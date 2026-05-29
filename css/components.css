@@ -1,0 +1,22 @@
+/* ==========================================================================
+   RUX DESIGN SYSTEM — COMPONENTS
+   --------------------------------------------------------------------------
+   All design-system components, BEM-style, --rux- prefixed.
+
+   Convention
+   ----------
+   .rux-{block}                 Block
+   .rux-{block}__{element}      Element (named sub-part)
+   .rux-{block}--{modifier}     Variant / size
+   .is-*  /  .has-*             JS-toggled state (no rux- prefix)
+
+   Components only reference tokens.css variables. Never hardcode colors,
+   radii, shadows, or spacing — if a value is missing, add a token first.
+   ========================================================================== */
+
+@import './controls.css';
+@import './form.css';
+@import './content.css';
+@import './feedback.css';
+@import './navigation.css';
+@import './utils.css';

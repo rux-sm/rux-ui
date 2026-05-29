@@ -1,0 +1,339 @@
+# Rux Design System
+
+A lightweight, dark-only design system for Rux UI. Three CSS files, one JS file, one naming convention.
+
+> **Philosophy**: clean, minimalist, modern. Think the restraint of Apple, the density of Linear, the energy of Spotify. Near-black surfaces, hairline borders, single accent color, no decoration that doesn't earn its place.
+
+## Sources
+
+This system was distilled from the **TripBoard** codebase (`trip-board/`), which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates it into a single flat namespace optimized for maintainability — every token in one file (`tokens.css`), every component in another (`components.css`).
+
+The TripBoard codebase remains the reference for advanced patterns (the schedule grid, trip bar geometry, optical-radius math) — see `trip-board/docs/RUX_UI.md` and `trip-board/docs/Rux_UI_Bible` for the original architecture write-ups.
+
+---
+
+## Index
+
+```
+.
+├── README.md              ← you are here
+├── SKILL.md               ← Agent Skill spec (Claude Code / Claude.ai)
+├── tokens.css             ← all design tokens: color, type, space, radius, motion
+├── colors_and_type.css    ← webfonts + global element styles (h1, p, code, etc)
+├── components.css         ← every component: .rux-button, .rux-card, …
+├── rux.js                 ← tiny JS helpers: Rux.toast, openModal, copy
+├── demo.html              ← live showcase of every component
+├── assets/                ← logos, favicons
+├── fonts/                 ← (Inter, JetBrains Mono — currently CDN-loaded, see Iconography)
+├── preview/               ← Design System tab cards
+└── ui_kits/
+    └── showcase/          ← example app screen built from the system
+```
+
+To use in a new page:
+
+```html
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="components.css" />
+<script src="rux.js" defer></script>
+```
+
+---
+
+## Content Fundamentals
+
+### Voice & tone
+
+- **Direct.** Short sentences. Verb-first when you can.
+- **Calm.** No exclamation marks, no urgency unless it's truly urgent (a destructive action, an error).
+- **Plain.** Plain words over technical ones. "Delete trip" over "Remove record". "Couldn't connect" over "Connection failure occurred".
+- **Trustworthy.** Tell the user what happened and what they can do. Never blame them.
+
+### Person & pronouns
+
+- **You** addresses the user directly. "You haven't saved this trip yet."
+- **We** is the product team, used sparingly and only for product communication ("We're updating the schedule format"). Never in UI labels.
+- **Never "I"** in UI copy.
+
+### Casing
+
+- **Sentence case** for everything: buttons, headings, menu items, labels, toast messages.
+  - ✅ `New trip`, `Save changes`, `Driver assignments`
+  - ❌ `New Trip`, `Save Changes`, `Driver Assignments`
+- **UPPERCASE** only for overlines and badges that need to read as a category, not a sentence. Track them out (`letter-spacing: 0.04em`).
+  - ✅ `DRAFT`, `INCOMPLETE`, `NEW`
+- **Title Case** is forbidden in UI. It looks dated.
+
+### Punctuation
+
+- No trailing periods on **button labels**, **menu items**, **field labels**, **table headers**, **toasts**, or **single-line tooltips**.
+- Periods **are** used in full sentences inside body copy, modal descriptions, and multi-sentence help text.
+- Ellipsis (`…`, the actual character, not three dots) for actions that open a follow-up step: `Export…`, `Delete trip…`.
+
+### Numbers, dates, units
+
+- Use real characters: `–` for ranges (`Mon–Fri`), `×` for dimensions, `′″` for feet/inches if needed.
+- Times: lowercase `am`/`pm`, no space. `9:00am`, `3:30pm`.
+- Dates in UI lists: `Tue, Mar 12`. Full dates: `March 12, 2026`.
+- Money: `$1,240` not `$1240.00` unless cents matter.
+
+### Emoji
+
+**Do not use emoji** in Rux UI surfaces. Status is communicated by color, icon (Lucide), and badge component. Emoji are inconsistent across platforms and clash with the minimalist tone.
+
+### Example copy
+
+| Context | Good | Bad |
+|---|---|---|
+| Empty state | `No trips this week` | `Looks like you don't have any trips yet! 🚌` |
+| Error | `Couldn't save. Check your connection and try again.` | `Oops! Something went wrong saving your trip!` |
+| Confirm | `Delete this trip?` `This can't be undone.` | `Are you sure you want to permanently delete this?` |
+| Toast | `Trip saved` | `Trip successfully saved.` |
+| Button | `Save` `Delete trip…` | `Save Trip` `DELETE` |
+
+---
+
+## Visual Foundations
+
+### Backgrounds
+
+The system has **four background planes**, all near-black with subtle separation:
+
+| Token | Hex | Use for |
+|---|---|---|
+| `--rux-bg` | `#000000` | App canvas — the lowest plane |
+| `--rux-bg-elevated` | `#1f1f1f` | Cards, panels, menus, modals |
+| `--rux-bg-sunken` | `#060606` | Inputs, code blocks, recessed footers |
+| `--rux-bg-hover` / `--rux-bg-active` | `#292929` / `#303030` | Interactive states |
+
+**No gradients** except `--rux-bg-overlay` (a flat 60% black scrim for modals). No full-bleed imagery as background. No textures, patterns, grain. Surfaces are flat color separated by hairlines.
+
+### Color
+
+One accent (`--rux-accent`, a clear blue at `oklch(64% 0.18 252)`) used sparingly — primary actions, active states, links, focus rings. Status colors (`--rux-success`, `--rux-warning`, `--rux-danger`, `--rux-info`) for semantic feedback only — never decorative.
+
+All colors are `oklch()` so chroma stays perceptually balanced if you retheme.
+
+#### Swappable accent
+
+Blue is the default, but the accent is **one variable**: change it once, the whole product retones. The system ships six pre-tuned themes that all share the same lightness/chroma — only the hue rotates — so they read as the same family.
+
+| Theme | Hue |
+|---|---|
+| `blue` (default) | `252` |
+| `violet` | `295` |
+| `cyan` | `210` |
+| `green` | `152` |
+| `amber` | `70` |
+| `red` | `25` |
+
+**Three ways to apply:**
+
+```html
+<!-- 1. HTML attribute (set at server-render time) -->
+<html data-rux-accent="violet">
+```
+
+```js
+// 2. Runtime swap — also persists to localStorage
+Rux.setAccent("green");
+```
+
+```html
+<!-- 3. Declarative: click a swatch -->
+<button data-rux-set-accent="amber" aria-label="Amber">…</button>
+```
+
+To add a brand-new accent, override `--rux-accent-h` (and optionally `--rux-accent-c`) on any selector — no other tokens need to change.
+
+```css
+[data-rux-accent="brand"] {
+  --rux-accent-h: 312;     /* magenta */
+  --rux-accent-c: 0.20;
+}
+```
+
+### Typography
+
+- **Inter** for UI text (loaded as Google Font). System sans fallback (`-apple-system`, `Segoe UI`) is acceptable when offline — Inter and SF have near-identical metrics.
+- **JetBrains Mono** for code and monospaced data.
+- **No third family.** No display serif, no script. Hierarchy comes from size and weight, not font choice.
+- Tight tracking on display sizes (`-0.02em`), normal at body, wide on overlines (`0.04em`).
+
+### Spacing
+
+A 4px grid: `4, 8, 12, 16, 24, 32, 48, 64`. Pick from `--rux-space-1` through `--rux-space-8`. **Do not invent new values.** Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use `--rux-space-5` or `--rux-space-6`.
+
+### Buttons
+
+Buttons are compact, solid controls. Rux uses one button size: 32px high.
+
+| Control | Height | Font | Horizontal padding | Icon/text gap |
+|---|---:|---:|---:|---:|
+| `.rux-button` | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-4` `16px` | `--rux-space-2` `8px` |
+| `.rux-button--icon` | `--rux-control-height` `32px` | icon only | `0` | n/a |
+| segmented items | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | n/a |
+
+- Use `--rux-weight-medium` for all button labels.
+- Icon-only buttons are square: width equals the resolved button height.
+- Do not add compact or large button variants. Use layout density, icon-only buttons, or progressive disclosure instead of changing button height.
+- Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
+- Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
+- Segmented controls use `calc(var(--rux-space-1) / 2)` (`2px`) between items so the group reads as one control.
+- Keep labels short, sentence case, and action-oriented.
+
+### Optical Radius
+
+Nested containers must have proportionally smaller radii or curves stop reading as parallel. The Rux scale halves at each step, with semantic depth mapping:
+
+```
+Depth 0  --rux-radius-xl   24px   modals, sheets
+Depth 1  --rux-radius-lg   16px   cards, panels
+Depth 2  --rux-radius-md    8px   buttons, sections inside cards
+Depth 3  --rux-radius-sm    6px   inputs, controls
+Depth 4  --rux-radius-xs    2px   badges, chips
+         --rux-radius-full 9999px pills, avatars
+         --rux-radius-none  0px   square
+```
+
+**Rule of thumb:** when you nest something inside another curved container, step *down* one level. A 6px input inside an 8px button group inside a 16px card. The eye stops noticing the curves — that's the goal.
+
+### Borders & shadows
+
+Borders are **hairlines** (always 1px) at one of three intensities (`--rux-border-subtle`, `--rux-border`, `--rux-border-strong`). Solid buttons, segmented controls, and base cards keep a transparent border slot so hover, focus, and active states never shift layout. Shadows are reserved for floating surfaces and subtle tactile lift on buttons.
+
+**Shadow scale:**
+- `--rux-shadow-none` — cards, fields, inline controls
+- `--rux-shadow-sm` — all button variants, segmented controls, toasts
+- `--rux-shadow-md` — menus, tooltips
+- `--rux-shadow-lg` — modals
+- `--rux-shadow-xl` — sheets, heavy overlays
+
+**No inset bevels.** No 3D buttons. No `box-shadow: inset 0 1px 0 white/18%` highlights. The TripBoard codebase used these heavily — Rux UI does not. Flat surfaces, hairline edges.
+
+### Cards
+
+```css
+background: var(--rux-bg-elevated);
+border: var(--rux-border-width) solid transparent;
+border-radius: var(--rux-radius-lg);   /* 16px */
+/* no shadow by default */
+```
+
+Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`) and a slight background lift to `--rux-bg-hover`. Never use a colored left border to denote category — use a `.rux-badge` instead.
+
+### Hover & press
+
+- **Surface hover** raises background brightness one step (`--rux-bg` → `--rux-bg-hover`) or shifts border up one intensity. Never opacity (looks washed out on dark).
+- **Default controls** are solid neutral fills, not outlined buttons. The fill does the affordance work; borders stay transparent unless the control is a container like tabs or an icon group.
+- **Control hover** uses the control surface family (`--rux-control-bg-hover`, `--rux-control-border-hover`) so default buttons, tabs, and icon groups read as interactive without becoming loud. Ghost controls stay quiet until hover.
+- **Press / active** drops further to the active surface (`--rux-bg-active` for rows/surfaces, `--rux-control-bg-active` for controls) and translates `0.5px` down for buttons. Subtle.
+- **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.
+
+### Motion
+
+| Duration | Use for |
+|---|---|
+| `--rux-duration-instant` `80ms` | Hover, opacity changes |
+| `--rux-duration-fast` `140ms` | Button press, color shifts |
+| `--rux-duration-base` `220ms` | Menu open, modal in |
+| `--rux-duration-slow` `360ms` | Sheet slide, large layout |
+
+Default easing is `--rux-ease-out` (`cubic-bezier(0.22, 1, 0.36, 1)`) — fast start, gentle settle. Use `--rux-ease-in-out` only for symmetric motion (loops, indeterminate progress). `--rux-ease-spring` exists for playful affordances but should appear *almost never* — overshoot is a feature, not a vibe.
+
+`prefers-reduced-motion` is respected globally in `components.css`.
+
+### Transparency & blur
+
+Used in exactly one place: the modal scrim (`--rux-bg-overlay`, 60% black + `backdrop-filter: blur(4px)`). Everywhere else, surfaces are opaque. No glass cards, no frosted panels, no translucent sidebars — they create ambiguity about what's a layer and what's a state.
+
+### Imagery
+
+When imagery appears (avatars, logos, attachments), it sits inside hairline-bordered containers with `--rux-radius-md` corners. Photos are not desaturated, not duotoned, not tinted — they're shown as-is. The dark canvas already unifies them.
+
+### Layout
+
+- App shell uses fixed positioning for the top bar (`--rux-z-sticky`) and side rail.
+- Content max-width: `--rux-container-xl` (1280px) for marketing, no max for app shells.
+- Section gutters: `--rux-space-6` (32px) desktop, `--rux-space-4` (16px) mobile.
+- Vertical rhythm is enforced by `.rux-stack` flex containers with `gap`, never margins.
+
+---
+
+## Iconography
+
+Rux UI uses **Lucide** ([lucide.dev](https://lucide.dev)) as its icon library. Lucide is:
+
+- Stroke-based, 24×24 viewBox, 1.5–2px stroke weight.
+- MIT-licensed, available via CDN, ESM, or React.
+- Visually compatible with Inter — both have rounded terminals and a similar geometric/humanist balance.
+
+### Why Lucide and not Material Symbols?
+
+The TripBoard codebase uses Material Symbols Outlined heavily. We migrated away because Material's variable-axis icons (`opsz`, `wght`, `GRAD`, `FILL`) require careful tuning to look right at small sizes, and their default fill style clashes with the minimalist stroke aesthetic. Lucide is more opinionated and consistent out of the box.
+
+> **FLAG:** TripBoard component CSS still references `material-symbols-outlined`. If you port a component from `trip-board/css/*.css`, swap those `<span class="material-symbols-outlined">` for inline Lucide SVGs.
+
+### Usage
+
+The simplest path is inline SVGs with `class="rux-icon"`. Sizes:
+
+```css
+.rux-icon        { width: 16px; height: 16px; stroke-width: 1.75; }
+.rux-icon--sm    { width: 14px; height: 14px; }
+.rux-icon--lg    { width: 20px; height: 20px; }
+.rux-icon--xl    { width: 24px; height: 24px; }
+```
+
+Via the CDN, you can drop them at runtime:
+
+```html
+<script src="https://unpkg.com/lucide@latest"></script>
+<i data-lucide="check" class="rux-icon"></i>
+<script>lucide.createIcons();</script>
+```
+
+`assets/icons/` contains a small set of inline-SVG icons used in `demo.html` and the preview cards — copy them or pull more from lucide.dev.
+
+### Emoji & unicode
+
+Both are **not** used as icons in Rux UI. Status is shown by color + Lucide icon + label. The only acceptable unicode character is `…` (ellipsis) in action labels and `–` (en dash) in ranges.
+
+### Logo
+
+`assets/rux-logo.svg` — the Rux wordmark, set in Inter Bold with a single accent dot. Use on `--rux-bg` or `--rux-bg-elevated`. Don't recolor it. Don't lock it up with other marks.
+
+---
+
+## Conventions
+
+```
+Use --rux-* for every design token. No other prefix exists.
+Use oklch() for all color values.
+Use full readable words.  Exception: `bg` for background.
+Use sentence case for UI copy.
+
+State classes (.is-*, .has-*) are JS-toggled, no rux- prefix.
+BEM for components: .rux-card, .rux-card__body, .rux-card--interactive.
+
+When in doubt, edit a token before adding a new component override.
+```
+
+---
+
+## CAVEATS & SUBSTITUTIONS
+
+- **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). The `fonts/` directory is currently empty. Drop self-hosted `.woff2` files there and update the `@import` at the top of `colors_and_type.css` if you need offline reliability.
+- **Lucide icons are referenced via CDN** in `demo.html` and inline-SVG in preview cards. We did not vendor the full set.
+- **Logo is a typographic wordmark** generated in this project — no pre-existing Rux logo was found in the source materials. If a real logo exists, swap `assets/rux-logo.svg`.
+- The **TripBoard codebase still uses the old token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-fg`) are intentionally divergent. To migrate the app, the mapping is:
+  ```
+  --rux-bg-1   → --rux-bg
+  --rux-bg-2/3/4 → --rux-bg-elevated
+  --rux-bg-5   → --rux-bg-elevated  (or its own token if modal needs lift)
+  --rux-text-1 → --rux-fg
+  --rux-text-2 → --rux-fg-muted
+  --rux-text-3 → --rux-fg-subtle
+  --rux-border-1/2/3 → --rux-border-subtle / --rux-border / --rux-border-strong
+  ```

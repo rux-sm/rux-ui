@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- @dsCard group="Components" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <style>
+      body { padding: var(--rux-space-5); display: grid; grid-template-columns: 1fr 1fr; gap: var(--rux-space-4); }
+    </style>
+  </head>
+  <body>
+    <div class="rux-field">
+      <label class="rux-field__label">Email</label>
+      <input class="rux-input" value="ada@rux.dev" />
+    </div>
+    <div class="rux-field">
+      <label class="rux-field__label">Role</label>
+      <select class="rux-select"><option>Dispatcher</option><option>Driver</option></select>
+    </div>
+    <div class="rux-field">
+      <label class="rux-field__label">Error</label>
+      <input class="rux-input" value="not an email" aria-invalid="true" />
+      <span class="rux-field__error">Enter a valid email.</span>
+    </div>
+    <div class="rux-field">
+      <label class="rux-field__label">Disabled</label>
+      <input class="rux-input" value="locked" disabled />
+    </div>
+  </body>
+</html>

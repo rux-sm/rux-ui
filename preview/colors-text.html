@@ -1,0 +1,27 @@
+<!doctype html>
+<!-- @dsCard group="Colors" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <style>
+      body { padding: var(--rux-space-5); display: flex; flex-direction: column; gap: var(--rux-space-2); }
+      .row { display: flex; align-items: center; gap: var(--rux-space-3); }
+      .swatch { width: calc(var(--rux-space-7) + var(--rux-space-2)); height: var(--rux-control-height); border-radius: var(--rux-radius-sm); border: var(--rux-border-width) solid var(--rux-border); }
+      .swatch--fg { background: var(--rux-fg); }
+      .swatch--muted { background: var(--rux-fg-muted); }
+      .swatch--subtle { background: var(--rux-fg-subtle); }
+      .swatch--disabled { background: var(--rux-fg-disabled); }
+      .name { font-size: var(--rux-text-xs); font-weight: var(--rux-weight-semibold); min-width: 100px; }
+      .val { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-subtle); }
+      .desc { font-size: var(--rux-text-xs); color: var(--rux-fg-muted); }
+    </style>
+  </head>
+  <body>
+    <div class="row"><div class="swatch swatch--fg"></div><div class="name">fg</div><div class="val">#f5f5f5</div><div class="desc">Primary text</div></div>
+    <div class="row"><div class="swatch swatch--muted"></div><div class="name">fg-muted</div><div class="val">#a1a1a1</div><div class="desc">Secondary, labels</div></div>
+    <div class="row"><div class="swatch swatch--subtle"></div><div class="name">fg-subtle</div><div class="val">#6b6b6b</div><div class="desc">Tertiary, helper</div></div>
+    <div class="row"><div class="swatch swatch--disabled"></div><div class="name">fg-disabled</div><div class="val">#404040</div><div class="desc">Disabled controls</div></div>
+  </body>
+</html>

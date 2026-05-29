@@ -1,0 +1,33 @@
+<!doctype html>
+<!-- @dsCard group="Spacing" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <style>
+      body { padding: var(--rux-space-5); }
+      /* Nested boxes demonstrating the rule: each child steps down one level */
+      .lvl-0 { padding: var(--rux-space-4); border-radius: var(--rux-radius-xl); background: var(--rux-bg-elevated); border: var(--rux-border-width) solid var(--rux-border); }
+      .lvl-1 { padding: var(--rux-space-3); border-radius: var(--rux-radius-lg); background: var(--rux-bg-hover); }
+      .lvl-2 { padding: var(--rux-space-2); border-radius: var(--rux-radius-md); background: var(--rux-bg-active); }
+      .lvl-3 { padding: var(--rux-space-2) var(--rux-space-3); border-radius: var(--rux-radius-sm); background: var(--rux-accent); color: var(--rux-fg-on-accent); }
+      .lbl { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-subtle); margin-bottom: var(--rux-space-1); }
+      .lvl-3 .lbl { color: color-mix(in oklab, var(--rux-fg-on-accent) 70%, transparent); margin: 0; font-size: var(--rux-text-2xs); }
+      .caption { font-size: var(--rux-text-xs); color: var(--rux-fg-muted); margin-top: var(--rux-space-2); }
+    </style>
+  </head>
+  <body>
+    <div class="lvl-0">
+      <div class="lbl">depth 0 · 24px modal</div>
+      <div class="lvl-1">
+        <div class="lbl">depth 1 · 16px card</div>
+        <div class="lvl-2">
+          <div class="lbl">depth 2 · 8px section</div>
+          <div class="lvl-3"><div class="lbl">depth 3 · 6px input</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption">Optical radius: every nested container steps down one level so curves stay visually parallel.</div>
+  </body>
+</html>

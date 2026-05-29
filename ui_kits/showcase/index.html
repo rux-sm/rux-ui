@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rux — Showcase</title>
+    <link rel="icon" href="../../assets/rux-mark.svg" />
+    <link rel="stylesheet" href="../../css/tokens.css" />
+    <link rel="stylesheet" href="../../css/colors_and_type.css" />
+    <link rel="stylesheet" href="../../css/components.css" />
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
+    <style>
+      /* App-shell layout — composed entirely from --rux-* tokens */
+      body {
+        display: grid;
+        grid-template-columns: var(--rux-sidebar-width) 1fr;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .sidebar {
+        background: var(--rux-bg);
+        border-right: var(--rux-border-width) solid var(--rux-border);
+        padding: var(--rux-space-4);
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-1);
+        overflow-y: auto;
+      }
+      .sidebar__brand {
+        display: flex;
+        align-items: center;
+        gap: var(--rux-space-2);
+        padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-4);
+        font-weight: var(--rux-weight-bold);
+        font-size: var(--rux-text-md);
+        letter-spacing: var(--rux-tracking-tight);
+      }
+      .sidebar__brand img { width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
+      .sidebar__action {
+        justify-content: flex-start;
+        margin: 0 var(--rux-space-2) var(--rux-space-3);
+      }
+      .sidebar__section {
+        margin-top: var(--rux-space-4);
+        padding: 0 var(--rux-space-3) var(--rux-space-1);
+        font-size: var(--rux-text-2xs);
+        text-transform: uppercase;
+        letter-spacing: var(--rux-tracking-wide);
+        color: var(--rux-fg-subtle);
+        font-weight: var(--rux-weight-semibold);
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: var(--rux-space-2);
+        padding: var(--rux-space-2) var(--rux-space-3);
+        border-radius: var(--rux-radius-sm);
+        color: var(--rux-fg-muted);
+        font-size: var(--rux-text-sm);
+        font-weight: var(--rux-weight-medium);
+        cursor: pointer;
+        background: transparent;
+        border: 0;
+        text-align: left;
+        font-family: inherit;
+        transition: background var(--rux-duration-instant), color var(--rux-duration-instant);
+      }
+      .nav-item:hover { background: var(--rux-bg-hover); color: var(--rux-fg); }
+      .nav-item.is-active { background: var(--rux-bg-active); color: var(--rux-fg); }
+      .nav-item .rux-icon { color: currentColor; }
+      .nav-item__badge {
+        margin-left: auto;
+        font-family: var(--rux-font-mono);
+        font-size: var(--rux-text-2xs);
+        color: var(--rux-fg-subtle);
+      }
+      .sidebar__spacer { flex: 1; }
+      .sidebar__user {
+        display: flex;
+        align-items: center;
+        gap: var(--rux-space-2);
+        padding: var(--rux-space-3);
+        border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+        margin: var(--rux-space-3) calc(var(--rux-space-2) * -1) 0;
+      }
+      .sidebar__user-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .sidebar__user-name {
+        font-size: var(--rux-text-sm);
+        font-weight: var(--rux-weight-medium);
+      }
+      .sidebar__user-role {
+        font-size: var(--rux-text-2xs);
+        color: var(--rux-fg-subtle);
+      }
+
+      .main {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: var(--rux-bg);
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: var(--rux-space-3);
+        padding: var(--rux-space-3) var(--rux-space-5);
+        border-bottom: var(--rux-border-width) solid var(--rux-border);
+        background: var(--rux-bg);
+      }
+      .topbar__search {
+        flex: 1;
+        max-width: var(--rux-container-xs);
+        position: relative;
+      }
+      .topbar__search input {
+        padding-left: var(--rux-field-height);
+      }
+      .topbar__search .rux-icon {
+        position: absolute;
+        left: var(--rux-space-3);
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--rux-fg-subtle);
+      }
+      .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--rux-space-6);
+      }
+      .page-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: var(--rux-space-4);
+        margin-bottom: var(--rux-space-6);
+      }
+      .page-header__eyebrow { margin-bottom: var(--rux-space-1); }
+      .page-header__title {
+        font-size: var(--rux-text-2xl);
+        font-weight: var(--rux-weight-semibold);
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--rux-space-4);
+        margin-bottom: var(--rux-space-5);
+      }
+      .stat {
+        padding: var(--rux-space-4) var(--rux-space-5);
+      }
+      .stat__label {
+        font-size: var(--rux-text-xs);
+        color: var(--rux-fg-muted);
+        text-transform: uppercase;
+        letter-spacing: var(--rux-tracking-wide);
+        font-weight: var(--rux-weight-semibold);
+      }
+      .stat__value {
+        font-size: var(--rux-text-2xl);
+        font-weight: var(--rux-weight-semibold);
+        letter-spacing: var(--rux-tracking-tight);
+        margin-top: var(--rux-space-1);
+      }
+      .stat__delta {
+        font-size: var(--rux-text-xs);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--rux-space-1);
+        margin-top: var(--rux-space-1);
+      }
+      .stat__subvalue {
+        color: var(--rux-fg-subtle);
+        font-weight: var(--rux-weight-regular);
+      }
+      .text-success { color: var(--rux-success); }
+      .text-danger { color: var(--rux-danger); }
+      .text-muted { color: var(--rux-fg-muted); }
+      .text-subtle { color: var(--rux-fg-subtle); }
+      .panel {
+        margin-bottom: var(--rux-space-5);
+      }
+      .panel__body { padding: 0; }
+      .row-item {
+        display: grid;
+        grid-template-columns: auto 1fr auto auto auto;
+        align-items: center;
+        gap: var(--rux-space-4);
+        padding: var(--rux-space-3) var(--rux-space-5);
+        border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+        cursor: pointer;
+      }
+      .row-item:last-child { border-bottom: 0; }
+      .row-item:hover { background: var(--rux-bg-hover); }
+      .row-item__title { font-size: var(--rux-text-sm); font-weight: var(--rux-weight-medium); }
+      .row-item__sub { font-size: var(--rux-text-xs); color: var(--rux-fg-muted); margin-top: calc(var(--rux-space-1) / 2); }
+      .row-item__time { font-family: var(--rux-font-mono); font-size: var(--rux-text-xs); color: var(--rux-fg-muted); }
+      .row-item__chevron { color: var(--rux-fg-subtle); }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: var(--rux-space-5);
+      }
+      .avatar-accent {
+        background: var(--rux-accent-subtle);
+        color: var(--rux-accent);
+      }
+      .avatar-info {
+        background: var(--rux-info-subtle);
+        color: var(--rux-info);
+      }
+      .avatar-warning {
+        background: var(--rux-warning-subtle);
+        color: var(--rux-warning);
+      }
+      .section-gap { margin-bottom: var(--rux-space-4); }
+      .panel-inset { padding: var(--rux-space-3) var(--rux-space-5) var(--rux-space-4); }
+      .driver-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .driver-name {
+        font-size: var(--rux-text-sm);
+        font-weight: var(--rux-weight-medium);
+      }
+      .driver-meta {
+        font-size: var(--rux-text-xs);
+        color: var(--rux-fg-muted);
+      }
+      .action-list {
+        padding: var(--rux-space-4) var(--rux-space-5);
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-2);
+      }
+      .action-button {
+        justify-content: flex-start;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <img src="../../assets/rux-mark.svg" alt="" />
+        <span>Rux</span>
+      </div>
+
+      <button class="rux-button rux-button--primary sidebar__action">
+        <i data-lucide="plus" class="rux-icon"></i> New trip
+      </button>
+
+      <button class="nav-item is-active"><i data-lucide="calendar" class="rux-icon"></i> Schedule <span class="nav-item__badge">142</span></button>
+      <button class="nav-item"><i data-lucide="users" class="rux-icon"></i> Drivers</button>
+      <button class="nav-item"><i data-lucide="bus" class="rux-icon"></i> Buses</button>
+      <button class="nav-item"><i data-lucide="bell" class="rux-icon"></i> Activity</button>
+
+      <div class="sidebar__section">Views</div>
+      <button class="nav-item"><i data-lucide="layout-grid" class="rux-icon"></i> This week</button>
+      <button class="nav-item"><i data-lucide="archive" class="rux-icon"></i> Archive</button>
+      <button class="nav-item"><i data-lucide="settings" class="rux-icon"></i> Settings</button>
+
+      <div class="sidebar__spacer"></div>
+
+      <div class="sidebar__user">
+        <div class="rux-avatar rux-avatar--sm">AB</div>
+        <div class="sidebar__user-body">
+          <div class="sidebar__user-name">Ada Bowman</div>
+          <div class="sidebar__user-role">Dispatcher</div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="topbar__search">
+          <i data-lucide="search" class="rux-icon"></i>
+          <input class="rux-input" placeholder="Search trips, drivers, buses…" />
+        </div>
+        <div class="rux-spacer"></div>
+        <div class="rux-tabs">
+          <button class="rux-tabs__tab is-active">Week</button>
+          <button class="rux-tabs__tab">Day</button>
+          <button class="rux-tabs__tab">Month</button>
+        </div>
+        <button class="rux-button rux-button--ghost rux-button--icon" data-tooltip="Notifications"><i data-lucide="bell" class="rux-icon"></i></button>
+      </div>
+
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <h6 class="page-header__eyebrow">Mar 9 – 15, 2026</h6>
+            <h1 class="page-header__title">Schedule</h1>
+          </div>
+          <div class="rux-cluster">
+            <button class="rux-button rux-button--ghost rux-button--icon" data-tooltip="Previous week"><i data-lucide="chevron-left" class="rux-icon"></i></button>
+            <button class="rux-button rux-button--ghost">This week</button>
+            <button class="rux-button rux-button--ghost rux-button--icon" data-tooltip="Next week"><i data-lucide="chevron-right" class="rux-icon"></i></button>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="rux-card stat">
+            <div class="stat__label">Trips</div>
+            <div class="stat__value">142</div>
+            <div class="stat__delta text-success"><i data-lucide="trending-up" class="rux-icon rux-icon--sm"></i> 8.2%</div>
+          </div>
+          <div class="rux-card stat">
+            <div class="stat__label">Assigned</div>
+            <div class="stat__value">38<span class="stat__subvalue"> / 42</span></div>
+            <div class="stat__delta text-muted">4 pending</div>
+          </div>
+          <div class="rux-card stat">
+            <div class="stat__label">Conflicts</div>
+            <div class="stat__value text-danger">3</div>
+            <div class="stat__delta text-danger"><i data-lucide="alert-triangle" class="rux-icon rux-icon--sm"></i> Review</div>
+          </div>
+          <div class="rux-card stat">
+            <div class="stat__label">Revenue</div>
+            <div class="stat__value">$48.2k</div>
+            <div class="stat__delta text-success"><i data-lucide="trending-up" class="rux-icon rux-icon--sm"></i> 12%</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div>
+            <div class="rux-alert rux-alert--warning section-gap">
+              <i data-lucide="alert-triangle" class="rux-icon rux-icon--lg rux-alert__icon"></i>
+              <div class="rux-alert__body">
+                <div class="rux-alert__title">Driver overlap on Tuesday</div>
+                <div>K. Romero is assigned to two trips between 9–11am.</div>
+              </div>
+              <button class="rux-button rux-button--ghost">Review</button>
+            </div>
+
+            <div class="rux-card panel">
+              <div class="rux-card__header">
+                <div class="rux-card__title">Upcoming trips</div>
+                <div class="rux-cluster">
+                  <button class="rux-button rux-button--ghost"><i data-lucide="filter" class="rux-icon rux-icon--sm"></i> Filter</button>
+                  <button class="rux-button rux-button--ghost rux-button--icon"><i data-lucide="more-horizontal" class="rux-icon"></i></button>
+                </div>
+              </div>
+              <div class="panel__body">
+                <div class="row-item">
+                  <div class="rux-avatar rux-avatar--sm">KR</div>
+                  <div>
+                    <div class="row-item__title">Yosemite weekend — Group A</div>
+                    <div class="row-item__sub">San Jose → Yosemite Valley · 42 pax · 2 buses</div>
+                  </div>
+                  <span class="rux-badge rux-badge--success rux-badge--dot">Confirmed</span>
+                  <div class="row-item__time">Sat 6:00am</div>
+                  <i data-lucide="chevron-right" class="rux-icon row-item__chevron"></i>
+                </div>
+                <div class="row-item">
+                  <div class="rux-avatar rux-avatar--sm avatar-info">JT</div>
+                  <div>
+                    <div class="row-item__title">Tahoe day trip</div>
+                    <div class="row-item__sub">Oakland → South Lake Tahoe · 36 pax · 1 bus</div>
+                  </div>
+                  <span class="rux-badge rux-badge--warning rux-badge--dot">Pending</span>
+                  <div class="row-item__time">Sun 7:30am</div>
+                  <i data-lucide="chevron-right" class="rux-icon row-item__chevron"></i>
+                </div>
+                <div class="row-item">
+                  <div class="rux-avatar rux-avatar--sm avatar-warning">AB</div>
+                  <div>
+                    <div class="row-item__title">SFO airport shuttle</div>
+                    <div class="row-item__sub">Berkeley → SFO Terminal 2 · 18 pax · 1 bus</div>
+                  </div>
+                  <span class="rux-badge rux-badge--danger rux-badge--dot">Conflict</span>
+                  <div class="row-item__time">Mon 4:15am</div>
+                  <i data-lucide="chevron-right" class="rux-icon row-item__chevron"></i>
+                </div>
+                <div class="row-item">
+                  <div class="rux-avatar rux-avatar--sm">MP</div>
+                  <div>
+                    <div class="row-item__title">Corporate retreat</div>
+                    <div class="row-item__sub">San Mateo → Half Moon Bay · 28 pax · 1 bus</div>
+                  </div>
+                  <span class="rux-badge rux-badge--success rux-badge--dot">Confirmed</span>
+                  <div class="row-item__time">Tue 8:00am</div>
+                  <i data-lucide="chevron-right" class="rux-icon row-item__chevron"></i>
+                </div>
+                <div class="row-item">
+                  <div class="rux-avatar rux-avatar--sm avatar-accent">RV</div>
+                  <div>
+                    <div class="row-item__title">Wine country tour</div>
+                    <div class="row-item__sub">San Francisco → Napa · 32 pax · 1 bus</div>
+                  </div>
+                  <span class="rux-badge rux-badge--success rux-badge--dot">Confirmed</span>
+                  <div class="row-item__time">Wed 9:00am</div>
+                  <i data-lucide="chevron-right" class="rux-icon row-item__chevron"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="rux-card panel">
+              <div class="rux-card__header">
+                <div class="rux-card__title">Driver status</div>
+                <span class="rux-badge">Live</span>
+              </div>
+              <div class="panel-inset">
+                <div class="rux-stack-sm">
+                  <div class="rux-row">
+                    <div class="rux-avatar rux-avatar--sm">KR</div>
+                    <div class="driver-body">
+                      <div class="driver-name">K. Romero</div>
+                      <div class="driver-meta">On trip · returns 4pm</div>
+                    </div>
+                    <span class="rux-badge rux-badge--success rux-badge--dot">On trip</span>
+                  </div>
+                  <div class="rux-row">
+                    <div class="rux-avatar rux-avatar--sm avatar-info">JT</div>
+                    <div class="driver-body">
+                      <div class="driver-name">J. Thomson</div>
+                      <div class="driver-meta">Available</div>
+                    </div>
+                    <span class="rux-badge">Idle</span>
+                  </div>
+                  <div class="rux-row">
+                    <div class="rux-avatar rux-avatar--sm avatar-warning">AB</div>
+                    <div class="driver-body">
+                      <div class="driver-name">A. Bowman</div>
+                      <div class="driver-meta">Off · returns Mon</div>
+                    </div>
+                    <span class="rux-badge rux-badge--warning rux-badge--dot">Off</span>
+                  </div>
+                  <div class="rux-row">
+                    <div class="rux-avatar rux-avatar--sm">MP</div>
+                    <div class="driver-body">
+                      <div class="driver-name">M. Park</div>
+                      <div class="driver-meta">Available</div>
+                    </div>
+                    <span class="rux-badge">Idle</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rux-card panel">
+              <div class="rux-card__header">
+                <div class="rux-card__title">Quick actions</div>
+              </div>
+              <div class="action-list">
+                <button class="rux-button action-button"><i data-lucide="upload" class="rux-icon"></i> Import schedule…</button>
+                <button class="rux-button action-button"><i data-lucide="printer" class="rux-icon"></i> Print weekly report</button>
+                <button class="rux-button action-button"><i data-lucide="mail" class="rux-icon"></i> Notify drivers</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="../../rux.js"></script>
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const init = () => window.lucide && window.lucide.createIcons();
+        if (window.lucide) init();
+        else {
+          const i = setInterval(() => {
+            if (window.lucide) { clearInterval(i); init(); }
+          }, 50);
+        }
+      });
+    </script>
+  </body>
+</html>

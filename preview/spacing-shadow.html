@@ -1,0 +1,27 @@
+<!doctype html>
+<!-- @dsCard group="Spacing" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <style>
+      body { padding: var(--rux-space-5); display: flex; gap: var(--rux-space-5); align-items: end; }
+      .stack { display: flex; flex-direction: column; gap: var(--rux-radius-md); align-items: center; }
+      .box { width: calc(var(--rux-space-8) + var(--rux-space-5)); height: calc(var(--rux-space-7) + var(--rux-space-3)); background: var(--rux-bg-elevated); border-radius: var(--rux-radius-md); }
+      .sm { box-shadow: var(--rux-shadow-sm); }
+      .md { box-shadow: var(--rux-shadow-md); }
+      .lg { box-shadow: var(--rux-shadow-lg); }
+      .xl { box-shadow: var(--rux-shadow-xl); }
+      .name { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-muted); }
+      .val { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-subtle); }
+    </style>
+  </head>
+  <body>
+    <div class="stack"><div class="box"></div><div class="name">none</div><div class="val">default</div></div>
+    <div class="stack"><div class="box sm"></div><div class="name">shadow-sm</div><div class="val">toasts</div></div>
+    <div class="stack"><div class="box md"></div><div class="name">shadow-md</div><div class="val">menus</div></div>
+    <div class="stack"><div class="box lg"></div><div class="name">shadow-lg</div><div class="val">modals</div></div>
+    <div class="stack"><div class="box xl"></div><div class="name">shadow-xl</div><div class="val">overlays</div></div>
+  </body>
+</html>

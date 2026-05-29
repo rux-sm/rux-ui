@@ -1,0 +1,47 @@
+<!doctype html>
+<!-- @dsCard group="Colors" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <style>
+      body { padding: var(--rux-space-5); display: flex; flex-direction: column; gap: var(--rux-space-4); }
+      .row { display: flex; align-items: center; gap: var(--rux-space-3); flex-wrap: wrap; }
+      .swatch { width: var(--rux-control-height); height: var(--rux-control-height); border-radius: var(--rux-radius-full); border: 0; cursor: pointer; padding: 0; }
+      .name { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-muted); width: var(--rux-space-8); }
+      .demo { display: flex; align-items: center; gap: var(--rux-space-3); padding: var(--rux-space-3); background: var(--rux-bg-elevated); border: var(--rux-border-width) solid var(--rux-border); border-radius: var(--rux-radius-md); }
+      .ring { width: var(--rux-icon-sm); height: var(--rux-icon-sm); border-radius: var(--rux-radius-full); background: var(--rux-accent); }
+      .note { font-size: var(--rux-text-xs); color: var(--rux-fg-muted); }
+      .swatch--blue { background: var(--rux-accent); }
+      .swatch--violet { background: oklch(var(--rux-accent-l) var(--rux-accent-c) 295); }
+      .swatch--cyan { background: oklch(var(--rux-accent-l) var(--rux-accent-c) 210); }
+      .swatch--green { background: oklch(var(--rux-accent-l) var(--rux-accent-c) 152); }
+      .swatch--amber { background: oklch(var(--rux-accent-l) 0.16 70); }
+      .swatch--red { background: oklch(var(--rux-accent-l) 0.19 25); }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <div class="name">blue</div>
+      <div class="swatch swatch--blue"></div>
+      <div class="name">violet</div>
+      <div class="swatch swatch--violet"></div>
+      <div class="name">cyan</div>
+      <div class="swatch swatch--cyan"></div>
+      <div class="name">green</div>
+      <div class="swatch swatch--green"></div>
+      <div class="name">amber</div>
+      <div class="swatch swatch--amber"></div>
+      <div class="name">red</div>
+      <div class="swatch swatch--red"></div>
+    </div>
+    <div class="demo">
+      <span class="rux-badge rux-badge--accent">Current</span>
+      <button class="rux-button rux-button--primary">Primary</button>
+      <div class="ring"></div>
+      <span class="note">Same L &amp; C — only hue rotates</span>
+    </div>
+  </body>
+</html>

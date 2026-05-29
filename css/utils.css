@@ -1,0 +1,54 @@
+/* ==========================================================================
+   UTILS  ·  divider, stack/cluster, icons, prefers-reduced-motion
+   ========================================================================== */
+
+/* — divider — */
+
+.rux-divider {
+  border: 0;
+  border-top: var(--rux-border-width) solid var(--rux-border);
+  margin: 0;
+}
+.rux-divider--vertical {
+  border-top: 0;
+  border-left: var(--rux-border-width) solid var(--rux-border);
+  height: 100%;
+  width: 0;
+  margin: 0;
+}
+
+
+/* — stack / cluster — */
+
+.rux-stack    { display: flex; flex-direction: column; gap: var(--rux-space-4); }
+.rux-stack-sm { display: flex; flex-direction: column; gap: var(--rux-space-2); }
+.rux-stack-lg { display: flex; flex-direction: column; gap: var(--rux-space-5); }
+.rux-cluster  { display: flex; align-items: center; gap: var(--rux-space-2); flex-wrap: wrap; }
+.rux-row      { display: flex; align-items: center; gap: var(--rux-space-3); }
+.rux-spacer   { flex: 1; }
+
+
+/* — icons — */
+
+.rux-icon {
+  width: var(--rux-icon-md);
+  height: var(--rux-icon-md);
+  flex: none;
+  stroke-width: 1.75;
+  vertical-align: middle;
+}
+.rux-icon--sm { width: var(--rux-icon-sm); height: var(--rux-icon-sm); }
+.rux-icon--lg { width: var(--rux-icon-lg); height: var(--rux-icon-lg); }
+.rux-icon--xl { width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
+
+
+/* — prefers-reduced-motion — */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

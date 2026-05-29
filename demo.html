@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rux Design System — Demo</title>
+    <link rel="icon" href="assets/rux-mark.svg" />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/colors_and_type.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js" defer></script>
+    <style>
+      /* Page-local layout only. No new tokens, no new components. */
+      body {
+        padding: var(--rux-space-7) var(--rux-space-5);
+      }
+      .page {
+        max-width: var(--rux-container-lg);
+        margin: 0 auto;
+      }
+      .page__nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: var(--rux-space-6);
+        margin-bottom: var(--rux-space-7);
+        border-bottom: var(--rux-border-width) solid var(--rux-border);
+      }
+      .page__nav-logo {
+        display: flex;
+        align-items: center;
+        gap: var(--rux-space-2);
+        font-size: var(--rux-text-md);
+        font-weight: var(--rux-weight-semibold);
+        letter-spacing: var(--rux-tracking-tight);
+      }
+      .page__nav-logo img { width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
+      section {
+        margin-bottom: var(--rux-space-7);
+      }
+      .section-kicker { margin-bottom: var(--rux-space-1); }
+      .section-eyebrow {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--rux-space-4);
+        padding-bottom: var(--rux-space-4);
+        margin-bottom: var(--rux-space-5);
+        border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--rux-space-4);
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--rux-space-4);
+      }
+      @media (max-width: 720px) {
+        .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      }
+      .swatch {
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-2);
+      }
+      .swatch__chip {
+        height: var(--rux-space-8);
+        border-radius: var(--rux-radius-md);
+        border: var(--rux-border-width) solid var(--rux-border);
+      }
+      .swatch__chip--bg { background: var(--rux-bg); }
+      .swatch__chip--elevated { background: var(--rux-bg-elevated); }
+      .swatch__chip--sunken { background: var(--rux-bg-sunken); }
+      .swatch__chip--accent { background: var(--rux-accent); }
+      .swatch__chip--success { background: var(--rux-success); }
+      .swatch__chip--warning { background: var(--rux-warning); }
+      .swatch__chip--danger { background: var(--rux-danger); }
+      .swatch__chip--info { background: var(--rux-info); }
+      .swatch__name {
+        font-size: var(--rux-text-xs);
+        font-weight: var(--rux-weight-medium);
+      }
+      .swatch__val {
+        font-family: var(--rux-font-mono);
+        font-size: var(--rux-text-2xs);
+        color: var(--rux-fg-subtle);
+      }
+      .stat-card {
+        padding: var(--rux-space-5);
+      }
+      .stat-card__label {
+        font-size: var(--rux-text-xs);
+        color: var(--rux-fg-muted);
+        text-transform: uppercase;
+        letter-spacing: var(--rux-tracking-wide);
+        font-weight: var(--rux-weight-semibold);
+      }
+      .stat-card__value {
+        margin-top: var(--rux-space-2);
+        font-size: var(--rux-text-2xl);
+        font-weight: var(--rux-weight-semibold);
+        letter-spacing: var(--rux-tracking-tight);
+      }
+      .stat-card__delta {
+        margin-top: var(--rux-space-1);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--rux-space-1);
+        font-size: var(--rux-text-xs);
+      }
+      .stat-card__delta--success { color: var(--rux-success); }
+      .stat-card__delta--danger { color: var(--rux-danger); }
+      .stat-card__delta--muted { color: var(--rux-fg-muted); }
+      .stat-card__subvalue {
+        color: var(--rux-fg-subtle);
+        font-weight: var(--rux-weight-regular);
+      }
+      .codeblock {
+        font-family: var(--rux-font-mono);
+        font-size: var(--rux-text-xs);
+        color: var(--rux-fg-muted);
+      }
+      .accent-picker {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--rux-dot-sm);
+        padding: var(--rux-space-1);
+        background: var(--rux-bg-elevated);
+        border: var(--rux-border-width) solid var(--rux-border);
+        border-radius: var(--rux-radius-full);
+      }
+      .accent-swatch {
+        width: var(--rux-icon-xl);
+        height: var(--rux-icon-xl);
+        border-radius: var(--rux-radius-full);
+        border: calc(var(--rux-border-width) * 2) solid transparent;
+        cursor: pointer;
+        padding: 0;
+        background: var(--_c);
+        transition: transform var(--rux-duration-instant) var(--rux-ease-out),
+                    border-color var(--rux-duration-instant);
+      }
+      .accent-swatch:hover { transform: scale(1.1); }
+      .accent-swatch.is-active {
+        border-color: var(--rux-fg);
+      }
+      .accent-swatch--blue { --_c: var(--rux-accent); }
+      .accent-swatch--violet { --_c: oklch(var(--rux-accent-l) var(--rux-accent-c) 295); }
+      .accent-swatch--cyan { --_c: oklch(var(--rux-accent-l) var(--rux-accent-c) 210); }
+      .accent-swatch--green { --_c: oklch(var(--rux-accent-l) var(--rux-accent-c) 152); }
+      .accent-swatch--amber { --_c: oklch(var(--rux-accent-l) 0.16 70); }
+      .accent-swatch--red { --_c: oklch(var(--rux-accent-l) 0.19 25); }
+      .hero-title {
+        font-size: var(--rux-text-4xl);
+        letter-spacing: var(--rux-tracking-tight);
+      }
+      .hero-copy {
+        margin-top: var(--rux-space-3);
+        max-width: 60ch;
+      }
+      .hero-actions { margin-top: var(--rux-space-5); }
+      .demo-card-offset { margin-top: var(--rux-space-4); }
+      .button-spec {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--rux-space-3);
+        padding-top: var(--rux-space-4);
+        border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+      }
+      .button-spec__item {
+        min-width: 0;
+      }
+      .button-spec__label {
+        margin-bottom: var(--rux-space-1);
+        color: var(--rux-fg-subtle);
+        font-size: var(--rux-text-2xs);
+        font-weight: var(--rux-weight-semibold);
+        letter-spacing: var(--rux-tracking-wide);
+        text-transform: uppercase;
+      }
+      .button-spec__value {
+        color: var(--rux-fg);
+        font-family: var(--rux-font-mono);
+        font-size: var(--rux-text-xs);
+      }
+      @media (max-width: 720px) {
+        .button-spec { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      .button-uses {
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-2);
+        padding-top: var(--rux-space-4);
+        border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+      }
+      .button-use {
+        display: flex;
+        gap: var(--rux-space-3);
+        font-size: var(--rux-text-xs);
+        line-height: var(--rux-leading-snug);
+      }
+      .button-use__label {
+        flex: none;
+        width: 5rem;
+        font-weight: var(--rux-weight-semibold);
+        color: var(--rux-fg);
+      }
+      .button-use__desc { color: var(--rux-fg-muted); }
+      .demo-hover  { background-color: oklch(from var(--_bg) calc(l + var(--_l-h)) c h) !important; }
+      .demo-active { background-color: oklch(from var(--_bg) calc(l + var(--_l-a)) c h) !important; transform: translateY(var(--_press-y)) !important; }
+      .demo-focus  { outline: none !important; box-shadow: var(--rux-ring-focus), var(--_shadow) !important; }
+      .demo-ghost-hover  { background-color: oklch(from var(--rux-control-bg) calc(l + var(--_l-h)) c h) !important; border-color: transparent !important; }
+      .demo-ghost-active { background-color: oklch(from var(--rux-control-bg) calc(l + var(--_l-a)) c h) !important; border-color: transparent !important; transform: translateY(var(--_press-y)) !important; }
+      .demo-ghost-focus  { outline: none !important; box-shadow: var(--rux-ring-focus) !important; }
+      .state-matrix { display: flex; flex-direction: column; gap: var(--rux-space-2); }
+      .state-row { display: flex; align-items: center; gap: var(--rux-space-4); }
+      .state-label { flex: none; width: 4.5rem; font-size: var(--rux-text-2xs); font-weight: var(--rux-weight-semibold); letter-spacing: var(--rux-tracking-wide); text-transform: uppercase; color: var(--rux-fg-subtle); }
+      .button-cards {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--rux-space-4);
+        align-items: start;
+      }
+      @media (max-width: 900px) {
+        .button-cards { grid-template-columns: 1fr; }
+      }
+      .shadow-scale {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: var(--rux-space-3);
+      }
+      .shadow-scale__item {
+        min-width: 0;
+      }
+      .shadow-scale__surface {
+        display: grid;
+        place-items: center;
+        aspect-ratio: 1;
+        margin-bottom: var(--rux-space-3);
+        border-radius: var(--rux-radius-md);
+        color: var(--rux-fg-muted);
+        font-family: var(--rux-font-mono);
+        font-size: var(--rux-text-xs);
+      }
+      .shadow-scale__surface--none { box-shadow: var(--rux-shadow-none); 
+      }
+      .shadow-scale__surface--sm { box-shadow: var(--rux-shadow-sm);
+      background: var(--rux-bg-elevated);
+      }
+      .shadow-scale__surface--md { box-shadow: var(--rux-shadow-md); }
+      .shadow-scale__surface--lg { box-shadow: var(--rux-shadow-lg); }
+      .shadow-scale__surface--xl { box-shadow: var(--rux-shadow-xl); }
+      .shadow-scale__name {
+        margin-bottom: var(--rux-space-1);
+        color: var(--rux-fg);
+        font-family: var(--rux-font-mono);
+        font-size: var(--rux-text-xs);
+      }
+      .shadow-scale__use {
+        color: var(--rux-fg-subtle);
+        font-size: var(--rux-text-xs);
+      }
+      .shadow-rule {
+        color: var(--rux-fg-muted);
+        font-size: var(--rux-text-sm);
+      }
+      @media (max-width: 900px) {
+        .shadow-scale { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      .avatar-overlap { margin-right: calc(var(--rux-space-3) * -1); }
+      .avatar-info {
+        background: var(--rux-info-subtle);
+        color: var(--rux-info);
+      }
+      .demo-menu-grid {
+        display: grid;
+        grid-template-columns: var(--rux-panel-width-sm) 1fr;
+        gap: var(--rux-space-5);
+        align-items: start;
+      }
+      .progress-bar--warning { background: var(--rux-warning); }
+      .progress-bar--success { background: var(--rux-success); }
+      .demo-tooltip-label { margin-top: var(--rux-space-3); }
+      .page-footer {
+        margin-top: var(--rux-space-8);
+        padding-top: var(--rux-space-5);
+        border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+        color: var(--rux-fg-subtle);
+        font-size: var(--rux-text-sm);
+      }
+      .page-footer__mark {
+        width: var(--rux-icon-md);
+        height: var(--rux-icon-md);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <header class="page__nav">
+        <div class="page__nav-logo">
+          <img src="assets/rux-mark.svg" alt="" />
+          <span>Rux</span>
+        </div>
+        <nav class="rux-cluster">
+          <div class="accent-picker" role="radiogroup" aria-label="Accent color">
+            <button class="accent-swatch accent-swatch--blue" data-rux-set-accent="blue" aria-label="Blue"></button>
+            <button class="accent-swatch accent-swatch--violet" data-rux-set-accent="violet" aria-label="Violet"></button>
+            <button class="accent-swatch accent-swatch--cyan" data-rux-set-accent="cyan" aria-label="Cyan"></button>
+            <button class="accent-swatch accent-swatch--green" data-rux-set-accent="green" aria-label="Green"></button>
+            <button class="accent-swatch accent-swatch--amber" data-rux-set-accent="amber" aria-label="Amber"></button>
+            <button class="accent-swatch accent-swatch--red" data-rux-set-accent="red" aria-label="Red"></button>
+          </div>
+          <a href="README.md" class="rux-button rux-button--ghost">README</a>
+          <a href="ui_kits/showcase/index.html" class="rux-button rux-button--ghost">Showcase</a>
+          <button class="rux-button rux-button--primary">Get started</button>
+        </nav>
+      </header>
+
+      <section>
+        <h1 class="hero-title">A dark, minimal design system.</h1>
+        <p class="rux-lead hero-copy">
+          Rux is one set of CSS tokens, one component sheet, one naming convention. No build step, no framework. Dark mode only.
+        </p>
+        <div class="rux-cluster hero-actions">
+          <button class="rux-button rux-button--primary">Get started</button>
+          <button class="rux-button">Read docs</button>
+          <span class="rux-badge rux-badge--accent rux-badge--dot">v1.0</span>
+        </div>
+      </section>
+
+      <!-- COLORS -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">01 — Color</h6>
+            <h2>Four planes. One accent. Four status colors.</h2>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="swatch"><div class="swatch__chip swatch__chip--bg"></div><div class="swatch__name">bg</div><div class="swatch__val">#000000</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--elevated"></div><div class="swatch__name">bg-elevated</div><div class="swatch__val">#1f1f1f</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--sunken"></div><div class="swatch__name">bg-sunken</div><div class="swatch__val">#060606</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--accent"></div><div class="swatch__name">accent</div><div class="swatch__val">oklch(64% 0.18 252)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--success"></div><div class="swatch__name">success</div><div class="swatch__val">oklch(72% 0.17 152)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--warning"></div><div class="swatch__name">warning</div><div class="swatch__val">oklch(80% 0.15 80)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--danger"></div><div class="swatch__name">danger</div><div class="swatch__val">oklch(67% 0.21 22)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--info"></div><div class="swatch__name">info</div><div class="swatch__val">oklch(74% 0.13 230)</div></div>
+        </div>
+      </section>
+
+      <!-- TYPE -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">02 — Typography</h6>
+            <h2>Inter for UI. JetBrains Mono for code.</h2>
+          </div>
+        </div>
+        <div class="rux-card">
+          <div class="rux-card__body rux-stack-lg">
+            <div>
+              <div class="rux-overline">Display · 64</div>
+              <div class="rux-display">Build with restraint.</div>
+            </div>
+            <div>
+              <div class="rux-overline">H1 · 44</div>
+              <h1>The quiet system.</h1>
+            </div>
+            <div>
+              <div class="rux-overline">H2 · 32</div>
+              <h2>Composed of tokens.</h2>
+            </div>
+            <div>
+              <div class="rux-overline">H3 · 24</div>
+              <h3>Every value has a name.</h3>
+            </div>
+            <div>
+              <div class="rux-overline">Body</div>
+              <p>The dark canvas, hairline borders, and a single accent color do most of the work. Most screens need nothing more than a card, a stack, and a button. <a href="#">Read the rules</a>.</p>
+            </div>
+            <div>
+              <div class="rux-overline">Mono</div>
+              <pre><code>const accent = "oklch(64% 0.18 252)";</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUTTONS -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">03 — Buttons</h6>
+            <h2>Three patterns. One system.</h2>
+          </div>
+        </div>
+
+        <div class="button-cards">
+        <!-- Card 1: Standard buttons -->
+        <div class="rux-card">
+          <div class="rux-card__header">
+            <div class="rux-card__title">Standard</div>
+          </div>
+          <div class="rux-card__body rux-stack">
+            <button class="rux-button rux-button--primary rux-button--block">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+              Save
+            </button>
+            <div class="rux-cluster">
+              <button class="rux-button rux-button--primary">Primary</button>
+              <button class="rux-button">Default</button>
+              <button class="rux-button rux-button--ghost">Ghost</button>
+            </div>
+            <div class="rux-cluster">
+              <button class="rux-button rux-button--danger">Danger</button>
+              <button class="rux-button" disabled>Disabled</button>
+            </div>
+            <div class="rux-cluster">
+              <button class="rux-button rux-button--toggle" data-rux-toggle-button aria-pressed="false">
+                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
+                Toggle
+              </button>
+            </div>
+            <div class="button-spec">
+              <div class="button-spec__item">
+                <div class="button-spec__label">Height</div>
+                <div class="button-spec__value">32px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Padding</div>
+                <div class="button-spec__value">0 · 16px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Radius</div>
+                <div class="button-spec__value">8px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Font / Weight</div>
+                <div class="button-spec__value">14px · 500</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Block</div>
+                <div class="button-spec__value">display: flex · width: 100%</div>
+              </div>
+            </div>
+            <div class="button-uses">
+              <div class="button-use"><span class="button-use__label">Primary</span><span class="button-use__desc">Filled accent. The main call-to-action — one per view. Use for submit, save, confirm.</span></div>
+              <div class="button-use"><span class="button-use__label">Default</span><span class="button-use__desc">Neutral fill. Secondary actions alongside a primary, or when no hierarchy exists.</span></div>
+              <div class="button-use"><span class="button-use__label">Ghost</span><span class="button-use__desc">Outline only. Low-priority actions, in-content links, or cancel alongside a primary.</span></div>
+              <div class="button-use"><span class="button-use__label">Toggle</span><span class="button-use__desc">Stateful. Accent fill when pressed. Use with aria-pressed for a single on/off action.</span></div>
+              <div class="button-use"><span class="button-use__label">Danger</span><span class="button-use__desc">Destructive actions — delete, remove, revoke. Confirm intent before proceeding.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Icon buttons -->
+        <div class="rux-card">
+          <div class="rux-card__header">
+            <div class="rux-card__title">Icon</div>
+          </div>
+          <div class="rux-card__body rux-stack">
+            <div class="rux-cluster">
+              <button class="rux-button rux-button--icon" aria-label="Search">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+              </button>
+              <button class="rux-button rux-button--icon rux-button--primary" aria-label="Add">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+              </button>
+              <button class="rux-button rux-button--icon is-active" aria-label="Search active" aria-pressed="true">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+              </button>
+              <button class="rux-button rux-button--icon rux-button--ghost" aria-label="User">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </button>
+              <button class="rux-button rux-button--icon rux-button--toggle is-active" aria-label="Bookmark" aria-pressed="true" data-rux-toggle-button>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
+              </button>
+              <button class="rux-button rux-button--icon rux-button--danger" aria-label="Delete">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+              <button class="rux-button rux-button--icon rux-button--toggle" data-rux-toggle-button aria-pressed="false" aria-label="Sort">
+                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
+              </button>
+            </div>
+            <div class="button-spec">
+              <div class="button-spec__item">
+                <div class="button-spec__label">Size</div>
+                <div class="button-spec__value">32 × 32px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Padding</div>
+                <div class="button-spec__value">0</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Radius</div>
+                <div class="button-spec__value">8px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Icon</div>
+                <div class="button-spec__value">16px</div>
+              </div>
+            </div>
+            <div class="button-uses">
+              <div class="button-use"><span class="button-use__label">Standalone</span><span class="button-use__desc">Use when the action is clear from context. Always supply aria-label — there is no visible text.</span></div>
+              <div class="button-use"><span class="button-use__label">Active state</span><span class="button-use__desc">Surfaces to control-bg on selection. aria-pressed="true" is the semantic standard; is-active is the JS class fallback — the CSS responds to both.</span></div>
+              <div class="button-use"><span class="button-use__label">In segmented</span><span class="button-use__desc">Radius steps down to 6px inside .rux-segmented. Hover and press compute from the strip background.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Segmented controls -->
+        <div class="rux-card">
+          <div class="rux-card__header">
+            <div class="rux-card__title">Segmented</div>
+          </div>
+          <div class="rux-card__body rux-stack">
+
+            <!-- Icon strip -->
+            <div class="rux-stack-sm">
+              <div class="rux-segmented" data-rux-toggle-group aria-label="View options">
+                <button class="rux-button rux-button--icon is-active" aria-label="Search" aria-pressed="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                </button>
+                <button class="rux-button rux-button--icon" aria-label="Add" aria-pressed="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                </button>
+                <button class="rux-button rux-button--icon" aria-label="User" aria-pressed="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
+              </div>
+              <div class="rux-segmented rux-segmented--inline" data-rux-toggle-group aria-label="View options compact">
+                <button class="rux-button rux-button--icon is-active" aria-label="Search" aria-pressed="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                </button>
+                <button class="rux-button rux-button--icon" aria-label="Add" aria-pressed="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                </button>
+                <button class="rux-button rux-button--icon" aria-label="User" aria-pressed="false">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </button>
+              </div>
+              <div class="button-use"><span class="button-use__label">Icon strip</span><span class="button-use__desc">Use data-rux-toggle-group for independent or single-select icon toggles. State managed via aria-pressed.</span></div>
+            </div>
+
+            <hr class="rux-divider">
+
+            <!-- Tab strip -->
+            <div class="rux-stack-sm">
+              <div class="rux-segmented" data-rux-tabs role="tablist" aria-label="Project sections">
+                <button class="rux-button is-active" role="tab" aria-selected="true">Details</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Estimate</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Billing</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1" disabled>Assign</button>
+              </div>
+              <div class="rux-segmented rux-segmented--inline" data-rux-tabs role="tablist" aria-label="Project sections compact">
+                <button class="rux-button is-active" role="tab" aria-selected="true">One</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Two</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Three</button>
+              </div>
+              <div class="button-use"><span class="button-use__label">Tab strip</span><span class="button-use__desc">Use data-rux-tabs with role="tablist" for exclusive view switching. State managed via aria-selected. Disabled items remain visible at reduced opacity.</span></div>
+            </div>
+
+            <div class="button-spec">
+              <div class="button-spec__item">
+                <div class="button-spec__label">Height</div>
+                <div class="button-spec__value">32px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Inner gap</div>
+                <div class="button-spec__value">4px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Item radius</div>
+                <div class="button-spec__value">6px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Mixed</div>
+                <div class="button-spec__value">icon + text in one strip</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div><!-- end .button-cards -->
+
+        <!-- Interaction States -->
+        <div class="rux-card demo-card-offset">
+          <div class="rux-card__header">
+            <div class="rux-card__title">Interaction States</div>
+          </div>
+          <div class="rux-card__body rux-stack">
+            <div class="state-matrix">
+              <div class="state-row">
+                <span class="state-label">Rest</span>
+                <button class="rux-button rux-button--primary">Primary</button>
+                <button class="rux-button">Default</button>
+                <button class="rux-button rux-button--ghost">Ghost</button>
+              </div>
+              <div class="state-row">
+                <span class="state-label">Hover</span>
+                <button class="rux-button rux-button--primary demo-hover">Primary</button>
+                <button class="rux-button demo-hover">Default</button>
+                <button class="rux-button rux-button--ghost demo-hover">Ghost</button>
+              </div>
+              <div class="state-row">
+                <span class="state-label">Pressed</span>
+                <button class="rux-button rux-button--primary demo-active">Primary</button>
+                <button class="rux-button demo-active">Default</button>
+                <button class="rux-button rux-button--ghost demo-active">Ghost</button>
+              </div>
+              <div class="state-row">
+                <span class="state-label">Focus</span>
+                <button class="rux-button rux-button--primary demo-focus">Primary</button>
+                <button class="rux-button demo-focus">Default</button>
+                <button class="rux-button rux-button--ghost demo-focus">Ghost</button>
+              </div>
+              <div class="state-row">
+                <span class="state-label">Disabled</span>
+                <button class="rux-button rux-button--primary" disabled>Primary</button>
+                <button class="rux-button" disabled>Default</button>
+                <button class="rux-button rux-button--ghost" disabled>Ghost</button>
+              </div>
+            </div>
+            <div class="button-spec">
+              <div class="button-spec__item">
+                <div class="button-spec__label">Hover</div>
+                <div class="button-spec__value">oklch L +0.05</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Pressed</div>
+                <div class="button-spec__value">oklch L −0.03 · translateY</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Focus ring</div>
+                <div class="button-spec__value">box-shadow · 2px offset</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Transition</div>
+                <div class="button-spec__value">instant · ease-out</div>
+              </div>
+            </div>
+            <div class="button-uses">
+              <div class="button-use"><span class="button-use__label">Color math</span><span class="button-use__desc">Hover and pressed colors are computed via relative oklch() from the base token — no separate hover/active color tokens needed per variant.</span></div>
+              <div class="button-use"><span class="button-use__label">Conflict rule</span><span class="button-use__desc">When hover and focus coincide, focus ring persists. Pressed overrides hover background. Disabled wins over all states via pointer-events: none.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="rux-card demo-card-offset">
+          <div class="rux-card__body rux-stack">
+            <div>
+              <h3>Elevation shadows.</h3>
+              <p class="shadow-rule">Cards and fields stay flat. Buttons get a subtle lift; stronger shadows are reserved for floating layers above the page.</p>
+            </div>
+            <div class="shadow-scale" aria-label="Shadow elevation scale">
+              <div class="shadow-scale__item">
+                <div class="shadow-scale__surface shadow-scale__surface--none">0</div>
+                <div class="shadow-scale__name">none</div>
+                <div class="shadow-scale__use">Cards, fields, inline controls</div>
+              </div>
+              <div class="shadow-scale__item">
+                <div class="shadow-scale__surface shadow-scale__surface--sm">sm</div>
+                <div class="shadow-scale__name">shadow-sm</div>
+                <div class="shadow-scale__use">Buttons, toggles, tabs</div>
+              </div>
+              <div class="shadow-scale__item">
+                <div class="shadow-scale__surface shadow-scale__surface--md">md</div>
+                <div class="shadow-scale__name">shadow-md</div>
+                <div class="shadow-scale__use">Menus, tooltips</div>
+              </div>
+              <div class="shadow-scale__item">
+                <div class="shadow-scale__surface shadow-scale__surface--lg">lg</div>
+                <div class="shadow-scale__name">shadow-lg</div>
+                <div class="shadow-scale__use">Modals, dialogs</div>
+              </div>
+              <div class="shadow-scale__item">
+                <div class="shadow-scale__surface shadow-scale__surface--xl">xl</div>
+                <div class="shadow-scale__name">shadow-xl</div>
+                <div class="shadow-scale__use">Sheets, heavy overlays</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- INPUTS -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">04 — Forms</h6>
+            <h2>Inputs, selects, switches, checkboxes.</h2>
+          </div>
+        </div>
+        <div class="rux-card">
+          <div class="rux-card__body grid-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="d-name">Name</label>
+              <input id="d-name" class="rux-input" placeholder="Ada Lovelace" />
+              <span class="rux-field__help">As it appears on the schedule.</span>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="d-email">Email</label>
+              <input id="d-email" class="rux-input" type="email" value="hello@" aria-invalid="true" />
+              <span class="rux-field__error">Enter a valid email.</span>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="d-role">Role</label>
+              <select id="d-role" class="rux-select">
+                <option>Dispatcher</option>
+                <option>Driver</option>
+                <option>Manager</option>
+              </select>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="d-notes">Notes</label>
+              <textarea id="d-notes" class="rux-textarea" placeholder="Anything to remember…"></textarea>
+            </div>
+            <div class="rux-stack-sm">
+              <label class="rux-checkbox">
+                <input type="checkbox" checked />
+                <span>Send a reminder the day before</span>
+              </label>
+              <label class="rux-checkbox">
+                <input type="checkbox" />
+                <span>Notify by SMS</span>
+              </label>
+            </div>
+            <div class="rux-stack-sm">
+              <div class="rux-row">
+                <label class="rux-switch">
+                  <input type="checkbox" checked />
+                  <span class="rux-switch__track"></span>
+                  <span class="rux-switch__thumb"></span>
+                </label>
+                <span class="rux-body-sm">Auto-assign drivers</span>
+              </div>
+              <div class="rux-row">
+                <label class="rux-switch">
+                  <input type="checkbox" />
+                  <span class="rux-switch__track"></span>
+                  <span class="rux-switch__thumb"></span>
+                </label>
+                <span class="rux-body-sm">Show weekend trips</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CARDS -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">05 — Cards & data</h6>
+            <h2>Composition over decoration.</h2>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="rux-card stat-card">
+            <div class="stat-card__label">Trips this week</div>
+            <div class="stat-card__value">142</div>
+            <div class="stat-card__delta stat-card__delta--success">
+              <i data-lucide="trending-up"></i> 8.2%
+            </div>
+          </div>
+          <div class="rux-card stat-card">
+            <div class="stat-card__label">Drivers assigned</div>
+            <div class="stat-card__value">38<span class="stat-card__subvalue"> / 42</span></div>
+            <div class="stat-card__delta stat-card__delta--muted">4 pending confirmation</div>
+          </div>
+          <div class="rux-card stat-card">
+            <div class="stat-card__label">Conflicts</div>
+            <div class="stat-card__value">3</div>
+            <div class="stat-card__delta stat-card__delta--danger">
+              <i data-lucide="alert-triangle"></i> Needs review
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-card-offset">
+          <div class="rux-card rux-card--interactive">
+            <div class="rux-card__header">
+              <div>
+                <div class="rux-card__title">Yosemite weekend — Group A</div>
+                <div class="rux-card__subtitle">Sat, Mar 14 · 6:00am · 2 buses · Driver: K. Romero</div>
+              </div>
+              <span class="rux-badge rux-badge--success rux-badge--dot">Confirmed</span>
+            </div>
+            <div class="rux-card__body">
+              <div class="rux-cluster">
+                <span class="rux-tag"><i data-lucide="users"></i> 42 pax</span>
+                <span class="rux-tag"><i data-lucide="map-pin"></i> San Jose → Yosemite</span>
+                <span class="rux-tag"><i data-lucide="clock"></i> 8h round</span>
+              </div>
+            </div>
+            <div class="rux-card__footer rux-row">
+              <div class="rux-avatar avatar-overlap">KR</div>
+              <div class="rux-avatar avatar-info">JT</div>
+              <div class="rux-spacer"></div>
+              <button class="rux-button rux-button--ghost">Open</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALERTS -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">06 — Feedback</h6>
+            <h2>Alerts, toasts, and badges.</h2>
+          </div>
+        </div>
+        <div class="rux-stack">
+          <div class="rux-alert rux-alert--info">
+            <i data-lucide="info" class="rux-icon rux-icon--lg rux-alert__icon"></i>
+            <div class="rux-alert__body">
+              <div class="rux-alert__title">Schedule sync paused</div>
+              <div>Resumes automatically when the connection returns.</div>
+            </div>
+          </div>
+          <div class="rux-alert rux-alert--success">
+            <i data-lucide="check-circle-2" class="rux-icon rux-icon--lg rux-alert__icon"></i>
+            <div class="rux-alert__body"><div class="rux-alert__title">All set</div><div>Drivers were notified.</div></div>
+          </div>
+          <div class="rux-alert rux-alert--warning">
+            <i data-lucide="alert-triangle" class="rux-icon rux-icon--lg rux-alert__icon"></i>
+            <div class="rux-alert__body"><div class="rux-alert__title">Driver overlap on Tuesday</div><div>K. Romero is assigned to two trips between 9–11am.</div></div>
+          </div>
+          <div class="rux-alert rux-alert--danger">
+            <i data-lucide="x-circle" class="rux-icon rux-icon--lg rux-alert__icon"></i>
+            <div class="rux-alert__body"><div class="rux-alert__title">Couldn't save</div><div>Check your connection and try again.</div></div>
+          </div>
+          <div class="rux-cluster">
+            <span class="rux-badge">Default</span>
+            <span class="rux-badge rux-badge--accent">v1.0</span>
+            <span class="rux-badge rux-badge--success rux-badge--dot">Live</span>
+            <span class="rux-badge rux-badge--warning rux-badge--dot">Pending</span>
+            <span class="rux-badge rux-badge--danger rux-badge--dot">Issue</span>
+            <span class="rux-badge rux-badge--info">Beta</span>
+          </div>
+          <div class="rux-cluster">
+            <button class="rux-button" onclick="Rux.toast('Trip saved')">Show toast</button>
+            <button class="rux-button" onclick="Rux.openModal('#demo-modal')">Open modal</button>
+            <button class="rux-button rux-button--ghost" onclick="Rux.copy('--rux-accent: oklch(64% 0.18 252);')"><i data-lucide="copy"></i> Copy token</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">07 — Menu</h6>
+            <h2>Dropdown / context list.</h2>
+          </div>
+        </div>
+        <div class="demo-menu-grid">
+          <div class="rux-menu">
+            <div class="rux-menu__header">Account</div>
+            <button class="rux-menu__item"><i data-lucide="user"></i> Profile</button>
+            <button class="rux-menu__item"><i data-lucide="settings"></i> Settings</button>
+            <button class="rux-menu__item is-active"><i data-lucide="bell"></i> Notifications</button>
+            <div class="rux-menu__divider"></div>
+            <button class="rux-menu__item rux-menu__item--danger"><i data-lucide="log-out"></i> Sign out</button>
+          </div>
+          <div class="rux-stack">
+            <div class="rux-overline">Progress</div>
+            <div class="rux-progress"><div class="rux-progress__bar" style="width: 64%;"></div></div>
+            <div class="rux-progress"><div class="rux-progress__bar progress-bar--warning" style="width: 22%;"></div></div>
+            <div class="rux-progress"><div class="rux-progress__bar progress-bar--success" style="width: 92%;"></div></div>
+
+            <div class="rux-overline demo-tooltip-label">Tooltip</div>
+            <div class="rux-cluster">
+              <button class="rux-button rux-button--icon" data-tooltip="Save (⌘S)"><i data-lucide="save" class="rux-icon"></i></button>
+              <button class="rux-button rux-button--icon" data-tooltip="Duplicate"><i data-lucide="copy" class="rux-icon"></i></button>
+              <button class="rux-button rux-button--icon" data-tooltip="Delete"><i data-lucide="trash-2" class="rux-icon"></i></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODAL (hidden by default) -->
+      <div class="rux-modal-backdrop" id="demo-modal" hidden>
+        <div class="rux-modal" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
+          <div class="rux-modal__header">
+            <div id="demo-modal-title" class="rux-modal__title">Delete this trip?</div>
+            <button class="rux-button rux-button--ghost rux-button--icon" data-rux-dismiss="modal" aria-label="Close"><i data-lucide="x" class="rux-icon"></i></button>
+          </div>
+          <div class="rux-modal__body">
+            <p>This removes the trip from the schedule and notifies assigned drivers. It can't be undone.</p>
+          </div>
+          <div class="rux-modal__footer">
+            <button class="rux-button rux-button--ghost" data-rux-dismiss="modal">Cancel</button>
+            <button class="rux-button rux-button--danger" data-rux-dismiss="modal" onclick="Rux.toast('Trip deleted')">Delete trip</button>
+          </div>
+        </div>
+      </div>
+
+      <footer class="page-footer">
+        <div class="rux-row">
+          <img class="page-footer__mark" src="assets/rux-mark.svg" alt="" />
+          <span>Rux Design System · v1.0</span>
+          <div class="rux-spacer"></div>
+          <a href="README.md">Docs</a>
+        </div>
+      </footer>
+    </main>
+
+    <script src="rux.js"></script>
+    <script>
+      // Mark the active swatch + react to accent changes
+      const swatches = document.querySelectorAll(".accent-swatch");
+      function syncSwatches() {
+        const cur = Rux.getAccent();
+        swatches.forEach((s) => s.classList.toggle("is-active", s.dataset.ruxSetAccent === cur));
+      }
+      syncSwatches();
+      document.documentElement.addEventListener("rux:accent-changed", syncSwatches);
+
+      // Lucide loaded async — initialize when ready
+      window.addEventListener("DOMContentLoaded", () => {
+        const init = () => window.lucide && window.lucide.createIcons();
+        if (window.lucide) init();
+        else {
+          const i = setInterval(() => {
+            if (window.lucide) {
+              clearInterval(i);
+              init();
+            }
+          }, 50);
+        }
+      });
+    </script>
+  </body>
+</html>

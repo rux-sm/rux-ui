@@ -1,0 +1,30 @@
+<!doctype html>
+<!-- @dsCard group="Type" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <style>
+      body { padding: var(--rux-space-5); display: flex; gap: var(--rux-space-5); align-items: center; }
+      .stack { display: flex; flex-direction: column; gap: var(--rux-space-2); }
+      .label { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-subtle); }
+      .sans { font-family: var(--rux-font-sans); font-size: var(--rux-text-xl); font-weight: var(--rux-weight-semibold); letter-spacing: var(--rux-tracking-tight); }
+      .mono { font-family: var(--rux-font-mono); font-size: var(--rux-text-md); }
+      .token-name { font-size: var(--rux-text-2xs); color: var(--rux-fg-subtle); font-family: var(--rux-font-mono); }
+      .accent-code { color: var(--rux-accent); }
+      pre.demo { background: var(--rux-bg-sunken); border: var(--rux-border-width) solid var(--rux-border); border-radius: var(--rux-radius-sm); padding: var(--rux-space-2) var(--rux-space-3); margin: 0; font-size: var(--rux-text-xs); }
+    </style>
+  </head>
+  <body>
+    <div class="stack">
+      <div class="label">Inter — UI</div>
+      <div class="sans">Inter — the quiet sans</div>
+      <div class="token-name">--rux-font-sans</div>
+    </div>
+    <div class="stack">
+      <div class="label">JetBrains Mono — code</div>
+      <pre class="demo">const accent = "<span class="accent-code">oklch(64% 0.18 252)</span>";</pre>
+    </div>
+  </body>
+</html>

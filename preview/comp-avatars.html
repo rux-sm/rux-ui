@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- @dsCard group="Components" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <style>
+      body { padding: var(--rux-space-5); display: flex; align-items: center; gap: var(--rux-space-4); }
+      .avatar-stack { margin-left: var(--rux-space-5); }
+      .avatar-stack .rux-avatar:not(:last-child) { margin-right: calc(var(--rux-radius-md) * -1); }
+      .avatar-accent { background: var(--rux-accent-subtle); color: var(--rux-accent); }
+      .avatar-success { background: var(--rux-success-subtle); color: var(--rux-success); }
+      .avatar-info { background: var(--rux-info-subtle); color: var(--rux-info); }
+    </style>
+  </head>
+  <body>
+    <div class="rux-avatar rux-avatar--sm">AB</div>
+    <div class="rux-avatar">KR</div>
+    <div class="rux-avatar rux-avatar--lg">JT</div>
+    <div class="rux-row avatar-stack">
+      <div class="rux-avatar avatar-accent">+3</div>
+      <div class="rux-avatar">JT</div>
+      <div class="rux-avatar avatar-success">KR</div>
+      <div class="rux-avatar avatar-info">AB</div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<!-- @dsCard group="Spacing" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <style>
+      body { padding: var(--rux-space-5); display: flex; align-items: end; gap: var(--rux-space-4); }
+      .stack { display: flex; flex-direction: column; align-items: center; gap: var(--rux-space-2); }
+      .box { width: calc(var(--rux-space-8) + var(--rux-space-4)); height: calc(var(--rux-space-8) + var(--rux-space-4)); background: var(--rux-bg-elevated); border: var(--rux-border-width) solid var(--rux-border); display: grid; place-items: center; color: var(--rux-fg-muted); font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); }
+      .box--xs { border-radius: var(--rux-radius-xs); }
+      .box--sm { border-radius: var(--rux-radius-sm); }
+      .box--md { border-radius: var(--rux-radius-md); }
+      .box--lg { border-radius: var(--rux-radius-lg); }
+      .box--xl { border-radius: var(--rux-radius-xl); }
+      .name { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-muted); }
+      .val { font-family: var(--rux-font-mono); font-size: var(--rux-text-2xs); color: var(--rux-fg-subtle); }
+    </style>
+  </head>
+  <body>
+    <div class="stack">
+      <div class="box box--xs">2px</div>
+      <div class="name">radius-xs</div><div class="val">badges</div>
+    </div>
+    <div class="stack">
+      <div class="box box--sm">6px</div>
+      <div class="name">radius-sm</div><div class="val">inputs</div>
+    </div>
+    <div class="stack">
+      <div class="box box--md">8px</div>
+      <div class="name">radius-md</div><div class="val">buttons</div>
+    </div>
+    <div class="stack">
+      <div class="box box--lg">16px</div>
+      <div class="name">radius-lg</div><div class="val">cards</div>
+    </div>
+    <div class="stack">
+      <div class="box box--xl">24px</div>
+      <div class="name">radius-xl</div><div class="val">modals</div>
+    </div>
+  </body>
+</html>
