@@ -100,33 +100,31 @@ To use in a new page:
 
 The system has **four background planes**, all near-black with subtle separation:
 
-| Token | Hex | Use for |
+| Token | Value | Use for |
 |---|---|---|
-| `--rux-bg` | `#000000` | App canvas — the lowest plane |
-| `--rux-bg-elevated` | `#1f1f1f` | Cards, panels, menus, modals |
-| `--rux-bg-sunken` | `#060606` | Inputs, code blocks, recessed footers |
+| `--rux-bg` | `oklch(16% 0.004 260)` | App canvas — the lowest plane |
+| `--rux-bg-sunken` | `oklch(20% 0.004 260)` | Inputs, code blocks, recessed footers |
+| `--rux-bg-elevated` | `oklch(24% 0.004 260)` | Cards, panels, menus, modals |
 | `--rux-bg-hover` / `--rux-bg-active` | `#292929` / `#303030` | Interactive states |
 
 **No gradients** except `--rux-bg-overlay` (a flat 60% black scrim for modals). No full-bleed imagery as background. No textures, patterns, grain. Surfaces are flat color separated by hairlines.
 
 ### Color
 
-One accent (`--rux-accent`, a clear blue at `oklch(64% 0.18 252)`) used sparingly — primary actions, active states, links, focus rings. Status colors (`--rux-success`, `--rux-warning`, `--rux-danger`, `--rux-info`) for semantic feedback only — never decorative.
+One accent (`--rux-accent`, `oklch(60% 0.18 260)` by default) used sparingly — primary actions, active states, links, focus rings. Status colors (`--rux-success`, `--rux-warning`, `--rux-danger`, `--rux-info`) for semantic feedback only — never decorative.
 
 All colors are `oklch()` so chroma stays perceptually balanced if you retheme.
 
 #### Swappable accent
 
-Blue is the default, but the accent is **one variable**: change it once, the whole product retones. The system ships six pre-tuned themes that all share the same lightness/chroma — only the hue rotates — so they read as the same family.
+Blue is the default, but the accent is **one variable**: change it once, the whole product retones. The system ships four pre-tuned themes that share the same lightness and near-matching chroma — only the hue rotates — so they read as the same family.
 
 | Theme | Hue |
 |---|---|
-| `blue` (default) | `252` |
+| `blue` | `250` |
 | `violet` | `295` |
-| `cyan` | `210` |
-| `green` | `152` |
-| `amber` | `70` |
-| `red` | `25` |
+| `green` | `155` |
+| `amber` | `70`, chroma `0.16` |
 
 **Three ways to apply:**
 
@@ -171,7 +169,7 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 
 | Control | Height | Font | Horizontal padding | Icon/text gap |
 |---|---:|---:|---:|---:|
-| `.rux-button` | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-4` `16px` | `--rux-space-2` `8px` |
+| `.rux-button` | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
 | `.rux-button--icon` | `--rux-control-height` `32px` | icon only | `0` | n/a |
 | segmented items | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | n/a |
 
@@ -182,6 +180,30 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
 - Segmented controls use `calc(var(--rux-space-1) / 2)` (`2px`) between items so the group reads as one control.
 - Keep labels short, sentence case, and action-oriented.
+
+### Forms
+
+Forms are data-entry surfaces, not action controls. They use the same type scale and radius family as buttons, but they sit slightly lower in the interface: sunken background, visible hairline edge, and an inset field shadow.
+
+| Element | Token / value | Rule |
+|---|---:|---|
+| `.rux-input`, `.rux-select` | `--rux-field-height` `36px` | Standard text-entry height |
+| `.rux-textarea` | `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed |
+| `.rux-field` | `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
+| `.rux-field__label` | `--rux-text-xs` `12px`, `--rux-weight-medium` | Muted, sentence case, no trailing period |
+| placeholder | `--rux-fg-subtle` | Hint only; never required information |
+| help text | `--rux-text-xs`, `--rux-fg-subtle` | One short sentence when useful |
+| error text | `--rux-text-xs`, `--rux-danger` | Direct recovery instruction |
+
+- Field height is intentionally `36px`, while buttons are `32px`. Text-entry controls need a little more vertical room for the caret, placeholder, and typed values. Do not force inputs down to button height for visual matching.
+- Labels sit above fields. Do not use placeholder text as the only label.
+- Labels use sentence case and no trailing punctuation: `Driver name`, not `Driver Name`.
+- Placeholder text describes format or an example value. Keep it short: `Ada Lovelace`, `name@example.com`, `Anything to remember…`.
+- Help text appears below the control and should explain how the value is used, not repeat the label.
+- Invalid fields use `aria-invalid="true"`, a danger border, and `--rux-ring-danger` on focus. The error message belongs directly under the field.
+- Focus rings compose with the inset field shadow. A focused field should still read as recessed, not lifted.
+- Inputs and selects use `--rux-bg-sunken`, `--rux-border`, `--rux-radius-sm`, and `--rux-text-sm`.
+- Checkboxes and switches are 32px target-height controls so they align with button rows and repeated settings lists.
 
 ### Optical Radius
 
@@ -204,13 +226,13 @@ Depth 4  --rux-radius-xs    2px   badges, chips
 Borders are **hairlines** (always 1px) at one of three intensities (`--rux-border-subtle`, `--rux-border`, `--rux-border-strong`). Solid buttons, segmented controls, and base cards keep a transparent border slot so hover, focus, and active states never shift layout. Shadows are reserved for floating surfaces and subtle tactile lift on buttons.
 
 **Shadow scale:**
-- `--rux-shadow-none` — cards, fields, inline controls
+- `--rux-shadow-none` — cards, flat inline surfaces
 - `--rux-shadow-sm` — all button variants, segmented controls, toasts
 - `--rux-shadow-md` — menus, tooltips
 - `--rux-shadow-lg` — modals
 - `--rux-shadow-xl` — sheets, heavy overlays
 
-**No inset bevels.** No 3D buttons. No `box-shadow: inset 0 1px 0 white/18%` highlights. The TripBoard codebase used these heavily — Rux UI does not. Flat surfaces, hairline edges.
+Use inset shadows only when they describe state or material: form fields are permanent recessed containers; pressed toggle buttons are latched controls. Do not add decorative bevels to cards or generic surfaces.
 
 ### Cards
 
@@ -229,7 +251,7 @@ Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`
 - **Default controls** are solid neutral fills, not outlined buttons. The fill does the affordance work; borders stay transparent unless the control is a container like tabs or an icon group.
 - **Control hover** uses OKLCH lightness steps (`+10L`: `--rux-control-bg-hover`, `--rux-accent-hover`, `--rux-danger-hover`) so filled buttons stay perceptually balanced across themes.
 - **Ghost hover** is the exception: ghost controls have a transparent base and use a white-alpha state fill (`--rux-control-ghost-hover`, `--rux-control-ghost-active`).
-- **Press / active** drops to the active color (`-10L` for filled controls) and translates `0.5px` down for buttons. Subtle.
+- **Press / active** drops to the active color (`-10L` for filled controls) and translates `1px` down for buttons. Subtle, but visible.
 - **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.
 
 ### Motion

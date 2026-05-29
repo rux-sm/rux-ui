@@ -313,14 +313,18 @@
         color: var(--rux-fg);
       }
       .button-use__desc { color: var(--rux-fg-muted); }
+      .form-spec,
+      .form-uses {
+        grid-column: 1 / -1;
+      }
       .demo-hover          { background-color: var(--_bg-h) !important; }
       .demo-active         { background-color: var(--_bg-a) !important; transform: translateY(var(--_press-y)) !important; }
       .demo-focus          { outline: none !important; box-shadow: var(--rux-ring-focus), var(--_shadow) !important; }
       .demo-ghost-hover    { background-color: var(--rux-control-ghost-hover) !important; }
       .demo-ghost-active   { background-color: var(--rux-control-ghost-active) !important; transform: translateY(var(--_press-y)) !important; }
       .demo-ghost-focus    { outline: none !important; box-shadow: var(--rux-ring-focus) !important; }
-      .state-matrix { display: flex; flex-direction: column; gap: var(--rux-space-2); overflow-x: auto; padding: 5px; margin: -5px; }
-      .state-row { display: flex; align-items: center; gap: var(--rux-space-2); }
+      .state-matrix { display: flex; flex-direction: column; gap: var(--rux-space-3); overflow-x: auto; padding: 5px 9px; margin: -5px -9px; }
+      .state-row { display: flex; align-items: center; gap: var(--rux-space-4); width: max-content; margin-inline: auto; }
       .state-label { flex: none; width: 4.5rem; font-size: var(--rux-text-2xs); font-weight: var(--rux-weight-semibold); letter-spacing: var(--rux-tracking-wide); text-transform: uppercase; color: var(--rux-fg-subtle); }
       .button-cards {
         display: grid;
@@ -419,10 +423,10 @@
          We set --_bg / --_bg-h / --_bg-a / --rux-ring-focus with concrete
          oklch() values so the colors are independent of the global accent
          picker — no nested var() chain that browsers may resolve at :root. */
-      .a-blue   { --_bg:oklch(60% .18 250);--_bg-h:oklch(70% .18 250);--_bg-a:oklch(50% .18 250);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .18 250/.4); }
-      .a-violet { --_bg:oklch(60% .18 295);--_bg-h:oklch(70% .18 295);--_bg-a:oklch(50% .18 295);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .18 295/.4); }
-      .a-green  { --_bg:oklch(60% .18 155);--_bg-h:oklch(70% .18 155);--_bg-a:oklch(50% .18 155);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .18 155/.4); }
-      .a-amber  { --_bg:oklch(60% .16  70);--_bg-h:oklch(70% .16  70);--_bg-a:oklch(50% .16  70);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .16  70/.4); }
+      .a-blue   { --_bg:oklch(60% .18 250);--_bg-h:oklch(70% .18 250);--_bg-a:oklch(50% .18 250);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(70% .28 250/1); }
+      .a-violet { --_bg:oklch(60% .18 295);--_bg-h:oklch(70% .18 295);--_bg-a:oklch(50% .18 295);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(70% .28 295/1); }
+      .a-green  { --_bg:oklch(60% .18 155);--_bg-h:oklch(70% .18 155);--_bg-a:oklch(50% .18 155);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(70% .28 155/1); }
+      .a-amber  { --_bg:oklch(60% .16  70);--_bg-h:oklch(70% .16  70);--_bg-a:oklch(50% .16  70);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(70% .28  70/1); }
       @media (max-width: 720px) {
         body {
           padding: 0;
@@ -808,7 +812,7 @@
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Padding</div>
-                <div class="button-spec__value">0 · 16px</div>
+                <div class="button-spec__value">0 · 12px</div>
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Radius</div>
@@ -1119,6 +1123,46 @@
                 </label>
                 <span class="rux-body-sm">Show weekend trips</span>
               </div>
+            </div>
+            <div class="button-spec form-spec">
+              <div class="button-spec__item">
+                <div class="button-spec__label">Field height</div>
+                <div class="button-spec__value">36px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Button height</div>
+                <div class="button-spec__value">32px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Field gap</div>
+                <div class="button-spec__value">8px</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Label</div>
+                <div class="button-spec__value">12px · 500</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Placeholder</div>
+                <div class="button-spec__value">fg-subtle</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Surface</div>
+                <div class="button-spec__value">sunken · border</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Focus</div>
+                <div class="button-spec__value">ring + inset</div>
+              </div>
+              <div class="button-spec__item">
+                <div class="button-spec__label">Invalid</div>
+                <div class="button-spec__value">danger ring</div>
+              </div>
+            </div>
+            <div class="button-uses form-uses">
+              <div class="button-use"><span class="button-use__label">Height</span><span class="button-use__desc">Text fields are 36px, four pixels taller than buttons, so caret, value, and placeholder text breathe.</span></div>
+              <div class="button-use"><span class="button-use__label">Labels</span><span class="button-use__desc">Always use a visible label above the field. Sentence case, no trailing period.</span></div>
+              <div class="button-use"><span class="button-use__label">Help text</span><span class="button-use__desc">Use one short sentence below the field to explain how the value is used.</span></div>
+              <div class="button-use"><span class="button-use__label">Errors</span><span class="button-use__desc">Set aria-invalid and keep the danger border, danger ring, and inset field shadow together.</span></div>
             </div>
           </div>
         </div>
