@@ -1,6 +1,6 @@
 # Rux — Showcase UI Kit
 
-An example app screen built **entirely** from Rux Design System primitives. No new tokens, no new components.
+An example app screen built **entirely** from Rux UI primitives. No new tokens, no new components.
 
 ## What's in it
 

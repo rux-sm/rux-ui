@@ -1,5 +1,5 @@
 /* ==========================================================================
-   RUX DESIGN SYSTEM — TOKENS
+   RUX UI — TOKENS
    --------------------------------------------------------------------------
    The single source of truth for every visual decision. All design tokens
    live in this file with one flat namespace: --rux-*.
@@ -23,8 +23,8 @@
      Designed for OLED-friendly contrast without crushing blacks.            */
 
   --rux-bg:            #000000;  /* canvas — the lowest plane              */
-  --rux-bg-elevated:   #1f1f1f;  /* panels, cards, modals                  */
-  --rux-bg-sunken:     #101010;  /* inputs, code, recessed surfaces        */
+  --rux-bg-elevated:   oklch( 20% 0 260);  /* panels, cards, modals                  */
+  --rux-bg-sunken:     oklch( 16% 0 260);  /* inputs, code, recessed surfaces        */
   --rux-bg-hover:      #292929;  /* interactive rows, lifted surfaces      */
   --rux-bg-active:     #303030;  /* pressed / selected                     */
   --rux-bg-overlay:    rgba(0, 0, 0, 0.6); /* modal scrim                  */
@@ -49,8 +49,10 @@
   --rux-control-strip-bg:      #292929;            /* pill-strip container for .rux-segmented */
   --rux-control-bg:            oklch(50% 0 260);   /* filled neutral controls              */
   --rux-control-bg-disabled:   #303030;            /* disabled controls                    */
-  --rux-control-bg-hover:      oklch(56% 0 260);   /* +6L hover state for controls         */
-  --rux-control-bg-active:     oklch(42% 0 260);   /* -8L selected / pressed controls      */
+  --rux-control-bg-hover:      oklch(60% 0 260);   /* +10L hover state for controls        */
+  --rux-control-bg-active:     oklch(40% 0 260);   /* -10L selected / pressed controls     */
+  --rux-control-ghost-hover:   oklch(100% 0 0 / 0.10); /* transparent white hover           */
+  --rux-control-ghost-active:  oklch(100% 0 0 / 0.14); /* transparent white press           */
   --rux-control-border:        #303030;            /* default control edge                 */
   --rux-control-border-hover:  #3a3a3a;            /* hover control edge                   */
   --rux-control-border-active: #424242;            /* selected / pressed control edge      */
@@ -70,8 +72,8 @@
   --rux-accent-c:       0.18;           /* chroma                          */
 
   --rux-accent:         oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
-  --rux-accent-hover:   oklch(66%             var(--rux-accent-c) var(--rux-accent-h)); /* +6L  */
-  --rux-accent-active:  oklch(52%             var(--rux-accent-c) var(--rux-accent-h)); /* -8L  */
+  --rux-accent-hover:   oklch(70%             var(--rux-accent-c) var(--rux-accent-h)); /* +10L */
+  --rux-accent-active:  oklch(50%             var(--rux-accent-c) var(--rux-accent-h)); /* -10L */
   --rux-accent-subtle:  oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
   --rux-accent-ring:    oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.4);
 
@@ -83,8 +85,8 @@
   --rux-warning:        oklch(80% 0.15 80);
   --rux-warning-subtle: oklch(80% 0.15 80 / 0.14);
   --rux-danger:         oklch(60% 0.21 24);
-  --rux-danger-hover:   oklch(66% 0.21 24);
-  --rux-danger-active:  oklch(52% 0.21 24);
+  --rux-danger-hover:   oklch(70% 0.21 24);
+  --rux-danger-active:  oklch(50% 0.21 24);
   --rux-danger-subtle:  oklch(67% 0.21 24 / 0.14);
   --rux-info:           oklch(74% 0.13 230);
   --rux-info-subtle:    oklch(74% 0.13 230 / 0.14);

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Rux Design System — Demo</title>
+    <title>Rux UI — Demo</title>
     <link rel="icon" href="assets/rux-mark.svg" />
     <link rel="stylesheet" href="css/tokens.css" />
     <link rel="stylesheet" href="css/colors_and_type.css" />
@@ -209,18 +209,18 @@
         color: var(--rux-fg);
       }
       .button-use__desc { color: var(--rux-fg-muted); }
-      .demo-hover  { background-color: oklch(from var(--_bg) calc(l + var(--_l-h)) c h) !important; }
-      .demo-active { background-color: oklch(from var(--_bg) calc(l + var(--_l-a)) c h) !important; transform: translateY(var(--_press-y)) !important; }
-      .demo-focus  { outline: none !important; box-shadow: var(--rux-ring-focus), var(--_shadow) !important; }
-      .demo-ghost-hover  { background-color: oklch(from var(--rux-control-bg) calc(l + var(--_l-h)) c h) !important; border-color: transparent !important; }
-      .demo-ghost-active { background-color: oklch(from var(--rux-control-bg) calc(l + var(--_l-a)) c h) !important; border-color: transparent !important; transform: translateY(var(--_press-y)) !important; }
-      .demo-ghost-focus  { outline: none !important; box-shadow: var(--rux-ring-focus) !important; }
+      .demo-hover          { background-color: var(--_bg-h) !important; }
+      .demo-active         { background-color: var(--_bg-a) !important; transform: translateY(var(--_press-y)) !important; }
+      .demo-focus          { outline: none !important; box-shadow: var(--rux-ring-focus), var(--_shadow) !important; }
+      .demo-ghost-hover    { background-color: var(--rux-control-ghost-hover) !important; }
+      .demo-ghost-active   { background-color: var(--rux-control-ghost-active) !important; transform: translateY(var(--_press-y)) !important; }
+      .demo-ghost-focus    { outline: none !important; box-shadow: var(--rux-ring-focus) !important; }
       .state-matrix { display: flex; flex-direction: column; gap: var(--rux-space-2); }
       .state-row { display: flex; align-items: center; gap: var(--rux-space-4); }
       .state-label { flex: none; width: 4.5rem; font-size: var(--rux-text-2xs); font-weight: var(--rux-weight-semibold); letter-spacing: var(--rux-tracking-wide); text-transform: uppercase; color: var(--rux-fg-subtle); }
       .button-cards {
         display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: var(--rux-space-4);
         align-items: start;
       }
@@ -313,9 +313,9 @@
             <button class="accent-swatch accent-swatch--amber" data-rux-set-accent="amber" aria-label="Amber"></button>
             <button class="accent-swatch accent-swatch--red" data-rux-set-accent="red" aria-label="Red"></button>
           </div>
-          <a href="README.md" class="rux-button rux-button--ghost">README</a>
-          <a href="ui_kits/showcase/index.html" class="rux-button rux-button--ghost">Showcase</a>
-          <button class="rux-button rux-button--primary">Get started</button>
+          <a href="README.md" class="rux-button rux-button--ghost"><i data-lucide="book-open"></i> README</a>
+          <a href="ui_kits/showcase/index.html" class="rux-button rux-button--ghost"><i data-lucide="layout-template"></i> Showcase</a>
+          <button class="rux-button rux-button--primary"><i data-lucide="arrow-right"></i> Get started</button>
         </nav>
       </header>
 
@@ -325,8 +325,8 @@
           Rux is one set of CSS tokens, one component sheet, one naming convention. No build step, no framework. Dark mode only.
         </p>
         <div class="rux-cluster hero-actions">
-          <button class="rux-button rux-button--primary">Get started</button>
-          <button class="rux-button">Read docs</button>
+          <button class="rux-button rux-button--primary"><i data-lucide="arrow-right"></i> Get started</button>
+          <button class="rux-button"><i data-lucide="book-open"></i> Read docs</button>
           <span class="rux-badge rux-badge--accent rux-badge--dot">v1.0</span>
         </div>
       </section>
@@ -394,40 +394,67 @@
         <div class="section-eyebrow">
           <div>
             <h6 class="section-kicker">03 — Buttons</h6>
-            <h2>Three patterns. One system.</h2>
+            <h2>Two patterns. One button system.</h2>
           </div>
         </div>
 
         <div class="button-cards">
-        <!-- Card 1: Standard buttons -->
+        <!-- Card 1: Buttons -->
         <div class="rux-card">
           <div class="rux-card__header">
-            <div class="rux-card__title">Standard</div>
+            <div class="rux-card__title">Button</div>
           </div>
           <div class="rux-card__body rux-stack">
             <button class="rux-button rux-button--primary rux-button--block">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7"/></svg>
+              <i data-lucide="save"></i>
               Save
             </button>
             <div class="rux-cluster">
-              <button class="rux-button rux-button--primary">Primary</button>
-              <button class="rux-button">Default</button>
-              <button class="rux-button rux-button--ghost">Ghost</button>
-            </div>
-            <div class="rux-cluster">
-              <button class="rux-button rux-button--danger">Danger</button>
-              <button class="rux-button" disabled>Disabled</button>
+              <button class="rux-button rux-button--primary">
+                <i data-lucide="plus"></i>
+                Primary
+              </button>
+              <button class="rux-button rux-button--icon rux-button--primary" aria-label="Add">
+                <i data-lucide="plus"></i>
+              </button>
+              <button class="rux-button">
+                <i data-lucide="search"></i>
+                Default
+              </button>
+              <button class="rux-button rux-button--icon" aria-label="Search">
+                <i data-lucide="search"></i>
+              </button>
+              <button class="rux-button rux-button--danger">
+                <i data-lucide="trash-2"></i>
+                Danger
+              </button>
+              <button class="rux-button rux-button--icon rux-button--danger" aria-label="Delete">
+                <i data-lucide="trash-2"></i>
+              </button>
             </div>
             <div class="rux-cluster">
               <button class="rux-button rux-button--toggle" data-rux-toggle-button aria-pressed="false">
-                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
+                <i class="icon-off" data-lucide="chevrons-up-down"></i>
+                <i class="icon-on" data-lucide="check"></i>
                 Toggle
               </button>
-              <button class="rux-button rux-button--toggle rux-button--ghost" data-rux-toggle-button aria-pressed="false">
-                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
-                Toggle
+              <button class="rux-button rux-button--icon rux-button--toggle" data-rux-toggle-button aria-pressed="false" aria-label="Sort">
+                <i class="icon-off" data-lucide="chevrons-up-down"></i>
+                <i class="icon-on" data-lucide="check"></i>
+              </button>
+              <button class="rux-button rux-button--ghost">
+                <i data-lucide="x"></i>
+                Ghost
+              </button>
+              <button class="rux-button rux-button--icon rux-button--ghost" aria-label="Cancel">
+                <i data-lucide="x"></i>
+              </button>
+              <button class="rux-button" disabled>
+                <i data-lucide="lock"></i>
+                Disabled
+              </button>
+              <button class="rux-button rux-button--icon" aria-label="Locked disabled" disabled>
+                <i data-lucide="lock"></i>
               </button>
             </div>
             <div class="button-spec">
@@ -448,82 +475,22 @@
                 <div class="button-spec__value">14px · 500</div>
               </div>
               <div class="button-spec__item">
-                <div class="button-spec__label">Block</div>
-                <div class="button-spec__value">display: flex · width: 100%</div>
+                <div class="button-spec__label">Icon</div>
+                <div class="button-spec__value">32px square · 16px icon</div>
               </div>
             </div>
             <div class="button-uses">
               <div class="button-use"><span class="button-use__label">Primary</span><span class="button-use__desc">Filled accent. The main call-to-action — one per view. Use for submit, save, confirm.</span></div>
               <div class="button-use"><span class="button-use__label">Default</span><span class="button-use__desc">Neutral fill. Secondary actions alongside a primary, or when no hierarchy exists.</span></div>
-              <div class="button-use"><span class="button-use__label">Ghost</span><span class="button-use__desc">Outline only. Low-priority actions, in-content links, or cancel alongside a primary.</span></div>
+              <div class="button-use"><span class="button-use__label">Ghost</span><span class="button-use__desc">Transparent base. Low-priority actions, in-content links, or cancel alongside a primary.</span></div>
               <div class="button-use"><span class="button-use__label">Toggle</span><span class="button-use__desc">Stateful. Accent fill when pressed. Use with aria-pressed for a single on/off action.</span></div>
               <div class="button-use"><span class="button-use__label">Danger</span><span class="button-use__desc">Destructive actions — delete, remove, revoke. Confirm intent before proceeding.</span></div>
+              <div class="button-use"><span class="button-use__label">Icon</span><span class="button-use__desc">Same component, square form. Use when the action is clear from context and always provide aria-label.</span></div>
             </div>
           </div>
         </div>
 
-        <!-- Card 2: Icon buttons -->
-        <div class="rux-card">
-          <div class="rux-card__header">
-            <div class="rux-card__title">Icon</div>
-          </div>
-          <div class="rux-card__body rux-stack">
-            <div class="rux-cluster">
-              <button class="rux-button rux-button--icon rux-button--primary" aria-label="Add">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
-              </button>
-              <button class="rux-button rux-button--icon" aria-label="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-              </button>
-              <button class="rux-button rux-button--icon rux-button--ghost" aria-label="User">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </button>
-            </div>
-            <div class="rux-cluster">
-              <button class="rux-button rux-button--icon rux-button--danger" aria-label="Delete">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              </button>
-              <button class="rux-button rux-button--icon" aria-label="Search disabled" disabled>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-              </button>
-            </div>
-            <div class="rux-cluster">
-              <button class="rux-button rux-button--icon rux-button--toggle" data-rux-toggle-button aria-pressed="false" aria-label="Sort">
-                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
-              </button>
-              <button class="rux-button rux-button--icon rux-button--toggle rux-button--ghost" data-rux-toggle-button aria-pressed="false" aria-label="Sort ghost">
-                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
-              </button>
-            </div>
-            <div class="button-spec">
-              <div class="button-spec__item">
-                <div class="button-spec__label">Size</div>
-                <div class="button-spec__value">32 × 32px</div>
-              </div>
-              <div class="button-spec__item">
-                <div class="button-spec__label">Padding</div>
-                <div class="button-spec__value">0</div>
-              </div>
-              <div class="button-spec__item">
-                <div class="button-spec__label">Radius</div>
-                <div class="button-spec__value">8px</div>
-              </div>
-              <div class="button-spec__item">
-                <div class="button-spec__label">Icon</div>
-                <div class="button-spec__value">16px</div>
-              </div>
-            </div>
-            <div class="button-uses">
-              <div class="button-use"><span class="button-use__label">Standalone</span><span class="button-use__desc">Use when the action is clear from context. Always supply aria-label — there is no visible text.</span></div>
-              <div class="button-use"><span class="button-use__label">Active state</span><span class="button-use__desc">Surfaces to control-bg on selection. aria-pressed="true" is the semantic standard; is-active is the JS class fallback — the CSS responds to both.</span></div>
-              <div class="button-use"><span class="button-use__label">In segmented</span><span class="button-use__desc">Radius steps down to 6px inside .rux-segmented. Hover and press compute from the strip background.</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Card 3: Segmented controls -->
+        <!-- Card 2: Segmented controls -->
         <div class="rux-card">
           <div class="rux-card__header">
             <div class="rux-card__title">Segmented</div>
@@ -534,24 +501,24 @@
             <div class="rux-stack-sm">
               <div class="rux-segmented" data-rux-toggle-group aria-label="View options">
                 <button class="rux-button rux-button--icon is-active" aria-label="Search" aria-pressed="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                  <i data-lucide="search"></i>
                 </button>
                 <button class="rux-button rux-button--icon" aria-label="Add" aria-pressed="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  <i data-lucide="plus"></i>
                 </button>
                 <button class="rux-button rux-button--icon" aria-label="User" aria-pressed="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <i data-lucide="user"></i>
                 </button>
               </div>
               <div class="rux-segmented rux-segmented--inline" data-rux-toggle-group aria-label="View options compact">
                 <button class="rux-button rux-button--icon is-active" aria-label="Search" aria-pressed="true">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+                  <i data-lucide="search"></i>
                 </button>
                 <button class="rux-button rux-button--icon" aria-label="Add" aria-pressed="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                  <i data-lucide="plus"></i>
                 </button>
                 <button class="rux-button rux-button--icon" aria-label="User" aria-pressed="false">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <i data-lucide="user"></i>
                 </button>
               </div>
               <div class="button-use"><span class="button-use__label">Icon strip</span><span class="button-use__desc">Use data-rux-toggle-group for independent or single-select icon toggles. State managed via aria-pressed.</span></div>
@@ -638,11 +605,11 @@
             <div class="button-spec">
               <div class="button-spec__item">
                 <div class="button-spec__label">Hover</div>
-                <div class="button-spec__value">oklch L +0.1</div>
+                <div class="button-spec__value">oklch +10L · ghost 10% white</div>
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Pressed</div>
-                <div class="button-spec__value">oklch L −0.1 · translateY</div>
+                <div class="button-spec__value">oklch −10L · ghost 14% white</div>
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Focus ring</div>
@@ -654,7 +621,7 @@
               </div>
             </div>
             <div class="button-uses">
-              <div class="button-use"><span class="button-use__label">Color math</span><span class="button-use__desc">Hover and pressed colors are computed via relative oklch() from the base token — no separate hover/active color tokens needed per variant.</span></div>
+              <div class="button-use"><span class="button-use__label">Color math</span><span class="button-use__desc">Filled buttons use OKLCH lightness steps: hover raises lightness, pressed lowers it. Ghost is the exception: transparent base, 10–14% white state fill.</span></div>
               <div class="button-use"><span class="button-use__label">Conflict rule</span><span class="button-use__desc">When hover and focus coincide, focus ring persists. Pressed overrides hover background. Disabled wins over all states via pointer-events: none.</span></div>
             </div>
           </div>
@@ -811,7 +778,7 @@
               <div class="rux-avatar avatar-overlap">KR</div>
               <div class="rux-avatar avatar-info">JT</div>
               <div class="rux-spacer"></div>
-              <button class="rux-button rux-button--ghost">Open</button>
+              <button class="rux-button rux-button--ghost"><i data-lucide="external-link"></i> Open</button>
             </div>
           </div>
         </div>
@@ -854,8 +821,8 @@
             <span class="rux-badge rux-badge--info">Beta</span>
           </div>
           <div class="rux-cluster">
-            <button class="rux-button" onclick="Rux.toast('Trip saved')">Show toast</button>
-            <button class="rux-button" onclick="Rux.openModal('#demo-modal')">Open modal</button>
+            <button class="rux-button" onclick="Rux.toast('Trip saved')"><i data-lucide="bell"></i> Show toast</button>
+            <button class="rux-button" onclick="Rux.openModal('#demo-modal')"><i data-lucide="maximize-2"></i> Open modal</button>
             <button class="rux-button rux-button--ghost" onclick="Rux.copy('--rux-accent: oklch(64% 0.18 252);')"><i data-lucide="copy"></i> Copy token</button>
           </div>
         </div>
@@ -905,8 +872,8 @@
             <p>This removes the trip from the schedule and notifies assigned drivers. It can't be undone.</p>
           </div>
           <div class="rux-modal__footer">
-            <button class="rux-button rux-button--ghost" data-rux-dismiss="modal">Cancel</button>
-            <button class="rux-button rux-button--danger" data-rux-dismiss="modal" onclick="Rux.toast('Trip deleted')">Delete trip</button>
+            <button class="rux-button rux-button--ghost" data-rux-dismiss="modal"><i data-lucide="x"></i> Cancel</button>
+            <button class="rux-button rux-button--danger" data-rux-dismiss="modal" onclick="Rux.toast('Trip deleted')"><i data-lucide="trash-2"></i> Delete trip</button>
           </div>
         </div>
       </div>
@@ -914,7 +881,7 @@
       <footer class="page-footer">
         <div class="rux-row">
           <img class="page-footer__mark" src="assets/rux-mark.svg" alt="" />
-          <span>Rux Design System · v1.0</span>
+          <span>Rux UI · v1.0</span>
           <div class="rux-spacer"></div>
           <a href="README.md">Docs</a>
         </div>

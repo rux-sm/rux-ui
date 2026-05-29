@@ -7,19 +7,20 @@
 .rux-button {
   --_h:       var(--rux-control-height);
   --_bg:      var(--rux-control-bg);
+  --_bg-h:    var(--rux-control-bg-hover);
+  --_bg-a:    var(--rux-control-bg-active);
   --_fg:      var(--rux-fg);
   --_border:  transparent;
   --_shadow:  var(--rux-shadow-sm);
-  --_l-h:     0.1;   /* L lift on hover */
-  --_l-a:    -0.1;   /* L drop on press */
   --_press-y: calc(var(--rux-border-width) / 2);
 
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--rux-space-2);
   height: var(--_h);
-  padding: 0 var(--rux-space-4);
+  padding: 0 var(--rux-space-3);
   background-color: var(--_bg);
   color: var(--_fg);
   border: var(--rux-border-width) solid var(--_border);
@@ -41,8 +42,8 @@
     transform var(--rux-duration-instant) var(--rux-ease-out);
 }
 
-.rux-button:hover  { background-color: oklch(from var(--_bg) calc(l + var(--_l-h)) c h); }
-.rux-button:active { background-color: oklch(from var(--_bg) calc(l + var(--_l-a)) c h); transform: translateY(var(--_press-y)); }
+.rux-button:hover  { background-color: var(--_bg-h); }
+.rux-button:active { background-color: var(--_bg-a); transform: translateY(var(--_press-y)); }
 
 .rux-button:focus-visible {
   outline: none;
@@ -61,30 +62,36 @@
 /* — variants — */
 
 .rux-button--primary {
-  --_bg: var(--rux-accent);
-  --_fg: var(--rux-fg-on-accent);
+  --_bg:   var(--rux-accent);
+  --_bg-h: var(--rux-accent-hover);
+  --_bg-a: var(--rux-accent-active);
+  --_fg:   var(--rux-fg-on-accent);
 }
 
-/* ghost — transparent base can't use oklch relative color; states use surface tokens directly */
+/* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
 .rux-button--ghost {
-  --_bg:     transparent;
-  --_border: transparent;
-  --_shadow: none;
+  --_bg:      transparent;
+  --_bg-h:    var(--rux-control-ghost-hover);
+  --_bg-a:    var(--rux-control-ghost-active);
+  --_border: var(--rux-border-strong);
+  --_shadow:  none;
 }
-.rux-button--ghost:hover        { background-color: oklch(from var(--rux-control-bg) calc(l + var(--_l-h)) c h); border-color: transparent; }
-.rux-button--ghost:active       { background-color: oklch(from var(--rux-control-bg) calc(l + var(--_l-a)) c h); border-color: transparent; }
 .rux-button--ghost:focus-visible { box-shadow: var(--rux-ring-focus); }
 
 .rux-button--toggle.is-active,
 .rux-button--toggle[aria-pressed="true"] {
-  --_bg: var(--rux-accent);
-  --_fg: var(--rux-fg-on-accent);
+  --_bg:   var(--rux-accent);
+  --_bg-h: var(--rux-accent-hover);
+  --_bg-a: var(--rux-accent-active);
+  --_fg:   var(--rux-fg-on-accent);
   transform: translateY(var(--_press-y));
 }
 
 .rux-button--danger {
-  --_bg: var(--rux-danger);
-  --_fg: var(--rux-fg-on-accent);
+  --_bg:   var(--rux-danger);
+  --_bg-h: var(--rux-danger-hover);
+  --_bg-a: var(--rux-danger-active);
+  --_fg:   var(--rux-fg-on-accent);
 }
 
 /* — block (full-width) — */
@@ -96,7 +103,7 @@
 
 /* — icon inside button — */
 
-.rux-button > svg {
+.rux-button > :where(svg, .rux-icon, [data-lucide]) {
   width: var(--rux-icon-md);
   height: var(--rux-icon-md);
   flex: none;
@@ -157,7 +164,7 @@
 .rux-segmented--inline > .rux-button { flex: none; }
 
 .rux-segmented > .rux-button {
-  --_bg:     var(--rux-control-strip-bg);   /* matches strip bg — blends in at rest, gives oklch a base to compute from */
+  --_bg:     var(--rux-control-strip-bg);   /* matches strip bg so inactive items blend into the strip */
   --_shadow: var(--rux-shadow-none);
   flex: 1;
   min-width: 0;

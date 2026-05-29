@@ -1,5 +1,5 @@
 /* ==========================================================================
-   RUX DESIGN SYSTEM — JS HELPERS
+   RUX UI — JS HELPERS
    --------------------------------------------------------------------------
    Tiny vanilla helpers for interactive components. No framework, no build
    step. Drop a <script src="rux.js"></script> tag at the end of <body>.

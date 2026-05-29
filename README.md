@@ -1,4 +1,4 @@
-# Rux Design System
+# Rux UI
 
 A lightweight, dark-only design system for Rux UI. Three CSS files, one JS file, one naming convention.
 
@@ -227,8 +227,9 @@ Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`
 
 - **Surface hover** raises background brightness one step (`--rux-bg` → `--rux-bg-hover`) or shifts border up one intensity. Never opacity (looks washed out on dark).
 - **Default controls** are solid neutral fills, not outlined buttons. The fill does the affordance work; borders stay transparent unless the control is a container like tabs or an icon group.
-- **Control hover** uses the control surface family (`--rux-control-bg-hover`, `--rux-control-border-hover`) so default buttons, tabs, and icon groups read as interactive without becoming loud. Ghost controls stay quiet until hover.
-- **Press / active** drops further to the active surface (`--rux-bg-active` for rows/surfaces, `--rux-control-bg-active` for controls) and translates `0.5px` down for buttons. Subtle.
+- **Control hover** uses OKLCH lightness steps (`+10L`: `--rux-control-bg-hover`, `--rux-accent-hover`, `--rux-danger-hover`) so filled buttons stay perceptually balanced across themes.
+- **Ghost hover** is the exception: ghost controls have a transparent base and use a white-alpha state fill (`--rux-control-ghost-hover`, `--rux-control-ghost-active`).
+- **Press / active** drops to the active color (`-10L` for filled controls) and translates `0.5px` down for buttons. Subtle.
 - **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.
 
 ### Motion
