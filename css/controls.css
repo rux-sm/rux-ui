@@ -68,7 +68,7 @@
 /* ghost — transparent base can't use oklch relative color; states use surface tokens directly */
 .rux-button--ghost {
   --_bg:     transparent;
-  --_border: var(--rux-border);
+  --_border: transparent;
   --_shadow: none;
 }
 .rux-button--ghost:hover        { background-color: oklch(from var(--rux-control-bg) calc(l + var(--_l-h)) c h); border-color: transparent; }

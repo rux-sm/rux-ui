@@ -424,6 +424,11 @@
                 <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
                 Toggle
               </button>
+              <button class="rux-button rux-button--toggle rux-button--ghost" data-rux-toggle-button aria-pressed="false">
+                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
+                Toggle
+              </button>
             </div>
             <div class="button-spec">
               <div class="button-spec__item">
@@ -464,25 +469,30 @@
           </div>
           <div class="rux-card__body rux-stack">
             <div class="rux-cluster">
-              <button class="rux-button rux-button--icon" aria-label="Search">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
-              </button>
               <button class="rux-button rux-button--icon rux-button--primary" aria-label="Add">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
               </button>
-              <button class="rux-button rux-button--icon is-active" aria-label="Search active" aria-pressed="true">
+              <button class="rux-button rux-button--icon" aria-label="Search">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
               </button>
               <button class="rux-button rux-button--icon rux-button--ghost" aria-label="User">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               </button>
-              <button class="rux-button rux-button--icon rux-button--toggle is-active" aria-label="Bookmark" aria-pressed="true" data-rux-toggle-button>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>
-              </button>
+            </div>
+            <div class="rux-cluster">
               <button class="rux-button rux-button--icon rux-button--danger" aria-label="Delete">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               </button>
+              <button class="rux-button rux-button--icon" aria-label="Search disabled" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
+              </button>
+            </div>
+            <div class="rux-cluster">
               <button class="rux-button rux-button--icon rux-button--toggle" data-rux-toggle-button aria-pressed="false" aria-label="Sort">
+                <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+                <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
+              </button>
+              <button class="rux-button rux-button--icon rux-button--toggle rux-button--ghost" data-rux-toggle-button aria-pressed="false" aria-label="Sort ghost">
                 <svg class="icon-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
                 <svg class="icon-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m7 20 5-5 5 5"/><path d="m7 4 5 5 5-5"/></svg>
               </button>
@@ -604,19 +614,19 @@
                 <span class="state-label">Hover</span>
                 <button class="rux-button rux-button--primary demo-hover">Primary</button>
                 <button class="rux-button demo-hover">Default</button>
-                <button class="rux-button rux-button--ghost demo-hover">Ghost</button>
+                <button class="rux-button rux-button--ghost demo-ghost-hover">Ghost</button>
               </div>
               <div class="state-row">
                 <span class="state-label">Pressed</span>
                 <button class="rux-button rux-button--primary demo-active">Primary</button>
                 <button class="rux-button demo-active">Default</button>
-                <button class="rux-button rux-button--ghost demo-active">Ghost</button>
+                <button class="rux-button rux-button--ghost demo-ghost-active">Ghost</button>
               </div>
               <div class="state-row">
                 <span class="state-label">Focus</span>
                 <button class="rux-button rux-button--primary demo-focus">Primary</button>
                 <button class="rux-button demo-focus">Default</button>
-                <button class="rux-button rux-button--ghost demo-focus">Ghost</button>
+                <button class="rux-button rux-button--ghost demo-ghost-focus">Ghost</button>
               </div>
               <div class="state-row">
                 <span class="state-label">Disabled</span>
@@ -628,11 +638,11 @@
             <div class="button-spec">
               <div class="button-spec__item">
                 <div class="button-spec__label">Hover</div>
-                <div class="button-spec__value">oklch L +0.05</div>
+                <div class="button-spec__value">oklch L +0.1</div>
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Pressed</div>
-                <div class="button-spec__value">oklch L −0.03 · translateY</div>
+                <div class="button-spec__value">oklch L −0.1 · translateY</div>
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Focus ring</div>
