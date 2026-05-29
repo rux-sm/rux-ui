@@ -11,7 +11,7 @@
   --_bg-a:    var(--rux-control-bg-active);
   --_fg:      var(--rux-fg);
   --_border:  transparent;
-  --_shadow:  var(--rux-shadow-sm);
+  --_shadow:  var(--rux-shadow-md);
   --_press-y: calc(var(--rux-border-width) / 2);
 
   position: relative;
@@ -80,11 +80,17 @@
 
 .rux-button--toggle.is-active,
 .rux-button--toggle[aria-pressed="true"] {
-  --_bg:   var(--rux-accent);
-  --_bg-h: var(--rux-accent-hover);
-  --_bg-a: var(--rux-accent-active);
-  --_fg:   var(--rux-fg-on-accent);
-  transform: translateY(var(--_press-y));
+  --_bg:     var(--rux-accent-active);
+  --_bg-h:   var(--rux-accent);
+  --_bg-a:   var(--rux-accent-active);
+  --_fg:     var(--rux-fg-on-accent);
+  
+  /* 1. Harsh inner top edge (the physical lip of the cutout)
+     2. Softer inner gradient to darken the top half of the cavity
+     3. Ensure the drop shadow and top rim light are entirely removed */
+  --_shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 
+             inset 0 1px 1px rgba(0, 0, 0, 0.8),
+             0 0 0 transparent; /* Overrides any base drop shadow */
 }
 
 .rux-button--danger {
@@ -134,8 +140,17 @@
 /* toggle wins over icon active — three-class specificity beats two */
 .rux-button--icon.rux-button--toggle.is-active,
 .rux-button--icon.rux-button--toggle[aria-pressed="true"] {
-  --_bg: var(--rux-accent);
-  --_fg: var(--rux-fg-on-accent);
+  --_bg:     var(--rux-accent-active);
+  --_bg-h:   var(--rux-accent);
+  --_bg-a:   var(--rux-accent-active);
+  --_fg:     var(--rux-fg-on-accent);
+  
+  /* 1. Harsh inner top edge (the physical lip of the cutout)
+     2. Softer inner gradient to darken the top half of the cavity
+     3. Ensure the drop shadow and top rim light are entirely removed */
+  --_shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), 
+             inset 0 1px 1px rgba(0, 0, 0, 0.8),
+             0 0 0 transparent; /* Overrides any base drop shadow */
 }
 
 
@@ -152,7 +167,7 @@
   background-color: var(--rux-control-strip-bg);
   border: var(--rux-border-width) solid transparent;
   border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-shadow-sm);
+  box-shadow: var(--rux-shadow-md);
 }
 
 .rux-segmented--inline {
@@ -184,4 +199,14 @@
   --_bg: var(--rux-control-bg);   /* intentionally matches base button color */
   color: var(--rux-fg);
   box-shadow: var(--rux-shadow-sm);
+}
+
+/* — primary active — accent-filled selected item */
+.rux-segmented--primary > .rux-button.is-active,
+.rux-segmented--primary > .rux-button[aria-pressed="true"],
+.rux-segmented--primary > .rux-button[aria-selected="true"] {
+  --_bg:   var(--rux-accent);
+  --_bg-h: var(--rux-accent-hover);
+  --_bg-a: var(--rux-accent-active);
+  color:   var(--rux-fg-on-accent);
 }

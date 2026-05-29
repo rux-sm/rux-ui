@@ -90,6 +90,11 @@
   --_w: var(--rux-switch-width);
   --_h: var(--rux-switch-height);
   --_p: var(--rux-radius-xs);
+  --_track: var(--rux-control-bg);
+  --_track-h: var(--rux-control-bg-hover);
+  --_track-a: var(--rux-control-bg-active);
+  --_thumb: var(--rux-fg);
+  --_shadow: var(--rux-shadow-sm);
 
   position: relative;
   display: inline-block;
@@ -101,9 +106,12 @@
 .rux-switch__track {
   position: absolute;
   inset: 0;
-  background-color: var(--rux-bg-active);
+  background-color: var(--_track);
   border-radius: var(--rux-radius-full);
-  transition: background-color var(--rux-duration-fast) var(--rux-ease-out);
+  box-shadow: var(--_shadow);
+  transition:
+    background-color var(--rux-duration-fast) var(--rux-ease-out),
+    box-shadow var(--rux-duration-fast) var(--rux-ease-out);
 }
 .rux-switch__thumb {
   position: absolute;
@@ -111,13 +119,24 @@
   left: var(--_p);
   width: calc(var(--_h) - var(--_p) * 2);
   height: calc(var(--_h) - var(--_p) * 2);
-  background: var(--rux-fg);
+  background: var(--_thumb);
   border-radius: var(--rux-radius-full);
-  transition: transform var(--rux-duration-fast) var(--rux-ease-out);
+  box-shadow: var(--_shadow);
+  transition:
+    background-color var(--rux-duration-fast) var(--rux-ease-out),
+    box-shadow var(--rux-duration-fast) var(--rux-ease-out),
+    transform var(--rux-duration-fast) var(--rux-ease-out);
 }
+.rux-switch:hover .rux-switch__track { background-color: var(--_track-h); }
+.rux-switch:active .rux-switch__track { background-color: var(--_track-a); }
 .rux-switch input:checked ~ .rux-switch__track { background-color: var(--rux-accent); }
-.rux-switch input:checked ~ .rux-switch__thumb { transform: translateX(calc(var(--_w) - var(--_h))); background: var(--rux-fg-on-accent); }
-.rux-switch input:focus-visible ~ .rux-switch__track { box-shadow: var(--rux-ring-focus); }
+.rux-switch:hover input:checked ~ .rux-switch__track { background-color: var(--rux-accent-hover); }
+.rux-switch:active input:checked ~ .rux-switch__track { background-color: var(--rux-accent-active); }
+.rux-switch input:checked ~ .rux-switch__thumb {
+  background-color: var(--rux-fg-on-accent);
+  transform: translateX(calc(var(--_w) - var(--_h)));
+}
+.rux-switch input:focus-visible ~ .rux-switch__track { box-shadow: var(--rux-ring-focus), var(--_shadow); }
 
 
 /* — checkbox — */
@@ -126,12 +145,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--rux-space-2);
+  min-height: var(--rux-check-target-height);
   cursor: pointer;
   font-size: var(--rux-text-sm);
   user-select: none;
 }
 .rux-checkbox input {
   appearance: none;
+  flex: none;
   width: var(--rux-check-control-size);
   height: var(--rux-check-control-size);
   background-color: var(--rux-bg-sunken);

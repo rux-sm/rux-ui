@@ -22,8 +22,8 @@
   /* Near-black backgrounds, perceptually-tuned hairlines, white-bias text.
      Designed for OLED-friendly contrast without crushing blacks.            */
 
-  --rux-bg:            #000000;  /* canvas — the lowest plane              */
-  --rux-bg-elevated:   oklch( 20% 0 260);  /* panels, cards, modals                  */
+  --rux-bg:            oklch( 18% 0 260);   /* canvas — the lowest plane              */
+  --rux-bg-elevated:   oklch( 24% 0 260);  /* panels, cards, modals                  */
   --rux-bg-sunken:     oklch( 16% 0 260);  /* inputs, code, recessed surfaces        */
   --rux-bg-hover:      #292929;  /* interactive rows, lifted surfaces      */
   --rux-bg-active:     #303030;  /* pressed / selected                     */
@@ -46,7 +46,7 @@
 
   /* ─── COLOR · controls ────────────────────────────────────────────────── */
 
-  --rux-control-strip-bg:      #292929;            /* pill-strip container for .rux-segmented */
+  --rux-control-strip-bg:      oklch( 30% 0 260);           /* pill-strip container for .rux-segmented */
   --rux-control-bg:            oklch(50% 0 260);   /* filled neutral controls              */
   --rux-control-bg-disabled:   #303030;            /* disabled controls                    */
   --rux-control-bg-hover:      oklch(60% 0 260);   /* +10L hover state for controls        */
@@ -62,10 +62,11 @@
      and chroma are held constant so every accent feels like the same
      family. Set --rux-accent-h on :root (or [data-rux-accent="…"]) to pick.
 
+     Default brand hue: 260.
+
      Available themes (see bottom of file):
-       blue  · 252 (default)   violet · 295
-       green · 152             amber  · 70
-       red   · 25              cyan   · 210                                */
+       blue  · 250             violet · 295
+       green · 155             amber  · 70                                  */
 
   --rux-accent-h:       260;            /* hue · 0–360                     */
   --rux-accent-l:       60%;            /* lightness                       */
@@ -75,7 +76,7 @@
   --rux-accent-hover:   oklch(70%             var(--rux-accent-c) var(--rux-accent-h)); /* +10L */
   --rux-accent-active:  oklch(50%             var(--rux-accent-c) var(--rux-accent-h)); /* -10L */
   --rux-accent-subtle:  oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
-  --rux-accent-ring:    oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.4);
+  --rux-accent-ring:    oklch(70% 0.28 var(--rux-accent-h) / 1);
 
   /* ─── COLOR · status / semantic ───────────────────────────────────────── */
   /* Bright enough for dark mode, balanced in chroma so none dominates.     */
@@ -153,8 +154,8 @@
   --rux-control-height:    32px;
   --rux-field-height:      36px;
   --rux-textarea-min-height: 84px;
-  --rux-switch-width:      32px;
-  --rux-switch-height:     18px;
+  --rux-switch-width:      52px;
+  --rux-switch-height:     32px;
 
   --rux-icon-sm: 14px;
   --rux-icon-md: 16px;
@@ -167,9 +168,10 @@
 
   --rux-dot-sm: 6px;
   --rux-progress-height: 6px;
-  --rux-check-control-size: 16px;
-  --rux-checkmark-width: 5px;
-  --rux-checkmark-height: 8px;
+  --rux-check-control-size: 18px;
+  --rux-check-target-height: 32px;
+  --rux-checkmark-width: 6px;
+  --rux-checkmark-height: 10px;
   --rux-menu-min-width: 200px;
   --rux-panel-width-sm: 280px;
   --rux-toast-min-width: var(--rux-panel-width-sm);
@@ -188,17 +190,35 @@
   --rux-radius-xl:   24px;  /* modals, sheets (depth 0)                    */
   --rux-radius-full: 9999px;/* pills, avatars                              */
 
-  /* ─── SHADOW · elevation ──────────────────────────────────────────────── */
+/* ─── SHADOW · elevation ──────────────────────────────────────────────── */
   /* Flat by default. Shadows are used sparingly — only to lift floating
      surfaces (menus, modals, toasts) above the canvas.                     */
+  /* Dark mode optimized: includes inset rim lights and layered falloffs.   */
 
-  --rux-shadow-none: none;
-  --rux-shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.4);
-  --rux-shadow-md:   0 4px 12px rgba(0, 0, 0, 0.4);
-  --rux-shadow-lg:   0 12px 32px rgba(0, 0, 0, 0.5);
-  --rux-shadow-xl:   0 24px 48px rgba(0, 0, 0, 0.6);
+--rux-shadow-none: none;
+
+  /* Crisp, immediate lift. Negative spread removes side-bleed. */
+  --rux-shadow-sm:   0 2px 4px -1px rgba(0, 0, 0, 0.6), 
+                     inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
+  --rux-shadow-md:   0 8px 16px -4px rgba(0, 0, 0, 0.7), 
+                     0 2px 6px -1px rgba(0, 0, 0, 0.4),
+                     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  /* Deep but contained. High offset, aggressive negative spread. */
+  --rux-shadow-lg:   0 16px 32px -6px rgba(0, 0, 0, 0.8), 
+                     0 6px 14px -2px rgba(0, 0, 0, 0.5),
+                     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
+  /* Maximum depth without the muddy blur. */
+  --rux-shadow-xl:   0 32px 64px -12px rgba(0, 0, 0, 0.9), 
+                     0 12px 24px -4px rgba(0, 0, 0, 0.6),
+                     inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  /* Focus ring remains untouched; excellent dual-ring setup */
   --rux-ring-focus:  0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
-
+ 
   /* ─── MOTION ──────────────────────────────────────────────────────────── */
 
   --rux-duration-instant: 80ms;   /* hover, opacity                        */
@@ -241,7 +261,5 @@
 
 [data-rux-accent="blue"]   { --rux-accent-h: 250; }
 [data-rux-accent="violet"] { --rux-accent-h: 295; }
-[data-rux-accent="cyan"]   { --rux-accent-h: 210; }
 [data-rux-accent="green"]  { --rux-accent-h: 155; }
 [data-rux-accent="amber"]  { --rux-accent-h:  70; --rux-accent-c: 0.16; }
-[data-rux-accent="red"]    { --rux-accent-h:  25; --rux-accent-c: 0.19; }

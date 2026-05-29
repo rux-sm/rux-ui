@@ -116,9 +116,9 @@
 
   /* ── Accent theme ──────────────────────────────────────────────────────── */
   /* Set / get the page accent. Persists in localStorage as "rux:accent".
-     Themes: "blue" (default), "violet", "cyan", "green", "amber", "red".   */
+     Themes: "blue" (default), "violet", "green", "amber".                 */
 
-  Rux.ACCENTS = ["blue", "violet", "cyan", "green", "amber", "red"];
+  Rux.ACCENTS = ["blue", "violet", "green", "amber"];
 
   Rux.setAccent = function (name) {
     if (!name || !Rux.ACCENTS.includes(name)) name = "blue";

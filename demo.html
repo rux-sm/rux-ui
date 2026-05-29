@@ -12,16 +12,20 @@
     <style>
       /* Page-local layout only. No new tokens, no new components. */
       body {
-        padding: var(--rux-space-7) var(--rux-space-5);
+        padding: 0;
       }
       .page {
-        max-width: var(--rux-container-lg);
+        max-width: calc(var(--rux-container-lg) + 3rem);
         margin: 0 auto;
+        padding: var(--rux-space-7) var(--rux-space-5);
+        overflow-x: clip;
       }
       .page__nav {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        gap: var(--rux-space-4);
+        flex-wrap: wrap;
         padding-bottom: var(--rux-space-6);
         margin-bottom: var(--rux-space-7);
         border-bottom: var(--rux-border-width) solid var(--rux-border);
@@ -35,6 +39,9 @@
         letter-spacing: var(--rux-tracking-tight);
       }
       .page__nav-logo img { width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
+      .page__nav-actions {
+        justify-content: flex-end;
+      }
       section {
         margin-bottom: var(--rux-space-7);
       }
@@ -132,6 +139,14 @@
         border: var(--rux-border-width) solid var(--rux-border);
         border-radius: var(--rux-radius-full);
       }
+      .accent-picker__label {
+        padding: 0 var(--rux-space-1) 0 var(--rux-space-2);
+        color: var(--rux-fg-subtle);
+        font-size: var(--rux-text-2xs);
+        font-weight: var(--rux-weight-semibold);
+        letter-spacing: var(--rux-tracking-wide);
+        text-transform: uppercase;
+      }
       .accent-swatch {
         width: var(--rux-icon-xl);
         height: var(--rux-icon-xl);
@@ -147,12 +162,10 @@
       .accent-swatch.is-active {
         border-color: var(--rux-fg);
       }
-      .accent-swatch--blue { --_c: var(--rux-accent); }
+      .accent-swatch--blue { --_c: oklch(var(--rux-accent-l) var(--rux-accent-c) 250); }
       .accent-swatch--violet { --_c: oklch(var(--rux-accent-l) var(--rux-accent-c) 295); }
-      .accent-swatch--cyan { --_c: oklch(var(--rux-accent-l) var(--rux-accent-c) 210); }
       .accent-swatch--green { --_c: oklch(var(--rux-accent-l) var(--rux-accent-c) 152); }
       .accent-swatch--amber { --_c: oklch(var(--rux-accent-l) 0.16 70); }
-      .accent-swatch--red { --_c: oklch(var(--rux-accent-l) 0.19 25); }
       .hero-title {
         font-size: var(--rux-text-4xl);
         letter-spacing: var(--rux-tracking-tight);
@@ -163,6 +176,97 @@
       }
       .hero-actions { margin-top: var(--rux-space-5); }
       .demo-card-offset { margin-top: var(--rux-space-4); }
+      .demo-app {
+        display: grid;
+        grid-template-columns: 0.9fr 1.4fr;
+        gap: var(--rux-space-4);
+        align-items: start;
+      }
+      .demo-app > *,
+      .demo-app__main {
+        min-width: 0;
+      }
+      .demo-app__main {
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-4);
+      }
+      .demo-app__toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--rux-space-3);
+        margin-bottom: var(--rux-space-4);
+      }
+      .demo-app__title {
+        font-size: var(--rux-text-lg);
+        font-weight: var(--rux-weight-semibold);
+        letter-spacing: var(--rux-tracking-tight);
+      }
+      .trip-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--rux-space-3);
+        padding: var(--rux-space-3) 0;
+        border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+      }
+      .trip-row:first-child {
+        border-top: 0;
+        padding-top: 0;
+      }
+      .trip-row__meta {
+        min-width: 0;
+      }
+      .trip-row__title {
+        font-size: var(--rux-text-sm);
+        font-weight: var(--rux-weight-medium);
+      }
+      .trip-row__detail {
+        color: var(--rux-fg-subtle);
+        font-size: var(--rux-text-xs);
+      }
+      .foundation-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--rux-space-4);
+      }
+      .scale-card {
+        padding: var(--rux-space-5);
+      }
+      .space-scale,
+      .radius-scale {
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-3);
+      }
+      .space-scale__row,
+      .radius-scale__row {
+        display: grid;
+        grid-template-columns: 4.5rem 1fr 4rem;
+        align-items: center;
+        gap: var(--rux-space-3);
+        font-family: var(--rux-font-mono);
+        font-size: var(--rux-text-xs);
+        color: var(--rux-fg-muted);
+      }
+      .space-scale__bar {
+        width: var(--_w);
+        height: var(--rux-space-3);
+        background: var(--rux-accent);
+        border-radius: var(--rux-radius-xs);
+      }
+      .radius-scale__box {
+        width: 100%;
+        height: var(--rux-space-8);
+        background: var(--rux-bg-sunken);
+        border: var(--rux-border-width) solid var(--rux-border);
+        border-radius: var(--_r);
+      }
+      .foundation-note {
+        color: var(--rux-fg-muted);
+        font-size: var(--rux-text-sm);
+      }
       .button-spec {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -215,8 +319,8 @@
       .demo-ghost-hover    { background-color: var(--rux-control-ghost-hover) !important; }
       .demo-ghost-active   { background-color: var(--rux-control-ghost-active) !important; transform: translateY(var(--_press-y)) !important; }
       .demo-ghost-focus    { outline: none !important; box-shadow: var(--rux-ring-focus) !important; }
-      .state-matrix { display: flex; flex-direction: column; gap: var(--rux-space-2); }
-      .state-row { display: flex; align-items: center; gap: var(--rux-space-4); }
+      .state-matrix { display: flex; flex-direction: column; gap: var(--rux-space-2); overflow-x: auto; padding: 5px; margin: -5px; }
+      .state-row { display: flex; align-items: center; gap: var(--rux-space-2); }
       .state-label { flex: none; width: 4.5rem; font-size: var(--rux-text-2xs); font-weight: var(--rux-weight-semibold); letter-spacing: var(--rux-tracking-wide); text-transform: uppercase; color: var(--rux-fg-subtle); }
       .button-cards {
         display: grid;
@@ -235,21 +339,31 @@
       .shadow-scale__item {
         min-width: 0;
       }
+      .shadow-scale__stage {
+        display: grid;
+        place-items: center;
+        min-height: 160px;
+        padding: var(--rux-space-5);
+        margin-bottom: var(--rux-space-3);
+        background: var(--rux-bg-elevated);
+        border: var(--rux-border-width) solid var(--rux-border-subtle);
+        border-radius: var(--rux-radius-md);
+        overflow: hidden;
+      }
       .shadow-scale__surface {
         display: grid;
         place-items: center;
-        aspect-ratio: 1;
-        margin-bottom: var(--rux-space-3);
+        width: 96px;
+        height: 96px;
+        background: var(--rux-bg-elevated);
+        border: transparent solid var(--rux-border-width);
         border-radius: var(--rux-radius-md);
         color: var(--rux-fg-muted);
         font-family: var(--rux-font-mono);
         font-size: var(--rux-text-xs);
       }
-      .shadow-scale__surface--none { box-shadow: var(--rux-shadow-none); 
-      }
-      .shadow-scale__surface--sm { box-shadow: var(--rux-shadow-sm);
-      background: var(--rux-bg-elevated);
-      }
+      .shadow-scale__surface--none { box-shadow: var(--rux-shadow-none); }
+      .shadow-scale__surface--sm { box-shadow: var(--rux-shadow-sm); }
       .shadow-scale__surface--md { box-shadow: var(--rux-shadow-md); }
       .shadow-scale__surface--lg { box-shadow: var(--rux-shadow-lg); }
       .shadow-scale__surface--xl { box-shadow: var(--rux-shadow-xl); }
@@ -269,6 +383,12 @@
       }
       @media (max-width: 900px) {
         .shadow-scale { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+      @media (max-width: 900px) {
+        .demo-app,
+        .foundation-grid {
+          grid-template-columns: 1fr;
+        }
       }
       .avatar-overlap { margin-right: calc(var(--rux-space-3) * -1); }
       .avatar-info {
@@ -295,6 +415,101 @@
         width: var(--rux-icon-md);
         height: var(--rux-icon-md);
       }
+      /* Accent-locked primary variants for the demo matrix.
+         We set --_bg / --_bg-h / --_bg-a / --rux-ring-focus with concrete
+         oklch() values so the colors are independent of the global accent
+         picker — no nested var() chain that browsers may resolve at :root. */
+      .a-blue   { --_bg:oklch(60% .18 250);--_bg-h:oklch(70% .18 250);--_bg-a:oklch(50% .18 250);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .18 250/.4); }
+      .a-violet { --_bg:oklch(60% .18 295);--_bg-h:oklch(70% .18 295);--_bg-a:oklch(50% .18 295);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .18 295/.4); }
+      .a-green  { --_bg:oklch(60% .18 155);--_bg-h:oklch(70% .18 155);--_bg-a:oklch(50% .18 155);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .18 155/.4); }
+      .a-amber  { --_bg:oklch(60% .16  70);--_bg-h:oklch(70% .16  70);--_bg-a:oklch(50% .16  70);--rux-ring-focus:0 0 0 2px var(--rux-bg),0 0 0 4px oklch(60% .16  70/.4); }
+      @media (max-width: 720px) {
+        body {
+          padding: 0;
+        }
+        .page {
+          width: calc(100vw - 2rem);
+          width: calc(100svw - 2rem);
+          max-width: none;
+          padding: var(--rux-space-5) 0;
+        }
+        .page__nav {
+          align-items: flex-start;
+          margin-bottom: var(--rux-space-6);
+          padding-bottom: var(--rux-space-5);
+        }
+        .page__nav-actions {
+          justify-content: flex-start;
+          width: 100%;
+        }
+        section {
+          margin-bottom: var(--rux-space-6);
+        }
+        .section-eyebrow {
+          align-items: flex-start;
+          margin-bottom: var(--rux-space-4);
+        }
+        .hero-title,
+        .rux-display {
+          font-size: var(--rux-text-3xl);
+          line-height: var(--rux-leading-tight);
+        }
+        h1 {
+          font-size: var(--rux-text-2xl);
+        }
+        h2 {
+          font-size: var(--rux-text-xl);
+          line-height: var(--rux-leading-snug);
+        }
+        .rux-card__header,
+        .rux-card__body,
+        .rux-card__footer,
+        .scale-card,
+        .stat-card {
+          padding: var(--rux-space-4);
+        }
+        .button-use {
+          flex-direction: column;
+          gap: var(--rux-space-1);
+        }
+        .button-use__label {
+          width: auto;
+        }
+        .space-scale__row,
+        .radius-scale__row {
+          grid-template-columns: 3.75rem 1fr;
+        }
+        .space-scale__row span:last-child,
+        .radius-scale__row span:last-child {
+          display: none;
+        }
+        .trip-row {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .demo-app__toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+        .demo-app .rux-card__footer {
+          display: grid;
+          grid-template-columns: repeat(2, auto);
+          align-items: center;
+        }
+        .demo-app .rux-card__footer .rux-spacer {
+          display: none;
+        }
+        .demo-app .rux-card__footer .rux-button {
+          grid-column: 1 / -1;
+          width: 100%;
+        }
+        .demo-app .rux-alert {
+          align-items: flex-start;
+        }
+        .demo-menu-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body>
@@ -302,16 +517,15 @@
       <header class="page__nav">
         <div class="page__nav-logo">
           <img src="assets/rux-mark.svg" alt="" />
-          <span>Rux</span>
+          <span>Rux UI</span>
         </div>
-        <nav class="rux-cluster">
+        <nav class="rux-cluster page__nav-actions">
           <div class="accent-picker" role="radiogroup" aria-label="Accent color">
+            <span class="accent-picker__label">Accent</span>
             <button class="accent-swatch accent-swatch--blue" data-rux-set-accent="blue" aria-label="Blue"></button>
             <button class="accent-swatch accent-swatch--violet" data-rux-set-accent="violet" aria-label="Violet"></button>
-            <button class="accent-swatch accent-swatch--cyan" data-rux-set-accent="cyan" aria-label="Cyan"></button>
             <button class="accent-swatch accent-swatch--green" data-rux-set-accent="green" aria-label="Green"></button>
             <button class="accent-swatch accent-swatch--amber" data-rux-set-accent="amber" aria-label="Amber"></button>
-            <button class="accent-swatch accent-swatch--red" data-rux-set-accent="red" aria-label="Red"></button>
           </div>
           <a href="README.md" class="rux-button rux-button--ghost"><i data-lucide="book-open"></i> README</a>
           <a href="ui_kits/showcase/index.html" class="rux-button rux-button--ghost"><i data-lucide="layout-template"></i> Showcase</a>
@@ -320,9 +534,9 @@
       </header>
 
       <section>
-        <h1 class="hero-title">A dark, minimal design system.</h1>
+        <h1 class="hero-title">Rux UI.</h1>
         <p class="rux-lead hero-copy">
-          Rux is one set of CSS tokens, one component sheet, one naming convention. No build step, no framework. Dark mode only.
+          Dark, minimal CSS tokens and components. No framework.
         </p>
         <div class="rux-cluster hero-actions">
           <button class="rux-button rux-button--primary"><i data-lucide="arrow-right"></i> Get started</button>
@@ -331,22 +545,110 @@
         </div>
       </section>
 
+      <!-- PATTERN -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">01 — Pattern</h6>
+            <h2>A working product surface.</h2>
+          </div>
+        </div>
+        <div class="demo-app">
+          <div class="rux-stack">
+            <div class="grid-2">
+              <div class="rux-card stat-card">
+                <div class="stat-card__label">Trips this week</div>
+                <div class="stat-card__value">142</div>
+                <div class="stat-card__delta stat-card__delta--success">
+                  <i data-lucide="trending-up"></i> 8.2%
+                </div>
+              </div>
+              <div class="rux-card stat-card">
+                <div class="stat-card__label">Conflicts</div>
+                <div class="stat-card__value">3</div>
+                <div class="stat-card__delta stat-card__delta--danger">
+                  <i data-lucide="alert-triangle"></i> Needs review
+                </div>
+              </div>
+            </div>
+            <div class="rux-card stat-card">
+              <div class="stat-card__label">Drivers assigned</div>
+              <div class="stat-card__value">38<span class="stat-card__subvalue"> / 42</span></div>
+              <div class="stat-card__delta stat-card__delta--muted">4 pending confirmation</div>
+            </div>
+          </div>
+
+          <div class="demo-app__main">
+            <div class="rux-card">
+              <div class="rux-card__body">
+                <div class="demo-app__toolbar">
+                  <div>
+                    <div class="rux-overline">Dispatch</div>
+                    <div class="demo-app__title">Yosemite weekend</div>
+                  </div>
+                  <div class="rux-segmented rux-segmented--inline" role="tablist" aria-label="Trip views">
+                    <button class="rux-button is-active" role="tab" aria-selected="true">Trips</button>
+                    <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Drivers</button>
+                  </div>
+                </div>
+                <div class="trip-row">
+                  <div class="trip-row__meta">
+                    <div class="trip-row__title">Group A · 6:00am</div>
+                    <div class="trip-row__detail">2 buses · Driver: K. Romero</div>
+                  </div>
+                  <span class="rux-badge rux-badge--success rux-badge--dot">Confirmed</span>
+                </div>
+                <div class="trip-row">
+                  <div class="trip-row__meta">
+                    <div class="trip-row__title">Group B · 7:15am</div>
+                    <div class="trip-row__detail">1 bus · Driver pending</div>
+                  </div>
+                  <span class="rux-badge rux-badge--warning rux-badge--dot">Pending</span>
+                </div>
+                <div class="trip-row">
+                  <div class="trip-row__meta">
+                    <div class="trip-row__title">Return route · 4:30pm</div>
+                    <div class="trip-row__detail">Overlap with Tuesday coverage</div>
+                  </div>
+                  <span class="rux-badge rux-badge--danger rux-badge--dot">Review</span>
+                </div>
+              </div>
+              <div class="rux-card__footer rux-row">
+                <div class="rux-avatar avatar-overlap">KR</div>
+                <div class="rux-avatar avatar-info">JT</div>
+                <div class="rux-spacer"></div>
+                <button class="rux-button rux-button--ghost"><i data-lucide="external-link"></i> Open</button>
+                <button class="rux-button rux-button--primary"><i data-lucide="plus"></i> Add trip</button>
+              </div>
+            </div>
+
+            <div class="rux-alert rux-alert--info">
+              <i data-lucide="info" class="rux-icon rux-icon--lg rux-alert__icon"></i>
+              <div class="rux-alert__body">
+                <div class="rux-alert__title">Schedule sync paused</div>
+                <div>Sync resumes when the connection returns.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COLORS -->
       <section>
         <div class="section-eyebrow">
           <div>
-            <h6 class="section-kicker">01 — Color</h6>
-            <h2>Four planes. One accent. Four status colors.</h2>
+            <h6 class="section-kicker">02 — Color</h6>
+            <h2>Color planes and status.</h2>
           </div>
         </div>
         <div class="grid-3">
-          <div class="swatch"><div class="swatch__chip swatch__chip--bg"></div><div class="swatch__name">bg</div><div class="swatch__val">#000000</div></div>
-          <div class="swatch"><div class="swatch__chip swatch__chip--elevated"></div><div class="swatch__name">bg-elevated</div><div class="swatch__val">#1f1f1f</div></div>
-          <div class="swatch"><div class="swatch__chip swatch__chip--sunken"></div><div class="swatch__name">bg-sunken</div><div class="swatch__val">#060606</div></div>
-          <div class="swatch"><div class="swatch__chip swatch__chip--accent"></div><div class="swatch__name">accent</div><div class="swatch__val">oklch(64% 0.18 252)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--bg"></div><div class="swatch__name">bg</div><div class="swatch__val">oklch(0% 0 260)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--elevated"></div><div class="swatch__name">bg-elevated</div><div class="swatch__val">oklch(20% 0 260)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--sunken"></div><div class="swatch__name">bg-sunken</div><div class="swatch__val">oklch(16% 0 260)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--accent"></div><div class="swatch__name">accent</div><div class="swatch__val">oklch(60% 0.18 260)</div></div>
           <div class="swatch"><div class="swatch__chip swatch__chip--success"></div><div class="swatch__name">success</div><div class="swatch__val">oklch(72% 0.17 152)</div></div>
           <div class="swatch"><div class="swatch__chip swatch__chip--warning"></div><div class="swatch__name">warning</div><div class="swatch__val">oklch(80% 0.15 80)</div></div>
-          <div class="swatch"><div class="swatch__chip swatch__chip--danger"></div><div class="swatch__name">danger</div><div class="swatch__val">oklch(67% 0.21 22)</div></div>
+          <div class="swatch"><div class="swatch__chip swatch__chip--danger"></div><div class="swatch__name">danger</div><div class="swatch__val">oklch(60% 0.21 24)</div></div>
           <div class="swatch"><div class="swatch__chip swatch__chip--info"></div><div class="swatch__name">info</div><div class="swatch__val">oklch(74% 0.13 230)</div></div>
         </div>
       </section>
@@ -355,7 +657,7 @@
       <section>
         <div class="section-eyebrow">
           <div>
-            <h6 class="section-kicker">02 — Typography</h6>
+            <h6 class="section-kicker">03 — Typography</h6>
             <h2>Inter for UI. JetBrains Mono for code.</h2>
           </div>
         </div>
@@ -383,7 +685,49 @@
             </div>
             <div>
               <div class="rux-overline">Mono</div>
-              <pre><code>const accent = "oklch(64% 0.18 252)";</code></pre>
+              <pre><code>const accent = "oklch(60% 0.18 260)";</code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOUNDATIONS -->
+      <section>
+        <div class="section-eyebrow">
+          <div>
+            <h6 class="section-kicker">04 — Foundations</h6>
+            <h2>Spacing, radius, and elevation.</h2>
+          </div>
+        </div>
+        <div class="foundation-grid">
+          <div class="rux-card scale-card rux-stack">
+            <div>
+              <h3>Spacing scale.</h3>
+              <p class="foundation-note">A 4px base grid keeps layouts dense without feeling cramped.</p>
+            </div>
+            <div class="space-scale" aria-label="Spacing scale">
+              <div class="space-scale__row"><span>space-1</span><div class="space-scale__bar" style="--_w: var(--rux-space-1);"></div><span>4px</span></div>
+              <div class="space-scale__row"><span>space-2</span><div class="space-scale__bar" style="--_w: var(--rux-space-2);"></div><span>8px</span></div>
+              <div class="space-scale__row"><span>space-3</span><div class="space-scale__bar" style="--_w: var(--rux-space-3);"></div><span>12px</span></div>
+              <div class="space-scale__row"><span>space-4</span><div class="space-scale__bar" style="--_w: var(--rux-space-4);"></div><span>16px</span></div>
+              <div class="space-scale__row"><span>space-5</span><div class="space-scale__bar" style="--_w: var(--rux-space-5);"></div><span>24px</span></div>
+              <div class="space-scale__row"><span>space-6</span><div class="space-scale__bar" style="--_w: var(--rux-space-6);"></div><span>32px</span></div>
+              <div class="space-scale__row"><span>space-7</span><div class="space-scale__bar" style="--_w: var(--rux-space-7);"></div><span>48px</span></div>
+              <div class="space-scale__row"><span>space-8</span><div class="space-scale__bar" style="--_w: var(--rux-space-8);"></div><span>64px</span></div>
+            </div>
+          </div>
+
+          <div class="rux-card scale-card rux-stack">
+            <div>
+              <h3>Radius scale.</h3>
+              <p class="foundation-note">Outer surfaces are softer; nested controls step down optically.</p>
+            </div>
+            <div class="radius-scale" aria-label="Radius scale">
+              <div class="radius-scale__row"><span>xs</span><div class="radius-scale__box" style="--_r: var(--rux-radius-xs);"></div><span>2px</span></div>
+              <div class="radius-scale__row"><span>sm</span><div class="radius-scale__box" style="--_r: var(--rux-radius-sm);"></div><span>6px</span></div>
+              <div class="radius-scale__row"><span>md</span><div class="radius-scale__box" style="--_r: var(--rux-radius-md);"></div><span>8px</span></div>
+              <div class="radius-scale__row"><span>lg</span><div class="radius-scale__box" style="--_r: var(--rux-radius-lg);"></div><span>16px</span></div>
+              <div class="radius-scale__row"><span>xl</span><div class="radius-scale__box" style="--_r: var(--rux-radius-xl);"></div><span>24px</span></div>
             </div>
           </div>
         </div>
@@ -393,7 +737,7 @@
       <section>
         <div class="section-eyebrow">
           <div>
-            <h6 class="section-kicker">03 — Buttons</h6>
+            <h6 class="section-kicker">05 — Buttons</h6>
             <h2>Two patterns. One button system.</h2>
           </div>
         </div>
@@ -542,6 +886,23 @@
               <div class="button-use"><span class="button-use__label">Tab strip</span><span class="button-use__desc">Use data-rux-tabs with role="tablist" for exclusive view switching. State managed via aria-selected. Disabled items remain visible at reduced opacity.</span></div>
             </div>
 
+            <hr class="rux-divider">
+
+            <!-- Primary active strip -->
+            <div class="rux-stack-sm">
+              <div class="rux-segmented rux-segmented--primary" data-rux-tabs role="tablist" aria-label="Primary active segmented">
+                <button class="rux-button is-active" role="tab" aria-selected="true">One</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Two</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Three</button>
+              </div>
+              <div class="rux-segmented rux-segmented--primary rux-segmented--inline" data-rux-tabs role="tablist" aria-label="Primary active inline">
+                <button class="rux-button is-active" role="tab" aria-selected="true">One</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Two</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Three</button>
+              </div>
+              <div class="button-use"><span class="button-use__label">Primary</span><span class="button-use__desc">Add rux-segmented--primary for an accent-filled active item. Use when the selection needs stronger visual emphasis than the default lifted-surface treatment.</span></div>
+            </div>
+
             <div class="button-spec">
               <div class="button-spec__item">
                 <div class="button-spec__label">Height</div>
@@ -574,32 +935,57 @@
               <div class="state-row">
                 <span class="state-label">Rest</span>
                 <button class="rux-button rux-button--primary">Primary</button>
+                <button class="rux-button rux-button--primary a-blue">Blue</button>
+                <button class="rux-button rux-button--primary a-violet">Violet</button>
+                <button class="rux-button rux-button--primary a-green">Green</button>
+                <button class="rux-button rux-button--primary a-amber">Amber</button>
                 <button class="rux-button">Default</button>
                 <button class="rux-button rux-button--ghost">Ghost</button>
+                <button class="rux-button rux-button--danger">Danger</button>
               </div>
               <div class="state-row">
                 <span class="state-label">Hover</span>
                 <button class="rux-button rux-button--primary demo-hover">Primary</button>
+                <button class="rux-button rux-button--primary a-blue demo-hover">Blue</button>
+                <button class="rux-button rux-button--primary a-violet demo-hover">Violet</button>
+                <button class="rux-button rux-button--primary a-green demo-hover">Green</button>
+                <button class="rux-button rux-button--primary a-amber demo-hover">Amber</button>
                 <button class="rux-button demo-hover">Default</button>
                 <button class="rux-button rux-button--ghost demo-ghost-hover">Ghost</button>
+                <button class="rux-button rux-button--danger demo-hover">Danger</button>
               </div>
               <div class="state-row">
                 <span class="state-label">Pressed</span>
                 <button class="rux-button rux-button--primary demo-active">Primary</button>
+                <button class="rux-button rux-button--primary a-blue demo-active">Blue</button>
+                <button class="rux-button rux-button--primary a-violet demo-active">Violet</button>
+                <button class="rux-button rux-button--primary a-green demo-active">Green</button>
+                <button class="rux-button rux-button--primary a-amber demo-active">Amber</button>
                 <button class="rux-button demo-active">Default</button>
                 <button class="rux-button rux-button--ghost demo-ghost-active">Ghost</button>
+                <button class="rux-button rux-button--danger demo-active">Danger</button>
               </div>
               <div class="state-row">
                 <span class="state-label">Focus</span>
                 <button class="rux-button rux-button--primary demo-focus">Primary</button>
+                <button class="rux-button rux-button--primary a-blue demo-focus">Blue</button>
+                <button class="rux-button rux-button--primary a-violet demo-focus">Violet</button>
+                <button class="rux-button rux-button--primary a-green demo-focus">Green</button>
+                <button class="rux-button rux-button--primary a-amber demo-focus">Amber</button>
                 <button class="rux-button demo-focus">Default</button>
                 <button class="rux-button rux-button--ghost demo-ghost-focus">Ghost</button>
+                <button class="rux-button rux-button--danger demo-focus">Danger</button>
               </div>
               <div class="state-row">
                 <span class="state-label">Disabled</span>
                 <button class="rux-button rux-button--primary" disabled>Primary</button>
+                <button class="rux-button rux-button--primary a-blue" disabled>Blue</button>
+                <button class="rux-button rux-button--primary a-violet" disabled>Violet</button>
+                <button class="rux-button rux-button--primary a-green" disabled>Green</button>
+                <button class="rux-button rux-button--primary a-amber" disabled>Amber</button>
                 <button class="rux-button" disabled>Default</button>
                 <button class="rux-button rux-button--ghost" disabled>Ghost</button>
+                <button class="rux-button rux-button--danger" disabled>Danger</button>
               </div>
             </div>
             <div class="button-spec">
@@ -635,27 +1021,37 @@
             </div>
             <div class="shadow-scale" aria-label="Shadow elevation scale">
               <div class="shadow-scale__item">
-                <div class="shadow-scale__surface shadow-scale__surface--none">0</div>
+                <div class="shadow-scale__stage">
+                  <div class="shadow-scale__surface shadow-scale__surface--none">none</div>
+                </div>
                 <div class="shadow-scale__name">none</div>
                 <div class="shadow-scale__use">Cards, fields, inline controls</div>
               </div>
               <div class="shadow-scale__item">
-                <div class="shadow-scale__surface shadow-scale__surface--sm">sm</div>
+                <div class="shadow-scale__stage">
+                  <div class="shadow-scale__surface shadow-scale__surface--sm">sm</div>
+                </div>
                 <div class="shadow-scale__name">shadow-sm</div>
                 <div class="shadow-scale__use">Buttons, toggles, tabs</div>
               </div>
               <div class="shadow-scale__item">
-                <div class="shadow-scale__surface shadow-scale__surface--md">md</div>
+                <div class="shadow-scale__stage">
+                  <div class="shadow-scale__surface shadow-scale__surface--md">md</div>
+                </div>
                 <div class="shadow-scale__name">shadow-md</div>
                 <div class="shadow-scale__use">Menus, tooltips</div>
               </div>
               <div class="shadow-scale__item">
-                <div class="shadow-scale__surface shadow-scale__surface--lg">lg</div>
+                <div class="shadow-scale__stage">
+                  <div class="shadow-scale__surface shadow-scale__surface--lg">lg</div>
+                </div>
                 <div class="shadow-scale__name">shadow-lg</div>
                 <div class="shadow-scale__use">Modals, dialogs</div>
               </div>
               <div class="shadow-scale__item">
-                <div class="shadow-scale__surface shadow-scale__surface--xl">xl</div>
+                <div class="shadow-scale__stage">
+                  <div class="shadow-scale__surface shadow-scale__surface--xl">xl</div>
+                </div>
                 <div class="shadow-scale__name">shadow-xl</div>
                 <div class="shadow-scale__use">Sheets, heavy overlays</div>
               </div>
@@ -668,7 +1064,7 @@
       <section>
         <div class="section-eyebrow">
           <div>
-            <h6 class="section-kicker">04 — Forms</h6>
+            <h6 class="section-kicker">06 — Forms</h6>
             <h2>Inputs, selects, switches, checkboxes.</h2>
           </div>
         </div>
@@ -728,67 +1124,11 @@
         </div>
       </section>
 
-      <!-- CARDS -->
-      <section>
-        <div class="section-eyebrow">
-          <div>
-            <h6 class="section-kicker">05 — Cards & data</h6>
-            <h2>Composition over decoration.</h2>
-          </div>
-        </div>
-        <div class="grid-3">
-          <div class="rux-card stat-card">
-            <div class="stat-card__label">Trips this week</div>
-            <div class="stat-card__value">142</div>
-            <div class="stat-card__delta stat-card__delta--success">
-              <i data-lucide="trending-up"></i> 8.2%
-            </div>
-          </div>
-          <div class="rux-card stat-card">
-            <div class="stat-card__label">Drivers assigned</div>
-            <div class="stat-card__value">38<span class="stat-card__subvalue"> / 42</span></div>
-            <div class="stat-card__delta stat-card__delta--muted">4 pending confirmation</div>
-          </div>
-          <div class="rux-card stat-card">
-            <div class="stat-card__label">Conflicts</div>
-            <div class="stat-card__value">3</div>
-            <div class="stat-card__delta stat-card__delta--danger">
-              <i data-lucide="alert-triangle"></i> Needs review
-            </div>
-          </div>
-        </div>
-
-        <div class="demo-card-offset">
-          <div class="rux-card rux-card--interactive">
-            <div class="rux-card__header">
-              <div>
-                <div class="rux-card__title">Yosemite weekend — Group A</div>
-                <div class="rux-card__subtitle">Sat, Mar 14 · 6:00am · 2 buses · Driver: K. Romero</div>
-              </div>
-              <span class="rux-badge rux-badge--success rux-badge--dot">Confirmed</span>
-            </div>
-            <div class="rux-card__body">
-              <div class="rux-cluster">
-                <span class="rux-tag"><i data-lucide="users"></i> 42 pax</span>
-                <span class="rux-tag"><i data-lucide="map-pin"></i> San Jose → Yosemite</span>
-                <span class="rux-tag"><i data-lucide="clock"></i> 8h round</span>
-              </div>
-            </div>
-            <div class="rux-card__footer rux-row">
-              <div class="rux-avatar avatar-overlap">KR</div>
-              <div class="rux-avatar avatar-info">JT</div>
-              <div class="rux-spacer"></div>
-              <button class="rux-button rux-button--ghost"><i data-lucide="external-link"></i> Open</button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- ALERTS -->
       <section>
         <div class="section-eyebrow">
           <div>
-            <h6 class="section-kicker">06 — Feedback</h6>
+            <h6 class="section-kicker">07 — Feedback</h6>
             <h2>Alerts, toasts, and badges.</h2>
           </div>
         </div>
@@ -797,7 +1137,7 @@
             <i data-lucide="info" class="rux-icon rux-icon--lg rux-alert__icon"></i>
             <div class="rux-alert__body">
               <div class="rux-alert__title">Schedule sync paused</div>
-              <div>Resumes automatically when the connection returns.</div>
+              <div>Sync resumes when the connection returns.</div>
             </div>
           </div>
           <div class="rux-alert rux-alert--success">
@@ -823,7 +1163,7 @@
           <div class="rux-cluster">
             <button class="rux-button" onclick="Rux.toast('Trip saved')"><i data-lucide="bell"></i> Show toast</button>
             <button class="rux-button" onclick="Rux.openModal('#demo-modal')"><i data-lucide="maximize-2"></i> Open modal</button>
-            <button class="rux-button rux-button--ghost" onclick="Rux.copy('--rux-accent: oklch(64% 0.18 252);')"><i data-lucide="copy"></i> Copy token</button>
+            <button class="rux-button rux-button--ghost" onclick="Rux.copy('--rux-accent: oklch(60% 0.18 260);')"><i data-lucide="copy"></i> Copy token</button>
           </div>
         </div>
       </section>
@@ -832,7 +1172,7 @@
       <section>
         <div class="section-eyebrow">
           <div>
-            <h6 class="section-kicker">07 — Menu</h6>
+            <h6 class="section-kicker">08 — Menu</h6>
             <h2>Dropdown / context list.</h2>
           </div>
         </div>
