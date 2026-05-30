@@ -171,6 +171,7 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 |---|---:|---:|---:|---:|
 | `.rux-button` | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
 | `.rux-button--icon` | `--rux-control-height` `32px` | icon only | `0` | n/a |
+| `.rux-segmented` | `40px` outer track | track | `--rux-space-1` `4px` inner depth | `--rux-space-1` `4px` |
 | segmented items | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | n/a |
 
 - Use `--rux-weight-medium` for all button labels.
@@ -178,7 +179,7 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 - Do not add compact or large button variants. Use layout density, icon-only buttons, or progressive disclosure instead of changing button height.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
-- Segmented controls use `calc(var(--rux-space-1) / 2)` (`2px`) between items so the group reads as one control.
+- Segmented controls use a shallow recessed, borderless 40px track with 4px inset depth around standard 32px button items. Inactive hover uses the quieter `--rux-control-strip-bg-hover`; the selected item is the only raised element in the strip.
 - Keep labels short, sentence case, and action-oriented.
 
 ### Forms
@@ -227,7 +228,7 @@ Borders are **hairlines** (always 1px) at one of three intensities (`--rux-borde
 
 **Shadow scale:**
 - `--rux-shadow-none` — cards, flat inline surfaces
-- `--rux-shadow-sm` — all button variants, segmented controls, toasts
+- `--rux-shadow-sm` — all button variants, selected segmented items, toasts
 - `--rux-shadow-md` — menus, tooltips
 - `--rux-shadow-lg` — modals
 - `--rux-shadow-xl` — sheets, heavy overlays

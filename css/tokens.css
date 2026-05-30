@@ -47,6 +47,7 @@
   /* ─── COLOR · controls ────────────────────────────────────────────────── */
 
   --rux-control-strip-bg:      oklch(32% 0.004 260);           /* pill-strip container for .rux-segmented */
+  --rux-control-strip-bg-hover: oklch(36% 0.004 260);          /* inactive item hover inside a strip     */
   --rux-control-strip-bg-active: oklch(42% 0.004 260);         /* selected item inside a pill-strip      */
   --rux-control-bg:            oklch(50% 0.004 260);   /* filled neutral controls              */
   --rux-control-bg-disabled:   #303030;            /* disabled controls                    */
@@ -199,20 +200,20 @@
 
 --rux-shadow-none: none;
   /* Crisp, immediate lift. Negative spread removes side-bleed. */
-  --rux-shadow-sm:   0 2px 4px -1px rgba(0, 0, 0, 0.8), 
-                     inset 0 2px 0 rgba(255, 255, 255, 0.2);
+  --rux-shadow-sm:   0 3px 2px 0px rgba(0, 0, 0, 0.8), 
+               inset 0 2px 0px 0px rgba(255, 255, 255, 0.2);
   /* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
   --rux-shadow-md:   0 8px 16px -4px rgba(0, 0, 0, 0.4), 
                      0 2px 6px -1px rgba(0, 0, 0, 0.8),
-                     inset 0 2px 0 rgba(255, 255, 255, 0.2);
+                     inset 0 2px 0.5px rgba(255, 255, 255, 0.15);
   /* Deep but contained. High offset, aggressive negative spread. */
   --rux-shadow-lg:   0 16px 32px -6px rgba(0, 0, 0, 0.4), 
                      0 6px 14px -2px rgba(0, 0, 0, 1),
-                     inset 0 2px 0 rgba(255, 255, 255, 0.2);
+                     inset 0 2px 0 rgba(255, 255, 255, 0.15);
   /* Maximum depth without the muddy blur. */
   --rux-shadow-xl:   0 32px 64px -12px rgba(0, 0, 0, 0.4), 
                      0 12px 24px -4px rgba(0, 0, 0, 1),
-                     inset 0 2px 0 rgba(255, 255, 255, 0.2);
+                     inset 0 2px 0 rgba(255, 255, 255, 0.15);
   /* Focus ring remains untouched; excellent dual-ring setup */
   --rux-ring-focus:  0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
   --rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);

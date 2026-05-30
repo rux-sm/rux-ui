@@ -160,14 +160,21 @@
    ========================================================================== */
 
 .rux-segmented {
+  --_pad: var(--rux-space-2);
+
   display: flex;
   align-items: center;
   gap: var(--rux-space-1);
-  padding: var(--rux-space-1);
+  min-height: calc(var(--rux-control-height) + var(--_pad) * 2);
+  padding: var(--_pad);
   background-color: var(--rux-control-strip-bg);
-  border: var(--rux-border-width) solid transparent;
+  border: 0;
   border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-shadow-sm);
+  box-shadow:
+  inset 0 2px 4px rgba(0, 0, 0, .8), /* Top dark edge */
+  inset 0 3px 6px rgba(0, 0, 0, .4), /* Top dark gradient/depth */
+  inset 0 -2px 4px rgba(255, 255, 255, 0.2); /* Single, sharp bottom crease */
+  overflow: hidden; /* clips active button corners to strip radius; inset shadow paints above children */
 }
 
 .rux-segmented--inline {
@@ -179,14 +186,20 @@
 .rux-segmented--inline > .rux-button { flex: none; }
 
 .rux-segmented > .rux-button {
+  --_h:     var(--rux-control-height);
   --_bg:     var(--rux-control-strip-bg);   /* matches strip bg so inactive items blend into the strip */
+  --_bg-h:   var(--rux-control-strip-bg-hover);
+  --_bg-a:   var(--rux-control-strip-bg-active);
   --_shadow: var(--rux-shadow-none);
   flex: 1;
   min-width: 0;
   border-radius: var(--rux-radius-sm);
   color: var(--rux-fg-muted);
 }
-.rux-segmented > .rux-button:hover { color: var(--rux-fg); }
+.rux-segmented > .rux-button:hover {
+  color: var(--rux-fg);
+  box-shadow: var(--rux-shadow-none);
+}
 .rux-segmented > .rux-button:disabled,
 .rux-segmented > .rux-button[aria-disabled="true"] {
   background-color: transparent;
@@ -196,7 +209,9 @@
 .rux-segmented > .rux-button.is-active,
 .rux-segmented > .rux-button[aria-pressed="true"],
 .rux-segmented > .rux-button[aria-selected="true"] {
-  --_bg: var(--rux-control-strip-bg-active);
+  --_bg:   var(--rux-control-strip-bg-active);
+  --_bg-h: var(--rux-control-strip-bg-active);
+  --_bg-a: var(--rux-control-strip-bg-active);
   color: var(--rux-fg);
   box-shadow: var(--rux-shadow-sm);
 }
