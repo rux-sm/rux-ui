@@ -1,0 +1,263 @@
+/* ==========================================================================
+   TRIP BAR — DEMO PAGE STYLES
+   --------------------------------------------------------------------------
+   Layout and presentation styles for preview/comp-trip-bar.html.
+   These are not part of the design system component cascade.
+   ========================================================================== */
+
+body {
+  min-height: 100vh;
+  padding: var(--rux-space-6);
+}
+
+.trip-bar-demo {
+  display: grid;
+  gap: var(--rux-space-7);
+  width: 100%;
+  min-width: 0;
+  max-width: var(--rux-container-xl);
+  margin: 0 auto;
+  overflow-x: clip;
+}
+
+.trip-bar-demo__header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: var(--rux-space-5);
+  padding-bottom: var(--rux-space-5);
+  border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.trip-bar-demo__title {
+  font-size: var(--rux-text-2xl);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: 0;
+}
+
+.trip-bar-demo__subtitle {
+  max-width: 58ch;
+  margin-top: var(--rux-space-2);
+  color: var(--rux-fg-muted);
+  font-size: var(--rux-text-sm);
+}
+
+.trip-bar-demo__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--rux-space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.trip-bar-demo__section {
+  display: grid;
+  gap: var(--rux-space-4);
+  min-width: 0;
+}
+
+.trip-bar-demo__section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rux-space-3);
+}
+
+.trip-bar-demo__section-title {
+  color: var(--rux-fg-muted);
+  font-size: var(--rux-text-xs);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: var(--rux-tracking-wide);
+  text-transform: uppercase;
+}
+
+.trip-bar-demo__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rux-space-5);
+  align-items: start;
+}
+
+.trip-bar-demo__single-day-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(13rem, 1fr));
+  gap: var(--rux-space-3);
+  align-items: start;
+}
+
+.trip-bar-demo__rules {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rux-space-4);
+}
+
+.trip-bar-demo__anatomy {
+  overflow: hidden;
+  background: var(--rux-bg-elevated);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-md);
+}
+
+.trip-bar-demo__anatomy-row {
+  display: grid;
+  grid-template-columns: 10rem 1.15fr 1.35fr 1fr;
+  gap: var(--rux-space-4);
+  padding: var(--rux-space-4) var(--rux-space-4);
+  border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+  color: var(--rux-fg-muted);
+  font-size: var(--rux-text-xs);
+  line-height: var(--rux-leading-snug);
+}
+
+.trip-bar-demo__anatomy-row:first-child {
+  border-top: 0;
+}
+
+.trip-bar-demo__anatomy-head {
+  background: var(--rux-bg-sunken);
+  color: var(--rux-fg-subtle);
+  font-size: var(--rux-text-2xs);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: var(--rux-tracking-wide);
+  text-transform: uppercase;
+}
+
+.trip-bar-demo__anatomy-name {
+  color: var(--rux-fg);
+  font-weight: var(--rux-weight-semibold);
+}
+
+.trip-bar-demo__anatomy code {
+  color: var(--rux-fg);
+  font-size: var(--rux-text-2xs);
+}
+
+.trip-bar-demo__metrics .trip-bar-demo__anatomy-row {
+  grid-template-columns: 9rem 1fr 1fr 1.15fr;
+}
+
+.trip-bar-demo__icons .trip-bar-demo__anatomy-row {
+  grid-template-columns: 9rem 12rem 1fr 1.2fr;
+}
+
+.trip-bar-demo__icon-sample {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rux-space-2);
+  color: var(--rux-fg);
+}
+
+.trip-bar-demo__icon-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--rux-control-height);
+  height: var(--rux-control-height);
+  border-radius: var(--rux-radius-sm);
+  background: color-mix(in oklch, var(--rux-fg) 8%, transparent);
+}
+
+.trip-bar-demo__icon-chip--pending {
+  color: var(--rux-danger);
+}
+
+.trip-bar-demo__icon-chip--paid {
+  color: var(--rux-success);
+}
+
+.trip-bar-demo__icon-chip--empty {
+  color: var(--rux-fg-subtle);
+}
+
+.trip-bar-demo__rule {
+  min-width: 0;
+  padding: var(--rux-space-4);
+  background: var(--rux-bg-elevated);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-md);
+}
+
+.trip-bar-demo__rule-title {
+  margin-bottom: var(--rux-space-2);
+  color: var(--rux-fg);
+  font-size: var(--rux-text-sm);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: 0;
+}
+
+.trip-bar-demo__rule-list {
+  display: grid;
+  gap: var(--rux-space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.trip-bar-demo__rule-list li {
+  margin: 0;
+  color: var(--rux-fg-muted);
+  font-size: var(--rux-text-xs);
+  line-height: var(--rux-leading-snug);
+}
+
+.trip-bar-demo__rule-list code {
+  color: var(--rux-fg);
+  font-size: var(--rux-text-2xs);
+}
+
+.trip-bar-demo__sample {
+  display: grid;
+  gap: var(--rux-space-3);
+  min-width: 0;
+}
+
+.trip-bar-demo__sample > .rux-badge {
+  justify-self: start;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 900px) {
+  body {
+    padding: var(--rux-space-5) 0;
+  }
+
+  .trip-bar-demo {
+    width: calc(100vw - 2rem);
+    max-width: none;
+  }
+
+  .trip-bar-demo__header,
+  .trip-bar-demo__section-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .trip-bar-demo__actions {
+    justify-content: flex-start;
+  }
+
+  .trip-bar-demo__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trip-bar-demo__single-day-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trip-bar-demo__rules {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trip-bar-demo__anatomy-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--rux-space-2);
+  }
+
+  .trip-bar-demo__icons .trip-bar-demo__anatomy-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .trip-bar-demo__anatomy-head {
+    display: none;
+  }
+}

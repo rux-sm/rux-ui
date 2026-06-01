@@ -25,17 +25,18 @@
   --rux-bg:            oklch( 16% 0.004 260);   /* canvas — the lowest plane              */
   --rux-bg-sunken:     oklch( 20% 0.004 260);  /* inputs, code, recessed surfaces        */ 
   --rux-bg-elevated:   oklch( 24% 0.004 260);  /* panels, cards, modals                  */
+  --rux-bg-3:          oklch( 28% 0.004 260);  /* panels, cards, modals */
   --rux-bg-hover:      #292929;  /* interactive rows, lifted surfaces      */
   --rux-bg-active:     #303030;  /* pressed / selected                     */
   --rux-bg-overlay:    rgba(0, 0, 0, 0.6); /* modal scrim                  */
 
   /* ─── COLOR · text ────────────────────────────────────────────────────── */
 
-  --rux-fg:            #f5f5f5;  /* primary text                           */
-  --rux-fg-muted:      #a1a1a1;  /* secondary text, labels                 */
-  --rux-fg-subtle:     #6b6b6b;  /* tertiary, helper, placeholder          */
-  --rux-fg-disabled:   #404040;  /* disabled controls                      */
-  --rux-fg-on-accent:  #ffffff;  /* text on accent-filled surfaces         */
+  --rux-fg:            oklch(100% 0 0); /* #ffffff */
+  --rux-fg-muted:      oklch(80% 0 0);  /* #a1a1a1 */
+  --rux-fg-subtle:     oklch(60% 0 0);  /* #6b6b6b */
+  --rux-fg-disabled:   oklch(40% 0 0);  /* #404040 */
+  --rux-fg-on-accent:  oklch(100% 0 0); /* #ffffff */
 
   /* ─── COLOR · border ──────────────────────────────────────────────────── */
   /* All borders are hairlines (1px). We use three levels.                   */
@@ -89,11 +90,11 @@
   /* ─── COLOR · status / semantic ───────────────────────────────────────── */
   /* Bright enough for dark mode, balanced in chroma so none dominates.     */
 
-  --rux-success:        oklch(72% 0.17 152);
+  --rux-success:        oklch(80% 0.22 152);
   --rux-success-subtle: oklch(72% 0.17 152 / 0.14);
   --rux-warning:        oklch(80% 0.15 80);
   --rux-warning-subtle: oklch(80% 0.15 80 / 0.14);
-  --rux-danger:         oklch(60% 0.21 24);
+  --rux-danger:         oklch(80% 0.22 24);
   --rux-danger-hover:   oklch(70% 0.21 24);
   --rux-danger-active:  oklch(50% 0.21 24);
   --rux-danger-subtle:  oklch(67% 0.21 24 / 0.14);

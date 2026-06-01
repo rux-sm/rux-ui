@@ -1,0 +1,143 @@
+/* ==========================================================================
+   RUX UI — SCHEDULER
+   --------------------------------------------------------------------------
+   A week-grid for displaying trip bars by bus/vehicle row. Columns are a
+   fixed label column plus N day columns (default 7, one week).
+
+   Architecture
+   ------------
+   - Fixed week window is the recommended navigation model. Dispatchers plan
+     in weekly blocks; back/forward navigation is simpler and faster than
+     horizontal drag-scrolling a timeline.
+   - The component is date-agnostic. It renders whatever day labels it receives
+     and does not hardcode Mon–Sun. Pagination is the application's concern.
+   - Rows are driven by the number of active vehicles.
+
+   Custom properties
+   -----------------
+   --rux-scheduler-col-head-width   Width of the row-label column  (default 5rem)
+   --rux-scheduler-days             Number of day columns, used for the track
+                                    column span and gradient tile  (default 7)
+   --rux-scheduler-day-min-width    Minimum width per day column. Keep wide
+                                    enough for one-day trip bars  (default 15rem)
+   --rux-scheduler-cols             Full grid-template-columns value. Override this
+                                    to change column count without touching CSS.
+
+   Modifiers
+   ---------
+   .rux-scheduler__day-head--today  Accent highlight on the current day column.
+
+   JS contract
+   -----------
+   After any selection or expansion change, observe each .rux-scheduler__track
+   with a ResizeObserver and set --_row-height on the parent .rux-scheduler so
+   the row-head and track stay in sync with the tallest visible trip bar.
+   ========================================================================== */
+
+.rux-scheduler {
+  --rux-scheduler-col-head-width: 5rem;
+  --rux-scheduler-days: 7;
+  --rux-scheduler-day-min-width: 15rem;
+  --_day-min-width: var(--rux-scheduler-day-min-width);
+  --_row-height: calc(
+    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-6)
+  );
+  --rux-scheduler-cols: var(--rux-scheduler-col-head-width)
+    repeat(7, minmax(var(--_day-min-width), 1fr));
+
+  display: grid;
+  grid-template-columns: var(--rux-scheduler-cols);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: auto;
+  background: var(--rux-bg-sunken);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-lg);
+}
+
+/* ---------- Header row ---------- */
+
+.rux-scheduler__col-head,
+.rux-scheduler__day-head {
+  position: sticky;
+  top: 0;
+  z-index: var(--rux-z-sticky);
+  padding: var(--rux-space-2) var(--rux-space-2);
+  background: var(--rux-bg-sunken);
+  border-right: var(--rux-border-width) solid var(--rux-border);
+  border-bottom: var(--rux-border-width) solid var(--rux-border);
+  color: var(--rux-fg-subtle);
+  font-size: var(--rux-text-2xs);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: var(--rux-tracking-wide);
+  text-transform: uppercase;
+}
+
+/* Today highlight */
+.rux-scheduler__day-head--today {
+  color: var(--rux-accent);
+  background: color-mix(in oklch, var(--rux-accent) 8%, var(--rux-bg-sunken));
+}
+
+/* ---------- Row wrapper ---------- */
+
+/* display: contents keeps children in the grid while letting CSS variables
+   set here cascade independently to each row's row-head and track. */
+.rux-scheduler__row {
+  display: contents;
+  --_row-height: calc(
+    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-6)
+  );
+}
+
+/* ---------- Bus row ---------- */
+
+.rux-scheduler__col-head,
+.rux-scheduler__row-head {
+  position: sticky;
+  left: 0;
+  z-index: var(--rux-z-sticky);
+}
+
+/* Corner cell: above both sticky axes */
+.rux-scheduler__col-head {
+  z-index: calc(var(--rux-z-sticky) + 1);
+}
+
+.rux-scheduler__row-head {
+  display: grid;
+  align-content: center;
+  gap: calc(var(--rux-space-1) / 2);
+  min-height: var(--_row-height);
+  padding: var(--rux-space-3);
+  background: var(--rux-bg-sunken);
+  border-right: var(--rux-border-width) solid var(--rux-border);
+  border-bottom: var(--rux-border-width) solid var(--rux-border);
+  color: var(--rux-fg);
+  font-size: var(--rux-text-sm);
+  font-weight: var(--rux-weight-semibold);
+  transition: min-height var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-scheduler__row-head > span {
+  color: var(--rux-fg-subtle);
+  font-size: var(--rux-text-2xs);
+  font-weight: var(--rux-weight-medium);
+}
+
+/* ---------- Track ---------- */
+
+.rux-scheduler__track {
+  position: relative;
+  grid-column: span var(--rux-scheduler-days, 7);
+  min-height: var(--_row-height);
+  background: linear-gradient(
+      90deg,
+      transparent calc(100% - var(--rux-border-width)),
+      var(--rux-border) 0
+    )
+    0 0 / calc(100% / var(--rux-scheduler-days, 7)) 100%;
+  border-bottom: var(--rux-border-width) solid var(--rux-border);
+  transition: min-height var(--rux-duration-base) var(--rux-ease-out);
+}

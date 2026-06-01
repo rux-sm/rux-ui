@@ -1,0 +1,463 @@
+<!doctype html>
+<!-- @dsCard group="Components" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rux UI — Scheduler</title>
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <script
+      src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"
+      defer
+    ></script>
+    <link rel="stylesheet" href="comp-scheduler-demo.css" />
+  </head>
+  <body>
+    <main class="scheduler-demo">
+      <header class="scheduler-demo__header">
+        <div>
+          <div class="rux-overline">Dispatch component</div>
+          <h1 class="scheduler-demo__title">Scheduler</h1>
+          <p class="scheduler-demo__subtitle">
+            A composed weekly bus schedule using scheduler rows, trip bars,
+            continuation modifiers, stacked lanes, and measured row growth.
+          </p>
+        </div>
+        <div class="scheduler-demo__actions">
+          <a class="rux-button rux-button--ghost" href="comp-trip-bar.html">
+            <i data-lucide="panel-top" class="rux-icon"></i>
+            Trip bar spec
+          </a>
+          <button class="rux-button rux-button--ghost" id="select-orlando">
+            <i data-lucide="mouse-pointer-2" class="rux-icon"></i>
+            Select Orlando
+          </button>
+          <button class="rux-button rux-button--primary" id="expand-austin">
+            <i data-lucide="list-plus" class="rux-icon"></i>
+            Expand conflict
+          </button>
+        </div>
+      </header>
+
+      <section class="scheduler-demo__section">
+        <div class="scheduler-demo__section-head">
+          <h2 class="scheduler-demo__section-title">Live schedule</h2>
+          <div class="scheduler-demo__legend">
+            <span class="rux-badge rux-badge--info">4 vehicles</span>
+            <span class="rux-badge">Stacked lanes</span>
+            <span class="rux-badge rux-badge--success">Paid status</span>
+          </div>
+        </div>
+        <div class="scheduler-demo__schedule-wrap">
+          <div class="rux-scheduler scheduler-demo__schedule" id="scheduler">
+            <div class="rux-scheduler__col-head">Bus</div>
+            <div class="rux-scheduler__day-head rux-scheduler__day-head--today">
+              Mon
+            </div>
+            <div class="rux-scheduler__day-head">Tue</div>
+            <div class="rux-scheduler__day-head">Wed</div>
+            <div class="rux-scheduler__day-head">Thu</div>
+            <div class="rux-scheduler__day-head">Fri</div>
+            <div class="rux-scheduler__day-head">Sat</div>
+            <div class="rux-scheduler__day-head">Sun</div>
+
+            <div class="rux-scheduler__row">
+              <div class="rux-scheduler__row-head">
+                #218 <span>55 pax</span>
+              </div>
+              <div class="rux-scheduler__track" id="track-218"></div>
+            </div>
+            <div class="rux-scheduler__row">
+              <div class="rux-scheduler__row-head">
+                #763 <span>47 pax</span>
+              </div>
+              <div class="rux-scheduler__track" id="track-763"></div>
+            </div>
+            <div class="rux-scheduler__row">
+              <div class="rux-scheduler__row-head">
+                #746 <span>52 pax</span>
+              </div>
+              <div class="rux-scheduler__track" id="track-746"></div>
+            </div>
+            <div class="rux-scheduler__row">
+              <div class="rux-scheduler__row-head">
+                #133 <span>44 pax</span>
+              </div>
+              <div class="rux-scheduler__track" id="track-133"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scheduler-demo__section">
+        <div class="scheduler-demo__section-head">
+          <h2 class="scheduler-demo__section-title">Integration contract</h2>
+          <span class="rux-badge"
+            >Scheduler measures, trip bars own height</span
+          >
+        </div>
+        <div class="scheduler-demo__rules">
+          <article class="scheduler-demo__rule">
+            <h3 class="scheduler-demo__rule-title">Placement</h3>
+            <ul class="scheduler-demo__rule-list">
+              <li>
+                Trips are placed from date math: day start, span, and lane.
+              </li>
+              <li>
+                Normal trips sit <code>var(--rux-space-2)</code> away from day
+                grid lines.
+              </li>
+              <li>
+                Week continuations use <code>fromPrev</code> or
+                <code>toNext</code> and flush to the rail edge.
+              </li>
+            </ul>
+          </article>
+          <article class="scheduler-demo__rule">
+            <h3 class="scheduler-demo__rule-title">Row growth</h3>
+            <ul class="scheduler-demo__rule-list">
+              <li>
+                Each trip bar keeps its own collapsed, selected, or expanded
+                height.
+              </li>
+              <li>
+                A <code>ResizeObserver</code> measures visible bars and updates
+                <code>--_row-height</code>.
+              </li>
+              <li>
+                Stacked lanes add each lane height plus
+                <code>var(--rux-space-3)</code> lane gaps.
+              </li>
+            </ul>
+          </article>
+          <article class="scheduler-demo__rule">
+            <h3 class="scheduler-demo__rule-title">Data coverage</h3>
+            <ul class="scheduler-demo__rule-list">
+              <li>
+                Includes single-day, multi-day, paid, pending, and conflict
+                states.
+              </li>
+              <li>
+                Includes pending PO, pending contract, and pending contact
+                icons.
+              </li>
+              <li>Includes TBA drivers and customer trip bus grouping.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import { createTripBar } from "../trip-bar.js";
+
+      const callbacks = {
+        onOpen: (trip) => console.log("open trip", trip.id),
+        onUpload: (trip) => console.log("upload pdf", trip.id),
+        onDuplicate: (trip) => console.log("duplicate", trip.id),
+        onEmail: (trip) => console.log("email", trip.id),
+        onMessage: (trip) => console.log("message", trip.id),
+        onMore: (trip) => console.log("more options", trip.id),
+      };
+
+      const trips = {
+        southPadre: {
+          id: "sched-south-padre",
+          singleDay: true,
+          confirmed: true,
+          destination: "South Padre Island, TX",
+          client: "Barrientes Middle School",
+          contact: "Jennifer Santamaria",
+          notes: "Trip notes",
+          departTime: "6:30 AM",
+          pickupTime: "7:00 AM",
+          arriveTime: "8:00 PM",
+          drivers: [{ name: "Maria", state: "conf" }],
+          busNumber: "218",
+          miles: "160 mi",
+          revenue: "$1,200",
+          pickupAddress: "Barrientes Middle School",
+          pendingItinerary: true,
+          pendingContact: true,
+        },
+        orlando: {
+          id: "sched-orlando",
+          confirmed: true,
+          paid: true,
+          busLabel: "1/2",
+          destination: "Orlando, FL",
+          client: "The Arts Educational Tours",
+          contact: "Scott Hartsfield",
+          notes: "ck# 1109 · paid",
+          departTime: "5:00 AM",
+          arriveTime: "8:15 PM",
+          drivers: [
+            { name: "George", state: "conf" },
+            { name: "Rigo", state: "conf" },
+          ],
+          busNumber: "218",
+          miles: "535 mi",
+          revenue: "$2,100",
+          pickupAddress: "805 W Ridge Rd, San Juan TX",
+          pendingItems: ["itinerary"],
+        },
+        austin: {
+          id: "sched-austin",
+          singleDay: true,
+          confirmed: true,
+          destination: "Austin, TX",
+          client: "Todd Middle School",
+          contact: "Alma Trevino",
+          notes: "5/6 PO received",
+          departTime: "2:15 AM",
+          pickupTime: "3:00 AM",
+          arriveTime: "12:00 AM",
+          arriveLate: true,
+          drivers: [
+            { name: "George", state: "conf" },
+            { name: "Oscar", state: "conf" },
+          ],
+          busNumber: "763",
+          miles: "620 mi",
+          revenue: "$2,900",
+          pickupAddress: "Todd Middle School",
+        },
+        newBraunfels: {
+          id: "sched-new-braunfels",
+          singleDay: true,
+          confirmed: false,
+          busLabel: "1/2",
+          destination: "New Braunfels, TX",
+          client: "Riverside MS",
+          contact: "Raul Garza",
+          notes: "5/15 ck# in mail",
+          departTime: "4:00 AM",
+          pickupTime: "5:30 AM",
+          arriveTime: "1:30 AM",
+          arriveLate: true,
+          drivers: [
+            { name: "Oscar", state: "conf" },
+            { name: "Juvel", state: "conf" },
+          ],
+          busNumber: "506",
+          miles: "520 mi",
+          revenue: "$0 pending",
+          pickupAddress: "Riverside MS",
+          pendingPO: true,
+          pendingSignedContract: true,
+        },
+        conflict: {
+          id: "sched-conflict",
+          confirmed: false,
+          busLabel: "1/2",
+          destination: "Austin, TX · STC",
+          client: "Esther Crawford",
+          contact: "Robert Garcia",
+          notes: "5/20 working on approval",
+          departTime: "5:00 AM",
+          arriveTime: "10:30 PM",
+          arriveLate: true,
+          drivers: [
+            { name: "TBA", state: "tba" },
+            { name: "TBA", state: "tba" },
+          ],
+          busNumber: "746",
+          miles: "312 mi",
+          revenue: "$0 · pending",
+          pickupAddress: "UTRGV Brownsville Campus",
+          pending: { contact: true, contract: true, po: true },
+          conflict: "overlapping driver assignment",
+          fromPrev: true,
+        },
+        sanAntonio: {
+          id: "sched-san-antonio",
+          singleDay: true,
+          confirmed: true,
+          paid: true,
+          busLabel: "2/2",
+          destination: "San Antonio, TX",
+          client: "Munoz Elementary",
+          contact: "Petra Arauza",
+          notes: "District approval",
+          departTime: "3:30 AM",
+          pickupTime: "4:00 AM",
+          arriveTime: "9:30 PM",
+          drivers: [
+            { name: "Padron", state: "conf" },
+            { name: "Hector", state: "conf" },
+          ],
+          busNumber: "133",
+          miles: "480 mi",
+          revenue: "$2,100",
+          pickupAddress: "Munoz Elementary",
+          pendingItems: ["contract"],
+        },
+      };
+
+      const placements = [
+        {
+          trip: trips.southPadre,
+          trackId: "track-218",
+          start: 1,
+          span: 1,
+          lane: 0,
+        },
+        {
+          trip: trips.orlando,
+          trackId: "track-218",
+          start: 2,
+          span: 4,
+          lane: 0,
+        },
+        {
+          trip: trips.austin,
+          trackId: "track-763",
+          start: 1,
+          span: 1,
+          lane: 0,
+        },
+        {
+          trip: trips.newBraunfels,
+          trackId: "track-763",
+          start: 1,
+          span: 1,
+          lane: 1,
+        },
+        {
+          trip: trips.conflict,
+          trackId: "track-746",
+          start: 1,
+          span: 4,
+          lane: 0,
+          fromPrev: true,
+        },
+        {
+          trip: trips.sanAntonio,
+          trackId: "track-133",
+          start: 5,
+          span: 1,
+          lane: 0,
+        },
+      ];
+
+      const root = document.documentElement;
+      const bars = placements.map((placement) => {
+        const bar = createTripBar(placement.trip, callbacks);
+        placement.bar = bar;
+        document.getElementById(placement.trackId).appendChild(bar);
+        return bar;
+      });
+
+      function tokenPx(name) {
+        const rootSize = Number.parseFloat(getComputedStyle(root).fontSize);
+        const value = getComputedStyle(root).getPropertyValue(name).trim();
+        if (value.endsWith("rem")) return Number.parseFloat(value) * rootSize;
+        if (value.endsWith("px")) return Number.parseFloat(value);
+        return Number.parseFloat(value) || 0;
+      }
+
+      function placeInline(bar, placement) {
+        const dayPct = 100 / 7;
+        const startPct = (placement.start - 1) * dayPct;
+        const spanPct = placement.span * dayPct;
+        const fromPrev = placement.fromPrev || placement.trip.fromPrev;
+        const toNext = placement.toNext || placement.trip.toNext;
+
+        bar.style.left = "";
+        bar.style.right = "";
+        bar.style.width = "";
+
+        if (fromPrev && toNext) {
+          bar.style.left = "0";
+          bar.style.right = "0";
+          bar.style.width = "auto";
+          return;
+        }
+
+        if (fromPrev) {
+          bar.style.left = "0";
+          bar.style.width = `calc(${spanPct}% - var(--rux-space-2))`;
+          return;
+        }
+
+        bar.style.left = `calc(${startPct}% + var(--rux-space-2))`;
+        if (toNext) {
+          bar.style.right = "0";
+          bar.style.width = "auto";
+        } else {
+          bar.style.width = `calc(${spanPct}% - var(--rux-space-4))`;
+        }
+      }
+
+      function layoutTrack(track) {
+        const entries = placements
+          .filter((placement) => placement.trackId === track.id)
+          .sort((a, b) => a.lane - b.lane || a.start - b.start);
+        if (!entries.length) return;
+
+        const row = track.closest(".rux-scheduler__row");
+        const inset = tokenPx("--rux-space-3");
+        const gap = tokenPx("--rux-space-3");
+        const lanes = [...new Set(entries.map((entry) => entry.lane))].sort(
+          (a, b) => a - b,
+        );
+        let y = inset;
+
+        lanes.forEach((lane, index) => {
+          const laneEntries = entries.filter((entry) => entry.lane === lane);
+          laneEntries.forEach((entry) => {
+            placeInline(entry.bar, entry);
+            entry.bar.style.top = `${y}px`;
+          });
+          const laneHeight = Math.max(
+            ...laneEntries.map((entry) => entry.bar.offsetHeight),
+          );
+          y += laneHeight;
+          if (index < lanes.length - 1) y += gap;
+        });
+
+        row.style.setProperty("--_row-height", `${y + inset}px`);
+      }
+
+      let layoutFrame = 0;
+      function layoutScheduler() {
+        cancelAnimationFrame(layoutFrame);
+        layoutFrame = requestAnimationFrame(() => {
+          document
+            .querySelectorAll(".rux-scheduler__track")
+            .forEach((track) => layoutTrack(track));
+        });
+      }
+
+      const observers = bars.map((bar) => {
+        const observer = new ResizeObserver(layoutScheduler);
+        observer.observe(bar);
+        return observer;
+      });
+
+      window.addEventListener("resize", layoutScheduler);
+      layoutScheduler();
+
+      document
+        .getElementById("select-orlando")
+        .addEventListener("click", () => {
+          trips.orlando.active = true;
+          placements
+            .find((entry) => entry.trip === trips.orlando)
+            .bar.setActive(true);
+        });
+
+      document.getElementById("expand-austin").addEventListener("click", () => {
+        const bar = placements.find(
+          (entry) => entry.trip === trips.conflict,
+        ).bar;
+        bar.setActive(true);
+        bar.setExpanded(!bar.classList.contains("is-expanded"));
+      });
+
+      window.schedulerDemo = { bars, placements, observers, layoutScheduler };
+    </script>
+  </body>
+</html>

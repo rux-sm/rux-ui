@@ -1,0 +1,611 @@
+/* ==========================================================================
+   RUX UI — TRIP BAR
+   --------------------------------------------------------------------------
+   Compact Gantt bar for Escamilla trips. Displays trip destination, client,
+   driver, and time data in a fixed-height card that expands on selection.
+
+   Base
+   ----
+   .rux-trip-bar   Single-day trip (most common shape). Fixed collapsed height,
+                   grows when selected to reveal action toolbar and expand button.
+
+   Modifiers (additive — no modifier fights another)
+   --------------------------------------------------
+   .rux-trip-bar--multi-day     Spans several scheduler columns; adjusts height
+                                when a conflict row is present.
+   .rux-trip-bar--unconfirmed   Danger-toned variant (red accent) for trips not
+                                yet confirmed by dispatch.
+   .rux-trip-bar--has-conflict  Adds a conflict banner row. Height effect applies
+                                only on multi-day bars (single-day absorbs it).
+   .rux-trip-bar--from-prev     Trip started before the current week window; removes
+                                the thick left accent stripe and left border radius.
+   .rux-trip-bar--to-next       Trip ends after the current week window; removes
+                                the right border radius.
+
+   State classes (JS-toggled, no rux- prefix)
+   ------------------------------------------
+   .is-active    Bar is selected; reveals action toolbar and expand button.
+   .is-expanded  Details drawer is open. Requires .is-active to be visible.
+
+   Row typography — scan rows (body, top to bottom)
+   ------------------------------------------------
+   Row          Element            Size      Weight     Line-height
+   ──────────── ────────────────── ───────── ────────── ──────────────
+   Destination  __destination      text-sm   bold       leading-snug
+   Client       __client           text-sm   medium     leading-snug
+   Contact      __contact          text-xs   regular    leading-snug
+   Notes        __notes            text-xs   regular    leading-snug  (italic)
+   Time         __time             text-xs   —          leading-snug
+   Time value   __time-value       text-xs   semibold   leading-snug
+   Drivers      __driver           text-xs   semibold   leading-snug
+   Bus badge    __bus-label        text-xs   bold       1             (pill, fixed height)
+   ========================================================================== */
+
+.rux-trip-bar {
+  --rux-trip-bar-collapsed-height: 10rem;
+  --rux-trip-bar-action-padding-block: var(--rux-space-1);
+  --rux-trip-bar-action-padding-inline: var(--rux-space-1);
+  --rux-trip-bar-action-height: calc(
+    var(--rux-control-height) + (var(--rux-trip-bar-action-padding-block) * 2) +
+      var(--rux-border-width)
+  );
+  --rux-trip-bar-expand-height: calc(
+    var(--rux-control-height) + var(--rux-border-width)
+  );
+  --rux-trip-bar-active-height: calc(
+    var(--rux-trip-bar-collapsed-height) + var(--rux-trip-bar-action-height) +
+      var(--rux-trip-bar-expand-height)
+  );
+
+  --_details-height: 0px;
+  --_tone: var(--rux-accent);
+  --_tone-subtle: var(--rux-accent-subtle);
+  --_tone-ring: var(--rux-ring-focus);
+  --_surface: oklch(from var(--_tone) 50% 0.18 h);
+  --_surface-hover: oklch(from var(--_tone) 55% 0.18 h);
+  --_surface-active: oklch(from var(--_tone) 55% 0.18 h);
+
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  container-type: inline-size;
+  background: var(--_surface);
+  border: var(--rux-border-width) transparent;
+  border-left-width: calc(var(--rux-border-width) * 3);
+  border-radius: var(--rux-radius-md);
+  box-shadow: var(--rux-shadow-sm);
+  color: var(--rux-fg);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    height var(--rux-duration-base) var(--rux-ease-out),
+    background-color var(--rux-duration-fast) var(--rux-ease-out),
+    border-color var(--rux-duration-fast) var(--rux-ease-out),
+    box-shadow var(--rux-duration-fast) var(--rux-ease-out),
+    transform var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+/* ---------- Base height contract (single-day) ---------- */
+
+.rux-trip-bar {
+  height: var(--rux-trip-bar-collapsed-height);
+}
+
+.rux-trip-bar.is-active {
+  height: var(--rux-trip-bar-active-height);
+}
+
+.rux-trip-bar.is-expanded {
+  height: calc(var(--rux-trip-bar-active-height) + var(--_details-height));
+}
+
+/* ---------- Interaction states ---------- */
+
+.rux-trip-bar:hover {
+  background: var(--_surface-hover);
+}
+
+.rux-trip-bar.is-active {
+  background: var(--_surface-active);
+  border-color: var(--_tone);
+  box-shadow: var(--_tone-ring), var(--rux-shadow-sm);
+  z-index: var(--rux-z-base);
+}
+
+/* ---------- Modifier: unconfirmed ---------- */
+
+.rux-trip-bar--unconfirmed {
+  --_tone: var(--rux-danger);
+  --_tone-subtle: var(--rux-danger-subtle);
+  --_tone-ring: var(--rux-ring-danger);
+}
+
+/* ---------- Modifier: from-prev ---------- */
+
+/* No thick left stripe or left radius — trip entered from a prior week.
+   Diagonal stripes at the left edge signal continuation. */
+.rux-trip-bar--from-prev {
+  border-left-width: var(--rux-border-width);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.rux-trip-bar--from-prev::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 2.5rem;
+  z-index: 1;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent 0,
+    transparent 3px,
+    color-mix(in oklch, var(--_tone) 24%, transparent) 3px,
+    color-mix(in oklch, var(--_tone) 24%, transparent) 6px
+  );
+  pointer-events: none;
+}
+
+/* ---------- Modifier: to-next ---------- */
+
+/* No right radius — trip exits into the next week.
+   Diagonal stripes at the right edge signal continuation. */
+.rux-trip-bar--to-next {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rux-trip-bar--to-next::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 2.5rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0,
+    transparent 3px,
+    color-mix(in oklch, var(--_tone) 24%, transparent) 3px,
+    color-mix(in oklch, var(--_tone) 24%, transparent) 6px
+  );
+  pointer-events: none;
+}
+
+/* ---------- Modifier: multi-day ---------- */
+
+.rux-trip-bar--multi-day.rux-trip-bar--has-conflict:not(.is-expanded) {
+  height: calc(
+    var(--rux-trip-bar-collapsed-height) + var(--rux-control-height)
+  );
+}
+
+.rux-trip-bar--multi-day.rux-trip-bar--has-conflict.is-active:not(
+    .is-expanded
+  ) {
+  height: calc(var(--rux-trip-bar-active-height) + var(--rux-control-height));
+}
+
+.rux-trip-bar--multi-day.rux-trip-bar--has-conflict.is-expanded {
+  height: calc(
+    var(--rux-trip-bar-active-height) + var(--rux-control-height) +
+      var(--_details-height)
+  );
+}
+
+/* ---------- Action toolbar ---------- */
+
+.rux-trip-bar__actions {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: auto 1px repeat(4, var(--rux-control-height)) 1fr var(
+      --rux-control-height
+    );
+  align-items: center;
+  flex: 0 0 auto;
+  gap: var(--rux-space-1);
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 var(--rux-space-2);
+  background: var(--rux-bg-3);
+  border-bottom: var(--rux-border-width) solid var(--_border);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(calc(var(--rux-space-1) * -1));
+  visibility: hidden;
+  transition:
+    max-height var(--rux-duration-base) var(--rux-ease-out),
+    padding-block var(--rux-duration-base) var(--rux-ease-out),
+    opacity var(--rux-duration-fast) var(--rux-ease-out),
+    transform var(--rux-duration-base) var(--rux-ease-out),
+    border-color var(--rux-duration-fast) var(--rux-ease-out),
+    visibility 0s linear var(--rux-duration-base);
+}
+
+.rux-trip-bar.is-active .rux-trip-bar__actions {
+  max-height: var(--rux-trip-bar-action-height);
+  padding-block: var(--rux-trip-bar-action-padding-block);
+  padding-inline: var(--rux-trip-bar-action-padding-inline);
+  border-bottom-color: color-mix(in oklch, var(--rux-fg) 8%, transparent);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  visibility: visible;
+  transition:
+    max-height var(--rux-duration-base) var(--rux-ease-out),
+    padding-block var(--rux-duration-base) var(--rux-ease-out),
+    opacity var(--rux-duration-fast) var(--rux-ease-out),
+    transform var(--rux-duration-base) var(--rux-ease-out),
+    border-color var(--rux-duration-fast) var(--rux-ease-out),
+    visibility 0s;
+}
+
+.rux-trip-bar__action-divider {
+  width: var(--rux-border-width);
+  height: var(--rux-icon-lg);
+  background: color-mix(in oklch, var(--rux-fg) 12%, transparent);
+}
+
+.rux-trip-bar__action-spacer {
+  min-width: 0;
+}
+
+/* ---------- Body ---------- */
+
+.rux-trip-bar__body {
+  display: grid;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-content: space-between;
+  padding: var(--rux-space-2);
+}
+
+/* ---------- Summary row ---------- */
+
+.rux-trip-bar__summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--rux-space-0);
+}
+
+.rux-trip-bar__bus-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: var(--rux-icon-xl);
+  padding: 0 var(--rux-space-2);
+  background: color-mix(in oklch, var(--rux-fg) 10%, transparent);
+  border-radius: var(--rux-radius-sm);
+  color: var(--rux-fg);
+  font-size: var(--rux-text-xs);
+  font-weight: var(--rux-weight-bold);
+  line-height: 1;
+}
+
+.rux-trip-bar__destination {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--rux-text-sm);
+  font-weight: var(--rux-weight-bold);
+  letter-spacing: 0;
+  line-height: var(--rux-leading-snug);
+}
+
+.rux-trip-bar__status {
+  color: var(--_tone);
+  flex: none;
+}
+
+.rux-trip-bar__status--paid {
+  color: var(--rux-success);
+}
+
+.rux-trip-bar__pending {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rux-space-1);
+  color: var(--rux-danger);
+}
+
+.rux-trip-bar__pending-icon {
+  width: var(--rux-icon-sm);
+  height: var(--rux-icon-sm);
+  flex: none;
+  stroke-width: 2.25;
+}
+
+/* ---------- Text rows ---------- */
+
+.rux-trip-bar__client,
+.rux-trip-bar__contact,
+.rux-trip-bar__notes {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: var(--rux-leading-snug);
+}
+
+.rux-trip-bar__client {
+  color: var(--rux-fg);
+  font-size: var(--rux-text-sm);
+  font-weight: var(--rux-weight-medium);
+}
+
+.rux-trip-bar__contact,
+.rux-trip-bar__notes {
+  color: var(--rux-fg);
+  font-size: var(--rux-text-xs);
+  font-weight: var(--rux-weight-regular);
+}
+
+.rux-trip-bar__notes {
+  font-style: italic;
+}
+
+/* ---------- Time row ---------- */
+
+.rux-trip-bar__time {
+  display: flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: var(--rux-space-2);
+  color: var(--rux-fg);
+  font-size: var(--rux-text-xs);
+  line-height: var(--rux-leading-snug);
+  white-space: nowrap;
+}
+
+.rux-trip-bar__time-item {
+  display: inline-flex;
+  min-width: 0;
+  align-items: baseline;
+  gap: 2px; /* deliberate sub-token: abbreviated label sits close to its value */
+}
+
+.rux-trip-bar__time-label {
+  color: var(--rux-fg-muted);
+}
+
+.rux-trip-bar__time-sep {
+  color: var(--rux-fg-muted);
+}
+
+.rux-trip-bar__time-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: var(--rux-weight-semibold);
+}
+
+.rux-trip-bar__time-value--late {
+  color: var(--rux-warning);
+}
+
+/* ---------- Drivers row ---------- */
+
+.rux-trip-bar__drivers {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rux-space-2);
+  min-height: var(--rux-icon-xl);
+}
+
+.rux-trip-bar__driver {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: var(--rux-space-1);
+  color: var(--rux-fg);
+  font-size: var(--rux-text-sm);
+  font-weight: var(--rux-weight-semibold);
+  line-height: var(--rux-leading-snug);
+}
+
+.rux-trip-bar__driver-dot {
+  width: var(--rux-dot-sm);
+  height: var(--rux-dot-sm);
+  flex: none;
+  border-radius: var(--rux-radius-full);
+  background: var(--rux-warning);
+}
+
+.rux-trip-bar__driver-dot--confirmed {
+  background: var(--rux-success);
+}
+.rux-trip-bar__driver-dot--unconfirmed {
+  background: var(--rux-danger);
+}
+
+.rux-trip-bar__drivers .rux-trip-bar__bus-label {
+  margin-left: auto;
+  flex: none;
+}
+
+/* ---------- Conflict row ---------- */
+
+.rux-trip-bar__conflict {
+  display: flex;
+  align-items: center;
+  gap: var(--rux-space-2);
+  padding: var(--rux-space-2) var(--rux-space-3);
+  background: color-mix(in oklch, var(--rux-danger) 18%, transparent);
+  border-top: var(--rux-border-width) solid
+    color-mix(in oklch, var(--rux-danger) 38%, transparent);
+  color: var(--rux-danger);
+  font-size: var(--rux-text-xs);
+  font-weight: var(--rux-weight-semibold);
+  line-height: var(--rux-leading-snug);
+}
+
+/* ---------- Details drawer ---------- */
+
+.rux-trip-bar__details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-trip-bar.is-expanded .rux-trip-bar__details {
+  max-height: var(--_details-height);
+}
+
+.rux-trip-bar__details-inner {
+  display: grid;
+  gap: var(--rux-space-2);
+  padding: var(--rux-space-3);
+  border-top: var(--rux-border-width) solid
+    color-mix(in oklch, var(--rux-fg) 8%, transparent);
+}
+
+.rux-trip-bar__detail-row {
+  display: grid;
+  grid-template-columns: 5.75rem minmax(0, 1fr);
+  align-items: baseline;
+  gap: var(--rux-space-3);
+  font-size: var(--rux-text-xs);
+  line-height: var(--rux-leading-snug);
+}
+
+.rux-trip-bar__detail-label {
+  color: var(--rux-fg-subtle);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: var(--rux-tracking-wide);
+  text-transform: uppercase;
+}
+
+.rux-trip-bar__detail-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--rux-fg);
+  font-weight: var(--rux-weight-medium);
+}
+
+.rux-trip-bar__detail-value--tone {
+  color: var(--_tone);
+}
+
+/* ---------- Expand button ---------- */
+
+.rux-trip-bar__expand {
+  max-height: 0;
+  overflow: hidden;
+  border-width: var(--rux-border-width) 0 0;
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  background: color-mix(in oklch, var(--rux-bg-sunken) 54%, transparent);
+  color: var(--rux-fg-muted);
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    max-height var(--rux-duration-base) var(--rux-ease-out),
+    opacity var(--rux-duration-fast) var(--rux-ease-out),
+    border-color var(--rux-duration-fast) var(--rux-ease-out),
+    visibility 0s linear var(--rux-duration-base);
+}
+
+.rux-trip-bar.is-active > .rux-trip-bar__expand {
+  max-height: var(--rux-trip-bar-expand-height);
+  border-color: color-mix(in oklch, var(--rux-fg) 8%, transparent);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transition:
+    max-height var(--rux-duration-base) var(--rux-ease-out),
+    opacity var(--rux-duration-fast) var(--rux-ease-out),
+    border-color var(--rux-duration-fast) var(--rux-ease-out),
+    visibility 0s;
+}
+
+.rux-trip-bar__expand:hover {
+  background: color-mix(in oklch, var(--rux-fg) 6%, transparent);
+  color: var(--rux-fg);
+}
+
+.rux-trip-bar__expand-icon {
+  transition: transform var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-trip-bar.is-expanded .rux-trip-bar__expand-icon {
+  transform: rotate(180deg);
+}
+
+/* ---------- Responsive container queries ---------- */
+
+@container (max-width: 24rem) {
+  .rux-trip-bar__actions {
+    grid-template-columns: auto repeat(3, var(--rux-control-height));
+    justify-content: start;
+  }
+
+  .rux-trip-bar__action-divider,
+  .rux-trip-bar__action--hide-narrow,
+  .rux-trip-bar__action-spacer {
+    display: none;
+  }
+
+  /* Multi-day bars hide text rows at narrow widths; single-day shows them */
+  .rux-trip-bar--multi-day .rux-trip-bar__client,
+  .rux-trip-bar--multi-day .rux-trip-bar__contact,
+  .rux-trip-bar--multi-day .rux-trip-bar__notes,
+  .rux-trip-bar--multi-day .rux-trip-bar__drivers {
+    display: none;
+  }
+
+  .rux-trip-bar__time {
+    gap: var(--rux-space-1);
+  }
+
+  .rux-trip-bar__pending {
+    gap: 2px;
+  }
+}
+
+@container (max-width: 16rem) {
+  .rux-trip-bar__actions {
+    grid-template-columns: repeat(2, var(--rux-control-height));
+    gap: var(--rux-space-1);
+    justify-content: start;
+    padding-inline: var(--rux-space-1);
+  }
+
+  .rux-trip-bar__actions .rux-button--primary {
+    width: var(--rux-control-height);
+    min-width: 0;
+    gap: 0;
+    padding-inline: 0;
+    font-size: 0;
+  }
+
+  .rux-trip-bar__action--hide-minimum {
+    display: none;
+  }
+}
+
+@container (max-width: 14rem) {
+  .rux-trip-bar__bus-label {
+    min-width: 1.875rem;
+    padding: 0 var(--rux-space-1);
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .rux-trip-bar,
+  .rux-trip-bar__actions,
+  .rux-trip-bar__details,
+  .rux-trip-bar__expand-icon {
+    transition-duration: 0.001ms !important;
+  }
+}
