@@ -68,7 +68,6 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  overflow: hidden;
   box-sizing: border-box;
   container-type: inline-size;
   background: var(--_surface);
@@ -215,7 +214,7 @@
   justify-content: start;
   background: var(--rux-bg-3);
   border-bottom: var(--rux-border-width) solid var(--_border);
-  border-radius: var(--rux-radius-sm) var(--rux-radius-sm) 0 0;
+  border-radius: var(--rux-radius-sm);
   opacity: 0;
   pointer-events: none;
   transform: translateY(calc(var(--rux-space-1) * -1));
@@ -226,12 +225,14 @@
     opacity var(--rux-duration-fast) var(--rux-ease-out),
     transform var(--rux-duration-base) var(--rux-ease-out),
     border-color var(--rux-duration-fast) var(--rux-ease-out),
+    overflow 0s linear 0s,
     visibility 0s linear var(--rux-duration-base);
   box-shadow: var(--rux-shadow-sm);
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {
   max-height: var(--rux-trip-bar-action-height);
+  overflow: visible;
   padding-block: var(--rux-trip-bar-action-padding-block);
   padding-inline: var(--rux-trip-bar-action-padding-inline);
   justify-content: start;
@@ -245,6 +246,7 @@
     opacity var(--rux-duration-fast) var(--rux-ease-out),
     transform var(--rux-duration-base) var(--rux-ease-out),
     border-color var(--rux-duration-fast) var(--rux-ease-out),
+    overflow 0s linear var(--rux-duration-base),
     visibility 0s;
 }
 
@@ -518,7 +520,7 @@
   border-width: var(--rux-border-width) 0 0;
   border-style: solid;
   border-color: transparent;
-  border-radius: 0;
+  border-radius: var(--rux-radius-sm);
   box-shadow: none;
   background: color-mix(in oklch, var(--rux-bg-sunken) 54%, transparent);
   color: var(--rux-fg-muted);

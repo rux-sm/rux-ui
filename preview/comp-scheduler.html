@@ -399,6 +399,27 @@
       ];
 
       const root = document.documentElement;
+
+      function buildTrackGrid(track) {
+        if (track.querySelector(".rux-scheduler__track-grid")) return;
+        const grid = document.createElement("div");
+        grid.className = "rux-scheduler__track-grid";
+        grid.setAttribute("aria-hidden", "true");
+        const days = schedulerDayCount(track);
+
+        for (let day = 0; day < days; day += 1) {
+          const cell = document.createElement("span");
+          cell.className = "rux-scheduler__track-day";
+          grid.appendChild(cell);
+        }
+
+        track.appendChild(grid);
+      }
+
+      document
+        .querySelectorAll(".rux-scheduler__track")
+        .forEach((track) => buildTrackGrid(track));
+
       const bars = placements.map((placement) => {
         const bar = createTripBar(placement.trip, callbacks);
         placement.bar = bar;
