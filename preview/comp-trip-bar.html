@@ -77,11 +77,15 @@
             <ul class="trip-bar-demo__rule-list">
               <li>
                 Inside a scheduler track, bars sit
-                <code>var(--rux-space-3)</code> from top and bottom.
+                <code>var(--rux-space-2)</code> from top and bottom.
               </li>
               <li>
                 Bars sit <code>var(--rux-space-2)</code> away from day grid
                 lines on each side.
+              </li>
+              <li>
+                Selected rings paint outward into the rail inset, leaving a
+                visible <code>var(--rux-space-1)</code> gap all around.
               </li>
               <li>
                 Trip bars use <code>var(--rux-space-3)</code> body padding and
@@ -208,7 +212,7 @@
               <li>
                 The action toolbar contributes
                 <code>var(--rux-trip-bar-action-height)</code>: one control, two
-                padding insets, and one divider border.
+                standard padding insets.
               </li>
               <li>
                 The details toggle contributes
@@ -234,7 +238,7 @@
                 top and bottom inset.
               </li>
               <li>
-                The standard inset is <code>var(--rux-space-3)</code> above and
+                The standard inset is <code>var(--rux-space-2)</code> above and
                 below the bar.
               </li>
               <li>
@@ -308,8 +312,8 @@
                 slight vertical motion.
               </li>
               <li>
-                At the minimum single-day width, open trip becomes a primary
-                icon button plus one direct action.
+                The same action set stays visible across widths; open trip is
+                always the primary icon button.
               </li>
               <li>
                 Scheduler rail cells transition their measured
@@ -390,8 +394,8 @@
             <div class="trip-bar-demo__anatomy-name">Action toolbar</div>
             <div><code>callbacks</code>, <code>trip.id</code></div>
             <div>
-              Shows commands only when selected: open, upload, duplicate, email,
-              message, and more.
+              Shows commands only when selected: open trip, change bus,
+              upload/view PDF, send info, trip envelope, and other.
             </div>
             <div>
               Active-state affordance; controls use existing button type with
@@ -429,7 +433,7 @@
             </div>
             <div>
               Urgency markers; red by design, compact enough to scan inside a
-              one-day trip card. Icons use <code>var(--rux-icon-sm)</code> with
+              one-day trip card. Icons use <code>var(--rux-icon-md)</code> with
               heavier stroke.
             </div>
           </div>
@@ -520,12 +524,15 @@
           <div class="trip-bar-demo__anatomy-row">
             <div class="trip-bar-demo__anatomy-name">Details drawer</div>
             <div>
-              <code>busNumber</code>, <code>miles</code>, <code>revenue</code>,
-              <code>pickupAddress</code>
+              <code>driverPay</code>, <code>estimatedMileage</code>,
+              <code>quotedPrice</code>, <code>postTripMileage</code>,
+              <code>poNumber</code>, <code>invoiceNumber</code>,
+              <code>checkNumber</code>, <code>paymentMethod</code>
             </div>
             <div>
-              Provides secondary trip data for review without navigating away
-              from the scheduler.
+              Uses fixed detail fields for driver pay, estimate, PO, end
+              mileage, invoice, and payment reference; missing values keep a
+              write-in line for print review.
             </div>
             <div>
               Expandable only while selected; hidden in scan state for dense
@@ -667,7 +674,7 @@
             <div>
               Collapsed lane:
               <code>var(--rux-trip-bar-collapsed-height)</code> bar +
-              <code>var(--rux-space-3)</code> top/bottom inset.
+              <code>var(--rux-space-2)</code> top/bottom inset.
             </div>
             <div>
               Single-day bars share the same height; their fit is handled by
@@ -710,11 +717,11 @@
             <div class="trip-bar-demo__anatomy-name">Action toolbar</div>
             <div>
               Animated height is <code>var(--rux-trip-bar-action-height)</code>:
-              32px control + 4px top + 4px bottom + 1px divider.
+              32px control + 8px top + 8px bottom.
             </div>
             <div>
-              Buttons use existing button type and
-              <code>var(--rux-icon-md)</code>.
+              Every trip bar uses the same six controls; the PDF action changes
+              between upload and view based on uploaded status.
             </div>
             <div>
               Toolbar sits on a sunken mixed surface; primary action uses
@@ -746,7 +753,7 @@
               Placed after destination in the summary row; no extra row height.
             </div>
             <div>
-              Icons use <code>var(--rux-icon-sm)</code> with heavier stroke.
+              Icons use <code>var(--rux-icon-md)</code> with heavier stroke.
             </div>
             <div>
               Always danger red while pending; hidden when received/complete.
@@ -819,12 +826,13 @@
       import { createTripBar } from "../trip-bar.js";
 
       const callbacks = {
-        onOpen: (trip) => console.log("open trip", trip.id),
-        onUpload: (trip) => console.log("upload pdf", trip.id),
-        onDuplicate: (trip) => console.log("duplicate", trip.id),
-        onEmail: (trip) => console.log("email", trip.id),
-        onMessage: (trip) => console.log("message", trip.id),
-        onMore: (trip) => console.log("more options", trip.id),
+        onOpenTrip: (trip) => console.log("open trip", trip.id),
+        onChangeBus: (trip) => console.log("change bus", trip.id),
+        onUploadPdf: (trip) => console.log("upload pdf", trip.id),
+        onViewPdf: (trip) => console.log("view pdf", trip.id),
+        onSendInfo: (trip) => console.log("send info", trip.id),
+        onTripEnvelope: (trip) => console.log("trip envelope", trip.id),
+        onOther: (trip) => console.log("other options", trip.id),
       };
 
       const singleDayTrips = [
@@ -845,6 +853,11 @@
           busNumber: "218",
           miles: "160 mi",
           revenue: "$1,200",
+          driverPay: { Maria: "$250" },
+          postTripMileage: "158 mi",
+          poNumber: "PO-1842",
+          invoiceNumber: "INV-260509",
+          checkNumber: "1107",
           pickupAddress: "Barrientes Middle School",
           pendingItinerary: true,
           pendingContact: true,
@@ -870,6 +883,11 @@
           busNumber: "763",
           miles: "620 mi",
           revenue: "$2,900",
+          driverPay: { George: "$375", Oscar: "$375" },
+          postTripMileage: "624 mi",
+          poNumber: "12343328",
+          invoiceNumber: "INV-260511",
+          paymentMethod: "Check",
           pickupAddress: "Todd Middle School",
         },
         {
@@ -892,6 +910,10 @@
           busNumber: "133",
           miles: "480 mi",
           revenue: "$2,100",
+          driverPay: { Padron: "$300", Hector: "$300" },
+          postTripMileage: "479 mi",
+          invoiceNumber: "INV-260512",
+          paymentMethod: "CC",
           pickupAddress: "Munoz Elementary",
           pendingItems: ["contract"],
         },
@@ -916,6 +938,10 @@
           busNumber: "506",
           miles: "520 mi",
           revenue: "$0 pending",
+          driverPay: { Oscar: "$325", Juvel: "$325" },
+          poNumber: "Pending",
+          invoiceNumber: "Draft",
+          paymentNote: "Check in mail",
           pickupAddress: "Riverside MS",
           pendingPO: true,
           pendingSignedContract: true,
@@ -942,8 +968,15 @@
         busNumber: "218",
         miles: "535 mi",
         revenue: "$2,100",
+        driverPay: { George: "$325", Rigo: "$325" },
+        postTripMileage: "541 mi",
+        poNumber: "PO-2091",
+        invoiceNumber: "INV-260510",
+        checkNumber: "1109",
+        paymentMethod: "Check",
         pickupAddress: "805 W Ridge Rd, San Juan TX",
         pendingItems: ["itinerary"],
+        pdfUploaded: true,
       };
 
       const austinTrip = {
@@ -965,6 +998,10 @@
         busNumber: "746",
         miles: "312 mi",
         revenue: "$0 · pending",
+        driverPay: { TBA: "$0 pending" },
+        poNumber: "Pending",
+        invoiceNumber: "Hold",
+        paymentNote: "Working on approval",
         pickupAddress: "UTRGV Brownsville Campus",
         pending: { contact: true, contract: true, po: true },
       };

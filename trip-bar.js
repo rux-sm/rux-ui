@@ -62,7 +62,7 @@ function button(className, label, iconName, onClick) {
 function textEl(tag, className, text) {
   const el = document.createElement(tag);
   el.className = className;
-  el.textContent = text || "";
+  el.textContent = text ?? "";
   return el;
 }
 
@@ -214,6 +214,102 @@ function getPendingIndicators(trip) {
   });
 }
 
+function hasTripPdf(trip) {
+  const pdfFields = [
+    trip.pdfUploaded,
+    trip.hasPdf,
+    trip.hasPDF,
+    trip.pdfReady,
+    trip.pdfUrl,
+    trip.pdfURL,
+    trip.pdf,
+    trip.uploadedPdf,
+    trip.uploadedPDF,
+    trip.uploadedPdfUrl,
+    trip.uploadedPDFUrl,
+    trip.documentUrl,
+    trip.documentURL,
+  ];
+  return pdfFields.some((value) => Boolean(value));
+}
+
+function firstValue(...values) {
+  return values.find(
+    (value) => value !== undefined && value !== null && value !== "",
+  );
+}
+
+function stripKnownPrefix(value, prefixes) {
+  if (value === undefined || value === null) return value;
+  const text = String(value);
+  const match = prefixes.find((prefix) =>
+    text.toLowerCase().startsWith(prefix.toLowerCase()),
+  );
+  return match ? text.slice(match.length) : text;
+}
+
+function detailValue(value) {
+  if (value === undefined || value === null) return "";
+  const text = String(value).trim();
+  const normalized = text.toLowerCase().replace(/\s+/g, " ");
+  if (
+    !text ||
+    normalized.includes("pending") ||
+    ["draft", "hold", "working on approval", "check in mail"].includes(
+      normalized,
+    )
+  ) {
+    return "";
+  }
+  return value;
+}
+
+function driverPayValues(trip) {
+  const drivers = trip.drivers || [];
+  if (Array.isArray(trip.driverPay)) {
+    return trip.driverPay.map((item) =>
+      typeof item === "string"
+        ? item
+        : firstValue(item.pay, item.amount, item.rate),
+    );
+  }
+  if (trip.driverPay && typeof trip.driverPay === "object") {
+    return Object.values(trip.driverPay);
+  }
+  return drivers.map((driver) =>
+    firstValue(driver.pay, driver.driverPay, driver.payAmount),
+  );
+}
+
+function paymentDetail(trip) {
+  const check = firstValue(trip.checkNumber, trip.checkNumbers, trip.checkNo);
+  if (check) {
+    return `Ck# ${stripKnownPrefix(check, ["ck#", "check #", "check"])}`;
+  }
+
+  const ref = firstValue(trip.refNumber, trip.referenceNumber, trip.ref);
+  if (ref) return `Ref# ${stripKnownPrefix(ref, ["ref#", "ref"])}`;
+
+  const method = firstValue(trip.paymentMethod, trip.paidBy, trip.paymentType);
+  const note = firstValue(trip.paymentNote, trip.billingNote);
+  return [method, note].filter(Boolean).join(" · ");
+}
+
+function detailFieldEl(label, value, { wide = false } = {}) {
+  const field = document.createElement("div");
+  field.className = `rux-trip-bar__detail-field${
+    wide ? " rux-trip-bar__detail-field--wide" : ""
+  }`;
+  const labelEl = textEl("span", "rux-trip-bar__detail-field-label", label);
+  const valueEl = textEl(
+    "span",
+    "rux-trip-bar__detail-field-value",
+    detailValue(value),
+  );
+  field.append(labelEl, valueEl);
+  return field;
+}
+
 function isSameTripDay(trip) {
   if (trip.singleDay || trip.layout === "single-day") return true;
   if (!trip.startDate || !trip.endDate) return false;
@@ -255,55 +351,53 @@ export function createTripBar(trip, callbacks = {}) {
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--primary";
+  openBtn.className = "rux-button rux-button--primary rux-button--icon";
   openBtn.setAttribute("aria-label", "Open trip");
   openBtn.dataset.tooltip = "Open trip";
-  openBtn.append(icon("external-link"), document.createTextNode("Open trip"));
+  openBtn.appendChild(icon("external-link"));
   openBtn.addEventListener("click", (event) => {
     event.stopPropagation();
-    callbacks.onOpen?.(trip);
+    (callbacks.onOpenTrip || callbacks.onOpen)?.(trip);
   });
 
-  const divider = document.createElement("span");
-  divider.className = "rux-trip-bar__action-divider";
-  divider.setAttribute("aria-hidden", "true");
-
-  const actionSpacer = document.createElement("span");
-  actionSpacer.className = "rux-trip-bar__action-spacer";
+  const pdfUploaded = hasTripPdf(trip);
+  const pdfLabel = pdfUploaded ? "View PDF" : "Upload PDF";
+  const pdfIcon = pdfUploaded ? "paperclip" : "upload";
+  const onPdf = pdfUploaded
+    ? callbacks.onViewPdf || callbacks.onViewPDF
+    : callbacks.onUploadPdf || callbacks.onUploadPDF || callbacks.onUpload;
 
   actions.append(
     openBtn,
-    divider,
     button(
-      "rux-button rux-button--ghost rux-button--icon rux-trip-bar__action--hide-narrow",
-      "Upload PDF",
-      "upload",
-      () => callbacks.onUpload?.(trip),
-    ),
-    button(
-      "rux-button rux-button--ghost rux-button--icon rux-trip-bar__action--hide-narrow",
-      "Duplicate",
-      "copy",
-      () => callbacks.onDuplicate?.(trip),
+      "rux-button rux-button--ghost rux-button--icon",
+      "Change bus",
+      "arrow-down-up",
+      () => callbacks.onChangeBus?.(trip),
     ),
     button(
       "rux-button rux-button--ghost rux-button--icon",
-      "Email",
+      pdfLabel,
+      pdfIcon,
+      () => onPdf?.(trip),
+    ),
+    button(
+      "rux-button rux-button--ghost rux-button--icon",
+      "Send info",
+      "message-square-more",
+      () => callbacks.onSendInfo?.(trip),
+    ),
+    button(
+      "rux-button rux-button--ghost rux-button--icon",
+      "Trip envelope",
       "mail",
-      () => callbacks.onEmail?.(trip),
+      () => (callbacks.onTripEnvelope || callbacks.onEmail)?.(trip),
     ),
     button(
-      "rux-button rux-button--ghost rux-button--icon rux-trip-bar__action--hide-minimum",
-      "Message",
-      "message-square",
-      () => callbacks.onMessage?.(trip),
-    ),
-    actionSpacer,
-    button(
-      "rux-button rux-button--ghost rux-button--icon rux-trip-bar__action--hide-minimum",
-      "More options",
+      "rux-button rux-button--ghost rux-button--icon",
+      "Other",
       "more-horizontal",
-      () => callbacks.onMore?.(trip),
+      () => (callbacks.onOther || callbacks.onMore)?.(trip),
     ),
   );
 
@@ -327,7 +421,7 @@ export function createTripBar(trip, callbacks = {}) {
   let statusIcon = null;
   if (paid) {
     statusIcon = icon(
-      "circle-dollar-sign",
+      "dollar-sign",
       "rux-icon rux-trip-bar__status rux-trip-bar__status--paid",
     );
     statusIcon.setAttribute("title", "Paid in full");
@@ -394,25 +488,47 @@ export function createTripBar(trip, callbacks = {}) {
   const detailsInner = document.createElement("div");
   detailsInner.className = "rux-trip-bar__details-inner";
 
-  const detailRows = [
-    ["Bus #", trip.busNumber, "tone"],
-    ["Miles", trip.miles],
-    ["Revenue", trip.revenue],
-    ["Pick up", trip.pickupAddress],
-  ].filter(([, value]) => value);
-
-  detailRows.forEach(([label, value, variant]) => {
-    const row = document.createElement("div");
-    row.className = "rux-trip-bar__detail-row";
-    row.append(
-      textEl("span", "rux-trip-bar__detail-label", label),
-      textEl(
-        "span",
-        `rux-trip-bar__detail-value${variant ? " rux-trip-bar__detail-value--" + variant : ""}`,
-        value,
+  const driverPay = driverPayValues(trip);
+  const detailFields = [
+    ["D1 PAY", driverPay[0]],
+    ["D2 PAY", driverPay[1]],
+    [
+      "EST MI",
+      firstValue(trip.estimatedMileage, trip.estimatedMiles, trip.miles),
+    ],
+    ["QUOTE", firstValue(trip.quotedPrice, trip.quote, trip.revenue)],
+    [
+      "PO",
+      stripKnownPrefix(firstValue(trip.poNumber, trip.po, trip.purchaseOrder), [
+        "po-",
+        "po #",
+        "po",
+      ]),
+      { wide: true },
+    ],
+    [
+      "END MI",
+      firstValue(
+        trip.postTripMileage,
+        trip.postTripMiles,
+        trip.actualMileage,
+        trip.actualMiles,
       ),
-    );
-    detailsInner.appendChild(row);
+    ],
+    [
+      "INV",
+      stripKnownPrefix(firstValue(trip.invoiceNumber, trip.invoice), [
+        "inv-",
+        "inv #",
+        "invoice #",
+        "invoice",
+      ]),
+    ],
+    ["PMT", paymentDetail(trip), { wide: true }],
+  ];
+
+  detailFields.forEach(([label, value, options]) => {
+    detailsInner.appendChild(detailFieldEl(label, value, options));
   });
   details.appendChild(detailsInner);
 
@@ -447,7 +563,7 @@ export function createTripBar(trip, callbacks = {}) {
     expandBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
     expandText.textContent = expanded
       ? "Hide details"
-      : `${detailRows.length} more details`;
+      : `${detailFields.length} more details`;
   }
 
   expandBtn.addEventListener("click", (event) => {

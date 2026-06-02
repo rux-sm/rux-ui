@@ -52,7 +52,9 @@
         </div>
         <div class="scheduler-demo__schedule-wrap">
           <div class="rux-scheduler scheduler-demo__schedule" id="scheduler">
-            <div class="rux-scheduler__col-head">Bus</div>
+            <div class="rux-scheduler__col-head">
+              <span class="rux-scheduler__corner-label">Bus</span>
+            </div>
             <div class="rux-scheduler__day-head rux-scheduler__day-head--today">
               Mon
             </div>
@@ -64,26 +66,46 @@
             <div class="rux-scheduler__day-head">Sun</div>
 
             <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head">
-                #218 <span>55 pax</span>
+              <div class="rux-scheduler__row-head" aria-label="Bus 218, 55 pax">
+                <span class="rux-scheduler__bus-number" aria-hidden="true">
+                  <span>2</span>
+                  <span>1</span>
+                  <span>8</span>
+                </span>
+                <span class="rux-scheduler__bus-pax">55 pax</span>
               </div>
               <div class="rux-scheduler__track" id="track-218"></div>
             </div>
             <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head">
-                #763 <span>47 pax</span>
+              <div class="rux-scheduler__row-head" aria-label="Bus 763, 47 pax">
+                <span class="rux-scheduler__bus-number" aria-hidden="true">
+                  <span>7</span>
+                  <span>6</span>
+                  <span>3</span>
+                </span>
+                <span class="rux-scheduler__bus-pax">47 pax</span>
               </div>
               <div class="rux-scheduler__track" id="track-763"></div>
             </div>
             <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head">
-                #746 <span>52 pax</span>
+              <div class="rux-scheduler__row-head" aria-label="Bus 746, 52 pax">
+                <span class="rux-scheduler__bus-number" aria-hidden="true">
+                  <span>7</span>
+                  <span>4</span>
+                  <span>6</span>
+                </span>
+                <span class="rux-scheduler__bus-pax">52 pax</span>
               </div>
               <div class="rux-scheduler__track" id="track-746"></div>
             </div>
             <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head">
-                #133 <span>44 pax</span>
+              <div class="rux-scheduler__row-head" aria-label="Bus 133, 44 pax">
+                <span class="rux-scheduler__bus-number" aria-hidden="true">
+                  <span>1</span>
+                  <span>3</span>
+                  <span>3</span>
+                </span>
+                <span class="rux-scheduler__bus-pax">44 pax</span>
               </div>
               <div class="rux-scheduler__track" id="track-133"></div>
             </div>
@@ -110,6 +132,10 @@
                 grid lines.
               </li>
               <li>
+                Selected trip rings paint outward into that inset, leaving a
+                visible <code>var(--rux-space-1)</code> gap.
+              </li>
+              <li>
                 Week continuations use <code>fromPrev</code> or
                 <code>toNext</code> and flush to the rail edge.
               </li>
@@ -128,7 +154,7 @@
               </li>
               <li>
                 Stacked lanes add each lane height plus
-                <code>var(--rux-space-3)</code> lane gaps.
+                <code>var(--rux-space-2)</code> lane gaps.
               </li>
             </ul>
           </article>
@@ -154,12 +180,13 @@
       import { createTripBar } from "../trip-bar.js";
 
       const callbacks = {
-        onOpen: (trip) => console.log("open trip", trip.id),
-        onUpload: (trip) => console.log("upload pdf", trip.id),
-        onDuplicate: (trip) => console.log("duplicate", trip.id),
-        onEmail: (trip) => console.log("email", trip.id),
-        onMessage: (trip) => console.log("message", trip.id),
-        onMore: (trip) => console.log("more options", trip.id),
+        onOpenTrip: (trip) => console.log("open trip", trip.id),
+        onChangeBus: (trip) => console.log("change bus", trip.id),
+        onUploadPdf: (trip) => console.log("upload pdf", trip.id),
+        onViewPdf: (trip) => console.log("view pdf", trip.id),
+        onSendInfo: (trip) => console.log("send info", trip.id),
+        onTripEnvelope: (trip) => console.log("trip envelope", trip.id),
+        onOther: (trip) => console.log("other options", trip.id),
       };
 
       const trips = {
@@ -178,6 +205,11 @@
           busNumber: "218",
           miles: "160 mi",
           revenue: "$1,200",
+          driverPay: { Maria: "$250" },
+          postTripMileage: "158 mi",
+          poNumber: "PO-1842",
+          invoiceNumber: "INV-260509",
+          checkNumber: "1107",
           pickupAddress: "Barrientes Middle School",
           pendingItinerary: true,
           pendingContact: true,
@@ -200,8 +232,15 @@
           busNumber: "218",
           miles: "535 mi",
           revenue: "$2,100",
+          driverPay: { George: "$325", Rigo: "$325" },
+          postTripMileage: "541 mi",
+          poNumber: "PO-2091",
+          invoiceNumber: "INV-260510",
+          checkNumber: "1109",
+          paymentMethod: "Check",
           pickupAddress: "805 W Ridge Rd, San Juan TX",
           pendingItems: ["itinerary"],
+          pdfUploaded: true,
         },
         austin: {
           id: "sched-austin",
@@ -222,6 +261,11 @@
           busNumber: "763",
           miles: "620 mi",
           revenue: "$2,900",
+          driverPay: { George: "$375", Oscar: "$375" },
+          postTripMileage: "624 mi",
+          poNumber: "12343328",
+          invoiceNumber: "INV-260511",
+          paymentMethod: "Check",
           pickupAddress: "Todd Middle School",
         },
         newBraunfels: {
@@ -244,6 +288,10 @@
           busNumber: "506",
           miles: "520 mi",
           revenue: "$0 pending",
+          driverPay: { Oscar: "$325", Juvel: "$325" },
+          poNumber: "Pending",
+          invoiceNumber: "Draft",
+          paymentNote: "Check in mail",
           pickupAddress: "Riverside MS",
           pendingPO: true,
           pendingSignedContract: true,
@@ -266,6 +314,10 @@
           busNumber: "746",
           miles: "312 mi",
           revenue: "$0 · pending",
+          driverPay: { TBA: "$0 pending" },
+          poNumber: "Pending",
+          invoiceNumber: "Hold",
+          paymentNote: "Working on approval",
           pickupAddress: "UTRGV Brownsville Campus",
           pending: { contact: true, contract: true, po: true },
           conflict: "overlapping driver assignment",
@@ -291,6 +343,10 @@
           busNumber: "133",
           miles: "480 mi",
           revenue: "$2,100",
+          driverPay: { Padron: "$300", Hector: "$300" },
+          postTripMileage: "479 mi",
+          invoiceNumber: "INV-260512",
+          paymentMethod: "CC",
           pickupAddress: "Munoz Elementary",
           pendingItems: ["contract"],
         },
@@ -358,8 +414,20 @@
         return Number.parseFloat(value) || 0;
       }
 
+      function schedulerDayCount(track) {
+        const scheduler = track.closest(".rux-scheduler");
+        return (
+          Number.parseFloat(
+            getComputedStyle(scheduler).getPropertyValue(
+              "--rux-scheduler-days",
+            ),
+          ) || 7
+        );
+      }
+
       function placeInline(bar, placement) {
-        const dayPct = 100 / 7;
+        const days = schedulerDayCount(bar.parentElement);
+        const dayPct = 100 / days;
         const startPct = (placement.start - 1) * dayPct;
         const spanPct = placement.span * dayPct;
         const fromPrev = placement.fromPrev || placement.trip.fromPrev;
@@ -398,8 +466,10 @@
         if (!entries.length) return;
 
         const row = track.closest(".rux-scheduler__row");
-        const inset = tokenPx("--rux-space-3");
-        const gap = tokenPx("--rux-space-3");
+        const inset = tokenPx("--rux-space-2");
+        const gap = tokenPx("--rux-space-2");
+        const days = schedulerDayCount(track);
+        const dayInlineSize = track.clientWidth / days - inset * 2;
         const lanes = [...new Set(entries.map((entry) => entry.lane))].sort(
           (a, b) => a - b,
         );
@@ -408,6 +478,10 @@
         lanes.forEach((lane, index) => {
           const laneEntries = entries.filter((entry) => entry.lane === lane);
           laneEntries.forEach((entry) => {
+            entry.bar.style.setProperty(
+              "--rux-trip-bar-day-inline-size",
+              `${dayInlineSize}px`,
+            );
             placeInline(entry.bar, entry);
             entry.bar.style.top = `${y}px`;
           });

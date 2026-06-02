@@ -117,7 +117,7 @@ body {
 }
 
 .scheduler-demo__schedule {
-  --rux-scheduler-day-min-width: 15rem;
+  --rux-scheduler-day-min-width: 16.5rem;
 }
 
 .scheduler-demo__schedule .rux-trip-bar {

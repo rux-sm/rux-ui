@@ -43,11 +43,10 @@
 
 .rux-trip-bar {
   --rux-trip-bar-collapsed-height: 10rem;
-  --rux-trip-bar-action-padding-block: var(--rux-space-1);
-  --rux-trip-bar-action-padding-inline: var(--rux-space-1);
+  --rux-trip-bar-action-padding-block: var(--rux-space-2);
+  --rux-trip-bar-action-padding-inline: var(--rux-space-2);
   --rux-trip-bar-action-height: calc(
-    var(--rux-control-height) + (var(--rux-trip-bar-action-padding-block) * 2) +
-      var(--rux-border-width)
+    var(--rux-control-height) + (var(--rux-trip-bar-action-padding-block) * 2)
   );
   --rux-trip-bar-expand-height: calc(
     var(--rux-control-height) + var(--rux-border-width)
@@ -61,9 +60,9 @@
   --_tone: var(--rux-accent);
   --_tone-subtle: var(--rux-accent-subtle);
   --_tone-ring: var(--rux-ring-focus);
-  --_surface: oklch(from var(--_tone) 50% 0.18 h);
-  --_surface-hover: oklch(from var(--_tone) 55% 0.18 h);
-  --_surface-active: oklch(from var(--_tone) 55% 0.18 h);
+  --_surface: oklch(from var(--_tone) 60% 0.24 h / 40%);
+  --_surface-hover: oklch(from var(--_tone) 65% 0.24 h / 40%);
+  --_surface-active: oklch(from var(--_tone) 65% 0.24 h / 40%);
 
   position: relative;
   display: flex;
@@ -115,6 +114,12 @@
   z-index: var(--rux-z-base);
 }
 
+/* Keep continuation stripes behind actions, text, and conflict content. */
+.rux-trip-bar > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* ---------- Modifier: unconfirmed ---------- */
 
 .rux-trip-bar--unconfirmed {
@@ -138,7 +143,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   width: 2.5rem;
-  z-index: 1;
+  z-index: 0;
   background: repeating-linear-gradient(
     45deg,
     transparent 0,
@@ -163,6 +168,7 @@
   position: absolute;
   inset: 0 0 0 auto;
   width: 2.5rem;
+  z-index: 0;
   background: repeating-linear-gradient(
     -45deg,
     transparent 0,
@@ -199,17 +205,17 @@
 .rux-trip-bar__actions {
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: auto 1px repeat(4, var(--rux-control-height)) 1fr var(
-      --rux-control-height
-    );
+  grid-template-columns: repeat(6, var(--rux-control-height));
   align-items: center;
   flex: 0 0 auto;
-  gap: var(--rux-space-1);
+  gap: var(--rux-space-2);
   max-height: 0;
   overflow: hidden;
-  padding: 0 var(--rux-space-2);
+  padding-inline: var(--rux-space-2);
+  justify-content: start;
   background: var(--rux-bg-3);
   border-bottom: var(--rux-border-width) solid var(--_border);
+  border-radius: var(--rux-radius-sm) var(--rux-radius-sm) 0 0;
   opacity: 0;
   pointer-events: none;
   transform: translateY(calc(var(--rux-space-1) * -1));
@@ -221,13 +227,14 @@
     transform var(--rux-duration-base) var(--rux-ease-out),
     border-color var(--rux-duration-fast) var(--rux-ease-out),
     visibility 0s linear var(--rux-duration-base);
+  box-shadow: var(--rux-shadow-sm);
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {
   max-height: var(--rux-trip-bar-action-height);
   padding-block: var(--rux-trip-bar-action-padding-block);
   padding-inline: var(--rux-trip-bar-action-padding-inline);
-  border-bottom-color: color-mix(in oklch, var(--rux-fg) 8%, transparent);
+  justify-content: start;
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -241,14 +248,12 @@
     visibility 0s;
 }
 
-.rux-trip-bar__action-divider {
-  width: var(--rux-border-width);
-  height: var(--rux-icon-lg);
-  background: color-mix(in oklch, var(--rux-fg) 12%, transparent);
+.rux-trip-bar--from-prev .rux-trip-bar__actions {
+  border-top-left-radius: 0;
 }
 
-.rux-trip-bar__action-spacer {
-  min-width: 0;
+.rux-trip-bar--to-next .rux-trip-bar__actions {
+  border-top-right-radius: 0;
 }
 
 /* ---------- Body ---------- */
@@ -303,6 +308,8 @@
 
 .rux-trip-bar__status--paid {
   color: var(--rux-success);
+  stroke-width: 2;
+  font-size: var(--rux-icon-md);
 }
 
 .rux-trip-bar__pending {
@@ -313,10 +320,10 @@
 }
 
 .rux-trip-bar__pending-icon {
-  width: var(--rux-icon-sm);
-  height: var(--rux-icon-sm);
+  width: var(--rux-icon-md);
+  height: var(--rux-icon-md);
   flex: none;
-  stroke-width: 2.25;
+  stroke-width: 2;
 }
 
 /* ---------- Text rows ---------- */
@@ -458,38 +465,49 @@
 }
 
 .rux-trip-bar__details-inner {
+  box-sizing: border-box;
   display: grid;
-  gap: var(--rux-space-2);
-  padding: var(--rux-space-3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rux-space-1);
+  padding: var(--rux-space-2);
   border-top: var(--rux-border-width) solid
     color-mix(in oklch, var(--rux-fg) 8%, transparent);
 }
 
-.rux-trip-bar__detail-row {
+.rux-trip-bar--multi-day .rux-trip-bar__details-inner {
+  width: min(100%, var(--rux-trip-bar-day-inline-size, 100%));
+}
+
+.rux-trip-bar__detail-field {
   display: grid;
-  grid-template-columns: 5.75rem minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr);
   align-items: baseline;
-  gap: var(--rux-space-3);
+  gap: var(--rux-space-1);
+  min-width: 0;
   font-size: var(--rux-text-xs);
   line-height: var(--rux-leading-snug);
 }
 
-.rux-trip-bar__detail-label {
+.rux-trip-bar__detail-field--wide {
+  grid-column: 1 / -1;
+}
+
+.rux-trip-bar__detail-field-label {
   color: var(--rux-fg-subtle);
   font-weight: var(--rux-weight-semibold);
   letter-spacing: var(--rux-tracking-wide);
   text-transform: uppercase;
 }
 
-.rux-trip-bar__detail-value {
+.rux-trip-bar__detail-field-label::after {
+  content: ":";
+}
+
+.rux-trip-bar__detail-field-value {
   min-width: 0;
   overflow-wrap: anywhere;
   color: var(--rux-fg);
   font-weight: var(--rux-weight-medium);
-}
-
-.rux-trip-bar__detail-value--tone {
-  color: var(--_tone);
 }
 
 /* ---------- Expand button ---------- */
@@ -544,14 +562,8 @@
 
 @container (max-width: 24rem) {
   .rux-trip-bar__actions {
-    grid-template-columns: auto repeat(3, var(--rux-control-height));
+    grid-template-columns: repeat(6, var(--rux-control-height));
     justify-content: start;
-  }
-
-  .rux-trip-bar__action-divider,
-  .rux-trip-bar__action--hide-narrow,
-  .rux-trip-bar__action-spacer {
-    display: none;
   }
 
   /* Multi-day bars hide text rows at narrow widths; single-day shows them */
@@ -573,22 +585,10 @@
 
 @container (max-width: 16rem) {
   .rux-trip-bar__actions {
-    grid-template-columns: repeat(2, var(--rux-control-height));
-    gap: var(--rux-space-1);
+    grid-template-columns: repeat(6, var(--rux-control-height));
+    gap: var(--rux-space-2);
     justify-content: start;
-    padding-inline: var(--rux-space-1);
-  }
-
-  .rux-trip-bar__actions .rux-button--primary {
-    width: var(--rux-control-height);
-    min-width: 0;
-    gap: 0;
-    padding-inline: 0;
-    font-size: 0;
-  }
-
-  .rux-trip-bar__action--hide-minimum {
-    display: none;
+    padding-inline: var(--rux-space-2);
   }
 }
 

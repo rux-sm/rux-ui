@@ -19,7 +19,7 @@
    --rux-scheduler-days             Number of day columns, used for the track
                                     column span and gradient tile  (default 7)
    --rux-scheduler-day-min-width    Minimum width per day column. Keep wide
-                                    enough for one-day trip bars  (default 15rem)
+                                    enough for one-day trip bars  (default 16.5rem)
    --rux-scheduler-cols             Full grid-template-columns value. Override this
                                     to change column count without touching CSS.
 
@@ -35,12 +35,13 @@
    ========================================================================== */
 
 .rux-scheduler {
-  --rux-scheduler-col-head-width: 5rem;
+  --rux-scheduler-col-head-width: 2.5rem;
+  --rux-scheduler-head-height: 2.5rem;
   --rux-scheduler-days: 7;
-  --rux-scheduler-day-min-width: 15rem;
+  --rux-scheduler-day-min-width: 16.5rem;
   --_day-min-width: var(--rux-scheduler-day-min-width);
   --_row-height: calc(
-    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-6)
+    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-4)
   );
   --rux-scheduler-cols: var(--rux-scheduler-col-head-width)
     repeat(7, minmax(var(--_day-min-width), 1fr));
@@ -51,7 +52,7 @@
   max-width: 100%;
   min-width: 0;
   overflow: auto;
-  background: var(--rux-bg-sunken);
+  background: var(--rux-bg);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-lg);
 }
@@ -63,8 +64,11 @@
   position: sticky;
   top: 0;
   z-index: var(--rux-z-sticky);
+  display: flex;
+  align-items: center;
+  min-height: var(--rux-scheduler-head-height);
   padding: var(--rux-space-2) var(--rux-space-2);
-  background: var(--rux-bg-sunken);
+  background: var(--rux-bg);
   border-right: var(--rux-border-width) solid var(--rux-border);
   border-bottom: var(--rux-border-width) solid var(--rux-border);
   color: var(--rux-fg-subtle);
@@ -76,8 +80,8 @@
 
 /* Today highlight */
 .rux-scheduler__day-head--today {
-  color: var(--rux-accent);
-  background: color-mix(in oklch, var(--rux-accent) 8%, var(--rux-bg-sunken));
+  color: oklch(from var(--rux-accent) 70% 0.24 h / 90%);
+  background: oklch(from var(--rux-accent) l c h / 10%);
 }
 
 /* ---------- Row wrapper ---------- */
@@ -87,7 +91,7 @@
 .rux-scheduler__row {
   display: contents;
   --_row-height: calc(
-    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-6)
+    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-4)
   );
 }
 
@@ -102,28 +106,44 @@
 
 /* Corner cell: above both sticky axes */
 .rux-scheduler__col-head {
+  justify-content: center;
   z-index: calc(var(--rux-z-sticky) + 1);
 }
 
+.rux-scheduler__corner-label {
+  display: block;
+  line-height: 1;
+  text-align: center;
+}
+
 .rux-scheduler__row-head {
-  display: grid;
-  align-content: center;
-  gap: calc(var(--rux-space-1) / 2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: var(--_row-height);
-  padding: var(--rux-space-3);
-  background: var(--rux-bg-sunken);
+  padding: var(--rux-space-2) 0;
+  background: var(--rux-bg);
   border-right: var(--rux-border-width) solid var(--rux-border);
   border-bottom: var(--rux-border-width) solid var(--rux-border);
   color: var(--rux-fg);
-  font-size: var(--rux-text-sm);
+  font-size: var(--rux-text-xs);
   font-weight: var(--rux-weight-semibold);
   transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
-.rux-scheduler__row-head > span {
-  color: var(--rux-fg-subtle);
-  font-size: var(--rux-text-2xs);
-  font-weight: var(--rux-weight-medium);
+.rux-scheduler__bus-number {
+  display: flex;
+  letter-spacing: var(--rux-tracking-tight);
+}
+
+.rux-scheduler__bus-pax {
+  display: none;
+}
+
+.rux-scheduler__row:last-child .rux-scheduler__row-head,
+.rux-scheduler__row:last-child .rux-scheduler__track {
+  border-bottom: none;
 }
 
 /* ---------- Track ---------- */

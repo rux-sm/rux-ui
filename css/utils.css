@@ -34,7 +34,7 @@
   width: var(--rux-icon-md);
   height: var(--rux-icon-md);
   flex: none;
-  stroke-width: 1.75;
+  stroke-width: 2;
   vertical-align: middle;
 }
 .rux-icon--sm { width: var(--rux-icon-sm); height: var(--rux-icon-sm); }
