@@ -193,7 +193,21 @@ function textEl(tag, className, text) {
 
 function fmtTime(str) {
   if (!str) return str;
-  return str.replace(/\s*AM$/i, "a").replace(/\s*PM$/i, "p");
+  // 12h with AM/PM suffix
+  if (/[ap]m$/i.test(str.trim()))
+    return str
+      .trim()
+      .replace(/\s*AM$/i, "a")
+      .replace(/\s*PM$/i, "p");
+  // 24h HH:MM
+  const m = str.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return str;
+  let h = parseInt(m[1], 10);
+  const min = m[2];
+  const suffix = h < 12 ? "a" : "p";
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return min === "00" ? `${h}${suffix}` : `${h}:${min}${suffix}`;
 }
 
 function timeItem(label, value, className = "") {
@@ -223,71 +237,38 @@ const PENDING_INDICATORS = [
     key: "itinerary",
     icon: "paperclip",
     label: "Pending itinerary",
-    fields: ["pendingItinerary", "itineraryPending"],
-    aliases: ["itinerary", "pending-itinerary", "pending_itinerary"],
+    check: (trip) => trip.itineraryStatus !== "received",
   },
   {
     key: "contact",
     icon: "user",
     label: "Pending contact status",
-    fields: [
-      "pendingContact",
-      "contactPending",
-      "pendingContactStatus",
-      "contactStatusPending",
-    ],
-    aliases: [
-      "contact",
-      "contact-status",
-      "contact_status",
-      "pending-contact",
-      "pending_contact",
-    ],
+    check: (trip) => trip.contactStatus !== "received",
   },
   {
     key: "contactPhone",
     icon: "phone",
     label: "Contact phone missing",
-    requiredField: "contactPhone",
-    fields: ["pendingContactPhone", "contactPhonePending"],
-    aliases: ["contact-phone", "contact_phone", "phone"],
+    check: (trip) => !trip.bookingContact?.phone,
   },
   {
-    key: "contract",
+    key: "payment",
     icon: "file-pen",
-    label: "Pending signed contract",
-    fields: [
-      "pendingContract",
-      "contractPending",
-      "pendingSignedContract",
-      "signedContractPending",
-    ],
-    aliases: [
-      "contract",
-      "signed-contract",
-      "signed_contract",
-      "pending-contract",
-      "pending_contract",
-    ],
+    label: "Pending contract or PO",
+    check: (trip) =>
+      ![
+        "po-received",
+        "contract-signed",
+        "invoiced",
+        "paid",
+        "not-required",
+      ].includes(trip.paymentStatus),
   },
   {
-    key: "po",
+    key: "invoice",
     icon: "receipt",
-    label: "Pending PO",
-    fields: [
-      "pendingPO",
-      "pendingPo",
-      "poPending",
-      "pendingPurchaseOrder",
-      "purchaseOrderPending",
-    ],
-    aliases: [
-      "po",
-      "purchase-order",
-      "purchase_order",
-      "pending-po",
-      "pending_po",
-    ],
+    label: "Pending invoice",
+    check: (trip) => trip.invoiceStatus === "pending",
   },
 ];
 
@@ -304,32 +285,14 @@ function isPendingValue(value) {
   ].includes(value.toLowerCase());
 }
 
+function isLateReturn(returnTime) {
+  if (!returnTime) return false;
+  const hour = parseInt(returnTime.split(":")[0], 10);
+  return hour < 5; // 00:xx–04:xx = crossed midnight
+}
+
 function isPaidTrip(trip) {
-  const paymentFields = [
-    trip.paid,
-    trip.fullyPaid,
-    trip.isPaid,
-    trip.paymentStatus,
-    trip.paidStatus,
-  ];
-  if (paymentFields.some((value) => value === true)) return true;
-  if (
-    paymentFields.some(
-      (value) =>
-        typeof value === "string" &&
-        [
-          "paid",
-          "paid-in-full",
-          "paid_in_full",
-          "fully-paid",
-          "fully_paid",
-          "complete",
-          "completed",
-        ].includes(value.trim().toLowerCase()),
-    )
-  )
-    return true;
-  return /\bpaid\b/i.test(trip.notes || "");
+  return trip.paymentStatus === "paid";
 }
 
 function compactDate(value) {
@@ -352,16 +315,7 @@ function compactDate(value) {
 }
 
 function paidDate(trip) {
-  return compactDate(
-    firstValue(
-      trip.paidDate,
-      trip.paymentDate,
-      trip.paymentReceivedDate,
-      trip.paidOn,
-      trip.paymentReceivedOn,
-      trip.checkDate,
-    ),
-  );
+  return compactDate(trip.datePaid);
 }
 
 function normalizePendingKey(value) {
@@ -369,34 +323,11 @@ function normalizePendingKey(value) {
 }
 
 function getPendingIndicators(trip) {
-  const pendingItems = Array.isArray(trip.pendingItems)
-    ? trip.pendingItems.map(normalizePendingKey)
-    : [];
-  return PENDING_INDICATORS.filter((item) => {
-    if (item.fields.some((field) => isPendingValue(trip[field]))) return true;
-    if (item.requiredField && !trip[item.requiredField]) return true;
-    if (trip.pending && isPendingValue(trip.pending[item.key])) return true;
-    return item.aliases.some((alias) => pendingItems.includes(alias));
-  });
+  return PENDING_INDICATORS.filter((item) => item.check(trip));
 }
 
 function hasTripPdf(trip) {
-  const pdfFields = [
-    trip.pdfUploaded,
-    trip.hasPdf,
-    trip.hasPDF,
-    trip.pdfReady,
-    trip.pdfUrl,
-    trip.pdfURL,
-    trip.pdf,
-    trip.uploadedPdf,
-    trip.uploadedPDF,
-    trip.uploadedPdfUrl,
-    trip.uploadedPDFUrl,
-    trip.documentUrl,
-    trip.documentURL,
-  ];
-  return pdfFields.some((value) => Boolean(value));
+  return Boolean(trip.itineraryPdfUrl || trip.pdfUrl || trip.pdfUploaded);
 }
 
 function firstValue(...values) {
@@ -431,34 +362,13 @@ function detailValue(value) {
 }
 
 function driverPayValues(trip) {
-  const drivers = trip.drivers || [];
-  if (Array.isArray(trip.driverPay)) {
-    return trip.driverPay.map((item) =>
-      typeof item === "string"
-        ? item
-        : firstValue(item.pay, item.amount, item.rate),
-    );
-  }
-  if (trip.driverPay && typeof trip.driverPay === "object") {
-    return Object.values(trip.driverPay);
-  }
-  return drivers.map((driver) =>
-    firstValue(driver.pay, driver.driverPay, driver.payAmount),
-  );
+  return (trip.drivers || []).map((d) => d.pay || "");
 }
 
 function paymentDetail(trip) {
-  const check = firstValue(trip.checkNumber, trip.checkNumbers, trip.checkNo);
-  if (check) {
-    return `Ck# ${stripKnownPrefix(check, ["ck#", "check #", "check"])}`;
-  }
-
-  const ref = firstValue(trip.refNumber, trip.referenceNumber, trip.ref);
-  if (ref) return `Ref# ${stripKnownPrefix(ref, ["ref#", "ref"])}`;
-
-  const method = firstValue(trip.paymentMethod, trip.paidBy, trip.paymentType);
-  const note = firstValue(trip.paymentNote, trip.billingNote);
-  return [method, note].filter(Boolean).join(" · ");
+  if (trip.paymentRefs?.length) return trip.paymentRefs.join(" · ");
+  const method = trip.paymentMethod || "";
+  return method;
 }
 
 function detailFieldEl(label, value, { wide = false } = {}) {
@@ -494,7 +404,7 @@ export function createTripBar(trip, callbacks = {}) {
   installOutsideDismiss();
   installFloatingTooltip();
 
-  const confirmed = Boolean(trip.confirmed);
+  const confirmed = trip.driverStatus === "confirmed";
   const singleDay = isSameTripDay(trip);
   const bar = document.createElement("article");
   bar.className = [
@@ -609,9 +519,9 @@ export function createTripBar(trip, callbacks = {}) {
 
   const time = document.createElement("div");
   time.className = "rux-trip-bar__time";
-  const middleTime = trip.loadTime || trip.pickupTime || trip.spotTime;
+  const middleTime = trip.spotTime;
   time.append(
-    timeItem("Dep", fmtTime(trip.departTime)),
+    timeItem("Dep", fmtTime(trip.departureTime)),
     timeItem(
       "Spt",
       middleTime ? fmtTime(middleTime) : "—",
@@ -619,8 +529,8 @@ export function createTripBar(trip, callbacks = {}) {
     ),
     timeItem(
       "Arr",
-      fmtTime(trip.arriveTime),
-      trip.arriveLate ? "rux-trip-bar__time-value--late" : "",
+      fmtTime(trip.returnTime),
+      isLateReturn(trip.returnTime) ? "rux-trip-bar__time-value--late" : "",
     ),
   );
 
@@ -638,7 +548,9 @@ export function createTripBar(trip, callbacks = {}) {
     const item = document.createElement("span");
     item.className = "rux-trip-bar__driver";
     const dot = document.createElement("span");
-    dot.className = `rux-trip-bar__driver-dot ${driverStateClass(driver.state)}`;
+    dot.className = `rux-trip-bar__driver-dot ${driverStateClass(
+      driver.status || driver.state,
+    )}`;
     item.append(dot, document.createTextNode(driver.name));
     drivers.appendChild(item);
   });
@@ -648,13 +560,21 @@ export function createTripBar(trip, callbacks = {}) {
 
   body.append(
     summary,
-    textEl("div", "rux-trip-bar__client", trip.client),
+    textEl("div", "rux-trip-bar__client", trip.customer),
     (() => {
       const el = document.createElement("div");
       el.className = "rux-trip-bar__contact";
-      el.append(textEl("span", "rux-trip-bar__contact-name", trip.contact));
-      if (trip.contactPhone)
-        el.append(textEl("span", "rux-trip-bar__contact-phone", trip.contactPhone));
+      el.append(
+        textEl("span", "rux-trip-bar__contact-name", trip.bookingContact?.name),
+      );
+      if (trip.bookingContact?.phone)
+        el.append(
+          textEl(
+            "span",
+            "rux-trip-bar__contact-phone",
+            trip.bookingContact.phone,
+          ),
+        );
       return el;
     })(),
     textEl("div", "rux-trip-bar__notes", trip.notes),
@@ -671,38 +591,14 @@ export function createTripBar(trip, callbacks = {}) {
   const detailFields = [
     ["D1 PAY", driverPay[0]],
     ["D2 PAY", driverPay[1]],
+    ["EST MI", trip.estimatedMiles ? String(trip.estimatedMiles) : ""],
     [
-      "EST MI",
-      firstValue(trip.estimatedMileage, trip.estimatedMiles, trip.miles),
+      "QUOTE",
+      trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : "",
     ],
-    ["QUOTE", firstValue(trip.quotedPrice, trip.quote, trip.revenue)],
-    [
-      "PO",
-      stripKnownPrefix(firstValue(trip.poNumber, trip.po, trip.purchaseOrder), [
-        "po-",
-        "po #",
-        "po",
-      ]),
-      { wide: true },
-    ],
-    [
-      "END MI",
-      firstValue(
-        trip.postTripMileage,
-        trip.postTripMiles,
-        trip.actualMileage,
-        trip.actualMiles,
-      ),
-    ],
-    [
-      "INV",
-      stripKnownPrefix(firstValue(trip.invoiceNumber, trip.invoice), [
-        "inv-",
-        "inv #",
-        "invoice #",
-        "invoice",
-      ]),
-    ],
+    ["PO", trip.paymentRef || "", { wide: true }],
+    ["END MI", trip.actualMiles ? String(trip.actualMiles) : ""],
+    ["INV", trip.invoiceNumber || ""],
     ["PMT", paymentDetail(trip), { wide: true }],
   ];
 
@@ -713,7 +609,8 @@ export function createTripBar(trip, callbacks = {}) {
 
   const expandBtn = document.createElement("button");
   expandBtn.type = "button";
-  expandBtn.className = "rux-button rux-button--ghost rux-button--icon rux-trip-bar__expand";
+  expandBtn.className =
+    "rux-button rux-button--ghost rux-button--icon rux-trip-bar__expand";
   const expandIcon = icon("chevron-down", "rux-icon rux-trip-bar__expand-icon");
   expandBtn.append(expandIcon);
   meta.appendChild(expandBtn);

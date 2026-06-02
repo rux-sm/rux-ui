@@ -14,39 +14,64 @@
     ></script>
     <link rel="stylesheet" href="comp-scheduler-demo.css" />
   </head>
-  <body class="scheduler-app-page">
-    <main class="scheduler-app">
-      <header class="scheduler-app__bar">
-        <div class="scheduler-app__brand">
-          <h1 class="scheduler-app__title" id="week-label"></h1>
+  <body class="scheduler-demo-page">
+    <main class="scheduler-demo">
+      <header class="scheduler-demo__header">
+        <div>
+          <div class="rux-overline">Dispatch component</div>
+          <h1 class="scheduler-demo__title">Scheduler</h1>
+          <p class="scheduler-demo__subtitle">
+            A composed weekly bus schedule using scheduler rows, trip bars,
+            continuation modifiers, stacked lanes, and measured row growth.
+          </p>
         </div>
-
-        <div class="scheduler-app__toolbar">
-          <nav class="scheduler-app__nav" aria-label="Week">
-            <button
-              class="rux-button rux-button--ghost rux-button--icon"
-              id="prev-week"
-              aria-label="Previous week"
-            >
-              <i data-lucide="chevron-left" class="rux-icon"></i>
-            </button>
-            <button
-              class="rux-button rux-button--ghost rux-button--icon"
-              id="next-week"
-              aria-label="Next week"
-            >
-              <i data-lucide="chevron-right" class="rux-icon"></i>
-            </button>
-            <button class="rux-button rux-button--ghost" id="today-btn">
-              Today
-            </button>
-          </nav>
+        <div class="scheduler-demo__actions">
+          <a class="rux-button rux-button--ghost" href="comp-trip-bar.html">
+            <i data-lucide="panel-top" class="rux-icon"></i>
+            Trip bar spec
+          </a>
+          <button class="rux-button rux-button--ghost" id="select-orlando">
+            <i data-lucide="mouse-pointer-2" class="rux-icon"></i>
+            Select Orlando
+          </button>
+          <button class="rux-button rux-button--primary" id="expand-austin">
+            <i data-lucide="list-plus" class="rux-icon"></i>
+            Expand conflict
+          </button>
         </div>
       </header>
 
-      <section class="scheduler-app__schedule" aria-label="Weekly schedule">
-        <div class="scheduler-app__schedule-wrap">
-          <div class="rux-scheduler scheduler-app__grid" id="scheduler">
+      <section class="scheduler-demo__section">
+        <div class="scheduler-demo__section-head">
+          <h2 class="scheduler-demo__section-title">Live schedule</h2>
+          <div class="scheduler-demo__legend">
+            <span class="rux-badge rux-badge--info">4 vehicles</span>
+            <span class="rux-badge">Stacked lanes</span>
+            <span class="rux-badge rux-badge--success">Paid status</span>
+          </div>
+        </div>
+        <div class="scheduler-demo__nav">
+          <button
+            class="rux-button rux-button--ghost rux-button--icon"
+            id="prev-week"
+            aria-label="Previous week"
+          >
+            <i data-lucide="chevron-left" class="rux-icon"></i>
+          </button>
+          <span class="scheduler-demo__nav-label" id="week-label"></span>
+          <button
+            class="rux-button rux-button--ghost rux-button--icon"
+            id="next-week"
+            aria-label="Next week"
+          >
+            <i data-lucide="chevron-right" class="rux-icon"></i>
+          </button>
+          <button class="rux-button rux-button--ghost" id="today-btn">
+            Today
+          </button>
+        </div>
+        <div class="scheduler-demo__schedule-wrap">
+          <div class="rux-scheduler scheduler-demo__schedule" id="scheduler">
             <div class="rux-scheduler__col-head">
               <span class="rux-scheduler__corner-label">Bus</span>
             </div>
@@ -105,6 +130,68 @@
               <div class="rux-scheduler__track" id="track-133"></div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="scheduler-demo__section">
+        <div class="scheduler-demo__section-head">
+          <h2 class="scheduler-demo__section-title">Integration contract</h2>
+          <span class="rux-badge"
+            >Scheduler measures, trip bars own height</span
+          >
+        </div>
+        <div class="scheduler-demo__rules">
+          <article class="scheduler-demo__rule">
+            <h3 class="scheduler-demo__rule-title">Placement</h3>
+            <ul class="scheduler-demo__rule-list">
+              <li>
+                Trips are placed from date math: day start, span, and lane.
+              </li>
+              <li>
+                Normal trips sit <code>var(--rux-space-2)</code> away from day
+                grid lines.
+              </li>
+              <li>
+                Selected trip rings paint outward into that inset, leaving a
+                visible <code>var(--rux-space-1)</code> gap.
+              </li>
+              <li>
+                Week continuations use <code>fromPrev</code> or
+                <code>toNext</code> and flush to the rail edge.
+              </li>
+            </ul>
+          </article>
+          <article class="scheduler-demo__rule">
+            <h3 class="scheduler-demo__rule-title">Row growth</h3>
+            <ul class="scheduler-demo__rule-list">
+              <li>
+                Each trip bar keeps its own collapsed, selected, or expanded
+                height.
+              </li>
+              <li>
+                A <code>ResizeObserver</code> measures visible bars and updates
+                <code>--_row-height</code>.
+              </li>
+              <li>
+                Stacked lanes add each lane height plus
+                <code>var(--rux-space-2)</code> lane gaps.
+              </li>
+            </ul>
+          </article>
+          <article class="scheduler-demo__rule">
+            <h3 class="scheduler-demo__rule-title">Data coverage</h3>
+            <ul class="scheduler-demo__rule-list">
+              <li>
+                Includes single-day, multi-day, paid, pending, and conflict
+                states.
+              </li>
+              <li>
+                Includes pending PO, pending contract, and pending contact
+                icons.
+              </li>
+              <li>Includes TBA drivers and customer trip bus grouping.</li>
+            </ul>
+          </article>
         </div>
       </section>
     </main>
@@ -594,6 +681,33 @@
         layoutScheduler();
       }
 
+      function showWeekForTrip(trip) {
+        currentWeekStart = startOfWeek(parseIsoDate(trip.startDate));
+        renderScheduler();
+      }
+
+      function findVisiblePlacement(trip) {
+        return activePlacements.find(
+          (placement) => placement.trip.id === trip.id,
+        );
+      }
+
+      function activateTrip(trip, { expanded = false } = {}) {
+        let placement = findVisiblePlacement(trip);
+        if (!placement) {
+          showWeekForTrip(trip);
+          placement = findVisiblePlacement(trip);
+        }
+        if (!placement) return;
+
+        placement.bar.setActive(true);
+        if (expanded) {
+          placement.bar.setExpanded(
+            !placement.bar.classList.contains("is-expanded"),
+          );
+        }
+      }
+
       window.addEventListener("resize", layoutScheduler);
 
       document.getElementById("prev-week").addEventListener("click", () => {
@@ -609,6 +723,16 @@
       document.getElementById("today-btn").addEventListener("click", () => {
         currentWeekStart = startOfWeek(new Date());
         renderScheduler();
+      });
+
+      document
+        .getElementById("select-orlando")
+        .addEventListener("click", () => {
+          activateTrip(trips.orlando);
+        });
+
+      document.getElementById("expand-austin").addEventListener("click", () => {
+        activateTrip(trips.conflict, { expanded: true });
       });
 
       renderScheduler();
