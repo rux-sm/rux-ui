@@ -11,6 +11,9 @@
  */
 
 let outsideDismissInstalled = false;
+let floatingTooltipInstalled = false;
+let floatingTooltip = null;
+let floatingTooltipTarget = null;
 const tripBars = new Set();
 
 function deactivateTripBars(except = null) {
@@ -45,12 +48,134 @@ function icon(name, className = "rux-icon") {
   return el;
 }
 
+function containsNode(el, node) {
+  return node instanceof Node && el.contains(node);
+}
+
+function installFloatingTooltip() {
+  if (floatingTooltipInstalled) return;
+  floatingTooltipInstalled = true;
+
+  document.addEventListener("pointerover", (event) => {
+    const target = event.target?.closest?.(
+      '[data-rux-tooltip="floating"][data-tooltip]',
+    );
+    if (!target || containsNode(target, event.relatedTarget)) return;
+    showFloatingTooltip(target);
+  });
+
+  document.addEventListener("pointerout", (event) => {
+    if (!floatingTooltipTarget) return;
+    if (!containsNode(floatingTooltipTarget, event.target)) return;
+    if (containsNode(floatingTooltipTarget, event.relatedTarget)) return;
+    hideFloatingTooltip();
+  });
+
+  document.addEventListener("focusin", (event) => {
+    const target = event.target?.closest?.(
+      '[data-rux-tooltip="floating"][data-tooltip]',
+    );
+    if (target) showFloatingTooltip(target);
+  });
+
+  document.addEventListener("focusout", (event) => {
+    if (floatingTooltipTarget?.contains(event.target)) hideFloatingTooltip();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") hideFloatingTooltip();
+  });
+
+  window.addEventListener("resize", updateFloatingTooltipPosition);
+  document.addEventListener("scroll", updateFloatingTooltipPosition, true);
+}
+
+function ensureFloatingTooltip() {
+  if (floatingTooltip) return floatingTooltip;
+  floatingTooltip = document.createElement("div");
+  floatingTooltip.id = "rux-floating-tooltip";
+  floatingTooltip.className = "rux-tooltip";
+  floatingTooltip.setAttribute("role", "tooltip");
+  floatingTooltip.hidden = true;
+  document.body.appendChild(floatingTooltip);
+  return floatingTooltip;
+}
+
+function tooltipGapPx() {
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue("--rux-dot-sm")
+    .trim();
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 4;
+}
+
+function updateFloatingTooltipPosition() {
+  if (!floatingTooltipTarget || !floatingTooltip || floatingTooltip.hidden) {
+    return;
+  }
+
+  const rect = floatingTooltipTarget.getBoundingClientRect();
+  if (!rect.width && !rect.height) {
+    hideFloatingTooltip();
+    return;
+  }
+
+  const margin = 8;
+  const gap = tooltipGapPx();
+  const tooltipRect = floatingTooltip.getBoundingClientRect();
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = document.documentElement.clientHeight;
+  let top = rect.top - tooltipRect.height - gap;
+  let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+
+  if (top < margin) {
+    top = Math.min(
+      rect.bottom + gap,
+      viewportHeight - tooltipRect.height - margin,
+    );
+  }
+
+  left = Math.max(
+    margin,
+    Math.min(left, viewportWidth - tooltipRect.width - margin),
+  );
+
+  floatingTooltip.style.left = `${left}px`;
+  floatingTooltip.style.top = `${Math.max(margin, top)}px`;
+}
+
+function showFloatingTooltip(target) {
+  const label = target.dataset.tooltip;
+  if (!label) return;
+
+  const tooltip = ensureFloatingTooltip();
+  floatingTooltipTarget?.removeAttribute("aria-describedby");
+  floatingTooltipTarget = target;
+  tooltip.textContent = label;
+  tooltip.hidden = false;
+  tooltip.style.left = "0";
+  tooltip.style.top = "0";
+  target.setAttribute("aria-describedby", tooltip.id);
+  updateFloatingTooltipPosition();
+}
+
+function hideFloatingTooltip() {
+  floatingTooltipTarget?.removeAttribute("aria-describedby");
+  floatingTooltipTarget = null;
+  if (floatingTooltip) floatingTooltip.hidden = true;
+}
+
+function setFloatingTooltip(el, label) {
+  el.dataset.tooltip = label;
+  el.dataset.ruxTooltip = "floating";
+}
+
 function button(className, label, iconName, onClick) {
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = className;
   btn.setAttribute("aria-label", label);
-  btn.dataset.tooltip = label;
+  setFloatingTooltip(btn, label);
   btn.appendChild(icon(iconName));
   btn.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -199,6 +324,38 @@ function isPaidTrip(trip) {
   return /\bpaid\b/i.test(trip.notes || "");
 }
 
+function compactDate(value) {
+  if (!value) return "";
+
+  if (value instanceof Date && !Number.isNaN(value.valueOf())) {
+    return `${value.getMonth() + 1}/${value.getDate()}`;
+  }
+
+  const text = String(value).trim();
+  if (!text) return "";
+
+  const iso = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (iso) return `${Number(iso[2])}/${Number(iso[3])}`;
+
+  const slash = text.match(/^(\d{1,2})\/(\d{1,2})(?:\/\d{2,4})?$/);
+  if (slash) return `${Number(slash[1])}/${Number(slash[2])}`;
+
+  return text;
+}
+
+function paidDate(trip) {
+  return compactDate(
+    firstValue(
+      trip.paidDate,
+      trip.paymentDate,
+      trip.paymentReceivedDate,
+      trip.paidOn,
+      trip.paymentReceivedOn,
+      trip.checkDate,
+    ),
+  );
+}
+
 function normalizePendingKey(value) {
   return String(value).trim().toLowerCase().replace(/\s+/g, "-");
 }
@@ -326,6 +483,7 @@ function refreshIcons() {
 
 export function createTripBar(trip, callbacks = {}) {
   installOutsideDismiss();
+  installFloatingTooltip();
 
   const confirmed = Boolean(trip.confirmed);
   const singleDay = isSameTripDay(trip);
@@ -353,7 +511,7 @@ export function createTripBar(trip, callbacks = {}) {
   openBtn.type = "button";
   openBtn.className = "rux-button rux-button--primary rux-button--icon";
   openBtn.setAttribute("aria-label", "Open trip");
-  openBtn.dataset.tooltip = "Open trip";
+  setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("external-link"));
   openBtn.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -413,21 +571,26 @@ export function createTripBar(trip, callbacks = {}) {
   const summaryMarkerLabels = [...pendingItems.map((item) => item.label)];
   pendingItems.forEach((item) => {
     const marker = icon(item.icon, "rux-icon rux-trip-bar__pending-icon");
-    marker.setAttribute("title", item.label);
-    marker.dataset.tooltip = item.label;
+    setFloatingTooltip(marker, item.label);
     pending.appendChild(marker);
   });
   const busLabel = trip.busLabel || "";
   let statusIcon = null;
   if (paid) {
+    const datePaid = paidDate(trip);
     statusIcon = icon(
       "dollar-sign",
       "rux-icon rux-trip-bar__status rux-trip-bar__status--paid",
     );
-    statusIcon.setAttribute("title", "Paid in full");
-    statusIcon.dataset.tooltip = "Paid in full";
-    summaryMarkerLabels.push("Paid in full");
+    const paidLabel = datePaid ? `Paid in full ${datePaid}` : "Paid in full";
+    setFloatingTooltip(statusIcon, paidLabel);
+    summaryMarkerLabels.push(paidLabel);
     pending.appendChild(statusIcon);
+    if (datePaid) {
+      pending.appendChild(
+        textEl("span", "rux-trip-bar__status-date", datePaid),
+      );
+    }
   }
   pending.setAttribute("aria-label", summaryMarkerLabels.join(", "));
   summary.append(
@@ -457,14 +620,6 @@ export function createTripBar(trip, callbacks = {}) {
 
   const drivers = document.createElement("div");
   drivers.className = "rux-trip-bar__drivers";
-  (trip.drivers || []).forEach((driver) => {
-    const item = document.createElement("span");
-    item.className = "rux-trip-bar__driver";
-    const dot = document.createElement("span");
-    dot.className = `rux-trip-bar__driver-dot ${driverStateClass(driver.state)}`;
-    item.append(dot, document.createTextNode(driver.name));
-    drivers.appendChild(item);
-  });
   if (busLabel) {
     const busGroup = textEl("span", "rux-trip-bar__bus-label", busLabel);
     busGroup.setAttribute(
@@ -473,6 +628,17 @@ export function createTripBar(trip, callbacks = {}) {
     );
     drivers.appendChild(busGroup);
   }
+  (trip.drivers || []).forEach((driver) => {
+    const item = document.createElement("span");
+    item.className = "rux-trip-bar__driver";
+    const dot = document.createElement("span");
+    dot.className = `rux-trip-bar__driver-dot ${driverStateClass(driver.state)}`;
+    item.append(dot, document.createTextNode(driver.name));
+    drivers.appendChild(item);
+  });
+  const meta = document.createElement("div");
+  meta.className = "rux-trip-bar__drivers-meta";
+  drivers.appendChild(meta);
 
   body.append(
     summary,
@@ -534,10 +700,10 @@ export function createTripBar(trip, callbacks = {}) {
 
   const expandBtn = document.createElement("button");
   expandBtn.type = "button";
-  expandBtn.className = "rux-button rux-button--block rux-trip-bar__expand";
+  expandBtn.className = "rux-trip-bar__expand";
   const expandIcon = icon("chevron-down", "rux-icon rux-trip-bar__expand-icon");
-  const expandText = document.createElement("span");
-  expandBtn.append(expandIcon, expandText);
+  expandBtn.append(expandIcon);
+  meta.appendChild(expandBtn);
 
   function setDetailsHeight() {
     bar.style.setProperty(
@@ -561,9 +727,6 @@ export function createTripBar(trip, callbacks = {}) {
     }
     bar.classList.toggle("is-expanded", expanded);
     expandBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
-    expandText.textContent = expanded
-      ? "Hide details"
-      : `${detailFields.length} more details`;
   }
 
   expandBtn.addEventListener("click", (event) => {
@@ -584,7 +747,7 @@ export function createTripBar(trip, callbacks = {}) {
     bar.appendChild(conflict);
   }
 
-  bar.append(details, expandBtn);
+  bar.appendChild(details);
 
   bar.addEventListener("click", () => {
     bar.setActive(!bar.classList.contains("is-active"));

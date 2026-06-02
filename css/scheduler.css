@@ -15,9 +15,9 @@
 
    Custom properties
    -----------------
-   --rux-scheduler-col-head-width   Width of the row-label column  (default 5rem)
+   --rux-scheduler-col-head-width   Width of the row-label column  (default 2.5rem)
    --rux-scheduler-days             Number of day columns, used for the track
-                                    column span and gradient tile  (default 7)
+                                    column span and grid tracks  (default 7)
    --rux-scheduler-day-min-width    Minimum width per day column. Keep wide
                                     enough for one-day trip bars  (default 16.5rem)
    --rux-scheduler-cols             Full grid-template-columns value. Override this
@@ -29,9 +29,9 @@
 
    JS contract
    -----------
-   After any selection or expansion change, observe each .rux-scheduler__track
-   with a ResizeObserver and set --_row-height on the parent .rux-scheduler so
-   the row-head and track stay in sync with the tallest visible trip bar.
+   After any selection or expansion change, observe visible trip bars with a
+   ResizeObserver and set --_row-height on each .rux-scheduler__row so the
+   row-head and track stay in sync with the tallest visible lane stack.
    ========================================================================== */
 
 .rux-scheduler {
@@ -39,12 +39,22 @@
   --rux-scheduler-head-height: 2.5rem;
   --rux-scheduler-days: 7;
   --rux-scheduler-day-min-width: 16.5rem;
-  --_day-min-width: var(--rux-scheduler-day-min-width);
+  --rux-scheduler-bg: var(--rux-bg);
+  --rux-scheduler-border-color: var(--rux-border);
+  --rux-scheduler-header-color: var(--rux-fg-subtle);
+  --rux-scheduler-row-head-color: var(--rux-fg);
+  --rux-scheduler-today-color: oklch(from var(--rux-accent) 70% 0.24 h / 100%);
+  --rux-scheduler-today-bg: oklch(from var(--rux-accent) l c h / 25%);
+  --rux-scheduler-row-block-inset: var(--rux-space-2);
   --_row-height: calc(
-    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-4)
+    var(--rux-trip-bar-collapsed-height, 10rem) +
+      (var(--rux-scheduler-row-block-inset) * 2)
   );
   --rux-scheduler-cols: var(--rux-scheduler-col-head-width)
-    repeat(7, minmax(var(--_day-min-width), 1fr));
+    repeat(
+      var(--rux-scheduler-days),
+      minmax(var(--rux-scheduler-day-min-width), 1fr)
+    );
 
   display: grid;
   grid-template-columns: var(--rux-scheduler-cols);
@@ -52,8 +62,8 @@
   max-width: 100%;
   min-width: 0;
   overflow: auto;
-  background: var(--rux-bg);
-  border: var(--rux-border-width) solid var(--rux-border);
+  background: var(--rux-scheduler-bg);
+  border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
   border-radius: var(--rux-radius-lg);
 }
 
@@ -62,17 +72,19 @@
 .rux-scheduler__col-head,
 .rux-scheduler__day-head {
   position: sticky;
-  top: 0;
+  inset-block-start: 0;
   z-index: var(--rux-z-sticky);
   display: flex;
   align-items: center;
   min-height: var(--rux-scheduler-head-height);
   padding: var(--rux-space-2) var(--rux-space-2);
-  background: var(--rux-bg);
-  border-inline-end: var(--rux-border-width) solid var(--rux-border);
-  border-bottom: var(--rux-border-width) solid var(--rux-border);
-  color: var(--rux-fg-subtle);
-  font-size: var(--rux-text-2xs);
+  background: var(--rux-scheduler-bg);
+  border-inline-end: var(--rux-border-width) solid
+    var(--rux-scheduler-border-color);
+  border-block-end: var(--rux-border-width) solid
+    var(--rux-scheduler-border-color);
+  color: var(--rux-scheduler-header-color);
+  font-size: var(--rux-text-xs);
   font-weight: var(--rux-weight-semibold);
   letter-spacing: var(--rux-tracking-wide);
   text-transform: uppercase;
@@ -86,8 +98,8 @@
 
 /* Today highlight */
 .rux-scheduler__day-head--today {
-  color: oklch(from var(--rux-accent) 70% 0.24 h / 100%);
-  background: oklch(from var(--rux-accent) l c h / 25%);
+  color: var(--rux-scheduler-today-color);
+  background: var(--rux-scheduler-today-bg);
 }
 
 /* ---------- Row wrapper ---------- */
@@ -97,7 +109,8 @@
 .rux-scheduler__row {
   display: contents;
   --_row-height: calc(
-    var(--rux-trip-bar-collapsed-height, 10rem) + var(--rux-space-4)
+    var(--rux-trip-bar-collapsed-height, 10rem) +
+      (var(--rux-scheduler-row-block-inset) * 2)
   );
 }
 
@@ -106,7 +119,7 @@
 .rux-scheduler__col-head,
 .rux-scheduler__row-head {
   position: sticky;
-  left: 0;
+  inset-inline-start: 0;
   z-index: var(--rux-z-sticky);
 }
 
@@ -128,11 +141,13 @@
   align-items: center;
   justify-content: center;
   min-height: var(--_row-height);
-  padding: var(--rux-space-2) 0;
-  background: var(--rux-bg);
-  border-right: var(--rux-border-width) solid var(--rux-border);
-  border-bottom: var(--rux-border-width) solid var(--rux-border);
-  color: var(--rux-fg);
+  padding: var(--rux-scheduler-row-block-inset) 0;
+  background: var(--rux-scheduler-bg);
+  border-inline-end: var(--rux-border-width) solid
+    var(--rux-scheduler-border-color);
+  border-block-end: var(--rux-border-width) solid
+    var(--rux-scheduler-border-color);
+  color: var(--rux-scheduler-row-head-color);
   font-size: var(--rux-text-xs);
   font-weight: var(--rux-weight-semibold);
   transition: min-height var(--rux-duration-base) var(--rux-ease-out);
@@ -140,7 +155,7 @@
 
 .rux-scheduler__bus-number {
   display: flex;
-  letter-spacing: var(--rux-tracking-tight);
+  letter-spacing: var(--rux-tracking-wide);
 }
 
 .rux-scheduler__bus-pax {
@@ -149,7 +164,7 @@
 
 .rux-scheduler__row:last-child .rux-scheduler__row-head,
 .rux-scheduler__row:last-child .rux-scheduler__track {
-  border-bottom: none;
+  border-block-end: none;
 }
 
 /* ---------- Track ---------- */
@@ -158,7 +173,8 @@
   position: relative;
   grid-column: span var(--rux-scheduler-days, 7);
   min-height: var(--_row-height);
-  border-bottom: var(--rux-border-width) solid var(--rux-border);
+  border-block-end: var(--rux-border-width) solid
+    var(--rux-scheduler-border-color);
   transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
@@ -171,7 +187,8 @@
 }
 
 .rux-scheduler__track-day {
-  border-inline-end: var(--rux-border-width) solid var(--rux-border);
+  border-inline-end: var(--rux-border-width) solid
+    var(--rux-scheduler-border-color);
 }
 
 .rux-scheduler__track-day:last-child {

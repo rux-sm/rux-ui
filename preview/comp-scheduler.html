@@ -238,6 +238,7 @@
           invoiceNumber: "INV-260510",
           checkNumber: "1109",
           paymentMethod: "Check",
+          paidDate: "6/2",
           pickupAddress: "805 W Ridge Rd, San Juan TX",
           pendingItems: ["itinerary"],
           pdfUploaded: true,
@@ -347,6 +348,7 @@
           postTripMileage: "479 mi",
           invoiceNumber: "INV-260512",
           paymentMethod: "CC",
+          paidDate: "6/2",
           pickupAddress: "Munoz Elementary",
           pendingItems: ["contract"],
         },
@@ -459,21 +461,21 @@
         bar.style.width = "";
 
         if (fromPrev && toNext) {
-          bar.style.left = "0";
-          bar.style.right = "0";
+          bar.style.left = "var(--rux-space-2)";
+          bar.style.right = "var(--rux-space-2)";
           bar.style.width = "auto";
           return;
         }
 
         if (fromPrev) {
-          bar.style.left = "0";
-          bar.style.width = `calc(${spanPct}% - var(--rux-space-2))`;
+          bar.style.left = "var(--rux-space-2)";
+          bar.style.width = `calc(${spanPct}% - var(--rux-space-4))`;
           return;
         }
 
         bar.style.left = `calc(${startPct}% + var(--rux-space-2))`;
         if (toNext) {
-          bar.style.right = "0";
+          bar.style.right = "var(--rux-space-2)";
           bar.style.width = "auto";
         } else {
           bar.style.width = `calc(${spanPct}% - var(--rux-space-4))`;

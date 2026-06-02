@@ -10,7 +10,7 @@
 /* ─── Webfonts ──────────────────────────────────────────────────────────── */
 /* Inter for UI text and JetBrains Mono for code.
    FLAGGED: these are CDN-loaded Google Fonts. If working offline or
-   self-hosting, see fonts/ for the same files.                              */
+   self-hosting, add local .woff2 files and replace this import.             */
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 

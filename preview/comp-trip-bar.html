@@ -88,7 +88,7 @@
                 visible <code>var(--rux-space-1)</code> gap all around.
               </li>
               <li>
-                Trip bars use <code>var(--rux-space-3)</code> body padding and
+                Trip bars use <code>var(--rux-space-2)</code> body padding and
                 reveal the details footer when selected.
               </li>
             </ul>
@@ -148,8 +148,8 @@
                 an 8% foreground mix.
               </li>
               <li>
-                The rail background is <code>var(--rux-bg-sunken)</code> so bars
-                read as raised objects.
+                The rail background is <code>var(--rux-bg)</code> so bars read
+                as raised objects.
               </li>
             </ul>
           </article>
@@ -176,7 +176,7 @@
               </li>
               <li>
                 Fully paid trips show a success
-                <code>circle-dollar-sign</code> status icon.
+                <code>dollar-sign</code> status icon.
               </li>
               <li>
                 Unconfirmed trips and pending summary icons use danger; late
@@ -560,19 +560,20 @@
               <span
                 class="trip-bar-demo__icon-chip trip-bar-demo__icon-chip--paid"
               >
-                <i data-lucide="circle-dollar-sign" class="rux-icon"></i>
+                <i data-lucide="dollar-sign" class="rux-icon"></i>
               </span>
               Paid
             </div>
             <div>
               <code>paid</code>, <code>fullyPaid</code>, <code>isPaid</code>,
-              <code>paymentStatus</code>,
-              <code>paidStatus</code>
+              <code>paymentStatus</code>, <code>paidStatus</code>,
+              <code>paidDate</code>,
+              <code>paymentDate</code>
             </div>
             <div>Shows that the customer trip is paid in full.</div>
             <div>
-              Success color. This is additive information, so it remains visible
-              even on confirmed blue bars.
+              Success color. If a paid date is present, the compact date follows
+              the dollar marker.
             </div>
           </div>
           <div class="trip-bar-demo__anatomy-row">
@@ -768,7 +769,7 @@
               <code>var(--rux-text-xs)</code>. Notes are italic.
             </div>
             <div>
-              Client uses foreground; contact and notes use muted foreground.
+              Client, contact, and notes use foreground for dense schedule scan.
             </div>
           </div>
           <div class="trip-bar-demo__anatomy-row">
@@ -779,8 +780,7 @@
             </div>
             <div>
               Uses <code>var(--rux-text-xs)</code> in every trip bar variation;
-              values use <code>var(--rux-weight-semibold)</code>. Labels hide at
-              the minimum single-day width.
+              values use <code>var(--rux-weight-semibold)</code>.
             </div>
             <div>
               Muted labels/separator text; late or next-day return uses warning.
@@ -794,12 +794,12 @@
             </div>
             <div>
               Driver dots use <code>var(--rux-dot-sm)</code>; names use
-              <code>var(--rux-text-xs)</code> /
+              <code>var(--rux-text-sm)</code> /
               <code>var(--rux-weight-semibold)</code> in every trip bar
               variation.
             </div>
             <div>
-              Confirmed dot uses accent, unconfirmed uses danger, TBA uses
+              Confirmed dot uses success, unconfirmed uses danger, TBA uses
               warning; bus-group badge trails the row.
             </div>
           </div>
@@ -914,6 +914,7 @@
           postTripMileage: "479 mi",
           invoiceNumber: "INV-260512",
           paymentMethod: "CC",
+          paidDate: "6/2",
           pickupAddress: "Munoz Elementary",
           pendingItems: ["contract"],
         },
@@ -953,6 +954,7 @@
         confirmed: true,
         busLabel: "1/2",
         paid: true,
+        paidDate: "6/2",
         destination: "Orlando, FL",
         client: "The Arts Educational Tours",
         contact: "Scott Hartsfield",

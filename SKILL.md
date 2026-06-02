@@ -8,9 +8,9 @@ user-invocable: true
 
 Read `README.md` in this skill first; it has the full visual and content rules. Then explore:
 
-- `tokens.css` — every design token, all `--rux-*`
-- `colors_and_type.css` — webfonts + global element styles
-- `components.css` — every component, BEM-style `.rux-*`
+- `css/tokens.css` — every design token, all `--rux-*`
+- `css/colors_and_type.css` — webfonts + global element styles
+- `css/components.css` — component entrypoint for BEM-style `.rux-*`
 - `rux.js` — tiny JS helpers (toast, modal, copy)
 - `demo.html` — live reference of every component composed together
 - `ui_kits/showcase/index.html` — an example app screen
@@ -22,7 +22,7 @@ Rux UI is a dark-only design system. Clean, minimalist, modern — the restraint
 
 ## When you build with it
 
-1. **Always** import the three CSS files in order: `tokens.css`, `colors_and_type.css`, `components.css`. Add `rux.js` if you need toasts/modals.
+1. **Always** import the three CSS files in order: `css/tokens.css`, `css/colors_and_type.css`, `css/components.css`. Add `rux.js` if you need toasts/modals.
 2. **Never hardcode** a color, radius, shadow, or spacing value. Use a `--rux-*` token. If a value is missing, that's a signal to add a token, not a one-off.
 3. **Compose, don't redesign.** A new screen is almost always `.rux-card` + `.rux-button` + `.rux-input` arranged with `.rux-stack` and `.rux-cluster`. Resist inventing components.
 4. **Match the copy voice.** Sentence case. No exclamation marks. No emoji. Verb-first button labels. Short error messages that say what happened and what to do.

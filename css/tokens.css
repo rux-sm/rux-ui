@@ -22,8 +22,10 @@
   /* Near-black backgrounds, perceptually-tuned hairlines, white-bias text.
      Designed for OLED-friendly contrast without crushing blacks.            */
 
+  --rux-color-white: oklch(100% 0 0);
+
   --rux-bg:            oklch( 0% 0.004 260);   /* canvas — the lowest plane              */
-  --rux-bg-sunken:     oklch( 20% 0.004 260);  /* inputs, code, recessed surfaces        */ 
+  --rux-bg-sunken:     oklch( 20% 0.004 260);  /* inputs, code, recessed surfaces        */
   --rux-bg-elevated:   oklch( 24% 0.004 260);  /* panels, cards, modals                  */
   --rux-bg-3:          oklch( 32% 0.004 260);  /* panels, cards, modals */
   --rux-bg-hover:      #292929;  /* interactive rows, lifted surfaces      */
@@ -47,9 +49,6 @@
 
   /* ─── COLOR · controls ────────────────────────────────────────────────── */
 
-  --rux-control-strip-bg:      oklch(32% 0.004 260);           /* pill-strip container for .rux-segmented */
-  --rux-control-strip-bg-hover: oklch(36% 0.004 260);          /* inactive item hover inside a strip     */
-  --rux-control-strip-bg-active: oklch(42% 0.004 260);         /* selected item inside a pill-strip      */
   --rux-control-ghost-hover:   oklch(100% 0 0 / 0.10); /* transparent white hover           */
   --rux-control-ghost-active:  oklch(100% 0 0 / 0.14); /* transparent white press           */
   --rux-control-ghost-border:  oklch(58% 0.004 260);   /* ghost outline across dark surfaces   */
@@ -57,9 +56,9 @@
   --rux-control-border-hover:  #3a3a3a;            /* hover control edge                   */
   --rux-control-border-active: #424242;            /* selected / pressed control edge      */
 
-  --rux-control-strip-bg:       oklch(29% 0.004 260);
-  --rux-control-strip-bg-hover: oklch(33% 0.004 260);
-  --rux-control-strip-bg-active: oklch(40% 0.004 260);
+  --rux-control-strip-bg:       oklch(29% 0.004 260);  /* pill-strip container for .rux-segmented */
+  --rux-control-strip-bg-hover: oklch(33% 0.004 260);  /* inactive item hover inside a strip      */
+  --rux-control-strip-bg-active: oklch(40% 0.004 260); /* selected item inside a pill-strip       */
 
   --rux-control-bg:             oklch(43% 0.004 260);
   --rux-control-bg-disabled:    oklch(24% 0.004 260);

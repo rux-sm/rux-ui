@@ -1,12 +1,12 @@
 # Rux UI
 
-A lightweight, dark-only design system for Rux UI. Three CSS files, one JS file, one naming convention.
+A lightweight, dark-only design system for Rux UI. Three CSS entrypoints, one JS file, one naming convention.
 
 > **Philosophy**: clean, minimalist, modern. Think the restraint of Apple, the density of Linear, the energy of Spotify. Near-black surfaces, hairline borders, single accent color, no decoration that doesn't earn its place.
 
 ## Sources
 
-This system was distilled from the **TripBoard** codebase (`trip-board/`), which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates it into a single flat namespace optimized for maintainability — every token in one file (`tokens.css`), every component in another (`components.css`).
+This system was distilled from the **TripBoard** codebase (`trip-board/`), which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates tokens into one flat namespace and exposes one component entrypoint that imports focused component partials.
 
 The TripBoard codebase remains the reference for advanced patterns (the schedule grid, trip bar geometry, optical-radius math) — see `trip-board/docs/RUX_UI.md` and `trip-board/docs/Rux_UI_Bible` for the original architecture write-ups.
 
@@ -18,13 +18,13 @@ The TripBoard codebase remains the reference for advanced patterns (the schedule
 .
 ├── README.md              ← you are here
 ├── SKILL.md               ← Agent Skill spec (Claude Code / Claude.ai)
-├── tokens.css             ← all design tokens: color, type, space, radius, motion
-├── colors_and_type.css    ← webfonts + global element styles (h1, p, code, etc)
-├── components.css         ← every component: .rux-button, .rux-card, …
+├── css/
+│   ├── tokens.css          ← all design tokens: color, type, space, radius, motion
+│   ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
+│   └── components.css      ← component entrypoint importing the component partials
 ├── rux.js                 ← tiny JS helpers: Rux.toast, openModal, copy
 ├── demo.html              ← live showcase of every component
 ├── assets/                ← logos, favicons
-├── fonts/                 ← (Inter, JetBrains Mono — currently CDN-loaded, see Iconography)
 ├── preview/               ← Design System tab cards
 └── ui_kits/
     └── showcase/          ← example app screen built from the system
@@ -33,9 +33,9 @@ The TripBoard codebase remains the reference for advanced patterns (the schedule
 To use in a new page:
 
 ```html
-<link rel="stylesheet" href="tokens.css" />
-<link rel="stylesheet" href="colors_and_type.css" />
-<link rel="stylesheet" href="components.css" />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/colors_and_type.css" />
+<link rel="stylesheet" href="css/components.css" />
 <script src="rux.js" defer></script>
 ```
 
@@ -102,7 +102,7 @@ The system has **four background planes**, all near-black with subtle separation
 
 | Token | Value | Use for |
 |---|---|---|
-| `--rux-bg` | `oklch(16% 0.004 260)` | App canvas — the lowest plane |
+| `--rux-bg` | `oklch(0% 0.004 260)` | App canvas — the lowest plane |
 | `--rux-bg-sunken` | `oklch(20% 0.004 260)` | Inputs, code blocks, recessed footers |
 | `--rux-bg-elevated` | `oklch(24% 0.004 260)` | Cards, panels, menus, modals |
 | `--rux-bg-hover` / `--rux-bg-active` | `#292929` / `#303030` | Interactive states |
@@ -266,7 +266,7 @@ Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`
 
 Default easing is `--rux-ease-out` (`cubic-bezier(0.22, 1, 0.36, 1)`) — fast start, gentle settle. Use `--rux-ease-in-out` only for symmetric motion (loops, indeterminate progress). `--rux-ease-spring` exists for playful affordances but should appear *almost never* — overshoot is a feature, not a vibe.
 
-`prefers-reduced-motion` is respected globally in `components.css`.
+`prefers-reduced-motion` is respected globally through `css/components.css`.
 
 ### Transparency & blur
 
@@ -348,8 +348,8 @@ When in doubt, edit a token before adding a new component override.
 
 ## CAVEATS & SUBSTITUTIONS
 
-- **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). The `fonts/` directory is currently empty. Drop self-hosted `.woff2` files there and update the `@import` at the top of `colors_and_type.css` if you need offline reliability.
-- **Lucide icons are referenced via CDN** in `demo.html` and inline-SVG in preview cards. We did not vendor the full set.
+- **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `css/colors_and_type.css` if you need offline reliability.
+- **Lucide icons are referenced via CDN** in `demo.html` and preview cards. We did not vendor the full set.
 - **Logo is a typographic wordmark** generated in this project — no pre-existing Rux logo was found in the source materials. If a real logo exists, swap `assets/rux-logo.svg`.
 - The **TripBoard codebase still uses the old token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-fg`) are intentionally divergent. To migrate the app, the mapping is:
   ```
