@@ -199,8 +199,8 @@ function fmtTime(str) {
 function timeItem(label, value, className = "") {
   const item = document.createElement("span");
   item.className = "rux-trip-bar__time-item";
+  if (label) item.append(textEl("span", "rux-trip-bar__time-label", label));
   item.append(
-    textEl("span", "rux-trip-bar__time-label", label),
     textEl(
       "span",
       `rux-trip-bar__time-value${className ? " " + className : ""}`,
@@ -228,7 +228,7 @@ const PENDING_INDICATORS = [
   },
   {
     key: "contact",
-    icon: "phone",
+    icon: "user",
     label: "Pending contact status",
     fields: [
       "pendingContact",
@@ -243,6 +243,14 @@ const PENDING_INDICATORS = [
       "pending-contact",
       "pending_contact",
     ],
+  },
+  {
+    key: "contactPhone",
+    icon: "phone",
+    label: "Contact phone missing",
+    requiredField: "contactPhone",
+    fields: ["pendingContactPhone", "contactPhonePending"],
+    aliases: ["contact-phone", "contact_phone", "phone"],
   },
   {
     key: "contract",
@@ -366,6 +374,7 @@ function getPendingIndicators(trip) {
     : [];
   return PENDING_INDICATORS.filter((item) => {
     if (item.fields.some((field) => isPendingValue(trip[field]))) return true;
+    if (item.requiredField && !trip[item.requiredField]) return true;
     if (trip.pending && isPendingValue(trip.pending[item.key])) return true;
     return item.aliases.some((alias) => pendingItems.includes(alias));
   });
@@ -601,18 +610,15 @@ export function createTripBar(trip, callbacks = {}) {
   const time = document.createElement("div");
   time.className = "rux-trip-bar__time";
   const middleTime = trip.loadTime || trip.pickupTime || trip.spotTime;
-  const middleLabel = trip.loadTime ? "Ld" : "Sp";
   time.append(
-    timeItem("Yd", fmtTime(trip.departTime)),
-    textEl("span", "rux-trip-bar__time-sep", "·"),
-    ...(middleTime
-      ? [
-          timeItem(middleLabel, fmtTime(middleTime)),
-          textEl("span", "rux-trip-bar__time-sep", "·"),
-        ]
-      : []),
+    timeItem("Dep", fmtTime(trip.departTime)),
     timeItem(
-      "Rt",
+      "Spt",
+      middleTime ? fmtTime(middleTime) : "—",
+      middleTime ? "" : "rux-trip-bar__time-value--empty",
+    ),
+    timeItem(
+      "Arr",
       fmtTime(trip.arriveTime),
       trip.arriveLate ? "rux-trip-bar__time-value--late" : "",
     ),
@@ -643,7 +649,14 @@ export function createTripBar(trip, callbacks = {}) {
   body.append(
     summary,
     textEl("div", "rux-trip-bar__client", trip.client),
-    textEl("div", "rux-trip-bar__contact", trip.contact),
+    (() => {
+      const el = document.createElement("div");
+      el.className = "rux-trip-bar__contact";
+      el.append(textEl("span", "rux-trip-bar__contact-name", trip.contact));
+      if (trip.contactPhone)
+        el.append(textEl("span", "rux-trip-bar__contact-phone", trip.contactPhone));
+      return el;
+    })(),
     textEl("div", "rux-trip-bar__notes", trip.notes),
     time,
     drivers,
@@ -700,7 +713,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const expandBtn = document.createElement("button");
   expandBtn.type = "button";
-  expandBtn.className = "rux-trip-bar__expand";
+  expandBtn.className = "rux-button rux-button--ghost rux-button--icon rux-trip-bar__expand";
   const expandIcon = icon("chevron-down", "rux-icon rux-trip-bar__expand-icon");
   expandBtn.append(expandIcon);
   meta.appendChild(expandBtn);

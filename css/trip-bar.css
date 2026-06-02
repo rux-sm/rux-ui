@@ -35,7 +35,7 @@
    Client       __client           text-sm   medium     leading-snug
    Contact      __contact          text-xs   regular    leading-snug
    Notes        __notes            text-xs   regular    leading-snug  (italic)
-   Time         __time             text-xs   —          leading-snug
+   Time         __time             text-xs   —          leading-snug  (Dep · Spt · Arr, Arr right-aligned)
    Time value   __time-value       text-xs   semibold   leading-snug
    Drivers      __driver           text-sm   semibold   leading-snug
    Bus badge    __bus-label        text-xs   bold       1             (pill, fixed height)
@@ -92,11 +92,11 @@
   --_surface: var(--rux-trip-bar-bg, oklch(from var(--_tone) 60% 0.24 h / 40%));
   --_surface-hover: var(
     --rux-trip-bar-bg-hover,
-    oklch(from var(--_tone) 65% 0.24 h / 40%)
+    oklch(from var(--_tone) 63% 0.24 h / 45%)
   );
   --_surface-active: var(
     --rux-trip-bar-bg-active,
-    oklch(from var(--_tone) 65% 0.24 h / 40%)
+    oklch(from var(--_tone) 66% 0.24 h / 52%)
   );
 
   position: relative;
@@ -119,7 +119,7 @@
     box-shadow var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-/* ---------- Base height contract (single-day) ---------- */
+/* ---------- Height contract ---------- */
 
 .rux-trip-bar {
   height: calc(var(--rux-trip-bar-collapsed-height) + var(--_conflict-height));
@@ -166,7 +166,6 @@
 /* No thick left stripe or left radius — trip entered from a prior week.
    Diagonal stripes at the left edge signal continuation. */
 .rux-trip-bar--from-prev {
-  border-left-width: var(--rux-border-width);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -224,8 +223,7 @@
 
 .rux-trip-bar--multi-day .rux-trip-bar__actions,
 .rux-trip-bar--multi-day .rux-trip-bar__body,
-.rux-trip-bar--multi-day .rux-trip-bar__details-inner,
-.rux-trip-bar--multi-day .rux-trip-bar__expand {
+.rux-trip-bar--multi-day .rux-trip-bar__details-inner {
   width: min(100%, var(--rux-trip-bar-day-inline-size, 100%));
 }
 
@@ -244,7 +242,7 @@
   justify-content: start;
   background: var(--rux-trip-bar-actions-bg);
   border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
-  border-radius: var(--rux-radius-sm) var(--rux-radius-sm) 0 0;
+  border-radius: var(--rux-radius-sm);
   opacity: 0;
   pointer-events: none;
   transform: translateY(calc(var(--rux-space-1) * -1));
@@ -288,6 +286,10 @@
   border-top-right-radius: 0;
 }
 
+.rux-trip-bar--multi-day .rux-trip-bar__actions {
+  border-top-right-radius: 0;
+}
+
 /* ---------- Body ---------- */
 
 .rux-trip-bar__body {
@@ -311,8 +313,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--rux-trip-bar-bus-label-min-width);
-  height: var(--rux-icon-xl);
+  width: var(--rux-control-height);
+  height: var(--rux-icon-lg);
   padding: 0 var(--rux-space-2);
   background: var(--rux-trip-bar-bus-label-bg);
   border-radius: var(--rux-radius-sm);
@@ -371,27 +373,49 @@
 .rux-trip-bar__contact,
 .rux-trip-bar__notes {
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   line-height: var(--rux-leading-snug);
 }
 
 .rux-trip-bar__client {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--rux-fg);
   font-size: var(--rux-text-sm);
   font-weight: var(--rux-weight-medium);
 }
 
-.rux-trip-bar__contact,
-.rux-trip-bar__notes {
-  color: var(--rux-fg);
+.rux-trip-bar__contact {
+  display: flex;
+  align-items: baseline;
+  gap: var(--rux-space-2);
   font-size: var(--rux-text-xs);
   font-weight: var(--rux-weight-regular);
+  color: var(--rux-fg-muted);
+}
+
+.rux-trip-bar__contact-name {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rux-trip-bar__contact-phone {
+  flex: none;
+  white-space: nowrap;
+  color: var(--rux-fg-subtle);
 }
 
 .rux-trip-bar__notes {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-style: italic;
+  color: var(--rux-warning);
+  font-size: var(--rux-text-xs);
+  font-weight: var(--rux-weight-regular);
 }
 
 /* ---------- Time row ---------- */
@@ -407,9 +431,13 @@
   white-space: nowrap;
 }
 
+.rux-trip-bar__time .rux-trip-bar__time-item:last-child {
+  margin-left: auto;
+}
+
 .rux-trip-bar__time-item {
   display: inline-flex;
-  min-width: 0;
+  min-width: 3.75rem;
   align-items: baseline;
   gap: var(
     --rux-trip-bar-tight-gap
@@ -433,6 +461,10 @@
 
 .rux-trip-bar__time-value--late {
   color: var(--rux-warning);
+}
+
+.rux-trip-bar__time-value--empty {
+  color: var(--rux-fg-subtle);
 }
 
 /* ---------- Drivers row ---------- */
@@ -533,7 +565,7 @@
 }
 
 .rux-trip-bar__detail-field-label {
-  color: var(--rux-fg-subtle);
+  color: var(--rux-fg-muted);
   font-weight: var(--rux-weight-semibold);
   letter-spacing: var(--rux-tracking-wide);
   text-transform: uppercase;
@@ -553,30 +585,20 @@
 /* ---------- Expand button ---------- */
 
 .rux-trip-bar__expand {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--rux-icon-xl);
-  height: var(--rux-icon-xl);
-  border: none;
+  --_h: var(--rux-icon-xl);
   border-radius: var(--rux-radius-sm);
-  background: transparent;
-  color: var(--rux-fg-muted);
-  cursor: pointer;
+  border: var(--rux-border-width) solid transparent;
   opacity: 0;
   pointer-events: none;
   transition:
     opacity var(--rux-duration-fast) var(--rux-ease-out),
-    color var(--rux-duration-fast) var(--rux-ease-out);
+    background-color var(--rux-duration-instant) var(--rux-ease-out),
+    border-color var(--rux-duration-instant) var(--rux-ease-out);
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__expand {
   opacity: 1;
   pointer-events: auto;
-}
-
-.rux-trip-bar__expand:hover {
-  color: var(--rux-fg);
 }
 
 .rux-trip-bar__expand-icon {
