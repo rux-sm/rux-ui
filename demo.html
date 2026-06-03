@@ -20,27 +20,95 @@
         padding: var(--rux-space-7) var(--rux-space-5);
         overflow-x: clip;
       }
-      .page__nav {
+      .demo-topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        min-width: 0;
         gap: var(--rux-space-4);
-        flex-wrap: wrap;
-        padding-bottom: var(--rux-space-6);
-        margin-bottom: var(--rux-space-7);
+        padding: var(--rux-space-4);
         border-bottom: var(--rux-border-width) solid var(--rux-border);
       }
-      .page__nav-logo {
+      .demo-topbar__start,
+      .demo-topbar__actions,
+      .demo-topbar__account,
+      .demo-topbar__module-nav {
         display: flex;
         align-items: center;
+        min-width: 0;
+      }
+      .demo-topbar__start {
+        flex: 1 1 auto;
+        gap: var(--rux-space-4);
+      }
+      .demo-topbar__brand {
+        display: flex;
+        align-items: center;
+        flex: none;
         gap: var(--rux-space-2);
         font-size: var(--rux-text-md);
         font-weight: var(--rux-weight-semibold);
-        letter-spacing: var(--rux-tracking-tight);
+        letter-spacing: 0;
       }
-      .page__nav-logo img { width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
-      .page__nav-actions {
+      .demo-topbar__brand img {
+        width: var(--rux-control-height);
+        height: var(--rux-control-height);
+        border-radius: var(--rux-radius-sm);
+      }
+      .demo-topbar__module-nav {
+        gap: var(--rux-space-2);
+        margin: calc(var(--rux-space-1) * -1);
+        padding: var(--rux-space-1);
+        overflow-x: auto;
+        scroll-padding-inline: var(--rux-space-1);
+        scrollbar-width: none;
+      }
+      .demo-topbar__module-nav::-webkit-scrollbar {
+        display: none;
+      }
+      .demo-topbar__module-button {
+        flex: none;
+      }
+      .demo-topbar__module-button.is-active {
+        color: var(--rux-fg);
+        background: var(--rux-control-ghost-hover);
+      }
+      .demo-topbar__actions {
         justify-content: flex-end;
+        flex: none;
+        gap: var(--rux-space-3);
+      }
+      .demo-topbar__account {
+        gap: var(--rux-space-3);
+      }
+      .demo-topbar__profile {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--rux-control-height);
+        height: var(--rux-control-height);
+        padding: 0;
+        overflow: hidden;
+        background: var(--rux-bg-sunken);
+        border: var(--rux-border-width) solid var(--rux-control-ghost-border);
+        border-radius: var(--rux-radius-full);
+        cursor: pointer;
+      }
+      .demo-topbar__profile:focus-visible {
+        outline: none;
+        box-shadow: var(--rux-ring-focus);
+      }
+      .demo-topbar__profile img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .demo-topbar__username {
+        color: var(--rux-fg);
+        font-size: var(--rux-text-sm);
+        font-weight: var(--rux-weight-semibold);
+        line-height: 1;
       }
       section {
         margin-bottom: var(--rux-space-7);
@@ -437,14 +505,18 @@
           max-width: none;
           padding: var(--rux-space-5) 0;
         }
-        .page__nav {
+        .demo-topbar {
           align-items: flex-start;
-          margin-bottom: var(--rux-space-6);
-          padding-bottom: var(--rux-space-5);
+          flex-direction: column;
+          padding: var(--rux-space-4);
         }
-        .page__nav-actions {
+        .demo-topbar__start,
+        .demo-topbar__actions {
           justify-content: flex-start;
           width: 100%;
+        }
+        .demo-topbar__actions {
+          flex-wrap: wrap;
         }
         section {
           margin-bottom: var(--rux-space-6);
@@ -517,26 +589,68 @@
     </style>
   </head>
   <body>
-    <main class="page">
-      <header class="page__nav">
-        <div class="page__nav-logo">
+    <header class="demo-topbar" aria-label="App">
+      <div class="demo-topbar__start">
+        <div class="demo-topbar__brand">
           <img src="assets/rux-mark.svg" alt="" />
           <span>Rux UI</span>
         </div>
-        <nav class="rux-cluster page__nav-actions">
-          <div class="accent-picker" role="radiogroup" aria-label="Accent color">
-            <span class="accent-picker__label">Accent</span>
-            <button class="accent-swatch accent-swatch--blue" data-rux-set-accent="blue" aria-label="Blue"></button>
-            <button class="accent-swatch accent-swatch--violet" data-rux-set-accent="violet" aria-label="Violet"></button>
-            <button class="accent-swatch accent-swatch--green" data-rux-set-accent="green" aria-label="Green"></button>
-            <button class="accent-swatch accent-swatch--amber" data-rux-set-accent="amber" aria-label="Amber"></button>
-          </div>
-          <a href="README.md" class="rux-button rux-button--ghost"><i data-lucide="book-open"></i> README</a>
-          <a href="ui_kits/showcase/index.html" class="rux-button rux-button--ghost"><i data-lucide="layout-template"></i> Showcase</a>
-          <button class="rux-button rux-button--primary"><i data-lucide="arrow-right"></i> Get started</button>
+        <nav class="demo-topbar__module-nav" aria-label="Main">
+          <button
+            class="rux-button rux-button--ghost demo-topbar__module-button is-active"
+            type="button"
+            aria-current="page"
+          >
+            <i data-lucide="layout-dashboard"></i>
+            Overview
+          </button>
+          <button
+            class="rux-button rux-button--ghost demo-topbar__module-button"
+            type="button"
+          >
+            <i data-lucide="palette"></i>
+            Foundations
+          </button>
+          <button
+            class="rux-button rux-button--ghost demo-topbar__module-button"
+            type="button"
+          >
+            <i data-lucide="blocks"></i>
+            Components
+          </button>
+          <a
+            class="rux-button rux-button--ghost demo-topbar__module-button"
+            href="components/comp-scheduler.html"
+          >
+            <i data-lucide="calendar-days"></i>
+            Schedule
+          </a>
         </nav>
-      </header>
+      </div>
+      <div class="demo-topbar__actions">
+        <div class="accent-picker" role="radiogroup" aria-label="Accent color">
+          <span class="accent-picker__label">Accent</span>
+          <button class="accent-swatch accent-swatch--blue" data-rux-set-accent="blue" aria-label="Blue"></button>
+          <button class="accent-swatch accent-swatch--violet" data-rux-set-accent="violet" aria-label="Violet"></button>
+          <button class="accent-swatch accent-swatch--green" data-rux-set-accent="green" aria-label="Green"></button>
+          <button class="accent-swatch accent-swatch--amber" data-rux-set-accent="amber" aria-label="Amber"></button>
+        </div>
+        <a href="README.md" class="rux-button rux-button--ghost"><i data-lucide="book-open"></i> README</a>
+        <a href="ui_kits/showcase/index.html" class="rux-button rux-button--ghost"><i data-lucide="layout-template"></i> Showcase</a>
+        <div class="demo-topbar__account">
+          <span class="demo-topbar__username">Rux</span>
+          <button
+            class="demo-topbar__profile"
+            type="button"
+            aria-label="Open Rux profile"
+          >
+            <img src="assets/rux-profile-pic.png" alt="" />
+          </button>
+        </div>
+      </div>
+    </header>
 
+    <main class="page">
       <section>
         <h1 class="hero-title">Rux UI.</h1>
         <p class="rux-lead hero-copy">
@@ -816,7 +930,7 @@
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Radius</div>
-                <div class="button-spec__value">8px</div>
+                <div class="button-spec__value">6px</div>
               </div>
               <div class="button-spec__item">
                 <div class="button-spec__label">Font / Weight</div>
@@ -888,6 +1002,32 @@
                 <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Three</button>
               </div>
               <div class="button-use"><span class="button-use__label">Tab strip</span><span class="button-use__desc">Use data-rux-tabs with role="tablist" for exclusive view switching. The track is recessed; selected items lift above it.</span></div>
+            </div>
+
+            <hr class="rux-divider">
+
+            <!-- Ghost active strip -->
+            <div class="rux-stack-sm">
+              <div class="rux-segmented rux-segmented--ghost" data-rux-tabs role="tablist" aria-label="Schedule view modes">
+                <button class="rux-button is-active" role="tab" aria-selected="true">Day</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Week</button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">Month</button>
+              </div>
+              <div class="rux-segmented rux-segmented--ghost rux-segmented--inline" data-rux-tabs role="tablist" aria-label="Schedule view modes compact">
+                <button class="rux-button is-active" role="tab" aria-selected="true">
+                  <i data-lucide="calendar-days"></i>
+                  Day
+                </button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">
+                  <i data-lucide="calendar-range"></i>
+                  Week
+                </button>
+                <button class="rux-button" role="tab" aria-selected="false" tabindex="-1">
+                  <i data-lucide="calendar"></i>
+                  Month
+                </button>
+              </div>
+              <div class="button-use"><span class="button-use__label">Ghost</span><span class="button-use__desc">Add rux-segmented--ghost for low-emphasis view modes. Inactive items stay transparent; the selected item uses the ghost state fill.</span></div>
             </div>
 
             <hr class="rux-divider">

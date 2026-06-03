@@ -22,6 +22,8 @@
                                     enough for one-day trip bars  (default 16.5rem)
    --rux-scheduler-max-block-size   Optional vertical cap; set this to make the
                                     scheduler scroll internally  (default none)
+   --rux-scheduler-grid-line-color  Inner grid lines between rows and days
+                                    (default --rux-grid-line)
    --rux-scheduler-cols             Full grid-template-columns value. Override this
                                     to change column count without touching CSS.
 
@@ -37,12 +39,13 @@
    ========================================================================== */
 
 .rux-scheduler {
-  --rux-scheduler-col-head-width: 2.5rem;
-  --rux-scheduler-head-height: 2.5rem;
+  --rux-scheduler-col-head-width: 2rem;
+  --rux-scheduler-head-height: 2rem;
   --rux-scheduler-days: 7;
   --rux-scheduler-day-min-width: 16.5rem;
   --rux-scheduler-bg: var(--rux-bg);
   --rux-scheduler-border-color: var(--rux-border);
+  --rux-scheduler-grid-line-color: var(--rux-border);
   --rux-scheduler-header-color: var(--rux-fg-subtle);
   --rux-scheduler-row-head-color: var(--rux-fg);
   --rux-scheduler-max-block-size: none;
@@ -74,7 +77,7 @@
   scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
   background: var(--rux-scheduler-bg);
   border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
-  border-radius: var(--rux-radius-lg);
+  border-radius: var(--rux-radius-sm);
 }
 
 /* ---------- Header row ---------- */
@@ -90,9 +93,9 @@
   padding: var(--rux-space-2) var(--rux-space-2);
   background: var(--rux-scheduler-bg);
   border-inline-end: var(--rux-border-width) solid
-    var(--rux-scheduler-border-color);
+    var(--rux-scheduler-grid-line-color);
   border-block-end: var(--rux-border-width) solid
-    var(--rux-scheduler-border-color);
+    var(--rux-scheduler-grid-line-color);
   color: var(--rux-scheduler-header-color);
   font-size: var(--rux-text-xs);
   font-weight: var(--rux-weight-semibold);
@@ -154,9 +157,9 @@
   padding: var(--rux-scheduler-row-block-inset) 0;
   background: var(--rux-scheduler-bg);
   border-inline-end: var(--rux-border-width) solid
-    var(--rux-scheduler-border-color);
+    var(--rux-scheduler-grid-line-color);
   border-block-end: var(--rux-border-width) solid
-    var(--rux-scheduler-border-color);
+    var(--rux-scheduler-grid-line-color);
   color: var(--rux-scheduler-row-head-color);
   font-size: var(--rux-text-xs);
   font-weight: var(--rux-weight-semibold);
@@ -184,7 +187,7 @@
   grid-column: span var(--rux-scheduler-days, 7);
   min-height: var(--_row-height);
   border-block-end: var(--rux-border-width) solid
-    var(--rux-scheduler-border-color);
+    var(--rux-scheduler-grid-line-color);
   transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
@@ -198,7 +201,7 @@
 
 .rux-scheduler__track-day {
   border-inline-end: var(--rux-border-width) solid
-    var(--rux-scheduler-border-color);
+    var(--rux-scheduler-grid-line-color);
 }
 
 .rux-scheduler__track-day:last-child {
