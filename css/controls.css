@@ -100,6 +100,29 @@
   --_fg:   var(--rux-fg-on-accent);
 }
 
+/* — sizes — */
+
+.rux-button--sm {
+  --_h: 26px;
+  font-size: var(--rux-text-xs);
+  padding: 0 var(--rux-space-2);
+  gap: var(--rux-space-1);
+}
+
+.rux-button--xs {
+  --_h: 20px;
+  font-size: var(--rux-text-2xs);
+  padding: 0 6px;
+  gap: 3px;
+  border-radius: var(--rux-radius-xs);
+}
+
+.rux-button--sm > :where(svg, .rux-icon, [data-lucide]),
+.rux-button--xs > :where(svg, .rux-icon, [data-lucide]) {
+  width: var(--rux-icon-sm);
+  height: var(--rux-icon-sm);
+}
+
 /* — block (full-width) — */
 
 .rux-button--block {
@@ -160,7 +183,7 @@
    ========================================================================== */
 
 .rux-segmented {
-  --_pad: var(--rux-space-1);
+  --_pad: var(--rux-space-1);  /* 4px — track extends beyond buttons, buttons align with adjacent 32px fields via align-items:center on the grid row */
 
   display: flex;
   align-items: center;
@@ -193,7 +216,7 @@
   flex: 1;
   min-width: 0;
   border-radius: var(--rux-radius-sm);
-  color: var(--rux-fg-muted);
+  color: var(--rux-fg);
 }
 .rux-segmented > .rux-button:hover {
   color: var(--rux-fg);
@@ -205,6 +228,7 @@
   color: var(--rux-fg-disabled);
   box-shadow: none;
 }
+
 .rux-segmented > .rux-button.is-active,
 .rux-segmented > .rux-button[aria-pressed="true"],
 .rux-segmented > .rux-button[aria-selected="true"] {

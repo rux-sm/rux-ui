@@ -24,8 +24,8 @@
 
   --rux-color-white: oklch(100% 0 0);
 
-  --rux-bg-topbar: oklch(0% 0.004 260);
-  --rux-bg: oklch(16% 0.004 260); /* canvas — the lowest plane              */
+  --rux-bg-topbar: oklch(16% 0.004 260);
+  --rux-bg: oklch(20% 0.004 260); /* canvas — the lowest plane              */
   --rux-bg-sunken: oklch(
     20% 0.004 260
   ); /* inputs, code, recessed surfaces        */
@@ -192,7 +192,7 @@
   --rux-border-width: 1px;
 
   --rux-control-height: 32px;
-  --rux-field-height: 36px;
+  --rux-field-height: 32px;  /* unified with --rux-control-height */
   --rux-textarea-min-height: 84px;
   --rux-switch-width: 52px;
   --rux-switch-height: 32px;

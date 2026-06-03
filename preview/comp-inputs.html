@@ -3,30 +3,332 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <title>Form controls</title>
     <link rel="stylesheet" href="../css/tokens.css" />
     <link rel="stylesheet" href="../css/colors_and_type.css" />
     <link rel="stylesheet" href="../css/components.css" />
+    <script src="https://unpkg.com/lucide@latest" defer></script>
     <style>
-      body { padding: var(--rux-space-5); display: grid; grid-template-columns: 1fr 1fr; gap: var(--rux-space-4); }
+      body {
+        padding: var(--rux-space-6);
+        max-width: 600px;
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-7);
+      }
+
+      .ds-section-title {
+        font-size: var(--rux-text-2xs);
+        font-weight: var(--rux-weight-semibold);
+        color: var(--rux-fg-subtle);
+        letter-spacing: var(--rux-tracking-wide);
+        text-transform: uppercase;
+        padding-bottom: var(--rux-space-3);
+        border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+        margin-bottom: var(--rux-space-4);
+      }
+
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--rux-space-4); }
+      .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--rux-space-4); }
+      .span-2 { grid-column: 1 / -1; }
     </style>
   </head>
   <body>
-    <div class="rux-field">
-      <label class="rux-field__label">Email</label>
-      <input class="rux-input" value="ada@rux.dev" />
-    </div>
-    <div class="rux-field">
-      <label class="rux-field__label">Role</label>
-      <select class="rux-select"><option>Dispatcher</option><option>Driver</option></select>
-    </div>
-    <div class="rux-field">
-      <label class="rux-field__label">Error</label>
-      <input class="rux-input" value="not an email" aria-invalid="true" />
-      <span class="rux-field__error">Enter a valid email.</span>
-    </div>
-    <div class="rux-field">
-      <label class="rux-field__label">Disabled</label>
-      <input class="rux-input" value="locked" disabled />
-    </div>
+
+    <!-- ── Text inputs ──────────────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">Text inputs</p>
+      <div class="grid-2">
+        <div class="rux-field">
+          <label class="rux-field__label">Destination</label>
+          <input class="rux-input" type="text" value="Paragon Casino" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Customer</label>
+          <input class="rux-input" type="text" placeholder="Organization name" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Phone</label>
+          <input class="rux-input" type="tel" placeholder="(555) 000-0000" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Email</label>
+          <input class="rux-input" type="email" placeholder="contact@example.com" />
+        </div>
+        <div class="rux-field span-2">
+          <label class="rux-field__label">Pick-up address</label>
+          <input class="rux-input" type="text" placeholder="123 Main St, City, State" />
+          <span class="rux-field__help">Full departure address including city and state.</span>
+        </div>
+        <div class="rux-field span-2">
+          <label class="rux-field__label">Driver instructions</label>
+          <textarea class="rux-textarea" rows="3" placeholder="Gate code, parking notes, special instructions…"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Prefix / suffix ─────────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">Input with prefix / suffix</p>
+      <div class="grid-2">
+        <div class="rux-field">
+          <label class="rux-field__label">Search</label>
+          <div class="rux-input-group rux-input-group--prefix">
+            <span class="rux-input-group__prefix">
+              <i data-lucide="search" style="width:var(--rux-icon-md);height:var(--rux-icon-md);"></i>
+            </span>
+            <input class="rux-input" type="text" placeholder="Driver or trip…" />
+          </div>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Quoted price</label>
+          <div class="rux-input-group rux-input-group--prefix">
+            <span class="rux-input-group__prefix">$</span>
+            <input class="rux-input" type="number" min="0" step="0.01" placeholder="0.00" />
+          </div>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Estimated miles</label>
+          <div class="rux-input-group rux-input-group--suffix">
+            <input class="rux-input" type="number" min="0" placeholder="0" />
+            <span class="rux-input-group__suffix">mi</span>
+          </div>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Driver pay</label>
+          <div class="rux-input-group rux-input-group--prefix">
+            <span class="rux-input-group__prefix">$</span>
+            <input class="rux-input" type="number" min="0" step="0.01" value="325" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Date & time ─────────────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">Date & time</p>
+      <div class="grid-2">
+        <div class="rux-field">
+          <label class="rux-field__label">Departure date</label>
+          <input class="rux-input" type="date" value="2026-06-07" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Return date</label>
+          <input class="rux-input" type="date" value="2026-06-09" />
+        </div>
+      </div>
+      <div class="grid-3" style="margin-top:var(--rux-space-4)">
+        <div class="rux-field">
+          <label class="rux-field__label">Departure time</label>
+          <input class="rux-input" type="time" value="06:30" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Spot time</label>
+          <input class="rux-input" type="time" value="06:00" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Return time</label>
+          <input class="rux-input" type="time" value="22:00" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Select ──────────────────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">Select (native)</p>
+      <div class="grid-2">
+        <div class="rux-field">
+          <label class="rux-field__label">Payment status</label>
+          <select class="rux-select">
+            <option>Pending quote</option>
+            <option>PO received</option>
+            <option selected>Contract signed</option>
+            <option>Invoiced</option>
+            <option>Paid</option>
+            <option>Not required</option>
+          </select>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">With placeholder</label>
+          <select class="rux-select">
+            <option value="" disabled selected>Select a driver…</option>
+            <option>Alejandro Arredondo</option>
+            <option>Hector Escamilla</option>
+            <option>Maria Lopez</option>
+          </select>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Itinerary status</label>
+          <select class="rux-select">
+            <option selected>Pending</option>
+            <option>Received</option>
+          </select>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Disabled</label>
+          <select class="rux-select" disabled>
+            <option>Locked value</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Segmented controls ──────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">Segmented controls</p>
+      <div class="grid-2">
+        <div class="rux-field">
+          <label class="rux-field__label">Contract status</label>
+          <div class="rux-segmented" data-rux-toggle-group>
+            <button class="rux-button rux-button--sm is-active" aria-pressed="true">Pending</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">N/A</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">Signed</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">PO</button>
+          </div>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Invoice status</label>
+          <div class="rux-segmented" data-rux-toggle-group>
+            <button class="rux-button rux-button--sm is-active" aria-pressed="true">Pending</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">Invoiced</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">Deposit</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">Paid</button>
+          </div>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Driver role</label>
+          <div class="rux-segmented" data-rux-toggle-group>
+            <button class="rux-button rux-button--sm is-active" aria-pressed="true">Driver</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">Co-driver</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">Relief</button>
+          </div>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Buses needed</label>
+          <div class="rux-segmented" data-rux-toggle-group>
+            <button class="rux-button rux-button--sm is-active" aria-pressed="true">1</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">2</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">3</button>
+            <button class="rux-button rux-button--sm" aria-pressed="false">4</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Switch & checkbox ───────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">Switch & checkbox</p>
+      <div class="grid-2">
+        <div class="rux-field">
+          <label class="rux-field__label">Notifications</label>
+          <div style="display:flex; align-items:center; gap:var(--rux-space-3); height:var(--rux-field-height);">
+            <label class="rux-switch">
+              <input type="checkbox" checked>
+              <span class="rux-switch__track"></span>
+              <span class="rux-switch__thumb"></span>
+            </label>
+            <span style="font-size:var(--rux-text-sm); color:var(--rux-fg-muted);">Enabled</span>
+          </div>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Notifications off</label>
+          <div style="display:flex; align-items:center; gap:var(--rux-space-3); height:var(--rux-field-height);">
+            <label class="rux-switch">
+              <input type="checkbox">
+              <span class="rux-switch__track"></span>
+              <span class="rux-switch__thumb"></span>
+            </label>
+            <span style="font-size:var(--rux-text-sm); color:var(--rux-fg-subtle);">Disabled</span>
+          </div>
+        </div>
+        <div class="rux-field span-2">
+          <label class="rux-field__label">Documents received</label>
+          <div style="display:flex;flex-direction:column;gap:var(--rux-space-1);">
+            <label class="rux-checkbox"><input type="checkbox" checked>Itinerary</label>
+            <label class="rux-checkbox"><input type="checkbox">Contact sheet</label>
+            <label class="rux-checkbox"><input type="checkbox" checked>Contract</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Color swatches ──────────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">Color swatches</p>
+      <div class="rux-field">
+        <label class="rux-field__label">Trip color</label>
+        <div class="rux-color-swatches" role="group" aria-label="Select a trip color">
+          <label class="rux-color-swatch" style="--color:hsl(220 78% 56%)">
+            <input type="radio" name="color-demo" value="blue" checked />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+          <label class="rux-color-swatch" style="--color:hsl(186 68% 44%)">
+            <input type="radio" name="color-demo" value="cyan" />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+          <label class="rux-color-swatch" style="--color:hsl(155 58% 42%)">
+            <input type="radio" name="color-demo" value="green" />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+          <label class="rux-color-swatch" style="--color:hsl(68 62% 44%)">
+            <input type="radio" name="color-demo" value="yellow" />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+          <label class="rux-color-swatch" style="--color:hsl(32 80% 52%)">
+            <input type="radio" name="color-demo" value="orange" />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+          <label class="rux-color-swatch" style="--color:hsl(356 68% 52%)">
+            <input type="radio" name="color-demo" value="red" />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+          <label class="rux-color-swatch" style="--color:hsl(288 52% 52%)">
+            <input type="radio" name="color-demo" value="purple" />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+          <label class="rux-color-swatch" style="--color:hsl(0 0% 48%)">
+            <input type="radio" name="color-demo" value="gray" />
+            <span class="rux-color-swatch__dot"></span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── States ──────────────────────────────────────────────── -->
+    <section>
+      <p class="ds-section-title">States</p>
+      <div class="grid-2">
+        <div class="rux-field">
+          <label class="rux-field__label">Default</label>
+          <input class="rux-input" type="text" placeholder="Placeholder text" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Filled</label>
+          <input class="rux-input" type="text" value="Filled value" />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Error</label>
+          <input class="rux-input" type="text" value="bad value" aria-invalid="true" />
+          <span class="rux-field__error">This field is required.</span>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Disabled</label>
+          <input class="rux-input" type="text" value="Cannot edit" disabled />
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">Read-only</label>
+          <input class="rux-input" type="text" value="260607-0001" readonly />
+          <span class="rux-field__help">Trip ID — assigned automatically.</span>
+        </div>
+        <div class="rux-field">
+          <label class="rux-field__label">With help text</label>
+          <input class="rux-input" type="text" placeholder="e.g. 1/2" />
+          <span class="rux-field__help">Bus label for multi-bus trips.</span>
+        </div>
+      </div>
+    </section>
+
+    <script src="../rux.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });</script>
   </body>
 </html>

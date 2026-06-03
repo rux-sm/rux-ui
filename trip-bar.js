@@ -493,7 +493,7 @@ export function createTripBar(trip, callbacks = {}) {
     setFloatingTooltip(marker, item.label);
     pending.appendChild(marker);
   });
-  const busLabel = trip.busLabel || "";
+  const groupLabel = trip.groupLabel || "";
   let statusIcon = null;
   if (paid) {
     const datePaid = paidDate(trip);
@@ -536,11 +536,11 @@ export function createTripBar(trip, callbacks = {}) {
 
   const drivers = document.createElement("div");
   drivers.className = "rux-trip-bar__drivers";
-  if (busLabel) {
-    const busGroup = textEl("span", "rux-trip-bar__bus-label", busLabel);
+  if (groupLabel) {
+    const busGroup = textEl("span", "rux-trip-bar__bus-label", groupLabel);
     busGroup.setAttribute(
       "aria-label",
-      `${busLabel} buses in this customer trip`,
+      `${groupLabel} buses in this customer trip`,
     );
     drivers.appendChild(busGroup);
   }

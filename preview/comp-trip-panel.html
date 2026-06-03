@@ -1,0 +1,712 @@
+<!doctype html>
+<!-- @dsCard group="Components" -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Trip panel</title>
+    <link rel="stylesheet" href="../css/tokens.css" />
+    <link rel="stylesheet" href="../css/colors_and_type.css" />
+    <link rel="stylesheet" href="../css/components.css" />
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <style>
+
+      /* ── Demo page ───────────────────────────────────────────────────── */
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: var(--rux-bg);
+        display: grid;
+        grid-template-columns: 1fr 440px;
+      }
+      .demo-bg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--rux-fg-subtle);
+        font-size: var(--rux-text-sm);
+        border-right: var(--rux-border-width) solid var(--rux-border);
+        background-image:
+          repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 59px,
+            var(--rux-border-subtle) 59px,
+            var(--rux-border-subtle) 60px
+          );
+      }
+
+      /* ── Panel shell ─────────────────────────────────────────────────── */
+      .trip-panel {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        min-height: 0;
+        background: var(--rux-bg-elevated);
+        border-left: var(--rux-border-width) solid var(--rux-border);
+      }
+
+      /* ── Header ──────────────────────────────────────────────────────── */
+      .trip-panel__header {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--rux-space-3);
+        padding: var(--rux-space-3) var(--rux-space-4);
+        border-bottom: var(--rux-border-width) solid var(--rux-border);
+      }
+      .trip-panel__heading {
+        display: flex;
+        align-items: baseline;
+        gap: var(--rux-space-3);
+      }
+      .trip-panel__title {
+        font-size: var(--rux-text-md);
+        font-weight: var(--rux-weight-semibold);
+        line-height: var(--rux-leading-snug);
+      }
+      .trip-panel__id {
+        font-family: var(--rux-font-mono, ui-monospace, monospace);
+        font-size: var(--rux-text-sm);
+        color: var(--rux-accent);
+        font-weight: var(--rux-weight-medium);
+      }
+
+      /* ── Tab nav ─────────────────────────────────────────────────────── */
+      .trip-panel__tabs {
+        flex: none;
+        padding: var(--rux-space-3) var(--rux-space-4);
+        border-bottom: var(--rux-border-width) solid var(--rux-border);
+      }
+      .trip-panel__tabs .rux-segmented { width: 100%; }
+      .trip-panel__tabs .rux-segmented .rux-button { flex: 1; }
+
+      /* ── Body / panes ────────────────────────────────────────────────── */
+      .trip-panel__body {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        min-height: 0;
+      }
+      .trip-panel__pane {
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-4);
+        padding: var(--rux-space-4) var(--rux-space-4);
+      }
+
+      /* ── Form layout helpers ─────────────────────────────────────────── */
+      .trip-panel__cols-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--rux-space-3);
+        align-items: center;
+      }
+      .trip-panel__cols-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--rux-space-3);
+        align-items: center;
+      }
+      .trip-panel__section-label {
+        font-size: var(--rux-text-2xs);
+        font-weight: var(--rux-weight-semibold);
+        color: var(--rux-fg-subtle);
+        text-transform: uppercase;
+        letter-spacing: var(--rux-tracking-wide);
+        padding-bottom: var(--rux-space-2);
+        border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+      }
+
+      /* ── Requirements chips ──────────────────────────────────────────── */
+      .trip-panel__reqs {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--rux-space-2);
+      }
+
+      /* ── Payment refs row ────────────────────────────────────────────── */
+      .trip-panel__refs {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--rux-space-2);
+      }
+
+      /* ── Dispatch: bus group ─────────────────────────────────────────── */
+      .trip-panel__bus-groups {
+        display: flex;
+        flex-direction: column;
+        gap: var(--rux-space-3);
+      }
+      .trip-panel__bus-group {
+        border: var(--rux-border-width) solid var(--rux-border);
+        border-radius: var(--rux-radius-md);
+        overflow: hidden;
+      }
+      .trip-panel__bus-head {
+        display: flex;
+        align-items: center;
+        gap: var(--rux-space-2);
+        padding: var(--rux-space-3) var(--rux-space-3);
+        background: var(--rux-bg-sunken);
+        border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+      }
+      .trip-panel__bus-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 22px;
+        padding: 0 var(--rux-space-2);
+        background: var(--rux-control-bg);
+        border: var(--rux-border-width) solid var(--rux-border);
+        border-radius: var(--rux-radius-xs);
+        font-size: var(--rux-text-xs);
+        font-weight: var(--rux-weight-semibold);
+        color: var(--rux-fg);
+      }
+      .trip-panel__bus-hint {
+        font-size: var(--rux-text-xs);
+        color: var(--rux-fg-subtle);
+      }
+      .trip-panel__bus-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        border-radius: var(--rux-radius-full);
+        background: var(--rux-accent);
+        color: var(--rux-fg-on-accent);
+        font-size: var(--rux-text-2xs);
+        font-weight: var(--rux-weight-semibold);
+        flex: none;
+      }
+
+      /* driver rows inside bus group */
+      .trip-panel__driver-rows {
+        display: flex;
+        flex-direction: column;
+      }
+      .trip-panel__driver-row {
+        display: grid;
+        grid-template-columns: 64px 1fr 96px;
+        gap: var(--rux-space-2);
+        align-items: center;
+        padding: var(--rux-space-3) var(--rux-space-3);
+        border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+      }
+      .trip-panel__driver-row:last-child { border-bottom: none; }
+      .trip-panel__driver-row--head {
+        background: var(--rux-bg-sunken);
+      }
+      .trip-panel__driver-row--head span {
+        font-size: var(--rux-text-2xs);
+        font-weight: var(--rux-weight-semibold);
+        color: var(--rux-fg-subtle);
+        text-transform: uppercase;
+        letter-spacing: var(--rux-tracking-wide);
+      }
+
+      .trip-panel__role-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--rux-fg-muted);
+      }
+      .trip-panel__role-label .rux-icon {
+        width: var(--rux-icon-md);
+        height: var(--rux-icon-md);
+      }
+      .trip-panel__role-col {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .trip-panel__segment-pick { /* segment selector for relief rows */ }
+
+
+      /* ── Footer ──────────────────────────────────────────────────────── */
+      .trip-panel__footer {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--rux-space-3);
+        padding: var(--rux-space-3) var(--rux-space-4);
+        border-top: var(--rux-border-width) solid var(--rux-border);
+        background: var(--rux-bg-sunken);
+      }
+      .trip-panel__footer-actions {
+        display: flex;
+        gap: var(--rux-space-2);
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <!-- Simulated scheduler background -->
+    <div class="demo-bg">scheduler grid</div>
+
+    <!-- ── Trip panel ─────────────────────────────────────────────────── -->
+    <aside class="trip-panel" role="dialog" aria-labelledby="trip-panel-title">
+
+      <!-- Header -->
+      <header class="trip-panel__header">
+        <div class="trip-panel__heading">
+          <h2 class="trip-panel__title" id="trip-panel-title">Trip editor</h2>
+          <span class="trip-panel__id">260607-01</span>
+        </div>
+        <button class="rux-button rux-button--ghost rux-button--icon" aria-label="Close panel">
+          <i data-lucide="x" class="rux-icon"></i>
+        </button>
+      </header>
+
+      <!-- Tab nav -->
+      <nav class="trip-panel__tabs" aria-label="Trip editor sections">
+        <div class="rux-segmented" data-rux-tabs>
+          <button class="rux-button" aria-selected="true"  aria-controls="pane-details">Details</button>
+          <button class="rux-button" aria-selected="false" aria-controls="pane-contacts">Contacts</button>
+          <button class="rux-button" aria-selected="false" aria-controls="pane-billing">Billing</button>
+          <button class="rux-button" aria-selected="false" aria-controls="pane-dispatch">Dispatch</button>
+        </div>
+      </nav>
+
+      <!-- Tab panes -->
+      <div class="trip-panel__body">
+
+        <!-- ── Details ─────────────────────────────────────────────────── -->
+        <div id="pane-details" class="trip-panel__pane" role="tabpanel">
+
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label">Trip type</label>
+              <div class="rux-segmented" data-rux-toggle-group>
+                <button class="rux-button is-active" aria-pressed="true">Round trip</button>
+                <button class="rux-button" aria-pressed="false">One way</button>
+              </div>
+            </div>
+            <!-- right col: color swatches + buses count -->
+            <div style="display:grid;grid-template-columns:1fr 72px;gap:var(--rux-space-3);align-items:start;">
+              <div class="rux-field">
+                <label class="rux-field__label">Color</label>
+                <div class="rux-color-picker" id="tp-color-picker">
+                  <button class="rux-color-picker__trigger" type="button"
+                          aria-haspopup="listbox" aria-expanded="false"
+                          aria-label="Select trip bar color">
+                    <span class="rux-color-picker__preview" style="--color:var(--rux-accent)"></span>
+                    <span class="rux-color-picker__label">Blue</span>
+                    <i data-lucide="chevron-down" class="rux-color-picker__chevron"></i>
+                  </button>
+                  <div class="rux-color-picker__popover" hidden role="listbox" aria-label="Trip color">
+                    <label class="rux-color-picker__option" style="--color:var(--rux-accent)" data-label="Blue" title="Blue">
+                      <input type="radio" name="tp-color" value="blue" checked />
+                      <span class="rux-color-picker__dot"></span>
+                    </label>
+                    <label class="rux-color-picker__option" style="--color:hsl(186 68% 44%)" data-label="Cyan" title="Cyan">
+                      <input type="radio" name="tp-color" value="cyan" />
+                      <span class="rux-color-picker__dot"></span>
+                    </label>
+                    <label class="rux-color-picker__option" style="--color:hsl(155 58% 42%)" data-label="Green" title="Green">
+                      <input type="radio" name="tp-color" value="green" />
+                      <span class="rux-color-picker__dot"></span>
+                    </label>
+                    <label class="rux-color-picker__option" style="--color:hsl(38 80% 52%)" data-label="Amber" title="Amber">
+                      <input type="radio" name="tp-color" value="amber" />
+                      <span class="rux-color-picker__dot"></span>
+                    </label>
+                    <label class="rux-color-picker__option" style="--color:hsl(288 52% 52%)" data-label="Purple" title="Purple">
+                      <input type="radio" name="tp-color" value="purple" />
+                      <span class="rux-color-picker__dot"></span>
+                    </label>
+                    <label class="rux-color-picker__option" style="--color:hsl(250 60% 55%)" data-label="Violet" title="Violet">
+                      <input type="radio" name="tp-color" value="violet" />
+                      <span class="rux-color-picker__dot"></span>
+                    </label>
+                    <label class="rux-color-picker__option" style="--color:hsl(0 0% 48%)" data-label="Gray" title="Gray">
+                      <input type="radio" name="tp-color" value="gray" />
+                      <span class="rux-color-picker__dot"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="rux-field">
+                <label class="rux-field__label" for="tp-buses">Buses</label>
+                <input class="rux-input" id="tp-buses" name="busesNeeded"
+                       type="number" min="1" max="20" value="1" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-destination">Destination</label>
+              <input class="rux-input" id="tp-destination" name="destination" type="text" value="Paragon Casino" />
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-customer">Customer</label>
+              <input class="rux-input" id="tp-customer" name="customer" type="text" value="Arlington ISD" />
+            </div>
+          </div>
+
+          <div class="rux-field">
+            <label class="rux-field__label" for="tp-pickup">Pick-up address</label>
+            <input class="rux-input" id="tp-pickup" name="pickupAddress" type="text" value="805 W Ridge Rd, San Juan TX" />
+          </div>
+
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-start">Start date</label>
+              <input class="rux-input" id="tp-start" name="startDate" type="date" value="2026-06-07" />
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-end">End date</label>
+              <input class="rux-input" id="tp-end" name="endDate" type="date" value="2026-06-09" />
+            </div>
+          </div>
+
+          <div class="trip-panel__cols-3">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-dep">Departure</label>
+              <input class="rux-input" id="tp-dep" name="departureTime" type="time" value="06:30" />
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-spot">Spot</label>
+              <input class="rux-input" id="tp-spot" name="spotTime" type="time" value="06:00" />
+            </div>
+            <div class="rux-field" id="tp-return-wrap">
+              <label class="rux-field__label" for="tp-return">Return</label>
+              <input class="rux-input" id="tp-return" name="returnTime" type="time" value="22:00" />
+            </div>
+          </div>
+
+          <div class="rux-field">
+            <label class="rux-field__label">Requirements</label>
+            <div class="trip-panel__reqs" id="tp-reqs">
+              <!-- Rendered from TRIP_REQUIREMENTS config at runtime -->
+              <button class="rux-button rux-button--toggle rux-button--block is-active" aria-pressed="true">
+                <i data-lucide="moon" class="rux-icon"></i> Sleeper
+              </button>
+              <button class="rux-button rux-button--toggle rux-button--block" aria-pressed="false">
+                <i data-lucide="users" class="rux-icon"></i> 56 pax
+              </button>
+              <button class="rux-button rux-button--toggle rux-button--block" aria-pressed="false">
+                <i data-lucide="building" class="rux-icon"></i> Hotel
+              </button>
+              <button class="rux-button rux-button--toggle rux-button--block" aria-pressed="false">
+                <i data-lucide="accessibility" class="rux-icon"></i> ADA lift
+              </button>
+              <button class="rux-button rux-button--toggle rux-button--block" aria-pressed="false">
+                <i data-lucide="credit-card" class="rux-icon"></i> Fuel card
+              </button>
+            </div>
+          </div>
+
+          <div class="rux-field">
+            <label class="rux-field__label" for="tp-notes">Notes</label>
+            <textarea class="rux-textarea" id="tp-notes" name="notes" rows="3" placeholder="Operational notes shown on trip bar…"></textarea>
+          </div>
+
+        </div><!-- /pane-details -->
+
+
+        <!-- ── Contacts ────────────────────────────────────────────────── -->
+        <div id="pane-contacts" class="trip-panel__pane" role="tabpanel" hidden>
+
+          <p class="trip-panel__section-label">Booking contact</p>
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-book-name">Name</label>
+              <input class="rux-input" id="tp-book-name" name="bookingContact.name" type="text" value="Ashley Pearl" />
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-book-phone">Phone</label>
+              <input class="rux-input" id="tp-book-phone" name="bookingContact.phone" type="tel" value="956-555-0123" />
+            </div>
+          </div>
+
+          <p class="trip-panel__section-label">Trip contact</p>
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-trip-name">Name</label>
+              <input class="rux-input" id="tp-trip-name" name="tripContact.name" type="text" placeholder="On-site contact" />
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-trip-phone">Phone</label>
+              <input class="rux-input" id="tp-trip-phone" name="tripContact.phone" type="tel" />
+            </div>
+          </div>
+
+        </div><!-- /pane-contacts -->
+
+
+        <!-- ── Billing ─────────────────────────────────────────────────── -->
+        <div id="pane-billing" class="trip-panel__pane" role="tabpanel" hidden>
+
+          <div class="rux-field">
+            <label class="rux-field__label">Contract</label>
+            <div class="rux-segmented" data-rux-toggle-group>
+              <button class="rux-button is-active" aria-pressed="true">Pending</button>
+              <button class="rux-button" aria-pressed="false">N/A</button>
+              <button class="rux-button" aria-pressed="false">Signed</button>
+              <button class="rux-button" aria-pressed="false">PO</button>
+            </div>
+          </div>
+
+          <div class="rux-field">
+            <label class="rux-field__label">Invoice</label>
+            <div class="rux-segmented" data-rux-toggle-group>
+              <button class="rux-button is-active" aria-pressed="true">Pending</button>
+              <button class="rux-button" aria-pressed="false">Invoiced</button>
+              <button class="rux-button" aria-pressed="false">Deposit</button>
+              <button class="rux-button" aria-pressed="false">Paid</button>
+            </div>
+          </div>
+
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label">Itinerary</label>
+              <div class="rux-segmented" data-rux-toggle-group>
+                <button class="rux-button is-active" aria-pressed="true">Pending</button>
+                <button class="rux-button" aria-pressed="false">Received</button>
+              </div>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label">Contact sheet</label>
+              <div class="rux-segmented" data-rux-toggle-group>
+                <button class="rux-button is-active" aria-pressed="true">Pending</button>
+                <button class="rux-button" aria-pressed="false">Received</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-price">Quoted price</label>
+              <div class="rux-input-group rux-input-group--prefix">
+                <span class="rux-input-group__prefix">$</span>
+                <input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" value="1200" />
+              </div>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-po">PO / ref</label>
+              <input class="rux-input" id="tp-po" name="paymentRef" type="text" value="PO-1842" />
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-inv-num">Invoice number</label>
+              <input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" value="INV-260509" />
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-date-paid">Date paid</label>
+              <input class="rux-input" id="tp-date-paid" name="datePaid" type="date" />
+            </div>
+          </div>
+
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-est-mi">Est. miles</label>
+              <div class="rux-input-group rux-input-group--suffix">
+                <input class="rux-input" id="tp-est-mi" name="estimatedMiles" type="number" min="0" value="160" />
+                <span class="rux-input-group__suffix">mi</span>
+              </div>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-act-mi">Actual miles</label>
+              <div class="rux-input-group rux-input-group--suffix">
+                <input class="rux-input" id="tp-act-mi" name="actualMiles" type="number" min="0" value="158" />
+                <span class="rux-input-group__suffix">mi</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="rux-field">
+            <label class="rux-field__label">Payment refs</label>
+            <div class="trip-panel__refs">
+              <input class="rux-input" name="paymentRef1" type="text" placeholder="Ref 1" value="ck# 1107" />
+              <input class="rux-input" name="paymentRef2" type="text" placeholder="Ref 2" />
+              <input class="rux-input" name="paymentRef3" type="text" placeholder="Ref 3" />
+            </div>
+          </div>
+
+        </div><!-- /pane-billing -->
+
+
+        <!-- ── Dispatch ────────────────────────────────────────────────── -->
+        <div id="pane-dispatch" class="trip-panel__pane" role="tabpanel" hidden>
+
+          <div class="trip-panel__cols-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-drive-hr">Driving hours</label>
+              <div class="rux-input-group rux-input-group--suffix">
+                <input class="rux-input" id="tp-drive-hr" name="estimatedDrivingHours" type="number" min="0" step="0.5" placeholder="0.0" />
+                <span class="rux-input-group__suffix">hr</span>
+              </div>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="tp-duty-hr">On-duty hours</label>
+              <div class="rux-input-group rux-input-group--suffix">
+                <input class="rux-input" id="tp-duty-hr" name="estimatedOnDutyHours" type="number" min="0" step="0.5" placeholder="0.0" />
+                <span class="rux-input-group__suffix">hr</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bus groups — one per bus, unlocked by Buses count in Details tab -->
+          <div class="trip-panel__bus-groups" id="tp-bus-groups">
+
+            <div class="trip-panel__bus-group">
+
+              <!-- Bus selector + role toggles — toggles share remaining row width -->
+              <div class="trip-panel__bus-head">
+                <span class="trip-panel__bus-badge">1</span>
+                <select class="rux-select" name="buses[0].busId" style="flex:1;">
+                  <option value="" disabled>Select bus…</option>
+                  <option value="218">218</option>
+                  <option value="470">470</option>
+                  <option value="506">506</option>
+                  <option value="607">607</option>
+                  <option value="746">746</option>
+                  <option value="763" selected>763</option>
+                  <option value="897">897</option>
+                  <option value="898">898</option>
+                </select>
+                <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="coDriver" title="Co-driver">
+                  <i data-lucide="user-plus" class="rux-icon"></i>
+                </button>
+                <button class="rux-button rux-button--toggle rux-button--icon is-active" aria-pressed="true" data-role="relief1" title="Relief 1 — start">
+                  <i data-lucide="chevrons-right" class="rux-icon"></i>
+                </button>
+                <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief2" title="Relief 2 — end">
+                  <i data-lucide="chevrons-left" class="rux-icon"></i>
+                </button>
+              </div>
+
+              <div class="trip-panel__driver-rows">
+                <!-- Column header -->
+                <div class="trip-panel__driver-row trip-panel__driver-row--head">
+                  <span></span>
+                  <span>Driver</span>
+                  <span>Pay</span>
+                </div>
+
+                <!-- Primary driver — always present -->
+                <div class="trip-panel__driver-row">
+                  <span class="trip-panel__role-label" title="Driver">
+                    <i data-lucide="user" class="rux-icon"></i>
+                  </span>
+                  <select class="rux-select" name="buses[0].driver.name">
+                    <option value="" disabled>Assign driver…</option>
+                    <option selected>Jose Luis Sanchez</option>
+                    <option>Maria Lopez</option>
+                    <option>Hector Escamilla</option>
+                  </select>
+                  <div class="rux-input-group rux-input-group--prefix">
+                    <span class="rux-input-group__prefix">$</span>
+                    <input class="rux-input" name="buses[0].driver.pay" type="number" min="0" value="325" />
+                  </div>
+                </div>
+
+                <!-- Relief 1 = start of trip (shown because toggle is active) -->
+                <div class="trip-panel__driver-row" data-role-row="relief1">
+                  <span class="trip-panel__role-label" title="Relief 1 — start">
+                    <i data-lucide="refresh-ccw" class="rux-icon"></i>
+                  </span>
+                  <select class="rux-select" name="buses[0].relief1.name">
+                    <option value="" disabled selected>Assign driver…</option>
+                    <option>Maria Lopez</option>
+                    <option>Hector Escamilla</option>
+                    <option>Alejandro Arredondo</option>
+                  </select>
+                  <div class="rux-input-group rux-input-group--prefix">
+                    <span class="rux-input-group__prefix">$</span>
+                    <input class="rux-input" name="buses[0].relief1.pay" type="number" min="0" placeholder="0" />
+                  </div>
+                </div>
+
+              </div><!-- /.trip-panel__driver-rows -->
+            </div><!-- /.trip-panel__bus-group -->
+
+          </div><!-- /#tp-bus-groups -->
+
+        </div><!-- /pane-dispatch -->
+
+      </div><!-- /.trip-panel__body -->
+
+      <!-- Footer -->
+      <footer class="trip-panel__footer">
+        <button class="rux-button rux-button--danger">
+          <i data-lucide="trash-2" class="rux-icon"></i> Delete
+        </button>
+        <div class="trip-panel__footer-actions">
+          <button class="rux-button rux-button--ghost">Cancel</button>
+          <button class="rux-button rux-button--primary">
+            <i data-lucide="save" class="rux-icon"></i> Save
+          </button>
+        </div>
+      </footer>
+
+    </aside><!-- /.trip-panel -->
+
+    <script src="../rux.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        if (window.lucide) lucide.createIcons();
+
+        // Color picker
+        const colorPicker  = document.getElementById('tp-color-picker');
+        const colorTrigger = colorPicker.querySelector('.rux-color-picker__trigger');
+        const colorPopover = colorPicker.querySelector('.rux-color-picker__popover');
+        const colorPreview = colorPicker.querySelector('.rux-color-picker__preview');
+
+        colorTrigger.addEventListener('click', e => {
+          e.stopPropagation();
+          const open = !colorPopover.hidden;
+          colorPopover.hidden = open;
+          colorTrigger.setAttribute('aria-expanded', String(!open));
+        });
+
+        const colorLabel = colorPicker.querySelector('.rux-color-picker__label');
+
+        colorPicker.addEventListener('change', e => {
+          if (e.target.type !== 'radio') return;
+          const option = e.target.closest('.rux-color-picker__option');
+          const color = option.style.getPropertyValue('--color');
+          const label = option.dataset.label || '';
+          colorPreview.style.setProperty('--color', color);
+          colorLabel.textContent = label;
+          colorPopover.hidden = true;
+          colorTrigger.setAttribute('aria-expanded', 'false');
+          colorTrigger.focus();
+        });
+
+        document.addEventListener('click', e => {
+          if (!colorPicker.contains(e.target)) {
+            colorPopover.hidden = true;
+            colorTrigger.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape' && !colorPopover.hidden) {
+            colorPopover.hidden = true;
+            colorTrigger.setAttribute('aria-expanded', 'false');
+            colorTrigger.focus();
+          }
+        });
+
+        // Tab panel switching — show active pane, hide others
+        const tabNav = document.querySelector('[data-rux-tabs]');
+        const allPanes = document.querySelectorAll('.trip-panel__pane');
+
+        tabNav.addEventListener('click', e => {
+          const tab = e.target.closest('.rux-button');
+          if (!tab) return;
+          const panelId = tab.getAttribute('aria-controls');
+          if (!panelId) return;
+          allPanes.forEach(p => { p.hidden = p.id !== panelId; });
+        });
+      });
+    </script>
+  </body>
+</html>

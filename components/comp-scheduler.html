@@ -243,6 +243,19 @@
         onOther: (trip) => console.log("other options", trip.id),
       };
 
+      // ── Trip requirements config ──────────────────────────────────────
+      // Customize per business deployment. Keys must be unique strings (no spaces).
+      // The trip editor renders these as toggles, 3 per row — keep under ~15 for a usable form.
+      // Trip objects store active keys as: requirements: ["sleeper", "adaLift"]
+      const TRIP_REQUIREMENTS = [
+        { key: "sleeper",   label: "Sleeper",    icon: "moon"           },
+        { key: "pax56",     label: "56 pax",     icon: "users"          },
+        { key: "hotel",     label: "Hotel",      icon: "building"       },
+        { key: "adaLift",   label: "ADA lift",   icon: "accessibility"  },
+        { key: "fuelCard",  label: "Fuel card",  icon: "credit-card"    },
+        // add more requirements here
+      ];
+
       const trips = {
         southPadre: {
           id: "sched-south-padre",
@@ -272,7 +285,7 @@
           paymentRefs: ["ck# 1107"],
           pickupAddress: "Barrientes Middle School",
           busesNeeded: 1,
-          busLabel: "",
+          groupLabel: "",
           drivers: [{ name: "Maria", status: "confirmed", pay: "$250" }],
         },
         orlando: {
@@ -301,7 +314,7 @@
           datePaid: "2026-06-02",
           pickupAddress: "805 W Ridge Rd, San Juan TX",
           busesNeeded: 2,
-          busLabel: "1/2",
+          groupLabel: "1/2",
           drivers: [
             { name: "George", status: "confirmed", pay: "$325" },
             { name: "Rigo", status: "confirmed", pay: "$325" },
@@ -331,7 +344,7 @@
           invoiceNumber: "INV-260511",
           pickupAddress: "Todd Middle School",
           busesNeeded: 1,
-          busLabel: "",
+          groupLabel: "",
           drivers: [
             { name: "George", status: "confirmed", pay: "$375" },
             { name: "Oscar", status: "confirmed", pay: "$375" },
@@ -357,7 +370,7 @@
           quotedPrice: 0,
           pickupAddress: "Riverside MS",
           busesNeeded: 2,
-          busLabel: "1/2",
+          groupLabel: "1/2",
           drivers: [
             { name: "Oscar", status: "confirmed", pay: "$325" },
             { name: "Juvel", status: "confirmed", pay: "$325" },
@@ -385,7 +398,7 @@
           paymentRef: "PO-10012624",
           pickupAddress: "3201 W Pecan Blvd, McAllen TX",
           busesNeeded: 1,
-          busLabel: "1/2",
+          groupLabel: "1/2",
           drivers: [
             { name: "TBA", status: "pending" },
             { name: "TBA", status: "pending" },
@@ -418,7 +431,7 @@
           datePaid: "2026-06-02",
           pickupAddress: "Munoz Elementary",
           busesNeeded: 2,
-          busLabel: "2/2",
+          groupLabel: "2/2",
           drivers: [
             { name: "Padron", status: "confirmed", pay: "$300" },
             { name: "Hector", status: "confirmed", pay: "$300" },
@@ -484,6 +497,48 @@
           year: "numeric",
         });
         return `${start} - ${end}`;
+      }
+
+      // Bus label: "1/3", "2/3", "3/3" — auto-computed from tripGroupId + track order.
+      // trackOrder is populated by renderScheduler() each render (top-to-bottom track IDs).
+      // Returns "" for single-bus trips (no tripGroupId).
+      let trackOrder = [];
+
+      function computeBusLabel(tripKey) {
+        const trip = trips[tripKey];
+        if (!trip.tripGroupId) return "";
+
+        const groupKeys = Object.keys(trips)
+          .filter(k => trips[k].tripGroupId === trip.tripGroupId);
+        if (groupKeys.length <= 1) return "";
+
+        const sorted = [...groupKeys].sort((a, b) => {
+          const posA = trackOrder.indexOf(tripTrackMap[a]?.trackId ?? "");
+          const posB = trackOrder.indexOf(tripTrackMap[b]?.trackId ?? "");
+          return (posA < 0 ? Infinity : posA) - (posB < 0 ? Infinity : posB);
+        });
+
+        const pos = sorted.indexOf(tripKey) + 1;
+        return `${pos}/${sorted.length}`;
+      }
+
+      // Trip ID: YYMMDD-NN (departure date + 2-digit per-day sequence, max 99/day)
+      // Immutable once assigned — editing departure date does not regenerate the ID.
+      function generateTripId(departureDate) {
+        if (!departureDate) throw new Error("departureDate required");
+        const [y, m, d] = departureDate.split("-");
+        const prefix = y.slice(2) + m + d; // "2026-06-07" → "260607"
+
+        // max+1 keeps IDs unique even after deletions
+        const maxSeq = Object.values(trips)
+          .map(t => t.id)
+          .filter(id => id.startsWith(prefix + "-"))
+          .map(id => parseInt(id.split("-")[1], 10))
+          .filter(n => Number.isFinite(n) && n > 0)
+          .reduce((max, n) => Math.max(max, n), 0);
+
+        if (maxSeq >= 99) throw new Error(`ID sequence full for ${prefix} (max 99/day)`);
+        return `${prefix}-${String(maxSeq + 1).padStart(2, "0")}`;
       }
 
       function renderDayHeaders(weekStart) {
@@ -736,14 +791,13 @@
 
       window.schedulerDemo = {
         trips,
-        get placements() {
-          return activePlacements;
-        },
-        get weekStart() {
-          return currentWeekStart;
-        },
+        TRIP_REQUIREMENTS,
+        get placements() { return activePlacements; },
+        get weekStart()  { return currentWeekStart; },
         layoutScheduler,
         renderScheduler,
+        generateTripId,
+        computeBusLabel,
       };
     </script>
   </body>
