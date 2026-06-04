@@ -74,7 +74,7 @@
 }
 
 .rux-button--secondary {
-	--_border: var(--rux-border);
+	--_border: transparent;
 }
 
 /* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */

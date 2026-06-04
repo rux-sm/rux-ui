@@ -29,7 +29,7 @@
 	flex-direction: column;
 	height: 100%;
 	min-height: 0;
-	background: var(--rux-bg-elevated);
+	background: var(--rux-bg);
 	border-left: var(--rux-border-width) solid var(--rux-border);
 }
 
@@ -91,6 +91,10 @@
 }
 .rux-trip-panel__pane[hidden] {
 	display: none;
+}
+.rux-trip-panel__pane--flush {
+	padding: 0;
+	gap: 0;
 }
 
 /* — Form layout helpers — */

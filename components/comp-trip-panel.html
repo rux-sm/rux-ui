@@ -60,7 +60,7 @@
 			<nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
 				<div class="rux-segmented rux-segmented--ghost" data-trip-tabs>
 					<button class="rux-button" aria-selected="true" aria-controls="pane-trip">Trip</button>
-					<button class="rux-button" aria-selected="false" aria-controls="pane-plan">Plan</button>
+					<button class="rux-button" aria-selected="false" aria-controls="pane-itinerary">Itinerary</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-billing">Billing</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-dispatch">Dispatch</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-docs">Docs</button>
@@ -200,55 +200,59 @@
 				</div>
 				<!-- /pane-trip -->
 
-				<!-- ── Plan ────────────────────────────────────────────────────── -->
-				<!-- Operational details filled in as the trip approaches -->
-				<div id="pane-plan" class="rux-trip-panel__pane" role="tabpanel" hidden>
-					<div class="rux-field">
-						<label class="rux-field__label" for="tp-notes">Notes</label>
-						<input
-							class="rux-input"
-							id="tp-notes"
-							name="notes"
-							type="text"
-							placeholder="Operational notes shown on trip bar…"
-						/>
-					</div>
+				<!-- ── Itinerary ────────────────────────────────────────────── -->
+				<!-- Rendered by js/itinerary.js -->
+				<div
+					id="pane-itinerary"
+					class="rux-trip-panel__pane rux-trip-panel__pane--flush"
+					role="tabpanel"
+					hidden
+				>
+					<div class="rux-itin" id="tp-itin">
+						<div class="rux-itin__summary" id="tp-itin-summary"></div>
 
-					<p class="rux-trip-panel__section-label">Trip contacts</p>
-					<div class="rux-trip-panel__cols-2">
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-trip-name">Name</label>
-							<input
-								class="rux-input"
-								id="tp-trip-name"
-								name="tripContact.name"
-								type="text"
-								placeholder="On-site contact"
-							/>
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-trip-phone">Phone</label>
-							<input class="rux-input" id="tp-trip-phone" name="tripContact.phone" type="tel" />
-						</div>
-					</div>
-					<div class="rux-trip-panel__cols-2">
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-trip2-name">Name</label>
-							<input
-								class="rux-input"
-								id="tp-trip2-name"
-								name="tripContact2.name"
-								type="text"
-								placeholder="Secondary contact"
-							/>
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-trip2-phone">Phone</label>
-							<input class="rux-input" id="tp-trip2-phone" name="tripContact2.phone" type="tel" />
+						<div class="rux-itin__stops" id="tp-itin-stops"></div>
+
+						<div class="rux-itin__actions">
+							<button
+								class="rux-button rux-button--secondary"
+								type="button"
+								id="tp-itin-add-pickup"
+							>
+								Pick-up
+							</button>
+							<button
+								class="rux-button rux-button--secondary"
+								type="button"
+								id="tp-itin-add-stop"
+							>
+								Stop
+							</button>
+							<button
+								class="rux-button rux-button--secondary"
+								type="button"
+								id="tp-itin-add-sleeper"
+							>
+								Sleeper
+							</button>
+							<button
+								class="rux-button rux-button--secondary"
+								type="button"
+								id="tp-itin-add-day"
+							>
+								End day
+							</button>
+							<button
+								class="rux-button rux-button--secondary"
+								type="button"
+								id="tp-itin-add-return"
+							>
+								Return
+							</button>
 						</div>
 					</div>
 				</div>
-				<!-- /pane-plan -->
+				<!-- /pane-itinerary -->
 
 				<!-- ── Billing ─────────────────────────────────────────────────── -->
 				<div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
@@ -466,6 +470,51 @@
 							</button>
 						</li>
 					</ul>
+
+					<div class="rux-field">
+						<label class="rux-field__label" for="tp-notes">Notes</label>
+						<input
+							class="rux-input"
+							id="tp-notes"
+							name="notes"
+							type="text"
+							placeholder="Operational notes shown on trip bar…"
+						/>
+					</div>
+
+					<p class="rux-trip-panel__section-label">Trip contacts</p>
+					<div class="rux-trip-panel__cols-2">
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-trip-name">Name</label>
+							<input
+								class="rux-input"
+								id="tp-trip-name"
+								name="tripContact.name"
+								type="text"
+								placeholder="On-site contact"
+							/>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-trip-phone">Phone</label>
+							<input class="rux-input" id="tp-trip-phone" name="tripContact.phone" type="tel" />
+						</div>
+					</div>
+					<div class="rux-trip-panel__cols-2">
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-trip2-name">Name</label>
+							<input
+								class="rux-input"
+								id="tp-trip2-name"
+								name="tripContact2.name"
+								type="text"
+								placeholder="Secondary contact"
+							/>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-trip2-phone">Phone</label>
+							<input class="rux-input" id="tp-trip2-phone" name="tripContact2.phone" type="tel" />
+						</div>
+					</div>
 				</div>
 				<!-- /pane-docs -->
 			</div>
@@ -483,10 +532,13 @@
 		<!-- /.trip-panel -->
 
 		<script src="../js/utilities.js"></script>
+		<script src="../js/itinerary.js"></script>
 		<script>
 			document.addEventListener("DOMContentLoaded", () => {
 				if (window.lucide) lucide.createIcons();
-				TripPanel.init(document.querySelector(".rux-trip-panel"));
+				const panel = document.querySelector(".rux-trip-panel");
+				TripPanel.init(panel);
+				Itinerary.init(panel);
 			});
 		</script>
 	</body>

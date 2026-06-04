@@ -1,0 +1,308 @@
+/* ==========================================================================
+   ITINERARY  ·  .rux-itin
+   --------------------------------------------------------------------------
+   Timeline stop editor for the Itinerary tab. Each card represents a leg
+   arriving at that location — travel info (miles, drive time) always answers
+   "how did we get here from the previous stop."
+
+   Stop types
+   ----------
+   yard    · green  · only a depart time; nothing arrives at the start
+   pickup  · amber  · spot + depart times; travel info from previous
+   stop    · info   · arrive + depart times; travel info from previous
+   return  · danger · arrive yard only; travel info from last stop
+
+   Structure
+   ---------
+   .rux-itin                   Outer container (flush against pane edges)
+   .rux-itin__summary          3-stat strip at top
+   .rux-itin__day              Day-break header with accent badge
+   .rux-itin__stop             Rail + card row for one stop
+   .rux-itin__rail             Dot + vertical connecting line
+   .rux-itin__card             Elevated card: head · address · travel · times
+   .rux-itin__actions          Add-stop action buttons at bottom
+   ========================================================================== */
+
+/* — Outer container — */
+
+.rux-itin {
+	display: flex;
+	flex-direction: column;
+}
+
+/* — Summary strip — */
+
+.rux-itin__summary {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	background: var(--rux-bg);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-itin__stat {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding: var(--rux-space-2) var(--rux-space-3);
+	border-right: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-itin__stat:last-child {
+	border-right: 0;
+}
+
+.rux-itin__stat-label {
+	font-size: var(--rux-text-2xs);
+	color: var(--rux-fg-subtle);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-itin__stat-value {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg);
+}
+
+/* — Day-break header — */
+
+.rux-itin__day {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	background: color-mix(in oklch, var(--rux-bg) 78%, var(--rux-accent) 22%);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+/* Stats shown inside End day row and Sleeper card */
+
+.rux-itin__seg-stats {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	gap: var(--rux-space-4);
+	flex-wrap: wrap;
+}
+
+.rux-itin__seg-stat {
+	font-size: var(--rux-text-xs);
+	color: var(--rux-fg-muted);
+	white-space: nowrap;
+}
+
+.rux-itin__seg-stat--warn {
+	color: var(--rux-danger);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-itin__seg-stat--ok {
+	color: var(--rux-success-bright);
+	font-weight: var(--rux-weight-semibold);
+}
+
+/* Sleeper card: stats section below times */
+
+.rux-itin__card .rux-itin__seg-stats {
+	padding-top: var(--rux-space-2);
+	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+}
+
+.rux-itin__day-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 2px var(--rux-space-2);
+	background: var(--rux-accent);
+	color: var(--rux-fg-on-accent);
+	border-radius: var(--rux-radius-xs);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: 0;
+}
+
+/* — Stop row — */
+
+.rux-itin__stop {
+	display: grid;
+	grid-template-columns: 2rem 1fr;
+}
+
+/* — Rail: dot + connecting line — */
+
+.rux-itin__rail {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding-top: var(--rux-space-4);
+}
+
+.rux-itin__dot {
+	width: 10px;
+	height: 10px;
+	border-radius: var(--rux-radius-full);
+	border: 2px solid currentColor;
+	background: transparent;
+	flex: none;
+	position: relative;
+	z-index: 1;
+}
+
+.rux-itin__dot--yard {
+	color: var(--rux-success);
+}
+.rux-itin__dot--pickup {
+	color: var(--rux-warning-bright);
+}
+.rux-itin__dot--stop {
+	color: var(--rux-info);
+}
+.rux-itin__dot--sleeper {
+	color: oklch(65% 0.15 295);
+}
+.rux-itin__dot--return {
+	color: var(--rux-danger);
+}
+
+.rux-itin__line {
+	width: var(--rux-border-width);
+	flex: 1;
+	min-height: var(--rux-space-3);
+	background: var(--rux-border);
+	margin-top: var(--rux-space-1);
+}
+
+.rux-itin__stop:last-of-type .rux-itin__line {
+	display: none;
+}
+
+/* — Card — */
+
+.rux-itin__card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	margin: var(--rux-space-2) var(--rux-space-3) var(--rux-space-2) 0;
+	padding: var(--rux-space-3);
+	background: var(--rux-bg-elevated);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-md);
+}
+
+/* — Card meta: badge + from label + delete button — */
+
+.rux-itin__card-meta {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+}
+
+.rux-itin__card-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	margin-left: auto;
+}
+
+/* — Card head: name + delete button — */
+
+.rux-itin__card-head {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+}
+
+/* — Stop-type badge — */
+
+.rux-itin__badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 1px var(--rux-space-2);
+	border-radius: var(--rux-radius-xs);
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-bold);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	flex: none;
+	line-height: 1.6;
+}
+
+.rux-itin__badge--yard {
+	background: var(--rux-success-subtle);
+	color: var(--rux-success-bright);
+}
+.rux-itin__badge--pickup {
+	background: var(--rux-warning-subtle);
+	color: var(--rux-warning-bright);
+}
+.rux-itin__badge--stop {
+	background: var(--rux-info-subtle);
+	color: var(--rux-info-bright);
+}
+.rux-itin__badge--sleeper {
+	background: oklch(65% 0.15 295 / 0.14);
+	color: oklch(72% 0.15 295);
+}
+.rux-itin__badge--return {
+	background: var(--rux-danger-subtle);
+	color: var(--rux-danger-bright);
+}
+
+.rux-itin__name {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* — Address & from label — */
+
+.rux-itin__address {
+	font-size: var(--rux-text-xs);
+	color: var(--rux-fg-muted);
+}
+
+.rux-itin__from {
+	font-size: var(--rux-text-xs);
+	color: var(--rux-fg-subtle);
+}
+
+/* — Unified fields grid (times + travel, 2 columns per row) — */
+
+.rux-itin__fields {
+	display: grid;
+	grid-template-columns: auto 1fr auto 1fr;
+	align-items: center;
+	gap: var(--rux-space-2);
+}
+
+.rux-itin__field-label {
+	font-size: var(--rux-text-xs);
+	color: var(--rux-fg-subtle);
+	white-space: nowrap;
+}
+
+/* Name input stretches to fill the flex card-head row (badge + name + delete) */
+
+.rux-itin__card-head .rux-input {
+	flex: 1;
+	min-width: 0;
+}
+
+/* — Action buttons — */
+
+.rux-itin__actions {
+	display: flex;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-itin__actions .rux-button {
+	flex: 1;
+}
