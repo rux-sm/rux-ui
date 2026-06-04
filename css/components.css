@@ -12,10 +12,32 @@
 
    Components only reference tokens.css variables. Never hardcode colors,
    radii, shadows, or spacing — if a value is missing, add a token first.
+
+   Modules (in load order)
+   -----------------------
+   controls.css     .rux-button, .rux-segmented
+   form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
+                    .rux-switch, .rux-checkbox, .rux-input-group,
+                    .rux-color-swatches, .rux-color-picker
+   content.css      .rux-card, .rux-badge, .rux-tag, .rux-avatar
+   feedback.css     .rux-alert, .rux-toast, .rux-modal, .rux-progress,
+                    [data-tooltip], .rux-tooltip
+   navigation.css   .rux-menu
+   utils.css        .rux-divider, .rux-stack, .rux-cluster, .rux-row,
+                    .rux-spacer, .rux-icon, prefers-reduced-motion
+   trip-bar.css     .rux-trip-bar — Gantt bar for trip display
+   trip-panel.css   .rux-trip-panel — side-panel form editor for trip details
+   scheduler.css    .rux-scheduler — week-grid component
+   scheduler-app.css  .scheduler-app — full-page application shell layout
    ========================================================================== */
 
-@import './controls.css';
-@import './form.css';
-@import './trip-bar.css';
-@import './trip-panel.css';
-@import './scheduler.css';
+@import "./controls.css";
+@import "./form.css";
+@import "./content.css";
+@import "./feedback.css";
+@import "./navigation.css";
+@import "./utils.css";
+@import "./trip-bar.css";
+@import "./trip-panel.css";
+@import "./scheduler.css";
+@import "./scheduler-app.css";

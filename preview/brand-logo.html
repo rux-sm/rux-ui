@@ -1,29 +1,59 @@
 <!doctype html>
 <!-- @dsCard group="Brand" -->
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="css/tokens.css" />
-    <link rel="stylesheet" href="css/colors_and_type.css" />
-    <link rel="stylesheet" href="css/components.css" />
-    <style>
-      body { padding: var(--rux-space-5); display: flex; align-items: center; gap: var(--rux-space-5); }
-      .mark { display: flex; align-items: center; gap: var(--rux-space-3); }
-      .mark img { width: var(--rux-field-height); height: var(--rux-field-height); }
-      .wordmark { font-size: var(--rux-text-2xl); font-weight: var(--rux-weight-bold); letter-spacing: var(--rux-tracking-tight); }
-      .accent-dot { display: inline-block; width: var(--rux-radius-md); height: var(--rux-radius-md); border-radius: var(--rux-radius-full); background: var(--rux-accent); vertical-align: middle; margin-left: var(--rux-space-1); }
-      .meta { color: var(--rux-fg-muted); font-size: var(--rux-text-sm); line-height: var(--rux-leading-snug); }
-      .token-sample { font-size: var(--rux-text-2xs); }
-    </style>
-  </head>
-  <body>
-    <div class="mark">
-      <img src="../assets/rux-mark.svg" alt="" />
-      <div class="wordmark">rux<span class="accent-dot"></span></div>
-    </div>
-    <div class="meta">
-      Wordmark · Inter Bold, -2% tracking<br />
-      Accent dot at <code class="token-sample">oklch(64% 0.18 252)</code>
-    </div>
-  </body>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="stylesheet" href="../css/tokens.css" />
+		<link rel="stylesheet" href="../css/colors_and_type.css" />
+		<link rel="stylesheet" href="../css/components.css" />
+		<style>
+			body {
+				padding: var(--rux-space-5);
+				display: flex;
+				align-items: center;
+				gap: var(--rux-space-5);
+			}
+			.mark {
+				display: flex;
+				align-items: center;
+				gap: var(--rux-space-3);
+			}
+			.mark img {
+				width: var(--rux-field-height);
+				height: var(--rux-field-height);
+			}
+			.wordmark {
+				font-size: var(--rux-text-2xl);
+				font-weight: var(--rux-weight-bold);
+				letter-spacing: var(--rux-tracking-tight);
+			}
+			.accent-dot {
+				display: inline-block;
+				width: var(--rux-radius-md);
+				height: var(--rux-radius-md);
+				border-radius: var(--rux-radius-full);
+				background: var(--rux-accent);
+				vertical-align: middle;
+				margin-left: var(--rux-space-1);
+			}
+			.meta {
+				color: var(--rux-fg-muted);
+				font-size: var(--rux-text-sm);
+				line-height: var(--rux-leading-snug);
+			}
+			.token-sample {
+				font-size: var(--rux-text-2xs);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="mark">
+			<img src="../assets/rux-mark.svg" alt="" />
+			<div class="wordmark">rux<span class="accent-dot"></span></div>
+		</div>
+		<div class="meta">
+			Wordmark · Inter Bold, -2% tracking<br />
+			Accent dot at <code class="token-sample">oklch(64% 0.18 252)</code>
+		</div>
+	</body>
 </html>

@@ -54,8 +54,8 @@ function buildBusGroup(idx) {
     { role: 'relief1',  icon: 'refresh-ccw', title: 'Relief 1 — start' },
     { role: 'relief2',  icon: 'refresh-cw',  title: 'Relief 2 — end'   },
   ].map(r => `
-    <div class="trip-panel__driver-row" data-role-row="${r.role}" hidden>
-      <span class="trip-panel__role-label" title="${r.title}">
+    <div class="rux-trip-panel__driver-row" data-role-row="${r.role}" hidden>
+      <span class="rux-trip-panel__role-label" title="${r.title}">
         <i data-lucide="${r.icon}" class="rux-icon"></i>
       </span>
       <select class="rux-select" name="buses[${idx}].${r.role}.name">${driverOpts}</select>
@@ -66,10 +66,10 @@ function buildBusGroup(idx) {
     </div>`).join('');
 
   const el = document.createElement('div');
-  el.className = 'trip-panel__bus-group';
+  el.className = 'rux-trip-panel__bus-group';
   el.innerHTML = `
-    <div class="trip-panel__bus-head">
-      <span class="trip-panel__bus-badge">${idx + 1}</span>
+    <div class="rux-trip-panel__bus-head">
+      <span class="rux-trip-panel__bus-badge">${idx + 1}</span>
       <select class="rux-select" name="buses[${idx}].busId" style="flex:1;">
         <option value="" disabled selected>Select bus…</option>
         ${busOpts}
@@ -84,9 +84,9 @@ function buildBusGroup(idx) {
         <i data-lucide="chevrons-left" class="rux-icon"></i>
       </button>
     </div>
-    <div class="trip-panel__driver-rows">
-      <div class="trip-panel__driver-row">
-        <span class="trip-panel__role-label" title="Driver">
+    <div class="rux-trip-panel__driver-rows">
+      <div class="rux-trip-panel__driver-row">
+        <span class="rux-trip-panel__role-label" title="Driver">
           <i data-lucide="user" class="rux-icon"></i>
         </span>
         <select class="rux-select" name="buses[${idx}].driver.name">${driverOpts}</select>
@@ -115,8 +115,8 @@ function initTripPanel(root) {
 
   /* ── Tabs ─────────────────────────────────────────────────────────────── */
 
-  const allPanes = root.querySelectorAll('.trip-panel__pane');
-  const allTabBtns = root.querySelectorAll('.trip-panel__tabs .rux-button[aria-controls]');
+  const allPanes = root.querySelectorAll('.rux-trip-panel__pane');
+  const allTabBtns = root.querySelectorAll('.rux-trip-panel__tabs .rux-button[aria-controls]');
   allTabBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
       const panelId = btn.getAttribute('aria-controls');
@@ -224,10 +224,10 @@ function initTripPanel(root) {
       if (!file || !label) return;
 
       const li = document.createElement('li');
-      li.className = 'trip-panel__doc-row';
+      li.className = 'rux-trip-panel__doc-row';
       li.innerHTML = `
-        <span class="trip-panel__doc-chip">${label}</span>
-        <span class="trip-panel__doc-name">${file.name}</span>
+        <span class="rux-trip-panel__doc-chip">${label}</span>
+        <span class="rux-trip-panel__doc-name">${file.name}</span>
         <button class="rux-button rux-button--ghost rux-button--sm" type="button">Open</button>
         <button class="rux-button rux-button--ghost rux-button--sm rux-button--icon" type="button" aria-label="Delete">
           <i data-lucide="trash-2" class="rux-icon"></i>
@@ -242,7 +242,7 @@ function initTripPanel(root) {
 
     docList?.addEventListener('click', (e) => {
       const del = e.target.closest('[aria-label="Delete"]');
-      if (del) del.closest('.trip-panel__doc-row')?.remove();
+      if (del) del.closest('.rux-trip-panel__doc-row')?.remove();
     });
   }
 
@@ -263,7 +263,7 @@ function initTripPanel(root) {
     busGroupsEl.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-role]');
       if (!btn) return;
-      const group    = btn.closest('.trip-panel__bus-group');
+      const group    = btn.closest('.rux-trip-panel__bus-group');
       const role     = btn.dataset.role;
       const nowActive = btn.getAttribute('aria-pressed') !== 'true';
       btn.setAttribute('aria-pressed', String(nowActive));

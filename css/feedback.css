@@ -1,0 +1,161 @@
+/* ==========================================================================
+   FEEDBACK  ·  alert, toast, modal, progress, tooltip
+   ========================================================================== */
+
+/* — alert — */
+
+.rux-alert {
+  display: flex;
+  gap: var(--rux-space-3);
+  padding: var(--rux-space-3) var(--rux-space-4);
+  background: var(--rux-bg-elevated);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-md);
+  font-size: var(--rux-text-sm);
+  line-height: var(--rux-leading-snug);
+}
+.rux-alert__icon  { color: var(--rux-fg-muted); flex: none; }
+.rux-alert__body  { flex: 1; min-width: 0; }
+.rux-alert__title { font-weight: var(--rux-weight-semibold); margin-bottom: calc(var(--rux-space-1) / 2); }
+
+.rux-alert--info    { background: var(--rux-info-subtle);    border-color: transparent; }
+.rux-alert--info    .rux-alert__icon { color: var(--rux-info); }
+.rux-alert--success { background: var(--rux-success-subtle); border-color: transparent; }
+.rux-alert--success .rux-alert__icon { color: var(--rux-success); }
+.rux-alert--warning { background: var(--rux-warning-subtle); border-color: transparent; }
+.rux-alert--warning .rux-alert__icon { color: var(--rux-warning); }
+.rux-alert--danger  { background: var(--rux-danger-subtle);  border-color: transparent; }
+.rux-alert--danger  .rux-alert__icon { color: var(--rux-danger); }
+
+
+/* — toast — */
+
+.rux-toast {
+  display: flex;
+  align-items: center;
+  gap: var(--rux-space-3);
+  padding: var(--rux-space-3) var(--rux-space-4);
+  background: var(--rux-bg-elevated);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-md);
+  box-shadow: var(--rux-shadow-sm);
+  font-size: var(--rux-text-sm);
+  min-width: var(--rux-toast-min-width);
+}
+
+
+/* — modal — */
+
+.rux-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: var(--rux-bg-overlay);
+  backdrop-filter: blur(var(--rux-overlay-blur));
+  -webkit-backdrop-filter: blur(var(--rux-overlay-blur));
+  z-index: var(--rux-z-modal);
+  display: grid;
+  place-items: center;
+  padding: var(--rux-space-5);
+  animation: rux-fade-in var(--rux-duration-base) var(--rux-ease-out);
+}
+.rux-modal-backdrop[hidden] { display: none; }
+.rux-modal {
+  width: 100%;
+  max-width: var(--rux-container-xs);
+  background: var(--rux-bg-elevated);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-xl);
+  box-shadow: var(--rux-shadow-lg);
+  overflow: hidden;
+  animation: rux-modal-in var(--rux-duration-base) var(--rux-ease-out);
+}
+.rux-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--rux-space-5);
+  border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+}
+.rux-modal__title { font-size: var(--rux-text-lg); font-weight: var(--rux-weight-semibold); }
+.rux-modal__body { padding: var(--rux-space-5); color: var(--rux-fg-muted); }
+.rux-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--rux-space-2);
+  padding: var(--rux-space-4) var(--rux-space-5);
+  background: var(--rux-bg-sunken);
+  border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+}
+
+@keyframes rux-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes rux-modal-in {
+  from { opacity: 0; transform: translateY(var(--rux-modal-enter-y)) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+
+/* — progress — */
+
+.rux-progress {
+  position: relative;
+  width: 100%;
+  height: var(--rux-progress-height);
+  background: var(--rux-bg-active);
+  border-radius: var(--rux-radius-full);
+  overflow: hidden;
+}
+.rux-progress__bar {
+  height: 100%;
+  background: var(--rux-accent);
+  border-radius: inherit;
+  transition: width var(--rux-duration-base) var(--rux-ease-out);
+}
+
+
+/* — tooltip — */
+
+[data-tooltip]:not([data-rux-tooltip="floating"]) {
+  position: relative;
+}
+[data-tooltip]:not([data-rux-tooltip="floating"]):hover::after,
+[data-tooltip]:not([data-rux-tooltip="floating"]):focus-visible::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + var(--rux-dot-sm));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--rux-space-1) var(--rux-space-2);
+  background: var(--rux-bg-active);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-sm);
+  color: var(--rux-fg);
+  font-size: var(--rux-text-xs);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: var(--rux-z-overlay);
+  box-shadow: var(--rux-shadow-md);
+}
+
+.rux-tooltip {
+  position: fixed;
+  max-width: calc(100vw - var(--rux-space-4));
+  padding: var(--rux-space-1) var(--rux-space-2);
+  background: var(--rux-bg-active);
+  border: var(--rux-border-width) solid var(--rux-border);
+  border-radius: var(--rux-radius-sm);
+  color: var(--rux-fg);
+  font-size: var(--rux-text-xs);
+  line-height: var(--rux-leading-snug);
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: var(--rux-z-overlay);
+  box-shadow: var(--rux-shadow-md);
+}
+
+.rux-tooltip[hidden] {
+  display: none;
+}

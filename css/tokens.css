@@ -13,83 +13,89 @@
       never hardcode a color, radius, or shadow.
    4. Dark mode is the only mode for now. The system declares
       color-scheme: dark on :root.
+
+   Contents (token groups)
+   -----------------------
+   Color · base palette       --rux-bg-*, --rux-color-white
+   Color · text               --rux-fg-*
+   Color · border             --rux-border-*, --rux-grid-*
+   Color · controls           --rux-control-*
+   Color · accent             --rux-accent-*  (hue-based theming)
+   Color · status             --rux-success-*, --rux-warning-*, --rux-info-*, --rux-danger-*
+   Typography · family        --rux-font-*
+   Typography · size          --rux-text-*
+   Typography · weight        --rux-weight-*
+   Typography · line-height   --rux-leading-*
+   Typography · tracking      --rux-tracking-*
+   Spacing                    --rux-space-0 → --rux-space-8
+   Size                       --rux-border-width, --rux-control-*, --rux-icon-*,
+                               --rux-avatar-*, --rux-dot-sm, --rux-progress-height,
+                               --rux-check-*, --rux-menu-min-width, --rux-panel-width-sm,
+                               --rux-toast-min-width, --rux-overlay-blur, --rux-modal-enter-y
+   Radius                     --rux-radius-none → --rux-radius-full
+   Shadow                     --rux-shadow-*, --rux-ring-*
+   Motion                     --rux-duration-*, --rux-ease-*
+   Layout                     --rux-container-*, --rux-sidebar-width
+   Z-index                    --rux-z-*
+   Accent themes              [data-rux-accent="blue|violet|green|amber"]
    ========================================================================== */
 
 :root {
-  color-scheme: dark;
+	color-scheme: dark;
 
-  /* ─── COLOR · base palette ────────────────────────────────────────────── */
-  /* Near-black backgrounds, perceptually-tuned hairlines, white-bias text.
+	/* ─── COLOR · base palette ────────────────────────────────────────────── */
+	/* Near-black backgrounds, perceptually-tuned hairlines, white-bias text.
      Designed for OLED-friendly contrast without crushing blacks.            */
 
-  --rux-color-white: oklch(100% 0 0);
+	--rux-color-white: oklch(100% 0 0);
 
-  --rux-bg-topbar: oklch(16% 0.004 260);
-  --rux-bg: oklch(20% 0.004 260); /* canvas — the lowest plane              */
-  --rux-bg-sunken: oklch(
-    20% 0.004 260
-  ); /* inputs, code, recessed surfaces        */
-  --rux-bg-elevated: oklch(
-    24% 0.004 260
-  ); /* panels, cards, modals                  */
-  --rux-bg-3: oklch(32% 0.004 260); /* panels, cards, modals */
-  --rux-bg-hover: #292929; /* interactive rows, lifted surfaces      */
-  --rux-bg-active: #303030; /* pressed / selected                     */
-  --rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim                  */
+	--rux-bg-topbar: oklch(0% 0.004 260);
+	--rux-bg: oklch(20% 0.004 260); /* canvas — the lowest plane              */
+	--rux-bg-sunken: oklch(20% 0.004 260); /* inputs, code, recessed surfaces        */
+	--rux-bg-elevated: oklch(24% 0.004 260); /* panels, cards, modals                  */
+	--rux-bg-3: oklch(32% 0.004 260); /* panels, cards, modals */
+	--rux-bg-hover: #292929; /* interactive rows, lifted surfaces      */
+	--rux-bg-active: #303030; /* pressed / selected                     */
+	--rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim                  */
 
-  /* ─── COLOR · text ────────────────────────────────────────────────────── */
+	/* ─── COLOR · text ────────────────────────────────────────────────────── */
 
-  --rux-fg: oklch(100% 0 0); /* #ffffff */
-  --rux-fg-muted: oklch(80% 0 0); /* #a1a1a1 */
-  --rux-fg-subtle: oklch(60% 0 0); /* #6b6b6b */
-  --rux-fg-disabled: oklch(40% 0 0); /* #404040 */
-  --rux-fg-on-accent: oklch(100% 0 0); /* #ffffff */
+	--rux-fg: oklch(100% 0 0); /* #ffffff */
+	--rux-fg-muted: oklch(80% 0 0); /* #a1a1a1 */
+	--rux-fg-subtle: oklch(60% 0 0); /* #6b6b6b */
+	--rux-fg-disabled: oklch(40% 0 0); /* #404040 */
+	--rux-fg-on-accent: oklch(100% 0 0); /* #ffffff */
 
-  /* ─── COLOR · border ──────────────────────────────────────────────────── */
-  /* All borders are hairlines (1px). We use three levels.                   */
+	/* ─── COLOR · border ──────────────────────────────────────────────────── */
+	/* All borders are hairlines (1px). We use three levels.                   */
 
-  --rux-border: oklch(38% 0.004 260); /* default — separates surfaces           */
-  --rux-border-strong: #4a4a4a; /* emphasized — focused/selected card     */
-  --rux-border-subtle: #292929; /* whisper — grouping inside a card       */
-  --rux-grid-line: var(
-    --rux-border-subtle
-  ); /* dense tables, calendars, schedulers */
-  --rux-grid-border: var(
-    --rux-border
-  ); /* outer edge for grid surfaces        */
+	--rux-border: oklch(38% 0.004 260); /* default — separates surfaces           */
+	/*--rux-border: oklch(70% 0.2 24); /* debug borders */
+	--rux-border-strong: #4a4a4a; /* emphasized — focused/selected card     */
+	--rux-border-subtle: #292929; /* whisper — grouping inside a card       */
+	--rux-grid-line: var(--rux-border-subtle); /* dense tables, calendars, schedulers */
+	--rux-grid-border: var(--rux-border); /* outer edge for grid surfaces        */
 
-  /* ─── COLOR · controls ────────────────────────────────────────────────── */
+	/* ─── COLOR · controls ────────────────────────────────────────────────── */
 
-  --rux-control-ghost-hover: oklch(
-    100% 0 0 / 0.1
-  ); /* transparent white hover           */
-  --rux-control-ghost-active: oklch(
-    100% 0 0 / 0.14
-  ); /* transparent white press           */
-  --rux-control-ghost-border: var(
-    --rux-border
-  ); /* ghost outline matches section borders */
-  --rux-control-border: #303030; /* default control edge                 */
-  --rux-control-border-hover: #3a3a3a; /* hover control edge                   */
-  --rux-control-border-active: #424242; /* selected / pressed control edge      */
+	--rux-control-ghost-hover: oklch(100% 0 0 / 0.1); /* transparent white hover           */
+	--rux-control-ghost-active: oklch(100% 0 0 / 0.14); /* transparent white press           */
+	--rux-control-ghost-border: var(--rux-border); /* ghost outline matches section borders */
+	--rux-control-border: #303030; /* default control edge                 */
+	--rux-control-border-hover: #3a3a3a; /* hover control edge                   */
+	--rux-control-border-active: #424242; /* selected / pressed control edge      */
 
-  --rux-control-strip-bg: oklch(
-    29% 0.004 260
-  ); /* pill-strip container for .rux-segmented */
-  --rux-control-strip-bg-hover: oklch(
-    33% 0.004 260
-  ); /* inactive item hover inside a strip      */
-  --rux-control-strip-bg-active: oklch(
-    40% 0.004 260
-  ); /* selected item inside a pill-strip       */
+	--rux-control-strip-bg: oklch(29% 0.004 260); /* pill-strip container for .rux-segmented */
+	--rux-control-strip-bg-hover: oklch(33% 0.004 260); /* inactive item hover inside a strip      */
+	--rux-control-strip-bg-active: oklch(40% 0.004 260); /* selected item inside a pill-strip       */
 
-  --rux-control-bg: oklch(43% 0.004 260);
-  --rux-control-bg-disabled: oklch(24% 0.004 260);
-  --rux-control-bg-hover: oklch(50% 0.004 260);
-  --rux-control-bg-active: oklch(36% 0.004 260);
+	--rux-control-bg: oklch(43% 0.004 260);
+	--rux-control-bg-disabled: oklch(24% 0.004 260);
+	--rux-control-bg-hover: oklch(50% 0.004 260);
+	--rux-control-bg-active: oklch(36% 0.004 260);
 
-  /* ─── COLOR · accent ──────────────────────────────────────────────────── */
-  /* One brand color, used sparingly. Swap the *hue* to retheme — lightness
+	/* ─── COLOR · accent ──────────────────────────────────────────────────── */
+	/* One brand color, used sparingly. Swap the *hue* to retheme — lightness
      and chroma are held constant so every accent feels like the same
      family. Set --rux-accent-h on :root (or [data-rux-accent="…"]) to pick.
 
@@ -99,190 +105,183 @@
        blue  · 250             violet · 295
        green · 155             amber  · 70                                  */
 
-  --rux-accent-h: 260; /* hue · 0–360                     */
-  --rux-accent-l: 60%; /* lightness                       */
-  --rux-accent-c: 0.18; /* chroma                          */
+	--rux-accent-h: 260; /* hue · 0–360                     */
+	--rux-accent-l: 60%; /* lightness                       */
+	--rux-accent-c: 0.22; /* chroma                          */
 
-  --rux-accent: oklch(
-    var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h)
-  );
-  --rux-accent-hover: oklch(
-    70% var(--rux-accent-c) var(--rux-accent-h)
-  ); /* +10L */
-  --rux-accent-active: oklch(
-    50% var(--rux-accent-c) var(--rux-accent-h)
-  ); /* -10L */
-  --rux-accent-subtle: oklch(
-    var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14
-  );
-  --rux-accent-ring: oklch(70% 0.28 var(--rux-accent-h) / 1);
+	--rux-accent: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
+	--rux-accent-hover: oklch(70% var(--rux-accent-c) var(--rux-accent-h)); /* +10L */
+	--rux-accent-active: oklch(50% var(--rux-accent-c) var(--rux-accent-h)); /* -10L */
+	--rux-accent-subtle: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
+	--rux-accent-ring: oklch(70% 0.28 var(--rux-accent-h) / 1);
 
-  /* ─── COLOR · status / semantic ───────────────────────────────────────── */
-  /* Bright enough for dark mode, balanced in chroma so none dominates.     */
+	/* ─── COLOR · status / semantic ───────────────────────────────────────── */
+	/* Bright enough for dark mode, balanced in chroma so none dominates.     */
 
-  --rux-success: oklch(80% 0.22 152);
-  --rux-success-subtle: oklch(72% 0.17 152 / 0.14);
-  --rux-warning: oklch(80% 0.15 80);
-  --rux-warning-subtle: oklch(80% 0.15 80 / 0.14);
-  --rux-danger: oklch(80% 0.22 24);
-  --rux-danger-hover: oklch(70% 0.21 24);
-  --rux-danger-active: oklch(50% 0.21 24);
-  --rux-danger-subtle: oklch(67% 0.21 24 / 0.14);
-  --rux-info: oklch(74% 0.13 230);
-  --rux-info-subtle: oklch(74% 0.13 230 / 0.14);
+	--rux-success: oklch(60% 0.22 152);
+	--rux-success-bright: oklch(70% 0.22 152);
+	--rux-success-subtle: oklch(70% 0.22 152 / 0.14);
 
-  /* ─── TYPOGRAPHY · family ─────────────────────────────────────────────── */
-  /* System-first. Inter is loaded as a webfont in colors_and_type.css
+	--rux-warning: oklch(60% 0.22 80);
+	--rux-warning-bright: oklch(70% 0.22 80);
+	--rux-warning-subtle: oklch(80% 0.22 80 / 0.14);
+
+	--rux-info: oklch(60% 0.22 230);
+	--rux-info-bright: oklch(70% 0.22 230);
+	--rux-info-subtle: oklch(70% 0.22 230 / 0.14);
+
+	--rux-danger: oklch(60% 0.22 24);
+	--rux-danger-bright: oklch(70% 0.22 24);
+	--rux-danger-hover: oklch(70% 0.22 24);
+	--rux-danger-active: oklch(50% 0.22 24);
+	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
+
+	/* ─── TYPOGRAPHY · family ─────────────────────────────────────────────── */
+	/* System-first. Inter is loaded as a webfont in colors_and_type.css
      for cross-platform consistency on text-heavy screens.                  */
 
-  --rux-font-sans:
-    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue",
-    Arial, sans-serif;
-  --rux-font-mono:
-    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--rux-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+	--rux-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* ─── TYPOGRAPHY · size scale ─────────────────────────────────────────── */
-  /* Modular scale, ratio ~1.25. Use semantic aliases below in components.   */
+	/* ─── TYPOGRAPHY · size scale ─────────────────────────────────────────── */
+	/* Modular scale, ratio ~1.25. Use semantic aliases below in components.   */
 
-  --rux-text-2xs: 0.6875rem; /* 11px  · micro labels, badges               */
-  --rux-text-xs: 0.75rem; /* 12px  · captions, helper text              */
-  --rux-text-sm: 0.875rem; /* 14px  · body small, dense UI               */
-  --rux-text-md: 1rem; /* 16px  · base body                          */
-  --rux-text-lg: 1.125rem; /* 18px  · lead paragraph                     */
-  --rux-text-xl: 1.5rem; /* 24px  · h3                                 */
-  --rux-text-2xl: 2rem; /* 32px  · h2                                 */
-  --rux-text-3xl: 2.75rem; /* 44px  · h1                                 */
-  --rux-text-4xl: 4rem; /* 64px  · display                            */
+	--rux-text-2xs: 0.6875rem; /* 11px  · micro labels, badges               */
+	--rux-text-xs: 0.75rem; /* 12px  · captions, helper text              */
+	--rux-text-sm: 0.875rem; /* 14px  · body small, dense UI               */
+	--rux-text-md: 1rem; /* 16px  · base body                          */
+	--rux-text-lg: 1.125rem; /* 18px  · lead paragraph                     */
+	--rux-text-xl: 1.5rem; /* 24px  · h3                                 */
+	--rux-text-2xl: 2rem; /* 32px  · h2                                 */
+	--rux-text-3xl: 2.75rem; /* 44px  · h1                                 */
+	--rux-text-4xl: 4rem; /* 64px  · display                            */
 
-  /* ─── TYPOGRAPHY · weight ─────────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · weight ─────────────────────────────────────────────── */
 
-  --rux-weight-regular: 400;
-  --rux-weight-medium: 500;
-  --rux-weight-semibold: 600;
-  --rux-weight-bold: 700;
+	--rux-weight-regular: 400;
+	--rux-weight-medium: 500;
+	--rux-weight-semibold: 600;
+	--rux-weight-bold: 700;
 
-  /* ─── TYPOGRAPHY · line-height ────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · line-height ────────────────────────────────────────── */
 
-  --rux-leading-tight: 1.15; /* headlines, display                      */
-  --rux-leading-snug: 1.3; /* short ui copy                           */
-  --rux-leading-normal: 1.5; /* body paragraphs                         */
-  --rux-leading-relaxed: 1.65; /* long-form reading                       */
+	--rux-leading-tight: 1.15; /* headlines, display                      */
+	--rux-leading-snug: 1.3; /* short ui copy                           */
+	--rux-leading-normal: 1.5; /* body paragraphs                         */
+	--rux-leading-relaxed: 1.65; /* long-form reading                       */
 
-  /* ─── TYPOGRAPHY · tracking ───────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · tracking ───────────────────────────────────────────── */
 
-  --rux-tracking-tight: -0.02em; /* large display                         */
-  --rux-tracking-normal: 0;
-  --rux-tracking-wide: 0.04em; /* uppercase eyebrows / overline         */
+	--rux-tracking-tight: -0.02em; /* large display                         */
+	--rux-tracking-normal: 0;
+	--rux-tracking-wide: 0.04em; /* uppercase eyebrows / overline         */
 
-  /* ─── SPACING ─────────────────────────────────────────────────────────── */
-  /* 4px base grid. Pick from the scale; do not invent new values.          */
+	/* ─── SPACING ─────────────────────────────────────────────────────────── */
+	/* 4px base grid. Pick from the scale; do not invent new values.          */
 
-  --rux-space-0: 0;
-  --rux-space-1: 0.25rem; /*  4px */
-  --rux-space-2: 0.5rem; /*  8px */
-  --rux-space-3: 0.75rem; /* 12px */
-  --rux-space-4: 1rem; /* 16px */
-  --rux-space-5: 1.5rem; /* 24px */
-  --rux-space-6: 2rem; /* 32px */
-  --rux-space-7: 3rem; /* 48px */
-  --rux-space-8: 4rem; /* 64px */
+	--rux-space-0: 0;
+	--rux-space-1: 0.25rem; /*  4px */
+	--rux-space-2: 0.5rem; /*  8px */
+	--rux-space-3: 0.75rem; /* 12px */
+	--rux-space-4: 1rem; /* 16px */
+	--rux-space-5: 1.5rem; /* 24px */
+	--rux-space-6: 2rem; /* 32px */
+	--rux-space-7: 3rem; /* 48px */
+	--rux-space-8: 4rem; /* 64px */
 
-  /* ─── SIZE · controls and marks ───────────────────────────────────────── */
+	/* ─── SIZE · controls and marks ───────────────────────────────────────── */
 
-  --rux-border-width: 1px;
+	--rux-border-width: 1px;
 
-  --rux-control-height: 32px;
-  --rux-field-height: 32px;  /* unified with --rux-control-height */
-  --rux-textarea-min-height: 84px;
-  --rux-switch-width: 52px;
-  --rux-switch-height: 32px;
+	--rux-control-height: 32px;
+	--rux-field-height: 32px; /* unified with --rux-control-height */
+	--rux-textarea-min-height: 84px;
+	--rux-switch-width: 52px;
+	--rux-switch-height: 32px;
 
-  --rux-icon-sm: 14px;
-  --rux-icon-md: 16px;
-  --rux-icon-lg: 20px;
-  --rux-icon-xl: 24px;
+	--rux-icon-sm: 14px;
+	--rux-icon-md: 16px;
+	--rux-icon-lg: 20px;
+	--rux-icon-xl: 24px;
 
-  --rux-avatar-sm: 24px;
-  --rux-avatar-md: 32px;
-  --rux-avatar-lg: 48px;
+	--rux-avatar-sm: 24px;
+	--rux-avatar-md: 32px;
+	--rux-avatar-lg: 48px;
 
-  --rux-dot-sm: 6px;
-  --rux-progress-height: 6px;
-  --rux-check-control-size: 18px;
-  --rux-check-target-height: 32px;
-  --rux-checkmark-width: 6px;
-  --rux-checkmark-height: 10px;
-  --rux-menu-min-width: 200px;
-  --rux-panel-width-sm: 280px;
-  --rux-toast-min-width: var(--rux-panel-width-sm);
-  --rux-overlay-blur: 4px;
-  --rux-modal-enter-y: 12px;
+	--rux-dot-sm: 6px;
+	--rux-progress-height: 6px;
+	--rux-check-control-size: 18px;
+	--rux-check-target-height: 32px;
+	--rux-checkmark-width: 6px;
+	--rux-checkmark-height: 10px;
+	--rux-menu-min-width: 200px;
+	--rux-panel-width-sm: 280px;
+	--rux-toast-min-width: var(--rux-panel-width-sm);
+	--rux-overlay-blur: 4px;
+	--rux-modal-enter-y: 12px;
 
-  /* ─── RADIUS · optical scale ──────────────────────────────────────────── */
-  /* Optical nesting: every depth in a container, step down one level so
+	/* ─── RADIUS · optical scale ──────────────────────────────────────────── */
+	/* Optical nesting: every depth in a container, step down one level so
      curves stay visually parallel. See README → Visual Foundations.         */
 
-  --rux-radius-none: 0;
-  --rux-radius-xs: 2px; /* badges, chips                               */
-  --rux-radius-sm: 6px; /* inputs, buttons, controls (depth 3)         */
-  --rux-radius-md: 8px; /* sections inside cards (depth 2)             */
-  --rux-radius-lg: 16px; /* cards, panels (depth 1)                     */
-  --rux-radius-xl: 24px; /* modals, sheets (depth 0)                    */
-  --rux-radius-full: 9999px; /* pills, avatars                              */
+	--rux-radius-none: 0;
+	--rux-radius-xs: 2px; /* badges, chips                               */
+	--rux-radius-sm: 6px; /* inputs, buttons, controls (depth 3)         */
+	--rux-radius-md: 8px; /* sections inside cards (depth 2)             */
+	--rux-radius-lg: 16px; /* cards, panels (depth 1)                     */
+	--rux-radius-xl: 24px; /* modals, sheets (depth 0)                    */
+	--rux-radius-full: 9999px; /* pills, avatars                              */
 
-  /* ─── SHADOW · elevation ──────────────────────────────────────────────── */
-  /* Flat by default. Shadows are used sparingly — only to lift floating
+	/* ─── SHADOW · elevation ──────────────────────────────────────────────── */
+	/* Flat by default. Shadows are used sparingly — only to lift floating
      surfaces (menus, modals, toasts) above the canvas.                     */
-  /* Dark mode optimized: includes inset rim lights and layered falloffs.   */
+	/* Dark mode optimized: includes inset rim lights and layered falloffs.   */
 
-  --rux-shadow-none: none;
-  /* Crisp, immediate lift. Negative spread removes side-bleed. */
-  --rux-shadow-sm:
-    0 2px 3px -1px rgba(0, 0, 0, 0.75), inset 0 2px 0 rgba(255, 255, 255, 0.16);
-  /* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
-  --rux-shadow-md:
-    0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.8),
-    inset 0 2px 0.5px rgba(255, 255, 255, 0.16);
-  /* Deep but contained. High offset, aggressive negative spread. */
-  --rux-shadow-lg:
-    0 16px 32px -6px rgba(0, 0, 0, 0.4), 0 6px 14px -2px rgba(0, 0, 0, 1),
-    inset 0 2px 0 rgba(255, 255, 255, 0.16);
-  /* Maximum depth without the muddy blur. */
-  --rux-shadow-xl:
-    0 32px 64px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -4px rgba(0, 0, 0, 1),
-    inset 0 2px 0 rgba(255, 255, 255, 0.16);
-  /* Focus ring remains untouched; excellent dual-ring setup */
-  --rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
-  --rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
+	--rux-shadow-none: none;
+	/* Crisp, immediate lift. Negative spread removes side-bleed. */
+	--rux-shadow-sm: 0 2px 3px -1px rgba(0, 0, 0, 0.75), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+	/* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
+	--rux-shadow-md:
+		0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.8),
+		inset 0 2px 0.5px rgba(255, 255, 255, 0.16);
+	/* Deep but contained. High offset, aggressive negative spread. */
+	--rux-shadow-lg:
+		0 16px 32px -6px rgba(0, 0, 0, 0.4), 0 6px 14px -2px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+	/* Maximum depth without the muddy blur. */
+	--rux-shadow-xl:
+		0 32px 64px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -4px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+	/* Focus ring remains untouched; excellent dual-ring setup */
+	--rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
+	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
 
-  /* ─── MOTION ──────────────────────────────────────────────────────────── */
+	/* ─── MOTION ──────────────────────────────────────────────────────────── */
 
-  --rux-duration-instant: 80ms; /* hover, opacity                        */
-  --rux-duration-fast: 140ms; /* button press, color shifts            */
-  --rux-duration-base: 220ms; /* menu open, modal in                   */
-  --rux-duration-slow: 360ms; /* sheet slide, layout                   */
+	--rux-duration-instant: 80ms; /* hover, opacity                        */
+	--rux-duration-fast: 140ms; /* button press, color shifts            */
+	--rux-duration-base: 220ms; /* menu open, modal in                   */
+	--rux-duration-slow: 360ms; /* sheet slide, layout                   */
 
-  --rux-ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* default          */
-  --rux-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* symmetric        */
-  --rux-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* playful, rare    */
+	--rux-ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* default          */
+	--rux-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* symmetric        */
+	--rux-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* playful, rare    */
 
-  /* ─── LAYOUT ──────────────────────────────────────────────────────────── */
+	/* ─── LAYOUT ──────────────────────────────────────────────────────────── */
 
-  --rux-container-sm: 640px;
-  --rux-container-xs: 480px;
-  --rux-container-md: 768px;
-  --rux-container-lg: 1024px;
-  --rux-container-xl: 1280px;
-  --rux-sidebar-width: 240px;
+	--rux-container-sm: 640px;
+	--rux-container-xs: 480px;
+	--rux-container-md: 768px;
+	--rux-container-lg: 1024px;
+	--rux-container-xl: 1280px;
+	--rux-sidebar-width: 240px;
 
-  /* ─── Z-INDEX ─────────────────────────────────────────────────────────── */
+	/* ─── Z-INDEX ─────────────────────────────────────────────────────────── */
 
-  --rux-z-base: 1;
-  --rux-z-dropdown: 100;
-  --rux-z-sticky: 200;
-  --rux-z-overlay: 300;
-  --rux-z-modal: 400;
-  --rux-z-toast: 500;
+	--rux-z-base: 1;
+	--rux-z-dropdown: 100;
+	--rux-z-sticky: 200;
+	--rux-z-overlay: 300;
+	--rux-z-modal: 400;
+	--rux-z-toast: 500;
 }
 
 /* ==========================================================================
@@ -296,15 +295,15 @@
    ========================================================================== */
 
 [data-rux-accent="blue"] {
-  --rux-accent-h: 250;
+	--rux-accent-h: 260;
 }
 [data-rux-accent="violet"] {
-  --rux-accent-h: 295;
+	--rux-accent-h: 295;
 }
 [data-rux-accent="green"] {
-  --rux-accent-h: 155;
+	--rux-accent-h: 155;
 }
 [data-rux-accent="amber"] {
-  --rux-accent-h: 70;
-  --rux-accent-c: 0.16;
+	--rux-accent-h: 70;
+	--rux-accent-c: 0.16;
 }

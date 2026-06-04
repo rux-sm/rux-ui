@@ -4,6 +4,20 @@
    Loads webfonts, applies a global reset, and wires raw type tokens to
    the actual HTML elements (h1–h6, p, code, small, etc).
 
+   Contents
+   --------
+   Webfonts          Inter (UI) + JetBrains Mono (code) via Google Fonts CDN
+   Reset             box-sizing, margin/padding, font-smoothing, font features
+   Headings          h1–h6 — sizes, weights, tracking
+   Body copy         p, small, strong, em
+   Links             a — color, underline, focus ring
+   Code              code, kbd, samp, pre — mono stack, inset surface
+   Lists             ul, ol — left padding, item spacing
+   Rules             hr — hairline separator
+   Selection         ::selection, :focus-visible defaults
+   Type utilities    .rux-display .rux-h1–h3 .rux-lead .rux-body .rux-body-sm
+                     .rux-caption .rux-overline .rux-mono .rux-muted .rux-subtle
+
    Depends on tokens.css.
    ========================================================================== */
 
