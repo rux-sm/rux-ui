@@ -48,9 +48,10 @@
      Designed for OLED-friendly contrast without crushing blacks.            */
 
 	--rux-color-white: oklch(100% 0 0);
+	--rux-color-neutral: oklch(80% 0.004 0);
 
 	--rux-bg-topbar: oklch(0% 0.004 260);
-	--rux-bg: oklch(20% 0.004 260); /* canvas — the lowest plane              */
+	--rux-bg-1: oklch(20% 0.004 260); /* canvas — the lowest plane              */
 	--rux-bg-sunken: oklch(20% 0.004 260); /* inputs, code, recessed surfaces        */
 	--rux-bg-elevated: oklch(24% 0.004 260); /* panels, cards, modals                  */
 	--rux-bg-3: oklch(32% 0.004 260); /* panels, cards, modals */
@@ -194,7 +195,7 @@
 	--rux-border-width: 1px;
 
 	--rux-control-height: 32px;
-	--rux-field-height: 32px; /* unified with --rux-control-height */
+	--rux-field-height: 40px; /* unified with --rux-control-height */
 	--rux-textarea-min-height: 84px;
 	--rux-switch-width: 52px;
 	--rux-switch-height: 32px;
@@ -240,16 +241,20 @@
 	--rux-shadow-none: none;
 	/* Crisp, immediate lift. Negative spread removes side-bleed. */
 	--rux-shadow-sm: 0 2px 3px -1px rgba(0, 0, 0, 0.75), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+	--rux-shadow-sm: none;
 	/* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
 	--rux-shadow-md:
 		0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.8),
 		inset 0 2px 0.5px rgba(255, 255, 255, 0.16);
+	--rux-shadow-md: none;
 	/* Deep but contained. High offset, aggressive negative spread. */
 	--rux-shadow-lg:
 		0 16px 32px -6px rgba(0, 0, 0, 0.4), 0 6px 14px -2px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+	--rux-shadow-lg: none;
 	/* Maximum depth without the muddy blur. */
 	--rux-shadow-xl:
 		0 32px 64px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -4px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+	--rux-shadow-xl: none;
 	/* Focus ring remains untouched; excellent dual-ring setup */
 	--rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
 	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);

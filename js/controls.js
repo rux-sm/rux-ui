@@ -10,87 +10,107 @@
    data-rux-toggle-button      → standalone press toggle (.is-active / aria-pressed)
    data-rux-toggle-group       → single-select pressed button group
    data-rux-tabs               → single-select tab group (arrow key navigation)
+   data-rux-stepper            → [−] count [+] stepper; reads min/max from hidden input
    ========================================================================== */
 
 (function () {
-  "use strict";
+	"use strict";
 
-  /* ── Helpers ────────────────────────────────────────────────────────────── */
+	/* ── Helpers ────────────────────────────────────────────────────────────── */
 
-  function setActiveItem(group, active, selector, attr) {
-    group.querySelectorAll(selector).forEach((item) => {
-      const isActive = item === active;
-      item.classList.toggle("is-active", isActive);
-      item.setAttribute(attr, isActive ? "true" : "false");
-      if (attr === "aria-selected") item.tabIndex = isActive ? 0 : -1;
-    });
-  }
+	function setActiveItem(group, active, selector, attr) {
+		group.querySelectorAll(selector).forEach((item) => {
+			const isActive = item === active;
+			item.classList.toggle("is-active", isActive);
+			item.setAttribute(attr, isActive ? "true" : "false");
+			if (attr === "aria-selected") item.tabIndex = isActive ? 0 : -1;
+		});
+	}
 
-  function moveActiveItem(group, selector, attr, dir) {
-    const items = Array.from(group.querySelectorAll(selector)).filter((item) => !item.disabled);
-    if (!items.length) return;
+	function moveActiveItem(group, selector, attr, dir) {
+		const items = Array.from(group.querySelectorAll(selector)).filter((item) => !item.disabled);
+		if (!items.length) return;
 
-    const current = group.querySelector(selector + ".is-active") || items[0];
-    const currentIndex = items.indexOf(current);
-    const nextIndex = (currentIndex + dir + items.length) % items.length;
-    const next = items[nextIndex];
+		const current = group.querySelector(selector + ".is-active") || items[0];
+		const currentIndex = items.indexOf(current);
+		const nextIndex = (currentIndex + dir + items.length) % items.length;
+		const next = items[nextIndex];
 
-    setActiveItem(group, next, selector, attr);
-    next.focus();
-  }
+		setActiveItem(group, next, selector, attr);
+		next.focus();
+	}
 
-  /* ── Click ──────────────────────────────────────────────────────────────── */
+	/* ── Click ──────────────────────────────────────────────────────────────── */
 
-  document.addEventListener("click", function (e) {
-    // [data-rux-toggle="#target"] — toggle .is-open on a target element
-    const toggle = e.target.closest("[data-rux-toggle]");
-    if (toggle) {
-      const sel = toggle.getAttribute("data-rux-toggle");
-      const tgt = document.querySelector(sel);
-      if (tgt) tgt.classList.toggle("is-open");
-    }
+	document.addEventListener("click", function (e) {
+		// [data-rux-toggle="#target"] — toggle .is-open on a target element
+		const toggle = e.target.closest("[data-rux-toggle]");
+		if (toggle) {
+			const sel = toggle.getAttribute("data-rux-toggle");
+			const tgt = document.querySelector(sel);
+			if (tgt) tgt.classList.toggle("is-open");
+		}
 
-    // [data-rux-toggle-button] — standalone pressed toggle
-    const pressedToggle = e.target.closest("[data-rux-toggle-button]");
-    if (pressedToggle && !pressedToggle.disabled) {
-      const isActive = pressedToggle.getAttribute("aria-pressed") === "true";
-      pressedToggle.classList.toggle("is-active", !isActive);
-      pressedToggle.setAttribute("aria-pressed", isActive ? "false" : "true");
-    }
+		// [data-rux-toggle-button] — standalone pressed toggle
+		const pressedToggle = e.target.closest("[data-rux-toggle-button]");
+		if (pressedToggle && !pressedToggle.disabled) {
+			const isActive = pressedToggle.getAttribute("aria-pressed") === "true";
+			pressedToggle.classList.toggle("is-active", !isActive);
+			pressedToggle.setAttribute("aria-pressed", isActive ? "false" : "true");
+		}
 
-    // [data-rux-toggle-group] — single-select pressed button group
-    const toggleButton = e.target.closest("[data-rux-toggle-group] .rux-button");
-    if (toggleButton && !toggleButton.disabled) {
-      const group = toggleButton.closest("[data-rux-toggle-group]");
-      setActiveItem(group, toggleButton, ".rux-button", "aria-pressed");
-    }
+		// [data-rux-toggle-group] — single-select pressed button group
+		const toggleButton = e.target.closest("[data-rux-toggle-group] .rux-button");
+		if (toggleButton && !toggleButton.disabled) {
+			const group = toggleButton.closest("[data-rux-toggle-group]");
+			setActiveItem(group, toggleButton, ".rux-button", "aria-pressed");
+		}
 
-    // [data-rux-tabs] — single-select tab group
-    const tab = e.target.closest("[data-rux-tabs] .rux-button");
-    if (tab && !tab.disabled) {
-      const group = tab.closest("[data-rux-tabs]");
-      setActiveItem(group, tab, ".rux-button", "aria-selected");
-    }
-  });
+		// [data-rux-tabs] — single-select tab group
+		const tab = e.target.closest("[data-rux-tabs] .rux-button");
+		if (tab && !tab.disabled) {
+			const group = tab.closest("[data-rux-tabs]");
+			setActiveItem(group, tab, ".rux-button", "aria-selected");
+		}
 
-  /* ── Keyboard navigation ────────────────────────────────────────────────── */
+		// [data-rux-stepper] — [−] count [+]
+		const stepBtn = e.target.closest("[data-rux-stepper] [data-stepper-dec], [data-rux-stepper] [data-stepper-inc]");
+		if (stepBtn && !stepBtn.disabled) {
+			const stepper = stepBtn.closest("[data-rux-stepper]");
+			const input = stepper.querySelector("input[type='hidden']");
+			const display = stepper.querySelector(".rux-stepper__count");
+			if (!input) return;
+			const min = parseInt(input.min, 10) || 1;
+			const max = parseInt(input.max, 10) || Infinity;
+			const step = parseInt(input.step, 10) || 1;
+			const inc = stepBtn.hasAttribute("data-stepper-inc");
+			const val = Math.min(max, Math.max(min, (parseInt(input.value, 10) || min) + (inc ? step : -step)));
+			input.value = val;
+			if (display) display.textContent = val;
+			stepper.querySelector("[data-stepper-dec]").disabled = val <= min;
+			stepper.querySelector("[data-stepper-inc]").disabled = val >= max;
+			input.dispatchEvent(new Event("input", { bubbles: true }));
+		}
+	});
 
-  document.addEventListener("keydown", function (e) {
-    const dir = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 :
-                e.key === "ArrowLeft"  || e.key === "ArrowUp"   ? -1 : 0;
-    if (!dir) return;
+	/* ── Keyboard navigation ────────────────────────────────────────────────── */
 
-    const toggleGroup = e.target.closest("[data-rux-toggle-group]");
-    if (toggleGroup && e.target.closest(".rux-button")) {
-      e.preventDefault();
-      moveActiveItem(toggleGroup, ".rux-button", "aria-pressed", dir);
-      return;
-    }
+	document.addEventListener("keydown", function (e) {
+		const dir =
+			e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+		if (!dir) return;
 
-    const tabGroup = e.target.closest("[data-rux-tabs]");
-    if (tabGroup && e.target.closest(".rux-button")) {
-      e.preventDefault();
-      moveActiveItem(tabGroup, ".rux-button", "aria-selected", dir);
-    }
-  });
+		const toggleGroup = e.target.closest("[data-rux-toggle-group]");
+		if (toggleGroup && e.target.closest(".rux-button")) {
+			e.preventDefault();
+			moveActiveItem(toggleGroup, ".rux-button", "aria-pressed", dir);
+			return;
+		}
+
+		const tabGroup = e.target.closest("[data-rux-tabs]");
+		if (tabGroup && e.target.closest(".rux-button")) {
+			e.preventDefault();
+			moveActiveItem(tabGroup, ".rux-button", "aria-selected", dir);
+		}
+	});
 })();

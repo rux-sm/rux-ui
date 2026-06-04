@@ -58,8 +58,8 @@
 
 			<!-- Tab nav -->
 			<nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
-				<div class="rux-segmented" data-trip-tabs>
-					<button class="rux-button" aria-selected="true" aria-controls="pane-quote">Quote</button>
+				<div class="rux-segmented rux-segmented--ghost" data-trip-tabs>
+					<button class="rux-button" aria-selected="true" aria-controls="pane-trip">Trip</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-plan">Plan</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-billing">Billing</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-dispatch">Dispatch</button>
@@ -69,126 +69,16 @@
 
 			<!-- Tab panes -->
 			<div class="rux-trip-panel__body">
-				<!-- ── Quote ───────────────────────────────────────────────────── -->
-				<!-- What you capture on the initial booking call -->
-				<div id="pane-quote" class="rux-trip-panel__pane" role="tabpanel">
+				<!-- ── Trip ─────────────────────────────────────────────────── -->
+				<div id="pane-trip" class="rux-trip-panel__pane" role="tabpanel">
 					<div class="rux-trip-panel__cols-2">
 						<div class="rux-field">
-							<label class="rux-field__label">Trip type</label>
-							<div class="rux-segmented" data-rux-toggle-group>
-								<button class="rux-button is-active" aria-pressed="true">Round trip</button>
-								<button class="rux-button" aria-pressed="false">One way</button>
-							</div>
+							<label class="rux-field__label" for="tp-start">Start date</label>
+							<input class="rux-input" id="tp-start" name="startDate" type="date" value="2026-06-07" />
 						</div>
-						<div
-							style="
-								display: grid;
-								grid-template-columns: 1fr 72px;
-								gap: var(--rux-space-3);
-								align-items: start;
-							"
-						>
-							<div class="rux-field">
-								<label class="rux-field__label">Color</label>
-								<div class="rux-color-picker" id="tp-color-picker">
-									<button
-										class="rux-color-picker__trigger"
-										type="button"
-										aria-haspopup="listbox"
-										aria-expanded="false"
-										aria-label="Select trip bar color"
-									>
-										<span
-											class="rux-color-picker__preview"
-											style="--color: var(--rux-accent)"
-										></span>
-										<span class="rux-color-picker__label">Blue</span>
-										<i data-lucide="chevron-down" class="rux-color-picker__chevron"></i>
-									</button>
-									<div
-										class="rux-color-picker__popover"
-										hidden
-										role="listbox"
-										aria-label="Trip color"
-									>
-										<label
-											class="rux-color-picker__option"
-											style="--color: var(--rux-accent)"
-											data-label="Blue"
-											title="Blue"
-										>
-											<input type="radio" name="tp-color" value="blue" checked />
-											<span class="rux-color-picker__dot"></span>
-										</label>
-										<label
-											class="rux-color-picker__option"
-											style="--color: hsl(186 68% 44%)"
-											data-label="Cyan"
-											title="Cyan"
-										>
-											<input type="radio" name="tp-color" value="cyan" />
-											<span class="rux-color-picker__dot"></span>
-										</label>
-										<label
-											class="rux-color-picker__option"
-											style="--color: hsl(155 58% 42%)"
-											data-label="Green"
-											title="Green"
-										>
-											<input type="radio" name="tp-color" value="green" />
-											<span class="rux-color-picker__dot"></span>
-										</label>
-										<label
-											class="rux-color-picker__option"
-											style="--color: hsl(38 80% 52%)"
-											data-label="Amber"
-											title="Amber"
-										>
-											<input type="radio" name="tp-color" value="amber" />
-											<span class="rux-color-picker__dot"></span>
-										</label>
-										<label
-											class="rux-color-picker__option"
-											style="--color: hsl(288 52% 52%)"
-											data-label="Purple"
-											title="Purple"
-										>
-											<input type="radio" name="tp-color" value="purple" />
-											<span class="rux-color-picker__dot"></span>
-										</label>
-										<label
-											class="rux-color-picker__option"
-											style="--color: hsl(250 60% 55%)"
-											data-label="Violet"
-											title="Violet"
-										>
-											<input type="radio" name="tp-color" value="violet" />
-											<span class="rux-color-picker__dot"></span>
-										</label>
-										<label
-											class="rux-color-picker__option"
-											style="--color: hsl(0 0% 48%)"
-											data-label="Gray"
-											title="Gray"
-										>
-											<input type="radio" name="tp-color" value="gray" />
-											<span class="rux-color-picker__dot"></span>
-										</label>
-									</div>
-								</div>
-							</div>
-							<div class="rux-field">
-								<label class="rux-field__label" for="tp-buses">Buses</label>
-								<input
-									class="rux-input"
-									id="tp-buses"
-									name="busesNeeded"
-									type="number"
-									min="1"
-									max="20"
-									value="1"
-								/>
-							</div>
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-end">End date</label>
+							<input class="rux-input" id="tp-end" name="endDate" type="date" value="2026-06-09" />
 						</div>
 					</div>
 
@@ -215,55 +105,32 @@
 						</div>
 					</div>
 
-					<div class="rux-trip-panel__cols-2">
+					<div class="rux-trip-panel__cols-3">
 						<div class="rux-field">
-							<label class="rux-field__label" for="tp-start">Start date</label>
-							<input class="rux-input" id="tp-start" name="startDate" type="date" value="2026-06-07" />
+							<label class="rux-field__label" for="tp-dep">Departure</label>
+							<input class="rux-input" id="tp-dep" name="departureTime" type="time" value="06:30" />
 						</div>
 						<div class="rux-field">
-							<label class="rux-field__label" for="tp-end">End date</label>
-							<input class="rux-input" id="tp-end" name="endDate" type="date" value="2026-06-09" />
-						</div>
-					</div>
-
-					<div class="rux-trip-panel__cols-2">
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-price">Quoted price</label>
-							<div class="rux-input-group rux-input-group--prefix">
-								<span class="rux-input-group__prefix">$</span>
-								<input
-									class="rux-input"
-									id="tp-price"
-									name="quotedPrice"
-									type="number"
-									min="0"
-									step="0.01"
-									value="1200"
-								/>
-							</div>
+							<label class="rux-field__label" for="tp-spot">Spot</label>
+							<input class="rux-input" id="tp-spot" name="spotTime" type="time" value="06:00" />
 						</div>
 						<div class="rux-field">
-							<label class="rux-field__label" for="tp-est-mi">Est. miles</label>
-							<div class="rux-input-group rux-input-group--suffix">
-								<input
-									class="rux-input"
-									id="tp-est-mi"
-									name="estimatedMiles"
-									type="number"
-									min="0"
-									value="160"
-								/>
-								<span class="rux-input-group__suffix">mi</span>
-							</div>
+							<label class="rux-field__label" for="tp-return">Return</label>
+							<input class="rux-input" id="tp-return" name="returnTime" type="time" value="22:00" />
 						</div>
 					</div>
 
 					<div class="rux-field">
-						<label class="rux-field__label">Requirements</label>
-						<div class="rux-trip-panel__reqs" id="tp-reqs"></div>
+						<label class="rux-field__label" for="tp-pickup">Pick-up address</label>
+						<input
+							class="rux-input"
+							id="tp-pickup"
+							name="pickupAddress"
+							type="text"
+							value="805 W Ridge Rd, San Juan TX"
+						/>
 					</div>
 
-					<p class="rux-trip-panel__section-label">Booking contact</p>
 					<div class="rux-trip-panel__cols-2">
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-book-name">Name</label>
@@ -295,90 +162,47 @@
 							type="email"
 							placeholder="contact@example.com"
 						/>
-						<span class="rux-field__help">Used for itineraries, invoices, and confirmations.</span>
+					</div>
+
+					<div class="rux-trip-panel__cols-2">
+						<div class="rux-field">
+							<label class="rux-field__label">Trip type</label>
+							<div class="rux-segmented" data-rux-toggle-group>
+								<button class="rux-button is-active" aria-pressed="true">Round trip</button>
+								<button class="rux-button" aria-pressed="false">One way</button>
+							</div>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label" id="tp-buses-label">Buses</label>
+							<div class="rux-segmented" data-rux-stepper role="group" aria-labelledby="tp-buses-label">
+								<button
+									class="rux-button rux-button--icon"
+									type="button"
+									data-stepper-dec
+									aria-label="Fewer buses"
+									disabled
+								>
+									<i data-lucide="minus" class="rux-icon"></i>
+								</button>
+								<span class="rux-stepper__count" aria-live="polite">1</span>
+								<button
+									class="rux-button rux-button--icon"
+									type="button"
+									data-stepper-inc
+									aria-label="More buses"
+								>
+									<i data-lucide="plus" class="rux-icon"></i>
+								</button>
+								<input type="hidden" id="tp-buses" name="busesNeeded" value="1" min="1" max="20" />
+							</div>
+						</div>
 					</div>
 				</div>
-				<!-- /pane-quote -->
+				<!-- /pane-trip -->
 
 				<!-- ── Plan ────────────────────────────────────────────────────── -->
 				<!-- Operational details filled in as the trip approaches -->
 				<div id="pane-plan" class="rux-trip-panel__pane" role="tabpanel" hidden>
-					<div class="rux-field">
-						<label class="rux-field__label" for="tp-pickup">Pick-up address</label>
-						<input
-							class="rux-input"
-							id="tp-pickup"
-							name="pickupAddress"
-							type="text"
-							value="805 W Ridge Rd, San Juan TX"
-						/>
-					</div>
-
-					<div class="rux-trip-panel__cols-3">
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-dep">Departure</label>
-							<input class="rux-input" id="tp-dep" name="departureTime" type="time" value="06:30" />
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-spot">Spot</label>
-							<input class="rux-input" id="tp-spot" name="spotTime" type="time" value="06:00" />
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-return">Return</label>
-							<input class="rux-input" id="tp-return" name="returnTime" type="time" value="22:00" />
-						</div>
-					</div>
-
-					<div class="rux-trip-panel__cols-2">
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-drive-hr">Driving hours</label>
-							<div class="rux-input-group rux-input-group--suffix">
-								<input
-									class="rux-input"
-									id="tp-drive-hr"
-									name="estimatedDrivingHours"
-									type="number"
-									min="0"
-									step="0.5"
-									placeholder="0.0"
-								/>
-								<span class="rux-input-group__suffix">hr</span>
-							</div>
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-duty-hr">On-duty hours</label>
-							<div class="rux-input-group rux-input-group--suffix">
-								<input
-									class="rux-input"
-									id="tp-duty-hr"
-									name="estimatedOnDutyHours"
-									type="number"
-									min="0"
-									step="0.5"
-									placeholder="0.0"
-								/>
-								<span class="rux-input-group__suffix">hr</span>
-							</div>
-						</div>
-					</div>
-
-					<div class="rux-trip-panel__cols-2">
-						<div class="rux-field">
-							<label class="rux-field__label">Itinerary</label>
-							<div class="rux-segmented" data-rux-toggle-group>
-								<button class="rux-button is-active" aria-pressed="true">Pending</button>
-								<button class="rux-button" aria-pressed="false">Received</button>
-							</div>
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label">Contact sheet</label>
-							<div class="rux-segmented" data-rux-toggle-group>
-								<button class="rux-button is-active" aria-pressed="true">Pending</button>
-								<button class="rux-button" aria-pressed="false">Received</button>
-							</div>
-						</div>
-					</div>
-
 					<div class="rux-field">
 						<label class="rux-field__label" for="tp-notes">Notes</label>
 						<input
@@ -435,6 +259,71 @@
 							<button class="rux-button" aria-pressed="false">N/A</button>
 							<button class="rux-button" aria-pressed="false">Signed</button>
 							<button class="rux-button" aria-pressed="false">PO</button>
+						</div>
+					</div>
+
+					<div class="rux-trip-panel__cols-2">
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-price">Quoted price</label>
+							<div class="rux-input-group rux-input-group--prefix">
+								<span class="rux-input-group__prefix">$</span>
+								<input
+									class="rux-input"
+									id="tp-price"
+									name="quotedPrice"
+									type="number"
+									min="0"
+									step="0.01"
+									value="1200"
+								/>
+							</div>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-est-mi">Est. miles</label>
+							<div class="rux-input-group rux-input-group--suffix">
+								<input
+									class="rux-input"
+									id="tp-est-mi"
+									name="estimatedMiles"
+									type="number"
+									min="0"
+									value="160"
+								/>
+								<span class="rux-input-group__suffix">mi</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="rux-trip-panel__cols-2">
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-drive-hr">Driving hours</label>
+							<div class="rux-input-group rux-input-group--suffix">
+								<input
+									class="rux-input"
+									id="tp-drive-hr"
+									name="estimatedDrivingHours"
+									type="number"
+									min="0"
+									step="0.5"
+									placeholder="0.0"
+								/>
+								<span class="rux-input-group__suffix">hr</span>
+							</div>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label" for="tp-duty-hr">On-duty hours</label>
+							<div class="rux-input-group rux-input-group--suffix">
+								<input
+									class="rux-input"
+									id="tp-duty-hr"
+									name="estimatedOnDutyHours"
+									type="number"
+									min="0"
+									step="0.5"
+									placeholder="0.0"
+								/>
+								<span class="rux-input-group__suffix">hr</span>
+							</div>
 						</div>
 					</div>
 
@@ -502,6 +391,12 @@
 
 				<!-- ── Dispatch ────────────────────────────────────────────────── -->
 				<div id="pane-dispatch" class="rux-trip-panel__pane" role="tabpanel" hidden>
+					<p class="rux-trip-panel__section-label">Vehicle requirements</p>
+					<div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
+
+					<p class="rux-trip-panel__section-label">Driver needs</p>
+					<div class="rux-cluster" id="tp-driver-needs"></div>
+
 					<!-- Bus groups — rendered by trip-panel.js from #tp-buses count -->
 					<div class="rux-trip-panel__bus-groups" id="tp-bus-groups"></div>
 				</div>
