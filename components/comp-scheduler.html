@@ -12,7 +12,7 @@
       src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"
       defer
     ></script>
-    <link rel="stylesheet" href="comp-scheduler-demo.css" />
+    <link rel="stylesheet" href="../css/comp-scheduler-demo.css" />
   </head>
   <body class="scheduler-app-page">
     <main class="scheduler-app">
@@ -231,7 +231,7 @@
     </main>
 
     <script type="module">
-      import { createTripBar } from "../trip-bar.js";
+      import { createTripBar } from "../js/trip-bar.js";
 
       const callbacks = {
         onOpenTrip: (trip) => console.log("open trip", trip.id),

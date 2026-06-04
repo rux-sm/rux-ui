@@ -22,7 +22,7 @@ The TripBoard codebase remains the reference for advanced patterns (the schedule
 │   ├── tokens.css          ← all design tokens: color, type, space, radius, motion
 │   ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
 │   └── components.css      ← component entrypoint importing the component partials
-├── rux.js                 ← tiny JS helpers: Rux.toast, openModal, copy
+├── utilities.js                 ← tiny JS helpers: Rux.toast, openModal, copy
 ├── demo.html              ← live showcase of every component
 ├── assets/                ← logos, favicons
 ├── preview/               ← Design System tab cards
@@ -36,7 +36,7 @@ To use in a new page:
 <link rel="stylesheet" href="css/tokens.css" />
 <link rel="stylesheet" href="css/colors_and_type.css" />
 <link rel="stylesheet" href="css/components.css" />
-<script src="rux.js" defer></script>
+<script src="utilities.js" defer></script>
 ```
 
 ---

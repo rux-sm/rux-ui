@@ -1,19 +1,19 @@
 /* ==========================================================================
-   RUX UI — JS HELPERS
+   RUX UI — UTILITIES
    --------------------------------------------------------------------------
-   Tiny vanilla helpers for interactive components. No framework, no build
-   step. Drop a <script src="rux.js"></script> tag at the end of <body>.
+   Shared app utilities: toasts, modals, clipboard, and accent theming.
+   No framework, no build step. Exposes window.Rux.
 
    API
    ---
-   Rux.toast(message, opts)            → show a toast (top-right)
-   Rux.openModal(el)  / Rux.closeModal(el)
-   Rux.copy(text)                      → copy text to clipboard
-   data-rux-toggle="menu" #target      → wire click → toggle .is-open on target
-   data-rux-toggle-button              → toggle .is-active / aria-pressed
-   data-rux-toggle-group               → single-select toggle button group
-   data-rux-tabs                       → single-select tabs
-   data-rux-dismiss="modal"            → click closes nearest .rux-modal-backdrop
+   Rux.toast(message, opts)       → show a toast notification (top-right)
+   Rux.openModal(el)              → open a modal, trap focus, close on Escape
+   Rux.closeModal(el)             → close a modal
+   Rux.copy(text)                 → copy text to clipboard, fires a toast
+   Rux.setAccent(name)            → swap accent theme (blue/violet/green/amber)
+   Rux.getAccent()                → get current accent name
+   data-rux-set-accent="violet"   → click sets accent
+   data-rux-dismiss               → click closes nearest modal
    ========================================================================== */
 
 (function () {
@@ -102,7 +102,7 @@
     }
   };
 
-  /* ── Copy to clipboard ─────────────────────────────────────────────────── */
+  /* ── Clipboard ─────────────────────────────────────────────────────────── */
 
   Rux.copy = async function (text) {
     try {
@@ -114,9 +114,7 @@
     }
   };
 
-  /* ── Accent theme ──────────────────────────────────────────────────────── */
-  /* Set / get the page accent. Persists in localStorage as "rux:accent".
-     Themes: "blue" (default), "violet", "green", "amber".                 */
+  /* ── Accent ────────────────────────────────────────────────────────────── */
 
   Rux.ACCENTS = ["blue", "violet", "green", "amber"];
 
@@ -142,67 +140,13 @@
     }
   })();
 
-  /* ── Selection groups ─────────────────────────────────────────────────── */
-
-  function setActiveItem(group, active, selector, attr) {
-    group.querySelectorAll(selector).forEach((item) => {
-      const isActive = item === active;
-      item.classList.toggle("is-active", isActive);
-      item.setAttribute(attr, isActive ? "true" : "false");
-      if (attr === "aria-selected") item.tabIndex = isActive ? 0 : -1;
-    });
-  }
-
-  function moveActiveItem(group, selector, attr, dir) {
-    const items = Array.from(group.querySelectorAll(selector)).filter((item) => !item.disabled);
-    if (!items.length) return;
-
-    const current = group.querySelector(selector + ".is-active") || items[0];
-    const currentIndex = items.indexOf(current);
-    const nextIndex = (currentIndex + dir + items.length) % items.length;
-    const next = items[nextIndex];
-
-    setActiveItem(group, next, selector, attr);
-    next.focus();
-  }
-
-  /* ── Declarative wiring ────────────────────────────────────────────────── */
+  /* ── Wiring ─────────────────────────────────────────────────────────────── */
 
   document.addEventListener("click", function (e) {
-    // [data-rux-toggle="#target"] — toggle .is-open on a target
-    const toggle = e.target.closest("[data-rux-toggle]");
-    if (toggle) {
-      const sel = toggle.getAttribute("data-rux-toggle");
-      const tgt = document.querySelector(sel);
-      if (tgt) tgt.classList.toggle("is-open");
-    }
-
-    // [data-rux-accent="violet"] — set accent on click
+    // [data-rux-set-accent="violet"] — set accent on click
     const accentEl = e.target.closest("[data-rux-set-accent]");
     if (accentEl) {
       Rux.setAccent(accentEl.getAttribute("data-rux-set-accent"));
-    }
-
-    // [data-rux-toggle-button] — standalone pressed toggle button
-    const pressedToggle = e.target.closest("[data-rux-toggle-button]");
-    if (pressedToggle && !pressedToggle.disabled) {
-      const isActive = pressedToggle.getAttribute("aria-pressed") === "true";
-      pressedToggle.classList.toggle("is-active", !isActive);
-      pressedToggle.setAttribute("aria-pressed", isActive ? "false" : "true");
-    }
-
-    // [data-rux-toggle-group] — single-select pressed button group
-    const toggleButton = e.target.closest("[data-rux-toggle-group] .rux-button");
-    if (toggleButton && !toggleButton.disabled) {
-      const group = toggleButton.closest("[data-rux-toggle-group]");
-      setActiveItem(group, toggleButton, ".rux-button", "aria-pressed");
-    }
-
-    // [data-rux-tabs] — single-select tabs
-    const tab = e.target.closest("[data-rux-tabs] .rux-button");
-    if (tab && !tab.disabled) {
-      const group = tab.closest("[data-rux-tabs]");
-      setActiveItem(group, tab, ".rux-button", "aria-selected");
     }
 
     // [data-rux-dismiss] — close nearest modal
@@ -219,25 +163,6 @@
       e.target.dataset.ruxOpen
     ) {
       Rux.closeModal(e.target);
-    }
-  });
-
-  document.addEventListener("keydown", function (e) {
-    const dir = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 :
-                e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
-    if (!dir) return;
-
-    const toggleGroup = e.target.closest("[data-rux-toggle-group]");
-    if (toggleGroup && e.target.closest(".rux-button")) {
-      e.preventDefault();
-      moveActiveItem(toggleGroup, ".rux-button", "aria-pressed", dir);
-      return;
-    }
-
-    const tabGroup = e.target.closest("[data-rux-tabs]");
-    if (tabGroup && e.target.closest(".rux-button")) {
-      e.preventDefault();
-      moveActiveItem(tabGroup, ".rux-button", "aria-selected", dir);
     }
   });
 

@@ -1,20 +1,26 @@
-/**
- * Trip Bar
- * Usage:
- *   import { createTripBar } from './trip-bar.js';
- *   const el = createTripBar(trip, callbacks);
- *
- * Public API on returned element:
- *   el.setActive(bool)
- *   el.setExpanded(bool)
- *   el.tripData
- */
+/* ==========================================================================
+   RUX UI — TRIP BAR
+   --------------------------------------------------------------------------
+   Creates and manages trip bar elements for the scheduler grid.
+   No framework, no build step.
+
+   API
+   ---
+   createTripBar(trip, callbacks)   → create and return a .rux-trip-bar element
+   el.setActive(bool)               → toggle selected state on the bar
+   el.setExpanded(bool)             → toggle expanded/collapsed state
+   el.tripData                      → read the trip data object for this bar
+   ========================================================================== */
+
+/* ── Module state ───────────────────────────────────────────────────────── */
 
 let outsideDismissInstalled = false;
 let floatingTooltipInstalled = false;
 let floatingTooltip = null;
 let floatingTooltipTarget = null;
 const tripBars = new Set();
+
+/* ── Selection ──────────────────────────────────────────────────────────── */
 
 function deactivateTripBars(except = null) {
   tripBars.forEach((bar) => {
@@ -41,6 +47,8 @@ function installOutsideDismiss() {
   );
 }
 
+/* ── DOM helpers ────────────────────────────────────────────────────────── */
+
 function icon(name, className = "rux-icon") {
   const el = document.createElement("i");
   el.setAttribute("data-lucide", name);
@@ -52,42 +60,32 @@ function containsNode(el, node) {
   return node instanceof Node && el.contains(node);
 }
 
-function installFloatingTooltip() {
-  if (floatingTooltipInstalled) return;
-  floatingTooltipInstalled = true;
-
-  document.addEventListener("pointerover", (event) => {
-    const target = event.target?.closest?.(
-      '[data-rux-tooltip="floating"][data-tooltip]',
-    );
-    if (!target || containsNode(target, event.relatedTarget)) return;
-    showFloatingTooltip(target);
+function button(className, label, iconName, onClick) {
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = className;
+  btn.setAttribute("aria-label", label);
+  setFloatingTooltip(btn, label);
+  btn.appendChild(icon(iconName));
+  btn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    onClick?.();
   });
+  return btn;
+}
 
-  document.addEventListener("pointerout", (event) => {
-    if (!floatingTooltipTarget) return;
-    if (!containsNode(floatingTooltipTarget, event.target)) return;
-    if (containsNode(floatingTooltipTarget, event.relatedTarget)) return;
-    hideFloatingTooltip();
-  });
+function textEl(tag, className, text) {
+  const el = document.createElement(tag);
+  el.className = className;
+  el.textContent = text ?? "";
+  return el;
+}
 
-  document.addEventListener("focusin", (event) => {
-    const target = event.target?.closest?.(
-      '[data-rux-tooltip="floating"][data-tooltip]',
-    );
-    if (target) showFloatingTooltip(target);
-  });
+/* ── Tooltip ────────────────────────────────────────────────────────────── */
 
-  document.addEventListener("focusout", (event) => {
-    if (floatingTooltipTarget?.contains(event.target)) hideFloatingTooltip();
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") hideFloatingTooltip();
-  });
-
-  window.addEventListener("resize", updateFloatingTooltipPosition);
-  document.addEventListener("scroll", updateFloatingTooltipPosition, true);
+function setFloatingTooltip(el, label) {
+  el.dataset.tooltip = label;
+  el.dataset.ruxTooltip = "floating";
 }
 
 function ensureFloatingTooltip() {
@@ -165,31 +163,45 @@ function hideFloatingTooltip() {
   if (floatingTooltip) floatingTooltip.hidden = true;
 }
 
-function setFloatingTooltip(el, label) {
-  el.dataset.tooltip = label;
-  el.dataset.ruxTooltip = "floating";
-}
+function installFloatingTooltip() {
+  if (floatingTooltipInstalled) return;
+  floatingTooltipInstalled = true;
 
-function button(className, label, iconName, onClick) {
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = className;
-  btn.setAttribute("aria-label", label);
-  setFloatingTooltip(btn, label);
-  btn.appendChild(icon(iconName));
-  btn.addEventListener("click", (event) => {
-    event.stopPropagation();
-    onClick?.();
+  document.addEventListener("pointerover", (event) => {
+    const target = event.target?.closest?.(
+      '[data-rux-tooltip="floating"][data-tooltip]',
+    );
+    if (!target || containsNode(target, event.relatedTarget)) return;
+    showFloatingTooltip(target);
   });
-  return btn;
+
+  document.addEventListener("pointerout", (event) => {
+    if (!floatingTooltipTarget) return;
+    if (!containsNode(floatingTooltipTarget, event.target)) return;
+    if (containsNode(floatingTooltipTarget, event.relatedTarget)) return;
+    hideFloatingTooltip();
+  });
+
+  document.addEventListener("focusin", (event) => {
+    const target = event.target?.closest?.(
+      '[data-rux-tooltip="floating"][data-tooltip]',
+    );
+    if (target) showFloatingTooltip(target);
+  });
+
+  document.addEventListener("focusout", (event) => {
+    if (floatingTooltipTarget?.contains(event.target)) hideFloatingTooltip();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") hideFloatingTooltip();
+  });
+
+  window.addEventListener("resize", updateFloatingTooltipPosition);
+  document.addEventListener("scroll", updateFloatingTooltipPosition, true);
 }
 
-function textEl(tag, className, text) {
-  const el = document.createElement(tag);
-  el.className = className;
-  el.textContent = text ?? "";
-  return el;
-}
+/* ── Formatting ─────────────────────────────────────────────────────────── */
 
 function fmtTime(str) {
   if (!str) return str;
@@ -231,6 +243,8 @@ function driverStateClass(state) {
     return "rux-trip-bar__driver-dot--unconfirmed";
   return "";
 }
+
+/* ── Trip data helpers ──────────────────────────────────────────────────── */
 
 const PENDING_INDICATORS = [
   {
@@ -394,11 +408,15 @@ function isSameTripDay(trip) {
   return start.toDateString() === end.toDateString();
 }
 
+/* ── Utilities ──────────────────────────────────────────────────────────── */
+
 function refreshIcons() {
   window.requestAnimationFrame(() => {
     window.lucide?.createIcons?.();
   });
 }
+
+/* ── Factory ────────────────────────────────────────────────────────────── */
 
 export function createTripBar(trip, callbacks = {}) {
   installOutsideDismiss();

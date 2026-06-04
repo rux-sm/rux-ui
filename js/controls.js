@@ -1,0 +1,96 @@
+/* ==========================================================================
+   RUX UI — CONTROLS
+   --------------------------------------------------------------------------
+   Declarative interactivity for button groups, toggles, and tabs.
+   No framework, no build step.
+
+   API
+   ---
+   data-rux-toggle="#target"   → click toggles .is-open on target element
+   data-rux-toggle-button      → standalone press toggle (.is-active / aria-pressed)
+   data-rux-toggle-group       → single-select pressed button group
+   data-rux-tabs               → single-select tab group (arrow key navigation)
+   ========================================================================== */
+
+(function () {
+  "use strict";
+
+  /* ── Helpers ────────────────────────────────────────────────────────────── */
+
+  function setActiveItem(group, active, selector, attr) {
+    group.querySelectorAll(selector).forEach((item) => {
+      const isActive = item === active;
+      item.classList.toggle("is-active", isActive);
+      item.setAttribute(attr, isActive ? "true" : "false");
+      if (attr === "aria-selected") item.tabIndex = isActive ? 0 : -1;
+    });
+  }
+
+  function moveActiveItem(group, selector, attr, dir) {
+    const items = Array.from(group.querySelectorAll(selector)).filter((item) => !item.disabled);
+    if (!items.length) return;
+
+    const current = group.querySelector(selector + ".is-active") || items[0];
+    const currentIndex = items.indexOf(current);
+    const nextIndex = (currentIndex + dir + items.length) % items.length;
+    const next = items[nextIndex];
+
+    setActiveItem(group, next, selector, attr);
+    next.focus();
+  }
+
+  /* ── Click ──────────────────────────────────────────────────────────────── */
+
+  document.addEventListener("click", function (e) {
+    // [data-rux-toggle="#target"] — toggle .is-open on a target element
+    const toggle = e.target.closest("[data-rux-toggle]");
+    if (toggle) {
+      const sel = toggle.getAttribute("data-rux-toggle");
+      const tgt = document.querySelector(sel);
+      if (tgt) tgt.classList.toggle("is-open");
+    }
+
+    // [data-rux-toggle-button] — standalone pressed toggle
+    const pressedToggle = e.target.closest("[data-rux-toggle-button]");
+    if (pressedToggle && !pressedToggle.disabled) {
+      const isActive = pressedToggle.getAttribute("aria-pressed") === "true";
+      pressedToggle.classList.toggle("is-active", !isActive);
+      pressedToggle.setAttribute("aria-pressed", isActive ? "false" : "true");
+    }
+
+    // [data-rux-toggle-group] — single-select pressed button group
+    const toggleButton = e.target.closest("[data-rux-toggle-group] .rux-button");
+    if (toggleButton && !toggleButton.disabled) {
+      const group = toggleButton.closest("[data-rux-toggle-group]");
+      setActiveItem(group, toggleButton, ".rux-button", "aria-pressed");
+    }
+
+    // [data-rux-tabs] — single-select tab group
+    const tab = e.target.closest("[data-rux-tabs] .rux-button");
+    if (tab && !tab.disabled) {
+      const group = tab.closest("[data-rux-tabs]");
+      setActiveItem(group, tab, ".rux-button", "aria-selected");
+    }
+  });
+
+  /* ── Keyboard navigation ────────────────────────────────────────────────── */
+
+  document.addEventListener("keydown", function (e) {
+    const dir = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 :
+                e.key === "ArrowLeft"  || e.key === "ArrowUp"   ? -1 : 0;
+    if (!dir) return;
+
+    const toggleGroup = e.target.closest("[data-rux-toggle-group]");
+    if (toggleGroup && e.target.closest(".rux-button")) {
+      e.preventDefault();
+      moveActiveItem(toggleGroup, ".rux-button", "aria-pressed", dir);
+      return;
+    }
+
+    const tabGroup = e.target.closest("[data-rux-tabs]");
+    if (tabGroup && e.target.closest(".rux-button")) {
+      e.preventDefault();
+      moveActiveItem(tabGroup, ".rux-button", "aria-selected", dir);
+    }
+  });
+})();
