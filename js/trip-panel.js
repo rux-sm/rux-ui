@@ -157,6 +157,21 @@ function initTripPanel(root) {
 		});
 	}
 
+	/* ── Segmented toggle groups (Billing) ─────────────────────────────── */
+
+	root.querySelectorAll("[data-rux-toggle-group]").forEach((group) => {
+		group.addEventListener("click", (e) => {
+			const btn = e.target.closest(".rux-button");
+			if (!btn || !group.contains(btn)) return;
+			group.querySelectorAll(".rux-button").forEach((b) => {
+				b.setAttribute("aria-pressed", "false");
+				b.classList.remove("is-active");
+			});
+			btn.setAttribute("aria-pressed", "true");
+			btn.classList.add("is-active");
+		});
+	});
+
 	/* ── Requirements ───────────────────────────────────────────────────── */
 
 	const vehicleReqContainer = root.querySelector("#tp-vehicle-reqs");

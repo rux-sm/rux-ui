@@ -529,6 +529,25 @@
 			ri >= 0 ? stops.splice(ri, 0, newDay) : stops.push(newDay);
 			renderStopList();
 		});
+
+		return {
+			getStops: () => stops.slice(),
+			setStops: (newStops) => {
+				stops.length = 0;
+				stops.push(...newStops);
+				updateSummary();
+				renderStopList();
+				syncReturnBtn();
+				syncPickupBtn();
+			},
+			clearStops: () => {
+				stops.length = 0;
+				updateSummary();
+				renderStopList();
+				syncReturnBtn();
+				syncPickupBtn();
+			},
+		};
 	}
 
 	window.Itinerary = { init: initItinerary };

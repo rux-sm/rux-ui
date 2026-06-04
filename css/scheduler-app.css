@@ -153,8 +153,35 @@
 }
 
 .scheduler-app__schedule {
-  margin-inline: var(--rux-space-4);
+  display: flex;
   margin-block-end: var(--rux-space-4);
+  overflow: hidden;
+}
+
+/* — Trip panel drawer — */
+
+.scheduler-app__drawer {
+  flex: none;
+  width: 0;
+  overflow: hidden;
+  transition: width 280ms ease;
+}
+
+.scheduler-app__drawer.is-open {
+  width: 380px;
+}
+
+.scheduler-app__drawer .rux-trip-panel {
+  width: 380px;
+  border-left: none;
+  border-right: var(--rux-border-width) solid var(--rux-border);
+}
+
+/* — Schedule grid wrap — */
+
+.scheduler-app__schedule-wrap {
+  flex: 1;
+  margin-inline: var(--rux-space-4);
 }
 
 .scheduler-app__schedule-wrap,

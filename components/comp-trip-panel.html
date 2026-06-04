@@ -60,8 +60,8 @@
 			<nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
 				<div class="rux-segmented rux-segmented--ghost" data-trip-tabs>
 					<button class="rux-button" aria-selected="true" aria-controls="pane-trip">Trip</button>
-					<button class="rux-button" aria-selected="false" aria-controls="pane-itinerary">Itinerary</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-billing">Billing</button>
+					<button class="rux-button" aria-selected="false" aria-controls="pane-itinerary">Itinerary</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-dispatch">Dispatch</button>
 					<button class="rux-button" aria-selected="false" aria-controls="pane-docs">Docs</button>
 				</div>
@@ -74,11 +74,11 @@
 					<div class="rux-trip-panel__cols-2">
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-start">Start date</label>
-							<input class="rux-input" id="tp-start" name="startDate" type="date" value="2026-06-07" />
+							<input class="rux-input" id="tp-start" name="startDate" type="date" />
 						</div>
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-end">End date</label>
-							<input class="rux-input" id="tp-end" name="endDate" type="date" value="2026-06-09" />
+							<input class="rux-input" id="tp-end" name="endDate" type="date" />
 						</div>
 					</div>
 
@@ -90,7 +90,7 @@
 								id="tp-customer"
 								name="customer"
 								type="text"
-								value="Arlington ISD"
+								placeholder="Customer name"
 							/>
 						</div>
 						<div class="rux-field">
@@ -100,7 +100,7 @@
 								id="tp-destination"
 								name="destination"
 								type="text"
-								value="Paragon Casino"
+								placeholder="Destination"
 							/>
 						</div>
 					</div>
@@ -108,15 +108,15 @@
 					<div class="rux-trip-panel__cols-3">
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-dep">Departure</label>
-							<input class="rux-input" id="tp-dep" name="departureTime" type="time" value="06:30" />
+							<input class="rux-input" id="tp-dep" name="departureTime" type="time" />
 						</div>
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-spot">Spot</label>
-							<input class="rux-input" id="tp-spot" name="spotTime" type="time" value="06:00" />
+							<input class="rux-input" id="tp-spot" name="spotTime" type="time" />
 						</div>
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-return">Return</label>
-							<input class="rux-input" id="tp-return" name="returnTime" type="time" value="22:00" />
+							<input class="rux-input" id="tp-return" name="returnTime" type="time" />
 						</div>
 					</div>
 
@@ -127,7 +127,7 @@
 							id="tp-pickup"
 							name="pickupAddress"
 							type="text"
-							value="805 W Ridge Rd, San Juan TX"
+							placeholder="Street address"
 						/>
 					</div>
 
@@ -139,7 +139,7 @@
 								id="tp-book-name"
 								name="bookingContact.name"
 								type="text"
-								value="Ashley Pearl"
+								placeholder="Contact name"
 							/>
 						</div>
 						<div class="rux-field">
@@ -149,7 +149,7 @@
 								id="tp-book-phone"
 								name="bookingContact.phone"
 								type="tel"
-								value="956-555-0123"
+								placeholder="Phone number"
 							/>
 						</div>
 					</div>
@@ -258,7 +258,7 @@
 				<div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
 					<div class="rux-field">
 						<label class="rux-field__label">Contract</label>
-						<div class="rux-segmented" data-rux-toggle-group>
+						<div class="rux-segmented" id="tp-contract-group" data-rux-toggle-group>
 							<button class="rux-button is-active" aria-pressed="true">Pending</button>
 							<button class="rux-button" aria-pressed="false">N/A</button>
 							<button class="rux-button" aria-pressed="false">Signed</button>
@@ -278,7 +278,7 @@
 									type="number"
 									min="0"
 									step="0.01"
-									value="1200"
+									placeholder="0.00"
 								/>
 							</div>
 						</div>
@@ -291,7 +291,6 @@
 									name="estimatedMiles"
 									type="number"
 									min="0"
-									value="160"
 								/>
 								<span class="rux-input-group__suffix">mi</span>
 							</div>
@@ -333,7 +332,7 @@
 
 					<div class="rux-field">
 						<label class="rux-field__label">Invoice</label>
-						<div class="rux-segmented" data-rux-toggle-group>
+						<div class="rux-segmented" id="tp-invoice-group" data-rux-toggle-group>
 							<button class="rux-button is-active" aria-pressed="true">Pending</button>
 							<button class="rux-button" aria-pressed="false">Invoiced</button>
 							<button class="rux-button" aria-pressed="false">Deposit</button>
@@ -344,7 +343,7 @@
 					<div class="rux-trip-panel__cols-2">
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-po">PO / ref</label>
-							<input class="rux-input" id="tp-po" name="paymentRef" type="text" value="PO-1842" />
+							<input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="PO / ref" />
 						</div>
 						<div class="rux-field">
 							<label class="rux-field__label" for="tp-inv-num">Invoice number</label>
@@ -353,7 +352,7 @@
 								id="tp-inv-num"
 								name="invoiceNumber"
 								type="text"
-								value="INV-260509"
+								placeholder="INV-"
 							/>
 						</div>
 						<div class="rux-field">
@@ -369,7 +368,6 @@
 									name="actualMiles"
 									type="number"
 									min="0"
-									value="158"
 								/>
 								<span class="rux-input-group__suffix">mi</span>
 							</div>
@@ -379,15 +377,9 @@
 					<div class="rux-field">
 						<label class="rux-field__label">Payment refs</label>
 						<div class="rux-trip-panel__refs">
-							<input
-								class="rux-input"
-								name="paymentRef1"
-								type="text"
-								placeholder="Ref 1"
-								value="ck# 1107"
-							/>
-							<input class="rux-input" name="paymentRef2" type="text" placeholder="Ref 2" />
-							<input class="rux-input" name="paymentRef3" type="text" placeholder="Ref 3" />
+							<input class="rux-input" id="tp-pay-ref-1" name="paymentRef1" type="text" placeholder="Ref 1" />
+							<input class="rux-input" id="tp-pay-ref-2" name="paymentRef2" type="text" placeholder="Ref 2" />
+							<input class="rux-input" id="tp-pay-ref-3" name="paymentRef3" type="text" placeholder="Ref 3" />
 						</div>
 					</div>
 				</div>
@@ -522,24 +514,26 @@
 
 			<!-- Footer -->
 			<footer class="rux-trip-panel__footer">
-				<button class="rux-button rux-button--danger">
+				<button class="rux-button rux-button--danger" id="tp-btn-delete">
 					<i data-lucide="trash-2" class="rux-icon"></i> Delete
 				</button>
-				<button class="rux-button rux-button--secondary">Clear</button>
-				<button class="rux-button rux-button--primary"><i data-lucide="save" class="rux-icon"></i> Save</button>
+				<button class="rux-button rux-button--secondary" id="tp-btn-clear">Clear</button>
+				<button class="rux-button rux-button--primary" id="tp-btn-save"><i data-lucide="save" class="rux-icon"></i> Save</button>
 			</footer>
 		</aside>
 		<!-- /.trip-panel -->
 
 		<script src="../js/utilities.js"></script>
+		<script src="../js/trip-panel.js"></script>
 		<script src="../js/itinerary.js"></script>
-		<script>
-			document.addEventListener("DOMContentLoaded", () => {
-				if (window.lucide) lucide.createIcons();
-				const panel = document.querySelector(".rux-trip-panel");
-				TripPanel.init(panel);
-				Itinerary.init(panel);
-			});
+		<script type="module">
+			import { initTripDB } from "../js/trip-db.js";
+			/* Module scripts are deferred — DOM and sync scripts are already ready */
+			if (window.lucide) lucide.createIcons();
+			const panel = document.querySelector(".rux-trip-panel");
+			TripPanel.init(panel);
+			const itinerary = Itinerary.init(panel);
+			initTripDB(panel, itinerary);
 		</script>
 	</body>
 </html>
