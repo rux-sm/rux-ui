@@ -314,7 +314,7 @@
 	flex: 1;
 }
 
-@container (max-width: 360px) {
+@container (max-width: 400px) {
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		grid-template-columns: 1fr;
