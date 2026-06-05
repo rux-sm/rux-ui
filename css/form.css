@@ -238,7 +238,11 @@
 .rux-input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
 .rux-input[type="number"] { appearance: textfield; }
 
-/* — date / time — ensure value text inherits color on iOS Safari — */
+/* — date / time — */
+
+.rux-input[type="date"],
+.rux-input[type="time"],
+.rux-input[type="datetime-local"] { min-width: 0; }
 
 .rux-input[type="date"]::-webkit-date-and-time-value,
 .rux-input[type="time"]::-webkit-date-and-time-value,
