@@ -12,8 +12,11 @@
     inset 0 1px 2px rgba(0, 0, 0, 0.75),
     inset 0 -1px 0 rgba(255, 255, 255, 0.04);
 
+  box-sizing: border-box;
   display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-space-3);
   background-color: var(--rux-bg-sunken);
@@ -96,7 +99,7 @@
 
 /* — field — */
 
-.rux-field          { display: flex; flex-direction: column; gap: var(--rux-space-2); }
+.rux-field          { display: flex; flex-direction: column; gap: var(--rux-space-2); min-width: 0; }
 .rux-field__label   { font-size: var(--rux-text-xs); font-weight: var(--rux-weight-medium); color: var(--rux-fg-muted); }
 .rux-field__help    { font-size: var(--rux-text-xs); color: var(--rux-fg-subtle); }
 .rux-field__error   { font-size: var(--rux-text-xs); color: var(--rux-danger); }
