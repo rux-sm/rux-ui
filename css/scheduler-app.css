@@ -229,6 +229,7 @@
 	}
 	.scheduler-app__drawer .rux-trip-panel {
 		width: 100dvw;
+		max-width: 100dvw;
 	}
 
 	/* Abbreviated date: hide text, show short version via data attribute */
