@@ -313,6 +313,7 @@
 }
 
 @media (max-width: 640px) {
+	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		grid-template-columns: 1fr;
 	}
