@@ -242,7 +242,11 @@
 
 .rux-input[type="date"],
 .rux-input[type="time"],
-.rux-input[type="datetime-local"] { min-width: 0; }
+.rux-input[type="datetime-local"] {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
 
 .rux-input[type="date"]::-webkit-date-and-time-value,
 .rux-input[type="time"]::-webkit-date-and-time-value,
