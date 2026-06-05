@@ -246,14 +246,38 @@
 .rux-input[type="date"],
 .rux-input[type="time"],
 .rux-input[type="datetime-local"] {
+  appearance: none;
+  -webkit-appearance: none;
   box-sizing: border-box;
+  inline-size: 100%;
   min-width: 0;
+  min-inline-size: 0;
   max-width: 100%;
+  max-inline-size: 100%;
+  line-height: normal;
 }
 
 .rux-input[type="date"]::-webkit-date-and-time-value,
 .rux-input[type="time"]::-webkit-date-and-time-value,
-.rux-input[type="datetime-local"]::-webkit-date-and-time-value { color: var(--rux-fg); }
+.rux-input[type="datetime-local"]::-webkit-date-and-time-value {
+  color: var(--rux-fg);
+  display: block;
+  width: 100%;
+  inline-size: 100%;
+  min-width: 0;
+  min-inline-size: 0;
+  max-width: 100%;
+  max-inline-size: 100%;
+  overflow: hidden;
+  text-align: start;
+}
+
+.rux-input[type="date"]::-webkit-calendar-picker-indicator,
+.rux-input[type="time"]::-webkit-calendar-picker-indicator,
+.rux-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  flex: none;
+  margin: 0;
+}
 
 
 /* — readonly — */
