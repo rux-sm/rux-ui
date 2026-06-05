@@ -107,17 +107,18 @@
 
 /* — Form layout helpers — */
 
-.rux-trip-panel__cols-2 {
+.rux-trip-panel__cols-2,
+.rux-trip-panel__cols-3 {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
 	gap: var(--rux-space-3);
 	align-items: start;
 }
+.rux-trip-panel__cols-2 {
+	--_cols: 2;
+}
 .rux-trip-panel__cols-3 {
-	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: var(--rux-space-3);
-	align-items: start;
+	--_cols: 3;
 }
 .rux-trip-panel__section-label {
 	font-size: var(--rux-text-2xs);
@@ -314,9 +315,9 @@
 	flex: 1;
 }
 
-@media (max-width: 430px) {
+@container (max-width: 430px) {
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
-		grid-template-columns: 1fr;
+		--_cols: 1;
 	}
 }
