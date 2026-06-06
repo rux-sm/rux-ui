@@ -236,6 +236,7 @@
 	.scheduler-app__drawer .rux-trip-panel {
 		width: 100dvw;
 		max-width: 100dvw;
+		border-right: none;
 	}
 
 	/* Abbreviated date: hide text, show short version via data attribute */
@@ -317,7 +318,8 @@
 	}
 
 	.rux-trip-panel__footer {
-		padding-bottom: var(--rux-space-3);	}
+		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
+	}
 }
 
 /* — Schedule grid wrap — */
