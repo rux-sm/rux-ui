@@ -187,8 +187,12 @@
 	position: relative;
 	flex: none;
 	width: 0;
+	min-height: 0;
 	overflow: hidden;
 	transition: width 280ms ease;
+
+	display: flex;
+	flex-direction: column;
 }
 
 .scheduler-app__drawer.is-open {
@@ -200,6 +204,8 @@
 }
 
 .scheduler-app__drawer .rux-trip-panel {
+	flex: 1 1 auto;
+	min-height: 0;
 	width: var(--drawer-width, 380px);
 	border-left: none;
 	border-right: var(--rux-border-width) solid var(--rux-border);
@@ -246,7 +252,7 @@
 
 	/* Push content above the fixed bottom tab bar */
 	.scheduler-app {
-		padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+		padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
 	}
 
 	/* Push bar below notch/Dynamic Island */
@@ -305,6 +311,13 @@
 		width: var(--rux-icon-lg);
 		height: var(--rux-icon-lg);
 	}
+
+	.scheduler-app__drawer .rux-trip-panel__header {
+		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
+	}
+
+	.rux-trip-panel__footer {
+		padding-bottom: var(--rux-space-3);	}
 }
 
 /* — Schedule grid wrap — */

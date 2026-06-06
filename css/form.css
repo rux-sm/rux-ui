@@ -22,7 +22,7 @@
   background-color: var(--rux-bg-sunken);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
-  border-radius: var(--rux-radius-sm);
+  border-radius: var(--rux-radius-md);
   box-shadow: var(--_field-shadow);
   font: inherit;
   font-size: var(--rux-text-sm);
@@ -246,39 +246,60 @@
 .rux-input[type="date"],
 .rux-input[type="time"],
 .rux-input[type="datetime-local"] {
-  appearance: none;
+  /* iOS/macOS Safari: Strip intrinsic OS-level structural layouts */
   -webkit-appearance: none;
+  appearance: none;
+  margin: 0; 
+  width: 100%;
+  position: relative; /* Required to absolutely position the native icons */
+  
   box-sizing: border-box;
   inline-size: 100%;
   min-width: 0;
   min-inline-size: 0;
   max-width: 100%;
   max-inline-size: 100%;
-  line-height: normal;
+  text-align: center;
+  
+  /* Force Safari to treat the fields as a dark-theme control */
+  color-scheme: dark;
+  line-height: var(--rux-field-height); 
 }
 
-.rux-input[type="date"]::-webkit-date-and-time-value,
-.rux-input[type="time"]::-webkit-date-and-time-value,
-.rux-input[type="datetime-local"]::-webkit-date-and-time-value {
-  color: var(--rux-fg);
-  display: block;
-  width: 100%;
-  inline-size: 100%;
-  min-width: 0;
-  min-inline-size: 0;
-  max-width: 100%;
-  max-inline-size: 100%;
-  overflow: hidden;
-  text-align: start;
+/* Target all WebKit browsers (iOS Safari + macOS Safari) */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+  .rux-input[type="date"],
+  .rux-input[type="time"],
+  .rux-input[type="datetime-local"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: normal; 
+  }
+
+  .rux-input[type="date"]::-webkit-datetime-edit,
+  .rux-input[type="time"]::-webkit-datetime-edit,
+  .rux-input[type="datetime-local"]::-webkit-datetime-edit {
+    flex: 1; /* Forces the text wrapper to span the full width of the input */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: 0;
+    margin: 0;
+    height: 100%;
+    line-height: normal;
+  }
 }
 
+/* Pull the icons out of the flex flow so they don't offset the text centering */
 .rux-input[type="date"]::-webkit-calendar-picker-indicator,
 .rux-input[type="time"]::-webkit-calendar-picker-indicator,
 .rux-input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  right: var(--rux-space-3); /* Places the icon cleanly on the right edge */
   flex: none;
   margin: 0;
 }
-
 
 /* — readonly — */
 
