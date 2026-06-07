@@ -1,0 +1,127 @@
+/* ==========================================================================
+   FLEET APP — PAGE SHELL & TABLE
+   --------------------------------------------------------------------------
+   App-specific layout for the fleet manager module.
+   ========================================================================== */
+
+/* — Page body — */
+
+.fleet-app__main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* — Toolbar search input width — */
+
+.fleet-app__search {
+	width: 200px;
+}
+
+/* — Table wrap — */
+
+.fleet-app__table-wrap {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: auto;
+	overscroll-behavior: contain;
+	padding-bottom: var(--rux-space-4);
+}
+
+/* — Vehicle identity cell — */
+
+.fleet-app__vehicle-cell {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.fleet-app__avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: var(--rux-avatar-md);
+	height: var(--rux-avatar-md);
+	background: var(--rux-bg-3);
+	border-radius: var(--rux-radius-sm);
+	color: var(--rux-fg-muted);
+	user-select: none;
+}
+
+.fleet-app__avatar .rux-icon {
+	width: var(--rux-icon-md);
+	height: var(--rux-icon-md);
+}
+
+.fleet-app__vehicle-info {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	min-width: 0;
+}
+
+.fleet-app__vehicle-name {
+	font-weight: var(--rux-weight-medium);
+	color: var(--rux-fg);
+}
+
+.fleet-app__vehicle-ref {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-2xs);
+	color: var(--rux-accent);
+	font-weight: var(--rux-weight-medium);
+}
+
+/* — Order column — */
+
+.fleet-app__order {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	color: var(--rux-fg-subtle);
+	width: 2rem;
+	text-align: center;
+}
+
+/* — Table cell variants — */
+
+.fleet-app__expiry {
+	color: var(--rux-fg-muted);
+}
+
+.fleet-app__expiry--warn {
+	color: var(--rux-warning);
+}
+
+.fleet-app__expiry--expired {
+	color: var(--rux-danger);
+}
+
+/* — Empty state — */
+
+.fleet-app__empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-8);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+	text-align: center;
+}
+
+/* — Mobile — */
+
+@media (max-width: 640px) {
+	.fleet-app__search {
+		width: 100%;
+	}
+
+	.fleet-app__table .col-service {
+		display: none;
+	}
+}

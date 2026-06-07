@@ -1,0 +1,117 @@
+/* ==========================================================================
+   TRIPS APP — PAGE SHELL & TABLE
+   ========================================================================== */
+
+/* — Page body — */
+
+.trips-app__main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* — Toolbar search input width — */
+
+.trips-app__search {
+	width: 200px;
+}
+
+/* — Table wrap — */
+
+.trips-app__table-wrap {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: auto;
+	overscroll-behavior: contain;
+	padding-bottom: var(--rux-space-4);
+}
+
+/* — Trip identity cell — */
+
+.trips-app__trip-cell {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	min-width: 0;
+}
+
+.trips-app__trip-ref {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-2xs);
+	color: var(--rux-accent);
+	font-weight: var(--rux-weight-medium);
+}
+
+.trips-app__customer {
+	font-weight: var(--rux-weight-medium);
+	color: var(--rux-fg);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* — Bus cell — */
+
+.trips-app__bus-cell {
+	white-space: nowrap;
+}
+
+/* — Unassigned indicator — */
+
+.trips-app__unassigned {
+	font-size: var(--rux-text-xs);
+	color: var(--rux-fg-muted);
+	font-style: italic;
+}
+
+/* — All cells top-aligned — trips rows have a 2-line first cell — */
+
+.trips-app__table td {
+	vertical-align: top;
+}
+
+/* — Date cell — */
+
+.trips-app__dates {
+	white-space: nowrap;
+}
+
+/* — Row interaction — */
+
+.trips-app__row {
+	cursor: pointer;
+}
+
+.trips-app__row:hover td {
+	background: var(--rux-bg-hover, color-mix(in srgb, var(--rux-bg-2) 80%, var(--rux-accent) 20%));
+}
+
+.trips-app__row:focus-visible {
+	outline: 2px solid var(--rux-focus);
+	outline-offset: -2px;
+}
+
+/* — Empty state — */
+
+.trips-app__empty {
+	text-align: center;
+	padding: var(--rux-space-8);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+}
+
+/* — Mobile — */
+
+@media (max-width: 640px) {
+	.trips-app__search {
+		width: 100%;
+	}
+
+	.trips-app__table .col-payment,
+	.trips-app__table .col-quoted {
+		display: none;
+	}
+}

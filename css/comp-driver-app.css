@@ -62,6 +62,7 @@
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
 	white-space: nowrap;
+	border-top: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 

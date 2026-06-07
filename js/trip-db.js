@@ -592,8 +592,9 @@ export async function fetchTrips() {
 export async function fetchBuses() {
 	const { data, error } = await supabase
 		.from("buses")
-		.select("id, number, capacity, type, ada_lift")
+		.select("id, number, sort_order, capacity, type, ada_lift")
 		.eq("status", "active")
+		.order("sort_order", { ascending: true, nullsFirst: false })
 		.order("number");
 	if (error) throw error;
 	return data ?? [];
@@ -681,6 +682,14 @@ export function newTrip(root, itinerary) {
 }
 
 	/* ── Init ────────────────────────────────────────────────────────────── */
+
+export async function reassignBus(assignmentId, newBusId) {
+	const { error } = await supabase
+		.from("trip_assignments")
+		.update({ bus_id: newBusId })
+		.eq("id", assignmentId);
+	if (error) throw error;
+}
 
 export function initTripDB(root, itinerary) {
 	const saveBtn   = root.querySelector("#tp-btn-save");

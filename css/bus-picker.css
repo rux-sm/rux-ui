@@ -1,0 +1,112 @@
+/* ==========================================================================
+   BUS PICKER — "Move to Bus" popover
+   Shell follows .scheduler-app__context-menu pattern.
+   Buttons match .rux-button sizing and shape exactly.
+   ========================================================================== */
+
+.rux-bus-picker {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+	min-width: 12rem;
+	padding: var(--rux-space-1);
+	background: var(--rux-bg-elevated);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-sm);
+	box-shadow: var(--rux-shadow-lg);
+}
+
+.rux-bus-picker[hidden] {
+	display: none;
+}
+
+/* — Heading — */
+
+.rux-bus-picker__heading {
+	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
+	margin-bottom: var(--rux-space-1);
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg-muted);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+/* — Scrollable list — */
+
+.rux-bus-picker__list {
+	max-height: 280px;
+	overflow-y: auto;
+}
+
+/* — Row — outer flex wrapper — */
+
+.rux-bus-picker__row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-1);
+}
+
+/* — Move button — ghost variant (transparent base, white-alpha states) — */
+
+.rux-bus-picker__move {
+	--_bg:     transparent;
+	--_bg-h:   var(--rux-control-ghost-hover);
+	--_bg-a:   var(--rux-control-ghost-active);
+	--_fg:     var(--rux-fg);
+	--_shadow: none;
+
+	flex: 1;
+	display: flex;
+	align-items: center;
+	height: var(--rux-control-height);
+	padding: 0 var(--rux-space-3);
+	background-color: var(--_bg);
+	color: var(--_fg);
+	border: var(--rux-border-width) solid var(--rux-control-ghost-border);
+	border-radius: var(--rux-radius-sm);
+	box-shadow: var(--_shadow);
+	font: inherit;
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+	cursor: pointer;
+	user-select: none;
+	transition:
+		background-color var(--rux-duration-instant) var(--rux-ease-out),
+		transform        var(--rux-duration-instant) var(--rux-ease-out);
+}
+
+.rux-bus-picker__move:hover  { background-color: var(--_bg-h); }
+.rux-bus-picker__move:active { background-color: var(--_bg-a); transform: translateY(var(--rux-border-width)); }
+
+.rux-bus-picker__move:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-ring-focus), var(--_shadow);
+}
+
+/* — Current bus row — primary button style, non-interactive — */
+
+.rux-bus-picker__row.is-current .rux-bus-picker__number {
+	--_bg:     var(--rux-accent);
+	--_fg:     var(--rux-fg-on-accent);
+	--_shadow: var(--rux-shadow-sm);
+
+	flex: 1;
+	display: flex;
+	align-items: center;
+	height: var(--rux-control-height);
+	padding: 0 var(--rux-space-3);
+	background-color: var(--_bg);
+	color: var(--_fg);
+	border-radius: var(--rux-radius-sm);
+	box-shadow: var(--_shadow);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+}
+
+/* — Swap button — ghost icon button with accent tint — */
+
+.rux-bus-picker__swap {
+	--_fg: var(--rux-accent);
+}

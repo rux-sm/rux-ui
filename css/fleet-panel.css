@@ -1,0 +1,255 @@
+/* ==========================================================================
+   RUX UI — FLEET PANEL
+   --------------------------------------------------------------------------
+   Side-panel form editor for vehicle profile, service records, and trip
+   assignments. Shares the same drawer shell as the trip and driver panels.
+
+   Structure
+   ---------
+   .rux-fleet-panel              Flex column, width set by drawer parent.
+   .rux-fleet-panel__header      Vehicle unit + ID + close button.
+   .rux-fleet-panel__tabs        Segmented tab nav — Info | Service | Trips.
+   .rux-fleet-panel__body        Scrollable body holding tab panes.
+   .rux-fleet-panel__pane        One per section, hidden via [hidden].
+   .rux-fleet-panel__footer      Delete + Clear + Save actions.
+   ========================================================================== */
+
+/* — Panel shell — */
+
+.rux-fleet-panel {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+	overflow: clip;
+	background: var(--rux-bg);
+	border-left: var(--rux-border-width) solid var(--rux-border);
+	container-type: inline-size;
+}
+
+/* — Drawer integration — */
+
+.scheduler-app__drawer .rux-fleet-panel {
+	flex: 1 1 auto;
+	min-height: 0;
+	width: var(--drawer-width, 380px);
+	border-left: none;
+	border-right: var(--rux-border-width) solid var(--rux-border);
+}
+
+/* — Header — */
+
+.rux-fleet-panel__header {
+	flex: none;
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-fleet-panel__heading {
+	display: flex;
+	align-items: baseline;
+	gap: var(--rux-space-3);
+	min-width: 0;
+}
+
+.rux-fleet-panel__title {
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-snug);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.rux-fleet-panel__id {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	color: var(--rux-accent);
+	font-weight: var(--rux-weight-medium);
+	white-space: nowrap;
+}
+
+/* — Tab nav — */
+
+.rux-fleet-panel__tabs {
+	flex: none;
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.rux-fleet-panel__tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.rux-fleet-panel__tabs .rux-segmented {
+	width: 100%;
+}
+
+.rux-fleet-panel__tabs .rux-segmented .rux-button {
+	flex: 1;
+	gap: var(--rux-space-1);
+	min-width: 0;
+	padding-inline: var(--rux-space-2);
+}
+
+.rux-fleet-panel__tab-label {
+	white-space: nowrap;
+}
+
+/* — Body / panes — */
+
+.rux-fleet-panel__body {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	min-height: 0;
+}
+
+.rux-fleet-panel__pane {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-4);
+}
+
+.rux-fleet-panel__pane[hidden] {
+	display: none;
+}
+
+/* — Form layout helpers — */
+
+.rux-fleet-panel__cols-2 {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-3);
+	align-items: start;
+}
+
+.rux-fleet-panel__section-label {
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg-subtle);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	padding-bottom: var(--rux-space-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+}
+
+/* — Equipment toggles — */
+
+.rux-fleet-panel__equipment {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+}
+
+/* — Trips: read-only trip list — */
+
+.rux-fleet-panel__trip-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	padding: 0;
+	list-style: none;
+}
+
+.rux-fleet-panel__trip-item {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3);
+	background: var(--rux-bg-sunken);
+	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-radius: var(--rux-radius-md);
+}
+
+.rux-fleet-panel__trip-id {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	color: var(--rux-accent);
+	font-weight: var(--rux-weight-medium);
+	min-width: 5rem;
+}
+
+.rux-fleet-panel__trip-meta {
+	flex: 1;
+	font-size: var(--rux-text-sm);
+	color: var(--rux-fg-muted);
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-fleet-panel__trip-empty {
+	padding: var(--rux-space-5);
+	text-align: center;
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+}
+
+/* — Footer — */
+
+.rux-fleet-panel__footer {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-fleet-panel__footer > .rux-button {
+	flex: 1;
+}
+
+/* — Narrow panel — */
+
+@container (max-width: 360px) {
+	.rux-fleet-panel__cols-2 {
+		grid-template-columns: 1fr;
+		gap: var(--rux-space-4);
+	}
+
+	.rux-fleet-panel__tabs .rux-segmented .rux-button {
+		padding-inline: var(--rux-space-2);
+	}
+
+	.rux-fleet-panel__tab-label,
+	.rux-fleet-panel__footer .rux-btn-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+		white-space: nowrap;
+		border: 0;
+	}
+}
+
+/* — Mobile — */
+
+@media (max-width: 640px) {
+	.scheduler-app__drawer .rux-fleet-panel {
+		width: 100dvw;
+		max-width: 100dvw;
+		border-right: none;
+	}
+
+	.scheduler-app__drawer .rux-fleet-panel__header {
+		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
+	}
+
+	.rux-fleet-panel__footer {
+		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
+	}
+}
