@@ -234,6 +234,15 @@
   padding-right: calc(var(--rux-space-3) + var(--rux-icon-md) + var(--rux-space-2));
 }
 
+.rux-input-group--action .rux-input-group__suffix {
+  pointer-events: auto;
+}
+
+.rux-input-group--action .rux-input-group__suffix .rux-button {
+  --_border: transparent;
+  border-radius: var(--rux-radius-xl);
+}
+
 
 /* — number — hide native spin buttons — */
 

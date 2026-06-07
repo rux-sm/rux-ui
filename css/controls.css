@@ -198,13 +198,13 @@
 
 .rux-segmented {
 	--_pad: var(
-		--rux-space-1
+		1px
 	); /* 4px — track extends beyond buttons, buttons align with adjacent 32px fields via align-items:center on the grid row */
 
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	min-height: calc(var(--rux-control-height) + var(--_pad) * 2);
+	min-height: calc(var(--rux-segmented-height) + 1px);
 	padding: var(--_pad);
 	background-color: var(--rux-control-strip-bg);
 	background-color: var(--rux-bg-sunken);
@@ -229,7 +229,7 @@
 }
 
 .rux-segmented > .rux-button {
-	--_h: var(--rux-control-height);
+	--_h: var(--rux-segmented-height);
 	--_bg: var(--rux-bg-sunken); /* matches strip bg so inactive items blend into the strip */
 	--_bg-h: var(--rux-control-strip-bg-hover);
 	--_bg-a: var(--rux-control-strip-bg-active);
@@ -306,7 +306,7 @@
 	justify-content: center;
 	min-width: 2rem;
 	padding: 0 var(--rux-space-2);
-	height: var(--rux-control-height);
+	height: var(--rux-segmented-height);
 	color: var(--rux-fg);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);

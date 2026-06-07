@@ -195,7 +195,8 @@
 	--rux-border-width: 1px;
 
 	--rux-control-height: 32px;
-	--rux-field-height: 40px; /* unified with --rux-control-height */
+	--rux-segmented-height: 30px;
+	--rux-field-height: 32px; /* unified with --rux-control-height */
 	--rux-textarea-min-height: 84px;
 	--rux-switch-width: 52px;
 	--rux-switch-height: 32px;

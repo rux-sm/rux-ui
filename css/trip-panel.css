@@ -62,6 +62,38 @@
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-medium);
 }
+.rux-trip-panel__confirm-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	padding: 2px var(--rux-space-2);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: 999px;
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-medium);
+	color: var(--rux-fg-muted);
+	background: transparent;
+	cursor: pointer;
+	transition: color 120ms, border-color 120ms;
+}
+.rux-trip-panel__confirm-btn:hover {
+	border-color: var(--rux-fg-subtle);
+	color: var(--rux-fg);
+}
+.rux-trip-panel__confirm-dot {
+	flex: none;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--rux-fg-subtle);
+}
+.rux-trip-panel__confirm-btn[aria-pressed="true"] {
+	color: var(--rux-accent);
+	border-color: var(--rux-accent);
+}
+.rux-trip-panel__confirm-btn[aria-pressed="true"] .rux-trip-panel__confirm-dot {
+	background: var(--rux-accent);
+}
 
 /* — Tab nav — */
 

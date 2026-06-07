@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../css/colors_and_type.css" />
     <link rel="stylesheet" href="../css/components.css" />
     <script
+    
       src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"
       defer
     ></script>
@@ -215,7 +216,7 @@
                   <div class="rux-field"><label class="rux-field__label" for="tp-date-paid">Date paid</label><input class="rux-input" id="tp-date-paid" name="datePaid" type="date" /></div>
                   <div class="rux-field"><label class="rux-field__label" for="tp-act-mi">Actual miles</label><div class="rux-input-group rux-input-group--suffix"><input class="rux-input" id="tp-act-mi" name="actualMiles" type="number" min="0" /><span class="rux-input-group__suffix">mi</span></div></div>
                 </div>
-                <div class="rux-field"><label class="rux-field__label">Payment refs</label><div class="rux-trip-panel__refs"><input class="rux-input" id="tp-pay-ref-1" name="paymentRef1" type="text" placeholder="Ref 1" /><input class="rux-input" id="tp-pay-ref-2" name="paymentRef2" type="text" placeholder="Ref 2" /><input class="rux-input" id="tp-pay-ref-3" name="paymentRef3" type="text" placeholder="Ref 3" /></div></div>
+                <div class="rux-field"><label class="rux-field__label">Payment refs</label><div class="rux-trip-panel__refs"><input class="rux-input" id="tp-pay-ref-1" name="paymentRef1" type="text" placeholder="Ref 1" /><input class="rux-input" id="tp-pay-ref-2" name="paymentRef2" type="text" placeholder="Ref 2" hidden /><input class="rux-input" id="tp-pay-ref-3" name="paymentRef3" type="text" placeholder="Ref 3" hidden /></div></div>
               </div>
               <!-- Itinerary -->
               <div id="pane-itinerary" class="rux-trip-panel__pane rux-trip-panel__pane--flush" role="tabpanel" hidden>
@@ -295,6 +296,9 @@
                 </button>
                 <button class="rux-button rux-button--ghost" id="today-btn">Today</button>
               </nav>
+              <button class="rux-button rux-button--primary" id="new-trip-btn" type="button">
+                <i data-lucide="plus" class="rux-icon"></i> New trip
+              </button>
             </div>
           </header>
 
@@ -312,68 +316,36 @@
             <div class="rux-scheduler__day-head">Fri</div>
             <div class="rux-scheduler__day-head">Sat</div>
             <div class="rux-scheduler__day-head">Sun</div>
-
-            <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head" aria-label="Bus 218, 55 pax">
-                <span class="rux-scheduler__bus-number" aria-hidden="true">
-                  <span>2</span>
-                  <span>1</span>
-                  <span>8</span>
-                </span>
-                <span class="rux-scheduler__bus-pax">55 pax</span>
-              </div>
-              <div class="rux-scheduler__track" id="track-218"></div>
-            </div>
-            <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head" aria-label="Bus 763, 47 pax">
-                <span class="rux-scheduler__bus-number" aria-hidden="true">
-                  <span>7</span>
-                  <span>6</span>
-                  <span>3</span>
-                </span>
-                <span class="rux-scheduler__bus-pax">47 pax</span>
-              </div>
-              <div class="rux-scheduler__track" id="track-763"></div>
-            </div>
-            <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head" aria-label="Bus 746, 52 pax">
-                <span class="rux-scheduler__bus-number" aria-hidden="true">
-                  <span>7</span>
-                  <span>4</span>
-                  <span>6</span>
-                </span>
-                <span class="rux-scheduler__bus-pax">52 pax</span>
-              </div>
-              <div class="rux-scheduler__track" id="track-746"></div>
-            </div>
-            <div class="rux-scheduler__row">
-              <div class="rux-scheduler__row-head" aria-label="Bus 133, 44 pax">
-                <span class="rux-scheduler__bus-number" aria-hidden="true">
-                  <span>1</span>
-                  <span>3</span>
-                  <span>3</span>
-                </span>
-                <span class="rux-scheduler__bus-pax">44 pax</span>
-              </div>
-              <div class="rux-scheduler__track" id="track-133"></div>
-            </div>
           </div>
         </div>
         </section>
       </div>
     </main>
+    <div class="scheduler-app__context-menu" id="scheduler-context-menu" role="menu" hidden>
+      <button class="scheduler-app__context-item" id="scheduler-context-add-trip" type="button" role="menuitem">
+        <i data-lucide="plus" class="rux-icon"></i>
+        <span>Add trip</span>
+      </button>
+    </div>
 
     <script src="../js/utilities.js"></script>
+    <script src="../js/controls.js" defer></script>
     <script src="../js/trip-panel.js"></script>
     <script src="../js/itinerary.js"></script>
 
     <script type="module">
       import { createTripBar } from "../js/trip-bar.js";
-      import { initTripDB } from "../js/trip-db.js";
 
       /* ── Trip panel drawer ───────────────────────────────────────────── */
       const drawer = document.getElementById("trip-panel-drawer");
       const tripPanel = drawer.querySelector(".rux-trip-panel");
+      const schedulerEl = document.getElementById("scheduler");
+      const schedulerContextMenu = document.getElementById("scheduler-context-menu");
+      const schedulerContextAddTrip = document.getElementById("scheduler-context-add-trip");
+      let loadTrip = null;
+      let newTrip = null;
+      let fetchTrips = null;
+      let pendingNewTripContext = null;
 
       function openDrawer() { drawer.classList.add("is-open"); }
       function closeDrawer() { drawer.classList.remove("is-open"); }
@@ -384,11 +356,94 @@
       document.getElementById("tp-btn-close")
         .addEventListener("click", closeDrawer);
 
+      function setActiveTripPane(panelId) {
+        const tab = tripPanel.querySelector(`.rux-trip-panel__tabs .rux-button[aria-controls="${panelId}"]`);
+        tab?.click();
+      }
+
+      function closeSchedulerContextMenu() {
+        schedulerContextMenu.hidden = true;
+        pendingNewTripContext = null;
+      }
+
+      function positionSchedulerContextMenu(event) {
+        schedulerContextMenu.hidden = false;
+        const rect = schedulerContextMenu.getBoundingClientRect();
+        const inline = Math.min(event.clientX, window.innerWidth - rect.width - 8);
+        const block = Math.min(event.clientY, window.innerHeight - rect.height - 8);
+        schedulerContextMenu.style.left = `${Math.max(8, inline)}px`;
+        schedulerContextMenu.style.top = `${Math.max(8, block)}px`;
+      }
+
+      function trackIdForBusNumber(number) {
+        return `track-${String(number ?? "").replace(/[^A-Za-z0-9_-]/g, "_")}`;
+      }
+
+      function busNumberFromTrack(track) {
+        return track?.dataset.busNumber || String(track?.id || "").replace(/^track-/, "");
+      }
+
+      function contextFromTrackEvent(event, track) {
+        const rect = track.getBoundingClientRect();
+        const days = schedulerDayCount(track);
+        const dayIndex = Math.max(
+          0,
+          Math.min(days - 1, Math.floor(((event.clientX - rect.left) / rect.width) * days)),
+        );
+        const date = isoDate(addDays(currentWeekStart, dayIndex));
+        const busNumber = busNumberFromTrack(track);
+        return { date, busNumber };
+      }
+
+      function syncBusStepper(value) {
+        const busesInput = tripPanel.querySelector("#tp-buses");
+        if (!busesInput) return;
+        busesInput.value = String(value);
+        busesInput.dispatchEvent(new Event("input", { bubbles: true }));
+        const stepper = busesInput.closest("[data-rux-stepper]");
+        const count = stepper?.querySelector(".rux-stepper__count");
+        if (count) count.textContent = String(value);
+        stepper?.querySelector("[data-stepper-dec]")?.toggleAttribute("disabled", value <= 1);
+        stepper?.querySelector("[data-stepper-inc]")?.toggleAttribute("disabled", value >= 20);
+      }
+
+      function prefillNewTripFromContext({ date, busNumber }) {
+        tripPanel.querySelector("#tp-start").value = date;
+        tripPanel.querySelector("#tp-end").value = date;
+        syncBusStepper(1);
+
+        const busSelect = tripPanel.querySelector('[name="buses[0].busId"]');
+        if (!busSelect || !busNumber) return;
+        const option = [...busSelect.options].find((opt) =>
+          opt.value === busNumber || opt.textContent.trim() === busNumber
+        );
+        if (option) {
+          busSelect.value = option.value;
+          busSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+
+      function startNewTripFromContext(context) {
+        if (!newTrip) return;
+        newTrip(tripPanel, itinerary);
+        prefillNewTripFromContext(context);
+        setActiveTripPane("pane-trip");
+        openDrawer();
+      }
+
+      // Hoist date constants so the calendar renders before any async work
+      const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const dayHeadEls = document.querySelectorAll(".rux-scheduler__day-head");
+      const todayIso = new Date().toISOString().slice(0, 10);
+      let currentWeekStart = startOfWeek(new Date());
+
+      renderDayHeaders(currentWeekStart);
+
+      // Process static HTML icons immediately — before any async work
+      if (window.lucide) lucide.createIcons();
+
       TripPanel.init(tripPanel);
       const itinerary = Itinerary.init(tripPanel);
-      initTripDB(tripPanel, itinerary);
-
-      if (window.lucide) lucide.createIcons();
 
       /* ── Resizable drawer ────────────────────────────────────────────── */
       const DRAWER_MIN = 280;
@@ -424,8 +479,42 @@
         document.addEventListener("mouseup", onUp);
       });
 
+      schedulerEl.addEventListener("contextmenu", (event) => {
+        const track = event.target.closest(".rux-scheduler__track");
+        if (!track || event.target.closest(".rux-trip-bar")) {
+          closeSchedulerContextMenu();
+          return;
+        }
+
+        event.preventDefault();
+        pendingNewTripContext = contextFromTrackEvent(event, track);
+        positionSchedulerContextMenu(event);
+        if (window.lucide) lucide.createIcons();
+      });
+
+      schedulerContextAddTrip.addEventListener("click", () => {
+        const context = pendingNewTripContext;
+        closeSchedulerContextMenu();
+        if (context) startNewTripFromContext(context);
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!schedulerContextMenu.hidden && !schedulerContextMenu.contains(event.target)) {
+          closeSchedulerContextMenu();
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeSchedulerContextMenu();
+      });
+
+      schedulerEl.addEventListener("scroll", closeSchedulerContextMenu);
+
       const callbacks = {
-        onOpenTrip: (trip) => { openDrawer(); console.log("load trip", trip.id); },
+        onOpenTrip: (trip) => {
+          openDrawer();
+          if (loadTrip) loadTrip(tripPanel, itinerary, trip);
+        },
         onChangeBus: (trip) => console.log("change bus", trip.id),
         onUploadPdf: (trip) => console.log("upload pdf", trip.id),
         onViewPdf: (trip) => console.log("view pdf", trip.id),
@@ -447,201 +536,78 @@
         // add more requirements here
       ];
 
-      const trips = {
-        southPadre: {
-          id: "sched-south-padre",
-          startDate: "2026-06-02",
-          endDate: "2026-06-02",
-          driverStatus: "confirmed",
-          itineraryStatus: "pending",
-          contactStatus: "pending",
-          paymentStatus: "po-received",
-          invoiceStatus: "pending",
-          destination: "South Padre Island, TX",
-          customer: "Barrientes Middle School",
-          bookingContact: {
-            name: "Jennifer Santamaria",
-            phone: "956-555-0174",
-          },
-          tripContact: { name: "Jennifer Santamaria", phone: "956-555-0174" },
-          notes: "",
-          departureTime: "06:30",
-          spotTime: "07:00",
-          returnTime: "20:00",
-          estimatedMiles: 160,
-          actualMiles: 158,
-          quotedPrice: 1200,
-          paymentRef: "PO-1842",
-          invoiceNumber: "INV-260509",
-          paymentRefs: ["ck# 1107"],
-          pickupAddress: "Barrientes Middle School",
-          busesNeeded: 1,
-          groupLabel: "",
-          drivers: [{ name: "Maria", status: "confirmed", pay: "$250" }],
-        },
-        orlando: {
-          id: "sched-orlando",
-          startDate: "2026-06-02",
-          endDate: "2026-06-02",
-          driverStatus: "confirmed",
-          itineraryStatus: "pending",
-          contactStatus: "received",
-          paymentStatus: "paid",
-          invoiceStatus: "paid",
-          destination: "Orlando, FL",
-          customer: "The Arts Educational Tours",
-          bookingContact: { name: "Scott Hartsfield", phone: "956-345-8557" },
-          tripContact: { name: "David Cardona", phone: "361-701-2097" },
-          notes: "",
-          itineraryPdfUrl: "https://drive.google.com/file/d/1",
-          departureTime: "05:00",
-          returnTime: "20:15",
-          estimatedMiles: 535,
-          actualMiles: 541,
-          quotedPrice: 2100,
-          paymentRef: "PO-2091",
-          invoiceNumber: "INV-260510",
-          paymentRefs: ["ck# 1109"],
-          datePaid: "2026-06-02",
-          pickupAddress: "805 W Ridge Rd, San Juan TX",
-          busesNeeded: 2,
-          groupLabel: "1/2",
-          drivers: [
-            { name: "George", status: "confirmed", pay: "$325" },
-            { name: "Rigo", status: "confirmed", pay: "$325" },
-          ],
-        },
-        austin: {
-          id: "sched-austin",
-          startDate: "2026-06-04",
-          endDate: "2026-06-06",
-          driverStatus: "confirmed",
-          itineraryStatus: "received",
-          contactStatus: "received",
-          paymentStatus: "po-received",
-          invoiceStatus: "pending",
-          destination: "Austin, TX",
-          customer: "Todd Middle School",
-          bookingContact: { name: "Alma Trevino", phone: "956-225-9852" },
-          tripContact: { name: "Alma Trevino", phone: "956-225-9852" },
-          notes: "5/6 PO received",
-          departureTime: "02:15",
-          spotTime: "03:00",
-          returnTime: "00:00",
-          estimatedMiles: 620,
-          actualMiles: 624,
-          quotedPrice: 2900,
-          paymentRef: "12343328",
-          invoiceNumber: "INV-260511",
-          pickupAddress: "Todd Middle School",
-          busesNeeded: 1,
-          groupLabel: "",
-          drivers: [
-            { name: "George", status: "confirmed", pay: "$375" },
-            { name: "Oscar", status: "confirmed", pay: "$375" },
-          ],
-        },
-        newBraunfels: {
-          id: "sched-new-braunfels",
-          startDate: "2026-06-02",
-          endDate: "2026-06-02",
-          driverStatus: "confirmed",
-          itineraryStatus: "received",
-          contactStatus: "received",
-          paymentStatus: "pending-quote",
-          invoiceStatus: "pending",
-          destination: "New Braunfels, TX",
-          customer: "Riverside MS",
-          bookingContact: { name: "Raul Garza", phone: "956-555-0192" },
-          notes: "5/15 ck# in mail",
-          departureTime: "04:00",
-          spotTime: "05:30",
-          returnTime: "01:30",
-          estimatedMiles: 520,
-          quotedPrice: 0,
-          pickupAddress: "Riverside MS",
-          busesNeeded: 2,
-          groupLabel: "1/2",
-          drivers: [
-            { name: "Oscar", status: "confirmed", pay: "$325" },
-            { name: "Juvel", status: "confirmed", pay: "$325" },
-          ],
-        },
-        conflict: {
-          id: "sched-conflict",
-          startDate: "2026-06-04",
-          endDate: "2026-06-06",
-          driverStatus: "pending",
-          itineraryStatus: "received",
-          contactStatus: "pending",
-          paymentStatus: "pending-quote",
-          invoiceStatus: "pending",
-          destination: "Austin, TX",
-          customer: "STC",
-          bookingContact: { name: "Esther Crawford", phone: "956-872-6441" },
-          tripContact: { name: "Anna Alaniz", phone: "956-437-4400" },
-          notes: "5/20 working on approval",
-          departureTime: "05:00",
-          spotTime: "06:00",
-          returnTime: "22:30",
-          estimatedMiles: 645,
-          quotedPrice: 4675,
-          paymentRef: "PO-10012624",
-          pickupAddress: "3201 W Pecan Blvd, McAllen TX",
-          busesNeeded: 1,
-          groupLabel: "1/2",
-          drivers: [
-            { name: "TBA", status: "pending" },
-            { name: "TBA", status: "pending" },
-          ],
-          conflict: "overlapping driver assignment",
-          fromPrev: true,
-        },
-        sanAntonio: {
-          id: "sched-san-antonio",
-          startDate: "2026-06-02",
-          endDate: "2026-06-02",
-          driverStatus: "confirmed",
-          itineraryStatus: "received",
-          contactStatus: "received",
-          paymentStatus: "paid",
-          invoiceStatus: "paid",
-          destination: "San Antonio, TX",
-          customer: "Munoz Elementary",
-          bookingContact: { name: "Petra Arauza", phone: "956-207-9126" },
-          tripContact: { name: "Isela Cantu", phone: "956-929-4255" },
-          notes: "",
-          departureTime: "03:30",
-          spotTime: "04:00",
-          returnTime: "21:30",
-          estimatedMiles: 480,
-          actualMiles: 479,
-          quotedPrice: 2100,
-          invoiceNumber: "INV-260512",
-          paymentRefs: ["ck# 5026"],
-          datePaid: "2026-06-02",
-          pickupAddress: "Munoz Elementary",
-          busesNeeded: 2,
-          groupLabel: "2/2",
-          drivers: [
-            { name: "Padron", status: "confirmed", pay: "$300" },
-            { name: "Hector", status: "confirmed", pay: "$300" },
-          ],
-        },
-      };
+      const trips = {};
+      const tripTrackMap = {};
+      let schedulerBuses = [];
 
-      const tripTrackMap = {
-        southPadre: { trackId: "track-218", lane: 0 },
-        orlando: { trackId: "track-218", lane: 0 },
-        austin: { trackId: "track-763", lane: 0 },
-        newBraunfels: { trackId: "track-763", lane: 1 },
-        conflict: { trackId: "track-746", lane: 0 },
-        sanAntonio: { trackId: "track-133", lane: 0 },
-      };
+      async function loadTripsFromDB() {
+        if (!fetchTrips) return;
 
-      const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-      const dayHeadEls = document.querySelectorAll(".rux-scheduler__day-head");
-      const todayIso = isoDate(new Date());
+        let data;
+        try {
+          data = await fetchTrips();
+        } catch (err) {
+          console.error("Failed to load trips:", err);
+          return;
+        }
+
+        Object.keys(trips).forEach(k => delete trips[k]);
+        Object.keys(tripTrackMap).forEach(k => delete tripTrackMap[k]);
+
+        data.forEach(t => {
+          (t.trip_assignments ?? []).forEach(assignment => {
+            if (!assignment.buses) return;
+            const key = assignment.id;
+            const primaryDriver = (assignment.trip_drivers ?? []).find(d => d.role === "driver");
+
+            trips[key] = {
+              id:            t.id,
+              trip_ref:      t.trip_ref,
+              assignmentId:  assignment.id,
+              busId:         assignment.bus_id,
+              // embed assignments so loadTrip can repopulate the Fleet tab
+              assignments:   (t.trip_assignments ?? []).map(a => ({
+                bus_id:      a.bus_id,
+                position:    a.position,
+                trip_drivers: a.trip_drivers ?? [],
+              })),
+              startDate:     t.start_date,
+              endDate:       t.end_date,
+              destination:   t.destination,
+              customer:      t.customer,
+              departureTime: t.departure_time,
+              spotTime:      t.spot_time,
+              returnTime:    t.return_time,
+              notes:         t.notes,
+              bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone },
+              invoiceStatus: t.invoice_status,
+              paymentStatus: t.contract_status,
+              estimatedMiles: t.est_miles,
+              actualMiles:   t.actual_miles,
+              quotedPrice:   t.quoted_price,
+              paymentRef:    t.po_ref,
+              invoiceNumber: t.invoice_number,
+              datePaid:      t.date_paid,
+              paymentRefs:   [t.payment_ref_1, t.payment_ref_2, t.payment_ref_3].filter(Boolean),
+              drivers: (assignment.trip_drivers ?? []).map(td => ({
+                name:   td.drivers?.name,
+                status: "confirmed",
+                pay:    td.pay != null ? `$${td.pay}` : "",
+              })),
+              driverId: primaryDriver?.driver_id ?? null,
+            };
+            const trackId = trackIdForBusNumber(assignment.buses.number);
+            if (!document.getElementById(trackId)) return;
+            tripTrackMap[key] = { trackId, lane: 0 };
+          });
+        });
+
+        renderScheduler();
+      }
+
+      tripPanel.addEventListener("rux:trip-saved",   () => loadTripsFromDB());
+      tripPanel.addEventListener("rux:trip-deleted", () => loadTripsFromDB());
+
       const root = document.documentElement;
 
       function parseIsoDate(value) {
@@ -840,9 +806,54 @@
         track.appendChild(grid);
       }
 
-      document
-        .querySelectorAll(".rux-scheduler__track")
-        .forEach((track) => buildTrackGrid(track));
+      function renderBusRows(buses = []) {
+        schedulerEl.querySelectorAll(".rux-scheduler__row").forEach((row) => row.remove());
+
+        buses.forEach((bus) => {
+          const number = String(bus.number ?? "").trim();
+          if (!number) return;
+
+          const row = document.createElement("div");
+          row.className = "rux-scheduler__row";
+
+          const head = document.createElement("div");
+          head.className = "rux-scheduler__row-head";
+          head.setAttribute(
+            "aria-label",
+            bus.capacity ? `Bus ${number}, ${bus.capacity} pax` : `Bus ${number}`,
+          );
+
+          const numberEl = document.createElement("span");
+          numberEl.className = "rux-scheduler__bus-number";
+          numberEl.setAttribute("aria-hidden", "true");
+          [...number].forEach((char) => {
+            const charEl = document.createElement("span");
+            charEl.textContent = char;
+            numberEl.appendChild(charEl);
+          });
+          head.appendChild(numberEl);
+
+          if (bus.capacity) {
+            const paxEl = document.createElement("span");
+            paxEl.className = "rux-scheduler__bus-pax";
+            paxEl.textContent = `${bus.capacity} pax`;
+            head.appendChild(paxEl);
+          }
+
+          const track = document.createElement("div");
+          track.className = "rux-scheduler__track";
+          track.id = trackIdForBusNumber(number);
+          track.dataset.busId = bus.id;
+          track.dataset.busNumber = number;
+
+          row.append(head, track);
+          schedulerEl.appendChild(row);
+          buildTrackGrid(track);
+        });
+
+        trackOrder = buses.map((bus) => trackIdForBusNumber(bus.number)).filter((trackId) => document.getElementById(trackId));
+        renderScheduler();
+      }
 
       function tokenPx(name) {
         const rootSize = Number.parseFloat(getComputedStyle(root).fontSize);
@@ -938,7 +949,6 @@
 
       let activePlacements = [];
       let activeObservers = [];
-      let currentWeekStart = startOfWeek(new Date());
       let layoutFrame = 0;
 
       function layoutScheduler() {
@@ -960,10 +970,13 @@
 
         activePlacements = getWeekPlacements(currentWeekStart, trips);
         activePlacements.forEach((placement) => {
+          const track = document.getElementById(placement.trackId);
+          if (!track) return;
           const bar = createTripBar(placement.trip, callbacks);
           placement.bar = bar;
-          document.getElementById(placement.trackId).appendChild(bar);
+          track.appendChild(bar);
         });
+        activePlacements = activePlacements.filter((placement) => placement.bar);
 
         renderDayHeaders(currentWeekStart);
         activePlacements.forEach((placement) => {
@@ -991,7 +1004,51 @@
         renderScheduler();
       });
 
+      document.getElementById("new-trip-btn").addEventListener("click", () => {
+        if (newTrip) newTrip(tripPanel, itinerary);
+        setActiveTripPane("pane-trip");
+        openDrawer();
+      });
+
       renderScheduler();
+
+      async function initSchedulerData() {
+        try {
+          const db = await import("../js/trip-db.js");
+          loadTrip = db.loadTrip;
+          newTrip = db.newTrip;
+          fetchTrips = db.fetchTrips;
+
+          // Wire save/clear/delete immediately — don't wait for buses/drivers
+          db.initTripDB(tripPanel, itinerary);
+
+          let buses = [];
+          let drivers = [];
+
+          try {
+            buses = await db.fetchBuses();
+          } catch (err) {
+            console.warn("Could not load buses from DB:", err);
+          }
+
+          schedulerBuses = buses;
+          renderBusRows(schedulerBuses);
+
+          try {
+            drivers = await db.fetchDrivers();
+          } catch (err) {
+            console.warn("Could not load drivers from DB:", err);
+          }
+
+          TripPanel.updateOptions(tripPanel, { buses, drivers });
+          if (window.lucide) lucide.createIcons();
+          await loadTripsFromDB();
+        } catch (err) {
+          console.warn("Could not initialize trip DB:", err);
+        }
+      }
+
+      initSchedulerData();
 
       window.schedulerDemo = {
         trips,

@@ -1,0 +1,173 @@
+/* ==========================================================================
+   DRIVER APP — PAGE SHELL & TABLE
+   --------------------------------------------------------------------------
+   App-specific layout for the driver manager module. Also defines
+   .rux-table — a first-class design system component to be extracted to
+   components.css once it stabilises.
+   ========================================================================== */
+
+/* — Page body — */
+
+.driver-app__main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* — Toolbar search input width — */
+
+.driver-app__search {
+	width: 200px;
+}
+
+/* — Table wrap — */
+
+.driver-app__table-wrap {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: auto;
+	overscroll-behavior: contain;
+	padding-inline: var(--rux-space-4);
+	padding-bottom: var(--rux-space-4);
+}
+
+/* ==========================================================================
+   RUX TABLE COMPONENT
+   --------------------------------------------------------------------------
+   Full-width data table. Sticky header, hover + selection states.
+   Uses auto layout — column widths are driven by content.
+   ========================================================================== */
+
+.rux-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--rux-text-sm);
+}
+
+.rux-table thead {
+	position: sticky;
+	top: 0;
+	z-index: var(--rux-z-base);
+	background: var(--rux-bg);
+}
+
+.rux-table th {
+	padding: var(--rux-space-2) var(--rux-space-4);
+	text-align: left;
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg-subtle);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	white-space: nowrap;
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-table td {
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+	vertical-align: middle;
+	color: var(--rux-fg);
+	white-space: nowrap;
+}
+
+.rux-table tbody tr {
+	cursor: pointer;
+	transition: background-color var(--rux-duration-instant) var(--rux-ease-out);
+}
+
+.rux-table tbody tr:hover {
+	background: var(--rux-bg-hover);
+}
+
+.rux-table tbody tr.is-selected {
+	background: var(--rux-accent-subtle);
+}
+
+.rux-table tbody tr:focus-visible {
+	outline: none;
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+}
+
+/* — Driver identity cell — */
+
+.driver-app__driver-cell {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.driver-app__avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: var(--rux-avatar-md);
+	height: var(--rux-avatar-md);
+	background: var(--rux-bg-3);
+	border-radius: var(--rux-radius-full);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-semibold);
+	font-family: var(--rux-font-mono);
+	letter-spacing: 0;
+	user-select: none;
+}
+
+.driver-app__avatar--inactive {
+	opacity: 0.4;
+}
+
+.driver-app__driver-name {
+	font-weight: var(--rux-weight-medium);
+	color: var(--rux-fg);
+}
+
+/* — Table cell variants — */
+
+.driver-app__phone {
+	color: var(--rux-fg-muted);
+}
+
+.driver-app__expiry {
+	color: var(--rux-fg-muted);
+}
+
+.driver-app__expiry--warn {
+	color: var(--rux-warning);
+}
+
+.driver-app__expiry--expired {
+	color: var(--rux-danger);
+}
+
+/* — Empty state — */
+
+.driver-app__empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-8);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+	text-align: center;
+}
+
+/* — Mobile — */
+
+@media (max-width: 640px) {
+	.driver-app__search {
+		width: 100%;
+	}
+
+	/* Hide less-critical columns on small screens */
+	.driver-app__table .col-phone,
+	.driver-app__table .col-expiry {
+		display: none;
+	}
+}

@@ -344,6 +344,44 @@
 	position: absolute;
 }
 
+.scheduler-app__context-menu {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+	min-width: 10rem;
+	padding: var(--rux-space-1);
+	background: var(--rux-bg-elevated);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-sm);
+	box-shadow: var(--rux-shadow-lg);
+}
+
+.scheduler-app__context-menu[hidden] {
+	display: none;
+}
+
+.scheduler-app__context-item {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	min-height: var(--rux-control-height);
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	color: var(--rux-fg);
+	background: transparent;
+	border: 0;
+	border-radius: var(--rux-radius-xs);
+	font: inherit;
+	font-size: var(--rux-text-sm);
+	text-align: left;
+	cursor: pointer;
+}
+
+.scheduler-app__context-item:hover,
+.scheduler-app__context-item:focus-visible {
+	outline: none;
+	background: var(--rux-control-ghost-hover);
+}
+
 @media (max-width: 900px) {
 	.scheduler-app {
 		width: 100%;

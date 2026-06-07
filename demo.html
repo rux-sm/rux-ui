@@ -1314,6 +1314,49 @@
             </div>
           </div>
         </div>
+
+        <!-- input group -->
+        <div class="rux-card" style="margin-top: var(--rux-space-5);">
+          <div class="rux-card__body grid-2">
+            <div class="rux-field">
+              <label class="rux-field__label" for="d-price">Text prefix</label>
+              <div class="rux-input-group rux-input-group--prefix">
+                <span class="rux-input-group__prefix">$</span>
+                <input id="d-price" class="rux-input" type="number" placeholder="0.00" />
+              </div>
+              <span class="rux-field__help">Currency or unit symbol before the value.</span>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="d-search">Icon suffix</label>
+              <div class="rux-input-group rux-input-group--suffix">
+                <input id="d-search" class="rux-input" type="search" placeholder="Trip reference…" />
+                <span class="rux-input-group__suffix">
+                  <i data-lucide="search" class="rux-icon"></i>
+                </span>
+              </div>
+              <span class="rux-field__help">Decorative icon — not interactive, doesn't block input.</span>
+            </div>
+            <div class="rux-field">
+              <label class="rux-field__label" for="d-deposit">Action button suffix</label>
+              <div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
+                <span class="rux-input-group__prefix">$</span>
+                <input id="d-deposit" class="rux-input" type="number" placeholder="0.00" />
+                <span class="rux-input-group__suffix">
+                  <button class="rux-button rux-button--ghost rux-button--sm rux-button--icon" type="button" title="Mark paid in full">
+                    <i data-lucide="circle-check" class="rux-icon"></i>
+                  </button>
+                </span>
+              </div>
+              <span class="rux-field__help">Add <code>rux-input-group--action</code> when the suffix holds a clickable button.</span>
+            </div>
+            <div class="button-uses form-uses">
+              <div class="button-use"><span class="button-use__label">--prefix</span><span class="button-use__desc">Currency symbols, units, or short labels that precede the value.</span></div>
+              <div class="button-use"><span class="button-use__label">--suffix</span><span class="button-use__desc">Decorative icons only. Pointer-events off by default — won't intercept input clicks.</span></div>
+              <div class="button-use"><span class="button-use__label">--action</span><span class="button-use__desc">Add alongside --suffix when the suffix contains a button. Enables pointer-events on the slot.</span></div>
+              <div class="button-use"><span class="button-use__label">Button</span><span class="button-use__desc">Use <code>rux-button--ghost rux-button--sm rux-button--icon</code> for a 26×26px icon-only button in the slot.</span></div>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ALERTS -->

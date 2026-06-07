@@ -1,0 +1,288 @@
+/* ==========================================================================
+   RUX UI — DRIVER PANEL
+   --------------------------------------------------------------------------
+   Side-panel form editor for driver profile, license, status, and trip
+   assignments. Shares the same drawer shell as the trip panel.
+
+   Structure
+   ---------
+   .rux-driver-panel              Flex column, width set by drawer parent.
+   .rux-driver-panel__header      Driver name + ID + close button.
+   .rux-driver-panel__tabs        Segmented tab nav — Profile | License | Status | Trips.
+   .rux-driver-panel__body        Scrollable body holding tab panes.
+   .rux-driver-panel__pane        One per section, hidden via [hidden].
+   .rux-driver-panel__footer      Delete + Save actions.
+   ========================================================================== */
+
+/* — Panel shell — */
+
+.rux-driver-panel {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+	overflow: clip;
+	background: var(--rux-bg);
+	border-left: var(--rux-border-width) solid var(--rux-border);
+	container-type: inline-size;
+}
+
+/* — Drawer integration — */
+
+.scheduler-app__drawer .rux-driver-panel {
+	flex: 1 1 auto;
+	min-height: 0;
+	width: var(--drawer-width, 380px);
+	border-left: none;
+	border-right: var(--rux-border-width) solid var(--rux-border);
+}
+
+/* — Header — */
+
+.rux-driver-panel__header {
+	flex: none;
+	display: flex;
+	align-items: start;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-driver-panel__heading {
+	display: flex;
+	align-items: baseline;
+	gap: var(--rux-space-3);
+	min-width: 0;
+}
+
+.rux-driver-panel__title {
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-snug);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.rux-driver-panel__id {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	color: var(--rux-accent);
+	font-weight: var(--rux-weight-medium);
+	white-space: nowrap;
+}
+
+/* — Tab nav — */
+
+.rux-driver-panel__tabs {
+	flex: none;
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.rux-driver-panel__tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.rux-driver-panel__tabs .rux-segmented {
+	width: 100%;
+}
+
+.rux-driver-panel__tabs .rux-segmented .rux-button {
+	flex: 1;
+	gap: var(--rux-space-1);
+	min-width: 0;
+	padding-inline: var(--rux-space-2);
+}
+
+.rux-driver-panel__tab-label {
+	white-space: nowrap;
+}
+
+/* — Body / panes — */
+
+.rux-driver-panel__body {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	min-height: 0;
+}
+
+.rux-driver-panel__pane {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-4);
+}
+
+.rux-driver-panel__pane[hidden] {
+	display: none;
+}
+
+/* — Form layout helpers — */
+
+.rux-driver-panel__cols-2 {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-3);
+	align-items: start;
+}
+
+.rux-driver-panel__section-label {
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg-subtle);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	padding-bottom: var(--rux-space-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+}
+
+/* — Profile: avatar row — */
+
+.rux-driver-panel__avatar-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-4);
+}
+
+.rux-driver-panel__avatar-row .rux-driver-panel__cols-2 {
+	flex: 1;
+}
+
+.rux-driver-panel__avatar {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: var(--rux-avatar-lg);
+	height: var(--rux-avatar-lg);
+	background: var(--rux-bg-3);
+	border-radius: var(--rux-radius-full);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	font-family: var(--rux-font-mono);
+	letter-spacing: 0;
+	user-select: none;
+}
+
+.rux-driver-panel__avatar .rux-icon {
+	width: var(--rux-icon-xl);
+	height: var(--rux-icon-xl);
+}
+
+/* — License: endorsement toggles — */
+
+.rux-driver-panel__endorsements {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+}
+
+.rux-driver-panel__endorsements .rux-button {
+	min-width: var(--rux-control-height);
+	font-family: var(--rux-font-mono);
+	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-driver-panel__endorsements .rux-button[aria-pressed="true"] {
+	background: var(--rux-accent-subtle);
+	color: var(--rux-accent);
+}
+
+/* — Status: employment status segmented — */
+
+.rux-driver-panel__status-group {
+	width: 100%;
+}
+
+.rux-driver-panel__status-group .rux-button {
+	flex: 1;
+	gap: var(--rux-space-1);
+	min-width: 0;
+	padding-inline: var(--rux-space-2);
+}
+
+/* — Trips: read-only trip list — */
+
+.rux-driver-panel__trip-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	padding: 0;
+	list-style: none;
+}
+
+.rux-driver-panel__trip-item {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-space-3);
+	background: var(--rux-bg-sunken);
+	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-radius: var(--rux-radius-md);
+}
+
+.rux-driver-panel__trip-id {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	color: var(--rux-accent);
+	font-weight: var(--rux-weight-medium);
+	min-width: 5rem;
+}
+
+.rux-driver-panel__trip-meta {
+	flex: 1;
+	font-size: var(--rux-text-sm);
+	color: var(--rux-fg-muted);
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-driver-panel__trip-empty {
+	padding: var(--rux-space-5);
+	text-align: center;
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+}
+
+/* — Footer — */
+
+.rux-driver-panel__footer {
+	flex: none;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-driver-panel__footer .rux-button--danger {
+	margin-right: auto;
+}
+
+/* — Mobile — */
+
+@media (max-width: 640px) {
+	.scheduler-app__drawer .rux-driver-panel {
+		width: 100dvw;
+		max-width: 100dvw;
+		border-right: none;
+	}
+
+	.scheduler-app__drawer .rux-driver-panel__header {
+		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
+	}
+
+	.rux-driver-panel__footer {
+		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
+	}
+}

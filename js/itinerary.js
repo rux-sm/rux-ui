@@ -49,6 +49,15 @@
 		return `${Math.floor(mins / 60)}h ${String(mins % 60).padStart(2, "0")}m`;
 	}
 
+	function escHtml(value) {
+		return String(value ?? "")
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;")
+			.replace(/'/g, "&#39;");
+	}
+
 	function parseTimeToMins(t) {
 		if (!t) return null;
 		const [h, m] = t.split(":").map(Number);
@@ -249,7 +258,7 @@
 		const stats = computeSegmentStats(stops, idx);
 		return `
       <div class="rux-itin__day" data-stop-idx="${idx}">
-        <span class="rux-itin__day-badge">${item.label}</span>
+        <span class="rux-itin__day-badge">${escHtml(item.label)}</span>
         ${renderSegStats(stats)}
         <div class="rux-itin__card-actions">
           ${reorderBtns(idx, stops)}
@@ -276,30 +285,31 @@
 	const TYPE_LABEL = { pickup: "Pick-up", stop: "Stop", sleeper: "Sleeper", return: "Return" };
 
 	function renderStop(stop, idx, stops) {
+		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
 		const prev = prevStopName(stops, idx);
 		const fromText = prev ? `From ${prev}` : "From yard";
-		const isReturn = stop.type === "return";
-		const statsSection = stop.type === "sleeper" ? renderSleeperStats(stop, stops) : "";
+		const isReturn = type === "return";
+		const statsSection = type === "sleeper" ? renderSleeperStats(stop, stops) : "";
 
-		const time1Label = stop.type === "sleeper" ? "Start" : "Depart";
+		const time1Label = type === "sleeper" ? "Start" : "Depart";
 		const time2 =
-			stop.type === "pickup"  ? { label: "Spot",    field: "spot"   } :
-			stop.type === "sleeper" ? { label: "End",     field: "arrive" } :
+			type === "pickup"  ? { label: "Spot",    field: "spot"   } :
+			type === "sleeper" ? { label: "End",     field: "arrive" } :
 			                          { label: "Arrive",  field: "arrive" };
 
-		const isSleeper = stop.type === "sleeper";
+		const isSleeper = type === "sleeper";
 
 		const nameEl = isReturn
-			? `<span class="rux-itin__name">${stop.name}</span>`
+			? `<span class="rux-itin__name">${escHtml(stop.name)}</span>`
 			: isSleeper ? ""
 			: `<input class="rux-input" type="text" data-field="name"
-               value="${stop.name || ""}" placeholder="Location name" />`;
+               value="${escHtml(stop.name)}" placeholder="Location name" />`;
 
 		const addrEl = isReturn
-			? `<div class="rux-itin__address">${stop.address}</div>`
+			? `<div class="rux-itin__address">${escHtml(stop.address)}</div>`
 			: isSleeper ? ""
 			: `<input class="rux-input" type="text" data-field="address"
-               value="${stop.address || ""}" placeholder="Address" />`;
+               value="${escHtml(stop.address)}" placeholder="Address" />`;
 
 		const deleteBtn = `
       <button class="rux-button rux-button--ghost rux-button--icon"
@@ -310,15 +320,15 @@
 		return `
       <div class="rux-itin__stop" data-stop-idx="${idx}">
         <div class="rux-itin__rail">
-          <span class="rux-itin__dot rux-itin__dot--${stop.type}"></span>
+          <span class="rux-itin__dot rux-itin__dot--${type}"></span>
           <span class="rux-itin__line"></span>
         </div>
         <div class="rux-itin__card">
           <div class="rux-itin__card-meta">
-            <span class="rux-itin__badge rux-itin__badge--${stop.type}">${TYPE_LABEL[stop.type]}</span>
-            <span class="rux-itin__from">${fromText}</span>
+            <span class="rux-itin__badge rux-itin__badge--${type}">${TYPE_LABEL[type]}</span>
+            <span class="rux-itin__from">${escHtml(fromText)}</span>
             <div class="rux-itin__card-actions">
-              ${(stop.type !== "pickup" && stop.type !== "return") ? reorderBtns(idx, stops) : ""}
+              ${(type !== "pickup" && type !== "return") ? reorderBtns(idx, stops) : ""}
               ${deleteBtn}
             </div>
           </div>
@@ -326,16 +336,16 @@
           ${addrEl}
           <div class="rux-itin__fields">
             <span class="rux-itin__field-label">${time1Label}</span>
-            <input class="rux-input" type="time" data-field="departPrev" value="${stop.departPrev || ""}" />
+            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" />
             <span class="rux-itin__field-label">${time2.label}</span>
-            <input class="rux-input" type="time" data-field="${time2.field}" value="${stop[time2.field] || ""}" />
-            ${stop.type !== "sleeper" ? `
+            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" />
+            ${type !== "sleeper" ? `
             <span class="rux-itin__field-label">Miles</span>
             <input class="rux-input" type="number" data-field="miles"
-                   value="${stop.miles || ""}" min="0" step="0.1" placeholder="0" />
+                   value="${escHtml(stop.miles)}" min="0" step="0.1" placeholder="0" />
             <span class="rux-itin__field-label">Drive</span>
             <input class="rux-input" type="text" data-field="drive"
-                   value="${stop.drive || ""}" placeholder="h:mm" />` : ""}
+                   value="${escHtml(stop.drive)}" placeholder="h:mm" />` : ""}
           </div>
           ${statsSection}
         </div>

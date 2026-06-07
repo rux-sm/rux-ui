@@ -59,6 +59,7 @@
 
 	display: grid;
 	grid-template-columns: var(--rux-scheduler-cols);
+	align-content: start;
 	width: 100%;
 	max-width: 100%;
 	max-block-size: var(--rux-scheduler-max-block-size);

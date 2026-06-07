@@ -233,6 +233,8 @@ Borders are **hairlines** (always 1px) at one of three intensities (`--rux-borde
 - `--rux-shadow-lg` — modals
 - `--rux-shadow-xl` — sheets, heavy overlays
 
+> **Current state:** All shadow tokens are set to `none` in `tokens.css` — the app runs flat for now. Some inset shadows on form fields and the segmented button are hardcoded and also disabled. A shadow toggle (flat vs. elevated) is planned; enabling it will uncomment all shadow values in one place.
+
 Use inset shadows only when they describe state or material: form fields are permanent recessed containers; pressed toggle buttons are latched controls. Do not add decorative bevels to cards or generic surfaces.
 
 ### Cards

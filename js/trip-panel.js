@@ -31,14 +31,16 @@ const DRIVER_NEEDS = [
 	{ key: "fuelCard", label: "Fuel card", icon: "credit-card" },
 ];
 
-const BUS_OPTIONS = ["218", "470", "506", "607", "746", "763", "897", "898"];
+/* ── Helpers ───────────────────────────────────────────────────────────── */
 
-const DRIVER_OPTIONS = [
-	{ value: "jose_luis_sanchez", label: "Jose Luis Sanchez" },
-	{ value: "maria_lopez", label: "Maria Lopez" },
-	{ value: "hector_escamilla", label: "Hector Escamilla" },
-	{ value: "alejandro_arredondo", label: "Alejandro Arredondo" },
-];
+function escHtml(value) {
+	return String(value ?? "")
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
+}
 
 /* ── Renderers ──────────────────────────────────────────────────────────── */
 
@@ -46,18 +48,20 @@ function renderRequirements(container, items, { block = true } = {}) {
 	container.innerHTML = items
 		.map(
 			(req) =>
-				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${req.key}">
-					<i data-lucide="${req.icon}" class="rux-icon"></i> ${req.label}
+				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.key)}">
+					<i data-lucide="${escHtml(req.icon)}" class="rux-icon"></i> ${escHtml(req.label)}
 				</button>`,
 		)
 		.join("");
 }
 
-function buildBusGroup(idx) {
-	const busOpts = BUS_OPTIONS.map((v) => `<option value="${v}">${v}</option>`).join("");
+function buildBusGroup(idx, buses, drivers) {
+	const busList = buses;
+	const driverList = drivers;
+	const busOpts = busList.map((b) => `<option value="${escHtml(b.id)}">${escHtml(b.number)}</option>`).join("");
 	const driverOpts =
 		`<option value="" disabled selected>Assign driver…</option>` +
-		DRIVER_OPTIONS.map((d) => `<option value="${d.value}">${d.label}</option>`).join("");
+		driverList.map((d) => `<option value="${escHtml(d.id)}">${escHtml(d.name)}</option>`).join("");
 
 	const roleRows = [
 		{ role: "coDriver", icon: "user-plus", title: "Co-driver" },
@@ -66,14 +70,14 @@ function buildBusGroup(idx) {
 	]
 		.map(
 			(r) => `
-    <div class="rux-trip-panel__driver-row" data-role-row="${r.role}" hidden>
-      <span class="rux-trip-panel__role-label" title="${r.title}">
-        <i data-lucide="${r.icon}" class="rux-icon"></i>
+    <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
+      <span class="rux-trip-panel__role-label" title="${escHtml(r.title)}">
+        <i data-lucide="${escHtml(r.icon)}" class="rux-icon"></i>
       </span>
-      <select class="rux-select" name="buses[${idx}].${r.role}.name">${driverOpts}</select>
+      <select class="rux-select" name="buses[${idx}].${escHtml(r.role)}.name">${driverOpts}</select>
       <div class="rux-input-group rux-input-group--prefix">
         <span class="rux-input-group__prefix">$</span>
-        <input class="rux-input" name="buses[${idx}].${r.role}.pay" type="number" min="0" placeholder="0" />
+        <input class="rux-input" name="buses[${idx}].${escHtml(r.role)}.pay" type="number" min="0" placeholder="0" />
       </div>
     </div>`,
 		)
@@ -114,20 +118,40 @@ function buildBusGroup(idx) {
 	return el;
 }
 
-function renderBusGroups(container, n) {
+function renderBusGroups(container, n, buses, drivers) {
 	container.innerHTML = "";
 	for (let i = 0; i < n; i++) {
-		container.appendChild(buildBusGroup(i));
+		container.appendChild(buildBusGroup(i, buses, drivers));
 	}
 	if (window.lucide) lucide.createIcons();
 }
 
-/* ── Init ───────────────────────────────────────────────────────────────── */
+function setTripOptions(root, { buses = [], drivers = [] } = {}) {
+	root.__ruxTripPanelOptions = { buses, drivers };
+}
 
-function initTripPanel(root) {
-	"use strict";
+function getTripOptions(root) {
+	return root.__ruxTripPanelOptions || { buses: [], drivers: [] };
+}
 
-	/* ── Tabs ─────────────────────────────────────────────────────────────── */
+function updateTripOptions(root, options = {}) {
+	setTripOptions(root, options);
+
+	const busGroupsEl = root.querySelector("#tp-bus-groups");
+	const busesInput = root.querySelector("#tp-buses");
+	if (!busGroupsEl || !busesInput) return;
+
+	const n = Math.max(1, Math.min(20, parseInt(busesInput.value, 10) || 1));
+	const { buses, drivers } = getTripOptions(root);
+	renderBusGroups(busGroupsEl, n, buses, drivers);
+}
+
+/* ── Tabs ───────────────────────────────────────────────────────────────── */
+
+function initTripTabs(root) {
+	const tabs = root.querySelector("[data-trip-tabs]");
+	if (tabs?.dataset.ruxTripTabsInit === "true") return;
+	if (tabs) tabs.dataset.ruxTripTabsInit = "true";
 
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
 	const allTabBtns = root.querySelectorAll(".rux-trip-panel__tabs .rux-button[aria-controls]");
@@ -147,15 +171,34 @@ function initTripPanel(root) {
 		});
 	});
 
-	// Initialize first tab as active
-	if (allTabBtns.length > 0) {
-		allTabBtns[0].classList.add("is-active");
-		allTabBtns[0].setAttribute("aria-selected", "true");
-		const firstPaneId = allTabBtns[0].getAttribute("aria-controls");
+	const activeTab =
+		root.querySelector(".rux-trip-panel__tabs .rux-button[aria-controls][aria-selected='true']") ||
+		allTabBtns[0];
+
+	if (activeTab) {
+		allTabBtns.forEach((btn) => {
+			const isActive = btn === activeTab;
+			btn.classList.toggle("is-active", isActive);
+			btn.setAttribute("aria-selected", String(isActive));
+		});
+
+		const activePaneId = activeTab.getAttribute("aria-controls");
 		allPanes.forEach((p) => {
-			p.hidden = p.id !== firstPaneId;
+			p.hidden = p.id !== activePaneId;
 		});
 	}
+}
+
+/* ── Init ───────────────────────────────────────────────────────────────── */
+
+function initTripPanel(root, { buses = [], drivers = [] } = {}) {
+	initTripTabs(root);
+	setTripOptions(root, { buses, drivers });
+	if (root.dataset.ruxTripPanelInit === "true") {
+		updateTripOptions(root, { buses, drivers });
+		return;
+	}
+	root.dataset.ruxTripPanelInit = "true";
 
 	/* ── Segmented toggle groups (Billing) ─────────────────────────────── */
 
@@ -214,8 +257,8 @@ function initTripPanel(root) {
 			const li = document.createElement("li");
 			li.className = "rux-trip-panel__doc-row";
 			li.innerHTML = `
-        <span class="rux-trip-panel__doc-chip">${label}</span>
-        <span class="rux-trip-panel__doc-name">${file.name}</span>
+        <span class="rux-trip-panel__doc-chip">${escHtml(label)}</span>
+        <span class="rux-trip-panel__doc-name">${escHtml(file.name)}</span>
         <button class="rux-button rux-button--ghost rux-button--sm" type="button">Open</button>
         <button class="rux-button rux-button--ghost rux-button--sm rux-button--icon" type="button" aria-label="Delete">
           <i data-lucide="trash-2" class="rux-icon"></i>
@@ -240,11 +283,12 @@ function initTripPanel(root) {
 	const busesInput = root.querySelector("#tp-buses");
 
 	if (busGroupsEl && busesInput) {
-		renderBusGroups(busGroupsEl, parseInt(busesInput.value, 10) || 1);
+		updateTripOptions(root);
 
 		busesInput.addEventListener("input", () => {
 			const n = Math.max(1, Math.min(20, parseInt(busesInput.value, 10) || 1));
-			renderBusGroups(busGroupsEl, n);
+			const { buses, drivers } = getTripOptions(root);
+			renderBusGroups(busGroupsEl, n, buses, drivers);
 		});
 
 		// Role toggles — show/hide co-driver, relief 1/2 rows within the same bus group
@@ -262,4 +306,4 @@ function initTripPanel(root) {
 	}
 }
 
-window.TripPanel = { init: initTripPanel };
+window.TripPanel = { init: initTripPanel, initTabs: initTripTabs, updateOptions: updateTripOptions };
