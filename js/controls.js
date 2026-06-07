@@ -93,6 +93,25 @@
 		}
 	});
 
+	/* ── Date / time input state ───────────────────────────────────────────── */
+
+	function syncDateInput(el) {
+		el.classList.toggle("has-value", !!el.value);
+	}
+
+	document.addEventListener("change", function (e) {
+		if (e.target.matches('input[type="date"], input[type="time"], input[type="datetime-local"]')) {
+			syncDateInput(e.target);
+		}
+	});
+
+	window.Rux = window.Rux || {};
+	window.Rux.syncDateInputs = function (root) {
+		(root || document)
+			.querySelectorAll('input[type="date"], input[type="time"], input[type="datetime-local"]')
+			.forEach(syncDateInput);
+	};
+
 	/* ── Keyboard navigation ────────────────────────────────────────────────── */
 
 	document.addEventListener("keydown", function (e) {

@@ -390,16 +390,18 @@
 	flex: 1;
 }
 
-@container (max-width: 430px) {
+@container (max-width: 360px) {
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;
+		gap: var(--rux-space-4);
 	}
 	.rux-trip-panel__tabs .rux-segmented .rux-button {
 		padding-inline: var(--rux-space-2);
 	}
 	.rux-trip-panel__status-label,
-	.rux-trip-panel__tab-label {
+	.rux-trip-panel__tab-label,
+	.rux-trip-panel__footer .rux-btn-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;

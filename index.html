@@ -255,9 +255,9 @@
                 </div>
               </div>
               <footer class="rux-trip-panel__footer">
-                <button class="rux-button rux-button--danger" id="tp-btn-delete"><i data-lucide="trash-2" class="rux-icon"></i> Delete</button>
-                <button class="rux-button rux-button--secondary" id="tp-btn-clear"><i data-lucide="eraser" class="rux-icon"></i> Clear</button>
-                <button class="rux-button rux-button--primary" id="tp-btn-save"><i data-lucide="save" class="rux-icon"></i> Save</button>
+                <button class="rux-button rux-button--danger" id="tp-btn-delete"><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--secondary" id="tp-btn-clear"><i data-lucide="eraser" class="rux-icon"></i><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--primary" id="tp-btn-save"><i data-lucide="save" class="rux-icon"></i><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
             <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
@@ -284,10 +284,14 @@
                   <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
                     <i data-lucide="chevron-right" class="rux-icon"></i>
                   </button>
-                  <button class="rux-button rux-button--ghost" id="today-btn">Today</button>
+                  <button class="rux-button rux-button--ghost" id="today-btn">
+                    <i data-lucide="calendar" class="rux-icon"></i>
+                    <span class="rux-btn-label">Today</span>
+                  </button>
                 </nav>
                 <button class="rux-button rux-button--primary" id="new-trip-btn" type="button">
-                  <i data-lucide="plus" class="rux-icon"></i> New trip
+                  <i data-lucide="plus" class="rux-icon"></i>
+                  <span class="rux-btn-label">New trip</span>
                 </button>
               </div>
             </header>
@@ -356,10 +360,13 @@
                     <div class="rux-driver-panel__avatar" id="dp-avatar" aria-hidden="true">
                       <i data-lucide="user" class="rux-icon"></i>
                     </div>
-                    <div class="rux-driver-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="dp-first-name">First name</label><input class="rux-input" id="dp-first-name" name="firstName" type="text" placeholder="First" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="dp-last-name">Last name</label><input class="rux-input" id="dp-last-name" name="lastName" type="text" placeholder="Last" /></div>
+                    <div class="rux-driver-panel__name-block">
+                      <div class="rux-field"><label class="rux-field__label" for="dp-short-name">Short name</label><input class="rux-input" id="dp-short-name" name="shortName" type="text" placeholder="e.g. Sanchez, Jose" maxlength="20" /></div>
                     </div>
+                  </div>
+                  <div class="rux-driver-panel__cols-2">
+                    <div class="rux-field"><label class="rux-field__label" for="dp-first-name">First name</label><input class="rux-input" id="dp-first-name" name="firstName" type="text" placeholder="First" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="dp-last-name">Last name</label><input class="rux-input" id="dp-last-name" name="lastName" type="text" placeholder="Last" /></div>
                   </div>
                   <div class="rux-driver-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="dp-phone">Phone</label><input class="rux-input" id="dp-phone" name="phone" type="tel" placeholder="(555) 000-0000" /></div>
@@ -367,8 +374,9 @@
                   </div>
                   <div class="rux-field"><label class="rux-field__label" for="dp-email">Email</label><input class="rux-input" id="dp-email" name="email" type="email" placeholder="driver@example.com" /></div>
                   <div class="rux-field"><label class="rux-field__label" for="dp-address">Address</label><input class="rux-input" id="dp-address" name="address" type="text" placeholder="Street address" /></div>
+                  <div class="rux-field"><label class="rux-field__label" for="dp-city">City</label><input class="rux-input" id="dp-city" name="city" type="text" placeholder="City" /></div>
                   <div class="rux-driver-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="dp-city">City</label><input class="rux-input" id="dp-city" name="city" type="text" placeholder="City" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="dp-state">State</label><input class="rux-input" id="dp-state" name="state" type="text" placeholder="ST" maxlength="2" /></div>
                     <div class="rux-field"><label class="rux-field__label" for="dp-zip">ZIP</label><input class="rux-input" id="dp-zip" name="zip" type="text" placeholder="00000" maxlength="10" /></div>
                   </div>
                   <p class="rux-driver-panel__section-label">Emergency contact</p>
@@ -390,12 +398,12 @@
                   <div class="rux-field">
                     <label class="rux-field__label" id="dp-endorsements-label">Endorsements</label>
                     <div class="rux-driver-panel__endorsements" role="group" aria-labelledby="dp-endorsements-label">
-                      <button class="rux-button" type="button" aria-pressed="false" title="Passenger vehicles">P</button>
-                      <button class="rux-button" type="button" aria-pressed="false" title="School bus">S</button>
-                      <button class="rux-button" type="button" aria-pressed="false" title="Hazmat">H</button>
-                      <button class="rux-button" type="button" aria-pressed="false" title="Tanker + Hazmat">X</button>
-                      <button class="rux-button" type="button" aria-pressed="false" title="Tanker">N</button>
-                      <button class="rux-button" type="button" aria-pressed="false" title="Double/Triple trailers">T</button>
+                      <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Passenger vehicles">P</button>
+                      <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="School bus">S</button>
+                      <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Hazmat">H</button>
+                      <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Tanker + Hazmat">X</button>
+                      <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Tanker">N</button>
+                      <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Double/Triple trailers">T</button>
                     </div>
                   </div>
                   <div class="rux-driver-panel__cols-2">
@@ -427,8 +435,9 @@
                 </div>
               </div>
               <footer class="rux-driver-panel__footer">
-                <button class="rux-button rux-button--danger" id="dp-btn-delete" type="button"><i data-lucide="trash-2" class="rux-icon"></i> Delete</button>
-                <button class="rux-button rux-button--primary" id="dp-btn-save" type="button"><i data-lucide="save" class="rux-icon"></i> Save</button>
+                <button class="rux-button rux-button--danger" id="dp-btn-delete" type="button"><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--secondary" id="dp-btn-clear" type="button"><i data-lucide="eraser" class="rux-icon"></i><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--primary" id="dp-btn-save" type="button"><i data-lucide="save" class="rux-icon"></i><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
             <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
@@ -437,6 +446,14 @@
 
           <section class="driver-app__main" aria-label="Driver roster">
             <header class="scheduler-app__bar">
+              <button
+                class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
+                type="button"
+                id="driver-menu-btn"
+                aria-label="Open driver panel"
+              >
+                <i data-lucide="menu" class="rux-icon"></i>
+              </button>
               <div class="scheduler-app__brand">
                 <h1 class="scheduler-app__title">Drivers</h1>
               </div>

@@ -25,6 +25,7 @@
   }
 
   document.getElementById("dp-btn-close").addEventListener("click", closeDrawer);
+  document.getElementById("driver-menu-btn")?.addEventListener("click", () => drawer.classList.toggle("is-open"));
 
   // ── Tabs ──────────────────────────────────────────────────────────────────
 
@@ -49,15 +50,6 @@
           b.classList.toggle("is-active", on);
         });
       });
-    });
-  });
-
-  // ── Endorsement toggles (multi-select) ───────────────────────────────────
-
-  panelEl.querySelectorAll(".rux-driver-panel__endorsements .rux-button").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const on = btn.getAttribute("aria-pressed") !== "true";
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
     });
   });
 
@@ -155,7 +147,10 @@
           <div class="driver-app__driver-cell">
             <div class="driver-app__avatar${d.status === "inactive" ? " driver-app__avatar--inactive" : ""}"
                  aria-hidden="true">${ini}</div>
-            <span class="driver-app__driver-name">${d.name}</span>
+            <div class="driver-app__driver-info">
+              <span class="driver-app__driver-name">${d.name}</span>
+              ${d.driver_ref ? `<span class="driver-app__driver-ref">${d.driver_ref}</span>` : ""}
+            </div>
           </div>
         </td>
         <td><span class="rux-badge rux-badge--dot ${sm.cls}">${sm.label}</span></td>
@@ -191,12 +186,17 @@
     const last  = parts.slice(1).join(" ") || "";
 
     document.getElementById("dp-title").textContent     = d.name || "Driver";
-    document.getElementById("dp-driver-id").textContent = "";
+    document.getElementById("dp-driver-id").textContent = d.driver_ref || "";
     document.getElementById("dp-avatar").textContent    = initials(d.name);
     document.getElementById("dp-first-name").value      = first;
     document.getElementById("dp-last-name").value       = last;
+    document.getElementById("dp-short-name").value      = d.short_name || "";
     document.getElementById("dp-phone").value           = d.phone          || "";
     document.getElementById("dp-email").value           = d.email          || "";
+    document.getElementById("dp-address").value         = d.address        || "";
+    document.getElementById("dp-city").value            = d.city           || "";
+    document.getElementById("dp-state").value           = d.address_state  || "";
+    document.getElementById("dp-zip").value             = d.zip            || "";
     document.getElementById("dp-hire-date").value       = d.hire_date      || "";
     document.getElementById("dp-lic-num").value         = d.license_number || "";
     document.getElementById("dp-lic-state").value       = d.license_state  || "";
@@ -226,9 +226,11 @@
     panelEl.querySelectorAll(".rux-driver-panel__endorsements .rux-button").forEach((btn) => {
       const on = ends.includes(btn.textContent.trim());
       btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.classList.toggle("is-active", on);
     });
 
     switchTab(tabBtns[0]);
+    window.Rux?.syncDateInputs(panelEl);
   }
 
   // ── Form read ─────────────────────────────────────────────────────────────
@@ -252,8 +254,13 @@
 
     return {
       name:            [first, last].filter(Boolean).join(" ") || null,
+      short_name:      document.getElementById("dp-short-name").value.trim() || null,
       email:           document.getElementById("dp-email").value.trim()      || null,
       phone:           document.getElementById("dp-phone").value.trim()      || null,
+      address:         document.getElementById("dp-address").value.trim()    || null,
+      city:            document.getElementById("dp-city").value.trim()       || null,
+      address_state:   document.getElementById("dp-state").value.trim().toUpperCase() || null,
+      zip:             document.getElementById("dp-zip").value.trim()        || null,
       hire_date:       document.getElementById("dp-hire-date").value         || null,
       cdl_class:       cdlClass,
       license_number:  document.getElementById("dp-lic-num").value.trim()   || null,
@@ -307,9 +314,9 @@
     }
   });
 
-  // ── Add driver ────────────────────────────────────────────────────────────
+  // ── Clear ─────────────────────────────────────────────────────────────────
 
-  document.getElementById("dp-btn-add").addEventListener("click", () => {
+  function clearPanel() {
     tbody.querySelectorAll(".driver-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
 
@@ -331,10 +338,19 @@
       });
     });
     panelEl.querySelectorAll(".rux-driver-panel__endorsements .rux-button")
-      .forEach(btn => btn.setAttribute("aria-pressed", "false"));
+      .forEach(btn => { btn.setAttribute("aria-pressed", "false"); btn.classList.remove("is-active"); });
 
     tripList.innerHTML = "";
     switchTab(tabBtns[0]);
+    window.Rux?.syncDateInputs(panelEl);
+  }
+
+  document.getElementById("dp-btn-clear").addEventListener("click", clearPanel);
+
+  // ── Add driver ────────────────────────────────────────────────────────────
+
+  document.getElementById("dp-btn-add").addEventListener("click", () => {
+    clearPanel();
     openDrawer();
   });
 
@@ -411,7 +427,8 @@
       renderRows(list);
       applyFilter();
     } catch (err) {
-      console.warn("Could not load drivers:", err);
+      console.error("fetchDrivers failed:", err);
+      tbody.innerHTML = `<tr><td colspan="6" class="driver-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
     }
   }
 
@@ -430,6 +447,13 @@
   }
 
   window.DriverPanel = { init, reload: loadDrivers };
+
+  // Auto-init: don't wait for nav event — defer timing means the nav click
+  // fires before this script runs on direct load / refresh at #drivers.
+  init().catch(err => {
+    console.error("DriverPanel init failed:", err);
+    tbody.innerHTML = `<tr><td colspan="6" class="driver-app__empty" style="color:var(--rux-danger)">Init error: ${err?.message ?? err}</td></tr>`;
+  });
 
   // ── Lucide ────────────────────────────────────────────────────────────────
 

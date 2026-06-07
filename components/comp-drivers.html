@@ -214,15 +214,21 @@
                   <div class="rux-driver-panel__avatar" id="dp-avatar" aria-hidden="true">
                     <i data-lucide="user" class="rux-icon"></i>
                   </div>
-                  <div class="rux-driver-panel__cols-2">
+                  <div class="rux-driver-panel__name-block">
                     <div class="rux-field">
-                      <label class="rux-field__label" for="dp-first-name">First name</label>
-                      <input class="rux-input" id="dp-first-name" name="firstName" type="text" placeholder="First" />
+                      <label class="rux-field__label" for="dp-short-name">Short name</label>
+                      <input class="rux-input" id="dp-short-name" name="shortName" type="text" placeholder="e.g. Sanchez, Jose" maxlength="20" />
                     </div>
-                    <div class="rux-field">
-                      <label class="rux-field__label" for="dp-last-name">Last name</label>
-                      <input class="rux-input" id="dp-last-name" name="lastName" type="text" placeholder="Last" />
-                    </div>
+                  </div>
+                </div>
+                <div class="rux-driver-panel__cols-2">
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="dp-first-name">First name</label>
+                    <input class="rux-input" id="dp-first-name" name="firstName" type="text" placeholder="First" />
+                  </div>
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="dp-last-name">Last name</label>
+                    <input class="rux-input" id="dp-last-name" name="lastName" type="text" placeholder="Last" />
                   </div>
                 </div>
                 <div class="rux-driver-panel__cols-2">
@@ -243,10 +249,14 @@
                   <label class="rux-field__label" for="dp-address">Address</label>
                   <input class="rux-input" id="dp-address" name="address" type="text" placeholder="Street address" />
                 </div>
+                <div class="rux-field">
+                  <label class="rux-field__label" for="dp-city">City</label>
+                  <input class="rux-input" id="dp-city" name="city" type="text" placeholder="City" />
+                </div>
                 <div class="rux-driver-panel__cols-2">
                   <div class="rux-field">
-                    <label class="rux-field__label" for="dp-city">City</label>
-                    <input class="rux-input" id="dp-city" name="city" type="text" placeholder="City" />
+                    <label class="rux-field__label" for="dp-state">State</label>
+                    <input class="rux-input" id="dp-state" name="state" type="text" placeholder="ST" maxlength="2" />
                   </div>
                   <div class="rux-field">
                     <label class="rux-field__label" for="dp-zip">ZIP</label>
@@ -279,12 +289,12 @@
                 <div class="rux-field">
                   <label class="rux-field__label" id="dp-endorsements-label">Endorsements</label>
                   <div class="rux-driver-panel__endorsements" role="group" aria-labelledby="dp-endorsements-label">
-                    <button class="rux-button" type="button" aria-pressed="false" title="Passenger vehicles">P</button>
-                    <button class="rux-button" type="button" aria-pressed="false" title="School bus">S</button>
-                    <button class="rux-button" type="button" aria-pressed="false" title="Hazmat">H</button>
-                    <button class="rux-button" type="button" aria-pressed="false" title="Tanker + Hazmat combo">X</button>
-                    <button class="rux-button" type="button" aria-pressed="false" title="Tanker">N</button>
-                    <button class="rux-button" type="button" aria-pressed="false" title="Double/Triple trailers">T</button>
+                    <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Passenger vehicles">P</button>
+                    <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="School bus">S</button>
+                    <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Hazmat">H</button>
+                    <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Tanker + Hazmat combo">X</button>
+                    <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Tanker">N</button>
+                    <button class="rux-button rux-button--toggle" type="button" aria-pressed="false" data-rux-toggle-button title="Double/Triple trailers">T</button>
                   </div>
                 </div>
                 <div class="rux-driver-panel__cols-2">
@@ -359,10 +369,13 @@
 
             <footer class="rux-driver-panel__footer">
               <button class="rux-button rux-button--danger" id="dp-btn-delete" type="button">
-                <i data-lucide="trash-2" class="rux-icon"></i> Delete
+                <i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label"> Delete</span>
+              </button>
+              <button class="rux-button rux-button--secondary" id="dp-btn-clear" type="button">
+                <i data-lucide="eraser" class="rux-icon"></i><span class="rux-btn-label"> Clear</span>
               </button>
               <button class="rux-button rux-button--primary" id="dp-btn-save" type="button">
-                <i data-lucide="save" class="rux-icon"></i> Save
+                <i data-lucide="save" class="rux-icon"></i><span class="rux-btn-label"> Save</span>
               </button>
             </footer>
 
@@ -375,6 +388,14 @@
         <section class="driver-app__main" aria-label="Driver roster">
 
           <header class="scheduler-app__bar">
+            <button
+              class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
+              id="driver-menu-btn"
+              type="button"
+              aria-label="Open driver panel"
+            >
+              <i data-lucide="align-justify" class="rux-icon"></i>
+            </button>
             <div class="scheduler-app__brand">
               <h1 class="scheduler-app__title">Drivers</h1>
             </div>

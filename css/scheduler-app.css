@@ -156,9 +156,22 @@
 
 .scheduler-app__toolbar {
 	align-items: center;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
+	flex-shrink: 0;
 	justify-content: flex-end;
 	gap: var(--rux-space-3);
+}
+
+@media (max-width: 520px) {
+	#today-btn .rux-btn-label,
+	#new-trip-btn .rux-btn-label {
+		display: none;
+	}
+	#today-btn,
+	#new-trip-btn {
+		width: var(--rux-control-height);
+		padding: 0;
+	}
 }
 
 .scheduler-app__nav {

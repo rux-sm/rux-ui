@@ -447,6 +447,7 @@ import { supabase } from "./supabase.js";
 		currentTripSnapshot = null;
 		currentAssignments = [];
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
+		window.Rux?.syncDateInputs(root);
 		root.dispatchEvent(new CustomEvent("rux:trip-cleared", { bubbles: true }));
 	}
 
@@ -663,6 +664,7 @@ export function loadTrip(root, itinerary, trip) {
 
 	populateTrip(root, normalized);
 	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
+	window.Rux?.syncDateInputs(root);
 	syncBusCount(root, busCount);
 
 	// Pre-select bus and drivers from the assignment embedded in the trip object

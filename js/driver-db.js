@@ -3,7 +3,7 @@ import { supabase } from "./supabase.js";
 export async function fetchDrivers() {
   const { data, error } = await supabase
     .from("drivers")
-    .select("id, name, email, phone, hire_date, cdl_class, license_number, license_state, license_exp, med_card_expiry, endorsements, status, notes")
+    .select("id, driver_ref, name, short_name, email, phone, address, city, address_state, zip, hire_date, cdl_class, license_number, license_state, license_exp, med_card_expiry, endorsements, status, notes")
     .order("name");
   if (error) throw error;
   return data ?? [];

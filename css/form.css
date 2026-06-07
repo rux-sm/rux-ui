@@ -11,6 +11,7 @@
   --_field-shadow:
     inset 0 1px 2px rgba(0, 0, 0, 0.75),
     inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  --_field-shadow: none; /* disabled */
 
   box-sizing: border-box;
   display: block;
@@ -22,6 +23,7 @@
   background-color: var(--rux-bg-sunken);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
+  border: solid transparent; /* default to transparent border, use border-color to show borders and preserve layout when borders appear on focus/hover/invalid */
   border-radius: var(--rux-radius-md);
   box-shadow: var(--_field-shadow);
   font: inherit;
@@ -268,8 +270,9 @@
   min-inline-size: 0;
   max-width: 100%;
   max-inline-size: 100%;
-  text-align: center;
-  
+  text-align: left;
+  color: var(--rux-fg-placeholder);
+
   /* Force Safari to treat the fields as a dark-theme control */
   color-scheme: dark;
   line-height: var(--rux-field-height); 
@@ -282,8 +285,8 @@
   .rux-input[type="datetime-local"] {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    line-height: normal; 
+    justify-content: flex-start;
+    line-height: normal;
   }
 
   .rux-input[type="date"]::-webkit-datetime-edit,
@@ -292,12 +295,18 @@
     flex: 1; /* Forces the text wrapper to span the full width of the input */
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding-block: 0;
     margin: 0;
     height: 100%;
     line-height: normal;
   }
+}
+
+.rux-input[type="date"].has-value,
+.rux-input[type="time"].has-value,
+.rux-input[type="datetime-local"].has-value {
+  color: var(--rux-fg);
 }
 
 /* Pull the icons out of the flex flow so they don't offset the text centering */
