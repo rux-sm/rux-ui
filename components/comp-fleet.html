@@ -18,7 +18,7 @@
       </header>
       <nav class="rux-fleet-panel__tabs" aria-label="Vehicle editor sections">
         <div class="rux-segmented rux-segmented--ghost" data-fleet-tabs>
-          <button class="rux-button" type="button" aria-selected="true"  aria-controls="pane-info"        title="Info"><i data-lucide="bus-front" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Info</span></button>
+          <button class="rux-button" type="button" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span><span class="rux-fleet-panel__tab-label">Info</span></button>
           <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-service"     title="Service"><i data-lucide="wrench" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Service</span></button>
           <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><i data-lucide="map" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Trips</span></button>
         </div>
@@ -105,7 +105,7 @@
   <!-- /fleet-panel-drawer -->
 
   <section class="fleet-app__main" aria-label="Fleet roster">
-    <header class="scheduler-app__bar">
+    <header class="scheduler-app__bar scheduler-app__bar--table">
       <button
         class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
         type="button"
@@ -114,9 +114,6 @@
       >
         <i data-lucide="menu" class="rux-icon"></i>
       </button>
-      <div class="scheduler-app__brand">
-        <h1 class="scheduler-app__title">Fleet</h1>
-      </div>
       <div class="scheduler-app__toolbar">
         <input class="rux-input fleet-app__search" id="fleet-search" type="search" placeholder="Search…" aria-label="Search fleet" />
         <div class="rux-segmented" data-fleet-filter>
@@ -126,7 +123,8 @@
           <button class="rux-button"            type="button" aria-pressed="false" data-filter="retired">Retired</button>
         </div>
         <button class="rux-button rux-button--primary" id="fp-btn-add" type="button">
-          <i data-lucide="plus" class="rux-icon"></i> Add vehicle
+          <i data-lucide="plus" class="rux-icon"></i>
+          <span class="rux-btn-label">Add vehicle</span>
         </button>
       </div>
     </header>

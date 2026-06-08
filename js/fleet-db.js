@@ -36,6 +36,16 @@ export async function deleteBus(id) {
   if (error) throw error;
 }
 
+export async function reorderBuses(updates) {
+  const results = await Promise.all(
+    updates.map(({ id, sort_order }) =>
+      supabase.from("buses").update({ sort_order }).eq("id", id)
+    )
+  );
+  const failed = results.find(r => r.error);
+  if (failed) throw failed.error;
+}
+
 export async function fetchBusTrips(busId) {
   const { data, error } = await supabase
     .from("trip_assignments")

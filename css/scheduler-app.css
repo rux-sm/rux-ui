@@ -122,6 +122,12 @@
 	padding: var(--rux-space-3) var(--rux-space-4);
 }
 
+.scheduler-app__bar--table .scheduler-app__toolbar {
+	flex: 1 1 auto;
+	min-width: 0;
+	margin-left: auto;
+}
+
 .scheduler-app__brand,
 .scheduler-app__toolbar,
 .scheduler-app__nav {
@@ -160,6 +166,26 @@
 	flex-shrink: 0;
 	justify-content: flex-end;
 	gap: var(--rux-space-3);
+	container-type: inline-size;
+}
+
+.scheduler-app__bar--table .scheduler-app__toolbar > .rux-input[type="search"] {
+	flex: 1 1 24rem;
+	width: auto;
+}
+
+.scheduler-app__toolbar > .rux-button--icon {
+	flex: 0 0 var(--rux-control-height);
+	width: var(--rux-control-height);
+	min-width: var(--rux-control-height);
+	padding: 0;
+}
+
+.scheduler-app__save-order-icon {
+	display: inline-block;
+	background: currentColor;
+	mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXNhdmUtaWNvbiBsdWNpZGUtc2F2ZSI+PHBhdGggZD0iTTE1LjIgM2EyIDIgMCAwIDEgMS40LjZsMy44IDMuOGEyIDIgMCAwIDEgLjYgMS40VjE5YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMTcgMjF2LTdhMSAxIDAgMCAwLTEtMUg4YTEgMSAwIDAgMC0xIDF2NyIvPjxwYXRoIGQ9Ik03IDN2NGExIDEgMCAwIDAgMSAxaDciLz48L3N2Zz4=") center / contain no-repeat;
+	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXNhdmUtaWNvbiBsdWNpZGUtc2F2ZSI+PHBhdGggZD0iTTE1LjIgM2EyIDIgMCAwIDEgMS40LjZsMy44IDMuOGEyIDIgMCAwIDEgLjYgMS40VjE5YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMTcgMjF2LTdhMSAxIDAgMCAwLTEtMUg4YTEgMSAwIDAgMC0xIDF2NyIvPjxwYXRoIGQ9Ik03IDN2NGExIDEgMCAwIDAgMSAxaDciLz48L3N2Zz4=") center / contain no-repeat;
 }
 
 @media (max-width: 520px) {
@@ -170,6 +196,31 @@
 	#today-btn,
 	#new-trip-btn {
 		width: var(--rux-control-height);
+		padding: 0;
+	}
+}
+
+@container (max-width: 640px) {
+	#fleet-save-order-btn .rux-btn-label,
+	#driver-save-order-btn .rux-btn-label,
+	#fleet-cols-btn .rux-btn-label,
+	#driver-cols-btn .rux-btn-label,
+	#trips-btn-add .rux-btn-label,
+	#fp-btn-add .rux-btn-label,
+	#dp-btn-add .rux-btn-label {
+		display: none;
+	}
+
+	#fleet-save-order-btn,
+	#driver-save-order-btn,
+	#fleet-cols-btn,
+	#driver-cols-btn,
+	#trips-btn-add,
+	#fp-btn-add,
+	#dp-btn-add {
+		flex: 0 0 var(--rux-control-height);
+		width: var(--rux-control-height);
+		min-width: var(--rux-control-height);
 		padding: 0;
 	}
 }

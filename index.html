@@ -76,14 +76,7 @@
               type="button"
               data-module="fleet"
             >
-              <svg class="rux-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 6 2 7" /><path d="M10 6h4" /><path d="m22 7-2-1" />
-                <rect width="16" height="16" x="4" y="3" rx="2" />
-                <path d="M4 11h16" /><path d="M8 15h.01" /><path d="M16 15h.01" />
-                <path d="M6 19v2" /><path d="M18 21v-2" />
-              </svg>
+              <span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span>
               Fleet
             </button>
 
@@ -333,43 +326,11 @@
               <input class="rux-input trips-app__search" id="trips-search" type="search"
                      placeholder="Search…" aria-label="Search trips" />
 
-              <!-- Date filter -->
-              <div class="rux-segmented" data-trips-date-filter aria-label="Date filter">
-                <button class="rux-button is-active" type="button" data-filter="all"
-                        aria-pressed="true">All</button>
-                <button class="rux-button" type="button" data-filter="upcoming"
-                        aria-pressed="false">Upcoming</button>
-                <button class="rux-button" type="button" data-filter="past"
-                        aria-pressed="false">Past</button>
-              </div>
-
-              <!-- Bus filter -->
-              <div class="rux-segmented" data-trips-bus-filter aria-label="Bus filter">
-                <button class="rux-button is-active" type="button" data-filter="all"
-                        aria-pressed="true">All</button>
-                <button class="rux-button" type="button" data-filter="assigned"
-                        aria-pressed="false">Assigned</button>
-                <button class="rux-button" type="button" data-filter="unassigned"
-                        aria-pressed="false">Unassigned</button>
-              </div>
-
-              <!-- Invoice filter -->
-              <div class="rux-segmented" data-trips-invoice-filter aria-label="Invoice filter">
-                <button class="rux-button is-active" type="button" data-filter="all"
-                        aria-pressed="true">All</button>
-                <button class="rux-button" type="button" data-filter="pending"
-                        aria-pressed="false">Pending</button>
-                <button class="rux-button" type="button" data-filter="invoiced"
-                        aria-pressed="false">Invoiced</button>
-                <button class="rux-button" type="button" data-filter="paid"
-                        aria-pressed="false">Paid</button>
-              </div>
-
               <div style="flex:1"></div>
 
               <button class="rux-button rux-button--primary" type="button" id="trips-btn-add">
                 <i data-lucide="plus" class="rux-icon" aria-hidden="true"></i>
-                Add trip
+                <span class="rux-btn-label">Add trip</span>
               </button>
             </header>
 
@@ -378,14 +339,14 @@
               <table class="rux-table trips-app__table" aria-label="Trips roster">
                 <thead>
                   <tr>
-                    <th>Trip</th>
-                    <th>Destination</th>
-                    <th>Dates</th>
-                    <th>Bus</th>
-                    <th>Confirmed</th>
-                    <th>Invoice</th>
-                    <th class="col-payment">Payment</th>
-                    <th class="col-quoted">Quoted</th>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col" data-col-filter="date">Dates <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>
+                    <th scope="col" data-col-filter="bus">Bus <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>
+                    <th scope="col">Confirmed</th>
+                    <th scope="col" data-col-filter="invoice">Invoice <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>
+                    <th scope="col" class="col-payment">Payment</th>
+                    <th scope="col" class="col-quoted">Quoted</th>
                   </tr>
                 </thead>
                 <tbody id="trips-roster-body"></tbody>
@@ -416,7 +377,7 @@
               </header>
               <nav class="rux-fleet-panel__tabs" aria-label="Vehicle editor sections">
                 <div class="rux-segmented rux-segmented--ghost" data-fleet-tabs>
-                  <button class="rux-button" type="button" aria-selected="true"  aria-controls="pane-info"        title="Info"><i data-lucide="bus-front" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Info</span></button>
+                  <button class="rux-button" type="button" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span><span class="rux-fleet-panel__tab-label">Info</span></button>
                   <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-service"     title="Service"><i data-lucide="wrench" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Service</span></button>
                   <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><i data-lucide="map" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Trips</span></button>
                 </div>
@@ -425,9 +386,10 @@
 
                 <!-- Info -->
                 <div id="pane-info" class="rux-fleet-panel__pane" role="tabpanel">
+                  <input type="hidden" id="fp-sort-order" name="sortOrder" />
                   <div class="rux-fleet-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="fp-sort-order">Order</label><input class="rux-input" id="fp-sort-order" name="sortOrder" type="number" placeholder="1" min="1" /></div>
                     <div class="rux-field"><label class="rux-field__label" for="fp-number">Unit number</label><input class="rux-input" id="fp-number" name="number" type="text" placeholder="e.g. 42" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="fp-capacity">Capacity</label><input class="rux-input" id="fp-capacity" name="capacity" type="number" placeholder="55" min="1" /></div>
                   </div>
                   <div class="rux-fleet-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="fp-make">Make</label><input class="rux-input" id="fp-make" name="make" type="text" placeholder="e.g. Prevost" /></div>
@@ -435,36 +397,51 @@
                   </div>
                   <div class="rux-fleet-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="fp-year">Year</label><input class="rux-input" id="fp-year" name="year" type="number" placeholder="2024" min="1970" max="2099" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="fp-color">Color</label><input class="rux-input" id="fp-color" name="color" type="text" placeholder="e.g. White" /></div>
-                  </div>
-                  <div class="rux-field"><label class="rux-field__label" for="fp-vin">VIN</label><input class="rux-input" id="fp-vin" name="vin" type="text" placeholder="Vehicle identification number" maxlength="17" /></div>
-                  <div class="rux-fleet-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="fp-capacity">Capacity</label><input class="rux-input" id="fp-capacity" name="capacity" type="number" placeholder="55" min="1" /></div>
                     <div class="rux-field">
-                      <label class="rux-field__label">Equipment</label>
-                      <div class="rux-fleet-panel__equipment">
-                        <button class="rux-button rux-button--toggle" id="fp-ada-lift" type="button" aria-pressed="false" data-rux-toggle-button>
-                          <i data-lucide="accessibility" class="rux-icon"></i> ADA lift
-                        </button>
-                        <button class="rux-button rux-button--toggle" id="fp-sleeper" type="button" aria-pressed="false" data-rux-toggle-button>
-                          <i data-lucide="bed" class="rux-icon"></i> Sleeper
-                        </button>
+                      <label class="rux-field__label" for="fp-color-hex">Color</label>
+                      <div class="rux-color-input">
+                        <button class="rux-color-input__swatch" id="fp-color-swatch" type="button" aria-label="Open color picker"></button>
+                        <input type="color" id="fp-color-picker" class="rux-color-input__picker" tabindex="-1" aria-hidden="true" value="#aaaaaa" />
+                        <input class="rux-color-input__hex" id="fp-color-hex" type="text" placeholder="—" maxlength="7" spellcheck="false" autocomplete="off" />
                       </div>
                     </div>
                   </div>
+                  <div class="rux-field"><label class="rux-field__label" for="fp-vin">VIN</label><input class="rux-input" id="fp-vin" name="vin" type="text" placeholder="Vehicle identification number" maxlength="17" /></div>
                   <div class="rux-field">
-                    <label class="rux-field__label">Type</label>
-                    <div class="rux-segmented" id="fp-type-group" data-rux-toggle-group>
-                      <button class="rux-button is-active" type="button" aria-pressed="true"  data-value="Motorcoach">Motorcoach</button>
-                      <button class="rux-button"            type="button" aria-pressed="false" data-value="Sprinter">Sprinter</button>
+                    <label class="rux-field__label">Equipment</label>
+                    <div class="rux-fleet-panel__equipment">
+                      <button class="rux-button rux-button--toggle" id="fp-ada-lift" type="button" aria-pressed="false" data-rux-toggle-button>
+                        <i data-lucide="accessibility" class="rux-icon"></i> ADA lift
+                      </button>
+                      <button class="rux-button rux-button--toggle" id="fp-sleeper" type="button" aria-pressed="false" data-rux-toggle-button>
+                        <i data-lucide="bed" class="rux-icon"></i> Sleeper
+                      </button>
+                    </div>
+                  </div>
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="fp-type">Type</label>
+                    <div class="fleet-app__type-select">
+                      <span id="fp-type-icon-wrap" class="fleet-app__type-icon-wrap" aria-hidden="true">
+                        <span data-type-icon="Motorcoach"><span class="rux-icon rux-icon--bus-side"></span></span>
+                        <span data-type-icon="Sprinter"  hidden><span class="rux-icon rux-icon--van"></span></span>
+                        <span data-type-icon="Car"       hidden><i data-lucide="car"       class="rux-icon"></i></span>
+                        <span data-type-icon="Truck"     hidden><i data-lucide="truck"     class="rux-icon"></i></span>
+                      </span>
+                      <select class="rux-input rux-select" id="fp-type">
+                        <option value="Motorcoach">Motorcoach</option>
+                        <option value="Sprinter">Sprinter</option>
+                        <option value="Car">Car</option>
+                        <option value="Truck">Truck</option>
+                      </select>
                     </div>
                   </div>
                   <div class="rux-field">
                     <label class="rux-field__label">Status</label>
                     <div class="rux-segmented" id="fp-status-group" data-rux-toggle-group>
                       <button class="rux-button is-active" type="button" aria-pressed="true"  data-value="active"      title="Active"><i data-lucide="circle-check" class="rux-icon"></i><span>Active</span></button>
-                      <button class="rux-button"            type="button" aria-pressed="false" data-value="maintenance" title="Maintenance"><i data-lucide="wrench" class="rux-icon"></i><span>Maintenance</span></button>
-                      <button class="rux-button"            type="button" aria-pressed="false" data-value="retired"     title="Retired"><i data-lucide="circle-x" class="rux-icon"></i><span>Retired</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" data-value="maintenance"    title="Maintenance"><i data-lucide="wrench" class="rux-icon"></i><span>Maintenance</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" data-value="out-of-service" title="Out of service"><i data-lucide="ban" class="rux-icon"></i><span>Out of service</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" data-value="retired"        title="Retired"><i data-lucide="circle-x" class="rux-icon"></i><span>Retired</span></button>
                     </div>
                   </div>
                 </div>
@@ -503,7 +480,7 @@
           <!-- /fleet-panel-drawer -->
 
           <section class="fleet-app__main" aria-label="Fleet roster">
-            <header class="scheduler-app__bar">
+            <header class="scheduler-app__bar scheduler-app__bar--table">
               <button
                 class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
                 type="button"
@@ -512,19 +489,19 @@
               >
                 <i data-lucide="menu" class="rux-icon"></i>
               </button>
-              <div class="scheduler-app__brand">
-                <h1 class="scheduler-app__title">Fleet</h1>
-              </div>
               <div class="scheduler-app__toolbar">
                 <input class="rux-input fleet-app__search" id="fleet-search" type="search" placeholder="Search…" aria-label="Search fleet" />
-                <div class="rux-segmented" data-fleet-filter>
-                  <button class="rux-button is-active" type="button" aria-pressed="true"  data-filter="all">All</button>
-                  <button class="rux-button"            type="button" aria-pressed="false" data-filter="active">Active</button>
-                  <button class="rux-button"            type="button" aria-pressed="false" data-filter="maintenance">Maintenance</button>
-                  <button class="rux-button"            type="button" aria-pressed="false" data-filter="retired">Retired</button>
-                </div>
+                <button class="rux-button rux-button--ghost" id="fleet-save-order-btn" type="button" hidden title="Save current sort as permanent order">
+                  <span class="rux-icon scheduler-app__save-order-icon" aria-hidden="true"></span>
+                  <span class="rux-btn-label">Save order</span>
+                </button>
+                <button class="rux-button rux-button--ghost" id="fleet-cols-btn" type="button" title="Show / hide columns">
+                  <i data-lucide="columns-3" class="rux-icon"></i>
+                  <span class="rux-btn-label">Columns</span>
+                </button>
                 <button class="rux-button rux-button--primary" id="fp-btn-add" type="button">
-                  <i data-lucide="plus" class="rux-icon"></i> Add vehicle
+                  <i data-lucide="plus" class="rux-icon"></i>
+                  <span class="rux-btn-label">Add vehicle</span>
                 </button>
               </div>
             </header>
@@ -532,13 +509,13 @@
               <table class="rux-table fleet-app__table" aria-label="Fleet roster">
                 <thead>
                   <tr>
-                    <th scope="col" class="col-order">#</th>
+                    <th scope="col" class="col-order" data-col="order">#</th>
                     <th scope="col">Vehicle</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Capacity</th>
-                    <th scope="col" class="col-service">Next service</th>
-                    <th scope="col">Next trip</th>
+                    <th scope="col" data-col="status">Status</th>
+                    <th scope="col" data-col="equipment">Equipment</th>
+                    <th scope="col" data-col="capacity">Capacity</th>
+                    <th scope="col" class="col-service" data-col="service">Next service</th>
+                    <th scope="col" data-col="next-trip">Next trip</th>
                   </tr>
                 </thead>
                 <tbody id="fleet-roster-body">
@@ -586,6 +563,7 @@
                       <div class="rux-field"><label class="rux-field__label" for="dp-short-name">Short name</label><input class="rux-input" id="dp-short-name" name="shortName" type="text" placeholder="e.g. Sanchez, Jose" maxlength="20" /></div>
                     </div>
                   </div>
+                  <input type="hidden" id="dp-sort-order" name="sortOrder" />
                   <div class="rux-driver-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="dp-first-name">First name</label><input class="rux-input" id="dp-first-name" name="firstName" type="text" placeholder="First" /></div>
                     <div class="rux-field"><label class="rux-field__label" for="dp-last-name">Last name</label><input class="rux-input" id="dp-last-name" name="lastName" type="text" placeholder="Last" /></div>
@@ -647,6 +625,15 @@
                       <button class="rux-button"            type="button" aria-pressed="false" title="Inactive"><i data-lucide="circle-x" class="rux-icon"></i><span>Inactive</span></button>
                     </div>
                   </div>
+                  <div class="rux-field">
+                    <label class="rux-field__label">Employment type</label>
+                    <div class="rux-segmented" data-rux-toggle-group data-emp-type-group>
+                      <button class="rux-button is-active" type="button" aria-pressed="true">Full-time</button>
+                      <button class="rux-button" type="button" aria-pressed="false">Part-time</button>
+                      <button class="rux-button" type="button" aria-pressed="false">Contract</button>
+                      <button class="rux-button" type="button" aria-pressed="false">Seasonal</button>
+                    </div>
+                  </div>
                   <div class="rux-field"><label class="rux-field__label" for="dp-hire-date">Hire date</label><input class="rux-input" id="dp-hire-date" name="hireDate" type="date" /></div>
                   <div class="rux-field"><label class="rux-field__label" for="dp-notes">Notes</label><textarea class="rux-textarea" id="dp-notes" name="notes" rows="5" placeholder="Internal notes about this driver…"></textarea></div>
                 </div>
@@ -667,7 +654,7 @@
           <!-- /driver-panel-drawer -->
 
           <section class="driver-app__main" aria-label="Driver roster">
-            <header class="scheduler-app__bar">
+            <header class="scheduler-app__bar scheduler-app__bar--table">
               <button
                 class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
                 type="button"
@@ -676,19 +663,19 @@
               >
                 <i data-lucide="menu" class="rux-icon"></i>
               </button>
-              <div class="scheduler-app__brand">
-                <h1 class="scheduler-app__title">Drivers</h1>
-              </div>
               <div class="scheduler-app__toolbar">
                 <input class="rux-input driver-app__search" id="driver-search" type="search" placeholder="Search…" aria-label="Search drivers" />
-                <div class="rux-segmented" data-driver-filter>
-                  <button class="rux-button is-active" type="button" aria-pressed="true"  data-filter="all">All</button>
-                  <button class="rux-button"            type="button" aria-pressed="false" data-filter="active">Active</button>
-                  <button class="rux-button"            type="button" aria-pressed="false" data-filter="on-leave">On Leave</button>
-                  <button class="rux-button"            type="button" aria-pressed="false" data-filter="inactive">Inactive</button>
-                </div>
+                <button class="rux-button rux-button--ghost" id="driver-save-order-btn" type="button" hidden title="Save current sort as permanent order">
+                  <span class="rux-icon scheduler-app__save-order-icon" aria-hidden="true"></span>
+                  <span class="rux-btn-label">Save order</span>
+                </button>
+                <button class="rux-button rux-button--ghost" id="driver-cols-btn" type="button" title="Show / hide columns">
+                  <i data-lucide="columns-3" class="rux-icon"></i>
+                  <span class="rux-btn-label">Columns</span>
+                </button>
                 <button class="rux-button rux-button--primary" id="dp-btn-add" type="button">
-                  <i data-lucide="plus" class="rux-icon"></i> Add driver
+                  <i data-lucide="plus" class="rux-icon"></i>
+                  <span class="rux-btn-label">Add driver</span>
                 </button>
               </div>
             </header>
@@ -697,11 +684,11 @@
                 <thead>
                   <tr>
                     <th scope="col">Driver</th>
-                    <th scope="col">Status</th>
-                    <th scope="col" class="col-phone">Phone</th>
-                    <th scope="col">CDL</th>
-                    <th scope="col" class="col-expiry">Lic. expiry</th>
-                    <th scope="col">Next trip</th>
+                    <th scope="col" data-col="status">Status</th>
+                    <th scope="col" class="col-phone" data-col="phone">Phone</th>
+                    <th scope="col" data-col="cdl">CDL</th>
+                    <th scope="col" class="col-expiry" data-col="expiry">Lic. expiry</th>
+                    <th scope="col" data-col="next-trip">Next trip</th>
                   </tr>
                 </thead>
                 <tbody id="driver-roster-body">
@@ -992,7 +979,7 @@
       };
 
       const TRIP_REQUIREMENTS = [
-        { key: "sleeper",  label: "Sleeper",   icon: "moon"          },
+        { key: "sleeper",  label: "Sleeper",   icon: "bed"           },
         { key: "pax56",    label: "56 pax",    icon: "users"         },
         { key: "hotel",    label: "Hotel",     icon: "building"      },
         { key: "adaLift",  label: "ADA lift",  icon: "accessibility" },
@@ -1151,10 +1138,12 @@
           const number = String(bus.number ?? "").trim();
           if (!number) return;
           const row  = document.createElement("div");
-          row.className = "rux-scheduler__row";
+          const isOos = bus.status === "out-of-service";
+          row.className = "rux-scheduler__row" + (isOos ? " is-out-of-service" : "");
           const head = document.createElement("div");
           head.className = "rux-scheduler__row-head";
           head.setAttribute("aria-label", bus.capacity ? `Bus ${number}, ${bus.capacity} pax` : `Bus ${number}`);
+          if (isOos) head.title = `Bus ${number} — Out of service`;
           const numberEl = document.createElement("span");
           numberEl.className = "rux-scheduler__bus-number";
           numberEl.setAttribute("aria-hidden", "true");
@@ -1169,6 +1158,13 @@
             paxEl.className = "rux-scheduler__bus-pax";
             paxEl.textContent = `${bus.capacity} pax`;
             head.appendChild(paxEl);
+          }
+          if (isOos) {
+            const oosEl = document.createElement("i");
+            oosEl.className = "rux-icon rux-icon--sm rux-scheduler__bus-oos";
+            oosEl.setAttribute("data-lucide", "ban");
+            oosEl.setAttribute("aria-hidden", "true");
+            head.appendChild(oosEl);
           }
           const track = document.createElement("div");
           track.className = "rux-scheduler__track";
@@ -1290,7 +1286,7 @@
               estimatedMiles: t.est_miles, actualMiles: t.actual_miles, quotedPrice: t.quoted_price,
               paymentRef: t.po_ref, invoiceNumber: t.invoice_number, datePaid: t.date_paid,
               paymentRefs: [t.payment_ref_1, t.payment_ref_2, t.payment_ref_3].filter(Boolean),
-              drivers: (assignment.trip_drivers ?? []).map(td => ({ name: td.drivers?.name, status: "confirmed", pay: td.pay != null ? `$${td.pay}` : "" })),
+              drivers: (assignment.trip_drivers ?? []).map(td => ({ name: td.drivers?.name, shortName: td.drivers?.short_name || td.drivers?.name, status: "confirmed", pay: td.pay != null ? `$${td.pay}` : "" })),
               driverId: primaryDriver?.driver_id ?? null,
             };
             const trackId = trackIdForBusNumber(assignment.buses.number);
@@ -1301,12 +1297,15 @@
         renderScheduler();
       }
 
-      tripPanel.addEventListener("rux:trip-saved",   () => loadTripsFromDB());
-      tripPanel.addEventListener("rux:trip-deleted", () => loadTripsFromDB());
-      tripPanel.addEventListener("rux:trip-cleared", () => {
+      function resetTripPanel() {
+        closeDrawer();
         setActiveTripPane("pane-trip");
         tripPanel.querySelector(".rux-trip-panel__body")?.scrollTo({ top: 0, behavior: "instant" });
-      });
+      }
+
+      tripPanel.addEventListener("rux:trip-saved",   () => { loadTripsFromDB(); resetTripPanel(); });
+      tripPanel.addEventListener("rux:trip-deleted", () => { loadTripsFromDB(); resetTripPanel(); });
+      tripPanel.addEventListener("rux:trip-cleared", resetTripPanel);
 
       window.addEventListener("resize", layoutScheduler);
 

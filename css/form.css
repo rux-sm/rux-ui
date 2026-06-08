@@ -508,3 +508,69 @@
 .rux-color-picker__option input:focus-visible + .rux-color-picker__dot {
   box-shadow: var(--rux-ring-focus);
 }
+
+
+/* — Color input: swatch + hex text field compound input — */
+
+.rux-color-input {
+  display: flex;
+  align-items: center;
+  gap: var(--rux-space-2);
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--rux-field-height);
+  padding: 0 var(--rux-space-3);
+  background-color: var(--rux-bg-sunken);
+  border: var(--rux-border-width) solid transparent;
+  border-radius: var(--rux-radius-md);
+  transition:
+    border-color var(--rux-duration-fast) var(--rux-ease-out),
+    box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-color-input:hover {
+  border-color: var(--rux-border-strong);
+}
+
+.rux-color-input:focus-within {
+  border-color: var(--rux-accent);
+  box-shadow: var(--rux-ring-focus);
+}
+
+.rux-color-input__swatch {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: var(--rux-border-width) solid color-mix(in srgb, currentColor 25%, transparent);
+  border-radius: var(--rux-radius-xs);
+  background: var(--rux-bg-3);
+  cursor: pointer;
+  padding: 0;
+}
+
+.rux-color-input__swatch:focus-visible {
+  outline: none;
+}
+
+.rux-color-input__picker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rux-color-input__hex {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  outline: none;
+  color: var(--rux-fg);
+  font: inherit;
+  font-size: var(--rux-text-md);
+}
+

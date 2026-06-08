@@ -3,10 +3,21 @@ import { supabase } from "./supabase.js";
 export async function fetchDrivers() {
   const { data, error } = await supabase
     .from("drivers")
-    .select("id, driver_ref, name, short_name, email, phone, address, city, address_state, zip, hire_date, cdl_class, license_number, license_state, license_exp, med_card_expiry, endorsements, status, notes")
+    .select("id, driver_ref, name, short_name, email, phone, address, city, address_state, zip, hire_date, cdl_class, license_number, license_state, license_exp, med_card_expiry, endorsements, status, employment_type, emergency_contact_name, emergency_contact_phone, notes, sort_order")
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("name");
   if (error) throw error;
   return data ?? [];
+}
+
+export async function reorderDrivers(updates) {
+  const results = await Promise.all(
+    updates.map(({ id, sort_order }) =>
+      supabase.from("drivers").update({ sort_order }).eq("id", id)
+    )
+  );
+  const failed = results.find(r => r.error);
+  if (failed) throw failed.error;
 }
 
 export async function saveDriver(driver) {

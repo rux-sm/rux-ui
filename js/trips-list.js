@@ -126,18 +126,46 @@
 
   // ── Filters ───────────────────────────────────────────────────────────────
 
+  let dateFilter    = "all";
+  let busFilter     = "all";
+  let invoiceFilter = "all";
+
+  const COL_FILTER_DEFS = {
+    date: {
+      label:   "When",
+      get:     ()  => dateFilter,
+      set:     (v) => { dateFilter    = v; },
+      options: [
+        { value: "all",      label: "All" },
+        { value: "upcoming", label: "Upcoming" },
+        { value: "past",     label: "Past" },
+      ],
+    },
+    bus: {
+      label:   "Bus",
+      get:     ()  => busFilter,
+      set:     (v) => { busFilter     = v; },
+      options: [
+        { value: "all",        label: "All" },
+        { value: "assigned",   label: "Assigned" },
+        { value: "unassigned", label: "Unassigned" },
+      ],
+    },
+    invoice: {
+      label:   "Invoice",
+      get:     ()  => invoiceFilter,
+      set:     (v) => { invoiceFilter = v; },
+      options: [
+        { value: "all",      label: "All" },
+        { value: "pending",  label: "Pending" },
+        { value: "invoiced", label: "Invoiced" },
+        { value: "paid",     label: "Paid" },
+      ],
+    },
+  };
+
   function applyFilter() {
     const q = searchInput.value.toLowerCase();
-
-    const dateFilter =
-      document.querySelector("[data-trips-date-filter] .rux-button[aria-pressed='true']")
-        ?.dataset.filter || "all";
-    const busFilter =
-      document.querySelector("[data-trips-bus-filter] .rux-button[aria-pressed='true']")
-        ?.dataset.filter || "all";
-    const invoiceFilter =
-      document.querySelector("[data-trips-invoice-filter] .rux-button[aria-pressed='true']")
-        ?.dataset.filter || "all";
 
     tbody.querySelectorAll(".trips-app__row").forEach((row) => {
       const ref  = row.querySelector(".trips-app__trip-ref")?.textContent.toLowerCase()  || "";
@@ -161,21 +189,87 @@
     });
   }
 
-  searchInput.addEventListener("input", applyFilter);
+  // ── Column header filter popover ──────────────────────────────────────────
 
-  ["[data-trips-date-filter]", "[data-trips-bus-filter]", "[data-trips-invoice-filter]"]
-    .forEach((groupSel) => {
-      document.querySelectorAll(`${groupSel} .rux-button`).forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document.querySelectorAll(`${groupSel} .rux-button`).forEach((b) => {
-            const on = b === btn;
-            b.setAttribute("aria-pressed", on ? "true" : "false");
-            b.classList.toggle("is-active", on);
-          });
-          applyFilter();
-        });
-      });
+  let colFilterPopover    = null;
+  let activeFilterTh      = null;
+
+  function buildColFilterPopover() {
+    colFilterPopover = document.createElement("div");
+    colFilterPopover.className = "rux-col-filter-popover";
+    colFilterPopover.setAttribute("hidden", "");
+    colFilterPopover.setAttribute("role", "menu");
+    document.body.appendChild(colFilterPopover);
+
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeColFilter();
     });
+    document.addEventListener("mousedown", e => {
+      if (colFilterPopover && !colFilterPopover.hidden &&
+          !colFilterPopover.contains(e.target) && e.target !== activeFilterTh)
+        closeColFilter();
+    });
+  }
+
+  function closeColFilter() {
+    colFilterPopover?.setAttribute("hidden", "");
+    activeFilterTh = null;
+  }
+
+  function openColFilter(th, filterKey) {
+    if (!colFilterPopover) buildColFilterPopover();
+
+    // Toggle closed if same th clicked again
+    if (activeFilterTh === th && !colFilterPopover.hidden) {
+      closeColFilter();
+      return;
+    }
+    activeFilterTh = th;
+
+    const def = COL_FILTER_DEFS[filterKey];
+
+    colFilterPopover.innerHTML = "";
+    def.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.type      = "button";
+      btn.className = "rux-col-filter-popover__option" + (def.get() === opt.value ? " is-active" : "");
+      btn.textContent = opt.label;
+      btn.addEventListener("click", () => {
+        def.set(opt.value);
+        updateFilterHeaders();
+        applyFilter();
+        closeColFilter();
+      });
+      colFilterPopover.appendChild(btn);
+    });
+
+    // Position below the th
+    colFilterPopover.style.visibility = "hidden";
+    colFilterPopover.removeAttribute("hidden");
+    const ar = th.getBoundingClientRect();
+    const pr = colFilterPopover.getBoundingClientRect();
+    const m  = 8;
+    colFilterPopover.style.left = `${Math.max(m, Math.min(ar.left, window.innerWidth - pr.width - m))}px`;
+    colFilterPopover.style.top  = `${ar.bottom + 4}px`;
+    colFilterPopover.style.visibility = "";
+  }
+
+  function updateFilterHeaders() {
+    document.querySelectorAll("th[data-col-filter]").forEach(th => {
+      const key = th.dataset.colFilter;
+      const def = COL_FILTER_DEFS[key];
+      if (!def) return;
+      const active = def.get() !== "all";
+      th.classList.toggle("is-filtered", active);
+      th.setAttribute("aria-label", `${def.label}: ${def.options.find(o => o.value === def.get())?.label}`);
+    });
+  }
+
+  document.querySelectorAll("th[data-col-filter]").forEach(th => {
+    th.addEventListener("click", () => openColFilter(th, th.dataset.colFilter));
+  });
+
+  searchInput.addEventListener("input", applyFilter);
 
   // ── Add trip button ───────────────────────────────────────────────────────
 

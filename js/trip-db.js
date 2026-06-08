@@ -581,7 +581,7 @@ export async function fetchTrips() {
 			trip_assignments(
 				id, position, bus_id,
 				buses(id, number),
-				trip_drivers(id, driver_id, role, pay, drivers(id, name))
+				trip_drivers(id, driver_id, role, pay, drivers(id, name, short_name))
 			)
 		`)
 		.order("start_date", { ascending: true });
@@ -592,8 +592,8 @@ export async function fetchTrips() {
 export async function fetchBuses() {
 	const { data, error } = await supabase
 		.from("buses")
-		.select("id, number, sort_order, capacity, type, ada_lift")
-		.eq("status", "active")
+		.select("id, number, sort_order, capacity, type, ada_lift, sleeper, color, status")
+		.neq("status", "retired")
 		.order("sort_order", { ascending: true, nullsFirst: false })
 		.order("number");
 	if (error) throw error;

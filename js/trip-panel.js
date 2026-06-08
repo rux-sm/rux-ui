@@ -19,7 +19,7 @@
 /* Vehicle equipment — determines which bus is eligible for the trip.
    Rendered in the Dispatch pane alongside bus assignment.              */
 const VEHICLE_REQS = [
-	{ key: "sleeper", label: "Sleeper", icon: "moon" },
+	{ key: "sleeper", label: "Sleeper", icon: "bed" },
 	{ key: "pax56", label: "56 pax", icon: "users" },
 	{ key: "adaLift", label: "ADA lift", icon: "accessibility" },
 ];

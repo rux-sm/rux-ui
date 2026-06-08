@@ -141,6 +141,21 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
+/* — Equipment column — */
+
+.fleet-app__equipment-cell {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+}
+
+.fleet-app__equip-icon {
+	width: 1rem;
+	height: 1rem;
+	color: var(--rux-fg-muted);
+	flex-shrink: 0;
+}
+
 /* — Equipment toggles — */
 
 .rux-fleet-panel__equipment {
@@ -252,4 +267,90 @@
 	.rux-fleet-panel__footer {
 		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
 	}
+}
+
+/* — Type select with icon — */
+
+.fleet-app__type-select {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+
+.fleet-app__type-icon-wrap {
+	position: absolute;
+	left: var(--rux-space-3);
+	display: flex;
+	align-items: center;
+	color: var(--rux-fg-muted);
+	pointer-events: none;
+	z-index: 1;
+}
+
+.fleet-app__type-select .rux-select {
+	padding-left: calc(var(--rux-space-3) + var(--rux-icon-md) + var(--rux-space-2));
+	width: 100%;
+}
+
+/* — Fleet table extras — */
+
+.fleet-app__color-dot {
+	display: inline-block;
+	width: 0.75rem;
+	height: 0.75rem;
+	border-radius: 50%;
+	vertical-align: middle;
+	flex-shrink: 0;
+	border: var(--rux-border-width) solid color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.fleet-app__truncate {
+	display: block;
+	max-width: 12rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* — Row drag-to-reorder — */
+
+.fleet-app__drag-col {
+	width: 2rem;
+	padding-right: 0;
+}
+
+.fleet-app__drag-handle {
+	width: 2rem;
+	padding-right: 0;
+	color: var(--rux-fg-muted);
+	opacity: 0;
+	cursor: grab;
+}
+
+.fleet-app__drag-handle:active {
+	cursor: grabbing;
+}
+
+.fleet-app__row:hover .fleet-app__drag-handle {
+	opacity: 1;
+}
+
+.fleet-app__row.is-dragging {
+	opacity: 0.4;
+}
+
+.fleet-app__row.is-drag-target td {
+	border-top: 2px solid var(--rux-accent);
+}
+
+.fleet-app__order {
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	color: var(--rux-fg-subtle);
+	text-align: center;
+}
+
+.fleet-app__table:not(.is-manual-order) .fleet-app__drag-handle {
+	opacity: 0;
+	pointer-events: none;
 }

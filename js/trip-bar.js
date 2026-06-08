@@ -569,7 +569,7 @@ export function createTripBar(trip, callbacks = {}) {
     dot.className = `rux-trip-bar__driver-dot ${driverStateClass(
       driver.status || driver.state,
     )}`;
-    item.append(dot, document.createTextNode(driver.name));
+    item.append(dot, document.createTextNode(driver.shortName || driver.name));
     drivers.appendChild(item);
   });
   const meta = document.createElement("div");

@@ -57,29 +57,7 @@
               class="rux-button rux-button--ghost scheduler-app__module-button"
               type="button"
             >
-              <svg
-                class="rux-icon"
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M4 6 2 7" />
-                <path d="M10 6h4" />
-                <path d="m22 7-2-1" />
-                <rect width="16" height="16" x="4" y="3" rx="2" />
-                <path d="M4 11h16" />
-                <path d="M8 15h.01" />
-                <path d="M16 15h.01" />
-                <path d="M6 19v2" />
-                <path d="M18 21v-2" />
-              </svg>
+              <span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span>
               Fleet
             </button>
             <button
@@ -387,7 +365,7 @@
         <!-- ── Driver roster ─────────────────────────────────────────────── -->
         <section class="driver-app__main" aria-label="Driver roster">
 
-          <header class="scheduler-app__bar">
+          <header class="scheduler-app__bar scheduler-app__bar--table">
             <button
               class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
               id="driver-menu-btn"
@@ -396,9 +374,6 @@
             >
               <i data-lucide="align-justify" class="rux-icon"></i>
             </button>
-            <div class="scheduler-app__brand">
-              <h1 class="scheduler-app__title">Drivers</h1>
-            </div>
             <div class="scheduler-app__toolbar">
               <input
                 class="rux-input driver-app__search"
@@ -414,7 +389,8 @@
                 <button class="rux-button"            type="button" aria-pressed="false" data-filter="inactive">Inactive</button>
               </div>
               <button class="rux-button rux-button--primary" id="dp-btn-add" type="button">
-                <i data-lucide="plus" class="rux-icon"></i> Add driver
+                <i data-lucide="plus" class="rux-icon"></i>
+                <span class="rux-btn-label">Add driver</span>
               </button>
             </div>
           </header>

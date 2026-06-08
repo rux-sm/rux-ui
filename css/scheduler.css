@@ -159,6 +159,24 @@
 	display: none;
 }
 
+/* — Out of service row — */
+
+.rux-scheduler__bus-oos {
+	color: var(--rux-warning);
+}
+
+.rux-scheduler__row.is-out-of-service .rux-scheduler__track {
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent 0px 6px,
+		color-mix(in srgb, var(--rux-warning) 10%, transparent) 6px 12px
+	);
+}
+
+.rux-scheduler__row.is-out-of-service .rux-scheduler__row-head {
+	opacity: 0.7;
+}
+
 .rux-scheduler__row:last-child .rux-scheduler__row-head,
 .rux-scheduler__row:last-child .rux-scheduler__track {
 	border-block-end: none;
