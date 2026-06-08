@@ -212,17 +212,9 @@
 /* — Footer — */
 
 .rux-fleet-panel__footer {
-	flex: none;
-	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-3) var(--rux-space-4);
-	border-top: var(--rux-border-width) solid var(--rux-border);
-}
-
-.rux-fleet-panel__footer > .rux-button {
-	flex: 1;
 }
 
 /* — Narrow panel — */
@@ -253,7 +245,7 @@
 
 /* — Mobile — */
 
-@media (max-width: 640px) {
+@media (max-width: 480px) {
 	.scheduler-app__drawer .rux-fleet-panel {
 		width: 100dvw;
 		max-width: 100dvw;
@@ -262,10 +254,6 @@
 
 	.scheduler-app__drawer .rux-fleet-panel__header {
 		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
-	}
-
-	.rux-fleet-panel__footer {
-		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
 	}
 }
 

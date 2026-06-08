@@ -378,16 +378,9 @@
 /* — Footer — */
 
 .rux-trip-panel__footer {
-	flex: none;
-	display: flex;
 	align-items: start;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-3) var(--rux-space-4);
-	border-top: var(--rux-border-width) solid var(--rux-border);
 	background: var(--rux-bg-sunken);
-}
-.rux-trip-panel__footer > .rux-button {
-	flex: 1;
 }
 
 @container (max-width: 360px) {

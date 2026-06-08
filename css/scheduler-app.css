@@ -115,6 +115,17 @@
 	line-height: 1;
 }
 
+.rux-panel__footer {
+	flex: none;
+	display: flex;
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-panel__footer > .rux-button {
+	flex: 1;
+}
+
 .scheduler-app__bar {
 	display: flex;
 	align-items: center;
