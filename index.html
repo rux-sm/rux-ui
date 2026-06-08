@@ -263,13 +263,6 @@
 
           <section class="scheduler-app__schedule" aria-label="Weekly schedule">
             <header class="scheduler-app__bar">
-              <button
-                class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
-                type="button"
-                aria-label="Open schedule menu"
-              >
-                <i data-lucide="menu" class="rux-icon"></i>
-              </button>
               <div class="scheduler-app__brand">
                 <h1 class="scheduler-app__title" id="week-label"></h1>
               </div>
@@ -481,14 +474,6 @@
 
           <section class="fleet-app__main" aria-label="Fleet roster">
             <header class="scheduler-app__bar scheduler-app__bar--table">
-              <button
-                class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
-                type="button"
-                id="fleet-menu-btn"
-                aria-label="Open fleet panel"
-              >
-                <i data-lucide="menu" class="rux-icon"></i>
-              </button>
               <div class="scheduler-app__toolbar">
                 <input class="rux-input fleet-app__search" id="fleet-search" type="search" placeholder="Search…" aria-label="Search fleet" />
                 <button class="rux-button rux-button--ghost" id="fleet-save-order-btn" type="button" hidden title="Save current sort as permanent order">
@@ -655,14 +640,6 @@
 
           <section class="driver-app__main" aria-label="Driver roster">
             <header class="scheduler-app__bar scheduler-app__bar--table">
-              <button
-                class="rux-button rux-button--ghost rux-button--icon scheduler-app__view-menu"
-                type="button"
-                id="driver-menu-btn"
-                aria-label="Open driver panel"
-              >
-                <i data-lucide="menu" class="rux-icon"></i>
-              </button>
               <div class="scheduler-app__toolbar">
                 <input class="rux-input driver-app__search" id="driver-search" type="search" placeholder="Search…" aria-label="Search drivers" />
                 <button class="rux-button rux-button--ghost" id="driver-save-order-btn" type="button" hidden title="Save current sort as permanent order">
@@ -799,10 +776,7 @@
         openDrawer();
       });
 
-      document.querySelector(".scheduler-app__view-menu")
-        .addEventListener("click", () => drawer.classList.toggle("is-open"));
-
-      document.getElementById("tp-btn-close")
+document.getElementById("tp-btn-close")
         .addEventListener("click", closeDrawer);
 
       function setActiveTripPane(panelId) {
