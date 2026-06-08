@@ -80,6 +80,7 @@
 	z-index: var(--rux-z-sticky);
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	min-height: var(--rux-scheduler-head-height);
 	padding: var(--rux-space-2) var(--rux-space-2);
 	background: var(--rux-scheduler-bg);
@@ -88,8 +89,16 @@
 	color: var(--rux-scheduler-header-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
-	letter-spacing: var(--rux-tracking-wide);
+}
+
+.rux-scheduler__day-head span:first-child {
 	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+}
+
+.rux-scheduler__day-head span:last-child {
+	font-weight: var(--rux-weight-normal);
+	color: var(--rux-fg-subtle);
 }
 
 /* The day headers use real grid-cell borders; only remove the final edge so it

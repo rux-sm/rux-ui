@@ -388,10 +388,6 @@
 	.scheduler-app__drawer .rux-trip-panel__header {
 		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
 	}
-
-	.rux-trip-panel__footer {
-		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
-	}
 }
 
 /* — Schedule grid wrap — */

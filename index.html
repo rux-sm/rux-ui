@@ -994,8 +994,7 @@ document.getElementById("tp-btn-close")
 
       function fmtWeekLabel(weekStart) {
         const weekEnd = addDays(weekStart, 6);
-        const opts = { month: "short", day: "numeric" };
-        return `${weekStart.toLocaleDateString("en-US", opts)} - ${weekEnd.toLocaleDateString("en-US", { ...opts, year: "numeric" })}`;
+        return weekStart.toLocaleDateString("en-US", { month: "long", year: "numeric" });
       }
 
       function fmtWeekLabelShort(weekStart) {
@@ -1046,7 +1045,8 @@ document.getElementById("tp-btn-close")
         weekLabelEl.dataset.short = fmtWeekLabelShort(weekStart);
         dayHeadEls.forEach((el, index) => {
           const date = addDays(weekStart, index);
-          el.textContent = `${DAY_NAMES[index]} ${date.getDate()}`;
+          const monthShort = date.toLocaleDateString("en-US", { month: "short" });
+          el.innerHTML = `<span>${DAY_NAMES[index]}</span><span>${monthShort} ${date.getDate()}</span>`;
           el.classList.toggle("rux-scheduler__day-head--today", isoDate(date) === todayIso);
         });
       }
