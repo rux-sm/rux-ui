@@ -39,10 +39,7 @@
 }
 
 .trips-app__trip-ref {
-	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-2xs);
-	color: var(--rux-accent);
-	font-weight: var(--rux-weight-medium);
+	display: none;
 }
 
 .trips-app__customer {

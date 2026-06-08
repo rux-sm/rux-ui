@@ -170,7 +170,7 @@
 
 .scheduler-app__title {
 	color: var(--rux-fg);
-	font-size: 1.25rem;
+	font-size: var(--rux-text-xl);
 	font-weight: var(--rux-weight-semibold);
 	letter-spacing: 0;
 	line-height: var(--rux-leading-tight);
@@ -322,17 +322,7 @@
 		border-right: none;
 	}
 
-	/* Abbreviated date: hide text, show short version via data attribute */
-	.scheduler-app__title {
-		font-size: 0;
-	}
 
-	.scheduler-app__title::before {
-		content: attr(data-short);
-		font-size: 1.25rem;
-		font-weight: var(--rux-weight-semibold);
-		white-space: nowrap;
-	}
 
 	/* Push content above the fixed bottom tab bar */
 	.scheduler-app {

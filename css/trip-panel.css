@@ -40,7 +40,7 @@
 .rux-trip-panel__header {
 	flex: none;
 	display: flex;
-	align-items: start;
+	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) var(--rux-space-4);
@@ -53,14 +53,15 @@
 }
 .rux-trip-panel__title {
 	font-size: var(--rux-text-md);
+	text-transform: uppercase;
 	font-weight: var(--rux-weight-semibold);
-	line-height: var(--rux-leading-snug);
+	line-height: var(--rux-leading-tight);
 }
 .rux-trip-panel__id {
-	font-family: var(--rux-font-mono, ui-monospace, monospace);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-text-md);
 	color: var(--rux-accent);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-tight);
 }
 .rux-trip-panel__confirm-btn {
 	display: inline-flex;
