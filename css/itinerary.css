@@ -243,25 +243,26 @@
 	white-space: nowrap;
 }
 
-/* — Unified fields grid (times + travel, 2 columns per row) — */
+/* — Fields grid: 2 equal columns, stacked label+input for times — */
 
 .rux-itin__fields {
 	display: grid;
-	grid-template-columns: auto 1fr auto 1fr;
-	align-items: center;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	gap: var(--rux-space-2);
 }
 
-.rux-itin__field-label {
-	font-size: var(--rux-text-xs);
-	color: var(--rux-fg-subtle);
-	white-space: nowrap;
+.rux-itin__field-stack {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
 }
 
-.rux-itin__field-label--with-source {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--rux-space-1);
+.rux-itin__field-label {
+	font-size: var(--rux-text-2xs);
+	color: var(--rux-fg-subtle);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	font-weight: var(--rux-weight-semibold);
 }
 
 .rux-itin__source {
@@ -309,6 +310,10 @@
 
 .rux-itin__address-wrap {
 	position: relative;
+}
+
+.rux-itin__address-wrap .rux-input {
+	text-overflow: ellipsis;
 }
 
 .rux-itin__suggestions {

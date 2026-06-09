@@ -261,14 +261,14 @@
 		if (totalDrive > 0) {
 			const warnDrive = totalDrive > 11 * 60;
 			items.push(
-				`<span class="rux-itin__seg-stat${warnDrive ? " rux-itin__seg-stat--warn" : ""}">${formatDriveMinsCompact(totalDrive)} drive</span>`,
+				`<span class="rux-itin__seg-stat${warnDrive ? " rux-itin__seg-stat--warn" : ""}">${formatDriveMinsCompact(totalDrive)} dr</span>`,
 			);
 		}
 		if (netMins !== null) {
 			const warnNet = netMins > 14 * 60;
 			items.push(
 				`<span class="rux-itin__seg-stat${warnNet ? " rux-itin__seg-stat--warn" : ""}">` +
-					`${formatDriveMinsCompact(netMins)} on duty</span>`,
+					`${formatDriveMinsCompact(netMins)} duty</span>`,
 			);
 		}
 		if (grossMins !== null && sleeperDwellInStats(grossMins, netMins)) {
@@ -477,15 +477,20 @@
           ${addrEl}
           ${nameEl ? `<div class="rux-itin__card-head">${nameEl}</div>` : ""}
           <div class="rux-itin__fields">
-            <span class="rux-itin__field-label">${time1Label}</span>
-            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" />
-            <span class="rux-itin__field-label">${time2.label}</span>
-            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" />
+            <div class="rux-itin__field-stack">
+              <span class="rux-itin__field-label">${time1Label}</span>
+              <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" />
+            </div>
+            <div class="rux-itin__field-stack">
+              <span class="rux-itin__field-label">${time2.label}</span>
+              <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" />
+            </div>
             ${type !== "sleeper" ? `
-            ${fieldLabelHtml("Mi", stop, "miles")}
-            <input class="rux-input" type="number" data-field="miles"
-                   value="${escHtml(stop.miles)}" min="0" step="0.1" placeholder="0" />
-            ${fieldLabelHtml("Dr", stop, "drive")}
+            <div class="rux-input-group rux-input-group--suffix">
+              <input class="rux-input" type="number" data-field="miles"
+                     value="${escHtml(stop.miles)}" min="0" step="0.1" placeholder="0" />
+              <span class="rux-input-group__suffix">mi</span>
+            </div>
             <input class="rux-input" type="text" data-field="drive"
                    value="${escHtml(stop.drive)}" placeholder="h:mm" />` : ""}
           </div>

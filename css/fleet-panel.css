@@ -77,7 +77,10 @@
 
 .rux-fleet-panel__tabs {
 	flex: none;
-	padding: var(--rux-space-3) var(--rux-space-4);
+	display: flex;
+	align-items: center;
+	padding: var(--rux-space-2) var(--rux-space-3);
+	gap: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	overflow-x: auto;
 	scrollbar-width: none;
@@ -88,14 +91,30 @@
 }
 
 .rux-fleet-panel__tabs .rux-segmented {
-	width: 100%;
+	display: contents;
 }
 
 .rux-fleet-panel__tabs .rux-segmented .rux-button {
 	flex: 1;
 	gap: var(--rux-space-1);
 	min-width: 0;
-	padding-inline: var(--rux-space-2);
+	padding: var(--rux-space-1) var(--rux-space-3);
+	background: var(--rux-bg-elevated);
+	border: none;
+	border-radius: var(--rux-radius-sm);
+	color: var(--rux-fg-muted);
+	transition: color 0.15s ease, background 0.15s ease;
+}
+
+.rux-fleet-panel__tabs .rux-segmented .rux-button:hover {
+	background: var(--rux-bg-elevated);
+	color: var(--rux-fg);
+}
+
+.rux-fleet-panel__tabs .rux-segmented .rux-button.is-active,
+.rux-fleet-panel__tabs .rux-segmented .rux-button[aria-selected="true"] {
+	background: var(--rux-accent);
+	color: var(--rux-fg-on-accent);
 }
 
 .rux-fleet-panel__tab-label {
@@ -223,10 +242,6 @@
 	.rux-fleet-panel__cols-2 {
 		grid-template-columns: 1fr;
 		gap: var(--rux-space-4);
-	}
-
-	.rux-fleet-panel__tabs .rux-segmented .rux-button {
-		padding-inline: var(--rux-space-2);
 	}
 
 	.rux-fleet-panel__tab-label,

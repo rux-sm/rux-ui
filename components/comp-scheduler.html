@@ -277,10 +277,6 @@
                   <span class="rux-btn-label">Today</span>
                 </button>
               </nav>
-              <button class="rux-button rux-button--primary" id="new-trip-btn" type="button">
-                <i data-lucide="plus" class="rux-icon"></i>
-                <span class="rux-btn-label">New trip</span>
-              </button>
             </div>
           </header>
 
@@ -428,7 +424,7 @@
       const itinerary = Itinerary.init(tripPanel);
 
       /* ── Resizable drawer ────────────────────────────────────────────── */
-      const DRAWER_MIN = 280;
+      const DRAWER_MIN = 320;
       const DRAWER_MAX = 640;
       const DRAWER_STORAGE_KEY = "rux-drawer-width";
 
@@ -990,12 +986,6 @@
       document.getElementById("today-btn").addEventListener("click", () => {
         currentWeekStart = startOfWeek(new Date());
         renderScheduler();
-      });
-
-      document.getElementById("new-trip-btn").addEventListener("click", () => {
-        if (newTrip) newTrip(tripPanel, itinerary);
-        setActiveTripPane("pane-trip");
-        openDrawer();
       });
 
       renderScheduler();

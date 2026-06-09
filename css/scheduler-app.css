@@ -132,6 +132,7 @@
 	justify-content: flex-start;
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-3) var(--rux-space-4);
+	border-bottom: solid transparent var(--rux-border-width);
 }
 
 .scheduler-app__bar--table .scheduler-app__toolbar {
