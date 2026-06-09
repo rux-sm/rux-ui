@@ -60,9 +60,12 @@
 }
 
 .rux-itin__stat-value {
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-bold);
 	color: var(--rux-fg);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 /* — Day-break header — */
@@ -84,7 +87,8 @@
 	align-items: center;
 	flex: 1;
 	gap: var(--rux-space-4);
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
+	overflow: hidden;
 }
 
 .rux-itin__seg-stat {
@@ -122,59 +126,14 @@
 	letter-spacing: 0;
 }
 
+.rux-itin__day--final .rux-itin__day-badge {
+	opacity: 0.7;
+}
+
 /* — Stop row — */
 
 .rux-itin__stop {
-	display: grid;
-	grid-template-columns: 2rem 1fr;
-}
-
-/* — Rail: dot + connecting line — */
-
-.rux-itin__rail {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding-top: var(--rux-space-4);
-}
-
-.rux-itin__dot {
-	width: 10px;
-	height: 10px;
-	border-radius: var(--rux-radius-full);
-	border: 2px solid currentColor;
-	background: transparent;
-	flex: none;
-	position: relative;
-	z-index: 1;
-}
-
-.rux-itin__dot--yard {
-	color: var(--rux-success);
-}
-.rux-itin__dot--pickup {
-	color: var(--rux-warning-bright);
-}
-.rux-itin__dot--stop {
-	color: var(--rux-info);
-}
-.rux-itin__dot--sleeper {
-	color: oklch(65% 0.15 295);
-}
-.rux-itin__dot--return {
-	color: var(--rux-danger);
-}
-
-.rux-itin__line {
-	width: var(--rux-border-width);
-	flex: 1;
-	min-height: var(--rux-space-3);
-	background: var(--rux-border);
-	margin-top: var(--rux-space-1);
-}
-
-.rux-itin__stop:last-of-type .rux-itin__line {
-	display: none;
+	display: block;
 }
 
 /* — Card — */
@@ -183,7 +142,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
-	margin: var(--rux-space-2) var(--rux-space-3) var(--rux-space-2) 0;
+	margin: var(--rux-space-2) var(--rux-space-3);
 	padding: var(--rux-space-3);
 	background: var(--rux-bg-elevated);
 	border: var(--rux-border-width) solid var(--rux-border);
@@ -191,8 +150,7 @@
 }
 
 .rux-itin__card--stale {
-	border-color: color-mix(in oklch, var(--rux-warning) 70%, var(--rux-border));
-	box-shadow: inset 3px 0 0 var(--rux-warning);
+	border-color: color-mix(in oklch, var(--rux-warning) 100%, var(--rux-border));
 }
 
 /* — Card meta: badge + from label + delete button — */
@@ -270,11 +228,19 @@
 .rux-itin__address {
 	font-size: var(--rux-text-xs);
 	color: var(--rux-fg-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .rux-itin__from {
 	font-size: var(--rux-text-xs);
 	color: var(--rux-fg-subtle);
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* — Unified fields grid (times + travel, 2 columns per row) — */
@@ -332,6 +298,8 @@
 
 .rux-itin__actions .rux-button {
 	flex: 1;
+	width: auto;
+	min-width: 0;
 }
 
 .rux-itin__actions .rux-button.is-stale {
@@ -396,13 +364,10 @@
 }
 
 @container (max-width: 360px) {
-	.rux-itin__actions {
-		justify-content: space-between;
-	}
-
 	.rux-itin__actions .rux-button {
-		flex: 0 0 var(--rux-control-height);
-		width: var(--rux-control-height);
+		flex: 1;
+		width: auto;
+		min-width: 0;
 		padding: 0;
 	}
 

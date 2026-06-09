@@ -50,18 +50,26 @@
 	display: flex;
 	align-items: baseline;
 	gap: var(--rux-space-3);
+	flex: 1;
+	min-width: 0;
 }
 .rux-trip-panel__title {
 	font-size: var(--rux-text-md);
 	text-transform: uppercase;
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-tight);
+	white-space: nowrap;
+	flex: none;
 }
 .rux-trip-panel__id {
 	font-size: var(--rux-text-md);
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-tight);
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .rux-trip-panel__confirm-btn {
 	display: inline-flex;

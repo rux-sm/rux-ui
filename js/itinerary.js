@@ -67,8 +67,26 @@
 		};
 	}
 
+	function defaultReturn() {
+		const yard = getYard();
+		return {
+			type: "return",
+			name: yard.name,
+			address: yard.address,
+			lat: yard.lat ?? null,
+			lng: yard.lng ?? null,
+			miles: "",
+			drive: "",
+			milesSource: "estimated",
+			driveSource: "estimated",
+			routeStatus: "stale",
+			departPrev: "",
+			arrive: "",
+		};
+	}
+
 	function defaultStops() {
-		return [defaultPickup()];
+		return [defaultPickup(), defaultReturn()];
 	}
 
 	function normalizeStop(stop) {
@@ -126,7 +144,18 @@
 
 	function routeSourceLabel(stop, field) {
 		const source = field === "miles" ? stop.milesSource : stop.driveSource;
-		return stop.routeStatus === "stale" ? "Route" : sourceLabel(source);
+		if (stop.routeStatus === "stale") return "Route";
+		if (source === "manual") return "Manual";
+		return "";
+	}
+
+	function fieldLabelHtml(text, stop, field) {
+		const label = routeSourceLabel(stop, field);
+		const badge = label
+			? `<span class="rux-itin__source${routeSourceClass(stop, field)}">${label}</span>`
+			: "";
+		const cls = label ? " rux-itin__field-label--with-source" : "";
+		return `<span class="rux-itin__field-label${cls}">${text}${badge}</span>`;
 	}
 
 	function routeSourceClass(stop, field) {
@@ -339,8 +368,32 @@
         <span class="rux-itin__stat-value">${formatDriveMinsCompact(totalDrive)}</span>
       </div>
       <div class="rux-itin__stat">
-        <span class="rux-itin__stat-label">On Duty</span>
+        <span class="rux-itin__stat-label">Duty</span>
         <span class="rux-itin__stat-value">${onDutyMins !== null ? formatDriveMinsCompact(onDutyMins) : "—"}</span>
+      </div>`;
+	}
+
+	function renderFinalDaySummary(stops) {
+		const lastDayIdx = (() => {
+			for (let i = stops.length - 1; i >= 0; i--) {
+				if (stops[i].type === "day") return i;
+			}
+			return -1;
+		})();
+
+		const finalSegment = stops.slice(lastDayIdx + 1).filter((s) => s.type !== "day");
+		const hasData = finalSegment.some((s) => s.miles || s.drive || s.departPrev || s.arrive || s.spot);
+		if (!hasData) return "";
+
+		const dayNum = stops.filter((s) => s.type === "day").length + 1;
+		const stats = computeSegmentStats(stops, stops.length);
+		const statsHtml = renderSegStats(stats);
+		if (!statsHtml) return "";
+
+		return `
+      <div class="rux-itin__day rux-itin__day--final">
+        <span class="rux-itin__day-badge">Day ${dayNum}</span>
+        ${statsHtml}
       </div>`;
 	}
 
@@ -382,11 +435,11 @@
 		const statsSection = type === "sleeper" ? renderSleeperStats(stop, stops) : "";
 		const isStale = stop.routeStatus === "stale" && type !== "sleeper";
 
-		const time1Label = type === "sleeper" ? "Start" : "Depart";
+		const time1Label = type === "sleeper" ? "Str" : "Dep";
 		const time2 =
-			type === "pickup"  ? { label: "Spot",    field: "spot"   } :
-			type === "sleeper" ? { label: "End",     field: "arrive" } :
-			                          { label: "Arrive",  field: "arrive" };
+			type === "pickup"  ? { label: "Spt", field: "spot"   } :
+			type === "sleeper" ? { label: "End", field: "arrive" } :
+			                     { label: "Arr", field: "arrive" };
 
 		const isSleeper = type === "sleeper";
 
@@ -404,7 +457,7 @@
                       value="${escHtml(stop.address)}" placeholder="Address" />
              </div>`;
 
-		const deleteBtn = type === "pickup" ? "" : `
+		const deleteBtn = (type === "pickup" || type === "return") ? "" : `
       <button class="rux-button rux-button--ghost rux-button--icon"
               type="button" data-delete-stop aria-label="Remove stop">
         <i data-lucide="x" class="rux-icon"></i>
@@ -412,10 +465,6 @@
 
 		return `
       <div class="rux-itin__stop" data-stop-idx="${idx}">
-        <div class="rux-itin__rail">
-          <span class="rux-itin__dot rux-itin__dot--${type}"></span>
-          <span class="rux-itin__line"></span>
-        </div>
         <div class="rux-itin__card${isStale ? " rux-itin__card--stale" : ""}">
           <div class="rux-itin__card-meta">
             <span class="rux-itin__badge rux-itin__badge--${type}">${TYPE_LABEL[type]}</span>
@@ -425,24 +474,18 @@
               ${deleteBtn}
             </div>
           </div>
-          ${nameEl ? `<div class="rux-itin__card-head">${nameEl}</div>` : ""}
           ${addrEl}
+          ${nameEl ? `<div class="rux-itin__card-head">${nameEl}</div>` : ""}
           <div class="rux-itin__fields">
             <span class="rux-itin__field-label">${time1Label}</span>
             <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" />
             <span class="rux-itin__field-label">${time2.label}</span>
             <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" />
             ${type !== "sleeper" ? `
-            <span class="rux-itin__field-label rux-itin__field-label--with-source">
-              Miles
-              <span class="rux-itin__source${routeSourceClass(stop, "miles")}">${routeSourceLabel(stop, "miles")}</span>
-            </span>
+            ${fieldLabelHtml("Mi", stop, "miles")}
             <input class="rux-input" type="number" data-field="miles"
                    value="${escHtml(stop.miles)}" min="0" step="0.1" placeholder="0" />
-            <span class="rux-itin__field-label rux-itin__field-label--with-source">
-              Drive
-              <span class="rux-itin__source${routeSourceClass(stop, "drive")}">${routeSourceLabel(stop, "drive")}</span>
-            </span>
+            ${fieldLabelHtml("Dr", stop, "drive")}
             <input class="rux-input" type="text" data-field="drive"
                    value="${escHtml(stop.drive)}" placeholder="h:mm" />` : ""}
           </div>
@@ -488,9 +531,10 @@
 		}
 
 		function renderStopList() {
-			stopsEl.innerHTML = stops
-				.map((item, idx) => (item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops)))
-				.join("");
+			stopsEl.innerHTML =
+				stops
+					.map((item, idx) => (item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops)))
+					.join("") + renderFinalDaySummary(stops);
 			if (window.lucide) lucide.createIcons();
 			syncRouteButton();
 		}
@@ -888,39 +932,6 @@
 			insertBeforeReturn({ type: "sleeper", name: "", address: "", miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: "", arrive: "" });
 		});
 
-		/* — add return to yard — */
-		const addReturnBtn = root.querySelector("#tp-itin-add-return");
-
-		function syncReturnBtn() {
-			if (addReturnBtn) addReturnBtn.disabled = stops.some((s) => s.type === "return");
-		}
-
-		addReturnBtn?.addEventListener("click", () => {
-			if (stops.some((s) => s.type === "return")) return;
-			const yard = getYard();
-			const returnIdx = stops.length;
-			stops.push({
-				type: "return",
-				name: yard.name,
-				address: yard.address,
-				lat: yard.lat ?? null,
-				lng: yard.lng ?? null,
-				miles: "",
-				drive: "",
-				milesSource: "estimated",
-				driveSource: "estimated",
-				routeStatus: "stale",
-				departPrev: "",
-				arrive: "",
-			});
-			updateSummary();
-			renderStopList();
-			syncReturnBtn();
-			estimateLeg(returnIdx);
-		});
-
-		syncReturnBtn();
-
 		document.addEventListener("settings:yard", () => {
 			stops.forEach((stop) => {
 				if (stop.type !== "return") return;
@@ -954,17 +965,17 @@
 			getStops: () => stops.slice(),
 			setStops: (newStops) => {
 				stops.length = 0;
-				stops.push(...(newStops.length ? newStops.map(normalizeStop) : defaultStops()));
+				const normalized = newStops.length ? newStops.map(normalizeStop) : defaultStops();
+				if (!normalized.some((s) => s.type === "return")) normalized.push(defaultReturn());
+				stops.push(...normalized);
 				updateSummary();
 				renderStopList();
-				syncReturnBtn();
 			},
 			clearStops: () => {
 				stops.length = 0;
 				stops.push(...defaultStops());
 				updateSummary();
 				renderStopList();
-				syncReturnBtn();
 			},
 		};
 	}
