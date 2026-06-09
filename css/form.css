@@ -23,7 +23,6 @@
   background-color: var(--rux-bg-sunken);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
-  border: solid transparent; /* default to transparent border, use border-color to show borders and preserve layout when borders appear on focus/hover/invalid */
   border-radius: var(--rux-radius-md);
   box-shadow: var(--_field-shadow);
   font: inherit;

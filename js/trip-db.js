@@ -39,12 +39,12 @@ import { supabase } from "./supabase.js";
 
 	function fieldVal(root, id) {
 		const el = root.querySelector(`#${id}`);
-		return el ? el.value.trim() || null : undefined;
+		return el ? el.value.trim() || null : null;
 	}
 
 	function numVal(root, id) {
 		const el = root.querySelector(`#${id}`);
-		if (!el) return undefined;
+		if (!el) return null;
 		const v = el.value;
 		if (v === "") return null;
 		const n = parseFloat(v);
@@ -53,24 +53,19 @@ import { supabase } from "./supabase.js";
 
 	function intVal(root, id, fallback = null) {
 		const el = root.querySelector(`#${id}`);
-		if (!el) return undefined;
+		if (!el) return fallback;
 		const n = parseInt(el.value, 10);
 		return Number.isFinite(n) ? n : fallback;
 	}
 
-	function toggleVal(root, groupId) {
-		const group = root.querySelector(`#${groupId}`);
-		return group ? group.querySelector('[aria-pressed="true"]')?.textContent?.trim() || null : undefined;
-	}
-
 	function reqVal(root, key) {
 		const btn = root.querySelector(`[data-req="${key}"]`);
-		return btn ? btn.getAttribute("aria-pressed") === "true" : undefined;
+		return btn ? btn.getAttribute("aria-pressed") === "true" : false;
 	}
 
 	function setVal(root, id, value) {
 		const el = root.querySelector(`#${id}`);
-		if (el && value != null) el.value = value;
+		if (el) el.value = value ?? "";
 	}
 
 	function setToggle(root, groupId, value) {
@@ -108,6 +103,10 @@ import { supabase } from "./supabase.js";
 		return Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined));
 	}
 
+	function localIsoDate(date = new Date()) {
+		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+	}
+
 	function mergeUpdate(next, previous = {}) {
 		return Object.fromEntries(
 			Object.entries(next).map(([key, value]) => [
@@ -118,14 +117,14 @@ import { supabase } from "./supabase.js";
 	}
 
 	function hasAssignments(assignments) {
-		return assignments.some((assignment) => assignment.bus_id || (assignment.trip_drivers || []).length);
+		return assignments.some((assignment) => assignment.bus_id || (assignment.drivers || []).length);
 	}
 
 	function snapshotAssignments(assignments = []) {
 		return assignments.map((assignment) => ({
 			bus_id: assignment.bus_id ?? null,
 			position: assignment.position ?? null,
-			trip_drivers: (assignment.trip_drivers || assignment.drivers || []).map((driver) => ({
+			drivers: (assignment.trip_drivers || assignment.drivers || []).map((driver) => ({
 				driver_id: driver.driver_id ?? null,
 				role: driver.role ?? null,
 				pay: driver.pay ?? null,
@@ -141,9 +140,6 @@ import { supabase } from "./supabase.js";
 			destination:          fieldVal(root, "tp-destination"),
 			start_date:           fieldVal(root, "tp-start"),
 			end_date:             fieldVal(root, "tp-end"),
-			departure_time:       fieldVal(root, "tp-dep"),
-			spot_time:            fieldVal(root, "tp-spot"),
-			return_time:          fieldVal(root, "tp-return"),
 			trip_type:            root.querySelector("#tp-trip-type .rux-button[aria-pressed='true']")
 			                        ?.textContent.trim() === "One way" ? "one_way" : "round_trip",
 
@@ -222,10 +218,29 @@ import { supabase } from "./supabase.js";
 			address:     s.address || null,
 			miles:       s.miles ? parseFloat(s.miles) : null,
 			drive:       s.drive || null,
+			lat:         s.lat ?? null,
+			lng:         s.lng ?? null,
+			mapbox_id:   s.mapboxId || null,
+			miles_source: s.milesSource || "estimated",
+			drive_source: s.driveSource || "estimated",
+			route_status: s.routeStatus || "current",
 			depart_prev: s.departPrev || null,
 			arrive:      s.arrive || null,
 			spot:        s.spot || null,
 		}));
+	}
+
+	function legacyStopPayload(stop) {
+		const {
+			lat,
+			lng,
+			mapbox_id,
+			miles_source,
+			drive_source,
+			route_status,
+			...legacy
+		} = stop;
+		return legacy;
 	}
 
 	function tripRange(tripData) {
@@ -291,7 +306,7 @@ import { supabase } from "./supabase.js";
 					};
 				}
 
-				for (const driver of assignment.trip_drivers ?? []) {
+				for (const driver of assignment.drivers ?? assignment.trip_drivers ?? []) {
 					if (driver.driver_id && driverIds.has(driver.driver_id)) {
 						return {
 							label: `${driver.drivers?.name ?? "A selected driver"} is already assigned to ${tripLabel(trip)}`,
@@ -311,9 +326,7 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-destination", trip.destination);
 		setVal(root, "tp-start",       trip.start_date);
 		setVal(root, "tp-end",         trip.end_date);
-		setVal(root, "tp-dep",         trip.departure_time);
-		setVal(root, "tp-spot",        trip.spot_time);
-		setVal(root, "tp-return",      trip.return_time);
+
 
 		const oneWay    = trip.trip_type === "one_way";
 		const oneWayBtn = root.querySelector("#tp-trip-type .rux-button:last-child");
@@ -324,7 +337,6 @@ import { supabase } from "./supabase.js";
 			roundBtn.setAttribute("aria-pressed", oneWay ? "false" : "true");
 			roundBtn.classList.toggle("is-active", !oneWay);
 		}
-		syncTripType(root);
 
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
 		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
@@ -358,17 +370,18 @@ import { supabase } from "./supabase.js";
 	}
 
 	function populateAssignments(root, assignments) {
+		const roleKeyMap = { "driver": "driver", "co-driver": "coDriver", "relief-start": "relief1", "relief-end": "relief2" };
 		assignments.forEach((assignment, i) => {
-			const busSelect = root.querySelector(`[name="buses[${i}].busId"]`);
+			const slot = assignment.position ?? i;
+			const busSelect = root.querySelector(`[name="buses[${slot}].busId"]`);
 			if (busSelect && assignment.bus_id) busSelect.value = assignment.bus_id;
 
-			(assignment.trip_drivers || []).forEach(({ driver_id, role, pay }) => {
-				const roleKey = { "driver": "driver", "co-driver": "coDriver", "relief-start": "relief1", "relief-end": "relief2" }[role];
+			(assignment.drivers || []).forEach(({ driver_id, role, pay }) => {
+				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
-				const driverSelect = root.querySelector(`[name="buses[${i}].${roleKey}.name"]`);
+				const driverSelect = root.querySelector(`[name="buses[${slot}].${roleKey}.name"]`);
 				if (driverSelect && driver_id) {
 					driverSelect.value = driver_id;
-					// show the role row if it's a non-primary role
 					if (roleKey !== "driver") {
 						const row = driverSelect.closest("[data-role-row]");
 						if (row) row.hidden = false;
@@ -379,7 +392,7 @@ import { supabase } from "./supabase.js";
 						}
 					}
 				}
-				const payInput = root.querySelector(`[name="buses[${i}].${roleKey}.pay"]`);
+				const payInput = root.querySelector(`[name="buses[${slot}].${roleKey}.pay"]`);
 				if (payInput && pay != null) payInput.value = pay;
 			});
 		});
@@ -395,6 +408,12 @@ import { supabase } from "./supabase.js";
 				address:    r.address,
 				miles:      r.miles != null ? String(r.miles) : "",
 				drive:      r.drive || "",
+				lat:        r.lat ?? null,
+				lng:        r.lng ?? null,
+				mapboxId:   r.mapbox_id || null,
+				milesSource: r.miles_source || "estimated",
+				driveSource: r.drive_source || "estimated",
+				routeStatus: r.route_status === "stale" ? "stale" : "current",
 				departPrev: r.depart_prev || "",
 				arrive:     r.arrive || "",
 				spot:       r.spot || "",
@@ -404,11 +423,6 @@ import { supabase } from "./supabase.js";
 
 	/* ── Clear form ──────────────────────────────────────────────────────── */
 
-	function syncTripType(root) {
-		const oneWay = root.querySelector("#tp-trip-type .rux-button:last-child")
-		                   ?.getAttribute("aria-pressed") === "true";
-		root.querySelector("#tp-return-col")?.toggleAttribute("hidden", oneWay);
-	}
 
 	function clearForm(root, itinerary) {
 		root.querySelectorAll(
@@ -438,9 +452,9 @@ import { supabase } from "./supabase.js";
 			roundBtn.setAttribute("aria-pressed", "true");
 			roundBtn.classList.add("is-active");
 		}
-		syncTripType(root);
 		const idEl = root.querySelector("#tp-trip-id");
 		if (idEl) idEl.textContent = "";
+		syncBusCount(root, 1);
 		itinerary.clearStops();
 		currentTripId  = null;
 		currentTripRef = null;
@@ -454,13 +468,17 @@ import { supabase } from "./supabase.js";
 	/* ── Save ────────────────────────────────────────────────────────────── */
 
 	async function save(root, itinerary, saveBtn) {
+		// Freeze identity at call time so a mid-save loadTrip can't corrupt state.
+		const savingTripId       = currentTripId;
+		const savingTripRef      = currentTripRef;
+		const savingSnapshot     = currentTripSnapshot;
 		saveBtn.disabled = true;
 		saveBtn.textContent = "Saving…";
 
 		try {
 			const nextTripData = collectTrip(root);
-			const tripData = currentTripId
-				? mergeUpdate(nextTripData, currentTripSnapshot || {})
+			const tripData = savingTripId
+				? mergeUpdate(nextTripData, savingSnapshot || {})
 				: compactPayload(nextTripData);
 			const assignments = collectAssignments(root);
 
@@ -480,32 +498,33 @@ import { supabase } from "./supabase.js";
 			}
 
 			// Generate human-readable ref for new trips only
-			if (!currentTripId && tripData.start_date && !currentTripRef) {
+			if (!savingTripId && tripData.start_date && !savingTripRef) {
 				currentTripRef = await generateTripRef(tripData.start_date);
 			}
-			if (currentTripRef) tripData.trip_ref = currentTripRef;
+			const resolvedRef = currentTripRef;
+			if (resolvedRef) tripData.trip_ref = resolvedRef;
 
 			// Upsert trip record
 			const { data: trip, error: tripErr } = await supabase
 				.from("trips")
-				.upsert(currentTripId ? { id: currentTripId, ...tripData } : tripData)
+				.upsert(savingTripId ? { id: savingTripId, ...tripData } : tripData)
 				.select("id")
 				.single();
 
 			if (tripErr) throw tripErr;
-			currentTripId = trip.id;
+			const savedId = trip.id;
 
 			// Replace bus assignments (cascade deletes trip_drivers)
 			const { error: deleteAssignmentsErr } = await supabase
 				.from("trip_assignments")
 				.delete()
-				.eq("trip_id", currentTripId);
+				.eq("trip_id", savedId);
 			if (deleteAssignmentsErr) throw deleteAssignmentsErr;
 
 			for (const { bus_id, position, drivers } of assignments) {
 				const { data: assignment, error: assignErr } = await supabase
 					.from("trip_assignments")
-					.insert({ trip_id: currentTripId, bus_id, position })
+					.insert({ trip_id: savedId, bus_id, position })
 					.select("id")
 					.single();
 				if (assignErr) throw assignErr;
@@ -522,21 +541,32 @@ import { supabase } from "./supabase.js";
 			const { error: deleteStopsErr } = await supabase
 				.from("trip_stops")
 				.delete()
-				.eq("trip_id", currentTripId);
+				.eq("trip_id", savedId);
 			if (deleteStopsErr) throw deleteStopsErr;
-			const stopsData = collectStops(itinerary).map((s) => ({ trip_id: currentTripId, ...s }));
+			const stopsData = collectStops(itinerary).map((s) => ({ trip_id: savedId, ...s }));
 			if (stopsData.length) {
 				const { error: stopsErr } = await supabase.from("trip_stops").insert(stopsData);
-				if (stopsErr) throw stopsErr;
+				if (stopsErr) {
+					const missingOptionalStopColumns = /lat|lng|mapbox_id|miles_source|drive_source|route_status|schema cache|column/i.test(stopsErr.message || "");
+					if (!missingOptionalStopColumns) throw stopsErr;
+					console.warn("trip_stops optional route columns are missing; saving legacy stop fields only.", stopsErr);
+					const legacyStopsData = stopsData.map(legacyStopPayload);
+					const { error: legacyStopsErr } = await supabase.from("trip_stops").insert(legacyStopsData);
+					if (legacyStopsErr) throw legacyStopsErr;
+				}
 			}
 
-			currentTripSnapshot = { ...tripData };
-			currentAssignments = snapshotAssignments(assignments);
+			// Only update module state if the user hasn't navigated to a different trip mid-save.
+			if (currentTripId === savingTripId) {
+				currentTripId       = savedId;
+				currentTripSnapshot = { ...tripData };
+				currentAssignments  = snapshotAssignments(assignments);
+			}
 
 			saveBtn.textContent = "Saved ✓";
 			const idEl = root.querySelector("#tp-trip-id");
-			if (idEl && currentTripRef) idEl.textContent = currentTripRef;
-			root.dispatchEvent(new CustomEvent("rux:trip-saved", { bubbles: true, detail: { id: currentTripId } }));
+			if (idEl && resolvedRef) idEl.textContent = resolvedRef;
+			root.dispatchEvent(new CustomEvent("rux:trip-saved", { bubbles: true, detail: { id: savedId } }));
 			if (window.Rux) Rux.toast("Trip saved");
 			clearForm(root, itinerary);
 			setTimeout(() => {
@@ -582,11 +612,19 @@ export async function fetchTrips() {
 				id, position, bus_id,
 				buses(id, number),
 				trip_drivers(id, driver_id, role, pay, drivers(id, name, short_name))
-			)
+			),
+			trip_stops(*)
 		`)
 		.order("start_date", { ascending: true });
 	if (error) throw error;
-	return data ?? [];
+	// Normalize Supabase's auto-named join key (trip_drivers) to the app-wide name (drivers).
+	return (data ?? []).map(trip => ({
+		...trip,
+		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...a }) => ({
+			...a,
+			drivers: trip_drivers ?? [],
+		})),
+	}));
 }
 
 export async function fetchBuses() {
@@ -620,9 +658,7 @@ export function loadTrip(root, itinerary, trip) {
 		destination:           trip.destination,
 		start_date:            trip.start_date    ?? trip.startDate    ?? null,
 		end_date:              trip.end_date      ?? trip.endDate      ?? null,
-		departure_time:        trip.departure_time ?? trip.departureTime ?? null,
-		spot_time:             trip.spot_time     ?? trip.spotTime     ?? null,
-		return_time:           trip.return_time   ?? trip.returnTime   ?? null,
+		trip_type:             trip.trip_type     ?? trip.tripType     ?? null,
 
 		booking_contact_name:  trip.booking_contact_name  ?? trip.bookingContact?.name  ?? null,
 		booking_contact_phone: trip.booking_contact_phone ?? trip.bookingContact?.phone ?? null,
@@ -663,6 +699,8 @@ export function loadTrip(root, itinerary, trip) {
 	currentTripSnapshot = { ...normalized };
 	currentAssignments = snapshotAssignments(loadedAssignments);
 
+	root.classList.add("rux-trip-panel--loading");
+
 	populateTrip(root, normalized);
 	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 	window.Rux?.syncDateInputs(root);
@@ -673,8 +711,14 @@ export function loadTrip(root, itinerary, trip) {
 		populateAssignments(root, loadedAssignments);
 	}
 
+	populateStops(itinerary, trip.trip_stops ?? trip.stops ?? []);
+
 	const idEl = root.querySelector("#tp-trip-id");
 	if (idEl) idEl.textContent = trip.trip_ref ?? trip.id ?? "";
+
+	root.querySelector(".rux-trip-panel__tabs .rux-button[aria-controls]")?.click();
+
+	requestAnimationFrame(() => root.classList.remove("rux-trip-panel--loading"));
 }
 
 export function newTrip(root, itinerary) {
@@ -700,7 +744,6 @@ export function initTripDB(root, itinerary) {
 	clearBtn?.addEventListener("click",  () => clearForm(root, itinerary));
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
 
-	root.querySelector("#tp-trip-type")?.addEventListener("click", () => syncTripType(root));
 
 	const paidFullBtn = root.querySelector("#tp-paid-full-btn");
 	const priceEl     = root.querySelector("#tp-price");
@@ -719,7 +762,7 @@ export function initTripDB(root, itinerary) {
 		}
 		const datePaid = root.querySelector("#tp-date-paid");
 		if (datePaid && !datePaid.value) {
-			datePaid.value = new Date().toISOString().slice(0, 10);
+			datePaid.value = localIsoDate();
 		}
 		if (window.lucide) lucide.createIcons();
 	});

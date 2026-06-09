@@ -19,6 +19,10 @@
     });
   }
 
+  function localIsoDate(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
   function fmtDates(start, end) {
     if (!start) return "—";
     if (!end || start === end) return fmtDate(start);
@@ -58,7 +62,7 @@
       return;
     }
 
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localIsoDate();
 
     list.forEach((t) => {
       const buses     = busNumbers(t);

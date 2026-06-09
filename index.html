@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://white-boat-9932.rux-smercado.workers.dev wss://white-boat-9932.rux-smercado.workers.dev https://cdn.jsdelivr.net https://unpkg.com ws://127.0.0.1:* ws://localhost:*;" />
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://white-boat-9932.rux-smercado.workers.dev wss://white-boat-9932.rux-smercado.workers.dev https://api.mapbox.com https://cdn.jsdelivr.net https://unpkg.com ws://127.0.0.1:* ws://localhost:*;" />
     <title>Rux UI</title>
     <link rel="icon" href="assets/rux-mark.svg" />
     <link rel="stylesheet" href="./css/tokens.css" />
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./css/comp-driver-app.css" />
     <link rel="stylesheet" href="./css/fleet-panel.css" />
     <link rel="stylesheet" href="./css/comp-fleet-app.css" />
+    <link rel="stylesheet" href="./css/comp-settings-app.css" />
     <link rel="stylesheet" href="./css/comp-trips-app.css" />
     <link rel="stylesheet" href="./css/bus-picker.css" />
     <script
@@ -106,6 +107,15 @@
               Customers
             </button>
 
+            <button
+              class="rux-button rux-button--ghost scheduler-app__module-button"
+              type="button"
+              data-module="settings"
+            >
+              <i data-lucide="settings" class="rux-icon"></i>
+              Settings
+            </button>
+
             <!-- Mobile: profile avatar lives in the nav bar -->
             <button class="scheduler-app__profile" type="button" aria-label="Open Rux profile">
               <img src="./assets/rux-profile-pic.png" alt="" />
@@ -172,11 +182,7 @@
                   </div>
                   <div class="rux-trip-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-dep">Departure</label><input class="rux-input" id="tp-dep" name="departureTime" type="time" /></div>
-                  </div>
-                  <div class="rux-trip-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
-                    <div id="tp-return-col" class="rux-field"><label class="rux-field__label" for="tp-return">Return</label><input class="rux-input" id="tp-return" name="returnTime" type="time" /></div>
                   </div>
                   <div class="rux-trip-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="tp-book-name">Name</label><input class="rux-input" id="tp-book-name" name="bookingContact.name" type="text" placeholder="Contact name" /></div>
@@ -205,11 +211,11 @@
                     <div class="rux-itin__summary" id="tp-itin-summary"></div>
                     <div class="rux-itin__stops" id="tp-itin-stops"></div>
                     <div class="rux-itin__actions">
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-pickup">Pick-up</button>
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-stop">Stop</button>
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-sleeper">Sleeper</button>
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-day">End day</button>
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-return">Return</button>
+                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-stop" title="Add stop"><i data-lucide="map-pin" class="rux-icon"></i><span class="rux-btn-label">Stop</span></button>
+                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-sleeper" title="Add sleep"><i data-lucide="bed" class="rux-icon"></i><span class="rux-btn-label">Sleep</span></button>
+                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-day" title="End day"><i data-lucide="calendar-x" class="rux-icon"></i><span class="rux-btn-label">End</span></button>
+                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-return" title="Add return"><i data-lucide="undo-2" class="rux-icon"></i><span class="rux-btn-label">Return</span></button>
+                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-recalc" title="Recalculate route"><i data-lucide="route" class="rux-icon"></i><span class="rux-btn-label">Route</span></button>
                     </div>
                   </div>
                 </div>
@@ -478,9 +484,9 @@
             <header class="scheduler-app__bar scheduler-app__bar--table">
               <div class="scheduler-app__toolbar">
                 <input class="rux-input fleet-app__search" id="fleet-search" type="search" placeholder="Search…" aria-label="Search fleet" />
-                <button class="rux-button rux-button--ghost" id="fleet-save-order-btn" type="button" hidden title="Save current sort as permanent order">
+                <button class="rux-button rux-button--ghost" id="fleet-save-order-btn" type="button" hidden title="Set current sort as manual order">
                   <span class="rux-icon scheduler-app__save-order-icon" aria-hidden="true"></span>
-                  <span class="rux-btn-label">Save order</span>
+                  <span class="rux-btn-label">Set as order</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="fleet-cols-btn" type="button" title="Show / hide columns">
                   <i data-lucide="columns-3" class="rux-icon"></i>
@@ -644,9 +650,9 @@
             <header class="scheduler-app__bar scheduler-app__bar--table">
               <div class="scheduler-app__toolbar">
                 <input class="rux-input driver-app__search" id="driver-search" type="search" placeholder="Search…" aria-label="Search drivers" />
-                <button class="rux-button rux-button--ghost" id="driver-save-order-btn" type="button" hidden title="Save current sort as permanent order">
+                <button class="rux-button rux-button--ghost" id="driver-save-order-btn" type="button" hidden title="Set current sort as manual order">
                   <span class="rux-icon scheduler-app__save-order-icon" aria-hidden="true"></span>
-                  <span class="rux-btn-label">Save order</span>
+                  <span class="rux-btn-label">Set as order</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="driver-cols-btn" type="button" title="Show / hide columns">
                   <i data-lucide="columns-3" class="rux-icon"></i>
@@ -686,6 +692,102 @@
           <div class="module-placeholder">Customers module — coming soon</div>
         </div>
 
+        <!-- ════════════════════════════════════════════════════════════════
+             MODULE: SETTINGS
+             ════════════════════════════════════════════════════════════════ -->
+        <div class="scheduler-app__module" data-module="settings" hidden>
+          <section class="settings-app__main" aria-labelledby="settings-title">
+            <header class="scheduler-app__bar settings-app__header">
+              <div class="scheduler-app__brand">
+                <h1 class="scheduler-app__title" id="settings-title">Settings</h1>
+                <p class="settings-app__subtitle">Company defaults used across dispatch and estimates.</p>
+              </div>
+            </header>
+
+            <div class="settings-app__body">
+              <section class="settings-app__panel" aria-labelledby="settings-mapbox-title">
+                <header class="settings-app__panel-header">
+                  <div>
+                    <h2 class="settings-app__panel-title" id="settings-mapbox-title">Mapbox</h2>
+                    <p class="settings-app__panel-copy">Used for address verification and mileage estimates.</p>
+                  </div>
+                  <span class="rux-badge rux-badge--info" id="settings-mapbox-status">Not set</span>
+                </header>
+
+                <div class="settings-app__form">
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="settings-mapbox-token">Public access token</label>
+                    <input class="rux-input" id="settings-mapbox-token" type="password" autocomplete="off" placeholder="pk..." />
+                    <span class="rux-field__help">Use a URL-restricted public token from Mapbox.</span>
+                  </div>
+                </div>
+
+                <footer class="settings-app__footer">
+                  <p class="settings-app__message" id="settings-mapbox-message" aria-live="polite"></p>
+                  <div class="settings-app__actions">
+                    <button class="rux-button rux-button--primary" id="settings-mapbox-save-btn" type="button">
+                      <i data-lucide="save" class="rux-icon"></i>
+                      <span class="rux-btn-label">Save token</span>
+                    </button>
+                  </div>
+                </footer>
+              </section>
+
+              <section class="settings-app__panel" aria-labelledby="settings-yard-title">
+                <header class="settings-app__panel-header">
+                  <div>
+                    <h2 class="settings-app__panel-title" id="settings-yard-title">Yard Location</h2>
+                    <p class="settings-app__panel-copy">Used as the starting point for first pickup and return mileage estimates.</p>
+                  </div>
+                  <span class="rux-badge rux-badge--info" id="settings-yard-status">Default</span>
+                </header>
+
+                <div class="settings-app__form">
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="settings-yard-name">Yard name</label>
+                    <input class="rux-input" id="settings-yard-name" type="text" autocomplete="organization" placeholder="Yard" />
+                  </div>
+
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="settings-yard-address">Yard address</label>
+                    <input class="rux-input" id="settings-yard-address" type="text" autocomplete="off" placeholder="Street address" />
+                    <span class="rux-field__help">Choose a Mapbox result or verify before saving.</span>
+                  </div>
+
+                  <div class="settings-app__grid-2">
+                    <div class="rux-field">
+                      <label class="rux-field__label" for="settings-yard-lat">Latitude</label>
+                      <input class="rux-input" id="settings-yard-lat" type="number" step="any" inputmode="decimal" placeholder="Optional" />
+                    </div>
+                    <div class="rux-field">
+                      <label class="rux-field__label" for="settings-yard-lng">Longitude</label>
+                      <input class="rux-input" id="settings-yard-lng" type="number" step="any" inputmode="decimal" placeholder="Optional" />
+                    </div>
+                  </div>
+                </div>
+
+                <footer class="settings-app__footer">
+                  <p class="settings-app__message" id="settings-yard-message" aria-live="polite"></p>
+                  <div class="settings-app__actions">
+                    <button class="rux-button rux-button--secondary" id="settings-yard-default-btn" type="button">
+                      <i data-lucide="rotate-ccw" class="rux-icon"></i>
+                      <span class="rux-btn-label">Use default</span>
+                    </button>
+                    <button class="rux-button rux-button--secondary" id="settings-yard-verify-btn" type="button">
+                      <i data-lucide="map-pin-check" class="rux-icon"></i>
+                      <span class="rux-btn-label">Verify</span>
+                    </button>
+                    <button class="rux-button rux-button--primary" id="settings-yard-save-btn" type="button">
+                      <i data-lucide="save" class="rux-icon"></i>
+                      <span class="rux-btn-label">Save yard</span>
+                    </button>
+                  </div>
+                </footer>
+              </section>
+            </div>
+          </section>
+        </div>
+
       </div><!-- /scheduler-app__body -->
     </main>
 
@@ -704,6 +806,7 @@
     <script src="./js/itinerary.js"></script>
     <script src="./js/driver-panel.js" defer></script>
     <script src="./js/fleet-panel.js" defer></script>
+    <script src="./js/settings-panel.js" defer></script>
     <script src="./js/trips-list.js" defer></script>
 
     <script type="module">
@@ -729,6 +832,7 @@
         if (name === "drivers") window.DriverPanel?.init();
         if (name === "fleet")   window.FleetPanel?.init();
         if (name === "trips")   window.TripsListPanel?.init();
+        if (name === "settings") window.SettingsPanel?.init();
       }
 
       moduleButtons.forEach((btn) => {
@@ -737,7 +841,7 @@
 
       // Respect hash on load; fall back to schedule
       const initialModule = location.hash.slice(1) || "schedule";
-      showModule(["schedule", "trips", "fleet", "drivers", "customers"].includes(initialModule)
+      showModule(["schedule", "trips", "fleet", "drivers", "customers", "settings"].includes(initialModule)
         ? initialModule
         : "schedule");
 
@@ -754,7 +858,7 @@
       let pendingNewTripContext = null;
 
       function openDrawer() { drawer.classList.add("is-open"); }
-      function closeDrawer() { drawer.classList.remove("is-open"); }
+      function closeDrawer() { drawer.classList.remove("is-open"); newTrip?.(tripPanel, itinerary); }
 
       // ── Trips module → scheduler bridge ────────────────────────────────────
 
@@ -855,7 +959,7 @@ document.getElementById("tp-btn-close")
 
       const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
       const dayHeadEls = document.querySelectorAll(".rux-scheduler__day-head");
-      const todayIso = new Date().toISOString().slice(0, 10);
+      const todayIso = isoDate(new Date());
       let currentWeekStart = startOfWeek(new Date());
 
       renderDayHeaders(currentWeekStart);
@@ -1250,19 +1354,25 @@ document.getElementById("tp-btn-close")
           (t.trip_assignments ?? []).forEach(assignment => {
             if (!assignment.buses) return;
             const key = assignment.id;
-            const primaryDriver = (assignment.trip_drivers ?? []).find(d => d.role === "driver");
+            const primaryDriver = (assignment.drivers ?? []).find(d => d.role === "driver");
             trips[key] = {
               id: t.id, trip_ref: t.trip_ref, assignmentId: assignment.id, busId: assignment.bus_id,
-              assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, trip_drivers: a.trip_drivers ?? [] })),
+              assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [] })),
+              trip_stops: t.trip_stops ?? [],
               startDate: t.start_date, endDate: t.end_date, destination: t.destination, customer: t.customer,
+              trip_type: t.trip_type,
               departureTime: t.departure_time, spotTime: t.spot_time, returnTime: t.return_time, notes: t.notes,
-              bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone },
+              bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone, email: t.booking_contact_email },
+              bus_count: t.bus_count,
+              req_sleeper: t.req_sleeper, req_56pax: t.req_56pax, req_ada: t.req_ada,
+              need_hotel: t.need_hotel, need_fuel_card: t.need_fuel_card,
+              confirmed: t.confirmed,
               driverStatus: t.confirmed ? "confirmed" : "unconfirmed",
               invoiceStatus: t.invoice_status, paymentStatus: t.contract_status,
               estimatedMiles: t.est_miles, actualMiles: t.actual_miles, quotedPrice: t.quoted_price,
               paymentRef: t.po_ref, invoiceNumber: t.invoice_number, datePaid: t.date_paid,
               paymentRefs: [t.payment_ref_1, t.payment_ref_2, t.payment_ref_3].filter(Boolean),
-              drivers: (assignment.trip_drivers ?? []).map(td => ({ name: td.drivers?.name, shortName: td.drivers?.short_name || td.drivers?.name, status: "confirmed", pay: td.pay != null ? `$${td.pay}` : "" })),
+              drivers: (assignment.drivers ?? []).map(td => ({ name: td.drivers?.name, shortName: td.drivers?.short_name || td.drivers?.name, status: "confirmed", pay: td.pay != null ? `$${td.pay}` : "" })),
               driverId: primaryDriver?.driver_id ?? null,
             };
             const trackId = trackIdForBusNumber(assignment.buses.number);

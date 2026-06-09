@@ -78,6 +78,10 @@
     });
   }
 
+  function localIsoDate(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
   function fmtTripDates(start, end) {
     if (!start) return "";
     const s  = new Date(start + "T00:00:00");
@@ -116,11 +120,11 @@
 
   function licExpiryClass(iso) {
     if (!iso) return "driver-app__expiry";
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localIsoDate();
     if (iso < today) return "driver-app__expiry driver-app__expiry--expired";
     const warn = new Date();
     warn.setMonth(warn.getMonth() + 3);
-    if (iso <= warn.toISOString().slice(0, 10))
+    if (iso <= localIsoDate(warn))
       return "driver-app__expiry driver-app__expiry--warn";
     return "driver-app__expiry";
   }
@@ -197,7 +201,6 @@
     // Rebuild thead
     const theadRow = table.querySelector("thead tr");
     theadRow.innerHTML =
-      `<th scope="col" class="driver-app__drag-col" aria-label="Reorder"></th>` +
       `<th scope="col" data-sort="driver">Driver</th>` +
       activeCols.map(c => c.head).join("");
     if (window.lucide) lucide.createIcons({ nodes: [...theadRow.querySelectorAll("[data-lucide]")] });
@@ -207,11 +210,12 @@
     tbody.innerHTML = "";
     if (!list.length) {
       tbody.innerHTML =
-        `<tr><td colspan="${2 + activeCols.length}" class="driver-app__empty">No drivers — add one to get started.</td></tr>`;
+        `<tr><td colspan="${1 + activeCols.length}" class="driver-app__empty">No drivers — add one to get started.</td></tr>`;
       return;
     }
 
     let dragSrcIdx = null;
+    let didDragRow = false;
 
     list.forEach((d, idx) => {
       const ini = initials(d.name);
@@ -223,22 +227,22 @@
       tr.dataset.idx            = idx;
       tr.dataset.status         = d.status || "active";
       tr.dataset.employmentType = d.employment_type || "";
-
-      const handleTd = document.createElement("td");
-      handleTd.className = "driver-app__drag-handle";
-      handleTd.innerHTML = `<i data-lucide="grip-vertical" class="rux-icon rux-icon--sm"></i>`;
-
-      handleTd.addEventListener("pointerdown", () => { if (sortKey === "order") tr.draggable = true; });
+      tr.draggable              = sortKey === "order";
 
       tr.addEventListener("dragstart", e => {
+        if (sortKey !== "order") {
+          e.preventDefault();
+          return;
+        }
         dragSrcIdx = idx;
+        didDragRow = true;
         tr.classList.add("is-dragging");
         e.dataTransfer.effectAllowed = "move";
       });
       tr.addEventListener("dragend", () => {
-        tr.draggable = false;
         tr.classList.remove("is-dragging");
         tbody.querySelectorAll(".is-drag-target").forEach(el => el.classList.remove("is-drag-target"));
+        setTimeout(() => { didDragRow = false; }, 0);
       });
       tr.addEventListener("dragover", e => {
         if (dragSrcIdx !== null && dragSrcIdx !== idx) {
@@ -252,8 +256,10 @@
         e.preventDefault();
         if (dragSrcIdx === null || dragSrcIdx === idx) return;
         const toIdx = idx;
-        const [moved] = allDrivers.splice(dragSrcIdx, 1);
-        allDrivers.splice(toIdx, 0, moved);
+        const orderedDrivers = getSortedDrivers();
+        const [moved] = orderedDrivers.splice(dragSrcIdx, 1);
+        orderedDrivers.splice(toIdx, 0, moved);
+        allDrivers = orderedDrivers;
         dragSrcIdx = null;
         await saveDriverOrder();
       });
@@ -270,10 +276,11 @@
         </td>
       ` + activeCols.map(c => c.cell(d)).join("");
 
-      tr.prepend(handleTd);
-
       tr.addEventListener("click", e => {
-        if (e.target.closest(".driver-app__drag-handle")) return;
+        if (didDragRow) {
+          e.preventDefault();
+          return;
+        }
         selectRow(tr, d);
       });
       tr.addEventListener("keydown", (e) => {
@@ -282,8 +289,6 @@
 
       tbody.appendChild(tr);
     });
-
-    if (window.lucide) lucide.createIcons({ nodes: [...tbody.querySelectorAll(".driver-app__drag-handle")] });
   }
 
   async function saveDriverOrder() {
@@ -683,6 +688,7 @@
       const matchE = employmentFilter === "all" || row.dataset.employmentType === employmentFilter;
       row.hidden = !(matchQ && matchF && matchE);
     });
+    updateSaveOrderState();
   }
 
   function updateFilterHeaders(table) {
@@ -783,10 +789,27 @@
       th.classList.toggle("is-sort-desc", key === sortKey && sortDir === "desc");
     });
     table.classList.toggle("is-manual-order", sortKey === "order");
-    if (saveOrderBtn) saveOrderBtn.hidden = (sortKey === "order");
+    updateSaveOrderState();
+  }
+
+  function hasActiveDriverFilter() {
+    return !!searchInput.value.trim() ||
+      Object.values(DRIVER_COL_FILTERS).some(def => def.get() !== "all");
+  }
+
+  function updateSaveOrderState() {
+    if (!saveOrderBtn) return;
+    const isManualOrder = sortKey === "order";
+    const blockedByFilter = hasActiveDriverFilter();
+    saveOrderBtn.hidden = isManualOrder;
+    saveOrderBtn.disabled = !isManualOrder && blockedByFilter;
+    saveOrderBtn.title = blockedByFilter
+      ? "Clear search and filters before setting manual order"
+      : "Set current sort as manual order";
   }
 
   async function lockCurrentOrder() {
+    if (sortKey === "order" || hasActiveDriverFilter()) return;
     allDrivers = getSortedDrivers();
     sortKey = "order";
     sortDir = "asc";

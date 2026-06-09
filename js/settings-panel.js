@@ -1,0 +1,434 @@
+(function () {
+  "use strict";
+
+  const YARD_KEY = "yard-location-v1";
+  const MAPBOX_TOKEN_KEY = "mapbox-token-v1";
+  const DEFAULT_YARD = {
+    name: "Yard",
+    address: "2801 Zinnia Ave, McAllen, TX 78504",
+    lat: null,
+    lng: null,
+  };
+
+  const root = document.querySelector('.scheduler-app__module[data-module="settings"]');
+  const nameInput = document.getElementById("settings-yard-name");
+  const addressInput = document.getElementById("settings-yard-address");
+  const latInput = document.getElementById("settings-yard-lat");
+  const lngInput = document.getElementById("settings-yard-lng");
+  const statusEl = document.getElementById("settings-yard-status");
+  const messageEl = document.getElementById("settings-yard-message");
+  const saveBtn = document.getElementById("settings-yard-save-btn");
+  const defaultBtn = document.getElementById("settings-yard-default-btn");
+  const verifyBtn = document.getElementById("settings-yard-verify-btn");
+  const mapboxTokenInput = document.getElementById("settings-mapbox-token");
+  const mapboxStatusEl = document.getElementById("settings-mapbox-status");
+  const mapboxMessageEl = document.getElementById("settings-mapbox-message");
+  const mapboxSaveBtn = document.getElementById("settings-mapbox-save-btn");
+
+  let db = null;
+  let initialized = false;
+  let currentYard = { ...DEFAULT_YARD };
+  let mapboxToken = "";
+  let yardSearchTimer = null;
+  let yardSearchSeq = 0;
+  let yardSessionToken = uuid();
+  let yardSuggestions = [];
+  let yardSuggestionsEl = null;
+
+  function escHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function uuid() {
+    return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  }
+
+  function parseCoordinate(value) {
+    if (value === null || value === undefined || value === "") return null;
+    const number = Number(value);
+    return Number.isFinite(number) ? number : null;
+  }
+
+  function normalizeYard(value) {
+    const yard = value && typeof value === "object" ? value : {};
+    return {
+      name: String(yard.name || DEFAULT_YARD.name).trim() || DEFAULT_YARD.name,
+      address: String(yard.address || DEFAULT_YARD.address).trim() || DEFAULT_YARD.address,
+      lat: parseCoordinate(yard.lat),
+      lng: parseCoordinate(yard.lng),
+    };
+  }
+
+  function setMessage(text = "", state = "") {
+    if (!messageEl) return;
+    messageEl.textContent = text;
+    messageEl.classList.toggle("is-error", state === "error");
+    messageEl.classList.toggle("is-success", state === "success");
+  }
+
+  function setMapboxMessage(text = "", state = "") {
+    if (!mapboxMessageEl) return;
+    mapboxMessageEl.textContent = text;
+    mapboxMessageEl.classList.toggle("is-error", state === "error");
+    mapboxMessageEl.classList.toggle("is-success", state === "success");
+  }
+
+  function setMapboxStatus(hasToken) {
+    if (!mapboxStatusEl) return;
+    mapboxStatusEl.textContent = hasToken ? "Saved" : "Not set";
+    mapboxStatusEl.classList.toggle("rux-badge--info", !hasToken);
+    mapboxStatusEl.classList.toggle("rux-badge--success", hasToken);
+  }
+
+  function setStatus(isDefault) {
+    if (!statusEl) return;
+    statusEl.textContent = isDefault ? "Default" : "Saved";
+    statusEl.classList.toggle("rux-badge--info", isDefault);
+    statusEl.classList.toggle("rux-badge--success", !isDefault);
+  }
+
+  function fillForm(yard) {
+    if (!nameInput || !addressInput || !latInput || !lngInput) return;
+    nameInput.value = yard.name || "";
+    addressInput.value = yard.address || "";
+    latInput.value = yard.lat == null ? "" : String(yard.lat);
+    lngInput.value = yard.lng == null ? "" : String(yard.lng);
+  }
+
+  function ensureYardSuggestions() {
+    if (yardSuggestionsEl) return yardSuggestionsEl;
+    yardSuggestionsEl = document.createElement("div");
+    yardSuggestionsEl.className = "settings-app__suggestions";
+    yardSuggestionsEl.hidden = true;
+    yardSuggestionsEl.setAttribute("role", "listbox");
+    yardSuggestionsEl.setAttribute("aria-label", "Yard address suggestions");
+    document.body.appendChild(yardSuggestionsEl);
+    return yardSuggestionsEl;
+  }
+
+  function hideYardSuggestions() {
+    if (!yardSuggestionsEl) return;
+    yardSuggestionsEl.hidden = true;
+    yardSuggestionsEl.innerHTML = "";
+    yardSuggestions = [];
+  }
+
+  function positionYardSuggestions() {
+    if (!addressInput) return;
+    const suggestionsEl = ensureYardSuggestions();
+    const rect = addressInput.getBoundingClientRect();
+    const margin = 8;
+    const width = Math.max(rect.width, 240);
+    suggestionsEl.style.left = `${Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin))}px`;
+    suggestionsEl.style.top = `${rect.bottom + 4}px`;
+    suggestionsEl.style.width = `${Math.min(width, window.innerWidth - margin * 2)}px`;
+  }
+
+  function suggestionLabel(suggestion) {
+    return suggestion.full_address ||
+      [suggestion.name, suggestion.place_formatted].filter(Boolean).join(", ") ||
+      suggestion.name ||
+      "Address";
+  }
+
+  function featureLabel(feature, fallback = "") {
+    const props = feature?.properties || {};
+    return props.full_address ||
+      [props.name, props.place_formatted].filter(Boolean).join(", ") ||
+      fallback ||
+      "Address";
+  }
+
+  function applyYardFeature(feature, fallbackLabel = "") {
+    const props = feature?.properties || {};
+    const coords = feature?.geometry?.coordinates || [
+      props.coordinates?.longitude,
+      props.coordinates?.latitude,
+    ];
+    const lng = Number(coords?.[0]);
+    const lat = Number(coords?.[1]);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      throw new Error("Mapbox did not return coordinates for that address.");
+    }
+    addressInput.value = featureLabel(feature, fallbackLabel);
+    latInput.value = String(lat);
+    lngInput.value = String(lng);
+    setMessage("Yard address verified. Save yard to keep it.", "success");
+  }
+
+  function renderYardSuggestions(suggestions) {
+    const suggestionsEl = ensureYardSuggestions();
+    yardSuggestions = suggestions;
+    if (!suggestions.length) {
+      hideYardSuggestions();
+      return;
+    }
+    positionYardSuggestions();
+    suggestionsEl.innerHTML = suggestions.map((suggestion, i) => `
+      <button class="settings-app__suggestion" type="button" role="option" data-suggestion-idx="${i}">
+        <span class="settings-app__suggestion-name">${escHtml(suggestion.name || suggestionLabel(suggestion))}</span>
+        <span class="settings-app__suggestion-address">${escHtml(suggestion.place_formatted || suggestion.full_address || "")}</span>
+      </button>
+    `).join("");
+    suggestionsEl.hidden = false;
+  }
+
+  async function suggestYardAddress() {
+    const token = mapboxToken;
+    const q = addressInput?.value.trim() || "";
+    if (!token || q.length < 3) {
+      hideYardSuggestions();
+      return;
+    }
+    const seq = ++yardSearchSeq;
+    const url = new URL("https://api.mapbox.com/search/searchbox/v1/suggest");
+    url.searchParams.set("q", q);
+    url.searchParams.set("session_token", yardSessionToken);
+    url.searchParams.set("access_token", token);
+    url.searchParams.set("country", "US");
+    url.searchParams.set("types", "address,poi");
+    url.searchParams.set("limit", "5");
+    url.searchParams.set("proximity", "ip");
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Mapbox suggest failed: ${response.status}`);
+      const data = await response.json();
+      if (seq !== yardSearchSeq) return;
+      renderYardSuggestions(data.suggestions || []);
+    } catch (err) {
+      console.warn("Yard address suggestions failed:", err);
+      hideYardSuggestions();
+    }
+  }
+
+  async function retrieveYardSuggestion(suggestion) {
+    const token = mapboxToken;
+    if (!token || !suggestion?.mapbox_id) return;
+    const url = new URL(`https://api.mapbox.com/search/searchbox/v1/retrieve/${encodeURIComponent(suggestion.mapbox_id)}`);
+    url.searchParams.set("session_token", yardSessionToken);
+    url.searchParams.set("access_token", token);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Mapbox retrieve failed: ${response.status}`);
+      const data = await response.json();
+      applyYardFeature(data.features?.[0], suggestionLabel(suggestion));
+      yardSessionToken = uuid();
+      hideYardSuggestions();
+    } catch (err) {
+      console.warn("Yard address retrieve failed:", err);
+      setMessage(err?.message || "Could not verify yard address.", "error");
+    }
+  }
+
+  async function verifyYardAddress() {
+    const token = mapboxToken;
+    const q = addressInput?.value.trim() || "";
+    if (!token) throw new Error("Save a Mapbox public token first.");
+    if (q.length < 3) throw new Error("Enter a yard address to verify.");
+
+    const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
+    url.searchParams.set("q", q);
+    url.searchParams.set("access_token", token);
+    url.searchParams.set("country", "US");
+    url.searchParams.set("types", "address,poi");
+    url.searchParams.set("limit", "1");
+    url.searchParams.set("proximity", "ip");
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Mapbox verify failed: ${response.status}`);
+    const data = await response.json();
+    const feature = data.features?.[0];
+    if (!feature) throw new Error("No verified address found.");
+    applyYardFeature(feature, q);
+    hideYardSuggestions();
+  }
+
+  function readForm() {
+    const lat = latInput.value.trim();
+    const lng = lngInput.value.trim();
+    const yard = {
+      name: nameInput.value.trim(),
+      address: addressInput.value.trim(),
+      lat: lat ? Number(lat) : null,
+      lng: lng ? Number(lng) : null,
+    };
+    if (!yard.name) throw new Error("Yard name is required.");
+    if (!yard.address) throw new Error("Yard address is required.");
+    if (lat && !Number.isFinite(yard.lat)) throw new Error("Latitude must be a number.");
+    if (lng && !Number.isFinite(yard.lng)) throw new Error("Longitude must be a number.");
+    return yard;
+  }
+
+  function publishYard(yard) {
+    currentYard = normalizeYard(yard);
+    window.RuxSettings = {
+      ...(window.RuxSettings || {}),
+      DEFAULT_YARD,
+      getYard: () => ({ ...currentYard }),
+      getMapboxToken: () => mapboxToken,
+    };
+    document.dispatchEvent(new CustomEvent("settings:yard", { detail: { yard: { ...currentYard } } }));
+  }
+
+  function publishMapboxToken(token) {
+    mapboxToken = String(token || "").trim();
+    window.RuxSettings = {
+      ...(window.RuxSettings || {}),
+      DEFAULT_YARD,
+      getYard: () => ({ ...currentYard }),
+      getMapboxToken: () => mapboxToken,
+    };
+    document.dispatchEvent(new CustomEvent("settings:mapbox", { detail: { hasToken: !!mapboxToken } }));
+  }
+
+  async function loadYard() {
+    if (!db) {
+      try {
+        db = await import("./settings-db.js");
+      } catch (err) {
+        console.warn("Could not load settings-db:", err);
+        publishYard(DEFAULT_YARD);
+        fillForm(DEFAULT_YARD);
+        setStatus(true);
+        setMessage("Using default yard until settings are available.");
+        return;
+      }
+    }
+
+    const saved = await db.getSetting(YARD_KEY);
+    const yard = normalizeYard(saved);
+    publishYard(yard);
+    fillForm(yard);
+    setStatus(!saved);
+    setMessage(saved ? "" : "Using default yard.");
+  }
+
+  async function loadMapboxToken() {
+    if (!db) db = await import("./settings-db.js");
+    const saved = await db.getSetting(MAPBOX_TOKEN_KEY);
+    const token = typeof saved === "string" ? saved.trim() : "";
+    publishMapboxToken(token);
+    if (mapboxTokenInput) mapboxTokenInput.value = token;
+    setMapboxStatus(!!token);
+    setMapboxMessage(token ? "" : "Address verification is disabled until a token is saved.");
+  }
+
+  async function saveYard(yard) {
+    if (!db) db = await import("./settings-db.js");
+    const normalized = normalizeYard(yard);
+    await db.setSetting(YARD_KEY, normalized);
+    publishYard(normalized);
+    setStatus(false);
+    setMessage("Yard saved.", "success");
+    return normalized;
+  }
+
+  async function saveMapboxToken(token) {
+    if (!db) db = await import("./settings-db.js");
+    const normalized = String(token || "").trim();
+    await db.setSetting(MAPBOX_TOKEN_KEY, normalized);
+    publishMapboxToken(normalized);
+    setMapboxStatus(!!normalized);
+    setMapboxMessage(normalized ? "Mapbox token saved." : "Mapbox token cleared.", "success");
+  }
+
+  async function init() {
+    if (!root || initialized) return;
+    initialized = true;
+    await loadYard();
+    await loadMapboxToken();
+  }
+
+  saveBtn?.addEventListener("click", async () => {
+    saveBtn.disabled = true;
+    setMessage("Saving...");
+    try {
+      await saveYard(readForm());
+    } catch (err) {
+      setMessage(err?.message || "Could not save yard.", "error");
+    } finally {
+      saveBtn.disabled = false;
+    }
+  });
+
+  defaultBtn?.addEventListener("click", () => {
+    fillForm(DEFAULT_YARD);
+    hideYardSuggestions();
+    setStatus(true);
+    setMessage("Default yard loaded. Save to make it permanent.");
+  });
+
+  verifyBtn?.addEventListener("click", async () => {
+    verifyBtn.disabled = true;
+    setMessage("Verifying address...");
+    try {
+      await verifyYardAddress();
+    } catch (err) {
+      setMessage(err?.message || "Could not verify yard address.", "error");
+    } finally {
+      verifyBtn.disabled = false;
+    }
+  });
+
+  addressInput?.addEventListener("input", () => {
+    if (latInput) latInput.value = "";
+    if (lngInput) lngInput.value = "";
+    setMessage("");
+    clearTimeout(yardSearchTimer);
+    yardSearchTimer = setTimeout(suggestYardAddress, 250);
+  });
+
+  addressInput?.addEventListener("focusin", () => {
+    if (ensureYardSuggestions().hidden) yardSessionToken = uuid();
+    suggestYardAddress();
+  });
+
+  ensureYardSuggestions().addEventListener("click", event => {
+    const button = event.target.closest("[data-suggestion-idx]");
+    if (!button) return;
+    const suggestion = yardSuggestions[Number(button.dataset.suggestionIdx)];
+    retrieveYardSuggestion(suggestion);
+  });
+
+  document.addEventListener("mousedown", event => {
+    const suggestionsEl = ensureYardSuggestions();
+    if (event.target === addressInput || suggestionsEl.contains(event.target)) return;
+    hideYardSuggestions();
+  });
+
+  window.addEventListener("resize", () => {
+    if (yardSuggestionsEl && !yardSuggestionsEl.hidden) positionYardSuggestions();
+  });
+
+  root?.addEventListener("scroll", () => {
+    if (yardSuggestionsEl && !yardSuggestionsEl.hidden) positionYardSuggestions();
+  });
+
+  mapboxSaveBtn?.addEventListener("click", async () => {
+    mapboxSaveBtn.disabled = true;
+    setMapboxMessage("Saving...");
+    try {
+      await saveMapboxToken(mapboxTokenInput?.value || "");
+    } catch (err) {
+      setMapboxMessage(err?.message || "Could not save Mapbox token.", "error");
+    } finally {
+      mapboxSaveBtn.disabled = false;
+    }
+  });
+
+  window.RuxSettings = {
+    ...(window.RuxSettings || {}),
+    DEFAULT_YARD,
+    getYard: () => ({ ...currentYard }),
+    getMapboxToken: () => mapboxToken,
+    saveYard,
+    saveMapboxToken,
+  };
+  window.SettingsPanel = { init, reload: loadYard };
+
+  if (document.readyState !== "loading") init().catch(err => console.error("SettingsPanel init failed:", err));
+})();

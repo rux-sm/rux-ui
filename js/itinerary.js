@@ -15,7 +15,7 @@
      departPrev  = time you left the previous location heading to this card
      spot/arrive = time you arrive at this card's location
 
-   The yard is the implicit origin — hardcoded via YARD, no card needed.
+   The yard is the implicit origin — loaded from Settings with a fallback.
 
    API
    ---
@@ -27,15 +27,69 @@
 
 	/* ── Config ──────────────────────────────────────────────────────────── */
 
-	const YARD = {
+	const DEFAULT_YARD = {
 		name: "Yard",
 		address: "2801 Zinnia Ave, McAllen, TX 78504",
 	};
 
+	function getYard() {
+		const yard = window.RuxSettings?.getYard?.();
+		if (!yard || typeof yard !== "object") return DEFAULT_YARD;
+		return {
+			name: String(yard.name || DEFAULT_YARD.name).trim() || DEFAULT_YARD.name,
+			address: String(yard.address || DEFAULT_YARD.address).trim() || DEFAULT_YARD.address,
+			lat: yard.lat ?? null,
+			lng: yard.lng ?? null,
+		};
+	}
+
+	function getMapboxToken() {
+		return window.RuxSettings?.getMapboxToken?.() || "";
+	}
+
 	/* ── Default demo data ───────────────────────────────────────────────── */
 
+	function defaultPickup() {
+		return {
+			type: "pickup",
+			name: "",
+			address: "",
+			miles: "",
+			drive: "",
+			milesSource: "estimated",
+			driveSource: "estimated",
+			routeStatus: "stale",
+			departPrev: "",
+			spot: "",
+			lat: null,
+			lng: null,
+			mapboxId: null,
+		};
+	}
+
 	function defaultStops() {
-		return [];
+		return [defaultPickup()];
+	}
+
+	function normalizeStop(stop) {
+		const value = stop && typeof stop === "object" ? stop : {};
+		return {
+			...value,
+			type: value.type || "stop",
+			name: value.name || "",
+			address: value.address || "",
+			miles: value.miles || "",
+			drive: value.drive || "",
+			milesSource: value.milesSource === "manual" ? "manual" : "estimated",
+			driveSource: value.driveSource === "manual" ? "manual" : "estimated",
+			routeStatus: value.routeStatus === "stale" ? "stale" : "current",
+			departPrev: value.departPrev || "",
+			arrive: value.arrive || "",
+			spot: value.spot || "",
+			lat: value.lat ?? null,
+			lng: value.lng ?? null,
+			mapboxId: value.mapboxId || null,
+		};
 	}
 
 	/* ── Helpers ───────────────────────────────────────────────────── */
@@ -58,6 +112,37 @@
 			.replace(/'/g, "&#39;");
 	}
 
+	function formatDriveValue(minutes) {
+		return `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, "0")}`;
+	}
+
+	function sourceLabel(source) {
+		return source === "manual" ? "Manual" : "Est";
+	}
+
+	function sourceClass(source) {
+		return source === "manual" ? " rux-itin__source--manual" : "";
+	}
+
+	function routeSourceLabel(stop, field) {
+		const source = field === "miles" ? stop.milesSource : stop.driveSource;
+		return stop.routeStatus === "stale" ? "Route" : sourceLabel(source);
+	}
+
+	function routeSourceClass(stop, field) {
+		const source = field === "miles" ? stop.milesSource : stop.driveSource;
+		if (stop.routeStatus === "stale") return " rux-itin__source--stale";
+		return sourceClass(source);
+	}
+
+	function formatMilesValue(meters) {
+		return (meters / 1609.34).toFixed(1);
+	}
+
+	function uuid() {
+		return globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+	}
+
 	function parseTimeToMins(t) {
 		if (!t) return null;
 		const [h, m] = t.split(":").map(Number);
@@ -78,6 +163,11 @@
 			if (stops[i].type !== "day") return stops[i].name || "previous stop";
 		}
 		return null;
+	}
+
+	function fromYardText() {
+		const yard = getYard();
+		return `From ${yard.name || "yard"}`;
 	}
 
 	// Compute stats for the day segment ending at dayIdx (an "End day" marker).
@@ -287,9 +377,10 @@
 	function renderStop(stop, idx, stops) {
 		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
 		const prev = prevStopName(stops, idx);
-		const fromText = prev ? `From ${prev}` : "From yard";
+		const fromText = prev ? `From ${prev}` : fromYardText();
 		const isReturn = type === "return";
 		const statsSection = type === "sleeper" ? renderSleeperStats(stop, stops) : "";
+		const isStale = stop.routeStatus === "stale" && type !== "sleeper";
 
 		const time1Label = type === "sleeper" ? "Start" : "Depart";
 		const time2 =
@@ -308,10 +399,12 @@
 		const addrEl = isReturn
 			? `<div class="rux-itin__address">${escHtml(stop.address)}</div>`
 			: isSleeper ? ""
-			: `<input class="rux-input" type="text" data-field="address"
-               value="${escHtml(stop.address)}" placeholder="Address" />`;
+			: `<div class="rux-itin__address-wrap">
+               <input class="rux-input" type="text" data-field="address" autocomplete="off"
+                      value="${escHtml(stop.address)}" placeholder="Address" />
+             </div>`;
 
-		const deleteBtn = `
+		const deleteBtn = type === "pickup" ? "" : `
       <button class="rux-button rux-button--ghost rux-button--icon"
               type="button" data-delete-stop aria-label="Remove stop">
         <i data-lucide="x" class="rux-icon"></i>
@@ -323,7 +416,7 @@
           <span class="rux-itin__dot rux-itin__dot--${type}"></span>
           <span class="rux-itin__line"></span>
         </div>
-        <div class="rux-itin__card">
+        <div class="rux-itin__card${isStale ? " rux-itin__card--stale" : ""}">
           <div class="rux-itin__card-meta">
             <span class="rux-itin__badge rux-itin__badge--${type}">${TYPE_LABEL[type]}</span>
             <span class="rux-itin__from">${escHtml(fromText)}</span>
@@ -340,10 +433,16 @@
             <span class="rux-itin__field-label">${time2.label}</span>
             <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" />
             ${type !== "sleeper" ? `
-            <span class="rux-itin__field-label">Miles</span>
+            <span class="rux-itin__field-label rux-itin__field-label--with-source">
+              Miles
+              <span class="rux-itin__source${routeSourceClass(stop, "miles")}">${routeSourceLabel(stop, "miles")}</span>
+            </span>
             <input class="rux-input" type="number" data-field="miles"
                    value="${escHtml(stop.miles)}" min="0" step="0.1" placeholder="0" />
-            <span class="rux-itin__field-label">Drive</span>
+            <span class="rux-itin__field-label rux-itin__field-label--with-source">
+              Drive
+              <span class="rux-itin__source${routeSourceClass(stop, "drive")}">${routeSourceLabel(stop, "drive")}</span>
+            </span>
             <input class="rux-input" type="text" data-field="drive"
                    value="${escHtml(stop.drive)}" placeholder="h:mm" />` : ""}
           </div>
@@ -360,14 +459,40 @@
 		if (!summaryEl || !stopsEl) return;
 
 		const stops = defaultStops();
+		const recalcBtn = root.querySelector("#tp-itin-recalc");
 
 		/* — render helpers — */
+
+		function hasStaleRoutes() {
+			return stops.some((stop) => stop?.type !== "day" && stop?.type !== "sleeper" && stop.routeStatus === "stale");
+		}
+
+		function syncRouteButton() {
+			if (!recalcBtn) return;
+			const stale = hasStaleRoutes();
+			recalcBtn.classList.toggle("is-stale", stale);
+			recalcBtn.title = stale ? "Recalculate route updates" : "Recalculate route";
+		}
+
+		function markLegStale(idx) {
+			const stop = stops[idx];
+			if (!stop || stop.type === "day" || stop.type === "sleeper") return;
+			stop.routeStatus = "stale";
+		}
+
+		function markAffectedLegsStale(idx) {
+			markLegStale(idx);
+			const nextIdx = nextRealStopIndex(idx);
+			if (nextIdx >= 0) markLegStale(nextIdx);
+			syncRouteButton();
+		}
 
 		function renderStopList() {
 			stopsEl.innerHTML = stops
 				.map((item, idx) => (item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops)))
 				.join("");
 			if (window.lucide) lucide.createIcons();
+			syncRouteButton();
 		}
 
 		function updateSummary() {
@@ -384,13 +509,229 @@
 				const fromEl = el.querySelector(".rux-itin__from");
 				if (!fromEl) return;
 				const prev = prevStopName(stops, idx);
-				fromEl.textContent = prev ? `From ${prev}` : "From yard";
+				fromEl.textContent = prev ? `From ${prev}` : fromYardText();
 			});
+		}
+
+		let addressSearchTimer = null;
+		let addressSearchSeq = 0;
+		let addressSessionToken = uuid();
+		let activeAddressIdx = null;
+		let activeSuggestions = [];
+
+		const suggestionsEl = document.createElement("div");
+		suggestionsEl.className = "rux-itin__suggestions";
+		suggestionsEl.hidden = true;
+		suggestionsEl.setAttribute("role", "listbox");
+		suggestionsEl.setAttribute("aria-label", "Address suggestions");
+		document.body.appendChild(suggestionsEl);
+
+		function hideSuggestions() {
+			suggestionsEl.hidden = true;
+			suggestionsEl.innerHTML = "";
+			activeSuggestions = [];
+		}
+
+		function selectedAddressInput() {
+			if (activeAddressIdx === null) return null;
+			return stopsEl.querySelector(`[data-stop-idx="${activeAddressIdx}"] [data-field="address"]`);
+		}
+
+		function positionSuggestions(input) {
+			const rect = input.getBoundingClientRect();
+			const margin = 8;
+			const width = Math.max(rect.width, 240);
+			suggestionsEl.style.left = `${Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin))}px`;
+			suggestionsEl.style.top = `${rect.bottom + 4}px`;
+			suggestionsEl.style.width = `${Math.min(width, window.innerWidth - margin * 2)}px`;
+		}
+
+		function suggestionLabel(suggestion) {
+			return suggestion.full_address ||
+				[suggestion.name, suggestion.place_formatted].filter(Boolean).join(", ") ||
+				suggestion.name ||
+				"Address";
+		}
+
+		function renderSuggestions(input, suggestions) {
+			activeSuggestions = suggestions;
+			if (!suggestions.length) {
+				hideSuggestions();
+				return;
+			}
+			positionSuggestions(input);
+			suggestionsEl.innerHTML = suggestions.map((suggestion, i) => `
+        <button class="rux-itin__suggestion" type="button" role="option" data-suggestion-idx="${i}">
+          <span class="rux-itin__suggestion-name">${escHtml(suggestion.name || suggestionLabel(suggestion))}</span>
+          <span class="rux-itin__suggestion-address">${escHtml(suggestion.place_formatted || suggestion.full_address || "")}</span>
+        </button>
+      `).join("");
+			suggestionsEl.hidden = false;
+		}
+
+		async function suggestAddress(input, idx) {
+			const token = getMapboxToken();
+			const q = input.value.trim();
+			if (!token || q.length < 3) {
+				hideSuggestions();
+				return;
+			}
+			const seq = ++addressSearchSeq;
+			const url = new URL("https://api.mapbox.com/search/searchbox/v1/suggest");
+			url.searchParams.set("q", q);
+			url.searchParams.set("session_token", addressSessionToken);
+			url.searchParams.set("access_token", token);
+			url.searchParams.set("country", "US");
+			url.searchParams.set("types", "address,poi");
+			url.searchParams.set("limit", "5");
+			url.searchParams.set("proximity", "ip");
+			try {
+				const response = await fetch(url);
+				if (!response.ok) throw new Error(`Mapbox suggest failed: ${response.status}`);
+				const data = await response.json();
+				if (seq !== addressSearchSeq || activeAddressIdx !== idx) return;
+				renderSuggestions(input, data.suggestions || []);
+			} catch (err) {
+				console.warn("Address suggestions failed:", err);
+				hideSuggestions();
+			}
+		}
+
+		async function previousLocation(idx) {
+			for (let i = idx - 1; i >= 0; i--) {
+				const stop = stops[i];
+				if (!stop || stop.type === "day") continue;
+				if (stop.lat != null && stop.lng != null) return { lat: stop.lat, lng: stop.lng };
+				if (await geocodeStop(i)) return { lat: stop.lat, lng: stop.lng };
+				return null;
+			}
+			const yard = getYard();
+			return yard.lat != null && yard.lng != null ? { lat: yard.lat, lng: yard.lng } : null;
+		}
+
+		function nextRealStopIndex(idx) {
+			for (let i = idx + 1; i < stops.length; i++) {
+				if (stops[i]?.type !== "day") return i;
+			}
+			return -1;
+		}
+
+		function applyFeatureToStop(stop, feature, fallbackLabel = "") {
+			const props = feature?.properties || {};
+			const coords = feature?.geometry?.coordinates || [
+				props.coordinates?.longitude,
+				props.coordinates?.latitude,
+			];
+			const lng = Number(coords?.[0]);
+			const lat = Number(coords?.[1]);
+			if (!Number.isFinite(lat) || !Number.isFinite(lng)) return false;
+			stop.address = props.full_address || fallbackLabel || stop.address || "";
+			stop.name = stop.name || props.name || "";
+			stop.mapboxId = props.mapbox_id || props.feature_id || stop.mapboxId || null;
+			stop.lng = lng;
+			stop.lat = lat;
+			return true;
+		}
+
+		async function geocodeStop(idx) {
+			const token = getMapboxToken();
+			const stop = stops[idx];
+			if (!token || !stop || stop.type === "day" || stop.lat != null || stop.lng != null) return true;
+			const q = String(stop.address || "").trim();
+			if (q.length < 3) return false;
+
+			const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
+			url.searchParams.set("q", q);
+			url.searchParams.set("access_token", token);
+			url.searchParams.set("country", "US");
+			url.searchParams.set("types", "address,poi");
+			url.searchParams.set("limit", "1");
+			url.searchParams.set("proximity", "ip");
+			try {
+				const response = await fetch(url);
+				if (!response.ok) throw new Error(`Mapbox forward failed: ${response.status}`);
+				const data = await response.json();
+				return applyFeatureToStop(stop, data.features?.[0], q);
+			} catch (err) {
+				console.warn("Stop geocode failed:", err);
+				return false;
+			}
+		}
+
+		async function estimateLeg(idx, options = {}) {
+			const force = !!options.force;
+			const token = getMapboxToken();
+			const stop = stops[idx];
+			if (!token || !stop || stop.type === "day") return;
+			if ((stop.lat == null || stop.lng == null) && !(await geocodeStop(idx))) return;
+			const updateMiles = force || stop.milesSource !== "manual";
+			const updateDrive = force || stop.driveSource !== "manual";
+			if (!updateMiles && !updateDrive) return;
+			const prev = await previousLocation(idx);
+			if (!prev) return;
+			const coords = `${prev.lng},${prev.lat};${stop.lng},${stop.lat}`;
+			const url = new URL(`https://api.mapbox.com/directions/v5/mapbox/driving/${coords}`);
+			url.searchParams.set("overview", "false");
+			url.searchParams.set("access_token", token);
+			try {
+				const response = await fetch(url);
+				if (!response.ok) throw new Error(`Mapbox directions failed: ${response.status}`);
+				const data = await response.json();
+				const route = data.routes?.[0];
+				if (!route) return;
+				if (updateMiles) {
+					stop.miles = formatMilesValue(route.distance || 0);
+					stop.milesSource = "estimated";
+				}
+				if (updateDrive) {
+					stop.drive = formatDriveValue(Math.round((route.duration || 0) / 60));
+					stop.driveSource = "estimated";
+				}
+				stop.routeStatus = "current";
+				renderStopList();
+				updateSummary();
+			} catch (err) {
+				console.warn("Leg estimate failed:", err);
+			}
+		}
+
+		async function retrieveSuggestion(idx, suggestion) {
+			const token = getMapboxToken();
+			const stop = stops[idx];
+			if (!token || !stop || !suggestion?.mapbox_id) return;
+			const url = new URL(`https://api.mapbox.com/search/searchbox/v1/retrieve/${encodeURIComponent(suggestion.mapbox_id)}`);
+			url.searchParams.set("session_token", addressSessionToken);
+			url.searchParams.set("access_token", token);
+			try {
+				const response = await fetch(url);
+				if (!response.ok) throw new Error(`Mapbox retrieve failed: ${response.status}`);
+				const data = await response.json();
+				applyFeatureToStop(stop, data.features?.[0], suggestionLabel(suggestion));
+				stop.mapboxId = suggestion.mapbox_id || stop.mapboxId;
+				stop.name = stop.name || suggestion.name || "";
+				stop.milesSource = stop.milesSource === "manual" ? "manual" : "estimated";
+				stop.driveSource = stop.driveSource === "manual" ? "manual" : "estimated";
+				addressSessionToken = uuid();
+				hideSuggestions();
+				renderStopList();
+				updateFromLabels();
+				await estimateLeg(idx);
+				const nextIdx = nextRealStopIndex(idx);
+				if (nextIdx >= 0) await estimateLeg(nextIdx);
+			} catch (err) {
+				console.warn("Address retrieve failed:", err);
+			}
 		}
 
 		/* — initial render — */
 		updateSummary();
 		renderStopList();
+
+		async function recalculateRoute(options = {}) {
+			for (let i = 0; i < stops.length; i++) {
+				await estimateLeg(i, options);
+			}
+		}
 
 		/* — input changes — */
 		stopsEl.addEventListener("input", (e) => {
@@ -400,7 +741,60 @@
 			const field = e.target.dataset.field;
 			if (!field || !stops[idx]) return;
 			stops[idx][field] = e.target.value;
-			if (field === "miles" || field === "drive") updateSummary();
+			if (field === "address") {
+				activeAddressIdx = idx;
+				stops[idx].lat = null;
+				stops[idx].lng = null;
+				stops[idx].mapboxId = null;
+				markAffectedLegsStale(idx);
+				if (stops[idx].milesSource !== "manual") stops[idx].miles = "";
+				if (stops[idx].driveSource !== "manual") stops[idx].drive = "";
+				updateSummary();
+				clearTimeout(addressSearchTimer);
+				addressSearchTimer = setTimeout(() => suggestAddress(e.target, idx), 250);
+			}
+			if (field === "miles") {
+				stops[idx].milesSource = "manual";
+				stops[idx].routeStatus = "current";
+				syncRouteButton();
+				updateSummary();
+			}
+			if (field === "drive") {
+				stops[idx].driveSource = "manual";
+				stops[idx].routeStatus = "current";
+				syncRouteButton();
+				updateSummary();
+			}
+		});
+
+		stopsEl.addEventListener("focusin", (e) => {
+			if (e.target.dataset.field !== "address") return;
+			const stopEl = e.target.closest("[data-stop-idx]");
+			if (!stopEl) return;
+			const idx = parseInt(stopEl.dataset.stopIdx, 10);
+			if (activeAddressIdx !== idx) {
+				activeAddressIdx = idx;
+				addressSessionToken = uuid();
+			}
+			suggestAddress(e.target, idx);
+		});
+
+		suggestionsEl.addEventListener("click", (e) => {
+			const btn = e.target.closest("[data-suggestion-idx]");
+			if (!btn || activeAddressIdx === null) return;
+			const suggestion = activeSuggestions[parseInt(btn.dataset.suggestionIdx, 10)];
+			retrieveSuggestion(activeAddressIdx, suggestion);
+		});
+
+		document.addEventListener("mousedown", (e) => {
+			if (suggestionsEl.hidden) return;
+			if (suggestionsEl.contains(e.target)) return;
+			if (selectedAddressInput()?.contains(e.target)) return;
+			hideSuggestions();
+		});
+
+		document.addEventListener("keydown", (e) => {
+			if (e.key === "Escape") hideSuggestions();
 		});
 
 		// Update "From" labels after the user finishes editing a name field
@@ -424,16 +818,6 @@
 					const stop = stops[idx];
 					if (stop) {
 						stop[field] = e.target.value;
-						// Auto-calculate drive time from depart → arrive/spot
-						if (stop.type !== "sleeper") {
-							const dep = parseTimeToMins(stop.departPrev);
-							const arr = parseTimeToMins(stop.arrive || stop.spot);
-							if (dep !== null && arr !== null) {
-								const mins = minutesBetween(dep, arr);
-								if (mins !== null)
-									stop.drive = `${Math.floor(mins / 60)}:${String(mins % 60).padStart(2, "0")}`;
-							}
-						}
 					}
 				}
 				renderStopList();
@@ -449,10 +833,11 @@
 			if (!itemEl) return;
 			const idx = parseInt(itemEl.dataset.stopIdx, 10);
 			stops.splice(idx, 1);
+			const nextIdx = idx < stops.length ? nextRealStopIndex(idx - 1) : -1;
+			if (nextIdx >= 0) markLegStale(nextIdx);
 			updateSummary();
 			renderStopList();
 			syncReturnBtn();
-			syncPickupBtn();
 		});
 
 		/* — reorder stops — */
@@ -465,6 +850,8 @@
 			const newIdx = btn.hasAttribute("data-move-up") ? idx - 1 : idx + 1;
 			if (newIdx < 0 || newIdx >= stops.length) return;
 			[stops[idx], stops[newIdx]] = [stops[newIdx], stops[idx]];
+			const firstAffected = Math.min(idx, newIdx);
+			markAffectedLegsStale(firstAffected);
 			updateSummary();
 			renderStopList();
 		});
@@ -472,7 +859,9 @@
 		/* — add stop / pick-up — */
 		function insertBeforeReturn(newStop) {
 			const ri = stops.findIndex((s) => s.type === "return");
+			const insertIdx = ri >= 0 ? ri : stops.length;
 			ri >= 0 ? stops.splice(ri, 0, newStop) : stops.push(newStop);
+			markAffectedLegsStale(insertIdx);
 			updateSummary();
 			renderStopList();
 		}
@@ -484,25 +873,19 @@
 				address: "",
 				miles: "",
 				drive: "",
+				milesSource: "estimated",
+				driveSource: "estimated",
+				routeStatus: "stale",
 				departPrev: "",
 				arrive: "",
+				lat: null,
+				lng: null,
+				mapboxId: null,
 			});
 		});
 
-		const addPickupBtn = root.querySelector("#tp-itin-add-pickup");
-
-		function syncPickupBtn() {
-			if (addPickupBtn) addPickupBtn.disabled = stops.some((s) => s.type === "pickup");
-		}
-
-		addPickupBtn?.addEventListener("click", () => {
-			if (stops.some((s) => s.type === "pickup")) return;
-			insertBeforeReturn({ type: "pickup", name: "", address: "", miles: "", drive: "", departPrev: "", spot: "" });
-			syncPickupBtn();
-		});
-
 		root.querySelector("#tp-itin-add-sleeper")?.addEventListener("click", () => {
-			insertBeforeReturn({ type: "sleeper", name: "", address: "", miles: "", drive: "", departPrev: "", arrive: "" });
+			insertBeforeReturn({ type: "sleeper", name: "", address: "", miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: "", arrive: "" });
 		});
 
 		/* — add return to yard — */
@@ -514,22 +897,49 @@
 
 		addReturnBtn?.addEventListener("click", () => {
 			if (stops.some((s) => s.type === "return")) return;
+			const yard = getYard();
+			const returnIdx = stops.length;
 			stops.push({
 				type: "return",
-				name: YARD.name,
-				address: YARD.address,
+				name: yard.name,
+				address: yard.address,
+				lat: yard.lat ?? null,
+				lng: yard.lng ?? null,
 				miles: "",
 				drive: "",
+				milesSource: "estimated",
+				driveSource: "estimated",
+				routeStatus: "stale",
 				departPrev: "",
 				arrive: "",
 			});
 			updateSummary();
 			renderStopList();
 			syncReturnBtn();
+			estimateLeg(returnIdx);
 		});
 
 		syncReturnBtn();
-		syncPickupBtn();
+
+		document.addEventListener("settings:yard", () => {
+			stops.forEach((stop) => {
+				if (stop.type !== "return") return;
+				const yard = getYard();
+				stop.name = yard.name;
+				stop.address = yard.address;
+				stop.lat = yard.lat ?? null;
+				stop.lng = yard.lng ?? null;
+				stop.routeStatus = "stale";
+			});
+			updateFromLabels();
+			renderStopList();
+			const returnIdx = stops.findIndex((stop) => stop.type === "return");
+			if (returnIdx >= 0) estimateLeg(returnIdx);
+		});
+
+		root.querySelector("#tp-itin-recalc")?.addEventListener("click", () => {
+			recalculateRoute({ force: true });
+		});
 
 		/* — add day break — */
 		root.querySelector("#tp-itin-add-day")?.addEventListener("click", () => {
@@ -544,18 +954,17 @@
 			getStops: () => stops.slice(),
 			setStops: (newStops) => {
 				stops.length = 0;
-				stops.push(...newStops);
+				stops.push(...(newStops.length ? newStops.map(normalizeStop) : defaultStops()));
 				updateSummary();
 				renderStopList();
 				syncReturnBtn();
-				syncPickupBtn();
 			},
 			clearStops: () => {
 				stops.length = 0;
+				stops.push(...defaultStops());
 				updateSummary();
 				renderStopList();
 				syncReturnBtn();
-				syncPickupBtn();
 			},
 		};
 	}

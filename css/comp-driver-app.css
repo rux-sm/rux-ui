@@ -226,33 +226,14 @@
 	font-style: normal;
 }
 
-/* Drag handles hidden when not in manual order */
-.driver-app__table:not(.is-manual-order) .driver-app__drag-handle {
-	opacity: 0;
-	pointer-events: none;
-}
-
 /* — Row drag-to-reorder — */
 
-.driver-app__drag-col {
-	width: 2rem;
-	padding-right: 0;
-}
-
-.driver-app__drag-handle {
-	width: 2rem;
-	padding-right: 0;
-	color: var(--rux-fg-muted);
-	opacity: 0;
+.driver-app__table.is-manual-order .driver-app__row {
 	cursor: grab;
 }
 
-.driver-app__drag-handle:active {
+.driver-app__table.is-manual-order .driver-app__row:active {
 	cursor: grabbing;
-}
-
-.driver-app__row:hover .driver-app__drag-handle {
-	opacity: 1;
 }
 
 .driver-app__row.is-dragging {

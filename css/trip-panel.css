@@ -166,6 +166,13 @@
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	min-height: 0;
+	opacity: 1;
+	transition: opacity 0.2s ease-in;
+}
+
+.rux-trip-panel--loading .rux-trip-panel__body {
+	opacity: 0;
+	transition: none;
 }
 .rux-trip-panel__pane {
 	display: flex;

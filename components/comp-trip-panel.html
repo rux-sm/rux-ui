@@ -105,20 +105,6 @@
 						</div>
 					</div>
 
-					<div class="rux-trip-panel__cols-3">
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-dep">Departure</label>
-							<input class="rux-input" id="tp-dep" name="departureTime" type="time" />
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-spot">Spot</label>
-							<input class="rux-input" id="tp-spot" name="spotTime" type="time" />
-						</div>
-						<div class="rux-field">
-							<label class="rux-field__label" for="tp-return">Return</label>
-							<input class="rux-input" id="tp-return" name="returnTime" type="time" />
-						</div>
-					</div>
 
 					<div class="rux-field">
 						<label class="rux-field__label" for="tp-pickup">Pick-up address</label>
@@ -217,37 +203,47 @@
 							<button
 								class="rux-button rux-button--secondary"
 								type="button"
-								id="tp-itin-add-pickup"
-							>
-								Pick-up
-							</button>
-							<button
-								class="rux-button rux-button--secondary"
-								type="button"
 								id="tp-itin-add-stop"
+								title="Add stop"
 							>
-								Stop
+								<i data-lucide="map-pin" class="rux-icon"></i>
+								<span class="rux-btn-label">Stop</span>
 							</button>
 							<button
 								class="rux-button rux-button--secondary"
 								type="button"
 								id="tp-itin-add-sleeper"
+								title="Add sleep"
 							>
-								Sleeper
+								<i data-lucide="bed" class="rux-icon"></i>
+								<span class="rux-btn-label">Sleep</span>
 							</button>
 							<button
 								class="rux-button rux-button--secondary"
 								type="button"
 								id="tp-itin-add-day"
+								title="End day"
 							>
-								End day
+								<i data-lucide="calendar-x" class="rux-icon"></i>
+								<span class="rux-btn-label">End</span>
 							</button>
 							<button
 								class="rux-button rux-button--secondary"
 								type="button"
 								id="tp-itin-add-return"
+								title="Add return"
 							>
-								Return
+								<i data-lucide="undo-2" class="rux-icon"></i>
+								<span class="rux-btn-label">Return</span>
+							</button>
+							<button
+								class="rux-button rux-button--secondary"
+								type="button"
+								id="tp-itin-recalc"
+								title="Recalculate route"
+							>
+								<i data-lucide="route" class="rux-icon"></i>
+								<span class="rux-btn-label">Route</span>
 							</button>
 						</div>
 					</div>

@@ -51,10 +51,11 @@
 	--rux-color-neutral: oklch(80% 0.004 0);
 
 	--rux-bg-topbar: oklch(0% 0.004 260);
-	--rux-bg: oklch(20% 0.004 260); /* canvas — the lowest plane              */
-	--rux-bg-sunken: oklch(28% 0.004 260); /* inputs, code, recessed surfaces        */
+	--rux-bg: oklch(0% 0.004 260); /* canvas — the lowest plane              */
+	--rux-bg-sunken: oklch(0% 0.004 260); /* inputs, code, recessed surfaces        */
 	--rux-bg-elevated: oklch(20% 0.004 260); /* panels, cards, modals                  */
 	--rux-bg-3: oklch(32% 0.004 260); /* panels, cards, modals */
+	--rux-bg-bus:oklch(50% 0.004 260);
 	--rux-bg-hover: #292929; /* interactive rows, lifted surfaces      */
 	--rux-bg-active: #303030; /* pressed / selected                     */
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim                  */

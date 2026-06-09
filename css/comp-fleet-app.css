@@ -46,9 +46,9 @@
 	flex-shrink: 0;
 	width: var(--rux-avatar-md);
 	height: var(--rux-avatar-md);
-	background: var(--rux-bg-3);
-	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg-muted);
+	background: var(--rux-color-white);
+	border-radius: var(--rux-radius-xl);
+	color: var(--rux-fg);
 	user-select: none;
 }
 

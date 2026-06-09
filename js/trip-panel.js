@@ -55,13 +55,30 @@ function renderRequirements(container, items, { block = true } = {}) {
 		.join("");
 }
 
+function busOptsHtml(buses) {
+	return buses.map((b) => `<option value="${escHtml(b.id)}">${escHtml(b.number)}</option>`).join("");
+}
+
+function driverOptsHtml(drivers) {
+	return `<option value="" disabled selected>Assign driver…</option>` +
+		drivers.map((d) => `<option value="${escHtml(d.id)}">${escHtml(d.name)}</option>`).join("");
+}
+
+function refreshGroupOptions(group, buses, drivers) {
+	const busOpts   = busOptsHtml(buses);
+	const driverOpts = driverOptsHtml(drivers);
+	group.querySelectorAll("select[name]").forEach(select => {
+		const prev = select.value;
+		select.innerHTML = select.name.endsWith(".busId")
+			? `<option value="" disabled selected>Select bus…</option>${busOpts}`
+			: driverOpts;
+		select.value = prev;
+	});
+}
+
 function buildBusGroup(idx, buses, drivers) {
-	const busList = buses;
-	const driverList = drivers;
-	const busOpts = busList.map((b) => `<option value="${escHtml(b.id)}">${escHtml(b.number)}</option>`).join("");
-	const driverOpts =
-		`<option value="" disabled selected>Assign driver…</option>` +
-		driverList.map((d) => `<option value="${escHtml(d.id)}">${escHtml(d.name)}</option>`).join("");
+	const busOpts    = busOptsHtml(buses);
+	const driverOpts = driverOptsHtml(drivers);
 
 	const roleRows = [
 		{ role: "coDriver", icon: "user-plus", title: "Co-driver" },
@@ -119,11 +136,20 @@ function buildBusGroup(idx, buses, drivers) {
 }
 
 function renderBusGroups(container, n, buses, drivers) {
-	container.innerHTML = "";
-	for (let i = 0; i < n; i++) {
-		container.appendChild(buildBusGroup(i, buses, drivers));
+	const current = container.querySelectorAll(".rux-trip-panel__bus-group").length;
+	if (n > current) {
+		// Add new groups at the end — never touch existing ones
+		for (let i = current; i < n; i++) {
+			container.appendChild(buildBusGroup(i, buses, drivers));
+		}
+		if (window.lucide) lucide.createIcons();
+	} else if (n < current) {
+		// Remove from the end
+		const groups = container.querySelectorAll(".rux-trip-panel__bus-group");
+		for (let i = current - 1; i >= n; i--) {
+			groups[i].remove();
+		}
 	}
-	if (window.lucide) lucide.createIcons();
 }
 
 function setTripOptions(root, { buses = [], drivers = [] } = {}) {
@@ -141,8 +167,15 @@ function updateTripOptions(root, options = {}) {
 	const busesInput = root.querySelector("#tp-buses");
 	if (!busGroupsEl || !busesInput) return;
 
-	const n = Math.max(1, Math.min(20, parseInt(busesInput.value, 10) || 1));
 	const { buses, drivers } = getTripOptions(root);
+
+	// Refresh option lists in existing groups without disturbing selected values
+	busGroupsEl.querySelectorAll(".rux-trip-panel__bus-group").forEach(group => {
+		refreshGroupOptions(group, buses, drivers);
+	});
+
+	// Add or remove groups to match the current count
+	const n = Math.max(1, Math.min(20, parseInt(busesInput.value, 10) || 1));
 	renderBusGroups(busGroupsEl, n, buses, drivers);
 }
 

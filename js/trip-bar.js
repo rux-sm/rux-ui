@@ -209,14 +209,14 @@ function fmtTime(str) {
   if (/[ap]m$/i.test(str.trim()))
     return str
       .trim()
-      .replace(/\s*AM$/i, "a")
-      .replace(/\s*PM$/i, "p");
+      .replace(/\s*AM$/i, " am")
+      .replace(/\s*PM$/i, " pm");
   // 24h HH:MM
   const m = str.match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return str;
   let h = parseInt(m[1], 10);
   const min = m[2];
-  const suffix = h < 12 ? "a" : "p";
+  const suffix = h < 12 ? " am" : " pm";
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
   return min === "00" ? `${h}${suffix}` : `${h}:${min}${suffix}`;
@@ -303,6 +303,24 @@ function isLateReturn(returnTime) {
   if (!returnTime) return false;
   const hour = parseInt(returnTime.split(":")[0], 10);
   return hour < 5; // 00:xx–04:xx = crossed midnight
+}
+
+function sortedTripStops(trip) {
+  return Array.isArray(trip.trip_stops)
+    ? [...trip.trip_stops].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+    : [];
+}
+
+function tripBarTimes(trip) {
+  const stops = sortedTripStops(trip);
+  const pickup = stops.find((stop) => stop.type === "pickup");
+  const returnStop = [...stops].reverse().find((stop) => stop.type === "return");
+
+  return {
+    departureTime: pickup?.depart_prev,
+    spotTime: pickup?.spot,
+    returnTime: returnStop?.arrive,
+  };
 }
 
 function isPaidTrip(trip) {
@@ -537,9 +555,10 @@ export function createTripBar(trip, callbacks = {}) {
 
   const time = document.createElement("div");
   time.className = "rux-trip-bar__time";
-  const middleTime = trip.spotTime;
+  const displayTimes = tripBarTimes(trip);
+  const middleTime = displayTimes.spotTime;
   time.append(
-    timeItem("Dep", fmtTime(trip.departureTime)),
+    timeItem("Dep", fmtTime(displayTimes.departureTime)),
     timeItem(
       "Spt",
       middleTime ? fmtTime(middleTime) : "—",
@@ -547,8 +566,8 @@ export function createTripBar(trip, callbacks = {}) {
     ),
     timeItem(
       "Arr",
-      fmtTime(trip.returnTime),
-      isLateReturn(trip.returnTime) ? "rux-trip-bar__time-value--late" : "",
+      fmtTime(displayTimes.returnTime),
+      isLateReturn(displayTimes.returnTime) ? "rux-trip-bar__time-value--late" : "",
     ),
   );
 

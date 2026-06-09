@@ -202,11 +202,11 @@
                   <div class="rux-itin__summary" id="tp-itin-summary"></div>
                   <div class="rux-itin__stops" id="tp-itin-stops"></div>
                   <div class="rux-itin__actions">
-                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-pickup">Pick-up</button>
-                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-stop">Stop</button>
-                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-sleeper">Sleeper</button>
-                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-day">End day</button>
-                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-return">Return</button>
+                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-stop" title="Add stop"><i data-lucide="map-pin" class="rux-icon"></i><span class="rux-btn-label">Stop</span></button>
+                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-sleeper" title="Add sleep"><i data-lucide="bed" class="rux-icon"></i><span class="rux-btn-label">Sleep</span></button>
+                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-day" title="End day"><i data-lucide="calendar-x" class="rux-icon"></i><span class="rux-btn-label">End</span></button>
+                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-return" title="Add return"><i data-lucide="undo-2" class="rux-icon"></i><span class="rux-btn-label">Return</span></button>
+                    <button class="rux-button rux-button--secondary" type="button" id="tp-itin-recalc" title="Recalculate route"><i data-lucide="route" class="rux-icon"></i><span class="rux-btn-label">Route</span></button>
                   </div>
                 </div>
               </div>
@@ -416,7 +416,7 @@
       // Hoist date constants so the calendar renders before any async work
       const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
       const dayHeadEls = document.querySelectorAll(".rux-scheduler__day-head");
-      const todayIso = new Date().toISOString().slice(0, 10);
+      const todayIso = isoDate(new Date());
       let currentWeekStart = startOfWeek(new Date());
 
       renderDayHeaders(currentWeekStart);
@@ -540,28 +540,33 @@
           (t.trip_assignments ?? []).forEach(assignment => {
             if (!assignment.buses) return;
             const key = assignment.id;
-            const primaryDriver = (assignment.trip_drivers ?? []).find(d => d.role === "driver");
+            const primaryDriver = (assignment.drivers ?? []).find(d => d.role === "driver");
 
             trips[key] = {
               id:            t.id,
               trip_ref:      t.trip_ref,
               assignmentId:  assignment.id,
               busId:         assignment.bus_id,
-              // embed assignments so loadTrip can repopulate the Fleet tab
               assignments:   (t.trip_assignments ?? []).map(a => ({
-                bus_id:      a.bus_id,
-                position:    a.position,
-                trip_drivers: a.trip_drivers ?? [],
+                bus_id:   a.bus_id,
+                position: a.position,
+                drivers:  a.drivers ?? [],
               })),
+              trip_stops:    t.trip_stops ?? [],
               startDate:     t.start_date,
               endDate:       t.end_date,
+              trip_type:     t.trip_type,
               destination:   t.destination,
               customer:      t.customer,
               departureTime: t.departure_time,
               spotTime:      t.spot_time,
               returnTime:    t.return_time,
               notes:         t.notes,
-              bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone },
+              bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone, email: t.booking_contact_email },
+              bus_count:     t.bus_count,
+              req_sleeper:   t.req_sleeper, req_56pax: t.req_56pax, req_ada: t.req_ada,
+              need_hotel:    t.need_hotel, need_fuel_card: t.need_fuel_card,
+              confirmed:     t.confirmed,
               invoiceStatus: t.invoice_status,
               paymentStatus: t.contract_status,
               estimatedMiles: t.est_miles,
@@ -571,7 +576,7 @@
               invoiceNumber: t.invoice_number,
               datePaid:      t.date_paid,
               paymentRefs:   [t.payment_ref_1, t.payment_ref_2, t.payment_ref_3].filter(Boolean),
-              drivers: (assignment.trip_drivers ?? []).map(td => ({
+              drivers: (assignment.drivers ?? []).map(td => ({
                 name:      td.drivers?.name,
                 shortName: td.drivers?.short_name || td.drivers?.name,
                 status:    "confirmed",

@@ -289,7 +289,7 @@
 	border-radius: 50%;
 	vertical-align: middle;
 	flex-shrink: 0;
-	border: var(--rux-border-width) solid color-mix(in srgb, currentColor 20%, transparent);
+	border: var(--rux-border-width) solid color-mix(in srgb, currentColor 50%, transparent);
 }
 
 .fleet-app__truncate {
@@ -302,25 +302,12 @@
 
 /* — Row drag-to-reorder — */
 
-.fleet-app__drag-col {
-	width: 2rem;
-	padding-right: 0;
-}
-
-.fleet-app__drag-handle {
-	width: 2rem;
-	padding-right: 0;
-	color: var(--rux-fg-muted);
-	opacity: 0;
+.fleet-app__table.is-manual-order .fleet-app__row {
 	cursor: grab;
 }
 
-.fleet-app__drag-handle:active {
+.fleet-app__table.is-manual-order .fleet-app__row:active {
 	cursor: grabbing;
-}
-
-.fleet-app__row:hover .fleet-app__drag-handle {
-	opacity: 1;
 }
 
 .fleet-app__row.is-dragging {
@@ -336,9 +323,4 @@
 	font-size: var(--rux-text-sm);
 	color: var(--rux-fg-subtle);
 	text-align: center;
-}
-
-.fleet-app__table:not(.is-manual-order) .fleet-app__drag-handle {
-	opacity: 0;
-	pointer-events: none;
 }

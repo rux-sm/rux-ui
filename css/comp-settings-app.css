@@ -1,0 +1,196 @@
+/* ==========================================================================
+   SETTINGS APP — GLOBAL DEFAULTS
+   ========================================================================== */
+
+.settings-app__main {
+	display: flex;
+	flex-direction: column;
+	flex: none;
+	width: 100%;
+	min-width: 0;
+	min-height: 100%;
+	overflow: visible;
+}
+
+.scheduler-app__module[data-module="settings"] {
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.settings-app__header {
+	flex: none;
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.settings-app__subtitle {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	line-height: var(--rux-leading-snug);
+}
+
+.settings-app__body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-5);
+	flex: none;
+	overflow: visible;
+	padding: var(--rux-space-5);
+}
+
+.settings-app__panel {
+	flex: none;
+	width: min(100%, 46rem);
+	max-width: 46rem;
+	background: var(--rux-bg);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-md);
+	overflow: hidden;
+}
+
+.settings-app__panel-header {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-5);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.settings-app__panel-title {
+	margin: 0;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-lg);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: 0;
+	line-height: var(--rux-leading-tight);
+}
+
+.settings-app__panel-copy {
+	margin: var(--rux-space-1) 0 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	line-height: var(--rux-leading-snug);
+}
+
+.settings-app__form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-5);
+}
+
+.settings-app__grid-2 {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-4);
+}
+
+.settings-app__footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-4) var(--rux-space-5);
+	background: var(--rux-bg-sunken);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.settings-app__message {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	line-height: var(--rux-leading-snug);
+}
+
+.settings-app__message.is-error {
+	color: var(--rux-danger);
+}
+
+.settings-app__message.is-success {
+	color: var(--rux-success);
+}
+
+.settings-app__actions {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+	flex: none;
+}
+
+.settings-app__suggestions {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+	min-width: 12rem;
+	max-width: min(28rem, calc(100vw - var(--rux-space-4)));
+	max-height: 16rem;
+	overflow: auto;
+	padding: var(--rux-space-1);
+	background: var(--rux-bg-elevated);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-md);
+	box-shadow: var(--rux-shadow-lg);
+}
+
+.settings-app__suggestions[hidden] {
+	display: none;
+}
+
+.settings-app__suggestion {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	width: 100%;
+	min-height: var(--rux-control-height);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	background: transparent;
+	border: 0;
+	border-radius: var(--rux-radius-sm);
+	color: var(--rux-fg);
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.settings-app__suggestion:hover,
+.settings-app__suggestion:focus-visible {
+	outline: none;
+	background: var(--rux-bg-hover);
+}
+
+.settings-app__suggestion-name {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+	line-height: var(--rux-leading-snug);
+}
+
+.settings-app__suggestion-address {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	line-height: var(--rux-leading-snug);
+}
+
+@media (max-width: 640px) {
+	.settings-app__body {
+		padding: var(--rux-space-3);
+	}
+
+	.settings-app__panel-header,
+	.settings-app__footer {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.settings-app__grid-2 {
+		grid-template-columns: 1fr;
+	}
+
+	.settings-app__actions {
+		width: 100%;
+	}
+
+	.settings-app__actions .rux-button {
+		flex: 1 1 9rem;
+	}
+}

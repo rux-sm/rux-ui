@@ -120,6 +120,10 @@
     });
   }
 
+  function localIsoDate(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
   function fmtTripDates(start, end) {
     if (!start) return "";
     const s  = new Date(start + "T00:00:00");
@@ -134,11 +138,11 @@
 
   function serviceExpiryClass(iso) {
     if (!iso) return "fleet-app__expiry";
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localIsoDate();
     if (iso < today) return "fleet-app__expiry fleet-app__expiry--expired";
     const warn = new Date();
     warn.setMonth(warn.getMonth() + 3);
-    if (iso <= warn.toISOString().slice(0, 10))
+    if (iso <= localIsoDate(warn))
       return "fleet-app__expiry fleet-app__expiry--warn";
     return "fleet-app__expiry";
   }
@@ -251,7 +255,6 @@
     // Rebuild thead
     const theadRow = table.querySelector("thead tr");
     theadRow.innerHTML =
-      `<th scope="col" class="fleet-app__drag-col" aria-label="Reorder"></th>` +
       `<th scope="col" data-sort="number">Vehicle</th>` +
       activeCols.map(c => c.head).join("");
     if (window.lucide) lucide.createIcons({ nodes: [...theadRow.querySelectorAll("[data-lucide]")] });
@@ -261,11 +264,12 @@
     tbody.innerHTML = "";
     if (!list.length) {
       tbody.innerHTML =
-        `<tr><td colspan="${2 + activeCols.length}" class="fleet-app__empty">No vehicles — add one to get started.</td></tr>`;
+        `<tr><td colspan="${1 + activeCols.length}" class="fleet-app__empty">No vehicles — add one to get started.</td></tr>`;
       return;
     }
 
     let dragSrcIdx = null;
+    let didDragRow = false;
 
     list.forEach((b, idx) => {
       const tr = document.createElement("tr");
@@ -274,22 +278,22 @@
       tr.dataset.id     = b.id;
       tr.dataset.idx    = idx;
       tr.dataset.status = b.status || "active";
-
-      const handleTd = document.createElement("td");
-      handleTd.className = "fleet-app__drag-handle";
-      handleTd.innerHTML = `<i data-lucide="grip-vertical" class="rux-icon rux-icon--sm"></i>`;
-
-      handleTd.addEventListener("pointerdown", () => { if (sortKey === "order") tr.draggable = true; });
+      tr.draggable      = sortKey === "order";
 
       tr.addEventListener("dragstart", e => {
+        if (sortKey !== "order") {
+          e.preventDefault();
+          return;
+        }
         dragSrcIdx = idx;
+        didDragRow = true;
         tr.classList.add("is-dragging");
         e.dataTransfer.effectAllowed = "move";
       });
       tr.addEventListener("dragend", () => {
-        tr.draggable = false;
         tr.classList.remove("is-dragging");
         tbody.querySelectorAll(".is-drag-target").forEach(el => el.classList.remove("is-drag-target"));
+        setTimeout(() => { didDragRow = false; }, 0);
       });
       tr.addEventListener("dragover", e => {
         if (dragSrcIdx !== null && dragSrcIdx !== idx) {
@@ -303,8 +307,10 @@
         e.preventDefault();
         if (dragSrcIdx === null || dragSrcIdx === idx) return;
         const toIdx = idx;
-        const [moved] = allBuses.splice(dragSrcIdx, 1);
-        allBuses.splice(toIdx, 0, moved);
+        const orderedBuses = getSortedBuses();
+        const [moved] = orderedBuses.splice(dragSrcIdx, 1);
+        orderedBuses.splice(toIdx, 0, moved);
+        allBuses = orderedBuses;
         dragSrcIdx = null;
         await saveBusOrder();
       });
@@ -312,7 +318,7 @@
       const typeTitle   = b.type || "Motorcoach";
       const hexColor    = b.color && /^#[0-9a-fA-F]{6}$/.test(b.color) ? b.color : null;
       const avatarStyle = hexColor
-        ? `style="background:color-mix(in srgb,${hexColor} 20%,var(--rux-bg-3));"`
+        ? `style="background:color-mix(in srgb,${hexColor} 50%,var(--rux-bg-bus));"`
         : "";
 
       tr.innerHTML = `
@@ -328,10 +334,11 @@
         </td>
       ` + activeCols.map(c => c.cell(b)).join("");
 
-      tr.prepend(handleTd);
-
       tr.addEventListener("click", e => {
-        if (e.target.closest(".fleet-app__drag-handle")) return;
+        if (didDragRow) {
+          e.preventDefault();
+          return;
+        }
         selectRow(tr, b);
       });
       tr.addEventListener("keydown", (e) => {
@@ -341,7 +348,7 @@
       tbody.appendChild(tr);
     });
 
-    if (window.lucide) lucide.createIcons({ nodes: [...tbody.querySelectorAll(".fleet-app__avatar, .fleet-app__equip-icon, .fleet-app__drag-handle")] });
+    if (window.lucide) lucide.createIcons({ nodes: [...tbody.querySelectorAll(".fleet-app__avatar, .fleet-app__equip-icon")] });
   }
 
   function selectRow(tr, b) {
@@ -688,6 +695,7 @@
       const matchF = statusFilter === "all" || row.dataset.status === statusFilter;
       row.hidden = !(matchQ && matchF);
     });
+    updateSaveOrderState();
   }
 
   function updateFilterHeaders(table) {
@@ -782,7 +790,7 @@
       th.classList.toggle("is-sort-desc", key === sortKey && sortDir === "desc");
     });
     table.classList.toggle("is-manual-order", sortKey === "order");
-    if (saveOrderBtn) saveOrderBtn.hidden = (sortKey === "order");
+    updateSaveOrderState();
   }
 
   async function saveBusOrder() {
@@ -793,7 +801,24 @@
     try { await db.reorderBuses(updates); } catch (err) { console.error("reorderBuses failed:", err); }
   }
 
+  function hasActiveFleetFilter() {
+    return !!searchInput.value.trim() ||
+      Object.values(FLEET_COL_FILTERS).some(def => def.get() !== "all");
+  }
+
+  function updateSaveOrderState() {
+    if (!saveOrderBtn) return;
+    const isManualOrder = sortKey === "order";
+    const blockedByFilter = hasActiveFleetFilter();
+    saveOrderBtn.hidden = isManualOrder;
+    saveOrderBtn.disabled = !isManualOrder && blockedByFilter;
+    saveOrderBtn.title = blockedByFilter
+      ? "Clear search and filters before setting manual order"
+      : "Set current sort as manual order";
+  }
+
   async function lockCurrentOrder() {
+    if (sortKey === "order" || hasActiveFleetFilter()) return;
     allBuses = getSortedBuses();
     sortKey = "order";
     sortDir = "asc";
