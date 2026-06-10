@@ -83,6 +83,7 @@
 	--_bg-h: var(--rux-control-ghost-hover);
 	--_bg-a: var(--rux-control-ghost-active);
 	--_border: var(--rux-control-ghost-border);
+	--_border: solid transparent; /* override to preserve layout when border color changes on hover/active */
 	--_shadow: none;
 }
 .rux-button--ghost:focus-visible {

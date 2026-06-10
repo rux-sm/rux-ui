@@ -146,74 +146,76 @@
                   <h2 class="rux-trip-panel__title" id="trip-panel-title">Trip editor</h2>
                   <span class="rux-trip-panel__id" id="tp-trip-id"></span>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-import-btn" type="button" title="Import from JSON">
-                  <i data-lucide="upload" class="rux-icon"></i>
-                </button>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-close" aria-label="Close panel">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
                   <i data-lucide="x" class="rux-icon"></i>
                 </button>
               </header>
               <nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
-                <div class="rux-segmented rux-segmented--ghost" data-trip-tabs>
-                  <button class="rux-button" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><i data-lucide="info" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Info</span></button>
-                  <button class="rux-button" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><i data-lucide="receipt" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Bill</span></button>
-                  <button class="rux-button" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-icon rux-trip-panel__route-icon" aria-hidden="true"></span><span class="rux-trip-panel__tab-label">Route</span></button>
-                  <button class="rux-button" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon rux-trip-panel__fleet-icon" aria-hidden="true"></span><span class="rux-trip-panel__tab-label">Fleet</span></button>
-                  <button class="rux-button" aria-selected="false" aria-controls="pane-docs"      aria-label="Docs"  title="Docs"><i data-lucide="files" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Docs</span></button>
+                <div data-trip-tabs>
+                  <button class="rux-button rux-button--toggle" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><i data-lucide="info" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Info</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><i data-lucide="receipt" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Bill</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-icon rux-trip-panel__route-icon" aria-hidden="true"></span><span class="rux-trip-panel__tab-label">Route</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon rux-trip-panel__fleet-icon" aria-hidden="true"></span><span class="rux-trip-panel__tab-label">Fleet</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-docs"      aria-label="Docs"  title="Docs"><i data-lucide="files" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Docs</span></button>
                 </div>
               </nav>
               <div class="rux-trip-panel__body">
                 <!-- Trip -->
                 <div id="pane-trip" class="rux-trip-panel__pane" role="tabpanel">
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field">
-                      <label class="rux-field__label">Trip type</label>
-                      <div class="rux-segmented" id="tp-trip-type" data-rux-toggle-group><button class="rux-button is-active" aria-pressed="true">Round trip</button><button class="rux-button" aria-pressed="false">One way</button></div>
-                    </div>
-                    <div class="rux-field">
-                      <label class="rux-field__label" id="tp-buses-label">Buses</label>
-                      <div class="rux-segmented" data-rux-stepper role="group" aria-labelledby="tp-buses-label">
-                        <button class="rux-button rux-button--icon" type="button" data-stepper-dec aria-label="Fewer buses" disabled><i data-lucide="minus" class="rux-icon"></i></button>
-                        <span class="rux-stepper__count" aria-live="polite">1</span>
-                        <button class="rux-button rux-button--icon" type="button" data-stepper-inc aria-label="More buses"><i data-lucide="plus" class="rux-icon"></i></button>
-                        <input type="hidden" id="tp-buses" name="busesNeeded" value="1" min="1" max="20" />
+                  <div class="rux-card">
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field">
+                        <label class="rux-field__label">Trip type</label>
+                        <div class="rux-segmented" id="tp-trip-type" data-rux-toggle-group><button class="rux-button is-active" aria-pressed="true">Round trip</button><button class="rux-button" aria-pressed="false">One way</button></div>
+                      </div>
+                      <div class="rux-field">
+                        <label class="rux-field__label" id="tp-buses-label">Buses</label>
+                        <div class="rux-segmented" data-rux-stepper role="group" aria-labelledby="tp-buses-label">
+                          <button class="rux-button rux-button--icon" type="button" data-stepper-dec aria-label="Fewer buses" disabled><i data-lucide="minus" class="rux-icon"></i></button>
+                          <span class="rux-stepper__count" aria-live="polite">1</span>
+                          <button class="rux-button rux-button--icon" type="button" data-stepper-inc aria-label="More buses"><i data-lucide="plus" class="rux-icon"></i></button>
+                          <input type="hidden" id="tp-buses" name="busesNeeded" value="1" min="1" max="20" />
+                        </div>
                       </div>
                     </div>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-customer">Customer</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Customer name" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" placeholder="Destination" /></div>
+                    </div>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
+                    </div>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-book-name">Name</label><input class="rux-input" id="tp-book-name" name="bookingContact.name" type="text" placeholder="Contact name" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-book-phone">Phone</label><input class="rux-input" id="tp-book-phone" name="bookingContact.phone" type="tel" placeholder="Phone number" /></div>
+                    </div>
+                    <div class="rux-field"><label class="rux-field__label" for="tp-book-email">Email</label><input class="rux-input" id="tp-book-email" name="bookingContact.email" type="email" placeholder="contact@example.com" /></div>
                   </div>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-customer">Customer</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Customer name" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" placeholder="Destination" /></div>
-                  </div>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
-                  </div>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-book-name">Name</label><input class="rux-input" id="tp-book-name" name="bookingContact.name" type="text" placeholder="Contact name" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-book-phone">Phone</label><input class="rux-input" id="tp-book-phone" name="bookingContact.phone" type="tel" placeholder="Phone number" /></div>
-                  </div>
-                  <div class="rux-field"><label class="rux-field__label" for="tp-book-email">Email</label><input class="rux-input" id="tp-book-email" name="bookingContact.email" type="email" placeholder="contact@example.com" /></div>
                 </div>
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-price">Quoted price</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-deposit">Amount paid</label><div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-deposit" name="depositAmount" type="number" min="0" step="0.01" placeholder="0.00" /><span class="rux-input-group__suffix"><button class="rux-button rux-button--ghost rux-button--sm rux-button--icon" id="tp-paid-full-btn" type="button" title="Mark paid in full"><i data-lucide="circle-check" class="rux-icon"></i></button></span></div></div>
-                  </div>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-date-paid">Date Paid</label><input class="rux-input" id="tp-date-paid" name="datePaid" type="date" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-pay-ref-1">Payment Method</label><input class="rux-input" id="tp-pay-ref-1" name="paymentRef1" type="text" placeholder="Ref" /><span hidden><input class="rux-input" id="tp-pay-ref-2" name="paymentRef2" type="text" /><input class="rux-input" id="tp-pay-ref-3" name="paymentRef3" type="text" /></span></div>
-                  </div>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-inv-num">Invoice Number</label><input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" placeholder="INV-" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-po">PO Number</label><input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="PO / ref" /></div>
+                  <div class="rux-card">
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-price">Quoted price</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-deposit">Amount paid</label><div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-deposit" name="depositAmount" type="number" min="0" step="0.01" placeholder="0.00" /><span class="rux-input-group__suffix"><button class="rux-button rux-button--ghost rux-button--sm rux-button--icon" id="tp-paid-full-btn" type="button" title="Mark paid in full"><i data-lucide="circle-check" class="rux-icon"></i></button></span></div></div>
+                    </div>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-date-paid">Date Paid</label><input class="rux-input" id="tp-date-paid" name="datePaid" type="date" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-pay-ref-1">Payment Method</label><input class="rux-input" id="tp-pay-ref-1" name="paymentRef1" type="text" placeholder="Ref" /><span hidden><input class="rux-input" id="tp-pay-ref-2" name="paymentRef2" type="text" /><input class="rux-input" id="tp-pay-ref-3" name="paymentRef3" type="text" /></span></div>
+                    </div>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-inv-num">Invoice Number</label><input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" placeholder="INV-" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-po">PO Number</label><input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="PO / ref" /></div>
+                    </div>
                   </div>
                 </div>
                 <!-- Itinerary -->
                 <div id="pane-itinerary" class="rux-trip-panel__pane rux-trip-panel__pane--flush" role="tabpanel" hidden>
                   <div class="rux-itin" id="tp-itin">
                     <div class="rux-itin__summary" id="tp-itin-summary">
-                      <button class="rux-button rux-button--ghost rux-button--sm" type="button" id="tp-itin-recalc" title="Recalculate route"><i data-lucide="route" class="rux-icon"></i><span>Route</span></button>
+                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-import-btn" title="Import from JSON" aria-label="Import from JSON"><i data-lucide="upload" class="rux-icon"></i></button>
+                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Recalculate route"><i data-lucide="route" class="rux-icon"></i></button>
                     </div>
                     <div class="rux-itin__stops" id="tp-itin-stops"></div>
                   </div>
@@ -270,11 +272,11 @@
 
           <section class="scheduler-app__schedule" aria-label="Weekly schedule">
             <header class="scheduler-app__bar">
-              <div class="scheduler-app__brand">
-                <h1 class="scheduler-app__title" id="week-label"></h1>
-              </div>
               <div class="scheduler-app__toolbar">
                 <nav class="scheduler-app__nav" aria-label="Week">
+                  <button class="rux-button rux-button--ghost rux-button--icon" id="open-trip-panel" aria-label="Open trip editor" aria-pressed="false">
+                    <i data-lucide="panel-right-open" class="rux-icon"></i>
+                  </button>
                   <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
                     <i data-lucide="chevron-left" class="rux-icon"></i>
                   </button>
@@ -287,19 +289,22 @@
                   </button>
                 </nav>
               </div>
+              <div class="scheduler-app__brand">
+                <h1 class="scheduler-app__title" id="week-label"></h1>
+              </div>
             </header>
             <div class="scheduler-app__schedule-wrap">
               <div class="rux-scheduler scheduler-app__grid" id="scheduler">
                 <div class="rux-scheduler__col-head">
                   <span class="rux-scheduler__corner-label"></span>
                 </div>
-                <div class="rux-scheduler__day-head rux-scheduler__day-head--today">Mon</div>
-                <div class="rux-scheduler__day-head">Tue</div>
-                <div class="rux-scheduler__day-head">Wed</div>
-                <div class="rux-scheduler__day-head">Thu</div>
-                <div class="rux-scheduler__day-head">Fri</div>
-                <div class="rux-scheduler__day-head">Sat</div>
-                <div class="rux-scheduler__day-head">Sun</div>
+                <div class="rux-scheduler__day-head rux-scheduler__day-head--today">Monday</div>
+                <div class="rux-scheduler__day-head">Tuesday</div>
+                <div class="rux-scheduler__day-head">Wednesday</div>
+                <div class="rux-scheduler__day-head">Thursday</div>
+                <div class="rux-scheduler__day-head">Friday</div>
+                <div class="rux-scheduler__day-head">Saturday</div>
+                <div class="rux-scheduler__day-head">Sunday</div>
               </div>
             </div>
           </section>
@@ -879,8 +884,16 @@
       let fetchTrips = null;
       let pendingNewTripContext = null;
 
-      function openDrawer() { drawer.classList.add("is-open"); }
-      function closeDrawer() { drawer.classList.remove("is-open"); newTrip?.(tripPanel, itinerary); }
+      const openTripPanelBtn = document.getElementById("open-trip-panel");
+      function openDrawer() {
+        drawer.classList.add("is-open");
+        openTripPanelBtn?.setAttribute("aria-pressed", "true");
+      }
+      function closeDrawer() {
+        drawer.classList.remove("is-open");
+        openTripPanelBtn?.setAttribute("aria-pressed", "false");
+        newTrip?.(tripPanel, itinerary);
+      }
 
       // ── Trips module → scheduler bridge ────────────────────────────────────
 
@@ -903,9 +916,6 @@
         setActiveTripPane("pane-trip");
         openDrawer();
       });
-
-document.getElementById("tp-btn-close")
-        .addEventListener("click", closeDrawer);
 
       function setActiveTripPane(panelId) {
         const tab = tripPanel.querySelector(`.rux-trip-panel__tabs .rux-button[aria-controls="${panelId}"]`);
@@ -1420,6 +1430,9 @@ document.getElementById("tp-btn-close")
       document.getElementById("prev-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart, -7); renderScheduler(); });
       document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  7); renderScheduler(); });
       document.getElementById("today-btn").addEventListener("click", () => { currentWeekStart = startOfWeek(new Date()); renderScheduler(); });
+      openTripPanelBtn.addEventListener("click", () => {
+        if (drawer.classList.contains("is-open")) { closeDrawer(); } else { openDrawer(); }
+      });
 
       renderScheduler();
 

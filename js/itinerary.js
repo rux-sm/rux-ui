@@ -436,16 +436,21 @@
 
 		const nameEl = isReturn
 			? `<span class="rux-itin__name">${escHtml(stop.name)}</span>`
-			: `<input class="rux-input" type="text" data-field="name"
+			: `<input class="rux-input" type="text" data-field="name" autocomplete="organization"
                value="${escHtml(stop.name)}" placeholder="${isSleeper ? "Hotel / location name" : "Location name"}" />`;
 
 		const isVerified = !!(stop.lat && stop.lng);
+		const showAddrIcon = isStale || isVerified;
 		const addrEl = isReturn
 			? `<div class="rux-itin__address">${escHtml(stop.address)}</div>`
-			: `<div class="rux-itin__address-wrap${isVerified ? " is-verified" : ""}">
-               <input class="rux-input" type="text" data-field="address" autocomplete="off"
+			: `<div class="rux-itin__address-wrap${showAddrIcon ? " is-verified" : ""}">
+               <input class="rux-input" type="text" data-field="address" autocomplete="street-address"
                       value="${escHtml(stop.address)}" placeholder="Address" />
-               ${isVerified ? '<i data-lucide="circle-check" class="rux-icon rux-itin__addr-check"></i>' : ""}
+               ${isStale
+				? '<i data-lucide="circle-alert" class="rux-icon rux-itin__addr-check rux-itin__addr-check--stale"></i>'
+				: isVerified
+					? '<i data-lucide="circle-check" class="rux-icon rux-itin__addr-check"></i>'
+					: ""}
              </div>`;
 
 		const isDraggable = type !== "pickup" && type !== "return";
@@ -506,6 +511,7 @@
 
 		const stops = defaultStops();
 		const recalcBtn = root.querySelector("#tp-itin-recalc");
+		const importBtn = root.querySelector("#tp-import-btn");
 
 		let yardCoordsCache = null;
 		let yardAddressCacheKey = null;
@@ -581,6 +587,7 @@
 
 		function updateSummary() {
 			summaryEl.innerHTML = renderSummary(stops);
+			if (importBtn) summaryEl.appendChild(importBtn);
 			if (recalcBtn) summaryEl.appendChild(recalcBtn);
 		}
 

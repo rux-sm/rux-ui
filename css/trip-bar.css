@@ -204,7 +204,9 @@
 	padding-inline: var(--rux-space-2);
 	justify-content: start;
 	background: var(--rux-trip-bar-actions-bg);
+	background: transparent; /* override */
 	border: var(--rux-border-width) solid var(--rux-border);
+	border: none; /* override */
 	border-radius: var(--rux-radius-sm) var(--rux-radius-sm) 0 0;
 	opacity: 0;
 	pointer-events: none;

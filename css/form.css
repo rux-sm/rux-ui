@@ -20,7 +20,7 @@
   max-width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-space-3);
-  background-color: var(--rux-bg-level-2);
+  background-color: var(--rux-bg-level-form);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
   border: solid transparent var(--rux-border-width);

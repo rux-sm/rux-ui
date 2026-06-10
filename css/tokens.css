@@ -63,12 +63,13 @@
 	
 	/* The absolute base (OLED black) */
 	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
+	--rux-bg-level-form: oklch(from var(--rux-color-base) 18% c h);
 
 	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 18% c h);
 
 	/* Elevated elements like floating cards or popovers */
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 30% c h);
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 24% c h);
 
 	/* Highest contrast accents / Badges */
 	--rux-bg-level-3: oklch(from var(--rux-color-base) 40% c h);
@@ -87,7 +88,7 @@
 	--rux-border: oklch(38% 0.004 260); /* default — separates surfaces           */
 	/*--rux-border: oklch(70% 0.2 24); /* debug borders */
 	--rux-border-strong: #4a4a4a; /* emphasized — focused/selected card     */
-	--rux-border-subtle: #292929; /* whisper — grouping inside a card       */
+	--rux-border-subtle: oklch(from var(--rux-color-base) 30% c h); /* whisper — grouping inside a card       */
 	--rux-grid-line: var(--rux-border-subtle); /* dense tables, calendars, schedulers */
 	--rux-grid-border: var(--rux-border); /* outer edge for grid surfaces        */
 
@@ -104,7 +105,7 @@
 	--rux-control-strip-bg-hover: oklch(33% 0.004 260); /* inactive item hover inside a strip      */
 	--rux-control-strip-bg-active: oklch(40% 0.004 260); /* selected item inside a pill-strip       */
 
-	--rux-control-bg: oklch(43% 0.004 260);
+	--rux-control-bg: oklch(from var(--rux-color-base) 28% c h);
 	--rux-control-bg-disabled: oklch(24% 0.004 260);
 	--rux-control-bg-hover: oklch(50% 0.004 260);
 	--rux-control-bg-active: oklch(36% 0.004 260);
@@ -209,7 +210,7 @@
 	--rux-border-width: 1px;
 
 	--rux-control-height: 32px;
-	--rux-segmented-height: 30px;
+	--rux-segmented-height: 32px;
 	--rux-field-height: 32px; /* unified with --rux-control-height */
 	--rux-textarea-min-height: 84px;
 	--rux-switch-width: 52px;

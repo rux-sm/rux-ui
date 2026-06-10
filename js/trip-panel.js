@@ -48,8 +48,8 @@ function renderRequirements(container, items, { block = true } = {}) {
 	container.innerHTML = items
 		.map(
 			(req) =>
-				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.key)}">
-					<i data-lucide="${escHtml(req.icon)}" class="rux-icon"></i> ${escHtml(req.label)}
+				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.key)}" title="${escHtml(req.label)}">
+					<i data-lucide="${escHtml(req.icon)}" class="rux-icon"></i><span class="rux-btn-label"> ${escHtml(req.label)}</span>
 				</button>`,
 		)
 		.join("");

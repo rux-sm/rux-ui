@@ -26,10 +26,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: var(--rux-bg-topbar);
+	background: var(--rux-bg-level-0);
 	min-width: 0;
 	gap: var(--rux-space-4);
-	padding: var(--rux-space-4);
+	padding: var(--rux-space-2) var(--rux-space-4);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 
@@ -118,8 +118,9 @@
 .rux-panel__footer {
 	flex: none;
 	display: flex;
-	padding: var(--rux-space-3) var(--rux-space-4);
+	padding: var(--rux-space-4) var(--rux-space-4);
 	border-top: var(--rux-border-width) solid var(--rux-border);
+	border-top: solid transparent var(--rux-border-width); /* override */
 }
 
 .rux-panel__footer > .rux-button {
@@ -131,7 +132,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	gap: var(--rux-space-4);
-	padding: var(--rux-space-3) var(--rux-space-4);
+	padding: var(--rux-space-2) var(--rux-space-4);
 	border-bottom: solid transparent var(--rux-border-width);
 }
 
@@ -156,7 +157,7 @@
 
 .scheduler-app__brand {
 	flex-direction: column;
-	align-items: flex-start;
+	align-items: flex-end;
 	flex: 1 1 auto;
 	min-width: 0;
 	gap: var(--rux-space-1);
@@ -262,7 +263,11 @@
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
-	margin-block-end: var(--rux-space-4);
+	margin: var(--rux-space-3);
+	padding-block-end: var(--rux-space-3);
+	background: var(--rux-bg-level-1);
+	border-radius: var(--rux-radius-lg);
+	overflow: hidden;
 }
 
 /* — Trip panel drawer — */
@@ -273,7 +278,7 @@
 	width: 0;
 	min-height: 0;
 	overflow: hidden;
-	transition: width 280ms ease;
+	transition: width 280ms ease, padding 280ms ease;
 
 	display: flex;
 	flex-direction: column;
@@ -281,6 +286,7 @@
 
 .scheduler-app__drawer.is-open {
 	width: var(--drawer-width, 380px);
+	padding: var(--rux-space-3);
 }
 
 .scheduler-app__drawer.is-resizing {
@@ -290,10 +296,38 @@
 .scheduler-app__drawer .rux-trip-panel {
 	flex: 1 1 auto;
 	min-height: 0;
-	width: var(--drawer-width, 380px);
-	border-left: none;
-	border-right: var(--rux-border-width) solid var(--rux-border);
+	width: calc(var(--drawer-width, 380px) - 2 * var(--rux-space-3));
+	border: none;
+	border-radius: var(--rux-radius-lg);
 }
+
+/* — Panel edge tab — */
+
+.scheduler-app__panel-tab {
+	flex: none;
+	width: var(--rux-control-height);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: none;
+	border-left: var(--rux-border-width) solid var(--rux-border);
+	color: var(--rux-fg-subtle);
+	cursor: pointer;
+	padding: 0;
+	transition:
+		background var(--rux-duration-fast),
+		color var(--rux-duration-fast);
+}
+
+.scheduler-app__panel-tab:hover {
+	background: var(--rux-control-ghost-hover);
+	color: var(--rux-fg);
+}
+
+.scheduler-app__panel-tab [data-lucide="panel-left-close"] { display: none; }
+.scheduler-app__panel-tab[aria-pressed="true"] [data-lucide="panel-left-close"] { display: block; }
+.scheduler-app__panel-tab[aria-pressed="true"] [data-lucide="panel-left-open"] { display: none; }
 
 .scheduler-app__drawer-handle {
 	position: absolute;
@@ -323,7 +357,7 @@
 		border-right: none;
 	}
 
-
+	.scheduler-app__panel-tab { display: none; }
 
 	/* Push content above the fixed bottom tab bar */
 	.scheduler-app {

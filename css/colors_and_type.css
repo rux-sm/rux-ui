@@ -51,7 +51,7 @@ html {
 }
 
 body {
-  background: var(--rux-bg);
+  background: var(--rux-bg-level-0);
   color: var(--rux-fg);
   font-family: var(--rux-font-sans);
   font-size: var(--rux-text-md);

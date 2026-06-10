@@ -30,7 +30,7 @@
 	height: 100%;
 	min-height: 0;
 	overflow: clip;
-	background: var(--rux-bg);
+	background: var(--rux-bg-level-1);
 	border-left: var(--rux-border-width) solid var(--rux-border);
 	container-type: inline-size;
 }
@@ -43,8 +43,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-4) var(--rux-space-4);
-	padding-bottom: 0px;
+	padding:var(--rux-space-2) var(--rux-space-4);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: solid transparent var(--rux-border-width);
 }
@@ -112,37 +111,25 @@
 	flex: none;
 	display: flex;
 	align-items: center;
-	padding: var(--rux-space-2) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
+	padding: 0 var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	gap: var(--rux-space-2);
+	border-top: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-top: solid transparent var(--rux-border-width);
+	border-bottom: solid transparent var(--rux-border-width);
 	overflow-x: auto;
 	scrollbar-width: none;
 }
 .rux-trip-panel__tabs::-webkit-scrollbar {
 	display: none;
 }
-.rux-trip-panel__tabs .rux-segmented {
+.rux-trip-panel__tabs [data-trip-tabs] {
 	display: contents;
 }
-.rux-trip-panel__tabs .rux-segmented .rux-button {
+.rux-trip-panel__tabs .rux-button--toggle {
 	flex: 1;
 	gap: var(--rux-space-1);
-	min-width: 0;
 	padding: var(--rux-space-1) var(--rux-space-3);
-	background: var(--rux-bg-elevated);
-	border: none;
-	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg-muted);
-	transition: color 0.15s ease, background 0.15s ease;
-}
-.rux-trip-panel__tabs .rux-segmented .rux-button:hover {
-	background: var(--rux-bg-elevated);
-	color: var(--rux-fg);
-}
-.rux-trip-panel__tabs .rux-segmented .rux-button.is-active,
-.rux-trip-panel__tabs .rux-segmented .rux-button[aria-selected="true"] {
-	background: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
 }
 .rux-trip-panel__status-group .rux-button {
 	gap: var(--rux-space-1);
@@ -215,6 +202,17 @@
 	gap: 0;
 }
 
+/* — Card — */
+
+.rux-card {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-4);
+	background: var(--rux-bg-level-2);
+	border-radius: var(--rux-radius-lg);
+}
+
 /* — Form layout helpers — */
 
 .rux-trip-panel__cols-2,
@@ -278,7 +276,7 @@
 	align-items: start;
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-3) var(--rux-space-3);
-	background: var(--rux-bg-sunken);
+	background: var(--rux-bg-level-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 .rux-trip-panel__bus-hint {
@@ -416,10 +414,10 @@
 .rux-trip-panel__footer {
 	align-items: start;
 	gap: var(--rux-space-2);
-	background: var(--rux-bg-sunken);
+	background: var(--rux-bg-level-1);
 }
 
-@container (max-width: 360px) {
+@container (max-width: 460px) {
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;
@@ -427,7 +425,7 @@
 	}
 	.rux-trip-panel__tab-label,
 	.rux-trip-panel__status-label,
-	.rux-trip-panel__footer .rux-btn-label {
+	.rux-btn-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -437,5 +435,10 @@
 		clip: rect(0 0 0 0);
 		white-space: nowrap;
 		border: 0;
+	}
+	#tp-vehicle-reqs .rux-button--block,
+	#tp-driver-needs .rux-button {
+		flex: 1;
+		padding: 0;
 	}
 }
