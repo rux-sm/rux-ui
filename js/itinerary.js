@@ -241,19 +241,12 @@
 		}
 		const grossMins = minutesBetween(firstDepart, lastArrive);
 
-		// Sleeper dwell = check-in (arrive) → next card's departPrev
-		// Summed and subtracted from gross to get net on-duty.
+		// Sleeper rest = departPrev (STR) → arrive (END), same interval shown on the sleeper card.
 		let sleeperDwell = 0;
 		for (let i = startIdx; i < dayIdx; i++) {
 			if (stops[i].type !== "sleeper") continue;
-			const checkIn = parseTimeToMins(stops[i].arrive);
-			for (let j = i + 1; j < dayIdx; j++) {
-				if (stops[j].type !== "day" && stops[j].departPrev) {
-					const d = minutesBetween(checkIn, parseTimeToMins(stops[j].departPrev));
-					if (d !== null) sleeperDwell += d;
-					break;
-				}
-			}
+			const d = minutesBetween(parseTimeToMins(stops[i].departPrev), parseTimeToMins(stops[i].arrive));
+			if (d !== null) sleeperDwell += d;
 		}
 		const netMins = grossMins !== null ? Math.max(0, grossMins - sleeperDwell) : null;
 
