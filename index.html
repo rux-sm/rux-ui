@@ -212,14 +212,10 @@
                 <!-- Itinerary -->
                 <div id="pane-itinerary" class="rux-trip-panel__pane rux-trip-panel__pane--flush" role="tabpanel" hidden>
                   <div class="rux-itin" id="tp-itin">
-                    <div class="rux-itin__summary" id="tp-itin-summary"></div>
-                    <div class="rux-itin__stops" id="tp-itin-stops"></div>
-                    <div class="rux-itin__actions">
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-stop" title="Add stop"><i data-lucide="map-pin" class="rux-icon"></i><span class="rux-btn-label">Stop</span></button>
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-sleeper" title="Add sleep"><i data-lucide="bed" class="rux-icon"></i><span class="rux-btn-label">Sleep</span></button>
-                      <button class="rux-button rux-button--secondary" type="button" id="tp-itin-add-day" title="End day"><i data-lucide="calendar-x" class="rux-icon"></i><span class="rux-btn-label">End</span></button>
-<button class="rux-button rux-button--secondary" type="button" id="tp-itin-recalc" title="Recalculate route"><i data-lucide="route" class="rux-icon"></i><span class="rux-btn-label">Route</span></button>
+                    <div class="rux-itin__summary" id="tp-itin-summary">
+                      <button class="rux-button rux-button--ghost rux-button--sm" type="button" id="tp-itin-recalc" title="Recalculate route"><i data-lucide="route" class="rux-icon"></i><span>Route</span></button>
                     </div>
+                    <div class="rux-itin__stops" id="tp-itin-stops"></div>
                   </div>
                 </div>
                 <!-- Dispatch -->
@@ -725,6 +721,35 @@
                     <button class="rux-button rux-button--primary" id="settings-mapbox-save-btn" type="button">
                       <i data-lucide="save" class="rux-icon"></i>
                       <span class="rux-btn-label">Save token</span>
+                    </button>
+                  </div>
+                </footer>
+              </section>
+
+              <section class="settings-app__panel" aria-labelledby="settings-defaults-title">
+                <header class="settings-app__panel-header">
+                  <div>
+                    <h2 class="settings-app__panel-title" id="settings-defaults-title">Trip Defaults</h2>
+                    <p class="settings-app__panel-copy">Default values applied when building itineraries.</p>
+                  </div>
+                </header>
+
+                <div class="settings-app__form">
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="settings-spot-padding">Spot padding (min)</label>
+                    <div class="rux-input-group rux-input-group--suffix" style="max-width:8rem">
+                      <input class="rux-input" id="settings-spot-padding" type="number" min="0" max="120" step="5" value="15" />
+                      <span class="rux-input-group__suffix">min</span>
+                    </div>
+                    <span class="rux-field__help">When DEP is set on a pickup card, SPT is auto-filled as DEP minus this value.</span>
+                  </div>
+                </div>
+
+                <footer class="settings-app__footer">
+                  <div class="settings-app__actions">
+                    <button class="rux-button rux-button--primary" id="settings-spot-padding-save-btn" type="button">
+                      <i data-lucide="save" class="rux-icon"></i>
+                      <span class="rux-btn-label">Save</span>
                     </button>
                   </div>
                 </footer>

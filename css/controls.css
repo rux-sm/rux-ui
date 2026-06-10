@@ -166,6 +166,15 @@
 
 /* — icon-only — */
 
+/* sm — 24 px tall; combine with --icon for a 24×24 close/action button */
+.rux-button--sm {
+	--_h: 24px;
+	padding: 0 var(--rux-space-2);
+	font-size: var(--rux-text-xs);
+	color: var(--rux-fg-muted);
+	border: solid transparent; /* maintain hit area when padding is removed for icon-only */
+}
+
 .rux-button--icon {
 	flex: 0 0 var(--_h);
 	width: var(--_h);

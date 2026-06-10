@@ -117,6 +117,15 @@
 		return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
 	}
 
+	function parseClockMins(t) {
+		if (!t) return null;
+		const parts = String(t).split(":");
+		const h = parseInt(parts[0], 10);
+		const m = parseInt(parts[1], 10);
+		if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
+		return h * 60 + m;
+	}
+
 	function formatDriveMins(mins) {
 		return `${Math.floor(mins / 60)}h ${String(mins % 60).padStart(2, "0")}m`;
 	}
@@ -329,7 +338,7 @@
 		if (mins === 0) return "—";
 		const h = Math.floor(mins / 60);
 		const m = mins % 60;
-		return m === 0 ? `${h}h` : `${h}h ${String(m).padStart(2, "0")}`;
+		return m === 0 ? `${h}h` : `${h}h ${String(m).padStart(2, "0")}m`;
 	}
 
 	function computeOnDuty(stops) {
@@ -353,24 +362,15 @@
 		const totalDrive = real.reduce((n, s) => n + parseDriveMins(s.drive), 0);
 		const dayCount = stops.filter((s) => s.type === "day").length + 1;
 		const onDutyMins = computeOnDuty(stops);
-		const milesStr = totalMiles === 0 ? "—" : (totalMiles % 1 === 0 ? `${totalMiles} mi` : `${totalMiles.toFixed(1)} mi`);
+		const parts = [];
+		if (totalMiles > 0) parts.push(`${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)} mi`);
+		parts.push(`${dayCount} ${dayCount === 1 ? "day" : "days"}`);
+		if (totalDrive > 0) parts.push(`${formatDriveMinsCompact(totalDrive)} dr`);
+		if (onDutyMins !== null) parts.push(`${formatDriveMinsCompact(onDutyMins)} duty`);
+		const statsHtml = parts.map((p) => `<span class="rux-itin__seg-stat">${p}</span>`).join("");
 		return `
-      <div class="rux-itin__stat">
-        <span class="rux-itin__stat-label">Miles</span>
-        <span class="rux-itin__stat-value">${milesStr}</span>
-      </div>
-      <div class="rux-itin__stat">
-        <span class="rux-itin__stat-label">Days</span>
-        <span class="rux-itin__stat-value">${dayCount}</span>
-      </div>
-      <div class="rux-itin__stat">
-        <span class="rux-itin__stat-label">Drive</span>
-        <span class="rux-itin__stat-value">${formatDriveMinsCompact(totalDrive)}</span>
-      </div>
-      <div class="rux-itin__stat">
-        <span class="rux-itin__stat-label">Duty</span>
-        <span class="rux-itin__stat-value">${onDutyMins !== null ? formatDriveMinsCompact(onDutyMins) : "—"}</span>
-      </div>`;
+      <span class="rux-itin__day-badge rux-itin__summary-badge">Trip</span>
+      <div class="rux-itin__seg-stats">${statsHtml}</div>`;
 	}
 
 	function renderFinalDaySummary(stops) {
@@ -397,32 +397,30 @@
       </div>`;
 	}
 
+	function formatDayLabel(label) {
+		const m = label.match(/^(\w+),\s+(\w+)\s+(\d+),\s+\d{4}$/);
+		if (!m) return label;
+		const [, weekday, month, day] = m;
+		return `${weekday.slice(0, 3).toUpperCase()} · ${month.slice(0, 3).toUpperCase()} ${day}`;
+	}
+
 	function renderDay(item, idx, stops) {
 		const stats = computeSegmentStats(stops, idx);
 		return `
-      <div class="rux-itin__day" data-stop-idx="${idx}">
-        <span class="rux-itin__day-badge">${escHtml(item.label)}</span>
+      <div class="rux-itin__day" data-stop-idx="${idx}" draggable="true">
+        <span class="rux-itin__day-badge">${escHtml(formatDayLabel(item.label))}</span>
         ${renderSegStats(stats)}
         <div class="rux-itin__card-actions">
-          ${reorderBtns(idx, stops)}
-          <button class="rux-button rux-button--ghost rux-button--icon"
+          <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
+                  type="button" data-drag-handle aria-label="Drag to reorder">
+            <i data-lucide="grip-vertical" class="rux-icon"></i>
+          </button>
+          <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
                   type="button" data-delete-stop aria-label="Remove day break">
             <i data-lucide="x" class="rux-icon"></i>
           </button>
         </div>
       </div>`;
-	}
-
-	function reorderBtns(idx, stops) {
-		const upDis  = idx === 0 || stops[idx - 1]?.type === "pickup"  ? " disabled" : "";
-		const downDis = idx === stops.length - 1 || stops[idx + 1]?.type === "return" ? " disabled" : "";
-		return `
-        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-move-up${upDis} aria-label="Move up">
-          <i data-lucide="chevron-up" class="rux-icon"></i>
-        </button>
-        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-move-down${downDis} aria-label="Move down">
-          <i data-lucide="chevron-down" class="rux-icon"></i>
-        </button>`;
 	}
 
 	const TYPE_LABEL = { pickup: "Pick-up", stop: "Stop", sleeper: "Sleeper", return: "Return" };
@@ -445,34 +443,38 @@
 
 		const nameEl = isReturn
 			? `<span class="rux-itin__name">${escHtml(stop.name)}</span>`
-			: isSleeper ? ""
 			: `<input class="rux-input" type="text" data-field="name"
-               value="${escHtml(stop.name)}" placeholder="Location name" />`;
+               value="${escHtml(stop.name)}" placeholder="${isSleeper ? "Hotel / location name" : "Location name"}" />`;
 
+		const isVerified = !!(stop.lat && stop.lng);
 		const addrEl = isReturn
 			? `<div class="rux-itin__address">${escHtml(stop.address)}</div>`
-			: isSleeper ? ""
-			: `<div class="rux-itin__address-wrap">
+			: `<div class="rux-itin__address-wrap${isVerified ? " is-verified" : ""}">
                <input class="rux-input" type="text" data-field="address" autocomplete="off"
                       value="${escHtml(stop.address)}" placeholder="Address" />
+               ${isVerified ? '<i data-lucide="circle-check" class="rux-icon rux-itin__addr-check"></i>' : ""}
              </div>`;
 
-		const deleteBtn = (type === "pickup" || type === "return") ? "" : `
-      <button class="rux-button rux-button--ghost rux-button--icon"
-              type="button" data-delete-stop aria-label="Remove stop">
-        <i data-lucide="x" class="rux-icon"></i>
-      </button>`;
+		const isDraggable = type !== "pickup" && type !== "return";
+		const cardActions = isDraggable ? `
+            <div class="rux-itin__card-actions">
+              <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
+                      type="button" data-drag-handle aria-label="Drag to reorder">
+                <i data-lucide="grip-vertical" class="rux-icon"></i>
+              </button>
+              <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
+                      type="button" data-delete-stop aria-label="Remove stop">
+                <i data-lucide="x" class="rux-icon"></i>
+              </button>
+            </div>` : "";
 
 		return `
-      <div class="rux-itin__stop" data-stop-idx="${idx}">
+      <div class="rux-itin__stop" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
         <div class="rux-itin__card${isStale ? " rux-itin__card--stale" : ""}">
           <div class="rux-itin__card-meta">
             <span class="rux-itin__badge rux-itin__badge--${type}">${TYPE_LABEL[type]}</span>
             <span class="rux-itin__from">${escHtml(fromText)}</span>
-            <div class="rux-itin__card-actions">
-              ${(type !== "pickup" && type !== "return") ? reorderBtns(idx, stops) : ""}
-              ${deleteBtn}
-            </div>
+            ${cardActions}
           </div>
           ${addrEl}
           ${nameEl ? `<div class="rux-itin__card-head">${nameEl}</div>` : ""}
@@ -491,8 +493,11 @@
                      value="${escHtml(stop.miles)}" min="0" step="0.1" placeholder="0" />
               <span class="rux-input-group__suffix">mi</span>
             </div>
-            <input class="rux-input" type="text" data-field="drive"
-                   value="${escHtml(stop.drive)}" placeholder="h:mm" />` : ""}
+            <div class="rux-input-group rux-input-group--suffix">
+              <input class="rux-input" type="text" data-field="drive"
+                     value="${escHtml(stop.drive)}" placeholder="0:00" />
+              <span class="rux-input-group__suffix">hr</span>
+            </div>` : ""}
           </div>
           ${statsSection}
         </div>
@@ -508,6 +513,9 @@
 
 		const stops = defaultStops();
 		const recalcBtn = root.querySelector("#tp-itin-recalc");
+
+		let yardCoordsCache = null;
+		let yardAddressCacheKey = null;
 
 		/* — render helpers — */
 
@@ -535,10 +543,44 @@
 			syncRouteButton();
 		}
 
+		function renderGapRow(stop, nextStop, idx) {
+			if (stop.type === "return") return "";
+			let dwellLabel = "";
+			if (stop.type === "stop" && nextStop && nextStop.type !== "day") {
+				const dep = parseClockMins(nextStop.departPrev);
+				const arr = parseClockMins(stop.arrive);
+				if (dep !== null && arr !== null) {
+					const mins = dep >= arr ? dep - arr : dep - arr + 1440;
+					if (mins > 0) dwellLabel = `<span class="rux-itin__gap-dwell">${formatDriveMinsCompact(mins)}</span>`;
+				}
+			}
+			return `<div class="rux-itin__gap" data-insert-row>
+				<div class="rux-itin__gap-trigger" data-insert-expand="${idx}" role="button" tabindex="0" aria-label="Insert here">
+					<i data-lucide="plus" class="rux-icon rux-itin__gap-plus"></i>
+					<div class="rux-itin__insert-actions">
+						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="stop">
+						  <i data-lucide="map-pin" class="rux-icon"></i><span>Stop</span>
+						</button>
+						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="sleeper">
+						  <i data-lucide="bed" class="rux-icon"></i><span>Sleep</span>
+						</button>
+						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="day">
+						  <i data-lucide="calendar-x" class="rux-icon"></i><span>End day</span>
+						</button>
+					</div>
+					${dwellLabel}
+				</div>
+			</div>`;
+		}
+
 		function renderStopList() {
 			stopsEl.innerHTML =
 				stops
-					.map((item, idx) => (item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops)))
+					.map((item, idx) => {
+						const html = item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops);
+						const gapRow = renderGapRow(item, stops[idx + 1], idx);
+						return html + gapRow;
+					})
 					.join("") + renderFinalDaySummary(stops);
 			if (window.lucide) lucide.createIcons();
 			syncRouteButton();
@@ -546,6 +588,7 @@
 
 		function updateSummary() {
 			summaryEl.innerHTML = renderSummary(stops);
+			if (recalcBtn) summaryEl.appendChild(recalcBtn);
 		}
 
 		// Update just the "From …" labels without re-rendering the whole list.
@@ -561,6 +604,9 @@
 				fromEl.textContent = prev ? `From ${prev}` : fromYardText();
 			});
 		}
+
+		let dragSrcIdx = null;
+		let dragFromHandle = false;
 
 		let addressSearchTimer = null;
 		let addressSearchSeq = 0;
@@ -646,6 +692,41 @@
 			}
 		}
 
+		async function geocodeYard() {
+			const yard = getYard();
+			if (yard.lat != null && yard.lng != null) return { lat: yard.lat, lng: yard.lng };
+			const address = String(yard.address || "").trim();
+			if (address.length < 3) return null;
+			if (yardCoordsCache && yardAddressCacheKey === address) return yardCoordsCache;
+			const token = getMapboxToken();
+			if (!token) return null;
+			try {
+				const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
+				url.searchParams.set("q", address);
+				url.searchParams.set("access_token", token);
+				url.searchParams.set("country", "US");
+				url.searchParams.set("types", "address");
+				url.searchParams.set("limit", "1");
+				url.searchParams.set("proximity", "ip");
+				const resp = await fetch(url);
+				if (!resp.ok) return null;
+				const data = await resp.json();
+				const feat = data.features?.[0];
+				const coords = feat?.geometry?.coordinates || [
+					feat?.properties?.coordinates?.longitude,
+					feat?.properties?.coordinates?.latitude,
+				];
+				const lng = Number(coords?.[0]);
+				const lat = Number(coords?.[1]);
+				if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+				yardCoordsCache = { lat, lng };
+				yardAddressCacheKey = address;
+				return yardCoordsCache;
+			} catch {
+				return null;
+			}
+		}
+
 		async function previousLocation(idx) {
 			for (let i = idx - 1; i >= 0; i--) {
 				const stop = stops[i];
@@ -654,8 +735,7 @@
 				if (await geocodeStop(i)) return { lat: stop.lat, lng: stop.lng };
 				return null;
 			}
-			const yard = getYard();
-			return yard.lat != null && yard.lng != null ? { lat: yard.lat, lng: yard.lng } : null;
+			return geocodeYard();
 		}
 
 		function nextRealStopIndex(idx) {
@@ -711,13 +791,22 @@
 			const force = !!options.force;
 			const token = getMapboxToken();
 			const stop = stops[idx];
-			if (!token || !stop || stop.type === "day") return;
-			if ((stop.lat == null || stop.lng == null) && !(await geocodeStop(idx))) return;
+			if (!token || !stop || stop.type === "day") return false;
+			if (stop.lat == null || stop.lng == null) {
+				if (stop.type === "return") {
+					const yc = await geocodeYard();
+					if (!yc) return false;
+					stop.lat = yc.lat;
+					stop.lng = yc.lng;
+				} else if (!(await geocodeStop(idx))) {
+					return false;
+				}
+			}
 			const updateMiles = force || stop.milesSource !== "manual";
 			const updateDrive = force || stop.driveSource !== "manual";
-			if (!updateMiles && !updateDrive) return;
+			if (!updateMiles && !updateDrive) return false;
 			const prev = await previousLocation(idx);
-			if (!prev) return;
+			if (!prev) return false;
 			const coords = `${prev.lng},${prev.lat};${stop.lng},${stop.lat}`;
 			const url = new URL(`https://api.mapbox.com/directions/v5/mapbox/driving/${coords}`);
 			url.searchParams.set("overview", "false");
@@ -727,7 +816,7 @@
 				if (!response.ok) throw new Error(`Mapbox directions failed: ${response.status}`);
 				const data = await response.json();
 				const route = data.routes?.[0];
-				if (!route) return;
+				if (!route) return false;
 				if (updateMiles) {
 					stop.miles = formatMilesValue(route.distance || 0);
 					stop.milesSource = "estimated";
@@ -739,8 +828,10 @@
 				stop.routeStatus = "current";
 				renderStopList();
 				updateSummary();
+				return true;
 			} catch (err) {
 				console.warn("Leg estimate failed:", err);
+				return false;
 			}
 		}
 
@@ -777,8 +868,27 @@
 		renderStopList();
 
 		async function recalculateRoute(options = {}) {
+			if (recalcBtn) {
+				recalcBtn.disabled = true;
+				recalcBtn.classList.add("is-routing");
+			}
+			let routed = 0;
 			for (let i = 0; i < stops.length; i++) {
-				await estimateLeg(i, options);
+				if (await estimateLeg(i, options)) routed++;
+			}
+			if (recalcBtn) {
+				recalcBtn.disabled = false;
+				recalcBtn.classList.remove("is-routing");
+				if (routed === 0) {
+					recalcBtn.classList.add("is-error");
+					recalcBtn.title = "Route failed — check addresses and Mapbox token in Settings";
+					setTimeout(() => {
+						recalcBtn.classList.remove("is-error");
+						syncRouteButton();
+					}, 4000);
+				} else {
+					syncRouteButton();
+				}
 			}
 		}
 
@@ -795,6 +905,11 @@
 				stops[idx].lat = null;
 				stops[idx].lng = null;
 				stops[idx].mapboxId = null;
+				const wrap = e.target.closest(".rux-itin__address-wrap");
+				if (wrap) {
+					wrap.classList.remove("is-verified");
+					wrap.querySelector(".rux-itin__addr-check")?.remove();
+				}
 				markAffectedLegsStale(idx);
 				if (stops[idx].milesSource !== "manual") stops[idx].miles = "";
 				if (stops[idx].driveSource !== "manual") stops[idx].drive = "";
@@ -867,6 +982,16 @@
 					const stop = stops[idx];
 					if (stop) {
 						stop[field] = e.target.value;
+						if (field === "departPrev" && stop.type === "pickup" && e.target.value) {
+							const depMins = parseClockMins(e.target.value);
+							const padding = window.RuxSettings?.getSpotPadding?.() ?? 15;
+							if (depMins !== null) {
+								const spotMins = ((depMins - padding) % 1440 + 1440) % 1440;
+								const hh = String(Math.floor(spotMins / 60)).padStart(2, "0");
+								const mm = String(spotMins % 60).padStart(2, "0");
+								stop.spot = `${hh}:${mm}`;
+							}
+						}
 					}
 				}
 				renderStopList();
@@ -876,9 +1001,9 @@
 
 		/* — delete stop / day — */
 		stopsEl.addEventListener("click", (e) => {
-			const delBtn = e.target.closest("[data-delete-stop]");
-			if (!delBtn) return;
-			const itemEl = delBtn.closest("[data-stop-idx]");
+			const btn = e.target.closest("[data-delete-stop]");
+			if (!btn) return;
+			const itemEl = btn.closest("[data-stop-idx]");
 			if (!itemEl) return;
 			const idx = parseInt(itemEl.dataset.stopIdx, 10);
 			stops.splice(idx, 1);
@@ -886,20 +1011,82 @@
 			if (nextIdx >= 0) markLegStale(nextIdx);
 			updateSummary();
 			renderStopList();
-			syncReturnBtn();
 		});
 
-		/* — reorder stops — */
+		/* — inline insert row — */
 		stopsEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-move-up], [data-move-down]");
-			if (!btn) return;
-			const itemEl = btn.closest("[data-stop-idx]");
-			if (!itemEl) return;
-			const idx = parseInt(itemEl.dataset.stopIdx, 10);
-			const newIdx = btn.hasAttribute("data-move-up") ? idx - 1 : idx + 1;
-			if (newIdx < 0 || newIdx >= stops.length) return;
-			[stops[idx], stops[newIdx]] = [stops[newIdx], stops[idx]];
-			const firstAffected = Math.min(idx, newIdx);
+			const btn = e.target.closest("[data-insert-after]");
+			if (btn) {
+				const afterIdx = parseInt(btn.dataset.insertAfter, 10);
+				const insertType = btn.dataset.insertType;
+				let newStop;
+				if (insertType === "day") {
+					newStop = { type: "day", label: `Day ${stops.filter((s) => s.type === "day").length + 1}` };
+				} else if (insertType === "sleeper") {
+					newStop = newSleeperStop(afterIdx + 1);
+				} else {
+					newStop = { type: "stop", name: "", address: "", miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "stale", departPrev: "", arrive: "", lat: null, lng: null, mapboxId: null };
+				}
+				insertAtIndex(afterIdx + 1, newStop);
+				return;
+			}
+			const expandBtn = e.target.closest("[data-insert-expand]");
+			if (expandBtn) {
+				const row = expandBtn.closest("[data-insert-row]");
+				const isOpen = row.classList.contains("is-open");
+				stopsEl.querySelectorAll("[data-insert-row].is-open").forEach((r) => r.classList.remove("is-open"));
+				if (!isOpen) row.classList.add("is-open");
+			}
+		});
+
+		document.addEventListener("click", (e) => {
+			if (!e.target.closest("[data-insert-row]")) {
+				stopsEl.querySelectorAll("[data-insert-row].is-open").forEach((r) => r.classList.remove("is-open"));
+			}
+		});
+
+		/* — drag to reorder — */
+		stopsEl.addEventListener("mousedown", (e) => {
+			dragFromHandle = !!e.target.closest("[data-drag-handle]");
+		});
+
+		stopsEl.addEventListener("dragstart", (e) => {
+			if (!dragFromHandle) { e.preventDefault(); return; }
+			const el = e.target.closest("[data-stop-idx]");
+			if (!el) return;
+			dragSrcIdx = parseInt(el.dataset.stopIdx, 10);
+			el.classList.add("is-dragging");
+			e.dataTransfer.effectAllowed = "move";
+		});
+
+		stopsEl.addEventListener("dragend", (e) => {
+			const el = e.target.closest("[data-stop-idx]");
+			el?.classList.remove("is-dragging");
+			stopsEl.querySelectorAll(".is-drag-target").forEach((t) => t.classList.remove("is-drag-target"));
+			dragSrcIdx = null;
+		});
+
+		stopsEl.addEventListener("dragover", (e) => {
+			if (dragSrcIdx === null) return;
+			const el = e.target.closest("[data-stop-idx]");
+			if (!el) return;
+			const overIdx = parseInt(el.dataset.stopIdx, 10);
+			if (overIdx === dragSrcIdx) return;
+			e.preventDefault();
+			e.dataTransfer.dropEffect = "move";
+			stopsEl.querySelectorAll(".is-drag-target").forEach((t) => t.classList.remove("is-drag-target"));
+			el.classList.add("is-drag-target");
+		});
+
+		stopsEl.addEventListener("drop", (e) => {
+			e.preventDefault();
+			const el = e.target.closest("[data-stop-idx]");
+			if (!el || dragSrcIdx === null) return;
+			const toIdx = parseInt(el.dataset.stopIdx, 10);
+			if (toIdx === dragSrcIdx) return;
+			const [moved] = stops.splice(dragSrcIdx, 1);
+			stops.splice(toIdx, 0, moved);
+			const firstAffected = Math.min(dragSrcIdx, toIdx);
 			markAffectedLegsStale(firstAffected);
 			updateSummary();
 			renderStopList();
@@ -913,6 +1100,27 @@
 			markAffectedLegsStale(insertIdx);
 			updateSummary();
 			renderStopList();
+		}
+
+		function insertAtIndex(idx, newStop) {
+			stops.splice(idx, 0, newStop);
+			markAffectedLegsStale(idx);
+			updateSummary();
+			renderStopList();
+		}
+
+		function sleeperFromPrev(insertIdx) {
+			for (let i = insertIdx - 1; i >= 0; i--) {
+				const s = stops[i];
+				if (!s || s.type === "day") continue;
+				return { address: s.address || "", lat: s.lat ?? null, lng: s.lng ?? null, mapboxId: s.mapboxId ?? null };
+			}
+			return { address: "", lat: null, lng: null, mapboxId: null };
+		}
+
+		function newSleeperStop(insertIdx) {
+			const prev = sleeperFromPrev(insertIdx);
+			return { type: "sleeper", name: "", address: prev.address, miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: "", arrive: "", lat: prev.lat, lng: prev.lng, mapboxId: prev.mapboxId };
 		}
 
 		root.querySelector("#tp-itin-add-stop")?.addEventListener("click", () => {
@@ -934,10 +1142,14 @@
 		});
 
 		root.querySelector("#tp-itin-add-sleeper")?.addEventListener("click", () => {
-			insertBeforeReturn({ type: "sleeper", name: "", address: "", miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: "", arrive: "" });
+			const ri = stops.findIndex((s) => s.type === "return");
+			const insertIdx = ri >= 0 ? ri : stops.length;
+			insertBeforeReturn(newSleeperStop(insertIdx));
 		});
 
 		document.addEventListener("settings:yard", () => {
+			yardCoordsCache = null;
+			yardAddressCacheKey = null;
 			stops.forEach((stop) => {
 				if (stop.type !== "return") return;
 				const yard = getYard();
@@ -956,6 +1168,7 @@
 		root.querySelector("#tp-itin-recalc")?.addEventListener("click", () => {
 			recalculateRoute({ force: true });
 		});
+
 
 		/* — add day break — */
 		root.querySelector("#tp-itin-add-day")?.addEventListener("click", () => {

@@ -3,6 +3,8 @@
 
   const YARD_KEY = "yard-location-v1";
   const MAPBOX_TOKEN_KEY = "mapbox-token-v1";
+  const SPOT_PADDING_KEY = "spot-padding-v1";
+  const DEFAULT_SPOT_PADDING = 15;
   const DEFAULT_YARD = {
     name: "Yard",
     address: "2801 Zinnia Ave, McAllen, TX 78504",
@@ -25,9 +27,12 @@
   const mapboxMessageEl = document.getElementById("settings-mapbox-message");
   const mapboxSaveBtn = document.getElementById("settings-mapbox-save-btn");
 
+  const spotPaddingInput = document.getElementById("settings-spot-padding");
+
   let db = null;
   let initialized = false;
   let currentYard = { ...DEFAULT_YARD };
+  let spotPaddingMins = DEFAULT_SPOT_PADDING;
   let mapboxToken = "";
   let yardSearchTimer = null;
   let yardSearchSeq = 0;
@@ -336,11 +341,36 @@
     setMapboxMessage(normalized ? "Mapbox token saved." : "Mapbox token cleared.", "success");
   }
 
+  function publishSpotPadding(mins) {
+    spotPaddingMins = Number.isFinite(mins) && mins >= 0 ? mins : DEFAULT_SPOT_PADDING;
+    window.RuxSettings = {
+      ...(window.RuxSettings || {}),
+      getSpotPadding: () => spotPaddingMins,
+    };
+  }
+
+  async function loadSpotPadding() {
+    if (!db) db = await import("./settings-db.js");
+    const saved = await db.getSetting(SPOT_PADDING_KEY);
+    const mins = saved != null ? Number(saved) : DEFAULT_SPOT_PADDING;
+    publishSpotPadding(Number.isFinite(mins) ? mins : DEFAULT_SPOT_PADDING);
+    if (spotPaddingInput) spotPaddingInput.value = spotPaddingMins;
+  }
+
+  async function saveSpotPadding(mins) {
+    if (!db) db = await import("./settings-db.js");
+    const normalized = Number.isFinite(mins) && mins >= 0 ? mins : DEFAULT_SPOT_PADDING;
+    await db.setSetting(SPOT_PADDING_KEY, normalized);
+    publishSpotPadding(normalized);
+    if (spotPaddingInput) spotPaddingInput.value = normalized;
+  }
+
   async function init() {
     if (!root || initialized) return;
     initialized = true;
     await loadYard();
     await loadMapboxToken();
+    await loadSpotPadding();
   }
 
   saveBtn?.addEventListener("click", async () => {
@@ -420,11 +450,23 @@
     }
   });
 
+  document.getElementById("settings-spot-padding-save-btn")?.addEventListener("click", async () => {
+    const btn = document.getElementById("settings-spot-padding-save-btn");
+    if (btn) btn.disabled = true;
+    try {
+      const val = parseInt(spotPaddingInput?.value ?? DEFAULT_SPOT_PADDING, 10);
+      await saveSpotPadding(Number.isFinite(val) && val >= 0 ? val : DEFAULT_SPOT_PADDING);
+    } finally {
+      if (btn) btn.disabled = false;
+    }
+  });
+
   window.RuxSettings = {
     ...(window.RuxSettings || {}),
     DEFAULT_YARD,
     getYard: () => ({ ...currentYard }),
     getMapboxToken: () => mapboxToken,
+    getSpotPadding: () => spotPaddingMins,
     saveYard,
     saveMapboxToken,
   };
