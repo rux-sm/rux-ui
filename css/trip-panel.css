@@ -287,13 +287,14 @@
 }
 .rux-trip-panel__bus-badge {
 	display: inline-flex;
-	align-items: start;
+	align-items: center;
 	justify-content: center;
 	width: 32px;
 	height: 32px;
 	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-sm);
-	background: color-mix(in srgb, var(--rux-accent) 25%, transparent);
+	background: var(--rux-accent);
 	color: var(--rux-fg-on-accent);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);

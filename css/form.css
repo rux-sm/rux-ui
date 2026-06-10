@@ -20,13 +20,14 @@
   max-width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-space-3);
-  background-color: var(--rux-bg-sunken);
+  background-color: var(--rux-bg-level-2);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
+  border: solid transparent var(--rux-border-width);
   border-radius: var(--rux-radius-md);
   box-shadow: var(--_field-shadow);
   font: inherit;
-  font-size: var(--rux-text-md);
+  font-size: var(--rux-text-sm);
   outline: none;
   transition:
     background-color var(--rux-duration-fast) var(--rux-ease-out),
