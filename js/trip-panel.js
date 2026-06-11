@@ -316,12 +316,44 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	const busesInput = root.querySelector("#tp-buses");
 
 	if (busGroupsEl && busesInput) {
+		const busCountDecBtn = root.querySelector("[data-bus-count-dec]");
+		const busCountIncBtn = root.querySelector("[data-bus-count-inc]");
+		const minBusCount = parseInt(busesInput.min, 10) || 1;
+		const maxBusCount = parseInt(busesInput.max, 10) || 20;
+		const clampBusCount = (value) => Math.max(minBusCount, Math.min(maxBusCount, parseInt(value, 10) || minBusCount));
+		const syncBusCountButtons = (value = busesInput.value) => {
+			const n = clampBusCount(value);
+			if (busCountDecBtn) busCountDecBtn.disabled = n <= minBusCount;
+			if (busCountIncBtn) busCountIncBtn.disabled = n >= maxBusCount;
+		};
+
 		updateTripOptions(root);
+		syncBusCountButtons();
+
+		root.querySelectorAll("[data-bus-count-dec], [data-bus-count-inc]").forEach((btn) => {
+			btn.addEventListener("click", () => {
+				const direction = btn.hasAttribute("data-bus-count-inc") ? 1 : -1;
+				busesInput.value = String(clampBusCount((parseInt(busesInput.value, 10) || minBusCount) + direction));
+				busesInput.dispatchEvent(new Event("input", { bubbles: true }));
+			});
+		});
 
 		busesInput.addEventListener("input", () => {
-			const n = Math.max(1, Math.min(20, parseInt(busesInput.value, 10) || 1));
+			if (busesInput.value === "") {
+				syncBusCountButtons();
+				return;
+			}
+			const n = clampBusCount(busesInput.value);
+			if (busesInput.value !== String(n)) busesInput.value = String(n);
 			const { buses, drivers } = getTripOptions(root);
 			renderBusGroups(busGroupsEl, n, buses, drivers);
+			syncBusCountButtons(n);
+		});
+
+		busesInput.addEventListener("change", () => {
+			const n = clampBusCount(busesInput.value);
+			busesInput.value = String(n);
+			busesInput.dispatchEvent(new Event("input", { bubbles: true }));
 		});
 
 		// Role toggles — show/hide co-driver, relief 1/2 rows within the same bus group

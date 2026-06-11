@@ -58,6 +58,10 @@ import { supabase } from "./supabase.js";
 		return Number.isFinite(n) ? n : fallback;
 	}
 
+	function busCountVal(root) {
+		return Math.max(1, Math.min(20, intVal(root, "tp-buses", 1)));
+	}
+
 	function reqVal(root, key) {
 		const btn = root.querySelector(`[data-req="${key}"]`);
 		return btn ? btn.getAttribute("aria-pressed") === "true" : false;
@@ -91,12 +95,6 @@ import { supabase } from "./supabase.js";
 
 		input.value = String(value);
 		input.dispatchEvent(new Event("input", { bubbles: true }));
-
-		const stepper = input.closest("[data-rux-stepper]");
-		const countEl = stepper?.querySelector(".rux-stepper__count");
-		if (countEl) countEl.textContent = String(value);
-		stepper?.querySelector("[data-stepper-dec]")?.toggleAttribute("disabled", value <= 1);
-		stepper?.querySelector("[data-stepper-inc]")?.toggleAttribute("disabled", value >= 20);
 	}
 
 	function compactPayload(data) {
@@ -140,10 +138,11 @@ import { supabase } from "./supabase.js";
 			destination:          fieldVal(root, "tp-destination"),
 			start_date:           fieldVal(root, "tp-start"),
 			end_date:             fieldVal(root, "tp-end"),
-			trip_type:            root.querySelector("#tp-trip-type .rux-button[aria-pressed='true']")
-			                        ?.textContent.trim() === "One way" ? "one_way" : "round_trip",
+			trip_type:            root.querySelector("#tp-one-way")?.getAttribute("aria-pressed") === "true"
+			                        ? "one_way"
+			                        : "round_trip",
 
-			bus_count:            intVal(root, "tp-buses", 1),
+			bus_count:            busCountVal(root),
 			booking_contact_name:  fieldVal(root, "tp-book-name"),
 			booking_contact_phone: fieldVal(root, "tp-book-phone"),
 			booking_contact_email: fieldVal(root, "tp-book-email"),
@@ -181,7 +180,7 @@ import { supabase } from "./supabase.js";
 	}
 
 	function collectAssignments(root) {
-		const busCount = parseInt(root.querySelector("#tp-buses")?.value) || 1;
+		const busCount = busCountVal(root);
 		const assignments = [];
 
 		for (let i = 0; i < busCount; i++) {
@@ -329,13 +328,10 @@ import { supabase } from "./supabase.js";
 
 
 		const oneWay    = trip.trip_type === "one_way";
-		const oneWayBtn = root.querySelector("#tp-trip-type .rux-button:last-child");
-		const roundBtn  = root.querySelector("#tp-trip-type .rux-button:first-child");
-		if (oneWayBtn && roundBtn) {
-			oneWayBtn.setAttribute("aria-pressed", oneWay ? "true" : "false");
+		const oneWayBtn = root.querySelector("#tp-one-way");
+		if (oneWayBtn) {
+			oneWayBtn.setAttribute("aria-pressed", String(oneWay));
 			oneWayBtn.classList.toggle("is-active", oneWay);
-			roundBtn.setAttribute("aria-pressed", oneWay ? "false" : "true");
-			roundBtn.classList.toggle("is-active", !oneWay);
 		}
 
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
@@ -444,13 +440,10 @@ import { supabase } from "./supabase.js";
 			btn.setAttribute("aria-pressed", "false");
 			btn.classList.remove("is-active");
 		});
-		const oneWayBtn = root.querySelector("#tp-trip-type .rux-button:last-child");
-		const roundBtn  = root.querySelector("#tp-trip-type .rux-button:first-child");
-		if (oneWayBtn && roundBtn) {
+		const oneWayBtn = root.querySelector("#tp-one-way");
+		if (oneWayBtn) {
 			oneWayBtn.setAttribute("aria-pressed", "false");
 			oneWayBtn.classList.remove("is-active");
-			roundBtn.setAttribute("aria-pressed", "true");
-			roundBtn.classList.add("is-active");
 		}
 		const idEl = root.querySelector("#tp-trip-id");
 		if (idEl) idEl.textContent = "";

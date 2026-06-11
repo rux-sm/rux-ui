@@ -143,12 +143,12 @@
               <!-- Trip -->
               <div id="pane-trip" class="rux-trip-panel__pane" role="tabpanel">
                 <div class="rux-trip-panel__cols-2">
-                  <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
-                  <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
-                </div>
-                <div class="rux-trip-panel__cols-2">
                   <div class="rux-field"><label class="rux-field__label" for="tp-customer">Customer</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Customer name" /></div>
                   <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" placeholder="Destination" /></div>
+                </div>
+                <div class="rux-trip-panel__logistics-grid">
+                  <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
+                  <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
                 </div>
                 <div class="rux-trip-panel__cols-2">
                   <div class="rux-field"><label class="rux-field__label" for="tp-dep">Departure</label><input class="rux-input" id="tp-dep" name="departureTime" type="time" /></div>
@@ -160,21 +160,14 @@
                   <div class="rux-field"><label class="rux-field__label" for="tp-book-phone">Phone</label><input class="rux-input" id="tp-book-phone" name="bookingContact.phone" type="tel" placeholder="Phone number" /></div>
                 </div>
                 <div class="rux-field"><label class="rux-field__label" for="tp-book-email">Email</label><input class="rux-input" id="tp-book-email" name="bookingContact.email" type="email" placeholder="contact@example.com" /></div>
-                <div class="rux-trip-panel__cols-2">
-                  <div class="rux-field">
-                    <label class="rux-field__label">Trip type</label>
-                    <div class="rux-segmented" data-rux-toggle-group><button class="rux-button is-active" aria-pressed="true">Round trip</button><button class="rux-button" aria-pressed="false">One way</button></div>
-                  </div>
-                  <div class="rux-field">
-                    <label class="rux-field__label" id="tp-buses-label">Buses</label>
-                    <div class="rux-segmented" data-rux-stepper role="group" aria-labelledby="tp-buses-label">
-                      <button class="rux-button rux-button--icon" type="button" data-stepper-dec aria-label="Fewer buses" disabled><i data-lucide="minus" class="rux-icon"></i></button>
-                      <span class="rux-stepper__count" aria-live="polite">1</span>
-                      <button class="rux-button rux-button--icon" type="button" data-stepper-inc aria-label="More buses"><i data-lucide="plus" class="rux-icon"></i></button>
-                      <input type="hidden" id="tp-buses" name="busesNeeded" value="1" min="1" max="20" />
-                    </div>
-                  </div>
+                <p class="rux-trip-panel__section-label">Trip options</p>
+                <div class="rux-cluster">
+                  <button class="rux-button rux-button--toggle" id="tp-one-way" type="button" aria-pressed="false" data-rux-toggle-button title="One way trip">One way</button>
                 </div>
+                <p class="rux-trip-panel__section-label">Vehicle requirements</p>
+                <div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
+                <p class="rux-trip-panel__section-label">Driver needs</p>
+                <div class="rux-cluster" id="tp-driver-needs"></div>
               </div>
               <!-- Billing -->
               <div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
@@ -212,10 +205,14 @@
               </div>
               <!-- Dispatch -->
               <div id="pane-dispatch" class="rux-trip-panel__pane" role="tabpanel" hidden>
-                <p class="rux-trip-panel__section-label">Vehicle requirements</p>
-                <div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
-                <p class="rux-trip-panel__section-label">Driver needs</p>
-                <div class="rux-cluster" id="tp-driver-needs"></div>
+                <div class="rux-trip-panel__fleet-count-card">
+                  <span class="rux-trip-panel__fleet-count-label" id="tp-buses-label">Buses Needed</span>
+                  <div class="rux-trip-panel__number-picker" role="group" aria-labelledby="tp-buses-label">
+                    <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-dec aria-label="Fewer buses"><i data-lucide="minus" class="rux-icon"></i></button>
+                    <input class="rux-input rux-trip-panel__number-input" id="tp-buses" name="busesNeeded" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" aria-labelledby="tp-buses-label" />
+                    <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-inc aria-label="More buses"><i data-lucide="plus" class="rux-icon"></i></button>
+                  </div>
+                </div>
                 <div class="rux-trip-panel__bus-groups" id="tp-bus-groups"></div>
               </div>
               <!-- Docs -->
@@ -373,22 +370,18 @@
         return { date, busNumber };
       }
 
-      function syncBusStepper(value) {
+      function syncBusCount(value) {
         const busesInput = tripPanel.querySelector("#tp-buses");
         if (!busesInput) return;
-        busesInput.value = String(value);
+        const nextValue = Math.max(1, Math.min(20, parseInt(value, 10) || 1));
+        busesInput.value = String(nextValue);
         busesInput.dispatchEvent(new Event("input", { bubbles: true }));
-        const stepper = busesInput.closest("[data-rux-stepper]");
-        const count = stepper?.querySelector(".rux-stepper__count");
-        if (count) count.textContent = String(value);
-        stepper?.querySelector("[data-stepper-dec]")?.toggleAttribute("disabled", value <= 1);
-        stepper?.querySelector("[data-stepper-inc]")?.toggleAttribute("disabled", value >= 20);
       }
 
       function prefillNewTripFromContext({ date, busNumber }) {
         tripPanel.querySelector("#tp-start").value = date;
         tripPanel.querySelector("#tp-end").value = date;
-        syncBusStepper(1);
+        syncBusCount(1);
 
         const busSelect = tripPanel.querySelector('[name="buses[0].busId"]');
         if (!busSelect || !busNumber) return;
@@ -436,10 +429,11 @@
         drawer.classList.add("is-resizing");
         document.body.style.cursor = "col-resize";
         document.body.style.userSelect = "none";
+        const startX = e.clientX;
+        const startW = parseInt(getComputedStyle(drawer).getPropertyValue("--drawer-width")) || drawer.offsetWidth;
 
         const onMove = (e) => {
-          const rect = drawer.getBoundingClientRect();
-          const w = Math.min(DRAWER_MAX, Math.max(DRAWER_MIN, e.clientX - rect.left));
+          const w = Math.min(DRAWER_MAX, Math.max(DRAWER_MIN, startW + e.clientX - startX));
           drawer.style.setProperty("--drawer-width", w + "px");
         };
 

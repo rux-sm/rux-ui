@@ -7,6 +7,8 @@
    ========================================================================== */
 
 .scheduler-app {
+	--scheduler-app-gap: var(--rux-space-2);
+	--scheduler-app-card-radius: var(--rux-radius-md);
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
 	width: 100%;
@@ -29,8 +31,9 @@
 	background: var(--rux-bg-level-0);
 	min-width: 0;
 	gap: var(--rux-space-4);
-	padding: var(--rux-space-2) var(--rux-space-4);
+	padding: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
+
 }
 
 .scheduler-app__topbar-start,
@@ -118,7 +121,7 @@
 .rux-panel__footer {
 	flex: none;
 	display: flex;
-	padding: var(--rux-space-4) var(--rux-space-4);
+	padding: var(--rux-space-2) var(--rux-space-2);
 	border-top: var(--rux-border-width) solid var(--rux-border);
 	border-top: solid transparent var(--rux-border-width); /* override */
 }
@@ -132,7 +135,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	gap: var(--rux-space-4);
-	padding: var(--rux-space-2) var(--rux-space-4);
+	padding: var(--rux-space-2) var(--rux-space-2);
 	border-bottom: solid transparent var(--rux-border-width);
 }
 
@@ -263,11 +266,17 @@
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
-	margin: var(--rux-space-3);
-	padding-block-end: var(--rux-space-3);
+	margin: var(--scheduler-app-gap);
+	padding-block-end: var(--scheduler-app-gap);
 	background: var(--rux-bg-level-1);
-	border-radius: var(--rux-radius-lg);
+	border-radius: var(--scheduler-app-card-radius);
 	overflow: hidden;
+	transition: margin-left 0ms linear 280ms;
+}
+
+.scheduler-app__drawer.is-open + .scheduler-app__schedule {
+	margin-left: 0;
+	transition-delay: 0ms;
 }
 
 /* — Trip panel drawer — */
@@ -278,7 +287,9 @@
 	width: 0;
 	min-height: 0;
 	overflow: hidden;
-	transition: width 280ms ease, padding 280ms ease;
+	box-sizing: border-box;
+	padding: 0;
+	transition: width 280ms ease;
 
 	display: flex;
 	flex-direction: column;
@@ -286,19 +297,20 @@
 
 .scheduler-app__drawer.is-open {
 	width: var(--drawer-width, 380px);
-	padding: var(--rux-space-3);
 }
 
 .scheduler-app__drawer.is-resizing {
 	transition: none;
 }
 
-.scheduler-app__drawer .rux-trip-panel {
-	flex: 1 1 auto;
-	min-height: 0;
-	width: calc(var(--drawer-width, 380px) - 2 * var(--rux-space-3));
+.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel) {
+	position: absolute;
+	inset-block: var(--scheduler-app-gap);
+	right: var(--scheduler-app-gap);
+	height: auto;
+	width: calc(var(--drawer-width, 380px) - 2 * var(--scheduler-app-gap));
 	border: none;
-	border-radius: var(--rux-radius-lg);
+	border-radius: var(--scheduler-app-card-radius);
 }
 
 /* — Panel edge tab — */
@@ -333,17 +345,35 @@
 	position: absolute;
 	top: 0;
 	right: 0;
-	width: 6px;
+	width: var(--scheduler-app-gap);
 	height: 100%;
 	cursor: col-resize;
 	z-index: 10;
-	transition: background var(--rux-duration-fast);
+	background: transparent;
 }
 
-.scheduler-app__drawer-handle:hover,
-.scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle {
-	background: var(--rux-accent);
-	opacity: 0.35;
+.scheduler-app__drawer-handle::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 3px;
+	height: 3rem;
+	border-radius: var(--rux-radius-full);
+	background: color-mix(in oklch, var(--rux-fg-subtle) 45%, transparent);
+	opacity: 0.42;
+	transform: translate(-50%, -50%);
+	transition:
+		height var(--rux-duration-fast),
+		background var(--rux-duration-fast),
+		opacity var(--rux-duration-fast);
+}
+
+.scheduler-app__drawer-handle:hover::before,
+.scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle::before {
+	height: 4.5rem;
+	background: color-mix(in oklch, var(--rux-accent) 82%, white 8%);
+	opacity: 1;
 }
 
 @media (max-width: 480px) {
@@ -351,9 +381,12 @@
 	.scheduler-app__drawer.is-open {
 		width: 100dvw;
 	}
-	.scheduler-app__drawer .rux-trip-panel {
+	.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel) {
+		inset-block: 0;
+		right: 0;
 		width: 100dvw;
 		max-width: 100dvw;
+		border-radius: 0;
 		border-right: none;
 	}
 
@@ -430,7 +463,7 @@
 
 .scheduler-app__schedule-wrap {
 	flex: 1;
-	margin-inline: var(--rux-space-4);
+	margin-inline: var(--scheduler-app-gap);
 }
 
 .scheduler-app__schedule-wrap,
