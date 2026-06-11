@@ -384,6 +384,19 @@
 	font-weight: var(--rux-weight-regular);
 }
 
+/* ---------- Requirements row ---------- */
+
+.rux-trip-bar__reqs {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+}
+
+.rux-trip-bar__req-icon {
+	color: var(--rux-fg-subtle);
+	opacity: 0.8;
+}
+
 /* ---------- Time row ---------- */
 
 .rux-trip-bar__time {

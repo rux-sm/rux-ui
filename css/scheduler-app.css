@@ -32,7 +32,9 @@
 	min-width: 0;
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-2);
+	padding-bottom: 0px;
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: none; /* override */
 
 }
 
@@ -134,7 +136,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
-	gap: var(--rux-space-4);
+	gap: var(--rux-space-3);
 	padding: var(--rux-space-2) var(--rux-space-2);
 	border-bottom: solid transparent var(--rux-border-width);
 }
@@ -145,11 +147,10 @@
 	margin-left: auto;
 }
 
-/* Non-table bars (e.g. schedule) use a rigid toolbar; reset containment so
-   flex-basis: auto resolves to content size instead of 0. */
 .scheduler-app__bar:not(.scheduler-app__bar--table) .scheduler-app__toolbar {
-	flex: none;
+	flex: 1 1 auto;
 	container-type: normal;
+	min-width: 0;
 }
 
 .scheduler-app__brand,
@@ -161,9 +162,16 @@
 .scheduler-app__brand {
 	flex-direction: column;
 	align-items: flex-end;
+	justify-content: flex-end;
 	flex: 1 1 auto;
 	min-width: 0;
 	gap: var(--rux-space-1);
+}
+
+.scheduler-app__schedule > .scheduler-app__bar .scheduler-app__brand {
+	flex-direction: row;
+	align-items: center;
+	gap: var(--rux-space-3);
 }
 
 .scheduler-app__view-menu {
@@ -187,10 +195,40 @@
 .scheduler-app__toolbar {
 	align-items: center;
 	flex-wrap: nowrap;
-	flex-shrink: 0;
-	justify-content: flex-end;
-	gap: var(--rux-space-3);
+	flex-shrink: 1;
+	justify-content: flex-start;
+	gap: var(--rux-space-2);
 	container-type: inline-size;
+}
+
+.scheduler-app__search-control {
+	display: flex;
+	align-items: center;
+	flex: 1 1 auto;
+	min-width: 0;
+	gap: var(--rux-space-2);
+	margin-left: var(--rux-space-1);
+}
+
+.scheduler-app__search {
+	flex: 0 1 0;
+	width: 0;
+	min-width: 0;
+	max-width: 28rem;
+	padding-inline: 0;
+	opacity: 0;
+	pointer-events: none;
+	transition:
+		flex-basis var(--rux-duration-fast) var(--rux-ease-out),
+		opacity var(--rux-duration-fast) var(--rux-ease-out),
+		padding-inline var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.scheduler-app__search-control.is-open .scheduler-app__search {
+	flex-basis: 18rem;
+	padding-inline: var(--rux-space-3);
+	opacity: 1;
+	pointer-events: auto;
 }
 
 .scheduler-app__bar--table .scheduler-app__toolbar > .rux-input[type="search"] {
@@ -252,6 +290,14 @@
 .scheduler-app__nav {
 	align-items: center;
 	gap: var(--rux-space-2);
+}
+
+.scheduler-app__day-picker {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	opacity: 0;
+	pointer-events: none;
 }
 
 .scheduler-app__schedule,
@@ -459,6 +505,20 @@
 	}
 }
 
+/* — Schedule sub-view toggle — */
+
+.scheduler-app__view-toggles {
+	display: flex;
+	gap: var(--rux-space-1);
+	flex: none;
+}
+
+.scheduler-app__schedule[data-view="list"]     .scheduler-app__nav           { display: none; }
+.scheduler-app__schedule[data-view="list"]     #week-label                   { display: none; }
+.scheduler-app__schedule[data-view="schedule"] #list-view-label              { display: none; }
+.scheduler-app__schedule[data-view="list"]     .scheduler-app__schedule-wrap { display: none; }
+.scheduler-app__schedule[data-view="schedule"] .trips-app__table-wrap        { display: none; }
+
 /* — Schedule grid wrap — */
 
 .scheduler-app__schedule-wrap {
@@ -466,7 +526,16 @@
 	margin-inline: var(--scheduler-app-gap);
 }
 
+.scheduler-app__schedule .trips-app__table-wrap {
+	flex: 1;
+	margin-inline: var(--scheduler-app-gap);
+	background: var(--rux-bg-level-0);
+	border-radius: var(--scheduler-app-card-radius);
+	overflow: auto;
+}
+
 .scheduler-app__schedule-wrap,
+.scheduler-app__schedule .trips-app__table-wrap,
 .scheduler-app__grid {
 	block-size: 100%;
 }
@@ -528,6 +597,14 @@
 
 	.scheduler-app__toolbar {
 		justify-content: flex-start;
+	}
+
+	.scheduler-app__search {
+		max-width: none;
+	}
+
+	.scheduler-app__search-control.is-open .scheduler-app__search {
+		flex-basis: 12rem;
 	}
 
 	.scheduler-app__module-button {

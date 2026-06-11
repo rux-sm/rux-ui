@@ -28,11 +28,17 @@
   const mapboxSaveBtn = document.getElementById("settings-mapbox-save-btn");
 
   const spotPaddingInput = document.getElementById("settings-spot-padding");
+  const billingWorkflowEl = document.getElementById("settings-billing-workflow");
+  const billingConfirmEl = document.getElementById("settings-billing-confirm");
+  const billingMessageEl = document.getElementById("settings-billing-message");
+  const billingSaveBtn = document.getElementById("settings-billing-save-btn");
+  const billingDefaultBtn = document.getElementById("settings-billing-default-btn");
 
   let db = null;
   let initialized = false;
   let currentYard = { ...DEFAULT_YARD };
   let spotPaddingMins = DEFAULT_SPOT_PADDING;
+  let billingConfig = window.RuxBilling?.getConfig?.() || null;
   let mapboxToken = "";
   let yardSearchTimer = null;
   let yardSearchSeq = 0;
@@ -81,6 +87,13 @@
     mapboxMessageEl.textContent = text;
     mapboxMessageEl.classList.toggle("is-error", state === "error");
     mapboxMessageEl.classList.toggle("is-success", state === "success");
+  }
+
+  function setBillingMessage(text = "", state = "") {
+    if (!billingMessageEl) return;
+    billingMessageEl.textContent = text;
+    billingMessageEl.classList.toggle("is-error", state === "error");
+    billingMessageEl.classList.toggle("is-success", state === "success");
   }
 
   function setMapboxStatus(hasToken) {
@@ -365,12 +378,89 @@
     if (spotPaddingInput) spotPaddingInput.value = normalized;
   }
 
+  function workflowRowsHtml(config) {
+    const labels = {
+      contractSigned: "Contract",
+      poReceived: "PO",
+      invoiced: "Invoice",
+    };
+    return Object.entries(config.workflow).map(([key, item]) => `
+      <div class="settings-billing-row" data-billing-setting="${key}">
+        <span class="settings-billing-row__label">${escHtml(labels[key] || key)}</span>
+        <input class="rux-input settings-billing-row__input" type="text" maxlength="32" value="${escHtml(item.label)}" data-billing-label-input="${key}" />
+        <label class="rux-switch" title="${item.active ? "Visible in trip editor" : "Hidden in trip editor"}">
+          <input type="checkbox" ${item.active ? "checked" : ""} data-billing-active="${key}" />
+          <span class="rux-switch__track"></span>
+          <span class="rux-switch__thumb"></span>
+        </label>
+      </div>
+    `).join("");
+  }
+
+  function confirmRowsHtml(config) {
+    const meta = window.RuxBilling?.STATUS_META || {};
+    const order = ["contract_signed", "po_received", "deposit_received", "paid_full", "overpaid"];
+    const selected = new Set(config.confirmWhen || []);
+    const labelOverrides = {
+      contract_signed: config.workflow.contractSigned?.label,
+      po_received: config.workflow.poReceived?.label,
+    };
+    return order.map((status) => {
+      const item = meta[status] || { label: status, badgeClass: "rux-badge--info", icon: "" };
+      const label = labelOverrides[status] || item.label;
+      const iconHtml = item.icon ? `<i data-lucide="${escHtml(item.icon)}" class="rux-icon rux-icon--sm"></i>` : "";
+      return `<label class="settings-billing-confirm">
+        <input type="checkbox" ${selected.has(status) ? "checked" : ""} data-confirm-status="${status}" />
+        <span class="rux-badge ${escHtml(item.badgeClass)}">${iconHtml}${escHtml(label)}</span>
+      </label>`;
+    }).join("");
+  }
+
+  function readBillingForm() {
+    const current = billingConfig || window.RuxBilling?.getConfig?.() || window.RuxBilling?.DEFAULT_CONFIG;
+    const next = window.RuxBilling?.normalizeConfig?.(current) || current;
+    billingWorkflowEl?.querySelectorAll("[data-billing-label-input]").forEach((input) => {
+      const key = input.dataset.billingLabelInput;
+      if (!next.workflow[key]) return;
+      next.workflow[key].label = input.value.trim() || next.workflow[key].label;
+    });
+    billingWorkflowEl?.querySelectorAll("[data-billing-active]").forEach((input) => {
+      const key = input.dataset.billingActive;
+      if (!next.workflow[key]) return;
+      next.workflow[key].active = input.checked;
+    });
+    next.confirmWhen = Array.from(billingConfirmEl?.querySelectorAll("[data-confirm-status]:checked") || [])
+      .map((input) => input.dataset.confirmStatus);
+    return window.RuxBilling?.normalizeConfig?.(next) || next;
+  }
+
+  function renderBillingSettings(config = billingConfig) {
+    if (!billingWorkflowEl || !billingConfirmEl || !window.RuxBilling) return;
+    billingConfig = window.RuxBilling.normalizeConfig(config || window.RuxBilling.DEFAULT_CONFIG);
+    billingWorkflowEl.innerHTML = workflowRowsHtml(billingConfig);
+    billingConfirmEl.innerHTML = confirmRowsHtml(billingConfig);
+    if (window.lucide) window.lucide.createIcons();
+  }
+
+  function publishBilling(config) {
+    billingConfig = window.RuxBilling?.normalizeConfig?.(config) || config;
+    window.RuxBilling?.applyToTripPanel?.(document.querySelector(".rux-trip-panel"));
+    renderBillingSettings(billingConfig);
+  }
+
+  async function loadBilling() {
+    if (!window.RuxBilling) return;
+    billingConfig = await window.RuxBilling.load();
+    renderBillingSettings(billingConfig);
+  }
+
   async function init() {
     if (!root || initialized) return;
     initialized = true;
     await loadYard();
     await loadMapboxToken();
     await loadSpotPadding();
+    await loadBilling();
   }
 
   saveBtn?.addEventListener("click", async () => {
@@ -461,16 +551,44 @@
     }
   });
 
+  billingDefaultBtn?.addEventListener("click", () => {
+    if (!window.RuxBilling) return;
+    billingConfig = window.RuxBilling.normalizeConfig(window.RuxBilling.DEFAULT_CONFIG);
+    renderBillingSettings(billingConfig);
+    setBillingMessage("Default billing workflow loaded. Save to keep it.");
+  });
+
+  billingSaveBtn?.addEventListener("click", async () => {
+    if (!window.RuxBilling) return;
+    billingSaveBtn.disabled = true;
+    setBillingMessage("Saving...");
+    try {
+      const saved = await window.RuxBilling.save(readBillingForm());
+      publishBilling(saved);
+      setBillingMessage("Billing workflow saved.", "success");
+    } catch (err) {
+      setBillingMessage(err?.message || "Could not save billing workflow.", "error");
+    } finally {
+      billingSaveBtn.disabled = false;
+    }
+  });
+
+  document.addEventListener("settings:billing", (event) => {
+    billingConfig = event.detail?.config || window.RuxBilling?.getConfig?.();
+    renderBillingSettings(billingConfig);
+  });
+
   window.RuxSettings = {
     ...(window.RuxSettings || {}),
     DEFAULT_YARD,
     getYard: () => ({ ...currentYard }),
     getMapboxToken: () => mapboxToken,
     getSpotPadding: () => spotPaddingMins,
+    getBillingWorkflow: () => window.RuxBilling?.getConfig?.() || billingConfig,
     saveYard,
     saveMapboxToken,
   };
-  window.SettingsPanel = { init, reload: loadYard };
+  window.SettingsPanel = { init, reload: async () => { await loadYard(); await loadBilling(); } };
 
   if (document.readyState !== "loading") init().catch(err => console.error("SettingsPanel init failed:", err));
 })();

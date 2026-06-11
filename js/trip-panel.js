@@ -16,20 +16,20 @@
 
 /* ── Config ─────────────────────────────────────────────────────────────── */
 
-/* Vehicle equipment — determines which bus is eligible for the trip.
-   Rendered in the Dispatch pane alongside bus assignment.              */
-const VEHICLE_REQS = [
-	{ key: "sleeper", label: "Sleeper", icon: "bed" },
-	{ key: "pax56", label: "56 pax", icon: "users" },
-	{ key: "adaLift", label: "ADA lift", icon: "accessibility" },
+/* Static fallback used before window.appRequirements loads. */
+const DEFAULT_REQUIREMENTS = [
+	{ id: "sleeper",  label: "Sleeper",   icon: "bed",           type: "vehicle", active: true },
+	{ id: "pax56",    label: "56 pax",    icon: "users",         type: "vehicle", active: true },
+	{ id: "adaLift",  label: "ADA lift",  icon: "accessibility", type: "vehicle", active: true },
+	{ id: "hotel",    label: "Hotel",     icon: "building",      type: "driver",  active: true },
+	{ id: "fuelCard", label: "Fuel card", icon: "credit-card",   type: "driver",  active: true },
 ];
 
-/* Driver / trip needs — logistical items for the crew.
-   Rendered in the Plan pane alongside trip planning details.          */
-const DRIVER_NEEDS = [
-	{ key: "hotel", label: "Hotel", icon: "building" },
-	{ key: "fuelCard", label: "Fuel card", icon: "credit-card" },
-];
+function activeReqsByType(type) {
+	return (window.appRequirements ?? DEFAULT_REQUIREMENTS)
+		.filter(r => r.type === type && r.active)
+		.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
+}
 
 /* ── Helpers ───────────────────────────────────────────────────────────── */
 
@@ -48,7 +48,7 @@ function renderRequirements(container, items, { block = true } = {}) {
 	container.innerHTML = items
 		.map(
 			(req) =>
-				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.key)}" title="${escHtml(req.label)}">
+				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.id ?? req.key)}" title="${escHtml(req.label)}">
 					<i data-lucide="${escHtml(req.icon)}" class="rux-icon"></i><span class="rux-btn-label"> ${escHtml(req.label)}</span>
 				</button>`,
 		)
@@ -179,6 +179,262 @@ function updateTripOptions(root, options = {}) {
 	renderBusGroups(busGroupsEl, n, buses, drivers);
 }
 
+function formatMoney(value) {
+	const number = Number.parseFloat(value);
+	const amount = Number.isFinite(number) ? number : 0;
+	const sign = amount < 0 ? "-" : "";
+	return `${sign}$${Math.abs(amount).toLocaleString("en-US", {
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 2,
+	})}`;
+}
+
+function localIsoDate(date = new Date()) {
+	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function formatDisplayDate(value) {
+	if (!value) return "—";
+	const [year, month, day] = value.split("-");
+	return year && month && day ? `${month}/${day}/${year}` : value;
+}
+
+function initBillingWorkflow(root) {
+	const toggles = root.querySelectorAll("[data-billing-toggle]");
+	const priceEl = root.querySelector("#tp-price");
+	const paidEl = root.querySelector("#tp-deposit");
+	const priceSummary = root.querySelector("#tp-price-summary");
+	const totalPaid = root.querySelector("#tp-total-paid");
+	const balanceDue = root.querySelector("#tp-balance-due");
+	const paidDateSummary = root.querySelector("#tp-paid-date-summary");
+	const paidStatus = root.querySelector("#tp-paid-status");
+	const confirmStatus = root.querySelector("#tp-confirm-status");
+	const balancePaidEl = root.querySelector("#tp-balance-paid");
+	const datePaidEl = root.querySelector("#tp-date-paid");
+	const paymentRows = root.querySelector("#tp-payment-rows");
+	const addPaymentBtn = root.querySelector("[data-payment-add]");
+	const paidFullBtn = root.querySelector("#tp-paid-full-btn");
+
+	if (!toggles.length && !priceSummary && !balanceDue && !paymentRows) return;
+	window.RuxBilling?.applyToTripPanel?.(root);
+
+	const readMoney = (el) => {
+		const value = Number.parseFloat(el?.value);
+		return Number.isFinite(value) ? value : 0;
+	};
+	const paymentMethodOptions = () => `
+		<option value="">Method</option>
+		<option value="Cash">Cash</option>
+		<option value="Check">Check</option>
+		<option value="Card">Card</option>
+		<option value="ACH">ACH</option>
+		<option value="Zelle">Zelle</option>
+		<option value="Other">Other</option>`;
+	const paymentRowCount = () => paymentRows?.querySelectorAll("[data-payment-row]").length || 0;
+	const createPaymentRow = (index) => {
+		const row = document.createElement("div");
+		row.className = "rux-trip-panel__payment-row";
+		row.dataset.paymentRow = "";
+		row.innerHTML = `
+			<div class="rux-trip-panel__payment-row-main">
+				<div class="rux-input-group rux-input-group--prefix">
+					<span class="rux-input-group__prefix">$</span>
+					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
+				</div>
+				<div class="rux-trip-panel__payment-row-end">
+					<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+					<button class="rux-button rux-button--ghost rux-button--icon" type="button" data-payment-remove aria-label="Remove payment"><i data-lucide="trash-2" class="rux-icon"></i></button>
+				</div>
+			</div>
+			<div class="rux-trip-panel__payment-row-meta">
+				<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">${paymentMethodOptions()}</select>
+				<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Ref / note" />
+			</div>`;
+		return row;
+	};
+	const ensurePaymentRows = (count) => {
+		if (!paymentRows) return;
+		while (paymentRowCount() < count) {
+			paymentRows.appendChild(createPaymentRow(paymentRowCount()));
+		}
+	};
+	const renumberPaymentRows = () => {
+		paymentRows?.querySelectorAll("[data-payment-row]").forEach((row, index) => {
+			const amount = row.querySelector("[data-payment-amount]");
+			const method = row.querySelector("[data-payment-method]");
+			const date = row.querySelector("[data-payment-date]");
+			const ref = row.querySelector("[data-payment-ref]");
+			if (amount) {
+				amount.id = `tp-payment-amount-${index + 1}`;
+				amount.name = `payments[${index}].amount`;
+			}
+			if (method) {
+				method.id = `tp-payment-method-${index + 1}`;
+				method.name = `payments[${index}].method`;
+			}
+			if (date) {
+				date.id = `tp-payment-date-${index + 1}`;
+				date.name = `payments[${index}].date`;
+			}
+			if (ref) {
+				ref.id = `tp-payment-ref-${index + 1}`;
+				ref.name = `payments[${index}].ref`;
+			}
+		});
+	};
+	const updatePaymentRemoveButtons = () => {
+		const count = paymentRowCount();
+		paymentRows?.querySelectorAll("[data-payment-remove]").forEach((btn) => {
+			btn.disabled = count <= 1;
+		});
+	};
+	const readPayments = () =>
+		Array.from(paymentRows?.querySelectorAll("[data-payment-row]") || []).map((row) => ({
+			amount: readMoney(row.querySelector("[data-payment-amount]")),
+			method: row.querySelector("[data-payment-method]")?.value.trim() || "",
+			date: row.querySelector("[data-payment-date]")?.value.trim() || "",
+			ref: row.querySelector("[data-payment-ref]")?.value.trim() || "",
+		}));
+	const serializePayment = (payment) => [payment.method, payment.date, payment.ref].filter(Boolean).join(" · ");
+	const syncLegacyPaymentFields = (payments, paid) => {
+		if (paidEl) paidEl.value = paid ? String(paid) : "";
+		const refs = root.querySelectorAll("#tp-pay-ref-1, #tp-pay-ref-2, #tp-pay-ref-3");
+		refs.forEach((ref, index) => {
+			ref.value = serializePayment(payments[index] || {});
+		});
+	};
+	const hydrateLegacyPayments = () => {
+		if (!paymentRows || paymentRows.dataset.paymentsTouched === "true") return;
+		const legacyPaid = paidEl?.value;
+		const refs = Array.from(root.querySelectorAll("#tp-pay-ref-1, #tp-pay-ref-2, #tp-pay-ref-3")).map((ref) => ref.value).filter(Boolean);
+		if (!legacyPaid && !refs.length) return;
+		ensurePaymentRows(Math.max(1, refs.length));
+		const rows = paymentRows.querySelectorAll("[data-payment-row]");
+		if (legacyPaid && !rows[0]?.querySelector("[data-payment-amount]")?.value) {
+			rows[0].querySelector("[data-payment-amount]").value = legacyPaid;
+		}
+		refs.forEach((ref, index) => {
+			const refInput = rows[index]?.querySelector("[data-payment-ref]");
+			if (refInput && !refInput.value) refInput.value = ref;
+		});
+	};
+
+	const sync = () => {
+		hydrateLegacyPayments();
+		const price = readMoney(priceEl);
+		const payments = readPayments();
+		const paid = payments.reduce((sum, payment) => sum + payment.amount, 0);
+		const balance = price - paid;
+		const latestPaymentDate = payments
+			.filter((payment) => payment.amount > 0 && payment.date)
+			.map((payment) => payment.date)
+			.sort()
+			.pop() || "";
+		const fullyPaid = price > 0 && balance <= 0;
+		syncLegacyPaymentFields(payments, paid);
+		updatePaymentRemoveButtons();
+
+		if (priceSummary) priceSummary.textContent = formatMoney(price);
+		if (totalPaid) totalPaid.textContent = formatMoney(paid);
+		if (balanceDue) {
+			balanceDue.textContent = formatMoney(balance);
+			balanceDue.classList.toggle("is-negative", balance < 0);
+		}
+		if (paidDateSummary) paidDateSummary.textContent = fullyPaid ? formatDisplayDate(latestPaymentDate) : "—";
+		if (paidStatus) {
+			const contractSigned = !!root.querySelector("#tp-contract-signed")?.checked;
+			const poReceived = !!root.querySelector("#tp-po-received")?.checked;
+			const statusKey = window.RuxBilling?.deriveStatus?.({ contractSigned, poReceived, price, paid, balance }) || "pending";
+			window.RuxBilling?.renderStatusBadge?.(paidStatus, statusKey);
+			if (confirmStatus) {
+				const confirms = !!window.RuxBilling?.isStatusConfirmed?.(statusKey);
+				window.RuxBilling?.renderConfirmBadge?.(confirmStatus, statusKey, confirms);
+			}
+		}
+		if (balancePaidEl) balancePaidEl.checked = fullyPaid;
+		if (datePaidEl) datePaidEl.value = fullyPaid ? latestPaymentDate : "";
+		if (paidFullBtn) paidFullBtn.disabled = price <= 0;
+
+		toggles.forEach((toggle) => {
+			const enabled = toggle.checked;
+			const step = toggle.closest("[data-billing-step]");
+			step?.classList.toggle("is-enabled", enabled);
+
+			(toggle.dataset.billingControls || "")
+				.split(/\s+/)
+				.filter(Boolean)
+				.forEach((id) => {
+					const control = root.querySelector(`#${id}`);
+					if (control) control.disabled = !enabled;
+				});
+		});
+
+		window.Rux?.syncDateInputs(root);
+	};
+
+	toggles.forEach((toggle) => toggle.addEventListener("change", sync));
+	[priceEl, paidEl].forEach((el) => el?.addEventListener("input", sync));
+	paymentRows?.addEventListener("input", (event) => {
+		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
+		sync();
+	});
+	paymentRows?.addEventListener("change", (event) => {
+		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
+		sync();
+	});
+	paymentRows?.addEventListener("click", (event) => {
+		const removeBtn = event.target.closest("[data-payment-remove]");
+		if (!removeBtn || removeBtn.disabled) return;
+		removeBtn.closest("[data-payment-row]")?.remove();
+		paymentRows.dataset.paymentsTouched = "true";
+		renumberPaymentRows();
+		sync();
+	});
+	addPaymentBtn?.addEventListener("click", () => {
+		ensurePaymentRows(paymentRowCount() + 1);
+		paymentRows.dataset.paymentsTouched = "true";
+		updatePaymentRemoveButtons();
+		if (window.lucide) lucide.createIcons();
+		paymentRows?.querySelector("[data-payment-row]:last-child [data-payment-amount]")?.focus();
+	});
+	paidFullBtn?.addEventListener("click", () => {
+		if (!paymentRows) return;
+		const price = readMoney(priceEl);
+		if (!price) return;
+		const payments = readPayments();
+		const paid = payments.reduce((sum, payment) => sum + payment.amount, 0);
+		const remaining = Math.max(0, price - paid);
+		if (remaining > 0) {
+			const targetRow = Array.from(paymentRows.querySelectorAll("[data-payment-row]")).find((paymentRow) => !paymentRow.querySelector("[data-payment-amount]")?.value);
+			const row = targetRow || (() => {
+				ensurePaymentRows(paymentRowCount() + 1);
+				return paymentRows.querySelector("[data-payment-row]:last-child");
+			})();
+			row.querySelector("[data-payment-amount]").value = remaining;
+			const dateInput = row.querySelector("[data-payment-date]");
+			if (dateInput && !dateInput.value) dateInput.value = localIsoDate();
+		}
+		paymentRows.dataset.paymentsTouched = "true";
+		sync();
+	});
+	root.addEventListener("rux:trip-cleared", () => {
+		if (!paymentRows) return;
+		paymentRows.dataset.paymentsTouched = "true";
+		const rows = paymentRows.querySelectorAll("[data-payment-row]");
+		rows.forEach((row, index) => {
+			if (index > 0) row.remove();
+		});
+		paymentRows.querySelectorAll("input").forEach((input) => { input.value = ""; });
+		paymentRows.querySelectorAll("select").forEach((select) => { select.value = ""; });
+		sync();
+	});
+	document.addEventListener("settings:billing", () => {
+		window.RuxBilling?.applyToTripPanel?.(root);
+		sync();
+	});
+	sync();
+}
+
 /* ── Tabs ───────────────────────────────────────────────────────────────── */
 
 function initTripTabs(root) {
@@ -248,13 +504,15 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		});
 	});
 
+	initBillingWorkflow(root);
+
 	/* ── Requirements ───────────────────────────────────────────────────── */
 
 	const vehicleReqContainer = root.querySelector("#tp-vehicle-reqs");
 	const driverNeedsContainer = root.querySelector("#tp-driver-needs");
 	if (vehicleReqContainer || driverNeedsContainer) {
-		if (vehicleReqContainer) renderRequirements(vehicleReqContainer, VEHICLE_REQS);
-		if (driverNeedsContainer) renderRequirements(driverNeedsContainer, DRIVER_NEEDS, { block: false });
+		if (vehicleReqContainer) renderRequirements(vehicleReqContainer, activeReqsByType("vehicle"));
+		if (driverNeedsContainer) renderRequirements(driverNeedsContainer, activeReqsByType("driver"), { block: false });
 		if (window.lucide) lucide.createIcons();
 	}
 
@@ -371,4 +629,12 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	}
 }
 
-window.TripPanel = { init: initTripPanel, initTabs: initTripTabs, updateOptions: updateTripOptions };
+function refreshRequirements(root) {
+	const vEl = root.querySelector("#tp-vehicle-reqs");
+	const dEl = root.querySelector("#tp-driver-needs");
+	if (vEl) renderRequirements(vEl, activeReqsByType("vehicle"));
+	if (dEl) renderRequirements(dEl, activeReqsByType("driver"), { block: false });
+	if (window.lucide) lucide.createIcons();
+}
+
+window.TripPanel = { init: initTripPanel, initTabs: initTripTabs, updateOptions: updateTripOptions, refreshRequirements };

@@ -42,6 +42,7 @@
   }
 
   function isConfirmed(t) {
+    if (window.RuxBilling?.isRecordConfirmed) return window.RuxBilling.isRecordConfirmed(t);
     return !!(t.confirmed || t.contract_status === "Signed" ||
               t.po_ref || (t.deposit_amount > 0) || t.date_paid);
   }
@@ -309,6 +310,12 @@
   }
 
   window.TripsListPanel = { init, reload: loadTrips };
+  document.addEventListener("settings:billing", () => {
+    if (allTrips.length) {
+      renderRows(allTrips);
+      applyFilter();
+    }
+  });
 
   init().catch((err) => {
     console.error("TripsListPanel init failed:", err);

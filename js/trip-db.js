@@ -51,6 +51,10 @@ import { supabase } from "./supabase.js";
 		return Number.isFinite(n) ? n : null;
 	}
 
+	function optionalNumVal(root, id) {
+		return root.querySelector(`#${id}`) ? numVal(root, id) : undefined;
+	}
+
 	function intVal(root, id, fallback = null) {
 		const el = root.querySelector(`#${id}`);
 		if (!el) return fallback;
@@ -72,20 +76,22 @@ import { supabase } from "./supabase.js";
 		if (el) el.value = value ?? "";
 	}
 
-	function setToggle(root, groupId, value) {
-		if (!value) return;
-		root.querySelectorAll(`#${groupId} .rux-button`).forEach((btn) => {
-			const match = btn.textContent.trim() === value;
-			btn.setAttribute("aria-pressed", String(match));
-			btn.classList.toggle("is-active", match);
-		});
-	}
-
 	function setReq(root, key, value) {
 		const btn = root.querySelector(`[data-req="${key}"]`);
 		if (!btn) return;
 		btn.setAttribute("aria-pressed", String(!!value));
 		btn.classList.toggle("is-active", !!value);
+	}
+
+	function resetPaymentRows(root) {
+		const paymentRows = root.querySelector("#tp-payment-rows");
+		if (!paymentRows) return;
+		paymentRows.dataset.paymentsTouched = "false";
+		paymentRows.querySelectorAll("[data-payment-row]").forEach((row, index) => {
+			if (index > 0) row.remove();
+		});
+		paymentRows.querySelectorAll("input").forEach((input) => { input.value = ""; });
+		paymentRows.querySelectorAll("select").forEach((select) => { select.value = ""; });
 	}
 
 	function syncBusCount(root, count) {
@@ -99,10 +105,6 @@ import { supabase } from "./supabase.js";
 
 	function compactPayload(data) {
 		return Object.fromEntries(Object.entries(data).filter(([, value]) => value !== undefined));
-	}
-
-	function localIsoDate(date = new Date()) {
-		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 	}
 
 	function mergeUpdate(next, previous = {}) {
@@ -133,6 +135,25 @@ import { supabase } from "./supabase.js";
 	/* ── Collect ─────────────────────────────────────────────────────────── */
 
 	function collectTrip(root) {
+		const billingWorkflow = (window.RuxBilling?.getConfig?.() || {}).workflow || {};
+		const billingActive = (key) => billingWorkflow[key]?.active !== false;
+		const contractSigned = billingActive("contractSigned") && !!root.querySelector("#tp-contract-signed")?.checked;
+		const poReceived = billingActive("poReceived") && !!root.querySelector("#tp-po-received")?.checked;
+		const invoiced = !!root.querySelector("#tp-invoiced")?.checked;
+		const balancePaid = !!root.querySelector("#tp-balance-paid")?.checked;
+		const poRef = poReceived ? fieldVal(root, "tp-po") : null;
+		const invoiceNumber = invoiced ? fieldVal(root, "tp-inv-num") : null;
+		const datePaid = balancePaid ? fieldVal(root, "tp-date-paid") : null;
+		const depositAmount = numVal(root, "tp-deposit");
+		const quotedPrice = contractSigned ? numVal(root, "tp-price") : null;
+		const billingConfirmed = window.RuxBilling?.isStateConfirmed?.({
+			contractSigned,
+			poReceived,
+			price: quotedPrice,
+			paid: depositAmount,
+			balance: (quotedPrice ?? 0) - (depositAmount ?? 0),
+		});
+
 		return {
 			customer:             fieldVal(root, "tp-customer"),
 			destination:          fieldVal(root, "tp-destination"),
@@ -152,25 +173,36 @@ import { supabase } from "./supabase.js";
 			trip_contact_2_phone:  fieldVal(root, "tp-trip2-phone"),
 			notes:                 fieldVal(root, "tp-notes"),
 			// Billing
-			contract_status:  root.querySelector("#tp-contract-signed")?.checked ? "Signed" : "Pending",
-			quoted_price:     numVal(root, "tp-price"),
-			est_miles:        numVal(root, "tp-est-mi"),
-			driving_hours:    numVal(root, "tp-drive-hr"),
-			on_duty_hours:    numVal(root, "tp-duty-hr"),
-			invoice_status:   fieldVal(root, "tp-inv-num") ? "Invoiced" : "Pending",
-			po_ref:           fieldVal(root, "tp-po"),
-			invoice_number:   fieldVal(root, "tp-inv-num"),
-			date_paid:        fieldVal(root, "tp-date-paid"),
-			actual_miles:     numVal(root, "tp-act-mi"),
+			contract_status:  contractSigned ? "Signed" : "Pending",
+			quoted_price:     quotedPrice,
+			est_miles:        optionalNumVal(root, "tp-est-mi"),
+			driving_hours:    optionalNumVal(root, "tp-drive-hr"),
+			on_duty_hours:    optionalNumVal(root, "tp-duty-hr"),
+			invoice_status:   invoiced ? "Invoiced" : "Pending",
+			po_ref:           poRef,
+			invoice_number:   invoiceNumber,
+			date_paid:        datePaid,
+			actual_miles:     optionalNumVal(root, "tp-act-mi"),
 			payment_ref_1:    fieldVal(root, "tp-pay-ref-1"),
 			payment_ref_2:    fieldVal(root, "tp-pay-ref-2"),
 			payment_ref_3:    fieldVal(root, "tp-pay-ref-3"),
-			deposit_amount:   numVal(root, "tp-deposit"),
-			confirmed:        !!(root.querySelector("#tp-contract-signed")?.checked
-			                  || fieldVal(root, "tp-po")
-			                  || (numVal(root, "tp-deposit") ?? 0) > 0
-			                  || fieldVal(root, "tp-date-paid")),
-			// Dispatch requirements
+			deposit_amount:   depositAmount,
+			confirmed:        billingConfirmed ?? !!(contractSigned
+			                  || poRef
+			                  || (depositAmount ?? 0) > 0
+			                  || datePaid),
+			// Billing status flags
+			po_received:  poReceived,
+			invoiced:     invoiced,
+			balance_paid: balancePaid,
+			// Dispatch requirements — JSONB map + legacy boolean columns
+			trip_reqs: (() => {
+				const map = {};
+				root.querySelectorAll("[data-req]").forEach(btn => {
+					if (btn.getAttribute("aria-pressed") === "true") map[btn.dataset.req] = true;
+				});
+				return map;
+			})(),
 			req_sleeper:    reqVal(root, "sleeper"),
 			req_56pax:      reqVal(root, "pax56"),
 			req_ada:        reqVal(root, "adaLift"),
@@ -342,9 +374,17 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-trip2-name",  trip.trip_contact_2_name);
 		setVal(root, "tp-trip2-phone", trip.trip_contact_2_phone);
 		setVal(root, "tp-notes",       trip.notes);
-		// Billing
+		resetPaymentRows(root);
+		// Billing — treat legacy `confirmed: true` (no contract_status) as signed
 		const contractEl = root.querySelector("#tp-contract-signed");
-		if (contractEl) contractEl.checked = (trip.contract_status === "Signed");
+		if (contractEl) contractEl.checked = trip.contract_status === "Signed"
+			|| (trip.contract_status == null && !!trip.confirmed);
+		const poReceivedEl = root.querySelector("#tp-po-received");
+		if (poReceivedEl) poReceivedEl.checked = !!(trip.po_received || trip.po_ref);
+		const invoicedEl = root.querySelector("#tp-invoiced");
+		if (invoicedEl) invoicedEl.checked = !!(trip.invoiced || trip.invoice_number || trip.invoice_status === "Invoiced");
+		const balancePaidEl = root.querySelector("#tp-balance-paid");
+		if (balancePaidEl) balancePaidEl.checked = !!(trip.balance_paid || trip.date_paid);
 		setVal(root, "tp-price",    trip.quoted_price);
 		setVal(root, "tp-est-mi",   trip.est_miles);
 		setVal(root, "tp-drive-hr", trip.driving_hours);
@@ -357,12 +397,15 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-pay-ref-1", trip.payment_ref_1);
 		setVal(root, "tp-pay-ref-2", trip.payment_ref_2);
 		setVal(root, "tp-pay-ref-3", trip.payment_ref_3);
-		// Dispatch
-		setReq(root, "sleeper",  trip.req_sleeper);
-		setReq(root, "pax56",    trip.req_56pax);
-		setReq(root, "adaLift",  trip.req_ada);
-		setReq(root, "hotel",    trip.need_hotel);
-		setReq(root, "fuelCard", trip.need_fuel_card);
+		// Dispatch requirements — prefer trip_reqs JSONB, fall back to legacy columns
+		const tripReqs = trip.trip_reqs && Object.keys(trip.trip_reqs).length
+			? trip.trip_reqs
+			: { sleeper: trip.req_sleeper, pax56: trip.req_56pax, adaLift: trip.req_ada, hotel: trip.need_hotel, fuelCard: trip.need_fuel_card };
+		root.querySelectorAll("[data-req]").forEach(btn => {
+			const val = !!tripReqs[btn.dataset.req];
+			btn.setAttribute("aria-pressed", String(val));
+			btn.classList.toggle("is-active", val);
+		});
 	}
 
 	function populateAssignments(root, assignments) {
@@ -433,9 +476,11 @@ import { supabase } from "./supabase.js";
 			btn.setAttribute("aria-pressed", "false");
 			btn.classList.remove("is-active");
 		});
-		const contractEl = root.querySelector("#tp-contract-signed");
-		if (contractEl) contractEl.checked = false;
-		setToggle(root, "tp-invoice-group",  "Pending");
+		["#tp-contract-signed", "#tp-po-received", "#tp-invoiced", "#tp-balance-paid"].forEach(sel => {
+			const el = root.querySelector(sel);
+			if (el) el.checked = false;
+		});
+		resetPaymentRows(root);
 		root.querySelectorAll("[data-req]").forEach((btn) => {
 			btn.setAttribute("aria-pressed", "false");
 			btn.classList.remove("is-active");
@@ -675,12 +720,16 @@ export function loadTrip(root, itinerary, trip) {
 		payment_ref_2:         trip.payment_ref_2  ?? trip.paymentRefs?.[1] ?? null,
 		payment_ref_3:         trip.payment_ref_3  ?? trip.paymentRefs?.[2] ?? null,
 		bus_count:             trip.bus_count      ?? trip.busesNeeded    ?? null,
+		trip_reqs:      trip.trip_reqs      ?? {},
 		req_sleeper:    trip.req_sleeper    ?? false,
 		req_56pax:      trip.req_56pax      ?? false,
 		req_ada:        trip.req_ada        ?? false,
 		need_hotel:     trip.need_hotel     ?? false,
 		need_fuel_card: trip.need_fuel_card ?? false,
 		confirmed:      trip.confirmed      ?? false,
+		po_received:    trip.po_received    ?? false,
+		invoiced:       trip.invoiced       ?? false,
+		balance_paid:   trip.balance_paid   ?? false,
 		deposit_amount: trip.deposit_amount ?? null,
 	};
 	const loadedAssignments = trip.assignments ?? trip.trip_assignments ?? [];
@@ -736,27 +785,4 @@ export function initTripDB(root, itinerary) {
 	saveBtn?.addEventListener("click",   () => save(root, itinerary, saveBtn));
 	clearBtn?.addEventListener("click",  () => clearForm(root, itinerary));
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
-
-
-	const paidFullBtn = root.querySelector("#tp-paid-full-btn");
-	const priceEl     = root.querySelector("#tp-price");
-
-	function syncPaidBtn() {
-		if (paidFullBtn) paidFullBtn.disabled = !(parseFloat(priceEl?.value) > 0);
-	}
-	priceEl?.addEventListener("input", syncPaidBtn);
-	syncPaidBtn();
-
-	paidFullBtn?.addEventListener("click", () => {
-		const price = priceEl?.value;
-		if (price) {
-			const depositEl = root.querySelector("#tp-deposit");
-			if (depositEl) depositEl.value = price;
-		}
-		const datePaid = root.querySelector("#tp-date-paid");
-		if (datePaid && !datePaid.value) {
-			datePaid.value = localIsoDate();
-		}
-		if (window.lucide) lucide.createIcons();
-	});
 }

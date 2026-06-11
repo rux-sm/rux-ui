@@ -244,6 +244,44 @@ function driverStateClass(state) {
   return "";
 }
 
+/* ── Requirement icons ──────────────────────────────────────────────────── */
+
+const LEGACY_REQ_MAP = {
+  req_sleeper:    "sleeper",
+  req_56pax:      "pax56",
+  req_ada:        "adaLift",
+  need_hotel:     "hotel",
+  need_fuel_card: "fuelCard",
+};
+
+function buildRequirementIcons(trip) {
+  const activeIds = [];
+  const tripReqs = trip.trip_reqs;
+  if (tripReqs && typeof tripReqs === "object" && Object.keys(tripReqs).length) {
+    Object.entries(tripReqs).forEach(([id, val]) => { if (val) activeIds.push(id); });
+  } else {
+    Object.entries(LEGACY_REQ_MAP).forEach(([col, id]) => {
+      if (trip[col]) activeIds.push(id);
+    });
+  }
+  if (!activeIds.length) return null;
+
+  const allReqs = window.appRequirements;
+  if (!allReqs?.length) return null;
+
+  const matched = activeIds.map(id => allReqs.find(r => r.id === id)).filter(Boolean);
+  if (!matched.length) return null;
+
+  const el = document.createElement("div");
+  el.className = "rux-trip-bar__reqs";
+  matched.forEach(req => {
+    const i = icon(req.icon, "rux-icon rux-trip-bar__req-icon");
+    setFloatingTooltip(i, req.label);
+    el.appendChild(i);
+  });
+  return el;
+}
+
 /* ── Trip data helpers ──────────────────────────────────────────────────── */
 
 const PENDING_INDICATORS = [
@@ -270,13 +308,18 @@ const PENDING_INDICATORS = [
     icon: "file-pen",
     label: "Pending contract or PO",
     check: (trip) =>
-      ![
-        "po-received",
-        "contract-signed",
-        "invoiced",
-        "paid",
-        "not-required",
-      ].includes(trip.paymentStatus),
+      !(window.RuxBilling?.isStatusConfirmed?.(trip.paymentStatus) ||
+        [
+          "po-received",
+          "po_received",
+          "contract-signed",
+          "contract_signed",
+          "deposit_received",
+          "paid",
+          "paid_full",
+          "overpaid",
+          "not-required",
+        ].includes(trip.paymentStatus)),
   },
   {
     key: "invoice",
@@ -324,7 +367,7 @@ function tripBarTimes(trip) {
 }
 
 function isPaidTrip(trip) {
-  return trip.paymentStatus === "paid";
+  return ["paid", "paid_full", "overpaid"].includes(trip.paymentStatus);
 }
 
 function compactDate(value) {
@@ -615,6 +658,7 @@ export function createTripBar(trip, callbacks = {}) {
       return el;
     })(),
     textEl("div", "rux-trip-bar__notes", trip.notes),
+    ...(() => { const r = buildRequirementIcons(trip); return r ? [r] : []; })(),
     time,
     drivers,
   );

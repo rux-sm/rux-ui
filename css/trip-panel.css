@@ -237,6 +237,44 @@
 	gap: var(--rux-space-3);
 }
 
+.rux-trip-panel__section-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+}
+
+.rux-trip-panel__status-checks {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.rux-trip-panel__status-checks .rux-row .rux-input,
+.rux-trip-panel__status-checks .rux-row .rux-input-group {
+	flex: 0 0 50%;
+	min-width: 0;
+	margin-left: auto;
+	height: var(--rux-control-height-sm, 28px);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-trip-panel__status-checks .rux-row .rux-input {
+	padding-block: 0;
+}
+
+.rux-trip-panel__status-checks .rux-row .rux-input-group .rux-input {
+	height: 100%;
+	padding-block: 0;
+	font-size: inherit;
+}
+
+.rux-trip-panel__section-head .rux-trip-panel__section-label {
+	border-bottom: none;
+	padding-bottom: 0;
+	flex: 1;
+}
+
 .rux-trip-panel__section-label {
 	font-size: var(--rux-text-2xs);
 	font-weight: var(--rux-weight-semibold);
@@ -251,13 +289,181 @@
 	border-bottom-color: transparent;
 	padding-bottom: 0;
 }
+.rux-trip-panel__section-label--requirements {
+	margin-top: var(--rux-space-2);
+}
+
+/* — Billing workflow — */
+
+.rux-trip-panel__billing-summary {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+	gap: 0;
+	align-items: start;
+	margin-top: var(--rux-space-3);
+	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+}
+.rux-trip-panel__billing-summary .rux-field {
+	gap: var(--rux-space-1);
+	min-width: 0;
+	padding: var(--rux-space-3) var(--rux-space-3) 0 0;
+}
+.rux-trip-panel__billing-output {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	height: auto;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-lg);
+	font-weight: var(--rux-weight-bold);
+	line-height: var(--rux-leading-tight);
+	font-variant-numeric: tabular-nums;
+}
+.rux-trip-panel__billing-output.is-negative {
+	color: var(--rux-info);
+}
+.rux-trip-panel__billing-badges {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--rux-space-2);
+	min-width: 0;
+}
+.rux-trip-panel__billing-status {
+	flex: none;
+}
+.rux-trip-panel__confirm-status {
+	flex: none;
+}
+.rux-trip-panel__billing-workflow {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+.rux-trip-panel__billing-step {
+	display: grid;
+	grid-template-columns: var(--rux-switch-width) minmax(0, 1fr);
+	gap: var(--rux-space-3);
+	align-items: start;
+	padding: var(--rux-space-3);
+	border-radius: var(--rux-radius-md);
+	background: var(--rux-bg-level-2);
+}
+.rux-trip-panel__billing-step-body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	min-width: 0;
+	width: 100%;
+}
+.rux-trip-panel__billing-step-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+	min-width: 0;
+}
+.rux-trip-panel__billing-step-title {
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-tight);
+}
+.rux-trip-panel__billing-step-help {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-xs);
+	line-height: var(--rux-leading-tight);
+}
+.rux-trip-panel__billing-step-content {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--rux-space-2);
+	width: 100%;
+	margin-top: var(--rux-space-1);
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+.rux-trip-panel__billing-step .rux-field {
+	gap: var(--rux-space-1);
+}
+.rux-trip-panel__billing-step .rux-input,
+.rux-trip-panel__billing-step .rux-select,
+.rux-trip-panel__billing-step .rux-input-group {
+	width: 100%;
+	min-width: 0;
+	height: var(--rux-field-height);
+}
+.rux-trip-panel__billing-step .rux-input-group .rux-input {
+	height: 100%;
+}
+.rux-trip-panel__billing-step:not(.is-enabled) .rux-trip-panel__billing-step-content {
+	opacity: 0.45;
+}
+.rux-trip-panel__billing-step--payments {
+	grid-template-columns: minmax(0, 1fr);
+}
+.rux-trip-panel__payment-rows {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+.rux-trip-panel__payment-row {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+.rux-trip-panel__payment-row-main {
+	display: grid;
+	grid-template-columns: 1fr minmax(0, 1fr);
+	gap: var(--rux-space-2);
+	align-items: center;
+}
+.rux-trip-panel__payment-row-end {
+	display: flex;
+	gap: var(--rux-space-2);
+	align-items: center;
+	min-width: 0;
+}
+.rux-trip-panel__payment-row-end .rux-input {
+	flex: 1;
+	min-width: 0;
+}
+.rux-trip-panel__payment-row-end [data-payment-remove] {
+	flex: none;
+	width: var(--rux-field-height);
+	height: var(--rux-field-height);
+	padding: 0;
+}
+.rux-trip-panel__payment-row-meta {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--rux-space-2);
+	align-items: center;
+}
+.rux-trip-panel__add-payment {
+	align-self: flex-start;
+}
 
 /* — Requirements chips — */
 
-.rux-trip-panel__reqs {
+.rux-trip-panel__requirements-grid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: var(--rux-space-2);
+}
+.rux-trip-panel__reqs {
+	display: contents;
+}
+.rux-trip-panel__requirements-grid #tp-driver-needs {
+	display: contents;
+}
+.rux-trip-panel__requirements-grid .rux-button {
+	width: 100%;
+	min-width: 0;
+	justify-content: center;
 }
 
 /* — Payment refs row — */
@@ -517,6 +723,27 @@
 		--_cols: 1;
 		gap: var(--rux-space-4);
 	}
+
+	.rux-trip-panel__billing-summary {
+		grid-template-columns: 1fr;
+	}
+
+	.rux-trip-panel__billing-step-head {
+		align-items: flex-start;
+		flex-direction: column;
+	}
+
+	.rux-trip-panel__payment-row-main {
+		grid-template-columns: 1fr var(--rux-field-height);
+	}
+
+	.rux-trip-panel__payment-row-main [data-payment-date] {
+		grid-column: 1;
+	}
+
+	.rux-trip-panel__payment-row-meta {
+		grid-template-columns: 1fr;
+	}
 }
 
 @container (max-width: 340px) {
@@ -564,9 +791,7 @@
 }
 
 @container (max-width: 400px) {
-	#tp-vehicle-reqs .rux-button--block,
-	#tp-driver-needs .rux-button {
-		flex: 1;
-		padding: 0;
+	.rux-trip-panel__requirements-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }

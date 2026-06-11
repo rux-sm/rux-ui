@@ -55,6 +55,7 @@
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-5);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	background: var(--rux-bg-level-1);
 }
 
 .settings-app__panel-title {
@@ -78,6 +79,7 @@
 	flex-direction: column;
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-5);
+	background: var(--rux-bg-level-1);
 }
 
 .settings-app__grid-2 {
@@ -92,7 +94,7 @@
 	justify-content: space-between;
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-4) var(--rux-space-5);
-	background: var(--rux-bg-sunken);
+	background: var(--rux-bg-level-1);
 	border-top: var(--rux-border-width) solid var(--rux-border);
 }
 
@@ -171,6 +173,209 @@
 	line-height: var(--rux-leading-snug);
 }
 
+/* — Requirements panel ————————————————————————————————————————————————— */
+
+.settings-req-list {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.settings-req-section {
+	margin: var(--rux-space-2) 0 var(--rux-space-1);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+}
+
+.settings-req-section:first-child {
+	margin-top: 0;
+}
+
+.settings-req-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-1) var(--rux-space-2);
+	border-radius: var(--rux-radius-sm);
+}
+
+.settings-req-row:hover {
+	background: var(--rux-bg-hover);
+}
+
+.req-icon-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: var(--rux-control-height-sm, 28px);
+	height: var(--rux-control-height-sm, 28px);
+	padding: 0;
+	background: var(--rux-bg-sunken);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-sm);
+	color: var(--rux-fg-subtle);
+	cursor: pointer;
+	transition: background var(--rux-duration-fast), border-color var(--rux-duration-fast), color var(--rux-duration-fast);
+}
+
+.req-icon-btn:hover {
+	background: var(--rux-control-ghost-hover);
+	border-color: var(--rux-border-strong);
+	color: var(--rux-fg);
+}
+
+.settings-req-label-input {
+	flex: 1;
+	min-width: 0;
+	height: var(--rux-control-height-sm, 28px);
+	padding-block: 0;
+	background: transparent;
+	border-color: transparent;
+	font-size: var(--rux-text-sm);
+}
+
+.settings-req-label-input:hover {
+	border-color: var(--rux-border);
+	background: var(--rux-bg);
+}
+
+.settings-req-label-input:focus {
+	border-color: var(--rux-focus);
+	background: var(--rux-bg);
+}
+
+.settings-req-type-badge {
+	flex: none;
+}
+
+.settings-req-empty {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+.settings-req-add-area {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.settings-req-new-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	flex-wrap: wrap;
+}
+
+.settings-billing-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.settings-billing-row {
+	display: grid;
+	grid-template-columns: minmax(5rem, 7rem) minmax(0, 1fr) var(--rux-switch-width);
+	gap: var(--rux-space-2);
+	align-items: center;
+	padding: var(--rux-space-2);
+	border-radius: var(--rux-radius-md);
+	background: var(--rux-bg-level-2);
+}
+
+.settings-billing-row__label {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+}
+
+.settings-billing-confirm-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--rux-space-2);
+}
+
+.settings-billing-confirm {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	height: var(--rux-field-height);
+	cursor: pointer;
+}
+
+.settings-billing-confirm input {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.settings-billing-confirm .rux-badge {
+	width: 100%;
+	height: 100%;
+	justify-content: center;
+	border: var(--rux-border-width) solid transparent;
+	border-radius: var(--rux-radius-md);
+}
+
+.settings-billing-confirm input:not(:checked) + .rux-badge {
+	background: var(--rux-bg-level-form);
+	color: var(--rux-fg-subtle);
+}
+
+.settings-billing-confirm input:focus-visible + .rux-badge {
+	box-shadow: var(--rux-ring-focus);
+}
+
+/* — Icon picker popover ——————————————————————————————————————————————————— */
+
+.req-icon-picker {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 2px;
+	width: 248px;
+	padding: var(--rux-space-2);
+	background: var(--rux-bg-elevated);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-md);
+	box-shadow: var(--rux-shadow-lg);
+}
+
+.req-icon-picker[hidden] {
+	display: none;
+}
+
+.req-icon-option {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 36px;
+	height: 36px;
+	padding: 0;
+	background: transparent;
+	border: var(--rux-border-width) solid transparent;
+	border-radius: var(--rux-radius-sm);
+	color: var(--rux-fg-subtle);
+	cursor: pointer;
+	transition: background var(--rux-duration-fast), color var(--rux-duration-fast);
+}
+
+.req-icon-option:hover {
+	background: var(--rux-control-ghost-hover);
+	color: var(--rux-fg);
+}
+
+/* — Responsive ——————————————————————————————————————————————————————————— */
+
 @media (max-width: 640px) {
 	.settings-app__body {
 		padding: var(--rux-space-3);
@@ -183,6 +388,11 @@
 	}
 
 	.settings-app__grid-2 {
+		grid-template-columns: 1fr;
+	}
+
+	.settings-billing-row,
+	.settings-billing-confirm-grid {
 		grid-template-columns: 1fr;
 	}
 
