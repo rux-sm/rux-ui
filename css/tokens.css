@@ -88,7 +88,7 @@
 	--rux-border: oklch(38% 0.004 260); /* default — separates surfaces           */
 	/*--rux-border: oklch(70% 0.2 24); /* debug borders */
 	--rux-border-strong: #4a4a4a; /* emphasized — focused/selected card     */
-	--rux-border-subtle: oklch(from var(--rux-color-base) 30% c h); /* whisper — grouping inside a card       */
+	--rux-border-subtle: oklch(from var(--rux-color-base) 25% c h); /* whisper — grouping inside a card       */
 	--rux-grid-line: var(--rux-border-subtle); /* dense tables, calendars, schedulers */
 	--rux-grid-border: var(--rux-border); /* outer edge for grid surfaces        */
 
@@ -190,7 +190,9 @@
 
 	--rux-tracking-tight: -0.02em; /* large display                         */
 	--rux-tracking-normal: 0;
-	--rux-tracking-wide: 0.04em; /* uppercase eyebrows / overline         */
+	--rux-tracking-wide: 0.04em;   /* field labels                          */
+	--rux-tracking-wider: 0.06em;  /* card titles · toggle chips            */
+	--rux-tracking-widest: 0.10em; /* section headers / eyebrows            */
 
 	/* ─── SPACING ─────────────────────────────────────────────────────────── */
 	/* 4px base grid. Pick from the scale; do not invent new values.          */

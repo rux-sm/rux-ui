@@ -43,9 +43,8 @@
 	--rux-scheduler-head-height: 2rem;
 	--rux-scheduler-days: 7;
 	--rux-scheduler-day-min-width: 16.5rem;
-	--rux-scheduler-bg: var(--rux-bg);
+	--rux-scheduler-bg: var(--rux-bg-level-1);
 	--rux-scheduler-border-color: var(--rux-border-subtle);
-	--rux-scheduler-border-color: transparent; /* override */
 	--rux-scheduler-grid-line-color: var(--rux-border-subtle);
 	--rux-scheduler-header-color: var(--rux-fg-subtle);
 	--rux-scheduler-row-head-color: var(--rux-fg);
@@ -67,9 +66,8 @@
 	min-width: 0;
 	overflow: auto;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
-	background: var(--rux-bg-level-0);
-	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
-	border-radius: var(--rux-radius-sm);
+	background: var(--rux-bg-level-2);
+	border-radius: var(--rux-radius-md);
 }
 
 /* ---------- Header row ---------- */
@@ -84,7 +82,7 @@
 	justify-content: space-between;
 	min-height: var(--rux-scheduler-head-height);
 	padding: var(--rux-space-2) var(--rux-space-2);
-	background: var(--rux-bg-level-0);
+	background: var(--rux-bg-level-2);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-header-color);
@@ -151,7 +149,7 @@
 	justify-content: center;
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
-	background: var(--rux-bg-level-0);
+	background: var(--rux-bg-level-2);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-row-head-color);

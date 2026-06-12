@@ -55,9 +55,8 @@
 	min-width: 0;
 }
 .rux-trip-panel__title {
-	font-size: var(--rux-text-md);
-	text-transform: uppercase;
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-text-md); /* 1rem 16px */
+	font-weight: var(--rux-weight-bold);
 	line-height: var(--rux-leading-tight);
 	white-space: nowrap;
 	flex: none;
@@ -111,14 +110,16 @@
 	flex: none;
 	display: flex;
 	align-items: center;
-	padding: 0 var(--rux-space-2) var(--rux-space-2) var(--rux-space-2);
+	padding: var(--rux-space-2);
 	gap: var(--rux-space-2);
-	border-top: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	border-top: solid transparent var(--rux-border-width);
 	border-bottom: solid transparent var(--rux-border-width);
 	overflow-x: auto;
 	scrollbar-width: none;
+}
+.rux-trip-panel__tabs > .rux-button--icon {
+	flex: none;
+	margin-left: auto;
 }
 .rux-trip-panel__tabs::-webkit-scrollbar {
 	display: none;
@@ -212,6 +213,7 @@
 	padding: var(--rux-space-4);
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-md);
+	border: solid transparent var(--rux-border-width);
 }
 
 /* — Form layout helpers — */
@@ -237,11 +239,12 @@
 	gap: var(--rux-space-3);
 }
 
-.rux-trip-panel__section-head {
+.rux-trip-panel__card-head {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
+	height: 24px;
 }
 
 .rux-trip-panel__status-checks {
@@ -269,7 +272,7 @@
 	font-size: inherit;
 }
 
-.rux-trip-panel__section-head .rux-trip-panel__section-label {
+.rux-trip-panel__card-head .rux-trip-panel__section-label {
 	border-bottom: none;
 	padding-bottom: 0;
 	flex: 1;
@@ -277,10 +280,10 @@
 
 .rux-trip-panel__section-label {
 	font-size: var(--rux-text-2xs);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-medium);
 	color: var(--rux-fg-subtle);
 	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-widest);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
@@ -318,8 +321,8 @@
 	border-radius: 0;
 	background: transparent;
 	color: var(--rux-fg);
-	font-size: var(--rux-text-lg);
-	font-weight: var(--rux-weight-bold);
+	font-size: 1.25rem;
+	font-weight: var(--rux-weight-medium);
 	line-height: var(--rux-leading-tight);
 	font-variant-numeric: tabular-nums;
 }
@@ -349,7 +352,7 @@
 	grid-template-columns: var(--rux-switch-width) minmax(0, 1fr);
 	gap: var(--rux-space-3);
 	align-items: start;
-	padding: var(--rux-space-3);
+	padding: var(--rux-space-4);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-level-2);
 }
@@ -375,9 +378,11 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-medium);
+	letter-spacing: var(--rux-tracking-wider);
+	text-transform: uppercase;
 	line-height: var(--rux-leading-tight);
 }
 .rux-trip-panel__billing-step-help {
@@ -544,7 +549,9 @@
 }
 .rux-trip-panel__bus-group {
 	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-md);
+	background: var(--rux-bg-level-2);
 	overflow: hidden;
 }
 .rux-trip-panel__bus-head {
@@ -552,7 +559,6 @@
 	align-items: start;
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-3) var(--rux-space-3);
-	background: var(--rux-bg-level-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 .rux-trip-panel__bus-hint {
@@ -748,8 +754,21 @@
 	}
 }
 
-@container (max-width: 430px) {
-	.rux-trip-panel__tab-label,
+@container (max-width: 470px) {
+	.rux-trip-panel__tabs .rux-button--toggle {
+		flex-direction: column;
+		height: auto;
+		min-height: var(--rux-control-height);
+		padding: var(--rux-space-1) var(--rux-space-1);
+		gap: 3px;
+		line-height: 1;
+	}
+	.rux-trip-panel__tab-label {
+		font-size: 10px;
+		font-weight: var(--rux-weight-medium);
+		letter-spacing: 0;
+		text-transform: none;
+	}
 	.rux-trip-panel__status-label {
 		position: absolute;
 		width: 1px;
@@ -781,4 +800,19 @@
 	.rux-trip-panel__requirements-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
+}
+
+/* — Scoped type overrides ————————————————————————————————————————————————— */
+
+.rux-trip-panel .rux-field__label {
+	font-size: var(--rux-text-2xs);
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
+}
+
+.rux-trip-panel .rux-segmented > .rux-button {
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-medium);
+	letter-spacing: var(--rux-tracking-wider);
+	text-transform: uppercase;
 }

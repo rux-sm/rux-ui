@@ -127,15 +127,6 @@
           <!-- Trip panel drawer -->
           <div class="scheduler-app__drawer" id="trip-panel-drawer">
             <aside class="rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
-              <header class="rux-trip-panel__header">
-                <div class="rux-trip-panel__heading">
-                  <h2 class="rux-trip-panel__title" id="trip-panel-title">Trip editor</h2>
-                  <span class="rux-trip-panel__id" id="tp-trip-id"></span>
-                </div>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
-                  <i data-lucide="x" class="rux-icon"></i>
-                </button>
-              </header>
               <nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
                 <div data-trip-tabs>
                   <button class="rux-button rux-button--toggle" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><i data-lucide="info" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Info</span></button>
@@ -144,11 +135,17 @@
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon rux-trip-panel__fleet-icon" aria-hidden="true"></span><span class="rux-trip-panel__tab-label">Fleet</span></button>
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-docs"      aria-label="Docs"  title="Docs"><i data-lucide="files" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Docs</span></button>
                 </div>
+                <button class="rux-button rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
+                  <i data-lucide="x" class="rux-icon"></i>
+                </button>
               </nav>
               <div class="rux-trip-panel__body">
                 <!-- Trip -->
                 <div id="pane-trip" class="rux-trip-panel__pane" role="tabpanel">
                   <div class="rux-card">
+                    <div class="rux-trip-panel__card-head">
+                      <p class="rux-trip-panel__title">Trip Information</p>
+                    </div>
                     <div class="rux-trip-panel__cols-2">
                       <div class="rux-field"><label class="rux-field__label" for="tp-customer">Customer</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Customer name" /></div>
                       <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" placeholder="Destination" /></div>
@@ -173,8 +170,8 @@
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
-                    <div class="rux-trip-panel__section-head">
-                      <p class="rux-trip-panel__section-label">Financial Summary</p>
+                    <div class="rux-trip-panel__card-head">
+                      <p class="rux-trip-panel__title">Financial Summary</p>
                       <div class="rux-trip-panel__billing-badges">
                         <span class="rux-badge rux-badge--danger rux-trip-panel__confirm-status" id="tp-confirm-status">Unconfirmed</span>
                         <span class="rux-badge rux-badge--danger rux-trip-panel__billing-status" id="tp-paid-status">Pending</span>
@@ -316,20 +313,18 @@
 
           <section class="scheduler-app__schedule" aria-label="Weekly schedule" data-view="schedule">
             <header class="scheduler-app__bar">
-              <div class="scheduler-app__toolbar">
-                <button class="rux-button rux-button--ghost rux-button--icon" id="open-trip-panel" aria-label="Open trip editor" aria-pressed="false">
+              <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
+                <button class="rux-button rux-button--icon rux-button--toggle" id="open-trip-panel" aria-label="Open trip editor" aria-pressed="false">
                   <i data-lucide="panel-right-open" class="rux-icon"></i>
                 </button>
-                <div class="scheduler-app__view-toggles" role="group" aria-label="View">
-                  <button class="rux-button rux-button--ghost rux-button--icon is-active" data-view-btn="schedule" aria-pressed="true" title="Week" aria-label="Week view">
-                    <i data-lucide="calendar-days" class="rux-icon"></i>
-                  </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon" data-view-btn="list" aria-pressed="false" title="List" aria-label="List view">
-                    <i data-lucide="list" class="rux-icon"></i>
-                  </button>
-                </div>
+                <button class="rux-button rux-button--icon rux-button--toggle is-active" data-view-btn="schedule" aria-pressed="true" title="Week" aria-label="Week view">
+                  <i data-lucide="calendar-days" class="rux-icon"></i>
+                </button>
+                <button class="rux-button rux-button--icon rux-button--toggle" data-view-btn="list" aria-pressed="false" title="List" aria-label="List view">
+                  <i data-lucide="list" class="rux-icon"></i>
+                </button>
                 <div class="scheduler-app__search-control" id="trips-search-control">
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="trips-search-toggle" type="button" aria-label="Search trips" aria-expanded="false" aria-controls="trips-search">
+                  <button class="rux-button rux-button--icon" id="trips-search-toggle" type="button" aria-label="Search trips" aria-expanded="false" aria-controls="trips-search">
                     <i data-lucide="search" class="rux-icon"></i>
                   </button>
                   <input class="rux-input scheduler-app__search trips-app__search" id="trips-search" type="search"
@@ -343,13 +338,13 @@
                   <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
                     <i data-lucide="chevron-left" class="rux-icon"></i>
                   </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
-                    <i data-lucide="chevron-right" class="rux-icon"></i>
-                  </button>
                   <button class="rux-button rux-button--ghost rux-button--icon" id="day-picker-btn" type="button" aria-label="Pick day" aria-controls="day-picker-input" title="Pick day">
                     <i data-lucide="calendar-search" class="rux-icon"></i>
                   </button>
                   <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
+                  <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
+                    <i data-lucide="chevron-right" class="rux-icon"></i>
+                  </button>
                 </nav>
               </div>
             </header>
@@ -1047,7 +1042,6 @@
       function closeDrawer() {
         drawer.classList.remove("is-open");
         openTripPanelBtn?.setAttribute("aria-pressed", "false");
-        newTrip?.(tripPanel, itinerary);
       }
 
       // ── Trips module → scheduler bridge ────────────────────────────────────
@@ -1578,7 +1572,10 @@
 
       tripPanel.addEventListener("rux:trip-saved",   () => { loadTripsFromDB(); resetTripPanel(); });
       tripPanel.addEventListener("rux:trip-deleted", () => { loadTripsFromDB(); resetTripPanel(); });
-      tripPanel.addEventListener("rux:trip-cleared", resetTripPanel);
+      tripPanel.addEventListener("rux:trip-cleared", () => {
+        setActiveTripPane("pane-trip");
+        tripPanel.querySelector(".rux-trip-panel__body")?.scrollTo({ top: 0, behavior: "instant" });
+      });
       document.addEventListener("settings:billing", () => {
         loadTripsFromDB();
         document.dispatchEvent(new CustomEvent("trips:refresh"));
@@ -1607,6 +1604,7 @@
       openTripPanelBtn.addEventListener("click", () => {
         if (drawer.classList.contains("is-open")) { closeDrawer(); } else { openDrawer(); }
       });
+      document.getElementById("tp-close-btn").addEventListener("click", closeDrawer);
 
       renderScheduler();
 
