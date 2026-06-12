@@ -1,0 +1,96 @@
+/* ==========================================================================
+   RUX UI — Demo scaffold styles
+   Used by all controls-demo pages. Not part of the design system.
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: var(--rux-space-6) var(--rux-space-5);
+  background: var(--rux-bg-level-1);
+  color: var(--rux-fg);
+  font-family: var(--rux-font-sans);
+  font-size: var(--rux-text-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rux-space-7);
+}
+
+/* Page header */
+.demo-page-title {
+  font-size: var(--rux-text-xl);
+  font-weight: var(--rux-weight-semibold);
+  color: var(--rux-fg);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.demo-page-subtitle {
+  margin: var(--rux-space-1) 0 0;
+  color: var(--rux-fg-muted);
+  font-size: var(--rux-text-sm);
+}
+
+/* Section */
+.demo-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rux-space-4);
+}
+.demo-section__title {
+  font-size: var(--rux-text-xs);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--rux-fg-subtle);
+  margin: 0;
+  padding-bottom: var(--rux-space-3);
+  border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+/* Row */
+.demo-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rux-space-2);
+}
+.demo-row__label {
+  font-size: var(--rux-text-xs);
+  color: var(--rux-fg-muted);
+  font-family: var(--rux-font-mono);
+}
+.demo-row__items {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--rux-space-4) var(--rux-space-5);
+}
+
+/* Individual labeled item */
+.demo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--rux-space-1);
+}
+.demo-item__label {
+  font-size: var(--rux-text-2xs);
+  color: var(--rux-fg-subtle);
+  font-family: var(--rux-font-mono);
+  max-width: 180px;
+}
+
+/* Narrow column for inputs / textareas */
+.demo-narrow {
+  width: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rux-space-3);
+}
+
+/* Divider */
+.demo-divider {
+  border: none;
+  border-top: var(--rux-border-width) solid var(--rux-border);
+  margin: 0;
+}

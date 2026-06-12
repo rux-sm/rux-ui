@@ -214,6 +214,7 @@ function initBillingWorkflow(root) {
 	const paymentRows = root.querySelector("#tp-payment-rows");
 	const addPaymentBtn = root.querySelector("[data-payment-add]");
 	const paidFullBtn = root.querySelector("#tp-paid-full-btn");
+	const removePaymentBtn = root.querySelector("#tp-payment-remove-btn");
 
 	if (!toggles.length && !priceSummary && !balanceDue && !paymentRows) return;
 	window.RuxBilling?.applyToTripPanel?.(root);
@@ -241,10 +242,7 @@ function initBillingWorkflow(root) {
 					<span class="rux-input-group__prefix">$</span>
 					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
 				</div>
-				<div class="rux-trip-panel__payment-row-end">
-					<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
-					<button class="rux-button rux-button--ghost rux-button--icon" type="button" data-payment-remove aria-label="Remove payment"><i data-lucide="trash-2" class="rux-icon"></i></button>
-				</div>
+				<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
 			</div>
 			<div class="rux-trip-panel__payment-row-meta">
 				<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">${paymentMethodOptions()}</select>
@@ -283,10 +281,7 @@ function initBillingWorkflow(root) {
 		});
 	};
 	const updatePaymentRemoveButtons = () => {
-		const count = paymentRowCount();
-		paymentRows?.querySelectorAll("[data-payment-remove]").forEach((btn) => {
-			btn.disabled = count <= 1;
-		});
+		if (removePaymentBtn) removePaymentBtn.disabled = paymentRowCount() <= 1;
 	};
 	const readPayments = () =>
 		Array.from(paymentRows?.querySelectorAll("[data-payment-row]") || []).map((row) => ({
@@ -382,10 +377,10 @@ function initBillingWorkflow(root) {
 		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
 		sync();
 	});
-	paymentRows?.addEventListener("click", (event) => {
-		const removeBtn = event.target.closest("[data-payment-remove]");
-		if (!removeBtn || removeBtn.disabled) return;
-		removeBtn.closest("[data-payment-row]")?.remove();
+	removePaymentBtn?.addEventListener("click", () => {
+		if (!paymentRows || removePaymentBtn.disabled) return;
+		const rows = paymentRows.querySelectorAll("[data-payment-row]");
+		rows[rows.length - 1]?.remove();
 		paymentRows.dataset.paymentsTouched = "true";
 		renumberPaymentRows();
 		sync();

@@ -16,10 +16,11 @@
    Modules (in load order)
    -----------------------
    controls.css     .rux-button, .rux-segmented
+   badges.css       .rux-badge, .rux-itin__badge  ← single source of truth for all badge rules
    form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
                     .rux-switch, .rux-checkbox, .rux-input-group,
                     .rux-color-swatches, .rux-color-picker
-   content.css      .rux-card, .rux-badge, .rux-tag, .rux-avatar
+   content.css      .rux-card, .rux-tag, .rux-avatar
    feedback.css     .rux-alert, .rux-toast, .rux-modal, .rux-progress,
                     [data-tooltip], .rux-tooltip
    navigation.css   .rux-menu
@@ -33,6 +34,7 @@
    ========================================================================== */
 
 @import "./controls.css";
+@import "./badges.css";
 @import "./form.css";
 @import "./content.css";
 @import "./feedback.css";

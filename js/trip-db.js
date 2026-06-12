@@ -146,12 +146,13 @@ import { supabase } from "./supabase.js";
 		const datePaid = balancePaid ? fieldVal(root, "tp-date-paid") : null;
 		const depositAmount = numVal(root, "tp-deposit");
 		const quotedPrice = contractSigned ? numVal(root, "tp-price") : null;
+		const priceForStatus = numVal(root, "tp-price");
 		const billingConfirmed = window.RuxBilling?.isStateConfirmed?.({
 			contractSigned,
 			poReceived,
-			price: quotedPrice,
+			price: priceForStatus,
 			paid: depositAmount,
-			balance: (quotedPrice ?? 0) - (depositAmount ?? 0),
+			balance: (priceForStatus ?? 0) - (depositAmount ?? 0),
 		});
 
 		return {

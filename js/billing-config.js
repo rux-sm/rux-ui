@@ -32,9 +32,9 @@
 
 	const STATUS_META = {
 		pending:            { label: "Pending",            badgeClass: "rux-badge--danger",    icon: "clock" },
-		contract_signed:    { label: "Contract Signed",    badgeClass: "rux-badge--warning",   icon: "file-check" },
-		po_received:        { label: "PO Received",        badgeClass: "rux-badge--info",      icon: "file-text" },
-		deposit_received:   { label: "Deposit Received",   badgeClass: "rux-badge--info",      icon: "banknote" },
+		contract_signed:    { label: "Contract Signed",    badgeClass: "rux-badge--warning",   icon: "file-pen" },
+		po_received:        { label: "PO Received",        badgeClass: "rux-badge--info",      icon: "receipt" },
+		deposit_received:   { label: "Deposit Received",   badgeClass: "rux-badge--info",      icon: "hand-coins" },
 		paid_full:          { label: "Paid in Full",       badgeClass: "rux-badge--success",   icon: "circle-check" },
 		overpaid:           { label: "Overpaid",           badgeClass: "rux-badge--warning",   icon: "alert-triangle" },
 	};
@@ -98,7 +98,7 @@
 
 		if (price > 0 && balance < 0) return "overpaid";
 		if (price > 0 && paid > 0 && balance <= 0) return "paid_full";
-		if (paid > 0 && balance > 0) return "deposit_received";
+		if (paid > 0 && (balance > 0 || price <= 0)) return "deposit_received";
 		if (poReceived) return "po_received";
 		if (contractSigned) return "contract_signed";
 		return "pending";
@@ -119,7 +119,7 @@
 			poReceived,
 			price,
 			paid: hasPaidDate && paid <= 0 ? price : paid,
-			balance: hasPaidDate ? 0 : price - paid,
+			balance: hasPaidDate && paid >= price ? 0 : price - paid,
 		};
 	}
 
@@ -163,6 +163,7 @@
 	 */
 	const STEP_ORDER = ["contract_signed", "po_received", "deposit_received", "paid_full"];
 	function nextPendingStep(status) {
+		if (status === "overpaid") return null;
 		const idx = STEP_ORDER.indexOf(status);
 		if (idx < 0) return STEP_ORDER[0]; // pending → first step
 		if (idx < STEP_ORDER.length - 1) return STEP_ORDER[idx + 1];
@@ -170,26 +171,42 @@
 	}
 
 	/**
-	 * Render the confirmation badge with next-step icon.
+	 * Render the confirmation badge.
+	 *
+	 * Payment-security icon rules (independent of confirmed state):
+	 *   pending          → contract icon  (need to get contract signed)
+	 *   contract_signed  → PO icon        (payment not yet secured)
+	 *   po_received / deposit_received / overpaid → no icon
+	 *   paid_full        → green badge + circle-check
+	 *
 	 * @param {HTMLElement} el
 	 * @param {string} statusKey - current billing status
 	 * @param {boolean} confirmed - whether trip is confirmed
 	 */
 	function renderConfirmBadge(el, statusKey, confirmed) {
 		if (!el) return;
+
+		const PAYMENT_STEP_ICON = {
+			pending:         STATUS_META.contract_signed.icon,
+			contract_signed: STATUS_META.po_received.icon,
+		};
+
+		const isPaidFull = statusKey === "paid_full";
+		const paymentIcon = isPaidFull ? "circle-check" : (PAYMENT_STEP_ICON[statusKey] || null);
+		const iconHtml = paymentIcon
+			? `<i data-lucide="${paymentIcon}" class="rux-icon rux-icon--sm"></i>`
+			: "";
+
 		if (confirmed) {
-			el.textContent = "Confirmed";
-			el.className = "rux-badge rux-badge--info rux-trip-panel__confirm-status";
+			const badgeClass = isPaidFull ? "rux-badge--success" : "rux-badge--info";
+			el.className = `rux-badge ${badgeClass} rux-trip-panel__confirm-status`;
+			el.innerHTML = `${iconHtml}Confirmed`;
 		} else {
-			const next = nextPendingStep(statusKey);
-			const meta = next ? STATUS_META[next] : STATUS_META.pending;
-			const iconHtml = meta.icon
-				? `<i data-lucide="${meta.icon}" class="rux-icon rux-icon--sm"></i>`
-				: "";
-			el.innerHTML = `${iconHtml}Unconfirmed`;
 			el.className = "rux-badge rux-badge--danger rux-trip-panel__confirm-status";
-			if (window.lucide) window.lucide.createIcons({ nodes: [el] });
+			el.innerHTML = `${iconHtml}Unconfirmed`;
 		}
+
+		if (window.lucide) window.lucide.createIcons({ nodes: [el] });
 	}
 
 	function isStatusConfirmed(status, cfg = config) {
@@ -204,6 +221,11 @@
 		return isStatusConfirmed(deriveRecordStatus(trip), cfg);
 	}
 
+	const WORKFLOW_STATUS_KEY = {
+		contractSigned: "contract_signed",
+		poReceived:     "po_received",
+	};
+
 	function applyToTripPanel(root) {
 		if (!root) return;
 		root.querySelectorAll("[data-billing-key]").forEach((step) => {
@@ -213,6 +235,15 @@
 			step.hidden = item.active === false;
 			const label = step.querySelector("[data-billing-label]");
 			if (label) label.textContent = item.label;
+			const iconEl = step.querySelector("[data-billing-icon]");
+			if (iconEl) {
+				const statusKey = WORKFLOW_STATUS_KEY[key];
+				const iconName = statusKey && STATUS_META[statusKey]?.icon;
+				if (iconName) {
+					iconEl.setAttribute("data-lucide", iconName);
+					if (window.lucide) window.lucide.createIcons({ nodes: [iconEl] });
+				}
+			}
 		});
 	}
 

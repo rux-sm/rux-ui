@@ -54,39 +54,6 @@
 }
 
 
-/* — badge — */
-
-.rux-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--rux-space-1);
-  padding: calc(var(--rux-space-1) / 2) var(--rux-space-2);
-  background: var(--rux-bg-elevated);
-  border: var(--rux-border-width) solid var(--rux-border);
-  border-radius: var(--rux-radius-full);
-  color: var(--rux-fg-muted);
-  font-size: var(--rux-text-2xs);
-  font-weight: var(--rux-weight-medium);
-  letter-spacing: var(--rux-tracking-wide);
-  line-height: 1.5;
-  white-space: nowrap;
-}
-
-.rux-badge--accent  { background: var(--rux-accent-subtle);  border-color: transparent; color: var(--rux-accent); }
-.rux-badge--success { background: var(--rux-success-subtle); border-color: transparent; color: var(--rux-success); }
-.rux-badge--warning { background: var(--rux-warning-subtle); border-color: transparent; color: var(--rux-warning); }
-.rux-badge--danger  { background: var(--rux-danger-subtle);  border-color: transparent; color: var(--rux-danger); }
-.rux-badge--info    { background: var(--rux-info-subtle);    border-color: transparent; color: var(--rux-info); }
-
-.rux-badge--dot::before {
-  content: "";
-  width: var(--rux-dot-sm);
-  height: var(--rux-dot-sm);
-  border-radius: var(--rux-radius-full);
-  background: currentColor;
-}
-
-
 /* — tag — */
 
 .rux-tag {

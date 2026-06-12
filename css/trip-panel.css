@@ -353,6 +353,10 @@
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-level-2);
 }
+.rux-trip-panel__billing-step > .rux-switch {
+	align-self: start;
+	padding-top: 2px;
+}
 .rux-trip-panel__billing-step-body {
 	display: flex;
 	flex-direction: column;
@@ -368,6 +372,9 @@
 	min-width: 0;
 }
 .rux-trip-panel__billing-step-title {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
 	color: var(--rux-fg);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
@@ -410,38 +417,21 @@
 	flex-direction: column;
 	gap: var(--rux-space-3);
 }
+.rux-trip-panel__payment-head-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	flex-shrink: 0;
+}
 .rux-trip-panel__payment-row {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
-}
-.rux-trip-panel__payment-row-main {
-	display: grid;
-	grid-template-columns: 1fr minmax(0, 1fr);
-	gap: var(--rux-space-2);
-	align-items: center;
-}
-.rux-trip-panel__payment-row-end {
-	display: flex;
-	gap: var(--rux-space-2);
-	align-items: center;
-	min-width: 0;
-}
-.rux-trip-panel__payment-row-end .rux-input {
-	flex: 1;
-	min-width: 0;
-}
-.rux-trip-panel__payment-row-end [data-payment-remove] {
-	flex: none;
-	width: var(--rux-field-height);
-	height: var(--rux-field-height);
-	padding: 0;
-}
-.rux-trip-panel__payment-row-meta {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: var(--rux-space-2);
 	align-items: center;
+}
+.rux-trip-panel__payment-row-main,
+.rux-trip-panel__payment-row-meta {
+	display: contents;
 }
 .rux-trip-panel__add-payment {
 	align-self: flex-start;
@@ -728,22 +718,19 @@
 		grid-template-columns: 1fr;
 	}
 
-	.rux-trip-panel__billing-step-head {
-		align-items: flex-start;
-		flex-direction: column;
-	}
-
-	.rux-trip-panel__payment-row-main {
-		grid-template-columns: 1fr var(--rux-field-height);
-	}
-
-	.rux-trip-panel__payment-row-main [data-payment-date] {
-		grid-column: 1;
-	}
-
-	.rux-trip-panel__payment-row-meta {
+	.rux-trip-panel__payment-row {
 		grid-template-columns: 1fr;
 	}
+
+	#tp-paid-full-btn .rux-btn-label {
+		display: none;
+	}
+	#tp-paid-full-btn {
+		width: var(--rux-field-height);
+		padding: 0;
+		justify-content: center;
+	}
+
 }
 
 @container (max-width: 340px) {

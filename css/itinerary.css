@@ -160,41 +160,7 @@
 	gap: var(--rux-space-2);
 }
 
-/* — Stop-type badge — */
-
-.rux-itin__badge {
-	display: inline-flex;
-	align-items: center;
-	padding: 1px var(--rux-space-2);
-	border-radius: var(--rux-radius-xs);
-	font-size: var(--rux-text-2xs);
-	font-weight: var(--rux-weight-bold);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
-	flex: none;
-	line-height: 1.6;
-}
-
-.rux-itin__badge--yard {
-	background: var(--rux-success-subtle);
-	color: var(--rux-success-bright);
-}
-.rux-itin__badge--pickup {
-	background: var(--rux-warning-subtle);
-	color: var(--rux-warning-bright);
-}
-.rux-itin__badge--stop {
-	background: var(--rux-info-subtle);
-	color: var(--rux-info-bright);
-}
-.rux-itin__badge--sleeper {
-	background: oklch(65% 0.15 295 / 0.14);
-	color: oklch(72% 0.15 295);
-}
-.rux-itin__badge--return {
-	background: var(--rux-danger-subtle);
-	color: var(--rux-danger-bright);
-}
+/* — Stop-type badge — see css/badges.css — */
 
 .rux-itin__name {
 	flex: 1;

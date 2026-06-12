@@ -28,7 +28,7 @@
 	box-shadow: var(--_shadow);
 	font: inherit;
 	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
 	letter-spacing: 0;
 	cursor: pointer;
@@ -113,19 +113,11 @@
 
 /* — sizes — */
 
-.rux-button--sm {
-	--_h: 26px;
-	font-size: var(--rux-text-xs);
-	padding: 0 var(--rux-space-2);
-	gap: var(--rux-space-1);
-}
-
 .rux-button--xs {
 	--_h: 20px;
 	font-size: var(--rux-text-2xs);
 	padding: 0 6px;
 	gap: 3px;
-	border-radius: var(--rux-radius-xs);
 }
 
 .rux-button--sm > :where(svg, .rux-icon, [data-lucide]),
@@ -165,16 +157,16 @@
 	display: none;
 }
 
-/* — icon-only — */
+/* — sm — */
 
-/* sm — 24 px tall; combine with --icon for a 24×24 close/action button */
 .rux-button--sm {
 	--_h: 24px;
-	padding: 0 var(--rux-space-2);
 	font-size: var(--rux-text-xs);
-	color: var(--rux-fg-muted);
-	border: solid transparent; /* maintain hit area when padding is removed for icon-only */
+	padding: 0 var(--rux-space-2);
+	gap: var(--rux-space-1);
 }
+
+/* — icon-only — */
 
 .rux-button--icon {
 	flex: 0 0 var(--_h);

@@ -1,0 +1,82 @@
+/* ==========================================================================
+   RUX UI — BADGES
+   --------------------------------------------------------------------------
+   All badge rules live here. No other file should define badge shapes,
+   colors, or sizes — reference this file only.
+
+   .rux-badge                    Base pill: bg-elevated, fg-muted, semibold, radius-full
+   .rux-badge--accent            Accent-subtle bg · accent fg
+   .rux-badge--success           Success-subtle bg · success fg
+   .rux-badge--warning           Warning-subtle bg · warning fg
+   .rux-badge--danger            Danger-subtle bg · danger fg
+   .rux-badge--info              Info-subtle bg · info fg
+   .rux-badge--dot               ::before dot in currentColor (combine with a color modifier)
+
+   Stop-type labels — same base as .rux-badge, flex:none added for itinerary grid:
+   .rux-itin__badge--yard        success-subtle / success
+   .rux-itin__badge--pickup      warning-subtle / warning
+   .rux-itin__badge--stop        info-subtle / info
+   .rux-itin__badge--sleeper     purple-subtle / purple
+   .rux-itin__badge--return      danger-subtle / danger
+   ========================================================================== */
+
+/* — base — */
+
+.rux-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rux-space-1);
+  height: 28px;
+  padding: 0 var(--rux-space-2);
+  background: var(--rux-bg-elevated);
+  border: var(--rux-border-width) solid transparent;
+  border-radius: var(--rux-radius-full);
+  color: var(--rux-fg-muted);
+  font-size: var(--rux-text-2xs);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: var(--rux-tracking-wide);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* — color variants — */
+
+.rux-badge--accent  { background: var(--rux-accent-subtle);  color: var(--rux-accent); }
+.rux-badge--success { background: var(--rux-success-subtle); color: var(--rux-success); }
+.rux-badge--warning { background: var(--rux-warning-subtle); color: var(--rux-warning); }
+.rux-badge--danger  { background: var(--rux-danger-subtle);  color: var(--rux-danger); }
+.rux-badge--info    { background: var(--rux-info-subtle);    color: var(--rux-info); }
+
+/* — dot indicator — */
+
+.rux-badge--dot::before {
+  content: "";
+  width: var(--rux-dot-sm);
+  height: var(--rux-dot-sm);
+  border-radius: var(--rux-radius-full);
+  background: currentColor;
+}
+
+/* — stop-type labels (itinerary) — */
+
+.rux-itin__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rux-space-1);
+  height: 28px;
+  padding: 0 var(--rux-space-2);
+  border: var(--rux-border-width) solid transparent;
+  border-radius: var(--rux-radius-full);
+  font-size: var(--rux-text-2xs);
+  font-weight: var(--rux-weight-semibold);
+  letter-spacing: var(--rux-tracking-wide);
+  line-height: 1.5;
+  white-space: nowrap;
+  flex: none;
+}
+
+.rux-itin__badge--yard    { background: var(--rux-success-subtle); color: var(--rux-success); }
+.rux-itin__badge--pickup  { background: var(--rux-warning-subtle); color: var(--rux-warning); }
+.rux-itin__badge--stop    { background: var(--rux-info-subtle);    color: var(--rux-info); }
+.rux-itin__badge--sleeper { background: oklch(65% 0.15 295 / 0.14); color: oklch(72% 0.15 295); }
+.rux-itin__badge--return  { background: var(--rux-danger-subtle);  color: var(--rux-danger); }

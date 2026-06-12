@@ -304,22 +304,16 @@ const PENDING_INDICATORS = [
     check: (trip) => !trip.bookingContact?.phone,
   },
   {
-    key: "payment",
-    icon: "file-pen",
-    label: "Pending contract or PO",
-    check: (trip) =>
-      !(window.RuxBilling?.isStatusConfirmed?.(trip.paymentStatus) ||
-        [
-          "po-received",
-          "po_received",
-          "contract-signed",
-          "contract_signed",
-          "deposit_received",
-          "paid",
-          "paid_full",
-          "overpaid",
-          "not-required",
-        ].includes(trip.paymentStatus)),
+    key: "needs_contract",
+    get icon() { return window.RuxBilling?.STATUS_META?.contract_signed?.icon || "file-pen"; },
+    label: "Pending contract",
+    check: (trip) => trip.paymentStatus === "pending",
+  },
+  {
+    key: "needs_po",
+    get icon() { return window.RuxBilling?.STATUS_META?.po_received?.icon || "receipt"; },
+    label: "Pending PO",
+    check: (trip) => trip.paymentStatus === "contract_signed",
   },
   {
     key: "invoice",
@@ -367,7 +361,7 @@ function tripBarTimes(trip) {
 }
 
 function isPaidTrip(trip) {
-  return ["paid", "paid_full", "overpaid"].includes(trip.paymentStatus);
+  return ["paid_full", "overpaid"].includes(trip.paymentStatus);
 }
 
 function compactDate(value) {
@@ -576,15 +570,18 @@ export function createTripBar(trip, callbacks = {}) {
   let statusIcon = null;
   if (paid) {
     const datePaid = paidDate(trip);
+    const isOverpaid = trip.paymentStatus === "overpaid";
+    const paidIconName = window.RuxBilling?.STATUS_META?.[trip.paymentStatus]?.icon
+      || (isOverpaid ? "alert-triangle" : "circle-check");
     statusIcon = icon(
-      "dollar-sign",
-      "rux-icon rux-trip-bar__status rux-trip-bar__status--paid",
+      paidIconName,
+      `rux-icon rux-trip-bar__status rux-trip-bar__status--${isOverpaid ? "overpaid" : "paid"}`,
     );
-    const paidLabel = datePaid ? `Paid in full ${datePaid}` : "Paid in full";
+    const paidLabel = isOverpaid ? "Overpaid" : (datePaid ? `Paid in full ${datePaid}` : "Paid in full");
     setFloatingTooltip(statusIcon, paidLabel);
     summaryMarkerLabels.push(paidLabel);
     pending.appendChild(statusIcon);
-    if (datePaid) {
+    if (datePaid && !isOverpaid) {
       pending.appendChild(
         textEl("span", "rux-trip-bar__status-date", datePaid),
       );
