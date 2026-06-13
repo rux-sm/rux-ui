@@ -73,7 +73,7 @@
 
 .scheduler-app__module-button.is-active {
 	color: var(--rux-fg);
-	background: var(--rux-control-ghost-hover);
+	background: var(--rux-bg-level-2);
 }
 
 .scheduler-app__account {

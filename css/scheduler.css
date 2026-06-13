@@ -66,7 +66,7 @@
 	min-width: 0;
 	overflow: auto;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
-	background: var(--rux-bg-level-2);
+	background: var(--rux-bg-level-1);
 	border-radius: var(--rux-radius-md);
 }
 
@@ -82,7 +82,7 @@
 	justify-content: space-between;
 	min-height: var(--rux-scheduler-head-height);
 	padding: var(--rux-space-2) var(--rux-space-2);
-	background: var(--rux-bg-level-2);
+	background: var(--rux-bg-level-1);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-header-color);
@@ -149,7 +149,7 @@
 	justify-content: center;
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
-	background: var(--rux-bg-level-2);
+	background: var(--rux-bg-level-1);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-row-head-color);
