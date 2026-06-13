@@ -133,24 +133,23 @@
 	width: 100%;
 }
 
-/* — nav (stacked icon + micro label, mobile bottom-nav style) — */
+/* — tab (stacked icon + micro label, bottom-nav / tab-bar style) — */
 
-.rux-button--nav {
+.rux-button--tab {
 	flex-direction: column;
-	height: auto;
-	min-height: var(--rux-control-height);
+	height: 42px;
 	padding: var(--rux-space-1) var(--rux-space-2);
 	gap: 3px;
 	line-height: 1;
 	letter-spacing: 0;
 }
-.rux-button--nav > :where(svg, .rux-icon, [data-lucide]) {
+.rux-button--tab > :where(svg, .rux-icon, [data-lucide]) {
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);
 }
-.rux-button--nav > .rux-trip-panel__tab-label,
-.rux-button--nav > [class*="__tab-label"],
-.rux-button--nav > span:last-child {
+.rux-button--tab > .rux-trip-panel__tab-label,
+.rux-button--tab > [class*="__tab-label"],
+.rux-button--tab > span:last-child {
 	font-size: 10px;
 	font-weight: var(--rux-weight-medium);
 	letter-spacing: 0.02em;

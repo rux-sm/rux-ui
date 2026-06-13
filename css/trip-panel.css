@@ -29,6 +29,7 @@
 	flex-direction: column;
 	height: 100%;
 	min-height: 0;
+	min-width: calc(6 * 42px + 5 * var(--rux-space-2) + 2 * var(--rux-space-2)); /* 6 tabs + gaps + padding = 308px */
 	overflow: clip;
 	background: var(--rux-bg-level-1);
 	border-left: var(--rux-border-width) solid var(--rux-border);
@@ -120,6 +121,7 @@
 .rux-trip-panel__tabs > .rux-button--icon {
 	flex: none;
 	margin-left: auto;
+	align-self: start;
 }
 .rux-trip-panel__tabs::-webkit-scrollbar {
 	display: none;
@@ -140,6 +142,10 @@
 .rux-trip-panel__status-label,
 .rux-trip-panel__tab-label {
 	white-space: nowrap;
+}
+
+.rux-trip-panel__tab-label--break {
+	display: none;
 }
 .rux-trip-panel__route-icon,
 .rux-trip-panel__po-icon,
@@ -757,11 +763,20 @@
 @container (max-width: 470px) {
 	.rux-trip-panel__tabs .rux-button--toggle {
 		flex-direction: column;
-		height: auto;
-		min-height: var(--rux-control-height);
+		height: 42px;
 		padding: var(--rux-space-1) var(--rux-space-1);
 		gap: 3px;
 		line-height: 1;
+	}
+	.rux-trip-panel__tabs > .rux-button--icon {
+		flex-direction: column;
+		width: 42px;
+		height: 42px;
+		align-self: auto;
+		gap: 3px;
+	}
+	.rux-trip-panel__tab-label--break {
+		display: block;
 	}
 	.rux-trip-panel__tab-label {
 		font-size: 10px;

@@ -1,0 +1,190 @@
+/* ==========================================================================
+   GLOBAL SEARCH MODAL  ·  .rux-search-modal
+   ========================================================================== */
+
+.rux-search-modal {
+	padding: 0;
+	border: none;
+	background: transparent;
+	width: 100%;
+	max-width: 100%;
+	max-height: 100%;
+	overflow: visible;
+}
+
+.rux-search-modal::backdrop {
+	background: oklch(0 0 0 / 0.55);
+	backdrop-filter: blur(4px);
+	-webkit-backdrop-filter: blur(4px);
+}
+
+.rux-search-modal__panel {
+	position: fixed;
+	inset-inline: 0;
+	top: 12vh;
+	margin-inline: auto;
+	width: calc(100% - var(--rux-space-5) * 2);
+	max-width: 600px;
+	background: var(--rux-bg-level-1);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-lg);
+	box-shadow:
+		0 20px 60px oklch(0 0 0 / 0.5),
+		0 4px 12px oklch(0 0 0 / 0.3);
+	overflow: hidden;
+	animation: rux-search-in var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+@keyframes rux-search-in {
+	from { opacity: 0; transform: scale(0.97) translateY(-6px); }
+	to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+/* — Input row — */
+
+.rux-search-modal__input-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-space-4);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-search-modal__icon {
+	flex: none;
+	color: var(--rux-fg-subtle);
+	width: var(--rux-icon-md);
+	height: var(--rux-icon-md);
+}
+
+.rux-search-modal__input {
+	flex: 1;
+	background: transparent;
+	border: none;
+	outline: none;
+	font: inherit;
+	font-size: var(--rux-text-lg);
+	color: var(--rux-fg);
+	padding: 0;
+	min-width: 0;
+}
+
+.rux-search-modal__input::placeholder {
+	color: var(--rux-fg-subtle);
+}
+
+.rux-search-modal__input::-webkit-search-cancel-button {
+	display: none;
+}
+
+/* — Results — */
+
+.rux-search-modal__results {
+	max-height: 420px;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.rux-search-modal__empty {
+	padding: var(--rux-space-6) var(--rux-space-4);
+	text-align: center;
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+	margin: 0;
+}
+
+.rux-search-modal__group-head {
+	padding: var(--rux-space-2) var(--rux-space-4) var(--rux-space-1);
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-semibold);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-widest);
+	color: var(--rux-fg-subtle);
+}
+
+.rux-search-modal__item {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-2) var(--rux-space-4);
+	cursor: pointer;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	text-decoration: none;
+	border: none;
+	background: none;
+	width: 100%;
+	text-align: left;
+}
+
+.rux-search-modal__item:hover,
+.rux-search-modal__item[aria-selected="true"] {
+	background: var(--rux-control-bg-hover);
+}
+
+.rux-search-modal__item-icon {
+	flex: none;
+	color: var(--rux-fg-muted);
+	width: var(--rux-icon-md);
+	height: var(--rux-icon-md);
+}
+
+.rux-search-modal__item-body {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-search-modal__item-name {
+	font-weight: var(--rux-weight-medium);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-search-modal__item-meta {
+	font-size: var(--rux-text-xs);
+	color: var(--rux-fg-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-search-modal__item-badge {
+	flex: none;
+}
+
+/* — Footer — */
+
+.rux-search-modal__footer {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-2) var(--rux-space-4);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-search-modal__hint {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	font-size: var(--rux-text-2xs);
+	color: var(--rux-fg-subtle);
+}
+
+/* — kbd chip — */
+
+.rux-kbd {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 5px;
+	height: 18px;
+	background: var(--rux-bg-sunken);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-sm);
+	font: inherit;
+	font-size: 11px;
+	color: var(--rux-fg-muted);
+	line-height: 1;
+	white-space: nowrap;
+}

@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="./css/comp-settings-app.css" />
     <link rel="stylesheet" href="./css/comp-trips-app.css" />
     <link rel="stylesheet" href="./css/bus-picker.css" />
+    <link rel="stylesheet" href="./css/search-modal.css" />
     <script
       src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"
       defer
@@ -91,27 +92,27 @@
                 <rect width="16" height="20" x="4" y="2" rx="2" />
                 <path d="M15 2v20" /><path d="M15 7h5" /><path d="M15 12h5" /><path d="M15 17h5" />
               </svg>
-              Customers
+              Clients
             </button>
 
             <button
               class="rux-button rux-button--ghost scheduler-app__module-button"
               type="button"
-              data-module="settings"
+              id="search-modal-btn"
+              aria-label="Search"
             >
-              <i data-lucide="settings" class="rux-icon"></i>
-              Settings
+              <i data-lucide="search" class="rux-icon"></i>
+              Search
             </button>
 
             <!-- Mobile: profile avatar lives in the nav bar -->
-            <button class="scheduler-app__profile" type="button" aria-label="Open Rux profile">
+            <button class="scheduler-app__profile" type="button" aria-label="Settings" data-module="settings">
               <img src="./assets/rux-profile-pic.png" alt="" />
             </button>
           </nav>
         </div>
         <div class="scheduler-app__account">
-          <span class="scheduler-app__username">Rux</span>
-          <button class="scheduler-app__profile" type="button" aria-label="Open Rux profile">
+          <button class="scheduler-app__profile" type="button" aria-label="Settings" data-module="settings">
             <img src="./assets/rux-profile-pic.png" alt="" />
           </button>
         </div>
@@ -137,6 +138,7 @@
                 </div>
                 <button class="rux-button rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
                   <i data-lucide="x" class="rux-icon"></i>
+                  <span class="rux-trip-panel__tab-label rux-trip-panel__tab-label--break">Close</span>
                 </button>
               </nav>
               <div class="rux-trip-panel__body">
@@ -147,7 +149,7 @@
                       <p class="rux-trip-panel__title">Trip Information</p>
                     </div>
                     <div class="rux-trip-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="tp-customer">Customer</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Customer name" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-customer">Client</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Client name" /></div>
                       <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" placeholder="Destination" /></div>
                     </div>
                     <div class="rux-trip-panel__logistics-grid">
@@ -314,38 +316,35 @@
           <section class="scheduler-app__schedule" aria-label="Weekly schedule" data-view="schedule">
             <header class="scheduler-app__bar">
               <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
-                <button class="rux-button rux-button--icon rux-button--toggle" id="open-trip-panel" aria-label="Open trip editor" aria-pressed="false">
+                <button class="rux-button rux-button--toggle" id="open-trip-panel" aria-label="Open trip editor" aria-pressed="false">
                   <i data-lucide="panel-right-open" class="rux-icon"></i>
+                  <span class="scheduler-app__toolbar-label">Panel</span>
                 </button>
-                <button class="rux-button rux-button--icon rux-button--toggle is-active" data-view-btn="schedule" aria-pressed="true" title="Week" aria-label="Week view">
+                <button class="rux-button rux-button--toggle is-active" data-view-btn="schedule" aria-pressed="true" aria-label="Week view">
                   <i data-lucide="calendar-days" class="rux-icon"></i>
+                  <span class="scheduler-app__toolbar-label">Week</span>
                 </button>
-                <button class="rux-button rux-button--icon rux-button--toggle" data-view-btn="list" aria-pressed="false" title="List" aria-label="List view">
+                <button class="rux-button rux-button--toggle" data-view-btn="list" aria-pressed="false" aria-label="List view">
                   <i data-lucide="list" class="rux-icon"></i>
+                  <span class="scheduler-app__toolbar-label">List</span>
                 </button>
-                <div class="scheduler-app__search-control" id="trips-search-control">
-                  <button class="rux-button rux-button--icon" id="trips-search-toggle" type="button" aria-label="Search trips" aria-expanded="false" aria-controls="trips-search">
-                    <i data-lucide="search" class="rux-icon"></i>
-                  </button>
-                  <input class="rux-input scheduler-app__search trips-app__search" id="trips-search" type="search"
-                         placeholder="Search…" aria-label="Search trips" />
-                </div>
+                <button class="rux-button" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input">
+                  <i data-lucide="calendar-search" class="rux-icon"></i>
+                  <span class="scheduler-app__toolbar-label">Date</span>
+                </button>
+                <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
+                <button class="rux-button rux-button--icon" id="prev-week" aria-label="Previous week">
+                  <i data-lucide="chevron-left" class="rux-icon"></i>
+                  <span class="scheduler-app__toolbar-label scheduler-app__toolbar-label--break">Prev</span>
+                </button>
+                <button class="rux-button rux-button--icon" id="next-week" aria-label="Next week">
+                  <i data-lucide="chevron-right" class="rux-icon"></i>
+                  <span class="scheduler-app__toolbar-label scheduler-app__toolbar-label--break">Next</span>
+                </button>
               </div>
               <div class="scheduler-app__brand">
                 <h1 class="scheduler-app__title" id="week-label"></h1>
                 <span class="scheduler-app__title" id="list-view-label">Trip List</span>
-                <nav class="scheduler-app__nav" aria-label="Week">
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
-                    <i data-lucide="chevron-left" class="rux-icon"></i>
-                  </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="day-picker-btn" type="button" aria-label="Pick day" aria-controls="day-picker-input" title="Pick day">
-                    <i data-lucide="calendar-search" class="rux-icon"></i>
-                  </button>
-                  <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
-                    <i data-lucide="chevron-right" class="rux-icon"></i>
-                  </button>
-                </nav>
               </div>
             </header>
             <div class="scheduler-app__schedule-wrap">
@@ -716,7 +715,7 @@
              MODULE: CUSTOMERS  (placeholder)
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="customers" hidden>
-          <div class="module-placeholder">Customers module — coming soon</div>
+          <div class="module-placeholder">Clients module — coming soon</div>
         </div>
 
         <!-- ════════════════════════════════════════════════════════════════
@@ -908,6 +907,32 @@
       </div><!-- /scheduler-app__body -->
     </main>
 
+    <!-- ── Global search modal ─────────────────────────────────────────── -->
+    <dialog class="rux-search-modal" id="search-modal" aria-label="Search">
+      <div class="rux-search-modal__panel">
+        <div class="rux-search-modal__input-row">
+          <i data-lucide="search" class="rux-icon rux-search-modal__icon"></i>
+          <input
+            class="rux-search-modal__input"
+            id="search-modal-input"
+            type="search"
+            placeholder="Search trips, drivers, fleet, clients…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <kbd class="rux-kbd">Esc</kbd>
+        </div>
+        <div class="rux-search-modal__results" id="search-modal-results">
+          <p class="rux-search-modal__empty">Start typing to search…</p>
+        </div>
+        <footer class="rux-search-modal__footer">
+          <span class="rux-search-modal__hint"><kbd class="rux-kbd">↑</kbd><kbd class="rux-kbd">↓</kbd> Navigate</span>
+          <span class="rux-search-modal__hint"><kbd class="rux-kbd">↵</kbd> Open</span>
+          <span class="rux-search-modal__hint"><kbd class="rux-kbd">⌘K</kbd> Toggle</span>
+        </footer>
+      </div>
+    </dialog>
+
     <!-- Scheduler context menu (floats above everything) -->
     <div class="scheduler-app__context-menu" id="scheduler-context-menu" role="menu" hidden>
       <button class="scheduler-app__context-item" id="scheduler-context-add-trip" type="button" role="menuitem">
@@ -968,6 +993,10 @@
         });
       });
 
+      document.querySelectorAll(".scheduler-app__profile[data-module]").forEach((btn) => {
+        btn.addEventListener("click", () => showModule(btn.dataset.module));
+      });
+
       // Respect hash on load; fall back to trips. Legacy #schedule maps to #trips.
       const initialModule = location.hash.slice(1) || "trips";
       const normalizedModule = initialModule === "schedule" ? "trips" : initialModule;
@@ -992,33 +1021,31 @@
         btn.addEventListener("click", () => setScheduleView(btn.dataset.viewBtn));
       });
 
-      const searchControl = document.getElementById("trips-search-control");
-      const searchToggle = document.getElementById("trips-search-toggle");
-      const tripsSearch = document.getElementById("trips-search");
+      // ── Global search modal ─────────────────────────────────────────────
+      const searchModal      = document.getElementById("search-modal");
+      const searchModalInput = document.getElementById("search-modal-input");
+      const searchModalBtn   = document.getElementById("search-modal-btn");
 
-      function setSearchOpen(open, { clear = false } = {}) {
-        searchControl?.classList.toggle("is-open", open);
-        searchToggle?.setAttribute("aria-expanded", open ? "true" : "false");
-        if (clear && tripsSearch?.value) {
-          tripsSearch.value = "";
-          tripsSearch.dispatchEvent(new Event("input", { bubbles: true }));
-        }
-        if (open) tripsSearch?.focus();
+      function openSearchModal() {
+        searchModal?.showModal();
+        searchModalInput.value = "";
+        searchModalInput.focus();
       }
 
-      searchToggle?.addEventListener("click", () => {
-        const open = !searchControl?.classList.contains("is-open");
-        setSearchOpen(open, { clear: !open });
+      function closeSearchModal() {
+        searchModal?.close();
+      }
+
+      searchModalBtn?.addEventListener("click", openSearchModal);
+
+      searchModal?.addEventListener("click", (e) => {
+        if (e.target === searchModal) closeSearchModal();
       });
 
-      tripsSearch?.addEventListener("keydown", (event) => {
-        if (event.key !== "Escape") return;
-        if (tripsSearch.value) {
-          tripsSearch.value = "";
-          tripsSearch.dispatchEvent(new Event("input", { bubbles: true }));
-        } else {
-          setSearchOpen(false);
-          searchToggle?.focus();
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+          e.preventDefault();
+          searchModal?.open ? closeSearchModal() : openSearchModal();
         }
       });
 

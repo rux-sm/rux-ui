@@ -13,7 +13,7 @@
 	grid-template-rows: auto minmax(0, 1fr);
 	width: 100%;
 	block-size: 100dvh;
-	min-width: 0;
+	min-width: calc(6 * 42px + 5 * 8px + 2 * 12px); /* 6 nav buttons + gaps + inline padding = 316px */
 	min-height: 0;
 	overflow: clip;
 }
@@ -96,7 +96,7 @@
 	overflow: hidden;
 	background: var(--rux-bg-sunken);
 	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-full);
+	border-radius: var(--rux-radius-md);
 	cursor: pointer;
 }
 
@@ -153,6 +153,13 @@
 	min-width: 0;
 }
 
+.scheduler-app__schedule > .scheduler-app__bar {
+	container-type: inline-size;
+	container-name: schedule-toolbar;
+	padding: var(--rux-space-2) var(--rux-space-3);
+	min-width: calc(6 * 42px + 5 * var(--rux-space-2) + 2 * var(--rux-space-3)); /* 6 buttons + gaps + padding = 316px */
+}
+
 .scheduler-app__brand,
 .scheduler-app__toolbar,
 .scheduler-app__nav {
@@ -171,7 +178,8 @@
 .scheduler-app__schedule > .scheduler-app__bar .scheduler-app__brand {
 	flex-direction: row;
 	align-items: center;
-	gap: var(--rux-space-3);
+	justify-content: flex-end;
+	gap: var(--rux-space-2);
 }
 
 .scheduler-app__view-menu {
@@ -207,7 +215,6 @@
 	flex: 1 1 auto;
 	min-width: 0;
 	gap: var(--rux-space-2);
-	margin-left: var(--rux-space-1);
 }
 
 .scheduler-app__search {
@@ -236,11 +243,12 @@
 	width: auto;
 }
 
-.scheduler-app__toolbar > .rux-button--icon {
-	flex: 0 0 var(--rux-control-height);
-	width: var(--rux-control-height);
-	min-width: var(--rux-control-height);
-	padding: 0;
+.scheduler-app__toolbar-label {
+	white-space: nowrap;
+}
+
+.scheduler-app__toolbar-label--break {
+	display: none;
 }
 
 .scheduler-app__save-order-icon {
@@ -250,8 +258,11 @@
 	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXNhdmUtaWNvbiBsdWNpZGUtc2F2ZSI+PHBhdGggZD0iTTE1LjIgM2EyIDIgMCAwIDEgMS40LjZsMy44IDMuOGEyIDIgMCAwIDEgLjYgMS40VjE5YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMTcgMjF2LTdhMSAxIDAgMCAwLTEtMUg4YTEgMSAwIDAgMC0xIDF2NyIvPjxwYXRoIGQ9Ik03IDN2NGExIDEgMCAwIDAgMSAxaDciLz48L3N2Zz4=") center / contain no-repeat;
 }
 
-@media (max-width: 600px) {
+@container schedule-toolbar (max-width: 660px) {
 	#week-label {
+		display: none;
+	}
+	.scheduler-app__brand {
 		display: none;
 	}
 }
@@ -322,7 +333,6 @@
 	padding-block-end: var(--scheduler-app-gap);
 	background: var(--rux-bg-level-1);
 	border-radius: var(--scheduler-app-card-radius);
-	overflow: hidden;
 	transition: margin-left 0ms linear 280ms;
 }
 
@@ -428,7 +438,7 @@
 	opacity: 1;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 500px) {
 	/* Drawer fills full viewport */
 	.scheduler-app__drawer.is-open {
 		width: 100dvw;
@@ -444,9 +454,9 @@
 
 	.scheduler-app__panel-tab { display: none; }
 
-	/* Push content above the fixed bottom tab bar */
+	/* Push content above the fixed bottom tab bar (42px buttons + 8px top + 8px bottom = 58px) */
 	.scheduler-app {
-		padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
+		padding-bottom: calc(58px + env(safe-area-inset-bottom, 0px));
 	}
 
 	/* Push bar below notch/Dynamic Island */
@@ -469,6 +479,8 @@
 	/* Show nav copy in bottom bar */
 	.scheduler-app__module-nav .scheduler-app__profile {
 		display: inline-flex;
+		width: 42px;
+		height: 42px;
 	}
 
 	/* Fixed bottom tab bar */
@@ -480,9 +492,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-evenly;
-		gap: 0;
+		gap: var(--rux-space-2);
 		margin: 0;
-		padding: var(--rux-space-2) 0;
+		padding: var(--rux-space-2);
 		padding-bottom: calc(var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
 		overflow: visible;
 		background: var(--rux-bg-topbar);
@@ -492,8 +504,8 @@
 	/* Nav style: stacked icon + micro label */
 	.scheduler-app__module-button {
 		flex-direction: column;
-		height: auto;
-		min-width: 48px;
+		height: 42px;
+		min-width: 42px;
 		padding: var(--rux-space-1) var(--rux-space-2);
 		gap: 3px;
 		line-height: 1;
@@ -523,6 +535,7 @@
 .scheduler-app__schedule-wrap {
 	flex: 1;
 	margin-inline: var(--scheduler-app-gap);
+	overflow: hidden;
 }
 
 .scheduler-app__schedule .trips-app__table-wrap {
@@ -587,29 +600,21 @@
 	background: var(--rux-control-ghost-hover);
 }
 
-@media (max-width: 900px) {
-	.scheduler-app {
-		width: 100%;
-		max-width: none;
-		margin: 0;
+@media (max-width: 580px) {
+	.scheduler-app__module-nav {
+		justify-content: space-evenly;
 	}
 
-	.scheduler-app__toolbar {
-		justify-content: flex-start;
-	}
-
-	.scheduler-app__search {
-		max-width: none;
-	}
-
-	.scheduler-app__search-control.is-open .scheduler-app__search {
-		flex-basis: 12rem;
+	.scheduler-app__module-button,
+	.scheduler-app__module-nav .scheduler-app__profile {
+		flex: 1;
+		justify-content: center;
 	}
 
 	.scheduler-app__module-button {
 		flex-direction: column;
-		height: auto;
-		min-width: 48px;
+		height: 42px;
+		min-width: 0;
 		padding: var(--rux-space-1) var(--rux-space-2);
 		gap: 3px;
 		line-height: 1;
@@ -618,5 +623,56 @@
 		letter-spacing: 0;
 		--_border: transparent;
 	}
+}
 
+@media (max-width: 500px) {
+	.scheduler-app {
+		width: 100%;
+		max-width: none;
+		margin: 0;
+	}
+
+	.scheduler-app__schedule {
+		margin: 0;
+		border-radius: 0;
+		padding-block-end: var(--rux-space-2);
+	}
+
+	.scheduler-app__toolbar {
+		justify-content: flex-start;
+	}
+
+	.scheduler-app__module-button {
+		flex: 1;
+		width: auto;
+		min-width: 42px;
+		height: 42px;
+	}
+
+	.scheduler-app__module-nav .scheduler-app__profile {
+		flex: none;
+		width: 42px;
+		height: 42px;
+	}
+}
+
+@container schedule-toolbar (max-width: 660px) {
+	.scheduler-app__toolbar > .rux-button {
+		flex: 1;
+		flex-direction: column;
+		height: 42px;
+		width: auto;
+		min-width: 42px;
+		padding: var(--rux-space-1) var(--rux-space-2);
+		gap: 3px;
+		line-height: 1;
+	}
+	.scheduler-app__toolbar-label {
+		font-size: 10px;
+		font-weight: var(--rux-weight-medium);
+		letter-spacing: 0.02em;
+	}
+	.scheduler-app__toolbar-label--break {
+		display: block;
+	}
 }
