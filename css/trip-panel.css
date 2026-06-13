@@ -111,7 +111,7 @@
 	flex: none;
 	display: flex;
 	align-items: center;
-	padding: var(--rux-space-2);
+	padding: var(--rux-space-3);
 	gap: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: solid transparent var(--rux-border-width);
