@@ -170,7 +170,7 @@
   };
 
   function applyFilter() {
-    const q = searchInput.value.toLowerCase();
+    const q = searchInput?.value.toLowerCase() ?? "";
 
     tbody.querySelectorAll(".trips-app__row").forEach((row) => {
       const ref  = row.querySelector(".trips-app__trip-ref")?.textContent.toLowerCase()  || "";
@@ -274,7 +274,7 @@
     th.addEventListener("click", () => openColFilter(th, th.dataset.colFilter));
   });
 
-  searchInput.addEventListener("input", applyFilter);
+  searchInput?.addEventListener("input", applyFilter);
 
   // ── Add trip button ───────────────────────────────────────────────────────
 
@@ -310,6 +310,15 @@
   }
 
   window.TripsListPanel = { init, reload: loadTrips };
+  document.addEventListener("trips:refresh", () => {
+    if (db) loadTrips();
+  });
+  document.addEventListener("rux:trip-saved", () => {
+    if (db) loadTrips();
+  });
+  document.addEventListener("rux:trip-deleted", () => {
+    if (db) loadTrips();
+  });
   document.addEventListener("settings:billing", () => {
     if (allTrips.length) {
       renderRows(allTrips);
