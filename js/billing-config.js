@@ -146,11 +146,18 @@
 	 * Render a status badge into an element.
 	 * @param {HTMLElement} el
 	 * @param {string} statusKey
+	 * @param {{ confirmed?: boolean }} [options]
 	 */
-	function renderStatusBadge(el, statusKey) {
+	function renderStatusBadge(el, statusKey, options = {}) {
 		if (!el) return;
 		const meta = statusMeta(statusKey);
-		el.className = `rux-badge ${meta.badgeClass} rux-trip-panel__billing-status`;
+		const confirmed = typeof options.confirmed === "boolean"
+			? options.confirmed
+			: isStatusConfirmed(statusKey);
+		const badgeClass = confirmed
+			? (statusKey === "paid_full" ? "rux-badge--success" : "rux-badge--info")
+			: "rux-badge--danger";
+		el.className = `rux-badge ${badgeClass} rux-trip-panel__billing-status`;
 		el.innerHTML = meta.icon
 			? `<i data-lucide="${meta.icon}" class="rux-icon rux-icon--sm"></i>${meta.label}`
 			: meta.label;
@@ -168,45 +175,6 @@
 		if (idx < 0) return STEP_ORDER[0]; // pending → first step
 		if (idx < STEP_ORDER.length - 1) return STEP_ORDER[idx + 1];
 		return null; // already at final step
-	}
-
-	/**
-	 * Render the confirmation badge.
-	 *
-	 * Payment-security icon rules (independent of confirmed state):
-	 *   pending          → contract icon  (need to get contract signed)
-	 *   contract_signed  → PO icon        (payment not yet secured)
-	 *   po_received / deposit_received / overpaid → no icon
-	 *   paid_full        → green badge + circle-check
-	 *
-	 * @param {HTMLElement} el
-	 * @param {string} statusKey - current billing status
-	 * @param {boolean} confirmed - whether trip is confirmed
-	 */
-	function renderConfirmBadge(el, statusKey, confirmed) {
-		if (!el) return;
-
-		const PAYMENT_STEP_ICON = {
-			pending:         STATUS_META.contract_signed.icon,
-			contract_signed: STATUS_META.po_received.icon,
-		};
-
-		const isPaidFull = statusKey === "paid_full";
-		const paymentIcon = isPaidFull ? "circle-check" : (PAYMENT_STEP_ICON[statusKey] || null);
-		const iconHtml = paymentIcon
-			? `<i data-lucide="${paymentIcon}" class="rux-icon rux-icon--sm"></i>`
-			: "";
-
-		if (confirmed) {
-			const badgeClass = isPaidFull ? "rux-badge--success" : "rux-badge--info";
-			el.className = `rux-badge ${badgeClass} rux-trip-panel__confirm-status`;
-			el.innerHTML = `${iconHtml}Confirmed`;
-		} else {
-			el.className = "rux-badge rux-badge--danger rux-trip-panel__confirm-status";
-			el.innerHTML = `${iconHtml}Unconfirmed`;
-		}
-
-		if (window.lucide) window.lucide.createIcons({ nodes: [el] });
 	}
 
 	function isStatusConfirmed(status, cfg = config) {
@@ -288,7 +256,6 @@
 		statusMeta,
 		renderStatusBadge,
 		nextPendingStep,
-		renderConfirmBadge,
 		isStatusConfirmed,
 		isStateConfirmed,
 		isRecordConfirmed,

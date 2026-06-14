@@ -38,7 +38,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-2) var(--rux-space-3);
+	padding: 0 var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-md);
 	border: var(--rux-border-width) solid var(--rux-border);

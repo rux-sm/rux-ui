@@ -20,14 +20,14 @@ The system spans these files:
 
 There are **6 billing statuses**, derived from the trip's financial state:
 
-| Status Key         | Label            | Icon             | Badge Color      | When                          |
-| ------------------ | ---------------- | ---------------- | ---------------- | ----------------------------- |
-| `pending`          | Pending          | `clock`          | Red (danger)     | No contract, no payment       |
-| `contract_signed`  | Contract Signed  | `file-check`     | Orange (warning) | Contract signed               |
-| `po_received`      | PO Received      | `file-text`      | Blue (info)      | PO received                   |
-| `deposit_received` | Deposit Received | `banknote`       | Blue (info)      | Partial payment received      |
-| `paid_full`        | Paid in Full     | `circle-check`   | Green (success)  | Fully paid                    |
-| `overpaid`         | Overpaid         | `alert-triangle` | Orange (warning) | Paid more than contract value |
+| Status Key         | Label            | Icon             | When                          |
+| ------------------ | ---------------- | ---------------- | ----------------------------- |
+| `pending`          | Pending          | `clock`          | No contract, no payment       |
+| `contract_signed`  | Contract Signed  | `file-check`     | Contract signed               |
+| `po_received`      | PO Received      | `file-text`      | PO received                   |
+| `deposit_received` | Deposit Received | `banknote`       | Partial payment received      |
+| `paid_full`        | Paid in Full     | `circle-check`   | Fully paid                    |
+| `overpaid`         | Overpaid         | `alert-triangle` | Paid more than contract value |
 
 ### Status Derivation Priority
 
@@ -82,27 +82,18 @@ In **Settings → Billing Workflow → Confirmed when**, you can check/uncheck w
 
 ---
 
-## Confirmation Badge Behavior
+## Status Badge Behavior
 
-The confirmation badge in the billing tab shows:
+The billing tab renders a single status badge:
 
-- **Confirmed** → Blue badge with text "Confirmed"
-- **Unconfirmed** → Red badge showing the **next pending step's icon** + "Unconfirmed"
+- The **label and icon** come from the derived billing status.
+- The **background tone** comes from confirmation state:
+  - **Confirmed** → Blue/info badge, or green/success when `paid_full`
+  - **Unconfirmed** → Red/danger badge
 
-### Next Step Icons
+For example, a trip whose status is `contract_signed` shows the "Contract Signed" label/icon. If that status is included in `confirmWhen`, the badge uses the confirmed tone; otherwise it uses the unconfirmed tone.
 
-The badge dynamically shows the icon of what needs to happen next:
-
-| Current Status     | Next Step Icon          | Meaning             |
-| ------------------ | ----------------------- | ------------------- |
-| `pending`          | `file-check` (contract) | "Sign the contract" |
-| `contract_signed`  | `file-text` (PO)        | "Get the PO"        |
-| `po_received`      | `banknote` (deposit)    | "Collect deposit"   |
-| `deposit_received` | `circle-check` (paid)   | "Pay in full"       |
-| `paid_full`        | _(none — confirmed)_    | All done            |
-| `overpaid`         | _(none — confirmed)_    | All done            |
-
-This is implemented via `nextPendingStep()` and `renderConfirmBadge()` in `billing-config.js`.
+This is implemented via `renderStatusBadge()` in `billing-config.js`.
 
 ---
 
@@ -114,8 +105,7 @@ The billing tab shows a **Financial Summary** card with:
 - **Total paid** — Sum of all payment rows
 - **Balance due** — Price minus total paid (negative = overpaid)
 - **Paid date** — Date of the last payment (shown only when fully paid)
-- **Status badge** — Current billing status with icon
-- **Confirmation badge** — Confirmed/unconfirmed with next-step icon
+- **Status badge** — Current billing status with icon, tinted by confirmation state
 
 ### Payment Rows
 
@@ -139,7 +129,7 @@ Settings Panel → save() → Supabase (settings table, key: billing-workflow-v1
                               ↓
               Trip Panel: applyToTripPanel() + sync()
                               ↓
-              Status badge + confirmation badge updated
+              Status badge label/icon + confirmation tone updated
                               ↓
               On Save: collectTrip() → Supabase (trips table)
                               ↓
@@ -188,8 +178,7 @@ The billing module is exposed globally as `window.RuxBilling`:
 | `deriveRecordStatus(trip)`                     | Derive status from raw DB trip record         |
 | `normalizeRecord(trip)`                        | Map DB columns to normalized state shape      |
 | `statusMeta(status)`                           | Get label, badgeClass, icon for a status      |
-| `renderStatusBadge(el, statusKey)`             | Render status badge with icon into element    |
-| `renderConfirmBadge(el, statusKey, confirmed)` | Render confirmation badge with next-step icon |
+| `renderStatusBadge(el, statusKey, options)`    | Render status badge with icon and confirmation tone |
 | `nextPendingStep(status)`                      | Get the next status key that needs to happen  |
 | `isStatusConfirmed(status)`                    | Check if a status is in the confirmWhen list  |
 | `isStateConfirmed(state)`                      | Derive status then check confirmation         |

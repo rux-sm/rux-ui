@@ -199,7 +199,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-2);
+	padding: var(--rux-space-3) var(--rux-space-3);
 	padding-top: 0px;
 }
 .rux-trip-panel__pane[hidden] {
@@ -245,12 +245,12 @@
 	gap: var(--rux-space-3);
 }
 
-.rux-trip-panel__card-head {
+.rux-trip-panel__section-head {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
-	height: 24px;
+	min-height: 24px;
 }
 
 .rux-trip-panel__status-checks {
@@ -278,7 +278,7 @@
 	font-size: inherit;
 }
 
-.rux-trip-panel__card-head .rux-trip-panel__section-label {
+.rux-trip-panel__section-head .rux-trip-panel__section-label {
 	border-bottom: none;
 	padding-bottom: 0;
 	flex: 1;
@@ -306,28 +306,32 @@
 
 .rux-trip-panel__billing-summary {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-	gap: 0;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: var(--rux-space-3);
+	row-gap: var(--rux-space-2);
 	align-items: start;
-	margin-top: var(--rux-space-3);
 	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 .rux-trip-panel__billing-summary .rux-field {
 	gap: var(--rux-space-1);
 	min-width: 0;
-	padding: var(--rux-space-3) var(--rux-space-3) 0 0;
+}
+.rux-trip-panel__billing-summary .rux-field__label {
+	font-size: var(--rux-text-2xs);
+	line-height: var(--rux-leading-snug);
 }
 .rux-trip-panel__billing-output {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	min-width: 0;
-	height: auto;
+	height: var(--rux-field-height);
 	padding: 0;
 	border: 0;
-	border-radius: 0;
-	background: transparent;
+	border-radius: var(--rux-radius-sm);
+	background: var(--rux-bg-level-1);
 	color: var(--rux-fg);
-	font-size: 1.25rem;
+	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 	line-height: var(--rux-leading-tight);
 	font-variant-numeric: tabular-nums;
@@ -342,10 +346,12 @@
 	gap: var(--rux-space-2);
 	min-width: 0;
 }
-.rux-trip-panel__billing-status {
-	flex: none;
+.rux-trip-panel__billing-badges .rux-badge {
+	height: 20px;
+	font-size: var(--rux-text-2xs);
+	letter-spacing: var(--rux-tracking-wide);
 }
-.rux-trip-panel__confirm-status {
+.rux-trip-panel__billing-status {
 	flex: none;
 }
 .rux-trip-panel__billing-workflow {
@@ -719,7 +725,7 @@
    Requirement buttons:    400px
    ========================================================================== */
 
-@container (max-width: 340px) {
+@container (max-width: 300px) {
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;

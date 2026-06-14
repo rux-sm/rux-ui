@@ -145,8 +145,8 @@
                 <!-- Trip -->
                 <div id="pane-trip" class="rux-trip-panel__pane" role="tabpanel">
                   <div class="rux-card">
-                    <div class="rux-trip-panel__card-head">
-                      <p class="rux-trip-panel__title">Trip Information</p>
+                    <div class="rux-trip-panel__section-head">
+                      <p class="rux-trip-panel__section-label">Trip Information</p>
                     </div>
                     <div class="rux-trip-panel__cols-2">
                       <div class="rux-field"><label class="rux-field__label" for="tp-customer">Client</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Client name" /></div>
@@ -172,18 +172,17 @@
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
-                    <div class="rux-trip-panel__card-head">
-                      <p class="rux-trip-panel__title">Financial Summary</p>
+                    <div class="rux-trip-panel__section-head">
+                      <p class="rux-trip-panel__section-label">Billing Summary</p>
                       <div class="rux-trip-panel__billing-badges">
-                        <span class="rux-badge rux-badge--danger rux-trip-panel__confirm-status" id="tp-confirm-status">Unconfirmed</span>
                         <span class="rux-badge rux-badge--danger rux-trip-panel__billing-status" id="tp-paid-status">Pending</span>
                       </div>
                     </div>
                     <div class="rux-trip-panel__billing-summary">
-                      <div class="rux-field"><label class="rux-field__label" for="tp-price-summary">Contract value</label><output class="rux-trip-panel__billing-output" id="tp-price-summary" for="tp-price">$0.00</output></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-total-paid">Total paid</label><output class="rux-trip-panel__billing-output" id="tp-total-paid" for="tp-payment-rows">$0.00</output></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-balance-due">Balance due</label><output class="rux-trip-panel__billing-output" id="tp-balance-due" for="tp-price tp-payment-rows">$0.00</output></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-paid-date-summary">Paid date</label><output class="rux-trip-panel__billing-output" id="tp-paid-date-summary" for="tp-payment-rows">—</output></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-price-summary">Quoted</label><output class="rux-trip-panel__billing-output" id="tp-price-summary" for="tp-price">$0.00</output></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-total-paid">Paid</label><output class="rux-trip-panel__billing-output" id="tp-total-paid" for="tp-payment-rows">$0.00</output></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-balance-due">Balance</label><output class="rux-trip-panel__billing-output" id="tp-balance-due" for="tp-price tp-payment-rows">$0.00</output></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-paid-date-summary">Paid Date</label><output class="rux-trip-panel__billing-output" id="tp-paid-date-summary" for="tp-payment-rows">—</output></div>
                     </div>
                     <input type="checkbox" id="tp-balance-paid" name="balancePaid" hidden />
                     <input id="tp-date-paid" name="datePaid" type="hidden" />
@@ -261,6 +260,7 @@
                 <div id="pane-itinerary" class="rux-trip-panel__pane rux-trip-panel__pane--flush" role="tabpanel" hidden>
                   <div class="rux-itin" id="tp-itin">
                     <div class="rux-itin__summary" id="tp-itin-summary">
+                      <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Itinerary</p></div>
                       <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-import-btn" title="Import from JSON" aria-label="Import from JSON"><i data-lucide="upload" class="rux-icon"></i></button>
                       <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Recalculate route"><i data-lucide="route" class="rux-icon"></i></button>
                     </div>

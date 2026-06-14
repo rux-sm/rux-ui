@@ -44,13 +44,15 @@
 	width: 100%;
 	border-collapse: collapse;
 	font-size: var(--rux-text-sm);
+	background: var(--rux-bg-level-2);
 }
 
 .rux-table thead {
 	position: sticky;
 	top: 0;
 	z-index: var(--rux-z-base);
-	background: var(--rux-bg);
+	background: var(--rux-bg-level-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 
 .rux-table th {
@@ -62,8 +64,8 @@
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
 	white-space: nowrap;
-	border-top: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	/*border-top: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);*/
 }
 
 .rux-table td {

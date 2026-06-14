@@ -63,10 +63,10 @@
 	
 	/* The absolute base (OLED black) */
 	--rux-bg-level-0: oklch(from var(--rux-color-base) 15% c h);
-	--rux-bg-level-form: oklch(from var(--rux-color-base) 18% c h);
+	--rux-bg-level-form: oklch(from var(--rux-color-base) 30% c h);
 
 	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 18% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
 
 	/* Elevated elements like floating cards or popovers */
 	--rux-bg-level-2: oklch(from var(--rux-color-base) 24% c h);

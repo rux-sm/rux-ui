@@ -208,7 +208,6 @@ function initBillingWorkflow(root) {
 	const balanceDue = root.querySelector("#tp-balance-due");
 	const paidDateSummary = root.querySelector("#tp-paid-date-summary");
 	const paidStatus = root.querySelector("#tp-paid-status");
-	const confirmStatus = root.querySelector("#tp-confirm-status");
 	const balancePaidEl = root.querySelector("#tp-balance-paid");
 	const datePaidEl = root.querySelector("#tp-date-paid");
 	const paymentRows = root.querySelector("#tp-payment-rows");
@@ -340,11 +339,8 @@ function initBillingWorkflow(root) {
 			const contractSigned = !!root.querySelector("#tp-contract-signed")?.checked;
 			const poReceived = !!root.querySelector("#tp-po-received")?.checked;
 			const statusKey = window.RuxBilling?.deriveStatus?.({ contractSigned, poReceived, price, paid, balance }) || "pending";
-			window.RuxBilling?.renderStatusBadge?.(paidStatus, statusKey);
-			if (confirmStatus) {
-				const confirms = !!window.RuxBilling?.isStatusConfirmed?.(statusKey);
-				window.RuxBilling?.renderConfirmBadge?.(confirmStatus, statusKey, confirms);
-			}
+			const confirmed = !!window.RuxBilling?.isStatusConfirmed?.(statusKey);
+			window.RuxBilling?.renderStatusBadge?.(paidStatus, statusKey, { confirmed });
 		}
 		if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (datePaidEl) datePaidEl.value = fullyPaid ? latestPaymentDate : "";
