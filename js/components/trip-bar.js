@@ -635,6 +635,9 @@ export function createTripBar(trip, callbacks = {}) {
   meta.className = "rux-trip-bar__drivers-meta";
   drivers.appendChild(meta);
 
+  const spacer = document.createElement("div");
+  spacer.className = "rux-trip-bar__spacer";
+
   body.append(
     summary,
     textEl("div", "rux-trip-bar__client", trip.customer),
@@ -656,8 +659,13 @@ export function createTripBar(trip, callbacks = {}) {
     })(),
     textEl("div", "rux-trip-bar__notes", trip.notes),
     ...(() => { const r = buildRequirementIcons(trip); return r ? [r] : []; })(),
-    time,
-    drivers,
+    spacer,
+    (() => {
+      const footer = document.createElement("div");
+      footer.className = "rux-trip-bar__footer";
+      footer.append(time, drivers);
+      return footer;
+    })(),
   );
 
   const details = document.createElement("div");

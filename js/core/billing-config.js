@@ -217,7 +217,7 @@
 
 	async function load() {
 		try {
-			const db = await import("./settings-db.js");
+			const db = await import("../data/settings-db.js");
 			config = normalizeConfig(await db.getSetting(KEY));
 		} catch (err) {
 			console.warn("Could not load billing workflow settings:", err);
@@ -233,7 +233,7 @@
 
 	async function save(next) {
 		config = normalizeConfig(next);
-		const db = await import("./settings-db.js");
+		const db = await import("../data/settings-db.js");
 		await db.setSetting(KEY, config);
 		window.RuxSettings = {
 			...(window.RuxSettings || {}),

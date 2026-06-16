@@ -254,11 +254,23 @@
 /* ---------- Body ---------- */
 
 .rux-trip-bar__body {
-	display: grid;
+	display: flex;
+	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	align-content: space-between;
 	padding: var(--rux-space-2);
+	gap: var(--rux-trip-bar-tight-gap);
+}
+
+.rux-trip-bar__spacer {
+	flex: 1 1 auto;
+}
+
+.rux-trip-bar__footer {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-trip-bar-tight-gap);
+	flex: 0 0 auto;
 }
 
 /* ---------- Summary row ---------- */
@@ -452,7 +464,6 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--rux-space-2);
-	min-height: var(--rux-icon-xl);
 }
 
 .rux-trip-bar__driver {
@@ -587,14 +598,6 @@
 /* ---------- Responsive container queries ---------- */
 
 @container (max-width: 24rem) {
-	/* Multi-day bars hide text rows at narrow widths; single-day shows them */
-	.rux-trip-bar--multi-day .rux-trip-bar__client,
-	.rux-trip-bar--multi-day .rux-trip-bar__contact,
-	.rux-trip-bar--multi-day .rux-trip-bar__notes,
-	.rux-trip-bar--multi-day .rux-trip-bar__drivers {
-		display: none;
-	}
-
 	.rux-trip-bar__time {
 		gap: var(--rux-space-1);
 	}

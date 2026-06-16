@@ -33,15 +33,15 @@
    scheduler-app.css  .scheduler-app — full-page application shell layout
    ========================================================================== */
 
-@import "./controls.css";
-@import "./badges.css";
-@import "./form.css";
-@import "./content.css";
-@import "./feedback.css";
-@import "./navigation.css";
-@import "./utils.css";
-@import "./trip-bar.css";
-@import "./trip-panel.css";
-@import "./itinerary.css";
-@import "./scheduler.css";
-@import "./scheduler-app.css";
+@import "./base/controls.css";
+@import "./base/badges.css";
+@import "./base/form.css";
+@import "./base/content.css";
+@import "./base/feedback.css";
+@import "./base/navigation.css";
+@import "./base/utils.css";
+@import "./features/trip-bar.css";
+@import "./features/trip-panel.css";
+@import "./features/itinerary.css";
+@import "./layout/scheduler.css";
+@import "./layout/scheduler-app.css";

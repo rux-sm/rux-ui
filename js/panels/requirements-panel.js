@@ -10,7 +10,7 @@
 (async function () {
   "use strict";
 
-  const { loadRequirements, saveRequirements, DEFAULT_REQUIREMENTS } = await import("./requirements-db.js");
+  const { loadRequirements, saveRequirements, DEFAULT_REQUIREMENTS } = await import("../data/requirements-db.js");
 
   /* ── Icon catalogue (curated Lucide icon names) ────────────────────────── */
 

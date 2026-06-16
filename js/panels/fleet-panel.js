@@ -549,7 +549,7 @@
 
   async function loadColConfig() {
     if (!settingsDb) {
-      try { settingsDb = await import("./settings-db.js"); } catch { /* offline */ }
+      try { settingsDb = await import("../data/settings-db.js"); } catch { /* offline */ }
     }
     const saved = settingsDb ? await settingsDb.getSetting(FLEET_COLS_KEY) : null;
     colConfig = mergeConfig(saved);
@@ -906,7 +906,7 @@
   async function init() {
     if (!db) {
       try {
-        db = await import("./fleet-db.js");
+        db = await import("../data/fleet-db.js");
       } catch (err) {
         console.warn("Could not load fleet-db:", err);
         return;

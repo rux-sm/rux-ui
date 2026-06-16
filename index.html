@@ -10,14 +10,14 @@
     <link rel="stylesheet" href="./css/tokens.css" />
     <link rel="stylesheet" href="./css/colors_and_type.css" />
     <link rel="stylesheet" href="./css/components.css" />
-    <link rel="stylesheet" href="./css/driver-panel.css" />
-    <link rel="stylesheet" href="./css/comp-driver-app.css" />
-    <link rel="stylesheet" href="./css/fleet-panel.css" />
-    <link rel="stylesheet" href="./css/comp-fleet-app.css" />
-    <link rel="stylesheet" href="./css/comp-settings-app.css" />
-    <link rel="stylesheet" href="./css/comp-trips-app.css" />
-    <link rel="stylesheet" href="./css/bus-picker.css" />
-    <link rel="stylesheet" href="./css/search-modal.css" />
+    <link rel="stylesheet" href="./css/features/driver-panel.css" />
+    <link rel="stylesheet" href="./css/features/comp-driver-app.css" />
+    <link rel="stylesheet" href="./css/features/fleet-panel.css" />
+    <link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
+    <link rel="stylesheet" href="./css/features/comp-settings-app.css" />
+    <link rel="stylesheet" href="./css/features/comp-trips-app.css" />
+    <link rel="stylesheet" href="./css/features/bus-picker.css" />
+    <link rel="stylesheet" href="./css/features/search-modal.css" />
     <script
       src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"
       defer
@@ -945,21 +945,21 @@
     <div id="req-icon-picker" class="req-icon-picker" hidden></div>
 
     <!-- ── Scripts ─────────────────────────────────────────────────────────── -->
-    <script src="./js/utilities.js"></script>
-    <script src="./js/controls.js" defer></script>
-    <script src="./js/billing-config.js"></script>
-    <script src="./js/trip-panel.js"></script>
-    <script src="./js/itinerary.js"></script>
-    <script src="./js/driver-panel.js" defer></script>
-    <script src="./js/fleet-panel.js" defer></script>
-    <script src="./js/settings-panel.js" defer></script>
-    <script src="./js/trips-list.js" defer></script>
-    <script type="module" src="./js/requirements-panel.js"></script>
+    <script src="./js/core/utilities.js"></script>
+    <script src="./js/core/controls.js" defer></script>
+    <script src="./js/core/billing-config.js"></script>
+    <script src="./js/panels/trip-panel.js"></script>
+    <script src="./js/components/itinerary.js"></script>
+    <script src="./js/panels/driver-panel.js" defer></script>
+    <script src="./js/panels/fleet-panel.js" defer></script>
+    <script src="./js/panels/settings-panel.js" defer></script>
+    <script src="./js/panels/trips-list.js" defer></script>
+    <script type="module" src="./js/panels/requirements-panel.js"></script>
 
     <script type="module">
-      import { createTripBar } from "./js/trip-bar.js";
-      import BusPicker from "./js/bus-picker.js";
-      import { loadRequirements } from "./js/requirements-db.js";
+      import { createTripBar } from "./js/components/trip-bar.js";
+      import BusPicker from "./js/components/bus-picker.js";
+      import { loadRequirements } from "./js/data/requirements-db.js";
 
       // Load requirements before trip panel is used (window.appRequirements cache)
       if (!window.appRequirements) window.appRequirements = await loadRequirements();
@@ -1245,7 +1245,7 @@
         onChangeBus:   (trip) => {
           BusPicker.show(trip, schedulerBuses, trips, async (newBus, conflictAssignmentId) => {
             try {
-              const db = await import("./js/trip-db.js");
+              const db = await import("./js/data/trip-db.js");
               await db.reassignBus(trip.assignmentId, newBus.id);
               if (conflictAssignmentId) {
                 await db.reassignBus(conflictAssignmentId, trip.busId);
@@ -1637,7 +1637,7 @@
 
       async function initSchedulerData() {
         try {
-          const db = await import("./js/trip-db.js");
+          const db = await import("./js/data/trip-db.js");
           loadTrip  = db.loadTrip;
           newTrip   = db.newTrip;
           fetchTrips = db.fetchTrips;

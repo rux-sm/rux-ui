@@ -306,7 +306,7 @@
   async function loadYard() {
     if (!db) {
       try {
-        db = await import("./settings-db.js");
+        db = await import("../data/settings-db.js");
       } catch (err) {
         console.warn("Could not load settings-db:", err);
         publishYard(DEFAULT_YARD);
@@ -326,7 +326,7 @@
   }
 
   async function loadMapboxToken() {
-    if (!db) db = await import("./settings-db.js");
+    if (!db) db = await import("../data/settings-db.js");
     const saved = await db.getSetting(MAPBOX_TOKEN_KEY);
     const token = typeof saved === "string" ? saved.trim() : "";
     publishMapboxToken(token);
@@ -336,7 +336,7 @@
   }
 
   async function saveYard(yard) {
-    if (!db) db = await import("./settings-db.js");
+    if (!db) db = await import("../data/settings-db.js");
     const normalized = normalizeYard(yard);
     await db.setSetting(YARD_KEY, normalized);
     publishYard(normalized);
@@ -346,7 +346,7 @@
   }
 
   async function saveMapboxToken(token) {
-    if (!db) db = await import("./settings-db.js");
+    if (!db) db = await import("../data/settings-db.js");
     const normalized = String(token || "").trim();
     await db.setSetting(MAPBOX_TOKEN_KEY, normalized);
     publishMapboxToken(normalized);
@@ -363,7 +363,7 @@
   }
 
   async function loadSpotPadding() {
-    if (!db) db = await import("./settings-db.js");
+    if (!db) db = await import("../data/settings-db.js");
     const saved = await db.getSetting(SPOT_PADDING_KEY);
     const mins = saved != null ? Number(saved) : DEFAULT_SPOT_PADDING;
     publishSpotPadding(Number.isFinite(mins) ? mins : DEFAULT_SPOT_PADDING);
@@ -371,7 +371,7 @@
   }
 
   async function saveSpotPadding(mins) {
-    if (!db) db = await import("./settings-db.js");
+    if (!db) db = await import("../data/settings-db.js");
     const normalized = Number.isFinite(mins) && mins >= 0 ? mins : DEFAULT_SPOT_PADDING;
     await db.setSetting(SPOT_PADDING_KEY, normalized);
     publishSpotPadding(normalized);

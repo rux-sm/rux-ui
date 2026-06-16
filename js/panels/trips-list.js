@@ -300,7 +300,7 @@
   async function init() {
     if (!db) {
       try {
-        db = await import("./trip-db.js");
+        db = await import("../data/trip-db.js");
       } catch (err) {
         console.warn("Could not load trip-db:", err);
         return;
