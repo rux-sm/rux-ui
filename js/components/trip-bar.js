@@ -533,12 +533,6 @@ export function createTripBar(trip, callbacks = {}) {
     ),
     button(
       "rux-button rux-button--ghost rux-button--icon",
-      "Send info",
-      "message-square-more",
-      () => callbacks.onSendInfo?.(trip),
-    ),
-    button(
-      "rux-button rux-button--ghost rux-button--icon",
       "Trip envelope",
       "mail",
       () => (callbacks.onTripEnvelope || callbacks.onEmail)?.(trip),

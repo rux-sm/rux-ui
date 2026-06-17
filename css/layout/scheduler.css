@@ -19,7 +19,7 @@
    --rux-scheduler-days             Number of day columns, used for the track
                                     column span and grid tracks  (default 7)
    --rux-scheduler-day-min-width    Minimum width per day column. Keep wide
-                                    enough for one-day trip bars  (default 16.5rem)
+                                    enough for one-day trip bars  (default 14rem)
    --rux-scheduler-max-block-size   Optional vertical cap; set this to make the
                                     scheduler scroll internally  (default none)
    --rux-scheduler-grid-line-color  Inner grid lines between rows and days
@@ -42,7 +42,7 @@
 	--rux-scheduler-col-head-width: 2rem;
 	--rux-scheduler-head-height: 2rem;
 	--rux-scheduler-days: 7;
-	--rux-scheduler-day-min-width: 16.5rem;
+	--rux-scheduler-day-min-width: 14rem;
 	--rux-scheduler-bg: var(--rux-bg-level-1);
 	--rux-scheduler-border-color: var(--rux-border-subtle);
 	--rux-scheduler-grid-line-color: var(--rux-border-subtle);

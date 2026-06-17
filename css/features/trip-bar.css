@@ -195,7 +195,7 @@
 .rux-trip-bar__actions {
 	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: repeat(6, var(--rux-control-height));
+	grid-template-columns: repeat(5, var(--rux-control-height));
 	align-items: center;
 	flex: 0 0 auto;
 	gap: var(--rux-space-2);
