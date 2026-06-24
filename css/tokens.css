@@ -82,6 +82,8 @@
 	--rux-fg-subtle: oklch(60% 0 0); /* #6b6b6b */
 	--rux-fg-disabled: oklch(40% 0 0); /* #404040 */
 	--rux-fg-on-accent: oklch(100% 0 0); /* #ffffff */
+	--rux-fg-on-accent-muted: oklch(100% 0 0 / 0.75);
+	--rux-fg-on-accent-subtle: oklch(100% 0 0 / 0.55);
 
 	/* ─── COLOR · border ──────────────────────────────────────────────────── */
 	/* All borders are hairlines (1px). We use three levels.                   */

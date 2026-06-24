@@ -228,7 +228,8 @@
 .rux-trip-panel__cols-3 {
 	display: grid;
 	grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
-	gap: var(--rux-space-3);
+	column-gap: var(--rux-space-3);
+	row-gap: var(--rux-space-4);
 	align-items: start;
 }
 .rux-trip-panel__cols-2 {
@@ -242,7 +243,8 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: start;
-	gap: var(--rux-space-3);
+	column-gap: var(--rux-space-3);
+	row-gap: var(--rux-space-4);
 }
 
 .rux-trip-panel__section-head {
@@ -722,7 +724,6 @@
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;
-		gap: var(--rux-space-4);
 	}
 
 	.rux-trip-panel__payment-row {

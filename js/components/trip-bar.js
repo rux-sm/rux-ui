@@ -592,14 +592,14 @@ export function createTripBar(trip, callbacks = {}) {
   const displayTimes = tripBarTimes(trip);
   const middleTime = displayTimes.spotTime;
   time.append(
-    timeItem("Dep", fmtTime(displayTimes.departureTime)),
+    timeItem("D", fmtTime(displayTimes.departureTime)),
     timeItem(
-      "Spt",
-      middleTime ? fmtTime(middleTime) : "—",
+      "S",
+      middleTime ? fmtTime(middleTime) : "",
       middleTime ? "" : "rux-trip-bar__time-value--empty",
     ),
     timeItem(
-      "Arr",
+      "A",
       fmtTime(displayTimes.returnTime),
       isLateReturn(displayTimes.returnTime) ? "rux-trip-bar__time-value--late" : "",
     ),
