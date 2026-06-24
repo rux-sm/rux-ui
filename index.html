@@ -174,9 +174,10 @@
                   <div class="rux-card">
                     <div class="rux-trip-panel__section-head">
                       <p class="rux-trip-panel__section-label">Billing Summary</p>
-                      <div class="rux-trip-panel__billing-badges">
-                        <span class="rux-badge rux-badge--danger rux-trip-panel__billing-status" id="tp-paid-status">Pending</span>
-                      </div>
+                    </div>
+                    <div class="rux-field">
+                      <label class="rux-field__label" for="tp-price">Quoted Price</label>
+                      <div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="0.00" aria-label="Quoted price" /></div>
                     </div>
                     <div class="rux-trip-panel__billing-summary">
                       <div class="rux-field"><label class="rux-field__label" for="tp-total-paid">Paid</label><output class="rux-trip-panel__billing-output" id="tp-total-paid" for="tp-payment-rows">$0.00</output></div>
@@ -190,9 +191,6 @@
                       <label class="rux-switch"><input type="checkbox" id="tp-contract-signed" name="contractSigned" data-billing-toggle /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       <div class="rux-trip-panel__billing-step-body">
                         <label class="rux-field__label" data-billing-label>Contract signed</label>
-                        <div class="rux-trip-panel__billing-step-content">
-                          <div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="Quoted price" aria-label="Quoted price" /></div>
-                        </div>
                       </div>
                     </div>
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="poReceived">
@@ -221,10 +219,6 @@
                           <button class="rux-button" type="button" data-payment-add><i data-lucide="plus" class="rux-icon"></i><span class="rux-btn-label">Add payment</span></button>
                           <button class="rux-button rux-button--danger" type="button" data-payment-remove disabled><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label">Delete payment</span></button>
                         </div>
-                        <input id="tp-deposit" name="depositAmount" type="hidden" />
-                        <input id="tp-pay-ref-1" name="paymentRef1" type="hidden" />
-                        <input id="tp-pay-ref-2" name="paymentRef2" type="hidden" />
-                        <input id="tp-pay-ref-3" name="paymentRef3" type="hidden" />
                       </div>
                     </div>
                   </div>
@@ -1538,6 +1532,7 @@
               id: t.id, trip_ref: t.trip_ref, assignmentId: assignment.id, busId: assignment.bus_id,
               assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [] })),
               trip_stops: t.trip_stops ?? [],
+              trip_payments: t.trip_payments ?? [],
               startDate: t.start_date, endDate: t.end_date, destination: t.destination, customer: t.customer,
               trip_type: t.trip_type,
               departureTime: t.departure_time, spotTime: t.spot_time, returnTime: t.return_time, notes: t.notes,

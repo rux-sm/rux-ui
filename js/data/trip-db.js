@@ -87,11 +87,7 @@ import { supabase } from "./supabase.js";
 		const paymentRows = root.querySelector("#tp-payment-rows");
 		if (!paymentRows) return;
 		paymentRows.dataset.paymentsTouched = "false";
-		paymentRows.querySelectorAll("[data-payment-row]").forEach((row, index) => {
-			if (index > 0) row.remove();
-		});
-		paymentRows.querySelectorAll("input").forEach((input) => { input.value = ""; });
-		paymentRows.querySelectorAll("select").forEach((select) => { select.value = ""; });
+		paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
 	}
 
 	function syncBusCount(root, count) {
@@ -144,15 +140,14 @@ import { supabase } from "./supabase.js";
 		const poRef = poReceived ? fieldVal(root, "tp-po") : null;
 		const invoiceNumber = invoiced ? fieldVal(root, "tp-inv-num") : null;
 		const datePaid = balancePaid ? fieldVal(root, "tp-date-paid") : null;
-		const depositAmount = numVal(root, "tp-deposit");
-		const quotedPrice = contractSigned ? numVal(root, "tp-price") : null;
-		const priceForStatus = numVal(root, "tp-price");
+		const depositAmount = collectPayments(root).reduce((sum, p) => sum + (p.amount || 0), 0) || null;
+		const quotedPrice = numVal(root, "tp-price");
 		const billingConfirmed = window.RuxBilling?.isStateConfirmed?.({
 			contractSigned,
 			poReceived,
-			price: priceForStatus,
+			price: quotedPrice,
 			paid: depositAmount,
-			balance: (priceForStatus ?? 0) - (depositAmount ?? 0),
+			balance: (quotedPrice ?? 0) - (depositAmount ?? 0),
 		});
 
 		return {
@@ -184,9 +179,6 @@ import { supabase } from "./supabase.js";
 			invoice_number:   invoiceNumber,
 			date_paid:        datePaid,
 			actual_miles:     optionalNumVal(root, "tp-act-mi"),
-			payment_ref_1:    fieldVal(root, "tp-pay-ref-1"),
-			payment_ref_2:    fieldVal(root, "tp-pay-ref-2"),
-			payment_ref_3:    fieldVal(root, "tp-pay-ref-3"),
 			deposit_amount:   depositAmount,
 			confirmed:        billingConfirmed ?? !!(contractSigned
 			                  || poRef
@@ -239,6 +231,17 @@ import { supabase } from "./supabase.js";
 		}
 
 		return assignments;
+	}
+
+	function collectPayments(root) {
+		const rows = root.querySelectorAll("#tp-payment-rows [data-payment-row]");
+		return Array.from(rows).map((row, i) => ({
+			position: i,
+			amount: parseFloat(row.querySelector("[data-payment-amount]")?.value) || null,
+			method: row.querySelector("[data-payment-method]")?.value || null,
+			date: row.querySelector("[data-payment-date]")?.value || null,
+			ref: row.querySelector("[data-payment-ref]")?.value?.trim() || null,
+		})).filter(p => p.amount || p.method || p.date || p.ref);
 	}
 
 	function collectStops(itinerary) {
@@ -390,14 +393,10 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-est-mi",   trip.est_miles);
 		setVal(root, "tp-drive-hr", trip.driving_hours);
 		setVal(root, "tp-duty-hr",  trip.on_duty_hours);
-		setVal(root, "tp-deposit", trip.deposit_amount);
 		setVal(root, "tp-po",        trip.po_ref);
 		setVal(root, "tp-inv-num",   trip.invoice_number);
 		setVal(root, "tp-date-paid", trip.date_paid);
 		setVal(root, "tp-act-mi",    trip.actual_miles);
-		setVal(root, "tp-pay-ref-1", trip.payment_ref_1);
-		setVal(root, "tp-pay-ref-2", trip.payment_ref_2);
-		setVal(root, "tp-pay-ref-3", trip.payment_ref_3);
 		// Dispatch requirements — prefer trip_reqs JSONB, fall back to legacy columns
 		const tripReqs = trip.trip_reqs && Object.keys(trip.trip_reqs).length
 			? trip.trip_reqs
@@ -407,6 +406,42 @@ import { supabase } from "./supabase.js";
 			btn.setAttribute("aria-pressed", String(val));
 			btn.classList.toggle("is-active", val);
 		});
+	}
+
+	function populatePayments(root, payments) {
+		if (!payments?.length) return;
+		const paymentRows = root.querySelector("#tp-payment-rows");
+		if (!paymentRows) return;
+		const sorted = [...payments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+		for (const payment of sorted) {
+			const index = paymentRows.querySelectorAll("[data-payment-row]").length;
+			const row = document.createElement("div");
+			row.className = "rux-trip-panel__payment-row";
+			row.dataset.paymentRow = "";
+			row.innerHTML = `
+				<div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
+					<span class="rux-input-group__prefix">$</span>
+					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
+					<span class="rux-input-group__suffix"><button class="rux-trip-panel__payment-fill" type="button" data-payment-fill title="Fill remaining balance"><i data-lucide="circle-check" class="rux-icon"></i></button></span>
+				</div>
+				<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+				<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">
+					<option value="">Method</option>
+					<option value="Cash">Cash</option>
+					<option value="Check">Check</option>
+					<option value="Card">Card</option>
+					<option value="ACH">ACH</option>
+					<option value="Zelle">Zelle</option>
+					<option value="Other">Other</option>
+				</select>
+				<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Ref / note" />`;
+			paymentRows.appendChild(row);
+			if (payment.amount) row.querySelector("[data-payment-amount]").value = payment.amount;
+			if (payment.date) row.querySelector("[data-payment-date]").value = payment.date;
+			if (payment.method) row.querySelector("[data-payment-method]").value = payment.method;
+			if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
+		}
+		if (window.lucide) lucide.createIcons();
 	}
 
 	function populateAssignments(root, assignments) {
@@ -520,6 +555,7 @@ import { supabase } from "./supabase.js";
 				? mergeUpdate(nextTripData, savingSnapshot || {})
 				: compactPayload(nextTripData);
 			const assignments = collectAssignments(root);
+			const payments = collectPayments(root);
 
 			if (tripData.start_date && tripData.end_date && tripData.end_date < tripData.start_date) {
 				throw new Error("End date cannot be before start date.");
@@ -595,6 +631,19 @@ import { supabase } from "./supabase.js";
 				}
 			}
 
+			// Replace payments
+			const { error: deletePaymentsErr } = await supabase
+				.from("trip_payments")
+				.delete()
+				.eq("trip_id", savedId);
+			if (deletePaymentsErr) throw deletePaymentsErr;
+			if (payments.length) {
+				const { error: paymentsErr } = await supabase
+					.from("trip_payments")
+					.insert(payments.map(p => ({ trip_id: savedId, ...p })));
+				if (paymentsErr) throw paymentsErr;
+			}
+
 			// Only update module state if the user hasn't navigated to a different trip mid-save.
 			if (currentTripId === savingTripId) {
 				currentTripId       = savedId;
@@ -643,26 +692,40 @@ import { supabase } from "./supabase.js";
 	/* ── Fetch ───────────────────────────────────────────────────────────── */
 
 export async function fetchTrips() {
-	const { data, error } = await supabase
-		.from("trips")
-		.select(`
-			*,
-			trip_assignments(
-				id, position, bus_id,
-				buses(id, number),
-				trip_drivers(id, driver_id, role, pay, drivers(id, name, short_name))
-			),
-			trip_stops(*)
-		`)
-		.order("start_date", { ascending: true });
-	if (error) throw error;
-	// Normalize Supabase's auto-named join key (trip_drivers) to the app-wide name (drivers).
-	return (data ?? []).map(trip => ({
+	const [tripsResult, paymentsResult] = await Promise.all([
+		supabase
+			.from("trips")
+			.select(`
+				*,
+				trip_assignments(
+					id, position, bus_id,
+					buses(id, number),
+					trip_drivers(id, driver_id, role, pay, drivers(id, name, short_name))
+				),
+				trip_stops(*)
+			`)
+			.order("start_date", { ascending: true }),
+		supabase
+			.from("trip_payments")
+			.select("*")
+			.order("position", { ascending: true }),
+	]);
+	if (tripsResult.error) throw tripsResult.error;
+	if (paymentsResult.error) throw paymentsResult.error;
+
+	const paymentsByTrip = new Map();
+	for (const p of paymentsResult.data ?? []) {
+		if (!paymentsByTrip.has(p.trip_id)) paymentsByTrip.set(p.trip_id, []);
+		paymentsByTrip.get(p.trip_id).push(p);
+	}
+
+	return (tripsResult.data ?? []).map(trip => ({
 		...trip,
 		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...a }) => ({
 			...a,
 			drivers: trip_drivers ?? [],
 		})),
+		trip_payments: paymentsByTrip.get(trip.id) ?? [],
 	}));
 }
 
@@ -717,9 +780,6 @@ export function loadTrip(root, itinerary, trip) {
 		invoice_number:        trip.invoice_number ?? trip.invoiceNumber  ?? null,
 		date_paid:             trip.date_paid      ?? trip.datePaid       ?? null,
 		actual_miles:          trip.actual_miles   ?? trip.actualMiles    ?? null,
-		payment_ref_1:         trip.payment_ref_1  ?? trip.paymentRefs?.[0] ?? null,
-		payment_ref_2:         trip.payment_ref_2  ?? trip.paymentRefs?.[1] ?? null,
-		payment_ref_3:         trip.payment_ref_3  ?? trip.paymentRefs?.[2] ?? null,
 		bus_count:             trip.bus_count      ?? trip.busesNeeded    ?? null,
 		trip_reqs:      trip.trip_reqs      ?? {},
 		req_sleeper:    trip.req_sleeper    ?? false,
@@ -745,7 +805,6 @@ export function loadTrip(root, itinerary, trip) {
 	root.classList.add("rux-trip-panel--loading");
 
 	populateTrip(root, normalized);
-	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 	window.Rux?.syncDateInputs(root);
 	syncBusCount(root, busCount);
 
@@ -754,6 +813,8 @@ export function loadTrip(root, itinerary, trip) {
 		populateAssignments(root, loadedAssignments);
 	}
 
+	populatePayments(root, trip.trip_payments ?? []);
+	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 	populateStops(itinerary, trip.trip_stops ?? trip.stops ?? []);
 
 	const idEl = root.querySelector("#tp-trip-id");

@@ -202,10 +202,8 @@ function formatDisplayDate(value) {
 function initBillingWorkflow(root) {
 	const toggles = root.querySelectorAll("[data-billing-toggle]");
 	const priceEl = root.querySelector("#tp-price");
-	const paidEl = root.querySelector("#tp-deposit");
 	const totalPaid = root.querySelector("#tp-total-paid");
 	const balanceDue = root.querySelector("#tp-balance-due");
-	const paidStatus = root.querySelector("#tp-paid-status");
 	const balancePaidEl = root.querySelector("#tp-balance-paid");
 	const datePaidEl = root.querySelector("#tp-date-paid");
 	const paymentRows = root.querySelector("#tp-payment-rows");
@@ -284,32 +282,7 @@ function initBillingWorkflow(root) {
 			date: row.querySelector("[data-payment-date]")?.value.trim() || "",
 			ref: row.querySelector("[data-payment-ref]")?.value.trim() || "",
 		}));
-	const serializePayment = (payment) => [payment.method, payment.date, payment.ref].filter(Boolean).join(" · ");
-	const syncLegacyPaymentFields = (payments, paid) => {
-		if (paidEl) paidEl.value = paid ? String(paid) : "";
-		const refs = root.querySelectorAll("#tp-pay-ref-1, #tp-pay-ref-2, #tp-pay-ref-3");
-		refs.forEach((ref, index) => {
-			ref.value = serializePayment(payments[index] || {});
-		});
-	};
-	const hydrateLegacyPayments = () => {
-		if (!paymentRows || paymentRows.dataset.paymentsTouched === "true") return;
-		const legacyPaid = paidEl?.value;
-		const refs = Array.from(root.querySelectorAll("#tp-pay-ref-1, #tp-pay-ref-2, #tp-pay-ref-3")).map((ref) => ref.value).filter(Boolean);
-		if (!legacyPaid && !refs.length) return;
-		ensurePaymentRows(Math.max(1, refs.length));
-		const rows = paymentRows.querySelectorAll("[data-payment-row]");
-		if (legacyPaid && !rows[0]?.querySelector("[data-payment-amount]")?.value) {
-			rows[0].querySelector("[data-payment-amount]").value = legacyPaid;
-		}
-		refs.forEach((ref, index) => {
-			const refInput = rows[index]?.querySelector("[data-payment-ref]");
-			if (refInput && !refInput.value) refInput.value = ref;
-		});
-	};
-
 	const sync = () => {
-		hydrateLegacyPayments();
 		const price = readMoney(priceEl);
 		const payments = readPayments();
 		const paid = payments.reduce((sum, payment) => sum + payment.amount, 0);
@@ -320,7 +293,6 @@ function initBillingWorkflow(root) {
 			.sort()
 			.pop() || "";
 		const fullyPaid = price > 0 && balance <= 0;
-		syncLegacyPaymentFields(payments, paid);
 		updatePaymentButtons();
 
 		if (totalPaid) totalPaid.textContent = formatMoney(paid);
@@ -328,14 +300,7 @@ function initBillingWorkflow(root) {
 			balanceDue.textContent = formatMoney(balance);
 			balanceDue.classList.toggle("is-negative", balance < 0);
 		}
-		if (paidStatus) {
-			const contractSigned = !!root.querySelector("#tp-contract-signed")?.checked;
-			const poReceived = !!root.querySelector("#tp-po-received")?.checked;
-			const statusKey = window.RuxBilling?.deriveStatus?.({ contractSigned, poReceived, price, paid, balance }) || "pending";
-			const confirmed = !!window.RuxBilling?.isStatusConfirmed?.(statusKey);
-			window.RuxBilling?.renderStatusBadge?.(paidStatus, statusKey, { confirmed });
-		}
-		if (balancePaidEl) balancePaidEl.checked = fullyPaid;
+if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (datePaidEl) datePaidEl.value = fullyPaid ? latestPaymentDate : "";
 		paymentRows?.querySelectorAll("[data-payment-fill]").forEach((btn) => { btn.disabled = price <= 0; });
 
@@ -357,7 +322,7 @@ function initBillingWorkflow(root) {
 	};
 
 	toggles.forEach((toggle) => toggle.addEventListener("change", sync));
-	[priceEl, paidEl].forEach((el) => el?.addEventListener("input", sync));
+	priceEl?.addEventListener("input", sync);
 	paymentRows?.addEventListener("input", (event) => {
 		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
 		sync();
@@ -411,6 +376,26 @@ function initBillingWorkflow(root) {
 		updatePaymentButtons();
 		if (window.lucide) lucide.createIcons();
 		newRow?.querySelector("[data-payment-amount]")?.focus();
+	});
+	root.addEventListener("rux:payments-loaded", (event) => {
+		if (!paymentRows) return;
+		const payments = (event.detail?.payments || []).sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+		paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
+		for (const payment of payments) {
+			ensurePaymentRows(paymentRowCount() + 1);
+			const row = paymentRows.querySelector("[data-payment-row]:last-child");
+			const amountEl = row.querySelector("[data-payment-amount]");
+			const dateEl = row.querySelector("[data-payment-date]");
+			const methodEl = row.querySelector("[data-payment-method]");
+			const refEl = row.querySelector("[data-payment-ref]");
+			if (amountEl && payment.amount) amountEl.value = payment.amount;
+			if (dateEl && payment.date) dateEl.value = payment.date;
+			if (methodEl && payment.method) methodEl.value = payment.method;
+			if (refEl && payment.ref) refEl.value = payment.ref;
+		}
+		if (window.lucide) lucide.createIcons();
+		updatePaymentButtons();
+		sync();
 	});
 	root.addEventListener("rux:trip-cleared", () => {
 		if (!paymentRows) return;

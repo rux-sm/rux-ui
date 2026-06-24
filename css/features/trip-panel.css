@@ -339,21 +339,6 @@
 .rux-trip-panel__billing-output.is-negative {
 	color: var(--rux-info);
 }
-.rux-trip-panel__billing-badges {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: flex-end;
-	gap: var(--rux-space-2);
-	min-width: 0;
-}
-.rux-trip-panel__billing-badges .rux-badge {
-	height: 20px;
-	font-size: var(--rux-text-2xs);
-	letter-spacing: var(--rux-tracking-wide);
-}
-.rux-trip-panel__billing-status {
-	flex: none;
-}
 .rux-trip-panel__billing-workflow {
 	display: flex;
 	flex-direction: column;
@@ -361,7 +346,7 @@
 }
 .rux-trip-panel__billing-step {
 	display: grid;
-	grid-template-columns: var(--rux-switch-width) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
 	gap: var(--rux-space-3);
 	align-items: start;
 	padding: var(--rux-space-4);
@@ -369,8 +354,8 @@
 	background: var(--rux-bg-level-2);
 }
 .rux-trip-panel__billing-step > .rux-switch {
-	align-self: start;
-	padding-top: 2px;
+	order: 1;
+	align-self: center;
 }
 .rux-trip-panel__billing-step-body {
 	display: flex;
@@ -403,10 +388,7 @@
 	height: 100%;
 }
 .rux-trip-panel__billing-step:not(.is-enabled) .rux-trip-panel__billing-step-content {
-	opacity: 0.45;
-}
-[data-billing-key="contractSigned"] .rux-trip-panel__billing-step-content {
-	opacity: 1;
+	display: none;
 }
 .rux-trip-panel__billing-step--payments {
 	grid-template-columns: minmax(0, 1fr);
