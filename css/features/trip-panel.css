@@ -311,9 +311,9 @@
 	row-gap: var(--rux-space-2);
 	align-items: start;
 	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-top: none; /* ovreride */
 }
 .rux-trip-panel__billing-summary .rux-field {
-	gap: var(--rux-space-1);
 	min-width: 0;
 }
 .rux-trip-panel__billing-summary .rux-field__label {
@@ -327,13 +327,13 @@
 	min-width: 0;
 	height: var(--rux-field-height);
 	padding: 0;
-	border: 0;
-	border-radius: var(--rux-radius-sm);
+	border: solid transparent var(--rux-border-width);
+	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-level-1);
 	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
-	line-height: var(--rux-leading-tight);
+	font: inherit;
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-regular);
 	font-variant-numeric: tabular-nums;
 }
 .rux-trip-panel__billing-output.is-negative {
@@ -379,24 +379,6 @@
 	min-width: 0;
 	width: 100%;
 }
-.rux-trip-panel__billing-step-head {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-3);
-	min-width: 0;
-}
-.rux-trip-panel__billing-step-title {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--rux-space-1);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
-	letter-spacing: var(--rux-tracking-wider);
-	text-transform: uppercase;
-	line-height: var(--rux-leading-tight);
-}
 .rux-trip-panel__billing-step-help {
 	color: var(--rux-fg-subtle);
 	font-size: var(--rux-text-xs);
@@ -409,9 +391,6 @@
 	width: 100%;
 	margin-top: var(--rux-space-1);
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
-}
-.rux-trip-panel__billing-step .rux-field {
-	gap: var(--rux-space-1);
 }
 .rux-trip-panel__billing-step .rux-input,
 .rux-trip-panel__billing-step .rux-select,
@@ -426,6 +405,9 @@
 .rux-trip-panel__billing-step:not(.is-enabled) .rux-trip-panel__billing-step-content {
 	opacity: 0.45;
 }
+[data-billing-key="contractSigned"] .rux-trip-panel__billing-step-content {
+	opacity: 1;
+}
 .rux-trip-panel__billing-step--payments {
 	grid-template-columns: minmax(0, 1fr);
 }
@@ -434,24 +416,48 @@
 	flex-direction: column;
 	gap: var(--rux-space-3);
 }
-.rux-trip-panel__payment-head-actions {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-space-1);
-	flex-shrink: 0;
-}
 .rux-trip-panel__payment-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: var(--rux-space-2);
 	align-items: center;
+	padding-bottom: var(--rux-space-3);
+	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
-.rux-trip-panel__payment-row-main,
-.rux-trip-panel__payment-row-meta {
-	display: contents;
+.rux-trip-panel__payment-row:last-child {
+	padding-bottom: 0;
+	border-bottom: 0;
 }
-.rux-trip-panel__add-payment {
-	align-self: flex-start;
+.rux-trip-panel__payment-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	margin-top: var(--rux-space-2);
+}
+.rux-trip-panel__payment-actions > .rux-button {
+	flex: 1;
+}
+.rux-trip-panel__payment-fill {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--rux-fg-subtle);
+	cursor: pointer;
+	transition: color var(--rux-duration-fast) var(--rux-ease-out);
+}
+.rux-trip-panel__payment-fill .rux-icon {
+	width: var(--rux-icon-md);
+	height: var(--rux-icon-md);
+}
+.rux-trip-panel__payment-fill:hover {
+	color: var(--rux-fg);
+}
+.rux-trip-panel__payment-fill:disabled {
+	opacity: 0.35;
+	pointer-events: none;
 }
 
 /* — Requirements chips — */
@@ -725,33 +731,27 @@
    Requirement buttons:    400px
    ========================================================================== */
 
-@container (max-width: 300px) {
+@container (max-width: 365px) {
+	.rux-trip-panel__payment-actions .rux-btn-label {
+		display: none;
+	}
+	.rux-trip-panel__payment-actions .rux-button {
+		width: var(--rux-field-height);
+		padding: 0;
+		justify-content: center;
+		flex: 1;
+	}
+
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;
 		gap: var(--rux-space-4);
 	}
 
-	.rux-trip-panel__billing-summary {
-		grid-template-columns: 1fr;
-	}
-
 	.rux-trip-panel__payment-row {
 		grid-template-columns: 1fr;
 	}
 
-	#tp-paid-full-btn .rux-btn-label {
-		display: none;
-	}
-	#tp-paid-full-btn {
-		width: var(--rux-field-height);
-		padding: 0;
-		justify-content: center;
-	}
-
-}
-
-@container (max-width: 340px) {
 	.rux-trip-panel__logistics-grid {
 		grid-template-columns: 1fr;
 	}

@@ -179,28 +179,26 @@
                       </div>
                     </div>
                     <div class="rux-trip-panel__billing-summary">
-                      <div class="rux-field"><label class="rux-field__label" for="tp-price-summary">Quoted</label><output class="rux-trip-panel__billing-output" id="tp-price-summary" for="tp-price">$0.00</output></div>
                       <div class="rux-field"><label class="rux-field__label" for="tp-total-paid">Paid</label><output class="rux-trip-panel__billing-output" id="tp-total-paid" for="tp-payment-rows">$0.00</output></div>
                       <div class="rux-field"><label class="rux-field__label" for="tp-balance-due">Balance</label><output class="rux-trip-panel__billing-output" id="tp-balance-due" for="tp-price tp-payment-rows">$0.00</output></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-paid-date-summary">Paid Date</label><output class="rux-trip-panel__billing-output" id="tp-paid-date-summary" for="tp-payment-rows">—</output></div>
                     </div>
                     <input type="checkbox" id="tp-balance-paid" name="balancePaid" hidden />
                     <input id="tp-date-paid" name="datePaid" type="hidden" />
                   </div>
                   <div class="rux-trip-panel__billing-workflow">
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="contractSigned">
-                      <label class="rux-switch"><input type="checkbox" id="tp-contract-signed" name="contractSigned" data-billing-toggle data-billing-controls="tp-price" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
+                      <label class="rux-switch"><input type="checkbox" id="tp-contract-signed" name="contractSigned" data-billing-toggle /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       <div class="rux-trip-panel__billing-step-body">
-                        <span class="rux-trip-panel__billing-step-title"><i data-lucide="file-pen" class="rux-icon rux-icon--sm" data-billing-icon></i><span data-billing-label>Contract signed</span></span>
+                        <label class="rux-field__label" data-billing-label>Contract signed</label>
                         <div class="rux-trip-panel__billing-step-content">
-                          <div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="Contract amount" aria-label="Contract amount" /></div>
+                          <div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="Quoted price" aria-label="Quoted price" /></div>
                         </div>
                       </div>
                     </div>
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="poReceived">
                       <label class="rux-switch"><input type="checkbox" id="tp-po-received" name="poReceived" data-billing-toggle data-billing-controls="tp-po" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       <div class="rux-trip-panel__billing-step-body">
-                        <span class="rux-trip-panel__billing-step-title"><i data-lucide="receipt" class="rux-icon rux-icon--sm" data-billing-icon></i><span data-billing-label>PO received</span></span>
+                        <label class="rux-field__label" data-billing-label>PO received</label>
                         <div class="rux-trip-panel__billing-step-content">
                           <input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="PO number" aria-label="PO number" />
                         </div>
@@ -209,7 +207,7 @@
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="invoiced">
                       <label class="rux-switch"><input type="checkbox" id="tp-invoiced" name="invoiced" data-billing-toggle data-billing-controls="tp-inv-num" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       <div class="rux-trip-panel__billing-step-body">
-                        <span class="rux-trip-panel__billing-step-title"><i data-lucide="send" class="rux-icon rux-icon--sm" data-billing-icon></i><span data-billing-label>Invoiced</span></span>
+                        <label class="rux-field__label" data-billing-label>Invoiced</label>
                         <div class="rux-trip-panel__billing-step-content">
                           <input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" placeholder="Invoice number" aria-label="Invoice number" />
                         </div>
@@ -217,37 +215,12 @@
                     </div>
                     <div class="rux-trip-panel__billing-step rux-trip-panel__billing-step--payments" data-payment-card>
                       <div class="rux-trip-panel__billing-step-body">
-                        <div class="rux-trip-panel__billing-step-head">
-                          <span class="rux-trip-panel__billing-step-title">Payments</span>
-                          <div class="rux-trip-panel__payment-head-actions">
-                            <button class="rux-button rux-button--ghost" id="tp-paid-full-btn" type="button" title="Add the remaining balance as a payment"><i data-lucide="circle-check" class="rux-icon"></i><span class="rux-btn-label">Pay balance</span></button>
-                            <button class="rux-button rux-button--ghost rux-button--icon" id="tp-payment-remove-btn" type="button" aria-label="Remove payment" disabled><i data-lucide="trash-2" class="rux-icon"></i></button>
-                          </div>
+                        <label class="rux-field__label">Payments</label>
+                        <div class="rux-trip-panel__payment-rows" id="tp-payment-rows"></div>
+                        <div class="rux-trip-panel__payment-actions">
+                          <button class="rux-button" type="button" data-payment-add><i data-lucide="plus" class="rux-icon"></i><span class="rux-btn-label">Add payment</span></button>
+                          <button class="rux-button rux-button--danger" type="button" data-payment-remove disabled><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label">Delete payment</span></button>
                         </div>
-                        <div class="rux-trip-panel__payment-rows" id="tp-payment-rows">
-                          <div class="rux-trip-panel__payment-row" data-payment-row>
-                            <div class="rux-trip-panel__payment-row-main">
-                              <div class="rux-input-group rux-input-group--prefix">
-                                <span class="rux-input-group__prefix">$</span>
-                                <input class="rux-input" id="tp-payment-amount-1" name="payments[0].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
-                              </div>
-                              <input class="rux-input" id="tp-payment-date-1" name="payments[0].date" data-payment-date type="date" aria-label="Payment date" />
-                            </div>
-                            <div class="rux-trip-panel__payment-row-meta">
-                              <select class="rux-select" id="tp-payment-method-1" name="payments[0].method" data-payment-method aria-label="Payment method">
-                                <option value="">Method</option>
-                                <option value="Cash">Cash</option>
-                                <option value="Check">Check</option>
-                                <option value="Card">Card</option>
-                                <option value="ACH">ACH</option>
-                                <option value="Zelle">Zelle</option>
-                                <option value="Other">Other</option>
-                              </select>
-                              <input class="rux-input" id="tp-payment-ref-1" name="payments[0].ref" data-payment-ref type="text" placeholder="Ref / note" />
-                            </div>
-                          </div>
-                        </div>
-                        <button class="rux-button rux-button--ghost rux-button--sm rux-trip-panel__add-payment" type="button" data-payment-add><i data-lucide="plus" class="rux-icon"></i><span class="rux-btn-label">Add payment</span></button>
                         <input id="tp-deposit" name="depositAmount" type="hidden" />
                         <input id="tp-pay-ref-1" name="paymentRef1" type="hidden" />
                         <input id="tp-pay-ref-2" name="paymentRef2" type="hidden" />

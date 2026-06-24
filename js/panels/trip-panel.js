@@ -203,19 +203,15 @@ function initBillingWorkflow(root) {
 	const toggles = root.querySelectorAll("[data-billing-toggle]");
 	const priceEl = root.querySelector("#tp-price");
 	const paidEl = root.querySelector("#tp-deposit");
-	const priceSummary = root.querySelector("#tp-price-summary");
 	const totalPaid = root.querySelector("#tp-total-paid");
 	const balanceDue = root.querySelector("#tp-balance-due");
-	const paidDateSummary = root.querySelector("#tp-paid-date-summary");
 	const paidStatus = root.querySelector("#tp-paid-status");
 	const balancePaidEl = root.querySelector("#tp-balance-paid");
 	const datePaidEl = root.querySelector("#tp-date-paid");
 	const paymentRows = root.querySelector("#tp-payment-rows");
 	const addPaymentBtn = root.querySelector("[data-payment-add]");
-	const paidFullBtn = root.querySelector("#tp-paid-full-btn");
-	const removePaymentBtn = root.querySelector("#tp-payment-remove-btn");
 
-	if (!toggles.length && !priceSummary && !balanceDue && !paymentRows) return;
+	if (!toggles.length && !balanceDue && !paymentRows) return;
 	window.RuxBilling?.applyToTripPanel?.(root);
 
 	const readMoney = (el) => {
@@ -236,17 +232,14 @@ function initBillingWorkflow(root) {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-trip-panel__payment-row-main">
-				<div class="rux-input-group rux-input-group--prefix">
-					<span class="rux-input-group__prefix">$</span>
-					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
-				</div>
-				<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+			<div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
+				<span class="rux-input-group__prefix">$</span>
+				<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
+				<span class="rux-input-group__suffix"><button class="rux-trip-panel__payment-fill" type="button" data-payment-fill title="Fill remaining balance"><i data-lucide="circle-check" class="rux-icon"></i></button></span>
 			</div>
-			<div class="rux-trip-panel__payment-row-meta">
-				<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">${paymentMethodOptions()}</select>
-				<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Ref / note" />
-			</div>`;
+			<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+			<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">${paymentMethodOptions()}</select>
+			<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Ref / note" />`;
 		return row;
 	};
 	const ensurePaymentRows = (count) => {
@@ -279,8 +272,10 @@ function initBillingWorkflow(root) {
 			}
 		});
 	};
-	const updatePaymentRemoveButtons = () => {
-		if (removePaymentBtn) removePaymentBtn.disabled = paymentRowCount() <= 1;
+	const removePaymentBtn = root.querySelector("[data-payment-remove]");
+	const updatePaymentButtons = () => {
+		if (removePaymentBtn) removePaymentBtn.disabled = paymentRowCount() === 0;
+		if (addPaymentBtn) addPaymentBtn.disabled = Array.from(paymentRows?.querySelectorAll("[data-payment-row]") || []).some((row) => !row.querySelector("[data-payment-amount]")?.value);
 	};
 	const readPayments = () =>
 		Array.from(paymentRows?.querySelectorAll("[data-payment-row]") || []).map((row) => ({
@@ -326,15 +321,13 @@ function initBillingWorkflow(root) {
 			.pop() || "";
 		const fullyPaid = price > 0 && balance <= 0;
 		syncLegacyPaymentFields(payments, paid);
-		updatePaymentRemoveButtons();
+		updatePaymentButtons();
 
-		if (priceSummary) priceSummary.textContent = formatMoney(price);
 		if (totalPaid) totalPaid.textContent = formatMoney(paid);
 		if (balanceDue) {
 			balanceDue.textContent = formatMoney(balance);
 			balanceDue.classList.toggle("is-negative", balance < 0);
 		}
-		if (paidDateSummary) paidDateSummary.textContent = fullyPaid ? formatDisplayDate(latestPaymentDate) : "—";
 		if (paidStatus) {
 			const contractSigned = !!root.querySelector("#tp-contract-signed")?.checked;
 			const poReceived = !!root.querySelector("#tp-po-received")?.checked;
@@ -344,7 +337,7 @@ function initBillingWorkflow(root) {
 		}
 		if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (datePaidEl) datePaidEl.value = fullyPaid ? latestPaymentDate : "";
-		if (paidFullBtn) paidFullBtn.disabled = price <= 0;
+		paymentRows?.querySelectorAll("[data-payment-fill]").forEach((btn) => { btn.disabled = price <= 0; });
 
 		toggles.forEach((toggle) => {
 			const enabled = toggle.checked;
@@ -376,47 +369,53 @@ function initBillingWorkflow(root) {
 	removePaymentBtn?.addEventListener("click", () => {
 		if (!paymentRows || removePaymentBtn.disabled) return;
 		const rows = paymentRows.querySelectorAll("[data-payment-row]");
-		rows[rows.length - 1]?.remove();
+		const lastRow = rows[rows.length - 1];
+		if (!lastRow) return;
+		const hasData = Array.from(lastRow.querySelectorAll("input, select")).some((el) => el.value);
+		if (hasData && !confirm("Delete this payment?")) return;
+		lastRow.remove();
 		paymentRows.dataset.paymentsTouched = "true";
 		renumberPaymentRows();
+		updatePaymentButtons();
 		sync();
+	});
+	paymentRows?.addEventListener("click", (event) => {
+		const fillBtn = event.target.closest("[data-payment-fill]");
+		if (fillBtn) {
+			const price = readMoney(priceEl);
+			if (!price) return;
+			const payments = readPayments();
+			const paid = payments.reduce((sum, payment) => sum + payment.amount, 0);
+			const remaining = Math.max(0, price - paid);
+			if (remaining > 0) {
+				const row = fillBtn.closest("[data-payment-row]");
+				row.querySelector("[data-payment-amount]").value = remaining;
+				const dateInput = row.querySelector("[data-payment-date]");
+				if (dateInput && !dateInput.value) dateInput.value = localIsoDate();
+			}
+			paymentRows.dataset.paymentsTouched = "true";
+			sync();
+		}
 	});
 	addPaymentBtn?.addEventListener("click", () => {
-		ensurePaymentRows(paymentRowCount() + 1);
-		paymentRows.dataset.paymentsTouched = "true";
-		updatePaymentRemoveButtons();
-		if (window.lucide) lucide.createIcons();
-		paymentRows?.querySelector("[data-payment-row]:last-child [data-payment-amount]")?.focus();
-	});
-	paidFullBtn?.addEventListener("click", () => {
-		if (!paymentRows) return;
-		const price = readMoney(priceEl);
-		if (!price) return;
-		const payments = readPayments();
-		const paid = payments.reduce((sum, payment) => sum + payment.amount, 0);
-		const remaining = Math.max(0, price - paid);
-		if (remaining > 0) {
-			const targetRow = Array.from(paymentRows.querySelectorAll("[data-payment-row]")).find((paymentRow) => !paymentRow.querySelector("[data-payment-amount]")?.value);
-			const row = targetRow || (() => {
-				ensurePaymentRows(paymentRowCount() + 1);
-				return paymentRows.querySelector("[data-payment-row]:last-child");
-			})();
-			row.querySelector("[data-payment-amount]").value = remaining;
-			const dateInput = row.querySelector("[data-payment-date]");
-			if (dateInput && !dateInput.value) dateInput.value = localIsoDate();
+		const emptyRow = Array.from(paymentRows?.querySelectorAll("[data-payment-row]") || []).find((row) => !row.querySelector("[data-payment-amount]")?.value);
+		if (emptyRow) {
+			emptyRow.querySelector("[data-payment-amount]")?.focus();
+			return;
 		}
+		ensurePaymentRows(paymentRowCount() + 1);
+		const newRow = paymentRows?.querySelector("[data-payment-row]:last-child");
+		const dateInput = newRow?.querySelector("[data-payment-date]");
+		if (dateInput) dateInput.value = localIsoDate();
 		paymentRows.dataset.paymentsTouched = "true";
-		sync();
+		updatePaymentButtons();
+		if (window.lucide) lucide.createIcons();
+		newRow?.querySelector("[data-payment-amount]")?.focus();
 	});
 	root.addEventListener("rux:trip-cleared", () => {
 		if (!paymentRows) return;
 		paymentRows.dataset.paymentsTouched = "true";
-		const rows = paymentRows.querySelectorAll("[data-payment-row]");
-		rows.forEach((row, index) => {
-			if (index > 0) row.remove();
-		});
-		paymentRows.querySelectorAll("input").forEach((input) => { input.value = ""; });
-		paymentRows.querySelectorAll("select").forEach((select) => { select.value = ""; });
+		paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
 		sync();
 	});
 	document.addEventListener("settings:billing", () => {

@@ -62,17 +62,18 @@
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim     
 	
 	/* The absolute base (OLED black) */
-	--rux-bg-level-0: oklch(from var(--rux-color-base) 16% c h);
-	--rux-bg-level-form: oklch(from var(--rux-color-base) 30% c h);
+	--rux-bg-level-0: oklch(from var(--rux-color-base) 18% c h);
 
 	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 22% c h);
 
 	/* Elevated elements like floating cards or popovers */
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 24% c h);
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 28% c h);
 
 	/* Highest contrast accents / Badges */
-	--rux-bg-level-3: oklch(from var(--rux-color-base) 28% c h);
+	--rux-bg-level-3: oklch(from var(--rux-color-base) 30% c h);
+
+	--rux-bg-level-form: oklch(from var(--rux-color-base) 18% c h);
 
 	/* ─── COLOR · text ────────────────────────────────────────────────────── */
 
@@ -105,7 +106,7 @@
 	--rux-control-strip-bg-hover: oklch(33% 0.004 260); /* inactive item hover inside a strip      */
 	--rux-control-strip-bg-active: oklch(40% 0.004 260); /* selected item inside a pill-strip       */
 
-	--rux-control-bg: oklch(from var(--rux-color-base) 28% c h);
+	--rux-control-bg: oklch(from var(--rux-color-base) 40% c h);
 	--rux-control-bg-disabled: oklch(24% 0.004 260);
 	--rux-control-bg-hover: oklch(50% 0.004 260);
 	--rux-control-bg-active: oklch(36% 0.004 260);
