@@ -230,6 +230,7 @@ function initBillingWorkflow(root) {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
+			<label class="rux-field__label rux-trip-panel__payment-row-label">Payment ${index + 1}</label>
 			<div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
 				<span class="rux-input-group__prefix">$</span>
 				<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
@@ -308,6 +309,9 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 			const enabled = toggle.checked;
 			const step = toggle.closest("[data-billing-step]");
 			step?.classList.toggle("is-enabled", enabled);
+
+			const statusEl = step?.querySelector("[data-billing-status]");
+			if (statusEl) statusEl.textContent = enabled ? statusEl.dataset.on : statusEl.dataset.off;
 
 			(toggle.dataset.billingControls || "")
 				.split(/\s+/)

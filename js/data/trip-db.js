@@ -170,6 +170,7 @@ import { supabase } from "./supabase.js";
 			notes:                 fieldVal(root, "tp-notes"),
 			// Billing
 			contract_status:  contractSigned ? "Signed" : "Pending",
+			contract_note:    contractSigned ? fieldVal(root, "tp-contract-note") : null,
 			quoted_price:     quotedPrice,
 			est_miles:        optionalNumVal(root, "tp-est-mi"),
 			driving_hours:    optionalNumVal(root, "tp-drive-hr"),
@@ -389,6 +390,7 @@ import { supabase } from "./supabase.js";
 		if (invoicedEl) invoicedEl.checked = !!(trip.invoiced || trip.invoice_number || trip.invoice_status === "Invoiced");
 		const balancePaidEl = root.querySelector("#tp-balance-paid");
 		if (balancePaidEl) balancePaidEl.checked = !!(trip.balance_paid || trip.date_paid);
+		setVal(root, "tp-contract-note", trip.contract_note);
 		setVal(root, "tp-price",    trip.quoted_price);
 		setVal(root, "tp-est-mi",   trip.est_miles);
 		setVal(root, "tp-drive-hr", trip.driving_hours);
@@ -419,6 +421,7 @@ import { supabase } from "./supabase.js";
 			row.className = "rux-trip-panel__payment-row";
 			row.dataset.paymentRow = "";
 			row.innerHTML = `
+				<label class="rux-field__label rux-trip-panel__payment-row-label">Payment ${index + 1}</label>
 				<div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
 					<span class="rux-input-group__prefix">$</span>
 					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
@@ -557,8 +560,14 @@ import { supabase } from "./supabase.js";
 			const assignments = collectAssignments(root);
 			const payments = collectPayments(root);
 
-			if (tripData.start_date && tripData.end_date && tripData.end_date < tripData.start_date) {
+			if (!tripData.start_date || !tripData.end_date) {
+				throw new Error("Start date and end date are required.");
+			}
+			if (tripData.end_date < tripData.start_date) {
 				throw new Error("End date cannot be before start date.");
+			}
+			if (!tripData.destination?.trim()) {
+				throw new Error("Destination is required.");
 			}
 
 			if (currentTripId && hasAssignments(currentAssignments) && assignments.length === 0) {
@@ -663,8 +672,9 @@ import { supabase } from "./supabase.js";
 			}, 1500);
 		} catch (err) {
 			console.error("Save failed:", err);
+			const isValidation = err instanceof Error && !err.status;
 			saveBtn.textContent = "Save failed";
-			if (window.Rux) Rux.toast("Save failed — check your connection and try again.");
+			if (window.Rux) Rux.toast(isValidation ? err.message : "Save failed — check your connection and try again.");
 			setTimeout(() => {
 				saveBtn.innerHTML = '<i data-lucide="save" class="rux-icon"></i> Save';
 				if (window.lucide) lucide.createIcons();
@@ -771,6 +781,7 @@ export function loadTrip(root, itinerary, trip) {
 		trip_contact_2_phone:  trip.trip_contact_2_phone  ?? trip.tripContact2?.phone  ?? null,
 		notes:                 trip.notes ?? null,
 		contract_status:       trip.contract_status ?? null,
+		contract_note:         trip.contract_note ?? null,
 		quoted_price:          trip.quoted_price   ?? trip.quotedPrice    ?? null,
 		est_miles:             trip.est_miles      ?? trip.estimatedMiles ?? null,
 		driving_hours:         trip.driving_hours  ?? null,
