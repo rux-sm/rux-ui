@@ -425,7 +425,7 @@ import { supabase } from "./supabase.js";
 				<div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
 					<span class="rux-input-group__prefix">$</span>
 					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
-					<span class="rux-input-group__suffix"><button class="rux-trip-panel__payment-fill" type="button" data-payment-fill title="Fill remaining balance"><i data-lucide="circle-check" class="rux-icon"></i></button></span>
+					<span class="rux-input-group__suffix"><button class="rux-trip-panel__payment-fill" type="button" data-payment-fill title="Fill remaining balance"><span class="rux-icon">check_circle</span></button></span>
 				</div>
 				<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
 				<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">
@@ -444,7 +444,7 @@ import { supabase } from "./supabase.js";
 			if (payment.method) row.querySelector("[data-payment-method]").value = payment.method;
 			if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
 		}
-		if (window.lucide) lucide.createIcons();
+		
 	}
 
 	function populateAssignments(root, assignments) {
@@ -576,8 +576,8 @@ import { supabase } from "./supabase.js";
 
 			const conflict = await findAssignmentConflict(tripData, assignments);
 			if (conflict && !confirm(`Conflict detected: ${conflict.label}. Save anyway?`)) {
-				saveBtn.innerHTML = '<i data-lucide="save" class="rux-icon"></i> Save';
-				if (window.lucide) lucide.createIcons();
+				saveBtn.innerHTML = '<span class="rux-icon">save</span> Save';
+				
 				return;
 			}
 
@@ -667,8 +667,8 @@ import { supabase } from "./supabase.js";
 			if (window.Rux) Rux.toast("Trip saved");
 			clearForm(root, itinerary);
 			setTimeout(() => {
-				saveBtn.innerHTML = '<i data-lucide="save" class="rux-icon"></i> Save';
-				if (window.lucide) lucide.createIcons();
+				saveBtn.innerHTML = '<span class="rux-icon">save</span> Save';
+				
 			}, 1500);
 		} catch (err) {
 			console.error("Save failed:", err);
@@ -676,8 +676,8 @@ import { supabase } from "./supabase.js";
 			saveBtn.textContent = "Save failed";
 			if (window.Rux) Rux.toast(isValidation ? err.message : "Save failed — check your connection and try again.");
 			setTimeout(() => {
-				saveBtn.innerHTML = '<i data-lucide="save" class="rux-icon"></i> Save';
-				if (window.lucide) lucide.createIcons();
+				saveBtn.innerHTML = '<span class="rux-icon">save</span> Save';
+				
 			}, 2000);
 		} finally {
 			saveBtn.disabled = false;

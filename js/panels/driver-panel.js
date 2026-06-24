@@ -136,7 +136,7 @@
       head: `<th scope="col" data-col="order" class="col-order" data-sort="order">#</th>`,
       cell: d => `<td data-col="order" class="col-order driver-app__order">${d.sort_order ?? "—"}</td>` },
     { key: "status",           label: "Status",            defaultOn: true,
-      head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>`,
+      head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
       cell: d => { const s = statusMeta(d.status); return `<td data-col="status"><span class="rux-badge rux-badge--dot ${s.cls}">${s.label}</span></td>`; } },
     { key: "phone",            label: "Phone",             defaultOn: true,
       head: `<th scope="col" data-col="phone">Phone</th>`,
@@ -166,7 +166,7 @@
       head: `<th scope="col" data-col="endorsements">Endorsements</th>`,
       cell: d => `<td data-col="endorsements">${d.endorsements || "—"}</td>` },
     { key: "employment-type",  label: "Employment",        defaultOn: false,
-      head: `<th scope="col" data-col="employment-type" data-col-filter="employment-type" data-sort="employment-type">Employment <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>`,
+      head: `<th scope="col" data-col="employment-type" data-col-filter="employment-type" data-sort="employment-type">Employment <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
       cell: d => `<td data-col="employment-type">${d.employment_type || "—"}</td>` },
     { key: "license-number",   label: "License #",         defaultOn: false,
       head: `<th scope="col" data-col="license-number">License #</th>`,
@@ -203,7 +203,7 @@
     theadRow.innerHTML =
       `<th scope="col" data-sort="driver">Driver</th>` +
       activeCols.map(c => c.head).join("");
-    if (window.lucide) lucide.createIcons({ nodes: [...theadRow.querySelectorAll("[data-lucide]")] });
+    
     updateFilterHeaders(table);
     updateSortHeaders(table);
 
@@ -476,8 +476,8 @@
     document.getElementById("dp-driver-id").textContent = "";
     const avatar = document.getElementById("dp-avatar");
     avatar.textContent = "";
-    avatar.innerHTML   = '<i data-lucide="user" class="rux-icon"></i>';
-    if (window.lucide) lucide.createIcons({ nodes: [avatar] });
+    avatar.innerHTML   = '<span class="rux-icon">person</span>';
+    
 
     panelEl.querySelectorAll(".rux-driver-panel__pane input, .rux-driver-panel__pane textarea")
       .forEach(f => { f.value = ""; });
@@ -570,7 +570,7 @@
 
         const handle = document.createElement("span");
         handle.className = "rux-col-picker__handle";
-        handle.innerHTML = `<i data-lucide="grip-vertical" class="rux-icon rux-icon--sm"></i>`;
+        handle.innerHTML = `<span class="rux-icon rux-icon--sm">drag_indicator</span>`;
 
         const cb = document.createElement("input");
         cb.type    = "checkbox";
@@ -615,14 +615,14 @@
           const [item]  = colConfig.splice(fromIdx, 1);
           colConfig.splice(toIdx, 0, item);
           renderPickerRows();
-          if (window.lucide) lucide.createIcons({ nodes: [...list.querySelectorAll(".rux-col-picker__handle")] });
+          
           renderRows(getSortedDrivers());
           await saveColConfig();
         });
 
         list.appendChild(row);
       });
-      if (window.lucide) lucide.createIcons({ nodes: [...list.querySelectorAll(".rux-col-picker__handle")] });
+      
     }
 
     renderPickerRows();
@@ -923,5 +923,5 @@
 
   // ── Lucide ────────────────────────────────────────────────────────────────
 
-  if (document.readyState !== "loading" && window.lucide) lucide.createIcons();
+  
 })();

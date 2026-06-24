@@ -15,12 +15,12 @@
   /* ── Icon catalogue (curated Lucide icon names) ────────────────────────── */
 
   const ICON_OPTIONS = [
-    "bed",           "users",         "accessibility", "building",      "credit-card",
-    "wifi",          "tv",            "coffee",        "utensils",      "luggage",
-    "music",         "baby",          "camera",        "fuel",          "wrench",
-    "shield",        "bandage",       "star",          "zap",           "snowflake",
-    "thermometer",   "volume-2",      "mic",           "monitor",       "map-pin",
-    "clock",         "flag",          "key",           "briefcase",     "package",
+    "airline_seat_flat", "groups",    "accessible",    "apartment",     "credit_card",
+    "wifi",          "tv",            "coffee",        "restaurant",    "luggage",
+    "music_note",    "child_care",    "photo_camera",  "local_gas_station", "build",
+    "shield",        "healing",       "star",          "bolt",          "ac_unit",
+    "thermostat",    "volume_up",     "mic",           "monitor",       "location_on",
+    "schedule",      "flag",          "key",           "work",          "inventory_2",
   ];
 
   /* ── DOM refs ──────────────────────────────────────────────────────────── */
@@ -38,7 +38,7 @@
   if (!listEl) return; // requirements panel not in DOM
 
   let iconTargetId  = null; // req.id or "new"
-  let newIcon       = "tag";
+  let newIcon       = "label";
 
   /* ── Helpers ───────────────────────────────────────────────────────────── */
 
@@ -69,10 +69,10 @@
   pickerEl.innerHTML = ICON_OPTIONS
     .map(icon =>
       `<button class="req-icon-option" type="button" data-icon="${icon}" title="${icon}">
-        <i data-lucide="${icon}" class="rux-icon"></i>
+        <span class="rux-icon">${icon}</span>
       </button>`
     ).join("");
-  if (window.lucide) lucide.createIcons({ el: pickerEl });
+  
 
   function openPicker(triggerEl, targetId) {
     iconTargetId = targetId;
@@ -117,7 +117,7 @@
 
   function iconBtnHtml(icon, id) {
     return `<button class="req-icon-btn" type="button" data-icon-for="${escHtml(id)}" title="Change icon">
-      <i data-lucide="${escHtml(icon)}" class="rux-icon"></i>
+      <span class="rux-icon">${escHtml(icon)}</span>
     </button>`;
   }
 
@@ -135,7 +135,7 @@
       </label>
       <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" type="button"
               data-req-delete="${escHtml(req.id)}" aria-label="Delete ${escHtml(req.label)}">
-        <i data-lucide="trash-2" class="rux-icon"></i>
+        <span class="rux-icon">delete</span>
       </button>
     </div>`;
   }
@@ -154,7 +154,7 @@
       listEl.innerHTML = `<p class="settings-req-empty">No requirements yet. Add one below.</p>`;
     } else {
       listEl.innerHTML = sectionHtml("Vehicle", vehicle) + sectionHtml("Driver", driver);
-      if (window.lucide) lucide.createIcons({ el: listEl });
+      
     }
 
     // Wire icon buttons
@@ -197,15 +197,9 @@
   /* ── Add form ──────────────────────────────────────────────────────────── */
 
   function updateNewIconBtn(icon) {
-    const svg = newIconBtn.querySelector("svg[data-lucide]");
-    const i   = newIconBtn.querySelector("i[data-lucide]");
-    const el  = svg ?? i;
+    const el = newIconBtn.querySelector(".rux-icon");
     if (!el) return;
-    const newI = document.createElement("i");
-    newI.dataset.lucide = icon;
-    newI.className = "rux-icon";
-    el.replaceWith(newI);
-    if (window.lucide) lucide.createIcons({ el: newIconBtn });
+    el.textContent = icon;
   }
 
   addBtn?.addEventListener("click", () => {

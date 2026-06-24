@@ -67,6 +67,8 @@
 	overflow: auto;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-bg-level-1);
+	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
+
 	border-radius: var(--rux-radius-md);
 }
 
@@ -196,6 +198,7 @@
 	position: relative;
 	grid-column: span var(--rux-scheduler-days, 7);
 	min-height: var(--_row-height);
+	overflow: hidden;
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }

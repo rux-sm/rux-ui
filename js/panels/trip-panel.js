@@ -18,11 +18,11 @@
 
 /* Static fallback used before window.appRequirements loads. */
 const DEFAULT_REQUIREMENTS = [
-	{ id: "sleeper",  label: "Sleeper",   icon: "bed",           type: "vehicle", active: true },
-	{ id: "pax56",    label: "56 pax",    icon: "users",         type: "vehicle", active: true },
-	{ id: "adaLift",  label: "ADA lift",  icon: "accessibility", type: "vehicle", active: true },
-	{ id: "hotel",    label: "Hotel",     icon: "building",      type: "driver",  active: true },
-	{ id: "fuelCard", label: "Fuel card", icon: "credit-card",   type: "driver",  active: true },
+	{ id: "sleeper",  label: "Sleeper",   icon: "airline_seat_flat", type: "vehicle", active: true },
+	{ id: "pax56",    label: "56 pax",    icon: "tatami_seat",    type: "vehicle", active: true },
+	{ id: "adaLift",  label: "ADA lift",  icon: "accessible",    type: "vehicle", active: true },
+	{ id: "hotel",    label: "Hotel",     icon: "apartment",     type: "driver",  active: true },
+	{ id: "fuelCard", label: "Fuel card", icon: "local_gas_station", type: "driver",  active: true },
 ];
 
 function activeReqsByType(type) {
@@ -44,12 +44,21 @@ function escHtml(value) {
 
 /* ── Renderers ──────────────────────────────────────────────────────────── */
 
+const ICON_MAP = {
+	"bed": "airline_seat_flat", "users": "tatami_seat", "accessibility": "accessible",
+	"building": "apartment", "credit-card": "credit_card", "fuel": "local_gas_station",
+	"wifi": "wifi", "zap": "power", "hotel": "apartment", "wrench": "build",
+	"tag": "label", "star": "star", "key": "key", "briefcase": "work",
+	"user-plus": "person_add", "user": "person",
+};
+function mapIcon(name) { return ICON_MAP[name] || name; }
+
 function renderRequirements(container, items, { block = true } = {}) {
 	container.innerHTML = items
 		.map(
 			(req) =>
 				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.id ?? req.key)}" title="${escHtml(req.label)}">
-					<i data-lucide="${escHtml(req.icon)}" class="rux-icon"></i><span class="rux-btn-label"> ${escHtml(req.label)}</span>
+					<span class="rux-icon">${escHtml(mapIcon(req.icon))}</span><span class="rux-btn-label"> ${escHtml(req.label)}</span>
 				</button>`,
 		)
 		.join("");
@@ -81,15 +90,15 @@ function buildBusGroup(idx, buses, drivers) {
 	const driverOpts = driverOptsHtml(drivers);
 
 	const roleRows = [
-		{ role: "coDriver", icon: "user-plus", title: "Co-driver" },
-		{ role: "relief1", icon: "refresh-ccw", title: "Relief 1 — start" },
-		{ role: "relief2", icon: "refresh-cw", title: "Relief 2 — end" },
+		{ role: "coDriver", icon: "person_add", title: "Co-driver" },
+		{ role: "relief1", icon: "last_page", title: "Relief 1 — start" },
+		{ role: "relief2", icon: "first_page", title: "Relief 2 — end" },
 	]
 		.map(
 			(r) => `
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <span class="rux-trip-panel__role-label" title="${escHtml(r.title)}">
-        <i data-lucide="${escHtml(r.icon)}" class="rux-icon"></i>
+        <span class="rux-icon">${escHtml(mapIcon(r.icon))}</span>
       </span>
       <select class="rux-select" name="buses[${idx}].${escHtml(r.role)}.name">${driverOpts}</select>
       <div class="rux-input-group rux-input-group--prefix">
@@ -110,19 +119,19 @@ function buildBusGroup(idx, buses, drivers) {
         ${busOpts}
       </select>
       <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="coDriver" title="Co-driver">
-        <i data-lucide="user-plus" class="rux-icon"></i>
+        <span class="rux-icon">person_add</span>
       </button>
       <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief1" title="Relief 1 — start">
-        <i data-lucide="chevrons-right" class="rux-icon"></i>
+        <span class="rux-icon">last_page</span>
       </button>
       <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief2" title="Relief 2 — end">
-        <i data-lucide="chevrons-left" class="rux-icon"></i>
+        <span class="rux-icon">first_page</span>
       </button>
     </div>
     <div class="rux-trip-panel__driver-rows">
       <div class="rux-trip-panel__driver-row">
         <span class="rux-trip-panel__role-label" title="Driver">
-          <i data-lucide="user" class="rux-icon"></i>
+          <span class="rux-icon">person</span>
         </span>
         <select class="rux-select" name="buses[${idx}].driver.name">${driverOpts}</select>
         <div class="rux-input-group rux-input-group--prefix">
@@ -142,7 +151,7 @@ function renderBusGroups(container, n, buses, drivers) {
 		for (let i = current; i < n; i++) {
 			container.appendChild(buildBusGroup(i, buses, drivers));
 		}
-		if (window.lucide) lucide.createIcons();
+		
 	} else if (n < current) {
 		// Remove from the end
 		const groups = container.querySelectorAll(".rux-trip-panel__bus-group");
@@ -234,7 +243,7 @@ function initBillingWorkflow(root) {
 			<div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
 				<span class="rux-input-group__prefix">$</span>
 				<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
-				<span class="rux-input-group__suffix"><button class="rux-trip-panel__payment-fill" type="button" data-payment-fill title="Fill remaining balance"><i data-lucide="circle-check" class="rux-icon"></i></button></span>
+				<span class="rux-input-group__suffix"><button class="rux-trip-panel__payment-fill" type="button" data-payment-fill title="Fill remaining balance"><span class="rux-icon">check_circle</span></button></span>
 			</div>
 			<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
 			<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">${paymentMethodOptions()}</select>
@@ -378,7 +387,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (dateInput) dateInput.value = localIsoDate();
 		paymentRows.dataset.paymentsTouched = "true";
 		updatePaymentButtons();
-		if (window.lucide) lucide.createIcons();
+		
 		newRow?.querySelector("[data-payment-amount]")?.focus();
 	});
 	root.addEventListener("rux:payments-loaded", (event) => {
@@ -397,7 +406,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 			if (methodEl && payment.method) methodEl.value = payment.method;
 			if (refEl && payment.ref) refEl.value = payment.ref;
 		}
-		if (window.lucide) lucide.createIcons();
+		
 		updatePaymentButtons();
 		sync();
 	});
@@ -492,7 +501,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	if (vehicleReqContainer || driverNeedsContainer) {
 		if (vehicleReqContainer) renderRequirements(vehicleReqContainer, activeReqsByType("vehicle"));
 		if (driverNeedsContainer) renderRequirements(driverNeedsContainer, activeReqsByType("driver"), { block: false });
-		if (window.lucide) lucide.createIcons();
+		
 	}
 
 	/* ── Documents ────────────────────────────────────────────────────────── */
@@ -506,42 +515,55 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	const docList = root.querySelector("#tp-doc-list");
 
 	if (docUploadBtn && docFileInput) {
-		docUploadBtn.addEventListener("click", () => docFileInput.click());
+		docLabelSel?.addEventListener("change", () => {
+			docUploadBtn.disabled = !docLabelSel.value;
+		});
+
+		docUploadBtn.addEventListener("click", () => {
+			if (!docLabelSel?.value) return;
+			docFileInput.click();
+		});
 
 		docFileInput.addEventListener("change", () => {
-			if (!docFileInput.files.length) return;
-			docLabelSel.value = "";
-			docLabelPick.hidden = false;
-		});
-
-		docCancelBtn?.addEventListener("click", () => {
-			docLabelPick.hidden = true;
-			docFileInput.value = "";
-		});
-
-		docAddBtn?.addEventListener("click", () => {
 			const file = docFileInput.files[0];
-			const label = docLabelSel.value;
+			const label = docLabelSel?.value;
 			if (!file || !label) return;
 
 			const li = document.createElement("li");
 			li.className = "rux-trip-panel__doc-row";
 			li.innerHTML = `
-        <span class="rux-trip-panel__doc-chip">${escHtml(label)}</span>
-        <span class="rux-trip-panel__doc-name">${escHtml(file.name)}</span>
-        <button class="rux-button rux-button--ghost rux-button--sm" type="button">Open</button>
-        <button class="rux-button rux-button--ghost rux-button--sm rux-button--icon" type="button" aria-label="Delete">
-          <i data-lucide="trash-2" class="rux-icon"></i>
-        </button>`;
-			li.querySelector('[aria-label="Delete"]').addEventListener("click", () => li.remove());
+				<button class="rux-button rux-trip-panel__doc-btn" type="button" data-doc-open title="${escHtml(file.name)}">
+					<span class="rux-icon">description</span>
+					<span>${escHtml(label)}</span>
+				</button>
+				<button class="rux-button rux-button--icon" type="button" data-doc-replace aria-label="Replace">
+					<span class="rux-icon">swap_horiz</span>
+				</button>
+				<button class="rux-button rux-button--danger rux-button--icon" type="button" aria-label="Delete">
+					<span class="rux-icon">delete</span>
+				</button>`;
 			docList?.appendChild(li);
-			if (window.lucide) lucide.createIcons();
-
-			docLabelPick.hidden = true;
+			docLabelSel.value = "";
+			docUploadBtn.disabled = true;
 			docFileInput.value = "";
 		});
 
 		docList?.addEventListener("click", (e) => {
+			const replaceBtn = e.target.closest("[data-doc-replace]");
+			if (replaceBtn) {
+				const row = replaceBtn.closest(".rux-trip-panel__doc-row");
+				const input = document.createElement("input");
+				input.type = "file";
+				input.accept = "*/*";
+				input.addEventListener("change", () => {
+					if (input.files[0]) {
+						const openBtn = row.querySelector("[data-doc-open]");
+						if (openBtn) openBtn.title = input.files[0].name;
+					}
+				});
+				input.click();
+				return;
+			}
 			const del = e.target.closest('[aria-label="Delete"]');
 			if (del) del.closest(".rux-trip-panel__doc-row")?.remove();
 		});
@@ -613,7 +635,7 @@ function refreshRequirements(root) {
 	const dEl = root.querySelector("#tp-driver-needs");
 	if (vEl) renderRequirements(vEl, activeReqsByType("vehicle"));
 	if (dEl) renderRequirements(dEl, activeReqsByType("driver"), { block: false });
-	if (window.lucide) lucide.createIcons();
+	
 }
 
 window.TripPanel = { init: initTripPanel, initTabs: initTripTabs, updateOptions: updateTripOptions, refreshRequirements };

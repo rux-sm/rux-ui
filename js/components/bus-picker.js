@@ -88,7 +88,7 @@ function renderList(trip, buses, currentTrips) {
         swapBtn.type = "button";
         swapBtn.className = "rux-button rux-button--ghost rux-button--icon rux-bus-picker__swap";
         swapBtn.setAttribute("aria-label", `Swap with bus ${bus.number}`);
-        swapBtn.innerHTML = `<i data-lucide="arrow-left-right" class="rux-icon" aria-hidden="true"></i>`;
+        swapBtn.innerHTML = `<span class="rux-icon" aria-hidden="true">swap_horiz</span>`;
         swapBtn.addEventListener("click", (e) => {
           e.stopPropagation();
           hide();
@@ -101,7 +101,7 @@ function renderList(trip, buses, currentTrips) {
     listEl.appendChild(row);
   });
 
-  if (window.lucide) lucide.createIcons({ nodes: [listEl] });
+  
 
   if (currentRow) {
     requestAnimationFrame(() => currentRow.scrollIntoView({ block: "center" }));

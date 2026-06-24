@@ -64,15 +64,15 @@
   const TYPE_ICONS = {
     Motorcoach: { customClass: "rux-icon--bus-side" },
     Sprinter:  { customClass: "rux-icon--van" },
-    Car:       { lucide: "car" },
-    Truck:     { lucide: "truck" },
+    Car:       { material: "directions_car" },
+    Truck:     { material: "local_shipping" },
   };
 
   function vehicleIconHtml(type) {
     const icon = TYPE_ICONS[type] || TYPE_ICONS.Motorcoach;
     return icon.customClass
       ? `<span class="rux-icon ${icon.customClass}"></span>`
-      : `<i data-lucide="${icon.lucide}" class="rux-icon"></i>`;
+      : `<span class="rux-icon">${icon.material}</span>`;
   }
 
   function updateTypeIcon() {
@@ -187,14 +187,14 @@
       head: `<th scope="col" data-col="order" class="col-order" data-sort="order">#</th>`,
       cell: b => `<td data-col="order" class="col-order fleet-app__order">${b.sort_order ?? "—"}</td>` },
     { key: "status",           label: "Status",           defaultOn: true,
-      head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>`,
+      head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
       cell: b => { const s = statusMeta(b.status); return `<td data-col="status"><span class="rux-badge rux-badge--dot ${s.cls}">${s.label}</span></td>`; } },
     { key: "type",             label: "Type",             defaultOn: false,
       head: `<th scope="col" data-col="type" data-sort="type">Type</th>`,
       cell: b => `<td data-col="type">${b.type || "—"}</td>` },
     { key: "equipment",        label: "Equipment",        defaultOn: true,
       head: `<th scope="col" data-col="equipment">Equipment</th>`,
-      cell: b => `<td data-col="equipment"><div class="fleet-app__equipment-cell">${b.sleeper ? '<i data-lucide="bed" class="rux-icon fleet-app__equip-icon" title="Sleeper"></i>' : ''}${b.ada_lift ? '<i data-lucide="accessibility" class="rux-icon fleet-app__equip-icon" title="ADA lift"></i>' : ''}</div></td>` },
+      cell: b => `<td data-col="equipment"><div class="fleet-app__equipment-cell">${b.sleeper ? '<span class="rux-icon fleet-app__equip-icon" title="Sleeper">airline_seat_flat</span>' : ''}${b.ada_lift ? '<span class="rux-icon fleet-app__equip-icon" title="ADA lift">accessible</span>' : ''}</div></td>` },
     { key: "capacity",         label: "Capacity",         defaultOn: true,
       head: `<th scope="col" data-col="capacity" data-sort="capacity">Capacity</th>`,
       cell: b => `<td data-col="capacity">${b.capacity ?? "—"}</td>` },
@@ -257,7 +257,7 @@
     theadRow.innerHTML =
       `<th scope="col" data-sort="number">Vehicle</th>` +
       activeCols.map(c => c.head).join("");
-    if (window.lucide) lucide.createIcons({ nodes: [...theadRow.querySelectorAll("[data-lucide]")] });
+    
     updateFilterHeaders(table);
     updateSortHeaders(table);
 
@@ -348,7 +348,7 @@
       tbody.appendChild(tr);
     });
 
-    if (window.lucide) lucide.createIcons({ nodes: [...tbody.querySelectorAll(".fleet-app__avatar, .fleet-app__equip-icon")] });
+    
   }
 
   function selectRow(tr, b) {
@@ -589,7 +589,7 @@
 
         const handle = document.createElement("span");
         handle.className = "rux-col-picker__handle";
-        handle.innerHTML = `<i data-lucide="grip-vertical" class="rux-icon rux-icon--sm"></i>`;
+        handle.innerHTML = `<span class="rux-icon rux-icon--sm">drag_indicator</span>`;
 
         const cb = document.createElement("input");
         cb.type    = "checkbox";
@@ -634,14 +634,14 @@
           const [item]  = colConfig.splice(fromIdx, 1);
           colConfig.splice(toIdx, 0, item);
           renderPickerRows();
-          if (window.lucide) lucide.createIcons({ nodes: [...list.querySelectorAll(".rux-col-picker__handle")] });
+          
           renderRows(getSortedBuses());
           await saveColConfig();
         });
 
         list.appendChild(row);
       });
-      if (window.lucide) lucide.createIcons({ nodes: [...list.querySelectorAll(".rux-col-picker__handle")] });
+      
     }
 
     renderPickerRows();
@@ -924,5 +924,5 @@
     tbody.innerHTML = `<tr><td colspan="6" class="fleet-app__empty" style="color:var(--rux-danger)">Init error: ${err?.message ?? err}</td></tr>`;
   });
 
-  if (document.readyState !== "loading" && window.lucide) lucide.createIcons();
+  
 })();

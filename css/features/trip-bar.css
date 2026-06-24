@@ -66,8 +66,8 @@
 	--_tone: var(--rux-accent);
 	--_tone-ring: var(--rux-ring-focus);
 	--_surface: var(--rux-trip-bar-bg, oklch(from var(--_tone) 65% 0.28 h));
-	--_surface-hover: var(--rux-trip-bar-bg-hover, oklch(from var(--_tone) 63% 0.24 h / 45%));
-	--_surface-active: var(--rux-trip-bar-bg-active, oklch(from var(--_tone) 66% 0.24 h / 52%));
+	--_surface-hover: var(--rux-trip-bar-bg-hover, oklch(from var(--_tone) 58% 0.24 h));
+	--_surface-active: var(--rux-trip-bar-bg-active, oklch(from var(--_tone) 55% 0.24 h));
 
 	position: relative;
 	display: flex;
@@ -76,7 +76,6 @@
 	box-sizing: border-box;
 	container-type: inline-size;
 	background-color: var(--_surface);
-	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-md);
 	box-shadow: var(--rux-shadow-sm);
 	color: var(--rux-fg-on-accent);
@@ -85,7 +84,6 @@
 	transition:
 		height var(--rux-duration-base) var(--rux-ease-out),
 		background-color var(--rux-duration-fast) var(--rux-ease-out),
-		border-color var(--rux-duration-fast) var(--rux-ease-out),
 		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
 }
 

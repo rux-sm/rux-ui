@@ -31,12 +31,12 @@
 	};
 
 	const STATUS_META = {
-		pending:            { label: "Pending",            badgeClass: "rux-badge--danger",    icon: "clock" },
-		contract_signed:    { label: "Contract Signed",    badgeClass: "rux-badge--warning",   icon: "file-pen" },
-		po_received:        { label: "PO Received",        badgeClass: "rux-badge--info",      icon: "receipt" },
-		deposit_received:   { label: "Deposit Received",   badgeClass: "rux-badge--info",      icon: "hand-coins" },
-		paid_full:          { label: "Paid in Full",       badgeClass: "rux-badge--success",   icon: "circle-check" },
-		overpaid:           { label: "Overpaid",           badgeClass: "rux-badge--warning",   icon: "alert-triangle" },
+		pending:            { label: "Pending",            badgeClass: "rux-badge--danger",    icon: "schedule" },
+		contract_signed:    { label: "Contract Signed",    badgeClass: "rux-badge--warning",   icon: "edit_document" },
+		po_received:        { label: "PO Received",        badgeClass: "rux-badge--info",      icon: "receipt_long" },
+		deposit_received:   { label: "Deposit Received",   badgeClass: "rux-badge--info",      icon: "payments" },
+		paid_full:          { label: "Paid in Full",       badgeClass: "rux-badge--success",   icon: "check_circle" },
+		overpaid:           { label: "Overpaid",           badgeClass: "rux-badge--warning",   icon: "warning" },
 	};
 
 	let config = normalizeConfig(DEFAULT_CONFIG);
@@ -159,9 +159,9 @@
 			: "rux-badge--danger";
 		el.className = `rux-badge ${badgeClass} rux-trip-panel__billing-status`;
 		el.innerHTML = meta.icon
-			? `<i data-lucide="${meta.icon}" class="rux-icon rux-icon--sm"></i>${meta.label}`
+			? `<span class="rux-icon rux-icon--sm">${meta.icon}</span>${meta.label}`
 			: meta.label;
-		if (window.lucide) window.lucide.createIcons({ nodes: [el] });
+		
 	}
 
 	/**
@@ -208,8 +208,8 @@
 				const statusKey = WORKFLOW_STATUS_KEY[key];
 				const iconName = statusKey && STATUS_META[statusKey]?.icon;
 				if (iconName) {
-					iconEl.setAttribute("data-lucide", iconName);
-					if (window.lucide) window.lucide.createIcons({ nodes: [iconEl] });
+					iconEl.textContent = iconName;
+					
 				}
 			}
 		});

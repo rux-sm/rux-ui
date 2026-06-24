@@ -49,10 +49,43 @@ function installOutsideDismiss() {
 
 /* ── DOM helpers ────────────────────────────────────────────────────────── */
 
+const ICON_MAP = {
+  "map": "map", "map-pin": "location_on", "map-pin-check": "where_to_vote",
+  "user": "person", "user-plus": "person_add", "search": "search",
+  "info": "info", "receipt": "receipt_long", "files": "folder_open",
+  "x": "close", "plus": "add", "minus": "remove",
+  "arrow-right": "arrow_forward", "arrow-left-right": "swap_horiz",
+  "trash-2": "delete", "upload": "upload", "route": "route",
+  "eraser": "backspace", "save": "save", "file-up": "upload_file",
+  "panel-right-open": "dock_to_right",
+  "calendar-days": "calendar_month", "calendar-search": "event_note", "calendar-x": "event_busy",
+  "list": "list", "list-filter": "filter_list",
+  "chevron-left": "chevron_left", "chevron-right": "chevron_right",
+  "chevrons-left": "first_page", "chevrons-right": "last_page",
+  "wrench": "build", "accessibility": "accessible", "bed": "airline_seat_flat",
+  "car": "directions_car", "truck": "local_shipping",
+  "circle-check": "check_circle", "circle-pause": "pause_circle",
+  "circle-x": "cancel", "circle-alert": "error", "ban": "block",
+  "id-card": "badge", "activity": "monitoring", "columns-3": "view_column",
+  "tag": "label", "rotate-ccw": "undo", "grip-vertical": "drag_indicator",
+  "file-pen": "edit_document", "send": "send",
+  "alert-triangle": "warning",
+  "paperclip": "attach_file",
+  "chevron-down": "keyboard_arrow_down",
+  "hotel": "apartment",
+  "building": "apartment",
+  "credit-card": "credit_card",
+  "users": "tatami_seat",
+  "zap": "power", "bolt": "power",
+  "groups": "tatami_seat",
+  "external-link": "open_in_new",
+  "phone": "phone",
+};
+
 function icon(name, className = "rux-icon") {
-  const el = document.createElement("i");
-  el.setAttribute("data-lucide", name);
+  const el = document.createElement("span");
   el.className = className;
+  el.textContent = ICON_MAP[name] || name;
   return el;
 }
 
@@ -293,7 +326,7 @@ const PENDING_INDICATORS = [
   },
   {
     key: "contact",
-    icon: "user",
+    icon: "phone_enabled",
     label: "Pending contact status",
     check: (trip) => trip.contactStatus !== "received",
   },
@@ -465,11 +498,7 @@ function isSameTripDay(trip) {
 
 /* ── Utilities ──────────────────────────────────────────────────────────── */
 
-function refreshIcons() {
-  window.requestAnimationFrame(() => {
-    window.lucide?.createIcons?.();
-  });
-}
+function refreshIcons() {}
 
 /* ── Factory ────────────────────────────────────────────────────────────── */
 
@@ -504,7 +533,7 @@ export function createTripBar(trip, callbacks = {}) {
   openBtn.className = "rux-button rux-button--primary rux-button--icon";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
-  openBtn.appendChild(icon("external-link"));
+  openBtn.appendChild(icon("add"));
   openBtn.addEventListener("click", (event) => {
     event.stopPropagation();
     (callbacks.onOpenTrip || callbacks.onOpen)?.(trip);
@@ -522,7 +551,7 @@ export function createTripBar(trip, callbacks = {}) {
     button(
       "rux-button rux-button--ghost rux-button--icon",
       "Change bus",
-      "arrow-down-up",
+      "swap_vert",
       () => callbacks.onChangeBus?.(trip),
     ),
     button(
@@ -691,7 +720,7 @@ export function createTripBar(trip, callbacks = {}) {
   expandBtn.type = "button";
   expandBtn.className =
     "rux-button rux-button--ghost rux-button--icon rux-trip-bar__expand";
-  const expandIcon = icon("chevron-down", "rux-icon rux-trip-bar__expand-icon");
+  const expandIcon = icon("keyboard_arrow_down", "rux-icon rux-trip-bar__expand-icon");
   expandBtn.append(expandIcon);
   meta.appendChild(expandBtn);
 

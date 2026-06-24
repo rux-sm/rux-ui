@@ -406,11 +406,11 @@
         <div class="rux-itin__card-actions">
           <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
                   type="button" data-drag-handle aria-label="Drag to reorder">
-            <i data-lucide="grip-vertical" class="rux-icon"></i>
+            <span class="rux-icon">drag_indicator</span>
           </button>
           <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
                   type="button" data-delete-stop aria-label="Remove day break">
-            <i data-lucide="x" class="rux-icon"></i>
+            <span class="rux-icon">close</span>
           </button>
         </div>
       </div>`;
@@ -447,9 +447,9 @@
                <input class="rux-input" type="text" data-field="address" autocomplete="street-address"
                       value="${escHtml(stop.address)}" placeholder="Address" />
                ${isStale
-				? '<i data-lucide="circle-alert" class="rux-icon rux-itin__addr-check rux-itin__addr-check--stale"></i>'
+				? '<span class="rux-icon rux-itin__addr-check rux-itin__addr-check--stale">error</span>'
 				: isVerified
-					? '<i data-lucide="circle-check" class="rux-icon rux-itin__addr-check"></i>'
+					? '<span class="rux-icon rux-itin__addr-check">check_circle</span>'
 					: ""}
              </div>`;
 
@@ -458,11 +458,11 @@
             <div class="rux-itin__card-actions">
               <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
                       type="button" data-drag-handle aria-label="Drag to reorder">
-                <i data-lucide="grip-vertical" class="rux-icon"></i>
+                <span class="rux-icon">drag_indicator</span>
               </button>
               <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
                       type="button" data-delete-stop aria-label="Remove stop">
-                <i data-lucide="x" class="rux-icon"></i>
+                <span class="rux-icon">close</span>
               </button>
             </div>` : "";
 
@@ -555,16 +555,16 @@
 			}
 			return `<div class="rux-itin__gap" data-insert-row>
 				<div class="rux-itin__gap-trigger" data-insert-expand="${idx}" role="button" tabindex="0" aria-label="Insert here">
-					<i data-lucide="plus" class="rux-icon rux-itin__gap-plus"></i>
+					<span class="rux-icon rux-itin__gap-plus">add</span>
 					<div class="rux-itin__insert-actions">
 						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="stop">
-						  <i data-lucide="map-pin" class="rux-icon"></i><span>Stop</span>
+						  <span class="rux-icon">location_on</span><span>Stop</span>
 						</button>
 						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="sleeper">
-						  <i data-lucide="bed" class="rux-icon"></i><span>Sleep</span>
+						  <span class="rux-icon">hotel</span><span>Sleep</span>
 						</button>
 						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="day">
-						  <i data-lucide="calendar-x" class="rux-icon"></i><span>End day</span>
+						  <span class="rux-icon">event_busy</span><span>End day</span>
 						</button>
 					</div>
 					${dwellLabel}
@@ -581,7 +581,7 @@
 						return html + gapRow;
 					})
 					.join("") + renderFinalDaySummary(stops);
-			if (window.lucide) lucide.createIcons();
+			
 			syncRouteButton();
 		}
 

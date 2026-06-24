@@ -120,10 +120,11 @@
 	gap: 3px;
 }
 
-.rux-button--sm > :where(svg, .rux-icon, [data-lucide]),
-.rux-button--xs > :where(svg, .rux-icon, [data-lucide]) {
+.rux-button--sm > :where(.rux-icon),
+.rux-button--xs > :where(.rux-icon) {
 	width: var(--rux-icon-sm);
 	height: var(--rux-icon-sm);
+	font-size: var(--rux-icon-sm);
 }
 
 /* — block (full-width) — */
@@ -143,9 +144,10 @@
 	line-height: 1;
 	letter-spacing: 0;
 }
-.rux-button--tab > :where(svg, .rux-icon, [data-lucide]) {
+.rux-button--tab > :where(.rux-icon) {
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);
+	font-size: var(--rux-icon-md);
 }
 .rux-button--tab > .rux-trip-panel__tab-label,
 .rux-button--tab > [class*="__tab-label"],
@@ -158,11 +160,11 @@
 
 /* — icon inside button — */
 
-.rux-button > :where(svg, .rux-icon, [data-lucide]) {
+.rux-button > :where(.rux-icon) {
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);
+	font-size: var(--rux-icon-md);
 	flex: none;
-	stroke-width: 2;
 	pointer-events: none;
 }
 

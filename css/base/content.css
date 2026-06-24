@@ -6,7 +6,7 @@
 
 .rux-card {
   background: var(--rux-bg-elevated);
-  border: var(--rux-border-width) solid transparent;
+  border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   overflow: hidden;
 }

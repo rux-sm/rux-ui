@@ -31,15 +31,31 @@
 /* — icons — */
 
 .rux-icon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: var(--rux-icon-md);
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'liga';
+  flex: none;
+  vertical-align: middle;
   width: var(--rux-icon-md);
   height: var(--rux-icon-md);
-  flex: none;
-  stroke-width: 2;
-  vertical-align: middle;
+  overflow: hidden;
 }
-.rux-icon--sm { width: var(--rux-icon-sm); height: var(--rux-icon-sm); }
-.rux-icon--lg { width: var(--rux-icon-lg); height: var(--rux-icon-lg); }
-.rux-icon--xl { width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
+.rux-icon--sm { font-size: var(--rux-icon-sm); width: var(--rux-icon-sm); height: var(--rux-icon-sm); }
+.rux-icon--lg { font-size: var(--rux-icon-lg); width: var(--rux-icon-lg); height: var(--rux-icon-lg); }
+.rux-icon--xl { font-size: var(--rux-icon-xl); width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
 
 .rux-icon--bus-side {
   display: inline-block;

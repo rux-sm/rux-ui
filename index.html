@@ -18,10 +18,7 @@
     <link rel="stylesheet" href="./css/features/comp-trips-app.css" />
     <link rel="stylesheet" href="./css/features/bus-picker.css" />
     <link rel="stylesheet" href="./css/features/search-modal.css" />
-    <script
-      src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"
-      defer
-    ></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
     <style>
       /* Module wrapper — each module fills the full body area */
       .scheduler-app__module {
@@ -58,7 +55,7 @@
               type="button"
               data-module="trips"
             >
-              <i data-lucide="map" class="rux-icon"></i>
+              <span class="rux-icon">map</span>
               Trips
             </button>
 
@@ -76,7 +73,7 @@
               type="button"
               data-module="drivers"
             >
-              <i data-lucide="user" class="rux-icon"></i>
+              <span class="rux-icon">person</span>
               Drivers
             </button>
 
@@ -101,7 +98,7 @@
               id="search-modal-btn"
               aria-label="Search"
             >
-              <i data-lucide="search" class="rux-icon"></i>
+              <span class="rux-icon">search</span>
               Search
             </button>
 
@@ -130,14 +127,13 @@
             <aside class="rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
               <nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
                 <div data-trip-tabs>
-                  <button class="rux-button rux-button--toggle" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><i data-lucide="info" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Info</span></button>
-                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><i data-lucide="receipt" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Bill</span></button>
-                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-icon rux-trip-panel__route-icon" aria-hidden="true"></span><span class="rux-trip-panel__tab-label">Route</span></button>
-                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon rux-trip-panel__fleet-icon" aria-hidden="true"></span><span class="rux-trip-panel__tab-label">Fleet</span></button>
-                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-docs"      aria-label="Docs"  title="Docs"><i data-lucide="files" class="rux-icon"></i><span class="rux-trip-panel__tab-label">Docs</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-trip-panel__tab-label">Info</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-trip-panel__tab-label">Bill</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-trip-panel__tab-label">Route</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-trip-panel__tab-label">Fleet</span></button>
                 </div>
                 <button class="rux-button rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
-                  <i data-lucide="x" class="rux-icon"></i>
+                  <span class="rux-icon">close</span>
                 </button>
               </nav>
               <div class="rux-trip-panel__body">
@@ -163,14 +159,42 @@
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" placeholder="Operational notes…" /></div>
                   </div>
                   <div class="rux-card">
+                    <p class="rux-trip-panel__section-label">Trip Contacts</p>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-trip-name">Name</label><input class="rux-input" id="tp-trip-name" name="tripContact.name" type="text" placeholder="On-site contact" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-trip-phone">Phone</label><input class="rux-input" id="tp-trip-phone" name="tripContact.phone" type="tel" /></div>
+                    </div>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-trip2-name">Name</label><input class="rux-input" id="tp-trip2-name" name="tripContact2.name" type="text" placeholder="Secondary contact" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-trip2-phone">Phone</label><input class="rux-input" id="tp-trip2-phone" name="tripContact2.phone" type="tel" /></div>
+                    </div>
+                  </div>
+                  <div class="rux-card">
                     <div class="rux-trip-panel__section-head">
                       <p class="rux-trip-panel__section-label">Trip Requirements</p>
                     </div>
                     <div class="rux-trip-panel__requirements-grid">
-                      <button class="rux-button rux-button--toggle" id="tp-one-way" type="button" aria-pressed="false" data-rux-toggle-button title="One way trip"><i data-lucide="arrow-right" class="rux-icon"></i><span class="rux-btn-label">One way</span></button>
+                      <button class="rux-button rux-button--toggle" id="tp-one-way" type="button" aria-pressed="false" data-rux-toggle-button title="One way trip"><span class="rux-icon">arrow_forward</span><span class="rux-btn-label">One way</span></button>
                       <div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
                       <div class="rux-cluster" id="tp-driver-needs"></div>
                     </div>
+                  </div>
+                  <div class="rux-card">
+                    <p class="rux-trip-panel__section-label">Documents</p>
+                    <div class="rux-trip-panel__doc-upload">
+                      <select class="rux-select" id="tp-doc-label-select">
+                        <option value="" disabled selected>Document type…</option>
+                        <option value="Quote">Quote</option>
+                        <option value="PO">Purchase Order</option>
+                        <option value="Itinerary">Itinerary</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Permit">Permit</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      <button class="rux-button" id="tp-doc-upload-btn" type="button" disabled><span class="rux-icon">upload</span> Upload</button>
+                      <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
+                    </div>
+                    <ul class="rux-trip-panel__doc-list" id="tp-doc-list"></ul>
                   </div>
                 </div>
                 <!-- Billing -->
@@ -232,8 +256,8 @@
                     <p class="rux-trip-panel__section-label">Payments</p>
                     <div class="rux-trip-panel__payment-rows" id="tp-payment-rows"></div>
                     <div class="rux-trip-panel__payment-actions">
-                      <button class="rux-button rux-button--danger" type="button" data-payment-remove disabled><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label">Delete Payment</span></button>
-                      <button class="rux-button" type="button" data-payment-add><i data-lucide="plus" class="rux-icon"></i><span class="rux-btn-label">Add Payment</span></button>
+                      <button class="rux-button rux-button--danger" type="button" data-payment-remove disabled><span class="rux-icon">delete</span><span class="rux-btn-label">Delete Payment</span></button>
+                      <button class="rux-button" type="button" data-payment-add><span class="rux-icon">add</span><span class="rux-btn-label">Add Payment</span></button>
                     </div>
                   </div>
                 </div>
@@ -242,8 +266,8 @@
                   <div class="rux-itin" id="tp-itin">
                     <div class="rux-itin__summary" id="tp-itin-summary">
                       <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Itinerary</p></div>
-                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-import-btn" title="Import from JSON" aria-label="Import from JSON"><i data-lucide="upload" class="rux-icon"></i></button>
-                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Recalculate route"><i data-lucide="route" class="rux-icon"></i></button>
+                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-import-btn" title="Import from JSON" aria-label="Import from JSON"><span class="rux-icon">upload</span></button>
+                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Recalculate route"><span class="rux-icon">route</span></button>
                     </div>
                     <div class="rux-itin__stops" id="tp-itin-stops"></div>
                   </div>
@@ -253,40 +277,18 @@
                   <div class="rux-trip-panel__fleet-count-card">
                     <span class="rux-trip-panel__fleet-count-label" id="tp-buses-label">Buses Needed</span>
                     <div class="rux-trip-panel__number-picker" role="group" aria-labelledby="tp-buses-label">
-                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-dec aria-label="Fewer buses"><i data-lucide="minus" class="rux-icon"></i></button>
+                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-dec aria-label="Fewer buses"><span class="rux-icon">remove</span></button>
                       <input class="rux-input rux-trip-panel__number-input" id="tp-buses" name="busesNeeded" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" aria-labelledby="tp-buses-label" />
-                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-inc aria-label="More buses"><i data-lucide="plus" class="rux-icon"></i></button>
+                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-inc aria-label="More buses"><span class="rux-icon">add</span></button>
                     </div>
                   </div>
                   <div class="rux-trip-panel__bus-groups" id="tp-bus-groups"></div>
                 </div>
-                <!-- Docs -->
-                <div id="pane-docs" class="rux-trip-panel__pane" role="tabpanel" hidden>
-                  <div class="rux-trip-panel__doc-upload">
-                    <button class="rux-button" id="tp-doc-upload-btn" type="button"><i data-lucide="upload" class="rux-icon"></i> Upload</button>
-                    <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
-                    <div class="rux-trip-panel__doc-label-pick" id="tp-doc-label-pick" hidden>
-                      <select class="rux-select" id="tp-doc-label-select"><option value="" disabled selected>Label…</option><option value="Quote">Quote</option><option value="PO">PO</option><option value="Itinerary">Itinerary</option><option value="Contract">Contract</option><option value="Permit">Permit</option><option value="Other">Other</option></select>
-                      <button class="rux-button rux-button--primary" id="tp-doc-add-btn" type="button">Add</button>
-                      <button class="rux-button rux-button--ghost" id="tp-doc-cancel-btn" type="button">Cancel</button>
-                    </div>
-                  </div>
-                  <ul class="rux-trip-panel__doc-list" id="tp-doc-list"></ul>
-                  <p class="rux-trip-panel__section-label">Trip contacts</p>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-trip-name">Name</label><input class="rux-input" id="tp-trip-name" name="tripContact.name" type="text" placeholder="On-site contact" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-trip-phone">Phone</label><input class="rux-input" id="tp-trip-phone" name="tripContact.phone" type="tel" /></div>
-                  </div>
-                  <div class="rux-trip-panel__cols-2">
-                    <div class="rux-field"><label class="rux-field__label" for="tp-trip2-name">Name</label><input class="rux-input" id="tp-trip2-name" name="tripContact2.name" type="text" placeholder="Secondary contact" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-trip2-phone">Phone</label><input class="rux-input" id="tp-trip2-phone" name="tripContact2.phone" type="tel" /></div>
-                  </div>
-                </div>
               </div>
               <footer class="rux-panel__footer rux-trip-panel__footer">
-                <button class="rux-button rux-button--danger" id="tp-btn-delete"><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--secondary" id="tp-btn-clear"><i data-lucide="eraser" class="rux-icon"></i><span class="rux-btn-label"> Clear</span></button>
-                <button class="rux-button rux-button--primary" id="tp-btn-save"><i data-lucide="save" class="rux-icon"></i><span class="rux-btn-label"> Save</span></button>
+                <button class="rux-button rux-button--danger" id="tp-btn-delete"><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--secondary" id="tp-btn-clear"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--primary" id="tp-btn-save"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
             <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
@@ -296,29 +298,28 @@
           <section class="scheduler-app__schedule" aria-label="Weekly schedule" data-view="schedule">
             <header class="scheduler-app__bar">
               <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
-                <button class="rux-button rux-button--toggle" id="open-trip-panel" aria-label="Open trip editor" aria-pressed="false">
-                  <i data-lucide="panel-right-open" class="rux-icon"></i>
-                  <span class="scheduler-app__toolbar-label">Panel</span>
+                <button class="rux-button rux-button--toggle rux-button--icon" id="open-trip-panel" aria-label="Open trip editor" aria-pressed="false">
+                  <span class="rux-icon">add</span>
                 </button>
                 <button class="rux-button rux-button--toggle is-active" data-view-btn="schedule" aria-pressed="true" aria-label="Week view">
-                  <i data-lucide="calendar-days" class="rux-icon"></i>
+                  <span class="rux-icon">calendar_month</span>
                   <span class="scheduler-app__toolbar-label">Week</span>
                 </button>
                 <button class="rux-button rux-button--toggle" data-view-btn="list" aria-pressed="false" aria-label="List view">
-                  <i data-lucide="list" class="rux-icon"></i>
+                  <span class="rux-icon">list</span>
                   <span class="scheduler-app__toolbar-label">List</span>
                 </button>
                 <button class="rux-button" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input">
-                  <i data-lucide="calendar-search" class="rux-icon"></i>
+                  <span class="rux-icon">event_note</span>
                   <span class="scheduler-app__toolbar-label">Date</span>
                 </button>
                 <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
                 <button class="rux-button rux-button--icon" id="prev-week" aria-label="Previous week">
-                  <i data-lucide="chevron-left" class="rux-icon"></i>
+                  <span class="rux-icon">chevron_left</span>
                   <span class="scheduler-app__toolbar-label scheduler-app__toolbar-label--break">Prev</span>
                 </button>
                 <button class="rux-button rux-button--icon" id="next-week" aria-label="Next week">
-                  <i data-lucide="chevron-right" class="rux-icon"></i>
+                  <span class="rux-icon">chevron_right</span>
                   <span class="scheduler-app__toolbar-label scheduler-app__toolbar-label--break">Next</span>
                 </button>
               </div>
@@ -347,10 +348,10 @@
                   <tr>
                     <th scope="col">Trip</th>
                     <th scope="col">Destination</th>
-                    <th scope="col" data-col-filter="date">Dates <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>
-                    <th scope="col" data-col-filter="bus">Bus <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>
+                    <th scope="col" data-col-filter="date">Dates <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
+                    <th scope="col" data-col-filter="bus">Bus <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
                     <th scope="col">Confirmed</th>
-                    <th scope="col" data-col-filter="invoice">Invoice <i data-lucide="list-filter" class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true"></i></th>
+                    <th scope="col" data-col-filter="invoice">Invoice <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
                     <th scope="col" class="col-payment">Payment</th>
                     <th scope="col" class="col-quoted">Quoted</th>
                   </tr>
@@ -379,14 +380,14 @@
                   <span class="rux-fleet-panel__id" id="fp-fleet-id"></span>
                 </div>
                 <button class="rux-button rux-button--ghost rux-button--icon" id="fp-btn-close" type="button" aria-label="Close panel">
-                  <i data-lucide="x" class="rux-icon"></i>
+                  <span class="rux-icon">close</span>
                 </button>
               </header>
               <nav class="rux-fleet-panel__tabs" aria-label="Vehicle editor sections">
                 <div class="rux-segmented rux-segmented--ghost" data-fleet-tabs>
                   <button class="rux-button" type="button" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span><span class="rux-fleet-panel__tab-label">Info</span></button>
-                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-service"     title="Service"><i data-lucide="wrench" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Service</span></button>
-                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><i data-lucide="map" class="rux-icon"></i><span class="rux-fleet-panel__tab-label">Trips</span></button>
+                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-service"     title="Service"><span class="rux-icon">build</span><span class="rux-fleet-panel__tab-label">Service</span></button>
+                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><span class="rux-icon">map</span><span class="rux-fleet-panel__tab-label">Trips</span></button>
                 </div>
               </nav>
               <div class="rux-fleet-panel__body">
@@ -418,10 +419,10 @@
                     <label class="rux-field__label">Equipment</label>
                     <div class="rux-fleet-panel__equipment">
                       <button class="rux-button rux-button--toggle" id="fp-ada-lift" type="button" aria-pressed="false" data-rux-toggle-button>
-                        <i data-lucide="accessibility" class="rux-icon"></i> ADA lift
+                        <span class="rux-icon">accessible</span> ADA lift
                       </button>
                       <button class="rux-button rux-button--toggle" id="fp-sleeper" type="button" aria-pressed="false" data-rux-toggle-button>
-                        <i data-lucide="bed" class="rux-icon"></i> Sleeper
+                        <span class="rux-icon">airline_seat_flat</span> Sleeper
                       </button>
                     </div>
                   </div>
@@ -431,8 +432,8 @@
                       <span id="fp-type-icon-wrap" class="fleet-app__type-icon-wrap" aria-hidden="true">
                         <span data-type-icon="Motorcoach"><span class="rux-icon rux-icon--bus-side"></span></span>
                         <span data-type-icon="Sprinter"  hidden><span class="rux-icon rux-icon--van"></span></span>
-                        <span data-type-icon="Car"       hidden><i data-lucide="car"       class="rux-icon"></i></span>
-                        <span data-type-icon="Truck"     hidden><i data-lucide="truck"     class="rux-icon"></i></span>
+                        <span data-type-icon="Car"       hidden><span class="rux-icon">directions_car</span></span>
+                        <span data-type-icon="Truck"     hidden><span class="rux-icon">local_shipping</span></span>
                       </span>
                       <select class="rux-input rux-select" id="fp-type">
                         <option value="Motorcoach">Motorcoach</option>
@@ -445,10 +446,10 @@
                   <div class="rux-field">
                     <label class="rux-field__label">Status</label>
                     <div class="rux-segmented" id="fp-status-group" data-rux-toggle-group>
-                      <button class="rux-button is-active" type="button" aria-pressed="true"  data-value="active"      title="Active"><i data-lucide="circle-check" class="rux-icon"></i><span>Active</span></button>
-                      <button class="rux-button"            type="button" aria-pressed="false" data-value="maintenance"    title="Maintenance"><i data-lucide="wrench" class="rux-icon"></i><span>Maintenance</span></button>
-                      <button class="rux-button"            type="button" aria-pressed="false" data-value="out-of-service" title="Out of service"><i data-lucide="ban" class="rux-icon"></i><span>Out of service</span></button>
-                      <button class="rux-button"            type="button" aria-pressed="false" data-value="retired"        title="Retired"><i data-lucide="circle-x" class="rux-icon"></i><span>Retired</span></button>
+                      <button class="rux-button is-active" type="button" aria-pressed="true"  data-value="active"      title="Active"><span class="rux-icon">check_circle</span><span>Active</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" data-value="maintenance"    title="Maintenance"><span class="rux-icon">build</span><span>Maintenance</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" data-value="out-of-service" title="Out of service"><span class="rux-icon">block</span><span>Out of service</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" data-value="retired"        title="Retired"><span class="rux-icon">cancel</span><span>Retired</span></button>
                     </div>
                   </div>
                 </div>
@@ -477,9 +478,9 @@
 
               </div>
               <footer class="rux-panel__footer rux-fleet-panel__footer">
-                <button class="rux-button rux-button--danger"    id="fp-btn-delete" type="button"><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--secondary" id="fp-btn-clear"  type="button"><i data-lucide="eraser" class="rux-icon"></i><span class="rux-btn-label"> Clear</span></button>
-                <button class="rux-button rux-button--primary"   id="fp-btn-save"   type="button"><i data-lucide="save" class="rux-icon"></i><span class="rux-btn-label"> Save</span></button>
+                <button class="rux-button rux-button--danger"    id="fp-btn-delete" type="button"><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--secondary" id="fp-btn-clear"  type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--primary"   id="fp-btn-save"   type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
             <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
@@ -490,7 +491,7 @@
             <header class="scheduler-app__bar scheduler-app__bar--table">
               <div class="scheduler-app__toolbar">
                 <button class="rux-button rux-button--primary" id="fp-btn-add" type="button">
-                  <i data-lucide="plus" class="rux-icon"></i>
+                  <span class="rux-icon">add</span>
                   <span class="rux-btn-label">Add vehicle</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="fleet-save-order-btn" type="button" hidden title="Set current sort as manual order">
@@ -498,7 +499,7 @@
                   <span class="rux-btn-label">Set as order</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="fleet-cols-btn" type="button" title="Show / hide columns">
-                  <i data-lucide="columns-3" class="rux-icon"></i>
+                  <span class="rux-icon">view_column</span>
                   <span class="rux-btn-label">Columns</span>
                 </button>
                 <input class="rux-input fleet-app__search" id="fleet-search" type="search" placeholder="Search…" aria-label="Search fleet" style="flex:1" />
@@ -540,15 +541,15 @@
                   <span class="rux-driver-panel__id" id="dp-driver-id"></span>
                 </div>
                 <button class="rux-button rux-button--ghost rux-button--icon" id="dp-btn-close" type="button" aria-label="Close panel">
-                  <i data-lucide="x" class="rux-icon"></i>
+                  <span class="rux-icon">close</span>
                 </button>
               </header>
               <nav class="rux-driver-panel__tabs" aria-label="Driver editor sections">
                 <div class="rux-segmented rux-segmented--ghost" data-driver-tabs>
-                  <button class="rux-button" type="button" aria-selected="true"  aria-controls="pane-profile"     title="Profile"><i data-lucide="user" class="rux-icon"></i><span class="rux-driver-panel__tab-label">Profile</span></button>
-                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-license"     title="License"><i data-lucide="id-card" class="rux-icon"></i><span class="rux-driver-panel__tab-label">License</span></button>
-                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-status"      title="Status"><i data-lucide="activity" class="rux-icon"></i><span class="rux-driver-panel__tab-label">Status</span></button>
-                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-assignments" title="Trips"><i data-lucide="map" class="rux-icon"></i><span class="rux-driver-panel__tab-label">Trips</span></button>
+                  <button class="rux-button" type="button" aria-selected="true"  aria-controls="pane-profile"     title="Profile"><span class="rux-icon">person</span><span class="rux-driver-panel__tab-label">Profile</span></button>
+                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-license"     title="License"><span class="rux-icon">badge</span><span class="rux-driver-panel__tab-label">License</span></button>
+                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-status"      title="Status"><span class="rux-icon">monitoring</span><span class="rux-driver-panel__tab-label">Status</span></button>
+                  <button class="rux-button" type="button" aria-selected="false" aria-controls="pane-assignments" title="Trips"><span class="rux-icon">map</span><span class="rux-driver-panel__tab-label">Trips</span></button>
                 </div>
               </nav>
               <div class="rux-driver-panel__body">
@@ -556,7 +557,7 @@
                 <div id="pane-profile" class="rux-driver-panel__pane" role="tabpanel">
                   <div class="rux-driver-panel__avatar-row">
                     <div class="rux-driver-panel__avatar" id="dp-avatar" aria-hidden="true">
-                      <i data-lucide="user" class="rux-icon"></i>
+                      <span class="rux-icon">person</span>
                     </div>
                     <div class="rux-driver-panel__name-block">
                       <div class="rux-field"><label class="rux-field__label" for="dp-short-name">Short name</label><input class="rux-input" id="dp-short-name" name="shortName" type="text" placeholder="e.g. Sanchez, Jose" maxlength="20" /></div>
@@ -619,9 +620,9 @@
                   <div class="rux-field">
                     <label class="rux-field__label">Employment status</label>
                     <div class="rux-segmented rux-driver-panel__status-group" data-rux-toggle-group>
-                      <button class="rux-button is-active" type="button" aria-pressed="true"  title="Active"><i data-lucide="circle-check" class="rux-icon"></i><span>Active</span></button>
-                      <button class="rux-button"            type="button" aria-pressed="false" title="On Leave"><i data-lucide="circle-pause" class="rux-icon"></i><span>On Leave</span></button>
-                      <button class="rux-button"            type="button" aria-pressed="false" title="Inactive"><i data-lucide="circle-x" class="rux-icon"></i><span>Inactive</span></button>
+                      <button class="rux-button is-active" type="button" aria-pressed="true"  title="Active"><span class="rux-icon">check_circle</span><span>Active</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" title="On Leave"><span class="rux-icon">pause_circle</span><span>On Leave</span></button>
+                      <button class="rux-button"            type="button" aria-pressed="false" title="Inactive"><span class="rux-icon">cancel</span><span>Inactive</span></button>
                     </div>
                   </div>
                   <div class="rux-field">
@@ -643,9 +644,9 @@
                 </div>
               </div>
               <footer class="rux-panel__footer rux-driver-panel__footer">
-                <button class="rux-button rux-button--danger" id="dp-btn-delete" type="button"><i data-lucide="trash-2" class="rux-icon"></i><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--secondary" id="dp-btn-clear" type="button"><i data-lucide="eraser" class="rux-icon"></i><span class="rux-btn-label"> Clear</span></button>
-                <button class="rux-button rux-button--primary" id="dp-btn-save" type="button"><i data-lucide="save" class="rux-icon"></i><span class="rux-btn-label"> Save</span></button>
+                <button class="rux-button rux-button--danger" id="dp-btn-delete" type="button"><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--secondary" id="dp-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--primary" id="dp-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
             <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
@@ -656,7 +657,7 @@
             <header class="scheduler-app__bar scheduler-app__bar--table">
               <div class="scheduler-app__toolbar">
                 <button class="rux-button rux-button--primary" id="dp-btn-add" type="button">
-                  <i data-lucide="plus" class="rux-icon"></i>
+                  <span class="rux-icon">add</span>
                   <span class="rux-btn-label">Add driver</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="driver-save-order-btn" type="button" hidden title="Set current sort as manual order">
@@ -664,7 +665,7 @@
                   <span class="rux-btn-label">Set as order</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="driver-cols-btn" type="button" title="Show / hide columns">
-                  <i data-lucide="columns-3" class="rux-icon"></i>
+                  <span class="rux-icon">view_column</span>
                   <span class="rux-btn-label">Columns</span>
                 </button>
                 <input class="rux-input driver-app__search" id="driver-search" type="search" placeholder="Search…" aria-label="Search drivers" style="flex:1" />
@@ -732,7 +733,7 @@
                   <p class="settings-app__message" id="settings-mapbox-message" aria-live="polite"></p>
                   <div class="settings-app__actions">
                     <button class="rux-button rux-button--primary" id="settings-mapbox-save-btn" type="button">
-                      <i data-lucide="save" class="rux-icon"></i>
+                      <span class="rux-icon">save</span>
                       <span class="rux-btn-label">Save token</span>
                     </button>
                   </div>
@@ -761,7 +762,7 @@
                 <footer class="settings-app__footer">
                   <div class="settings-app__actions">
                     <button class="rux-button rux-button--primary" id="settings-spot-padding-save-btn" type="button">
-                      <i data-lucide="save" class="rux-icon"></i>
+                      <span class="rux-icon">save</span>
                       <span class="rux-btn-label">Save</span>
                     </button>
                   </div>
@@ -787,11 +788,11 @@
                   <p class="settings-app__message" id="settings-billing-message" aria-live="polite"></p>
                   <div class="settings-app__actions">
                     <button class="rux-button rux-button--secondary" id="settings-billing-default-btn" type="button">
-                      <i data-lucide="rotate-ccw" class="rux-icon"></i>
+                      <span class="rux-icon">undo</span>
                       <span class="rux-btn-label">Use defaults</span>
                     </button>
                     <button class="rux-button rux-button--primary" id="settings-billing-save-btn" type="button">
-                      <i data-lucide="save" class="rux-icon"></i>
+                      <span class="rux-icon">save</span>
                       <span class="rux-btn-label">Save workflow</span>
                     </button>
                   </div>
@@ -835,15 +836,15 @@
                   <p class="settings-app__message" id="settings-yard-message" aria-live="polite"></p>
                   <div class="settings-app__actions">
                     <button class="rux-button rux-button--secondary" id="settings-yard-default-btn" type="button">
-                      <i data-lucide="rotate-ccw" class="rux-icon"></i>
+                      <span class="rux-icon">undo</span>
                       <span class="rux-btn-label">Use default</span>
                     </button>
                     <button class="rux-button rux-button--secondary" id="settings-yard-verify-btn" type="button">
-                      <i data-lucide="map-pin-check" class="rux-icon"></i>
+                      <span class="rux-icon">where_to_vote</span>
                       <span class="rux-btn-label">Verify</span>
                     </button>
                     <button class="rux-button rux-button--primary" id="settings-yard-save-btn" type="button">
-                      <i data-lucide="save" class="rux-icon"></i>
+                      <span class="rux-icon">save</span>
                       <span class="rux-btn-label">Save yard</span>
                     </button>
                   </div>
@@ -860,12 +861,12 @@
                   <div id="settings-req-list" class="settings-req-list"></div>
                   <div class="settings-req-add-area">
                     <button class="rux-button rux-button--ghost" type="button" id="settings-req-add-btn">
-                      <i data-lucide="plus" class="rux-icon"></i>
+                      <span class="rux-icon">add</span>
                       <span class="rux-btn-label">Add requirement</span>
                     </button>
                     <div class="settings-req-new-row" id="settings-req-new-row" hidden>
                       <button class="req-icon-btn" type="button" id="settings-req-new-icon" title="Pick icon">
-                        <i data-lucide="tag" class="rux-icon"></i>
+                        <span class="rux-icon">label</span>
                       </button>
                       <input class="rux-input settings-req-label-input" type="text" id="settings-req-new-label"
                              placeholder="Label" maxlength="32" style="flex:1" />
@@ -891,7 +892,7 @@
     <dialog class="rux-search-modal" id="search-modal" aria-label="Search">
       <div class="rux-search-modal__panel">
         <div class="rux-search-modal__input-row">
-          <i data-lucide="search" class="rux-icon rux-search-modal__icon"></i>
+          <span class="rux-icon rux-search-modal__icon">search</span>
           <input
             class="rux-search-modal__input"
             id="search-modal-input"
@@ -916,7 +917,7 @@
     <!-- Scheduler context menu (floats above everything) -->
     <div class="scheduler-app__context-menu" id="scheduler-context-menu" role="menu" hidden>
       <button class="scheduler-app__context-item" id="scheduler-context-add-trip" type="button" role="menuitem">
-        <i data-lucide="plus" class="rux-icon"></i>
+        <span class="rux-icon">add</span>
         <span>Add trip</span>
       </button>
     </div>
@@ -1147,7 +1148,6 @@
       let currentWeekStart = startOfWeek(new Date());
 
       renderDayHeaders(currentWeekStart);
-      if (window.lucide) lucide.createIcons();
 
       TripPanel.init(tripPanel);
       const itinerary = Itinerary.init(tripPanel);
@@ -1197,7 +1197,6 @@
         event.preventDefault();
         pendingNewTripContext = contextFromTrackEvent(event, track);
         positionSchedulerContextMenu(event);
-        if (window.lucide) lucide.createIcons();
       });
 
       schedulerContextAddTrip.addEventListener("click", () => {
@@ -1424,9 +1423,9 @@
             head.appendChild(paxEl);
           }
           if (isOos) {
-            const oosEl = document.createElement("i");
+            const oosEl = document.createElement("span");
             oosEl.className = "rux-icon rux-icon--sm rux-scheduler__bus-oos";
-            oosEl.setAttribute("data-lucide", "ban");
+            oosEl.textContent = "block";
             oosEl.setAttribute("aria-hidden", "true");
             head.appendChild(oosEl);
           }
@@ -1628,7 +1627,6 @@
           renderBusRows(schedulerBuses);
           try { drivers = await db.fetchDrivers(); } catch (err) { console.warn("Could not load drivers:", err); }
           TripPanel.updateOptions(tripPanel, { buses, drivers });
-          if (window.lucide) lucide.createIcons();
           await loadTripsFromDB();
         } catch (err) {
           console.warn("Could not initialize trip DB:", err);
@@ -1710,7 +1708,7 @@
             style="font-family:var(--rux-font-mono); font-size:var(--rux-text-xs); resize:vertical; min-height:14rem; height:14rem"></textarea>
           <div style="display:flex; align-items:center; gap:var(--rux-space-2)">
             <label class="rux-button rux-button--ghost" style="cursor:pointer">
-              <i data-lucide="file-up" class="rux-icon"></i>
+              <span class="rux-icon">upload_file</span>
               <span class="rux-btn-label">Upload .json</span>
               <input type="file" accept=".json,application/json" id="tp-import-file" hidden />
             </label>

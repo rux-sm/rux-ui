@@ -408,7 +408,7 @@
     return order.map((status) => {
       const item = meta[status] || { label: status, badgeClass: "rux-badge--info", icon: "" };
       const label = labelOverrides[status] || item.label;
-      const iconHtml = item.icon ? `<i data-lucide="${escHtml(item.icon)}" class="rux-icon rux-icon--sm"></i>` : "";
+      const iconHtml = item.icon ? `<span class="rux-icon rux-icon--sm">${escHtml(item.icon)}</span>` : "";
       return `<label class="settings-billing-confirm">
         <input type="checkbox" ${selected.has(status) ? "checked" : ""} data-confirm-status="${status}" />
         <span class="rux-badge ${escHtml(item.badgeClass)}">${iconHtml}${escHtml(label)}</span>
@@ -439,7 +439,7 @@
     billingConfig = window.RuxBilling.normalizeConfig(config || window.RuxBilling.DEFAULT_CONFIG);
     billingWorkflowEl.innerHTML = workflowRowsHtml(billingConfig);
     billingConfirmEl.innerHTML = confirmRowsHtml(billingConfig);
-    if (window.lucide) window.lucide.createIcons();
+    
   }
 
   function publishBilling(config) {

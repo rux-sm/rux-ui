@@ -401,9 +401,6 @@
 	color: var(--rux-fg);
 }
 
-.scheduler-app__panel-tab [data-lucide="panel-left-close"] { display: none; }
-.scheduler-app__panel-tab[aria-pressed="true"] [data-lucide="panel-left-close"] { display: block; }
-.scheduler-app__panel-tab[aria-pressed="true"] [data-lucide="panel-left-open"] { display: none; }
 
 .scheduler-app__drawer-handle {
 	position: absolute;
