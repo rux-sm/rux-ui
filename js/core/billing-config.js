@@ -35,7 +35,7 @@
 		contract_signed:    { label: "Contract Signed",    badgeClass: "rux-badge--warning",   icon: "edit_document" },
 		po_received:        { label: "PO Received",        badgeClass: "rux-badge--info",      icon: "receipt_long" },
 		deposit_received:   { label: "Deposit Received",   badgeClass: "rux-badge--info",      icon: "payments" },
-		paid_full:          { label: "Paid in Full",       badgeClass: "rux-badge--success",   icon: "check_circle" },
+		paid_full:          { label: "Paid in Full",       badgeClass: "rux-badge--success",   icon: "paid" },
 		overpaid:           { label: "Overpaid",           badgeClass: "rux-badge--warning",   icon: "warning" },
 	};
 

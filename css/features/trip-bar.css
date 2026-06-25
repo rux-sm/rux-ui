@@ -42,10 +42,10 @@
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 143px;
+	--rux-trip-bar-collapsed-height: 148px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
-	--rux-trip-bar-continuation-width: 2.5rem;
+	--rux-trip-bar-continuation-width: 1.5rem;
 	--rux-trip-bar-stripe-size: 3px;
 	--rux-trip-bar-bus-label-min-width: 2.25rem;
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
@@ -65,9 +65,9 @@
 	--_conflict-height: 0px;
 	--_tone: var(--rux-accent);
 	--_tone-ring: var(--rux-ring-focus);
-	--_surface: oklch(from var(--_tone) 50% 0.18 h);
-	--_surface-hover: oklch(from var(--_tone) 70% 0.28 h);
-	--_surface-active: oklch(from var(--_tone) 60% 0.24 h);
+	--_surface: oklch(from var(--_tone) 50% 0.22 h);
+	--_surface-hover: oklch(from var(--_tone) 46% 0.22 h);
+	--_surface-active: oklch(from var(--_tone) 54% 0.22 h);
 
 	position: relative;
 	display: flex;
@@ -77,7 +77,7 @@
 	container-type: inline-size;
 	--rux-icon-md: 18px;
 	background-color: var(--_surface);
-	border-radius: 12px;
+	border-radius: 14px;
 	box-shadow: var(--rux-shadow-sm);
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;
@@ -85,7 +85,8 @@
 	transition:
 		height var(--rux-duration-base) var(--rux-ease-out),
 		background-color var(--rux-duration-fast) var(--rux-ease-out),
-		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+		box-shadow var(--rux-duration-fast) var(--rux-ease-out),
+		transform var(--rux-duration-fast) var(--rux-ease-out);
 }
 
 /* ---------- Height contract ---------- */
@@ -110,8 +111,9 @@
 
 .rux-trip-bar.is-active {
 	background-color: var(--_surface-active);
-	box-shadow: var(--_tone-ring), var(--rux-shadow-sm);
+	box-shadow: 0 16px 48px oklch(0% 0 0 / 0.5), 0 4px 12px oklch(0% 0 0 / 0.3);
 	z-index: var(--rux-trip-bar-active-z-index);
+	transform: translateY(-4px);
 }
 
 /* Keep continuation stripes behind actions, text, and conflict content. */
@@ -142,13 +144,7 @@
 	inset: 0 auto 0 0;
 	width: var(--rux-trip-bar-continuation-width);
 	z-index: 0;
-	background: repeating-linear-gradient(
-		45deg,
-		transparent 0,
-		transparent var(--rux-trip-bar-stripe-size),
-		color-mix(in oklch, var(--_tone) 50%, transparent) var(--rux-trip-bar-stripe-size),
-		color-mix(in oklch, var(--_tone) 50%, transparent) calc(var(--rux-trip-bar-stripe-size) * 2)
-	);
+	background: linear-gradient(to right, oklch(0% 0 0 / 0.5), transparent);
 	pointer-events: none;
 }
 
@@ -167,13 +163,7 @@
 	inset: 0 0 0 auto;
 	width: var(--rux-trip-bar-continuation-width);
 	z-index: 0;
-	background: repeating-linear-gradient(
-		-45deg,
-		transparent 0,
-		transparent var(--rux-trip-bar-stripe-size),
-		color-mix(in oklch, var(--_tone) 24%, transparent) var(--rux-trip-bar-stripe-size),
-		color-mix(in oklch, var(--_tone) 24%, transparent) calc(var(--rux-trip-bar-stripe-size) * 2)
-	);
+	background: linear-gradient(to left, oklch(0% 0 0 / 0.5), transparent);
 	pointer-events: none;
 }
 
@@ -189,6 +179,16 @@
 .rux-trip-bar--multi-day .rux-trip-bar__body,
 .rux-trip-bar--multi-day .rux-trip-bar__details-inner {
 	width: min(100%, var(--rux-trip-bar-day-inline-size, 100%));
+}
+
+.rux-trip-bar--multi-day {
+	background-image: linear-gradient(
+		to right,
+		transparent 0%,
+		transparent var(--rux-trip-bar-day-inline-size, 50%),
+		oklch(0% 0 0 / 0.25) var(--rux-trip-bar-day-inline-size, 50%),
+		oklch(0% 0 0 / 0.25) 100%
+	);
 }
 
 
@@ -208,13 +208,20 @@
 	margin: 0;
 	justify-content: stretch;
 	background: oklch(0% 0 0 / 0.2);
-	border-radius: 4px;
+	border-radius: 6px;
 	overflow: hidden;
 }
 .rux-trip-bar__actions > .rux-button {
 	width: 100%;
 	min-width: 0;
 	flex: 1;
+	border-radius: 0;
+}
+.rux-trip-bar__actions > .rux-button:first-child {
+	border-radius: 6px 0 0 6px;
+}
+.rux-trip-bar__actions > .rux-button:last-child {
+	border-radius: 0 6px 6px 0;
 }
 
 .rux-trip-bar__actions {
@@ -234,7 +241,7 @@
 .rux-trip-bar.is-active .rux-trip-bar__actions {
 	max-height: var(--rux-trip-bar-action-height);
 	overflow: hidden;
-	margin: var(--rux-space-2);
+	margin: var(--rux-space-2) var(--rux-space-2) 0;
 	padding-block: var(--rux-trip-bar-action-padding-block);
 	padding-inline: 0;
 	opacity: 1;
@@ -250,12 +257,23 @@
 		visibility 0s;
 }
 
+.rux-trip-bar--multi-day:not(.rux-trip-bar--from-prev) .rux-trip-bar__actions {
+	border-top-right-radius: 0;
+}
+.rux-trip-bar--multi-day:not(.rux-trip-bar--from-prev) .rux-trip-bar__actions > .rux-button:last-child {
+	border-top-right-radius: 0;
+}
+.rux-trip-bar--to-next .rux-trip-bar__actions {
+	border-top-right-radius: 0;
+}
+.rux-trip-bar--to-next .rux-trip-bar__actions > .rux-button:last-child {
+	border-top-right-radius: 0;
+}
 .rux-trip-bar--from-prev .rux-trip-bar__actions {
 	border-top-left-radius: 0;
 }
-
-.rux-trip-bar--to-next .rux-trip-bar__actions {
-	border-top-right-radius: 0;
+.rux-trip-bar--from-prev .rux-trip-bar__actions > .rux-button:first-child {
+	border-top-left-radius: 0;
 }
 
 /* ---------- Body ---------- */
@@ -296,7 +314,7 @@
 	height: 20px;
 	padding: 0 4px;
 	background: oklch(0% 0 0 / 0.2);
-	border-radius: 4px;
+	border-radius: 6px;
 	color: var(--rux-fg-on-accent);
 	font-size: 10px;
 	font-weight: var(--rux-weight-bold);
@@ -321,14 +339,13 @@
 }
 
 .rux-trip-bar__status--paid {
-	color: var(--rux-fg-on-accent);
-	stroke-width: 2;
+	color: var(--rux-success-bright);
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);
 }
 
 .rux-trip-bar__status-date {
-	color: var(--rux-fg-on-accent);
+	color: var(--rux-success-bright);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
@@ -338,7 +355,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	color: oklch(85% 0.2 24);
+	color: var(--rux-danger-bright);
 }
 
 .rux-trip-bar__pending-icon {
@@ -412,6 +429,7 @@
 	align-items: center;
 	min-height: 18px;
 	gap: var(--rux-space-1);
+	overflow: hidden;
 }
 
 .rux-trip-bar__reqs .rux-trip-bar__pending {
@@ -427,9 +445,13 @@
 .rux-trip-bar__time {
 	display: flex;
 	justify-content: space-between;
+	background: oklch(0% 0 0 / 0.15);
+	padding: 2px var(--rux-space-2);
+	border-radius: 6px 6px 0 0;
 	min-width: 0;
-	min-height: 16px;
-	align-items: baseline;
+	min-height: 20px;
+	box-sizing: border-box;
+	align-items: center;
 	gap: var(--rux-space-2);
 	color: var(--rux-fg);
 	font-size: var(--rux-text-xs);
@@ -475,21 +497,39 @@
 .rux-trip-bar__drivers {
 	display: flex;
 	min-width: 0;
-	min-height: 19px;
+	min-height: 20px;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: var(--rux-space-2);
+	gap: 2px;
+	margin-top: 1px;
 }
 
 .rux-trip-bar__driver {
 	display: inline-flex;
+	flex: 1;
 	min-width: 0;
 	align-items: center;
+	justify-content: center;
 	gap: var(--rux-space-1);
+	background: oklch(0% 0 0 / 0.15);
+	padding: 0 var(--rux-space-2);
+	height: 20px;
+	border-radius: 0;
 	color: var(--rux-fg-on-accent);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-snug);
+}
+
+.rux-trip-bar__driver:first-child {
+	border-bottom-left-radius: 6px;
+}
+.rux-trip-bar__driver:nth-last-child(2) {
+	border-bottom-right-radius: 6px;
+}
+.rux-trip-bar__driver:first-child:nth-last-child(2) {
+	border-bottom-left-radius: 6px;
+	border-bottom-right-radius: 6px;
 }
 
 .rux-trip-bar__driver-role-icon {
@@ -518,11 +558,14 @@
 }
 
 .rux-trip-bar__drivers-meta {
-	display: flex;
+	display: none;
 	align-items: center;
 	gap: var(--rux-space-1);
-	margin-left: auto;
 	flex: none;
+	margin-left: auto;
+}
+.rux-trip-bar.is-active .rux-trip-bar__drivers-meta {
+	display: flex;
 }
 
 /* ---------- Conflict row ---------- */
@@ -598,22 +641,24 @@
 /* ---------- Expand button ---------- */
 
 .rux-trip-bar__expand {
-	--_h: var(--rux-icon-xl);
-	border-radius: var(--rux-radius-sm);
-	border: var(--rux-border-width) solid transparent;
+	--_h: 20px;
+	height: 20px;
+	border-radius: 0 0 6px 0;
+	border: none;
+	background: oklch(0% 0 0 / 0.15);
 	opacity: 0;
 	pointer-events: none;
 	transition:
-		opacity var(--rux-duration-fast) var(--rux-ease-out),
-		background-color var(--rux-duration-instant) var(--rux-ease-out),
-		border-color var(--rux-duration-instant) var(--rux-ease-out);
+		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__expand {
 	opacity: 1;
 	pointer-events: auto;
-	background: oklch(0% 0 0 / 0.2);
-	border-radius: 4px;
+}
+
+.rux-trip-bar.is-active .rux-trip-bar__driver:nth-last-child(2) {
+	border-bottom-right-radius: 0;
 }
 
 .rux-trip-bar__expand-icon {

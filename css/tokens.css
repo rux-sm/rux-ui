@@ -65,7 +65,7 @@
 	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
 
 	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 22% c h);
 
 	/* Elevated elements like floating cards or popovers */
 	--rux-bg-level-2: oklch(from var(--rux-color-base) 26% c h);
@@ -138,19 +138,19 @@
 	/* Bright enough for dark mode, balanced in chroma so none dominates.     */
 
 	--rux-success: oklch(60% 0.22 155);
-	--rux-success-bright: oklch(90% 0.3 155);
+	--rux-success-bright: oklch(85% 0.2 155);
 	--rux-success-subtle: oklch(70% 0.22 155 / 0.14);
 
 	--rux-warning: oklch(60% 0.22 90);
-	--rux-warning-bright: oklch(90% 0.3 90);
+	--rux-warning-bright: oklch(85% 0.2 90);
 	--rux-warning-subtle: oklch(80% 0.22 90 / 0.14);
 	
 	--rux-info: oklch(60% 0.22 230);
-	--rux-info-bright: oklch(90% 0.3 230);
+	--rux-info-bright: oklch(85% 0.2 230);
 	--rux-info-subtle: oklch(70% 0.22 230 / 0.14);
 
 	--rux-danger: oklch(60% 0.22 24);
-	--rux-danger-bright: oklch(90% 0.3 24);
+	--rux-danger-bright: oklch(85% 0.2 24);
 	--rux-danger-hover: oklch(90% 0.18 24);
 	--rux-danger-active: oklch(50% 0.18 24);
 	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
@@ -262,20 +262,20 @@
 	--rux-shadow-none: none;
 	/* Crisp, immediate lift. Negative spread removes side-bleed. */
 	--rux-shadow-sm: 0 2px 3px -1px rgba(0, 0, 0, 0.75), inset 0 2px 0 rgba(255, 255, 255, 0.16);
-	--rux-shadow-sm: none;
+	
 	/* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
 	--rux-shadow-md:
 		0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.8),
 		inset 0 2px 0.5px rgba(255, 255, 255, 0.16);
-	--rux-shadow-md: none;
+	
 	/* Deep but contained. High offset, aggressive negative spread. */
 	--rux-shadow-lg:
 		0 16px 32px -6px rgba(0, 0, 0, 0.4), 0 6px 14px -2px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
-	--rux-shadow-lg: none;
+	
 	/* Maximum depth without the muddy blur. */
 	--rux-shadow-xl:
 		0 32px 64px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -4px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
-	--rux-shadow-xl: none;
+
 	/* Focus ring remains untouched; excellent dual-ring setup */
 	--rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
 	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);

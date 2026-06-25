@@ -574,6 +574,10 @@
 	position: absolute;
 }
 
+.scheduler-app__grid .rux-scheduler__track:has(.rux-trip-bar.is-active) {
+	z-index: var(--rux-z-dropdown);
+}
+
 .scheduler-app__context-menu {
 	position: fixed;
 	z-index: var(--rux-z-dropdown);

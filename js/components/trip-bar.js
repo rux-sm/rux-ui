@@ -634,7 +634,7 @@ export function createTripBar(trip, callbacks = {}) {
     const datePaid = paidDate(trip);
     const isOverpaid = trip.paymentStatus === "overpaid";
     const paidIconName = window.RuxBilling?.STATUS_META?.[trip.paymentStatus]?.icon
-      || (isOverpaid ? "alert-triangle" : "circle-check");
+      || (isOverpaid ? "alert-triangle" : "paid");
     statusIcon = icon(
       paidIconName,
       `rux-icon rux-trip-bar__status rux-trip-bar__status--${isOverpaid ? "overpaid" : "paid"}`,
@@ -737,7 +737,7 @@ export function createTripBar(trip, callbacks = {}) {
       const el = document.createElement("div");
       el.className = "rux-trip-bar__contact";
       el.append(
-        textEl("span", "rux-trip-bar__contact-name", trip.bookingContact?.name),
+        textEl("span", "rux-trip-bar__contact-name", trip.bookingContact?.name || trip.tripContact?.name),
       );
       if (trip.bookingContact?.phone)
         el.append(
@@ -758,13 +758,8 @@ export function createTripBar(trip, callbacks = {}) {
       if (summaryMarkerLabels.length) { row.appendChild(pending); }
       return row;
     })(),
-    spacer,
-    (() => {
-      const footer = document.createElement("div");
-      footer.className = "rux-trip-bar__footer";
-      footer.append(time, drivers);
-      return footer;
-    })(),
+    time,
+    drivers,
   );
 
   const details = document.createElement("div");
