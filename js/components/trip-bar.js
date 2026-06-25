@@ -338,7 +338,7 @@ const PENDING_INDICATORS = [
   },
   {
     key: "needs_po",
-    get icon() { return window.RuxBilling?.STATUS_META?.po_received?.icon || "receipt"; },
+    icon: "request_quote",
     label: "Pending PO",
     check: (trip) => trip.paymentStatus === "contract_signed",
   },
@@ -528,7 +528,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--primary rux-button--icon";
+  openBtn.className = "rux-button rux-button--ghost rux-button--icon";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("add"));
@@ -559,8 +559,22 @@ export function createTripBar(trip, callbacks = {}) {
           const tripId = trip.id;
           if (!file || !tripId) return;
           try {
-            await window.RuxDocs?.upload(tripId, "Itinerary", file);
+            const doc = await window.RuxDocs?.upload(tripId, "Itinerary", file);
             window.Rux?.toast("Itinerary uploaded");
+            if (doc && pdfBtn) {
+              const iconEl = pdfBtn.querySelector(".rux-icon");
+              if (iconEl) iconEl.textContent = ICON_MAP["paperclip"] || "attach_file";
+              pdfBtn.setAttribute("aria-label", "View Itinerary");
+              pdfBtn.dataset.tooltip = "View Itinerary";
+              const newBtn = pdfBtn.cloneNode(true);
+              newBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const url = window.RuxDocs?.url?.(doc.file_path);
+                if (url) window.open(url, "_blank");
+              });
+              pdfBtn.replaceWith(newBtn);
+              bar.querySelector('.rux-trip-bar__pending-icon[data-tooltip="Pending itinerary"]')?.remove();
+            }
           } catch (err) {
             console.error("Upload failed:", err);
             window.Rux?.toast("Upload failed");
@@ -568,6 +582,13 @@ export function createTripBar(trip, callbacks = {}) {
         });
         input.click();
       };
+
+  const pdfBtn = button(
+    "rux-button rux-button--ghost rux-button--icon",
+    pdfLabel,
+    pdfIcon,
+    () => onPdf(),
+  );
 
   actions.append(
     openBtn,
@@ -577,12 +598,7 @@ export function createTripBar(trip, callbacks = {}) {
       "swap_vert",
       () => callbacks.onChangeBus?.(trip),
     ),
-    button(
-      "rux-button rux-button--ghost rux-button--icon",
-      pdfLabel,
-      pdfIcon,
-      () => onPdf(),
-    ),
+    pdfBtn,
     button(
       "rux-button rux-button--ghost rux-button--icon",
       "Trip envelope",
@@ -721,15 +737,15 @@ export function createTripBar(trip, callbacks = {}) {
 
   const driverPay = driverPayValues(trip);
   const detailFields = [
-    ["D1 PAY", driverPay[0]],
-    ["D2 PAY", driverPay[1]],
-    ["EST MI", trip.estimatedMiles ? String(trip.estimatedMiles) : ""],
+    ["D1", driverPay[0]],
+    ["D2", driverPay[1]],
+    ["MI", trip.estimatedMiles ? String(trip.estimatedMiles) : ""],
     [
-      "QUOTE",
+      "QT",
       trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : "",
     ],
     ["PO", trip.paymentRef || "", { wide: true }],
-    ["END MI", trip.actualMiles ? String(trip.actualMiles) : ""],
+    ["ACT", trip.actualMiles ? String(trip.actualMiles) : ""],
     ["INV", trip.invoiceNumber || ""],
     ["PMT", paymentDetail(trip), { wide: true }],
   ];

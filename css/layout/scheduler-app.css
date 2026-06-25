@@ -565,7 +565,7 @@
 }
 
 .scheduler-app__grid {
-	--rux-scheduler-day-min-width: 14rem;
+	--rux-scheduler-day-min-width: 13rem;
 	--rux-scheduler-max-block-size: 100%;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-4);
 }

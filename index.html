@@ -1225,11 +1225,38 @@
           BusPicker.show(trip, schedulerBuses, trips, async (newBus, conflictAssignmentId) => {
             try {
               const db = await import("./js/data/trip-db.js");
+              const oldBar = activePlacements.find(p => p.trip.assignmentId === trip.assignmentId)?.bar;
+              const oldRect = oldBar?.getBoundingClientRect();
+
               await db.reassignBus(trip.assignmentId, newBus.id);
               if (conflictAssignmentId) {
                 await db.reassignBus(conflictAssignmentId, trip.busId);
               }
               await loadTripsFromDB();
+
+              if (!oldRect) return;
+              requestAnimationFrame(() => {
+                const newBar = activePlacements.find(p => p.trip.assignmentId === trip.assignmentId)?.bar;
+                if (!newBar) return;
+                const newRect = newBar.getBoundingClientRect();
+                const dy = oldRect.top - newRect.top;
+                const dx = oldRect.left - newRect.left;
+                if (!dy && !dx) return;
+
+                newBar.style.transform = `translate(${dx}px, ${dy}px)`;
+                newBar.style.opacity = "1";
+                newBar.style.zIndex = "100";
+
+                requestAnimationFrame(() => {
+                  newBar.style.transition = "transform var(--rux-duration-slow) var(--rux-ease-out), opacity var(--rux-duration-fast) var(--rux-ease-out)";
+                  newBar.style.transform = "translate(0, 0)";
+                  newBar.addEventListener("transitionend", () => {
+                    newBar.style.transition = "";
+                    newBar.style.transform = "";
+                    newBar.style.zIndex = "";
+                  }, { once: true });
+                });
+              });
             } catch (err) {
               console.error("Reassign bus failed:", err);
             }
@@ -1579,7 +1606,19 @@
       }
 
       tripPanel.addEventListener("rux:trip-saved",   () => { loadTripsFromDB(); resetTripPanel(); });
-      tripPanel.addEventListener("rux:trip-deleted", () => { loadTripsFromDB(); resetTripPanel(); });
+      tripPanel.addEventListener("rux:trip-deleted", async (e) => {
+        const deletedId = e.detail?.id;
+        const bars = activePlacements.filter(p => p.trip.id === deletedId).map(p => p.bar).filter(Boolean);
+        if (bars.length) {
+          bars.forEach(bar => {
+            bar.style.transition = "opacity var(--rux-duration-base) var(--rux-ease-out), transform var(--rux-duration-base) var(--rux-ease-out)";
+            bar.style.opacity = "0";
+            bar.style.transform = "scale(0.9) translateY(-8px)";
+          });
+          await new Promise(r => setTimeout(r, 240));
+        }
+        loadTripsFromDB(); resetTripPanel();
+      });
       tripPanel.addEventListener("rux:trip-cleared", () => {
         setActiveTripPane("pane-trip");
         tripPanel.querySelector(".rux-trip-panel__body")?.scrollTo({ top: 0, behavior: "instant" });
@@ -1690,8 +1729,12 @@
             return;
           }
           if (!parsed.stops && parsed.trip_stops) parsed.stops = parsed.trip_stops;
-          if (loadTrip) loadTrip(tripPanel, itinerary, parsed);
-          setActiveTripPane("pane-trip");
+          if (parsed.stops) {
+            itinerary.setStops(parsed.stops);
+          } else if (loadTrip) {
+            loadTrip(tripPanel, itinerary, parsed);
+          }
+          setActiveTripPane("pane-itinerary");
           openDrawer();
           importModal.hidden = true;
         });

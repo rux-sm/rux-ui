@@ -42,16 +42,16 @@
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 10rem;
-	--rux-trip-bar-action-padding-block: var(--rux-space-2);
-	--rux-trip-bar-action-padding-inline: var(--rux-space-2);
+	--rux-trip-bar-collapsed-height: 136px;
+	--rux-trip-bar-action-padding-block: 0;
+	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-continuation-width: 2.5rem;
 	--rux-trip-bar-stripe-size: 3px;
 	--rux-trip-bar-bus-label-min-width: 2.25rem;
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
 	--rux-trip-bar-paid-color: var(--rux-success);
-	--rux-trip-bar-tight-gap: 2px;
+	--rux-trip-bar-tight-gap: 1px;
 	--rux-trip-bar-actions-bg: color-mix(in oklch, var(--rux-bg-elevated) 75%, transparent);
 	--rux-trip-bar-bus-label-bg: color-mix(in oklch, var(--rux-fg) 10%, transparent);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
@@ -182,30 +182,41 @@
 	--_conflict-height: var(--rux-trip-bar-conflict-height);
 }
 
-.rux-trip-bar--multi-day .rux-trip-bar__actions,
+.rux-trip-bar--multi-day .rux-trip-bar__actions {
+	max-width: calc(var(--rux-trip-bar-day-inline-size, 100%) - var(--rux-space-1) * 2);
+}
 .rux-trip-bar--multi-day .rux-trip-bar__body,
 .rux-trip-bar--multi-day .rux-trip-bar__details-inner {
 	width: min(100%, var(--rux-trip-bar-day-inline-size, 100%));
 }
+
 
 /* ---------- Action toolbar ---------- */
 
 .rux-trip-bar__actions {
 	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: repeat(5, var(--rux-control-height));
+	grid-template-columns: repeat(5, 1fr);
 	align-items: center;
+	align-content: stretch;
 	flex: 0 0 auto;
-	gap: var(--rux-space-2);
+	gap: 0;
 	max-height: 0;
 	overflow: hidden;
-	padding-inline: var(--rux-space-2);
-	justify-content: start;
-	background: var(--rux-trip-bar-actions-bg);
-	background: transparent; /* override */
-	border: var(--rux-border-width) solid var(--rux-border);
-	border: none; /* override */
-	border-radius: var(--rux-radius-sm) var(--rux-radius-sm) 0 0;
+	padding-inline: 0;
+	margin: 0;
+	justify-content: stretch;
+	background: oklch(0% 0 0 / 0.2);
+	border-radius: var(--rux-radius-md);
+	overflow: hidden;
+}
+.rux-trip-bar__actions > .rux-button {
+	width: 100%;
+	min-width: 0;
+	flex: 1;
+}
+
+.rux-trip-bar__actions {
 	opacity: 0;
 	pointer-events: none;
 	transform: translateY(calc(var(--rux-space-1) * -1));
@@ -223,10 +234,10 @@
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {
 	max-height: var(--rux-trip-bar-action-height);
-	overflow: visible;
+	overflow: hidden;
+	margin: var(--rux-space-1);
 	padding-block: var(--rux-trip-bar-action-padding-block);
-	padding-inline: var(--rux-trip-bar-action-padding-inline);
-	justify-content: start;
+	padding-inline: 0;
 	opacity: 1;
 	pointer-events: auto;
 	transform: translateY(0);
@@ -256,12 +267,12 @@
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	padding: var(--rux-space-2);
+	padding: var(--rux-space-1);
 	gap: var(--rux-trip-bar-tight-gap);
 }
 
 .rux-trip-bar__spacer {
-	flex: 1 1 auto;
+	display: none;
 }
 
 .rux-trip-bar__footer {
@@ -352,16 +363,14 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	min-height: 1lh;
 	color: var(--rux-fg-on-accent-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 }
 
 .rux-trip-bar__contact {
 	display: flex;
 	min-width: 0;
-	min-height: 1lh;
 	align-items: baseline;
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-regular);
@@ -381,9 +390,8 @@
 	white-space: nowrap;
 }
 
-.rux-trip-bar__contact-phone::before {
-	content: "·";
-	padding-inline: 0.25em;
+.rux-trip-bar__contact-phone {
+	margin-left: var(--rux-space-1);
 }
 
 .rux-trip-bar__notes {
@@ -562,7 +570,9 @@
 
 .rux-trip-bar__detail-field-value {
 	min-width: 0;
-	overflow-wrap: anywhere;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 	color: var(--rux-fg);
 	font-weight: var(--rux-weight-medium);
 }
