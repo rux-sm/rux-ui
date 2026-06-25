@@ -42,7 +42,7 @@
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 136px;
+	--rux-trip-bar-collapsed-height: 134px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-continuation-width: 2.5rem;
@@ -65,9 +65,9 @@
 	--_conflict-height: 0px;
 	--_tone: var(--rux-accent);
 	--_tone-ring: var(--rux-ring-focus);
-	--_surface: var(--rux-trip-bar-bg, oklch(from var(--_tone) 60% 0.24 h));
-	--_surface-hover: var(--rux-trip-bar-bg-hover, oklch(from var(--_tone) 58% 0.24 h));
-	--_surface-active: var(--rux-trip-bar-bg-active, oklch(from var(--_tone) 55% 0.24 h));
+	--_surface: oklch(from var(--_tone) 60% 0.24 h);
+	--_surface-hover: oklch(from var(--_tone) 70% 0.28 h);
+	--_surface-active: oklch(from var(--_tone) 60% 0.24 h);
 
 	position: relative;
 	display: flex;
@@ -75,6 +75,7 @@
 	flex-direction: column;
 	box-sizing: border-box;
 	container-type: inline-size;
+	--rux-icon-md: 18px;
 	background-color: var(--_surface);
 	border-radius: var(--rux-radius-md);
 	box-shadow: var(--rux-shadow-sm);
@@ -223,13 +224,11 @@
 	visibility: hidden;
 	transition:
 		max-height var(--rux-duration-base) var(--rux-ease-out),
+		margin var(--rux-duration-base) var(--rux-ease-out),
 		padding-block var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out),
 		transform var(--rux-duration-base) var(--rux-ease-out),
-		border-color var(--rux-duration-fast) var(--rux-ease-out),
-		overflow 0s linear 0s,
 		visibility 0s linear var(--rux-duration-base);
-	box-shadow: var(--rux-shadow-sm);
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {
@@ -244,11 +243,10 @@
 	visibility: visible;
 	transition:
 		max-height var(--rux-duration-base) var(--rux-ease-out),
+		margin var(--rux-duration-base) var(--rux-ease-out),
 		padding-block var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out),
 		transform var(--rux-duration-base) var(--rux-ease-out),
-		border-color var(--rux-duration-fast) var(--rux-ease-out),
-		overflow 0s linear var(--rux-duration-base),
 		visibility 0s;
 }
 
@@ -267,7 +265,7 @@
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	padding: var(--rux-space-1);
+	padding: var(--rux-space-1) var(--rux-space-2);
 	gap: var(--rux-trip-bar-tight-gap);
 }
 
@@ -308,6 +306,7 @@
 
 .rux-trip-bar__destination {
 	min-width: 0;
+	min-height: 19px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -363,6 +362,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	min-height: 16px;
 	color: var(--rux-fg-on-accent-muted);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
@@ -371,6 +371,7 @@
 .rux-trip-bar__contact {
 	display: flex;
 	min-width: 0;
+	min-height: 16px;
 	align-items: baseline;
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-regular);
@@ -398,6 +399,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	min-height: 16px;
 	font-style: italic;
 	color: oklch(90% 0.15 90);
 	font-size: var(--rux-text-xs);
@@ -409,6 +411,7 @@
 .rux-trip-bar__reqs {
 	display: flex;
 	align-items: center;
+	min-height: 18px;
 	gap: var(--rux-space-1);
 }
 
@@ -422,6 +425,7 @@
 	display: flex;
 	justify-content: space-between;
 	min-width: 0;
+	min-height: 16px;
 	align-items: baseline;
 	gap: var(--rux-space-2);
 	color: var(--rux-fg);
@@ -468,6 +472,7 @@
 .rux-trip-bar__drivers {
 	display: flex;
 	min-width: 0;
+	min-height: 19px;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--rux-space-2);

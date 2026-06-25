@@ -46,7 +46,7 @@
 	--rux-scheduler-bg: var(--rux-bg-level-1);
 	--rux-scheduler-border-color: var(--rux-border-subtle);
 	--rux-scheduler-grid-line-color: var(--rux-border-subtle);
-	--rux-scheduler-header-color: var(--rux-fg-subtle);
+	--rux-scheduler-header-color: var(--rux-fg);
 	--rux-scheduler-row-head-color: var(--rux-fg);
 	--rux-scheduler-max-block-size: none;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-4);
@@ -68,6 +68,7 @@
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-bg-level-2);
 	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
+	border: none;
 
 	border-radius: var(--rux-radius-md);
 }
@@ -81,25 +82,40 @@
 	z-index: var(--rux-z-sticky);
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	gap: var(--rux-space-2);
 	min-height: var(--rux-scheduler-head-height);
-	padding: var(--rux-space-2) var(--rux-space-2);
+	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--rux-bg-level-2);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-header-color);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
 }
 
-.rux-scheduler__day-head span:first-child {
+.rux-scheduler__day-name {
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-medium);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
+	color: var(--rux-fg-subtle);
 }
 
-.rux-scheduler__day-head span:last-child {
-	font-weight: var(--rux-weight-normal);
-	color: var(--rux-fg-subtle);
+.rux-scheduler__day-number {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-bold);
+	color: var(--rux-fg);
+	line-height: 1;
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	margin-left: auto;
+}
+
+.rux-scheduler__day-number--today {
+	background: var(--rux-accent);
+	color: var(--rux-fg-on-accent);
 }
 
 /* The day headers use real grid-cell borders; only remove the final edge so it
@@ -108,10 +124,9 @@
 	border-inline-end: none;
 }
 
-/* Today highlight */
+/* Today highlight — no column tint, just the number circle */
 .rux-scheduler__day-head--today {
-	color: var(--rux-scheduler-today-color);
-	background: var(--rux-scheduler-today-bg);
+	color: var(--rux-fg);
 }
 
 /* ---------- Row wrapper ---------- */

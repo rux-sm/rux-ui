@@ -1361,8 +1361,8 @@
         weekLabelEl.dataset.short = fmtWeekLabelShort(weekStart);
         dayHeadEls.forEach((el, index) => {
           const date = addDays(weekStart, index);
-          const monthShort = date.toLocaleDateString("en-US", { month: "short" });
-          el.innerHTML = `<span>${DAY_NAMES[index]}</span><span>${monthShort} ${date.getDate()}</span>`;
+          const isToday = isoDate(date) === todayIso;
+          el.innerHTML = `<span class="rux-scheduler__day-name">${DAY_NAMES[index]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span>`;
           el.classList.toggle("rux-scheduler__day-head--today", isoDate(date) === todayIso);
         });
       }
@@ -1489,12 +1489,14 @@
         const spanPct  = placement.span * dayPct;
         const fromPrev = placement.fromPrev || placement.trip.fromPrev;
         const toNext   = placement.toNext   || placement.trip.toNext;
+        const insetL = "var(--rux-space-2)";
+        const totalInset = "calc(var(--rux-space-4) + var(--rux-border-width))";
         bar.style.left = bar.style.right = bar.style.width = "";
-        if (fromPrev && toNext) { bar.style.left = bar.style.right = "var(--rux-space-2)"; bar.style.width = "auto"; return; }
-        if (fromPrev) { bar.style.left = "var(--rux-space-2)"; bar.style.width = `calc(${spanPct}% - var(--rux-space-4))`; return; }
-        bar.style.left = `calc(${startPct}% + var(--rux-space-2))`;
-        if (toNext) { bar.style.right = "var(--rux-space-2)"; bar.style.width = "auto"; }
-        else { bar.style.width = `calc(${spanPct}% - var(--rux-space-4))`; }
+        if (fromPrev && toNext) { bar.style.left = bar.style.right = insetL; bar.style.width = "auto"; return; }
+        if (fromPrev) { bar.style.left = insetL; bar.style.width = `calc(${spanPct}% - ${totalInset})`; return; }
+        bar.style.left = `calc(${startPct}% + ${insetL})`;
+        if (toNext) { bar.style.right = insetL; bar.style.width = "auto"; }
+        else { bar.style.width = `calc(${spanPct}% - ${totalInset})`; }
       }
 
       function layoutTrack(track) {
@@ -1517,7 +1519,7 @@
           y += Math.max(...laneEntries.map(e => e.bar.offsetHeight));
           if (index < lanes.length - 1) y += gap;
         });
-        row.style.setProperty("--_row-height", `${y + inset}px`);
+        row.style.setProperty("--_row-height", `${y + inset + 1}px`);
       }
 
       let activePlacements = [];

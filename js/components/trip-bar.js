@@ -720,7 +720,7 @@ export function createTripBar(trip, callbacks = {}) {
       return el;
     })(),
     textEl("div", "rux-trip-bar__notes", trip.notes),
-    ...(() => { const r = buildRequirementIcons(trip); return r ? [r] : []; })(),
+    (() => { const r = buildRequirementIcons(trip); if (r) return r; const empty = document.createElement("div"); empty.className = "rux-trip-bar__reqs"; return empty; })(),
     spacer,
     (() => {
       const footer = document.createElement("div");
@@ -820,9 +820,17 @@ export function createTripBar(trip, callbacks = {}) {
 
   bar.setActive = (value) => {
     const active = Boolean(value);
-    if (active) deactivateTripBars(bar);
-    bar.classList.toggle("is-active", active);
-    if (!active) setExpanded(false);
+    if (active) {
+      deactivateTripBars(bar);
+      bar.classList.add("is-active");
+    } else {
+      const wasExpanded = bar.classList.contains("is-expanded");
+      setExpanded(false);
+      const delay = wasExpanded ? 220 : 0;
+      setTimeout(() => {
+        bar.classList.remove("is-active");
+      }, delay);
+    }
   };
   bar.setExpanded = setExpanded;
   bar.tripData = trip;
