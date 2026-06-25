@@ -322,19 +322,13 @@ const PENDING_INDICATORS = [
     key: "itinerary",
     icon: "paperclip",
     label: "Pending itinerary",
-    check: (trip) => trip.itineraryStatus !== "received",
+    check: (trip) => trip.itineraryStatus !== "received" && !(trip.trip_documents || []).some(d => d.label === "Itinerary"),
   },
   {
-    key: "contact",
+    key: "tripContact",
     icon: "phone_enabled",
-    label: "Pending contact status",
-    check: (trip) => trip.contactStatus !== "received",
-  },
-  {
-    key: "contactPhone",
-    icon: "phone",
-    label: "Contact phone missing",
-    check: (trip) => !trip.bookingContact?.phone,
+    label: "Trip contact missing",
+    check: (trip) => !trip.tripContact?.name && !trip.tripContact?.phone,
   },
   {
     key: "needs_contract",
@@ -428,8 +422,12 @@ function getPendingIndicators(trip) {
   return PENDING_INDICATORS.filter((item) => item.check(trip));
 }
 
+function getItineraryDoc(trip) {
+  return (trip.trip_documents || []).find(d => d.label === "Itinerary") || null;
+}
+
 function hasTripPdf(trip) {
-  return Boolean(trip.itineraryPdfUrl || trip.pdfUrl || trip.pdfUploaded);
+  return Boolean(getItineraryDoc(trip) || trip.itineraryPdfUrl || trip.pdfUrl || trip.pdfUploaded);
 }
 
 function firstValue(...values) {
@@ -539,12 +537,37 @@ export function createTripBar(trip, callbacks = {}) {
     (callbacks.onOpenTrip || callbacks.onOpen)?.(trip);
   });
 
-  const pdfUploaded = hasTripPdf(trip);
-  const pdfLabel = pdfUploaded ? "View PDF" : "Upload PDF";
-  const pdfIcon = pdfUploaded ? "paperclip" : "upload";
+  const itineraryDoc = getItineraryDoc(trip);
+  const pdfUploaded = Boolean(itineraryDoc) || hasTripPdf(trip);
+  const pdfLabel = pdfUploaded ? "View Itinerary" : "Upload Itinerary";
+  const pdfIcon = pdfUploaded ? "attach_file" : "upload";
   const onPdf = pdfUploaded
-    ? callbacks.onViewPdf || callbacks.onViewPDF
-    : callbacks.onUploadPdf || callbacks.onUploadPDF || callbacks.onUpload;
+    ? () => {
+        if (itineraryDoc) {
+          const url = window.RuxDocs?.url?.(itineraryDoc.file_path);
+          if (url) window.open(url, "_blank");
+        } else {
+          (callbacks.onViewPdf || callbacks.onViewPDF)?.(trip);
+        }
+      }
+    : () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "*/*";
+        input.addEventListener("change", async () => {
+          const file = input.files[0];
+          const tripId = trip.id;
+          if (!file || !tripId) return;
+          try {
+            await window.RuxDocs?.upload(tripId, "Itinerary", file);
+            window.Rux?.toast("Itinerary uploaded");
+          } catch (err) {
+            console.error("Upload failed:", err);
+            window.Rux?.toast("Upload failed");
+          }
+        });
+        input.click();
+      };
 
   actions.append(
     openBtn,
@@ -558,7 +581,7 @@ export function createTripBar(trip, callbacks = {}) {
       "rux-button rux-button--ghost rux-button--icon",
       pdfLabel,
       pdfIcon,
-      () => onPdf?.(trip),
+      () => onPdf(),
     ),
     button(
       "rux-button rux-button--ghost rux-button--icon",

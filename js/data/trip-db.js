@@ -702,7 +702,7 @@ import { supabase } from "./supabase.js";
 	/* ── Fetch ───────────────────────────────────────────────────────────── */
 
 export async function fetchTrips() {
-	const [tripsResult, paymentsResult] = await Promise.all([
+	const [tripsResult, paymentsResult, docsResult] = await Promise.all([
 		supabase
 			.from("trips")
 			.select(`
@@ -719,6 +719,10 @@ export async function fetchTrips() {
 			.from("trip_payments")
 			.select("*")
 			.order("position", { ascending: true }),
+		supabase
+			.from("trip_documents")
+			.select("id, trip_id, label, file_name, file_path")
+			.order("created_at", { ascending: true }),
 	]);
 	if (tripsResult.error) throw tripsResult.error;
 	if (paymentsResult.error) throw paymentsResult.error;
@@ -729,6 +733,12 @@ export async function fetchTrips() {
 		paymentsByTrip.get(p.trip_id).push(p);
 	}
 
+	const docsByTrip = new Map();
+	for (const d of docsResult?.data ?? []) {
+		if (!docsByTrip.has(d.trip_id)) docsByTrip.set(d.trip_id, []);
+		docsByTrip.get(d.trip_id).push(d);
+	}
+
 	return (tripsResult.data ?? []).map(trip => ({
 		...trip,
 		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...a }) => ({
@@ -736,6 +746,7 @@ export async function fetchTrips() {
 			drivers: trip_drivers ?? [],
 		})),
 		trip_payments: paymentsByTrip.get(trip.id) ?? [],
+		trip_documents: docsByTrip.get(trip.id) ?? [],
 	}));
 }
 
@@ -828,6 +839,12 @@ export function loadTrip(root, itinerary, trip) {
 	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 	populateStops(itinerary, trip.trip_stops ?? trip.stops ?? []);
 
+	if (currentTripId) {
+		fetchDocuments(currentTripId).then((docs) => {
+			root.dispatchEvent(new CustomEvent("rux:documents-loaded", { bubbles: true, detail: { documents: docs } }));
+		}).catch((err) => console.warn("Could not load documents:", err));
+	}
+
 	const idEl = root.querySelector("#tp-trip-id");
 	if (idEl) idEl.textContent = trip.trip_ref ?? trip.id ?? "";
 
@@ -848,6 +865,89 @@ export async function reassignBus(assignmentId, newBusId) {
 		.update({ bus_id: newBusId })
 		.eq("id", assignmentId);
 	if (error) throw error;
+}
+
+/* ── Documents ──────────────────────────────────────────────────────────── */
+
+const BUCKET = "trip-documents";
+
+export function getDocumentUrl(filePath) {
+	const { data } = supabase.storage.from(BUCKET).getPublicUrl(filePath);
+	return data?.publicUrl || null;
+}
+
+export function getDocumentShortUrl(docId) {
+	return `${window.location.origin}/doc.html?id=${docId}`;
+}
+
+export async function uploadDocument(tripId, label, file) {
+	const ext = file.name.split(".").pop() || "bin";
+	const filePath = `${tripId}/${label.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.${ext}`;
+
+	const { error: uploadErr } = await supabase.storage
+		.from(BUCKET)
+		.upload(filePath, file);
+	if (uploadErr) throw uploadErr;
+
+	const { data: doc, error: dbErr } = await supabase
+		.from("trip_documents")
+		.insert({ trip_id: tripId, label, file_name: file.name, file_path: filePath, file_size: file.size })
+		.select("id, label, file_name, file_path")
+		.single();
+	if (dbErr) throw dbErr;
+	return doc;
+}
+
+export async function replaceDocument(docId, file) {
+	const { data: existing } = await supabase
+		.from("trip_documents")
+		.select("file_path, trip_id, label")
+		.eq("id", docId)
+		.single();
+	if (!existing) throw new Error("Document not found");
+
+	await supabase.storage.from(BUCKET).remove([existing.file_path]);
+
+	const ext = file.name.split(".").pop() || "bin";
+	const filePath = `${existing.trip_id}/${existing.label.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.${ext}`;
+
+	const { error: uploadErr } = await supabase.storage
+		.from(BUCKET)
+		.upload(filePath, file);
+	if (uploadErr) throw uploadErr;
+
+	const { error: updateErr } = await supabase
+		.from("trip_documents")
+		.update({ file_name: file.name, file_path: filePath, file_size: file.size })
+		.eq("id", docId);
+	if (updateErr) throw updateErr;
+	return { ...existing, file_name: file.name, file_path: filePath };
+}
+
+export async function deleteDocument(docId) {
+	const { data: doc } = await supabase
+		.from("trip_documents")
+		.select("file_path")
+		.eq("id", docId)
+		.single();
+	if (doc?.file_path) {
+		await supabase.storage.from(BUCKET).remove([doc.file_path]);
+	}
+	await supabase.from("trip_documents").delete().eq("id", docId);
+}
+
+export async function fetchDocuments(tripId) {
+	const { data, error } = await supabase
+		.from("trip_documents")
+		.select("id, label, file_name, file_path")
+		.eq("trip_id", tripId)
+		.order("created_at", { ascending: true });
+	if (error) throw error;
+	return data ?? [];
+}
+
+export function getCurrentTripId() {
+	return currentTripId;
 }
 
 export function initTripDB(root, itinerary) {

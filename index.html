@@ -64,7 +64,7 @@
               type="button"
               data-module="fleet"
             >
-              <span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span>
+              <span class="rux-icon" aria-hidden="true">directions_bus</span>
               Fleet
             </button>
 
@@ -1545,10 +1545,12 @@
               assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [] })),
               trip_stops: t.trip_stops ?? [],
               trip_payments: t.trip_payments ?? [],
+              trip_documents: t.trip_documents ?? [],
               startDate: t.start_date, endDate: t.end_date, destination: t.destination, customer: t.customer,
               trip_type: t.trip_type,
               departureTime: t.departure_time, spotTime: t.spot_time, returnTime: t.return_time, notes: t.notes,
               bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone, email: t.booking_contact_email },
+              tripContact: { name: t.trip_contact_1_name, phone: t.trip_contact_1_phone },
               bus_count: t.bus_count,
               trip_reqs: t.trip_reqs ?? {},
               req_sleeper: t.req_sleeper, req_56pax: t.req_56pax, req_ada: t.req_ada,
@@ -1621,6 +1623,14 @@
           newTrip   = db.newTrip;
           fetchTrips = db.fetchTrips;
           db.initTripDB(tripPanel, itinerary);
+          window.RuxDocs = {
+            upload: db.uploadDocument,
+            replace: db.replaceDocument,
+            delete: db.deleteDocument,
+            fetch: db.fetchDocuments,
+            url: db.getDocumentUrl,
+            tripId: db.getCurrentTripId,
+          };
           let buses = [], drivers = [];
           try { buses   = await db.fetchBuses();   } catch (err) { console.warn("Could not load buses:",   err); }
           schedulerBuses = buses;

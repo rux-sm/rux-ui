@@ -50,8 +50,8 @@
 	--rux-scheduler-row-head-color: var(--rux-fg);
 	--rux-scheduler-max-block-size: none;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-4);
-	--rux-scheduler-today-color: oklch(from var(--rux-accent) 70% 0.24 h / 100%);
-	--rux-scheduler-today-bg: color-mix(in oklch, var(--rux-scheduler-bg) 75%, var(--rux-accent) 25%);
+	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
+	--rux-scheduler-today-bg: color-mix(in oklch, var(--rux-scheduler-bg) 0%, var(--rux-accent) 100%);
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
 	--_row-height: calc(var(--rux-trip-bar-collapsed-height, 10rem) + (var(--rux-scheduler-row-block-inset) * 2));
 	--rux-scheduler-cols: var(--rux-scheduler-col-head-width)

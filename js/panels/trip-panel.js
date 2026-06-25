@@ -411,10 +411,11 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		sync();
 	});
 	root.addEventListener("rux:trip-cleared", () => {
-		if (!paymentRows) return;
-		paymentRows.dataset.paymentsTouched = "true";
-		paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
-		sync();
+		if (paymentRows) {
+			paymentRows.dataset.paymentsTouched = "true";
+			paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
+			sync();
+		}
 	});
 	document.addEventListener("settings:billing", () => {
 		window.RuxBilling?.applyToTripPanel?.(root);
@@ -514,6 +515,19 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	const docCancelBtn = root.querySelector("#tp-doc-cancel-btn");
 	const docList = root.querySelector("#tp-doc-list");
 
+	function docRowHtml(doc) {
+		return `<button class="rux-button rux-trip-panel__doc-btn" type="button" data-doc-open data-doc-path="${escHtml(doc.file_path)}" title="${escHtml(doc.file_name)}">
+				<span class="rux-icon">description</span>
+				<span>${escHtml(doc.label)}</span>
+			</button>
+			<button class="rux-button rux-button--icon" type="button" data-doc-replace data-doc-id="${escHtml(doc.id)}" aria-label="Replace">
+				<span class="rux-icon">swap_horiz</span>
+			</button>
+			<button class="rux-button rux-button--danger rux-button--icon" type="button" data-doc-delete data-doc-id="${escHtml(doc.id)}" aria-label="Delete">
+				<span class="rux-icon">delete</span>
+			</button>`;
+	}
+
 	if (docUploadBtn && docFileInput) {
 		docLabelSel?.addEventListener("change", () => {
 			docUploadBtn.disabled = !docLabelSel.value;
@@ -524,50 +538,93 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			docFileInput.click();
 		});
 
-		docFileInput.addEventListener("change", () => {
+		docFileInput.addEventListener("change", async () => {
 			const file = docFileInput.files[0];
 			const label = docLabelSel?.value;
-			if (!file || !label) return;
-
-			const li = document.createElement("li");
-			li.className = "rux-trip-panel__doc-row";
-			li.innerHTML = `
-				<button class="rux-button rux-trip-panel__doc-btn" type="button" data-doc-open title="${escHtml(file.name)}">
-					<span class="rux-icon">description</span>
-					<span>${escHtml(label)}</span>
-				</button>
-				<button class="rux-button rux-button--icon" type="button" data-doc-replace aria-label="Replace">
-					<span class="rux-icon">swap_horiz</span>
-				</button>
-				<button class="rux-button rux-button--danger rux-button--icon" type="button" aria-label="Delete">
-					<span class="rux-icon">delete</span>
-				</button>`;
-			docList?.appendChild(li);
+			const tripId = window.RuxDocs?.tripId?.();
+			if (!file || !label || !tripId) {
+				if (!tripId) window.Rux?.toast("Save the trip first before uploading documents.");
+				docFileInput.value = "";
+				return;
+			}
+			docUploadBtn.disabled = true;
+			docUploadBtn.textContent = "Uploading…";
+			try {
+				const doc = await window.RuxDocs.upload(tripId, label, file);
+				const li = document.createElement("li");
+				li.className = "rux-trip-panel__doc-row";
+				li.innerHTML = docRowHtml(doc);
+				docList?.appendChild(li);
+				window.Rux?.toast(`${label} uploaded`);
+			} catch (err) {
+				console.error("Upload failed:", err);
+				window.Rux?.toast("Upload failed — try again.");
+			}
 			docLabelSel.value = "";
 			docUploadBtn.disabled = true;
+			docUploadBtn.innerHTML = '<span class="rux-icon">upload</span> Upload';
 			docFileInput.value = "";
 		});
 
-		docList?.addEventListener("click", (e) => {
+		docList?.addEventListener("click", async (e) => {
+			const openBtn = e.target.closest("[data-doc-open]");
+			if (openBtn) {
+				const url = window.RuxDocs?.url?.(openBtn.dataset.docPath);
+				if (url) window.open(url, "_blank");
+				return;
+			}
 			const replaceBtn = e.target.closest("[data-doc-replace]");
 			if (replaceBtn) {
 				const row = replaceBtn.closest(".rux-trip-panel__doc-row");
+				const docId = replaceBtn.dataset.docId;
 				const input = document.createElement("input");
 				input.type = "file";
 				input.accept = "*/*";
-				input.addEventListener("change", () => {
-					if (input.files[0]) {
-						const openBtn = row.querySelector("[data-doc-open]");
-						if (openBtn) openBtn.title = input.files[0].name;
+				input.addEventListener("change", async () => {
+					if (!input.files[0]) return;
+					try {
+						const updated = await window.RuxDocs.replace(docId, input.files[0]);
+						row.innerHTML = docRowHtml({ id: docId, ...updated });
+						window.Rux?.toast("Document replaced");
+					} catch (err) {
+						console.error("Replace failed:", err);
+						window.Rux?.toast("Replace failed — try again.");
 					}
 				});
 				input.click();
 				return;
 			}
-			const del = e.target.closest('[aria-label="Delete"]');
-			if (del) del.closest(".rux-trip-panel__doc-row")?.remove();
+			const delBtn = e.target.closest("[data-doc-delete]");
+			if (delBtn) {
+				const row = delBtn.closest(".rux-trip-panel__doc-row");
+				const docId = delBtn.dataset.docId;
+				if (!confirm("Delete this document?")) return;
+				try {
+					await window.RuxDocs.delete(docId);
+					row.remove();
+					window.Rux?.toast("Document deleted");
+				} catch (err) {
+					console.error("Delete failed:", err);
+					window.Rux?.toast("Delete failed — try again.");
+				}
+			}
 		});
 	}
+
+	root.addEventListener("rux:trip-cleared", () => {
+		if (docList) docList.innerHTML = "";
+	});
+
+	root.addEventListener("rux:documents-loaded", (event) => {
+		if (!docList) return;
+		docList.innerHTML = "";
+		(event.detail?.documents || []).forEach((doc) => {
+			const li = document.createElement("li");
+			li.className = "rux-trip-panel__doc-row";
+			li.innerHTML = docRowHtml(doc);
+			docList.appendChild(li);
+		});
+	});
 
 	/* ── Bus groups ───────────────────────────────────────────────────────── */
 

@@ -48,7 +48,7 @@
      Designed for OLED-friendly contrast without crushing blacks.            */
 
 	--rux-color-white: oklch(100% 0 0);
-	--rux-color-base: oklch(50% 0.004 260);
+	--rux-color-base: oklch(50% 0 260);
 
 	--rux-bg-topbar: oklch(0% 0.004 260);
 	--rux-bg: oklch(0% 0.004 260); /* canvas — the lowest plane */
@@ -62,13 +62,13 @@
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim     
 	
 	/* The absolute base (OLED black) */
-	--rux-bg-level-0: oklch(from var(--rux-color-base) 18% c h);
+	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
 
 	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 22% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 18.5% c h);
 
 	/* Elevated elements like floating cards or popovers */
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 28% c h);
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 26% c h);
 
 	/* Highest contrast accents / Badges */
 	--rux-bg-level-3: oklch(from var(--rux-color-base) 30% c h);
@@ -126,11 +126,11 @@
 
 	--rux-accent-h: 260; /* hue · 0–360                     */
 	--rux-accent-l: 60%; /* lightness                       */
-	--rux-accent-c: 0.22; /* chroma                          */
+	--rux-accent-c: 0.24; /* chroma                          */
 
 	--rux-accent: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
 	--rux-accent-hover: oklch(70% var(--rux-accent-c) var(--rux-accent-h)); /* +10L */
-	--rux-accent-active: oklch(50% var(--rux-accent-c) var(--rux-accent-h)); /* -10L */
+	--rux-accent-active: oklch(60% var(--rux-accent-c) var(--rux-accent-h)); /* -10L */
 	--rux-accent-subtle: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
 	--rux-accent-ring: oklch(70% 0.28 var(--rux-accent-h) / 1);
 

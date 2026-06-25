@@ -167,4 +167,8 @@
   });
 
   window.Rux = Rux;
+
+  document.querySelectorAll("input, select, textarea").forEach((el) => {
+    if (!el.hasAttribute("autocomplete")) el.setAttribute("autocomplete", "nope");
+  });
 })();
