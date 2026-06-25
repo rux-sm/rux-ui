@@ -1537,6 +1537,7 @@
         activeObservers.forEach(o => o.disconnect());
         activeObservers = [];
         document.querySelectorAll(".rux-scheduler__track .rux-trip-bar").forEach(bar => bar.remove());
+        Object.keys(trips).forEach(key => { trips[key].groupLabel = computeBusLabel(key); });
         activePlacements = getWeekPlacements(currentWeekStart, trips);
         activePlacements.forEach((placement) => {
           const track = document.getElementById(placement.trackId);
@@ -1571,6 +1572,7 @@
             const primaryDriver = (assignment.drivers ?? []).find(d => d.role === "driver");
             trips[key] = {
               id: t.id, trip_ref: t.trip_ref, assignmentId: assignment.id, busId: assignment.bus_id,
+              tripGroupId: (t.trip_assignments ?? []).length > 1 ? t.id : null,
               assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [] })),
               trip_stops: t.trip_stops ?? [],
               trip_payments: t.trip_payments ?? [],

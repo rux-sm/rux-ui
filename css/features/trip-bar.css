@@ -42,7 +42,7 @@
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 134px;
+	--rux-trip-bar-collapsed-height: 135px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-continuation-width: 2.5rem;
@@ -208,7 +208,7 @@
 	margin: 0;
 	justify-content: stretch;
 	background: oklch(0% 0 0 / 0.2);
-	border-radius: var(--rux-radius-md);
+	border-radius: 4px;
 	overflow: hidden;
 }
 .rux-trip-bar__actions > .rux-button {
@@ -265,7 +265,7 @@
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	padding: var(--rux-space-1) var(--rux-space-2);
+	padding: var(--rux-space-1);
 	gap: var(--rux-trip-bar-tight-gap);
 }
 
@@ -293,20 +293,19 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: var(--rux-control-height);
-	height: var(--rux-icon-lg);
-	padding: 0 var(--rux-space-2);
-	background: var(--rux-trip-bar-bus-label-bg);
-	border-radius: var(--rux-radius-sm);
+	height: 20px;
+	padding: 0 4px;
+	background: oklch(0% 0 0 / 0.2);
+	border-radius: 4px;
 	color: var(--rux-fg-on-accent);
-	font-size: var(--rux-text-xs);
+	font-size: 10px;
 	font-weight: var(--rux-weight-bold);
 	line-height: 1;
 }
 
 .rux-trip-bar__destination {
 	min-width: 0;
-	min-height: 19px;
+	min-height: 20px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -413,6 +412,10 @@
 	align-items: center;
 	min-height: 18px;
 	gap: var(--rux-space-1);
+}
+
+.rux-trip-bar__reqs .rux-trip-bar__pending {
+	margin-left: auto;
 }
 
 .rux-trip-bar__req-icon {
@@ -599,6 +602,8 @@
 .rux-trip-bar.is-active .rux-trip-bar__expand {
 	opacity: 1;
 	pointer-events: auto;
+	background: oklch(0% 0 0 / 0.2);
+	border-radius: 4px;
 }
 
 .rux-trip-bar__expand-icon {

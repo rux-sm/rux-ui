@@ -8,8 +8,8 @@ The trip bar is a compact Gantt-style card on the scheduler grid. Each bar repre
 
 | Property | Value | Notes |
 |---|---|---|
-| Collapsed height | **134px** | Exact fit for 7 rows + gaps + padding |
-| Body padding | **4px top/bottom, 8px left/right** | `space-1` vertical, `space-2` horizontal |
+| Collapsed height | **135px** | Exact fit for 7 rows + gaps + padding |
+| Body padding | **4px all sides** | `space-1` uniform |
 | Row gap | **1px** | `--rux-trip-bar-tight-gap` |
 | Icon size (all icons) | **18px** | Scoped `--rux-icon-md: 18px` on `.rux-trip-bar` |
 | Day minimum width | **13rem (208px)** | Set on `.scheduler-app__grid` |
@@ -18,23 +18,23 @@ The trip bar is a compact Gantt-style card on the scheduler grid. Each bar repre
 
 ## Row Layout (top to bottom)
 
-All rows use `line-height: 1.3` (`--rux-leading-snug`) unless noted.
+All rows use `line-height: 1.3` (`--rux-leading-snug`) unless noted. All rows have `min-height` set so they **always reserve space** even when empty — every bar is an identical fixed grid.
 
-| # | Row | Class | Font size | Weight | Height |
-|---|---|---|---|---|---|
-| 1 | Destination + pending icons | `__destination` | 14px (`text-sm`) | bold | 19px |
-| 2 | Client | `__client` | 12px (`text-xs`) | medium | 16px |
-| 3 | Contact name + phone | `__contact` | 12px (`text-xs`) | regular | 16px |
-| 4 | Notes | `__notes` | 12px (`text-xs`) | medium italic | 16px (0 if empty) |
-| 5 | Requirement icons | `__reqs` | 18px icons | — | 18px (0 if none) |
-| 6 | Times (D / S / A) | `__time` | 12px (`text-xs`) | bold values | 16px |
-| 7 | Driver + expand chevron | `__driver` | 14px (`text-sm`) | semibold | 19px |
+| # | Row | Class | Font size | Weight | Min-height | Content |
+|---|---|---|---|---|---|---|
+| 1 | Destination + bus pill | `__destination` | 14px (`text-sm`) | bold | 20px | Destination left, bus pill right (if multi-bus) |
+| 2 | Client | `__client` | 12px (`text-xs`) | medium | 16px | Customer name |
+| 3 | Contact | `__contact` | 12px (`text-xs`) | regular | 16px | Name + phone (4px gap, no dot separator) |
+| 4 | Notes | `__notes` | 12px (`text-xs`) | medium italic | 16px | Yellow text, operational callout |
+| 5 | Reqs + pending icons | `__reqs` | 18px icons | — | 18px | Req icons left, pending icons right |
+| 6 | Times (D / S / A) | `__time` | 12px (`text-xs`) | bold values | 16px | D/S/A labels at 55% opacity |
+| 7 | Drivers + expand | `__drivers` | 14px (`text-sm`) | semibold | 19px | Driver names + expand chevron |
 
 ### Height calculation
 
 ```
   Padding top:     4px
-  Row 1:          19px
+  Row 1:          20px
   Gap:             1px
   Row 2:          16px
   Gap:             1px
@@ -49,14 +49,32 @@ All rows use `line-height: 1.3` (`--rux-leading-snug`) unless noted.
   Row 7:          19px
   Padding bottom:  4px
   ─────────────────────
-  Total:         134px
+  Total:         135px
 ```
 
-### Empty rows
-- **Notes** (row 4): collapses to 0 when empty, no min-height
-- **Requirements** (row 5): not rendered when no reqs are active
-- **Client/Contact** (rows 2-3): collapse to 0 when empty, no min-height
-- Trips with fewer rows will have dead space at the bottom (fixed height)
+### Fixed grid rules
+- **All 7 rows always reserve space** via `min-height`, even when empty
+- **No spacer** — content flows top to bottom, no flex push
+- **Empty rows** hold their height — every bar is identical regardless of data
+
+---
+
+## Optical Radius System
+
+All nested elements follow the optical radius formula: `inner radius = outer radius - gap`.
+
+| Element | Radius | Calculation |
+|---|---|---|
+| Trip bar (outer) | **8px** (`--rux-radius-md`) | Base |
+| Action toolbar | **4px** | 8px - 4px margin |
+| Bus pill | **4px** | 8px - 4px padding |
+| Expand chevron button | **4px** | 8px - 4px padding |
+| Interactive overlay bg | `oklch(0% 0 0 / 0.2)` | Shared across action bar, bus pill, expand button |
+
+### Rule
+Any element nested inside the trip bar with a background uses:
+- **4px border-radius** (outer 8px minus 4px body padding)
+- **20% black overlay** (`oklch(0% 0 0 / 0.2)`) for background
 
 ---
 
@@ -71,7 +89,7 @@ Appears above the body when the trip bar is selected (`.is-active`).
 | Padding | 0 (buttons fill edge-to-edge) |
 | Margin | 4px (`space-1`) — creates floating inset |
 | Background | `oklch(0% 0 0 / 0.2)` — 20% black overlay |
-| Border radius | `--rux-radius-md` |
+| Border radius | 4px (optical: 8px outer - 4px margin) |
 | Overflow | hidden (clips button hover to rounded corners) |
 
 ### Buttons (left to right)
@@ -85,6 +103,23 @@ Appears above the body when the trip bar is selected (`.is-active`).
 | 5 | `more_horiz` | Other | Additional options |
 
 All buttons are `rux-button--ghost rux-button--icon` with `width: 100%; min-width: 0` to fill their grid cell.
+
+---
+
+## Bus Pill
+
+Shows which bus in a multi-bus trip (e.g. "1/2", "2/2"). Only appears when trip has multiple assignments.
+
+| Property | Value |
+|---|---|
+| Position | Row 1, right-aligned next to destination |
+| Height | 20px |
+| Padding | 0 4px |
+| Font size | 10px |
+| Font weight | bold |
+| Background | `oklch(0% 0 0 / 0.2)` |
+| Border radius | 4px |
+| Color | `--rux-fg-on-accent` (white) |
 
 ---
 
@@ -122,9 +157,9 @@ All text uses white with opacity tiers. Works on any status background color.
 
 ---
 
-## Pending Indicators (row 1, right side)
+## Pending Indicators (row 5, right-aligned)
 
-Icons that flag missing data. Disappear when the condition is resolved.
+Icons that flag missing data. Sit on the requirements row, pushed right via `margin-left: auto`. Disappear when the condition is resolved.
 
 | Key | Icon | Condition |
 |---|---|---|
@@ -139,6 +174,11 @@ Icons that flag missing data. Disappear when the condition is resolved.
 ## Expanded Details (below driver row)
 
 Shown when the expand chevron (`keyboard_arrow_down`) is clicked. Requires `.is-active`.
+
+| Property | Value |
+|---|---|
+| Expand button bg | `oklch(0% 0 0 / 0.2)` |
+| Expand button radius | 4px |
 
 | Label | Field |
 |---|---|
@@ -175,6 +215,7 @@ Values truncate with ellipsis — no wrapping.
 | Hover | Background color shift | `--rux-duration-fast` (140ms) |
 | Select/deselect | Height change (action bar reveal) | `--rux-duration-base` (220ms) |
 | Expand/collapse details | Height change | `--rux-duration-base` (220ms) |
+| Click-away close (expanded) | Staged: collapse details (220ms) → then deactivate | Sequential, not simultaneous |
 
 ---
 

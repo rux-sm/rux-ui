@@ -650,9 +650,14 @@ export function createTripBar(trip, callbacks = {}) {
     }
   }
   pending.setAttribute("aria-label", summaryMarkerLabels.join(", "));
+  const busPill = groupLabel ? (() => {
+    const el = textEl("span", "rux-trip-bar__bus-label", groupLabel);
+    el.setAttribute("aria-label", `${groupLabel} buses in this customer trip`);
+    return el;
+  })() : null;
   summary.append(
     textEl("div", "rux-trip-bar__destination", trip.destination),
-    ...(summaryMarkerLabels.length ? [pending] : []),
+    ...(busPill ? [busPill] : []),
   );
 
   const time = document.createElement("div");
@@ -675,14 +680,6 @@ export function createTripBar(trip, callbacks = {}) {
 
   const drivers = document.createElement("div");
   drivers.className = "rux-trip-bar__drivers";
-  if (groupLabel) {
-    const busGroup = textEl("span", "rux-trip-bar__bus-label", groupLabel);
-    busGroup.setAttribute(
-      "aria-label",
-      `${groupLabel} buses in this customer trip`,
-    );
-    drivers.appendChild(busGroup);
-  }
   (trip.drivers || []).forEach((driver) => {
     const item = document.createElement("span");
     item.className = "rux-trip-bar__driver";
@@ -720,7 +717,14 @@ export function createTripBar(trip, callbacks = {}) {
       return el;
     })(),
     textEl("div", "rux-trip-bar__notes", trip.notes),
-    (() => { const r = buildRequirementIcons(trip); if (r) return r; const empty = document.createElement("div"); empty.className = "rux-trip-bar__reqs"; return empty; })(),
+    (() => {
+      const row = document.createElement("div");
+      row.className = "rux-trip-bar__reqs";
+      const r = buildRequirementIcons(trip);
+      if (r) { while (r.firstChild) row.appendChild(r.firstChild); }
+      if (summaryMarkerLabels.length) { row.appendChild(pending); }
+      return row;
+    })(),
     spacer,
     (() => {
       const footer = document.createElement("div");
