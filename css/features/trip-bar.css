@@ -42,7 +42,7 @@
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 135px;
+	--rux-trip-bar-collapsed-height: 143px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-continuation-width: 2.5rem;
@@ -77,7 +77,7 @@
 	container-type: inline-size;
 	--rux-icon-md: 18px;
 	background-color: var(--_surface);
-	border-radius: var(--rux-radius-md);
+	border-radius: 12px;
 	box-shadow: var(--rux-shadow-sm);
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;
@@ -184,7 +184,7 @@
 }
 
 .rux-trip-bar--multi-day .rux-trip-bar__actions {
-	max-width: calc(var(--rux-trip-bar-day-inline-size, 100%) - var(--rux-space-1) * 2);
+	max-width: calc(var(--rux-trip-bar-day-inline-size, 100%) - var(--rux-space-2) * 2);
 }
 .rux-trip-bar--multi-day .rux-trip-bar__body,
 .rux-trip-bar--multi-day .rux-trip-bar__details-inner {
@@ -234,7 +234,7 @@
 .rux-trip-bar.is-active .rux-trip-bar__actions {
 	max-height: var(--rux-trip-bar-action-height);
 	overflow: hidden;
-	margin: var(--rux-space-1);
+	margin: var(--rux-space-2);
 	padding-block: var(--rux-trip-bar-action-padding-block);
 	padding-inline: 0;
 	opacity: 1;
@@ -265,7 +265,7 @@
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	padding: var(--rux-space-1);
+	padding: var(--rux-space-2);
 	gap: var(--rux-trip-bar-tight-gap);
 }
 
@@ -490,6 +490,16 @@
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-snug);
+}
+
+.rux-trip-bar__driver-role-icon {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+}
+
+.rux-trip-bar__driver--unassigned {
+	color: var(--rux-fg-on-accent-subtle);
 }
 
 .rux-trip-bar__driver-dot {

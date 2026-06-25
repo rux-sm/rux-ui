@@ -328,6 +328,7 @@
     document.getElementById("dp-city").value            = d.city           || "";
     document.getElementById("dp-state").value           = d.address_state  || "";
     document.getElementById("dp-zip").value             = d.zip            || "";
+    document.getElementById("dp-dob").value              = d.date_of_birth  || "";
     document.getElementById("dp-hire-date").value       = d.hire_date      || "";
     document.getElementById("dp-lic-num").value         = d.license_number || "";
     document.getElementById("dp-lic-state").value       = d.license_state  || "";
@@ -410,6 +411,7 @@
       city:            document.getElementById("dp-city").value.trim()       || null,
       address_state:   document.getElementById("dp-state").value.trim().toUpperCase() || null,
       zip:             document.getElementById("dp-zip").value.trim()        || null,
+      date_of_birth:   document.getElementById("dp-dob").value              || null,
       hire_date:       document.getElementById("dp-hire-date").value         || null,
       cdl_class:       cdlClass,
       license_number:  document.getElementById("dp-lic-num").value.trim()   || null,

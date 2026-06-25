@@ -1573,7 +1573,7 @@
             trips[key] = {
               id: t.id, trip_ref: t.trip_ref, assignmentId: assignment.id, busId: assignment.bus_id,
               tripGroupId: (t.trip_assignments ?? []).length > 1 ? t.id : null,
-              assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [] })),
+              assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [], active_roles: a.active_roles ?? ["driver"] })),
               trip_stops: t.trip_stops ?? [],
               trip_payments: t.trip_payments ?? [],
               trip_documents: t.trip_documents ?? [],
@@ -1592,7 +1592,8 @@
               estimatedMiles: t.est_miles, actualMiles: t.actual_miles, quotedPrice: t.quoted_price,
               paymentRef: t.po_ref, invoiceNumber: t.invoice_number, datePaid: t.date_paid,
               paymentRefs: [t.payment_ref_1, t.payment_ref_2, t.payment_ref_3].filter(Boolean),
-              drivers: (assignment.drivers ?? []).map(td => ({ name: td.drivers?.name, shortName: td.drivers?.short_name || td.drivers?.name, status: "confirmed", pay: td.pay != null ? `$${td.pay}` : "" })),
+              drivers: (assignment.drivers ?? []).map(td => ({ name: td.drivers?.name, shortName: td.drivers?.short_name || td.drivers?.name, role: td.role, status: "confirmed", pay: td.pay != null ? `$${td.pay}` : "" })),
+              activeRoles: assignment.active_roles ?? ["driver"],
               driverId: primaryDriver?.driver_id ?? null,
             };
             const trackId = trackIdForBusNumber(assignment.buses.number);

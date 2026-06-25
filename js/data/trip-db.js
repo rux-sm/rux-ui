@@ -228,7 +228,16 @@ import { supabase } from "./supabase.js";
 				})
 				.filter(Boolean);
 
-			assignments.push({ bus_id: busId, position: i, drivers });
+			const busGroup = root.querySelectorAll(".rux-trip-panel__bus-group")[i];
+			const activeRoles = ["driver"];
+			if (busGroup) {
+				const roleMap = { coDriver: "co-driver", relief1: "relief-start", relief2: "relief-end" };
+				busGroup.querySelectorAll("[data-role][aria-pressed='true']").forEach((btn) => {
+					const mapped = roleMap[btn.dataset.role];
+					if (mapped) activeRoles.push(mapped);
+				});
+			}
+			assignments.push({ bus_id: busId, position: i, drivers, active_roles: activeRoles });
 		}
 
 		return assignments;
@@ -451,25 +460,30 @@ import { supabase } from "./supabase.js";
 		const roleKeyMap = { "driver": "driver", "co-driver": "coDriver", "relief-start": "relief1", "relief-end": "relief2" };
 		assignments.forEach((assignment, i) => {
 			const slot = assignment.position ?? i;
+			const busGroup = root.querySelectorAll(".rux-trip-panel__bus-group")[slot];
 			const busSelect = root.querySelector(`[name="buses[${slot}].busId"]`);
 			if (busSelect && assignment.bus_id) busSelect.value = assignment.bus_id;
+
+			// Restore active role toggles from saved state
+			(assignment.active_roles || ["driver"]).forEach((role) => {
+				const roleKey = roleKeyMap[role];
+				if (!roleKey || roleKey === "driver") return;
+				if (busGroup) {
+					const toggleBtn = busGroup.querySelector(`[data-role="${roleKey}"]`);
+					if (toggleBtn) {
+						toggleBtn.setAttribute("aria-pressed", "true");
+						toggleBtn.classList.add("is-active");
+					}
+					const row = busGroup.querySelector(`[data-role-row="${roleKey}"]`);
+					if (row) row.hidden = false;
+				}
+			});
 
 			(assignment.drivers || []).forEach(({ driver_id, role, pay }) => {
 				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
 				const driverSelect = root.querySelector(`[name="buses[${slot}].${roleKey}.name"]`);
-				if (driverSelect && driver_id) {
-					driverSelect.value = driver_id;
-					if (roleKey !== "driver") {
-						const row = driverSelect.closest("[data-role-row]");
-						if (row) row.hidden = false;
-						const toggleBtn = root.querySelector(`[data-role="${roleKey}"]`);
-						if (toggleBtn) {
-							toggleBtn.setAttribute("aria-pressed", "true");
-							toggleBtn.classList.add("is-active");
-						}
-					}
-				}
+				if (driverSelect && driver_id) driverSelect.value = driver_id;
 				const payInput = root.querySelector(`[name="buses[${slot}].${roleKey}.pay"]`);
 				if (payInput && pay != null) payInput.value = pay;
 			});
@@ -605,10 +619,10 @@ import { supabase } from "./supabase.js";
 				.eq("trip_id", savedId);
 			if (deleteAssignmentsErr) throw deleteAssignmentsErr;
 
-			for (const { bus_id, position, drivers } of assignments) {
+			for (const { bus_id, position, drivers, active_roles } of assignments) {
 				const { data: assignment, error: assignErr } = await supabase
 					.from("trip_assignments")
-					.insert({ trip_id: savedId, bus_id, position })
+					.insert({ trip_id: savedId, bus_id, position, active_roles })
 					.select("id")
 					.single();
 				if (assignErr) throw assignErr;
@@ -708,7 +722,7 @@ export async function fetchTrips() {
 			.select(`
 				*,
 				trip_assignments(
-					id, position, bus_id,
+					id, position, bus_id, active_roles,
 					buses(id, number),
 					trip_drivers(id, driver_id, role, pay, drivers(id, name, short_name))
 				),

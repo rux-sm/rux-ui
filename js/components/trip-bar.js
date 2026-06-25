@@ -678,17 +678,34 @@ export function createTripBar(trip, callbacks = {}) {
     ),
   );
 
+  const ROLE_ICONS = {
+    "driver": "person",
+    "co-driver": "person_add",
+    "relief-start": "last_page",
+    "relief-end": "first_page",
+  };
+
   const drivers = document.createElement("div");
   drivers.className = "rux-trip-bar__drivers";
+  const assignedRoles = new Set((trip.drivers || []).map(d => d.role));
+
   (trip.drivers || []).forEach((driver) => {
     const item = document.createElement("span");
     item.className = "rux-trip-bar__driver";
-    const dot = document.createElement("span");
-    dot.className = `rux-trip-bar__driver-dot ${driverStateClass(
-      driver.status || driver.state,
-    )}`;
-    item.append(dot, document.createTextNode(driver.shortName || driver.name));
+    const roleIcon = icon(ROLE_ICONS[driver.role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
+    item.append(roleIcon, document.createTextNode(driver.shortName || driver.name));
     drivers.appendChild(item);
+  });
+
+  const activeRoles = trip.activeRoles || ["driver"];
+  activeRoles.forEach((role) => {
+    if (!assignedRoles.has(role)) {
+      const item = document.createElement("span");
+      item.className = "rux-trip-bar__driver rux-trip-bar__driver--unassigned";
+      const roleIcon = icon(ROLE_ICONS[role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
+      item.appendChild(roleIcon);
+      drivers.appendChild(item);
+    }
   });
   const meta = document.createElement("div");
   meta.className = "rux-trip-bar__drivers-meta";
