@@ -65,7 +65,7 @@
 	--_conflict-height: 0px;
 	--_tone: var(--rux-accent);
 	--_tone-ring: var(--rux-ring-focus);
-	--_surface: oklch(from var(--_tone) 60% 0.24 h);
+	--_surface: oklch(from var(--_tone) 50% 0.18 h);
 	--_surface-hover: oklch(from var(--_tone) 70% 0.28 h);
 	--_surface-active: oklch(from var(--_tone) 60% 0.24 h);
 
@@ -146,8 +146,8 @@
 		45deg,
 		transparent 0,
 		transparent var(--rux-trip-bar-stripe-size),
-		color-mix(in oklch, var(--_tone) 24%, transparent) var(--rux-trip-bar-stripe-size),
-		color-mix(in oklch, var(--_tone) 24%, transparent) calc(var(--rux-trip-bar-stripe-size) * 2)
+		color-mix(in oklch, var(--_tone) 50%, transparent) var(--rux-trip-bar-stripe-size),
+		color-mix(in oklch, var(--_tone) 50%, transparent) calc(var(--rux-trip-bar-stripe-size) * 2)
 	);
 	pointer-events: none;
 }
@@ -493,9 +493,9 @@
 }
 
 .rux-trip-bar__driver-role-icon {
-	font-size: 14px;
-	width: 14px;
-	height: 14px;
+	font-size: var(--rux-icon-md);
+	width: var(--rux-icon-md);
+	height: var(--rux-icon-md);
 }
 
 .rux-trip-bar__driver--unassigned {

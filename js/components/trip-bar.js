@@ -689,20 +689,36 @@ export function createTripBar(trip, callbacks = {}) {
   drivers.className = "rux-trip-bar__drivers";
   const assignedRoles = new Set((trip.drivers || []).map(d => d.role));
 
+  const roleStateMap = {};
+  (trip.activeRoles || ["driver"]).forEach((entry) => {
+    const [role, state] = entry.includes(":") ? entry.split(":") : [entry, "default"];
+    roleStateMap[role] = state;
+  });
+
+  const STATUS_COLORS = {
+    "danger": "var(--rux-danger-bright)",
+    "warning": "var(--rux-warning-bright)",
+    "success": "var(--rux-success-bright)",
+  };
+
   (trip.drivers || []).forEach((driver) => {
     const item = document.createElement("span");
     item.className = "rux-trip-bar__driver";
     const roleIcon = icon(ROLE_ICONS[driver.role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
+    const state = roleStateMap[driver.role];
+    if (state && STATUS_COLORS[state]) roleIcon.style.color = STATUS_COLORS[state];
     item.append(roleIcon, document.createTextNode(driver.shortName || driver.name));
     drivers.appendChild(item);
   });
 
   const activeRoles = trip.activeRoles || ["driver"];
-  activeRoles.forEach((role) => {
+  activeRoles.forEach((entry) => {
+    const [role, state] = entry.includes(":") ? entry.split(":") : [entry, "default"];
     if (!assignedRoles.has(role)) {
       const item = document.createElement("span");
       item.className = "rux-trip-bar__driver rux-trip-bar__driver--unassigned";
       const roleIcon = icon(ROLE_ICONS[role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
+      if (state && STATUS_COLORS[state]) roleIcon.style.color = STATUS_COLORS[state];
       item.appendChild(roleIcon);
       drivers.appendChild(item);
     }

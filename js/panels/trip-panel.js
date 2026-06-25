@@ -684,6 +684,19 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			const row = group.querySelector(`[data-role-row="${role}"]`);
 			if (row) row.hidden = !nowActive;
 		});
+
+		// Role label icons — cycle status: default → danger → warning → success → default
+		const ROLE_STATES = ["default", "danger", "warning", "success"];
+		busGroupsEl.addEventListener("click", (e) => {
+			const label = e.target.closest(".rux-trip-panel__role-label");
+			if (!label) return;
+			const current = label.dataset.roleState || "default";
+			const nextIndex = (ROLE_STATES.indexOf(current) + 1) % ROLE_STATES.length;
+			const next = ROLE_STATES[nextIndex];
+			label.dataset.roleState = next;
+			label.classList.remove("rux-role--danger", "rux-role--warning", "rux-role--success");
+			if (next !== "default") label.classList.add(`rux-role--${next}`);
+		});
 	}
 }
 

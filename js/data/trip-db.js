@@ -229,13 +229,25 @@ import { supabase } from "./supabase.js";
 				.filter(Boolean);
 
 			const busGroup = root.querySelectorAll(".rux-trip-panel__bus-group")[i];
-			const activeRoles = ["driver"];
+			const activeRoles = [];
 			if (busGroup) {
 				const roleMap = { coDriver: "co-driver", relief1: "relief-start", relief2: "relief-end" };
+				// Driver role label state
+				const driverLabel = busGroup.querySelector(".rux-trip-panel__driver-row:not([data-role-row]) .rux-trip-panel__role-label");
+				const driverState = driverLabel?.dataset.roleState || "default";
+				activeRoles.push(driverState !== "default" ? `driver:${driverState}` : "driver");
+				// Other role states (only if toggled active)
 				busGroup.querySelectorAll("[data-role][aria-pressed='true']").forEach((btn) => {
 					const mapped = roleMap[btn.dataset.role];
-					if (mapped) activeRoles.push(mapped);
+					if (!mapped) return;
+					const roleKey = btn.dataset.role;
+					const row = busGroup.querySelector(`[data-role-row="${roleKey}"]`);
+					const label = row?.querySelector(".rux-trip-panel__role-label");
+					const state = label?.dataset.roleState || "default";
+					activeRoles.push(state !== "default" ? `${mapped}:${state}` : mapped);
 				});
+			} else {
+				activeRoles.push("driver");
 			}
 			assignments.push({ bus_id: busId, position: i, drivers, active_roles: activeRoles });
 		}
@@ -464,18 +476,34 @@ import { supabase } from "./supabase.js";
 			const busSelect = root.querySelector(`[name="buses[${slot}].busId"]`);
 			if (busSelect && assignment.bus_id) busSelect.value = assignment.bus_id;
 
-			// Restore active role toggles from saved state
-			(assignment.active_roles || ["driver"]).forEach((role) => {
+			// Restore active role toggles and label color states
+			(assignment.active_roles || ["driver"]).forEach((entry) => {
+				const [role, state] = entry.includes(":") ? entry.split(":") : [entry, "default"];
 				const roleKey = roleKeyMap[role];
-				if (!roleKey || roleKey === "driver") return;
-				if (busGroup) {
+				if (!roleKey) return;
+				if (!busGroup) return;
+
+				if (roleKey === "driver") {
+					const label = busGroup.querySelector(".rux-trip-panel__driver-row:not([data-role-row]) .rux-trip-panel__role-label");
+					if (label && state !== "default") {
+						label.dataset.roleState = state;
+						label.classList.add(`rux-role--${state}`);
+					}
+				} else {
 					const toggleBtn = busGroup.querySelector(`[data-role="${roleKey}"]`);
 					if (toggleBtn) {
 						toggleBtn.setAttribute("aria-pressed", "true");
 						toggleBtn.classList.add("is-active");
 					}
 					const row = busGroup.querySelector(`[data-role-row="${roleKey}"]`);
-					if (row) row.hidden = false;
+					if (row) {
+						row.hidden = false;
+						const label = row.querySelector(".rux-trip-panel__role-label");
+						if (label && state !== "default") {
+							label.dataset.roleState = state;
+							label.classList.add(`rux-role--${state}`);
+						}
+					}
 				}
 			});
 

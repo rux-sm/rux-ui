@@ -65,7 +65,7 @@
 	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
 
 	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 18.5% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
 
 	/* Elevated elements like floating cards or popovers */
 	--rux-bg-level-2: oklch(from var(--rux-color-base) 26% c h);
@@ -137,22 +137,22 @@
 	/* ─── COLOR · status / semantic ───────────────────────────────────────── */
 	/* Bright enough for dark mode, balanced in chroma so none dominates.     */
 
-	--rux-success: oklch(60% 0.22 152);
-	--rux-success-bright: oklch(70% 0.22 152);
-	--rux-success-subtle: oklch(70% 0.22 152 / 0.14);
+	--rux-success: oklch(60% 0.22 155);
+	--rux-success-bright: oklch(90% 0.3 155);
+	--rux-success-subtle: oklch(70% 0.22 155 / 0.14);
 
-	--rux-warning: oklch(60% 0.22 80);
-	--rux-warning-bright: oklch(70% 0.22 80);
-	--rux-warning-subtle: oklch(80% 0.22 80 / 0.14);
-
+	--rux-warning: oklch(60% 0.22 90);
+	--rux-warning-bright: oklch(90% 0.3 90);
+	--rux-warning-subtle: oklch(80% 0.22 90 / 0.14);
+	
 	--rux-info: oklch(60% 0.22 230);
-	--rux-info-bright: oklch(70% 0.22 230);
+	--rux-info-bright: oklch(90% 0.3 230);
 	--rux-info-subtle: oklch(70% 0.22 230 / 0.14);
 
 	--rux-danger: oklch(60% 0.22 24);
-	--rux-danger-bright: oklch(70% 0.22 24);
-	--rux-danger-hover: oklch(70% 0.22 24);
-	--rux-danger-active: oklch(50% 0.22 24);
+	--rux-danger-bright: oklch(90% 0.3 24);
+	--rux-danger-hover: oklch(90% 0.18 24);
+	--rux-danger-active: oklch(50% 0.18 24);
 	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
 
 	/* ─── TYPOGRAPHY · family ─────────────────────────────────────────────── */

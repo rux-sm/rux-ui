@@ -615,6 +615,20 @@
 	justify-content: center;
 	color: var(--rux-fg-muted);
 }
+.rux-trip-panel__role-label {
+	cursor: pointer;
+	transition: color var(--rux-duration-fast) var(--rux-ease-out);
+}
+.rux-trip-panel__role-label.rux-role--danger {
+	color: var(--rux-danger-bright);
+}
+.rux-trip-panel__role-label.rux-role--warning {
+	color: var(--rux-warning-bright);
+}
+.rux-trip-panel__role-label.rux-role--success {
+	color: var(--rux-success-bright);
+}
+
 .rux-trip-panel__role-label .rux-icon {
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);
