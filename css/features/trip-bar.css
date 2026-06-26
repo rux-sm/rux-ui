@@ -157,8 +157,6 @@
 
 .rux-trip-bar--from-prev .rux-trip-bar__tail {
 	grid-column: 1 / -1;
-	align-self: start;
-	margin-top: var(--rux-trip-bar-rail-offset-y);
 	margin-left: 0;
 	border-radius: 0 14px 14px 0;
 }
@@ -252,9 +250,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	height: var(--rux-trip-bar-rail-height);
-	align-self: start;
-	margin-top: var(--rux-trip-bar-rail-offset-y);
+	align-self: stretch;
 	margin-left: calc(var(--rux-trip-bar-tail-overlap) * -1);
 	z-index: 1;
 	background: linear-gradient(to bottom, oklch(from var(--_tone) 40% 0.18 h), oklch(from var(--_tone) 34% 0.16 h));
@@ -265,11 +261,6 @@
 		0 1px 3px oklch(0% 0 0 / 0.24);
 }
 
-.rux-scheduler--time-aligned .rux-trip-bar__tail {
-	height: auto;
-	align-self: stretch;
-	margin-top: 0;
-}
 
 .rux-trip-bar__tail-destination {
 	flex: 1;
