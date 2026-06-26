@@ -498,6 +498,11 @@ function isSameTripDay(trip) {
 
 function refreshIcons() {}
 
+export function clearTripBars() {
+  tripBars.clear();
+  hideFloatingTooltip();
+}
+
 /* ── Factory ────────────────────────────────────────────────────────────── */
 
 export function createTripBar(trip, callbacks = {}) {
@@ -834,12 +839,6 @@ export function createTripBar(trip, callbacks = {}) {
     tailDest.textContent = trip.destination || "";
     tail.appendChild(tailDest);
 
-    if (!trip.toNext && displayTimes.returnTime) {
-      const arrLabel = document.createElement("span");
-      arrLabel.className = "rux-trip-bar__tail-arrival";
-      arrLabel.textContent = `Arr ${fmtTime(displayTimes.returnTime)}`;
-      tail.appendChild(arrLabel);
-    }
 
     bar.append(head, tail);
 

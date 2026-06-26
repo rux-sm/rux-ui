@@ -76,6 +76,10 @@
 	background: var(--rux-bg-level-2);
 }
 
+.scheduler-app__module-button.is-active .rux-icon {
+	font-variation-settings: 'FILL' 1;
+}
+
 .scheduler-app__account {
 	flex: none;
 	gap: var(--rux-space-3);
@@ -381,24 +385,35 @@
 
 .scheduler-app__panel-tab {
 	flex: none;
-	width: var(--rux-control-height);
+	width: 16px;
+	align-self: stretch;
+	margin-block: var(--scheduler-app-gap);
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background: transparent;
 	border: none;
-	border-left: var(--rux-border-width) solid var(--rux-border);
-	color: var(--rux-fg-subtle);
+
+	border-radius: 0 var(--scheduler-app-card-radius) var(--scheduler-app-card-radius) 0;
+	color: transparent;
 	cursor: pointer;
 	padding: 0;
+	overflow: hidden;
 	transition:
+		width var(--rux-duration-fast) var(--rux-ease-out),
 		background var(--rux-duration-fast),
 		color var(--rux-duration-fast);
 }
 
 .scheduler-app__panel-tab:hover {
+	width: 32px;
 	background: var(--rux-control-ghost-hover);
 	color: var(--rux-fg);
+}
+
+.scheduler-app__drawer.is-open ~ .scheduler-app__panel-tab,
+.scheduler-app__panel-tab:has(+ .scheduler-app__drawer.is-open) {
+	display: none;
 }
 
 

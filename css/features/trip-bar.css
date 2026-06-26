@@ -42,7 +42,7 @@
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 152px;
+	--rux-trip-bar-collapsed-height: 140px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-continuation-width: 1.5rem;
@@ -61,7 +61,7 @@
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
 	--rux-trip-bar-detail-border-color: color-mix(in oklch, var(--rux-fg) 8%, transparent);
-	--rux-trip-bar-action-height: calc(var(--rux-control-height) + (var(--rux-trip-bar-action-padding-block) * 2));
+	--rux-trip-bar-action-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
 	--rux-trip-bar-active-height: calc(var(--rux-trip-bar-collapsed-height) + var(--rux-trip-bar-action-height));
 
 	--_details-height: 0px;
@@ -104,6 +104,7 @@
 
 .rux-trip-bar.is-active {
 	height: calc(var(--rux-trip-bar-active-height) + var(--_conflict-height));
+	min-width: var(--rux-trip-bar-day-inline-size, 100%);
 }
 
 .rux-trip-bar.is-expanded {
@@ -158,7 +159,7 @@
 .rux-trip-bar--from-prev .rux-trip-bar__tail {
 	grid-column: 1 / -1;
 	margin-left: 0;
-	border-radius: 0 14px 14px 0;
+	border-radius: 0 14px 14px 0;  /* flat left edge — trip enters from offscreen */
 }
 
 
@@ -172,9 +173,9 @@
 }
 
 .rux-trip-bar--from-prev.is-active .rux-trip-bar__tail {
-	grid-column: 2;
-	margin-left: calc(var(--rux-trip-bar-tail-overlap) * -1);
-	border-radius: 0 14px 14px 0;
+	grid-column: 1 / -1;
+	margin-left: 0;
+	border-radius: 14px;
 }
 
 .rux-trip-bar--from-prev.is-active .rux-trip-bar__tail-destination {
@@ -224,7 +225,7 @@
 	display: flex;
 	flex-direction: column;
 	background-color: var(--_surface);
-	border-radius: 14px 0 0 14px;
+	border-radius: 14px;
 	overflow: hidden;
 	box-shadow:
 		inset 0 1px oklch(100% 0 0 / 0.10),
@@ -245,16 +246,15 @@
 /* ---------- Tail (continuation rail for multi-day) ---------- */
 
 .rux-trip-bar__tail {
-	grid-column: 2;
+	grid-column: 1 / -1;
 	grid-row: 1;
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	align-self: stretch;
-	margin-left: calc(var(--rux-trip-bar-tail-overlap) * -1);
 	z-index: 1;
 	background: linear-gradient(to bottom, oklch(from var(--_tone) 40% 0.18 h), oklch(from var(--_tone) 34% 0.16 h));
-	border-radius: 0 14px 14px 0;
+	border-radius: 14px;
 	box-shadow:
 		inset 0 1px oklch(100% 0 0 / 0.10),
 		inset 0 -1px oklch(0% 0 0 / 0.20),
@@ -279,15 +279,6 @@
 	display: block;
 }
 
-.rux-trip-bar__tail-arrival {
-	flex: none;
-	margin-right: var(--rux-space-3);
-	font-size: 11px;
-	font-weight: var(--rux-weight-bold);
-	line-height: 1;
-	color: oklch(100% 0 0 / 0.7);
-	white-space: nowrap;
-}
 
 /* ---------- Action toolbar ---------- */
 
@@ -364,6 +355,7 @@
 	flex: 1 1 auto;
 	min-height: 0;
 	padding: var(--rux-space-2);
+	padding-bottom: calc(var(--rux-space-2) + 1px);
 	gap: var(--rux-trip-bar-tight-gap);
 	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.05) 0%, oklch(0% 0 0 / 0.3) 100%);
 }
@@ -397,7 +389,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	height: 20px;
+	height: 18px;
 	padding: 0 4px;
 	background: oklch(0% 0 0 / 0.2);
 	border-radius: 6px;
@@ -411,7 +403,7 @@
 	display: flex;
 	align-items: center;
 	min-width: 0;
-	min-height: 20px;
+	min-height: 18px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -468,7 +460,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	min-height: 16px;
+	min-height: 13px;
 	color: var(--rux-fg-on-accent-muted);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
@@ -477,7 +469,7 @@
 .rux-trip-bar__contact {
 	display: flex;
 	min-width: 0;
-	min-height: 16px;
+	min-height: 13px;
 	align-items: center;
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-regular);
@@ -505,7 +497,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	min-height: 16px;
+	min-height: 13px;
 	font-style: italic;
 	color: oklch(90% 0.15 90);
 	font-size: var(--rux-text-xs);
@@ -523,7 +515,12 @@
 }
 
 .rux-trip-bar__reqs .rux-trip-bar__pending {
+	position: sticky;
+	right: 0;
+	flex: none;
 	margin-left: auto;
+	background: inherit;
+	padding-left: var(--rux-space-1);
 }
 
 .rux-trip-bar__req-icon {
@@ -555,7 +552,7 @@
 	justify-content: center;
 	align-self: stretch;
 	gap: var(--rux-trip-bar-tight-gap);
-	background: oklch(0% 0 0 / 0.2);
+	background: oklch(0% 0 0 / 0.24);
 	height: 20px;
 	padding: 0;
 	border-radius: 0;
@@ -597,7 +594,7 @@
 	display: flex;
 	min-width: 0;
 	min-height: 20px;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	align-items: center;
 	gap: 2px;
 	margin-top: 1px;
@@ -610,7 +607,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: var(--rux-space-1);
-	background: oklch(0% 0 0 / 0.2);
+	background: oklch(0% 0 0 / 0.24);
 	padding: 0 var(--rux-space-2);
 	height: 20px;
 	border-radius: 0;
@@ -700,7 +697,7 @@
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-2);
-	background: oklch(0% 0 0 / 0.5);
+	background: oklch(0% 0 0 / 0.24);
 	border-top: none;
 }
 
@@ -791,6 +788,28 @@
 	.rux-trip-bar__bus-label {
 		min-width: var(--rux-trip-bar-bus-label-min-width-compact);
 		padding: 0 var(--rux-space-1);
+	}
+}
+
+@container (max-width: 7rem) {
+	.rux-trip-bar__time {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.rux-trip-bar__time-item:nth-child(2) {
+		display: none;
+	}
+
+	.rux-trip-bar__time-item:first-child {
+		border-radius: 6px 0 0 0;
+	}
+
+	.rux-trip-bar__time-item:last-child {
+		border-radius: 0 6px 0 0;
+	}
+
+	.rux-trip-bar__contact-phone {
+		display: none;
 	}
 }
 

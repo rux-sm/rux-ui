@@ -43,7 +43,7 @@
 	--rux-scheduler-head-height: 2rem;
 	--rux-scheduler-days: 7;
 	--rux-scheduler-day-min-width: 14rem;
-	--rux-scheduler-bg: var(--rux-bg-level-2);
+	--rux-scheduler-bg: var(--rux-bg-level-1);
 	--rux-scheduler-border-color: var(--rux-border-subtle);
 	--rux-scheduler-grid-line-color: var(--rux-border-subtle);
 	--rux-scheduler-header-color: var(--rux-fg);
@@ -53,7 +53,7 @@
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
 	--rux-scheduler-today-bg: color-mix(in oklch, var(--rux-scheduler-bg) 0%, var(--rux-accent) 100%);
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
-	--_row-height: calc(152px + (var(--rux-scheduler-row-block-inset) * 2));
+	--_row-height: calc(140px + (var(--rux-scheduler-row-block-inset) * 2));
 	--rux-scheduler-cols: var(--rux-scheduler-col-head-width)
 		repeat(var(--rux-scheduler-days), minmax(var(--rux-scheduler-day-min-width), 1fr));
 
@@ -66,7 +66,7 @@
 	min-width: 0;
 	overflow: auto;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
-	background: var(--rux-bg-level-2);
+	background: var(--rux-bg-level-1);
 	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
 	border: none;
 
@@ -86,7 +86,7 @@
 	gap: var(--rux-space-2);
 	min-height: var(--rux-scheduler-head-height);
 	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-bg-level-2);
+	background: var(--rux-bg-level-1);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-header-color);
@@ -151,7 +151,7 @@
 	color: var(--rux-fg-subtle);
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
-	background: var(--rux-bg-level-2);
+	background: var(--rux-bg-level-1);
 	padding: 0 2px;
 	min-width: 20px;
 	text-align: center;
@@ -161,6 +161,9 @@
 .rux-scheduler__time-ticks > span:nth-child(2) { left: 25%; }
 .rux-scheduler__time-ticks > span:nth-child(3) { left: 75%; }
 
+.rux-scheduler__col-head + .rux-scheduler__day-head .rux-scheduler__time-ticks > span:nth-child(1) {
+	display: none;
+}
 
 .rux-scheduler--time-aligned .rux-scheduler__time-ticks {
 	display: block;
@@ -172,7 +175,7 @@
    set here cascade independently to each row's row-head and track. */
 .rux-scheduler__row {
 	display: contents;
-	--_row-height: calc(152px + (var(--rux-scheduler-row-block-inset) * 2));
+	--_row-height: calc(140px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
 /* ---------- Bus row ---------- */
@@ -203,7 +206,7 @@
 	justify-content: center;
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
-	background: var(--rux-bg-level-2);
+	background: var(--rux-bg-level-1);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-row-head-color);
