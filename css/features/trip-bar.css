@@ -138,14 +138,33 @@
 	border-bottom-left-radius: 0;
 }
 
-.rux-trip-bar--from-prev::before {
-	content: "";
-	position: absolute;
-	inset: 0 auto 0 0;
-	width: var(--rux-trip-bar-continuation-width);
-	z-index: 0;
-	background: linear-gradient(to right, oklch(0% 0 0 / 0.5), transparent);
-	pointer-events: none;
+.rux-trip-bar--from-prev:not(.is-active) {
+	background-image: linear-gradient(oklch(0% 0 0 / 0.25), oklch(0% 0 0 / 0.25));
+}
+
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__body {
+	background: none;
+}
+
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__bus-label,
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__client,
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__contact,
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__notes,
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__reqs,
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__time {
+	display: none;
+}
+
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__drivers {
+	margin-top: auto;
+}
+
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__driver:first-child {
+	border-top-left-radius: 6px;
+}
+
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__driver:nth-last-child(2) {
+	border-top-right-radius: 6px;
 }
 
 /* ---------- Modifier: to-next ---------- */
@@ -157,15 +176,6 @@
 	border-bottom-right-radius: 0;
 }
 
-.rux-trip-bar--to-next::after {
-	content: "";
-	position: absolute;
-	inset: 0 0 0 auto;
-	width: var(--rux-trip-bar-continuation-width);
-	z-index: 0;
-	background: linear-gradient(to left, oklch(0% 0 0 / 0.5), transparent);
-	pointer-events: none;
-}
 
 /* ---------- Modifier: multi-day ---------- */
 
@@ -285,6 +295,7 @@
 	min-height: 0;
 	padding: var(--rux-space-2);
 	gap: var(--rux-trip-bar-tight-gap);
+	background: linear-gradient(to bottom, transparent, oklch(0% 0 0 / 0.2) 100%);
 }
 
 .rux-trip-bar__spacer {
@@ -613,7 +624,8 @@
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-2);
-	border-top: var(--rux-border-width) solid var(--rux-trip-bar-detail-border-color);
+	background: oklch(0% 0 0 / 0.5);
+	border-top: none;
 }
 
 .rux-trip-bar__detail-field {
