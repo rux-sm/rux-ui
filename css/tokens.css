@@ -261,20 +261,27 @@
 
 	--rux-shadow-none: none;
 	/* Crisp, immediate lift. Negative spread removes side-bleed. */
-	--rux-shadow-sm: 0 2px 3px -1px rgba(0, 0, 0, 0.75), inset 0 2px 0 rgba(255, 255, 255, 0.16);
-	
+	--rux-shadow-sm:
+		0 2px 3px -1px rgba(0, 0, 0, 0.6),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+
 	/* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
 	--rux-shadow-md:
-		0 8px 16px -4px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.8),
-		inset 0 2px 0.5px rgba(255, 255, 255, 0.16);
-	
+		0 8px 16px -4px rgba(0, 0, 0, 0.4),
+		0 2px 6px -1px rgba(0, 0, 0, 0.7),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+
 	/* Deep but contained. High offset, aggressive negative spread. */
 	--rux-shadow-lg:
-		0 16px 32px -6px rgba(0, 0, 0, 0.4), 0 6px 14px -2px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
-	
+		0 16px 32px -6px rgba(0, 0, 0, 0.4),
+		0 6px 14px -2px rgba(0, 0, 0, 0.75),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+
 	/* Maximum depth without the muddy blur. */
 	--rux-shadow-xl:
-		0 32px 64px -12px rgba(0, 0, 0, 0.4), 0 12px 24px -4px rgba(0, 0, 0, 1), inset 0 2px 0 rgba(255, 255, 255, 0.16);
+		0 32px 64px -12px rgba(0, 0, 0, 0.4),
+		0 12px 24px -4px rgba(0, 0, 0, 0.8),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
 
 	/* Focus ring remains untouched; excellent dual-ring setup */
 	--rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);

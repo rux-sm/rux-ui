@@ -237,22 +237,22 @@ function installFloatingTooltip() {
 /* ── Formatting ─────────────────────────────────────────────────────────── */
 
 function fmtTime(str) {
-  if (!str) return str;
+  if (!str) return "--:--";
   // 12h with AM/PM suffix
   if (/[ap]m$/i.test(str.trim()))
     return str
       .trim()
-      .replace(/\s*AM$/i, " am")
-      .replace(/\s*PM$/i, " pm");
+      .replace(/\s*AM$/i, " a")
+      .replace(/\s*PM$/i, " p");
   // 24h HH:MM
   const m = str.match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return str;
   let h = parseInt(m[1], 10);
   const min = m[2];
-  const suffix = h < 12 ? " am" : " pm";
+  const suffix = h < 12 ? " a" : " p";
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
-  return min === "00" ? `${h}${suffix}` : `${h}:${min}${suffix}`;
+  return `${h}:${min}${suffix}`;
 }
 
 function timeItem(label, value, className = "") {
@@ -665,16 +665,12 @@ export function createTripBar(trip, callbacks = {}) {
   const displayTimes = tripBarTimes(trip);
   const middleTime = displayTimes.spotTime;
   time.append(
-    timeItem("D", fmtTime(displayTimes.departureTime)),
+    timeItem("", fmtTime(displayTimes.departureTime), displayTimes.departureTime ? "" : "rux-trip-bar__time-value--empty"),
+    timeItem("", fmtTime(middleTime), middleTime ? "" : "rux-trip-bar__time-value--empty"),
     timeItem(
-      "S",
-      middleTime ? fmtTime(middleTime) : "",
-      middleTime ? "" : "rux-trip-bar__time-value--empty",
-    ),
-    timeItem(
-      "A",
+      "",
       fmtTime(displayTimes.returnTime),
-      isLateReturn(displayTimes.returnTime) ? "rux-trip-bar__time-value--late" : "",
+      isLateReturn(displayTimes.returnTime) ? "rux-trip-bar__time-value--late" : (displayTimes.returnTime ? "" : "rux-trip-bar__time-value--empty"),
     ),
   );
 

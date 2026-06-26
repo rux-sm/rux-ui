@@ -82,6 +82,7 @@
 	z-index: var(--rux-z-sticky);
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: var(--rux-space-2);
 	min-height: var(--rux-scheduler-head-height);
 	padding: var(--rux-space-2) var(--rux-space-3);
@@ -109,7 +110,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 50%;
+	border-radius: 8px;
 }
 
 .rux-scheduler__day-number--today {
