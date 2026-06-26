@@ -322,6 +322,9 @@
                   <span class="rux-icon">chevron_right</span>
                   <span class="scheduler-app__toolbar-label scheduler-app__toolbar-label--break">Next</span>
                 </button>
+                <button class="rux-button rux-button--toggle rux-button--icon" id="time-align-btn" type="button" aria-pressed="false" title="Time-aligned view">
+                  <span class="rux-icon">schedule</span>
+                </button>
               </div>
               <div class="scheduler-app__brand">
                 <h1 class="scheduler-app__title" id="week-label"></h1>
@@ -1280,6 +1283,17 @@
       const tripTrackMap = {};
       let schedulerBuses = [];
 
+      // ── Time-aligned positioning ─────────────────────────────────────────
+
+      let timeAlignEnabled = false;
+
+      function timeToFraction(timeStr) {
+        if (!timeStr) return null;
+        const m = timeStr.match(/^(\d{1,2}):(\d{2})$/);
+        if (!m) return null;
+        return (parseInt(m[1], 10) * 60 + parseInt(m[2], 10)) / 1440;
+      }
+
       // ── Date utilities ──────────────────────────────────────────────────
 
       function parseIsoDate(value) {
@@ -1362,7 +1376,7 @@
         dayHeadEls.forEach((el, index) => {
           const date = addDays(weekStart, index);
           const isToday = isoDate(date) === todayIso;
-          el.innerHTML = `<span class="rux-scheduler__day-name">${DAY_NAMES[index]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span>`;
+          el.innerHTML = `<span class="rux-scheduler__day-name">${DAY_NAMES[index]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span><div class="rux-scheduler__time-ticks"><span>12a</span><span>6a</span><span>6p</span></div>`;
           el.classList.toggle("rux-scheduler__day-head--today", isoDate(date) === todayIso);
         });
       }
@@ -1388,6 +1402,18 @@
         return placements;
       }
 
+      function extractTripTimes(trip) {
+        const stops = Array.isArray(trip.trip_stops)
+          ? [...trip.trip_stops].sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+          : [];
+        const pickup = stops.find(s => s.type === "pickup");
+        const returnStop = [...stops].reverse().find(s => s.type === "return");
+        return {
+          _depTime: pickup?.depart_prev || trip.departureTime || null,
+          _retTime: returnStop?.arrive || trip.returnTime || null,
+        };
+      }
+
       function getWeekPlacements(weekStart, tripMap) {
         const weekEnd = addDays(weekStart, 6);
         const placements = [];
@@ -1403,7 +1429,8 @@
           const span     = Math.round((visibleEnd - visibleStart) / 864e5) + 1;
           const fromPrev = tripStart < weekStart;
           const toNext   = tripEnd   > weekEnd;
-          placements.push({ trip: { ...trip, fromPrev, toNext }, trackId: info.trackId, lane: info.lane, start, span, fromPrev, toNext });
+          const times = extractTripTimes(trip);
+          placements.push({ trip: { ...trip, ...times, fromPrev, toNext }, trackId: info.trackId, lane: info.lane, start, span, fromPrev, toNext });
         });
         return assignLanes(placements);
       }
@@ -1492,6 +1519,36 @@
         const insetL = "var(--rux-space-2)";
         const totalInset = "calc(var(--rux-space-4) + var(--rux-border-width))";
         bar.style.left = bar.style.right = bar.style.width = "";
+
+        if (timeAlignEnabled) {
+          const depFrac = timeToFraction(placement.trip._depTime);
+          const retFrac = timeToFraction(placement.trip._retTime);
+
+          if (depFrac !== null || retFrac !== null) {
+            const startOffset = fromPrev ? 0 : (depFrac ?? 0);
+            const endDay = placement.start + placement.span - 2;
+            const endOffset = toNext ? 1 : (retFrac ?? 1);
+
+            const leftPct = startPct + (startOffset * dayPct);
+            const rightPct = (endDay * dayPct) + (endOffset * dayPct);
+            const widthPct = rightPct - leftPct;
+
+            if (fromPrev) {
+              bar.style.left = insetL;
+            } else {
+              bar.style.left = `calc(${leftPct}% + ${insetL})`;
+            }
+
+            if (toNext) {
+              bar.style.right = insetL;
+              bar.style.width = "auto";
+            } else {
+              bar.style.width = `calc(${widthPct}% - ${totalInset})`;
+            }
+            return;
+          }
+        }
+
         if (fromPrev && toNext) { bar.style.left = bar.style.right = insetL; bar.style.width = "auto"; return; }
         if (fromPrev) { bar.style.left = insetL; bar.style.width = `calc(${spanPct}% - ${totalInset})`; return; }
         bar.style.left = `calc(${startPct}% + ${insetL})`;
@@ -1637,6 +1694,15 @@
 
       document.getElementById("prev-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart, -7); renderScheduler(); });
       document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  7); renderScheduler(); });
+
+      const timeAlignBtn = document.getElementById("time-align-btn");
+      timeAlignBtn?.addEventListener("click", () => {
+        timeAlignEnabled = !timeAlignEnabled;
+        timeAlignBtn.setAttribute("aria-pressed", timeAlignEnabled);
+        timeAlignBtn.classList.toggle("is-active", timeAlignEnabled);
+        schedulerEl?.classList.toggle("rux-scheduler--time-aligned", timeAlignEnabled);
+        layoutScheduler();
+      });
       const dayPickerBtn = document.getElementById("day-picker-btn");
       const dayPickerInput = document.getElementById("day-picker-input");
       dayPickerBtn?.addEventListener("click", () => {

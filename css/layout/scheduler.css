@@ -129,6 +129,43 @@
 	color: var(--rux-fg);
 }
 
+/* ---------- Time-aligned mode ---------- */
+
+.rux-scheduler__time-ticks {
+	display: none;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 0;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.rux-scheduler__time-ticks > span {
+	position: absolute;
+	top: 0;
+	transform: translate(-50%, calc(-100% - 4px));
+	font-size: 9px;
+	font-weight: var(--rux-weight-medium);
+	color: var(--rux-fg-subtle);
+	letter-spacing: var(--rux-tracking-wide);
+	line-height: 1;
+	background: var(--rux-bg-level-2);
+	padding: 0 2px;
+	min-width: 20px;
+	text-align: center;
+}
+
+.rux-scheduler__time-ticks > span:nth-child(1) { left: 0%; }
+.rux-scheduler__time-ticks > span:nth-child(2) { left: 25%; }
+.rux-scheduler__time-ticks > span:nth-child(3) { left: 75%; }
+
+
+.rux-scheduler--time-aligned .rux-scheduler__time-ticks {
+	display: block;
+}
+
 /* ---------- Row wrapper ---------- */
 
 /* display: contents keeps children in the grid while letting CSS variables
@@ -235,4 +272,19 @@
 
 .rux-scheduler__track-day:last-child {
 	border-inline-end: none;
+}
+
+.rux-scheduler--time-aligned .rux-scheduler__track-day {
+	background-image: linear-gradient(
+		to right,
+		transparent 24.99%,
+		oklch(100% 0 0 / 0.03) 25%,
+		transparent 25.5%,
+		transparent 49.99%,
+		oklch(100% 0 0 / 0.05) 50%,
+		transparent 50.5%,
+		transparent 74.99%,
+		oklch(100% 0 0 / 0.03) 75%,
+		transparent 75.5%
+	);
 }
