@@ -821,19 +821,52 @@ export function createTripBar(trip, callbacks = {}) {
     setExpanded(!bar.classList.contains("is-expanded"));
   });
 
-  bar.append(actions, body);
+  if (!singleDay) {
+    const head = document.createElement("div");
+    head.className = "rux-trip-bar__head";
+    head.append(actions, body, details);
 
-  if (trip.conflict) {
-    const conflict = document.createElement("div");
-    conflict.className = "rux-trip-bar__conflict";
-    conflict.append(
-      icon("alert-triangle", "rux-icon rux-icon--sm"),
-      document.createTextNode(`Conflict: ${trip.conflict}`),
-    );
-    bar.appendChild(conflict);
+    const tail = document.createElement("div");
+    tail.className = "rux-trip-bar__tail";
+
+    const tailDest = document.createElement("span");
+    tailDest.className = "rux-trip-bar__tail-destination";
+    tailDest.textContent = trip.destination || "";
+    tail.appendChild(tailDest);
+
+    if (!trip.toNext && displayTimes.returnTime) {
+      const arrLabel = document.createElement("span");
+      arrLabel.className = "rux-trip-bar__tail-arrival";
+      arrLabel.textContent = `Arr ${fmtTime(displayTimes.returnTime)}`;
+      tail.appendChild(arrLabel);
+    }
+
+    bar.append(head, tail);
+
+    if (trip.conflict) {
+      const conflict = document.createElement("div");
+      conflict.className = "rux-trip-bar__conflict";
+      conflict.append(
+        icon("alert-triangle", "rux-icon rux-icon--sm"),
+        document.createTextNode(`Conflict: ${trip.conflict}`),
+      );
+      bar.appendChild(conflict);
+    }
+  } else {
+    bar.append(actions, body);
+
+    if (trip.conflict) {
+      const conflict = document.createElement("div");
+      conflict.className = "rux-trip-bar__conflict";
+      conflict.append(
+        icon("alert-triangle", "rux-icon rux-icon--sm"),
+        document.createTextNode(`Conflict: ${trip.conflict}`),
+      );
+      bar.appendChild(conflict);
+    }
+
+    bar.appendChild(details);
   }
-
-  bar.appendChild(details);
 
   bar.addEventListener("click", () => {
     bar.setActive(!bar.classList.contains("is-active"));

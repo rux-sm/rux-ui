@@ -42,10 +42,13 @@
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 148px;
+	--rux-trip-bar-collapsed-height: 152px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-continuation-width: 1.5rem;
+	--rux-trip-bar-rail-height: 34px;
+	--rux-trip-bar-rail-offset-y: 24px;
+	--rux-trip-bar-tail-overlap: 6px;
 	--rux-trip-bar-stripe-size: 3px;
 	--rux-trip-bar-bus-label-min-width: 2.25rem;
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
@@ -67,7 +70,7 @@
 	--_tone-ring: var(--rux-ring-focus);
 	--_surface: oklch(from var(--_tone) 50% 0.22 h);
 	--_surface-hover: oklch(from var(--_tone) 46% 0.22 h);
-	--_surface-active: oklch(from var(--_tone) 54% 0.22 h);
+	--_surface-active: oklch(from var(--_tone) 50% 0.22 h);
 
 	position: relative;
 	display: flex;
@@ -78,7 +81,11 @@
 	--rux-icon-md: 18px;
 	background-color: var(--_surface);
 	border-radius: 14px;
-	box-shadow: var(--rux-shadow-sm);
+	overflow: hidden;
+	box-shadow:
+		inset 0 1px oklch(100% 0 0 / 0.10),
+		inset 0 -1px oklch(0% 0 0 / 0.20),
+		0 2px 6px oklch(0% 0 0 / 0.34);
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;
 	user-select: none;
@@ -113,7 +120,16 @@
 	background-color: var(--_surface-active);
 	box-shadow: 0 16px 48px oklch(0% 0 0 / 0.5), 0 4px 12px oklch(0% 0 0 / 0.3);
 	z-index: var(--rux-trip-bar-active-z-index);
-	transform: translateY(-4px);
+}
+
+.rux-trip-bar--multi-day:hover,
+.rux-trip-bar--multi-day.is-active {
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.rux-trip-bar--multi-day.is-active {
+	z-index: var(--rux-trip-bar-active-z-index);
 }
 
 /* Keep continuation stripes behind actions, text, and conflict content. */
@@ -131,76 +147,150 @@
 
 /* ---------- Modifier: from-prev ---------- */
 
-/* No thick left stripe or left radius — trip entered from a prior week.
-   Diagonal stripes at the left edge signal continuation. */
 .rux-trip-bar--from-prev {
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
+	grid-template-columns: 1fr;
 }
 
-.rux-trip-bar--from-prev:not(.is-active) {
-	background-image: linear-gradient(oklch(0% 0 0 / 0.25), oklch(0% 0 0 / 0.25));
-}
-
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__body {
-	background: none;
-}
-
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__bus-label,
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__client,
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__contact,
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__notes,
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__reqs,
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__time {
+.rux-trip-bar--from-prev .rux-trip-bar__head {
 	display: none;
 }
 
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__drivers {
-	margin-top: auto;
+.rux-trip-bar--from-prev .rux-trip-bar__tail {
+	grid-column: 1 / -1;
+	align-self: start;
+	margin-top: var(--rux-trip-bar-rail-offset-y);
+	margin-left: 0;
+	border-radius: 0 14px 14px 0;
 }
 
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__driver:first-child {
-	border-top-left-radius: 6px;
+
+.rux-trip-bar--from-prev.is-active {
+	height: calc(var(--rux-trip-bar-active-height) + var(--_conflict-height));
+	grid-template-columns: var(--rux-trip-bar-day-inline-size, 50%) 1fr;
 }
 
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__driver:nth-last-child(2) {
-	border-top-right-radius: 6px;
+.rux-trip-bar--from-prev.is-active .rux-trip-bar__head {
+	display: flex;
+}
+
+.rux-trip-bar--from-prev.is-active .rux-trip-bar__tail {
+	grid-column: 2;
+	margin-left: calc(var(--rux-trip-bar-tail-overlap) * -1);
+	border-radius: 0 14px 14px 0;
+}
+
+.rux-trip-bar--from-prev.is-active .rux-trip-bar__tail-destination {
+	display: none;
 }
 
 /* ---------- Modifier: to-next ---------- */
 
-/* No right radius — trip exits into the next week.
-   Diagonal stripes at the right edge signal continuation. */
-.rux-trip-bar--to-next {
+.rux-trip-bar--to-next .rux-trip-bar__tail {
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 }
 
+.rux-trip-bar--from-prev.rux-trip-bar--to-next .rux-trip-bar__tail {
+	border-radius: 0;
+}
+
+
 
 /* ---------- Modifier: multi-day ---------- */
+
+.rux-trip-bar--multi-day {
+	display: grid;
+	grid-template-columns: var(--rux-trip-bar-day-inline-size, 50%) 1fr;
+	grid-template-rows: 1fr auto;
+	background-color: transparent;
+	box-shadow: none;
+	overflow: visible;
+}
 
 .rux-trip-bar--multi-day.rux-trip-bar--has-conflict {
 	--_conflict-height: var(--rux-trip-bar-conflict-height);
 }
 
-.rux-trip-bar--multi-day .rux-trip-bar__actions {
-	max-width: calc(var(--rux-trip-bar-day-inline-size, 100%) - var(--rux-space-2) * 2);
-}
-.rux-trip-bar--multi-day .rux-trip-bar__body,
-.rux-trip-bar--multi-day .rux-trip-bar__details-inner {
-	width: min(100%, var(--rux-trip-bar-day-inline-size, 100%));
+.rux-trip-bar--multi-day .rux-trip-bar__conflict {
+	grid-column: 1 / -1;
+	grid-row: 2;
 }
 
-.rux-trip-bar--multi-day {
-	background-image: linear-gradient(
-		to right,
-		transparent 0%,
-		transparent var(--rux-trip-bar-day-inline-size, 50%),
-		oklch(0% 0 0 / 0.25) var(--rux-trip-bar-day-inline-size, 50%),
-		oklch(0% 0 0 / 0.25) 100%
-	);
+/* ---------- Head (day-1 card for multi-day) ---------- */
+
+.rux-trip-bar__head {
+	grid-column: 1;
+	grid-row: 1;
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	background-color: var(--_surface);
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow:
+		inset 0 1px oklch(100% 0 0 / 0.10),
+		inset 0 -1px oklch(0% 0 0 / 0.20),
+		0 2px 6px oklch(0% 0 0 / 0.34);
+	overflow: hidden;
 }
 
+.rux-trip-bar--multi-day:hover .rux-trip-bar__head {
+	background-color: var(--_surface-hover);
+}
+
+.rux-trip-bar--multi-day.is-active .rux-trip-bar__head {
+	background-color: var(--_surface-active);
+	box-shadow: 0 16px 48px oklch(0% 0 0 / 0.5), 0 4px 12px oklch(0% 0 0 / 0.3);
+}
+
+/* ---------- Tail (continuation rail for multi-day) ---------- */
+
+.rux-trip-bar__tail {
+	grid-column: 2;
+	grid-row: 1;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	height: var(--rux-trip-bar-rail-height);
+	align-self: start;
+	margin-top: var(--rux-trip-bar-rail-offset-y);
+	margin-left: calc(var(--rux-trip-bar-tail-overlap) * -1);
+	z-index: 1;
+	background: linear-gradient(to bottom, oklch(from var(--_tone) 40% 0.18 h), oklch(from var(--_tone) 34% 0.16 h));
+	border-radius: 0 14px 14px 0;
+	box-shadow:
+		inset 0 1px oklch(100% 0 0 / 0.10),
+		inset 0 -1px oklch(0% 0 0 / 0.20),
+		0 1px 3px oklch(0% 0 0 / 0.24);
+}
+
+.rux-trip-bar__tail-destination {
+	flex: 1;
+	min-width: 0;
+	padding-left: var(--rux-space-3);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-bold);
+	color: var(--rux-fg-on-accent);
+	display: none;
+}
+
+.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__tail-destination {
+	display: block;
+}
+
+.rux-trip-bar__tail-arrival {
+	flex: none;
+	margin-right: var(--rux-space-3);
+	font-size: 11px;
+	font-weight: var(--rux-weight-bold);
+	line-height: 1;
+	color: oklch(100% 0 0 / 0.7);
+	white-space: nowrap;
+}
 
 /* ---------- Action toolbar ---------- */
 
@@ -225,13 +315,13 @@
 	width: 100%;
 	min-width: 0;
 	flex: 1;
-	border-radius: 0;
+	border-radius: 6px;
 }
 .rux-trip-bar__actions > .rux-button:first-child {
-	border-radius: 6px 0 0 6px;
+	border-radius: 6px;
 }
 .rux-trip-bar__actions > .rux-button:last-child {
-	border-radius: 0 6px 6px 0;
+	border-radius: 6px ;
 }
 
 .rux-trip-bar__actions {
@@ -251,13 +341,14 @@
 .rux-trip-bar.is-active .rux-trip-bar__actions {
 	max-height: var(--rux-trip-bar-action-height);
 	overflow: hidden;
-	margin: var(--rux-space-2) var(--rux-space-2) 0;
+	margin: var(--rux-space-2);
 	padding-block: var(--rux-trip-bar-action-padding-block);
 	padding-inline: 0;
 	opacity: 1;
 	pointer-events: auto;
 	transform: translateY(0);
 	visibility: visible;
+	background: oklch(100% 0 0 / 0);
 	transition:
 		max-height var(--rux-duration-base) var(--rux-ease-out),
 		margin var(--rux-duration-base) var(--rux-ease-out),
@@ -267,24 +358,6 @@
 		visibility 0s;
 }
 
-.rux-trip-bar--multi-day:not(.rux-trip-bar--from-prev) .rux-trip-bar__actions {
-	border-top-right-radius: 0;
-}
-.rux-trip-bar--multi-day:not(.rux-trip-bar--from-prev) .rux-trip-bar__actions > .rux-button:last-child {
-	border-top-right-radius: 0;
-}
-.rux-trip-bar--to-next .rux-trip-bar__actions {
-	border-top-right-radius: 0;
-}
-.rux-trip-bar--to-next .rux-trip-bar__actions > .rux-button:last-child {
-	border-top-right-radius: 0;
-}
-.rux-trip-bar--from-prev .rux-trip-bar__actions {
-	border-top-left-radius: 0;
-}
-.rux-trip-bar--from-prev .rux-trip-bar__actions > .rux-button:first-child {
-	border-top-left-radius: 0;
-}
 
 /* ---------- Body ---------- */
 
@@ -295,7 +368,12 @@
 	min-height: 0;
 	padding: var(--rux-space-2);
 	gap: var(--rux-trip-bar-tight-gap);
-	background: linear-gradient(to bottom, transparent, oklch(0% 0 0 / 0.2) 100%);
+	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.05) 0%, oklch(0% 0 0 / 0.3) 100%);
+}
+
+.rux-trip-bar__head .rux-trip-bar__body {
+	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.05) 0%, oklch(0% 0 0 / 0.3) 100%);
+	border-radius: 0;
 }
 
 .rux-trip-bar__spacer {
@@ -343,7 +421,7 @@
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-bold);
 	letter-spacing: 0;
-	line-height: 1;
+	line-height: 1.05;
 }
 
 .rux-trip-bar__status {
@@ -384,7 +462,7 @@
 .rux-trip-bar__contact,
 .rux-trip-bar__notes {
 	min-width: 0;
-	line-height: 1;
+	line-height: 1.05;
 }
 
 .rux-trip-bar__client {
@@ -463,6 +541,7 @@
 	min-width: 0;
 	min-height: 20px;
 	align-items: center;
+	margin-top: 1px;
 	gap: 2px;
 	color: var(--rux-fg);
 	font-size: var(--rux-text-xs);
