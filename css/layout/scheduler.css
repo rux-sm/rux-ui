@@ -53,7 +53,7 @@
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
 	--rux-scheduler-today-bg: color-mix(in oklch, var(--rux-scheduler-bg) 0%, var(--rux-accent) 100%);
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
-	--_row-height: calc(var(--rux-trip-bar-collapsed-height, 10rem) + (var(--rux-scheduler-row-block-inset) * 2));
+	--_row-height: calc(152px + (var(--rux-scheduler-row-block-inset) * 2));
 	--rux-scheduler-cols: var(--rux-scheduler-col-head-width)
 		repeat(var(--rux-scheduler-days), minmax(var(--rux-scheduler-day-min-width), 1fr));
 
@@ -172,7 +172,7 @@
    set here cascade independently to each row's row-head and track. */
 .rux-scheduler__row {
 	display: contents;
-	--_row-height: calc(var(--rux-trip-bar-collapsed-height, 10rem) + (var(--rux-scheduler-row-block-inset) * 2));
+	--_row-height: calc(152px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
 /* ---------- Bus row ---------- */
