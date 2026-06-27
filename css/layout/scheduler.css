@@ -66,12 +66,19 @@
 	min-width: 0;
 	overflow: auto;
 	overscroll-behavior: contain;
+	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-bg-level-1);
 	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
-	border: none;
+	border:none; /* override */
+	
 
 	border-radius: var(--rux-radius-md);
+	border-radius: 0; /* override */
+}
+
+.rux-scheduler::-webkit-scrollbar {
+	display: none;
 }
 
 /* ---------- Header row ---------- */
