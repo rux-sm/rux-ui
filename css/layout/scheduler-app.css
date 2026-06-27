@@ -69,11 +69,14 @@
 
 .scheduler-app__module-button {
 	flex: none;
+	--_fg: var(--rux-fg-muted);
+	--_bg: transparent;
+	--_bg-h: transparent;
+	--_bg-a: transparent;
 }
 
 .scheduler-app__module-button.is-active {
-	color: var(--rux-fg);
-	background: var(--rux-bg-level-2);
+	--_fg: var(--rux-fg);
 }
 
 .scheduler-app__module-button.is-active .rux-icon {
@@ -385,13 +388,13 @@
 
 .scheduler-app__panel-tab {
 	flex: none;
-	width: 16px;
+	width: 8px;
 	align-self: stretch;
 	margin-block: var(--scheduler-app-gap);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: transparent;
+	background: var(--rux-bg-level-1);
 	border: none;
 
 	border-radius: 0 var(--scheduler-app-card-radius) var(--scheduler-app-card-radius) 0;
@@ -400,7 +403,7 @@
 	padding: 0;
 	overflow: hidden;
 	transition:
-		width var(--rux-duration-fast) var(--rux-ease-out),
+		width var(--rux-duration-slow) var(--rux-ease-out),
 		background var(--rux-duration-fast),
 		color var(--rux-duration-fast);
 }
@@ -471,7 +474,7 @@
 
 	/* Push content above the fixed bottom tab bar (42px buttons + rux-space-3 top + rux-space-3 bottom) */
 	.scheduler-app {
-		--scheduler-app-mobile-nav-height: calc(var(--rux-control-height) + 2 * var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
+		--scheduler-app-mobile-nav-height: calc(48px + 2 * var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
 		padding-bottom: calc(var(--scheduler-app-mobile-nav-height) + var(--scheduler-app-gap));
 	}
 
@@ -506,8 +509,8 @@
 	/* Show nav copy in bottom bar */
 	.scheduler-app__module-nav .scheduler-app__profile {
 		display: inline-flex;
-		width: 42px;
-		height: 42px;
+		width: 48px;
+		height: 48px;
 	}
 
 	/* Fixed bottom tab bar */
@@ -521,8 +524,8 @@
 		justify-content: space-evenly;
 		gap: var(--rux-space-2);
 		margin: 0;
-		padding: var(--rux-space-3);
-		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
+		padding: var(--rux-space-2) var(--rux-space-3);
+		padding-bottom: calc(var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
 		overflow: visible;
 		background: var(--rux-bg-topbar);
 		border-top: var(--rux-border-width) solid var(--rux-border);
@@ -532,15 +535,21 @@
 	/* Nav style: stacked icon + micro label */
 	.scheduler-app__module-button {
 		flex-direction: column;
-		height: 42px;
-		min-width: 42px;
+		height: auto;
+		min-width: 48px;
 		padding: var(--rux-space-1) var(--rux-space-2);
-		gap: 3px;
+		gap: 2px;
 		line-height: 1;
 		font-size: 10px;
 		font-weight: var(--rux-weight-medium);
 		letter-spacing: 0;
 		--_border: transparent;
+	}
+
+	.scheduler-app__module-button > .rux-icon {
+		width: 24px;
+		height: 24px;
+		font-size: 24px;
 	}
 
 	.scheduler-app__drawer .rux-trip-panel__header {
