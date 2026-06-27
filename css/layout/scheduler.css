@@ -65,6 +65,7 @@
 	max-block-size: var(--rux-scheduler-max-block-size);
 	min-width: 0;
 	overflow: auto;
+	overscroll-behavior: contain;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-bg-level-1);
 	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);

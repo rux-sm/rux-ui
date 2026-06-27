@@ -77,8 +77,8 @@
 
 	/* ─── COLOR · text ────────────────────────────────────────────────────── */
 
-	--rux-fg: oklch(100% 0 0); /* #ffffff */
-	--rux-fg-muted: oklch(80% 0 0); /* #a1a1a1 */
+	--rux-fg: oklch(100% 0 0);
+	--rux-fg-muted: oklch(75% 0 0);
 	--rux-fg-subtle: oklch(60% 0 0); /* #6b6b6b */
 	--rux-fg-disabled: oklch(40% 0 0); /* #404040 */
 	--rux-fg-on-accent: oklch(100% 0 0); /* #ffffff */

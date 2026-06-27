@@ -96,6 +96,10 @@
 		transform var(--rux-duration-fast) var(--rux-ease-out);
 }
 
+.rux-trip-bar .rux-icon {
+	font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
 /* ---------- Height contract ---------- */
 
 .rux-trip-bar {
