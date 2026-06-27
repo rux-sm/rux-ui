@@ -88,10 +88,7 @@
 	gap: var(--rux-space-3);
 }
 
-/* nav copy is mobile-only */
-.scheduler-app__module-nav .scheduler-app__profile {
-	display: none;
-}
+
 
 .scheduler-app__profile {
 	display: inline-flex;
@@ -474,7 +471,7 @@
 
 	/* Push content above the fixed bottom tab bar (42px buttons + rux-space-3 top + rux-space-3 bottom) */
 	.scheduler-app {
-		--scheduler-app-mobile-nav-height: calc(48px + 2 * var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
+		--scheduler-app-mobile-nav-height: calc(48px + 8px + env(safe-area-inset-bottom, 0px));
 		padding-bottom: calc(var(--scheduler-app-mobile-nav-height) + var(--scheduler-app-gap));
 	}
 
@@ -506,13 +503,6 @@
 		visibility: visible;
 	}
 
-	/* Show nav copy in bottom bar */
-	.scheduler-app__module-nav .scheduler-app__profile {
-		display: inline-flex;
-		width: 48px;
-		height: 48px;
-	}
-
 	/* Fixed bottom tab bar */
 	.scheduler-app__module-nav {
 		position: fixed;
@@ -524,8 +514,7 @@
 		justify-content: space-evenly;
 		gap: var(--rux-space-2);
 		margin: 0;
-		padding: var(--rux-space-2) var(--rux-space-3);
-		padding-bottom: calc(var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
+		padding: 8px var(--rux-space-3) calc(16px + env(safe-area-inset-bottom, 0px));
 		overflow: visible;
 		background: var(--rux-bg-topbar);
 		border-top: var(--rux-border-width) solid var(--rux-border);
@@ -538,18 +527,18 @@
 		height: auto;
 		min-width: 48px;
 		padding: var(--rux-space-1) var(--rux-space-2);
-		gap: 2px;
+		gap: 4px;
 		line-height: 1;
-		font-size: 10px;
+		font-size: 11px;
 		font-weight: var(--rux-weight-medium);
 		letter-spacing: 0;
 		--_border: transparent;
 	}
 
 	.scheduler-app__module-button > .rux-icon {
-		width: 24px;
-		height: 24px;
-		font-size: 24px;
+		width: 28px;
+		height: 28px;
+		font-size: 28px;
 	}
 
 	.scheduler-app__drawer .rux-trip-panel__header {
@@ -645,8 +634,7 @@
 		justify-content: space-evenly;
 	}
 
-	.scheduler-app__module-button,
-	.scheduler-app__module-nav .scheduler-app__profile {
+	.scheduler-app__module-button {
 		flex: 1;
 		justify-content: center;
 	}
@@ -686,12 +674,6 @@
 		flex: 1;
 		width: auto;
 		min-width: 42px;
-		height: 42px;
-	}
-
-	.scheduler-app__module-nav .scheduler-app__profile {
-		flex: none;
-		width: 42px;
 		height: 42px;
 	}
 }
