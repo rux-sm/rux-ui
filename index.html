@@ -53,9 +53,18 @@
             <button
               class="rux-button rux-button--ghost scheduler-app__module-button"
               type="button"
+              data-module="calendar"
+            >
+              <span class="rux-icon">calendar_month</span>
+              Calendar
+            </button>
+
+            <button
+              class="rux-button rux-button--ghost scheduler-app__module-button"
+              type="button"
               data-module="trips"
             >
-              <span class="rux-icon">location_on</span>
+              <span class="rux-icon">list_alt</span>
               Trips
             </button>
 
@@ -98,9 +107,9 @@
       <div class="scheduler-app__body">
 
         <!-- ════════════════════════════════════════════════════════════════
-             MODULE: TRIPS
+             MODULE: CALENDAR
              ════════════════════════════════════════════════════════════════ -->
-        <div class="scheduler-app__module" data-module="trips">
+        <div class="scheduler-app__module" data-module="calendar">
 
           <!-- Panel edge tab (visible when drawer is closed) -->
           <button class="scheduler-app__panel-tab" id="open-trip-panel" type="button" aria-label="Open trip editor">
@@ -117,7 +126,7 @@
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-trip-panel__tab-label">Route</span></button>
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-trip-panel__tab-label">Fleet</span></button>
                 </div>
-                <button class="rux-button rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
                   <span class="rux-icon">left_panel_close</span>
                 </button>
               </nav>
@@ -280,37 +289,31 @@
           </div>
           <!-- /trip-panel-drawer -->
 
-          <section class="scheduler-app__schedule" aria-label="Weekly schedule" data-view="schedule">
+          <section class="scheduler-app__schedule" aria-label="Weekly schedule">
             <header class="scheduler-app__bar">
-              <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
-                <button class="rux-button rux-button--toggle is-active" data-view-btn="schedule" aria-pressed="true" aria-label="Week view">
-                  <span class="rux-icon">calendar_month</span>
-                  <span class="scheduler-app__toolbar-label">Week</span>
+              <div class="scheduler-app__nav-arrows">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
+                  <span class="rux-icon">chevron_left</span>
                 </button>
-                <button class="rux-button rux-button--toggle" data-view-btn="list" aria-pressed="false" aria-label="List view">
-                  <span class="rux-icon">list</span>
-                  <span class="scheduler-app__toolbar-label">List</span>
-                </button>
-                <button class="rux-button" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input" title="Pick date">
                   <span class="rux-icon">event_note</span>
-                  <span class="scheduler-app__toolbar-label">Date</span>
                 </button>
                 <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
-                <button class="rux-button rux-button--icon" id="prev-week" aria-label="Previous week">
-                  <span class="rux-icon">chevron_left</span>
-                  <span class="scheduler-app__toolbar-label scheduler-app__toolbar-label--break">Prev</span>
-                </button>
-                <button class="rux-button rux-button--icon" id="next-week" aria-label="Next week">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
                   <span class="rux-icon">chevron_right</span>
-                  <span class="scheduler-app__toolbar-label scheduler-app__toolbar-label--break">Next</span>
-                </button>
-                <button class="rux-button rux-button--toggle rux-button--icon" id="time-align-btn" type="button" aria-pressed="false" title="Time-aligned view">
-                  <span class="rux-icon">schedule</span>
                 </button>
               </div>
               <div class="scheduler-app__brand">
                 <h1 class="scheduler-app__title" id="week-label"></h1>
-                <span class="scheduler-app__title" id="list-view-label">Trip List</span>
+              </div>
+              <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
+                <button class="rux-button rux-button--toggle rux-button--icon" id="time-align-btn" type="button" aria-pressed="false" title="Time-aligned view">
+                  <span class="rux-icon">schedule</span>
+                </button>
+                <button class="rux-button rux-button--toggle rux-button--icon" id="compact-mode-btn" type="button" aria-pressed="false" title="Compact trip bars">
+                  <span class="rux-icon icon-off">compress</span>
+                  <span class="rux-icon icon-on">expand</span>
+                </button>
               </div>
             </header>
             <div class="scheduler-app__schedule-wrap">
@@ -327,6 +330,42 @@
                 <div class="rux-scheduler__day-head">Sunday</div>
               </div>
             </div>
+          </section>
+
+          <!-- Right panel drawer -->
+          <div class="scheduler-app__drawer scheduler-app__drawer--right" id="right-panel-drawer">
+            <aside class="rux-right-panel" role="dialog" aria-labelledby="right-panel-title">
+              <nav class="rux-right-panel__tabs" aria-label="Right panel sections">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="rp-close-btn" type="button" aria-label="Close panel">
+                  <span class="rux-icon">right_panel_close</span>
+                </button>
+              </nav>
+              <div class="rux-right-panel__body">
+              </div>
+            </aside>
+            <div class="scheduler-app__drawer-handle"></div>
+          </div>
+
+          <!-- Right panel edge tab (visible when drawer is closed) -->
+          <button class="scheduler-app__panel-tab scheduler-app__panel-tab--right" id="open-right-panel" type="button" aria-label="Open right panel">
+            <span class="rux-icon">right_panel_open</span>
+          </button>
+
+        </div>
+        <!-- /module:calendar -->
+
+        <!-- ════════════════════════════════════════════════════════════════
+             MODULE: TRIPS
+             ════════════════════════════════════════════════════════════════ -->
+        <div class="scheduler-app__module" data-module="trips" hidden>
+          <section class="scheduler-app__schedule" aria-label="Trip list">
+            <header class="scheduler-app__bar scheduler-app__bar--table">
+              <div class="scheduler-app__brand">
+                <h1 class="scheduler-app__title">Trips</h1>
+              </div>
+              <div class="scheduler-app__toolbar" role="group" aria-label="Table controls">
+              </div>
+            </header>
             <div class="trips-app__table-wrap">
               <table class="rux-table trips-app__table" aria-label="Trips roster">
                 <thead>
@@ -345,11 +384,8 @@
               </table>
             </div>
           </section>
-
         </div>
         <!-- /module:trips -->
-
-        <!-- trips list view is now a sub-view within the schedule card -->
 
         <!-- ════════════════════════════════════════════════════════════════
              MODULE: FLEET
@@ -955,7 +991,6 @@
       moduleButtons.forEach((btn) => {
         btn.addEventListener("click", () => {
           showModule(btn.dataset.module);
-          if (btn.dataset.module === "trips") setScheduleView("schedule");
         });
       });
 
@@ -963,29 +998,14 @@
         btn.addEventListener("click", () => showModule(btn.dataset.module));
       });
 
-      // Respect hash on load; fall back to trips. Legacy #schedule maps to #trips.
-      const initialModule = location.hash.slice(1) || "trips";
-      const normalizedModule = initialModule === "schedule" ? "trips" : initialModule;
-      showModule(["trips", "fleet", "drivers", "customers", "settings"].includes(normalizedModule)
+      // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
+      const initialModule = location.hash.slice(1) || "calendar";
+      const normalizedModule = (initialModule === "schedule" || initialModule === "trips") ? "calendar" : initialModule;
+      showModule(["calendar", "trips", "fleet", "drivers", "customers", "settings"].includes(normalizedModule)
         ? normalizedModule
-        : "trips");
-
-      // ── Schedule sub-view toggle (Week / List) ──────────────────────────
+        : "calendar");
 
       const scheduleSection = document.querySelector(".scheduler-app__schedule");
-
-      function setScheduleView(view) {
-        scheduleSection.dataset.view = view;
-        document.querySelectorAll("[data-view-btn]").forEach((btn) => {
-          const active = btn.dataset.viewBtn === view;
-          btn.setAttribute("aria-pressed", active ? "true" : "false");
-          btn.classList.toggle("is-active", active);
-        });
-      }
-
-      document.querySelectorAll("[data-view-btn]").forEach((btn) => {
-        btn.addEventListener("click", () => setScheduleView(btn.dataset.viewBtn));
-      });
 
       // ── Global search modal ─────────────────────────────────────────────
       const searchModal      = document.getElementById("search-modal");
@@ -1041,7 +1061,7 @@
 
       document.addEventListener("trips:open", (e) => {
         const { trip } = e.detail;
-        showModule("trips");
+        showModule("calendar");
         if (trip.start_date) {
           currentWeekStart = startOfWeek(parseIsoDate(trip.start_date));
           renderDayHeaders(currentWeekStart);
@@ -1053,7 +1073,7 @@
       });
 
       document.addEventListener("trips:new", () => {
-        showModule("trips");
+        showModule("calendar");
         if (newTrip) newTrip(tripPanel, itinerary);
         setActiveTripPane("pane-trip");
         openDrawer();
@@ -1139,7 +1159,7 @@
 
       // ── Resizable drawer ────────────────────────────────────────────────
 
-      const DRAWER_MIN = 320;
+      const DRAWER_MIN = 372;
       const DRAWER_MAX = 640;
       const DRAWER_STORAGE_KEY = "rux-drawer-width";
 
@@ -1725,6 +1745,23 @@
         schedulerEl?.classList.toggle("rux-scheduler--time-aligned", timeAlignEnabled);
         renderScheduler();
       });
+
+      const compactBtn = document.getElementById("compact-mode-btn");
+      let compactEnabled = false;
+      try { compactEnabled = localStorage.getItem("rux:compact-trips") === "true"; } catch (_) {}
+      if (compactEnabled) {
+        compactBtn?.classList.add("is-active");
+        compactBtn?.setAttribute("aria-pressed", "true");
+        schedulerEl?.classList.add("rux-scheduler--compact");
+      }
+      compactBtn?.addEventListener("click", () => {
+        compactEnabled = !compactEnabled;
+        compactBtn.setAttribute("aria-pressed", compactEnabled);
+        compactBtn.classList.toggle("is-active", compactEnabled);
+        schedulerEl?.classList.toggle("rux-scheduler--compact", compactEnabled);
+        try { localStorage.setItem("rux:compact-trips", compactEnabled); } catch (_) {}
+        layoutScheduler();
+      });
       const dayPickerBtn = document.getElementById("day-picker-btn");
       const dayPickerInput = document.getElementById("day-picker-input");
       dayPickerBtn?.addEventListener("click", () => {
@@ -1745,6 +1782,45 @@
         if (drawer.classList.contains("is-open")) { closeDrawer(); } else { openDrawer(); }
       });
       document.getElementById("tp-close-btn").addEventListener("click", closeDrawer);
+
+      // ── Right panel drawer ──────────────────────────────────────────────
+      const rightDrawer = document.getElementById("right-panel-drawer");
+      const openRightPanelBtn = document.getElementById("open-right-panel");
+      function openRightDrawer() { rightDrawer.classList.add("is-open"); }
+      function closeRightDrawer() { rightDrawer.classList.remove("is-open"); }
+      openRightPanelBtn.addEventListener("click", () => {
+        rightDrawer.classList.contains("is-open") ? closeRightDrawer() : openRightDrawer();
+      });
+      document.getElementById("rp-close-btn").addEventListener("click", closeRightDrawer);
+
+      const RIGHT_DRAWER_STORAGE_KEY = "rux-right-drawer-width";
+      const savedRightWidth = localStorage.getItem(RIGHT_DRAWER_STORAGE_KEY);
+      if (savedRightWidth) rightDrawer.style.setProperty("--drawer-width", savedRightWidth + "px");
+
+      rightDrawer.querySelector(".scheduler-app__drawer-handle").addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        rightDrawer.classList.add("is-resizing");
+        document.body.style.cursor = "col-resize";
+        document.body.style.userSelect = "none";
+        const startX = e.clientX;
+        const startW = parseInt(getComputedStyle(rightDrawer).getPropertyValue("--drawer-width")) || rightDrawer.offsetWidth;
+
+        const onMove = (e) => {
+          const w = Math.min(DRAWER_MAX, Math.max(DRAWER_MIN, startW - (e.clientX - startX)));
+          rightDrawer.style.setProperty("--drawer-width", w + "px");
+        };
+        const onUp = () => {
+          rightDrawer.classList.remove("is-resizing");
+          document.body.style.cursor = "";
+          document.body.style.userSelect = "";
+          const w = parseInt(getComputedStyle(rightDrawer).getPropertyValue("--drawer-width"));
+          if (w) localStorage.setItem(RIGHT_DRAWER_STORAGE_KEY, w);
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+      });
 
       renderScheduler();
 

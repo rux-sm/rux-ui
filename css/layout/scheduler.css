@@ -186,6 +186,14 @@
 	--_row-height: calc(140px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
+.rux-scheduler--compact {
+	--_row-height: calc(112px + (var(--rux-scheduler-row-block-inset) * 2));
+}
+
+.rux-scheduler--compact .rux-scheduler__row {
+	--_row-height: calc(112px + (var(--rux-scheduler-row-block-inset) * 2));
+}
+
 /* ---------- Bus row ---------- */
 
 .rux-scheduler__col-head,

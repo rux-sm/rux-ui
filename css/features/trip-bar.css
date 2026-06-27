@@ -817,6 +817,26 @@
 	}
 }
 
+/* ---------- Compact mode ---------- */
+
+.rux-scheduler--compact .rux-trip-bar {
+	--rux-trip-bar-collapsed-height: 112px;
+}
+
+.rux-scheduler--compact .rux-trip-bar__contact,
+.rux-scheduler--compact .rux-trip-bar__notes {
+	display: none;
+}
+
+.rux-scheduler--compact .rux-trip-bar.is-active {
+	--rux-trip-bar-collapsed-height: 140px;
+}
+
+.rux-scheduler--compact .rux-trip-bar.is-active .rux-trip-bar__contact,
+.rux-scheduler--compact .rux-trip-bar.is-active .rux-trip-bar__notes {
+	display: flex;
+}
+
 /* ---------- Reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {

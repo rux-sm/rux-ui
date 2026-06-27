@@ -29,7 +29,7 @@
 	flex-direction: column;
 	height: 100%;
 	min-height: 0;
-	min-width: calc(6 * 42px + 5 * var(--rux-space-2) + 2 * var(--rux-space-2)); /* 6 tabs + gaps + padding = 308px */
+	min-width: 360px;
 	overflow: clip;
 	background: var(--rux-bg-level-1);
 	border-left: var(--rux-border-width) solid var(--rux-border);
@@ -133,6 +133,12 @@
 	flex: 1;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-3);
+	--_bg: transparent;
+	--_bg-h: transparent;
+	--_bg-a: transparent;
+	--_fg: var(--rux-fg-muted);
+	--_shadow: none;
+	--_border: transparent;
 }
 .rux-trip-panel__status-group .rux-button {
 	gap: var(--rux-space-1);
@@ -713,7 +719,7 @@
    Requirement buttons:    400px
    ========================================================================== */
 
-@container (max-width: 365px) {
+@container (max-width: 350px) {
 	.rux-trip-panel__payment-actions .rux-btn-label {
 		display: none;
 	}

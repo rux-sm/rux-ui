@@ -48,7 +48,7 @@
      Designed for OLED-friendly contrast without crushing blacks.            */
 
 	--rux-color-white: oklch(100% 0 0);
-	--rux-color-base: oklch(50% 0 260);
+	--rux-color-base: oklch(50% 0.005 260);
 
 	--rux-bg-topbar: oklch(0% 0.004 260);
 	--rux-bg: oklch(0% 0.004 260); /* canvas — the lowest plane */
@@ -222,9 +222,9 @@
 	--rux-switch-height: 32px;
 
 	--rux-icon-sm: 20px;
-	--rux-icon-md: 20px;
-	--rux-icon-lg: 20px;
-	--rux-icon-xl: 20px;
+	--rux-icon-md: 24px;
+	--rux-icon-lg: 24px;
+	--rux-icon-xl: 24px;
 
 	--rux-avatar-sm: 24px;
 	--rux-avatar-md: 32px;
@@ -292,11 +292,11 @@
 	--rux-duration-instant: 80ms; /* hover, opacity                        */
 	--rux-duration-fast: 140ms; /* button press, color shifts            */
 	--rux-duration-base: 220ms; /* menu open, modal in                   */
-	--rux-duration-slow: 360ms; /* sheet slide, layout                   */
+	--rux-duration-slow: 720ms; /* sheet slide, layout                   */
 
-	--rux-ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* default          */
-	--rux-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* symmetric        */
-	--rux-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* playful, rare    */
+	--rux-ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* fast start, gentle stop — default for most transitions */
+	--rux-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* smooth ramp up and down — panels, modals, layout shifts */
+	--rux-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoots then settles — toggles, popovers, playful emphasis */
 
 	/* ─── LAYOUT ──────────────────────────────────────────────────────────── */
 
