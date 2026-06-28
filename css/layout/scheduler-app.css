@@ -563,6 +563,136 @@
 	display: none;
 }
 
+/* — Mini calendar — */
+
+.rux-mini-cal {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+
+.rux-mini-cal__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-2);
+}
+
+.rux-mini-cal__title {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg);
+	text-align: center;
+	flex: 1;
+}
+
+.rux-mini-cal__grid {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+}
+
+.rux-mini-cal__day-names {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	text-align: center;
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-medium);
+	color: var(--rux-fg-subtle);
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
+	padding-bottom: var(--rux-space-1);
+}
+
+.rux-mini-cal__dates {
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 2px;
+}
+
+.rux-mini-cal__date {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	aspect-ratio: 1;
+	max-height: 36px;
+	border: none;
+	border-radius: var(--rux-radius-sm);
+	background: transparent;
+	color: var(--rux-fg);
+	font: inherit;
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-regular);
+	line-height: 1;
+	cursor: pointer;
+	padding: 0;
+	transition: background var(--rux-duration-instant) var(--rux-ease-out);
+}
+
+.rux-mini-cal__date:hover {
+	background: var(--rux-control-ghost-hover);
+}
+
+.rux-mini-cal__date--outside {
+	color: var(--rux-fg-subtle);
+}
+
+.rux-mini-cal__date--today {
+	background: var(--rux-accent);
+	color: var(--rux-fg-on-accent);
+	font-weight: var(--rux-weight-bold);
+	border-radius: var(--rux-radius-sm);
+}
+
+.rux-mini-cal__date--today:hover {
+	background: var(--rux-accent-hover);
+}
+
+.rux-mini-cal__date--active-week {
+	background: var(--rux-accent-subtle);
+}
+
+.rux-mini-cal__date--active-week.rux-mini-cal__date--today {
+	background: var(--rux-accent);
+}
+
+.rux-mini-cal__date--has-trips::after {
+	content: "";
+	position: absolute;
+	bottom: 2px;
+	width: 4px;
+	height: 4px;
+	border-radius: var(--rux-radius-full);
+	background: var(--rux-accent);
+}
+
+.rux-mini-cal__date--has-trips {
+	position: relative;
+}
+
+/* — View options — */
+
+.rux-view-options {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+
+.rux-view-options__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+	cursor: pointer;
+}
+
+.rux-view-options__label {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+	color: var(--rux-fg-muted);
+}
+
 @media (max-width: 500px) {
 	/* Drawer fills full viewport */
 	.scheduler-app__drawer.is-open {

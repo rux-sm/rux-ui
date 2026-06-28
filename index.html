@@ -296,7 +296,7 @@
                   <span class="rux-icon">chevron_left</span>
                 </button>
                 <button class="rux-button rux-button--ghost rux-button--icon" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input" title="Pick date">
-                  <span class="rux-icon">event_note</span>
+                  <span class="rux-icon">date_range</span>
                 </button>
                 <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
                 <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
@@ -307,13 +307,6 @@
                 <h1 class="scheduler-app__title" id="week-label"></h1>
               </div>
               <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
-                <button class="rux-button rux-button--toggle rux-button--icon" id="time-align-btn" type="button" aria-pressed="false" title="Time-aligned view">
-                  <span class="rux-icon">schedule</span>
-                </button>
-                <button class="rux-button rux-button--toggle rux-button--icon" id="compact-mode-btn" type="button" aria-pressed="false" title="Compact trip bars">
-                  <span class="rux-icon icon-off">compress</span>
-                  <span class="rux-icon icon-on">expand</span>
-                </button>
               </div>
             </header>
             <div class="scheduler-app__schedule-wrap">
@@ -321,13 +314,6 @@
                 <div class="rux-scheduler__col-head">
                   <span class="rux-scheduler__corner-label"></span>
                 </div>
-                <div class="rux-scheduler__day-head rux-scheduler__day-head--today">Monday</div>
-                <div class="rux-scheduler__day-head">Tuesday</div>
-                <div class="rux-scheduler__day-head">Wednesday</div>
-                <div class="rux-scheduler__day-head">Thursday</div>
-                <div class="rux-scheduler__day-head">Friday</div>
-                <div class="rux-scheduler__day-head">Saturday</div>
-                <div class="rux-scheduler__day-head">Sunday</div>
               </div>
             </div>
           </section>
@@ -348,6 +334,61 @@
               </nav>
               <div class="rux-right-panel__body">
                 <div id="rp-pane-navigate" class="rux-right-panel__pane" role="tabpanel">
+                  <div class="rux-card rux-mini-cal">
+                    <header class="rux-mini-cal__header">
+                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-prev" type="button" aria-label="Previous month">
+                        <span class="rux-icon">chevron_left</span>
+                      </button>
+                      <span class="rux-mini-cal__title" id="mini-cal-title"></span>
+                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-next" type="button" aria-label="Next month">
+                        <span class="rux-icon">chevron_right</span>
+                      </button>
+                    </header>
+                    <div class="rux-mini-cal__grid" role="grid">
+                      <div class="rux-mini-cal__day-names">
+                        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                      </div>
+                      <div class="rux-mini-cal__dates" id="mini-cal-dates"></div>
+                    </div>
+                    <button class="rux-button rux-button--block" id="mini-cal-today" type="button">Today</button>
+                  </div>
+                  <div class="rux-card">
+                    <p class="rux-trip-panel__section-label">View Options</p>
+                    <div class="rux-view-options">
+                      <div class="rux-view-options__row">
+                        <span class="rux-view-options__label">Time-aligned</span>
+                        <label class="rux-switch">
+                          <input id="opt-time-align" type="checkbox" role="switch" />
+                          <span class="rux-switch__track"></span>
+                          <span class="rux-switch__thumb"></span>
+                        </label>
+                      </div>
+                      <div class="rux-view-options__row">
+                        <span class="rux-view-options__label">Compact trips</span>
+                        <label class="rux-switch">
+                          <input id="opt-compact" type="checkbox" role="switch" />
+                          <span class="rux-switch__track"></span>
+                          <span class="rux-switch__thumb"></span>
+                        </label>
+                      </div>
+                      <div class="rux-view-options__row">
+                        <span class="rux-view-options__label">Start on Sunday</span>
+                        <label class="rux-switch">
+                          <input id="opt-sunday-start" type="checkbox" role="switch" />
+                          <span class="rux-switch__track"></span>
+                          <span class="rux-switch__thumb"></span>
+                        </label>
+                      </div>
+                      <div class="rux-view-options__row">
+                        <span class="rux-view-options__label">Two-week view</span>
+                        <label class="rux-switch">
+                          <input id="opt-two-weeks" type="checkbox" role="switch" />
+                          <span class="rux-switch__track"></span>
+                          <span class="rux-switch__thumb"></span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div id="rp-pane-drivers" class="rux-right-panel__pane" role="tabpanel" hidden>
                 </div>
@@ -1163,8 +1204,15 @@
         openDrawer();
       }
 
-      const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-      const dayHeadEls = document.querySelectorAll(".rux-scheduler__day-head");
+      let sundayStart = false;
+      try { sundayStart = localStorage.getItem("rux:sunday-start") === "true"; } catch (_) {}
+
+      let viewDays = 7;
+      try { viewDays = localStorage.getItem("rux:two-weeks") === "true" ? 14 : 7; } catch (_) {}
+
+      const DAY_NAMES_MON = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const DAY_NAMES_SUN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      function getDayNames() { return sundayStart ? DAY_NAMES_SUN : DAY_NAMES_MON; }
       const todayIso = isoDate(new Date());
       let currentWeekStart = startOfWeek(new Date());
 
@@ -1325,7 +1373,11 @@
       function startOfWeek(date) {
         const d = new Date(date);
         const day = d.getDay();
-        d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+        if (sundayStart) {
+          d.setDate(d.getDate() - day);
+        } else {
+          d.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+        }
         d.setHours(0, 0, 0, 0);
         return d;
       }
@@ -1392,12 +1444,20 @@
         const weekLabelEl = document.getElementById("week-label");
         weekLabelEl.textContent = fmtWeekLabel(weekStart);
         weekLabelEl.dataset.short = fmtWeekLabelShort(weekStart);
-        dayHeadEls.forEach((el, index) => {
+        schedulerEl.style.setProperty("--rux-scheduler-days", viewDays);
+        const colHead = schedulerEl.querySelector(".rux-scheduler__col-head");
+        schedulerEl.querySelectorAll(".rux-scheduler__day-head").forEach(el => el.remove());
+        const names = getDayNames();
+        let insertAfter = colHead;
+        for (let index = 0; index < viewDays; index++) {
           const date = addDays(weekStart, index);
           const isToday = isoDate(date) === todayIso;
-          el.innerHTML = `<span class="rux-scheduler__day-name">${DAY_NAMES[index]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span><div class="rux-scheduler__time-ticks"><span>12a</span><span>6a</span><span>6p</span></div>`;
-          el.classList.toggle("rux-scheduler__day-head--today", isoDate(date) === todayIso);
-        });
+          const el = document.createElement("div");
+          el.className = "rux-scheduler__day-head" + (isToday ? " rux-scheduler__day-head--today" : "");
+          el.innerHTML = `<span class="rux-scheduler__day-name">${names[index % 7]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span><div class="rux-scheduler__time-ticks"><span>12a</span><span>6a</span><span>6p</span></div>`;
+          insertAfter.insertAdjacentElement("afterend", el);
+          insertAfter = el;
+        }
       }
 
       // ── Scheduler layout ────────────────────────────────────────────────
@@ -1455,7 +1515,7 @@
       }
 
       function getWeekPlacements(weekStart, tripMap) {
-        const weekEnd = addDays(weekStart, 6);
+        const weekEnd = addDays(weekStart, viewDays - 1);
         const placements = [];
         Object.entries(tripTrackMap).forEach(([key, info]) => {
           const trip = tripMap[key];
@@ -1655,6 +1715,7 @@
         });
         activePlacements = activePlacements.filter(p => p.bar);
         renderDayHeaders(currentWeekStart);
+        if (typeof renderMiniCal === "function") renderMiniCal();
         activePlacements.forEach((placement) => {
           const observer = new ResizeObserver(layoutScheduler);
           observer.observe(placement.bar);
@@ -1748,34 +1809,47 @@
 
       window.addEventListener("resize", layoutScheduler);
 
-      document.getElementById("prev-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart, -7); renderScheduler(); });
-      document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  7); renderScheduler(); });
+      document.getElementById("prev-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart, -viewDays); renderScheduler(); });
+      document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  viewDays); renderScheduler(); });
 
-      const timeAlignBtn = document.getElementById("time-align-btn");
-      timeAlignBtn?.addEventListener("click", () => {
-        timeAlignEnabled = !timeAlignEnabled;
-        timeAlignBtn.setAttribute("aria-pressed", timeAlignEnabled);
-        timeAlignBtn.classList.toggle("is-active", timeAlignEnabled);
+      const optTimeAlign = document.getElementById("opt-time-align");
+      optTimeAlign.checked = timeAlignEnabled;
+      optTimeAlign?.addEventListener("change", () => {
+        timeAlignEnabled = optTimeAlign.checked;
         schedulerEl?.classList.toggle("rux-scheduler--time-aligned", timeAlignEnabled);
         renderScheduler();
       });
 
-      const compactBtn = document.getElementById("compact-mode-btn");
+      const optCompact = document.getElementById("opt-compact");
       let compactEnabled = false;
       try { compactEnabled = localStorage.getItem("rux:compact-trips") === "true"; } catch (_) {}
       if (compactEnabled) {
-        compactBtn?.classList.add("is-active");
-        compactBtn?.setAttribute("aria-pressed", "true");
         schedulerEl?.classList.add("rux-scheduler--compact");
       }
-      compactBtn?.addEventListener("click", () => {
-        compactEnabled = !compactEnabled;
-        compactBtn.setAttribute("aria-pressed", compactEnabled);
-        compactBtn.classList.toggle("is-active", compactEnabled);
+      optCompact.checked = compactEnabled;
+      optCompact?.addEventListener("change", () => {
+        compactEnabled = optCompact.checked;
         schedulerEl?.classList.toggle("rux-scheduler--compact", compactEnabled);
         try { localStorage.setItem("rux:compact-trips", compactEnabled); } catch (_) {}
         layoutScheduler();
       });
+      const optSundayStart = document.getElementById("opt-sunday-start");
+      optSundayStart.checked = sundayStart;
+      optSundayStart?.addEventListener("change", () => {
+        sundayStart = optSundayStart.checked;
+        try { localStorage.setItem("rux:sunday-start", sundayStart); } catch (_) {}
+        currentWeekStart = startOfWeek(currentWeekStart);
+        renderScheduler();
+      });
+
+      const optTwoWeeks = document.getElementById("opt-two-weeks");
+      optTwoWeeks.checked = viewDays === 14;
+      optTwoWeeks?.addEventListener("change", () => {
+        viewDays = optTwoWeeks.checked ? 14 : 7;
+        try { localStorage.setItem("rux:two-weeks", optTwoWeeks.checked); } catch (_) {}
+        renderScheduler();
+      });
+
       const dayPickerBtn = document.getElementById("day-picker-btn");
       const dayPickerInput = document.getElementById("day-picker-input");
       dayPickerBtn?.addEventListener("click", () => {
@@ -1818,6 +1892,76 @@
           rpPanes.forEach((p) => { p.hidden = p.id !== paneId; });
         });
       });
+
+      // ── Mini calendar ────────────────────────────────────────────────────
+      const miniCalDates = document.getElementById("mini-cal-dates");
+      const miniCalTitle = document.getElementById("mini-cal-title");
+      let miniCalMonth = new Date(currentWeekStart);
+      miniCalMonth.setDate(1);
+
+      function renderMiniCal() {
+        const year = miniCalMonth.getFullYear();
+        const month = miniCalMonth.getMonth();
+        miniCalTitle.textContent = new Date(year, month).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const prevMonthDays = new Date(year, month, 0).getDate();
+
+        const today = isoDate(new Date());
+        const weekStartIso = isoDate(currentWeekStart);
+        const weekEndIso = isoDate(addDays(currentWeekStart, viewDays - 1));
+
+        let html = "";
+        for (let i = 0; i < firstDay; i++) {
+          const day = prevMonthDays - firstDay + 1 + i;
+          const d = new Date(year, month - 1, day);
+          const iso = isoDate(d);
+          html += `<button class="rux-mini-cal__date rux-mini-cal__date--outside${iso >= weekStartIso && iso <= weekEndIso ? " rux-mini-cal__date--active-week" : ""}" type="button" data-date="${iso}">${day}</button>`;
+        }
+        for (let day = 1; day <= daysInMonth; day++) {
+          const d = new Date(year, month, day);
+          const iso = isoDate(d);
+          const isToday = iso === today;
+          const inWeek = iso >= weekStartIso && iso <= weekEndIso;
+          let cls = "rux-mini-cal__date";
+          if (isToday) cls += " rux-mini-cal__date--today";
+          if (inWeek) cls += " rux-mini-cal__date--active-week";
+          html += `<button class="${cls}" type="button" data-date="${iso}">${day}</button>`;
+        }
+        const totalCells = firstDay + daysInMonth;
+        const remaining = (7 - (totalCells % 7)) % 7;
+        for (let i = 1; i <= remaining; i++) {
+          const d = new Date(year, month + 1, i);
+          const iso = isoDate(d);
+          html += `<button class="rux-mini-cal__date rux-mini-cal__date--outside${iso >= weekStartIso && iso <= weekEndIso ? " rux-mini-cal__date--active-week" : ""}" type="button" data-date="${iso}">${i}</button>`;
+        }
+        miniCalDates.innerHTML = html;
+      }
+
+      miniCalDates.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-date]");
+        if (!btn) return;
+        currentWeekStart = startOfWeek(parseIsoDate(btn.dataset.date));
+        renderScheduler();
+      });
+
+      document.getElementById("mini-cal-prev").addEventListener("click", () => {
+        miniCalMonth.setMonth(miniCalMonth.getMonth() - 1);
+        renderMiniCal();
+      });
+      document.getElementById("mini-cal-next").addEventListener("click", () => {
+        miniCalMonth.setMonth(miniCalMonth.getMonth() + 1);
+        renderMiniCal();
+      });
+      document.getElementById("mini-cal-today").addEventListener("click", () => {
+        currentWeekStart = startOfWeek(new Date());
+        miniCalMonth = new Date();
+        miniCalMonth.setDate(1);
+        renderScheduler();
+      });
+
+      renderMiniCal();
 
       const RIGHT_DRAWER_STORAGE_KEY = "rux-right-drawer-width";
 
