@@ -693,7 +693,15 @@
 	color: var(--rux-fg-muted);
 }
 
+.scheduler-app__mobile-panel-btn {
+	display: none;
+}
+
 @media (max-width: 500px) {
+	.scheduler-app__mobile-panel-btn {
+		display: inline-flex;
+	}
+
 	/* Drawer fills full viewport */
 	.scheduler-app__drawer.is-open {
 		width: 100dvw;

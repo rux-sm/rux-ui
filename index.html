@@ -291,23 +291,29 @@
 
           <section class="scheduler-app__schedule" aria-label="Weekly schedule">
             <header class="scheduler-app__bar">
-              <div class="scheduler-app__nav-arrows">
-                <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
-                  <span class="rux-icon">chevron_left</span>
-                </button>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input" title="Pick date">
-                  <span class="rux-icon">date_range</span>
-                </button>
-                <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
-                <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
-                  <span class="rux-icon">chevron_right</span>
-                </button>
-              </div>
+              <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" data-opens="trip-panel-drawer">
+                <span class="rux-icon">left_panel_open</span>
+              </button>
               <div class="scheduler-app__brand">
                 <h1 class="scheduler-app__title" id="week-label"></h1>
               </div>
               <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
+                <div class="scheduler-app__nav-arrows">
+                  <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
+                    <span class="rux-icon">chevron_left</span>
+                  </button>
+                  <button class="rux-button rux-button--ghost rux-button--icon" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input" title="Pick date">
+                    <span class="rux-icon">date_range</span>
+                  </button>
+                  <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
+                  <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
+                    <span class="rux-icon">chevron_right</span>
+                  </button>
+                </div>
               </div>
+              <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" data-opens="right-panel-drawer">
+                <span class="rux-icon">right_panel_open</span>
+              </button>
             </header>
             <div class="scheduler-app__schedule-wrap">
               <div class="rux-scheduler scheduler-app__grid" id="scheduler">
@@ -1870,6 +1876,18 @@
         if (drawer.classList.contains("is-open")) { closeDrawer(); } else { openDrawer(); }
       });
       document.getElementById("tp-close-btn").addEventListener("click", closeDrawer);
+
+      // ── Mobile panel open buttons ─────────────────────────────────────
+      document.querySelectorAll(".scheduler-app__mobile-panel-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const targetId = btn.dataset.opens;
+          if (targetId === "trip-panel-drawer") {
+            drawer.classList.contains("is-open") ? closeDrawer() : openDrawer();
+          } else if (targetId === "right-panel-drawer") {
+            document.getElementById("right-panel-drawer")?.classList.contains("is-open") ? closeRightDrawer() : openRightDrawer();
+          }
+        });
+      });
 
       // ── Right panel drawer ──────────────────────────────────────────────
       const rightDrawer = document.getElementById("right-panel-drawer");
