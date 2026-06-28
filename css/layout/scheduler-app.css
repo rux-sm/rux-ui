@@ -343,7 +343,7 @@
 	display: flex;
 	flex-direction: column;
 	flex: 1;
-	min-width: 0;
+	min-width: 471px;
 	min-height: 0;
 	margin: var(--scheduler-app-gap);
 	padding-block-end: var(--scheduler-app-gap);
@@ -376,7 +376,7 @@
 }
 
 .scheduler-app__drawer.is-open {
-	width: var(--drawer-width, 380px);
+	width: var(--drawer-width, 372px);
 	margin-left: var(--scheduler-app-gap);
 }
 
@@ -389,7 +389,7 @@
 	inset-block: var(--scheduler-app-gap);
 	right: var(--scheduler-app-gap);
 	height: auto;
-	width: calc(var(--drawer-width, 380px) - var(--scheduler-app-gap));
+	width: calc(var(--drawer-width, 372px) - var(--scheduler-app-gap));
 	border: none;
 	border-radius: var(--scheduler-app-card-radius);
 }
@@ -484,7 +484,7 @@
 	left: var(--scheduler-app-gap);
 	right: auto;
 	height: auto;
-	width: calc(var(--drawer-width, 380px) - var(--scheduler-app-gap));
+	width: calc(var(--drawer-width, 372px) - var(--scheduler-app-gap));
 	border: none;
 	border-radius: var(--scheduler-app-card-radius);
 }
@@ -525,6 +525,25 @@
 	gap: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: solid transparent var(--rux-border-width);
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+.rux-right-panel__tabs::-webkit-scrollbar {
+	display: none;
+}
+.rux-right-panel__tabs [data-right-tabs] {
+	display: contents;
+}
+.rux-right-panel__tabs .rux-button--toggle {
+	flex: 1;
+	gap: var(--rux-space-1);
+	padding: var(--rux-space-1) var(--rux-space-3);
+	--_bg: transparent;
+	--_bg-h: transparent;
+	--_bg-a: transparent;
+	--_fg: var(--rux-fg-muted);
+	--_shadow: none;
+	--_border: transparent;
 }
 
 .rux-right-panel__body {
@@ -532,6 +551,16 @@
 	overflow-y: auto;
 	overscroll-behavior: contain;
 	min-height: 0;
+}
+
+.rux-right-panel__pane {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3);
+}
+.rux-right-panel__pane[hidden] {
+	display: none;
 }
 
 @media (max-width: 500px) {
