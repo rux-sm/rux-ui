@@ -184,8 +184,6 @@
 
 .scheduler-app__bar:not(.scheduler-app__bar--table) .scheduler-app__toolbar {
 	flex: none;
-	container-type: normal;
-	min-width: 0;
 }
 
 .scheduler-app__schedule > .scheduler-app__bar {
@@ -298,14 +296,6 @@
 	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXNhdmUtaWNvbiBsdWNpZGUtc2F2ZSI+PHBhdGggZD0iTTE1LjIgM2EyIDIgMCAwIDEgMS40LjZsMy44IDMuOGEyIDIgMCAwIDEgLjYgMS40VjE5YTIgMiAwIDAgMS0yIDJINWEyIDIgMCAwIDEtMi0yVjVhMiAyIDAgMCAxIDItMnoiLz48cGF0aCBkPSJNMTcgMjF2LTdhMSAxIDAgMCAwLTEtMUg4YTEgMSAwIDAgMC0xIDF2NyIvPjxwYXRoIGQ9Ik03IDN2NGExIDEgMCAwIDAgMSAxaDciLz48L3N2Zz4=") center / contain no-repeat;
 }
 
-@container schedule-toolbar (max-width: 400px) {
-	#week-label {
-		display: none;
-	}
-	.scheduler-app__brand {
-		display: none;
-	}
-}
 
 @media (max-width: 520px) {
 	#today-btn .rux-btn-label,
@@ -727,6 +717,23 @@
 		flex: none;
 	}
 
+	.scheduler-app__schedule > .scheduler-app__bar {
+		gap: var(--rux-space-1);
+		container-type: normal;
+	}
+
+	.scheduler-app__schedule > .scheduler-app__bar .scheduler-app__brand {
+		min-width: 0;
+	}
+
+	.scheduler-app__schedule > .scheduler-app__bar .scheduler-app__toolbar {
+		container-type: normal;
+	}
+
+	.scheduler-app__schedule > .scheduler-app__bar .scheduler-app__nav-arrows {
+		gap: 0;
+	}
+
 	/* Drawer fills full viewport */
 	.scheduler-app__drawer.is-open {
 		width: 100dvw;
@@ -753,6 +760,7 @@
 
 	/* Suppress internal bottom padding — app padding already provides the nav gap */
 	.scheduler-app__schedule {
+		min-width: 0;
 		padding-block-end: 0;
 	}
 
