@@ -65,12 +65,12 @@
 	max-block-size: var(--rux-scheduler-max-block-size);
 	min-width: 0;
 	overflow: auto;
-	overscroll-behavior: contain;
+	overscroll-behavior-x: none;
+	overscroll-behavior-y: contain;
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-bg-level-1);
-	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
-	border:none; /* override */
+	border: none;
 	
 
 	border-radius: var(--rux-radius-md);
@@ -89,15 +89,20 @@
 	inset-block-start: 0;
 	z-index: var(--rux-z-sticky);
 	display: flex;
+	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	gap: var(--rux-space-2);
+	justify-content: start;
+	gap: 0;
 	min-height: var(--rux-scheduler-head-height);
-	padding: var(--rux-space-2) var(--rux-space-3);
+	padding: 0 var(--rux-space-3);
 	background: var(--rux-bg-level-1);
-	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
-	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-1);
+	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-1);
 	color: var(--rux-scheduler-header-color);
+}
+
+.rux-scheduler__col-head {
+	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-1);
 }
 
 .rux-scheduler__day-name {
@@ -105,36 +110,46 @@
 	font-weight: var(--rux-weight-medium);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
+	line-height: 1;
 	color: var(--rux-fg-subtle);
 }
 
 .rux-scheduler__day-number {
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-bold);
 	color: var(--rux-fg);
 	line-height: 1;
-	width: 24px;
-	height: 24px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 8px;
 }
 
 .rux-scheduler__day-number--today {
-	background: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
+	background: none;
+	color: inherit;
 }
 
 /* The day headers use real grid-cell borders; only remove the final edge so it
    does not double with the scheduler's outer border. */
-.rux-scheduler__day-head:has(+ :not(.rux-scheduler__day-head)) {
+.rux-scheduler__day-head:last-of-type {
 	border-inline-end: none;
 }
 
-/* Today highlight — no column tint, just the number circle */
-.rux-scheduler__day-head--today {
-	color: var(--rux-fg);
+.rux-scheduler__day-label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 36px;
+	padding: 2px var(--rux-space-1);
+	margin-block-end: var(--rux-space-1);
+	background: var(--rux-bg-level-1);
+	border-radius: var(--rux-radius-sm);
+}
+
+.rux-scheduler__day-head--today .rux-scheduler__day-label {
+	background: var(--rux-accent);
+}
+
+.rux-scheduler__day-head--today .rux-scheduler__day-name,
+.rux-scheduler__day-head--today .rux-scheduler__day-number {
+	color: var(--rux-fg-on-accent);
 }
 
 /* ---------- Time-aligned mode ---------- */
@@ -174,7 +189,7 @@
 }
 
 .rux-scheduler--time-aligned .rux-scheduler__time-ticks {
-	display: block;
+	display: none;
 }
 
 /* ---------- Row wrapper ---------- */
@@ -223,8 +238,8 @@
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
 	background: var(--rux-bg-level-1);
-	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
-	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-1);
+	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-1);
 	color: var(--rux-scheduler-row-head-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);

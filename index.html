@@ -155,14 +155,6 @@
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
                   </div>
                   <div class="rux-card">
-                    <p class="rux-trip-panel__section-label">Trip Contacts</p>
-                    <div id="tp-contacts-list" style="display:none;flex-direction:column;gap:var(--rux-space-4)"></div>
-                    <div class="rux-trip-panel__cols-2">
-                      <button class="rux-button rux-button--danger" type="button" id="tp-del-contact" disabled><span class="rux-icon">delete</span> Delete</button>
-                      <button class="rux-button" type="button" id="tp-add-contact"><span class="rux-icon">add</span> Add</button>
-                    </div>
-                  </div>
-                  <div class="rux-card">
                     <div class="rux-trip-panel__section-head">
                       <p class="rux-trip-panel__section-label">Trip Requirements</p>
                     </div>
@@ -173,7 +165,13 @@
                     </div>
                   </div>
                   <div class="rux-card">
+                    <p class="rux-trip-panel__section-label">Trip Contacts</p>
+                    <div id="tp-contacts-list" style="display:none;flex-direction:column;gap:var(--rux-space-4)"></div>
+                    <button class="rux-button" type="button" id="tp-add-contact"><span class="rux-icon">add</span> Add</button>
+                  </div>
+                  <div class="rux-card">
                     <p class="rux-trip-panel__section-label">Documents</p>
+                    <ul class="rux-trip-panel__doc-list" id="tp-doc-list"></ul>
                     <div class="rux-trip-panel__doc-upload">
                       <select class="rux-select" id="tp-doc-label-select">
                         <option value="" disabled selected>Document type…</option>
@@ -184,7 +182,6 @@
                       <button class="rux-button" id="tp-doc-upload-btn" type="button" disabled><span class="rux-icon">upload</span> Upload</button>
                       <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
                     </div>
-                    <ul class="rux-trip-panel__doc-list" id="tp-doc-list"></ul>
                   </div>
                 </div>
                 <!-- Billing -->
@@ -1099,6 +1096,7 @@
       let loadTrip = null;
       let newTrip  = null;
       let fetchTrips = null;
+      let tripDBHandle = null;
       let pendingNewTripContext = null;
 
       const openTripPanelBtn = document.getElementById("open-trip-panel");
@@ -1107,6 +1105,9 @@
         drawer.classList.add("is-open");
         openTripPanelBtn?.setAttribute("aria-pressed", "true");
         leftAutoCollapsed = false;
+        const scrollBody = tripPanel?.querySelector(".rux-trip-panel__body");
+        if (scrollBody) scrollBody.scrollTop = 0;
+        document.activeElement?.blur();
       }
       function closeDrawer() {
         drawer.classList.remove("is-open");
@@ -1116,6 +1117,7 @@
       // ── Trips module → scheduler bridge ────────────────────────────────────
 
       document.addEventListener("trips:open", (e) => {
+        if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
         const { trip } = e.detail;
         showModule("calendar");
         if (trip.start_date) {
@@ -1185,14 +1187,16 @@
         tripPanel.querySelector("#tp-end").value   = date;
         syncBusCount(1);
         const busSelect = tripPanel.querySelector('[name="buses[0].busId"]');
-        if (!busSelect || !busNumber) return;
-        const option = [...busSelect.options].find(
-          (opt) => opt.value === busNumber || opt.textContent.trim() === busNumber
-        );
-        if (option) {
-          busSelect.value = option.value;
-          busSelect.dispatchEvent(new Event("change", { bubbles: true }));
+        if (busSelect && busNumber) {
+          const option = [...busSelect.options].find(
+            (opt) => opt.value === busNumber || opt.textContent.trim() === busNumber
+          );
+          if (option) {
+            busSelect.value = option.value;
+            busSelect.dispatchEvent(new Event("change", { bubbles: true }));
+          }
         }
+        tripPanel.dispatchEvent(new CustomEvent("rux:trip-prefilled", { bubbles: true }));
       }
 
       function startNewTripFromContext(context) {
@@ -1285,11 +1289,28 @@
       });
 
       schedulerEl.addEventListener("scroll", closeSchedulerContextMenu);
+      const scheduleWrap = schedulerEl.closest(".scheduler-app__schedule-wrap");
+      function syncSchedulerShadows() {
+        if (!scheduleWrap) return;
+        const atTop = schedulerEl.scrollTop < 1;
+        const atLeft = schedulerEl.scrollLeft < 1;
+        const atRight = schedulerEl.scrollWidth - schedulerEl.scrollLeft - schedulerEl.clientWidth < 1;
+        const atBottom = schedulerEl.scrollHeight - schedulerEl.scrollTop - schedulerEl.clientHeight < 1;
+        scheduleWrap.classList.toggle("is-clipped-top", !atTop);
+        scheduleWrap.classList.toggle("is-clipped-left", !atLeft);
+        scheduleWrap.classList.toggle("is-clipped-right", !atRight);
+        scheduleWrap.classList.toggle("is-clipped-bottom", !atBottom);
+      }
+      schedulerEl.addEventListener("scroll", syncSchedulerShadows);
+      new ResizeObserver(syncSchedulerShadows).observe(schedulerEl);
 
       // ── Trip callbacks ──────────────────────────────────────────────────
 
       const callbacks = {
-        onOpenTrip:    (trip) => { openDrawer(); if (loadTrip) loadTrip(tripPanel, itinerary, trip); },
+        onOpenTrip:    (trip) => {
+          if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
+          openDrawer(); if (loadTrip) loadTrip(tripPanel, itinerary, trip);
+        },
         onChangeBus:   (trip) => {
           BusPicker.show(trip, schedulerBuses, trips, async (newBus, conflictAssignmentId) => {
             try {
@@ -1397,7 +1418,7 @@
 
       function fmtWeekLabel(weekStart) {
         const weekEnd = addDays(weekStart, 6);
-        return weekStart.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+        return weekStart.toLocaleDateString("en-US", { month: "long", year: "numeric" });
       }
 
       function fmtWeekLabelShort(weekStart) {
@@ -1456,7 +1477,7 @@
           const isToday = isoDate(date) === todayIso;
           const el = document.createElement("div");
           el.className = "rux-scheduler__day-head" + (isToday ? " rux-scheduler__day-head--today" : "");
-          el.innerHTML = `<span class="rux-scheduler__day-name">${names[index % 7]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span><div class="rux-scheduler__time-ticks"><span>12a</span><span>6a</span><span>6p</span></div>`;
+          el.innerHTML = `<span class="rux-scheduler__day-label"><span class="rux-scheduler__day-name">${names[index % 7]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span></span><div class="rux-scheduler__time-ticks"><span>12</span><span>6</span><span>6</span></div>`;
           insertAfter.insertAdjacentElement("afterend", el);
           insertAfter = el;
         }
@@ -1538,11 +1559,13 @@
       }
 
       function buildTrackGrid(track) {
-        if (track.querySelector(".rux-scheduler__track-grid")) return;
-        const grid = document.createElement("div");
+        const days = schedulerDayCount(track);
+        let grid = track.querySelector(".rux-scheduler__track-grid");
+        if (grid && grid.children.length === days) return;
+        if (grid) grid.remove();
+        grid = document.createElement("div");
         grid.className = "rux-scheduler__track-grid";
         grid.setAttribute("aria-hidden", "true");
-        const days = schedulerDayCount(track);
         for (let day = 0; day < days; day++) {
           const cell = document.createElement("span");
           cell.className = "rux-scheduler__track-day";
@@ -1717,6 +1740,7 @@
         });
         activePlacements = activePlacements.filter(p => p.bar);
         renderDayHeaders(currentWeekStart);
+        document.querySelectorAll(".rux-scheduler__track").forEach(buildTrackGrid);
         if (typeof renderMiniCal === "function") renderMiniCal();
         activePlacements.forEach((placement) => {
           const observer = new ResizeObserver(layoutScheduler);
@@ -1756,6 +1780,7 @@
               departureTime: t.departure_time, spotTime: t.spot_time, returnTime: t.return_time, notes: t.notes,
               bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone, email: t.booking_contact_email },
               tripContact: { name: t.trip_contact_1_name, phone: t.trip_contact_1_phone },
+              tripContact2: { name: t.trip_contact_2_name, phone: t.trip_contact_2_phone },
               bus_count: t.bus_count,
               trip_reqs: t.trip_reqs ?? {},
               req_sleeper: t.req_sleeper, req_56pax: t.req_56pax, req_ada: t.req_ada,
@@ -2058,7 +2083,7 @@
           loadTrip  = db.loadTrip;
           newTrip   = db.newTrip;
           fetchTrips = db.fetchTrips;
-          db.initTripDB(tripPanel, itinerary);
+          tripDBHandle = db.initTripDB(tripPanel, itinerary);
           window.RuxDocs = {
             upload: db.uploadDocument,
             replace: db.replaceDocument,

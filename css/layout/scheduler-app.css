@@ -857,6 +857,41 @@
 	block-size: 100%;
 }
 
+.scheduler-app__schedule-wrap {
+	position: relative;
+	overflow: hidden;
+}
+
+.scheduler-app__schedule-wrap::after {
+	content: "";
+	position: absolute;
+	inset: var(--rux-scheduler-head-height, 2rem) 0 0 var(--rux-scheduler-col-head-width, 2rem);
+	pointer-events: none;
+	z-index: var(--rux-z-sticky, 200);
+	--_shadow-top: 0 0 0 0 transparent;
+	--_shadow-right: 0 0 0 0 transparent;
+	--_shadow-bottom: 0 0 0 0 transparent;
+	--_shadow-left: 0 0 0 0 transparent;
+	box-shadow: inset var(--_shadow-top), inset var(--_shadow-right), inset var(--_shadow-bottom), inset var(--_shadow-left);
+	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.scheduler-app__schedule-wrap.is-clipped-top::after {
+	--_shadow-top: 0 10px 16px -8px oklch(0% 0 0 / 0.5);
+}
+
+.scheduler-app__schedule-wrap.is-clipped-right::after {
+	--_shadow-right: -10px 0 16px -8px oklch(0% 0 0 / 0.5);
+}
+
+.scheduler-app__schedule-wrap.is-clipped-bottom::after {
+	--_shadow-bottom: 0 -10px 16px -8px oklch(0% 0 0 / 0.5);
+}
+
+.scheduler-app__schedule-wrap.is-clipped-left::after {
+	--_shadow-left: 10px 0 16px -8px oklch(0% 0 0 / 0.5);
+}
+
 .scheduler-app__grid {
 	--rux-scheduler-day-min-width: 13rem;
 	--rux-scheduler-max-block-size: 100%;

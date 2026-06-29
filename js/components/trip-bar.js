@@ -238,34 +238,31 @@ function installFloatingTooltip() {
 
 function fmtTime(str) {
   if (!str) return "--:--";
-  // 12h with AM/PM suffix
-  if (/[ap]m$/i.test(str.trim()))
-    return str
-      .trim()
-      .replace(/\s*AM$/i, " a")
-      .replace(/\s*PM$/i, " p");
-  // 24h HH:MM
+  let h, min, suffix;
+  if (/[ap]m$/i.test(str.trim())) {
+    const clean = str.trim();
+    suffix = /am$/i.test(clean) ? "a" : "p";
+    const core = clean.replace(/\s*[ap]m$/i, "");
+    return `${core}<span class="rux-trip-bar__time-suffix"> ${suffix}</span>`;
+  }
   const m = str.match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return str;
-  let h = parseInt(m[1], 10);
-  const min = m[2];
-  const suffix = h < 12 ? " a" : " p";
+  h = parseInt(m[1], 10);
+  min = m[2];
+  suffix = h < 12 ? "a" : "p";
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
-  return `${h}:${min}${suffix}`;
+  return `${h}:${min}<span class="rux-trip-bar__time-suffix"> ${suffix}</span>`;
 }
 
 function timeItem(label, value, className = "") {
   const item = document.createElement("span");
   item.className = "rux-trip-bar__time-item";
   if (label) item.append(textEl("span", "rux-trip-bar__time-label", label));
-  item.append(
-    textEl(
-      "span",
-      `rux-trip-bar__time-value${className ? " " + className : ""}`,
-      value,
-    ),
-  );
+  const val = document.createElement("span");
+  val.className = `rux-trip-bar__time-value${className ? " " + className : ""}`;
+  val.innerHTML = value ?? "";
+  item.append(val);
   return item;
 }
 

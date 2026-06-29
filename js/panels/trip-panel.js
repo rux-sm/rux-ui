@@ -435,6 +435,20 @@ function initTripTabs(root) {
 
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
 	const allTabBtns = root.querySelectorAll(".rux-trip-panel__tabs .rux-button[aria-controls]");
+	const scrollBody = root.querySelector(".rux-trip-panel__body");
+	const tabsEl = root.querySelector(".rux-trip-panel__tabs");
+	const footerEl = root.querySelector(".rux-trip-panel__footer");
+	if (scrollBody) {
+		const syncScrollShadows = () => {
+			if (tabsEl) tabsEl.classList.toggle("is-scrolled", scrollBody.scrollTop > 0);
+			if (footerEl) {
+				const atBottom = scrollBody.scrollHeight - scrollBody.scrollTop - scrollBody.clientHeight < 1;
+				footerEl.classList.toggle("is-scrolled", !atBottom);
+			}
+		};
+		scrollBody.addEventListener("scroll", syncScrollShadows);
+		new ResizeObserver(syncScrollShadows).observe(scrollBody);
+	}
 	allTabBtns.forEach((btn) => {
 		btn.addEventListener("click", () => {
 			const panelId = btn.getAttribute("aria-controls");
@@ -448,6 +462,8 @@ function initTripTabs(root) {
 			allPanes.forEach((p) => {
 				p.hidden = p.id !== panelId;
 			});
+			if (scrollBody) scrollBody.scrollTop = 0;
+			document.activeElement?.blur();
 		});
 	});
 
@@ -511,37 +527,36 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	const contactList = root.querySelector("#tp-contacts-list");
 	const addContactBtn = root.querySelector("#tp-add-contact");
-	const delContactBtn = root.querySelector("#tp-del-contact");
 	const MAX_CONTACTS = 2;
 	if (addContactBtn && contactList) {
 		const contactCount = () => contactList.querySelectorAll("[data-trip-contact]").length;
 		const syncContactBtns = () => {
 			const count = contactCount();
 			addContactBtn.disabled = count >= MAX_CONTACTS;
-			if (delContactBtn) delContactBtn.disabled = count < 1;
 			contactList.style.display = count ? "flex" : "none";
 		};
+		contactList.addEventListener("click", (e) => {
+			const delBtn = e.target.closest("[data-contact-delete]");
+			if (!delBtn) return;
+			if (!confirm("Delete this contact?")) return;
+			delBtn.closest("[data-trip-contact]")?.remove();
+			syncContactBtns();
+		});
 		addContactBtn.addEventListener("click", () => {
-			const idx = contactCount() + 1;
-			if (idx > MAX_CONTACTS) return;
+			if (contactCount() >= MAX_CONTACTS) return;
+			const idx = [1, 2].find(i => !root.querySelector(`#tp-trip${i}-name`));
+			const label = idx === 1 ? "Primary" : "Secondary";
 			const row = document.createElement("div");
-			row.className = "rux-trip-panel__cols-2";
+			row.className = "rux-trip-panel__contact-row";
 			row.dataset.tripContact = "";
 			row.innerHTML =
-				`<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-name">Name</label><input class="rux-input" id="tp-trip${idx}-name" name="tripContact${idx}.name" type="text" /></div>` +
-				`<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-phone">Phone</label><input class="rux-input" id="tp-trip${idx}-phone" name="tripContact${idx}.phone" type="tel" /></div>`;
+				`<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-name">${label}</label><input class="rux-input" id="tp-trip${idx}-name" name="tripContact${idx}.name" type="text" /></div>` +
+				`<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-phone">Phone</label><input class="rux-input" id="tp-trip${idx}-phone" name="tripContact${idx}.phone" type="tel" /></div>` +
+				`<button class="rux-button rux-button--danger rux-button--icon" type="button" data-contact-delete aria-label="Delete contact"><span class="rux-icon">delete</span></button>`;
 			contactList.appendChild(row);
 			syncContactBtns();
 			row.querySelector(`#tp-trip${idx}-name`)?.focus();
 		});
-		if (delContactBtn) {
-			delContactBtn.addEventListener("click", () => {
-				const rows = contactList.querySelectorAll("[data-trip-contact]");
-				if (!rows.length) return;
-				rows[rows.length - 1].remove();
-				syncContactBtns();
-			});
-		}
 		syncContactBtns();
 	}
 
@@ -663,7 +678,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		if (contactList) {
 			contactList.querySelectorAll("[data-trip-contact]").forEach(r => r.remove());
 			if (addContactBtn) addContactBtn.disabled = false;
-			if (delContactBtn) delContactBtn.disabled = true;
+			contactList.style.display = "none";
 		}
 	});
 

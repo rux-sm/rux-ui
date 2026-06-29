@@ -592,6 +592,10 @@
 	color: var(--rux-fg-on-accent-subtle);
 }
 
+.rux-trip-bar:not(.rux-trip-bar--multi-day) .rux-trip-bar__time-suffix {
+	display: none;
+}
+
 /* ---------- Drivers row ---------- */
 
 .rux-trip-bar__drivers {

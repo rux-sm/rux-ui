@@ -900,7 +900,10 @@ export function loadTrip(root, itinerary, trip) {
 
 	root.querySelector(".rux-trip-panel__tabs .rux-button[aria-controls]")?.click();
 
-	requestAnimationFrame(() => root.classList.remove("rux-trip-panel--loading"));
+	requestAnimationFrame(() => {
+		root.classList.remove("rux-trip-panel--loading");
+		root.dispatchEvent(new CustomEvent("rux:trip-loaded", { bubbles: true }));
+	});
 }
 
 export function newTrip(root, itinerary) {
@@ -1005,7 +1008,51 @@ export function initTripDB(root, itinerary) {
 	const clearBtn  = root.querySelector("#tp-btn-clear");
 	const deleteBtn = root.querySelector("#tp-btn-delete");
 
-	saveBtn?.addEventListener("click",   () => save(root, itinerary, saveBtn));
-	clearBtn?.addEventListener("click",  () => clearForm(root, itinerary));
+	let cleanSnapshot = null;
+
+	function snapshotForm() {
+		const inputs = root.querySelectorAll("#pane-trip input, #pane-trip textarea, #pane-trip select, #pane-billing input");
+		const toggles = root.querySelectorAll("[data-req], [data-rux-toggle-button], [data-role]");
+		const inputVals = Array.from(inputs).map(el => el.type === "checkbox" ? String(el.checked) : el.value);
+		const toggleVals = Array.from(toggles).map(el => el.getAttribute("aria-pressed") || "false");
+		return inputVals.concat(toggleVals).join("\0");
+	}
+
+	function markClean() {
+		cleanSnapshot = snapshotForm();
+		if (saveBtn) saveBtn.disabled = true;
+	}
+
+	function isFormDirty() {
+		return snapshotForm() !== cleanSnapshot;
+	}
+
+	function syncSaveBtn() {
+		if (saveBtn) saveBtn.disabled = !isFormDirty();
+	}
+
+	markClean();
+	root.addEventListener("rux:trip-cleared", markClean);
+	root.addEventListener("rux:trip-prefilled", markClean);
+	root.addEventListener("rux:trip-loaded", markClean);
+
+	root.addEventListener("input", syncSaveBtn);
+	root.addEventListener("change", syncSaveBtn);
+	root.addEventListener("click", (e) => {
+		if (e.target.closest("[data-req], [data-rux-toggle-button], [data-role]")) {
+			requestAnimationFrame(syncSaveBtn);
+		}
+	});
+
+	saveBtn?.addEventListener("click", async () => {
+		await save(root, itinerary, saveBtn);
+		markClean();
+	});
+	clearBtn?.addEventListener("click",  () => {
+		if (isFormDirty() && !confirm("Discard unsaved changes?")) return;
+		clearForm(root, itinerary);
+	});
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
+
+	return { isFormDirty };
 }
