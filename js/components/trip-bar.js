@@ -533,7 +533,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--ghost rux-button--icon";
+  openBtn.className = "rux-button rux-button--icon";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("add"));
@@ -589,7 +589,7 @@ export function createTripBar(trip, callbacks = {}) {
       };
 
   const pdfBtn = button(
-    "rux-button rux-button--ghost rux-button--icon",
+    "rux-button rux-button--icon",
     pdfLabel,
     pdfIcon,
     () => onPdf(),
@@ -598,23 +598,17 @@ export function createTripBar(trip, callbacks = {}) {
   actions.append(
     openBtn,
     button(
-      "rux-button rux-button--ghost rux-button--icon",
+      "rux-button rux-button--icon",
       "Change bus",
       "swap_vert",
       () => callbacks.onChangeBus?.(trip),
     ),
     pdfBtn,
     button(
-      "rux-button rux-button--ghost rux-button--icon",
+      "rux-button rux-button--icon",
       "Trip envelope",
       "mail",
       () => (callbacks.onTripEnvelope || callbacks.onEmail)?.(trip),
-    ),
-    button(
-      "rux-button rux-button--ghost rux-button--icon",
-      "Other",
-      "more-horizontal",
-      () => (callbacks.onOther || callbacks.onMore)?.(trip),
     ),
   );
 
@@ -708,7 +702,10 @@ export function createTripBar(trip, callbacks = {}) {
     const roleIcon = icon(ROLE_ICONS[driver.role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
     const state = roleStateMap[driver.role];
     if (state && STATUS_COLORS[state]) roleIcon.style.color = STATUS_COLORS[state];
-    item.append(roleIcon, document.createTextNode(driver.shortName || driver.name));
+    const nameEl = document.createElement("span");
+    nameEl.className = "rux-trip-bar__driver-name";
+    nameEl.textContent = driver.shortName || driver.name;
+    item.append(roleIcon, nameEl);
     drivers.appendChild(item);
   });
 

@@ -108,7 +108,7 @@
 	--rux-control-strip-bg-hover: oklch(33% 0.004 260); /* inactive item hover inside a strip      */
 	--rux-control-strip-bg-active: oklch(40% 0.004 260); /* selected item inside a pill-strip       */
 
-	--rux-control-bg: oklch(from var(--rux-color-base) 40% c h);
+	--rux-control-bg: oklch(from var(--rux-color-base) 50% c h);
 	--rux-control-bg-disabled: oklch(24% 0.004 260);
 	--rux-control-bg-hover: oklch(50% 0.004 260);
 	--rux-control-bg-active: oklch(36% 0.004 260);

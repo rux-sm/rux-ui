@@ -282,8 +282,10 @@ function initBillingWorkflow(root) {
 	};
 	const removePaymentBtn = root.querySelector("[data-payment-remove]");
 	const updatePaymentButtons = () => {
-		if (removePaymentBtn) removePaymentBtn.disabled = paymentRowCount() === 0;
+		const count = paymentRowCount();
+		if (removePaymentBtn) removePaymentBtn.disabled = count === 0;
 		if (addPaymentBtn) addPaymentBtn.disabled = Array.from(paymentRows?.querySelectorAll("[data-payment-row]") || []).some((row) => !row.querySelector("[data-payment-amount]")?.value);
+		if (paymentRows) paymentRows.style.display = count ? "" : "none";
 	};
 	const readPayments = () =>
 		Array.from(paymentRows?.querySelectorAll("[data-payment-row]") || []).map((row) => ({
@@ -505,6 +507,44 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		
 	}
 
+	/* ── Trip Contacts ─────────────────────────────────────────────────── */
+
+	const contactList = root.querySelector("#tp-contacts-list");
+	const addContactBtn = root.querySelector("#tp-add-contact");
+	const delContactBtn = root.querySelector("#tp-del-contact");
+	const MAX_CONTACTS = 2;
+	if (addContactBtn && contactList) {
+		const contactCount = () => contactList.querySelectorAll("[data-trip-contact]").length;
+		const syncContactBtns = () => {
+			const count = contactCount();
+			addContactBtn.disabled = count >= MAX_CONTACTS;
+			if (delContactBtn) delContactBtn.disabled = count < 1;
+			contactList.style.display = count ? "flex" : "none";
+		};
+		addContactBtn.addEventListener("click", () => {
+			const idx = contactCount() + 1;
+			if (idx > MAX_CONTACTS) return;
+			const row = document.createElement("div");
+			row.className = "rux-trip-panel__cols-2";
+			row.dataset.tripContact = "";
+			row.innerHTML =
+				`<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-name">Name</label><input class="rux-input" id="tp-trip${idx}-name" name="tripContact${idx}.name" type="text" /></div>` +
+				`<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-phone">Phone</label><input class="rux-input" id="tp-trip${idx}-phone" name="tripContact${idx}.phone" type="tel" /></div>`;
+			contactList.appendChild(row);
+			syncContactBtns();
+			row.querySelector(`#tp-trip${idx}-name`)?.focus();
+		});
+		if (delContactBtn) {
+			delContactBtn.addEventListener("click", () => {
+				const rows = contactList.querySelectorAll("[data-trip-contact]");
+				if (!rows.length) return;
+				rows[rows.length - 1].remove();
+				syncContactBtns();
+			});
+		}
+		syncContactBtns();
+	}
+
 	/* ── Documents ────────────────────────────────────────────────────────── */
 
 	const docUploadBtn = root.querySelector("#tp-doc-upload-btn");
@@ -516,9 +556,9 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	const docList = root.querySelector("#tp-doc-list");
 
 	function docRowHtml(doc) {
-		return `<button class="rux-button rux-trip-panel__doc-btn" type="button" data-doc-open data-doc-path="${escHtml(doc.file_path)}" title="${escHtml(doc.file_name)}">
+		return `<button class="rux-button rux-button--primary rux-trip-panel__doc-btn" type="button" data-doc-open data-doc-path="${escHtml(doc.file_path)}" title="${escHtml(doc.file_name)}">
 				<span class="rux-icon">description</span>
-				<span>${escHtml(doc.label)}</span>
+				<span>View ${escHtml(doc.label)}</span>
 			</button>
 			<button class="rux-button rux-button--icon" type="button" data-doc-replace data-doc-id="${escHtml(doc.id)}" aria-label="Replace">
 				<span class="rux-icon">swap_horiz</span>
@@ -555,6 +595,13 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				li.className = "rux-trip-panel__doc-row";
 				li.innerHTML = docRowHtml(doc);
 				docList?.appendChild(li);
+				if (label === "PO") {
+					const poToggle = root.querySelector("#tp-po-received");
+					if (poToggle && !poToggle.checked) {
+						poToggle.checked = true;
+						poToggle.dispatchEvent(new Event("change", { bubbles: true }));
+					}
+				}
 				window.Rux?.toast(`${label} uploaded`);
 			} catch (err) {
 				console.error("Upload failed:", err);
@@ -613,6 +660,11 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	root.addEventListener("rux:trip-cleared", () => {
 		if (docList) docList.innerHTML = "";
+		if (contactList) {
+			contactList.querySelectorAll("[data-trip-contact]").forEach(r => r.remove());
+			if (addContactBtn) addContactBtn.disabled = false;
+			if (delContactBtn) delContactBtn.disabled = true;
+		}
 	});
 
 	root.addEventListener("rux:documents-loaded", (event) => {

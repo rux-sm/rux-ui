@@ -144,25 +144,22 @@
                       <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
                     </div>
                     <div class="rux-trip-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" placeholder="Destination" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-customer">Client</label><input class="rux-input" id="tp-customer" name="customer" type="text" placeholder="Client name" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-customer">Client</label><input class="rux-input" id="tp-customer" name="customer" type="text" /></div>
                     </div>
                     <div class="rux-trip-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="tp-book-name">Name</label><input class="rux-input" id="tp-book-name" name="bookingContact.name" type="text" placeholder="Contact name" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-book-phone">Phone</label><input class="rux-input" id="tp-book-phone" name="bookingContact.phone" type="tel" placeholder="Phone number" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-book-name">Name</label><input class="rux-input" id="tp-book-name" name="bookingContact.name" type="text" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-book-phone">Phone</label><input class="rux-input" id="tp-book-phone" name="bookingContact.phone" type="tel" /></div>
                     </div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-book-email">Email</label><input class="rux-input" id="tp-book-email" name="bookingContact.email" type="email" placeholder="contact@example.com" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" placeholder="Operational notes…" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="tp-book-email">Email</label><input class="rux-input" id="tp-book-email" name="bookingContact.email" type="email" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
                   </div>
                   <div class="rux-card">
                     <p class="rux-trip-panel__section-label">Trip Contacts</p>
+                    <div id="tp-contacts-list" style="display:none;flex-direction:column;gap:var(--rux-space-4)"></div>
                     <div class="rux-trip-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="tp-trip-name">Name</label><input class="rux-input" id="tp-trip-name" name="tripContact.name" type="text" placeholder="On-site contact" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-trip-phone">Phone</label><input class="rux-input" id="tp-trip-phone" name="tripContact.phone" type="tel" /></div>
-                    </div>
-                    <div class="rux-trip-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="tp-trip2-name">Name</label><input class="rux-input" id="tp-trip2-name" name="tripContact2.name" type="text" placeholder="Secondary contact" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-trip2-phone">Phone</label><input class="rux-input" id="tp-trip2-phone" name="tripContact2.phone" type="tel" /></div>
+                      <button class="rux-button rux-button--danger" type="button" id="tp-del-contact" disabled><span class="rux-icon">delete</span> Delete</button>
+                      <button class="rux-button" type="button" id="tp-add-contact"><span class="rux-icon">add</span> Add</button>
                     </div>
                   </div>
                   <div class="rux-card">
@@ -180,12 +177,9 @@
                     <div class="rux-trip-panel__doc-upload">
                       <select class="rux-select" id="tp-doc-label-select">
                         <option value="" disabled selected>Document type…</option>
-                        <option value="Quote">Quote</option>
-                        <option value="PO">Purchase Order</option>
                         <option value="Itinerary">Itinerary</option>
                         <option value="Contract">Contract</option>
-                        <option value="Permit">Permit</option>
-                        <option value="Other">Other</option>
+                        <option value="PO">Purchase Order</option>
                       </select>
                       <button class="rux-button" id="tp-doc-upload-btn" type="button" disabled><span class="rux-icon">upload</span> Upload</button>
                       <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
@@ -250,10 +244,10 @@
                   </div>
                   <div class="rux-card" data-payment-card>
                     <p class="rux-trip-panel__section-label">Payments</p>
-                    <div class="rux-trip-panel__payment-rows" id="tp-payment-rows"></div>
+                    <div class="rux-trip-panel__payment-rows" id="tp-payment-rows" style="display:none"></div>
                     <div class="rux-trip-panel__payment-actions">
-                      <button class="rux-button rux-button--danger" type="button" data-payment-remove disabled><span class="rux-icon">delete</span><span class="rux-btn-label">Delete Payment</span></button>
-                      <button class="rux-button" type="button" data-payment-add><span class="rux-icon">add</span><span class="rux-btn-label">Add Payment</span></button>
+                      <button class="rux-button rux-button--danger" type="button" data-payment-remove disabled><span class="rux-icon">delete</span><span class="rux-btn-label">Delete</span></button>
+                      <button class="rux-button" type="button" data-payment-add><span class="rux-icon">add</span><span class="rux-btn-label">Add</span></button>
                     </div>
                   </div>
                 </div>
@@ -282,8 +276,8 @@
                 </div>
               </div>
               <footer class="rux-panel__footer rux-trip-panel__footer">
-                <button class="rux-button rux-button--danger" id="tp-btn-delete"><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--secondary" id="tp-btn-clear"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--danger" id="tp-btn-delete" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--secondary" id="tp-btn-clear"><span class="rux-icon">refresh</span><span class="rux-btn-label"> Clear</span></button>
                 <button class="rux-button rux-button--primary" id="tp-btn-save"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
@@ -339,6 +333,8 @@
               <div class="rux-right-panel__body">
                 <div id="rp-pane-navigate" class="rux-right-panel__pane" role="tabpanel">
                   <div class="rux-card rux-mini-cal">
+                    <p class="rux-trip-panel__section-label">Calendar</p>
+                    <button class="rux-button rux-button--primary rux-button--block" id="mini-cal-today" type="button">Today</button>
                     <header class="rux-mini-cal__header">
                       <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-prev" type="button" aria-label="Previous month">
                         <span class="rux-icon">chevron_left</span>
@@ -354,7 +350,6 @@
                       </div>
                       <div class="rux-mini-cal__dates" id="mini-cal-dates"></div>
                     </div>
-                    <button class="rux-button rux-button--block" id="mini-cal-today" type="button">Today</button>
                   </div>
                   <div class="rux-card">
                     <p class="rux-trip-panel__section-label">View Options</p>

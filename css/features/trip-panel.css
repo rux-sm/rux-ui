@@ -226,6 +226,7 @@
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-md);
 	border: solid transparent var(--rux-border-width);
+	overflow: visible;
 }
 
 /* — Form layout helpers — */
@@ -417,7 +418,6 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
-	margin-top: var(--rux-space-2);
 }
 .rux-trip-panel__payment-actions > .rux-button {
 	flex: 1;

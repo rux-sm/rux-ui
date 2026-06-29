@@ -257,7 +257,7 @@
 	justify-content: flex-end;
 	align-self: stretch;
 	z-index: 1;
-	background: linear-gradient(to bottom, oklch(from var(--_tone) 40% 0.18 h), oklch(from var(--_tone) 34% 0.16 h));
+	background: linear-gradient(to bottom, oklch(from var(--_tone) 40% 0.18 h), oklch(from var(--_tone) 30% 0.16 h));
 	border-radius: 14px;
 	box-shadow:
 		inset 0 1px oklch(100% 0 0 / 0.10),
@@ -289,25 +289,26 @@
 .rux-trip-bar__actions {
 	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: repeat(5, 1fr);
+	grid-template-columns: repeat(4, 1fr);
 	align-items: center;
 	align-content: stretch;
 	flex: 0 0 auto;
-	gap: 0;
+	gap: 8px;
 	max-height: 0;
-	overflow: hidden;
 	padding-inline: 0;
 	margin: 0;
 	justify-content: stretch;
 	background: oklch(0% 0 0 / 0.2);
 	border-radius: 6px;
-	overflow: hidden;
 }
 .rux-trip-bar__actions > .rux-button {
 	width: 100%;
 	min-width: 0;
 	flex: 1;
 	border-radius: 6px;
+	--_bg: oklch(0% 0 0 / 0.2);
+	--_bg-h: oklch(0% 0 0 / 0.3);
+	--_bg-a: oklch(0% 0 0 / 0.35);
 }
 .rux-trip-bar__actions > .rux-button:first-child {
 	border-radius: 6px;
@@ -331,8 +332,7 @@
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {
-	max-height: var(--rux-trip-bar-action-height);
-	overflow: hidden;
+	max-height: calc(var(--rux-trip-bar-action-height) + 4px);
 	margin: var(--rux-space-2);
 	padding-block: var(--rux-trip-bar-action-padding-block);
 	padding-inline: 0;
@@ -361,11 +361,11 @@
 	padding: var(--rux-space-2);
 	padding-bottom: calc(var(--rux-space-2) + 1px);
 	gap: var(--rux-trip-bar-tight-gap);
-	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.05) 0%, oklch(0% 0 0 / 0.3) 100%);
+	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.2) 0%, oklch(0% 0 0 / 0.5) 100%);
 }
 
 .rux-trip-bar__head .rux-trip-bar__body {
-	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.05) 0%, oklch(0% 0 0 / 0.3) 100%);
+	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.2) 0%, oklch(0% 0 0 / 0.5) 100%);
 	border-radius: 0;
 }
 
@@ -612,7 +612,7 @@
 	justify-content: center;
 	gap: var(--rux-space-1);
 	background: oklch(0% 0 0 / 0.24);
-	padding: 0 var(--rux-space-2);
+	padding: 0 var(--rux-space-1);
 	height: 20px;
 	border-radius: 0;
 	color: var(--rux-fg-on-accent);
@@ -632,7 +632,20 @@
 	border-bottom-right-radius: 6px;
 }
 
+.rux-trip-bar__driver-name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	min-width: 0;
+}
+
+.rux-trip-bar__driver:hover .rux-trip-bar__driver-name {
+	overflow: visible;
+	text-overflow: clip;
+}
+
 .rux-trip-bar__driver-role-icon {
+	flex-shrink: 0;
 	font-size: var(--rux-icon-md);
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);

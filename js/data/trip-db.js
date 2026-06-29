@@ -163,10 +163,10 @@ import { supabase } from "./supabase.js";
 			booking_contact_name:  fieldVal(root, "tp-book-name"),
 			booking_contact_phone: fieldVal(root, "tp-book-phone"),
 			booking_contact_email: fieldVal(root, "tp-book-email"),
-			trip_contact_1_name:   fieldVal(root, "tp-trip-name"),
-			trip_contact_1_phone:  fieldVal(root, "tp-trip-phone"),
-			trip_contact_2_name:   fieldVal(root, "tp-trip2-name"),
-			trip_contact_2_phone:  fieldVal(root, "tp-trip2-phone"),
+			trip_contact_1_name:   root.querySelector("#tp-trip1-name")?.value?.trim() || null,
+			trip_contact_1_phone:  root.querySelector("#tp-trip1-phone")?.value?.trim() || null,
+			trip_contact_2_name:   root.querySelector("#tp-trip2-name")?.value?.trim() || null,
+			trip_contact_2_phone:  root.querySelector("#tp-trip2-phone")?.value?.trim() || null,
 			notes:                 fieldVal(root, "tp-notes"),
 			// Billing
 			contract_status:  contractSigned ? "Signed" : "Pending",
@@ -395,10 +395,14 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
 		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
 		setVal(root, "tp-book-email",  trip.booking_contact_email);
-		setVal(root, "tp-trip-name",   trip.trip_contact_1_name);
-		setVal(root, "tp-trip-phone",  trip.trip_contact_1_phone);
-		setVal(root, "tp-trip2-name",  trip.trip_contact_2_name);
-		setVal(root, "tp-trip2-phone", trip.trip_contact_2_phone);
+		const addBtn = root.querySelector("#tp-add-contact");
+		for (const i of [1, 2]) {
+			if (trip[`trip_contact_${i}_name`] || trip[`trip_contact_${i}_phone`]) {
+				if (addBtn && !root.querySelector(`#tp-trip${i}-name`)) addBtn.click();
+				setVal(root, `tp-trip${i}-name`,  trip[`trip_contact_${i}_name`]);
+				setVal(root, `tp-trip${i}-phone`, trip[`trip_contact_${i}_phone`]);
+			}
+		}
 		setVal(root, "tp-notes",       trip.notes);
 		resetPaymentRows(root);
 		// Billing — treat legacy `confirmed: true` (no contract_status) as signed
@@ -573,6 +577,8 @@ import { supabase } from "./supabase.js";
 		}
 		const idEl = root.querySelector("#tp-trip-id");
 		if (idEl) idEl.textContent = "";
+		const delBtn = root.querySelector("#tp-btn-delete");
+		if (delBtn) delBtn.disabled = true;
 		syncBusCount(root, 1);
 		itinerary.clearStops();
 		currentTripId  = null;
@@ -863,6 +869,8 @@ export function loadTrip(root, itinerary, trip) {
 
 	currentTripId  = UUID_RE.test(String(trip.id ?? "")) ? trip.id : null;
 	currentTripRef = trip.trip_ref ?? null;
+	const delBtn = root.querySelector("#tp-btn-delete");
+	if (delBtn) delBtn.disabled = !currentTripId;
 	currentTripSnapshot = { ...normalized };
 	currentAssignments = snapshotAssignments(loadedAssignments);
 
