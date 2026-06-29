@@ -868,12 +868,13 @@
 	inset: var(--rux-scheduler-head-height, 2rem) 0 0 var(--rux-scheduler-col-head-width, 2rem);
 	pointer-events: none;
 	z-index: var(--rux-z-sticky, 200);
-	--_shadow-top: 0 0 0 0 transparent;
-	--_shadow-right: 0 0 0 0 transparent;
-	--_shadow-bottom: 0 0 0 0 transparent;
-	--_shadow-left: 0 0 0 0 transparent;
-	box-shadow: inset var(--_shadow-top), inset var(--_shadow-right), inset var(--_shadow-bottom), inset var(--_shadow-left);
-	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+	box-shadow: none;
+	opacity: 0;
+	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out), opacity var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.scheduler-app__schedule-wrap:is(.is-clipped-top, .is-clipped-right, .is-clipped-bottom, .is-clipped-left)::after {
+	opacity: 1;
 }
 
 .scheduler-app__schedule-wrap.is-clipped-top::after {

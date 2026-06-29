@@ -69,12 +69,12 @@
 	overscroll-behavior-y: contain;
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
-	background: var(--rux-bg-level-1);
-	border: none;
+	background: var(--rux-bg-level-form);
+	border: var(--rux-border-width) solid var(--rux-bg-level-2);
 	
 
 	border-radius: var(--rux-radius-md);
-	border-radius: 0; /* override */
+	
 }
 
 .rux-scheduler::-webkit-scrollbar {
@@ -91,22 +91,22 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: start;
+	justify-content: center;
 	gap: 0;
 	min-height: var(--rux-scheduler-head-height);
 	padding: 0 var(--rux-space-3);
-	background: var(--rux-bg-level-1);
-	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-1);
-	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-1);
+	background: var(--rux-bg-level-2);
+	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-2);
+	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-2);
 	color: var(--rux-scheduler-header-color);
 }
 
 .rux-scheduler__col-head {
-	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-1);
+	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-2);
 }
 
 .rux-scheduler__day-name {
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
@@ -137,10 +137,10 @@
 	flex-direction: column;
 	align-items: center;
 	min-width: 36px;
-	padding: 2px var(--rux-space-1);
-	margin-block-end: var(--rux-space-1);
-	background: var(--rux-bg-level-1);
+	padding: 3px var(--rux-space-1) 1px;
+	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-sm);
+	gap: 2px;
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
@@ -237,9 +237,9 @@
 	justify-content: center;
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
-	background: var(--rux-bg-level-1);
-	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-1);
-	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-1);
+	background: var(--rux-bg-level-2);
+	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-2);
+	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-2);
 	color: var(--rux-scheduler-row-head-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
@@ -271,6 +271,22 @@
 
 .rux-scheduler__row.is-out-of-service .rux-scheduler__row-head {
 	opacity: 0.7;
+}
+
+.rux-scheduler__row:first-child .rux-scheduler__row-head {
+	border-start-start-radius: var(--rux-radius-md);
+}
+
+.rux-scheduler__row:first-child .rux-scheduler__track {
+	border-start-end-radius: var(--rux-radius-md);
+}
+
+.rux-scheduler__row:last-child .rux-scheduler__row-head {
+	border-end-start-radius: var(--rux-radius-md);
+}
+
+.rux-scheduler__row:last-child .rux-scheduler__track {
+	border-end-end-radius: var(--rux-radius-md);
 }
 
 .rux-scheduler__row:last-child .rux-scheduler__row-head,
