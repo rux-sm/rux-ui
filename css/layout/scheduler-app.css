@@ -724,6 +724,7 @@
 @media (max-width: 500px) {
 	.scheduler-app__mobile-panel-btn {
 		display: inline-flex;
+		flex: none;
 	}
 
 	/* Drawer fills full viewport */
