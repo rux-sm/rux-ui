@@ -183,7 +183,7 @@
 }
 
 .scheduler-app__bar:not(.scheduler-app__bar--table) .scheduler-app__toolbar {
-	flex: 1 1 auto;
+	flex: none;
 	container-type: normal;
 	min-width: 0;
 }
