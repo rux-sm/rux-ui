@@ -1011,7 +1011,7 @@ export function initTripDB(root, itinerary) {
 	let cleanSnapshot = null;
 
 	function snapshotForm() {
-		const inputs = root.querySelectorAll("#pane-trip input, #pane-trip textarea, #pane-trip select, #pane-billing input");
+		const inputs = root.querySelectorAll(".rux-trip-panel__pane input, .rux-trip-panel__pane textarea, .rux-trip-panel__pane select");
 		const toggles = root.querySelectorAll("[data-req], [data-rux-toggle-button], [data-role]");
 		const inputVals = Array.from(inputs).map(el => el.type === "checkbox" ? String(el.checked) : el.value);
 		const toggleVals = Array.from(toggles).map(el => el.getAttribute("aria-pressed") || "false");

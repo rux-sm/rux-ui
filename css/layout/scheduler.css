@@ -115,7 +115,7 @@
 }
 
 .rux-scheduler__day-number {
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-bold);
 	color: var(--rux-fg);
 	line-height: 1;
@@ -140,7 +140,7 @@
 	padding: 3px var(--rux-space-1) 1px;
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-sm);
-	gap: 2px;
+	gap: 0px;
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
