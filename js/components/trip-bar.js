@@ -246,7 +246,7 @@ function fmtTime(str) {
     return `${core}<span class="rux-trip-bar__time-suffix"> ${suffix}</span>`;
   }
   const m = str.match(/^(\d{1,2}):(\d{2})$/);
-  if (!m) return str;
+  if (!m) return str.replace(/[<>&"]/g, c => `&#${c.charCodeAt(0)};`);
   h = parseInt(m[1], 10);
   min = m[2];
   suffix = h < 12 ? "a" : "p";

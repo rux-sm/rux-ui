@@ -69,10 +69,8 @@
 	overscroll-behavior-y: contain;
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
-	background: var(--rux-bg-level-form);
-	border: var(--rux-border-width) solid var(--rux-bg-level-2);
-	
-
+	background: var(--rux-bg-level-2);
+	border: none;
 	border-radius: var(--rux-radius-md);
 	
 }
@@ -97,7 +95,7 @@
 	padding: 0 var(--rux-space-3);
 	background: var(--rux-bg-level-2);
 	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-2);
-	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-2);
+	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-header-color);
 }
 
@@ -115,7 +113,7 @@
 }
 
 .rux-scheduler__day-number {
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-bold);
 	color: var(--rux-fg);
 	line-height: 1;
@@ -134,13 +132,11 @@
 
 .rux-scheduler__day-label {
 	display: flex;
-	flex-direction: column;
-	align-items: center;
-	min-width: 36px;
-	padding: 3px var(--rux-space-1) 1px;
+	align-items: baseline;
+	gap: var(--rux-space-1);
+	padding: var(--rux-space-1) var(--rux-space-2);
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-sm);
-	gap: 0px;
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
@@ -238,12 +234,13 @@
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
 	background: var(--rux-bg-level-2);
-	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-2);
+	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-2);
 	color: var(--rux-scheduler-row-head-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
+	border-radius: var(--rux-radius-o);
 }
 
 .rux-scheduler__bus-number {
@@ -279,6 +276,7 @@
 
 .rux-scheduler__row:first-child .rux-scheduler__track {
 	border-start-end-radius: var(--rux-radius-md);
+	overflow: hidden;
 }
 
 .rux-scheduler__row:last-child .rux-scheduler__row-head {
@@ -287,12 +285,11 @@
 
 .rux-scheduler__row:last-child .rux-scheduler__track {
 	border-end-end-radius: var(--rux-radius-md);
+	overflow: hidden;
+	border: none;
 }
 
-.rux-scheduler__row:last-child .rux-scheduler__row-head,
-.rux-scheduler__row:last-child .rux-scheduler__track {
-	border-block-end: none;
-}
+
 
 /* ---------- Track ---------- */
 
@@ -323,6 +320,52 @@
 .rux-scheduler__track-day:last-child {
 	border-inline-end: none;
 }
+
+
+
+.rux-scheduler__now-line {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: var(--rux-accent);
+	z-index: 2;
+	pointer-events: auto;
+	opacity: 0.8;
+	cursor: default;
+	transition: width var(--rux-duration-fast) var(--rux-ease-out),
+		opacity var(--rux-duration-fast) var(--rux-ease-out);
+	transform: translateX(-50%);
+}
+
+.rux-scheduler__now-line:hover {
+	width: 4px;
+	opacity: 1;
+}
+
+.rux-scheduler__now-line::after {
+	content: attr(data-time);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-bold);
+	line-height: 1;
+	white-space: nowrap;
+	color: var(--rux-fg-on-accent);
+	background: var(--rux-accent);
+	padding: var(--rux-space-1) var(--rux-space-2);
+	border-radius: var(--rux-radius-sm);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-scheduler__now-line:hover::after {
+	opacity: 1;
+}
+
 
 .rux-scheduler--time-aligned .rux-scheduler__track-day {
 	background-image: linear-gradient(

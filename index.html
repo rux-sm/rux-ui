@@ -124,8 +124,8 @@
               <nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
                 <div data-trip-tabs>
                   <button class="rux-button rux-button--toggle" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-trip-panel__tab-label">Info</span></button>
-                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-trip-panel__tab-label">Bill</span></button>
-                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-trip-panel__tab-label">Route</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-trip-panel__tab-label">Billing</span></button>
+                  <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-trip-panel__tab-label">Itinerary</span></button>
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-trip-panel__tab-label">Fleet</span></button>
                 </div>
                 <button class="rux-button rux-button--ghost rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
@@ -288,9 +288,6 @@
                 <span class="rux-icon">left_panel_open</span>
               </button>
               <div class="scheduler-app__brand">
-                <h1 class="scheduler-app__title" id="week-label"></h1>
-              </div>
-              <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
                 <div class="scheduler-app__nav-arrows">
                   <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
                     <span class="rux-icon">chevron_left</span>
@@ -299,6 +296,12 @@
                     <span class="rux-icon">chevron_right</span>
                   </button>
                 </div>
+                <h1 class="scheduler-app__title" id="week-label"></h1>
+              </div>
+              <div class="scheduler-app__toolbar" role="group" aria-label="View controls">
+                <button class="rux-button rux-button--toggle rux-button--icon" id="opt-time-align" type="button" aria-pressed="false" title="Time-aligned mode"><span class="rux-icon">schedule</span></button>
+                <button class="rux-button rux-button--toggle rux-button--icon" id="opt-compact" type="button" aria-pressed="false" title="Compact rows"><span class="rux-icon">unfold_less</span></button>
+                <button class="rux-button rux-button--toggle rux-button--icon" id="opt-two-weeks" type="button" aria-pressed="false" title="Two-week view"><span class="rux-icon">fit_page_width</span></button>
                 <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" data-opens="right-panel-drawer">
                   <span class="rux-icon">right_panel_open</span>
                 </button>
@@ -352,33 +355,9 @@
                     <p class="rux-trip-panel__section-label">View Options</p>
                     <div class="rux-view-options">
                       <div class="rux-view-options__row">
-                        <span class="rux-view-options__label">Time-aligned</span>
-                        <label class="rux-switch">
-                          <input id="opt-time-align" type="checkbox" role="switch" />
-                          <span class="rux-switch__track"></span>
-                          <span class="rux-switch__thumb"></span>
-                        </label>
-                      </div>
-                      <div class="rux-view-options__row">
-                        <span class="rux-view-options__label">Compact trips</span>
-                        <label class="rux-switch">
-                          <input id="opt-compact" type="checkbox" role="switch" />
-                          <span class="rux-switch__track"></span>
-                          <span class="rux-switch__thumb"></span>
-                        </label>
-                      </div>
-                      <div class="rux-view-options__row">
                         <span class="rux-view-options__label">Start on Sunday</span>
                         <label class="rux-switch">
                           <input id="opt-sunday-start" type="checkbox" role="switch" />
-                          <span class="rux-switch__track"></span>
-                          <span class="rux-switch__thumb"></span>
-                        </label>
-                      </div>
-                      <div class="rux-view-options__row">
-                        <span class="rux-view-options__label">Two-week view</span>
-                        <label class="rux-switch">
-                          <input id="opt-two-weeks" type="checkbox" role="switch" />
                           <span class="rux-switch__track"></span>
                           <span class="rux-switch__thumb"></span>
                         </label>
@@ -1545,14 +1524,18 @@
           if (!trip?.startDate) return;
           const tripStart = parseIsoDate(trip.startDate);
           const tripEnd   = parseIsoDate(trip.endDate || trip.startDate);
-          if (tripEnd < weekStart || tripStart > weekEnd) return;
+          const times = extractTripTimes(trip);
+          const depFrac = timeToFraction(times._depTime);
+          const retFrac = timeToFraction(times._retTime);
+          const wrapsNextDay = timeAlignEnabled && depFrac !== null && retFrac !== null && retFrac <= depFrac && +tripStart === +tripEnd;
+          const effectiveEnd = wrapsNextDay ? addDays(tripEnd, 1) : tripEnd;
+          if (effectiveEnd < weekStart || tripStart > weekEnd) return;
           const visibleStart = tripStart < weekStart ? weekStart : tripStart;
-          const visibleEnd   = tripEnd   > weekEnd   ? weekEnd   : tripEnd;
+          const visibleEnd   = effectiveEnd > weekEnd ? weekEnd : effectiveEnd;
           const start    = Math.round((visibleStart - weekStart) / 864e5) + 1;
           const span     = Math.round((visibleEnd - visibleStart) / 864e5) + 1;
           const fromPrev = tripStart < weekStart;
-          const toNext   = tripEnd   > weekEnd;
-          const times = extractTripTimes(trip);
+          const toNext   = effectiveEnd > weekEnd;
           placements.push({ trip: { ...trip, ...times, fromPrev, toNext }, trackId: info.trackId, lane: info.lane, start, span, fromPrev, toNext });
         });
         return assignLanes(placements);
@@ -1748,7 +1731,51 @@
           activeObservers.push(observer);
         });
         layoutScheduler();
+        if (typeof updateNowLine === "function") updateNowLine();
       }
+
+      // ── Now line ───────────────────────────────────────────────────────────
+
+      function fmtNowTime(date) {
+        let h = date.getHours();
+        const min = String(date.getMinutes()).padStart(2, "0");
+        const suffix = h < 12 ? "AM" : "PM";
+        if (h === 0) h = 12;
+        else if (h > 12) h -= 12;
+        return `${h}:${min} ${suffix}`;
+      }
+
+      function updateNowLine() {
+        const now = new Date();
+        const nowIso = isoDate(now);
+        const timeLabel = fmtNowTime(now);
+        let todayIndex = -1;
+        for (let i = 0; i < viewDays; i++) {
+          if (isoDate(addDays(currentWeekStart, i)) === nowIso) { todayIndex = i; break; }
+        }
+        const existing = document.querySelectorAll(".rux-scheduler__now-line");
+        if (todayIndex < 0) { existing.forEach(el => el.remove()); return; }
+        const fraction = (now.getHours() + now.getMinutes() / 60) / 24;
+        const dayPct = 100 / viewDays;
+        const leftPct = (todayIndex * dayPct) + (fraction * dayPct);
+        if (existing.length) {
+          existing.forEach(el => {
+            el.style.left = `${leftPct}%`;
+            el.dataset.time = timeLabel;
+          });
+          return;
+        }
+        document.querySelectorAll(".rux-scheduler__track").forEach(track => {
+          const line = document.createElement("div");
+          line.className = "rux-scheduler__now-line";
+          line.style.left = `${leftPct}%`;
+          line.dataset.time = timeLabel;
+          track.appendChild(line);
+        });
+      }
+
+      updateNowLine();
+      setInterval(updateNowLine, 60000);
 
       let _loadInProgress = false;
       let _loadQueued = false;
@@ -1839,43 +1866,57 @@
       document.getElementById("prev-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart, -viewDays); renderScheduler(); });
       document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  viewDays); renderScheduler(); });
 
-      const optTimeAlign = document.getElementById("opt-time-align");
-      optTimeAlign.checked = timeAlignEnabled;
-      optTimeAlign?.addEventListener("change", () => {
-        timeAlignEnabled = optTimeAlign.checked;
-        schedulerEl?.classList.toggle("rux-scheduler--time-aligned", timeAlignEnabled);
+      function initToggle(id, isActive, onChange) {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.setAttribute("aria-pressed", String(isActive));
+        if (isActive) btn.classList.add("is-active");
+        btn.addEventListener("click", () => {
+          const pressed = btn.getAttribute("aria-pressed") !== "true";
+          btn.setAttribute("aria-pressed", String(pressed));
+          btn.classList.toggle("is-active", pressed);
+          onChange(pressed);
+        });
+      }
+
+      initToggle("opt-time-align", timeAlignEnabled, (on) => {
+        timeAlignEnabled = on;
+        schedulerEl?.classList.toggle("rux-scheduler--time-aligned", on);
         renderScheduler();
       });
 
-      const optCompact = document.getElementById("opt-compact");
       let compactEnabled = false;
       try { compactEnabled = localStorage.getItem("rux:compact-trips") === "true"; } catch (_) {}
       if (compactEnabled) {
         schedulerEl?.classList.add("rux-scheduler--compact");
+        const compactBtn = document.getElementById("opt-compact");
+        if (compactBtn) compactBtn.querySelector(".rux-icon").textContent = "unfold_more";
       }
-      optCompact.checked = compactEnabled;
-      optCompact?.addEventListener("change", () => {
-        compactEnabled = optCompact.checked;
-        schedulerEl?.classList.toggle("rux-scheduler--compact", compactEnabled);
-        try { localStorage.setItem("rux:compact-trips", compactEnabled); } catch (_) {}
+      initToggle("opt-compact", compactEnabled, (on) => {
+        compactEnabled = on;
+        schedulerEl?.classList.toggle("rux-scheduler--compact", on);
+        try { localStorage.setItem("rux:compact-trips", on); } catch (_) {}
+        const compactBtn = document.getElementById("opt-compact");
+        if (compactBtn) compactBtn.querySelector(".rux-icon").textContent = on ? "unfold_more" : "unfold_less";
         layoutScheduler();
       });
-      const optSundayStart = document.getElementById("opt-sunday-start");
-      optSundayStart.checked = sundayStart;
-      optSundayStart?.addEventListener("change", () => {
-        sundayStart = optSundayStart.checked;
-        try { localStorage.setItem("rux:sunday-start", sundayStart); } catch (_) {}
-        currentWeekStart = startOfWeek(currentWeekStart);
+
+      initToggle("opt-two-weeks", viewDays === 14, (on) => {
+        viewDays = on ? 14 : 7;
+        try { localStorage.setItem("rux:two-weeks", on); } catch (_) {}
         renderScheduler();
       });
 
-      const optTwoWeeks = document.getElementById("opt-two-weeks");
-      optTwoWeeks.checked = viewDays === 14;
-      optTwoWeeks?.addEventListener("change", () => {
-        viewDays = optTwoWeeks.checked ? 14 : 7;
-        try { localStorage.setItem("rux:two-weeks", optTwoWeeks.checked); } catch (_) {}
-        renderScheduler();
-      });
+      const optSundayStart = document.getElementById("opt-sunday-start");
+      if (optSundayStart) {
+        optSundayStart.checked = sundayStart;
+        optSundayStart.addEventListener("change", () => {
+          sundayStart = optSundayStart.checked;
+          try { localStorage.setItem("rux:sunday-start", sundayStart); } catch (_) {}
+          currentWeekStart = startOfWeek(currentWeekStart);
+          renderScheduler();
+        });
+      }
 
       const dayPickerBtn = document.getElementById("day-picker-btn");
       const dayPickerInput = document.getElementById("day-picker-input");

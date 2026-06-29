@@ -727,8 +727,6 @@ import { supabase } from "./supabase.js";
 				saveBtn.innerHTML = '<span class="rux-icon">save</span> Save';
 				
 			}, 2000);
-		} finally {
-			saveBtn.disabled = false;
 		}
 	}
 
@@ -1013,9 +1011,16 @@ export function initTripDB(root, itinerary) {
 	function snapshotForm() {
 		const inputs = root.querySelectorAll(".rux-trip-panel__pane input, .rux-trip-panel__pane textarea, .rux-trip-panel__pane select");
 		const toggles = root.querySelectorAll("[data-req], [data-rux-toggle-button], [data-role]");
-		const inputVals = Array.from(inputs).map(el => el.type === "checkbox" ? String(el.checked) : el.value);
-		const toggleVals = Array.from(toggles).map(el => el.getAttribute("aria-pressed") || "false");
-		return inputVals.concat(toggleVals).join("\0");
+		const inputVals = Array.from(inputs).map(el => {
+			const key = el.id || el.name || "";
+			const val = el.type === "checkbox" ? String(el.checked) : el.value;
+			return `${key}=${val}`;
+		});
+		const toggleVals = Array.from(toggles).map(el => {
+			const key = el.dataset.req || el.id || "";
+			return `${key}=${el.getAttribute("aria-pressed") || "false"}`;
+		});
+		return inputVals.concat(toggleVals).sort().join("\0");
 	}
 
 	function markClean() {
@@ -1028,6 +1033,7 @@ export function initTripDB(root, itinerary) {
 	}
 
 	function syncSaveBtn() {
+		if (root.classList.contains("rux-trip-panel--loading")) return;
 		if (saveBtn) saveBtn.disabled = !isFormDirty();
 	}
 
@@ -1045,8 +1051,12 @@ export function initTripDB(root, itinerary) {
 	});
 
 	saveBtn?.addEventListener("click", async () => {
-		await save(root, itinerary, saveBtn);
-		markClean();
+		try {
+			await save(root, itinerary, saveBtn);
+			markClean();
+		} catch (_) {
+			syncSaveBtn();
+		}
 	});
 	clearBtn?.addEventListener("click",  () => {
 		if (isFormDirty() && !confirm("Discard unsaved changes?")) return;

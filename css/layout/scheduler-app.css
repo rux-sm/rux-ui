@@ -412,7 +412,7 @@
 
 .scheduler-app__panel-tab {
 	flex: none;
-	width: 8px;
+	width: 16px;
 	align-self: stretch;
 	margin-block: var(--scheduler-app-gap);
 	display: flex;
@@ -436,8 +436,8 @@
 }
 
 .scheduler-app__panel-tab:hover {
-	width: 32px;
-	background: var(--rux-control-ghost-hover);
+	width: 44px;
+	background: var(--rux-bg-level-1);
 	color: var(--rux-fg);
 }
 
@@ -571,7 +571,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-3);
+	padding: var(--rux-space-3);	
 }
 .rux-right-panel__pane[hidden] {
 	display: none;
@@ -891,6 +891,11 @@
 
 .scheduler-app__schedule-wrap.is-clipped-left::after {
 	--_shadow-left: 10px 0 16px -8px oklch(0% 0 0 / 0.5);
+}
+
+#opt-time-align.is-active .rux-icon,
+#opt-two-weeks.is-active .rux-icon {
+	font-variation-settings: 'FILL' 1;
 }
 
 .scheduler-app__grid {
