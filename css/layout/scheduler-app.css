@@ -31,15 +31,52 @@
 }
 
 .scheduler-app {
-	--scheduler-app-gap: var(--rux-space-3);
+	--scheduler-app-gap: var(--rux-space-4);
 	--scheduler-app-card-radius: var(--rux-radius-md);
 	display: grid;
-	grid-template-rows: auto minmax(0, 1fr);
+	grid-template-rows: auto auto minmax(0, 1fr);
 	width: 100%;
 	block-size: 100dvh;
 	min-width: 0;
 	min-height: 0;
 	overflow: clip;
+}
+
+.scheduler-app__topbar-handle {
+	flex: none;
+	height: var(--scheduler-app-gap);
+	cursor: row-resize;
+	position: relative;
+	z-index: 1;
+}
+
+.scheduler-app__topbar-handle::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 3rem;
+	height: 3px;
+	border-radius: var(--rux-radius-full);
+	background: color-mix(in oklch, var(--rux-fg-subtle) 45%, transparent);
+	opacity: 0;
+	transform: translate(-50%, -50%);
+	transition: width var(--rux-duration-fast), opacity var(--rux-duration-fast), background var(--rux-duration-fast);
+}
+
+.scheduler-app__topbar-handle:hover::before,
+.scheduler-app.is-topbar-resizing .scheduler-app__topbar-handle::before {
+	width: 4.5rem;
+	opacity: 1;
+	background: color-mix(in oklch, var(--rux-accent) 82%, white 8%);
+}
+
+.scheduler-app__topbar.is-collapsed {
+	height: 0;
+	min-height: 0;
+	overflow: hidden;
+	padding: 0;
+	border: none;
 }
 
 .scheduler-app__body {
@@ -64,9 +101,9 @@
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-3);
 	padding-bottom: 0px;
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: none; /* override */
-
+	border-bottom: none;
+	transition: height var(--rux-duration-slow) var(--rux-ease-in-out),
+		padding var(--rux-duration-slow) var(--rux-ease-in-out);
 }
 
 .scheduler-app__topbar-start,
@@ -359,15 +396,11 @@
 	flex: 1;
 	min-width: 471px;
 	min-height: 0;
-	margin: var(--scheduler-app-gap);
+	margin: 0 0 var(--scheduler-app-gap);
 	padding-block-end: var(--scheduler-app-gap);
 	background: var(--rux-bg-level-1);
 	border-radius: var(--scheduler-app-card-radius);
 	overflow: hidden;
-}
-
-.scheduler-app__drawer.is-open + .scheduler-app__schedule {
-	margin-left: 0;
 }
 
 /* — Trip panel drawer — */
@@ -375,15 +408,14 @@
 .scheduler-app__drawer {
 	position: relative;
 	flex: none;
-	width: 0;
+	width: var(--scheduler-app-gap);
 	margin-left: 0;
 	min-height: 0;
-	overflow: hidden;
+	overflow: visible;
 	box-sizing: border-box;
 	padding: 0;
 	transition:
-		width var(--rux-duration-slow) var(--rux-ease-in-out),
-		margin-left var(--rux-duration-slow) var(--rux-ease-in-out);
+		width var(--rux-duration-slow) var(--rux-ease-in-out);
 
 	display: flex;
 	flex-direction: column;
@@ -391,7 +423,7 @@
 
 .scheduler-app__drawer.is-open {
 	width: var(--drawer-width, 372px);
-	margin-left: var(--scheduler-app-gap);
+	overflow: hidden;
 }
 
 .scheduler-app__drawer.is-resizing {
@@ -400,53 +432,19 @@
 
 .scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel) {
 	position: absolute;
-	inset-block: var(--scheduler-app-gap);
+	inset-block: 0 var(--scheduler-app-gap);
 	right: var(--scheduler-app-gap);
+	left: auto;
 	height: auto;
 	width: calc(var(--drawer-width, 372px) - var(--scheduler-app-gap));
+	min-width: calc(var(--drawer-width, 372px) - var(--scheduler-app-gap));
 	border: none;
 	border-radius: var(--scheduler-app-card-radius);
-}
-
-/* — Panel edge tab — */
-
-.scheduler-app__panel-tab {
-	flex: none;
-	width: 16px;
-	align-self: stretch;
-	margin-block: var(--scheduler-app-gap);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background: var(--rux-bg-level-1);
-	border: none;
-	border-radius: 0 var(--scheduler-app-card-radius) var(--scheduler-app-card-radius) 0;
-	color: transparent;
-	cursor: pointer;
-	padding: 0;
 	overflow: hidden;
-	transition:
-		width var(--rux-duration-slow) var(--rux-ease-out),
-		background var(--rux-duration-fast),
-		color var(--rux-duration-fast);
 }
 
-.scheduler-app__panel-tab--right {
-	border-radius: var(--scheduler-app-card-radius) 0 0 var(--scheduler-app-card-radius);
-}
-
-.scheduler-app__panel-tab:hover {
-	width: 44px;
-	background: var(--rux-bg-level-1);
-	color: var(--rux-fg);
-}
-
-.scheduler-app__panel-tab:has(+ .scheduler-app__drawer.is-open),
-.scheduler-app__drawer.is-open + .scheduler-app__panel-tab {
-	width: 0;
-	pointer-events: none;
-	transition:
-		width var(--rux-duration-slow) var(--rux-ease-in-out);
+.scheduler-app__drawer:not(.is-open) :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel) {
+	display: none;
 }
 
 
@@ -478,6 +476,15 @@
 		opacity var(--rux-duration-fast);
 }
 
+.scheduler-app__drawer:not(.is-open) .scheduler-app__drawer-handle::before {
+	opacity: 0;
+}
+
+.scheduler-app__drawer:not(.is-open) .scheduler-app__drawer-handle:hover::before {
+	opacity: 1;
+	background: color-mix(in oklch, var(--rux-accent) 82%, white 8%);
+}
+
 .scheduler-app__drawer-handle:hover::before,
 .scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle::before {
 	height: 4.5rem;
@@ -487,20 +494,24 @@
 
 /* — Right drawer (mirrored) — */
 
-.scheduler-app__drawer--right.is-open {
+.scheduler-app__drawer--right {
 	margin-left: 0;
-	margin-right: var(--scheduler-app-gap);
+}
+
+.scheduler-app__drawer--right.is-open {
+	margin-right: 0;
 }
 
 .scheduler-app__drawer--right :is(.rux-right-panel) {
 	position: absolute;
-	inset-block: var(--scheduler-app-gap);
+	inset-block: 0 var(--scheduler-app-gap);
 	left: var(--scheduler-app-gap);
 	right: auto;
 	height: auto;
 	width: calc(var(--drawer-width, 372px) - var(--scheduler-app-gap));
 	border: none;
 	border-radius: var(--scheduler-app-card-radius);
+	overflow: hidden;
 }
 
 .scheduler-app__drawer--right .scheduler-app__drawer-handle {
@@ -508,14 +519,6 @@
 	left: 0;
 }
 
-.scheduler-app__panel-tab--right {
-	border-radius: var(--scheduler-app-card-radius) 0 0 var(--scheduler-app-card-radius);
-}
-
-.scheduler-app__schedule:has(+ .scheduler-app__drawer--right.is-open) {
-	margin-right: 0;
-	transition: margin-right 0ms;
-}
 
 /* — Right panel shell — */
 
@@ -750,7 +753,6 @@
 		border-right: none;
 	}
 
-	.scheduler-app__panel-tab { display: none; }
 
 	/* Push content above the fixed bottom tab bar (42px buttons + rux-space-3 top + rux-space-3 bottom) */
 	.scheduler-app {

@@ -105,18 +105,13 @@
           </button>
         </div>
       </header>
-
+      <div class="scheduler-app__topbar-handle" id="topbar-handle"></div>
       <div class="scheduler-app__body">
 
         <!-- ════════════════════════════════════════════════════════════════
              MODULE: CALENDAR
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="calendar">
-
-          <!-- Panel edge tab (visible when drawer is closed) -->
-          <button class="scheduler-app__panel-tab" id="open-trip-panel" type="button" aria-label="Open trip editor">
-            <span class="rux-icon">left_panel_open</span>
-          </button>
 
           <!-- Trip panel drawer -->
           <div class="scheduler-app__drawer" id="trip-panel-drawer">
@@ -128,9 +123,6 @@
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-trip-panel__tab-label">Itinerary</span></button>
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-trip-panel__tab-label">Fleet</span></button>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-close-btn" type="button" aria-label="Close trip editor">
-                  <span class="rux-icon">left_panel_close</span>
-                </button>
               </nav>
               <div class="rux-trip-panel__body">
                 <!-- Trip -->
@@ -320,9 +312,6 @@
           <div class="scheduler-app__drawer scheduler-app__drawer--right" id="right-panel-drawer">
             <aside class="rux-right-panel" role="dialog" aria-labelledby="right-panel-title">
               <nav class="rux-right-panel__tabs" aria-label="Right panel sections">
-                <button class="rux-button rux-button--ghost rux-button--icon" id="rp-close-btn" type="button" aria-label="Close panel">
-                  <span class="rux-icon">right_panel_close</span>
-                </button>
                 <div data-right-tabs>
                   <button class="rux-button rux-button--toggle" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate">Nav</button>
                   <button class="rux-button rux-button--toggle" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers">Drivers</button>
@@ -376,10 +365,6 @@
             <div class="scheduler-app__drawer-handle"></div>
           </div>
 
-          <!-- Right panel edge tab (visible when drawer is closed) -->
-          <button class="scheduler-app__panel-tab scheduler-app__panel-tab--right" id="open-right-panel" type="button" aria-label="Open right panel">
-            <span class="rux-icon">right_panel_open</span>
-          </button>
 
         </div>
         <!-- /module:calendar -->
@@ -1067,6 +1052,52 @@
 
       // ── Trip panel drawer ───────────────────────────────────────────────
 
+      // ── Topbar collapse handle ──────────────────────────────────────────
+      const topbar = document.querySelector(".scheduler-app__topbar");
+      const topbarHandle = document.getElementById("topbar-handle");
+      const appEl = document.querySelector(".scheduler-app");
+      let topbarCollapsed = false;
+      try { topbarCollapsed = localStorage.getItem("rux:topbar-collapsed") === "true"; } catch (_) {}
+      if (topbarCollapsed) topbar.classList.add("is-collapsed");
+
+      topbarHandle.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        appEl.classList.add("is-topbar-resizing");
+        document.body.style.cursor = "row-resize";
+        document.body.style.userSelect = "none";
+        const startY = e.clientY;
+        let moved = false;
+        let deltaY = 0;
+
+        const onMove = (ev) => {
+          moved = true;
+          deltaY = ev.clientY - startY;
+        };
+        const onUp = () => {
+          appEl.classList.remove("is-topbar-resizing");
+          document.body.style.cursor = "";
+          document.body.style.userSelect = "";
+          if (moved) {
+            if (!topbarCollapsed && deltaY < -20) {
+              topbarCollapsed = true;
+              topbar.classList.add("is-collapsed");
+            } else if (topbarCollapsed && deltaY > 20) {
+              topbarCollapsed = false;
+              topbar.classList.remove("is-collapsed");
+            }
+            try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
+          } else {
+            topbarCollapsed = !topbarCollapsed;
+            topbar.classList.toggle("is-collapsed", topbarCollapsed);
+            try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
+          }
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+      });
+
       const drawer  = document.getElementById("trip-panel-drawer");
       const tripPanel = drawer.querySelector(".rux-trip-panel");
       const schedulerEl = document.getElementById("scheduler");
@@ -1078,19 +1109,22 @@
       let tripDBHandle = null;
       let pendingNewTripContext = null;
 
-      const openTripPanelBtn = document.getElementById("open-trip-panel");
       function openDrawer() {
-        drawer.style.removeProperty("--drawer-width");
+        const saved = localStorage.getItem(DRAWER_STORAGE_KEY);
+        drawer.style.setProperty("--drawer-width", (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px");
         drawer.classList.add("is-open");
-        openTripPanelBtn?.setAttribute("aria-pressed", "true");
         leftAutoCollapsed = false;
         const scrollBody = tripPanel?.querySelector(".rux-trip-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
         document.activeElement?.blur();
       }
       function closeDrawer() {
-        drawer.classList.remove("is-open");
-        openTripPanelBtn?.setAttribute("aria-pressed", "false");
+        drawer.style.setProperty("--drawer-width", GAP + "px");
+        drawer.addEventListener("transitionend", function handler(e) {
+          if (e.target !== drawer || e.propertyName !== "width") return;
+          drawer.classList.remove("is-open");
+          drawer.removeEventListener("transitionend", handler);
+        });
       }
 
       // ── Trips module → scheduler bridge ────────────────────────────────────
@@ -1205,38 +1239,70 @@
 
       // ── Resizable drawer ────────────────────────────────────────────────
 
-      const DRAWER_MIN = 372;
+      const DRAWER_MIN = 376;
+      const DRAWER_SNAP_CLOSE = 200;
       const DRAWER_MAX = 640;
+      const DRAWER_DEFAULT = 372;
       const DRAWER_STORAGE_KEY = "rux-drawer-width";
+      const SCHEDULE_MIN = 471;
+      const GAP = 16;
 
+      function initDrawerDrag(handle, drawerEl, storageKey, openFn, closeFn, getOtherDrawer, direction) {
+        handle.addEventListener("mousedown", (e) => {
+          e.preventDefault();
+          const wasOpen = drawerEl.classList.contains("is-open");
+          const startX = e.clientX;
+          const startW = wasOpen ? (parseInt(getComputedStyle(drawerEl).getPropertyValue("--drawer-width")) || drawerEl.offsetWidth) : 0;
+          let lastW = startW;
+          let moved = false;
 
-      drawer.querySelector(".scheduler-app__drawer-handle").addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        drawer.classList.add("is-resizing");
-        document.body.style.cursor = "col-resize";
-        document.body.style.userSelect = "none";
-        const startX = e.clientX;
-        const startW = parseInt(getComputedStyle(drawer).getPropertyValue("--drawer-width")) || drawer.offsetWidth;
+          document.body.style.cursor = "col-resize";
+          document.body.style.userSelect = "none";
 
-        const onMove = (e) => {
-          const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
-          const otherDrawerW = rightDrawer.classList.contains("is-open") ? rightDrawer.offsetWidth : 0;
-          const maxW = Math.min(DRAWER_MAX, bodyW - otherDrawerW - SCHEDULE_MIN - GAP * 3);
-          const w = Math.min(maxW, Math.max(DRAWER_MIN, startW + e.clientX - startX));
-          drawer.style.setProperty("--drawer-width", w + "px");
-        };
-        const onUp = () => {
-          drawer.classList.remove("is-resizing");
-          document.body.style.cursor = "";
-          document.body.style.userSelect = "";
-          const w = parseInt(getComputedStyle(drawer).getPropertyValue("--drawer-width"));
-          if (w) localStorage.setItem(DRAWER_STORAGE_KEY, w);
-          document.removeEventListener("mousemove", onMove);
-          document.removeEventListener("mouseup", onUp);
-        };
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
-      });
+          const onMove = (ev) => {
+            if (!moved) {
+              moved = true;
+              drawerEl.classList.add("is-resizing");
+              if (!wasOpen) {
+                drawerEl.classList.add("is-open");
+                drawerEl.style.setProperty("--drawer-width", "0px");
+              }
+            }
+            const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
+            const otherDrawerEl = getOtherDrawer();
+            const otherW = otherDrawerEl?.classList.contains("is-open") ? otherDrawerEl.offsetWidth : 0;
+            const maxW = Math.min(DRAWER_MAX, bodyW - otherW - SCHEDULE_MIN - GAP * 3);
+            const delta = direction === "left" ? ev.clientX - startX : startX - ev.clientX;
+            const raw = startW + delta;
+            lastW = raw;
+            const w = Math.min(maxW, Math.max(0, raw));
+            drawerEl.style.setProperty("--drawer-width", w + "px");
+          };
+          const onUp = () => {
+            drawerEl.classList.remove("is-resizing");
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+            if (!moved) {
+              wasOpen ? closeFn() : openFn();
+            } else if (lastW < DRAWER_SNAP_CLOSE) {
+              closeFn();
+            } else if (lastW < DRAWER_MIN) {
+              drawerEl.style.setProperty("--drawer-width", DRAWER_MIN + "px");
+              localStorage.setItem(storageKey, DRAWER_MIN);
+            } else {
+              const w = parseInt(getComputedStyle(drawerEl).getPropertyValue("--drawer-width"));
+              if (w) localStorage.setItem(storageKey, w);
+            }
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+          };
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+        });
+      }
+
+      const getRightDrawer = () => document.getElementById("right-panel-drawer");
+      initDrawerDrag(drawer.querySelector(".scheduler-app__drawer-handle"), drawer, DRAWER_STORAGE_KEY, openDrawer, closeDrawer, getRightDrawer, "left");
 
       // ── Scheduler context menu ──────────────────────────────────────────
 
@@ -1934,10 +2000,6 @@
         currentWeekStart = startOfWeek(parseIsoDate(dayPickerInput.value));
         renderScheduler();
       });
-      openTripPanelBtn.addEventListener("click", () => {
-        if (drawer.classList.contains("is-open")) { closeDrawer(); } else { openDrawer(); }
-      });
-      document.getElementById("tp-close-btn").addEventListener("click", closeDrawer);
 
       // ── Mobile panel open buttons ─────────────────────────────────────
       document.querySelectorAll(".scheduler-app__mobile-panel-btn").forEach((btn) => {
@@ -1952,14 +2014,22 @@
       });
 
       // ── Right panel drawer ──────────────────────────────────────────────
+      const RIGHT_DRAWER_STORAGE_KEY = "rux-right-drawer-width";
       const rightDrawer = document.getElementById("right-panel-drawer");
-      const openRightPanelBtn = document.getElementById("open-right-panel");
-      function openRightDrawer() { rightDrawer.style.removeProperty("--drawer-width"); rightDrawer.classList.add("is-open"); rightAutoCollapsed = false; }
-      function closeRightDrawer() { rightDrawer.classList.remove("is-open"); }
-      openRightPanelBtn.addEventListener("click", () => {
-        rightDrawer.classList.contains("is-open") ? closeRightDrawer() : openRightDrawer();
-      });
-      document.getElementById("rp-close-btn").addEventListener("click", closeRightDrawer);
+      function openRightDrawer() {
+        const saved = localStorage.getItem(RIGHT_DRAWER_STORAGE_KEY);
+        rightDrawer.style.setProperty("--drawer-width", (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px");
+        rightDrawer.classList.add("is-open");
+        rightAutoCollapsed = false;
+      }
+      function closeRightDrawer() {
+        rightDrawer.style.setProperty("--drawer-width", GAP + "px");
+        rightDrawer.addEventListener("transitionend", function handler(e) {
+          if (e.target !== rightDrawer || e.propertyName !== "width") return;
+          rightDrawer.classList.remove("is-open");
+          rightDrawer.removeEventListener("transitionend", handler);
+        });
+      }
 
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-button[aria-controls]");
@@ -2043,39 +2113,9 @@
 
       renderMiniCal();
 
-      const RIGHT_DRAWER_STORAGE_KEY = "rux-right-drawer-width";
-
-      rightDrawer.querySelector(".scheduler-app__drawer-handle").addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        rightDrawer.classList.add("is-resizing");
-        document.body.style.cursor = "col-resize";
-        document.body.style.userSelect = "none";
-        const startX = e.clientX;
-        const startW = parseInt(getComputedStyle(rightDrawer).getPropertyValue("--drawer-width")) || rightDrawer.offsetWidth;
-
-        const onMove = (e) => {
-          const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
-          const otherDrawerW = drawer.classList.contains("is-open") ? drawer.offsetWidth : 0;
-          const maxW = Math.min(DRAWER_MAX, bodyW - otherDrawerW - SCHEDULE_MIN - GAP * 3);
-          const w = Math.min(maxW, Math.max(DRAWER_MIN, startW - (e.clientX - startX)));
-          rightDrawer.style.setProperty("--drawer-width", w + "px");
-        };
-        const onUp = () => {
-          rightDrawer.classList.remove("is-resizing");
-          document.body.style.cursor = "";
-          document.body.style.userSelect = "";
-          const w = parseInt(getComputedStyle(rightDrawer).getPropertyValue("--drawer-width"));
-          if (w) localStorage.setItem(RIGHT_DRAWER_STORAGE_KEY, w);
-          document.removeEventListener("mousemove", onMove);
-          document.removeEventListener("mouseup", onUp);
-        };
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
-      });
+      initDrawerDrag(rightDrawer.querySelector(".scheduler-app__drawer-handle"), rightDrawer, RIGHT_DRAWER_STORAGE_KEY, openRightDrawer, closeRightDrawer, () => drawer, "right");
 
       // ── Auto-close panels when viewport is too narrow ──────────────────
-      const SCHEDULE_MIN = 471;
-      const GAP = 12;
       let rightAutoCollapsed = false;
       let leftAutoCollapsed = false;
 
