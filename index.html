@@ -304,10 +304,6 @@
                   <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
                     <span class="rux-icon">chevron_left</span>
                   </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="day-picker-btn" type="button" aria-label="Pick date" aria-controls="day-picker-input" title="Pick date">
-                    <span class="rux-icon">date_range</span>
-                  </button>
-                  <input class="scheduler-app__day-picker" id="day-picker-input" type="date" aria-label="Pick schedule day" tabindex="-1" />
                   <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
                     <span class="rux-icon">chevron_right</span>
                   </button>
@@ -1245,7 +1241,10 @@
         const startW = parseInt(getComputedStyle(drawer).getPropertyValue("--drawer-width")) || drawer.offsetWidth;
 
         const onMove = (e) => {
-          const w = Math.min(DRAWER_MAX, Math.max(DRAWER_MIN, startW + e.clientX - startX));
+          const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
+          const otherDrawerW = rightDrawer.classList.contains("is-open") ? rightDrawer.offsetWidth : 0;
+          const maxW = Math.min(DRAWER_MAX, bodyW - otherDrawerW - SCHEDULE_MIN - GAP * 3);
+          const w = Math.min(maxW, Math.max(DRAWER_MIN, startW + e.clientX - startX));
           drawer.style.setProperty("--drawer-width", w + "px");
         };
         const onUp = () => {
@@ -1994,7 +1993,10 @@
         const startW = parseInt(getComputedStyle(rightDrawer).getPropertyValue("--drawer-width")) || rightDrawer.offsetWidth;
 
         const onMove = (e) => {
-          const w = Math.min(DRAWER_MAX, Math.max(DRAWER_MIN, startW - (e.clientX - startX)));
+          const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
+          const otherDrawerW = drawer.classList.contains("is-open") ? drawer.offsetWidth : 0;
+          const maxW = Math.min(DRAWER_MAX, bodyW - otherDrawerW - SCHEDULE_MIN - GAP * 3);
+          const w = Math.min(maxW, Math.max(DRAWER_MIN, startW - (e.clientX - startX)));
           rightDrawer.style.setProperty("--drawer-width", w + "px");
         };
         const onUp = () => {
