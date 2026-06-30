@@ -435,7 +435,7 @@
 	right: var(--scheduler-app-gap);
 	left: auto;
 	height: auto;
-	width: calc(var(--drawer-width, 372px) - var(--scheduler-app-gap));
+	width: calc(var(--drawer-open-width, 372px) - var(--scheduler-app-gap));
 	min-width: 360px;
 	border: none;
 	border-radius: var(--scheduler-app-card-radius);
@@ -507,7 +507,7 @@
 	left: var(--scheduler-app-gap);
 	right: auto;
 	height: auto;
-	width: calc(var(--drawer-width, 372px) - var(--scheduler-app-gap));
+	width: calc(var(--drawer-open-width, 372px) - var(--scheduler-app-gap));
 	border: none;
 	border-radius: var(--scheduler-app-card-radius);
 	overflow: hidden;

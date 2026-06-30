@@ -1111,7 +1111,9 @@
 
       function openDrawer() {
         const saved = localStorage.getItem(DRAWER_STORAGE_KEY);
-        drawer.style.setProperty("--drawer-width", (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px");
+        const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
+        drawer.style.setProperty("--drawer-width", w);
+        drawer.style.setProperty("--drawer-open-width", w);
         drawer.classList.add("is-open");
         leftAutoCollapsed = false;
         const scrollBody = tripPanel?.querySelector(".rux-trip-panel__body");
@@ -1119,6 +1121,9 @@
         document.activeElement?.blur();
       }
       function closeDrawer() {
+        // Leave --drawer-open-width untouched so the panel content freezes at
+        // its pre-close size and only gets clipped by the shrinking drawer,
+        // instead of snapping to its min-width before the drawer animates.
         drawer.style.setProperty("--drawer-width", GAP + "px");
         drawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== drawer || e.propertyName !== "width") return;
@@ -1266,6 +1271,7 @@
               if (!wasOpen) {
                 drawerEl.classList.add("is-open");
                 drawerEl.style.setProperty("--drawer-width", "0px");
+                drawerEl.style.setProperty("--drawer-open-width", "0px");
               }
             }
             const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
@@ -1277,6 +1283,7 @@
             lastW = raw;
             const w = Math.min(maxW, Math.max(0, raw));
             drawerEl.style.setProperty("--drawer-width", w + "px");
+            drawerEl.style.setProperty("--drawer-open-width", w + "px");
           };
           const onUp = () => {
             drawerEl.classList.remove("is-resizing");
@@ -1288,6 +1295,7 @@
               closeFn();
             } else if (lastW < DRAWER_MIN) {
               drawerEl.style.setProperty("--drawer-width", DRAWER_MIN + "px");
+              drawerEl.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
               localStorage.setItem(storageKey, DRAWER_MIN);
             } else {
               const w = parseInt(getComputedStyle(drawerEl).getPropertyValue("--drawer-width"));
@@ -2018,7 +2026,9 @@
       const rightDrawer = document.getElementById("right-panel-drawer");
       function openRightDrawer() {
         const saved = localStorage.getItem(RIGHT_DRAWER_STORAGE_KEY);
-        rightDrawer.style.setProperty("--drawer-width", (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px");
+        const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
+        rightDrawer.style.setProperty("--drawer-width", w);
+        rightDrawer.style.setProperty("--drawer-open-width", w);
         rightDrawer.classList.add("is-open");
         rightAutoCollapsed = false;
       }
