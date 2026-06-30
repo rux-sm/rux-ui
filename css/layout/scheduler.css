@@ -44,8 +44,8 @@
 	--rux-scheduler-days: 7;
 	--rux-scheduler-day-min-width: 14rem;
 	--rux-scheduler-bg: var(--rux-bg-level-1);
-	--rux-scheduler-border-color: var(--rux-border-subtle);
-	--rux-scheduler-grid-line-color: var(--rux-border-subtle);
+	--rux-scheduler-border-color: var(--rux-bg-level-2);
+	--rux-scheduler-grid-line-color: var(--rux-bg-level-2);
 	--rux-scheduler-header-color: var(--rux-fg);
 	--rux-scheduler-row-head-color: var(--rux-fg);
 	--rux-scheduler-max-block-size: none;
@@ -70,9 +70,8 @@
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-bg-level-1);
-	border: none;
+	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
 	border-radius: var(--rux-radius-md);
-	
 }
 
 .rux-scheduler::-webkit-scrollbar {
@@ -94,13 +93,9 @@
 	min-height: var(--rux-scheduler-head-height);
 	padding: 0 var(--rux-space-3);
 	background: var(--rux-bg-level-1);
-	border-inline-end: var(--rux-border-width) solid var(--rux-bg-level-2);
+	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-header-color);
-}
-
-.rux-scheduler__col-head {
-	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-2);
 }
 
 .rux-scheduler__day-name {
@@ -125,8 +120,10 @@
 }
 
 /* The day headers use real grid-cell borders; only remove the final edge so it
-   does not double with the scheduler's outer border. */
-.rux-scheduler__day-head:last-of-type {
+   does not double with the scheduler's outer border. Day-heads and rows are
+   both plain <div>s under the same parent, so :last-of-type can't tell them
+   apart — match on the day-head immediately followed by the first row. */
+.rux-scheduler__day-head:has(+ .rux-scheduler__row) {
 	border-inline-end: none;
 }
 
@@ -235,7 +232,7 @@
 	padding: var(--rux-scheduler-row-block-inset) 0;
 	background: var(--rux-bg-level-1);
 	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
-	border-block-end: var(--rux-border-width) solid var(--rux-bg-level-2);
+	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
 	color: var(--rux-scheduler-row-head-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
@@ -281,6 +278,7 @@
 
 .rux-scheduler__row:last-child .rux-scheduler__row-head {
 	border-end-start-radius: var(--rux-radius-md);
+	border-block-end: none;
 }
 
 .rux-scheduler__row:last-child .rux-scheduler__track {
@@ -381,3 +379,4 @@
 		transparent 75.5%
 	);
 }
+

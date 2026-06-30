@@ -118,10 +118,10 @@
             <aside class="rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
               <nav class="rux-trip-panel__tabs" aria-label="Trip editor sections">
                 <div class="rux-segmented rux-segmented--ghost" data-trip-tabs>
-                  <button class="rux-button" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-trip-panel__tab-label">Info</span></button>
-                  <button class="rux-button" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-trip-panel__tab-label">Billing</span></button>
-                  <button class="rux-button" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-trip-panel__tab-label">Itinerary</span></button>
-                  <button class="rux-button" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-trip-panel__tab-label">Fleet</span></button>
+                  <button class="rux-button" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
+                  <button class="rux-button" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-icon" aria-hidden="true">payments</span><span class="rux-trip-panel__tab-label">Billing</span></button>
+                  <button class="rux-button" aria-selected="false" aria-controls="pane-itinerary" aria-label="Route" title="Route"><span class="rux-icon" aria-hidden="true">location_on</span><span class="rux-trip-panel__tab-label">Route</span></button>
+                  <button class="rux-button" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon" aria-hidden="true">manage_accounts</span><span class="rux-trip-panel__tab-label">Fleet</span></button>
                 </div>
               </nav>
               <div class="rux-trip-panel__body">
@@ -1123,7 +1123,7 @@
       topbarHandle.addEventListener("mousedown", (e) => {
         e.preventDefault();
         appEl.classList.add("is-topbar-resizing");
-        document.body.style.cursor = "row-resize";
+        document.body.style.cursor = "grabbing";
         document.body.style.userSelect = "none";
         const startY = e.clientY;
         let moved = false;
@@ -1323,7 +1323,7 @@
           let lastW = startW;
           let moved = false;
 
-          document.body.style.cursor = "col-resize";
+          document.body.style.cursor = "grabbing";
           document.body.style.userSelect = "none";
 
           const onMove = (ev) => {
@@ -2187,6 +2187,16 @@
       renderMiniCal();
 
       initDrawerDrag(rightDrawer.querySelector(".scheduler-app__drawer-handle"), rightDrawer, RIGHT_DRAWER_STORAGE_KEY, openRightDrawer, closeRightDrawer, () => drawer, "right");
+
+      // ── Default boot state — both panels open at their minimum width ───
+      // Always starts here on load/refresh, regardless of any saved drag-resize width.
+      drawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
+      drawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
+      drawer.classList.add("is-open");
+
+      rightDrawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
+      rightDrawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
+      rightDrawer.classList.add("is-open");
 
       // ── Auto-close panels when viewport is too narrow ──────────────────
       let rightAutoCollapsed = false;

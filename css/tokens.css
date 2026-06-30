@@ -68,7 +68,7 @@
 	--rux-bg-level-1: oklch(from var(--rux-color-base) 22% c h);
 
 	/* Elevated elements like floating cards or popovers */
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 26% c h);
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 28% c h);
 
 	/* Highest contrast accents / Badges */
 	--rux-bg-level-3: oklch(from var(--rux-color-base) 30% c h);
@@ -100,6 +100,10 @@
 	--rux-control-ghost-hover: oklch(100% 0 0 / 0.1); /* transparent white hover           */
 	--rux-control-ghost-active: oklch(100% 0 0 / 0.14); /* transparent white press           */
 	--rux-control-ghost-border: var(--rux-border); /* ghost outline matches section borders */
+
+	--rux-control-scrim: oklch(100% 0 0 / 0.06); /* transparent white fill — lightens whatever surface sits behind it */
+	--rux-control-scrim-hover: oklch(100% 0 0 / 0.12);
+	--rux-control-scrim-active: oklch(100% 0 0 / 0.16);
 	--rux-control-border: #303030; /* default control edge                 */
 	--rux-control-border-hover: #3a3a3a; /* hover control edge                   */
 	--rux-control-border-active: #424242; /* selected / pressed control edge      */
@@ -214,13 +218,14 @@
 
 	--rux-border-width: 1px;
 
-	--rux-control-height: 32px;
-	--rux-segmented-height: 32px;
-	--rux-field-height: 32px;
+	--rux-control-height: 28px;
+	--rux-segmented-height: 28px;
+	--rux-field-height: 28px;
 	--rux-textarea-min-height: 84px;
-	--rux-switch-width: 52px;
-	--rux-switch-height: 32px;
+	--rux-switch-width: 48px;
+	--rux-switch-height: 28px;
 
+	--rux-icon-xs: 16px;
 	--rux-icon-sm: 20px;
 	--rux-icon-md: 24px;
 	--rux-icon-lg: 24px;

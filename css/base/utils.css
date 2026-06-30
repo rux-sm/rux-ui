@@ -31,11 +31,16 @@
 /* — icons — */
 
 .rux-icon {
+  --_icon-fill: 0;
+  --_icon-wght: 300;
+  --_icon-grad: 0;
+  --_icon-opsz: 20;
+
   font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
-  font-size: var(--rux-icon-md);
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  font-size: var(--rux-icon-sm);
+  font-variation-settings: 'FILL' var(--_icon-fill), 'wght' var(--_icon-wght), 'GRAD' var(--_icon-grad), 'opsz' var(--_icon-opsz);
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
@@ -49,8 +54,8 @@
   font-feature-settings: 'liga';
   flex: none;
   vertical-align: middle;
-  width: var(--rux-icon-md);
-  height: var(--rux-icon-md);
+  width: var(--rux-icon-sm);
+  height: var(--rux-icon-sm);
   overflow: hidden;
 }
 .rux-icon--sm { font-size: var(--rux-icon-sm); width: var(--rux-icon-sm); height: var(--rux-icon-sm); }

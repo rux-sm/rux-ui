@@ -46,7 +46,7 @@
 	align-items: start;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-4) var(--rux-space-4);
+	padding: var(--rux-space-3) var(--rux-space-4) var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 
@@ -96,26 +96,28 @@
 }
 
 .rux-fleet-panel__tabs .rux-segmented .rux-button {
+	--_bg: var(--rux-control-scrim);
+	--_bg-h: var(--rux-control-scrim-hover);
+	--_bg-a: var(--rux-control-scrim-active);
 	flex: 1;
 	gap: var(--rux-space-1);
 	min-width: 0;
 	padding: var(--rux-space-1) var(--rux-space-3);
-	background: var(--rux-bg-elevated);
 	border: none;
-	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg-muted);
-	transition: color 0.15s ease, background 0.15s ease;
-}
-
-.rux-fleet-panel__tabs .rux-segmented .rux-button:hover {
-	background: var(--rux-bg-elevated);
-	color: var(--rux-fg);
+	border-radius: var(--rux-radius-md);
+	transition: background-color 0.15s ease;
 }
 
 .rux-fleet-panel__tabs .rux-segmented .rux-button.is-active,
 .rux-fleet-panel__tabs .rux-segmented .rux-button[aria-selected="true"] {
-	background: var(--rux-accent);
+	--_bg: var(--rux-accent);
+	--_bg-h: var(--rux-accent-hover);
+	--_bg-a: var(--rux-accent-active);
 	color: var(--rux-fg-on-accent);
+}
+.rux-fleet-panel__tabs .rux-segmented .rux-button.is-active .rux-icon,
+.rux-fleet-panel__tabs .rux-segmented .rux-button[aria-selected="true"] .rux-icon {
+	--_icon-fill: 1;
 }
 
 .rux-fleet-panel__tab-label {
@@ -234,7 +236,7 @@
 .rux-fleet-panel__footer {
 	align-items: center;
 	justify-content: flex-end;
-	gap: var(--rux-space-3);
+	gap: var(--rux-space-2);
 }
 
 /* — Narrow panel — */

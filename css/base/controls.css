@@ -6,12 +6,12 @@
 
 .rux-button {
 	--_h: var(--rux-control-height);
-	--_bg: var(--rux-control-bg);
-	--_bg-h: var(--rux-control-bg-hover);
-	--_bg-a: var(--rux-control-bg-active);
+	--_bg: var(--rux-control-scrim);
+	--_bg-h: var(--rux-control-scrim-hover);
+	--_bg-a: var(--rux-control-scrim-active);
 	--_fg: var(--rux-fg);
 	--_border: transparent;
-	--_shadow: var(--rux-shadow-sm);
+	--_shadow: none;
 	--_press-y: var(--rux-border-width);
 
 	position: relative;
@@ -24,7 +24,7 @@
 	background-color: var(--_bg);
 	color: var(--_fg);
 	border: var(--rux-border-width) solid var(--_border);
-	border-radius: var(--rux-radius-sm);
+	border-radius: var(--rux-radius-md);
 	box-shadow: var(--_shadow);
 	font: inherit;
 	font-size: var(--rux-text-sm);
@@ -83,8 +83,7 @@
 	--_bg: transparent;
 	--_bg-h: var(--rux-control-ghost-hover);
 	--_bg-a: var(--rux-control-ghost-active);
-	--_border: var(--rux-control-ghost-border);
-	--_border: solid transparent; /* override to preserve layout when border color changes on hover/active */
+	--_border: transparent; /* invisible but real — keeps box size identical to bordered states */
 	--_shadow: none;
 }
 .rux-button--ghost:focus-visible {
@@ -121,11 +120,10 @@
 	gap: 3px;
 }
 
-.rux-button--sm > :where(.rux-icon),
 .rux-button--xs > :where(.rux-icon) {
-	width: var(--rux-icon-sm);
-	height: var(--rux-icon-sm);
-	font-size: var(--rux-icon-sm);
+	width: var(--rux-icon-xs);
+	height: var(--rux-icon-xs);
+	font-size: var(--rux-icon-xs);
 }
 
 /* — block (full-width) — */
@@ -159,12 +157,22 @@
 	text-transform: none;
 }
 
+/* selected tab — accent-filled like .rux-button--primary, regardless of rest state */
+.rux-button--tab.is-active,
+.rux-button--tab[aria-pressed="true"],
+.rux-button--tab[aria-selected="true"] {
+	--_bg: var(--rux-accent);
+	--_bg-h: var(--rux-accent-hover);
+	--_bg-a: var(--rux-accent-active);
+	--_fg: var(--rux-fg-on-accent);
+}
+
 /* — icon inside button — */
 
 .rux-button > :where(.rux-icon) {
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
-	font-size: var(--rux-icon-md);
+	width: var(--rux-icon-sm);
+	height: var(--rux-icon-sm);
+	font-size: var(--rux-icon-sm);
 	flex: none;
 	pointer-events: none;
 }
