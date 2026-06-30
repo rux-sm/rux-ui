@@ -1060,6 +1060,66 @@
       try { topbarCollapsed = localStorage.getItem("rux:topbar-collapsed") === "true"; } catch (_) {}
       if (topbarCollapsed) topbar.classList.add("is-collapsed");
 
+      // The topbar's open height is implicit (auto), so it can't transition
+      // smoothly on its own — `height` jumps to its target instantly while
+      // only `padding` animates. Pin an explicit px height before toggling so
+      // the transition has two real numbers to interpolate between, then
+      // release back to auto once it settles so it stays responsive to
+      // content/viewport changes at rest.
+      function collapseTopbarSmooth() {
+        const h = topbar.getBoundingClientRect().height;
+        topbar.style.overflow = "hidden";
+        topbar.style.height = h + "px";
+        topbar.getBoundingClientRect();
+        topbar.classList.add("is-collapsed");
+        topbar.style.height = "0px";
+        topbar.addEventListener("transitionend", function handler(e) {
+          if (e.target !== topbar || e.propertyName !== "height") return;
+          topbar.style.height = "";
+          topbar.style.overflow = "";
+          topbar.removeEventListener("transitionend", handler);
+        });
+      }
+      function expandTopbarSmooth() {
+        topbar.style.overflow = "hidden";
+        // Pin height AND padding to the collapsed (0) state explicitly. With
+        // box-sizing: border-box, height alone can't reach 0 once padding is
+        // restored — padding always reserves its own space — so both must be
+        // pinned together to get a true 0 "from" snapshot.
+        topbar.style.height = "0px";
+        topbar.style.paddingTop = "0px";
+        topbar.style.paddingBottom = "0px";
+        topbar.getBoundingClientRect();
+        // Briefly disable transitions so removing is-collapsed settles
+        // instantly, letting us measure the true natural size.
+        const prevTransition = topbar.style.transition;
+        topbar.style.transition = "none";
+        topbar.classList.remove("is-collapsed");
+        topbar.style.height = "";
+        topbar.style.paddingTop = "";
+        topbar.style.paddingBottom = "";
+        const naturalH = topbar.getBoundingClientRect().height;
+        const naturalPadTop = getComputedStyle(topbar).paddingTop;
+        const naturalPadBottom = getComputedStyle(topbar).paddingBottom;
+        topbar.style.height = "0px";
+        topbar.style.paddingTop = "0px";
+        topbar.style.paddingBottom = "0px";
+        topbar.getBoundingClientRect();
+        topbar.style.transition = prevTransition;
+        topbar.getBoundingClientRect();
+        topbar.style.height = naturalH + "px";
+        topbar.style.paddingTop = naturalPadTop;
+        topbar.style.paddingBottom = naturalPadBottom;
+        topbar.addEventListener("transitionend", function handler(e) {
+          if (e.target !== topbar || e.propertyName !== "height") return;
+          topbar.style.height = "";
+          topbar.style.paddingTop = "";
+          topbar.style.paddingBottom = "";
+          topbar.style.overflow = "";
+          topbar.removeEventListener("transitionend", handler);
+        });
+      }
+
       topbarHandle.addEventListener("mousedown", (e) => {
         e.preventDefault();
         appEl.classList.add("is-topbar-resizing");
@@ -1080,15 +1140,15 @@
           if (moved) {
             if (!topbarCollapsed && deltaY < -20) {
               topbarCollapsed = true;
-              topbar.classList.add("is-collapsed");
+              collapseTopbarSmooth();
             } else if (topbarCollapsed && deltaY > 20) {
               topbarCollapsed = false;
-              topbar.classList.remove("is-collapsed");
+              expandTopbarSmooth();
             }
             try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
           } else {
             topbarCollapsed = !topbarCollapsed;
-            topbar.classList.toggle("is-collapsed", topbarCollapsed);
+            topbarCollapsed ? collapseTopbarSmooth() : expandTopbarSmooth();
             try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
           }
           document.removeEventListener("mousemove", onMove);
