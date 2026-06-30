@@ -136,16 +136,24 @@
 .rux-trip-panel__tabs [data-trip-tabs] {
 	display: contents;
 }
-.rux-trip-panel__tabs .rux-button--toggle {
+.rux-trip-panel__tabs [data-trip-tabs] .rux-button {
 	flex: 1;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-3);
-	--_bg: transparent;
-	--_bg-h: transparent;
-	--_bg-a: transparent;
-	--_fg: var(--rux-fg-muted);
-	--_shadow: none;
-	--_border: transparent;
+	background: var(--rux-bg-elevated);
+	border: none;
+	border-radius: var(--rux-radius-sm);
+	color: var(--rux-fg-muted);
+	transition: color 0.15s ease, background 0.15s ease;
+}
+.rux-trip-panel__tabs [data-trip-tabs] .rux-button:hover {
+	background: var(--rux-bg-elevated);
+	color: var(--rux-fg);
+}
+.rux-trip-panel__tabs [data-trip-tabs] .rux-button.is-active,
+.rux-trip-panel__tabs [data-trip-tabs] .rux-button[aria-selected="true"] {
+	background: var(--rux-accent);
+	color: var(--rux-fg-on-accent);
 }
 .rux-trip-panel__status-group .rux-button {
 	gap: var(--rux-space-1);
@@ -774,7 +782,7 @@
 }
 
 @container (max-width: 300px) {
-	.rux-trip-panel__tabs .rux-button--toggle {
+	.rux-trip-panel__tabs [data-trip-tabs] .rux-button {
 		flex-direction: column;
 		height: 42px;
 		padding: var(--rux-space-1) var(--rux-space-1);
@@ -840,9 +848,3 @@
 	text-transform: uppercase;
 }
 
-.rux-trip-panel .rux-segmented > .rux-button {
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
-	letter-spacing: var(--rux-tracking-wider);
-	text-transform: uppercase;
-}

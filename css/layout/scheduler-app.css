@@ -31,7 +31,7 @@
 }
 
 .scheduler-app {
-	--scheduler-app-gap: var(--rux-space-4);
+	--scheduler-app-gap: var(--rux-space-2);
 	--scheduler-app-card-radius: var(--rux-radius-md);
 	display: grid;
 	grid-template-rows: auto auto minmax(0, 1fr);
@@ -44,7 +44,7 @@
 
 .scheduler-app__topbar-handle {
 	flex: none;
-	height: calc(var(--scheduler-app-gap) + 8px);
+	height: calc(var(--scheduler-app-gap));
 	cursor: row-resize;
 	position: relative;
 	z-index: 1;
@@ -438,7 +438,8 @@
 	width: calc(var(--drawer-open-width, 372px) - var(--scheduler-app-gap));
 	min-width: 360px;
 	border: none;
-	border-radius: var(--scheduler-app-card-radius);
+	/* Flush against the viewport's left edge — only round the inner (right) corners. */
+	border-radius: 0 var(--scheduler-app-card-radius) var(--scheduler-app-card-radius) 0;
 	overflow: hidden;
 }
 
@@ -509,7 +510,8 @@
 	height: auto;
 	width: calc(var(--drawer-open-width, 372px) - var(--scheduler-app-gap));
 	border: none;
-	border-radius: var(--scheduler-app-card-radius);
+	/* Flush against the viewport's right edge — only round the inner (left) corners. */
+	border-radius: var(--scheduler-app-card-radius) 0 0 var(--scheduler-app-card-radius);
 	overflow: hidden;
 }
 
@@ -554,16 +556,24 @@
 .rux-right-panel__tabs [data-right-tabs] {
 	display: contents;
 }
-.rux-right-panel__tabs .rux-button--toggle {
+.rux-right-panel__tabs [data-right-tabs] .rux-button {
 	flex: 1;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-3);
-	--_bg: transparent;
-	--_bg-h: transparent;
-	--_bg-a: transparent;
-	--_fg: var(--rux-fg-muted);
-	--_shadow: none;
-	--_border: transparent;
+	background: var(--rux-bg-elevated);
+	border: none;
+	border-radius: var(--rux-radius-sm);
+	color: var(--rux-fg-muted);
+	transition: color 0.15s ease, background 0.15s ease;
+}
+.rux-right-panel__tabs [data-right-tabs] .rux-button:hover {
+	background: var(--rux-bg-elevated);
+	color: var(--rux-fg);
+}
+.rux-right-panel__tabs [data-right-tabs] .rux-button.is-active,
+.rux-right-panel__tabs [data-right-tabs] .rux-button[aria-selected="true"] {
+	background: var(--rux-accent);
+	color: var(--rux-fg-on-accent);
 }
 
 .rux-right-panel__body {
@@ -577,7 +587,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-3);	
+	padding: 0 var(--rux-space-3);
 }
 .rux-right-panel__pane[hidden] {
 	display: none;
