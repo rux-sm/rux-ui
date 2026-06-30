@@ -239,8 +239,8 @@
 .rux-card {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-4);
-	padding: var(--rux-space-4);
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3);
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-md);
 	border: solid transparent var(--rux-border-width);
@@ -254,7 +254,7 @@
 	display: grid;
 	grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
 	column-gap: var(--rux-space-3);
-	row-gap: var(--rux-space-4);
+	row-gap: var(--rux-space-3);
 	align-items: start;
 }
 .rux-trip-panel__cols-2 {
@@ -276,7 +276,7 @@
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: start;
 	column-gap: var(--rux-space-3);
-	row-gap: var(--rux-space-4);
+	row-gap: var(--rux-space-3);
 }
 
 .rux-trip-panel__section-head {
@@ -366,7 +366,7 @@
 	column-gap: var(--rux-space-3);
 	row-gap: 0;
 	align-items: start;
-	padding: var(--rux-space-4);
+	padding: var(--rux-space-3);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-level-2);
 }
@@ -379,17 +379,11 @@
 .rux-trip-panel__billing-step-body {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-4);
+	gap: var(--rux-space-3);
 	min-width: 0;
 	width: 100%;
 }
-.rux-trip-panel__billing-step-status {
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
-	color: var(--rux-fg-muted);
-	letter-spacing: var(--rux-tracking-wide);
-	text-transform: uppercase;
-}
+
 .rux-trip-panel__billing-step.is-enabled .rux-trip-panel__billing-step-status {
 	color: var(--rux-accent);
 }
@@ -428,7 +422,7 @@
 .rux-trip-panel__payment-rows {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-4);
+	gap: var(--rux-space-3);
 }
 .rux-trip-panel__payment-row {
 	display: grid;
@@ -849,6 +843,5 @@
 	font-weight: var(--rux-weight-medium);
 	color: var(--rux-fg-muted);
 	letter-spacing: var(--rux-tracking-wide);
-	text-transform: uppercase;
 }
 

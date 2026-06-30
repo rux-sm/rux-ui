@@ -33,18 +33,17 @@
 /* — Summary strip — */
 
 .rux-itin__summary {
-	position: sticky;
-	top: 0;
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-3);
-	padding: 0 var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
+	justify-content: center;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-md);
 	border: var(--rux-border-width) solid var(--rux-border);
-	border: solid transparent var(--rux-border-width); /* override */
+	border: none; /* override */
 	z-index: 10;
-	margin: var(--rux-space-4) var(--rux-space-4) 0 var(--rux-space-4);
+	margin-inline: var(--rux-space-3);
 }
 
 .rux-itin__summary-badge {
@@ -128,8 +127,8 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
-	margin: var(--rux-space-4) var(--rux-space-4);
-	padding: var(--rux-space-4);
+	margin: var(--rux-space-3) var(--rux-space-3);
+	padding: 0 var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
 	background: var(--rux-bg-level-2);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border: solid transparent var(--rux-border-width);

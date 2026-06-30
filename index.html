@@ -198,7 +198,7 @@
                       <label class="rux-switch"><input type="checkbox" id="tp-contract-signed" name="contractSigned" data-billing-toggle data-billing-controls="tp-contract-note" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       <div class="rux-trip-panel__billing-step-body">
                         <p class="rux-trip-panel__section-label" data-billing-label>Contract</p>
-                        <span class="rux-trip-panel__billing-step-status" data-billing-status data-off="Pending" data-on="Signed">Pending</span>
+                        <span class="rux-field__label rux-trip-panel__billing-step-status" data-billing-status data-off="Pending" data-on="Signed">Pending</span>
                       </div>
                       <div class="rux-trip-panel__billing-step-content">
                         <div class="rux-trip-panel__billing-step-inner">
@@ -210,7 +210,7 @@
                       <label class="rux-switch"><input type="checkbox" id="tp-po-received" name="poReceived" data-billing-toggle data-billing-controls="tp-po" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       <div class="rux-trip-panel__billing-step-body">
                         <p class="rux-trip-panel__section-label" data-billing-label>Purchase Order</p>
-                        <span class="rux-trip-panel__billing-step-status" data-billing-status data-off="Not received" data-on="Received">Not received</span>
+                        <span class="rux-field__label rux-trip-panel__billing-step-status" data-billing-status data-off="Not received" data-on="Received">Not received</span>
                       </div>
                       <div class="rux-trip-panel__billing-step-content">
                         <div class="rux-trip-panel__billing-step-inner">
@@ -222,7 +222,7 @@
                       <label class="rux-switch"><input type="checkbox" id="tp-invoiced" name="invoiced" data-billing-toggle data-billing-controls="tp-inv-num" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       <div class="rux-trip-panel__billing-step-body">
                         <p class="rux-trip-panel__section-label" data-billing-label>Invoice</p>
-                        <span class="rux-trip-panel__billing-step-status" data-billing-status data-off="Pending" data-on="Invoiced">Pending</span>
+                        <span class="rux-field__label rux-trip-panel__billing-step-status" data-billing-status data-off="Pending" data-on="Invoiced">Pending</span>
                       </div>
                       <div class="rux-trip-panel__billing-step-content">
                         <div class="rux-trip-panel__billing-step-inner">
@@ -245,8 +245,8 @@
                   <div class="rux-itin" id="tp-itin">
                     <div class="rux-itin__summary" id="tp-itin-summary">
                       <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Itinerary</p></div>
-                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-import-btn" title="Import from JSON" aria-label="Import from JSON"><span class="rux-icon">upload</span></button>
-                      <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Recalculate route"><span class="rux-icon">route</span></button>
+                      <button class="rux-button rux-button--icon" type="button" id="tp-import-btn" title="Upload JSON" aria-label="Upload JSON"><span class="rux-icon">upload</span></button>
+                      <button class="rux-button rux-button--icon" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Recalculate route"><span class="rux-icon">route</span></button>
                     </div>
                     <div class="rux-itin__stops" id="tp-itin-stops"></div>
                   </div>

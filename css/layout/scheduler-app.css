@@ -31,7 +31,7 @@
 }
 
 .scheduler-app {
-	--scheduler-app-gap: var(--rux-space-2);
+	--scheduler-app-gap: var(--rux-space-3);
 	--scheduler-app-card-radius: var(--rux-radius-lg);
 	display: grid;
 	grid-template-rows: auto auto minmax(0, 1fr);
@@ -102,8 +102,9 @@
 	justify-content: space-between;
 	background: var(--rux-bg-level-1);
 	min-width: 0;
-	gap: var(--rux-space-4);
+	gap: var(--rux-space-2);
 	padding: var(--rux-space-2);
+	padding-right: var(--rux-space-3);
 	border-bottom: none;
 	transition: height var(--rux-duration-slow) var(--rux-ease-in-out),
 		padding var(--rux-duration-slow) var(--rux-ease-in-out);
@@ -204,7 +205,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-2);
+	padding: var(--rux-space-3) var(--rux-space-3);
 	border-bottom: solid transparent var(--rux-border-width);
 	border-bottom: none;
 }
@@ -222,7 +223,7 @@
 .scheduler-app__schedule > .scheduler-app__bar {
 	container-type: inline-size;
 	container-name: schedule-toolbar;
-	padding: var(--rux-space-2) var(--rux-space-2);
+	padding: var(--rux-space-3) var(--rux-space-3);
 	min-width: 0;
 }
 
