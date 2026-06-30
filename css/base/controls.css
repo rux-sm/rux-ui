@@ -24,7 +24,7 @@
 	background-color: var(--_bg);
 	color: var(--_fg);
 	border: var(--rux-border-width) solid var(--_border);
-	border-radius: var(--rux-radius-md);
+	border-radius: var(--rux-radius-xs);
 	box-shadow: var(--_shadow);
 	font: inherit;
 	font-size: var(--rux-text-sm);
@@ -247,7 +247,7 @@
 	background-color: var(--rux-control-strip-bg);
 	background-color: var(--rux-bg-sunken);
 	border: 1px solid var(--rux-border);
-	border-radius: var(--rux-radius-md);
+
 	box-shadow:
 		inset 0 1px 2px rgba(0, 0, 0, 0.75),
 		inset 0 2px 5px rgba(0, 0, 0, 0.32),
@@ -274,7 +274,7 @@
 	--_shadow: var(--rux-shadow-none);
 	flex: 1;
 	min-width: 0;
-	border-radius: var(--rux-radius-sm);
+
 	color: var(--rux-fg);
 }
 .rux-segmented > .rux-button:hover {

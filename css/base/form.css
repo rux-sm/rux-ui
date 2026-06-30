@@ -24,7 +24,7 @@
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
   border: solid transparent var(--rux-border-width);
-  border-radius: var(--rux-radius-md);
+  border-radius: var(--rux-radius-xs);
   box-shadow: var(--_field-shadow);
   font: inherit;
   font-size: var(--rux-text-sm);

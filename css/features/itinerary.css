@@ -32,37 +32,48 @@
 
 /* — Summary strip — */
 
+/* .rux-card handles the shared chrome (bg, radius, gap, padding); this is
+   only what's specific to the summary's placement inside the flush itinerary
+   pane, which has no padding of its own. */
 .rux-itin__summary {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-bg-level-2);
-	border-radius: var(--rux-radius-md);
-	border: var(--rux-border-width) solid var(--rux-border);
-	border: none; /* override */
-	z-index: 10;
 	margin-inline: var(--rux-space-3);
 }
 
-.rux-itin__summary-badge {
-	background: var(--rux-bg-3);
-	color: var(--rux-fg-muted);
+.rux-itin__summary-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	column-gap: var(--rux-space-2);
 }
 
-/* — Day-break header — */
-
-.rux-itin__day {
+.rux-itin__summary-actions {
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-3);
-	margin-top: var(--rux-space-4);
-	margin-bottom: var(--rux-space-4);
-	padding: var(--rux-space-2) var(--rux-space-3);
-	background: color-mix(in oklch, var(--rux-bg) 78%, var(--rux-accent) 22%);
-	border-top: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	gap: var(--rux-space-2);
+}
+
+.rux-itin__summary-actions > .rux-button {
+	flex: 1;
+	width: auto;
+}
+
+/* — Day card — */
+
+/* .rux-card handles shared chrome; margin matches .rux-itin__card positioning. */
+.rux-itin__day {
+	margin: var(--rux-space-3) var(--rux-space-3);
+}
+
+.rux-itin__day-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-2);
+}
+
+.rux-itin__day-stats {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	column-gap: var(--rux-space-2);
 }
 
 /* Stats shown inside End day row and Sleeper card */
@@ -99,22 +110,6 @@
 	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
-.rux-itin__day-badge {
-	display: inline-flex;
-	align-items: center;
-	padding: 2px var(--rux-space-2);
-	background: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
-	border-radius: var(--rux-radius-xs);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: 0;
-}
-
-.rux-itin__day--final .rux-itin__day-badge {
-	opacity: 0.7;
-}
-
 /* — Stop row — */
 
 .rux-itin__stop {
@@ -123,16 +118,12 @@
 
 /* — Card — */
 
+/* .rux-card handles the shared chrome (bg, radius, gap, padding); margin is the
+   only itinerary-specific piece — it recreates the flush pane's horizontal inset
+   and is the sole source of vertical spacing between stacked timeline cards
+   (.rux-itin has no gap of its own). */
 .rux-itin__card {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
 	margin: var(--rux-space-3) var(--rux-space-3);
-	padding: 0 var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
-	background: var(--rux-bg-level-2);
-	border: var(--rux-border-width) solid var(--rux-border);
-	border: solid transparent var(--rux-border-width);
-	border-radius: var(--rux-radius-md);
 }
 
 
@@ -182,36 +173,19 @@
 	white-space: nowrap;
 }
 
-.rux-itin__from {
-	font-size: var(--rux-text-xs);
-	color: var(--rux-fg-subtle);
-	flex: 1;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
 /* — Fields grid: 2 equal columns, stacked label+input for times — */
 
 .rux-itin__fields {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-	gap: var(--rux-space-2);
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-space-3);
 }
 
 .rux-itin__field-stack {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
-}
-
-.rux-itin__field-label {
-	font-size: var(--rux-text-2xs);
-	color: var(--rux-fg-subtle);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
-	font-weight: var(--rux-weight-semibold);
 }
 
 .rux-itin__source {
@@ -272,6 +246,12 @@
 	color: var(--rux-danger-bright);
 }
 
+/* Disabled always wins over stale/error tinting — same specificity (ID + one
+   selector), so source order is what makes this the final word. */
+#tp-itin-recalc:disabled {
+	color: var(--rux-fg-disabled);
+}
+
 .rux-itin__address-wrap {
 	position: relative;
 }
@@ -298,77 +278,18 @@
 	padding-right: calc(var(--rux-icon-sm, 14px) + var(--rux-space-2) * 2);
 }
 
-/* — Gap row — */
+/* — Add-stop actions row — */
 
-.rux-itin__gap {
-	overflow: hidden;
-	margin-top: calc(var(--rux-space-4) * -1);
-	margin-bottom: calc(var(--rux-space-4) * -1);
-}
-
-.rux-itin__gap-trigger {
-	position: relative;
+.rux-itin__add-actions {
 	display: flex;
-	align-items: center;
-	justify-content: center;
 	gap: var(--rux-space-2);
-	padding: 0 var(--rux-space-2);
-	height: calc(var(--rux-space-2) * 2);
-	overflow: hidden;
-	opacity: 0.35;
-	cursor: pointer;
-	transition: opacity 150ms, height 180ms ease;
-	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-xs);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	margin-top: calc(var(--rux-space-3) * -1);
+	margin-bottom: calc(var(--rux-space-3) * -1);
 }
 
-.rux-itin__gap.is-open .rux-itin__gap-trigger {
-	height: calc(var(--rux-space-2) + var(--rux-control-height) + var(--rux-space-2));
-}
-
-.rux-itin__gap-trigger:hover,
-.rux-itin__gap.is-open .rux-itin__gap-trigger {
-	opacity: 1;
-	color: var(--rux-fg-hover);
-}
-
-.rux-itin__gap-plus {
-	width: 12px;
-	height: 12px;
-	flex: none;
-	transition: rotate 150ms;
-}
-
-.rux-itin__gap.is-open .rux-itin__gap-plus {
-	rotate: 45deg;
-	width: var(--rux-icon-md, 16px);
-	height: var(--rux-icon-md, 16px);
-}
-
-.rux-itin__gap-dwell {
-	position: absolute;
-	right: var(--rux-space-4);
-	color: var(--rux-fg-subtle);
-	white-space: nowrap;
-	pointer-events: none;
-}
-
-.rux-itin__insert-actions {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-space-2);
-	max-width: 0;
-	overflow: hidden;
-	transition: max-width 300ms ease;
-}
-
-.rux-itin__gap.is-open .rux-itin__insert-actions {
-	max-width: 320px;
-}
-
-.rux-itin__insert-opt .rux-icon {
-	width: var(--rux-icon-md, 16px);
-	height: var(--rux-icon-md, 16px);
+.rux-itin__add-actions > .rux-button {
+	flex: 1;
 }
 
 .rux-itin__suggestions {

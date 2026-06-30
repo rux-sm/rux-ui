@@ -462,7 +462,7 @@ import { supabase } from "./supabase.js";
 					<option value="Zelle">Zelle</option>
 					<option value="Other">Other</option>
 				</select>
-				<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Ref / note" />`;
+				<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference Number" />`;
 			paymentRows.appendChild(row);
 			if (payment.amount) row.querySelector("[data-payment-amount]").value = payment.amount;
 			if (payment.date) row.querySelector("[data-payment-date]").value = payment.date;

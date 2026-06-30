@@ -448,6 +448,7 @@
 	height: var(--rux-icon-md);
 	flex: none;
 	stroke-width: 2;
+	padding-right: var(--rux-space-2);
 }
 
 /* ---------- Text rows ---------- */

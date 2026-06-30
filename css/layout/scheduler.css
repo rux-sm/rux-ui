@@ -129,15 +129,19 @@
 .rux-scheduler__day-label {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-2);
-	background: var(--rux-bg-level-2);
-	border-radius: var(--rux-radius-sm);
-	height: var(--rux-control-height);
+	background: var(--rux-bg-level-1);
+	border-radius: var(--rux-radius-lg);
+	height: 20px;
+	white-space: nowrap;
+	width: 192px;
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
-	background: var(--rux-accent);
+	background: color-mix(in srgb, var(--rux-accent), transparent 75%);
+	border: solid 1px var(--rux-accent);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,
@@ -322,6 +326,7 @@
 
 
 .rux-scheduler__now-line {
+	display: none;
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -334,6 +339,10 @@
 	transition: width var(--rux-duration-fast) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 	transform: translateX(-50%);
+}
+
+.rux-scheduler--time-aligned .rux-scheduler__now-line {
+	display: block;
 }
 
 .rux-scheduler__now-line:hover {

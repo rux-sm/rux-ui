@@ -202,7 +202,7 @@
                       </div>
                       <div class="rux-trip-panel__billing-step-content">
                         <div class="rux-trip-panel__billing-step-inner">
-                          <input class="rux-input" id="tp-contract-note" name="contractNote" type="text" placeholder="Contract ref / note" aria-label="Contract note" />
+                          <input class="rux-input" id="tp-contract-note" name="contractNote" type="text" placeholder="Optional Notes" aria-label="Contract note" />
                         </div>
                       </div>
                     </div>
@@ -214,7 +214,7 @@
                       </div>
                       <div class="rux-trip-panel__billing-step-content">
                         <div class="rux-trip-panel__billing-step-inner">
-                          <input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="PO number" aria-label="PO number" />
+                          <input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="PO number" aria-label="PO Number" />
                         </div>
                       </div>
                     </div>
@@ -226,7 +226,7 @@
                       </div>
                       <div class="rux-trip-panel__billing-step-content">
                         <div class="rux-trip-panel__billing-step-inner">
-                          <input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" placeholder="Invoice number" aria-label="Invoice number" />
+                          <input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" placeholder="Invoice number" aria-label="Invoice Number" />
                         </div>
                       </div>
                     </div>
@@ -243,10 +243,10 @@
                 <!-- Itinerary -->
                 <div id="pane-itinerary" class="rux-trip-panel__pane rux-trip-panel__pane--flush" role="tabpanel" hidden>
                   <div class="rux-itin" id="tp-itin">
-                    <div class="rux-itin__summary" id="tp-itin-summary">
+                    <div class="rux-card rux-itin__summary" id="tp-itin-summary">
                       <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Itinerary</p></div>
-                      <button class="rux-button rux-button--icon" type="button" id="tp-import-btn" title="Upload JSON" aria-label="Upload JSON"><span class="rux-icon">upload</span></button>
-                      <button class="rux-button rux-button--icon" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Recalculate route"><span class="rux-icon">route</span></button>
+                      <button class="rux-button" type="button" id="tp-import-btn" title="Upload JSON"><span class="rux-icon" aria-hidden="true">upload</span>Upload JSON</button>
+                      <button class="rux-button" type="button" id="tp-itin-recalc" title="Recalculate route"><span class="rux-icon" aria-hidden="true">route</span><span data-recalc-label>Calculate</span></button>
                     </div>
                     <div class="rux-itin__stops" id="tp-itin-stops"></div>
                   </div>

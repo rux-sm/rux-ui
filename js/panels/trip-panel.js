@@ -247,7 +247,7 @@ function initBillingWorkflow(root) {
 			</div>
 			<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
 			<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">${paymentMethodOptions()}</select>
-			<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Ref / note" />`;
+			<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference Number" />`;
 		return row;
 	};
 	const ensurePaymentRows = (count) => {

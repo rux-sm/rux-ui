@@ -149,7 +149,8 @@
 .rux-fleet-panel__cols-2 {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: var(--rux-space-3);
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-space-3);
 	align-items: start;
 }
 

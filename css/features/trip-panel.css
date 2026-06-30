@@ -253,7 +253,7 @@
 .rux-trip-panel__cols-3 {
 	display: grid;
 	grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
-	column-gap: var(--rux-space-3);
+	column-gap: var(--rux-space-2);
 	row-gap: var(--rux-space-3);
 	align-items: start;
 }
@@ -267,7 +267,7 @@
 .rux-trip-panel__contact-row {
 	display: grid;
 	grid-template-columns: 1fr 1fr auto;
-	column-gap: var(--rux-space-3);
+	column-gap: var(--rux-space-2);
 	align-items: end;
 }
 
@@ -275,7 +275,7 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: start;
-	column-gap: var(--rux-space-3);
+	column-gap: var(--rux-space-2);
 	row-gap: var(--rux-space-3);
 }
 
@@ -346,9 +346,9 @@
 	border: solid transparent var(--rux-border-width);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-level-1);
-	color: var(--rux-fg);
+	color: var(--rux-fg-muted);
 	font: inherit;
-	font-size: var(--rux-text-md);
+	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-regular);
 	font-variant-numeric: tabular-nums;
 }
@@ -363,7 +363,7 @@
 .rux-trip-panel__billing-step {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
-	column-gap: var(--rux-space-3);
+	column-gap: var(--rux-space-2);
 	row-gap: 0;
 	align-items: start;
 	padding: var(--rux-space-3);

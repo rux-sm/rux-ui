@@ -117,6 +117,12 @@
 		return (parseInt(parts[0], 10) || 0) * 60 + (parseInt(parts[1], 10) || 0);
 	}
 
+	function minsToTimeStr(mins) {
+		const h = Math.floor(mins / 60) % 24;
+		const m = mins % 60;
+		return String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+	}
+
 	function parseClockMins(t) {
 		if (!t) return null;
 		const parts = String(t).split(":");
@@ -253,38 +259,19 @@
 		return { totalMiles, totalDrive, grossMins, netMins };
 	}
 
-	function renderSegStats({ totalMiles, totalDrive, grossMins, netMins } = {}) {
-		const items = [];
-
-		if (totalMiles > 0) {
-			const mi = totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1);
-			items.push(`<span class="rux-itin__seg-stat">${mi} mi</span>`);
-		}
-		if (totalDrive > 0) {
-			const warnDrive = totalDrive > 11 * 60;
-			items.push(
-				`<span class="rux-itin__seg-stat${warnDrive ? " rux-itin__seg-stat--warn" : ""}">${formatDriveMinsCompact(totalDrive)} dr</span>`,
-			);
-		}
-		if (netMins !== null) {
-			const warnNet = netMins > 14 * 60;
-			items.push(
-				`<span class="rux-itin__seg-stat${warnNet ? " rux-itin__seg-stat--warn" : ""}">` +
-					`${formatDriveMinsCompact(netMins)} duty</span>`,
-			);
-		}
-		if (grossMins !== null && sleeperDwellInStats(grossMins, netMins)) {
-			items.push(
-				`<span class="rux-itin__seg-stat">${formatDriveMinsCompact(grossMins)} gross</span>`,
-			);
-		}
-
-		return items.length ? `<div class="rux-itin__seg-stats">${items.join("")}</div>` : "";
-	}
-
-	// Only show gross alongside net when there is a meaningful difference (sleeper dwell > 0).
-	function sleeperDwellInStats(gross, net) {
-		return gross !== null && net !== null && gross !== net;
+	function renderDayStatsGrid({ totalMiles, totalDrive, netMins } = {}) {
+		const miVal = totalMiles > 0 ? (totalMiles % 1 === 0 ? String(totalMiles) : totalMiles.toFixed(1)) : "—";
+		const drVal = totalDrive > 0 ? formatDriveMinsCompact(totalDrive) : "—";
+		const dutyVal = netMins !== null ? formatDriveMinsCompact(netMins) : "—";
+		const drWarn = totalDrive > 11 * 60;
+		const dutyWarn = netMins !== null && netMins > 14 * 60;
+		const out = (val, warn) =>
+			`<output class="rux-trip-panel__billing-output${warn ? " rux-itin__seg-stat--warn" : ""}">${escHtml(val)}</output>`;
+		return `<div class="rux-itin__day-stats">
+      <div class="rux-field"><span class="rux-field__label">Miles</span>${out(miVal, false)}</div>
+      <div class="rux-field"><span class="rux-field__label">Drive</span>${out(drVal, drWarn)}</div>
+      <div class="rux-field"><span class="rux-field__label">On-Duty</span>${out(dutyVal, dutyWarn)}</div>
+    </div>`;
 	}
 
 	function renderSleeperStats(stop, stops) {
@@ -334,6 +321,22 @@
 		return m === 0 ? `${h}h` : `${h}h ${String(m).padStart(2, "0")}m`;
 	}
 
+	function autoPopulateReturnTimes(stops) {
+		const ret = stops.find((s) => s.type === "return");
+		if (!ret) return;
+		const prev = [...stops].reverse().find((s) => s.type !== "day" && s.type !== "return");
+		if (!prev?.arrive) return;
+		const prevArrMins = parseClockMins(prev.arrive);
+		if (prevArrMins === null) return;
+		const buffer = window.RuxSettings?.getReturnBuffer?.() ?? 15;
+		const depMins = (prevArrMins + buffer) % 1440;
+		ret.departPrev = minsToTimeStr(depMins);
+		const driveMins = parseDriveMins(ret.drive);
+		if (driveMins > 0) {
+			ret.arrive = minsToTimeStr((depMins + driveMins) % 1440);
+		}
+	}
+
 	function computeOnDuty(stops) {
 		const pickup = stops.find((s) => s.type === "pickup");
 		const ret = stops.find((s) => s.type === "return");
@@ -355,15 +358,27 @@
 		const totalDrive = real.reduce((n, s) => n + parseDriveMins(s.drive), 0);
 		const dayCount = stops.filter((s) => s.type === "day").length + 1;
 		const onDutyMins = computeOnDuty(stops);
-		const parts = [];
-		if (totalMiles > 0) parts.push(`${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)} mi`);
-		parts.push(`${dayCount} ${dayCount === 1 ? "day" : "days"}`);
-		if (totalDrive > 0) parts.push(`${formatDriveMinsCompact(totalDrive)} dr`);
-		if (onDutyMins !== null) parts.push(`${formatDriveMinsCompact(onDutyMins)} duty`);
-		const statsHtml = parts.map((p) => `<span class="rux-itin__seg-stat">${p}</span>`).join("");
+
+		const stats = [
+			{ id: "days", label: "Days", value: `${dayCount}` },
+			{ id: "miles", label: "Miles", value: totalMiles > 0 ? `${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)}` : "—" },
+			{ id: "drive", label: "Drive", value: totalDrive > 0 ? formatDriveMinsCompact(totalDrive) : "—" },
+			{ id: "duty", label: "On-Duty", value: onDutyMins !== null ? formatDriveMinsCompact(onDutyMins) : "—" },
+		];
+		const statsHtml = stats
+			.map(
+				(s) => `
+        <div class="rux-field">
+          <label class="rux-field__label" for="tp-itin-summary-${s.id}">${s.label}</label>
+          <output class="rux-trip-panel__billing-output" id="tp-itin-summary-${s.id}">${s.value}</output>
+        </div>`
+			)
+			.join("");
+
 		return `
-      <span class="rux-itin__day-badge rux-itin__summary-badge">Trip</span>
-      <div class="rux-itin__seg-stats">${statsHtml}</div>`;
+      <span class="rux-trip-panel__section-label">Route Summary</span>
+      <div class="rux-itin__summary-grid">${statsHtml}</div>
+      <div class="rux-itin__summary-actions"></div>`;
 	}
 
 	function renderFinalDaySummary(stops) {
@@ -380,13 +395,10 @@
 
 		const dayNum = stops.filter((s) => s.type === "day").length + 1;
 		const stats = computeSegmentStats(stops, stops.length);
-		const statsHtml = renderSegStats(stats);
-		if (!statsHtml) return "";
-
 		return `
-      <div class="rux-itin__day rux-itin__day--final">
-        <span class="rux-itin__day-badge">Day ${dayNum}</span>
-        ${statsHtml}
+      <div class="rux-card rux-itin__day rux-itin__day--final">
+        <span class="rux-trip-panel__section-label">Day ${dayNum}</span>
+        ${renderDayStatsGrid(stats)}
       </div>`;
 	}
 
@@ -400,19 +412,21 @@
 	function renderDay(item, idx, stops) {
 		const stats = computeSegmentStats(stops, idx);
 		return `
-      <div class="rux-itin__day" data-stop-idx="${idx}" draggable="true">
-        <span class="rux-itin__day-badge">${escHtml(formatDayLabel(item.label))}</span>
-        ${renderSegStats(stats)}
-        <div class="rux-itin__card-actions">
-          <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
-                  type="button" data-drag-handle aria-label="Drag to reorder">
-            <span class="rux-icon">drag_indicator</span>
-          </button>
-          <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
-                  type="button" data-delete-stop aria-label="Remove day break">
-            <span class="rux-icon">close</span>
-          </button>
+      <div class="rux-card rux-itin__day" data-stop-idx="${idx}" draggable="true">
+        <div class="rux-itin__day-header">
+          <span class="rux-trip-panel__section-label">${escHtml(formatDayLabel(item.label))}</span>
+          <div class="rux-itin__card-actions">
+            <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
+                    type="button" data-drag-handle aria-label="Drag to reorder">
+              <span class="rux-icon">drag_indicator</span>
+            </button>
+            <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
+                    type="button" data-delete-stop aria-label="Remove day break">
+              <span class="rux-icon">close</span>
+            </button>
+          </div>
         </div>
+        ${renderDayStatsGrid(stats)}
       </div>`;
 	}
 
@@ -420,8 +434,6 @@
 
 	function renderStop(stop, idx, stops) {
 		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
-		const prev = prevStopName(stops, idx);
-		const fromText = prev ? `From ${prev}` : fromYardText();
 		const isReturn = type === "return";
 		const statsSection = type === "sleeper" ? renderSleeperStats(stop, stops) : "";
 		const isStale = stop.routeStatus === "stale" && type !== "sleeper";
@@ -432,12 +444,10 @@
 			type === "sleeper" ? { label: "End", field: "arrive" } :
 			                     { label: "Arr", field: "arrive" };
 
-		const isSleeper = type === "sleeper";
-
+		// Return card shows yard name as a read-only heading; other cards have no name field.
 		const nameEl = isReturn
-			? `<span class="rux-itin__name">${escHtml(stop.name)}</span>`
-			: `<input class="rux-input" type="text" data-field="name" autocomplete="organization"
-               value="${escHtml(stop.name)}" placeholder="${isSleeper ? "Hotel / location name" : "Location name"}" />`;
+			? `<div class="rux-itin__card-head"><span class="rux-itin__name">${escHtml(stop.name)}</span></div>`
+			: "";
 
 		const isVerified = !!(stop.lat && stop.lng);
 		const showAddrIcon = isStale || isVerified;
@@ -466,35 +476,35 @@
               </button>
             </div>` : "";
 
+		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
+		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";
+
 		return `
       <div class="rux-itin__stop" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
-        <div class="rux-itin__card${isStale ? " rux-itin__card--stale" : ""}">
+        <div class="rux-card rux-itin__card${isStale ? " rux-itin__card--stale" : ""}">
           <div class="rux-itin__card-meta">
             <span class="rux-itin__badge rux-itin__badge--${type}">${TYPE_LABEL[type]}</span>
-            <span class="rux-itin__from">${escHtml(fromText)}</span>
             ${cardActions}
           </div>
           ${addrEl}
-          ${nameEl ? `<div class="rux-itin__card-head">${nameEl}</div>` : ""}
+          ${nameEl}
           <div class="rux-itin__fields">
             <div class="rux-itin__field-stack">
-              <span class="rux-itin__field-label">${time1Label}</span>
+              <span class="rux-field__label">${time1Label}</span>
               <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" />
             </div>
             <div class="rux-itin__field-stack">
-              <span class="rux-itin__field-label">${time2.label}</span>
+              <span class="rux-field__label">${time2.label}</span>
               <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" />
             </div>
             ${type !== "sleeper" ? `
-            <div class="rux-input-group rux-input-group--suffix">
-              <input class="rux-input" type="number" data-field="miles"
-                     value="${escHtml(stop.miles)}" min="0" step="0.1" placeholder="0" />
-              <span class="rux-input-group__suffix">mi</span>
+            <div class="rux-itin__field-stack">
+              <span class="rux-field__label">Miles</span>
+              <output class="rux-trip-panel__billing-output">${escHtml(milesVal)}</output>
             </div>
-            <div class="rux-input-group rux-input-group--suffix">
-              <input class="rux-input" type="text" data-field="drive"
-                     value="${escHtml(stop.drive)}" placeholder="0:00" />
-              <span class="rux-input-group__suffix">hr</span>
+            <div class="rux-itin__field-stack">
+              <span class="rux-field__label">Drive</span>
+              <output class="rux-trip-panel__billing-output">${escHtml(driveVal)}</output>
             </div>` : ""}
           </div>
           ${statsSection}
@@ -522,11 +532,30 @@
 			return stops.some((stop) => stop?.type !== "day" && stop?.type !== "sleeper" && stop.routeStatus === "stale");
 		}
 
+		function hasRoutableLegs() {
+			if (!getMapboxToken()) return false;
+			// A return leg routes FROM the previous located stop, so it only counts once
+			// some other real stop actually has a location to route from.
+			return stops.some((stop) => {
+				if (!stop || stop.type === "day" || stop.type === "return") return false;
+				return !!stop.address?.trim() || (stop.lat != null && stop.lng != null);
+			});
+		}
+
 		function syncRouteButton() {
 			if (!recalcBtn) return;
-			const stale = hasStaleRoutes();
+			const routable = hasRoutableLegs();
+			const stale = routable && hasStaleRoutes();
 			recalcBtn.classList.toggle("is-stale", stale);
-			recalcBtn.title = stale ? "Recalculate route updates" : "Recalculate route";
+			recalcBtn.disabled = !routable;
+			if (!routable) recalcBtn.classList.remove("is-error", "is-routing");
+			recalcBtn.title = !routable
+				? "Add a stop address to calculate a route"
+				: stale
+				? "Recalculate route updates"
+				: "Recalculate route";
+			const label = recalcBtn.querySelector("[data-recalc-label]");
+			if (label) label.textContent = routable ? "Recalculate" : "Calculate";
 		}
 
 		function markLegStale(idx) {
@@ -542,53 +571,42 @@
 			syncRouteButton();
 		}
 
-		function renderGapRow(stop, nextStop, idx) {
-			if (stop.type === "return") return "";
-			let dwellLabel = "";
-			if (stop.type === "stop" && nextStop && nextStop.type !== "day") {
-				const dep = parseClockMins(nextStop.departPrev);
-				const arr = parseClockMins(stop.arrive);
-				if (dep !== null && arr !== null) {
-					const mins = dep >= arr ? dep - arr : dep - arr + 1440;
-					if (mins > 0) dwellLabel = `<span class="rux-itin__gap-dwell">${formatDriveMinsCompact(mins)}</span>`;
-				}
-			}
-			return `<div class="rux-itin__gap" data-insert-row>
-				<div class="rux-itin__gap-trigger" data-insert-expand="${idx}" role="button" tabindex="0" aria-label="Insert here">
-					<span class="rux-icon rux-itin__gap-plus">add</span>
-					<div class="rux-itin__insert-actions">
-						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="stop">
-						  <span class="rux-icon">location_on</span><span>Stop</span>
-						</button>
-						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="sleeper">
-						  <span class="rux-icon">hotel</span><span>Sleep</span>
-						</button>
-						<button class="rux-button rux-button--ghost rux-itin__insert-opt" type="button" data-insert-after="${idx}" data-insert-type="day">
-						  <span class="rux-icon">event_busy</span><span>End day</span>
-						</button>
-					</div>
-					${dwellLabel}
-				</div>
+		function renderAddStopActions(stops) {
+			const returnIdx = stops.findIndex((s) => s.type === "return");
+			const afterIdx = returnIdx > 0 ? returnIdx - 1 : stops.length - 2;
+			return `<div class="rux-itin__add-actions">
+				<button class="rux-button" type="button" data-insert-after="${afterIdx}" data-insert-type="stop">
+					<span class="rux-icon" aria-hidden="true">location_on</span>Stop
+				</button>
+				<button class="rux-button" type="button" data-insert-after="${afterIdx}" data-insert-type="sleeper">
+					<span class="rux-icon" aria-hidden="true">hotel</span>Sleep
+				</button>
+				<button class="rux-button" type="button" data-insert-after="${afterIdx}" data-insert-type="day">
+					<span class="rux-icon" aria-hidden="true">event_busy</span>End day
+				</button>
 			</div>`;
 		}
 
 		function renderStopList() {
+			autoPopulateReturnTimes(stops);
 			stopsEl.innerHTML =
 				stops
 					.map((item, idx) => {
-						const html = item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops);
-						const gapRow = renderGapRow(item, stops[idx + 1], idx);
-						return html + gapRow;
+						if (item.type === "return") return "";
+						return item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops);
 					})
-					.join("") + renderFinalDaySummary(stops);
-			
+					.join("")
+				+ renderAddStopActions(stops)
+				+ renderFinalDaySummary(stops);
 			syncRouteButton();
 		}
 
 		function updateSummary() {
 			summaryEl.innerHTML = renderSummary(stops);
-			if (importBtn) summaryEl.appendChild(importBtn);
-			if (recalcBtn) summaryEl.appendChild(recalcBtn);
+			const actions = summaryEl.querySelector(".rux-itin__summary-actions");
+			if (!actions) return;
+			if (importBtn) actions.appendChild(importBtn);
+			if (recalcBtn) actions.appendChild(recalcBtn);
 		}
 
 		// Update just the "From …" labels without re-rendering the whole list.
@@ -868,20 +886,24 @@
 		renderStopList();
 
 		async function recalculateRoute(options = {}) {
+			const recalcLabel = recalcBtn?.querySelector("[data-recalc-label]");
 			if (recalcBtn) {
 				recalcBtn.disabled = true;
 				recalcBtn.classList.add("is-routing");
+				if (recalcLabel) recalcLabel.textContent = "Calculating…";
 			}
 			let routed = 0;
 			for (let i = 0; i < stops.length; i++) {
 				if (await estimateLeg(i, options)) routed++;
 			}
+			autoPopulateReturnTimes(stops);
 			if (recalcBtn) {
 				recalcBtn.disabled = false;
 				recalcBtn.classList.remove("is-routing");
 				if (routed === 0) {
 					recalcBtn.classList.add("is-error");
 					recalcBtn.title = "Route failed — check addresses and Mapbox token in Settings";
+					if (recalcLabel) recalcLabel.textContent = "Retry";
 					setTimeout(() => {
 						recalcBtn.classList.remove("is-error");
 						syncRouteButton();
@@ -900,6 +922,10 @@
 			const field = e.target.dataset.field;
 			if (!field || !stops[idx]) return;
 			stops[idx][field] = e.target.value;
+			if (field === "arrive") {
+				autoPopulateReturnTimes(stops);
+				updateSummary();
+			}
 			if (field === "address") {
 				activeAddressIdx = idx;
 				stops[idx].lat = null;
@@ -1029,19 +1055,6 @@
 				}
 				insertAtIndex(afterIdx + 1, newStop);
 				return;
-			}
-			const expandBtn = e.target.closest("[data-insert-expand]");
-			if (expandBtn) {
-				const row = expandBtn.closest("[data-insert-row]");
-				const isOpen = row.classList.contains("is-open");
-				stopsEl.querySelectorAll("[data-insert-row].is-open").forEach((r) => r.classList.remove("is-open"));
-				if (!isOpen) row.classList.add("is-open");
-			}
-		});
-
-		document.addEventListener("click", (e) => {
-			if (!e.target.closest("[data-insert-row]")) {
-				stopsEl.querySelectorAll("[data-insert-row].is-open").forEach((r) => r.classList.remove("is-open"));
 			}
 		});
 

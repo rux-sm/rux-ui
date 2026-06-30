@@ -400,7 +400,7 @@
                         <option value="Card">Card</option>
                         <option value="ACH">ACH</option>
                       </select>
-                      <input class="rux-input" type="text" value="Ck #4421" placeholder="Ref / note" />
+                      <input class="rux-input" type="text" value="Ck #4421" placeholder="Reference Number" />
                     </div>
                   </div>
                 </div>
@@ -436,7 +436,7 @@
           <div class="rux-itin__stops">
             <!-- Pick-up stop — itinerary.js renderStop(), type=pickup -->
             <div class="rux-itin__stop">
-              <div class="rux-itin__card">
+              <div class="rux-card rux-itin__card">
                 <div class="rux-itin__card-meta">
                   <span class="rux-itin__badge rux-itin__badge--pickup">Pick-up</span>
                   <span class="rux-itin__from">From Escamilla Tour Buses</span>
@@ -450,11 +450,11 @@
                 </div>
                 <div class="rux-itin__fields">
                   <div class="rux-itin__field-stack">
-                    <span class="rux-itin__field-label">Dep</span>
+                    <span class="rux-field__label">Dep</span>
                     <input class="rux-input" type="time" value="07:00" />
                   </div>
                   <div class="rux-itin__field-stack">
-                    <span class="rux-itin__field-label">Spt</span>
+                    <span class="rux-field__label">Spt</span>
                     <input class="rux-input" type="time" value="07:30" />
                   </div>
                   <div class="rux-input-group rux-input-group--suffix">
@@ -471,7 +471,7 @@
 
             <!-- Intermediate stop — type=stop, draggable -->
             <div class="rux-itin__stop" draggable="true">
-              <div class="rux-itin__card">
+              <div class="rux-card rux-itin__card">
                 <div class="rux-itin__card-meta">
                   <span class="rux-itin__badge rux-itin__badge--stop">Stop</span>
                   <span class="rux-itin__from">From Escamilla Tour Buses</span>
@@ -492,11 +492,11 @@
                 </div>
                 <div class="rux-itin__fields">
                   <div class="rux-itin__field-stack">
-                    <span class="rux-itin__field-label">Dep</span>
+                    <span class="rux-field__label">Dep</span>
                     <input class="rux-input" type="time" />
                   </div>
                   <div class="rux-itin__field-stack">
-                    <span class="rux-itin__field-label">Arr</span>
+                    <span class="rux-field__label">Arr</span>
                     <input class="rux-input" type="time" />
                   </div>
                   <div class="rux-input-group rux-input-group--suffix">
@@ -513,7 +513,7 @@
 
             <!-- Return stop — type=return, name/address are read-only spans -->
             <div class="rux-itin__stop">
-              <div class="rux-itin__card">
+              <div class="rux-card rux-itin__card">
                 <div class="rux-itin__card-meta">
                   <span class="rux-itin__badge rux-itin__badge--return">Return</span>
                   <span class="rux-itin__from">From previous stop</span>
@@ -524,11 +524,11 @@
                 </div>
                 <div class="rux-itin__fields">
                   <div class="rux-itin__field-stack">
-                    <span class="rux-itin__field-label">Dep</span>
+                    <span class="rux-field__label">Dep</span>
                     <input class="rux-input" type="time" value="19:00" />
                   </div>
                   <div class="rux-itin__field-stack">
-                    <span class="rux-itin__field-label">Arr</span>
+                    <span class="rux-field__label">Arr</span>
                     <input class="rux-input" type="time" value="20:30" />
                   </div>
                   <div class="rux-input-group rux-input-group--suffix">
