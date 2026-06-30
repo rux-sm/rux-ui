@@ -1130,6 +1130,7 @@
         let deltaY = 0;
 
         const onMove = (ev) => {
+          if (!moved && Math.abs(ev.clientY - startY) < HANDLE_DRAG_THRESHOLD) return;
           moved = true;
           deltaY = ev.clientY - startY;
         };
@@ -1311,6 +1312,7 @@
       const DRAWER_STORAGE_KEY = "rux-drawer-width";
       const SCHEDULE_MIN = 471;
       const GAP = 16;
+      const HANDLE_DRAG_THRESHOLD = 5; // px of cursor movement before a click counts as a drag
 
       function initDrawerDrag(handle, drawerEl, storageKey, openFn, closeFn, getOtherDrawer, direction) {
         handle.addEventListener("mousedown", (e) => {
@@ -1326,6 +1328,7 @@
 
           const onMove = (ev) => {
             if (!moved) {
+              if (Math.abs(ev.clientX - startX) < HANDLE_DRAG_THRESHOLD) return;
               moved = true;
               drawerEl.classList.add("is-resizing");
               if (!wasOpen) {

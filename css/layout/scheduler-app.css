@@ -44,7 +44,7 @@
 
 .scheduler-app__topbar-handle {
 	flex: none;
-	height: var(--scheduler-app-gap);
+	height: calc(var(--scheduler-app-gap) + 8px);
 	cursor: row-resize;
 	position: relative;
 	z-index: 1;
@@ -450,8 +450,8 @@
 .scheduler-app__drawer-handle {
 	position: absolute;
 	top: 0;
-	right: 0;
-	width: var(--scheduler-app-gap);
+	right: -4px;
+	width: calc(var(--scheduler-app-gap) + 8px);
 	height: 100%;
 	cursor: col-resize;
 	z-index: 10;
@@ -519,7 +519,7 @@
 
 .scheduler-app__drawer--right .scheduler-app__drawer-handle {
 	right: auto;
-	left: 0;
+	left: -4px;
 }
 
 
