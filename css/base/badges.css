@@ -22,14 +22,13 @@
    .rux-itin__badge--endday      danger-subtle bg · danger border/fg (day-break header)
    .rux-itin__badge--yard        success-subtle bg · success border/fg
 
-   .rux-itin__badge--pickup/--stop/--sleeper/--return render as 28x28 icon
-   badges (single icon glyph — see TYPE_ICON in itinerary.js) instead of a
-   text pill. This also keeps them lined up as the first column of
-   .rux-itin__fields' grid in itinerary.css. --endday keeps the wide text
-   pill (icon + date/"Day N" text) — its card has more room and that text
-   is real per-card info, not a repeated type label, so it isn't worth
-   shrinking to an icon-only badge. --yard is unused (demo-only) and left
-   as a text pill too.
+   .rux-itin__badge--pickup/--stop/--sleeper/--return/--endday render as
+   28x28 icon badges (single icon glyph — see TYPE_ICON in itinerary.js,
+   event_busy for --endday) instead of a text pill. This also keeps them
+   lined up as the first column of .rux-itin__fields'/.rux-itin__day-header's
+   grid in itinerary.css — the date/"Day N" text moves to title/aria-label
+   instead of being rendered. --yard is unused (demo-only) and left as a
+   text pill.
    ========================================================================== */
 
 /* — base — */
@@ -97,12 +96,12 @@
 }
 
 .rux-itin__badge--yard    { background: var(--rux-success-subtle); border-color: var(--rux-success-bright); color: var(--rux-success-bright); }
-.rux-itin__badge--endday  { background: var(--rux-danger-subtle);  border-color: var(--rux-danger-bright);  color: var(--rux-danger-bright); }
 
 .rux-itin__badge--pickup,
 .rux-itin__badge--stop,
 .rux-itin__badge--sleeper,
-.rux-itin__badge--return {
+.rux-itin__badge--return,
+.rux-itin__badge--endday {
   /* --rux-itin-lead-w set on .rux-itin__card in itinerary.css — every row
      in the card lines up on this same lead-column width, so it's defined
      once there rather than hardcoded separately in each place. */
@@ -116,6 +115,7 @@
 .rux-itin__badge--stop    { background: var(--rux-warning-subtle); border-color: var(--rux-warning-bright); color: var(--rux-warning-bright); }
 .rux-itin__badge--sleeper { background: var(--rux-info-subtle);    border-color: var(--rux-info-bright);    color: var(--rux-info-bright); }
 .rux-itin__badge--return  { background: var(--rux-danger-subtle);  border-color: var(--rux-danger-bright);  color: var(--rux-danger-bright); }
+.rux-itin__badge--endday  { background: var(--rux-danger-subtle);  border-color: var(--rux-danger-bright);  color: var(--rux-danger-bright); }
 
 /* Badges doubling as the drag handle + delete trigger (itinerary.js sets
    data-drag-handle/data-delete-stop instead of separate buttons). */

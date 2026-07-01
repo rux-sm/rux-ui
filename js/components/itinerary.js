@@ -67,6 +67,24 @@
 		};
 	}
 
+	function defaultStop() {
+		return {
+			type: "stop",
+			name: "",
+			address: "",
+			miles: "",
+			drive: "",
+			milesSource: "estimated",
+			driveSource: "estimated",
+			routeStatus: "stale",
+			departPrev: "",
+			arrive: "",
+			lat: null,
+			lng: null,
+			mapboxId: null,
+		};
+	}
+
 	function defaultReturn() {
 		const yard = getYard();
 		return {
@@ -86,7 +104,10 @@
 	}
 
 	function defaultStops() {
-		return [defaultPickup(), defaultReturn()];
+		// Stop 1 is the real timing anchor now (Pickup's Dep/Spot derive from
+		// it), so a fresh trip starts with one already in place — still a
+		// normal, deletable Stop, not a permanent fixture like Pickup/Return.
+		return [defaultPickup(), defaultStop(), defaultReturn()];
 	}
 
 	function normalizeStop(stop) {
@@ -272,20 +293,17 @@
 		return { totalMiles, totalDrive, grossMins, netMins };
 	}
 
-	// Same field/output markup as renderSummary's Route Summary grid, so a
-	// day card reads as a smaller version of that card, not a different design.
+	// Same value+unit format as the per-stop Miles/Drive boxes — no labels,
+	// the unit suffix communicates what the number means.
 	function renderDayStatsGrid({ totalMiles, totalDrive, netMins } = {}) {
 		const miVal = totalMiles > 0 ? (totalMiles % 1 === 0 ? String(totalMiles) : totalMiles.toFixed(1)) : "—";
-		const drVal = totalDrive > 0 ? formatDriveMinsCompact(totalDrive) : "—";
-		const dutyVal = netMins !== null ? formatDriveMinsCompact(netMins) : "—";
+		const drVal = totalDrive > 0 ? formatDriveValue(totalDrive) : "—";
+		const dutyVal = netMins !== null && netMins > 0 ? formatDriveValue(netMins) : "—";
 		const drWarn = totalDrive > 11 * 60;
 		const dutyWarn = netMins !== null && netMins > 14 * 60;
-		const field = (label, val, warn) => `
-        <div class="rux-field">
-          <span class="rux-field__label">${label}</span>
-          <output class="rux-trip-panel__billing-output${warn ? " rux-itin__seg-stat--warn" : ""}">${escHtml(val)}</output>
-        </div>`;
-		return `<div class="rux-itin__day-stats">${field("Miles", miVal, false)}${field("Drive", drVal, drWarn)}${field("On-Duty", dutyVal, dutyWarn)}</div>`;
+		const field = (val, unit, warn) => `
+        <output class="rux-trip-panel__billing-output${warn ? " rux-itin__seg-stat--warn" : ""}">${escHtml(val)} <span class="rux-itin__unit">${unit}</span></output>`;
+		return `<div class="rux-itin__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}</div>`;
 	}
 
 	function renderSleeperStats(stop, stops) {
@@ -309,31 +327,21 @@
 		const splitOk = !singleOk && splitPairs.length >= 2 && splitPairs[0] + splitPairs[1] >= RESET;
 		const resetOk = singleOk || splitOk;
 
-		const restLabel = `${formatDriveMinsCompact(thisMins)} rest`;
-		let statusLabel, statusClass;
-		if (resetOk) {
-			statusLabel = splitOk ? "Reset ✓ split" : "Reset ✓";
-			statusClass = "rux-itin__seg-stat--ok";
-		} else {
-			const deficit = RESET - totalRest;
-			statusLabel = deficit > 0 ? `${formatDriveMinsCompact(deficit)} to reset` : "Conditions not met";
-			statusClass = thisMins < SPLIT_MIN ? "rux-itin__seg-stat--warn" : "";
-		}
+		// Same read-only-field look as Miles/Drive: status where Miles would
+		// go (this card has no distance of its own), duration formatted like
+		// every other "hr" field instead of the old "8h"/"1h 30m" shorthand.
+		const statusClass = resetOk ? " rux-itin__seg-stat--ok" : (thisMins < SPLIT_MIN ? " rux-itin__seg-stat--warn" : "");
+		const statusVal = resetOk ? "Reset" : "Not reset";
+		const restVal = formatDriveValue(thisMins);
 
-		return `<div class="rux-itin__seg-stats">
-      <span class="rux-itin__seg-stat">${restLabel}</span>
-      <span class="rux-itin__seg-stat ${statusClass}">${statusLabel}</span>
+		return `<div class="rux-itin__sleeper-stats">
+      <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
+      <output class="rux-trip-panel__billing-output${statusClass}">${statusVal}</output>
+      <output class="rux-trip-panel__billing-output">${escHtml(restVal)} <span class="rux-itin__unit">hr</span></output>
     </div>`;
 	}
 
 	/* ── Render ──────────────────────────────────────────────────────────── */
-
-	function formatDriveMinsCompact(mins) {
-		if (mins === 0) return "—";
-		const h = Math.floor(mins / 60);
-		const m = mins % 60;
-		return m === 0 ? `${h}h` : `${h}h ${String(m).padStart(2, "0")}m`;
-	}
 
 	function autoPopulateReturnTimes(stops) {
 		const ret = stops.find((s) => s.type === "return");
@@ -349,6 +357,38 @@
 		if (driveMins > 0) {
 			ret.arrive = minsToTimeStr((depMins + driveMins) % 1440);
 		}
+	}
+
+	// Chain of derived times working backward from the one real anchor a
+	// dispatcher is actually given — Stop 1's scheduled departure *with
+	// passengers*:
+	//   Stop1.departPrev (manual, the anchor)
+	//     → Pickup.spot = Stop1.departPrev − boarding padding
+	//         → Pickup.departPrev = Pickup.spot − yard-to-pickup drive time
+	// "Spot padding" is the boarding buffer for the first step (how much
+	// earlier the bus should be ready than the scheduled passenger
+	// departure) — it has nothing to do with the yard leg, which is pure
+	// travel time.
+
+	function autoPopulatePickupSpot(stops) {
+		const pickup = stops.find((s) => s.type === "pickup");
+		if (!pickup) return;
+		const firstStop = stops.find((s) => s.type === "stop");
+		if (!firstStop?.departPrev) return;
+		const depMins = parseClockMins(firstStop.departPrev);
+		if (depMins === null) return;
+		const padding = window.RuxSettings?.getSpotPadding?.() ?? 15;
+		pickup.spot = minsToTimeStr(((depMins - padding) % 1440 + 1440) % 1440);
+	}
+
+	function autoPopulatePickupDepart(stops) {
+		const pickup = stops.find((s) => s.type === "pickup");
+		if (!pickup?.spot) return;
+		const spotMins = parseClockMins(pickup.spot);
+		if (spotMins === null) return;
+		const driveMins = parseDriveMins(pickup.drive);
+		if (driveMins <= 0) return;
+		pickup.departPrev = minsToTimeStr(((spotMins - driveMins) % 1440 + 1440) % 1440);
 	}
 
 	function computeOnDuty(stops) {
@@ -374,18 +414,15 @@
 		const onDutyMins = computeOnDuty(stops);
 
 		const stats = [
-			{ id: "days", label: "Days", value: `${dayCount}` },
-			{ id: "miles", label: "Miles", value: totalMiles > 0 ? `${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)}` : "—" },
-			{ id: "drive", label: "Drive", value: totalDrive > 0 ? formatDriveMinsCompact(totalDrive) : "—" },
-			{ id: "duty", label: "On-Duty", value: onDutyMins !== null ? formatDriveMinsCompact(onDutyMins) : "—" },
+			{ id: "days", value: `${dayCount}`, unit: dayCount === 1 ? "day" : "days" },
+			{ id: "miles", value: totalMiles > 0 ? `${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)}` : "—", unit: "mi" },
+			{ id: "drive", value: totalDrive > 0 ? formatDriveValue(totalDrive) : "—", unit: "hr" },
+			{ id: "duty", value: onDutyMins !== null && onDutyMins > 0 ? formatDriveValue(onDutyMins) : "—", unit: "hr" },
 		];
 		const statsHtml = stats
 			.map(
 				(s) => `
-        <div class="rux-field">
-          <label class="rux-field__label" for="tp-itin-summary-${s.id}">${s.label}</label>
-          <output class="rux-trip-panel__billing-output" id="tp-itin-summary-${s.id}">${s.value}</output>
-        </div>`
+        <output class="rux-trip-panel__billing-output" id="tp-itin-summary-${s.id}">${escHtml(s.value)} <span class="rux-itin__unit">${s.unit}</span></output>`
 			)
 			.join("");
 
@@ -420,8 +457,12 @@
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
       <div class="rux-card rux-itin__day rux-itin__day--final">
-        <span class="rux-itin__badge rux-itin__badge--endday">Day ${dayNum}</span>
-        ${renderDayStatsGrid(stats)}
+        <div class="rux-itin__day-header">
+          <span class="rux-itin__badge rux-itin__badge--endday" title="Day ${dayNum}" aria-label="Day ${dayNum} summary">
+            <span class="rux-icon" aria-hidden="true">event_busy</span>
+          </span>
+          ${renderDayStatsGrid(stats)}
+        </div>
       </div>`;
 	}
 
@@ -441,10 +482,10 @@
           <span class="rux-itin__badge rux-itin__badge--endday" title="${escHtml(label)}"
                 data-drag-handle data-delete-stop role="button" tabindex="0"
                 aria-label="${escHtml(label)} — drag to reorder, click to remove">
-            <span class="rux-icon" aria-hidden="true">event_busy</span>${escHtml(label)}
+            <span class="rux-icon" aria-hidden="true">event_busy</span>
           </span>
+          ${renderDayStatsGrid(stats)}
         </div>
-        ${renderDayStatsGrid(stats)}
       </div>`;
 	}
 
@@ -462,10 +503,29 @@
 	function dayNumberFor(stops, idx) {
 		return stops.slice(0, idx).filter((s) => s.type === "day").length + 1;
 	}
+	// 1-based position of this stop among only the "stop"-type stops, for
+	// address placeholders like "Stop 2 Address".
+	function stopNumberFor(stops, idx) {
+		return stops.slice(0, idx + 1).filter((s) => s.type === "stop").length;
+	}
+
+	// Sleeper always rests wherever the previous real stop is (see
+	// sleeperFromPrev) — computed fresh from the current list on every render
+	// so the displayed address can never go stale, unlike stop.address itself
+	// which is only a one-time snapshot taken when the sleeper was inserted.
+	function previousStopAddress(stops, idx) {
+		for (let i = idx - 1; i >= 0; i--) {
+			const s = stops[i];
+			if (!s || s.type === "day" || s.type === "sleeper") continue;
+			return s.address || "";
+		}
+		return "";
+	}
 
 	function renderStop(stop, idx, stops) {
 		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
 		const isReturn = type === "return";
+		const isPickup = type === "pickup";
 		const statsSection = type === "sleeper" ? renderSleeperStats(stop, stops) : "";
 		const isStale = stop.routeStatus === "stale" && type !== "sleeper";
 
@@ -477,15 +537,26 @@
 
 		const isVerified = !!(stop.lat && stop.lng);
 		const showAddrIcon = isStale || isVerified;
-		// Sleeper always sits at whatever location the previous stop is at (see
-		// sleeperFromPrev) — it's a time block, not a place, so no address UI.
+		// "Pick-up Address" / "Stop 2 Address" instead of a bare "Address" —
+		// tells you which stop you're filling in without needing to glance
+		// back at the badge, especially useful once a list has several Stops.
+		const addressPlaceholder = type === "pickup" ? `${TYPE_LABEL[type]} Address` : `Stop ${stopNumberFor(stops, idx)} Address`;
+		// Sleeper always sits at whatever location the previous stop is at —
+		// shown read-only (like Return's) instead of empty space, since it's
+		// a time block at an inherited place, not a place of its own to edit.
 		// Return's address is a real (but read-only) input styled like every
 		// other address field, instead of plain text — the yard is always a
 		// known-good location so there's no verified/stale icon to show, and
 		// the yard name folds into the accessible label instead of its own
 		// heading (which used to awkwardly interrupt the card's field rows).
+		const sleeperAddr = type === "sleeper" ? previousStopAddress(stops, idx) : "";
 		const addrEl = type === "sleeper"
-			? ""
+			? (sleeperAddr
+				? `<div class="rux-itin__address-wrap">
+               <input class="rux-input" type="text" value="${escHtml(sleeperAddr)}" readonly
+                      aria-label="Resting at ${escHtml(sleeperAddr)}" />
+             </div>`
+				: "")
 			: isReturn
 				? `<div class="rux-itin__address-wrap">
                <input class="rux-input" type="text" value="${escHtml(stop.address)}" readonly
@@ -493,7 +564,7 @@
              </div>`
 				: `<div class="rux-itin__address-wrap${showAddrIcon ? " is-verified" : ""}">
                <input class="rux-input" type="text" data-field="address" autocomplete="street-address"
-                      value="${escHtml(stop.address)}" placeholder="Address" />
+                      value="${escHtml(stop.address)}" placeholder="${addressPlaceholder}" />
                ${isStale
 				? '<span class="rux-icon rux-itin__addr-check rux-itin__addr-check--stale">error</span>'
 				: isVerified
@@ -528,15 +599,24 @@
             ${addrEl}
           </div>
           <div class="rux-itin__time-row">
-            <span class="rux-icon rux-itin__time-icon" aria-hidden="true">schedule</span>
-            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" aria-label="${time1Label}" />
-            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" aria-label="${time2.label}" />
+            ${type !== "sleeper" ? `
+            <button class="rux-button rux-button--ghost rux-button--icon" type="button"
+                    data-toggle-stats aria-expanded="${!!stop.statsExpanded}"
+                    aria-label="${stop.statsExpanded ? "Hide" : "Show"} mileage and drive time">
+              <span class="rux-icon" aria-hidden="true">keyboard_arrow_down</span>
+            </button>` : `<span class="rux-itin__lead-spacer" aria-hidden="true"></span>`}
+            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
+                   aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
+            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
+                   aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
           </div>
           ${type !== "sleeper" ? `
           <div class="rux-itin__fields--pair">
             <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
-            <output class="rux-trip-panel__billing-output">${escHtml(milesVal)} <span class="rux-itin__unit">mi</span></output>
-            <output class="rux-trip-panel__billing-output">${escHtml(driveVal)} <span class="rux-itin__unit">hr</span></output>
+            <div class="rux-itin__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
+              <output class="rux-trip-panel__billing-output">${escHtml(milesVal)} <span class="rux-itin__unit">mi</span></output>
+              <output class="rux-trip-panel__billing-output">${escHtml(driveVal)} <span class="rux-itin__unit">hr</span></output>
+            </div>
           </div>` : ""}
           ${statsSection}
         </div>
@@ -620,6 +700,8 @@
 
 		function renderStopList() {
 			autoPopulateReturnTimes(stops);
+			autoPopulatePickupSpot(stops);
+			autoPopulatePickupDepart(stops);
 			stopsEl.innerHTML =
 				stops
 					.map((item, idx) => (item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops)))
@@ -777,6 +859,13 @@
 			for (let i = idx - 1; i >= 0; i--) {
 				const stop = stops[i];
 				if (!stop || stop.type === "day") continue;
+				// Sleeper has no location of its own — it's always wherever the
+				// previous real stop already is (see sleeperFromPrev) — so skip
+				// past it instead of treating its lack of an address as a dead
+				// end. Without this, a stale/never-geocoded sleeper permanently
+				// blocks routing for every stop after it, no matter how many
+				// times Recalculate runs.
+				if (stop.type === "sleeper") continue;
 				if (stop.lat != null && stop.lng != null) return { lat: stop.lat, lng: stop.lng };
 				if (await geocodeStop(i)) return { lat: stop.lat, lng: stop.lng };
 				return null;
@@ -844,6 +933,15 @@
 					if (!yc) return false;
 					stop.lat = yc.lat;
 					stop.lng = yc.lng;
+				} else if (stop.type === "sleeper") {
+					// Sleeper has no address to geocode — it just needs to
+					// re-inherit whatever the previous real stop's location is
+					// now (its initial snapshot from sleeperFromPrev can go
+					// stale if that stop wasn't geocoded yet at insert time).
+					const prev = await previousLocation(idx);
+					if (!prev) return false;
+					stop.lat = prev.lat;
+					stop.lng = prev.lng;
 				} else if (!(await geocodeStop(idx))) {
 					return false;
 				}
@@ -925,6 +1023,8 @@
 				if (await estimateLeg(i, options)) routed++;
 			}
 			autoPopulateReturnTimes(stops);
+			autoPopulatePickupSpot(stops);
+			autoPopulatePickupDepart(stops);
 			if (recalcBtn) {
 				recalcBtn.disabled = false;
 				recalcBtn.classList.remove("is-routing");
@@ -1026,6 +1126,9 @@
 
 		// Re-render when a time field commits (after native picker closes or field blurs)
 		// so that day-segment stats stay current without fighting the time picker.
+		// renderStopList() re-runs the whole Stop1→Spot→Pickup-departure chain
+		// on every render, so changing any time field naturally cascades —
+		// no need to special-case which field triggers which derived value here.
 		const TIME_FIELDS = new Set(["departPrev", "arrive", "spot"]);
 		stopsEl.addEventListener("change", (e) => {
 			const field = e.target.dataset.field;
@@ -1034,19 +1137,7 @@
 				if (stopEl) {
 					const idx = parseInt(stopEl.dataset.stopIdx, 10);
 					const stop = stops[idx];
-					if (stop) {
-						stop[field] = e.target.value;
-						if (field === "departPrev" && stop.type === "pickup" && e.target.value) {
-							const depMins = parseClockMins(e.target.value);
-							const padding = window.RuxSettings?.getSpotPadding?.() ?? 15;
-							if (depMins !== null) {
-								const spotMins = ((depMins - padding) % 1440 + 1440) % 1440;
-								const hh = String(Math.floor(spotMins / 60)).padStart(2, "0");
-								const mm = String(spotMins % 60).padStart(2, "0");
-								stop.spot = `${hh}:${mm}`;
-							}
-						}
-					}
+					if (stop) stop[field] = e.target.value;
 				}
 				renderStopList();
 				updateSummary();
@@ -1079,6 +1170,20 @@
 			el.click();
 		});
 
+		/* — toggle Miles/Drive stats — */
+		stopsEl.addEventListener("click", (e) => {
+			const btn = e.target.closest("[data-toggle-stats]");
+			if (!btn) return;
+			const itemEl = btn.closest("[data-stop-idx]");
+			if (!itemEl) return;
+			const idx = parseInt(itemEl.dataset.stopIdx, 10);
+			stops[idx].statsExpanded = !stops[idx].statsExpanded;
+			renderStopList();
+			// renderStopList() rebuilds innerHTML, destroying the clicked button —
+			// re-focus its replacement so keyboard users don't lose their place.
+			stopsEl.querySelector(`[data-stop-idx="${idx}"] [data-toggle-stats]`)?.focus();
+		});
+
 		/* — inline insert row — */
 		stopsEl.addEventListener("click", (e) => {
 			const btn = e.target.closest("[data-insert-after]");
@@ -1091,7 +1196,7 @@
 				} else if (insertType === "sleeper") {
 					newStop = newSleeperStop(afterIdx + 1);
 				} else {
-					newStop = { type: "stop", name: "", address: "", miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "stale", departPrev: "", arrive: "", lat: null, lng: null, mapboxId: null };
+					newStop = defaultStop();
 				}
 				insertAtIndex(afterIdx + 1, newStop);
 				return;
@@ -1166,6 +1271,10 @@
 			for (let i = insertIdx - 1; i >= 0; i--) {
 				const s = stops[i];
 				if (!s || s.type === "day") continue;
+				// Skip past an earlier sleeper too, same reasoning as
+				// previousLocation() — copy a real stop's location, not
+				// another sleeper's possibly-still-unresolved snapshot.
+				if (s.type === "sleeper") continue;
 				return { address: s.address || "", lat: s.lat ?? null, lng: s.lng ?? null, mapboxId: s.mapboxId ?? null };
 			}
 			return { address: "", lat: null, lng: null, mapboxId: null };
@@ -1177,21 +1286,7 @@
 		}
 
 		root.querySelector("#tp-itin-add-stop")?.addEventListener("click", () => {
-			insertBeforeReturn({
-				type: "stop",
-				name: "",
-				address: "",
-				miles: "",
-				drive: "",
-				milesSource: "estimated",
-				driveSource: "estimated",
-				routeStatus: "stale",
-				departPrev: "",
-				arrive: "",
-				lat: null,
-				lng: null,
-				mapboxId: null,
-			});
+			insertBeforeReturn(defaultStop());
 		});
 
 		root.querySelector("#tp-itin-add-sleeper")?.addEventListener("click", () => {

@@ -48,10 +48,10 @@
      Designed for OLED-friendly contrast without crushing blacks.            */
 
 	--rux-color-white: oklch(100% 0 0);
-	--rux-color-base: oklch(50% 0.005 260);
+	--rux-color-base: oklch(50% 0.008 260);
 
 	--rux-bg-topbar: oklch(0% 0.004 260);
-	--rux-bg: oklch(0% 0.004 260); /* canvas — the lowest plane */
+	--rux-bg: oklch(10% 0.004 260); /* canvas — the lowest plane */
 	--rux-bg-02: oklch(0% 0.004 260); /* canvas — the lowest plane          */
 	--rux-bg-sunken: oklch(0% 0.004 260); /* inputs, code, recessed surfaces        */
 	--rux-bg-elevated: oklch(20% 0.004 260); /* panels, cards, modals                  */
@@ -62,7 +62,7 @@
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim     
 	
 	/* The absolute base (OLED black) */
-	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
+	--rux-bg-level-0: oklch(from var(--rux-color-base) 4% c h);
 
 	/* Default panels / slightly raised surfaces */
 	--rux-bg-level-1: oklch(from var(--rux-color-base) 22% c h);
@@ -101,8 +101,8 @@
 	--rux-control-ghost-active: oklch(100% 0 0 / 0.14); /* transparent white press           */
 	--rux-control-ghost-border: var(--rux-border); /* ghost outline matches section borders */
 
-	--rux-control-scrim: oklch(100% 0 0 / 0.06); /* transparent white fill — lightens whatever surface sits behind it */
-	--rux-control-scrim-hover: oklch(100% 0 0 / 0.12);
+	--rux-control-scrim: oklch(100% 0 0 / 0.16); /* transparent white fill — lightens whatever surface sits behind it */
+	--rux-control-scrim-hover: oklch(100% 0 0 / 0.20); /* transparent white fill — lightens whatever surface sits behind it */
 	--rux-control-scrim-active: oklch(100% 0 0 / 0.16);
 	--rux-control-border: #303030; /* default control edge                 */
 	--rux-control-border-hover: #3a3a3a; /* hover control edge                   */
@@ -112,7 +112,7 @@
 	--rux-control-strip-bg-hover: oklch(33% 0.004 260); /* inactive item hover inside a strip      */
 	--rux-control-strip-bg-active: oklch(40% 0.004 260); /* selected item inside a pill-strip       */
 
-	--rux-control-bg: oklch(from var(--rux-color-base) 50% c h);
+	--rux-control-bg: oklch(from var(--rux-color-base) 70% c h);
 	--rux-control-bg-disabled: oklch(24% 0.004 260);
 	--rux-control-bg-hover: oklch(50% 0.004 260);
 	--rux-control-bg-active: oklch(36% 0.004 260);
@@ -264,12 +264,12 @@
 	   and read-only "summary" outputs like .rux-trip-panel__billing-output)
 	   shares this one radius so they all round the same regardless of which
 	   element renders them. */
-	--rux-field-radius: var(--rux-radius-xs);
+	--rux-field-radius: var(--rux-radius-sm);
 
 	/* Semantic alias — buttons, badges, and tab pills all round the same,
 	   per the --rux-radius-sm scale entry's own "inputs, buttons, controls"
 	   label above. */
-	--rux-control-radius: var(--rux-radius-xs);
+	--rux-control-radius: var(--rux-radius-sm);
 
 	/* ─── SHADOW · elevation ──────────────────────────────────────────────── */
 	/* Flat by default. Shadows are used sparingly — only to lift floating

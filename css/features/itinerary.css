@@ -89,11 +89,16 @@
 	margin-top: 0;
 }
 
+/* Badge is the lead column (same width every other card's badge/icon column
+   uses) with the stat grid inline beside it — one row, not a header row
+   plus a separate full-width stat row below. Needs its own fallback here
+   (unlike .rux-itin__fields etc.) since --rux-itin-lead-w is scoped to
+   .rux-itin__card, and a day-break header isn't nested inside one. */
 .rux-itin__day-header {
-	display: flex;
+	display: grid;
+	grid-template-columns: var(--rux-itin-lead-w, 28px) minmax(0, 1fr);
 	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-2);
+	column-gap: var(--rux-space-2);
 }
 
 /* Same 3-col boxed stat grid as .rux-itin__summary-grid (Route Summary),
@@ -104,23 +109,16 @@
 	column-gap: var(--rux-space-2);
 }
 
-/* Stats shown inside Sleeper card */
-
-.rux-itin__seg-stats {
-	display: flex;
-	align-items: center;
-	flex: 1;
-	gap: var(--rux-space-4);
-	flex-wrap: nowrap;
-	overflow: hidden;
+/* Sleeper card: reset status + rest duration, same boxed-field look as
+   Miles/Drive elsewhere — status sits where Miles would (no distance on a
+   sleeper leg), duration where Drive would. */
+.rux-itin__sleeper-stats {
+	display: grid;
+	grid-template-columns: var(--rux-itin-lead-w) minmax(0, 1fr) minmax(0, 1fr);
+	column-gap: var(--rux-space-2);
 }
 
-.rux-itin__seg-stat {
-	font-size: var(--rux-text-xs);
-	color: var(--rux-fg-muted);
-	white-space: nowrap;
-}
-
+/* Shared warn/ok tint — also used by renderDayStatsGrid's over-limit outputs */
 .rux-itin__seg-stat--warn {
 	color: var(--rux-danger);
 	font-weight: var(--rux-weight-semibold);
@@ -129,13 +127,6 @@
 .rux-itin__seg-stat--ok {
 	color: var(--rux-success-bright);
 	font-weight: var(--rux-weight-semibold);
-}
-
-/* Sleeper card: stats section below times */
-
-.rux-itin__card .rux-itin__seg-stats {
-	padding-top: var(--rux-space-2);
-	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
 /* — Stop row — */
@@ -204,7 +195,7 @@
 
 /* — Card content columns —
    Every row in a stop card lines up on the same two columns: a fixed-width
-   "lead" column (the badge, the time-row icon, or an empty spacer for
+   "lead" column (the badge, or an empty spacer for the time row and
    Miles/Drive) and a content column that always starts at the same x as
    the address field. --rux-itin-lead-w is also read by .rux-itin__badge's
    fixed width in badges.css, so the two stay in sync from one place. */
@@ -218,10 +209,32 @@
 	column-gap: var(--rux-space-2);
 	align-items: end;
 }
+/* Miles/Drive row: lead column holds the expand/collapse toggle instead of
+   a bare spacer — .rux-itin__stats-values does its own 2-column split and
+   owns the collapse animation, so this outer grid only needs 2 columns. */
 .rux-itin__fields--pair {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w) 1fr 1fr;
+	grid-template-columns: var(--rux-itin-lead-w) minmax(0, 1fr);
 	column-gap: var(--rux-space-2);
+}
+
+.rux-itin__stats-values {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: var(--rux-space-2);
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height var(--rux-duration-base) var(--rux-ease-out);
+}
+.rux-itin__stats-values.is-expanded {
+	max-height: calc(var(--rux-field-height) * 1.5);
+}
+
+[data-toggle-stats] .rux-icon {
+	transition: transform var(--rux-duration-base) var(--rux-ease-out);
+}
+[data-toggle-stats][aria-expanded="true"] .rux-icon {
+	transform: rotate(180deg);
 }
 
 /* align-self:flex-start (badges.css) keeps the badge from stretching in
@@ -236,10 +249,6 @@
 	grid-template-columns: var(--rux-itin-lead-w) 1fr 1fr;
 	column-gap: var(--rux-space-2);
 	align-items: center;
-}
-.rux-itin__time-icon {
-	justify-self: center;
-	color: var(--rux-fg-subtle);
 }
 
 /* Miles/Drive unit suffix — no field label above these, the unit inline
