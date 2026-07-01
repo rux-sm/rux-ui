@@ -100,7 +100,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: var(--rux-bg-level-1);
+	background: var(--rux-bg-level-0);
 	min-width: 0;
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-2);

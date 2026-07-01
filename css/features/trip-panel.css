@@ -569,8 +569,10 @@
 	gap: var(--rux-space-3);
 }
 .rux-trip-panel__bus-group {
-	border: var(--rux-border-width) solid var(--rux-border);
-	border: var(--rux-border-width) solid transparent;
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-level-2);
 	overflow: hidden;
@@ -579,45 +581,26 @@
 	display: flex;
 	align-items: start;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-3) var(--rux-space-3);
-	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 .rux-trip-panel__bus-hint {
 	font-size: var(--rux-text-xs);
 	color: var(--rux-fg-subtle);
 }
-.rux-trip-panel__bus-badge {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 32px;
-	height: 32px;
-	border: var(--rux-border-width) solid var(--rux-border);
-	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-sm);
-	background: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
-	flex: none;
-}
+/* .rux-trip-panel__bus-badge shape/color lives in css/base/badges.css —
+   this file only owns bus-group layout, not badge chrome. */
 
 /* — Driver rows — */
 
 .rux-trip-panel__driver-rows {
 	display: flex;
 	flex-direction: column;
+	gap: var(--rux-space-2);
 }
 .rux-trip-panel__driver-row {
 	display: grid;
-	grid-template-columns: 32px 1fr 128px;
+	grid-template-columns: 28px 1fr 128px;
 	gap: var(--rux-space-2);
 	align-items: start;
-	padding: var(--rux-space-3) var(--rux-space-3);
-	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
-}
-.rux-trip-panel__driver-row:last-child {
-	border-bottom: none;
 }
 .rux-trip-panel__driver-row[hidden] {
 	display: none;
@@ -633,24 +616,45 @@
 	letter-spacing: var(--rux-tracking-wide);
 }
 
+/* Real button now (was a bare icon span) — plain .rux-button gives it the
+   standard control-scrim background at rest, same as the adjacent
+   co-driver/relief toggle buttons in .rux-trip-panel__bus-head. The status
+   classes below override the button's own --_bg/--_fg custom properties
+   for a solid fill instead of just tinting a bare icon, using the -bright
+   token step (a vivid, light chip) rather than the base/-subtle steps
+   used elsewhere for badges — these read as status "LEDs", not text-on-tint
+   labels, so they need to be the loudest color in the row. Icon color
+   flips to --rux-bg (near-black) for contrast against that light fill,
+   and the icon itself switches to its filled glyph variant (--_icon-fill)
+   like other active/selected icons in the app (see trip-panel.css:159).
+   --_bg-h/--_bg-a are pinned to the same color (no separate hover/active
+   step exists for warning/success) — :hover uses a brightness filter
+   instead, matching the existing badge drag-handle hover treatment in
+   badges.css. */
 .rux-trip-panel__role-label {
-	display: flex;
-	align-items: start;
-	justify-content: center;
-	color: var(--rux-fg-muted);
+	--_fg: var(--rux-fg-muted);
 }
-.rux-trip-panel__role-label {
-	cursor: pointer;
-	transition: color var(--rux-duration-fast) var(--rux-ease-out);
-}
-.rux-trip-panel__role-label.rux-role--danger {
-	color: var(--rux-danger-bright);
-}
-.rux-trip-panel__role-label.rux-role--warning {
-	color: var(--rux-warning-bright);
-}
+
+.rux-trip-panel__role-label.rux-role--danger,
+.rux-trip-panel__role-label.rux-role--warning,
 .rux-trip-panel__role-label.rux-role--success {
-	color: var(--rux-success-bright);
+	--_fg: var(--rux-bg);
+	--_border: transparent;
+}
+.rux-trip-panel__role-label.rux-role--danger  { --_bg: var(--rux-danger-bright);  --_bg-h: var(--rux-danger-bright);  --_bg-a: var(--rux-danger-bright); }
+.rux-trip-panel__role-label.rux-role--warning { --_bg: var(--rux-warning-bright); --_bg-h: var(--rux-warning-bright); --_bg-a: var(--rux-warning-bright); }
+.rux-trip-panel__role-label.rux-role--success { --_bg: var(--rux-success-bright); --_bg-h: var(--rux-success-bright); --_bg-a: var(--rux-success-bright); }
+
+.rux-trip-panel__role-label.rux-role--danger:hover,
+.rux-trip-panel__role-label.rux-role--warning:hover,
+.rux-trip-panel__role-label.rux-role--success:hover {
+	filter: brightness(1.1);
+}
+
+.rux-trip-panel__role-label.rux-role--danger .rux-icon,
+.rux-trip-panel__role-label.rux-role--warning .rux-icon,
+.rux-trip-panel__role-label.rux-role--success .rux-icon {
+	--_icon-fill: 1;
 }
 
 .rux-trip-panel__role-label .rux-icon {

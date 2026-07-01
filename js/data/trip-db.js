@@ -1010,15 +1010,24 @@ export function initTripDB(root, itinerary) {
 
 	function snapshotForm() {
 		const inputs = root.querySelectorAll(".rux-trip-panel__pane input, .rux-trip-panel__pane textarea, .rux-trip-panel__pane select");
-		const toggles = root.querySelectorAll("[data-req], [data-rux-toggle-button], [data-role]");
+		const toggles = root.querySelectorAll("[data-req], [data-rux-toggle-button], [data-role], .rux-trip-panel__role-label");
 		const inputVals = Array.from(inputs).map(el => {
 			const key = el.id || el.name || "";
 			const val = el.type === "checkbox" ? String(el.checked) : el.value;
 			return `${key}=${val}`;
 		});
-		const toggleVals = Array.from(toggles).map(el => {
-			const key = el.dataset.req || el.id || "";
-			return `${key}=${el.getAttribute("aria-pressed") || "false"}`;
+		// Role-status buttons (driver/co-driver/relief click-to-cycle color)
+		// track state via dataset.roleState, not aria-pressed like every other
+		// toggle here — read whichever the element actually uses. "default" is
+		// normalized to the same value as the attribute never having been set
+		// at all, so cycling all the way back around reads as clean again.
+		const toggleVals = Array.from(toggles).map((el, i) => {
+			const key = el.dataset.req || el.id || el.dataset.roleKey || `toggle-${i}`;
+			const roleState = el.dataset.roleState;
+			const val = roleState !== undefined
+				? (roleState === "default" ? "false" : roleState)
+				: (el.getAttribute("aria-pressed") || "false");
+			return `${key}=${val}`;
 		});
 		return inputVals.concat(toggleVals).sort().join("\0");
 	}
@@ -1045,7 +1054,7 @@ export function initTripDB(root, itinerary) {
 	root.addEventListener("input", syncSaveBtn);
 	root.addEventListener("change", syncSaveBtn);
 	root.addEventListener("click", (e) => {
-		if (e.target.closest("[data-req], [data-rux-toggle-button], [data-role]")) {
+		if (e.target.closest("[data-req], [data-rux-toggle-button], [data-role], .rux-trip-panel__role-label")) {
 			requestAnimationFrame(syncSaveBtn);
 		}
 	});

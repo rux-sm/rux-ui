@@ -97,9 +97,9 @@ function buildBusGroup(idx, buses, drivers) {
 		.map(
 			(r) => `
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
-      <span class="rux-trip-panel__role-label" title="${escHtml(r.title)}">
+      <button type="button" class="rux-button rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].${escHtml(r.role)}.status" title="${escHtml(r.title)}" aria-label="${escHtml(r.title)} status">
         <span class="rux-icon">${escHtml(mapIcon(r.icon))}</span>
-      </span>
+      </button>
       <select class="rux-select" name="buses[${idx}].${escHtml(r.role)}.name" aria-label="${escHtml(r.title)}">${driverOpts}</select>
       <div class="rux-input-group rux-input-group--prefix">
         <span class="rux-input-group__prefix">$</span>
@@ -130,9 +130,9 @@ function buildBusGroup(idx, buses, drivers) {
     </div>
     <div class="rux-trip-panel__driver-rows">
       <div class="rux-trip-panel__driver-row">
-        <span class="rux-trip-panel__role-label" title="Driver">
+        <button type="button" class="rux-button rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].driver.status" title="Driver" aria-label="Driver status">
           <span class="rux-icon">person</span>
-        </span>
+        </button>
         <select class="rux-select" name="buses[${idx}].driver.name" aria-label="Driver">${driverOpts}</select>
         <div class="rux-input-group rux-input-group--prefix">
           <span class="rux-input-group__prefix">$</span>

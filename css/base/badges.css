@@ -29,6 +29,10 @@
    grid in itinerary.css — the date/"Day N" text moves to title/aria-label
    instead of being rendered. --yard is unused (demo-only) and left as a
    text pill.
+
+   .rux-trip-panel__bus-badge (trip panel Fleet tab) shares this exact
+   28x28 shape/formula — accent-subtle bg · accent border/fg — showing a
+   bus index number instead of an icon.
    ========================================================================== */
 
 /* — base — */
@@ -73,7 +77,8 @@
 
 /* — stop-type labels (itinerary) — */
 
-.rux-itin__badge {
+.rux-itin__badge,
+.rux-trip-panel__bus-badge {
   display: inline-flex;
   align-items: center;
   align-self: flex-start;
@@ -101,10 +106,12 @@
 .rux-itin__badge--stop,
 .rux-itin__badge--sleeper,
 .rux-itin__badge--return,
-.rux-itin__badge--endday {
+.rux-itin__badge--endday,
+.rux-trip-panel__bus-badge {
   /* --rux-itin-lead-w set on .rux-itin__card in itinerary.css — every row
      in the card lines up on this same lead-column width, so it's defined
-     once there rather than hardcoded separately in each place. */
+     once there rather than hardcoded separately in each place. Trip panel
+     falls back to the literal 28px since it's outside that scope. */
   width: var(--rux-itin-lead-w, 28px);
   padding: 0;
   justify-content: center;
@@ -116,6 +123,7 @@
 .rux-itin__badge--sleeper { background: var(--rux-info-subtle);    border-color: var(--rux-info-bright);    color: var(--rux-info-bright); }
 .rux-itin__badge--return  { background: var(--rux-danger-subtle);  border-color: var(--rux-danger-bright);  color: var(--rux-danger-bright); }
 .rux-itin__badge--endday  { background: var(--rux-danger-subtle);  border-color: var(--rux-danger-bright);  color: var(--rux-danger-bright); }
+.rux-trip-panel__bus-badge { background: var(--rux-accent-subtle); border-color: var(--rux-accent); color: var(--rux-accent); }
 
 /* Badges doubling as the drag handle + delete trigger (itinerary.js sets
    data-drag-handle/data-delete-stop instead of separate buttons). */

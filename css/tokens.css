@@ -62,7 +62,7 @@
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim     
 	
 	/* The absolute base (OLED black) */
-	--rux-bg-level-0: oklch(from var(--rux-color-base) 4% c h);
+	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
 
 	/* Default panels / slightly raised surfaces */
 	--rux-bg-level-1: oklch(from var(--rux-color-base) 22% c h);
