@@ -112,20 +112,24 @@ function buildBusGroup(idx, buses, drivers) {
 	const el = document.createElement("div");
 	el.className = "rux-trip-panel__bus-group";
 	el.innerHTML = `
+    <div class="rux-trip-panel__section-head">
+      <p class="rux-trip-panel__section-label">Bus ${idx + 1}</p>
+    </div>
     <div class="rux-trip-panel__bus-head">
-      <span class="rux-trip-panel__bus-badge" aria-hidden="true">${idx + 1}</span>
-      <select class="rux-select" name="buses[${idx}].busId" style="flex:1;" aria-label="Bus ${idx + 1}">
+      <select class="rux-select" name="buses[${idx}].busId" aria-label="Bus ${idx + 1}">
         <option value="" disabled selected>Select bus…</option>
         ${busOpts}
       </select>
-      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
-        <span class="rux-icon">person_add</span>
+    </div>
+    <div class="rux-trip-panel__bus-roles">
+      <button class="rux-button rux-button--toggle" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
+        <span class="rux-icon">person_add</span><span class="rux-btn-label">Co-driver</span>
       </button>
-      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
-        <span class="rux-icon">last_page</span>
+      <button class="rux-button rux-button--toggle" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
+        <span class="rux-icon">last_page</span><span class="rux-btn-label">Relief 1</span>
       </button>
-      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
-        <span class="rux-icon">first_page</span>
+      <button class="rux-button rux-button--toggle" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
+        <span class="rux-icon">first_page</span><span class="rux-btn-label">Relief 2</span>
       </button>
     </div>
     <div class="rux-trip-panel__driver-rows">

@@ -65,10 +65,10 @@
 	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
 
 	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 22% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
 
 	/* Elevated elements like floating cards or popovers */
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 28% c h);
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 30% c h);
 
 	/* Highest contrast accents / Badges */
 	--rux-bg-level-3: oklch(from var(--rux-color-base) 30% c h);
@@ -88,7 +88,7 @@
 	/* ─── COLOR · border ──────────────────────────────────────────────────── */
 	/* All borders are hairlines (1px). We use three levels.                   */
 
-	--rux-border: oklch(50% 0.004 260); /* default — separates surfaces           */
+	--rux-border: oklch(100% 0.004 260); /* default — separates surfaces           */
 	/*--rux-border: oklch(70% 0.2 24); /* debug borders */
 	--rux-border-strong: #4a4a4a; /* emphasized — focused/selected card     */
 	--rux-border-subtle: oklch(from var(--rux-color-base) 40% c h); /* whisper — grouping inside a card       */

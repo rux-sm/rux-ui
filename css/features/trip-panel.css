@@ -18,8 +18,10 @@
    Dispatch sub-components
    -----------------------
    .rux-trip-panel__bus-groups  Vertical stack of bus assignment cards.
-   .rux-trip-panel__bus-group   Single bus card: head (badge + bus select + role toggles)
-                            + driver rows (icon | driver select | pay input).
+   .rux-trip-panel__bus-group   Single bus card: titled "Bus N", head row
+                            (bus select, full width) + role-toggle row
+                            (3 equal-width buttons) + driver rows
+                            (icon | driver select | pay input).
    ========================================================================== */
 
 /* — Panel shell — */
@@ -235,6 +237,31 @@
 
 /* — Card — */
 
+/* Where do buttons go in a card? Sort by what the control DOES, not by
+   habit — three cases, each with one correct spot:
+
+   1. Data toggle/switch (Trip Requirements chips, Billing step switches,
+      Fleet's co-driver/relief/status buttons, Itinerary's stats-expand
+      chevron) — represents a state, not a one-shot action. Lives inline
+      wherever that piece of data naturally sits in the row/content flow.
+      Never restricted to a header or footer.
+   2. List-management action — Add/Upload/Delete (Payments, Trip Contacts,
+      Documents, Itinerary's Stop/Sleep/End day buttons) — always at the
+      BOTTOM of the card, immediately after the list it affects. Matches
+      where a user looks for "add the next one."
+   3. Section-wide toolbar action (Itinerary's Upload JSON / Calculate) —
+      acts on the whole section right now and must stay reachable without
+      scrolling past a long list, so it lives in the HEADER, trailing the
+      title.
+
+   Repeating list-item cards with no natural title of their own (Itinerary
+   stops — identity comes from the badge) keep their first row to ONE
+   primary field next to the badge; give any other control cluster its own
+   row rather than crowding row one. Fleet's bus-groups follow the same
+   instinct even though they're titled ("Bus 1", "Bus 2", ...): the bus
+   picker gets its own full-width row, and the co-driver/relief toggles get
+   their own row right below it rather than sharing space with the picker. */
+
 .rux-card {
 	display: flex;
 	flex-direction: column;
@@ -437,8 +464,17 @@
 	align-items: center;
 	gap: var(--rux-space-2);
 }
+/* See .rux-trip-panel__bus-roles above for why min-width:0 is needed on
+   both the button and its label — flex:1 alone doesn't guarantee equal
+   widths when "Delete" and "Add" differ in content size. */
 .rux-trip-panel__payment-actions > .rux-button {
 	flex: 1;
+	min-width: 0;
+}
+.rux-trip-panel__payment-actions > .rux-button .rux-btn-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 .rux-trip-panel__payment-fill {
 	display: flex;
@@ -452,8 +488,16 @@
 	transition: color var(--rux-duration-fast) var(--rux-ease-out);
 }
 .rux-trip-panel__payment-fill .rux-icon {
+	/* font-size must match width/height (see .rux-icon--lg/--xl and the fix
+	   for .rux-trip-panel__role-label) — otherwise the glyph renders at the
+	   smaller inherited --rux-icon-sm inside this larger box with no
+	   flex-centering, so it sits off-center instead of filling it. */
+	font-size: var(--rux-icon-md);
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 .rux-trip-panel__payment-fill:hover {
 	color: var(--rux-fg);
@@ -496,8 +540,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: var(--rux-space-3);
-	padding: var(--rux-space-2);
+	gap: var(--rux-space-2);
+
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-md);
 }
@@ -579,15 +623,44 @@
 }
 .rux-trip-panel__bus-head {
 	display: flex;
-	align-items: start;
+}
+.rux-trip-panel__bus-head .rux-select {
+	flex: 1;
+}
+/* Full-width row of equal-share toggles below the bus picker, instead of
+   competing with it for space in the same row. */
+.rux-trip-panel__bus-roles {
+	display: flex;
 	gap: var(--rux-space-2);
+}
+/* min-width:0 overrides the flex default of min-width:auto, which floors
+   a flex item at its own content width — without it, "Co-driver" (longer
+   label) refuses to shrink to its fair third, so the row renders uneven
+   even though every button has flex:1. The label itself needs the same
+   min-width:0 (it's the flex item that's actually too wide) plus
+   overflow/ellipsis so it truncates gracefully if space ever gets tight,
+   instead of visually overflowing its button. */
+.rux-trip-panel__bus-roles > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+.rux-trip-panel__bus-roles > .rux-button .rux-btn-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+/* Co-driver/relief toggle icons switch to their filled glyph variant when
+   active, same as the trip-panel tabs (see .rux-trip-panel__tabs above) —
+   the solid accent background alone doesn't read as "on" as clearly as
+   pairing it with the solid icon shape. */
+.rux-trip-panel__bus-roles [data-role].is-active .rux-icon,
+.rux-trip-panel__bus-roles [data-role][aria-pressed="true"] .rux-icon {
+	--_icon-fill: 1;
 }
 .rux-trip-panel__bus-hint {
 	font-size: var(--rux-text-xs);
 	color: var(--rux-fg-subtle);
 }
-/* .rux-trip-panel__bus-badge shape/color lives in css/base/badges.css —
-   this file only owns bus-group layout, not badge chrome. */
 
 /* — Driver rows — */
 
@@ -598,7 +671,7 @@
 }
 .rux-trip-panel__driver-row {
 	display: grid;
-	grid-template-columns: 28px 1fr 128px;
+	grid-template-columns: 28px 1fr 96px;
 	gap: var(--rux-space-2);
 	align-items: start;
 }
@@ -618,48 +691,26 @@
 
 /* Real button now (was a bare icon span) — plain .rux-button gives it the
    standard control-scrim background at rest, same as the adjacent
-   co-driver/relief toggle buttons in .rux-trip-panel__bus-head. The status
-   classes below override the button's own --_bg/--_fg custom properties
-   for a solid fill instead of just tinting a bare icon, using the -bright
-   token step (a vivid, light chip) rather than the base/-subtle steps
-   used elsewhere for badges — these read as status "LEDs", not text-on-tint
-   labels, so they need to be the loudest color in the row. Icon color
-   flips to --rux-bg (near-black) for contrast against that light fill,
-   and the icon itself switches to its filled glyph variant (--_icon-fill)
-   like other active/selected icons in the app (see trip-panel.css:159).
-   --_bg-h/--_bg-a are pinned to the same color (no separate hover/active
-   step exists for warning/success) — :hover uses a brightness filter
-   instead, matching the existing badge drag-handle hover treatment in
-   badges.css. */
+   co-driver/relief toggle buttons in .rux-trip-panel__bus-head, and that
+   chrome never changes. Status is communicated purely by the icon: solid
+   white by default, solid red/bright yellow/bright green when cycled —
+   always the filled glyph variant (--_icon-fill), never a background fill. */
 .rux-trip-panel__role-label {
-	--_fg: var(--rux-fg-muted);
+	--_fg: var(--rux-fg);
 }
-
-.rux-trip-panel__role-label.rux-role--danger,
-.rux-trip-panel__role-label.rux-role--warning,
-.rux-trip-panel__role-label.rux-role--success {
-	--_fg: var(--rux-bg);
-	--_border: transparent;
-}
-.rux-trip-panel__role-label.rux-role--danger  { --_bg: var(--rux-danger-bright);  --_bg-h: var(--rux-danger-bright);  --_bg-a: var(--rux-danger-bright); }
-.rux-trip-panel__role-label.rux-role--warning { --_bg: var(--rux-warning-bright); --_bg-h: var(--rux-warning-bright); --_bg-a: var(--rux-warning-bright); }
-.rux-trip-panel__role-label.rux-role--success { --_bg: var(--rux-success-bright); --_bg-h: var(--rux-success-bright); --_bg-a: var(--rux-success-bright); }
-
-.rux-trip-panel__role-label.rux-role--danger:hover,
-.rux-trip-panel__role-label.rux-role--warning:hover,
-.rux-trip-panel__role-label.rux-role--success:hover {
-	filter: brightness(1.1);
-}
-
-.rux-trip-panel__role-label.rux-role--danger .rux-icon,
-.rux-trip-panel__role-label.rux-role--warning .rux-icon,
-.rux-trip-panel__role-label.rux-role--success .rux-icon {
-	--_icon-fill: 1;
-}
+.rux-trip-panel__role-label.rux-role--danger  { --_fg: var(--rux-danger-bright); }
+.rux-trip-panel__role-label.rux-role--warning { --_fg: var(--rux-warning-bright); }
+.rux-trip-panel__role-label.rux-role--success { --_fg: var(--rux-success-bright); }
 
 .rux-trip-panel__role-label .rux-icon {
+	/* font-size must match width/height (see .rux-icon--lg/--xl) — otherwise
+	   the glyph renders at the smaller inherited --rux-icon-sm inside this
+	   larger box with no flex-centering, so it sits off-center instead of
+	   filling it. */
+	font-size: var(--rux-icon-md);
 	width: var(--rux-icon-md);
 	height: var(--rux-icon-md);
+	--_icon-fill: 1;
 }
 .rux-trip-panel__role-col {
 	display: flex;

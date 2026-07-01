@@ -42,12 +42,28 @@
 	overflow: clip;
 }
 
+/* No dedicated space while the topbar is showing — content starts right
+   under it, no dead gap. The handle still needs to be easy to grab, so
+   its hit area is extended via ::after instead of via its own box height
+   (see below). Collapsed state (topbar height:0) gets the gap back below,
+   since nothing else would give the module content its top inset then. */
 .scheduler-app__topbar-handle {
 	flex: none;
-	height: var(--scheduler-app-gap);
+	height: 0;
 	cursor: grab;
 	position: relative;
 	z-index: 1;
+	transition: height var(--rux-duration-slow) var(--rux-ease-in-out);
+}
+
+.scheduler-app__topbar-handle::after {
+	content: "";
+	position: absolute;
+	inset: -6px 0;
+}
+
+.scheduler-app__topbar.is-collapsed + .scheduler-app__topbar-handle {
+	height: var(--scheduler-app-gap);
 }
 
 .scheduler-app.is-topbar-resizing .scheduler-app__topbar-handle {
@@ -196,8 +212,20 @@
 	border-top: none; /* override */
 }
 
+/* min-width:0 overrides flex's default min-width:auto, which floors a
+   flex item at its own content width — without it, "Delete" (longest
+   label) won't shrink to its fair share, so Delete/Clear/Save render
+   uneven despite all having flex:1. The label needs the same override
+   plus overflow/ellipsis so it truncates gracefully under real pressure
+   instead of overflowing its button. */
 .rux-panel__footer > .rux-button {
 	flex: 1;
+	min-width: 0;
+}
+.rux-panel__footer > .rux-button .rux-btn-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .scheduler-app__bar {
