@@ -100,10 +100,10 @@ function buildBusGroup(idx, buses, drivers) {
       <span class="rux-trip-panel__role-label" title="${escHtml(r.title)}">
         <span class="rux-icon">${escHtml(mapIcon(r.icon))}</span>
       </span>
-      <select class="rux-select" name="buses[${idx}].${escHtml(r.role)}.name">${driverOpts}</select>
+      <select class="rux-select" name="buses[${idx}].${escHtml(r.role)}.name" aria-label="${escHtml(r.title)}">${driverOpts}</select>
       <div class="rux-input-group rux-input-group--prefix">
         <span class="rux-input-group__prefix">$</span>
-        <input class="rux-input" name="buses[${idx}].${escHtml(r.role)}.pay" type="number" min="0" placeholder="0" />
+        <input class="rux-input" name="buses[${idx}].${escHtml(r.role)}.pay" type="number" min="0" placeholder="0" aria-label="${escHtml(r.title)} pay" />
       </div>
     </div>`,
 		)
@@ -113,18 +113,18 @@ function buildBusGroup(idx, buses, drivers) {
 	el.className = "rux-trip-panel__bus-group";
 	el.innerHTML = `
     <div class="rux-trip-panel__bus-head">
-      <span class="rux-trip-panel__bus-badge">${idx + 1}</span>
-      <select class="rux-select" name="buses[${idx}].busId" style="flex:1;">
+      <span class="rux-trip-panel__bus-badge" aria-hidden="true">${idx + 1}</span>
+      <select class="rux-select" name="buses[${idx}].busId" style="flex:1;" aria-label="Bus ${idx + 1}">
         <option value="" disabled selected>Select bus…</option>
         ${busOpts}
       </select>
-      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="coDriver" title="Co-driver">
+      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
         <span class="rux-icon">person_add</span>
       </button>
-      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief1" title="Relief 1 — start">
+      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
         <span class="rux-icon">last_page</span>
       </button>
-      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief2" title="Relief 2 — end">
+      <button class="rux-button rux-button--toggle rux-button--icon" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
         <span class="rux-icon">first_page</span>
       </button>
     </div>
@@ -133,10 +133,10 @@ function buildBusGroup(idx, buses, drivers) {
         <span class="rux-trip-panel__role-label" title="Driver">
           <span class="rux-icon">person</span>
         </span>
-        <select class="rux-select" name="buses[${idx}].driver.name">${driverOpts}</select>
+        <select class="rux-select" name="buses[${idx}].driver.name" aria-label="Driver">${driverOpts}</select>
         <div class="rux-input-group rux-input-group--prefix">
           <span class="rux-input-group__prefix">$</span>
-          <input class="rux-input" name="buses[${idx}].driver.pay" type="number" min="0" placeholder="0" />
+          <input class="rux-input" name="buses[${idx}].driver.pay" type="number" min="0" placeholder="0" aria-label="Driver pay" />
         </div>
       </div>
       ${roleRows}

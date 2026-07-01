@@ -29,9 +29,9 @@
    Typography · tracking      --rux-tracking-*
    Spacing                    --rux-space-0 → --rux-space-8
    Size                       --rux-border-width, --rux-control-*, --rux-icon-*,
-                               --rux-avatar-*, --rux-dot-sm, --rux-progress-height,
-                               --rux-check-*, --rux-menu-min-width, --rux-panel-width-sm,
-                               --rux-toast-min-width, --rux-overlay-blur, --rux-modal-enter-y
+                              --rux-avatar-*, --rux-dot-sm, --rux-progress-height,
+                              --rux-check-*, --rux-menu-min-width, --rux-panel-width-sm,
+                              --rux-toast-min-width, --rux-overlay-blur, --rux-modal-enter-y
    Radius                     --rux-radius-none → --rux-radius-full
    Shadow                     --rux-shadow-*, --rux-ring-*
    Motion                     --rux-duration-*, --rux-ease-*

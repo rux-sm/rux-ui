@@ -427,7 +427,7 @@
 			.join("");
 
 		return `
-      <span class="rux-trip-panel__section-label">Route Summary</span>
+      <span class="rux-trip-panel__section-label">Trip Summary</span>
       <div class="rux-itin__summary-grid">${statsHtml}</div>
       <div class="rux-itin__summary-actions"></div>`;
 	}
@@ -551,12 +551,11 @@
 		// heading (which used to awkwardly interrupt the card's field rows).
 		const sleeperAddr = type === "sleeper" ? previousStopAddress(stops, idx) : "";
 		const addrEl = type === "sleeper"
-			? (sleeperAddr
-				? `<div class="rux-itin__address-wrap">
+			? `<div class="rux-itin__address-wrap">
                <input class="rux-input" type="text" value="${escHtml(sleeperAddr)}" readonly
-                      aria-label="Resting at ${escHtml(sleeperAddr)}" />
+                      placeholder="Inherits previous stop's address"
+                      aria-label="${sleeperAddr ? `Resting at ${escHtml(sleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
              </div>`
-				: "")
 			: isReturn
 				? `<div class="rux-itin__address-wrap">
                <input class="rux-input" type="text" value="${escHtml(stop.address)}" readonly
@@ -587,7 +586,7 @@
 		// piece of card content, rather than floating above it as bare text.
 		// Return never gets one — it closes out the trip, it doesn't open a day.
 		const dayTitle = !isReturn && isFirstStopOfDay(stops, idx)
-			? `<div class="rux-itin__day-title rux-trip-panel__section-label">Day ${dayNumberFor(stops, idx)} Itinerary</div>`
+			? `<div class="rux-itin__day-title rux-trip-panel__section-label">Day ${dayNumberFor(stops, idx)}</div>`
 			: "";
 
 		return `

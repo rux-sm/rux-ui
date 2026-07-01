@@ -111,10 +111,13 @@
 
 /* Sleeper card: reset status + rest duration, same boxed-field look as
    Miles/Drive elsewhere — status sits where Miles would (no distance on a
-   sleeper leg), duration where Drive would. */
+   sleeper leg), duration where Drive would. Fallback matches every other
+   lead-column usage in this file (see .rux-itin__day-header) — currently
+   always inside a .rux-itin__card where the variable IS set, but relying
+   on that implicitly is exactly what broke the day-break header before. */
 .rux-itin__sleeper-stats {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w) minmax(0, 1fr) minmax(0, 1fr);
+	grid-template-columns: var(--rux-itin-lead-w, 28px) minmax(0, 1fr) minmax(0, 1fr);
 	column-gap: var(--rux-space-2);
 }
 
@@ -198,14 +201,18 @@
    "lead" column (the badge, or an empty spacer for the time row and
    Miles/Drive) and a content column that always starts at the same x as
    the address field. --rux-itin-lead-w is also read by .rux-itin__badge's
-   fixed width in badges.css, so the two stay in sync from one place. */
+   fixed width in badges.css, so the two stay in sync from one place.
+   Row gap is tightened from .rux-card's default --rux-space-3 to
+   --rux-space-2 — address/time/stats read as one grouped stop, not three
+   separately-spaced sections. */
 .rux-itin__card {
 	--rux-itin-lead-w: 28px;
+	gap: var(--rux-space-2);
 }
 
 .rux-itin__fields {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w) 1fr;
+	grid-template-columns: var(--rux-itin-lead-w, 28px) 1fr;
 	column-gap: var(--rux-space-2);
 	align-items: end;
 }
@@ -214,7 +221,7 @@
    owns the collapse animation, so this outer grid only needs 2 columns. */
 .rux-itin__fields--pair {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w) minmax(0, 1fr);
+	grid-template-columns: var(--rux-itin-lead-w, 28px) minmax(0, 1fr);
 	column-gap: var(--rux-space-2);
 }
 
@@ -246,7 +253,7 @@
 
 .rux-itin__time-row {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w) 1fr 1fr;
+	grid-template-columns: var(--rux-itin-lead-w, 28px) 1fr 1fr;
 	column-gap: var(--rux-space-2);
 	align-items: center;
 }
