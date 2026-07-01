@@ -300,22 +300,22 @@
 	margin: 0;
 	justify-content: stretch;
 	background: oklch(0% 0 0 / 0.2);
-	border-radius: 6px;
+	border-radius: var(--rux-control-radius);
 }
 .rux-trip-bar__actions > .rux-button {
 	width: 100%;
 	min-width: 0;
 	flex: 1;
-	border-radius: 6px;
+	border-radius: var(--rux-control-radius);
 	--_bg: oklch(0% 0 0 / 0.2);
 	--_bg-h: oklch(0% 0 0 / 0.3);
 	--_bg-a: oklch(0% 0 0 / 0.35);
 }
 .rux-trip-bar__actions > .rux-button:first-child {
-	border-radius: 6px;
+	border-radius: var(--rux-control-radius);
 }
 .rux-trip-bar__actions > .rux-button:last-child {
-	border-radius: 6px ;
+	border-radius: var(--rux-control-radius);
 }
 
 .rux-trip-bar__actions {

@@ -227,7 +227,20 @@
 			}
 		}
 
-		const segment = stops.slice(startIdx, dayIdx).filter((s) => s.type !== "day");
+		// The return-to-yard leg always sits after every "day" marker and
+		// belongs to whichever day is actually still in progress. If this is
+		// the LAST day marker and no real stop has been added after it yet,
+		// fold the return leg into THIS day's total instead of leaving it to
+		// spawn an empty trailing "Day N+1" with nothing but the return leg
+		// counted toward it (even though the card itself now always shows).
+		let endIdx = dayIdx;
+		const isLastDayMarker = !stops.slice(dayIdx + 1).some((s) => s.type === "day");
+		if (isLastDayMarker) {
+			const hasRealStopAfter = stops.slice(dayIdx + 1).some((s) => s.type !== "day" && s.type !== "return");
+			if (!hasRealStopAfter) endIdx = stops.length;
+		}
+
+		const segment = stops.slice(startIdx, endIdx).filter((s) => s.type !== "day");
 
 		const totalMiles = segment.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
 		const totalDrive = segment.reduce((n, s) => n + parseDriveMins(s.drive), 0);
@@ -249,7 +262,7 @@
 
 		// Sleeper rest = departPrev (STR) → arrive (END), same interval shown on the sleeper card.
 		let sleeperDwell = 0;
-		for (let i = startIdx; i < dayIdx; i++) {
+		for (let i = startIdx; i < endIdx; i++) {
 			if (stops[i].type !== "sleeper") continue;
 			const d = minutesBetween(parseTimeToMins(stops[i].departPrev), parseTimeToMins(stops[i].arrive));
 			if (d !== null) sleeperDwell += d;
@@ -259,19 +272,20 @@
 		return { totalMiles, totalDrive, grossMins, netMins };
 	}
 
+	// Same field/output markup as renderSummary's Route Summary grid, so a
+	// day card reads as a smaller version of that card, not a different design.
 	function renderDayStatsGrid({ totalMiles, totalDrive, netMins } = {}) {
 		const miVal = totalMiles > 0 ? (totalMiles % 1 === 0 ? String(totalMiles) : totalMiles.toFixed(1)) : "—";
 		const drVal = totalDrive > 0 ? formatDriveMinsCompact(totalDrive) : "—";
 		const dutyVal = netMins !== null ? formatDriveMinsCompact(netMins) : "—";
 		const drWarn = totalDrive > 11 * 60;
 		const dutyWarn = netMins !== null && netMins > 14 * 60;
-		const out = (val, warn) =>
-			`<output class="rux-trip-panel__billing-output${warn ? " rux-itin__seg-stat--warn" : ""}">${escHtml(val)}</output>`;
-		return `<div class="rux-itin__day-stats">
-      <div class="rux-field"><span class="rux-field__label">Miles</span>${out(miVal, false)}</div>
-      <div class="rux-field"><span class="rux-field__label">Drive</span>${out(drVal, drWarn)}</div>
-      <div class="rux-field"><span class="rux-field__label">On-Duty</span>${out(dutyVal, dutyWarn)}</div>
-    </div>`;
+		const field = (label, val, warn) => `
+        <div class="rux-field">
+          <span class="rux-field__label">${label}</span>
+          <output class="rux-trip-panel__billing-output${warn ? " rux-itin__seg-stat--warn" : ""}">${escHtml(val)}</output>
+        </div>`;
+		return `<div class="rux-itin__day-stats">${field("Miles", miVal, false)}${field("Drive", drVal, drWarn)}${field("On-Duty", dutyVal, dutyWarn)}</div>`;
 	}
 
 	function renderSleeperStats(stop, stops) {
@@ -388,8 +402,17 @@
 			}
 			return -1;
 		})();
+		// A trip with no explicit "End day" break is just a one-day trip — the
+		// Route Summary at top already covers its totals, so don't duplicate
+		// them here. Only the trailing segment of a multi-day trip gets a card.
+		if (lastDayIdx === -1) return "";
 
-		const finalSegment = stops.slice(lastDayIdx + 1).filter((s) => s.type !== "day");
+		// The return leg auto-populates its own times/miles once the last real
+		// stop has route data, which would otherwise make an empty trailing
+		// day look "real" on its own. Only count actual stops here — the
+		// return leg's numbers still show up (via computeSegmentStats) once
+		// there's a genuine reason to render this card.
+		const finalSegment = stops.slice(lastDayIdx + 1).filter((s) => s.type !== "day" && s.type !== "return");
 		const hasData = finalSegment.some((s) => s.miles || s.drive || s.departPrev || s.arrive || s.spot);
 		if (!hasData) return "";
 
@@ -397,7 +420,7 @@
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
       <div class="rux-card rux-itin__day rux-itin__day--final">
-        <span class="rux-trip-panel__section-label">Day ${dayNum}</span>
+        <span class="rux-itin__badge rux-itin__badge--endday">Day ${dayNum}</span>
         ${renderDayStatsGrid(stats)}
       </div>`;
 	}
@@ -411,26 +434,34 @@
 
 	function renderDay(item, idx, stops) {
 		const stats = computeSegmentStats(stops, idx);
+		const label = formatDayLabel(item.label);
 		return `
       <div class="rux-card rux-itin__day" data-stop-idx="${idx}" draggable="true">
         <div class="rux-itin__day-header">
-          <span class="rux-trip-panel__section-label">${escHtml(formatDayLabel(item.label))}</span>
-          <div class="rux-itin__card-actions">
-            <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
-                    type="button" data-drag-handle aria-label="Drag to reorder">
-              <span class="rux-icon">drag_indicator</span>
-            </button>
-            <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
-                    type="button" data-delete-stop aria-label="Remove day break">
-              <span class="rux-icon">close</span>
-            </button>
-          </div>
+          <span class="rux-itin__badge rux-itin__badge--endday" title="${escHtml(label)}"
+                data-drag-handle data-delete-stop role="button" tabindex="0"
+                aria-label="${escHtml(label)} — drag to reorder, click to remove">
+            <span class="rux-icon" aria-hidden="true">event_busy</span>${escHtml(label)}
+          </span>
         </div>
         ${renderDayStatsGrid(stats)}
       </div>`;
 	}
 
 	const TYPE_LABEL = { pickup: "Pick-up", stop: "Stop", sleeper: "Sleeper", return: "Return" };
+	// Icon shown in the 28x28 badge — TYPE_LABEL stays the accessible name
+	// (title/aria-label). Pick-up and Stop share location_on since both are
+	// just "arrive at a place"; return uses home for "back to the yard".
+	const TYPE_ICON = { pickup: "location_on", stop: "location_on", sleeper: "airline_seat_flat", return: "home" };
+
+	// A stop opens a new day's section if it's the very first stop, or the
+	// one right after a "day" break marker.
+	function isFirstStopOfDay(stops, idx) {
+		return idx === 0 || stops[idx - 1]?.type === "day";
+	}
+	function dayNumberFor(stops, idx) {
+		return stops.slice(0, idx).filter((s) => s.type === "day").length + 1;
+	}
 
 	function renderStop(stop, idx, stops) {
 		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
@@ -444,16 +475,23 @@
 			type === "sleeper" ? { label: "End", field: "arrive" } :
 			                     { label: "Arr", field: "arrive" };
 
-		// Return card shows yard name as a read-only heading; other cards have no name field.
-		const nameEl = isReturn
-			? `<div class="rux-itin__card-head"><span class="rux-itin__name">${escHtml(stop.name)}</span></div>`
-			: "";
-
 		const isVerified = !!(stop.lat && stop.lng);
 		const showAddrIcon = isStale || isVerified;
-		const addrEl = isReturn
-			? `<div class="rux-itin__address">${escHtml(stop.address)}</div>`
-			: `<div class="rux-itin__address-wrap${showAddrIcon ? " is-verified" : ""}">
+		// Sleeper always sits at whatever location the previous stop is at (see
+		// sleeperFromPrev) — it's a time block, not a place, so no address UI.
+		// Return's address is a real (but read-only) input styled like every
+		// other address field, instead of plain text — the yard is always a
+		// known-good location so there's no verified/stale icon to show, and
+		// the yard name folds into the accessible label instead of its own
+		// heading (which used to awkwardly interrupt the card's field rows).
+		const addrEl = type === "sleeper"
+			? ""
+			: isReturn
+				? `<div class="rux-itin__address-wrap">
+               <input class="rux-input" type="text" value="${escHtml(stop.address)}" readonly
+                      aria-label="${escHtml(stop.name)} — ${escHtml(stop.address)}" />
+             </div>`
+				: `<div class="rux-itin__address-wrap${showAddrIcon ? " is-verified" : ""}">
                <input class="rux-input" type="text" data-field="address" autocomplete="street-address"
                       value="${escHtml(stop.address)}" placeholder="Address" />
                ${isStale
@@ -464,49 +502,42 @@
              </div>`;
 
 		const isDraggable = type !== "pickup" && type !== "return";
-		const cardActions = isDraggable ? `
-            <div class="rux-itin__card-actions">
-              <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
-                      type="button" data-drag-handle aria-label="Drag to reorder">
-                <span class="rux-icon">drag_indicator</span>
-              </button>
-              <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
-                      type="button" data-delete-stop aria-label="Remove stop">
-                <span class="rux-icon">close</span>
-              </button>
-            </div>` : "";
+		// Drag-handle/delete buttons folded into the badge itself: drag from
+		// the badge to reorder, click it to remove the stop. Keeps the card
+		// meta row down to just the address for types that have one.
+		const badgeActionAttrs = isDraggable
+			? `data-drag-handle data-delete-stop role="button" tabindex="0" aria-label="${TYPE_LABEL[type]} — drag to reorder, click to remove"`
+			: `aria-label="${TYPE_LABEL[type]}"`;
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
 		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";
 
+		// Day-section header lives inside the card itself, like every other
+		// piece of card content, rather than floating above it as bare text.
+		// Return never gets one — it closes out the trip, it doesn't open a day.
+		const dayTitle = !isReturn && isFirstStopOfDay(stops, idx)
+			? `<div class="rux-itin__day-title rux-trip-panel__section-label">Day ${dayNumberFor(stops, idx)} Itinerary</div>`
+			: "";
+
 		return `
       <div class="rux-itin__stop" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
         <div class="rux-card rux-itin__card${isStale ? " rux-itin__card--stale" : ""}">
-          <div class="rux-itin__card-meta">
-            <span class="rux-itin__badge rux-itin__badge--${type}">${TYPE_LABEL[type]}</span>
-            ${cardActions}
-          </div>
-          ${addrEl}
-          ${nameEl}
+          ${dayTitle}
           <div class="rux-itin__fields">
-            <div class="rux-itin__field-stack">
-              <span class="rux-field__label">${time1Label}</span>
-              <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" />
-            </div>
-            <div class="rux-itin__field-stack">
-              <span class="rux-field__label">${time2.label}</span>
-              <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" />
-            </div>
-            ${type !== "sleeper" ? `
-            <div class="rux-itin__field-stack">
-              <span class="rux-field__label">Miles</span>
-              <output class="rux-trip-panel__billing-output">${escHtml(milesVal)}</output>
-            </div>
-            <div class="rux-itin__field-stack">
-              <span class="rux-field__label">Drive</span>
-              <output class="rux-trip-panel__billing-output">${escHtml(driveVal)}</output>
-            </div>` : ""}
+            <span class="rux-itin__badge rux-itin__badge--${type}" title="${TYPE_LABEL[type]}" ${badgeActionAttrs}><span class="rux-icon" aria-hidden="true">${TYPE_ICON[type]}</span></span>
+            ${addrEl}
           </div>
+          <div class="rux-itin__time-row">
+            <span class="rux-icon rux-itin__time-icon" aria-hidden="true">schedule</span>
+            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" aria-label="${time1Label}" />
+            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" aria-label="${time2.label}" />
+          </div>
+          ${type !== "sleeper" ? `
+          <div class="rux-itin__fields--pair">
+            <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
+            <output class="rux-trip-panel__billing-output">${escHtml(milesVal)} <span class="rux-itin__unit">mi</span></output>
+            <output class="rux-trip-panel__billing-output">${escHtml(driveVal)} <span class="rux-itin__unit">hr</span></output>
+          </div>` : ""}
           ${statsSection}
         </div>
       </div>`;
@@ -591,10 +622,7 @@
 			autoPopulateReturnTimes(stops);
 			stopsEl.innerHTML =
 				stops
-					.map((item, idx) => {
-						if (item.type === "return") return "";
-						return item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops);
-					})
+					.map((item, idx) => (item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops)))
 					.join("")
 				+ renderAddStopActions(stops)
 				+ renderFinalDaySummary(stops);
@@ -1031,12 +1059,24 @@
 			if (!btn) return;
 			const itemEl = btn.closest("[data-stop-idx]");
 			if (!itemEl) return;
+			const what = btn.classList.contains("rux-itin__badge--endday") ? "day break" : "stop";
+			if (!confirm(`Remove this ${what}?`)) return;
 			const idx = parseInt(itemEl.dataset.stopIdx, 10);
 			stops.splice(idx, 1);
 			const nextIdx = idx < stops.length ? nextRealStopIndex(idx - 1) : -1;
 			if (nextIdx >= 0) markLegStale(nextIdx);
 			updateSummary();
 			renderStopList();
+		});
+
+		/* Badges with data-delete-stop are focusable spans (role="button"),
+		   not real <button>s, so Enter/Space needs wiring up manually. */
+		stopsEl.addEventListener("keydown", (e) => {
+			if (e.key !== "Enter" && e.key !== " ") return;
+			const el = e.target.closest("[data-delete-stop]");
+			if (!el) return;
+			e.preventDefault();
+			el.click();
 		});
 
 		/* — inline insert row — */

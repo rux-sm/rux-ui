@@ -12,12 +12,24 @@
    .rux-badge--info              Info-subtle bg · info fg
    .rux-badge--dot               ::before dot in currentColor (combine with a color modifier)
 
-   Stop-type labels — same base as .rux-badge, flex:none added for itinerary grid:
-   .rux-itin__badge--yard        success-subtle / success
-   .rux-itin__badge--pickup      warning-subtle / warning
-   .rux-itin__badge--stop        info-subtle / info
-   .rux-itin__badge--sleeper     purple-subtle / purple
-   .rux-itin__badge--return      danger-subtle / danger
+   Stop-type labels — same base as .rux-badge, flex:none added for itinerary grid.
+   Each pairs a subtle tint background with a solid matching-color border,
+   mirroring the "today" pill treatment in scheduler.css:
+   .rux-itin__badge--pickup      success-subtle bg · success border/fg (go)
+   .rux-itin__badge--stop        warning-subtle bg · warning border/fg
+   .rux-itin__badge--sleeper     info-subtle bg · info border/fg
+   .rux-itin__badge--return      danger-subtle bg · danger border/fg
+   .rux-itin__badge--endday      danger-subtle bg · danger border/fg (day-break header)
+   .rux-itin__badge--yard        success-subtle bg · success border/fg
+
+   .rux-itin__badge--pickup/--stop/--sleeper/--return render as 28x28 icon
+   badges (single icon glyph — see TYPE_ICON in itinerary.js) instead of a
+   text pill. This also keeps them lined up as the first column of
+   .rux-itin__fields' grid in itinerary.css. --endday keeps the wide text
+   pill (icon + date/"Day N" text) — its card has more room and that text
+   is real per-card info, not a repeated type label, so it isn't worth
+   shrinking to an icon-only badge. --yard is unused (demo-only) and left
+   as a text pill too.
    ========================================================================== */
 
 /* — base — */
@@ -32,10 +44,8 @@
   border: var(--rux-border-width) solid transparent;
   border-radius: var(--rux-radius-full);
   color: var(--rux-fg-muted);
-  font-size: var(--rux-text-2xs);
-  font-weight: var(--rux-weight-semibold);
-  letter-spacing: var(--rux-tracking-wide);
-  line-height: 1.5;
+  font-size: var(--rux-text-sm);
+  font-weight: var(--rux-weight-regular);
   white-space: nowrap;
 }
 .rux-badge > :where(.rux-icon) {
@@ -67,21 +77,58 @@
 .rux-itin__badge {
   display: inline-flex;
   align-items: center;
+  align-self: flex-start;
   gap: var(--rux-space-1);
   height: 28px;
   padding: 0 var(--rux-space-2);
   border: var(--rux-border-width) solid transparent;
-  border-radius: var(--rux-radius-full);
-  font-size: var(--rux-text-2xs);
-  font-weight: var(--rux-weight-semibold);
-  letter-spacing: var(--rux-tracking-wide);
-  line-height: 1.5;
+  border-radius: var(--rux-control-radius);
+
+  font-size: var(--rux-text-xs);
+  font-weight: var(--rux-weight-regular);
   white-space: nowrap;
   flex: none;
 }
 
-.rux-itin__badge--yard    { background: var(--rux-success-subtle); color: var(--rux-success); }
-.rux-itin__badge--pickup  { background: var(--rux-warning-subtle); color: var(--rux-warning); }
-.rux-itin__badge--stop    { background: var(--rux-info-subtle);    color: var(--rux-info); }
-.rux-itin__badge--sleeper { background: oklch(65% 0.15 295 / 0.14); color: oklch(72% 0.15 295); }
-.rux-itin__badge--return  { background: var(--rux-danger-subtle);  color: var(--rux-danger); }
+.rux-itin__badge > .rux-icon {
+  width: var(--rux-icon-sm, 16px);
+  height: var(--rux-icon-sm, 16px);
+  flex-shrink: 0;
+}
+
+.rux-itin__badge--yard    { background: var(--rux-success-subtle); border-color: var(--rux-success-bright); color: var(--rux-success-bright); }
+.rux-itin__badge--endday  { background: var(--rux-danger-subtle);  border-color: var(--rux-danger-bright);  color: var(--rux-danger-bright); }
+
+.rux-itin__badge--pickup,
+.rux-itin__badge--stop,
+.rux-itin__badge--sleeper,
+.rux-itin__badge--return {
+  /* --rux-itin-lead-w set on .rux-itin__card in itinerary.css — every row
+     in the card lines up on this same lead-column width, so it's defined
+     once there rather than hardcoded separately in each place. */
+  width: var(--rux-itin-lead-w, 28px);
+  padding: 0;
+  justify-content: center;
+  font-weight: var(--rux-weight-semibold);
+}
+
+.rux-itin__badge--pickup  { background: var(--rux-success-subtle); border-color: var(--rux-success-bright); color: var(--rux-success-bright); }
+.rux-itin__badge--stop    { background: var(--rux-warning-subtle); border-color: var(--rux-warning-bright); color: var(--rux-warning-bright); }
+.rux-itin__badge--sleeper { background: var(--rux-info-subtle);    border-color: var(--rux-info-bright);    color: var(--rux-info-bright); }
+.rux-itin__badge--return  { background: var(--rux-danger-subtle);  border-color: var(--rux-danger-bright);  color: var(--rux-danger-bright); }
+
+/* Badges doubling as the drag handle + delete trigger (itinerary.js sets
+   data-drag-handle/data-delete-stop instead of separate buttons). */
+.rux-itin__badge[data-drag-handle] {
+  cursor: grab;
+}
+.rux-itin__badge[data-drag-handle]:hover {
+  filter: brightness(1.15);
+}
+.rux-itin__badge[data-drag-handle]:active {
+  cursor: grabbing;
+}
+.rux-itin__badge[data-drag-handle]:focus-visible {
+  outline: none;
+  box-shadow: var(--rux-ring-focus);
+}

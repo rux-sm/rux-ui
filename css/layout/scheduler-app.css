@@ -566,7 +566,6 @@
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-3);
 	border: none;
-	border-radius: var(--rux-radius-md);
 	transition: background-color 0.15s ease;
 }
 .rux-right-panel__tabs [data-right-tabs] .rux-button.is-active,

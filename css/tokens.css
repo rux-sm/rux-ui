@@ -260,6 +260,17 @@
 	--rux-radius-xl: 24px; /* modals, sheets (depth 0)                    */
 	--rux-radius-full: 9999px; /* pills, avatars                              */
 
+	/* Semantic alias — every field-shaped box (inputs, selects, textareas,
+	   and read-only "summary" outputs like .rux-trip-panel__billing-output)
+	   shares this one radius so they all round the same regardless of which
+	   element renders them. */
+	--rux-field-radius: var(--rux-radius-xs);
+
+	/* Semantic alias — buttons, badges, and tab pills all round the same,
+	   per the --rux-radius-sm scale entry's own "inputs, buttons, controls"
+	   label above. */
+	--rux-control-radius: var(--rux-radius-xs);
+
 	/* ─── SHADOW · elevation ──────────────────────────────────────────────── */
 	/* Flat by default. Shadows are used sparingly — only to lift floating
      surfaces (menus, modals, toasts) above the canvas.                     */
