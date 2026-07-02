@@ -539,14 +539,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			addContactBtn.disabled = count >= MAX_CONTACTS;
 			contactList.style.display = count ? "flex" : "none";
 		};
-		contactList.addEventListener("click", (e) => {
-			const delBtn = e.target.closest("[data-contact-delete]");
-			if (!delBtn) return;
-			if (!confirm("Delete this contact?")) return;
-			delBtn.closest("[data-trip-contact]")?.remove();
-			syncContactBtns();
-		});
-		addContactBtn.addEventListener("click", () => {
+		const addContactRow = ({ focus = true } = {}) => {
 			if (contactCount() >= MAX_CONTACTS) return;
 			const idx = [1, 2].find(i => !root.querySelector(`#tp-trip${i}-name`));
 			const label = idx === 1 ? "Primary" : "Secondary";
@@ -559,9 +552,21 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				`<button class="rux-button rux-button--danger rux-button--icon" type="button" data-contact-delete aria-label="Delete contact"><span class="rux-icon">delete</span></button>`;
 			contactList.appendChild(row);
 			syncContactBtns();
-			row.querySelector(`#tp-trip${idx}-name`)?.focus();
+			if (focus) row.querySelector(`#tp-trip${idx}-name`)?.focus();
+		};
+		contactList.addEventListener("click", (e) => {
+			const delBtn = e.target.closest("[data-contact-delete]");
+			if (!delBtn) return;
+			if (!confirm("Delete this contact?")) return;
+			delBtn.closest("[data-trip-contact]")?.remove();
+			syncContactBtns();
 		});
+		addContactBtn.addEventListener("click", () => addContactRow());
 		syncContactBtns();
+		// Primary starts visible by default, like Booking Contact above it —
+		// no reason to make the first contact wait behind an extra "+ Add"
+		// click when the form always has room for it.
+		addContactRow({ focus: false });
 	}
 
 	/* ── Documents ────────────────────────────────────────────────────────── */
@@ -681,8 +686,14 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		if (docList) docList.innerHTML = "";
 		if (contactList) {
 			contactList.querySelectorAll("[data-trip-contact]").forEach(r => r.remove());
-			if (addContactBtn) addContactBtn.disabled = false;
-			contactList.style.display = "none";
+			if (addContactBtn) {
+				// Re-add the default-visible Primary row (see init above) instead
+				// of leaving the list empty/hidden after a reset.
+				addContactBtn.disabled = false;
+				addContactBtn.click();
+			} else {
+				contactList.style.display = "none";
+			}
 		}
 	});
 

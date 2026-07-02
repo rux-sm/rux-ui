@@ -262,15 +262,30 @@
    picker gets its own full-width row, and the co-driver/relief toggles get
    their own row right below it rather than sharing space with the picker. */
 
+/* Row spacing uses margin-top on every row but the first (via `> * + *`)
+   instead of a flex `gap` — a `gap` applies uniformly to every child with
+   no way to single one row out. This is what let .rux-itin__day-title get
+   double-spaced by its own margin stacking on the card's gap; using margin
+   throughout means a specific row (like the section label below) can get
+   its own spacing without fighting a shared gap value. */
 .rux-card {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-3);
+	gap: 0;
 	padding: var(--rux-space-3);
 	background: var(--rux-bg-level-2);
-	border-radius: var(--rux-radius-md);
-	border: solid transparent var(--rux-border-width);
+	border-radius: var(--rux-radius-0);
+	border: solid var(--rux-border-width) var(--rux-card-border);
 	overflow: visible;
+}
+.rux-card > * + * {
+	margin-top: var(--rux-card-gap);
+}
+/* Section label/head is followed by its own dedicated gap instead of the
+   card's general row gap — see --rux-section-label-gap in tokens.css. */
+.rux-trip-panel__section-head + *,
+.rux-card > .rux-trip-panel__section-label + * {
+	margin-top: var(--rux-section-label-gap);
 }
 
 /* — Form layout helpers — */
@@ -350,6 +365,7 @@
 	color: var(--rux-fg);
 	letter-spacing: normal;
 	text-transform: none;
+	line-height: 1;
 }
 .rux-trip-panel__section-label--minor {
 	color: var(--rux-fg-muted);
@@ -387,60 +403,41 @@
 	gap: var(--rux-space-3);
 }
 .rux-trip-panel__billing-step {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
-	column-gap: var(--rux-space-2);
-	row-gap: 0;
-	align-items: start;
-	padding: var(--rux-space-3);
-	border-radius: var(--rux-radius-md);
-	background: var(--rux-bg-level-2);
-}
-.rux-trip-panel__billing-step > .rux-switch {
-	grid-column: 2;
-	grid-row: 1;
-	align-self: start;
-	padding-top: 2px;
-}
-.rux-trip-panel__billing-step-body {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-3);
-	min-width: 0;
-	width: 100%;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3);
+	border-radius: var(--rux-card-radius);
+	background: var(--rux-bg-level-2);
+	border: solid var(--rux-border-width) var(--rux-card-border);
 }
-
+/* Field + status + toggle live inline on one row, below the title — the
+   field is always rendered (never collapsed); JS just flips its `disabled`
+   attribute with the toggle, so .rux-input:disabled (form.css) is what
+   communicates "not active yet" instead of a hide/reveal animation. */
+.rux-trip-panel__billing-step-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+}
+.rux-trip-panel__billing-step-row .rux-input {
+	flex: 1;
+	min-width: 0;
+}
+.rux-trip-panel__billing-step-status {
+	flex: none;
+	white-space: nowrap;
+}
 .rux-trip-panel__billing-step.is-enabled .rux-trip-panel__billing-step-status {
 	color: var(--rux-accent);
+}
+.rux-trip-panel__billing-step-row .rux-switch {
+	flex: none;
 }
 .rux-trip-panel__billing-step-help {
 	color: var(--rux-fg-subtle);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-tight);
-}
-.rux-trip-panel__billing-step-content {
-	display: grid;
-	grid-template-rows: 0fr;
-	grid-column: 1 / -1;
-	width: 100%;
-	margin-top: 0;
-	transition:
-		grid-template-rows var(--rux-duration-base) var(--rux-ease-out),
-		margin-top var(--rux-duration-base) var(--rux-ease-out);
-}
-.rux-trip-panel__billing-step-inner {
-	overflow: hidden;
-	min-height: 0;
-}
-.rux-trip-panel__billing-step.is-enabled .rux-trip-panel__billing-step-content {
-	grid-template-rows: 1fr;
-	margin-top: var(--rux-space-2);
-}
-.rux-trip-panel__billing-step .rux-input,
-.rux-trip-panel__billing-step .rux-select,
-.rux-trip-panel__billing-step .rux-input-group {
-	width: 100%;
-	min-width: 0;
 }
 .rux-trip-panel__billing-step--payments {
 	grid-template-columns: minmax(0, 1fr);
@@ -897,5 +894,6 @@
 	font-weight: var(--rux-weight-medium);
 	color: var(--rux-fg-muted);
 	letter-spacing: var(--rux-tracking-wide);
+	line-height: 1;
 }
 

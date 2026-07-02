@@ -20,16 +20,21 @@
    ---------
    .rux-itin                   Outer container (flush against pane edges)
    .rux-itin__summary          3-stat strip at top
-   .rux-itin__day              Day-break card: pill + drag/delete + stat grid,
-                                styled like .rux-itin__summary minus its buttons
+   .rux-itin__day              Day-break card: icon + stat grid, actions
+                                behind its own more_vert menu (Delete only)
    .rux-itin__day--final       Trailing (not-yet-closed) day — same card, no
-                                drag/delete since it isn't a real list item
+                                menu since it isn't a real list item
    .rux-itin__stop             Rail + card row for one stop
    .rux-itin__rail             Dot + vertical connecting line
-   .rux-itin__card             Elevated card: badge+address row (badge alone
-                                for Sleeper) · time-fields row · Miles/Drive
-                                row (not Sleeper) — drag/delete live on the
-                                badge, see .rux-itin__badge[data-drag-handle]
+   .rux-itin__card             Elevated card: label row (ending in a
+                                more_horiz trigger) · address row · time-
+                                fields row · Miles/Drive row (not Sleeper).
+                                All actions — Expand/Collapse, Move, Delete —
+                                live behind that one trigger; see
+                                .rux-itin__stop-menu and openStopMenu() in
+                                itinerary.js. The drag handle in the
+                                Miles/Drive row only exists in the DOM while
+                                a stop is armed via "Move".
    .rux-itin__actions          Add-stop action buttons at bottom
 
    A day's stops + its closing Day-N card sit flush (0 gap) and read as one
@@ -80,6 +85,7 @@
    day's first stop. */
 .rux-itin__day {
 	margin: var(--rux-space-3) var(--rux-space-3);
+	gap: var(--rux-space-2);
 }
 
 .rux-itin__stop:has(+ .rux-itin__day) .rux-itin__card {
@@ -96,7 +102,7 @@
    .rux-itin__card, and a day-break header isn't nested inside one. */
 .rux-itin__day-header {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w, 28px) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1fr) var(--rux-itin-lead-w, 28px);
 	align-items: center;
 	column-gap: var(--rux-space-2);
 }
@@ -106,18 +112,6 @@
 .rux-itin__day-stats {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	column-gap: var(--rux-space-2);
-}
-
-/* Sleeper card: reset status + rest duration, same boxed-field look as
-   Miles/Drive elsewhere — status sits where Miles would (no distance on a
-   sleeper leg), duration where Drive would. Fallback matches every other
-   lead-column usage in this file (see .rux-itin__day-header) — currently
-   always inside a .rux-itin__card where the variable IS set, but relying
-   on that implicitly is exactly what broke the day-break header before. */
-.rux-itin__sleeper-stats {
-	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w, 28px) minmax(0, 1fr) minmax(0, 1fr);
 	column-gap: var(--rux-space-2);
 }
 
@@ -140,11 +134,9 @@
 
 /* Day-section header — first thing inside the first stop card of each day
    (see isFirstStopOfDay in itinerary.js). Lives inside .rux-itin__card like
-   any other card content, so the card's own padding handles the inset —
-   just needs space below before the badge/fields row. */
-.rux-itin__day-title {
-	margin-bottom: var(--rux-space-2);
-}
+   any other card content, so the card's own padding handles the inset.
+   Spacing below it comes from .rux-itin__card's row-margin rule, same as
+   every other row — no margin of its own needed. */
 
 /* — Card — */
 
@@ -198,30 +190,68 @@
 
 /* — Card content columns —
    Every row in a stop card lines up on the same two columns: a fixed-width
-   "lead" column (the badge, or an empty spacer for the time row and
-   Miles/Drive) and a content column that always starts at the same x as
-   the address field. --rux-itin-lead-w is also read by .rux-itin__badge's
-   fixed width in badges.css, so the two stay in sync from one place.
-   Row gap is tightened from .rux-card's default --rux-space-3 to
-   --rux-space-2 — address/time/stats read as one grouped stop, not three
-   separately-spaced sections. */
+   "trailing" column (the badge, or an empty spacer for the time row and
+   Miles/Drive) and a content column that always starts flush with the card
+   edge. The trailing column sits on the RIGHT — badge/chevron read as
+   actions attached to the content, not a leading label — so the address
+   field, time inputs, and stats values all line up on the left, with the
+   badge/chevron/spacer sharing one column on the right. --rux-itin-lead-w
+   is also read by .rux-itin__badge's fixed width in badges.css, so the two
+   stay in sync from one place.
+
+   Row spacing uses margin-top on every row but the first (via the `> * + *`
+   adjacent-sibling rule below) instead of a flex `gap` — a `gap` on the
+   card would apply uniformly to every child with no way to single one row
+   out, which is exactly what caused .rux-itin__day-title to get double
+   spacing (its own margin-bottom stacking on top of the card's gap). One
+   row's spacing can now be tuned independently by giving that row its own
+   margin-top, without touching every other row. --rux-stack-gap is tighter
+   than .rux-card's own default --rux-space-3 — address/time/stats read as
+   one grouped stop, not three separately-spaced sections. */
 .rux-itin__card {
 	--rux-itin-lead-w: 28px;
-	gap: var(--rux-space-2);
+	gap: 0;
+}
+.rux-itin__card > * + * {
+	margin-top: var(--rux-stack-gap);
+}
+
+/* Label sits in its own row above the address field, with the more_horiz
+   trigger hanging off its right edge — absolutely positioned so the row's
+   height always comes from the label text's own line-height (line-height:1
+   at --rux-text-xs, see trip-panel.css), never from the taller icon-button
+   box next to it. */
+.rux-itin__label-row {
+	position: relative;
+	display: flex;
+	align-items: center;
+}
+.rux-itin__label-row [data-stop-menu] {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 .rux-itin__fields {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w, 28px) 1fr;
+	grid-template-columns: 1fr var(--rux-itin-lead-w, 28px);
 	column-gap: var(--rux-space-2);
 	align-items: end;
 }
-/* Miles/Drive row: lead column holds the expand/collapse toggle instead of
-   a bare spacer — .rux-itin__stats-values does its own 2-column split and
-   owns the collapse animation, so this outer grid only needs 2 columns. */
+/* Trailing column is now always a bare spacer (see .rux-itin__label-row
+   above) — kept only so the address field's right edge still lines up with
+   the time-row/Miles-Drive row's reserved lead column. */
+/* Miles/Drive row: trailing column holds the drag handle instead of a bare
+   spacer — .rux-itin__stats-values does its own 2-column split and owns the
+   collapse animation, so this outer grid only needs 2 columns. The drag
+   handle is only ever in the DOM at all while stop.moveMode is true (see
+   dragHandleEl in itinerary.js) — armed via the stop-actions menu's "Move"
+   item, one-shot — so no CSS visibility toggle is needed here; it just
+   renders or it doesn't. */
 .rux-itin__fields--pair {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w, 28px) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1fr) var(--rux-itin-lead-w, 28px);
 	column-gap: var(--rux-space-2);
 }
 
@@ -237,23 +267,9 @@
 	max-height: calc(var(--rux-field-height) * 1.5);
 }
 
-[data-toggle-stats] .rux-icon {
-	transition: transform var(--rux-duration-base) var(--rux-ease-out);
-}
-[data-toggle-stats][aria-expanded="true"] .rux-icon {
-	transform: rotate(180deg);
-}
-
-/* align-self:flex-start (badges.css) keeps the badge from stretching in
-   flex-column card contexts elsewhere; here it needs to sit level with the
-   bottom of the address field instead. */
-.rux-itin__fields > .rux-itin__badge {
-	align-self: end;
-}
-
 .rux-itin__time-row {
 	display: grid;
-	grid-template-columns: var(--rux-itin-lead-w, 28px) 1fr 1fr;
+	grid-template-columns: 1fr 1fr var(--rux-itin-lead-w, 28px);
 	column-gap: var(--rux-space-2);
 	align-items: center;
 }
@@ -415,5 +431,24 @@
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
+}
+
+/* — Stop-actions menu (Expand/Move/Delete) —
+   Reuses .rux-menu/.rux-menu__item (css/base/navigation.css) for the menu
+   chrome/items; this just layers on the fixed-position popover behavior,
+   same as .rux-itin__suggestions above. */
+.rux-itin__stop-menu {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+}
+.rux-itin__stop-menu[hidden] {
+	display: none;
+}
+
+/* Card currently armed for a one-shot drag (see stop.moveMode) — a subtle
+   cue that this is the one card that will move if you drag it right now. */
+.rux-itin__card.is-move-mode {
+	outline: var(--rux-border-width) solid var(--rux-accent);
+	outline-offset: -1px;
 }
 

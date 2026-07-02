@@ -306,39 +306,42 @@
 		return `<div class="rux-itin__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}</div>`;
 	}
 
+	// Returns just the two boxed outputs (status + duration) — the caller
+	// wraps them in the same collapsible .rux-itin__stats-values/--pair
+	// shell every other type's Miles/Drive row uses, so Sleeper's reset
+	// status hides behind the same toggle instead of always showing.
 	function renderSleeperStats(stop, stops) {
 		const dep = parseTimeToMins(stop.departPrev);
 		const arr = parseTimeToMins(stop.arrive);
-		if (dep === null || arr === null) return "";
-		const thisMins = minutesBetween(dep, arr);
-		if (thisMins === null) return "";
+		const thisMins = dep !== null && arr !== null ? minutesBetween(dep, arr) : null;
 
 		const RESET = 8 * 60;
 		const SPLIT_MIN = 2 * 60;
 
-		const allMins = stops
-			.filter((s) => s.type === "sleeper")
-			.map((s) => minutesBetween(parseTimeToMins(s.departPrev), parseTimeToMins(s.arrive)) || 0)
-			.filter((d) => d > 0);
+		let statusClass = "";
+		let statusVal = "—";
+		let restVal = "—";
+		if (thisMins !== null) {
+			const allMins = stops
+				.filter((s) => s.type === "sleeper")
+				.map((s) => minutesBetween(parseTimeToMins(s.departPrev), parseTimeToMins(s.arrive)) || 0)
+				.filter((d) => d > 0);
 
-		const totalRest = allMins.reduce((a, b) => a + b, 0);
-		const singleOk = allMins.some((d) => d >= RESET);
-		const splitPairs = allMins.filter((d) => d >= SPLIT_MIN);
-		const splitOk = !singleOk && splitPairs.length >= 2 && splitPairs[0] + splitPairs[1] >= RESET;
-		const resetOk = singleOk || splitOk;
+			const singleOk = allMins.some((d) => d >= RESET);
+			const splitPairs = allMins.filter((d) => d >= SPLIT_MIN);
+			const splitOk = !singleOk && splitPairs.length >= 2 && splitPairs[0] + splitPairs[1] >= RESET;
+			const resetOk = singleOk || splitOk;
 
-		// Same read-only-field look as Miles/Drive: status where Miles would
-		// go (this card has no distance of its own), duration formatted like
-		// every other "hr" field instead of the old "8h"/"1h 30m" shorthand.
-		const statusClass = resetOk ? " rux-itin__seg-stat--ok" : (thisMins < SPLIT_MIN ? " rux-itin__seg-stat--warn" : "");
-		const statusVal = resetOk ? "Reset" : "Not reset";
-		const restVal = formatDriveValue(thisMins);
+			// Same read-only-field look as Miles/Drive: status where Miles would
+			// go (this card has no distance of its own), duration formatted like
+			// every other "hr" field instead of the old "8h"/"1h 30m" shorthand.
+			statusClass = resetOk ? " rux-itin__seg-stat--ok" : (thisMins < SPLIT_MIN ? " rux-itin__seg-stat--warn" : "");
+			statusVal = resetOk ? "Reset" : "Not reset";
+			restVal = formatDriveValue(thisMins);
+		}
 
-		return `<div class="rux-itin__sleeper-stats">
-      <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
-      <output class="rux-trip-panel__billing-output${statusClass}">${statusVal}</output>
-      <output class="rux-trip-panel__billing-output">${escHtml(restVal)} <span class="rux-itin__unit">hr</span></output>
-    </div>`;
+		return `<output class="rux-trip-panel__billing-output${statusClass}">${statusVal}</output>
+      <output class="rux-trip-panel__billing-output">${escHtml(restVal)} <span class="rux-itin__unit">hr</span></output>`;
 	}
 
 	/* ── Render ──────────────────────────────────────────────────────────── */
@@ -457,11 +460,12 @@
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
       <div class="rux-card rux-itin__day rux-itin__day--final">
+        <label class="rux-field__label">End of Day ${dayNum}</label>
         <div class="rux-itin__day-header">
+          ${renderDayStatsGrid(stats)}
           <span class="rux-itin__badge rux-itin__badge--endday" title="Day ${dayNum}" aria-label="Day ${dayNum} summary">
             <span class="rux-icon" aria-hidden="true">event_busy</span>
           </span>
-          ${renderDayStatsGrid(stats)}
         </div>
       </div>`;
 	}
@@ -476,20 +480,21 @@
 	function renderDay(item, idx, stops) {
 		const stats = computeSegmentStats(stops, idx);
 		const label = formatDayLabel(item.label);
+		const dayNum = dayNumberFor(stops, idx);
 		return `
-      <div class="rux-card rux-itin__day" data-stop-idx="${idx}" draggable="true">
+      <div class="rux-card rux-itin__day" data-stop-idx="${idx}" title="${escHtml(label)}">
+        <label class="rux-field__label">End of Day ${dayNum}</label>
         <div class="rux-itin__day-header">
-          <span class="rux-itin__badge rux-itin__badge--endday" title="${escHtml(label)}"
-                data-drag-handle data-delete-stop role="button" tabindex="0"
-                aria-label="${escHtml(label)} — drag to reorder, click to remove">
-            <span class="rux-icon" aria-hidden="true">event_busy</span>
-          </span>
           ${renderDayStatsGrid(stats)}
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-stop-menu
+                  aria-haspopup="menu" aria-expanded="false" aria-label="${escHtml(label)} day break actions">
+            <span class="rux-icon" aria-hidden="true">more_vert</span>
+          </button>
         </div>
       </div>`;
 	}
 
-	const TYPE_LABEL = { pickup: "Pick-up", stop: "Stop", sleeper: "Sleeper", return: "Return" };
+	const TYPE_LABEL = { pickup: "Pickup", stop: "Stop", sleeper: "Sleeper", return: "Return" };
 	// Icon shown in the 28x28 badge — TYPE_LABEL stays the accessible name
 	// (title/aria-label). Pick-up and Stop share location_on since both are
 	// just "arrive at a place"; return uses home for "back to the yard".
@@ -509,6 +514,15 @@
 		return stops.slice(0, idx + 1).filter((s) => s.type === "stop").length;
 	}
 
+	// Persistent label above the address field — unlike the badge (icon +
+	// color only) or the placeholder (disappears once filled in), this stays
+	// visible so a long list of stops still reads clearly at a glance.
+	function fieldLabelFor(stops, idx, type) {
+		if (type === "return") return "Return to Yard";
+		if (type === "stop") return `Stop ${stopNumberFor(stops, idx)}`;
+		return TYPE_LABEL[type];
+	}
+
 	// Sleeper always rests wherever the previous real stop is (see
 	// sleeperFromPrev) — computed fresh from the current list on every render
 	// so the displayed address can never go stale, unlike stop.address itself
@@ -526,7 +540,6 @@
 		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
 		const isReturn = type === "return";
 		const isPickup = type === "pickup";
-		const statsSection = type === "sleeper" ? renderSleeperStats(stop, stops) : "";
 		const isStale = stop.routeStatus === "stale" && type !== "sleeper";
 
 		const time1Label = type === "sleeper" ? "Str" : "Dep";
@@ -550,19 +563,20 @@
 		// the yard name folds into the accessible label instead of its own
 		// heading (which used to awkwardly interrupt the card's field rows).
 		const sleeperAddr = type === "sleeper" ? previousStopAddress(stops, idx) : "";
+		const addrFieldId = `itin-addr-${idx}`;
 		const addrEl = type === "sleeper"
 			? `<div class="rux-itin__address-wrap">
-               <input class="rux-input" type="text" value="${escHtml(sleeperAddr)}" readonly
+               <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(sleeperAddr)}" readonly
                       placeholder="Inherits previous stop's address"
                       aria-label="${sleeperAddr ? `Resting at ${escHtml(sleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
              </div>`
 			: isReturn
 				? `<div class="rux-itin__address-wrap">
-               <input class="rux-input" type="text" value="${escHtml(stop.address)}" readonly
+               <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(stop.address)}" readonly
                       aria-label="${escHtml(stop.name)} — ${escHtml(stop.address)}" />
              </div>`
 				: `<div class="rux-itin__address-wrap${showAddrIcon ? " is-verified" : ""}">
-               <input class="rux-input" type="text" data-field="address" autocomplete="street-address"
+               <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="street-address"
                       value="${escHtml(stop.address)}" placeholder="${addressPlaceholder}" />
                ${isStale
 				? '<span class="rux-icon rux-itin__addr-check rux-itin__addr-check--stale">error</span>'
@@ -572,15 +586,42 @@
              </div>`;
 
 		const isDraggable = type !== "pickup" && type !== "return";
-		// Drag-handle/delete buttons folded into the badge itself: drag from
-		// the badge to reorder, click it to remove the stop. Keeps the card
-		// meta row down to just the address for types that have one.
-		const badgeActionAttrs = isDraggable
-			? `data-drag-handle data-delete-stop role="button" tabindex="0" aria-label="${TYPE_LABEL[type]} — drag to reorder, click to remove"`
-			: `aria-label="${TYPE_LABEL[type]}"`;
+		// The type badge is gone from the address row — the field label above
+		// already says "Pickup"/"Stop 1"/etc, so a second color-coded icon
+		// there was redundant. In its place: one more_horiz trigger sharing the
+		// label row (see .rux-itin__label-row), opening a menu (built in
+		// initItinerary) with whichever of Expand/Move/Delete actually apply to
+		// this type — see openStopMenu(). The old standalone delete
+		// button/chevron/drag handle are gone; this is the only action
+		// affordance on the card now.
+		const menuTriggerEl = `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--xs" data-stop-menu
+              aria-haspopup="menu" aria-expanded="false" aria-label="${TYPE_LABEL[type]} actions">
+              <span class="rux-icon" aria-hidden="true">more_horiz</span>
+            </button>`;
+		// Absolutely positioned inside .rux-itin__label-row (itinerary.css) so
+		// the row's height always comes from the label text's own line-height,
+		// never from the larger icon-button box.
+		const fieldLabel = `<div class="rux-itin__label-row">
+              <label class="rux-field__label" for="${addrFieldId}">${escHtml(fieldLabelFor(stops, idx, type))}</label>
+              ${menuTriggerEl}
+            </div>`;
+		// Drag handle only exists in the DOM while this stop is armed for a
+		// move (stop.moveMode, set by the menu's Move item) — one-shot: the
+		// drop handler clears moveMode right after a successful reorder, and
+		// Escape/outside-click clear it if the user backs out without
+		// dragging. Not draggable types (Pickup/Return) never get one.
+		const dragHandleEl = isDraggable && stop.moveMode
+			? `<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-drag-handle aria-label="Drag to reorder ${TYPE_LABEL[type]}">
+              <span class="rux-icon" aria-hidden="true">drag_indicator</span>
+            </button>`
+			: `<span class="rux-itin__lead-spacer" aria-hidden="true"></span>`;
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
 		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";
+		const statsInner = type === "sleeper"
+			? renderSleeperStats(stop, stops)
+			: `<output class="rux-trip-panel__billing-output">${escHtml(milesVal)} <span class="rux-itin__unit">mi</span></output>
+      <output class="rux-trip-panel__billing-output">${escHtml(driveVal)} <span class="rux-itin__unit">hr</span></output>`;
 
 		// Day-section header lives inside the card itself, like every other
 		// piece of card content, rather than floating above it as bare text.
@@ -591,33 +632,26 @@
 
 		return `
       <div class="rux-itin__stop" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
-        <div class="rux-card rux-itin__card${isStale ? " rux-itin__card--stale" : ""}">
+        <div class="rux-card rux-itin__card${isStale ? " rux-itin__card--stale" : ""}${stop.moveMode ? " is-move-mode" : ""}">
           ${dayTitle}
+          ${fieldLabel}
           <div class="rux-itin__fields">
-            <span class="rux-itin__badge rux-itin__badge--${type}" title="${TYPE_LABEL[type]}" ${badgeActionAttrs}><span class="rux-icon" aria-hidden="true">${TYPE_ICON[type]}</span></span>
             ${addrEl}
+            <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
           </div>
           <div class="rux-itin__time-row">
-            ${type !== "sleeper" ? `
-            <button class="rux-button rux-button--ghost rux-button--icon" type="button"
-                    data-toggle-stats aria-expanded="${!!stop.statsExpanded}"
-                    aria-label="${stop.statsExpanded ? "Hide" : "Show"} mileage and drive time">
-              <span class="rux-icon" aria-hidden="true">keyboard_arrow_down</span>
-            </button>` : `<span class="rux-itin__lead-spacer" aria-hidden="true"></span>`}
             <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
                    aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
             <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
                    aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
-          </div>
-          ${type !== "sleeper" ? `
-          <div class="rux-itin__fields--pair">
             <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
+          </div>
+          <div class="rux-itin__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
             <div class="rux-itin__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
-              <output class="rux-trip-panel__billing-output">${escHtml(milesVal)} <span class="rux-itin__unit">mi</span></output>
-              <output class="rux-trip-panel__billing-output">${escHtml(driveVal)} <span class="rux-itin__unit">hr</span></output>
+              ${statsInner}
             </div>
-          </div>` : ""}
-          ${statsSection}
+            ${dragHandleEl}
+          </div>
         </div>
       </div>`;
 	}
@@ -734,6 +768,72 @@
 
 		let dragSrcIdx = null;
 		let dragFromHandle = false;
+
+		/* — stop-actions menu (Expand/Move/Delete) — singleton popover, same
+		   shape as suggestionsEl below: created once, appended to
+		   document.body, positioned against whichever trigger opened it. */
+		let activeMenuIdx = null;
+
+		const stopMenuEl = document.createElement("div");
+		stopMenuEl.className = "rux-itin__stop-menu rux-menu";
+		stopMenuEl.hidden = true;
+		stopMenuEl.setAttribute("role", "menu");
+		document.body.appendChild(stopMenuEl);
+
+		function closeStopMenu() {
+			if (activeMenuIdx !== null) {
+				stopsEl.querySelector(`[data-stop-idx="${activeMenuIdx}"] [data-stop-menu]`)?.setAttribute("aria-expanded", "false");
+			}
+			stopMenuEl.hidden = true;
+			stopMenuEl.innerHTML = "";
+			activeMenuIdx = null;
+		}
+
+		function positionStopMenu(triggerEl) {
+			const rect = triggerEl.getBoundingClientRect();
+			const margin = 8;
+			// Measure at real size before placing, same visibility trick used
+			// by bus-picker.js's position() to avoid a flash at (0,0).
+			stopMenuEl.style.visibility = "hidden";
+			stopMenuEl.hidden = false;
+			const menuRect = stopMenuEl.getBoundingClientRect();
+			const left = Math.max(margin, Math.min(rect.right - menuRect.width, window.innerWidth - menuRect.width - margin));
+			const top = (rect.bottom + 4 + menuRect.height <= window.innerHeight - margin)
+				? rect.bottom + 4
+				: Math.max(margin, rect.top - menuRect.height - 4);
+			stopMenuEl.style.left = `${left}px`;
+			stopMenuEl.style.top = `${top}px`;
+			stopMenuEl.style.visibility = "";
+		}
+
+		// Which actions apply to a given stop — Pickup/Return only ever get
+		// Expand (fixed anchors, nothing to move or delete); Stop/Sleeper get
+		// all three; the "day" break marker only ever gets Delete.
+		function menuItemsFor(stop) {
+			if (stop.type === "day") {
+				return [{ action: "delete", label: "Delete", danger: true }];
+			}
+			const expandNoun = stop.type === "sleeper" ? "reset status" : "mileage and drive time";
+			const items = [{ action: "expand", label: `${stop.statsExpanded ? "Collapse" : "Expand"} ${expandNoun}` }];
+			if (stop.type === "stop" || stop.type === "sleeper") {
+				items.push({ divider: true });
+				items.push({ action: "move", label: "Move" });
+				items.push({ action: "delete", label: "Delete", danger: true });
+			}
+			return items;
+		}
+
+		function openStopMenu(idx, triggerEl) {
+			const stop = stops[idx];
+			if (!stop) return;
+			activeMenuIdx = idx;
+			stopMenuEl.innerHTML = menuItemsFor(stop).map((item) => item.divider
+				? `<div class="rux-menu__divider"></div>`
+				: `<button type="button" class="rux-menu__item${item.danger ? " rux-menu__item--danger" : ""}" role="menuitem" data-menu-action="${item.action}">${escHtml(item.label)}</button>`
+			).join("");
+			triggerEl.setAttribute("aria-expanded", "true");
+			positionStopMenu(triggerEl);
+		}
 
 		let addressSearchTimer = null;
 		let addressSearchSeq = 0;
@@ -1143,44 +1243,89 @@
 			}
 		});
 
-		/* — delete stop / day — */
+		/* — stop-actions menu: open/close trigger — */
 		stopsEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-delete-stop]");
-			if (!btn) return;
-			const itemEl = btn.closest("[data-stop-idx]");
-			if (!itemEl) return;
-			const what = btn.classList.contains("rux-itin__badge--endday") ? "day break" : "stop";
-			if (!confirm(`Remove this ${what}?`)) return;
-			const idx = parseInt(itemEl.dataset.stopIdx, 10);
-			stops.splice(idx, 1);
-			const nextIdx = idx < stops.length ? nextRealStopIndex(idx - 1) : -1;
-			if (nextIdx >= 0) markLegStale(nextIdx);
-			updateSummary();
-			renderStopList();
-		});
-
-		/* Badges with data-delete-stop are focusable spans (role="button"),
-		   not real <button>s, so Enter/Space needs wiring up manually. */
-		stopsEl.addEventListener("keydown", (e) => {
-			if (e.key !== "Enter" && e.key !== " ") return;
-			const el = e.target.closest("[data-delete-stop]");
-			if (!el) return;
-			e.preventDefault();
-			el.click();
-		});
-
-		/* — toggle Miles/Drive stats — */
-		stopsEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-toggle-stats]");
+			const btn = e.target.closest("[data-stop-menu]");
 			if (!btn) return;
 			const itemEl = btn.closest("[data-stop-idx]");
 			if (!itemEl) return;
 			const idx = parseInt(itemEl.dataset.stopIdx, 10);
-			stops[idx].statsExpanded = !stops[idx].statsExpanded;
+			// Re-clicking the trigger that's already open just closes it.
+			if (activeMenuIdx === idx && !stopMenuEl.hidden) {
+				closeStopMenu();
+				return;
+			}
+			closeStopMenu();
+			openStopMenu(idx, btn);
+		});
+
+		/* — stop-actions menu: item selection — the popover lives on
+		   document.body (see stopMenuEl above), not inside stopsEl, so this
+		   listener is on the menu itself rather than delegated from stopsEl. */
+		stopMenuEl.addEventListener("click", (e) => {
+			const btn = e.target.closest("[data-menu-action]");
+			if (!btn) return;
+			const idx = activeMenuIdx;
+			const action = btn.dataset.menuAction;
+			closeStopMenu();
+			if (idx === null) return;
+			const stop = stops[idx];
+			if (!stop) return;
+
+			if (action === "expand") {
+				stop.statsExpanded = !stop.statsExpanded;
+				renderStopList();
+				// renderStopList() rebuilds innerHTML, destroying the clicked
+				// trigger — re-focus its replacement so keyboard users don't
+				// lose their place.
+				stopsEl.querySelector(`[data-stop-idx="${idx}"] [data-stop-menu]`)?.focus();
+			} else if (action === "delete") {
+				const what = stop.type === "day" ? "day break" : "stop";
+				if (!confirm(`Remove this ${what}?`)) return;
+				stops.splice(idx, 1);
+				const nextIdx = idx < stops.length ? nextRealStopIndex(idx - 1) : -1;
+				if (nextIdx >= 0) markLegStale(nextIdx);
+				updateSummary();
+				renderStopList();
+			} else if (action === "move") {
+				// Only one card can be armed for a move at a time.
+				stops.forEach((s) => { if (s) s.moveMode = false; });
+				stop.moveMode = true;
+				renderStopList();
+				stopsEl.querySelector(`[data-stop-idx="${idx}"] [data-drag-handle]`)?.focus();
+			}
+		});
+
+		/* — stop-actions menu: dismissal — Escape or clicking outside the
+		   menu (and not on the trigger that opens/closes it, which the click
+		   handler above already toggles correctly on its own). */
+		document.addEventListener("mousedown", (e) => {
+			if (stopMenuEl.hidden) return;
+			if (stopMenuEl.contains(e.target)) return;
+			if (e.target.closest("[data-stop-menu]")) return;
+			closeStopMenu();
+		});
+		document.addEventListener("keydown", (e) => {
+			if (e.key !== "Escape" || stopMenuEl.hidden) return;
+			closeStopMenu();
+		});
+
+		/* — Move mode: one-shot — armed by the menu's "Move" item, disarmed
+		   by a successful drop (see the drop handler below), or backed out
+		   of here via Escape / clicking anywhere but the drag handle itself. */
+		document.addEventListener("mousedown", (e) => {
+			if (e.target.closest("[data-drag-handle]")) return;
+			const movingIdx = stops.findIndex((s) => s?.moveMode);
+			if (movingIdx < 0) return;
+			stops[movingIdx].moveMode = false;
 			renderStopList();
-			// renderStopList() rebuilds innerHTML, destroying the clicked button —
-			// re-focus its replacement so keyboard users don't lose their place.
-			stopsEl.querySelector(`[data-stop-idx="${idx}"] [data-toggle-stats]`)?.focus();
+		});
+		document.addEventListener("keydown", (e) => {
+			if (e.key !== "Escape") return;
+			const movingIdx = stops.findIndex((s) => s?.moveMode);
+			if (movingIdx < 0) return;
+			stops[movingIdx].moveMode = false;
+			renderStopList();
 		});
 
 		/* — inline insert row — */
@@ -1221,6 +1366,15 @@
 			el?.classList.remove("is-dragging");
 			stopsEl.querySelectorAll(".is-drag-target").forEach((t) => t.classList.remove("is-drag-target"));
 			dragSrcIdx = null;
+			// Fallback for a cancelled drag (dropped outside a valid target) —
+			// the drop handler already clears moveMode on a successful move,
+			// but dragend fires either way, so this is what makes "Move" truly
+			// one-shot even when nothing was actually reordered.
+			const stillMoving = stops.find((s) => s?.moveMode);
+			if (stillMoving) {
+				stillMoving.moveMode = false;
+				renderStopList();
+			}
 		});
 
 		stopsEl.addEventListener("dragover", (e) => {
@@ -1242,6 +1396,7 @@
 			const toIdx = parseInt(el.dataset.stopIdx, 10);
 			if (toIdx === dragSrcIdx) return;
 			const [moved] = stops.splice(dragSrcIdx, 1);
+			moved.moveMode = false; // one-shot — the handle only reappears if Move is picked again
 			stops.splice(toIdx, 0, moved);
 			const firstAffected = Math.min(dragSrcIdx, toIdx);
 			markAffectedLegsStale(firstAffected);

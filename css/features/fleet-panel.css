@@ -161,6 +161,7 @@
 	letter-spacing: var(--rux-tracking-wide);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+	line-height: 1;
 }
 
 /* — Equipment column — */

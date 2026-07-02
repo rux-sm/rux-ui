@@ -32,7 +32,7 @@
 
 .scheduler-app {
 	--scheduler-app-gap: var(--rux-space-3);
-	--scheduler-app-card-radius: var(--rux-radius-lg);
+	--scheduler-app-card-radius: var(--rux-radius-md);
 	display: grid;
 	grid-template-rows: auto auto minmax(0, 1fr);
 	width: 100%;
@@ -188,7 +188,7 @@
 	overflow: hidden;
 	background: var(--rux-bg-sunken);
 	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-md);
+	border-radius: var(--rux-radius-full);
 	cursor: pointer;
 }
 

@@ -1,221 +1,90 @@
 /* ==========================================================================
    RUX UI — TOKENS
    --------------------------------------------------------------------------
-   The single source of truth for every visual decision. All design tokens
-   live in this file with one flat namespace: --rux-*.
+   Primitive tokens define raw scales and constants. Semantic tokens map
+   those primitives to UI roles and live together at the end of :root.
 
    Maintenance rules
    -----------------
-   1. Everything in this file is prefixed --rux-*.  No other prefixes.
-   2. Tokens are organized by *kind* (color, space, type) not by component.
-      Component-specific values stay in components.css, not here.
-   3. Edit values here to retheme the entire system. Component CSS should
-      never hardcode a color, radius, or shadow.
-   4. Dark mode is the only mode for now. The system declares
-      color-scheme: dark on :root.
-
-   Contents (token groups)
-   -----------------------
-   Color · base palette       --rux-bg-*, --rux-color-white
-   Color · text               --rux-fg-*
-   Color · border             --rux-border-*, --rux-grid-*
-   Color · controls           --rux-control-*
-   Color · accent             --rux-accent-*  (hue-based theming)
-   Color · status             --rux-success-*, --rux-warning-*, --rux-info-*, --rux-danger-*
-   Typography · family        --rux-font-*
-   Typography · size          --rux-text-*
-   Typography · weight        --rux-weight-*
-   Typography · line-height   --rux-leading-*
-   Typography · tracking      --rux-tracking-*
-   Spacing                    --rux-space-0 → --rux-space-8
-   Size                       --rux-border-width, --rux-control-*, --rux-icon-*,
-                              --rux-avatar-*, --rux-dot-sm, --rux-progress-height,
-                              --rux-check-*, --rux-menu-min-width, --rux-panel-width-sm,
-                              --rux-toast-min-width, --rux-overlay-blur, --rux-modal-enter-y
-   Radius                     --rux-radius-none → --rux-radius-full
-   Shadow                     --rux-shadow-*, --rux-ring-*
-   Motion                     --rux-duration-*, --rux-ease-*
-   Layout                     --rux-container-*, --rux-sidebar-width
-   Z-index                    --rux-z-*
-   Accent themes              [data-rux-accent="blue|violet|green|amber"]
+   1. Everything in this file is prefixed --rux-*.
+   2. Components consume semantic tokens when a role exists.
+   3. Primitive scales should not encode component names or usage.
+   4. Tokens marked UNUSED have no var() reference in the current project.
+      They remain available until an intentional breaking cleanup.
+   5. Dark mode is the only mode for now.
    ========================================================================== */
 
 :root {
 	color-scheme: dark;
 
-	/* ─── COLOR · base palette ────────────────────────────────────────────── */
-	/* Near-black backgrounds, perceptually-tuned hairlines, white-bias text.
-     Designed for OLED-friendly contrast without crushing blacks.            */
+	/* ======================================================================
+	   PRIMITIVES
+	   ====================================================================== */
+
+	/* ─── COLOR · neutral foundation ─────────────────────────────────────── */
 
 	--rux-color-white: oklch(100% 0 0);
-	--rux-color-base: oklch(50% 0.008 260);
+	--rux-color-base: oklch(50% 0.004 260);
 
-	--rux-bg-topbar: oklch(0% 0.004 260);
-	--rux-bg: oklch(10% 0.004 260); /* canvas — the lowest plane */
-	--rux-bg-02: oklch(0% 0.004 260); /* canvas — the lowest plane          */
-	--rux-bg-sunken: oklch(0% 0.004 260); /* inputs, code, recessed surfaces        */
-	--rux-bg-elevated: oklch(20% 0.004 260); /* panels, cards, modals                  */
-	--rux-bg-3: oklch(32% 0.004 260); /* panels, cards, modals */
-	--rux-bg-bus:oklch(50% 0.004 260);
-	--rux-bg-hover: #292929; /* interactive rows, lifted surfaces      */
-	--rux-bg-active: #303030; /* pressed / selected                     */
-	--rux-bg-overlay: rgba(0, 0, 0, 0.6); /* modal scrim     
-	
-	/* The absolute base (OLED black) */
-	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
+	/* ─── COLOR · accent foundation ──────────────────────────────────────── */
 
-	/* Default panels / slightly raised surfaces */
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
+	--rux-accent-h: 260;
+	--rux-accent-l: 60%;
+	--rux-accent-c: 0.24;
 
-	/* Elevated elements like floating cards or popovers */
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 30% c h);
-
-	/* Highest contrast accents / Badges */
-	--rux-bg-level-3: oklch(from var(--rux-color-base) 30% c h);
-
-	--rux-bg-level-form: oklch(from var(--rux-color-base) 18% c h);
-
-	/* ─── COLOR · text ────────────────────────────────────────────────────── */
-
-	--rux-fg: oklch(100% 0 0);
-	--rux-fg-muted: oklch(75% 0 0);
-	--rux-fg-subtle: oklch(60% 0 0); /* #6b6b6b */
-	--rux-fg-disabled: oklch(40% 0 0); /* #404040 */
-	--rux-fg-on-accent: oklch(100% 0 0); /* #ffffff */
-	--rux-fg-on-accent-muted: oklch(100% 0 0 / 0.75);
-	--rux-fg-on-accent-subtle: oklch(100% 0 0 / 0.55);
-
-	/* ─── COLOR · border ──────────────────────────────────────────────────── */
-	/* All borders are hairlines (1px). We use three levels.                   */
-
-	--rux-border: oklch(100% 0.004 260); /* default — separates surfaces           */
-	/*--rux-border: oklch(70% 0.2 24); /* debug borders */
-	--rux-border-strong: #4a4a4a; /* emphasized — focused/selected card     */
-	--rux-border-subtle: oklch(from var(--rux-color-base) 40% c h); /* whisper — grouping inside a card       */
-	--rux-grid-line: var(--rux-border-subtle); /* dense tables, calendars, schedulers */
-	--rux-grid-border: var(--rux-border); /* outer edge for grid surfaces        */
-
-	/* ─── COLOR · controls ────────────────────────────────────────────────── */
-
-	--rux-control-ghost-hover: oklch(100% 0 0 / 0.1); /* transparent white hover           */
-	--rux-control-ghost-active: oklch(100% 0 0 / 0.14); /* transparent white press           */
-	--rux-control-ghost-border: var(--rux-border); /* ghost outline matches section borders */
-
-	--rux-control-scrim: oklch(100% 0 0 / 0.16); /* transparent white fill — lightens whatever surface sits behind it */
-	--rux-control-scrim-hover: oklch(100% 0 0 / 0.20); /* transparent white fill — lightens whatever surface sits behind it */
-	--rux-control-scrim-active: oklch(100% 0 0 / 0.16);
-	--rux-control-border: #303030; /* default control edge                 */
-	--rux-control-border-hover: #3a3a3a; /* hover control edge                   */
-	--rux-control-border-active: #424242; /* selected / pressed control edge      */
-
-	--rux-control-strip-bg: oklch(29% 0.004 260); /* pill-strip container for .rux-segmented */
-	--rux-control-strip-bg-hover: oklch(33% 0.004 260); /* inactive item hover inside a strip      */
-	--rux-control-strip-bg-active: oklch(40% 0.004 260); /* selected item inside a pill-strip       */
-
-	--rux-control-bg: oklch(from var(--rux-color-base) 70% c h);
-	--rux-control-bg-disabled: oklch(24% 0.004 260);
-	--rux-control-bg-hover: oklch(50% 0.004 260);
-	--rux-control-bg-active: oklch(36% 0.004 260);
-
-	/* ─── COLOR · accent ──────────────────────────────────────────────────── */
-	/* One brand color, used sparingly. Swap the *hue* to retheme — lightness
-     and chroma are held constant so every accent feels like the same
-     family. Set --rux-accent-h on :root (or [data-rux-accent="…"]) to pick.
-
-     Default brand hue: 260.
-
-     Available themes (see bottom of file):
-       blue  · 250             violet · 295
-       green · 155             amber  · 70                                  */
-
-	--rux-accent-h: 260; /* hue · 0–360                     */
-	--rux-accent-l: 60%; /* lightness                       */
-	--rux-accent-c: 0.24; /* chroma                          */
-
-	--rux-accent: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
-	--rux-accent-hover: oklch(70% var(--rux-accent-c) var(--rux-accent-h)); /* +10L */
-	--rux-accent-active: oklch(60% var(--rux-accent-c) var(--rux-accent-h)); /* -10L */
-	--rux-accent-subtle: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
-	--rux-accent-ring: oklch(70% 0.28 var(--rux-accent-h) / 1);
-
-	/* ─── COLOR · status / semantic ───────────────────────────────────────── */
-	/* Bright enough for dark mode, balanced in chroma so none dominates.     */
-
-	--rux-success: oklch(60% 0.22 155);
-	--rux-success-bright: oklch(85% 0.2 155);
-	--rux-success-subtle: oklch(70% 0.22 155 / 0.14);
-
-	--rux-warning: oklch(60% 0.22 90);
-	--rux-warning-bright: oklch(85% 0.2 90);
-	--rux-warning-subtle: oklch(80% 0.22 90 / 0.14);
-	
-	--rux-info: oklch(60% 0.22 230);
-	--rux-info-bright: oklch(85% 0.2 230);
-	--rux-info-subtle: oklch(70% 0.22 230 / 0.14);
-
-	--rux-danger: oklch(60% 0.22 24);
-	--rux-danger-bright: oklch(85% 0.2 24);
-	--rux-danger-hover: oklch(90% 0.18 24);
-	--rux-danger-active: oklch(50% 0.18 24);
-	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
-
-	/* ─── TYPOGRAPHY · family ─────────────────────────────────────────────── */
-	/* System-first. Inter is loaded as a webfont in colors_and_type.css
-     for cross-platform consistency on text-heavy screens.                  */
+	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
 
 	--rux-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
 	--rux-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-	/* ─── TYPOGRAPHY · size scale ─────────────────────────────────────────── */
-	/* Modular scale, ratio ~1.25. Use semantic aliases below in components.   */
+	/* ─── TYPOGRAPHY · size scale ────────────────────────────────────────── */
 
-	--rux-text-2xs: 0.6875rem; /* 11px  · micro labels, badges               */
-	--rux-text-xs: 0.75rem; /* 12px  · captions, helper text              */
-	--rux-text-sm: 0.875rem; /* 14px  · body small, dense UI               */
-	--rux-text-md: 1rem; /* 16px  · base body                          */
-	--rux-text-lg: 1.125rem; /* 18px  · lead paragraph                     */
-	--rux-text-xl: 1.5rem; /* 24px  · h3                                 */
-	--rux-text-2xl: 2rem; /* 32px  · h2                                 */
-	--rux-text-3xl: 2.75rem; /* 44px  · h1                                 */
-	--rux-text-4xl: 4rem; /* 64px  · display                            */
+	--rux-text-2xs: 0.6875rem; /* 11px */
+	--rux-text-xs: 0.75rem; /* 12px */
+	--rux-text-sm: 0.875rem; /* 14px */
+	--rux-text-md: 1rem; /* 16px */
+	--rux-text-lg: 1.125rem; /* 18px */
+	--rux-text-xl: 1.5rem; /* 24px */
+	--rux-text-2xl: 2rem; /* 32px */
+	--rux-text-3xl: 2.75rem; /* 44px */
+	--rux-text-4xl: 4rem; /* 64px */
 
-	/* ─── TYPOGRAPHY · weight ─────────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · weight ────────────────────────────────────────────── */
 
 	--rux-weight-regular: 400;
 	--rux-weight-medium: 500;
 	--rux-weight-semibold: 600;
 	--rux-weight-bold: 700;
 
-	/* ─── TYPOGRAPHY · line-height ────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · line-height ───────────────────────────────────────── */
 
-	--rux-leading-tight: 1.15; /* headlines, display                      */
-	--rux-leading-snug: 1.3; /* short ui copy                           */
-	--rux-leading-normal: 1.5; /* body paragraphs                         */
-	--rux-leading-relaxed: 1.65; /* long-form reading                       */
+	--rux-leading-tight: 1.15;
+	--rux-leading-snug: 1.3;
+	--rux-leading-normal: 1.5;
+	--rux-leading-relaxed: 1.65; /* UNUSED */
 
-	/* ─── TYPOGRAPHY · tracking ───────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · tracking ──────────────────────────────────────────── */
 
-	--rux-tracking-tight: -0.02em; /* large display                         */
+	--rux-tracking-tight: -0.02em;
 	--rux-tracking-normal: 0;
-	--rux-tracking-wide: 0.04em;   /* field labels                          */
-	--rux-tracking-wider: 0.06em;  /* card titles · toggle chips            */
-	--rux-tracking-widest: 0.10em; /* section headers / eyebrows            */
+	--rux-tracking-wide: 0.04em;
+	--rux-tracking-wider: 0.06em; /* UNUSED */
+	--rux-tracking-widest: 0.1em;
 
-	/* ─── SPACING ─────────────────────────────────────────────────────────── */
-	/* 4px base grid. Pick from the scale; do not invent new values.          */
+	/* ─── SPACING · 4px base grid ───────────────────────────────────────── */
 
 	--rux-space-0: 0;
-	--rux-space-1: 0.25rem; /*  4px */
-	--rux-space-2: 0.5rem; /*  8px */
+	--rux-space-1: 0.25rem; /* 4px */
+	--rux-space-2: 0.5rem; /* 8px */
 	--rux-space-3: 0.75rem; /* 12px */
 	--rux-space-4: 1rem; /* 16px */
 	--rux-space-5: 1.5rem; /* 24px */
 	--rux-space-6: 2rem; /* 32px */
 	--rux-space-7: 3rem; /* 48px */
 	--rux-space-8: 4rem; /* 64px */
-	--rux-space-9: 4.5rem; /* 
+	--rux-space-9: 4.5rem; /* 72px · UNUSED */
 
-	/* ─── SIZE · controls and marks ───────────────────────────────────────── */
+	/* ─── SIZE · controls and marks ──────────────────────────────────────── */
 
 	--rux-border-width: 1px;
 
@@ -242,118 +111,204 @@
 	--rux-check-target-height: 32px;
 	--rux-checkmark-width: 6px;
 	--rux-checkmark-height: 10px;
+
+	/* ─── RADIUS · optical scale ─────────────────────────────────────────── */
+
+	--rux-radius-0: 0;
+	--rux-radius-xs: 2px;
+	--rux-radius-sm: 4px;
+	--rux-radius-md: 8px;
+	--rux-radius-lg: 16px;
+	--rux-radius-xl: 24px;
+	--rux-radius-full: 9999px;
+
+	/* ─── SHADOW · elevation scale ───────────────────────────────────────── */
+
+	--rux-shadow-none: none;
+	--rux-shadow-sm:
+		0 2px 3px -1px rgba(0, 0, 0, 0.6),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+	--rux-shadow-md:
+		0 8px 16px -4px rgba(0, 0, 0, 0.4),
+		0 2px 6px -1px rgba(0, 0, 0, 0.7),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+	--rux-shadow-lg:
+		0 16px 32px -6px rgba(0, 0, 0, 0.4),
+		0 6px 14px -2px rgba(0, 0, 0, 0.75),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+	--rux-shadow-xl:
+		0 32px 64px -12px rgba(0, 0, 0, 0.4),
+		0 12px 24px -4px rgba(0, 0, 0, 0.8),
+		inset 0 1px 0.5px rgba(255, 255, 255, 0.06); /* UNUSED */
+
+	/* ─── MOTION ─────────────────────────────────────────────────────────── */
+
+	--rux-duration-instant: 80ms;
+	--rux-duration-fast: 140ms;
+	--rux-duration-base: 220ms;
+	--rux-duration-slow: 720ms;
+
+	--rux-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--rux-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+	--rux-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* UNUSED */
+
+	/* ======================================================================
+	   SEMANTIC TOKENS
+	   ====================================================================== */
+
+	/* ─── COLOR · surfaces ───────────────────────────────────────────────── */
+
+	--rux-bg-topbar: oklch(0% 0.004 260);
+	--rux-bg: oklch(10% 0.004 260);
+	--rux-bg-02: oklch(0% 0.004 260); /* UNUSED · legacy surface */
+	--rux-bg-sunken: oklch(0% 0.004 260);
+	--rux-bg-elevated: oklch(20% 0.004 260);
+	--rux-bg-3: oklch(32% 0.004 260);
+	--rux-bg-bus: oklch(50% 0.004 260);
+	--rux-bg-hover: #292929;
+	--rux-bg-active: #303030;
+	--rux-bg-overlay: rgba(0, 0, 0, 0.6);
+
+	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 20% c h);
+	--rux-bg-level-3: oklch(from var(--rux-color-base) 30% c h); /* UNUSED */
+	--rux-bg-level-form: oklch(from var(--rux-color-base) 28% c h);
+
+	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
+
+	--rux-fg: oklch(100% 0 0);
+	--rux-fg-muted: oklch(75% 0 0);
+	--rux-fg-subtle: oklch(60% 0 0);
+	--rux-fg-disabled: oklch(40% 0 0);
+	--rux-fg-on-accent: oklch(100% 0 0);
+	--rux-fg-on-accent-muted: oklch(100% 0 0 / 0.75);
+	--rux-fg-on-accent-subtle: oklch(100% 0 0 / 0.55);
+
+	/* ─── COLOR · border roles ───────────────────────────────────────────── */
+
+	--rux-border: oklch(100% 0.004 260);
+	--rux-border-strong: #4a4a4a;
+	--rux-border-subtle: oklch(from var(--rux-color-base) 40% c h);
+	--rux-grid-line: var(--rux-border-subtle); /* UNUSED */
+	--rux-grid-border: var(--rux-border); /* UNUSED */
+	--rux-card-border: oklch(40% 0.004 260);; /* UNUSED */
+
+	/* ─── COLOR · control states ─────────────────────────────────────────── */
+
+	--rux-control-ghost-hover: oklch(100% 0 0 / 0.1);
+	--rux-control-ghost-active: oklch(100% 0 0 / 0.14);
+	--rux-control-ghost-border: var(--rux-border);
+
+	--rux-control-scrim: oklch(100% 0 0 / 0.16);
+	--rux-control-scrim-hover: oklch(100% 0 0 / 0.2);
+	--rux-control-scrim-active: oklch(100% 0 0 / 0.16);
+
+	--rux-control-border: #303030; /* UNUSED */
+	--rux-control-border-hover: #3a3a3a; /* UNUSED */
+	--rux-control-border-active: #424242; /* UNUSED */
+
+	--rux-control-strip-bg: oklch(29% 0.004 260);
+	--rux-control-strip-bg-hover: oklch(33% 0.004 260);
+	--rux-control-strip-bg-active: oklch(40% 0.004 260);
+
+	--rux-control-bg: oklch(from var(--rux-color-base) 70% c h);
+	--rux-control-bg-disabled: oklch(24% 0.004 260);
+	--rux-control-bg-hover: oklch(50% 0.004 260);
+	--rux-control-bg-active: oklch(36% 0.004 260);
+
+	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
+
+	--rux-accent: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
+	--rux-accent-hover: oklch(70% var(--rux-accent-c) var(--rux-accent-h));
+	--rux-accent-active: oklch(60% var(--rux-accent-c) var(--rux-accent-h));
+	--rux-accent-subtle: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
+	--rux-accent-ring: oklch(70% 0.28 var(--rux-accent-h));
+
+	/* ─── COLOR · status roles ───────────────────────────────────────────── */
+
+	--rux-success: oklch(60% 0.22 155);
+	--rux-success-bright: oklch(85% 0.2 155);
+	--rux-success-subtle: oklch(70% 0.22 155 / 0.14);
+
+	--rux-warning: oklch(60% 0.22 90);
+	--rux-warning-bright: oklch(85% 0.2 90);
+	--rux-warning-subtle: oklch(80% 0.22 90 / 0.14);
+
+	--rux-info: oklch(60% 0.22 230);
+	--rux-info-bright: oklch(85% 0.2 230); /* UNUSED */
+	--rux-info-subtle: oklch(70% 0.22 230 / 0.14);
+
+	--rux-danger: oklch(60% 0.22 24);
+	--rux-danger-bright: oklch(85% 0.2 24);
+	--rux-danger-hover: oklch(90% 0.18 24);
+	--rux-danger-active: oklch(50% 0.18 24);
+	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
+
+	/* ─── SHAPE · component roles ────────────────────────────────────────── */
+
+	--rux-field-radius: var(--rux-radius-sm);
+	--rux-control-radius: var(--rux-radius-sm);
+
+	/* Unused legacy aliases. Names retain their original spelling. */
+	--rux-radius-buttn: var(--rux-radius-0); /* UNUSED */
+	--rux-radius-field: var(--rux-radius-0); /* UNUSED */
+	--rux-radius-card: var(--rux-radius-0); /* UNUSED */
+	--rux-radius-pannel: var(--rux-radius-0); /* UNUSED */
+
+	/* ─── SPACING · component roles ──────────────────────────────────────── */
+
+	--rux-stack-gap: var(--rux-space-2);
+	--rux-card-gap: var(--rux-space-3);
+	--rux-section-label-gap: var(--rux-space-3);
+
+	/* ─── FOCUS ──────────────────────────────────────────────────────────── */
+
+	--rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
+	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
+
+	/* ─── LAYOUT ROLES ───────────────────────────────────────────────────── */
+
+	--rux-container-xs: 480px;
+	--rux-container-sm: 640px; /* UNUSED */
+	--rux-container-md: 768px; /* UNUSED */
+	--rux-container-lg: 1024px; /* UNUSED */
+	--rux-container-xl: 1280px; /* UNUSED */
+	--rux-sidebar-width: 240px; /* UNUSED */
 	--rux-menu-min-width: 200px;
 	--rux-panel-width-sm: 280px;
 	--rux-toast-min-width: var(--rux-panel-width-sm);
 	--rux-overlay-blur: 4px;
 	--rux-modal-enter-y: 12px;
 
-	/* ─── RADIUS · optical scale ──────────────────────────────────────────── */
-	/* Optical nesting: every depth in a container, step down one level so
-     curves stay visually parallel. See README → Visual Foundations.         */
-
-	--rux-radius-none: 0;
-	--rux-radius-xs: 2px; /* badges, chips                               */
-	--rux-radius-sm: 6px; /* inputs, buttons, controls (depth 3)         */
-	--rux-radius-md: 8px; /* sections inside cards (depth 2)             */
-	--rux-radius-lg: 16px; /* cards, panels (depth 1)                     */
-	--rux-radius-xl: 24px; /* modals, sheets (depth 0)                    */
-	--rux-radius-full: 9999px; /* pills, avatars                              */
-
-	/* Semantic alias — every field-shaped box (inputs, selects, textareas,
-	   and read-only "summary" outputs like .rux-trip-panel__billing-output)
-	   shares this one radius so they all round the same regardless of which
-	   element renders them. */
-	--rux-field-radius: var(--rux-radius-sm);
-
-	/* Semantic alias — buttons, badges, and tab pills all round the same,
-	   per the --rux-radius-sm scale entry's own "inputs, buttons, controls"
-	   label above. */
-	--rux-control-radius: var(--rux-radius-sm);
-
-	/* ─── SHADOW · elevation ──────────────────────────────────────────────── */
-	/* Flat by default. Shadows are used sparingly — only to lift floating
-     surfaces (menus, modals, toasts) above the canvas.                     */
-	/* Dark mode optimized: includes inset rim lights and layered falloffs.   */
-
-	--rux-shadow-none: none;
-	/* Crisp, immediate lift. Negative spread removes side-bleed. */
-	--rux-shadow-sm:
-		0 2px 3px -1px rgba(0, 0, 0, 0.6),
-		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
-
-	/* Dual-layer sharp: A harsh core shadow + a tight ambient falloff */
-	--rux-shadow-md:
-		0 8px 16px -4px rgba(0, 0, 0, 0.4),
-		0 2px 6px -1px rgba(0, 0, 0, 0.7),
-		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
-
-	/* Deep but contained. High offset, aggressive negative spread. */
-	--rux-shadow-lg:
-		0 16px 32px -6px rgba(0, 0, 0, 0.4),
-		0 6px 14px -2px rgba(0, 0, 0, 0.75),
-		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
-
-	/* Maximum depth without the muddy blur. */
-	--rux-shadow-xl:
-		0 32px 64px -12px rgba(0, 0, 0, 0.4),
-		0 12px 24px -4px rgba(0, 0, 0, 0.8),
-		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
-
-	/* Focus ring remains untouched; excellent dual-ring setup */
-	--rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
-	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
-
-	/* ─── MOTION ──────────────────────────────────────────────────────────── */
-
-	--rux-duration-instant: 80ms; /* hover, opacity                        */
-	--rux-duration-fast: 140ms; /* button press, color shifts            */
-	--rux-duration-base: 220ms; /* menu open, modal in                   */
-	--rux-duration-slow: 720ms; /* sheet slide, layout                   */
-
-	--rux-ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* fast start, gentle stop — default for most transitions */
-	--rux-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1); /* smooth ramp up and down — panels, modals, layout shifts */
-	--rux-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* overshoots then settles — toggles, popovers, playful emphasis */
-
-	/* ─── LAYOUT ──────────────────────────────────────────────────────────── */
-
-	--rux-container-sm: 640px;
-	--rux-container-xs: 480px;
-	--rux-container-md: 768px;
-	--rux-container-lg: 1024px;
-	--rux-container-xl: 1280px;
-	--rux-sidebar-width: 240px;
-
-	/* ─── Z-INDEX ─────────────────────────────────────────────────────────── */
+	/* ─── STACKING ROLES ─────────────────────────────────────────────────── */
 
 	--rux-z-base: 1;
 	--rux-z-dropdown: 100;
 	--rux-z-sticky: 200;
 	--rux-z-overlay: 300;
 	--rux-z-modal: 400;
-	--rux-z-toast: 500;
-
+	--rux-z-toast: 500; /* UNUSED */
 }
 
 /* ==========================================================================
    ACCENT THEMES
    --------------------------------------------------------------------------
-   Apply by setting `data-rux-accent="<name>"` on <html> or <body>. Each
-   theme only overrides the hue — lightness and chroma stay constant so
-   the visual weight of the accent matches across themes.
-
-   Pick at runtime:  document.documentElement.dataset.ruxAccent = "violet"
+   Apply data-rux-accent="<name>" to <html> or <body>.
    ========================================================================== */
 
 [data-rux-accent="blue"] {
 	--rux-accent-h: 260;
 }
+
 [data-rux-accent="violet"] {
 	--rux-accent-h: 295;
 }
+
 [data-rux-accent="green"] {
 	--rux-accent-h: 155;
 }
+
 [data-rux-accent="amber"] {
 	--rux-accent-h: 70;
 	--rux-accent-c: 0.16;

@@ -101,7 +101,7 @@
 
 /* — field — */
 
-.rux-field          { display: flex; flex-direction: column; gap: var(--rux-space-2); min-width: 0; }
+.rux-field          { display: flex; flex-direction: column; gap: var(--rux-stack-gap); min-width: 0; }
 .rux-field__label   { font-size: var(--rux-text-xs); font-weight: var(--rux-weight-medium); color: var(--rux-fg-muted); }
 .rux-field__help    { font-size: var(--rux-text-xs); color: var(--rux-fg-subtle); }
 .rux-field__error   { font-size: var(--rux-text-xs); color: var(--rux-danger); }
