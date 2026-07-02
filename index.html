@@ -311,8 +311,12 @@
               <div class="rux-right-panel__body">
                 <div id="rp-pane-navigate" class="rux-right-panel__pane" role="tabpanel">
                   <div class="rux-card rux-mini-cal">
-                    <p class="rux-trip-panel__section-label">Calendar</p>
-                    <button class="rux-button rux-button--primary rux-button--block" id="mini-cal-today" type="button">Today</button>
+                    <div class="rux-trip-panel__section-head">
+                      <p class="rux-trip-panel__section-label">Calendar</p>
+                      <div class="rux-cluster">
+                        <button class="rux-button rux-button--primary" id="mini-cal-today" type="button">Today</button>
+                      </div>
+                    </div>
                     <header class="rux-mini-cal__header">
                       <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-prev" type="button" aria-label="Previous month">
                         <span class="rux-icon">chevron_left</span>
@@ -1826,10 +1830,39 @@
       let activeObservers  = [];
       let layoutFrame = 0;
 
+      // .scheduler-app__schedule stretches full-height by default (CSS), so
+      // .rux-scheduler's own max-block-size:100%/overflow:auto has a real
+      // definite cap to scroll within. A bare `max-height` on the card
+      // can't substitute for that — percentage/max-block-size heights on
+      // descendants only resolve against an ancestor's explicit `height`,
+      // not a `max-height` clamp, so anything shy of the full stretch
+      // silently fails to cap the grid and rows get hard-clipped instead
+      // of scrolling. To still hug short content (e.g. a single vehicle),
+      // measure the grid's natural content height against what it was
+      // just given and, only when there's slack, pin the card down to fit —
+      // otherwise leave the default stretch (and internal scroll) alone.
+      function fitSchedulerHeight() {
+        const card = document.querySelector(".scheduler-app__schedule");
+        if (!card || !schedulerEl) return;
+        card.style.removeProperty("height");
+        const availableH = schedulerEl.clientHeight;
+        // schedulerEl itself is pinned to block-size:100% (that's what lets
+        // max-block-size:100% actually cap+scroll it — see comment above),
+        // so its own scrollHeight can't drop below that 100% floor. Suspend
+        // the pin just long enough to read its true intrinsic content height.
+        schedulerEl.style.blockSize = "auto";
+        const contentH = schedulerEl.scrollHeight;
+        schedulerEl.style.removeProperty("block-size");
+        if (contentH < availableH) {
+          card.style.height = `${card.clientHeight - (availableH - contentH)}px`;
+        }
+      }
+
       function layoutScheduler() {
         cancelAnimationFrame(layoutFrame);
         layoutFrame = requestAnimationFrame(() => {
           document.querySelectorAll(".rux-scheduler__track").forEach(track => layoutTrack(track));
+          fitSchedulerHeight();
         });
       }
 

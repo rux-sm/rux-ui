@@ -415,6 +415,14 @@
 	min-height: 0;
 }
 
+/* Stretches full-height by default (align-items:stretch, inherited from
+   .scheduler-app__module) so .rux-scheduler's max-block-size:100% has a
+   real definite ancestor height to cap against and scroll internally via
+   its own overflow:auto. A schedule shorter than that (e.g. one vehicle)
+   gets pinned down to its actual content height by fitSchedulerHeight()
+   in index.html instead — max-height alone can't do this in CSS, since
+   descendants' percentage/max-block-size heights only resolve against an
+   explicit `height`, not a `max-height` clamp. */
 .scheduler-app__schedule {
 	display: flex;
 	flex-direction: column;
@@ -630,7 +638,6 @@
 .rux-mini-cal {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-3);
 }
 
 .rux-mini-cal__header {
