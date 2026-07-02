@@ -45,7 +45,7 @@
 	--rux-scheduler-day-min-width: 14rem;
 	--rux-scheduler-bg: var(--rux-bg-level-1);
 	--rux-scheduler-border-color: var(--rux-bg-level-2);
-	--rux-scheduler-grid-line-color: var(--rux-bg-level-2);
+	--rux-scheduler-grid-line-color: var(--rux-card-border);
 	--rux-scheduler-header-color: var(--rux-fg);
 	--rux-scheduler-row-head-color: var(--rux-fg);
 	--rux-scheduler-max-block-size: none;
@@ -70,7 +70,7 @@
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-bg-level-1);
-	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 }
 
@@ -93,8 +93,8 @@
 	min-height: var(--rux-scheduler-head-height);
 	padding: 0 var(--rux-space-3);
 	background: var(--rux-bg-level-1);
-	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
-	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-inline-end: var(--rux-border-width) solid var(--rux-card-border);
+	border-block-end: var(--rux-border-width) solid var(--rux-card-border);
 	color: var(--rux-scheduler-header-color);
 }
 
@@ -235,8 +235,8 @@
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
 	background: var(--rux-bg-level-1);
-	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
-	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-inline-end: var(--rux-border-width) solid var(--rux-card-border);
+	border-block-end: var(--rux-border-width) solid var(--rux-card-border);
 	color: var(--rux-scheduler-row-head-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);

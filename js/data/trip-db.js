@@ -395,10 +395,9 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
 		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
 		setVal(root, "tp-book-email",  trip.booking_contact_email);
-		const addBtn = root.querySelector("#tp-add-contact");
 		for (const i of [1, 2]) {
 			if (trip[`trip_contact_${i}_name`] || trip[`trip_contact_${i}_phone`]) {
-				if (addBtn && !root.querySelector(`#tp-trip${i}-name`)) addBtn.click();
+				if (!root.querySelector(`#tp-trip${i}-name`)) root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
 				setVal(root, `tp-trip${i}-name`,  trip[`trip_contact_${i}_name`]);
 				setVal(root, `tp-trip${i}-phone`, trip[`trip_contact_${i}_phone`]);
 			}
@@ -435,41 +434,53 @@ import { supabase } from "./supabase.js";
 		});
 	}
 
+	const PAYMENT_METHOD_ICONS = { Cash: "universal_currency_alt", Check: "checkbook", Card: "credit_card", ACH: "account_balance", Zelle: "bolt", Other: "more_horiz" };
+
+	// Single-line pill: type icon · amount · reference · date — mirrors
+	// createPaymentRow in trip-panel.js. Method is set via DOM property
+	// (not string-interpolated) since it comes from saved trip data here,
+	// not a fixed trusted menu list.
+	function createPaymentRow(index, method) {
+		const row = document.createElement("div");
+		row.className = "rux-trip-panel__payment-row";
+		row.dataset.paymentRow = "";
+		row.innerHTML = `
+			<div class="rux-trip-panel__payment-content">
+				<span class="rux-icon rux-trip-panel__payment-icon" aria-hidden="true"></span>
+				<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
+				<div class="rux-input-group rux-input-group--prefix rux-trip-panel__payment-amount">
+					<span class="rux-input-group__prefix">$</span>
+					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
+				</div>
+				<span class="rux-trip-panel__payment-divider" aria-hidden="true"></span>
+				<input class="rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
+				<span class="rux-trip-panel__payment-divider" aria-hidden="true"></span>
+				<input class="rux-trip-panel__payment-input rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+			</div>
+			<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
+				<span class="rux-icon" aria-hidden="true">delete</span>
+			</button>`;
+		const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
+		row.querySelector(".rux-trip-panel__payment-icon").textContent = PAYMENT_METHOD_ICONS[safeMethod];
+		row.querySelector("[data-payment-method]").value = safeMethod;
+		return row;
+	}
+
+	// Payments are optional now (no more mandatory first row) — mirrors
+	// Files/Trip Contacts, which also start empty until "+ Add" is used.
 	function populatePayments(root, payments) {
-		if (!payments?.length) return;
 		const paymentRows = root.querySelector("#tp-payment-rows");
 		if (!paymentRows) return;
-		const sorted = [...payments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+		const sorted = [...(payments || [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
 		for (const payment of sorted) {
 			const index = paymentRows.querySelectorAll("[data-payment-row]").length;
-			const row = document.createElement("div");
-			row.className = "rux-trip-panel__payment-row";
-			row.dataset.paymentRow = "";
-			row.innerHTML = `
-				<label class="rux-field__label rux-trip-panel__payment-row-label">Payment ${index + 1}</label>
-				<div class="rux-input-group rux-input-group--prefix rux-input-group--suffix rux-input-group--action">
-					<span class="rux-input-group__prefix">$</span>
-					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
-					<span class="rux-input-group__suffix"><button class="rux-trip-panel__payment-fill" type="button" data-payment-fill title="Fill remaining balance"><span class="rux-icon">check_circle</span></button></span>
-				</div>
-				<input class="rux-input" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
-				<select class="rux-select" id="tp-payment-method-${index + 1}" name="payments[${index}].method" data-payment-method aria-label="Payment method">
-					<option value="">Method</option>
-					<option value="Cash">Cash</option>
-					<option value="Check">Check</option>
-					<option value="Card">Card</option>
-					<option value="ACH">ACH</option>
-					<option value="Zelle">Zelle</option>
-					<option value="Other">Other</option>
-				</select>
-				<input class="rux-input" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference Number" />`;
+			const row = createPaymentRow(index, payment.method);
 			paymentRows.appendChild(row);
 			if (payment.amount) row.querySelector("[data-payment-amount]").value = payment.amount;
 			if (payment.date) row.querySelector("[data-payment-date]").value = payment.date;
-			if (payment.method) row.querySelector("[data-payment-method]").value = payment.method;
 			if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
 		}
-		
+		paymentRows.style.display = paymentRows.querySelector("[data-payment-row]") ? "flex" : "none";
 	}
 
 	function populateAssignments(root, assignments) {

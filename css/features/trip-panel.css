@@ -305,11 +305,55 @@
 	--_cols: 3;
 }
 
+/* Fields live in their own inner grid (.rux-trip-panel__contact-fields) so
+   the row's own gap is 0 — the trash icon's width AND margin-left both
+   animate from 0 together, instead of a grid/flex `gap` leaving a stray
+   reserved space next to it while it's hidden. */
 .rux-trip-panel__contact-row {
-	display: grid;
-	grid-template-columns: 1fr 1fr auto;
-	column-gap: var(--rux-space-2);
+	display: flex;
 	align-items: end;
+}
+.rux-trip-panel__contact-fields {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	column-gap: var(--rux-space-2);
+	flex: 1;
+	min-width: 0;
+}
+/* Hidden by default — the header Delete button arms "select which one"
+   mode (#tp-contacts-list.is-selecting), which reveals this trash icon on
+   every row. Clicking it deletes that specific contact immediately and
+   disarms the mode — danger red by default (not just on hover) since the
+   click is a one-shot delete, not a select-then-confirm step. */
+.rux-trip-panel__contact-select {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 0;
+	height: var(--rux-field-height);
+	margin-left: 0;
+	overflow: hidden;
+	opacity: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	color: var(--rux-danger);
+	cursor: pointer;
+	pointer-events: none;
+	transition:
+		width var(--rux-duration-base) var(--rux-ease-out),
+		margin-left var(--rux-duration-base) var(--rux-ease-out),
+		opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+.rux-trip-panel__contact-select:hover {
+	color: var(--rux-danger-hover);
+}
+#tp-contacts-list.is-selecting .rux-trip-panel__contact-select {
+	width: var(--rux-field-height);
+	margin-left: var(--rux-space-2);
+	opacity: 1;
+	pointer-events: auto;
 }
 
 .rux-trip-panel__logistics-grid {
@@ -322,10 +366,10 @@
 
 .rux-trip-panel__section-head {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
-	min-height: 24px;
+	min-height: 28px;
 }
 
 .rux-trip-panel__status-checks {
@@ -378,6 +422,12 @@
 
 /* — Billing workflow — */
 
+/* Same footprint as .rux-input (height/padding/radius) but deliberately
+   NOT input-shaped — dashed border + a recessed background darker than
+   the card (--rux-bg-level-0, not --rux-bg-level-1 which happens to equal
+   the card's own --rux-bg-level-2 and was rendering with no visible box
+   at all) makes "read-only computed value" obvious at a glance instead of
+   looking like a disabled/empty input. */
 .rux-trip-panel__billing-output {
 	display: flex;
 	align-items: center;
@@ -385,36 +435,32 @@
 	min-width: 0;
 	height: var(--rux-field-height);
 	padding: 0;
-	border: solid transparent var(--rux-border-width);
-	border-radius: var(--rux-field-radius);
-	background: var(--rux-bg-level-1);
+	border: var(--rux-border-width) solid transparent;
+	border-radius: var(--rux-radius-field);
+	background: var(--rux-bg-level-0);
 	color: var(--rux-fg-muted);
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-regular);
 	font-variant-numeric: tabular-nums;
+	cursor: default;
 }
 .rux-trip-panel__billing-output.is-negative {
 	color: var(--rux-info);
 }
-.rux-trip-panel__billing-workflow {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-3);
-}
+/* One .rux-card (index.html) holds all three steps now — no per-step card
+   chrome, just row spacing inherited the same way every other card handles
+   it (.rux-card > * + * in content.css). */
 .rux-trip-panel__billing-step {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-3);
-	border-radius: var(--rux-card-radius);
-	background: var(--rux-bg-level-2);
-	border: solid var(--rux-border-width) var(--rux-card-border);
 }
-/* Field + status + toggle live inline on one row, below the title — the
-   field is always rendered (never collapsed); JS just flips its `disabled`
-   attribute with the toggle, so .rux-input:disabled (form.css) is what
-   communicates "not active yet" instead of a hide/reveal animation. */
+/* Field + toggle live inline on one row, below the title — the field is
+   always rendered (never collapsed); JS flips its `disabled` attribute and
+   swaps its placeholder ("Pending" ↔ "Enter PO number") with the toggle, so
+   .rux-input:disabled (form.css) + the placeholder text communicate state
+   instead of a separate status label. */
 .rux-trip-panel__billing-step-row {
 	display: flex;
 	align-items: center;
@@ -423,13 +469,6 @@
 .rux-trip-panel__billing-step-row .rux-input {
 	flex: 1;
 	min-width: 0;
-}
-.rux-trip-panel__billing-step-status {
-	flex: none;
-	white-space: nowrap;
-}
-.rux-trip-panel__billing-step.is-enabled .rux-trip-panel__billing-step-status {
-	color: var(--rux-accent);
 }
 .rux-trip-panel__billing-step-row .rux-switch {
 	flex: none;
@@ -445,63 +484,126 @@
 .rux-trip-panel__payment-rows {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-3);
-}
-.rux-trip-panel__payment-row {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
 	gap: var(--rux-space-2);
-	align-items: center;
 }
-.rux-trip-panel__payment-row-label {
-	grid-column: 1 / -1;
-}
-.rux-trip-panel__payment-actions {
+/* Outer row is unstyled layout only — the pill background/border lives on
+   the inner .rux-trip-panel__payment-content instead, so the trash button
+   sits genuinely outside the pill (like .rux-trip-panel__doc-content /
+   .rux-trip-panel__contact-fields above) and visibly pushes/shrinks it on
+   reveal, instead of being just another item painted inside the same box. */
+.rux-trip-panel__payment-row {
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-2);
 }
-/* See .rux-trip-panel__bus-roles above for why min-width:0 is needed on
-   both the button and its label — flex:1 alone doesn't guarantee equal
-   widths when "Delete" and "Add" differ in content size. */
-.rux-trip-panel__payment-actions > .rux-button {
+/* Single-line pill: type icon · amount · reference · date, replacing the
+   old label+grid layout. Method is fixed at creation (see PAYMENT_METHODS
+   in trip-panel.js) and shown as the icon, not an editable field —
+   consistent with Files, where type is likewise fixed once created. */
+.rux-trip-panel__payment-content {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	min-width: 0;
+	min-height: var(--rux-field-height);
+	padding: 0 var(--rux-space-3);
+	border-radius: var(--rux-radius-sm);
+	background: var(--rux-control-scrim);
+}
+.rux-trip-panel__payment-content > * + * {
+	margin-left: var(--rux-space-2);
+}
+.rux-trip-panel__payment-icon {
+	flex: none;
+	width: var(--rux-icon-sm);
+	height: var(--rux-icon-sm);
+	color: var(--rux-fg-muted);
+}
+/* Amount reuses the standard .rux-input-group prefix pattern (same as
+   Quoted Price) — a real bordered field with "$" inside it, sized down to
+   fit inline in the pill instead of stretching to fill the row. */
+.rux-trip-panel__payment-amount {
+	flex: none;
+	width: 6.5em;
+}
+.rux-trip-panel__payment-amount .rux-input {
+	height: var(--rux-field-height);
+	font-size: var(--rux-text-sm);
+}
+/* Native number stepper reads as "a counter", not "an amount" — hide it,
+   same rule .rux-input[type=number] already gets in form.css. */
+.rux-trip-panel__payment-amount .rux-input[type="number"]::-webkit-inner-spin-button,
+.rux-trip-panel__payment-amount .rux-input[type="number"]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+}
+.rux-trip-panel__payment-amount .rux-input[type="number"] {
+	appearance: textfield;
+}
+.rux-trip-panel__payment-input {
+	background: none;
+	border: none;
+	padding: 0;
+	font: inherit;
+	font-size: var(--rux-text-sm);
+	color: var(--rux-fg);
+}
+.rux-trip-panel__payment-input::placeholder {
+	color: var(--rux-fg-subtle);
+}
+.rux-trip-panel__payment-divider {
+	flex: none;
+	width: var(--rux-border-width);
+	align-self: stretch;
+	margin-block: var(--rux-space-1);
+	background: var(--rux-border);
+}
+.rux-trip-panel__payment-ref {
 	flex: 1;
 	min-width: 0;
 }
-.rux-trip-panel__payment-actions > .rux-button .rux-btn-label {
-	min-width: 0;
+.rux-trip-panel__payment-date {
+	flex: none;
+	text-align: right;
+}
+/* Hidden by default — header Delete arms select mode
+   (#tp-payment-rows.is-selecting), revealing this trash icon; width +
+   margin-left animate together so no gap is left when hidden (same recipe
+   as .rux-trip-panel__contact-select / doc-select above). */
+.rux-trip-panel__payment-select {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 0;
+	height: var(--rux-field-height);
+	margin-left: 0;
 	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.rux-trip-panel__payment-fill {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	opacity: 0;
 	padding: 0;
-	border: 0;
 	background: none;
-	color: var(--rux-fg-subtle);
+	border: none;
+	color: var(--rux-danger);
 	cursor: pointer;
-	transition: color var(--rux-duration-fast) var(--rux-ease-out);
-}
-.rux-trip-panel__payment-fill .rux-icon {
-	/* font-size must match width/height (see .rux-icon--lg/--xl and the fix
-	   for .rux-trip-panel__role-label) — otherwise the glyph renders at the
-	   smaller inherited --rux-icon-sm inside this larger box with no
-	   flex-centering, so it sits off-center instead of filling it. */
-	font-size: var(--rux-icon-md);
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-.rux-trip-panel__payment-fill:hover {
-	color: var(--rux-fg);
-}
-.rux-trip-panel__payment-fill:disabled {
-	opacity: 0.35;
 	pointer-events: none;
+	transition:
+		width var(--rux-duration-base) var(--rux-ease-out),
+		margin-left var(--rux-duration-base) var(--rux-ease-out),
+		opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+.rux-trip-panel__payment-select:hover {
+	color: var(--rux-danger-hover);
+}
+#tp-payment-rows.is-selecting .rux-trip-panel__payment-select {
+	width: var(--rux-field-height);
+	margin-left: var(--rux-space-2);
+	opacity: 1;
+	pointer-events: auto;
+}
+.rux-trip-panel__payment-menu {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+}
+.rux-trip-panel__payment-menu[hidden] {
+	display: none;
 }
 
 /* — Requirements chips — */
@@ -716,55 +818,115 @@
 }
 /* — Documents — */
 
-.rux-trip-panel__doc-upload {
-	display: flex;
-	align-items: start;
-	gap: var(--rux-space-2);
-	flex-wrap: wrap;
-}
-.rux-trip-panel__doc-upload .rux-select {
-	flex: 1;
-	min-width: 0;
-}
-
 .rux-trip-panel__doc-list {
 	list-style: none;
 	margin: 0;
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-space-1);
 }
 .rux-trip-panel__doc-list:empty {
 	display: none;
 }
+/* The label+list .rux-field wrapper hides itself whenever the list is
+   empty — otherwise the wrapper's own row-spacing margin (from
+   .rux-card > * + *) would still show as empty space below the header,
+   even with the label and list both collapsed to nothing. */
+.rux-field:has(> .rux-trip-panel__doc-list:empty) {
+	display: none;
+}
+/* Click opens the file (Enter for keyboard). The row's own background lives
+   on .rux-trip-panel__doc-content (not the row) so it reads as a visible
+   pill that actually narrows as the trash icon reveals — same "push"
+   effect as the input boxes on Trip Contacts, not just an invisible flex
+   reflow. Icon+label share this box so the trash icon's width/margin-left
+   can animate from 0 without a row-level `gap` leaving a stray space. */
 .rux-trip-panel__doc-row {
 	display: flex;
 	align-items: center;
+	min-height: 28px;
+	cursor: pointer;
+	user-select: none;
+}
+.rux-trip-panel__doc-content {
+	display: flex;
+	align-items: center;
 	gap: var(--rux-space-2);
-}
-.rux-trip-panel__doc-btn {
 	flex: 1;
-	justify-content: flex-start;
-}
-.rux-trip-panel__doc-chip {
-	font-size: var(--rux-text-2xs);
-	font-weight: var(--rux-weight-semibold);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
-	color: var(--rux-accent);
-	background: color-mix(in srgb, var(--rux-accent) 12%, transparent);
+	min-width: 0;
+	height: 28px;
+	padding: 0 var(--rux-space-3);
 	border-radius: var(--rux-radius-sm);
-	padding: 2px var(--rux-space-2);
-	white-space: nowrap;
+	background: var(--rux-control-scrim);
+	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
+}
+.rux-trip-panel__doc-row:hover .rux-trip-panel__doc-content {
+	background: var(--rux-bg-hover);
+}
+.rux-trip-panel__doc-row:focus-visible .rux-trip-panel__doc-content {
+	outline: none;
+	box-shadow: var(--rux-ring-focus);
+}
+.rux-trip-panel__doc-content > .rux-icon {
+	width: var(--rux-icon-sm);
+	height: var(--rux-icon-sm);
+	flex: none;
+	color: var(--rux-fg-muted);
+}
+.rux-trip-panel__doc-menu {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+	background: var(--rux-bg-level-4);
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-menu);
+}
+.rux-trip-panel__doc-menu[hidden] {
+	display: none;
 }
 .rux-trip-panel__doc-name {
+	flex: 1;
 	font-size: var(--rux-text-sm);
 	color: var(--rux-fg);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	min-width: 0;
+}
+/* Hidden by default — header Delete arms select mode (#tp-doc-list.is-selecting),
+   revealing this trash icon on every row; width + margin-left animate
+   together so no gap is left when hidden (same recipe as
+   .rux-trip-panel__contact-select above). Clicking it deletes that
+   specific document immediately and disarms the mode. */
+.rux-trip-panel__doc-select {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 0;
+	height: var(--rux-field-height);
+	margin-left: 0;
+	overflow: hidden;
+	opacity: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	color: var(--rux-danger);
+	cursor: pointer;
+	pointer-events: none;
+	transition:
+		width var(--rux-duration-base) var(--rux-ease-out),
+		margin-left var(--rux-duration-base) var(--rux-ease-out),
+		opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+.rux-trip-panel__doc-select:hover {
+	color: var(--rux-danger-hover);
+}
+#tp-doc-list.is-selecting .rux-trip-panel__doc-select {
+	width: var(--rux-field-height);
+	margin-left: var(--rux-space-2);
+	opacity: 1;
+	pointer-events: auto;
 }
 
 /* — Footer — */
@@ -797,16 +959,6 @@
    ========================================================================== */
 
 @container (max-width: 350px) {
-	.rux-trip-panel__payment-actions .rux-btn-label {
-		display: none;
-	}
-	.rux-trip-panel__payment-actions .rux-button {
-		width: var(--rux-field-height);
-		padding: 0;
-		justify-content: center;
-		flex: 1;
-	}
-
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;

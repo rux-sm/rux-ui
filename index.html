@@ -128,7 +128,7 @@
                 <!-- Trip -->
                 <div id="pane-trip" class="rux-trip-panel__pane" role="tabpanel">
                   <div class="rux-card">
-                    <p class="rux-trip-panel__section-label">Trip Information</p>
+                    <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Trip Information</p></div>
                     <div class="rux-trip-panel__logistics-grid">
                       <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
                       <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
@@ -145,7 +145,7 @@
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
                   </div>
                   <div class="rux-card">
-                    <p class="rux-trip-panel__section-label">Trip Requirements</p>
+                    <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Trip Requirements</p></div>
                     <div class="rux-trip-panel__requirements-grid">
                       <button class="rux-button rux-button--toggle" id="tp-one-way" type="button" aria-pressed="false" data-rux-toggle-button title="One way trip"><span class="rux-icon">arrow_forward</span><span class="rux-btn-label">One way</span></button>
                       <div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
@@ -153,29 +153,34 @@
                     </div>
                   </div>
                   <div class="rux-card">
-                    <p class="rux-trip-panel__section-label">Trip Contacts</p>
+                    <div class="rux-trip-panel__section-head">
+                      <p class="rux-trip-panel__section-label">Trip Contacts</p>
+                      <div class="rux-cluster">
+                        <button class="rux-button rux-button--icon" type="button" id="tp-contact-add-btn" aria-label="Add contact"><span class="rux-icon" aria-hidden="true">add</span></button>
+                        <button class="rux-button rux-button--danger rux-button--icon" type="button" id="tp-contact-delete-btn" disabled aria-pressed="false" aria-label="Delete a contact"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                      </div>
+                    </div>
                     <div id="tp-contacts-list" style="display:none;flex-direction:column;gap:var(--rux-space-4)"></div>
-                    <button class="rux-button" type="button" id="tp-add-contact"><span class="rux-icon">add</span> Add</button>
                   </div>
                   <div class="rux-card">
-                    <p class="rux-trip-panel__section-label">Documents</p>
-                    <ul class="rux-trip-panel__doc-list" id="tp-doc-list"></ul>
-                    <div class="rux-trip-panel__doc-upload">
-                      <select class="rux-select" id="tp-doc-label-select">
-                        <option value="" disabled selected>Document type…</option>
-                        <option value="Itinerary">Itinerary</option>
-                        <option value="Contract">Contract</option>
-                        <option value="PO">Purchase Order</option>
-                      </select>
-                      <button class="rux-button" id="tp-doc-upload-btn" type="button" disabled><span class="rux-icon">upload</span> Upload</button>
-                      <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
+                    <div class="rux-trip-panel__section-head">
+                      <p class="rux-trip-panel__section-label">Files</p>
+                      <div class="rux-cluster">
+                        <button class="rux-button rux-button--icon" type="button" id="tp-doc-new-btn" data-doc-menu aria-haspopup="menu" aria-expanded="false" aria-label="Add document"><span class="rux-icon" aria-hidden="true">add</span></button>
+                        <button class="rux-button rux-button--danger rux-button--icon" type="button" id="tp-doc-delete-btn" disabled aria-label="Delete selected document"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                      </div>
                     </div>
+                    <div class="rux-field">
+                      <p class="rux-field__label" id="tp-doc-list-label">Uploaded Files</p>
+                      <ul class="rux-trip-panel__doc-list" id="tp-doc-list"></ul>
+                    </div>
+                    <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
                   </div>
                 </div>
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
-                    <p class="rux-trip-panel__section-label">Billing Summary</p>
+                    <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Billing Summary</p></div>
                     <div class="rux-field">
                       <label class="rux-field__label" for="tp-price">Quoted Price</label>
                       <div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="0.00" aria-label="Quoted price" /></div>
@@ -187,39 +192,38 @@
                     <input type="checkbox" id="tp-balance-paid" name="balancePaid" hidden />
                     <input id="tp-date-paid" name="datePaid" type="hidden" />
                   </div>
-                  <div class="rux-trip-panel__billing-workflow">
+                  <div class="rux-card rux-trip-panel__billing-workflow">
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="contractSigned">
-                      <p class="rux-trip-panel__section-label" data-billing-label>Contract</p>
+                      <p class="rux-field__label" data-billing-label>Contract</p>
                       <div class="rux-trip-panel__billing-step-row">
-                        <input class="rux-input" id="tp-contract-note" name="contractNote" type="text" placeholder="Optional Notes" aria-label="Contract note" disabled />
-                        <span class="rux-field__label rux-trip-panel__billing-step-status" data-billing-status data-off="Pending" data-on="Signed">Pending</span>
+                        <input class="rux-input" id="tp-contract-note" name="contractNote" type="text" placeholder="Pending" data-off-placeholder="Pending" data-on-placeholder="Optional notes" aria-label="Contract note" disabled />
                         <label class="rux-switch"><input type="checkbox" id="tp-contract-signed" name="contractSigned" data-billing-toggle data-billing-controls="tp-contract-note" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       </div>
                     </div>
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="poReceived">
-                      <p class="rux-trip-panel__section-label" data-billing-label>Purchase Order</p>
+                      <p class="rux-field__label" data-billing-label>Purchase Order</p>
                       <div class="rux-trip-panel__billing-step-row">
-                        <input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="PO number" aria-label="PO Number" disabled />
-                        <span class="rux-field__label rux-trip-panel__billing-step-status" data-billing-status data-off="Not received" data-on="Received">Not received</span>
+                        <input class="rux-input" id="tp-po" name="paymentRef" type="text" placeholder="Not received" data-off-placeholder="Not received" data-on-placeholder="Enter PO number" aria-label="PO Number" disabled />
                         <label class="rux-switch"><input type="checkbox" id="tp-po-received" name="poReceived" data-billing-toggle data-billing-controls="tp-po" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       </div>
                     </div>
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="invoiced">
-                      <p class="rux-trip-panel__section-label" data-billing-label>Invoice</p>
+                      <p class="rux-field__label" data-billing-label>Invoice</p>
                       <div class="rux-trip-panel__billing-step-row">
-                        <input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" placeholder="Invoice number" aria-label="Invoice Number" disabled />
-                        <span class="rux-field__label rux-trip-panel__billing-step-status" data-billing-status data-off="Pending" data-on="Invoiced">Pending</span>
+                        <input class="rux-input" id="tp-inv-num" name="invoiceNumber" type="text" placeholder="Pending" data-off-placeholder="Pending" data-on-placeholder="Enter Invoice Number" aria-label="Invoice Number" disabled />
                         <label class="rux-switch"><input type="checkbox" id="tp-invoiced" name="invoiced" data-billing-toggle data-billing-controls="tp-inv-num" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                       </div>
                     </div>
                   </div>
                   <div class="rux-card" data-payment-card>
-                    <p class="rux-trip-panel__section-label">Payments</p>
-                    <div class="rux-trip-panel__payment-rows" id="tp-payment-rows" style="display:none"></div>
-                    <div class="rux-trip-panel__payment-actions">
-                      <button class="rux-button rux-button--danger" type="button" data-payment-remove disabled><span class="rux-icon">delete</span><span class="rux-btn-label">Delete</span></button>
-                      <button class="rux-button" type="button" data-payment-add><span class="rux-icon">add</span><span class="rux-btn-label">Add</span></button>
+                    <div class="rux-trip-panel__section-head">
+                      <p class="rux-trip-panel__section-label">Payments</p>
+                      <div class="rux-cluster">
+                        <button class="rux-button rux-button--icon" type="button" id="tp-payment-add-btn" aria-label="Add payment"><span class="rux-icon" aria-hidden="true">add</span></button>
+                        <button class="rux-button rux-button--danger rux-button--icon" type="button" id="tp-payment-delete-btn" disabled aria-label="Delete a payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                      </div>
                     </div>
+                    <div class="rux-trip-panel__payment-rows" id="tp-payment-rows"></div>
                   </div>
                 </div>
                 <!-- Itinerary -->
@@ -236,7 +240,7 @@
                 <!-- Dispatch -->
                 <div id="pane-dispatch" class="rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
-                    <p class="rux-trip-panel__section-label">Fleet Assignments</p>
+                    <div class="rux-trip-panel__section-head"><p class="rux-trip-panel__section-label">Fleet Assignments</p></div>
                     <div class="rux-trip-panel__fleet-count-card">
                       <span class="rux-trip-panel__fleet-count-label" id="tp-buses-label">Buses Needed</span>
                       <div class="rux-trip-panel__number-picker" role="group" aria-labelledby="tp-buses-label">

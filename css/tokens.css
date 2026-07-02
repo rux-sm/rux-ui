@@ -169,11 +169,12 @@
 	--rux-bg-active: #303030;
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6);
 
-	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h);
-	--rux-bg-level-1: oklch(from var(--rux-color-base) 20% c h);
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 20% c h);
-	--rux-bg-level-3: oklch(from var(--rux-color-base) 30% c h); /* UNUSED */
-	--rux-bg-level-form: oklch(from var(--rux-color-base) 28% c h);
+	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h); /* App Background */
+	--rux-bg-level-1: oklch(from var(--rux-color-base) 24% c h); /* Panel Background */
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 24% c h); /* Card Background */
+	--rux-bg-level-3: oklch(from var(--rux-color-base) 36% c h); /* Form Background */
+	--rux-bg-level-4: oklch(from var(--rux-color-base) 40% c h); /* UNUSED Context Menus*/
+	--rux-bg-level-form: oklch(from var(--rux-color-base) 36% c h);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 
@@ -192,7 +193,7 @@
 	--rux-border-subtle: oklch(from var(--rux-color-base) 40% c h);
 	--rux-grid-line: var(--rux-border-subtle); /* UNUSED */
 	--rux-grid-border: var(--rux-border); /* UNUSED */
-	--rux-card-border: oklch(40% 0.004 260);; /* UNUSED */
+	--rux-card-border: oklch(40% 0.004 260);
 
 	/* ─── COLOR · control states ─────────────────────────────────────────── */
 
@@ -251,16 +252,17 @@
 	--rux-control-radius: var(--rux-radius-sm);
 
 	/* Unused legacy aliases. Names retain their original spelling. */
-	--rux-radius-buttn: var(--rux-radius-0); /* UNUSED */
-	--rux-radius-field: var(--rux-radius-0); /* UNUSED */
-	--rux-radius-card: var(--rux-radius-0); /* UNUSED */
 	--rux-radius-pannel: var(--rux-radius-0); /* UNUSED */
+	--rux-radius-card: var(--rux-radius-0); /* UNUSED */
+	--rux-radius-menu: var(--rux-radius-0); /* UNUSED */
+	--rux-radius-button: var(--rux-radius-0); /* UNUSED */
+	--rux-radius-field: var(--rux-radius-0); /* UNUSED */
 
 	/* ─── SPACING · component roles ──────────────────────────────────────── */
 
 	--rux-stack-gap: var(--rux-space-2);
 	--rux-card-gap: var(--rux-space-3);
-	--rux-section-label-gap: var(--rux-space-3);
+	--rux-section-label-gap: var(--rux-space-2);
 
 	/* ─── FOCUS ──────────────────────────────────────────────────────────── */
 

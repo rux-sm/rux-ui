@@ -33,7 +33,7 @@
 .rux-menu__item.is-active { background-color: var(--rux-bg-active); }
 .rux-menu__item--danger   { color: var(--rux-danger); }
 .rux-menu__divider {
-  height: var(--rux-border-width);
+  height: var(--rux-control-height);
   background: var(--rux-border);
   margin: var(--rux-space-1) 0;
 }
