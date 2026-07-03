@@ -35,7 +35,7 @@
   gap: var(--rux-space-1);
   height: 22px;
   padding: 0 var(--rux-space-2);
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid transparent;
   border-radius: var(--rux-radius-full);
   color: var(--rux-fg-muted);
@@ -43,12 +43,6 @@
   font-weight: var(--rux-weight-regular);
   white-space: nowrap;
 }
-.rux-badge > :where(.rux-icon) {
-  width: var(--rux-icon-sm);
-  height: var(--rux-icon-sm);
-  flex-shrink: 0;
-}
-
 /* — color variants — */
 
 .rux-badge--accent  { background: var(--rux-accent-subtle);  color: var(--rux-accent); }
@@ -61,8 +55,8 @@
 
 .rux-badge--dot::before {
   content: "";
-  width: var(--rux-dot-sm);
-  height: var(--rux-dot-sm);
+  width: var(--rux-status-dot-size);
+  height: var(--rux-status-dot-size);
   border-radius: var(--rux-radius-full);
   background: currentColor;
 }
@@ -85,12 +79,6 @@
   flex: none;
 }
 
-.rux-itin__badge > .rux-icon {
-  width: var(--rux-icon-sm, 16px);
-  height: var(--rux-icon-sm, 16px);
-  flex-shrink: 0;
-}
-
 .rux-itin__badge--yard    { background: var(--rux-success-subtle); border-color: var(--rux-success-bright); color: var(--rux-success-bright); }
 
 .rux-itin__badge--endday {
@@ -105,4 +93,3 @@
   border-color: var(--rux-danger-bright);
   color: var(--rux-danger-bright);
 }
-

@@ -116,7 +116,7 @@
   /* ── Render list ───────────────────────────────────────────────────────── */
 
   function iconBtnHtml(icon, id) {
-    return `<button class="rux-button rux-button--icon req-icon-btn" type="button" data-icon-for="${escHtml(id)}" title="Change icon">
+    return `<button class="rux-button rux-button--default rux-button--icon req-icon-btn" type="button" data-icon-for="${escHtml(id)}" title="Change icon">
       <span class="rux-icon">${escHtml(icon)}</span>
     </button>`;
   }

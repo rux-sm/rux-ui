@@ -10,10 +10,10 @@
    ---------
    .rux-trip-panel              Flex column, 440px wide (set by parent grid).
    .rux-trip-panel__header      Title + trip ID + close button.
-   .rux-trip-panel__tabs        Segmented tab nav — Details | Contacts | Billing | Dispatch.
+   .rux-trip-panel__tabs        Tab navigation — Details | Contacts | Billing | Dispatch.
    .rux-trip-panel__body        Scrollable body holding tab panes.
    .rux-trip-panel__pane        One per section, hidden via [hidden] when inactive.
-   .rux-trip-panel__footer      Delete + Cancel / Save actions.
+   .rux-panel__footer           Shared Delete + Cancel / Save action row.
 
    Dispatch sub-components
    -----------------------
@@ -27,14 +27,9 @@
 /* — Panel shell — */
 
 .rux-trip-panel {
-	display: flex;
-	flex-direction: column;
 	height: 100%;
-	min-height: 0;
 	min-width: 360px;
-	overflow: clip;
-	background: var(--rux-bg-level-1);
-	border-left: var(--rux-border-width) solid var(--rux-border);
+	border-width: 0 0 0 var(--rux-panel-border-width);
 	container-type: inline-size;
 }
 
@@ -92,36 +87,8 @@
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
 }
 
-.rux-trip-panel__tabs.is-scrolled {
-	box-shadow: 0 6px 16px oklch(0% 0 0 / 0.5), 0 2px 4px oklch(0% 0 0 / 0.3);
-}
-.rux-trip-panel__tabs > .rux-button--icon {
-	flex: none;
-	margin-left: auto;
-	align-self: start;
-}
 .rux-trip-panel__tabs::-webkit-scrollbar {
 	display: none;
-}
-.rux-trip-panel__tabs [data-trip-tabs] {
-	display: contents;
-}
-.rux-trip-panel__tabs [data-trip-tabs] .rux-button {
-	--_bg: var(--rux-control-scrim);
-	flex: 1;
-	gap: var(--rux-space-1);
-	padding: var(--rux-space-1) var(--rux-space-3);
-	border: none;
-	transition: background-color 0.15s ease;
-}
-.rux-trip-panel__tabs [data-trip-tabs] .rux-button.is-active,
-.rux-trip-panel__tabs [data-trip-tabs] .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
-}
-.rux-trip-panel__tabs [data-trip-tabs] .rux-button.is-active .rux-icon,
-.rux-trip-panel__tabs [data-trip-tabs] .rux-button[aria-selected="true"] .rux-icon {
-	--_icon-fill: 1;
 }
 .rux-trip-panel__status-group .rux-button {
 	gap: var(--rux-space-1);
@@ -172,10 +139,6 @@
 /* — Body / panes — */
 
 .rux-trip-panel__body {
-	flex: 1 1 auto;
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	min-height: 0;
 	opacity: 1;
 	transition: opacity 0.2s ease-in;
 }
@@ -231,23 +194,10 @@
    double-spaced by its own margin stacking on the card's gap; using margin
    throughout means a specific row (like the section label below) can get
    its own spacing without fighting a shared gap value. */
-.rux-card {
-	display: flex;
-	flex-direction: column;
-	gap: 0;
-	padding: var(--rux-control-padding-inline);
-	background: var(--rux-bg-level-2);
-	border-radius: var(--rux-radius-0);
-	border: solid var(--rux-border-width) var(--rux-card-border);
-	overflow: visible;
-}
-.rux-card > * + * {
-	margin-top: var(--rux-card-gap);
-}
 /* Section label/head is followed by its own dedicated gap instead of the
    card's general row gap — see --rux-section-label-gap in tokens.css. */
 .rux-trip-panel__section-head + *,
-.rux-card > .rux-trip-panel__section-label + * {
+.rux-card--section > .rux-trip-panel__section-label + * {
 	margin-top: var(--rux-section-label-gap);
 }
 
@@ -387,8 +337,8 @@
 
 /* Same footprint as .rux-input (height/padding/radius) but deliberately
    NOT input-shaped — dashed border + a recessed background darker than
-   the card (--rux-bg-level-0, not --rux-bg-level-1 which happens to equal
-   the card's own --rux-bg-level-2 and was rendering with no visible box
+   the card (--rux-surface-0, not --rux-surface-1 which happens to equal
+   the card's own --rux-surface-2 and was rendering with no visible box
    at all) makes "read-only computed value" obvious at a glance instead of
    looking like a disabled/empty input. */
 .rux-trip-panel__billing-output {
@@ -400,7 +350,7 @@
 	padding: 0;
 	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-field);
-	background: var(--rux-bg-level-0);
+	background: var(--rux-surface-0);
 	color: var(--rux-fg-muted);
 	font: inherit;
 	font-size: var(--rux-text-sm);
@@ -489,7 +439,7 @@
 	min-width: 0;
 	min-height: var(--rux-field-height);
 	border: var(--rux-border-width) solid var(--_border);
-	border-radius: var(--rux-radius-button);
+	border-radius: var(--rux-button-radius);
 	background: var(--rux-control-scrim);
 }
 .rux-trip-panel__payment-icon {
@@ -510,6 +460,7 @@
 	width: 100%;
 	margin: 0;
 	border: var(--rux-border-width) solid var(--_border);
+	border-radius: 0 var(--rux-button-radius) var(--rux-button-radius) 0;
 }
 .rux-trip-panel__payment-amount {
 	grid-area: amount;
@@ -561,7 +512,7 @@
 	min-width: 0;
 	height: var(--rux-field-height);
 	border: var(--rux-border-width) solid var(--_border);
-	border-radius: var(--rux-radius-field);
+	border-radius: var(--rux-button-radius) 0 0 var(--rux-button-radius);
 }
 .rux-trip-panel__payment-reference:focus-within {
 	border-color: transparent;
@@ -706,7 +657,7 @@
 	justify-content: space-between;
 	gap: var(--rux-control-content-gap);
 
-	background: var(--rux-bg-level-2);
+	background: var(--rux-surface-2);
 	border-radius: var(--rux-radius-md);
 }
 .rux-trip-panel__fleet-count-label {
@@ -724,7 +675,7 @@
 	overflow: hidden;
 	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-md);
-	background: var(--rux-bg-level-form);
+	background: var(--rux-surface-4);
 	transition:
 		border-color var(--rux-duration-fast) var(--rux-ease-out),
 		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
@@ -782,7 +733,7 @@
 	gap: var(--rux-control-content-gap);
 	padding: var(--rux-control-padding-inline);
 	border-radius: var(--rux-radius-md);
-	background: var(--rux-bg-level-2);
+	background: var(--rux-surface-2);
 	overflow: hidden;
 }
 .rux-trip-panel__bus-head {
@@ -813,14 +764,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
-/* Co-driver/relief toggle icons switch to their filled glyph variant when
-   active, same as the trip-panel tabs (see .rux-trip-panel__tabs above) —
-   the solid accent background alone doesn't read as "on" as clearly as
-   pairing it with the solid icon shape. */
-.rux-trip-panel__bus-roles [data-role].is-active .rux-icon,
-.rux-trip-panel__bus-roles [data-role][aria-pressed="true"] .rux-icon {
-	--_icon-fill: 1;
-}
 .rux-trip-panel__bus-hint {
 	font-size: var(--rux-text-xs);
 	color: var(--rux-fg-subtle);
@@ -843,7 +786,7 @@
 	display: none;
 }
 .rux-trip-panel__driver-row--head {
-	background: var(--rux-bg-sunken);
+	background: var(--rux-surface-0);
 }
 .rux-trip-panel__driver-row--head span {
 	font-size: var(--rux-text-2xs);
@@ -867,14 +810,9 @@
 .rux-trip-panel__role-label.rux-role--success { --_fg: var(--rux-success-bright); }
 
 .rux-trip-panel__role-label .rux-icon {
-	/* font-size must match width/height (see .rux-icon--lg/--xl) — otherwise
-	   the glyph renders at the smaller inherited --rux-icon-sm inside this
-	   larger box with no flex-centering, so it sits off-center instead of
-	   filling it. */
-	font-size: var(--rux-icon-md);
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
-	--_icon-fill: 1;
+	--_icon-size: var(--rux-icon-md);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
+	--_icon-fill: var(--rux-icon-fill-selected);
 }
 .rux-trip-panel__role-col {
 	display: flex;
@@ -922,7 +860,7 @@
 	min-width: 0;
 	height: 28px;
 	padding: 0 var(--rux-control-padding-inline);
-	border-radius: var(--rux-radius-button);
+	border-radius: var(--rux-button-radius);
 	background: var(--rux-control-scrim);
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
 }
@@ -937,16 +875,13 @@
 	box-shadow: var(--rux-ring-focus);
 }
 .rux-trip-panel__doc-content > .rux-icon {
-	width: var(--rux-icon-sm);
-	height: var(--rux-icon-sm);
-	flex: none;
 	color: var(--rux-fg-muted);
 }
 .rux-trip-panel__doc-menu {
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
-	background: var(--rux-bg-level-4);
-	border: var(--rux-border-width) solid var(--rux-card-border);
+	background: var(--rux-surface-3);
+	border: var(--rux-border-width) solid var(--rux-border-strong);
 	border-radius: var(--rux-radius-menu);
 }
 .rux-trip-panel__doc-menu[hidden] {
@@ -997,21 +932,6 @@
 	pointer-events: auto;
 }
 
-/* — Footer — */
-
-.rux-trip-panel__footer {
-	align-items: start;
-	gap: var(--rux-control-content-gap);
-	background: var(--rux-bg-level-1);
-	position: relative;
-	z-index: 1;
-	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-}
-
-.rux-trip-panel__footer.is-scrolled {
-	box-shadow: 0 -6px 16px oklch(0% 0 0 / 0.5), 0 -2px 4px oklch(0% 0 0 / 0.3);
-}
-
 /* ==========================================================================
    Trip Editor Responsive Tuning
    --------------------------------------------------------------------------
@@ -1047,19 +967,12 @@
 }
 
 @container (max-width: 300px) {
-	.rux-trip-panel__tabs [data-trip-tabs] .rux-button {
+	.rux-trip-panel__tabs > .rux-tab {
 		flex-direction: column;
 		height: 42px;
 		padding: var(--rux-space-1) var(--rux-space-1);
 		gap: 3px;
 		line-height: 1;
-	}
-	.rux-trip-panel__tabs > .rux-button--icon {
-		flex-direction: column;
-		width: 42px;
-		height: 42px;
-		align-self: auto;
-		gap: 3px;
 	}
 	.rux-trip-panel__tab-label--break {
 		display: block;
@@ -1084,7 +997,7 @@
 }
 
 @container (max-width: 300px) {
-	.rux-trip-panel__footer .rux-btn-label {
+	.rux-trip-panel .rux-panel__footer .rux-btn-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;

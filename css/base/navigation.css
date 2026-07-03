@@ -2,6 +2,75 @@
    NAVIGATION  ·  menu
    ========================================================================== */
 
+/* — tabs — */
+
+.rux-tabs {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-tabs-gap);
+	min-width: 0;
+}
+
+.rux-tabs--fill > .rux-tab {
+	flex: 1;
+}
+
+.rux-tab {
+	--_state-overlay: transparent;
+
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-tab-content-gap);
+	min-width: 0;
+	height: var(--rux-tab-height);
+	padding: 0 var(--rux-tab-padding-inline);
+	background-color: var(--rux-tab-bg);
+	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
+	color: var(--rux-tab-fg);
+	border: 0;
+	border-radius: var(--rux-tab-radius);
+	box-shadow: none;
+	font: inherit;
+	font-size: var(--rux-button-font-size);
+	font-weight: var(--rux-button-font-weight);
+	line-height: 1;
+	white-space: nowrap;
+	cursor: pointer;
+	transition:
+		background-color var(--rux-tab-transition-duration) var(--rux-tab-transition-easing),
+		color var(--rux-tab-transition-duration) var(--rux-tab-transition-easing),
+		box-shadow var(--rux-tab-transition-duration) var(--rux-tab-transition-easing);
+}
+
+.rux-tab:hover {
+	--_state-overlay: var(--rux-tab-hover-overlay);
+}
+
+.rux-tab:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-tab-focus-ring);
+}
+
+.rux-tab.is-active,
+.rux-tab[aria-selected="true"] {
+	--_state-overlay: transparent;
+	background-color: var(--rux-tab-selected-bg);
+	color: var(--rux-tab-selected-fg);
+	box-shadow: var(--rux-tab-selected-shadow);
+}
+
+.rux-tab > .rux-icon {
+	--_icon-size: var(--rux-button-icon-size);
+	pointer-events: none;
+}
+
+.rux-tab.is-active > .rux-icon,
+.rux-tab[aria-selected="true"] > .rux-icon {
+	--_icon-fill: var(--rux-icon-fill-selected);
+	--_icon-weight: var(--rux-icon-weight-selected);
+}
+
 /* — menu — */
 
 .rux-menu {
@@ -9,10 +78,10 @@
   flex-direction: column;
   min-width: var(--rux-menu-min-width);
   padding: var(--rux-space-1);
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-shadow-md);
+  box-shadow: var(--rux-elevation-3);
 }
 .rux-menu__item {
   display: flex;

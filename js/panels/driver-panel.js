@@ -6,7 +6,7 @@
   const drawer      = document.getElementById("driver-panel-drawer");
   const panelEl     = drawer.querySelector(".rux-driver-panel");
   const tbody       = document.getElementById("driver-roster-body");
-  const tabBtns     = document.querySelectorAll("[data-driver-tabs] .rux-button");
+  const tabBtns     = document.querySelectorAll("[data-driver-tabs] .rux-tab");
   const panes       = document.querySelectorAll(".rux-driver-panel__pane");
   const searchInput  = document.getElementById("driver-search");
   const cdlGroup     = document.getElementById("dp-cdl-group");

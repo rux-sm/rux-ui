@@ -8,22 +8,17 @@
    ---------
    .rux-driver-panel              Flex column, width set by drawer parent.
    .rux-driver-panel__header      Driver name + ID + close button.
-   .rux-driver-panel__tabs        Segmented tab nav — Profile | License | Status | Trips.
+   .rux-driver-panel__tabs        Tab navigation — Profile | License | Status | Trips.
    .rux-driver-panel__body        Scrollable body holding tab panes.
    .rux-driver-panel__pane        One per section, hidden via [hidden].
-   .rux-driver-panel__footer      Delete + Save actions.
+   .rux-panel__footer             Shared Delete + Save action row.
    ========================================================================== */
 
 /* — Panel shell — */
 
 .rux-driver-panel {
-	display: flex;
-	flex-direction: column;
 	height: 100%;
-	min-height: 0;
-	overflow: clip;
-	background: var(--rux-bg);
-	border-left: var(--rux-border-width) solid var(--rux-border);
+	border-width: 0 0 0 var(--rux-panel-border-width);
 	container-type: inline-size;
 }
 
@@ -91,42 +86,11 @@
 	display: none;
 }
 
-.rux-driver-panel__tabs .rux-segmented {
-	display: contents;
-}
-
-.rux-driver-panel__tabs .rux-segmented .rux-button {
-	--_bg: var(--rux-control-scrim);
-	flex: 1;
-	gap: var(--rux-space-1);
-	min-width: 0;
-	padding: var(--rux-space-1) var(--rux-space-3);
-	border: none;
-	transition: background-color 0.15s ease;
-}
-
-.rux-driver-panel__tabs .rux-segmented .rux-button.is-active,
-.rux-driver-panel__tabs .rux-segmented .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
-}
-.rux-driver-panel__tabs .rux-segmented .rux-button.is-active .rux-icon,
-.rux-driver-panel__tabs .rux-segmented .rux-button[aria-selected="true"] .rux-icon {
-	--_icon-fill: 1;
-}
-
 .rux-driver-panel__tab-label {
 	white-space: nowrap;
 }
 
 /* — Body / panes — */
-
-.rux-driver-panel__body {
-	flex: 1 1 auto;
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	min-height: 0;
-}
 
 .rux-driver-panel__pane {
 	display: flex;
@@ -183,7 +147,7 @@
 	width: 58px;
 	height: 58px;
 	aspect-ratio: 1;
-	background: var(--rux-bg-3);
+	background: var(--rux-surface-2);
 	border-radius: var(--rux-radius-sm);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
@@ -194,8 +158,8 @@
 }
 
 .rux-driver-panel__avatar .rux-icon {
-	width: var(--rux-icon-xl);
-	height: var(--rux-icon-xl);
+	--_icon-size: var(--rux-icon-xl);
+	--_icon-optical-size: var(--rux-icon-optical-size-xl);
 }
 
 /* — License: endorsement toggles — */
@@ -242,7 +206,7 @@
 	align-items: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) var(--rux-space-3);
-	background: var(--rux-bg-sunken);
+	background: var(--rux-surface-0);
 	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	border-radius: var(--rux-radius-md);
 }
@@ -272,14 +236,6 @@
 	font-size: var(--rux-text-sm);
 }
 
-/* — Footer — */
-
-.rux-driver-panel__footer {
-	align-items: center;
-	justify-content: flex-end;
-	gap: var(--rux-space-2);
-}
-
 /* — Narrow panel — */
 
 @container (max-width: 360px) {
@@ -289,7 +245,7 @@
 	}
 
 	.rux-driver-panel__tab-label,
-	.rux-driver-panel__footer .rux-btn-label {
+	.rux-driver-panel .rux-panel__footer .rux-btn-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;

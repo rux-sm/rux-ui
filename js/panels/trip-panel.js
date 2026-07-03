@@ -57,7 +57,7 @@ function renderRequirements(container, items, { block = true } = {}) {
 	container.innerHTML = items
 		.map(
 			(req) =>
-				`<button class="rux-button rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.id ?? req.key)}" title="${escHtml(req.label)}">
+				`<button class="rux-button rux-button--default rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.id ?? req.key)}" title="${escHtml(req.label)}">
 					<span class="rux-icon">${escHtml(mapIcon(req.icon))}</span><span class="rux-btn-label"> ${escHtml(req.label)}</span>
 				</button>`,
 		)
@@ -97,7 +97,7 @@ function buildBusGroup(idx, buses, drivers) {
 		.map(
 			(r) => `
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
-      <button type="button" class="rux-button rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].${escHtml(r.role)}.status" title="${escHtml(r.title)}" aria-label="${escHtml(r.title)} status">
+      <button type="button" class="rux-button rux-button--default rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].${escHtml(r.role)}.status" title="${escHtml(r.title)}" aria-label="${escHtml(r.title)} status">
         <span class="rux-icon">${escHtml(mapIcon(r.icon))}</span>
       </button>
       <select class="rux-select" name="buses[${idx}].${escHtml(r.role)}.name" aria-label="${escHtml(r.title)}">${driverOpts}</select>
@@ -122,19 +122,19 @@ function buildBusGroup(idx, buses, drivers) {
       </select>
     </div>
     <div class="rux-trip-panel__bus-roles">
-      <button class="rux-button rux-button--toggle" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
+      <button class="rux-button rux-button--default rux-button--toggle" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
         <span class="rux-icon">person_add</span><span class="rux-btn-label">Co-driver</span>
       </button>
-      <button class="rux-button rux-button--toggle" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
+      <button class="rux-button rux-button--default rux-button--toggle" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
         <span class="rux-icon">last_page</span><span class="rux-btn-label">Relief 1</span>
       </button>
-      <button class="rux-button rux-button--toggle" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
+      <button class="rux-button rux-button--default rux-button--toggle" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
         <span class="rux-icon">first_page</span><span class="rux-btn-label">Relief 2</span>
       </button>
     </div>
     <div class="rux-trip-panel__driver-rows">
       <div class="rux-trip-panel__driver-row">
-        <button type="button" class="rux-button rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].driver.status" title="Driver" aria-label="Driver status">
+        <button type="button" class="rux-button rux-button--default rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].driver.status" title="Driver" aria-label="Driver status">
           <span class="rux-icon">person</span>
         </button>
         <select class="rux-select" name="buses[${idx}].driver.name" aria-label="Driver">${driverOpts}</select>
@@ -552,21 +552,7 @@ function initTripTabs(root) {
 	if (tabs) tabs.dataset.ruxTripTabsInit = "true";
 
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
-	const allTabBtns = root.querySelectorAll(".rux-trip-panel__tabs .rux-button[aria-controls]");
-	const scrollBody = root.querySelector(".rux-trip-panel__body");
-	const tabsEl = root.querySelector(".rux-trip-panel__tabs");
-	const footerEl = root.querySelector(".rux-trip-panel__footer");
-	if (scrollBody) {
-		const syncScrollShadows = () => {
-			if (tabsEl) tabsEl.classList.toggle("is-scrolled", scrollBody.scrollTop > 0);
-			if (footerEl) {
-				const atBottom = scrollBody.scrollHeight - scrollBody.scrollTop - scrollBody.clientHeight < 1;
-				footerEl.classList.toggle("is-scrolled", !atBottom);
-			}
-		};
-		scrollBody.addEventListener("scroll", syncScrollShadows);
-		new ResizeObserver(syncScrollShadows).observe(scrollBody);
-	}
+	const allTabBtns = root.querySelectorAll(".rux-trip-panel__tabs .rux-tab[aria-controls]");
 	allTabBtns.forEach((btn) => {
 		btn.addEventListener("click", () => {
 			const panelId = btn.getAttribute("aria-controls");
@@ -581,12 +567,11 @@ function initTripTabs(root) {
 				p.hidden = p.id !== panelId;
 			});
 			if (scrollBody) scrollBody.scrollTop = 0;
-			document.activeElement?.blur();
 		});
 	});
 
 	const activeTab =
-		root.querySelector(".rux-trip-panel__tabs .rux-button[aria-controls][aria-selected='true']") ||
+		root.querySelector(".rux-trip-panel__tabs .rux-tab[aria-controls][aria-selected='true']") ||
 		allTabBtns[0];
 
 	if (activeTab) {

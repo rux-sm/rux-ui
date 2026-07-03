@@ -15,7 +15,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: var(--rux-bg-level-1);
+	background: var(--rux-surface-1);
 	transition: opacity var(--rux-duration-slow) var(--rux-ease-out);
 }
 
@@ -116,7 +116,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: var(--rux-bg-level-0);
+	background: var(--rux-surface-0);
 	min-width: 0;
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-2);
@@ -166,7 +166,7 @@
 }
 
 .scheduler-app__module-button.is-active .rux-icon {
-	--_icon-fill: 1;
+	--_icon-fill: var(--rux-icon-fill-selected);
 }
 
 .scheduler-app__account {
@@ -186,30 +186,6 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-}
-
-.rux-panel__footer {
-	flex: none;
-	display: flex;
-	padding: var(--rux-space-3) var(--rux-space-3);
-	border-top: var(--rux-border-width) solid var(--rux-border);
-	border-top: none; /* override */
-}
-
-/* min-width:0 overrides flex's default min-width:auto, which floors a
-   flex item at its own content width — without it, "Delete" (longest
-   label) won't shrink to its fair share, so Delete/Clear/Save render
-   uneven despite all having flex:1. The label needs the same override
-   plus overflow/ellipsis so it truncates gracefully under real pressure
-   instead of overflowing its button. */
-.rux-panel__footer > .rux-button {
-	flex: 1;
-	min-width: 0;
-}
-.rux-panel__footer > .rux-button .rux-btn-label {
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
 }
 
 .scheduler-app__bar {
@@ -415,7 +391,7 @@
 	min-height: 0;
 	margin: 0 0 var(--scheduler-app-gap);
 	padding-block-end: var(--scheduler-app-gap);
-	background: var(--rux-bg-level-1);
+	background: var(--rux-surface-1);
 	border-radius: var(--scheduler-app-card-radius);
 	overflow: hidden;
 }
@@ -551,14 +527,9 @@
 /* — Right panel shell — */
 
 .rux-right-panel {
-	display: flex;
-	flex-direction: column;
 	height: 100%;
-	min-height: 0;
 	min-width: 360px;
-	overflow: clip;
-	background: var(--rux-bg-level-1);
-	border-right: var(--rux-border-width) solid var(--rux-border);
+	border-width: 0 var(--rux-panel-border-width) 0 0;
 	container-type: inline-size;
 }
 
@@ -576,34 +547,6 @@
 .rux-right-panel__tabs::-webkit-scrollbar {
 	display: none;
 }
-.rux-right-panel__tabs [data-right-tabs] {
-	display: contents;
-}
-.rux-right-panel__tabs [data-right-tabs] .rux-button {
-	--_bg: var(--rux-control-scrim);
-	flex: 1;
-	gap: var(--rux-space-1);
-	padding: var(--rux-space-1) var(--rux-space-3);
-	border: none;
-	transition: background-color 0.15s ease;
-}
-.rux-right-panel__tabs [data-right-tabs] .rux-button.is-active,
-.rux-right-panel__tabs [data-right-tabs] .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
-}
-.rux-right-panel__tabs [data-right-tabs] .rux-button.is-active .rux-icon,
-.rux-right-panel__tabs [data-right-tabs] .rux-button[aria-selected="true"] .rux-icon {
-	--_icon-fill: 1;
-}
-
-.rux-right-panel__body {
-	flex: 1 1 auto;
-	overflow-y: auto;
-	overscroll-behavior: contain;
-	min-height: 0;
-}
-
 .rux-right-panel__pane {
 	display: flex;
 	flex-direction: column;
@@ -834,7 +777,7 @@
 		margin: 0;
 		padding: 8px var(--rux-space-3) calc(16px + env(safe-area-inset-bottom, 0px));
 		overflow: visible;
-		background: var(--rux-bg-topbar);
+		background: var(--rux-surface-0);
 		border-top: var(--rux-border-width) solid var(--rux-border);
 		border-top: none; /* override */
 	}
@@ -854,16 +797,14 @@
 	}
 
 	.scheduler-app__module-button > .rux-icon {
-		width: 28px;
-		height: 28px;
-		font-size: 28px;
-		--_icon-wght: 300;
-		--_icon-opsz: 20;
+		--_icon-size: 28px;
+		--_icon-weight: var(--rux-icon-weight-default);
+		--_icon-optical-size: var(--rux-icon-optical-size-sm);
 	}
 
 	.scheduler-app__module-button.is-active > .rux-icon {
-		--_icon-fill: 1;
-		--_icon-wght: 400;
+		--_icon-fill: var(--rux-icon-fill-selected);
+		--_icon-weight: var(--rux-icon-weight-selected);
 	}
 
 	.scheduler-app__drawer .rux-trip-panel__header {
@@ -882,7 +823,7 @@
 .scheduler-app__schedule .trips-app__table-wrap {
 	flex: 1;
 	margin-inline: var(--scheduler-app-gap);
-	background: var(--rux-bg-level-0);
+	background: var(--rux-surface-0);
 	border-radius: var(--scheduler-app-card-radius);
 	overflow: auto;
 }
@@ -931,7 +872,7 @@
 
 #opt-time-align.is-active .rux-icon,
 #opt-two-weeks.is-active .rux-icon {
-	--_icon-fill: 1;
+	--_icon-fill: var(--rux-icon-fill-selected);
 }
 
 .scheduler-app__grid {
@@ -953,10 +894,10 @@
 	z-index: var(--rux-z-dropdown);
 	min-width: 10rem;
 	padding: var(--rux-space-1);
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-sm);
-	box-shadow: var(--rux-shadow-lg);
+	box-shadow: var(--rux-elevation-4);
 }
 
 .scheduler-app__context-menu[hidden] {

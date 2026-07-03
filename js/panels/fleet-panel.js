@@ -6,7 +6,7 @@
   const drawer      = document.getElementById("fleet-panel-drawer");
   const panelEl     = drawer.querySelector(".rux-fleet-panel");
   const tbody       = document.getElementById("fleet-roster-body");
-  const tabBtns     = document.querySelectorAll("[data-fleet-tabs] .rux-button");
+  const tabBtns     = document.querySelectorAll("[data-fleet-tabs] .rux-tab");
   const panes       = document.querySelectorAll(".rux-fleet-panel__pane");
   const searchInput  = document.getElementById("fleet-search");
   const tripList     = document.getElementById("fp-trip-list");

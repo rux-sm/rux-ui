@@ -350,14 +350,13 @@
 }
 
 .rux-itin__addr-check {
+	--_icon-size: var(--rux-icon-sm);
 	position: absolute;
 	right: var(--rux-space-2);
 	top: 50%;
 	transform: translateY(-50%);
 	color: var(--rux-success-bright);
 	pointer-events: none;
-	width: var(--rux-icon-sm, 14px);
-	height: var(--rux-icon-sm, 14px);
 }
 .rux-itin__addr-check--stale {
 	color: var(--rux-warning-bright);
@@ -389,10 +388,10 @@
 	max-height: 16rem;
 	overflow: auto;
 	padding: var(--rux-space-1);
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
-	box-shadow: var(--rux-shadow-lg);
+	box-shadow: var(--rux-elevation-4);
 }
 
 .rux-itin__suggestions[hidden] {

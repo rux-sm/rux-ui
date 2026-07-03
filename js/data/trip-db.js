@@ -925,7 +925,7 @@ export function loadTrip(root, itinerary, trip) {
 	const idEl = root.querySelector("#tp-trip-id");
 	if (idEl) idEl.textContent = trip.trip_ref ?? trip.id ?? "";
 
-	root.querySelector(".rux-trip-panel__tabs .rux-button[aria-controls]")?.click();
+	root.querySelector(".rux-trip-panel__tabs .rux-tab[aria-controls]")?.click();
 
 	requestAnimationFrame(() => {
 		root.classList.remove("rux-trip-panel--loading");

@@ -8,7 +8,7 @@
   display: flex;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   font-size: var(--rux-text-sm);
@@ -35,10 +35,10 @@
   align-items: center;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-shadow-sm);
+  box-shadow: var(--rux-elevation-2);
   font-size: var(--rux-text-sm);
   min-width: var(--rux-toast-min-width);
 }
@@ -62,10 +62,10 @@
 .rux-modal {
   width: 100%;
   max-width: var(--rux-container-xs);
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xl);
-  box-shadow: var(--rux-shadow-lg);
+  box-shadow: var(--rux-elevation-4);
   overflow: hidden;
   animation: rux-modal-in var(--rux-duration-base) var(--rux-ease-out);
 }
@@ -83,7 +83,7 @@
   justify-content: flex-end;
   gap: var(--rux-space-2);
   padding: var(--rux-space-4) var(--rux-space-5);
-  background: var(--rux-bg-sunken);
+  background: var(--rux-surface-0);
   border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
@@ -124,7 +124,7 @@
 [data-tooltip]:not([data-rux-tooltip="floating"]):focus-visible::after {
   content: attr(data-tooltip);
   position: absolute;
-  bottom: calc(100% + var(--rux-dot-sm));
+  bottom: calc(100% + var(--rux-status-dot-size));
   left: 50%;
   transform: translateX(-50%);
   padding: var(--rux-space-1) var(--rux-space-2);
@@ -136,7 +136,7 @@
   white-space: nowrap;
   pointer-events: none;
   z-index: var(--rux-z-overlay);
-  box-shadow: var(--rux-shadow-md);
+  box-shadow: var(--rux-elevation-3);
 }
 
 .rux-tooltip {
@@ -153,7 +153,7 @@
   pointer-events: none;
   white-space: nowrap;
   z-index: var(--rux-z-overlay);
-  box-shadow: var(--rux-shadow-md);
+  box-shadow: var(--rux-elevation-3);
 }
 
 .rux-tooltip[hidden] {

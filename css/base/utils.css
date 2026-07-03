@@ -1,5 +1,5 @@
 /* ==========================================================================
-   UTILS  ·  divider, stack/cluster, icons, prefers-reduced-motion
+   UTILS  ·  divider, stack/cluster, prefers-reduced-motion
    ========================================================================== */
 
 /* — divider — */
@@ -27,54 +27,6 @@
 .rux-row      { display: flex; align-items: center; gap: var(--rux-space-3); }
 .rux-spacer   { flex: 1; }
 
-
-/* — icons — */
-
-.rux-icon {
-  --_icon-fill: 0;
-  --_icon-wght: 300;
-  --_icon-grad: 0;
-  --_icon-opsz: 20;
-
-  font-family: 'Material Symbols Outlined';
-  font-weight: normal;
-  font-style: normal;
-  font-size: var(--rux-icon-sm);
-  font-variation-settings: 'FILL' var(--_icon-fill), 'wght' var(--_icon-wght), 'GRAD' var(--_icon-grad), 'opsz' var(--_icon-opsz);
-  line-height: 1;
-  letter-spacing: normal;
-  text-transform: none;
-  display: inline-block;
-  white-space: nowrap;
-  word-wrap: normal;
-  direction: ltr;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  font-feature-settings: 'liga';
-  flex: none;
-  vertical-align: middle;
-  width: var(--rux-icon-sm);
-  height: var(--rux-icon-sm);
-  overflow: hidden;
-}
-.rux-icon--sm { font-size: var(--rux-icon-sm); width: var(--rux-icon-sm); height: var(--rux-icon-sm); }
-.rux-icon--lg { font-size: var(--rux-icon-lg); width: var(--rux-icon-lg); height: var(--rux-icon-lg); }
-.rux-icon--xl { font-size: var(--rux-icon-xl); width: var(--rux-icon-xl); height: var(--rux-icon-xl); }
-
-.rux-icon--bus-side {
-  display: inline-block;
-  background: currentColor;
-  mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWJ1cy1pY29uIGx1Y2lkZS1idXMiPjxwYXRoIGQ9Ik04IDZ2NiIvPjxwYXRoIGQ9Ik0xNSA2djYiLz48cGF0aCBkPSJNMiAxMmgxOS42Ii8+PHBhdGggZD0iTTE4IDE4aDNzLjUtMS43LjgtMi44Yy4xLS40LjItLjguMi0xLjIgMC0uNC0uMS0uOC0uMi0xLjJsLTEuNC01QzIwLjEgNi44IDE5LjEgNiAxOCA2SDRhMiAyIDAgMCAwLTIgMnYxMGgzIi8+PGNpcmNsZSBjeD0iNyIgY3k9IjE4IiByPSIyIi8+PHBhdGggZD0iTTkgMThoNSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTgiIHI9IjIiLz48L3N2Zz4=") center / contain no-repeat;
-  -webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWJ1cy1pY29uIGx1Y2lkZS1idXMiPjxwYXRoIGQ9Ik04IDZ2NiIvPjxwYXRoIGQ9Ik0xNSA2djYiLz48cGF0aCBkPSJNMiAxMmgxOS42Ii8+PHBhdGggZD0iTTE4IDE4aDNzLjUtMS43LjgtMi44Yy4xLS40LjItLjguMi0xLjIgMC0uNC0uMS0uOC0uMi0xLjJsLTEuNC01QzIwLjEgNi44IDE5LjEgNiAxOCA2SDRhMiAyIDAgMCAwLTIgMnYxMGgzIi8+PGNpcmNsZSBjeD0iNyIgY3k9IjE4IiByPSIyIi8+PHBhdGggZD0iTTkgMThoNSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTgiIHI9IjIiLz48L3N2Zz4=") center / contain no-repeat;
-}
-
-.rux-icon--van {
-  display: inline-block;
-  background: currentColor;
-  mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXZhbi1pY29uIGx1Y2lkZS12YW4iPjxwYXRoIGQ9Ik0xMyA2djVhMSAxIDAgMCAwIDEgMWg2LjEwMmExIDEgMCAwIDEgLjcxMi4yOThsLjg5OC45MWExIDEgMCAwIDEgLjI4OC43MDJWMTdhMSAxIDAgMCAxLTEgMWgtMyIvPjxwYXRoIGQ9Ik01IDE4SDNhMSAxIDAgMCAxLTEtMVY4YTIgMiAwIDAgMSAyLTJoMTJjMS4xIDAgMi4xLjggMi40IDEuOGwxLjE3NiA0LjIiLz48cGF0aCBkPSJNOSAxOGg1Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxOCIgcj0iMiIvPjxjaXJjbGUgY3g9IjciIGN5PSIxOCIgcj0iMiIvPjwvc3ZnPg==") center / contain no-repeat;
-  -webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXZhbi1pY29uIGx1Y2lkZS12YW4iPjxwYXRoIGQ9Ik0xMyA2djVhMSAxIDAgMCAwIDEgMWg2LjEwMmExIDEgMCAwIDEgLjcxMi4yOThsLjg5OC45MWExIDEgMCAwIDEgLjI4OC43MDJWMTdhMSAxIDAgMCAxLTEgMWgtMyIvPjxwYXRoIGQ9Ik01IDE4SDNhMSAxIDAgMCAxLTEtMVY4YTIgMiAwIDAgMSAyLTJoMTJjMS4xIDAgMi4xLjggMi40IDEuOGwxLjE3NiA0LjIiLz48cGF0aCBkPSJNOSAxOGg1Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIxOCIgcj0iMiIvPjxjaXJjbGUgY3g9IjciIGN5PSIxOCIgcj0iMiIvPjwvc3ZnPg==") center / contain no-repeat;
-}
 
 
 /* — prefers-reduced-motion — */

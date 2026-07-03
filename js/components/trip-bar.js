@@ -134,7 +134,7 @@ function ensureFloatingTooltip() {
 
 function tooltipGapPx() {
   const value = getComputedStyle(document.documentElement)
-    .getPropertyValue("--rux-dot-sm")
+    .getPropertyValue("--rux-status-dot-size")
     .trim();
   const parsed = Number.parseFloat(value);
   return Number.isFinite(parsed) ? parsed : 4;

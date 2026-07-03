@@ -15,17 +15,18 @@
 
    Modules (in load order)
    -----------------------
+   icons.css        .rux-icon and custom pictogram variants
    controls.css     .rux-button, .rux-segmented
    badges.css       .rux-badge, .rux-itin__badge  ← single source of truth for all badge rules
    form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
                     .rux-switch, .rux-checkbox, .rux-input-group,
                     .rux-color-swatches, .rux-color-picker
-   content.css      .rux-card, .rux-tag, .rux-avatar
+   content.css      .rux-panel, .rux-card, .rux-tag, .rux-avatar
    feedback.css     .rux-alert, .rux-toast, .rux-modal, .rux-progress,
                     [data-tooltip], .rux-tooltip
    navigation.css   .rux-menu
    utils.css        .rux-divider, .rux-stack, .rux-cluster, .rux-row,
-                    .rux-spacer, .rux-icon, prefers-reduced-motion
+                    .rux-spacer, prefers-reduced-motion
    trip-bar.css     .rux-trip-bar — Gantt bar for trip display
    trip-panel.css   .rux-trip-panel — side-panel form editor for trip details
    itinerary.css    .rux-itin — timeline stop editor for the Itinerary tab
@@ -33,6 +34,7 @@
    scheduler-app.css  .scheduler-app — full-page application shell layout
    ========================================================================== */
 
+@import "./base/icons.css";
 @import "./base/controls.css";
 @import "./base/badges.css";
 @import "./base/form.css";

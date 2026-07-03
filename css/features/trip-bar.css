@@ -55,7 +55,7 @@
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
 	--rux-trip-bar-paid-color: var(--rux-success);
 	--rux-trip-bar-tight-gap: 1px;
-	--rux-trip-bar-actions-bg: color-mix(in oklch, var(--rux-bg-elevated) 75%, transparent);
+	--rux-trip-bar-actions-bg: color-mix(in oklch, var(--rux-surface-1) 75%, transparent);
 	--rux-trip-bar-bus-label-bg: color-mix(in oklch, var(--rux-fg) 10%, transparent);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
@@ -97,8 +97,8 @@
 }
 
 .rux-trip-bar .rux-icon {
-	--_icon-fill: 1;
-	--_icon-opsz: 24;
+	--_icon-fill: var(--rux-icon-fill-selected);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 }
 
 /* ---------- Height contract ---------- */
@@ -422,9 +422,9 @@
 }
 
 .rux-trip-bar__status--paid {
+	--_icon-size: var(--rux-icon-md);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	color: var(--rux-success-bright);
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
 }
 
 .rux-trip-bar__status-date {
@@ -442,8 +442,8 @@
 }
 
 .rux-trip-bar__pending-icon {
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
+	--_icon-size: var(--rux-icon-md);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	flex: none;
 	stroke-width: 2;
 	padding-right: var(--rux-space-2);
@@ -649,10 +649,9 @@
 }
 
 .rux-trip-bar__driver-role-icon {
+	--_icon-size: var(--rux-icon-md);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	flex-shrink: 0;
-	font-size: var(--rux-icon-md);
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
 }
 
 .rux-trip-bar__driver--unassigned {
@@ -660,8 +659,8 @@
 }
 
 .rux-trip-bar__driver-dot {
-	width: var(--rux-dot-sm);
-	height: var(--rux-dot-sm);
+	width: var(--rux-status-dot-size);
+	height: var(--rux-status-dot-size);
 	flex: none;
 	border-radius: var(--rux-radius-full);
 	background: var(--rux-warning);

@@ -459,7 +459,7 @@
 		const dayNum = stops.filter((s) => s.type === "day").length + 1;
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
-      <div class="rux-card rux-itin__day rux-itin__day--final">
+      <div class="rux-card rux-card--section rux-itin__day rux-itin__day--final">
         <label class="rux-field__label">End of Day ${dayNum}</label>
         <div class="rux-itin__day-header">
           ${renderDayStatsGrid(stats)}
@@ -482,7 +482,7 @@
 		const label = formatDayLabel(item.label);
 		const dayNum = dayNumberFor(stops, idx);
 		return `
-      <div class="rux-card rux-itin__day" data-stop-idx="${idx}" title="${escHtml(label)}">
+      <div class="rux-card rux-card--section rux-itin__day" data-stop-idx="${idx}" title="${escHtml(label)}">
         <label class="rux-field__label">End of Day ${dayNum}</label>
         <div class="rux-itin__day-header">
           ${renderDayStatsGrid(stats)}
@@ -632,7 +632,7 @@
 
 		return `
       <div class="rux-itin__stop" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
-        <div class="rux-card rux-itin__card${isStale ? " rux-itin__card--stale" : ""}${stop.moveMode ? " is-move-mode" : ""}">
+        <div class="rux-card rux-card--section rux-itin__card${isStale ? " rux-itin__card--stale" : ""}${stop.moveMode ? " is-move-mode" : ""}">
           ${dayTitle}
           ${fieldLabel}
           <div class="rux-itin__fields">
@@ -719,13 +719,13 @@
 			const returnIdx = stops.findIndex((s) => s.type === "return");
 			const afterIdx = returnIdx > 0 ? returnIdx - 1 : stops.length - 2;
 			return `<div class="rux-itin__add-actions">
-				<button class="rux-button" type="button" data-insert-after="${afterIdx}" data-insert-type="stop">
+				<button class="rux-button rux-button--default" type="button" data-insert-after="${afterIdx}" data-insert-type="stop">
 					<span class="rux-icon" aria-hidden="true">location_on</span>Stop
 				</button>
-				<button class="rux-button" type="button" data-insert-after="${afterIdx}" data-insert-type="sleeper">
+				<button class="rux-button rux-button--default" type="button" data-insert-after="${afterIdx}" data-insert-type="sleeper">
 					<span class="rux-icon" aria-hidden="true">hotel</span>Sleep
 				</button>
-				<button class="rux-button" type="button" data-insert-after="${afterIdx}" data-insert-type="day">
+				<button class="rux-button rux-button--default" type="button" data-insert-after="${afterIdx}" data-insert-type="day">
 					<span class="rux-icon" aria-hidden="true">event_busy</span>End day
 				</button>
 			</div>`;

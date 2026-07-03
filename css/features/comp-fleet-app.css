@@ -53,8 +53,8 @@
 }
 
 .fleet-app__avatar .rux-icon {
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
+	--_icon-size: var(--rux-icon-md);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 }
 
 .fleet-app__vehicle-info {

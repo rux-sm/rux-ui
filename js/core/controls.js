@@ -9,7 +9,7 @@
    data-rux-toggle="#target"   → click toggles .is-open on target element
    data-rux-toggle-button      → standalone press toggle (.is-active / aria-pressed)
    data-rux-toggle-group       → single-select pressed button group
-   data-rux-tabs               → single-select tab group (arrow key navigation)
+   data-rux-tabs               → .rux-tab single-select group (arrow key navigation)
    data-rux-stepper            → [−] count [+] stepper; reads min/max from hidden input
    ========================================================================== */
 
@@ -38,6 +38,25 @@
 
 		setActiveItem(group, next, selector, attr);
 		next.focus();
+		return next;
+	}
+
+	function initPanelScrollEdges(panel) {
+		const body = panel.querySelector(".rux-panel__body");
+		const tabs = panel.querySelector(".rux-panel__tabs");
+		const footer = panel.querySelector(".rux-panel__footer");
+		if (!body || (!tabs && !footer) || body.dataset.ruxScrollEdgesInit === "true") return;
+
+		body.dataset.ruxScrollEdgesInit = "true";
+		const sync = () => {
+			tabs?.classList.toggle("is-scrolled", body.scrollTop > 0);
+			const atBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 1;
+			footer?.classList.toggle("is-scrolled", !atBottom);
+		};
+
+		body.addEventListener("scroll", sync, { passive: true });
+		new ResizeObserver(sync).observe(body);
+		sync();
 	}
 
 	/* ── Click ──────────────────────────────────────────────────────────────── */
@@ -67,10 +86,10 @@
 		}
 
 		// [data-rux-tabs] — single-select tab group
-		const tab = e.target.closest("[data-rux-tabs] .rux-button");
+		const tab = e.target.closest("[data-rux-tabs] .rux-tab");
 		if (tab && !tab.disabled) {
 			const group = tab.closest("[data-rux-tabs]");
-			setActiveItem(group, tab, ".rux-button", "aria-selected");
+			setActiveItem(group, tab, ".rux-tab", "aria-selected");
 		}
 
 		// [data-rux-stepper] — [−] count [+]
@@ -112,6 +131,14 @@
 			.forEach(syncDateInput);
 	};
 
+	document.addEventListener("DOMContentLoaded", function () {
+		document.querySelectorAll("[data-rux-tabs]").forEach((group) => {
+			const active = group.querySelector('.rux-tab[aria-selected="true"]') || group.querySelector(".rux-tab");
+			if (active) setActiveItem(group, active, ".rux-tab", "aria-selected");
+		});
+		document.querySelectorAll(".rux-panel").forEach(initPanelScrollEdges);
+	});
+
 	/* ── Keyboard navigation ────────────────────────────────────────────────── */
 
 	document.addEventListener("keydown", function (e) {
@@ -127,9 +154,9 @@
 		}
 
 		const tabGroup = e.target.closest("[data-rux-tabs]");
-		if (tabGroup && e.target.closest(".rux-button")) {
+		if (tabGroup && e.target.closest(".rux-tab")) {
 			e.preventDefault();
-			moveActiveItem(tabGroup, ".rux-button", "aria-selected", dir);
+			moveActiveItem(tabGroup, ".rux-tab", "aria-selected", dir)?.click();
 		}
 	});
 })();

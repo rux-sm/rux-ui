@@ -227,10 +227,11 @@ Depth 4  --rux-radius-xs    2px   badges, chips
 Borders are **hairlines** (always 1px) at one of three intensities (`--rux-border-subtle`, `--rux-border`, `--rux-border-strong`). Solid buttons, segmented controls, and base cards keep a transparent border slot so hover, focus, and active states never shift layout. Shadows are reserved for floating surfaces and subtle tactile lift on buttons.
 
 **Shadow scale:**
-- `--rux-shadow-none` — cards, flat inline surfaces
-- `--rux-shadow-sm` — all button variants, selected segmented items, toasts
-- `--rux-shadow-md` — menus, tooltips
-- `--rux-shadow-lg` — modals
+- `--rux-shadow-0` — no shadow
+- `--rux-shadow-1` — minimally raised surfaces
+- `--rux-shadow-2` — buttons, selected controls, and toasts
+- `--rux-shadow-3` — menus and tooltips
+- `--rux-shadow-4` — modals and high overlays
 - `--rux-shadow-xl` — sheets, heavy overlays
 
 > **Current state:** All shadow tokens are set to `none` in `tokens.css` — the app runs flat for now. Some inset shadows on form fields and the segmented button are hardcoded and also disabled. A shadow toggle (flat vs. elevated) is planned; enabling it will uncomment all shadow values in one place.

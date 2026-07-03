@@ -5,128 +5,165 @@
 /* — button — */
 
 .rux-button {
-	--_h: var(--rux-control-height);
-	--_bg: var(--rux-control-scrim);
-	--_fg: var(--rux-fg);
+	/* 	1. Height is a CSS variable so it can be overridden by size modifiers
+		2. Background is transparent by default so ghost buttons can inherit the strip bg
+		3. Foreground is a CSS variable so it can be overridden by accent and danger modifiers
+		4. Border is transparent by default so ghost buttons can inherit the strip bg
+		5. Shadow is none by default so ghost buttons can inherit the strip shadow
+		6. Press-y is a CSS variable so it can be overridden by size modifiers
+		7. State overlay is transparent by default so ghost buttons can inherit the strip bg */
+
+	--_h: var(--rux-button-height);
+	--_bg: transparent;
+	--_fg: var(--rux-button-default-fg);
 	--_border: transparent;
-	--_shadow: none;
-	--_press-y: var(--rux-border-width);
+	--_shadow: var(--rux-button-shadow);
+	--_press-y: var(--rux-button-border-width);
 	--_state-overlay: transparent;
 
 	position: relative;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: var(--rux-control-content-gap);
+	gap: var(--rux-button-content-gap);
 	height: var(--_h);
-	padding: 0 var(--rux-control-padding-inline);
+	padding: 0 var(--rux-button-padding-inline);
 	background-color: var(--_bg);
 	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--_fg);
-	border: var(--rux-border-width) solid var(--_border);
-	border-radius: var(--rux-radius-button);
+	border: var(--rux-button-border-width) solid var(--_border);
+	border-radius: var(--rux-button-radius);
 	box-shadow: var(--_shadow);
 	font: inherit;
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-regular);
+	font-family: var(--rux-button-font-family);
+	font-size: var(--rux-button-font-size);
+	font-weight: var(--rux-button-font-weight);
 	line-height: 1;
 	letter-spacing: 0;
 	cursor: pointer;
 	user-select: none;
 	white-space: nowrap;
 	transition:
-		background-color var(--rux-duration-instant) var(--rux-ease-out),
-		color var(--rux-duration-instant) var(--rux-ease-out),
-		border-color var(--rux-duration-instant) var(--rux-ease-out),
-		box-shadow var(--rux-duration-instant) var(--rux-ease-out),
-		transform var(--rux-duration-instant) var(--rux-ease-out);
+		background-color var(--rux-button-transition-duration) var(--rux-button-transition-easing),
+		color var(--rux-button-transition-duration) var(--rux-button-transition-easing),
+		border-color var(--rux-button-transition-duration) var(--rux-button-transition-easing),
+		box-shadow var(--rux-button-transition-duration) var(--rux-button-transition-easing),
+		transform var(--rux-button-transition-duration) var(--rux-button-transition-easing);
 }
 
 .rux-button:hover:not(:disabled):not([aria-disabled="true"]) {
-	--_state-overlay: var(--rux-control-hover-overlay);
+	--_state-overlay: var(--rux-button-hover-overlay);
 }
 .rux-button:active:not(:disabled):not([aria-disabled="true"]) {
-	--_state-overlay: var(--rux-control-active-overlay);
+	--_state-overlay: var(--rux-button-active-overlay);
 	transform: translateY(var(--_press-y));
 }
 
 .rux-button:focus-visible {
 	outline: none;
-	box-shadow: var(--rux-ring-focus), var(--_shadow);
+	box-shadow: var(--rux-button-focus-ring), var(--_shadow);
 }
 
 .rux-button:disabled,
 .rux-button[aria-disabled="true"] {
-	color: var(--rux-fg-disabled);
-	background-color: var(--rux-control-bg-disabled);
+	color: var(--rux-button-disabled-fg);
+	background-color: var(--rux-button-disabled-bg);
 	background-image: none;
 	border-color: transparent;
-	box-shadow: none;
+	box-shadow: var(--rux-button-disabled-shadow);
 	cursor: not-allowed;
 	pointer-events: none;
 }
 
 /* — variants — */
 
-.rux-button--primary {
-	--_bg: var(--rux-accent);
-	--_fg: var(--rux-fg-on-accent);
+.rux-button--default {
+	--_bg: var(--rux-button-default-bg);
+	--_fg: var(--rux-button-default-fg);
+}
+
+.rux-button--accent {
+	--_bg: var(--rux-button-accent-bg);
+	--_fg: var(--rux-button-accent-fg);
 }
 
 /* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
 .rux-button--ghost {
-	--_bg: transparent;
+	--_bg: var(--rux-button-ghost-bg);
+	--_fg: var(--rux-button-ghost-fg);
 	--_border: transparent; /* invisible but real — keeps box size identical to bordered states */
-	--_shadow: none;
-}
-.rux-button--ghost:focus-visible {
-	box-shadow: var(--rux-ring-focus);
+	--_shadow: var(--rux-button-shadow);
 }
 
 .rux-button--toggle.is-active,
 .rux-button--toggle[aria-pressed="true"] {
-	--_bg: var(--rux-accent-active);
-	--_fg: var(--rux-fg-on-accent);
+	--_bg: var(--rux-button-selected-bg);
+	--_fg: var(--rux-button-selected-fg);
 
-	/* 1. Harsh inner top edge (the physical lip of the cutout)
-     2. Softer inner gradient to darken the top half of the cavity
-     3. Ensure the drop shadow and top rim light are entirely removed */
-	--_shadow:
-		inset 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(0, 0, 0, 0.8), 0 0 0 transparent; /* Overrides any base drop shadow */
+	--_shadow: var(--rux-button-selected-shadow);
 }
 
 /* danger is an intent modifier; combine it with an emphasis modifier */
 .rux-button--danger {
-	--_fg: var(--rux-danger-bright);
+	--_fg: var(--rux-button-danger-quiet-fg);
 }
 
-.rux-button--primary.rux-button--danger {
-	--_bg: var(--rux-danger);
-	--_fg: var(--rux-fg-on-accent);
+.rux-button--accent.rux-button--danger {
+	--_bg: var(--rux-button-danger-bg);
+	--_fg: var(--rux-button-danger-fg);
 }
 
 .rux-button--ghost.rux-button--danger {
-	--_bg: transparent;
-	--_fg: var(--rux-danger-bright);
+	--_bg: var(--rux-button-ghost-bg);
+	--_fg: var(--rux-button-danger-quiet-fg);
 }
 
 .rux-button--danger:focus-visible {
-	box-shadow: var(--rux-ring-danger), var(--_shadow);
+	box-shadow: var(--rux-button-danger-focus-ring), var(--_shadow);
+}
+
+/* — loading — */
+
+.rux-button--loading {
+	cursor: wait;
+}
+
+.rux-button--loading:disabled {
+	color: var(--_fg);
+	background-color: var(--_bg);
+	opacity: var(--rux-button-loading-opacity);
+}
+
+.rux-button__spinner {
+	width: var(--rux-button-icon-size);
+	height: var(--rux-button-icon-size);
+	flex: none;
+	border: calc(var(--rux-button-border-width) * 2) solid currentColor;
+	border-right-color: transparent;
+	border-radius: var(--rux-radius-full);
+	animation: rux-button-spin 700ms linear infinite;
+}
+
+@keyframes rux-button-spin {
+	to { transform: rotate(1turn); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rux-button__spinner { animation-duration: 1.4s; }
 }
 
 /* — sizes — */
 
 .rux-button--xs {
-	--_h: 20px;
-	font-size: var(--rux-text-2xs);
-	padding: 0 6px;
-	gap: 3px;
+	--_h: var(--rux-button-xs-height);
+	font-size: var(--rux-button-xs-font-size);
+	padding: 0 var(--rux-button-xs-padding-inline);
+	gap: var(--rux-button-xs-content-gap);
 }
 
 .rux-button--xs > :where(.rux-icon) {
-	width: var(--rux-icon-xs);
-	height: var(--rux-icon-xs);
-	font-size: var(--rux-icon-xs);
+	--_icon-size: var(--rux-button-xs-icon-size);
+	--_icon-optical-size: var(--rux-icon-optical-size-xs);
 }
 
 /* — block (full-width) — */
@@ -136,46 +173,16 @@
 	width: 100%;
 }
 
-/* — tab (stacked icon + micro label, bottom-nav / tab-bar style) — */
-
-.rux-button--tab {
-	flex-direction: column;
-	height: 42px;
-	padding: var(--rux-space-1) var(--rux-space-2);
-	gap: 3px;
-	line-height: 1;
-	letter-spacing: 0;
-}
-.rux-button--tab > :where(.rux-icon) {
-	width: var(--rux-icon-md);
-	height: var(--rux-icon-md);
-	font-size: var(--rux-icon-md);
-}
-.rux-button--tab > .rux-trip-panel__tab-label,
-.rux-button--tab > [class*="__tab-label"],
-.rux-button--tab > span:last-child {
-	font-size: 10px;
-	font-weight: var(--rux-weight-medium);
-	letter-spacing: 0.02em;
-	text-transform: none;
-}
-
-/* selected tab — accent-filled like .rux-button--primary, regardless of rest state */
-.rux-button--tab.is-active,
-.rux-button--tab[aria-pressed="true"],
-.rux-button--tab[aria-selected="true"] {
-	--_bg: var(--rux-accent);
-	--_fg: var(--rux-fg-on-accent);
-}
-
 /* — icon inside button — */
 
 .rux-button > :where(.rux-icon) {
-	width: var(--rux-icon-sm);
-	height: var(--rux-icon-sm);
-	font-size: var(--rux-icon-sm);
-	flex: none;
+	--_icon-size: var(--rux-button-icon-size);
 	pointer-events: none;
+}
+
+.rux-button:is(.is-active, [aria-pressed="true"]) > .rux-icon {
+	--_icon-fill: var(--rux-icon-fill-selected);
+	--_icon-weight: var(--rux-icon-weight-selected);
 }
 
 /* — toggle icon swap — */
@@ -195,10 +202,10 @@
 /* — sm — */
 
 .rux-button--sm {
-	--_h: 24px;
-	font-size: var(--rux-text-xs);
-	padding: 0 var(--rux-space-2);
-	gap: var(--rux-space-1);
+	--_h: var(--rux-button-sm-height);
+	font-size: var(--rux-button-sm-font-size);
+	padding: 0 var(--rux-button-sm-padding-inline);
+	gap: var(--rux-button-sm-content-gap);
 }
 
 /* — icon-only — */
@@ -212,20 +219,16 @@
 
 .rux-button--icon.is-active,
 .rux-button--icon[aria-pressed="true"] {
-	--_bg: var(--rux-control-bg);
+	--_bg: var(--rux-button-icon-selected-bg);
 }
 
 /* toggle wins over icon active — three-class specificity beats two */
 .rux-button--icon.rux-button--toggle.is-active,
 .rux-button--icon.rux-button--toggle[aria-pressed="true"] {
-	--_bg: var(--rux-accent-active);
-	--_fg: var(--rux-fg-on-accent);
+	--_bg: var(--rux-button-selected-bg);
+	--_fg: var(--rux-button-selected-fg);
 
-	/* 1. Harsh inner top edge (the physical lip of the cutout)
-     2. Softer inner gradient to darken the top half of the cavity
-     3. Ensure the drop shadow and top rim light are entirely removed */
-	--_shadow:
-		inset 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(0, 0, 0, 0.8), 0 0 0 transparent; /* Overrides any base drop shadow */
+	--_shadow: var(--rux-button-selected-shadow);
 }
 
 /* ==========================================================================
@@ -243,13 +246,9 @@
 	gap: var(--rux-space-1);
 	min-height: calc(var(--rux-segmented-height) + 1px);
 	padding: var(--_pad);
-	background-color: var(--rux-bg-sunken);
+	background-color: var(--rux-surface-0);
 	border: 1px solid var(--rux-border);
 
-	box-shadow:
-		inset 0 1px 2px rgba(0, 0, 0, 0.75),
-		inset 0 2px 5px rgba(0, 0, 0, 0.32),
-		inset 0 -1px 0 rgba(255, 255, 255, 0.1);
 	box-shadow: none;
 	overflow: hidden; /* clips active button corners to strip radius; inset shadow paints above children */
 }
@@ -266,8 +265,8 @@
 
 .rux-segmented > .rux-button {
 	--_h: var(--rux-segmented-height);
-	--_bg: var(--rux-bg-sunken); /* matches strip bg so inactive items blend into the strip */
-	--_shadow: var(--rux-shadow-none);
+	--_bg: var(--rux-surface-0); /* matches strip bg so inactive items blend into the strip */
+	--_shadow: var(--rux-elevation-0);
 	flex: 1;
 	min-width: 0;
 
@@ -275,7 +274,7 @@
 }
 .rux-segmented > .rux-button:hover {
 	color: var(--rux-fg);
-	box-shadow: var(--rux-shadow-none);
+	box-shadow: var(--rux-elevation-0);
 }
 .rux-segmented > .rux-button:disabled,
 .rux-segmented > .rux-button[aria-disabled="true"] {
@@ -289,7 +288,7 @@
 .rux-segmented > .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-control-strip-bg-selected);
 	color: var(--rux-fg);
-	box-shadow: var(--rux-shadow-sm);
+	box-shadow: var(--rux-elevation-2);
 }
 
 /* — primary active — accent-filled selected item */

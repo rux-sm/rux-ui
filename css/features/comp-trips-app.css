@@ -27,7 +27,7 @@
 	overflow-x: auto;
 	overscroll-behavior: contain;
 	padding-bottom: var(--rux-space-4);
-	background: var(--rux-bg-level-1);
+	background: var(--rux-surface-1);
 }
 
 /* — Trip identity cell — */

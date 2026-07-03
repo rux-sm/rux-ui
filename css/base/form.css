@@ -20,7 +20,7 @@
   max-width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-control-padding-inline);
-  background-color: var(--rux-bg-level-form);
+  background-color: var(--rux-surface-4);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
   border: solid transparent var(--rux-border-width);
@@ -116,7 +116,7 @@
   --_track: var(--rux-control-scrim);
   --_state-overlay: transparent;
   --_thumb: var(--rux-fg);
-  --_shadow: var(--rux-shadow-sm);
+  --_shadow: var(--rux-elevation-2);
 
   position: relative;
   display: inline-block;
@@ -173,7 +173,7 @@
   display: inline-flex;
   align-items: center;
   gap: var(--rux-control-content-gap);
-  min-height: var(--rux-check-target-height);
+  min-height: var(--rux-checkbox-target-height);
   cursor: pointer;
   font-size: var(--rux-text-sm);
   user-select: none;
@@ -181,9 +181,9 @@
 .rux-checkbox input {
   appearance: none;
   flex: none;
-  width: var(--rux-check-control-size);
-  height: var(--rux-check-control-size);
-  background-color: var(--rux-bg-sunken);
+  width: var(--rux-checkbox-size);
+  height: var(--rux-checkbox-size);
+  background-color: var(--rux-surface-0);
   border: var(--rux-border-width) solid var(--rux-border-strong);
   border-radius: var(--rux-radius-xs);
   cursor: pointer;
@@ -197,8 +197,8 @@
 }
 .rux-checkbox input:checked::after {
   content: "";
-  width: var(--rux-checkmark-width);
-  height: var(--rux-checkmark-height);
+  width: var(--rux-checkbox-mark-width);
+  height: var(--rux-checkbox-mark-height);
   border: solid var(--rux-fg-on-accent);
   border-width: 0 calc(var(--rux-border-width) * 2) calc(var(--rux-border-width) * 2) 0;
   transform: rotate(45deg) translate(calc(var(--rux-border-width) * -1), calc(var(--rux-border-width) * -1));
@@ -399,7 +399,7 @@
   width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-control-padding-inline);
-  background: var(--rux-bg-sunken);
+  background: var(--rux-surface-0);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-sm);
@@ -439,9 +439,8 @@
 }
 
 .rux-color-picker__chevron {
+  --_icon-size: var(--rux-icon-sm);
   flex: none;
-  width: var(--rux-icon-sm);
-  height: var(--rux-icon-sm);
   color: var(--rux-fg-subtle);
   pointer-events: none;
 }
@@ -456,10 +455,10 @@
   flex-wrap: wrap;
   gap: var(--rux-control-content-gap);
   padding: var(--rux-control-padding-inline);
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-shadow-lg);
+  box-shadow: var(--rux-elevation-4);
 }
 
 .rux-color-picker__popover[hidden] { display: none; }
@@ -525,7 +524,7 @@
   width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-control-padding-inline);
-  background-color: var(--rux-bg-sunken);
+  background-color: var(--rux-surface-0);
   border: var(--rux-border-width) solid transparent;
   border-radius: var(--rux-radius-md);
   transition:
@@ -548,7 +547,7 @@
   height: 1.25rem;
   border: var(--rux-border-width) solid color-mix(in srgb, currentColor 25%, transparent);
   border-radius: var(--rux-radius-xs);
-  background: var(--rux-bg-3);
+  background: var(--rux-surface-2);
   cursor: pointer;
   padding: 0;
 }

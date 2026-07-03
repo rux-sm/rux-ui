@@ -9,10 +9,10 @@
 	z-index: var(--rux-z-dropdown);
 	min-width: 12rem;
 	padding: var(--rux-space-1);
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-sm);
-	box-shadow: var(--rux-shadow-lg);
+	box-shadow: var(--rux-elevation-4);
 }
 
 .rux-bus-picker[hidden] {
@@ -62,7 +62,7 @@
 .rux-bus-picker__row.is-current .rux-bus-picker__number {
 	--_bg:     var(--rux-accent);
 	--_fg:     var(--rux-fg-on-accent);
-	--_shadow: var(--rux-shadow-sm);
+	--_shadow: var(--rux-elevation-2);
 
 	flex: 1;
 	display: flex;
@@ -92,10 +92,10 @@
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
 	min-width: 10rem;
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-sm);
-	box-shadow: var(--rux-shadow-lg);
+	box-shadow: var(--rux-elevation-4);
 	padding: var(--rux-space-1);
 }
 
@@ -169,10 +169,10 @@
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
 	min-width: 8rem;
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-sm);
-	box-shadow: var(--rux-shadow-lg);
+	box-shadow: var(--rux-elevation-4);
 	padding: var(--rux-space-1);
 }
 

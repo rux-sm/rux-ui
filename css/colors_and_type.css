@@ -51,7 +51,7 @@ html {
 }
 
 body {
-  background: var(--rux-bg-level-0);
+  background: var(--rux-surface-0);
   color: var(--rux-fg);
   font-family: var(--rux-font-sans);
   font-size: var(--rux-text-md);
@@ -128,14 +128,14 @@ code, kbd, samp, pre {
 
 code {
   padding: 0.12em 0.4em;
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xs);
   color: var(--rux-fg);
 }
 
 pre {
-  background: var(--rux-bg-sunken);
+  background: var(--rux-surface-0);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   padding: var(--rux-space-4);
@@ -153,7 +153,7 @@ pre code {
 kbd {
   display: inline-block;
   padding: 0.15em 0.5em;
-  background: var(--rux-bg-elevated);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border-strong);
   border-bottom-width: calc(var(--rux-border-width) * 2);
   border-radius: var(--rux-radius-xs);
