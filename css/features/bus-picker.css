@@ -51,43 +51,10 @@
 /* — Move button — ghost variant (transparent base, white-alpha states) — */
 
 .rux-bus-picker__move {
-	--_bg:     transparent;
-	--_fg:     var(--rux-fg);
-	--_shadow: none;
-	--_state-overlay: transparent;
-
 	flex: 1;
-	display: flex;
-	align-items: center;
-	height: var(--rux-control-height);
-	padding: 0 var(--rux-space-3);
-	background-color: var(--_bg);
-	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
-	color: var(--_fg);
-	border: var(--rux-border-width) solid var(--rux-control-ghost-border);
-	border-radius: var(--rux-radius-sm);
-	box-shadow: var(--_shadow);
-	font: inherit;
-	font-size: var(--rux-text-sm);
+	justify-content: flex-start;
+	--_border: var(--rux-control-ghost-border);
 	font-weight: var(--rux-weight-medium);
-	cursor: pointer;
-	user-select: none;
-	transition:
-		background-color var(--rux-duration-instant) var(--rux-ease-out),
-		transform        var(--rux-duration-instant) var(--rux-ease-out);
-}
-
-.rux-bus-picker__move:hover {
-	--_state-overlay: var(--rux-control-hover-overlay);
-}
-.rux-bus-picker__move:active {
-	--_state-overlay: var(--rux-control-active-overlay);
-	transform: translateY(var(--rux-border-width));
-}
-
-.rux-bus-picker__move:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-ring-focus), var(--_shadow);
 }
 
 /* — Current bus row — primary button style, non-interactive — */

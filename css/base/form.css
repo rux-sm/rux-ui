@@ -113,9 +113,8 @@
   --_w: var(--rux-switch-width);
   --_h: var(--rux-switch-height);
   --_p: var(--rux-radius-xs);
-  --_track: var(--rux-control-bg);
-  --_track-h: var(--rux-control-bg-hover);
-  --_track-a: var(--rux-control-bg-active);
+  --_track: var(--rux-control-scrim);
+  --_state-overlay: transparent;
   --_thumb: var(--rux-fg);
   --_shadow: var(--rux-shadow-sm);
 
@@ -130,6 +129,7 @@
   position: absolute;
   inset: 0;
   background-color: var(--_track);
+  background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
   border-radius: var(--rux-radius-full);
   box-shadow: var(--_shadow);
   transition:
@@ -150,15 +150,20 @@
     box-shadow var(--rux-duration-fast) var(--rux-ease-out),
     transform var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-switch:hover .rux-switch__track { background-color: var(--_track-h); }
-.rux-switch:active .rux-switch__track { background-color: var(--_track-a); }
-.rux-switch input:checked ~ .rux-switch__track { background-color: var(--rux-accent); }
-.rux-switch:hover input:checked ~ .rux-switch__track { background-color: var(--rux-accent-hover); }
-.rux-switch:active input:checked ~ .rux-switch__track { background-color: var(--rux-accent-active); }
+.rux-switch:hover { --_state-overlay: var(--rux-control-hover-overlay); }
+.rux-switch:active { --_state-overlay: var(--rux-control-active-overlay); }
+.rux-switch input:checked ~ .rux-switch__track { --_track: var(--rux-accent); }
+.rux-switch:has(input:disabled) {
+  --_state-overlay: transparent;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.rux-switch:has(input:disabled) .rux-switch__track { --_track: var(--rux-control-bg-disabled); }
 .rux-switch input:checked ~ .rux-switch__thumb {
   background-color: var(--rux-fg-on-accent);
   transform: translateX(calc(var(--_w) - var(--_h)));
 }
+.rux-switch:has(input:disabled) .rux-switch__thumb { background-color: var(--rux-fg-disabled); }
 .rux-switch input:focus-visible ~ .rux-switch__track { box-shadow: var(--rux-ring-focus), var(--_shadow); }
 
 

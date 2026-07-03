@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
     <link rel="stylesheet" href="./css/features/comp-settings-app.css" />
     <link rel="stylesheet" href="./css/features/comp-trips-app.css" />
+    <link rel="stylesheet" href="./css/features/comp-components-app.css" />
     <link rel="stylesheet" href="./css/features/bus-picker.css" />
     <link rel="stylesheet" href="./css/features/search-modal.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
@@ -97,10 +98,19 @@
               <span class="rux-icon">search</span>
               Search
             </button>
+
+            <button
+              class="rux-button rux-button--ghost scheduler-app__module-button"
+              type="button"
+              data-module="components"
+            >
+              <span class="rux-icon" aria-hidden="true">widgets</span>
+              Components
+            </button>
           </nav>
         </div>
         <div class="scheduler-app__account">
-          <button class="scheduler-app__profile" type="button" aria-label="Settings" data-module="settings">
+          <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__profile" type="button" aria-label="Settings" data-module="settings">
             <img src="./assets/rux-profile-pic.png" alt="" />
           </button>
         </div>
@@ -156,7 +166,7 @@
                     <div class="rux-trip-panel__section-head">
                       <p class="rux-trip-panel__section-label">Trip Contacts</p>
                       <div class="rux-cluster">
-                        <button class="rux-button rux-button--danger rux-button--icon" type="button" id="tp-contact-delete-btn" disabled aria-pressed="false" aria-label="Delete a contact"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                        <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="tp-contact-delete-btn" disabled aria-pressed="false" aria-label="Delete a contact"><span class="rux-icon" aria-hidden="true">delete</span></button>
                         <button class="rux-button rux-button--icon" type="button" id="tp-contact-add-btn" aria-label="Add contact"><span class="rux-icon" aria-hidden="true">add</span></button>
                       </div>
                     </div>
@@ -166,7 +176,7 @@
                     <div class="rux-trip-panel__section-head">
                       <p class="rux-trip-panel__section-label">Files</p>
                       <div class="rux-cluster">
-                        <button class="rux-button rux-button--danger rux-button--icon" type="button" id="tp-doc-delete-btn" disabled aria-label="Delete selected document"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                        <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="tp-doc-delete-btn" disabled aria-label="Delete selected document"><span class="rux-icon" aria-hidden="true">delete</span></button>
                         <button class="rux-button rux-button--icon" type="button" id="tp-doc-new-btn" data-doc-menu aria-haspopup="menu" aria-expanded="false" aria-label="Add document"><span class="rux-icon" aria-hidden="true">add</span></button>
                       </div>
                     </div>
@@ -219,7 +229,7 @@
                     <div class="rux-trip-panel__section-head">
                       <p class="rux-trip-panel__section-label">Payments</p>
                       <div class="rux-cluster">
-                        <button class="rux-button rux-button--danger rux-button--icon" type="button" id="tp-payment-delete-btn" disabled aria-label="Delete a payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                        <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="tp-payment-delete-btn" disabled aria-label="Delete a payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
                         <button class="rux-button rux-button--icon" type="button" id="tp-payment-add-btn" aria-label="Add payment"><span class="rux-icon" aria-hidden="true">add</span></button>
                       </div>
                     </div>
@@ -255,7 +265,7 @@
               </div>
               <footer class="rux-panel__footer rux-trip-panel__footer">
                 <button class="rux-button rux-button--danger" id="tp-btn-delete" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--secondary" id="tp-btn-clear"><span class="rux-icon">refresh</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button" id="tp-btn-clear"><span class="rux-icon">refresh</span><span class="rux-btn-label"> Clear</span></button>
                 <button class="rux-button rux-button--primary" id="tp-btn-save"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
@@ -508,7 +518,7 @@
               </div>
               <footer class="rux-panel__footer rux-fleet-panel__footer">
                 <button class="rux-button rux-button--danger"    id="fp-btn-delete" type="button"><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--secondary" id="fp-btn-clear"  type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button" id="fp-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
                 <button class="rux-button rux-button--primary"   id="fp-btn-save"   type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
@@ -674,7 +684,7 @@
               </div>
               <footer class="rux-panel__footer rux-driver-panel__footer">
                 <button class="rux-button rux-button--danger" id="dp-btn-delete" type="button"><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--secondary" id="dp-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button" id="dp-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
                 <button class="rux-button rux-button--primary" id="dp-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
@@ -726,6 +736,406 @@
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="customers" hidden>
           <div class="module-placeholder">Clients module — coming soon</div>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             MODULE: COMPONENTS
+             ════════════════════════════════════════════════════════════════ -->
+        <div class="scheduler-app__module" data-module="components" hidden>
+          <section class="components-app" aria-labelledby="components-title">
+            <header class="scheduler-app__bar components-app__header">
+              <div class="scheduler-app__brand">
+                <h1 class="scheduler-app__title" id="components-title">Components</h1>
+                <p class="components-app__subtitle">Live specimens built from the same tokens and classes used by the scheduler.</p>
+              </div>
+            </header>
+
+            <div class="components-app__body">
+              <nav class="components-app__index" aria-label="Component sections">
+                <a href="#component-buttons">Buttons</a>
+                <a href="#component-selection">Selection</a>
+                <a href="#component-forms">Forms</a>
+                <a href="#component-cards">Cards</a>
+                <a href="#component-tokens">Tokens</a>
+              </nav>
+
+              <section class="components-app__section" id="component-buttons" aria-labelledby="component-buttons-title">
+                <div class="components-app__section-heading">
+                  <div>
+                    <h2 id="component-buttons-title">Buttons</h2>
+                    <p>One base class with purpose, size, and shape modifiers.</p>
+                  </div>
+                  <code>.rux-button</code>
+                </div>
+
+                <div class="components-app__specimen-grid">
+                  <article class="rux-card components-app__specimen components-app__specimen--reference">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <div class="components-app__preview">
+                        <div>
+                          <h3>Base button</h3>
+                          <p class="components-app__note">Shared anatomy and visual states for every button variant.</p>
+                        </div>
+                        <div class="components-app__demo">
+                          <button class="rux-button" type="button">Default</button>
+                          <button class="rux-button rux-button--primary" type="button">Primary</button>
+                          <button class="rux-button rux-button--ghost" type="button">Ghost</button>
+                          <button class="rux-button rux-button--primary rux-button--danger" type="button">Danger</button>
+                          <button class="rux-button" type="button" disabled>Disabled</button>
+                        </div>
+                      </div>
+
+                      <section class="components-app__anatomy" aria-labelledby="button-anatomy-title">
+                        <div class="components-app__subheading">
+                          <h4 id="button-anatomy-title">Anatomy</h4>
+                          <p>Diagram enlarged for clarity; annotations show the current production token values.</p>
+                        </div>
+                        <div class="components-app__anatomy-stage">
+                          <div class="components-app__anatomy-diagram">
+                            <div class="components-app__anatomy-control">
+                              <button class="rux-button" type="button" tabindex="-1">Button label</button>
+                              <span class="components-app__padding-zone components-app__padding-zone--start" aria-hidden="true"></span>
+                              <span class="components-app__padding-zone components-app__padding-zone--end" aria-hidden="true"></span>
+                            </div>
+
+                            <div class="components-app__annotation components-app__annotation--padding">
+                              <span>Inline padding</span>
+                              <code>--rux-control-padding-inline</code>
+                              <output data-token-value="--rux-control-padding-inline"></output>
+                            </div>
+                            <div class="components-app__annotation components-app__annotation--type">
+                              <span>Label</span>
+                              <code>--rux-text-sm · --rux-weight-regular</code>
+                              <span><output data-token-value="--rux-text-sm"></output> / <output data-token-value="--rux-weight-regular"></output></span>
+                            </div>
+                            <div class="components-app__annotation components-app__annotation--radius">
+                              <span>Corner radius</span>
+                              <code>--rux-radius-button</code>
+                              <output data-token-value="--rux-radius-button"></output>
+                            </div>
+                            <div class="components-app__annotation components-app__annotation--height">
+                              <span>Control height</span>
+                              <code>--rux-control-height</code>
+                              <output data-token-value="--rux-control-height"></output>
+                            </div>
+                            <div class="components-app__annotation components-app__annotation--border">
+                              <span>Border</span>
+                              <code>--rux-border-width</code>
+                              <output data-token-value="--rux-border-width"></output>
+                            </div>
+                            <div class="components-app__annotation components-app__annotation--surface">
+                              <span>Surface</span>
+                              <code>--rux-control-scrim</code>
+                              <output data-token-value="--rux-control-scrim"></output>
+                            </div>
+                            <div class="components-app__annotation components-app__annotation--foreground">
+                              <span>Label color</span>
+                              <code>--rux-fg</code>
+                              <output data-token-value="--rux-fg"></output>
+                            </div>
+                          </div>
+                        </div>
+                      </section>
+
+                      <section class="components-app__states" aria-labelledby="button-states-title">
+                        <div class="components-app__subheading">
+                          <h4 id="button-states-title">Variant matrix</h4>
+                          <p>Emphasis, intent, and content layout are independent choices.</p>
+                        </div>
+                        <div class="components-app__state-matrix">
+                          <span></span><strong>No icon</strong><strong>Icon before</strong><strong>Icon only</strong>
+                          <span>Action · Primary</span>
+                          <button class="rux-button rux-button--primary" type="button">Save</button>
+                          <button class="rux-button rux-button--primary" type="button"><span class="rux-icon" aria-hidden="true">save</span>Save</button>
+                          <button class="rux-button rux-button--primary rux-button--icon" type="button" aria-label="Save"><span class="rux-icon" aria-hidden="true">save</span></button>
+                          <span>Action · Secondary</span>
+                          <button class="rux-button" type="button">Cancel</button>
+                          <button class="rux-button" type="button"><span class="rux-icon" aria-hidden="true">edit</span>Edit</button>
+                          <button class="rux-button rux-button--icon" type="button" aria-label="Edit"><span class="rux-icon" aria-hidden="true">edit</span></button>
+                          <span>Action · Ghost</span>
+                          <button class="rux-button rux-button--ghost" type="button">More</button>
+                          <button class="rux-button rux-button--ghost" type="button"><span class="rux-icon" aria-hidden="true">more_horiz</span>More</button>
+                          <button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="More options"><span class="rux-icon" aria-hidden="true">more_horiz</span></button>
+                          <span>Destructive · Primary</span>
+                          <button class="rux-button rux-button--primary rux-button--danger" type="button">Delete</button>
+                          <button class="rux-button rux-button--primary rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">delete</span>Delete</button>
+                          <button class="rux-button rux-button--primary rux-button--danger rux-button--icon" type="button" aria-label="Delete"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                          <span>Destructive · Secondary</span>
+                          <button class="rux-button rux-button--danger" type="button">Remove</button>
+                          <button class="rux-button rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">remove_circle</span>Remove</button>
+                          <button class="rux-button rux-button--danger rux-button--icon" type="button" aria-label="Remove"><span class="rux-icon" aria-hidden="true">remove_circle</span></button>
+                          <span>Destructive · Ghost</span>
+                          <button class="rux-button rux-button--ghost rux-button--danger" type="button">Delete</button>
+                          <button class="rux-button rux-button--ghost rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">delete</span>Delete</button>
+                          <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" aria-label="Delete"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                        </div>
+                      </section>
+
+                      <aside class="components-app__guidance" aria-labelledby="button-guidance-title">
+                        <h4 id="button-guidance-title">Usage guidelines</h4>
+                        <ul>
+                          <li><strong>Primary</strong> identifies the single preferred action in a view or workflow step.</li>
+                          <li><strong>Default</strong> supports regular actions that do not need primary emphasis.</li>
+                          <li><strong>Ghost</strong> is for secondary, low-emphasis actions in compact toolbars.</li>
+                          <li><strong>Destructive primary</strong> belongs in explicit confirmation flows.</li>
+                          <li><strong>Destructive ghost</strong> suits compact row and toolbar actions.</li>
+                        </ul>
+                      </aside>
+
+                      <div class="components-app__property-groups">
+                        <section class="components-app__property-group" aria-labelledby="button-sizing-title">
+                          <div class="components-app__subheading">
+                            <h4 id="button-sizing-title">Sizing &amp; spacing</h4>
+                          </div>
+                          <div class="components-app__rules-heading" aria-hidden="true">
+                            <span>Property</span><span>Token</span><span>Resolved value</span>
+                          </div>
+                          <dl class="components-app__rules">
+                            <div><dt>Height</dt><dd><code>--rux-control-height</code><output data-token-value="--rux-control-height"></output></dd></div>
+                            <div><dt>Inline padding</dt><dd><code>--rux-control-padding-inline</code><output data-token-value="--rux-control-padding-inline"></output></dd></div>
+                            <div><dt>Content gap</dt><dd><code>--rux-control-content-gap</code><output data-token-value="--rux-control-content-gap"></output></dd></div>
+                            <div><dt>Corner radius</dt><dd><code>--rux-radius-button</code><output data-token-value="--rux-radius-button"></output></dd></div>
+                          </dl>
+                        </section>
+
+                        <section class="components-app__property-group" aria-labelledby="button-type-title">
+                          <div class="components-app__subheading">
+                            <h4 id="button-type-title">Typography</h4>
+                          </div>
+                          <div class="components-app__rules-heading" aria-hidden="true">
+                            <span>Property</span><span>Token</span><span>Resolved value</span>
+                          </div>
+                          <dl class="components-app__rules">
+                            <div><dt>Font family</dt><dd><code>--rux-font-sans</code><output data-token-value="--rux-font-sans"></output></dd></div>
+                            <div><dt>Font size</dt><dd><code>--rux-text-sm</code><output data-token-value="--rux-text-sm"></output></dd></div>
+                            <div><dt>Font weight</dt><dd><code>--rux-weight-regular</code><output data-token-value="--rux-weight-regular"></output></dd></div>
+                          </dl>
+                        </section>
+
+                        <section class="components-app__property-group" aria-labelledby="button-state-tokens-title">
+                          <div class="components-app__subheading">
+                            <h4 id="button-state-tokens-title">Colors &amp; states</h4>
+                          </div>
+                          <div class="components-app__rules-heading" aria-hidden="true">
+                            <span>Property</span><span>Token</span><span>Resolved value</span>
+                          </div>
+                          <dl class="components-app__rules">
+                            <div><dt>Text color</dt><dd><code>--rux-fg</code><output data-token-value="--rux-fg"></output></dd></div>
+                            <div><dt>Background</dt><dd><code>--rux-control-scrim</code><output data-token-value="--rux-control-scrim"></output></dd></div>
+                            <div><dt>Hover overlay</dt><dd><code>--rux-control-hover-overlay</code><output data-token-value="--rux-control-hover-overlay"></output></dd></div>
+                            <div><dt>Focus ring</dt><dd><code>--rux-ring-focus</code><output data-token-value="--rux-ring-focus"></output></dd></div>
+                            <div><dt>Transition</dt><dd><code>--rux-duration-instant</code><output data-token-value="--rux-duration-instant"></output></dd></div>
+                          </dl>
+                        </section>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article class="rux-card components-app__specimen">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <h3>Icons and sizes</h3>
+                    <div class="components-app__demo">
+                      <button class="rux-button rux-button--primary" type="button">
+                        <span class="rux-icon" aria-hidden="true">add</span>
+                        Add trip
+                      </button>
+                      <button class="rux-button rux-button--sm" type="button">Small</button>
+                      <button class="rux-button rux-button--xs" type="button">Extra small</button>
+                      <button class="rux-button rux-button--icon" type="button" aria-label="More options">
+                        <span class="rux-icon" aria-hidden="true">more_horiz</span>
+                      </button>
+                      <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" aria-label="Delete">
+                        <span class="rux-icon" aria-hidden="true">delete</span>
+                      </button>
+                    </div>
+                      <p class="components-app__note">Icon-only buttons remain square; all text buttons share the global inline padding and gap.</p>
+                    </div>
+                  </article>
+
+                  <article class="rux-card components-app__specimen">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <h3>Toggle</h3>
+                    <div class="components-app__demo">
+                      <button class="rux-button rux-button--toggle" type="button" data-rux-toggle-button aria-pressed="false">
+                        <span class="rux-icon" aria-hidden="true">accessible</span>
+                        ADA lift
+                      </button>
+                      <button class="rux-button rux-button--toggle is-active" type="button" data-rux-toggle-button aria-pressed="true">
+                        <span class="rux-icon" aria-hidden="true">bed</span>
+                        Sleeper
+                      </button>
+                    </div>
+                      <p class="components-app__note">Use <code>aria-pressed</code> for a persistent on/off action.</p>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
+              <section class="components-app__section" id="component-selection" aria-labelledby="component-selection-title">
+                <div class="components-app__section-heading">
+                  <div>
+                    <h2 id="component-selection-title">Selection controls</h2>
+                    <p>Button-like controls for choosing one option or adjusting a value.</p>
+                  </div>
+                  <code>.rux-segmented</code>
+                </div>
+
+                <div class="components-app__specimen-grid">
+                  <article class="rux-card components-app__specimen">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <h3>Segmented</h3>
+                    <div class="components-app__demo components-app__demo--stack">
+                      <div class="rux-segmented rux-segmented--inline" data-rux-toggle-group aria-label="View density">
+                        <button class="rux-button is-active" type="button" aria-pressed="true">Comfortable</button>
+                        <button class="rux-button" type="button" aria-pressed="false">Compact</button>
+                      </div>
+                      <div class="rux-segmented rux-segmented--primary rux-segmented--inline" data-rux-toggle-group aria-label="Schedule view">
+                        <button class="rux-button is-active" type="button" aria-pressed="true">Week</button>
+                        <button class="rux-button" type="button" aria-pressed="false">Month</button>
+                      </div>
+                      </div>
+                    </div>
+                  </article>
+
+                  <article class="rux-card components-app__specimen">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <h3>Stepper</h3>
+                    <div class="components-app__demo">
+                      <div class="rux-segmented rux-segmented--inline" data-rux-stepper>
+                        <button class="rux-button rux-button--icon" type="button" data-stepper-dec aria-label="Decrease passengers">
+                          <span class="rux-icon" aria-hidden="true">remove</span>
+                        </button>
+                        <span class="rux-stepper__count" aria-live="polite">24</span>
+                        <button class="rux-button rux-button--icon" type="button" data-stepper-inc aria-label="Increase passengers">
+                          <span class="rux-icon" aria-hidden="true">add</span>
+                        </button>
+                        <input type="hidden" value="24" min="1" max="60" step="1" />
+                      </div>
+                    </div>
+                      <p class="components-app__note">The stepper reuses segmented and icon-button primitives.</p>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
+              <section class="components-app__section" id="component-forms" aria-labelledby="component-forms-title">
+                <div class="components-app__section-heading">
+                  <div>
+                    <h2 id="component-forms-title">Forms</h2>
+                    <p>Consistent field height, padding, labels, help text, and focus rings.</p>
+                  </div>
+                  <code>.rux-field</code>
+                </div>
+
+                <div class="components-app__form-grid">
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="demo-name">Trip name</label>
+                    <input class="rux-input" id="demo-name" type="text" value="Austin conference" />
+                    <span class="rux-field__help">A short recognizable name.</span>
+                  </div>
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="demo-status">Status</label>
+                    <select class="rux-select" id="demo-status">
+                      <option>Confirmed</option>
+                      <option>Pending</option>
+                      <option>Cancelled</option>
+                    </select>
+                  </div>
+                  <div class="rux-field">
+                    <label class="rux-field__label" for="demo-error">Invalid field</label>
+                    <input class="rux-input" id="demo-error" type="text" value="Incorrect value" aria-invalid="true" />
+                    <span class="rux-field__error">Review this value.</span>
+                  </div>
+                  <div class="rux-field">
+                    <span class="rux-field__label">Options</span>
+                    <div class="components-app__demo">
+                      <label class="rux-checkbox"><input type="checkbox" checked /> Send reminder</label>
+                      <label class="rux-switch" aria-label="Trip is confirmed">
+                        <input type="checkbox" checked />
+                        <span class="rux-switch__track"></span>
+                        <span class="rux-switch__thumb"></span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="rux-field components-app__form-wide">
+                    <label class="rux-field__label" for="demo-notes">Notes</label>
+                    <textarea class="rux-textarea" id="demo-notes" placeholder="Optional details"></textarea>
+                  </div>
+                </div>
+              </section>
+
+              <section class="components-app__section" id="component-cards" aria-labelledby="component-cards-title">
+                <div class="components-app__section-heading">
+                  <div>
+                    <h2 id="component-cards-title">Cards</h2>
+                    <p>Use cards to group related content—not as decoration around every field.</p>
+                  </div>
+                  <code>.rux-card</code>
+                </div>
+                <div class="components-app__card-grid">
+                  <article class="rux-card">
+                    <header class="rux-card__header">
+                      <div>
+                        <h3 class="rux-card__title">Standard card</h3>
+                        <p class="rux-card__subtitle">Header, body, and optional footer.</p>
+                      </div>
+                      <span class="rux-badge rux-badge--info">Draft</span>
+                    </header>
+                    <div class="rux-card__body">Use a standard card for a distinct group with its own heading or actions.</div>
+                    <footer class="rux-card__footer">
+                      <button class="rux-button rux-button--primary rux-button--sm" type="button">Save</button>
+                    </footer>
+                  </article>
+                  <article class="rux-card rux-card--interactive" tabindex="0">
+                    <div class="rux-card__body">
+                      <h3 class="rux-card__title">Interactive card</h3>
+                      <p class="rux-card__subtitle">The whole surface represents one destination.</p>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
+              <section class="components-app__section" id="component-tokens" aria-labelledby="component-tokens-title">
+                <div class="components-app__section-heading">
+                  <div>
+                    <h2 id="component-tokens-title">Core tokens</h2>
+                    <p>A compact reference for the foundations shared by these specimens.</p>
+                  </div>
+                  <code>tokens.css</code>
+                </div>
+                <div class="components-app__token-grid">
+                  <article class="rux-card components-app__token-group">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <h3>Surfaces</h3>
+                      <div class="components-app__swatch" style="--_swatch: var(--rux-bg)"><span></span><code>--rux-bg</code></div>
+                      <div class="components-app__swatch" style="--_swatch: var(--rux-bg-elevated)"><span></span><code>--rux-bg-elevated</code></div>
+                      <div class="components-app__swatch" style="--_swatch: var(--rux-bg-level-form)"><span></span><code>--rux-bg-level-form</code></div>
+                    </div>
+                  </article>
+                  <article class="rux-card components-app__token-group">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <h3>Text and action</h3>
+                      <div class="components-app__swatch" style="--_swatch: var(--rux-fg)"><span></span><code>--rux-fg</code></div>
+                      <div class="components-app__swatch" style="--_swatch: var(--rux-fg-muted)"><span></span><code>--rux-fg-muted</code></div>
+                      <div class="components-app__swatch" style="--_swatch: var(--rux-accent)"><span></span><code>--rux-accent</code></div>
+                      <div class="components-app__swatch" style="--_swatch: var(--rux-danger)"><span></span><code>--rux-danger</code></div>
+                    </div>
+                  </article>
+                  <article class="rux-card components-app__token-group">
+                    <div class="rux-card__body components-app__specimen-body">
+                      <h3>Geometry</h3>
+                      <dl class="components-app__rules">
+                        <div><dt>Field height</dt><dd><code>--rux-field-height</code><output data-token-value="--rux-field-height"></output></dd></div>
+                        <div><dt>Control height</dt><dd><code>--rux-control-height</code><output data-token-value="--rux-control-height"></output></dd></div>
+                        <div><dt>Card radius</dt><dd><code>--rux-radius-card</code><output data-token-value="--rux-radius-card"></output></dd></div>
+                        <div><dt>Focus ring</dt><dd><code>--rux-ring-focus</code><output data-token-value="--rux-ring-focus"></output></dd></div>
+                      </dl>
+                    </div>
+                  </article>
+                </div>
+              </section>
+            </div>
+          </section>
         </div>
 
         <!-- ════════════════════════════════════════════════════════════════
@@ -816,7 +1226,7 @@
                 <footer class="settings-app__footer">
                   <p class="settings-app__message" id="settings-billing-message" aria-live="polite"></p>
                   <div class="settings-app__actions">
-                    <button class="rux-button rux-button--secondary" id="settings-billing-default-btn" type="button">
+                    <button class="rux-button" id="settings-billing-default-btn" type="button">
                       <span class="rux-icon">undo</span>
                       <span class="rux-btn-label">Use defaults</span>
                     </button>
@@ -864,11 +1274,11 @@
                 <footer class="settings-app__footer">
                   <p class="settings-app__message" id="settings-yard-message" aria-live="polite"></p>
                   <div class="settings-app__actions">
-                    <button class="rux-button rux-button--secondary" id="settings-yard-default-btn" type="button">
+                    <button class="rux-button" id="settings-yard-default-btn" type="button">
                       <span class="rux-icon">undo</span>
                       <span class="rux-btn-label">Use default</span>
                     </button>
-                    <button class="rux-button rux-button--secondary" id="settings-yard-verify-btn" type="button">
+                    <button class="rux-button" id="settings-yard-verify-btn" type="button">
                       <span class="rux-icon">where_to_vote</span>
                       <span class="rux-btn-label">Verify</span>
                     </button>
@@ -894,7 +1304,7 @@
                       <span class="rux-btn-label">Add requirement</span>
                     </button>
                     <div class="settings-req-new-row" id="settings-req-new-row" hidden>
-                      <button class="req-icon-btn" type="button" id="settings-req-new-icon" title="Pick icon">
+                      <button class="rux-button rux-button--icon req-icon-btn" type="button" id="settings-req-new-icon" title="Pick icon">
                         <span class="rux-icon">label</span>
                       </button>
                       <input class="rux-input settings-req-label-input" type="text" id="settings-req-new-label"
@@ -945,7 +1355,7 @@
 
     <!-- Scheduler context menu (floats above everything) -->
     <div class="scheduler-app__context-menu" id="scheduler-context-menu" role="menu" hidden>
-      <button class="scheduler-app__context-item" id="scheduler-context-add-trip" type="button" role="menuitem">
+      <button class="rux-menu__item scheduler-app__context-item" id="scheduler-context-add-trip" type="button" role="menuitem">
         <span class="rux-icon">add</span>
         <span>Add trip</span>
       </button>
@@ -964,6 +1374,7 @@
     <script src="./js/panels/fleet-panel.js" defer></script>
     <script src="./js/panels/settings-panel.js" defer></script>
     <script src="./js/panels/trips-list.js" defer></script>
+    <script src="./js/panels/components-panel.js" defer></script>
     <script type="module" src="./js/panels/requirements-panel.js"></script>
 
     <script type="module">
@@ -1009,7 +1420,7 @@
       // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
       const initialModule = location.hash.slice(1) || "calendar";
       const normalizedModule = (initialModule === "schedule" || initialModule === "trips") ? "calendar" : initialModule;
-      showModule(["calendar", "trips", "fleet", "drivers", "customers", "settings"].includes(normalizedModule)
+      showModule(["calendar", "trips", "fleet", "drivers", "customers", "components", "settings"].includes(normalizedModule)
         ? normalizedModule
         : "calendar");
 

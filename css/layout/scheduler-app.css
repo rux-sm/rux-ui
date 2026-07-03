@@ -177,22 +177,8 @@
 
 
 .scheduler-app__profile {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: var(--rux-control-height);
-	height: var(--rux-control-height);
-	padding: 0;
 	overflow: hidden;
-	background: var(--rux-bg-sunken);
-	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-full);
-	cursor: pointer;
-}
-
-.scheduler-app__profile:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-ring-focus);
 }
 
 .scheduler-app__profile img {
@@ -978,26 +964,7 @@
 }
 
 .scheduler-app__context-item {
-	display: flex;
-	align-items: center;
 	width: 100%;
-	min-height: var(--rux-control-height);
-	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-3);
-	color: var(--rux-fg);
-	background: transparent;
-	border: 0;
-	border-radius: var(--rux-radius-xs);
-	font: inherit;
-	font-size: var(--rux-text-sm);
-	text-align: left;
-	cursor: pointer;
-}
-
-.scheduler-app__context-item:hover,
-.scheduler-app__context-item:focus-visible {
-	outline: none;
-	background: var(--rux-control-hover-overlay);
 }
 
 @media (max-width: 580px) {

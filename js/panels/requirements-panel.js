@@ -68,7 +68,7 @@
   // Build picker DOM once
   pickerEl.innerHTML = ICON_OPTIONS
     .map(icon =>
-      `<button class="req-icon-option" type="button" data-icon="${icon}" title="${icon}">
+      `<button class="rux-button rux-button--ghost rux-button--icon req-icon-option" type="button" data-icon="${icon}" title="${icon}">
         <span class="rux-icon">${icon}</span>
       </button>`
     ).join("");
@@ -116,7 +116,7 @@
   /* ── Render list ───────────────────────────────────────────────────────── */
 
   function iconBtnHtml(icon, id) {
-    return `<button class="req-icon-btn" type="button" data-icon-for="${escHtml(id)}" title="Change icon">
+    return `<button class="rux-button rux-button--icon req-icon-btn" type="button" data-icon-for="${escHtml(id)}" title="Change icon">
       <span class="rux-icon">${escHtml(icon)}</span>
     </button>`;
   }

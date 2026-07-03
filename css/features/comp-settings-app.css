@@ -207,23 +207,13 @@
 }
 
 .req-icon-btn {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
 	flex: none;
-	width: var(--rux-control-height-sm, 28px);
-	height: var(--rux-control-height-sm, 28px);
-	padding: 0;
-	background: var(--rux-bg-sunken);
-	border: var(--rux-border-width) solid var(--rux-border);
-	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg-subtle);
-	cursor: pointer;
-	transition: background var(--rux-duration-fast), border-color var(--rux-duration-fast), color var(--rux-duration-fast);
+	--_bg: var(--rux-bg-sunken);
+	--_border: var(--rux-border);
+	--_fg: var(--rux-fg-subtle);
 }
 
 .req-icon-btn:hover {
-	background: var(--rux-control-hover-overlay);
 	border-color: var(--rux-border-strong);
 	color: var(--rux-fg);
 }
@@ -355,22 +345,11 @@
 }
 
 .req-icon-option {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	width: 36px;
-	height: 36px;
-	padding: 0;
-	background: transparent;
-	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg-subtle);
-	cursor: pointer;
-	transition: background var(--rux-duration-fast), color var(--rux-duration-fast);
+	--_h: 36px;
+	--_fg: var(--rux-fg-subtle);
 }
 
 .req-icon-option:hover {
-	background: var(--rux-control-hover-overlay);
 	color: var(--rux-fg);
 }
 

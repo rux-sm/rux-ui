@@ -160,9 +160,9 @@
 
 	--rux-bg-level-0: oklch(from var(--rux-color-base) 0% c h); /* App Background */
 	--rux-bg-level-1: oklch(from var(--rux-color-base) 24% c h); /* Panel Background */
-	--rux-bg-level-2: oklch(from var(--rux-color-base) 24% c h); /* Card Background */
+	--rux-bg-level-2: oklch(from var(--rux-color-base) 32% c h); /* Card Background */
 	--rux-bg-level-4: oklch(from var(--rux-color-base) 40% c h); /* Context menus */
-	--rux-bg-level-form: oklch(from var(--rux-color-base) 36% c h);
+	--rux-bg-level-form: oklch(from var(--rux-color-base) 48% c h);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 
@@ -187,16 +187,13 @@
 	--rux-control-quiet-selected: oklch(100% 0 0 / 0.1);
 
 	--rux-control-scrim: oklch(100% 0 0 / 0.16);
-	--rux-control-hover-overlay: oklch(100% 0 0 / 0.06);
-	--rux-control-active-overlay: oklch(0% 0 0 / 0.1);
+	--rux-control-hover-overlay: oklch(100% 0 0 / 0.08);
+	--rux-control-active-overlay: oklch(0% 0 0 / 0.12);
 
-	--rux-control-strip-bg: oklch(29% 0.004 260);
 	--rux-control-strip-bg-selected: oklch(40% 0.004 260);
 
 	--rux-control-bg: oklch(from var(--rux-color-base) 70% c h);
 	--rux-control-bg-disabled: oklch(24% 0.004 260);
-	--rux-control-bg-hover: oklch(50% 0.004 260);
-	--rux-control-bg-active: oklch(36% 0.004 260);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
 
@@ -230,7 +227,7 @@
 
 	--rux-radius-card: var(--rux-radius-0);
 	--rux-radius-menu: var(--rux-radius-0);
-	--rux-radius-button: var(--rux-radius-full);
+	--rux-radius-button: var(--rux-radius-md);
 	--rux-radius-field: var(--rux-radius-0);
 
 	/* ─── SPACING · component roles ──────────────────────────────────────── */

@@ -68,7 +68,7 @@ function renderList(trip, buses, currentTrips) {
       // Move button — full-width, always clickable (force-moves even if conflict)
       const moveBtn = document.createElement("button");
       moveBtn.type = "button";
-      moveBtn.className = "rux-bus-picker__move";
+      moveBtn.className = "rux-button rux-button--ghost rux-button--block rux-bus-picker__move";
       moveBtn.setAttribute("aria-label", `Move to bus ${bus.number}`);
 
       const numEl = document.createElement("span");
