@@ -710,6 +710,19 @@
 		border-right: none;
 	}
 
+	/* Full-screen panels keep dismissal visible, comfortable, and notch-safe. */
+	.scheduler-app__drawer .rux-panel > .rux-panel__header {
+		padding-top: calc(var(--rux-panel-padding) + env(safe-area-inset-top, 0px));
+	}
+
+	.scheduler-app__drawer .rux-panel > .rux-panel__header > .rux-button--icon {
+		--_h: 44px;
+	}
+
+	.scheduler-app__drawer-handle {
+		display: none;
+	}
+
 
 	/* Push content above the fixed bottom tab bar (42px buttons + rux-space-3 top + rux-space-3 bottom) */
 	.scheduler-app {
@@ -787,10 +800,6 @@
 	.scheduler-app__module-button.is-active > .rux-icon {
 		--_icon-fill: var(--rux-icon-fill-selected);
 		--_icon-weight: var(--rux-icon-weight-selected);
-	}
-
-	.scheduler-app__drawer .rux-trip-panel > .rux-panel__header {
-		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
 	}
 
 }

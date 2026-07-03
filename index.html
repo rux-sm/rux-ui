@@ -1791,6 +1791,7 @@
       });
 
       const drawer  = document.getElementById("trip-panel-drawer");
+      const rightDrawer = document.getElementById("right-panel-drawer");
       const tripPanel = drawer.querySelector(".rux-trip-panel");
       const schedulerEl = document.getElementById("scheduler");
       const schedulerContextMenu = document.getElementById("scheduler-context-menu");
@@ -1800,23 +1801,44 @@
       let fetchTrips = null;
       let tripDBHandle = null;
       let pendingNewTripContext = null;
+      const mobilePanelQuery = window.matchMedia("(max-width: 500px)");
+
+      function closeOtherMobilePanel(panel) {
+        if (!mobilePanelQuery.matches) return;
+        if (panel !== drawer && drawer.classList.contains("is-open")) closeDrawer();
+        if (panel !== rightDrawer && rightDrawer?.classList.contains("is-open")) closeRightDrawer();
+      }
+
+      function restoreMobilePanelTrigger(panelId) {
+        if (!mobilePanelQuery.matches) return;
+        document.querySelector(`.scheduler-app__mobile-panel-btn[data-opens="${panelId}"]`)?.focus();
+      }
 
       function openDrawer() {
+        closeOtherMobilePanel(drawer);
         const saved = localStorage.getItem(DRAWER_STORAGE_KEY);
         const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
         drawer.style.setProperty("--drawer-width", w);
         drawer.style.setProperty("--drawer-open-width", w);
         drawer.classList.add("is-open");
+        drawer.inert = false;
+        drawer.setAttribute("aria-hidden", "false");
         leftAutoCollapsed = false;
         const scrollBody = tripPanel?.querySelector(".rux-trip-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
         document.activeElement?.blur();
+        if (mobilePanelQuery.matches) {
+          requestAnimationFrame(() => document.getElementById("tp-btn-close")?.focus());
+        }
       }
       function closeDrawer() {
         // Leave --drawer-open-width untouched so the panel content freezes at
         // its pre-close size and only gets clipped by the shrinking drawer,
         // instead of snapping to its min-width before the drawer animates.
+        restoreMobilePanelTrigger("trip-panel-drawer");
         drawer.style.setProperty("--drawer-width", GAP + "px");
+        drawer.inert = true;
+        drawer.setAttribute("aria-hidden", "true");
         drawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== drawer || e.propertyName !== "width") return;
           drawer.classList.remove("is-open");
@@ -2747,17 +2769,25 @@
 
       // ── Right panel drawer ──────────────────────────────────────────────
       const RIGHT_DRAWER_STORAGE_KEY = "rux-right-drawer-width";
-      const rightDrawer = document.getElementById("right-panel-drawer");
       function openRightDrawer() {
+        closeOtherMobilePanel(rightDrawer);
         const saved = localStorage.getItem(RIGHT_DRAWER_STORAGE_KEY);
         const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
         rightDrawer.style.setProperty("--drawer-width", w);
         rightDrawer.style.setProperty("--drawer-open-width", w);
         rightDrawer.classList.add("is-open");
+        rightDrawer.inert = false;
+        rightDrawer.setAttribute("aria-hidden", "false");
         rightAutoCollapsed = false;
+        if (mobilePanelQuery.matches) {
+          requestAnimationFrame(() => document.getElementById("rp-btn-close")?.focus());
+        }
       }
       function closeRightDrawer() {
+        restoreMobilePanelTrigger("right-panel-drawer");
         rightDrawer.style.setProperty("--drawer-width", GAP + "px");
+        rightDrawer.inert = true;
+        rightDrawer.setAttribute("aria-hidden", "true");
         rightDrawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== rightDrawer || e.propertyName !== "width") return;
           rightDrawer.classList.remove("is-open");
@@ -2850,15 +2880,44 @@
 
       initDrawerDrag(rightDrawer.querySelector(".scheduler-app__drawer-handle"), rightDrawer, RIGHT_DRAWER_STORAGE_KEY, openRightDrawer, closeRightDrawer, () => drawer, "right");
 
-      // ── Default boot state — both panels open at their minimum width ───
-      // Always starts here on load/refresh, regardless of any saved drag-resize width.
+      // ── Default boot state ──────────────────────────────────────────────
+      // Desktop begins with both panels visible. Mobile begins with the
+      // schedule visible and opens only one full-screen panel at a time.
       drawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
       drawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
-      drawer.classList.add("is-open");
-
       rightDrawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
       rightDrawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
-      rightDrawer.classList.add("is-open");
+
+      if (mobilePanelQuery.matches) {
+        drawer.style.setProperty("--drawer-width", GAP + "px");
+        rightDrawer.style.setProperty("--drawer-width", GAP + "px");
+        drawer.inert = true;
+        rightDrawer.inert = true;
+        drawer.setAttribute("aria-hidden", "true");
+        rightDrawer.setAttribute("aria-hidden", "true");
+      } else {
+        drawer.classList.add("is-open");
+        rightDrawer.classList.add("is-open");
+        drawer.inert = false;
+        rightDrawer.inert = false;
+        drawer.setAttribute("aria-hidden", "false");
+        rightDrawer.setAttribute("aria-hidden", "false");
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || !mobilePanelQuery.matches) return;
+        if (rightDrawer.classList.contains("is-open")) {
+          closeRightDrawer();
+        } else if (drawer.classList.contains("is-open")) {
+          closeDrawer();
+        }
+      });
+
+      mobilePanelQuery.addEventListener("change", (event) => {
+        if (!event.matches) return;
+        closeRightDrawer();
+        closeDrawer();
+      });
 
       // ── Auto-close panels when viewport is too narrow ──────────────────
       let rightAutoCollapsed = false;
