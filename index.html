@@ -126,7 +126,16 @@
           <!-- Trip panel drawer -->
           <div class="scheduler-app__drawer" id="trip-panel-drawer">
             <aside class="rux-panel rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill rux-trip-panel__tabs" role="tablist" aria-label="Trip editor sections" data-rux-tabs data-trip-tabs>
+              <header class="rux-panel__header">
+                <div class="rux-trip-panel__heading">
+                  <h2 class="rux-trip-panel__title" id="trip-panel-title">Trip</h2>
+                  <span class="rux-trip-panel__id" id="tp-trip-id"></span>
+                </div>
+                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-close" type="button" aria-label="Close trip editor">
+                  <span class="rux-icon" aria-hidden="true">close</span>
+                </button>
+              </header>
+              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Trip editor sections" data-rux-tabs data-trip-tabs>
                 <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-icon" aria-hidden="true">payments</span><span class="rux-trip-panel__tab-label">Billing</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-itinerary" aria-label="Trip" title="Trip"><span class="rux-icon" aria-hidden="true">location_on</span><span class="rux-trip-panel__tab-label">Trip</span></button>
@@ -264,7 +273,11 @@
               <footer class="rux-panel__footer">
                 <button class="rux-button rux-button--default rux-button--danger" id="tp-btn-delete" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
                 <button class="rux-button rux-button--default" id="tp-btn-clear"><span class="rux-icon">refresh</span><span class="rux-btn-label"> Clear</span></button>
-                <button class="rux-button rux-button--accent" id="tp-btn-save"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
+                <button class="rux-button rux-button--accent" id="tp-btn-save">
+                  <span class="rux-icon rux-button__idle-icon" aria-hidden="true">save</span>
+                  <span class="rux-button__spinner" aria-hidden="true"></span>
+                  <span class="rux-btn-label">Save</span>
+                </button>
               </footer>
             </aside>
             <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
@@ -308,56 +321,66 @@
           <!-- Right panel drawer -->
           <div class="scheduler-app__drawer scheduler-app__drawer--right" id="right-panel-drawer">
             <aside class="rux-panel rux-right-panel" role="dialog" aria-labelledby="right-panel-title">
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill rux-right-panel__tabs" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
+              <header class="rux-panel__header">
+                <h2 class="rux-panel__title" id="right-panel-title">Tools</h2>
+                <button class="rux-button rux-button--ghost rux-button--icon" id="rp-btn-close" type="button" aria-label="Close tools panel">
+                  <span class="rux-icon" aria-hidden="true">close</span>
+                </button>
+              </header>
+              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
                 <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate">Nav</button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers">Drivers</button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks">Tasks</button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-notes" title="Notes">Notes</button>
               </nav>
-              <div class="rux-panel__body rux-right-panel__body">
-                <div id="rp-pane-navigate" class="rux-right-panel__pane" role="tabpanel">
-                  <div class="rux-card rux-card--section rux-mini-cal">
-                    <div class="rux-trip-panel__section-head">
-                      <p class="rux-trip-panel__section-label">Calendar</p>
-                      <div class="rux-cluster">
-                        <button class="rux-button rux-button--accent" id="mini-cal-today" type="button">Today</button>
-                      </div>
-                    </div>
-                    <header class="rux-mini-cal__header">
-                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-prev" type="button" aria-label="Previous month">
-                        <span class="rux-icon">chevron_left</span>
-                      </button>
-                      <span class="rux-mini-cal__title" id="mini-cal-title"></span>
-                      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-next" type="button" aria-label="Next month">
-                        <span class="rux-icon">chevron_right</span>
-                      </button>
+              <div class="rux-panel__body">
+                <div id="rp-pane-navigate" class="rux-panel__pane" role="tabpanel">
+                  <article class="rux-card rux-mini-cal">
+                    <header class="rux-card__header">
+                      <h3 class="rux-card__title">Calendar</h3>
+                      <button class="rux-button rux-button--accent" id="mini-cal-today" type="button">Today</button>
                     </header>
-                    <div class="rux-mini-cal__grid" role="grid">
-                      <div class="rux-mini-cal__day-names">
-                        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-                      </div>
-                      <div class="rux-mini-cal__dates" id="mini-cal-dates"></div>
-                    </div>
-                  </div>
-                  <div class="rux-card rux-card--section">
-                    <p class="rux-trip-panel__section-label">View Options</p>
-                    <div class="rux-view-options">
-                      <div class="rux-view-options__row">
-                        <span class="rux-view-options__label">Start on Sunday</span>
-                        <label class="rux-switch">
-                          <input id="opt-sunday-start" type="checkbox" role="switch" />
-                          <span class="rux-switch__track"></span>
-                          <span class="rux-switch__thumb"></span>
-                        </label>
+                    <div class="rux-card__body rux-mini-cal__body">
+                      <header class="rux-mini-cal__header">
+                        <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-prev" type="button" aria-label="Previous month">
+                          <span class="rux-icon">chevron_left</span>
+                        </button>
+                        <span class="rux-mini-cal__title" id="mini-cal-title"></span>
+                        <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-next" type="button" aria-label="Next month">
+                          <span class="rux-icon">chevron_right</span>
+                        </button>
+                      </header>
+                      <div class="rux-mini-cal__grid" role="grid">
+                        <div class="rux-mini-cal__day-names">
+                          <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+                        </div>
+                        <div class="rux-mini-cal__dates" id="mini-cal-dates"></div>
                       </div>
                     </div>
-                  </div>
+                  </article>
+                  <article class="rux-card">
+                    <header class="rux-card__header">
+                      <h3 class="rux-card__title">View Options</h3>
+                    </header>
+                    <div class="rux-card__body">
+                      <div class="rux-view-options">
+                        <div class="rux-view-options__row">
+                          <span class="rux-view-options__label">Start on Sunday</span>
+                          <label class="rux-switch">
+                            <input id="opt-sunday-start" type="checkbox" role="switch" />
+                            <span class="rux-switch__track"></span>
+                            <span class="rux-switch__thumb"></span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
                 </div>
-                <div id="rp-pane-drivers" class="rux-right-panel__pane" role="tabpanel" hidden>
+                <div id="rp-pane-drivers" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
-                <div id="rp-pane-tasks" class="rux-right-panel__pane" role="tabpanel" hidden>
+                <div id="rp-pane-tasks" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
-                <div id="rp-pane-notes" class="rux-right-panel__pane" role="tabpanel" hidden>
+                <div id="rp-pane-notes" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
               </div>
             </aside>
@@ -409,7 +432,7 @@
           <!-- Fleet panel drawer -->
           <div class="scheduler-app__drawer" id="fleet-panel-drawer">
             <aside class="rux-panel rux-fleet-panel" role="dialog" aria-labelledby="fp-title">
-              <header class="rux-panel__header rux-fleet-panel__header">
+              <header class="rux-panel__header">
                 <div class="rux-fleet-panel__heading">
                   <h2 class="rux-fleet-panel__title" id="fp-title">Vehicle</h2>
                   <span class="rux-fleet-panel__id" id="fp-fleet-id"></span>
@@ -418,7 +441,7 @@
                   <span class="rux-icon">close</span>
                 </button>
               </header>
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill rux-fleet-panel__tabs" role="tablist" aria-label="Vehicle editor sections" data-rux-tabs data-fleet-tabs>
+              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Vehicle editor sections" data-rux-tabs data-fleet-tabs>
                 <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span><span class="rux-fleet-panel__tab-label">Info</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-service"     title="Service"><span class="rux-icon">build</span><span class="rux-fleet-panel__tab-label">Service</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><span class="rux-icon">map</span><span class="rux-fleet-panel__tab-label">Trips</span></button>
@@ -568,7 +591,7 @@
           <!-- Driver panel drawer -->
           <div class="scheduler-app__drawer" id="driver-panel-drawer">
             <aside class="rux-panel rux-driver-panel" role="dialog" aria-labelledby="dp-title">
-              <header class="rux-panel__header rux-driver-panel__header">
+              <header class="rux-panel__header">
                 <div class="rux-driver-panel__heading">
                   <h2 class="rux-driver-panel__title" id="dp-title">Driver</h2>
                   <span class="rux-driver-panel__id" id="dp-driver-id"></span>
@@ -577,7 +600,7 @@
                   <span class="rux-icon">close</span>
                 </button>
               </header>
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill rux-driver-panel__tabs" role="tablist" aria-label="Driver editor sections" data-rux-tabs data-driver-tabs>
+              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Driver editor sections" data-rux-tabs data-driver-tabs>
                 <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-profile"     title="Profile"><span class="rux-icon">person</span><span class="rux-driver-panel__tab-label">Profile</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-license"     title="License"><span class="rux-icon">badge</span><span class="rux-driver-panel__tab-label">License</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-status"      title="Status"><span class="rux-icon">monitoring</span><span class="rux-driver-panel__tab-label">Status</span></button>
@@ -1023,7 +1046,7 @@
                             <div><dt>Hover overlay</dt><dd><code>--rux-button-hover-overlay</code><output data-token-value="--rux-button-hover-overlay"></output></dd></div>
                             <div><dt>Default shadow</dt><dd><code>--rux-button-shadow</code><output data-token-value="--rux-button-shadow"></output></dd></div>
                             <div><dt>Selected inset</dt><dd><code>--rux-button-selected-shadow</code><output data-token-value="--rux-button-selected-shadow"></output></dd></div>
-                            <div><dt>Disabled shadow</dt><dd><code>--rux-button-disabled-shadow</code><output data-token-value="--rux-button-disabled-shadow"></output></dd></div>
+                            <div><dt>Disabled opacity</dt><dd><code>--rux-button-disabled-opacity</code><output data-token-value="--rux-button-disabled-opacity"></output></dd></div>
                             <div><dt>Focus ring</dt><dd><code>--rux-button-focus-ring</code><output data-token-value="--rux-button-focus-ring"></output></dd></div>
                             <div><dt>Transition</dt><dd><code>--rux-button-transition-duration</code><output data-token-value="--rux-button-transition-duration"></output></dd></div>
                           </dl>
@@ -1800,6 +1823,7 @@
           drawer.removeEventListener("transitionend", handler);
         });
       }
+      document.getElementById("tp-btn-close")?.addEventListener("click", closeDrawer);
 
       // ── Trips module → scheduler bridge ────────────────────────────────────
 
@@ -1825,7 +1849,7 @@
       });
 
       function setActiveTripPane(panelId) {
-        const tab = tripPanel.querySelector(`.rux-trip-panel__tabs .rux-tab[aria-controls="${panelId}"]`);
+        const tab = tripPanel.querySelector(`[data-trip-tabs] .rux-tab[aria-controls="${panelId}"]`);
         tab?.click();
       }
 
@@ -2740,10 +2764,11 @@
           rightDrawer.removeEventListener("transitionend", handler);
         });
       }
+      document.getElementById("rp-btn-close")?.addEventListener("click", closeRightDrawer);
 
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-tab[aria-controls]");
-      const rpPanes = rightDrawer.querySelectorAll(".rux-right-panel__pane");
+      const rpPanes = rightDrawer.querySelectorAll(".rux-panel__pane");
       rpTabs.forEach((btn) => {
         btn.addEventListener("click", () => {
           const paneId = btn.getAttribute("aria-controls");

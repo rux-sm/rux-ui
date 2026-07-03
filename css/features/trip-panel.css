@@ -9,8 +9,8 @@
    Structure
    ---------
    .rux-trip-panel              Flex column, 440px wide (set by parent grid).
-   .rux-trip-panel__header      Title + trip ID + close button.
-   .rux-trip-panel__tabs        Tab navigation — Details | Contacts | Billing | Dispatch.
+   .rux-panel__header           Shared title + trip ID + close row.
+   .rux-panel__tabs             Shared tab navigation slot.
    .rux-trip-panel__body        Scrollable body holding tab panes.
    .rux-trip-panel__pane        One per section, hidden via [hidden] when inactive.
    .rux-panel__footer           Shared Delete + Cancel / Save action row.
@@ -33,18 +33,6 @@
 	container-type: inline-size;
 }
 
-/* — Header — */
-
-.rux-trip-panel__header {
-	flex: none;
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-3);
-	padding: var(--rux-space-3) var(--rux-control-padding-inline) var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: solid transparent var(--rux-border-width);
-}
 .rux-trip-panel__heading {
 	display: flex;
 	align-items: baseline;
@@ -68,27 +56,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-}
-/* — Tab nav — */
-
-.rux-trip-panel__tabs {
-	flex: none;
-	display: flex;
-	align-items: center;
-	padding: var(--rux-space-3) var(--rux-control-padding-inline);
-	gap: var(--rux-control-content-gap);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: none;
-
-	overflow-x: auto;
-	scrollbar-width: none;
-	position: relative;
-	z-index: 1;
-	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-}
-
-.rux-trip-panel__tabs::-webkit-scrollbar {
-	display: none;
 }
 .rux-trip-panel__status-group .rux-button {
 	gap: var(--rux-space-1);
@@ -967,7 +934,7 @@
 }
 
 @container (max-width: 300px) {
-	.rux-trip-panel__tabs > .rux-tab {
+	.rux-trip-panel > .rux-panel__tabs > .rux-tab {
 		flex-direction: column;
 		height: 42px;
 		padding: var(--rux-space-1) var(--rux-space-1);

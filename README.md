@@ -232,7 +232,6 @@ Borders are **hairlines** (always 1px) at one of three intensities (`--rux-borde
 - `--rux-shadow-2` — buttons, selected controls, and toasts
 - `--rux-shadow-3` — menus and tooltips
 - `--rux-shadow-4` — modals and high overlays
-- `--rux-shadow-xl` — sheets, heavy overlays
 
 > **Current state:** All shadow tokens are set to `none` in `tokens.css` — the app runs flat for now. Some inset shadows on form fields and the segmented button are hardcoded and also disabled. A shadow toggle (flat vs. elevated) is planned; enabling it will uncomment all shadow values in one place.
 
@@ -256,7 +255,7 @@ Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`
 - **Control hover** uses OKLCH lightness steps (`+10L`: `--rux-control-bg-hover`, `--rux-accent-hover`, `--rux-danger-hover`) so filled buttons stay perceptually balanced across themes.
 - **Ghost hover** is the exception: ghost controls have a transparent base and use a white-alpha state fill (`--rux-control-ghost-hover`, `--rux-control-ghost-active`).
 - **Press / active** drops to the active color (`-10L` for filled controls) and translates `1px` down for buttons. Subtle, but visible.
-- **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.
+- **Disabled** preserves each button variant and applies `--rux-button-disabled-opacity` universally. Cursor `not-allowed`.
 
 ### Motion
 

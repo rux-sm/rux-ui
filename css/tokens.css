@@ -109,20 +109,73 @@
 
 	/* ─── SHADOW · elevation scale ───────────────────────────────────────── */
 
+	/* Shared recipe values */
+	--rux-shadow-highlight:
+		inset 0 1px 0.5px oklch(from var(--rux-color-white) l c h / 0.06);
+
+	--rux-shadow-1-y: 1px;
+	--rux-shadow-1-blur: 2px;
+	--rux-shadow-1-spread: 0;
+	--rux-shadow-1-color: oklch(from var(--rux-color-black) l c h / 0.24);
+
+	--rux-shadow-2-y: 2px;
+	--rux-shadow-2-blur: 3px;
+	--rux-shadow-2-spread: -1px;
+	--rux-shadow-2-color: oklch(from var(--rux-color-black) l c h / 0.6);
+
+	--rux-shadow-3-far-y: 8px;
+	--rux-shadow-3-far-blur: 16px;
+	--rux-shadow-3-far-spread: -4px;
+	--rux-shadow-3-far-color: oklch(from var(--rux-color-black) l c h / 0.4);
+	--rux-shadow-3-near-y: 2px;
+	--rux-shadow-3-near-blur: 6px;
+	--rux-shadow-3-near-spread: -1px;
+	--rux-shadow-3-near-color: oklch(from var(--rux-color-black) l c h / 0.7);
+
+	--rux-shadow-4-far-y: 16px;
+	--rux-shadow-4-far-blur: 32px;
+	--rux-shadow-4-far-spread: -6px;
+	--rux-shadow-4-far-color: oklch(from var(--rux-color-black) l c h / 0.4);
+	--rux-shadow-4-near-y: 6px;
+	--rux-shadow-4-near-blur: 14px;
+	--rux-shadow-4-near-spread: -2px;
+	--rux-shadow-4-near-color: oklch(from var(--rux-color-black) l c h / 0.75);
+
+	/* Assembled elevation primitives */
 	--rux-shadow-0: none;
 	--rux-shadow-1:
-		0 1px 2px oklch(from var(--rux-color-black) l c h / 0.24);
+		0 var(--rux-shadow-1-y)
+		var(--rux-shadow-1-blur)
+		var(--rux-shadow-1-spread)
+		var(--rux-shadow-1-color);
 	--rux-shadow-2:
-		0 2px 3px -1px rgba(0, 0, 0, 0.6),
-		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+		0 var(--rux-shadow-2-y)
+		var(--rux-shadow-2-blur)
+		var(--rux-shadow-2-spread)
+		var(--rux-shadow-2-color),
+		var(--rux-shadow-highlight);
 	--rux-shadow-3:
-		0 8px 16px -4px rgba(0, 0, 0, 0.4),
-		0 2px 6px -1px rgba(0, 0, 0, 0.7),
-		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+		0 var(--rux-shadow-3-far-y)
+		var(--rux-shadow-3-far-blur)
+		var(--rux-shadow-3-far-spread)
+		var(--rux-shadow-3-far-color),
+		0 var(--rux-shadow-3-near-y)
+		var(--rux-shadow-3-near-blur)
+		var(--rux-shadow-3-near-spread)
+		var(--rux-shadow-3-near-color),
+		var(--rux-shadow-highlight);
 	--rux-shadow-4:
-		0 16px 32px -6px rgba(0, 0, 0, 0.4),
-		0 6px 14px -2px rgba(0, 0, 0, 0.75),
-		inset 0 1px 0.5px rgba(255, 255, 255, 0.06);
+		0 var(--rux-shadow-4-far-y)
+		var(--rux-shadow-4-far-blur)
+		var(--rux-shadow-4-far-spread)
+		var(--rux-shadow-4-far-color),
+		0 var(--rux-shadow-4-near-y)
+		var(--rux-shadow-4-near-blur)
+		var(--rux-shadow-4-near-spread)
+		var(--rux-shadow-4-near-color),
+		var(--rux-shadow-highlight);
+
+	/* Inset state primitives */
 	--rux-inset-0: none;
 	--rux-inset-1:
 		inset 0 1px 2px oklch(from var(--rux-color-black) l c h / 0.35),
@@ -130,12 +183,26 @@
 	--rux-inset-2:
 		inset 0 2px 4px oklch(from var(--rux-color-black) l c h / 0.5),
 		inset 0 1px 0 var(--rux-color-white-a10);
+
+	/* Directional elevation-3 primitives */
 	--rux-edge-shadow-top:
-		0 -6px 16px oklch(from var(--rux-color-black) l c h / 0.5),
-		0 -2px 4px oklch(from var(--rux-color-black) l c h / 0.3);
+		0 calc(0px - var(--rux-shadow-3-far-y))
+		var(--rux-shadow-3-far-blur)
+		var(--rux-shadow-3-far-spread)
+		var(--rux-shadow-3-far-color),
+		0 calc(0px - var(--rux-shadow-3-near-y))
+		var(--rux-shadow-3-near-blur)
+		var(--rux-shadow-3-near-spread)
+		var(--rux-shadow-3-near-color);
 	--rux-edge-shadow-bottom:
-		0 6px 16px oklch(from var(--rux-color-black) l c h / 0.5),
-		0 2px 4px oklch(from var(--rux-color-black) l c h / 0.3);
+		0 var(--rux-shadow-3-far-y)
+		var(--rux-shadow-3-far-blur)
+		var(--rux-shadow-3-far-spread)
+		var(--rux-shadow-3-far-color),
+		0 var(--rux-shadow-3-near-y)
+		var(--rux-shadow-3-near-blur)
+		var(--rux-shadow-3-near-spread)
+		var(--rux-shadow-3-near-color);
 
 	/* ─── MOTION ─────────────────────────────────────────────────────────── */
 
@@ -204,6 +271,8 @@
 	--rux-icon-optical-size-md: 24;
 	--rux-icon-optical-size-lg: 32;
 	--rux-icon-optical-size-xl: 40;
+	--rux-icon-transition-duration: var(--rux-duration-fast);
+	--rux-icon-transition-easing: var(--rux-ease-out);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 
@@ -240,6 +309,8 @@
 	--rux-accent-hover: oklch(70% var(--rux-accent-c) var(--rux-accent-h));
 	--rux-accent-subtle: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
 	--rux-accent-ring: oklch(70% 0.28 var(--rux-accent-h));
+	--rux-selection-bg: var(--rux-accent);
+	--rux-selection-fg: var(--rux-fg-on-accent);
 
 	/* ─── COLOR · status roles ───────────────────────────────────────────── */
 
@@ -291,6 +362,10 @@
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-padding: var(--rux-space-3);
 	--rux-panel-content-gap: var(--rux-space-3);
+	--rux-panel-chrome-min-height: 52px;
+	--rux-panel-title-font-size: var(--rux-text-md);
+	--rux-panel-title-font-weight: var(--rux-weight-semibold);
+	--rux-panel-title-line-height: var(--rux-leading-tight);
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
 
@@ -340,14 +415,12 @@
 	/* Interaction states */
 	--rux-button-hover-overlay: var(--rux-color-white-a08);
 	--rux-button-active-overlay: var(--rux-color-black-a12);
-	--rux-button-disabled-bg: var(--rux-color-neutral-24);
-	--rux-button-disabled-fg: oklch(40% 0 0);
+	--rux-button-disabled-opacity: 0.45;
 	--rux-button-selected-bg: var(--rux-color-white);
 	--rux-button-selected-fg: var(--rux-color-black);
 	--rux-button-icon-selected-bg: var(--rux-color-neutral-70);
 	--rux-button-shadow: var(--rux-elevation-0);
 	--rux-button-selected-shadow: var(--rux-inset-0);
-	--rux-button-disabled-shadow: var(--rux-elevation-0);
 	--rux-button-focus-ring: var(--rux-ring-focus);
 	--rux-button-danger-focus-ring: var(--rux-ring-danger);
 

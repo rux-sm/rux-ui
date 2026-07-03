@@ -55,7 +55,7 @@
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
 	--rux-trip-bar-paid-color: var(--rux-success);
 	--rux-trip-bar-tight-gap: 1px;
-	--rux-trip-bar-actions-bg: color-mix(in oklch, var(--rux-surface-1) 75%, transparent);
+	--rux-trip-bar-actions-bg: transparent;
 	--rux-trip-bar-bus-label-bg: color-mix(in oklch, var(--rux-fg) 10%, transparent);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
@@ -290,29 +290,14 @@
 .rux-trip-bar__actions {
 	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: repeat(4, 1fr);
+	grid-template-columns: repeat(4, minmax(0, 1fr));
 	align-items: center;
-	align-content: stretch;
 	flex: 0 0 auto;
-	gap: 8px;
+	gap: var(--rux-control-content-gap);
 	max-height: 0;
 	padding-inline: 0;
 	margin: 0;
-	justify-content: stretch;
-	background: oklch(0% 0 0 / 0.2);
-	border-radius: var(--rux-control-radius);
-}
-.rux-trip-bar__actions > .rux-button {
-	width: 100%;
-	min-width: 0;
-	flex: 1;
-	border-radius: var(--rux-control-radius);
-	--_bg: oklch(0% 0 0 / 0.2);
-}
-.rux-trip-bar__actions > .rux-button:first-child {
-	border-radius: var(--rux-control-radius);
-}
-.rux-trip-bar__actions > .rux-button:last-child {
+	background: var(--rux-trip-bar-actions-bg);
 	border-radius: var(--rux-control-radius);
 }
 
@@ -339,7 +324,6 @@
 	pointer-events: auto;
 	transform: translateY(0);
 	visibility: visible;
-	background: oklch(100% 0 0 / 0);
 	transition:
 		max-height var(--rux-duration-base) var(--rux-ease-out),
 		margin var(--rux-duration-base) var(--rux-ease-out),

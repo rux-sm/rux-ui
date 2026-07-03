@@ -533,35 +533,17 @@
 	container-type: inline-size;
 }
 
-.rux-right-panel__tabs {
-	flex: none;
-	display: flex;
-	align-items: center;
-	padding: var(--rux-space-3) var(--rux-space-3);
-	gap: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: none;
-	overflow-x: auto;
-	scrollbar-width: none;
-}
-.rux-right-panel__tabs::-webkit-scrollbar {
-	display: none;
-}
-.rux-right-panel__pane {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-3);
-	padding: 0 var(--rux-space-3);
-}
-.rux-right-panel__pane[hidden] {
-	display: none;
-}
-
 /* — Mini calendar — */
 
 .rux-mini-cal {
 	display: flex;
 	flex-direction: column;
+}
+
+.rux-mini-cal__body {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-card-content-gap);
 }
 
 .rux-mini-cal__header {
@@ -807,7 +789,7 @@
 		--_icon-weight: var(--rux-icon-weight-selected);
 	}
 
-	.scheduler-app__drawer .rux-trip-panel__header {
+	.scheduler-app__drawer .rux-trip-panel > .rux-panel__header {
 		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
 	}
 

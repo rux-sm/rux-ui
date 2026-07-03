@@ -7,8 +7,8 @@
    Structure
    ---------
    .rux-fleet-panel              Flex column, width set by drawer parent.
-   .rux-fleet-panel__header      Vehicle unit + ID + close button.
-   .rux-fleet-panel__tabs        Tab navigation — Info | Service | Trips.
+   .rux-panel__header            Shared vehicle unit + ID + close row.
+   .rux-panel__tabs              Shared tab navigation slot.
    .rux-fleet-panel__body        Scrollable body holding tab panes.
    .rux-fleet-panel__pane        One per section, hidden via [hidden].
    .rux-panel__footer            Shared Delete + Clear + Save action row.
@@ -33,18 +33,6 @@
 	border-radius: var(--rux-radius-lg);
 }
 
-/* — Header — */
-
-.rux-fleet-panel__header {
-	flex: none;
-	display: flex;
-	align-items: start;
-	justify-content: space-between;
-	gap: var(--rux-space-3);
-	padding: var(--rux-space-3) var(--rux-space-4) var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-}
-
 .rux-fleet-panel__heading {
 	display: flex;
 	align-items: baseline;
@@ -67,23 +55,6 @@
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-medium);
 	white-space: nowrap;
-}
-
-/* — Tab nav — */
-
-.rux-fleet-panel__tabs {
-	flex: none;
-	display: flex;
-	align-items: center;
-	padding: var(--rux-space-2) var(--rux-space-3);
-	gap: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	overflow-x: auto;
-	scrollbar-width: none;
-}
-
-.rux-fleet-panel__tabs::-webkit-scrollbar {
-	display: none;
 }
 
 .rux-fleet-panel__tab-label {
@@ -223,7 +194,7 @@
 		border-right: none;
 	}
 
-	.scheduler-app__drawer .rux-fleet-panel__header {
+	.scheduler-app__drawer .rux-fleet-panel > .rux-panel__header {
 		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
 	}
 }

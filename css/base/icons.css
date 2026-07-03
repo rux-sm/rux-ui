@@ -34,6 +34,10 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
+	transition:
+		font-variation-settings
+		var(--rux-icon-transition-duration)
+		var(--rux-icon-transition-easing);
 }
 
 .rux-icon--xs {

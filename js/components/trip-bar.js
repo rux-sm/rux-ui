@@ -530,7 +530,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--icon";
+  openBtn.className = "rux-button rux-button--default rux-button--icon rux-button--block";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("add"));
@@ -586,7 +586,7 @@ export function createTripBar(trip, callbacks = {}) {
       };
 
   const pdfBtn = button(
-    "rux-button rux-button--icon",
+    "rux-button rux-button--default rux-button--icon rux-button--block",
     pdfLabel,
     pdfIcon,
     () => onPdf(),
@@ -595,14 +595,14 @@ export function createTripBar(trip, callbacks = {}) {
   actions.append(
     openBtn,
     button(
-      "rux-button rux-button--icon",
+      "rux-button rux-button--default rux-button--icon rux-button--block",
       "Change bus",
       "swap_vert",
       () => callbacks.onChangeBus?.(trip),
     ),
     pdfBtn,
     button(
-      "rux-button rux-button--icon",
+      "rux-button rux-button--default rux-button--icon rux-button--block",
       "Trip envelope",
       "mail",
       () => (callbacks.onTripEnvelope || callbacks.onEmail)?.(trip),

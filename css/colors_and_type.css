@@ -184,8 +184,8 @@ hr {
 /* ─── Selection & focus defaults ────────────────────────────────────────── */
 
 ::selection {
-  background: var(--rux-accent-subtle);
-  color: var(--rux-fg);
+  background: var(--rux-selection-bg);
+  color: var(--rux-selection-fg);
 }
 
 :focus-visible {

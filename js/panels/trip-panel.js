@@ -552,7 +552,8 @@ function initTripTabs(root) {
 	if (tabs) tabs.dataset.ruxTripTabsInit = "true";
 
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
-	const allTabBtns = root.querySelectorAll(".rux-trip-panel__tabs .rux-tab[aria-controls]");
+	const allTabBtns = tabs?.querySelectorAll(".rux-tab[aria-controls]") || [];
+	const scrollBody = root.querySelector(".rux-panel__body");
 	allTabBtns.forEach((btn) => {
 		btn.addEventListener("click", () => {
 			const panelId = btn.getAttribute("aria-controls");
@@ -571,7 +572,7 @@ function initTripTabs(root) {
 	});
 
 	const activeTab =
-		root.querySelector(".rux-trip-panel__tabs .rux-tab[aria-controls][aria-selected='true']") ||
+		tabs?.querySelector(".rux-tab[aria-controls][aria-selected='true']") ||
 		allTabBtns[0];
 
 	if (activeTab) {
@@ -982,7 +983,20 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			btn.setAttribute("aria-pressed", String(nowActive));
 			btn.classList.toggle("is-active", nowActive);
 			const row = group.querySelector(`[data-role-row="${role}"]`);
-			if (row) row.hidden = !nowActive;
+			if (row) {
+				row.hidden = !nowActive;
+				if (!nowActive) {
+					const select = row.querySelector("select[name]");
+					if (select) select.value = "";
+					const payInput = row.querySelector("input[name]");
+					if (payInput) payInput.value = "";
+					const label = row.querySelector(".rux-trip-panel__role-label");
+					if (label) {
+						label.dataset.roleState = "default";
+						label.classList.remove("rux-role--danger", "rux-role--warning", "rux-role--success");
+					}
+				}
+			}
 		});
 
 		// Role label icons — cycle status: default → danger → warning → success → default

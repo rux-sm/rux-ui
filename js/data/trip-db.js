@@ -621,13 +621,30 @@ import { supabase } from "./supabase.js";
 
 	/* ── Save ────────────────────────────────────────────────────────────── */
 
+	function setSaveButtonState(saveBtn, { busy = false, label = "Save", icon = "save", disabled } = {}) {
+		const iconEl = saveBtn.querySelector(".rux-button__idle-icon");
+		const labelEl = saveBtn.querySelector(".rux-btn-label");
+
+		saveBtn.classList.toggle("rux-button--loading", busy);
+		if (busy) {
+			saveBtn.setAttribute("aria-busy", "true");
+			saveBtn.disabled = true;
+		} else {
+			saveBtn.removeAttribute("aria-busy");
+			if (disabled !== undefined) saveBtn.disabled = disabled;
+		}
+		if (iconEl) iconEl.textContent = icon;
+		if (labelEl) labelEl.textContent = label;
+	}
+
 	async function save(root, itinerary, saveBtn) {
 		// Freeze identity at call time so a mid-save loadTrip can't corrupt state.
 		const savingTripId       = currentTripId;
 		const savingTripRef      = currentTripRef;
 		const savingSnapshot     = currentTripSnapshot;
-		saveBtn.disabled = true;
-		saveBtn.textContent = "Saving…";
+		const saveAttempt = String(Number(saveBtn.dataset.saveAttempt || 0) + 1);
+		saveBtn.dataset.saveAttempt = saveAttempt;
+		setSaveButtonState(saveBtn, { busy: true, label: "Saving" });
 
 		try {
 			const nextTripData = collectTrip(root);
@@ -653,9 +670,8 @@ import { supabase } from "./supabase.js";
 
 			const conflict = await findAssignmentConflict(tripData, assignments);
 			if (conflict && !confirm(`Conflict detected: ${conflict.label}. Save anyway?`)) {
-				saveBtn.innerHTML = '<span class="rux-icon">save</span> Save';
-				
-				return;
+				setSaveButtonState(saveBtn, { label: "Save", icon: "save", disabled: false });
+				return false;
 			}
 
 			// Generate human-readable ref for new trips only
@@ -737,25 +753,29 @@ import { supabase } from "./supabase.js";
 				currentAssignments  = snapshotAssignments(assignments);
 			}
 
-			saveBtn.textContent = "Saved ✓";
+			setSaveButtonState(saveBtn, { label: "Saved", icon: "check", disabled: true });
 			const idEl = root.querySelector("#tp-trip-id");
 			if (idEl && resolvedRef) idEl.textContent = resolvedRef;
 			root.dispatchEvent(new CustomEvent("rux:trip-saved", { bubbles: true, detail: { id: savedId } }));
 			if (window.Rux) Rux.toast("Trip saved");
 			clearForm(root, itinerary);
 			setTimeout(() => {
-				saveBtn.innerHTML = '<span class="rux-icon">save</span> Save';
-				
+				if (saveBtn.dataset.saveAttempt === saveAttempt && !saveBtn.hasAttribute("aria-busy")) {
+					setSaveButtonState(saveBtn, { label: "Save", icon: "save" });
+				}
 			}, 1500);
+			return true;
 		} catch (err) {
 			console.error("Save failed:", err);
 			const isValidation = err instanceof Error && !err.status;
-			saveBtn.textContent = "Save failed";
+			setSaveButtonState(saveBtn, { label: "Save failed", icon: "error", disabled: false });
 			if (window.Rux) Rux.toast(isValidation ? err.message : "Save failed — check your connection and try again.");
 			setTimeout(() => {
-				saveBtn.innerHTML = '<span class="rux-icon">save</span> Save';
-				
+				if (saveBtn.dataset.saveAttempt === saveAttempt && !saveBtn.hasAttribute("aria-busy")) {
+					setSaveButtonState(saveBtn, { label: "Save", icon: "save" });
+				}
 			}, 2000);
+			return false;
 		}
 	}
 
@@ -925,7 +945,7 @@ export function loadTrip(root, itinerary, trip) {
 	const idEl = root.querySelector("#tp-trip-id");
 	if (idEl) idEl.textContent = trip.trip_ref ?? trip.id ?? "";
 
-	root.querySelector(".rux-trip-panel__tabs .rux-tab[aria-controls]")?.click();
+	root.querySelector("[data-trip-tabs] .rux-tab[aria-controls]")?.click();
 
 	requestAnimationFrame(() => {
 		root.classList.remove("rux-trip-panel--loading");
@@ -1089,12 +1109,9 @@ export function initTripDB(root, itinerary) {
 	});
 
 	saveBtn?.addEventListener("click", async () => {
-		try {
-			await save(root, itinerary, saveBtn);
-			markClean();
-		} catch (_) {
-			syncSaveBtn();
-		}
+		const saved = await save(root, itinerary, saveBtn);
+		if (saved) markClean();
+		else syncSaveBtn();
 	});
 	clearBtn?.addEventListener("click",  () => {
 		if (isFormDirty() && !confirm("Discard unsaved changes?")) return;

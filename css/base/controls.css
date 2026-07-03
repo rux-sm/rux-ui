@@ -66,11 +66,12 @@
 
 .rux-button:disabled,
 .rux-button[aria-disabled="true"] {
-	color: var(--rux-button-disabled-fg);
-	background-color: var(--rux-button-disabled-bg);
+	color: var(--_fg);
+	background-color: var(--_bg);
 	background-image: none;
-	border-color: transparent;
-	box-shadow: var(--rux-button-disabled-shadow);
+	border-color: var(--_border);
+	box-shadow: none;
+	opacity: var(--rux-button-disabled-opacity);
 	cursor: not-allowed;
 	pointer-events: none;
 }
@@ -135,6 +136,7 @@
 }
 
 .rux-button__spinner {
+	display: none;
 	width: var(--rux-button-icon-size);
 	height: var(--rux-button-icon-size);
 	flex: none;
@@ -142,6 +144,14 @@
 	border-right-color: transparent;
 	border-radius: var(--rux-radius-full);
 	animation: rux-button-spin 700ms linear infinite;
+}
+
+.rux-button--loading > .rux-button__idle-icon {
+	display: none;
+}
+
+.rux-button--loading > .rux-button__spinner {
+	display: block;
 }
 
 @keyframes rux-button-spin {
@@ -231,6 +241,12 @@
 	--_shadow: var(--rux-button-selected-shadow);
 }
 
+.rux-button--icon.rux-button--block {
+	flex: 1 1 0;
+	width: 100%;
+	max-width: none;
+}
+
 /* ==========================================================================
    SEGMENTED  ·  .rux-segmented
    — pill-strip container for any button variant: icon, text, or mixed
@@ -276,13 +292,6 @@
 	color: var(--rux-fg);
 	box-shadow: var(--rux-elevation-0);
 }
-.rux-segmented > .rux-button:disabled,
-.rux-segmented > .rux-button[aria-disabled="true"] {
-	background-color: transparent;
-	color: var(--rux-fg-disabled);
-	box-shadow: none;
-}
-
 .rux-segmented > .rux-button.is-active,
 .rux-segmented > .rux-button[aria-pressed="true"],
 .rux-segmented > .rux-button[aria-selected="true"] {

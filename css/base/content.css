@@ -14,12 +14,35 @@
 	border: var(--rux-panel-border-width) solid var(--rux-panel-border);
 	border-radius: var(--rux-panel-radius);
 	box-shadow: var(--rux-panel-shadow);
+	isolation: isolate;
 }
 
 .rux-panel__header,
 .rux-panel__tabs,
 .rux-panel__footer {
 	flex: none;
+	min-height: var(--rux-panel-chrome-min-height);
+}
+
+.rux-panel__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-panel-content-gap);
+	padding: var(--rux-panel-padding);
+	position: relative;
+	z-index: 2;
+	background: var(--rux-panel-bg);
+}
+
+.rux-panel__title {
+	min-width: 0;
+	overflow: hidden;
+	font-size: var(--rux-panel-title-font-size);
+	font-weight: var(--rux-panel-title-font-weight);
+	line-height: var(--rux-panel-title-line-height);
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .rux-panel__body {
@@ -27,12 +50,32 @@
 	min-height: 0;
 	overflow-y: auto;
 	overscroll-behavior: contain;
+	position: relative;
+	z-index: 0;
+}
+
+.rux-panel__pane {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-panel-content-gap);
+	padding: 0 var(--rux-panel-padding);
+}
+
+.rux-panel__pane[hidden] {
+	display: none;
 }
 
 .rux-panel__tabs {
+	padding: var(--rux-panel-padding);
+	overflow-x: auto;
+	scrollbar-width: none;
 	position: relative;
 	z-index: 1;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-panel__tabs::-webkit-scrollbar {
+	display: none;
 }
 
 .rux-panel__tabs.is-scrolled {
@@ -46,7 +89,7 @@
 	background: var(--rux-panel-bg);
 	border-top: var(--rux-panel-footer-border);
 	position: relative;
-	z-index: 1;
+	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
 }
 
