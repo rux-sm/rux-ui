@@ -308,8 +308,6 @@
 	flex: 1;
 	border-radius: var(--rux-control-radius);
 	--_bg: oklch(0% 0 0 / 0.2);
-	--_bg-h: oklch(0% 0 0 / 0.3);
-	--_bg-a: oklch(0% 0 0 / 0.35);
 }
 .rux-trip-bar__actions > .rux-button:first-child {
 	border-radius: var(--rux-control-radius);

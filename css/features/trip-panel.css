@@ -46,7 +46,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-3) var(--rux-space-2) var(--rux-space-2);
+	padding: var(--rux-space-3) var(--rux-control-padding-inline) var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: solid transparent var(--rux-border-width);
 }
@@ -113,8 +113,8 @@
 	flex: none;
 	display: flex;
 	align-items: center;
-	padding: var(--rux-space-3) var(--rux-space-3);
-	gap: var(--rux-space-2);
+	padding: var(--rux-space-3) var(--rux-control-padding-inline);
+	gap: var(--rux-control-content-gap);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: none;
 
@@ -141,8 +141,6 @@
 }
 .rux-trip-panel__tabs [data-trip-tabs] .rux-button {
 	--_bg: var(--rux-control-scrim);
-	--_bg-h: var(--rux-control-scrim-hover);
-	--_bg-a: var(--rux-control-scrim-active);
 	flex: 1;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-3);
@@ -152,8 +150,6 @@
 .rux-trip-panel__tabs [data-trip-tabs] .rux-button.is-active,
 .rux-trip-panel__tabs [data-trip-tabs] .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-accent);
-	--_bg-h: var(--rux-accent-hover);
-	--_bg-a: var(--rux-accent-active);
 	color: var(--rux-fg-on-accent);
 }
 .rux-trip-panel__tabs [data-trip-tabs] .rux-button.is-active .rux-icon,
@@ -225,7 +221,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
-	padding: 0 var(--rux-space-3);
+	padding: 0 var(--rux-control-padding-inline);
 }
 .rux-trip-panel__pane[hidden] {
 	display: none;
@@ -272,7 +268,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0;
-	padding: var(--rux-space-3);
+	padding: var(--rux-control-padding-inline);
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-0);
 	border: solid var(--rux-border-width) var(--rux-card-border);
@@ -294,7 +290,7 @@
 .rux-trip-panel__cols-3 {
 	display: grid;
 	grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
-	column-gap: var(--rux-space-2);
+	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-space-3);
 	align-items: start;
 }
@@ -316,7 +312,7 @@
 .rux-trip-panel__contact-fields {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	column-gap: var(--rux-space-2);
+	column-gap: var(--rux-control-content-gap);
 	flex: 1;
 	min-width: 0;
 }
@@ -360,7 +356,7 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: start;
-	column-gap: var(--rux-space-2);
+	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-space-3);
 }
 
@@ -375,7 +371,7 @@
 .rux-trip-panel__status-checks {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 
 .rux-trip-panel__status-checks .rux-row .rux-input,
@@ -454,7 +450,7 @@
 .rux-trip-panel__billing-step {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 /* Field + toggle live inline on one row, below the title — the field is
    always rendered (never collapsed); JS flips its `disabled` attribute and
@@ -464,7 +460,7 @@
 .rux-trip-panel__billing-step-row {
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 .rux-trip-panel__billing-step-row .rux-input {
 	flex: 1;
@@ -484,7 +480,7 @@
 .rux-trip-panel__payment-rows {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 /* Outer row is unstyled layout only — the pill background/border lives on
    the inner .rux-trip-panel__payment-content instead, so the trash button
@@ -495,39 +491,61 @@
 	display: flex;
 	align-items: center;
 }
-/* Single-line pill: type icon · amount · reference · date, replacing the
+/* Single-line pill: type icon as Reference prefix · date · amount, replacing the
    old label+grid layout. Method is fixed at creation (see PAYMENT_METHODS
    in trip-panel.js) and shown as the icon, not an editable field —
-   consistent with Files, where type is likewise fixed once created. */
+   consistent with Files, where type is likewise fixed once created.
+   Icon gets a fixed-width slot up front; date and amount are fixed-width
+   too (120px — enough for MM/DD/YYYY and a 3-digit balance) so they never
+   get squeezed. Reference is the only flexible column: a minmax(0, 1fr)
+   track ignores min-width when sizing itself, so if date/amount were fr
+   tracks too they'd shrink and overflow their own box under pressure
+   instead of holding size — reference is the one column allowed to give
+   up space and ellipsis, the ledger/statement convention of scanning
+   dates on the left and summing amounts on the right. */
 .rux-trip-panel__payment-content {
-	display: flex;
+	--_payment-date-width: calc(
+		8ch +
+		(var(--rux-border-width) * 2)
+	);
+	--_payment-amount-min-width: 112px;
+	--_payment-amount-max-width: 116px;
+	display: grid;
+	grid-template-columns:
+		minmax(0, 1fr)
+		var(--_payment-date-width)
+		minmax(var(--_payment-amount-min-width), var(--_payment-amount-max-width));
+	grid-template-areas: "reference date amount";
 	align-items: center;
+	gap: var(--rux-space-0);
 	flex: 1;
 	min-width: 0;
 	min-height: var(--rux-field-height);
-	padding: 0 var(--rux-space-3);
-	border-radius: var(--rux-radius-sm);
+	border: var(--rux-border-width) solid var(--_border);
+	border-radius: var(--rux-radius-button);
 	background: var(--rux-control-scrim);
-}
-.rux-trip-panel__payment-content > * + * {
-	margin-left: var(--rux-space-2);
 }
 .rux-trip-panel__payment-icon {
 	flex: none;
-	width: var(--rux-icon-sm);
+	width: calc(var(--rux-icon-sm) + (var(--rux-control-padding-inline) * 2));
 	height: var(--rux-icon-sm);
-	color: var(--rux-fg-muted);
+	color: var(--rux-fg);
+	padding: 0 var(--rux-control-padding-inline);
+
 }
 /* Amount reuses the standard .rux-input-group prefix pattern (same as
-   Quoted Price) — a real bordered field with "$" inside it, sized down to
-   fit inline in the pill instead of stretching to fill the row. */
-.rux-trip-panel__payment-amount {
-	flex: none;
-	width: 6.5em;
-}
+   Quoted Price) — a real bordered field with "$" inside it. */
 .rux-trip-panel__payment-amount .rux-input {
 	height: var(--rux-field-height);
 	font-size: var(--rux-text-sm);
+	background: none;
+	text-align: right;
+	width: 100%;
+	margin: 0;
+	border: var(--rux-border-width) solid var(--_border);
+}
+.rux-trip-panel__payment-amount {
+	grid-area: amount;
 }
 /* Native number stepper reads as "a counter", not "an amount" — hide it,
    same rule .rux-input[type=number] already gets in form.css. */
@@ -537,6 +555,7 @@
 }
 .rux-trip-panel__payment-amount .rux-input[type="number"] {
 	appearance: textfield;
+	padding-inline: var(--rux-control-padding-inline);
 }
 .rux-trip-panel__payment-input {
 	background: none;
@@ -545,24 +564,100 @@
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	color: var(--rux-fg);
+	margin: 0;
 }
 .rux-trip-panel__payment-input::placeholder {
 	color: var(--rux-fg-subtle);
 }
-.rux-trip-panel__payment-divider {
-	flex: none;
-	width: var(--rux-border-width);
-	align-self: stretch;
-	margin-block: var(--rux-space-1);
-	background: var(--rux-border);
+.rux-trip-panel__payment-field:focus,
+.rux-trip-panel__payment-field:focus-visible {
+	position: relative;
+	z-index: 1;
+	outline: none;
+	border-color: transparent;
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
 }
 .rux-trip-panel__payment-ref {
 	flex: 1;
+	width: 100%;
 	min-width: 0;
+	height: var(--rux-field-height);
+	padding: 0 var(--rux-control-padding-inline) 0 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	border: none;
+}
+.rux-trip-panel__payment-reference {
+	grid-area: reference;
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	height: var(--rux-field-height);
+	border: var(--rux-border-width) solid var(--_border);
+	border-radius: var(--rux-radius-field);
+}
+.rux-trip-panel__payment-reference:focus-within {
+	border-color: transparent;
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+}
+.rux-trip-panel__payment-reference .rux-trip-panel__payment-ref:focus,
+.rux-trip-panel__payment-reference .rux-trip-panel__payment-ref:focus-visible {
+	box-shadow: none;
+}
+.rux-trip-panel__payment-date-control {
+	grid-area: date;
+	position: relative;
+	min-width: 0;
+	height: var(--rux-field-height);
+	font-variant-numeric: tabular-nums;
+}
+.rux-trip-panel__payment-date-label {
+	position: absolute;
+	inset-block: 0;
+	inset-inline: 0;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	pointer-events: none;
 }
 .rux-trip-panel__payment-date {
-	flex: none;
-	text-align: right;
+	width: 100%;
+	height: var(--rux-field-height);
+	padding: 0;
+	text-align: center;
+	color: transparent;
+	border: var(--rux-border-width) solid var(--_border);
+	border-right: none;
+}
+.rux-trip-panel__payment-date::-webkit-datetime-edit {
+	color: transparent;
+}
+.rux-trip-panel__payment-date::-webkit-calendar-picker-indicator {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+.rux-trip-panel__payment-date-control:focus-within {
+	z-index: 1;
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+}
+.rux-trip-panel__payment-date:focus,
+.rux-trip-panel__payment-date:focus-visible {
+	border-color: transparent;
+	box-shadow: none;
+	color: transparent;
+}
+.rux-trip-panel__payment-date:focus::-webkit-datetime-edit,
+.rux-trip-panel__payment-date:focus-visible::-webkit-datetime-edit {
+	color: transparent;
 }
 /* Hidden by default — header Delete arms select mode
    (#tp-payment-rows.is-selecting), revealing this trash icon; width +
@@ -598,6 +693,9 @@
 	opacity: 1;
 	pointer-events: auto;
 }
+#tp-payment-delete-btn:disabled {
+	display: none;
+}
 .rux-trip-panel__payment-menu {
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
@@ -611,7 +709,7 @@
 .rux-trip-panel__requirements-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 .rux-trip-panel__reqs {
 	display: contents;
@@ -630,7 +728,7 @@
 .rux-trip-panel__refs {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 
 /* — Dispatch: bus group — */
@@ -639,7 +737,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 
 	background: var(--rux-bg-level-2);
 	border-radius: var(--rux-radius-md);
@@ -714,8 +812,8 @@
 .rux-trip-panel__bus-group {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
-	padding: var(--rux-space-3);
+	gap: var(--rux-control-content-gap);
+	padding: var(--rux-control-padding-inline);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-level-2);
 	overflow: hidden;
@@ -730,7 +828,7 @@
    competing with it for space in the same row. */
 .rux-trip-panel__bus-roles {
 	display: flex;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 /* min-width:0 overrides the flex default of min-width:auto, which floors
    a flex item at its own content width — without it, "Co-driver" (longer
@@ -766,12 +864,12 @@
 .rux-trip-panel__driver-rows {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 }
 .rux-trip-panel__driver-row {
 	display: grid;
 	grid-template-columns: 28px 1fr 96px;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 	align-items: start;
 }
 .rux-trip-panel__driver-row[hidden] {
@@ -824,7 +922,7 @@
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-1);
+	gap: var(--rux-control-content-gap);
 }
 .rux-trip-panel__doc-list:empty {
 	display: none;
@@ -852,17 +950,20 @@
 .rux-trip-panel__doc-content {
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 	flex: 1;
 	min-width: 0;
 	height: 28px;
-	padding: 0 var(--rux-space-3);
-	border-radius: var(--rux-radius-sm);
+	padding: 0 var(--rux-control-padding-inline);
+	border-radius: var(--rux-radius-button);
 	background: var(--rux-control-scrim);
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
 }
 .rux-trip-panel__doc-row:hover .rux-trip-panel__doc-content {
-	background: var(--rux-bg-hover);
+	background-image: linear-gradient(
+		var(--rux-control-hover-overlay),
+		var(--rux-control-hover-overlay)
+	);
 }
 .rux-trip-panel__doc-row:focus-visible .rux-trip-panel__doc-content {
 	outline: none;
@@ -933,7 +1034,7 @@
 
 .rux-trip-panel__footer {
 	align-items: start;
-	gap: var(--rux-space-2);
+	gap: var(--rux-control-content-gap);
 	background: var(--rux-bg-level-1);
 	position: relative;
 	z-index: 1;
@@ -962,10 +1063,6 @@
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;
-	}
-
-	.rux-trip-panel__payment-row {
-		grid-template-columns: 1fr;
 	}
 
 	.rux-trip-panel__logistics-grid {
@@ -1048,4 +1145,3 @@
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
 }
-

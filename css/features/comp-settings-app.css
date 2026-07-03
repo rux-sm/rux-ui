@@ -158,7 +158,7 @@
 .settings-app__suggestion:hover,
 .settings-app__suggestion:focus-visible {
 	outline: none;
-	background: var(--rux-bg-hover);
+	background: var(--rux-control-hover-overlay);
 }
 
 .settings-app__suggestion-name {
@@ -223,7 +223,7 @@
 }
 
 .req-icon-btn:hover {
-	background: var(--rux-control-ghost-hover);
+	background: var(--rux-control-hover-overlay);
 	border-color: var(--rux-border-strong);
 	color: var(--rux-fg);
 }
@@ -370,7 +370,7 @@
 }
 
 .req-icon-option:hover {
-	background: var(--rux-control-ghost-hover);
+	background: var(--rux-control-hover-overlay);
 	color: var(--rux-fg);
 }
 

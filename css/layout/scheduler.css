@@ -52,7 +52,7 @@
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
 	--rux-scheduler-today-bg: color-mix(in oklch, var(--rux-scheduler-bg) 0%, var(--rux-accent) 100%);
-	--rux-scheduler-row-block-inset: var(--rux-space-3);
+	--rux-scheduler-row-block-inset: var(--rux-space-2);
 	--_row-height: calc(140px + (var(--rux-scheduler-row-block-inset) * 2));
 	--rux-scheduler-cols: var(--rux-scheduler-col-head-width)
 		repeat(var(--rux-scheduler-days), minmax(var(--rux-scheduler-day-min-width), 1fr));
@@ -388,4 +388,3 @@
 		transparent 75.5%
 	);
 }
-

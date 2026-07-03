@@ -228,6 +228,19 @@ function initBillingWorkflow(root) {
 		const value = Number.parseFloat(el?.value);
 		return Number.isFinite(value) ? value : 0;
 	};
+	const formatPaymentAmount = (el) => {
+		if (!el?.value) return;
+		el.value = readMoney(el).toFixed(2);
+	};
+	const formatCompactPaymentDate = (value) => {
+		const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+		if (!match) return "Date";
+		return `${match[2]}/${match[3]}/${match[1].slice(-2)}`;
+	};
+	const syncPaymentDateLabel = (input) => {
+		const label = input?.closest(".rux-trip-panel__payment-date-control")?.querySelector("[data-payment-date-label]");
+		if (label) label.textContent = formatCompactPaymentDate(input.value);
+	};
 	const PAYMENT_METHODS = [
 		{ value: "Cash", label: "Cash", icon: "universal_currency_alt" },
 		{ value: "Check", label: "Check", icon: "checkbook" },
@@ -238,7 +251,7 @@ function initBillingWorkflow(root) {
 	];
 	const PAYMENT_METHOD_ICONS = Object.fromEntries(PAYMENT_METHODS.map((m) => [m.value, m.icon]));
 	const paymentRowCount = () => paymentRows?.querySelectorAll("[data-payment-row]").length || 0;
-	// Single-line pill: type icon · amount · reference · date. Method is
+	// Single-line pill: type icon as Reference prefix · date · amount. Method is
 	// fixed at creation — picked from the header "+" menu and shown as the
 	// icon, not an editable field, consistent with Files (delete + re-add
 	// to change the type). Amount reuses the standard .rux-input-group
@@ -250,16 +263,19 @@ function initBillingWorkflow(root) {
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
 			<div class="rux-trip-panel__payment-content">
-				<span class="rux-icon rux-trip-panel__payment-icon" aria-hidden="true"></span>
-				<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
+				<div class="rux-trip-panel__payment-reference">
+					<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+					<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
+					<input class="rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
+				</div>
+				<div class="rux-trip-panel__payment-date-control">
+					<span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
+					<input class="rux-input rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+				</div>
 				<div class="rux-input-group rux-input-group--prefix rux-trip-panel__payment-amount">
 					<span class="rux-input-group__prefix">$</span>
-					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
+					<input class="rux-input rux-trip-panel__payment-field" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
 				</div>
-				<span class="rux-trip-panel__payment-divider" aria-hidden="true"></span>
-				<input class="rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
-				<span class="rux-trip-panel__payment-divider" aria-hidden="true"></span>
-				<input class="rux-trip-panel__payment-input rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
 			</div>
 			<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
 				<span class="rux-icon" aria-hidden="true">delete</span>
@@ -268,9 +284,16 @@ function initBillingWorkflow(root) {
 	};
 	const setPaymentRowMethod = (row, method) => {
 		const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
-		const icon = row.querySelector(".rux-trip-panel__payment-icon");
+		const content = row.querySelector(".rux-trip-panel__payment-content");
 		const methodInput = row.querySelector("[data-payment-method]");
-		if (icon) icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
+		row.querySelectorAll("[data-payment-method-icon]").forEach((icon) => {
+			icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
+			icon.title = safeMethod;
+		});
+		if (content) {
+			content.setAttribute("role", "group");
+			content.setAttribute("aria-label", `${safeMethod} payment`);
+		}
 		if (methodInput) methodInput.value = safeMethod;
 	};
 	const renumberPaymentRows = () => {
@@ -363,7 +386,10 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		setPaymentRowMethod(row, method);
 		paymentRows.appendChild(row);
 		const dateInput = row.querySelector("[data-payment-date]");
-		if (dateInput) dateInput.value = localIsoDate();
+		if (dateInput) {
+			dateInput.value = localIsoDate();
+			syncPaymentDateLabel(dateInput);
+		}
 		paymentRows.dataset.paymentsTouched = "true";
 		syncPaymentButtons();
 		row.querySelector("[data-payment-amount]")?.focus();
@@ -437,7 +463,11 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	});
 	paymentRows?.addEventListener("change", (event) => {
 		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
+		if (event.target.matches("[data-payment-date]")) syncPaymentDateLabel(event.target);
 		sync();
+	});
+	paymentRows?.addEventListener("focusout", (event) => {
+		if (event.target.matches("[data-payment-amount]")) formatPaymentAmount(event.target);
 	});
 	paymentRows?.addEventListener("click", (event) => {
 		const selectBtn = event.target.closest("[data-payment-select]");
@@ -481,8 +511,12 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 			const amountEl = row.querySelector("[data-payment-amount]");
 			const dateEl = row.querySelector("[data-payment-date]");
 			const refEl = row.querySelector("[data-payment-ref]");
-			if (amountEl && payment.amount) amountEl.value = payment.amount;
+			if (amountEl && payment.amount) {
+				amountEl.value = payment.amount;
+				formatPaymentAmount(amountEl);
+			}
 			if (dateEl && payment.date) dateEl.value = payment.date;
+			syncPaymentDateLabel(dateEl);
 			if (refEl && payment.ref) refEl.value = payment.ref;
 		});
 		syncPaymentButtons();

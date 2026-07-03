@@ -29,7 +29,7 @@
   font: inherit;
   font-size: var(--rux-text-sm);
 }
-.rux-menu__item:hover     { background-color: var(--rux-bg-hover); }
+.rux-menu__item:hover     { background-color: var(--rux-control-hover-overlay); }
 .rux-menu__item.is-active { background-color: var(--rux-bg-active); }
 .rux-menu__item--danger   { color: var(--rux-danger); }
 .rux-menu__divider {

@@ -19,7 +19,7 @@
   min-width: 0;
   max-width: 100%;
   height: var(--rux-field-height);
-  padding: 0 var(--rux-space-3);
+  padding: 0 var(--rux-control-padding-inline);
   background-color: var(--rux-bg-level-form);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
@@ -83,7 +83,7 @@
 .rux-textarea {
   height: auto;
   min-height: var(--rux-textarea-min-height);
-  padding: var(--rux-space-2) var(--rux-space-3);
+  padding: var(--rux-space-2) var(--rux-control-padding-inline);
   line-height: var(--rux-leading-snug);
   resize: vertical;
 }
@@ -167,7 +167,7 @@
 .rux-checkbox {
   display: inline-flex;
   align-items: center;
-  gap: var(--rux-space-2);
+  gap: var(--rux-control-content-gap);
   min-height: var(--rux-check-target-height);
   cursor: pointer;
   font-size: var(--rux-text-sm);
@@ -225,15 +225,15 @@
   line-height: 1;
 }
 
-.rux-input-group__prefix { left: var(--rux-space-3); }
-.rux-input-group__suffix { right: var(--rux-space-3); }
+.rux-input-group__prefix { left: var(--rux-control-padding-inline); }
+.rux-input-group__suffix { right: var(--rux-control-padding-inline); }
 
 .rux-input-group--prefix .rux-input {
-  padding-left: calc(var(--rux-space-3) + var(--rux-icon-md) + var(--rux-space-2));
+  padding-left: calc(var(--rux-control-padding-inline) + var(--rux-icon-md) + var(--rux-control-content-gap));
 }
 
 .rux-input-group--suffix .rux-input {
-  padding-right: calc(var(--rux-space-3) + var(--rux-icon-md) + var(--rux-space-2));
+  padding-right: calc(var(--rux-control-padding-inline) + var(--rux-icon-md) + var(--rux-control-content-gap));
 }
 
 .rux-input-group--action .rux-input-group__suffix {
@@ -332,7 +332,7 @@
 
 .rux-color-swatches {
   display: flex;
-  gap: var(--rux-space-2);
+  gap: var(--rux-control-content-gap);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -390,10 +390,10 @@
 
   display: flex;
   align-items: center;
-  gap: var(--rux-space-2);
+  gap: var(--rux-control-content-gap);
   width: 100%;
   height: var(--rux-field-height);
-  padding: 0 var(--rux-space-3);
+  padding: 0 var(--rux-control-padding-inline);
   background: var(--rux-bg-sunken);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
@@ -449,8 +449,8 @@
   z-index: var(--rux-z-dropdown);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--rux-space-2);
-  padding: var(--rux-space-3);
+  gap: var(--rux-control-content-gap);
+  padding: var(--rux-control-padding-inline);
   background: var(--rux-bg-elevated);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
@@ -515,11 +515,11 @@
 .rux-color-input {
   display: flex;
   align-items: center;
-  gap: var(--rux-space-2);
+  gap: var(--rux-control-content-gap);
   box-sizing: border-box;
   width: 100%;
   height: var(--rux-field-height);
-  padding: 0 var(--rux-space-3);
+  padding: 0 var(--rux-control-padding-inline);
   background-color: var(--rux-bg-sunken);
   border: var(--rux-border-width) solid transparent;
   border-radius: var(--rux-radius-md);
@@ -573,4 +573,3 @@
   font: inherit;
   font-size: var(--rux-text-md);
 }
-

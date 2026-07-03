@@ -97,8 +97,6 @@
 
 .rux-fleet-panel__tabs .rux-segmented .rux-button {
 	--_bg: var(--rux-control-scrim);
-	--_bg-h: var(--rux-control-scrim-hover);
-	--_bg-a: var(--rux-control-scrim-active);
 	flex: 1;
 	gap: var(--rux-space-1);
 	min-width: 0;
@@ -110,8 +108,6 @@
 .rux-fleet-panel__tabs .rux-segmented .rux-button.is-active,
 .rux-fleet-panel__tabs .rux-segmented .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-accent);
-	--_bg-h: var(--rux-accent-hover);
-	--_bg-a: var(--rux-accent-active);
 	color: var(--rux-fg-on-accent);
 }
 .rux-fleet-panel__tabs .rux-segmented .rux-button.is-active .rux-icon,

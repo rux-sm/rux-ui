@@ -159,8 +159,6 @@
 	flex: none;
 	--_fg: var(--rux-fg-muted);
 	--_bg: transparent;
-	--_bg-h: transparent;
-	--_bg-a: transparent;
 }
 
 .scheduler-app__module-button.is-active {
@@ -490,7 +488,8 @@
 	height: 100%;
 	cursor: grab;
 	z-index: 10;
-	background: transparent;
+	background-color: transparent;
+	background-image: none;
 }
 
 .scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle {
@@ -596,8 +595,6 @@
 }
 .rux-right-panel__tabs [data-right-tabs] .rux-button {
 	--_bg: var(--rux-control-scrim);
-	--_bg-h: var(--rux-control-scrim-hover);
-	--_bg-a: var(--rux-control-scrim-active);
 	flex: 1;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-3);
@@ -607,8 +604,6 @@
 .rux-right-panel__tabs [data-right-tabs] .rux-button.is-active,
 .rux-right-panel__tabs [data-right-tabs] .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-accent);
-	--_bg-h: var(--rux-accent-hover);
-	--_bg-a: var(--rux-accent-active);
 	color: var(--rux-fg-on-accent);
 }
 .rux-right-panel__tabs [data-right-tabs] .rux-button.is-active .rux-icon,
@@ -700,7 +695,10 @@
 }
 
 .rux-mini-cal__date:hover {
-	background: var(--rux-control-ghost-hover);
+	background-image: linear-gradient(
+		var(--rux-control-hover-overlay),
+		var(--rux-control-hover-overlay)
+	);
 }
 
 .rux-mini-cal__date--outside {
@@ -708,18 +706,14 @@
 }
 
 .rux-mini-cal__date--today {
-	background: var(--rux-accent);
+	background-color: var(--rux-accent);
 	color: var(--rux-fg-on-accent);
 	font-weight: var(--rux-weight-bold);
 	border-radius: var(--rux-radius-sm);
 }
 
-.rux-mini-cal__date--today:hover {
-	background: var(--rux-accent-hover);
-}
-
 .rux-mini-cal__date--active-week {
-	background: var(--rux-accent-subtle);
+	background-color: var(--rux-accent-subtle);
 }
 
 .rux-mini-cal__date--active-week.rux-mini-cal__date--today {
@@ -1003,7 +997,7 @@
 .scheduler-app__context-item:hover,
 .scheduler-app__context-item:focus-visible {
 	outline: none;
-	background: var(--rux-control-ghost-hover);
+	background: var(--rux-control-hover-overlay);
 }
 
 @media (max-width: 580px) {

@@ -117,9 +117,11 @@
 	text-align: left;
 }
 
-.rux-search-modal__item:hover,
+.rux-search-modal__item:hover {
+	background: var(--rux-control-hover-overlay);
+}
 .rux-search-modal__item[aria-selected="true"] {
-	background: var(--rux-control-bg-hover);
+	background: var(--rux-control-quiet-selected);
 }
 
 .rux-search-modal__item-icon {

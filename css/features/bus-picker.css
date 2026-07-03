@@ -52,10 +52,9 @@
 
 .rux-bus-picker__move {
 	--_bg:     transparent;
-	--_bg-h:   var(--rux-control-ghost-hover);
-	--_bg-a:   var(--rux-control-ghost-active);
 	--_fg:     var(--rux-fg);
 	--_shadow: none;
+	--_state-overlay: transparent;
 
 	flex: 1;
 	display: flex;
@@ -63,6 +62,7 @@
 	height: var(--rux-control-height);
 	padding: 0 var(--rux-space-3);
 	background-color: var(--_bg);
+	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--_fg);
 	border: var(--rux-border-width) solid var(--rux-control-ghost-border);
 	border-radius: var(--rux-radius-sm);
@@ -77,8 +77,13 @@
 		transform        var(--rux-duration-instant) var(--rux-ease-out);
 }
 
-.rux-bus-picker__move:hover  { background-color: var(--_bg-h); }
-.rux-bus-picker__move:active { background-color: var(--_bg-a); transform: translateY(var(--rux-border-width)); }
+.rux-bus-picker__move:hover {
+	--_state-overlay: var(--rux-control-hover-overlay);
+}
+.rux-bus-picker__move:active {
+	--_state-overlay: var(--rux-control-active-overlay);
+	transform: translateY(var(--rux-border-width));
+}
 
 .rux-bus-picker__move:focus-visible {
 	outline: none;
@@ -153,7 +158,7 @@
 }
 
 .rux-col-picker__row:hover {
-	background: var(--rux-bg-hover);
+	background: var(--rux-control-hover-overlay);
 }
 
 .rux-col-picker__row.is-over {
@@ -236,7 +241,7 @@
 }
 
 .rux-col-filter-popover__option:hover {
-	background: var(--rux-bg-hover);
+	background: var(--rux-control-hover-overlay);
 }
 
 .rux-col-filter-popover__option.is-active {

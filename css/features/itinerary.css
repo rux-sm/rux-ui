@@ -418,7 +418,7 @@
 .rux-itin__suggestion:hover,
 .rux-itin__suggestion:focus-visible {
 	outline: none;
-	background: var(--rux-bg-hover);
+	background: var(--rux-control-hover-overlay);
 }
 
 .rux-itin__suggestion-name {
@@ -451,4 +451,3 @@
 	outline: var(--rux-border-width) solid var(--rux-accent);
 	outline-offset: -1px;
 }
-

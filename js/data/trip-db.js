@@ -436,7 +436,7 @@ import { supabase } from "./supabase.js";
 
 	const PAYMENT_METHOD_ICONS = { Cash: "universal_currency_alt", Check: "checkbook", Card: "credit_card", ACH: "account_balance", Zelle: "bolt", Other: "more_horiz" };
 
-	// Single-line pill: type icon · amount · reference · date — mirrors
+	// Single-line pill: type icon as Reference prefix · date · amount — mirrors
 	// createPaymentRow in trip-panel.js. Method is set via DOM property
 	// (not string-interpolated) since it comes from saved trip data here,
 	// not a fixed trusted menu list.
@@ -446,22 +446,31 @@ import { supabase } from "./supabase.js";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
 			<div class="rux-trip-panel__payment-content">
-				<span class="rux-icon rux-trip-panel__payment-icon" aria-hidden="true"></span>
-				<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
+				<div class="rux-trip-panel__payment-reference">
+					<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+					<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
+					<input class="rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
+				</div>
+				<div class="rux-trip-panel__payment-date-control">
+					<span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
+					<input class="rux-input rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+				</div>
 				<div class="rux-input-group rux-input-group--prefix rux-trip-panel__payment-amount">
 					<span class="rux-input-group__prefix">$</span>
-					<input class="rux-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
+					<input class="rux-input rux-trip-panel__payment-field" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
 				</div>
-				<span class="rux-trip-panel__payment-divider" aria-hidden="true"></span>
-				<input class="rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
-				<span class="rux-trip-panel__payment-divider" aria-hidden="true"></span>
-				<input class="rux-trip-panel__payment-input rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
 			</div>
 			<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
 				<span class="rux-icon" aria-hidden="true">delete</span>
 			</button>`;
 		const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
-		row.querySelector(".rux-trip-panel__payment-icon").textContent = PAYMENT_METHOD_ICONS[safeMethod];
+		const content = row.querySelector(".rux-trip-panel__payment-content");
+		row.querySelectorAll("[data-payment-method-icon]").forEach((icon) => {
+			icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
+			icon.title = safeMethod;
+		});
+		content.setAttribute("role", "group");
+		content.setAttribute("aria-label", `${safeMethod} payment`);
 		row.querySelector("[data-payment-method]").value = safeMethod;
 		return row;
 	}
@@ -476,11 +485,20 @@ import { supabase } from "./supabase.js";
 			const index = paymentRows.querySelectorAll("[data-payment-row]").length;
 			const row = createPaymentRow(index, payment.method);
 			paymentRows.appendChild(row);
-			if (payment.amount) row.querySelector("[data-payment-amount]").value = payment.amount;
-			if (payment.date) row.querySelector("[data-payment-date]").value = payment.date;
+			if (payment.amount) row.querySelector("[data-payment-amount]").value = Number(payment.amount).toFixed(2);
+			if (payment.date) {
+				row.querySelector("[data-payment-date]").value = payment.date;
+				const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(payment.date);
+				row.querySelector("[data-payment-date-label]").textContent = match
+					? `${match[2]}/${match[3]}/${match[1].slice(-2)}`
+					: "Date";
+			}
 			if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
 		}
-		paymentRows.style.display = paymentRows.querySelector("[data-payment-row]") ? "flex" : "none";
+		const hasPayments = Boolean(paymentRows.querySelector("[data-payment-row]"));
+		paymentRows.style.display = hasPayments ? "flex" : "none";
+		const paymentDeleteBtn = root.querySelector("#tp-payment-delete-btn");
+		if (paymentDeleteBtn) paymentDeleteBtn.disabled = !hasPayments;
 	}
 
 	function populateAssignments(root, assignments) {
