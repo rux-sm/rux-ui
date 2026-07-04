@@ -715,7 +715,8 @@
 		padding-top: calc(var(--rux-panel-padding) + env(safe-area-inset-top, 0px));
 	}
 
-	.scheduler-app__drawer .rux-panel > .rux-panel__header > .rux-button--icon {
+	.scheduler-app__drawer .rux-panel > .rux-panel__header > .rux-button--icon,
+	.scheduler-app__drawer .rux-panel > .rux-panel__header .rux-trip-panel__heading + .rux-button--icon {
 		--_h: 44px;
 	}
 

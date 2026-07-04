@@ -415,12 +415,14 @@
 	/* Interaction states */
 	--rux-button-hover-overlay: var(--rux-color-white-a08);
 	--rux-button-active-overlay: var(--rux-color-black-a12);
-	--rux-button-disabled-opacity: 0.45;
+	--rux-button-disabled-bg: var(--rux-color-neutral-24);
+	--rux-button-disabled-fg: oklch(40% 0 0);
 	--rux-button-selected-bg: var(--rux-color-white);
 	--rux-button-selected-fg: var(--rux-color-black);
 	--rux-button-icon-selected-bg: var(--rux-color-neutral-70);
 	--rux-button-shadow: var(--rux-elevation-0);
 	--rux-button-selected-shadow: var(--rux-inset-0);
+	--rux-button-disabled-shadow: var(--rux-elevation-0);
 	--rux-button-focus-ring: var(--rux-ring-focus);
 	--rux-button-danger-focus-ring: var(--rux-ring-danger);
 

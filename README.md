@@ -255,7 +255,7 @@ Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`
 - **Control hover** uses OKLCH lightness steps (`+10L`: `--rux-control-bg-hover`, `--rux-accent-hover`, `--rux-danger-hover`) so filled buttons stay perceptually balanced across themes.
 - **Ghost hover** is the exception: ghost controls have a transparent base and use a white-alpha state fill (`--rux-control-ghost-hover`, `--rux-control-ghost-active`).
 - **Press / active** drops to the active color (`-10L` for filled controls) and translates `1px` down for buttons. Subtle, but visible.
-- **Disabled** preserves each button variant and applies `--rux-button-disabled-opacity` universally. Cursor `not-allowed`.
+- **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.
 
 ### Motion
 

@@ -1046,7 +1046,7 @@
                             <div><dt>Hover overlay</dt><dd><code>--rux-button-hover-overlay</code><output data-token-value="--rux-button-hover-overlay"></output></dd></div>
                             <div><dt>Default shadow</dt><dd><code>--rux-button-shadow</code><output data-token-value="--rux-button-shadow"></output></dd></div>
                             <div><dt>Selected inset</dt><dd><code>--rux-button-selected-shadow</code><output data-token-value="--rux-button-selected-shadow"></output></dd></div>
-                            <div><dt>Disabled opacity</dt><dd><code>--rux-button-disabled-opacity</code><output data-token-value="--rux-button-disabled-opacity"></output></dd></div>
+                            <div><dt>Disabled shadow</dt><dd><code>--rux-button-disabled-shadow</code><output data-token-value="--rux-button-disabled-shadow"></output></dd></div>
                             <div><dt>Focus ring</dt><dd><code>--rux-button-focus-ring</code><output data-token-value="--rux-button-focus-ring"></output></dd></div>
                             <div><dt>Transition</dt><dd><code>--rux-button-transition-duration</code><output data-token-value="--rux-button-transition-duration"></output></dd></div>
                           </dl>
@@ -1793,6 +1793,7 @@
       const drawer  = document.getElementById("trip-panel-drawer");
       const rightDrawer = document.getElementById("right-panel-drawer");
       const tripPanel = drawer.querySelector(".rux-trip-panel");
+      const rightPanel = rightDrawer.querySelector(".rux-right-panel");
       const schedulerEl = document.getElementById("scheduler");
       const schedulerContextMenu = document.getElementById("scheduler-context-menu");
       const schedulerContextAddTrip = document.getElementById("scheduler-context-add-trip");
@@ -1814,37 +1815,6 @@
         document.querySelector(`.scheduler-app__mobile-panel-btn[data-opens="${panelId}"]`)?.focus();
       }
 
-      function installMobileSwipeDismiss(panel, dismissDirection, closePanel) {
-        let startX = 0;
-        let startY = 0;
-        let tracking = false;
-
-        panel.addEventListener("pointerdown", (event) => {
-          if (!mobilePanelQuery.matches || event.pointerType !== "touch") return;
-          startX = event.clientX;
-          startY = event.clientY;
-          tracking = true;
-        }, { passive: true });
-
-        panel.addEventListener("pointerup", (event) => {
-          if (!tracking) return;
-          tracking = false;
-          const deltaX = event.clientX - startX;
-          const deltaY = event.clientY - startY;
-          const isHorizontalSwipe =
-            Math.abs(deltaX) >= 72 &&
-            Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
-          const isDismissDirection =
-            dismissDirection === "left" ? deltaX < 0 : deltaX > 0;
-
-          if (isHorizontalSwipe && isDismissDirection) closePanel();
-        }, { passive: true });
-
-        panel.addEventListener("pointercancel", () => {
-          tracking = false;
-        }, { passive: true });
-      }
-
       function openDrawer() {
         closeOtherMobilePanel(drawer);
         const saved = localStorage.getItem(DRAWER_STORAGE_KEY);
@@ -1852,15 +1822,12 @@
         drawer.style.setProperty("--drawer-width", w);
         drawer.style.setProperty("--drawer-open-width", w);
         drawer.classList.add("is-open");
-        drawer.inert = false;
+        tripPanel.inert = false;
         drawer.setAttribute("aria-hidden", "false");
         leftAutoCollapsed = false;
         const scrollBody = tripPanel?.querySelector(".rux-trip-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
         document.activeElement?.blur();
-        if (mobilePanelQuery.matches) {
-          requestAnimationFrame(() => document.getElementById("tp-btn-close")?.focus());
-        }
       }
       function closeDrawer() {
         // Leave --drawer-open-width untouched so the panel content freezes at
@@ -1868,15 +1835,8 @@
         // instead of snapping to its min-width before the drawer animates.
         restoreMobilePanelTrigger("trip-panel-drawer");
         drawer.style.setProperty("--drawer-width", GAP + "px");
-        drawer.inert = true;
+        tripPanel.inert = true;
         drawer.setAttribute("aria-hidden", "true");
-        if (mobilePanelQuery.matches) {
-          // Mobile .is-open is explicitly 100dvw, so remove the state
-          // immediately; waiting for a variable-driven transition would
-          // leave the drawer permanently open.
-          drawer.classList.remove("is-open");
-          return;
-        }
         drawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== drawer || e.propertyName !== "width") return;
           drawer.classList.remove("is-open");
@@ -2025,6 +1985,8 @@
               drawerEl.classList.add("is-resizing");
               if (!wasOpen) {
                 drawerEl.classList.add("is-open");
+                drawerEl.querySelector(".rux-panel").inert = false;
+                drawerEl.setAttribute("aria-hidden", "false");
                 drawerEl.style.setProperty("--drawer-width", "0px");
                 drawerEl.style.setProperty("--drawer-open-width", "0px");
               }
@@ -2814,22 +2776,15 @@
         rightDrawer.style.setProperty("--drawer-width", w);
         rightDrawer.style.setProperty("--drawer-open-width", w);
         rightDrawer.classList.add("is-open");
-        rightDrawer.inert = false;
+        rightPanel.inert = false;
         rightDrawer.setAttribute("aria-hidden", "false");
         rightAutoCollapsed = false;
-        if (mobilePanelQuery.matches) {
-          requestAnimationFrame(() => document.getElementById("rp-btn-close")?.focus());
-        }
       }
       function closeRightDrawer() {
         restoreMobilePanelTrigger("right-panel-drawer");
         rightDrawer.style.setProperty("--drawer-width", GAP + "px");
-        rightDrawer.inert = true;
+        rightPanel.inert = true;
         rightDrawer.setAttribute("aria-hidden", "true");
-        if (mobilePanelQuery.matches) {
-          rightDrawer.classList.remove("is-open");
-          return;
-        }
         rightDrawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== rightDrawer || e.propertyName !== "width") return;
           rightDrawer.classList.remove("is-open");
@@ -2837,12 +2792,6 @@
         });
       }
       document.getElementById("rp-btn-close")?.addEventListener("click", closeRightDrawer);
-      installMobileSwipeDismiss(tripPanel, "left", closeDrawer);
-      installMobileSwipeDismiss(
-        rightDrawer.querySelector(".rux-right-panel"),
-        "right",
-        closeRightDrawer,
-      );
 
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-tab[aria-controls]");
@@ -2939,15 +2888,15 @@
       if (mobilePanelQuery.matches) {
         drawer.style.setProperty("--drawer-width", GAP + "px");
         rightDrawer.style.setProperty("--drawer-width", GAP + "px");
-        drawer.inert = true;
-        rightDrawer.inert = true;
+        tripPanel.inert = true;
+        rightPanel.inert = true;
         drawer.setAttribute("aria-hidden", "true");
         rightDrawer.setAttribute("aria-hidden", "true");
       } else {
         drawer.classList.add("is-open");
         rightDrawer.classList.add("is-open");
-        drawer.inert = false;
-        rightDrawer.inert = false;
+        tripPanel.inert = false;
+        rightPanel.inert = false;
         drawer.setAttribute("aria-hidden", "false");
         rightDrawer.setAttribute("aria-hidden", "false");
       }

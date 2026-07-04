@@ -333,6 +333,12 @@
 	color: var(--rux-danger-bright);
 }
 
+/* Disabled always wins over stale/error tinting — same specificity (ID + one
+   selector), so source order is what makes this the final word. */
+#tp-itin-recalc:disabled {
+	color: var(--rux-fg-disabled);
+}
+
 .rux-itin__address-wrap {
 	position: relative;
 	flex: 1;

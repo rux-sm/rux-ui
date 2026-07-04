@@ -66,12 +66,11 @@
 
 .rux-button:disabled,
 .rux-button[aria-disabled="true"] {
-	color: var(--_fg);
-	background-color: var(--_bg);
+	color: var(--rux-button-disabled-fg);
+	background-color: var(--rux-button-disabled-bg);
 	background-image: none;
-	border-color: var(--_border);
-	box-shadow: none;
-	opacity: var(--rux-button-disabled-opacity);
+	border-color: transparent;
+	box-shadow: var(--rux-button-disabled-shadow);
 	cursor: not-allowed;
 	pointer-events: none;
 }
@@ -292,6 +291,13 @@
 	color: var(--rux-fg);
 	box-shadow: var(--rux-elevation-0);
 }
+.rux-segmented > .rux-button:disabled,
+.rux-segmented > .rux-button[aria-disabled="true"] {
+	background-color: transparent;
+	color: var(--rux-fg-disabled);
+	box-shadow: none;
+}
+
 .rux-segmented > .rux-button.is-active,
 .rux-segmented > .rux-button[aria-pressed="true"],
 .rux-segmented > .rux-button[aria-selected="true"] {
