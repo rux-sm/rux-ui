@@ -1814,6 +1814,37 @@
         document.querySelector(`.scheduler-app__mobile-panel-btn[data-opens="${panelId}"]`)?.focus();
       }
 
+      function installMobileSwipeDismiss(panel, dismissDirection, closePanel) {
+        let startX = 0;
+        let startY = 0;
+        let tracking = false;
+
+        panel.addEventListener("pointerdown", (event) => {
+          if (!mobilePanelQuery.matches || event.pointerType !== "touch") return;
+          startX = event.clientX;
+          startY = event.clientY;
+          tracking = true;
+        }, { passive: true });
+
+        panel.addEventListener("pointerup", (event) => {
+          if (!tracking) return;
+          tracking = false;
+          const deltaX = event.clientX - startX;
+          const deltaY = event.clientY - startY;
+          const isHorizontalSwipe =
+            Math.abs(deltaX) >= 72 &&
+            Math.abs(deltaX) > Math.abs(deltaY) * 1.25;
+          const isDismissDirection =
+            dismissDirection === "left" ? deltaX < 0 : deltaX > 0;
+
+          if (isHorizontalSwipe && isDismissDirection) closePanel();
+        }, { passive: true });
+
+        panel.addEventListener("pointercancel", () => {
+          tracking = false;
+        }, { passive: true });
+      }
+
       function openDrawer() {
         closeOtherMobilePanel(drawer);
         const saved = localStorage.getItem(DRAWER_STORAGE_KEY);
@@ -1839,6 +1870,13 @@
         drawer.style.setProperty("--drawer-width", GAP + "px");
         drawer.inert = true;
         drawer.setAttribute("aria-hidden", "true");
+        if (mobilePanelQuery.matches) {
+          // Mobile .is-open is explicitly 100dvw, so remove the state
+          // immediately; waiting for a variable-driven transition would
+          // leave the drawer permanently open.
+          drawer.classList.remove("is-open");
+          return;
+        }
         drawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== drawer || e.propertyName !== "width") return;
           drawer.classList.remove("is-open");
@@ -2788,6 +2826,10 @@
         rightDrawer.style.setProperty("--drawer-width", GAP + "px");
         rightDrawer.inert = true;
         rightDrawer.setAttribute("aria-hidden", "true");
+        if (mobilePanelQuery.matches) {
+          rightDrawer.classList.remove("is-open");
+          return;
+        }
         rightDrawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== rightDrawer || e.propertyName !== "width") return;
           rightDrawer.classList.remove("is-open");
@@ -2795,6 +2837,12 @@
         });
       }
       document.getElementById("rp-btn-close")?.addEventListener("click", closeRightDrawer);
+      installMobileSwipeDismiss(tripPanel, "left", closeDrawer);
+      installMobileSwipeDismiss(
+        rightDrawer.querySelector(".rux-right-panel"),
+        "right",
+        closeRightDrawer,
+      );
 
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-tab[aria-controls]");
