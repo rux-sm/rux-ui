@@ -179,7 +179,7 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 - Do not add compact or large button variants. Use layout density, icon-only buttons, or progressive disclosure instead of changing button height.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
-- Segmented controls use a shallow recessed, borderless 40px track with 4px inset depth around standard 32px button items. Inactive hover uses the quieter `--rux-control-strip-bg-hover`; the selected item is the only raised element in the strip.
+- Segmented controls use a shallow recessed track around standard button items. The selected item uses `--rux-segmented-selected-bg` and is the only raised element in the strip.
 - Keep labels short, sentence case, and action-oriented.
 
 ### Forms
@@ -252,8 +252,8 @@ Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`
 
 - **Surface hover** raises background brightness one step (`--rux-bg` → `--rux-bg-hover`) or shifts border up one intensity. Never opacity (looks washed out on dark).
 - **Default controls** are solid neutral fills, not outlined buttons. The fill does the affordance work; borders stay transparent unless the control is a container like tabs or an icon group.
-- **Control hover** uses OKLCH lightness steps (`+10L`: `--rux-control-bg-hover`, `--rux-accent-hover`, `--rux-danger-hover`) so filled buttons stay perceptually balanced across themes.
-- **Ghost hover** is the exception: ghost controls have a transparent base and use a white-alpha state fill (`--rux-control-ghost-hover`, `--rux-control-ghost-active`).
+- **Button hover and active states** use composited state fills (`--rux-button-hover-overlay`, `--rux-button-active-overlay`) so the same interaction treatment works across button backgrounds.
+- **Ghost buttons** keep a transparent base and reveal those state overlays on interaction.
 - **Press / active** drops to the active color (`-10L` for filled controls) and translates `1px` down for buttons. Subtle, but visible.
 - **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.
 

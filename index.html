@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#202022" />
     <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://white-boat-9932.rux-smercado.workers.dev wss://white-boat-9932.rux-smercado.workers.dev https://api.mapbox.com https://cdn.jsdelivr.net https://unpkg.com ws://127.0.0.1:* ws://localhost:*;" />
     <title>Rux UI</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
@@ -128,7 +129,7 @@
             <aside class="rux-panel rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
               <header class="rux-panel__header">
                 <div class="rux-trip-panel__heading">
-                  <h2 class="rux-trip-panel__title" id="trip-panel-title">Trip</h2>
+                  <h2 class="rux-trip-panel__title" id="trip-panel-title">New Trip</h2>
                   <span class="rux-trip-panel__id" id="tp-trip-id"></span>
                 </div>
                 <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-close" type="button" aria-label="Close trip editor">
@@ -271,12 +272,12 @@
                 </div>
               </div>
               <footer class="rux-panel__footer">
-                <button class="rux-button rux-button--default rux-button--danger" id="tp-btn-delete" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--default rux-button--danger" id="tp-btn-delete" disabled><span class="rux-icon">delete</span><span class="rux-btn-label">Delete Trip</span></button>
                 <button class="rux-button rux-button--default" id="tp-btn-clear"><span class="rux-icon">refresh</span><span class="rux-btn-label"> Clear</span></button>
                 <button class="rux-button rux-button--accent" id="tp-btn-save">
                   <span class="rux-icon rux-button__idle-icon" aria-hidden="true">save</span>
                   <span class="rux-button__spinner" aria-hidden="true"></span>
-                  <span class="rux-btn-label">Save</span>
+                  <span class="rux-btn-label">Create Trip</span>
                 </button>
               </footer>
             </aside>
@@ -286,7 +287,7 @@
 
           <section class="scheduler-app__schedule" aria-label="Weekly schedule">
             <header class="scheduler-app__bar">
-              <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" data-opens="trip-panel-drawer">
+              <button class="rux-button rux-button--default rux-button--icon rux-button--block scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" data-opens="trip-panel-drawer">
                 <span class="rux-icon">left_panel_open</span>
               </button>
               <div class="scheduler-app__brand">
@@ -304,7 +305,7 @@
                 <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" id="opt-time-align" type="button" aria-pressed="false" title="Time-aligned mode"><span class="rux-icon">schedule</span></button>
                 <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" id="opt-compact" type="button" aria-pressed="false" title="Compact rows"><span class="rux-icon">unfold_less</span></button>
                 <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" id="opt-two-weeks" type="button" aria-pressed="false" title="Two-week view"><span class="rux-icon">fit_page_width</span></button>
-                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" data-opens="right-panel-drawer">
+                <button class="rux-button rux-button--default rux-button--icon rux-button--block scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" data-opens="right-panel-drawer">
                   <span class="rux-icon">right_panel_open</span>
                 </button>
               </div>
@@ -1821,6 +1822,7 @@
         const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
         drawer.style.setProperty("--drawer-width", w);
         drawer.style.setProperty("--drawer-open-width", w);
+        drawer.classList.remove("is-closing");
         drawer.classList.add("is-open");
         tripPanel.inert = false;
         drawer.setAttribute("aria-hidden", "false");
@@ -1837,6 +1839,16 @@
         drawer.style.setProperty("--drawer-width", GAP + "px");
         tripPanel.inert = true;
         drawer.setAttribute("aria-hidden", "true");
+        if (mobilePanelQuery.matches) {
+          drawer.classList.replace("is-open", "is-closing");
+          const finishClose = (event) => {
+            if (event.target !== tripPanel || event.animationName !== "scheduler-mobile-drawer-out") return;
+            drawer.classList.remove("is-closing");
+            tripPanel.removeEventListener("animationend", finishClose);
+          };
+          tripPanel.addEventListener("animationend", finishClose);
+          return;
+        }
         drawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== drawer || e.propertyName !== "width") return;
           drawer.classList.remove("is-open");
@@ -2775,6 +2787,7 @@
         const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
         rightDrawer.style.setProperty("--drawer-width", w);
         rightDrawer.style.setProperty("--drawer-open-width", w);
+        rightDrawer.classList.remove("is-closing");
         rightDrawer.classList.add("is-open");
         rightPanel.inert = false;
         rightDrawer.setAttribute("aria-hidden", "false");
@@ -2785,6 +2798,16 @@
         rightDrawer.style.setProperty("--drawer-width", GAP + "px");
         rightPanel.inert = true;
         rightDrawer.setAttribute("aria-hidden", "true");
+        if (mobilePanelQuery.matches) {
+          rightDrawer.classList.replace("is-open", "is-closing");
+          const finishClose = (event) => {
+            if (event.target !== rightPanel || event.animationName !== "scheduler-mobile-drawer-out") return;
+            rightDrawer.classList.remove("is-closing");
+            rightPanel.removeEventListener("animationend", finishClose);
+          };
+          rightPanel.addEventListener("animationend", finishClose);
+          return;
+        }
         rightDrawer.addEventListener("transitionend", function handler(e) {
           if (e.target !== rightDrawer || e.propertyName !== "width") return;
           rightDrawer.classList.remove("is-open");
@@ -2925,6 +2948,10 @@
       }
 
       function checkPanelFit() {
+        // Mobile drawers are full-screen overlays; schedule width is not a
+        // signal that they should be auto-collapsed.
+        if (mobilePanelQuery.matches) return;
+
         const scheduleEl = document.querySelector("[data-module='calendar'] .scheduler-app__schedule");
         if (!scheduleEl) return;
         const available = scheduleEl.offsetWidth;

@@ -227,10 +227,10 @@
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6);
 
 	--rux-surface-0: oklch(from var(--rux-color-base) 0% c h);  /* App background */
-	--rux-surface-1: oklch(from var(--rux-color-base) 24% c h); /* Panels */
-	--rux-surface-2: oklch(from var(--rux-color-base) 32% c h); /* Cards */
-	--rux-surface-3: oklch(from var(--rux-color-base) 40% c h); /* Menus and popovers */
-	--rux-surface-4: oklch(from var(--rux-color-base) 48% c h); /* Form controls */
+	--rux-surface-1: oklch(from var(--rux-color-base) 20% c h); /* Panels */
+	--rux-surface-2: oklch(from var(--rux-color-base) 28% c h); /* Cards */
+	--rux-surface-3: oklch(from var(--rux-color-base) 32% c h); /* Menus and popovers */
+	--rux-surface-4: oklch(from var(--rux-color-base) 40% c h); /* Form controls */
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
 
@@ -289,19 +289,6 @@
 	--rux-border-subtle: var(--rux-color-white-a10);
 	--rux-border: var(--rux-color-white-a16);
 	--rux-border-strong: var(--rux-color-white-a28);
-
-	/* ─── COLOR · control states ─────────────────────────────────────────── */
-
-	--rux-control-ghost-border: var(--rux-border);
-	--rux-control-quiet-selected: var(--rux-color-white-a10);
-
-	--rux-control-scrim: var(--rux-color-white-a16);
-	--rux-control-hover-overlay: var(--rux-color-white-a08);
-	--rux-control-active-overlay: var(--rux-color-black-a12);
-
-	--rux-control-strip-bg-selected: oklch(40% 0.004 260);
-
-	--rux-control-bg-disabled: var(--rux-color-neutral-24);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
 
@@ -392,6 +379,7 @@
 
 	/* Structure */
 	--rux-button-height: 28px;
+	--rux-button-mobile-height: 36px;
 	--rux-button-padding-inline: var(--rux-space-3);
 	--rux-button-content-gap: var(--rux-space-2);
 	--rux-button-radius: var(--rux-radius-sm);
@@ -400,6 +388,7 @@
 	--rux-button-font-size: var(--rux-text-sm);
 	--rux-button-font-weight: var(--rux-weight-regular);
 	--rux-button-icon-size: var(--rux-icon-sm);
+	--rux-button-mobile-icon-size: 24px;
 
 	/* Appearance */
 	--rux-button-default-bg: var(--rux-color-white-a16);
@@ -408,6 +397,7 @@
 	--rux-button-accent-fg: var(--rux-color-white);
 	--rux-button-ghost-bg: transparent;
 	--rux-button-ghost-fg: var(--rux-color-white);
+	--rux-button-ghost-border: var(--rux-border);
 	--rux-button-danger-bg: oklch(60% 0.22 24);
 	--rux-button-danger-fg: var(--rux-color-white);
 	--rux-button-danger-quiet-fg: oklch(85% 0.2 24);
@@ -418,6 +408,7 @@
 	--rux-button-disabled-bg: var(--rux-color-neutral-24);
 	--rux-button-disabled-fg: oklch(40% 0 0);
 	--rux-button-selected-bg: var(--rux-color-white);
+	--rux-button-quiet-selected-bg: var(--rux-color-white-a10);
 	--rux-button-selected-fg: var(--rux-color-black);
 	--rux-button-icon-selected-bg: var(--rux-color-neutral-70);
 	--rux-button-shadow: var(--rux-elevation-0);
@@ -439,6 +430,17 @@
 	--rux-button-loading-opacity: 0.65;
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing: var(--rux-ease-out);
+
+	/* ─── COMPONENT · segmented ──────────────────────────────────────────── */
+
+	--rux-segmented-selected-bg: oklch(40% 0.004 260);
+
+	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
+
+	--rux-switch-track-bg: var(--rux-button-default-bg);
+	--rux-switch-hover-overlay: var(--rux-button-hover-overlay);
+	--rux-switch-active-overlay: var(--rux-button-active-overlay);
+	--rux-switch-disabled-bg: var(--rux-button-disabled-bg);
 
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 

@@ -53,7 +53,7 @@
 .rux-bus-picker__move {
 	flex: 1;
 	justify-content: flex-start;
-	--_border: var(--rux-control-ghost-border);
+	--_border: var(--rux-button-ghost-border);
 	font-weight: var(--rux-weight-medium);
 }
 
@@ -125,7 +125,7 @@
 }
 
 .rux-col-picker__row:hover {
-	background: var(--rux-control-hover-overlay);
+	background: var(--rux-button-hover-overlay);
 }
 
 .rux-col-picker__row.is-over {
@@ -208,7 +208,7 @@
 }
 
 .rux-col-filter-popover__option:hover {
-	background: var(--rux-control-hover-overlay);
+	background: var(--rux-button-hover-overlay);
 }
 
 .rux-col-filter-popover__option.is-active {

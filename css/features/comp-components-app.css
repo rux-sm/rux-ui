@@ -81,12 +81,12 @@
 }
 
 .components-app__component-nav button:hover {
-	background: var(--rux-control-hover-overlay);
+	background: var(--rux-button-hover-overlay);
 	color: var(--rux-fg);
 }
 
 .components-app__component-nav button[aria-current="page"] {
-	background: var(--rux-control-quiet-selected);
+	background: var(--rux-button-quiet-selected-bg);
 	color: var(--rux-fg);
 	font-weight: var(--rux-weight-medium);
 }

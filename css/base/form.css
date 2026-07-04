@@ -113,7 +113,7 @@
   --_w: var(--rux-switch-width);
   --_h: var(--rux-switch-height);
   --_p: var(--rux-radius-xs);
-  --_track: var(--rux-control-scrim);
+  --_track: var(--rux-switch-track-bg);
   --_state-overlay: transparent;
   --_thumb: var(--rux-fg);
   --_shadow: var(--rux-elevation-2);
@@ -150,15 +150,15 @@
     box-shadow var(--rux-duration-fast) var(--rux-ease-out),
     transform var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-switch:hover { --_state-overlay: var(--rux-control-hover-overlay); }
-.rux-switch:active { --_state-overlay: var(--rux-control-active-overlay); }
+.rux-switch:hover { --_state-overlay: var(--rux-switch-hover-overlay); }
+.rux-switch:active { --_state-overlay: var(--rux-switch-active-overlay); }
 .rux-switch input:checked ~ .rux-switch__track { --_track: var(--rux-accent); }
 .rux-switch:has(input:disabled) {
   --_state-overlay: transparent;
   cursor: not-allowed;
   pointer-events: none;
 }
-.rux-switch:has(input:disabled) .rux-switch__track { --_track: var(--rux-control-bg-disabled); }
+.rux-switch:has(input:disabled) .rux-switch__track { --_track: var(--rux-switch-disabled-bg); }
 .rux-switch input:checked ~ .rux-switch__thumb {
   background-color: var(--rux-fg-on-accent);
   transform: translateX(calc(var(--_w) - var(--_h)));

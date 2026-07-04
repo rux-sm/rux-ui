@@ -118,10 +118,10 @@
 }
 
 .rux-search-modal__item:hover {
-	background: var(--rux-control-hover-overlay);
+	background: var(--rux-button-hover-overlay);
 }
 .rux-search-modal__item[aria-selected="true"] {
-	background: var(--rux-control-quiet-selected);
+	background: var(--rux-button-quiet-selected-bg);
 }
 
 .rux-search-modal__item-icon {

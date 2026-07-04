@@ -20,6 +20,7 @@ import { supabase } from "./supabase.js";
 	let currentTripRef = null;
 	let currentTripSnapshot = null;
 	let currentAssignments = [];
+	let currentLoadedTrip = null;
 
 	/* ── Trip ref ────────────────────────────────────────────────────────── */
 
@@ -36,6 +37,21 @@ import { supabase } from "./supabase.js";
 	}
 
 	/* ── Helpers ─────────────────────────────────────────────────────────── */
+
+	function setEditorMode(root, mode) {
+		const editing = mode === "edit";
+		const title = root.querySelector("#trip-panel-title");
+		const clearLabel = root.querySelector("#tp-btn-clear .rux-btn-label");
+		const saveLabel = root.querySelector("#tp-btn-save .rux-btn-label");
+
+		if (title) title.textContent = editing ? "Edit Trip" : "New Trip";
+		if (clearLabel) clearLabel.textContent = editing ? "Reset Changes" : "Clear";
+		if (saveLabel) saveLabel.textContent = editing ? "Save Changes" : "Create Trip";
+	}
+
+	function defaultSaveLabel(tripId = currentTripId) {
+		return tripId ? "Save Changes" : "Create Trip";
+	}
 
 	function fieldVal(root, id) {
 		const el = root.querySelector(`#${id}`);
@@ -614,6 +630,8 @@ import { supabase } from "./supabase.js";
 		currentTripRef = null;
 		currentTripSnapshot = null;
 		currentAssignments = [];
+		currentLoadedTrip = null;
+		setEditorMode(root, "new");
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
 		root.dispatchEvent(new CustomEvent("rux:trip-cleared", { bubbles: true }));
@@ -621,7 +639,7 @@ import { supabase } from "./supabase.js";
 
 	/* ── Save ────────────────────────────────────────────────────────────── */
 
-	function setSaveButtonState(saveBtn, { busy = false, label = "Save", icon = "save", disabled } = {}) {
+	function setSaveButtonState(saveBtn, { busy = false, label = defaultSaveLabel(), icon = "save", disabled } = {}) {
 		const iconEl = saveBtn.querySelector(".rux-button__idle-icon");
 		const labelEl = saveBtn.querySelector(".rux-btn-label");
 
@@ -670,7 +688,7 @@ import { supabase } from "./supabase.js";
 
 			const conflict = await findAssignmentConflict(tripData, assignments);
 			if (conflict && !confirm(`Conflict detected: ${conflict.label}. Save anyway?`)) {
-				setSaveButtonState(saveBtn, { label: "Save", icon: "save", disabled: false });
+				setSaveButtonState(saveBtn, { label: defaultSaveLabel(savingTripId), icon: "save", disabled: false });
 				return false;
 			}
 
@@ -761,7 +779,7 @@ import { supabase } from "./supabase.js";
 			clearForm(root, itinerary);
 			setTimeout(() => {
 				if (saveBtn.dataset.saveAttempt === saveAttempt && !saveBtn.hasAttribute("aria-busy")) {
-					setSaveButtonState(saveBtn, { label: "Save", icon: "save" });
+					setSaveButtonState(saveBtn, { label: defaultSaveLabel(), icon: "save" });
 				}
 			}, 1500);
 			return true;
@@ -772,7 +790,7 @@ import { supabase } from "./supabase.js";
 			if (window.Rux) Rux.toast(isValidation ? err.message : "Save failed — check your connection and try again.");
 			setTimeout(() => {
 				if (saveBtn.dataset.saveAttempt === saveAttempt && !saveBtn.hasAttribute("aria-busy")) {
-					setSaveButtonState(saveBtn, { label: "Save", icon: "save" });
+					setSaveButtonState(saveBtn, { label: defaultSaveLabel(), icon: "save" });
 				}
 			}, 2000);
 			return false;
@@ -916,6 +934,8 @@ export function loadTrip(root, itinerary, trip) {
 
 	currentTripId  = UUID_RE.test(String(trip.id ?? "")) ? trip.id : null;
 	currentTripRef = trip.trip_ref ?? null;
+	currentLoadedTrip = trip;
+	setEditorMode(root, "edit");
 	const delBtn = root.querySelector("#tp-btn-delete");
 	if (delBtn) delBtn.disabled = !currentTripId;
 	currentTripSnapshot = { ...normalized };
@@ -1115,7 +1135,11 @@ export function initTripDB(root, itinerary) {
 	});
 	clearBtn?.addEventListener("click",  () => {
 		if (isFormDirty() && !confirm("Discard unsaved changes?")) return;
-		clearForm(root, itinerary);
+		if (currentLoadedTrip) {
+			loadTrip(root, itinerary, currentLoadedTrip);
+		} else {
+			clearForm(root, itinerary);
+		}
 	});
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
 

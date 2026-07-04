@@ -407,7 +407,7 @@
 	min-height: var(--rux-field-height);
 	border: var(--rux-border-width) solid var(--_border);
 	border-radius: var(--rux-button-radius);
-	background: var(--rux-control-scrim);
+	background: var(--rux-button-default-bg);
 }
 .rux-trip-panel__payment-icon {
 	flex: none;
@@ -828,13 +828,13 @@
 	height: 28px;
 	padding: 0 var(--rux-control-padding-inline);
 	border-radius: var(--rux-button-radius);
-	background: var(--rux-control-scrim);
+	background: var(--rux-button-default-bg);
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
 }
 .rux-trip-panel__doc-row:hover .rux-trip-panel__doc-content {
 	background-image: linear-gradient(
-		var(--rux-control-hover-overlay),
-		var(--rux-control-hover-overlay)
+		var(--rux-button-hover-overlay),
+		var(--rux-button-hover-overlay)
 	);
 }
 .rux-trip-panel__doc-row:focus-visible .rux-trip-panel__doc-content {
@@ -974,6 +974,12 @@
 		clip: rect(0 0 0 0);
 		white-space: nowrap;
 		border: 0;
+	}
+}
+
+@container (min-width: 301px) and (max-width: 400px) {
+	.rux-trip-panel .rux-panel__footer .rux-icon {
+		display: none;
 	}
 }
 

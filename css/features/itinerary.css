@@ -417,7 +417,7 @@
 .rux-itin__suggestion:hover,
 .rux-itin__suggestion:focus-visible {
 	outline: none;
-	background: var(--rux-control-hover-overlay);
+	background: var(--rux-button-hover-overlay);
 }
 
 .rux-itin__suggestion-name {

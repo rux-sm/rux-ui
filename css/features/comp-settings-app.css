@@ -158,7 +158,7 @@
 .settings-app__suggestion:hover,
 .settings-app__suggestion:focus-visible {
 	outline: none;
-	background: var(--rux-control-hover-overlay);
+	background: var(--rux-button-hover-overlay);
 }
 
 .settings-app__suggestion-name {
