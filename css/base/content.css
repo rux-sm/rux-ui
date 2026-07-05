@@ -57,8 +57,8 @@
 .rux-panel__pane {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-panel-content-gap);
-	padding: 0 var(--rux-panel-padding);
+	gap: var(--rux-panel-section-gap);
+	padding: var(--rux-panel-pane-padding-block) var(--rux-panel-pane-padding-inline);
 }
 
 .rux-panel__pane[hidden] {

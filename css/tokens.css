@@ -322,7 +322,7 @@
 	--rux-control-radius: var(--rux-radius-sm);
 
 	--rux-radius-menu: var(--rux-radius-0);
-	--rux-radius-field: var(--rux-radius-0);
+	--rux-radius-field: var(--rux-radius-sm);
 
 	/* ─── SPACING · component roles ──────────────────────────────────────── */
 
@@ -349,6 +349,9 @@
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-padding: var(--rux-space-3);
 	--rux-panel-content-gap: var(--rux-space-3);
+	--rux-panel-pane-padding-block: var(--rux-panel-padding);
+	--rux-panel-pane-padding-inline: var(--rux-panel-padding);
+	--rux-panel-section-gap: var(--rux-panel-content-gap);
 	--rux-panel-chrome-min-height: 52px;
 	--rux-panel-title-font-size: var(--rux-text-md);
 	--rux-panel-title-font-weight: var(--rux-weight-semibold);
@@ -361,7 +364,7 @@
 	--rux-card-border-width: var(--rux-border-width);
 	--rux-card-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
-	--rux-card-radius: var(--rux-radius-sm);
+	--rux-card-radius: var(--rux-radius-mds);
 	--rux-card-shadow: var(--rux-elevation-0);
 	--rux-card-padding: var(--rux-space-3);
 	--rux-card-content-gap: var(--rux-space-3);

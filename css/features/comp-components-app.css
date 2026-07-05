@@ -566,16 +566,11 @@
 	justify-content: space-between;
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-padding);
-	border-bottom: var(--rux-panel-border-width) solid var(--rux-panel-border);
 }
 
 .components-app__panel-demo-header p {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-fg-muted);
-}
-
-.components-app__panel-demo-body {
-	padding: var(--rux-panel-padding);
 }
 
 .components-app__swatch {

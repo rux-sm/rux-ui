@@ -90,6 +90,13 @@
 		if (tab && !tab.disabled) {
 			const group = tab.closest("[data-rux-tabs]");
 			setActiveItem(group, tab, ".rux-tab", "aria-selected");
+			const panel = group.closest(".rux-panel");
+			const targetId = tab.getAttribute("aria-controls");
+			if (panel && targetId) {
+				panel.querySelectorAll(".rux-panel__body > .rux-panel__pane").forEach((pane) => {
+					pane.hidden = pane.id !== targetId;
+				});
+			}
 		}
 
 		// [data-rux-stepper] — [−] count [+]

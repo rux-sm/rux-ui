@@ -819,6 +819,10 @@
 		display: none;
 	}
 
+	body[data-active-module="game"] .scheduler-app__module-nav {
+		display: none;
+	}
+
 	/* Keep the schedule flush beneath the overlaid navigation. */
 	.scheduler-app__schedule {
 		min-width: 0;

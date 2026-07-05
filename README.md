@@ -206,21 +206,21 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 - Inputs and selects use `--rux-bg-sunken`, `--rux-border`, `--rux-radius-sm`, and `--rux-text-sm`.
 - Checkboxes and switches are 32px target-height controls so they align with button rows and repeated settings lists.
 
-### Optical Radius
+### Optical radius
 
-Nested containers must have proportionally smaller radii or curves stop reading as parallel. The Rux scale halves at each step, with semantic depth mapping:
+Use component semantic tokens in component CSS; use the primitive scale only when defining those tokens:
 
 ```
-Depth 0  --rux-radius-xl   24px   modals, sheets
-Depth 1  --rux-radius-lg   16px   cards, panels
-Depth 2  --rux-radius-md    8px   buttons, sections inside cards
-Depth 3  --rux-radius-sm    6px   inputs, controls
-Depth 4  --rux-radius-xs    2px   badges, chips
-         --rux-radius-full 9999px pills, avatars
-         --rux-radius-none  0px   square
+--rux-radius-0       0px
+--rux-radius-xs      2px
+--rux-radius-sm      4px
+--rux-radius-md      8px
+--rux-radius-lg     16px
+--rux-radius-xl     24px
+--rux-radius-full 9999px
 ```
 
-**Rule of thumb:** when you nest something inside another curved container, step *down* one level. A 6px input inside an 8px button group inside a 16px card. The eye stops noticing the curves — that's the goal.
+Panels use `--rux-panel-radius`, cards use `--rux-card-radius`, buttons use `--rux-button-radius`, and fields use `--rux-radius-field`. A drawer shell may override the outer panel radius at a viewport edge; that is layout behavior, not a new panel variant.
 
 ### Borders & shadows
 
@@ -240,13 +240,19 @@ Use inset shadows only when they describe state or material: form fields are per
 ### Cards
 
 ```css
-background: var(--rux-bg-elevated);
-border: var(--rux-border-width) solid transparent;
-border-radius: var(--rux-radius-lg);   /* 16px */
-/* no shadow by default */
+background: var(--rux-card-bg);
+border: var(--rux-card-border);
+border-radius: var(--rux-card-radius);
+padding: var(--rux-card-padding);
 ```
 
 Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`) and a slight background lift to `--rux-bg-hover`. Never use a colored left border to denote category — use a `.rux-badge` instead.
+
+### Panels
+
+A panel is modular: header, tabs, body panes, and footer are independently optional. Pane insets use `--rux-panel-pane-padding-block` and `--rux-panel-pane-padding-inline`; sibling sections or cards use `--rux-panel-section-gap`. Header, tabs, and footer use `--rux-panel-padding`.
+
+Cards may group distinct content inside a panel, but do not wrap every field or section by default. Resizing belongs to the drawer or workspace shell containing the panel, not to `.rux-panel` itself.
 
 ### Hover & press
 

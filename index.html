@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="./css/features/comp-settings-app.css" />
     <link rel="stylesheet" href="./css/features/comp-trips-app.css" />
     <link rel="stylesheet" href="./css/features/comp-components-app.css" />
+    <link rel="stylesheet" href="./css/features/flip-seven.css?v=15" />
     <link rel="stylesheet" href="./css/features/bus-picker.css" />
     <link rel="stylesheet" href="./css/features/search-modal.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
@@ -107,6 +108,15 @@
             >
               <span class="rux-icon" aria-hidden="true">widgets</span>
               Components
+            </button>
+
+            <button
+              class="rux-button rux-button--ghost scheduler-app__module-button"
+              type="button"
+              data-module="game"
+            >
+              <span class="rux-icon" aria-hidden="true">playing_cards</span>
+              Flip 7
             </button>
           </nav>
         </div>
@@ -1239,34 +1249,49 @@
                 <div class="components-app__section-heading">
                   <div>
                     <h2 id="component-panels-title">Panels</h2>
-                    <p>Use a panel as a structural workspace, drawer, or editor region. Cards may live inside its body.</p>
+                    <p>This anatomy specimen shows every modular region. Production panels include only the header, tabs, body, and footer they need.</p>
                   </div>
                   <code>.rux-panel</code>
                 </div>
                 <aside class="rux-panel components-app__panel-demo" aria-label="Example panel">
                   <header class="rux-panel__header components-app__panel-demo-header">
                     <div>
-                      <h3>Trip editor</h3>
-                      <p>Panel header</p>
+                      <h3 class="rux-panel__title">Trip editor</h3>
+                      <p>Header · optional</p>
                     </div>
                     <button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="Close example panel"><span class="rux-icon">close</span></button>
                   </header>
+                  <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Example panel sections" data-rux-tabs>
+                    <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-demo-overview">Overview</button>
+                    <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-demo-activity">Activity</button>
+                  </nav>
                   <div class="rux-panel__body components-app__panel-demo-body">
-                    <article class="rux-card rux-card--section">
-                      <h3 class="rux-card__title">Contained section</h3>
-                      <p>A card groups one related set of content inside the panel.</p>
-                    </article>
+                    <div class="rux-panel__pane" id="panel-demo-overview" role="tabpanel">
+                      <article class="rux-card rux-card--section">
+                        <h3 class="rux-card__title">Trip details</h3>
+                        <p>Cards group distinct content inside a panel; they are not required around every field or section.</p>
+                      </article>
+                    </div>
+                    <div class="rux-panel__pane" id="panel-demo-activity" role="tabpanel" hidden>
+                      <p>Recent edits and status changes belong in this pane.</p>
+                    </div>
                   </div>
                   <footer class="rux-panel__footer">
                     <button class="rux-button rux-button--default" type="button">Cancel</button>
                     <button class="rux-button rux-button--accent" type="button">Save</button>
                   </footer>
                 </aside>
+                <p class="components-app__guidance">Panel anatomy owns structure and spacing. Resizing belongs to a drawer or workspace shell and should be demonstrated as a separate composition.</p>
                 <dl class="components-app__rules">
+                  <div><dt>Composition</dt><dd>Header, tabs, panes, cards, and footer are independently optional.</dd></div>
+                  <div><dt>Radius</dt><dd><code>--rux-panel-radius</code><output data-token-value="--rux-panel-radius"></output></dd></div>
                   <div><dt>Background</dt><dd><code>--rux-panel-bg</code><output data-token-value="--rux-panel-bg"></output></dd></div>
                   <div><dt>Border</dt><dd><code>--rux-panel-border</code><output data-token-value="--rux-panel-border"></output></dd></div>
-                  <div><dt>Padding</dt><dd><code>--rux-panel-padding</code><output data-token-value="--rux-panel-padding"></output></dd></div>
-                  <div><dt>Content gap</dt><dd><code>--rux-panel-content-gap</code><output data-token-value="--rux-panel-content-gap"></output></dd></div>
+                  <div><dt>Chrome inset</dt><dd><code>--rux-panel-padding</code><output data-token-value="--rux-panel-padding"></output></dd></div>
+                  <div><dt>Pane inset</dt><dd><code>--rux-panel-pane-padding-inline</code><output data-token-value="--rux-panel-pane-padding-inline"></output></dd></div>
+                  <div><dt>Section gap</dt><dd><code>--rux-panel-section-gap</code><output data-token-value="--rux-panel-section-gap"></output></dd></div>
+                  <div><dt>Card radius</dt><dd><code>--rux-card-radius</code><output data-token-value="--rux-card-radius"></output></dd></div>
+                  <div><dt>Card inset</dt><dd><code>--rux-card-padding</code><output data-token-value="--rux-card-padding"></output></dd></div>
                 </dl>
               </section>
 
@@ -1362,6 +1387,95 @@
                 </div>
               </section>
               </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ════════════════════════════════════════════════════════════════
+             MODULE: FLIP 7
+             ════════════════════════════════════════════════════════════════ -->
+        <div class="scheduler-app__module" data-module="game" hidden>
+          <section class="flip-seven" aria-labelledby="flip-seven-title">
+            <header class="scheduler-app__bar flip-seven__header">
+              <div class="scheduler-app__brand">
+                <h1 class="scheduler-app__title" id="flip-seven-title">Flip 7</h1>
+                <p class="flip-seven__subtitle" id="game-status">Join the table to play</p>
+              </div>
+              <button class="rux-button rux-button--ghost rux-button--icon flip-seven__quit" id="game-leave" type="button" aria-label="Quit game" title="Quit game">
+                <span class="rux-icon" aria-hidden="true">close</span>
+              </button>
+            </header>
+
+            <div class="flip-seven__shell">
+              <section class="flip-seven__lobby" id="game-lobby" aria-labelledby="game-lobby-title">
+                <div class="rux-card flip-seven__lobby-card">
+                  <div>
+                    <p class="flip-seven__eyebrow">New match</p>
+                    <h2 id="game-lobby-title">Take a seat</h2>
+                    <p class="flip-seven__copy">Draw unique cards, bank your points, and reach 200. Flip seven to end the round with a 15-point bonus.</p>
+                  </div>
+                  <form class="flip-seven__join" id="game-join-form">
+                    <div class="rux-field">
+                      <label class="rux-field__label" for="game-player-name">Player name</label>
+                      <input class="rux-input" id="game-player-name" maxlength="32" autocomplete="nickname" placeholder="Enter name" required />
+                      <span class="rux-field__error" id="game-join-error" role="alert" hidden></span>
+                    </div>
+                    <button class="rux-button rux-button--accent" id="game-join-button" type="submit">Join game</button>
+                  </form>
+                  <div class="flip-seven__players">
+                    <div class="flip-seven__section-heading">
+                      <h3>Players</h3>
+                      <span class="rux-badge" id="game-player-count">0</span>
+                    </div>
+                    <ul class="flip-seven__roster" id="game-lobby-players"></ul>
+                  </div>
+                  <button class="rux-button rux-button--accent" id="game-start" type="button" disabled>Start match</button>
+                  <button class="rux-button rux-button--ghost rux-button--danger" id="game-lobby-reset" type="button" hidden>
+                    <span class="rux-icon" aria-hidden="true">restart_alt</span>Reset lobby
+                  </button>
+                </div>
+              </section>
+
+              <section class="rux-panel flip-seven__table" id="game-table" hidden aria-label="Game table">
+                <aside class="rux-card rux-card--section flip-seven__scoreboard" aria-labelledby="game-scoreboard-title">
+                  <div class="flip-seven__section-heading">
+                    <h2 id="game-scoreboard-title">Scoreboard</h2>
+                    <span class="rux-badge rux-badge--info" id="game-deck-count">0 cards</span>
+                  </div>
+                  <ol class="flip-seven__scores" id="game-scores"></ol>
+                </aside>
+                <div class="rux-card rux-card--section flip-seven__mat">
+                  <div class="flip-seven__board">
+                    <div class="flip-seven__turn">
+                      <div class="flip-seven__turn-status">
+                        <span class="flip-seven__eyebrow">Current turn</span>
+                        <strong id="game-active-player">Waiting for player</strong>
+                        <span id="game-turn-note">Controls unlock on your turn.</span>
+                      </div>
+                      <div class="flip-seven__messages" id="game-messages" role="log" aria-live="polite" aria-label="Game messages"></div>
+                      <form class="flip-seven__message-form" id="game-message-form">
+                        <input class="rux-input" id="game-message-input" maxlength="160" autocomplete="off" placeholder="Message the table" aria-label="Message" />
+                        <button class="rux-button rux-button--accent rux-button--icon" id="game-message-send" type="submit" aria-label="Send message">
+                          <span class="rux-icon" aria-hidden="true">send</span>
+                        </button>
+                      </form>
+                    </div>
+                    <div class="flip-seven__hand" id="game-hand" aria-label="Player hands"></div>
+                  </div>
+                  <div class="flip-seven__round-total">Round <strong id="game-round-score">0</strong></div>
+                  <div class="flip-seven__actions">
+                    <button class="rux-button rux-button--accent" id="game-hit" type="button" disabled>
+                      <span class="rux-icon" aria-hidden="true">add_card</span>Hit
+                    </button>
+                    <button class="rux-button rux-button--default" id="game-bank" type="button" disabled>
+                      <span class="rux-icon" aria-hidden="true">savings</span>Bank
+                    </button>
+                    <button class="rux-button rux-button--ghost rux-button--danger" id="game-reset" type="button" hidden>
+                      <span class="rux-icon" aria-hidden="true">restart_alt</span>Reset game
+                    </button>
+                  </div>
+                </div>
+              </section>
             </div>
           </section>
         </div>
@@ -1603,6 +1717,7 @@
     <script src="./js/panels/settings-panel.js" defer></script>
     <script src="./js/panels/trips-list.js" defer></script>
     <script src="./js/panels/components-panel.js" defer></script>
+    <script type="module" src="./js/panels/flip-seven.js?v=19"></script>
     <script type="module" src="./js/panels/requirements-panel.js"></script>
 
     <script type="module">
@@ -1620,6 +1735,7 @@
       const moduleButtons  = document.querySelectorAll(".scheduler-app__module-button[data-module]");
 
       function showModule(name) {
+        document.body.dataset.activeModule = name;
         moduleSections.forEach((section) => {
           section.hidden = section.dataset.module !== name;
         });
@@ -1648,7 +1764,7 @@
       // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
       const initialModule = location.hash.slice(1).split("/")[0] || "calendar";
       const normalizedModule = (initialModule === "schedule" || initialModule === "trips") ? "calendar" : initialModule;
-      showModule(["calendar", "trips", "fleet", "drivers", "customers", "components", "settings"].includes(normalizedModule)
+      showModule(["calendar", "trips", "fleet", "drivers", "customers", "components", "game", "settings"].includes(normalizedModule)
         ? normalizedModule
         : "calendar");
 
