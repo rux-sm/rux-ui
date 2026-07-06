@@ -72,8 +72,6 @@ import { supabase } from "./supabase.js";
 	function setEditorMode(root, mode, destination = "") {
 		const editing = mode === "edit";
 		const title = root.querySelector("#trip-panel-title");
-		const clearLabel = root.querySelector("#tp-btn-clear .rux-btn-label");
-		const saveLabel = root.querySelector("#tp-btn-save .rux-btn-label");
 		const destinationLabel = String(destination || "").trim();
 
 		if (title) {
@@ -81,12 +79,10 @@ import { supabase } from "./supabase.js";
 				? `Manage Trip · ${destinationLabel}`
 				: editing ? "Manage Trip" : "Create Trip";
 		}
-		if (clearLabel) clearLabel.textContent = editing ? "Reset Changes" : "Clear";
-		if (saveLabel) saveLabel.textContent = editing ? "Save Changes" : "Create Trip";
 	}
 
-	function defaultSaveLabel(tripId = currentTripId) {
-		return tripId ? "Save Changes" : "Create Trip";
+	function defaultSaveLabel() {
+		return "Save";
 	}
 
 	function fieldVal(root, id) {
@@ -725,7 +721,7 @@ import { supabase } from "./supabase.js";
 
 			const conflict = await findAssignmentConflict(tripData, assignments);
 			if (conflict && !confirm(`Conflict detected: ${conflict.label}. Save anyway?`)) {
-				setSaveButtonState(saveBtn, { label: defaultSaveLabel(savingTripId), icon: "save", disabled: false });
+				setSaveButtonState(saveBtn, { label: defaultSaveLabel(), icon: "save", disabled: false });
 				return false;
 			}
 

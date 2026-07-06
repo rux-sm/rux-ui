@@ -141,9 +141,14 @@
                 <div class="rux-trip-panel__heading">
                   <h2 class="rux-trip-panel__title" id="trip-panel-title">Create Trip</h2>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-close" type="button" aria-label="Close trip editor">
-                  <span class="rux-icon" aria-hidden="true">close</span>
-                </button>
+                <div class="rux-cluster">
+                  <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-new" type="button" aria-label="New trip">
+                    <span class="rux-icon" aria-hidden="true">add</span>
+                  </button>
+                  <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-close" type="button" aria-label="Close trip editor">
+                    <span class="rux-icon" aria-hidden="true">close</span>
+                  </button>
+                </div>
               </header>
               <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Trip editor sections" data-rux-tabs data-trip-tabs>
                 <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
@@ -310,12 +315,12 @@
                 </div>
               </div>
               <footer class="rux-panel__footer">
-                <button class="rux-button rux-button--default rux-button--danger" id="tp-btn-delete" disabled><span class="rux-icon">delete</span><span class="rux-btn-label">Delete Trip</span></button>
-                <button class="rux-button rux-button--default" id="tp-btn-clear"><span class="rux-icon">refresh</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--default rux-button--danger" id="tp-btn-delete" disabled><span class="rux-icon">delete</span><span class="rux-btn-label">Delete</span></button>
+                <button class="rux-button rux-button--default" id="tp-btn-clear"><span class="rux-icon">refresh</span><span class="rux-btn-label"> Reset</span></button>
                 <button class="rux-button rux-button--accent" id="tp-btn-save">
                   <span class="rux-icon rux-button__idle-icon" aria-hidden="true">save</span>
                   <span class="rux-button__spinner" aria-hidden="true"></span>
-                  <span class="rux-btn-label">Create Trip</span>
+                  <span class="rux-btn-label">Save</span>
                 </button>
               </footer>
             </aside>
@@ -2002,7 +2007,13 @@
           drawer.removeEventListener("transitionend", handler);
         });
       }
-      document.getElementById("tp-btn-close")?.addEventListener("click", closeDrawer);
+      document.getElementById("tp-btn-new")?.addEventListener("click", () => {
+        document.dispatchEvent(new CustomEvent("trips:new"));
+      });
+      document.getElementById("tp-btn-close")?.addEventListener("click", () => {
+        if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
+        closeDrawer();
+      });
 
       // ── Trips module → scheduler bridge ────────────────────────────────────
 
@@ -2021,6 +2032,7 @@
       });
 
       document.addEventListener("trips:new", () => {
+        if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
         showModule("calendar");
         if (newTrip) newTrip(tripPanel, itinerary);
         setActiveTripPane("pane-trip");
