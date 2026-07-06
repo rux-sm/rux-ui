@@ -110,11 +110,12 @@ function buildBusGroup(idx, buses, drivers) {
 		.join("");
 
 	const el = document.createElement("div");
-	el.className = "rux-trip-panel__bus-group";
+	el.className = "rux-card rux-trip-panel__bus-group";
 	el.innerHTML = `
-    <div class="rux-trip-panel__section-head">
-      <p class="rux-trip-panel__section-label">Bus ${idx + 1}</p>
-    </div>
+    <header class="rux-card__header">
+      <p class="rux-card__title">Bus ${idx + 1}</p>
+    </header>
+    <div class="rux-card__body rux-card__body--stack">
     <div class="rux-trip-panel__bus-head">
       <select class="rux-select" name="buses[${idx}].busId" aria-label="Bus ${idx + 1}">
         <option value="" disabled selected>Select bus…</option>
@@ -144,6 +145,7 @@ function buildBusGroup(idx, buses, drivers) {
         </div>
       </div>
       ${roleRows}
+    </div>
     </div>`;
 	return el;
 }
@@ -373,11 +375,11 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	const paymentAddBtn = root.querySelector("#tp-payment-add-btn");
 	const paymentDeleteBtn = root.querySelector("#tp-payment-delete-btn");
 
-	// Hidden by default (no more mandatory first row) — same convention as
-	// Files/Trip Contacts above.
+	// Keep the rows container visible so its accessible empty-state row
+	// preserves the same footprint as one payment.
 	const syncPaymentButtons = () => {
 		const count = paymentRowCount();
-		if (paymentRows) paymentRows.style.display = count ? "flex" : "none";
+		if (paymentRows) paymentRows.style.display = "flex";
 		if (paymentDeleteBtn) paymentDeleteBtn.disabled = count === 0;
 	};
 	const addPaymentRow = (method) => {
@@ -425,27 +427,18 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	   one creates a new payment row with that method's icon. Same
 	   singleton-popover recipe as the Files add-type menu above. */
 	const paymentMenuEl = document.createElement("div");
-	paymentMenuEl.className = "rux-menu rux-trip-panel__payment-menu";
+	paymentMenuEl.className = "rux-menu rux-popover";
 	paymentMenuEl.hidden = true;
 	paymentMenuEl.setAttribute("role", "menu");
+	paymentMenuEl.addEventListener("rux:menu-close", () => { paymentMenuEl.innerHTML = ""; });
 	document.body.appendChild(paymentMenuEl);
 
 	const closePaymentMenu = () => {
 		if (paymentMenuEl.hidden) return;
-		paymentMenuEl.hidden = true;
-		paymentMenuEl.innerHTML = "";
-		paymentAddBtn?.setAttribute("aria-expanded", "false");
+		window.RuxMenu.close(paymentMenuEl, { restoreFocus: false });
 	};
 	const positionPaymentMenu = () => {
-		paymentMenuEl.style.visibility = "hidden";
-		paymentMenuEl.hidden = false;
-		const triggerRect = paymentAddBtn.getBoundingClientRect();
-		const menuRect = paymentMenuEl.getBoundingClientRect();
-		const left = Math.max(8, Math.min(triggerRect.right - menuRect.width, window.innerWidth - menuRect.width - 8));
-		const top = Math.min(triggerRect.bottom + 4, window.innerHeight - menuRect.height - 8);
-		paymentMenuEl.style.left = `${left}px`;
-		paymentMenuEl.style.top = `${top}px`;
-		paymentMenuEl.style.visibility = "";
+		window.RuxMenu.open(paymentAddBtn, paymentMenuEl, { placement: "bottom-end" });
 	};
 	const openPaymentMenu = () => {
 		paymentMenuEl.innerHTML = PAYMENT_METHODS
@@ -489,16 +482,8 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		addPaymentRow(btn.dataset.paymentMethodChoice);
 	});
 	paymentDeleteBtn?.addEventListener("click", () => setPaymentSelecting(!paymentSelecting));
-	document.addEventListener("mousedown", (event) => {
-		if (paymentMenuEl.hidden) return;
-		if (paymentMenuEl.contains(event.target)) return;
-		if (event.target === paymentAddBtn) return;
-		closePaymentMenu();
-	});
 	document.addEventListener("keydown", (event) => {
-		if (event.key !== "Escape") return;
-		if (!paymentMenuEl.hidden) closePaymentMenu();
-		if (paymentSelecting) setPaymentSelecting(false);
+		if (event.key === "Escape" && paymentSelecting) setPaymentSelecting(false);
 	});
 	root.addEventListener("rux:payments-loaded", (event) => {
 		if (!paymentRows) return;
@@ -635,13 +620,13 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	const MAX_CONTACTS = 2;
 	if (contactList) {
 		const contactCount = () => contactList.querySelectorAll("[data-trip-contact]").length;
-		// Same as Files: hidden by default, header Add/Delete drive
-		// everything — no per-row menu, no mandatory first row.
+		// Keep one primary contact visible at all times. Add/Delete manage the
+		// optional secondary contact.
 		const syncContactButtons = () => {
 			const count = contactCount();
-			contactList.style.display = count ? "flex" : "none";
+			contactList.style.display = "flex";
 			if (contactAddBtn) contactAddBtn.disabled = count >= MAX_CONTACTS;
-			if (contactDeleteBtn) contactDeleteBtn.disabled = count === 0;
+			if (contactDeleteBtn) contactDeleteBtn.disabled = count <= 1;
 		};
 		const addContactRow = ({ focus = true } = {}) => {
 			if (contactCount() >= MAX_CONTACTS) return;
@@ -678,6 +663,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			}
 		};
 		const deleteContact = (row) => {
+			if (contactCount() <= 1) return;
 			const hasData = Array.from(row.querySelectorAll("input")).some((el) => el.value);
 			if (hasData && !confirm("Delete this contact?")) return;
 			row.remove();
@@ -698,7 +684,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		// create the row a loaded trip's data needs.
 		root.addEventListener("rux:contact-row-needed", () => addContactRow({ focus: false }));
 
-		syncContactButtons();
+		addContactRow({ focus: false });
 	}
 
 	/* ── Documents ────────────────────────────────────────────────────────── */
@@ -747,7 +733,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		let docSelecting = false;
 
 		const syncDocButtons = () => {
-			if (docDeleteBtn) docDeleteBtn.disabled = !docList?.children.length;
+			if (docDeleteBtn) docDeleteBtn.disabled = !docList?.querySelector(".rux-trip-panel__doc-row");
 		};
 		const setDocSelecting = (on) => {
 			docSelecting = on;
@@ -811,27 +797,18 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		   picking one immediately opens the file dialog for that type. Same
 		   singleton-popover recipe as the payment/contact menus above. */
 		const docMenuEl = document.createElement("div");
-		docMenuEl.className = "rux-menu rux-trip-panel__doc-menu";
+		docMenuEl.className = "rux-menu rux-popover";
 		docMenuEl.hidden = true;
 		docMenuEl.setAttribute("role", "menu");
+		docMenuEl.addEventListener("rux:menu-close", () => { docMenuEl.innerHTML = ""; });
 		document.body.appendChild(docMenuEl);
 
 		const closeDocMenu = () => {
 			if (docMenuEl.hidden) return;
-			docMenuEl.hidden = true;
-			docMenuEl.innerHTML = "";
-			docNewBtn.setAttribute("aria-expanded", "false");
+			window.RuxMenu.close(docMenuEl, { restoreFocus: false });
 		};
 		const positionDocMenu = () => {
-			docMenuEl.style.visibility = "hidden";
-			docMenuEl.hidden = false;
-			const triggerRect = docNewBtn.getBoundingClientRect();
-			const menuRect = docMenuEl.getBoundingClientRect();
-			const left = Math.max(8, Math.min(triggerRect.right - menuRect.width, window.innerWidth - menuRect.width - 8));
-			const top = Math.min(triggerRect.bottom + 4, window.innerHeight - menuRect.height - 8);
-			docMenuEl.style.left = `${left}px`;
-			docMenuEl.style.top = `${top}px`;
-			docMenuEl.style.visibility = "";
+			window.RuxMenu.open(docNewBtn, docMenuEl, { placement: "bottom-end" });
 		};
 		const openDocMenu = () => {
 			docMenuEl.innerHTML = DOC_TYPES
@@ -855,17 +832,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			closeDocMenu();
 			docFileInput.click();
 		});
-		document.addEventListener("mousedown", (e) => {
-			if (docMenuEl.hidden) return;
-			if (docMenuEl.contains(e.target)) return;
-			if (e.target === docNewBtn) return;
-			closeDocMenu();
-		});
-		document.addEventListener("keydown", (e) => {
-			if (e.key !== "Escape" || docMenuEl.hidden) return;
-			closeDocMenu();
-		});
-
 		docList?.addEventListener("click", (e) => {
 			const selectBtn = e.target.closest("[data-doc-select]");
 			if (selectBtn) {
@@ -889,7 +855,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	root.addEventListener("rux:trip-cleared", () => {
 		if (docList) {
-			docList.innerHTML = "";
+			docList.querySelectorAll(".rux-trip-panel__doc-row").forEach((row) => row.remove());
 			docList.classList.remove("is-selecting");
 		}
 		if (docDeleteBtn) {
@@ -900,7 +866,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		}
 		if (contactList) {
 			contactList.querySelectorAll("[data-trip-contact]").forEach(r => r.remove());
-			contactList.style.display = "none";
+			root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
 			contactList.classList.remove("is-selecting");
 			if (contactAddBtn) contactAddBtn.disabled = false;
 			if (contactDeleteBtn) {
@@ -914,13 +880,13 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	root.addEventListener("rux:documents-loaded", (event) => {
 		if (!docList) return;
-		docList.innerHTML = "";
+		docList.querySelectorAll(".rux-trip-panel__doc-row").forEach((row) => row.remove());
 		docList.classList.remove("is-selecting");
 		(event.detail?.documents || []).forEach((doc) => {
 			docList.appendChild(createDocRow(doc));
 		});
 		if (docDeleteBtn) {
-			docDeleteBtn.disabled = !docList.children.length;
+			docDeleteBtn.disabled = !docList.querySelector(".rux-trip-panel__doc-row");
 			docDeleteBtn.setAttribute("aria-pressed", "false");
 			docDeleteBtn.querySelector(".rux-icon").textContent = "delete";
 			docDeleteBtn.setAttribute("aria-label", "Delete a document");

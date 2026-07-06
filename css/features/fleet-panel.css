@@ -18,7 +18,6 @@
 
 .rux-fleet-panel {
 	height: 100%;
-	border-width: 0 0 0 var(--rux-panel-border-width);
 	container-type: inline-size;
 }
 
@@ -28,9 +27,6 @@
 	flex: 1 1 auto;
 	min-height: 0;
 	width: calc(var(--drawer-width, 380px) - 2 * var(--scheduler-app-gap));
-	border-left: none;
-	border-right: none;
-	border-radius: var(--rux-radius-lg);
 }
 
 .rux-fleet-panel__heading {
@@ -191,7 +187,6 @@
 	.scheduler-app__drawer .rux-fleet-panel {
 		width: 100dvw;
 		max-width: 100dvw;
-		border-right: none;
 	}
 
 	.scheduler-app__drawer .rux-fleet-panel > .rux-panel__header {

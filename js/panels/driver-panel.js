@@ -696,6 +696,9 @@
   function updateFilterHeaders(table) {
     table.querySelectorAll("th[data-col-filter]").forEach(th => {
       const def = DRIVER_COL_FILTERS[th.dataset.colFilter];
+      th.tabIndex = 0;
+      th.setAttribute("aria-haspopup", "menu");
+      if (!th.hasAttribute("aria-expanded")) th.setAttribute("aria-expanded", "false");
       if (def) th.classList.toggle("is-filtered", def.get() !== "all");
     });
   }
@@ -709,20 +712,15 @@
 
     if (!driverColFilterPopover) {
       driverColFilterPopover = document.createElement("div");
-      driverColFilterPopover.className = "rux-col-filter-popover";
+      driverColFilterPopover.className = "rux-menu rux-popover";
       driverColFilterPopover.setAttribute("hidden", "");
+      driverColFilterPopover.setAttribute("role", "menu");
+      driverColFilterPopover.addEventListener("rux:menu-close", () => { activeFilterTh = null; });
       document.body.appendChild(driverColFilterPopover);
-      document.addEventListener("keydown", e => {
-        if (e.key === "Escape") { driverColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null; }
-      });
-      document.addEventListener("mousedown", e => {
-        if (!driverColFilterPopover.hidden && !driverColFilterPopover.contains(e.target) && e.target !== activeFilterTh)
-          { driverColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null; }
-      });
     }
 
     if (activeFilterTh === th && !driverColFilterPopover.hidden) {
-      driverColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null; return;
+      window.RuxMenu.close(driverColFilterPopover); return;
     }
     activeFilterTh = th;
 
@@ -730,25 +728,21 @@
     def.options.forEach(opt => {
       const btn = document.createElement("button");
       btn.type      = "button";
-      btn.className = "rux-col-filter-popover__option" + (def.get() === opt.value ? " is-active" : "");
+      const selected = def.get() === opt.value;
+      btn.className = "rux-menu__item" + (selected ? " is-active" : "");
+      btn.setAttribute("role", "menuitemradio");
+      btn.setAttribute("aria-checked", String(selected));
       btn.textContent = opt.label;
       btn.addEventListener("click", () => {
         def.set(opt.value);
         updateFilterHeaders(tbody.closest("table"));
         applyFilter();
-        driverColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null;
+        window.RuxMenu.close(driverColFilterPopover);
       });
       driverColFilterPopover.appendChild(btn);
     });
 
-    driverColFilterPopover.style.visibility = "hidden";
-    driverColFilterPopover.removeAttribute("hidden");
-    const ar = th.getBoundingClientRect();
-    const pr = driverColFilterPopover.getBoundingClientRect();
-    const m  = 8;
-    driverColFilterPopover.style.left = `${Math.max(m, Math.min(ar.left, window.innerWidth - pr.width - m))}px`;
-    driverColFilterPopover.style.top  = `${ar.bottom + 4}px`;
-    driverColFilterPopover.style.visibility = "";
+    window.RuxMenu.open(th, driverColFilterPopover, { placement: "bottom-start" });
   }
 
   // ── Sort ──────────────────────────────────────────────────────────────────
@@ -846,6 +840,12 @@
     // Filter header (no sort on this th)
     const filterTh = e.target.closest("th[data-col-filter]");
     if (filterTh) openDriverColFilter(filterTh, filterTh.dataset.colFilter);
+  });
+  tbody.closest("table").addEventListener("keydown", e => {
+    const filterTh = e.target.closest("th[data-col-filter]");
+    if (!filterTh || (e.key !== "Enter" && e.key !== " ")) return;
+    e.preventDefault();
+    openDriverColFilter(filterTh, filterTh.dataset.colFilter);
   });
 
   searchInput.addEventListener("input", applyFilter);

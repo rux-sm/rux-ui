@@ -1,0 +1,15 @@
+/* ==========================================================================
+   POPOVER
+   --------------------------------------------------------------------------
+   Shared floating-layer positioning shell. Visual appearance belongs to the
+   composed component, such as .rux-menu; geometry is set by popover.js.
+   ========================================================================== */
+
+.rux-popover {
+	position: fixed;
+	z-index: var(--rux-z-dropdown);
+}
+
+.rux-popover[hidden] {
+	display: none;
+}

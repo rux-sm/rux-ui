@@ -8,7 +8,7 @@
 
 .flip-seven [hidden] { display: none !important; }
 .flip-seven__header { flex: 0 0 auto; }
-.flip-seven__header .scheduler-app__brand {
+.flip-seven__header .rux-workspace__heading {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
@@ -62,11 +62,11 @@
 	flex-direction: column;
 	width: min(100%, 42rem);
 	min-height: min(44rem, 100%);
-	gap: var(--rux-panel-section-gap);
+	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-padding);
 	overflow: visible;
 }
-.flip-seven__scoreboard.rux-card--section {
+.flip-seven__scoreboard.rux-card--stack {
 	gap: var(--rux-space-3);
 	padding: var(--rux-card-padding);
 }
@@ -110,7 +110,7 @@
 .flip-seven__score-round { color: var(--rux-fg-subtle); font: var(--rux-weight-medium) var(--rux-text-sm)/1 var(--rux-font-mono); text-align: right; }
 .flip-seven__score.is-bust .flip-seven__score-round { color: var(--rux-danger); }
 
-.flip-seven__mat.rux-card--section {
+.flip-seven__mat.rux-card--stack {
 	display: grid;
 	grid-template-rows: minmax(0, 1fr) auto auto;
 	flex: 1;
@@ -293,13 +293,13 @@
 	.flip-seven__shell { align-items: start; padding: var(--rux-space-3); }
 	.flip-seven__header { padding-right: calc(var(--rux-space-3) + env(safe-area-inset-right, 0px)); }
 	.flip-seven__table { min-height: calc(100dvh - 7rem); padding: var(--rux-space-3); }
-	.flip-seven__scoreboard.rux-card--section { padding: var(--rux-space-3); }
+	.flip-seven__scoreboard.rux-card--stack { padding: var(--rux-space-3); }
 	.flip-seven__scoreboard .flip-seven__section-heading { display: none; }
 	.flip-seven__scores { margin-top: 0; }
 	.flip-seven__score { grid-template-columns: 1.5rem var(--rux-avatar-sm) minmax(0, 1fr) 2.5rem 2.5rem; gap: var(--rux-space-2); padding: 1px var(--rux-space-2); }
 	.flip-seven__score-name .rux-badge { display: none; }
 	.flip-seven__join { grid-template-columns: 1fr; }
-	.flip-seven__mat.rux-card--section {
+	.flip-seven__mat.rux-card--stack {
 		min-height: 0;
 		padding: var(--rux-space-3);
 		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));

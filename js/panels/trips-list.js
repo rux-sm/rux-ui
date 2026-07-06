@@ -201,23 +201,15 @@
 
   function buildColFilterPopover() {
     colFilterPopover = document.createElement("div");
-    colFilterPopover.className = "rux-col-filter-popover";
+    colFilterPopover.className = "rux-menu rux-popover";
     colFilterPopover.setAttribute("hidden", "");
     colFilterPopover.setAttribute("role", "menu");
+    colFilterPopover.addEventListener("rux:menu-close", () => { activeFilterTh = null; });
     document.body.appendChild(colFilterPopover);
-
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") closeColFilter();
-    });
-    document.addEventListener("mousedown", e => {
-      if (colFilterPopover && !colFilterPopover.hidden &&
-          !colFilterPopover.contains(e.target) && e.target !== activeFilterTh)
-        closeColFilter();
-    });
   }
 
   function closeColFilter() {
-    colFilterPopover?.setAttribute("hidden", "");
+    window.RuxMenu.close(colFilterPopover, { restoreFocus: false });
     activeFilterTh = null;
   }
 
@@ -237,7 +229,10 @@
     def.options.forEach(opt => {
       const btn = document.createElement("button");
       btn.type      = "button";
-      btn.className = "rux-col-filter-popover__option" + (def.get() === opt.value ? " is-active" : "");
+      const selected = def.get() === opt.value;
+      btn.className = "rux-menu__item" + (selected ? " is-active" : "");
+      btn.setAttribute("role", "menuitemradio");
+      btn.setAttribute("aria-checked", String(selected));
       btn.textContent = opt.label;
       btn.addEventListener("click", () => {
         def.set(opt.value);
@@ -248,15 +243,7 @@
       colFilterPopover.appendChild(btn);
     });
 
-    // Position below the th
-    colFilterPopover.style.visibility = "hidden";
-    colFilterPopover.removeAttribute("hidden");
-    const ar = th.getBoundingClientRect();
-    const pr = colFilterPopover.getBoundingClientRect();
-    const m  = 8;
-    colFilterPopover.style.left = `${Math.max(m, Math.min(ar.left, window.innerWidth - pr.width - m))}px`;
-    colFilterPopover.style.top  = `${ar.bottom + 4}px`;
-    colFilterPopover.style.visibility = "";
+    window.RuxMenu.open(th, colFilterPopover, { placement: "bottom-start" });
   }
 
   function updateFilterHeaders() {
@@ -271,7 +258,15 @@
   }
 
   document.querySelectorAll("th[data-col-filter]").forEach(th => {
+    th.tabIndex = 0;
+    th.setAttribute("aria-haspopup", "menu");
+    th.setAttribute("aria-expanded", "false");
     th.addEventListener("click", () => openColFilter(th, th.dataset.colFilter));
+    th.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openColFilter(th, th.dataset.colFilter);
+    });
   });
 
   searchInput?.addEventListener("input", applyFilter);

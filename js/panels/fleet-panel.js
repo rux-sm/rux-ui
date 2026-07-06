@@ -701,6 +701,9 @@
   function updateFilterHeaders(table) {
     table.querySelectorAll("th[data-col-filter]").forEach(th => {
       const def = FLEET_COL_FILTERS[th.dataset.colFilter];
+      th.tabIndex = 0;
+      th.setAttribute("aria-haspopup", "menu");
+      if (!th.hasAttribute("aria-expanded")) th.setAttribute("aria-expanded", "false");
       if (def) th.classList.toggle("is-filtered", def.get() !== "all");
     });
   }
@@ -714,20 +717,15 @@
 
     if (!fleetColFilterPopover) {
       fleetColFilterPopover = document.createElement("div");
-      fleetColFilterPopover.className = "rux-col-filter-popover";
+      fleetColFilterPopover.className = "rux-menu rux-popover";
       fleetColFilterPopover.setAttribute("hidden", "");
+      fleetColFilterPopover.setAttribute("role", "menu");
+      fleetColFilterPopover.addEventListener("rux:menu-close", () => { activeFilterTh = null; });
       document.body.appendChild(fleetColFilterPopover);
-      document.addEventListener("keydown", e => {
-        if (e.key === "Escape") { fleetColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null; }
-      });
-      document.addEventListener("mousedown", e => {
-        if (!fleetColFilterPopover.hidden && !fleetColFilterPopover.contains(e.target) && e.target !== activeFilterTh)
-          { fleetColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null; }
-      });
     }
 
     if (activeFilterTh === th && !fleetColFilterPopover.hidden) {
-      fleetColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null; return;
+      window.RuxMenu.close(fleetColFilterPopover); return;
     }
     activeFilterTh = th;
 
@@ -735,25 +733,21 @@
     def.options.forEach(opt => {
       const btn = document.createElement("button");
       btn.type      = "button";
-      btn.className = "rux-col-filter-popover__option" + (def.get() === opt.value ? " is-active" : "");
+      const selected = def.get() === opt.value;
+      btn.className = "rux-menu__item" + (selected ? " is-active" : "");
+      btn.setAttribute("role", "menuitemradio");
+      btn.setAttribute("aria-checked", String(selected));
       btn.textContent = opt.label;
       btn.addEventListener("click", () => {
         def.set(opt.value);
         updateFilterHeaders(tbody.closest("table"));
         applyFilter();
-        fleetColFilterPopover.setAttribute("hidden", ""); activeFilterTh = null;
+        window.RuxMenu.close(fleetColFilterPopover);
       });
       fleetColFilterPopover.appendChild(btn);
     });
 
-    fleetColFilterPopover.style.visibility = "hidden";
-    fleetColFilterPopover.removeAttribute("hidden");
-    const ar = th.getBoundingClientRect();
-    const pr = fleetColFilterPopover.getBoundingClientRect();
-    const m  = 8;
-    fleetColFilterPopover.style.left = `${Math.max(m, Math.min(ar.left, window.innerWidth - pr.width - m))}px`;
-    fleetColFilterPopover.style.top  = `${ar.bottom + 4}px`;
-    fleetColFilterPopover.style.visibility = "";
+    window.RuxMenu.open(th, fleetColFilterPopover, { placement: "bottom-start" });
   }
 
   searchInput.addEventListener("input", applyFilter);
@@ -850,6 +844,12 @@
 
     const filterTh = e.target.closest("th[data-col-filter]");
     if (filterTh) openFleetColFilter(filterTh, filterTh.dataset.colFilter);
+  });
+  tbody.closest("table").addEventListener("keydown", e => {
+    const filterTh = e.target.closest("th[data-col-filter]");
+    if (!filterTh || (e.key !== "Enter" && e.key !== " ")) return;
+    e.preventDefault();
+    openFleetColFilter(filterTh, filterTh.dataset.colFilter);
   });
 
   // ── Resize handle ─────────────────────────────────────────────────────────

@@ -29,7 +29,6 @@
 .rux-trip-panel {
 	height: 100%;
 	min-width: 360px;
-	border-width: 0 0 0 var(--rux-panel-border-width);
 	container-type: inline-size;
 }
 
@@ -44,18 +43,11 @@
 	font-size: var(--rux-text-md); /* 1rem 16px */
 	font-weight: var(--rux-weight-bold);
 	line-height: var(--rux-leading-tight);
-	white-space: nowrap;
-	flex: none;
-}
-.rux-trip-panel__id {
-	font-size: var(--rux-text-md);
-	color: var(--rux-accent);
-	font-weight: var(--rux-weight-semibold);
-	line-height: var(--rux-leading-tight);
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	flex: 1;
 }
 .rux-trip-panel__status-group .rux-button {
 	gap: var(--rux-space-1);
@@ -117,17 +109,12 @@
 .rux-trip-panel__pane {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-panel-section-gap);
-	padding: var(--rux-panel-pane-padding-block) var(--rux-panel-pane-padding-inline);
+	gap: var(--rux-panel-content-gap);
+	padding: var(--rux-panel-padding);
 }
 .rux-trip-panel__pane[hidden] {
 	display: none;
 }
-.rux-trip-panel__pane--flush {
-	padding: 0;
-	gap: 0;
-}
-
 /* — Card — */
 
 /* Where do buttons go in a card? Sort by what the control DOES, not by
@@ -157,14 +144,12 @@
 
 /* Row spacing uses margin-top on every row but the first (via `> * + *`)
    instead of a flex `gap` — a `gap` applies uniformly to every child with
-   no way to single one row out. This is what let .rux-itin__day-title get
+   no way to single one row out. This is what let .rux-trip-itinerary__day-title get
    double-spaced by its own margin stacking on the card's gap; using margin
    throughout means a specific row (like the section label below) can get
    its own spacing without fighting a shared gap value. */
-/* Section label/head is followed by its own dedicated gap instead of the
-   card's general row gap — see --rux-section-label-gap in tokens.css. */
-.rux-trip-panel__section-head + *,
-.rux-card--section > .rux-trip-panel__section-label + * {
+/* Standalone labels outside the standard card anatomy retain a compact gap. */
+.rux-card--stack > .rux-trip-panel__section-label + * {
 	margin-top: var(--rux-section-label-gap);
 }
 
@@ -244,14 +229,6 @@
 	row-gap: var(--rux-space-3);
 }
 
-.rux-trip-panel__section-head {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-	gap: var(--rux-space-3);
-	min-height: 28px;
-}
-
 .rux-trip-panel__status-checks {
 	display: flex;
 	flex-direction: column;
@@ -277,12 +254,6 @@
 	font-size: inherit;
 }
 
-.rux-trip-panel__section-head .rux-trip-panel__section-label {
-	border-bottom: none;
-	padding-bottom: 0;
-	flex: 1;
-}
-
 .rux-trip-panel__section-label {
 	font-size: var(--rux-text-md);
 	font-weight: var(--rux-weight-bold);
@@ -302,35 +273,11 @@
 
 /* — Billing workflow — */
 
-/* Same footprint as .rux-input (height/padding/radius) but deliberately
-   NOT input-shaped — dashed border + a recessed background darker than
-   the card (--rux-surface-0, not --rux-surface-1 which happens to equal
-   the card's own --rux-surface-2 and was rendering with no visible box
-   at all) makes "read-only computed value" obvious at a glance instead of
-   looking like a disabled/empty input. */
-.rux-trip-panel__billing-output {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 0;
-	height: var(--rux-field-height);
-	padding: 0;
-	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-field);
-	background: var(--rux-surface-0);
-	color: var(--rux-fg-muted);
-	font: inherit;
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-regular);
-	font-variant-numeric: tabular-nums;
-	cursor: default;
-}
-.rux-trip-panel__billing-output.is-negative {
+.rux-trip-panel .rux-output.is-negative {
 	color: var(--rux-info);
 }
-/* One .rux-card (index.html) holds all three steps now — no per-step card
-   chrome, just row spacing inherited the same way every other card handles
-   it (.rux-card > * + * in content.css). */
+/* One card body holds all three workflow steps; its shared stack anatomy
+   supplies the spacing while these rules handle only billing behavior. */
 .rux-trip-panel__billing-step {
 	display: flex;
 	flex-direction: column;
@@ -365,6 +312,18 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
+}
+.rux-trip-panel__payment-empty {
+	display: flex;
+	min-height: var(--rux-field-height);
+	align-items: center;
+	gap: var(--rux-control-content-gap);
+	padding-inline: var(--rux-control-padding-inline);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+.rux-trip-panel__payment-rows:has([data-payment-row]) > .rux-trip-panel__payment-empty {
+	display: none;
 }
 /* Outer row is unstyled layout only — the pill background/border lives on
    the inner .rux-trip-panel__payment-content instead, so the trash button
@@ -581,13 +540,6 @@
 #tp-payment-delete-btn:disabled {
 	display: none;
 }
-.rux-trip-panel__payment-menu {
-	position: fixed;
-	z-index: var(--rux-z-dropdown);
-}
-.rux-trip-panel__payment-menu[hidden] {
-	display: none;
-}
 
 /* — Requirements chips — */
 
@@ -695,13 +647,7 @@
 	gap: var(--rux-space-3);
 }
 .rux-trip-panel__bus-group {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-control-content-gap);
-	padding: var(--rux-control-padding-inline);
-	border-radius: var(--rux-radius-md);
-	background: var(--rux-surface-2);
-	overflow: hidden;
+	--rux-card-content-gap: var(--rux-control-content-gap);
 }
 .rux-trip-panel__bus-head {
 	display: flex;
@@ -796,14 +742,16 @@
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__doc-list:empty {
-	display: none;
+.rux-trip-panel__doc-empty {
+	display: flex;
+	min-height: var(--rux-field-height);
+	align-items: center;
+	gap: var(--rux-control-content-gap);
+	padding-inline: var(--rux-control-padding-inline);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
 }
-/* The label+list .rux-field wrapper hides itself whenever the list is
-   empty — otherwise the wrapper's own row-spacing margin (from
-   .rux-card > * + *) would still show as empty space below the header,
-   even with the label and list both collapsed to nothing. */
-.rux-field:has(> .rux-trip-panel__doc-list:empty) {
+.rux-trip-panel__doc-list:has(.rux-trip-panel__doc-row) > .rux-trip-panel__doc-empty {
 	display: none;
 }
 /* Click opens the file (Enter for keyboard). The row's own background lives
@@ -843,16 +791,6 @@
 }
 .rux-trip-panel__doc-content > .rux-icon {
 	color: var(--rux-fg-muted);
-}
-.rux-trip-panel__doc-menu {
-	position: fixed;
-	z-index: var(--rux-z-dropdown);
-	background: var(--rux-surface-3);
-	border: var(--rux-border-width) solid var(--rux-border-strong);
-	border-radius: var(--rux-radius-menu);
-}
-.rux-trip-panel__doc-menu[hidden] {
-	display: none;
 }
 .rux-trip-panel__doc-name {
 	flex: 1;

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   NAVIGATION  ·  menu
+   NAVIGATION  ·  tabs
    ========================================================================== */
 
 /* — tabs — */
@@ -69,52 +69,4 @@
 .rux-tab[aria-selected="true"] > .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
 	--_icon-weight: var(--rux-icon-weight-selected);
-}
-
-/* — menu — */
-
-.rux-menu {
-  display: flex;
-  flex-direction: column;
-  min-width: var(--rux-menu-min-width);
-  padding: var(--rux-space-1);
-  background: var(--rux-surface-1);
-  border: var(--rux-border-width) solid var(--rux-border);
-  border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-elevation-3);
-}
-.rux-menu__item {
-  display: flex;
-  align-items: center;
-  gap: var(--rux-space-2);
-  padding: var(--rux-space-2) var(--rux-space-3);
-  border-radius: var(--rux-radius-sm);
-  color: var(--rux-fg);
-  font-size: var(--rux-text-sm);
-  cursor: pointer;
-  background: transparent;
-  border: var(--rux-border-width) solid transparent;
-  text-align: left;
-  font: inherit;
-  font-size: var(--rux-text-sm);
-}
-.rux-menu__item:hover     { background-color: var(--rux-button-hover-overlay); }
-.rux-menu__item:focus-visible {
-  outline: none;
-  box-shadow: var(--rux-ring-focus);
-}
-.rux-menu__item.is-active { background-color: var(--rux-bg-active); }
-.rux-menu__item--danger   { color: var(--rux-danger); }
-.rux-menu__divider {
-  height: var(--rux-control-height);
-  background: var(--rux-border);
-  margin: var(--rux-space-1) 0;
-}
-.rux-menu__header {
-  padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
-  font-size: var(--rux-text-2xs);
-  text-transform: uppercase;
-  letter-spacing: var(--rux-tracking-wide);
-  color: var(--rux-fg-subtle);
-  font-weight: var(--rux-weight-semibold);
 }

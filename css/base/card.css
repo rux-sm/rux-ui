@@ -1,0 +1,108 @@
+/* ==========================================================================
+   CARD
+   The card owns the outer radius and clips its internal regions to it.
+   Header and footer never duplicate the card radius.
+   ========================================================================== */
+
+.rux-card {
+	background: var(--rux-card-bg);
+	color: var(--rux-card-fg);
+	border: var(--rux-card-border);
+	border-radius: var(--rux-card-radius);
+	box-shadow: var(--rux-card-shadow);
+	overflow: hidden;
+}
+
+.rux-card--borderless {
+	border: var(--rux-card-border-none);
+}
+
+.rux-card--elevated {
+	background: var(--rux-card-elevated-bg);
+	box-shadow: var(--rux-card-elevated-shadow);
+}
+
+.rux-card--stack {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	padding: var(--rux-card-padding);
+}
+
+.rux-card--stack > * + * {
+	margin-top: var(--rux-card-content-gap);
+}
+
+.rux-card--stack > .rux-card__header {
+	width: auto;
+	margin: calc(0px - var(--rux-card-padding)) calc(0px - var(--rux-card-padding)) 0;
+}
+
+.rux-card__header,
+.rux-card__body,
+.rux-card__footer {
+	padding: var(--rux-card-padding);
+	border-radius: 0;
+}
+
+.rux-card__body--stack {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-card-content-gap);
+}
+
+.rux-card__section {
+	padding: var(--rux-card-padding);
+}
+
+.rux-card__section + .rux-card__section {
+	border-top: var(--rux-card-section-border);
+}
+
+.rux-card__header {
+	display: flex;
+	flex: none;
+	width: 100%;
+	min-height: var(--rux-card-header-min-height);
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-card-content-gap);
+	background: var(--rux-card-header-bg);
+	border-bottom: var(--rux-card-header-border);
+}
+
+.rux-card__footer {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--rux-card-content-gap);
+	background: var(--rux-card-footer-bg);
+	border-top: var(--rux-card-footer-border);
+}
+
+.rux-card__title {
+	margin: 0;
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: 0;
+	line-height: var(--rux-leading-snug);
+}
+
+.rux-card__subtitle {
+	margin: var(--rux-space-1) 0 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-card--interactive {
+	cursor: pointer;
+	transition:
+		border-color var(--rux-duration-fast) var(--rux-ease-out),
+		background-color var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-card--interactive:hover {
+	border-color: var(--rux-card-hover-border);
+	background-color: var(--rux-card-hover-bg);
+}

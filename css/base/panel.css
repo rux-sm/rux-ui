@@ -1,0 +1,129 @@
+/* ==========================================================================
+   PANEL
+   --------------------------------------------------------------------------
+   Structural panel shell and its optional anatomy: header, tabs, body,
+   panes, and footer. Placement and drawer behavior belong to layout CSS.
+   ========================================================================== */
+
+.rux-panel {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	overflow: clip;
+	background: var(--rux-panel-bg);
+	color: var(--rux-panel-fg);
+	border: var(--rux-panel-border);
+	border-radius: var(--rux-panel-radius);
+	box-shadow: var(--rux-panel-shadow);
+	isolation: isolate;
+}
+
+/*
+ * Optional edge-attached variants. Enable only when a panel is genuinely
+ * flush with a viewport edge; inset panels should keep the full base border.
+ *
+ * .rux-panel--flush-left {
+ * 	border-left-width: 0;
+ * 	border-radius: 0 var(--rux-panel-radius) var(--rux-panel-radius) 0;
+ * }
+ *
+ * .rux-panel--flush-right {
+ * 	border-right-width: 0;
+ * 	border-radius: var(--rux-panel-radius) 0 0 var(--rux-panel-radius);
+ * }
+ */
+
+.rux-panel__header,
+.rux-panel__tabs,
+.rux-panel__footer {
+	flex: none;
+}
+
+.rux-panel__header {
+	display: flex;
+	min-height: var(--rux-panel-header-min-height);
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-panel-content-gap);
+	padding: var(--rux-panel-padding);
+	position: relative;
+	z-index: 2;
+	background: var(--rux-panel-bg);
+	border-bottom: var(--rux-panel-header-border);
+}
+
+.rux-panel__title {
+	min-width: 0;
+	overflow: hidden;
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-tight);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-panel__body {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	position: relative;
+	z-index: 0;
+}
+
+.rux-panel__pane {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-panel-content-gap);
+	padding: var(--rux-panel-padding);
+}
+
+.rux-panel__pane[hidden] {
+	display: none;
+}
+
+.rux-panel__tabs {
+	min-height: var(--rux-panel-tabs-min-height);
+	padding: var(--rux-panel-padding);
+	overflow-x: auto;
+	scrollbar-width: none;
+	position: relative;
+	z-index: 1;
+	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+	border-bottom: var(--rux-panel-tabs-border);
+}
+
+.rux-panel__tabs::-webkit-scrollbar {
+	display: none;
+}
+
+.rux-panel__tabs.is-scrolled {
+	box-shadow: var(--rux-panel-tabs-shadow);
+}
+
+.rux-panel__footer {
+	display: flex;
+	min-height: var(--rux-panel-footer-min-height);
+	gap: var(--rux-panel-content-gap);
+	padding: var(--rux-panel-padding);
+	background: var(--rux-panel-bg);
+	border-top: var(--rux-panel-footer-border);
+	position: relative;
+	z-index: 2;
+	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-panel__footer.is-scrolled {
+	box-shadow: var(--rux-panel-footer-shadow);
+}
+
+.rux-panel__footer > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-panel__footer > .rux-button .rux-btn-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

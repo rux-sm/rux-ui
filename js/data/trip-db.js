@@ -38,13 +38,18 @@ import { supabase } from "./supabase.js";
 
 	/* ── Helpers ─────────────────────────────────────────────────────────── */
 
-	function setEditorMode(root, mode) {
+	function setEditorMode(root, mode, destination = "") {
 		const editing = mode === "edit";
 		const title = root.querySelector("#trip-panel-title");
 		const clearLabel = root.querySelector("#tp-btn-clear .rux-btn-label");
 		const saveLabel = root.querySelector("#tp-btn-save .rux-btn-label");
+		const destinationLabel = String(destination || "").trim();
 
-		if (title) title.textContent = editing ? "Edit Trip" : "New Trip";
+		if (title) {
+			title.textContent = editing && destinationLabel
+				? `Manage Trip · ${destinationLabel}`
+				: editing ? "Manage Trip" : "Create Trip";
+		}
 		if (clearLabel) clearLabel.textContent = editing ? "Reset Changes" : "Clear";
 		if (saveLabel) saveLabel.textContent = editing ? "Save Changes" : "Create Trip";
 	}
@@ -411,6 +416,9 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
 		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
 		setVal(root, "tp-book-email",  trip.booking_contact_email);
+		const contactList = root.querySelector("#tp-contacts-list");
+		contactList?.querySelectorAll("[data-trip-contact]").forEach((row) => row.remove());
+		root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
 		for (const i of [1, 2]) {
 			if (trip[`trip_contact_${i}_name`] || trip[`trip_contact_${i}_phone`]) {
 				if (!root.querySelector(`#tp-trip${i}-name`)) root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
@@ -512,7 +520,7 @@ import { supabase } from "./supabase.js";
 			if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
 		}
 		const hasPayments = Boolean(paymentRows.querySelector("[data-payment-row]"));
-		paymentRows.style.display = hasPayments ? "flex" : "none";
+		paymentRows.style.display = "flex";
 		const paymentDeleteBtn = root.querySelector("#tp-payment-delete-btn");
 		if (paymentDeleteBtn) paymentDeleteBtn.disabled = !hasPayments;
 	}
@@ -620,8 +628,6 @@ import { supabase } from "./supabase.js";
 			oneWayBtn.setAttribute("aria-pressed", "false");
 			oneWayBtn.classList.remove("is-active");
 		}
-		const idEl = root.querySelector("#tp-trip-id");
-		if (idEl) idEl.textContent = "";
 		const delBtn = root.querySelector("#tp-btn-delete");
 		if (delBtn) delBtn.disabled = true;
 		syncBusCount(root, 1);
@@ -772,8 +778,6 @@ import { supabase } from "./supabase.js";
 			}
 
 			setSaveButtonState(saveBtn, { label: "Saved", icon: "check", disabled: true });
-			const idEl = root.querySelector("#tp-trip-id");
-			if (idEl && resolvedRef) idEl.textContent = resolvedRef;
 			root.dispatchEvent(new CustomEvent("rux:trip-saved", { bubbles: true, detail: { id: savedId } }));
 			if (window.Rux) Rux.toast("Trip saved");
 			clearForm(root, itinerary);
@@ -935,7 +939,7 @@ export function loadTrip(root, itinerary, trip) {
 	currentTripId  = UUID_RE.test(String(trip.id ?? "")) ? trip.id : null;
 	currentTripRef = trip.trip_ref ?? null;
 	currentLoadedTrip = trip;
-	setEditorMode(root, "edit");
+	setEditorMode(root, "edit", normalized.destination);
 	const delBtn = root.querySelector("#tp-btn-delete");
 	if (delBtn) delBtn.disabled = !currentTripId;
 	currentTripSnapshot = { ...normalized };
@@ -961,9 +965,6 @@ export function loadTrip(root, itinerary, trip) {
 			root.dispatchEvent(new CustomEvent("rux:documents-loaded", { bubbles: true, detail: { documents: docs } }));
 		}).catch((err) => console.warn("Could not load documents:", err));
 	}
-
-	const idEl = root.querySelector("#tp-trip-id");
-	if (idEl) idEl.textContent = trip.trip_ref ?? trip.id ?? "";
 
 	root.querySelector("[data-trip-tabs] .rux-tab[aria-controls]")?.click();
 

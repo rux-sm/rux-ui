@@ -19,7 +19,7 @@
 
    API
    ---
-   Itinerary.init(root)   → wire up a .rux-itin element
+   Itinerary.init(root)   → wire up a .rux-trip-itinerary element
    ========================================================================== */
 
 (function () {
@@ -175,7 +175,7 @@
 	}
 
 	function sourceClass(source) {
-		return source === "manual" ? " rux-itin__source--manual" : "";
+		return source === "manual" ? " rux-trip-itinerary__source--manual" : "";
 	}
 
 	function routeSourceLabel(stop, field) {
@@ -188,15 +188,15 @@
 	function fieldLabelHtml(text, stop, field) {
 		const label = routeSourceLabel(stop, field);
 		const badge = label
-			? `<span class="rux-itin__source${routeSourceClass(stop, field)}">${label}</span>`
+			? `<span class="rux-trip-itinerary__source${routeSourceClass(stop, field)}">${label}</span>`
 			: "";
-		const cls = label ? " rux-itin__field-label--with-source" : "";
-		return `<span class="rux-itin__field-label${cls}">${text}${badge}</span>`;
+		const cls = label ? " rux-trip-itinerary__field-label--with-source" : "";
+		return `<span class="rux-trip-itinerary__field-label${cls}">${text}${badge}</span>`;
 	}
 
 	function routeSourceClass(stop, field) {
 		const source = field === "miles" ? stop.milesSource : stop.driveSource;
-		if (stop.routeStatus === "stale") return " rux-itin__source--stale";
+		if (stop.routeStatus === "stale") return " rux-trip-itinerary__source--stale";
 		return sourceClass(source);
 	}
 
@@ -302,12 +302,12 @@
 		const drWarn = totalDrive > 11 * 60;
 		const dutyWarn = netMins !== null && netMins > 14 * 60;
 		const field = (val, unit, warn) => `
-        <output class="rux-trip-panel__billing-output${warn ? " rux-itin__seg-stat--warn" : ""}">${escHtml(val)} <span class="rux-itin__unit">${unit}</span></output>`;
-		return `<div class="rux-itin__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}</div>`;
+        <output class="rux-output${warn ? " rux-trip-itinerary__seg-stat--warn" : ""}">${escHtml(val)} <span class="rux-trip-itinerary__unit">${unit}</span></output>`;
+		return `<div class="rux-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}</div>`;
 	}
 
 	// Returns just the two boxed outputs (status + duration) — the caller
-	// wraps them in the same collapsible .rux-itin__stats-values/--pair
+	// wraps them in the same collapsible .rux-trip-itinerary__stats-values/--pair
 	// shell every other type's Miles/Drive row uses, so Sleeper's reset
 	// status hides behind the same toggle instead of always showing.
 	function renderSleeperStats(stop, stops) {
@@ -335,13 +335,13 @@
 			// Same read-only-field look as Miles/Drive: status where Miles would
 			// go (this card has no distance of its own), duration formatted like
 			// every other "hr" field instead of the old "8h"/"1h 30m" shorthand.
-			statusClass = resetOk ? " rux-itin__seg-stat--ok" : (thisMins < SPLIT_MIN ? " rux-itin__seg-stat--warn" : "");
+			statusClass = resetOk ? " rux-trip-itinerary__seg-stat--ok" : (thisMins < SPLIT_MIN ? " rux-trip-itinerary__seg-stat--warn" : "");
 			statusVal = resetOk ? "Reset" : "Not reset";
 			restVal = formatDriveValue(thisMins);
 		}
 
-		return `<output class="rux-trip-panel__billing-output${statusClass}">${statusVal}</output>
-      <output class="rux-trip-panel__billing-output">${escHtml(restVal)} <span class="rux-itin__unit">hr</span></output>`;
+		return `<output class="rux-output${statusClass}">${statusVal}</output>
+      <output class="rux-output">${escHtml(restVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
 	}
 
 	/* ── Render ──────────────────────────────────────────────────────────── */
@@ -425,14 +425,16 @@
 		const statsHtml = stats
 			.map(
 				(s) => `
-        <output class="rux-trip-panel__billing-output" id="tp-itin-summary-${s.id}">${escHtml(s.value)} <span class="rux-itin__unit">${s.unit}</span></output>`
+        <output class="rux-output" id="tp-itin-summary-${s.id}">${escHtml(s.value)} <span class="rux-trip-itinerary__unit">${s.unit}</span></output>`
 			)
 			.join("");
 
 		return `
-      <span class="rux-trip-panel__section-label">Trip Summary</span>
-      <div class="rux-itin__summary-grid">${statsHtml}</div>
-      <div class="rux-itin__summary-actions"></div>`;
+      <header class="rux-card__header"><span class="rux-card__title">Itinerary</span></header>
+      <div class="rux-card__body rux-card__body--stack">
+        <div class="rux-trip-itinerary__summary-grid">${statsHtml}</div>
+        <div class="rux-trip-itinerary__summary-actions"></div>
+      </div>`;
 	}
 
 	function renderFinalDaySummary(stops) {
@@ -459,15 +461,15 @@
 		const dayNum = stops.filter((s) => s.type === "day").length + 1;
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
-      <div class="rux-card rux-card--section rux-itin__day rux-itin__day--final">
+      <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--final">
         <label class="rux-field__label">End of Day ${dayNum}</label>
-        <div class="rux-itin__day-header">
+        <div class="rux-trip-itinerary__day-header">
           ${renderDayStatsGrid(stats)}
-          <span class="rux-itin__badge rux-itin__badge--endday" title="Day ${dayNum}" aria-label="Day ${dayNum} summary">
+          <span class="rux-trip-itinerary__badge rux-trip-itinerary__badge--endday" title="Day ${dayNum}" aria-label="Day ${dayNum} summary">
             <span class="rux-icon" aria-hidden="true">event_busy</span>
           </span>
         </div>
-      </div>`;
+      </section>`;
 	}
 
 	function formatDayLabel(label) {
@@ -477,21 +479,22 @@
 		return `${weekday.slice(0, 3).toUpperCase()} · ${month.slice(0, 3).toUpperCase()} ${day}`;
 	}
 
-	function renderDay(item, idx, stops) {
+	function renderDay(item, idx, stops, modes = {}) {
 		const stats = computeSegmentStats(stops, idx);
 		const label = formatDayLabel(item.label);
 		const dayNum = dayNumberFor(stops, idx);
 		return `
-      <div class="rux-card rux-card--section rux-itin__day" data-stop-idx="${idx}" title="${escHtml(label)}">
+      <section class="rux-card__section rux-trip-itinerary__day" data-stop-idx="${idx}" title="${escHtml(label)}">
         <label class="rux-field__label">End of Day ${dayNum}</label>
-        <div class="rux-itin__day-header">
+        <div class="rux-trip-itinerary__day-header">
           ${renderDayStatsGrid(stats)}
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-stop-menu
-                  aria-haspopup="menu" aria-expanded="false" aria-label="${escHtml(label)} day break actions">
-            <span class="rux-icon" aria-hidden="true">more_vert</span>
-          </button>
+          ${modes.deleting
+			? `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--icon" data-inline-delete aria-label="Delete End of Day ${dayNum}">
+				<span class="rux-icon" aria-hidden="true">delete</span>
+			</button>`
+			: '<span class="rux-trip-itinerary__lead-spacer" aria-hidden="true"></span>'}
         </div>
-      </div>`;
+      </section>`;
 	}
 
 	const TYPE_LABEL = { pickup: "Pickup", stop: "Stop", sleeper: "Sleeper", return: "Return" };
@@ -500,11 +503,6 @@
 	// just "arrive at a place"; return uses home for "back to the yard".
 	const TYPE_ICON = { pickup: "location_on", stop: "location_on", sleeper: "airline_seat_flat", return: "home" };
 
-	// A stop opens a new day's section if it's the very first stop, or the
-	// one right after a "day" break marker.
-	function isFirstStopOfDay(stops, idx) {
-		return idx === 0 || stops[idx - 1]?.type === "day";
-	}
 	function dayNumberFor(stops, idx) {
 		return stops.slice(0, idx).filter((s) => s.type === "day").length + 1;
 	}
@@ -536,7 +534,7 @@
 		return "";
 	}
 
-	function renderStop(stop, idx, stops) {
+	function renderStop(stop, idx, stops, modes = {}) {
 		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
 		const isReturn = type === "return";
 		const isPickup = type === "pickup";
@@ -565,95 +563,72 @@
 		const sleeperAddr = type === "sleeper" ? previousStopAddress(stops, idx) : "";
 		const addrFieldId = `itin-addr-${idx}`;
 		const addrEl = type === "sleeper"
-			? `<div class="rux-itin__address-wrap">
+			? `<div class="rux-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(sleeperAddr)}" readonly
                       placeholder="Inherits previous stop's address"
                       aria-label="${sleeperAddr ? `Resting at ${escHtml(sleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
              </div>`
 			: isReturn
-				? `<div class="rux-itin__address-wrap">
+				? `<div class="rux-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(stop.address)}" readonly
                       aria-label="${escHtml(stop.name)} — ${escHtml(stop.address)}" />
              </div>`
-				: `<div class="rux-itin__address-wrap${showAddrIcon ? " is-verified" : ""}">
+				: `<div class="rux-trip-itinerary__address-wrap${showAddrIcon ? " is-verified" : ""}">
                <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="street-address"
                       value="${escHtml(stop.address)}" placeholder="${addressPlaceholder}" />
                ${isStale
-				? '<span class="rux-icon rux-itin__addr-check rux-itin__addr-check--stale">error</span>'
+				? '<span class="rux-icon rux-trip-itinerary__addr-check rux-trip-itinerary__addr-check--stale">error</span>'
 				: isVerified
-					? '<span class="rux-icon rux-itin__addr-check">check_circle</span>'
+					? '<span class="rux-icon rux-trip-itinerary__addr-check">check_circle</span>'
 					: ""}
              </div>`;
 
 		const isDraggable = type !== "pickup" && type !== "return";
-		// The type badge is gone from the address row — the field label above
-		// already says "Pickup"/"Stop 1"/etc, so a second color-coded icon
-		// there was redundant. In its place: one more_horiz trigger sharing the
-		// label row (see .rux-itin__label-row), opening a menu (built in
-		// initItinerary) with whichever of Expand/Move/Delete actually apply to
-		// this type — see openStopMenu(). The old standalone delete
-		// button/chevron/drag handle are gone; this is the only action
-		// affordance on the card now.
-		const menuTriggerEl = `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--xs" data-stop-menu
-              aria-haspopup="menu" aria-expanded="false" aria-label="${TYPE_LABEL[type]} actions">
-              <span class="rux-icon" aria-hidden="true">more_horiz</span>
-            </button>`;
-		// Absolutely positioned inside .rux-itin__label-row (itinerary.css) so
-		// the row's height always comes from the label text's own line-height,
-		// never from the larger icon-button box.
-		const fieldLabel = `<div class="rux-itin__label-row">
+		const deleteControl = modes.deleting && isDraggable
+			? `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--icon rux-button--xs" data-inline-delete aria-label="Delete ${TYPE_LABEL[type]}">
+				<span class="rux-icon" aria-hidden="true">delete</span>
+			</button>`
+			: "";
+		const fieldLabel = `<div class="rux-trip-itinerary__label-row">
               <label class="rux-field__label" for="${addrFieldId}">${escHtml(fieldLabelFor(stops, idx, type))}</label>
-              ${menuTriggerEl}
+              ${deleteControl}
             </div>`;
-		// Drag handle only exists in the DOM while this stop is armed for a
-		// move (stop.moveMode, set by the menu's Move item) — one-shot: the
-		// drop handler clears moveMode right after a successful reorder, and
-		// Escape/outside-click clear it if the user backs out without
-		// dragging. Not draggable types (Pickup/Return) never get one.
-		const dragHandleEl = isDraggable && stop.moveMode
+		const trailingControl = isDraggable && modes.reordering
 			? `<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-drag-handle aria-label="Drag to reorder ${TYPE_LABEL[type]}">
               <span class="rux-icon" aria-hidden="true">drag_indicator</span>
             </button>`
-			: `<span class="rux-itin__lead-spacer" aria-hidden="true"></span>`;
+			: `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--xs" data-toggle-stats aria-label="${stop.statsExpanded ? "Collapse" : "Expand"} ${TYPE_LABEL[type]} statistics">
+				<span class="rux-icon" aria-hidden="true">${stop.statsExpanded ? "expand_less" : "expand_more"}</span>
+			</button>`;
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
 		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";
 		const statsInner = type === "sleeper"
 			? renderSleeperStats(stop, stops)
-			: `<output class="rux-trip-panel__billing-output">${escHtml(milesVal)} <span class="rux-itin__unit">mi</span></output>
-      <output class="rux-trip-panel__billing-output">${escHtml(driveVal)} <span class="rux-itin__unit">hr</span></output>`;
-
-		// Day-section header lives inside the card itself, like every other
-		// piece of card content, rather than floating above it as bare text.
-		// Return never gets one — it closes out the trip, it doesn't open a day.
-		const dayTitle = !isReturn && isFirstStopOfDay(stops, idx)
-			? `<div class="rux-itin__day-title rux-trip-panel__section-label">Day ${dayNumberFor(stops, idx)}</div>`
-			: "";
+			: `<output class="rux-output">${escHtml(milesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
+      <output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
 
 		return `
-      <div class="rux-itin__stop" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
-        <div class="rux-card rux-card--section rux-itin__card${isStale ? " rux-itin__card--stale" : ""}${stop.moveMode ? " is-move-mode" : ""}">
-          ${dayTitle}
+      <section class="rux-card__section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}" data-stop-idx="${idx}"${isDraggable && modes.reordering ? ' draggable="true"' : ""}>
           ${fieldLabel}
-          <div class="rux-itin__fields">
+          <div class="rux-trip-itinerary__fields">
             ${addrEl}
-            <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
+            <span class="rux-trip-itinerary__lead-spacer" aria-hidden="true"></span>
           </div>
-          <div class="rux-itin__time-row">
+          <div class="rux-trip-itinerary__time-row">
             <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
                    aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
             <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
                    aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
-            <span class="rux-itin__lead-spacer" aria-hidden="true"></span>
+            <span class="rux-trip-itinerary__lead-spacer" aria-hidden="true"></span>
           </div>
-          <div class="rux-itin__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
-            <div class="rux-itin__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
+          <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
+            <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
               ${statsInner}
             </div>
-            ${dragHandleEl}
+            ${trailingControl}
           </div>
-        </div>
-      </div>`;
+      </section>`;
 	}
 
 	/* ── Init ────────────────────────────────────────────────────────────── */
@@ -666,6 +641,7 @@
 		const stops = defaultStops();
 		const recalcBtn = root.querySelector("#tp-itin-recalc");
 		const importBtn = root.querySelector("#tp-import-btn");
+		let activeDayMode = { day: null, mode: null };
 
 		let yardCoordsCache = null;
 		let yardAddressCacheKey = null;
@@ -715,38 +691,61 @@
 			syncRouteButton();
 		}
 
-		function renderAddStopActions(stops) {
-			const returnIdx = stops.findIndex((s) => s.type === "return");
-			const afterIdx = returnIdx > 0 ? returnIdx - 1 : stops.length - 2;
-			return `<div class="rux-itin__add-actions">
-				<button class="rux-button rux-button--default" type="button" data-insert-after="${afterIdx}" data-insert-type="stop">
-					<span class="rux-icon" aria-hidden="true">location_on</span>Stop
-				</button>
-				<button class="rux-button rux-button--default" type="button" data-insert-after="${afterIdx}" data-insert-type="sleeper">
-					<span class="rux-icon" aria-hidden="true">hotel</span>Sleep
-				</button>
-				<button class="rux-button rux-button--default" type="button" data-insert-after="${afterIdx}" data-insert-type="day">
-					<span class="rux-icon" aria-hidden="true">event_busy</span>End day
-				</button>
-			</div>`;
-		}
-
 		function renderStopList() {
 			autoPopulateReturnTimes(stops);
 			autoPopulatePickupSpot(stops);
 			autoPopulatePickupDepart(stops);
-			stopsEl.innerHTML =
-				stops
-					.map((item, idx) => (item.type === "day" ? renderDay(item, idx, stops) : renderStop(item, idx, stops)))
-					.join("")
-				+ renderAddStopActions(stops)
-				+ renderFinalDaySummary(stops);
+			let dayNumber = 1;
+			let daySections = "";
+			let dayCanDelete = false;
+			let dayCanReorder = false;
+			const dayCards = [];
+			const closeDayCard = () => {
+				if (!daySections) return;
+				dayCards.push(`
+					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">
+						<header class="rux-card__header">
+							<h3 class="rux-card__title">Day ${dayNumber}</h3>
+							<div class="rux-cluster">
+								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-mode="reorder" ${dayCanReorder ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder"}" aria-label="Reorder Day ${dayNumber} stops"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? "close" : "swap_vert"}</span></button>
+								<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--icon" data-day-mode="delete" ${dayCanDelete ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "delete"}" aria-label="Delete from Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "delete" ? "close" : "delete"}</span></button>
+								<button type="button" class="rux-button rux-button--default rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">add</span></button>
+							</div>
+						</header>
+						${daySections}
+					</article>`);
+				daySections = "";
+				dayCanDelete = false;
+				dayCanReorder = false;
+				dayNumber += 1;
+			};
+
+			stops.forEach((item, idx) => {
+				if (item.type === "stop" || item.type === "sleeper") {
+					dayCanDelete = true;
+					dayCanReorder = true;
+				} else if (item.type === "day") {
+					dayCanDelete = true;
+				}
+				const modes = {
+					deleting: activeDayMode.day === dayNumber && activeDayMode.mode === "delete",
+					reordering: activeDayMode.day === dayNumber && activeDayMode.mode === "reorder",
+				};
+				daySections += item.type === "day"
+					? renderDay(item, idx, stops, modes)
+					: renderStop(item, idx, stops, modes);
+				if (item.type === "day") closeDayCard();
+			});
+			daySections += renderFinalDaySummary(stops);
+			closeDayCard();
+
+			stopsEl.innerHTML = dayCards.join("");
 			syncRouteButton();
 		}
 
 		function updateSummary() {
 			summaryEl.innerHTML = renderSummary(stops);
-			const actions = summaryEl.querySelector(".rux-itin__summary-actions");
+			const actions = summaryEl.querySelector(".rux-trip-itinerary__summary-actions");
 			if (!actions) return;
 			if (importBtn) actions.appendChild(importBtn);
 			if (recalcBtn) actions.appendChild(recalcBtn);
@@ -759,7 +758,7 @@
 				const idx = parseInt(el.dataset.stopIdx, 10);
 				const stop = stops[idx];
 				if (!stop || stop.type === "day") return;
-				const fromEl = el.querySelector(".rux-itin__from");
+				const fromEl = el.querySelector(".rux-trip-itinerary__from");
 				if (!fromEl) return;
 				const prev = prevStopName(stops, idx);
 				fromEl.textContent = prev ? `From ${prev}` : fromYardText();
@@ -769,71 +768,42 @@
 		let dragSrcIdx = null;
 		let dragFromHandle = false;
 
-		/* — stop-actions menu (Expand/Move/Delete) — singleton popover, same
-		   shape as suggestionsEl below: created once, appended to
-		   document.body, positioned against whichever trigger opened it. */
-		let activeMenuIdx = null;
+		const dayAddMenu = document.createElement("div");
+		dayAddMenu.className = "rux-menu rux-popover";
+		dayAddMenu.hidden = true;
+		dayAddMenu.setAttribute("role", "menu");
+		document.body.appendChild(dayAddMenu);
+		let activeAddDay = null;
 
-		const stopMenuEl = document.createElement("div");
-		stopMenuEl.className = "rux-itin__stop-menu rux-menu";
-		stopMenuEl.hidden = true;
-		stopMenuEl.setAttribute("role", "menu");
-		document.body.appendChild(stopMenuEl);
-
-		function closeStopMenu() {
-			if (activeMenuIdx !== null) {
-				stopsEl.querySelector(`[data-stop-idx="${activeMenuIdx}"] [data-stop-menu]`)?.setAttribute("aria-expanded", "false");
+		const closeDayAddMenu = () => {
+			if (!dayAddMenu.hidden) window.RuxMenu.close(dayAddMenu, { restoreFocus: false });
+			activeAddDay = null;
+		};
+		const dayInsertIndex = (dayNumber) => {
+			const start = dayNumber === 1
+				? 0
+				: stops.findIndex((item, idx) => item.type !== "day" && dayNumberFor(stops, idx) === dayNumber);
+			if (start < 0) return Math.max(0, stops.length - 1);
+			for (let idx = start; idx < stops.length; idx += 1) {
+				if (stops[idx].type === "day" || stops[idx].type === "return") return idx;
+				if (dayNumberFor(stops, idx) > dayNumber) return idx;
 			}
-			stopMenuEl.hidden = true;
-			stopMenuEl.innerHTML = "";
-			activeMenuIdx = null;
-		}
-
-		function positionStopMenu(triggerEl) {
-			const rect = triggerEl.getBoundingClientRect();
-			const margin = 8;
-			// Measure at real size before placing, same visibility trick used
-			// by bus-picker.js's position() to avoid a flash at (0,0).
-			stopMenuEl.style.visibility = "hidden";
-			stopMenuEl.hidden = false;
-			const menuRect = stopMenuEl.getBoundingClientRect();
-			const left = Math.max(margin, Math.min(rect.right - menuRect.width, window.innerWidth - menuRect.width - margin));
-			const top = (rect.bottom + 4 + menuRect.height <= window.innerHeight - margin)
-				? rect.bottom + 4
-				: Math.max(margin, rect.top - menuRect.height - 4);
-			stopMenuEl.style.left = `${left}px`;
-			stopMenuEl.style.top = `${top}px`;
-			stopMenuEl.style.visibility = "";
-		}
-
-		// Which actions apply to a given stop — Pickup/Return only ever get
-		// Expand (fixed anchors, nothing to move or delete); Stop/Sleeper get
-		// all three; the "day" break marker only ever gets Delete.
-		function menuItemsFor(stop) {
-			if (stop.type === "day") {
-				return [{ action: "delete", label: "Delete", danger: true }];
-			}
-			const expandNoun = stop.type === "sleeper" ? "reset status" : "mileage and drive time";
-			const items = [{ action: "expand", label: `${stop.statsExpanded ? "Collapse" : "Expand"} ${expandNoun}` }];
-			if (stop.type === "stop" || stop.type === "sleeper") {
-				items.push({ divider: true });
-				items.push({ action: "move", label: "Move" });
-				items.push({ action: "delete", label: "Delete", danger: true });
-			}
-			return items;
-		}
-
-		function openStopMenu(idx, triggerEl) {
-			const stop = stops[idx];
-			if (!stop) return;
-			activeMenuIdx = idx;
-			stopMenuEl.innerHTML = menuItemsFor(stop).map((item) => item.divider
-				? `<div class="rux-menu__divider"></div>`
-				: `<button type="button" class="rux-menu__item${item.danger ? " rux-menu__item--danger" : ""}" role="menuitem" data-menu-action="${item.action}">${escHtml(item.label)}</button>`
-			).join("");
-			triggerEl.setAttribute("aria-expanded", "true");
-			positionStopMenu(triggerEl);
-		}
+			return stops.length;
+		};
+		const openDayAddMenu = (dayNumber, trigger) => {
+			activeAddDay = dayNumber;
+			const insertIndex = dayInsertIndex(dayNumber);
+			const hasEndDay = stops[insertIndex]?.type === "day";
+			dayAddMenu.innerHTML = `
+				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="stop"><span class="rux-icon" aria-hidden="true">location_on</span>Add stop</button>
+				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="sleeper"><span class="rux-icon" aria-hidden="true">hotel</span>Add sleeper</button>
+				${hasEndDay ? "" : '<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="day"><span class="rux-icon" aria-hidden="true">event_busy</span>End day</button>'}`;
+			window.RuxMenu.open(trigger, dayAddMenu, { placement: "bottom-end" });
+		};
+		dayAddMenu.addEventListener("rux:menu-close", () => {
+			activeAddDay = null;
+			dayAddMenu.innerHTML = "";
+		});
 
 		let addressSearchTimer = null;
 		let addressSearchSeq = 0;
@@ -842,7 +812,7 @@
 		let activeSuggestions = [];
 
 		const suggestionsEl = document.createElement("div");
-		suggestionsEl.className = "rux-itin__suggestions";
+		suggestionsEl.className = "rux-trip-itinerary__suggestions";
 		suggestionsEl.hidden = true;
 		suggestionsEl.setAttribute("role", "listbox");
 		suggestionsEl.setAttribute("aria-label", "Address suggestions");
@@ -883,9 +853,9 @@
 			}
 			positionSuggestions(input);
 			suggestionsEl.innerHTML = suggestions.map((suggestion, i) => `
-        <button class="rux-itin__suggestion" type="button" role="option" data-suggestion-idx="${i}">
-          <span class="rux-itin__suggestion-name">${escHtml(suggestion.name || suggestionLabel(suggestion))}</span>
-          <span class="rux-itin__suggestion-address">${escHtml(suggestion.place_formatted || suggestion.full_address || "")}</span>
+        <button class="rux-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
+          <span class="rux-trip-itinerary__suggestion-name">${escHtml(suggestion.name || suggestionLabel(suggestion))}</span>
+          <span class="rux-trip-itinerary__suggestion-address">${escHtml(suggestion.place_formatted || suggestion.full_address || "")}</span>
         </button>
       `).join("");
 			suggestionsEl.hidden = false;
@@ -1158,10 +1128,10 @@
 				stops[idx].lat = null;
 				stops[idx].lng = null;
 				stops[idx].mapboxId = null;
-				const wrap = e.target.closest(".rux-itin__address-wrap");
+				const wrap = e.target.closest(".rux-trip-itinerary__address-wrap");
 				if (wrap) {
 					wrap.classList.remove("is-verified");
-					wrap.querySelector(".rux-itin__addr-check")?.remove();
+					wrap.querySelector(".rux-trip-itinerary__addr-check")?.remove();
 				}
 				markAffectedLegsStale(idx);
 				if (stops[idx].milesSource !== "manual") stops[idx].miles = "";
@@ -1243,108 +1213,76 @@
 			}
 		});
 
-		/* — stop-actions menu: open/close trigger — */
+		/* — day header actions and inline section controls — */
 		stopsEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-stop-menu]");
-			if (!btn) return;
-			const itemEl = btn.closest("[data-stop-idx]");
-			if (!itemEl) return;
-			const idx = parseInt(itemEl.dataset.stopIdx, 10);
-			// Re-clicking the trigger that's already open just closes it.
-			if (activeMenuIdx === idx && !stopMenuEl.hidden) {
-				closeStopMenu();
+			const modeButton = e.target.closest("[data-day-mode]");
+			if (modeButton) {
+				closeDayAddMenu();
+				const day = Number(modeButton.closest("[data-day-number]")?.dataset.dayNumber);
+				const mode = modeButton.dataset.dayMode;
+				const alreadyActive = activeDayMode.day === day && activeDayMode.mode === mode;
+				activeDayMode = alreadyActive ? { day: null, mode: null } : { day, mode };
+				renderStopList();
 				return;
 			}
-			closeStopMenu();
-			openStopMenu(idx, btn);
-		});
-
-		/* — stop-actions menu: item selection — the popover lives on
-		   document.body (see stopMenuEl above), not inside stopsEl, so this
-		   listener is on the menu itself rather than delegated from stopsEl. */
-		stopMenuEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-menu-action]");
-			if (!btn) return;
-			const idx = activeMenuIdx;
-			const action = btn.dataset.menuAction;
-			closeStopMenu();
-			if (idx === null) return;
-			const stop = stops[idx];
-			if (!stop) return;
-
-			if (action === "expand") {
-				stop.statsExpanded = !stop.statsExpanded;
+			const addButton = e.target.closest("[data-day-add]");
+			if (addButton) {
+				const day = Number(addButton.closest("[data-day-number]")?.dataset.dayNumber);
+				if (activeDayMode.mode) {
+					activeDayMode = { day: null, mode: null };
+					renderStopList();
+					openDayAddMenu(day, stopsEl.querySelector(`[data-day-number="${day}"] [data-day-add]`));
+				} else {
+					openDayAddMenu(day, addButton);
+				}
+				return;
+			}
+			const statsButton = e.target.closest("[data-toggle-stats]");
+			if (statsButton) {
+				const idx = Number(statsButton.closest("[data-stop-idx]")?.dataset.stopIdx);
+				if (stops[idx]) stops[idx].statsExpanded = !stops[idx].statsExpanded;
 				renderStopList();
-				// renderStopList() rebuilds innerHTML, destroying the clicked
-				// trigger — re-focus its replacement so keyboard users don't
-				// lose their place.
-				stopsEl.querySelector(`[data-stop-idx="${idx}"] [data-stop-menu]`)?.focus();
-			} else if (action === "delete") {
-				const what = stop.type === "day" ? "day break" : "stop";
-				if (!confirm(`Remove this ${what}?`)) return;
+				return;
+			}
+			const deleteButton = e.target.closest("[data-inline-delete]");
+			if (deleteButton) {
+				const idx = Number(deleteButton.closest("[data-stop-idx]")?.dataset.stopIdx);
+				const item = stops[idx];
+				if (!item || item.type === "pickup" || item.type === "return") return;
+				const what = item.type === "day" ? "end-of-day marker" : item.type;
+				if (!confirm(`Delete this ${what}?`)) return;
 				stops.splice(idx, 1);
+				activeDayMode = { day: null, mode: null };
 				const nextIdx = idx < stops.length ? nextRealStopIndex(idx - 1) : -1;
 				if (nextIdx >= 0) markLegStale(nextIdx);
 				updateSummary();
 				renderStopList();
-			} else if (action === "move") {
-				// Only one card can be armed for a move at a time.
-				stops.forEach((s) => { if (s) s.moveMode = false; });
-				stop.moveMode = true;
-				renderStopList();
-				stopsEl.querySelector(`[data-stop-idx="${idx}"] [data-drag-handle]`)?.focus();
-			}
-		});
-
-		/* — stop-actions menu: dismissal — Escape or clicking outside the
-		   menu (and not on the trigger that opens/closes it, which the click
-		   handler above already toggles correctly on its own). */
-		document.addEventListener("mousedown", (e) => {
-			if (stopMenuEl.hidden) return;
-			if (stopMenuEl.contains(e.target)) return;
-			if (e.target.closest("[data-stop-menu]")) return;
-			closeStopMenu();
-		});
-		document.addEventListener("keydown", (e) => {
-			if (e.key !== "Escape" || stopMenuEl.hidden) return;
-			closeStopMenu();
-		});
-
-		/* — Move mode: one-shot — armed by the menu's "Move" item, disarmed
-		   by a successful drop (see the drop handler below), or backed out
-		   of here via Escape / clicking anywhere but the drag handle itself. */
-		document.addEventListener("mousedown", (e) => {
-			if (e.target.closest("[data-drag-handle]")) return;
-			const movingIdx = stops.findIndex((s) => s?.moveMode);
-			if (movingIdx < 0) return;
-			stops[movingIdx].moveMode = false;
-			renderStopList();
-		});
-		document.addEventListener("keydown", (e) => {
-			if (e.key !== "Escape") return;
-			const movingIdx = stops.findIndex((s) => s?.moveMode);
-			if (movingIdx < 0) return;
-			stops[movingIdx].moveMode = false;
-			renderStopList();
-		});
-
-		/* — inline insert row — */
-		stopsEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-insert-after]");
-			if (btn) {
-				const afterIdx = parseInt(btn.dataset.insertAfter, 10);
-				const insertType = btn.dataset.insertType;
-				let newStop;
-				if (insertType === "day") {
-					newStop = { type: "day", label: `Day ${stops.filter((s) => s.type === "day").length + 1}` };
-				} else if (insertType === "sleeper") {
-					newStop = newSleeperStop(afterIdx + 1);
-				} else {
-					newStop = defaultStop();
-				}
-				insertAtIndex(afterIdx + 1, newStop);
 				return;
 			}
+
+		});
+
+		dayAddMenu.addEventListener("click", (e) => {
+			const button = e.target.closest("[data-day-add-type]");
+			if (!button || activeAddDay === null) return;
+			const day = activeAddDay;
+			const insertIndex = dayInsertIndex(day);
+			const type = button.dataset.dayAddType;
+			closeDayAddMenu();
+			const item = type === "day"
+				? { type: "day", label: `Day ${day}` }
+				: type === "sleeper"
+					? newSleeperStop(insertIndex)
+					: defaultStop();
+			insertAtIndex(insertIndex, item);
+		});
+
+		document.addEventListener("keydown", (e) => {
+			if (e.key !== "Escape") return;
+			closeDayAddMenu();
+			if (!activeDayMode.mode) return;
+			activeDayMode = { day: null, mode: null };
+			renderStopList();
 		});
 
 		/* — drag to reorder — */
@@ -1366,15 +1304,6 @@
 			el?.classList.remove("is-dragging");
 			stopsEl.querySelectorAll(".is-drag-target").forEach((t) => t.classList.remove("is-drag-target"));
 			dragSrcIdx = null;
-			// Fallback for a cancelled drag (dropped outside a valid target) —
-			// the drop handler already clears moveMode on a successful move,
-			// but dragend fires either way, so this is what makes "Move" truly
-			// one-shot even when nothing was actually reordered.
-			const stillMoving = stops.find((s) => s?.moveMode);
-			if (stillMoving) {
-				stillMoving.moveMode = false;
-				renderStopList();
-			}
 		});
 
 		stopsEl.addEventListener("dragover", (e) => {
@@ -1396,23 +1325,13 @@
 			const toIdx = parseInt(el.dataset.stopIdx, 10);
 			if (toIdx === dragSrcIdx) return;
 			const [moved] = stops.splice(dragSrcIdx, 1);
-			moved.moveMode = false; // one-shot — the handle only reappears if Move is picked again
-			stops.splice(toIdx, 0, moved);
+			const insertIdx = dragSrcIdx < toIdx ? toIdx - 1 : toIdx;
+			stops.splice(insertIdx, 0, moved);
 			const firstAffected = Math.min(dragSrcIdx, toIdx);
 			markAffectedLegsStale(firstAffected);
 			updateSummary();
 			renderStopList();
 		});
-
-		/* — add stop / pick-up — */
-		function insertBeforeReturn(newStop) {
-			const ri = stops.findIndex((s) => s.type === "return");
-			const insertIdx = ri >= 0 ? ri : stops.length;
-			ri >= 0 ? stops.splice(ri, 0, newStop) : stops.push(newStop);
-			markAffectedLegsStale(insertIdx);
-			updateSummary();
-			renderStopList();
-		}
 
 		function insertAtIndex(idx, newStop) {
 			stops.splice(idx, 0, newStop);
@@ -1439,16 +1358,6 @@
 			return { type: "sleeper", name: "", address: prev.address, miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: "", arrive: "", lat: prev.lat, lng: prev.lng, mapboxId: prev.mapboxId };
 		}
 
-		root.querySelector("#tp-itin-add-stop")?.addEventListener("click", () => {
-			insertBeforeReturn(defaultStop());
-		});
-
-		root.querySelector("#tp-itin-add-sleeper")?.addEventListener("click", () => {
-			const ri = stops.findIndex((s) => s.type === "return");
-			const insertIdx = ri >= 0 ? ri : stops.length;
-			insertBeforeReturn(newSleeperStop(insertIdx));
-		});
-
 		document.addEventListener("settings:yard", () => {
 			yardCoordsCache = null;
 			yardAddressCacheKey = null;
@@ -1469,16 +1378,6 @@
 
 		root.querySelector("#tp-itin-recalc")?.addEventListener("click", () => {
 			recalculateRoute({ force: true });
-		});
-
-
-		/* — add day break — */
-		root.querySelector("#tp-itin-add-day")?.addEventListener("click", () => {
-			const dayCount = stops.filter((s) => s.type === "day").length;
-			const newDay = { type: "day", label: `Day ${dayCount + 1}` };
-			const ri = stops.findIndex((s) => s.type === "return");
-			ri >= 0 ? stops.splice(ri, 0, newDay) : stops.push(newDay);
-			renderStopList();
 		});
 
 		return {

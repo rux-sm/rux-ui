@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ITINERARY  ·  .rux-itin
+   ITINERARY  ·  .rux-trip-itinerary
    --------------------------------------------------------------------------
    Timeline stop editor for the Itinerary tab. Each card represents a leg
    arriving at that location — travel info (miles, drive time) always answers
@@ -18,24 +18,17 @@
 
    Structure
    ---------
-   .rux-itin                   Outer container (flush against pane edges)
-   .rux-itin__summary          3-stat strip at top
-   .rux-itin__day              Day-break card: icon + stat grid, actions
-                                behind its own more_vert menu (Delete only)
-   .rux-itin__day--final       Trailing (not-yet-closed) day — same card, no
+   .rux-trip-itinerary                   Itinerary feature container
+   .rux-trip-itinerary__summary          3-stat strip at top
+   .rux-trip-itinerary__day-group        One card containing a complete day
+   .rux-trip-itinerary__day              End-day section: stat grid and actions
+   .rux-trip-itinerary__day--final       Trailing (not-yet-closed) day — same card, no
                                 menu since it isn't a real list item
-   .rux-itin__stop             Rail + card row for one stop
-   .rux-itin__rail             Dot + vertical connecting line
-   .rux-itin__card             Elevated card: label row (ending in a
-                                more_horiz trigger) · address row · time-
+   .rux-trip-itinerary__stop             Card section for one stop: label row,
+                                address row, time-
                                 fields row · Miles/Drive row (not Sleeper).
-                                All actions — Expand/Collapse, Move, Delete —
-                                live behind that one trigger; see
-                                .rux-itin__stop-menu and openStopMenu() in
-                                itinerary.js. The drag handle in the
-                                Miles/Drive row only exists in the DOM while
-                                a stop is armed via "Move".
-   .rux-itin__actions          Add-stop action buttons at bottom
+                                Day-header modes expose add, delete, and
+                                reorder controls.
 
    A day's stops + its closing Day-N card sit flush (0 gap) and read as one
    grouped block: square corners in the middle, rounded only at the very top
@@ -45,146 +38,79 @@
 
 /* — Outer container — */
 
-.rux-itin {
+.rux-trip-itinerary {
 	display: flex;
 	flex-direction: column;
 }
 
 /* — Summary strip — */
 
-/* .rux-card handles the shared chrome (bg, radius, gap, padding); this is
-   only what's specific to the summary's placement inside the flush itinerary
-   pane, which has no padding of its own. */
-.rux-itin__summary {
-	margin-inline: var(--rux-space-3);
-}
+/* The pane supplies the outer inset; the card owns its internal anatomy. */
 
-.rux-itin__summary-grid {
+.rux-trip-itinerary__summary-grid {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	column-gap: var(--rux-space-2);
 }
 
-.rux-itin__summary-actions {
+.rux-trip-itinerary__summary-actions {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 }
 
-.rux-itin__summary-actions > .rux-button {
+.rux-trip-itinerary__summary-actions > .rux-button {
 	flex: 1;
 	width: auto;
 }
 
 /* — Day card — */
 
-/* .rux-card handles shared chrome; margin matches .rux-itin__card positioning.
-   A day card closes out the stops above it, so by default it sits flush
-   against the last stop of that day (see the :has() rule below) — the
-   margin here only ever shows up *after* it, separating it from the next
-   day's first stop. */
-.rux-itin__day {
-	margin: var(--rux-space-3) var(--rux-space-3);
-	gap: var(--rux-space-2);
+.rux-trip-itinerary__day-group {
+	--rux-trip-itinerary-lead-w: 28px;
+	margin-block: var(--rux-space-3);
 }
 
-.rux-itin__stop:has(+ .rux-itin__day) .rux-itin__card {
-	margin-bottom: 0;
-}
-.rux-itin__stop + .rux-itin__day {
-	margin-top: 0;
+.rux-trip-itinerary__day {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
 }
 
 /* Badge is the lead column (same width every other card's badge/icon column
    uses) with the stat grid inline beside it — one row, not a header row
-   plus a separate full-width stat row below. Needs its own fallback here
-   (unlike .rux-itin__fields etc.) since --rux-itin-lead-w is scoped to
-   .rux-itin__card, and a day-break header isn't nested inside one. */
-.rux-itin__day-header {
+   plus a separate full-width stat row below. */
+.rux-trip-itinerary__day-header {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) var(--rux-itin-lead-w, 28px);
+	grid-template-columns: minmax(0, 1fr) var(--rux-trip-itinerary-lead-w, 28px);
 	align-items: center;
 	column-gap: var(--rux-space-2);
 }
 
-/* Same 3-col boxed stat grid as .rux-itin__summary-grid (Route Summary),
+/* Same 3-col boxed stat grid as .rux-trip-itinerary__summary-grid (Route Summary),
    just Miles/Drive/On-Duty instead of Days/Miles/Drive/On-Duty. */
-.rux-itin__day-stats {
+.rux-trip-itinerary__day-stats {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	column-gap: var(--rux-space-2);
 }
 
 /* Shared warn/ok tint — also used by renderDayStatsGrid's over-limit outputs */
-.rux-itin__seg-stat--warn {
+.rux-trip-itinerary__seg-stat--warn {
 	color: var(--rux-danger);
 	font-weight: var(--rux-weight-semibold);
 }
 
-.rux-itin__seg-stat--ok {
+.rux-trip-itinerary__seg-stat--ok {
 	color: var(--rux-success-bright);
 	font-weight: var(--rux-weight-semibold);
 }
 
 /* — Stop row — */
 
-.rux-itin__stop {
+.rux-trip-itinerary__stop {
 	display: block;
 }
-
-/* Day-section header — first thing inside the first stop card of each day
-   (see isFirstStopOfDay in itinerary.js). Lives inside .rux-itin__card like
-   any other card content, so the card's own padding handles the inset.
-   Spacing below it comes from .rux-itin__card's row-margin rule, same as
-   every other row — no margin of its own needed. */
-
-/* — Card — */
-
-/* .rux-card handles the shared chrome (bg, radius, gap, padding); margin is the
-   only itinerary-specific piece — it recreates the flush pane's horizontal inset
-   and is the sole source of vertical spacing between stacked timeline cards
-   (.rux-itin has no gap of its own). */
-.rux-itin__card {
-	margin: var(--rux-space-3) var(--rux-space-3);
-}
-
-/* Same-day stops sit flush against each other (0 gap) — a stop's card only
-   keeps its block-direction margin next to a day boundary (.rux-itin__day)
-   or at the very start/end of the list. Both sides of the pair have to be
-   zeroed since equal adjoining margins would otherwise collapse to the
-   larger (non-zero) value instead of 0. */
-.rux-itin__stop:has(+ .rux-itin__stop) .rux-itin__card {
-	margin-bottom: 0;
-}
-.rux-itin__stop + .rux-itin__stop .rux-itin__card {
-	margin-top: 0;
-}
-
-/* Grouped-card look: a day's stops + its closing Day-N card read as one
-   continuous block — square corners in the middle, rounded only where the
-   block actually starts (first stop of the day) and ends (the Day-N card,
-   or the last stop if that day hasn't been closed out yet). */
-.rux-itin__card,
-.rux-itin__day {
-	border-radius: 0;
-}
-
-.rux-itin__day {
-	border-bottom-left-radius: var(--rux-radius-md);
-	border-bottom-right-radius: var(--rux-radius-md);
-}
-
-.rux-itin__stop:first-child .rux-itin__card,
-.rux-itin__day + .rux-itin__stop .rux-itin__card {
-	border-top-left-radius: var(--rux-radius-md);
-	border-top-right-radius: var(--rux-radius-md);
-}
-
-.rux-itin__stop:not(:has(+ .rux-itin__stop)):not(:has(+ .rux-itin__day)) .rux-itin__card {
-	border-bottom-left-radius: var(--rux-radius-md);
-	border-bottom-right-radius: var(--rux-radius-md);
-}
-
 
 /* — Stop-type badge — see css/badges.css — */
 
@@ -195,67 +121,45 @@
    edge. The trailing column sits on the RIGHT — badge/chevron read as
    actions attached to the content, not a leading label — so the address
    field, time inputs, and stats values all line up on the left, with the
-   badge/chevron/spacer sharing one column on the right. --rux-itin-lead-w
-   is also read by .rux-itin__badge's fixed width in badges.css, so the two
+   badge/chevron/spacer sharing one column on the right. --rux-trip-itinerary-lead-w
+   is also read by .rux-trip-itinerary__badge's fixed width in badges.css, so the two
    stay in sync from one place.
 
    Row spacing uses margin-top on every row but the first (via the `> * + *`
    adjacent-sibling rule below) instead of a flex `gap` — a `gap` on the
    card would apply uniformly to every child with no way to single one row
-   out, which is exactly what caused .rux-itin__day-title to get double
-   spacing (its own margin-bottom stacking on top of the card's gap). One
+   out. One
    row's spacing can now be tuned independently by giving that row its own
    margin-top, without touching every other row. --rux-stack-gap is tighter
    than .rux-card's own default --rux-space-3 — address/time/stats read as
    one grouped stop, not three separately-spaced sections. */
-.rux-itin__card {
-	--rux-itin-lead-w: 28px;
-	gap: 0;
-}
-.rux-itin__card > * + * {
+.rux-trip-itinerary__stop > * + * {
 	margin-top: var(--rux-stack-gap);
 }
 
-/* Label sits in its own row above the address field, with the more_horiz
-   trigger hanging off its right edge — absolutely positioned so the row's
-   height always comes from the label text's own line-height (line-height:1
-   at --rux-text-xs, see trip-panel.css), never from the taller icon-button
-   box next to it. */
-.rux-itin__label-row {
-	position: relative;
+/* Label row also hosts the inline trash control during delete mode. */
+.rux-trip-itinerary__label-row {
 	display: flex;
 	align-items: center;
-}
-.rux-itin__label-row [data-stop-menu] {
-	position: absolute;
-	right: 0;
-	top: 50%;
-	transform: translateY(-50%);
+	justify-content: space-between;
+	gap: var(--rux-space-2);
 }
 
-.rux-itin__fields {
+.rux-trip-itinerary__fields {
 	display: grid;
-	grid-template-columns: 1fr var(--rux-itin-lead-w, 28px);
+	grid-template-columns: 1fr var(--rux-trip-itinerary-lead-w, 28px);
 	column-gap: var(--rux-space-2);
 	align-items: end;
 }
-/* Trailing column is now always a bare spacer (see .rux-itin__label-row
-   above) — kept only so the address field's right edge still lines up with
-   the time-row/Miles-Drive row's reserved lead column. */
-/* Miles/Drive row: trailing column holds the drag handle instead of a bare
-   spacer — .rux-itin__stats-values does its own 2-column split and owns the
-   collapse animation, so this outer grid only needs 2 columns. The drag
-   handle is only ever in the DOM at all while stop.moveMode is true (see
-   dragHandleEl in itinerary.js) — armed via the stop-actions menu's "Move"
-   item, one-shot — so no CSS visibility toggle is needed here; it just
-   renders or it doesn't. */
-.rux-itin__fields--pair {
+/* Miles/Drive row: its trailing column hosts either the disclosure control
+   or a drag handle while the day is in reorder mode. */
+.rux-trip-itinerary__fields--pair {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) var(--rux-itin-lead-w, 28px);
+	grid-template-columns: minmax(0, 1fr) var(--rux-trip-itinerary-lead-w, 28px);
 	column-gap: var(--rux-space-2);
 }
 
-.rux-itin__stats-values {
+.rux-trip-itinerary__stats-values {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	column-gap: var(--rux-space-2);
@@ -263,26 +167,26 @@
 	overflow: hidden;
 	transition: max-height var(--rux-duration-base) var(--rux-ease-out);
 }
-.rux-itin__stats-values.is-expanded {
+.rux-trip-itinerary__stats-values.is-expanded {
 	max-height: calc(var(--rux-field-height) * 1.5);
 }
 
-.rux-itin__time-row {
+.rux-trip-itinerary__time-row {
 	display: grid;
-	grid-template-columns: 1fr 1fr var(--rux-itin-lead-w, 28px);
+	grid-template-columns: 1fr 1fr var(--rux-trip-itinerary-lead-w, 28px);
 	column-gap: var(--rux-space-2);
 	align-items: center;
 }
 
 /* Miles/Drive unit suffix — no field label above these, the unit inline
    with the value is the only cue for what it is. */
-.rux-itin__unit {
+.rux-trip-itinerary__unit {
 	margin-left: var(--rux-space-1);
 	color: var(--rux-fg-subtle);
 	font-size: var(--rux-text-xs);
 }
 
-.rux-itin__source {
+.rux-trip-itinerary__source {
 	color: var(--rux-fg-subtle);
 	font-size: var(--rux-text-2xs);
 	font-weight: var(--rux-weight-semibold);
@@ -290,11 +194,11 @@
 	text-transform: uppercase;
 }
 
-.rux-itin__source--manual {
+.rux-trip-itinerary__source--manual {
 	color: var(--rux-warning);
 }
 
-.rux-itin__source--stale {
+.rux-trip-itinerary__source--stale {
 	color: var(--rux-warning-bright);
 }
 
@@ -308,14 +212,14 @@
 	cursor: grabbing;
 }
 
-.rux-itin__stop.is-dragging,
-.rux-itin__day.is-dragging {
+.rux-trip-itinerary__stop.is-dragging,
+.rux-trip-itinerary__day.is-dragging {
 	opacity: 0.4;
 }
 
-.rux-itin__stop.is-drag-target .rux-itin__card,
-.rux-itin__day.is-drag-target {
-	border-top: 2px solid var(--rux-accent);
+.rux-trip-itinerary__stop.is-drag-target,
+.rux-trip-itinerary__day.is-drag-target {
+	box-shadow: inset 0 2px var(--rux-accent);
 }
 
 /* — Summary Route button stale state — */
@@ -339,17 +243,17 @@
 	color: var(--rux-fg-disabled);
 }
 
-.rux-itin__address-wrap {
+.rux-trip-itinerary__address-wrap {
 	position: relative;
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-itin__address-wrap .rux-input {
+.rux-trip-itinerary__address-wrap .rux-input {
 	text-overflow: ellipsis;
 }
 
-.rux-itin__addr-check {
+.rux-trip-itinerary__addr-check {
 	--_icon-size: var(--rux-icon-sm);
 	position: absolute;
 	right: var(--rux-space-2);
@@ -358,29 +262,15 @@
 	color: var(--rux-success-bright);
 	pointer-events: none;
 }
-.rux-itin__addr-check--stale {
+.rux-trip-itinerary__addr-check--stale {
 	color: var(--rux-warning-bright);
 }
 
-.rux-itin__address-wrap.is-verified .rux-input {
+.rux-trip-itinerary__address-wrap.is-verified .rux-input {
 	padding-right: calc(var(--rux-icon-sm, 14px) + var(--rux-space-2) * 2);
 }
 
-/* — Add-stop actions row — */
-
-.rux-itin__add-actions {
-	display: flex;
-	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-3);
-	margin-top: calc(var(--rux-space-3) * -1);
-	margin-bottom: calc(var(--rux-space-3) * -1);
-}
-
-.rux-itin__add-actions > .rux-button {
-	flex: 1;
-}
-
-.rux-itin__suggestions {
+.rux-trip-itinerary__suggestions {
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
 	min-width: 12rem;
@@ -394,11 +284,11 @@
 	box-shadow: var(--rux-elevation-4);
 }
 
-.rux-itin__suggestions[hidden] {
+.rux-trip-itinerary__suggestions[hidden] {
 	display: none;
 }
 
-.rux-itin__suggestion {
+.rux-trip-itinerary__suggestion {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
@@ -414,39 +304,20 @@
 	cursor: pointer;
 }
 
-.rux-itin__suggestion:hover,
-.rux-itin__suggestion:focus-visible {
+.rux-trip-itinerary__suggestion:hover,
+.rux-trip-itinerary__suggestion:focus-visible {
 	outline: none;
 	background: var(--rux-button-hover-overlay);
 }
 
-.rux-itin__suggestion-name {
+.rux-trip-itinerary__suggestion-name {
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 	line-height: var(--rux-leading-snug);
 }
 
-.rux-itin__suggestion-address {
+.rux-trip-itinerary__suggestion-address {
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
-}
-
-/* — Stop-actions menu (Expand/Move/Delete) —
-   Reuses .rux-menu/.rux-menu__item (css/base/navigation.css) for the menu
-   chrome/items; this just layers on the fixed-position popover behavior,
-   same as .rux-itin__suggestions above. */
-.rux-itin__stop-menu {
-	position: fixed;
-	z-index: var(--rux-z-dropdown);
-}
-.rux-itin__stop-menu[hidden] {
-	display: none;
-}
-
-/* Card currently armed for a one-shot drag (see stop.moveMode) — a subtle
-   cue that this is the one card that will move if you drag it right now. */
-.rux-itin__card.is-move-mode {
-	outline: var(--rux-border-width) solid var(--rux-accent);
-	outline-offset: -1px;
 }

@@ -1,0 +1,77 @@
+/* ==========================================================================
+   MENU
+   --------------------------------------------------------------------------
+   Popup action/context menu. Triggers remain standard .rux-button controls;
+   aria-haspopup="menu" and aria-expanded communicate their relationship.
+   Positioning belongs to the feature or popover controller.
+   ========================================================================== */
+
+.rux-menu {
+	display: flex;
+	flex-direction: column;
+	min-width: var(--rux-menu-min-width);
+	padding: var(--rux-menu-padding);
+	background: var(--rux-menu-bg);
+	color: var(--rux-menu-fg);
+	border: var(--rux-menu-border);
+	border-radius: var(--rux-menu-radius);
+	box-shadow: var(--rux-menu-shadow);
+}
+
+.rux-menu[hidden] {
+	display: none;
+}
+
+.rux-menu__item {
+	display: flex;
+	width: 100%;
+	min-height: var(--rux-menu-item-min-height);
+	align-items: center;
+	gap: var(--rux-menu-item-gap);
+	padding: var(--rux-menu-item-padding-block) var(--rux-menu-item-padding-inline);
+	background: transparent;
+	color: var(--rux-menu-fg);
+	border: var(--rux-border-width) solid transparent;
+	border-radius: var(--rux-menu-item-radius);
+	font: inherit;
+	font-size: var(--rux-menu-item-font-size);
+	text-align: left;
+	cursor: pointer;
+}
+
+.rux-menu__item:hover {
+	background: var(--rux-menu-item-hover-bg);
+}
+
+.rux-menu__item:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-ring-focus);
+}
+
+.rux-menu__item.is-active,
+.rux-menu__item[aria-checked="true"] {
+	background: var(--rux-menu-item-active-bg);
+}
+
+.rux-menu__item--danger {
+	color: var(--rux-danger);
+}
+
+.rux-menu__divider {
+	height: var(--rux-border-width);
+	margin: var(--rux-menu-padding) 0;
+	background: var(--rux-menu-divider);
+}
+
+.rux-menu__header {
+	padding: var(--rux-menu-item-padding-block) var(--rux-menu-item-padding-inline);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
+}
+
+.rux-menu__item > .rux-icon {
+	flex: none;
+}
