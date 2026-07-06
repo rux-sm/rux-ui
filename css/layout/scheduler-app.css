@@ -341,7 +341,7 @@
 	left: auto;
 	height: auto;
 	width: calc(var(--drawer-open-width, 372px) - var(--scheduler-app-gap));
-	min-width: 360px;
+	min-width: var(--rux-panel-min-width);
 	overflow: hidden;
 }
 
@@ -433,7 +433,7 @@
 
 .rux-right-panel {
 	height: 100%;
-	min-width: 360px;
+	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
 }
 

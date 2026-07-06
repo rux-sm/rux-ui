@@ -28,7 +28,7 @@
 
 .rux-trip-panel {
 	height: 100%;
-	min-width: 360px;
+	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
 }
 
@@ -787,24 +787,8 @@
 	}
 }
 
-@container (max-width: 300px) {
-	.rux-trip-panel > .rux-panel__tabs > .rux-tab {
-		flex-direction: column;
-		height: 42px;
-		padding: var(--rux-space-1) var(--rux-space-1);
-		gap: 3px;
-		line-height: 1;
-	}
-	.rux-trip-panel__tab-label--break {
-		display: block;
-	}
+@container (max-width: 430px) {
 	.rux-trip-panel__tab-label {
-		font-size: 10px;
-		font-weight: var(--rux-weight-medium);
-		letter-spacing: 0;
-		text-transform: none;
-	}
-	.rux-trip-panel__status-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;

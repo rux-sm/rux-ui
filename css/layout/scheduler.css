@@ -133,10 +133,10 @@
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-2);
 	background: var(--rux-surface-1);
-	border-radius: var(--rux-radius-lg);
-	height: 20px;
+	border-radius: var(--rux-radius-0);
+	height: 32px;
 	white-space: nowrap;
-	width: 192px;
+	width: 206px;
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {

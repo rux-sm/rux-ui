@@ -360,22 +360,37 @@
 	--rux-panel-tabs-shadow: var(--rux-edge-shadow-bottom);
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-padding: var(--rux-space-3);
-	--rux-panel-content-gap: var(--rux-space-3);
+	--rux-panel-content-gap: var(--rux-space-2);
 	--rux-panel-header-min-height: var(--rux-chrome-min-height);
 	--rux-panel-tabs-min-height: var(--rux-chrome-min-height);
 	--rux-panel-footer-min-height: var(--rux-chrome-min-height);
+
+	/* Drawer-style panels (trip/fleet/driver/right) host 2-up field rows
+	   (e.g. Start/End date) whose columns are minmax(0, 1fr) — this is the
+	   only thing stopping those columns from collapsing to unusable width.
+	   Deriving it from padding/border/gap tokens means it tracks those
+	   automatically instead of drifting out of sync with a bare px value. */
+	--rux-panel-min-field-width: 110px; /* solved so the derived total matches the prior 360px floor exactly */
+	--rux-panel-min-content-width: calc(
+		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
+	);
+	--rux-panel-min-width: calc(
+		var(--rux-panel-min-content-width)
+		+ (2 * var(--rux-panel-padding))
+		+ (2 * var(--rux-panel-border-width))
+	);
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
 
 	--rux-card-bg: var(--rux-surface-2);
 	--rux-card-fg: var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border: var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
 	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
 	--rux-card-radius: var(--rux-radius-md);
 	--rux-card-shadow: var(--rux-elevation-0);
 	--rux-card-padding: var(--rux-space-3);
-	--rux-card-content-gap: var(--rux-space-3);
+	--rux-card-content-gap: var(--rux-space-2);
 	--rux-card-header-min-height: var(--rux-chrome-min-height);
 	--rux-card-header-bg: var(--rux-card-bg);
 	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border-subtle);

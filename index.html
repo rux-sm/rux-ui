@@ -2133,13 +2133,16 @@
 
       // ── Resizable drawer ────────────────────────────────────────────────
 
-      const DRAWER_MIN = 376;
+      const GAP = 16;
+      // Panel floor is tokenized (--rux-panel-min-width in tokens.css); read the
+      // resolved px value off the panel itself rather than duplicating it here,
+      // so this stays in sync if the token's padding/border inputs ever change.
+      const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(tripPanel).minWidth)) + GAP;
       const DRAWER_SNAP_CLOSE = 200;
       const DRAWER_MAX = 640;
       const DRAWER_DEFAULT = 372;
       const DRAWER_STORAGE_KEY = "rux-drawer-width";
       const SCHEDULE_MIN = 471;
-      const GAP = 16;
       const HANDLE_DRAG_THRESHOLD = 5; // px of cursor movement before a click counts as a drag
 
       function initDrawerDrag(handle, drawerEl, storageKey, openFn, closeFn, getOtherDrawer, direction) {
