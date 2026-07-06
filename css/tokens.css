@@ -229,7 +229,7 @@
 	--rux-surface-0: oklch(from var(--rux-color-base) 0% c h);  /* App background */
 	--rux-surface-1: oklch(from var(--rux-color-base) 20% c h); /* Panels */
 	--rux-surface-2: oklch(from var(--rux-color-base) 28% c h); /* Cards */
-	--rux-surface-3: oklch(from var(--rux-color-base) 32% c h); /* Menus and popovers */
+	--rux-surface-3: oklch(from var(--rux-color-base) 36% c h); /* Menus and popovers */
 	--rux-surface-4: oklch(from var(--rux-color-base) 40% c h); /* Form controls */
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
@@ -458,14 +458,14 @@
 
 	/* ─── COMPONENT · menu ───────────────────────────────────────────────── */
 
-	--rux-menu-bg: var(--rux-surface-1);
+	--rux-menu-bg: var(--rux-surface-3);
 	--rux-menu-fg: var(--rux-fg);
 	--rux-menu-border: var(--rux-border-width) solid var(--rux-border);
 	--rux-menu-radius: var(--rux-radius-md);
 	--rux-menu-shadow: var(--rux-elevation-3);
 	--rux-menu-min-width: 200px;
 	--rux-menu-padding: var(--rux-space-1);
-	--rux-menu-item-min-height: var(--rux-control-height);
+	--rux-menu-item-height: var(--rux-button-height);
 	--rux-menu-item-padding-block: var(--rux-space-2);
 	--rux-menu-item-padding-inline: var(--rux-space-3);
 	--rux-menu-item-gap: var(--rux-space-2);

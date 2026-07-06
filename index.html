@@ -102,23 +102,27 @@
             </button>
 
             <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
+              class="rux-button rux-button--ghost rux-button--icon"
               type="button"
-              data-module="components"
+              id="nav-more-btn"
+              aria-label="More"
+              aria-haspopup="menu"
+              aria-expanded="false"
             >
-              <span class="rux-icon" aria-hidden="true">widgets</span>
-              Components
-            </button>
-
-            <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
-              type="button"
-              data-module="game"
-            >
-              <span class="rux-icon" aria-hidden="true">playing_cards</span>
-              Flip 7
+              <span class="rux-icon" aria-hidden="true">more_vert</span>
             </button>
           </nav>
+        </div>
+
+        <div class="rux-menu rux-popover" id="nav-more-menu" role="menu" hidden>
+          <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="components">
+            <span class="rux-icon" aria-hidden="true">widgets</span>
+            <span>Components</span>
+          </button>
+          <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="game">
+            <span class="rux-icon" aria-hidden="true">playing_cards</span>
+            <span>Flip 7</span>
+          </button>
         </div>
         <div class="scheduler-app__account">
           <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__profile" type="button" aria-label="Settings" data-module="settings">
@@ -1797,6 +1801,12 @@
 
       document.querySelectorAll(".scheduler-app__profile[data-module]").forEach((btn) => {
         btn.addEventListener("click", () => showModule(btn.dataset.module));
+      });
+
+      const navMoreBtn  = document.getElementById("nav-more-btn");
+      const navMoreMenu = document.getElementById("nav-more-menu");
+      navMoreBtn?.addEventListener("click", () => {
+        navMoreMenu.hidden ? window.RuxMenu.open(navMoreBtn, navMoreMenu, { placement: "bottom-end" }) : window.RuxMenu.close(navMoreMenu);
       });
 
       // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.

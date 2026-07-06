@@ -25,7 +25,7 @@
 .rux-menu__item {
 	display: flex;
 	width: 100%;
-	min-height: var(--rux-menu-item-min-height);
+	height: var(--rux-menu-item-height);
 	align-items: center;
 	gap: var(--rux-menu-item-gap);
 	padding: var(--rux-menu-item-padding-block) var(--rux-menu-item-padding-inline);

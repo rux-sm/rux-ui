@@ -133,6 +133,12 @@
 	min-width: 0;
 }
 
+/* Topbar menus must float above the mobile drawer, which sits at --rux-z-modal
+   while open (see "Drawer fills full viewport" below) */
+#nav-more-menu {
+	z-index: calc(var(--rux-z-modal) + 1);
+}
+
 .scheduler-app__topbar-start {
 	flex: 1 1 auto;
 	gap: var(--rux-space-3);
