@@ -122,6 +122,13 @@
 .flip-seven__board {
 	position: relative;
 	display: grid;
+	grid-template-columns: minmax(7rem, 0.8fr) minmax(12rem, 1.7fr) minmax(7rem, 0.8fr);
+	grid-template-rows: minmax(5.5rem, auto) minmax(8rem, 1fr) minmax(5.5rem, auto);
+	grid-template-areas:
+		".    top    ."
+		"left center right"
+		".    bottom .";
+	gap: var(--rux-space-3);
 	min-height: 25rem;
 	padding: var(--rux-space-3);
 	border: var(--rux-border-width) solid var(--rux-border);
@@ -130,13 +137,12 @@
 	box-shadow: var(--rux-inset-1);
 }
 .flip-seven__turn {
-	z-index: 1;
-	grid-area: 1 / 1;
+	grid-area: center;
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr) auto;
-	align-self: center;
 	width: min(100%, 18rem);
-	height: 13rem;
+	height: 100%;
+	min-height: 0;
 	justify-self: center;
 	padding: var(--rux-space-3);
 	border: var(--rux-border-width) solid var(--rux-border);
@@ -194,17 +200,7 @@
 	width: var(--rux-control-height-sm, 28px);
 	height: var(--rux-control-height-sm, 28px);
 }
-.flip-seven__hand {
-	display: grid;
-	grid-area: 1 / 1;
-	grid-template:
-		". top ." minmax(5.5rem, auto)
-		"left . right" minmax(8rem, 1fr)
-		". bottom ." minmax(5.5rem, auto)
-		/ minmax(7rem, 0.8fr) minmax(12rem, 1.7fr) minmax(7rem, 0.8fr);
-	gap: var(--rux-space-3);
-	pointer-events: none;
-}
+.flip-seven__hand { display: contents; }
 .flip-seven__player-hand {
 	display: grid;
 	min-width: 0;
@@ -304,16 +300,14 @@
 		padding: var(--rux-space-3);
 		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
 	}
-	.flip-seven__board { min-height: 28rem; padding: var(--rux-space-2); }
-	.flip-seven__hand {
-		grid-template:
-			". top ." minmax(6.5rem, auto)
-			"left . right" minmax(10rem, 1fr)
-			". bottom ." minmax(6.5rem, auto)
-			/ minmax(5.5rem, 0.75fr) minmax(8rem, 1.5fr) minmax(5.5rem, 0.75fr);
+	.flip-seven__board {
+		grid-template-columns: minmax(5.5rem, 0.75fr) minmax(8rem, 1.5fr) minmax(5.5rem, 0.75fr);
+		grid-template-rows: minmax(6.5rem, auto) minmax(10rem, 1fr) minmax(6.5rem, auto);
 		gap: var(--rux-space-2);
+		min-height: 28rem;
+		padding: var(--rux-space-2);
 	}
-	.flip-seven__turn { width: min(44%, 12rem); height: 13rem; padding: var(--rux-space-2); }
+	.flip-seven__turn { width: min(44%, 12rem); padding: var(--rux-space-2); }
 	.flip-seven__turn-status .flip-seven__eyebrow { display: none; }
 	.flip-seven__messages p { font-size: var(--rux-text-xs); }
 	.flip-seven__player-hand { padding: var(--rux-space-2); }
@@ -355,7 +349,9 @@
 	.flip-seven__table { padding: var(--rux-space-3); border-right: 0; border-left: 0; border-radius: 0; }
 	.flip-seven__score { grid-template-columns: 1.5rem minmax(0, 1fr) 2.25rem 2.25rem; }
 	.flip-seven__score .rux-avatar { display: none; }
-	.flip-seven__board { min-height: 25rem; }
-	.flip-seven__hand { grid-template-columns: minmax(4.75rem, 0.7fr) minmax(7rem, 1.4fr) minmax(4.75rem, 0.7fr); }
+	.flip-seven__board {
+		grid-template-columns: minmax(4.75rem, 0.7fr) minmax(7rem, 1.4fr) minmax(4.75rem, 0.7fr);
+		min-height: 25rem;
+	}
 	.flip-seven__turn { width: min(46%, 10rem); }
 }
