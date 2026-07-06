@@ -50,9 +50,7 @@
 	flex: 1;
 }
 .rux-trip-panel__status-group .rux-button {
-	gap: var(--rux-space-1);
 	min-width: 0;
-	padding-inline: var(--rux-space-2);
 }
 .rux-trip-panel__status-label,
 .rux-trip-panel__tab-label {
@@ -62,39 +60,6 @@
 .rux-trip-panel__tab-label--break {
 	display: none;
 }
-.rux-trip-panel__route-icon,
-.rux-trip-panel__po-icon,
-.rux-trip-panel__invoiced-icon,
-.rux-trip-panel__deposit-icon,
-.rux-trip-panel__signed-icon,
-.rux-trip-panel__fleet-icon {
-	background-color: currentColor;
-}
-.rux-trip-panel__route-icon {
-	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLW1hcC1waW4taWNvbiBsdWNpZGUtbWFwLXBpbiI+PHBhdGggZD0iTTIwIDEwYzAgNC45OTMtNS41MzkgMTAuMTkzLTcuMzk5IDExLjc5OWExIDEgMCAwIDEtMS4yMDIgMEM5LjUzOSAyMC4xOTMgNCAxNC45OTMgNCAxMGE4IDggMCAwIDEgMTYgMCIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTAiIHI9IjMiLz48L3N2Zz4=") center / contain no-repeat;
-	mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLW1hcC1waW4taWNvbiBsdWNpZGUtbWFwLXBpbiI+PHBhdGggZD0iTTIwIDEwYzAgNC45OTMtNS41MzkgMTAuMTkzLTcuMzk5IDExLjc5OWExIDEgMCAwIDEtMS4yMDIgMEM5LjUzOSAyMC4xOTMgNCAxNC45OTMgNCAxMGE4IDggMCAwIDEgMTYgMCIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTAiIHI9IjMiLz48L3N2Zz4=") center / contain no-repeat;
-}
-.rux-trip-panel__fleet-icon {
-	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWJ1cy1pY29uIGx1Y2lkZS1idXMiPjxwYXRoIGQ9Ik04IDZ2NiIvPjxwYXRoIGQ9Ik0xNSA2djYiLz48cGF0aCBkPSJNMiAxMmgxOS42Ii8+PHBhdGggZD0iTTE4IDE4aDNzLjUtMS43LjgtMi44Yy4xLS40LjItLjguMi0xLjIgMC0uNC0uMS0uOC0uMi0xLjJsLTEuNC01QzIwLjEgNi44IDE5LjEgNiAxOCA2SDRhMiAyIDAgMCAwLTIgMnYxMGgzIi8+PGNpcmNsZSBjeD0iNyIgY3k9IjE4IiByPSIyIi8+PHBhdGggZD0iTTkgMThoNSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTgiIHI9IjIiLz48L3N2Zz4=") center / contain no-repeat;
-	mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWJ1cy1pY29uIGx1Y2lkZS1idXMiPjxwYXRoIGQ9Ik04IDZ2NiIvPjxwYXRoIGQ9Ik0xNSA2djYiLz48cGF0aCBkPSJNMiAxMmgxOS42Ii8+PHBhdGggZD0iTTE4IDE4aDNzLjUtMS43LjgtMi44Yy4xLS40LjItLjguMi0xLjIgMC0uNC0uMS0uOC0uMi0xLjJsLTEuNC01QzIwLjEgNi44IDE5LjEgNiAxOCA2SDRhMiAyIDAgMCAwLTIgMnYxMGgzIi8+PGNpcmNsZSBjeD0iNyIgY3k9IjE4IiByPSIyIi8+PHBhdGggZD0iTTkgMThoNSIvPjxjaXJjbGUgY3g9IjE2IiBjeT0iMTgiIHI9IjIiLz48L3N2Zz4=") center / contain no-repeat;
-}
-.rux-trip-panel__signed-icon {
-	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWZpbGUtcGVuLWljb24gbHVjaWRlLWZpbGUtcGVuIj48cGF0aCBkPSJNMTIuNjU5IDIySDE4YTIgMiAwIDAgMCAyLTJWOGEyLjQgMi40IDAgMCAwLS43MDYtMS43MDZsLTMuNTg4LTMuNTg4QTIuNCAyLjQgMCAwIDAgMTQgMkg2YTIgMiAwIDAgMC0yIDJ2OS4zNCIvPjxwYXRoIGQ9Ik0xNCAydjVhMSAxIDAgMCAwIDEgMWg1Ii8+PHBhdGggZD0iTTEwLjM3OCAxMi42MjJhMSAxIDAgMCAxIDMgMy4wMDNMOC4zNiAyMC42MzdhMiAyIDAgMCAxLS44NTQuNTA2bC0yLjg2Ny44MzdhLjUuNSAwIDAgMS0uNjItLjYybC44MzYtMi44NjlhMiAyIDAgMCAxIC41MDYtLjg1M3oiLz48L3N2Zz4=") center / contain no-repeat;
-	mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWZpbGUtcGVuLWljb24gbHVjaWRlLWZpbGUtcGVuIj48cGF0aCBkPSJNMTIuNjU5IDIySDE4YTIgMiAwIDAgMCAyLTJWOGEyLjQgMi40IDAgMCAwLS43MDYtMS43MDZsLTMuNTg4LTMuNTg4QTIuNCAyLjQgMCAwIDAgMTQgMkg2YTIgMiAwIDAgMC0yIDJ2OS4zNCIvPjxwYXRoIGQ9Ik0xNCAydjVhMSAxIDAgMCAwIDEgMWg1Ii8+PHBhdGggZD0iTTEwLjM3OCAxMi42MjJhMSAxIDAgMCAxIDMgMy4wMDNMOC4zNiAyMC42MzdhMiAyIDAgMCAxLS44NTQuNTA2bC0yLjg2Ny44MzdhLjUuNSAwIDAgMS0uNjItLjYybC44MzYtMi44NjlhMiAyIDAgMCAxIC41MDYtLjg1M3oiLz48L3N2Zz4=") center / contain no-repeat;
-}
-.rux-trip-panel__po-icon {
-	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXJlY2VpcHQtaWNvbiBsdWNpZGUtcmVjZWlwdCI+PHBhdGggZD0iTTEyIDE3VjciLz48cGF0aCBkPSJNMTYgOGgtNmEyIDIgMCAwIDAgMCA0aDRhMiAyIDAgMCAxIDAgNEg4Ii8+PHBhdGggZD0iTTQgM2ExIDEgMCAwIDEgMS0xIDEuMyAxLjMgMCAwIDEgLjcuMmwuOTMzLjZhMS4zIDEuMyAwIDAgMCAxLjQgMGwuOTM0LS42YTEuMyAxLjMgMCAwIDEgMS40IDBsLjkzMy42YTEuMyAxLjMgMCAwIDAgMS40IDBsLjkzMy0uNmExLjMgMS4zIDAgMCAxIDEuNCAwbC45MzQuNmExLjMgMS4zIDAgMCAwIDEuNCAwbC45MzMtLjZBMS4zIDEuMyAwIDAgMSAxOSAyYTEgMSAwIDAgMSAxIDF2MThhMSAxIDAgMCAxLTEgMSAxLjMgMS4zIDAgMCAxLS43LS4ybC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzQuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTM0LS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLS43LjIgMSAxIDAgMCAxLTEtMXoiLz48L3N2Zz4=") center / contain no-repeat;
-	mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXJlY2VpcHQtaWNvbiBsdWNpZGUtcmVjZWlwdCI+PHBhdGggZD0iTTEyIDE3VjciLz48cGF0aCBkPSJNMTYgOGgtNmEyIDIgMCAwIDAgMCA0aDRhMiAyIDAgMCAxIDAgNEg4Ii8+PHBhdGggZD0iTTQgM2ExIDEgMCAwIDEgMS0xIDEuMyAxLjMgMCAwIDEgLjcuMmwuOTMzLjZhMS4zIDEuMyAwIDAgMCAxLjQgMGwuOTM0LS42YTEuMyAxLjMgMCAwIDEgMS40IDBsLjkzMy42YTEuMyAxLjMgMCAwIDAgMS40IDBsLjkzMy0uNmExLjMgMS4zIDAgMCAxIDEuNCAwbC45MzQuNmExLjMgMS4zIDAgMCAwIDEuNCAwbC45MzMtLjZBMS4zIDEuMyAwIDAgMSAxOSAyYTEgMSAwIDAgMSAxIDF2MThhMSAxIDAgMCAxLTEgMSAxLjMgMS4zIDAgMCAxLS43LS4ybC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzQuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTM0LS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLS43LjIgMSAxIDAgMCAxLTEtMXoiLz48L3N2Zz4=") center / contain no-repeat;
-}
-.rux-trip-panel__deposit-icon {
-	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWJhbmtub3RlLWFycm93LWRvd24taWNvbiBsdWNpZGUtYmFua25vdGUtYXJyb3ctZG93biI+PHBhdGggZD0iTTEyIDE4SDRhMiAyIDAgMCAxLTItMlY4YTIgMiAwIDAgMSAyLTJoMTZhMiAyIDAgMCAxIDIgMnY1Ii8+PHBhdGggZD0ibTE2IDE5IDMgMyAzLTMiLz48cGF0aCBkPSJNMTggMTJoLjAxIi8+PHBhdGggZD0iTTE5IDE2djYiLz48cGF0aCBkPSJNNiAxMmguMDEiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIyIi8+PC9zdmc+") center / contain no-repeat;
-	mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWJhbmtub3RlLWFycm93LWRvd24taWNvbiBsdWNpZGUtYmFua25vdGUtYXJyb3ctZG93biI+PHBhdGggZD0iTTEyIDE4SDRhMiAyIDAgMCAxLTItMlY4YTIgMiAwIDAgMSAyLTJoMTZhMiAyIDAgMCAxIDIgMnY1Ii8+PHBhdGggZD0ibTE2IDE5IDMgMyAzLTMiLz48cGF0aCBkPSJNMTggMTJoLjAxIi8+PHBhdGggZD0iTTE5IDE2djYiLz48cGF0aCBkPSJNNiAxMmguMDEiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIyIi8+PC9zdmc+") center / contain no-repeat;
-}
-.rux-trip-panel__invoiced-icon {
-	-webkit-mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXJlY2VpcHQtdGV4dC1pY29uIGx1Y2lkZS1yZWNlaXB0LXRleHQiPjxwYXRoIGQ9Ik0xMyAxNkg4Ii8+PHBhdGggZD0iTTE0IDhIOCIvPjxwYXRoIGQ9Ik0xNiAxMkg4Ii8+PHBhdGggZD0iTTQgM2ExIDEgMCAwIDEgMS0xIDEuMyAxLjMgMCAwIDEgLjcuMmwuOTMzLjZhMS4zIDEuMyAwIDAgMCAxLjQgMGwuOTM0LS42YTEuMyAxLjMgMCAwIDEgMS40IDBsLjkzMy42YTEuMyAxLjMgMCAwIDAgMS40IDBsLjkzMy0uNmExLjMgMS4zIDAgMCAxIDEuNCAwbC45MzQuNmExLjMgMS4zIDAgMCAwIDEuNCAwbC45MzMtLjZBMS4zIDEuMyAwIDAgMSAxOSAyYTEgMSAwIDAgMSAxIDF2MThhMSAxIDAgMCAxLTEgMSAxLjMgMS4zIDAgMCAxLS43LS4ybC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzQuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTM0LS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLS43LjIgMSAxIDAgMCAxLTEtMXoiLz48L3N2Zz4=") center / contain no-repeat;
-	mask: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLXJlY2VpcHQtdGV4dC1pY29uIGx1Y2lkZS1yZWNlaXB0LXRleHQiPjxwYXRoIGQ9Ik0xMyAxNkg4Ii8+PHBhdGggZD0iTTE0IDhIOCIvPjxwYXRoIGQ9Ik0xNiAxMkg4Ii8+PHBhdGggZD0iTTQgM2ExIDEgMCAwIDEgMS0xIDEuMyAxLjMgMCAwIDEgLjcuMmwuOTMzLjZhMS4zIDEuMyAwIDAgMCAxLjQgMGwuOTM0LS42YTEuMyAxLjMgMCAwIDEgMS40IDBsLjkzMy42YTEuMyAxLjMgMCAwIDAgMS40IDBsLjkzMy0uNmExLjMgMS4zIDAgMCAxIDEuNCAwbC45MzQuNmExLjMgMS4zIDAgMCAwIDEuNCAwbC45MzMtLjZBMS4zIDEuMyAwIDAgMSAxOSAyYTEgMSAwIDAgMSAxIDF2MThhMSAxIDAgMCAxLTEgMSAxLjMgMS4zIDAgMCAxLS43LS4ybC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzQuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTMzLS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLTEuNCAwbC0uOTM0LS42YTEuMyAxLjMgMCAwIDAtMS40IDBsLS45MzMuNmExLjMgMS4zIDAgMCAxLS43LjIgMSAxIDAgMCAxLTEtMXoiLz48L3N2Zz4=") center / contain no-repeat;
-}
-
 /* — Body / panes — */
 
 .rux-trip-panel__body {
@@ -120,27 +85,20 @@
 /* Where do buttons go in a card? Sort by what the control DOES, not by
    habit — three cases, each with one correct spot:
 
-   1. Data toggle/switch (Trip Requirements chips, Billing step switches,
-      Fleet's co-driver/relief/status buttons, Itinerary's stats-expand
-      chevron) — represents a state, not a one-shot action. Lives inline
-      wherever that piece of data naturally sits in the row/content flow.
-      Never restricted to a header or footer.
-   2. List-management action — Add/Upload/Delete (Payments, Trip Contacts,
-      Documents, Itinerary's Stop/Sleep/End day buttons) — always at the
-      BOTTOM of the card, immediately after the list it affects. Matches
-      where a user looks for "add the next one."
+   1. Data toggle/switch (Trip Requirements chips and Billing step
+      switches) — represents a state, not a one-shot action. Lives inline
+      wherever that piece of data naturally sits in the content flow.
+   2. List-management action — Add/Delete (Payments, Trip Contacts,
+      Documents and itinerary days) — lives in the HEADER so every titled
+      card exposes the same predictable action area.
    3. Section-wide toolbar action (Itinerary's Upload JSON / Calculate) —
-      acts on the whole section right now and must stay reachable without
-      scrolling past a long list, so it lives in the HEADER, trailing the
-      title.
+      also lives in the HEADER, trailing the title. Neutral utilities use
+      ghost, destructive utilities use ghost + danger, and Add uses default.
 
-   Repeating list-item cards with no natural title of their own (Itinerary
-   stops — identity comes from the badge) keep their first row to ONE
-   primary field next to the badge; give any other control cluster its own
-   row rather than crowding row one. Fleet's bus-groups follow the same
-   instinct even though they're titled ("Bus 1", "Bus 2", ...): the bus
-   picker gets its own full-width row, and the co-driver/relief toggles get
-   their own row right below it rather than sharing space with the picker. */
+   Repeating list-item cards keep their primary field uncluttered. Actions
+   that affect the whole titled card belong in its header: Fleet bus cards
+   therefore keep the bus picker full-width and place their optional-role
+   toggles in the header. */
 
 /* Row spacing uses margin-top on every row but the first (via `> * + *`)
    instead of a flex `gap` — a `gap` applies uniformly to every child with
@@ -599,19 +557,6 @@
 		border-color var(--rux-duration-fast) var(--rux-ease-out),
 		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-trip-panel__number-btn {
-	--_h: var(--rux-field-height);
-	width: var(--rux-field-height);
-	height: var(--rux-field-height);
-	padding: 0;
-	border-radius: 0;
-}
-.rux-trip-panel__number-btn:first-child {
-	border-right: var(--rux-border-width) solid var(--rux-border-subtle);
-}
-.rux-trip-panel__number-btn:last-child {
-	border-left: var(--rux-border-width) solid var(--rux-border-subtle);
-}
 .rux-trip-panel__number-input {
 	width: 100%;
 	min-width: 0;
@@ -655,28 +600,6 @@
 .rux-trip-panel__bus-head .rux-select {
 	flex: 1;
 }
-/* Full-width row of equal-share toggles below the bus picker, instead of
-   competing with it for space in the same row. */
-.rux-trip-panel__bus-roles {
-	display: flex;
-	gap: var(--rux-control-content-gap);
-}
-/* min-width:0 overrides the flex default of min-width:auto, which floors
-   a flex item at its own content width — without it, "Co-driver" (longer
-   label) refuses to shrink to its fair third, so the row renders uneven
-   even though every button has flex:1. The label itself needs the same
-   min-width:0 (it's the flex item that's actually too wide) plus
-   overflow/ellipsis so it truncates gracefully if space ever gets tight,
-   instead of visually overflowing its button. */
-.rux-trip-panel__bus-roles > .rux-button {
-	flex: 1;
-	min-width: 0;
-}
-.rux-trip-panel__bus-roles > .rux-button .rux-btn-label {
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 .rux-trip-panel__bus-hint {
 	font-size: var(--rux-text-xs);
 	color: var(--rux-fg-subtle);
@@ -691,7 +614,7 @@
 }
 .rux-trip-panel__driver-row {
 	display: grid;
-	grid-template-columns: 28px 1fr 96px;
+	grid-template-columns: minmax(0, 1fr) 96px;
 	gap: var(--rux-control-content-gap);
 	align-items: start;
 }
@@ -709,24 +632,17 @@
 	letter-spacing: var(--rux-tracking-wide);
 }
 
-/* Real button now (was a bare icon span) — plain .rux-button gives it the
-   standard control-scrim background at rest, same as the adjacent
-   co-driver/relief toggle buttons in .rux-trip-panel__bus-head, and that
-   chrome never changes. Status is communicated purely by the icon: solid
-   white by default, solid red/bright yellow/bright green when cycled —
-   always the filled glyph variant (--_icon-fill), never a background fill. */
-.rux-trip-panel__role-label {
-	--_fg: var(--rux-fg);
-}
-.rux-trip-panel__role-label.rux-role--danger  { --_fg: var(--rux-danger-bright); }
-.rux-trip-panel__role-label.rux-role--warning { --_fg: var(--rux-warning-bright); }
-.rux-trip-panel__role-label.rux-role--success { --_fg: var(--rux-success-bright); }
-
-.rux-trip-panel__role-label .rux-icon {
-	--_icon-size: var(--rux-icon-md);
-	--_icon-optical-size: var(--rux-icon-optical-size-md);
+/* The button keeps standard RUX chrome; only its status glyph changes color. */
+.rux-trip-panel__role-label:is(
+	.rux-role--pending-assignment,
+	.rux-role--pending-response,
+	.rux-role--confirmed
+) .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
 }
+.rux-trip-panel__role-label.rux-role--pending-assignment .rux-icon { color: var(--rux-danger-bright); }
+.rux-trip-panel__role-label.rux-role--pending-response .rux-icon   { color: var(--rux-warning-bright); }
+.rux-trip-panel__role-label.rux-role--confirmed .rux-icon          { color: var(--rux-success-bright); }
 .rux-trip-panel__role-col {
 	display: flex;
 	flex-direction: column;

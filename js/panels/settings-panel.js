@@ -408,7 +408,7 @@
     return order.map((status) => {
       const item = meta[status] || { label: status, badgeClass: "rux-badge--info", icon: "" };
       const label = labelOverrides[status] || item.label;
-      const iconHtml = item.icon ? `<span class="rux-icon rux-icon--sm">${escHtml(item.icon)}</span>` : "";
+      const iconHtml = item.icon ? `<span class="rux-icon">${escHtml(item.icon)}</span>` : "";
       return `<label class="settings-billing-confirm">
         <input type="checkbox" ${selected.has(status) ? "checked" : ""} data-confirm-status="${status}" />
         <span class="rux-badge ${escHtml(item.badgeClass)}">${iconHtml}${escHtml(label)}</span>

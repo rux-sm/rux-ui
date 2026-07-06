@@ -672,9 +672,9 @@ export function createTripBar(trip, callbacks = {}) {
 
   const ROLE_ICONS = {
     "driver": "person",
-    "co-driver": "person_add",
-    "relief-start": "last_page",
-    "relief-end": "first_page",
+    "co-driver": "group",
+    "relief-start": "person_add",
+    "relief-end": "person_remove",
   };
 
   const drivers = document.createElement("div");
@@ -683,22 +683,34 @@ export function createTripBar(trip, callbacks = {}) {
 
   const roleStateMap = {};
   (trip.activeRoles || ["driver"]).forEach((entry) => {
-    const [role, state] = entry.includes(":") ? entry.split(":") : [entry, "default"];
-    roleStateMap[role] = state;
+    const [role, savedState] = entry.includes(":") ? entry.split(":") : [entry, "off"];
+    const legacyState = {
+      default: "off",
+      danger: "pending-assignment",
+      warning: "pending-response",
+      success: "confirmed",
+    };
+    roleStateMap[role] = legacyState[savedState] || savedState || "off";
   });
 
   const STATUS_COLORS = {
-    "danger": "var(--rux-danger-bright)",
-    "warning": "var(--rux-warning-bright)",
-    "success": "var(--rux-success-bright)",
+    "pending-assignment": "var(--rux-danger-bright)",
+    "pending-response": "var(--rux-warning-bright)",
+    "confirmed": "var(--rux-success-bright)",
   };
+
+  function applyDriverStatus(iconEl, state) {
+    if (!STATUS_COLORS[state]) return;
+    iconEl.style.color = STATUS_COLORS[state];
+    iconEl.style.setProperty("--_icon-fill", "var(--rux-icon-fill-selected)");
+  }
 
   (trip.drivers || []).forEach((driver) => {
     const item = document.createElement("span");
     item.className = "rux-trip-bar__driver";
     const roleIcon = icon(ROLE_ICONS[driver.role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
     const state = roleStateMap[driver.role];
-    if (state && STATUS_COLORS[state]) roleIcon.style.color = STATUS_COLORS[state];
+    applyDriverStatus(roleIcon, state);
     const nameEl = document.createElement("span");
     nameEl.className = "rux-trip-bar__driver-name";
     nameEl.textContent = driver.shortName || driver.name;
@@ -708,12 +720,13 @@ export function createTripBar(trip, callbacks = {}) {
 
   const activeRoles = trip.activeRoles || ["driver"];
   activeRoles.forEach((entry) => {
-    const [role, state] = entry.includes(":") ? entry.split(":") : [entry, "default"];
+    const [role] = entry.includes(":") ? entry.split(":") : [entry];
+    const state = roleStateMap[role] || "off";
     if (!assignedRoles.has(role)) {
       const item = document.createElement("span");
       item.className = "rux-trip-bar__driver rux-trip-bar__driver--unassigned";
       const roleIcon = icon(ROLE_ICONS[role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
-      if (state && STATUS_COLORS[state]) roleIcon.style.color = STATUS_COLORS[state];
+      applyDriverStatus(roleIcon, state);
       item.appendChild(roleIcon);
       drivers.appendChild(item);
     }
@@ -786,7 +799,7 @@ export function createTripBar(trip, callbacks = {}) {
   expandBtn.type = "button";
   expandBtn.className =
     "rux-button rux-button--ghost rux-button--icon rux-trip-bar__expand";
-  const expandIcon = icon("keyboard_arrow_down", "rux-icon rux-trip-bar__expand-icon");
+  const expandIcon = icon("keyboard_arrow_down", "rux-icon rux-button__disclosure-icon");
   expandBtn.append(expandIcon);
   meta.appendChild(expandBtn);
 
@@ -840,7 +853,7 @@ export function createTripBar(trip, callbacks = {}) {
       const conflict = document.createElement("div");
       conflict.className = "rux-trip-bar__conflict";
       conflict.append(
-        icon("alert-triangle", "rux-icon rux-icon--sm"),
+        icon("alert-triangle", "rux-icon"),
         document.createTextNode(`Conflict: ${trip.conflict}`),
       );
       bar.appendChild(conflict);
@@ -852,7 +865,7 @@ export function createTripBar(trip, callbacks = {}) {
       const conflict = document.createElement("div");
       conflict.className = "rux-trip-bar__conflict";
       conflict.append(
-        icon("alert-triangle", "rux-icon rux-icon--sm"),
+        icon("alert-triangle", "rux-icon"),
         document.createTextNode(`Conflict: ${trip.conflict}`),
       );
       bar.appendChild(conflict);

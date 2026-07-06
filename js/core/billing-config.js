@@ -159,7 +159,7 @@
 			: "rux-badge--danger";
 		el.className = `rux-badge ${badgeClass} rux-trip-panel__billing-status`;
 		el.innerHTML = meta.icon
-			? `<span class="rux-icon rux-icon--sm">${meta.icon}</span>${meta.label}`
+			? `<span class="rux-icon">${meta.icon}</span>${meta.label}`
 			: meta.label;
 		
 	}

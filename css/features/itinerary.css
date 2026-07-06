@@ -47,6 +47,10 @@
 
 /* The pane supplies the outer inset; the card owns its internal anatomy. */
 
+.rux-trip-itinerary__summary {
+	container-type: inline-size;
+}
+
 .rux-trip-itinerary__summary-grid {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -60,8 +64,19 @@
 }
 
 .rux-trip-itinerary__summary-actions > .rux-button {
-	flex: 1;
+	flex: none;
 	width: auto;
+}
+
+@container (max-width: 32rem) {
+	.rux-trip-itinerary__summary-actions .rux-btn-label {
+		display: none;
+	}
+
+	.rux-trip-itinerary__summary-actions > .rux-button {
+		width: var(--rux-control-height);
+		padding-inline: 0;
+	}
 }
 
 /* — Day card — */
@@ -81,10 +96,13 @@
    uses) with the stat grid inline beside it — one row, not a header row
    plus a separate full-width stat row below. */
 .rux-trip-itinerary__day-header {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) var(--rux-trip-itinerary-lead-w, 28px);
+	display: flex;
 	align-items: center;
-	column-gap: var(--rux-space-2);
+}
+
+.rux-trip-itinerary__day-header .rux-trip-itinerary__day-stats {
+	flex: 1;
+	min-width: 0;
 }
 
 /* Same 3-col boxed stat grid as .rux-trip-itinerary__summary-grid (Route Summary),
@@ -115,15 +133,8 @@
 /* — Stop-type badge — see css/badges.css — */
 
 /* — Card content columns —
-   Every row in a stop card lines up on the same two columns: a fixed-width
-   "trailing" column (the badge, or an empty spacer for the time row and
-   Miles/Drive) and a content column that always starts flush with the card
-   edge. The trailing column sits on the RIGHT — badge/chevron read as
-   actions attached to the content, not a leading label — so the address
-   field, time inputs, and stats values all line up on the left, with the
-   badge/chevron/spacer sharing one column on the right. --rux-trip-itinerary-lead-w
-   is also read by .rux-trip-itinerary__badge's fixed width in badges.css, so the two
-   stay in sync from one place.
+   Address and time rows fill the section width. Their mode-specific action
+   controls collapse to zero width until Delete or Reorder is active.
 
    Row spacing uses margin-top on every row but the first (via the `> * + *`
    adjacent-sibling rule below) instead of a flex `gap` — a `gap` on the
@@ -146,17 +157,12 @@
 }
 
 .rux-trip-itinerary__fields {
-	display: grid;
-	grid-template-columns: 1fr var(--rux-trip-itinerary-lead-w, 28px);
-	column-gap: var(--rux-space-2);
+	display: flex;
 	align-items: end;
 }
-/* Miles/Drive row: its trailing column hosts either the disclosure control
-   or a drag handle while the day is in reorder mode. */
+/* Statistics span the full section; expansion is controlled by the day header. */
 .rux-trip-itinerary__fields--pair {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) var(--rux-trip-itinerary-lead-w, 28px);
-	column-gap: var(--rux-space-2);
+	display: block;
 }
 
 .rux-trip-itinerary__stats-values {
@@ -172,10 +178,55 @@
 }
 
 .rux-trip-itinerary__time-row {
-	display: grid;
-	grid-template-columns: 1fr 1fr var(--rux-trip-itinerary-lead-w, 28px);
-	column-gap: var(--rux-space-2);
+	display: flex;
 	align-items: center;
+}
+
+.rux-trip-itinerary__time-row > .rux-input {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-trip-itinerary__time-row > .rux-input + .rux-input {
+	margin-left: var(--rux-space-2);
+}
+
+.rux-trip-itinerary__inline-action {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 0;
+	height: var(--rux-field-height);
+	margin-left: 0;
+	overflow: hidden;
+	opacity: 0;
+	padding: 0;
+	background: none;
+	border: none;
+	color: var(--rux-fg-muted);
+	cursor: pointer;
+	pointer-events: none;
+	transition:
+		width var(--rux-duration-base) var(--rux-ease-out),
+		margin-left var(--rux-duration-base) var(--rux-ease-out),
+		opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-trip-itinerary__inline-action--delete {
+	color: var(--rux-danger);
+}
+
+.rux-trip-itinerary__inline-action--move {
+	cursor: grab;
+}
+
+.rux-trip-itinerary__day-group.is-deleting .rux-trip-itinerary__inline-action--delete,
+.rux-trip-itinerary__day-group.is-reordering .rux-trip-itinerary__inline-action--move {
+	width: var(--rux-field-height);
+	margin-left: var(--rux-space-2);
+	opacity: 1;
+	pointer-events: auto;
 }
 
 /* Miles/Drive unit suffix — no field label above these, the unit inline
@@ -254,7 +305,6 @@
 }
 
 .rux-trip-itinerary__addr-check {
-	--_icon-size: var(--rux-icon-sm);
 	position: absolute;
 	right: var(--rux-space-2);
 	top: 50%;

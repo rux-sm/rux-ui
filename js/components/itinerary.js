@@ -430,10 +430,12 @@
 			.join("");
 
 		return `
-      <header class="rux-card__header"><span class="rux-card__title">Itinerary</span></header>
-      <div class="rux-card__body rux-card__body--stack">
-        <div class="rux-trip-itinerary__summary-grid">${statsHtml}</div>
+      <header class="rux-card__header">
+        <span class="rux-card__title">Trip Summary</span>
         <div class="rux-trip-itinerary__summary-actions"></div>
+      </header>
+      <div class="rux-card__body">
+        <div class="rux-trip-itinerary__summary-grid">${statsHtml}</div>
       </div>`;
 	}
 
@@ -479,7 +481,7 @@
 		return `${weekday.slice(0, 3).toUpperCase()} · ${month.slice(0, 3).toUpperCase()} ${day}`;
 	}
 
-	function renderDay(item, idx, stops, modes = {}) {
+	function renderDay(item, idx, stops) {
 		const stats = computeSegmentStats(stops, idx);
 		const label = formatDayLabel(item.label);
 		const dayNum = dayNumberFor(stops, idx);
@@ -488,11 +490,9 @@
         <label class="rux-field__label">End of Day ${dayNum}</label>
         <div class="rux-trip-itinerary__day-header">
           ${renderDayStatsGrid(stats)}
-          ${modes.deleting
-			? `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--icon" data-inline-delete aria-label="Delete End of Day ${dayNum}">
+          <button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete End of Day ${dayNum}">
 				<span class="rux-icon" aria-hidden="true">delete</span>
-			</button>`
-			: '<span class="rux-trip-itinerary__lead-spacer" aria-hidden="true"></span>'}
+			</button>
         </div>
       </section>`;
 	}
@@ -534,7 +534,7 @@
 		return "";
 	}
 
-	function renderStop(stop, idx, stops, modes = {}) {
+	function renderStop(stop, idx, stops) {
 		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
 		const isReturn = type === "return";
 		const isPickup = type === "pickup";
@@ -584,22 +584,19 @@
              </div>`;
 
 		const isDraggable = type !== "pickup" && type !== "return";
-		const deleteControl = modes.deleting && isDraggable
-			? `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--icon rux-button--xs" data-inline-delete aria-label="Delete ${TYPE_LABEL[type]}">
+		const deleteControl = isDraggable
+			? `<button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete ${TYPE_LABEL[type]}">
 				<span class="rux-icon" aria-hidden="true">delete</span>
 			</button>`
 			: "";
 		const fieldLabel = `<div class="rux-trip-itinerary__label-row">
               <label class="rux-field__label" for="${addrFieldId}">${escHtml(fieldLabelFor(stops, idx, type))}</label>
-              ${deleteControl}
             </div>`;
-		const trailingControl = isDraggable && modes.reordering
-			? `<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-drag-handle aria-label="Drag to reorder ${TYPE_LABEL[type]}">
+		const moveControl = isDraggable
+			? `<button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--move" data-drag-handle aria-label="Drag to reorder ${TYPE_LABEL[type]}">
               <span class="rux-icon" aria-hidden="true">drag_indicator</span>
             </button>`
-			: `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--xs" data-toggle-stats aria-label="${stop.statsExpanded ? "Collapse" : "Expand"} ${TYPE_LABEL[type]} statistics">
-				<span class="rux-icon" aria-hidden="true">${stop.statsExpanded ? "expand_less" : "expand_more"}</span>
-			</button>`;
+			: "";
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
 		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";
@@ -609,24 +606,23 @@
       <output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
 
 		return `
-      <section class="rux-card__section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}" data-stop-idx="${idx}"${isDraggable && modes.reordering ? ' draggable="true"' : ""}>
+      <section class="rux-card__section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
           ${fieldLabel}
           <div class="rux-trip-itinerary__fields">
             ${addrEl}
-            <span class="rux-trip-itinerary__lead-spacer" aria-hidden="true"></span>
+            ${deleteControl}
           </div>
           <div class="rux-trip-itinerary__time-row">
             <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
                    aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
             <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
                    aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
-            <span class="rux-trip-itinerary__lead-spacer" aria-hidden="true"></span>
+            ${moveControl}
           </div>
           <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
             <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
               ${statsInner}
             </div>
-            ${trailingControl}
           </div>
       </section>`;
 	}
@@ -674,6 +670,7 @@
 				: stale
 				? "Recalculate route updates"
 				: "Recalculate route";
+			recalcBtn.setAttribute("aria-label", routable ? "Recalculate route" : "Calculate route");
 			const label = recalcBtn.querySelector("[data-recalc-label]");
 			if (label) label.textContent = routable ? "Recalculate" : "Calculate";
 		}
@@ -699,16 +696,19 @@
 			let daySections = "";
 			let dayCanDelete = false;
 			let dayCanReorder = false;
+			let dayExpandableCount = 0;
+			let dayExpandedCount = 0;
 			const dayCards = [];
 			const closeDayCard = () => {
 				if (!daySections) return;
 				dayCards.push(`
-					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">
+					<article class="rux-card rux-trip-itinerary__day-group${activeDayMode.day === dayNumber && activeDayMode.mode === "delete" ? " is-deleting" : ""}${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? " is-reordering" : ""}" data-day-number="${dayNumber}">
 						<header class="rux-card__header">
 							<h3 class="rux-card__title">Day ${dayNumber}</h3>
 							<div class="rux-cluster">
-								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-mode="reorder" ${dayCanReorder ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder"}" aria-label="Reorder Day ${dayNumber} stops"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? "close" : "swap_vert"}</span></button>
 								<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--icon" data-day-mode="delete" ${dayCanDelete ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "delete"}" aria-label="Delete from Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "delete" ? "close" : "delete"}</span></button>
+								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-mode="reorder" ${dayCanReorder ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder"}" aria-label="Reorder Day ${dayNumber} stops"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? "close" : "swap_vert"}</span></button>
+								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 								<button type="button" class="rux-button rux-button--default rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">add</span></button>
 							</div>
 						</header>
@@ -717,6 +717,8 @@
 				daySections = "";
 				dayCanDelete = false;
 				dayCanReorder = false;
+				dayExpandableCount = 0;
+				dayExpandedCount = 0;
 				dayNumber += 1;
 			};
 
@@ -727,13 +729,13 @@
 				} else if (item.type === "day") {
 					dayCanDelete = true;
 				}
-				const modes = {
-					deleting: activeDayMode.day === dayNumber && activeDayMode.mode === "delete",
-					reordering: activeDayMode.day === dayNumber && activeDayMode.mode === "reorder",
-				};
+				if (item.type !== "day") {
+					dayExpandableCount += 1;
+					if (item.statsExpanded) dayExpandedCount += 1;
+				}
 				daySections += item.type === "day"
-					? renderDay(item, idx, stops, modes)
-					: renderStop(item, idx, stops, modes);
+					? renderDay(item, idx, stops)
+					: renderStop(item, idx, stops);
 				if (item.type === "day") closeDayCard();
 			});
 			daySections += renderFinalDaySummary(stops);
@@ -796,7 +798,7 @@
 			const hasEndDay = stops[insertIndex]?.type === "day";
 			dayAddMenu.innerHTML = `
 				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="stop"><span class="rux-icon" aria-hidden="true">location_on</span>Add stop</button>
-				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="sleeper"><span class="rux-icon" aria-hidden="true">hotel</span>Add sleeper</button>
+				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="sleeper"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span>Add sleeper</button>
 				${hasEndDay ? "" : '<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="day"><span class="rux-icon" aria-hidden="true">event_busy</span>End day</button>'}`;
 			window.RuxMenu.open(trigger, dayAddMenu, { placement: "bottom-end" });
 		};
@@ -1085,6 +1087,7 @@
 			if (recalcBtn) {
 				recalcBtn.disabled = true;
 				recalcBtn.classList.add("is-routing");
+				recalcBtn.setAttribute("aria-label", "Calculating route");
 				if (recalcLabel) recalcLabel.textContent = "Calculating…";
 			}
 			let routed = 0;
@@ -1215,6 +1218,17 @@
 
 		/* — day header actions and inline section controls — */
 		stopsEl.addEventListener("click", (e) => {
+			const expandButton = e.target.closest("[data-day-expand]");
+			if (expandButton) {
+				const group = expandButton.closest("[data-day-number]");
+				const indices = Array.from(group?.querySelectorAll("[data-stop-idx]") || [])
+					.map((section) => Number(section.dataset.stopIdx))
+					.filter((idx) => stops[idx] && stops[idx].type !== "day");
+				const expand = !indices.every((idx) => stops[idx].statsExpanded);
+				indices.forEach((idx) => { stops[idx].statsExpanded = expand; });
+				renderStopList();
+				return;
+			}
 			const modeButton = e.target.closest("[data-day-mode]");
 			if (modeButton) {
 				closeDayAddMenu();
@@ -1222,7 +1236,17 @@
 				const mode = modeButton.dataset.dayMode;
 				const alreadyActive = activeDayMode.day === day && activeDayMode.mode === mode;
 				activeDayMode = alreadyActive ? { day: null, mode: null } : { day, mode };
-				renderStopList();
+				stopsEl.querySelectorAll("[data-day-number]").forEach((group) => {
+					const groupDay = Number(group.dataset.dayNumber);
+					group.classList.toggle("is-deleting", activeDayMode.day === groupDay && activeDayMode.mode === "delete");
+					group.classList.toggle("is-reordering", activeDayMode.day === groupDay && activeDayMode.mode === "reorder");
+					group.querySelectorAll("[data-day-mode]").forEach((button) => {
+						const active = activeDayMode.day === groupDay && activeDayMode.mode === button.dataset.dayMode;
+						button.setAttribute("aria-pressed", String(active));
+						const icon = button.querySelector(".rux-icon");
+						if (icon) icon.textContent = active ? "close" : button.dataset.dayMode === "delete" ? "delete" : "swap_vert";
+					});
+				});
 				return;
 			}
 			const addButton = e.target.closest("[data-day-add]");
@@ -1235,13 +1259,6 @@
 				} else {
 					openDayAddMenu(day, addButton);
 				}
-				return;
-			}
-			const statsButton = e.target.closest("[data-toggle-stats]");
-			if (statsButton) {
-				const idx = Number(statsButton.closest("[data-stop-idx]")?.dataset.stopIdx);
-				if (stops[idx]) stops[idx].statsExpanded = !stops[idx].statsExpanded;
-				renderStopList();
 				return;
 			}
 			const deleteButton = e.target.closest("[data-inline-delete]");

@@ -62,17 +62,15 @@
   }
 
   const TYPE_ICONS = {
-    Motorcoach: { customClass: "rux-icon--bus-side" },
-    Sprinter:  { customClass: "rux-icon--van" },
+    Motorcoach: { material: "directions_bus" },
+    Sprinter:  { material: "airport_shuttle" },
     Car:       { material: "directions_car" },
     Truck:     { material: "local_shipping" },
   };
 
   function vehicleIconHtml(type) {
     const icon = TYPE_ICONS[type] || TYPE_ICONS.Motorcoach;
-    return icon.customClass
-      ? `<span class="rux-icon ${icon.customClass}"></span>`
-      : `<span class="rux-icon">${icon.material}</span>`;
+    return `<span class="rux-icon">${icon.material}</span>`;
   }
 
   function updateTypeIcon() {
@@ -187,7 +185,7 @@
       head: `<th scope="col" data-col="order" class="col-order" data-sort="order">#</th>`,
       cell: b => `<td data-col="order" class="col-order fleet-app__order">${b.sort_order ?? "—"}</td>` },
     { key: "status",           label: "Status",           defaultOn: true,
-      head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
+      head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
       cell: b => { const s = statusMeta(b.status); return `<td data-col="status"><span class="rux-badge rux-badge--dot ${s.cls}">${s.label}</span></td>`; } },
     { key: "type",             label: "Type",             defaultOn: false,
       head: `<th scope="col" data-col="type" data-sort="type">Type</th>`,
@@ -589,7 +587,7 @@
 
         const handle = document.createElement("span");
         handle.className = "rux-col-picker__handle";
-        handle.innerHTML = `<span class="rux-icon rux-icon--sm">drag_indicator</span>`;
+        handle.innerHTML = `<span class="rux-icon">drag_indicator</span>`;
 
         const cb = document.createElement("input");
         cb.type    = "checkbox";

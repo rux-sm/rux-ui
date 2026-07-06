@@ -208,14 +208,6 @@
 
 .req-icon-btn {
 	flex: none;
-	--_bg: var(--rux-surface-0);
-	--_border: var(--rux-border);
-	--_fg: var(--rux-fg-subtle);
-}
-
-.req-icon-btn:hover {
-	border-color: var(--rux-border-strong);
-	color: var(--rux-fg);
 }
 
 .settings-req-label-input {
@@ -342,15 +334,6 @@
 
 .req-icon-picker[hidden] {
 	display: none;
-}
-
-.req-icon-option {
-	--_h: 36px;
-	--_fg: var(--rux-fg-subtle);
-}
-
-.req-icon-option:hover {
-	color: var(--rux-fg);
 }
 
 /* — Responsive ——————————————————————————————————————————————————————————— */

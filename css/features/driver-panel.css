@@ -124,11 +124,6 @@
 	user-select: none;
 }
 
-.rux-driver-panel__avatar .rux-icon {
-	--_icon-size: var(--rux-icon-xl);
-	--_icon-optical-size: var(--rux-icon-optical-size-xl);
-}
-
 /* — License: endorsement toggles — */
 
 .rux-driver-panel__endorsements {
@@ -139,9 +134,6 @@
 
 .rux-driver-panel__endorsements .rux-button {
 	min-width: var(--rux-control-height);
-	font-family: var(--rux-font-mono);
-	font-weight: var(--rux-weight-semibold);
-	font-size: var(--rux-text-sm);
 }
 
 
@@ -153,9 +145,7 @@
 
 .rux-driver-panel__status-group .rux-button {
 	flex: 1;
-	gap: var(--rux-space-1);
 	min-width: 0;
-	padding-inline: var(--rux-space-2);
 }
 
 /* — Trips: read-only trip list — */

@@ -51,8 +51,6 @@
 }
 
 .rux-search-modal__icon {
-	--_icon-size: var(--rux-icon-md);
-	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	flex: none;
 	color: var(--rux-fg-subtle);
 }
@@ -125,8 +123,6 @@
 }
 
 .rux-search-modal__item-icon {
-	--_icon-size: var(--rux-icon-md);
-	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	flex: none;
 	color: var(--rux-fg-muted);
 }

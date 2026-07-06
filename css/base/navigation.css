@@ -61,12 +61,10 @@
 }
 
 .rux-tab > .rux-icon {
-	--_icon-size: var(--rux-button-icon-size);
 	pointer-events: none;
 }
 
 .rux-tab.is-active > .rux-icon,
 .rux-tab[aria-selected="true"] > .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
-	--_icon-weight: var(--rux-icon-weight-selected);
 }

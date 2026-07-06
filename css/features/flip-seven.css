@@ -196,10 +196,6 @@
 	min-width: 0;
 	height: var(--rux-control-height-sm, 28px);
 }
-.flip-seven__message-form .rux-button {
-	width: var(--rux-control-height-sm, 28px);
-	height: var(--rux-control-height-sm, 28px);
-}
 .flip-seven__hand { display: contents; }
 .flip-seven__player-hand {
 	display: grid;

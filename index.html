@@ -7,9 +7,9 @@
     <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://white-boat-9932.rux-smercado.workers.dev wss://white-boat-9932.rux-smercado.workers.dev https://api.mapbox.com https://cdn.jsdelivr.net https://unpkg.com ws://127.0.0.1:* ws://localhost:*;" />
     <title>Rux UI</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./css/tokens.css?v=14" />
+    <link rel="stylesheet" href="./css/tokens.css?v=15" />
     <link rel="stylesheet" href="./css/colors_and_type.css" />
-    <link rel="stylesheet" href="./css/components.css?v=26" />
+    <link rel="stylesheet" href="./css/components.css?v=37" />
     <link rel="stylesheet" href="./css/features/driver-panel.css?v=2" />
     <link rel="stylesheet" href="./css/features/comp-driver-app.css" />
     <link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -279,11 +279,14 @@
                 <div id="pane-itinerary" class="rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-trip-itinerary" id="tp-itin">
                     <div class="rux-card rux-trip-itinerary__summary" id="tp-itin-summary">
-                      <header class="rux-card__header"><p class="rux-card__title">Itinerary</p></header>
-                      <div class="rux-card__body rux-card__body--stack"><div class="rux-trip-itinerary__summary-actions">
-                        <button class="rux-button rux-button--default" type="button" id="tp-import-btn" title="Upload JSON"><span class="rux-icon" aria-hidden="true">upload</span>Upload JSON</button>
-                        <button class="rux-button rux-button--default" type="button" id="tp-itin-recalc" title="Recalculate route"><span class="rux-icon" aria-hidden="true">route</span><span data-recalc-label>Calculate</span></button>
-                      </div></div>
+                      <header class="rux-card__header">
+                        <p class="rux-card__title">Trip Summary</p>
+                        <div class="rux-trip-itinerary__summary-actions">
+                          <button class="rux-button rux-button--ghost" type="button" id="tp-import-btn" title="Upload JSON" aria-label="Upload JSON"><span class="rux-icon" aria-hidden="true">upload</span><span class="rux-btn-label">Upload JSON</span></button>
+                          <button class="rux-button rux-button--default" type="button" id="tp-itin-recalc" title="Recalculate route" aria-label="Calculate route"><span class="rux-icon" aria-hidden="true">route</span><span class="rux-btn-label" data-recalc-label>Calculate</span></button>
+                        </div>
+                      </header>
+                      <div class="rux-card__body"></div>
                     </div>
                     <div class="rux-trip-itinerary__stops" id="tp-itin-stops"></div>
                   </div>
@@ -296,9 +299,9 @@
                     <div class="rux-trip-panel__fleet-count-card">
                       <span class="rux-trip-panel__fleet-count-label" id="tp-buses-label">Buses Needed</span>
                       <div class="rux-trip-panel__number-picker" role="group" aria-labelledby="tp-buses-label">
-                        <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-dec aria-label="Fewer buses"><span class="rux-icon">remove</span></button>
+                        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-bus-count-dec aria-label="Fewer buses"><span class="rux-icon">remove</span></button>
                         <input class="rux-input rux-trip-panel__number-input" id="tp-buses" name="busesNeeded" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" aria-labelledby="tp-buses-label" />
-                        <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__number-btn" type="button" data-bus-count-inc aria-label="More buses"><span class="rux-icon">add</span></button>
+                        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-bus-count-inc aria-label="More buses"><span class="rux-icon">add</span></button>
                       </div>
                     </div>
                     </div>
@@ -374,7 +377,7 @@
                   <article class="rux-card rux-mini-cal">
                     <header class="rux-card__header">
                       <h3 class="rux-card__title">Calendar</h3>
-                      <button class="rux-button rux-button--accent" id="mini-cal-today" type="button">Today</button>
+                      <button class="rux-button rux-button--ghost" id="mini-cal-today" type="button">Today</button>
                     </header>
                     <div class="rux-card__body rux-mini-cal__body">
                       <header class="rux-mini-cal__header">
@@ -445,10 +448,10 @@
                   <tr>
                     <th scope="col">Trip</th>
                     <th scope="col">Destination</th>
-                    <th scope="col" data-col-filter="date">Dates <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
-                    <th scope="col" data-col-filter="bus">Bus <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
+                    <th scope="col" data-col-filter="date">Dates <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
+                    <th scope="col" data-col-filter="bus">Bus <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
                     <th scope="col">Confirmed</th>
-                    <th scope="col" data-col-filter="invoice">Invoice <span class="rux-icon rux-icon--xs rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
+                    <th scope="col" data-col-filter="invoice">Invoice <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
                     <th scope="col" class="col-payment">Payment</th>
                     <th scope="col" class="col-quoted">Quoted</th>
                   </tr>
@@ -478,7 +481,7 @@
                 </button>
               </header>
               <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Vehicle editor sections" data-rux-tabs data-fleet-tabs>
-                <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon rux-icon--bus-side" aria-hidden="true"></span><span class="rux-fleet-panel__tab-label">Info</span></button>
+                <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-fleet-panel__tab-label">Info</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-service"     title="Service"><span class="rux-icon">build</span><span class="rux-fleet-panel__tab-label">Service</span></button>
                 <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><span class="rux-icon">map</span><span class="rux-fleet-panel__tab-label">Trips</span></button>
               </nav>
@@ -522,8 +525,8 @@
                     <label class="rux-field__label" for="fp-type">Type</label>
                     <div class="fleet-app__type-select">
                       <span id="fp-type-icon-wrap" class="fleet-app__type-icon-wrap" aria-hidden="true">
-                        <span data-type-icon="Motorcoach"><span class="rux-icon rux-icon--bus-side"></span></span>
-                        <span data-type-icon="Sprinter"  hidden><span class="rux-icon rux-icon--van"></span></span>
+                        <span data-type-icon="Motorcoach"><span class="rux-icon">directions_bus</span></span>
+                        <span data-type-icon="Sprinter"  hidden><span class="rux-icon">airport_shuttle</span></span>
                         <span data-type-icon="Car"       hidden><span class="rux-icon">directions_car</span></span>
                         <span data-type-icon="Truck"     hidden><span class="rux-icon">local_shipping</span></span>
                       </span>
@@ -587,7 +590,7 @@
                   <span class="rux-btn-label">Add vehicle</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="fleet-save-order-btn" type="button" hidden title="Set current sort as manual order">
-                  <span class="rux-icon scheduler-app__save-order-icon" aria-hidden="true"></span>
+                  <span class="rux-icon" aria-hidden="true">save</span>
                   <span class="rux-btn-label">Set as order</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="fleet-cols-btn" type="button" title="Show / hide columns">
@@ -751,7 +754,7 @@
                   <span class="rux-btn-label">Add driver</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="driver-save-order-btn" type="button" hidden title="Set current sort as manual order">
-                  <span class="rux-icon scheduler-app__save-order-icon" aria-hidden="true"></span>
+                  <span class="rux-icon" aria-hidden="true">save</span>
                   <span class="rux-btn-label">Set as order</span>
                 </button>
                 <button class="rux-button rux-button--ghost" id="driver-cols-btn" type="button" title="Show / hide columns">
@@ -1738,20 +1741,20 @@
     <script src="./js/core/utilities.js"></script>
     <script src="./js/core/popover.js?v=1"></script>
     <script src="./js/core/menu.js?v=2"></script>
-    <script src="./js/core/controls.js" defer></script>
-    <script src="./js/core/billing-config.js"></script>
-    <script src="./js/panels/trip-panel.js?v=7"></script>
-    <script src="./js/components/itinerary.js?v=8"></script>
-    <script src="./js/panels/driver-panel.js?v=5" defer></script>
-    <script src="./js/panels/fleet-panel.js?v=5" defer></script>
-    <script src="./js/panels/settings-panel.js" defer></script>
+    <script src="./js/core/controls.js?v=2" defer></script>
+    <script src="./js/core/billing-config.js?v=2"></script>
+    <script src="./js/panels/trip-panel.js?v=12"></script>
+    <script src="./js/components/itinerary.js?v=14"></script>
+    <script src="./js/panels/driver-panel.js?v=6" defer></script>
+    <script src="./js/panels/fleet-panel.js?v=6" defer></script>
+    <script src="./js/panels/settings-panel.js?v=2" defer></script>
     <script src="./js/panels/trips-list.js?v=5" defer></script>
     <script src="./js/panels/components-panel.js" defer></script>
     <script type="module" src="./js/panels/flip-seven.js?v=19"></script>
     <script type="module" src="./js/panels/requirements-panel.js"></script>
 
     <script type="module">
-      import { createTripBar, clearTripBars } from "./js/components/trip-bar.js";
+      import { createTripBar, clearTripBars } from "./js/components/trip-bar.js?v=5";
       import BusPicker from "./js/components/bus-picker.js";
       import { loadRequirements } from "./js/data/requirements-db.js";
 
@@ -2528,7 +2531,7 @@
           }
           if (isOos) {
             const oosEl = document.createElement("span");
-            oosEl.className = "rux-icon rux-icon--sm rux-scheduler__bus-oos";
+            oosEl.className = "rux-icon rux-scheduler__bus-oos";
             oosEl.textContent = "block";
             oosEl.setAttribute("aria-hidden", "true");
             head.appendChild(oosEl);

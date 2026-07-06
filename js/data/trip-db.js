@@ -38,6 +38,37 @@ import { supabase } from "./supabase.js";
 
 	/* ── Helpers ─────────────────────────────────────────────────────────── */
 
+	function normalizeDriverStatus(value) {
+		const legacy = {
+			default: "off",
+			danger: "pending-assignment",
+			warning: "pending-response",
+			success: "confirmed",
+		};
+		const normalized = legacy[value] || value || "off";
+		return ["off", "pending-assignment", "pending-response", "confirmed"].includes(normalized)
+			? normalized
+			: "off";
+	}
+
+	function restoreDriverStatus(button, value) {
+		const state = normalizeDriverStatus(value);
+		if (window.TripPanel?.setRoleStatus) {
+			window.TripPanel.setRoleStatus(button, state);
+			return;
+		}
+		button.dataset.roleState = state;
+		button.classList.remove(
+			"rux-role--pending-assignment",
+			"rux-role--pending-response",
+			"rux-role--confirmed",
+			"rux-role--danger",
+			"rux-role--warning",
+			"rux-role--success",
+		);
+		if (state !== "off") button.classList.add(`rux-role--${state}`);
+	}
+
 	function setEditorMode(root, mode, destination = "") {
 		const editing = mode === "edit";
 		const title = root.querySelector("#trip-panel-title");
@@ -255,8 +286,8 @@ import { supabase } from "./supabase.js";
 				const roleMap = { coDriver: "co-driver", relief1: "relief-start", relief2: "relief-end" };
 				// Driver role label state
 				const driverLabel = busGroup.querySelector(".rux-trip-panel__driver-row:not([data-role-row]) .rux-trip-panel__role-label");
-				const driverState = driverLabel?.dataset.roleState || "default";
-				activeRoles.push(driverState !== "default" ? `driver:${driverState}` : "driver");
+				const driverState = normalizeDriverStatus(driverLabel?.dataset.roleState);
+				activeRoles.push(driverState !== "off" ? `driver:${driverState}` : "driver");
 				// Other role states (only if toggled active)
 				busGroup.querySelectorAll("[data-role][aria-pressed='true']").forEach((btn) => {
 					const mapped = roleMap[btn.dataset.role];
@@ -264,8 +295,8 @@ import { supabase } from "./supabase.js";
 					const roleKey = btn.dataset.role;
 					const row = busGroup.querySelector(`[data-role-row="${roleKey}"]`);
 					const label = row?.querySelector(".rux-trip-panel__role-label");
-					const state = label?.dataset.roleState || "default";
-					activeRoles.push(state !== "default" ? `${mapped}:${state}` : mapped);
+					const state = normalizeDriverStatus(label?.dataset.roleState);
+					activeRoles.push(state !== "off" ? `${mapped}:${state}` : mapped);
 				});
 			} else {
 				activeRoles.push("driver");
@@ -535,17 +566,15 @@ import { supabase } from "./supabase.js";
 
 			// Restore active role toggles and label color states
 			(assignment.active_roles || ["driver"]).forEach((entry) => {
-				const [role, state] = entry.includes(":") ? entry.split(":") : [entry, "default"];
+				const [role, savedState] = entry.includes(":") ? entry.split(":") : [entry, "off"];
+				const state = normalizeDriverStatus(savedState);
 				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
 				if (!busGroup) return;
 
 				if (roleKey === "driver") {
 					const label = busGroup.querySelector(".rux-trip-panel__driver-row:not([data-role-row]) .rux-trip-panel__role-label");
-					if (label && state !== "default") {
-						label.dataset.roleState = state;
-						label.classList.add(`rux-role--${state}`);
-					}
+					if (label) restoreDriverStatus(label, state);
 				} else {
 					const toggleBtn = busGroup.querySelector(`[data-role="${roleKey}"]`);
 					if (toggleBtn) {
@@ -556,10 +585,7 @@ import { supabase } from "./supabase.js";
 					if (row) {
 						row.hidden = false;
 						const label = row.querySelector(".rux-trip-panel__role-label");
-						if (label && state !== "default") {
-							label.dataset.roleState = state;
-							label.classList.add(`rux-role--${state}`);
-						}
+						if (label) restoreDriverStatus(label, state);
 					}
 				}
 			});
@@ -573,6 +599,7 @@ import { supabase } from "./supabase.js";
 				if (payInput && pay != null) payInput.value = pay;
 			});
 		});
+		window.Rux?.syncSelectPlaceholders?.(root);
 	}
 
 	function populateStops(itinerary, rows) {
@@ -631,6 +658,9 @@ import { supabase } from "./supabase.js";
 		const delBtn = root.querySelector("#tp-btn-delete");
 		if (delBtn) delBtn.disabled = true;
 		syncBusCount(root, 1);
+		root.querySelectorAll(".rux-trip-panel__role-label").forEach((button) => {
+			restoreDriverStatus(button, "off");
+		});
 		itinerary.clearStops();
 		currentTripId  = null;
 		currentTripRef = null;
@@ -640,6 +670,7 @@ import { supabase } from "./supabase.js";
 		setEditorMode(root, "new");
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
+		window.Rux?.syncSelectPlaceholders?.(root);
 		root.dispatchEvent(new CustomEvent("rux:trip-cleared", { bubbles: true }));
 	}
 
@@ -1086,16 +1117,14 @@ export function initTripDB(root, itinerary) {
 			const val = el.type === "checkbox" ? String(el.checked) : el.value;
 			return `${key}=${val}`;
 		});
-		// Role-status buttons (driver/co-driver/relief click-to-cycle color)
-		// track state via dataset.roleState, not aria-pressed like every other
-		// toggle here — read whichever the element actually uses. "default" is
-		// normalized to the same value as the attribute never having been set
-		// at all, so cycling all the way back around reads as clean again.
+		// Role-status buttons use a four-state semantic cycle.
+		// Track state via dataset.roleState rather than aria-pressed because
+		// this control has four values. Off normalizes to the initial clean state.
 		const toggleVals = Array.from(toggles).map((el, i) => {
 			const key = el.dataset.req || el.id || el.dataset.roleKey || `toggle-${i}`;
 			const roleState = el.dataset.roleState;
 			const val = roleState !== undefined
-				? (roleState === "default" ? "false" : roleState)
+				? (normalizeDriverStatus(roleState) === "off" ? "false" : normalizeDriverStatus(roleState))
 				: (el.getAttribute("aria-pressed") || "false");
 			return `${key}=${val}`;
 		});

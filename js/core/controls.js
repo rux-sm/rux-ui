@@ -125,9 +125,16 @@
 		el.classList.toggle("has-value", !!el.value);
 	}
 
+	function syncSelectPlaceholder(el) {
+		el.classList.toggle("is-placeholder", el.value === "");
+	}
+
 	document.addEventListener("change", function (e) {
 		if (e.target.matches('input[type="date"], input[type="time"], input[type="datetime-local"]')) {
 			syncDateInput(e.target);
+		}
+		if (e.target.matches(".rux-select")) {
+			syncSelectPlaceholder(e.target);
 		}
 	});
 
@@ -137,6 +144,9 @@
 			.querySelectorAll('input[type="date"], input[type="time"], input[type="datetime-local"]')
 			.forEach(syncDateInput);
 	};
+	window.Rux.syncSelectPlaceholders = function (root) {
+		(root || document).querySelectorAll(".rux-select").forEach(syncSelectPlaceholder);
+	};
 
 	document.addEventListener("DOMContentLoaded", function () {
 		document.querySelectorAll("[data-rux-tabs]").forEach((group) => {
@@ -144,6 +154,7 @@
 			if (active) setActiveItem(group, active, ".rux-tab", "aria-selected");
 		});
 		document.querySelectorAll(".rux-panel").forEach(initPanelScrollEdges);
+		window.Rux.syncSelectPlaceholders(document);
 	});
 
 	/* ── Keyboard navigation ────────────────────────────────────────────────── */

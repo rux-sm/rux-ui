@@ -265,10 +265,10 @@
 	--rux-icon-font-family: "Material Symbols Outlined";
 	--rux-icon-fill-default: 0;
 	--rux-icon-fill-selected: 1;
-	--rux-icon-weight-default: 300;
+	--rux-icon-weight-default: 400;
 	--rux-icon-weight-selected: 400;
 	--rux-icon-grade-default: 0;
-	--rux-icon-optical-size-xs: 16;
+	--rux-icon-optical-size-xs: 20;
 	--rux-icon-optical-size-sm: 20;
 	--rux-icon-optical-size-md: 24;
 	--rux-icon-optical-size-lg: 32;

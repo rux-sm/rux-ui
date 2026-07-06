@@ -95,6 +95,12 @@
 	--_shadow: var(--rux-button-shadow);
 }
 
+/* ghost has no background in any other state, so disabled shouldn't add one either */
+.rux-button--ghost:disabled,
+.rux-button--ghost[aria-disabled="true"] {
+	background-color: transparent;
+}
+
 .rux-button--toggle.is-active,
 .rux-button--toggle[aria-pressed="true"] {
 	--_bg: var(--rux-button-selected-bg);
@@ -153,12 +159,21 @@
 	display: block;
 }
 
+.rux-button__disclosure-icon {
+	transition: transform var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-button[aria-expanded="true"] > .rux-button__disclosure-icon {
+	transform: rotate(180deg);
+}
+
 @keyframes rux-button-spin {
 	to { transform: rotate(1turn); }
 }
 
 @media (prefers-reduced-motion: reduce) {
 	.rux-button__spinner { animation-duration: 1.4s; }
+	.rux-button__disclosure-icon { transition-duration: 0.001ms !important; }
 }
 
 /* — sizes — */
@@ -168,11 +183,6 @@
 	font-size: var(--rux-button-xs-font-size);
 	padding: 0 var(--rux-button-xs-padding-inline);
 	gap: var(--rux-button-xs-content-gap);
-}
-
-.rux-button--xs > :where(.rux-icon) {
-	--_icon-size: var(--rux-button-xs-icon-size);
-	--_icon-optical-size: var(--rux-icon-optical-size-xs);
 }
 
 /* — block (full-width) — */
@@ -185,13 +195,11 @@
 /* — icon inside button — */
 
 .rux-button > :where(.rux-icon) {
-	--_icon-size: var(--rux-button-icon-size);
 	pointer-events: none;
 }
 
 .rux-button:is(.is-active, [aria-pressed="true"]) > .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
-	--_icon-weight: var(--rux-icon-weight-selected);
 }
 
 /* — toggle icon swap — */

@@ -306,10 +306,7 @@
 }
 
 .components-app__anatomy-control > .rux-button {
-	--_h: calc(var(--rux-button-height) * 2);
 	width: 100%;
-	padding-inline: calc(var(--rux-button-padding-inline) * 2);
-	font-size: calc(var(--rux-button-font-size) * 1.5);
 	pointer-events: none;
 }
 

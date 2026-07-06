@@ -25,6 +25,43 @@ const DEFAULT_REQUIREMENTS = [
 	{ id: "fuelCard", label: "Fuel card", icon: "local_gas_station", type: "driver",  active: true },
 ];
 
+const ROLE_STATUS_STATES = [
+	{ value: "off", label: "Off" },
+	{ value: "pending-assignment", label: "Pending assignment" },
+	{ value: "pending-response", label: "Pending response" },
+	{ value: "confirmed", label: "Confirmed" },
+];
+const LEGACY_ROLE_STATUS = {
+	default: "off",
+	danger: "pending-assignment",
+	warning: "pending-response",
+	success: "confirmed",
+};
+
+function normalizeRoleStatus(value) {
+	const normalized = LEGACY_ROLE_STATUS[value] || value || "off";
+	return ROLE_STATUS_STATES.some((status) => status.value === normalized) ? normalized : "off";
+}
+
+function setRoleStatus(button, value) {
+	if (!button) return;
+	const state = normalizeRoleStatus(value);
+	const status = ROLE_STATUS_STATES.find((item) => item.value === state);
+	const role = button.dataset.roleLabel || "Driver";
+	button.dataset.roleState = state;
+	button.classList.remove(
+		"rux-role--pending-assignment",
+		"rux-role--pending-response",
+		"rux-role--confirmed",
+		"rux-role--danger",
+		"rux-role--warning",
+		"rux-role--success",
+	);
+	if (state !== "off") button.classList.add(`rux-role--${state}`);
+	button.title = `${role} status: ${status.label}`;
+	button.setAttribute("aria-label", `${role} status: ${status.label}`);
+}
+
 function activeReqsByType(type) {
 	return (window.appRequirements ?? DEFAULT_REQUIREMENTS)
 		.filter(r => r.type === type && r.active)
@@ -83,6 +120,7 @@ function refreshGroupOptions(group, buses, drivers) {
 			: driverOpts;
 		select.value = prev;
 	});
+	window.Rux?.syncSelectPlaceholders?.(group);
 }
 
 function buildBusGroup(idx, buses, drivers) {
@@ -90,17 +128,21 @@ function buildBusGroup(idx, buses, drivers) {
 	const driverOpts = driverOptsHtml(drivers);
 
 	const roleRows = [
-		{ role: "coDriver", icon: "person_add", title: "Co-driver" },
-		{ role: "relief1", icon: "last_page", title: "Relief 1 — start" },
-		{ role: "relief2", icon: "first_page", title: "Relief 2 — end" },
+		{ role: "coDriver", icon: "group", title: "Co-driver" },
+		{ role: "relief1", icon: "person_add", title: "Relief 1 — start" },
+		{ role: "relief2", icon: "person_remove", title: "Relief 2 — end" },
 	]
 		.map(
 			(r) => `
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
-      <button type="button" class="rux-button rux-button--default rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].${escHtml(r.role)}.status" title="${escHtml(r.title)}" aria-label="${escHtml(r.title)} status">
-        <span class="rux-icon">${escHtml(mapIcon(r.icon))}</span>
-      </button>
-      <select class="rux-select" name="buses[${idx}].${escHtml(r.role)}.name" aria-label="${escHtml(r.title)}">${driverOpts}</select>
+      <div class="rux-input-group rux-input-group--prefix rux-input-group--action">
+        <span class="rux-input-group__prefix">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+            <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
+          </button>
+        </span>
+        <select class="rux-select is-placeholder" name="buses[${idx}].${escHtml(r.role)}.name" aria-label="${escHtml(r.title)}">${driverOpts}</select>
+      </div>
       <div class="rux-input-group rux-input-group--prefix">
         <span class="rux-input-group__prefix">$</span>
         <input class="rux-input" name="buses[${idx}].${escHtml(r.role)}.pay" type="number" min="0" placeholder="0" aria-label="${escHtml(r.title)} pay" />
@@ -114,31 +156,35 @@ function buildBusGroup(idx, buses, drivers) {
 	el.innerHTML = `
     <header class="rux-card__header">
       <p class="rux-card__title">Bus ${idx + 1}</p>
+      <div class="rux-cluster">
+        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
+          <span class="rux-icon" aria-hidden="true">group</span>
+        </button>
+        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
+          <span class="rux-icon" aria-hidden="true">person_add</span>
+        </button>
+        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
+          <span class="rux-icon" aria-hidden="true">person_remove</span>
+        </button>
+      </div>
     </header>
     <div class="rux-card__body rux-card__body--stack">
     <div class="rux-trip-panel__bus-head">
-      <select class="rux-select" name="buses[${idx}].busId" aria-label="Bus ${idx + 1}">
+      <select class="rux-select is-placeholder" name="buses[${idx}].busId" aria-label="Bus ${idx + 1}">
         <option value="" disabled selected>Select bus…</option>
         ${busOpts}
       </select>
     </div>
-    <div class="rux-trip-panel__bus-roles">
-      <button class="rux-button rux-button--default rux-button--toggle" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
-        <span class="rux-icon">person_add</span><span class="rux-btn-label">Co-driver</span>
-      </button>
-      <button class="rux-button rux-button--default rux-button--toggle" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
-        <span class="rux-icon">last_page</span><span class="rux-btn-label">Relief 1</span>
-      </button>
-      <button class="rux-button rux-button--default rux-button--toggle" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
-        <span class="rux-icon">first_page</span><span class="rux-btn-label">Relief 2</span>
-      </button>
-    </div>
     <div class="rux-trip-panel__driver-rows">
       <div class="rux-trip-panel__driver-row">
-        <button type="button" class="rux-button rux-button--default rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].driver.status" title="Driver" aria-label="Driver status">
-          <span class="rux-icon">person</span>
-        </button>
-        <select class="rux-select" name="buses[${idx}].driver.name" aria-label="Driver">${driverOpts}</select>
+        <div class="rux-input-group rux-input-group--prefix rux-input-group--action">
+          <span class="rux-input-group__prefix">
+            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+              <span class="rux-icon" aria-hidden="true">person</span>
+            </button>
+          </span>
+          <select class="rux-select is-placeholder" name="buses[${idx}].driver.name" aria-label="Driver">${driverOpts}</select>
+        </div>
         <div class="rux-input-group rux-input-group--prefix">
           <span class="rux-input-group__prefix">$</span>
           <input class="rux-input" name="buses[${idx}].driver.pay" type="number" min="0" placeholder="0" aria-label="Driver pay" />
@@ -957,25 +1003,20 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 					const payInput = row.querySelector("input[name]");
 					if (payInput) payInput.value = "";
 					const label = row.querySelector(".rux-trip-panel__role-label");
-					if (label) {
-						label.dataset.roleState = "default";
-						label.classList.remove("rux-role--danger", "rux-role--warning", "rux-role--success");
-					}
+					if (label) setRoleStatus(label, "off");
 				}
 			}
+			window.Rux?.syncSelectPlaceholders?.(group);
 		});
 
-		// Role label icons — cycle status: default → danger → warning → success → default
-		const ROLE_STATES = ["default", "danger", "warning", "success"];
+		// Role status icons: off → pending assignment → pending response → confirmed.
 		busGroupsEl.addEventListener("click", (e) => {
 			const label = e.target.closest(".rux-trip-panel__role-label");
 			if (!label) return;
-			const current = label.dataset.roleState || "default";
-			const nextIndex = (ROLE_STATES.indexOf(current) + 1) % ROLE_STATES.length;
-			const next = ROLE_STATES[nextIndex];
-			label.dataset.roleState = next;
-			label.classList.remove("rux-role--danger", "rux-role--warning", "rux-role--success");
-			if (next !== "default") label.classList.add(`rux-role--${next}`);
+			const current = normalizeRoleStatus(label.dataset.roleState);
+			const currentIndex = ROLE_STATUS_STATES.findIndex((status) => status.value === current);
+			const next = ROLE_STATUS_STATES[(currentIndex + 1) % ROLE_STATUS_STATES.length];
+			setRoleStatus(label, next.value);
 		});
 	}
 }
@@ -988,4 +1029,11 @@ function refreshRequirements(root) {
 	
 }
 
-window.TripPanel = { init: initTripPanel, initTabs: initTripTabs, updateOptions: updateTripOptions, refreshRequirements };
+window.TripPanel = {
+	init: initTripPanel,
+	initTabs: initTripTabs,
+	updateOptions: updateTripOptions,
+	refreshRequirements,
+	normalizeRoleStatus,
+	setRoleStatus,
+};

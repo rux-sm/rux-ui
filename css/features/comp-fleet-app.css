@@ -52,11 +52,6 @@
 	user-select: none;
 }
 
-.fleet-app__avatar .rux-icon {
-	--_icon-size: var(--rux-icon-md);
-	--_icon-optical-size: var(--rux-icon-optical-size-md);
-}
-
 .fleet-app__vehicle-info {
 	display: flex;
 	flex-direction: column;

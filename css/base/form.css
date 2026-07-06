@@ -23,7 +23,6 @@
   background-color: var(--rux-surface-4);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
-  border: solid transparent var(--rux-border-width);
   border-radius: var(--rux-radius-field);
   box-shadow: var(--_field-shadow);
   font: inherit;
@@ -96,6 +95,18 @@
   background-repeat: no-repeat;
   background-position: right var(--rux-space-3) center;
   background-size: var(--rux-icon-sm);
+}
+
+.rux-select.is-placeholder:not(:disabled) {
+  color: var(--rux-fg-subtle);
+}
+
+.rux-select option {
+  color: var(--rux-fg);
+}
+
+.rux-select option[value=""] {
+  color: var(--rux-fg-subtle);
 }
 
 
@@ -216,7 +227,10 @@
   align-items: center;
 }
 
-.rux-input-group .rux-input { flex: 1; }
+.rux-input-group .rux-input,
+.rux-input-group .rux-select {
+  flex: 1;
+}
 
 .rux-input-group__prefix,
 .rux-input-group__suffix {
@@ -233,23 +247,25 @@
 .rux-input-group__prefix { left: var(--rux-control-padding-inline); }
 .rux-input-group__suffix { right: var(--rux-control-padding-inline); }
 
-.rux-input-group--prefix .rux-input {
+.rux-input-group--prefix .rux-input,
+.rux-input-group--prefix .rux-select {
   padding-left: calc(var(--rux-control-padding-inline) + var(--rux-icon-md) + var(--rux-control-content-gap));
 }
 
-.rux-input-group--suffix .rux-input {
+.rux-input-group--suffix .rux-input,
+.rux-input-group--suffix .rux-select {
   padding-right: calc(var(--rux-control-padding-inline) + var(--rux-icon-md) + var(--rux-control-content-gap));
 }
 
+.rux-input-group--action .rux-input-group__prefix,
 .rux-input-group--action .rux-input-group__suffix {
   pointer-events: auto;
 }
 
-.rux-input-group--action .rux-input-group__suffix .rux-button {
-  --_border: transparent;
-  border-radius: var(--rux-radius-xl);
+.rux-input-group--action.rux-input-group--prefix .rux-input,
+.rux-input-group--action.rux-input-group--prefix .rux-select {
+  padding-left: calc(var(--rux-control-padding-inline) + var(--rux-control-height) + var(--rux-control-content-gap));
 }
-
 
 /* — number — hide native spin buttons — */
 
@@ -439,7 +455,6 @@
 }
 
 .rux-color-picker__chevron {
-  --_icon-size: var(--rux-icon-sm);
   flex: none;
   color: var(--rux-fg-subtle);
   pointer-events: none;
