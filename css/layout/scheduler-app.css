@@ -837,7 +837,7 @@
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
 	flex: 1;
 	margin-inline: var(--scheduler-app-gap);
-	background: var(--rux-surface-0);
+	background: var(--rux-surface-1);
 	border-radius: var(--scheduler-app-card-radius);
 	overflow: auto;
 }

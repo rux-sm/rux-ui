@@ -1,7 +1,5 @@
 /* ==========================================================================
-   TRIP LIST — shared roster table (Calendar List view, My Trips,
-   Passenger Roster). Classes are still .trips-app__* — only the file
-   was renamed since this stopped being a single standalone module.
+   TRIPS APP — PAGE SHELL & TABLE
    ========================================================================== */
 
 /* — Active-filter chips (List view header) — */
@@ -44,8 +42,7 @@
 	overscroll-behavior: contain;
 	padding-bottom: var(--rux-space-4);
 	background: var(--rux-surface-1);
-	border-radius: var(--rux-card-radius);
-	border: var(--rux-border-width) solid var(--rux-border);
+
 }
 
 /* — Trip identity cell — */
