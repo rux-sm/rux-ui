@@ -301,37 +301,26 @@
 .rux-segmented > .rux-button {
 	--_h: var(--rux-segmented-height);
 	--_bg: var(--rux-button-ghost-bg); /* matches strip bg so inactive items blend into the strip */
+	--_fg: var(--rux-fg);
 	--_shadow: var(--rux-elevation-0);
 	flex: 1;
 	min-width: 0;
-
-	color: var(--rux-fg);
-}
-.rux-segmented > .rux-button:hover {
-	color: var(--rux-fg);
-	box-shadow: var(--rux-elevation-0);
 }
 .rux-segmented > .rux-button:disabled,
 .rux-segmented > .rux-button[aria-disabled="true"] {
-	background-color: transparent;
-	color: var(--rux-fg-disabled);
-	box-shadow: none;
+	--_bg: transparent;
+	--_fg: var(--rux-fg-disabled);
+	--_shadow: none;
 }
 
+/* Same selected-state tokens as .rux-button--toggle.is-active — segmented
+   items are just buttons in a strip, not a separate styled component. */
 .rux-segmented > .rux-button.is-active,
 .rux-segmented > .rux-button[aria-pressed="true"],
 .rux-segmented > .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-button-selected-bg);
-	color: var(--rux-button-selected-fg);
-	box-shadow: var(--rux-elevation-2);
-}
-
-/* — primary active — accent-filled selected item */
-.rux-segmented--primary > .rux-button.is-active,
-.rux-segmented--primary > .rux-button[aria-pressed="true"],
-.rux-segmented--primary > .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-accent);
-	color: var(--rux-fg-on-accent);
+	--_fg: var(--rux-button-selected-fg);
+	--_shadow: var(--rux-button-selected-shadow);
 }
 
 /* — ghost active — transparent track with quiet selected item */
@@ -344,15 +333,15 @@
 .rux-segmented--ghost > .rux-button {
 	--_bg: transparent;
 	--_border: transparent;
-	color: var(--rux-fg-muted);
+	--_fg: var(--rux-fg-muted);
 }
 
 .rux-segmented--ghost > .rux-button.is-active,
 .rux-segmented--ghost > .rux-button[aria-pressed="true"],
 .rux-segmented--ghost > .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-button-quiet-selected-bg);
-	color: var(--rux-fg);
-	box-shadow: none;
+	--_fg: var(--rux-fg);
+	--_shadow: none;
 }
 
 /* ==========================================================================

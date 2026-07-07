@@ -1,0 +1,300 @@
+/* ==========================================================================
+   PRINT SCHEDULE — off-screen build container + physical page layout
+
+   Built by js/panels/print-schedule.js as a one-shot static snapshot of
+   the current week. Print intentionally ignores Time Align and uses the
+   scheduler's default full-day placement. Visibility is a pure @media
+   print swap — the container sits off-screen at all times so layout can
+   be measured without ever being display:none.
+   ========================================================================== */
+
+.rux-print-root {
+	position: fixed;
+	top: 0;
+	left: -10000px;
+	background: #fff;
+	color: #111;
+}
+
+.rux-print-page {
+	box-sizing: border-box;
+	background: #fff;
+	padding-block-end: 0;
+}
+
+.rux-print-page:not(:last-child) {
+	break-after: page;
+}
+
+.rux-print__page-title {
+	font-family: var(--rux-font-sans, sans-serif);
+	font-size: 14px;
+	font-weight: 700;
+	margin-block-end: 8px;
+	color: #111;
+}
+
+.rux-print__header {
+	display: grid;
+	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
+	column-gap: 4px;
+	row-gap: 0;
+	border-block-end: 2px solid #333;
+	padding-block-end: 4px;
+	margin-block-end: 4px;
+}
+
+.rux-print__day-head {
+	font-family: var(--rux-font-sans, sans-serif);
+	font-size: 11px;
+	font-weight: 600;
+	text-align: center;
+	color: #333;
+}
+
+/* Every row — real bus row or blank filler slot on a partial last page —
+   gets the same fixed height (set inline by layoutRowHeights, JS) and
+   clips its own content, so rows are always uniform regardless of how
+   many print trip cards they hold. */
+.rux-print__row {
+	box-sizing: border-box;
+	overflow: hidden;
+	border-block-end: 1px solid #ccc;
+	break-inside: avoid;
+}
+
+/* The actual grid (label column + 7 day columns) and everything scaled
+   to fit the row's fixed height (transform:scaleY, set inline by
+   layoutRowHeights when a row's natural content is too tall) live here,
+   one level inside .rux-print__row — transform never changes how much
+   space an element reserves in normal flow, so the *outer* row's fixed
+   height + overflow:hidden (not this element) is what print pagination
+   actually measures against. */
+.rux-print__row-inner {
+	display: grid;
+	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
+	column-gap: 4px;
+	grid-auto-rows: min-content;
+	row-gap: 4px;
+	align-items: start;
+	padding-block: 4px;
+	transform-origin: top left;
+}
+
+.rux-print__row-head {
+	grid-column: 1;
+	grid-row: 1 / -1;
+	min-height: 40px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: var(--rux-font-sans, sans-serif);
+	font-size: 13px;
+	font-weight: 700;
+	color: #111;
+}
+
+.rux-print-trip {
+	box-sizing: border-box;
+	min-width: 0;
+	margin-inline: 8px;
+	border: 1px solid #bbb;
+	border-radius: 8px;
+	background: #fff;
+	color: #222;
+	font-family: var(--rux-font-sans, sans-serif);
+	font-size: 10px;
+	line-height: 1.08;
+	overflow: hidden;
+	box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
+	print-color-adjust: exact;
+	-webkit-print-color-adjust: exact;
+}
+
+.rux-print-trip--unconfirmed {
+	border-color: #e57373;
+}
+
+.rux-print-trip__content {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	width: var(--rux-print-trip-content-width, 100%);
+	height: 100%;
+	min-width: 0;
+	padding: 6px;
+	overflow: hidden;
+}
+
+.rux-print-trip--multi-day .rux-print-trip__content {
+	border-right: 1px solid #e0e0e0;
+	border-radius: 8px 0 0 8px;
+	background: #fff;
+}
+
+.rux-print-trip__head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 4px;
+	align-items: start;
+	min-width: 0;
+}
+
+.rux-print-trip__destination {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 12px;
+	font-weight: 800;
+	color: #222;
+}
+
+.rux-print-trip__group {
+	font-size: 9px;
+	font-weight: 700;
+	color: #777;
+}
+
+.rux-print-trip__line,
+.rux-print-trip__notes {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: #666;
+}
+
+.rux-print-trip__notes {
+	color: #9a7600;
+	font-style: italic;
+	font-weight: 700;
+}
+
+.rux-print-trip__meta {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	min-height: 14px;
+	overflow: hidden;
+}
+
+.rux-print-trip__icon {
+	flex: none;
+	font-size: 13px;
+	color: #777;
+}
+
+.rux-print-trip__icon--pending {
+	color: #e95c5c;
+}
+
+.rux-print-trip__icon--paid,
+.rux-print-trip__paid-date {
+	color: #148a4a;
+}
+
+.rux-print-trip__paid-date {
+	font-size: 9px;
+	font-weight: 700;
+}
+
+.rux-print-trip__times,
+.rux-print-trip__drivers {
+	display: grid;
+	gap: 2px;
+	min-width: 0;
+}
+
+.rux-print-trip__times {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	margin-top: 2px;
+	font-size: 10px;
+	font-weight: 800;
+	color: #555;
+}
+
+.rux-print-trip__times > span {
+	min-width: 0;
+	overflow: hidden;
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	background: #f0f0f0;
+	padding: 2px 3px;
+}
+
+.rux-print-trip__drivers {
+	grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+	font-size: 10px;
+	font-weight: 700;
+	color: #555;
+}
+
+.rux-print-trip__driver {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	gap: 3px;
+	background: #f0f0f0;
+	padding: 2px 3px;
+}
+
+.rux-print-trip__driver-icon {
+	flex: none;
+	font-size: 12px;
+	color: #15985a;
+}
+
+.rux-print-trip__driver-name {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-print-trip__details {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 2px 4px;
+	margin-top: 2px;
+	padding-top: 4px;
+	border-top: 1px solid #e0e0e0;
+	font-size: 8.5px;
+	line-height: 1;
+	color: #555;
+}
+
+.rux-print-trip__detail {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-print-trip__detail-label {
+	margin-right: 2px;
+	color: #888;
+	font-weight: 800;
+}
+
+.rux-print-trip__detail-value {
+	display: inline-block;
+	min-width: 1.25rem;
+	min-height: 0.75rem;
+	border-bottom: 1px solid #d0d0d0;
+	font-weight: 700;
+}
+
+@media print {
+	body > *:not(.rux-print-root) {
+		display: none !important;
+	}
+
+	.rux-print-root {
+		position: static;
+		left: auto;
+	}
+}

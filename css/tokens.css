@@ -428,7 +428,7 @@
 	--rux-button-accent-fg: var(--rux-color-white);
 	--rux-button-ghost-bg: transparent;
 	--rux-button-ghost-fg: var(--rux-color-white);
-	--rux-button-ghost-border: var(--rux-border-subtle);
+	--rux-button-ghost-border: transparent;
 	--rux-button-danger-bg: oklch(60% 0.22 24);
 	--rux-button-danger-fg: var(--rux-color-white);
 	--rux-button-danger-quiet-fg: oklch(85% 0.2 24);
@@ -461,10 +461,6 @@
 	--rux-button-loading-opacity: 0.65;
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing: var(--rux-ease-out);
-
-	/* ─── COMPONENT · segmented ──────────────────────────────────────────── */
-
-	--rux-segmented-selected-bg: oklch(40% 0.004 260);
 
 	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
 
