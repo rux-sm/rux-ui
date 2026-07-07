@@ -6,7 +6,7 @@
     legal: { w: "8.5in", h: "14in" },
     a4: { w: "210mm", h: "297mm" },
   };
-  const PAGE_MARGIN = "0.25in";
+  const PAGE_MARGIN = "0.15in";
   const MIN_FIT_SCALE = 0.55;
   const PAGE_FIT_SLOP_PX = 8;
   const ICON_MAP = {
@@ -191,26 +191,22 @@
     return trip.paymentMethod || "";
   }
 
-  function appendDetailFields(card, trip) {
-    const driverPay = (trip.drivers || []).map((driver) => driver.pay || "");
-    const fields = [
-      ["D1", driverPay[0]],
-      ["D2", driverPay[1]],
-      ["MI", trip.estimatedMiles ? String(trip.estimatedMiles) : ""],
-      ["QT", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""],
-      ["PO", trip.paymentRef || ""],
-      ["ACT", trip.actualMiles ? String(trip.actualMiles) : ""],
-      ["INV", trip.invoiceNumber || ""],
-      ["PMT", paymentDetail(trip)],
-    ];
-    const details = el("div", "rux-print-trip__details");
-    fields.forEach(([label, value]) => {
-      const normalized = detailValue(value);
-      const field = el("span", "rux-print-trip__detail");
-      field.append(el("span", "rux-print-trip__detail-label", label), el("span", "rux-print-trip__detail-value", normalized || "\u00a0"));
-      details.appendChild(field);
-    });
-    card.appendChild(details);
+  function detailField(label, value) {
+    const normalized = detailValue(value);
+    const field = el("span", "rux-print-trip__detail");
+    const valueEl = el("span", "rux-print-trip__detail-value", normalized || "");
+    if (!normalized) valueEl.classList.add("rux-print-trip__detail-value--empty");
+    field.append(
+      el("span", "rux-print-trip__detail-label", `${label}:`),
+      valueEl,
+    );
+    return field;
+  }
+
+  function appendDetailRow(card, fields, className = "") {
+    const row = el("div", `rux-print-trip__row rux-print-trip__detail-row${className ? " " + className : ""}`);
+    fields.forEach(([label, value]) => row.appendChild(detailField(label, value)));
+    card.appendChild(row);
   }
 
   function createPrintTripCard(entry, demo) {
@@ -231,24 +227,22 @@
 
     const content = el("div", "rux-print-trip__content");
 
-    const head = el("div", "rux-print-trip__head");
-    head.appendChild(el("div", "rux-print-trip__destination", trip.destination || "Trip"));
-    if (trip.groupLabel) head.appendChild(el("div", "rux-print-trip__group", trip.groupLabel));
-    content.appendChild(head);
+    const destinationRow = el("div", "rux-print-trip__row rux-print-trip__destination-row");
+    destinationRow.appendChild(el("span", "rux-print-trip__destination", trip.destination || "Trip"));
+    destinationRow.appendChild(el("span", "rux-print-trip__group", trip.groupLabel || "\u00a0"));
+    content.appendChild(destinationRow);
 
     const passengerCount = (trip.trip_passengers || []).length;
     const customer = trip.is_self_organized
       ? `${passengerCount} passenger${passengerCount === 1 ? "" : "s"}`
       : trip.customer;
-    if (customer) content.appendChild(el("div", "rux-print-trip__line", customer));
+    content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", customer || "\u00a0"));
 
     const contact = trip.bookingContact || trip.tripContact || {};
     const contactText = [contact.name, contact.phone].filter(Boolean).join("  ");
-    if (contactText) content.appendChild(el("div", "rux-print-trip__line", contactText));
+    content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", contactText || "\u00a0"));
 
-    if (trip.notes) content.appendChild(el("div", "rux-print-trip__notes", trip.notes));
-
-    const meta = el("div", "rux-print-trip__meta");
+    const meta = el("div", "rux-print-trip__row rux-print-trip__meta");
     activeRequirementIds(trip).forEach((id) => {
       const req = requirementMeta(id, demo);
       if (req?.icon) meta.appendChild(icon(req.icon));
@@ -259,14 +253,15 @@
       const datePaid = compactDate(trip.datePaid);
       if (datePaid) meta.appendChild(el("span", "rux-print-trip__paid-date", datePaid));
     }
-    if (meta.children.length) content.appendChild(meta);
+    if (!meta.children.length) meta.appendChild(el("span", "", "\u00a0"));
+    content.appendChild(meta);
 
     const times = tripTimes(trip);
-    const timeRow = el("div", "rux-print-trip__times");
+    const timeRow = el("div", "rux-print-trip__row rux-print-trip__times");
     timeRow.append(el("span", "", fmtTime(times.departureTime)), el("span", "", fmtTime(times.spotTime)), el("span", "", fmtTime(times.returnTime)));
     content.appendChild(timeRow);
 
-    const drivers = el("div", "rux-print-trip__drivers");
+    const drivers = el("div", "rux-print-trip__row rux-print-trip__drivers");
     const roleIcons = {
       "driver": "person",
       "co-driver": "group",
@@ -278,9 +273,14 @@
       item.append(icon(roleIcons[driver.role] || "person", "rux-icon rux-print-trip__driver-icon"), el("span", "rux-print-trip__driver-name", driver.shortName || driver.name || ""));
       drivers.appendChild(item);
     });
-    if (drivers.children.length) content.appendChild(drivers);
+    if (!drivers.children.length) drivers.appendChild(el("span", "rux-print-trip__driver", "\u00a0"));
+    content.appendChild(drivers);
 
-    appendDetailFields(content, trip);
+    const driverPay = (trip.drivers || []).map((driver) => driver.pay || "");
+    appendDetailRow(content, [["D1", driverPay[0]], ["D2", driverPay[1]]]);
+    appendDetailRow(content, [["MI", trip.estimatedMiles ? String(trip.estimatedMiles) : ""], ["ACT MI", trip.actualMiles ? String(trip.actualMiles) : ""]]);
+    appendDetailRow(content, [["PO", trip.paymentRef || ""], ["INV", trip.invoiceNumber || ""]]);
+    appendDetailRow(content, [["PMT", paymentDetail(trip)]], "rux-print-trip__detail-row--single");
     card.appendChild(content);
     return card;
   }
