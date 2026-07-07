@@ -26,41 +26,6 @@
     "person_add": "person_add",
     "person_remove": "person_remove",
   };
-  const LEGACY_REQ_MAP = {
-    req_sleeper: "sleeper",
-    req_56pax: "pax56",
-    req_ada: "adaLift",
-    need_hotel: "hotel",
-    need_fuel_card: "fuelCard",
-  };
-  const PENDING_INDICATORS = [
-    {
-      icon: "paperclip",
-      label: "Pending itinerary",
-      check: (trip) => trip.itineraryStatus !== "received" && !(trip.trip_documents || []).some(d => d.label === "Itinerary"),
-    },
-    {
-      icon: "phone_enabled",
-      label: "Trip contact missing",
-      check: (trip) => !trip.tripContact?.name && !trip.tripContact?.phone,
-    },
-    {
-      icon: "file-pen",
-      label: "Pending contract",
-      check: (trip) => trip.paymentStatus === "pending",
-    },
-    {
-      icon: "request_quote",
-      label: "Pending PO",
-      check: (trip) => trip.paymentStatus === "contract_signed",
-    },
-    {
-      icon: "receipt",
-      label: "Pending invoice",
-      check: (trip) => trip.invoiceStatus === "pending",
-    },
-  ];
-
   function trackIdForBusNumber(number) {
     return `track-${String(number ?? "").replace(/[^A-Za-z0-9_-]/g, "_")}`;
   }
@@ -145,21 +110,6 @@
     };
   }
 
-  function activeRequirementIds(trip) {
-    const ids = [];
-    if (trip.trip_reqs && typeof trip.trip_reqs === "object" && Object.keys(trip.trip_reqs).length) {
-      Object.entries(trip.trip_reqs).forEach(([id, value]) => { if (value) ids.push(id); });
-    } else {
-      Object.entries(LEGACY_REQ_MAP).forEach(([key, id]) => { if (trip[key]) ids.push(id); });
-    }
-    return ids;
-  }
-
-  function requirementMeta(id, demo) {
-    const allReqs = window.appRequirements || demo?.TRIP_REQUIREMENTS || [];
-    return allReqs.find((req) => req.id === id || req.key === id);
-  }
-
   function compactDate(value) {
     if (!value) return "";
     const text = String(value).trim();
@@ -204,7 +154,7 @@
     card.appendChild(row);
   }
 
-  function createPrintTripCard(entry, demo) {
+  function createPrintTripCard(entry) {
     const trip = entry.trip || {};
     const card = el("article", "rux-print-trip");
     if (!trip.driverStatus || trip.driverStatus !== "confirmed") card.classList.add("rux-print-trip--unconfirmed");
@@ -243,15 +193,6 @@
     const contact = trip.bookingContact || trip.tripContact || {};
     const contactText = [contact.name, contact.phone].filter(Boolean).join("  ");
     content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", contactText || "\u00a0"));
-
-    const meta = el("div", "rux-print-trip__row rux-print-trip__meta");
-    activeRequirementIds(trip).forEach((id) => {
-      const req = requirementMeta(id, demo);
-      if (req?.icon) meta.appendChild(icon(req.icon));
-    });
-    PENDING_INDICATORS.filter((item) => item.check(trip)).forEach((item) => meta.appendChild(icon(item.icon, "rux-icon rux-print-trip__icon rux-print-trip__icon--pending")));
-    if (!meta.children.length) meta.appendChild(el("span", "", "\u00a0"));
-    content.appendChild(meta);
 
     const times = tripTimes(trip);
     const timeRow = el("div", "rux-print-trip__row rux-print-trip__times");
@@ -469,7 +410,7 @@
         const trackId = trackIdForBusNumber(bus.number);
         const entries = byTrack.get(trackId) || [];
         entries.forEach((entry) => {
-          inner.appendChild(createPrintTripCard(entry, demo));
+          inner.appendChild(createPrintTripCard(entry));
         });
 
         table.appendChild(row);

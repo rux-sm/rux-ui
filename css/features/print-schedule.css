@@ -68,12 +68,20 @@
 	overflow: hidden;
 }
 
+/* Matching corner radii on the header (top) and last row (bottom, below)
+   so nothing has a sharp corner poking past where .rux-print__table's own
+   rounded overflow:hidden clip already curves away — without this, the
+   header/last-row's straight corner gets a sliver clipped off right at
+   the curve, making its border look thin/broken there instead of just
+   smoothly rounding with the table. */
 .rux-print__header {
 	flex: none;
 	display: grid;
 	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
 	row-gap: 0;
 	background-color: #eee;
+	border-start-start-radius: 4px;
+	border-start-end-radius: 4px;
 	border-block-end: 2px solid #333;
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
@@ -127,6 +135,8 @@
 }
 
 .rux-print__row:last-child {
+	border-end-start-radius: 4px;
+	border-end-end-radius: 4px;
 	border-block-end: none;
 }
 
@@ -256,9 +266,12 @@
 	line-height: 1;
 }
 
-/* Destination, customer, contact, icon meta, and times rows — keep the
-   border's reserved space (no layout shift) but hide the line itself. */
-.rux-print-trip__row:nth-child(-n+5) {
+/* Destination, customer, contact, and times rows — keep the border's
+   reserved space (no layout shift) but hide the line itself. Row count
+   dropped by one when the icon/meta row was removed, so this now stops
+   one row earlier than before (drivers is row 5 and should keep its
+   visible border, separating it from the detail fields below). */
+.rux-print-trip__row:nth-child(-n+4) {
 	border-bottom-color: transparent;
 }
 
@@ -316,31 +329,6 @@
 	color: #9a7600;
 	font-style: italic;
 	font-weight: 700;
-}
-
-.rux-print-trip__meta {
-	align-items: center;
-	gap: 4px;
-	min-height: 0;
-	overflow: hidden;
-}
-
-.rux-print-trip__icon {
-	--_icon-fill: 1;
-	display: inline-flex;
-	width: 1em;
-	height: 1em;
-	align-items: center;
-	justify-content: center;
-	flex: none;
-	font-size: 10px;
-	line-height: 1;
-	color: #777;
-	transform: translateY(0.04em);
-}
-
-.rux-print-trip__icon--pending {
-	color: #e95c5c;
 }
 
 .rux-print-trip__paid-label,
