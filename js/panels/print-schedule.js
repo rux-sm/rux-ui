@@ -117,11 +117,11 @@
   function fmtTime(value) {
     if (!value) return "--:--";
     const text = String(value).trim();
-    if (/[ap]m$/i.test(text)) return text.replace(/\s*am$/i, "a").replace(/\s*pm$/i, "p");
+    if (/[ap]m$/i.test(text)) return text.replace(/\s*am$/i, " am").replace(/\s*pm$/i, " pm");
     const match = text.match(/^(\d{1,2}):(\d{2})$/);
     if (!match) return text;
     let hour = Number(match[1]);
-    const suffix = hour < 12 ? "a" : "p";
+    const suffix = hour < 12 ? "am" : "pm";
     if (hour === 0) hour = 12;
     else if (hour > 12) hour -= 12;
     return `${hour}:${match[2]} ${suffix}`;
@@ -205,6 +205,7 @@
 
   function appendDetailRow(card, fields, className = "") {
     const row = el("div", `rux-print-trip__row rux-print-trip__detail-row${className ? " " + className : ""}`);
+    row.style.gridTemplateColumns = `repeat(${fields.length}, minmax(0, 1fr))`;
     fields.forEach(([label, value]) => row.appendChild(detailField(label, value)));
     card.appendChild(row);
   }
@@ -229,6 +230,13 @@
 
     const destinationRow = el("div", "rux-print-trip__row rux-print-trip__destination-row");
     destinationRow.appendChild(el("span", "rux-print-trip__destination", trip.destination || "Trip"));
+    if (["paid_full", "overpaid"].includes(trip.paymentStatus)) {
+      const paidBadge = el("span", "rux-print-trip__paid-badge");
+      paidBadge.appendChild(el("span", "rux-print-trip__paid-label", trip.paymentStatus === "overpaid" ? "OVERPAID" : "PAID"));
+      const datePaid = compactDate(trip.datePaid);
+      if (datePaid) paidBadge.appendChild(el("span", "rux-print-trip__paid-date", datePaid));
+      destinationRow.appendChild(paidBadge);
+    }
     destinationRow.appendChild(el("span", "rux-print-trip__group", trip.groupLabel || "\u00a0"));
     content.appendChild(destinationRow);
 
@@ -248,11 +256,6 @@
       if (req?.icon) meta.appendChild(icon(req.icon));
     });
     PENDING_INDICATORS.filter((item) => item.check(trip)).forEach((item) => meta.appendChild(icon(item.icon, "rux-icon rux-print-trip__icon rux-print-trip__icon--pending")));
-    if (["paid_full", "overpaid"].includes(trip.paymentStatus)) {
-      meta.appendChild(icon(trip.paymentStatus === "overpaid" ? "warning" : "paid", "rux-icon rux-print-trip__icon rux-print-trip__icon--paid"));
-      const datePaid = compactDate(trip.datePaid);
-      if (datePaid) meta.appendChild(el("span", "rux-print-trip__paid-date", datePaid));
-    }
     if (!meta.children.length) meta.appendChild(el("span", "", "\u00a0"));
     content.appendChild(meta);
 
@@ -276,11 +279,18 @@
     if (!drivers.children.length) drivers.appendChild(el("span", "rux-print-trip__driver", "\u00a0"));
     content.appendChild(drivers);
 
-    const driverPay = (trip.drivers || []).map((driver) => driver.pay || "");
-    appendDetailRow(content, [["D1", driverPay[0]], ["D2", driverPay[1]]]);
-    appendDetailRow(content, [["MI", trip.estimatedMiles ? String(trip.estimatedMiles) : ""], ["ACT MI", trip.actualMiles ? String(trip.actualMiles) : ""]]);
-    appendDetailRow(content, [["PO", trip.paymentRef || ""], ["INV", trip.invoiceNumber || ""]]);
-    appendDetailRow(content, [["PMT", paymentDetail(trip)]], "rux-print-trip__detail-row--single");
+    // First driver is always "D1"; every driver beyond that is a relief
+    // slot ("R1", "R2", ...) — the row's column count matches however many
+    // drivers are actually assigned, not a fixed D1/D2 pair. Row is never
+    // omitted (falls back to a single empty "D1" slot) so every card
+    // reserves the same rows regardless of driver count.
+    const driverPayFields = (trip.drivers || []).length
+      ? trip.drivers.map((driver, i) => [i === 0 ? "D1" : `R${i}`, driver.pay || ""])
+      : [["D1", ""]];
+    appendDetailRow(content, driverPayFields, "rux-print-trip__detail-row--after-drivers");
+    appendDetailRow(content, [["Mi", trip.estimatedMiles ? String(trip.estimatedMiles) : ""], ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""]]);
+    appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["Inv", trip.invoiceNumber || ""]]);
+    appendDetailRow(content, [["Pmt", paymentDetail(trip)]], "rux-print-trip__detail-row--single");
     card.appendChild(content);
     return card;
   }

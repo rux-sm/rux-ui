@@ -122,11 +122,11 @@
 	box-sizing: border-box;
 	display: grid;
 	grid-auto-rows: minmax(0, 1fr);
-	gap: 2px;
+	gap: 0;
 	width: var(--rux-print-trip-content-width, 100%);
 	height: 100%;
 	min-width: 0;
-	padding: 6px;
+	padding: 4px;
 	overflow: hidden;
 }
 
@@ -143,12 +143,23 @@
 	overflow: visible;
 	display: flex;
 	align-items: center;
+	border-bottom: 1px solid #e0e0e0;
 	line-height: 1;
+}
+
+/* Destination, customer, contact, icon meta, and times rows — keep the
+   border's reserved space (no layout shift) but hide the line itself. */
+.rux-print-trip__row:nth-child(-n+5) {
+	border-bottom-color: transparent;
+}
+
+.rux-print-trip__row:last-child {
+	border-bottom: 0;
 }
 
 .rux-print-trip__destination-row {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr) auto auto;
 	gap: 4px;
 	align-items: center;
 }
@@ -161,6 +172,16 @@
 	font-size: 10px;
 	font-weight: 800;
 	color: #222;
+}
+
+/* Sits left of .rux-print-trip__group — the group/bus badge is a fixed
+   identity marker anchored at the far right edge, so the paid status
+   (a secondary indicator) reads better just inside it, not past it. */
+.rux-print-trip__paid-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	white-space: nowrap;
 }
 
 .rux-print-trip__group {
@@ -196,6 +217,7 @@
 }
 
 .rux-print-trip__icon {
+	--_icon-fill: 1;
 	display: inline-flex;
 	width: 1em;
 	height: 1em;
@@ -212,12 +234,9 @@
 	color: #e95c5c;
 }
 
-.rux-print-trip__icon--paid,
+.rux-print-trip__paid-label,
 .rux-print-trip__paid-date {
 	color: #148a4a;
-}
-
-.rux-print-trip__paid-date {
 	font-size: 10px;
 	font-weight: 700;
 }
@@ -260,6 +279,7 @@
 	font-size: 10px;
 	font-weight: 700;
 	color: #555;
+	overflow: visible;
 }
 
 .rux-print-trip__driver {
@@ -270,11 +290,12 @@
 	min-height: 0;
 	gap: 3px;
 	background: transparent;
-	padding: 0 0 1px;
+	padding: 0;
 	line-height: 1;
 }
 
 .rux-print-trip__driver-icon {
+	--_icon-fill: 1;
 	display: inline-flex;
 	width: 1em;
 	height: 1em;
@@ -289,8 +310,8 @@
 
 .rux-print-trip__driver-name {
 	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	overflow: visible;
+	text-overflow: clip;
 	white-space: nowrap;
 	line-height: 1;
 }
@@ -299,23 +320,10 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: center;
-	position: relative;
-	z-index: 1;
 	gap: 4px;
 	color: #555;
 	font-size: 10px;
 	line-height: 1;
-}
-
-.rux-print-trip__detail-row::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	border-top: 1px solid #e0e0e0;
-	transform: translateY(-50%);
-	z-index: -1;
 }
 
 .rux-print-trip__detail-row--single {
@@ -334,13 +342,12 @@
 	gap: 3px;
 	height: 100%;
 	line-height: 1;
-	transform: translateY(0.03em);
 }
 
 .rux-print-trip__detail-label {
 	flex: none;
 	color: #888;
-	font-weight: 800;
+	font-weight: 500;
 	line-height: 1;
 }
 
