@@ -360,10 +360,22 @@
 /* ---------- Summary row ---------- */
 
 .rux-trip-bar__summary {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
+	display: flex;
 	align-items: center;
-	gap: var(--rux-space-0);
+	gap: var(--rux-space-1);
+}
+
+.rux-trip-bar__paid-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-space-1);
+	height: 18px;
+	padding: 0 4px;
+	background: oklch(0% 0 0 / 0.2);
+	border-radius: 6px;
+	flex: none;
+	white-space: nowrap;
 }
 
 .rux-trip-bar__bus-label {
@@ -382,6 +394,7 @@
 
 .rux-trip-bar__destination {
 	display: flex;
+	flex: 1 1 auto;
 	align-items: center;
 	min-width: 0;
 	min-height: 18px;
@@ -397,6 +410,11 @@
 .rux-trip-bar__status {
 	color: var(--rux-fg-on-accent-muted);
 	flex: none;
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-bold);
+	line-height: 1;
+	letter-spacing: var(--rux-tracking-wide);
+	white-space: nowrap;
 }
 
 .rux-trip-bar__status--paid {
@@ -709,9 +727,8 @@
 
 .rux-trip-bar__detail-field-label {
 	color: var(--rux-fg-muted);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-medium);
 	letter-spacing: var(--rux-tracking-wide);
-	text-transform: uppercase;
 }
 
 .rux-trip-bar__detail-field-label::after {

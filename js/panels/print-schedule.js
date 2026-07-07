@@ -6,9 +6,8 @@
     legal: { w: "8.5in", h: "14in" },
     a4: { w: "210mm", h: "297mm" },
   };
-  const PAGE_MARGIN = "0.15in";
+  const PAGE_MARGIN = "0.2in";
   const MIN_FIT_SCALE = 0.55;
-  const PAGE_FIT_SLOP_PX = 8;
   const ICON_MAP = {
     bed: "airline_seat_flat",
     users: "tatami_seat",
@@ -62,28 +61,6 @@
     },
   ];
 
-  // Physical CSS lengths (in/mm) convert to px consistently regardless of
-  // print context, so a hidden probe element gives an accurate px budget
-  // for "how much vertical space does one physical page actually have."
-  function cssLengthToPx(cssLength) {
-    const probe = document.createElement("div");
-    probe.style.position = "absolute";
-    probe.style.visibility = "hidden";
-    probe.style.height = cssLength;
-    document.body.appendChild(probe);
-    const px = probe.getBoundingClientRect().height;
-    probe.remove();
-    return px;
-  }
-
-  function outerBlockSize(el) {
-    if (!el) return 0;
-    const style = getComputedStyle(el);
-    const marginStart = Number.parseFloat(style.marginBlockStart || style.marginTop) || 0;
-    const marginEnd = Number.parseFloat(style.marginBlockEnd || style.marginBottom) || 0;
-    return el.getBoundingClientRect().height + marginStart + marginEnd;
-  }
-
   function trackIdForBusNumber(number) {
     return `track-${String(number ?? "").replace(/[^A-Za-z0-9_-]/g, "_")}`;
   }
@@ -95,12 +72,29 @@
   }
 
   function fmtDayHead(date) {
-    const weekday = date.toLocaleDateString(undefined, { weekday: "short" });
-    return `${weekday} ${date.getMonth() + 1}/${date.getDate()}`;
+    return {
+      name: date.toLocaleDateString(undefined, { weekday: "long" }).toUpperCase(),
+      day: String(date.getDate()),
+    };
   }
 
-  function fmtWeekOf(date) {
-    return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  // "June 29-July 5, 2026" (crosses a month) / "July 6-12, 2026" (single
+  // month) / with a repeated year only when the range crosses one too.
+  function fmtWeekRange(weekStart) {
+    const weekEnd = addDays(weekStart, 6);
+    const startMonth = weekStart.toLocaleDateString(undefined, { month: "long" });
+    const endMonth = weekEnd.toLocaleDateString(undefined, { month: "long" });
+    const startDay = weekStart.getDate();
+    const endDay = weekEnd.getDate();
+    const startYear = weekStart.getFullYear();
+    const endYear = weekEnd.getFullYear();
+    if (startYear !== endYear) {
+      return `${startMonth} ${startDay}, ${startYear}-${endMonth} ${endDay}, ${endYear}`;
+    }
+    if (startMonth !== endMonth) {
+      return `${startMonth} ${startDay}-${endMonth} ${endDay}, ${startYear}`;
+    }
+    return `${startMonth} ${startDay}-${endDay}, ${startYear}`;
   }
 
   function el(tag, className, text) {
@@ -288,8 +282,9 @@
       ? trip.drivers.map((driver, i) => [i === 0 ? "D1" : `R${i}`, driver.pay || ""])
       : [["D1", ""]];
     appendDetailRow(content, driverPayFields, "rux-print-trip__detail-row--after-drivers");
-    appendDetailRow(content, [["Mi", trip.estimatedMiles ? String(trip.estimatedMiles) : ""], ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""]]);
-    appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["Inv", trip.invoiceNumber || ""]]);
+    appendDetailRow(content, [["Mi", trip.estimatedMiles ? String(trip.estimatedMiles) : ""], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
+    appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", trip.paymentRef || ""]]);
+    appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "rux-print-trip__detail-row--single");
     appendDetailRow(content, [["Pmt", paymentDetail(trip)]], "rux-print-trip__detail-row--single");
     card.appendChild(content);
     return card;
@@ -365,7 +360,6 @@
 
     const contentWidth = `calc(${w} - (2 * ${PAGE_MARGIN}))`;
     const contentHeight = `calc(${h} - (2 * ${PAGE_MARGIN}))`;
-    const availableHeightPx = cssLengthToPx(`calc(${h} - (2 * ${PAGE_MARGIN}))`);
 
     // Group placements per bus track, clipped to the plain 7-day work week
     // (activePlacements may span 14 days if the live two-week toggle is on —
@@ -401,21 +395,36 @@
 
       const title = document.createElement("div");
       title.className = "rux-print__page-title";
-      title.textContent = `Week of ${fmtWeekOf(weekStart)}` +
-        (busChunks.length > 1 ? ` — Page ${pageIndex + 1} of ${busChunks.length}` : "");
+      const logo = document.createElement("img");
+      logo.className = "rux-print__page-logo";
+      logo.src = "assets/logo.png";
+      logo.alt = "";
+      title.appendChild(logo);
+      const titleText = el("span", "rux-print__page-title-text",
+        fmtWeekRange(weekStart) +
+        (busChunks.length > 1 ? ` — Page ${pageIndex + 1} of ${busChunks.length}` : ""));
+      title.appendChild(titleText);
       page.appendChild(title);
+
+      // Header + rows share one bordered frame (.rux-print__table) — a
+      // border around the title alone wouldn't read as "the schedule."
+      const table = document.createElement("div");
+      table.className = "rux-print__table";
+      page.appendChild(table);
 
       const header = document.createElement("div");
       header.className = "rux-print__header";
       const cornerCell = document.createElement("div");
+      cornerCell.className = "rux-print__corner";
       header.appendChild(cornerCell);
       dayLabels.forEach((label) => {
         const cell = document.createElement("div");
         cell.className = "rux-print__day-head";
-        cell.textContent = label;
+        cell.appendChild(el("span", "rux-print__day-head-name", label.name));
+        cell.appendChild(el("span", "rux-print__day-head-number", label.day));
         header.appendChild(cell);
       });
-      page.appendChild(header);
+      table.appendChild(header);
 
       // rowsPerPage is a fixed slot count, not just a chunk size: every
       // row (this page's real buses AND blank filler slots on a partial
@@ -427,12 +436,28 @@
         const row = document.createElement("div");
         row.className = "rux-print__row";
 
+        // Background day-column divider lines — a plain overlay behind the
+        // row's content (same idea as the live scheduler's track-grid),
+        // present on every row (including blank filler slots) so the day
+        // columns read as a consistent grid down the whole page. Includes
+        // a leading label-column placeholder so this grid's columns land
+        // in the exact same place as .rux-print__row-inner's (same
+        // template + gap), not just an approximation of it.
+        const dayGrid = document.createElement("div");
+        dayGrid.className = "rux-print__row-daygrid";
+        dayGrid.setAttribute("aria-hidden", "true");
+        dayGrid.appendChild(el("span", "rux-print__row-daygrid-label"));
+        for (let d = 0; d < 7; d++) {
+          dayGrid.appendChild(el("span", "rux-print__row-dayline"));
+        }
+        row.appendChild(dayGrid);
+
         const inner = document.createElement("div");
         inner.className = "rux-print__row-inner";
         row.appendChild(inner);
 
         if (!bus) {
-          page.appendChild(row);
+          table.appendChild(row);
           continue;
         }
 
@@ -447,41 +472,36 @@
           inner.appendChild(createPrintTripCard(entry, demo));
         });
 
-        page.appendChild(row);
+        table.appendChild(row);
       }
 
       root.appendChild(page);
     });
 
-    return { root, availableHeightPx };
+    return root;
   }
 
   // Rows-per-page is a fixed slot count, and every slot — real bus row or
-  // blank filler on a partial last page — must be the same height. So the
-  // slot height is computed top-down: (page budget − title − day header) /
-  // rowsPerPage, applied to every .rux-print__row up front; only then are
-  // the row's static print trip cards, stacked in print lanes, fit into
-  // that fixed slot, never the reverse.
+  // blank filler on a partial last page — must be the same height. Rather
+  // than pre-compute a pixel height in JS (page budget − title − header,
+  // divided by rowsPerPage) and hope it sums to exactly what the page
+  // actually renders, .rux-print__table/.rux-print__row are laid out with
+  // CSS flex (flex: 1 1 0 on every row) so the browser itself divides
+  // whatever vertical space is actually left after the title/header evenly
+  // among all rows — that's correct by construction, with no gap or
+  // overflow possible from a measurement mismatch between two independent
+  // height calculations.
   //
   // `transform: scaleY()` (not `zoom`, which some print/PDF pipelines —
   // notably Safari's — silently ignore) shrinks an oversized row's inner
   // content vertically without moving the day columns horizontally. Transforms
   // never change how much space an element reserves in normal flow, so the
-  // fixed height + `overflow: hidden` on the outer .rux-print__row (not the
-  // transformed .rux-print__row-inner) is what the print pagination engine
-  // actually measures against.
-  function layoutRowHeights(root, availableHeightPx, rowsPerPage) {
-    const firstPage = root.querySelector(".rux-print-page");
-    if (!firstPage) return;
-    const title = firstPage.querySelector(".rux-print__page-title");
-    const header = firstPage.querySelector(".rux-print__header");
-    const titleHeight = outerBlockSize(title);
-    const headerHeight = outerBlockSize(header);
-    const usableRowsHeight = availableHeightPx - titleHeight - headerHeight - PAGE_FIT_SLOP_PX;
-    const rowSlotHeight = Math.max(24, Math.floor(usableRowsHeight / rowsPerPage));
-
+  // row's flex-allocated height + `overflow: hidden` on the outer
+  // .rux-print__row (not the transformed .rux-print__row-inner) is what the
+  // print pagination engine actually measures against.
+  function layoutRowHeights(root) {
     root.querySelectorAll(".rux-print__row").forEach((row) => {
-      row.style.height = `${rowSlotHeight}px`;
+      const rowSlotHeight = row.getBoundingClientRect().height;
       const inner = row.querySelector(".rux-print__row-inner");
       if (!inner) return;
       const naturalHeight = inner.scrollHeight;
@@ -493,22 +513,35 @@
     });
   }
 
+  // The logo <img>'s src fetch is async — window.print() firing before it
+  // finishes loading renders as blank space, since browsers don't reliably
+  // wait for late-arriving images before rasterizing print output.
+  function waitForImages(root) {
+    const images = Array.from(root.querySelectorAll("img"));
+    return Promise.all(images.map((img) => {
+      if (img.complete) return Promise.resolve();
+      return new Promise((resolve) => {
+        img.addEventListener("load", resolve, { once: true });
+        img.addEventListener("error", resolve, { once: true });
+      });
+    }));
+  }
+
   function printSchedule(options) {
     const existing = document.querySelector(".rux-print-root");
     if (existing) existing.remove();
 
-    const built = buildPrintDom(options);
-    if (!built) return;
-    const { root, availableHeightPx } = built;
+    const root = buildPrintDom(options);
+    if (!root) return;
     document.body.appendChild(root);
 
-    requestAnimationFrame(() => {
-      layoutRowHeights(root, availableHeightPx, options.rowsPerPage);
+    waitForImages(root).then(() => requestAnimationFrame(() => {
+      layoutRowHeights(root);
       window.addEventListener("afterprint", () => {
         root.remove();
       }, { once: true });
       window.print();
-    });
+    }));
   }
 
   function init() {

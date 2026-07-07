@@ -458,8 +458,13 @@ function detailValue(value) {
   return value;
 }
 
-function driverPayValues(trip) {
-  return (trip.drivers || []).map((d) => d.pay || "");
+// First driver is always "D1"; every driver beyond that is a relief slot
+// ("R1", "R2", ...) — matches print-schedule.js's driver-pay labeling so
+// the field count always reflects how many drivers are actually assigned.
+function driverPayFields(trip) {
+  const drivers = trip.drivers || [];
+  if (!drivers.length) return [["D1", ""]];
+  return drivers.map((d, i) => [i === 0 ? "D1" : `R${i}`, d.pay || ""]);
 }
 
 function paymentDetail(trip) {
@@ -468,11 +473,38 @@ function paymentDetail(trip) {
   return method;
 }
 
-function detailFieldEl(label, value, { wide = false } = {}) {
+// Computes an explicit grid-row/grid-column for every field instead of
+// leaning on the grid's implicit auto-flow: the driver-pay section is now
+// a variable length (1 field for a single driver, 2, 3+ for relief
+// drivers), and letting the browser auto-place everything after it risks
+// sliding MI/QT/etc. into whatever leftover cell a short driver row left
+// open, instead of starting their own row. Deterministic placement here
+// removes that ambiguity entirely.
+function layoutDetailFields(fields) {
+  let row = 1;
+  let col = 1;
+  return fields.map(([label, value, options = {}]) => {
+    const wide = !!options.wide;
+    if (wide) {
+      if (col !== 1) { row += 1; col = 1; }
+      const placed = { label, value, wide, gridRow: row, gridColumn: "1 / -1" };
+      row += 1;
+      return placed;
+    }
+    const placed = { label, value, wide, gridRow: row, gridColumn: col };
+    if (col === 1) col = 2;
+    else { col = 1; row += 1; }
+    return placed;
+  });
+}
+
+function detailFieldEl({ label, value, wide, gridRow, gridColumn }) {
   const field = document.createElement("div");
   field.className = `rux-trip-bar__detail-field${
     wide ? " rux-trip-bar__detail-field--wide" : ""
   }`;
+  field.style.gridRow = String(gridRow);
+  field.style.gridColumn = String(gridColumn);
   const labelEl = textEl("span", "rux-trip-bar__detail-field-label", label);
   const valueEl = textEl(
     "span",
@@ -625,24 +657,25 @@ export function createTripBar(trip, callbacks = {}) {
     pending.appendChild(marker);
   });
   const groupLabel = trip.groupLabel || "";
-  let statusIcon = null;
+  // Sits left of the bus-label pill on the destination row — the pill is
+  // a fixed identity marker anchored at the far right edge, so paid status
+  // (a secondary indicator) reads better just inside it, not past it.
+  let paidBadge = null;
   if (paid) {
     const datePaid = paidDate(trip);
     const isOverpaid = trip.paymentStatus === "overpaid";
-    const paidIconName = window.RuxBilling?.STATUS_META?.[trip.paymentStatus]?.icon
-      || (isOverpaid ? "alert-triangle" : "paid");
-    statusIcon = icon(
-      paidIconName,
-      `rux-icon rux-trip-bar__status rux-trip-bar__status--${isOverpaid ? "overpaid" : "paid"}`,
+    const statusLabel = textEl(
+      "span",
+      "rux-trip-bar__status rux-trip-bar__status--paid",
+      isOverpaid ? "OVERPAID" : "PAID",
     );
     const paidLabel = isOverpaid ? "Overpaid" : (datePaid ? `Paid in full ${datePaid}` : "Paid in full");
-    setFloatingTooltip(statusIcon, paidLabel);
-    summaryMarkerLabels.push(paidLabel);
-    pending.appendChild(statusIcon);
-    if (datePaid && !isOverpaid) {
-      pending.appendChild(
-        textEl("span", "rux-trip-bar__status-date", datePaid),
-      );
+    setFloatingTooltip(statusLabel, paidLabel);
+    paidBadge = document.createElement("span");
+    paidBadge.className = "rux-trip-bar__paid-badge";
+    paidBadge.appendChild(statusLabel);
+    if (datePaid) {
+      paidBadge.appendChild(textEl("span", "rux-trip-bar__status-date", datePaid));
     }
   }
   pending.setAttribute("aria-label", summaryMarkerLabels.join(", "));
@@ -653,6 +686,7 @@ export function createTripBar(trip, callbacks = {}) {
   })() : null;
   summary.append(
     textEl("div", "rux-trip-bar__destination", trip.destination),
+    ...(paidBadge ? [paidBadge] : []),
     ...(busPill ? [busPill] : []),
   );
 
@@ -780,23 +814,33 @@ export function createTripBar(trip, callbacks = {}) {
   const detailsInner = document.createElement("div");
   detailsInner.className = "rux-trip-bar__details-inner";
 
-  const driverPay = driverPayValues(trip);
-  const detailFields = [
-    ["D1", driverPay[0]],
-    ["D2", driverPay[1]],
-    ["MI", trip.estimatedMiles ? String(trip.estimatedMiles) : ""],
-    [
-      "QT",
-      trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : "",
-    ],
-    ["PO", trip.paymentRef || "", { wide: true }],
-    ["ACT", trip.actualMiles ? String(trip.actualMiles) : ""],
-    ["INV", trip.invoiceNumber || ""],
-    ["PMT", paymentDetail(trip), { wide: true }],
-  ];
+  // Driver-pay fields are laid out on their own (rows 1..driverRows,
+  // packed 2-per-row — a lone last driver leaves column 2 blank on
+  // purpose, same as removing "D2" for a single driver). Everything after
+  // always starts fresh at driverRows+1, regardless of whether that last
+  // driver row was fully packed — see layoutDetailFields's doc comment for
+  // why this can't just be one continuous auto-flowing list.
+  const driverFields = driverPayFields(trip);
+  const driverRows = Math.ceil(driverFields.length / 2);
+  const placedDriverFields = driverFields.map(([label, value], i) => ({
+    label, value, wide: false,
+    gridRow: Math.floor(i / 2) + 1,
+    gridColumn: (i % 2) + 1,
+  }));
 
-  detailFields.forEach(([label, value, options]) => {
-    detailsInner.appendChild(detailFieldEl(label, value, options));
+  const restFields = [
+    ["Mi", trip.estimatedMiles ? String(trip.estimatedMiles) : ""],
+    ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""],
+    ["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""],
+    ["PO", trip.paymentRef || ""],
+    ["Inv", trip.invoiceNumber || "", { wide: true }],
+    ["Pmt", paymentDetail(trip), { wide: true }],
+  ];
+  const placedRestFields = layoutDetailFields(restFields)
+    .map((placed) => ({ ...placed, gridRow: placed.gridRow + driverRows }));
+
+  [...placedDriverFields, ...placedRestFields].forEach((placed) => {
+    detailsInner.appendChild(detailFieldEl(placed));
   });
   details.appendChild(detailsInner);
 

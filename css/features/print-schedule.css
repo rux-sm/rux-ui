@@ -17,6 +17,9 @@
 }
 
 .rux-print-page {
+	--rux-print-label-width: 32px;
+	display: flex;
+	flex-direction: column;
 	box-sizing: border-box;
 	background: #fff;
 	padding-block-end: 0;
@@ -27,29 +30,86 @@
 }
 
 .rux-print__page-title {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding-inline: 6px;
+	margin-block-start: 6px;
+	margin-block-end: 6px;
+}
+
+.rux-print__page-logo {
+	height: 24px;
+	width: auto;
+	flex: none;
+}
+
+.rux-print__page-title-text {
 	font-family: var(--rux-font-sans, sans-serif);
 	font-size: 14px;
 	font-weight: 700;
-	margin-block-end: 8px;
 	color: #111;
+	text-align: right;
+}
+
+/* Frames the header + every row as one visual table — a border around
+   the title alone wouldn't read as "the schedule." flex:1 makes this fill
+   whatever vertical space is left in .rux-print-page after the title, so
+   there's no gap between the table and the page's bottom edge regardless
+   of how tall the title happens to render. */
+.rux-print__table {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0;
+	min-height: 0;
+	border: 1px solid #333;
+	border-radius: 4px;
+	overflow: hidden;
 }
 
 .rux-print__header {
+	flex: none;
 	display: grid;
 	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
-	column-gap: 4px;
 	row-gap: 0;
+	background-color: #eee;
 	border-block-end: 2px solid #333;
-	padding-block-end: 4px;
-	margin-block-end: 4px;
+	print-color-adjust: exact;
+	-webkit-print-color-adjust: exact;
+}
+
+/* Padding lives on the cells (not the .rux-print__header container) so
+   each cell's box — and its vertical border-inline-end — extends all the
+   way down to meet the header's border-block-end, instead of stopping
+   short at the cell's own short text content and leaving a gap. */
+.rux-print__corner {
+	padding-block: 4px;
+	border-inline-end: 1px solid #333;
 }
 
 .rux-print__day-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+	padding-block: 4px;
+	padding-inline: 8px;
 	font-family: var(--rux-font-sans, sans-serif);
-	font-size: 11px;
-	font-weight: 600;
-	text-align: center;
+	font-size: 14px;
+	font-weight: 700;
 	color: #333;
+	border-inline-end: 1px solid #ccc;
+	border-bottom: none;
+}
+
+.rux-print__day-head-name,
+.rux-print__day-head-number {
+	white-space: nowrap;
+}
+
+.rux-print__day-head:last-child {
+	border-inline-end: none;
 }
 
 /* Every row — real bus row or blank filler slot on a partial last page —
@@ -57,10 +117,52 @@
    clips its own content, so rows are always uniform regardless of how
    many print trip cards they hold. */
 .rux-print__row {
+	position: relative;
+	flex: 1 1 0;
+	min-height: 0;
 	box-sizing: border-box;
 	overflow: hidden;
 	border-block-end: 1px solid #ccc;
 	break-inside: avoid;
+}
+
+.rux-print__row:last-child {
+	border-block-end: none;
+}
+
+/* Background day-column divider lines, behind the row's content (same
+   idea as the live scheduler's track-grid) — present even on blank filler
+   rows so the day columns read as one consistent grid down the page.
+   Shares the exact grid-template-columns of .rux-print__row-inner (not
+   just the same label-width offset) — two independently computed grids
+   over the same space will drift apart otherwise, and that drift
+   compounds day-by-day across the week. No column-gap here (or on
+   row-inner/header) — the divider line is drawn as border-inline-end on
+   each cell, so a nonzero gap would put empty space on one side of that
+   line and not the other, making trip cards (inset via their own
+   margin-inline) look closer to their right neighbor than their left. */
+.rux-print__row-daygrid {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.rux-print__row-daygrid-label {
+	background-color: #eee;
+	print-color-adjust: exact;
+	-webkit-print-color-adjust: exact;
+	border-inline-end: 1px solid #333;
+}
+
+.rux-print__row-dayline {
+	border-inline-end: 1px solid #e0e0e0;
+}
+
+.rux-print__row-dayline:last-child {
+	border-inline-end: none;
 }
 
 /* The actual grid (label column + 7 day columns) and everything scaled
@@ -71,10 +173,11 @@
    height + overflow:hidden (not this element) is what print pagination
    actually measures against. */
 .rux-print__row-inner {
+	position: relative;
+	z-index: 1;
 	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
-	column-gap: 4px;
 	grid-auto-rows: minmax(0, 1fr);
 	row-gap: 4px;
 	align-items: stretch;
@@ -86,36 +189,38 @@
 .rux-print__row-head {
 	grid-column: 1;
 	grid-row: 1 / -1;
-	min-height: 40px;
+	min-height: 28px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-family: var(--rux-font-sans, sans-serif);
-	font-size: 10px;
+	font-size: 14px;
 	font-weight: 700;
+	line-height: 1;
 	color: #111;
+	border-bottom: none;
 }
 
 .rux-print-trip {
 	box-sizing: border-box;
 	min-width: 0;
 	height: 100%;
-	margin-inline: 8px;
-	border: 1px solid #bbb;
+	margin-inline: 4px;
+	border: 1px solid oklch(55% 0.12 260);
 	border-radius: 8px;
-	background: #fff;
+	background: oklch(96% 0.025 260);
 	color: #222;
 	font-family: var(--rux-font-sans, sans-serif);
 	font-size: 10px;
 	line-height: 1.08;
 	overflow: hidden;
-	box-shadow: 0 1px 4px rgb(0 0 0 / 0.18);
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
 }
 
 .rux-print-trip--unconfirmed {
-	border-color: #e57373;
+	border-color: oklch(55% 0.19 24);
+	background: oklch(96% 0.03 24);
 }
 
 .rux-print-trip__content {
@@ -133,7 +238,11 @@
 .rux-print-trip--multi-day .rux-print-trip__content {
 	border-right: 1px solid #e0e0e0;
 	border-radius: 8px 0 0 8px;
-	background: #fff;
+	background: oklch(96% 0.025 260);
+}
+
+.rux-print-trip--unconfirmed.rux-print-trip--multi-day .rux-print-trip__content {
+	background: oklch(96% 0.03 24);
 }
 
 .rux-print-trip__row {
@@ -158,13 +267,13 @@
 }
 
 .rux-print-trip__destination-row {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto auto;
+	display: flex;
 	gap: 4px;
 	align-items: center;
 }
 
 .rux-print-trip__destination {
+	flex: 1 1 auto;
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -185,7 +294,7 @@
 }
 
 .rux-print-trip__group {
-	justify-self: end;
+	flex: none;
 	font-size: 10px;
 	font-weight: 700;
 	color: #777;
