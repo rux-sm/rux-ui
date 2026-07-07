@@ -241,7 +241,7 @@ function fmtTime(str) {
   let h, min, suffix;
   if (/[ap]m$/i.test(str.trim())) {
     const clean = str.trim();
-    suffix = /am$/i.test(clean) ? "a" : "p";
+    suffix = /am$/i.test(clean) ? "am" : "pm";
     const core = clean.replace(/\s*[ap]m$/i, "");
     return `${core}<span class="rux-trip-bar__time-suffix"> ${suffix}</span>`;
   }
@@ -249,7 +249,7 @@ function fmtTime(str) {
   if (!m) return str.replace(/[<>&"]/g, c => `&#${c.charCodeAt(0)};`);
   h = parseInt(m[1], 10);
   min = m[2];
-  suffix = h < 12 ? "a" : "p";
+  suffix = h < 12 ? "am" : "pm";
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
   return `${h}:${min}<span class="rux-trip-bar__time-suffix"> ${suffix}</span>`;
@@ -532,6 +532,31 @@ export function clearTripBars() {
   hideFloatingTooltip();
 }
 
+// Patches a single already-rendered bar to reflect "itinerary now exists" —
+// swaps the paperclip action button from upload to view-doc, and clears the
+// pending-itinerary indicator. Trip bars don't re-render reactively from
+// data changes, so a multi-bus trip (sibling bars for the same trip id on
+// other tracks) needs this called on each of its bars individually after an
+// upload — see the "rux:itinerary-uploaded" listener in index.html, which
+// finds every sibling via activePlacements and calls this on all of them.
+export function applyItineraryUploaded(bar, doc) {
+  const pdfBtn = bar.querySelector('[data-role="itinerary-btn"]');
+  if (pdfBtn) {
+    const iconEl = pdfBtn.querySelector(".rux-icon");
+    if (iconEl) iconEl.textContent = ICON_MAP["paperclip"] || "attach_file";
+    pdfBtn.setAttribute("aria-label", "View Itinerary");
+    pdfBtn.dataset.tooltip = "View Itinerary";
+    const newBtn = pdfBtn.cloneNode(true);
+    newBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const url = window.RuxDocs?.url?.(doc.file_path);
+      if (url) window.open(url, "_blank");
+    });
+    pdfBtn.replaceWith(newBtn);
+  }
+  bar.querySelector('.rux-trip-bar__pending-icon[data-tooltip="Pending itinerary"]')?.remove();
+}
+
 /* ── Factory ────────────────────────────────────────────────────────────── */
 
 export function createTripBar(trip, callbacks = {}) {
@@ -595,19 +620,15 @@ export function createTripBar(trip, callbacks = {}) {
           try {
             const doc = await window.RuxDocs?.upload(tripId, "Itinerary", file);
             window.Rux?.toast("Itinerary uploaded");
-            if (doc && pdfBtn) {
-              const iconEl = pdfBtn.querySelector(".rux-icon");
-              if (iconEl) iconEl.textContent = ICON_MAP["paperclip"] || "attach_file";
-              pdfBtn.setAttribute("aria-label", "View Itinerary");
-              pdfBtn.dataset.tooltip = "View Itinerary";
-              const newBtn = pdfBtn.cloneNode(true);
-              newBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const url = window.RuxDocs?.url?.(doc.file_path);
-                if (url) window.open(url, "_blank");
-              });
-              pdfBtn.replaceWith(newBtn);
-              bar.querySelector('.rux-trip-bar__pending-icon[data-tooltip="Pending itinerary"]')?.remove();
+            // This bar doesn't patch itself directly — dispatching lets the
+            // "rux:itinerary-uploaded" listener (index.html) update the
+            // shared trip_documents data AND patch every bar for this trip
+            // id uniformly, this one included, since a multi-bus trip
+            // renders one bar per bus track that all need the same update.
+            if (doc) {
+              document.dispatchEvent(
+                new CustomEvent("rux:itinerary-uploaded", { detail: { tripId, doc } }),
+              );
             }
           } catch (err) {
             console.error("Upload failed:", err);
@@ -623,6 +644,7 @@ export function createTripBar(trip, callbacks = {}) {
     pdfIcon,
     () => onPdf(),
   );
+  pdfBtn.dataset.role = "itinerary-btn";
 
   actions.append(
     openBtn,
@@ -667,7 +689,7 @@ export function createTripBar(trip, callbacks = {}) {
     const statusLabel = textEl(
       "span",
       "rux-trip-bar__status rux-trip-bar__status--paid",
-      isOverpaid ? "OVERPAID" : "PAID",
+      isOverpaid ? "Overpaid" : "Paid",
     );
     const paidLabel = isOverpaid ? "Overpaid" : (datePaid ? `Paid in full ${datePaid}` : "Paid in full");
     setFloatingTooltip(statusLabel, paidLabel);
@@ -679,6 +701,10 @@ export function createTripBar(trip, callbacks = {}) {
     }
   }
   pending.setAttribute("aria-label", summaryMarkerLabels.join(", "));
+  // Lives on the reqs row (left-aligned, before requirement icons), not
+  // nested inside `pending` — that span has its own overriding aria-label
+  // for pending-only items, which would swallow this pill's aria-label if
+  // it were a descendant instead of a sibling.
   const busPill = groupLabel ? (() => {
     const el = textEl("span", "rux-trip-bar__bus-label", groupLabel);
     el.setAttribute("aria-label", `${groupLabel} buses in this customer trip`);
@@ -687,7 +713,6 @@ export function createTripBar(trip, callbacks = {}) {
   summary.append(
     textEl("div", "rux-trip-bar__destination", trip.destination),
     ...(paidBadge ? [paidBadge] : []),
-    ...(busPill ? [busPill] : []),
   );
 
   const time = document.createElement("div");
@@ -800,6 +825,7 @@ export function createTripBar(trip, callbacks = {}) {
     (() => {
       const row = document.createElement("div");
       row.className = "rux-trip-bar__reqs";
+      if (busPill) row.appendChild(busPill);
       const r = buildRequirementIcons(trip);
       if (r) { while (r.firstChild) row.appendChild(r.firstChild); }
       if (summaryMarkerLabels.length) { row.appendChild(pending); }
@@ -847,7 +873,7 @@ export function createTripBar(trip, callbacks = {}) {
   const expandBtn = document.createElement("button");
   expandBtn.type = "button";
   expandBtn.className =
-    "rux-button rux-button--ghost rux-button--icon rux-trip-bar__expand";
+    "rux-button rux-button--default rux-button--icon rux-button--xs rux-trip-bar__expand";
   const expandIcon = icon("keyboard_arrow_down", "rux-icon rux-button__disclosure-icon");
   expandBtn.append(expandIcon);
   meta.appendChild(expandBtn);

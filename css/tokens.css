@@ -344,7 +344,7 @@
 	--rux-workspace-bg: var(--rux-surface-1);
 	--rux-workspace-fg: var(--rux-fg);
 	--rux-workspace-border: var(--rux-border-width) solid var(--rux-border);
-	--rux-workspace-radius: var(--rux-radius-md);
+	--rux-workspace-radius: var(--rux-radius-0);
 	--rux-workspace-shadow: var(--rux-elevation-0);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
@@ -354,7 +354,7 @@
 	--rux-panel-border-width: var(--rux-border-width);
 	--rux-panel-border-color: var(--rux-border);
 	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-panel-border-color);
-	--rux-panel-radius: var(--rux-radius-md);
+	--rux-panel-radius: var(--rux-radius-0);
 	--rux-panel-shadow: var(--rux-elevation-0);
 	--rux-panel-header-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
 	--rux-panel-tabs-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);

@@ -27,22 +27,24 @@
    .is-active    Bar is selected; reveals action toolbar and expand chevron.
    .is-expanded  Details drawer is open. Requires .is-active to be visible.
 
-   Row typography — scan rows (body, top to bottom)
+   Row typography — scan rows (body, top to bottom). Line-height is 1
+   throughout (destination's row min-height is derived from this).
    ------------------------------------------------
-   Row          Element            Size      Weight     Line-height
-   ──────────── ────────────────── ───────── ────────── ──────────────
-   Destination  __destination      text-sm   bold       leading-snug
-   Client       __client           text-sm   medium     leading-snug
-   Contact      __contact          text-xs   regular    leading-snug
-   Notes        __notes            text-xs   regular    leading-snug  (italic)
-   Time         __time             text-xs   —          leading-snug  (Dep · Spt · Arr, Arr right-aligned)
-   Time value   __time-value       text-xs   semibold   leading-snug
-   Drivers      __driver           text-sm   semibold   leading-snug
-   Bus badge    __bus-label        text-xs   bold       1             (pill, fixed height)
+   Row          Element            Size      Weight
+   ──────────── ────────────────── ───────── ──────────
+   Destination  __destination      text-sm   bold
+   Paid badge   __status(-date)    text-xs   bold          (on the destination row)
+   Client       __client           text-xs   medium
+   Contact      __contact          text-xs   regular
+   Notes        __notes            text-xs   medium        (italic)
+   Reqs/bus pill __bus-label       10px      bold          (pill, fixed 18px height; lives on the reqs row)
+   Time         __time             text-xs   —             (Dep · Spt · Arr, Arr right-aligned)
+   Time value   __time-value       text-xs   bold
+   Drivers      __driver           text-xs   semibold
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 140px;
+	--rux-trip-bar-collapsed-height: 138px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-continuation-width: 1.5rem;
@@ -56,7 +58,7 @@
 	--rux-trip-bar-paid-color: var(--rux-success);
 	--rux-trip-bar-tight-gap: 1px;
 	--rux-trip-bar-actions-bg: transparent;
-	--rux-trip-bar-bus-label-bg: color-mix(in oklch, var(--rux-fg) 10%, transparent);
+	--rux-trip-bar-bus-label-bg: var(--rux-color-white);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
@@ -71,6 +73,7 @@
 	--_surface: oklch(from var(--_tone) 50% 0.22 h);
 	--_surface-hover: oklch(from var(--_tone) 50% 0.22 h);
 	--_surface-active: oklch(from var(--_tone) 50% 0.22 h);
+	--_bus-label-fg: var(--_surface);
 
 	position: relative;
 	display: flex;
@@ -113,10 +116,12 @@
 /* ---------- Interaction states ---------- */
 
 .rux-trip-bar:hover {
+	--_bus-label-fg: var(--_surface-hover);
 	background-color: var(--_surface-hover);
 }
 
 .rux-trip-bar.is-active {
+	--_bus-label-fg: var(--_surface-active);
 	background-color: var(--_surface-active);
 	box-shadow: 0 16px 48px oklch(0% 0 0 / 0.5), 0 4px 12px oklch(0% 0 0 / 0.3);
 	z-index: var(--rux-trip-bar-active-z-index);
@@ -224,7 +229,7 @@
 	display: flex;
 	flex-direction: column;
 	background-color: var(--_surface);
-	border-radius: 14px;
+	border-radius: var(--rux-card-radius);
 	overflow: hidden;
 	box-shadow:
 		inset 0 1px oklch(100% 0 0 / 0.10),
@@ -253,7 +258,7 @@
 	align-self: stretch;
 	z-index: 1;
 	background: linear-gradient(to bottom, oklch(from var(--_tone) 40% 0.18 h), oklch(from var(--_tone) 30% 0.16 h));
-	border-radius: 14px;
+	border-radius: var(--rux-card-radius);
 	box-shadow:
 		inset 0 1px oklch(100% 0 0 / 0.10),
 		inset 0 -1px oklch(0% 0 0 / 0.20),
@@ -368,12 +373,7 @@
 .rux-trip-bar__paid-badge {
 	display: inline-flex;
 	align-items: center;
-	justify-content: center;
 	gap: var(--rux-space-1);
-	height: 18px;
-	padding: 0 4px;
-	background: oklch(0% 0 0 / 0.2);
-	border-radius: 6px;
 	flex: none;
 	white-space: nowrap;
 }
@@ -382,13 +382,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	height: 18px;
-	padding: 0 4px;
-	background: oklch(0% 0 0 / 0.2);
-	border-radius: 6px;
-	color: var(--rux-fg-on-accent);
+	height: 12px;
+	padding: 0 2px;
+	background: var(--rux-trip-bar-bus-label-bg);
+	border-radius: var(--rux-radius-xs);
+	color: var(--_bus-label-fg);
 	font-size: 10px;
-	font-weight: var(--rux-weight-bold);
+	font-weight: 900;
 	line-height: 1;
 }
 
@@ -397,21 +397,21 @@
 	flex: 1 1 auto;
 	align-items: center;
 	min-width: 0;
-	min-height: 18px;
+	min-height: 16px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-bold);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
 	letter-spacing: 0;
-	line-height: 1.05;
+	line-height: 1;
 }
 
 .rux-trip-bar__status {
 	color: var(--rux-fg-on-accent-muted);
 	flex: none;
 	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-bold);
+	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
 	letter-spacing: var(--rux-tracking-wide);
 	white-space: nowrap;
@@ -447,7 +447,7 @@
 .rux-trip-bar__contact,
 .rux-trip-bar__notes {
 	min-width: 0;
-	line-height: 1.05;
+	line-height: 1;
 }
 
 .rux-trip-bar__client {
@@ -468,7 +468,7 @@
 	min-height: 13px;
 	align-items: center;
 	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-regular);
+	font-weight: var(--rux-weight-medium);
 	color: var(--rux-fg-on-accent-muted);
 }
 
@@ -548,17 +548,17 @@
 	justify-content: center;
 	align-self: stretch;
 	gap: var(--rux-trip-bar-tight-gap);
-	background: oklch(0% 0 0 / 0.24);
+	background: var(--rux-button-default-bg);
 	height: 20px;
 	padding: 0;
 	border-radius: 0;
 	box-sizing: border-box;
 }
 .rux-trip-bar__time-item:first-child {
-	border-radius: 6px 0 0 0;
+	border-radius: var(--rux-button-radius) 0 0 0;
 }
 .rux-trip-bar__time-item:last-child {
-	border-radius: 0 6px 0 0;
+	border-radius: 0 var(--rux-button-radius) 0 0;
 }
 
 .rux-trip-bar__time-label {
@@ -573,7 +573,7 @@
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	font-weight: var(--rux-weight-bold);
+	font-weight: var(--rux-weight-semibold);
 }
 
 .rux-trip-bar__time-value--late {
@@ -582,10 +582,6 @@
 
 .rux-trip-bar__time-value--empty {
 	color: var(--rux-fg-on-accent-subtle);
-}
-
-.rux-trip-bar:not(.rux-trip-bar--multi-day) .rux-trip-bar__time-suffix {
-	display: none;
 }
 
 /* ---------- Drivers row ---------- */
@@ -607,7 +603,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: var(--rux-space-1);
-	background: oklch(0% 0 0 / 0.24);
+	background: var(--rux-button-default-bg);
 	padding: 0 var(--rux-space-1);
 	height: 20px;
 	border-radius: 0;
@@ -618,14 +614,14 @@
 }
 
 .rux-trip-bar__driver:first-child {
-	border-bottom-left-radius: 6px;
+	border-bottom-left-radius: var(--rux-button-radius);
 }
 .rux-trip-bar__driver:nth-last-child(2) {
-	border-bottom-right-radius: 6px;
+	border-bottom-right-radius: var(--rux-button-radius);
 }
 .rux-trip-bar__driver:first-child:nth-last-child(2) {
-	border-bottom-left-radius: 6px;
-	border-bottom-right-radius: 6px;
+	border-bottom-left-radius: var(--rux-button-radius);
+	border-bottom-right-radius: var(--rux-button-radius);
 }
 
 .rux-trip-bar__driver-name {
@@ -812,7 +808,7 @@
 /* ---------- Compact mode ---------- */
 
 .rux-scheduler--compact .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 112px;
+	--rux-trip-bar-collapsed-height: 110px;
 }
 
 .rux-scheduler--compact .rux-trip-bar__contact,
@@ -821,7 +817,7 @@
 }
 
 .rux-scheduler--compact .rux-trip-bar.is-active {
-	--rux-trip-bar-collapsed-height: 140px;
+	--rux-trip-bar-collapsed-height: 138px;
 }
 
 .rux-scheduler--compact .rux-trip-bar.is-active .rux-trip-bar__contact,

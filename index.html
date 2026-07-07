@@ -1977,7 +1977,7 @@
     <script type="module" src="./js/panels/requirements-panel.js"></script>
 
     <script type="module">
-      import { createTripBar, clearTripBars } from "./js/components/trip-bar.js?v=6";
+      import { createTripBar, clearTripBars, applyItineraryUploaded } from "./js/components/trip-bar.js?v=7";
       import BusPicker from "./js/components/bus-picker.js";
       import { loadRequirements } from "./js/data/requirements-db.js";
 
@@ -3082,6 +3082,30 @@
       document.addEventListener("settings:billing", () => {
         loadTripsFromDB();
         document.dispatchEvent(new CustomEvent("trips:refresh"));
+      });
+
+      // A multi-bus trip renders one bar per bus track, but they all share
+      // the same underlying trip_documents (one trips row, one itinerary).
+      // Bars don't re-render reactively from data changes, so uploading via
+      // any one bar's paperclip button (or the trip panel's document
+      // uploader) only ever touched that one bar/panel — siblings on other
+      // tracks kept showing "pending itinerary" until a reload. This is the
+      // single place that both updates the shared data (dedup by doc.id,
+      // since trip_documents is normally the same array by reference across
+      // every sibling's trip copy, but this stays correct even if that ever
+      // isn't the case) and patches every bar for this trip id, uniformly —
+      // same sibling-lookup pattern as rux:trip-deleted above, just patching
+      // in place instead of removing.
+      document.addEventListener("rux:itinerary-uploaded", (e) => {
+        const { tripId, doc } = e.detail || {};
+        if (!tripId || !doc) return;
+        activePlacements
+          .filter(p => p.trip.id === tripId)
+          .forEach(p => {
+            const docs = p.trip.trip_documents || (p.trip.trip_documents = []);
+            if (!docs.some(d => d.id === doc.id)) docs.push(doc);
+            if (p.bar) applyItineraryUploaded(p.bar, doc);
+          });
       });
 
       window.addEventListener("resize", layoutScheduler);

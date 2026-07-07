@@ -849,6 +849,16 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 						poToggle.dispatchEvent(new Event("change", { bubbles: true }));
 					}
 				}
+				if (label === "Itinerary") {
+					// Same event the trip bar's own paperclip upload dispatches —
+					// the scheduler's listener (index.html) updates every bus
+					// track's bar for this trip, since uploading via the panel
+					// otherwise never touched any bar at all (only this drawer's
+					// own document list).
+					document.dispatchEvent(
+						new CustomEvent("rux:itinerary-uploaded", { detail: { tripId, doc } }),
+					);
+				}
 				window.Rux?.toast(`${label} uploaded`);
 			} catch (err) {
 				console.error("Upload failed:", err);
