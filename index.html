@@ -7,15 +7,15 @@
     <meta http-equiv="Content-Security-Policy" content="connect-src 'self' https://white-boat-9932.rux-smercado.workers.dev wss://white-boat-9932.rux-smercado.workers.dev https://api.mapbox.com https://cdn.jsdelivr.net https://unpkg.com ws://127.0.0.1:* ws://localhost:*;" />
     <title>Rux UI</title>
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./css/tokens.css?v=15" />
+    <link rel="stylesheet" href="./css/tokens.css?v=18" />
     <link rel="stylesheet" href="./css/colors_and_type.css" />
-    <link rel="stylesheet" href="./css/components.css?v=37" />
+    <link rel="stylesheet" href="./css/components.css?v=51" />
     <link rel="stylesheet" href="./css/features/driver-panel.css?v=2" />
     <link rel="stylesheet" href="./css/features/comp-driver-app.css" />
     <link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
     <link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
     <link rel="stylesheet" href="./css/features/comp-settings-app.css" />
-    <link rel="stylesheet" href="./css/features/comp-trips-app.css" />
+    <link rel="stylesheet" href="./css/features/comp-trips-app.css?v=1" />
     <link rel="stylesheet" href="./css/features/comp-components-app.css" />
     <link rel="stylesheet" href="./css/features/flip-seven.css?v=17" />
     <link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
@@ -67,10 +67,10 @@
             <button
               class="rux-button rux-button--ghost scheduler-app__module-button"
               type="button"
-              data-module="trips"
+              data-module="my-trips"
             >
-              <span class="rux-icon">list_alt</span>
-              Trips
+              <span class="rux-icon">groups</span>
+              My Trips
             </button>
 
             <button
@@ -180,13 +180,20 @@
                     </div>
                     <div class="rux-field"><label class="rux-field__label" for="tp-book-email">Email</label><input class="rux-input" id="tp-book-email" name="bookingContact.email" type="email" /></div>
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
+                    <div class="rux-field">
+                      <label class="rux-field__label">Trip Type</label>
+                      <div class="rux-segmented" id="tp-trip-type-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="round_trip"><span class="rux-btn-label">Round Trip</span></button>
+                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="one_way"><span class="rux-btn-label">One-Way</span></button>
+                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="self_organized" title="Escamilla Tour Buses Trip"><span class="rux-btn-label">ETB Trip</span></button>
+                      </div>
+                    </div>
                     </div>
                   </div>
                   <div class="rux-card">
                     <header class="rux-card__header"><p class="rux-card__title">Trip Requirements</p></header>
                     <div class="rux-card__body">
                     <div class="rux-trip-panel__requirements-grid">
-                      <button class="rux-button rux-button--default rux-button--toggle" id="tp-one-way" type="button" aria-pressed="false" data-rux-toggle-button title="One way trip"><span class="rux-icon">arrow_forward</span><span class="rux-btn-label">One way</span></button>
                       <div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
                       <div class="rux-cluster" id="tp-driver-needs"></div>
                     </div>
@@ -338,6 +345,9 @@
                 <span class="rux-icon">left_panel_open</span>
               </button>
               <div class="rux-workspace__heading">
+                <h1 class="rux-workspace__title" id="week-label"></h1>
+              </div>
+              <div class="rux-workspace__toolbar" role="group" aria-label="View controls">
                 <div class="calendar-app__nav">
                   <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
                     <span class="rux-icon">chevron_left</span>
@@ -346,12 +356,7 @@
                     <span class="rux-icon">chevron_right</span>
                   </button>
                 </div>
-                <h1 class="rux-workspace__title" id="week-label"></h1>
-              </div>
-              <div class="rux-workspace__toolbar" role="group" aria-label="View controls">
-                <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" id="opt-time-align" type="button" aria-pressed="false" title="Time-aligned mode"><span class="rux-icon">schedule</span></button>
-                <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" id="opt-compact" type="button" aria-pressed="false" title="Compact rows"><span class="rux-icon">unfold_less</span></button>
-                <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" id="opt-two-weeks" type="button" aria-pressed="false" title="Two-week view"><span class="rux-icon">fit_page_width</span></button>
+                <div class="rux-cluster" id="trips-filter-badges" hidden></div>
                 <button class="rux-button rux-button--default rux-button--icon rux-button--block scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" data-opens="right-panel-drawer">
                   <span class="rux-icon">right_panel_open</span>
                 </button>
@@ -363,6 +368,23 @@
                   <span class="rux-scheduler__corner-label"></span>
                 </div>
               </div>
+            </div>
+            <div class="rux-workspace__body trips-app__table-wrap" id="calendar-list-view" hidden>
+              <table class="rux-table trips-app__table" aria-label="Trips roster">
+                <thead>
+                  <tr>
+                    <th scope="col">Trip</th>
+                    <th scope="col">Destination</th>
+                    <th scope="col">Dates</th>
+                    <th scope="col">Bus</th>
+                    <th scope="col">Confirmed</th>
+                    <th scope="col">Invoice</th>
+                    <th scope="col" class="col-payment">Payment</th>
+                    <th scope="col" class="col-quoted">Quoted</th>
+                  </tr>
+                </thead>
+                <tbody id="trips-roster-body"></tbody>
+              </table>
             </div>
           </section>
 
@@ -383,7 +405,18 @@
               </nav>
               <div class="rux-panel__body">
                 <div id="rp-pane-navigate" class="rux-panel__pane" role="tabpanel">
-                  <article class="rux-card rux-mini-cal">
+                  <article class="rux-card">
+                    <header class="rux-card__header">
+                      <h3 class="rux-card__title">Trip View</h3>
+                    </header>
+                    <div class="rux-card__body">
+                      <div class="rux-segmented" id="trip-view-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="calendar">Calendar</button>
+                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="list">List</button>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="rux-card rux-mini-cal" id="rp-minical-card">
                     <header class="rux-card__header">
                       <h3 class="rux-card__title">Calendar</h3>
                       <button class="rux-button rux-button--ghost" id="mini-cal-today" type="button">Today</button>
@@ -406,12 +439,105 @@
                       </div>
                     </div>
                   </article>
-                  <article class="rux-card">
+                  <article class="rux-card" id="rp-filter-card" hidden>
+                    <header class="rux-card__header">
+                      <h3 class="rux-card__title">Filter By</h3>
+                      <button class="rux-button rux-button--ghost" id="tf-clear-btn" type="button">Clear</button>
+                    </header>
+                    <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-field">
+                        <label class="rux-field__label">When</label>
+                        <div class="rux-segmented" id="tf-when-group" data-rux-toggle-group>
+                          <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="all">All</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="upcoming">Upcoming</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="past">Past</button>
+                        </div>
+                      </div>
+                      <div class="rux-field">
+                        <label class="rux-field__label">Status</label>
+                        <div class="rux-segmented" id="tf-status-group" data-rux-toggle-group>
+                          <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="all">All</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="unconfirmed">Unconfirmed</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="confirmed">Confirmed</button>
+                        </div>
+                      </div>
+                      <div class="rux-field">
+                        <label class="rux-field__label">Trip Type</label>
+                        <div class="rux-segmented" id="tf-type-group" data-rux-toggle-group>
+                          <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="all">All</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="round_trip">Round Trip</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="one_way">One-Way</button>
+                        </div>
+                      </div>
+                      <div class="rux-field">
+                        <label class="rux-field__label">Bus</label>
+                        <div class="rux-segmented" id="tf-bus-group" data-rux-toggle-group>
+                          <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="all">All</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="assigned">Assigned</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="unassigned">Unassigned</button>
+                        </div>
+                      </div>
+                      <div class="rux-field">
+                        <label class="rux-field__label">Requirements</label>
+                        <div class="rux-view-options">
+                          <div class="rux-view-options__row">
+                            <span class="rux-view-options__label">Needs Hotel</span>
+                            <label class="rux-switch"><input id="tf-req-hotel" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
+                          </div>
+                          <div class="rux-view-options__row">
+                            <span class="rux-view-options__label">Needs Fuel Card</span>
+                            <label class="rux-switch"><input id="tf-req-fuelcard" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
+                          </div>
+                          <div class="rux-view-options__row">
+                            <span class="rux-view-options__label">Sleeper Required</span>
+                            <label class="rux-switch"><input id="tf-req-sleeper" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
+                          </div>
+                          <div class="rux-view-options__row">
+                            <span class="rux-view-options__label">ADA Lift Required</span>
+                            <label class="rux-switch"><input id="tf-req-ada" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
+                          </div>
+                          <div class="rux-view-options__row">
+                            <span class="rux-view-options__label">56 Pax Required</span>
+                            <label class="rux-switch"><input id="tf-req-pax56" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
+                          </div>
+                          <div class="rux-view-options__row">
+                            <span class="rux-view-options__label">Balance Paid</span>
+                            <label class="rux-switch"><input id="tf-req-balancepaid" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="rux-card" id="rp-view-options-card">
                     <header class="rux-card__header">
                       <h3 class="rux-card__title">View Options</h3>
                     </header>
                     <div class="rux-card__body">
                       <div class="rux-view-options">
+                        <div class="rux-view-options__row">
+                          <span class="rux-view-options__label">Time-aligned mode</span>
+                          <label class="rux-switch">
+                            <input id="opt-time-align" type="checkbox" role="switch" />
+                            <span class="rux-switch__track"></span>
+                            <span class="rux-switch__thumb"></span>
+                          </label>
+                        </div>
+                        <div class="rux-view-options__row">
+                          <span class="rux-view-options__label">Compact rows</span>
+                          <label class="rux-switch">
+                            <input id="opt-compact" type="checkbox" role="switch" />
+                            <span class="rux-switch__track"></span>
+                            <span class="rux-switch__thumb"></span>
+                          </label>
+                        </div>
+                        <div class="rux-view-options__row">
+                          <span class="rux-view-options__label">Two-week view</span>
+                          <label class="rux-switch">
+                            <input id="opt-two-weeks" type="checkbox" role="switch" />
+                            <span class="rux-switch__track"></span>
+                            <span class="rux-switch__thumb"></span>
+                          </label>
+                        </div>
                         <div class="rux-view-options__row">
                           <span class="rux-view-options__label">Start on Sunday</span>
                           <label class="rux-switch">
@@ -439,38 +565,119 @@
         </div>
         <!-- /module:calendar -->
 
+
         <!-- ════════════════════════════════════════════════════════════════
-             MODULE: TRIPS
+             MODULE: MY TRIPS
              ════════════════════════════════════════════════════════════════ -->
-        <div class="scheduler-app__module" data-module="trips" hidden>
-          <section class="rux-workspace" aria-label="Trip list">
+        <div class="scheduler-app__module" data-module="my-trips" hidden>
+          <section class="rux-workspace" aria-label="My trips list">
             <header class="rux-workspace__header rux-workspace__header--table">
               <div class="rux-workspace__heading">
-                <h1 class="rux-workspace__title">Trips</h1>
+                <h1 class="rux-workspace__title">My Trips</h1>
               </div>
               <div class="rux-workspace__toolbar" role="group" aria-label="Table controls">
+                <button class="rux-button rux-button--default rux-button--icon" type="button" id="my-trips-btn-add" aria-label="New ETB trip"><span class="rux-icon" aria-hidden="true">add</span></button>
               </div>
             </header>
             <div class="rux-workspace__body trips-app__table-wrap">
-              <table class="rux-table trips-app__table" aria-label="Trips roster">
+              <table class="rux-table trips-app__table" aria-label="My trips roster">
                 <thead>
                   <tr>
                     <th scope="col">Trip</th>
-                    <th scope="col">Destination</th>
-                    <th scope="col" data-col-filter="date">Dates <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
-                    <th scope="col" data-col-filter="bus">Bus <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
+                    <th scope="col">Dates</th>
+                    <th scope="col">Bus</th>
+                    <th scope="col">Passengers</th>
+                    <th scope="col" class="col-owed">Owed</th>
+                    <th scope="col" class="col-paid">Paid</th>
+                    <th scope="col" class="col-balance">Balance</th>
                     <th scope="col">Confirmed</th>
-                    <th scope="col" data-col-filter="invoice">Invoice <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>
-                    <th scope="col" class="col-payment">Payment</th>
-                    <th scope="col" class="col-quoted">Quoted</th>
                   </tr>
                 </thead>
-                <tbody id="trips-roster-body"></tbody>
+                <tbody id="my-trips-roster-body"></tbody>
               </table>
             </div>
           </section>
         </div>
-        <!-- /module:trips -->
+        <!-- /module:my-trips -->
+
+        <!-- ════════════════════════════════════════════════════════════════
+             MODULE: PASSENGER ROSTER (drill-down from My Trips — no nav button)
+             ════════════════════════════════════════════════════════════════ -->
+        <div class="scheduler-app__module" data-module="passenger-roster" hidden>
+
+          <!-- Passenger panel drawer -->
+          <div class="scheduler-app__drawer" id="passenger-panel-drawer">
+            <aside class="rux-panel rux-passenger-panel" role="dialog" aria-labelledby="pp-title">
+              <header class="rux-panel__header">
+                <h2 class="rux-panel__title" id="pp-title">Passenger</h2>
+                <button class="rux-button rux-button--ghost rux-button--icon" id="pp-btn-close" type="button" aria-label="Close panel">
+                  <span class="rux-icon">close</span>
+                </button>
+              </header>
+              <div class="rux-panel__body">
+                <div class="rux-card">
+                  <header class="rux-card__header"><p class="rux-card__title">Passenger Info</p></header>
+                  <div class="rux-card__body rux-card__body--stack">
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="pp-name">Name</label><input class="rux-input" id="pp-name" type="text" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="pp-phone">Phone</label><input class="rux-input" id="pp-phone" type="tel" /></div>
+                    </div>
+                    <div class="rux-field"><label class="rux-field__label" for="pp-email">Email</label><input class="rux-input" id="pp-email" type="email" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="pp-address">Address</label><input class="rux-input" id="pp-address" type="text" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="pp-dob">Date of birth</label><input class="rux-input" id="pp-dob" type="date" /></div>
+                    <div class="rux-field"><label class="rux-field__label" for="pp-notes">Notes</label><textarea class="rux-textarea" id="pp-notes" rows="3"></textarea></div>
+                  </div>
+                </div>
+                <div class="rux-card">
+                  <header class="rux-card__header"><p class="rux-card__title">Balance</p></header>
+                  <div class="rux-card__body rux-card__body--stack">
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="pp-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                      <div class="rux-field"><label class="rux-field__label" for="pp-paid">Paid</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-paid" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                    </div>
+                    <div class="rux-field"><span class="rux-field__label">Status</span><div><span class="rux-badge" id="pp-status-badge">Unpaid</span></div></div>
+                  </div>
+                </div>
+              </div>
+              <footer class="rux-panel__footer">
+                <button class="rux-button rux-button--default rux-button--danger" id="pp-btn-delete" type="button" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+                <button class="rux-button rux-button--default" id="pp-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                <button class="rux-button rux-button--accent" id="pp-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
+              </footer>
+            </aside>
+          </div>
+          <!-- /passenger-panel-drawer -->
+
+          <section class="rux-workspace" aria-label="Passenger roster">
+            <header class="rux-workspace__header rux-workspace__header--table">
+              <div class="rux-workspace__heading">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="pr-btn-back" type="button" aria-label="Back to My Trips"><span class="rux-icon">arrow_back</span></button>
+                <h1 class="rux-workspace__title" id="pr-trip-title">Passenger Roster</h1>
+              </div>
+              <div class="rux-workspace__toolbar" role="group" aria-label="Table controls">
+                <button class="rux-button rux-button--ghost" id="pr-btn-edit-trip" type="button"><span class="rux-icon">edit</span><span class="rux-btn-label">Edit Trip</span></button>
+                <button class="rux-button rux-button--accent" id="pr-btn-add" type="button"><span class="rux-icon">add</span><span class="rux-btn-label">Add passenger</span></button>
+              </div>
+            </header>
+            <div class="rux-workspace__body trips-app__table-wrap">
+              <table class="rux-table trips-app__table" aria-label="Passenger roster">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Email</th>
+                    <th scope="col" class="col-owed">Owed</th>
+                    <th scope="col" class="col-paid">Paid</th>
+                    <th scope="col" class="col-balance">Balance</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="passenger-roster-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+        <!-- /module:passenger-roster -->
 
         <!-- ════════════════════════════════════════════════════════════════
              MODULE: FLEET
@@ -1421,6 +1628,7 @@
                         <div><dt>Control height</dt><dd><code>--rux-control-height</code><output data-token-value="--rux-control-height"></output></dd></div>
                         <div><dt>Card radius</dt><dd><code>--rux-card-radius</code><output data-token-value="--rux-card-radius"></output></dd></div>
                         <div><dt>Focus ring</dt><dd><code>--rux-ring-focus</code><output data-token-value="--rux-ring-focus"></output></dd></div>
+                        <div><dt>Field focus</dt><dd><code>--rux-ring-field-focus</code><output data-token-value="--rux-ring-field-focus"></output></dd></div>
                       </dl>
                     </div>
                   </article>
@@ -1435,86 +1643,89 @@
              MODULE: FLIP 7
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="game" hidden>
-          <section class="rux-workspace flip-seven" aria-labelledby="flip-seven-title">
-            <header class="rux-workspace__header flip-seven__header">
-              <div class="rux-workspace__heading">
-                <h1 class="rux-workspace__title" id="flip-seven-title">Flip 7</h1>
-                <p class="rux-workspace__subtitle flip-seven__subtitle" id="game-status">Join the table to play</p>
-              </div>
-              <button class="rux-button rux-button--ghost rux-button--icon flip-seven__quit" id="game-leave" type="button" aria-label="Quit game" title="Quit game">
-                <span class="rux-icon" aria-hidden="true">close</span>
-              </button>
-            </header>
-
+          <section class="rux-workspace flip-seven" aria-label="Flip 7">
             <div class="rux-workspace__body flip-seven__shell">
-              <section class="flip-seven__lobby" id="game-lobby" aria-labelledby="game-lobby-title">
-                <div class="rux-card flip-seven__lobby-card">
-                  <div>
-                    <p class="flip-seven__eyebrow">New match</p>
-                    <h2 id="game-lobby-title">Take a seat</h2>
-                    <p class="flip-seven__copy">Draw unique cards, bank your points, and reach 200. Flip seven to end the round with a 15-point bonus.</p>
+              <section class="rux-panel flip-seven__panel" aria-label="Flip 7 game">
+                <header class="rux-panel__header">
+                  <h2 class="rux-panel__title">Flip 7</h2>
+                  <div class="rux-cluster">
+                    <p class="flip-seven__status" id="game-status">Join the table to play</p>
+                    <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" id="game-reset" type="button" hidden aria-label="Reset game" title="Reset game">
+                      <span class="rux-icon" aria-hidden="true">restart_alt</span>
+                    </button>
+                    <button class="rux-button rux-button--ghost rux-button--icon flip-seven__quit" id="game-leave" type="button" aria-label="Quit game" title="Quit game">
+                      <span class="rux-icon" aria-hidden="true">close</span>
+                    </button>
                   </div>
-                  <form class="flip-seven__join" id="game-join-form">
-                    <div class="rux-field">
-                      <label class="rux-field__label" for="game-player-name">Player name</label>
-                      <input class="rux-input" id="game-player-name" maxlength="32" autocomplete="nickname" placeholder="Enter name" required />
-                      <span class="rux-field__error" id="game-join-error" role="alert" hidden></span>
-                    </div>
-                    <button class="rux-button rux-button--accent" id="game-join-button" type="submit">Join game</button>
-                  </form>
-                  <div class="flip-seven__players">
-                    <div class="flip-seven__section-heading">
-                      <h3>Players</h3>
-                      <span class="rux-badge" id="game-player-count">0</span>
-                    </div>
-                    <ul class="flip-seven__roster" id="game-lobby-players"></ul>
-                  </div>
-                  <button class="rux-button rux-button--accent" id="game-start" type="button" disabled>Start match</button>
-                  <button class="rux-button rux-button--ghost rux-button--danger" id="game-lobby-reset" type="button" hidden>
-                    <span class="rux-icon" aria-hidden="true">restart_alt</span>Reset lobby
-                  </button>
-                </div>
-              </section>
-
-              <section class="rux-panel flip-seven__table" id="game-table" hidden aria-label="Game table">
-                <aside class="rux-card rux-card--stack flip-seven__scoreboard" aria-labelledby="game-scoreboard-title">
-                  <div class="flip-seven__section-heading">
-                    <h2 id="game-scoreboard-title">Scoreboard</h2>
-                    <span class="rux-badge rux-badge--info" id="game-deck-count">0 cards</span>
-                  </div>
-                  <ol class="flip-seven__scores" id="game-scores"></ol>
-                </aside>
-                <div class="rux-card rux-card--stack flip-seven__mat">
-                  <div class="flip-seven__board">
-                    <div class="flip-seven__turn">
-                      <div class="flip-seven__turn-status">
-                        <span class="flip-seven__eyebrow">Current turn</span>
-                        <strong id="game-active-player">Waiting for player</strong>
-                        <span id="game-turn-note">Controls unlock on your turn.</span>
+                </header>
+                <div class="rux-panel__body flip-seven__body">
+                  <section class="flip-seven__lobby" id="game-lobby" aria-labelledby="game-lobby-title">
+                    <div class="rux-card flip-seven__lobby-card">
+                      <div>
+                        <p class="flip-seven__eyebrow">New match</p>
+                        <h3 id="game-lobby-title">Take a seat</h3>
+                        <p class="flip-seven__copy">Draw unique cards, bank your points, and reach 200. Flip seven to end the round with a 15-point bonus.</p>
                       </div>
-                      <div class="flip-seven__messages" id="game-messages" role="log" aria-live="polite" aria-label="Game messages"></div>
-                      <form class="flip-seven__message-form" id="game-message-form">
-                        <input class="rux-input" id="game-message-input" maxlength="160" autocomplete="off" placeholder="Message the table" aria-label="Message" />
-                        <button class="rux-button rux-button--accent rux-button--icon" id="game-message-send" type="submit" aria-label="Send message">
-                          <span class="rux-icon" aria-hidden="true">send</span>
-                        </button>
+                      <form class="flip-seven__join" id="game-join-form">
+                        <div class="rux-field">
+                          <label class="rux-field__label" for="game-player-name">Player name</label>
+                          <input class="rux-input" id="game-player-name" maxlength="32" autocomplete="nickname" placeholder="Enter name" required />
+                          <span class="rux-field__error" id="game-join-error" role="alert" hidden></span>
+                        </div>
+                        <button class="rux-button rux-button--accent" id="game-join-button" type="submit">Join game</button>
                       </form>
+                      <div class="flip-seven__players">
+                        <div class="flip-seven__section-heading">
+                          <h3>Players</h3>
+                          <span class="rux-badge" id="game-player-count">0</span>
+                        </div>
+                        <ul class="flip-seven__roster" id="game-lobby-players"></ul>
+                      </div>
+                      <button class="rux-button rux-button--accent" id="game-start" type="button" disabled>Start match</button>
+                      <button class="rux-button rux-button--ghost rux-button--danger" id="game-lobby-reset" type="button" hidden>
+                        <span class="rux-icon" aria-hidden="true">restart_alt</span>Reset lobby
+                      </button>
                     </div>
-                    <div class="flip-seven__hand" id="game-hand" aria-label="Player hands"></div>
-                  </div>
-                  <div class="flip-seven__round-total">Round <strong id="game-round-score">0</strong></div>
-                  <div class="flip-seven__actions">
-                    <button class="rux-button rux-button--accent" id="game-hit" type="button" disabled>
-                      <span class="rux-icon" aria-hidden="true">add_card</span>Hit
-                    </button>
-                    <button class="rux-button rux-button--default" id="game-bank" type="button" disabled>
-                      <span class="rux-icon" aria-hidden="true">savings</span>Bank
-                    </button>
-                    <button class="rux-button rux-button--ghost rux-button--danger" id="game-reset" type="button" hidden>
-                      <span class="rux-icon" aria-hidden="true">restart_alt</span>Reset game
-                    </button>
+                  </section>
+
+                  <div class="flip-seven__table" id="game-table" hidden>
+                    <div class="rux-card rux-card--stack flip-seven__mat">
+                      <div class="flip-seven__board">
+                        <div class="flip-seven__turn">
+                          <div class="flip-seven__turn-status">
+                            <span class="flip-seven__eyebrow">Current turn</span>
+                            <strong id="game-active-player">Waiting for player</strong>
+                            <span id="game-turn-note">Controls unlock on your turn.</span>
+                          </div>
+                          <div class="flip-seven__messages" id="game-messages" role="log" aria-live="polite" aria-label="Game messages"></div>
+                          <form class="flip-seven__message-form" id="game-message-form">
+                            <input class="rux-input" id="game-message-input" maxlength="160" autocomplete="off" placeholder="Message the table" aria-label="Message" />
+                            <button class="rux-button rux-button--accent rux-button--icon" id="game-message-send" type="submit" aria-label="Send message">
+                              <span class="rux-icon" aria-hidden="true">send</span>
+                            </button>
+                          </form>
+                        </div>
+                        <div class="flip-seven__hand" id="game-hand" aria-label="Player hands"></div>
+                      </div>
+                      <div class="flip-seven__round-total">Round <strong id="game-round-score">0</strong></div>
+                    </div>
+                    <aside class="rux-card rux-card--stack flip-seven__scoreboard" aria-labelledby="game-scoreboard-title">
+                      <div class="flip-seven__section-heading">
+                        <h3 id="game-scoreboard-title">Scoreboard</h3>
+                        <span class="rux-badge rux-badge--info" id="game-deck-count">0 cards</span>
+                      </div>
+                      <ol class="flip-seven__scores" id="game-scores"></ol>
+                    </aside>
                   </div>
                 </div>
+                <footer class="rux-panel__footer flip-seven__actions">
+                  <button class="rux-button rux-button--accent" id="game-hit" type="button" disabled>
+                    <span class="rux-icon" aria-hidden="true">add_card</span>Hit
+                  </button>
+                  <button class="rux-button rux-button--default" id="game-bank" type="button" disabled>
+                    <span class="rux-icon" aria-hidden="true">savings</span>Bank
+                  </button>
+                </footer>
               </section>
             </div>
           </section>
@@ -1752,18 +1963,20 @@
     <script src="./js/core/menu.js?v=2"></script>
     <script src="./js/core/controls.js?v=2" defer></script>
     <script src="./js/core/billing-config.js?v=2"></script>
-    <script src="./js/panels/trip-panel.js?v=12"></script>
+    <script src="./js/panels/trip-panel.js?v=14"></script>
     <script src="./js/components/itinerary.js?v=14"></script>
     <script src="./js/panels/driver-panel.js?v=6" defer></script>
     <script src="./js/panels/fleet-panel.js?v=6" defer></script>
     <script src="./js/panels/settings-panel.js?v=2" defer></script>
-    <script src="./js/panels/trips-list.js?v=5" defer></script>
+    <script src="./js/panels/trips-list.js?v=8" defer></script>
+    <script src="./js/panels/my-trips-list.js?v=2" defer></script>
+    <script src="./js/panels/passenger-roster.js?v=1" defer></script>
     <script src="./js/panels/components-panel.js" defer></script>
     <script type="module" src="./js/panels/flip-seven.js?v=19"></script>
     <script type="module" src="./js/panels/requirements-panel.js"></script>
 
     <script type="module">
-      import { createTripBar, clearTripBars } from "./js/components/trip-bar.js?v=5";
+      import { createTripBar, clearTripBars } from "./js/components/trip-bar.js?v=6";
       import BusPicker from "./js/components/bus-picker.js";
       import { loadRequirements } from "./js/data/requirements-db.js";
 
@@ -1812,7 +2025,7 @@
       // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
       const initialModule = location.hash.slice(1).split("/")[0] || "calendar";
       const normalizedModule = (initialModule === "schedule" || initialModule === "trips") ? "calendar" : initialModule;
-      showModule(["calendar", "trips", "fleet", "drivers", "customers", "components", "game", "settings"].includes(normalizedModule)
+      showModule(["calendar", "my-trips", "fleet", "drivers", "customers", "components", "game", "settings"].includes(normalizedModule)
         ? normalizedModule
         : "calendar");
 
@@ -1980,8 +2193,7 @@
 
       function openDrawer() {
         closeOtherMobilePanel(drawer);
-        const saved = localStorage.getItem(DRAWER_STORAGE_KEY);
-        const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
+        const w = DRAWER_DEFAULT + "px";
         drawer.style.setProperty("--drawer-width", w);
         drawer.style.setProperty("--drawer-open-width", w);
         drawer.classList.remove("is-closing");
@@ -2031,7 +2243,10 @@
         if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
         const { trip } = e.detail;
         showModule("calendar");
-        if (trip.start_date) {
+        // Skip the week-jump/re-render while the List view is showing — the
+        // grid is hidden anyway, and re-rendering would stomp the "Trips"
+        // week-label text with a date range for no visible benefit.
+        if (tripViewMode !== "list" && trip.start_date) {
           currentWeekStart = startOfWeek(parseIsoDate(trip.start_date));
           renderDayHeaders(currentWeekStart);
           renderScheduler();
@@ -2041,12 +2256,21 @@
         openDrawer();
       });
 
-      document.addEventListener("trips:new", () => {
+      document.addEventListener("trips:new", (e) => {
         if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
         showModule("calendar");
         if (newTrip) newTrip(tripPanel, itinerary);
+        if (e.detail?.selfOrganized) {
+          window.TripPanel?.setTripType(tripPanel, "self_organized");
+        }
         setActiveTripPane("pane-trip");
         openDrawer();
+      });
+
+      // ── Passenger roster module → scheduler bridge ──────────────────────────
+
+      document.addEventListener("nav:show-module", (e) => {
+        if (e.detail?.module) showModule(e.detail.module);
       });
 
       function setActiveTripPane(panelId) {
@@ -2140,12 +2364,13 @@
       const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(tripPanel).minWidth)) + GAP;
       const DRAWER_SNAP_CLOSE = 200;
       const DRAWER_MAX = 640;
-      const DRAWER_DEFAULT = 372;
-      const DRAWER_STORAGE_KEY = "rux-drawer-width";
+      // Tokenized (--scheduler-app-drawer-default-width in scheduler-app.css);
+      // read it so JS and CSS can't drift out of sync on the default width.
+      const DRAWER_DEFAULT = parseFloat(getComputedStyle(appEl).getPropertyValue("--scheduler-app-drawer-default-width"));
       const SCHEDULE_MIN = 471;
       const HANDLE_DRAG_THRESHOLD = 5; // px of cursor movement before a click counts as a drag
 
-      function initDrawerDrag(handle, drawerEl, storageKey, openFn, closeFn, getOtherDrawer, direction) {
+      function initDrawerDrag(handle, drawerEl, openFn, closeFn, getOtherDrawer, direction) {
         handle.addEventListener("mousedown", (e) => {
           e.preventDefault();
           const wasOpen = drawerEl.classList.contains("is-open");
@@ -2192,10 +2417,6 @@
             } else if (lastW < DRAWER_MIN) {
               drawerEl.style.setProperty("--drawer-width", DRAWER_MIN + "px");
               drawerEl.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
-              localStorage.setItem(storageKey, DRAWER_MIN);
-            } else {
-              const w = parseInt(getComputedStyle(drawerEl).getPropertyValue("--drawer-width"));
-              if (w) localStorage.setItem(storageKey, w);
             }
             document.removeEventListener("mousemove", onMove);
             document.removeEventListener("mouseup", onUp);
@@ -2206,7 +2427,7 @@
       }
 
       const getRightDrawer = () => document.getElementById("right-panel-drawer");
-      initDrawerDrag(drawer.querySelector(".scheduler-app__drawer-handle"), drawer, DRAWER_STORAGE_KEY, openDrawer, closeDrawer, getRightDrawer, "left");
+      initDrawerDrag(drawer.querySelector(".scheduler-app__drawer-handle"), drawer, openDrawer, closeDrawer, getRightDrawer, "left");
 
       // ── Scheduler context menu ──────────────────────────────────────────
 
@@ -2801,6 +3022,8 @@
               trip_stops: t.trip_stops ?? [],
               trip_payments: t.trip_payments ?? [],
               trip_documents: t.trip_documents ?? [],
+              trip_passengers: t.trip_passengers ?? [],
+              is_self_organized: t.is_self_organized,
               startDate: t.start_date, endDate: t.end_date, destination: t.destination, customer: t.customer,
               trip_type: t.trip_type,
               departureTime: t.departure_time, spotTime: t.spot_time, returnTime: t.return_time, notes: t.notes,
@@ -2866,16 +3089,10 @@
       document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  viewDays); renderScheduler(); });
 
       function initToggle(id, isActive, onChange) {
-        const btn = document.getElementById(id);
-        if (!btn) return;
-        btn.setAttribute("aria-pressed", String(isActive));
-        if (isActive) btn.classList.add("is-active");
-        btn.addEventListener("click", () => {
-          const pressed = btn.getAttribute("aria-pressed") !== "true";
-          btn.setAttribute("aria-pressed", String(pressed));
-          btn.classList.toggle("is-active", pressed);
-          onChange(pressed);
-        });
+        const input = document.getElementById(id);
+        if (!input) return;
+        input.checked = isActive;
+        input.addEventListener("change", () => onChange(input.checked));
       }
 
       initToggle("opt-time-align", timeAlignEnabled, (on) => {
@@ -2886,17 +3103,11 @@
 
       let compactEnabled = false;
       try { compactEnabled = localStorage.getItem("rux:compact-trips") === "true"; } catch (_) {}
-      if (compactEnabled) {
-        schedulerEl?.classList.add("rux-scheduler--compact");
-        const compactBtn = document.getElementById("opt-compact");
-        if (compactBtn) compactBtn.querySelector(".rux-icon").textContent = "unfold_more";
-      }
+      if (compactEnabled) schedulerEl?.classList.add("rux-scheduler--compact");
       initToggle("opt-compact", compactEnabled, (on) => {
         compactEnabled = on;
         schedulerEl?.classList.toggle("rux-scheduler--compact", on);
         try { localStorage.setItem("rux:compact-trips", on); } catch (_) {}
-        const compactBtn = document.getElementById("opt-compact");
-        if (compactBtn) compactBtn.querySelector(".rux-icon").textContent = on ? "unfold_more" : "unfold_less";
         layoutScheduler();
       });
 
@@ -2905,6 +3116,50 @@
         try { localStorage.setItem("rux:two-weeks", on); } catch (_) {}
         renderScheduler();
       });
+
+      // ── Trip View: Calendar grid vs. flat Trips list ────────────────────────
+
+      let tripViewMode = "calendar";
+
+      const calendarViewportEl = document.querySelector(".calendar-app__viewport");
+      const calendarListViewEl = document.getElementById("calendar-list-view");
+      const calendarNavEl = document.querySelector(".calendar-app__nav");
+      const tripsFilterBadgesEl = document.getElementById("trips-filter-badges");
+      const rpMiniCalCard = document.getElementById("rp-minical-card");
+      const rpViewOptionsCard = document.getElementById("rp-view-options-card");
+      const rpFilterCard = document.getElementById("rp-filter-card");
+
+      function setTripView(mode) {
+        tripViewMode = mode;
+        const isList = mode === "list";
+        if (calendarViewportEl) calendarViewportEl.hidden = isList;
+        if (calendarListViewEl) calendarListViewEl.hidden = !isList;
+        if (calendarNavEl) calendarNavEl.hidden = isList;
+        if (rpMiniCalCard) rpMiniCalCard.hidden = isList;
+        if (rpViewOptionsCard) rpViewOptionsCard.hidden = isList;
+        if (rpFilterCard) rpFilterCard.hidden = !isList;
+        if (tripsFilterBadgesEl) {
+          tripsFilterBadgesEl.hidden = isList ? tripsFilterBadgesEl.children.length === 0 : true;
+        }
+        if (isList) {
+          window.TripsListPanel?.updateTitle?.();
+        } else {
+          renderDayHeaders(currentWeekStart);
+        }
+      }
+
+      const tripViewGroup = document.getElementById("trip-view-group");
+      if (tripViewGroup) {
+        tripViewGroup.querySelectorAll(".rux-button").forEach((btn) => {
+          const on = btn.dataset.value === tripViewMode;
+          btn.setAttribute("aria-pressed", String(on));
+          btn.classList.toggle("is-active", on);
+        });
+        tripViewGroup.addEventListener("click", (e) => {
+          const btn = e.target.closest(".rux-button");
+          if (btn) setTripView(btn.dataset.value);
+        });
+      }
 
       const optSundayStart = document.getElementById("opt-sunday-start");
       if (optSundayStart) {
@@ -2947,11 +3202,9 @@
       });
 
       // ── Right panel drawer ──────────────────────────────────────────────
-      const RIGHT_DRAWER_STORAGE_KEY = "rux-right-drawer-width";
       function openRightDrawer() {
         closeOtherMobilePanel(rightDrawer);
-        const saved = localStorage.getItem(RIGHT_DRAWER_STORAGE_KEY);
-        const w = (saved ? parseInt(saved) : DRAWER_DEFAULT) + "px";
+        const w = DRAWER_DEFAULT + "px";
         rightDrawer.style.setProperty("--drawer-width", w);
         rightDrawer.style.setProperty("--drawer-open-width", w);
         rightDrawer.classList.remove("is-closing");
@@ -3065,15 +3318,15 @@
 
       renderMiniCal();
 
-      initDrawerDrag(rightDrawer.querySelector(".scheduler-app__drawer-handle"), rightDrawer, RIGHT_DRAWER_STORAGE_KEY, openRightDrawer, closeRightDrawer, () => drawer, "right");
+      initDrawerDrag(rightDrawer.querySelector(".scheduler-app__drawer-handle"), rightDrawer, openRightDrawer, closeRightDrawer, () => drawer, "right");
 
       // ── Default boot state ──────────────────────────────────────────────
       // Desktop begins with both panels visible. Mobile begins with the
       // schedule visible and opens only one full-screen panel at a time.
-      drawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
-      drawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
-      rightDrawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
-      rightDrawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
+      drawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
+      drawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
+      rightDrawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
+      rightDrawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
 
       if (mobilePanelQuery.matches) {
         drawer.style.setProperty("--drawer-width", GAP + "px");

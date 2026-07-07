@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ICONS  ·  Material Symbols and custom pictograms
+   ICONS  ·  Material Symbols — single source of truth for all .rux-icon
    ========================================================================== */
 
 .rux-icon {
@@ -38,4 +38,17 @@
 		font-variation-settings
 		var(--rux-icon-transition-duration)
 		var(--rux-icon-transition-easing);
+}
+
+/* Trip bar icons are tuned independently of every other .rux-icon in the
+   app — override the tokens in tokens.css (--rux-trip-bar-icon-*), not this
+   rule, to adjust them. Higher specificity than the base rule above, but
+   still loses to any :is(.is-active, [aria-pressed="true"]) selected-state
+   override elsewhere, since those are more specific still. */
+.rux-trip-bar .rux-icon {
+	--_icon-size: 18px;
+	--_icon-fill: 1;
+	--_icon-weight: 400;
+	--_icon-grade: -25;
+	--_icon-optical-size: 20;
 }

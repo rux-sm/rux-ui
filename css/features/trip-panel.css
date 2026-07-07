@@ -376,8 +376,8 @@
 	position: relative;
 	z-index: 1;
 	outline: none;
-	border-color: transparent;
-	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+	border-color: var(--rux-accent);
+	box-shadow: var(--rux-ring-field-focus);
 }
 .rux-trip-panel__payment-ref {
 	flex: 1;
@@ -399,8 +399,8 @@
 	border-radius: var(--rux-button-radius) 0 0 var(--rux-button-radius);
 }
 .rux-trip-panel__payment-reference:focus-within {
-	border-color: transparent;
-	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+	border-color: var(--rux-accent);
+	box-shadow: var(--rux-ring-field-focus);
 }
 .rux-trip-panel__payment-reference .rux-trip-panel__payment-ref:focus,
 .rux-trip-panel__payment-reference .rux-trip-panel__payment-ref:focus-visible {
@@ -449,11 +449,11 @@
 }
 .rux-trip-panel__payment-date-control:focus-within {
 	z-index: 1;
-	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+	box-shadow: var(--rux-ring-field-focus);
 }
 .rux-trip-panel__payment-date:focus,
 .rux-trip-panel__payment-date:focus-visible {
-	border-color: transparent;
+	border-color: var(--rux-accent);
 	box-shadow: none;
 	color: transparent;
 }
@@ -583,7 +583,7 @@
 }
 .rux-trip-panel__number-picker:focus-within {
 	border-color: var(--rux-accent);
-	box-shadow: var(--rux-ring-focus);
+	box-shadow: var(--rux-ring-field-focus);
 }
 
 .rux-trip-panel__bus-groups {

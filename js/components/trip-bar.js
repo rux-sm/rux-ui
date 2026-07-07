@@ -738,9 +738,14 @@ export function createTripBar(trip, callbacks = {}) {
   const spacer = document.createElement("div");
   spacer.className = "rux-trip-bar__spacer";
 
+  const passengerCount = (trip.trip_passengers ?? []).length;
+  const clientLabel = trip.is_self_organized
+    ? `${passengerCount} passenger${passengerCount === 1 ? "" : "s"}`
+    : trip.customer;
+
   body.append(
     summary,
-    textEl("div", "rux-trip-bar__client", trip.customer),
+    textEl("div", "rux-trip-bar__client", clientLabel),
     (() => {
       const el = document.createElement("div");
       el.className = "rux-trip-bar__contact";

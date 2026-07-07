@@ -161,6 +161,10 @@
 	background: var(--rux-button-hover-overlay);
 }
 
+.settings-app__suggestion:focus-visible {
+	box-shadow: var(--rux-ring-focus);
+}
+
 .settings-app__suggestion-name {
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
@@ -226,8 +230,10 @@
 }
 
 .settings-req-label-input:focus {
-	border-color: var(--rux-focus);
+	outline: none;
+	border-color: var(--rux-accent);
 	background: var(--rux-bg);
+	box-shadow: var(--rux-ring-field-focus);
 }
 
 .settings-req-type-badge {

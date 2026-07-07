@@ -334,8 +334,10 @@
 
 	/* ─── FOCUS ──────────────────────────────────────────────────────────── */
 
-	--rux-ring-focus: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
+	--rux-ring-focus: 0 0 0 6px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
 	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
+	--rux-ring-field-focus: inset 0 0 0 6px var(--rux-accent-ring);
+	--rux-ring-field-danger: inset 0 0 0 2px var(--rux-danger);
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
@@ -360,7 +362,7 @@
 	--rux-panel-tabs-shadow: var(--rux-edge-shadow-bottom);
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-padding: var(--rux-space-3);
-	--rux-panel-content-gap: var(--rux-space-2);
+	--rux-panel-content-gap: var(--rux-space-3);
 	--rux-panel-header-min-height: var(--rux-chrome-min-height);
 	--rux-panel-tabs-min-height: var(--rux-chrome-min-height);
 	--rux-panel-footer-min-height: var(--rux-chrome-min-height);
@@ -426,7 +428,7 @@
 	--rux-button-accent-fg: var(--rux-color-white);
 	--rux-button-ghost-bg: transparent;
 	--rux-button-ghost-fg: var(--rux-color-white);
-	--rux-button-ghost-border: var(--rux-border);
+	--rux-button-ghost-border: var(--rux-border-subtle);
 	--rux-button-danger-bg: oklch(60% 0.22 24);
 	--rux-button-danger-fg: var(--rux-color-white);
 	--rux-button-danger-quiet-fg: oklch(85% 0.2 24);

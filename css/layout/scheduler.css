@@ -133,20 +133,20 @@
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-1) var(--rux-space-2);
 	background: var(--rux-surface-1);
-	border-radius: var(--rux-radius-0);
-	height: 32px;
+	border-radius: var(--rux-radius-full);
+	height: 24px;
 	white-space: nowrap;
-	width: 206px;
+	width: var(--rux-button-min-width);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
-	background: color-mix(in srgb, var(--rux-accent), transparent 75%);
-	border: solid 1px var(--rux-accent);
+	background: color-mix(in srgb, var(--rux-color-white), transparent 10%);
+	border: solid 1px var(--rux-color-white);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,
 .rux-scheduler__day-head--today .rux-scheduler__day-number {
-	color: var(--rux-fg-on-accent);
+	color: var(--rux-color-black);
 }
 
 /* ---------- Time-aligned mode ---------- */

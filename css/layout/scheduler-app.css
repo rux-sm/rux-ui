@@ -33,6 +33,7 @@
 .scheduler-app {
 	--scheduler-app-gap: var(--rux-space-3);
 	--scheduler-app-card-radius: var(--rux-radius-md);
+	--scheduler-app-drawer-default-width: 374px;
 	display: grid;
 	grid-template-rows: auto auto minmax(0, 1fr);
 	width: 100%;
@@ -151,7 +152,7 @@
 	min-width: 0;
 	gap: var(--rux-space-2);
 	margin: calc(var(--rux-space-1) * -1);
-	padding: var(--rux-space-1);
+	padding: var(--rux-space-2);
 	overflow-x: auto;
 	scroll-padding-inline: var(--rux-space-1);
 	scrollbar-width: none;
@@ -174,7 +175,8 @@
 
 .scheduler-app__profile {
 	overflow: hidden;
-	border-radius: var(--rux-radius-full);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-card-radius);
 }
 
 .scheduler-app__profile img {
@@ -191,9 +193,14 @@
 .calendar-app__nav {
 	display: flex;
 	flex: none;
+	gap: var(--rux-space-2);
 }
 
-.scheduler-app__module:is([data-module="calendar"], [data-module="trips"]) > .rux-workspace > .rux-workspace__header .rux-workspace__heading {
+.calendar-app__nav[hidden] {
+	display: none;
+}
+
+.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__heading {
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-start;
@@ -326,7 +333,7 @@
 }
 
 .scheduler-app__drawer.is-open {
-	width: var(--drawer-width, 372px);
+	width: var(--drawer-width, var(--scheduler-app-drawer-default-width));
 	overflow: hidden;
 }
 
@@ -334,18 +341,18 @@
 	transition: none;
 }
 
-.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel) {
+.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
 	position: absolute;
 	inset-block: 0 var(--scheduler-app-gap);
 	right: var(--scheduler-app-gap);
 	left: auto;
 	height: auto;
-	width: calc(var(--drawer-open-width, 372px) - var(--scheduler-app-gap));
+	width: calc(var(--drawer-open-width, var(--scheduler-app-drawer-default-width)) - var(--scheduler-app-gap));
 	min-width: var(--rux-panel-min-width);
 	overflow: hidden;
 }
 
-.scheduler-app__drawer:not(.is-open) :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel) {
+.scheduler-app__drawer:not(.is-open) :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
 	display: none;
 }
 
@@ -415,7 +422,7 @@
 	left: var(--scheduler-app-gap);
 	right: auto;
 	height: auto;
-	width: calc(var(--drawer-open-width, 372px) - var(--scheduler-app-gap));
+	width: calc(var(--drawer-open-width, var(--scheduler-app-drawer-default-width)) - var(--scheduler-app-gap));
 	overflow: hidden;
 }
 
@@ -442,6 +449,10 @@
 .rux-mini-cal {
 	display: flex;
 	flex-direction: column;
+}
+
+.rux-mini-cal[hidden] {
+	display: none;
 }
 
 .rux-mini-cal__body {
@@ -528,6 +539,7 @@
 
 .rux-mini-cal__date--active-week {
 	background-color: var(--rux-accent-subtle);
+	border: var(--rux-border-width) solid var(--rux-accent);
 }
 
 .rux-mini-cal__date--active-week.rux-mini-cal__date--today {
@@ -564,6 +576,10 @@
 	cursor: pointer;
 }
 
+.rux-view-options__row[hidden] {
+	display: none;
+}
+
 .rux-view-options__label {
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
@@ -589,30 +605,34 @@
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__heading {
-		display: grid;
-		grid-column: 1 / -1;
-		grid-row: 1;
-		grid-template-columns: var(--rux-button-mobile-height) minmax(0, 1fr) var(--rux-button-mobile-height);
-		align-items: center;
-		width: 100%;
-		min-width: 0;
-		gap: var(--rux-space-2);
+		display: contents;
+	}
+
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__toolbar {
+		display: contents;
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .calendar-app__nav {
 		display: contents;
 	}
 
+	/* prev/next now live inside .rux-workspace__toolbar in the markup (moved
+	   there to sit on the right on desktop), but on mobile both .heading and
+	   .toolbar collapse to display:contents, so everything below is a direct
+	   item of this 5-column grid regardless of markup nesting — prev/title/
+	   next share row 1, the two drawer-toggle buttons share row 2. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #prev-week {
 		grid-column: 1;
+		grid-row: 1;
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #next-week {
-		grid-column: 3;
+		grid-column: 5;
+		grid-row: 1;
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__title {
-		grid-column: 2;
+		grid-column: 2 / 5;
 		grid-row: 1;
 		justify-self: center;
 		max-width: 100%;
@@ -624,8 +644,9 @@
 		grid-row: 2;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__toolbar {
-		display: contents;
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .scheduler-app__mobile-panel-btn--right {
+		grid-column: 5;
+		grid-row: 2;
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header :is(
@@ -648,7 +669,7 @@
 		transition: none;
 	}
 
-	.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-right-panel) {
+	.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel, .rux-right-panel) {
 		inset-block: 0;
 		right: 0;
 		left: 0;
@@ -658,7 +679,7 @@
 		border-radius: 0;
 	}
 
-	.scheduler-app__drawer.is-closing :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-right-panel) {
+	.scheduler-app__drawer.is-closing :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel, .rux-right-panel) {
 		display: flex;
 	}
 
@@ -813,7 +834,7 @@
 	margin-inline: var(--scheduler-app-gap);
 }
 
-.rux-workspace .trips-app__table-wrap {
+.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
 	flex: 1;
 	margin-inline: var(--scheduler-app-gap);
 	background: var(--rux-surface-0);
@@ -822,9 +843,32 @@
 }
 
 .calendar-app__viewport,
-.rux-workspace .trips-app__table-wrap,
+.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap),
 .scheduler-app__grid {
 	block-size: 100%;
+}
+
+/* Calendar/Fleet/Drivers/Passenger Roster each sit next to a companion
+   drawer that's still --scheduler-app-gap wide even when closed — and since
+   a drawer has no background of its own, that sliver shows the true app
+   background (--rux-surface-0) behind it, which is what actually reads as
+   a visible margin (the table-wrap's own margin-inline just sits inside
+   .rux-workspace's own charcoal background, so it alone barely shows).
+   My Trips has no companion drawer, so give .rux-workspace itself the
+   same inset here — that's what exposes the true black gap around the
+   whole card instead of a same-tone-on-tone gap. */
+[data-module="my-trips"] .rux-workspace {
+	margin-inline: var(--scheduler-app-gap);
+}
+
+/* Fleet/Drivers only have a drawer on the left (their own edit panel) — its
+   closed sliver gives the left edge a true-black gap for free, but there's
+   nothing on the right to do the same, so the right edge falls back to just
+   the inner table-wrap's on-tone margin. Add the matching outer inset here
+   so the right side gets the same true-black gap as the left. */
+[data-module="fleet"] .rux-workspace,
+[data-module="drivers"] .rux-workspace {
+	margin-inline-end: var(--scheduler-app-gap);
 }
 
 .calendar-app__viewport {

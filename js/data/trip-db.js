@@ -198,14 +198,15 @@ import { supabase } from "./supabase.js";
 			balance: (quotedPrice ?? 0) - (depositAmount ?? 0),
 		});
 
+		const selectedTripType = window.TripPanel?.getTripType(root) || "round_trip";
+
 		return {
 			customer:             fieldVal(root, "tp-customer"),
 			destination:          fieldVal(root, "tp-destination"),
+			is_self_organized:    selectedTripType === "self_organized",
 			start_date:           fieldVal(root, "tp-start"),
 			end_date:             fieldVal(root, "tp-end"),
-			trip_type:            root.querySelector("#tp-one-way")?.getAttribute("aria-pressed") === "true"
-			                        ? "one_way"
-			                        : "round_trip",
+			trip_type:            selectedTripType === "one_way" ? "one_way" : "round_trip",
 
 			bus_count:            busCountVal(root),
 			booking_contact_name:  fieldVal(root, "tp-book-name"),
@@ -433,12 +434,9 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-end",         trip.end_date);
 
 
-		const oneWay    = trip.trip_type === "one_way";
-		const oneWayBtn = root.querySelector("#tp-one-way");
-		if (oneWayBtn) {
-			oneWayBtn.setAttribute("aria-pressed", String(oneWay));
-			oneWayBtn.classList.toggle("is-active", oneWay);
-		}
+		window.TripPanel?.setTripType(root, trip.is_self_organized
+			? "self_organized"
+			: (trip.trip_type === "one_way" ? "one_way" : "round_trip"));
 
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
 		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
@@ -641,16 +639,12 @@ import { supabase } from "./supabase.js";
 			const el = root.querySelector(sel);
 			if (el) el.checked = false;
 		});
+		window.TripPanel?.setTripType(root, "round_trip");
 		resetPaymentRows(root);
 		root.querySelectorAll("[data-req]").forEach((btn) => {
 			btn.setAttribute("aria-pressed", "false");
 			btn.classList.remove("is-active");
 		});
-		const oneWayBtn = root.querySelector("#tp-one-way");
-		if (oneWayBtn) {
-			oneWayBtn.setAttribute("aria-pressed", "false");
-			oneWayBtn.classList.remove("is-active");
-		}
 		const delBtn = root.querySelector("#tp-btn-delete");
 		if (delBtn) delBtn.disabled = true;
 		syncBusCount(root, 1);
@@ -846,7 +840,7 @@ import { supabase } from "./supabase.js";
 	/* ── Fetch ───────────────────────────────────────────────────────────── */
 
 export async function fetchTrips() {
-	const [tripsResult, paymentsResult, docsResult] = await Promise.all([
+	const [tripsResult, paymentsResult, docsResult, passengersResult] = await Promise.all([
 		supabase
 			.from("trips")
 			.select(`
@@ -867,6 +861,10 @@ export async function fetchTrips() {
 			.from("trip_documents")
 			.select("id, trip_id, label, file_name, file_path")
 			.order("created_at", { ascending: true }),
+		supabase
+			.from("trip_passengers")
+			.select("*")
+			.order("position", { ascending: true }),
 	]);
 	if (tripsResult.error) throw tripsResult.error;
 	if (paymentsResult.error) throw paymentsResult.error;
@@ -883,6 +881,12 @@ export async function fetchTrips() {
 		docsByTrip.get(d.trip_id).push(d);
 	}
 
+	const passengersByTrip = new Map();
+	for (const p of passengersResult?.data ?? []) {
+		if (!passengersByTrip.has(p.trip_id)) passengersByTrip.set(p.trip_id, []);
+		passengersByTrip.get(p.trip_id).push(p);
+	}
+
 	return (tripsResult.data ?? []).map(trip => ({
 		...trip,
 		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...a }) => ({
@@ -890,6 +894,7 @@ export async function fetchTrips() {
 			drivers: trip_drivers ?? [],
 		})),
 		trip_payments: paymentsByTrip.get(trip.id) ?? [],
+		trip_passengers: passengersByTrip.get(trip.id) ?? [],
 		trip_documents: docsByTrip.get(trip.id) ?? [],
 	}));
 }
@@ -926,6 +931,7 @@ export function loadTrip(root, itinerary, trip) {
 		start_date:            trip.start_date    ?? trip.startDate    ?? null,
 		end_date:              trip.end_date      ?? trip.endDate      ?? null,
 		trip_type:             trip.trip_type     ?? trip.tripType     ?? null,
+		is_self_organized:     trip.is_self_organized ?? false,
 
 		booking_contact_name:  trip.booking_contact_name  ?? trip.bookingContact?.name  ?? null,
 		booking_contact_phone: trip.booking_contact_phone ?? trip.bookingContact?.phone ?? null,

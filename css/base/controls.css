@@ -91,7 +91,7 @@
 .rux-button--ghost {
 	--_bg: var(--rux-button-ghost-bg);
 	--_fg: var(--rux-button-ghost-fg);
-	--_border: transparent; /* invisible but real — keeps box size identical to bordered states */
+	--_border: var(--rux-button-ghost-border); /* invisible but real — keeps box size identical to bordered states */
 	--_shadow: var(--rux-button-shadow);
 }
 
@@ -280,8 +280,9 @@
 	gap: var(--rux-space-1);
 	min-height: calc(var(--rux-segmented-height) + 1px);
 	padding: var(--_pad);
-	background-color: var(--rux-surface-0);
+	background-color: var(--rux-button-default-bg);
 	border: 1px solid var(--rux-border);
+	border-radius: var(--rux-button-radius);
 
 	box-shadow: none;
 	overflow: hidden; /* clips active button corners to strip radius; inset shadow paints above children */
@@ -299,7 +300,7 @@
 
 .rux-segmented > .rux-button {
 	--_h: var(--rux-segmented-height);
-	--_bg: var(--rux-surface-0); /* matches strip bg so inactive items blend into the strip */
+	--_bg: var(--rux-button-ghost-bg); /* matches strip bg so inactive items blend into the strip */
 	--_shadow: var(--rux-elevation-0);
 	flex: 1;
 	min-width: 0;
@@ -320,8 +321,8 @@
 .rux-segmented > .rux-button.is-active,
 .rux-segmented > .rux-button[aria-pressed="true"],
 .rux-segmented > .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-segmented-selected-bg);
-	color: var(--rux-fg);
+	--_bg: var(--rux-button-selected-bg);
+	color: var(--rux-button-selected-fg);
 	box-shadow: var(--rux-elevation-2);
 }
 

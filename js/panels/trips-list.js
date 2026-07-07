@@ -5,6 +5,7 @@
 
   const tbody       = document.getElementById("trips-roster-body");
   const searchInput = document.getElementById("trips-search");
+  const badgesEl    = document.getElementById("trips-filter-badges");
 
   let db       = null;
   let allTrips = [];
@@ -53,6 +54,10 @@
     return "pending";
   }
 
+  function tripTypeOf(t) {
+    return t.trip_type === "one_way" ? "one_way" : "round_trip";
+  }
+
   // ── Row rendering ─────────────────────────────────────────────────────────
 
   function renderRows(list) {
@@ -71,12 +76,20 @@
       const invLevel  = invoiceLevel(t);
 
       const tr = document.createElement("tr");
-      tr.className           = "trips-app__row";
-      tr.tabIndex            = 0;
-      tr.dataset.id          = t.id;
-      tr.dataset.hasBus      = buses.length > 0 ? "yes" : "no";
+      tr.className            = "trips-app__row";
+      tr.tabIndex             = 0;
+      tr.dataset.id           = t.id;
+      tr.dataset.hasBus       = buses.length > 0 ? "yes" : "no";
       tr.dataset.invoiceLevel = invLevel;
-      tr.dataset.isPast      = (t.start_date && t.start_date < today) ? "yes" : "no";
+      tr.dataset.isPast       = (t.start_date && t.start_date < today) ? "yes" : "no";
+      tr.dataset.confirmed    = confirmed ? "yes" : "no";
+      tr.dataset.tripType     = tripTypeOf(t);
+      tr.dataset.needHotel    = t.need_hotel ? "yes" : "no";
+      tr.dataset.needFuelCard = t.need_fuel_card ? "yes" : "no";
+      tr.dataset.reqSleeper   = t.req_sleeper ? "yes" : "no";
+      tr.dataset.reqAda       = t.req_ada ? "yes" : "no";
+      tr.dataset.req56pax     = t.req_56pax ? "yes" : "no";
+      tr.dataset.balancePaid  = t.date_paid ? "yes" : "no";
 
       const busCell = buses.length
         ? buses.map(n => `<span class="rux-tag">Bus ${n}</span>`).join(" ")
@@ -130,44 +143,70 @@
   }
 
   // ── Filters ───────────────────────────────────────────────────────────────
+  // The segmented groups (When/Status/Trip Type/Bus) and Requirements switches
+  // live in the right panel's "Filter By" card (index.html) — this module owns
+  // the filter state and just reads whichever button/switch is active there.
 
-  let dateFilter    = "all";
-  let busFilter     = "all";
-  let invoiceFilter = "all";
+  let dateFilter   = "all";
+  let busFilter    = "all";
+  let statusFilter = "all";
+  let typeFilter   = "all";
+  const reqFilters = { hotel: false, fuelcard: false, sleeper: false, ada: false, pax56: false, balancepaid: false };
 
-  const COL_FILTER_DEFS = {
-    date: {
-      label:   "When",
-      get:     ()  => dateFilter,
-      set:     (v) => { dateFilter    = v; },
-      options: [
-        { value: "all",      label: "All" },
-        { value: "upcoming", label: "Upcoming" },
-        { value: "past",     label: "Past" },
-      ],
-    },
-    bus: {
-      label:   "Bus",
-      get:     ()  => busFilter,
-      set:     (v) => { busFilter     = v; },
-      options: [
-        { value: "all",        label: "All" },
-        { value: "assigned",   label: "Assigned" },
-        { value: "unassigned", label: "Unassigned" },
-      ],
-    },
-    invoice: {
-      label:   "Invoice",
-      get:     ()  => invoiceFilter,
-      set:     (v) => { invoiceFilter = v; },
-      options: [
-        { value: "all",      label: "All" },
-        { value: "pending",  label: "Pending" },
-        { value: "invoiced", label: "Invoiced" },
-        { value: "paid",     label: "Paid" },
-      ],
-    },
-  };
+  function setSegmentedValue(groupId, value) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    group.querySelectorAll(".rux-button").forEach((btn) => {
+      const on = btn.dataset.value === value;
+      btn.setAttribute("aria-pressed", String(on));
+      btn.classList.toggle("is-active", on);
+    });
+  }
+
+  function wireSegmentedFilter(groupId, setter) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    group.addEventListener("click", (e) => {
+      const btn = e.target.closest(".rux-button");
+      if (!btn) return;
+      setter(btn.dataset.value);
+      applyFilter();
+    });
+  }
+
+  function wireReqToggle(inputId, key) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    input.addEventListener("change", () => {
+      reqFilters[key] = input.checked;
+      applyFilter();
+    });
+  }
+
+  wireSegmentedFilter("tf-when-group",   (v) => { dateFilter   = v; });
+  wireSegmentedFilter("tf-status-group", (v) => { statusFilter = v; });
+  wireSegmentedFilter("tf-type-group",   (v) => { typeFilter   = v; });
+  wireSegmentedFilter("tf-bus-group",    (v) => { busFilter    = v; });
+  wireReqToggle("tf-req-hotel",       "hotel");
+  wireReqToggle("tf-req-fuelcard",    "fuelcard");
+  wireReqToggle("tf-req-sleeper",     "sleeper");
+  wireReqToggle("tf-req-ada",         "ada");
+  wireReqToggle("tf-req-pax56",       "pax56");
+  wireReqToggle("tf-req-balancepaid", "balancepaid");
+
+  document.getElementById("tf-clear-btn")?.addEventListener("click", () => {
+    dateFilter = "all"; statusFilter = "all"; typeFilter = "all"; busFilter = "all";
+    Object.keys(reqFilters).forEach((key) => {
+      reqFilters[key] = false;
+      const input = document.getElementById(`tf-req-${key}`);
+      if (input) input.checked = false;
+    });
+    setSegmentedValue("tf-when-group", "all");
+    setSegmentedValue("tf-status-group", "all");
+    setSegmentedValue("tf-type-group", "all");
+    setSegmentedValue("tf-bus-group", "all");
+    applyFilter();
+  });
 
   function applyFilter() {
     const q = searchInput?.value.toLowerCase() ?? "";
@@ -187,87 +226,90 @@
         (busFilter === "assigned"   && row.dataset.hasBus === "yes") ||
         (busFilter === "unassigned" && row.dataset.hasBus === "no");
 
-      const matchInvoice =
-        invoiceFilter === "all" || invoiceFilter === row.dataset.invoiceLevel;
+      const matchStatus =
+        statusFilter === "all" ||
+        (statusFilter === "confirmed"   && row.dataset.confirmed === "yes") ||
+        (statusFilter === "unconfirmed" && row.dataset.confirmed === "no");
 
-      row.hidden = !(matchQ && matchDate && matchBus && matchInvoice);
+      const matchType = typeFilter === "all" || row.dataset.tripType === typeFilter;
+
+      const matchReqs =
+        (!reqFilters.hotel      || row.dataset.needHotel === "yes") &&
+        (!reqFilters.fuelcard   || row.dataset.needFuelCard === "yes") &&
+        (!reqFilters.sleeper    || row.dataset.reqSleeper === "yes") &&
+        (!reqFilters.ada        || row.dataset.reqAda === "yes") &&
+        (!reqFilters.pax56      || row.dataset.req56pax === "yes") &&
+        (!reqFilters.balancepaid || row.dataset.balancePaid === "yes");
+
+      row.hidden = !(matchQ && matchDate && matchBus && matchStatus && matchType && matchReqs);
     });
+
+    renderFilterBadges();
+    updateListTitle();
   }
 
-  // ── Column header filter popover ──────────────────────────────────────────
+  // ── Dynamic title ("All Trips" / "Upcoming Trips" / "Unconfirmed Trips"...) ─
 
-  let colFilterPopover    = null;
-  let activeFilterTh      = null;
+  const WHEN_TITLE   = { upcoming: "Upcoming", past: "Past" };
+  const STATUS_TITLE = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
 
-  function buildColFilterPopover() {
-    colFilterPopover = document.createElement("div");
-    colFilterPopover.className = "rux-menu rux-popover";
-    colFilterPopover.setAttribute("hidden", "");
-    colFilterPopover.setAttribute("role", "menu");
-    colFilterPopover.addEventListener("rux:menu-close", () => { activeFilterTh = null; });
-    document.body.appendChild(colFilterPopover);
+  function updateListTitle() {
+    const listViewEl = document.getElementById("calendar-list-view");
+    const weekLabelEl = document.getElementById("week-label");
+    if (!listViewEl || listViewEl.hidden || !weekLabelEl) return;
+    const parts = [WHEN_TITLE[dateFilter], STATUS_TITLE[statusFilter]].filter(Boolean);
+    weekLabelEl.textContent = parts.length ? `${parts.join(" ")} Trips` : "All Trips";
   }
 
-  function closeColFilter() {
-    window.RuxMenu.close(colFilterPopover, { restoreFocus: false });
-    activeFilterTh = null;
+  // ── Active-filter badges (right-aligned in the List view header) ─────────
+
+  const WHEN_LABELS   = { upcoming: "Upcoming", past: "Past" };
+  const STATUS_LABELS = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
+  const TYPE_LABELS   = { round_trip: "Round Trip", one_way: "One-Way" };
+  const BUS_LABELS    = { assigned: "Assigned Bus", unassigned: "Unassigned Bus" };
+  const REQ_LABELS    = {
+    hotel: "Needs Hotel", fuelcard: "Needs Fuel Card", sleeper: "Sleeper Required",
+    ada: "ADA Lift Required", pax56: "56 Pax Required", balancepaid: "Balance Paid",
+  };
+
+  function createChip(label, onClear) {
+    const span = document.createElement("span");
+    span.className = "rux-badge trips-filter-chip";
+    span.innerHTML = `${label} <button type="button" class="trips-filter-chip__remove" aria-label="Clear ${label} filter"><span class="rux-icon" aria-hidden="true">close</span></button>`;
+    span.querySelector("button").addEventListener("click", onClear);
+    return span;
   }
 
-  function openColFilter(th, filterKey) {
-    if (!colFilterPopover) buildColFilterPopover();
+  function renderFilterBadges() {
+    if (!badgesEl) return;
+    badgesEl.innerHTML = "";
+    const chips = [];
 
-    // Toggle closed if same th clicked again
-    if (activeFilterTh === th && !colFilterPopover.hidden) {
-      closeColFilter();
-      return;
-    }
-    activeFilterTh = th;
-
-    const def = COL_FILTER_DEFS[filterKey];
-
-    colFilterPopover.innerHTML = "";
-    def.options.forEach(opt => {
-      const btn = document.createElement("button");
-      btn.type      = "button";
-      const selected = def.get() === opt.value;
-      btn.className = "rux-menu__item" + (selected ? " is-active" : "");
-      btn.setAttribute("role", "menuitemradio");
-      btn.setAttribute("aria-checked", String(selected));
-      btn.textContent = opt.label;
-      btn.addEventListener("click", () => {
-        def.set(opt.value);
-        updateFilterHeaders();
+    if (dateFilter !== "all") chips.push(createChip(WHEN_LABELS[dateFilter], () => {
+      dateFilter = "all"; setSegmentedValue("tf-when-group", "all"); applyFilter();
+    }));
+    if (statusFilter !== "all") chips.push(createChip(STATUS_LABELS[statusFilter], () => {
+      statusFilter = "all"; setSegmentedValue("tf-status-group", "all"); applyFilter();
+    }));
+    if (typeFilter !== "all") chips.push(createChip(TYPE_LABELS[typeFilter], () => {
+      typeFilter = "all"; setSegmentedValue("tf-type-group", "all"); applyFilter();
+    }));
+    if (busFilter !== "all") chips.push(createChip(BUS_LABELS[busFilter], () => {
+      busFilter = "all"; setSegmentedValue("tf-bus-group", "all"); applyFilter();
+    }));
+    Object.entries(reqFilters).forEach(([key, on]) => {
+      if (!on) return;
+      chips.push(createChip(REQ_LABELS[key], () => {
+        reqFilters[key] = false;
+        const input = document.getElementById(`tf-req-${key}`);
+        if (input) input.checked = false;
         applyFilter();
-        closeColFilter();
-      });
-      colFilterPopover.appendChild(btn);
+      }));
     });
 
-    window.RuxMenu.open(th, colFilterPopover, { placement: "bottom-start" });
+    chips.forEach((chip) => badgesEl.appendChild(chip));
+    badgesEl.hidden = chips.length === 0;
   }
-
-  function updateFilterHeaders() {
-    document.querySelectorAll("th[data-col-filter]").forEach(th => {
-      const key = th.dataset.colFilter;
-      const def = COL_FILTER_DEFS[key];
-      if (!def) return;
-      const active = def.get() !== "all";
-      th.classList.toggle("is-filtered", active);
-      th.setAttribute("aria-label", `${def.label}: ${def.options.find(o => o.value === def.get())?.label}`);
-    });
-  }
-
-  document.querySelectorAll("th[data-col-filter]").forEach(th => {
-    th.tabIndex = 0;
-    th.setAttribute("aria-haspopup", "menu");
-    th.setAttribute("aria-expanded", "false");
-    th.addEventListener("click", () => openColFilter(th, th.dataset.colFilter));
-    th.addEventListener("keydown", event => {
-      if (event.key !== "Enter" && event.key !== " ") return;
-      event.preventDefault();
-      openColFilter(th, th.dataset.colFilter);
-    });
-  });
 
   searchInput?.addEventListener("input", applyFilter);
 
@@ -281,7 +323,7 @@
 
   async function loadTrips() {
     try {
-      allTrips = await db.fetchTrips();
+      allTrips = (await db.fetchTrips()).filter((t) => !t.is_self_organized);
       renderRows(allTrips);
       applyFilter();
     } catch (err) {
@@ -304,7 +346,7 @@
     await loadTrips();
   }
 
-  window.TripsListPanel = { init, reload: loadTrips };
+  window.TripsListPanel = { init, reload: loadTrips, updateTitle: updateListTitle };
   document.addEventListener("trips:refresh", () => {
     if (db) loadTrips();
   });

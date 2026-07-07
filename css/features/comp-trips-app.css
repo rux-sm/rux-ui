@@ -19,6 +19,37 @@
 	width: 200px;
 }
 
+/* — Active-filter chips (List view header) — */
+
+.trips-filter-chip {
+	gap: 0;
+	padding-left: var(--rux-space-2);
+	padding-right: var(--rux-space-1);
+}
+
+.trips-filter-chip__remove {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	margin-left: var(--rux-space-1);
+	padding: 0;
+	background: none;
+	border: none;
+	border-radius: var(--rux-radius-full);
+	color: inherit;
+	cursor: pointer;
+}
+
+.trips-filter-chip__remove:hover {
+	background: var(--rux-color-white-a16);
+}
+
+.trips-filter-chip__remove .rux-icon {
+	font-size: 14px;
+}
+
 /* — Table wrap — */
 
 .trips-app__table-wrap {
@@ -88,8 +119,8 @@
 }
 
 .trips-app__row:focus-visible {
-	outline: 2px solid var(--rux-focus);
-	outline-offset: -2px;
+	outline: none;
+	box-shadow: var(--rux-ring-focus);
 }
 
 /* — Empty state — */
@@ -109,7 +140,10 @@
 	}
 
 	.trips-app__table .col-payment,
-	.trips-app__table .col-quoted {
+	.trips-app__table .col-quoted,
+	.trips-app__table .col-owed,
+	.trips-app__table .col-paid,
+	.trips-app__table .col-balance {
 		display: none;
 	}
 }

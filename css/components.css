@@ -43,7 +43,7 @@
 @import "./base/controls.css";
 @import "./base/badges.css";
 @import "./base/form.css";
-@import "./base/workspace.css";
+@import "./base/workspace.css?v=2";
 @import "./base/panel.css";
 @import "./base/menu.css";
 @import "./base/popover.css";
@@ -51,9 +51,9 @@
 @import "./base/content.css";
 @import "./base/feedback.css";
 @import "./base/navigation.css";
-@import "./base/utils.css";
+@import "./base/utils.css?v=2";
 @import "./features/trip-bar.css";
 @import "./features/trip-panel.css";
 @import "./features/itinerary.css";
 @import "./layout/scheduler.css";
-@import "./layout/scheduler-app.css";
+@import "./layout/scheduler-app.css?v=11";

@@ -575,6 +575,27 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	sync();
 }
 
+/* ── Trip Type ────────────────────────────────────────────────────────────── */
+
+// Trip Type is a single three-way segmented control (Round Trip / One-Way /
+// ETB Trip) — the generic [data-rux-toggle-group] handler in initTripPanel
+// keeps exactly one button pressed at a time. getTripType/setTripType read/
+// write that shared state so trip-db.js and index.html don't need to know
+// the group's internal markup.
+function getTripType(root) {
+	return root.querySelector("#tp-trip-type-group [aria-pressed='true']")?.dataset.value || "round_trip";
+}
+
+function setTripType(root, value) {
+	const group = root.querySelector("#tp-trip-type-group");
+	if (!group) return;
+	group.querySelectorAll(".rux-button").forEach((btn) => {
+		const active = btn.dataset.value === value;
+		btn.setAttribute("aria-pressed", String(active));
+		btn.classList.toggle("is-active", active);
+	});
+}
+
 /* ── Tabs ───────────────────────────────────────────────────────────────── */
 
 function initTripTabs(root) {
@@ -1036,4 +1057,6 @@ window.TripPanel = {
 	refreshRequirements,
 	normalizeRoleStatus,
 	setRoleStatus,
+	getTripType,
+	setTripType,
 };

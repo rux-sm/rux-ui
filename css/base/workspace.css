@@ -24,7 +24,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	min-width: 0;
-	gap: var(--rux-space-2);
+	gap: var(--rux-space-0);
 	padding: var(--rux-space-3);
 	container-type: inline-size;
 	container-name: workspace-header;
@@ -41,7 +41,7 @@
 	align-items: flex-start;
 	justify-content: flex-start;
 	min-width: 0;
-	gap: var(--rux-space-1);
+	gap: var(--rux-space-2);
 }
 
 .rux-workspace__title {
@@ -79,6 +79,17 @@
 
 .rux-workspace__header:not(.rux-workspace__header--table) .rux-workspace__toolbar {
 	flex: none;
+	/* The base .rux-workspace__toolbar rule turns this into a size-containment
+	   box (container-type: inline-size) so Fleet/Drivers table toolbars can
+	   query their own width — but those toolbars grow via flex:1 1 auto, so
+	   containment doesn't matter to their sizing. This (Calendar-style,
+	   flex:none) toolbar has no grow, so its width comes entirely from
+	   flex-basis:auto's content measurement — which containment defeats,
+	   collapsing it to 0 and pushing its children outside normal flex flow
+	   instead of flush against the right edge. None of the buttons the
+	   640px container query hides live in this toolbar, so it's safe to
+	   drop containment here and let it size to content normally. */
+	container-type: normal;
 }
 
 .rux-workspace__header--table .rux-workspace__toolbar > .rux-input[type="search"] {

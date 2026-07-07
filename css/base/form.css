@@ -53,7 +53,7 @@
 .rux-select:focus-visible,
 .rux-textarea:focus-visible {
   border-color: var(--rux-accent);
-  box-shadow: var(--rux-ring-focus), var(--_field-shadow);
+  box-shadow: var(--rux-ring-field-focus), var(--_field-shadow);
 }
 
 .rux-input:disabled,
@@ -76,7 +76,7 @@
 .rux-select[aria-invalid="true"]:focus-visible,
 .rux-textarea[aria-invalid="true"]:focus-visible {
   border-color: var(--rux-danger);
-  box-shadow: var(--rux-ring-danger), var(--_field-shadow);
+  box-shadow: var(--rux-ring-field-danger), var(--_field-shadow);
 }
 
 .rux-textarea {
@@ -433,7 +433,7 @@
 .rux-color-picker__trigger:focus-visible {
   outline: none;
   border-color: var(--rux-accent);
-  box-shadow: var(--rux-ring-focus), var(--_field-shadow);
+  box-shadow: var(--rux-ring-field-focus), var(--_field-shadow);
 }
 
 .rux-color-picker__preview {
@@ -553,7 +553,7 @@
 
 .rux-color-input:focus-within {
   border-color: var(--rux-accent);
-  box-shadow: var(--rux-ring-focus);
+  box-shadow: var(--rux-ring-field-focus);
 }
 
 .rux-color-input__swatch {

@@ -166,12 +166,15 @@ function render() {
 		if (!player) {
 			return '<li class="flip-seven__score flip-seven__score--empty" aria-hidden="true"></li>';
 		}
+		const history = (player.round_history || [])
+			.map((round) => round.bust ? "X" : String(round.score))
+			.join("  ");
 		return `
 			<li class="flip-seven__score${player.id === state.current_player_id ? " is-active" : ""}${player.is_bust ? " is-bust" : ""}">
 				<span class="flip-seven__score-rank">${index + 1}</span>
 				<span class="rux-avatar rux-avatar--sm" aria-hidden="true">${escapeHtml(initials(player.name))}</span>
-				<span class="flip-seven__score-name">${escapeHtml(player.name)}${player.id === playerId ? ' <span class="rux-badge rux-badge--accent">You</span>' : ""}</span>
-				<span class="flip-seven__score-round">${player.is_bust ? "Bust" : player.round_score}</span>
+				<span class="flip-seven__score-name">${escapeHtml(player.name)}</span>
+				<span class="flip-seven__score-history">${escapeHtml(history)}</span>
 				<strong class="flip-seven__score-total">${player.total_score}</strong>
 			</li>`;
 	}).join("");
@@ -191,7 +194,20 @@ function render() {
 	els.hand.innerHTML = ["bottom", "left", "top", "right"].map((position) => {
 		const player = playersByPosition.get(position);
 		if (!player) {
-			return `<section class="rux-card flip-seven__player-hand flip-seven__player-hand--${position} is-empty" aria-hidden="true"></section>`;
+			// Mirror the real seat's header + cards structure (hidden, not omitted) so an
+			// empty seat is exactly as tall as an occupied one instead of falling back to
+			// whatever generic min-height the grid track happens to apply.
+			return `
+			<section class="rux-card flip-seven__player-hand flip-seven__player-hand--${position} is-empty" aria-hidden="true">
+				<header class="flip-seven__player-hand-header">
+					<span class="rux-avatar" aria-hidden="true"></span>
+					<span class="flip-seven__player-hand-name">&nbsp;</span>
+					<span class="flip-seven__player-hand-score">&nbsp;</span>
+				</header>
+				<div class="flip-seven__player-cards">
+					<span class="flip-seven__hand-empty">&nbsp;</span>
+				</div>
+			</section>`;
 		}
 		const playerCards = cards.filter((card) => card.player_id === player.id);
 		const latestCardId = playerCards.at(-1)?.id;
@@ -202,7 +218,7 @@ function render() {
 			<section class="rux-card flip-seven__player-hand flip-seven__player-hand--${position}${isActive ? " is-active" : ""}${player.is_bust ? " is-bust" : ""}${isMe ? " is-me" : ""}" aria-label="${escapeHtml(seatLabel)}">
 				<header class="flip-seven__player-hand-header">
 					<span class="rux-avatar" aria-hidden="true">${escapeHtml(initials(player.name))}</span>
-					<span class="flip-seven__player-hand-name">${escapeHtml(player.name)}${isMe ? ' <span class="rux-badge rux-badge--accent">You</span>' : ""}</span>
+					<span class="flip-seven__player-hand-name">${escapeHtml(player.name)}</span>
 					<span class="flip-seven__player-hand-score">${player.is_bust ? "Bust" : `${player.round_score} pts`}</span>
 				</header>
 				<div class="flip-seven__player-cards">

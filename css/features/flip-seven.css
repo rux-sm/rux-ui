@@ -7,21 +7,15 @@
 }
 
 .flip-seven [hidden] { display: none !important; }
-.flip-seven__header { flex: 0 0 auto; }
-.flip-seven__header .rux-workspace__heading {
-	flex-direction: row;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-3);
-}
 .flip-seven__quit { flex: none; }
-.flip-seven__subtitle {
+.flip-seven__status {
+	min-width: 0;
 	overflow: hidden;
 	text-align: right;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.flip-seven__subtitle,
+.flip-seven__status,
 .flip-seven__copy,
 .flip-seven__turn p { margin: 0; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
 
@@ -57,20 +51,37 @@
 .flip-seven__roster li { padding: var(--rux-space-3); border: var(--rux-border-width) solid var(--rux-border); border-radius: var(--rux-radius-sm); }
 .flip-seven__empty { color: var(--rux-fg-subtle); font-size: var(--rux-text-sm); text-align: center; }
 
+.flip-seven__panel {
+	align-self: stretch;
+	width: 100%;
+	max-width: 42rem;
+	height: 100%;
+	max-height: 44rem;
+}
+.flip-seven__body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-panel-content-gap);
+	padding: var(--rux-panel-padding);
+	min-height: 0;
+}
+/* The table pane holds the two game cards (board + scoreboard); it's the one
+   that should stretch to fill the shared body, unlike the narrower lobby card. */
 .flip-seven__table {
 	display: flex;
 	flex-direction: column;
-	width: min(100%, 42rem);
-	min-height: min(44rem, 100%);
+	flex: 1;
+	width: 100%;
+	min-height: 0;
 	gap: var(--rux-panel-content-gap);
-	padding: var(--rux-panel-padding);
-	overflow: visible;
 }
 .flip-seven__scoreboard.rux-card--stack {
 	gap: var(--rux-space-3);
 	padding: var(--rux-card-padding);
 }
-.flip-seven__scoreboard .flip-seven__section-heading h2 { font-size: var(--rux-text-md); }
+.flip-seven__scoreboard .flip-seven__section-heading h3 { font-size: var(--rux-text-md); }
 .flip-seven__scores {
 	gap: 0;
 	margin-top: 0;
@@ -80,12 +91,12 @@
 }
 .flip-seven__score {
 	display: grid;
-	grid-template-columns: 1.5rem var(--rux-avatar-sm) minmax(0, 1fr) minmax(3rem, auto) minmax(3rem, auto);
+	grid-template-columns: 1.5rem var(--rux-avatar-sm) minmax(3rem, 8rem) minmax(0, 1fr) auto;
 	align-items: center;
-	gap: var(--rux-space-3);
+	gap: var(--rux-space-1);
 	height: 28px;
 	min-height: 28px;
-	padding: 1px var(--rux-space-3);
+	padding: 1px var(--rux-space-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	background: var(--rux-bg-elevated);
 }
@@ -107,14 +118,23 @@
 .flip-seven__score-name { overflow: hidden; font-weight: var(--rux-weight-medium); text-overflow: ellipsis; white-space: nowrap; }
 .flip-seven__score-name .rux-badge { margin-left: var(--rux-space-2); vertical-align: middle; }
 .flip-seven__score-total { font: var(--rux-weight-semibold) var(--rux-text-md)/1 var(--rux-font-mono); text-align: right; }
-.flip-seven__score-round { color: var(--rux-fg-subtle); font: var(--rux-weight-medium) var(--rux-text-sm)/1 var(--rux-font-mono); text-align: right; }
-.flip-seven__score.is-bust .flip-seven__score-round { color: var(--rux-danger); }
+.flip-seven__score-history {
+	overflow: hidden;
+	color: var(--rux-fg-subtle);
+	font: var(--rux-weight-medium) var(--rux-text-sm)/1 var(--rux-font-mono);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
 
 .flip-seven__mat.rux-card--stack {
 	display: grid;
-	grid-template-rows: minmax(0, 1fr) auto auto;
+	/* auto (not 1fr): board must size to its own row-tracks' real content,
+	   not a flexible share of whatever space happens to be left — a flexible
+	   track here let the board get shorter than its content needed, spilling
+	   the bottom seat past the board's box and onto the round-total line. */
+	grid-template-rows: auto auto;
 	flex: 1;
-	min-height: 30rem;
+	min-height: 0;
 	gap: var(--rux-space-4);
 	padding: var(--rux-card-padding);
 	overflow: visible;
@@ -123,13 +143,15 @@
 	position: relative;
 	display: grid;
 	grid-template-columns: minmax(7rem, 0.8fr) minmax(12rem, 1.7fr) minmax(7rem, 0.8fr);
-	grid-template-rows: minmax(5.5rem, auto) minmax(8rem, 1fr) minmax(5.5rem, auto);
+	grid-template-rows: minmax(4.5rem, auto) minmax(8rem, 1fr) minmax(4.5rem, auto);
 	grid-template-areas:
 		".    top    ."
 		"left center right"
 		".    bottom .";
 	gap: var(--rux-space-3);
-	min-height: 25rem;
+	/* auto (not 0): the row tracks above have real minimums (seat slots) —
+	   shrinking past them pushes the bottom seat (your hand) outside the box */
+	min-height: auto;
 	padding: var(--rux-space-3);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-xl);
@@ -200,8 +222,8 @@
 .flip-seven__player-hand {
 	display: grid;
 	min-width: 0;
-	gap: var(--rux-space-2);
-	padding: var(--rux-space-3);
+	gap: var(--rux-space-1);
+	padding: var(--rux-space-2);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-bg-elevated);
@@ -217,6 +239,12 @@
 	background: var(--rux-bg-sunken);
 	box-shadow: none;
 }
+/* Content is present only to hold the seat's real height (see flip-seven.js) —
+   keep it invisible so an empty slot still reads as empty. */
+.flip-seven__player-hand.is-empty .flip-seven__player-hand-header,
+.flip-seven__player-hand.is-empty .flip-seven__player-cards {
+	visibility: hidden;
+}
 .flip-seven__player-hand.is-active { border-color: var(--rux-accent); box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-accent); }
 .flip-seven__player-hand.is-me { background: var(--rux-bg-active); }
 .flip-seven__player-hand.is-bust { border-color: var(--rux-danger); }
@@ -224,6 +252,7 @@
 	display: grid;
 	grid-template-columns: var(--rux-avatar-md) minmax(0, 1fr) auto;
 	align-items: center;
+	min-height: 24px;
 	gap: var(--rux-space-2);
 }
 .flip-seven__player-hand-header .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent); }
@@ -242,8 +271,8 @@
 	display: flex;
 	width: 100%;
 	min-width: 0;
-	min-height: 3rem;
-	align-items: center;
+	min-height: 24px;
+	align-items: stretch;
 	flex-wrap: wrap;
 	gap: var(--rux-space-1);
 }
@@ -252,7 +281,6 @@
 	display: grid;
 	flex: 0 0 2.25rem;
 	width: 2.25rem;
-	height: 3rem;
 	place-items: center;
 	border: var(--rux-border-width) solid var(--rux-border-strong);
 	border-radius: var(--rux-radius-sm);
@@ -269,26 +297,18 @@
 }
 .flip-seven__round-total { justify-self: center; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
 .flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-fg); font: var(--rux-weight-bold) var(--rux-text-xl)/1 var(--rux-font-mono); }
-.flip-seven__actions {
-	display: flex;
-	justify-content: center;
-	gap: var(--rux-space-3);
-	padding: var(--rux-space-4);
-	border: var(--rux-border-width) solid var(--rux-border);
-	border-radius: var(--rux-radius-lg);
-	background: var(--rux-bg-elevated);
-	box-shadow: var(--rux-shadow-2);
-}
+/* Box styling (padding/gap/background/border-top) comes from .rux-panel__footer;
+   this only adds what's specific to this footer. */
+.flip-seven__actions { justify-content: center; }
 .flip-seven__actions > .rux-button:not([hidden]) { min-width: 8rem; }
 
 @media (max-width: 720px) {
 	.flip-seven__shell { align-items: start; padding: var(--rux-space-3); }
-	.flip-seven__header { padding-right: calc(var(--rux-space-3) + env(safe-area-inset-right, 0px)); }
-	.flip-seven__table { min-height: calc(100dvh - 7rem); padding: var(--rux-space-3); }
+	.flip-seven__panel { height: calc(100dvh - 7rem); max-height: none; }
 	.flip-seven__scoreboard.rux-card--stack { padding: var(--rux-space-3); }
 	.flip-seven__scoreboard .flip-seven__section-heading { display: none; }
 	.flip-seven__scores { margin-top: 0; }
-	.flip-seven__score { grid-template-columns: 1.5rem var(--rux-avatar-sm) minmax(0, 1fr) 2.5rem 2.5rem; gap: var(--rux-space-2); padding: 1px var(--rux-space-2); }
+	.flip-seven__score { grid-template-columns: 1.5rem var(--rux-avatar-sm) minmax(2.5rem, 6rem) minmax(0, 1fr) auto; gap: var(--rux-space-2); padding: 1px var(--rux-space-2); }
 	.flip-seven__score-name .rux-badge { display: none; }
 	.flip-seven__join { grid-template-columns: 1fr; }
 	.flip-seven__mat.rux-card--stack {
@@ -325,29 +345,18 @@
 	.flip-seven__player-hand--left .flip-seven__card,
 	.flip-seven__player-hand--right .flip-seven__card { width: 100%; min-width: 0; }
 	.flip-seven__actions {
-		position: sticky;
-		bottom: 0;
-		z-index: 2;
-		margin: 0 calc(var(--rux-space-3) * -1) calc(0px - var(--rux-space-3) - env(safe-area-inset-bottom, 0px));
-		padding: var(--rux-space-3);
-		padding-bottom: calc(var(--rux-space-3) + env(safe-area-inset-bottom, 0px));
-		border-right: 0;
-		border-bottom: 0;
-		border-left: 0;
-		border-radius: 0;
-		box-shadow: var(--rux-edge-shadow-top);
+		padding-bottom: calc(var(--rux-panel-padding) + env(safe-area-inset-bottom, 0px));
 	}
 	.flip-seven__actions > .rux-button:not([hidden]) { flex: 1; min-width: 0; }
 }
 
 @media (max-width: 420px) {
 	.flip-seven__shell { padding: 0; }
-	.flip-seven__table { padding: var(--rux-space-3); border-right: 0; border-left: 0; border-radius: 0; }
-	.flip-seven__score { grid-template-columns: 1.5rem minmax(0, 1fr) 2.25rem 2.25rem; }
+	.flip-seven__panel { border-right: 0; border-left: 0; border-radius: 0; }
+	.flip-seven__score { grid-template-columns: 1.5rem minmax(2.5rem, 4.5rem) minmax(0, 1fr) auto; }
 	.flip-seven__score .rux-avatar { display: none; }
 	.flip-seven__board {
 		grid-template-columns: minmax(4.75rem, 0.7fr) minmax(7rem, 1.4fr) minmax(4.75rem, 0.7fr);
-		min-height: 25rem;
 	}
 	.flip-seven__turn { width: min(46%, 10rem); }
 }
