@@ -63,37 +63,22 @@
 
 .scheduler-app__topbar.is-collapsed ~ .scheduler-app__body {
 	padding-block-start: var(--scheduler-app-gap);
-	padding-block-start: 0px; /* override the above for mobile, where the topbar is always collapsed */
 }
 
+/* Sides + bottom always keep a consistent --scheduler-app-gap inset,
+   regardless of whether a panel is open or closed — previously this only
+   applied while a panel was open (via :has(...is-open)), dropping to 0 once
+   closed, so the workspace would expand flush to the outer edge. An open
+   panel still sits flush against the workspace itself (see the panel
+   border-only-on-the-workspace-facing-side rule below); this gutter is
+   only ever between a panel/workspace and the outer edge of the app. */
 .scheduler-app__module {
-	--scheduler-app-outer-gutter-start: 0;
-	--scheduler-app-outer-gutter-end: 0;
-	--scheduler-app-outer-gutter-bottom: 0;
 	display: flex;
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
-	padding-inline-start: var(--scheduler-app-outer-gutter-start);
-	padding-inline-end: var(--scheduler-app-outer-gutter-end);
-	padding-block-end: var(--scheduler-app-outer-gutter-bottom);
-	transition:
-		padding-inline-start var(--rux-duration-slow) var(--rux-ease-in-out),
-		padding-inline-end var(--rux-duration-slow) var(--rux-ease-in-out),
-		padding-block-end var(--rux-duration-slow) var(--rux-ease-in-out);
-}
-
-.scheduler-app__module:has(> .scheduler-app__drawer:first-child.is-open) {
-	--scheduler-app-outer-gutter-start: var(--scheduler-app-gap);
-}
-
-.scheduler-app__module:has(> .scheduler-app__drawer--right.is-open) {
-	--scheduler-app-outer-gutter-end: var(--scheduler-app-gap);
-}
-
-.scheduler-app__module:has(> .scheduler-app__drawer.is-open) {
-	--scheduler-app-outer-gutter-bottom: var(--scheduler-app-gap);
-
+	padding-inline: var(--scheduler-app-gap);
+	padding-block-end: var(--scheduler-app-gap);
 }
 
 .scheduler-app__topbar {
@@ -120,7 +105,7 @@
 
 /* Topbar menus must float above the mobile drawer, which sits at --rux-z-modal
    while open (see "Drawer fills full viewport" below) */
-#nav-more-menu {
+#profile-menu {
 	z-index: calc(var(--rux-z-modal) + 1);
 }
 
@@ -603,6 +588,13 @@
 @media (max-width: 500px) {
 	.scheduler-app__panel-mobile-btn {
 		display: inline-flex;
+	}
+
+	/* On mobile the topbar is always collapsed (there's no toggle for it),
+	   so it never needs the "just uncollapsed" top gutter the rule above
+	   gives every other viewport. */
+	.scheduler-app__topbar.is-collapsed ~ .scheduler-app__body {
+		padding-block-start: 0px;
 	}
 
 

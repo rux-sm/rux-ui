@@ -92,36 +92,16 @@
               Drivers
             </button>
 
-            <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
-              type="button"
-              id="search-modal-btn"
-              aria-label="Search"
-            >
-              <span class="rux-icon">search</span>
-              Search
-            </button>
-
-            <button
-              class="rux-button rux-button--ghost rux-button--icon"
-              type="button"
-              id="nav-more-btn"
-              aria-label="More"
-              aria-haspopup="menu"
-              aria-expanded="false"
-            >
-              <span class="rux-icon" aria-hidden="true">more_vert</span>
-            </button>
           </nav>
         </div>
 
         <div class="scheduler-app__account">
-          <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__profile" type="button" aria-label="Settings" data-module="settings">
+          <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__profile" type="button" id="profile-menu-btn" aria-label="Profile menu" aria-haspopup="menu" aria-expanded="false">
             <img src="./assets/rux-profile-pic.png" alt="" />
           </button>
         </div>
       </header>
-      <div class="rux-menu rux-popover" id="nav-more-menu" role="menu" hidden>
+      <div class="rux-menu rux-popover" id="profile-menu" role="menu" hidden>
         <button class="rux-menu__item" id="print-schedule-btn" type="button" role="menuitem" aria-label="Print schedule">
           <span class="rux-icon" aria-hidden="true">print</span>
           <span>Print schedule</span>
@@ -133,6 +113,11 @@
         <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="game">
           <span class="rux-icon" aria-hidden="true">playing_cards</span>
           <span>Flip 7</span>
+        </button>
+        <div class="rux-menu__divider" role="separator"></div>
+        <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="settings">
+          <span class="rux-icon" aria-hidden="true">settings</span>
+          <span>Configuration</span>
         </button>
       </div>
       <div class="scheduler-app__body">
@@ -557,9 +542,9 @@
                           </label>
                         </div>
                         <div class="rux-view-options__row">
-                          <span class="rux-view-options__label">Show navigation bar</span>
+                          <span class="rux-view-options__label">Hide navigation bar</span>
                           <label class="rux-switch">
-                            <input id="opt-show-nav" type="checkbox" role="switch" />
+                            <input id="opt-hide-nav" type="checkbox" role="switch" />
                             <span class="rux-switch__track"></span>
                             <span class="rux-switch__thumb"></span>
                           </label>
@@ -2039,25 +2024,26 @@
         });
       });
 
-      document.querySelectorAll(".scheduler-app__profile[data-module]").forEach((btn) => {
-        btn.addEventListener("click", () => showModule(btn.dataset.module));
-      });
-
-      const navMoreBtn  = document.getElementById("nav-more-btn");
-      const navMoreMenu = document.getElementById("nav-more-menu");
-      function setNavMoreExpanded(expanded) {
-        navMoreBtn?.setAttribute("aria-expanded", String(expanded));
+      // Print schedule / Components / Flip 7 / Configuration all live under
+      // the profile button's menu now (the ⋮ "More" button that used to
+      // hold them is gone). Configuration reuses the generic module-button
+      // wiring above (data-module="settings"), same as Components/Flip 7 —
+      // it doesn't need its own click handler.
+      const profileMenuBtn = document.getElementById("profile-menu-btn");
+      const profileMenu    = document.getElementById("profile-menu");
+      function setProfileMenuExpanded(expanded) {
+        profileMenuBtn?.setAttribute("aria-expanded", String(expanded));
       }
-      function toggleNavMoreMenu(anchor) {
-        if (navMoreMenu.hidden) {
-          window.RuxMenu.open(anchor, navMoreMenu, { placement: "bottom-end" });
-          setNavMoreExpanded(true);
+      function toggleProfileMenu() {
+        if (profileMenu.hidden) {
+          window.RuxMenu.open(profileMenuBtn, profileMenu, { placement: "bottom-end" });
+          setProfileMenuExpanded(true);
         } else {
-          window.RuxMenu.close(navMoreMenu);
-          setNavMoreExpanded(false);
+          window.RuxMenu.close(profileMenu);
+          setProfileMenuExpanded(false);
         }
       }
-      navMoreBtn?.addEventListener("click", () => toggleNavMoreMenu(navMoreBtn));
+      profileMenuBtn?.addEventListener("click", toggleProfileMenu);
 
       // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
       const initialModule = location.hash.slice(1).split("/")[0] || "calendar";
@@ -2067,9 +2053,11 @@
         : "calendar");
 
       // ── Global search modal ─────────────────────────────────────────────
+      // No visible trigger anymore (the top-nav Search button was removed —
+      // superseded by the Search tab in the right panel); ⌘K still opens it
+      // as a power-user shortcut.
       const searchModal        = document.getElementById("search-modal");
       const searchModalInput   = document.getElementById("search-modal-input");
-      const searchModalBtn     = document.getElementById("search-modal-btn");
       const searchModalResults = document.getElementById("search-modal-results");
 
       function openSearchModal() {
@@ -2082,8 +2070,6 @@
       function closeSearchModal() {
         searchModal?.close();
       }
-
-      searchModalBtn?.addEventListener("click", openSearchModal);
 
       searchModal?.addEventListener("click", (e) => {
         if (e.target === searchModal) closeSearchModal();
@@ -2194,11 +2180,11 @@
       // ── Trip panel drawer ───────────────────────────────────────────────
 
       // ── Topbar visibility ───────────────────────────────────────────────
+      // Always starts expanded on load — deliberately not persisted, unlike
+      // the panels' open/closed state.
       const topbar = document.querySelector(".scheduler-app__topbar");
       const appEl = document.querySelector(".scheduler-app");
       let topbarCollapsed = false;
-      try { topbarCollapsed = localStorage.getItem("rux:topbar-collapsed") === "true"; } catch (_) {}
-      if (topbarCollapsed) topbar.classList.add("is-collapsed");
 
       // The topbar's open height is implicit (auto), so it can't transition
       // smoothly on its own — `height` jumps to its target instantly while
@@ -2264,12 +2250,13 @@
         if (topbarCollapsed === collapsed) return;
         topbarCollapsed = collapsed;
         topbarCollapsed ? collapseTopbarSmooth() : expandTopbarSmooth();
-        try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
       }
 
       // Lives in the right panel's View Options card now, not the ⋮ menu —
-      // "on" reads as "nav is shown", the inverse of topbarCollapsed.
-      initToggle("opt-show-nav", !topbarCollapsed, (on) => setTopbarCollapsed(!on));
+      // "on" reads as "nav is hidden" (matching the "Hide navigation bar"
+      // label), the same direction as topbarCollapsed, so this is a direct
+      // pass-through rather than an inversion.
+      initToggle("opt-hide-nav", topbarCollapsed, (on) => setTopbarCollapsed(on));
 
       const drawer  = document.getElementById("trip-panel-drawer");
       const rightDrawer = document.getElementById("right-panel-drawer");
