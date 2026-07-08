@@ -33,7 +33,7 @@
 .scheduler-app {
 	--scheduler-app-gap: var(--rux-space-2);
 	--scheduler-app-resize-line-width: 1px;
-	--scheduler-app-card-radius: var(--rux-radius-md);
+	--scheduler-app-card-radius: var(--rux-radius-lg);
 	--scheduler-app-drawer-default-width: 374px;
 	position: relative;
 	display: grid;
