@@ -852,12 +852,13 @@
 
   // ── Resize handle ─────────────────────────────────────────────────────────
 
-  const handle = drawer.querySelector(".scheduler-app__drawer-handle");
+  const handle = document.getElementById("driver-panel-resize-gutter");
   let resizing = false, startX = 0, startW = 0;
 
-  handle.addEventListener("pointerdown", (e) => {
+  handle?.addEventListener("pointerdown", (e) => {
     resizing = true; startX = e.clientX; startW = drawer.offsetWidth;
     drawer.classList.add("is-resizing");
+    handle.classList.add("is-resizing");
     document.body.style.cursor = "col-resize";
     e.preventDefault();
   });
@@ -870,6 +871,7 @@
     if (!resizing) return;
     resizing = false;
     drawer.classList.remove("is-resizing");
+    handle?.classList.remove("is-resizing");
     document.body.style.cursor = "";
   });
 

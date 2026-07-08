@@ -13,6 +13,7 @@
 	background: var(--rux-panel-bg);
 	color: var(--rux-panel-fg);
 	border: var(--rux-panel-border);
+	border: none; /* Overrides */
 	border-radius: var(--rux-panel-radius);
 	box-shadow: var(--rux-panel-shadow);
 	isolation: isolate;
@@ -66,25 +67,6 @@
 	display: none;
 }
 
-.rux-panel--left > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
-.rux-panel--left .rux-panel__pane {
-	padding-inline-end: 0;
-}
-
-.rux-panel--right > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
-.rux-panel--right .rux-panel__pane {
-	padding-inline-start: 0;
-}
-
-@media (max-width: 500px) {
-	.rux-panel--left > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
-	.rux-panel--left .rux-panel__pane,
-	.rux-panel--right > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
-	.rux-panel--right .rux-panel__pane {
-		padding-inline: var(--rux-panel-padding-inline);
-	}
-}
-
 .rux-panel__tabs {
 	min-height: auto;
 	padding: var(--rux-panel-tabs-padding);
@@ -110,9 +92,10 @@
 	display: flex;
 	min-height: auto;
 	gap: var(--rux-panel-content-gap);
-	padding: var(--rux-panel-padding);
+	padding: var(--rux-panel-footer-padding);
 	background: var(--rux-panel-bg);
 	border-top: 1px solid transparent;
+	border-top:none;
 	position: relative;
 	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);

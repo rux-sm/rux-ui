@@ -290,7 +290,7 @@
 
 	--rux-border-subtle: var(--rux-color-white-a10);
 	--rux-border: var(--rux-color-white-a16);
-	--rux-border: transparent; /* TEMPORARY: remove once border color is finalized */
+	/*--rux-border: transparent; /* TEMPORARY: remove once border color is finalized */
 	--rux-border-strong: var(--rux-color-white-a28);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
@@ -360,12 +360,13 @@
 	--rux-panel-header-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
 	--rux-panel-tabs-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
 	--rux-panel-footer-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
+	--rux-panel-footer-padding: var(--rux-space-2) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-tabs-shadow: var(--rux-edge-shadow-bottom);
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
-	--rux-panel-padding-block: var(--rux-space-3);
-	--rux-panel-padding-inline: var(--rux-space-3);
-	--rux-panel-tabs-padding: 0 var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
-	--rux-panel-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
+	--rux-panel-padding-block: var(--rux-space-4);
+	--rux-panel-padding-inline: var(--rux-space-2);
+	--rux-panel-tabs-padding: var(--rux-space-4)  var(--rux-space-4);
+	--rux-panel-padding: var(--rux-space-4) var(--rux-space-2);
 	--rux-panel-content-gap: var(--rux-space-2);
 	--rux-panel-header-min-height: 44px;
 	--rux-panel-tabs-min-height: var(--rux-chrome-min-height);

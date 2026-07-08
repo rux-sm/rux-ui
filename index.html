@@ -115,27 +115,26 @@
           </nav>
         </div>
 
-        <div class="rux-menu rux-popover" id="nav-more-menu" role="menu" hidden>
-          <button class="rux-menu__item" id="print-schedule-btn" type="button" role="menuitem" aria-label="Print schedule">
-            <span class="rux-icon" aria-hidden="true">print</span>
-            <span>Print schedule</span>
-          </button>
-          <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="components">
-            <span class="rux-icon" aria-hidden="true">widgets</span>
-            <span>Components</span>
-          </button>
-          <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="game">
-            <span class="rux-icon" aria-hidden="true">playing_cards</span>
-            <span>Flip 7</span>
-          </button>
-        </div>
         <div class="scheduler-app__account">
           <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__profile" type="button" aria-label="Settings" data-module="settings">
             <img src="./assets/rux-profile-pic.png" alt="" />
           </button>
         </div>
       </header>
-      <div class="scheduler-app__topbar-handle" id="topbar-handle"></div>
+      <div class="rux-menu rux-popover" id="nav-more-menu" role="menu" hidden>
+        <button class="rux-menu__item" id="print-schedule-btn" type="button" role="menuitem" aria-label="Print schedule">
+          <span class="rux-icon" aria-hidden="true">print</span>
+          <span>Print schedule</span>
+        </button>
+        <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="components">
+          <span class="rux-icon" aria-hidden="true">widgets</span>
+          <span>Components</span>
+        </button>
+        <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="game">
+          <span class="rux-icon" aria-hidden="true">playing_cards</span>
+          <span>Flip 7</span>
+        </button>
+      </div>
       <div class="scheduler-app__body">
 
         <!-- ════════════════════════════════════════════════════════════════
@@ -340,8 +339,8 @@
                 </button>
               </footer>
             </aside>
-            <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
           </div>
+          <div class="scheduler-app__gutter scheduler-app__resize-gutter" id="trip-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize trip panel" aria-controls="trip-panel-drawer" tabindex="0"></div>
           <!-- /trip-panel-drawer -->
 
           <section class="rux-workspace" aria-label="Weekly schedule">
@@ -359,7 +358,6 @@
                     <span class="rux-icon">chevron_left</span>
                   </button>
                   <button class="rux-button rux-button--ghost" id="today-btn" type="button" aria-label="Jump to current week">
-                    <span class="rux-icon" aria-hidden="true">calendar_today</span>
                     <span class="rux-btn-label">Today</span>
                   </button>
                   <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
@@ -398,6 +396,7 @@
               </table>
             </div>
           </section>
+          <div class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right" id="right-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize tools panel" aria-controls="right-panel-drawer" tabindex="0"></div>
 
           <!-- Right panel drawer -->
           <div class="scheduler-app__drawer scheduler-app__drawer--right" id="right-panel-drawer">
@@ -557,6 +556,14 @@
                             <span class="rux-switch__thumb"></span>
                           </label>
                         </div>
+                        <div class="rux-view-options__row">
+                          <span class="rux-view-options__label">Show navigation bar</span>
+                          <label class="rux-switch">
+                            <input id="opt-show-nav" type="checkbox" role="switch" />
+                            <span class="rux-switch__track"></span>
+                            <span class="rux-switch__thumb"></span>
+                          </label>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -580,7 +587,6 @@
               </div>
               <footer class="rux-panel__footer rux-panel__footer--spacer" aria-hidden="true"></footer>
             </aside>
-            <div class="scheduler-app__drawer-handle"></div>
           </div>
 
 
@@ -818,8 +824,8 @@
                 <button class="rux-button rux-button--accent"   id="fp-btn-save"   type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
-            <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
           </div>
+          <div class="scheduler-app__gutter scheduler-app__resize-gutter" id="fleet-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize vehicle panel" aria-controls="fleet-panel-drawer" tabindex="0"></div>
           <!-- /fleet-panel-drawer -->
 
           <section class="rux-workspace fleet-app__main" aria-label="Fleet roster">
@@ -982,8 +988,8 @@
                 <button class="rux-button rux-button--accent" id="dp-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
               </footer>
             </aside>
-            <div class="scheduler-app__drawer-handle" aria-hidden="true"></div>
           </div>
+          <div class="scheduler-app__gutter scheduler-app__resize-gutter" id="driver-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize driver panel" aria-controls="driver-panel-drawer" tabindex="0"></div>
           <!-- /driver-panel-drawer -->
 
           <section class="rux-workspace driver-app__main" aria-label="Driver roster">
@@ -2039,9 +2045,19 @@
 
       const navMoreBtn  = document.getElementById("nav-more-btn");
       const navMoreMenu = document.getElementById("nav-more-menu");
-      navMoreBtn?.addEventListener("click", () => {
-        navMoreMenu.hidden ? window.RuxMenu.open(navMoreBtn, navMoreMenu, { placement: "bottom-end" }) : window.RuxMenu.close(navMoreMenu);
-      });
+      function setNavMoreExpanded(expanded) {
+        navMoreBtn?.setAttribute("aria-expanded", String(expanded));
+      }
+      function toggleNavMoreMenu(anchor) {
+        if (navMoreMenu.hidden) {
+          window.RuxMenu.open(anchor, navMoreMenu, { placement: "bottom-end" });
+          setNavMoreExpanded(true);
+        } else {
+          window.RuxMenu.close(navMoreMenu);
+          setNavMoreExpanded(false);
+        }
+      }
+      navMoreBtn?.addEventListener("click", () => toggleNavMoreMenu(navMoreBtn));
 
       // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
       const initialModule = location.hash.slice(1).split("/")[0] || "calendar";
@@ -2177,9 +2193,8 @@
 
       // ── Trip panel drawer ───────────────────────────────────────────────
 
-      // ── Topbar collapse handle ──────────────────────────────────────────
+      // ── Topbar visibility ───────────────────────────────────────────────
       const topbar = document.querySelector(".scheduler-app__topbar");
-      const topbarHandle = document.getElementById("topbar-handle");
       const appEl = document.querySelector(".scheduler-app");
       let topbarCollapsed = false;
       try { topbarCollapsed = localStorage.getItem("rux:topbar-collapsed") === "true"; } catch (_) {}
@@ -2245,44 +2260,16 @@
         });
       }
 
-      topbarHandle.addEventListener("mousedown", (e) => {
-        e.preventDefault();
-        appEl.classList.add("is-topbar-resizing");
-        document.body.style.cursor = "grabbing";
-        document.body.style.userSelect = "none";
-        const startY = e.clientY;
-        let moved = false;
-        let deltaY = 0;
+      function setTopbarCollapsed(collapsed) {
+        if (topbarCollapsed === collapsed) return;
+        topbarCollapsed = collapsed;
+        topbarCollapsed ? collapseTopbarSmooth() : expandTopbarSmooth();
+        try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
+      }
 
-        const onMove = (ev) => {
-          if (!moved && Math.abs(ev.clientY - startY) < HANDLE_DRAG_THRESHOLD) return;
-          moved = true;
-          deltaY = ev.clientY - startY;
-        };
-        const onUp = () => {
-          appEl.classList.remove("is-topbar-resizing");
-          document.body.style.cursor = "";
-          document.body.style.userSelect = "";
-          if (moved) {
-            if (!topbarCollapsed && deltaY < -20) {
-              topbarCollapsed = true;
-              collapseTopbarSmooth();
-            } else if (topbarCollapsed && deltaY > 20) {
-              topbarCollapsed = false;
-              expandTopbarSmooth();
-            }
-            try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
-          } else {
-            topbarCollapsed = !topbarCollapsed;
-            topbarCollapsed ? collapseTopbarSmooth() : expandTopbarSmooth();
-            try { localStorage.setItem("rux:topbar-collapsed", topbarCollapsed); } catch (_) {}
-          }
-          document.removeEventListener("mousemove", onMove);
-          document.removeEventListener("mouseup", onUp);
-        };
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
-      });
+      // Lives in the right panel's View Options card now, not the ⋮ menu —
+      // "on" reads as "nav is shown", the inverse of topbarCollapsed.
+      initToggle("opt-show-nav", !topbarCollapsed, (on) => setTopbarCollapsed(!on));
 
       const drawer  = document.getElementById("trip-panel-drawer");
       const rightDrawer = document.getElementById("right-panel-drawer");
@@ -2490,13 +2477,80 @@
       const DRAWER_DEFAULT = parseFloat(getComputedStyle(appEl).getPropertyValue("--scheduler-app-drawer-default-width"));
       const SCHEDULE_MIN = 471;
       const HANDLE_DRAG_THRESHOLD = 5; // px of cursor movement before a click counts as a drag
+      const DRAWER_KEYBOARD_STEP = 16;
+
+      function drawerWidth(drawerEl) {
+        const width = parseInt(getComputedStyle(drawerEl).getPropertyValue("--drawer-width"), 10);
+        return Number.isFinite(width) ? width : drawerEl.offsetWidth;
+      }
+
+      function moduleGutterWidth(drawerEl) {
+        const moduleEl = drawerEl.closest(".scheduler-app__module");
+        if (!moduleEl) return 0;
+        const moduleStyle = getComputedStyle(moduleEl);
+        const outerGutters =
+          parseFloat(moduleStyle.paddingInlineStart) +
+          parseFloat(moduleStyle.paddingInlineEnd);
+        const innerGutters = [...moduleEl.querySelectorAll(":scope > .scheduler-app__gutter")]
+          .reduce((total, gutter) => total + gutter.offsetWidth, 0);
+        return outerGutters + innerGutters;
+      }
+
+      function maxDrawerWidth(drawerEl, getOtherDrawer) {
+        const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
+        const otherDrawerEl = getOtherDrawer();
+        const otherOpen = otherDrawerEl?.classList.contains("is-open");
+        const otherW = otherOpen ? otherDrawerEl.offsetWidth : 0;
+        return Math.max(0, Math.min(DRAWER_MAX, bodyW - otherW - moduleGutterWidth(drawerEl) - SCHEDULE_MIN));
+      }
+
+      function setDrawerWidth(drawerEl, width, getOtherDrawer) {
+        const w = Math.min(maxDrawerWidth(drawerEl, getOtherDrawer), Math.max(0, width));
+        drawerEl.style.setProperty("--drawer-width", w + "px");
+        drawerEl.style.setProperty("--drawer-open-width", w + "px");
+        return w;
+      }
+
+      function syncResizeHandleValue(handle, drawerEl, getOtherDrawer) {
+        if (!handle) return;
+        handle.setAttribute("aria-valuemin", "0");
+        handle.setAttribute("aria-valuemax", String(Math.round(maxDrawerWidth(drawerEl, getOtherDrawer))));
+        handle.setAttribute("aria-valuenow", String(Math.round(drawerWidth(drawerEl))));
+      }
 
       function initDrawerDrag(handle, drawerEl, openFn, closeFn, getOtherDrawer, direction) {
+        if (!handle) return;
+        syncResizeHandleValue(handle, drawerEl, getOtherDrawer);
+
+        handle.addEventListener("keydown", (e) => {
+          const growKey = direction === "left" ? "ArrowRight" : "ArrowLeft";
+          const shrinkKey = direction === "left" ? "ArrowLeft" : "ArrowRight";
+          let nextW = null;
+
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            drawerEl.classList.contains("is-open") ? closeFn() : openFn();
+            requestAnimationFrame(() => syncResizeHandleValue(handle, drawerEl, getOtherDrawer));
+            return;
+          }
+          if (e.key === growKey) nextW = drawerWidth(drawerEl) + DRAWER_KEYBOARD_STEP;
+          if (e.key === shrinkKey) nextW = drawerWidth(drawerEl) - DRAWER_KEYBOARD_STEP;
+          if (e.key === "Home") nextW = DRAWER_MIN;
+          if (e.key === "End") nextW = maxDrawerWidth(drawerEl, getOtherDrawer);
+          if (nextW === null) return;
+
+          e.preventDefault();
+          if (!drawerEl.classList.contains("is-open")) openFn();
+          const w = setDrawerWidth(drawerEl, nextW, getOtherDrawer);
+          if (w < DRAWER_SNAP_CLOSE) closeFn();
+          syncResizeHandleValue(handle, drawerEl, getOtherDrawer);
+        });
+
         handle.addEventListener("mousedown", (e) => {
           e.preventDefault();
           const wasOpen = drawerEl.classList.contains("is-open");
           const startX = e.clientX;
-          const startW = wasOpen ? (parseInt(getComputedStyle(drawerEl).getPropertyValue("--drawer-width")) || drawerEl.offsetWidth) : 0;
+          const startW = wasOpen ? drawerWidth(drawerEl) : 0;
           let lastW = startW;
           let moved = false;
 
@@ -2508,6 +2562,7 @@
               if (Math.abs(ev.clientX - startX) < HANDLE_DRAG_THRESHOLD) return;
               moved = true;
               drawerEl.classList.add("is-resizing");
+              handle.classList.add("is-resizing");
               if (!wasOpen) {
                 drawerEl.classList.add("is-open");
                 drawerEl.querySelector(".rux-panel").inert = false;
@@ -2517,30 +2572,26 @@
                 (drawerEl === drawer ? leftPanelToggleBtn : rightPanelToggleBtn)?.setAttribute("aria-pressed", "true");
               }
             }
-            const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
-            const otherDrawerEl = getOtherDrawer();
-            const otherOpen = otherDrawerEl?.classList.contains("is-open");
-            const otherW = otherOpen ? otherDrawerEl.offsetWidth : 0;
-            const maxW = Math.min(DRAWER_MAX, bodyW - otherW - SCHEDULE_MIN);
             const delta = direction === "left" ? ev.clientX - startX : startX - ev.clientX;
             const raw = startW + delta;
             lastW = raw;
-            const w = Math.min(maxW, Math.max(0, raw));
-            drawerEl.style.setProperty("--drawer-width", w + "px");
-            drawerEl.style.setProperty("--drawer-open-width", w + "px");
+            setDrawerWidth(drawerEl, raw, getOtherDrawer);
+            syncResizeHandleValue(handle, drawerEl, getOtherDrawer);
           };
           const onUp = () => {
             drawerEl.classList.remove("is-resizing");
+            handle.classList.remove("is-resizing");
             document.body.style.cursor = "";
             document.body.style.userSelect = "";
             if (!moved) {
               wasOpen ? closeFn() : openFn();
-            } else if (lastW < DRAWER_SNAP_CLOSE) {
+            } else if (lastW < DRAWER_SNAP_CLOSE || maxDrawerWidth(drawerEl, getOtherDrawer) < DRAWER_MIN) {
               closeFn();
             } else if (lastW < DRAWER_MIN) {
               drawerEl.style.setProperty("--drawer-width", DRAWER_MIN + "px");
               drawerEl.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
             }
+            syncResizeHandleValue(handle, drawerEl, getOtherDrawer);
             document.removeEventListener("mousemove", onMove);
             document.removeEventListener("mouseup", onUp);
           };
@@ -2550,7 +2601,7 @@
       }
 
       const getRightDrawer = () => document.getElementById("right-panel-drawer");
-      initDrawerDrag(drawer.querySelector(".scheduler-app__drawer-handle"), drawer, openDrawer, closeDrawer, getRightDrawer, "left");
+      initDrawerDrag(document.getElementById("trip-panel-resize-gutter"), drawer, openDrawer, closeDrawer, getRightDrawer, "left");
 
       // ── Scheduler context menu ──────────────────────────────────────────
 
@@ -3200,13 +3251,20 @@
         if (_loadQueued) { _loadQueued = false; loadTripsFromDB(); }
       }
 
-      function resetTripPanel() {
-        closeDrawer();
+      // Resets the panel's own view state (active pane + scroll position)
+      // without closing it — saving a trip should leave the panel open so
+      // you can keep working, unlike deleting one, which has nothing left
+      // to show.
+      function resetTripPanelView() {
         setActiveTripPane("pane-trip");
         tripPanel.querySelector(".rux-trip-panel__body")?.scrollTo({ top: 0, behavior: "instant" });
       }
+      function resetTripPanel() {
+        closeDrawer();
+        resetTripPanelView();
+      }
 
-      tripPanel.addEventListener("rux:trip-saved",   () => { loadTripsFromDB(); resetTripPanel(); });
+      tripPanel.addEventListener("rux:trip-saved",   () => { loadTripsFromDB(); resetTripPanelView(); });
       tripPanel.addEventListener("rux:trip-deleted", async (e) => {
         const deletedId = e.detail?.id;
         const bars = activePlacements.filter(p => p.trip.id === deletedId).map(p => p.bar).filter(Boolean);
@@ -3220,10 +3278,7 @@
         }
         loadTripsFromDB(); resetTripPanel();
       });
-      tripPanel.addEventListener("rux:trip-cleared", () => {
-        setActiveTripPane("pane-trip");
-        tripPanel.querySelector(".rux-trip-panel__body")?.scrollTo({ top: 0, behavior: "instant" });
-      });
+      tripPanel.addEventListener("rux:trip-cleared", resetTripPanelView);
       document.addEventListener("settings:billing", () => {
         loadTripsFromDB();
         document.dispatchEvent(new CustomEvent("trips:refresh"));
@@ -3501,7 +3556,7 @@
 
       renderMiniCal();
 
-      initDrawerDrag(rightDrawer.querySelector(".scheduler-app__drawer-handle"), rightDrawer, openRightDrawer, closeRightDrawer, () => drawer, "right");
+      initDrawerDrag(document.getElementById("right-panel-resize-gutter"), rightDrawer, openRightDrawer, closeRightDrawer, () => drawer, "right");
 
       // ── Default boot state ──────────────────────────────────────────────
       // Desktop begins with both panels visible. Mobile begins with the
@@ -3528,6 +3583,8 @@
         leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
         rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
       }
+      syncResizeHandleValue(document.getElementById("trip-panel-resize-gutter"), drawer, getRightDrawer);
+      syncResizeHandleValue(document.getElementById("right-panel-resize-gutter"), rightDrawer, () => drawer);
 
       document.addEventListener("keydown", (event) => {
         if (event.key !== "Escape" || !mobilePanelQuery.matches) return;
@@ -3560,6 +3617,16 @@
 
         const scheduleEl = document.querySelector("[data-module='calendar'] .rux-workspace");
         if (!scheduleEl) return;
+        // Bail if the calendar module itself is hidden (a different
+        // top-level module like Fleet is active) — scheduleEl.offsetWidth
+        // reads 0 in that state, which is always < SCHEDULE_MIN and was
+        // wrongly read as "not enough room," auto-closing whichever panel(s)
+        // were open. Since .scheduler-app__body's own box doesn't
+        // necessarily change size on a module switch, nothing was
+        // guaranteed to re-run this with real measurements afterward, so
+        // the panel stayed closed even once you switched back and there was
+        // plenty of room again. Same fix as layoutScheduler()'s guard.
+        if (scheduleEl.offsetParent === null) return;
         const available = scheduleEl.offsetWidth;
         const leftOpen = drawer.classList.contains("is-open");
         const rightOpen = rightDrawer.classList.contains("is-open");

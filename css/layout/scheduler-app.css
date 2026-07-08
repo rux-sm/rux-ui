@@ -31,9 +31,11 @@
 }
 
 .scheduler-app {
-	--scheduler-app-gap: var(--rux-space-3);
+	--scheduler-app-gap: var(--rux-space-2);
+	--scheduler-app-resize-line-width: 1px;
 	--scheduler-app-card-radius: var(--rux-radius-md);
 	--scheduler-app-drawer-default-width: 374px;
+	position: relative;
 	display: grid;
 	grid-template-rows: auto auto minmax(0, 1fr);
 	width: 100%;
@@ -41,55 +43,6 @@
 	min-width: 0;
 	min-height: 0;
 	overflow: clip;
-}
-
-/* No dedicated space while the topbar is showing — content starts right
-   under it, no dead gap. The handle still needs to be easy to grab, so
-   its hit area is extended via ::after instead of via its own box height
-   (see below). Collapsed state (topbar height:0) gets the gap back below,
-   since nothing else would give the module content its top inset then. */
-.scheduler-app__topbar-handle {
-	flex: none;
-	height: 0;
-	cursor: grab;
-	position: relative;
-	z-index: 1;
-	transition: height var(--rux-duration-slow) var(--rux-ease-in-out);
-}
-
-.scheduler-app__topbar-handle::after {
-	content: "";
-	position: absolute;
-	inset: -6px 0;
-}
-
-.scheduler-app__topbar.is-collapsed + .scheduler-app__topbar-handle {
-	height: var(--scheduler-app-gap);
-}
-
-.scheduler-app.is-topbar-resizing .scheduler-app__topbar-handle {
-	cursor: grabbing;
-}
-
-.scheduler-app__topbar-handle::before {
-	content: "";
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 3rem;
-	height: 3px;
-	border-radius: var(--rux-radius-full);
-	background: color-mix(in oklch, var(--rux-fg-subtle) 45%, transparent);
-	opacity: 0;
-	transform: translate(-50%, -50%);
-	transition: width var(--rux-duration-fast), opacity var(--rux-duration-fast), background var(--rux-duration-fast);
-}
-
-.scheduler-app__topbar-handle:hover::before,
-.scheduler-app.is-topbar-resizing .scheduler-app__topbar-handle::before {
-	width: 4.5rem;
-	opacity: 1;
-	background: color-mix(in oklch, var(--rux-accent) 82%, white 8%);
 }
 
 .scheduler-app__topbar.is-collapsed {
@@ -104,13 +57,43 @@
 	display: flex;
 	min-height: 0;
 	overflow: hidden;
+	padding-block-start: 0;
+	transition: padding-block-start var(--rux-duration-slow) var(--rux-ease-in-out);
+}
+
+.scheduler-app__topbar.is-collapsed ~ .scheduler-app__body {
+	padding-block-start: var(--scheduler-app-gap);
+	padding-block-start: 0px; /* override the above for mobile, where the topbar is always collapsed */
 }
 
 .scheduler-app__module {
+	--scheduler-app-outer-gutter-start: 0;
+	--scheduler-app-outer-gutter-end: 0;
+	--scheduler-app-outer-gutter-bottom: 0;
 	display: flex;
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
+	padding-inline-start: var(--scheduler-app-outer-gutter-start);
+	padding-inline-end: var(--scheduler-app-outer-gutter-end);
+	padding-block-end: var(--scheduler-app-outer-gutter-bottom);
+	transition:
+		padding-inline-start var(--rux-duration-slow) var(--rux-ease-in-out),
+		padding-inline-end var(--rux-duration-slow) var(--rux-ease-in-out),
+		padding-block-end var(--rux-duration-slow) var(--rux-ease-in-out);
+}
+
+.scheduler-app__module:has(> .scheduler-app__drawer:first-child.is-open) {
+	--scheduler-app-outer-gutter-start: var(--scheduler-app-gap);
+}
+
+.scheduler-app__module:has(> .scheduler-app__drawer--right.is-open) {
+	--scheduler-app-outer-gutter-end: var(--scheduler-app-gap);
+}
+
+.scheduler-app__module:has(> .scheduler-app__drawer.is-open) {
+	--scheduler-app-outer-gutter-bottom: var(--scheduler-app-gap);
+
 }
 
 .scheduler-app__topbar {
@@ -123,6 +106,7 @@
 	padding: var(--rux-space-2);
 	padding-right: var(--rux-space-3);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: none; /* override the above for mobile, where the topbar is always collapsed */
 	transition: height var(--rux-duration-slow) var(--rux-ease-in-out),
 		padding var(--rux-duration-slow) var(--rux-ease-in-out);
 }
@@ -243,11 +227,11 @@
 
 
 @media (max-width: 520px) {
-	#today-btn .rux-btn-label,
+	/* #today-btn is text-only now (no icon), so it's excluded here — hiding
+	   its label at narrow widths would leave nothing to show at all. */
 	#new-trip-btn .rux-btn-label {
 		display: none;
 	}
-	#today-btn,
 	#new-trip-btn {
 		width: var(--rux-control-height);
 		padding: 0;
@@ -349,48 +333,59 @@
 	overflow: hidden;
 	/* Only the edge facing the workspace gets a border — top/bottom/outer
 	   side stay borderless. (top right bottom left) */
-	border-width: 0 var(--rux-panel-border-width) 0 0;
+
 }
 
 .scheduler-app__drawer:not(.is-open) :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
 	display: none;
 }
 
-/* Spotify-style divider: keep the hit area inside the clipped drawer, then
-   reveal a thin line on the panel/workspace boundary on hover or drag. */
-.scheduler-app__drawer-handle {
-	position: absolute;
-	top: 0;
-	right: 0;
-	width: 12px;
-	height: 100%;
-	cursor: col-resize;
-	z-index: 10;
-	background-color: transparent;
-	background-image: none;
+.scheduler-app__gutter {
+	position: relative;
+	flex: 0 0 0;
+	min-width: 0;
+	min-height: 0;
+	z-index: 1;
+	transition:
+		flex-basis var(--rux-duration-slow) var(--rux-ease-in-out),
+		min-width var(--rux-duration-slow) var(--rux-ease-in-out);
 }
 
-/* VSCode-style: invisible at rest, a thin full-height accent line on hover
-   or while actively dragging — not a fixed-size grip indicator, so it reads
-   as "this border is draggable" rather than as a decorative handle. */
-.scheduler-app__drawer-handle::before {
+.scheduler-app__drawer.is-open + .scheduler-app__gutter,
+.scheduler-app__gutter:has(+ .scheduler-app__drawer.is-open) {
+	flex-basis: var(--scheduler-app-gap);
+	min-width: var(--scheduler-app-gap);
+}
+
+.scheduler-app__resize-gutter {
+	cursor: col-resize;
+	z-index: 10;
+}
+
+.scheduler-app__resize-gutter::before {
 	content: "";
 	position: absolute;
 	top: 0;
-	right: 0;
-	width: 2px;
+	left: 50%;
+	width: var(--scheduler-app-resize-line-width);
 	height: 100%;
 	background: color-mix(in oklch, var(--rux-fg) 55%, transparent);
 	opacity: 0;
+	transform: translateX(-50%);
 	transition: opacity var(--rux-duration-fast);
 }
 
-.scheduler-app__drawer-handle:hover::before,
-.scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle::before {
+.scheduler-app__resize-gutter:hover::before,
+.scheduler-app__resize-gutter:focus-visible::before,
+.scheduler-app__resize-gutter.is-resizing::before {
 	opacity: 1;
 }
 
-.scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle::before {
+.scheduler-app__resize-gutter:focus-visible {
+	outline: none;
+}
+
+.scheduler-app__resize-gutter.is-resizing::before {
 	background: var(--rux-accent);
 }
 
@@ -419,17 +414,6 @@
 .scheduler-app__drawer--right:not(.is-open) :is(.rux-right-panel) {
 	display: none;
 }
-
-.scheduler-app__drawer--right .scheduler-app__drawer-handle {
-	right: auto;
-	left: 0;
-}
-
-.scheduler-app__drawer--right .scheduler-app__drawer-handle::before {
-	right: auto;
-	left: 0;
-}
-
 
 /* — Right panel shell — */
 
@@ -742,7 +726,7 @@
 		padding-bottom: env(safe-area-inset-bottom, 0px);
 	}
 
-	.scheduler-app__drawer-handle {
+	.scheduler-app__gutter {
 		display: none;
 	}
 
