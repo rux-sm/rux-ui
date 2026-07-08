@@ -22,7 +22,7 @@
   padding: 0 var(--rux-control-padding-inline);
   background-color: var(--rux-surface-4);
   color: var(--rux-fg);
-  border: var(--rux-border-width) solid var(--rux-border);
+  border: var(--rux-border-width) solid transparent;
   border-radius: var(--rux-radius-field);
   box-shadow: var(--_field-shadow);
   font: inherit;

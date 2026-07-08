@@ -116,6 +116,10 @@
         </div>
 
         <div class="rux-menu rux-popover" id="nav-more-menu" role="menu" hidden>
+          <button class="rux-menu__item" id="print-schedule-btn" type="button" role="menuitem" aria-label="Print schedule">
+            <span class="rux-icon" aria-hidden="true">print</span>
+            <span>Print schedule</span>
+          </button>
           <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="components">
             <span class="rux-icon" aria-hidden="true">widgets</span>
             <span>Components</span>
@@ -141,16 +145,16 @@
 
           <!-- Trip panel drawer -->
           <div class="scheduler-app__drawer" id="trip-panel-drawer">
-            <aside class="rux-panel rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
+            <aside class="rux-panel rux-panel--left rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
               <header class="rux-panel__header">
                 <div class="rux-trip-panel__heading">
                   <h2 class="rux-trip-panel__title" id="trip-panel-title">Create Trip</h2>
                 </div>
                 <div class="rux-cluster">
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-new" type="button" aria-label="New trip">
+                  <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="tp-btn-new" type="button" aria-label="New trip">
                     <span class="rux-icon" aria-hidden="true">add</span>
                   </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="tp-btn-close" type="button" aria-label="Close trip editor">
+                  <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="tp-btn-close" type="button" aria-label="Close trip editor">
                     <span class="rux-icon" aria-hidden="true">close</span>
                   </button>
                 </div>
@@ -163,7 +167,7 @@
               </nav>
               <div class="rux-panel__body rux-trip-panel__body">
                 <!-- Trip -->
-                <div id="pane-trip" class="rux-trip-panel__pane" role="tabpanel">
+                <div id="pane-trip" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel">
                   <div class="rux-card">
                     <header class="rux-card__header"><p class="rux-card__title">Trip Information</p></header>
                     <div class="rux-card__body rux-card__body--stack">
@@ -232,7 +236,7 @@
                   </div>
                 </div>
                 <!-- Billing -->
-                <div id="pane-billing" class="rux-trip-panel__pane" role="tabpanel" hidden>
+                <div id="pane-billing" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
                     <header class="rux-card__header"><p class="rux-card__title">Billing Summary</p></header>
                     <div class="rux-card__body rux-card__body--stack">
@@ -293,7 +297,7 @@
                   </div>
                 </div>
                 <!-- Itinerary -->
-                <div id="pane-itinerary" class="rux-trip-panel__pane" role="tabpanel" hidden>
+                <div id="pane-itinerary" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-trip-itinerary" id="tp-itin">
                     <div class="rux-card rux-trip-itinerary__summary" id="tp-itin-summary">
                       <header class="rux-card__header">
@@ -309,7 +313,7 @@
                   </div>
                 </div>
                 <!-- Dispatch -->
-                <div id="pane-dispatch" class="rux-trip-panel__pane" role="tabpanel" hidden>
+                <div id="pane-dispatch" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
                     <header class="rux-card__header"><p class="rux-card__title">Fleet Assignments</p></header>
                     <div class="rux-card__body">
@@ -342,8 +346,9 @@
 
           <section class="rux-workspace" aria-label="Weekly schedule">
             <header class="rux-workspace__header">
-              <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" data-opens="trip-panel-drawer">
-                <span class="rux-icon">left_panel_open</span>
+              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" aria-pressed="false" data-opens="trip-panel-drawer">
+                <span class="rux-icon icon-off">left_panel_open</span>
+                <span class="rux-icon icon-on">left_panel_close</span>
               </button>
               <div class="rux-workspace__heading">
                 <h1 class="rux-workspace__title" id="week-label"></h1>
@@ -353,16 +358,18 @@
                   <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
                     <span class="rux-icon">chevron_left</span>
                   </button>
+                  <button class="rux-button rux-button--ghost" id="today-btn" type="button" aria-label="Jump to current week">
+                    <span class="rux-icon" aria-hidden="true">calendar_today</span>
+                    <span class="rux-btn-label">Today</span>
+                  </button>
                   <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
                     <span class="rux-icon">chevron_right</span>
                   </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="print-schedule-btn" type="button" aria-label="Print schedule">
-                    <span class="rux-icon">print</span>
-                  </button>
                 </div>
                 <div class="rux-cluster" id="trips-filter-badges" hidden></div>
-                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" data-opens="right-panel-drawer">
-                  <span class="rux-icon">right_panel_open</span>
+                <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" aria-pressed="false" data-opens="right-panel-drawer">
+                  <span class="rux-icon icon-off">right_panel_open</span>
+                  <span class="rux-icon icon-on">right_panel_close</span>
                 </button>
               </div>
             </header>
@@ -394,18 +401,18 @@
 
           <!-- Right panel drawer -->
           <div class="scheduler-app__drawer scheduler-app__drawer--right" id="right-panel-drawer">
-            <aside class="rux-panel rux-right-panel" role="dialog" aria-labelledby="right-panel-title">
+            <aside class="rux-panel rux-panel--right rux-right-panel" role="dialog" aria-labelledby="right-panel-title">
               <header class="rux-panel__header">
                 <h2 class="rux-panel__title" id="right-panel-title">Tools</h2>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="rp-btn-close" type="button" aria-label="Close tools panel">
+                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="rp-btn-close" type="button" aria-label="Close tools panel">
                   <span class="rux-icon" aria-hidden="true">close</span>
                 </button>
               </header>
               <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
-                <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate">Nav</button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers">Drivers</button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks">Tasks</button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-notes" title="Notes">Notes</button>
+                <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-right-panel__tab-label">Nav</span></button>
+                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-search" title="Search"><span class="rux-icon" aria-hidden="true">search</span><span class="rux-right-panel__tab-label">Search</span></button>
+                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers"><span class="rux-icon" aria-hidden="true">group</span><span class="rux-right-panel__tab-label">Drivers</span></button>
+                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks"><span class="rux-icon" aria-hidden="true">checklist</span><span class="rux-right-panel__tab-label">Tasks</span></button>
               </nav>
               <div class="rux-panel__body">
                 <div id="rp-pane-navigate" class="rux-panel__pane" role="tabpanel">
@@ -554,13 +561,24 @@
                     </div>
                   </article>
                 </div>
+                <div id="rp-pane-search" class="rux-panel__pane" role="tabpanel" hidden>
+                  <article class="rux-card">
+                    <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-field">
+                        <input class="rux-input" id="rp-search-input" type="search" placeholder="Search trips…" aria-label="Search trips" />
+                      </div>
+                      <div class="rux-search-modal__results" id="rp-search-results" style="max-height:none">
+                        <p class="rux-search-modal__empty">Start typing to search…</p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
                 <div id="rp-pane-drivers" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
                 <div id="rp-pane-tasks" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
-                <div id="rp-pane-notes" class="rux-panel__pane" role="tabpanel" hidden>
-                </div>
               </div>
+              <footer class="rux-panel__footer rux-panel__footer--spacer" aria-hidden="true"></footer>
             </aside>
             <div class="scheduler-app__drawer-handle"></div>
           </div>
@@ -611,35 +629,37 @@
 
           <!-- Passenger panel drawer -->
           <div class="scheduler-app__drawer" id="passenger-panel-drawer">
-            <aside class="rux-panel rux-passenger-panel" role="dialog" aria-labelledby="pp-title">
+            <aside class="rux-panel rux-panel--left rux-passenger-panel" role="dialog" aria-labelledby="pp-title">
               <header class="rux-panel__header">
                 <h2 class="rux-panel__title" id="pp-title">Passenger</h2>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="pp-btn-close" type="button" aria-label="Close panel">
+                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="pp-btn-close" type="button" aria-label="Close panel">
                   <span class="rux-icon">close</span>
                 </button>
               </header>
               <div class="rux-panel__body">
-                <div class="rux-card">
-                  <header class="rux-card__header"><p class="rux-card__title">Passenger Info</p></header>
-                  <div class="rux-card__body rux-card__body--stack">
-                    <div class="rux-trip-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="pp-name">Name</label><input class="rux-input" id="pp-name" type="text" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="pp-phone">Phone</label><input class="rux-input" id="pp-phone" type="tel" /></div>
+                <div class="rux-panel__pane">
+                  <div class="rux-card">
+                    <header class="rux-card__header"><p class="rux-card__title">Passenger Info</p></header>
+                    <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><label class="rux-field__label" for="pp-name">Name</label><input class="rux-input" id="pp-name" type="text" /></div>
+                        <div class="rux-field"><label class="rux-field__label" for="pp-phone">Phone</label><input class="rux-input" id="pp-phone" type="tel" /></div>
+                      </div>
+                      <div class="rux-field"><label class="rux-field__label" for="pp-email">Email</label><input class="rux-input" id="pp-email" type="email" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="pp-address">Address</label><input class="rux-input" id="pp-address" type="text" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="pp-dob">Date of birth</label><input class="rux-input" id="pp-dob" type="date" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="pp-notes">Notes</label><textarea class="rux-textarea" id="pp-notes" rows="3"></textarea></div>
                     </div>
-                    <div class="rux-field"><label class="rux-field__label" for="pp-email">Email</label><input class="rux-input" id="pp-email" type="email" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="pp-address">Address</label><input class="rux-input" id="pp-address" type="text" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="pp-dob">Date of birth</label><input class="rux-input" id="pp-dob" type="date" /></div>
-                    <div class="rux-field"><label class="rux-field__label" for="pp-notes">Notes</label><textarea class="rux-textarea" id="pp-notes" rows="3"></textarea></div>
                   </div>
-                </div>
-                <div class="rux-card">
-                  <header class="rux-card__header"><p class="rux-card__title">Balance</p></header>
-                  <div class="rux-card__body rux-card__body--stack">
-                    <div class="rux-trip-panel__cols-2">
-                      <div class="rux-field"><label class="rux-field__label" for="pp-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
-                      <div class="rux-field"><label class="rux-field__label" for="pp-paid">Paid</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-paid" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                  <div class="rux-card">
+                    <header class="rux-card__header"><p class="rux-card__title">Balance</p></header>
+                    <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><label class="rux-field__label" for="pp-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                        <div class="rux-field"><label class="rux-field__label" for="pp-paid">Paid</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-paid" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                      </div>
+                      <div class="rux-field"><span class="rux-field__label">Status</span><div><span class="rux-badge" id="pp-status-badge">Unpaid</span></div></div>
                     </div>
-                    <div class="rux-field"><span class="rux-field__label">Status</span><div><span class="rux-badge" id="pp-status-badge">Unpaid</span></div></div>
                   </div>
                 </div>
               </div>
@@ -690,13 +710,13 @@
 
           <!-- Fleet panel drawer -->
           <div class="scheduler-app__drawer" id="fleet-panel-drawer">
-            <aside class="rux-panel rux-fleet-panel" role="dialog" aria-labelledby="fp-title">
+            <aside class="rux-panel rux-panel--left rux-fleet-panel" role="dialog" aria-labelledby="fp-title">
               <header class="rux-panel__header">
                 <div class="rux-fleet-panel__heading">
                   <h2 class="rux-fleet-panel__title" id="fp-title">Vehicle</h2>
                   <span class="rux-fleet-panel__id" id="fp-fleet-id"></span>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="fp-btn-close" type="button" aria-label="Close panel">
+                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="fp-btn-close" type="button" aria-label="Close panel">
                   <span class="rux-icon">close</span>
                 </button>
               </header>
@@ -708,7 +728,7 @@
               <div class="rux-panel__body rux-fleet-panel__body">
 
                 <!-- Info -->
-                <div id="pane-info" class="rux-fleet-panel__pane" role="tabpanel">
+                <div id="pane-info" class="rux-panel__pane rux-fleet-panel__pane" role="tabpanel">
                   <input type="hidden" id="fp-sort-order" name="sortOrder" />
                   <div class="rux-fleet-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="fp-number">Unit number</label><input class="rux-input" id="fp-number" name="number" type="text" placeholder="e.g. 42" /></div>
@@ -770,7 +790,7 @@
                 </div>
 
                 <!-- Service -->
-                <div id="pane-service" class="rux-fleet-panel__pane" role="tabpanel" hidden>
+                <div id="pane-service" class="rux-panel__pane rux-fleet-panel__pane" role="tabpanel" hidden>
                   <div class="rux-field"><label class="rux-field__label" for="fp-mileage">Odometer (mi)</label><input class="rux-input" id="fp-mileage" name="mileage" type="number" placeholder="0" min="0" /></div>
                   <div class="rux-fleet-panel__cols-2">
                     <div class="rux-field"><label class="rux-field__label" for="fp-last-service">Last service</label><input class="rux-input" id="fp-last-service" name="lastService" type="date" /></div>
@@ -786,7 +806,7 @@
                 </div>
 
                 <!-- Trips -->
-                <div id="pane-fleet-trips" class="rux-fleet-panel__pane" role="tabpanel" hidden>
+                <div id="pane-fleet-trips" class="rux-panel__pane rux-fleet-panel__pane" role="tabpanel" hidden>
                   <p class="rux-fleet-panel__section-label">Assigned trips</p>
                   <ul class="rux-fleet-panel__trip-list" id="fp-trip-list"></ul>
                 </div>
@@ -849,13 +869,13 @@
 
           <!-- Driver panel drawer -->
           <div class="scheduler-app__drawer" id="driver-panel-drawer">
-            <aside class="rux-panel rux-driver-panel" role="dialog" aria-labelledby="dp-title">
+            <aside class="rux-panel rux-panel--left rux-driver-panel" role="dialog" aria-labelledby="dp-title">
               <header class="rux-panel__header">
                 <div class="rux-driver-panel__heading">
                   <h2 class="rux-driver-panel__title" id="dp-title">Driver</h2>
                   <span class="rux-driver-panel__id" id="dp-driver-id"></span>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon" id="dp-btn-close" type="button" aria-label="Close panel">
+                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="dp-btn-close" type="button" aria-label="Close panel">
                   <span class="rux-icon">close</span>
                 </button>
               </header>
@@ -867,7 +887,7 @@
               </nav>
               <div class="rux-panel__body rux-driver-panel__body">
                 <!-- Profile -->
-                <div id="pane-profile" class="rux-driver-panel__pane" role="tabpanel">
+                <div id="pane-profile" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel">
                   <div class="rux-driver-panel__avatar-row">
                     <div class="rux-driver-panel__avatar" id="dp-avatar" aria-hidden="true">
                       <span class="rux-icon">person</span>
@@ -899,7 +919,7 @@
                   </div>
                 </div>
                 <!-- License -->
-                <div id="pane-license" class="rux-driver-panel__pane" role="tabpanel" hidden>
+                <div id="pane-license" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel" hidden>
                   <div class="rux-field">
                     <label class="rux-field__label">CDL class</label>
                     <div class="rux-segmented" id="dp-cdl-group" data-rux-toggle-group>
@@ -929,7 +949,7 @@
                   </div>
                 </div>
                 <!-- Status -->
-                <div id="pane-status" class="rux-driver-panel__pane" role="tabpanel" hidden>
+                <div id="pane-status" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel" hidden>
                   <div class="rux-field">
                     <label class="rux-field__label">Employment status</label>
                     <div class="rux-segmented rux-driver-panel__status-group" data-rux-toggle-group>
@@ -951,7 +971,7 @@
                   <div class="rux-field"><label class="rux-field__label" for="dp-notes">Notes</label><textarea class="rux-textarea" id="dp-notes" name="notes" rows="5" placeholder="Internal notes about this driver…"></textarea></div>
                 </div>
                 <!-- Trips -->
-                <div id="pane-assignments" class="rux-driver-panel__pane" role="tabpanel" hidden>
+                <div id="pane-assignments" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel" hidden>
                   <p class="rux-driver-panel__section-label">Assigned trips</p>
                   <ul class="rux-driver-panel__trip-list" id="dp-trip-list"></ul>
                 </div>
@@ -2031,13 +2051,15 @@
         : "calendar");
 
       // ── Global search modal ─────────────────────────────────────────────
-      const searchModal      = document.getElementById("search-modal");
-      const searchModalInput = document.getElementById("search-modal-input");
-      const searchModalBtn   = document.getElementById("search-modal-btn");
+      const searchModal        = document.getElementById("search-modal");
+      const searchModalInput   = document.getElementById("search-modal-input");
+      const searchModalBtn     = document.getElementById("search-modal-btn");
+      const searchModalResults = document.getElementById("search-modal-results");
 
       function openSearchModal() {
         searchModal?.showModal();
         searchModalInput.value = "";
+        renderSearchResults(searchModalResults, "", onSelectSearchResult(closeSearchModal));
         searchModalInput.focus();
       }
 
@@ -2056,6 +2078,101 @@
           e.preventDefault();
           searchModal?.open ? closeSearchModal() : openSearchModal();
         }
+      });
+
+      // Trips are the only thing worth searching right now — the richest
+      // dataset already loaded client-side. Matches on destination, customer,
+      // trip reference/ID, and either contact's name/phone.
+      function searchTrips(query) {
+        const q = query.trim().toLowerCase();
+        if (!q) return [];
+        return allTripsRaw.filter((t) =>
+          [
+            t.destination, t.customer, t.trip_ref, t.id,
+            t.booking_contact_name, t.booking_contact_phone,
+            t.trip_contact_1_name,
+          ].some((field) => field && String(field).toLowerCase().includes(q))
+        );
+      }
+
+      function escapeHtml(str) {
+        return str.replace(/[<>&"]/g, (c) => `&#${c.charCodeAt(0)};`);
+      }
+
+      // Shared by the global search modal and the right panel's Search tab —
+      // same data, same result shape, just a different place to type and a
+      // different "what happens when you pick one" (onSelect).
+      function renderSearchResults(container, query, onSelect) {
+        if (!container) return;
+        container.innerHTML = "";
+        const q = query.trim();
+        if (!q) {
+          container.innerHTML = `<p class="rux-search-modal__empty">Start typing to search…</p>`;
+          return;
+        }
+        const matches = searchTrips(q);
+        if (!matches.length) {
+          container.innerHTML = `<p class="rux-search-modal__empty">No trips match "${escapeHtml(q)}"</p>`;
+          return;
+        }
+        matches.slice(0, 20).forEach((t) => {
+          const item = document.createElement("button");
+          item.type = "button";
+          item.className = "rux-search-modal__item";
+          item.setAttribute("role", "option");
+
+          // Doubles as an unassigned-bus finder: red icon + no number means
+          // none of this trip's assignments have a bus yet (a trip can have
+          // several — e.g. a multi-bus charter — so this shows the first
+          // one found, not necessarily all of them).
+          const busNumbers = (t.trip_assignments ?? []).map((a) => a.buses?.number).filter(Boolean);
+          const busNumber = busNumbers[0] || null;
+          const icon = document.createElement("span");
+          icon.className = "rux-search-modal__item-icon rux-search-modal__item-bus" +
+            (busNumber ? "" : " rux-search-modal__item-bus--unassigned");
+          const busIcon = document.createElement("span");
+          busIcon.className = "rux-icon";
+          busIcon.textContent = "directions_bus";
+          icon.appendChild(busIcon);
+          if (busNumber) {
+            const busNumberEl = document.createElement("span");
+            busNumberEl.className = "rux-search-modal__item-bus-number";
+            busNumberEl.textContent = busNumber;
+            icon.appendChild(busNumberEl);
+          }
+          const body = document.createElement("div");
+          body.className = "rux-search-modal__item-body";
+          const name = document.createElement("div");
+          name.className = "rux-search-modal__item-name";
+          name.textContent = t.destination || "Untitled trip";
+          const meta = document.createElement("div");
+          meta.className = "rux-search-modal__item-meta";
+          meta.textContent = [t.customer, t.start_date].filter(Boolean).join(" · ");
+          body.append(name, meta);
+          item.append(icon, body);
+          item.addEventListener("click", () => onSelect(t));
+          container.appendChild(item);
+        });
+      }
+
+      // Curries in "also close this modal" for the global search modal's
+      // onSelect, without the right panel's Search tab (which has no modal
+      // to close) needing to know or care about that.
+      function onSelectSearchResult(afterSelect) {
+        return (trip) => {
+          afterSelect?.();
+          callbacks.onOpenTrip(trip);
+        };
+      }
+
+      searchModalInput?.addEventListener("input", () => {
+        renderSearchResults(searchModalResults, searchModalInput.value, onSelectSearchResult(closeSearchModal));
+      });
+
+      const rpSearchInput = document.getElementById("rp-search-input");
+      const rpSearchResults = document.getElementById("rp-search-results");
+      rpSearchInput?.addEventListener("input", () => {
+        renderSearchResults(rpSearchResults, rpSearchInput.value, onSelectSearchResult());
       });
 
       // ── Trip panel drawer ───────────────────────────────────────────────
@@ -2171,6 +2288,8 @@
       const rightDrawer = document.getElementById("right-panel-drawer");
       const tripPanel = drawer.querySelector(".rux-trip-panel");
       const rightPanel = rightDrawer.querySelector(".rux-right-panel");
+      const leftPanelToggleBtn  = document.querySelector(".scheduler-app__mobile-panel-btn--left");
+      const rightPanelToggleBtn = document.querySelector(".scheduler-app__mobile-panel-btn--right");
       const schedulerEl = document.getElementById("scheduler");
       const schedulerContextMenu = document.getElementById("scheduler-context-menu");
       const schedulerContextAddTrip = document.getElementById("scheduler-context-add-trip");
@@ -2201,6 +2320,7 @@
         drawer.classList.add("is-open");
         tripPanel.inert = false;
         drawer.setAttribute("aria-hidden", "false");
+        leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
         leftAutoCollapsed = false;
         const scrollBody = tripPanel?.querySelector(".rux-trip-panel__body");
         if (scrollBody) scrollBody.scrollTop = 0;
@@ -2211,9 +2331,10 @@
         // its pre-close size and only gets clipped by the shrinking drawer,
         // instead of snapping to its min-width before the drawer animates.
         restoreMobilePanelTrigger("trip-panel-drawer");
-        drawer.style.setProperty("--drawer-width", GAP + "px");
+        drawer.style.setProperty("--drawer-width", "0px");
         tripPanel.inert = true;
         drawer.setAttribute("aria-hidden", "true");
+        leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
         if (mobilePanelQuery.matches) {
           drawer.classList.replace("is-open", "is-closing");
           const finishClose = (event) => {
@@ -2358,11 +2479,10 @@
 
       // ── Resizable drawer ────────────────────────────────────────────────
 
-      const GAP = 16;
       // Panel floor is tokenized (--rux-panel-min-width in tokens.css); read the
       // resolved px value off the panel itself rather than duplicating it here,
       // so this stays in sync if the token's padding/border inputs ever change.
-      const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(tripPanel).minWidth)) + GAP;
+      const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(tripPanel).minWidth));
       const DRAWER_SNAP_CLOSE = 200;
       const DRAWER_MAX = 640;
       // Tokenized (--scheduler-app-drawer-default-width in scheduler-app.css);
@@ -2380,7 +2500,7 @@
           let lastW = startW;
           let moved = false;
 
-          document.body.style.cursor = "grabbing";
+          document.body.style.cursor = "col-resize";
           document.body.style.userSelect = "none";
 
           const onMove = (ev) => {
@@ -2394,12 +2514,14 @@
                 drawerEl.setAttribute("aria-hidden", "false");
                 drawerEl.style.setProperty("--drawer-width", "0px");
                 drawerEl.style.setProperty("--drawer-open-width", "0px");
+                (drawerEl === drawer ? leftPanelToggleBtn : rightPanelToggleBtn)?.setAttribute("aria-pressed", "true");
               }
             }
             const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
             const otherDrawerEl = getOtherDrawer();
-            const otherW = otherDrawerEl?.classList.contains("is-open") ? otherDrawerEl.offsetWidth : 0;
-            const maxW = Math.min(DRAWER_MAX, bodyW - otherW - SCHEDULE_MIN - GAP * 3);
+            const otherOpen = otherDrawerEl?.classList.contains("is-open");
+            const otherW = otherOpen ? otherDrawerEl.offsetWidth : 0;
+            const maxW = Math.min(DRAWER_MAX, bodyW - otherW - SCHEDULE_MIN);
             const delta = direction === "left" ? ev.clientX - startX : startX - ev.clientX;
             const raw = startW + delta;
             lastW = raw;
@@ -2540,6 +2662,11 @@
       const trips = {};
       const tripTrackMap = {};
       let schedulerBuses = [];
+      // Raw fetchTrips() result, unfiltered — `trips` above only keeps
+      // assignments that have a bus (it needs one to place on a scheduler
+      // track), so a trip search over `trips` would silently miss anything
+      // unassigned. This is the complete list search reads from instead.
+      let allTripsRaw = [];
 
       // ── Time-aligned positioning ─────────────────────────────────────────
 
@@ -2923,6 +3050,23 @@
       function layoutScheduler() {
         cancelAnimationFrame(layoutFrame);
         layoutFrame = requestAnimationFrame(() => {
+          // Bail if the scheduler isn't actually rendered right now (e.g.
+          // List view is active — .calendar-app__viewport is hidden — or a
+          // different top-level module like Fleet is showing, which hides
+          // the whole calendar section the same way). Every trip bar
+          // collapses to 0 height while hidden, which fires their own
+          // ResizeObservers and calls right back into this function; without
+          // this guard, layoutTrack() would write garbage --_row-height from
+          // 0-sized elements, and fitSchedulerHeight() would measure
+          // availableH/contentH as 0/0 — its "shrink to fit" check silently
+          // no-ops on 0<0, but it had *already* cleared the workspace's
+          // height pin two lines earlier, permanently reverting it to full
+          // stretch. That's what left a stale blank gap the next time the
+          // scheduler became visible, since nothing re-ran to fix it until
+          // some other trigger happened to fire. offsetParent is null
+          // whenever the element (or any ancestor) is display:none, so this
+          // catches every "not actually visible" case, not just this one.
+          if (schedulerEl.offsetParent === null) return;
           document.querySelectorAll(".rux-scheduler__track").forEach(track => layoutTrack(track));
           fitSchedulerHeight();
         });
@@ -3007,6 +3151,7 @@
         let data;
         try { data = await fetchTrips(); }
         catch (err) { console.error("Failed to load trips:", err); _loadInProgress = false; return; }
+        allTripsRaw = data;
         Object.keys(trips).forEach(k => delete trips[k]);
         Object.keys(tripTrackMap).forEach(k => delete tripTrackMap[k]);
         data.forEach(t => {
@@ -3113,6 +3258,14 @@
       document.getElementById("prev-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart, -viewDays); renderScheduler(); });
       document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  viewDays); renderScheduler(); });
 
+      function jumpToToday() {
+        currentWeekStart = startOfWeek(new Date());
+        miniCalMonth = new Date();
+        miniCalMonth.setDate(1);
+        renderScheduler();
+      }
+      document.getElementById("today-btn")?.addEventListener("click", jumpToToday);
+
       function initToggle(id, isActive, onChange) {
         const input = document.getElementById(id);
         if (!input) return;
@@ -3170,6 +3323,14 @@
           window.TripsListPanel?.updateTitle?.();
         } else {
           renderDayHeaders(currentWeekStart);
+          // The scheduler was just unhidden (calendarViewportEl.hidden =
+          // false above) — its height/content weren't recomputed while
+          // hidden (clientHeight/scrollHeight both read 0, so
+          // fitSchedulerHeight()'s size check was a no-op the whole time),
+          // so the workspace is still pinned to whatever height was last
+          // measured before switching to List. Recompute now that it's
+          // actually visible again.
+          layoutScheduler();
         }
       }
 
@@ -3236,13 +3397,15 @@
         rightDrawer.classList.add("is-open");
         rightPanel.inert = false;
         rightDrawer.setAttribute("aria-hidden", "false");
+        rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
         rightAutoCollapsed = false;
       }
       function closeRightDrawer() {
         restoreMobilePanelTrigger("right-panel-drawer");
-        rightDrawer.style.setProperty("--drawer-width", GAP + "px");
+        rightDrawer.style.setProperty("--drawer-width", "0px");
         rightPanel.inert = true;
         rightDrawer.setAttribute("aria-hidden", "true");
+        rightPanelToggleBtn?.setAttribute("aria-pressed", "false");
         if (mobilePanelQuery.matches) {
           rightDrawer.classList.replace("is-open", "is-closing");
           const finishClose = (event) => {
@@ -3334,12 +3497,7 @@
         miniCalMonth.setMonth(miniCalMonth.getMonth() + 1);
         renderMiniCal();
       });
-      document.getElementById("mini-cal-today").addEventListener("click", () => {
-        currentWeekStart = startOfWeek(new Date());
-        miniCalMonth = new Date();
-        miniCalMonth.setDate(1);
-        renderScheduler();
-      });
+      document.getElementById("mini-cal-today").addEventListener("click", jumpToToday);
 
       renderMiniCal();
 
@@ -3354,8 +3512,8 @@
       rightDrawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
 
       if (mobilePanelQuery.matches) {
-        drawer.style.setProperty("--drawer-width", GAP + "px");
-        rightDrawer.style.setProperty("--drawer-width", GAP + "px");
+        drawer.style.setProperty("--drawer-width", "0px");
+        rightDrawer.style.setProperty("--drawer-width", "0px");
         tripPanel.inert = true;
         rightPanel.inert = true;
         drawer.setAttribute("aria-hidden", "true");
@@ -3367,6 +3525,8 @@
         rightPanel.inert = false;
         drawer.setAttribute("aria-hidden", "false");
         rightDrawer.setAttribute("aria-hidden", "false");
+        leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
+        rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
       }
 
       document.addEventListener("keydown", (event) => {
@@ -3389,7 +3549,8 @@
       let leftAutoCollapsed = false;
 
       function getDrawerWidth(el) {
-        return parseInt(getComputedStyle(el).getPropertyValue("--drawer-width")) || 380;
+        const width = parseInt(getComputedStyle(el).getPropertyValue("--drawer-width"), 10);
+        return Number.isFinite(width) ? width : 380;
       }
 
       function checkPanelFit() {
@@ -3412,14 +3573,14 @@
         }
 
         if (!rightOpen && rightAutoCollapsed) {
-          const wouldFit = available - getDrawerWidth(rightDrawer) - GAP;
+          const wouldFit = available - getDrawerWidth(rightDrawer);
           if (wouldFit >= SCHEDULE_MIN) {
             openRightDrawer();
             rightAutoCollapsed = false;
           }
         }
         if (!leftOpen && leftAutoCollapsed) {
-          const wouldFit = available - getDrawerWidth(drawer) - GAP;
+          const wouldFit = available - getDrawerWidth(drawer);
           if (wouldFit >= SCHEDULE_MIN) {
             openDrawer();
             leftAutoCollapsed = false;

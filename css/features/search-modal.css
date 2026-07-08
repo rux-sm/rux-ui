@@ -127,6 +127,26 @@
 	color: var(--rux-fg-muted);
 }
 
+/* Assigned bus shows its number under the icon; unassigned shows just the
+   icon in red — a quick visual scan for trips still missing a bus. */
+.rux-search-modal__item-bus {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1px;
+}
+
+.rux-search-modal__item-bus-number {
+	font-size: 9px;
+	font-weight: var(--rux-weight-bold);
+	line-height: 1;
+	color: var(--rux-fg-muted);
+}
+
+.rux-search-modal__item-bus--unassigned .rux-icon {
+	color: var(--rux-danger);
+}
+
 .rux-search-modal__item-body {
 	flex: 1;
 	min-width: 0;

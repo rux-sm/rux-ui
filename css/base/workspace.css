@@ -14,7 +14,6 @@
 	overflow: hidden;
 	background: var(--rux-workspace-bg);
 	color: var(--rux-workspace-fg);
-	border: var(--rux-workspace-border);
 	border-radius: var(--rux-workspace-radius);
 	box-shadow: var(--rux-workspace-shadow);
 }
@@ -24,8 +23,8 @@
 	align-items: center;
 	justify-content: flex-start;
 	min-width: 0;
-	gap: var(--rux-space-0);
-	padding: var(--rux-space-3);
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2) var(--rux-space-2);
 	container-type: inline-size;
 	container-name: workspace-header;
 }

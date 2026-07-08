@@ -228,9 +228,9 @@
 
 	--rux-surface-0: oklch(from var(--rux-color-base) 0% c h);  /* App background */
 	--rux-surface-1: oklch(from var(--rux-color-base) 20% c h); /* Panels */
-	--rux-surface-2: oklch(from var(--rux-color-base) 28% c h); /* Cards */
-	--rux-surface-3: oklch(from var(--rux-color-base) 36% c h); /* Menus and popovers */
-	--rux-surface-4: oklch(from var(--rux-color-base) 40% c h); /* Form controls */
+	--rux-surface-2: oklch(from var(--rux-color-base) 26% c h); /* Cards */
+	--rux-surface-3: oklch(from var(--rux-color-base) 34% c h); /* Menus and popovers */
+	--rux-surface-4: oklch(from var(--rux-color-base) 44% c h); /* Form controls */
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
 
@@ -290,6 +290,7 @@
 
 	--rux-border-subtle: var(--rux-color-white-a10);
 	--rux-border: var(--rux-color-white-a16);
+	--rux-border: transparent; /* TEMPORARY: remove once border color is finalized */
 	--rux-border-strong: var(--rux-color-white-a28);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
@@ -361,9 +362,12 @@
 	--rux-panel-footer-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
 	--rux-panel-tabs-shadow: var(--rux-edge-shadow-bottom);
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
-	--rux-panel-padding: var(--rux-space-3);
-	--rux-panel-content-gap: var(--rux-space-3);
-	--rux-panel-header-min-height: var(--rux-chrome-min-height);
+	--rux-panel-padding-block: var(--rux-space-3);
+	--rux-panel-padding-inline: var(--rux-space-3);
+	--rux-panel-tabs-padding: 0 var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
+	--rux-panel-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
+	--rux-panel-content-gap: var(--rux-space-2);
+	--rux-panel-header-min-height: 44px;
 	--rux-panel-tabs-min-height: var(--rux-chrome-min-height);
 	--rux-panel-footer-min-height: var(--rux-chrome-min-height);
 
@@ -372,13 +376,13 @@
 	   only thing stopping those columns from collapsing to unusable width.
 	   Deriving it from padding/border/gap tokens means it tracks those
 	   automatically instead of drifting out of sync with a bare px value. */
-	--rux-panel-min-field-width: 110px; /* solved so the derived total matches the prior 360px floor exactly */
+	--rux-panel-min-field-width: 163px; /* solved so the derived total matches the prior 360px floor exactly */
 	--rux-panel-min-content-width: calc(
 		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
 	);
 	--rux-panel-min-width: calc(
 		var(--rux-panel-min-content-width)
-		+ (2 * var(--rux-panel-padding))
+		+ (2 * var(--rux-panel-padding-inline))
 		+ (2 * var(--rux-panel-border-width))
 	);
 
@@ -387,7 +391,7 @@
 	--rux-card-bg: var(--rux-surface-2);
 	--rux-card-fg: var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
+	--rux-card-border: var(--rux-card-border-width) solid transparent;
 	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
 	--rux-card-radius: var(--rux-radius-md);
 	--rux-card-shadow: var(--rux-elevation-0);
@@ -427,7 +431,7 @@
 	--rux-button-accent-bg: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
 	--rux-button-accent-fg: var(--rux-color-white);
 	--rux-button-ghost-bg: transparent;
-	--rux-button-ghost-fg: var(--rux-color-white);
+	--rux-button-ghost-fg: var(--rux-fg-muted);
 	--rux-button-ghost-border: transparent;
 	--rux-button-danger-bg: oklch(60% 0.22 24);
 	--rux-button-danger-fg: var(--rux-color-white);

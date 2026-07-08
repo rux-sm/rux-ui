@@ -122,7 +122,7 @@
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-2);
 	padding-right: var(--rux-space-3);
-	border-bottom: none;
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	transition: height var(--rux-duration-slow) var(--rux-ease-in-out),
 		padding var(--rux-duration-slow) var(--rux-ease-in-out);
 }
@@ -152,9 +152,7 @@
 	min-width: 0;
 	gap: var(--rux-space-2);
 	margin: calc(var(--rux-space-1) * -1);
-	padding: var(--rux-space-2);
 	overflow-x: auto;
-	scroll-padding-inline: var(--rux-space-1);
 	scrollbar-width: none;
 }
 
@@ -310,7 +308,6 @@
    explicit `height`, not a `max-height` clamp. */
 .scheduler-app__module > .rux-workspace {
 	min-width: 471px;
-	margin: 0 0 var(--scheduler-app-gap);
 	padding-block-end: var(--scheduler-app-gap);
 }
 
@@ -343,67 +340,58 @@
 
 .scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
 	position: absolute;
-	inset-block: 0 var(--scheduler-app-gap);
+	inset-block: 0;
 	right: 0;
 	left: auto;
 	height: auto;
 	width: var(--drawer-open-width, var(--scheduler-app-drawer-default-width));
 	min-width: var(--rux-panel-min-width);
 	overflow: hidden;
+	/* Only the edge facing the workspace gets a border — top/bottom/outer
+	   side stay borderless. (top right bottom left) */
+	border-width: 0 var(--rux-panel-border-width) 0 0;
 }
 
 .scheduler-app__drawer:not(.is-open) :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
 	display: none;
 }
 
-
+/* Spotify-style divider: keep the hit area inside the clipped drawer, then
+   reveal a thin line on the panel/workspace boundary on hover or drag. */
 .scheduler-app__drawer-handle {
 	position: absolute;
 	top: 0;
-	right: -4px;
-	width: calc(var(--scheduler-app-gap) + 8px);
+	right: 0;
+	width: 12px;
 	height: 100%;
-	cursor: grab;
+	cursor: col-resize;
 	z-index: 10;
 	background-color: transparent;
 	background-image: none;
 }
 
-.scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle {
-	cursor: grabbing;
-}
-
+/* VSCode-style: invisible at rest, a thin full-height accent line on hover
+   or while actively dragging — not a fixed-size grip indicator, so it reads
+   as "this border is draggable" rather than as a decorative handle. */
 .scheduler-app__drawer-handle::before {
 	content: "";
 	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 3px;
-	height: 3rem;
-	border-radius: var(--rux-radius-full);
-	background: color-mix(in oklch, var(--rux-fg-subtle) 45%, transparent);
-	opacity: 0.42;
-	transform: translate(-50%, -50%);
-	transition:
-		height var(--rux-duration-fast),
-		background var(--rux-duration-fast),
-		opacity var(--rux-duration-fast);
-}
-
-.scheduler-app__drawer:not(.is-open) .scheduler-app__drawer-handle::before {
+	top: 0;
+	right: 0;
+	width: 2px;
+	height: 100%;
+	background: color-mix(in oklch, var(--rux-fg) 55%, transparent);
 	opacity: 0;
-}
-
-.scheduler-app__drawer:not(.is-open) .scheduler-app__drawer-handle:hover::before {
-	opacity: 1;
-	background: color-mix(in oklch, var(--rux-accent) 82%, white 8%);
+	transition: opacity var(--rux-duration-fast);
 }
 
 .scheduler-app__drawer-handle:hover::before,
 .scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle::before {
-	height: 4.5rem;
-	background: color-mix(in oklch, var(--rux-accent) 82%, white 8%);
 	opacity: 1;
+}
+
+.scheduler-app__drawer.is-resizing .scheduler-app__drawer-handle::before {
+	background: var(--rux-accent);
 }
 
 /* — Right drawer (mirrored) — */
@@ -418,12 +406,14 @@
 
 .scheduler-app__drawer--right :is(.rux-right-panel) {
 	position: absolute;
-	inset-block: 0 var(--scheduler-app-gap);
+	inset-block: 0;
 	left: 0;
 	right: auto;
 	height: auto;
 	width: var(--drawer-open-width, var(--scheduler-app-drawer-default-width));
 	overflow: hidden;
+	/* Only the edge facing the workspace gets a border. (top right bottom left) */
+	border-width: 0 0 0 var(--rux-panel-border-width);
 }
 
 .scheduler-app__drawer--right:not(.is-open) :is(.rux-right-panel) {
@@ -432,16 +422,26 @@
 
 .scheduler-app__drawer--right .scheduler-app__drawer-handle {
 	right: auto;
-	left: -4px;
+	left: 0;
+}
+
+.scheduler-app__drawer--right .scheduler-app__drawer-handle::before {
+	right: auto;
+	left: 0;
 }
 
 
 /* — Right panel shell — */
 
 .rux-right-panel {
+	box-sizing: border-box;
 	height: 100%;
 	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
+}
+
+.rux-right-panel__tab-label {
+	white-space: nowrap;
 }
 
 /* — Mini calendar — */
@@ -594,7 +594,34 @@
 	flex: none;
 }
 
+/* .rux-button--toggle[aria-pressed="true"] (controls.css) also swaps in the
+   "selected" bg/fg/shadow — useful for a real toggle button, but these two
+   just need the icon to reflect open/closed, not a persistent pressed look.
+   Reset back to plain ghost; :hover (higher specificity) still wins over
+   this when the pointer is actually over the button, so hover feedback
+   keeps working normally. */
+.scheduler-app__mobile-panel-btn.rux-button--toggle[aria-pressed="true"] {
+	--_bg: var(--rux-button-ghost-bg);
+	--_fg: var(--rux-button-ghost-fg);
+	--_shadow: var(--rux-button-shadow);
+}
+
+/* Panel-header actions that only earn their keep on mobile: e.g. the close
+   button (desktop has the drawer/border-drag plus the toggle button to
+   close/reopen a panel, so an explicit "X" is redundant there — but mobile
+   panels are full-screen overlays with neither, so it's the only way out)
+   and "+ new" shortcuts that duplicate a control reachable elsewhere on
+   desktop but are worth surfacing when mobile's screen space is tighter. */
+.scheduler-app__panel-mobile-btn {
+	display: none;
+}
+
 @media (max-width: 500px) {
+	.scheduler-app__panel-mobile-btn {
+		display: inline-flex;
+	}
+
+
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
 		display: grid;
 		grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -703,13 +730,12 @@
 		animation: scheduler-mobile-drawer-out var(--rux-duration-slow) var(--rux-ease-in-out);
 	}
 
-	/* Full-screen panels keep dismissal visible, comfortable, and notch-safe. */
 	.scheduler-app__drawer .rux-panel > .rux-panel__header {
-		padding-top: calc(var(--rux-panel-padding) + env(safe-area-inset-top, 0px));
+		padding-top: calc(var(--rux-panel-padding-block) + env(safe-area-inset-top, 0px));
 	}
 
 	.scheduler-app__drawer .rux-panel > .rux-panel__footer {
-		padding-bottom: calc(var(--rux-panel-padding) + env(safe-area-inset-bottom, 0px));
+		padding-bottom: calc(var(--rux-panel-padding-block) + env(safe-area-inset-bottom, 0px));
 	}
 
 	.scheduler-app__drawer .rux-panel:not(:has(> .rux-panel__footer)) > .rux-panel__body {
@@ -739,6 +765,10 @@
 	}
 
 	/* Keep the schedule flush beneath the overlaid navigation. */
+	.scheduler-app__module {
+		padding: 0;
+	}
+
 	.scheduler-app__module > .rux-workspace {
 		min-width: 0;
 		padding-block-end: 0;
@@ -845,29 +875,6 @@
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap),
 .scheduler-app__grid {
 	block-size: 100%;
-}
-
-/* Calendar/Fleet/Drivers/Passenger Roster each sit next to a companion
-   drawer that's still --scheduler-app-gap wide even when closed — and since
-   a drawer has no background of its own, that sliver shows the true app
-   background (--rux-surface-0) behind it, which is what actually reads as
-   a visible margin (the table-wrap's own margin-inline just sits inside
-   .rux-workspace's own charcoal background, so it alone barely shows).
-   My Trips has no companion drawer, so give .rux-workspace itself the
-   same inset here — that's what exposes the true black gap around the
-   whole card instead of a same-tone-on-tone gap. */
-[data-module="my-trips"] .rux-workspace {
-	margin-inline: var(--scheduler-app-gap);
-}
-
-/* Fleet/Drivers only have a drawer on the left (their own edit panel) — its
-   closed sliver gives the left edge a true-black gap for free, but there's
-   nothing on the right to do the same, so the right edge falls back to just
-   the inner table-wrap's on-tone margin. Add the matching outer inset here
-   so the right side gets the same true-black gap as the left. */
-[data-module="fleet"] .rux-workspace,
-[data-module="drivers"] .rux-workspace {
-	margin-inline-end: var(--scheduler-app-gap);
 }
 
 .calendar-app__viewport {

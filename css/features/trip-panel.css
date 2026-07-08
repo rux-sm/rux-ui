@@ -72,10 +72,7 @@
 	transition: none;
 }
 .rux-trip-panel__pane {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-panel-content-gap);
-	padding: var(--rux-panel-padding);
+	padding-block: 0;
 }
 .rux-trip-panel__pane[hidden] {
 	display: none;

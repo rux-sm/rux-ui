@@ -345,7 +345,7 @@
 	.flip-seven__player-hand--left .flip-seven__card,
 	.flip-seven__player-hand--right .flip-seven__card { width: 100%; min-width: 0; }
 	.flip-seven__actions {
-		padding-bottom: calc(var(--rux-panel-padding) + env(safe-area-inset-bottom, 0px));
+		padding-bottom: calc(var(--rux-panel-padding-block) + env(safe-area-inset-bottom, 0px));
 	}
 	.flip-seven__actions > .rux-button:not([hidden]) { flex: 1; min-width: 0; }
 }

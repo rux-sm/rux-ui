@@ -60,10 +60,7 @@
 /* — Body / panes — */
 
 .rux-fleet-panel__pane {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-4);
-	padding: var(--rux-space-4);
+	gap: var(--rux-panel-content-gap);
 }
 
 .rux-fleet-panel__pane[hidden] {

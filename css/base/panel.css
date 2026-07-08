@@ -18,21 +18,6 @@
 	isolation: isolate;
 }
 
-/*
- * Optional edge-attached variants. Enable only when a panel is genuinely
- * flush with a viewport edge; inset panels should keep the full base border.
- *
- * .rux-panel--flush-left {
- * 	border-left-width: 0;
- * 	border-radius: 0 var(--rux-panel-radius) var(--rux-panel-radius) 0;
- * }
- *
- * .rux-panel--flush-right {
- * 	border-right-width: 0;
- * 	border-radius: var(--rux-panel-radius) 0 0 var(--rux-panel-radius);
- * }
- */
-
 .rux-panel__header,
 .rux-panel__tabs,
 .rux-panel__footer {
@@ -49,7 +34,6 @@
 	position: relative;
 	z-index: 2;
 	background: var(--rux-panel-bg);
-	border-bottom: var(--rux-panel-header-border);
 }
 
 .rux-panel__title {
@@ -82,15 +66,36 @@
 	display: none;
 }
 
+.rux-panel--left > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
+.rux-panel--left .rux-panel__pane {
+	padding-inline-end: 0;
+}
+
+.rux-panel--right > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
+.rux-panel--right .rux-panel__pane {
+	padding-inline-start: 0;
+}
+
+@media (max-width: 500px) {
+	.rux-panel--left > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
+	.rux-panel--left .rux-panel__pane,
+	.rux-panel--right > :is(.rux-panel__header, .rux-panel__tabs, .rux-panel__footer),
+	.rux-panel--right .rux-panel__pane {
+		padding-inline: var(--rux-panel-padding-inline);
+	}
+}
+
 .rux-panel__tabs {
-	min-height: var(--rux-panel-tabs-min-height);
-	padding: var(--rux-panel-padding);
+	min-height: auto;
+	padding: var(--rux-panel-tabs-padding);
 	overflow-x: auto;
 	scrollbar-width: none;
 	position: relative;
 	z-index: 1;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
 	border-bottom: var(--rux-panel-tabs-border);
+	border-top: var(--rux-panel-tabs-border);
+	border: none;
 }
 
 .rux-panel__tabs::-webkit-scrollbar {
@@ -103,11 +108,11 @@
 
 .rux-panel__footer {
 	display: flex;
-	min-height: var(--rux-panel-footer-min-height);
+	min-height: auto;
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-padding);
 	background: var(--rux-panel-bg);
-	border-top: var(--rux-panel-footer-border);
+	border-top: 1px solid transparent;
 	position: relative;
 	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
@@ -115,6 +120,14 @@
 
 .rux-panel__footer.is-scrolled {
 	box-shadow: var(--rux-panel-footer-shadow);
+}
+
+.rux-panel__footer--spacer {
+	min-height: var(--scheduler-app-gap, var(--rux-panel-padding-block));
+	padding: 0;
+	border-top: none;
+	box-shadow: none;
+	pointer-events: none;
 }
 
 .rux-panel__footer > .rux-button {

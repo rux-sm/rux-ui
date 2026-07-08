@@ -93,6 +93,18 @@
 	--_fg: var(--rux-button-ghost-fg);
 	--_border: var(--rux-button-ghost-border); /* invisible but real — keeps box size identical to bordered states */
 	--_shadow: var(--rux-button-shadow);
+	--_state-overlay: transparent;
+}
+
+/* The plain hover rule above (.rux-button:hover...) has higher specificity
+   (4 compound selectors) than .rux-button--ghost alone (1), so it wins and
+   re-applies the white overlay tint on hover regardless of source order —
+   ghost needs its own hover rule at matching specificity to actually stay
+   background-free. Foreground goes fully white on hover (muted at rest, per
+   --rux-button-ghost-fg above) instead of just tinting the overlay. */
+.rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+	--_state-overlay: transparent;
+	--_fg: var(--rux-color-white);
 }
 
 /* ghost has no background in any other state, so disabled shouldn't add one either */

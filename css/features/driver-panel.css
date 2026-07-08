@@ -60,11 +60,8 @@
 /* — Body / panes — */
 
 .rux-driver-panel__pane {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-4);
-	padding: var(--rux-space-4);
-	padding-top: 0px;
+	gap: var(--rux-panel-content-gap);
+	padding-block-start: 0;
 }
 
 .rux-driver-panel__pane[hidden] {
