@@ -26,7 +26,7 @@
 .scheduler-app__drawer .rux-fleet-panel {
 	flex: 1 1 auto;
 	min-height: 0;
-	width: calc(var(--drawer-width, 380px) - 2 * var(--scheduler-app-gap));
+	width: var(--drawer-width, 380px);
 }
 
 .rux-fleet-panel__heading {

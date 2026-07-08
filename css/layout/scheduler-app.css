@@ -319,7 +319,7 @@
 .scheduler-app__drawer {
 	position: relative;
 	flex: none;
-	width: var(--scheduler-app-gap);
+	width: 0;
 	margin-left: 0;
 	min-height: 0;
 	overflow: visible;
@@ -344,10 +344,10 @@
 .scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
 	position: absolute;
 	inset-block: 0 var(--scheduler-app-gap);
-	right: var(--scheduler-app-gap);
+	right: 0;
 	left: auto;
 	height: auto;
-	width: calc(var(--drawer-open-width, var(--scheduler-app-drawer-default-width)) - var(--scheduler-app-gap));
+	width: var(--drawer-open-width, var(--scheduler-app-drawer-default-width));
 	min-width: var(--rux-panel-min-width);
 	overflow: hidden;
 }
@@ -419,10 +419,10 @@
 .scheduler-app__drawer--right :is(.rux-right-panel) {
 	position: absolute;
 	inset-block: 0 var(--scheduler-app-gap);
-	left: var(--scheduler-app-gap);
+	left: 0;
 	right: auto;
 	height: auto;
-	width: calc(var(--drawer-open-width, var(--scheduler-app-drawer-default-width)) - var(--scheduler-app-gap));
+	width: var(--drawer-open-width, var(--scheduler-app-drawer-default-width));
 	overflow: hidden;
 }
 
@@ -586,16 +586,15 @@
 	color: var(--rux-fg-muted);
 }
 
+/* Always visible now — with the drawer's closed-state sliver gone (see
+   .scheduler-app__drawer's width above), this is the only way to open a
+   closed panel on desktop too, not just on mobile. */
 .scheduler-app__mobile-panel-btn {
-	display: none;
+	display: inline-flex;
+	flex: none;
 }
 
 @media (max-width: 500px) {
-	.scheduler-app__mobile-panel-btn {
-		display: inline-flex;
-		flex: none;
-	}
-
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
 		display: grid;
 		grid-template-columns: repeat(5, minmax(0, 1fr));
