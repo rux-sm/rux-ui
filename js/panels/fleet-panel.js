@@ -25,13 +25,26 @@
   // ── Drawer ────────────────────────────────────────────────────────────────
 
   const panelToggleBtn = document.getElementById("fleet-panel-toggle-btn");
+  const DRAWER_DEFAULT = parseFloat(getComputedStyle(document.querySelector(".scheduler-app"))
+    .getPropertyValue("--scheduler-app-drawer-default-width"));
 
   function openDrawer()  {
+    const w = DRAWER_DEFAULT + "px";
+    drawer.style.setProperty("--drawer-width", w);
+    drawer.style.setProperty("--drawer-open-width", w);
     drawer.classList.add("is-open");
+    panelEl.inert = false;
+    drawer.setAttribute("aria-hidden", "false");
     panelToggleBtn?.setAttribute("aria-pressed", "true");
   }
   function closeDrawer() {
+    // Leave --drawer-open-width untouched so the panel content freezes at
+    // its pre-close size and only gets clipped by the shrinking drawer,
+    // instead of snapping to its min-width before the drawer animates.
+    drawer.style.setProperty("--drawer-width", "0px");
     drawer.classList.remove("is-open");
+    panelEl.inert = true;
+    drawer.setAttribute("aria-hidden", "true");
     tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
     panelToggleBtn?.setAttribute("aria-pressed", "false");
@@ -865,8 +878,9 @@
   });
   document.addEventListener("pointermove", (e) => {
     if (!resizing) return;
-    drawer.style.setProperty("--drawer-width",
-      `${Math.max(280, Math.min(600, startW + e.clientX - startX))}px`);
+    const w = `${Math.max(280, Math.min(600, startW + e.clientX - startX))}px`;
+    drawer.style.setProperty("--drawer-width", w);
+    drawer.style.setProperty("--drawer-open-width", w);
   });
   document.addEventListener("pointerup", () => {
     if (!resizing) return;

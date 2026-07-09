@@ -603,7 +603,7 @@
 
 
     --rux-opt-radius-1: var(--rux-radius-0).  ;   /* blue   [panel]          */ 
-	--rux-opt-radius-2: var(--rux-radius-lg);      /* red    [card]           */
+	--rux-opt-radius-2: var(--rux-radius-0;      /* red    [card]           */
 	--rux-opt-radius-3: var(--rux-radius-0);   /* green  [button] [input] */ 
 }
 
