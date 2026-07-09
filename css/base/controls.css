@@ -31,8 +31,8 @@
 	background-color: var(--_bg);
 	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--_fg);
-	border: var(--rux-button-border-width) solid var(--_border);
-	border-radius: var(--rux-button-radius);
+	border: var(--rux-button-border);
+	border-radius: var(--rux-opt-radius-3);
 	box-shadow: var(--_shadow);
 	font: inherit;
 	font-family: var(--rux-button-font-family);
@@ -290,7 +290,7 @@
 	min-height: var(--rux-control-height);
 	background-color: var(--rux-button-default-bg);
 	border: var(--rux-border-width) solid transparent; /* invisible but real — keeps box size identical to bordered states */
-	border-radius: var(--rux-button-radius);
+	border-radius: var(--rux-opt-radius-3);
 	box-shadow: none;
 	overflow: hidden; /* clips active button corners to strip radius; inset shadow paints above children */
 }

@@ -542,16 +542,25 @@
 .rux-trip-panel__number-picker {
 	display: inline-grid;
 	grid-template-columns: var(--rux-field-height) minmax(3rem, 4rem) var(--rux-field-height);
-	align-items: center;
+	align-items: stretch;
 	gap: 0;
-	height: var(--rux-field-height);
+	height: var(--rux-input-height);
 	overflow: hidden;
-	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-md);
+	border: var(--rux-button-border);
+	border-radius: var(--rux-opt-radius-3);
 	background: var(--rux-surface-4);
 	transition:
 		border-color var(--rux-duration-fast) var(--rux-ease-out),
 		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+}
+/* The picker's own border eats into its declared height (border-box), so
+   the button's independent height:var(--_h) — sized as if it owned the
+   full height — overflowed the picker's actual content box by exactly the
+   border width on each edge, and overflow:hidden clipped it back, landing
+   the button's bottom border on top of the picker's own. Stretching instead
+   of hardcoding height makes the button fill whatever's really available. */
+.rux-trip-panel__number-picker > .rux-button {
+	height: 100%;
 }
 .rux-trip-panel__number-input {
 	width: 100%;
@@ -585,7 +594,7 @@
 .rux-trip-panel__bus-groups {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-3);
+	gap: var(--rux-space-2);
 }
 .rux-trip-panel__bus-group {
 	--rux-card-content-gap: var(--rux-control-content-gap);

@@ -368,7 +368,7 @@
 	--rux-workspace-shadow: var(--rux-elevation-0);
 	/* .rux-workspace__body deliberately has no padding token — feature
 	   modules own their own internal inset (see workspace.css header). */
-	--rux-workspace-header-padding: var(--rux-space-2) var(--rux-space-2);
+	--rux-workspace-header-padding: var(--rux-space-2) var(--rux-space-3);
 	--rux-workspace-padding: var(--rux-space-3);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
@@ -378,7 +378,7 @@
 	--rux-panel-border-width: var(--rux-border-width);
 	--rux-panel-border-color: var(--rux-border);
 	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-panel-border-color);
-	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-info-bright); /* TEMPORARY: remove once border color is finalized */
+	--rux-panel-border: var(--rux-panel-border-width) solid transparent; /* TEMPORARY: remove once border color is finalized */
 	--rux-panel-radius: var(--rux-radius-0);
 	--rux-panel-shadow: var(--rux-elevation-0);
 	--rux-panel-footer-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
@@ -416,9 +416,9 @@
 	--rux-card-bg: var(--rux-surface-2);
 	--rux-card-fg: var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border: var(--rux-card-border-width) solid var(--rux-danger-bright); /* TEMPORARY: remove once border color is finalized */
+	--rux-card-border: var(--rux-card-border-width) solid transparent; /* TEMPORARY: remove once border color is finalized */
 	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
-	--rux-card-radius: var(--rux-radius-0);
+	--rux-card-radius: var(--rux-opt-radius-2);
 	--rux-card-shadow: var(--rux-elevation-0);
 	--rux-card-padding: var(--rux-space-2);
 	--rux-card-padding-compact: var(--rux-space-2); /* dense/absolutely-positioned cards, e.g. .rux-trip-bar */
@@ -450,6 +450,8 @@
 	--rux-button-font-weight: var(--rux-weight-regular);
 	--rux-button-icon-size: var(--rux-icon-md);
 	--rux-button-mobile-icon-size: 24px;
+	--rux-button-border: var(--rux-card-border-width) solid transparent; /* TEMPORARY: remove once border color is finalized */
+
 
 	/* Appearance */
 	--rux-button-default-bg: var(--rux-color-white-a16);
@@ -530,7 +532,7 @@
 	--rux-tab-height: 28px;
 	--rux-tab-padding-inline: var(--rux-space-3);
 	--rux-tab-content-gap: var(--rux-space-1);
-	--rux-tab-radius: var(--rux-radius-md);
+	--rux-tab-radius: var(--rux-opt-radius-3);
 	--rux-tab-bg: var(--rux-color-white-a16);
 	--rux-tab-fg: oklch(75% 0 0);
 	--rux-tab-hover-overlay: var(--rux-color-white-a08);
@@ -585,10 +587,24 @@
 	--rux-z-sticky: 200;
 	--rux-z-overlay: 300;
 	--rux-z-modal: 400;
+	--rux-input-height: 30px;
+   	--rux-input-border: var(--rux-card-border-width) solid transparent; 
 
-    --rux-opt-radius-1: var(--rux-radius-0); /* blue */
-	--rux-opt-radius-2: var(--rux-radius-xl); /* red */
-	--rux-opt-radius-2: var(--rux-radius-0); /* green */
+
+/* ==========================================================================
+   OPTICAL RADIUS AND DEBUG
+   --------------------------------------------------------------------------
+   Apply data-rux-accent="<name>" to <html> or <body>.
+   ========================================================================== */	
+	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-info-bright); /* TEMPORARY: remove once border color is finalized */
+    --rux-card-border: var(--rux-card-border-width) solid var(--rux-danger-bright); /* TEMPORARY: remove once border color is finalized */
+   	--rux-button-border: var(--rux-card-border-width) solid var(--rux-success-bright); /* TEMPORARY: remove once border color is finalized */
+   	--rux-input-border: var(--rux-card-border-width) solid var(--rux-success-bright); /* TEMPORARY: remove once border color is finalized */
+
+
+    --rux-opt-radius-1: var(--rux-radius-0).  ;   /* blue   [panel]          */ 
+	--rux-opt-radius-2: var(--rux-radius-lg);      /* red    [card]           */
+	--rux-opt-radius-3: var(--rux-radius-0);   /* green  [button] [input] */ 
 }
 
 /* ==========================================================================

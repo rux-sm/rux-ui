@@ -15,12 +15,6 @@
 	overflow: hidden;
 }
 
-/* — Toolbar search input width — */
-
-.fleet-app__search {
-	width: 200px;
-}
-
 /* — Table wrap — */
 
 .fleet-app__table-wrap {
@@ -29,6 +23,7 @@
 	overflow-x: auto;
 	overscroll-behavior: contain;
 	padding-bottom: var(--rux-space-4);
+	border: var(--rux-card-border);
 }
 
 /* — Vehicle identity cell — */
@@ -112,10 +107,6 @@
 /* — Mobile — */
 
 @media (max-width: 640px) {
-	.fleet-app__search {
-		width: 100%;
-	}
-
 	.fleet-app__table .col-service {
 		display: none;
 	}

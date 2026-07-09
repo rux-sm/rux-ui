@@ -869,11 +869,11 @@
 
           <section class="rux-workspace fleet-app__main" aria-label="Fleet roster">
             <header class="rux-workspace__header rux-workspace__header--table">
+              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="fleet-panel-toggle-btn" aria-label="Open vehicle panel" aria-pressed="false" data-opens="fleet-panel-drawer">
+                <span class="rux-icon icon-off">left_panel_open</span>
+                <span class="rux-icon icon-on">left_panel_close</span>
+              </button>
               <div class="rux-workspace__toolbar">
-                <button class="rux-button rux-button--accent" id="fp-btn-add" type="button">
-                  <span class="rux-icon">add</span>
-                  <span class="rux-btn-label">Add vehicle</span>
-                </button>
                 <button class="rux-button rux-button--ghost" id="fleet-save-order-btn" type="button" hidden title="Set current sort as manual order">
                   <span class="rux-icon" aria-hidden="true">save</span>
                   <span class="rux-btn-label">Set as order</span>
@@ -882,7 +882,6 @@
                   <span class="rux-icon">view_column</span>
                   <span class="rux-btn-label">Columns</span>
                 </button>
-                <input class="rux-input fleet-app__search" id="fleet-search" type="search" placeholder="Search…" aria-label="Search fleet" style="flex:1" />
               </div>
             </header>
             <div class="rux-workspace__body fleet-app__table-wrap">
@@ -1042,11 +1041,11 @@
 
           <section class="rux-workspace driver-app__main" aria-label="Driver roster">
             <header class="rux-workspace__header rux-workspace__header--table">
+              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="driver-panel-toggle-btn" aria-label="Open driver panel" aria-pressed="false" data-opens="driver-panel-drawer">
+                <span class="rux-icon icon-off">left_panel_open</span>
+                <span class="rux-icon icon-on">left_panel_close</span>
+              </button>
               <div class="rux-workspace__toolbar">
-                <button class="rux-button rux-button--accent" id="dp-btn-add" type="button">
-                  <span class="rux-icon">add</span>
-                  <span class="rux-btn-label">Add driver</span>
-                </button>
                 <button class="rux-button rux-button--ghost" id="driver-save-order-btn" type="button" hidden title="Set current sort as manual order">
                   <span class="rux-icon" aria-hidden="true">save</span>
                   <span class="rux-btn-label">Set as order</span>
@@ -1055,7 +1054,6 @@
                   <span class="rux-icon">view_column</span>
                   <span class="rux-btn-label">Columns</span>
                 </button>
-                <input class="rux-input driver-app__search" id="driver-search" type="search" placeholder="Search…" aria-label="Search drivers" style="flex:1" />
               </div>
             </header>
             <div class="rux-workspace__body driver-app__table-wrap">

@@ -8,7 +8,6 @@
   const tbody       = document.getElementById("fleet-roster-body");
   const tabBtns     = document.querySelectorAll("[data-fleet-tabs] .rux-tab");
   const panes       = document.querySelectorAll(".rux-fleet-panel__pane");
-  const searchInput  = document.getElementById("fleet-search");
   const tripList     = document.getElementById("fp-trip-list");
   const saveOrderBtn = document.getElementById("fleet-save-order-btn");
   const colorSwatch   = document.getElementById("fp-color-swatch");
@@ -25,11 +24,17 @@
 
   // ── Drawer ────────────────────────────────────────────────────────────────
 
-  function openDrawer()  { drawer.classList.add("is-open"); }
+  const panelToggleBtn = document.getElementById("fleet-panel-toggle-btn");
+
+  function openDrawer()  {
+    drawer.classList.add("is-open");
+    panelToggleBtn?.setAttribute("aria-pressed", "true");
+  }
   function closeDrawer() {
     drawer.classList.remove("is-open");
     tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
+    panelToggleBtn?.setAttribute("aria-pressed", "false");
   }
 
   function resetPanel() {
@@ -39,7 +44,14 @@
   }
 
   document.getElementById("fp-btn-close").addEventListener("click", closeDrawer);
-  document.getElementById("fleet-menu-btn")?.addEventListener("click", () => drawer.classList.toggle("is-open"));
+  panelToggleBtn?.addEventListener("click", () => {
+    if (drawer.classList.contains("is-open")) {
+      closeDrawer();
+    } else {
+      clearPanel();
+      openDrawer();
+    }
+  });
 
   // ── Tabs ──────────────────────────────────────────────────────────────────
 
@@ -518,11 +530,6 @@
 
   document.getElementById("fp-btn-clear").addEventListener("click", clearPanel);
 
-  document.getElementById("fp-btn-add").addEventListener("click", () => {
-    clearPanel();
-    openDrawer();
-  });
-
   // ── Column picker v2 — Supabase-persisted, drag-to-reorder ───────────────
 
   const FLEET_COLS_KEY = "fleet-cols-v2";
@@ -686,12 +693,9 @@
   };
 
   function applyFilter() {
-    const q = searchInput.value.toLowerCase();
     tbody.querySelectorAll(".fleet-app__row").forEach((row) => {
-      const name   = row.querySelector(".fleet-app__vehicle-name")?.textContent.toLowerCase() || "";
-      const matchQ = !q || name.includes(q);
       const matchF = statusFilter === "all" || row.dataset.status === statusFilter;
-      row.hidden = !(matchQ && matchF);
+      row.hidden = !matchF;
     });
     updateSaveOrderState();
   }
@@ -748,8 +752,6 @@
     window.RuxMenu.open(th, fleetColFilterPopover, { placement: "bottom-start" });
   }
 
-  searchInput.addEventListener("input", applyFilter);
-
   // ── Sort ──────────────────────────────────────────────────────────────────
 
   let sortKey = "order";
@@ -794,8 +796,7 @@
   }
 
   function hasActiveFleetFilter() {
-    return !!searchInput.value.trim() ||
-      Object.values(FLEET_COL_FILTERS).some(def => def.get() !== "all");
+    return Object.values(FLEET_COL_FILTERS).some(def => def.get() !== "all");
   }
 
   function updateSaveOrderState() {

@@ -323,7 +323,7 @@
 
   async function loadTrips() {
     try {
-      allTrips = (await db.fetchTrips()).filter((t) => !t.is_self_organized);
+      allTrips = await db.fetchTrips();
       renderRows(allTrips);
       applyFilter();
     } catch (err) {

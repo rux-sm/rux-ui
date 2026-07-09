@@ -18,12 +18,12 @@
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  height: var(--rux-field-height);
+  height: var(--rux-input-height);
   padding: 0 var(--rux-control-padding-inline);
   background-color: var(--rux-surface-4);
   color: var(--rux-fg);
-  border: 2px solid transparent;
-  border-radius: var(--rux-radius-field);
+  border: var(--rux-input-border);
+  border-radius: var(--rux-opt-radius-3);
   box-shadow: var(--_field-shadow);
   font: inherit;
   font-size: var(--rux-text-sm);
@@ -602,8 +602,8 @@
 	min-width: 0;
 	height: var(--rux-field-height);
 	padding: 0;
-	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-field);
+	border: var(--rux-input-border);
+	border-radius: var(--rux-opt-radius-3);
 	background: var(--rux-surface-0);
 	color: var(--rux-fg-muted);
 	font: inherit;

@@ -8,7 +8,6 @@
   const tbody       = document.getElementById("driver-roster-body");
   const tabBtns     = document.querySelectorAll("[data-driver-tabs] .rux-tab");
   const panes       = document.querySelectorAll(".rux-driver-panel__pane");
-  const searchInput  = document.getElementById("driver-search");
   const cdlGroup     = document.getElementById("dp-cdl-group");
   const tripList     = document.getElementById("dp-trip-list");
   const saveOrderBtn = document.getElementById("driver-save-order-btn");
@@ -25,15 +24,28 @@
 
   // ── Drawer ────────────────────────────────────────────────────────────────
 
-  function openDrawer()  { drawer.classList.add("is-open"); }
+  const panelToggleBtn = document.getElementById("driver-panel-toggle-btn");
+
+  function openDrawer()  {
+    drawer.classList.add("is-open");
+    panelToggleBtn?.setAttribute("aria-pressed", "true");
+  }
   function closeDrawer() {
     drawer.classList.remove("is-open");
     tbody.querySelectorAll(".driver-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
+    panelToggleBtn?.setAttribute("aria-pressed", "false");
   }
 
   document.getElementById("dp-btn-close").addEventListener("click", closeDrawer);
-  document.getElementById("driver-menu-btn")?.addEventListener("click", () => drawer.classList.toggle("is-open"));
+  panelToggleBtn?.addEventListener("click", () => {
+    if (drawer.classList.contains("is-open")) {
+      closeDrawer();
+    } else {
+      clearPanel();
+      openDrawer();
+    }
+  });
 
   // ── Tabs ──────────────────────────────────────────────────────────────────
 
@@ -521,13 +533,6 @@
 
   document.getElementById("dp-btn-clear").addEventListener("click", clearPanel);
 
-  // ── Add driver ────────────────────────────────────────────────────────────
-
-  document.getElementById("dp-btn-add").addEventListener("click", () => {
-    clearPanel();
-    openDrawer();
-  });
-
   // ── Avatar photo upload ───────────────────────────────────────────────────
 
   dpAvatarBtn.addEventListener("click", () => {
@@ -757,13 +762,10 @@
   };
 
   function applyFilter() {
-    const q = searchInput.value.toLowerCase();
     tbody.querySelectorAll(".driver-app__row").forEach((row) => {
-      const name   = row.querySelector(".driver-app__driver-name")?.textContent.toLowerCase() || "";
-      const matchQ = !q || name.includes(q);
       const matchF = statusFilter === "all" || row.dataset.status === statusFilter;
       const matchE = employmentFilter === "all" || row.dataset.employmentType === employmentFilter;
-      row.hidden = !(matchQ && matchF && matchE);
+      row.hidden = !(matchF && matchE);
     });
     updateSaveOrderState();
   }
@@ -864,8 +866,7 @@
   }
 
   function hasActiveDriverFilter() {
-    return !!searchInput.value.trim() ||
-      Object.values(DRIVER_COL_FILTERS).some(def => def.get() !== "all");
+    return Object.values(DRIVER_COL_FILTERS).some(def => def.get() !== "all");
   }
 
   function updateSaveOrderState() {
@@ -922,8 +923,6 @@
     e.preventDefault();
     openDriverColFilter(filterTh, filterTh.dataset.colFilter);
   });
-
-  searchInput.addEventListener("input", applyFilter);
 
   // ── Resize handle ─────────────────────────────────────────────────────────
 

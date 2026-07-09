@@ -63,8 +63,8 @@
 	background-color: var(--rux-tab-bg);
 	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--rux-tab-fg);
-	border: 0;
-	border-radius: var(--rux-tab-radius);
+	border: var(--rux-button-border);
+	border-radius: var(--rux-opt-radius-3);
 	box-shadow: none;
 	font: inherit;
 	font-size: var(--rux-button-font-size);
@@ -98,7 +98,7 @@
 .rux-tabs--contained > .rux-tab {
 	background-color: transparent;
 	color: var(--rux-tabs-contained-tab-fg);
-	border-radius: var(--rux-tabs-contained-tab-radius);
+	border-radius: var(--rux-opt-radius-3);
 	box-shadow: none;
 }
 
@@ -120,7 +120,7 @@
 	color: var(--rux-tabs-attached-tab-fg);
 	border: var(--rux-tabs-attached-tab-border);
 	border-bottom: 0;
-	border-radius: var(--rux-tabs-contained-radius) var(--rux-tabs-contained-radius) 0 0;
+	border-radius: var(--rux-opt-radius-3) var(--rux-opt-radius-3) 0 0;
 	box-shadow: none;
 }
 

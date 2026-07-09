@@ -17,12 +17,6 @@
 	overflow: hidden;
 }
 
-/* — Toolbar search input width — */
-
-.driver-app__search {
-	width: 200px;
-}
-
 /* — Table wrap — */
 
 .driver-app__table-wrap {
@@ -31,6 +25,7 @@
 	overflow-x: auto;
 	overscroll-behavior: contain;
 	padding-bottom: var(--rux-space-4);
+	border: var(--rux-card-border);
 }
 
 /* ==========================================================================
@@ -265,10 +260,6 @@
 /* — Mobile — */
 
 @media (max-width: 640px) {
-	.driver-app__search {
-		width: 100%;
-	}
-
 	/* Hide less-critical columns on small screens */
 	.driver-app__table .col-phone,
 	.driver-app__table .col-expiry {
