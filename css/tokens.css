@@ -365,6 +365,10 @@
 	--rux-workspace-border: var(--rux-border-width) solid var(--rux-border);
 	--rux-workspace-radius: var(--rux-radius-lg);
 	--rux-workspace-shadow: var(--rux-elevation-0);
+	/* .rux-workspace__body deliberately has no padding token — feature
+	   modules own their own internal inset (see workspace.css header). */
+	--rux-workspace-header-padding: var(--rux-space-2) var(--rux-space-2);
+	--rux-workspace-padding: var(--rux-space-3);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 

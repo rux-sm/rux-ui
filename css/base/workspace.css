@@ -24,7 +24,7 @@
 	justify-content: flex-start;
 	min-width: 0;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-2);
+	padding: var(--rux-workspace-header-padding);
 	container-type: inline-size;
 	container-name: workspace-header;
 }

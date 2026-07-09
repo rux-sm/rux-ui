@@ -22,7 +22,7 @@
   padding: 0 var(--rux-control-padding-inline);
   background-color: var(--rux-surface-4);
   color: var(--rux-fg);
-  border: var(--rux-border-width) solid transparent;
+  border: 2px solid transparent;
   border-radius: var(--rux-radius-field);
   box-shadow: var(--_field-shadow);
   font: inherit;
@@ -44,6 +44,7 @@
 .rux-select:hover,
 .rux-textarea:hover {
   border-color: var(--rux-border-strong);
+  border-color: transparent; /* override for dark mode */
 }
 
 .rux-input:focus,

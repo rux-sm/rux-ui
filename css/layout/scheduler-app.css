@@ -32,6 +32,12 @@
 
 .scheduler-app {
 	--scheduler-app-gap: var(--rux-space-2);
+	/* Outer frame around the main schedule/workspace card — same asymmetric
+	   shape as --rux-panel-footer-padding (top 2, inline+bottom 3), kept as
+	   its own token rather than reusing --scheduler-app-gap since that token
+	   also drives the (still-uniform) inter-panel gutter and inner content
+	   insets below, which aren't part of this ask. */
+	--scheduler-app-module-padding: 0 var(--rux-space-2) var(--rux-space-2) var(--rux-space-2);
 	--scheduler-app-resize-line-width: 1px;
 	--scheduler-app-card-radius: var(--rux-radius-lg);
 	--scheduler-app-drawer-default-width: 374px;
@@ -69,8 +75,9 @@
 	padding-block-start: var(--scheduler-app-gap);
 }
 
-/* Sides + bottom always keep a consistent --scheduler-app-gap inset,
-   regardless of whether a panel is open or closed — previously this only
+/* Sides + bottom + top always keep a consistent inset (matching the panel
+   padding shape — see --scheduler-app-module-padding above), regardless of
+   whether a panel is open or closed — previously the sides/bottom only
    applied while a panel was open (via :has(...is-open)), dropping to 0 once
    closed, so the workspace would expand flush to the outer edge. An open
    panel still sits flush against the workspace itself (see the panel
@@ -81,8 +88,7 @@
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
-	padding-inline: var(--scheduler-app-gap);
-	padding-block-end: var(--scheduler-app-gap);
+	padding: var(--scheduler-app-module-padding);
 }
 
 .scheduler-app__topbar {
@@ -135,6 +141,14 @@
 
 .scheduler-app__module-button {
 	flex: none;
+}
+
+/* Plain ghost button (no --toggle), so it never picks up the toggle
+   variant's --_fg swap on .is-active — only the icon's fill axis flips via
+   the shared .rux-button:is(.is-active,...) > .rux-icon rule in controls.css.
+   Foreground needs its own override here to go full-white to match. */
+.scheduler-app__module-button.is-active {
+	--_fg: var(--rux-fg);
 }
 
 .scheduler-app__account {
@@ -281,7 +295,7 @@
    explicit `height`, not a `max-height` clamp. */
 .scheduler-app__module > .rux-workspace {
 	min-width: 471px;
-	padding-block-end: var(--scheduler-app-gap);
+	padding-block-end: var(--rux-workspace-padding);
 }
 
 /* — Trip panel drawer — */
@@ -860,7 +874,7 @@
    does. */
 .calendar-app__viewport {
 	flex: 1;
-	margin-inline: var(--scheduler-app-gap);
+	margin-inline: var(--rux-workspace-padding);
 }
 
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
