@@ -3211,56 +3211,21 @@
       let activeObservers  = [];
       let layoutFrame = 0;
 
-      // The calendar workspace stretches full-height by default (CSS), so
-      // .rux-scheduler's own max-block-size:100%/overflow:auto has a real
-      // definite cap to scroll within. A bare `max-height` on the card
-      // can't substitute for that — percentage/max-block-size heights on
-      // descendants only resolve against an ancestor's explicit `height`,
-      // not a `max-height` clamp, so anything shy of the full stretch
-      // silently fails to cap the grid and rows get hard-clipped instead
-      // of scrolling. To still hug short content (e.g. a single vehicle),
-      // measure the grid's natural content height against what it was
-      // just given and, only when there's slack, pin the workspace down to fit —
-      // otherwise leave the default stretch (and internal scroll) alone.
-      function fitSchedulerHeight() {
-        const workspace = document.querySelector("[data-module='calendar'] .rux-workspace");
-        if (!workspace || !schedulerEl) return;
-        workspace.style.removeProperty("height");
-        const availableH = schedulerEl.clientHeight;
-        // schedulerEl itself is pinned to block-size:100% (that's what lets
-        // max-block-size:100% actually cap+scroll it — see comment above),
-        // so its own scrollHeight can't drop below that 100% floor. Suspend
-        // the pin just long enough to read its true intrinsic content height.
-        schedulerEl.style.blockSize = "auto";
-        const contentH = schedulerEl.scrollHeight;
-        schedulerEl.style.removeProperty("block-size");
-        if (contentH < availableH) {
-          workspace.style.height = `${workspace.clientHeight - (availableH - contentH)}px`;
-        }
-      }
-
       function layoutScheduler() {
         cancelAnimationFrame(layoutFrame);
         layoutFrame = requestAnimationFrame(() => {
           // Bail if the scheduler isn't actually rendered right now (e.g.
-          // List view is active — .calendar-app__viewport is hidden — or a
-          // different top-level module like Fleet is showing, which hides
-          // the whole calendar section the same way). Every trip bar
+          // List/Manifest view is active — .calendar-app__viewport is hidden
+          // — or a different top-level module like Fleet is showing, which
+          // hides the whole calendar section the same way). Every trip bar
           // collapses to 0 height while hidden, which fires their own
-          // ResizeObservers and calls right back into this function; without
-          // this guard, layoutTrack() would write garbage --_row-height from
-          // 0-sized elements, and fitSchedulerHeight() would measure
-          // availableH/contentH as 0/0 — its "shrink to fit" check silently
-          // no-ops on 0<0, but it had *already* cleared the workspace's
-          // height pin two lines earlier, permanently reverting it to full
-          // stretch. That's what left a stale blank gap the next time the
-          // scheduler became visible, since nothing re-ran to fix it until
-          // some other trigger happened to fire. offsetParent is null
+          // ResizeObservers and calls right back into this function;
+          // without this guard, layoutTrack() would write garbage
+          // --_row-height from 0-sized elements. offsetParent is null
           // whenever the element (or any ancestor) is display:none, so this
           // catches every "not actually visible" case, not just this one.
           if (schedulerEl.offsetParent === null) return;
           document.querySelectorAll(".rux-scheduler__track").forEach(track => layoutTrack(track));
-          fitSchedulerHeight();
         });
       }
 
@@ -3524,26 +3489,15 @@
         }
         if (isList) {
           window.TripsListPanel?.updateTitle?.();
-          // The list table wants the workspace's normal flex:1 full stretch,
-          // not whatever px height fitSchedulerHeight() last pinned the
-          // calendar grid to (it only ever shrinks-to-fit, so a light week
-          // can leave this pinned well below the panel's available height).
-          const workspace = document.querySelector("[data-module='calendar'] .rux-workspace");
-          workspace?.style.removeProperty("height");
         } else if (isManifest) {
           if (weekLabelEl) weekLabelEl.textContent = "Manifest";
-          const workspace = document.querySelector("[data-module='calendar'] .rux-workspace");
-          workspace?.style.removeProperty("height");
           window.TripManifest?.refresh();
         } else {
           renderDayHeaders(currentWeekStart);
           // The scheduler was just unhidden (calendarViewportEl.hidden =
-          // false above) — its height/content weren't recomputed while
-          // hidden (clientHeight/scrollHeight both read 0, so
-          // fitSchedulerHeight()'s size check was a no-op the whole time),
-          // so the workspace is still pinned to whatever height was last
-          // measured before switching to List. Recompute now that it's
-          // actually visible again.
+          // false above) — every .rux-scheduler__track collapsed to 0
+          // height while hidden, so their row heights need recomputing now
+          // that they're actually visible again.
           layoutScheduler();
         }
       }

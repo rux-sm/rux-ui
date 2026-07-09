@@ -885,8 +885,7 @@
 }
 
 .calendar-app__viewport,
-.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap),
-.scheduler-app__grid {
+.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
 	block-size: 100%;
 }
 
