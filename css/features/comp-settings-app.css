@@ -61,8 +61,8 @@
 .settings-app__panel-title {
 	margin: 0;
 	color: var(--rux-fg);
-	font-size: var(--rux-text-lg);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-heading-panel-size);
+	font-weight: var(--rux-heading-panel-weight);
 	letter-spacing: 0;
 	line-height: var(--rux-leading-tight);
 }
@@ -182,15 +182,15 @@
 .settings-req-list {
 	display: flex;
 	flex-direction: column;
-	gap: 2px;
+	gap: var(--rux-space-0-5);
 }
 
 .settings-req-section {
 	margin: var(--rux-space-2) 0 var(--rux-space-1);
-	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: 0.06em;
+	color: var(--rux-label-eyebrow-color);
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
+	letter-spacing: var(--rux-label-eyebrow-tracking);
 	text-transform: uppercase;
 }
 
@@ -277,10 +277,10 @@
 
 .settings-billing-row__label {
 	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
 	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-label-eyebrow-tracking);
 }
 
 .settings-billing-confirm-grid {
@@ -329,7 +329,7 @@
 	z-index: var(--rux-z-dropdown);
 	display: grid;
 	grid-template-columns: repeat(6, 1fr);
-	gap: 2px;
+	gap: var(--rux-space-0-5);
 	width: 248px;
 	padding: var(--rux-space-2);
 	background: var(--rux-surface-1);

@@ -10,7 +10,7 @@
    ---------
    .rux-trip-panel              Flex column, 440px wide (set by parent grid).
    .rux-panel__header           Shared title + trip ID + close row.
-   .rux-panel__tabs             Shared tab navigation slot.
+   .rux-panel__nav              Shared panel navigation slot.
    .rux-trip-panel__body        Scrollable body holding tab panes.
    .rux-trip-panel__pane        One per section, hidden via [hidden] when inactive.
    .rux-panel__footer           Shared Delete + Cancel / Save action row.
@@ -40,8 +40,8 @@
 	min-width: 0;
 }
 .rux-trip-panel__title {
-	font-size: var(--rux-text-md); /* 1rem 16px */
-	font-weight: var(--rux-weight-bold);
+	font-size: var(--rux-heading-panel-size);
+	font-weight: var(--rux-heading-panel-weight);
 	line-height: var(--rux-leading-tight);
 	min-width: 0;
 	overflow: hidden;
@@ -210,11 +210,13 @@
 }
 
 .rux-trip-panel__section-label {
-	font-size: var(--rux-text-md);
-	font-weight: var(--rux-weight-bold);
-	color: var(--rux-fg);
-	letter-spacing: normal;
-	text-transform: none;
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
+	color: var(--rux-label-eyebrow-color);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-label-eyebrow-tracking);
+	padding-bottom: var(--rux-space-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 	line-height: 1;
 }
 .rux-trip-panel__section-label--minor {

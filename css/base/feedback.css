@@ -76,7 +76,7 @@
   padding: var(--rux-space-5);
   border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
-.rux-modal__title { font-size: var(--rux-text-lg); font-weight: var(--rux-weight-semibold); }
+.rux-modal__title { font-size: var(--rux-heading-panel-size); font-weight: var(--rux-heading-panel-weight); }
 .rux-modal__body { padding: var(--rux-space-5); color: var(--rux-fg-muted); }
 .rux-modal__footer {
   display: flex;

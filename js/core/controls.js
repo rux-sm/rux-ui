@@ -43,13 +43,13 @@
 
 	function initPanelScrollEdges(panel) {
 		const body = panel.querySelector(".rux-panel__body");
-		const tabs = panel.querySelector(".rux-panel__tabs");
+		const nav = panel.querySelector(".rux-panel__nav, .rux-panel__tabs");
 		const footer = panel.querySelector(".rux-panel__footer");
-		if (!body || (!tabs && !footer) || body.dataset.ruxScrollEdgesInit === "true") return;
+		if (!body || (!nav && !footer) || body.dataset.ruxScrollEdgesInit === "true") return;
 
 		body.dataset.ruxScrollEdgesInit = "true";
 		const sync = () => {
-			tabs?.classList.toggle("is-scrolled", body.scrollTop > 0);
+			nav?.classList.toggle("is-scrolled", body.scrollTop > 0);
 			const atBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 1;
 			footer?.classList.toggle("is-scrolled", !atBottom);
 		};

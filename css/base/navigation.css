@@ -142,15 +142,21 @@
 }
 
 .rux-panel__tabs.rux-tabs--contained {
-	margin: var(--rux-panel-tabs-padding);
+	margin: var(--rux-panel-nav-padding);
 	padding: var(--rux-tabs-contained-padding);
 }
 
 .rux-panel__tabs.rux-tabs--attached {
-	margin: var(--rux-panel-tabs-padding) var(--rux-panel-tabs-padding) 0;
+	margin: var(--rux-panel-nav-padding);
+	margin-bottom: 0;
 	padding: 0;
 }
 
+.rux-panel__nav--attached {
+	padding-bottom: 0;
+}
+
+.rux-panel__nav--attached + .rux-panel__body,
 .rux-tabs--attached + .rux-panel__body {
 	background: var(--rux-tabs-attached-pane-bg);
 	border: var(--rux-tabs-attached-pane-border);

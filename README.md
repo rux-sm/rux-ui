@@ -250,7 +250,7 @@ Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`
 
 ### Panels
 
-A panel is modular: header, tabs, body panes, and footer are independently optional. Panel chrome and pane insets use `--rux-panel-padding`; sibling sections or cards use `--rux-panel-content-gap`.
+A panel is modular: header, navigation, body panes, and footer are independently optional. Panel chrome and pane insets use `--rux-panel-padding`; sibling sections or cards use `--rux-panel-content-gap`.
 
 Cards may group distinct content inside a panel, but do not wrap every field or section by default. Resizing belongs to the drawer or workspace shell containing the panel, not to `.rux-panel` itself.
 

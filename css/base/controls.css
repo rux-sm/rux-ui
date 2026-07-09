@@ -283,17 +283,19 @@
    ========================================================================== */
 
 .rux-segmented {
-	--_pad: var(
-		1px
-	); /* 4px — track extends beyond buttons, buttons align with adjacent 32px fields via align-items:center on the grid row */
+	/* --_pad was `var(1px)`, invalid CSS (var() takes a custom-property name,
+	   not a literal), so this has always resolved to 0 despite the old
+	   comment describing 4px/1px — kept at 0 here to match current
+	   rendering; revisit intentionally if 1px padding is actually wanted. */
+	--_pad: 0;
 
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	min-height: calc(var(--rux-segmented-height) + 1px);
+	min-height: calc(var(--rux-segmented-height) + var(--rux-border-width));
 	padding: var(--_pad);
 	background-color: var(--rux-button-default-bg);
-	border: 1px solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-button-radius);
 
 	box-shadow: none;

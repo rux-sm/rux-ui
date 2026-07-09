@@ -22,7 +22,7 @@
                     .rux-switch, .rux-checkbox, .rux-input-group,
                     .rux-color-swatches, .rux-color-picker
    workspace.css    .rux-workspace — primary application view shell
-   panel.css        .rux-panel and its header, tabs, body, pane, and footer
+   panel.css        .rux-panel and its header, navigation, body, pane, and footer
    menu.css         .rux-menu, items, headers, dividers, and states
    popover.css      .rux-popover — shared floating-layer positioning shell
    card.css         .rux-card and its header, body, section, footer, and variants

@@ -77,7 +77,10 @@
 	--rux-tracking-widest: 0.1em;
 
 	/* ─── SPACING · 4px base grid ───────────────────────────────────────── */
+	/* Scale intentionally skips --rux-space-7 — not a gap to fill in. */
 
+	--rux-space-px: 1px; /* hairline */
+	--rux-space-0-5: 0.125rem; /* 2px */
 	--rux-space-0: 0;
 	--rux-space-1: 0.25rem; /* 4px */
 	--rux-space-2: 0.5rem; /* 8px */
@@ -326,9 +329,24 @@
 
 	--rux-radius-field: var(--rux-radius-sm);
 
+	/* ─── TYPOGRAPHY · component roles ──────────────────────────────────── */
+	/* Named roles for recurring heading/label patterns — panel/card/drawer/
+	   settings/modal titles all share one size+weight, and uppercase micro
+	   labels (section labels, menu headers, picker headings) share one
+	   size+weight+tracking+color, instead of each file poking the raw
+	   --rux-text-* scale independently. */
+
+	--rux-heading-panel-size: var(--rux-text-md); /* 16px */
+	--rux-heading-panel-weight: var(--rux-weight-semibold);
+	--rux-label-eyebrow-size: var(--rux-text-2xs); /* 11px */
+	--rux-label-eyebrow-weight: var(--rux-weight-semibold);
+	--rux-label-eyebrow-tracking: var(--rux-tracking-wide);
+	--rux-label-eyebrow-color: var(--rux-fg-subtle);
+
 	/* ─── SPACING · component roles ──────────────────────────────────────── */
 
 	--rux-stack-gap: var(--rux-space-2);
+	--rux-stack-gap-tight: var(--rux-space-px);
 	--rux-section-label-gap: var(--rux-space-2);
 	--rux-control-padding-inline: var(--rux-space-2);
 	--rux-control-content-gap: var(--rux-space-2);
@@ -357,19 +375,19 @@
 	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-panel-border-color);
 	--rux-panel-radius: var(--rux-radius-lg);
 	--rux-panel-shadow: var(--rux-elevation-0);
-	--rux-panel-header-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
-	--rux-panel-tabs-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
-	--rux-panel-footer-border: var(--rux-panel-border-width) solid var(--rux-border-subtle);
-	--rux-panel-footer-padding: var(--rux-space-2) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
-	--rux-panel-tabs-shadow: var(--rux-edge-shadow-bottom);
+	--rux-panel-footer-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
+	--rux-panel-nav-shadow: var(--rux-edge-shadow-bottom);
+	--rux-panel-tabs-shadow: var(--rux-panel-nav-shadow);
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-padding-block: var(--rux-space-4);
-	--rux-panel-padding-inline: var(--rux-space-2);
-	--rux-panel-tabs-padding: var(--rux-space-4)  var(--rux-space-4);
-	--rux-panel-padding: var(--rux-space-4) var(--rux-space-2);
+	--rux-panel-padding-inline: var(--rux-space-4);
+	--rux-panel-nav-padding: var(--rux-space-0) var(--rux-space-4) var(--rux-space-2) var(--rux-space-4);
+	--rux-panel-tabs-padding: var(--rux-panel-nav-padding);
+	--rux-panel-padding: var(--rux-space-2) var(--rux-space-4);
 	--rux-panel-content-gap: var(--rux-space-2);
 	--rux-panel-header-min-height: 44px;
-	--rux-panel-tabs-min-height: var(--rux-chrome-min-height);
+	--rux-panel-nav-min-height: var(--rux-chrome-min-height);
+	--rux-panel-tabs-min-height: var(--rux-panel-nav-min-height);
 	--rux-panel-footer-min-height: var(--rux-chrome-min-height);
 
 	/* Drawer-style panels (trip/fleet/driver/right) host 2-up field rows
@@ -397,8 +415,9 @@
 	--rux-card-radius: var(--rux-radius-md);
 	--rux-card-shadow: var(--rux-elevation-0);
 	--rux-card-padding: var(--rux-space-3);
+	--rux-card-padding-compact: var(--rux-space-2); /* dense/absolutely-positioned cards, e.g. .rux-trip-bar */
 	--rux-card-content-gap: var(--rux-space-2);
-	--rux-card-header-min-height: var(--rux-chrome-min-height);
+	--rux-card-header-min-height: var(--rux-panel-header-min-height);
 	--rux-card-header-bg: var(--rux-card-bg);
 	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
 	--rux-card-section-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
@@ -509,8 +528,8 @@
 	--rux-tab-bg: var(--rux-color-white-a16);
 	--rux-tab-fg: oklch(75% 0 0);
 	--rux-tab-hover-overlay: var(--rux-color-white-a08);
-	--rux-tab-selected-bg: var(--rux-button-selected-bg);
-	--rux-tab-selected-fg: var(--rux-button-selected-fg);
+	--rux-tab-selected-bg: var(--rux-button-default-bg);
+	--rux-tab-selected-fg: var(--rux-button-default-fg);
 	--rux-tab-selected-shadow: var(--rux-button-selected-shadow);
 	--rux-tab-focus-ring: var(--rux-button-focus-ring);
 	--rux-tab-transition-duration: var(--rux-duration-instant);
@@ -522,10 +541,10 @@
 	     what panel/background it's placed against. Radii are nested on
 	     purpose: outer 8px = inner 4px + 4px padding, so the selected tab's
 	     corner sits concentric with the wrapper's. — */
-	--rux-tabs-contained-padding: var(--rux-space-1);
-	--rux-tabs-contained-gap: var(--rux-space-1);
-	--rux-tabs-contained-bg: var(--rux-button-default-bg);
-	--rux-tabs-contained-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-tabs-contained-padding: var(--rux-space-2);
+	--rux-tabs-contained-gap: var(--rux-space-2);
+	--rux-tabs-contained-bg: var(--rux-card-bg);
+	--rux-tabs-contained-border: var(--rux-border-width) transparent;
 	--rux-tabs-contained-radius: var(--rux-radius-md);
 	--rux-tabs-contained-tab-radius: var(--rux-button-radius);
 	--rux-tabs-contained-tab-fg: var(--rux-fg-muted);

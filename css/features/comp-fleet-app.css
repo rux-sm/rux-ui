@@ -55,7 +55,7 @@
 .fleet-app__vehicle-info {
 	display: flex;
 	flex-direction: column;
-	gap: 1px;
+	gap: var(--rux-stack-gap-tight);
 	min-width: 0;
 }
 

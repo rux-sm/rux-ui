@@ -133,7 +133,7 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	gap: 1px;
+	gap: var(--rux-stack-gap-tight);
 }
 
 .rux-search-modal__item-bus-number {
@@ -195,7 +195,7 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0 5px;
+	padding: 0 5px; /* below the 4px step; intentional exception sized to the 18px kbd chip */
 	height: 18px;
 	background: var(--rux-surface-0);
 	border: var(--rux-border-width) solid var(--rux-border);

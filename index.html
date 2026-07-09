@@ -143,12 +143,14 @@
                   </button>
                 </div>
               </header>
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Trip editor sections" data-rux-tabs data-trip-tabs>
-                <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-icon" aria-hidden="true">payments</span><span class="rux-trip-panel__tab-label">Billing</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-itinerary" aria-label="Trip" title="Trip"><span class="rux-icon" aria-hidden="true">location_on</span><span class="rux-trip-panel__tab-label">Trip</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon" aria-hidden="true">group_add</span><span class="rux-trip-panel__tab-label">Fleet</span></button>
-              </nav>
+              <div class="rux-panel__nav">
+                <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Trip editor sections" data-rux-tabs data-trip-tabs>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-icon" aria-hidden="true">payments</span><span class="rux-trip-panel__tab-label">Billing</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-itinerary" aria-label="Trip" title="Trip"><span class="rux-icon" aria-hidden="true">location_on</span><span class="rux-trip-panel__tab-label">Trip</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon" aria-hidden="true">group_add</span><span class="rux-trip-panel__tab-label">Fleet</span></button>
+                </nav>
+              </div>
               <div class="rux-panel__body rux-trip-panel__body">
                 <!-- Trip -->
                 <div id="pane-trip" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel">
@@ -392,12 +394,14 @@
                   <span class="rux-icon" aria-hidden="true">close</span>
                 </button>
               </header>
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
-                <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-right-panel__tab-label">Nav</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-search" title="Search"><span class="rux-icon" aria-hidden="true">search</span><span class="rux-right-panel__tab-label">Search</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers"><span class="rux-icon" aria-hidden="true">group</span><span class="rux-right-panel__tab-label">Drivers</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks"><span class="rux-icon" aria-hidden="true">checklist</span><span class="rux-right-panel__tab-label">Tasks</span></button>
-              </nav>
+              <div class="rux-panel__nav">
+                <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-right-panel__tab-label">Nav</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-search" title="Search"><span class="rux-icon" aria-hidden="true">search</span><span class="rux-right-panel__tab-label">Search</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers"><span class="rux-icon" aria-hidden="true">group</span><span class="rux-right-panel__tab-label">Drivers</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks"><span class="rux-icon" aria-hidden="true">checklist</span><span class="rux-right-panel__tab-label">Tasks</span></button>
+                </nav>
+              </div>
               <div class="rux-panel__body">
                 <div id="rp-pane-navigate" class="rux-panel__pane" role="tabpanel">
                   <article class="rux-card">
@@ -711,11 +715,13 @@
                   <span class="rux-icon">close</span>
                 </button>
               </header>
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Vehicle editor sections" data-rux-tabs data-fleet-tabs>
-                <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-fleet-panel__tab-label">Info</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-service"     title="Service"><span class="rux-icon">build</span><span class="rux-fleet-panel__tab-label">Service</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><span class="rux-icon">map</span><span class="rux-fleet-panel__tab-label">Trips</span></button>
-              </nav>
+              <div class="rux-panel__nav">
+                <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Vehicle editor sections" data-rux-tabs data-fleet-tabs>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-fleet-panel__tab-label">Info</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-service"     title="Service"><span class="rux-icon">build</span><span class="rux-fleet-panel__tab-label">Service</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-fleet-trips" title="Trips"><span class="rux-icon">map</span><span class="rux-fleet-panel__tab-label">Trips</span></button>
+                </nav>
+              </div>
               <div class="rux-panel__body rux-fleet-panel__body">
 
                 <!-- Info -->
@@ -870,12 +876,14 @@
                   <span class="rux-icon">close</span>
                 </button>
               </header>
-              <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Driver editor sections" data-rux-tabs data-driver-tabs>
-                <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-profile"     title="Profile"><span class="rux-icon">person</span><span class="rux-driver-panel__tab-label">Profile</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-license"     title="License"><span class="rux-icon">badge</span><span class="rux-driver-panel__tab-label">License</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-status"      title="Status"><span class="rux-icon">monitoring</span><span class="rux-driver-panel__tab-label">Status</span></button>
-                <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-assignments" title="Trips"><span class="rux-icon">map</span><span class="rux-driver-panel__tab-label">Trips</span></button>
-              </nav>
+              <div class="rux-panel__nav">
+                <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Driver editor sections" data-rux-tabs data-driver-tabs>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-profile"     title="Profile"><span class="rux-icon">person</span><span class="rux-driver-panel__tab-label">Profile</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-license"     title="License"><span class="rux-icon">badge</span><span class="rux-driver-panel__tab-label">License</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-status"      title="Status"><span class="rux-icon">monitoring</span><span class="rux-driver-panel__tab-label">Status</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-assignments" title="Trips"><span class="rux-icon">map</span><span class="rux-driver-panel__tab-label">Trips</span></button>
+                </nav>
+              </div>
               <div class="rux-panel__body rux-driver-panel__body">
                 <!-- Profile -->
                 <div id="pane-profile" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel">
@@ -1412,17 +1420,19 @@
                   <article class="components-app__example">
                     <div class="components-app__example-preview components-app__example-preview--block">
                       <aside class="rux-panel components-app__tabs-panel-demo" aria-label="Contained tabs panel example">
-                        <nav class="rux-panel__tabs rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Contained panel sections" data-rux-tabs>
-                          <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="contained-tabs-details">
-                            <span class="rux-icon" aria-hidden="true">assignment</span>Info
-                          </button>
-                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-billing">
-                            <span class="rux-icon" aria-hidden="true">payments</span>Billing
-                          </button>
-                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-fleet">
-                            <span class="rux-icon" aria-hidden="true">group_add</span>Fleet
-                          </button>
-                        </nav>
+                        <div class="rux-panel__nav">
+                          <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Contained panel sections" data-rux-tabs>
+                            <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="contained-tabs-details">
+                              <span class="rux-icon" aria-hidden="true">assignment</span>Info
+                            </button>
+                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-billing">
+                              <span class="rux-icon" aria-hidden="true">payments</span>Billing
+                            </button>
+                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-fleet">
+                              <span class="rux-icon" aria-hidden="true">group_add</span>Fleet
+                            </button>
+                          </nav>
+                        </div>
                         <div class="rux-panel__body">
                           <div class="rux-panel__pane" id="contained-tabs-details" role="tabpanel">
                             <div class="rux-field">
@@ -1457,11 +1467,13 @@
                   <article class="components-app__example">
                     <div class="components-app__example-preview components-app__example-preview--block">
                       <aside class="rux-panel components-app__tabs-panel-demo components-app__tabs-panel-demo--attached" aria-label="Attached tabs panel example">
-                        <nav class="rux-panel__tabs rux-tabs rux-tabs--attached rux-tabs--fill" role="tablist" aria-label="Attached panel sections" data-rux-tabs>
-                          <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="attached-tabs-active">Active</button>
-                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-inactive">Inactive</button>
-                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-other">Other</button>
-                        </nav>
+                        <div class="rux-panel__nav rux-panel__nav--attached">
+                          <nav class="rux-tabs rux-tabs--attached rux-tabs--fill" role="tablist" aria-label="Attached panel sections" data-rux-tabs>
+                            <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="attached-tabs-active">Active</button>
+                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-inactive">Inactive</button>
+                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-other">Other</button>
+                          </nav>
+                        </div>
                         <div class="rux-panel__body">
                           <div class="rux-panel__pane" id="attached-tabs-active" role="tabpanel">
                             <div class="rux-field">
@@ -1588,7 +1600,7 @@
                 <div class="components-app__section-heading">
                   <div>
                     <h2 id="component-panels-title">Panels</h2>
-                    <p>This anatomy specimen shows every modular region. Production panels include only the header, tabs, body, and footer they need.</p>
+                    <p>This anatomy specimen shows every modular region. Production panels include only the header, navigation, body, and footer they need.</p>
                   </div>
                   <code>.rux-panel</code>
                 </div>
@@ -1600,10 +1612,12 @@
                     </div>
                     <button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="Close example panel"><span class="rux-icon">close</span></button>
                   </header>
-                  <nav class="rux-panel__tabs rux-tabs rux-tabs--fill" role="tablist" aria-label="Example panel sections" data-rux-tabs>
-                    <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-demo-overview">Overview</button>
-                    <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-demo-activity">Activity</button>
-                  </nav>
+                  <div class="rux-panel__nav">
+                    <nav class="rux-tabs rux-tabs--fill" role="tablist" aria-label="Example panel sections" data-rux-tabs>
+                      <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-demo-overview">Overview</button>
+                      <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-demo-activity">Activity</button>
+                    </nav>
+                  </div>
                   <div class="rux-panel__body components-app__panel-demo-body">
                     <div class="rux-panel__pane" id="panel-demo-overview" role="tabpanel">
                       <article class="rux-card rux-card--stack">
@@ -1622,11 +1636,11 @@
                 </aside>
                 <p class="components-app__guidance">Panel anatomy owns structure and spacing. Resizing belongs to a drawer or workspace shell and should be demonstrated as a separate composition.</p>
                 <dl class="components-app__rules">
-                  <div><dt>Composition</dt><dd>Header, tabs, panes, cards, and footer are independently optional.</dd></div>
+                  <div><dt>Composition</dt><dd>Header, navigation, panes, cards, and footer are independently optional.</dd></div>
                   <div><dt>Radius</dt><dd><code>--rux-panel-radius</code><output data-token-value="--rux-panel-radius"></output></dd></div>
                   <div><dt>Background</dt><dd><code>--rux-panel-bg</code><output data-token-value="--rux-panel-bg"></output></dd></div>
                   <div><dt>Border</dt><dd><code>--rux-panel-border</code><output data-token-value="--rux-panel-border"></output></dd></div>
-                  <div><dt>Tabs divider</dt><dd><code>--rux-panel-tabs-border</code><output data-token-value="--rux-panel-tabs-border"></output></dd></div>
+                  <div><dt>Navigation divider</dt><dd><code>--rux-panel-nav-border</code><output data-token-value="--rux-panel-nav-border"></output></dd></div>
                   <div><dt>Footer divider</dt><dd><code>--rux-panel-footer-border</code><output data-token-value="--rux-panel-footer-border"></output></dd></div>
                   <div><dt>Panel inset</dt><dd><code>--rux-panel-padding</code><output data-token-value="--rux-panel-padding"></output></dd></div>
                   <div><dt>Content gap</dt><dd><code>--rux-panel-content-gap</code><output data-token-value="--rux-panel-content-gap"></output></dd></div>

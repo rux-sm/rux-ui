@@ -1,7 +1,7 @@
 /* ==========================================================================
    PANEL
    --------------------------------------------------------------------------
-   Structural panel shell and its optional anatomy: header, tabs, body,
+   Structural panel shell and its optional anatomy: header, navigation, body,
    panes, and footer. Placement and drawer behavior belong to layout CSS.
    ========================================================================== */
 
@@ -12,14 +12,14 @@
 	overflow: clip;
 	background: var(--rux-panel-bg);
 	color: var(--rux-panel-fg);
-	border: var(--rux-panel-border);
-	border: none; /* Overrides */
+	border: none;
 	border-radius: var(--rux-panel-radius);
 	box-shadow: var(--rux-panel-shadow);
 	isolation: isolate;
 }
 
 .rux-panel__header,
+.rux-panel__nav,
 .rux-panel__tabs,
 .rux-panel__footer {
 	flex: none;
@@ -40,8 +40,8 @@
 .rux-panel__title {
 	min-width: 0;
 	overflow: hidden;
-	font-size: var(--rux-text-md);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-heading-panel-size);
+	font-weight: var(--rux-heading-panel-weight);
 	line-height: var(--rux-leading-tight);
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -67,25 +67,40 @@
 	display: none;
 }
 
+.rux-panel__nav,
 .rux-panel__tabs {
 	min-height: auto;
-	padding: var(--rux-panel-tabs-padding);
-	overflow-x: auto;
+	padding: var(--rux-panel-nav-padding);
 	scrollbar-width: none;
 	position: relative;
 	z-index: 1;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-	border-bottom: var(--rux-panel-tabs-border);
-	border-top: var(--rux-panel-tabs-border);
 	border: none;
 }
 
+.rux-panel__nav {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-panel-content-gap);
+	overflow: visible;
+}
+
+.rux-panel__tabs {
+	overflow-x: auto;
+}
+
+.rux-panel__nav > .rux-tabs {
+	width: 100%;
+}
+
+.rux-panel__nav::-webkit-scrollbar,
 .rux-panel__tabs::-webkit-scrollbar {
 	display: none;
 }
 
+.rux-panel__nav.is-scrolled,
 .rux-panel__tabs.is-scrolled {
-	box-shadow: var(--rux-panel-tabs-shadow);
+	box-shadow: var(--rux-panel-nav-shadow);
 }
 
 .rux-panel__footer {
@@ -94,8 +109,7 @@
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-footer-padding);
 	background: var(--rux-panel-bg);
-	border-top: 1px solid transparent;
-	border-top:none;
+	border-top: none;
 	position: relative;
 	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);

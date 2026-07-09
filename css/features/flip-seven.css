@@ -96,7 +96,7 @@
 	gap: var(--rux-space-1);
 	height: 28px;
 	min-height: 28px;
-	padding: 1px var(--rux-space-1);
+	padding: var(--rux-space-px) var(--rux-space-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	background: var(--rux-bg-elevated);
 }
@@ -308,7 +308,7 @@
 	.flip-seven__scoreboard.rux-card--stack { padding: var(--rux-space-3); }
 	.flip-seven__scoreboard .flip-seven__section-heading { display: none; }
 	.flip-seven__scores { margin-top: 0; }
-	.flip-seven__score { grid-template-columns: 1.5rem var(--rux-avatar-sm) minmax(2.5rem, 6rem) minmax(0, 1fr) auto; gap: var(--rux-space-2); padding: 1px var(--rux-space-2); }
+	.flip-seven__score { grid-template-columns: 1.5rem var(--rux-avatar-sm) minmax(2.5rem, 6rem) minmax(0, 1fr) auto; gap: var(--rux-space-2); padding: var(--rux-space-px) var(--rux-space-2); }
 	.flip-seven__score-name .rux-badge { display: none; }
 	.flip-seven__join { grid-template-columns: 1fr; }
 	.flip-seven__mat.rux-card--stack {

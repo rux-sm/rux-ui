@@ -55,10 +55,10 @@
 
 .components-app__nav-group {
 	margin: var(--rux-space-4) var(--rux-space-3) var(--rux-space-1);
-	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-2xs);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: 0.08em;
+	color: var(--rux-label-eyebrow-color);
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
+	letter-spacing: var(--rux-label-eyebrow-tracking);
 	text-transform: uppercase;
 }
 
@@ -393,7 +393,7 @@
 .components-app__annotation {
 	position: absolute;
 	display: grid;
-	gap: 2px;
+	gap: var(--rux-space-0-5);
 	max-width: 15rem;
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: color-mix(in oklch, var(--rux-surface-1) 92%, transparent);
@@ -574,10 +574,10 @@
 	grid-template-columns: minmax(8rem, 0.75fr) minmax(12rem, 1.125fr) minmax(8rem, 1.125fr);
 	gap: var(--rux-space-4);
 	padding: 0 var(--rux-space-4) var(--rux-space-2);
-	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-2xs);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: 0.06em;
+	color: var(--rux-label-eyebrow-color);
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
+	letter-spacing: var(--rux-label-eyebrow-tracking);
 	text-transform: uppercase;
 }
 

@@ -172,7 +172,7 @@
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
 	background: var(--rux-surface-1);
-	padding: 0 2px;
+	padding: 0 var(--rux-space-0-5);
 	min-width: 20px;
 	text-align: center;
 }

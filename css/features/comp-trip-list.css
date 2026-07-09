@@ -53,7 +53,7 @@
 .trips-app__trip-cell {
 	display: flex;
 	flex-direction: column;
-	gap: 1px;
+	gap: var(--rux-stack-gap-tight);
 	min-width: 0;
 }
 

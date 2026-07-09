@@ -8,7 +8,7 @@
    ---------
    .rux-fleet-panel              Flex column, width set by drawer parent.
    .rux-panel__header            Shared vehicle unit + ID + close row.
-   .rux-panel__tabs              Shared tab navigation slot.
+   .rux-panel__nav               Shared panel navigation slot.
    .rux-fleet-panel__body        Scrollable body holding tab panes.
    .rux-fleet-panel__pane        One per section, hidden via [hidden].
    .rux-panel__footer            Shared Delete + Clear + Save action row.
@@ -37,8 +37,8 @@
 }
 
 .rux-fleet-panel__title {
-	font-size: var(--rux-text-md);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-heading-panel-size);
+	font-weight: var(--rux-heading-panel-weight);
 	line-height: var(--rux-leading-snug);
 	white-space: nowrap;
 	overflow: hidden;
@@ -78,11 +78,11 @@
 }
 
 .rux-fleet-panel__section-label {
-	font-size: var(--rux-text-2xs);
-	font-weight: var(--rux-weight-semibold);
-	color: var(--rux-fg-subtle);
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
+	color: var(--rux-label-eyebrow-color);
 	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-label-eyebrow-tracking);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 	line-height: 1;
