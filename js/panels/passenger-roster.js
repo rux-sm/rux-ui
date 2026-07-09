@@ -4,6 +4,7 @@
 	// ── DOM refs ──────────────────────────────────────────────────────────────
 
 	const drawer = document.getElementById("passenger-panel-drawer");
+	const panelToggleBtn = document.getElementById("pr-panel-toggle-btn");
 	const tbody = document.getElementById("passenger-roster-body");
 	const titleEl = document.getElementById("pr-trip-title");
 	const backBtn = document.getElementById("pr-btn-back");
@@ -23,13 +24,50 @@
 
 	// ── Drawer ────────────────────────────────────────────────────────────────
 
-	function openDrawer() { drawer.classList.add("is-open"); }
+	function openDrawer() {
+		drawer.classList.add("is-open");
+		panelToggleBtn?.setAttribute("aria-pressed", "true");
+	}
 	function closeDrawer() {
 		drawer.classList.remove("is-open");
 		tbody.querySelectorAll(".trips-app__row").forEach((r) => r.classList.remove("is-selected"));
 		selectedId = null;
+		panelToggleBtn?.setAttribute("aria-pressed", "false");
 	}
 	document.getElementById("pp-btn-close")?.addEventListener("click", closeDrawer);
+	panelToggleBtn?.addEventListener("click", () => {
+		drawer.classList.contains("is-open") ? closeDrawer() : openDrawer();
+	});
+
+	// ── Resize handle ─────────────────────────────────────────────────────────
+
+	const resizeHandle = document.getElementById("passenger-panel-resize-gutter");
+	let resizing = false, startX = 0, startW = 0;
+
+	resizeHandle?.addEventListener("pointerdown", (e) => {
+		resizing = true; startX = e.clientX; startW = drawer.offsetWidth;
+		drawer.classList.add("is-resizing");
+		resizeHandle.classList.add("is-resizing");
+		document.body.style.cursor = "col-resize";
+		e.preventDefault();
+	});
+	document.addEventListener("pointermove", (e) => {
+		if (!resizing) return;
+		const w = `${Math.max(280, Math.min(600, startW + e.clientX - startX))}px`;
+		// Both vars matter: --drawer-width sizes the outer drawer slot,
+		// --drawer-open-width sizes the absolutely-positioned panel inside it
+		// (see .scheduler-app__drawer :is(...) in scheduler-app.css) — set
+		// only one and the panel content stops tracking the drawer's edge.
+		drawer.style.setProperty("--drawer-width", w);
+		drawer.style.setProperty("--drawer-open-width", w);
+	});
+	document.addEventListener("pointerup", () => {
+		if (!resizing) return;
+		resizing = false;
+		drawer.classList.remove("is-resizing");
+		resizeHandle?.classList.remove("is-resizing");
+		document.body.style.cursor = "";
+	});
 
 	// ── Helpers ───────────────────────────────────────────────────────────────
 

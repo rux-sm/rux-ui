@@ -68,15 +68,6 @@
             <button
               class="rux-button rux-button--ghost scheduler-app__module-button"
               type="button"
-              data-module="my-trips"
-            >
-              <span class="rux-icon">groups</span>
-              Bookings
-            </button>
-
-            <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
-              type="button"
               data-module="fleet"
             >
               <span class="rux-icon" aria-hidden="true">directions_bus</span>
@@ -394,6 +385,22 @@
                 <tbody id="trips-roster-body"></tbody>
               </table>
             </div>
+            <div class="rux-workspace__body trips-app__table-wrap" id="calendar-manifest-view" hidden>
+              <table class="rux-table trips-app__table" aria-label="Passenger manifest">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Email</th>
+                    <th scope="col" class="col-owed">Owed</th>
+                    <th scope="col" class="col-paid">Paid</th>
+                    <th scope="col" class="col-balance">Balance</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="tp-manifest-body"></tbody>
+              </table>
+            </div>
           </section>
           <div class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right" id="right-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize tools panel" aria-controls="right-panel-drawer" tabindex="0"></div>
 
@@ -424,6 +431,7 @@
                       <div class="rux-segmented" id="trip-view-group" data-rux-toggle-group>
                         <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Calendar</span></button>
                         <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
+                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="manifest" id="trip-view-manifest-btn" disabled title="Open a ticketed trip to view its manifest"><span class="rux-icon" aria-hidden="true">groups</span><span class="rux-btn-label">Manifest</span></button>
                       </div>
                     </div>
                   </article>
@@ -515,6 +523,31 @@
                             <label class="rux-switch"><input id="tf-req-balancepaid" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
                           </div>
                         </div>
+                      </div>
+                    </div>
+                  </article>
+                  <article class="rux-card" id="rp-passenger-card" hidden>
+                    <header class="rux-card__header">
+                      <h3 class="rux-card__title" id="rpm-title">New passenger</h3>
+                    </header>
+                    <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-name">Name</label><input class="rux-input" id="rpm-name" type="text" /></div>
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-phone">Phone</label><input class="rux-input" id="rpm-phone" type="tel" /></div>
+                      </div>
+                      <div class="rux-field"><label class="rux-field__label" for="rpm-email">Email</label><input class="rux-input" id="rpm-email" type="email" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="rpm-address">Address</label><input class="rux-input" id="rpm-address" type="text" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="rpm-dob">Date of birth</label><input class="rux-input" id="rpm-dob" type="date" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="rpm-notes">Notes</label><textarea class="rux-textarea" id="rpm-notes" rows="3"></textarea></div>
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="rpm-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-paid">Paid</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="rpm-paid" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                      </div>
+                      <div class="rux-field"><span class="rux-field__label">Status</span><div><span class="rux-badge" id="rpm-status-badge">Unpaid</span></div></div>
+                      <div class="rux-cluster">
+                        <button class="rux-button rux-button--default rux-button--danger" id="rpm-btn-delete" type="button" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+                        <button class="rux-button rux-button--default" id="rpm-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+                        <button class="rux-button rux-button--accent" id="rpm-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
                       </div>
                     </div>
                   </article>
@@ -675,10 +708,15 @@
               </footer>
             </aside>
           </div>
+          <div class="scheduler-app__gutter scheduler-app__resize-gutter" id="passenger-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize passenger panel" aria-controls="passenger-panel-drawer" tabindex="0"></div>
           <!-- /passenger-panel-drawer -->
 
           <section class="rux-workspace" aria-label="Passenger roster">
             <header class="rux-workspace__header rux-workspace__header--table">
+              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="pr-panel-toggle-btn" aria-label="Open passenger panel" aria-pressed="false" data-opens="passenger-panel-drawer">
+                <span class="rux-icon icon-off">left_panel_open</span>
+                <span class="rux-icon icon-on">left_panel_close</span>
+              </button>
               <div class="rux-workspace__heading">
                 <button class="rux-button rux-button--ghost rux-button--icon" id="pr-btn-back" type="button" aria-label="Back to Bookings"><span class="rux-icon">arrow_back</span></button>
                 <h1 class="rux-workspace__title" id="pr-trip-title">Passenger Roster</h1>
@@ -2097,6 +2135,7 @@
     <script src="./js/panels/trips-list.js?v=8" defer></script>
     <script src="./js/panels/my-trips-list.js?v=2" defer></script>
     <script src="./js/panels/passenger-roster.js?v=1" defer></script>
+    <script src="./js/panels/trip-manifest.js?v=1" defer></script>
     <script src="./js/panels/print-schedule.js?v=29" defer></script>
     <script src="./js/panels/components-panel.js" defer></script>
     <script type="module" src="./js/panels/flip-seven.js?v=19"></script>
@@ -3458,21 +3497,28 @@
 
       const calendarViewportEl = document.querySelector(".calendar-app__viewport");
       const calendarListViewEl = document.getElementById("calendar-list-view");
+      const calendarManifestViewEl = document.getElementById("calendar-manifest-view");
       const calendarNavEl = document.querySelector(".calendar-app__nav");
       const tripsFilterBadgesEl = document.getElementById("trips-filter-badges");
       const rpMiniCalCard = document.getElementById("rp-minical-card");
       const rpViewOptionsCard = document.getElementById("rp-view-options-card");
       const rpFilterCard = document.getElementById("rp-filter-card");
+      const rpPassengerCard = document.getElementById("rp-passenger-card");
+      const weekLabelEl = document.getElementById("week-label");
 
       function setTripView(mode) {
         tripViewMode = mode;
+        const isCalendar = mode === "calendar";
         const isList = mode === "list";
-        if (calendarViewportEl) calendarViewportEl.hidden = isList;
+        const isManifest = mode === "manifest";
+        if (calendarViewportEl) calendarViewportEl.hidden = !isCalendar;
         if (calendarListViewEl) calendarListViewEl.hidden = !isList;
-        if (calendarNavEl) calendarNavEl.hidden = isList;
-        if (rpMiniCalCard) rpMiniCalCard.hidden = isList;
-        if (rpViewOptionsCard) rpViewOptionsCard.hidden = isList;
+        if (calendarManifestViewEl) calendarManifestViewEl.hidden = !isManifest;
+        if (calendarNavEl) calendarNavEl.hidden = !isCalendar;
+        if (rpMiniCalCard) rpMiniCalCard.hidden = !isCalendar;
+        if (rpViewOptionsCard) rpViewOptionsCard.hidden = !isCalendar;
         if (rpFilterCard) rpFilterCard.hidden = !isList;
+        if (rpPassengerCard) rpPassengerCard.hidden = !isManifest;
         if (tripsFilterBadgesEl) {
           tripsFilterBadgesEl.hidden = isList ? tripsFilterBadgesEl.children.length === 0 : true;
         }
@@ -3484,6 +3530,11 @@
           // can leave this pinned well below the panel's available height).
           const workspace = document.querySelector("[data-module='calendar'] .rux-workspace");
           workspace?.style.removeProperty("height");
+        } else if (isManifest) {
+          if (weekLabelEl) weekLabelEl.textContent = "Manifest";
+          const workspace = document.querySelector("[data-module='calendar'] .rux-workspace");
+          workspace?.style.removeProperty("height");
+          window.TripManifest?.refresh();
         } else {
           renderDayHeaders(currentWeekStart);
           // The scheduler was just unhidden (calendarViewportEl.hidden =
@@ -3509,6 +3560,11 @@
           if (btn) setTripView(btn.dataset.value);
         });
       }
+
+      window.TripView = {
+        set: setTripView,
+        get: () => tripViewMode,
+      };
 
       const optSundayStart = document.getElementById("opt-sunday-start");
       if (optSundayStart) {

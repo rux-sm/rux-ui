@@ -47,7 +47,7 @@
 	--scheduler-app-mobile-nav-padding-top: 20px;
 	position: relative;
 	display: grid;
-	grid-template-rows: auto auto minmax(0, 1fr);
+	grid-template-rows: auto minmax(0, 1fr);
 	width: 100%;
 	block-size: 100dvh;
 	min-width: 0;
