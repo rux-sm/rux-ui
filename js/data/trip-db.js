@@ -1167,11 +1167,7 @@ export function initTripDB(root, itinerary) {
 	});
 	clearBtn?.addEventListener("click",  () => {
 		if (isFormDirty() && !confirm("Discard unsaved changes?")) return;
-		if (currentLoadedTrip) {
-			loadTrip(root, itinerary, currentLoadedTrip);
-		} else {
-			clearForm(root, itinerary);
-		}
+		clearForm(root, itinerary);
 	});
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
 

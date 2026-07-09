@@ -363,7 +363,7 @@
 	--rux-workspace-bg: var(--rux-surface-1);
 	--rux-workspace-fg: var(--rux-fg);
 	--rux-workspace-border: var(--rux-border-width) solid var(--rux-border);
-	--rux-workspace-radius: var(--rux-radius-lg);
+	--rux-workspace-radius: var(--rux-radius-0);
 	--rux-workspace-shadow: var(--rux-elevation-0);
 	/* .rux-workspace__body deliberately has no padding token — feature
 	   modules own their own internal inset (see workspace.css header). */
@@ -377,7 +377,7 @@
 	--rux-panel-border-width: var(--rux-border-width);
 	--rux-panel-border-color: var(--rux-border);
 	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-panel-border-color);
-	--rux-panel-radius: var(--rux-radius-lg);
+	--rux-panel-radius: var(--rux-radius-0);
 	--rux-panel-shadow: var(--rux-elevation-0);
 	--rux-panel-footer-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
 	--rux-panel-nav-shadow: var(--rux-edge-shadow-bottom);

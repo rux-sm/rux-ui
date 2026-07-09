@@ -37,7 +37,7 @@
 	   its own token rather than reusing --scheduler-app-gap since that token
 	   also drives the (still-uniform) inter-panel gutter and inner content
 	   insets below, which aren't part of this ask. */
-	--scheduler-app-module-padding: 0 var(--rux-space-2) var(--rux-space-2) var(--rux-space-2);
+	--scheduler-app-module-padding: 0;
 	--scheduler-app-resize-line-width: 1px;
 	--scheduler-app-card-radius: var(--rux-radius-lg);
 	--scheduler-app-drawer-default-width: 374px;

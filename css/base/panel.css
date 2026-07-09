@@ -122,14 +122,6 @@
 	box-shadow: var(--rux-panel-footer-shadow);
 }
 
-.rux-panel__footer--spacer {
-	min-height: var(--scheduler-app-gap, var(--rux-panel-padding-block));
-	padding: 0;
-	border-top: none;
-	box-shadow: none;
-	pointer-events: none;
-}
-
 .rux-panel__footer > .rux-button {
 	flex: 1;
 	min-width: 0;
