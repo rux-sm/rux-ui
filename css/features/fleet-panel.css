@@ -6,7 +6,8 @@
 
    Structure
    ---------
-   .rux-fleet-panel              Flex column, width set by drawer parent.
+   .rux-fleet-panel              Flex column; width comes from the shared
+                                  drawer rule in scheduler-app.css.
    .rux-panel__header            Shared vehicle unit + ID + close row.
    .rux-panel__nav               Shared panel navigation slot.
    .rux-fleet-panel__body        Scrollable body holding tab panes.
@@ -19,14 +20,6 @@
 .rux-fleet-panel {
 	height: 100%;
 	container-type: inline-size;
-}
-
-/* — Drawer integration — */
-
-.scheduler-app__drawer .rux-fleet-panel {
-	flex: 1 1 auto;
-	min-height: 0;
-	width: var(--drawer-width, 380px);
 }
 
 .rux-fleet-panel__heading {

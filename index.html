@@ -3673,28 +3673,26 @@
       initDrawerDrag(document.getElementById("right-panel-resize-gutter"), rightDrawer, openRightDrawer, closeRightDrawer, () => drawer, "right");
 
       // ── Default boot state ──────────────────────────────────────────────
-      // Desktop begins with both panels visible. Mobile begins with the
-      // schedule visible and opens only one full-screen panel at a time.
-      drawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
-      drawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
+      // Desktop begins with only the right (Tools) panel open — the left
+      // trip editor stays closed until a trip is selected or "New Trip" is
+      // used, so the calendar/list gets full width by default. Mobile begins
+      // with the schedule visible and opens only one full-screen panel at a time.
+      drawer.style.setProperty("--drawer-width", "0px");
+      tripPanel.inert = true;
+      drawer.setAttribute("aria-hidden", "true");
+      leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
+
       rightDrawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
       rightDrawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
 
       if (mobilePanelQuery.matches) {
-        drawer.style.setProperty("--drawer-width", "0px");
         rightDrawer.style.setProperty("--drawer-width", "0px");
-        tripPanel.inert = true;
         rightPanel.inert = true;
-        drawer.setAttribute("aria-hidden", "true");
         rightDrawer.setAttribute("aria-hidden", "true");
       } else {
-        drawer.classList.add("is-open");
         rightDrawer.classList.add("is-open");
-        tripPanel.inert = false;
         rightPanel.inert = false;
-        drawer.setAttribute("aria-hidden", "false");
         rightDrawer.setAttribute("aria-hidden", "false");
-        leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
         rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
       }
       syncResizeHandleValue(document.getElementById("trip-panel-resize-gutter"), drawer, getRightDrawer);

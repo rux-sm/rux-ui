@@ -6,7 +6,8 @@
 
    Structure
    ---------
-   .rux-driver-panel              Flex column, width set by drawer parent.
+   .rux-driver-panel              Flex column; width comes from the shared
+                                   drawer rule in scheduler-app.css.
    .rux-panel__header             Shared driver name + ID + close row.
    .rux-panel__nav                Shared panel navigation slot.
    .rux-driver-panel__body        Scrollable body holding tab panes.
@@ -19,14 +20,6 @@
 .rux-driver-panel {
 	height: 100%;
 	container-type: inline-size;
-}
-
-/* — Drawer integration — */
-
-.scheduler-app__drawer .rux-driver-panel {
-	flex: 1 1 auto;
-	min-height: 0;
-	width: var(--drawer-width, 380px);
 }
 
 .rux-driver-panel__heading {
