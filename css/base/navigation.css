@@ -11,6 +11,41 @@
 	min-width: 0;
 }
 
+.rux-tabs--contained {
+	display: inline-flex;
+	gap: var(--rux-tabs-contained-gap);
+	align-items: center;
+	padding: var(--rux-tabs-contained-padding);
+	background: var(--rux-tabs-contained-bg);
+	border: var(--rux-tabs-contained-border);
+	border-radius: var(--rux-tabs-contained-radius);
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
+}
+
+.rux-tabs--contained::-webkit-scrollbar {
+	display: none;
+}
+
+.rux-tabs--attached {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--rux-tabs-contained-gap);
+	padding: 0 var(--rux-tabs-contained-padding);
+	background: var(--rux-tabs-attached-bg);
+	border: var(--rux-tabs-attached-border);
+	border-bottom: 0;
+	border-radius: 0;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
+}
+
+.rux-tabs--attached::-webkit-scrollbar {
+	display: none;
+}
+
 .rux-tabs--fill > .rux-tab {
 	flex: 1;
 }
@@ -24,12 +59,12 @@
 	gap: var(--rux-tab-content-gap);
 	min-width: 0;
 	height: var(--rux-tab-height);
-	padding: 0 var(--rux-button-padding-inline);
-	background-color: var(--rux-default-bg);
+	padding: 0 var(--rux-tab-padding-inline);
+	background-color: var(--rux-tab-bg);
 	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--rux-tab-fg);
 	border: 0;
-	border-radius: var(--rux-button-radius);
+	border-radius: var(--rux-tab-radius);
 	box-shadow: none;
 	font: inherit;
 	font-size: var(--rux-button-font-size);
@@ -58,6 +93,68 @@
 	background-color: var(--rux-tab-selected-bg);
 	color: var(--rux-tab-selected-fg);
 	box-shadow: var(--rux-tab-selected-shadow);
+}
+
+.rux-tabs--contained > .rux-tab {
+	background-color: transparent;
+	color: var(--rux-tabs-contained-tab-fg);
+	border-radius: var(--rux-tabs-contained-tab-radius);
+	box-shadow: none;
+}
+
+.rux-tabs--contained > .rux-tab:hover {
+	--_state-overlay: transparent;
+	background-color: var(--rux-tabs-contained-tab-hover-bg);
+}
+
+.rux-tabs--contained > .rux-tab.is-active,
+.rux-tabs--contained > .rux-tab[aria-selected="true"] {
+	background-color: var(--rux-tabs-contained-tab-selected-bg);
+	color: var(--rux-tabs-contained-tab-selected-fg);
+	box-shadow: var(--rux-tab-selected-shadow);
+}
+
+.rux-tabs--attached > .rux-tab {
+	height: calc(var(--rux-tab-height) + var(--rux-space-2));
+	background-color: var(--rux-tabs-attached-tab-bg);
+	color: var(--rux-tabs-attached-tab-fg);
+	border: var(--rux-tabs-attached-tab-border);
+	border-bottom: 0;
+	border-radius: var(--rux-tabs-contained-radius) var(--rux-tabs-contained-radius) 0 0;
+	box-shadow: none;
+}
+
+.rux-tabs--attached > .rux-tab:hover {
+	--_state-overlay: transparent;
+	background-color: var(--rux-tabs-attached-tab-hover-bg);
+	color: var(--rux-fg);
+}
+
+.rux-tabs--attached > .rux-tab.is-active,
+.rux-tabs--attached > .rux-tab[aria-selected="true"] {
+	position: relative;
+	z-index: 1;
+	margin-bottom: calc(var(--rux-border-width) * -1);
+	background-color: var(--rux-tabs-attached-tab-selected-bg);
+	border-color: var(--rux-border);
+	color: var(--rux-tabs-attached-tab-selected-fg);
+	box-shadow: none;
+}
+
+.rux-panel__tabs.rux-tabs--contained {
+	margin: var(--rux-panel-tabs-padding);
+	padding: var(--rux-tabs-contained-padding);
+}
+
+.rux-panel__tabs.rux-tabs--attached {
+	margin: var(--rux-panel-tabs-padding) var(--rux-panel-tabs-padding) 0;
+	padding: 0;
+}
+
+.rux-tabs--attached + .rux-panel__body {
+	background: var(--rux-tabs-attached-pane-bg);
+	border: var(--rux-tabs-attached-pane-border);
+	border-radius: 0 0 var(--rux-tabs-contained-radius) var(--rux-tabs-contained-radius);
 }
 
 .rux-tab > .rux-icon {

@@ -1374,7 +1374,7 @@
                   <code>.rux-tabs · .rux-tab</code>
                 </div>
 
-                <div class="components-app__examples">
+                <div class="components-app__examples components-app__examples--tabs">
                   <article class="components-app__example">
                     <div class="components-app__example-preview">
                       <nav class="rux-tabs" role="tablist" aria-label="Example sections" data-rux-tabs>
@@ -1406,6 +1406,90 @@
                     </div>
                     <footer class="components-app__example-footer">
                       <code>.rux-tabs--fill</code>
+                    </footer>
+                  </article>
+
+                  <article class="components-app__example">
+                    <div class="components-app__example-preview components-app__example-preview--block">
+                      <aside class="rux-panel components-app__tabs-panel-demo" aria-label="Contained tabs panel example">
+                        <nav class="rux-panel__tabs rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Contained panel sections" data-rux-tabs>
+                          <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="contained-tabs-details">
+                            <span class="rux-icon" aria-hidden="true">assignment</span>Info
+                          </button>
+                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-billing">
+                            <span class="rux-icon" aria-hidden="true">payments</span>Billing
+                          </button>
+                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-fleet">
+                            <span class="rux-icon" aria-hidden="true">group_add</span>Fleet
+                          </button>
+                        </nav>
+                        <div class="rux-panel__body">
+                          <div class="rux-panel__pane" id="contained-tabs-details" role="tabpanel">
+                            <div class="rux-field">
+                              <label class="rux-field__label" for="contained-tabs-destination">Destination</label>
+                              <input class="rux-input" id="contained-tabs-destination" type="text" value="Houston" />
+                            </div>
+                          </div>
+                          <div class="rux-panel__pane" id="contained-tabs-billing" role="tabpanel" hidden>
+                            <div class="rux-field">
+                              <label class="rux-field__label" for="contained-tabs-rate">Rate</label>
+                              <input class="rux-input" id="contained-tabs-rate" type="text" value="$4,850" />
+                            </div>
+                          </div>
+                          <div class="rux-panel__pane" id="contained-tabs-fleet" role="tabpanel" hidden>
+                            <div class="rux-field">
+                              <label class="rux-field__label" for="contained-tabs-bus">Bus</label>
+                              <input class="rux-input" id="contained-tabs-bus" type="text" value="218" />
+                            </div>
+                          </div>
+                        </div>
+                      </aside>
+                    </div>
+                    <div class="components-app__example-copy">
+                      <h3>Contained panel tabs</h3>
+                      <p>Use this when a panel needs clearer pane switching than loose header tabs provide.</p>
+                    </div>
+                    <footer class="components-app__example-footer">
+                      <code>.rux-tabs--contained</code>
+                    </footer>
+                  </article>
+
+                  <article class="components-app__example">
+                    <div class="components-app__example-preview components-app__example-preview--block">
+                      <aside class="rux-panel components-app__tabs-panel-demo components-app__tabs-panel-demo--attached" aria-label="Attached tabs panel example">
+                        <nav class="rux-panel__tabs rux-tabs rux-tabs--attached rux-tabs--fill" role="tablist" aria-label="Attached panel sections" data-rux-tabs>
+                          <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="attached-tabs-active">Active</button>
+                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-inactive">Inactive</button>
+                          <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-other">Other</button>
+                        </nav>
+                        <div class="rux-panel__body">
+                          <div class="rux-panel__pane" id="attached-tabs-active" role="tabpanel">
+                            <div class="rux-field">
+                              <label class="rux-field__label" for="attached-tabs-email">Email</label>
+                              <input class="rux-input" id="attached-tabs-email" type="email" value="dispatch@example.com" />
+                            </div>
+                          </div>
+                          <div class="rux-panel__pane" id="attached-tabs-inactive" role="tabpanel" hidden>
+                            <div class="rux-field">
+                              <label class="rux-field__label" for="attached-tabs-password">Password</label>
+                              <input class="rux-input" id="attached-tabs-password" type="password" value="contained" />
+                            </div>
+                          </div>
+                          <div class="rux-panel__pane" id="attached-tabs-other" role="tabpanel" hidden>
+                            <div class="rux-field">
+                              <label class="rux-field__label" for="attached-tabs-note">Note</label>
+                              <input class="rux-input" id="attached-tabs-note" type="text" value="Secondary pane" />
+                            </div>
+                          </div>
+                        </div>
+                      </aside>
+                    </div>
+                    <div class="components-app__example-copy">
+                      <h3>Attached panel tabs</h3>
+                      <p>Use when the selected tab should feel physically connected to the pane below.</p>
+                    </div>
+                    <footer class="components-app__example-footer">
+                      <code>.rux-tabs--attached</code>
                     </footer>
                   </article>
                 </div>

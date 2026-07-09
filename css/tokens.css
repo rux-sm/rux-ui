@@ -500,6 +500,7 @@
 
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
+	/* — base (plain .rux-tab, e.g. panel tab strips) — */
 	--rux-tabs-gap: var(--rux-space-2);
 	--rux-tab-height: 28px;
 	--rux-tab-padding-inline: var(--rux-space-3);
@@ -514,6 +515,36 @@
 	--rux-tab-focus-ring: var(--rux-button-focus-ring);
 	--rux-tab-transition-duration: var(--rux-duration-instant);
 	--rux-tab-transition-easing: var(--rux-ease-out);
+
+	/* — .rux-tabs--contained: bordered pill-strip wrapper, same raised-chip
+	     language as .rux-segmented (hence reusing --rux-button-default-bg)
+	     rather than a surface color, so it reads consistently regardless of
+	     what panel/background it's placed against. Radii are nested on
+	     purpose: outer 8px = inner 4px + 4px padding, so the selected tab's
+	     corner sits concentric with the wrapper's. — */
+	--rux-tabs-contained-padding: var(--rux-space-1);
+	--rux-tabs-contained-gap: var(--rux-space-1);
+	--rux-tabs-contained-bg: var(--rux-button-default-bg);
+	--rux-tabs-contained-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-tabs-contained-radius: var(--rux-radius-md);
+	--rux-tabs-contained-tab-radius: var(--rux-button-radius);
+	--rux-tabs-contained-tab-fg: var(--rux-fg-muted);
+	--rux-tabs-contained-tab-hover-bg: var(--rux-color-white-a08);
+	--rux-tabs-contained-tab-selected-bg: var(--rux-tab-selected-bg);
+	--rux-tabs-contained-tab-selected-fg: var(--rux-tab-selected-fg);
+
+	/* — .rux-tabs--attached: sits flush atop a panel body, tabs styled like
+	     file folder dividers rather than a pill strip — */
+	--rux-tabs-attached-bg: transparent;
+	--rux-tabs-attached-border: 0 solid transparent;
+	--rux-tabs-attached-tab-bg: transparent;
+	--rux-tabs-attached-tab-fg: var(--rux-fg-muted);
+	--rux-tabs-attached-tab-hover-bg: var(--rux-color-white-a08);
+	--rux-tabs-attached-tab-selected-bg: var(--rux-surface-1);
+	--rux-tabs-attached-tab-selected-fg: var(--rux-fg);
+	--rux-tabs-attached-tab-border: var(--rux-border-width) solid transparent;
+	--rux-tabs-attached-pane-bg: var(--rux-tabs-attached-tab-selected-bg);
+	--rux-tabs-attached-pane-border: var(--rux-border-width) solid var(--rux-border);
 	/* ─── LAYOUT ROLES ───────────────────────────────────────────────────── */
 
 	--rux-container-xs: 480px;

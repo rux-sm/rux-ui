@@ -152,10 +152,24 @@
 	display: grid;
 	grid-template-rows: minmax(10rem, auto) auto auto;
 	min-width: 0;
-	background: var(--rux-surface-1);
+	background: var(--rux-surface-2);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-card-radius);
 	overflow: hidden;
+}
+
+.components-app__examples--tabs {
+	grid-template-columns: 1fr;
+	gap: var(--rux-space-6);
+}
+
+.components-app__examples--tabs .components-app__example {
+	display: grid;
+	grid-template-rows: auto auto auto;
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+	overflow: visible;
 }
 
 .components-app__example-preview {
@@ -171,6 +185,13 @@
 	background-size: var(--rux-space-4) var(--rux-space-4);
 }
 
+.components-app__examples--tabs .components-app__example-preview {
+	min-height: 10rem;
+	padding-block: var(--rux-space-5);
+	border: 0;
+	border-radius: 0;
+}
+
 .components-app__example-preview--block {
 	align-content: center;
 	flex-direction: column;
@@ -181,10 +202,43 @@
 	width: 100%;
 }
 
+.components-app__tabs-panel-demo {
+	width: min(100%, 28rem);
+	min-height: 13rem;
+	box-shadow: none;
+}
+
+.components-app__tabs-panel-demo--attached {
+	width: min(100%, 48rem);
+	min-height: 12rem;
+	background: transparent;
+	border-radius: 0;
+}
+
+.components-app__tabs-panel-demo .rux-panel__pane {
+	gap: var(--rux-space-3);
+}
+
 .components-app__example-copy {
 	position: relative;
 	padding: var(--rux-space-5);
 	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.components-app__examples--tabs .components-app__example-copy {
+	padding-inline: 0;
+	border-top: 0;
+}
+
+.components-app__examples--tabs .components-app__example-copy h3 {
+	display: block;
+	padding-right: 0;
+	background: transparent;
+	transform: none;
+}
+
+.components-app__examples--tabs .components-app__example-copy p {
+	margin-top: var(--rux-space-1);
 }
 
 .components-app__example-copy h3 {
@@ -207,6 +261,12 @@
 	padding: var(--rux-space-3) var(--rux-space-5);
 	background: var(--rux-surface-0);
 	border-top: var(--rux-border-width) dashed var(--rux-border);
+}
+
+.components-app__examples--tabs .components-app__example-footer {
+	padding-inline: 0;
+	background: transparent;
+	border-top: 0;
 }
 
 .components-app__example-footer code {
