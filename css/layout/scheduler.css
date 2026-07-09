@@ -71,7 +71,8 @@
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
 	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-scheduler-border-color);
-	border-radius: var(--rux-radius-md);
+	border: var(--rux-card-border);
+	border-radius: var(--rux-opt-radius-2);
 }
 
 .rux-scheduler::-webkit-scrollbar {

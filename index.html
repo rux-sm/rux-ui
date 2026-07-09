@@ -61,8 +61,8 @@
               type="button"
               data-module="calendar"
             >
-              <span class="rux-icon">calendar_month</span>
-              Calendar
+              <span class="rux-icon">route</span>
+              Trips
             </button>
 
             <button
@@ -71,7 +71,7 @@
               data-module="my-trips"
             >
               <span class="rux-icon">groups</span>
-              My Trips
+              Bookings
             </button>
 
             <button
@@ -176,7 +176,6 @@
                       <div class="rux-segmented rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
                         <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
                         <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
-                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="self_organized" aria-label="ETB trip" title="Escamilla Tour Buses Trip"><span class="rux-icon" aria-hidden="true">home</span><span class="rux-btn-label">ETB</span></button>
                       </div>
                     </div>
                     </div>
@@ -223,6 +222,19 @@
                 </div>
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
+                  <div class="rux-card">
+                    <header class="rux-card__header"><p class="rux-card__title">Billing Type</p></header>
+                    <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-segmented rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
+                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
+                      </div>
+                      <button class="rux-button rux-button--default" type="button" id="tp-view-manifest-btn" hidden>
+                        <span class="rux-icon" aria-hidden="true">groups</span>
+                        <span class="rux-btn-label">View manifest</span>
+                      </button>
+                    </div>
+                  </div>
                   <div class="rux-card">
                     <header class="rux-card__header"><p class="rux-card__title">Billing Summary</p></header>
                     <div class="rux-card__body rux-card__body--stack">
@@ -418,7 +430,6 @@
                   <article class="rux-card rux-mini-cal" id="rp-minical-card">
                     <header class="rux-card__header">
                       <h3 class="rux-card__title">Calendar</h3>
-                      <button class="rux-button rux-button--ghost" id="mini-cal-today" type="button">Today</button>
                     </header>
                     <div class="rux-card__body rux-mini-cal__body">
                       <header class="rux-mini-cal__header">
@@ -583,20 +594,20 @@
 
 
         <!-- ════════════════════════════════════════════════════════════════
-             MODULE: MY TRIPS
+             MODULE: BOOKINGS
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="my-trips" hidden>
-          <section class="rux-workspace" aria-label="My trips list">
+          <section class="rux-workspace" aria-label="Bookings list">
             <header class="rux-workspace__header rux-workspace__header--table">
               <div class="rux-workspace__heading">
-                <h1 class="rux-workspace__title">My Trips</h1>
+                <h1 class="rux-workspace__title">Bookings</h1>
               </div>
               <div class="rux-workspace__toolbar" role="group" aria-label="Table controls">
                 <button class="rux-button rux-button--default rux-button--icon" type="button" id="my-trips-btn-add" aria-label="New ETB trip"><span class="rux-icon" aria-hidden="true">add</span></button>
               </div>
             </header>
             <div class="rux-workspace__body trips-app__table-wrap">
-              <table class="rux-table trips-app__table" aria-label="My trips roster">
+              <table class="rux-table trips-app__table" aria-label="Bookings roster">
                 <thead>
                   <tr>
                     <th scope="col">Trip</th>
@@ -617,7 +628,7 @@
         <!-- /module:my-trips -->
 
         <!-- ════════════════════════════════════════════════════════════════
-             MODULE: PASSENGER ROSTER (drill-down from My Trips — no nav button)
+             MODULE: PASSENGER ROSTER (drill-down from Bookings — no nav button)
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="passenger-roster" hidden>
 
@@ -669,7 +680,7 @@
           <section class="rux-workspace" aria-label="Passenger roster">
             <header class="rux-workspace__header rux-workspace__header--table">
               <div class="rux-workspace__heading">
-                <button class="rux-button rux-button--ghost rux-button--icon" id="pr-btn-back" type="button" aria-label="Back to My Trips"><span class="rux-icon">arrow_back</span></button>
+                <button class="rux-button rux-button--ghost rux-button--icon" id="pr-btn-back" type="button" aria-label="Back to Bookings"><span class="rux-icon">arrow_back</span></button>
                 <h1 class="rux-workspace__title" id="pr-trip-title">Passenger Roster</h1>
               </div>
               <div class="rux-workspace__toolbar" role="group" aria-label="Table controls">
@@ -887,8 +898,15 @@
                 <!-- Profile -->
                 <div id="pane-profile" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel">
                   <div class="rux-driver-panel__avatar-row">
-                    <div class="rux-driver-panel__avatar" id="dp-avatar" aria-hidden="true">
-                      <span class="rux-icon">person</span>
+                    <div class="rux-driver-panel__avatar-wrap">
+                      <button type="button" class="rux-driver-panel__avatar" id="dp-avatar" aria-label="Upload driver photo">
+                        <span class="rux-driver-panel__avatar-main" id="dp-avatar-main"><span class="rux-icon">person</span></span>
+                        <span class="rux-driver-panel__avatar-overlay" aria-hidden="true"><span class="rux-icon">photo_camera</span></span>
+                      </button>
+                      <button type="button" class="rux-driver-panel__avatar-remove" id="dp-avatar-remove" aria-label="Remove driver photo" hidden>
+                        <span class="rux-icon">close</span>
+                      </button>
+                      <input type="file" id="dp-avatar-input" hidden accept="image/*" />
                     </div>
                     <div class="rux-driver-panel__name-block">
                       <div class="rux-field"><label class="rux-field__label" for="dp-short-name">Short name</label><input class="rux-input" id="dp-short-name" name="shortName" type="text" placeholder="e.g. Sanchez, Jose" maxlength="20" /></div>
@@ -2454,7 +2472,7 @@
         showModule("calendar");
         if (newTrip) newTrip(tripPanel, itinerary);
         if (e.detail?.selfOrganized) {
-          window.TripPanel?.setTripType(tripPanel, "self_organized");
+          window.TripPanel?.setBillingType(tripPanel, "ticketed");
         }
         setActiveTripPane("pane-trip");
         openDrawer();
@@ -3460,6 +3478,12 @@
         }
         if (isList) {
           window.TripsListPanel?.updateTitle?.();
+          // The list table wants the workspace's normal flex:1 full stretch,
+          // not whatever px height fitSchedulerHeight() last pinned the
+          // calendar grid to (it only ever shrinks-to-fit, so a light week
+          // can leave this pinned well below the panel's available height).
+          const workspace = document.querySelector("[data-module='calendar'] .rux-workspace");
+          workspace?.style.removeProperty("height");
         } else {
           renderDayHeaders(currentWeekStart);
           // The scheduler was just unhidden (calendarViewportEl.hidden =
@@ -3636,8 +3660,6 @@
         miniCalMonth.setMonth(miniCalMonth.getMonth() + 1);
         renderMiniCal();
       });
-      document.getElementById("mini-cal-today").addEventListener("click", jumpToToday);
-
       renderMiniCal();
 
       initDrawerDrag(document.getElementById("right-panel-resize-gutter"), rightDrawer, openRightDrawer, closeRightDrawer, () => drawer, "right");

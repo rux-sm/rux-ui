@@ -14,8 +14,9 @@
 	overflow: hidden;
 	background: var(--rux-workspace-bg);
 	color: var(--rux-workspace-fg);
-	border-radius: var(--rux-workspace-radius);
+	border-radius: var(--rux-opt-radius-1);
 	box-shadow: var(--rux-workspace-shadow);
+	border: var(--rux-panel-border);
 }
 
 .rux-workspace__header {

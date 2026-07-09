@@ -3,7 +3,7 @@ import { supabase } from "./supabase.js";
 export async function fetchDrivers() {
   const { data, error } = await supabase
     .from("drivers")
-    .select("id, driver_ref, name, short_name, email, phone, address, city, address_state, zip, date_of_birth, hire_date, cdl_class, license_number, license_state, license_exp, med_card_expiry, endorsements, status, employment_type, emergency_contact_name, emergency_contact_phone, notes, sort_order")
+    .select("id, driver_ref, name, short_name, email, phone, address, city, address_state, zip, date_of_birth, hire_date, cdl_class, license_number, license_state, license_exp, med_card_expiry, endorsements, status, employment_type, emergency_contact_name, emergency_contact_phone, notes, sort_order, photo_path")
     .order("sort_order", { ascending: true, nullsFirst: false })
     .order("name");
   if (error) throw error;
@@ -43,6 +43,59 @@ export async function saveDriver(driver) {
 
 export async function deleteDriver(id) {
   const { error } = await supabase.from("drivers").delete().eq("id", id);
+  if (error) throw error;
+}
+
+/* ── Photos ─────────────────────────────────────────────────────────────── */
+
+const PHOTO_BUCKET = "driver-photos";
+
+export function getDriverPhotoUrl(photoPath) {
+  if (!photoPath) return null;
+  const { data } = supabase.storage.from(PHOTO_BUCKET).getPublicUrl(photoPath);
+  return data?.publicUrl || null;
+}
+
+export async function uploadDriverPhoto(driverId, file) {
+  const ext = file.name.split(".").pop() || "jpg";
+  const photoPath = `${driverId}/photo-${Date.now()}.${ext}`;
+
+  const { data: existing } = await supabase
+    .from("drivers")
+    .select("photo_path")
+    .eq("id", driverId)
+    .single();
+  if (existing?.photo_path) {
+    await supabase.storage.from(PHOTO_BUCKET).remove([existing.photo_path]);
+  }
+
+  const { error: uploadErr } = await supabase.storage
+    .from(PHOTO_BUCKET)
+    .upload(photoPath, file);
+  if (uploadErr) throw uploadErr;
+
+  const { error: updateErr } = await supabase
+    .from("drivers")
+    .update({ photo_path: photoPath })
+    .eq("id", driverId);
+  if (updateErr) throw updateErr;
+
+  return photoPath;
+}
+
+export async function removeDriverPhoto(driverId) {
+  const { data: existing } = await supabase
+    .from("drivers")
+    .select("photo_path")
+    .eq("id", driverId)
+    .single();
+  if (existing?.photo_path) {
+    await supabase.storage.from(PHOTO_BUCKET).remove([existing.photo_path]);
+  }
+  const { error } = await supabase
+    .from("drivers")
+    .update({ photo_path: null })
+    .eq("id", driverId);
   if (error) throw error;
 }
 

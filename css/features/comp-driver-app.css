@@ -138,6 +138,7 @@
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
+	overflow: hidden;
 	width: var(--rux-avatar-md);
 	height: var(--rux-avatar-md);
 	background: var(--rux-surface-2);
@@ -148,6 +149,12 @@
 	font-family: var(--rux-font-mono);
 	letter-spacing: 0;
 	user-select: none;
+}
+
+.driver-app__avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
 }
 
 .driver-app__avatar--inactive {

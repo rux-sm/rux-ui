@@ -575,19 +575,33 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	sync();
 }
 
-/* ── Trip Type ────────────────────────────────────────────────────────────── */
+/* ── Trip Type / Billing Type ────────────────────────────────────────────── */
 
-// Trip Type is a single three-way segmented control (Round Trip / One-Way /
-// ETB Trip) — the generic [data-rux-toggle-group] handler in initTripPanel
-// keeps exactly one button pressed at a time. getTripType/setTripType read/
-// write that shared state so trip-db.js and index.html don't need to know
-// the group's internal markup.
+// Trip Type (Round Trip / One-Way) and Billing Type (Charter / Ticketed) are
+// each a two-way segmented control — the generic [data-rux-toggle-group]
+// handler in initTripPanel keeps exactly one button pressed at a time per
+// group. These getters/setters read/write that shared state so trip-db.js
+// and index.html don't need to know the groups' internal markup.
 function getTripType(root) {
 	return root.querySelector("#tp-trip-type-group [aria-pressed='true']")?.dataset.value || "round_trip";
 }
 
 function setTripType(root, value) {
 	const group = root.querySelector("#tp-trip-type-group");
+	if (!group) return;
+	group.querySelectorAll(".rux-button").forEach((btn) => {
+		const active = btn.dataset.value === value;
+		btn.setAttribute("aria-pressed", String(active));
+		btn.classList.toggle("is-active", active);
+	});
+}
+
+function getBillingType(root) {
+	return root.querySelector("#tp-billing-type-group [aria-pressed='true']")?.dataset.value || "charter";
+}
+
+function setBillingType(root, value) {
+	const group = root.querySelector("#tp-billing-type-group");
 	if (!group) return;
 	group.querySelectorAll(".rux-button").forEach((btn) => {
 		const active = btn.dataset.value === value;
@@ -1069,4 +1083,6 @@ window.TripPanel = {
 	setRoleStatus,
 	getTripType,
 	setTripType,
+	getBillingType,
+	setBillingType,
 };

@@ -203,7 +203,7 @@ import { supabase } from "./supabase.js";
 		return {
 			customer:             fieldVal(root, "tp-customer"),
 			destination:          fieldVal(root, "tp-destination"),
-			is_self_organized:    selectedTripType === "self_organized",
+			is_self_organized:    window.TripPanel?.getBillingType(root) === "ticketed",
 			start_date:           fieldVal(root, "tp-start"),
 			end_date:             fieldVal(root, "tp-end"),
 			trip_type:            selectedTripType === "one_way" ? "one_way" : "round_trip",
@@ -434,9 +434,9 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-end",         trip.end_date);
 
 
-		window.TripPanel?.setTripType(root, trip.is_self_organized
-			? "self_organized"
-			: (trip.trip_type === "one_way" ? "one_way" : "round_trip"));
+		window.TripPanel?.setTripType(root, trip.trip_type === "one_way" ? "one_way" : "round_trip");
+		window.TripPanel?.setBillingType(root, trip.is_self_organized ? "ticketed" : "charter");
+		syncManifestBtn(root);
 
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
 		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
@@ -640,6 +640,7 @@ import { supabase } from "./supabase.js";
 			if (el) el.checked = false;
 		});
 		window.TripPanel?.setTripType(root, "round_trip");
+		window.TripPanel?.setBillingType(root, "charter");
 		resetPaymentRows(root);
 		root.querySelectorAll("[data-req]").forEach((btn) => {
 			btn.setAttribute("aria-pressed", "false");
@@ -657,6 +658,7 @@ import { supabase } from "./supabase.js";
 		currentTripSnapshot = null;
 		currentAssignments = [];
 		currentLoadedTrip = null;
+		syncManifestBtn(root);
 		setEditorMode(root, "new");
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
@@ -796,6 +798,8 @@ import { supabase } from "./supabase.js";
 				currentTripId       = savedId;
 				currentTripSnapshot = { ...tripData };
 				currentAssignments  = snapshotAssignments(assignments);
+				currentLoadedTrip   = { ...tripData, id: savedId };
+				syncManifestBtn(root);
 			}
 
 			setSaveButtonState(saveBtn, { label: "Saved", icon: "check", disabled: true });
@@ -1104,10 +1108,20 @@ export function getCurrentTripId() {
 	return currentTripId;
 }
 
+// Manifest only makes sense for a saved, ticketed trip — Passenger Roster
+// looks passengers up by trip id, and there's nothing to bill/board for a
+// charter trip.
+function syncManifestBtn(root) {
+	const btn = root.querySelector("#tp-view-manifest-btn");
+	if (!btn) return;
+	btn.hidden = !(currentTripId && window.TripPanel?.getBillingType(root) === "ticketed");
+}
+
 export function initTripDB(root, itinerary) {
 	const saveBtn   = root.querySelector("#tp-btn-save");
 	const clearBtn  = root.querySelector("#tp-btn-clear");
 	const deleteBtn = root.querySelector("#tp-btn-delete");
+	const manifestBtn = root.querySelector("#tp-view-manifest-btn");
 
 	let cleanSnapshot = null;
 
@@ -1158,6 +1172,9 @@ export function initTripDB(root, itinerary) {
 		if (e.target.closest("[data-req], [data-rux-toggle-button], [data-role], .rux-trip-panel__role-label")) {
 			requestAnimationFrame(syncSaveBtn);
 		}
+		if (e.target.closest("#tp-billing-type-group")) {
+			requestAnimationFrame(() => syncManifestBtn(root));
+		}
 	});
 
 	saveBtn?.addEventListener("click", async () => {
@@ -1170,6 +1187,10 @@ export function initTripDB(root, itinerary) {
 		clearForm(root, itinerary);
 	});
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
+	manifestBtn?.addEventListener("click", () => {
+		if (!currentLoadedTrip) return;
+		document.dispatchEvent(new CustomEvent("passenger-roster:open", { detail: { trip: currentLoadedTrip } }));
+	});
 
 	return { isFormDirty };
 }

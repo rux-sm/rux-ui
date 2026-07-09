@@ -94,15 +94,24 @@
 	gap: var(--rux-space-3);
 }
 
+.rux-driver-panel__avatar-wrap {
+	position: relative;
+	flex-shrink: 0;
+}
+
 .rux-driver-panel__avatar {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	flex-shrink: 0;
+	position: relative;
+	overflow: hidden;
 	width: 58px;
 	height: 58px;
 	aspect-ratio: 1;
+	margin: 0;
+	padding: 0;
 	background: var(--rux-surface-2);
+	border: 0;
 	border-radius: var(--rux-radius-sm);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
@@ -110,6 +119,69 @@
 	font-family: var(--rux-font-mono);
 	letter-spacing: 0;
 	user-select: none;
+	cursor: pointer;
+}
+
+.rux-driver-panel__avatar-main {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 100%;
+}
+
+.rux-driver-panel__avatar img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: inherit;
+}
+
+.rux-driver-panel__avatar-overlay {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgb(0 0 0 / 45%);
+	color: #fff;
+	opacity: 0;
+	transition: opacity 0.12s ease;
+}
+
+.rux-driver-panel__avatar:hover .rux-driver-panel__avatar-overlay,
+.rux-driver-panel__avatar:focus-visible .rux-driver-panel__avatar-overlay,
+.rux-driver-panel__avatar.is-uploading .rux-driver-panel__avatar-overlay {
+	opacity: 1;
+}
+
+.rux-driver-panel__avatar.is-uploading .rux-driver-panel__avatar-overlay .rux-icon {
+	animation: rux-driver-avatar-spin 0.8s linear infinite;
+}
+
+@keyframes rux-driver-avatar-spin {
+	to { transform: rotate(360deg); }
+}
+
+.rux-driver-panel__avatar-remove {
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	background: var(--rux-surface-1);
+	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-radius: var(--rux-radius-full);
+	color: var(--rux-fg-muted);
+	cursor: pointer;
+}
+
+.rux-driver-panel__avatar-remove .rux-icon {
+	font-size: 12px;
 }
 
 /* — License: endorsement toggles — */

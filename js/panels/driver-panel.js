@@ -12,6 +12,10 @@
   const cdlGroup     = document.getElementById("dp-cdl-group");
   const tripList     = document.getElementById("dp-trip-list");
   const saveOrderBtn = document.getElementById("driver-save-order-btn");
+  const dpAvatarBtn       = document.getElementById("dp-avatar");
+  const dpAvatarMain      = document.getElementById("dp-avatar-main");
+  const dpAvatarInput     = document.getElementById("dp-avatar-input");
+  const dpAvatarRemoveBtn = document.getElementById("dp-avatar-remove");
 
   let db         = null;
   let settingsDb = null;
@@ -62,6 +66,27 @@
   function initials(name) {
     const parts = (name || "").split(" ");
     return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "?";
+  }
+
+  function driverPhotoUrl(d) {
+    return d?.photo_path && db ? db.getDriverPhotoUrl(d.photo_path) : null;
+  }
+
+  // Drives both the drawer's big avatar and (via avatarCellHtml) the table
+  // row thumbnails, so a photo shows up consistently everywhere.
+  function renderAvatar(d) {
+    const photoUrl = driverPhotoUrl(d);
+    dpAvatarMain.innerHTML = photoUrl
+      ? `<img src="${photoUrl}" alt="">`
+      : d?.name
+        ? initials(d.name)
+        : '<span class="rux-icon">person</span>';
+    dpAvatarRemoveBtn.hidden = !photoUrl;
+  }
+
+  function avatarCellHtml(d) {
+    const photoUrl = driverPhotoUrl(d);
+    return photoUrl ? `<img src="${photoUrl}" alt="">` : initials(d.name);
   }
 
   function statusMeta(s) {
@@ -218,8 +243,6 @@
     let didDragRow = false;
 
     list.forEach((d, idx) => {
-      const ini = initials(d.name);
-
       const tr = document.createElement("tr");
       tr.className              = "driver-app__row";
       tr.tabIndex               = 0;
@@ -268,7 +291,7 @@
         <td>
           <div class="driver-app__driver-cell">
             <div class="driver-app__avatar${d.status === "inactive" ? " driver-app__avatar--inactive" : ""}"
-                 aria-hidden="true">${ini}</div>
+                 aria-hidden="true">${avatarCellHtml(d)}</div>
             <div class="driver-app__driver-info">
               <span class="driver-app__driver-name">${d.name}</span>
             </div>
@@ -317,7 +340,7 @@
 
     document.getElementById("dp-title").textContent     = d.name || "Driver";
     document.getElementById("dp-driver-id").textContent = d.driver_ref || "";
-    document.getElementById("dp-avatar").textContent    = initials(d.name);
+    renderAvatar(d);
     document.getElementById("dp-sort-order").value      = d.sort_order ?? "";
     document.getElementById("dp-first-name").value      = first;
     document.getElementById("dp-last-name").value       = last;
@@ -476,10 +499,7 @@
 
     document.getElementById("dp-title").textContent     = "New driver";
     document.getElementById("dp-driver-id").textContent = "";
-    const avatar = document.getElementById("dp-avatar");
-    avatar.textContent = "";
-    avatar.innerHTML   = '<span class="rux-icon">person</span>';
-    
+    renderAvatar(null);
 
     panelEl.querySelectorAll(".rux-driver-panel__pane input, .rux-driver-panel__pane textarea")
       .forEach(f => { f.value = ""; });
@@ -506,6 +526,61 @@
   document.getElementById("dp-btn-add").addEventListener("click", () => {
     clearPanel();
     openDrawer();
+  });
+
+  // ── Avatar photo upload ───────────────────────────────────────────────────
+
+  dpAvatarBtn.addEventListener("click", () => {
+    if (!selectedId) {
+      window.Rux?.toast("Save the driver before adding a photo.");
+      return;
+    }
+    dpAvatarInput.click();
+  });
+
+  dpAvatarInput.addEventListener("change", async () => {
+    const file = dpAvatarInput.files[0];
+    dpAvatarInput.value = "";
+    if (!file || !selectedId || !db) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => { dpAvatarMain.innerHTML = `<img src="${ev.target.result}" alt="">`; };
+    reader.readAsDataURL(file);
+
+    dpAvatarBtn.classList.add("is-uploading");
+    try {
+      const photoPath = await db.uploadDriverPhoto(selectedId, file);
+      const driver = allDrivers.find(x => x.id === selectedId);
+      if (driver) driver.photo_path = photoPath;
+      dpAvatarRemoveBtn.hidden = false;
+      renderRows(getSortedDrivers());
+      applyFilter();
+    } catch (err) {
+      console.error("Photo upload failed:", err);
+      window.Rux?.toast("Photo upload failed — try again.");
+      renderAvatar(allDrivers.find(x => x.id === selectedId));
+    } finally {
+      dpAvatarBtn.classList.remove("is-uploading");
+    }
+  });
+
+  dpAvatarRemoveBtn.addEventListener("click", async () => {
+    if (!selectedId || !db) return;
+    if (!confirm("Remove this driver's photo?")) return;
+    dpAvatarRemoveBtn.disabled = true;
+    try {
+      await db.removeDriverPhoto(selectedId);
+      const driver = allDrivers.find(x => x.id === selectedId);
+      if (driver) driver.photo_path = null;
+      renderAvatar(driver);
+      renderRows(getSortedDrivers());
+      applyFilter();
+    } catch (err) {
+      console.error("Remove photo failed:", err);
+      window.Rux?.toast("Could not remove photo — try again.");
+    } finally {
+      dpAvatarRemoveBtn.disabled = false;
+    }
   });
 
   // ── Column picker v2 — Supabase-persisted, drag-to-reorder ───────────────

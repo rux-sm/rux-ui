@@ -316,6 +316,7 @@
 	--rux-warning-subtle: oklch(80% 0.22 90 / 0.14);
 
 	--rux-info: oklch(60% 0.22 230);
+	--rux-info-bright: oklch(85% 0.2 230);
 	--rux-info-subtle: oklch(70% 0.22 230 / 0.14);
 
 	--rux-danger: oklch(60% 0.22 24);
@@ -377,6 +378,7 @@
 	--rux-panel-border-width: var(--rux-border-width);
 	--rux-panel-border-color: var(--rux-border);
 	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-panel-border-color);
+	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-info-bright); /* TEMPORARY: remove once border color is finalized */
 	--rux-panel-radius: var(--rux-radius-0);
 	--rux-panel-shadow: var(--rux-elevation-0);
 	--rux-panel-footer-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
@@ -414,9 +416,9 @@
 	--rux-card-bg: var(--rux-surface-2);
 	--rux-card-fg: var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border: var(--rux-card-border-width) solid transparent;
+	--rux-card-border: var(--rux-card-border-width) solid var(--rux-danger-bright); /* TEMPORARY: remove once border color is finalized */
 	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
-	--rux-card-radius: var(--rux-radius-md);
+	--rux-card-radius: var(--rux-radius-0);
 	--rux-card-shadow: var(--rux-elevation-0);
 	--rux-card-padding: var(--rux-space-2);
 	--rux-card-padding-compact: var(--rux-space-2); /* dense/absolutely-positioned cards, e.g. .rux-trip-bar */
@@ -583,6 +585,10 @@
 	--rux-z-sticky: 200;
 	--rux-z-overlay: 300;
 	--rux-z-modal: 400;
+
+    --rux-opt-radius-1: var(--rux-radius-0); /* blue */
+	--rux-opt-radius-2: var(--rux-radius-xl); /* red */
+	--rux-opt-radius-2: var(--rux-radius-0); /* green */
 }
 
 /* ==========================================================================
