@@ -938,29 +938,109 @@
   });
 
   // ── Resize handle ─────────────────────────────────────────────────────────
+  // Mirrors the trip panel's initDrawerDrag in index.html (drag-to-close with
+  // a snap-shut threshold, bounce-back to the min width, keyboard resize) —
+  // reimplemented locally since that helper is private to index.html's
+  // module script and this panel has no second drawer to coordinate with.
 
   const handle = document.getElementById("driver-panel-resize-gutter");
-  let resizing = false, startX = 0, startW = 0;
+  const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(panelEl).minWidth));
+  const DRAWER_SNAP_CLOSE = 200;
+  const DRAWER_MAX = 640;
+  const HANDLE_DRAG_THRESHOLD = 5;
+  const DRAWER_KEYBOARD_STEP = 16;
 
-  handle?.addEventListener("pointerdown", (e) => {
-    resizing = true; startX = e.clientX; startW = drawer.offsetWidth;
-    drawer.classList.add("is-resizing");
-    handle.classList.add("is-resizing");
-    document.body.style.cursor = "col-resize";
+  function drawerWidth() {
+    const width = parseInt(getComputedStyle(drawer).getPropertyValue("--drawer-width"), 10);
+    return Number.isFinite(width) ? width : drawer.offsetWidth;
+  }
+
+  function setDrawerWidth(width) {
+    const w = Math.min(DRAWER_MAX, Math.max(0, width));
+    drawer.style.setProperty("--drawer-width", w + "px");
+    drawer.style.setProperty("--drawer-open-width", w + "px");
+    return w;
+  }
+
+  function syncResizeHandleValue() {
+    if (!handle) return;
+    handle.setAttribute("aria-valuemin", "0");
+    handle.setAttribute("aria-valuemax", String(DRAWER_MAX));
+    handle.setAttribute("aria-valuenow", String(Math.round(drawerWidth())));
+  }
+  syncResizeHandleValue();
+
+  handle?.addEventListener("keydown", (e) => {
+    let nextW = null;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      drawer.classList.contains("is-open") ? closeDrawer() : openDrawer();
+      requestAnimationFrame(syncResizeHandleValue);
+      return;
+    }
+    if (e.key === "ArrowRight") nextW = drawerWidth() + DRAWER_KEYBOARD_STEP;
+    if (e.key === "ArrowLeft") nextW = drawerWidth() - DRAWER_KEYBOARD_STEP;
+    if (e.key === "Home") nextW = DRAWER_MIN;
+    if (e.key === "End") nextW = DRAWER_MAX;
+    if (nextW === null) return;
+
     e.preventDefault();
+    if (!drawer.classList.contains("is-open")) openDrawer();
+    const w = setDrawerWidth(nextW);
+    if (w < DRAWER_SNAP_CLOSE) closeDrawer();
+    syncResizeHandleValue();
   });
-  document.addEventListener("pointermove", (e) => {
-    if (!resizing) return;
-    const w = `${Math.max(280, Math.min(600, startW + e.clientX - startX))}px`;
-    drawer.style.setProperty("--drawer-width", w);
-    drawer.style.setProperty("--drawer-open-width", w);
-  });
-  document.addEventListener("pointerup", () => {
-    if (!resizing) return;
-    resizing = false;
-    drawer.classList.remove("is-resizing");
-    handle?.classList.remove("is-resizing");
-    document.body.style.cursor = "";
+
+  handle?.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    const wasOpen = drawer.classList.contains("is-open");
+    const startX = e.clientX;
+    const startW = wasOpen ? drawerWidth() : 0;
+    let lastW = startW;
+    let moved = false;
+
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+
+    const onMove = (ev) => {
+      if (!moved) {
+        if (Math.abs(ev.clientX - startX) < HANDLE_DRAG_THRESHOLD) return;
+        moved = true;
+        drawer.classList.add("is-resizing");
+        handle.classList.add("is-resizing");
+        if (!wasOpen) {
+          drawer.classList.add("is-open");
+          panelEl.inert = false;
+          drawer.setAttribute("aria-hidden", "false");
+          drawer.style.setProperty("--drawer-width", "0px");
+          drawer.style.setProperty("--drawer-open-width", "0px");
+          panelToggleBtn?.setAttribute("aria-pressed", "true");
+        }
+      }
+      const delta = ev.clientX - startX;
+      lastW = startW + delta;
+      setDrawerWidth(lastW);
+      syncResizeHandleValue();
+    };
+    const onUp = () => {
+      drawer.classList.remove("is-resizing");
+      handle.classList.remove("is-resizing");
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      if (!moved) {
+        wasOpen ? closeDrawer() : openDrawer();
+      } else if (lastW < DRAWER_SNAP_CLOSE) {
+        closeDrawer();
+      } else if (lastW < DRAWER_MIN) {
+        drawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
+        drawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
+      }
+      syncResizeHandleValue();
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
   });
 
   // ── Data loading ──────────────────────────────────────────────────────────
