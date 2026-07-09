@@ -39,15 +39,12 @@
 	flex: 1;
 	min-width: 0;
 }
+/* Layout-only modifier — typography comes from the shared .rux-panel__title
+   (applied alongside this class in markup). flex:1 lets the title truncate
+   against its sibling .rux-trip-panel__id span in the heading row. */
 .rux-trip-panel__title {
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-heading-panel-weight);
-	line-height: var(--rux-leading-tight);
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 	flex: 1;
+	padding-inline: var(--rux-space-2);
 }
 .rux-trip-panel__status-group .rux-button {
 	min-width: 0;

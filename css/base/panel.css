@@ -45,6 +45,8 @@
 	line-height: var(--rux-leading-tight);
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	flex: 1;
+	padding-inline: var(--rux-space-2);
 }
 
 .rux-panel__body {
@@ -61,6 +63,7 @@
 	flex-direction: column;
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-padding);
+	padding-top: 0px;
 }
 
 .rux-panel__pane[hidden] {

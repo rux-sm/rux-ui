@@ -36,15 +36,6 @@
 	min-width: 0;
 }
 
-.rux-driver-panel__title {
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-heading-panel-weight);
-	line-height: var(--rux-leading-snug);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-
 .rux-driver-panel__id {
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-text-sm);
