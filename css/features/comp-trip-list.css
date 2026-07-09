@@ -45,7 +45,7 @@
 	padding-bottom: var(--rux-space-4);
 	background: var(--rux-surface-1);
 	border-radius: var(--rux-card-radius);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-card-border);
 }
 
 /* — Trip identity cell — */
