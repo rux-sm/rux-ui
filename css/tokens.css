@@ -602,9 +602,9 @@
    	--rux-input-border: var(--rux-card-border-width) solid var(--rux-success-bright); /* TEMPORARY: remove once border color is finalized */
 
 
-    --rux-opt-radius-1: var(--rux-radius-0).  ;   /* blue   [panel]          */ 
-	--rux-opt-radius-2: var(--rux-radius-0;      /* red    [card]           */
-	--rux-opt-radius-3: var(--rux-radius-0);   /* green  [button] [input] */ 
+    --rux-opt-radius-1: var(--rux-radius-0);  ;   /* blue   [panel]          */ 
+	--rux-opt-radius-2: var(--rux-radius-md);      /* red    [card]           */
+	--rux-opt-radius-3: var(--rux-radius-sm);   /* green  [button] [input] */ 
 }
 
 /* ==========================================================================
