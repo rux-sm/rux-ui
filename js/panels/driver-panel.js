@@ -42,12 +42,20 @@
     // its pre-close size and only gets clipped by the shrinking drawer,
     // instead of snapping to its min-width before the drawer animates.
     drawer.style.setProperty("--drawer-width", "0px");
-    drawer.classList.remove("is-open");
     panelEl.inert = true;
     drawer.setAttribute("aria-hidden", "true");
     tbody.querySelectorAll(".driver-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
     panelToggleBtn?.setAttribute("aria-pressed", "false");
+    // Removing .is-open triggers display:none on the panel content (see
+    // scheduler-app.css), which is instant and unanimatable — do it only
+    // once the width transition actually finishes, so the panel visibly
+    // slides shut instead of vanishing the moment the class comes off.
+    drawer.addEventListener("transitionend", function handler(e) {
+      if (e.target !== drawer || e.propertyName !== "width") return;
+      drawer.classList.remove("is-open");
+      drawer.removeEventListener("transitionend", handler);
+    });
   }
 
   document.getElementById("dp-btn-close").addEventListener("click", closeDrawer);
