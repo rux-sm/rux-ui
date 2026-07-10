@@ -6,7 +6,12 @@
    Fleet/Driver panel drawers. Previously each of those three call sites
    hand-rolled its own near-identical copy of this logic; this factory is
    the single implementation they all now share, so an animation/behavior
-   fix (or the mobile scrim) only needs to be made once.
+   fix (like the mobile scrim below) only needs to be made once.
+
+   On mobile, open() shows a shared tap-to-dismiss scrim behind the drawer
+   (see .scheduler-app__drawer-scrim in scheduler-app.css) instead of the
+   drawer covering the full viewport — the workspace stays visible (dimmed)
+   behind it, and tapping it closes whichever drawer is open.
 
    API
    ---
@@ -56,6 +61,37 @@
 		return outerGutters + innerGutters;
 	}
 
+	/* — Mobile scrim — a single overlay shared by every drawer instance,
+	   since only one drawer is ever open at a time on mobile (see
+	   closeOtherMobilePanel in index.html). Dims + blocks the workspace
+	   behind the open drawer and closes it on tap, Gmail-nav-drawer style. */
+	let scrimEl = null;
+	let scrimCloseFn = null;
+
+	function ensureScrim() {
+		if (scrimEl) return scrimEl;
+		scrimEl = document.createElement("div");
+		scrimEl.className = "scheduler-app__drawer-scrim";
+		scrimEl.addEventListener("click", () => scrimCloseFn?.());
+		document.body.appendChild(scrimEl);
+		return scrimEl;
+	}
+
+	function showScrim(closeFn) {
+		if (!mobilePanelQuery.matches) return;
+		scrimCloseFn = closeFn;
+		ensureScrim().classList.add("is-visible");
+	}
+
+	function hideScrim(closeFn) {
+		// A different drawer may have opened (and claimed the scrim) between
+		// this one's close() starting and this running — only release it if
+		// we're still the current owner, so we don't hide another drawer's scrim.
+		if (scrimCloseFn !== closeFn) return;
+		scrimCloseFn = null;
+		scrimEl?.classList.remove("is-visible");
+	}
+
 	function create(options) {
 		const {
 			drawer,
@@ -85,6 +121,7 @@
 			panel.inert = false;
 			drawer.setAttribute("aria-hidden", "false");
 			toggleBtn?.setAttribute("aria-pressed", "true");
+			showScrim(close);
 			onOpen?.();
 		}
 
@@ -100,6 +137,7 @@
 			panel.inert = true;
 			drawer.setAttribute("aria-hidden", "true");
 			toggleBtn?.setAttribute("aria-pressed", "false");
+			hideScrim(close);
 			onClose?.();
 			if (mobilePanelQuery.matches) {
 				drawer.classList.replace("is-open", "is-closing");

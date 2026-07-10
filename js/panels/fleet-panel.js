@@ -47,7 +47,6 @@
     panelEl.querySelector(".rux-fleet-panel__body")?.scrollTo({ top: 0, behavior: "instant" });
   }
 
-  document.getElementById("fp-btn-close").addEventListener("click", closeDrawer);
   panelToggleBtn?.addEventListener("click", () => {
     if (drawer.classList.contains("is-open")) {
       closeDrawer();

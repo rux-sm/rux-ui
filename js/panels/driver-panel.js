@@ -41,7 +41,6 @@
   const openDrawer  = drawerHandle.open;
   const closeDrawer = drawerHandle.close;
 
-  document.getElementById("dp-btn-close").addEventListener("click", closeDrawer);
   panelToggleBtn?.addEventListener("click", () => {
     if (drawer.classList.contains("is-open")) {
       closeDrawer();

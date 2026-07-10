@@ -125,14 +125,6 @@
                 <div class="rux-trip-panel__heading">
                   <h2 class="rux-panel__title rux-trip-panel__title" id="trip-panel-title">Create New Trip</h2>
                 </div>
-                <div class="rux-cluster">
-                  <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="tp-btn-new" type="button" aria-label="New trip">
-                    <span class="rux-icon" aria-hidden="true">add</span>
-                  </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="tp-btn-close" type="button" aria-label="Close trip editor">
-                    <span class="rux-icon" aria-hidden="true">close</span>
-                  </button>
-                </div>
               </header>
               <div class="rux-panel__nav">
                 <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Trip editor sections" data-rux-tabs data-trip-tabs>
@@ -422,9 +414,6 @@
             <aside class="rux-panel rux-panel--right rux-right-panel" role="dialog" aria-labelledby="right-panel-title">
               <header class="rux-panel__header">
                 <h2 class="rux-panel__title" id="right-panel-title">Tools</h2>
-                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="rp-btn-close" type="button" aria-label="Close tools panel">
-                  <span class="rux-icon" aria-hidden="true">close</span>
-                </button>
               </header>
               <div class="rux-panel__nav">
                 <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
@@ -687,9 +676,6 @@
                   <h2 class="rux-panel__title" id="fp-title">Vehicle</h2>
                   <span class="rux-fleet-panel__id" id="fp-fleet-id"></span>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="fp-btn-close" type="button" aria-label="Close panel">
-                  <span class="rux-icon">close</span>
-                </button>
               </header>
               <div class="rux-panel__nav">
                 <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Vehicle editor sections" data-rux-tabs data-fleet-tabs>
@@ -847,9 +833,6 @@
                   <h2 class="rux-panel__title" id="dp-title">Driver</h2>
                   <span class="rux-driver-panel__id" id="dp-driver-id"></span>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="dp-btn-close" type="button" aria-label="Close panel">
-                  <span class="rux-icon">close</span>
-                </button>
               </header>
               <div class="rux-panel__nav">
                 <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Driver editor sections" data-rux-tabs data-driver-tabs>
@@ -2378,14 +2361,6 @@
         restoreMobilePanelTrigger("trip-panel-drawer");
         tripDrawerHandle.close();
       }
-      document.getElementById("tp-btn-new")?.addEventListener("click", () => {
-        document.dispatchEvent(new CustomEvent("trips:new"));
-      });
-      document.getElementById("tp-btn-close")?.addEventListener("click", () => {
-        if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
-        closeDrawer();
-      });
-
       // ── Trips module → scheduler bridge ────────────────────────────────────
 
       document.addEventListener("trips:open", (e) => {
@@ -3401,8 +3376,6 @@
         restoreMobilePanelTrigger("right-panel-drawer");
         rightDrawerHandle.close();
       }
-      document.getElementById("rp-btn-close")?.addEventListener("click", closeRightDrawer);
-
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-tab[aria-controls]");
       const rpPanes = rightDrawer.querySelectorAll(".rux-panel__pane");

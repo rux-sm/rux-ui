@@ -632,21 +632,7 @@
 	--_shadow: var(--rux-button-shadow);
 }
 
-/* Panel-header actions that only earn their keep on mobile: e.g. the close
-   button (desktop has the drawer/border-drag plus the toggle button to
-   close/reopen a panel, so an explicit "X" is redundant there — but mobile
-   panels are full-screen overlays with neither, so it's the only way out)
-   and "+ new" shortcuts that duplicate a control reachable elsewhere on
-   desktop but are worth surfacing when mobile's screen space is tighter. */
-.scheduler-app__panel-mobile-btn {
-	display: none;
-}
-
 @media (max-width: 500px) {
-	.scheduler-app__panel-mobile-btn {
-		display: inline-flex;
-	}
-
 	/* On mobile the topbar is always collapsed (there's no toggle for it),
 	   so it never needs the "just uncollapsed" top gutter the rule above
 	   gives every other viewport. */
@@ -726,16 +712,43 @@
 		width: 100%;
 	}
 
-	/* Drawer fills full viewport */
+	/* Drawer overlays the workspace as a partial-width panel, Gmail-nav-drawer
+	   style — a sliver of the workspace stays visible (and dimmed by the
+	   scrim below) instead of the drawer eating the full viewport. */
 	.scheduler-app__drawer:is(.is-open, .is-closing) {
 		position: fixed;
-		inset: 0;
+		inset-block: 0;
+		left: 0;
 		z-index: var(--rux-z-modal);
-		width: 100dvw;
+		width: min(86vw, 320px);
 		height: 100dvh;
 		margin-left: 0;
 		margin-right: 0;
 		transition: none;
+	}
+
+	.scheduler-app__drawer--right:is(.is-open, .is-closing) {
+		left: auto;
+		right: 0;
+	}
+
+	/* Tap-to-dismiss scrim behind the drawer, above the workspace and the
+	   fixed bottom nav — created/shown by RuxDrawer (js/core/drawer.js),
+	   shared by every drawer instance since only one is ever open at a time
+	   on mobile. */
+	.scheduler-app__drawer-scrim {
+		position: fixed;
+		inset: 0;
+		z-index: calc(var(--rux-z-modal) - 1);
+		background: oklch(0 0 0 / 0.55);
+		opacity: 0;
+		pointer-events: none;
+		transition: opacity var(--rux-duration-slow) var(--rux-ease-in-out);
+	}
+
+	.scheduler-app__drawer-scrim.is-visible {
+		opacity: 1;
+		pointer-events: auto;
 	}
 
 	.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel, .rux-right-panel) {
