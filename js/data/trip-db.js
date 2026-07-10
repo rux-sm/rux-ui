@@ -1189,7 +1189,7 @@ export function initTripDB(root, itinerary) {
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
 	manifestBtn?.addEventListener("click", () => {
 		if (!currentLoadedTrip) return;
-		document.dispatchEvent(new CustomEvent("passenger-roster:open", { detail: { trip: currentLoadedTrip } }));
+		window.TripView?.set("manifest");
 	});
 
 	return { isFormDirty };

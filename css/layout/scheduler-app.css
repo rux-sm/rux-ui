@@ -98,8 +98,7 @@
 	background: var(--rux-surface-0);
 	min-width: 0;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-2);
-	padding-right: var(--rux-space-3);
+	padding: var(--rux-space-2) var(--rux-space-3);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 	border-bottom: none; /* override the above for mobile, where the topbar is always collapsed */
 	transition: height var(--rux-duration-slow) var(--rux-ease-in-out),
@@ -121,7 +120,7 @@
 
 .scheduler-app__topbar-start {
 	flex: 1 1 auto;
-	gap: var(--rux-space-3);
+	gap: var(--rux-space-0);
 }
 
 .scheduler-app__module-nav {
@@ -130,7 +129,6 @@
 	flex: 1;
 	min-width: 0;
 	gap: var(--rux-space-2);
-	margin: calc(var(--rux-space-1) * -1);
 	overflow-x: auto;
 	scrollbar-width: none;
 }
@@ -160,8 +158,8 @@
 
 .scheduler-app__profile {
 	overflow: hidden;
-	border: var(--rux-border-width) solid var(--rux-border);
-	border-radius: var(--rux-card-radius);
+	border: var(--rux-button-border);
+	border-radius: var(--rux-opt-radius-3);
 }
 
 .scheduler-app__profile img {
@@ -649,23 +647,15 @@
 		display: contents;
 	}
 
-	/* prev/next now live inside .rux-workspace__toolbar in the markup (moved
-	   there to sit on the right on desktop), but on mobile both .heading and
-	   .toolbar collapse to display:contents, so everything below is a direct
-	   item of this 5-column grid regardless of markup nesting — prev/title/
-	   next share row 1, the two drawer-toggle buttons share row 2. */
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #prev-week {
-		grid-column: 1;
-		grid-row: 1;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #next-week {
-		grid-column: 5;
-		grid-row: 1;
-	}
-
+	/* prev/next/today now live inside .rux-workspace__toolbar in the markup
+	   (moved there to sit on the right on desktop), but on mobile .heading
+	   and .toolbar (and .calendar-app__nav, its own child) all collapse to
+	   display:contents, so everything below is a direct item of this
+	   5-column grid regardless of markup nesting — the title takes its own
+	   full-width row, and the two drawer toggles + prev/today/next share a
+	   single row underneath in reading order. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__title {
-		grid-column: 2 / 5;
+		grid-column: 1 / -1;
 		grid-row: 1;
 		justify-self: center;
 		max-width: 100%;
@@ -677,6 +667,21 @@
 		grid-row: 2;
 	}
 
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #prev-week {
+		grid-column: 2;
+		grid-row: 2;
+	}
+
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn {
+		grid-column: 3;
+		grid-row: 2;
+	}
+
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #next-week {
+		grid-column: 4;
+		grid-row: 2;
+	}
+
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .scheduler-app__mobile-panel-btn--right {
 		grid-column: 5;
 		grid-row: 2;
@@ -684,7 +689,10 @@
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header :is(
 		#prev-week,
+		#today-btn,
 		#next-week,
+		.scheduler-app__mobile-panel-btn--left,
+		.scheduler-app__mobile-panel-btn--right,
 		.rux-workspace__toolbar > .rux-button
 	) {
 		width: 100%;
@@ -754,7 +762,7 @@
 	}
 
 
-	/* The transparent mobile nav overlays the schedule instead of reserving space. */
+	/* The fixed mobile nav overlays the schedule instead of reserving space. */
 	.scheduler-app {
 		padding-bottom: 0;
 	}
@@ -813,19 +821,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: flex-start;
-		gap: var(--rux-space-1);
+		gap: var(--rux-space-2);
 		margin: 0;
-		padding: var(--scheduler-app-mobile-nav-padding-top) var(--rux-space-2) var(--rux-space-4);
+		padding: var(--rux-space-2) var(--rux-space-3);
 		overflow: visible;
-		background: linear-gradient(
-			to bottom,
-			transparent 0%,
-			oklch(from var(--rux-surface-1) l c h / 0.06) 42%,
-			oklch(from var(--rux-surface-1) l c h / 0.14) 68%,
-			oklch(from var(--rux-surface-1) l c h / 0.28) 100%
-		);
-		border-top: var(--rux-border-width) solid var(--rux-border);
-		border-top: none; /* override */
+		background: var(--rux-surface-1);
+		border: var(--rux-panel-border);
 	}
 
 	/* Nav style: stacked icon + micro label */

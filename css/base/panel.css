@@ -78,7 +78,7 @@
 	position: relative;
 	z-index: 1;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-	border: none;
+	border-bottom: var(--rux-panel-border);
 }
 
 .rux-panel__nav {
@@ -112,7 +112,7 @@
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-footer-padding);
 	background: var(--rux-panel-bg);
-	border-top: none;
+	border-top: var(--rux-panel-border);
 	position: relative;
 	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);

@@ -627,126 +627,6 @@
 
 
         <!-- ════════════════════════════════════════════════════════════════
-             MODULE: BOOKINGS
-             ════════════════════════════════════════════════════════════════ -->
-        <div class="scheduler-app__module" data-module="my-trips" hidden>
-          <section class="rux-workspace" aria-label="Bookings list">
-            <header class="rux-workspace__header rux-workspace__header--table">
-              <div class="rux-workspace__heading">
-                <h1 class="rux-workspace__title">Bookings</h1>
-              </div>
-              <div class="rux-workspace__toolbar" role="group" aria-label="Table controls">
-                <button class="rux-button rux-button--default rux-button--icon" type="button" id="my-trips-btn-add" aria-label="New ETB trip"><span class="rux-icon" aria-hidden="true">add</span></button>
-              </div>
-            </header>
-            <div class="rux-workspace__body trips-app__table-wrap">
-              <table class="rux-table trips-app__table" aria-label="Bookings roster">
-                <thead>
-                  <tr>
-                    <th scope="col">Trip</th>
-                    <th scope="col">Dates</th>
-                    <th scope="col">Bus</th>
-                    <th scope="col">Passengers</th>
-                    <th scope="col" class="col-owed">Owed</th>
-                    <th scope="col" class="col-paid">Paid</th>
-                    <th scope="col" class="col-balance">Balance</th>
-                    <th scope="col">Confirmed</th>
-                  </tr>
-                </thead>
-                <tbody id="my-trips-roster-body"></tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-        <!-- /module:my-trips -->
-
-        <!-- ════════════════════════════════════════════════════════════════
-             MODULE: PASSENGER ROSTER (drill-down from Bookings — no nav button)
-             ════════════════════════════════════════════════════════════════ -->
-        <div class="scheduler-app__module" data-module="passenger-roster" hidden>
-
-          <!-- Passenger panel drawer -->
-          <div class="scheduler-app__drawer" id="passenger-panel-drawer">
-            <aside class="rux-panel rux-panel--left rux-passenger-panel" role="dialog" aria-labelledby="pp-title">
-              <header class="rux-panel__header">
-                <h2 class="rux-panel__title" id="pp-title">Passenger</h2>
-                <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__panel-mobile-btn" id="pp-btn-close" type="button" aria-label="Close panel">
-                  <span class="rux-icon">close</span>
-                </button>
-              </header>
-              <div class="rux-panel__body">
-                <div class="rux-panel__pane">
-                  <div class="rux-card">
-                    <header class="rux-card__header"><p class="rux-card__title">Passenger Info</p></header>
-                    <div class="rux-card__body rux-card__body--stack">
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><label class="rux-field__label" for="pp-name">Name</label><input class="rux-input" id="pp-name" type="text" /></div>
-                        <div class="rux-field"><label class="rux-field__label" for="pp-phone">Phone</label><input class="rux-input" id="pp-phone" type="tel" /></div>
-                      </div>
-                      <div class="rux-field"><label class="rux-field__label" for="pp-email">Email</label><input class="rux-input" id="pp-email" type="email" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="pp-address">Address</label><input class="rux-input" id="pp-address" type="text" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="pp-dob">Date of birth</label><input class="rux-input" id="pp-dob" type="date" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="pp-notes">Notes</label><textarea class="rux-textarea" id="pp-notes" rows="3"></textarea></div>
-                    </div>
-                  </div>
-                  <div class="rux-card">
-                    <header class="rux-card__header"><p class="rux-card__title">Balance</p></header>
-                    <div class="rux-card__body rux-card__body--stack">
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><label class="rux-field__label" for="pp-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
-                        <div class="rux-field"><label class="rux-field__label" for="pp-paid">Paid</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="pp-paid" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
-                      </div>
-                      <div class="rux-field"><span class="rux-field__label">Status</span><div><span class="rux-badge" id="pp-status-badge">Unpaid</span></div></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <footer class="rux-panel__footer">
-                <button class="rux-button rux-button--default rux-button--danger" id="pp-btn-delete" type="button" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
-                <button class="rux-button rux-button--default" id="pp-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
-                <button class="rux-button rux-button--accent" id="pp-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
-              </footer>
-            </aside>
-          </div>
-          <div class="scheduler-app__gutter scheduler-app__resize-gutter" id="passenger-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize passenger panel" aria-controls="passenger-panel-drawer" tabindex="0"></div>
-          <!-- /passenger-panel-drawer -->
-
-          <section class="rux-workspace" aria-label="Passenger roster">
-            <header class="rux-workspace__header rux-workspace__header--table">
-              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="pr-panel-toggle-btn" aria-label="Open passenger panel" aria-pressed="false" data-opens="passenger-panel-drawer">
-                <span class="rux-icon icon-off">left_panel_open</span>
-                <span class="rux-icon icon-on">left_panel_close</span>
-              </button>
-              <div class="rux-workspace__heading">
-                <button class="rux-button rux-button--ghost rux-button--icon" id="pr-btn-back" type="button" aria-label="Back to Bookings"><span class="rux-icon">arrow_back</span></button>
-                <h1 class="rux-workspace__title" id="pr-trip-title">Passenger Roster</h1>
-              </div>
-              <div class="rux-workspace__toolbar" role="group" aria-label="Table controls">
-                <button class="rux-button rux-button--ghost" id="pr-btn-edit-trip" type="button"><span class="rux-icon">edit</span><span class="rux-btn-label">Edit Trip</span></button>
-                <button class="rux-button rux-button--accent" id="pr-btn-add" type="button"><span class="rux-icon">add</span><span class="rux-btn-label">Add passenger</span></button>
-              </div>
-            </header>
-            <div class="rux-workspace__body trips-app__table-wrap">
-              <table class="rux-table trips-app__table" aria-label="Passenger roster">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Email</th>
-                    <th scope="col" class="col-owed">Owed</th>
-                    <th scope="col" class="col-paid">Paid</th>
-                    <th scope="col" class="col-balance">Balance</th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="passenger-roster-body"></tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-        <!-- /module:passenger-roster -->
-
-        <!-- ════════════════════════════════════════════════════════════════
              MODULE: FLEET
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="fleet" hidden>
@@ -2131,8 +2011,6 @@
     <script src="./js/panels/fleet-panel.js?v=6" defer></script>
     <script src="./js/panels/settings-panel.js?v=2" defer></script>
     <script src="./js/panels/trips-list.js?v=8" defer></script>
-    <script src="./js/panels/my-trips-list.js?v=2" defer></script>
-    <script src="./js/panels/passenger-roster.js?v=1" defer></script>
     <script src="./js/panels/trip-manifest.js?v=1" defer></script>
     <script src="./js/panels/print-schedule.js?v=29" defer></script>
     <script src="./js/panels/components-panel.js" defer></script>
@@ -2200,7 +2078,7 @@
       // Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
       const initialModule = location.hash.slice(1).split("/")[0] || "calendar";
       const normalizedModule = (initialModule === "schedule" || initialModule === "trips") ? "calendar" : initialModule;
-      showModule(["calendar", "my-trips", "fleet", "drivers", "customers", "components", "game", "settings"].includes(normalizedModule)
+      showModule(["calendar", "fleet", "drivers", "customers", "components", "game", "settings"].includes(normalizedModule)
         ? normalizedModule
         : "calendar");
 
@@ -2504,21 +2382,12 @@
         openDrawer();
       });
 
-      document.addEventListener("trips:new", (e) => {
+      document.addEventListener("trips:new", () => {
         if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
         showModule("calendar");
         if (newTrip) newTrip(tripPanel, itinerary);
-        if (e.detail?.selfOrganized) {
-          window.TripPanel?.setBillingType(tripPanel, "ticketed");
-        }
         setActiveTripPane("pane-trip");
         openDrawer();
-      });
-
-      // ── Passenger roster module → scheduler bridge ──────────────────────────
-
-      document.addEventListener("nav:show-module", (e) => {
-        if (e.detail?.module) showModule(e.detail.module);
       });
 
       function setActiveTripPane(panelId) {

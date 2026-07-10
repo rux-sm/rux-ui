@@ -389,7 +389,7 @@
 	--rux-panel-padding-inline: var(--rux-space-2);
 	--rux-panel-nav-padding: var(--rux-space-0) var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
 	--rux-panel-tabs-padding: var(--rux-panel-nav-padding);
-	--rux-panel-padding: var(--rux-space-2) var(--rux-space-3);
+	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3);
 	--rux-panel-content-gap: var(--rux-space-2);
 	--rux-panel-header-min-height: 44px;
 	--rux-panel-nav-min-height: var(--rux-chrome-min-height);
@@ -401,7 +401,7 @@
 	   only thing stopping those columns from collapsing to unusable width.
 	   Deriving it from padding/border/gap tokens means it tracks those
 	   automatically instead of drifting out of sync with a bare px value. */
-	--rux-panel-min-field-width: 163px; /* solved so the derived total matches the prior 360px floor exactly */
+	--rux-panel-min-field-width: 112px; /* solved so the derived total matches the prior 360px floor exactly */
 	--rux-panel-min-content-width: calc(
 		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
 	);

@@ -27,11 +27,17 @@
   const panelToggleBtn = document.getElementById("fleet-panel-toggle-btn");
   const DRAWER_DEFAULT = parseFloat(getComputedStyle(document.querySelector(".scheduler-app"))
     .getPropertyValue("--scheduler-app-drawer-default-width"));
+  // Mobile drawers are full-screen overlays driven by a CSS @keyframes
+  // animation (.is-closing → scheduler-mobile-drawer-out), not the width
+  // transition — scheduler-app.css forces transition:none on them, so the
+  // desktop close path's transitionend listener never fires there.
+  const mobilePanelQuery = window.matchMedia("(max-width: 500px)");
 
   function openDrawer()  {
     const w = DRAWER_DEFAULT + "px";
     drawer.style.setProperty("--drawer-width", w);
     drawer.style.setProperty("--drawer-open-width", w);
+    drawer.classList.remove("is-closing");
     drawer.classList.add("is-open");
     panelEl.inert = false;
     drawer.setAttribute("aria-hidden", "false");
@@ -47,6 +53,16 @@
     tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
     panelToggleBtn?.setAttribute("aria-pressed", "false");
+    if (mobilePanelQuery.matches) {
+      drawer.classList.replace("is-open", "is-closing");
+      const finishClose = (event) => {
+        if (event.target !== panelEl || event.animationName !== "scheduler-mobile-drawer-out") return;
+        drawer.classList.remove("is-closing");
+        panelEl.removeEventListener("animationend", finishClose);
+      };
+      panelEl.addEventListener("animationend", finishClose);
+      return;
+    }
     // Removing .is-open triggers display:none on the panel content (see
     // scheduler-app.css), which is instant and unanimatable — do it only
     // once the width transition actually finishes, so the panel visibly
