@@ -40,7 +40,7 @@
 	--scheduler-app-module-padding: 0;
 	--scheduler-app-resize-line-width: 1px;
 	--scheduler-app-card-radius: var(--rux-opt-radius-2);
-	--scheduler-app-drawer-default-width: 374px;
+	--scheduler-app-drawer-default-width: 314px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */

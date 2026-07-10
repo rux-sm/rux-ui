@@ -9,21 +9,34 @@
 
   const nameInput = document.getElementById("rpm-name");
   const phoneInput = document.getElementById("rpm-phone");
+  const groupInput = document.getElementById("rpm-group");
+  const seatInput = document.getElementById("rpm-seat");
+  const pickupInput = document.getElementById("rpm-pickup");
+  const newCustomerInput = document.getElementById("rpm-new-customer");
   const emailInput = document.getElementById("rpm-email");
   const addressInput = document.getElementById("rpm-address");
   const dobInput = document.getElementById("rpm-dob");
   const notesInput = document.getElementById("rpm-notes");
+  const statusSelect = document.getElementById("rpm-status");
+  const ticketOptionSelect = document.getElementById("rpm-ticket-option");
   const owedInput = document.getElementById("rpm-owed");
-  const paidInput = document.getElementById("rpm-paid");
+  const balanceOutput = document.getElementById("rpm-balance");
+  const paymentRows = document.getElementById("rpm-payment-rows");
+  const paymentAddBtn = document.getElementById("rpm-payment-add-btn");
+  const paymentDeleteBtn = document.getElementById("rpm-payment-delete-btn");
   const statusBadge = document.getElementById("rpm-status-badge");
   const titleEl = document.getElementById("rpm-title");
   const saveBtn = document.getElementById("rpm-btn-save");
   const clearBtn = document.getElementById("rpm-btn-clear");
   const deleteBtn = document.getElementById("rpm-btn-delete");
+  const summaryPaidEl = document.getElementById("rpm-summary-paid");
+  const summarySeatsEl = document.getElementById("rpm-summary-seats");
 
   let db = null;
   let tripDb = null;
   let allPassengers = [];
+  let ticketOptions = [];
+  let capacityTotal = 0;
   let selectedId = null;
 
   async function ensureDb() {
@@ -36,11 +49,15 @@
     return tripDb;
   }
 
-  // ── Balance status ───────────────────────────────────────────────────────
+  // ── Money / balance helpers ──────────────────────────────────────────────
 
   function fmtMoney(value) {
     const n = Number(value) || 0;
     return `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
+
+  function sumPayments(payments) {
+    return (payments || []).reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   }
 
   const STATUS_META = {
@@ -53,15 +70,270 @@
     if (paid > 0) return "partial";
     return "unpaid";
   }
-  function syncStatusBadge() {
+
+  const PASSENGER_STATUS_META = {
+    active:   { label: "Active",   cls: "" },
+    canceled: { label: "Canceled", cls: "rux-badge--danger" },
+    refunded: { label: "Refunded", cls: "rux-badge--warning" },
+    no_show:  { label: "No-show",  cls: "rux-badge--warning" },
+  };
+
+  // ── Payment rows (mirrors the trip-level Payments card recipe) ──────────
+
+  const PAYMENT_METHODS = [
+    { value: "Cash", label: "Cash", icon: "universal_currency_alt" },
+    { value: "Check", label: "Check", icon: "checkbook" },
+    { value: "Card", label: "Card", icon: "credit_card" },
+    { value: "ACH", label: "ACH", icon: "account_balance" },
+    { value: "Zelle", label: "Zelle", icon: "bolt" },
+    { value: "Other", label: "Other", icon: "more_horiz" },
+  ];
+  const PAYMENT_METHOD_ICONS = Object.fromEntries(PAYMENT_METHODS.map((m) => [m.value, m.icon]));
+
+  function escHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function localIsoDate(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  }
+
+  function paymentRowCount() {
+    return paymentRows?.querySelectorAll("[data-payment-row]").length || 0;
+  }
+
+  function createPaymentRow(index) {
+    const row = document.createElement("div");
+    row.className = "rux-trip-panel__payment-row";
+    row.dataset.paymentRow = "";
+    row.innerHTML = `
+      <div class="rux-trip-panel__payment-content">
+        <div class="rux-trip-panel__payment-reference">
+          <span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+          <input type="hidden" data-payment-method id="rpm-payment-method-${index + 1}" />
+          <input class="rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="rpm-payment-ref-${index + 1}" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
+        </div>
+        <div class="rux-trip-panel__payment-date-control">
+          <span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
+          <input class="rux-input rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-date" id="rpm-payment-date-${index + 1}" data-payment-date type="date" aria-label="Payment date" />
+        </div>
+        <div class="rux-input-group rux-input-group--prefix rux-trip-panel__payment-amount">
+          <span class="rux-input-group__prefix">$</span>
+          <input class="rux-input rux-trip-panel__payment-field" id="rpm-payment-amount-${index + 1}" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
+        </div>
+      </div>
+      <button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
+        <span class="rux-icon" aria-hidden="true">delete</span>
+      </button>`;
+    return row;
+  }
+
+  function setPaymentRowMethod(row, method) {
+    const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
+    const content = row.querySelector(".rux-trip-panel__payment-content");
+    row.querySelectorAll("[data-payment-method-icon]").forEach((icon) => {
+      icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
+      icon.title = safeMethod;
+    });
+    if (content) {
+      content.setAttribute("role", "group");
+      content.setAttribute("aria-label", `${safeMethod} payment`);
+    }
+    row.querySelector("[data-payment-method]").value = safeMethod;
+  }
+
+  function formatPaymentAmount(el) {
+    if (!el?.value) return;
+    const value = Number.parseFloat(el.value);
+    el.value = (Number.isFinite(value) ? value : 0).toFixed(2);
+  }
+
+  function formatCompactPaymentDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+    if (!match) return "Date";
+    return `${match[2]}/${match[3]}/${match[1].slice(-2)}`;
+  }
+  function syncPaymentDateLabel(input) {
+    const label = input?.closest(".rux-trip-panel__payment-date-control")?.querySelector("[data-payment-date-label]");
+    if (label) label.textContent = formatCompactPaymentDate(input.value);
+  }
+
+  function syncPaymentButtons() {
+    if (paymentRows) paymentRows.style.display = "flex";
+    if (paymentDeleteBtn) paymentDeleteBtn.disabled = paymentRowCount() === 0;
+  }
+
+  function addPaymentRow(method) {
+    if (!paymentRows) return;
+    const row = createPaymentRow(paymentRowCount());
+    setPaymentRowMethod(row, method);
+    paymentRows.appendChild(row);
+    const dateInput = row.querySelector("[data-payment-date]");
+    if (dateInput) {
+      dateInput.value = localIsoDate();
+      syncPaymentDateLabel(dateInput);
+    }
+    syncPaymentButtons();
+    syncBalance();
+    row.querySelector("[data-payment-amount]")?.focus();
+  }
+
+  function deletePaymentRow(row) {
+    if (!paymentRows || !row) return;
+    const hasData = Array.from(row.querySelectorAll("input")).some((el) => el.type !== "hidden" && el.value);
+    if (hasData && !confirm("Delete this payment?")) return;
+    row.remove();
+    setPaymentSelecting(false);
+    syncPaymentButtons();
+    syncBalance();
+  }
+
+  let paymentSelecting = false;
+  function setPaymentSelecting(on) {
+    paymentSelecting = on;
+    paymentRows?.classList.toggle("is-selecting", on);
+    if (paymentDeleteBtn) {
+      paymentDeleteBtn.setAttribute("aria-pressed", String(on));
+      paymentDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
+      paymentDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete a payment");
+    }
+  }
+
+  const paymentMenuEl = document.createElement("div");
+  paymentMenuEl.className = "rux-menu rux-popover";
+  paymentMenuEl.hidden = true;
+  paymentMenuEl.setAttribute("role", "menu");
+  paymentMenuEl.addEventListener("rux:menu-close", () => { paymentMenuEl.innerHTML = ""; });
+  document.body.appendChild(paymentMenuEl);
+
+  function closePaymentMenu() {
+    if (paymentMenuEl.hidden) return;
+    window.RuxMenu.close(paymentMenuEl, { restoreFocus: false });
+  }
+  function openPaymentMenu() {
+    paymentMenuEl.innerHTML = PAYMENT_METHODS
+      .map((m) => `<button type="button" class="rux-menu__item" role="menuitem" data-payment-method-choice="${m.value}"><span class="rux-icon" aria-hidden="true">${m.icon}</span>${escHtml(m.label)}</button>`)
+      .join("");
+    window.RuxMenu.open(paymentAddBtn, paymentMenuEl, { placement: "bottom-end" });
+    paymentAddBtn?.setAttribute("aria-expanded", "true");
+  }
+
+  paymentRows?.addEventListener("focusout", (event) => {
+    if (event.target.matches("[data-payment-amount]")) formatPaymentAmount(event.target);
+  });
+  paymentRows?.addEventListener("input", (event) => {
+    if (event.target.closest("[data-payment-row]")) syncBalance();
+  });
+  paymentRows?.addEventListener("change", (event) => {
+    if (event.target.matches("[data-payment-date]")) syncPaymentDateLabel(event.target);
+  });
+  paymentRows?.addEventListener("click", (event) => {
+    const selectBtn = event.target.closest("[data-payment-select]");
+    if (selectBtn && paymentSelecting) deletePaymentRow(selectBtn.closest("[data-payment-row]"));
+  });
+  paymentAddBtn?.addEventListener("click", () => {
+    if (!paymentMenuEl.hidden) { closePaymentMenu(); return; }
+    openPaymentMenu();
+  });
+  paymentMenuEl.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-payment-method-choice]");
+    if (!btn) return;
+    closePaymentMenu();
+    addPaymentRow(btn.dataset.paymentMethodChoice);
+  });
+  paymentDeleteBtn?.addEventListener("click", () => setPaymentSelecting(!paymentSelecting));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && paymentSelecting) setPaymentSelecting(false);
+  });
+
+  function resetPaymentRows() {
+    if (!paymentRows) return;
+    paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
+    setPaymentSelecting(false);
+    syncPaymentButtons();
+  }
+
+  function collectPayments() {
+    const rows = paymentRows?.querySelectorAll("[data-payment-row]") || [];
+    return Array.from(rows).map((row, i) => ({
+      position: i,
+      amount: parseFloat(row.querySelector("[data-payment-amount]")?.value) || null,
+      method: row.querySelector("[data-payment-method]")?.value || null,
+      date: row.querySelector("[data-payment-date]")?.value || null,
+      ref: row.querySelector("[data-payment-ref]")?.value?.trim() || null,
+    })).filter((p) => p.amount || p.method || p.date || p.ref);
+  }
+
+  function populatePayments(payments) {
+    const sorted = [...(payments || [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    sorted.forEach((payment, i) => {
+      const row = createPaymentRow(i);
+      setPaymentRowMethod(row, payment.method);
+      paymentRows.appendChild(row);
+      const amountEl = row.querySelector("[data-payment-amount]");
+      if (payment.amount != null) { amountEl.value = payment.amount; formatPaymentAmount(amountEl); }
+      const dateEl = row.querySelector("[data-payment-date]");
+      if (payment.date) dateEl.value = payment.date;
+      syncPaymentDateLabel(dateEl);
+      if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
+    });
+    syncPaymentButtons();
+  }
+
+  // ── Owed / Balance / payment-status ──────────────────────────────────────
+
+  function syncBalance() {
     const owed = parseFloat(owedInput.value) || 0;
-    const paid = parseFloat(paidInput.value) || 0;
+    const paid = sumPayments(collectPayments());
+    if (balanceOutput) balanceOutput.textContent = fmtMoney(owed - paid);
     const meta = STATUS_META[statusKey(owed, paid)];
     statusBadge.className = `rux-badge ${meta.cls}`;
     statusBadge.textContent = meta.label;
   }
-  owedInput?.addEventListener("input", syncStatusBadge);
-  paidInput?.addEventListener("input", syncStatusBadge);
+  owedInput?.addEventListener("input", syncBalance);
+
+  // ── Ticket options (populates the Owed picker) ───────────────────────────
+
+  function populateTicketOptionSelect() {
+    if (!ticketOptionSelect) return;
+    ticketOptionSelect.innerHTML = `<option value="">Manual amount</option>` +
+      ticketOptions.map((o) => `<option value="${o.id}">${escHtml(o.label || "Option")} — ${fmtMoney(o.price)}</option>`).join("");
+    window.Rux?.syncSelectPlaceholders?.(passengerCard);
+  }
+
+  ticketOptionSelect?.addEventListener("change", () => {
+    const option = ticketOptions.find((o) => o.id === ticketOptionSelect.value);
+    if (option) {
+      owedInput.value = Number(option.price || 0).toFixed(2);
+      syncBalance();
+    }
+  });
+
+  async function loadTicketOptions(tripId) {
+    await ensureDb();
+    try {
+      ticketOptions = await db.fetchTicketOptions(tripId);
+    } catch (err) {
+      console.error("fetchTicketOptions failed:", err);
+      ticketOptions = [];
+    }
+    populateTicketOptionSelect();
+  }
+
+  async function loadCapacity(tripId) {
+    await ensureDb();
+    try {
+      capacityTotal = await db.fetchTripCapacity(tripId);
+    } catch (err) {
+      console.error("fetchTripCapacity failed:", err);
+      capacityTotal = 0;
+    }
+  }
 
   // ── Row rendering ─────────────────────────────────────────────────────────
 
@@ -69,25 +341,26 @@
     manifestBody.innerHTML = "";
     if (!allPassengers.length) {
       manifestBody.innerHTML =
-        `<tr><td colspan="7" class="trips-app__empty">No passengers yet — add one to get started.</td></tr>`;
+        `<tr><td colspan="8" class="trips-app__empty">No passengers yet — add one to get started.</td></tr>`;
       return;
     }
     allPassengers.forEach((p) => {
       const owed = Number(p.amount_owed) || 0;
-      const paid = Number(p.amount_paid) || 0;
-      const meta = STATUS_META[statusKey(owed, paid)];
+      const paid = sumPayments(p.payments);
+      const statusMeta = PASSENGER_STATUS_META[p.status || "active"] || PASSENGER_STATUS_META.active;
       const tr = document.createElement("tr");
       tr.className = "trips-app__row";
       tr.tabIndex = 0;
       tr.dataset.id = p.id;
       tr.innerHTML = `
-        <td>${p.name || "—"}</td>
-        <td>${p.phone || "—"}</td>
-        <td>${p.email || "—"}</td>
+        <td>${escHtml(p.name) || "—"}</td>
+        <td>${escHtml(p.phone) || "—"}</td>
+        <td>${escHtml(p.group_label) || "—"}</td>
+        <td>${escHtml(p.seat) || "—"}</td>
         <td class="col-owed">${fmtMoney(owed)}</td>
         <td class="col-paid">${fmtMoney(paid)}</td>
         <td class="col-balance">${fmtMoney(owed - paid)}</td>
-        <td><span class="rux-badge rux-badge--dot ${meta.cls}">${meta.label}</span></td>
+        <td><span class="rux-badge rux-badge--dot ${statusMeta.cls}">${statusMeta.label}</span></td>
       `;
       tr.addEventListener("click", () => selectRow(p));
       tr.addEventListener("keydown", (e) => {
@@ -97,20 +370,41 @@
     });
   }
 
+  // ── Manifest Status summary ("N of M paid" / "X of Y seats filled") ─────
+
+  function renderSummary() {
+    const active = allPassengers.filter((p) => (p.status || "active") === "active");
+    const paidCount = active.filter((p) => statusKey(Number(p.amount_owed) || 0, sumPayments(p.payments)) === "paid").length;
+    if (summaryPaidEl) summaryPaidEl.textContent = `${paidCount} of ${active.length} paid`;
+    if (summarySeatsEl) {
+      summarySeatsEl.textContent = capacityTotal > 0
+        ? `${active.length} of ${capacityTotal} seats filled`
+        : "No bus assigned";
+    }
+  }
+
   // ── Right-panel form ─────────────────────────────────────────────────────
 
   function populateForm(p) {
     titleEl.textContent = p.name || "Passenger";
     nameInput.value = p.name || "";
     phoneInput.value = p.phone || "";
+    groupInput.value = p.group_label || "";
+    seatInput.value = p.seat || "";
+    pickupInput.value = p.pickup_location || "";
+    newCustomerInput.checked = p.is_new_customer !== false;
     emailInput.value = p.email || "";
     addressInput.value = p.address || "";
     dobInput.value = p.dob || "";
     notesInput.value = p.notes || "";
+    statusSelect.value = p.status || "active";
+    ticketOptionSelect.value = p.ticket_option_id || "";
     owedInput.value = p.amount_owed ?? "";
-    paidInput.value = p.amount_paid ?? "";
-    syncStatusBadge();
+    resetPaymentRows();
+    populatePayments(p.payments);
+    syncBalance();
     window.Rux?.syncDateInputs(passengerCard);
+    window.Rux?.syncSelectPlaceholders?.(passengerCard);
   }
 
   function selectRow(p) {
@@ -125,24 +419,37 @@
     selectedId = null;
     deleteBtn.disabled = true;
     titleEl.textContent = "New passenger";
-    [nameInput, phoneInput, emailInput, addressInput, dobInput, notesInput, owedInput, paidInput]
+    [nameInput, phoneInput, groupInput, seatInput, pickupInput, emailInput, addressInput, dobInput, notesInput, owedInput]
       .forEach((f) => { if (f) f.value = ""; });
-    syncStatusBadge();
+    newCustomerInput.checked = true;
+    statusSelect.value = "active";
+    ticketOptionSelect.value = "";
+    resetPaymentRows();
+    syncBalance();
+    window.Rux?.syncSelectPlaceholders?.(passengerCard);
     manifestBody.querySelectorAll(".trips-app__row").forEach((r) => r.classList.remove("is-selected"));
   }
 
   clearBtn?.addEventListener("click", clearForm);
 
   function readForm() {
+    const payments = collectPayments();
     return {
       name: nameInput.value.trim() || null,
       phone: phoneInput.value.trim() || null,
+      group_label: groupInput.value.trim() || null,
+      seat: seatInput.value.trim() || null,
+      pickup_location: pickupInput.value.trim() || null,
+      is_new_customer: newCustomerInput.checked,
       email: emailInput.value.trim() || null,
       address: addressInput.value.trim() || null,
       dob: dobInput.value || null,
       notes: notesInput.value.trim() || null,
+      status: statusSelect.value || "active",
+      ticket_option_id: ticketOptionSelect.value || null,
       amount_owed: parseFloat(owedInput.value) || null,
-      amount_paid: parseFloat(paidInput.value) || null,
+      amount_paid: sumPayments(payments) || null,
+      payments,
     };
   }
 
@@ -192,15 +499,16 @@
   async function loadPassengers() {
     const { getCurrentTripId } = await ensureTripDb();
     const tripId = getCurrentTripId();
-    if (!tripId) { allPassengers = []; renderRows(); return; }
+    if (!tripId) { allPassengers = []; renderRows(); renderSummary(); return; }
     await ensureDb();
     try {
       allPassengers = await db.fetchPassengers(tripId);
       renderRows();
+      renderSummary();
     } catch (err) {
       console.error("fetchPassengers failed:", err);
       manifestBody.innerHTML =
-        `<tr><td colspan="7" class="trips-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
+        `<tr><td colspan="8" class="trips-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
     }
   }
 
@@ -225,7 +533,10 @@
     if (!available) return;
     document.querySelector('[data-right-tabs] .rux-tab[aria-controls="rp-pane-navigate"]')?.click();
     clearForm();
-    await loadPassengers();
+    const { getCurrentTripId } = await ensureTripDb();
+    const tripId = getCurrentTripId();
+    await Promise.all([loadPassengers(), loadTicketOptions(tripId), loadCapacity(tripId)]);
+    renderSummary();
   }
 
   window.TripManifest = { refresh };

@@ -575,6 +575,83 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	sync();
 }
 
+/* ── Ticket Pricing (Billing tab, Ticketed trips only) ───────────────────── */
+
+// Named price options a Ticketed trip can offer (e.g. "Single", "Double —
+// per person"). Same repeating-list recipe as Trip Contacts: a plain "+"
+// appends a blank row immediately (no type menu needed, unlike Payments),
+// and the header Delete button arms "select which one" mode.
+function initTicketPricing(root) {
+	const ticketList = root.querySelector("#tp-ticket-options-list");
+	const ticketAddBtn = root.querySelector("#tp-ticket-add-btn");
+	const ticketDeleteBtn = root.querySelector("#tp-ticket-delete-btn");
+	if (!ticketList) return;
+
+	let rowSeq = 0;
+	const ticketOptionCount = () => ticketList.querySelectorAll("[data-ticket-option-row]").length;
+	const syncTicketButtons = () => {
+		if (ticketDeleteBtn) ticketDeleteBtn.disabled = ticketOptionCount() === 0;
+	};
+	const createTicketOptionRow = () => {
+		const n = ++rowSeq;
+		const row = document.createElement("div");
+		row.className = "rux-trip-panel__contact-row";
+		row.dataset.ticketOptionRow = "";
+		row.innerHTML =
+			`<div class="rux-trip-panel__contact-fields">
+				<div class="rux-field"><label class="rux-field__label" for="tp-ticket-label-${n}">Option</label><input class="rux-input" id="tp-ticket-label-${n}" data-ticket-label type="text" placeholder="e.g. Single" /></div>
+				<div class="rux-field"><label class="rux-field__label" for="tp-ticket-price-${n}">Price</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-ticket-price-${n}" data-ticket-price type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+			</div>
+			<button type="button" class="rux-trip-panel__contact-select" data-ticket-option-select aria-label="Delete option">
+				<span class="rux-icon" aria-hidden="true">delete</span>
+			</button>`;
+		return row;
+	};
+	const addTicketOptionRow = ({ focus = true } = {}) => {
+		const row = createTicketOptionRow();
+		ticketList.appendChild(row);
+		syncTicketButtons();
+		if (focus) row.querySelector("[data-ticket-label]")?.focus();
+		return row;
+	};
+
+	let selecting = false;
+	const setSelecting = (on) => {
+		selecting = on;
+		ticketList.classList.toggle("is-selecting", on);
+		if (ticketDeleteBtn) {
+			ticketDeleteBtn.setAttribute("aria-pressed", String(on));
+			ticketDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
+			ticketDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete an option");
+		}
+	};
+	const deleteTicketOption = (row) => {
+		const hasData = Array.from(row.querySelectorAll("input")).some((el) => el.value);
+		if (hasData && !confirm("Delete this option?")) return;
+		row.remove();
+		setSelecting(false);
+		syncTicketButtons();
+	};
+
+	ticketAddBtn?.addEventListener("click", () => addTicketOptionRow());
+	ticketDeleteBtn?.addEventListener("click", () => setSelecting(!selecting));
+	ticketList.addEventListener("click", (e) => {
+		const selectBtn = e.target.closest("[data-ticket-option-select]");
+		if (selectBtn && selecting) deleteTicketOption(selectBtn.closest("[data-ticket-option-row]"));
+	});
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "Escape" && selecting) setSelecting(false);
+	});
+	root.addEventListener("rux:ticket-option-row-needed", () => addTicketOptionRow({ focus: false }));
+	root.addEventListener("rux:trip-cleared", () => {
+		ticketList.querySelectorAll("[data-ticket-option-row]").forEach((row) => row.remove());
+		setSelecting(false);
+		syncTicketButtons();
+	});
+
+	syncTicketButtons();
+}
+
 /* ── Trip Type / Billing Type ────────────────────────────────────────────── */
 
 // Trip Type (Round Trip / One-Way) and Billing Type (Charter / Ticketed) are
@@ -608,6 +685,14 @@ function setBillingType(root, value) {
 		btn.setAttribute("aria-pressed", String(active));
 		btn.classList.toggle("is-active", active);
 	});
+	syncTicketPricingVisibility(root);
+}
+
+// Ticket Pricing only makes sense for Ticketed trips — Charter trips bill a
+// single quoted price, not per-passenger options.
+function syncTicketPricingVisibility(root) {
+	const card = root.querySelector("#tp-ticket-pricing-card");
+	if (card) card.hidden = getBillingType(root) !== "ticketed";
 }
 
 /* ── Tabs ───────────────────────────────────────────────────────────────── */
@@ -678,10 +763,12 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			});
 			btn.setAttribute("aria-pressed", "true");
 			btn.classList.add("is-active");
+			if (group.id === "tp-billing-type-group") syncTicketPricingVisibility(root);
 		});
 	});
 
 	initBillingWorkflow(root);
+	initTicketPricing(root);
 
 	/* ── Requirements ───────────────────────────────────────────────────── */
 

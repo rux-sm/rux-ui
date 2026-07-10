@@ -387,10 +387,10 @@
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-padding-block: var(--rux-space-2);
 	--rux-panel-padding-inline: var(--rux-space-2);
-	--rux-panel-nav-padding: var(--rux-space-0) var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
+	--rux-panel-nav-padding: var(--rux-space-0) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
 	--rux-panel-tabs-padding: var(--rux-panel-nav-padding);
 	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3);
-	--rux-panel-content-gap: var(--rux-space-2);
+	--rux-panel-content-gap: var(--rux-space-3);
 	--rux-panel-header-min-height: 44px;
 	--rux-panel-nav-min-height: var(--rux-chrome-min-height);
 	--rux-panel-tabs-min-height: var(--rux-panel-nav-min-height);
@@ -420,9 +420,9 @@
 	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
 	--rux-card-radius: var(--rux-opt-radius-2);
 	--rux-card-shadow: var(--rux-elevation-0);
-	--rux-card-padding: var(--rux-space-2);
+	--rux-card-padding: var(--rux-space-3);
 	--rux-card-padding-compact: var(--rux-space-2); /* dense/absolutely-positioned cards, e.g. .rux-trip-bar */
-	--rux-card-content-gap: var(--rux-space-2);
+	--rux-card-content-gap: var(--rux-space-4);
 	--rux-card-header-min-height: var(--rux-panel-header-min-height);
 	--rux-card-header-bg: var(--rux-card-bg);
 	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border-subtle);

@@ -166,7 +166,8 @@
 .rux-trip-panel__contact-select:hover {
 	color: var(--rux-danger-hover);
 }
-#tp-contacts-list.is-selecting .rux-trip-panel__contact-select {
+#tp-contacts-list.is-selecting .rux-trip-panel__contact-select,
+#tp-ticket-options-list.is-selecting .rux-trip-panel__contact-select {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
@@ -276,7 +277,8 @@
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
 }
-.rux-trip-panel__payment-rows:has([data-payment-row]) > .rux-trip-panel__payment-empty {
+.rux-trip-panel__payment-rows:has([data-payment-row]) > .rux-trip-panel__payment-empty,
+.rux-trip-panel__payment-rows:has([data-ticket-option-row]) > .rux-trip-panel__payment-empty {
 	display: none;
 }
 /* Outer row is unstyled layout only — the pill background/border lives on
@@ -485,13 +487,16 @@
 .rux-trip-panel__payment-select:hover {
 	color: var(--rux-danger-hover);
 }
-#tp-payment-rows.is-selecting .rux-trip-panel__payment-select {
+#tp-payment-rows.is-selecting .rux-trip-panel__payment-select,
+#rpm-payment-rows.is-selecting .rux-trip-panel__payment-select {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
 }
-#tp-payment-delete-btn:disabled {
+#tp-payment-delete-btn:disabled,
+#tp-ticket-delete-btn:disabled,
+#rpm-payment-delete-btn:disabled {
 	display: none;
 }
 
@@ -773,7 +778,7 @@
    Requirement buttons:    400px
    ========================================================================== */
 
-@container (max-width: 350px) {
+@container (max-width: 311px) {
 	.rux-trip-panel__cols-2,
 	.rux-trip-panel__cols-3 {
 		--_cols: 1;

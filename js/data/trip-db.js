@@ -138,6 +138,11 @@ import { supabase } from "./supabase.js";
 		paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
 	}
 
+	function resetTicketOptionRows(root) {
+		root.querySelector("#tp-ticket-options-list")
+			?.querySelectorAll("[data-ticket-option-row]").forEach((row) => row.remove());
+	}
+
 	function syncBusCount(root, count) {
 		const value = Math.max(1, Math.min(20, parseInt(count, 10) || 1));
 		const input = root.querySelector("#tp-buses");
@@ -315,6 +320,15 @@ import { supabase } from "./supabase.js";
 		})).filter(p => p.amount || p.method || p.date || p.ref);
 	}
 
+	function collectTicketOptions(root) {
+		const rows = root.querySelectorAll("#tp-ticket-options-list [data-ticket-option-row]");
+		return Array.from(rows).map((row, i) => ({
+			position: i,
+			label: row.querySelector("[data-ticket-label]")?.value?.trim() || null,
+			price: parseFloat(row.querySelector("[data-ticket-price]")?.value) || null,
+		})).filter(o => o.label || o.price);
+	}
+
 	function collectStops(itinerary) {
 		return itinerary.getStops().map((s, i) => ({
 			position:    i,
@@ -453,6 +467,7 @@ import { supabase } from "./supabase.js";
 		}
 		setVal(root, "tp-notes",       trip.notes);
 		resetPaymentRows(root);
+		resetTicketOptionRows(root);
 		// Billing — treat legacy `confirmed: true` (no contract_status) as signed
 		const contractEl = root.querySelector("#tp-contract-signed");
 		if (contractEl) contractEl.checked = trip.contract_status === "Signed"
@@ -550,6 +565,36 @@ import { supabase } from "./supabase.js";
 		if (paymentDeleteBtn) paymentDeleteBtn.disabled = !hasPayments;
 	}
 
+	// Mirrors createTicketOptionRow's add-button counterpart in trip-panel.js.
+	function createTicketOptionRow(index) {
+		const row = document.createElement("div");
+		row.className = "rux-trip-panel__contact-row";
+		row.dataset.ticketOptionRow = "";
+		row.innerHTML =
+			`<div class="rux-trip-panel__contact-fields">
+				<div class="rux-field"><label class="rux-field__label" for="tp-ticket-label-${index + 1}">Option</label><input class="rux-input" id="tp-ticket-label-${index + 1}" data-ticket-label type="text" placeholder="e.g. Single" /></div>
+				<div class="rux-field"><label class="rux-field__label" for="tp-ticket-price-${index + 1}">Price</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-ticket-price-${index + 1}" data-ticket-price type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+			</div>
+			<button type="button" class="rux-trip-panel__contact-select" data-ticket-option-select aria-label="Delete option">
+				<span class="rux-icon" aria-hidden="true">delete</span>
+			</button>`;
+		return row;
+	}
+
+	function populateTicketOptions(root, options) {
+		const list = root.querySelector("#tp-ticket-options-list");
+		if (!list) return;
+		const sorted = [...(options || [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+		sorted.forEach((option, i) => {
+			const row = createTicketOptionRow(i);
+			list.appendChild(row);
+			if (option.label) row.querySelector("[data-ticket-label]").value = option.label;
+			if (option.price != null) row.querySelector("[data-ticket-price]").value = option.price;
+		});
+		const ticketDeleteBtn = root.querySelector("#tp-ticket-delete-btn");
+		if (ticketDeleteBtn) ticketDeleteBtn.disabled = !sorted.length;
+	}
+
 	function populateAssignments(root, assignments) {
 		const roleKeyMap = { "driver": "driver", "co-driver": "coDriver", "relief-start": "relief1", "relief-end": "relief2" };
 		assignments.forEach((assignment, i) => {
@@ -642,6 +687,7 @@ import { supabase } from "./supabase.js";
 		window.TripPanel?.setTripType(root, "round_trip");
 		window.TripPanel?.setBillingType(root, "charter");
 		resetPaymentRows(root);
+		resetTicketOptionRows(root);
 		root.querySelectorAll("[data-req]").forEach((btn) => {
 			btn.setAttribute("aria-pressed", "false");
 			btn.classList.remove("is-active");
@@ -700,6 +746,7 @@ import { supabase } from "./supabase.js";
 				: compactPayload(nextTripData);
 			const assignments = collectAssignments(root);
 			const payments = collectPayments(root);
+			const ticketOptions = collectTicketOptions(root);
 
 			if (!tripData.start_date || !tripData.end_date) {
 				throw new Error("Start date and end date are required.");
@@ -793,6 +840,19 @@ import { supabase } from "./supabase.js";
 				if (paymentsErr) throw paymentsErr;
 			}
 
+			// Replace ticket pricing options
+			const { error: deleteTicketOptionsErr } = await supabase
+				.from("trip_ticket_options")
+				.delete()
+				.eq("trip_id", savedId);
+			if (deleteTicketOptionsErr) throw deleteTicketOptionsErr;
+			if (ticketOptions.length) {
+				const { error: ticketOptionsErr } = await supabase
+					.from("trip_ticket_options")
+					.insert(ticketOptions.map(o => ({ trip_id: savedId, ...o })));
+				if (ticketOptionsErr) throw ticketOptionsErr;
+			}
+
 			// Only update module state if the user hasn't navigated to a different trip mid-save.
 			if (currentTripId === savingTripId) {
 				currentTripId       = savedId;
@@ -844,7 +904,7 @@ import { supabase } from "./supabase.js";
 	/* ── Fetch ───────────────────────────────────────────────────────────── */
 
 export async function fetchTrips() {
-	const [tripsResult, paymentsResult, docsResult, passengersResult] = await Promise.all([
+	const [tripsResult, paymentsResult, docsResult, passengersResult, ticketOptionsResult] = await Promise.all([
 		supabase
 			.from("trips")
 			.select(`
@@ -869,6 +929,10 @@ export async function fetchTrips() {
 			.from("trip_passengers")
 			.select("*")
 			.order("position", { ascending: true }),
+		supabase
+			.from("trip_ticket_options")
+			.select("*")
+			.order("position", { ascending: true }),
 	]);
 	if (tripsResult.error) throw tripsResult.error;
 	if (paymentsResult.error) throw paymentsResult.error;
@@ -891,6 +955,12 @@ export async function fetchTrips() {
 		passengersByTrip.get(p.trip_id).push(p);
 	}
 
+	const ticketOptionsByTrip = new Map();
+	for (const o of ticketOptionsResult?.data ?? []) {
+		if (!ticketOptionsByTrip.has(o.trip_id)) ticketOptionsByTrip.set(o.trip_id, []);
+		ticketOptionsByTrip.get(o.trip_id).push(o);
+	}
+
 	return (tripsResult.data ?? []).map(trip => ({
 		...trip,
 		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...a }) => ({
@@ -900,6 +970,7 @@ export async function fetchTrips() {
 		trip_payments: paymentsByTrip.get(trip.id) ?? [],
 		trip_passengers: passengersByTrip.get(trip.id) ?? [],
 		trip_documents: docsByTrip.get(trip.id) ?? [],
+		trip_ticket_options: ticketOptionsByTrip.get(trip.id) ?? [],
 	}));
 }
 
@@ -994,6 +1065,7 @@ export function loadTrip(root, itinerary, trip) {
 	}
 
 	populatePayments(root, trip.trip_payments ?? []);
+	populateTicketOptions(root, trip.trip_ticket_options ?? []);
 	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 	populateStops(itinerary, trip.trip_stops ?? trip.stops ?? []);
 

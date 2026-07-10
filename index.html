@@ -146,7 +146,6 @@
                 <!-- Trip -->
                 <div id="pane-trip" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel">
                   <div class="rux-card">
-                    <header class="rux-card__header"><p class="rux-card__title">Trip Information</p></header>
                     <div class="rux-card__body rux-card__body--stack">
                     <div class="rux-trip-panel__logistics-grid">
                       <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
@@ -172,7 +171,6 @@
                     </div>
                   </div>
                   <div class="rux-card">
-                    <header class="rux-card__header"><p class="rux-card__title">Trip Requirements</p></header>
                     <div class="rux-card__body">
                     <div class="rux-trip-panel__requirements-grid">
                       <div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
@@ -214,7 +212,6 @@
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
-                    <header class="rux-card__header"><p class="rux-card__title">Billing Type</p></header>
                     <div class="rux-card__body rux-card__body--stack">
                       <div class="rux-segmented rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group>
                         <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
@@ -226,8 +223,24 @@
                       </button>
                     </div>
                   </div>
+                  <div class="rux-card" id="tp-ticket-pricing-card" hidden>
+                    <header class="rux-card__header">
+                      <p class="rux-card__title">Ticket Pricing</p>
+                      <div class="rux-cluster">
+                        <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="tp-ticket-delete-btn" disabled aria-pressed="false" aria-label="Delete an option"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                        <button class="rux-button rux-button--default rux-button--icon" type="button" id="tp-ticket-add-btn" aria-label="Add option"><span class="rux-icon" aria-hidden="true">add</span></button>
+                      </div>
+                    </header>
+                    <div class="rux-card__body">
+                      <div class="rux-trip-panel__payment-rows" id="tp-ticket-options-list">
+                        <div class="rux-trip-panel__payment-empty" role="status">
+                          <span class="rux-icon" aria-hidden="true">confirmation_number</span>
+                          <span>No priced options — passengers use a manual Owed amount</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div class="rux-card">
-                    <header class="rux-card__header"><p class="rux-card__title">Billing Summary</p></header>
                     <div class="rux-card__body rux-card__body--stack">
                     <div class="rux-field">
                       <label class="rux-field__label" for="tp-price">Quoted Price</label>
@@ -242,7 +255,6 @@
                     </div>
                   </div>
                   <div class="rux-card rux-trip-panel__billing-workflow">
-                    <header class="rux-card__header"><p class="rux-card__title">Billing Workflow</p></header>
                     <div class="rux-card__body rux-card__body--stack">
                     <div class="rux-trip-panel__billing-step" data-billing-step data-billing-key="contractSigned">
                       <p class="rux-field__label" data-billing-label>Contract</p>
@@ -391,7 +403,8 @@
                   <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Phone</th>
-                    <th scope="col">Email</th>
+                    <th scope="col">Group</th>
+                    <th scope="col">Seat</th>
                     <th scope="col" class="col-owed">Owed</th>
                     <th scope="col" class="col-paid">Paid</th>
                     <th scope="col" class="col-balance">Balance</th>
@@ -423,10 +436,7 @@
               </div>
               <div class="rux-panel__body">
                 <div id="rp-pane-navigate" class="rux-panel__pane" role="tabpanel">
-                  <article class="rux-card">
-                    <header class="rux-card__header">
-                      <h3 class="rux-card__title">Trip View</h3>
-                    </header>
+                  <article class="rux-card" id="rp-trip-view-card">
                     <div class="rux-card__body">
                       <div class="rux-segmented" id="trip-view-group" data-rux-toggle-group>
                         <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Calendar</span></button>
@@ -435,9 +445,6 @@
                     </div>
                   </article>
                   <article class="rux-card rux-mini-cal" id="rp-minical-card">
-                    <header class="rux-card__header">
-                      <h3 class="rux-card__title">Calendar</h3>
-                    </header>
                     <div class="rux-card__body rux-mini-cal__body">
                       <header class="rux-mini-cal__header">
                         <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" id="mini-cal-prev" type="button" aria-label="Previous month">
@@ -525,6 +532,14 @@
                       </div>
                     </div>
                   </article>
+                  <article class="rux-card" id="rp-manifest-status-card" hidden>
+                    <div class="rux-card__body">
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><span class="rux-field__label">Paid</span><output class="rux-output" id="rpm-summary-paid">0 of 0 paid</output></div>
+                        <div class="rux-field"><span class="rux-field__label">Seats filled</span><output class="rux-output" id="rpm-summary-seats">—</output></div>
+                      </div>
+                    </div>
+                  </article>
                   <article class="rux-card" id="rp-passenger-card" hidden>
                     <header class="rux-card__header">
                       <h3 class="rux-card__title" id="rpm-title">New passenger</h3>
@@ -534,15 +549,52 @@
                         <div class="rux-field"><label class="rux-field__label" for="rpm-name">Name</label><input class="rux-input" id="rpm-name" type="text" /></div>
                         <div class="rux-field"><label class="rux-field__label" for="rpm-phone">Phone</label><input class="rux-input" id="rpm-phone" type="tel" /></div>
                       </div>
-                      <div class="rux-field"><label class="rux-field__label" for="rpm-email">Email</label><input class="rux-input" id="rpm-email" type="email" /></div>
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-group">Group</label><input class="rux-input" id="rpm-group" type="text" placeholder="e.g. 1" /></div>
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-seat">Seat</label><input class="rux-input" id="rpm-seat" type="text" /></div>
+                      </div>
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-pickup">Pick-up Location</label><input class="rux-input" id="rpm-pickup" type="text" /></div>
+                        <div class="rux-field"><span class="rux-field__label">New customer</span><label class="rux-switch"><input id="rpm-new-customer" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label></div>
+                      </div>
+                      <div class="rux-trip-panel__cols-2">
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-email">Email</label><input class="rux-input" id="rpm-email" type="email" /></div>
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-dob">Date of birth</label><input class="rux-input" id="rpm-dob" type="date" /></div>
+                      </div>
                       <div class="rux-field"><label class="rux-field__label" for="rpm-address">Address</label><input class="rux-input" id="rpm-address" type="text" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="rpm-dob">Date of birth</label><input class="rux-input" id="rpm-dob" type="date" /></div>
                       <div class="rux-field"><label class="rux-field__label" for="rpm-notes">Notes</label><textarea class="rux-textarea" id="rpm-notes" rows="3"></textarea></div>
+                      <div class="rux-field"><label class="rux-field__label" for="rpm-status">Status</label>
+                        <select class="rux-input rux-select" id="rpm-status">
+                          <option value="active">Active</option>
+                          <option value="canceled">Canceled</option>
+                          <option value="refunded">Refunded</option>
+                          <option value="no_show">No-show</option>
+                        </select>
+                      </div>
+                      <div class="rux-field"><label class="rux-field__label" for="rpm-ticket-option">Ticket Option</label>
+                        <select class="rux-input rux-select" id="rpm-ticket-option">
+                          <option value="">Manual amount</option>
+                        </select>
+                      </div>
                       <div class="rux-trip-panel__cols-2">
                         <div class="rux-field"><label class="rux-field__label" for="rpm-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="rpm-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-paid">Paid</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="rpm-paid" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                        <div class="rux-field"><label class="rux-field__label" for="rpm-balance">Balance</label><output class="rux-output" id="rpm-balance">$0.00</output></div>
                       </div>
-                      <div class="rux-field"><span class="rux-field__label">Status</span><div><span class="rux-badge" id="rpm-status-badge">Unpaid</span></div></div>
+                      <div class="rux-row">
+                        <p class="rux-trip-panel__section-label rux-trip-panel__section-label--minor">Payments</p>
+                        <span class="rux-spacer"></span>
+                        <div class="rux-cluster">
+                          <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="rpm-payment-delete-btn" disabled aria-label="Delete a payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                          <button class="rux-button rux-button--default rux-button--icon" type="button" id="rpm-payment-add-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Add payment"><span class="rux-icon" aria-hidden="true">add</span></button>
+                        </div>
+                      </div>
+                      <div class="rux-trip-panel__payment-rows" id="rpm-payment-rows">
+                        <div class="rux-trip-panel__payment-empty" role="status">
+                          <span class="rux-icon" aria-hidden="true">payments</span>
+                          <span>No payments yet</span>
+                        </div>
+                      </div>
+                      <div class="rux-field"><span class="rux-field__label">Payment status</span><div><span class="rux-badge" id="rpm-status-badge">Unpaid</span></div></div>
                       <div class="rux-cluster">
                         <button class="rux-button rux-button--default rux-button--danger" id="rpm-btn-delete" type="button" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
                         <button class="rux-button rux-button--default" id="rpm-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
@@ -551,9 +603,6 @@
                     </div>
                   </article>
                   <article class="rux-card" id="rp-view-options-card">
-                    <header class="rux-card__header">
-                      <h3 class="rux-card__title">View Options</h3>
-                    </header>
                     <div class="rux-card__body">
                       <div class="rux-view-options">
                         <div class="rux-view-options__row">
@@ -3345,6 +3394,8 @@
       const rpViewOptionsCard = document.getElementById("rp-view-options-card");
       const rpFilterCard = document.getElementById("rp-filter-card");
       const rpPassengerCard = document.getElementById("rp-passenger-card");
+      const rpManifestStatusCard = document.getElementById("rp-manifest-status-card");
+      const rpTripViewCard = document.getElementById("rp-trip-view-card");
       const weekLabelEl = document.getElementById("week-label");
       const tpManifestBtn = document.getElementById("tp-view-manifest-btn");
 
@@ -3357,25 +3408,33 @@
         if (calendarListViewEl) calendarListViewEl.hidden = !isList;
         if (calendarManifestViewEl) calendarManifestViewEl.hidden = !isManifest;
         if (calendarNavEl) calendarNavEl.hidden = !isCalendar;
+        // Trip View (Calendar/List — "how am I browsing trips") has nothing
+        // valid to select while drilled into one trip's manifest, so hide
+        // it entirely rather than show a toggle with neither option active.
+        // "Close manifest" (Billing tab) is the one defined way back out.
+        if (rpTripViewCard) rpTripViewCard.hidden = isManifest;
         if (rpMiniCalCard) rpMiniCalCard.hidden = !isCalendar;
         if (rpViewOptionsCard) rpViewOptionsCard.hidden = !isCalendar;
         if (rpFilterCard) rpFilterCard.hidden = !isList;
         if (rpPassengerCard) rpPassengerCard.hidden = !isManifest;
+        if (rpManifestStatusCard) rpManifestStatusCard.hidden = !isManifest;
         if (tripsFilterBadgesEl) {
           tripsFilterBadgesEl.hidden = isList ? tripsFilterBadgesEl.children.length === 0 : true;
         }
-        // The Calendar/List toggle only ever gets updated by clicking one of
-        // its own segments (generic [data-rux-toggle-group] handler in
-        // controls.js) — Manifest is reached from the trip bar or Billing
-        // tab, never by clicking a segment here, so without this the group
-        // keeps showing whichever of Calendar/List was last actually
-        // clicked as "active" even though neither is what's on screen.
-        if (isManifest) {
-          document.querySelectorAll("#trip-view-group .rux-button").forEach((btn) => {
-            btn.setAttribute("aria-pressed", "false");
-            btn.classList.remove("is-active");
-          });
-        }
+        // setTripView() is the single source of truth for this toggle's
+        // pressed state, not just the generic [data-rux-toggle-group] click
+        // handler in controls.js — that handler only fires for an actual
+        // click inside #trip-view-group, but Manifest is entered/exited via
+        // the trip bar or the Billing tab's button, which call this
+        // function programmatically. Re-deriving every button's state from
+        // `mode` on every call (not just "clear on entering manifest") means
+        // it's correct however setTripView() was reached, including
+        // *returning* from Manifest without ever clicking Calendar/List.
+        document.querySelectorAll("#trip-view-group .rux-button").forEach((btn) => {
+          const on = btn.dataset.value === mode;
+          btn.setAttribute("aria-pressed", String(on));
+          btn.classList.toggle("is-active", on);
+        });
         if (tpManifestBtn) {
           tpManifestBtn.querySelector(".rux-icon").textContent = isManifest ? "close" : "groups";
           tpManifestBtn.querySelector(".rux-btn-label").textContent = isManifest ? "Close manifest" : "View manifest";
@@ -3572,26 +3631,28 @@
       initDrawerDrag(document.getElementById("right-panel-resize-gutter"), rightDrawer, openRightDrawer, closeRightDrawer, () => drawer, "right");
 
       // ── Default boot state ──────────────────────────────────────────────
-      // Desktop begins with only the right (Tools) panel open — the left
-      // trip editor stays closed until a trip is selected or "New Trip" is
-      // used, so the calendar/list gets full width by default. Mobile begins
-      // with the schedule visible and opens only one full-screen panel at a time.
-      drawer.style.setProperty("--drawer-width", "0px");
-      tripPanel.inert = true;
-      drawer.setAttribute("aria-hidden", "true");
-      leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
-
+      // Desktop begins with both panels visible. Mobile begins with the
+      // schedule visible and opens only one full-screen panel at a time.
+      drawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
+      drawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
       rightDrawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
       rightDrawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
 
       if (mobilePanelQuery.matches) {
+        drawer.style.setProperty("--drawer-width", "0px");
         rightDrawer.style.setProperty("--drawer-width", "0px");
+        tripPanel.inert = true;
         rightPanel.inert = true;
+        drawer.setAttribute("aria-hidden", "true");
         rightDrawer.setAttribute("aria-hidden", "true");
       } else {
+        drawer.classList.add("is-open");
         rightDrawer.classList.add("is-open");
+        tripPanel.inert = false;
         rightPanel.inert = false;
+        drawer.setAttribute("aria-hidden", "false");
         rightDrawer.setAttribute("aria-hidden", "false");
+        leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
         rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
       }
       syncResizeHandleValue(document.getElementById("trip-panel-resize-gutter"), drawer, getRightDrawer);
