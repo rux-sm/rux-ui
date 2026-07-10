@@ -23,56 +23,23 @@
   let colConfig  = [];
 
   // ── Drawer ────────────────────────────────────────────────────────────────
+  // Open/close/resize behavior lives in RuxDrawer (js/core/drawer.js), shared
+  // with the Driver panel and the Trips panel's left+right drawers.
 
   const panelToggleBtn = document.getElementById("fleet-panel-toggle-btn");
-  const DRAWER_DEFAULT = parseFloat(getComputedStyle(document.querySelector(".scheduler-app"))
-    .getPropertyValue("--scheduler-app-drawer-default-width"));
-  // Mobile drawers are full-screen overlays driven by a CSS @keyframes
-  // animation (.is-closing → scheduler-mobile-drawer-out), not the width
-  // transition — scheduler-app.css forces transition:none on them, so the
-  // desktop close path's transitionend listener never fires there.
-  const mobilePanelQuery = window.matchMedia("(max-width: 500px)");
 
-  function openDrawer()  {
-    const w = DRAWER_DEFAULT + "px";
-    drawer.style.setProperty("--drawer-width", w);
-    drawer.style.setProperty("--drawer-open-width", w);
-    drawer.classList.remove("is-closing");
-    drawer.classList.add("is-open");
-    panelEl.inert = false;
-    drawer.setAttribute("aria-hidden", "false");
-    panelToggleBtn?.setAttribute("aria-pressed", "true");
-  }
-  function closeDrawer() {
-    // Leave --drawer-open-width untouched so the panel content freezes at
-    // its pre-close size and only gets clipped by the shrinking drawer,
-    // instead of snapping to its min-width before the drawer animates.
-    drawer.style.setProperty("--drawer-width", "0px");
-    panelEl.inert = true;
-    drawer.setAttribute("aria-hidden", "true");
-    tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
-    selectedId = null;
-    panelToggleBtn?.setAttribute("aria-pressed", "false");
-    if (mobilePanelQuery.matches) {
-      drawer.classList.replace("is-open", "is-closing");
-      const finishClose = (event) => {
-        if (event.target !== panelEl || event.animationName !== "scheduler-mobile-drawer-out") return;
-        drawer.classList.remove("is-closing");
-        panelEl.removeEventListener("animationend", finishClose);
-      };
-      panelEl.addEventListener("animationend", finishClose);
-      return;
-    }
-    // Removing .is-open triggers display:none on the panel content (see
-    // scheduler-app.css), which is instant and unanimatable — do it only
-    // once the width transition actually finishes, so the panel visibly
-    // slides shut instead of vanishing the moment the class comes off.
-    drawer.addEventListener("transitionend", function handler(e) {
-      if (e.target !== drawer || e.propertyName !== "width") return;
-      drawer.classList.remove("is-open");
-      drawer.removeEventListener("transitionend", handler);
-    });
-  }
+  const drawerHandle = RuxDrawer.create({
+    drawer,
+    panel: panelEl,
+    toggleBtn: panelToggleBtn,
+    handle: document.getElementById("fleet-panel-resize-gutter"),
+    onClose: () => {
+      tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
+      selectedId = null;
+    },
+  });
+  const openDrawer  = drawerHandle.open;
+  const closeDrawer = drawerHandle.close;
 
   function resetPanel() {
     closeDrawer();
@@ -886,112 +853,6 @@
     if (!filterTh || (e.key !== "Enter" && e.key !== " ")) return;
     e.preventDefault();
     openFleetColFilter(filterTh, filterTh.dataset.colFilter);
-  });
-
-  // ── Resize handle ─────────────────────────────────────────────────────────
-  // Mirrors the trip panel's initDrawerDrag in index.html (drag-to-close with
-  // a snap-shut threshold, bounce-back to the min width, keyboard resize) —
-  // reimplemented locally since that helper is private to index.html's
-  // module script and this panel has no second drawer to coordinate with.
-
-  const handle = document.getElementById("fleet-panel-resize-gutter");
-  const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(panelEl).minWidth));
-  const DRAWER_SNAP_CLOSE = 200;
-  const DRAWER_MAX = 640;
-  const HANDLE_DRAG_THRESHOLD = 5;
-  const DRAWER_KEYBOARD_STEP = 16;
-
-  function drawerWidth() {
-    const width = parseInt(getComputedStyle(drawer).getPropertyValue("--drawer-width"), 10);
-    return Number.isFinite(width) ? width : drawer.offsetWidth;
-  }
-
-  function setDrawerWidth(width) {
-    const w = Math.min(DRAWER_MAX, Math.max(0, width));
-    drawer.style.setProperty("--drawer-width", w + "px");
-    drawer.style.setProperty("--drawer-open-width", w + "px");
-    return w;
-  }
-
-  function syncResizeHandleValue() {
-    if (!handle) return;
-    handle.setAttribute("aria-valuemin", "0");
-    handle.setAttribute("aria-valuemax", String(DRAWER_MAX));
-    handle.setAttribute("aria-valuenow", String(Math.round(drawerWidth())));
-  }
-  syncResizeHandleValue();
-
-  handle?.addEventListener("keydown", (e) => {
-    let nextW = null;
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      drawer.classList.contains("is-open") ? closeDrawer() : openDrawer();
-      requestAnimationFrame(syncResizeHandleValue);
-      return;
-    }
-    if (e.key === "ArrowRight") nextW = drawerWidth() + DRAWER_KEYBOARD_STEP;
-    if (e.key === "ArrowLeft") nextW = drawerWidth() - DRAWER_KEYBOARD_STEP;
-    if (e.key === "Home") nextW = DRAWER_MIN;
-    if (e.key === "End") nextW = DRAWER_MAX;
-    if (nextW === null) return;
-
-    e.preventDefault();
-    if (!drawer.classList.contains("is-open")) openDrawer();
-    const w = setDrawerWidth(nextW);
-    if (w < DRAWER_SNAP_CLOSE) closeDrawer();
-    syncResizeHandleValue();
-  });
-
-  handle?.addEventListener("mousedown", (e) => {
-    e.preventDefault();
-    const wasOpen = drawer.classList.contains("is-open");
-    const startX = e.clientX;
-    const startW = wasOpen ? drawerWidth() : 0;
-    let lastW = startW;
-    let moved = false;
-
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
-
-    const onMove = (ev) => {
-      if (!moved) {
-        if (Math.abs(ev.clientX - startX) < HANDLE_DRAG_THRESHOLD) return;
-        moved = true;
-        drawer.classList.add("is-resizing");
-        handle.classList.add("is-resizing");
-        if (!wasOpen) {
-          drawer.classList.add("is-open");
-          panelEl.inert = false;
-          drawer.setAttribute("aria-hidden", "false");
-          drawer.style.setProperty("--drawer-width", "0px");
-          drawer.style.setProperty("--drawer-open-width", "0px");
-          panelToggleBtn?.setAttribute("aria-pressed", "true");
-        }
-      }
-      const delta = ev.clientX - startX;
-      lastW = startW + delta;
-      setDrawerWidth(lastW);
-      syncResizeHandleValue();
-    };
-    const onUp = () => {
-      drawer.classList.remove("is-resizing");
-      handle.classList.remove("is-resizing");
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-      if (!moved) {
-        wasOpen ? closeDrawer() : openDrawer();
-      } else if (lastW < DRAWER_SNAP_CLOSE) {
-        closeDrawer();
-      } else if (lastW < DRAWER_MIN) {
-        drawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
-        drawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
-      }
-      syncResizeHandleValue();
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
-    };
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
   });
 
   // ── Data loading ──────────────────────────────────────────────────────────
