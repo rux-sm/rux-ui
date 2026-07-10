@@ -246,6 +246,48 @@
 	font-size: var(--rux-text-sm);
 }
 
+/* — Time off: repeating date-range rows, same add/remove recipe as Trip
+   Contacts/Payments elsewhere in the app — header Add + Delete-mode-toggle,
+   rows below, replace-whole-set-on-save persistence. */
+
+.rux-driver-panel__timeoff-rows {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+
+.rux-driver-panel__timeoff-empty {
+	display: flex;
+	min-height: var(--rux-field-height);
+	align-items: center;
+	gap: var(--rux-control-content-gap);
+	padding-inline: var(--rux-control-padding-inline);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-driver-panel__timeoff-rows:has([data-timeoff-row]) > .rux-driver-panel__timeoff-empty {
+	display: none;
+}
+
+.rux-driver-panel__timeoff-row {
+	display: flex;
+	align-items: flex-end;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3);
+	background: var(--rux-surface-0);
+	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-radius: var(--rux-radius-md);
+}
+
+.rux-driver-panel__timeoff-fields {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
 /* — Narrow panel — */
 
 /* Two-step tab collapse as the panel narrows: icon+text → text only → icon

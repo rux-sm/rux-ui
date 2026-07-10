@@ -36,7 +36,7 @@ function datesOverlap(aStart, aEnd, bStart, bEnd) {
   return as <= be && ae >= bs;
 }
 
-function findConflict(busId, trip, currentTrips) {
+export function findConflict(busId, trip, currentTrips) {
   return Object.values(currentTrips).find(
     t => t.busId === busId &&
          t.assignmentId !== trip.assignmentId &&
@@ -160,4 +160,4 @@ export function hide() {
   if (el) el.setAttribute("hidden", "");
 }
 
-export default { show, hide };
+export default { show, hide, findConflict };

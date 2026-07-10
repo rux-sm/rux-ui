@@ -367,6 +367,9 @@
                   <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Week</span></button>
                   <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
                 </div>
+                <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="workspace-search-btn" aria-label="Search trips" title="Search trips (⌘K)">
+                  <span class="rux-icon" aria-hidden="true">search</span>
+                </button>
                 <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" aria-pressed="false" data-opens="right-panel-drawer">
                   <span class="rux-icon icon-off">right_panel_open</span>
                   <span class="rux-icon icon-on">right_panel_close</span>
@@ -426,7 +429,6 @@
               <div class="rux-panel__nav">
                 <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
                   <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-right-panel__tab-label">Nav</span></button>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-search" title="Search"><span class="rux-icon" aria-hidden="true">search</span><span class="rux-right-panel__tab-label">Search</span></button>
                   <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers"><span class="rux-icon" aria-hidden="true">group</span><span class="rux-right-panel__tab-label">Drivers</span></button>
                   <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks"><span class="rux-icon" aria-hidden="true">checklist</span><span class="rux-right-panel__tab-label">Tasks</span></button>
                 </nav>
@@ -488,35 +490,6 @@
                           <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="all">All</button>
                           <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="assigned">Assigned</button>
                           <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="unassigned">Unassigned</button>
-                        </div>
-                      </div>
-                      <div class="rux-field">
-                        <label class="rux-field__label">Requirements</label>
-                        <div class="rux-view-options">
-                          <div class="rux-view-options__row">
-                            <span class="rux-view-options__label">Needs Hotel</span>
-                            <label class="rux-switch"><input id="tf-req-hotel" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
-                          </div>
-                          <div class="rux-view-options__row">
-                            <span class="rux-view-options__label">Needs Fuel Card</span>
-                            <label class="rux-switch"><input id="tf-req-fuelcard" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
-                          </div>
-                          <div class="rux-view-options__row">
-                            <span class="rux-view-options__label">Sleeper Required</span>
-                            <label class="rux-switch"><input id="tf-req-sleeper" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
-                          </div>
-                          <div class="rux-view-options__row">
-                            <span class="rux-view-options__label">ADA Lift Required</span>
-                            <label class="rux-switch"><input id="tf-req-ada" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
-                          </div>
-                          <div class="rux-view-options__row">
-                            <span class="rux-view-options__label">56 Pax Required</span>
-                            <label class="rux-switch"><input id="tf-req-pax56" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
-                          </div>
-                          <div class="rux-view-options__row">
-                            <span class="rux-view-options__label">Balance Paid</span>
-                            <label class="rux-switch"><input id="tf-req-balancepaid" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label>
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -638,19 +611,20 @@
                     </div>
                   </article>
                 </div>
-                <div id="rp-pane-search" class="rux-panel__pane" role="tabpanel" hidden>
+                <div id="rp-pane-drivers" class="rux-panel__pane" role="tabpanel" hidden>
                   <article class="rux-card">
-                    <div class="rux-card__body rux-card__body--stack">
-                      <div class="rux-field">
-                        <input class="rux-input" id="rp-search-input" type="search" placeholder="Search trips…" aria-label="Search trips" />
-                      </div>
-                      <div class="rux-search-modal__results" id="rp-search-results" style="max-height:none">
-                        <p class="rux-search-modal__empty">Start typing to search…</p>
+                    <div class="rux-card__body">
+                      <div class="rux-driver-grid" id="rp-driver-grid">
+                        <p class="rux-subtle">Loading drivers…</p>
                       </div>
                     </div>
+                    <footer class="rux-card__footer">
+                      <button class="rux-button rux-button--default" type="button" id="rp-driver-add-timeoff-btn" disabled title="Select a driver first">
+                        <span class="rux-icon" aria-hidden="true">event_busy</span>
+                        <span class="rux-btn-label">Add Time Off</span>
+                      </button>
+                    </footer>
                   </article>
-                </div>
-                <div id="rp-pane-drivers" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
                 <div id="rp-pane-tasks" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
@@ -839,6 +813,7 @@
                   <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-profile"     title="Profile"><span class="rux-icon">person</span><span class="rux-driver-panel__tab-label">Profile</span></button>
                   <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-license"     title="License"><span class="rux-icon">badge</span><span class="rux-driver-panel__tab-label">License</span></button>
                   <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-status"      title="Status"><span class="rux-icon">monitoring</span><span class="rux-driver-panel__tab-label">Status</span></button>
+                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-timeoff"     title="Time Off"><span class="rux-icon">event_busy</span><span class="rux-driver-panel__tab-label">Time Off</span></button>
                   <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-assignments" title="Trips"><span class="rux-icon">map</span><span class="rux-driver-panel__tab-label">Trips</span></button>
                 </nav>
               </div>
@@ -933,6 +908,23 @@
                   </div>
                   <div class="rux-field"><label class="rux-field__label" for="dp-hire-date">Hire date</label><input class="rux-input" id="dp-hire-date" name="hireDate" type="date" /></div>
                   <div class="rux-field"><label class="rux-field__label" for="dp-notes">Notes</label><textarea class="rux-textarea" id="dp-notes" name="notes" rows="5" placeholder="Internal notes about this driver…"></textarea></div>
+                </div>
+                <!-- Time Off -->
+                <div id="pane-timeoff" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel" hidden>
+                  <div class="rux-row">
+                    <p class="rux-driver-panel__section-label">Time Off</p>
+                    <span class="rux-spacer"></span>
+                    <div class="rux-cluster">
+                      <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="dp-timeoff-delete-btn" disabled aria-label="Delete a time off entry"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                      <button class="rux-button rux-button--default rux-button--icon" type="button" id="dp-timeoff-add-btn" aria-label="Add time off"><span class="rux-icon" aria-hidden="true">add</span></button>
+                    </div>
+                  </div>
+                  <div class="rux-driver-panel__timeoff-rows" id="dp-timeoff-rows">
+                    <div class="rux-driver-panel__timeoff-empty" role="status">
+                      <span class="rux-icon" aria-hidden="true">event_busy</span>
+                      <span>No time off on record</span>
+                    </div>
+                  </div>
                 </div>
                 <!-- Trips -->
                 <div id="pane-assignments" class="rux-panel__pane rux-driver-panel__pane" role="tabpanel" hidden>
@@ -2051,7 +2043,7 @@
 
     <script type="module">
       import { createTripBar, clearTripBars, applyItineraryUploaded } from "./js/components/trip-bar.js?v=7";
-      import BusPicker from "./js/components/bus-picker.js";
+      import BusPicker, { findConflict as findBusConflict } from "./js/components/bus-picker.js";
       import { loadRequirements } from "./js/data/requirements-db.js";
 
       // Load requirements before trip panel is used (window.appRequirements cache)
@@ -2115,12 +2107,12 @@
         : "calendar");
 
       // ── Global search modal ─────────────────────────────────────────────
-      // No visible trigger anymore (the top-nav Search button was removed —
-      // superseded by the Search tab in the right panel); ⌘K still opens it
-      // as a power-user shortcut.
+      // Opened via the workspace header's search icon (desktop only — no
+      // room for it in the mobile header) or the ⌘K shortcut.
       const searchModal        = document.getElementById("search-modal");
       const searchModalInput   = document.getElementById("search-modal-input");
       const searchModalResults = document.getElementById("search-modal-results");
+      document.getElementById("workspace-search-btn")?.addEventListener("click", () => openSearchModal());
 
       function openSearchModal() {
         searchModal?.showModal();
@@ -2163,9 +2155,6 @@
         return str.replace(/[<>&"]/g, (c) => `&#${c.charCodeAt(0)};`);
       }
 
-      // Shared by the global search modal and the right panel's Search tab —
-      // same data, same result shape, just a different place to type and a
-      // different "what happens when you pick one" (onSelect).
       function renderSearchResults(container, query, onSelect) {
         if (!container) return;
         container.innerHTML = "";
@@ -2231,12 +2220,6 @@
 
       searchModalInput?.addEventListener("input", () => {
         renderSearchResults(searchModalResults, searchModalInput.value, onSelectSearchResult(closeSearchModal));
-      });
-
-      const rpSearchInput = document.getElementById("rp-search-input");
-      const rpSearchResults = document.getElementById("rp-search-results");
-      rpSearchInput?.addEventListener("input", () => {
-        renderSearchResults(rpSearchResults, rpSearchInput.value, onSelectSearchResult());
       });
 
       // ── Trip panel drawer ───────────────────────────────────────────────
@@ -2553,6 +2536,216 @@
       schedulerEl.addEventListener("scroll", syncSchedulerShadows);
       new ResizeObserver(syncSchedulerShadows).observe(schedulerEl);
 
+      // Shrinks an element down to nothing at its own center while fading it
+      // out. transition:none + a forced reflow before enabling the real
+      // transition matters here too — .rux-trip-bar's base rule already
+      // declares its own short transition (including transform), so without
+      // killing that first, the "from" state (scale(1)) would itself
+      // animate in over the wrong duration before this one even starts.
+      function shrinkAndFadeOut(el, { remove = false } = {}) {
+        el.style.transformOrigin = "center center";
+        el.style.pointerEvents = "none";
+        el.style.transition = "none";
+        el.style.transform = "scale(1)";
+        el.getBoundingClientRect();
+        el.style.transition = "transform 220ms var(--rux-ease-out), opacity 220ms var(--rux-ease-out)";
+        el.style.transform = "scale(0)";
+        el.style.opacity = "0";
+        const onDone = (e) => {
+          if (e.target !== el || e.propertyName !== "transform") return;
+          el.removeEventListener("transitionend", onDone);
+          if (remove) { el.remove(); return; }
+          el.style.transition = "";
+          el.style.transform = "";
+          el.style.opacity = "";
+          el.style.transformOrigin = "";
+          el.style.pointerEvents = "";
+        };
+        el.addEventListener("transitionend", onDone);
+      }
+
+      // Mirror of shrinkAndFadeOut — grows an already-in-place (but hidden)
+      // bar up from its own center while fading in, so a reassigned trip
+      // "appears" at its new row instead of physically traveling there.
+      function growInFromCenter(el) {
+        el.style.transformOrigin = "center center";
+        el.style.transition = "none";
+        el.style.transform = "scale(0)";
+        el.style.opacity = "0";
+        el.getBoundingClientRect();
+        el.style.transition = "transform 220ms var(--rux-ease-out), opacity 220ms var(--rux-ease-out)";
+        el.style.transform = "scale(1)";
+        el.style.opacity = "1";
+        const onDone = (e) => {
+          if (e.target !== el || e.propertyName !== "transform") return;
+          el.removeEventListener("transitionend", onDone);
+          el.style.transition = "";
+          el.style.transform = "";
+          el.style.opacity = "";
+          el.style.transformOrigin = "";
+        };
+        el.addEventListener("transitionend", onDone);
+      }
+
+      // ── Bus reassignment ─────────────────────────────────────────────────
+      // Shared by the click-based "Change bus" picker and drag-to-reassign
+      // (below) — reassigns (and swaps the conflicting trip back to the
+      // original bus, if one was passed), reloads, then grows the new bar in
+      // from its own center. skipDepart is set by the drag path: the ghost
+      // (see installBusDrag) already played the "this is leaving" beat at
+      // the drop point, so the real source bar doesn't need to shrink too.
+      async function performBusReassign(trip, newBus, conflictAssignmentId, skipDepart) {
+        try {
+          const db = await import("./js/data/trip-db.js");
+
+          if (!skipDepart) {
+            const oldBar = activePlacements.find(p => p.trip.assignmentId === trip.assignmentId)?.bar;
+            if (oldBar) shrinkAndFadeOut(oldBar);
+          }
+
+          await db.reassignBus(trip.assignmentId, newBus.id);
+          if (conflictAssignmentId) {
+            await db.reassignBus(conflictAssignmentId, trip.busId);
+          }
+          await loadTripsFromDB();
+
+          requestAnimationFrame(() => {
+            const newBar = activePlacements.find(p => p.trip.assignmentId === trip.assignmentId)?.bar;
+            if (newBar) growInFromCenter(newBar);
+          });
+        } catch (err) {
+          console.error("Reassign bus failed:", err);
+        }
+      }
+
+      // Vertical-only drag-to-reassign — grab a bar, drop it on another
+      // bus's row. Click still works normally (setActive/expand) below the
+      // threshold; past it, this takes over and the eventual "click" the
+      // browser fires after mouseup is swallowed so it doesn't also toggle
+      // the bar open. Hit-testing uses the bar's own rendered center, not
+      // the pointer, so "over 50% dragged into a row" is literal — once the
+      // dragged bar's center has crossed into a row's band, more than half
+      // of it is visually sitting there.
+      const BUS_DRAG_THRESHOLD = 6;
+
+      function installBusDrag(bar, trip) {
+        bar.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          if (e.target.closest(".rux-trip-bar__actions, .rux-trip-bar__expand")) return;
+
+          const startY = e.clientY;
+          let moved = false;
+          let rowRects = [];
+          let targetTrack = null;
+          let ghost = null;
+
+          const onMove = (ev) => {
+            if (!moved) {
+              if (Math.abs(ev.clientY - startY) < BUS_DRAG_THRESHOLD) return;
+              moved = true;
+              rowRects = [...schedulerEl.querySelectorAll(".rux-scheduler__track")]
+                .filter((t) => !t.closest(".rux-scheduler__row")?.classList.contains("is-out-of-service"))
+                .map((t) => ({ track: t, rect: t.getBoundingClientRect() }));
+
+              // Original bar stays put (dimmed) — a lightweight tinted-outline
+              // ghost follows the cursor instead (not a clone: multi-day bars
+              // carry an internal grid of head/tail columns that mis-lays-out
+              // once pinned outside the scheduler's own grid context), so on
+              // drop the real bar can smoothly FLIP straight from the ghost's
+              // resting spot to its new row.
+              const barRect = bar.getBoundingClientRect();
+              const tone = getComputedStyle(bar).getPropertyValue("--_tone").trim();
+              ghost = document.createElement("div");
+              ghost.className = "rux-trip-bar-ghost";
+              ghost.style.left = `${barRect.left}px`;
+              ghost.style.top = `${barRect.top}px`;
+              ghost.style.width = `${barRect.width}px`;
+              ghost.style.height = `${barRect.height}px`;
+              if (tone) ghost.style.setProperty("--_ghost-tone", tone);
+              ghost.textContent = trip.destination || trip.trip_ref || "Trip";
+              document.body.appendChild(ghost);
+
+              bar.classList.add("rux-trip-bar--drag-source");
+              document.body.style.cursor = "grabbing";
+              document.body.style.userSelect = "none";
+            }
+            ev.preventDefault();
+            ghost.style.transform = `translateY(${ev.clientY - startY}px)`;
+
+            const ghostRect = ghost.getBoundingClientRect();
+            const ghostCenterY = ghostRect.top + ghostRect.height / 2;
+            const hit = rowRects.find(({ rect }) => ghostCenterY >= rect.top && ghostCenterY <= rect.bottom);
+            const hitTrack = hit?.track || null;
+            if (hitTrack !== targetTrack) {
+              rowRects.forEach(({ track }) => track.classList.remove(
+                "rux-scheduler__track--drop-target", "rux-scheduler__track--drop-conflict",
+              ));
+              targetTrack = hitTrack;
+              if (targetTrack && targetTrack.dataset.busId !== trip.busId) {
+                const conflict = findBusConflict(targetTrack.dataset.busId, trip, trips);
+                targetTrack.classList.add(
+                  conflict ? "rux-scheduler__track--drop-conflict" : "rux-scheduler__track--drop-target",
+                );
+              }
+            }
+          };
+
+          const onUp = () => {
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+            if (!moved) return;
+
+            document.body.style.cursor = "";
+            document.body.style.userSelect = "";
+            rowRects.forEach(({ track }) => track.classList.remove(
+              "rux-scheduler__track--drop-target", "rux-scheduler__track--drop-conflict",
+            ));
+            // The browser fires a synthetic "click" right after this mouseup
+            // regardless of whether the mouse moved — suppressed by the
+            // capturing click listener below so a drag never also toggles
+            // the bar's expanded state.
+            bar.dataset.justDragged = "true";
+
+            // Ghost shrinks away right where it was released — no travel —
+            // then the reassigned bar grows in at its new row separately.
+            shrinkAndFadeOut(ghost, { remove: true });
+            ghost = null;
+
+            let reassigning = false;
+            if (targetTrack && targetTrack.dataset.busId !== trip.busId) {
+              const newBus = schedulerBuses.find((b) => b.id === targetTrack.dataset.busId);
+              if (newBus) {
+                reassigning = true;
+                const conflict = findBusConflict(newBus.id, trip, trips);
+                performBusReassign(trip, newBus, conflict?.assignmentId || null, true);
+              }
+            }
+
+            if (reassigning) {
+              // Fully hide it (not just dimmed) rather than restoring it —
+              // the ghost is already playing the departure beat, so a
+              // second, dimmed-but-still-visible copy sitting at the old row
+              // just reads as a duplicate. Inline opacity:0 overrides the
+              // --drag-source class's 0.3 until loadTripsFromDB() discards
+              // the element entirely.
+              bar.style.opacity = "0";
+            } else {
+              bar.classList.remove("rux-trip-bar--drag-source");
+            }
+          };
+
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+        });
+
+        bar.addEventListener("click", (e) => {
+          if (bar.dataset.justDragged !== "true") return;
+          delete bar.dataset.justDragged;
+          e.stopImmediatePropagation();
+          e.preventDefault();
+        }, true);
+      }
+
       // ── Trip callbacks ──────────────────────────────────────────────────
 
       const callbacks = {
@@ -2571,44 +2764,8 @@
           window.TripView?.set("manifest");
         },
         onChangeBus:   (trip) => {
-          BusPicker.show(trip, schedulerBuses, trips, async (newBus, conflictAssignmentId) => {
-            try {
-              const db = await import("./js/data/trip-db.js");
-              const oldBar = activePlacements.find(p => p.trip.assignmentId === trip.assignmentId)?.bar;
-              const oldRect = oldBar?.getBoundingClientRect();
-
-              await db.reassignBus(trip.assignmentId, newBus.id);
-              if (conflictAssignmentId) {
-                await db.reassignBus(conflictAssignmentId, trip.busId);
-              }
-              await loadTripsFromDB();
-
-              if (!oldRect) return;
-              requestAnimationFrame(() => {
-                const newBar = activePlacements.find(p => p.trip.assignmentId === trip.assignmentId)?.bar;
-                if (!newBar) return;
-                const newRect = newBar.getBoundingClientRect();
-                const dy = oldRect.top - newRect.top;
-                const dx = oldRect.left - newRect.left;
-                if (!dy && !dx) return;
-
-                newBar.style.transform = `translate(${dx}px, ${dy}px)`;
-                newBar.style.opacity = "1";
-                newBar.style.zIndex = "100";
-
-                requestAnimationFrame(() => {
-                  newBar.style.transition = "transform var(--rux-duration-slow) var(--rux-ease-out), opacity var(--rux-duration-fast) var(--rux-ease-out)";
-                  newBar.style.transform = "translate(0, 0)";
-                  newBar.addEventListener("transitionend", () => {
-                    newBar.style.transition = "";
-                    newBar.style.transform = "";
-                    newBar.style.zIndex = "";
-                  }, { once: true });
-                });
-              });
-            } catch (err) {
-              console.error("Reassign bus failed:", err);
-            }
+          BusPicker.show(trip, schedulerBuses, trips, (newBus, conflictAssignmentId) => {
+            performBusReassign(trip, newBus, conflictAssignmentId);
           });
         },
         onUploadPdf:   (trip) => console.log("upload pdf", trip.id),
@@ -3016,11 +3173,13 @@
           const bar = createTripBar(placement.trip, callbacks);
           placement.bar = bar;
           track.appendChild(bar);
+          installBusDrag(bar, placement.trip);
         });
         activePlacements = activePlacements.filter(p => p.bar);
         renderDayHeaders(currentWeekStart);
         document.querySelectorAll(".rux-scheduler__track").forEach(buildTrackGrid);
         if (typeof renderMiniCal === "function") renderMiniCal();
+        if (typeof driverGridDataLoaded !== "undefined" && driverGridDataLoaded) renderDriverGrid();
         activePlacements.forEach((placement) => {
           const observer = new ResizeObserver(layoutScheduler);
           observer.observe(placement.bar);
@@ -3029,6 +3188,72 @@
         layoutScheduler();
         if (typeof updateNowLine === "function") updateNowLine();
       }
+
+      // ── Week navigation (directional slide) ─────────────────────────────
+      // Prev/Next/wheel-swipe all funnel through here. Today and mini-cal
+      // date picks stay instant (renderScheduler() directly) — an arbitrary
+      // jump doesn't have a meaningful "direction" to slide, unlike stepping
+      // to an adjacent week.
+
+      function prefersReducedMotion() {
+        return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      }
+
+      // direction: 1 = forward/next (exits left, enters from the right),
+      // -1 = backward/prev (exits right, enters from the left) — matches the
+      // swipe convention every major calendar app already uses.
+      function navigateWeek(direction) {
+        currentWeekStart = addDays(currentWeekStart, viewDays * direction);
+        if (prefersReducedMotion() || !schedulerEl) {
+          renderScheduler();
+          return;
+        }
+        schedulerEl.style.setProperty("--_slide-offset", `${direction * -24}px`);
+        schedulerEl.classList.remove("rux-scheduler--slide-in");
+        schedulerEl.classList.add("rux-scheduler--slide-out");
+        const onExitEnd = (e) => {
+          if (e.target !== schedulerEl || e.animationName !== "rux-scheduler-slide-out") return;
+          schedulerEl.removeEventListener("animationend", onExitEnd);
+          schedulerEl.classList.remove("rux-scheduler--slide-out");
+          renderScheduler();
+          schedulerEl.style.setProperty("--_slide-offset", `${direction * 24}px`);
+          schedulerEl.classList.add("rux-scheduler--slide-in");
+          const onEnterEnd = (e2) => {
+            if (e2.target !== schedulerEl || e2.animationName !== "rux-scheduler-slide-in") return;
+            schedulerEl.removeEventListener("animationend", onEnterEnd);
+            schedulerEl.classList.remove("rux-scheduler--slide-in");
+          };
+          schedulerEl.addEventListener("animationend", onEnterEnd);
+        };
+        schedulerEl.addEventListener("animationend", onExitEnd);
+      }
+
+      // Trackpad/wheel horizontal swipe pages by one week, same slide as the
+      // buttons — only kicks in when the gesture is predominantly horizontal
+      // (trackpad swipe, shift+wheel), so a normal vertical scroll over a
+      // tall grid is untouched. Accumulates deltaX to a threshold rather than
+      // firing per-event (a single swipe fires many wheel events), and a
+      // short cooldown after triggering stops one swipe from paging several
+      // weeks at once.
+      let wheelAccum = 0;
+      let wheelResetTimer = 0;
+      let wheelCooldown = false;
+      const WHEEL_THRESHOLD = 60;
+      const WHEEL_COOLDOWN_MS = 450;
+      schedulerEl?.addEventListener("wheel", (e) => {
+        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        if (wheelCooldown) return;
+        wheelAccum += e.deltaX;
+        clearTimeout(wheelResetTimer);
+        wheelResetTimer = setTimeout(() => { wheelAccum = 0; }, 150);
+        if (Math.abs(wheelAccum) < WHEEL_THRESHOLD) return;
+        const direction = wheelAccum > 0 ? 1 : -1;
+        wheelAccum = 0;
+        wheelCooldown = true;
+        navigateWeek(direction);
+        setTimeout(() => { wheelCooldown = false; }, WHEEL_COOLDOWN_MS);
+      }, { passive: false });
 
       // ── Now line ───────────────────────────────────────────────────────────
 
@@ -3190,8 +3415,8 @@
 
       window.addEventListener("resize", layoutScheduler);
 
-      document.getElementById("prev-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart, -viewDays); renderScheduler(); });
-      document.getElementById("next-week").addEventListener("click", () => { currentWeekStart = addDays(currentWeekStart,  viewDays); renderScheduler(); });
+      document.getElementById("prev-week").addEventListener("click", () => navigateWeek(-1));
+      document.getElementById("next-week").addEventListener("click", () => navigateWeek(1));
 
       function jumpToToday() {
         currentWeekStart = startOfWeek(new Date());
@@ -3302,6 +3527,7 @@
           // that they're actually visible again.
           layoutScheduler();
         }
+        if (typeof syncRightPanelTitle === "function") syncRightPanelTitle();
       }
 
       const tripViewGroup = document.getElementById("trip-view-group");
@@ -3376,13 +3602,244 @@
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-tab[aria-controls]");
       const rpPanes = rightDrawer.querySelectorAll(".rux-panel__pane");
+      const rightPanelTitleEl = document.getElementById("right-panel-title");
+
+      // The header names whatever's actually showing instead of a generic
+      // "Tools" — Nav further depends on tripViewMode (Calendar/List/
+      // Manifest all render different cards in that same pane), so this also
+      // gets called from setTripView(), not just on tab click.
+      function syncRightPanelTitle() {
+        if (!rightPanelTitleEl) return;
+        const activeTab = rightDrawer.querySelector('[data-right-tabs] .rux-tab[aria-selected="true"]');
+        const paneId = activeTab?.getAttribute("aria-controls");
+        if (paneId === "rp-pane-navigate") {
+          rightPanelTitleEl.textContent =
+            tripViewMode === "list" ? "Trip List" :
+            tripViewMode === "manifest" ? "Manifest" : "Calendar";
+        } else if (paneId === "rp-pane-drivers") {
+          rightPanelTitleEl.textContent = "Driver Assignments";
+        } else if (paneId === "rp-pane-tasks") {
+          rightPanelTitleEl.textContent = "Tasks";
+        } else {
+          rightPanelTitleEl.textContent = "Tools";
+        }
+      }
+
       rpTabs.forEach((btn) => {
         btn.addEventListener("click", () => {
           const paneId = btn.getAttribute("aria-controls");
           rpTabs.forEach((b) => { b.classList.remove("is-active"); b.setAttribute("aria-selected", "false"); });
           btn.classList.add("is-active"); btn.setAttribute("aria-selected", "true");
           rpPanes.forEach((p) => { p.hidden = p.id !== paneId; });
+          if (paneId === "rp-pane-drivers") ensureDriverGridData().then(renderDriverGrid);
+          syncRightPanelTitle();
         });
+      });
+      syncRightPanelTitle();
+
+      // ── Driver assignment grid ───────────────────────────────────────────
+      // Mirrors the main scheduler's current week window exactly — reads
+      // currentWeekStart/viewDays/sundayStart live on every render rather
+      // than tracking any date state of its own, so it can't drift out of
+      // sync with the calendar. "Busy" comes from allTripsRaw (already
+      // loaded for the main calendar; no extra trip fetch needed), the
+      // driver roster is the one new fetch, lazy-loaded on first visit.
+      let allDrivers = [];
+      let allTimeOffRaw = [];
+      let driverGridDataLoaded = false;
+
+      async function ensureDriverGridData() {
+        if (driverGridDataLoaded) return;
+        try {
+          const driverDb = await import("./js/data/driver-db.js");
+          const [drivers, timeOff] = await Promise.all([
+            driverDb.fetchDrivers(),
+            driverDb.fetchAllTimeOff().catch((err) => { console.warn("Could not load time off:", err); return []; }),
+          ]);
+          allDrivers = drivers.filter((d) => (d.status || "active") === "active");
+          allTimeOffRaw = timeOff;
+          driverGridDataLoaded = true;
+        } catch (err) {
+          console.warn("Could not load drivers for driver grid:", err);
+          const grid = document.getElementById("rp-driver-grid");
+          if (grid) {
+            grid.innerHTML = "";
+            const p = document.createElement("p");
+            p.className = "rux-driver-grid__empty";
+            p.textContent = "Could not load drivers.";
+            grid.appendChild(p);
+          }
+        }
+      }
+
+      // driverId -> Map(iso date -> [destination, ...]) — an array (not a
+      // count) so a double-booked cell's tooltip can name what's conflicting,
+      // not just that something is.
+      function buildDriverDayMap() {
+        const map = new Map();
+        for (const trip of allTripsRaw) {
+          if (!trip.start_date) continue;
+          const driverIds = new Set();
+          for (const a of trip.trip_assignments || []) {
+            for (const d of a.drivers || []) if (d.driver_id) driverIds.add(d.driver_id);
+          }
+          if (!driverIds.size) continue;
+          const start = parseIsoDate(trip.start_date);
+          const end = parseIsoDate(trip.end_date || trip.start_date);
+          for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
+            const iso = isoDate(d);
+            const label = trip.destination || trip.trip_ref || "Trip";
+            driverIds.forEach((id) => {
+              if (!map.has(id)) map.set(id, new Map());
+              const dayMap = map.get(id);
+              if (!dayMap.has(iso)) dayMap.set(iso, []);
+              dayMap.get(iso).push(label);
+            });
+          }
+        }
+        return map;
+      }
+
+      const TIME_OFF_REASON_LABELS = {
+        vacation: "Vacation", sick: "Sick", personal: "Personal", suspended: "Suspended", other: "Time off",
+      };
+
+      // "July 6–12, 2026" (same month), "July 30 – August 2, 2026" (spans
+      // months/years), or "July 6, 2026" (single day).
+      function fmtDateRange(startIso, endIso) {
+        const start = parseIsoDate(startIso);
+        const end = parseIsoDate(endIso || startIso);
+        if (startIso === (endIso || startIso)) {
+          return start.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+        }
+        const startStr = start.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+        const sameMonth = start.getMonth() === end.getMonth() && start.getFullYear() === end.getFullYear();
+        if (sameMonth) return `${startStr}–${end.getDate()}, ${end.getFullYear()}`;
+        const endStr = end.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+        return `${startStr}, ${start.getFullYear()} – ${endStr}, ${end.getFullYear()}`;
+      }
+
+      // driverId -> Map(iso date -> "Reason: date range" tooltip) — expands
+      // each start/end range from allTimeOffRaw into individual days,
+      // mirroring how buildDriverDayMap expands trip date ranges above.
+      function buildDriverTimeOffMap() {
+        const map = new Map();
+        for (const entry of allTimeOffRaw) {
+          if (!entry.driver_id || !entry.start_date) continue;
+          const start = parseIsoDate(entry.start_date);
+          const end = parseIsoDate(entry.end_date || entry.start_date);
+          const label = TIME_OFF_REASON_LABELS[entry.reason] || "Time off";
+          const tooltip = `${label}: ${fmtDateRange(entry.start_date, entry.end_date)}`;
+          for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
+            const iso = isoDate(d);
+            if (!map.has(entry.driver_id)) map.set(entry.driver_id, new Map());
+            map.get(entry.driver_id).set(iso, tooltip);
+          }
+        }
+        return map;
+      }
+
+      function renderDriverGrid() {
+        const grid = document.getElementById("rp-driver-grid");
+        if (!grid || !driverGridDataLoaded) return;
+        grid.innerHTML = "";
+        grid.style.setProperty("--rux-driver-grid-days", viewDays);
+
+        if (!allDrivers.length) {
+          const p = document.createElement("p");
+          p.className = "rux-driver-grid__empty";
+          p.textContent = "No active drivers.";
+          grid.appendChild(p);
+          return;
+        }
+
+        const days = [];
+        for (let i = 0; i < viewDays; i++) days.push(addDays(currentWeekStart, i));
+        const names = getDayNames();
+        const dayMap = buildDriverDayMap();
+        const timeOffMap = buildDriverTimeOffMap();
+
+        const headRow = document.createElement("div");
+        headRow.className = "rux-driver-grid__row rux-driver-grid__row--head";
+        const headName = document.createElement("span");
+        headName.className = "rux-driver-grid__name";
+        headName.textContent = "Driver";
+        headRow.appendChild(headName);
+        const headDays = document.createElement("div");
+        headDays.className = "rux-driver-grid__days";
+        days.forEach((date, i) => {
+          const label = document.createElement("span");
+          label.className = "rux-driver-grid__day-label";
+          label.textContent = names[i % 7][0];
+          headDays.appendChild(label);
+        });
+        headRow.appendChild(headDays);
+        grid.appendChild(headRow);
+
+        allDrivers.forEach((driver) => {
+          const row = document.createElement("div");
+          row.className = "rux-driver-grid__row";
+          row.dataset.driverId = driver.id;
+
+          const nameEl = document.createElement("span");
+          nameEl.className = "rux-driver-grid__name";
+          nameEl.textContent = driver.short_name || driver.name;
+          nameEl.title = driver.name || "";
+          row.appendChild(nameEl);
+
+          const daysEl = document.createElement("div");
+          daysEl.className = "rux-driver-grid__days";
+          const driverDates = dayMap.get(driver.id);
+          const driverTimeOff = timeOffMap.get(driver.id);
+          days.forEach((date) => {
+            const iso = isoDate(date);
+            const entries = driverDates?.get(iso) || [];
+            const timeOffTooltip = driverTimeOff?.get(iso);
+            const cell = document.createElement("span");
+            cell.className = "rux-driver-grid__cell";
+            const titleParts = [];
+            if (entries.length >= 2) {
+              cell.classList.add("rux-driver-grid__cell--conflict");
+              titleParts.push(`Double-booked — ${entries.join(", ")}`);
+            } else if (entries.length === 1) {
+              cell.classList.add("rux-driver-grid__cell--busy");
+              titleParts.push(entries[0]);
+            }
+            if (timeOffTooltip) {
+              cell.classList.add("rux-driver-grid__cell--unavailable");
+              titleParts.push(entries.length ? `${timeOffTooltip} — assigned anyway` : timeOffTooltip);
+            }
+            if (titleParts.length) cell.title = titleParts.join(" · ");
+            daysEl.appendChild(cell);
+          });
+          row.appendChild(daysEl);
+          if (driver.id === selectedGridDriverId) row.classList.add("is-selected");
+          grid.appendChild(row);
+        });
+      }
+
+      // Select a driver in the grid (click any of their day cells too, not
+      // just the name) — footer button targets whichever driver is selected.
+      // Re-applied after every re-render above so the selection survives
+      // week navigation instead of silently clearing.
+      let selectedGridDriverId = null;
+      const driverGridEl = document.getElementById("rp-driver-grid");
+      const driverAddTimeOffBtn = document.getElementById("rp-driver-add-timeoff-btn");
+      driverGridEl?.addEventListener("click", (e) => {
+        const row = e.target.closest(".rux-driver-grid__row[data-driver-id]");
+        if (!row) return;
+        selectedGridDriverId = row.dataset.driverId;
+        driverGridEl.querySelectorAll(".rux-driver-grid__row").forEach((r) => r.classList.remove("is-selected"));
+        row.classList.add("is-selected");
+        if (driverAddTimeOffBtn) {
+          driverAddTimeOffBtn.disabled = false;
+          driverAddTimeOffBtn.title = "";
+        }
+      });
+      driverAddTimeOffBtn?.addEventListener("click", () => {
+        if (!selectedGridDriverId) return;
+        showModule("drivers");
+        window.DriverPanel?.openTimeOff(selectedGridDriverId);
       });
 
       // ── Mini calendar ────────────────────────────────────────────────────

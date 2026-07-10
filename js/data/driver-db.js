@@ -21,7 +21,8 @@ export async function reorderDrivers(updates) {
 }
 
 export async function saveDriver(driver) {
-  const { id, ...fields } = driver;
+  const { id, timeOff, ...fields } = driver;
+  let saved;
   if (id) {
     const { data, error } = await supabase
       .from("drivers")
@@ -30,20 +31,63 @@ export async function saveDriver(driver) {
       .select()
       .single();
     if (error) throw error;
-    return data;
+    saved = data;
+  } else {
+    const { data, error } = await supabase
+      .from("drivers")
+      .insert(fields)
+      .select()
+      .single();
+    if (error) throw error;
+    saved = data;
   }
-  const { data, error } = await supabase
-    .from("drivers")
-    .insert(fields)
-    .select()
-    .single();
-  if (error) throw error;
-  return data;
+  if (timeOff) await replaceTimeOff(saved.id, timeOff);
+  return saved;
 }
 
 export async function deleteDriver(id) {
   const { error } = await supabase.from("drivers").delete().eq("id", id);
   if (error) throw error;
+}
+
+/* ── Time off ───────────────────────────────────────────────────────────── */
+
+export async function fetchTimeOff(driverId) {
+  const { data, error } = await supabase
+    .from("driver_time_off")
+    .select("*")
+    .eq("driver_id", driverId)
+    .order("position", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+// Bulk fetch for the driver assignment grid — one query for every driver's
+// time off instead of one per driver, same reasoning as trip payments/
+// passengers being bulk-fetched for the calendar instead of per-trip.
+export async function fetchAllTimeOff() {
+  const { data, error } = await supabase
+    .from("driver_time_off")
+    .select("*")
+    .order("position", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+// Replaced wholesale on save — same "delete all, reinsert" recipe as
+// trip_payments / trip_ticket_options.
+export async function replaceTimeOff(driverId, entries) {
+  const { error: deleteErr } = await supabase
+    .from("driver_time_off")
+    .delete()
+    .eq("driver_id", driverId);
+  if (deleteErr) throw deleteErr;
+  if (entries.length) {
+    const { error: insertErr } = await supabase
+      .from("driver_time_off")
+      .insert(entries.map((e) => ({ driver_id: driverId, ...e })));
+    if (insertErr) throw insertErr;
+  }
 }
 
 /* ── Photos ─────────────────────────────────────────────────────────────── */

@@ -84,12 +84,6 @@
       tr.dataset.isPast       = (t.start_date && t.start_date < today) ? "yes" : "no";
       tr.dataset.confirmed    = confirmed ? "yes" : "no";
       tr.dataset.tripType     = tripTypeOf(t);
-      tr.dataset.needHotel    = t.need_hotel ? "yes" : "no";
-      tr.dataset.needFuelCard = t.need_fuel_card ? "yes" : "no";
-      tr.dataset.reqSleeper   = t.req_sleeper ? "yes" : "no";
-      tr.dataset.reqAda       = t.req_ada ? "yes" : "no";
-      tr.dataset.req56pax     = t.req_56pax ? "yes" : "no";
-      tr.dataset.balancePaid  = t.date_paid ? "yes" : "no";
 
       const busCell = buses.length
         ? buses.map(n => `<span class="rux-tag">Bus ${n}</span>`).join(" ")
@@ -143,15 +137,14 @@
   }
 
   // ── Filters ───────────────────────────────────────────────────────────────
-  // The segmented groups (When/Status/Trip Type/Bus) and Requirements switches
-  // live in the right panel's "Filter By" card (index.html) — this module owns
-  // the filter state and just reads whichever button/switch is active there.
+  // The segmented groups (When/Status/Trip Type/Bus) live in the right
+  // panel's "Filter By" card (index.html) — this module owns the filter
+  // state and just reads whichever button is active there.
 
   let dateFilter   = "all";
   let busFilter    = "all";
   let statusFilter = "all";
   let typeFilter   = "all";
-  const reqFilters = { hotel: false, fuelcard: false, sleeper: false, ada: false, pax56: false, balancepaid: false };
 
   function setSegmentedValue(groupId, value) {
     const group = document.getElementById(groupId);
@@ -174,33 +167,13 @@
     });
   }
 
-  function wireReqToggle(inputId, key) {
-    const input = document.getElementById(inputId);
-    if (!input) return;
-    input.addEventListener("change", () => {
-      reqFilters[key] = input.checked;
-      applyFilter();
-    });
-  }
-
   wireSegmentedFilter("tf-when-group",   (v) => { dateFilter   = v; });
   wireSegmentedFilter("tf-status-group", (v) => { statusFilter = v; });
   wireSegmentedFilter("tf-type-group",   (v) => { typeFilter   = v; });
   wireSegmentedFilter("tf-bus-group",    (v) => { busFilter    = v; });
-  wireReqToggle("tf-req-hotel",       "hotel");
-  wireReqToggle("tf-req-fuelcard",    "fuelcard");
-  wireReqToggle("tf-req-sleeper",     "sleeper");
-  wireReqToggle("tf-req-ada",         "ada");
-  wireReqToggle("tf-req-pax56",       "pax56");
-  wireReqToggle("tf-req-balancepaid", "balancepaid");
 
   document.getElementById("tf-clear-btn")?.addEventListener("click", () => {
     dateFilter = "all"; statusFilter = "all"; typeFilter = "all"; busFilter = "all";
-    Object.keys(reqFilters).forEach((key) => {
-      reqFilters[key] = false;
-      const input = document.getElementById(`tf-req-${key}`);
-      if (input) input.checked = false;
-    });
     setSegmentedValue("tf-when-group", "all");
     setSegmentedValue("tf-status-group", "all");
     setSegmentedValue("tf-type-group", "all");
@@ -233,15 +206,7 @@
 
       const matchType = typeFilter === "all" || row.dataset.tripType === typeFilter;
 
-      const matchReqs =
-        (!reqFilters.hotel      || row.dataset.needHotel === "yes") &&
-        (!reqFilters.fuelcard   || row.dataset.needFuelCard === "yes") &&
-        (!reqFilters.sleeper    || row.dataset.reqSleeper === "yes") &&
-        (!reqFilters.ada        || row.dataset.reqAda === "yes") &&
-        (!reqFilters.pax56      || row.dataset.req56pax === "yes") &&
-        (!reqFilters.balancepaid || row.dataset.balancePaid === "yes");
-
-      row.hidden = !(matchQ && matchDate && matchBus && matchStatus && matchType && matchReqs);
+      row.hidden = !(matchQ && matchDate && matchBus && matchStatus && matchType);
     });
 
     renderFilterBadges();
@@ -267,10 +232,6 @@
   const STATUS_LABELS = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
   const TYPE_LABELS   = { round_trip: "Round Trip", one_way: "One-Way" };
   const BUS_LABELS    = { assigned: "Assigned Bus", unassigned: "Unassigned Bus" };
-  const REQ_LABELS    = {
-    hotel: "Needs Hotel", fuelcard: "Needs Fuel Card", sleeper: "Sleeper Required",
-    ada: "ADA Lift Required", pax56: "56 Pax Required", balancepaid: "Balance Paid",
-  };
 
   function createChip(label, onClear) {
     const span = document.createElement("span");
@@ -297,15 +258,6 @@
     if (busFilter !== "all") chips.push(createChip(BUS_LABELS[busFilter], () => {
       busFilter = "all"; setSegmentedValue("tf-bus-group", "all"); applyFilter();
     }));
-    Object.entries(reqFilters).forEach(([key, on]) => {
-      if (!on) return;
-      chips.push(createChip(REQ_LABELS[key], () => {
-        reqFilters[key] = false;
-        const input = document.getElementById(`tf-req-${key}`);
-        if (input) input.checked = false;
-        applyFilter();
-      }));
-    });
 
     chips.forEach((chip) => badgesEl.appendChild(chip));
     badgesEl.hidden = chips.length === 0;

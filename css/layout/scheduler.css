@@ -53,7 +53,13 @@
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
 	--rux-scheduler-today-bg: color-mix(in oklch, var(--rux-scheduler-bg) 0%, var(--rux-accent) 100%);
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
-	--_row-height: calc(140px + (var(--rux-scheduler-row-block-inset) * 2));
+	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
+	   is the empty-row fallback, so an empty row sits at the same height a
+	   row with one collapsed trip bar would lay out to. Can't reference that
+	   token directly: it's scoped to .rux-trip-bar, a descendant of this
+	   element, and custom properties don't cascade upward. Keep the two in
+	   sync by hand if either one changes. */
+	--_row-height: calc(138px + (var(--rux-scheduler-row-block-inset) * 2));
 	--rux-scheduler-cols: var(--rux-scheduler-col-head-width)
 		repeat(var(--rux-scheduler-days), minmax(var(--rux-scheduler-day-min-width), 1fr));
 
@@ -77,6 +83,48 @@
 
 .rux-scheduler::-webkit-scrollbar {
 	display: none;
+}
+
+/* ---------- Week navigation slide ---------- */
+/* Direction-aware "moved forward/backward in time" motion for Prev/Next and
+   wheel-swipe paging (see navigateWeek() in index.html) — old week exits,
+   content is rebuilt in place (still off-canvas), then the new week enters
+   from the opposite side. --_slide-offset is set by JS per-direction:
+   negative = exit left / enter from left, positive = exit right / enter
+   from right. Today and mini-cal jumps skip this entirely (renderScheduler()
+   directly) since an arbitrary jump has no meaningful direction to slide. */
+
+@keyframes rux-scheduler-slide-out {
+	to {
+		transform: translateX(var(--_slide-offset, -24px));
+		opacity: 0;
+	}
+}
+
+@keyframes rux-scheduler-slide-in {
+	from {
+		transform: translateX(var(--_slide-offset, 24px));
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+.rux-scheduler--slide-out {
+	animation: rux-scheduler-slide-out var(--rux-duration-fast) var(--rux-ease-out) forwards;
+}
+
+.rux-scheduler--slide-in {
+	animation: rux-scheduler-slide-in var(--rux-duration-base) var(--rux-ease-out) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rux-scheduler--slide-out,
+	.rux-scheduler--slide-in {
+		animation: none;
+	}
 }
 
 /* ---------- Header row ---------- */
@@ -196,15 +244,27 @@
    set here cascade independently to each row's row-head and track. */
 .rux-scheduler__row {
 	display: contents;
-	--_row-height: calc(140px + (var(--rux-scheduler-row-block-inset) * 2));
+	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
+	   is the empty-row fallback, so an empty row sits at the same height a
+	   row with one collapsed trip bar would lay out to. Can't reference that
+	   token directly: it's scoped to .rux-trip-bar, a descendant of this
+	   element, and custom properties don't cascade upward. Keep the two in
+	   sync by hand if either one changes. */
+	--_row-height: calc(138px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
 .rux-scheduler--compact {
-	--_row-height: calc(112px + (var(--rux-scheduler-row-block-inset) * 2));
+	/* 110px must match .rux-scheduler--compact .rux-trip-bar's
+	   --rux-trip-bar-collapsed-height (trip-bar.css) — see the non-compact
+	   row above for why this can't just reference that token directly. */
+	--_row-height: calc(110px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
 .rux-scheduler--compact .rux-scheduler__row {
-	--_row-height: calc(112px + (var(--rux-scheduler-row-block-inset) * 2));
+	/* 110px must match .rux-scheduler--compact .rux-trip-bar's
+	   --rux-trip-bar-collapsed-height (trip-bar.css) — see the non-compact
+	   row above for why this can't just reference that token directly. */
+	--_row-height: calc(110px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
 /* ---------- Bus row ---------- */
@@ -306,6 +366,19 @@
 
 .rux-scheduler__track:has(.is-active) {
 	z-index: var(--rux-z-sticky);
+}
+
+/* Drag-to-reassign drop feedback (see installBusDrag() in index.html) — the
+   row currently under the dragged bar's center highlights live, amber
+   instead of accent if that bus already has a conflicting trip that day. */
+.rux-scheduler__track--drop-target {
+	background-color: var(--rux-accent-subtle);
+	box-shadow: inset 0 0 0 2px var(--rux-accent);
+}
+
+.rux-scheduler__track--drop-conflict {
+	background-color: color-mix(in oklch, var(--rux-warning) 14%, transparent);
+	box-shadow: inset 0 0 0 2px var(--rux-warning);
 }
 
 .rux-scheduler__track-grid {

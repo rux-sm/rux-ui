@@ -99,6 +99,50 @@
 		transform var(--rux-duration-fast) var(--rux-ease-out);
 }
 
+/* Drag-to-reassign (see installBusDrag() in index.html) — the original bar
+   stays put as a dimmed placeholder while a lightweight "ghost" outline (below)
+   is what actually follows the cursor. Keeps the real bar's slot visible
+   ("this is what's moving and where it currently is") without two
+   full-strength copies competing for attention. */
+.rux-trip-bar--drag-source {
+	opacity: 0.3;
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+/* The thing that actually follows the pointer — deliberately NOT a clone of
+   the real bar. A cloned multi-day bar drags its internal grid (head + tail
+   spanning columns, container queries) along with it, which breaks once the
+   clone is pinned to an explicit pixel box outside the scheduler's own grid
+   context. A plain tinted outline sized to the source bar's rect sidesteps
+   all of that — it's just a box, so it can't mis-layout. left/top/width are
+   set once (in viewport coordinates, from the source bar's
+   getBoundingClientRect() at drag-start) so translateY-per-frame is the only
+   thing moving it — transition is off so the per-frame transform doesn't lag
+   behind the cursor. --_ghost-tone is set inline from the source bar's --_tone. */
+.rux-trip-bar-ghost {
+	position: fixed;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	padding-inline: var(--rux-space-3);
+	margin: 0;
+	border-radius: var(--rux-opt-radius-2);
+	border: 2px solid var(--_ghost-tone, var(--rux-accent));
+	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) 16%, transparent);
+	box-shadow: 0 8px 20px oklch(0% 0 0 / 0.45);
+	color: var(--rux-fg-on-accent);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-bold);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: none;
+	cursor: grabbing;
+	z-index: var(--rux-z-dropdown);
+	pointer-events: none;
+}
+
 /* ---------- Height contract ---------- */
 
 .rux-trip-bar {

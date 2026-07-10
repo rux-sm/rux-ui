@@ -662,6 +662,125 @@
 	position: relative;
 }
 
+/* — Driver assignment grid — */
+/* Mirrors the main scheduler's current week window exactly (Mon/Sun start,
+   one/two-week span) rather than owning any date state of its own — see
+   renderDriverGrid() in index.html, which reads currentWeekStart/viewDays/
+   sundayStart live on every render instead of tracking its own copy. */
+
+.rux-driver-grid {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.rux-driver-grid__row {
+	display: flex;
+	align-items: center;
+	min-height: 20px;
+	gap: var(--rux-space-2);
+}
+
+.rux-driver-grid__name {
+	/* Claims extra row width first — flex-grow 20 vs .rux-driver-grid__days'
+	   1 means it absorbs nearly all of any spare space up front. Once it
+	   hits max-width it freezes (standard flex behavior), and everything
+	   from then on flows to the day grid instead — a smooth, continuous
+	   handoff with no breakpoint/step needed. Still shrinkable (flex-shrink
+	   1, not 0) so it gives up space instead of overflowing the card's
+	   padding when the row doesn't fully fit — see min-width below. */
+	flex: 20 1 4.5rem;
+	max-width: 8rem;
+	min-width: 3rem;
+	overflow: hidden;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-driver-grid__row--head .rux-driver-grid__name {
+	visibility: hidden;
+}
+
+.rux-driver-grid__row[data-driver-id] {
+	cursor: pointer;
+	border-radius: var(--rux-radius-sm);
+}
+
+.rux-driver-grid__row[data-driver-id]:hover {
+	background: var(--rux-color-white-a08);
+}
+
+.rux-driver-grid__row.is-selected {
+	background: var(--rux-accent-subtle);
+}
+
+.rux-driver-grid__row.is-selected .rux-driver-grid__name {
+	color: var(--rux-fg);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-driver-grid__days {
+	display: grid;
+	grid-template-columns: repeat(var(--rux-driver-grid-days, 7), minmax(20px, 1fr));
+	flex: 1 1 auto;
+	gap: var(--rux-space-2);
+}
+
+.rux-driver-grid__day-label {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-2xs);
+	font-weight: var(--rux-weight-medium);
+	text-align: center;
+	text-transform: uppercase;
+}
+
+.rux-driver-grid__cell {
+	width: 100%;
+	height: 20px;
+	border-radius: var(--rux-radius-sm);
+	background: var(--rux-color-white-a10);
+}
+
+.rux-driver-grid__cell--busy {
+	background: var(--rux-accent);
+}
+
+/* Same driver, two overlapping trips the same day — flagged distinctly from
+   a normal single-trip day rather than just looking "extra busy". */
+.rux-driver-grid__cell--conflict {
+	background: var(--rux-warning);
+}
+
+/* Marked time off (Driver panel → Time Off tab) — its own color, distinct
+   from a trip-conflict, so "unavailable" and "double-booked" never look
+   like the same problem. */
+.rux-driver-grid__cell--unavailable {
+	background: var(--rux-danger);
+}
+
+/* Worst case: a trip is assigned on a day the driver is marked unavailable.
+   Keeps the "busy" fill (the trip is real and still needs covering) but
+   rings it in the time-off color so the conflict reads at a glance instead
+   of looking like an ordinary assigned day. */
+.rux-driver-grid__cell--busy.rux-driver-grid__cell--unavailable {
+	background: var(--rux-accent);
+	box-shadow: 0 0 0 2px var(--rux-danger);
+}
+
+/* Double-booked trips on a day the driver is also marked unavailable —
+   the trip conflict fill still wins visually, ringed the same way. */
+.rux-driver-grid__cell--conflict.rux-driver-grid__cell--unavailable {
+	background: var(--rux-warning);
+	box-shadow: 0 0 0 2px var(--rux-danger);
+}
+
+.rux-driver-grid__empty {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+}
+
 /* — View options — */
 
 .rux-view-options {
@@ -752,6 +871,12 @@
 	   header is already a packed 5-column grid — List is still reachable
 	   there via the module nav, so this just doesn't compete for the space. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #trip-view-group {
+		display: none;
+	}
+
+	/* Same reasoning — no room in the 5-column mobile grid, and ⌘K isn't a
+	   mobile gesture anyway. */
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #workspace-search-btn {
 		display: none;
 	}
 

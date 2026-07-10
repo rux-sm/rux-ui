@@ -343,6 +343,7 @@
     selectedId = d.id;
     populatePanel(d);
     loadDriverTrips(d.id);
+    loadTimeOff(d.id);
     openDrawer();
   }
 
@@ -462,8 +463,132 @@
       emergency_contact_name:    document.getElementById("dp-ec-name").value.trim()  || null,
       emergency_contact_phone:   document.getElementById("dp-ec-phone").value.trim() || null,
       notes:                     document.getElementById("dp-notes").value.trim()     || null,
+      timeOff:                   collectTimeOff(),
     };
   }
+
+  // ── Time off ──────────────────────────────────────────────────────────────
+  // Repeating date-range rows — same add/remove/select-to-delete recipe as
+  // Trip Contacts/Payments in the Trip panel (reuses their CSS classes).
+
+  const timeoffRows = document.getElementById("dp-timeoff-rows");
+  const timeoffAddBtn = document.getElementById("dp-timeoff-add-btn");
+  const timeoffDeleteBtn = document.getElementById("dp-timeoff-delete-btn");
+
+  function timeOffRowCount() {
+    return timeoffRows?.querySelectorAll("[data-timeoff-row]").length || 0;
+  }
+
+  function syncTimeOffButtons() {
+    if (timeoffRows) timeoffRows.style.display = "flex";
+    if (timeoffDeleteBtn) timeoffDeleteBtn.disabled = timeOffRowCount() === 0;
+  }
+
+  function createTimeOffRow(index) {
+    const row = document.createElement("div");
+    row.className = "rux-driver-panel__timeoff-row";
+    row.dataset.timeoffRow = "";
+    row.innerHTML = `
+      <div class="rux-driver-panel__timeoff-fields">
+        <div class="rux-trip-panel__contact-fields">
+          <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-start-${index + 1}">Start</label><input class="rux-input" id="dp-timeoff-start-${index + 1}" type="date" data-timeoff-start /></div>
+          <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-end-${index + 1}">End</label><input class="rux-input" id="dp-timeoff-end-${index + 1}" type="date" data-timeoff-end /></div>
+        </div>
+        <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-reason-${index + 1}">Reason</label>
+          <select class="rux-input rux-select" id="dp-timeoff-reason-${index + 1}" data-timeoff-reason>
+            <option value="vacation">Vacation</option>
+            <option value="sick">Sick</option>
+            <option value="personal">Personal</option>
+            <option value="suspended">Suspended</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <button type="button" class="rux-trip-panel__contact-select" data-timeoff-select aria-label="Delete time off">
+        <span class="rux-icon" aria-hidden="true">delete</span>
+      </button>`;
+    return row;
+  }
+
+  function addTimeOffRow({ focus = true } = {}) {
+    if (!timeoffRows) return;
+    const row = createTimeOffRow(timeOffRowCount());
+    timeoffRows.appendChild(row);
+    syncTimeOffButtons();
+    window.Rux?.syncSelectPlaceholders?.(row);
+    if (focus) row.querySelector("[data-timeoff-start]")?.focus();
+  }
+
+  let timeOffSelecting = false;
+  function setTimeOffSelecting(on) {
+    timeOffSelecting = on;
+    timeoffRows?.classList.toggle("is-selecting", on);
+    if (timeoffDeleteBtn) {
+      timeoffDeleteBtn.setAttribute("aria-pressed", String(on));
+      timeoffDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
+      timeoffDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete a time off entry");
+    }
+  }
+
+  function deleteTimeOffRow(row) {
+    if (!timeoffRows || !row) return;
+    const hasData = [...row.querySelectorAll("input")].some((el) => el.value);
+    if (hasData && !confirm("Delete this time off entry?")) return;
+    row.remove();
+    setTimeOffSelecting(false);
+    syncTimeOffButtons();
+  }
+
+  function resetTimeOffRows() {
+    timeoffRows?.querySelectorAll("[data-timeoff-row]").forEach((row) => row.remove());
+    setTimeOffSelecting(false);
+    syncTimeOffButtons();
+  }
+
+  function collectTimeOff() {
+    const rows = timeoffRows?.querySelectorAll("[data-timeoff-row]") || [];
+    return [...rows].map((row, i) => ({
+      position: i,
+      start_date: row.querySelector("[data-timeoff-start]")?.value || null,
+      end_date: row.querySelector("[data-timeoff-end]")?.value || null,
+      reason: row.querySelector("[data-timeoff-reason]")?.value || null,
+    })).filter((e) => e.start_date && e.end_date);
+  }
+
+  function populateTimeOff(entries) {
+    resetTimeOffRows();
+    const sorted = [...(entries || [])].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    sorted.forEach((entry, i) => {
+      const row = createTimeOffRow(i);
+      timeoffRows.appendChild(row);
+      if (entry.start_date) row.querySelector("[data-timeoff-start]").value = entry.start_date;
+      if (entry.end_date) row.querySelector("[data-timeoff-end]").value = entry.end_date;
+      if (entry.reason) row.querySelector("[data-timeoff-reason]").value = entry.reason;
+    });
+    syncTimeOffButtons();
+    window.Rux?.syncDateInputs(timeoffRows);
+    window.Rux?.syncSelectPlaceholders?.(timeoffRows);
+  }
+
+  async function loadTimeOff(driverId) {
+    if (!db) return;
+    try {
+      const entries = await db.fetchTimeOff(driverId);
+      populateTimeOff(entries);
+    } catch (err) {
+      console.warn("Could not load time off:", err);
+    }
+  }
+
+  timeoffAddBtn?.addEventListener("click", () => addTimeOffRow());
+  timeoffDeleteBtn?.addEventListener("click", () => setTimeOffSelecting(!timeOffSelecting));
+  timeoffRows?.addEventListener("click", (e) => {
+    const selectBtn = e.target.closest("[data-timeoff-select]");
+    if (selectBtn && timeOffSelecting) deleteTimeOffRow(selectBtn.closest("[data-timeoff-row]"));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && timeOffSelecting) setTimeOffSelecting(false);
+  });
 
   // ── Save ──────────────────────────────────────────────────────────────────
 
@@ -530,6 +655,7 @@
       .forEach(btn => { btn.setAttribute("aria-pressed", "false"); btn.classList.remove("is-active"); });
 
     tripList.innerHTML = "";
+    resetTimeOffRows();
     switchTab(tabBtns[0]);
     window.Rux?.syncDateInputs(panelEl);
   }
@@ -968,7 +1094,19 @@
     await loadDrivers();
   }
 
-  window.DriverPanel = { init, reload: loadDrivers };
+  // Called from the Trips module's right-panel Drivers grid ("Add Time Off"
+  // footer button) — jumps straight to a specific driver's Time Off tab
+  // instead of just opening the panel on whatever tab it last showed.
+  async function openTimeOff(driverId) {
+    if (!db) await init();
+    const driver = allDrivers.find((d) => d.id === driverId);
+    const tr = tbody.querySelector(`[data-id="${driverId}"]`);
+    if (!driver || !tr) return;
+    selectRow(tr, driver);
+    document.querySelector('[data-driver-tabs] .rux-tab[aria-controls="pane-timeoff"]')?.click();
+  }
+
+  window.DriverPanel = { init, reload: loadDrivers, openTimeOff };
 
   // Auto-init: don't wait for nav event — defer timing means the nav click
   // fires before this script runs on direct load / refresh at #drivers.
