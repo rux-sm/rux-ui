@@ -113,9 +113,14 @@
 		}
 
 		function open() {
-			const w = DRAWER_DEFAULT + "px";
-			drawer.style.setProperty("--drawer-width", w);
-			drawer.style.setProperty("--drawer-open-width", w);
+			// Only force the default width when actually opening from closed —
+			// open() also runs every time a different trip/record is loaded into
+			// an already-open panel, and that shouldn't clobber a manual resize.
+			if (!isOpen()) {
+				const w = DRAWER_DEFAULT + "px";
+				drawer.style.setProperty("--drawer-width", w);
+				drawer.style.setProperty("--drawer-open-width", w);
+			}
 			drawer.classList.remove("is-closing");
 			drawer.classList.add("is-open");
 			panel.inert = false;

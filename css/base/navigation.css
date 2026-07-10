@@ -78,8 +78,13 @@
 		box-shadow var(--rux-tab-transition-duration) var(--rux-tab-transition-easing);
 }
 
+/* Unselected tabs brighten their text/icon on hover instead of picking up a
+   background tint — same "ghost" feel as .rux-button--ghost:hover. Selected
+   tabs are unaffected: .is-active/[aria-selected] sits later in the
+   cascade at equal specificity, so it still wins on hover. */
 .rux-tab:hover {
-	--_state-overlay: var(--rux-tab-hover-overlay);
+	--_state-overlay: transparent;
+	color: var(--rux-fg);
 }
 
 .rux-tab:focus-visible {
@@ -104,7 +109,7 @@
 
 .rux-tabs--contained > .rux-tab:hover {
 	--_state-overlay: transparent;
-	background-color: var(--rux-tabs-contained-tab-hover-bg);
+	color: var(--rux-fg);
 }
 
 .rux-tabs--contained > .rux-tab.is-active,
@@ -126,7 +131,6 @@
 
 .rux-tabs--attached > .rux-tab:hover {
 	--_state-overlay: transparent;
-	background-color: var(--rux-tabs-attached-tab-hover-bg);
 	color: var(--rux-fg);
 }
 

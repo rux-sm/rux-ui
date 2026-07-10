@@ -183,11 +183,87 @@
 	display: none;
 }
 
+/* Prev/Today/Next read as one cluster, flush against each other — the gap
+   belongs between this group and its neighbors (panel toggle, etc.), not
+   inside it. */
+.calendar-app__date-controls {
+	display: flex;
+	align-items: center;
+	gap: 0;
+}
+
+/* Week/List read as one cluster too, flush against each other. */
+#trip-view-group {
+	gap: 0;
+}
+
+/* No background fill for the active view (see the plain-ghost buttons
+   above) — bright white text/icon is the only "this one's selected" signal. */
+#trip-view-group .rux-button.is-active,
+#trip-view-group .rux-button[aria-pressed="true"] {
+	--_fg: var(--rux-color-white);
+}
+
 .scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__heading {
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-start;
 	gap: var(--rux-space-2);
+}
+
+/* Desktop: 3-column grid so the date navigator is truly centered regardless
+   of how wide the left (panel toggle + view switch) and right (Today +
+   panel toggle) zones are — flexbox space-between would only look centered
+   when both sides happen to be equal width, which they aren't here. */
+.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+}
+
+.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header > * {
+	min-width: 0;
+}
+
+.rux-workspace__nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-space-2);
+	min-width: 0;
+}
+
+.rux-workspace__nav > .rux-workspace__title {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+/* Strips button UA styling so this reads exactly like the plain-text title
+   it replaces — same font/color/truncation as .rux-workspace__title carries
+   for every other page, just interactive. */
+.rux-workspace__title-btn {
+	all: unset;
+	display: inline-block;
+	cursor: pointer;
+	overflow: hidden;
+	max-width: 100%;
+	color: var(--rux-workspace-fg);
+	font-size: var(--rux-text-xl);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: 0;
+	line-height: var(--rux-leading-tight);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border-radius: var(--rux-radius-sm);
+}
+
+.rux-workspace__title-btn:hover {
+	color: var(--rux-accent);
+}
+
+.rux-workspace__title-btn:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-ring-focus);
 }
 
 .scheduler-app__view-menu {
@@ -618,17 +694,23 @@
 .scheduler-app__mobile-panel-btn {
 	display: inline-flex;
 	flex: none;
+	/* Bigger box + icon than the 28px/20px button default — this is now the
+	   only way to reopen a closed panel on desktop, not just mobile, so it
+	   earns more visual weight than a typical icon button. Scoped to just
+	   these two buttons; every other icon button keeps the shared default. */
+	--_h: 28px;
 }
 
+
+
 /* .rux-button--toggle[aria-pressed="true"] (controls.css) also swaps in the
-   "selected" bg/fg/shadow — useful for a real toggle button, but these two
-   just need the icon to reflect open/closed, not a persistent pressed look.
-   Reset back to plain ghost; :hover (higher specificity) still wins over
-   this when the pointer is actually over the button, so hover feedback
-   keeps working normally. */
+   "selected" bg/shadow — useful for a real toggle button, but this one just
+   needs the icon to reflect open/closed, not a filled pressed look. Reset
+   the background back to plain ghost; keep the foreground bright white
+   though, so an open panel still reads as "active" via the icon alone. */
 .scheduler-app__mobile-panel-btn.rux-button--toggle[aria-pressed="true"] {
 	--_bg: var(--rux-button-ghost-bg);
-	--_fg: var(--rux-button-ghost-fg);
+	--_fg: var(--rux-color-white);
 	--_shadow: var(--rux-button-shadow);
 }
 
@@ -653,21 +735,31 @@
 		display: contents;
 	}
 
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__nav {
+		display: contents;
+	}
+
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__toolbar {
 		display: contents;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .calendar-app__nav {
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .calendar-app__date-controls {
 		display: contents;
 	}
 
-	/* prev/next/today now live inside .rux-workspace__toolbar in the markup
-	   (moved there to sit on the right on desktop), but on mobile .heading
-	   and .toolbar (and .calendar-app__nav, its own child) all collapse to
-	   display:contents, so everything below is a direct item of this
-	   5-column grid regardless of markup nesting — the title takes its own
-	   full-width row, and the two drawer toggles + prev/today/next share a
-	   single row underneath in reading order. */
+	/* The Calendar/List switch earns its keep in the header on desktop
+	   (room for a second control next to the panel toggle), but mobile's
+	   header is already a packed 5-column grid — List is still reachable
+	   there via the module nav, so this just doesn't compete for the space. */
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #trip-view-group {
+		display: none;
+	}
+
+	/* .heading, .nav, and .toolbar all collapse to display:contents above, so
+	   everything below is a direct item of this 5-column grid regardless of
+	   markup nesting — the title takes its own full-width row, and the
+	   drawer toggles + prev/today/next share a single row underneath in
+	   reading order. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__title {
 		grid-column: 1 / -1;
 		grid-row: 1;
@@ -676,7 +768,7 @@
 		text-align: center;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header > .scheduler-app__mobile-panel-btn--left {
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .scheduler-app__mobile-panel-btn--left {
 		grid-column: 1;
 		grid-row: 2;
 	}

@@ -339,26 +339,34 @@
 
           <section class="rux-workspace" aria-label="Weekly schedule">
             <header class="rux-workspace__header">
-              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" aria-pressed="false" data-opens="trip-panel-drawer">
-                <span class="rux-icon icon-off">left_panel_open</span>
-                <span class="rux-icon icon-on">left_panel_close</span>
-              </button>
               <div class="rux-workspace__heading">
-                <h1 class="rux-workspace__title" id="week-label"></h1>
-              </div>
-              <div class="rux-workspace__toolbar" role="group" aria-label="View controls">
-                <div class="calendar-app__nav">
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="prev-week" aria-label="Previous week">
+                <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" aria-pressed="false" data-opens="trip-panel-drawer">
+                  <span class="rux-icon icon-off">left_panel_open</span>
+                  <span class="rux-icon icon-on">left_panel_close</span>
+                </button>
+                <div class="calendar-app__date-controls">
+                  <button class="rux-button rux-button--ghost rux-button--icon calendar-app__nav" id="prev-week" aria-label="Previous week">
                     <span class="rux-icon">chevron_left</span>
                   </button>
                   <button class="rux-button rux-button--ghost" id="today-btn" type="button" aria-label="Jump to current week">
                     <span class="rux-btn-label">Today</span>
                   </button>
-                  <button class="rux-button rux-button--ghost rux-button--icon" id="next-week" aria-label="Next week">
+                  <button class="rux-button rux-button--ghost rux-button--icon calendar-app__nav" id="next-week" aria-label="Next week">
                     <span class="rux-icon">chevron_right</span>
                   </button>
                 </div>
+              </div>
+              <div class="rux-workspace__nav">
+                <h1 class="rux-workspace__title">
+                  <button type="button" id="week-label" class="rux-workspace__title-btn" aria-label="Jump to a date"></button>
+                </h1>
+              </div>
+              <div class="rux-workspace__toolbar" role="group" aria-label="View controls">
                 <div class="rux-cluster" id="trips-filter-badges" hidden></div>
+                <div class="rux-cluster" id="trip-view-group" data-rux-toggle-group>
+                  <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Week</span></button>
+                  <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
+                </div>
                 <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" aria-pressed="false" data-opens="right-panel-drawer">
                   <span class="rux-icon icon-off">right_panel_open</span>
                   <span class="rux-icon icon-on">right_panel_close</span>
@@ -425,14 +433,6 @@
               </div>
               <div class="rux-panel__body">
                 <div id="rp-pane-navigate" class="rux-panel__pane" role="tabpanel">
-                  <article class="rux-card" id="rp-trip-view-card">
-                    <div class="rux-card__body">
-                      <div class="rux-segmented" id="trip-view-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Calendar</span></button>
-                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
-                      </div>
-                    </div>
-                  </article>
                   <article class="rux-card rux-mini-cal" id="rp-minical-card">
                     <div class="rux-card__body rux-mini-cal__body">
                       <header class="rux-mini-cal__header">
@@ -3237,14 +3237,13 @@
       const calendarViewportEl = document.querySelector(".calendar-app__viewport");
       const calendarListViewEl = document.getElementById("calendar-list-view");
       const calendarManifestViewEl = document.getElementById("calendar-manifest-view");
-      const calendarNavEl = document.querySelector(".calendar-app__nav");
+      const calendarNavEls = document.querySelectorAll(".calendar-app__nav");
       const tripsFilterBadgesEl = document.getElementById("trips-filter-badges");
       const rpMiniCalCard = document.getElementById("rp-minical-card");
       const rpViewOptionsCard = document.getElementById("rp-view-options-card");
       const rpFilterCard = document.getElementById("rp-filter-card");
       const rpPassengerCard = document.getElementById("rp-passenger-card");
       const rpManifestStatusCard = document.getElementById("rp-manifest-status-card");
-      const rpTripViewCard = document.getElementById("rp-trip-view-card");
       const weekLabelEl = document.getElementById("week-label");
       const tpManifestBtn = document.getElementById("tp-view-manifest-btn");
 
@@ -3256,12 +3255,10 @@
         if (calendarViewportEl) calendarViewportEl.hidden = !isCalendar;
         if (calendarListViewEl) calendarListViewEl.hidden = !isList;
         if (calendarManifestViewEl) calendarManifestViewEl.hidden = !isManifest;
-        if (calendarNavEl) calendarNavEl.hidden = !isCalendar;
-        // Trip View (Calendar/List — "how am I browsing trips") has nothing
-        // valid to select while drilled into one trip's manifest, so hide
-        // it entirely rather than show a toggle with neither option active.
-        // "Close manifest" (Billing tab) is the one defined way back out.
-        if (rpTripViewCard) rpTripViewCard.hidden = isManifest;
+        // Prev/next only make sense browsing the calendar by week — List and
+        // Manifest keep the (always-visible, mode-appropriate) title but lose
+        // the arrows around it.
+        calendarNavEls.forEach((el) => { el.hidden = !isCalendar; });
         if (rpMiniCalCard) rpMiniCalCard.hidden = !isCalendar;
         if (rpViewOptionsCard) rpViewOptionsCard.hidden = !isCalendar;
         if (rpFilterCard) rpFilterCard.hidden = !isList;
@@ -3450,6 +3447,20 @@
         renderMiniCal();
       });
       renderMiniCal();
+
+      // Clicking the workspace title jumps to the mini-calendar (right panel,
+      // Nav tab) instead of a separate floating date-picker — reuses the one
+      // date-jump UI already built rather than duplicating it. Only
+      // meaningful in Calendar view; List/Manifest show a different title
+      // with nothing to jump to.
+      weekLabelEl?.addEventListener("click", () => {
+        if (tripViewMode !== "calendar") return;
+        miniCalMonth = new Date(currentWeekStart);
+        miniCalMonth.setDate(1);
+        renderMiniCal();
+        openRightDrawer();
+        document.querySelector('[data-right-tabs] .rux-tab[aria-controls="rp-pane-navigate"]')?.click();
+      });
 
       // ── Default boot state ──────────────────────────────────────────────
       // Desktop begins with both panels visible. Mobile begins with the

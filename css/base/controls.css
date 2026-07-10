@@ -308,7 +308,7 @@
 .rux-segmented > .rux-button {
 	--_h: var(--rux-segmented-height);
 	--_bg: var(--rux-button-ghost-bg); /* matches strip bg so inactive items blend into the strip */
-	--_fg: var(--rux-fg);
+	--_fg: var(--rux-fg-muted); /* muted at rest so hover's brighten-to-white is visible, same as .rux-button--ghost */
 	--_shadow: var(--rux-elevation-0);
 	flex: 1;
 	min-width: 0;
@@ -318,6 +318,15 @@
 	--_bg: transparent;
 	--_fg: var(--rux-fg-disabled);
 	--_shadow: none;
+}
+
+/* Unselected items brighten instead of picking up the generic
+   .rux-button:hover background tint — same "ghost" feel as
+   .rux-button--ghost:hover. Selected items are unaffected (excluded below),
+   keeping whatever hover treatment they already had. */
+.rux-segmented > .rux-button:hover:not(.is-active):not([aria-pressed="true"]):not([aria-selected="true"]) {
+	--_state-overlay: transparent;
+	--_fg: var(--rux-color-white);
 }
 
 /* Same selected-state tokens as .rux-button--toggle.is-active — segmented
