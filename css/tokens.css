@@ -401,7 +401,7 @@
 	   only thing stopping those columns from collapsing to unusable width.
 	   Deriving it from padding/border/gap tokens means it tracks those
 	   automatically instead of drifting out of sync with a bare px value. */
-	--rux-panel-min-field-width: 112px; /* solved so the derived total matches the prior 360px floor exactly */
+	--rux-panel-min-field-width: 116px; /* solved so the derived total matches the prior 360px floor exactly */
 	--rux-panel-min-content-width: calc(
 		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
 	);
@@ -454,7 +454,7 @@
 
 
 	/* Appearance */
-	--rux-button-default-bg: var(--rux-color-white-a16);
+	--rux-button-default-bg: var(--rux-color-white-a10);
 	--rux-button-default-fg: var(--rux-color-white);
 	--rux-button-accent-bg: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
 	--rux-button-accent-fg: var(--rux-color-white);
@@ -470,9 +470,13 @@
 	--rux-button-active-overlay: var(--rux-color-black-a12);
 	--rux-button-disabled-bg: var(--rux-color-neutral-24);
 	--rux-button-disabled-fg: oklch(40% 0 0);
-	--rux-button-selected-bg: var(--rux-color-white);
+	/* Selected reuses the accent color rather than solid white — "on" should
+	   mean one thing everywhere (switches already use accent for on/off), and
+	   white was otherwise indistinguishable at a glance from the merely-idle
+	   default-bg tone above. */
+	--rux-button-selected-bg: var(--rux-button-accent-bg);
 	--rux-button-quiet-selected-bg: var(--rux-color-white-a10);
-	--rux-button-selected-fg: var(--rux-color-black);
+	--rux-button-selected-fg: var(--rux-button-accent-fg);
 	--rux-button-icon-selected-bg: var(--rux-color-neutral-70);
 	--rux-button-shadow: var(--rux-elevation-0);
 	--rux-button-selected-shadow: var(--rux-inset-0);
@@ -550,7 +554,7 @@
 	     purpose: outer 8px = inner 4px + 4px padding, so the selected tab's
 	     corner sits concentric with the wrapper's. — */
 	--rux-tabs-contained-padding: var(--rux-space-2);
-	--rux-tabs-contained-gap: var(--rux-space-2);
+	--rux-tabs-contained-gap: var(--rux-space-0);
 	--rux-tabs-contained-bg: var(--rux-card-bg);
 	--rux-tabs-contained-border: var(--rux-border-width) transparent;
 	--rux-tabs-contained-radius: var(--rux-radius-md);
