@@ -39,8 +39,8 @@
    ========================================================================== */
 
 .rux-scheduler {
-	--rux-scheduler-col-head-width: 2rem;
-	--rux-scheduler-head-height: 2rem;
+	--rux-scheduler-col-head-width: 28px;
+	--rux-scheduler-head-height: 28px;
 	--rux-scheduler-days: 7;
 	--rux-scheduler-day-min-width: 14rem;
 	--rux-scheduler-bg: var(--rux-surface-2);
@@ -51,7 +51,7 @@
 	--rux-scheduler-max-block-size: none;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
-	--rux-scheduler-today-bg: color-mix(in oklch, var(--rux-scheduler-bg) 0%, var(--rux-accent) 100%);
+	--rux-scheduler-today-bg: var(--rux-button-default-bg);
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
 	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
 	   is the empty-row fallback, so an empty row sits at the same height a
@@ -189,13 +189,13 @@
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
-	background: color-mix(in srgb, var(--rux-color-white), transparent 10%);
-	border: solid 1px var(--rux-color-white);
+	background: var(--rux-button-default-bg);
+	border: var(--rux-button-border);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,
 .rux-scheduler__day-head--today .rux-scheduler__day-number {
-	color: var(--rux-color-black);
+	color: var(--rux-color-white);
 }
 
 /* ---------- Time-aligned mode ---------- */

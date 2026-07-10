@@ -703,7 +703,7 @@ function initTripTabs(root) {
 	if (tabs) tabs.dataset.ruxTripTabsInit = "true";
 
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
-	const allTabBtns = tabs?.querySelectorAll(".rux-tab[aria-controls]") || [];
+	const allTabBtns = tabs?.querySelectorAll(".rux-trip-panel__tab[aria-controls]") || [];
 	const scrollBody = root.querySelector(".rux-panel__body");
 	allTabBtns.forEach((btn) => {
 		btn.addEventListener("click", () => {
@@ -723,7 +723,7 @@ function initTripTabs(root) {
 	});
 
 	const activeTab =
-		tabs?.querySelector(".rux-tab[aria-controls][aria-selected='true']") ||
+		tabs?.querySelector(".rux-trip-panel__tab[aria-controls][aria-selected='true']") ||
 		allTabBtns[0];
 
 	if (activeTab) {

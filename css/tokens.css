@@ -604,12 +604,15 @@
     --rux-card-border: var(--rux-card-border-width) solid var(--rux-danger-bright); /* TEMPORARY: remove once border color is finalized */
    	--rux-button-border: var(--rux-card-border-width) solid var(--rux-success-bright); /* TEMPORARY: remove once border color is finalized */
    	--rux-input-border: var(--rux-card-border-width) solid var(--rux-success-bright); /* TEMPORARY: remove once border color is finalized */
+	--rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
 
-	--rux-panel-border: var(--rux-panel-border-width) solid transparent; /* TEMPORARY: remove once border color is finalized */
-    --rux-card-border: var(--rux-card-border-width) solid solid transparent; /* TEMPORARY: remove once border color is finalized */
-   	--rux-button-border: var(--rux-card-border-width) solid solid transparent; /* TEMPORARY: remove once border color is finalized */
-   	--rux-input-border: var(--rux-card-border-width) solid solid transparent; /* TEMPORARY: remove once border color is finalized */
+	--rux-panel-border: var(--rux-panel-border-width) solid transparent; 
+    --rux-card-border: var(--rux-card-border-width) solid solid transparent; 
+   	--rux-button-border: var(--rux-card-border-width) solid solid transparent;
+   	--rux-input-border: var(--rux-card-border-width) solid solid transparent; 
     --rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
+
+
 
     --rux-opt-radius-1: var(--rux-radius-0);  ;   /* blue   [panel]          */ 
 	--rux-opt-radius-2: var(--rux-radius-md);      /* red    [card]           */

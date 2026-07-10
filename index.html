@@ -127,11 +127,11 @@
                 </div>
               </header>
               <div class="rux-panel__nav">
-                <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Trip editor sections" data-rux-tabs data-trip-tabs>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-icon" aria-hidden="true">payments</span><span class="rux-trip-panel__tab-label">Billing</span></button>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-itinerary" aria-label="Trip" title="Trip"><span class="rux-icon" aria-hidden="true">location_on</span><span class="rux-trip-panel__tab-label">Trip</span></button>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon" aria-hidden="true">group_add</span><span class="rux-trip-panel__tab-label">Fleet</span></button>
+                <nav class="rux-trip-panel__tabs" role="tablist" aria-label="Trip editor sections" data-trip-tabs>
+                  <button class="rux-button rux-button--ghost rux-trip-panel__tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
+                  <button class="rux-button rux-button--ghost rux-trip-panel__tab" type="button" role="tab" aria-selected="false" aria-controls="pane-billing"   aria-label="Bill"  title="Bill"><span class="rux-icon" aria-hidden="true">payments</span><span class="rux-trip-panel__tab-label">Billing</span></button>
+                  <button class="rux-button rux-button--ghost rux-trip-panel__tab" type="button" role="tab" aria-selected="false" aria-controls="pane-itinerary" aria-label="Trip" title="Trip"><span class="rux-icon" aria-hidden="true">location_on</span><span class="rux-trip-panel__tab-label">Trip</span></button>
+                  <button class="rux-button rux-button--ghost rux-trip-panel__tab" type="button" role="tab" aria-selected="false" aria-controls="pane-dispatch"  aria-label="Fleet" title="Fleet"><span class="rux-icon" aria-hidden="true">group_add</span><span class="rux-trip-panel__tab-label">Fleet</span></button>
                 </nav>
               </div>
               <div class="rux-panel__body rux-trip-panel__body">
@@ -155,14 +155,17 @@
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
                     <div class="rux-field">
                       <label class="rux-field__label">Trip Type</label>
-                      <div class="rux-segmented rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
-                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
+                      <div class="rux-segmented rux-segmented--ghost rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
+                        <button class="rux-button is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
+                        <button class="rux-button" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
                       </div>
                     </div>
                     </div>
                   </div>
                   <div class="rux-card">
+                    <header class="rux-card__header">
+                      <p class="rux-card__title">Requirements</p>
+                    </header>
                     <div class="rux-card__body">
                     <div class="rux-trip-panel__requirements-grid">
                       <div class="rux-trip-panel__reqs" id="tp-vehicle-reqs"></div>
@@ -344,6 +347,24 @@
                   <span class="rux-icon icon-off">left_panel_open</span>
                   <span class="rux-icon icon-on">left_panel_close</span>
                 </button>
+                <div class="rux-cluster" id="workspace-view-controls">
+                  <button class="rux-button rux-button--ghost" type="button" id="workspace-search-btn" aria-label="Search trips" title="Search trips (⌘K)">
+                    <span class="rux-icon" aria-hidden="true">search</span>
+                    <span class="rux-btn-label">Search</span>
+                  </button>
+                  <div class="rux-cluster" id="trip-view-group" data-rux-toggle-group>
+                    <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Week</span></button>
+                    <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
+                  </div>
+                </div>
+              </div>
+              <div class="rux-workspace__nav">
+                <h1 class="rux-workspace__title">
+                  <button type="button" id="week-label" class="rux-workspace__title-btn" aria-label="Jump to a date"></button>
+                </h1>
+              </div>
+              <div class="rux-workspace__toolbar" role="group" aria-label="View controls">
+                <div class="rux-cluster" id="trips-filter-badges" hidden></div>
                 <div class="calendar-app__date-controls">
                   <button class="rux-button rux-button--ghost rux-button--icon calendar-app__nav" id="prev-week" aria-label="Previous week">
                     <span class="rux-icon">chevron_left</span>
@@ -355,21 +376,6 @@
                     <span class="rux-icon">chevron_right</span>
                   </button>
                 </div>
-              </div>
-              <div class="rux-workspace__nav">
-                <h1 class="rux-workspace__title">
-                  <button type="button" id="week-label" class="rux-workspace__title-btn" aria-label="Jump to a date"></button>
-                </h1>
-              </div>
-              <div class="rux-workspace__toolbar" role="group" aria-label="View controls">
-                <div class="rux-cluster" id="trips-filter-badges" hidden></div>
-                <div class="rux-cluster" id="trip-view-group" data-rux-toggle-group>
-                  <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Week</span></button>
-                  <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
-                </div>
-                <button class="rux-button rux-button--ghost rux-button--icon" type="button" id="workspace-search-btn" aria-label="Search trips" title="Search trips (⌘K)">
-                  <span class="rux-icon" aria-hidden="true">search</span>
-                </button>
                 <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" aria-pressed="false" data-opens="right-panel-drawer">
                   <span class="rux-icon icon-off">right_panel_open</span>
                   <span class="rux-icon icon-on">right_panel_close</span>
@@ -381,6 +387,12 @@
                 <div class="rux-scheduler__col-head">
                   <span class="rux-scheduler__corner-label"></span>
                 </div>
+              </div>
+              <div class="rux-scheduler__pull-hint rux-scheduler__pull-hint--prev" id="scheduler-pull-prev" aria-hidden="true">
+                <span class="rux-icon" aria-hidden="true">chevron_left</span>
+              </div>
+              <div class="rux-scheduler__pull-hint rux-scheduler__pull-hint--next" id="scheduler-pull-next" aria-hidden="true">
+                <span class="rux-icon" aria-hidden="true">chevron_right</span>
               </div>
             </div>
             <div class="rux-workspace__body trips-app__table-wrap" id="calendar-list-view" hidden>
@@ -427,10 +439,10 @@
                 <h2 class="rux-panel__title" id="right-panel-title">Tools</h2>
               </header>
               <div class="rux-panel__nav">
-                <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Right panel sections" data-rux-tabs data-right-tabs>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-right-panel__tab-label">Nav</span></button>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers"><span class="rux-icon" aria-hidden="true">group</span><span class="rux-right-panel__tab-label">Drivers</span></button>
-                  <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks"><span class="rux-icon" aria-hidden="true">checklist</span><span class="rux-right-panel__tab-label">Tasks</span></button>
+                <nav class="rux-right-panel__tabs" role="tablist" aria-label="Right panel sections" data-right-tabs>
+                  <button class="rux-button rux-button--ghost rux-right-panel__tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-right-panel__tab-label">Nav</span></button>
+                  <button class="rux-button rux-button--ghost rux-right-panel__tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-drivers" title="Drivers"><span class="rux-icon" aria-hidden="true">group</span><span class="rux-right-panel__tab-label">Drivers</span></button>
+                  <button class="rux-button rux-button--ghost rux-right-panel__tab" type="button" role="tab" aria-selected="false" aria-controls="rp-pane-tasks" title="Tasks"><span class="rux-icon" aria-hidden="true">checklist</span><span class="rux-right-panel__tab-label">Tasks</span></button>
                 </nav>
               </div>
               <div class="rux-panel__body">
@@ -2372,7 +2384,7 @@
       });
 
       function setActiveTripPane(panelId) {
-        const tab = tripPanel.querySelector(`[data-trip-tabs] .rux-tab[aria-controls="${panelId}"]`);
+        const tab = tripPanel.querySelector(`[data-trip-tabs] .rux-trip-panel__tab[aria-controls="${panelId}"]`);
         tab?.click();
       }
 
@@ -2537,29 +2549,29 @@
       new ResizeObserver(syncSchedulerShadows).observe(schedulerEl);
 
       // Shrinks an element down to nothing at its own center while fading it
-      // out. transition:none + a forced reflow before enabling the real
-      // transition matters here too — .rux-trip-bar's base rule already
-      // declares its own short transition (including transform), so without
-      // killing that first, the "from" state (scale(1)) would itself
-      // animate in over the wrong duration before this one even starts.
-      function shrinkAndFadeOut(el, { remove = false } = {}) {
+      // out, then removes it. transition:none + a forced reflow before
+      // enabling the real transition matters here too — .rux-trip-bar's base
+      // rule already declares its own short transition (including
+      // transform), so without killing that first, the "from" state
+      // (scale(1)) would itself animate in over the wrong duration before
+      // this one even starts. Always removes rather than resetting back to
+      // visible: every caller uses this on an element that's about to be
+      // superseded by a reload anyway, and resetting it to visible would
+      // pop it back to full size/opacity at its old spot for however long
+      // remains until that reload actually lands.
+      function shrinkAndFadeOut(el) {
         el.style.transformOrigin = "center center";
         el.style.pointerEvents = "none";
         el.style.transition = "none";
         el.style.transform = "scale(1)";
         el.getBoundingClientRect();
-        el.style.transition = "transform 220ms var(--rux-ease-out), opacity 220ms var(--rux-ease-out)";
+        el.style.transition = "transform 600ms var(--rux-ease-out), opacity 600ms var(--rux-ease-out)";
         el.style.transform = "scale(0)";
         el.style.opacity = "0";
         const onDone = (e) => {
           if (e.target !== el || e.propertyName !== "transform") return;
           el.removeEventListener("transitionend", onDone);
-          if (remove) { el.remove(); return; }
-          el.style.transition = "";
-          el.style.transform = "";
-          el.style.opacity = "";
-          el.style.transformOrigin = "";
-          el.style.pointerEvents = "";
+          el.remove();
         };
         el.addEventListener("transitionend", onDone);
       }
@@ -2662,7 +2674,6 @@
               ghost.style.width = `${barRect.width}px`;
               ghost.style.height = `${barRect.height}px`;
               if (tone) ghost.style.setProperty("--_ghost-tone", tone);
-              ghost.textContent = trip.destination || trip.trip_ref || "Trip";
               document.body.appendChild(ghost);
 
               bar.classList.add("rux-trip-bar--drag-source");
@@ -2708,7 +2719,7 @@
 
             // Ghost shrinks away right where it was released — no travel —
             // then the reassigned bar grows in at its new row separately.
-            shrinkAndFadeOut(ghost, { remove: true });
+            shrinkAndFadeOut(ghost);
             ghost = null;
 
             let reassigning = false;
@@ -3228,32 +3239,88 @@
         schedulerEl.addEventListener("animationend", onExitEnd);
       }
 
-      // Trackpad/wheel horizontal swipe pages by one week, same slide as the
-      // buttons — only kicks in when the gesture is predominantly horizontal
-      // (trackpad swipe, shift+wheel), so a normal vertical scroll over a
-      // tall grid is untouched. Accumulates deltaX to a threshold rather than
-      // firing per-event (a single swipe fires many wheel events), and a
-      // short cooldown after triggering stops one swipe from paging several
-      // weeks at once.
-      let wheelAccum = 0;
-      let wheelResetTimer = 0;
-      let wheelCooldown = false;
-      const WHEEL_THRESHOLD = 60;
-      const WHEEL_COOLDOWN_MS = 450;
-      schedulerEl?.addEventListener("wheel", (e) => {
-        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-        e.preventDefault();
-        if (wheelCooldown) return;
-        wheelAccum += e.deltaX;
-        clearTimeout(wheelResetTimer);
-        wheelResetTimer = setTimeout(() => { wheelAccum = 0; }, 150);
-        if (Math.abs(wheelAccum) < WHEEL_THRESHOLD) return;
-        const direction = wheelAccum > 0 ? 1 : -1;
-        wheelAccum = 0;
-        wheelCooldown = true;
-        navigateWeek(direction);
-        setTimeout(() => { wheelCooldown = false; }, WHEEL_COOLDOWN_MS);
-      }, { passive: false });
+      // Trackpad/wheel horizontal scroll is left entirely alone here — it
+      // only ever scrolls .rux-scheduler's own content (each day column has
+      // a 14rem minimum, so narrower viewports need it). Changing weeks is a
+      // separate, deliberate gesture instead: click-drag horizontally on
+      // empty scheduler background, past a distance threshold, then
+      // release — see installWeekDrag() below.
+      const pullHintPrev = document.getElementById("scheduler-pull-prev");
+      const pullHintNext = document.getElementById("scheduler-pull-next");
+
+      // Shows progress (0–1) toward the trigger threshold on whichever
+      // hint matches direction, and marks it .is-ready once a release would
+      // actually page the week. Hides the other side. Called with
+      // progress 0 (or no args) to hide both.
+      function setPullHint(direction, progress = 0, ready = false) {
+        // direction 0 (or no progress) means "hide both" — bugged before:
+        // the ternary below resolved direction=0 to the "next" branch, so a
+        // hide-both call only ever cleared pullHintNext and returned before
+        // touching pullHintPrev, leaving it stuck visible if a rightward
+        // (prev-side) drag was the last one shown.
+        if (!direction || progress <= 0) {
+          pullHintPrev?.classList.remove("is-active", "is-ready");
+          pullHintNext?.classList.remove("is-active", "is-ready");
+          return;
+        }
+        const activeEl = direction > 0 ? pullHintNext : pullHintPrev;
+        const inactiveEl = direction > 0 ? pullHintPrev : pullHintNext;
+        inactiveEl?.classList.remove("is-active", "is-ready");
+        activeEl?.style.setProperty("--_progress", String(progress));
+        activeEl?.classList.add("is-active");
+        activeEl?.classList.toggle("is-ready", ready);
+      }
+
+      // Click-drag-to-change-week — horizontal-only, mirroring the vertical-
+      // only bus-reassign drag (installBusDrag). Starting on a trip bar,
+      // sticky label, or any control is ignored so it can't compete with
+      // those. direction convention matches navigateWeek's own swipe
+      // convention: dragging left (content follows toward the left, like
+      // pulling the next page into view from the right) = next/forward.
+      const WEEK_DRAG_THRESHOLD = 90;
+      function installWeekDrag() {
+        schedulerEl?.addEventListener("mousedown", (e) => {
+          if (e.button !== 0) return;
+          if (e.target.closest(".rux-trip-bar, .rux-scheduler__row-head, .rux-scheduler__col-head, button, a, input, select, textarea")) return;
+
+          const startX = e.clientX;
+          const startY = e.clientY;
+          let dragging = false;
+
+          const onMove = (ev) => {
+            const dx = ev.clientX - startX;
+            if (!dragging) {
+              // Require horizontal-dominant movement past a small threshold
+              // before capturing, so a simple click (or vertical scroll
+              // attempt) isn't mistaken for the start of a drag.
+              if (Math.abs(dx) < 8 || Math.abs(dx) <= Math.abs(ev.clientY - startY)) return;
+              dragging = true;
+              schedulerEl.style.cursor = "grabbing";
+              document.body.style.userSelect = "none";
+            }
+            ev.preventDefault();
+            const ready = Math.abs(dx) >= WEEK_DRAG_THRESHOLD;
+            setPullHint(dx < 0 ? 1 : -1, Math.min(1, Math.abs(dx) / WEEK_DRAG_THRESHOLD), ready);
+          };
+
+          const onUp = (ev) => {
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+            if (!dragging) return;
+            schedulerEl.style.cursor = "";
+            document.body.style.userSelect = "";
+            setPullHint(0);
+            const dx = ev.clientX - startX;
+            if (Math.abs(dx) >= WEEK_DRAG_THRESHOLD) {
+              navigateWeek(dx < 0 ? 1 : -1);
+            }
+          };
+
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+        });
+      }
+      installWeekDrag();
 
       // ── Now line ───────────────────────────────────────────────────────────
 
@@ -3600,7 +3667,7 @@
         rightDrawerHandle.close();
       }
       // Right panel tab switching
-      const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-tab[aria-controls]");
+      const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-right-panel__tab[aria-controls]");
       const rpPanes = rightDrawer.querySelectorAll(".rux-panel__pane");
       const rightPanelTitleEl = document.getElementById("right-panel-title");
 
@@ -3610,7 +3677,7 @@
       // gets called from setTripView(), not just on tab click.
       function syncRightPanelTitle() {
         if (!rightPanelTitleEl) return;
-        const activeTab = rightDrawer.querySelector('[data-right-tabs] .rux-tab[aria-selected="true"]');
+        const activeTab = rightDrawer.querySelector('[data-right-tabs] .rux-right-panel__tab[aria-selected="true"]');
         const paneId = activeTab?.getAttribute("aria-controls");
         if (paneId === "rp-pane-navigate") {
           rightPanelTitleEl.textContent =
@@ -3916,7 +3983,7 @@
         miniCalMonth.setDate(1);
         renderMiniCal();
         openRightDrawer();
-        document.querySelector('[data-right-tabs] .rux-tab[aria-controls="rp-pane-navigate"]')?.click();
+        document.querySelector('[data-right-tabs] .rux-right-panel__tab[aria-controls="rp-pane-navigate"]')?.click();
       });
 
       // ── Default boot state ──────────────────────────────────────────────

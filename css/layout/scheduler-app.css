@@ -192,6 +192,13 @@
 	gap: 0;
 }
 
+/* Search + Week/List read as one continuous cluster, flush against each
+   other — the gap belongs between this group and the panel toggle, not
+   inside it. */
+#workspace-view-controls {
+	gap: 0;
+}
+
 /* Week/List read as one cluster too, flush against each other. */
 #trip-view-group {
 	gap: 0;
@@ -212,9 +219,9 @@
 }
 
 /* Desktop: 3-column grid so the date navigator is truly centered regardless
-   of how wide the left (panel toggle + view switch) and right (Today +
-   panel toggle) zones are — flexbox space-between would only look centered
-   when both sides happen to be equal width, which they aren't here. */
+   of how wide the left (panel toggle + Week/List + search) and right
+   (Today + panel toggle) zones are — flexbox space-between would only look
+   centered when both sides happen to be equal width, which they aren't here. */
 .scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
 	display: grid;
 	grid-template-columns: 1fr auto 1fr;
@@ -500,6 +507,27 @@
 	container-type: inline-size;
 }
 
+/* Plain buttons instead of a segmented/contained tab track — active looks
+   like .rux-button--default (filled), inactive like .rux-button--ghost
+   (transparent, brightens on hover). Keying the override off
+   [aria-selected="true"] rather than swapping variant classes in JS matches
+   how the workspace header's Week/List and panel-toggle buttons already do
+   this (see #trip-view-group rules). */
+.rux-right-panel__tabs {
+	display: flex;
+	width: 100%;
+	gap: var(--rux-space-1);
+}
+
+.rux-right-panel__tab {
+	flex: 1;
+}
+
+.rux-right-panel__tab[aria-selected="true"] {
+	--_bg: var(--rux-button-default-bg);
+	--_fg: var(--rux-button-default-fg);
+}
+
 .rux-right-panel__tab-label {
 	white-space: nowrap;
 }
@@ -507,7 +535,7 @@
 /* Two-step tab collapse as the panel narrows: icon+text → text only → icon
    only — see the matching comment in trip-panel.css for the rationale. */
 @container (max-width: 380px) {
-	[data-right-tabs] .rux-tab > .rux-icon {
+	[data-right-tabs] .rux-right-panel__tab > .rux-icon {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -521,7 +549,7 @@
 }
 
 @container (max-width: 300px) {
-	[data-right-tabs] .rux-tab > .rux-icon {
+	[data-right-tabs] .rux-right-panel__tab > .rux-icon {
 		position: static;
 		width: var(--_icon-size);
 		height: var(--_icon-size);
@@ -671,14 +699,14 @@
 .rux-driver-grid {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-space-1);
 }
 
 .rux-driver-grid__row {
 	display: flex;
 	align-items: center;
 	min-height: 20px;
-	gap: var(--rux-space-2);
+	gap: var(--rux-space-1);
 }
 
 .rux-driver-grid__name {
@@ -691,10 +719,10 @@
 	   padding when the row doesn't fully fit — see min-width below. */
 	flex: 20 1 4.5rem;
 	max-width: 8rem;
-	min-width: 3rem;
+	min-width: .5rem;
 	overflow: hidden;
 	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-text-xs);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -725,7 +753,7 @@
 	display: grid;
 	grid-template-columns: repeat(var(--rux-driver-grid-days, 7), minmax(20px, 1fr));
 	flex: 1 1 auto;
-	gap: var(--rux-space-2);
+	gap: var(--rux-space-1);
 }
 
 .rux-driver-grid__day-label {
@@ -863,6 +891,10 @@
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .calendar-app__date-controls {
+		display: contents;
+	}
+
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #workspace-view-controls {
 		display: contents;
 	}
 
@@ -1182,6 +1214,61 @@
 
 .calendar-app__viewport.is-clipped-left::after {
 	--_shadow-left: 10px 0 16px -8px oklch(0% 0 0 / 0.5);
+}
+
+/* — Pull-to-change-week hint — */
+/* Feedback for the click-drag-to-change-week gesture (installWeekDrag() in
+   index.html) — dragging horizontally on empty scheduler background, not
+   regular scrolling. --_progress (0–1, set inline by JS) tracks how far the
+   drag is toward the trigger threshold; .is-ready marks the moment it's far
+   enough that releasing will actually page the week. */
+.rux-scheduler__pull-hint {
+	--_progress: 0;
+	position: absolute;
+	top: 50%;
+	width: 2.5rem;
+	height: 2.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: color-mix(in oklch, var(--rux-accent) 85%, transparent);
+	color: var(--rux-fg-on-accent);
+	box-shadow: 0 4px 12px oklch(0% 0 0 / 0.35);
+	opacity: 0;
+	pointer-events: none;
+	z-index: var(--rux-z-overlay);
+	transform: translateY(-50%) scale(calc(0.5 + (var(--_progress) * 0.5)));
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-scheduler__pull-hint--prev {
+	left: var(--rux-space-3);
+}
+
+.rux-scheduler__pull-hint--next {
+	right: var(--rux-space-3);
+}
+
+.rux-scheduler__pull-hint.is-active {
+	opacity: var(--_progress);
+}
+
+.rux-scheduler__pull-hint.is-ready {
+	opacity: 1;
+	background: var(--rux-accent);
+	animation: rux-pull-hint-pulse 700ms var(--rux-ease-in-out) infinite;
+}
+
+@keyframes rux-pull-hint-pulse {
+	0%, 100% { transform: translateY(-50%) scale(1); }
+	50% { transform: translateY(-50%) scale(1.15); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rux-scheduler__pull-hint.is-ready {
+		animation: none;
+	}
 }
 
 .scheduler-app__grid {

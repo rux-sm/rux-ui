@@ -122,24 +122,18 @@
 .rux-trip-bar-ghost {
 	position: fixed;
 	box-sizing: border-box;
-	display: flex;
-	align-items: center;
-	gap: var(--rux-space-2);
-	padding-inline: var(--rux-space-3);
 	margin: 0;
 	border-radius: var(--rux-opt-radius-2);
 	border: 2px solid var(--_ghost-tone, var(--rux-accent));
 	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) 16%, transparent);
 	box-shadow: 0 8px 20px oklch(0% 0 0 / 0.45);
-	color: var(--rux-fg-on-accent);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-bold);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
 	transition: none;
 	cursor: grabbing;
-	z-index: var(--rux-z-dropdown);
+	/* Above --rux-z-sticky (200 — the row-head label column, and any track
+	   that :has(.is-active)) so the ghost stays visibly on top while it's
+	   dragged across other rows instead of ducking behind whichever one
+	   happens to be elevated. */
+	z-index: var(--rux-z-overlay);
 	pointer-events: none;
 }
 
@@ -193,6 +187,40 @@
 .rux-trip-bar--unconfirmed {
 	--_tone: var(--rux-danger);
 	--_tone-ring: var(--rux-ring-danger);
+}
+
+/* ---------- Modifier: one-way ---------- */
+/* A faint pinstripe overlay (not a color/tone change) marks one-way trips —
+   same -45deg direction as the out-of-service hatch elsewhere in the app
+   for a consistent texture language, but far subtler so it reads as "a
+   variant of this trip" rather than "something's wrong with it".
+   A pseudo-element overlay rather than baking the stripe into
+   background-image directly: it needs to work identically across the base
+   bar, __head, and __tail without three separate hand-tuned rules — a
+   single ::after layer, applied to each, does that in one place. A flat
+   black tint (not mix-blend-mode) so it looks the same regardless of what's
+   underneath — blend modes react to the surface's own lightness, which
+   made the base bar and __tail (different lightness) look inconsistent
+   with each other even with identical CSS.
+   position:relative on the hosts isn't declared here — .rux-trip-bar
+   already has it in its own base rule, and __head/__tail both get it for
+   free via ".rux-trip-bar > * { position: relative; }" above. Applied to
+   whichever element actually paints a background — the bar itself for
+   single-day, __head/__tail for multi-day (the outer .rux-trip-bar--multi-day
+   shell is transparent, nothing to overlay there). */
+.rux-trip-bar--one-way::after,
+.rux-trip-bar--one-way .rux-trip-bar__head::after,
+.rux-trip-bar--one-way .rux-trip-bar__tail::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	pointer-events: none;
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent 0px 9px,
+		oklch(0% 0 0 / 0.25) 9px 11px
+	);
 }
 
 /* ---------- Modifier: from-prev ---------- */
@@ -279,11 +307,18 @@
 	border-radius: var(--rux-opt-radius-2);
 	border: var(--rux-card-border);
 	overflow: hidden;
+	/* The base .rux-trip-bar rule (single-day) declares "transform" in its
+	   own transition list, which incidentally keeps it GPU-composited at all
+	   times — without that, overflow:hidden + border-radius here fails to
+	   clip .rux-trip-bar__actions (a child with its own animating
+	   translateY transform) to this rounded corner when it expands, and its
+	   square bounds poke through instead. translateZ(0) forces the same
+	   compositing here without needing an always-on transition. */
+	transform: translateZ(0);
 	box-shadow:
 		inset 0 1px oklch(100% 0 0 / 0.10),
 		inset 0 -1px oklch(0% 0 0 / 0.20),
 		0 2px 6px oklch(0% 0 0 / 0.34);
-	overflow: hidden;
 }
 
 .rux-trip-bar--multi-day:hover .rux-trip-bar__head {
@@ -305,13 +340,26 @@
 	justify-content: flex-end;
 	align-self: stretch;
 	z-index: 1;
-	background: linear-gradient(to bottom, oklch(from var(--_tone) 40% 0.18 h), oklch(from var(--_tone) 30% 0.16 h));
+	background-color: var(--_surface);
 	border-radius: var(--rux-opt-radius-2);
 	border: var(--rux-card-border);
 	box-shadow:
 		inset 0 1px oklch(100% 0 0 / 0.10),
 		inset 0 -1px oklch(0% 0 0 / 0.20),
 		0 1px 3px oklch(0% 0 0 / 0.24);
+}
+
+/* Matches __head's hover/active shading (below) — before this was flattened
+   to a solid color, the gradient made __tail's own static shade less
+   noticeable; now that it's flat like every other surface, __tail needs the
+   same hover/active response __head already has or the two halves of a
+   multi-day bar visibly desync on interaction. */
+.rux-trip-bar--multi-day:hover .rux-trip-bar__tail {
+	background-color: var(--_surface-hover);
+}
+
+.rux-trip-bar--multi-day.is-active .rux-trip-bar__tail {
+	background-color: var(--_surface-active);
 }
 
 

@@ -573,6 +573,7 @@ export function createTripBar(trip, callbacks = {}) {
     trip.conflict ? "rux-trip-bar--has-conflict" : "",
     trip.fromPrev ? "rux-trip-bar--from-prev" : "",
     trip.toNext ? "rux-trip-bar--to-next" : "",
+    trip.trip_type === "one_way" ? "rux-trip-bar--one-way" : "",
   ]
     .filter(Boolean)
     .join(" ");

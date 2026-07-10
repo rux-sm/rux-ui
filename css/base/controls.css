@@ -342,7 +342,7 @@
 /* — ghost active — transparent track with quiet selected item */
 .rux-segmented--ghost {
 	background-color: transparent;
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-button-border);
 	box-shadow: none;
 }
 
