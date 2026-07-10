@@ -1114,7 +1114,15 @@ export function getCurrentTripId() {
 function syncManifestBtn(root) {
 	const btn = root.querySelector("#tp-view-manifest-btn");
 	if (!btn) return;
-	btn.hidden = !(currentTripId && window.TripPanel?.getBillingType(root) === "ticketed");
+	const isTicketed = window.TripPanel?.getBillingType(root) === "ticketed";
+	const isSaved = !!currentTripId;
+	const available = isSaved && isTicketed;
+	btn.disabled = !available;
+	btn.title = available
+		? ""
+		: !isTicketed
+			? "Toggle Ticketed to enable"
+			: "Save this trip to enable";
 }
 
 export function initTripDB(root, itinerary) {
@@ -1188,6 +1196,10 @@ export function initTripDB(root, itinerary) {
 	});
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
 	manifestBtn?.addEventListener("click", () => {
+		if (window.TripView?.get() === "manifest") {
+			window.TripView.set("calendar");
+			return;
+		}
 		if (!currentLoadedTrip) return;
 		window.TripView?.set("manifest");
 	});

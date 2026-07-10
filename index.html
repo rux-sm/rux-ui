@@ -220,7 +220,7 @@
                         <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
                         <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
                       </div>
-                      <button class="rux-button rux-button--default" type="button" id="tp-view-manifest-btn" hidden>
+                      <button class="rux-button rux-button--default" type="button" id="tp-view-manifest-btn" disabled title="Toggle Ticketed to enable">
                         <span class="rux-icon" aria-hidden="true">groups</span>
                         <span class="rux-btn-label">View manifest</span>
                       </button>
@@ -431,7 +431,6 @@
                       <div class="rux-segmented" id="trip-view-group" data-rux-toggle-group>
                         <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Calendar</span></button>
                         <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
-                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="manifest" id="trip-view-manifest-btn" disabled title="Open a ticketed trip to view its manifest"><span class="rux-icon" aria-hidden="true">groups</span><span class="rux-btn-label">Manifest</span></button>
                       </div>
                     </div>
                   </article>
@@ -2663,6 +2662,16 @@
           if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
           openDrawer(); if (loadTrip) loadTrip(tripPanel, itinerary, trip);
         },
+        onOpenManifest: (trip) => {
+          if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
+          openDrawer();
+          if (loadTrip) loadTrip(tripPanel, itinerary, trip);
+          // Land on Billing so the "Close manifest" toggle button (the only
+          // way back out) is actually visible, regardless of which tab was
+          // last open before this trip bar shortcut was used.
+          setActiveTripPane("pane-billing");
+          window.TripView?.set("manifest");
+        },
         onChangeBus:   (trip) => {
           BusPicker.show(trip, schedulerBuses, trips, async (newBus, conflictAssignmentId) => {
             try {
@@ -3337,6 +3346,7 @@
       const rpFilterCard = document.getElementById("rp-filter-card");
       const rpPassengerCard = document.getElementById("rp-passenger-card");
       const weekLabelEl = document.getElementById("week-label");
+      const tpManifestBtn = document.getElementById("tp-view-manifest-btn");
 
       function setTripView(mode) {
         tripViewMode = mode;
@@ -3353,6 +3363,26 @@
         if (rpPassengerCard) rpPassengerCard.hidden = !isManifest;
         if (tripsFilterBadgesEl) {
           tripsFilterBadgesEl.hidden = isList ? tripsFilterBadgesEl.children.length === 0 : true;
+        }
+        // The Calendar/List toggle only ever gets updated by clicking one of
+        // its own segments (generic [data-rux-toggle-group] handler in
+        // controls.js) — Manifest is reached from the trip bar or Billing
+        // tab, never by clicking a segment here, so without this the group
+        // keeps showing whichever of Calendar/List was last actually
+        // clicked as "active" even though neither is what's on screen.
+        if (isManifest) {
+          document.querySelectorAll("#trip-view-group .rux-button").forEach((btn) => {
+            btn.setAttribute("aria-pressed", "false");
+            btn.classList.remove("is-active");
+          });
+        }
+        if (tpManifestBtn) {
+          tpManifestBtn.querySelector(".rux-icon").textContent = isManifest ? "close" : "groups";
+          tpManifestBtn.querySelector(".rux-btn-label").textContent = isManifest ? "Close manifest" : "View manifest";
+          // Accent = "this is currently engaged," not danger — closing the
+          // manifest just switches views, nothing destructive happens.
+          tpManifestBtn.classList.toggle("rux-button--accent", isManifest);
+          tpManifestBtn.classList.toggle("rux-button--default", !isManifest);
         }
         if (isList) {
           window.TripsListPanel?.updateTitle?.();

@@ -663,6 +663,19 @@ export function createTripBar(trip, callbacks = {}) {
     ),
   );
 
+  // Ticketed trips only — jumps straight past the trip panel's own tabs
+  // into the passenger manifest, same shortcut spirit as the buttons above.
+  if (trip.is_self_organized) {
+    actions.append(
+      button(
+        "rux-button rux-button--default rux-button--icon rux-button--block",
+        "View manifest",
+        "groups",
+        () => callbacks.onOpenManifest?.(trip),
+      ),
+    );
+  }
+
   const body = document.createElement("div");
   body.className = "rux-trip-bar__body";
 

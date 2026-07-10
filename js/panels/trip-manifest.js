@@ -4,7 +4,6 @@
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
   const tripPanelRoot = document.querySelector(".rux-trip-panel");
-  const manifestToggleBtn = document.getElementById("trip-view-manifest-btn");
   const manifestBody = document.getElementById("tp-manifest-body");
   const passengerCard = document.getElementById("rp-passenger-card");
 
@@ -212,7 +211,6 @@
     const tripId = getCurrentTripId();
     const billingType = window.TripPanel?.getBillingType(tripPanelRoot);
     const available = !!tripId && billingType === "ticketed";
-    if (manifestToggleBtn) manifestToggleBtn.disabled = !available;
     // A trip switch, clear, or Charter toggle can pull the rug out from under
     // an open Manifest view — bounce back to Calendar rather than leave an
     // empty/stale roster on screen with no way to tell why.
