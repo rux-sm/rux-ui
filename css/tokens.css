@@ -238,8 +238,8 @@
 	--rux-surface-panel: oklch(17% var(--chroma-neutral) var(--hue-neutral));
  	 /* Hex: #0F1011 | RGB: rgb(15, 16, 17) */
 
-	--rux-surface-calendar: oklch(17% var(--chroma-neutral) var(--hue-neutral));
-  	/* Hex: #0F1011 | RGB: rgb(15, 16, 17) */
+	--rux-surface-calendar: oklch(21% var(--chroma-neutral) var(--hue-neutral));
+  	/* Hex: #1A1B1D | RGB: rgb(26, 27, 29) */
 
 	--rux-surface-calendar-header: oklch(21% var(--chroma-neutral) var(--hue-neutral));
   	/* Hex: #1A1B1D | RGB: rgb(26, 27, 29) */
@@ -405,14 +405,16 @@
 	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-workspace-gutter);     /* UPDATED */
 
 	/* ─── COMPONENT · calendar ──────────────────────────────────────────── */
-	/* .rux-scheduler — the only layer in the calendar view that paints its
-	   own chrome; .rux-workspace and .calendar-app__viewport above it are
-	   plain shell/clip boxes with no bg/border/radius of their own. */
+	/* .calendar-app__viewport (scheduler-app.css) — the outer frame that owns
+	   this card's bg/border/radius/clipping. .rux-scheduler inside it is a
+	   plain scrolling grid with no chrome of its own, so its sticky row/day
+	   headers never fight the outer border for the same visual corners. */
 
 	--rux-calendar-bg: var(--rux-surface-calendar);                           /* UPDATED */
 	--rux-calendar-header-bg: var(--rux-surface-calendar-header);             /* UPDATED */
 	--rux-calendar-border: var(--rux-border-width) solid var(--rux-border);   /* UPDATED */
 	--rux-calendar-radius: var(--rux-opt-radius-2);                           /* UPDATED */
+	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-border);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 	/* .rux-panel shell + optional header / nav-tabs / body-pane / footer

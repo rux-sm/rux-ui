@@ -43,7 +43,7 @@
 	--rux-scheduler-head-height: 28px;
 	--rux-scheduler-days: 7;
 	--rux-scheduler-day-min-width: 14rem;
-	--rux-scheduler-grid-line-color: var(--rux-border-subtle);
+	--rux-scheduler-grid-line-color: var(--rux-calendar-grid);
 	--rux-scheduler-header-color: var(--rux-fg);
 	--rux-scheduler-row-head-color: var(--rux-fg);
 	--rux-scheduler-max-block-size: none;
@@ -73,9 +73,6 @@
 	overscroll-behavior-y: contain;
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
-	background: var(--rux-calendar-bg);
-	border: var(--rux-calendar-border);
-	border-radius: var(--rux-calendar-radius);
 }
 
 .rux-scheduler::-webkit-scrollbar {
@@ -139,8 +136,8 @@
 	min-height: var(--rux-scheduler-head-height);
 	padding: 0 var(--rux-space-3);
 	background: var(--rux-calendar-header-bg);
-	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
-	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-inline-end: var(--rux-calendar-grid);
+	border-block-end: var(--rux-calendar-grid);
 	color: var(--rux-scheduler-header-color);
 }
 
@@ -293,13 +290,12 @@
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
 	background: var(--rux-calendar-header-bg);
-	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
-	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-inline-end: var(--rux-calendar-grid);
+	border-block-end:  var(--rux-calendar-grid);
 	color: var(--rux-scheduler-row-head-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
-	border-radius: var(--rux-radius-0);
 }
 
 .rux-scheduler__bus-number {
@@ -329,23 +325,17 @@
 	opacity: 0.7;
 }
 
-.rux-scheduler__row:first-child .rux-scheduler__row-head {
-	border-start-start-radius: var(--rux-calendar-radius);
-}
-
-.rux-scheduler__row:first-child .rux-scheduler__track {
-	border-start-end-radius: var(--rux-calendar-radius);
-	overflow: hidden;
-}
-
+/* No corner-radius matching needed here anymore — .calendar-app__viewport
+   (scheduler-app.css) now owns the card's border/radius/clipping as the
+   outer frame, so it clips whatever's currently scrolled to its edges
+   automatically, at any scroll position. These rules just drop the
+   last row's own internal divider, since there's no next row to separate
+   from. */
 .rux-scheduler__row:last-child .rux-scheduler__row-head {
-	border-end-start-radius: var(--rux-calendar-radius);
 	border-block-end: none;
 }
 
 .rux-scheduler__row:last-child .rux-scheduler__track {
-	border-end-end-radius: var(--rux-calendar-radius);
-	overflow: hidden;
 	border: none;
 }
 
@@ -357,7 +347,7 @@
 	position: relative;
 	grid-column: span var(--rux-scheduler-days, 7);
 	min-height: var(--_row-height);
-	border-block-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-block-end: var(--rux-calendar-grid);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
@@ -387,7 +377,7 @@
 }
 
 .rux-scheduler__track-day {
-	border-inline-end: var(--rux-border-width) solid var(--rux-scheduler-grid-line-color);
+	border-inline-end: var(--rux-calendar-grid);
 }
 
 .rux-scheduler__track-day:last-child {

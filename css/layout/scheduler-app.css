@@ -1197,6 +1197,9 @@
 .calendar-app__viewport {
 	position: relative;
 	overflow: hidden;
+	background: var(--rux-calendar-bg);
+	border: var(--rux-calendar-border);
+	border-radius: var(--rux-calendar-radius);
 }
 
 .calendar-app__viewport::after {
