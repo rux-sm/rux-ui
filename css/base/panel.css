@@ -13,7 +13,7 @@
 	background: var(--rux-panel-bg);
 	color: var(--rux-panel-fg);
 	border: var(--rux-panel-border);
-	border-radius: var(--rux-opt-radius-1);
+	border-radius: var(--rux-panel-radius);
 	box-shadow: var(--rux-panel-shadow);
 	isolation: isolate;
 }

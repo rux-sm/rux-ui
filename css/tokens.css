@@ -230,6 +230,7 @@
 	--rux-surface-workspace: oklch(from var(--rux-color-neutral-base) 17.5% c h); /* updated */
 	--rux-surface-panel: oklch(from var(--rux-color-neutral-base) 17.5% c h);
 	--rux-surface-calendar: oklch(from var(--rux-color-neutral-base) 19.3% c h);
+	--rux-surface-calendar-header: oklch(from var(--rux-color-neutral-base) 22.3% c h);
 	--rux-surface-card: oklch(from var(--rux-color-neutral-base) 19.3% c h);
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
@@ -244,7 +245,6 @@
 
 	--rux-control-height: 28px;
 	--rux-field-height: 28px;
-	--rux-chrome-min-height: 53px;
 
 	--rux-switch-width: 48px;
 	--rux-switch-height: 28px;
@@ -343,6 +343,11 @@
 	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
 	--rux-focus-border-debug: 2px solid var(--rux-danger-bright);
 
+
+	/* ======================================================================
+	   SURFACES - SEMANTIC TOKENS
+	   ====================================================================== */
+
 	/* ─── COMPONENT · TOPBAR (app-wide chrome: module nav, search, profile) ── */
 
 	--rux-topbar-bg: var(--rux-surface-canvas);                              /* UPDATED */
@@ -355,8 +360,8 @@
 
 	--rux-workspace-bg: var(--rux-surface-workspace);                        /* UPDATED */
 	--rux-workspace-fg: var(--rux-fg);                                       /* UPDATED */
-	--rux-workspace-border: var(--rux-panel-border);                         /* UPDATED */
-	--rux-workspace-radius: var(--rux-opt-radius-0);                         /* UPDATED */
+	--rux-workspace-border: var(--rux-border-width) solid var(--rux-border); /* UPDATED */
+	--rux-workspace-radius: var(--rux-opt-radius-2);                         /* UPDATED */
 	--rux-workspace-shadow: var(--rux-elevation-0);                          /* UPDATED */
 	--rux-workspace-gutter: var(--rux-space-3);
 	/* inline component reuses --rux-workspace-gutter above (not its own
@@ -366,32 +371,47 @@
 	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-workspace-gutter);
 
 	/* ─── COMPONENT · calendar ──────────────────────────────────────────── */
+	/* .rux-scheduler — the only layer in the calendar view that paints its
+	   own chrome; .rux-workspace and .calendar-app__viewport above it are
+	   plain shell/clip boxes with no bg/border/radius of their own. */
 
-	--rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
+	--rux-calendar-bg: var(--rux-surface-calendar);                           /* UPDATED */
+	--rux-calendar-header-bg: var(--rux-surface-calendar-header);             /* UPDATED */
+	--rux-calendar-border: var(--rux-border-width) solid var(--rux-border);   /* UPDATED */
+	--rux-calendar-radius: var(--rux-opt-radius-2);                           /* UPDATED */
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
+	/* .rux-panel shell + optional header / nav-tabs / body-pane / footer
+	   anatomy. Body is intentionally bare below — pure scroll region, owns no
+	   chrome of its own. */
 
-	--rux-panel-bg: var(--rux-surface-1);
+	/* — shell — */
+	--rux-panel-bg: var(--rux-surface-panel);
 	--rux-panel-fg: var(--rux-fg);
-	--rux-panel-border-width: var(--rux-border-width);
-	--rux-panel-border: var(--rux-panel-border-width) solid transparent;
-	--rux-panel-radius: var(--rux-radius-0);
+	--rux-panel-border: var(--rux-border-width) var(--rux-border);
+	--rux-panel-radius: var(--rux-opt-radius-2);
 	--rux-panel-shadow: var(--rux-elevation-0);
-	--rux-panel-footer-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
-	--rux-panel-nav-shadow: var(--rux-edge-shadow-bottom);
-	--rux-panel-tabs-shadow: var(--rux-panel-nav-shadow);
-	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
-	--rux-panel-padding-block: var(--rux-space-2);
-	--rux-panel-padding-inline: var(--rux-space-2);
-	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
-	--rux-panel-tabs-padding: var(--rux-panel-nav-padding);
-	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3);
-	--rux-panel-content-gap: var(--rux-space-3);
-	--rux-panel-header-min-height: 44px;
-	--rux-panel-nav-min-height: var(--rux-chrome-min-height);
-	--rux-panel-tabs-min-height: var(--rux-panel-nav-min-height);
-	--rux-panel-footer-min-height: var(--rux-chrome-min-height);
 
+	/* — header — */
+	--rux-panel-header-min-height: 44px; /* currently not used ? */
+
+	/* — nav / tabs (one shared strip; tabs is just a scroll-state of the
+	   same chrome, not a visually distinct part) — */
+	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-3);
+	--rux-panel-nav-shadow: var(--rux-edge-shadow-bottom);
+
+	/* — footer (bg/border reuse the shell's above — needed as-is since the
+	   footer repaints over scrolled body content via z-index) — */
+	--rux-panel-footer-padding: var(--rux-space-3) var(--rux-space-3);
+	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
+
+	/* — shared across header/nav/pane/footer, not any one part's own — */
+
+	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3); /* padding sides of cards in panel */
+	--rux-panel-content-gap: var(--rux-space-3); /* gap between cards in panel */
+
+	/* — sizing formula: consumed by feature layouts that live inside a
+	   panel-shaped container elsewhere, not by panel.css itself — */
 	--rux-panel-min-field-width: 116px;
 	--rux-panel-min-content-width: calc(
 		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
