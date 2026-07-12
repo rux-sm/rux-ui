@@ -23,7 +23,7 @@
 	/* ─── COLOR · neutral foundation ─────────────────────────────────────── */
 
 	--rux-color-black: oklch(0% 0 0);
-	--rux-color-white: oklch(100% 0 0);
+	--rux-color-white: #F4F5F8;
 	--rux-color-base: oklch(50% 0.004 260);
 	--rux-color-white-a08: oklch(from var(--rux-color-white) l c h / 0.08);
 	--rux-color-white-a10: oklch(from var(--rux-color-white) l c h / 0.1);
@@ -231,9 +231,10 @@
 
 	--rux-surface-0: oklch(from var(--rux-color-base) 0% c h);  /* App background */
 	--rux-surface-1: oklch(from var(--rux-color-base) 24% c h); /* Panels */
+	--rux-surface-1: #222326; /* Panels */
 	--rux-surface-2: oklch(from var(--rux-color-base) 32% c h); /* Cards */
 	--rux-surface-3: oklch(from var(--rux-color-base) 34% c h); /* Menus and popovers */
-	--rux-surface-4: oklch(from var(--rux-color-base) 44% c h); /* Form controls */
+	--rux-surface-4: oklch(from var(--rux-color-base) 32% c h); /* Form controls */
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
 
@@ -354,10 +355,18 @@
 
 	/* ─── FOCUS ──────────────────────────────────────────────────────────── */
 
+	/* --rux-ring-focus/--rux-ring-danger kept — still referenced by
+	   .rux-trip-bar's --_tone-ring (trip-bar.css), even though that
+	   property itself is currently unused there. --rux-ring-field-focus/
+	   --rux-ring-field-danger removed: no remaining consumers anywhere
+	   after the app-wide focus-state strip (rebuild pending in a later
+	   pass). */
 	--rux-ring-focus: 0 0 0 6px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
 	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
-	--rux-ring-field-focus: inset 0 0 0 6px var(--rux-accent-ring);
-	--rux-ring-field-danger: inset 0 0 0 2px var(--rux-danger);
+	/* DEBUG: not applied anywhere yet — bright red border to visually flag
+	   whichever element(s) it gets added to while tracking down the focus
+	   style cleanup. Remove once no longer needed. */
+	--rux-focus-border-debug: 2px solid var(--rux-danger-bright);
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
@@ -481,8 +490,6 @@
 	--rux-button-shadow: var(--rux-elevation-0);
 	--rux-button-selected-shadow: var(--rux-inset-0);
 	--rux-button-disabled-shadow: var(--rux-elevation-0);
-	--rux-button-focus-ring: var(--rux-ring-focus);
-	--rux-button-danger-focus-ring: var(--rux-ring-danger);
 
 	/* Sizes and behavior */
 	--rux-button-sm-height: 24px;
@@ -543,7 +550,6 @@
 	--rux-tab-selected-bg: var(--rux-button-default-bg);
 	--rux-tab-selected-fg: var(--rux-button-default-fg);
 	--rux-tab-selected-shadow: var(--rux-button-selected-shadow);
-	--rux-tab-focus-ring: var(--rux-button-focus-ring);
 	--rux-tab-transition-duration: var(--rux-duration-instant);
 	--rux-tab-transition-easing: var(--rux-ease-out);
 
@@ -607,10 +613,11 @@
 	--rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
 
 	--rux-panel-border: var(--rux-panel-border-width) solid transparent; 
-    --rux-card-border: var(--rux-card-border-width) solid solid transparent; 
-   	--rux-button-border: var(--rux-card-border-width) solid solid transparent;
-   	--rux-input-border: var(--rux-card-border-width) solid solid transparent; 
+    --rux-card-border: var(--rux-card-border-width) solid transparent; 
+   	--rux-button-border: var(--rux-card-border-width) solid transparent;
+   	--rux-input-border: var(--rux-card-border-width) solid var(--rux-border); 
     --rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
+
 
 
 

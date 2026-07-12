@@ -10,11 +10,11 @@
    Reset             box-sizing, margin/padding, font-smoothing, font features
    Headings          h1–h6 — sizes, weights, tracking
    Body copy         p, small, strong, em
-   Links             a — color, underline, focus ring
+   Links             a — color, underline
    Code              code, kbd, samp, pre — mono stack, inset surface
    Lists             ul, ol — left padding, item spacing
    Rules             hr — hairline separator
-   Selection         ::selection, :focus-visible defaults
+   Selection         ::selection
    Type utilities    .rux-display .rux-h1–h3 .rux-lead .rux-body .rux-body-sm
                      .rux-caption .rux-overline .rux-mono .rux-muted .rux-subtle
 
@@ -114,11 +114,6 @@ a {
 }
 
 a:hover { color: var(--rux-accent-hover); text-decoration: underline; }
-a:focus-visible {
-  outline: none;
-  box-shadow: var(--rux-ring-focus);
-  border-radius: var(--rux-radius-xs);
-}
 
 /* ─── Code & monospace ──────────────────────────────────────────────────── */
 
@@ -182,16 +177,11 @@ hr {
   margin: var(--rux-space-5) 0;
 }
 
-/* ─── Selection & focus defaults ────────────────────────────────────────── */
+/* ─── Selection defaults ─────────────────────────────────────────────────── */
 
 ::selection {
   background: var(--rux-selection-bg);
   color: var(--rux-selection-fg);
-}
-
-:focus-visible {
-  outline: none;
-  box-shadow: var(--rux-ring-focus);
 }
 
 /* ─── Semantic type utility classes ─────────────────────────────────────── */

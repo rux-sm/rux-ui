@@ -102,11 +102,6 @@
 	background: var(--rux-bg-hover, color-mix(in srgb, var(--rux-bg-2) 80%, var(--rux-accent) 20%));
 }
 
-.trips-app__row:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-ring-focus);
-}
-
 /* — Empty state — */
 
 .trips-app__empty {

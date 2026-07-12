@@ -366,14 +366,9 @@
 	cursor: pointer;
 }
 
-.rux-trip-itinerary__suggestion:hover,
-.rux-trip-itinerary__suggestion:focus-visible {
+.rux-trip-itinerary__suggestion:hover {
 	outline: none;
 	background: var(--rux-button-hover-overlay);
-}
-
-.rux-trip-itinerary__suggestion:focus-visible {
-	box-shadow: var(--rux-ring-focus);
 }
 
 .rux-trip-itinerary__suggestion-name {

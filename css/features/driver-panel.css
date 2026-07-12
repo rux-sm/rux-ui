@@ -143,7 +143,6 @@
 }
 
 .rux-driver-panel__avatar:hover .rux-driver-panel__avatar-overlay,
-.rux-driver-panel__avatar:focus-visible .rux-driver-panel__avatar-overlay,
 .rux-driver-panel__avatar.is-uploading .rux-driver-panel__avatar-overlay {
 	opacity: 1;
 }

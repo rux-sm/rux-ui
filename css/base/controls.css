@@ -59,11 +59,6 @@
 	transform: translateY(var(--_press-y));
 }
 
-.rux-button:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-button-focus-ring), var(--_shadow);
-}
-
 .rux-button:disabled,
 .rux-button[aria-disabled="true"] {
 	color: var(--rux-button-disabled-fg);
@@ -134,10 +129,6 @@
 .rux-button--ghost.rux-button--danger {
 	--_bg: var(--rux-button-ghost-bg);
 	--_fg: var(--rux-button-danger-quiet-fg);
-}
-
-.rux-button--danger:focus-visible {
-	box-shadow: var(--rux-button-danger-focus-ring), var(--_shadow);
 }
 
 /* — loading — */

@@ -87,11 +87,6 @@
 	color: var(--rux-fg);
 }
 
-.rux-tab:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-tab-focus-ring);
-}
-
 .rux-tab.is-active,
 .rux-tab[aria-selected="true"] {
 	--_state-overlay: transparent;

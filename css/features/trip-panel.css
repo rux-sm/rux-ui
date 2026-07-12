@@ -339,7 +339,7 @@
 	flex: 1;
 	min-width: 0;
 	min-height: var(--rux-field-height);
-	border: var(--rux-border-width) solid var(--_border);
+	border: none;
 	border-radius: var(--rux-button-radius);
 	background: var(--rux-button-default-bg);
 }
@@ -360,7 +360,7 @@
 	text-align: right;
 	width: 100%;
 	margin: 0;
-	border: var(--rux-border-width) solid var(--_border);
+	border: var(--rux-input-border);
 	border-radius: 0 var(--rux-button-radius) var(--rux-button-radius) 0;
 }
 .rux-trip-panel__payment-amount {
@@ -378,7 +378,7 @@
 }
 .rux-trip-panel__payment-input {
 	background: none;
-	border: none;
+	border: var(--rux-input-border);
 	padding: 0;
 	font: inherit;
 	font-size: var(--rux-text-sm);
@@ -387,14 +387,6 @@
 }
 .rux-trip-panel__payment-input::placeholder {
 	color: var(--rux-fg-subtle);
-}
-.rux-trip-panel__payment-field:focus,
-.rux-trip-panel__payment-field:focus-visible {
-	position: relative;
-	z-index: 1;
-	outline: none;
-	border-color: var(--rux-accent);
-	box-shadow: var(--rux-ring-field-focus);
 }
 .rux-trip-panel__payment-ref {
 	flex: 1;
@@ -414,14 +406,6 @@
 	height: var(--rux-field-height);
 	border: var(--rux-border-width) solid var(--_border);
 	border-radius: var(--rux-button-radius) 0 0 var(--rux-button-radius);
-}
-.rux-trip-panel__payment-reference:focus-within {
-	border-color: var(--rux-accent);
-	box-shadow: var(--rux-ring-field-focus);
-}
-.rux-trip-panel__payment-reference .rux-trip-panel__payment-ref:focus,
-.rux-trip-panel__payment-reference .rux-trip-panel__payment-ref:focus-visible {
-	box-shadow: none;
 }
 .rux-trip-panel__payment-date-control {
 	grid-area: date;
@@ -463,20 +447,6 @@
 	padding: 0;
 	opacity: 0;
 	cursor: pointer;
-}
-.rux-trip-panel__payment-date-control:focus-within {
-	z-index: 1;
-	box-shadow: var(--rux-ring-field-focus);
-}
-.rux-trip-panel__payment-date:focus,
-.rux-trip-panel__payment-date:focus-visible {
-	border-color: var(--rux-accent);
-	box-shadow: none;
-	color: transparent;
-}
-.rux-trip-panel__payment-date:focus::-webkit-datetime-edit,
-.rux-trip-panel__payment-date:focus-visible::-webkit-datetime-edit {
-	color: transparent;
 }
 /* Hidden by default — header Delete arms select mode
    (#tp-payment-rows.is-selecting), revealing this trash icon; width +
@@ -599,10 +569,6 @@
 	text-align: center;
 	-moz-appearance: textfield;
 }
-.rux-trip-panel__number-input:focus,
-.rux-trip-panel__number-input:focus-visible {
-	box-shadow: none;
-}
 .rux-trip-panel__number-input::-webkit-outer-spin-button,
 .rux-trip-panel__number-input::-webkit-inner-spin-button {
 	margin: 0;
@@ -610,10 +576,6 @@
 }
 .rux-trip-panel__number-picker:hover {
 	border-color: var(--rux-border-strong);
-}
-.rux-trip-panel__number-picker:focus-within {
-	border-color: var(--rux-accent);
-	box-shadow: var(--rux-ring-field-focus);
 }
 
 .rux-trip-panel__bus-groups {
@@ -730,10 +692,6 @@
 		var(--rux-button-hover-overlay),
 		var(--rux-button-hover-overlay)
 	);
-}
-.rux-trip-panel__doc-row:focus-visible .rux-trip-panel__doc-content {
-	outline: none;
-	box-shadow: var(--rux-ring-focus);
 }
 .rux-trip-panel__doc-content > .rux-icon {
 	color: var(--rux-fg-muted);

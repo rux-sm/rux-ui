@@ -440,14 +440,13 @@
 	padding: var(--rux-card-padding-compact);
 	padding-bottom: calc(var(--rux-card-padding-compact) + var(--rux-trip-bar-tight-gap));
 	gap: var(--rux-trip-bar-tight-gap);
-	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.2) 0%, oklch(0% 0 0 / 0.5) 100%);
+	/*background: linear-gradient(to bottom, oklch(0% 0 0 / 0) 0%, oklch(0% 0 0 / 0.4) 100%);*/
 }
-
+/*
 .rux-trip-bar__head .rux-trip-bar__body {
-	background: linear-gradient(to bottom, oklch(0% 0 0 / 0.2) 0%, oklch(0% 0 0 / 0.5) 100%);
-	border-radius: var(--rux-opt-radius-2);
+	background: linear-gradient(to bottom, oklch(0% 0 0 / 0) 0%, oklch(0% 0 0 / 0.4) 100%);
 }
-
+*/
 .rux-trip-bar__spacer {
 	display: none;
 }

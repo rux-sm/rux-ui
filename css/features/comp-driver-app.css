@@ -86,11 +86,6 @@
 	background: var(--rux-accent-subtle);
 }
 
-.rux-table tbody tr:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-ring-focus);
-}
-
 /* — Filterable column headers (shared by all .rux-table instances) — */
 
 .rux-table th[data-col-filter] {

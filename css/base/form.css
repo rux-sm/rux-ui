@@ -40,22 +40,14 @@
   color: var(--rux-fg-subtle);
 }
 
+/*
 .rux-input:hover,
 .rux-select:hover,
 .rux-textarea:hover {
   border-color: var(--rux-border-strong);
-  border-color: transparent; /* override for dark mode */
-}
+  border-color: transparent; /* override for dark mode
+} */
 
-.rux-input:focus,
-.rux-select:focus,
-.rux-textarea:focus,
-.rux-input:focus-visible,
-.rux-select:focus-visible,
-.rux-textarea:focus-visible {
-  border-color: var(--rux-accent);
-  box-shadow: var(--rux-ring-field-focus), var(--_field-shadow);
-}
 
 .rux-input:disabled,
 .rux-select:disabled,
@@ -68,16 +60,6 @@
 .rux-select[aria-invalid="true"],
 .rux-textarea[aria-invalid="true"] {
   border-color: var(--rux-danger);
-}
-
-.rux-input[aria-invalid="true"]:focus,
-.rux-select[aria-invalid="true"]:focus,
-.rux-textarea[aria-invalid="true"]:focus,
-.rux-input[aria-invalid="true"]:focus-visible,
-.rux-select[aria-invalid="true"]:focus-visible,
-.rux-textarea[aria-invalid="true"]:focus-visible {
-  border-color: var(--rux-danger);
-  box-shadow: var(--rux-ring-field-danger), var(--_field-shadow);
 }
 
 .rux-textarea {
@@ -176,7 +158,6 @@
   transform: translateX(calc(var(--_w) - var(--_h)));
 }
 .rux-switch:has(input:disabled) .rux-switch__thumb { background-color: var(--rux-fg-disabled); }
-.rux-switch input:focus-visible ~ .rux-switch__track { box-shadow: var(--rux-ring-focus), var(--_shadow); }
 
 
 /* — checkbox — */
@@ -214,9 +195,6 @@
   border: solid var(--rux-fg-on-accent);
   border-width: 0 calc(var(--rux-border-width) * 2) calc(var(--rux-border-width) * 2) 0;
   transform: rotate(45deg) translate(calc(var(--rux-border-width) * -1), calc(var(--rux-border-width) * -1));
-}
-.rux-checkbox input:focus-visible {
-  box-shadow: var(--rux-ring-focus);
 }
 
 
@@ -392,9 +370,6 @@
   box-shadow: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--color, var(--rux-accent));
 }
 
-.rux-color-swatch input:focus-visible + .rux-color-swatch__dot {
-  box-shadow: var(--rux-ring-focus);
-}
 
 
 /* — color picker (trigger + popover, Google Calendar style) — */
@@ -430,12 +405,6 @@
 }
 
 .rux-color-picker__trigger:hover { border-color: var(--rux-border-strong); }
-
-.rux-color-picker__trigger:focus-visible {
-  outline: none;
-  border-color: var(--rux-accent);
-  box-shadow: var(--rux-ring-field-focus), var(--_field-shadow);
-}
 
 .rux-color-picker__preview {
   display: block;
@@ -525,9 +494,6 @@
   display: block;
 }
 
-.rux-color-picker__option input:focus-visible + .rux-color-picker__dot {
-  box-shadow: var(--rux-ring-focus);
-}
 
 
 /* — Color input: swatch + hex text field compound input — */
@@ -552,11 +518,6 @@
   border-color: var(--rux-border-strong);
 }
 
-.rux-color-input:focus-within {
-  border-color: var(--rux-accent);
-  box-shadow: var(--rux-ring-field-focus);
-}
-
 .rux-color-input__swatch {
   flex-shrink: 0;
   width: 1.25rem;
@@ -566,10 +527,6 @@
   background: var(--rux-surface-2);
   cursor: pointer;
   padding: 0;
-}
-
-.rux-color-input__swatch:focus-visible {
-  outline: none;
 }
 
 .rux-color-input__picker {

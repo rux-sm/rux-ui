@@ -268,11 +268,6 @@
 	color: var(--rux-accent);
 }
 
-.rux-workspace__title-btn:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-ring-focus);
-}
-
 .scheduler-app__view-menu {
 	flex: none;
 	width: var(--rux-control-height);
@@ -460,13 +455,8 @@
 }
 
 .scheduler-app__resize-gutter:hover::before,
-.scheduler-app__resize-gutter:focus-visible::before,
 .scheduler-app__resize-gutter.is-resizing::before {
 	opacity: 1;
-}
-
-.scheduler-app__resize-gutter:focus-visible {
-	outline: none;
 }
 
 .scheduler-app__resize-gutter.is-resizing::before {
@@ -1102,7 +1092,11 @@
 		visibility: visible;
 	}
 
-	/* Fixed bottom tab bar */
+	/* Fixed bottom tab bar — translucent + blurred (iOS tab bar material)
+	   instead of a solid fill, so it reads as a distinct floating layer over
+	   the schedule instead of just another flat gray blending into it. Only
+	   a top hairline separator (no full border) since the other three edges
+	   are flush with the viewport and would never be visible anyway. */
 	.scheduler-app__module-nav {
 		position: fixed;
 		inset-inline: 0;
@@ -1115,8 +1109,10 @@
 		margin: 0;
 		padding: var(--rux-space-2) var(--rux-space-3);
 		overflow: visible;
-		background: var(--rux-surface-1);
-		border: var(--rux-panel-border);
+		background: color-mix(in oklch, var(--rux-surface-1) 72%, transparent);
+		backdrop-filter: blur(var(--rux-overlay-blur));
+		-webkit-backdrop-filter: blur(var(--rux-overlay-blur));
+		border-top: var(--rux-border-width) solid var(--rux-border);
 	}
 
 	/* Nav style: stacked icon + micro label */

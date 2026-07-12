@@ -155,14 +155,9 @@
 	cursor: pointer;
 }
 
-.settings-app__suggestion:hover,
-.settings-app__suggestion:focus-visible {
+.settings-app__suggestion:hover {
 	outline: none;
 	background: var(--rux-button-hover-overlay);
-}
-
-.settings-app__suggestion:focus-visible {
-	box-shadow: var(--rux-ring-focus);
 }
 
 .settings-app__suggestion-name {
@@ -227,13 +222,6 @@
 .settings-req-label-input:hover {
 	border-color: var(--rux-border);
 	background: var(--rux-bg);
-}
-
-.settings-req-label-input:focus {
-	outline: none;
-	border-color: var(--rux-accent);
-	background: var(--rux-bg);
-	box-shadow: var(--rux-ring-field-focus);
 }
 
 .settings-req-type-badge {
@@ -316,10 +304,6 @@
 .settings-billing-confirm input:not(:checked) + .rux-badge {
 	background: var(--rux-surface-4);
 	color: var(--rux-fg-subtle);
-}
-
-.settings-billing-confirm input:focus-visible + .rux-badge {
-	box-shadow: var(--rux-ring-focus);
 }
 
 /* — Icon picker popover ——————————————————————————————————————————————————— */

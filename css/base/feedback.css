@@ -120,8 +120,7 @@
 [data-tooltip]:not([data-rux-tooltip="floating"]) {
   position: relative;
 }
-[data-tooltip]:not([data-rux-tooltip="floating"]):hover::after,
-[data-tooltip]:not([data-rux-tooltip="floating"]):focus-visible::after {
+[data-tooltip]:not([data-rux-tooltip="floating"]):hover::after {
   content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + var(--rux-status-dot-size));

@@ -91,12 +91,6 @@
 	font-weight: var(--rux-weight-medium);
 }
 
-.components-app__component-nav button:focus-visible,
-.rux-card--interactive:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-ring-focus);
-}
-
 .components-app__content {
 	min-width: 0;
 	min-height: 0;
