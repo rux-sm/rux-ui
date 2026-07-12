@@ -996,17 +996,6 @@
 		grid-row: 2;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header :is(
-		#prev-week,
-		#today-btn,
-		#next-week,
-		.scheduler-app__mobile-panel-btn--left,
-		.scheduler-app__mobile-panel-btn--right,
-		.rux-workspace__toolbar > .rux-button
-	) {
-		width: 100%;
-	}
-
 	/* Drawer overlays the workspace as a partial-width panel, Gmail-nav-drawer
 	   style — a sliver of the workspace stays visible (and dimmed by the
 	   scrim below) instead of the drawer eating the full viewport. */

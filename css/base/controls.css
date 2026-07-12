@@ -257,13 +257,14 @@
 	max-width: none;
 }
 
-/* Give standard buttons a roomier touch target without inflating compact sizes. */
+/* Roomier touch target on mobile — for now, scoped to just the module nav
+   (the bottom tab bar on mobile) rather than every standard button. This
+   used to apply broadly (any .rux-button not --sm/--xs/segmented), which
+   was also bumping things like trip-bar action buttons to 36px height
+   without that being asked for; narrowed down while that gets revisited. */
 @media (pointer: coarse) {
-	.rux-button:not(.rux-button--sm):not(.rux-button--xs):not(.rux-segmented > .rux-button) {
+	.scheduler-app__module-button {
 		--_h: var(--rux-button-mobile-height);
-	}
-
-	.rux-button:not(.rux-button--sm):not(.rux-button--xs) {
 		--rux-button-icon-size: var(--rux-button-mobile-icon-size);
 	}
 }
