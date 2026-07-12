@@ -352,12 +352,13 @@
 	--rux-shell-bg: var(--rux-surface-canvas);
 	--rux-shell-margin-inline: var(--rux-space-0);
 	--rux-shell-margin-bottom: var(--rux-space-0);
+	--rux-shell-topbar-gap: var(--rux-space-0);
 
 	/* ─── COMPONENT · TOPBAR (app-wide chrome: module nav, search, profile) ── */
 
 	--rux-topbar-bg: var(--rux-shell-bg);                                    /* UPDATED */
 	--rux-topbar-border: var(--rux-border-width) solid var(--rux-border);    /* UPDATED */
-	--rux-topbar-padding: var(--rux-space-3) var(--rux-space-3);             /* UPDATED */
+	--rux-topbar-padding: var(--rux-space-2) var(--rux-space-3);             /* UPDATED */
                                     /* Should I add more tokens? radius shadow ?? */
 
 

@@ -48,6 +48,7 @@
 	position: relative;
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
+	row-gap: var(--rux-shell-topbar-gap);
 	width: auto;
 	margin: 0 var(--rux-shell-margin-inline) var(--rux-shell-margin-bottom);
 	block-size: calc(100dvh - var(--rux-shell-margin-bottom));
@@ -69,12 +70,6 @@
 	display: flex;
 	min-height: 0;
 	overflow: hidden;
-	padding-block-start: 0;
-	transition: padding-block-start var(--rux-duration-slow) var(--rux-ease-in-out);
-}
-
-.scheduler-app__topbar.is-collapsed ~ .scheduler-app__body {
-	padding-block-start: var(--scheduler-app-gap);
 }
 
 /* Sides + bottom + top always keep a consistent inset (matching the panel
@@ -897,10 +892,10 @@
 
 @media (max-width: 500px) {
 	/* On mobile the topbar is always collapsed (there's no toggle for it),
-	   so it never needs the "just uncollapsed" top gutter the rule above
-	   gives every other viewport. */
-	.scheduler-app__topbar.is-collapsed ~ .scheduler-app__body {
-		padding-block-start: 0px;
+	   so it never needs the row-gap every other viewport gets between the
+	   topbar and body. */
+	.scheduler-app {
+		row-gap: 0;
 	}
 
 
