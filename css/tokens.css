@@ -70,7 +70,7 @@
 
 	--rux-space-px: 1px;
 	--rux-space-0-5: 0.125rem;
-	--rux-space-0: 0;
+	--rux-space-0: 0px;
 	--rux-space-1: 0.25rem;
 	--rux-space-2: 0.5rem;
 	--rux-space-3: 0.75rem;
@@ -218,7 +218,7 @@
 
 	--rux-surface-0: rgba(8,9,10);
 	--rux-surface-1: oklch(from var(--rux-color-base) 24% c h);
-	--rux-surface-1: rgba(16,17,18);
+	--rux-surface-1: rgb(10, 125, 240);
 	--rux-surface-2: oklch(from var(--rux-color-base) 32% c h);
 	--rux-surface-2: rgba(22,23,24);
 	--rux-surface-3: oklch(from var(--rux-color-base) 34% c h);
@@ -350,7 +350,8 @@
 	/* ─── COMPONENT · app shell (.scheduler-app — the outermost page frame) ── */
 
 	--rux-shell-bg: var(--rux-surface-canvas);
-	--rux-shell-margin: var(--rux-space-2);
+	--rux-shell-margin-inline: var(--rux-space-0);
+	--rux-shell-margin-bottom: var(--rux-space-0);
 
 	/* ─── COMPONENT · TOPBAR (app-wide chrome: module nav, search, profile) ── */
 

@@ -44,7 +44,7 @@ body {
 }
 
 html {
-  background: var(--rux-surface-1);
+  background: var(--rux-surface-canvas);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -52,6 +52,7 @@ html {
 }
 
 body {
+  display: flow-root; /* new BFC so .scheduler-app's margin-bottom paints as body's own background instead of collapsing through to html's */
   background: var(--rux-surface-canvas);
   color: var(--rux-fg);
   font-family: var(--rux-font-sans);
