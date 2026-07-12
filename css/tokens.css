@@ -14,7 +14,7 @@
 	--rux-color-black: oklch(0% 0 0);
 	--rux-color-white: #F4F5F8;
 	--rux-color-base: oklch(50% 0.004 260);
-	--rux-color-neutral-base: oklch(14.8% 0.2 20); /* oklch(14.8% 0.004 260); new canon base token */
+	--rux-color-neutral-base: oklch(14.8% 0.004 260); /* oklch(14.8% 0.004 260); new canon base token */
 	--rux-color-white-a08: oklch(from var(--rux-color-white) l c h / 0.08);
 	--rux-color-white-a10: oklch(from var(--rux-color-white) l c h / 0.1);
 	--rux-color-white-a16: oklch(from var(--rux-color-white) l c h / 0.16);
@@ -82,6 +82,7 @@
 	/* ─── SIZE · shared foundations ──────────────────────────────────────── */
 
 	--rux-border-width: 1px;
+	--rux-border-none: none;
 
 	--rux-icon-xs: 16px;
 	--rux-icon-sm: 20px;
@@ -349,15 +350,15 @@
 
 	/* ─── COMPONENT · app shell (.scheduler-app — the outermost page frame) ── */
 
-	--rux-shell-bg: var(--rux-surface-canvas);
-	--rux-shell-margin-inline: var(--rux-space-0);
-	--rux-shell-margin-bottom: var(--rux-space-0);
-	--rux-shell-topbar-gap: var(--rux-space-0);
+	--rux-shell-bg: var(--rux-surface-canvas);           /* UPDATED */
+	--rux-shell-margin-inline: var(--rux-space-0);        /* UPDATED */
+	--rux-shell-margin-bottom: var(--rux-space-0);           /* UPDATED */
+	--rux-shell-topbar-gap: var(--rux-space-0);            /* UPDATED */
 
 	/* ─── COMPONENT · TOPBAR (app-wide chrome: module nav, search, profile) ── */
 
 	--rux-topbar-bg: var(--rux-shell-bg);                                    /* UPDATED */
-	--rux-topbar-border: var(--rux-border-width) solid var(--rux-border);    /* UPDATED */
+	--rux-topbar-border: var(--rux-border-none) solid var(--rux-border);    /* UPDATED */
 	--rux-topbar-padding: var(--rux-space-2) var(--rux-space-3);             /* UPDATED */
                                     /* Should I add more tokens? radius shadow ?? */
 
@@ -374,7 +375,7 @@
 	   value) so the header's left edge can't drift from the body content's
 	   left edge below it (calendar/table views inset via margin-inline using
 	   the same token, in scheduler-app.css). */
-	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-workspace-gutter);
+	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-workspace-gutter);     /* UPDATED */
 
 	/* ─── COMPONENT · calendar ──────────────────────────────────────────── */
 	/* .rux-scheduler — the only layer in the calendar view that paints its
@@ -392,71 +393,83 @@
 	   chrome of its own. */
 
 	/* — shell — */
-	--rux-panel-bg: var(--rux-surface-panel);
-	--rux-panel-fg: var(--rux-fg);
+	--rux-panel-bg: var(--rux-surface-panel);                                   /* UPDATED */
+	--rux-panel-fg: var(--rux-fg);                                              /* UPDATED */
 	--rux-panel-border-width: var(--rux-border-width);
-	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-border);
-	--rux-panel-radius: var(--rux-opt-radius-2);
-	--rux-panel-shadow: var(--rux-elevation-0);
+	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-border);  /* UPDATED */
+	--rux-panel-radius: var(--rux-opt-radius-2);                                /* UPDATED */
+	--rux-panel-shadow: var(--rux-elevation-0);                                 /* UPDATED */
 
 	/* — header — */
-	--rux-panel-header-min-height: 44px;
+	--rux-panel-header-min-height: 0px;
 
 	/* — nav / tabs (one shared strip; tabs is just a scroll-state of the
 	   same chrome, not a visually distinct part) — */
-	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-3);
-	--rux-panel-nav-shadow: var(--rux-edge-shadow-bottom);
+	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-3);          /* UPDATED */
+	--rux-panel-nav-shadow: var(--rux-edge-shadow-bottom);                   /* UPDATED */
 
 	/* — footer (bg/border reuse the shell's above — needed as-is since the
 	   footer repaints over scrolled body content via z-index) — */
-	--rux-panel-footer-padding: var(--rux-space-3) var(--rux-space-3);
-	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
+	--rux-panel-footer-padding: var(--rux-space-3) var(--rux-space-3);        /* UPDATED */
+	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);                   /* UPDATED */
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
 
-	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3); /* padding sides of cards in panel */
-	--rux-panel-content-gap: var(--rux-space-3); /* gap between cards in panel */
+	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3); /* padding sides of cards in panel */ /* UPDATED */
+	--rux-panel-content-gap: var(--rux-space-3); /* gap between cards in panel */   /* UPDATED */
 	/* both still consumed outside panel.css — padding-block by safe-area
 	   calc()s in scheduler-app.css/flip-seven.css, padding-inline by the
 	   sizing formula below — keep defined even though panel.css itself
 	   doesn't read them directly. */
-	--rux-panel-padding-block: var(--rux-space-2);
-	--rux-panel-padding-inline: var(--rux-space-2);
+	--rux-panel-padding-block: var(--rux-space-2);                            /* UPDATED */
+	--rux-panel-padding-inline: var(--rux-space-2);                          /* UPDATED */
 
 	/* — sizing formula: consumed by feature layouts that live inside a
 	   panel-shaped container elsewhere, not by panel.css itself — */
-	--rux-panel-min-field-width: 116px;
-	--rux-panel-min-content-width: calc(
-		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
+	--rux-panel-min-field-width: 116px;                                          /* UPDATED */
+	--rux-panel-min-content-width: calc(                                          /* UPDATED */
+		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)    
 	);
-	--rux-panel-min-width: calc(
+	--rux-panel-min-width: calc(                                                /* UPDATED */
 		var(--rux-panel-min-content-width)
 		+ (2 * var(--rux-panel-padding-inline))
 		+ (2 * var(--rux-panel-border-width))
 	);
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
+	/* .rux-card shell + optional header / body-section / footer anatomy,
+	   plus interactive/elevated variants. Body is intentionally bare below —
+	   pure content region, owns no chrome of its own. */
 
-	--rux-card-bg: var(--rux-surface-2);
+	/* — shell — */
+	--rux-card-bg: var(--rux-surface-card);
 	--rux-card-fg: var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border: var(--rux-card-border-width) solid transparent;
-	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
+	--rux-card-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-radius: var(--rux-opt-radius-2);
 	--rux-card-shadow: var(--rux-elevation-0);
-	--rux-card-padding: var(--rux-space-3);
-	--rux-card-padding-compact: var(--rux-space-2);
-	--rux-card-content-gap: var(--rux-space-4);
-	--rux-card-header-min-height: var(--rux-panel-header-min-height);
-	--rux-card-header-bg: var(--rux-card-bg);
-	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
-	--rux-card-section-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
+
+	/* — header — */
+	--rux-card-header-min-height: calc(var(--rux-button-height) + (2 * var(--rux-card-padding)) + var(--rux-card-border-width));
+	--rux-card-header-bg: var(--rux-surface-card);
+	--rux-card-header-border: var(--rux-border-width) solid var(--rux-border);
+
+	/* — footer — */
 	--rux-card-footer-bg: var(--rux-surface-0);
 	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
-	--rux-card-hover-bg: var(--rux-bg-hover);
-	--rux-card-hover-border: var(--rux-border-strong);
+
+	/* — section (divider between stacked .rux-card__section siblings) — */
+	--rux-card-section-border: var(--rux-card-border-width) solid var(--rux-border-subtle);
+
+	/* — variants: elevated / interactive hover — */
 	--rux-card-elevated-bg: var(--rux-surface-3);
 	--rux-card-elevated-shadow: var(--rux-elevation-3);
+	--rux-card-hover-bg: var(--rux-bg-hover);
+	--rux-card-hover-border: var(--rux-border-strong);
+
+	/* — shared across header/body/footer/section, not any one part's own — */
+	--rux-card-padding: var(--rux-space-3);
+	--rux-card-content-gap: var(--rux-space-4);
 
 	/* ─── COMPONENT · input ──────────────────────────────────────────────── */
 	/* .rux-input/.rux-select/.rux-textarea. Height/radius/padding for these

@@ -57,6 +57,7 @@
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
 	--rux-trip-bar-paid-color: var(--rux-success);
 	--rux-trip-bar-tight-gap: var(--rux-space-px);
+	--rux-trip-bar-compact-padding: var(--rux-space-2);
 	--rux-trip-bar-actions-bg: transparent;
 	--rux-trip-bar-bus-label-bg: var(--rux-color-white);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
@@ -437,8 +438,8 @@
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	padding: var(--rux-card-padding-compact);
-	padding-bottom: calc(var(--rux-card-padding-compact) + var(--rux-trip-bar-tight-gap));
+	padding: var(--rux-trip-bar-compact-padding);
+	padding-bottom: calc(var(--rux-trip-bar-compact-padding) + var(--rux-trip-bar-tight-gap));
 	gap: var(--rux-trip-bar-tight-gap);
 	/*background: linear-gradient(to bottom, oklch(0% 0 0 / 0) 0%, oklch(0% 0 0 / 0.4) 100%);*/
 }
@@ -798,7 +799,7 @@
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-1);
-	padding: var(--rux-card-padding-compact);
+	padding: var(--rux-trip-bar-compact-padding);
 	background: oklch(0% 0 0 / 0.24);
 	border-top: none;
 }
