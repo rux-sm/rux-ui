@@ -704,10 +704,18 @@
 	padding: 0 var(--rux-space-1);
 	height: 20px;
 	border-radius: 0;
+	overflow: hidden;
 	color: var(--rux-fg-on-accent);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
+}
+
+/* Matches .rux-trip-bar__driver-name's own overflow:visible below — without
+   this, the name's hover reveal would still get clipped by this rounded
+   corner's own overflow:hidden above. */
+.rux-trip-bar__driver:hover {
+	overflow: visible;
 }
 
 .rux-trip-bar__driver:first-child {

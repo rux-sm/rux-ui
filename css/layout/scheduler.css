@@ -73,6 +73,13 @@
 	overscroll-behavior-y: contain;
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
+	/* Matches .calendar-app__viewport's radius (scheduler-app.css), which owns
+	   this card's actual border/bg — this element gets no border/bg of its
+	   own, just the same radius, so its own overflow:auto clip agrees with
+	   the parent's during scroll instead of the two rounded-corner masks
+	   disagreeing by a sub-pixel and leaking a hairline of scrolled content
+	   at the corners. */
+	border-radius: var(--rux-calendar-radius);
 }
 
 .rux-scheduler::-webkit-scrollbar {
@@ -139,6 +146,14 @@
 	border-inline-end: var(--rux-calendar-grid);
 	border-block-end: var(--rux-calendar-grid);
 	color: var(--rux-scheduler-header-color);
+	/* Bleeds the header's own background 4px past its top edge — dead space
+	   that .calendar-app__viewport's overflow:hidden (scheduler-app.css)
+	   trims away, so it's invisible at rest. Guards against exactly the
+	   sub-pixel corner-clip mismatch fixed elsewhere: even if the outer
+	   rounded-corner mask and this sticky header disagree by a pixel during
+	   scroll, there's 4px of matching-color overlap for that error to land
+	   in instead of a gap showing scrolled content underneath. */
+	box-shadow: 0 -4px 0 0 var(--rux-calendar-header-bg);
 }
 
 .rux-scheduler__day-name {
@@ -274,6 +289,13 @@
 .rux-scheduler__col-head {
 	justify-content: center;
 	z-index: calc(var(--rux-z-sticky) + 1);
+	/* Sticky on both axes, so it needs the top-bleed from the shared
+	   col-head/day-head rule above AND a matching left-bleed here — it's
+	   the one cell that can sit at either rounded top corner as the grid
+	   scrolls horizontally. */
+	box-shadow:
+		0 -4px 0 0 var(--rux-calendar-header-bg),
+		-4px 0 0 0 var(--rux-calendar-header-bg);
 }
 
 .rux-scheduler__corner-label {
@@ -296,6 +318,10 @@
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
+	/* Left-bleed, same reasoning as col-head/day-head's top-bleed above —
+	   sticky on the left axis, so any row can land at the rounded left
+	   corner (top or bottom) as the grid scrolls vertically. */
+	box-shadow: -4px 0 0 0 var(--rux-calendar-header-bg);
 }
 
 .rux-scheduler__bus-number {
