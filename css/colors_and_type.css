@@ -125,7 +125,7 @@ code, kbd, samp, pre {
 
 code {
   padding: 0.12em 0.4em;
-  background: var(--rux-surface-1);
+  background: var(--rux-surface-canvas);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xs);
   color: var(--rux-fg);
@@ -150,7 +150,7 @@ pre code {
 kbd {
   display: inline-block;
   padding: 0.15em 0.5em;
-  background: var(--rux-surface-1);
+  background: var(--rux-surface-canvas);
   border: var(--rux-border-width) solid var(--rux-border-strong);
   border-bottom-width: calc(var(--rux-border-width) * 2);
   border-radius: var(--rux-radius-xs);

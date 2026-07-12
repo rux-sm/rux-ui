@@ -150,7 +150,7 @@
 	width: 18px;
 	height: 18px;
 	padding: 0;
-	background: var(--rux-surface-1);
+	background: var(--rux-surface-modal);
 	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-fg-muted);

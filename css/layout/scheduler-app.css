@@ -15,7 +15,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: var(--rux-surface-1);
+	background: var(--rux-surface-canvas);
 	transition: opacity var(--rux-duration-slow) var(--rux-ease-out);
 }
 
@@ -1127,7 +1127,7 @@
 		margin: 0;
 		padding: var(--rux-space-2) var(--rux-space-3);
 		overflow: visible;
-		background: color-mix(in oklch, var(--rux-surface-1) 72%, transparent);
+		background: color-mix(in oklch, var(--rux-surface-modal) 72%, transparent);
 		backdrop-filter: blur(var(--rux-overlay-blur));
 		-webkit-backdrop-filter: blur(var(--rux-overlay-blur));
 		border-top: var(--rux-border-width) solid var(--rux-border);
@@ -1184,8 +1184,8 @@
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
 	flex: 1;
 	margin-inline: var(--rux-workspace-gutter);
-	background: var(--rux-surface-1);
-	border-radius: var(--scheduler-app-card-radius);
+	background: var(--rux-surface-workspace);
+	border-radius: var(--calendar-border-radius);
 	overflow: auto;
 }
 

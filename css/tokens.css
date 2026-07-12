@@ -218,8 +218,6 @@
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6);
 
 	--rux-surface-0: rgba(8,9,10);
-	--rux-surface-1: oklch(from var(--rux-color-base) 24% c h);
-	--rux-surface-1: rgb(10, 125, 240);
 	--rux-surface-2: oklch(from var(--rux-color-base) 32% c h);
 	--rux-surface-2: rgba(22,23,24);
 	--rux-surface-3: oklch(from var(--rux-color-base) 34% c h);
@@ -227,12 +225,31 @@
 
 	/* updated surfaces */
 
-	--rux-surface-canvas: var(--rux-color-neutral-base);
-	--rux-surface-workspace: oklch(from var(--rux-color-neutral-base) 17.5% c h); /* updated */
-	--rux-surface-panel: oklch(from var(--rux-color-neutral-base) 17.5% c h);
-	--rux-surface-calendar: oklch(from var(--rux-color-neutral-base) 19.3% c h);
-	--rux-surface-calendar-header: oklch(from var(--rux-color-neutral-base) 22.3% c h);
-	--rux-surface-card: oklch(from var(--rux-color-neutral-base) 19.3% c h);
+	--hue-neutral: 254;    
+	 
+  	--chroma-neutral: 0.005;
+
+	--rux-surface-canvas: oklch(14% var(--chroma-neutral) var(--hue-neutral));
+  	/* Hex: #08090A | RGB: rgb(8, 9, 10) */
+
+	--rux-surface-workspace: oklch(17% var(--chroma-neutral) var(--hue-neutral));
+  	/* Hex: #0F1011 | RGB: rgb(15, 16, 17) */
+
+	--rux-surface-panel: oklch(17% var(--chroma-neutral) var(--hue-neutral));
+ 	 /* Hex: #0F1011 | RGB: rgb(15, 16, 17) */
+
+	--rux-surface-calendar: oklch(17% var(--chroma-neutral) var(--hue-neutral));
+  	/* Hex: #0F1011 | RGB: rgb(15, 16, 17) */
+
+	--rux-surface-calendar-header: oklch(21% var(--chroma-neutral) var(--hue-neutral));
+  	/* Hex: #1A1B1D | RGB: rgb(26, 27, 29) */
+
+	--rux-surface-card: oklch(21% var(--chroma-neutral) var(--hue-neutral));
+ 	 /* Hex: #1A1B1D | RGB: rgb(26, 27, 29) */
+
+	--rux-surface-modal: oklch(24% var(--chroma-neutral) var(--hue-neutral));
+ 	 /* Hex: #222326 | RGB: rgb(34, 35, 38) */ 
+
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
 
@@ -282,9 +299,19 @@
 
 	/* ─── COLOR · border roles ───────────────────────────────────────────── */
 
-	--rux-border-subtle: var(--rux-color-white-a10);
-	--rux-border: var(--rux-color-white-a16);
-	--rux-border-strong: var(--rux-color-white-a28);
+  	 /* Using pure white with an opacity channel (/) for glassy boundaries */
+
+  	--rux-border: oklch(100% 0 0 / 4%);
+	  /* Hex: #FFFFFF0A | RGB: rgba(255, 255, 255, 0.04) */
+
+	  /* COMPONENTS: Layout Dividers, Panels, Workspace, Cards, 
+	  /* list item separators, (inactive) input fields. */
+
+  	--rux-border-strong: oklch(100% 0 0 / 8%);
+ 	 /* Hex: #FFFFFF14 | RGB: rgba(255, 255, 255, 0.08) */
+
+  	 /* COMPONENTS: modals, dropdowns, command palettes, 
+  	 /* card hover states, and active/focused input fields. */
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
 
@@ -625,7 +652,7 @@
 	--rux-tabs-attached-tab-bg: transparent;
 	--rux-tabs-attached-tab-fg: var(--rux-fg-muted);
 	--rux-tabs-attached-tab-hover-bg: var(--rux-color-white-a08);
-	--rux-tabs-attached-tab-selected-bg: var(--rux-surface-1);
+	--rux-tabs-attached-tab-selected-bg: var(--rux-surface-modal);
 	--rux-tabs-attached-tab-selected-fg: var(--rux-fg);
 	--rux-tabs-attached-tab-border: var(--rux-border-width) solid transparent;
 	--rux-tabs-attached-pane-bg: var(--rux-tabs-attached-tab-selected-bg);
@@ -649,9 +676,9 @@
 
 	/* ─── RADIUS · optical adjustments ───────────────────────────────────── */
 
-	--rux-opt-radius-1: var(--rux-radius-0);
+	--rux-opt-radius-1: var(--rux-radius-md);
 	--rux-opt-radius-2: var(--rux-radius-md);
-	--rux-opt-radius-3: var(--rux-radius-sm);
+	--rux-opt-radius-3: var(--rux-radius-md);
 }
 
 /* ==========================================================================

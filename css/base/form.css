@@ -462,7 +462,7 @@
   flex-wrap: wrap;
   gap: var(--rux-control-content-gap);
   padding: var(--rux-control-padding-inline);
-  background: var(--rux-surface-1);
+  background: var(--rux-surface-modal);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   box-shadow: var(--rux-elevation-4);

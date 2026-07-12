@@ -238,7 +238,7 @@
 .components-app__example-copy h3 {
 	display: inline-block;
 	padding-right: var(--rux-space-3);
-	background: var(--rux-surface-1);
+	background: var(--rux-surface-modal);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 	transform: translateY(calc((var(--rux-space-5) + 0.5em) * -1));
@@ -390,7 +390,7 @@
 	gap: var(--rux-space-0-5);
 	max-width: 15rem;
 	padding: var(--rux-space-2) var(--rux-space-3);
-	background: color-mix(in oklch, var(--rux-surface-1) 92%, transparent);
+	background: color-mix(in oklch, var(--rux-surface-modal) 92%, transparent);
 	border: var(--rux-border-width) solid color-mix(in oklch, var(--rux-accent) 55%, transparent);
 	border-radius: var(--rux-radius-field);
 	box-shadow: var(--rux-elevation-2);
@@ -593,7 +593,7 @@
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-5);
 	padding: var(--rux-space-5);
-	background: var(--rux-surface-1);
+	background: var(--rux-surface-modal);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-card-radius);
 }

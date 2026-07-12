@@ -8,7 +8,7 @@
   display: flex;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-surface-1);
+  background: var(--rux-surface-modal);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   font-size: var(--rux-text-sm);
@@ -35,7 +35,7 @@
   align-items: center;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-surface-1);
+  background: var(--rux-surface-modal);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   box-shadow: var(--rux-elevation-2);
@@ -62,7 +62,7 @@
 .rux-modal {
   width: 100%;
   max-width: var(--rux-container-xs);
-  background: var(--rux-surface-1);
+  background: var(--rux-surface-modal);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xl);
   box-shadow: var(--rux-elevation-4);
