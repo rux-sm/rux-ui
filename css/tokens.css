@@ -1,16 +1,5 @@
 /* ==========================================================================
    RUX UI — TOKENS
-   --------------------------------------------------------------------------
-   Primitive tokens define raw scales and constants. Semantic tokens map
-   those primitives to UI roles and live together at the end of :root.
-
-   Maintenance rules
-   -----------------
-   1. Everything in this file is prefixed --rux-*.
-   2. Components consume semantic tokens when a role exists.
-   3. Primitive scales should not encode component names or usage.
-   4. Remove tokens that no longer have a var() reference in the project.
-   5. Dark mode is the only mode for now.
    ========================================================================== */
 
 :root {
@@ -46,15 +35,15 @@
 
 	/* ─── TYPOGRAPHY · size scale ────────────────────────────────────────── */
 
-	--rux-text-2xs: 0.6875rem; /* 11px */
-	--rux-text-xs: 0.75rem; /* 12px */
-	--rux-text-sm: 0.875rem; /* 14px */
-	--rux-text-md: 1rem; /* 16px */
-	--rux-text-lg: 1.125rem; /* 18px */
-	--rux-text-xl: 1.5rem; /* 24px */
-	--rux-text-2xl: 2rem; /* 32px */
-	--rux-text-3xl: 2.75rem; /* 44px */
-	--rux-text-4xl: 4rem; /* 64px */
+	--rux-text-2xs: 0.6875rem;
+	--rux-text-xs: 0.75rem;
+	--rux-text-sm: 0.875rem;
+	--rux-text-md: 1rem;
+	--rux-text-lg: 1.125rem;
+	--rux-text-xl: 1.5rem;
+	--rux-text-2xl: 2rem;
+	--rux-text-3xl: 2.75rem;
+	--rux-text-4xl: 4rem;
 
 	/* ─── TYPOGRAPHY · weight ────────────────────────────────────────────── */
 
@@ -77,18 +66,17 @@
 	--rux-tracking-widest: 0.1em;
 
 	/* ─── SPACING · 4px base grid ───────────────────────────────────────── */
-	/* Scale intentionally skips --rux-space-7 — not a gap to fill in. */
 
-	--rux-space-px: 1px; /* hairline */
-	--rux-space-0-5: 0.125rem; /* 2px */
+	--rux-space-px: 1px;
+	--rux-space-0-5: 0.125rem;
 	--rux-space-0: 0;
-	--rux-space-1: 0.25rem; /* 4px */
-	--rux-space-2: 0.5rem; /* 8px */
-	--rux-space-3: 0.75rem; /* 12px */
-	--rux-space-4: 1rem; /* 16px */
-	--rux-space-5: 1.5rem; /* 24px */
-	--rux-space-6: 2rem; /* 32px */
-	--rux-space-8: 4rem; /* 64px */
+	--rux-space-1: 0.25rem;
+	--rux-space-2: 0.5rem;
+	--rux-space-3: 0.75rem;
+	--rux-space-4: 1rem;
+	--rux-space-5: 1.5rem;
+	--rux-space-6: 2rem;
+	--rux-space-8: 4rem;
 
 	/* ─── SIZE · shared foundations ──────────────────────────────────────── */
 
@@ -112,7 +100,6 @@
 
 	/* ─── SHADOW · elevation scale ───────────────────────────────────────── */
 
-	/* Shared recipe values */
 	--rux-shadow-highlight:
 		inset 0 1px 0.5px oklch(from var(--rux-color-white) l c h / 0.06);
 
@@ -144,7 +131,6 @@
 	--rux-shadow-4-near-spread: -2px;
 	--rux-shadow-4-near-color: oklch(from var(--rux-color-black) l c h / 0.75);
 
-	/* Assembled elevation primitives */
 	--rux-shadow-0: none;
 	--rux-shadow-1:
 		0 var(--rux-shadow-1-y)
@@ -178,7 +164,6 @@
 		var(--rux-shadow-4-near-color),
 		var(--rux-shadow-highlight);
 
-	/* Inset state primitives */
 	--rux-inset-0: none;
 	--rux-inset-1:
 		inset 0 1px 2px oklch(from var(--rux-color-black) l c h / 0.35),
@@ -187,7 +172,6 @@
 		inset 0 2px 4px oklch(from var(--rux-color-black) l c h / 0.5),
 		inset 0 1px 0 var(--rux-color-white-a10);
 
-	/* Directional elevation-3 primitives */
 	--rux-edge-shadow-top:
 		0 calc(0px - var(--rux-shadow-3-far-y))
 		var(--rux-shadow-3-far-blur)
@@ -229,22 +213,23 @@
 	--rux-bg-active: #303030;
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6);
 
-	--rux-surface-0: rgba(8,9,10);   /* App background */
-	--rux-surface-1: oklch(from var(--rux-color-base) 24% c h); /* Panels */
-	--rux-surface-1: rgba(16,17,18);  /* Panels */	
-	--rux-surface-2: oklch(from var(--rux-color-base) 32% c h); /* Cards */
+	--rux-surface-0: rgba(8,9,10);
+	--rux-surface-1: oklch(from var(--rux-color-base) 24% c h);
+	--rux-surface-1: rgba(16,17,18);
+	--rux-surface-2: oklch(from var(--rux-color-base) 32% c h);
 	--rux-surface-2: rgba(22,23,24);
-	--rux-surface-3: oklch(from var(--rux-color-base) 34% c h); /* Menus and popovers */
-	--rux-surface-4: oklch(from var(--rux-color-base) 32% c h); /* Form controls */
+	--rux-surface-3: oklch(from var(--rux-color-base) 34% c h);
+	--rux-surface-4: oklch(from var(--rux-color-base) 32% c h);
 
+	/* updated surfaces */
 
-	/* 1. THE PRIMITIVE (The mathematical anchor) */
-    --rux-core-neutral-base: oklch(100% 0.00011 271.152); 
+	--rux-color-neutral-base: oklch(14.8% 0.2 260); /* oklch(14.8% 0.004 260); */
 
-    /* 2. THE SEMANTIC SURFACES (The functional roles) */
-    --rux-surface-canvas: var(--rux-core-neutral-base);   
-    --rux-surface-panel: oklch(from var(--rux-core-neutral-base) 17.5% c h); 
-    --rux-surface-card: oklch(from var(--rux-core-neutral-base) 19.3% c h);
+	--rux-surface-canvas: var(--rux-color-neutral-base);
+	--rux-surface-workspace: oklch(from var(--rux-color-neutral-base) 17.5% c h); /* updated */
+	--rux-surface-panel: oklch(from var(--rux-color-neutral-base) 17.5% c h);
+	--rux-surface-calendar: oklch(from var(--rux-color-neutral-base) 19.3% c h);
+	--rux-surface-card: oklch(from var(--rux-color-neutral-base) 19.3% c h);
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
 
@@ -258,9 +243,6 @@
 
 	--rux-control-height: 28px;
 	--rux-field-height: 28px;
-	--rux-segmented-height: 28px;
-	--rux-textarea-min-height: 84px;
-	/* 28px control + 12px block padding on each side + 1px divider. */
 	--rux-chrome-min-height: 53px;
 
 	--rux-switch-width: 48px;
@@ -272,10 +254,6 @@
 
 	--rux-status-dot-size: 6px;
 	--rux-progress-height: 6px;
-	--rux-checkbox-size: 18px;
-	--rux-checkbox-target-height: 32px;
-	--rux-checkbox-mark-width: 6px;
-	--rux-checkbox-mark-height: 10px;
 	--rux-icon-font-family: "Material Symbols Outlined";
 	--rux-icon-fill-default: 0;
 	--rux-icon-fill-selected: 1;
@@ -304,7 +282,6 @@
 
 	--rux-border-subtle: var(--rux-color-white-a10);
 	--rux-border: var(--rux-color-white-a16);
-	/*--rux-border: transparent; /* TEMPORARY: remove once border color is finalized */
 	--rux-border-strong: var(--rux-color-white-a28);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
@@ -342,15 +319,10 @@
 	--rux-radius-field: var(--rux-radius-sm);
 
 	/* ─── TYPOGRAPHY · component roles ──────────────────────────────────── */
-	/* Named roles for recurring heading/label patterns — panel/card/drawer/
-	   settings/modal titles all share one size+weight, and uppercase micro
-	   labels (section labels, menu headers, picker headings) share one
-	   size+weight+tracking+color, instead of each file poking the raw
-	   --rux-text-* scale independently. */
 
-	--rux-heading-panel-size: var(--rux-text-md); /* 16px */
+	--rux-heading-panel-size: var(--rux-text-md);
 	--rux-heading-panel-weight: var(--rux-weight-semibold);
-	--rux-label-eyebrow-size: var(--rux-text-2xs); /* 11px */
+	--rux-label-eyebrow-size: var(--rux-text-2xs);
 	--rux-label-eyebrow-weight: var(--rux-weight-semibold);
 	--rux-label-eyebrow-tracking: var(--rux-tracking-wide);
 	--rux-label-eyebrow-color: var(--rux-fg-subtle);
@@ -365,39 +337,27 @@
 
 	/* ─── FOCUS ──────────────────────────────────────────────────────────── */
 
-	/* --rux-ring-focus/--rux-ring-danger kept — still referenced by
-	   .rux-trip-bar's --_tone-ring (trip-bar.css), even though that
-	   property itself is currently unused there. --rux-ring-field-focus/
-	   --rux-ring-field-danger removed: no remaining consumers anywhere
-	   after the app-wide focus-state strip (rebuild pending in a later
-	   pass). */
 	--rux-ring-focus: 0 0 0 6px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
 	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
-	/* DEBUG: not applied anywhere yet — bright red border to visually flag
-	   whichever element(s) it gets added to while tracking down the focus
-	   style cleanup. Remove once no longer needed. */
 	--rux-focus-border-debug: 2px solid var(--rux-danger-bright);
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
-	--rux-workspace-bg: var(--rux-surface-1);
+	--rux-workspace-bg: var(--rux-surface-workspace); /* updated */
 	--rux-workspace-fg: var(--rux-fg);
 	--rux-workspace-border: var(--rux-border-width) solid var(--rux-border);
 	--rux-workspace-radius: var(--rux-radius-0);
 	--rux-workspace-shadow: var(--rux-elevation-0);
-	/* .rux-workspace__body deliberately has no padding token — feature
-	   modules own their own internal inset (see workspace.css header). */
 	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
 	--rux-workspace-padding: var(--rux-space-3);
+	--rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 
 	--rux-panel-bg: var(--rux-surface-1);
 	--rux-panel-fg: var(--rux-fg);
 	--rux-panel-border-width: var(--rux-border-width);
-	--rux-panel-border-color: var(--rux-border);
-	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-panel-border-color);
-	--rux-panel-border: var(--rux-panel-border-width) solid transparent; /* TEMPORARY: remove once border color is finalized */
+	--rux-panel-border: var(--rux-panel-border-width) solid transparent;
 	--rux-panel-radius: var(--rux-radius-0);
 	--rux-panel-shadow: var(--rux-elevation-0);
 	--rux-panel-footer-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
@@ -415,12 +375,7 @@
 	--rux-panel-tabs-min-height: var(--rux-panel-nav-min-height);
 	--rux-panel-footer-min-height: var(--rux-chrome-min-height);
 
-	/* Drawer-style panels (trip/fleet/driver/right) host 2-up field rows
-	   (e.g. Start/End date) whose columns are minmax(0, 1fr) — this is the
-	   only thing stopping those columns from collapsing to unusable width.
-	   Deriving it from padding/border/gap tokens means it tracks those
-	   automatically instead of drifting out of sync with a bare px value. */
-	--rux-panel-min-field-width: 116px; /* solved so the derived total matches the prior 360px floor exactly */
+	--rux-panel-min-field-width: 116px;
 	--rux-panel-min-content-width: calc(
 		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
 	);
@@ -435,12 +390,12 @@
 	--rux-card-bg: var(--rux-surface-2);
 	--rux-card-fg: var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border: var(--rux-card-border-width) solid transparent; /* TEMPORARY: remove once border color is finalized */
+	--rux-card-border: var(--rux-card-border-width) solid transparent;
 	--rux-card-border-none: var(--rux-card-border-width) solid transparent;
 	--rux-card-radius: var(--rux-opt-radius-2);
 	--rux-card-shadow: var(--rux-elevation-0);
 	--rux-card-padding: var(--rux-space-3);
-	--rux-card-padding-compact: var(--rux-space-2); /* dense/absolutely-positioned cards, e.g. .rux-trip-bar */
+	--rux-card-padding-compact: var(--rux-space-2);
 	--rux-card-content-gap: var(--rux-space-4);
 	--rux-card-header-min-height: var(--rux-panel-header-min-height);
 	--rux-card-header-bg: var(--rux-card-bg);
@@ -453,67 +408,89 @@
 	--rux-card-elevated-bg: var(--rux-surface-3);
 	--rux-card-elevated-shadow: var(--rux-elevation-3);
 
-	/* ─── COMPONENT · button ─────────────────────────────────────────────── */
-	/* Button tokens map to primitives directly when the value is visual and
-	   alias shared semantic roles only when that relationship is intentional. */
+	/* ─── COMPONENT · input ──────────────────────────────────────────────── */
+	/* .rux-input/.rux-select/.rux-textarea. Height/radius/padding for these
+	   are shared with other controls (--rux-field-height, --rux-control-*
+	   above) rather than input-exclusive, so only what's genuinely unique
+	   to this component lives here. */
 
-	/* Structure */
+	--rux-input-height: 30px;
+	--rux-input-border: var(--rux-card-border-width) solid var(--rux-border);
+	--rux-textarea-min-height: 84px;
+
+	/* ─── COMPONENT · button ─────────────────────────────────────────────── */
+
+	/* — base — shared by every variant/size below unless overridden — */
 	--rux-button-height: 28px;
 	--rux-button-mobile-height: 36px;
 	--rux-button-padding-inline: var(--rux-space-3);
 	--rux-button-content-gap: var(--rux-space-2);
 	--rux-button-radius: var(--rux-radius-sm);
 	--rux-button-border-width: var(--rux-border-width);
+	--rux-button-border: var(--rux-card-border-width) solid transparent;
 	--rux-button-font-family: var(--rux-font-sans);
 	--rux-button-font-size: var(--rux-text-sm);
 	--rux-button-font-weight: var(--rux-weight-regular);
 	--rux-button-icon-size: var(--rux-icon-md);
 	--rux-button-mobile-icon-size: 24px;
-	--rux-button-border: var(--rux-card-border-width) solid transparent; /* TEMPORARY: remove once border color is finalized */
+	--rux-button-shadow: var(--rux-elevation-0);
+	--rux-button-hover-overlay: var(--rux-color-white-a08);
+	--rux-button-active-overlay: var(--rux-color-black-a12);
+	--rux-button-transition-duration: var(--rux-duration-instant);
+	--rux-button-transition-easing: var(--rux-ease-out);
 
-
-	/* Appearance */
+	/* — default — */
 	--rux-button-default-bg: var(--rux-color-white-a10);
 	--rux-button-default-fg: var(--rux-color-white);
+
+	/* — accent — */
 	--rux-button-accent-bg: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
 	--rux-button-accent-fg: var(--rux-color-white);
+
+	/* — ghost — */
 	--rux-button-ghost-bg: transparent;
 	--rux-button-ghost-fg: var(--rux-fg-muted);
 	--rux-button-ghost-border: transparent;
+
+	/* — danger — */
 	--rux-button-danger-bg: oklch(60% 0.22 24);
 	--rux-button-danger-fg: var(--rux-color-white);
 	--rux-button-danger-quiet-fg: oklch(85% 0.2 24);
 
-	/* Interaction states */
-	--rux-button-hover-overlay: var(--rux-color-white-a08);
-	--rux-button-active-overlay: var(--rux-color-black-a12);
+	/* — disabled — */
 	--rux-button-disabled-bg: var(--rux-color-neutral-24);
 	--rux-button-disabled-fg: oklch(40% 0 0);
-	/* Selected reuses the accent color rather than solid white — "on" should
-	   mean one thing everywhere (switches already use accent for on/off), and
-	   white was otherwise indistinguishable at a glance from the merely-idle
-	   default-bg tone above. */
+	--rux-button-disabled-shadow: var(--rux-elevation-0);
+
+	/* — selected (.is-active / [aria-pressed="true"]) — */
 	--rux-button-selected-bg: var(--rux-button-accent-bg);
 	--rux-button-quiet-selected-bg: var(--rux-color-white-a10);
 	--rux-button-selected-fg: var(--rux-button-accent-fg);
 	--rux-button-icon-selected-bg: var(--rux-color-neutral-70);
-	--rux-button-shadow: var(--rux-elevation-0);
 	--rux-button-selected-shadow: var(--rux-inset-0);
-	--rux-button-disabled-shadow: var(--rux-elevation-0);
 
-	/* Sizes and behavior */
+	/* — sm — */
 	--rux-button-sm-height: 24px;
 	--rux-button-sm-font-size: var(--rux-text-xs);
 	--rux-button-sm-padding-inline: var(--rux-space-2);
 	--rux-button-sm-content-gap: var(--rux-space-1);
+
+	/* — xs — */
 	--rux-button-xs-height: 20px;
 	--rux-button-xs-font-size: var(--rux-text-2xs);
 	--rux-button-xs-icon-size: var(--rux-icon-xs);
 	--rux-button-xs-padding-inline: 6px;
 	--rux-button-xs-content-gap: 3px;
+
+	/* — loading — */
 	--rux-button-loading-opacity: 0.65;
-	--rux-button-transition-duration: var(--rux-duration-instant);
-	--rux-button-transition-easing: var(--rux-ease-out);
+
+	/* ─── COMPONENT · segmented ──────────────────────────────────────────── */
+	/* .rux-segmented — a strip of buttons; most of its look (idle/selected
+	   bg+fg, border) is borrowed directly from button tokens above by
+	   design, so height is the only thing genuinely its own. */
+
+	--rux-segmented-height: 28px;
 
 	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
 
@@ -521,6 +498,13 @@
 	--rux-switch-hover-overlay: var(--rux-button-hover-overlay);
 	--rux-switch-active-overlay: var(--rux-button-active-overlay);
 	--rux-switch-disabled-bg: var(--rux-button-disabled-bg);
+
+	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */
+
+	--rux-checkbox-size: 18px;
+	--rux-checkbox-target-height: 32px;
+	--rux-checkbox-mark-width: 6px;
+	--rux-checkbox-mark-height: 10px;
 
 	/* ─── COMPONENT · menu ───────────────────────────────────────────────── */
 
@@ -548,7 +532,6 @@
 
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
-	/* — base (plain .rux-tab, e.g. panel tab strips) — */
 	--rux-tabs-gap: var(--rux-space-2);
 	--rux-tab-height: 28px;
 	--rux-tab-padding-inline: var(--rux-space-3);
@@ -563,12 +546,6 @@
 	--rux-tab-transition-duration: var(--rux-duration-instant);
 	--rux-tab-transition-easing: var(--rux-ease-out);
 
-	/* — .rux-tabs--contained: bordered pill-strip wrapper, same raised-chip
-	     language as .rux-segmented (hence reusing --rux-button-default-bg)
-	     rather than a surface color, so it reads consistently regardless of
-	     what panel/background it's placed against. Radii are nested on
-	     purpose: outer 8px = inner 4px + 4px padding, so the selected tab's
-	     corner sits concentric with the wrapper's. — */
 	--rux-tabs-contained-padding: var(--rux-space-2);
 	--rux-tabs-contained-gap: var(--rux-space-0);
 	--rux-tabs-contained-bg: var(--rux-card-bg);
@@ -580,8 +557,6 @@
 	--rux-tabs-contained-tab-selected-bg: var(--rux-tab-selected-bg);
 	--rux-tabs-contained-tab-selected-fg: var(--rux-tab-selected-fg);
 
-	/* — .rux-tabs--attached: sits flush atop a panel body, tabs styled like
-	     file folder dividers rather than a pill strip — */
 	--rux-tabs-attached-bg: transparent;
 	--rux-tabs-attached-border: 0 solid transparent;
 	--rux-tabs-attached-tab-bg: transparent;
@@ -592,6 +567,7 @@
 	--rux-tabs-attached-tab-border: var(--rux-border-width) solid transparent;
 	--rux-tabs-attached-pane-bg: var(--rux-tabs-attached-tab-selected-bg);
 	--rux-tabs-attached-pane-border: var(--rux-border-width) solid var(--rux-border);
+
 	/* ─── LAYOUT ROLES ───────────────────────────────────────────────────── */
 
 	--rux-container-xs: 480px;
@@ -607,39 +583,16 @@
 	--rux-z-sticky: 200;
 	--rux-z-overlay: 300;
 	--rux-z-modal: 400;
-	--rux-input-height: 30px;
-   	--rux-input-border: var(--rux-card-border-width) solid transparent; 
 
+	/* ─── RADIUS · optical adjustments ───────────────────────────────────── */
 
-/* ==========================================================================
-   OPTICAL RADIUS AND DEBUG
-   --------------------------------------------------------------------------
-   Apply data-rux-accent="<name>" to <html> or <body>.
-   ========================================================================== */	
-	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-info-bright); /* TEMPORARY: remove once border color is finalized */
-    --rux-card-border: var(--rux-card-border-width) solid var(--rux-danger-bright); /* TEMPORARY: remove once border color is finalized */
-   	--rux-button-border: var(--rux-card-border-width) solid var(--rux-success-bright); /* TEMPORARY: remove once border color is finalized */
-   	--rux-input-border: var(--rux-card-border-width) solid var(--rux-success-bright); /* TEMPORARY: remove once border color is finalized */
-	--rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
-
-	--rux-panel-border: var(--rux-panel-border-width) solid transparent; 
-    --rux-card-border: var(--rux-card-border-width) solid transparent; 
-   	--rux-button-border: var(--rux-card-border-width) solid transparent;
-   	--rux-input-border: var(--rux-card-border-width) solid var(--rux-border); 
-    --rux-calendar-border: var(--rux-card-border-width) solid var(--rux-surface-2);
-
-
-
-
-    --rux-opt-radius-1: var(--rux-radius-0);  ;   /* blue   [panel]          */ 
-	--rux-opt-radius-2: var(--rux-radius-md);      /* red    [card]           */
-	--rux-opt-radius-3: var(--rux-radius-sm);   /* green  [button] [input] */ 
+	--rux-opt-radius-1: var(--rux-radius-0);
+	--rux-opt-radius-2: var(--rux-radius-md);
+	--rux-opt-radius-3: var(--rux-radius-sm);
 }
 
 /* ==========================================================================
    ACCENT THEMES
-   --------------------------------------------------------------------------
-   Apply data-rux-accent="<name>" to <html> or <body>.
    ========================================================================== */
 
 [data-rux-accent="blue"] {
