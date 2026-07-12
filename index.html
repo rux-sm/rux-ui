@@ -356,14 +356,12 @@
                   <span class="rux-icon icon-on">left_panel_close</span>
                 </button>
                 <div class="rux-cluster" id="trip-view-group" data-rux-toggle-group>
-                  <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Week</span></button>
+                  <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_view_month</span><span class="rux-btn-label">Week</span></button>
                   <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
                 </div>
               </div>
               <div class="rux-workspace__nav">
-                <h1 class="rux-workspace__title">
-                  <button type="button" id="week-label" class="rux-workspace__title-btn" aria-label="Jump to a date"></button>
-                </h1>
+                <h1 class="rux-workspace__title" id="week-label"></h1>
               </div>
               <div class="rux-workspace__toolbar" role="group" aria-label="View controls">
                 <div class="rux-cluster" id="trips-filter-badges" hidden></div>
@@ -372,7 +370,7 @@
                     <span class="rux-icon">chevron_left</span>
                   </button>
                   <button class="rux-button rux-button--ghost" id="today-btn" type="button" aria-label="Jump to current week">
-                    <span class="rux-icon" aria-hidden="true">today</span>
+                    <span class="rux-icon" aria-hidden="true">mode_standby</span>
                     <span class="rux-btn-label">Today</span>
                   </button>
                   <button class="rux-button rux-button--ghost rux-button--icon calendar-app__nav" id="next-week" aria-label="Next week">
@@ -3934,20 +3932,6 @@
         renderMiniCal();
       });
       renderMiniCal();
-
-      // Clicking the workspace title jumps to the mini-calendar (right panel,
-      // Nav tab) instead of a separate floating date-picker — reuses the one
-      // date-jump UI already built rather than duplicating it. Only
-      // meaningful in Calendar view; List/Manifest show a different title
-      // with nothing to jump to.
-      weekLabelEl?.addEventListener("click", () => {
-        if (tripViewMode !== "calendar") return;
-        miniCalMonth = new Date(currentWeekStart);
-        miniCalMonth.setDate(1);
-        renderMiniCal();
-        openRightDrawer();
-        document.querySelector('[data-right-tabs] .rux-right-panel__tab[aria-controls="rp-pane-navigate"]')?.click();
-      });
 
       // ── Default boot state ──────────────────────────────────────────────
       // Desktop begins with both panels visible. Mobile begins with the

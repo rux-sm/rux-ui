@@ -95,12 +95,11 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: var(--rux-surface-0);
+	background: var(--rux-topbar-bg);
 	min-width: 0;
 	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-3);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: none; /* override the above for mobile, where the topbar is always collapsed */
+	padding: var(--rux-topbar-padding);
+	border-bottom: var(--rux-topbar-border);
 	transition: height var(--rux-duration-slow) var(--rux-ease-in-out),
 		padding var(--rux-duration-slow) var(--rux-ease-in-out);
 }
@@ -311,29 +310,6 @@
 	min-width: 0;
 }
 
-/* Strips button UA styling so this reads exactly like the plain-text title
-   it replaces — same font/color/truncation as .rux-workspace__title carries
-   for every other page, just interactive. */
-.rux-workspace__title-btn {
-	all: unset;
-	display: inline-block;
-	cursor: pointer;
-	overflow: hidden;
-	max-width: 100%;
-	color: var(--rux-workspace-fg);
-	font-size: var(--rux-text-xl);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: 0;
-	line-height: var(--rux-leading-tight);
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	border-radius: var(--rux-radius-sm);
-}
-
-.rux-workspace__title-btn:hover {
-	color: var(--rux-accent);
-}
-
 .scheduler-app__view-menu {
 	flex: none;
 	width: var(--rux-control-height);
@@ -437,7 +413,7 @@
    explicit `height`, not a `max-height` clamp. */
 .scheduler-app__module > .rux-workspace {
 	min-width: 471px;
-	padding-block-end: var(--rux-workspace-padding);
+	padding-block-end: var(--rux-workspace-gutter);
 }
 
 /* — Trip panel drawer — */
@@ -1205,12 +1181,12 @@
    does. */
 .calendar-app__viewport {
 	flex: 1;
-	margin-inline: var(--rux-workspace-padding);
+	margin-inline: var(--rux-workspace-gutter);
 }
 
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
 	flex: 1;
-	margin-inline: var(--rux-workspace-padding);
+	margin-inline: var(--rux-workspace-gutter);
 	background: var(--rux-surface-1);
 	border-radius: var(--scheduler-app-card-radius);
 	overflow: auto;

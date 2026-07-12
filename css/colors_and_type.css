@@ -52,7 +52,7 @@ html {
 }
 
 body {
-  background: var(--rux-surface-0);
+  background: var(--rux-surface-canvas);
   color: var(--rux-fg);
   font-family: var(--rux-font-sans);
   font-size: var(--rux-text-md);
