@@ -283,7 +283,6 @@
 
 	--rux-border-subtle: var(--rux-color-white-a10);
 	--rux-border: var(--rux-color-white-a16);
-	--rux-border: var(--rux-danger-bright); /* temp debug */
 	--rux-border-strong: var(--rux-color-white-a28);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
@@ -348,9 +347,14 @@
 	   SURFACES - SEMANTIC TOKENS
 	   ====================================================================== */
 
+	/* ─── COMPONENT · app shell (.scheduler-app — the outermost page frame) ── */
+
+	--rux-shell-bg: var(--rux-surface-canvas);
+	--rux-shell-margin: var(--rux-space-2);
+
 	/* ─── COMPONENT · TOPBAR (app-wide chrome: module nav, search, profile) ── */
 
-	--rux-topbar-bg: var(--rux-surface-canvas);                              /* UPDATED */
+	--rux-topbar-bg: var(--rux-shell-bg);                                    /* UPDATED */
 	--rux-topbar-border: var(--rux-border-width) solid var(--rux-border);    /* UPDATED */
 	--rux-topbar-padding: var(--rux-space-3) var(--rux-space-3);             /* UPDATED */
                                     /* Should I add more tokens? radius shadow ?? */
@@ -388,12 +392,13 @@
 	/* — shell — */
 	--rux-panel-bg: var(--rux-surface-panel);
 	--rux-panel-fg: var(--rux-fg);
-	--rux-panel-border: var(--rux-border-width) var(--rux-border);
+	--rux-panel-border-width: var(--rux-border-width);
+	--rux-panel-border: var(--rux-panel-border-width) solid var(--rux-border);
 	--rux-panel-radius: var(--rux-opt-radius-2);
 	--rux-panel-shadow: var(--rux-elevation-0);
 
 	/* — header — */
-	--rux-panel-header-min-height: 44px; /* currently not used ? */
+	--rux-panel-header-min-height: 44px;
 
 	/* — nav / tabs (one shared strip; tabs is just a scroll-state of the
 	   same chrome, not a visually distinct part) — */
@@ -409,6 +414,12 @@
 
 	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3); /* padding sides of cards in panel */
 	--rux-panel-content-gap: var(--rux-space-3); /* gap between cards in panel */
+	/* both still consumed outside panel.css — padding-block by safe-area
+	   calc()s in scheduler-app.css/flip-seven.css, padding-inline by the
+	   sizing formula below — keep defined even though panel.css itself
+	   doesn't read them directly. */
+	--rux-panel-padding-block: var(--rux-space-2);
+	--rux-panel-padding-inline: var(--rux-space-2);
 
 	/* — sizing formula: consumed by feature layouts that live inside a
 	   panel-shaped container elsewhere, not by panel.css itself — */

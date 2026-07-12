@@ -48,11 +48,13 @@
 	position: relative;
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
-	width: 100%;
-	block-size: 100dvh;
+	width: auto;
+	margin: 0 var(--rux-shell-margin) var(--rux-shell-margin);
+	block-size: calc(100dvh - var(--rux-shell-margin));
 	min-width: 0;
 	min-height: 0;
 	overflow: clip;
+	background: var(--rux-shell-bg);
 }
 
 .scheduler-app__topbar.is-collapsed {
