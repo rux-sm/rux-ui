@@ -69,18 +69,6 @@ import { supabase } from "./supabase.js";
 		if (state !== "off") button.classList.add(`rux-role--${state}`);
 	}
 
-	function setEditorMode(root, mode, destination = "") {
-		const editing = mode === "edit";
-		const title = root.querySelector("#trip-panel-title");
-		const destinationLabel = String(destination || "").trim();
-
-		if (title) {
-			title.textContent = editing && destinationLabel
-				? `Manage Trip · ${destinationLabel}`
-				: editing ? "Manage Trip" : "Create Trip";
-		}
-	}
-
 	function defaultSaveLabel() {
 		return "Save";
 	}
@@ -705,7 +693,6 @@ import { supabase } from "./supabase.js";
 		currentAssignments = [];
 		currentLoadedTrip = null;
 		syncManifestBtn(root);
-		setEditorMode(root, "new");
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
 		window.Rux?.syncSelectPlaceholders?.(root);
@@ -1047,7 +1034,6 @@ export function loadTrip(root, itinerary, trip) {
 	currentTripId  = UUID_RE.test(String(trip.id ?? "")) ? trip.id : null;
 	currentTripRef = trip.trip_ref ?? null;
 	currentLoadedTrip = trip;
-	setEditorMode(root, "edit", normalized.destination);
 	const delBtn = root.querySelector("#tp-btn-delete");
 	if (delBtn) delBtn.disabled = !currentTripId;
 	currentTripSnapshot = { ...normalized };

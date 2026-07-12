@@ -223,18 +223,28 @@
 
 	/* ─── COLOR · surfaces ───────────────────────────────────────────────── */
 
-	--rux-bg: oklch(10% 0.004 260);
+	--rux-bg: oklch(100% 0.004 260);
 	--rux-bg-bus: oklch(50% 0.004 260);
 	--rux-bg-hover: #292929;
 	--rux-bg-active: #303030;
 	--rux-bg-overlay: rgba(0, 0, 0, 0.6);
 
-	--rux-surface-0: oklch(from var(--rux-color-base) 0% c h);  /* App background */
+	--rux-surface-0: rgba(8,9,10);   /* App background */
 	--rux-surface-1: oklch(from var(--rux-color-base) 24% c h); /* Panels */
-	--rux-surface-1: #222326; /* Panels */
+	--rux-surface-1: rgba(16,17,18);  /* Panels */	
 	--rux-surface-2: oklch(from var(--rux-color-base) 32% c h); /* Cards */
+	--rux-surface-2: rgba(22,23,24);
 	--rux-surface-3: oklch(from var(--rux-color-base) 34% c h); /* Menus and popovers */
 	--rux-surface-4: oklch(from var(--rux-color-base) 32% c h); /* Form controls */
+
+
+	/* 1. THE PRIMITIVE (The mathematical anchor) */
+    --rux-core-neutral-base: oklch(100% 0.00011 271.152); 
+
+    /* 2. THE SEMANTIC SURFACES (The functional roles) */
+    --rux-surface-canvas: var(--rux-core-neutral-base);   
+    --rux-surface-panel: oklch(from var(--rux-core-neutral-base) 17.5% c h); 
+    --rux-surface-card: oklch(from var(--rux-core-neutral-base) 19.3% c h);
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
 
@@ -377,7 +387,7 @@
 	--rux-workspace-shadow: var(--rux-elevation-0);
 	/* .rux-workspace__body deliberately has no padding token — feature
 	   modules own their own internal inset (see workspace.css header). */
-	--rux-workspace-header-padding: var(--rux-space-2) var(--rux-space-3);
+	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
 	--rux-workspace-padding: var(--rux-space-3);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
@@ -396,7 +406,7 @@
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-padding-block: var(--rux-space-2);
 	--rux-panel-padding-inline: var(--rux-space-2);
-	--rux-panel-nav-padding: var(--rux-space-0) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
+	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-3) var(--rux-space-2) var(--rux-space-3);
 	--rux-panel-tabs-padding: var(--rux-panel-nav-padding);
 	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3);
 	--rux-panel-content-gap: var(--rux-space-3);

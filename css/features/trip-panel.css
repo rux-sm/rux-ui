@@ -32,20 +32,6 @@
 	container-type: inline-size;
 }
 
-.rux-trip-panel__heading {
-	display: flex;
-	align-items: baseline;
-	gap: var(--rux-space-3);
-	flex: 1;
-	min-width: 0;
-}
-/* Layout-only modifier — typography comes from the shared .rux-panel__title
-   (applied alongside this class in markup). flex:1 lets the title truncate
-   against its sibling .rux-trip-panel__id span in the heading row. */
-.rux-trip-panel__title {
-	flex: 1;
-	padding-inline: var(--rux-space-2);
-}
 .rux-trip-panel__status-group .rux-button {
 	min-width: 0;
 }
@@ -172,7 +158,9 @@
 	opacity: 0;
 	padding: 0;
 	background: none;
-	border: none;
+	/* 1px transparent, not none — reserves space so a focus-visible
+	   border-color swap doesn't shift anything by 1px once this expands. */
+	border: 1px solid transparent;
 	color: var(--rux-danger);
 	cursor: pointer;
 	pointer-events: none;
@@ -396,7 +384,10 @@
 	padding: 0 var(--rux-control-padding-inline) 0 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	border: none;
+	/* 1px transparent, not none — reserves the same space a focus-visible
+	   border-color swap will use, so focusing this doesn't shift its
+	   sibling icon by 1px. */
+	border: 1px solid transparent;
 }
 .rux-trip-panel__payment-reference {
 	grid-area: reference;
@@ -464,7 +455,9 @@
 	opacity: 0;
 	padding: 0;
 	background: none;
-	border: none;
+	/* 1px transparent, not none — reserves space so a focus-visible
+	   border-color swap doesn't shift anything by 1px once this expands. */
+	border: 1px solid transparent;
 	color: var(--rux-danger);
 	cursor: pointer;
 	pointer-events: none;
@@ -722,7 +715,9 @@
 	opacity: 0;
 	padding: 0;
 	background: none;
-	border: none;
+	/* 1px transparent, not none — reserves space so a focus-visible
+	   border-color swap doesn't shift anything by 1px once this expands. */
+	border: 1px solid transparent;
 	color: var(--rux-danger);
 	cursor: pointer;
 	pointer-events: none;
@@ -818,6 +813,26 @@
 		white-space: nowrap;
 		border: 0;
 	}
+}
+
+/* Plain ghost buttons instead of a segmented/clipped pill strip — same
+   "flat, clipped-strip components don't leave room for a real focus
+   border" issue this app hit elsewhere (Week/List, the panel tabs), fixed
+   the same way: independent buttons with a real gap, active looks like
+   .rux-button--default (filled), inactive stays ghost. Shared by both
+   Trip Type and Billing Type, which both carry this class.
+   flex:1 replaces the old .rux-segmented > .rux-button rule that used to
+   split the field's width evenly between the two options — .rux-cluster
+   itself doesn't stretch its children, so that needs restating here. */
+.rux-trip-panel__trip-type > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-trip-panel__trip-type > .rux-button.is-active,
+.rux-trip-panel__trip-type > .rux-button[aria-pressed="true"] {
+	--_bg: var(--rux-button-default-bg);
+	--_fg: var(--rux-button-default-fg);
 }
 
 @container (max-width: 200px) {

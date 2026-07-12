@@ -58,7 +58,9 @@
 .rux-search-modal__input {
 	flex: 1;
 	background: transparent;
-	border: none;
+	/* 1px transparent, not none — reserves space for the focus-visible
+	   border-color swap so focusing this doesn't shift the modal by 1px. */
+	border: 1px solid transparent;
 	outline: none;
 	font: inherit;
 	font-size: var(--rux-text-lg);
@@ -109,7 +111,9 @@
 	color: var(--rux-fg);
 	font-size: var(--rux-text-sm);
 	text-decoration: none;
-	border: none;
+	/* 1px transparent, not none — reserves space for the focus-visible
+	   border-color swap so focusing this doesn't shift its row by 1px. */
+	border: 1px solid transparent;
 	background: none;
 	width: 100%;
 	text-align: left;

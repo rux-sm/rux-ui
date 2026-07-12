@@ -22,21 +22,6 @@
 	container-type: inline-size;
 }
 
-.rux-fleet-panel__heading {
-	display: flex;
-	align-items: baseline;
-	gap: var(--rux-space-3);
-	min-width: 0;
-}
-
-.rux-fleet-panel__id {
-	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
-	color: var(--rux-accent);
-	font-weight: var(--rux-weight-medium);
-	white-space: nowrap;
-}
-
 .rux-fleet-panel__tab-label {
 	white-space: nowrap;
 }

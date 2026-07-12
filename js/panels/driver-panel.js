@@ -354,8 +354,6 @@
     const first = parts[0] || "";
     const last  = parts.slice(1).join(" ") || "";
 
-    document.getElementById("dp-title").textContent     = d.name || "Driver";
-    document.getElementById("dp-driver-id").textContent = d.driver_ref || "";
     renderAvatar(d);
     document.getElementById("dp-sort-order").value      = d.sort_order ?? "";
     document.getElementById("dp-first-name").value      = first;
@@ -637,8 +635,6 @@
     tbody.querySelectorAll(".driver-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
 
-    document.getElementById("dp-title").textContent     = "New driver";
-    document.getElementById("dp-driver-id").textContent = "";
     renderAvatar(null);
 
     panelEl.querySelectorAll(".rux-driver-panel__pane input, .rux-driver-panel__pane textarea")

@@ -177,11 +177,38 @@ hr {
   margin: var(--rux-space-5) 0;
 }
 
-/* ─── Selection defaults ─────────────────────────────────────────────────── */
+/* ─── Selection & focus defaults ────────────────────────────────────────── */
 
 ::selection {
   background: var(--rux-selection-bg);
   color: var(--rux-selection-fg);
+}
+
+/* Single universal focus indicator — every input, button, link, tab, or
+   custom clickable/toggleable element (anything with a tabindex) gets this
+   automatically, with no per-component overrides and no class to remember
+   to add anywhere. border-color only (not the border shorthand) — every
+   button/input now reserves a permanent 1px solid transparent border at
+   rest (see the app-wide focus-state strip earlier this session), so this
+   only ever swaps color, never width, which is what keeps it layout-stable
+   without needing outline for that purpose. outline: none is still needed
+   here though — the old per-component rules used to each suppress the
+   browser's own native default focus outline individually, and all of
+   those went away in the strip along with everything else, so without
+   this the native outline renders unsuppressed on top of (and unrelated
+   to) the border-color change above.
+   !important is deliberate and load-bearing here, not a shortcut: this
+   file loads first, so almost every component rule that sets its own
+   border/border-color (e.g. .rux-button { border: var(--rux-button-border) })
+   has equal-or-greater specificity AND loads later — an ordinary tie goes
+   to whichever rule comes last in the cascade, which is never this one.
+   Without !important this rule is silently dead on virtually every real
+   component. A universal focus indicator has to win unconditionally, so
+   this is the one place in the app that's an intentional exception to
+   "resolve overrides via specificity, not !important". */
+:focus-visible {
+  outline: none !important;
+  border-color: var(--rux-danger-bright) !important;
 }
 
 /* ─── Semantic type utility classes ─────────────────────────────────────── */

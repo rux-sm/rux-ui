@@ -384,8 +384,6 @@
   }
 
   function populatePanel(b) {
-    document.getElementById("fp-title").textContent      = b.number ? `Unit ${b.number}` : "Vehicle";
-    document.getElementById("fp-fleet-id").textContent   = b.bus_ref || "";
     document.getElementById("fp-sort-order").value        = b.sort_order      ?? "";
     document.getElementById("fp-number").value           = b.number          || "";
     document.getElementById("fp-make").value             = b.make            || "";
@@ -500,9 +498,6 @@
   function clearPanel() {
     tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
-
-    document.getElementById("fp-title").textContent    = "New vehicle";
-    document.getElementById("fp-fleet-id").textContent = "";
 
     panelEl.querySelectorAll(".rux-fleet-panel__pane input, .rux-fleet-panel__pane textarea")
       .forEach(f => { f.value = ""; });

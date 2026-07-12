@@ -4,7 +4,7 @@
 
 .scheduler-app__module[data-module="components"] {
 	min-width: 0;
-	background: var(--rux-bg);
+	background: var(--rux-surface-canvas);
 }
 
 .components-app {

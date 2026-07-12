@@ -78,7 +78,6 @@
 	position: relative;
 	z-index: 1;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-	border-bottom: var(--rux-panel-border);
 }
 
 .rux-panel__nav {

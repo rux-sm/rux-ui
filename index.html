@@ -68,6 +68,15 @@
             <button
               class="rux-button rux-button--ghost scheduler-app__module-button"
               type="button"
+              data-module="drivers"
+            >
+              <span class="rux-icon">person</span>
+              Drivers
+            </button>
+
+            <button
+              class="rux-button rux-button--ghost scheduler-app__module-button"
+              type="button"
               data-module="fleet"
             >
               <span class="rux-icon" aria-hidden="true">directions_bus</span>
@@ -77,10 +86,11 @@
             <button
               class="rux-button rux-button--ghost scheduler-app__module-button"
               type="button"
-              data-module="drivers"
+              id="workspace-search-btn"
+              title="Search trips (⌘K)"
             >
-              <span class="rux-icon">person</span>
-              Drivers
+              <span class="rux-icon" aria-hidden="true">search</span>
+              Search
             </button>
 
           </nav>
@@ -120,12 +130,7 @@
 
           <!-- Trip panel drawer -->
           <div class="scheduler-app__drawer" id="trip-panel-drawer">
-            <aside class="rux-panel rux-panel--left rux-trip-panel" role="dialog" aria-labelledby="trip-panel-title">
-              <header class="rux-panel__header">
-                <div class="rux-trip-panel__heading">
-                  <h2 class="rux-panel__title rux-trip-panel__title" id="trip-panel-title">Create New Trip</h2>
-                </div>
-              </header>
+            <aside class="rux-panel rux-panel--left rux-trip-panel" role="dialog" aria-label="Trip editor">
               <div class="rux-panel__nav">
                 <nav class="rux-trip-panel__tabs" role="tablist" aria-label="Trip editor sections" data-trip-tabs>
                   <button class="rux-button rux-button--ghost rux-trip-panel__tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-trip"      aria-label="Info"  title="Info"><span class="rux-icon" aria-hidden="true">assignment</span><span class="rux-trip-panel__tab-label">Info</span></button>
@@ -158,9 +163,9 @@
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
                     <div class="rux-field">
                       <label class="rux-field__label">Trip Type</label>
-                      <div class="rux-segmented rux-segmented--ghost rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
-                        <button class="rux-button is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
-                        <button class="rux-button" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
+                      <div class="rux-cluster rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
+                        <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
                       </div>
                     </div>
                     </div>
@@ -211,9 +216,9 @@
                 <div id="pane-billing" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
                     <div class="rux-card__body rux-card__body--stack">
-                      <div class="rux-segmented rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
-                        <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
+                      <div class="rux-cluster rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
+                        <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
                       </div>
                       <button class="rux-button rux-button--default" type="button" id="tp-view-manifest-btn" disabled title="Toggle Ticketed to enable">
                         <span class="rux-icon" aria-hidden="true">groups</span>
@@ -350,15 +355,9 @@
                   <span class="rux-icon icon-off">left_panel_open</span>
                   <span class="rux-icon icon-on">left_panel_close</span>
                 </button>
-                <div class="rux-cluster" id="workspace-view-controls">
-                  <button class="rux-button rux-button--ghost" type="button" id="workspace-search-btn" aria-label="Search trips" title="Search trips (⌘K)">
-                    <span class="rux-icon" aria-hidden="true">search</span>
-                    <span class="rux-btn-label">Search</span>
-                  </button>
-                  <div class="rux-cluster" id="trip-view-group" data-rux-toggle-group>
-                    <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Week</span></button>
-                    <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
-                  </div>
+                <div class="rux-cluster" id="trip-view-group" data-rux-toggle-group>
+                  <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-btn-label">Week</span></button>
+                  <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
                 </div>
               </div>
               <div class="rux-workspace__nav">
@@ -373,6 +372,7 @@
                     <span class="rux-icon">chevron_left</span>
                   </button>
                   <button class="rux-button rux-button--ghost" id="today-btn" type="button" aria-label="Jump to current week">
+                    <span class="rux-icon" aria-hidden="true">today</span>
                     <span class="rux-btn-label">Today</span>
                   </button>
                   <button class="rux-button rux-button--ghost rux-button--icon calendar-app__nav" id="next-week" aria-label="Next week">
@@ -437,10 +437,7 @@
 
           <!-- Right panel drawer -->
           <div class="scheduler-app__drawer scheduler-app__drawer--right" id="right-panel-drawer">
-            <aside class="rux-panel rux-panel--right rux-right-panel" role="dialog" aria-labelledby="right-panel-title">
-              <header class="rux-panel__header">
-                <h2 class="rux-panel__title" id="right-panel-title">Tools</h2>
-              </header>
+            <aside class="rux-panel rux-panel--right rux-right-panel" role="dialog" aria-label="Tools panel">
               <div class="rux-panel__nav">
                 <nav class="rux-right-panel__tabs" role="tablist" aria-label="Right panel sections" data-right-tabs>
                   <button class="rux-button rux-button--ghost rux-right-panel__tab" type="button" role="tab" aria-selected="true" aria-controls="rp-pane-navigate" title="Navigate"><span class="rux-icon" aria-hidden="true">calendar_month</span><span class="rux-right-panel__tab-label">Nav</span></button>
@@ -659,13 +656,7 @@
 
           <!-- Fleet panel drawer -->
           <div class="scheduler-app__drawer" id="fleet-panel-drawer">
-            <aside class="rux-panel rux-panel--left rux-fleet-panel" role="dialog" aria-labelledby="fp-title">
-              <header class="rux-panel__header">
-                <div class="rux-fleet-panel__heading">
-                  <h2 class="rux-panel__title" id="fp-title">Vehicle</h2>
-                  <span class="rux-fleet-panel__id" id="fp-fleet-id"></span>
-                </div>
-              </header>
+            <aside class="rux-panel rux-panel--left rux-fleet-panel" role="dialog" aria-label="Vehicle editor">
               <div class="rux-panel__nav">
                 <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Vehicle editor sections" data-rux-tabs data-fleet-tabs>
                   <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-info"        title="Info"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-fleet-panel__tab-label">Info</span></button>
@@ -816,13 +807,7 @@
 
           <!-- Driver panel drawer -->
           <div class="scheduler-app__drawer" id="driver-panel-drawer">
-            <aside class="rux-panel rux-panel--left rux-driver-panel" role="dialog" aria-labelledby="dp-title">
-              <header class="rux-panel__header">
-                <div class="rux-driver-panel__heading">
-                  <h2 class="rux-panel__title" id="dp-title">Driver</h2>
-                  <span class="rux-driver-panel__id" id="dp-driver-id"></span>
-                </div>
-              </header>
+            <aside class="rux-panel rux-panel--left rux-driver-panel" role="dialog" aria-label="Driver editor">
               <div class="rux-panel__nav">
                 <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Driver editor sections" data-rux-tabs data-driver-tabs>
                   <button class="rux-tab" type="button" role="tab" aria-selected="true"  aria-controls="pane-profile"     title="Profile"><span class="rux-icon">person</span><span class="rux-driver-panel__tab-label">Profile</span></button>
@@ -3597,7 +3582,6 @@
           // that they're actually visible again.
           layoutScheduler();
         }
-        if (typeof syncRightPanelTitle === "function") syncRightPanelTitle();
       }
 
       const tripViewGroup = document.getElementById("trip-view-group");
@@ -3672,28 +3656,6 @@
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-right-panel__tab[aria-controls]");
       const rpPanes = rightDrawer.querySelectorAll(".rux-panel__pane");
-      const rightPanelTitleEl = document.getElementById("right-panel-title");
-
-      // The header names whatever's actually showing instead of a generic
-      // "Tools" — Nav further depends on tripViewMode (Calendar/List/
-      // Manifest all render different cards in that same pane), so this also
-      // gets called from setTripView(), not just on tab click.
-      function syncRightPanelTitle() {
-        if (!rightPanelTitleEl) return;
-        const activeTab = rightDrawer.querySelector('[data-right-tabs] .rux-right-panel__tab[aria-selected="true"]');
-        const paneId = activeTab?.getAttribute("aria-controls");
-        if (paneId === "rp-pane-navigate") {
-          rightPanelTitleEl.textContent =
-            tripViewMode === "list" ? "Trip List" :
-            tripViewMode === "manifest" ? "Manifest" : "Calendar";
-        } else if (paneId === "rp-pane-drivers") {
-          rightPanelTitleEl.textContent = "Driver Assignments";
-        } else if (paneId === "rp-pane-tasks") {
-          rightPanelTitleEl.textContent = "Tasks";
-        } else {
-          rightPanelTitleEl.textContent = "Tools";
-        }
-      }
 
       rpTabs.forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -3702,10 +3664,8 @@
           btn.classList.add("is-active"); btn.setAttribute("aria-selected", "true");
           rpPanes.forEach((p) => { p.hidden = p.id !== paneId; });
           if (paneId === "rp-pane-drivers") ensureDriverGridData().then(renderDriverGrid);
-          syncRightPanelTitle();
         });
       });
-      syncRightPanelTitle();
 
       // ── Driver assignment grid ───────────────────────────────────────────
       // Mirrors the main scheduler's current week window exactly — reads

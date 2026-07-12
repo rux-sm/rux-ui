@@ -22,21 +22,6 @@
 	container-type: inline-size;
 }
 
-.rux-driver-panel__heading {
-	display: flex;
-	align-items: baseline;
-	gap: var(--rux-space-3);
-	min-width: 0;
-}
-
-.rux-driver-panel__id {
-	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
-	color: var(--rux-accent);
-	font-weight: var(--rux-weight-medium);
-	white-space: nowrap;
-}
-
 .rux-driver-panel__tab-label {
 	white-space: nowrap;
 }

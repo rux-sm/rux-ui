@@ -125,6 +125,10 @@
   background-color: var(--_track);
   background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
   border-radius: var(--rux-radius-full);
+  /* 1px transparent, not none — reserves space for the focus-visible
+     border-color forwarded from the (invisible) input below, so it
+     doesn't shift the track by 1px when it appears. */
+  border: 1px solid transparent;
   box-shadow: var(--_shadow);
   transition:
     background-color var(--rux-duration-fast) var(--rux-ease-out),
@@ -147,6 +151,15 @@
 .rux-switch:hover { --_state-overlay: var(--rux-switch-hover-overlay); }
 .rux-switch:active { --_state-overlay: var(--rux-switch-active-overlay); }
 .rux-switch input:checked ~ .rux-switch__track { --_track: var(--rux-accent); }
+/* The real <input> is invisible (opacity: 0 above) — the visible switch is
+   its sibling .rux-switch__track, so the global :focus-visible rule
+   (colors_and_type.css) has nothing to actually render on: it only ever
+   sets border-color on whatever element is :focus-visible, and that
+   element here has no visible box. Forwarded to the track the same way
+   :checked already forwards its own state above. */
+.rux-switch input:focus-visible ~ .rux-switch__track {
+  border-color: var(--rux-danger-bright);
+}
 .rux-switch:has(input:disabled) {
   --_state-overlay: transparent;
   cursor: not-allowed;
@@ -358,6 +371,9 @@
   width: var(--rux-icon-xl);
   height: var(--rux-icon-xl);
   border-radius: var(--rux-radius-full);
+  /* 1px transparent, not none — reserves space for the focus-visible
+     border-color forwarded from the (invisible) input below. */
+  border: 1px solid transparent;
   background-color: var(--color, var(--rux-accent));
   transition: box-shadow var(--rux-duration-fast) var(--rux-ease-out);
 }
@@ -368,6 +384,12 @@
 
 .rux-color-swatch input:checked + .rux-color-swatch__dot {
   box-shadow: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--color, var(--rux-accent));
+}
+
+/* The real <input> is invisible (opacity: 0 above) — see the same note on
+   .rux-switch input:focus-visible ~ .rux-switch__track above. */
+.rux-color-swatch input:focus-visible + .rux-color-swatch__dot {
+  border-color: var(--rux-danger-bright);
 }
 
 
@@ -471,12 +493,21 @@
   width: 22px;
   height: 22px;
   border-radius: var(--rux-radius-full);
+  /* 1px transparent, not none — reserves space for the focus-visible
+     border-color forwarded from the (invisible) input below. */
+  border: 1px solid transparent;
   background: var(--color, var(--rux-accent));
   transition: transform var(--rux-duration-fast) var(--rux-ease-out);
 }
 
 .rux-color-picker__option:hover .rux-color-picker__dot {
   transform: scale(1.18);
+}
+
+/* The real <input> is invisible (opacity: 0 above) — see the same note on
+   .rux-switch input:focus-visible ~ .rux-switch__track above. */
+.rux-color-picker__option input:focus-visible + .rux-color-picker__dot {
+  border-color: var(--rux-danger-bright);
 }
 
 .rux-color-picker__dot::after {
@@ -543,7 +574,10 @@
   height: auto;
   padding: 0;
   background: transparent;
-  border: none;
+  /* 1px transparent, not none — reserves the same space a focus-visible
+     border-color swap will use, so focusing this doesn't shift its
+     sibling elements by 1px. */
+  border: 1px solid transparent;
   box-shadow: none;
   outline: none;
   color: var(--rux-fg);
