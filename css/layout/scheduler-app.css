@@ -1201,10 +1201,27 @@
 	border-radius: var(--rux-calendar-radius);
 }
 
+/* The scrolling scheduler clips shadows that extend beyond its own scrollport,
+   so sticky cells cannot reliably protect the viewport's rounded top/left
+   corners themselves. Paint an opaque 4px guard on the non-scrolling frame
+   instead; keeping it separate from the glass header token prevents saturated
+   trip bars from bleeding through at the rounded outer edge. */
+.calendar-app__viewport::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: calc(var(--rux-z-sticky, 200) + 2);
+	pointer-events: none;
+	border: var(--rux-space-1) solid transparent;
+	border-block-start-color: var(--rux-calendar-edge-guard-bg);
+	border-inline-start-color: var(--rux-calendar-edge-guard-bg);
+	border-radius: calc(var(--rux-calendar-radius) - var(--rux-border-width));
+}
+
 .calendar-app__viewport::after {
 	content: "";
 	position: absolute;
-	inset: var(--rux-scheduler-head-height, 2rem) 0 0 var(--rux-scheduler-col-head-width, 2rem);
+	inset: var(--rux-scheduler-head-height, var(--rux-button-height)) 0 0 var(--rux-scheduler-col-head-width, var(--rux-button-height));
 	pointer-events: none;
 	z-index: var(--rux-z-sticky, 200);
 	/* per-side scroll-clip shadows: each side's var stays a no-op until its

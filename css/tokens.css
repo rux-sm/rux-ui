@@ -28,7 +28,7 @@
 	--rux-neutral-c: 0.005;
 
 	--rux-color-black: oklch(0% 0 0);
-	--rux-color-white: oklch(97% 0.004 var(--rux-neutral-h)); /* ≈ #F4F5F8 */
+	--rux-color-white: oklch(100% 0 0);
 	--rux-color-base: oklch(50% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-color-neutral-24: oklch(from var(--rux-color-base) 24% c h);
 	--rux-color-neutral-70: oklch(from var(--rux-color-base) 70% c h);
@@ -242,10 +242,14 @@
 	   below this may declare its own oklch() surface. */
 
 	--rux-surface-0: oklch(14% var(--rux-neutral-c) var(--rux-neutral-h)); /* base background   ≈ #08090A void black */
-	--rux-surface-1: oklch(22% var(--rux-neutral-c) var(--rux-neutral-h)); /* workspace / panel ≈ #0F1011 17% carbon lift */
-	--rux-surface-2: oklch(37% var(--rux-neutral-c) var(--rux-neutral-h)); /* card / raised     ≈ #1A1B1D */
+	--rux-surface-1: oklch(17% var(--rux-neutral-c) var(--rux-neutral-h)); /* workspace / panel ≈ #0F1011 17% carbon lift */
+	--rux-surface-2: oklch(20% var(--rux-neutral-c) var(--rux-neutral-h)); /* card / raised     ≈ #1A1B1D */
 	--rux-surface-3: oklch(24% var(--rux-neutral-c) var(--rux-neutral-h)); /* overlay / modal   ≈ #222326 */
 	--rux-surface-4: var(--rux-surface-3); /* compat — depth caps at tier 3 */
+	/* High-opacity glass: enough translucency for backdrop blur without letting
+	   saturated scheduler content dominate sticky chrome. */
+	--rux-surface-transparent: oklch(24% var(--rux-neutral-c) var(--rux-neutral-h) / 0.9);
+
 
 	/* — surface roles: components consume these, never the tiers directly — */
 
@@ -279,7 +283,7 @@
 	   against any opaque tier. Inputs AND segmented tracks consume these so
 	   every well in the app deepens/lightens together. */
 
-	--rux-well-bg: var(--rux-color-white-a02);
+	--rux-well-bg: var(--rux-surface-1);
 	--rux-well-bg-hover: var(--rux-color-white-a04);
 	--rux-well-bg-focus: var(--rux-color-white-a06);
 
@@ -300,7 +304,7 @@
 	   4%: layout dividers, panels, cards, resting fields.
 	   8%: modals, dropdowns, active pills, hover/focus edges. */
 
-	--rux-border: var(--rux-color-white-a04);
+	--rux-border: oklch(from var(--rux-color-white) l c h / 0.08);
 	--rux-border-subtle: var(--rux-border);
 	--rux-border-strong: var(--rux-color-white-a08);
 
@@ -450,6 +454,7 @@
 
 	--rux-calendar-bg: var(--rux-surface-calendar);
 	--rux-calendar-header-bg: var(--rux-surface-calendar-header);
+	--rux-calendar-edge-guard-bg: var(--rux-surface-calendar-header);
 	--rux-calendar-border: var(--rux-border-width) solid var(--rux-border);
 	--rux-calendar-radius: var(--rux-radius-container);
 	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-border);
