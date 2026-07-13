@@ -39,7 +39,7 @@
 	   insets below, which aren't part of this ask. */
 	--scheduler-app-module-padding: 0;
 	--scheduler-app-resize-line-width: 1px;
-	--scheduler-app-drawer-default-width: 314px;
+	--scheduler-app-drawer-default-width: 400px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -54,7 +54,7 @@
 	min-width: 0;
 	min-height: 0;
 	overflow: clip;
-	background: var(--rux-shell-bg);
+	background: var(--rux-surface-canvas);
 }
 
 .scheduler-app__topbar.is-collapsed {

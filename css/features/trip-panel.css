@@ -27,6 +27,8 @@
 /* — Panel shell — */
 
 .rux-trip-panel {
+	--rux-trip-panel-tab-selected-bg: var(--rux-button-default-bg);
+	--rux-trip-panel-tab-selected-fg: var(--rux-button-default-fg);
 	height: 100%;
 	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
@@ -49,7 +51,7 @@
 .rux-trip-panel__tabs {
 	display: flex;
 	width: 100%;
-	gap: var(--rux-space-1);
+	gap: var(--rux-tabs-gap);
 }
 
 .rux-trip-panel__tab {
@@ -57,8 +59,9 @@
 }
 
 .rux-trip-panel__tab[aria-selected="true"] {
-	--_bg: var(--rux-button-default-bg);
-	--_fg: var(--rux-button-default-fg);
+	--_bg: var(--rux-trip-panel-tab-selected-bg);
+	--_fg: var(--rux-trip-panel-tab-selected-fg);
+	border-color: var(--rux-tab-selected-border);
 }
 
 /* — Body / panes — */

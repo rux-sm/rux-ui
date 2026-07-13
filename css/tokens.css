@@ -25,7 +25,7 @@
 	   text, borders, overlays — so the whole UI cools together. */
 
 	--rux-neutral-h: 250;
-	--rux-neutral-c: 0.004;
+	--rux-neutral-c: 0.002;
 
 	--rux-white: 100% 0 0; /* pure White Seed */
 	--rux-black: 0% 0 0;   /* pure black seed */
@@ -40,12 +40,13 @@
 	/* Single translucent-white scale — wells sit at 2%, hairline borders at
 	   4% and 8%, state overlays above that. All derive from the one white. */
 
-	/* Structural Layers (Surfaces & Borders) */
-	--rux-alpha-white-1:  oklch(var(--rux-white) / 0%);  /* panel, workspace, disabled button */
-	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);  /* panel, workspace, disabled button */
-  	--rux-alpha-white-4:  oklch(var(--rux-white) / 4%);  /* card, calendar, disabled button */
-  	--rux-alpha-white-6:  oklch(var(--rux-white) / 6%);  /* menu, modal */
-  	--rux-alpha-white-8:  oklch(var(--rux-white) / 8%);  /* border */
+	/* Structural Layers (single-compositing overlays only — not for building
+	   the surface hierarchy itself; see COLOR · surfaces below for that) */
+	--rux-alpha-white-1:  oklch(var(--rux-white) / 0%);
+	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);  /* well/sunken fill, disabled button bg */
+  	--rux-alpha-white-4:  oklch(var(--rux-white) / 4%);  /* disabled button border */
+  	--rux-alpha-white-6:  oklch(var(--rux-white) / 6%);  /* menu, modal scrim tint */
+  	--rux-alpha-white-8:  oklch(var(--rux-white) / 8%);  /* border, hover overlay */
   	--rux-alpha-white-16: oklch(var(--rux-white) / 16%);
 
 	/* Typography Layers (High Opacity) */
@@ -244,37 +245,24 @@
 	   SEMANTIC TOKENS
 	   ====================================================================== */
 
-	/* ─── COLOR · surface tiers ──────────────────────────────────────────── */
-	/* THE 4-tier elevation ladder — the single source of truth for opaque
-	   depth. Pure lightness shifts on the shared cool-neutral axis; nothing
-	   below this may declare its own oklch() surface. */
-
-	--rux-surface-0: oklch(12% var(--rux-neutral-c) var(--rux-neutral-h)); /* base background   ≈ #08090A void black */
-	--rux-surface-1: oklch(15% var(--rux-neutral-c) var(--rux-neutral-h)); /* workspace / panel ≈ #0F1011 17% carbon lift */
-	--rux-surface-2: oklch(20% var(--rux-neutral-c) var(--rux-neutral-h)); /* card / raised     ≈ #1A1B1D */
-	--rux-surface-3: oklch(24% var(--rux-neutral-c) var(--rux-neutral-h)); /* overlay / modal   ≈ #222326 */
-	--rux-surface-4: var(--rux-surface-3); /* compat — depth caps at tier 3 */
-	/* High-opacity glass: enough translucency for backdrop blur without letting
-	   saturated scheduler content dominate sticky chrome. */
 	--rux-surface-transparent: oklch(24% var(--rux-neutral-c) var(--rux-neutral-h) / 0.9);
 
 
-	/* — surface roles: components consume these, never the tiers directly — */
+	/* — surface roles: components consume these, never the tiers directly —
+	   Opaque, explicit lightness steps on the same neutral hue/chroma DNA —
+	   not alpha. Alpha overlays compound when nested (a card inside a panel
+	   inside a workspace, each at "the same" alpha, actually renders three
+	   different colors depending on stacking depth), which is exactly wrong
+	   for a fixed structural hierarchy. Each of these is a known, absolute
+	   value regardless of what it's nested inside. */
 
-	--rux-surface-canvas: var(--rux-black);
-	--rux-surface-workspace: var(--rux-alpha-white-2);
-	--rux-surface-panel: var(--rux-alpha-white-2);
-	--rux-surface-calendar: var(--rux-alpha-white-4);
-	--rux-surface-calendar-header: transparent;
-	--rux-surface-card: var(--rux-alpha-white-4);
-	--rux-surface-modal: var(--rux-alpha-white-6);
-
-	/* — compat aliases for components on the original depth scale — */
-
-	--rux-bg: var(--rux-surface-canvas);
-	--rux-bg-2: var(--rux-surface-card);
-	--rux-bg-sunken: var(--rux-alpha-white-2);
-	--rux-bg-elevated: var(--rux-surface-modal);
+	--rux-surface-canvas: var(--rux-color-black); /* oklch(0% 0 0) */
+	--rux-surface-workspace:       oklch(16% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-panel:           oklch(16% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-calendar:        oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-calendar-header: oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-card:            oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-modal:           oklch(24% var(--rux-neutral-c) var(--rux-neutral-h));
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
@@ -291,7 +279,7 @@
 	   against any opaque tier. Inputs AND segmented tracks consume these so
 	   every well in the app deepens/lightens together. */
 
-	--rux-well-bg: var(--rux-alpha-white-2);
+	--rux-well-bg: oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-well-bg-hover: var(--rux-color-white-a04);
 	--rux-well-bg-focus: var(--rux-color-white-a06);
 
@@ -313,9 +301,9 @@
 	   4%: layout dividers, panels, cards, resting fields.
 	   8%: modals, dropdowns, active pills, hover/focus edges. */
 
-	--rux-border: var(--rux-alpha-white-8);
-	--rux-border-subtle: var(--rux-border);
-	--rux-border-strong: var(--rux-color-white-a08);
+	--rux-border: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.1);
+	--rux-border-subtle: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.20);
+	--rux-border-strong: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.16);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
 
@@ -428,8 +416,8 @@
 
 	/* ─── FOCUS ──────────────────────────────────────────────────────────── */
 
-	--rux-ring-focus: 0 0 0 6px var(--rux-bg), 0 0 0 4px var(--rux-accent-ring);
-	--rux-ring-danger: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--rux-danger);
+	--rux-ring-focus: 0 0 0 6px var(--rux-color-black), 0 0 0 4px var(--rux-accent-ring);
+	--rux-ring-danger: 0 0 0 2px var(--rux-color-black), 0 0 0 4px var(--rux-danger);
 
 
 
@@ -448,7 +436,7 @@
 
 	--rux-topbar-bg: var(--rux-shell-bg);
 	--rux-topbar-border: var(--rux-border-none); /* no hairline — topbar shares the canvas tier */
-	--rux-topbar-padding: var(--rux-space-2) var(--rux-space-3);
+	--rux-topbar-padding: var(--rux-space-4) var(--rux-space-4);
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
@@ -457,12 +445,12 @@
 	--rux-workspace-border: var(--rux-border-width) solid var(--rux-border);
 	--rux-workspace-radius: var(--rux-radius-container);
 	--rux-workspace-shadow: var(--rux-elevation-0);
-	--rux-workspace-gutter: var(--rux-space-3);
+	--rux-workspace-gutter: var(--rux-space-4);
 	/* header reuses --rux-workspace-gutter (not its own value) so the
 	   header's left edge can't drift from the body content's left edge
 	   below it (calendar/table views inset via margin-inline using the
 	   same token, in scheduler-app.css). */
-	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-workspace-gutter);
+	--rux-workspace-header-padding: var(--rux-space-4) var(--rux-workspace-gutter);
 
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* .calendar-app__viewport (scheduler-app.css) — the outer frame that owns
@@ -495,18 +483,19 @@
 
 	/* — nav / tabs (one shared strip; tabs is just a scroll-state of the
 	   same chrome, not a visually distinct part) — */
-	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-3);
+	--rux-panel-nav-padding: var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-nav-shadow: var(--rux-edge-shadow-bottom);
 
 	/* — footer (bg/border reuse the shell's above — needed as-is since the
 	   footer repaints over scrolled body content via z-index) — */
-	--rux-panel-footer-padding: var(--rux-space-3) var(--rux-space-3);
+	--rux-panel-footer-padding: var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
 	--rux-panel-footer-border: var(--rux-panel-border-width) solid transparent;
+	--rux-pannel-footer-bg: transparent;
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
-	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3);
-	--rux-panel-content-gap: var(--rux-space-3);
+	--rux-panel-padding: var(--rux-space-4) var(--rux-space-4);
+	--rux-panel-content-gap: var(--rux-space-2);
 	/* both still consumed outside panel.css — padding-block by safe-area
 	   calc()s in scheduler-app.css/flip-seven.css, padding-inline by the
 	   sizing formula below — keep defined even though panel.css itself
@@ -552,7 +541,9 @@
 	--rux-card-section-border: var(--rux-card-border-width) solid var(--rux-border);
 
 	/* — variants: elevated / interactive hover — */
-	--rux-card-elevated-bg: var(--rux-surface-card);
+	/* Own step, not --rux-surface-card — "elevated" needs to actually look
+	   raised above a plain card, between card (12%) and modal (16%). */
+	--rux-card-elevated-bg: oklch(14% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-card-elevated-shadow: var(--rux-elevation-3);
 	--rux-card-hover-bg: var(--rux-bg-hover);
 	--rux-card-hover-border: var(--rux-border-strong);
@@ -589,7 +580,7 @@
 	--rux-button-content-gap: var(--rux-space-2);
 	--rux-button-radius: var(--rux-radius-control);
 	--rux-button-border-width: var(--rux-border-width);
-	--rux-button-border: var(--rux-button-border-width) solid var(--rux-alpha-white-8);;
+	--rux-button-border: var(--rux-button-border-width) solid transparent;
 	--rux-button-font-family: var(--rux-font-sans);
 	--rux-button-font-size: var(--rux-text-sm);
 	--rux-button-font-weight: var(--rux-weight-regular);
@@ -614,7 +605,11 @@
 	/* — ghost — */
 	--rux-button-ghost-bg: transparent;
 	--rux-button-ghost-fg: var(--rux-fg-muted);
-	--rux-button-ghost-border: transparent;
+	/* Color only (not a full border value) — .rux-button--ghost sets this via
+	   border-color directly, since the base .rux-button rule's real `border`
+	   property never reads --_border (a pre-existing dead custom property).
+	   Set to transparent here to hide the border again later. */
+	--rux-button-ghost-border-color: var(--rux-border);
 
 	/* — danger — */
 	--rux-button-danger-bg: var(--rux-danger);
@@ -645,7 +640,7 @@
 	--rux-button-xs-font-size: var(--rux-text-2xs);
 	--rux-button-xs-icon-size: var(--rux-icon-xs);
 	--rux-button-xs-padding-inline: var(--rux-space-1-5);
-	--rux-button-xs-content-gap: var(--rux-space-1);
+	--rux-button-xs-content-gap: var(--rux-space-3);
 
 	/* — loading — */
 	--rux-button-loading-opacity: 0.65;
@@ -672,6 +667,7 @@
 	--rux-segmented-track-radius: var(--rux-radius-container);
 	--rux-segmented-track-height: 32px;
 	--rux-segmented-track-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-segmented-track-gap: var(--rux-space-2);
 	--rux-segment-radius: var(--rux-radius-control);
 	--rux-segment-padding-inline: var(--rux-space-4);
 	--rux-segment-fg: var(--rux-fg-muted);
@@ -755,11 +751,12 @@
 	--rux-tab-selected-bg: var(--rux-button-default-bg);
 	--rux-tab-selected-fg: var(--rux-button-default-fg);
 	--rux-tab-selected-shadow: var(--rux-button-selected-shadow);
+	--rux-tab-selected-border: var(--rux-border);
 	--rux-tab-transition-duration: var(--rux-duration-instant);
 	--rux-tab-transition-easing: var(--rux-ease-out);
 
 	--rux-tabs-contained-padding: var(--rux-space-2);
-	--rux-tabs-contained-gap: var(--rux-space-0);
+	--rux-tabs-contained-gap: var(--rux-space-3);
 	--rux-tabs-contained-bg: var(--rux-card-bg);
 	--rux-tabs-contained-border: var(--rux-border-width) solid transparent;
 	--rux-tabs-contained-radius: var(--rux-radius-container);

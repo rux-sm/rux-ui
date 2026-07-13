@@ -90,9 +90,12 @@
 .rux-button--ghost {
 	--_bg: var(--rux-button-ghost-bg);
 	--_fg: var(--rux-button-ghost-fg);
-	--_border: var(--rux-button-ghost-border); /* invisible but real — keeps box size identical to bordered states */
 	--_shadow: var(--rux-button-shadow);
 	--_state-overlay: transparent;
+	/* border-color directly, not --_border — the base rule's real `border`
+	   property never reads --_border. Set --rux-button-ghost-border-color to
+	   transparent in tokens.css to hide this again later. */
+	border-color: var(--rux-button-ghost-border-color);
 }
 
 /* The plain hover rule above (.rux-button:hover...) has higher specificity
@@ -362,6 +365,7 @@
 .rux-segmented-track {
 	display: inline-flex;
 	align-items: center;
+	gap: var(--rux-segmented-track-gap);
 	height: var(--rux-segmented-track-height);
 	padding: var(--rux-segmented-track-padding);
 	background: var(--rux-segmented-track-bg);

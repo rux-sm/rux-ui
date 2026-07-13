@@ -110,7 +110,7 @@
 	min-height: auto;
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-footer-padding);
-	background: var(--rux-panel-bg);
+	background: var(--rux-panel-footer-bg);
 	border-top: var(--rux-panel-footer-border);
 	position: relative;
 	z-index: 2;

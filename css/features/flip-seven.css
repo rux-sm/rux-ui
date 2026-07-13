@@ -98,11 +98,11 @@
 	min-height: 28px;
 	padding: var(--rux-space-px) var(--rux-space-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-modal);
 }
 .flip-seven__score:last-child { border-bottom: 0; }
 .flip-seven__score.is-active { background: var(--rux-bg-active); box-shadow: inset 3px 0 var(--rux-accent); }
-.flip-seven__score--empty { background: var(--rux-bg-sunken); }
+.flip-seven__score--empty { background: var(--rux-well-bg); }
 .flip-seven__score-rank {
 	display: grid;
 	width: 1.5rem;
@@ -169,7 +169,7 @@
 	padding: var(--rux-space-3);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-modal);
 	box-shadow: var(--rux-shadow-2);
 	text-align: left;
 }
@@ -226,7 +226,7 @@
 	padding: var(--rux-space-2);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-modal);
 	box-shadow: var(--rux-shadow-2);
 	pointer-events: auto;
 }
@@ -236,7 +236,7 @@
 .flip-seven__player-hand--left { grid-area: left; }
 .flip-seven__player-hand.is-empty {
 	border-style: dashed;
-	background: var(--rux-bg-sunken);
+	background: var(--rux-well-bg);
 	box-shadow: none;
 }
 /* Content is present only to hold the seat's real height (see flip-seven.js) —
@@ -284,7 +284,7 @@
 	place-items: center;
 	border: var(--rux-border-width) solid var(--rux-border-strong);
 	border-radius: var(--rux-radius-sm);
-	background: var(--rux-bg-elevated);
+	background: var(--rux-surface-modal);
 	box-shadow: var(--rux-shadow-2);
 	color: var(--rux-fg);
 	font: var(--rux-weight-bold) var(--rux-text-md)/1 var(--rux-font-mono);
