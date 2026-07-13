@@ -39,7 +39,6 @@
 	   insets below, which aren't part of this ask. */
 	--scheduler-app-module-padding: 0;
 	--scheduler-app-resize-line-width: 1px;
-	--scheduler-app-card-radius: var(--rux-opt-radius-0);
 	--scheduler-app-drawer-default-width: 314px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
@@ -273,7 +272,7 @@
 	}
 }
 
-.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__heading {
+.scheduler-app__module[data-module="calendar"] .rux-workspace__heading {
 	flex-direction: row;
 	align-items: center;
 	justify-content: flex-start;
@@ -907,7 +906,7 @@
 		container-type: normal;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__heading {
+	.scheduler-app__module[data-module="calendar"] .rux-workspace__heading {
 		display: contents;
 	}
 
@@ -997,7 +996,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: calc(var(--rux-z-modal) - 1);
-		background: oklch(0 0 0 / 0.55);
+		background: var(--rux-bg-overlay);
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity var(--rux-duration-slow) var(--rux-ease-in-out);
@@ -1208,7 +1207,18 @@
 	inset: var(--rux-scheduler-head-height, 2rem) 0 0 var(--rux-scheduler-col-head-width, 2rem);
 	pointer-events: none;
 	z-index: var(--rux-z-sticky, 200);
-	box-shadow: none;
+	/* per-side scroll-clip shadows: each side's var stays a no-op until its
+	   .is-clipped-* class swaps in a real shadow below */
+	--_clip-shadow-color: oklch(from var(--rux-color-black) l c h / 0.5);
+	--_shadow-top: 0 0 transparent;
+	--_shadow-right: 0 0 transparent;
+	--_shadow-bottom: 0 0 transparent;
+	--_shadow-left: 0 0 transparent;
+	box-shadow:
+		inset var(--_shadow-top),
+		inset var(--_shadow-right),
+		inset var(--_shadow-bottom),
+		inset var(--_shadow-left);
 	opacity: 0;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out), opacity var(--rux-duration-base) var(--rux-ease-out);
 }
@@ -1218,19 +1228,19 @@
 }
 
 .calendar-app__viewport.is-clipped-top::after {
-	--_shadow-top: 0 10px 16px -8px oklch(0% 0 0 / 0.5);
+	--_shadow-top: 0 10px 16px -8px var(--_clip-shadow-color);
 }
 
 .calendar-app__viewport.is-clipped-right::after {
-	--_shadow-right: -10px 0 16px -8px oklch(0% 0 0 / 0.5);
+	--_shadow-right: -10px 0 16px -8px var(--_clip-shadow-color);
 }
 
 .calendar-app__viewport.is-clipped-bottom::after {
-	--_shadow-bottom: 0 -10px 16px -8px oklch(0% 0 0 / 0.5);
+	--_shadow-bottom: 0 -10px 16px -8px var(--_clip-shadow-color);
 }
 
 .calendar-app__viewport.is-clipped-left::after {
-	--_shadow-left: 10px 0 16px -8px oklch(0% 0 0 / 0.5);
+	--_shadow-left: 10px 0 16px -8px var(--_clip-shadow-color);
 }
 
 /* — Pull-to-change-week hint — */
@@ -1251,7 +1261,7 @@
 	border-radius: 50%;
 	background: color-mix(in oklch, var(--rux-accent) 85%, transparent);
 	color: var(--rux-fg-on-accent);
-	box-shadow: 0 4px 12px oklch(0% 0 0 / 0.35);
+	box-shadow: 0 4px 12px oklch(from var(--rux-color-black) l c h / 0.35);
 	opacity: 0;
 	pointer-events: none;
 	z-index: var(--rux-z-overlay);

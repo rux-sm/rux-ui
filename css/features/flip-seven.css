@@ -216,7 +216,7 @@
 }
 .flip-seven__message-form .rux-input {
 	min-width: 0;
-	height: var(--rux-control-height-sm, 28px);
+	height: var(--rux-control-height-sm);
 }
 .flip-seven__hand { display: contents; }
 .flip-seven__player-hand {

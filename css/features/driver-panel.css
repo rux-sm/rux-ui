@@ -121,10 +121,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgb(0 0 0 / 45%);
-	color: #fff;
+	background: oklch(from var(--rux-color-black) l c h / 0.45);
+	color: var(--rux-fg);
 	opacity: 0;
-	transition: opacity 0.12s ease;
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
 .rux-driver-panel__avatar:hover .rux-driver-panel__avatar-overlay,
@@ -133,11 +133,7 @@
 }
 
 .rux-driver-panel__avatar.is-uploading .rux-driver-panel__avatar-overlay .rux-icon {
-	animation: rux-driver-avatar-spin 0.8s linear infinite;
-}
-
-@keyframes rux-driver-avatar-spin {
-	to { transform: rotate(360deg); }
+	animation: rux-spin 700ms linear infinite; /* shared keyframe, utils.css */
 }
 
 .rux-driver-panel__avatar-remove {

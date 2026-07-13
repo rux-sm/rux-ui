@@ -13,9 +13,9 @@
 }
 
 .rux-search-modal::backdrop {
-	background: oklch(0 0 0 / 0.55);
-	backdrop-filter: blur(4px);
-	-webkit-backdrop-filter: blur(4px);
+	background: var(--rux-bg-overlay);
+	backdrop-filter: blur(var(--rux-overlay-blur));
+	-webkit-backdrop-filter: blur(var(--rux-overlay-blur));
 }
 
 .rux-search-modal__panel {
@@ -28,9 +28,7 @@
 	background: var(--rux-surface-modal);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-lg);
-	box-shadow:
-		0 20px 60px oklch(0 0 0 / 0.5),
-		0 4px 12px oklch(0 0 0 / 0.3);
+	box-shadow: var(--rux-elevation-4);
 	overflow: hidden;
 	animation: rux-search-in var(--rux-duration-fast) var(--rux-ease-out);
 }

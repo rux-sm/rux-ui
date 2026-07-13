@@ -155,7 +155,7 @@
 	border: calc(var(--rux-button-border-width) * 2) solid currentColor;
 	border-right-color: transparent;
 	border-radius: var(--rux-radius-full);
-	animation: rux-button-spin 700ms linear infinite;
+	animation: rux-spin 700ms linear infinite;
 }
 
 .rux-button--loading > .rux-button__idle-icon {
@@ -172,10 +172,6 @@
 
 .rux-button[aria-expanded="true"] > .rux-button__disclosure-icon {
 	transform: rotate(180deg);
-}
-
-@keyframes rux-button-spin {
-	to { transform: rotate(1turn); }
 }
 
 @media (prefers-reduced-motion: reduce) {

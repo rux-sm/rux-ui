@@ -212,7 +212,7 @@
 .settings-req-label-input {
 	flex: 1;
 	min-width: 0;
-	height: var(--rux-control-height-sm, 28px);
+	height: var(--rux-control-height-sm);
 	padding-block: 0;
 	background: transparent;
 	border-color: transparent;

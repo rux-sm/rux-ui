@@ -8,12 +8,31 @@
    be measured without ever being display:none.
    ========================================================================== */
 
+/* Print is a deliberate light-on-paper world, so it gets its own scoped
+   palette instead of the dark --rux- surface tokens. This block is the
+   single source of truth for every color below — rules never hold raw
+   values. Grays are OKLCH like the rest of the system. */
 .rux-print-root {
+	--print-paper: oklch(100% 0 0);
+	--print-ink: oklch(18% 0 0);          /* headings, primary text */
+	--print-ink-muted: oklch(45% 0 0);    /* secondary text, times */
+	--print-ink-faint: oklch(60% 0 0);    /* labels, group badge */
+	--print-frame: oklch(32% 0 0);        /* table frame + header rules */
+	--print-rule: oklch(84% 0 0);         /* row separators */
+	--print-rule-soft: oklch(90% 0 0);    /* day-column hairlines */
+	--print-fill: oklch(94% 0 0);         /* header / label-column fill */
+	--print-warning: oklch(58% 0.12 90);  /* notes */
+	--print-success: oklch(58% 0.16 155); /* paid state, driver icons */
+	--print-accent-line: oklch(55% 0.12 260);
+	--print-accent-tint: oklch(96% 0.025 260);
+	--print-danger-line: oklch(55% 0.19 24);
+	--print-danger-tint: oklch(96% 0.03 24);
+
 	position: fixed;
 	top: 0;
 	left: -10000px;
-	background: #fff;
-	color: #111;
+	background: var(--print-paper);
+	color: var(--print-ink);
 }
 
 .rux-print-page {
@@ -21,7 +40,7 @@
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
-	background: #fff;
+	background: var(--print-paper);
 	padding-block-end: 0;
 }
 
@@ -49,7 +68,7 @@
 	font-family: var(--rux-font-sans, sans-serif);
 	font-size: 14px;
 	font-weight: 700;
-	color: #111;
+	color: var(--print-ink);
 	text-align: right;
 }
 
@@ -63,7 +82,7 @@
 	flex-direction: column;
 	flex: 1 1 0;
 	min-height: 0;
-	border: 1px solid #333;
+	border: 1px solid var(--print-frame);
 	border-radius: 4px;
 	overflow: hidden;
 }
@@ -79,10 +98,10 @@
 	display: grid;
 	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
 	row-gap: 0;
-	background-color: #eee;
+	background-color: var(--print-fill);
 	border-start-start-radius: 4px;
 	border-start-end-radius: 4px;
-	border-block-end: 2px solid #333;
+	border-block-end: 2px solid var(--print-frame);
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
 }
@@ -93,7 +112,7 @@
    short at the cell's own short text content and leaving a gap. */
 .rux-print__corner {
 	padding-block: 4px;
-	border-inline-end: 1px solid #333;
+	border-inline-end: 1px solid var(--print-frame);
 }
 
 .rux-print__day-head {
@@ -106,8 +125,8 @@
 	font-family: var(--rux-font-sans, sans-serif);
 	font-size: 14px;
 	font-weight: 700;
-	color: #333;
-	border-inline-end: 1px solid #ccc;
+	color: var(--print-frame);
+	border-inline-end: 1px solid var(--print-rule);
 	border-bottom: none;
 }
 
@@ -130,7 +149,7 @@
 	min-height: 0;
 	box-sizing: border-box;
 	overflow: hidden;
-	border-block-end: 1px solid #ccc;
+	border-block-end: 1px solid var(--print-rule);
 	break-inside: avoid;
 }
 
@@ -161,14 +180,14 @@
 }
 
 .rux-print__row-daygrid-label {
-	background-color: #eee;
+	background-color: var(--print-fill);
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
-	border-inline-end: 1px solid #333;
+	border-inline-end: 1px solid var(--print-frame);
 }
 
 .rux-print__row-dayline {
-	border-inline-end: 1px solid #e0e0e0;
+	border-inline-end: 1px solid var(--print-rule-soft);
 }
 
 .rux-print__row-dayline:last-child {
@@ -207,7 +226,7 @@
 	font-size: 14px;
 	font-weight: 700;
 	line-height: 1;
-	color: #111;
+	color: var(--print-ink);
 	border-bottom: none;
 }
 
@@ -216,10 +235,10 @@
 	min-width: 0;
 	height: 100%;
 	margin-inline: 4px;
-	border: 1px solid oklch(55% 0.12 260);
+	border: 1px solid var(--print-accent-line);
 	border-radius: 8px;
-	background: oklch(96% 0.025 260);
-	color: #222;
+	background: var(--print-accent-tint);
+	color: var(--print-ink);
 	font-family: var(--rux-font-sans, sans-serif);
 	font-size: 10px;
 	line-height: 1.08;
@@ -229,8 +248,8 @@
 }
 
 .rux-print-trip--unconfirmed {
-	border-color: oklch(55% 0.19 24);
-	background: oklch(96% 0.03 24);
+	border-color: var(--print-danger-line);
+	background: var(--print-danger-tint);
 }
 
 .rux-print-trip__content {
@@ -246,13 +265,13 @@
 }
 
 .rux-print-trip--multi-day .rux-print-trip__content {
-	border-right: 1px solid #e0e0e0;
+	border-right: 1px solid var(--print-rule-soft);
 	border-radius: 8px 0 0 8px;
-	background: oklch(96% 0.025 260);
+	background: var(--print-accent-tint);
 }
 
 .rux-print-trip--unconfirmed.rux-print-trip--multi-day .rux-print-trip__content {
-	background: oklch(96% 0.03 24);
+	background: var(--print-danger-tint);
 }
 
 .rux-print-trip__row {
@@ -262,7 +281,7 @@
 	overflow: visible;
 	display: flex;
 	align-items: center;
-	border-bottom: 1px solid #e0e0e0;
+	border-bottom: 1px solid var(--print-rule-soft);
 	line-height: 1;
 }
 
@@ -293,7 +312,7 @@
 	white-space: nowrap;
 	font-size: 10px;
 	font-weight: 800;
-	color: #222;
+	color: var(--print-ink);
 }
 
 /* Sits left of .rux-print-trip__group — the group/bus badge is a fixed
@@ -310,7 +329,7 @@
 	flex: none;
 	font-size: 10px;
 	font-weight: 700;
-	color: #777;
+	color: var(--print-ink-faint);
 	white-space: nowrap;
 }
 
@@ -321,19 +340,19 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: #666;
+	color: var(--print-ink-muted);
 	line-height: 1;
 }
 
 .rux-print-trip__notes {
-	color: #9a7600;
+	color: var(--print-warning);
 	font-style: italic;
 	font-weight: 700;
 }
 
 .rux-print-trip__paid-label,
 .rux-print-trip__paid-date {
-	color: #148a4a;
+	color: var(--print-success);
 	font-size: 10px;
 	font-weight: 700;
 }
@@ -351,7 +370,7 @@
 	align-items: center;
 	font-size: 10px;
 	font-weight: 800;
-	color: #555;
+	color: var(--print-ink-muted);
 }
 
 .rux-print-trip__times > span {
@@ -375,7 +394,7 @@
 	z-index: 2;
 	font-size: 10px;
 	font-weight: 700;
-	color: #555;
+	color: var(--print-ink-muted);
 	overflow: visible;
 }
 
@@ -401,7 +420,7 @@
 	flex: none;
 	font-size: 10px;
 	line-height: 1;
-	color: #15985a;
+	color: var(--print-success);
 	transform: translateY(0.04em);
 }
 
@@ -418,7 +437,7 @@
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: center;
 	gap: 4px;
-	color: #555;
+	color: var(--print-ink-muted);
 	font-size: 10px;
 	line-height: 1;
 }
@@ -443,7 +462,7 @@
 
 .rux-print-trip__detail-label {
 	flex: none;
-	color: #888;
+	color: var(--print-ink-faint);
 	font-weight: 500;
 	line-height: 1;
 }

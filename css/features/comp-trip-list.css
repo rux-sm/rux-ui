@@ -102,7 +102,7 @@
 }
 
 .trips-app__row:hover td {
-	background: var(--rux-bg-hover, color-mix(in srgb, var(--rux-bg-2) 80%, var(--rux-accent) 20%));
+	background: var(--rux-bg-hover);
 }
 
 /* — Empty state — */

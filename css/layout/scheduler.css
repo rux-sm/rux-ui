@@ -194,7 +194,6 @@
 	border-radius: var(--rux-radius-full);
 	height: 24px;
 	white-space: nowrap;
-	width: var(--rux-button-min-width);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
@@ -462,16 +461,18 @@
 
 
 .rux-scheduler--time-aligned .rux-scheduler__track-day {
+	/* quarter-hour tick hairlines — deliberately below the 4% border tier so
+	   they read as texture, not structure */
 	background-image: linear-gradient(
 		to right,
 		transparent 24.99%,
-		oklch(100% 0 0 / 0.03) 25%,
+		oklch(from var(--rux-color-white) l c h / 0.03) 25%,
 		transparent 25.5%,
 		transparent 49.99%,
-		oklch(100% 0 0 / 0.05) 50%,
+		oklch(from var(--rux-color-white) l c h / 0.05) 50%,
 		transparent 50.5%,
 		transparent 74.99%,
-		oklch(100% 0 0 / 0.03) 75%,
+		oklch(from var(--rux-color-white) l c h / 0.03) 75%,
 		transparent 75.5%
 	);
 }

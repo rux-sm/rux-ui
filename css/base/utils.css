@@ -37,6 +37,15 @@
 
 
 
+/* — shared animation primitives — */
+
+/* One spin for every loading indicator (button spinner, avatar upload,
+   future skeletons) — components set their own duration/easing. */
+@keyframes rux-spin {
+  to { transform: rotate(1turn); }
+}
+
+
 /* — prefers-reduced-motion — */
 
 @media (prefers-reduced-motion: reduce) {

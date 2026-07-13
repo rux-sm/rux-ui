@@ -360,6 +360,7 @@
 	/* ─── SIZE · shared and component roles ──────────────────────────────── */
 
 	--rux-control-height: 32px;
+	--rux-control-height-sm: 28px;
 	--rux-field-height: var(--rux-control-height);
 
 	--rux-switch-width: 48px;
@@ -629,7 +630,7 @@
 	   bg+fg, border) is borrowed directly from button tokens above by
 	   design, so height is the only thing genuinely its own. */
 
-	--rux-segmented-height: 28px;
+	--rux-segmented-height: var(--rux-control-height-sm);
 
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
 	/* .rux-segmented-track + .rux-button--segment — a "floating pill"
@@ -719,7 +720,7 @@
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
 	--rux-tabs-gap: var(--rux-space-2);
-	--rux-tab-height: 28px;
+	--rux-tab-height: var(--rux-control-height-sm);
 	--rux-tab-padding-inline: var(--rux-space-3);
 	--rux-tab-content-gap: var(--rux-space-1);
 	--rux-tab-radius: var(--rux-radius-control);
