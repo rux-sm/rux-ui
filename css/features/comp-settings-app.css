@@ -42,7 +42,7 @@
 	flex: none;
 	width: min(100%, 46rem);
 	max-width: 46rem;
-	background: var(--rux-bg);
+	background: var(--rux-surface-canvas);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
 	overflow: hidden;
@@ -221,7 +221,7 @@
 
 .settings-req-label-input:hover {
 	border-color: var(--rux-border);
-	background: var(--rux-bg);
+	background: var(--rux-surface-canvas);
 }
 
 .settings-req-type-badge {
@@ -260,7 +260,7 @@
 	align-items: center;
 	padding: var(--rux-space-2);
 	border-radius: var(--rux-radius-md);
-	background: var(--rux-surface-2);
+	background: var(--rux-surface-card);
 }
 
 .settings-billing-row__label {
@@ -302,7 +302,7 @@
 }
 
 .settings-billing-confirm input:not(:checked) + .rux-badge {
-	background: var(--rux-surface-4);
+	background: var(--rux-surface-modal);
 	color: var(--rux-fg-subtle);
 }
 

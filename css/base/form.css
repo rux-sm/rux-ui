@@ -43,15 +43,29 @@
 .rux-input:hover,
 .rux-select:hover,
 .rux-textarea:hover {
-  background: var(--rux-input-hover-bg);
+  background-color: var(--rux-input-hover-bg);
+  border-color: var(--rux-border-strong);
 }
 
+.rux-input:focus-visible,
+.rux-select:focus-visible,
+.rux-textarea:focus-visible {
+  background-color: var(--rux-input-focus-bg);
+  box-shadow: var(--rux-input-focus-ring);
+}
 
 .rux-input:disabled,
 .rux-select:disabled,
 .rux-textarea:disabled {
+  background-color: var(--rux-input-disabled-bg);
+  border-color: var(--rux-border);
   color: var(--rux-fg-disabled);
   cursor: not-allowed;
+}
+
+.rux-input:disabled::placeholder,
+.rux-textarea:disabled::placeholder {
+  color: var(--rux-fg-disabled);
 }
 
 .rux-input[aria-invalid="true"],
@@ -187,7 +201,7 @@
   flex: none;
   width: var(--rux-checkbox-size);
   height: var(--rux-checkbox-size);
-  background-color: var(--rux-surface-0);
+  background-color: var(--rux-surface-canvas);
   border: var(--rux-border-width) solid var(--rux-border-strong);
   border-radius: var(--rux-radius-xs);
   cursor: pointer;
@@ -377,11 +391,11 @@
 }
 
 .rux-color-swatch:hover .rux-color-swatch__dot {
-  box-shadow: 0 0 0 2px var(--rux-bg), 0 0 0 3px var(--color, var(--rux-accent));
+  box-shadow: 0 0 0 2px var(--rux-surface-canvas), 0 0 0 3px var(--color, var(--rux-accent));
 }
 
 .rux-color-swatch input:checked + .rux-color-swatch__dot {
-  box-shadow: 0 0 0 2px var(--rux-bg), 0 0 0 4px var(--color, var(--rux-accent));
+  box-shadow: 0 0 0 2px var(--rux-surface-canvas), 0 0 0 4px var(--color, var(--rux-accent));
 }
 
 /* The real <input> is invisible (opacity: 0 above) — see the same note on
@@ -411,7 +425,7 @@
   width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-control-padding-inline);
-  background: var(--rux-surface-0);
+  background: var(--rux-surface-canvas);
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-sm);
@@ -535,7 +549,7 @@
   width: 100%;
   height: var(--rux-field-height);
   padding: 0 var(--rux-control-padding-inline);
-  background-color: var(--rux-surface-0);
+  background-color: var(--rux-surface-canvas);
   border: var(--rux-border-width) solid transparent;
   border-radius: var(--rux-radius-md);
   transition:
@@ -553,7 +567,7 @@
   height: 1.25rem;
   border: var(--rux-border-width) solid color-mix(in srgb, currentColor 25%, transparent);
   border-radius: var(--rux-radius-xs);
-  background: var(--rux-surface-2);
+  background: var(--rux-surface-card);
   cursor: pointer;
   padding: 0;
 }
@@ -593,7 +607,7 @@
 	padding: 0;
 	border: var(--rux-input-border);
 	border-radius: var(--rux-opt-radius-3);
-	background: var(--rux-surface-0);
+	background: var(--rux-surface-canvas);
 	color: var(--rux-fg-muted);
 	font: inherit;
 	font-size: var(--rux-text-sm);

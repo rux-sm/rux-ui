@@ -518,7 +518,7 @@
 	justify-content: space-between;
 	gap: var(--rux-control-content-gap);
 
-	background: var(--rux-surface-2);
+	background: var(--rux-surface-card);
 	border-radius: var(--rux-radius-md);
 }
 .rux-trip-panel__fleet-count-label {
@@ -527,49 +527,8 @@
 	font-weight: var(--rux-weight-medium);
 	white-space: nowrap;
 }
-.rux-trip-panel__number-picker {
-	display: inline-grid;
-	grid-template-columns: var(--rux-field-height) minmax(3rem, 4rem) var(--rux-field-height);
-	align-items: stretch;
-	gap: 0;
-	height: var(--rux-input-height);
-	overflow: hidden;
-	border: var(--rux-button-border);
-	border-radius: var(--rux-opt-radius-3);
-	background: var(--rux-surface-4);
-	transition:
-		border-color var(--rux-duration-fast) var(--rux-ease-out),
-		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
-}
-/* The picker's own border eats into its declared height (border-box), so
-   the button's independent height:var(--_h) — sized as if it owned the
-   full height — overflowed the picker's actual content box by exactly the
-   border width on each edge, and overflow:hidden clipped it back, landing
-   the button's bottom border on top of the picker's own. Stretching instead
-   of hardcoding height makes the button fill whatever's really available. */
-.rux-trip-panel__number-picker > .rux-button {
-	height: 100%;
-}
-.rux-trip-panel__number-input {
-	width: 100%;
-	min-width: 0;
-	height: var(--rux-field-height);
-	padding: 0;
-	border: 0;
-	border-radius: 0;
-	background: transparent;
-	font-size: var(--rux-text-sm);
-	text-align: center;
-	-moz-appearance: textfield;
-}
-.rux-trip-panel__number-input::-webkit-outer-spin-button,
-.rux-trip-panel__number-input::-webkit-inner-spin-button {
-	margin: 0;
-	-webkit-appearance: none;
-}
-.rux-trip-panel__number-picker:hover {
-	border-color: var(--rux-border-strong);
-}
+/* Stepper itself is now .rux-number-stepper (base/controls.css) — a
+   reusable component, not trip-panel-specific. */
 
 .rux-trip-panel__bus-groups {
 	display: flex;
@@ -607,7 +566,7 @@
 	display: none;
 }
 .rux-trip-panel__driver-row--head {
-	background: var(--rux-surface-0);
+	background: var(--rux-surface-canvas);
 }
 .rux-trip-panel__driver-row--head span {
 	font-size: var(--rux-text-2xs);
@@ -766,8 +725,8 @@
 		flex-direction: column;
 	}
 
-	.rux-trip-panel__number-picker {
-		grid-template-columns: 32px minmax(0, 1fr) 32px;
+	.rux-number-stepper__btn {
+		width: 32px;
 	}
 }
 
@@ -815,24 +774,16 @@
 	}
 }
 
-/* Plain ghost buttons instead of a segmented/clipped pill strip — same
-   "flat, clipped-strip components don't leave room for a real focus
-   border" issue this app hit elsewhere (Week/List, the panel tabs), fixed
-   the same way: independent buttons with a real gap, active looks like
-   .rux-button--default (filled), inactive stays ghost. Shared by both
-   Trip Type and Billing Type, which both carry this class.
-   flex:1 replaces the old .rux-segmented > .rux-button rule that used to
-   split the field's width evenly between the two options — .rux-cluster
-   itself doesn't stretch its children, so that needs restating here. */
+/* .rux-segmented-track + .rux-button--segment (base/controls.css) — a
+   floating-pill toggle whose padding leaves room for a real focus ring,
+   unlike the old flush/clipped .rux-segmented strip. Active-state look is
+   handled by .rux-button--segment itself; flex:1 here just splits the
+   track's width evenly between the two options, since .rux-segmented-track
+   doesn't stretch its children on its own. Shared by both Trip Type and
+   Billing Type, which both carry this class. */
 .rux-trip-panel__trip-type > .rux-button {
 	flex: 1;
 	min-width: 0;
-}
-
-.rux-trip-panel__trip-type > .rux-button.is-active,
-.rux-trip-panel__trip-type > .rux-button[aria-pressed="true"] {
-	--_bg: var(--rux-button-default-bg);
-	--_fg: var(--rux-button-default-fg);
 }
 
 @container (max-width: 200px) {

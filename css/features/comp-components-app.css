@@ -42,7 +42,7 @@
 .components-app__sidebar {
 	min-height: 0;
 	padding: var(--rux-space-5) var(--rux-space-3);
-	background: var(--rux-surface-0);
+	background: var(--rux-surface-canvas);
 	border-right: var(--rux-border-width) solid var(--rux-border);
 	overflow-y: auto;
 }
@@ -146,7 +146,7 @@
 	display: grid;
 	grid-template-rows: minmax(10rem, auto) auto auto;
 	min-width: 0;
-	background: var(--rux-surface-2);
+	background: var(--rux-surface-card);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-card-radius);
 	overflow: hidden;
@@ -253,7 +253,7 @@
 
 .components-app__example-footer {
 	padding: var(--rux-space-3) var(--rux-space-5);
-	background: var(--rux-surface-0);
+	background: var(--rux-surface-canvas);
 	border-top: var(--rux-border-width) dashed var(--rux-border);
 }
 
@@ -339,7 +339,7 @@
 	background:
 		linear-gradient(color-mix(in oklch, var(--rux-fg) 4%, transparent) 1px, transparent 1px),
 		linear-gradient(90deg, color-mix(in oklch, var(--rux-fg) 4%, transparent) 1px, transparent 1px),
-		var(--rux-surface-0);
+		var(--rux-surface-canvas);
 	background-size: var(--rux-space-4) var(--rux-space-4);
 	border-radius: var(--rux-card-radius);
 	overflow: hidden;
@@ -461,7 +461,7 @@
 	align-items: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-4);
-	background: var(--rux-surface-0);
+	background: var(--rux-surface-canvas);
 	border-radius: var(--rux-card-radius);
 	overflow-x: auto;
 }
@@ -484,7 +484,7 @@
 
 .components-app__guidance {
 	padding: var(--rux-space-5);
-	background: color-mix(in oklch, var(--rux-accent) 8%, var(--rux-surface-0));
+	background: color-mix(in oklch, var(--rux-accent) 8%, var(--rux-surface-canvas));
 	border-left: calc(var(--rux-border-width) * 3) solid var(--rux-accent);
 	border-radius: var(--rux-card-radius);
 }

@@ -83,7 +83,7 @@
   justify-content: flex-end;
   gap: var(--rux-space-2);
   padding: var(--rux-space-4) var(--rux-space-5);
-  background: var(--rux-surface-0);
+  background: var(--rux-surface-canvas);
   border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 

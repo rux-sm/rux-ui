@@ -3,7 +3,7 @@
 	flex: 1;
 	min-width: 0;
 	flex-direction: column;
-	background: var(--rux-bg);
+	background: var(--rux-surface-canvas);
 }
 
 .flip-seven [hidden] { display: none !important; }
@@ -155,7 +155,7 @@
 	padding: var(--rux-space-3);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-xl);
-	background: var(--rux-bg);
+	background: var(--rux-surface-canvas);
 	box-shadow: var(--rux-inset-1);
 }
 .flip-seven__turn {

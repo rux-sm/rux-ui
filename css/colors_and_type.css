@@ -132,7 +132,7 @@ code {
 }
 
 pre {
-  background: var(--rux-surface-0);
+  background: var(--rux-surface-canvas);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   padding: var(--rux-space-4);

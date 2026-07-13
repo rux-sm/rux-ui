@@ -75,6 +75,10 @@
 .rux-button--default {
 	--_bg: var(--rux-button-default-bg);
 	--_fg: var(--rux-button-default-fg);
+	/* --_border isn't wired to the base rule's actual `border` property (that
+	   reads var(--rux-button-border) directly, not --_border) — so a crisp
+	   edge needs border-color set here, not the custom property. */
+	border-color: var(--rux-border);
 }
 
 .rux-button--accent {
@@ -353,6 +357,45 @@
 }
 
 /* ==========================================================================
+   SEGMENTED TRACK  ·  .rux-segmented-track + .rux-button--segment
+   — a "floating pill" toggle: recessed track + inset padding, so the active
+   pill has real room for a focus ring instead of being clipped like
+   .rux-segmented above
+   ========================================================================== */
+
+.rux-segmented-track {
+	display: inline-flex;
+	align-items: center;
+	height: var(--rux-segmented-track-height);
+	padding: var(--rux-segmented-track-padding);
+	background: var(--rux-segmented-track-bg);
+	border-radius: var(--rux-segmented-track-radius);
+	border: var(--rux-segmented-track-border);
+}
+
+.rux-button--segment {
+	--_h: calc(var(--rux-segmented-track-height) - (2 * var(--rux-segmented-track-padding)));
+	--_bg: transparent;
+	--_fg: var(--rux-segment-fg);
+	--_shadow: none;
+	border-radius: var(--rux-segment-radius);
+	padding: 0 var(--rux-segment-padding-inline);
+}
+
+.rux-button--segment:hover:not(.is-active):not([aria-pressed="true"]) {
+	--_fg: var(--rux-segment-fg-hover);
+	--_state-overlay: var(--rux-segment-hover-bg);
+}
+
+.rux-button--segment.is-active,
+.rux-button--segment[aria-pressed="true"] {
+	--_bg: var(--rux-segment-active-bg);
+	--_fg: var(--rux-segment-active-fg);
+	--_shadow: var(--rux-segment-active-shadow);
+	border-color: var(--rux-segment-active-border-color);
+}
+
+/* ==========================================================================
    STEPPER  ·  [data-rux-stepper]
    — [−] count [+] built on .rux-segmented, driven by controls.js
    ========================================================================== */
@@ -369,4 +412,94 @@
 	font-weight: var(--rux-weight-semibold);
 	font-variant-numeric: tabular-nums;
 	user-select: none;
+}
+
+/* ==========================================================================
+   NUMBER STEPPER  ·  .rux-number-stepper
+   — [-] [editable value] [+], a standalone control (not built on
+   .rux-segmented — its value is a real, directly-typeable input, not a
+   read-only count)
+   ========================================================================== */
+
+.rux-number-stepper {
+	display: inline-flex;
+	align-items: stretch;
+	height: var(--rux-number-stepper-height);
+	background: var(--rux-number-stepper-bg);
+	border: var(--rux-number-stepper-border);
+	border-radius: var(--rux-number-stepper-radius);
+	/* Clips button hover backgrounds to the rounded corners — without this
+	   a hovered edge button's square hover bg pokes past the rounded frame. */
+	overflow: hidden;
+	transition:
+		background-color var(--rux-duration-fast) var(--rux-ease-out),
+		border-color var(--rux-duration-fast) var(--rux-ease-out),
+		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-number-stepper:hover {
+	background: var(--rux-input-hover-bg);
+	border-color: var(--rux-border-strong);
+}
+
+.rux-number-stepper:focus-within {
+	background: var(--rux-input-focus-bg);
+	border-color: var(--rux-accent);
+	box-shadow: var(--rux-input-focus-ring);
+}
+
+.rux-number-stepper__btn {
+	appearance: none;
+	flex: none;
+	width: var(--rux-number-stepper-btn-width);
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	border: 0;
+	color: var(--rux-number-stepper-btn-fg);
+	cursor: pointer;
+	transition: background-color var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-number-stepper__btn:hover:not(:disabled) {
+	background: var(--rux-number-stepper-btn-hover-bg);
+}
+
+.rux-number-stepper__btn:disabled {
+	color: var(--rux-number-stepper-btn-fg-disabled);
+	cursor: not-allowed;
+}
+
+.rux-number-stepper__input {
+	flex: 1 1 auto;
+	width: var(--rux-number-stepper-value-width);
+	min-width: 0;
+	height: 100%;
+	padding: 0;
+	/* The hairline dividers seen either side of the value are this input's
+	   own left/right border — no extra divider elements needed. */
+	border: 0;
+	border-inline: var(--rux-number-stepper-divider);
+	border-radius: 0;
+	background: transparent;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	text-align: center;
+	appearance: textfield;
+	-moz-appearance: textfield;
+	outline: none;
+}
+
+/* The group owns the focus treatment; keep the editable value's internal
+   dividers neutral instead of turning both of them accent blue. */
+.rux-number-stepper__input:focus-visible {
+	border-color: var(--rux-border) !important;
+}
+
+.rux-number-stepper__input::-webkit-outer-spin-button,
+.rux-number-stepper__input::-webkit-inner-spin-button {
+	margin: 0;
+	-webkit-appearance: none;
 }

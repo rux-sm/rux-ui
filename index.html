@@ -163,9 +163,9 @@
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
                     <div class="rux-field">
                       <label class="rux-field__label">Trip Type</label>
-                      <div class="rux-cluster rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
-                        <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
+                      <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
+                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
                       </div>
                     </div>
                     </div>
@@ -216,9 +216,9 @@
                 <div id="pane-billing" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
                     <div class="rux-card__body rux-card__body--stack">
-                      <div class="rux-cluster rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
-                        <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
+                      <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
+                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
                       </div>
                       <button class="rux-button rux-button--default" type="button" id="tp-view-manifest-btn" disabled title="Toggle Ticketed to enable">
                         <span class="rux-icon" aria-hidden="true">groups</span>
@@ -323,10 +323,10 @@
                     <div class="rux-card__body">
                     <div class="rux-trip-panel__fleet-count-card">
                       <span class="rux-trip-panel__fleet-count-label" id="tp-buses-label">Buses Needed</span>
-                      <div class="rux-trip-panel__number-picker" role="group" aria-labelledby="tp-buses-label">
-                        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-bus-count-dec aria-label="Fewer buses"><span class="rux-icon">remove</span></button>
-                        <input class="rux-input rux-trip-panel__number-input" id="tp-buses" name="busesNeeded" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" aria-labelledby="tp-buses-label" />
-                        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-bus-count-inc aria-label="More buses"><span class="rux-icon">add</span></button>
+                      <div class="rux-number-stepper" role="group" aria-labelledby="tp-buses-label">
+                        <button class="rux-number-stepper__btn" type="button" data-bus-count-dec aria-label="Fewer buses"><span class="rux-icon">remove</span></button>
+                        <input class="rux-number-stepper__input" id="tp-buses" name="busesNeeded" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" aria-labelledby="tp-buses-label" />
+                        <button class="rux-number-stepper__btn" type="button" data-bus-count-inc aria-label="More buses"><span class="rux-icon">add</span></button>
                       </div>
                     </div>
                     </div>
