@@ -238,6 +238,7 @@
 .rux-trip-bar--from-prev .rux-trip-bar__tail {
 	grid-column: 1 / -1;
 	margin-left: 0;
+	border-inline-start: 0;
 	border-radius: 0 var(--rux-opt-radius-2) var(--rux-opt-radius-2) 0;  /* flat left edge — trip enters from offscreen */
 }
 
@@ -254,6 +255,7 @@
 .rux-trip-bar--from-prev.is-active .rux-trip-bar__tail {
 	grid-column: 1 / -1;
 	margin-left: 0;
+	border-inline-start: 0;
 	border-radius: 0 var(--rux-opt-radius-2) var(--rux-opt-radius-2) 0;
 }
 
@@ -264,6 +266,7 @@
 /* ---------- Modifier: to-next ---------- */
 
 .rux-trip-bar--to-next .rux-trip-bar__tail {
+	border-inline-end: 0;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 }

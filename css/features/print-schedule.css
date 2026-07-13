@@ -322,6 +322,28 @@
 	background-color: var(--_print-trip-tint);
 }
 
+/* A trip clipped by the printed week is open on that side: no outer inset,
+   border, or radius. The flush edge communicates that the trip continues
+   beyond the page rather than ending as a one-day card. */
+.rux-print-trip--from-prev {
+	margin-inline-start: 0;
+	border-inline-start: 0;
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
+}
+
+.rux-print-trip--from-prev.rux-print-trip--multi-day .rux-print-trip__content {
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
+}
+
+.rux-print-trip--to-next {
+	margin-inline-end: 0;
+	border-inline-end: 0;
+	border-start-end-radius: 0;
+	border-end-end-radius: 0;
+}
+
 .rux-print-trip__row {
 	box-sizing: border-box;
 	min-width: 0;

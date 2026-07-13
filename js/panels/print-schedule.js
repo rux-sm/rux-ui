@@ -163,7 +163,7 @@
       card.dataset.tripBarColor = tripBarColor;
     }
     if ((trip.trip_type || trip.tripType) === "one_way") card.classList.add("rux-print-trip--one-way");
-    if (entry.span > 1) card.classList.add("rux-print-trip--multi-day");
+    if (entry.span > 1 || entry.fromPrev || entry.toNext) card.classList.add("rux-print-trip--multi-day");
     if (entry.fromPrev) card.classList.add("rux-print-trip--from-prev");
     if (entry.toNext) card.classList.add("rux-print-trip--to-next");
     card.style.gridColumn = `${entry.start + 1} / span ${entry.span}`;

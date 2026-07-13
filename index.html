@@ -3143,10 +3143,10 @@
           }
         }
 
-        if (fromPrev && toNext) { bar.style.left = bar.style.right = insetL; bar.style.width = "auto"; return; }
-        if (fromPrev) { bar.style.left = insetL; bar.style.width = `calc(${spanPct}% - ${totalInset})`; return; }
+        if (fromPrev && toNext) { bar.style.left = bar.style.right = "0"; bar.style.width = "auto"; return; }
+        if (fromPrev) { bar.style.left = "0"; bar.style.width = `calc(${spanPct}% - ${insetL})`; return; }
         bar.style.left = `calc(${startPct}% + ${insetL})`;
-        if (toNext) { bar.style.right = insetL; bar.style.width = "auto"; }
+        if (toNext) { bar.style.right = "0"; bar.style.width = "auto"; }
         else { bar.style.width = `calc(${spanPct}% - ${totalInset})`; }
       }
 
