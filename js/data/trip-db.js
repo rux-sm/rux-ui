@@ -200,6 +200,7 @@ import { supabase } from "./supabase.js";
 			start_date:           fieldVal(root, "tp-start"),
 			end_date:             fieldVal(root, "tp-end"),
 			trip_type:            selectedTripType === "one_way" ? "one_way" : "round_trip",
+			trip_bar_color:       root.querySelector("[name='tripBarColor']:checked")?.value || null,
 
 			bus_count:            busCountVal(root),
 			booking_contact_name:  fieldVal(root, "tp-book-name"),
@@ -438,6 +439,11 @@ import { supabase } from "./supabase.js";
 
 		window.TripPanel?.setTripType(root, trip.trip_type === "one_way" ? "one_way" : "round_trip");
 		window.TripPanel?.setBillingType(root, trip.is_self_organized ? "ticketed" : "charter");
+		const tripBarColor = ["cyan", "green", "purple", "yellow", "orange", "pink"].includes(trip.trip_bar_color)
+			? trip.trip_bar_color
+			: "";
+		const tripBarColorInput = root.querySelector(`[name="tripBarColor"][value="${tripBarColor}"]`);
+		if (tripBarColorInput) tripBarColorInput.checked = true;
 		syncManifestBtn(root);
 
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
@@ -658,7 +664,15 @@ import { supabase } from "./supabase.js";
 	function clearForm(root, itinerary) {
 		root.querySelectorAll(
 			"#pane-trip input, #pane-trip textarea, #pane-billing input"
-		).forEach((el) => { el.value = ""; });
+		).forEach((el) => {
+			/* Preserve radio option values; clearing `.value` would rewrite every
+			   trip-color choice to an empty string for the rest of the session. */
+			if (el.type === "radio") {
+				el.checked = el.value === "";
+				return;
+			}
+			el.value = "";
+		});
 		// Reset all bus group selects and pay inputs
 		root.querySelectorAll(".rux-trip-panel__bus-group select").forEach(el => { el.value = ""; });
 		root.querySelectorAll(".rux-trip-panel__bus-group input[type='number']").forEach(el => { el.value = ""; });
@@ -674,6 +688,8 @@ import { supabase } from "./supabase.js";
 		});
 		window.TripPanel?.setTripType(root, "round_trip");
 		window.TripPanel?.setBillingType(root, "charter");
+		const defaultTripBarColor = root.querySelector("[name='tripBarColor'][value='']");
+		if (defaultTripBarColor) defaultTripBarColor.checked = true;
 		resetPaymentRows(root);
 		resetTicketOptionRows(root);
 		root.querySelectorAll("[data-req]").forEach((btn) => {
@@ -993,6 +1009,7 @@ export function loadTrip(root, itinerary, trip) {
 		start_date:            trip.start_date    ?? trip.startDate    ?? null,
 		end_date:              trip.end_date      ?? trip.endDate      ?? null,
 		trip_type:             trip.trip_type     ?? trip.tripType     ?? null,
+		trip_bar_color:        trip.trip_bar_color ?? trip.tripBarColor ?? null,
 		is_self_organized:     trip.is_self_organized ?? false,
 
 		booking_contact_name:  trip.booking_contact_name  ?? trip.bookingContact?.name  ?? null,

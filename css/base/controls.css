@@ -64,7 +64,7 @@
 	color: var(--rux-button-disabled-fg);
 	background-color: var(--rux-button-disabled-bg);
 	background-image: none;
-	border-color: transparent;
+	border-color: var(--rux-button-disabled-border);
 	box-shadow: var(--rux-button-disabled-shadow);
 	cursor: not-allowed;
 	pointer-events: none;

@@ -211,6 +211,44 @@
                     <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
                     </div>
                   </div>
+                  <div class="rux-card">
+                    <header class="rux-card__header">
+                      <p class="rux-card__title" id="tp-trip-bar-color-label">Trip Bar Color</p>
+                    </header>
+                    <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-color-swatches" role="radiogroup" aria-labelledby="tp-trip-bar-color-label">
+                        <label class="rux-color-swatch" title="Standard blue">
+                          <input type="radio" name="tripBarColor" value="" checked aria-label="Standard blue" />
+                          <span class="rux-color-swatch__dot" style="--color:var(--rux-accent)"></span>
+                        </label>
+                        <label class="rux-color-swatch" title="Cyan">
+                          <input type="radio" name="tripBarColor" value="cyan" aria-label="Cyan" />
+                          <span class="rux-color-swatch__dot" style="--color:var(--rux-trip-color-cyan)"></span>
+                        </label>
+                        <label class="rux-color-swatch" title="Green">
+                          <input type="radio" name="tripBarColor" value="green" aria-label="Green" />
+                          <span class="rux-color-swatch__dot" style="--color:var(--rux-trip-color-green)"></span>
+                        </label>
+                        <label class="rux-color-swatch" title="Purple">
+                          <input type="radio" name="tripBarColor" value="purple" aria-label="Purple" />
+                          <span class="rux-color-swatch__dot" style="--color:var(--rux-trip-color-purple)"></span>
+                        </label>
+                        <label class="rux-color-swatch" title="Yellow">
+                          <input type="radio" name="tripBarColor" value="yellow" aria-label="Yellow" />
+                          <span class="rux-color-swatch__dot" style="--color:var(--rux-trip-color-yellow)"></span>
+                        </label>
+                        <label class="rux-color-swatch" title="Orange">
+                          <input type="radio" name="tripBarColor" value="orange" aria-label="Orange" />
+                          <span class="rux-color-swatch__dot" style="--color:var(--rux-trip-color-orange)"></span>
+                        </label>
+                        <label class="rux-color-swatch" title="Pink">
+                          <input type="radio" name="tripBarColor" value="pink" aria-label="Pink" />
+                          <span class="rux-color-swatch__dot" style="--color:var(--rux-trip-color-pink)"></span>
+                        </label>
+                      </div>
+                      <p class="rux-field__help">Overrides the standard color on confirmed trips. Unconfirmed trips remain red.</p>
+                    </div>
+                  </div>
                 </div>
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
@@ -3381,6 +3419,7 @@
               is_self_organized: t.is_self_organized,
               startDate: t.start_date, endDate: t.end_date, destination: t.destination, customer: t.customer,
               trip_type: t.trip_type,
+              trip_bar_color: t.trip_bar_color,
               departureTime: t.departure_time, spotTime: t.spot_time, returnTime: t.return_time, notes: t.notes,
               bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone, email: t.booking_contact_email },
               tripContact: { name: t.trip_contact_1_name, phone: t.trip_contact_1_phone },

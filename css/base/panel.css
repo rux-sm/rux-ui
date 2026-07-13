@@ -111,7 +111,7 @@
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-footer-padding);
 	background: var(--rux-panel-bg);
-	border-top: var(--rux-panel-border);
+	border-top: var(--rux-panel-footer-border);
 	position: relative;
 	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);

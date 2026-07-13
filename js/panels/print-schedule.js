@@ -158,6 +158,11 @@
     const trip = entry.trip || {};
     const card = el("article", "rux-print-trip");
     if (!trip.driverStatus || trip.driverStatus !== "confirmed") card.classList.add("rux-print-trip--unconfirmed");
+    const tripBarColor = trip.trip_bar_color || trip.tripBarColor;
+    if (["cyan", "green", "purple", "yellow", "orange", "pink"].includes(tripBarColor)) {
+      card.dataset.tripBarColor = tripBarColor;
+    }
+    if ((trip.trip_type || trip.tripType) === "one_way") card.classList.add("rux-print-trip--one-way");
     if (entry.span > 1) card.classList.add("rux-print-trip--multi-day");
     if (entry.fromPrev) card.classList.add("rux-print-trip--from-prev");
     if (entry.toNext) card.classList.add("rux-print-trip--to-next");

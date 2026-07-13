@@ -51,7 +51,6 @@
 	--rux-trip-bar-rail-height: 34px;
 	--rux-trip-bar-rail-offset-y: 24px;
 	--rux-trip-bar-tail-overlap: 6px;
-	--rux-trip-bar-stripe-size: 3px;
 	--rux-trip-bar-bus-label-min-width: 2.25rem;
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
@@ -83,7 +82,7 @@
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;
-	--_tone: var(--rux-accent);
+	--_tone: var(--_trip-bar-color, var(--rux-accent));
 	--_tone-ring: var(--rux-ring-focus);
 	--_surface: oklch(from var(--_tone) 50% 0.22 h);
 	--_surface-hover: oklch(from var(--_tone) 50% 0.22 h);
@@ -190,7 +189,8 @@
 	z-index: var(--rux-trip-bar-active-z-index);
 }
 
-/* Keep continuation stripes behind actions, text, and conflict content. */
+/* Keep bar sections, actions, text, and conflict content in one predictable
+   stacking layer across single- and multi-day layouts. */
 .rux-trip-bar > * {
 	position: relative;
 	z-index: 1;
@@ -198,42 +198,30 @@
 
 /* ---------- Modifier: unconfirmed ---------- */
 
+.rux-trip-bar[data-trip-bar-color="cyan"] { --_trip-bar-color: var(--rux-trip-color-cyan); }
+.rux-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--rux-trip-color-green); }
+.rux-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--rux-trip-color-purple); }
+.rux-trip-bar[data-trip-bar-color="yellow"] { --_trip-bar-color: var(--rux-trip-color-yellow); }
+.rux-trip-bar[data-trip-bar-color="orange"] { --_trip-bar-color: var(--rux-trip-color-orange); }
+.rux-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
+
 .rux-trip-bar--unconfirmed {
 	--_tone: var(--rux-danger);
 	--_tone-ring: var(--rux-ring-danger);
 }
 
 /* ---------- Modifier: one-way ---------- */
-/* A faint pinstripe overlay (not a color/tone change) marks one-way trips —
-   same -45deg direction as the out-of-service hatch elsewhere in the app
-   for a consistent texture language, but far subtler so it reads as "a
-   variant of this trip" rather than "something's wrong with it".
-   A pseudo-element overlay rather than baking the stripe into
-   background-image directly: it needs to work identically across the base
-   bar, __head, and __tail without three separate hand-tuned rules — a
-   single ::after layer, applied to each, does that in one place. A flat
-   black tint (not mix-blend-mode) so it looks the same regardless of what's
-   underneath — blend modes react to the surface's own lightness, which
-   made the base bar and __tail (different lightness) look inconsistent
-   with each other even with identical CSS.
-   position:relative on the hosts isn't declared here — .rux-trip-bar
-   already has it in its own base rule, and __head/__tail both get it for
-   free via ".rux-trip-bar > * { position: relative; }" above. Applied to
-   whichever element actually paints a background — the bar itself for
-   single-day, __head/__tail for multi-day (the outer .rux-trip-bar--multi-day
-   shell is transparent, nothing to overlay there). */
-.rux-trip-bar--one-way::after,
-.rux-trip-bar--one-way .rux-trip-bar__head::after,
-.rux-trip-bar--one-way .rux-trip-bar__tail::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	z-index: 1;
-	pointer-events: none;
+/* Broad, opaque tonal bands distinguish trip type without changing the
+   semantic tone. Because the lighter band derives from the current surface,
+   confirmed one-way trips retain any selected color while unconfirmed ones
+   remain red. The real background layer always stays behind content. */
+.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day),
+.rux-trip-bar--one-way .rux-trip-bar__head,
+.rux-trip-bar--one-way .rux-trip-bar__tail {
 	background-image: repeating-linear-gradient(
 		-45deg,
-		transparent 0px 9px,
-		oklch(from var(--rux-color-black) l c h / 0.25) 9px 11px
+		transparent 0 10px,
+		color-mix(in oklch, transparent 85%, var(--rux-color-white)) 10px 20px
 	);
 }
 

@@ -24,11 +24,14 @@
 	/* One hue/chroma pair drives every neutral in the system — surfaces,
 	   text, borders, overlays — so the whole UI cools together. */
 
-	--rux-neutral-h: 254;
-	--rux-neutral-c: 0.005;
+	--rux-neutral-h: 250;
+	--rux-neutral-c: 0.004;
 
-	--rux-color-black: oklch(0% 0 0);
-	--rux-color-white: oklch(100% 0 0);
+	--rux-white: 100% 0 0; /* pure White Seed */
+	--rux-black: 0% 0 0;   /* pure black seed */
+
+	--rux-color-black: oklch(var(--rux-black));
+	--rux-color-white: oklch(var(--rux-white));
 	--rux-color-base: oklch(50% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-color-neutral-24: oklch(from var(--rux-color-base) 24% c h);
 	--rux-color-neutral-70: oklch(from var(--rux-color-base) 70% c h);
@@ -37,13 +40,18 @@
 	/* Single translucent-white scale — wells sit at 2%, hairline borders at
 	   4% and 8%, state overlays above that. All derive from the one white. */
 
-	--rux-color-white-a02: oklch(from var(--rux-color-white) l c h / 0.02);
-	--rux-color-white-a04: oklch(from var(--rux-color-white) l c h / 0.04);
-	--rux-color-white-a06: oklch(from var(--rux-color-white) l c h / 0.06);
-	--rux-color-white-a08: oklch(from var(--rux-color-white) l c h / 0.08);
-	--rux-color-white-a10: oklch(from var(--rux-color-white) l c h / 0.1);
-	--rux-color-white-a16: oklch(from var(--rux-color-white) l c h / 0.16);
-	--rux-color-white-a28: oklch(from var(--rux-color-white) l c h / 0.28);
+	/* Structural Layers (Surfaces & Borders) */
+	--rux-alpha-white-1:  oklch(var(--rux-white) / 0%);  /* panel, workspace, disabled button */
+	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);  /* panel, workspace, disabled button */
+  	--rux-alpha-white-4:  oklch(var(--rux-white) / 4%);  /* card, calendar, disabled button */
+  	--rux-alpha-white-6:  oklch(var(--rux-white) / 6%);  /* menu, modal */
+  	--rux-alpha-white-8:  oklch(var(--rux-white) / 8%);  /* border */
+  	--rux-alpha-white-16: oklch(var(--rux-white) / 16%);
+
+	/* Typography Layers (High Opacity) */
+  	--rux-alpha-white-40: oklch(var(--rux-white) / 40%); /* Muted/Disabled */
+  	--rux-alpha-white-65: oklch(var(--rux-white) / 65%); /* Secondary text */
+  	--rux-alpha-white-90: oklch(var(--rux-white) / 90%); /* Primary text */
 
 	--rux-color-black-a12: oklch(from var(--rux-color-black) l c h / 0.12);
 
@@ -241,8 +249,8 @@
 	   depth. Pure lightness shifts on the shared cool-neutral axis; nothing
 	   below this may declare its own oklch() surface. */
 
-	--rux-surface-0: oklch(14% var(--rux-neutral-c) var(--rux-neutral-h)); /* base background   ≈ #08090A void black */
-	--rux-surface-1: oklch(17% var(--rux-neutral-c) var(--rux-neutral-h)); /* workspace / panel ≈ #0F1011 17% carbon lift */
+	--rux-surface-0: oklch(12% var(--rux-neutral-c) var(--rux-neutral-h)); /* base background   ≈ #08090A void black */
+	--rux-surface-1: oklch(15% var(--rux-neutral-c) var(--rux-neutral-h)); /* workspace / panel ≈ #0F1011 17% carbon lift */
 	--rux-surface-2: oklch(20% var(--rux-neutral-c) var(--rux-neutral-h)); /* card / raised     ≈ #1A1B1D */
 	--rux-surface-3: oklch(24% var(--rux-neutral-c) var(--rux-neutral-h)); /* overlay / modal   ≈ #222326 */
 	--rux-surface-4: var(--rux-surface-3); /* compat — depth caps at tier 3 */
@@ -253,19 +261,19 @@
 
 	/* — surface roles: components consume these, never the tiers directly — */
 
-	--rux-surface-canvas: var(--rux-surface-0);
-	--rux-surface-workspace: var(--rux-surface-1);
-	--rux-surface-panel: var(--rux-surface-1);
-	--rux-surface-calendar: var(--rux-surface-2);
-	--rux-surface-calendar-header: var(--rux-surface-2);
-	--rux-surface-card: var(--rux-surface-2);
-	--rux-surface-modal: var(--rux-surface-3);
+	--rux-surface-canvas: var(--rux-black);
+	--rux-surface-workspace: var(--rux-alpha-white-2);
+	--rux-surface-panel: var(--rux-alpha-white-2);
+	--rux-surface-calendar: var(--rux-alpha-white-4);
+	--rux-surface-calendar-header: transparent;
+	--rux-surface-card: var(--rux-alpha-white-4);
+	--rux-surface-modal: var(--rux-alpha-white-6);
 
 	/* — compat aliases for components on the original depth scale — */
 
 	--rux-bg: var(--rux-surface-canvas);
 	--rux-bg-2: var(--rux-surface-card);
-	--rux-bg-sunken: var(--rux-surface-canvas);
+	--rux-bg-sunken: var(--rux-alpha-white-2);
 	--rux-bg-elevated: var(--rux-surface-modal);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
@@ -283,28 +291,29 @@
 	   against any opaque tier. Inputs AND segmented tracks consume these so
 	   every well in the app deepens/lightens together. */
 
-	--rux-well-bg: var(--rux-surface-1);
+	--rux-well-bg: var(--rux-alpha-white-2);
 	--rux-well-bg-hover: var(--rux-color-white-a04);
 	--rux-well-bg-focus: var(--rux-color-white-a06);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 	/* Same cool axis as the surfaces so grays never drift warm. */
 
-	--rux-fg: var(--rux-color-white);
-	--rux-fg-muted: oklch(75% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-fg-subtle: oklch(60% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-fg-placeholder: var(--rux-fg-subtle);
-	--rux-fg-disabled: oklch(40% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-fg-on-accent: oklch(100% 0 0);
-	--rux-fg-on-accent-muted: oklch(100% 0 0 / 0.75);
-	--rux-fg-on-accent-subtle: oklch(100% 0 0 / 0.55);
+	--rux-fg: var(--rux-alpha-white-90);
+	--rux-fg-muted: var(--rux-alpha-white-40);
+	--rux-fg-subtle: var(--rux-alpha-white-65);
+	--rux-fg-placeholder: var(--rux-alpha-white-40);
+	--rux-fg-disabled: var(--rux-alpha-white-40);
+
+	--rux-fg-on-accent: oklch(var(--rux-white));
+	--rux-fg-on-accent-muted: oklch(var(--rux-white) / 75%);
+	--rux-fg-on-accent-subtle: oklch(var(--rux-white) / 55%);
 
 	/* ─── COLOR · border roles ───────────────────────────────────────────── */
 	/* Glassy hairlines from the translucent-white ladder — never flat gray.
 	   4%: layout dividers, panels, cards, resting fields.
 	   8%: modals, dropdowns, active pills, hover/focus edges. */
 
-	--rux-border: oklch(from var(--rux-color-white) l c h / 0.08);
+	--rux-border: var(--rux-alpha-white-8);
 	--rux-border-subtle: var(--rux-border);
 	--rux-border-strong: var(--rux-color-white-a08);
 
@@ -335,6 +344,15 @@
 	--rux-danger-bright: oklch(85% 0.2 24);
 	--rux-danger-hover: oklch(90% 0.18 24);
 	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
+
+	/* ─── COLOR · trip bar categories ────────────────────────────────────── */
+
+	--rux-trip-color-cyan: oklch(60% 0.2 210);
+	--rux-trip-color-green: oklch(60% 0.2 155);
+	--rux-trip-color-purple: oklch(60% 0.2 300);
+	--rux-trip-color-yellow: oklch(60% 0.16 95);
+	--rux-trip-color-orange: oklch(60% 0.19 55);
+	--rux-trip-color-pink: oklch(60% 0.2 350);
 
 	/* ─── SHADOW · elevation roles ───────────────────────────────────────── */
 
@@ -484,6 +502,7 @@
 	   footer repaints over scrolled body content via z-index) — */
 	--rux-panel-footer-padding: var(--rux-space-3) var(--rux-space-3);
 	--rux-panel-footer-shadow: var(--rux-edge-shadow-top);
+	--rux-panel-footer-border: var(--rux-panel-border-width) solid transparent;
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
 	--rux-panel-padding: var(--rux-space-3) var(--rux-space-3);
@@ -522,7 +541,7 @@
 
 	/* — header — */
 	--rux-card-header-min-height: calc(var(--rux-button-height) + (2 * var(--rux-card-padding)) + var(--rux-card-border-width));
-	--rux-card-header-bg: var(--rux-surface-card);
+	--rux-card-header-bg: transparent;
 	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border);
 
 	/* — footer — */
@@ -533,7 +552,7 @@
 	--rux-card-section-border: var(--rux-card-border-width) solid var(--rux-border);
 
 	/* — variants: elevated / interactive hover — */
-	--rux-card-elevated-bg: var(--rux-surface-3);
+	--rux-card-elevated-bg: var(--rux-surface-card);
 	--rux-card-elevated-shadow: var(--rux-elevation-3);
 	--rux-card-hover-bg: var(--rux-bg-hover);
 	--rux-card-hover-border: var(--rux-border-strong);
@@ -570,14 +589,14 @@
 	--rux-button-content-gap: var(--rux-space-2);
 	--rux-button-radius: var(--rux-radius-control);
 	--rux-button-border-width: var(--rux-border-width);
-	--rux-button-border: var(--rux-button-border-width) solid transparent;
+	--rux-button-border: var(--rux-button-border-width) solid var(--rux-alpha-white-8);;
 	--rux-button-font-family: var(--rux-font-sans);
 	--rux-button-font-size: var(--rux-text-sm);
 	--rux-button-font-weight: var(--rux-weight-regular);
 	--rux-button-icon-size: var(--rux-icon-md);
 	--rux-button-mobile-icon-size: 24px;
 	--rux-button-shadow: var(--rux-elevation-0);
-	--rux-button-hover-overlay: var(--rux-color-white-a08);
+	--rux-button-hover-overlay: var(--rux-alpha-white-8);
 	--rux-button-active-overlay: var(--rux-color-black-a12);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing: var(--rux-ease-out);
@@ -585,7 +604,7 @@
 	/* — default — raised surface tier + glassy hairline (controls.css sets
 	   border-color: var(--rux-border) on the default variant), never a
 	   milky white fill — */
-	--rux-button-default-bg: var(--rux-surface-2);
+	--rux-button-default-bg: var(--rux-alpha-white-4);
 	--rux-button-default-fg: var(--rux-fg);
 
 	/* — accent — */
@@ -603,9 +622,10 @@
 	--rux-button-danger-quiet-fg: var(--rux-danger-bright);
 
 	/* — disabled — */
-	--rux-button-disabled-bg: var(--rux-color-neutral-24);
+	--rux-button-disabled-bg: var(--rux-alpha-white-2);
 	--rux-button-disabled-fg: var(--rux-fg-disabled);
 	--rux-button-disabled-shadow: var(--rux-elevation-0);
+	--rux-button-disabled-border: var(--rux-alpha-white-4);
 
 	/* — selected (.is-active / [aria-pressed="true"]) — */
 	--rux-button-selected-bg: var(--rux-button-accent-bg);
@@ -659,7 +679,7 @@
 	--rux-segment-hover-bg: var(--rux-button-hover-overlay);
 	--rux-segment-active-bg: var(--rux-button-default-bg);
 	--rux-segment-active-fg: var(--rux-fg);
-	--rux-segment-active-border-color: var(--rux-border-strong);
+	--rux-segment-active-border-color: var(--rux-border);
 	--rux-segment-active-shadow: var(--rux-shadow-1);
 
 	/* ─── COMPONENT · number stepper ─────────────────────────────────────── */

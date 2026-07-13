@@ -27,6 +27,18 @@
 	--print-accent-tint: oklch(96% 0.025 260);
 	--print-danger-line: oklch(55% 0.19 24);
 	--print-danger-tint: oklch(96% 0.03 24);
+	--print-cyan-line: oklch(55% 0.12 210);
+	--print-cyan-tint: oklch(96% 0.025 210);
+	--print-green-line: oklch(55% 0.12 155);
+	--print-green-tint: oklch(96% 0.025 155);
+	--print-purple-line: oklch(55% 0.12 300);
+	--print-purple-tint: oklch(96% 0.025 300);
+	--print-yellow-line: oklch(55% 0.1 95);
+	--print-yellow-tint: oklch(96% 0.02 95);
+	--print-orange-line: oklch(55% 0.12 55);
+	--print-orange-tint: oklch(96% 0.025 55);
+	--print-pink-line: oklch(55% 0.12 350);
+	--print-pink-tint: oklch(96% 0.025 350);
 
 	position: fixed;
 	top: 0;
@@ -101,7 +113,7 @@
 	background-color: var(--print-fill);
 	border-start-start-radius: 4px;
 	border-start-end-radius: 4px;
-	border-block-end: 2px solid var(--print-frame);
+	border-block-end: 1px solid var(--print-frame);
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
 }
@@ -231,13 +243,16 @@
 }
 
 .rux-print-trip {
+	--_print-trip-tint: var(--_print-trip-override-tint, var(--print-accent-tint));
+	--_print-trip-line: var(--_print-trip-override-line, var(--print-accent-line));
+	--_print-trip-stripe: color-mix(in oklch, var(--_print-trip-line) 28%, var(--_print-trip-tint));
 	box-sizing: border-box;
 	min-width: 0;
 	height: 100%;
 	margin-inline: 4px;
-	border: 1px solid var(--print-accent-line);
+	border: 1px solid var(--_print-trip-line);
 	border-radius: 8px;
-	background: var(--print-accent-tint);
+	background-color: var(--_print-trip-tint);
 	color: var(--print-ink);
 	font-family: var(--rux-font-sans, sans-serif);
 	font-size: 10px;
@@ -247,9 +262,46 @@
 	-webkit-print-color-adjust: exact;
 }
 
+.rux-print-trip[data-trip-bar-color="cyan"] {
+	--_print-trip-override-line: var(--print-cyan-line);
+	--_print-trip-override-tint: var(--print-cyan-tint);
+}
+.rux-print-trip[data-trip-bar-color="green"] {
+	--_print-trip-override-line: var(--print-green-line);
+	--_print-trip-override-tint: var(--print-green-tint);
+}
+.rux-print-trip[data-trip-bar-color="purple"] {
+	--_print-trip-override-line: var(--print-purple-line);
+	--_print-trip-override-tint: var(--print-purple-tint);
+}
+.rux-print-trip[data-trip-bar-color="yellow"] {
+	--_print-trip-override-line: var(--print-yellow-line);
+	--_print-trip-override-tint: var(--print-yellow-tint);
+}
+.rux-print-trip[data-trip-bar-color="orange"] {
+	--_print-trip-override-line: var(--print-orange-line);
+	--_print-trip-override-tint: var(--print-orange-tint);
+}
+.rux-print-trip[data-trip-bar-color="pink"] {
+	--_print-trip-override-line: var(--print-pink-line);
+	--_print-trip-override-tint: var(--print-pink-tint);
+}
+
 .rux-print-trip--unconfirmed {
-	border-color: var(--print-danger-line);
-	background: var(--print-danger-tint);
+	--_print-trip-tint: var(--print-danger-tint);
+	--_print-trip-line: var(--print-danger-line);
+}
+
+/* Printed one-way trips use a compact tonal hatch. It is intentionally finer
+   than the screen pattern so it survives scaling without overpowering text. */
+.rux-print-trip--one-way,
+.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content {
+	background-color: var(--_print-trip-tint);
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent 0 6px,
+		var(--_print-trip-stripe) 6px 9px
+	);
 }
 
 .rux-print-trip__content {
@@ -267,11 +319,7 @@
 .rux-print-trip--multi-day .rux-print-trip__content {
 	border-right: 1px solid var(--print-rule-soft);
 	border-radius: 8px 0 0 8px;
-	background: var(--print-accent-tint);
-}
-
-.rux-print-trip--unconfirmed.rux-print-trip--multi-day .rux-print-trip__content {
-	background: var(--print-danger-tint);
+	background-color: var(--_print-trip-tint);
 }
 
 .rux-print-trip__row {

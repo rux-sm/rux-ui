@@ -577,6 +577,9 @@ export function createTripBar(trip, callbacks = {}) {
   ]
     .filter(Boolean)
     .join(" ");
+  if (["cyan", "green", "purple", "yellow", "orange", "pink"].includes(trip.trip_bar_color)) {
+    bar.dataset.tripBarColor = trip.trip_bar_color;
+  }
   bar.tabIndex = 0;
   bar.setAttribute(
     "aria-label",
