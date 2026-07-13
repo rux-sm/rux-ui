@@ -370,7 +370,11 @@
 }
 
 .rux-button--segment {
-	--_h: calc(var(--rux-segmented-track-height) - (2 * var(--rux-segmented-track-padding)));
+	--_h: calc(
+		var(--rux-segmented-track-height)
+		- (2 * var(--rux-segmented-track-padding))
+		- (2 * var(--rux-border-width))
+	);
 	--_bg: transparent;
 	--_fg: var(--rux-segment-fg);
 	--_shadow: none;

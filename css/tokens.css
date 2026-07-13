@@ -241,9 +241,9 @@
 	   depth. Pure lightness shifts on the shared cool-neutral axis; nothing
 	   below this may declare its own oklch() surface. */
 
-	--rux-surface-0: oklch(14% var(--rux-neutral-c) var(--rux-neutral-h)); /* base background   ≈ #08090A */
-	--rux-surface-1: oklch(17% var(--rux-neutral-c) var(--rux-neutral-h)); /* workspace / panel ≈ #0F1011 */
-	--rux-surface-2: oklch(21% var(--rux-neutral-c) var(--rux-neutral-h)); /* card / raised     ≈ #1A1B1D */
+	--rux-surface-0: oklch(14% var(--rux-neutral-c) var(--rux-neutral-h)); /* base background   ≈ #08090A void black */
+	--rux-surface-1: oklch(22% var(--rux-neutral-c) var(--rux-neutral-h)); /* workspace / panel ≈ #0F1011 17% carbon lift */
+	--rux-surface-2: oklch(37% var(--rux-neutral-c) var(--rux-neutral-h)); /* card / raised     ≈ #1A1B1D */
 	--rux-surface-3: oklch(24% var(--rux-neutral-c) var(--rux-neutral-h)); /* overlay / modal   ≈ #222326 */
 	--rux-surface-4: var(--rux-surface-3); /* compat — depth caps at tier 3 */
 
