@@ -93,11 +93,11 @@
 	/* ─── RADIUS · optical scale ─────────────────────────────────────────── */
 
 	--rux-radius-0: 0;
-	--rux-radius-xs: 2px;
-	--rux-radius-sm: 4px;
+	--rux-radius-xs: 4px;
+	--rux-radius-sm: 6px;
 	--rux-radius-md: 8px;
-	--rux-radius-lg: 16px;
-	--rux-radius-xl: 24px;
+	--rux-radius-lg: 12px;
+	--rux-radius-xl: 15px;
 	--rux-radius-full: 9999px;
 
 	/* ─── SHADOW · elevation scale ───────────────────────────────────────── */
@@ -509,6 +509,8 @@
 	--rux-input-height: 30px;
 	--rux-input-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-textarea-min-height: 84px;
+	--rux-input-bg: oklch(100% 0 0 / 2%); /* Barely visible, glassy fill */
+	--rux-input-hover-bg: oklch(100% 0 0 / 4%);   /* Slight lift on hover */
 
 	/* ─── COMPONENT · button ─────────────────────────────────────────────── */
 
@@ -517,9 +519,9 @@
 	--rux-button-mobile-height: 36px;
 	--rux-button-padding-inline: var(--rux-space-3);
 	--rux-button-content-gap: var(--rux-space-2);
-	--rux-button-radius: var(--rux-radius-sm);
+	--rux-button-radius: var(--rux-opt-radius-2);
 	--rux-button-border-width: var(--rux-border-width);
-	--rux-button-border: var(--rux-card-border-width) solid transparent;
+	--rux-button-border: var(--rux-card-border-width) solid var(--rux-danger);
 	--rux-button-font-family: var(--rux-font-sans);
 	--rux-button-font-size: var(--rux-text-sm);
 	--rux-button-font-weight: var(--rux-weight-regular);
@@ -678,9 +680,9 @@
 
 	/* ─── RADIUS · optical adjustments ───────────────────────────────────── */
 
-	--rux-opt-radius-1: var(--rux-radius-md);
-	--rux-opt-radius-2: var(--rux-radius-md);
-	--rux-opt-radius-3: var(--rux-radius-md);
+	--rux-opt-radius-1: var(--rux-radius-md); /* Cards, modals, popovers */
+	--rux-opt-radius-2: var(--rux-radius-sm);  /* Buttons, inputs, nested elements */
+	--rux-opt-radius-3: var(--rux-radius-md); /* Only for avatars and status dots */
 }
 
 /* ==========================================================================

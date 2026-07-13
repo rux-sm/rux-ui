@@ -20,7 +20,7 @@
   max-width: 100%;
   height: var(--rux-input-height);
   padding: 0 var(--rux-control-padding-inline);
-  background-color: var(--rux-surface-4);
+  background-color: var(--rux-input-bg);
   color: var(--rux-fg);
   border: var(--rux-input-border);
   border-radius: var(--rux-opt-radius-3);
@@ -40,13 +40,11 @@
   color: var(--rux-fg-subtle);
 }
 
-/*
 .rux-input:hover,
 .rux-select:hover,
 .rux-textarea:hover {
-  border-color: var(--rux-border-strong);
-  border-color: transparent; /* override for dark mode
-} */
+  background: var(--rux-input-hover-bg);
+}
 
 
 .rux-input:disabled,

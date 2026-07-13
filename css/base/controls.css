@@ -32,7 +32,7 @@
 	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--_fg);
 	border: var(--rux-button-border);
-	border-radius: var(--rux-opt-radius-3);
+	border-radius: var(--rux-button-radius);
 	box-shadow: var(--_shadow);
 	font: inherit;
 	font-family: var(--rux-button-font-family);
