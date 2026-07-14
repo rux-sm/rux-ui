@@ -266,7 +266,7 @@
 	inset: 0;
 	z-index: -1;
 	pointer-events: none;
-	background-image: repeating-linear-gradient(var(--_hatch-angle), var(--rux-trip-bar-overlay) 0 8px, transparent 8px 16px);
+	background-image: repeating-linear-gradient(var(--_hatch-angle), var(--rux-trip-bar-overlay) 0 14px, transparent 14px 28px);
 }
 
 /* one-way: ::before = top half (45deg base), ::after = SAME gradient mirrored (scaleY) into the bottom half */
@@ -292,13 +292,13 @@
 .rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
 .rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
 .rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after {
-	--_hatch-angle: 135deg;
-	clip-path: inset(0 50% 0 0);
+	--_hatch-angle: 45deg;
+	clip-path: inset(0 0 50% 0);
 }
 .rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
 .rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
 .rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after {
-	transform: scaleX(-1);
+	transform: scaleY(-1);
 }
 
 /* pick-up leg (return date) points DOWN: ::before = left half (45deg base), ::after = SAME gradient mirrored (scaleX) into the right half */
@@ -308,13 +308,13 @@
 .rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
 .rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
 .rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
-	--_hatch-angle: 45deg;
-	clip-path: inset(0 50% 0 0);
+	--_hatch-angle: -45deg;
+	clip-path: inset(0 0 50% 0);
 }
 .rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
 .rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
 .rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
-	transform: scaleX(-1);
+	transform: scaleY(-1);
 }
 
 /* ---------- Modifier: from-prev ---------- */
