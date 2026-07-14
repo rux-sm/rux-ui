@@ -84,7 +84,7 @@
 	--_conflict-height: 0px;
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
 	--_tone-ring: var(--rux-ring-focus);
-	--_surface: oklch(from var(--_tone) 50% 0.22 h);
+	--_surface: oklch(from var(--_tone) 36% 0.18 h);
 	--_surface-hover: oklch(from var(--_tone) 50% 0.22 h);
 	--_surface-active: oklch(from var(--_tone) 50% 0.22 h);
 	--_bus-label-fg: var(--_surface);
@@ -430,11 +430,13 @@
 	justify-content: flex-end;
 	align-self: stretch;
 	z-index: 1;
-	background-color: color-mix(in oklch, var(--_surface) 50%, transparent);
+	background-color: color-mix(in oklch, var(--_surface)50%, transparent);
 	border-radius: var(--rux-radius-container);
 	border: var(--rux-card-border);
 	overflow: hidden;
 	box-shadow: var(--rux-trip-bar-surface-shadow-flat);
+	-webkit-backdrop-filter: blur(16px) saturate(1.2);
+	backdrop-filter: blur(16px) saturate(1.2);
 }
 
 /* Matches __head's hover/active shading (below) — before this was flattened

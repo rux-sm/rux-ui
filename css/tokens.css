@@ -255,7 +255,7 @@
 	--rux-surface-calendar:        oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-calendar-header: oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-card:            oklch(22% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-modal:           oklch(24% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-modal:           oklch(26% var(--rux-neutral-c) var(--rux-neutral-h));
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
