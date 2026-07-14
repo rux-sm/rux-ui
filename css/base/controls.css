@@ -285,7 +285,7 @@
 	height: var(--rux-control-height);
 	background-color: var(--rux-button-default-bg);
 	border: var(--rux-border-width) solid var(--rux-button-border); /* invisible but real — keeps box size identical to bordered states */
-	border-radius: var(--rux-opt-radius-3);
+	border-radius: var(--rux-radius-control);
 	box-shadow: none;
 	overflow: hidden; /* clips active button corners to strip radius; inset shadow paints above children */
 }

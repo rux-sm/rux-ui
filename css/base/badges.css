@@ -71,7 +71,7 @@
   height: 28px;
   padding: 0 var(--rux-space-2);
   border: var(--rux-border-width) solid transparent;
-  border-radius: var(--rux-control-radius);
+  border-radius: var(--rux-radius-control);
 
   font-size: var(--rux-text-xs);
   font-weight: var(--rux-weight-regular);

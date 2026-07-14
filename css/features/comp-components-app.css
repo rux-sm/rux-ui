@@ -392,7 +392,7 @@
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: color-mix(in oklch, var(--rux-surface-modal) 92%, transparent);
 	border: var(--rux-border-width) solid color-mix(in oklch, var(--rux-accent) 55%, transparent);
-	border-radius: var(--rux-radius-field);
+	border-radius: var(--rux-radius-control);
 	box-shadow: var(--rux-elevation-2);
 	font-size: var(--rux-text-xs);
 }
@@ -541,7 +541,7 @@
 	align-items: baseline;
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-4);
-	border-radius: var(--rux-radius-field);
+	border-radius: var(--rux-radius-control);
 }
 
 .components-app__rules > div:nth-child(even) {
@@ -636,7 +636,7 @@
 	height: var(--rux-control-height);
 	background: var(--_swatch);
 	border: var(--rux-border-width) solid var(--rux-border-strong);
-	border-radius: var(--rux-radius-field);
+	border-radius: var(--rux-radius-control);
 }
 
 @media (max-width: 720px) {

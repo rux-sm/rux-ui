@@ -154,7 +154,7 @@
 .scheduler-app__profile {
 	overflow: hidden;
 	border: var(--rux-button-border);
-	border-radius: var(--rux-opt-radius-3);
+	border-radius: var(--rux-radius-control);
 }
 
 .scheduler-app__profile img {
@@ -765,7 +765,7 @@
 }
 
 .rux-driver-grid__row[data-driver-id]:hover {
-	background: var(--rux-color-white-a08);
+	background: var(--rux-alpha-white-8);
 }
 
 .rux-driver-grid__row.is-selected {
@@ -796,7 +796,7 @@
 	width: 100%;
 	height: 20px;
 	border-radius: var(--rux-radius-sm);
-	background: var(--rux-color-white-a10);
+	background: var(--rux-alpha-white-10);
 }
 
 .rux-driver-grid__cell--busy {

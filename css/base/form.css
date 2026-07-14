@@ -18,7 +18,7 @@
   background-color: var(--rux-input-bg);
   color: var(--rux-fg);
   border: var(--rux-input-border);
-  border-radius: var(--rux-opt-radius-3);
+  border-radius: var(--rux-radius-control);
   font: inherit;
   font-size: var(--rux-text-sm);
   outline: none;
@@ -411,7 +411,7 @@
 .rux-color-picker__trigger {
   --_field-shadow:
     inset 0 1px 2px oklch(from var(--rux-color-black) l c h / 0.75),
-    inset 0 -1px 0 var(--rux-color-white-a04);
+    inset 0 -1px 0 var(--rux-alpha-white-4);
 
   display: flex;
   align-items: center;
@@ -600,7 +600,7 @@
 	height: var(--rux-field-height);
 	padding: 0;
 	border: var(--rux-input-border);
-	border-radius: var(--rux-opt-radius-3);
+	border-radius: var(--rux-radius-control);
 	background: var(--rux-surface-canvas);
 	color: var(--rux-fg-muted);
 	font: inherit;
