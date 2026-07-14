@@ -912,26 +912,51 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		{ value: "PO", label: "Purchase Order" },
 	];
 	const DOC_TYPE_LABELS = Object.fromEntries(DOC_TYPES.map((t) => [t.value, t.label]));
+	const formatDocumentDate = (value) => {
+		if (!value) return "";
+		const date = new Date(value);
+		if (Number.isNaN(date.getTime())) return "";
+		return new Intl.DateTimeFormat("en-US", {
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+		}).format(date).replaceAll("/", "-");
+	};
+	const documentIcon = (doc) => {
+		const extension = String(doc.file_name ?? "").split(".").pop()?.toLowerCase();
+		if (extension === "pdf") return "picture_as_pdf";
+		if (["xls", "xlsx", "csv", "ods"].includes(extension)) return "table_view";
+		if (["jpg", "jpeg", "png", "gif", "webp", "svg", "heic"].includes(extension)) return "image";
+		if (["doc", "docx", "odt", "rtf"].includes(extension)) return "description";
+		if (["txt", "md"].includes(extension)) return "article";
+		if (["zip", "rar", "7z"].includes(extension)) return "folder_zip";
 
-	// Click opens the file (or Enter, for keyboard). The header Delete button
+		const label = String(doc.label ?? "").toLowerCase();
+		if (label === "po") return "receipt_long";
+		if (label === "contract") return "contract";
+		return "description";
+	};
+
+	// The primary button opens the file. The header Delete button
 	// arms "select which one" mode — same recipe as Trip Contacts above —
 	// which reveals this row's trash icon; clicking it deletes that specific
-	// document and disarms. Icon+label live in their own inner flex group
+	// document and disarms. Icon, label, and date live in their own button
 	// (.rux-trip-panel__doc-content) so the trash icon's width/margin can
 	// collapse to true zero when hidden, instead of leaving a stray gap.
 	function createDocRow(doc) {
 		const displayLabel = DOC_TYPE_LABELS[doc.label] || doc.label;
+		const uploadedDate = formatDocumentDate(doc.created_at);
+		const icon = documentIcon(doc);
 		const li = document.createElement("li");
 		li.className = "rux-trip-panel__doc-row";
 		li.dataset.docId = doc.id;
 		li.dataset.docPath = doc.file_path;
-		li.title = doc.file_name;
-		li.tabIndex = 0;
 		li.innerHTML = `
-			<span class="rux-trip-panel__doc-content">
-				<span class="rux-icon" aria-hidden="true">description</span>
-				<span class="rux-trip-panel__doc-name">${escHtml(displayLabel)}</span>
-			</span>
+			<button type="button" class="rux-trip-panel__doc-content" data-doc-open title="${escHtml(doc.file_name)}" aria-label="View ${escHtml(displayLabel)}${uploadedDate ? `, uploaded ${uploadedDate}` : ""}">
+				<span class="rux-icon" aria-hidden="true">${icon}</span>
+				<span class="rux-trip-panel__doc-name">View ${escHtml(displayLabel)}</span>
+				${uploadedDate ? `<time class="rux-trip-panel__doc-date" datetime="${escHtml(doc.created_at)}">${uploadedDate}</time>` : ""}
+			</button>
 			<button type="button" class="rux-trip-panel__doc-select" data-doc-select aria-label="Delete ${escHtml(displayLabel)}">
 				<span class="rux-icon" aria-hidden="true">delete</span>
 			</button>`;
@@ -1058,12 +1083,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				if (docSelecting) deleteDoc(selectBtn.closest(".rux-trip-panel__doc-row"));
 				return;
 			}
-			const row = e.target.closest(".rux-trip-panel__doc-row");
-			if (row) openDocRow(row);
-		});
-		docList?.addEventListener("keydown", (e) => {
-			if (e.key !== "Enter") return;
-			const row = e.target.closest(".rux-trip-panel__doc-row");
+			const row = e.target.closest("[data-doc-open]")?.closest(".rux-trip-panel__doc-row");
 			if (row) openDocRow(row);
 		});
 

@@ -624,6 +624,28 @@
 	line-height: 1;
 }
 
+.rux-print-trip__payment-entry {
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+}
+
+/* Matches .rux-print-trip__driver-icon/.rux-print-trip__leg-icon's sizing
+   (1em square, 10px, no descender gap) but neutral-toned like this row's
+   own ink, not a status color. */
+.rux-print-trip__payment-icon {
+	--_icon-fill: 1;
+	display: inline-flex;
+	width: 1em;
+	height: 1em;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	font-size: 10px;
+	line-height: 1;
+	color: var(--print-ink-muted);
+}
+
 @media print {
 	body > *:not(.rux-print-root) {
 		display: none !important;

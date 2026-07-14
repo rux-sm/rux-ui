@@ -192,6 +192,15 @@
 	row-gap: var(--rux-space-3);
 }
 
+/* [hidden] and .rux-trip-panel__logistics-grid have equal specificity, and
+   author CSS beats the browser's own [hidden]{display:none} UA default at
+   equal specificity — without this, the return-date grid's `display: grid`
+   above silently wins and the hidden attribute (toggled by
+   syncReturnLegVisibility() in trip-panel.js) has no visible effect. */
+.rux-trip-panel__logistics-grid[hidden] {
+	display: none;
+}
+
 .rux-trip-panel__section-label {
 	font-size: var(--rux-label-eyebrow-size);
 	font-weight: var(--rux-label-eyebrow-weight);
@@ -513,6 +522,13 @@
 	flex-direction: column;
 	gap: var(--rux-space-2);
 }
+
+/* Same [hidden]-vs-equal-specificity issue as .rux-trip-panel__logistics-grid
+   above — without this, #tp-return-bus-groups's hidden attribute would be
+   silently overridden by the display: flex rule above. */
+.rux-trip-panel__bus-groups[hidden] {
+	display: none;
+}
 .rux-trip-panel__bus-group {
 	--rux-card-content-gap: var(--rux-control-content-gap);
 }
@@ -602,7 +618,6 @@
 	display: flex;
 	align-items: center;
 	min-height: 28px;
-	cursor: pointer;
 	user-select: none;
 }
 .rux-trip-panel__doc-content {
@@ -613,8 +628,11 @@
 	min-width: 0;
 	height: 28px;
 	padding: 0 var(--rux-control-padding-inline);
+	border: 0;
 	border-radius: var(--rux-button-radius);
-	background: var(--rux-button-default-bg);
+	background: var(--rux-button-accent-bg);
+	color: var(--rux-button-accent-fg);
+	cursor: pointer;
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
 }
 .rux-trip-panel__doc-row:hover .rux-trip-panel__doc-content {
@@ -624,16 +642,23 @@
 	);
 }
 .rux-trip-panel__doc-content > .rux-icon {
-	color: var(--rux-fg-muted);
+	color: currentColor;
 }
 .rux-trip-panel__doc-name {
 	flex: 1;
 	font-size: var(--rux-text-sm);
-	color: var(--rux-fg);
+	font-weight: var(--rux-weight-medium);
+	color: currentColor;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	min-width: 0;
+}
+.rux-trip-panel__doc-date {
+	flex: none;
+	font-size: var(--rux-text-xs);
+	font-variant-numeric: tabular-nums;
+	color: var(--rux-fg-on-accent-muted);
 }
 /* Hidden by default — header Delete arms select mode (#tp-doc-list.is-selecting),
    revealing this trash icon on every row; width + margin-left animate

@@ -147,9 +147,21 @@
                       <p class="rux-card__title">Trip Details</p>
                     </header>
                     <div class="rux-card__body rux-card__body--stack">
+                    <div class="rux-field">
+                      <label class="rux-field__label">Trip Type</label>
+                      <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
+                        <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">autorenew</span><span class="rux-btn-label">Round</span></button>
+                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
+                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="dropoff_pickup" aria-label="Split trip" title="Split trip"><span class="rux-icon" aria-hidden="true">mobiledata_arrows</span><span class="rux-btn-label">Split</span></button>
+                      </div>
+                    </div>
                     <div class="rux-trip-panel__logistics-grid">
                       <div class="rux-field"><label class="rux-field__label" for="tp-start">Start date</label><input class="rux-input" id="tp-start" name="startDate" type="date" /></div>
                       <div class="rux-field"><label class="rux-field__label" for="tp-end">End date</label><input class="rux-input" id="tp-end" name="endDate" type="date" /></div>
+                    </div>
+                    <div class="rux-trip-panel__logistics-grid" id="tp-return-dates-grid" hidden>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-return-start">Return start date</label><input class="rux-input" id="tp-return-start" name="returnStartDate" type="date" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-return-end">Return end date</label><input class="rux-input" id="tp-return-end" name="returnEndDate" type="date" /></div>
                     </div>
                     <div class="rux-trip-panel__cols-2">
                       <div class="rux-field"><label class="rux-field__label" for="tp-destination">Destination</label><input class="rux-input" id="tp-destination" name="destination" type="text" /></div>
@@ -161,18 +173,6 @@
                     </div>
                     <div class="rux-field"><label class="rux-field__label" for="tp-book-email">Email</label><input class="rux-input" id="tp-book-email" name="bookingContact.email" type="email" /></div>
                     <div class="rux-field"><label class="rux-field__label" for="tp-notes">Notes</label><input class="rux-input" id="tp-notes" name="notes" type="text" /></div>
-                    <div class="rux-field">
-                      <label class="rux-field__label">Trip Type</label>
-                      <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">autorenew</span><span class="rux-btn-label">Round</span></button>
-                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
-                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="dropoff_pickup" aria-label="Split trip" title="Split trip"><span class="rux-icon" aria-hidden="true">mobiledata_arrows</span><span class="rux-btn-label">Split</span></button>
-                      </div>
-                    </div>
-                    <div class="rux-trip-panel__logistics-grid" id="tp-return-dates-grid" hidden>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-return-start">Return start date</label><input class="rux-input" id="tp-return-start" name="returnStartDate" type="date" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="tp-return-end">Return end date</label><input class="rux-input" id="tp-return-end" name="returnEndDate" type="date" /></div>
-                    </div>
                     </div>
                   </div>
                   <div class="rux-card">
@@ -291,6 +291,10 @@
                     <div class="rux-field">
                       <label class="rux-field__label" for="tp-price">Quoted Price</label>
                       <div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-price" name="quotedPrice" type="number" min="0" step="0.01" placeholder="0.00" aria-label="Quoted price" /></div>
+                    </div>
+                    <div class="rux-trip-panel__cols-2">
+                      <div class="rux-field"><label class="rux-field__label" for="tp-est-mi">Est. Miles</label><input class="rux-input" id="tp-est-mi" name="estMiles" type="number" min="0" step="1" placeholder="0" aria-label="Estimated miles" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-act-mi">Actual Miles</label><input class="rux-input" id="tp-act-mi" name="actualMiles" type="number" min="0" step="1" placeholder="0" aria-label="Actual miles" /></div>
                     </div>
                     <div class="rux-trip-panel__cols-2">
                       <div class="rux-field"><label class="rux-field__label" for="tp-total-paid">Paid</label><output class="rux-output" id="tp-total-paid" for="tp-payment-rows">$0.00</output></div>

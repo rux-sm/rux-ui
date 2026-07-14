@@ -102,6 +102,21 @@
       : [];
   }
 
+  // Same formula as the Itinerary tab's own Trip Summary card (renderSummary()
+  // in itinerary.js) — "day" markers aren't real travel segments, so they're
+  // excluded from the sum. Falls back to the manually entered Billing-tab
+  // estimate (trip.estimatedMiles) only when there's no itinerary data yet.
+  function itineraryMiles(trip) {
+    const real = sortedTripStops(trip).filter((s) => s.type !== "day");
+    const total = real.reduce((n, s) => n + (parseFloat(s.miles) || 0), 0);
+    return total > 0 ? total : null;
+  }
+
+  function formatMiles(value) {
+    if (value == null) return "";
+    return String(value % 1 === 0 ? value : value.toFixed(1));
+  }
+
   function tripTimes(trip) {
     const stops = sortedTripStops(trip);
     const pickup = stops.find((stop) => stop.type === "pickup");
@@ -133,16 +148,44 @@
     return text;
   }
 
-  function paymentDetail(trip) {
-    if (trip.paymentRefs?.length) return trip.paymentRefs.join(" · ");
-    return trip.paymentMethod || "";
+  // Same icon set as the Billing tab's own payment rows (PAYMENT_METHOD_ICONS
+  // in trip-db.js) and the screen trip-bar (see trip-bar.js) — an icon reads
+  // faster than a text abbreviation.
+  const PAYMENT_METHOD_ICONS = { Cash: "universal_currency_alt", Check: "checkbook", Card: "credit_card", ACH: "account_balance", Zelle: "bolt", Other: "more_horiz" };
+
+  // trip.trip_payments is the real, live payments list — trip.paymentRefs/
+  // paymentMethod read from legacy payment_ref_1/2/3 columns that are never
+  // populated by the current save flow, so they were always empty. Returns
+  // a DOM element (icon + ref + amount per payment, "·"-separated) rather
+  // than a string, same reason as trip-bar.js's buildPaymentValueEl.
+  function buildPaymentValueEl(trip) {
+    const valueEl = el("span", "rux-print-trip__detail-value rux-print-trip__payment-value");
+    const payments = Array.isArray(trip.trip_payments) ? trip.trip_payments : [];
+    const sorted = [...payments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+    sorted.forEach((p) => {
+      if (!p.ref && !p.amount) return;
+      if (valueEl.childElementCount) valueEl.appendChild(document.createTextNode(" · "));
+      const entry = el("span", "rux-print-trip__payment-entry");
+      entry.appendChild(icon(PAYMENT_METHOD_ICONS[p.method] || PAYMENT_METHOD_ICONS.Other, "rux-icon rux-print-trip__payment-icon"));
+      const text = [p.ref || "", p.amount ? `$${Number(p.amount).toLocaleString()}` : ""].filter(Boolean).join(" ");
+      entry.appendChild(document.createTextNode(text));
+      valueEl.appendChild(entry);
+    });
+    if (!valueEl.childElementCount) valueEl.classList.add("rux-print-trip__detail-value--empty");
+    return valueEl;
   }
 
-  function detailField(label, value) {
-    const normalized = detailValue(value);
+  // value is the common case (plain text). builtValueEl is an escape hatch
+  // for the rare field (just payments, so far) that needs real child
+  // elements — an icon per entry — which a textContent string can't hold.
+  function detailField(label, value, builtValueEl) {
     const field = el("span", "rux-print-trip__detail");
-    const valueEl = el("span", "rux-print-trip__detail-value", normalized || "");
-    if (!normalized) valueEl.classList.add("rux-print-trip__detail-value--empty");
+    const valueEl = builtValueEl || (() => {
+      const normalized = detailValue(value);
+      const v = el("span", "rux-print-trip__detail-value", normalized || "");
+      if (!normalized) v.classList.add("rux-print-trip__detail-value--empty");
+      return v;
+    })();
     field.append(
       el("span", "rux-print-trip__detail-label", `${label}:`),
       valueEl,
@@ -153,7 +196,7 @@
   function appendDetailRow(card, fields, className = "") {
     const row = el("div", `rux-print-trip__row rux-print-trip__detail-row${className ? " " + className : ""}`);
     row.style.gridTemplateColumns = `repeat(${fields.length}, minmax(0, 1fr))`;
-    fields.forEach(([label, value]) => row.appendChild(detailField(label, value)));
+    fields.forEach(([label, value, builtValueEl]) => row.appendChild(detailField(label, value, builtValueEl)));
     card.appendChild(row);
   }
 
@@ -246,10 +289,10 @@
       ? trip.drivers.map((driver, i) => [i === 0 ? "D1" : `R${i}`, driver.pay || ""])
       : [["D1", ""]];
     appendDetailRow(content, driverPayFields, "rux-print-trip__detail-row--after-drivers");
-    appendDetailRow(content, [["Mi", trip.estimatedMiles ? String(trip.estimatedMiles) : ""], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
+    appendDetailRow(content, [["Mi", formatMiles(itineraryMiles(trip) ?? trip.estimatedMiles)], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
     appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", trip.paymentRef || ""]]);
     appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "rux-print-trip__detail-row--single");
-    appendDetailRow(content, [["Pmt", paymentDetail(trip)]], "rux-print-trip__detail-row--single");
+    appendDetailRow(content, [["Pmt", "", buildPaymentValueEl(trip)]], "rux-print-trip__detail-row--single");
     card.appendChild(content);
     return card;
   }

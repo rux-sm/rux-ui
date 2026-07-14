@@ -374,6 +374,23 @@ function sortedTripStops(trip) {
     : [];
 }
 
+// Same formula as the Itinerary tab's own Trip Summary card
+// (renderSummary() in itinerary.js) — "day" markers aren't real travel
+// segments, so they're excluded from the sum. Falls back to the manually
+// entered Billing-tab estimate (trip.estimatedMiles) only when there's no
+// itinerary data yet, so that field still has a purpose before a route's
+// been built out.
+function itineraryMiles(trip) {
+  const real = sortedTripStops(trip).filter((s) => s.type !== "day");
+  const total = real.reduce((n, s) => n + (parseFloat(s.miles) || 0), 0);
+  return total > 0 ? total : null;
+}
+
+function formatMiles(value) {
+  if (value == null) return "";
+  return String(value % 1 === 0 ? value : value.toFixed(1));
+}
+
 function tripBarTimes(trip) {
   const stops = sortedTripStops(trip);
   const pickup = stops.find((stop) => stop.type === "pickup");
@@ -469,10 +486,34 @@ function driverPayFields(trip) {
   return drivers.map((d, i) => [i === 0 ? "D1" : `R${i}`, d.pay || ""]);
 }
 
-function paymentDetail(trip) {
-  if (trip.paymentRefs?.length) return trip.paymentRefs.join(" · ");
-  const method = trip.paymentMethod || "";
-  return method;
+// Same icon set as the Billing tab's own payment rows (PAYMENT_METHOD_ICONS
+// in trip-db.js) — an icon reads faster than a text abbreviation and matches
+// how method is already shown everywhere else a payment appears.
+const PAYMENT_METHOD_ICONS = { Cash: "universal_currency_alt", Check: "checkbook", Card: "credit_card", ACH: "account_balance", Zelle: "bolt", Other: "more_horiz" };
+
+// trip.trip_payments is the real, live payments list (same rows the Billing
+// tab's payment rows render from) — the trip.paymentRefs/paymentMethod
+// fields this replaced read from legacy payment_ref_1/2/3 columns that are
+// never populated by the current save flow, so they were always empty.
+// Returns a DOM element (icon + ref + amount per payment, "·"-separated)
+// rather than a string, since detailFieldEl can't put an icon inside a
+// plain textContent value.
+function buildPaymentValueEl(trip) {
+  const valueEl = document.createElement("span");
+  valueEl.className = "rux-trip-bar__detail-field-value rux-trip-bar__payment-value";
+  const payments = Array.isArray(trip.trip_payments) ? trip.trip_payments : [];
+  const sorted = [...payments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+  sorted.forEach((p) => {
+    if (!p.ref && !p.amount) return;
+    if (valueEl.childElementCount) valueEl.appendChild(document.createTextNode(" · "));
+    const entry = document.createElement("span");
+    entry.className = "rux-trip-bar__payment-entry";
+    entry.appendChild(icon(PAYMENT_METHOD_ICONS[p.method] || PAYMENT_METHOD_ICONS.Other, "rux-icon rux-trip-bar__payment-icon"));
+    const text = [p.ref || "", p.amount ? `$${Number(p.amount).toLocaleString()}` : ""].filter(Boolean).join(" ");
+    entry.appendChild(document.createTextNode(text));
+    valueEl.appendChild(entry);
+  });
+  return valueEl;
 }
 
 // Computes an explicit grid-row/grid-column for every field instead of
@@ -487,33 +528,44 @@ function layoutDetailFields(fields) {
   let col = 1;
   return fields.map(([label, value, options = {}]) => {
     const wide = !!options.wide;
+    const valueEl = options.valueEl;
+    const alignItems = options.alignItems;
     if (wide) {
       if (col !== 1) { row += 1; col = 1; }
-      const placed = { label, value, wide, gridRow: row, gridColumn: "1 / -1" };
+      const placed = { label, value, valueEl, alignItems, wide, gridRow: row, gridColumn: "1 / -1" };
       row += 1;
       return placed;
     }
-    const placed = { label, value, wide, gridRow: row, gridColumn: col };
+    const placed = { label, value, valueEl, alignItems, wide, gridRow: row, gridColumn: col };
     if (col === 1) col = 2;
     else { col = 1; row += 1; }
     return placed;
   });
 }
 
-function detailFieldEl({ label, value, wide, gridRow, gridColumn }) {
+// value is used for the common case (plain text, rendered via textContent —
+// never HTML-injected). valueEl is an escape hatch for the rare field (just
+// payments, so far) that needs real child elements — an icon per entry —
+// which a textContent string can't hold. alignItems overrides the field's
+// default baseline alignment — needed for the payment field specifically,
+// since an inline-flex icon+text entry doesn't have the same text baseline
+// as a plain string value, so baseline-aligning it against its label
+// visibly mismatches every other (plain-text) row's alignment.
+function detailFieldEl({ label, value, valueEl, alignItems, wide, gridRow, gridColumn }) {
   const field = document.createElement("div");
   field.className = `rux-trip-bar__detail-field${
     wide ? " rux-trip-bar__detail-field--wide" : ""
   }`;
   field.style.gridRow = String(gridRow);
   field.style.gridColumn = String(gridColumn);
+  if (alignItems) field.style.alignItems = alignItems;
   const labelEl = textEl("span", "rux-trip-bar__detail-field-label", label);
-  const valueEl = textEl(
+  const resolvedValueEl = valueEl || textEl(
     "span",
     "rux-trip-bar__detail-field-value",
     detailValue(value),
   );
-  field.append(labelEl, valueEl);
+  field.append(labelEl, resolvedValueEl);
   return field;
 }
 
@@ -901,12 +953,12 @@ export function createTripBar(trip, callbacks = {}) {
   }));
 
   const restFields = [
-    ["Mi", trip.estimatedMiles ? String(trip.estimatedMiles) : ""],
+    ["Mi", formatMiles(itineraryMiles(trip) ?? trip.estimatedMiles)],
     ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""],
     ["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""],
     ["PO", trip.paymentRef || ""],
     ["Inv", trip.invoiceNumber || "", { wide: true }],
-    ["Pmt", paymentDetail(trip), { wide: true }],
+    ["Pmt", "", { wide: true, valueEl: buildPaymentValueEl(trip), alignItems: "center" }],
   ];
   const placedRestFields = layoutDetailFields(restFields)
     .map((placed) => ({ ...placed, gridRow: placed.gridRow + driverRows }));
@@ -961,12 +1013,6 @@ export function createTripBar(trip, callbacks = {}) {
 
     const tail = document.createElement("div");
     tail.className = "rux-trip-bar__tail";
-
-    const tailDest = document.createElement("span");
-    tailDest.className = "rux-trip-bar__tail-destination";
-    tailDest.textContent = trip.destination || "";
-    tail.appendChild(tailDest);
-
 
     bar.append(head, tail);
 

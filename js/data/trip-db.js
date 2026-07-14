@@ -1201,6 +1201,54 @@ export async function reassignBus(assignmentId, newBusId) {
 
 const BUCKET = "trip-documents";
 
+function documentFileSlug(value, fallback) {
+	const slug = String(value ?? "")
+		.normalize("NFKD")
+		.replace(/[\u0300-\u036f]/g, "")
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "-")
+		.replace(/^-+|-+$/g, "");
+	return slug || fallback;
+}
+
+function documentFileExtension(file) {
+	const match = String(file?.name ?? "").match(/\.([a-z0-9]+)$/i);
+	return documentFileSlug(match?.[1], "bin");
+}
+
+async function buildDocumentFileName(tripId, label, file) {
+	const { data: trip, error } = await supabase
+		.from("trips")
+		.select("trip_ref, customer, start_date, booking_contact_name, trip_contact_1_name, trip_contact_2_name")
+		.eq("id", tripId)
+		.single();
+	if (error) throw error;
+
+	const date = /^\d{4}-\d{2}-\d{2}$/.test(trip.start_date ?? "")
+		? trip.start_date
+		: "unknown-date";
+	const clientOrName = trip.customer
+		|| trip.booking_contact_name
+		|| trip.trip_contact_1_name
+		|| trip.trip_contact_2_name;
+	const tripRef = trip.trip_ref || String(tripId).slice(0, 8);
+	const extension = documentFileExtension(file);
+
+	return [
+		date,
+		documentFileSlug(clientOrName, "unnamed"),
+		documentFileSlug(label, "document"),
+		documentFileSlug(tripRef, "trip"),
+	].join("_") + `.${extension}`;
+}
+
+function renamedDocumentFile(file, fileName) {
+	return new File([file], fileName, {
+		type: file.type,
+		lastModified: file.lastModified,
+	});
+}
+
 export function getDocumentUrl(filePath) {
 	const { data } = supabase.storage.from(BUCKET).getPublicUrl(filePath);
 	return data?.publicUrl || null;
@@ -1211,18 +1259,19 @@ export function getDocumentShortUrl(docId) {
 }
 
 export async function uploadDocument(tripId, label, file) {
-	const ext = file.name.split(".").pop() || "bin";
-	const filePath = `${tripId}/${label.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.${ext}`;
+	const fileName = await buildDocumentFileName(tripId, label, file);
+	const uploadFile = renamedDocumentFile(file, fileName);
+	const filePath = `${tripId}/${Date.now()}/${fileName}`;
 
 	const { error: uploadErr } = await supabase.storage
 		.from(BUCKET)
-		.upload(filePath, file);
+		.upload(filePath, uploadFile);
 	if (uploadErr) throw uploadErr;
 
 	const { data: doc, error: dbErr } = await supabase
 		.from("trip_documents")
-		.insert({ trip_id: tripId, label, file_name: file.name, file_path: filePath, file_size: file.size })
-		.select("id, label, file_name, file_path")
+		.insert({ trip_id: tripId, label, file_name: fileName, file_path: filePath, file_size: uploadFile.size })
+		.select("id, label, file_name, file_path, created_at")
 		.single();
 	if (dbErr) throw dbErr;
 	return doc;
@@ -1238,20 +1287,21 @@ export async function replaceDocument(docId, file) {
 
 	await supabase.storage.from(BUCKET).remove([existing.file_path]);
 
-	const ext = file.name.split(".").pop() || "bin";
-	const filePath = `${existing.trip_id}/${existing.label.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.${ext}`;
+	const fileName = await buildDocumentFileName(existing.trip_id, existing.label, file);
+	const uploadFile = renamedDocumentFile(file, fileName);
+	const filePath = `${existing.trip_id}/${Date.now()}/${fileName}`;
 
 	const { error: uploadErr } = await supabase.storage
 		.from(BUCKET)
-		.upload(filePath, file);
+		.upload(filePath, uploadFile);
 	if (uploadErr) throw uploadErr;
 
 	const { error: updateErr } = await supabase
 		.from("trip_documents")
-		.update({ file_name: file.name, file_path: filePath, file_size: file.size })
+		.update({ file_name: fileName, file_path: filePath, file_size: uploadFile.size })
 		.eq("id", docId);
 	if (updateErr) throw updateErr;
-	return { ...existing, file_name: file.name, file_path: filePath };
+	return { ...existing, file_name: fileName, file_path: filePath };
 }
 
 export async function deleteDocument(docId) {
@@ -1269,7 +1319,7 @@ export async function deleteDocument(docId) {
 export async function fetchDocuments(tripId) {
 	const { data, error } = await supabase
 		.from("trip_documents")
-		.select("id, label, file_name, file_path")
+		.select("id, label, file_name, file_path, created_at")
 		.eq("trip_id", tripId)
 		.order("created_at", { ascending: true });
 	if (error) throw error;

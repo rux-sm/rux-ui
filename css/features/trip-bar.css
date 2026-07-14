@@ -351,10 +351,6 @@
 	border-radius: 0 var(--rux-radius-container) var(--rux-radius-container) 0;
 }
 
-.rux-trip-bar--from-prev.is-active .rux-trip-bar__tail-destination {
-	display: none;
-}
-
 /* ---------- Modifier: to-next ---------- */
 
 .rux-trip-bar--to-next .rux-trip-bar__tail {
@@ -435,7 +431,7 @@
 	justify-content: flex-end;
 	align-self: stretch;
 	z-index: 1;
-	background-color: var(--_surface);
+	background-color: color-mix(in oklch, var(--_surface) 50%, transparent);
 	border-radius: var(--rux-radius-container);
 	border: var(--rux-card-border);
 	overflow: hidden;
@@ -448,29 +444,11 @@
    same hover/active response __head already has or the two halves of a
    multi-day bar visibly desync on interaction. */
 .rux-trip-bar--multi-day:hover .rux-trip-bar__tail {
-	background-color: var(--_surface-hover);
+	background-color: color-mix(in oklch, var(--_surface-hover) 75%, transparent);
 }
 
 .rux-trip-bar--multi-day.is-active .rux-trip-bar__tail {
 	background-color: var(--_surface-active);
-}
-
-
-.rux-trip-bar__tail-destination {
-	flex: 1;
-	min-width: 0;
-	padding-left: var(--rux-space-3);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-bold);
-	color: var(--rux-fg-on-accent);
-	display: none;
-}
-
-.rux-trip-bar--from-prev:not(.is-active) .rux-trip-bar__tail-destination {
-	display: block;
 }
 
 
@@ -904,6 +882,12 @@
 	align-items: baseline;
 	gap: var(--rux-space-1);
 	min-width: 0;
+	/* Explicit, not left to font-size × line-height rounding — text-xs
+	   (12px) × leading-snug (1.3) ≈ 15.6px, which most rows round to 16px,
+	   but the payment row's inline-flex icon+text value doesn't round the
+	   same way and ends up 17px, breaking row-height symmetry. Locking this
+	   removes the ambiguity for every row, not just that one. */
+	height: var(--rux-space-4);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
 }
@@ -929,6 +913,37 @@
 	white-space: nowrap;
 	color: var(--rux-fg);
 	font-weight: var(--rux-weight-medium);
+}
+
+/* Making the value itself the flex container (not an inline span with a
+   nested inline-flex child sitting inside a plain-text line) is what
+   actually locks the height — an inline-flex atomic box embedded in a text
+   line contributes its OWN baseline/ascent-descent to that line, which
+   doesn't match plain text's metrics, so the surrounding line box still
+   grows to fit it regardless of any height set on an ancestor. As a real
+   flex container, this element's height is fully its own to control. */
+.rux-trip-bar__payment-value {
+	display: flex;
+	align-items: center;
+	height: var(--rux-space-4);
+	overflow: hidden;
+}
+
+.rux-trip-bar__payment-entry {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+}
+
+/* Scoped as .rux-trip-bar__payment-entry .rux-trip-bar__payment-icon (not
+   just the bare class) so its specificity (0,2,0) actually beats
+   .rux-trip-bar .rux-icon in base/icons.css (also (0,2,0), but loaded
+   first) — a bare single-class rule here would lose that tie-break and the
+   icon would render at the component default (18px) instead of 12px,
+   blowing out this row's height/alignment. */
+.rux-trip-bar__payment-entry .rux-trip-bar__payment-icon {
+	--_icon-size: 12px;
+	flex: none;
 }
 
 /* ---------- Expand button ---------- */
