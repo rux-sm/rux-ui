@@ -250,11 +250,11 @@
 	   value regardless of what it's nested inside. */
 
 	--rux-surface-canvas:          oklch(10% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-workspace:       oklch(16% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-panel:           oklch(16% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-calendar:        oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-calendar-header: oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-card:            oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-workspace:       oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-panel:           oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-calendar:        oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-calendar-header: oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-card:            oklch(22% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-modal:           oklch(24% var(--rux-neutral-c) var(--rux-neutral-h));
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
@@ -414,7 +414,7 @@
 	/* ─── COMPONENT · topbar (app-wide chrome: module nav, search, profile) ─ */
 
 	--rux-topbar-bg: var(--rux-shell-bg);
-	--rux-topbar-border: var(--rux-border-width) solid var(--rux-border-subtle);
+	--rux-topbar-border: none;
 	--rux-topbar-padding: var(--rux-space-4) var(--rux-space-4);
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
@@ -422,7 +422,7 @@
 	--rux-workspace-bg: var(--rux-surface-workspace);
 	--rux-workspace-fg: var(--rux-fg);
 	--rux-workspace-border-inline: var(--rux-border-width) solid var(--rux-border);
-	--rux-workspace-border-block: var(--rux-border-width) solid transparent;
+	--rux-workspace-border-block: var(--rux-border-width) solid var(--rux-border);
 	--rux-workspace-radius: var(--rux-radius-0);
 	--rux-workspace-shadow: var(--rux-elevation-0);
 	--rux-workspace-gutter: var(--rux-space-4);
@@ -454,7 +454,8 @@
 	--rux-panel-bg: var(--rux-surface-panel);
 	--rux-panel-fg: var(--rux-fg);
 	--rux-panel-border-width: var(--rux-border-width);
-	--rux-panel-border: var(--rux-panel-border-width) solid transparent;
+	--rux-panel-border-inline: var(--rux-panel-border-width) none;
+	--rux-panel-border-block: var(--rux-panel-border-width) solid var(--rux-border);
 	--rux-panel-radius: var(--rux-radius-0);
 	--rux-panel-shadow: var(--rux-elevation-0);
 

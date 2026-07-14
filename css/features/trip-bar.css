@@ -417,7 +417,6 @@
 
 .rux-trip-bar--multi-day.is-active .rux-trip-bar__head {
 	background-color: var(--_surface-active);
-	box-shadow: var(--rux-trip-bar-lifted-shadow);
 }
 
 /* ---------- Tail (continuation rail for multi-day) ---------- */
@@ -935,14 +934,13 @@
 	gap: var(--rux-space-1);
 }
 
-/* Scoped as .rux-trip-bar__payment-entry .rux-trip-bar__payment-icon (not
-   just the bare class) so its specificity (0,2,0) actually beats
-   .rux-trip-bar .rux-icon in base/icons.css (also (0,2,0), but loaded
-   first) — a bare single-class rule here would lose that tie-break and the
-   icon would render at the component default (18px) instead of 12px,
-   blowing out this row's height/alignment. */
+/* No size override — this icon uses the same 18px trip-bar default as
+   every other icon in the bar (only two sizes exist app-wide: the 20px
+   standard and this 18px trip-bar default). It's taller than the row's
+   locked 16px height, but .rux-trip-bar__payment-value centers and clips
+   it, and Material Symbols glyphs carry enough internal padding that the
+   1px top/bottom crop doesn't touch the ink. */
 .rux-trip-bar__payment-entry .rux-trip-bar__payment-icon {
-	--_icon-size: 12px;
 	flex: none;
 }
 

@@ -12,7 +12,8 @@
 	overflow: clip;
 	background: var(--rux-panel-bg);
 	color: var(--rux-panel-fg);
-	border: var(--rux-panel-border);
+	border-inline: var(--rux-panel-border-inline);
+	border-block: var(--rux-panel-border-block);
 	border-radius: var(--rux-panel-radius);
 	box-shadow: var(--rux-panel-shadow);
 	isolation: isolate;
