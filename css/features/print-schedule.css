@@ -463,6 +463,23 @@
 	white-space: nowrap;
 }
 
+/* Drop-off/pick-up leg or one-way marker — sits just inside .rux-print-trip__group,
+   same placement precedent as the paid badge above. Matches
+   .rux-print-trip__driver-icon's sizing (1em square, 10px, no descender gap)
+   but neutral-toned like the group label, not a status color. */
+.rux-print-trip__leg-icon {
+	--_icon-fill: 1;
+	display: inline-flex;
+	width: 1em;
+	height: 1em;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	font-size: 10px;
+	line-height: 1;
+	color: var(--print-ink-faint);
+}
+
 .rux-print-trip__line,
 .rux-print-trip__notes {
 	min-width: 0;

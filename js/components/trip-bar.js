@@ -80,6 +80,8 @@ const ICON_MAP = {
   "groups": "tatami_seat",
   "external-link": "open_in_new",
   "phone": "phone",
+  "start": "start",
+  "keyboard-tab": "keyboard_tab",
 };
 
 function icon(name, className = "rux-icon") {
@@ -845,6 +847,31 @@ export function createTripBar(trip, callbacks = {}) {
       const row = document.createElement("div");
       row.className = "rux-trip-bar__reqs";
       if (busPill) row.appendChild(busPill);
+      // Drop-off/Pick-up trips get a leg marker alongside the requirement
+      // icons — same class/tooltip convention as those, so it inherits the
+      // standard trip-bar icon treatment (size/weight/color) automatically
+      // instead of needing its own CSS. Reinforces (doesn't replace) the
+      // background chevron pattern, which requires already knowing the
+      // direction convention to read at a glance.
+      if (trip.trip_type === "dropoff_pickup") {
+        // start (|→, leaving a fixed point) / keyboard_tab (→|, arriving at
+        // one) — true mirror images of each other, both already pointing
+        // right by default, so no rotation is needed either way.
+        const isOutbound = trip.leg === "outbound";
+        const legIcon = icon(
+          isOutbound ? "start" : "keyboard-tab",
+          "rux-icon rux-trip-bar__req-icon",
+        );
+        setFloatingTooltip(legIcon, isOutbound ? "Drop-off leg" : "Pick-up leg");
+        row.appendChild(legIcon);
+      } else if (trip.trip_type === "one_way") {
+        // Same icon as the Trip Type picker's own "One-way" segment
+        // (arrow_forward) — reusing it here keeps one icon meaning "one-way"
+        // everywhere in the app instead of introducing a second one.
+        const oneWayIcon = icon("arrow-right", "rux-icon rux-trip-bar__req-icon");
+        setFloatingTooltip(oneWayIcon, "One-way trip");
+        row.appendChild(oneWayIcon);
+      }
       const r = buildRequirementIcons(trip);
       if (r) { while (r.firstChild) row.appendChild(r.firstChild); }
       if (summaryMarkerLabels.length) { row.appendChild(pending); }

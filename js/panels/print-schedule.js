@@ -25,6 +25,9 @@
     group: "group",
     "person_add": "person_add",
     "person_remove": "person_remove",
+    "start": "start",
+    "keyboard-tab": "keyboard_tab",
+    "arrow-right": "arrow_forward",
   };
   function trackIdForBusNumber(number) {
     return `track-${String(number ?? "").replace(/[^A-Za-z0-9_-]/g, "_")}`;
@@ -187,6 +190,19 @@
       const datePaid = compactDate(trip.datePaid);
       if (datePaid) paidBadge.appendChild(el("span", "rux-print-trip__paid-date", datePaid));
       destinationRow.appendChild(paidBadge);
+    }
+    const tripTypeVal = trip.trip_type || trip.tripType;
+    if (tripTypeVal === "dropoff_pickup") {
+      // start (|→, leaving a fixed point) / keyboard_tab (→|, arriving at
+      // one) — true mirror images of each other, both already pointing
+      // right by default, so no rotation is needed either way.
+      const isOutbound = trip.leg === "outbound";
+      destinationRow.appendChild(icon(
+        isOutbound ? "start" : "keyboard-tab",
+        "rux-icon rux-print-trip__leg-icon",
+      ));
+    } else if (tripTypeVal === "one_way") {
+      destinationRow.appendChild(icon("arrow-right", "rux-icon rux-print-trip__leg-icon"));
     }
     destinationRow.appendChild(el("span", "rux-print-trip__group", trip.groupLabel || "\u00a0"));
     content.appendChild(destinationRow);
