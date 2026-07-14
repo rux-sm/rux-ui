@@ -574,6 +574,8 @@ export function createTripBar(trip, callbacks = {}) {
     trip.fromPrev ? "rux-trip-bar--from-prev" : "",
     trip.toNext ? "rux-trip-bar--to-next" : "",
     trip.trip_type === "one_way" ? "rux-trip-bar--one-way" : "",
+    trip.trip_type === "dropoff_pickup" && trip.leg === "outbound" ? "rux-trip-bar--dropoff-leg" : "",
+    trip.trip_type === "dropoff_pickup" && trip.leg === "return" ? "rux-trip-bar--pickup-leg" : "",
   ]
     .filter(Boolean)
     .join(" ");

@@ -149,7 +149,8 @@ export async function fetchDriverTrips(driverId) {
     .select(`
       role,
       trip_assignments(
-        trips(trip_ref, start_date, end_date, destination, invoice_status),
+        leg,
+        trips(trip_ref, start_date, end_date, return_start_date, return_end_date, trip_type, destination, invoice_status),
         buses(number)
       )
     `)
@@ -161,10 +162,13 @@ export async function fetchDriverTrips(driverId) {
       const ta   = td.trip_assignments;
       const trip = ta?.trips;
       if (!trip?.trip_ref) return null;
+      // Return-leg assignments run on the trip's separate return date range,
+      // not its outbound start/end — only meaningful for dropoff_pickup trips.
+      const isReturnLeg = ta.leg === "return" && trip.trip_type === "dropoff_pickup";
       return {
         tripRef:       trip.trip_ref,
-        startDate:     trip.start_date,
-        endDate:       trip.end_date,
+        startDate:     isReturnLeg ? trip.return_start_date : trip.start_date,
+        endDate:       isReturnLeg ? trip.return_end_date : trip.end_date,
         destination:   trip.destination,
         invoiceStatus: trip.invoice_status,
         busNumber:     ta.buses?.number,

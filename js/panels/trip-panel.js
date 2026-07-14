@@ -123,7 +123,7 @@ function refreshGroupOptions(group, buses, drivers) {
 	window.Rux?.syncSelectPlaceholders?.(group);
 }
 
-function buildBusGroup(idx, buses, drivers) {
+function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 	const busOpts    = busOptsHtml(buses);
 	const driverOpts = driverOptsHtml(drivers);
 
@@ -137,15 +137,15 @@ function buildBusGroup(idx, buses, drivers) {
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <div class="rux-input-group rux-input-group--prefix rux-input-group--action">
         <span class="rux-input-group__prefix">
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
             <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
           </button>
         </span>
-        <select class="rux-select is-placeholder" name="buses[${idx}].${escHtml(r.role)}.name" aria-label="${escHtml(r.title)}">${driverOpts}</select>
+        <select class="rux-select is-placeholder" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.name" aria-label="${escHtml(r.title)}">${driverOpts}</select>
       </div>
       <div class="rux-input-group rux-input-group--prefix">
         <span class="rux-input-group__prefix">$</span>
-        <input class="rux-input" name="buses[${idx}].${escHtml(r.role)}.pay" type="number" min="0" placeholder="0" aria-label="${escHtml(r.title)} pay" />
+        <input class="rux-input" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.pay" type="number" min="0" placeholder="0" aria-label="${escHtml(r.title)} pay" />
       </div>
     </div>`,
 		)
@@ -170,7 +170,7 @@ function buildBusGroup(idx, buses, drivers) {
     </header>
     <div class="rux-card__body rux-card__body--stack">
     <div class="rux-trip-panel__bus-head">
-      <select class="rux-select is-placeholder" name="buses[${idx}].busId" aria-label="Bus ${idx + 1}">
+      <select class="rux-select is-placeholder" name="${escHtml(fieldPrefix)}[${idx}].busId" aria-label="Bus ${idx + 1}">
         <option value="" disabled selected>Select bus…</option>
         ${busOpts}
       </select>
@@ -179,15 +179,15 @@ function buildBusGroup(idx, buses, drivers) {
       <div class="rux-trip-panel__driver-row">
         <div class="rux-input-group rux-input-group--prefix rux-input-group--action">
           <span class="rux-input-group__prefix">
-            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="buses[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
               <span class="rux-icon" aria-hidden="true">person</span>
             </button>
           </span>
-          <select class="rux-select is-placeholder" name="buses[${idx}].driver.name" aria-label="Driver">${driverOpts}</select>
+          <select class="rux-select is-placeholder" name="${escHtml(fieldPrefix)}[${idx}].driver.name" aria-label="Driver">${driverOpts}</select>
         </div>
         <div class="rux-input-group rux-input-group--prefix">
           <span class="rux-input-group__prefix">$</span>
-          <input class="rux-input" name="buses[${idx}].driver.pay" type="number" min="0" placeholder="0" aria-label="Driver pay" />
+          <input class="rux-input" name="${escHtml(fieldPrefix)}[${idx}].driver.pay" type="number" min="0" placeholder="0" aria-label="Driver pay" />
         </div>
       </div>
       ${roleRows}
@@ -196,14 +196,14 @@ function buildBusGroup(idx, buses, drivers) {
 	return el;
 }
 
-function renderBusGroups(container, n, buses, drivers) {
+function renderBusGroups(container, n, buses, drivers, fieldPrefix = "buses") {
 	const current = container.querySelectorAll(".rux-trip-panel__bus-group").length;
 	if (n > current) {
 		// Add new groups at the end — never touch existing ones
 		for (let i = current; i < n; i++) {
-			container.appendChild(buildBusGroup(i, buses, drivers));
+			container.appendChild(buildBusGroup(i, buses, drivers, fieldPrefix));
 		}
-		
+
 	} else if (n < current) {
 		// Remove from the end
 		const groups = container.querySelectorAll(".rux-trip-panel__bus-group");
@@ -221,14 +221,8 @@ function getTripOptions(root) {
 	return root.__ruxTripPanelOptions || { buses: [], drivers: [] };
 }
 
-function updateTripOptions(root, options = {}) {
-	setTripOptions(root, options);
-
-	const busGroupsEl = root.querySelector("#tp-bus-groups");
-	const busesInput = root.querySelector("#tp-buses");
+function refreshBusGroupSection(busGroupsEl, busesInput, buses, drivers, fieldPrefix) {
 	if (!busGroupsEl || !busesInput) return;
-
-	const { buses, drivers } = getTripOptions(root);
 
 	// Refresh option lists in existing groups without disturbing selected values
 	busGroupsEl.querySelectorAll(".rux-trip-panel__bus-group").forEach(group => {
@@ -237,7 +231,15 @@ function updateTripOptions(root, options = {}) {
 
 	// Add or remove groups to match the current count
 	const n = Math.max(1, Math.min(20, parseInt(busesInput.value, 10) || 1));
-	renderBusGroups(busGroupsEl, n, buses, drivers);
+	renderBusGroups(busGroupsEl, n, buses, drivers, fieldPrefix);
+}
+
+function updateTripOptions(root, options = {}) {
+	setTripOptions(root, options);
+	const { buses, drivers } = getTripOptions(root);
+
+	refreshBusGroupSection(root.querySelector("#tp-bus-groups"), root.querySelector("#tp-buses"), buses, drivers, "buses");
+	refreshBusGroupSection(root.querySelector("#tp-return-bus-groups"), root.querySelector("#tp-return-buses"), buses, drivers, "returnBuses");
 }
 
 function formatMoney(value) {
@@ -671,6 +673,36 @@ function setTripType(root, value) {
 		btn.setAttribute("aria-pressed", String(active));
 		btn.classList.toggle("is-active", active);
 	});
+	syncReturnLegVisibility(root);
+}
+
+// Return-leg fields/cards only apply to Drop-off / Pick-up trips. Safe to run
+// unconditionally (idempotent show/hide) — called both on genuine user
+// clicks and on programmatic setTripType() calls from populateTrip/
+// loadTrip/clearForm.
+function syncReturnLegVisibility(root) {
+	const isDropoffPickup = getTripType(root) === "dropoff_pickup";
+	const returnDatesGrid = root.querySelector("#tp-return-dates-grid");
+	const returnFleetCard = root.querySelector("#tp-return-fleet-card");
+	const returnBusGroupsEl = root.querySelector("#tp-return-bus-groups");
+	if (returnDatesGrid) returnDatesGrid.hidden = !isDropoffPickup;
+	if (returnFleetCard) returnFleetCard.hidden = !isDropoffPickup;
+	if (returnBusGroupsEl) returnBusGroupsEl.hidden = !isDropoffPickup;
+}
+
+// Wipes the return leg back to a single empty bus slot — the return leg
+// must start empty on a genuine type transition (never pre-filled from the
+// outbound assignment), so a dispatcher actively chooses rather than a
+// stale/wrong assignment slipping through unnoticed.
+function resetReturnLegState(root) {
+	const returnBusesInput = root.querySelector("#tp-return-buses");
+	const returnBusGroupsEl = root.querySelector("#tp-return-bus-groups");
+	if (returnBusesInput) returnBusesInput.value = "1";
+	if (returnBusGroupsEl) {
+		returnBusGroupsEl.querySelectorAll(".rux-trip-panel__bus-group").forEach((group) => group.remove());
+		const { buses, drivers } = getTripOptions(root);
+		renderBusGroups(returnBusGroupsEl, 1, buses, drivers, "returnBuses");
+	}
 }
 
 function getBillingType(root) {
@@ -757,6 +789,12 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		group.addEventListener("click", (e) => {
 			const btn = e.target.closest(".rux-button");
 			if (!btn || !group.contains(btn)) return;
+			// Captured before reassigning aria-pressed below, so the
+			// dropoff_pickup reset (see below) can tell a genuine type
+			// *transition* apart from a redundant re-click while already on
+			// that type — re-clicking an already-selected trip type must
+			// never wipe an existing trip's already-populated return leg.
+			const prevValue = group.querySelector(".rux-button[aria-pressed='true']")?.dataset.value;
 			group.querySelectorAll(".rux-button").forEach((b) => {
 				b.setAttribute("aria-pressed", "false");
 				b.classList.remove("is-active");
@@ -764,6 +802,10 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			btn.setAttribute("aria-pressed", "true");
 			btn.classList.add("is-active");
 			if (group.id === "tp-billing-type-group") syncTicketPricingVisibility(root);
+			if (group.id === "tp-trip-type-group") {
+				syncReturnLegVisibility(root);
+				if (btn.dataset.value === "dropoff_pickup" && prevValue !== "dropoff_pickup") resetReturnLegState(root);
+			}
 		});
 	});
 
@@ -1073,84 +1115,95 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	/* ── Bus groups ───────────────────────────────────────────────────────── */
 
-	const busGroupsEl = root.querySelector("#tp-bus-groups");
-	const busesInput = root.querySelector("#tp-buses");
+	initBusGroupSection(root, root.querySelector("#tp-bus-groups"), root.querySelector("#tp-buses"), "buses");
+	initBusGroupSection(root, root.querySelector("#tp-return-bus-groups"), root.querySelector("#tp-return-buses"), "returnBuses");
 
-	if (busGroupsEl && busesInput) {
-		const busCountDecBtn = root.querySelector("[data-bus-count-dec]");
-		const busCountIncBtn = root.querySelector("[data-bus-count-inc]");
-		const minBusCount = parseInt(busesInput.min, 10) || 1;
-		const maxBusCount = parseInt(busesInput.max, 10) || 20;
-		const clampBusCount = (value) => Math.max(minBusCount, Math.min(maxBusCount, parseInt(value, 10) || minBusCount));
-		const syncBusCountButtons = (value = busesInput.value) => {
-			const n = clampBusCount(value);
-			if (busCountDecBtn) busCountDecBtn.disabled = n <= minBusCount;
-			if (busCountIncBtn) busCountIncBtn.disabled = n >= maxBusCount;
-		};
+	updateTripOptions(root);
+}
 
-		updateTripOptions(root);
-		syncBusCountButtons();
+// Wires bus-count stepper + role-toggle/role-status clicks for one leg's bus
+// group section. Called once for the outbound section (#tp-bus-groups) and
+// once for the return section (#tp-return-bus-groups) — each pairs its own
+// stepper (found via .closest(".rux-number-stepper")) with its own group
+// container, so the two legs' inc/dec buttons and role clicks never
+// cross-wire despite both using the same unqualified [data-bus-count-*]
+// attributes and .rux-trip-panel__bus-group class.
+function initBusGroupSection(root, busGroupsEl, busesInput, fieldPrefix) {
+	if (!busGroupsEl || !busesInput) return;
 
-		root.querySelectorAll("[data-bus-count-dec], [data-bus-count-inc]").forEach((btn) => {
-			btn.addEventListener("click", () => {
-				const direction = btn.hasAttribute("data-bus-count-inc") ? 1 : -1;
-				busesInput.value = String(clampBusCount((parseInt(busesInput.value, 10) || minBusCount) + direction));
-				busesInput.dispatchEvent(new Event("input", { bubbles: true }));
-			});
-		});
+	const stepperEl = busesInput.closest(".rux-number-stepper");
+	const busCountDecBtn = stepperEl?.querySelector("[data-bus-count-dec]");
+	const busCountIncBtn = stepperEl?.querySelector("[data-bus-count-inc]");
+	const minBusCount = parseInt(busesInput.min, 10) || 1;
+	const maxBusCount = parseInt(busesInput.max, 10) || 20;
+	const clampBusCount = (value) => Math.max(minBusCount, Math.min(maxBusCount, parseInt(value, 10) || minBusCount));
+	const syncBusCountButtons = (value = busesInput.value) => {
+		const n = clampBusCount(value);
+		if (busCountDecBtn) busCountDecBtn.disabled = n <= minBusCount;
+		if (busCountIncBtn) busCountIncBtn.disabled = n >= maxBusCount;
+	};
 
-		busesInput.addEventListener("input", () => {
-			if (busesInput.value === "") {
-				syncBusCountButtons();
-				return;
-			}
-			const n = clampBusCount(busesInput.value);
-			if (busesInput.value !== String(n)) busesInput.value = String(n);
-			const { buses, drivers } = getTripOptions(root);
-			renderBusGroups(busGroupsEl, n, buses, drivers);
-			syncBusCountButtons(n);
-		});
+	syncBusCountButtons();
 
-		busesInput.addEventListener("change", () => {
-			const n = clampBusCount(busesInput.value);
-			busesInput.value = String(n);
+	stepperEl?.querySelectorAll("[data-bus-count-dec], [data-bus-count-inc]").forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const direction = btn.hasAttribute("data-bus-count-inc") ? 1 : -1;
+			busesInput.value = String(clampBusCount((parseInt(busesInput.value, 10) || minBusCount) + direction));
 			busesInput.dispatchEvent(new Event("input", { bubbles: true }));
 		});
+	});
 
-		// Role toggles — show/hide co-driver, relief 1/2 rows within the same bus group
-		busGroupsEl.addEventListener("click", (e) => {
-			const btn = e.target.closest("[data-role]");
-			if (!btn) return;
-			const group = btn.closest(".rux-trip-panel__bus-group");
-			const role = btn.dataset.role;
-			const nowActive = btn.getAttribute("aria-pressed") !== "true";
-			btn.setAttribute("aria-pressed", String(nowActive));
-			btn.classList.toggle("is-active", nowActive);
-			const row = group.querySelector(`[data-role-row="${role}"]`);
-			if (row) {
-				row.hidden = !nowActive;
-				if (!nowActive) {
-					const select = row.querySelector("select[name]");
-					if (select) select.value = "";
-					const payInput = row.querySelector("input[name]");
-					if (payInput) payInput.value = "";
-					const label = row.querySelector(".rux-trip-panel__role-label");
-					if (label) setRoleStatus(label, "off");
-				}
+	busesInput.addEventListener("input", () => {
+		if (busesInput.value === "") {
+			syncBusCountButtons();
+			return;
+		}
+		const n = clampBusCount(busesInput.value);
+		if (busesInput.value !== String(n)) busesInput.value = String(n);
+		const { buses, drivers } = getTripOptions(root);
+		renderBusGroups(busGroupsEl, n, buses, drivers, fieldPrefix);
+		syncBusCountButtons(n);
+	});
+
+	busesInput.addEventListener("change", () => {
+		const n = clampBusCount(busesInput.value);
+		busesInput.value = String(n);
+		busesInput.dispatchEvent(new Event("input", { bubbles: true }));
+	});
+
+	// Role toggles — show/hide co-driver, relief 1/2 rows within the same bus group
+	busGroupsEl.addEventListener("click", (e) => {
+		const btn = e.target.closest("[data-role]");
+		if (!btn) return;
+		const group = btn.closest(".rux-trip-panel__bus-group");
+		const role = btn.dataset.role;
+		const nowActive = btn.getAttribute("aria-pressed") !== "true";
+		btn.setAttribute("aria-pressed", String(nowActive));
+		btn.classList.toggle("is-active", nowActive);
+		const row = group.querySelector(`[data-role-row="${role}"]`);
+		if (row) {
+			row.hidden = !nowActive;
+			if (!nowActive) {
+				const select = row.querySelector("select[name]");
+				if (select) select.value = "";
+				const payInput = row.querySelector("input[name]");
+				if (payInput) payInput.value = "";
+				const label = row.querySelector(".rux-trip-panel__role-label");
+				if (label) setRoleStatus(label, "off");
 			}
-			window.Rux?.syncSelectPlaceholders?.(group);
-		});
+		}
+		window.Rux?.syncSelectPlaceholders?.(group);
+	});
 
-		// Role status icons: off → pending assignment → pending response → confirmed.
-		busGroupsEl.addEventListener("click", (e) => {
-			const label = e.target.closest(".rux-trip-panel__role-label");
-			if (!label) return;
-			const current = normalizeRoleStatus(label.dataset.roleState);
-			const currentIndex = ROLE_STATUS_STATES.findIndex((status) => status.value === current);
-			const next = ROLE_STATUS_STATES[(currentIndex + 1) % ROLE_STATUS_STATES.length];
-			setRoleStatus(label, next.value);
-		});
-	}
+	// Role status icons: off → pending assignment → pending response → confirmed.
+	busGroupsEl.addEventListener("click", (e) => {
+		const label = e.target.closest(".rux-trip-panel__role-label");
+		if (!label) return;
+		const current = normalizeRoleStatus(label.dataset.roleState);
+		const currentIndex = ROLE_STATUS_STATES.findIndex((status) => status.value === current);
+		const next = ROLE_STATUS_STATES[(currentIndex + 1) % ROLE_STATUS_STATES.length];
+		setRoleStatus(label, next.value);
+	});
 }
 
 function refreshRequirements(root) {

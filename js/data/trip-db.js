@@ -102,6 +102,10 @@ import { supabase } from "./supabase.js";
 		return Math.max(1, Math.min(20, intVal(root, "tp-buses", 1)));
 	}
 
+	function returnBusCountVal(root) {
+		return Math.max(1, Math.min(20, intVal(root, "tp-return-buses", 1)));
+	}
+
 	function reqVal(root, key) {
 		const btn = root.querySelector(`[data-req="${key}"]`);
 		return btn ? btn.getAttribute("aria-pressed") === "true" : false;
@@ -134,6 +138,15 @@ import { supabase } from "./supabase.js";
 	function syncBusCount(root, count) {
 		const value = Math.max(1, Math.min(20, parseInt(count, 10) || 1));
 		const input = root.querySelector("#tp-buses");
+		if (!input) return;
+
+		input.value = String(value);
+		input.dispatchEvent(new Event("input", { bubbles: true }));
+	}
+
+	function syncReturnBusCount(root, count) {
+		const value = Math.max(1, Math.min(20, parseInt(count, 10) || 1));
+		const input = root.querySelector("#tp-return-buses");
 		if (!input) return;
 
 		input.value = String(value);
@@ -192,6 +205,7 @@ import { supabase } from "./supabase.js";
 		});
 
 		const selectedTripType = window.TripPanel?.getTripType(root) || "round_trip";
+		const isDropoffPickup = selectedTripType === "dropoff_pickup";
 
 		return {
 			customer:             fieldVal(root, "tp-customer"),
@@ -199,8 +213,16 @@ import { supabase } from "./supabase.js";
 			is_self_organized:    window.TripPanel?.getBillingType(root) === "ticketed",
 			start_date:           fieldVal(root, "tp-start"),
 			end_date:             fieldVal(root, "tp-end"),
-			trip_type:            selectedTripType === "one_way" ? "one_way" : "round_trip",
+			trip_type:            selectedTripType === "one_way" ? "one_way" : isDropoffPickup ? "dropoff_pickup" : "round_trip",
 			trip_bar_color:       root.querySelector("[name='tripBarColor']:checked")?.value || null,
+
+			// Return leg (Drop-off / Pick-up only) — explicitly nulled (dates) or
+			// reset to the column default (bus count, which is NOT NULL) when the
+			// trip isn't this type, so switching away actually clears stale return
+			// data instead of `mergeUpdate` silently preserving it on an edit.
+			return_start_date:    isDropoffPickup ? fieldVal(root, "tp-return-start") : null,
+			return_end_date:      isDropoffPickup ? fieldVal(root, "tp-return-end") : null,
+			return_bus_count:     isDropoffPickup ? returnBusCountVal(root) : 1,
 
 			bus_count:            busCountVal(root),
 			booking_contact_name:  fieldVal(root, "tp-book-name"),
@@ -248,19 +270,25 @@ import { supabase } from "./supabase.js";
 		};
 	}
 
-	function collectAssignments(root) {
-		const busCount = busCountVal(root);
+	// containerSelector must scope the bus-group lookup to this leg's own
+	// section — a root-wide query would misalign indices once a second
+	// (return-leg) section exists using the same .rux-trip-panel__bus-group
+	// class. positionOffset keeps `position` unique across both legs (they
+	// share one trip_assignments set), since legs are numbered continuously
+	// rather than each restarting at 0.
+	function collectAssignmentsForLeg(root, leg, containerSelector, fieldPrefix, busCount, positionOffset) {
+		const container = root.querySelector(containerSelector);
 		const assignments = [];
 
 		for (let i = 0; i < busCount; i++) {
-			const busId = root.querySelector(`[name="buses[${i}].busId"]`)?.value || null;
+			const busId = root.querySelector(`[name="${fieldPrefix}[${i}].busId"]`)?.value || null;
 			if (!busId) continue;
 
 			const driverRoles = [
-				{ role: "driver",       nameField: `buses[${i}].driver.name`,  payField: `buses[${i}].driver.pay`  },
-				{ role: "co-driver",    nameField: `buses[${i}].coDriver.name`, payField: `buses[${i}].coDriver.pay` },
-				{ role: "relief-start", nameField: `buses[${i}].relief1.name`,  payField: `buses[${i}].relief1.pay`  },
-				{ role: "relief-end",   nameField: `buses[${i}].relief2.name`,  payField: `buses[${i}].relief2.pay`  },
+				{ role: "driver",       nameField: `${fieldPrefix}[${i}].driver.name`,  payField: `${fieldPrefix}[${i}].driver.pay`  },
+				{ role: "co-driver",    nameField: `${fieldPrefix}[${i}].coDriver.name`, payField: `${fieldPrefix}[${i}].coDriver.pay` },
+				{ role: "relief-start", nameField: `${fieldPrefix}[${i}].relief1.name`,  payField: `${fieldPrefix}[${i}].relief1.pay`  },
+				{ role: "relief-end",   nameField: `${fieldPrefix}[${i}].relief2.name`,  payField: `${fieldPrefix}[${i}].relief2.pay`  },
 			];
 
 			const drivers = driverRoles
@@ -271,7 +299,7 @@ import { supabase } from "./supabase.js";
 				})
 				.filter(Boolean);
 
-			const busGroup = root.querySelectorAll(".rux-trip-panel__bus-group")[i];
+			const busGroup = container?.querySelectorAll(".rux-trip-panel__bus-group")[i];
 			const activeRoles = [];
 			if (busGroup) {
 				const roleMap = { coDriver: "co-driver", relief1: "relief-start", relief2: "relief-end" };
@@ -292,10 +320,17 @@ import { supabase } from "./supabase.js";
 			} else {
 				activeRoles.push("driver");
 			}
-			assignments.push({ bus_id: busId, position: i, drivers, active_roles: activeRoles });
+			assignments.push({ bus_id: busId, position: positionOffset + i, drivers, active_roles: activeRoles, leg });
 		}
 
 		return assignments;
+	}
+
+	function collectAssignments(root) {
+		const outbound = collectAssignmentsForLeg(root, "outbound", "#tp-bus-groups", "buses", busCountVal(root), 0);
+		if (window.TripPanel?.getTripType(root) !== "dropoff_pickup") return outbound;
+		const returnLeg = collectAssignmentsForLeg(root, "return", "#tp-return-bus-groups", "returnBuses", returnBusCountVal(root), outbound.length);
+		return outbound.concat(returnLeg);
 	}
 
 	function collectPayments(root) {
@@ -352,12 +387,16 @@ import { supabase } from "./supabase.js";
 		return legacy;
 	}
 
-	function tripRange(tripData) {
+	// The date range a trip occupies for a given assignment leg. Outbound
+	// always uses the trip's primary start/end; return only applies for
+	// Drop-off / Pick-up trips and uses the separate return start/end.
+	function legRange(tripData, leg) {
+		if (leg === "return") {
+			if (tripData.trip_type !== "dropoff_pickup" || !tripData.return_start_date) return null;
+			return { start: tripData.return_start_date, end: tripData.return_end_date || tripData.return_start_date };
+		}
 		if (!tripData.start_date) return null;
-		return {
-			start: tripData.start_date,
-			end: tripData.end_date || tripData.start_date,
-		};
+		return { start: tripData.start_date, end: tripData.end_date || tripData.start_date };
 	}
 
 	function overlaps(aStart, aEnd, bStart, bEnd) {
@@ -377,26 +416,42 @@ import { supabase } from "./supabase.js";
 		);
 	}
 
+	// Correctness note: a real double-booking is about whether two *specific*
+	// date ranges overlap for a shared bus/driver — it does not matter
+	// whether either side is labeled "outbound" or "return". So this checks
+	// every one of our own assignments (each carrying its own leg-appropriate
+	// range) against every other trip's assignments (each likewise carrying
+	// its own leg-appropriate range), independent of leg-label equality. This
+	// also guarantees leg isolation for free: a return-leg assignment's range
+	// is far from its own outbound range, so it will never spuriously
+	// conflict with something only busy during the outbound window.
 	async function findAssignmentConflict(tripData, assignments) {
-		const range = tripRange(tripData);
-		if (!range || !assignments.length) return null;
+		if (!assignments.length) return null;
 
-		const busIds = new Set(assignments.map((assignment) => assignment.bus_id).filter(Boolean));
-		const driverIds = selectedDriverIds(assignments);
+		const ours = assignments
+			.map((assignment) => ({ ...assignment, range: legRange(tripData, assignment.leg ?? "outbound") }))
+			.filter((assignment) => assignment.range);
+		if (!ours.length) return null;
+
+		const busIds = new Set(ours.map((assignment) => assignment.bus_id).filter(Boolean));
+		const driverIds = selectedDriverIds(ours);
 		if (!busIds.size && !driverIds.size) return null;
 
+		// No date prefilter here (unlike a single-range trip, we'd need to
+		// widen it across both legs anyway) — the real check below is a
+		// precise per-assignment overlap, so the prefilter would only be an
+		// optimization, not a correctness requirement.
 		let query = supabase
 			.from("trips")
 			.select(`
 				id, trip_ref, customer, destination, start_date, end_date,
+				return_start_date, return_end_date, trip_type,
 				trip_assignments(
-					id, bus_id,
+					id, bus_id, leg,
 					buses(id, number),
 					trip_drivers(driver_id, drivers(id, name))
 				)
-			`)
-			.lte("start_date", range.end)
-			.or(`end_date.gte.${range.start},end_date.is.null`);
+			`);
 
 		if (currentTripId) query = query.neq("id", currentTripId);
 
@@ -404,22 +459,28 @@ import { supabase } from "./supabase.js";
 		if (error) throw error;
 
 		for (const trip of data ?? []) {
-			const otherStart = trip.start_date;
-			const otherEnd = trip.end_date || trip.start_date;
-			if (!otherStart || !overlaps(range.start, range.end, otherStart, otherEnd)) continue;
-
 			for (const assignment of trip.trip_assignments ?? []) {
-				if (assignment.bus_id && busIds.has(assignment.bus_id)) {
-					return {
-						label: `Bus ${assignment.buses?.number ?? assignment.bus_id} is already assigned to ${tripLabel(trip)}`,
-					};
-				}
+				const otherRange = legRange(trip, assignment.leg ?? "outbound");
+				if (!otherRange) continue;
 
-				for (const driver of assignment.drivers ?? assignment.trip_drivers ?? []) {
-					if (driver.driver_id && driverIds.has(driver.driver_id)) {
+				for (const mine of ours) {
+					if (!overlaps(mine.range.start, mine.range.end, otherRange.start, otherRange.end)) continue;
+
+					if (assignment.bus_id && mine.bus_id === assignment.bus_id) {
 						return {
-							label: `${driver.drivers?.name ?? "A selected driver"} is already assigned to ${tripLabel(trip)}`,
+							label: `Bus ${assignment.buses?.number ?? assignment.bus_id} is already assigned to ${tripLabel(trip)}`,
 						};
+					}
+
+					const otherDrivers = assignment.drivers ?? assignment.trip_drivers ?? [];
+					for (const driver of mine.drivers ?? []) {
+						if (!driver.driver_id) continue;
+						const match = otherDrivers.find((d) => d.driver_id === driver.driver_id);
+						if (match) {
+							return {
+								label: `${match.drivers?.name ?? "A selected driver"} is already assigned to ${tripLabel(trip)}`,
+							};
+						}
 					}
 				}
 			}
@@ -435,9 +496,12 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-destination", trip.destination);
 		setVal(root, "tp-start",       trip.start_date);
 		setVal(root, "tp-end",         trip.end_date);
+		setVal(root, "tp-return-start", trip.return_start_date);
+		setVal(root, "tp-return-end",   trip.return_end_date);
 
 
-		window.TripPanel?.setTripType(root, trip.trip_type === "one_way" ? "one_way" : "round_trip");
+		const validTripTypes = ["round_trip", "one_way", "dropoff_pickup"];
+		window.TripPanel?.setTripType(root, validTripTypes.includes(trip.trip_type) ? trip.trip_type : "round_trip");
 		window.TripPanel?.setBillingType(root, trip.is_self_organized ? "ticketed" : "charter");
 		const tripBarColor = ["cyan", "green", "purple", "yellow", "orange", "pink"].includes(trip.trip_bar_color)
 			? trip.trip_bar_color
@@ -589,12 +653,18 @@ import { supabase } from "./supabase.js";
 		if (ticketDeleteBtn) ticketDeleteBtn.disabled = !sorted.length;
 	}
 
-	function populateAssignments(root, assignments) {
+	// slot is this assignment's index *within its own leg* (derived by sorted
+	// position, not the raw position value) — positions are numbered
+	// continuously across both legs at save time, so the raw value can't be
+	// used directly as a per-leg DOM slot index.
+	function populateAssignmentsForLeg(root, assignments, containerSelector, fieldPrefix) {
 		const roleKeyMap = { "driver": "driver", "co-driver": "coDriver", "relief-start": "relief1", "relief-end": "relief2" };
-		assignments.forEach((assignment, i) => {
-			const slot = assignment.position ?? i;
-			const busGroup = root.querySelectorAll(".rux-trip-panel__bus-group")[slot];
-			const busSelect = root.querySelector(`[name="buses[${slot}].busId"]`);
+		const container = root.querySelector(containerSelector);
+		const sorted = [...assignments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+
+		sorted.forEach((assignment, slot) => {
+			const busGroup = container?.querySelectorAll(".rux-trip-panel__bus-group")[slot];
+			const busSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].busId"]`);
 			if (busSelect && assignment.bus_id) busSelect.value = assignment.bus_id;
 
 			// Restore active role toggles and label color states
@@ -626,12 +696,19 @@ import { supabase } from "./supabase.js";
 			(assignment.drivers || []).forEach(({ driver_id, role, pay }) => {
 				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
-				const driverSelect = root.querySelector(`[name="buses[${slot}].${roleKey}.name"]`);
+				const driverSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.name"]`);
 				if (driverSelect && driver_id) driverSelect.value = driver_id;
-				const payInput = root.querySelector(`[name="buses[${slot}].${roleKey}.pay"]`);
+				const payInput = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.pay"]`);
 				if (payInput && pay != null) payInput.value = pay;
 			});
 		});
+	}
+
+	function populateAssignments(root, assignments) {
+		const outbound = assignments.filter((assignment) => (assignment.leg ?? "outbound") !== "return");
+		const returnLeg = assignments.filter((assignment) => assignment.leg === "return");
+		populateAssignmentsForLeg(root, outbound, "#tp-bus-groups", "buses");
+		if (returnLeg.length) populateAssignmentsForLeg(root, returnLeg, "#tp-return-bus-groups", "returnBuses");
 		window.Rux?.syncSelectPlaceholders?.(root);
 	}
 
@@ -699,6 +776,7 @@ import { supabase } from "./supabase.js";
 		const delBtn = root.querySelector("#tp-btn-delete");
 		if (delBtn) delBtn.disabled = true;
 		syncBusCount(root, 1);
+		syncReturnBusCount(root, 1);
 		root.querySelectorAll(".rux-trip-panel__role-label").forEach((button) => {
 			restoreDriverStatus(button, "off");
 		});
@@ -760,6 +838,17 @@ import { supabase } from "./supabase.js";
 			if (!tripData.destination?.trim()) {
 				throw new Error("Destination is required.");
 			}
+			if (tripData.trip_type === "dropoff_pickup") {
+				if (!tripData.return_start_date || !tripData.return_end_date) {
+					throw new Error("Return start and end dates are required for a Drop-off / Pick-up trip.");
+				}
+				if (tripData.return_end_date < tripData.return_start_date) {
+					throw new Error("Return end date cannot be before return start date.");
+				}
+				if (tripData.return_start_date < tripData.end_date) {
+					throw new Error("Return start date must be on or after the outbound end date.");
+				}
+			}
 
 			if (currentTripId && hasAssignments(currentAssignments) && assignments.length === 0) {
 				throw new Error("Bus assignments are not loaded; refusing to overwrite them.");
@@ -795,10 +884,10 @@ import { supabase } from "./supabase.js";
 				.eq("trip_id", savedId);
 			if (deleteAssignmentsErr) throw deleteAssignmentsErr;
 
-			for (const { bus_id, position, drivers, active_roles } of assignments) {
+			for (const { bus_id, position, drivers, active_roles, leg } of assignments) {
 				const { data: assignment, error: assignErr } = await supabase
 					.from("trip_assignments")
-					.insert({ trip_id: savedId, bus_id, position, active_roles })
+					.insert({ trip_id: savedId, bus_id, position, active_roles, leg: leg ?? "outbound" })
 					.select("id")
 					.single();
 				if (assignErr) throw assignErr;
@@ -913,7 +1002,7 @@ export async function fetchTrips() {
 			.select(`
 				*,
 				trip_assignments(
-					id, position, bus_id, active_roles,
+					id, position, bus_id, active_roles, leg,
 					buses(id, number),
 					trip_drivers(id, driver_id, role, pay, drivers(id, name, short_name))
 				),
@@ -1008,6 +1097,8 @@ export function loadTrip(root, itinerary, trip) {
 		destination:           trip.destination,
 		start_date:            trip.start_date    ?? trip.startDate    ?? null,
 		end_date:              trip.end_date      ?? trip.endDate      ?? null,
+		return_start_date:     trip.return_start_date ?? trip.returnStartDate ?? null,
+		return_end_date:       trip.return_end_date   ?? trip.returnEndDate   ?? null,
 		trip_type:             trip.trip_type     ?? trip.tripType     ?? null,
 		trip_bar_color:        trip.trip_bar_color ?? trip.tripBarColor ?? null,
 		is_self_organized:     trip.is_self_organized ?? false,
@@ -1032,6 +1123,7 @@ export function loadTrip(root, itinerary, trip) {
 		date_paid:             trip.date_paid      ?? trip.datePaid       ?? null,
 		actual_miles:          trip.actual_miles   ?? trip.actualMiles    ?? null,
 		bus_count:             trip.bus_count      ?? trip.busesNeeded    ?? null,
+		return_bus_count:      trip.return_bus_count ?? trip.returnBusCount ?? null,
 		trip_reqs:      trip.trip_reqs      ?? {},
 		req_sleeper:    trip.req_sleeper    ?? false,
 		req_56pax:      trip.req_56pax      ?? false,
@@ -1045,8 +1137,12 @@ export function loadTrip(root, itinerary, trip) {
 		deposit_amount: trip.deposit_amount ?? null,
 	};
 	const loadedAssignments = trip.assignments ?? trip.trip_assignments ?? [];
-	const busCount = Math.max(1, normalized.bus_count || 0, loadedAssignments.length);
+	const outboundAssignments = loadedAssignments.filter((a) => (a.leg ?? "outbound") !== "return");
+	const returnAssignments = loadedAssignments.filter((a) => a.leg === "return");
+	const busCount = Math.max(1, normalized.bus_count || 0, outboundAssignments.length);
+	const returnBusCount = Math.max(1, normalized.return_bus_count || 0, returnAssignments.length);
 	normalized.bus_count = busCount;
+	normalized.return_bus_count = returnBusCount;
 
 	currentTripId  = UUID_RE.test(String(trip.id ?? "")) ? trip.id : null;
 	currentTripRef = trip.trip_ref ?? null;
@@ -1061,6 +1157,7 @@ export function loadTrip(root, itinerary, trip) {
 	populateTrip(root, normalized);
 	window.Rux?.syncDateInputs(root);
 	syncBusCount(root, busCount);
+	syncReturnBusCount(root, returnBusCount);
 
 	// Pre-select bus and drivers from the assignment embedded in the trip object
 	if (loadedAssignments.length) {

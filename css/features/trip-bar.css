@@ -210,19 +210,111 @@
 	--_tone-ring: var(--rux-ring-danger);
 }
 
-/* ---------- Modifier: one-way ---------- */
-/* Broad, opaque tonal bands distinguish trip type without changing the
-   semantic tone. Because the lighter band derives from the current surface,
-   confirmed one-way trips retain any selected color while unconfirmed ones
-   remain red. The real background layer always stays behind content. */
+/* ---------- Modifier: trip-type pattern overlays ---------- */
+/* A thin diagonal hatch that bends at a center seam to form ONE big point
+   across the whole bar:
+     one-way:      top/bottom split  → point right
+     drop-off leg (start date): left/right split → point up
+     pick-up leg (return date): left/right split → point down
+
+   ::after is NOT a second, independently-angled gradient — it's the exact
+   SAME gradient as ::before, mirrored with an actual transform
+   (scaleY/scaleX(-1)), same clip-path as ::before. Two *different* angles
+   (e.g. 45deg + 135deg), even sharing one full-size box, don't reliably
+   meet at the seam: CSS computes each gradient's phase from where its own
+   angled line crosses the box's corners, and for a non-square box (a wide,
+   short trip bar) that computation differs per angle — so the two edges
+   only "happen" to line up, and in practice they don't (this is the
+   alternating/disconnected look from the previous version). A transform
+   has no such ambiguity: reflecting X is provably X reflected, so at the
+   mirror axis (which IS the seam, since transform-origin defaults to the
+   element's own center) the two halves' pixel values are identical by
+   construction, not by coincidence.
+
+   ::before/::after are pure decoration (no text of their own), but still
+   need z-index:-1 to stay behind the bar's REAL text, and __head/__tail/
+   the single-day base each need to be genuine stacking contexts
+   (isolation: isolate for the base; __head/__tail already have their own
+   explicit z-index) so that -1 never bleeds into a sibling bar's stacking.
+   All three share one ink token (--rux-trip-bar-overlay). */
 .rux-trip-bar--one-way:not(.rux-trip-bar--multi-day),
-.rux-trip-bar--one-way .rux-trip-bar__head,
-.rux-trip-bar--one-way .rux-trip-bar__tail {
-	background-image: repeating-linear-gradient(
-		-45deg,
-		transparent 0 10px,
-		color-mix(in oklch, transparent 85%, var(--rux-color-white)) 10px 20px
-	);
+.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day),
+.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day) {
+	isolation: isolate;
+}
+
+.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::before,
+.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--one-way .rux-trip-bar__head::before,
+.rux-trip-bar--one-way .rux-trip-bar__head::after,
+.rux-trip-bar--one-way .rux-trip-bar__tail::before,
+.rux-trip-bar--one-way .rux-trip-bar__tail::after,
+.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::before,
+.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__head::before,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::before,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after,
+.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::before,
+.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--pickup-leg .rux-trip-bar__head::before,
+.rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
+.rux-trip-bar--pickup-leg .rux-trip-bar__tail::before,
+.rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background-image: repeating-linear-gradient(var(--_hatch-angle), var(--rux-trip-bar-overlay) 0 8px, transparent 8px 16px);
+}
+
+/* one-way: ::before = top half (45deg base), ::after = SAME gradient mirrored (scaleY) into the bottom half */
+.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::before,
+.rux-trip-bar--one-way .rux-trip-bar__head::before,
+.rux-trip-bar--one-way .rux-trip-bar__tail::before,
+.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--one-way .rux-trip-bar__head::after,
+.rux-trip-bar--one-way .rux-trip-bar__tail::after {
+	--_hatch-angle: 45deg;
+	clip-path: inset(0 0 50% 0);
+}
+.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--one-way .rux-trip-bar__head::after,
+.rux-trip-bar--one-way .rux-trip-bar__tail::after {
+	transform: scaleY(-1);
+}
+
+/* drop-off leg (start date) points UP: ::before = left half (135deg base), ::after = SAME gradient mirrored (scaleX) into the right half */
+.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::before,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__head::before,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::before,
+.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after {
+	--_hatch-angle: 135deg;
+	clip-path: inset(0 50% 0 0);
+}
+.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
+.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after {
+	transform: scaleX(-1);
+}
+
+/* pick-up leg (return date) points DOWN: ::before = left half (45deg base), ::after = SAME gradient mirrored (scaleX) into the right half */
+.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::before,
+.rux-trip-bar--pickup-leg .rux-trip-bar__head::before,
+.rux-trip-bar--pickup-leg .rux-trip-bar__tail::before,
+.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
+.rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
+	--_hatch-angle: 45deg;
+	clip-path: inset(0 50% 0 0);
+}
+.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
+.rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
+.rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
+	transform: scaleX(-1);
 }
 
 /* ---------- Modifier: from-prev ---------- */
@@ -337,6 +429,7 @@
 .rux-trip-bar__tail {
 	grid-column: 1 / -1;
 	grid-row: 1;
+	position: relative;
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
@@ -345,6 +438,7 @@
 	background-color: var(--_surface);
 	border-radius: var(--rux-radius-container);
 	border: var(--rux-card-border);
+	overflow: hidden;
 	box-shadow: var(--rux-trip-bar-surface-shadow-flat);
 }
 

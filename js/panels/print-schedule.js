@@ -163,6 +163,8 @@
       card.dataset.tripBarColor = tripBarColor;
     }
     if ((trip.trip_type || trip.tripType) === "one_way") card.classList.add("rux-print-trip--one-way");
+    if ((trip.trip_type || trip.tripType) === "dropoff_pickup" && trip.leg === "outbound") card.classList.add("rux-print-trip--dropoff-leg");
+    if ((trip.trip_type || trip.tripType) === "dropoff_pickup" && trip.leg === "return") card.classList.add("rux-print-trip--pickup-leg");
     if (entry.span > 1 || entry.fromPrev || entry.toNext) card.classList.add("rux-print-trip--multi-day");
     if (entry.fromPrev) card.classList.add("rux-print-trip--from-prev");
     if (entry.toNext) card.classList.add("rux-print-trip--to-next");

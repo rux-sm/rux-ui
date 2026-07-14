@@ -164,9 +164,14 @@
                     <div class="rux-field">
                       <label class="rux-field__label">Trip Type</label>
                       <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-trip-type-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
+                        <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">autorenew</span><span class="rux-btn-label">Round</span></button>
                         <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
+                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="dropoff_pickup" aria-label="Split trip" title="Split trip"><span class="rux-icon" aria-hidden="true">mobiledata_arrows</span><span class="rux-btn-label">Split</span></button>
                       </div>
+                    </div>
+                    <div class="rux-trip-panel__logistics-grid" id="tp-return-dates-grid" hidden>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-return-start">Return start date</label><input class="rux-input" id="tp-return-start" name="returnStartDate" type="date" /></div>
+                      <div class="rux-field"><label class="rux-field__label" for="tp-return-end">Return end date</label><input class="rux-input" id="tp-return-end" name="returnEndDate" type="date" /></div>
                     </div>
                     </div>
                   </div>
@@ -370,6 +375,20 @@
                     </div>
                   </div>
                   <div class="rux-trip-panel__bus-groups" id="tp-bus-groups"></div>
+                  <div class="rux-card" id="tp-return-fleet-card" hidden>
+                    <header class="rux-card__header"><p class="rux-card__title">Return Fleet Assignments</p></header>
+                    <div class="rux-card__body">
+                    <div class="rux-trip-panel__fleet-count-card">
+                      <span class="rux-trip-panel__fleet-count-label" id="tp-return-buses-label">Buses Needed (Return)</span>
+                      <div class="rux-number-stepper" role="group" aria-labelledby="tp-return-buses-label">
+                        <button class="rux-number-stepper__btn" type="button" data-bus-count-dec="return" aria-label="Fewer return buses"><span class="rux-icon">remove</span></button>
+                        <input class="rux-number-stepper__input" id="tp-return-buses" name="returnBusesNeeded" type="number" min="1" max="20" step="1" value="1" inputmode="numeric" aria-labelledby="tp-return-buses-label" />
+                        <button class="rux-number-stepper__btn" type="button" data-bus-count-inc="return" aria-label="More return buses"><span class="rux-icon">add</span></button>
+                      </div>
+                    </div>
+                    </div>
+                  </div>
+                  <div class="rux-trip-panel__bus-groups" id="tp-return-bus-groups" hidden></div>
                 </div>
               </div>
               <footer class="rux-panel__footer">
@@ -528,8 +547,9 @@
                         <label class="rux-field__label">Trip Type</label>
                         <div class="rux-segmented" id="tf-type-group" data-rux-toggle-group>
                           <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="all">All</button>
-                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">sync_alt</span><span class="rux-btn-label">Round</span></button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="round_trip" aria-label="Round trip" title="Round trip"><span class="rux-icon" aria-hidden="true">autorenew</span><span class="rux-btn-label">Round</span></button>
                           <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="one_way" aria-label="One-way trip" title="One-way trip"><span class="rux-icon" aria-hidden="true">arrow_forward</span><span class="rux-btn-label">One-way</span></button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="dropoff_pickup" aria-label="Split trip" title="Split trip"><span class="rux-icon" aria-hidden="true">mobiledata_arrows</span><span class="rux-btn-label">Split</span></button>
                         </div>
                       </div>
                       <div class="rux-field">
@@ -3407,18 +3427,38 @@
           (t.trip_assignments ?? []).forEach(assignment => {
             if (!assignment.buses) return;
             const key = assignment.id;
+            const leg = assignment.leg ?? "outbound";
+            // A Drop-off / Pick-up trip's return-leg assignments occupy the
+            // trip's separate return date range, not its outbound start/end —
+            // this is what makes the return leg render as its own bar on its
+            // own date instead of stretching/duplicating the outbound span.
+            const legStart = leg === "return" ? t.return_start_date : t.start_date;
+            const legEnd   = leg === "return" ? t.return_end_date : t.end_date;
             const primaryDriver = (assignment.drivers ?? []).find(d => d.role === "driver");
+            // Group-id (drives the "N/M" bus-count pill) is scoped per leg —
+            // an outbound bar must never pair with a same-trip return bar,
+            // since they're on different, non-simultaneous dates.
+            const sameLegCount = (t.trip_assignments ?? []).filter(a => (a.leg ?? "outbound") === leg).length;
             trips[key] = {
               id: t.id, trip_ref: t.trip_ref, assignmentId: assignment.id, busId: assignment.bus_id,
-              tripGroupId: (t.trip_assignments ?? []).length > 1 ? t.id : null,
-              assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [], active_roles: a.active_roles ?? ["driver"] })),
+              leg,
+              tripGroupId: sameLegCount > 1 ? `${t.id}:${leg}` : null,
+              assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [], active_roles: a.active_roles ?? ["driver"], leg: a.leg ?? "outbound" })),
               trip_stops: t.trip_stops ?? [],
               trip_payments: t.trip_payments ?? [],
               trip_documents: t.trip_documents ?? [],
               trip_passengers: t.trip_passengers ?? [],
               is_self_organized: t.is_self_organized,
-              startDate: t.start_date, endDate: t.end_date, destination: t.destination, customer: t.customer,
+              startDate: legStart, endDate: legEnd, destination: t.destination, customer: t.customer,
               trip_type: t.trip_type,
+              // Raw outbound/return date pair + return bus count, distinct
+              // from startDate/endDate above (which are already resolved to
+              // whichever leg this placement is) — the trip panel's Info/
+              // Fleet tabs need both legs' own dates regardless of which
+              // bar was clicked to open it.
+              start_date: t.start_date, end_date: t.end_date,
+              return_start_date: t.return_start_date, return_end_date: t.return_end_date,
+              return_bus_count: t.return_bus_count,
               trip_bar_color: t.trip_bar_color,
               departureTime: t.departure_time, spotTime: t.spot_time, returnTime: t.return_time, notes: t.notes,
               bookingContact: { name: t.booking_contact_name, phone: t.booking_contact_phone, email: t.booking_contact_email },
@@ -3745,23 +3785,31 @@
       function buildDriverDayMap() {
         const map = new Map();
         for (const trip of allTripsRaw) {
-          if (!trip.start_date) continue;
-          const driverIds = new Set();
+          // Walk per-assignment, not per-trip: a Drop-off / Pick-up trip's
+          // return-leg assignment is busy on the separate return date range,
+          // not the outbound start/end — using the trip's outer range for
+          // every assignment would show a return-leg driver busy on the
+          // wrong dates entirely.
           for (const a of trip.trip_assignments || []) {
+            const isReturnLeg = (a.leg ?? "outbound") === "return" && trip.trip_type === "dropoff_pickup";
+            const legStart = isReturnLeg ? trip.return_start_date : trip.start_date;
+            const legEnd   = isReturnLeg ? trip.return_end_date : trip.end_date;
+            if (!legStart) continue;
+            const driverIds = new Set();
             for (const d of a.drivers || []) if (d.driver_id) driverIds.add(d.driver_id);
-          }
-          if (!driverIds.size) continue;
-          const start = parseIsoDate(trip.start_date);
-          const end = parseIsoDate(trip.end_date || trip.start_date);
-          for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
-            const iso = isoDate(d);
-            const label = trip.destination || trip.trip_ref || "Trip";
-            driverIds.forEach((id) => {
-              if (!map.has(id)) map.set(id, new Map());
-              const dayMap = map.get(id);
-              if (!dayMap.has(iso)) dayMap.set(iso, []);
-              dayMap.get(iso).push(label);
-            });
+            if (!driverIds.size) continue;
+            const start = parseIsoDate(legStart);
+            const end = parseIsoDate(legEnd || legStart);
+            for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
+              const iso = isoDate(d);
+              const label = trip.destination || trip.trip_ref || "Trip";
+              driverIds.forEach((id) => {
+                if (!map.has(id)) map.set(id, new Map());
+                const dayMap = map.get(id);
+                if (!dayMap.has(iso)) dayMap.set(iso, []);
+                dayMap.get(iso).push(label);
+              });
+            }
           }
         }
         return map;

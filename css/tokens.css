@@ -2,12 +2,12 @@
    RUX UI — TOKENS
    --------------------------------------------------------------------------
    Architecture: PRIMITIVES → SEMANTIC → COMPONENT, strictly one-directional.
-   All color math is OKLCH on a single cool-neutral axis (hue 254).
+   All color math is OKLCH on a single cool-neutral axis (hue 250).
    Depth model (Linear-style):
-     · 4 opaque surface tiers built on lightness shifts (14/17/21/24% L)
-     · glassy hairline borders from translucent white (4% / 8%)
-     · recessed "wells" from translucent white fills (2%), shared by
-       inputs and segmented tracks
+     · opaque surface roles built on explicit lightness shifts (10–24% L)
+     · translucent white for borders, highlights, and interaction overlays
+     · a shared opaque recessed well for inputs and segmented tracks, with
+       translucent hover/focus states
    Shape model:
      · 4px grid; containers 8px radius, nested controls 6px
      · concentric nesting: inner radius = outer radius − inset padding
@@ -35,25 +35,27 @@
 	--rux-color-base: oklch(50% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-color-neutral-70: oklch(from var(--rux-color-base) 70% c h);
 
-	/* ─── COLOR · alpha ladders ──────────────────────────────────────────── */
-	/* Single translucent-white scale — wells sit at 2%, hairline borders at
-	   4% and 8%, state overlays above that. All derive from the one white. */
+	/* ─── COLOR · alpha primitives ───────────────────────────────────────── */
+	/* Compositing colors only: interaction overlays, highlights, borders,
+	   disabled treatments, and adaptive foregrounds. Structural surfaces use
+	   the opaque semantic roles in COLOR · surfaces instead. */
 
-	/* Structural Layers (single-compositing overlays only — not for building
-	   the surface hierarchy itself; see COLOR · surfaces below for that) */
-	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);  /* well/sunken fill, disabled button bg */
-  	--rux-alpha-white-4:  oklch(var(--rux-white) / 4%);  /* disabled button border */
-  	--rux-alpha-white-6:  oklch(var(--rux-white) / 6%);  /* menu, modal scrim tint */
-  	--rux-alpha-white-8:  oklch(var(--rux-white) / 8%);  /* border, hover overlay */
-  	--rux-alpha-white-10: oklch(var(--rux-white) / 10%);
-  	--rux-alpha-white-16: oklch(var(--rux-white) / 16%);
+	/* — white overlays — */
+	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);
+	--rux-alpha-white-4:  oklch(var(--rux-white) / 4%);
+	--rux-alpha-white-6:  oklch(var(--rux-white) / 6%);
+	--rux-alpha-white-8:  oklch(var(--rux-white) / 8%);
+	--rux-alpha-white-10: oklch(var(--rux-white) / 10%);
+	--rux-alpha-white-16: oklch(var(--rux-white) / 16%);
 
-	/* Typography Layers (High Opacity) */
-  	--rux-alpha-white-40: oklch(var(--rux-white) / 40%); /* Muted/Disabled */
-  	--rux-alpha-white-65: oklch(var(--rux-white) / 65%); /* Secondary text */
-  	--rux-alpha-white-90: oklch(var(--rux-white) / 90%); /* Primary text */
+	/* — adaptive foregrounds — */
+	--rux-alpha-white-40: oklch(var(--rux-white) / 40%);
+	--rux-alpha-white-65: oklch(var(--rux-white) / 65%);
+	--rux-alpha-white-90: oklch(var(--rux-white) / 90%);
 
-	--rux-color-black-a12: oklch(from var(--rux-color-black) l c h / 0.12);
+	/* — black overlays — */
+	--rux-alpha-black-12: oklch(var(--rux-black) / 12%);
+	--rux-alpha-black-60: oklch(var(--rux-black) / 60%);
 
 	/* ─── COLOR · accent foundation ──────────────────────────────────────── */
 
@@ -261,23 +263,22 @@
 
 	--rux-bg-hover: oklch(26% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-bg-active: oklch(30% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-bg-overlay: oklch(from var(--rux-color-black) l c h / 0.6);
+	--rux-bg-overlay: var(--rux-alpha-black-60);
 
 	/* ─── COLOR · recessed well ──────────────────────────────────────────── */
-	/* The shared punched-in treatment: translucent white reads as recessed
-	   against any opaque tier. Inputs AND segmented tracks consume these so
-	   every well in the app deepens/lightens together. */
+	/* Inputs and segmented tracks share one opaque punched-in base. Their
+	   translucent interaction colors adapt to the surface beneath them. */
 
 	--rux-well-bg: oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-well-bg-hover: var(--rux-alpha-white-4);
 	--rux-well-bg-focus: var(--rux-alpha-white-6);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
-	/* Same cool axis as the surfaces so grays never drift warm. */
+	/* Primary → muted → subtle is a descending contrast hierarchy. */
 
 	--rux-fg: var(--rux-alpha-white-90);
-	--rux-fg-muted: var(--rux-alpha-white-40);
-	--rux-fg-subtle: var(--rux-alpha-white-65);
+	--rux-fg-muted: var(--rux-alpha-white-65);
+	--rux-fg-subtle: var(--rux-alpha-white-40);
 	--rux-fg-placeholder: var(--rux-alpha-white-40);
 	--rux-fg-disabled: var(--rux-alpha-white-40);
 
@@ -286,12 +287,10 @@
 	--rux-fg-on-accent-subtle: oklch(var(--rux-white) / 55%);
 
 	/* ─── COLOR · border roles ───────────────────────────────────────────── */
-	/* Glassy hairlines from the translucent-white ladder — never flat gray.
-	   4%: layout dividers, panels, cards, resting fields.
-	   8%: modals, dropdowns, active pills, hover/focus edges. */
+	/* Glassy hairlines ordered by contrast: subtle < default < strong. */
 
 	--rux-border: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.1);
-	--rux-border-subtle: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.14);
+	--rux-border-subtle: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.08);
 	--rux-border-strong: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.16);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
@@ -476,7 +475,7 @@
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
 	--rux-panel-padding: var(--rux-space-4) var(--rux-space-4);
-	--rux-panel-content-gap: var(--rux-space-2);
+	--rux-panel-content-gap: var(--rux-space-4);
 	/* both still consumed outside panel.css — padding-block by safe-area
 	   calc()s in scheduler-app.css/flip-seven.css, padding-inline by the
 	   sizing formula below — keep defined even though panel.css itself
@@ -530,7 +529,7 @@
 	--rux-card-hover-border: var(--rux-border-strong);
 
 	/* — shared across header/body/footer/section, not any one part's own — */
-	--rux-card-padding: var(--rux-space-3);
+	--rux-card-padding: var(--rux-space-4);
 	--rux-card-content-gap: var(--rux-space-4);
 
 	/* ─── COMPONENT · trip bar · category colors ──────────────────────────── */
@@ -541,6 +540,11 @@
 	--rux-trip-color-yellow: oklch(60% 0.16 95);
 	--rux-trip-color-orange: oklch(60% 0.19 55);
 	--rux-trip-color-pink: oklch(60% 0.2 350);
+
+	/* — trip-type pattern overlays (one-way / drop-off leg / pick-up leg) —
+	   one shared ink for all three directional chevron patterns, so they only
+	   ever differ by direction, never by contrast. */
+	--rux-trip-bar-overlay: var(--rux-alpha-white-8);
 
 	/* ─── COMPONENT · input ──────────────────────────────────────────────── */
 	/* .rux-input/.rux-select/.rux-textarea. Recessed-well treatment — bg
@@ -555,7 +559,7 @@
 	--rux-input-bg: var(--rux-well-bg);
 	--rux-input-hover-bg: var(--rux-well-bg-hover);
 	--rux-input-focus-bg: var(--rux-well-bg-focus);
-	--rux-input-disabled-bg: var(--rux-color-black-a12);
+	--rux-input-disabled-bg: var(--rux-alpha-black-12);
 	--rux-input-focus-ring: 0 0 0 3px var(--rux-accent-subtle);
 
 	/* ─── COMPONENT · button ─────────────────────────────────────────────── */
@@ -578,7 +582,7 @@
 	--rux-button-mobile-icon-size: 24px;
 	--rux-button-shadow: var(--rux-elevation-0);
 	--rux-button-hover-overlay: var(--rux-alpha-white-8);
-	--rux-button-active-overlay: var(--rux-color-black-a12);
+	--rux-button-active-overlay: var(--rux-alpha-black-12);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing: var(--rux-ease-out);
 

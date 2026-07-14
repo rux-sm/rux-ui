@@ -55,7 +55,7 @@
   }
 
   function tripTypeOf(t) {
-    return t.trip_type === "one_way" ? "one_way" : "round_trip";
+    return t.trip_type === "one_way" ? "one_way" : t.trip_type === "dropoff_pickup" ? "dropoff_pickup" : "round_trip";
   }
 
   // ── Row rendering ─────────────────────────────────────────────────────────
@@ -113,7 +113,7 @@
           </div>
         </td>
         <td>${t.destination || "—"}</td>
-        <td class="trips-app__dates">${fmtDates(t.start_date, t.end_date)}</td>
+        <td class="trips-app__dates">${fmtDates(t.start_date, t.end_date)}${t.trip_type === "dropoff_pickup" && t.return_start_date ? ` → ${fmtDates(t.return_start_date, t.return_end_date)}` : ""}</td>
         <td class="trips-app__bus-cell">${busCell}</td>
         <td>${confirmedBadge}</td>
         <td>${invoiceBadge}</td>
@@ -230,7 +230,7 @@
 
   const WHEN_LABELS   = { upcoming: "Upcoming", past: "Past" };
   const STATUS_LABELS = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
-  const TYPE_LABELS   = { round_trip: "Round Trip", one_way: "One-Way" };
+  const TYPE_LABELS   = { round_trip: "Round Trip", one_way: "One-Way", dropoff_pickup: "Split" };
   const BUS_LABELS    = { assigned: "Assigned Bus", unassigned: "Unassigned Bus" };
 
   function createChip(label, onClear) {
