@@ -31,7 +31,7 @@
 }
 
 .scheduler-app {
-	--scheduler-app-gap: var(--rux-space-2);
+	--scheduler-app-gap: var(--rux-space-0);
 	/* Outer frame around the main schedule/workspace card — same asymmetric
 	   shape as --rux-panel-footer-padding (top 2, inline+bottom 3), kept as
 	   its own token rather than reusing --scheduler-app-gap since that token

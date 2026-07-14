@@ -247,7 +247,7 @@
 	   for a fixed structural hierarchy. Each of these is a known, absolute
 	   value regardless of what it's nested inside. */
 
-	--rux-surface-canvas: var(--rux-color-black); /* oklch(0% 0 0) */
+	--rux-surface-canvas:          oklch(10% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-workspace:       oklch(16% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-panel:           oklch(16% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-calendar:        oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
