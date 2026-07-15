@@ -637,7 +637,41 @@
 		const stops = defaultStops();
 		const recalcBtn = root.querySelector("#tp-itin-recalc");
 		const importBtn = root.querySelector("#tp-import-btn");
+		const legToggleEl = root.querySelector("#tp-itin-leg-toggle");
+		const legCardEl = root.querySelector("#tp-itin-leg-card");
 		let activeDayMode = { day: null, mode: null };
+
+		// Split trips get a second, independent stop list (pickup -> stops ->
+		// return-to-yard) for the return leg. `stops` above always holds
+		// whichever leg is currently on screen; the *other* leg's contents are
+		// stashed here (null = not yet populated, seed lazily on first switch)
+		// rather than ever reassigning `stops` itself — every closure in this
+		// file reads/mutates that one array by reference, and reassigning it
+		// could desync an in-flight async recalculation (see recalculateRoute).
+		let activeLeg = "outbound";
+		let legBuffers = { outbound: null, return: null };
+
+		function setLegToggleValue(leg) {
+			if (!legToggleEl) return;
+			legToggleEl.querySelectorAll(".rux-button").forEach((btn) => {
+				const on = btn.dataset.value === leg;
+				btn.setAttribute("aria-pressed", String(on));
+				btn.classList.toggle("is-active", on);
+			});
+		}
+
+		function switchLeg(leg) {
+			if (leg === activeLeg || !legBuffers.hasOwnProperty(leg)) return;
+			legBuffers[activeLeg] = stops.slice();
+			const incoming = legBuffers[leg] ?? defaultStops();
+			legBuffers[leg] = null;
+			stops.length = 0;
+			stops.push(...incoming);
+			activeLeg = leg;
+			setLegToggleValue(leg);
+			updateSummary();
+			renderStopList();
+		}
 
 		let yardCoordsCache = null;
 		let yardAddressCacheKey = null;
@@ -1090,6 +1124,10 @@
 				recalcBtn.setAttribute("aria-label", "Calculating route");
 				if (recalcLabel) recalcLabel.textContent = "Calculating…";
 			}
+			// A leg switch mid-recalc would swap `stops` out from under this loop's
+			// indices, silently misapplying results to the wrong leg — lock the
+			// toggle for the duration.
+			legToggleEl?.querySelectorAll(".rux-button").forEach((btn) => { btn.disabled = true; });
 			let routed = 0;
 			for (let i = 0; i < stops.length; i++) {
 				if (await estimateLeg(i, options)) routed++;
@@ -1097,6 +1135,7 @@
 			autoPopulateReturnTimes(stops);
 			autoPopulatePickupSpot(stops);
 			autoPopulatePickupDepart(stops);
+			legToggleEl?.querySelectorAll(".rux-button").forEach((btn) => { btn.disabled = false; });
 			if (recalcBtn) {
 				recalcBtn.disabled = false;
 				recalcBtn.classList.remove("is-routing");
@@ -1387,6 +1426,19 @@
 				stop.lng = yard.lng ?? null;
 				stop.routeStatus = "stale";
 			});
+			// The other leg's stops aren't in `stops` right now (see legBuffers
+			// above) — patch its return stop too, just mark it stale instead of
+			// re-estimating, since that leg isn't on screen to show the result.
+			const bufferedLeg = activeLeg === "outbound" ? "return" : "outbound";
+			legBuffers[bufferedLeg]?.forEach((stop) => {
+				if (stop.type !== "return") return;
+				const yard = getYard();
+				stop.name = yard.name;
+				stop.address = yard.address;
+				stop.lat = yard.lat ?? null;
+				stop.lng = yard.lng ?? null;
+				stop.routeStatus = "stale";
+			});
 			updateFromLabels();
 			renderStopList();
 			const returnIdx = stops.findIndex((stop) => stop.type === "return");
@@ -1397,23 +1449,49 @@
 			recalculateRoute({ force: true });
 		});
 
-		return {
-			getStops: () => stops.slice(),
-			setStops: (newStops) => {
-				stops.length = 0;
-				const normalized = newStops.length ? newStops.map(normalizeStop) : defaultStops();
+		const api = {
+			// Defaults to whichever leg is currently on screen (not a literal
+			// "outbound") so callers like the Upload JSON modal, which have no
+			// idea which leg is active, target whatever the user is looking at.
+			// trip-db.js always passes an explicit leg so it can address both
+			// legs deterministically regardless of what's on screen.
+			getStops: (leg = activeLeg) =>
+				(leg === activeLeg ? stops : (legBuffers[leg] ?? defaultStops())).slice(),
+			setStops: (newStops, leg = activeLeg) => {
+				const normalized = newStops?.length ? newStops.map(normalizeStop) : defaultStops();
 				if (!normalized.some((s) => s.type === "return")) normalized.push(defaultReturn());
-				stops.push(...normalized);
-				updateSummary();
-				renderStopList();
+				if (leg === activeLeg) {
+					stops.length = 0;
+					stops.push(...normalized);
+					updateSummary();
+					renderStopList();
+				} else {
+					legBuffers[leg] = normalized;
+				}
 			},
 			clearStops: () => {
 				stops.length = 0;
 				stops.push(...defaultStops());
+				legBuffers = { outbound: null, return: null };
+				activeLeg = "outbound";
+				setLegToggleValue("outbound");
 				updateSummary();
 				renderStopList();
 			},
+			setActiveLeg: (leg) => switchLeg(leg),
+			getActiveLeg: () => activeLeg,
+			setLegToggleVisible: (visible) => {
+				if (legCardEl) legCardEl.hidden = !visible;
+				if (!visible && activeLeg !== "outbound") switchLeg("outbound");
+			},
 		};
+		// Published onto window.Itinerary (not just returned) so trip-panel.js's
+		// syncReturnLegVisibility() and toggle-group click handler — which only
+		// ever get `root`, never the `itinerary` instance index.html holds
+		// locally — can reach setLegToggleVisible/setActiveLeg via
+		// window.Itinerary, same convention as window.TripPanel/window.RuxDocs.
+		Object.assign(window.Itinerary, api);
+		return api;
 	}
 
 	window.Itinerary = { init: initItinerary };

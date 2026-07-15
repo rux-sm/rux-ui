@@ -105,10 +105,6 @@
         </div>
       </header>
       <div class="rux-menu rux-popover" id="profile-menu" role="menu" hidden>
-        <button class="rux-menu__item" id="print-schedule-btn" type="button" role="menuitem" aria-label="Print schedule">
-          <span class="rux-icon" aria-hidden="true">print</span>
-          <span>Print schedule</span>
-        </button>
         <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="components">
           <span class="rux-icon" aria-hidden="true">widgets</span>
           <span>Components</span>
@@ -192,6 +188,7 @@
                     <header class="rux-card__header">
                       <p class="rux-card__title">Trip Contacts</p>
                       <div class="rux-cluster">
+                        <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle" type="button" id="tp-contact-toggle-btn" aria-pressed="false" aria-label="Mark contact as not needed"><span class="rux-icon" aria-hidden="true">block</span></button>
                         <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="tp-contact-delete-btn" disabled aria-pressed="false" aria-label="Delete a contact"><span class="rux-icon" aria-hidden="true">delete</span></button>
                         <button class="rux-button rux-button--default rux-button--icon" type="button" id="tp-contact-add-btn" aria-label="Add contact"><span class="rux-icon" aria-hidden="true">add</span></button>
                       </div>
@@ -202,6 +199,7 @@
                     <header class="rux-card__header">
                       <p class="rux-card__title">Files</p>
                       <div class="rux-cluster">
+                        <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle" type="button" id="tp-doc-toggle-btn" aria-pressed="false" aria-label="Mark itinerary as not needed"><span class="rux-icon" aria-hidden="true">block</span></button>
                         <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="tp-doc-delete-btn" disabled aria-label="Delete selected document"><span class="rux-icon" aria-hidden="true">delete</span></button>
                         <button class="rux-button rux-button--default rux-button--icon" type="button" id="tp-doc-new-btn" data-doc-menu aria-haspopup="menu" aria-expanded="false" aria-label="Add document"><span class="rux-icon" aria-hidden="true">add</span></button>
                       </div>
@@ -215,7 +213,7 @@
                         </li>
                       </ul>
                     </div>
-                    <input type="file" id="tp-doc-file-input" hidden accept="*/*" />
+                    <input type="file" id="tp-doc-file-input" hidden accept=".pdf,application/pdf" />
                     </div>
                   </div>
                   <div class="rux-card">
@@ -362,6 +360,20 @@
                       </header>
                       <div class="rux-card__body"></div>
                     </div>
+                    <div class="rux-card" id="tp-itin-leg-card" hidden>
+                      <header class="rux-card__header">
+                        <p class="rux-card__title">Split Trip</p>
+                      </header>
+                      <div class="rux-card__body">
+                        <div class="rux-field">
+                          <label class="rux-field__label">Viewing</label>
+                          <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-itin-leg-toggle" data-rux-toggle-group>
+                            <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="outbound">Outbound</button>
+                            <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="return">Inbound</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="rux-trip-itinerary__stops" id="tp-itin-stops"></div>
                   </div>
                 </div>
@@ -414,13 +426,13 @@
           <section class="rux-workspace" aria-label="Weekly schedule">
             <header class="rux-workspace__header">
               <div class="rux-workspace__heading">
-                <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" aria-pressed="false" data-opens="trip-panel-drawer">
+                <button class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" aria-label="Open trip editor" aria-pressed="false" data-opens="trip-panel-drawer">
                   <span class="rux-icon icon-off">left_panel_open</span>
                   <span class="rux-icon icon-on">left_panel_close</span>
                 </button>
-                <div class="rux-cluster" id="trip-view-group" data-rux-toggle-group>
-                  <button class="rux-button rux-button--ghost is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_view_month</span><span class="rux-btn-label">Week</span></button>
-                  <button class="rux-button rux-button--ghost" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
+                <div class="rux-segmented-track" id="trip-view-group" role="group" aria-label="Schedule view" data-rux-toggle-group>
+                  <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="calendar"><span class="rux-icon" aria-hidden="true">calendar_view_month</span><span class="rux-btn-label">Week</span></button>
+                  <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="list"><span class="rux-icon" aria-hidden="true">view_list</span><span class="rux-btn-label">List</span></button>
                 </div>
               </div>
               <div class="rux-workspace__nav">
@@ -440,7 +452,10 @@
                     <span class="rux-icon">chevron_right</span>
                   </button>
                 </div>
-                <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" aria-pressed="false" data-opens="right-panel-drawer">
+                <button class="rux-button rux-button--ghost rux-button--icon" id="print-schedule-btn" type="button" aria-label="Print schedule" title="Print schedule">
+                  <span class="rux-icon" aria-hidden="true">print</span>
+                </button>
+                <button class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right" type="button" aria-label="Open right panel" aria-pressed="false" data-opens="right-panel-drawer">
                   <span class="rux-icon icon-off">right_panel_open</span>
                   <span class="rux-icon icon-on">right_panel_close</span>
                 </button>
@@ -516,6 +531,14 @@
                       <button class="rux-button rux-button--ghost" id="tf-clear-btn" type="button">Clear</button>
                     </header>
                     <div class="rux-card__body rux-card__body--stack">
+                      <div class="rux-field">
+                        <label class="rux-field__label">Billing</label>
+                        <div class="rux-segmented" id="tf-billing-group" data-rux-toggle-group>
+                          <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="all">All</button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
+                          <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
+                        </div>
+                      </div>
                       <div class="rux-field">
                         <label class="rux-field__label">When</label>
                         <div class="rux-segmented" id="tf-when-group" data-rux-toggle-group>
@@ -738,7 +761,7 @@
 
           <section class="rux-workspace fleet-app__main" aria-label="Fleet roster">
             <header class="rux-workspace__header rux-workspace__header--table">
-              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="fleet-panel-toggle-btn" aria-label="Open vehicle panel" aria-pressed="false" data-opens="fleet-panel-drawer">
+              <button class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="fleet-panel-toggle-btn" aria-label="Open vehicle panel" aria-pressed="false" data-opens="fleet-panel-drawer">
                 <span class="rux-icon icon-off">left_panel_open</span>
                 <span class="rux-icon icon-on">left_panel_close</span>
               </button>
@@ -919,7 +942,7 @@
 
           <section class="rux-workspace driver-app__main" aria-label="Driver roster">
             <header class="rux-workspace__header rux-workspace__header--table">
-              <button class="rux-button rux-button--ghost rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="driver-panel-toggle-btn" aria-label="Open driver panel" aria-pressed="false" data-opens="driver-panel-drawer">
+              <button class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left" type="button" id="driver-panel-toggle-btn" aria-label="Open driver panel" aria-pressed="false" data-opens="driver-panel-drawer">
                 <span class="rux-icon icon-off">left_panel_open</span>
                 <span class="rux-icon icon-on">left_panel_close</span>
               </button>
@@ -2436,9 +2459,11 @@
       // with two coordinating drawers (left+right), so these two pass
       // getOtherDrawer + scheduleMin — Fleet/Driver's single drawer omits both.
 
-      // Tokenized (--scheduler-app-drawer-default-width in scheduler-app.css);
-      // read it so JS and CSS can't drift out of sync on the default width.
-      const DRAWER_DEFAULT = parseFloat(getComputedStyle(appEl).getPropertyValue("--scheduler-app-drawer-default-width"));
+      // Tokenized separately in scheduler-app.css; read both so initial state
+      // and subsequent drawer opens use the same side-specific defaults.
+      const appStyles = getComputedStyle(appEl);
+      const LEFT_DRAWER_DEFAULT = parseFloat(appStyles.getPropertyValue("--scheduler-app-left-drawer-default-width"));
+      const RIGHT_DRAWER_DEFAULT = parseFloat(appStyles.getPropertyValue("--scheduler-app-right-drawer-default-width"));
       const SCHEDULE_MIN = 471;
 
       const tripDrawerHandle = RuxDrawer.create({
@@ -2960,17 +2985,18 @@
       function buildTrackGrid(track) {
         const days = schedulerDayCount(track);
         let grid = track.querySelector(".rux-scheduler__track-grid");
-        if (grid && grid.children.length === days) return;
-        if (grid) grid.remove();
-        grid = document.createElement("div");
-        grid.className = "rux-scheduler__track-grid";
-        grid.setAttribute("aria-hidden", "true");
-        for (let day = 0; day < days; day++) {
-          const cell = document.createElement("span");
-          cell.className = "rux-scheduler__track-day";
-          grid.appendChild(cell);
+        if (!grid || grid.children.length !== days) {
+          if (grid) grid.remove();
+          grid = document.createElement("div");
+          grid.className = "rux-scheduler__track-grid";
+          grid.setAttribute("aria-hidden", "true");
+          for (let day = 0; day < days; day++) {
+            const cell = document.createElement("span");
+            cell.className = "rux-scheduler__track-day";
+            grid.appendChild(cell);
+          }
+          track.appendChild(grid);
         }
-        track.appendChild(grid);
       }
 
       function renderBusRows(buses = []) {
@@ -3306,13 +3332,16 @@
         }
         const existing = document.querySelectorAll(".rux-scheduler__now-line");
         if (todayIndex < 0) { existing.forEach(el => el.remove()); return; }
-        const fraction = (now.getHours() + now.getMinutes() / 60) / 24;
+        // Standard mode represents whole days, so its marker sits at Today's
+        // center. Time-aligned mode uses the precise current-time position.
+        const fraction = timeAlignEnabled ? (now.getHours() + now.getMinutes() / 60) / 24 : 0.5;
+        const markerLabel = timeAlignEnabled ? timeLabel : "Today";
         const dayPct = 100 / viewDays;
         const leftPct = (todayIndex * dayPct) + (fraction * dayPct);
         if (existing.length) {
           existing.forEach(el => {
             el.style.left = `${leftPct}%`;
-            el.dataset.time = timeLabel;
+            el.dataset.time = markerLabel;
           });
           return;
         }
@@ -3320,7 +3349,7 @@
           const line = document.createElement("div");
           line.className = "rux-scheduler__now-line";
           line.style.left = `${leftPct}%`;
-          line.dataset.time = timeLabel;
+          line.dataset.time = markerLabel;
           track.appendChild(line);
         });
       }
@@ -3363,7 +3392,11 @@
               leg,
               tripGroupId: sameLegCount > 1 ? `${t.id}:${leg}` : null,
               assignments: (t.trip_assignments ?? []).map(a => ({ bus_id: a.bus_id, position: a.position, drivers: a.drivers ?? [], active_roles: a.active_roles ?? ["driver"], leg: a.leg ?? "outbound" })),
-              trip_stops: t.trip_stops ?? [],
+              // Split trips' stops are leg-tagged (js/components/itinerary.js's
+              // Outbound/Inbound toggle) — filter here so each leg's bar shows
+              // its own day/mi/hr/hr and pickup/return times instead of both
+              // bars sharing the same array.
+              trip_stops: (t.trip_stops ?? []).filter(s => (s.leg ?? "outbound") === leg),
               trip_payments: t.trip_payments ?? [],
               trip_documents: t.trip_documents ?? [],
               trip_passengers: t.trip_passengers ?? [],
@@ -3387,6 +3420,7 @@
               trip_reqs: t.trip_reqs ?? {},
               req_sleeper: t.req_sleeper, req_56pax: t.req_56pax, req_ada: t.req_ada,
               need_hotel: t.need_hotel, need_fuel_card: t.need_fuel_card,
+              contact_not_needed: t.contact_not_needed, itinerary_not_needed: t.itinerary_not_needed,
               confirmed: isBillingConfirmed,
               driverStatus: isBillingConfirmed ? "confirmed" : "unconfirmed",
               invoiceStatus: t.invoice_status, paymentStatus: billingStatus,
@@ -3964,9 +3998,9 @@
       // Mobile begins with the schedule visible and opens only one
       // full-screen panel at a time either way, so both start closed there.
       drawer.style.setProperty("--drawer-width", "0px");
-      drawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
-      rightDrawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
-      rightDrawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
+      drawer.style.setProperty("--drawer-open-width", LEFT_DRAWER_DEFAULT + "px");
+      rightDrawer.style.setProperty("--drawer-width", RIGHT_DRAWER_DEFAULT + "px");
+      rightDrawer.style.setProperty("--drawer-open-width", RIGHT_DRAWER_DEFAULT + "px");
 
       tripPanel.inert = true;
       drawer.setAttribute("aria-hidden", "true");
@@ -4210,6 +4244,13 @@
           <div class="rux-field">
             <label class="rux-field__label" for="ps-rows-per-page">Rows per page</label>
             <input class="rux-input" type="number" id="ps-rows-per-page" min="1" max="20" step="1" value="4" />
+          </div>
+          <div class="rux-field">
+            <label class="rux-field__label">Report type</label>
+            <div class="rux-segmented" id="ps-report-type-group" data-rux-toggle-group>
+              <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true" data-value="report">Trip Report</button>
+              <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="overview">Trip Overview</button>
+            </div>
           </div>
         </div>
       </div>

@@ -182,7 +182,7 @@
 	.rux-button__disclosure-icon { transition-duration: 0.001ms !important; }
 }
 
-/* — sizes — */
+/* — sizes — XS is the documented micro-control exception. */
 
 .rux-button--xs {
 	--_h: var(--rux-button-xs-height);
@@ -222,7 +222,7 @@
 	display: none;
 }
 
-/* — sm — */
+/* — sm / compact (28px) — */
 
 .rux-button--sm {
 	--_h: var(--rux-button-sm-height);

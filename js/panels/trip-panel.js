@@ -135,9 +135,9 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 		.map(
 			(r) => `
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
-      <div class="rux-input-group rux-input-group--prefix rux-input-group--action">
+      <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
         <span class="rux-input-group__prefix">
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
             <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
           </button>
         </span>
@@ -177,9 +177,9 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     </div>
     <div class="rux-trip-panel__driver-rows">
       <div class="rux-trip-panel__driver-row">
-        <div class="rux-input-group rux-input-group--prefix rux-input-group--action">
+        <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
           <span class="rux-input-group__prefix">
-            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
               <span class="rux-icon" aria-hidden="true">person</span>
             </button>
           </span>
@@ -688,6 +688,7 @@ function syncReturnLegVisibility(root) {
 	if (returnDatesGrid) returnDatesGrid.hidden = !isDropoffPickup;
 	if (returnFleetCard) returnFleetCard.hidden = !isDropoffPickup;
 	if (returnBusGroupsEl) returnBusGroupsEl.hidden = !isDropoffPickup;
+	window.Itinerary?.setLegToggleVisible(isDropoffPickup);
 }
 
 // Wipes the return leg back to a single empty bus slot — the return leg
@@ -725,6 +726,41 @@ function setBillingType(root, value) {
 function syncTicketPricingVisibility(root) {
 	const card = root.querySelector("#tp-ticket-pricing-card");
 	if (card) card.hidden = getBillingType(root) !== "ticketed";
+}
+
+// Trips where no trip contact will ever exist (e.g. self-organized groups) or
+// no itinerary applies shouldn't keep flagging as pending on the trip bar —
+// these two toggles record that up front and lock the section so it reads as
+// deliberately skipped rather than incomplete.
+function getContactNotNeeded(root) {
+	return root.querySelector("#tp-contact-toggle-btn")?.getAttribute("aria-pressed") === "true";
+}
+
+function setContactNotNeeded(root, value) {
+	const btn = root.querySelector("#tp-contact-toggle-btn");
+	if (btn) {
+		btn.setAttribute("aria-pressed", String(value));
+		btn.classList.toggle("is-active", value);
+		btn.setAttribute("aria-label", value ? "Mark contact as needed" : "Mark contact as not needed");
+	}
+	root.querySelector("#tp-contacts-list")?.querySelectorAll("input").forEach((input) => { input.disabled = value; });
+	const addBtn = root.querySelector("#tp-contact-add-btn");
+	if (addBtn) addBtn.disabled = value;
+}
+
+function getItineraryNotNeeded(root) {
+	return root.querySelector("#tp-doc-toggle-btn")?.getAttribute("aria-pressed") === "true";
+}
+
+function setItineraryNotNeeded(root, value) {
+	const btn = root.querySelector("#tp-doc-toggle-btn");
+	if (btn) {
+		btn.setAttribute("aria-pressed", String(value));
+		btn.classList.toggle("is-active", value);
+		btn.setAttribute("aria-label", value ? "Mark itinerary as needed" : "Mark itinerary as not needed");
+	}
+	const newBtn = root.querySelector("#tp-doc-new-btn");
+	if (newBtn) newBtn.disabled = value;
 }
 
 /* ── Tabs ───────────────────────────────────────────────────────────────── */
@@ -806,6 +842,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				syncReturnLegVisibility(root);
 				if (btn.dataset.value === "dropoff_pickup" && prevValue !== "dropoff_pickup") resetReturnLegState(root);
 			}
+			if (group.id === "tp-itin-leg-toggle") window.Itinerary?.setActiveLeg?.(btn.dataset.value);
 		});
 	});
 
@@ -827,6 +864,10 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	const contactList = root.querySelector("#tp-contacts-list");
 	const contactAddBtn = root.querySelector("#tp-contact-add-btn");
 	const contactDeleteBtn = root.querySelector("#tp-contact-delete-btn");
+	const contactToggleBtn = root.querySelector("#tp-contact-toggle-btn");
+	contactToggleBtn?.addEventListener("click", () => {
+		setContactNotNeeded(root, !getContactNotNeeded(root));
+	});
 	const MAX_CONTACTS = 2;
 	if (contactList) {
 		const contactCount = () => contactList.querySelectorAll("[data-trip-contact]").length;
@@ -901,6 +942,10 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	const docNewBtn = root.querySelector("#tp-doc-new-btn");
 	const docDeleteBtn = root.querySelector("#tp-doc-delete-btn");
+	const docToggleBtn = root.querySelector("#tp-doc-toggle-btn");
+	docToggleBtn?.addEventListener("click", () => {
+		setItineraryNotNeeded(root, !getItineraryNotNeeded(root));
+	});
 	const docFileInput = root.querySelector("#tp-doc-file-input");
 	const docLabelPick = root.querySelector("#tp-doc-label-pick");
 	const docAddBtn = root.querySelector("#tp-doc-add-btn");
@@ -922,7 +967,16 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			day: "2-digit",
 		}).format(date).replaceAll("/", "-");
 	};
+	const isPdfFile = (file) => Boolean(file) && (file.type === "application/pdf" || /\.pdf$/i.test(file.name || ""));
 	const documentIcon = (doc) => {
+		// Doc type takes priority over file extension — every upload is a PDF
+		// now (see isPdfFile), so extension alone can no longer tell Itinerary/
+		// PO/Contract apart and would show the same icon for all three.
+		const label = String(doc.label ?? "").toLowerCase();
+		if (label === "itinerary") return "route";
+		if (label === "po") return "receipt_long";
+		if (label === "contract") return "contract";
+
 		const extension = String(doc.file_name ?? "").split(".").pop()?.toLowerCase();
 		if (extension === "pdf") return "picture_as_pdf";
 		if (["xls", "xlsx", "csv", "ods"].includes(extension)) return "table_view";
@@ -930,10 +984,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		if (["doc", "docx", "odt", "rtf"].includes(extension)) return "description";
 		if (["txt", "md"].includes(extension)) return "article";
 		if (["zip", "rar", "7z"].includes(extension)) return "folder_zip";
-
-		const label = String(doc.label ?? "").toLowerCase();
-		if (label === "po") return "receipt_long";
-		if (label === "contract") return "contract";
 		return "description";
 	};
 
@@ -943,9 +993,10 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	// document and disarms. Icon, label, and date live in their own button
 	// (.rux-trip-panel__doc-content) so the trash icon's width/margin can
 	// collapse to true zero when hidden, instead of leaving a stray gap.
-	function createDocRow(doc) {
+	function createDocRow(doc, { isUpdate = false } = {}) {
 		const displayLabel = DOC_TYPE_LABELS[doc.label] || doc.label;
 		const uploadedDate = formatDocumentDate(doc.created_at);
+		const dateText = uploadedDate ? (isUpdate ? `Updated ${uploadedDate}` : uploadedDate) : "";
 		const icon = documentIcon(doc);
 		const li = document.createElement("li");
 		li.className = "rux-trip-panel__doc-row";
@@ -953,10 +1004,10 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		li.dataset.docPath = doc.file_path;
 		li.dataset.docLabel = doc.label;
 		li.innerHTML = `
-			<button type="button" class="rux-trip-panel__doc-content" data-doc-open title="${escHtml(doc.file_name)}" aria-label="View ${escHtml(displayLabel)}${uploadedDate ? `, uploaded ${uploadedDate}` : ""}">
+			<button type="button" class="rux-trip-panel__doc-content" data-doc-open title="${escHtml(doc.file_name)}" aria-label="View ${escHtml(displayLabel)}${uploadedDate ? `, ${isUpdate ? "updated" : "uploaded"} ${escHtml(uploadedDate)}` : ""}">
 				<span class="rux-icon" aria-hidden="true">${icon}</span>
 				<span class="rux-trip-panel__doc-name">View ${escHtml(displayLabel)}</span>
-				${uploadedDate ? `<time class="rux-trip-panel__doc-date" datetime="${escHtml(doc.created_at)}">${uploadedDate}</time>` : ""}
+				${dateText ? `<time class="rux-trip-panel__doc-date" datetime="${escHtml(doc.created_at)}">${escHtml(dateText)}</time>` : ""}
 			</button>
 			<button type="button" class="rux-trip-panel__doc-select" data-doc-select aria-label="Delete ${escHtml(displayLabel)}">
 				<span class="rux-icon" aria-hidden="true">delete</span>
@@ -1002,7 +1053,8 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			try {
 				const doc = await window.RuxDocs.upload(tripId, label, file);
 				await window.RuxDocs.delete(row.dataset.docId);
-				row.replaceWith(createDocRow(doc));
+				row.remove();
+				docList?.prepend(createDocRow(doc, { isUpdate: true }));
 				window.Rux?.toast(`${DOC_TYPE_LABELS[label] || label} replaced`);
 			} catch (err) {
 				console.error("Replace failed:", err);
@@ -1045,8 +1097,10 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			}
 			docNewBtn.disabled = true;
 			try {
+				const hasExistingLabel = Array.from(docList?.querySelectorAll(".rux-trip-panel__doc-row") ?? [])
+					.some((row) => row.dataset.docLabel === label);
 				const doc = await window.RuxDocs.upload(tripId, label, file);
-				docList?.appendChild(createDocRow(doc));
+				docList?.prepend(createDocRow(doc, { isUpdate: hasExistingLabel }));
 				syncDocButtons();
 				if (label === "PO") {
 					const poToggle = root.querySelector("#tp-po-received");
@@ -1075,14 +1129,21 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		};
 
 		docFileInput.addEventListener("change", () => {
-			if (pendingReplaceRow) {
-				const row = pendingReplaceRow;
+			const file = docFileInput.files[0];
+			if (file && !isPdfFile(file)) {
+				window.Rux?.toast("Only PDF files are supported.");
 				pendingReplaceRow = null;
-				replaceDoc(row, docFileInput.files[0]);
 				docFileInput.value = "";
 				return;
 			}
-			uploadDoc(docFileInput.files[0], pendingUploadLabel);
+			if (pendingReplaceRow) {
+				const row = pendingReplaceRow;
+				pendingReplaceRow = null;
+				replaceDoc(row, file);
+				docFileInput.value = "";
+				return;
+			}
+			uploadDoc(file, pendingUploadLabel);
 		});
 
 		/* — Add-type menu — .rux-menu popover listing the 3 document types;
@@ -1169,8 +1230,18 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		if (!docList) return;
 		docList.querySelectorAll(".rux-trip-panel__doc-row").forEach((row) => row.remove());
 		docList.classList.remove("is-selecting");
-		(event.detail?.documents || []).forEach((doc) => {
-			docList.appendChild(createDocRow(doc));
+		// Documents arrive oldest-first (created_at ascending); a doc is an
+		// "update" if an earlier document already used the same label — e.g.
+		// a second Itinerary upload. Walking newest-first and appending each
+		// puts the newest document at the top of the list.
+		const docs = event.detail?.documents || [];
+		const earliestByLabel = new Map();
+		docs.forEach((doc) => {
+			const cur = earliestByLabel.get(doc.label);
+			if (!cur || new Date(doc.created_at) < new Date(cur)) earliestByLabel.set(doc.label, doc.created_at);
+		});
+		docs.slice().reverse().forEach((doc) => {
+			docList.appendChild(createDocRow(doc, { isUpdate: doc.created_at !== earliestByLabel.get(doc.label) }));
 		});
 		if (docDeleteBtn) {
 			docDeleteBtn.disabled = !docList.querySelector(".rux-trip-panel__doc-row");
@@ -1292,4 +1363,8 @@ window.TripPanel = {
 	setTripType,
 	getBillingType,
 	setBillingType,
+	getContactNotNeeded,
+	setContactNotNeeded,
+	getItineraryNotNeeded,
+	setItineraryNotNeeded,
 };

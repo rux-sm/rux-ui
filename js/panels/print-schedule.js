@@ -200,7 +200,45 @@
     card.appendChild(row);
   }
 
-  function createPrintTripCard(entry) {
+  // Same detection logic as trip-bar.js's buildRequirementIcons — prefer the
+  // live trip_reqs map, fall back to the legacy boolean columns only when
+  // trip_reqs is absent/empty (no merging of both).
+  const LEGACY_REQ_MAP = {
+    req_sleeper:    "sleeper",
+    req_56pax:      "pax56",
+    req_ada:        "adaLift",
+    need_hotel:     "hotel",
+    need_fuel_card: "fuelCard",
+  };
+
+  function buildPrintReqIcons(trip) {
+    const activeIds = [];
+    const tripReqs = trip.trip_reqs;
+    if (tripReqs && typeof tripReqs === "object" && Object.keys(tripReqs).length) {
+      Object.entries(tripReqs).forEach(([id, val]) => { if (val) activeIds.push(id); });
+    } else {
+      Object.entries(LEGACY_REQ_MAP).forEach(([col, id]) => {
+        if (trip[col]) activeIds.push(id);
+      });
+    }
+    if (!activeIds.length) return null;
+
+    const allReqs = window.appRequirements;
+    if (!allReqs?.length) return null;
+
+    const matched = activeIds.map((id) => allReqs.find((r) => r.id === id)).filter(Boolean);
+    if (!matched.length) return null;
+
+    const wrap = el("span", "rux-print-trip__reqs");
+    matched.forEach((req) => {
+      const i = icon(req.icon, "rux-icon rux-print-trip__req-icon");
+      i.title = req.label;
+      wrap.appendChild(i);
+    });
+    return wrap;
+  }
+
+  function createPrintTripCard(entry, reportType = "report") {
     const trip = entry.trip || {};
     const card = el("article", "rux-print-trip");
     if (!trip.driverStatus || trip.driverStatus !== "confirmed") card.classList.add("rux-print-trip--unconfirmed");
@@ -227,7 +265,7 @@
 
     const destinationRow = el("div", "rux-print-trip__row rux-print-trip__destination-row");
     destinationRow.appendChild(el("span", "rux-print-trip__destination", trip.destination || "Trip"));
-    if (["paid_full", "overpaid"].includes(trip.paymentStatus)) {
+    if (reportType !== "overview" && ["paid_full", "overpaid"].includes(trip.paymentStatus)) {
       const paidBadge = el("span", "rux-print-trip__paid-badge");
       paidBadge.appendChild(el("span", "rux-print-trip__paid-label", trip.paymentStatus === "overpaid" ? "OVERPAID" : "PAID"));
       const datePaid = compactDate(trip.datePaid);
@@ -248,6 +286,8 @@
       destinationRow.appendChild(icon("arrow-right", "rux-icon rux-print-trip__leg-icon"));
     }
     destinationRow.appendChild(el("span", "rux-print-trip__group", trip.groupLabel || "\u00a0"));
+    const reqIcons = buildPrintReqIcons(trip);
+    if (reqIcons) destinationRow.appendChild(reqIcons);
     content.appendChild(destinationRow);
 
     const passengerCount = (trip.trip_passengers || []).length;
@@ -256,43 +296,59 @@
       : trip.customer;
     content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", customer || "\u00a0"));
 
-    const contact = trip.bookingContact || trip.tripContact || {};
-    const contactText = [contact.name, contact.phone].filter(Boolean).join("  ");
-    content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", contactText || "\u00a0"));
+    // Trip Overview drops everything below the time row: contact line,
+    // drivers, driver pay, and the billing/logistics detail rows, down to
+    // just destination/req icons/customer/times, same fields the user asked
+    // for. Trip Report (default) keeps the full stack as before.
+    if (reportType !== "overview") {
+      const contact = trip.bookingContact || trip.tripContact || {};
+      const contactText = [contact.name, contact.phone].filter(Boolean).join("  ");
+      content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", contactText || "\u00a0"));
+    }
 
     const times = tripTimes(trip);
     const timeRow = el("div", "rux-print-trip__row rux-print-trip__times");
-    timeRow.append(el("span", "", fmtTime(times.departureTime)), el("span", "", fmtTime(times.spotTime)), el("span", "", fmtTime(times.returnTime)));
+    if (reportType === "overview") {
+      // Spot time is the tightest-fitting of the three on this shorter card,
+      // and less essential than departure/return — drop it and go from 3
+      // columns to 2 so the remaining two aren't squeezed.
+      timeRow.append(el("span", "", fmtTime(times.departureTime)), el("span", "", fmtTime(times.returnTime)));
+      timeRow.style.gridTemplateColumns = "repeat(2, minmax(0, 1fr))";
+    } else {
+      timeRow.append(el("span", "", fmtTime(times.departureTime)), el("span", "", fmtTime(times.spotTime)), el("span", "", fmtTime(times.returnTime)));
+    }
     content.appendChild(timeRow);
 
-    const drivers = el("div", "rux-print-trip__row rux-print-trip__drivers");
-    const roleIcons = {
-      "driver": "person",
-      "co-driver": "group",
-      "relief-start": "person_add",
-      "relief-end": "person_remove",
-    };
-    (trip.drivers || []).forEach((driver) => {
-      const item = el("span", "rux-print-trip__driver");
-      item.append(icon(roleIcons[driver.role] || "person", "rux-icon rux-print-trip__driver-icon"), el("span", "rux-print-trip__driver-name", driver.shortName || driver.name || ""));
-      drivers.appendChild(item);
-    });
-    if (!drivers.children.length) drivers.appendChild(el("span", "rux-print-trip__driver", "\u00a0"));
-    content.appendChild(drivers);
+    if (reportType !== "overview") {
+      const drivers = el("div", "rux-print-trip__row rux-print-trip__drivers");
+      const roleIcons = {
+        "driver": "person",
+        "co-driver": "group",
+        "relief-start": "person_add",
+        "relief-end": "person_remove",
+      };
+      (trip.drivers || []).forEach((driver) => {
+        const item = el("span", "rux-print-trip__driver");
+        item.append(icon(roleIcons[driver.role] || "person", "rux-icon rux-print-trip__driver-icon"), el("span", "rux-print-trip__driver-name", driver.shortName || driver.name || ""));
+        drivers.appendChild(item);
+      });
+      if (!drivers.children.length) drivers.appendChild(el("span", "rux-print-trip__driver", "\u00a0"));
+      content.appendChild(drivers);
 
-    // First driver is always "D1"; every driver beyond that is a relief
-    // slot ("R1", "R2", ...) — the row's column count matches however many
-    // drivers are actually assigned, not a fixed D1/D2 pair. Row is never
-    // omitted (falls back to a single empty "D1" slot) so every card
-    // reserves the same rows regardless of driver count.
-    const driverPayFields = (trip.drivers || []).length
-      ? trip.drivers.map((driver, i) => [i === 0 ? "D1" : `R${i}`, driver.pay || ""])
-      : [["D1", ""]];
-    appendDetailRow(content, driverPayFields, "rux-print-trip__detail-row--after-drivers");
-    appendDetailRow(content, [["Mi", formatMiles(itineraryMiles(trip) ?? trip.estimatedMiles)], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
-    appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", trip.paymentRef || ""]]);
-    appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "rux-print-trip__detail-row--single");
-    appendDetailRow(content, [["Pmt", "", buildPaymentValueEl(trip)]], "rux-print-trip__detail-row--single");
+      // First driver is always "D1"; every driver beyond that is a relief
+      // slot ("R1", "R2", ...) — the row's column count matches however many
+      // drivers are actually assigned, not a fixed D1/D2 pair. Row is never
+      // omitted (falls back to a single empty "D1" slot) so every card
+      // reserves the same rows regardless of driver count.
+      const driverPayFields = (trip.drivers || []).length
+        ? trip.drivers.map((driver, i) => [i === 0 ? "D1" : `R${i}`, driver.pay || ""])
+        : [["D1", ""]];
+      appendDetailRow(content, driverPayFields, "rux-print-trip__detail-row--after-drivers");
+      appendDetailRow(content, [["Mi", formatMiles(itineraryMiles(trip) ?? trip.estimatedMiles)], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
+      appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", trip.paymentRef || ""]]);
+      appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "rux-print-trip__detail-row--single");
+      appendDetailRow(content, [["Pmt", "", buildPaymentValueEl(trip)]], "rux-print-trip__detail-row--single");
+    }
     card.appendChild(content);
     return card;
   }
@@ -352,7 +408,7 @@
     return el;
   }
 
-  function buildPrintDom({ paperSize, orientation, rowsPerPage }) {
+  function buildPrintDom({ paperSize, orientation, rowsPerPage, reportType }) {
     const demo = window.schedulerDemo;
     if (!demo) return null;
 
@@ -476,7 +532,7 @@
         const trackId = trackIdForBusNumber(bus.number);
         const entries = byTrack.get(trackId) || [];
         entries.forEach((entry) => {
-          inner.appendChild(createPrintTripCard(entry));
+          inner.appendChild(createPrintTripCard(entry, reportType));
         });
 
         table.appendChild(row);
@@ -557,8 +613,9 @@
     const paperSizeSelect = document.getElementById("ps-paper-size");
     const orientationGroup = document.getElementById("ps-orientation-group");
     const rowsPerPageInput = document.getElementById("ps-rows-per-page");
+    const reportTypeGroup = document.getElementById("ps-report-type-group");
     const confirmBtn = document.getElementById("ps-print-confirm");
-    if (!btn || !modal || !paperSizeSelect || !orientationGroup || !rowsPerPageInput || !confirmBtn) return;
+    if (!btn || !modal || !paperSizeSelect || !orientationGroup || !rowsPerPageInput || !reportTypeGroup || !confirmBtn) return;
 
     try {
       const savedPaper = localStorage.getItem("rux:print-paper-size");
@@ -575,6 +632,15 @@
 
       const savedRows = Number.parseInt(localStorage.getItem("rux:print-rows-per-page"), 10);
       if (Number.isFinite(savedRows) && savedRows > 0) rowsPerPageInput.value = String(savedRows);
+
+      const savedReportType = localStorage.getItem("rux:print-report-type");
+      if (savedReportType === "report" || savedReportType === "overview") {
+        reportTypeGroup.querySelectorAll(".rux-button").forEach((b) => {
+          const active = b.dataset.value === savedReportType;
+          b.classList.toggle("is-active", active);
+          b.setAttribute("aria-pressed", String(active));
+        });
+      }
     } catch (_) { /* localStorage unavailable */ }
 
     btn.addEventListener("click", () => window.Rux.openModal(modal));
@@ -583,15 +649,17 @@
       const paperSize = paperSizeSelect.value;
       const orientation = orientationGroup.querySelector('.rux-button[aria-pressed="true"]')?.dataset.value || "landscape";
       const rowsPerPage = Math.min(20, Math.max(1, Number.parseInt(rowsPerPageInput.value, 10) || 4));
+      const reportType = reportTypeGroup.querySelector('.rux-button[aria-pressed="true"]')?.dataset.value || "report";
 
       try {
         localStorage.setItem("rux:print-paper-size", paperSize);
         localStorage.setItem("rux:print-orientation", orientation);
         localStorage.setItem("rux:print-rows-per-page", String(rowsPerPage));
+        localStorage.setItem("rux:print-report-type", reportType);
       } catch (_) { /* localStorage unavailable */ }
 
       window.Rux.closeModal(modal);
-      printSchedule({ paperSize, orientation, rowsPerPage });
+      printSchedule({ paperSize, orientation, rowsPerPage, reportType });
     });
   }
 

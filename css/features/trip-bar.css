@@ -85,8 +85,8 @@
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
 	--_tone-ring: var(--rux-ring-focus);
 	--_surface: oklch(from var(--_tone) 36% 0.18 h);
-	--_surface-hover: oklch(from var(--_tone) 50% 0.22 h);
-	--_surface-active: oklch(from var(--_tone) 50% 0.22 h);
+	--_surface-hover: oklch(from var(--_tone) 40% 0.22 h);
+	--_surface-active: oklch(from var(--_tone) 48% 0.22 h);
 	--_bus-label-fg: var(--_surface);
 
 	position: relative;

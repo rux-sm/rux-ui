@@ -60,8 +60,8 @@
 	/* ─── COLOR · accent foundation ──────────────────────────────────────── */
 
 	--rux-accent-h: 260;
-	--rux-accent-l: 60%;
-	--rux-accent-c: 0.24;
+	--rux-accent-l: 64%;
+	--rux-accent-c: 0.28;
 
 	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
 
@@ -594,7 +594,7 @@
 	--rux-button-default-fg: var(--rux-fg);
 
 	/* — accent — */
-	--rux-button-accent-bg: var(--rux-accent);
+	--rux-button-accent-bg: color-mix(in srgb, var(--rux-accent) 60%, transparent);
 	--rux-button-accent-fg: var(--rux-fg-on-accent);
 
 	/* — ghost — */
@@ -624,13 +624,14 @@
 	--rux-button-icon-selected-bg: var(--rux-color-neutral-70);
 	--rux-button-selected-shadow: var(--rux-inset-0);
 
-	/* — sm — */
-	--rux-button-sm-height: 24px;
+	/* — sm / compact — 28px is the shared nested-control tier. */
+	--rux-button-sm-height: var(--rux-control-height-sm);
 	--rux-button-sm-font-size: var(--rux-text-xs);
 	--rux-button-sm-padding-inline: var(--rux-space-2);
 	--rux-button-sm-content-gap: var(--rux-space-1);
 
-	/* — xs — */
+	/* — xs / micro — reserved for space-constrained inline controls such as
+	   trip-bar disclosure buttons; not part of the standard form grid. */
 	--rux-button-xs-height: 20px;
 	--rux-button-xs-font-size: var(--rux-text-2xs);
 	--rux-button-xs-padding-inline: var(--rux-space-1-5);
@@ -652,16 +653,18 @@
 	   so both read as punched into the same surface). Padding on the track
 	   itself (not overflow:hidden + flush edges, like .rux-segmented above)
 	   leaves room for the active pill's real focus ring without clipping.
-	   Concentric math: 8px track − 2px padding = 6px pill. Inactive pills
-	   keep the base button's 1px transparent border, so gaining the active
-	   glassy border never shifts layout. */
+	   The 32px border-box track contains 28px pills exactly: 28px pill + two
+	   1px insets + two 1px track borders = 32px. Concentric math remains 8px
+	   track − (1px border + 1px inset) = 6px pill. Inactive pills keep the
+	   base button's 1px transparent border, so gaining the active glassy
+	   border never shifts layout. */
 
 	--rux-segmented-track-bg: var(--rux-well-bg);
-	--rux-segmented-track-padding: var(--rux-space-0-5);
+	--rux-segmented-track-padding: var(--rux-space-px);
 	--rux-segmented-track-radius: var(--rux-radius-container);
-	--rux-segmented-track-height: 32px;
+	--rux-segmented-track-height: var(--rux-control-height);
 	--rux-segmented-track-border: var(--rux-border-width) solid var(--rux-border);
-	--rux-segmented-track-gap: var(--rux-space-2);
+	--rux-segmented-track-gap: var(--rux-space-0-5);
 	--rux-segment-radius: var(--rux-radius-control);
 	--rux-segment-padding-inline: var(--rux-space-4);
 	--rux-segment-fg: var(--rux-fg-muted);

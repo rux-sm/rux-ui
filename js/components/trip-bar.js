@@ -91,6 +91,10 @@ function icon(name, className = "rux-icon") {
   return el;
 }
 
+function isPdfFile(file) {
+  return Boolean(file) && (file.type === "application/pdf" || /\.pdf$/i.test(file.name || ""));
+}
+
 // Shared "view a doc" action for the trip bar's paperclip/itinerary shortcut
 // — same floating panel the Files list's View button opens (js/panels/trip-panel.js),
 // so a document looks the same regardless of where you opened it from. Falls
@@ -102,7 +106,7 @@ function openDocInViewer(doc, options = {}) {
     window.open(url, "_blank");
     return;
   }
-  window.RuxDocViewer.open({ url, fileName: doc.file_name, icon: "picture_as_pdf", ...options });
+  window.RuxDocViewer.open({ url, fileName: doc.file_name, icon: "route", ...options });
 }
 
 function containsNode(el, node) {
@@ -335,13 +339,13 @@ const PENDING_INDICATORS = [
     key: "itinerary",
     icon: "paperclip",
     label: "Pending itinerary",
-    check: (trip) => trip.itineraryStatus !== "received" && !(trip.trip_documents || []).some(d => d.label === "Itinerary"),
+    check: (trip) => !trip.itinerary_not_needed && trip.itineraryStatus !== "received" && !(trip.trip_documents || []).some(d => d.label === "Itinerary"),
   },
   {
     key: "tripContact",
     icon: "phone_enabled",
     label: "Trip contact missing",
-    check: (trip) => !trip.tripContact?.name && !trip.tripContact?.phone,
+    check: (trip) => !trip.contact_not_needed && !trip.tripContact?.name && !trip.tripContact?.phone,
   },
   {
     key: "needs_contract",
@@ -684,11 +688,15 @@ export function createTripBar(trip, callbacks = {}) {
     : () => {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = "*/*";
+        input.accept = ".pdf,application/pdf";
         input.addEventListener("change", async () => {
           const file = input.files[0];
           const tripId = trip.id;
           if (!file || !tripId) return;
+          if (!isPdfFile(file)) {
+            window.Rux?.toast("Only PDF files are supported.");
+            return;
+          }
           try {
             const doc = await window.RuxDocs?.upload(tripId, "Itinerary", file);
             window.Rux?.toast("Itinerary uploaded");

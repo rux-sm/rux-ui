@@ -39,7 +39,10 @@
 	   insets below, which aren't part of this ask. */
 	--scheduler-app-module-padding: 0;
 	--scheduler-app-resize-line-width: 1px;
-	--scheduler-app-drawer-default-width: 400px;
+	/* Left/editor and right/tools drawers intentionally have independent
+	   defaults. Resize limits remain shared. */
+	--scheduler-app-left-drawer-default-width: 400px;
+	--scheduler-app-right-drawer-default-width: 275px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -185,12 +188,6 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
-}
-
-/* Week/List read as one cluster, flush against each other. */
-#trip-view-group {
-	gap: var(--rux-space-2);
-	flex-wrap: nowrap;
 }
 
 /* Drop the Week/List icons before the row ever has to wrap or overflow —
@@ -431,7 +428,7 @@
 }
 
 .scheduler-app__drawer.is-open {
-	width: var(--drawer-width, var(--scheduler-app-drawer-default-width));
+	width: var(--drawer-width, var(--scheduler-app-left-drawer-default-width));
 	overflow: hidden;
 }
 
@@ -445,7 +442,7 @@
 	right: 0;
 	left: auto;
 	height: auto;
-	width: var(--drawer-open-width, var(--scheduler-app-drawer-default-width));
+	width: var(--drawer-open-width, var(--scheduler-app-left-drawer-default-width));
 	min-width: var(--rux-panel-min-width);
 	overflow: hidden;
 	/* Only the edge facing the workspace gets a border — top/bottom/outer
@@ -509,6 +506,7 @@
 
 .scheduler-app__drawer--right.is-open {
 	margin-right: 0;
+	width: var(--drawer-width, var(--scheduler-app-right-drawer-default-width));
 }
 
 .scheduler-app__drawer--right :is(.rux-right-panel) {
@@ -517,7 +515,7 @@
 	left: 0;
 	right: auto;
 	height: auto;
-	width: var(--drawer-open-width, var(--scheduler-app-drawer-default-width));
+	width: var(--drawer-open-width, var(--scheduler-app-right-drawer-default-width));
 	overflow: hidden;
 
 }
@@ -869,24 +867,6 @@
 .scheduler-app__mobile-panel-btn {
 	display: inline-flex;
 	flex: none;
-	/* Bigger box + icon than the 28px/20px button default — this is now the
-	   only way to reopen a closed panel on desktop, not just mobile, so it
-	   earns more visual weight than a typical icon button. Scoped to just
-	   these two buttons; every other icon button keeps the shared default. */
-	--_h: 28px;
-}
-
-
-
-/* .rux-button--toggle[aria-pressed="true"] (controls.css) also swaps in the
-   "selected" bg/shadow — useful for a real toggle button, but this one just
-   needs the icon to reflect open/closed, not a filled pressed look. Reset
-   the background back to plain ghost; keep the foreground bright white
-   though, so an open panel still reads as "active" via the icon alone. */
-.scheduler-app__mobile-panel-btn.rux-button--toggle[aria-pressed="true"] {
-	--_bg: var(--rux-button-ghost-bg);
-	--_fg: var(--rux-color-white);
-	--_shadow: var(--rux-button-shadow);
 }
 
 @media (max-width: 500px) {

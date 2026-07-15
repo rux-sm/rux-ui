@@ -480,6 +480,30 @@
 	color: var(--print-ink-faint);
 }
 
+/* Requirement icons (ADA lift, sleeper, etc.) — sits at the end of the
+   destination row, same row/placement precedent as the live trip-bar's
+   .rux-trip-bar__reqs (trip-bar.js/trip-bar.css), sized to match the other
+   destination-row icons (.rux-print-trip__leg-icon/.rux-print-trip__driver-icon). */
+.rux-print-trip__reqs {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	gap: 3px;
+}
+
+.rux-print-trip__req-icon {
+	--_icon-fill: 1;
+	display: inline-flex;
+	width: 1em;
+	height: 1em;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	font-size: 10px;
+	line-height: 1;
+	color: var(--print-ink-faint);
+}
+
 .rux-print-trip__line,
 .rux-print-trip__notes {
 	min-width: 0;

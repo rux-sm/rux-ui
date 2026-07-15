@@ -570,6 +570,28 @@
 	letter-spacing: var(--rux-tracking-wide);
 }
 
+/* 32px select shell + 28px nested status action. This composite gets its own
+   class so the tighter inset and matching text offset do not affect ordinary
+   actionable input groups. */
+.rux-trip-panel__driver-select > .rux-input-group__prefix {
+	left: calc(2 * var(--rux-border-width));
+}
+
+.rux-trip-panel__driver-select .rux-trip-panel__role-label {
+	border-radius: calc(
+		var(--rux-radius-control)
+		- (2 * var(--rux-border-width))
+	);
+}
+
+.rux-trip-panel__driver-select.rux-input-group--prefix > .rux-select {
+	padding-left: calc(
+		(2 * var(--rux-border-width))
+		+ var(--rux-control-height-sm)
+		+ var(--rux-control-content-gap)
+	);
+}
+
 /* The button keeps standard RUX chrome; only its status glyph changes color. */
 .rux-trip-panel__role-label:is(
 	.rux-role--pending-assignment,
@@ -653,6 +675,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	min-width: 0;
+	text-align: left;
 }
 .rux-trip-panel__doc-date {
 	flex: none;

@@ -49,7 +49,7 @@
 	--rux-scheduler-max-block-size: none;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
-	--rux-scheduler-today-bg: var(--rux-button-default-bg);
+	--rux-scheduler-today-bg: color-mix(in srgb, var(--rux-accent) 50%, transparent);
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
 	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
 	   is the empty-row fallback, so an empty row sits at the same height a
@@ -73,6 +73,14 @@
 	overscroll-behavior-y: contain;
 	scrollbar-width: none;
 	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
+	/* LOAD-BEARING, not cosmetic: this scroller's contents (sticky headers
+	   included) paint on a composited scroll layer, and the browser only
+	   rounds that layer's corners from THIS element's own border-radius.
+	   The parent .calendar-app__viewport's overflow:hidden radius — even a
+	   clip-path — cannot mask it, so without this rule the sticky header
+	   corner paints square past the viewport's rounded corner. Verified by
+	   toggling this rule in-browser. Must match the viewport's radius. */
+	border-radius: var(--rux-calendar-radius);
 }
 
 .rux-scheduler::-webkit-scrollbar {
@@ -183,8 +191,8 @@
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
-	background: var(--rux-button-default-bg);
-	border: var(--rux-button-border);
+	background: var(--rux-scheduler-today-bg);
+	border: 1px solid var(--rux-border);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,
@@ -384,10 +392,8 @@
 	border-inline-end: none;
 }
 
-
-
 .rux-scheduler__now-line {
-	display: none;
+	display: block;
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -400,10 +406,6 @@
 	transition: width var(--rux-duration-fast) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 	transform: translateX(-50%);
-}
-
-.rux-scheduler--time-aligned .rux-scheduler__now-line {
-	display: block;
 }
 
 .rux-scheduler__now-line:hover {

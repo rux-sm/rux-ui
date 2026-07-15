@@ -267,6 +267,8 @@ import { supabase } from "./supabase.js";
 			req_ada:        reqVal(root, "adaLift"),
 			need_hotel:     reqVal(root, "hotel"),
 			need_fuel_card: reqVal(root, "fuelCard"),
+			contact_not_needed:   window.TripPanel?.getContactNotNeeded(root) ?? false,
+			itinerary_not_needed: window.TripPanel?.getItineraryNotNeeded(root) ?? false,
 		};
 	}
 
@@ -353,9 +355,10 @@ import { supabase } from "./supabase.js";
 		})).filter(o => o.label || o.price);
 	}
 
-	function collectStops(itinerary) {
-		return itinerary.getStops().map((s, i) => ({
-			position:    i,
+	function stopRow(s, position, leg) {
+		return {
+			position,
+			leg,
 			type:        s.type,
 			label:       s.label || null,
 			name:        s.name || null,
@@ -371,7 +374,19 @@ import { supabase } from "./supabase.js";
 			depart_prev: s.departPrev || null,
 			arrive:      s.arrive || null,
 			spot:        s.spot || null,
-		}));
+		};
+	}
+
+	// Split trips get a second, independent stop list for the return leg
+	// (js/components/itinerary.js's Outbound/Inbound toggle) — position stays
+	// globally continuous across both legs rather than restarting at 0 per
+	// leg, mirroring collectAssignmentsForLeg's positionOffset below (both
+	// tables share one trip_id with two legs' rows in it).
+	function collectStops(itinerary, includeReturn) {
+		const outbound = itinerary.getStops("outbound").map((s, i) => stopRow(s, i, "outbound"));
+		if (!includeReturn) return outbound;
+		const returnLeg = itinerary.getStops("return").map((s, i) => stopRow(s, outbound.length + i, "return"));
+		return outbound.concat(returnLeg);
 	}
 
 	function legacyStopPayload(stop) {
@@ -382,6 +397,7 @@ import { supabase } from "./supabase.js";
 			miles_source,
 			drive_source,
 			route_status,
+			leg,
 			...legacy
 		} = stop;
 		return legacy;
@@ -523,6 +539,8 @@ import { supabase } from "./supabase.js";
 				setVal(root, `tp-trip${i}-phone`, trip[`trip_contact_${i}_phone`]);
 			}
 		}
+		window.TripPanel?.setContactNotNeeded(root, !!trip.contact_not_needed);
+		window.TripPanel?.setItineraryNotNeeded(root, !!trip.itinerary_not_needed);
 		setVal(root, "tp-notes",       trip.notes);
 		resetPaymentRows(root);
 		resetTicketOptionRows(root);
@@ -712,27 +730,43 @@ import { supabase } from "./supabase.js";
 		window.Rux?.syncSelectPlaceholders?.(root);
 	}
 
+	function stopFromRow(r) {
+		return {
+			type:       r.type,
+			label:      r.label,
+			name:       r.name,
+			address:    r.address,
+			miles:      r.miles != null ? String(r.miles) : "",
+			drive:      r.drive || "",
+			lat:        r.lat ?? null,
+			lng:        r.lng ?? null,
+			mapboxId:   r.mapbox_id || null,
+			milesSource: r.miles_source || "estimated",
+			driveSource: r.drive_source || "estimated",
+			routeStatus: r.route_status === "stale" ? "stale" : "current",
+			departPrev: r.depart_prev || "",
+			arrive:     r.arrive || "",
+			spot:       r.spot || "",
+		};
+	}
+
+	// Rows missing `leg` (pre-migration data, or the legacy-schema save
+	// fallback) default to "outbound" so old trips keep loading unchanged.
 	function populateStops(itinerary, rows) {
-		const stops = rows
-			.sort((a, b) => a.position - b.position)
-			.map((r) => ({
-				type:       r.type,
-				label:      r.label,
-				name:       r.name,
-				address:    r.address,
-				miles:      r.miles != null ? String(r.miles) : "",
-				drive:      r.drive || "",
-				lat:        r.lat ?? null,
-				lng:        r.lng ?? null,
-				mapboxId:   r.mapbox_id || null,
-				milesSource: r.miles_source || "estimated",
-				driveSource: r.drive_source || "estimated",
-				routeStatus: r.route_status === "stale" ? "stale" : "current",
-				departPrev: r.depart_prev || "",
-				arrive:     r.arrive || "",
-				spot:       r.spot || "",
-			}));
-		itinerary.setStops(stops);
+		// itinerary.js is a singleton reused across every trip opened —
+		// force the view back to Outbound before loading this trip's stops,
+		// otherwise a Split trip loaded right after another Split trip that
+		// was left on "Inbound" would populate outbound data into a buffer
+		// instead of the visible array, opening on the wrong leg.
+		itinerary.setActiveLeg("outbound");
+		const outboundRows = rows
+			.filter((r) => (r.leg ?? "outbound") !== "return")
+			.sort((a, b) => a.position - b.position);
+		const returnRows = rows
+			.filter((r) => r.leg === "return")
+			.sort((a, b) => a.position - b.position);
+		itinerary.setStops(outboundRows.map(stopFromRow), "outbound");
+		itinerary.setStops(returnRows.map(stopFromRow), "return");
 	}
 
 	/* ── Clear form ──────────────────────────────────────────────────────── */
@@ -765,6 +799,8 @@ import { supabase } from "./supabase.js";
 		});
 		window.TripPanel?.setTripType(root, "round_trip");
 		window.TripPanel?.setBillingType(root, "charter");
+		window.TripPanel?.setContactNotNeeded(root, false);
+		window.TripPanel?.setItineraryNotNeeded(root, false);
 		const defaultTripBarColor = root.querySelector("[name='tripBarColor'][value='']");
 		if (defaultTripBarColor) defaultTripBarColor.checked = true;
 		resetPaymentRows(root);
@@ -906,7 +942,7 @@ import { supabase } from "./supabase.js";
 				.delete()
 				.eq("trip_id", savedId);
 			if (deleteStopsErr) throw deleteStopsErr;
-			const stopsData = collectStops(itinerary).map((s) => ({ trip_id: savedId, ...s }));
+			const stopsData = collectStops(itinerary, tripData.trip_type === "dropoff_pickup").map((s) => ({ trip_id: savedId, ...s }));
 			if (stopsData.length) {
 				const { error: stopsErr } = await supabase.from("trip_stops").insert(stopsData);
 				if (stopsErr) {
@@ -1130,6 +1166,8 @@ export function loadTrip(root, itinerary, trip) {
 		req_ada:        trip.req_ada        ?? false,
 		need_hotel:     trip.need_hotel     ?? false,
 		need_fuel_card: trip.need_fuel_card ?? false,
+		contact_not_needed:   trip.contact_not_needed   ?? false,
+		itinerary_not_needed: trip.itinerary_not_needed ?? false,
 		confirmed:      trip.confirmed      ?? false,
 		po_received:    trip.po_received    ?? false,
 		invoiced:       trip.invoiced       ?? false,

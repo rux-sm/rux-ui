@@ -58,6 +58,10 @@
     return t.trip_type === "one_way" ? "one_way" : t.trip_type === "dropoff_pickup" ? "dropoff_pickup" : "round_trip";
   }
 
+  function billingTypeOf(t) {
+    return t.is_self_organized ? "ticketed" : "charter";
+  }
+
   // ── Row rendering ─────────────────────────────────────────────────────────
 
   function renderRows(list) {
@@ -84,6 +88,7 @@
       tr.dataset.isPast       = (t.start_date && t.start_date < today) ? "yes" : "no";
       tr.dataset.confirmed    = confirmed ? "yes" : "no";
       tr.dataset.tripType     = tripTypeOf(t);
+      tr.dataset.billingType  = billingTypeOf(t);
 
       const busCell = buses.length
         ? buses.map(n => `<span class="rux-tag">Bus ${n}</span>`).join(" ")
@@ -141,10 +146,11 @@
   // panel's "Filter By" card (index.html) — this module owns the filter
   // state and just reads whichever button is active there.
 
-  let dateFilter   = "all";
-  let busFilter    = "all";
-  let statusFilter = "all";
-  let typeFilter   = "all";
+  let dateFilter    = "all";
+  let busFilter     = "all";
+  let statusFilter  = "all";
+  let typeFilter    = "all";
+  let billingFilter = "all";
 
   function setSegmentedValue(groupId, value) {
     const group = document.getElementById(groupId);
@@ -167,17 +173,19 @@
     });
   }
 
-  wireSegmentedFilter("tf-when-group",   (v) => { dateFilter   = v; });
-  wireSegmentedFilter("tf-status-group", (v) => { statusFilter = v; });
-  wireSegmentedFilter("tf-type-group",   (v) => { typeFilter   = v; });
-  wireSegmentedFilter("tf-bus-group",    (v) => { busFilter    = v; });
+  wireSegmentedFilter("tf-when-group",    (v) => { dateFilter    = v; });
+  wireSegmentedFilter("tf-status-group",  (v) => { statusFilter  = v; });
+  wireSegmentedFilter("tf-type-group",    (v) => { typeFilter    = v; });
+  wireSegmentedFilter("tf-bus-group",     (v) => { busFilter     = v; });
+  wireSegmentedFilter("tf-billing-group", (v) => { billingFilter = v; });
 
   document.getElementById("tf-clear-btn")?.addEventListener("click", () => {
-    dateFilter = "all"; statusFilter = "all"; typeFilter = "all"; busFilter = "all";
+    dateFilter = "all"; statusFilter = "all"; typeFilter = "all"; busFilter = "all"; billingFilter = "all";
     setSegmentedValue("tf-when-group", "all");
     setSegmentedValue("tf-status-group", "all");
     setSegmentedValue("tf-type-group", "all");
     setSegmentedValue("tf-bus-group", "all");
+    setSegmentedValue("tf-billing-group", "all");
     applyFilter();
   });
 
@@ -206,7 +214,9 @@
 
       const matchType = typeFilter === "all" || row.dataset.tripType === typeFilter;
 
-      row.hidden = !(matchQ && matchDate && matchBus && matchStatus && matchType);
+      const matchBilling = billingFilter === "all" || row.dataset.billingType === billingFilter;
+
+      row.hidden = !(matchQ && matchDate && matchBus && matchStatus && matchType && matchBilling);
     });
 
     renderFilterBadges();
@@ -230,8 +240,9 @@
 
   const WHEN_LABELS   = { upcoming: "Upcoming", past: "Past" };
   const STATUS_LABELS = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
-  const TYPE_LABELS   = { round_trip: "Round Trip", one_way: "One-Way", dropoff_pickup: "Split" };
-  const BUS_LABELS    = { assigned: "Assigned Bus", unassigned: "Unassigned Bus" };
+  const TYPE_LABELS    = { round_trip: "Round Trip", one_way: "One-Way", dropoff_pickup: "Split" };
+  const BUS_LABELS     = { assigned: "Assigned Bus", unassigned: "Unassigned Bus" };
+  const BILLING_LABELS = { charter: "Charter", ticketed: "Ticketed" };
 
   function createChip(label, onClear) {
     const span = document.createElement("span");
@@ -257,6 +268,9 @@
     }));
     if (busFilter !== "all") chips.push(createChip(BUS_LABELS[busFilter], () => {
       busFilter = "all"; setSegmentedValue("tf-bus-group", "all"); applyFilter();
+    }));
+    if (billingFilter !== "all") chips.push(createChip(BILLING_LABELS[billingFilter], () => {
+      billingFilter = "all"; setSegmentedValue("tf-billing-group", "all"); applyFilter();
     }));
 
     chips.forEach((chip) => badgesEl.appendChild(chip));

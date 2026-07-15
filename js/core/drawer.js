@@ -45,9 +45,12 @@
 	const HANDLE_DRAG_THRESHOLD = 5; // px of cursor movement before a click counts as a drag
 	const DRAWER_KEYBOARD_STEP = 16;
 
-	function schedulerAppDefaultWidth() {
+	function schedulerAppDefaultWidth(drawerEl) {
+		const property = drawerEl.classList.contains("scheduler-app__drawer--right")
+			? "--scheduler-app-right-drawer-default-width"
+			: "--scheduler-app-left-drawer-default-width";
 		return parseFloat(
-			getComputedStyle(document.querySelector(".scheduler-app")).getPropertyValue("--scheduler-app-drawer-default-width"),
+			getComputedStyle(document.querySelector(".scheduler-app")).getPropertyValue(property),
 		);
 	}
 
@@ -105,7 +108,7 @@
 			onClose = null,
 		} = options;
 
-		const DRAWER_DEFAULT = schedulerAppDefaultWidth();
+		const DRAWER_DEFAULT = schedulerAppDefaultWidth(drawer);
 		const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(panel).minWidth));
 
 		function isOpen() {
