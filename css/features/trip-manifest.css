@@ -1,0 +1,178 @@
+/* ==========================================================================
+   RUX UI — TRIP MANIFEST WINDOW
+   --------------------------------------------------------------------------
+   Floating, draggable, resizable window for the passenger roster table —
+   floats over the calendar (which stays visible/navigable underneath)
+   instead of replacing it. Positioning/drag/resize mechanics live in the
+   shared .rux-floating-window base (css/base/floating-window.css); this
+   file is just this window's size/position defaults and table styling.
+   See js/panels/trip-manifest.js for open/close/refresh wiring.
+   ========================================================================== */
+
+.rux-manifest-window {
+	top: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	/* clamp (not min()) so it actually grows on roomy screens instead of
+	   hard-capping at a fixed pixel size regardless of viewport. */
+	width: clamp(480px, 65vw, 1200px);
+	height: clamp(280px, 65vh, 900px);
+	min-width: 480px;
+	min-height: 280px;
+	max-width: calc(100vw - var(--rux-space-4));
+	max-height: calc(100vh - var(--rux-space-4));
+}
+
+/* Below phone width, a floating/draggable/resizable box is the wrong
+   paradigm — there's no room to drag or resize into. Same breakpoint as
+   this app's other mobile drawers (scheduler-app.css). Becomes a full-screen
+   sheet instead: no drag (js/panels/trip-manifest.js gates attachDrag's
+   minViewportWidth at the same value), no resize handle, no rounded corners. */
+@media (max-width: 580px) {
+	.rux-manifest-window {
+		top: 0;
+		left: 0;
+		transform: none;
+		width: 100%;
+		height: 100%;
+		min-width: 0;
+		min-height: 0;
+		max-width: 100%;
+		max-height: 100%;
+		border-radius: 0;
+		resize: none;
+	}
+
+	.rux-manifest-window__header {
+		cursor: default;
+	}
+
+	.rux-manifest-window__passenger-panel {
+		width: 100%;
+		min-width: 0;
+	}
+}
+
+/* Wraps toolbar + table + the passenger slide-in panel — everything below
+   the outer window header. Its own position:relative is what the panel's
+   inset:0 anchors to, so the outer header (title/close/drag) stays outside
+   the slide and always reachable while the panel is open. */
+.rux-manifest-window__content {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.rux-manifest-window__toolbar {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-card-padding);
+	background: var(--rux-card-header-bg);
+	border-bottom: var(--rux-card-header-border);
+}
+
+.rux-manifest-window__toolbar .rux-trip-panel__cols-2 {
+	gap: var(--rux-space-5);
+}
+
+.rux-manifest-window__toolbar .rux-field__label {
+	white-space: nowrap;
+}
+
+.rux-manifest-window__body {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+}
+
+/* Click-outside-to-close backdrop for the passenger panel — dims the table,
+   invisible/inert while closed (opacity:0 + pointer-events:none, not
+   [hidden], so both can transition together). z-index sits between the
+   table (auto) and the panel (2), so it can catch clicks anywhere in
+   .rux-manifest-window__content *except* on the panel itself, which is
+   stacked above it. */
+.rux-manifest-window__scrim {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background: var(--rux-bg-overlay);
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-manifest-window__scrim.is-open {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* Passenger editor — docks to the left edge of .rux-manifest-window__content
+   (toolbar + table), sliding in over it rather than covering the outer
+   window header. Fixed-ish width (min 400px "for now" — revisit once we
+   know how this reads against the table) rather than full-bleed, so part of
+   the table stays visible/dimmed behind it. Always in the DOM (no [hidden])
+   so the transform transition actually has something to animate;
+   translateX(-100%) puts it fully outside the window's own overflow:hidden
+   clip, so it can't intercept clicks while closed. */
+.rux-manifest-window__passenger-panel {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 400px;
+	min-width: 400px;
+	max-width: 100%;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	background: var(--rux-card-bg);
+	box-shadow: var(--rux-elevation-3);
+	transform: translateX(-100%);
+	transition: transform var(--rux-duration-base) var(--rux-ease-out);
+}
+
+.rux-manifest-window__passenger-panel.is-open {
+	transform: translateX(0);
+}
+
+/* Direct child only (not .rux-card__header generally) — the Passenger
+   Info/Payments cards below have their own headers and need the base
+   .rux-card__header space-between (title left, Add/Delete cluster right),
+   not this one's back-button left-alignment. */
+.rux-manifest-window__passenger-panel > .rux-card__header {
+	flex: none;
+	gap: var(--rux-space-2);
+	justify-content: flex-start;
+}
+
+/* The scrolling region between the outer header and the Delete/Clear/Save
+   footer — exactly .rux-panel__body's role for the main Trip panel: a plain
+   block, NOT a flex container itself. Its child .rux-panel__pane (the flex-
+   column that actually lays out the cards with gaps) is then just a normal,
+   naturally-sized block inside it — not a flex item of anything constrained,
+   so it can never get flex-shrunk. Doing both jobs (scroll container *and*
+   flex container for the cards) on one element was the original bug: the
+   cards, as flex items of a height-constrained column, could get squeezed
+   instead of the body actually scrolling around them. */
+.rux-manifest-window__passenger-body {
+	flex: 1;
+	min-height: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+}
+
+/* Delete/Clear/Save — pinned below the scrolling body instead of living at
+   the bottom of it, so they're reachable without scrolling through the
+   whole form. Left-aligned (not .rux-card__footer's default flex-end),
+   matching the same three-button row on the main Trip panel. */
+.rux-manifest-window__passenger-panel > .rux-card__footer {
+	flex: none;
+	justify-content: flex-start;
+}

@@ -91,6 +91,20 @@ function icon(name, className = "rux-icon") {
   return el;
 }
 
+// Shared "view a doc" action for the trip bar's paperclip/itinerary shortcut
+// — same floating panel the Files list's View button opens (js/panels/trip-panel.js),
+// so a document looks the same regardless of where you opened it from. Falls
+// back to a new tab if the viewer script hasn't loaded for some reason.
+function openDocInViewer(doc, options = {}) {
+  const url = window.RuxDocs?.url?.(doc?.file_path);
+  if (!url) return;
+  if (!window.RuxDocViewer) {
+    window.open(url, "_blank");
+    return;
+  }
+  window.RuxDocViewer.open({ url, fileName: doc.file_name, icon: "picture_as_pdf", ...options });
+}
+
 function containsNode(el, node) {
   return node instanceof Node && el.contains(node);
 }
@@ -603,8 +617,7 @@ export function applyItineraryUploaded(bar, doc) {
     const newBtn = pdfBtn.cloneNode(true);
     newBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const url = window.RuxDocs?.url?.(doc.file_path);
-      if (url) window.open(url, "_blank");
+      openDocInViewer(doc, { title: "Itinerary" });
     });
     pdfBtn.replaceWith(newBtn);
   }
@@ -663,8 +676,7 @@ export function createTripBar(trip, callbacks = {}) {
   const onPdf = pdfUploaded
     ? () => {
         if (itineraryDoc) {
-          const url = window.RuxDocs?.url?.(itineraryDoc.file_path);
-          if (url) window.open(url, "_blank");
+          openDocInViewer(itineraryDoc, { title: "Itinerary" });
         } else {
           (callbacks.onViewPdf || callbacks.onViewPDF)?.(trip);
         }
@@ -706,35 +718,30 @@ export function createTripBar(trip, callbacks = {}) {
   );
   pdfBtn.dataset.role = "itinerary-btn";
 
+  // Jumps straight past the trip panel's own tabs into the passenger
+  // manifest — only meaningful for ticketed trips (there's no roster to
+  // view/build for a charter), so it's always present (consistent 4th
+  // button on every bar) but disabled otherwise, same as the Billing tab's
+  // own manifest toggle.
+  const manifestBtn = button(
+    "rux-button rux-button--default rux-button--icon rux-button--block",
+    trip.is_self_organized ? "View manifest" : "Toggle Ticketed to enable",
+    "groups",
+    () => callbacks.onOpenManifest?.(trip),
+  );
+  manifestBtn.disabled = !trip.is_self_organized;
+
   actions.append(
     openBtn,
-    button(
-      "rux-button rux-button--default rux-button--icon rux-button--block",
-      "Change bus",
-      "swap_vert",
-      () => callbacks.onChangeBus?.(trip),
-    ),
     pdfBtn,
     button(
       "rux-button rux-button--default rux-button--icon rux-button--block",
-      "Trip envelope",
-      "mail",
-      () => (callbacks.onTripEnvelope || callbacks.onEmail)?.(trip),
+      "Move bus",
+      "swap_vert",
+      () => callbacks.onChangeBus?.(trip),
     ),
+    manifestBtn,
   );
-
-  // Ticketed trips only — jumps straight past the trip panel's own tabs
-  // into the passenger manifest, same shortcut spirit as the buttons above.
-  if (trip.is_self_organized) {
-    actions.append(
-      button(
-        "rux-button rux-button--default rux-button--icon rux-button--block",
-        "View manifest",
-        "groups",
-        () => callbacks.onOpenManifest?.(trip),
-      ),
-    );
-  }
 
   const body = document.createElement("div");
   body.className = "rux-trip-bar__body";

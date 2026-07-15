@@ -4,8 +4,64 @@
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
   const tripPanelRoot = document.querySelector(".rux-trip-panel");
+  const manifestWindow = document.getElementById("calendar-manifest-view");
   const manifestBody = document.getElementById("tp-manifest-body");
   const passengerCard = document.getElementById("rp-passenger-card");
+  const passengerScrim = document.getElementById("rpm-scrim");
+  const addPassengerBtn = document.getElementById("rpm-add-btn");
+  const backBtn = document.getElementById("rpm-back-btn");
+
+  // Floating/draggable/resizable window shell (css/base/floating-window.css,
+  // js/core/floating-window.js) — same recipe as the document viewer, so the
+  // manifest floats over the calendar instead of replacing it. Open/close
+  // state itself lives in index.html's window.TripView. The passenger editor
+  // (below) is a second, independent slide-in layer nested inside this
+  // window, not tied to TripView at all.
+  if (manifestWindow) {
+    manifestWindow.querySelector("#manifest-window-close")?.addEventListener("click", () => {
+      window.TripView?.set("calendar");
+    });
+    const header = manifestWindow.querySelector(".rux-floating-window__header");
+    // 580px matches the CSS breakpoint (trip-manifest.css) where the window
+    // becomes a full-screen sheet — nothing to drag at that point.
+    if (header) window.RuxFloatingWindow?.attachDrag(manifestWindow, header, { minViewportWidth: 580 });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || manifestWindow.hidden) return;
+      // Innermost first — Escape backs out of the passenger editor before
+      // it closes the whole manifest window.
+      if (passengerCard?.classList.contains("is-open")) closePassengerPanel();
+      else window.TripView?.set("calendar");
+    });
+  }
+
+  function openPassengerPanel() {
+    passengerCard?.classList.add("is-open");
+    passengerScrim?.classList.add("is-open");
+  }
+  function closePassengerPanel() {
+    passengerCard?.classList.remove("is-open");
+    passengerScrim?.classList.remove("is-open");
+  }
+  addPassengerBtn?.addEventListener("click", () => {
+    clearForm();
+    openPassengerPanel();
+  });
+  backBtn?.addEventListener("click", closePassengerPanel);
+  passengerScrim?.addEventListener("click", closePassengerPanel);
+
+  // Toolbar report/print actions — not built yet, just staking out the
+  // buttons. Swap the toast for the real handler as each one gets implemented.
+  const TOOLBAR_PLACEHOLDERS = {
+    "rpm-print-manifest-btn": "Print Manifest",
+    "rpm-print-report-2-btn": "Print Report 2",
+    "rpm-print-report-3-btn": "Print Report 3",
+    "rpm-seating-chart-btn": "Seating Chart",
+  };
+  Object.entries(TOOLBAR_PLACEHOLDERS).forEach(([id, label]) => {
+    document.getElementById(id)?.addEventListener("click", () => {
+      window.Rux?.toast(`${label} — coming soon`);
+    });
+  });
 
   const nameInput = document.getElementById("rpm-name");
   const phoneInput = document.getElementById("rpm-phone");
@@ -38,6 +94,14 @@
   let ticketOptions = [];
   let capacityTotal = 0;
   let selectedId = null;
+  // The trip this OPEN manifest window is bound to — captured once by
+  // refresh() when the window opens, then reused for every load/save/delete
+  // for as long as it stays open. Deliberately NOT re-read from
+  // trip-db's getCurrentTripId() on every action: that value is shared,
+  // mutable, and can change out from under a still-open (non-modal) manifest
+  // window if the user opens a different trip in the background — reading it
+  // live at save-time would silently write a passenger to the wrong trip.
+  let manifestTripId = null;
 
   async function ensureDb() {
     if (!db) db = await import("../data/passenger-db.js");
@@ -413,6 +477,7 @@
     selectedId = p.id;
     deleteBtn.disabled = false;
     populateForm(p);
+    openPassengerPanel();
   }
 
   function clearForm() {
@@ -454,10 +519,13 @@
   }
 
   // ── Save / Delete ─────────────────────────────────────────────────────────
+  // Both use manifestTripId (captured once by refresh(), below) — never a
+  // live getCurrentTripId() re-read — so a passenger always lands on the
+  // trip this window is actually showing, even if the trip panel has since
+  // moved on to editing something else in the background.
 
   saveBtn?.addEventListener("click", async () => {
-    const { getCurrentTripId } = await ensureTripDb();
-    const tripId = getCurrentTripId();
+    const tripId = manifestTripId;
     if (!tripId) return;
     const payload = readForm();
     if (!payload.name) { nameInput.focus(); return; }
@@ -471,6 +539,7 @@
       }
       await loadPassengers();
       clearForm();
+      closePassengerPanel();
     } catch (err) {
       console.error("Could not save passenger:", err);
     } finally {
@@ -487,6 +556,7 @@
       await db.deletePassenger(selectedId);
       await loadPassengers();
       clearForm();
+      closePassengerPanel();
     } catch (err) {
       console.error("Could not delete passenger:", err);
     } finally {
@@ -497,8 +567,7 @@
   // ── Data loading ──────────────────────────────────────────────────────────
 
   async function loadPassengers() {
-    const { getCurrentTripId } = await ensureTripDb();
-    const tripId = getCurrentTripId();
+    const tripId = manifestTripId;
     if (!tripId) { allPassengers = []; renderRows(); renderSummary(); return; }
     await ensureDb();
     try {
@@ -512,44 +581,67 @@
     }
   }
 
-  // ── Availability (ticketed + saved trip only) ───────────────────────────
-
-  async function syncAvailability() {
+  // ── Drift watchdog + open ────────────────────────────────────────────────
+  // watchForDrift() is passive — it runs on every trip-panel load/save/clear/
+  // delete event (and Billing-type toggle) REGARDLESS of whether the
+  // manifest is open, and only acts if it is: closes the window the moment
+  // the panel stops matching manifestTripId (wrong billing type, OR — just
+  // as important — a *different* trip entirely, even one that's also
+  // ticketed). It deliberately never sets manifestTripId itself; only an
+  // explicit refresh() (an actual open) binds the window to a trip, so a
+  // background event can't quietly "adopt" whatever's loaded as this
+  // window's new trip.
+  async function watchForDrift() {
+    if (window.TripView?.get() !== "manifest" || !manifestTripId) return;
     const { getCurrentTripId } = await ensureTripDb();
-    const tripId = getCurrentTripId();
+    const liveTripId = getCurrentTripId();
     const billingType = window.TripPanel?.getBillingType(tripPanelRoot);
-    const available = !!tripId && billingType === "ticketed";
-    // A trip switch, clear, or Charter toggle can pull the rug out from under
-    // an open Manifest view — bounce back to Calendar rather than leave an
-    // empty/stale roster on screen with no way to tell why.
-    if (!available && window.TripView?.get() === "manifest") {
+    if (liveTripId !== manifestTripId || billingType !== "ticketed") {
       window.TripView.set("calendar");
     }
-    return available;
   }
 
-  async function refresh() {
-    const available = await syncAvailability();
-    if (!available) return;
-    document.querySelector('[data-right-tabs] .rux-tab[aria-controls="rp-pane-navigate"]')?.click();
+  // explicitTrip (optional): { id, is_self_organized } straight from a trip
+  // bar/trip object — lets the trip-bar shortcut open the manifest without
+  // running the trip panel's full loadTrip() first (dates, contacts,
+  // documents, requirements, fleet — none of which the manifest needs).
+  // Omit it (the Billing tab's own manifest toggle does) to fall back to
+  // whatever's actually loaded in the trip panel right now.
+  async function refresh(explicitTrip) {
+    let tripId;
+    let billingType;
+    if (explicitTrip) {
+      tripId = explicitTrip.id;
+      billingType = explicitTrip.is_self_organized ? "ticketed" : "charter";
+    } else {
+      const { getCurrentTripId } = await ensureTripDb();
+      tripId = getCurrentTripId();
+      billingType = window.TripPanel?.getBillingType(tripPanelRoot);
+    }
+    const available = !!tripId && billingType === "ticketed";
+    if (!available) {
+      // Nothing valid to bind to — don't leave the window open on a stale
+      // or now-invalid trip.
+      manifestTripId = null;
+      window.TripView?.set("calendar");
+      return;
+    }
+    manifestTripId = tripId;
     clearForm();
-    const { getCurrentTripId } = await ensureTripDb();
-    const tripId = getCurrentTripId();
-    await Promise.all([loadPassengers(), loadTicketOptions(tripId), loadCapacity(tripId)]);
+    closePassengerPanel();
+    await Promise.all([loadPassengers(), loadTicketOptions(manifestTripId), loadCapacity(manifestTripId)]);
     renderSummary();
   }
 
   window.TripManifest = { refresh };
 
-  tripPanelRoot?.addEventListener("rux:trip-loaded", syncAvailability);
-  tripPanelRoot?.addEventListener("rux:trip-saved", syncAvailability);
-  tripPanelRoot?.addEventListener("rux:trip-cleared", syncAvailability);
-  tripPanelRoot?.addEventListener("rux:trip-deleted", syncAvailability);
+  tripPanelRoot?.addEventListener("rux:trip-loaded", watchForDrift);
+  tripPanelRoot?.addEventListener("rux:trip-saved", watchForDrift);
+  tripPanelRoot?.addEventListener("rux:trip-cleared", watchForDrift);
+  tripPanelRoot?.addEventListener("rux:trip-deleted", watchForDrift);
   tripPanelRoot?.addEventListener("click", (e) => {
     if (e.target.closest("#tp-billing-type-group")) {
-      requestAnimationFrame(syncAvailability);
+      requestAnimationFrame(watchForDrift);
     }
   });
-
-  syncAvailability();
 })();

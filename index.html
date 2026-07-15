@@ -9,7 +9,7 @@
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./css/tokens.css?v=18" />
     <link rel="stylesheet" href="./css/colors_and_type.css" />
-    <link rel="stylesheet" href="./css/components.css?v=52" />
+    <link rel="stylesheet" href="./css/components.css?v=53" />
     <link rel="stylesheet" href="./css/features/driver-panel.css?v=2" />
     <link rel="stylesheet" href="./css/features/comp-driver-app.css" />
     <link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
     <link rel="stylesheet" href="./css/features/search-modal.css" />
     <link rel="stylesheet" href="./css/features/print-schedule.css?v=29" />
+    <link rel="stylesheet" href="./css/features/doc-viewer.css?v=1" />
+    <link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
     <style>
       /* Module wrapper — each module fills the full body area */
@@ -474,23 +476,6 @@
                 <tbody id="trips-roster-body"></tbody>
               </table>
             </div>
-            <div class="rux-workspace__body trips-app__table-wrap" id="calendar-manifest-view" hidden>
-              <table class="rux-table trips-app__table" aria-label="Passenger manifest">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Group</th>
-                    <th scope="col">Seat</th>
-                    <th scope="col" class="col-owed">Owed</th>
-                    <th scope="col" class="col-paid">Paid</th>
-                    <th scope="col" class="col-balance">Balance</th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody id="tp-manifest-body"></tbody>
-              </table>
-            </div>
           </section>
           <div class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right" id="right-panel-resize-gutter" role="separator" aria-orientation="vertical" aria-label="Resize tools panel" aria-controls="right-panel-drawer" tabindex="0"></div>
 
@@ -563,76 +548,6 @@
                           <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="assigned">Assigned</button>
                           <button class="rux-button rux-button--default" type="button" aria-pressed="false" data-value="unassigned">Unassigned</button>
                         </div>
-                      </div>
-                    </div>
-                  </article>
-                  <article class="rux-card" id="rp-manifest-status-card" hidden>
-                    <div class="rux-card__body">
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><span class="rux-field__label">Paid</span><output class="rux-output" id="rpm-summary-paid">0 of 0 paid</output></div>
-                        <div class="rux-field"><span class="rux-field__label">Seats filled</span><output class="rux-output" id="rpm-summary-seats">—</output></div>
-                      </div>
-                    </div>
-                  </article>
-                  <article class="rux-card" id="rp-passenger-card" hidden>
-                    <header class="rux-card__header">
-                      <h3 class="rux-card__title" id="rpm-title">New passenger</h3>
-                    </header>
-                    <div class="rux-card__body rux-card__body--stack">
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-name">Name</label><input class="rux-input" id="rpm-name" type="text" /></div>
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-phone">Phone</label><input class="rux-input" id="rpm-phone" type="tel" /></div>
-                      </div>
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-group">Group</label><input class="rux-input" id="rpm-group" type="text" placeholder="e.g. 1" /></div>
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-seat">Seat</label><input class="rux-input" id="rpm-seat" type="text" /></div>
-                      </div>
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-pickup">Pick-up Location</label><input class="rux-input" id="rpm-pickup" type="text" /></div>
-                        <div class="rux-field"><span class="rux-field__label">New customer</span><label class="rux-switch"><input id="rpm-new-customer" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label></div>
-                      </div>
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-email">Email</label><input class="rux-input" id="rpm-email" type="email" /></div>
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-dob">Date of birth</label><input class="rux-input" id="rpm-dob" type="date" /></div>
-                      </div>
-                      <div class="rux-field"><label class="rux-field__label" for="rpm-address">Address</label><input class="rux-input" id="rpm-address" type="text" /></div>
-                      <div class="rux-field"><label class="rux-field__label" for="rpm-notes">Notes</label><textarea class="rux-textarea" id="rpm-notes" rows="3"></textarea></div>
-                      <div class="rux-field"><label class="rux-field__label" for="rpm-status">Status</label>
-                        <select class="rux-input rux-select" id="rpm-status">
-                          <option value="active">Active</option>
-                          <option value="canceled">Canceled</option>
-                          <option value="refunded">Refunded</option>
-                          <option value="no_show">No-show</option>
-                        </select>
-                      </div>
-                      <div class="rux-field"><label class="rux-field__label" for="rpm-ticket-option">Ticket Option</label>
-                        <select class="rux-input rux-select" id="rpm-ticket-option">
-                          <option value="">Manual amount</option>
-                        </select>
-                      </div>
-                      <div class="rux-trip-panel__cols-2">
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="rpm-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
-                        <div class="rux-field"><label class="rux-field__label" for="rpm-balance">Balance</label><output class="rux-output" id="rpm-balance">$0.00</output></div>
-                      </div>
-                      <div class="rux-row">
-                        <p class="rux-trip-panel__section-label rux-trip-panel__section-label--minor">Payments</p>
-                        <span class="rux-spacer"></span>
-                        <div class="rux-cluster">
-                          <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="rpm-payment-delete-btn" disabled aria-label="Delete a payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
-                          <button class="rux-button rux-button--default rux-button--icon" type="button" id="rpm-payment-add-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Add payment"><span class="rux-icon" aria-hidden="true">add</span></button>
-                        </div>
-                      </div>
-                      <div class="rux-trip-panel__payment-rows" id="rpm-payment-rows">
-                        <div class="rux-trip-panel__payment-empty" role="status">
-                          <span class="rux-icon" aria-hidden="true">payments</span>
-                          <span>No payments yet</span>
-                        </div>
-                      </div>
-                      <div class="rux-field"><span class="rux-field__label">Payment status</span><div><span class="rux-badge" id="rpm-status-badge">Unpaid</span></div></div>
-                      <div class="rux-cluster">
-                        <button class="rux-button rux-button--default rux-button--danger" id="rpm-btn-delete" type="button" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
-                        <button class="rux-button rux-button--default" id="rpm-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
-                        <button class="rux-button rux-button--accent" id="rpm-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
                       </div>
                     </div>
                   </article>
@@ -2089,6 +2004,8 @@
     <script src="./js/core/menu.js?v=2"></script>
     <script src="./js/core/controls.js?v=2" defer></script>
     <script src="./js/core/billing-config.js?v=2"></script>
+    <script src="./js/core/floating-window.js?v=1"></script>
+    <script src="./js/core/doc-viewer.js?v=1"></script>
     <script src="./js/panels/trip-panel.js?v=14"></script>
     <script src="./js/components/itinerary.js?v=14"></script>
     <script src="./js/panels/driver-panel.js?v=6" defer></script>
@@ -2813,23 +2730,21 @@
           openDrawer(); if (loadTrip) loadTrip(tripPanel, itinerary, trip);
         },
         onOpenManifest: (trip) => {
-          if (tripDBHandle?.isFormDirty() && !confirm("You have unsaved changes. Discard them?")) return;
-          openDrawer();
-          if (loadTrip) loadTrip(tripPanel, itinerary, trip);
-          // Land on Billing so the "Close manifest" toggle button (the only
-          // way back out) is actually visible, regardless of which tab was
-          // last open before this trip bar shortcut was used.
-          setActiveTripPane("pane-billing");
-          window.TripView?.set("manifest");
+          // Doesn't touch the trip panel at all anymore — the manifest window
+          // takes trip.id/is_self_organized directly (TripManifest.refresh(),
+          // js/panels/trip-manifest.js), so there's no loadTrip() populating
+          // the whole form just to read an id and a billing type back out of
+          // it, and nothing to dirty-check/discard since the panel's own
+          // state (open or closed, whatever trip it's on) is left untouched.
+          window.TripView?.set("manifest", trip);
         },
+        onUploadPdf:   (trip) => console.log("upload pdf", trip.id),
+        onViewPdf:     (trip) => console.log("view pdf", trip.id),
         onChangeBus:   (trip) => {
           BusPicker.show(trip, schedulerBuses, trips, (newBus, conflictAssignmentId) => {
             performBusReassign(trip, newBus, conflictAssignmentId);
           });
         },
-        onUploadPdf:   (trip) => console.log("upload pdf", trip.id),
-        onViewPdf:     (trip) => console.log("view pdf", trip.id),
-        onTripEnvelope:(trip) => console.log("trip envelope", trip.id),
         onOther:       (trip) => console.log("other options", trip.id),
       };
 
@@ -3592,8 +3507,16 @@
       });
 
       // ── Trip View: Calendar grid vs. flat Trips list ────────────────────────
+      // Manifest is a floating window (see css/features/trip-manifest.css,
+      // js/panels/trip-manifest.js) layered OVER whichever of Calendar/List is
+      // active, not a third mutually-exclusive mode — so `tripViewMode` only
+      // ever holds "calendar"/"list", and `manifestOpen` tracks the overlay
+      // independently. window.TripView.get() still reports "manifest" while
+      // it's open so existing callers (the Billing-tab toggle, trip-manifest.js's
+      // own auto-close-when-not-ticketed guard) don't need to change.
 
       let tripViewMode = "calendar";
+      let manifestOpen = false;
 
       const calendarViewportEl = document.querySelector(".calendar-app__viewport");
       const calendarListViewEl = document.getElementById("calendar-list-view");
@@ -3603,58 +3526,68 @@
       const rpMiniCalCard = document.getElementById("rp-minical-card");
       const rpViewOptionsCard = document.getElementById("rp-view-options-card");
       const rpFilterCard = document.getElementById("rp-filter-card");
-      const rpPassengerCard = document.getElementById("rp-passenger-card");
-      const rpManifestStatusCard = document.getElementById("rp-manifest-status-card");
-      const weekLabelEl = document.getElementById("week-label");
       const tpManifestBtn = document.getElementById("tp-view-manifest-btn");
 
-      function setTripView(mode) {
+      function syncManifestBtnLabel() {
+        if (!tpManifestBtn) return;
+        tpManifestBtn.querySelector(".rux-icon").textContent = manifestOpen ? "close" : "groups";
+        tpManifestBtn.querySelector(".rux-btn-label").textContent = manifestOpen ? "Close manifest" : "View manifest";
+        // Accent = "this is currently engaged," not danger — closing the
+        // manifest just closes the window, nothing destructive happens.
+        tpManifestBtn.classList.toggle("rux-button--accent", manifestOpen);
+        tpManifestBtn.classList.toggle("rux-button--default", !manifestOpen);
+      }
+
+      function openManifestWindow(trip) {
+        manifestOpen = true;
+        if (calendarManifestViewEl) calendarManifestViewEl.hidden = false;
+        // A prior drag/resize (trip-manifest.css's 580px breakpoint) leaves
+        // inline left/top/width/height on the window, which always outranks
+        // the stylesheet — without clearing it, the mobile full-screen rule
+        // can never actually apply once the window's ever been moved/sized.
+        if (calendarManifestViewEl && window.innerWidth <= 580) {
+          window.RuxFloatingWindow?.resetGeometry(calendarManifestViewEl);
+        }
+        syncManifestBtnLabel();
+        window.TripManifest?.refresh(trip);
+      }
+
+      function closeManifestWindow() {
+        if (!manifestOpen) return;
+        manifestOpen = false;
+        if (calendarManifestViewEl) calendarManifestViewEl.hidden = true;
+        syncManifestBtnLabel();
+      }
+
+      function setTripView(mode, trip) {
+        if (mode === "manifest") {
+          openManifestWindow(trip);
+          return;
+        }
+        closeManifestWindow();
         tripViewMode = mode;
         const isCalendar = mode === "calendar";
         const isList = mode === "list";
-        const isManifest = mode === "manifest";
         if (calendarViewportEl) calendarViewportEl.hidden = !isCalendar;
         if (calendarListViewEl) calendarListViewEl.hidden = !isList;
-        if (calendarManifestViewEl) calendarManifestViewEl.hidden = !isManifest;
-        // Prev/next only make sense browsing the calendar by week — List and
-        // Manifest keep the (always-visible, mode-appropriate) title but lose
-        // the arrows around it.
         calendarNavEls.forEach((el) => { el.hidden = !isCalendar; });
         if (rpMiniCalCard) rpMiniCalCard.hidden = !isCalendar;
         if (rpViewOptionsCard) rpViewOptionsCard.hidden = !isCalendar;
         if (rpFilterCard) rpFilterCard.hidden = !isList;
-        if (rpPassengerCard) rpPassengerCard.hidden = !isManifest;
-        if (rpManifestStatusCard) rpManifestStatusCard.hidden = !isManifest;
         if (tripsFilterBadgesEl) {
           tripsFilterBadgesEl.hidden = isList ? tripsFilterBadgesEl.children.length === 0 : true;
         }
         // setTripView() is the single source of truth for this toggle's
         // pressed state, not just the generic [data-rux-toggle-group] click
         // handler in controls.js — that handler only fires for an actual
-        // click inside #trip-view-group, but Manifest is entered/exited via
-        // the trip bar or the Billing tab's button, which call this
-        // function programmatically. Re-deriving every button's state from
-        // `mode` on every call (not just "clear on entering manifest") means
-        // it's correct however setTripView() was reached, including
-        // *returning* from Manifest without ever clicking Calendar/List.
+        // click inside #trip-view-group.
         document.querySelectorAll("#trip-view-group .rux-button").forEach((btn) => {
           const on = btn.dataset.value === mode;
           btn.setAttribute("aria-pressed", String(on));
           btn.classList.toggle("is-active", on);
         });
-        if (tpManifestBtn) {
-          tpManifestBtn.querySelector(".rux-icon").textContent = isManifest ? "close" : "groups";
-          tpManifestBtn.querySelector(".rux-btn-label").textContent = isManifest ? "Close manifest" : "View manifest";
-          // Accent = "this is currently engaged," not danger — closing the
-          // manifest just switches views, nothing destructive happens.
-          tpManifestBtn.classList.toggle("rux-button--accent", isManifest);
-          tpManifestBtn.classList.toggle("rux-button--default", !isManifest);
-        }
         if (isList) {
           window.TripsListPanel?.updateTitle?.();
-        } else if (isManifest) {
-          if (weekLabelEl) weekLabelEl.textContent = "Manifest";
-          window.TripManifest?.refresh();
         } else {
           renderDayHeaders(currentWeekStart);
           // The scheduler was just unhidden (calendarViewportEl.hidden =
@@ -3680,7 +3613,7 @@
 
       window.TripView = {
         set: setTripView,
-        get: () => tripViewMode,
+        get: () => (manifestOpen ? "manifest" : tripViewMode),
       };
 
       const optSundayStart = document.getElementById("opt-sunday-start");
@@ -4025,28 +3958,28 @@
       renderMiniCal();
 
       // ── Default boot state ──────────────────────────────────────────────
-      // Desktop begins with both panels visible. Mobile begins with the
-      // schedule visible and opens only one full-screen panel at a time.
-      drawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
+      // Only the right (tools) panel opens by default — the left (trip
+      // editor) panel starts closed and opens on demand, same as clicking a
+      // trip / "+ New trip" / a trip bar's manifest shortcut already does.
+      // Mobile begins with the schedule visible and opens only one
+      // full-screen panel at a time either way, so both start closed there.
+      drawer.style.setProperty("--drawer-width", "0px");
       drawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
       rightDrawer.style.setProperty("--drawer-width", DRAWER_DEFAULT + "px");
       rightDrawer.style.setProperty("--drawer-open-width", DRAWER_DEFAULT + "px");
 
+      tripPanel.inert = true;
+      drawer.setAttribute("aria-hidden", "true");
+      leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
+
       if (mobilePanelQuery.matches) {
-        drawer.style.setProperty("--drawer-width", "0px");
         rightDrawer.style.setProperty("--drawer-width", "0px");
-        tripPanel.inert = true;
         rightPanel.inert = true;
-        drawer.setAttribute("aria-hidden", "true");
         rightDrawer.setAttribute("aria-hidden", "true");
       } else {
-        drawer.classList.add("is-open");
         rightDrawer.classList.add("is-open");
-        tripPanel.inert = false;
         rightPanel.inert = false;
-        drawer.setAttribute("aria-hidden", "false");
         rightDrawer.setAttribute("aria-hidden", "false");
-        leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
         rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
       }
       tripDrawerHandle.syncHandle();
@@ -4283,6 +4216,147 @@
       <div class="rux-modal__footer">
         <button class="rux-button rux-button--ghost" data-rux-dismiss>Cancel</button>
         <button class="rux-button rux-button--accent" id="ps-print-confirm">Print</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trip manifest window — floating/draggable/resizable, same shell as the
+       document viewer, so it floats over the calendar instead of replacing
+       it. See js/panels/trip-manifest.js for open/close/drag wiring. -->
+  <div class="rux-floating-window rux-manifest-window rux-card rux-card--elevated" id="calendar-manifest-view" hidden>
+    <header class="rux-floating-window__header rux-manifest-window__header rux-card__header">
+      <p class="rux-card__title" id="manifest-window-title">Manifest</p>
+      <button type="button" class="rux-button rux-button--ghost rux-button--icon" id="manifest-window-close" aria-label="Close manifest">
+        <span class="rux-icon" aria-hidden="true">close</span>
+      </button>
+    </header>
+    <div class="rux-manifest-window__content">
+      <div class="rux-manifest-window__toolbar">
+        <div class="rux-trip-panel__cols-2">
+          <div class="rux-field"><span class="rux-field__label">Paid</span><output class="rux-output" id="rpm-summary-paid">0 of 0 paid</output></div>
+          <div class="rux-field"><span class="rux-field__label">Seats filled</span><output class="rux-output" id="rpm-summary-seats">—</output></div>
+        </div>
+        <div class="rux-cluster">
+          <!-- Placeholders for now — see js/panels/trip-manifest.js. Icon-only
+               so a full row of secondary actions doesn't crowd out +Passenger,
+               the one action that actually does something today. -->
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" id="rpm-print-manifest-btn" title="Print Manifest" aria-label="Print Manifest">
+            <span class="rux-icon" aria-hidden="true">print</span>
+          </button>
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" id="rpm-print-report-2-btn" title="Print Report 2" aria-label="Print Report 2">
+            <span class="rux-icon" aria-hidden="true">description</span>
+          </button>
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" id="rpm-print-report-3-btn" title="Print Report 3" aria-label="Print Report 3">
+            <span class="rux-icon" aria-hidden="true">description</span>
+          </button>
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" id="rpm-seating-chart-btn" title="Seating Chart" aria-label="Seating Chart">
+            <span class="rux-icon" aria-hidden="true">event_seat</span>
+          </button>
+          <button type="button" class="rux-button rux-button--accent" id="rpm-add-btn">
+            <span class="rux-icon" aria-hidden="true">person_add</span><span class="rux-btn-label"> Passenger</span>
+          </button>
+        </div>
+      </div>
+      <div class="rux-floating-window__body rux-manifest-window__body rux-card__body">
+        <table class="rux-table trips-app__table" aria-label="Passenger manifest">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Group</th>
+              <th scope="col">Seat</th>
+              <th scope="col" class="col-owed">Owed</th>
+              <th scope="col" class="col-paid">Paid</th>
+              <th scope="col" class="col-balance">Balance</th>
+              <th scope="col">Status</th>
+            </tr>
+          </thead>
+          <tbody id="tp-manifest-body"></tbody>
+        </table>
+      </div>
+      <!-- Dims the table and catches the "click outside to close" while the
+           passenger panel is open. Sits above the table but below the panel
+           (z-index), so it can't swallow clicks meant for the panel itself. -->
+      <div class="rux-manifest-window__scrim" id="rpm-scrim"></div>
+      <!-- Slides in from the left over the table/toolbar (not the outer
+           header — title/close/drag stay reachable while editing). See
+           js/panels/trip-manifest.js for open/close wiring. -->
+      <div class="rux-manifest-window__passenger-panel" id="rp-passenger-card">
+        <header class="rux-card__header">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" id="rpm-back-btn" aria-label="Back to manifest">
+            <span class="rux-icon" aria-hidden="true">arrow_back</span>
+          </button>
+          <h3 class="rux-card__title" id="rpm-title">New passenger</h3>
+        </header>
+        <div class="rux-manifest-window__passenger-body">
+        <div class="rux-panel__pane">
+          <div class="rux-card">
+            <header class="rux-card__header">
+              <p class="rux-card__title">Passenger Info</p>
+            </header>
+            <div class="rux-card__body rux-card__body--stack">
+              <div class="rux-trip-panel__cols-2">
+                <div class="rux-field"><label class="rux-field__label" for="rpm-name">Name</label><input class="rux-input" id="rpm-name" type="text" /></div>
+                <div class="rux-field"><label class="rux-field__label" for="rpm-phone">Phone</label><input class="rux-input" id="rpm-phone" type="tel" /></div>
+              </div>
+              <div class="rux-trip-panel__cols-2">
+                <div class="rux-field"><label class="rux-field__label" for="rpm-group">Group</label><input class="rux-input" id="rpm-group" type="text" placeholder="e.g. 1" /></div>
+                <div class="rux-field"><label class="rux-field__label" for="rpm-seat">Seat</label><input class="rux-input" id="rpm-seat" type="text" /></div>
+              </div>
+              <div class="rux-trip-panel__cols-2">
+                <div class="rux-field"><label class="rux-field__label" for="rpm-pickup">Pick-up Location</label><input class="rux-input" id="rpm-pickup" type="text" /></div>
+                <div class="rux-field"><span class="rux-field__label">New customer</span><label class="rux-switch"><input id="rpm-new-customer" type="checkbox" role="switch" /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label></div>
+              </div>
+              <div class="rux-trip-panel__cols-2">
+                <div class="rux-field"><label class="rux-field__label" for="rpm-email">Email</label><input class="rux-input" id="rpm-email" type="email" /></div>
+                <div class="rux-field"><label class="rux-field__label" for="rpm-dob">Date of birth</label><input class="rux-input" id="rpm-dob" type="date" /></div>
+              </div>
+              <div class="rux-field"><label class="rux-field__label" for="rpm-address">Address</label><input class="rux-input" id="rpm-address" type="text" /></div>
+              <div class="rux-field"><label class="rux-field__label" for="rpm-notes">Notes</label><textarea class="rux-textarea" id="rpm-notes" rows="3"></textarea></div>
+              <div class="rux-field"><label class="rux-field__label" for="rpm-status">Status</label>
+                <select class="rux-input rux-select" id="rpm-status">
+                  <option value="active">Active</option>
+                  <option value="canceled">Canceled</option>
+                  <option value="refunded">Refunded</option>
+                  <option value="no_show">No-show</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="rux-card" data-payment-card>
+            <header class="rux-card__header">
+              <p class="rux-card__title">Payments</p>
+              <div class="rux-cluster">
+                <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" id="rpm-payment-delete-btn" disabled aria-label="Delete a payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
+                <button class="rux-button rux-button--default rux-button--icon" type="button" id="rpm-payment-add-btn" aria-haspopup="menu" aria-expanded="false" aria-label="Add payment"><span class="rux-icon" aria-hidden="true">add</span></button>
+              </div>
+            </header>
+            <div class="rux-card__body rux-card__body--stack">
+              <div class="rux-field"><label class="rux-field__label" for="rpm-ticket-option">Ticket Option</label>
+                <select class="rux-input rux-select" id="rpm-ticket-option">
+                  <option value="">Manual amount</option>
+                </select>
+              </div>
+              <div class="rux-trip-panel__cols-2">
+                <div class="rux-field"><label class="rux-field__label" for="rpm-owed">Owed</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="rpm-owed" type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
+                <div class="rux-field"><label class="rux-field__label" for="rpm-balance">Balance</label><output class="rux-output" id="rpm-balance">$0.00</output></div>
+              </div>
+              <div class="rux-trip-panel__payment-rows" id="rpm-payment-rows">
+                <div class="rux-trip-panel__payment-empty" role="status">
+                  <span class="rux-icon" aria-hidden="true">payments</span>
+                  <span>No payments yet</span>
+                </div>
+              </div>
+              <div class="rux-field"><span class="rux-field__label">Payment status</span><div><span class="rux-badge" id="rpm-status-badge">Unpaid</span></div></div>
+            </div>
+          </div>
+        </div>
+        </div>
+        <footer class="rux-card__footer">
+          <button class="rux-button rux-button--default rux-button--danger" id="rpm-btn-delete" type="button" disabled><span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span></button>
+          <button class="rux-button rux-button--default" id="rpm-btn-clear" type="button"><span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span></button>
+          <button class="rux-button rux-button--accent" id="rpm-btn-save" type="button"><span class="rux-icon">save</span><span class="rux-btn-label"> Save</span></button>
+        </footer>
       </div>
     </div>
   </div>

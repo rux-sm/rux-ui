@@ -1,0 +1,41 @@
+/* ==========================================================================
+   FLOATING WINDOW
+   --------------------------------------------------------------------------
+   Shared mechanics for a movable, resizable, position:fixed panel — drag
+   via its header (see js/core/floating-window.js), resize via the native
+   corner grip (resize: both). The document viewer and the trip manifest
+   window are both built on this; width/height/initial position are set by
+   the specific component (.rux-doc-viewer / .rux-manifest-window), not here.
+   ========================================================================== */
+
+.rux-floating-window {
+	position: fixed;
+	display: flex;
+	flex-direction: column;
+	resize: both;
+	z-index: var(--rux-z-modal);
+	box-shadow: var(--rux-elevation-4);
+}
+
+.rux-floating-window[hidden] {
+	display: none;
+}
+
+.rux-floating-window.is-dragging {
+	/* Dragging is a discrete per-frame jump (pointer position), not a
+	   continuous change — an inherited transition on left/top would make
+	   the panel visibly lag a frame behind the cursor. */
+	transition: none;
+	user-select: none;
+}
+
+.rux-floating-window__header {
+	cursor: move;
+	flex: none;
+}
+
+.rux-floating-window__body {
+	flex: 1;
+	min-height: 0;
+	padding: 0;
+}

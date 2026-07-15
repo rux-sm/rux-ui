@@ -1170,7 +1170,16 @@ export function loadTrip(root, itinerary, trip) {
 	populateStops(itinerary, trip.trip_stops ?? trip.stops ?? []);
 
 	if (currentTripId) {
-		fetchDocuments(currentTripId).then((docs) => {
+		// Freeze which trip this fetch is for — loadTrip() isn't awaited by its
+		// callers, so a second loadTrip() (a different trip opened before this
+		// one's fetch resolves) can easily land first. Without the guard below,
+		// this trip's now-stale response would still fire and repaint the doc
+		// list with the WRONG trip's files over whatever the second load just
+		// (correctly) populated — and from there, deleting a "duplicate" is
+		// actually deleting the other trip's real document.
+		const requestedTripId = currentTripId;
+		fetchDocuments(requestedTripId).then((docs) => {
+			if (currentTripId !== requestedTripId) return;
 			root.dispatchEvent(new CustomEvent("rux:documents-loaded", { bubbles: true, detail: { documents: docs } }));
 		}).catch((err) => console.warn("Could not load documents:", err));
 	}

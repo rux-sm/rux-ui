@@ -951,6 +951,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		li.className = "rux-trip-panel__doc-row";
 		li.dataset.docId = doc.id;
 		li.dataset.docPath = doc.file_path;
+		li.dataset.docLabel = doc.label;
 		li.innerHTML = `
 			<button type="button" class="rux-trip-panel__doc-content" data-doc-open title="${escHtml(doc.file_name)}" aria-label="View ${escHtml(displayLabel)}${uploadedDate ? `, uploaded ${uploadedDate}` : ""}">
 				<span class="rux-icon" aria-hidden="true">${icon}</span>
@@ -965,6 +966,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	if (docNewBtn && docFileInput) {
 		let pendingUploadLabel = null;
+		let pendingReplaceRow = null;
 		let docSelecting = false;
 
 		const syncDocButtons = () => {
@@ -993,9 +995,45 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				window.Rux?.toast("Delete failed — try again.");
 			}
 		};
+		const replaceDoc = async (row, file) => {
+			const label = row.dataset.docLabel;
+			const tripId = window.RuxDocs?.tripId?.();
+			if (!file || !tripId) return;
+			try {
+				const doc = await window.RuxDocs.upload(tripId, label, file);
+				await window.RuxDocs.delete(row.dataset.docId);
+				row.replaceWith(createDocRow(doc));
+				window.Rux?.toast(`${DOC_TYPE_LABELS[label] || label} replaced`);
+			} catch (err) {
+				console.error("Replace failed:", err);
+				window.Rux?.toast("Replace failed — try again.");
+			}
+		};
+
 		const openDocRow = (row) => {
 			const url = window.RuxDocs?.url?.(row.dataset.docPath);
-			if (url) window.open(url, "_blank");
+			if (!url) return;
+			if (!window.RuxDocViewer) {
+				window.open(url, "_blank");
+				return;
+			}
+			const fileName = row.querySelector("[data-doc-open]")?.title || "";
+			const label = row.dataset.docLabel;
+			window.RuxDocViewer.open({
+				url,
+				fileName,
+				title: DOC_TYPE_LABELS[label] || label || fileName,
+				icon: documentIcon({ file_name: fileName, label }),
+				onDelete: () => {
+					window.RuxDocViewer.close();
+					deleteDoc(row);
+				},
+				onUpdate: () => {
+					window.RuxDocViewer.close();
+					pendingReplaceRow = row;
+					docFileInput.click();
+				},
+			});
 		};
 
 		const uploadDoc = async (file, label) => {
@@ -1036,7 +1074,16 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			docFileInput.value = "";
 		};
 
-		docFileInput.addEventListener("change", () => uploadDoc(docFileInput.files[0], pendingUploadLabel));
+		docFileInput.addEventListener("change", () => {
+			if (pendingReplaceRow) {
+				const row = pendingReplaceRow;
+				pendingReplaceRow = null;
+				replaceDoc(row, docFileInput.files[0]);
+				docFileInput.value = "";
+				return;
+			}
+			uploadDoc(docFileInput.files[0], pendingUploadLabel);
+		});
 
 		/* — Add-type menu — .rux-menu popover listing the 3 document types;
 		   picking one immediately opens the file dialog for that type. Same
