@@ -59,9 +59,9 @@
 
 	/* ─── COLOR · accent foundation ──────────────────────────────────────── */
 
-	--rux-accent-h: 260;
-	--rux-accent-l: 64%;
-	--rux-accent-c: 0.28;
+	--rux-accent-h: 259;
+	--rux-accent-l: 54%;
+	--rux-accent-c: 0.192;
 
 	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
 
@@ -250,8 +250,8 @@
 	   value regardless of what it's nested inside. */
 
 	--rux-surface-canvas:          oklch(10% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-workspace:       oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-panel:           oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-workspace:       oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-panel:           oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-calendar:        oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-calendar-header: oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-surface-card:            oklch(22% var(--rux-neutral-c) var(--rux-neutral-h));
@@ -594,7 +594,7 @@
 	--rux-button-default-fg: var(--rux-fg);
 
 	/* — accent — */
-	--rux-button-accent-bg: color-mix(in srgb, var(--rux-accent) 60%, transparent);
+	--rux-button-accent-bg: var(--rux-accent);
 	--rux-button-accent-fg: var(--rux-fg-on-accent);
 
 	/* — ghost — */
