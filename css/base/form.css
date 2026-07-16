@@ -37,8 +37,7 @@
 .rux-input:hover,
 .rux-select:hover,
 .rux-textarea:hover {
-  background-color: var(--rux-input-hover-bg);
-  border-color: var(--rux-border-strong);
+  border-color: var(--rux-input-hover);
 }
 
 .rux-input:focus-visible,
@@ -116,7 +115,6 @@
   --_track: var(--rux-switch-track-bg);
   --_state-overlay: transparent;
   --_thumb: var(--rux-fg);
-  --_shadow: var(--rux-elevation-2);
 
   position: relative;
   display: inline-block;
@@ -135,7 +133,6 @@
      border-color forwarded from the (invisible) input below, so it
      doesn't shift the track by 1px when it appears. */
   border: 1px solid transparent;
-  box-shadow: var(--_shadow);
   transition:
     background-color var(--rux-duration-fast) var(--rux-ease-out),
     box-shadow var(--rux-duration-fast) var(--rux-ease-out);
@@ -148,7 +145,6 @@
   height: calc(var(--_h) - var(--_p) * 2);
   background: var(--_thumb);
   border-radius: var(--rux-radius-full);
-  box-shadow: var(--_shadow);
   transition:
     background-color var(--rux-duration-fast) var(--rux-ease-out),
     box-shadow var(--rux-duration-fast) var(--rux-ease-out),
@@ -409,10 +405,6 @@
 }
 
 .rux-color-picker__trigger {
-  --_field-shadow:
-    inset 0 1px 2px oklch(from var(--rux-color-black) l c h / 0.75),
-    inset 0 -1px 0 var(--rux-alpha-white-4);
-
   display: flex;
   align-items: center;
   gap: var(--rux-control-content-gap);
@@ -423,7 +415,6 @@
   color: var(--rux-fg);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-sm);
-  box-shadow: var(--_field-shadow);
   font: inherit;
   font-size: var(--rux-text-sm);
   cursor: pointer;
@@ -471,7 +462,6 @@
   background: var(--rux-surface-modal);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-elevation-4);
 }
 
 .rux-color-picker__popover[hidden] { display: none; }

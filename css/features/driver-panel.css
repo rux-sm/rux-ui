@@ -121,7 +121,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: oklch(from var(--rux-color-black) l c h / 0.45);
+	background: oklch(from var(--rux-black) l c h / 0.45);
 	color: var(--rux-fg);
 	opacity: 0;
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);

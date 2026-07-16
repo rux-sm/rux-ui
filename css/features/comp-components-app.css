@@ -393,7 +393,6 @@
 	background: color-mix(in oklch, var(--rux-surface-modal) 92%, transparent);
 	border: var(--rux-border-width) solid color-mix(in oklch, var(--rux-accent) 55%, transparent);
 	border-radius: var(--rux-radius-control);
-	box-shadow: var(--rux-elevation-2);
 	font-size: var(--rux-text-xs);
 }
 

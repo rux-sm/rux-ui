@@ -15,7 +15,6 @@
 	background: var(--rux-workspace-bg);
 	color: var(--rux-workspace-fg);
 	border-radius: var(--rux-workspace-radius);
-	box-shadow: var(--rux-workspace-shadow);
 	border-inline: var(--rux-workspace-border-inline);
 	border-block: var(--rux-workspace-border-block);
 }

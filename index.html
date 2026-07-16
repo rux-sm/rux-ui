@@ -53,68 +53,70 @@
     </div>
     <main class="scheduler-app">
 
-      <!-- ── Top bar ──────────────────────────────────────────────────────── -->
-      <header class="scheduler-app__topbar" aria-label="App">
-        <div class="scheduler-app__topbar-start">
-          <nav class="scheduler-app__module-nav" aria-label="Main">
-
-            <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
-              type="button"
-              data-module="calendar"
-            >
-              <span class="rux-icon">route</span>
-              Trips
-            </button>
-
-            <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
-              type="button"
-              data-module="drivers"
-            >
-              <span class="rux-icon">person</span>
-              Drivers
-            </button>
-
-            <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
-              type="button"
-              data-module="fleet"
-            >
-              <span class="rux-icon" aria-hidden="true">directions_bus</span>
-              Fleet
-            </button>
-
-            <button
-              class="rux-button rux-button--ghost scheduler-app__module-button"
-              type="button"
-              id="workspace-search-btn"
-              title="Search trips (⌘K)"
-            >
-              <span class="rux-icon" aria-hidden="true">search</span>
-              Search
-            </button>
-
-          </nav>
+      <!-- ── App header ───────────────────────────────────────────────────── -->
+      <header class="rux-app-header" aria-label="App header">
+        <div class="rux-app-header__brand">
+          <img class="rux-app-header__logo" src="./assets/logo.png" alt="Scamilla Tour Buses" />
         </div>
 
-        <div class="scheduler-app__account">
-          <button class="rux-button rux-button--ghost rux-button--icon scheduler-app__profile" type="button" id="profile-menu-btn" aria-label="Profile menu" aria-haspopup="menu" aria-expanded="false">
+        <nav class="rux-app-header__nav" aria-label="Primary navigation">
+
+          <button
+            class="rux-button rux-button--ghost rux-app-header__nav-item"
+            type="button"
+            data-module="calendar"
+          >
+            <span class="rux-icon" aria-hidden="true">map</span>
+            Trips
+          </button>
+
+          <button
+            class="rux-button rux-button--ghost rux-app-header__nav-item"
+            type="button"
+            data-module="drivers"
+          >
+            <span class="rux-icon">person</span>
+            Drivers
+          </button>
+
+          <button
+            class="rux-button rux-button--ghost rux-app-header__nav-item"
+            type="button"
+            data-module="fleet"
+          >
+            <span class="rux-icon" aria-hidden="true">directions_bus</span>
+            Fleet
+          </button>
+
+          <button
+            class="rux-button rux-button--ghost rux-app-header__nav-item"
+            type="button"
+            id="workspace-search-btn"
+            title="Search trips (⌘K)"
+          >
+            <span class="rux-icon" aria-hidden="true">search</span>
+            Search
+          </button>
+
+        </nav>
+
+        <div class="rux-app-header__actions" aria-label="Account actions">
+          <button class="rux-button rux-button--ghost rux-button--icon rux-app-header__profile" type="button" id="profile-menu-btn" aria-label="Profile menu" aria-haspopup="menu" aria-expanded="false">
             <img src="./assets/rux-profile-pic.png" alt="" />
           </button>
         </div>
       </header>
       <div class="rux-menu rux-popover" id="profile-menu" role="menu" hidden>
-        <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="components">
+        <button class="rux-menu__item" type="button" role="menuitem" data-module="components">
           <span class="rux-icon" aria-hidden="true">widgets</span>
           <span>Components</span>
         </button>
-        <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="game">
+        <button class="rux-menu__item" type="button" role="menuitem" data-module="game">
           <span class="rux-icon" aria-hidden="true">playing_cards</span>
           <span>Flip 7</span>
         </button>
         <div class="rux-menu__divider" role="separator"></div>
-        <button class="rux-menu__item scheduler-app__module-button" type="button" role="menuitem" data-module="settings">
+        <button class="rux-menu__item" type="button" role="menuitem" data-module="settings">
           <span class="rux-icon" aria-hidden="true">settings</span>
           <span>Configuration</span>
         </button>
@@ -1178,13 +1180,13 @@
                             </div>
                             <div class="components-app__annotation components-app__annotation--surface">
                               <span>Surface</span>
-                              <code>--rux-button-default-bg</code>
-                              <output data-token-value="--rux-button-default-bg"></output>
+                              <code>--rux-button-default-background</code>
+                              <output data-token-value="--rux-button-default-background"></output>
                             </div>
                             <div class="components-app__annotation components-app__annotation--foreground">
                               <span>Label color</span>
-                              <code>--rux-button-default-fg</code>
-                              <output data-token-value="--rux-button-default-fg"></output>
+                              <code>--rux-button-default-text</code>
+                              <output data-token-value="--rux-button-default-text"></output>
                             </div>
                           </div>
                         </div>
@@ -1273,12 +1275,9 @@
                             <span>Property</span><span>Token</span><span>Resolved value</span>
                           </div>
                           <dl class="components-app__rules">
-                            <div><dt>Text color</dt><dd><code>--rux-button-default-fg</code><output data-token-value="--rux-button-default-fg"></output></dd></div>
-                            <div><dt>Background</dt><dd><code>--rux-button-default-bg</code><output data-token-value="--rux-button-default-bg"></output></dd></div>
+                            <div><dt>Text color</dt><dd><code>--rux-button-default-text</code><output data-token-value="--rux-button-default-text"></output></dd></div>
+                            <div><dt>Background</dt><dd><code>--rux-button-default-background</code><output data-token-value="--rux-button-default-background"></output></dd></div>
                             <div><dt>Hover overlay</dt><dd><code>--rux-button-hover-overlay</code><output data-token-value="--rux-button-hover-overlay"></output></dd></div>
-                            <div><dt>Default shadow</dt><dd><code>--rux-button-shadow</code><output data-token-value="--rux-button-shadow"></output></dd></div>
-                            <div><dt>Selected inset</dt><dd><code>--rux-button-selected-shadow</code><output data-token-value="--rux-button-selected-shadow"></output></dd></div>
-                            <div><dt>Disabled shadow</dt><dd><code>--rux-button-disabled-shadow</code><output data-token-value="--rux-button-disabled-shadow"></output></dd></div>
                             <div><dt>Focus ring</dt><dd><code>--rux-button-focus-ring</code><output data-token-value="--rux-button-focus-ring"></output></dd></div>
                             <div><dt>Transition</dt><dd><code>--rux-button-transition-duration</code><output data-token-value="--rux-button-transition-duration"></output></dd></div>
                           </dl>
@@ -1664,18 +1663,6 @@
                   </article>
                   <article class="rux-card components-app__token-group">
                     <div class="rux-card__body components-app__specimen-body">
-                      <h3>Elevation</h3>
-                      <dl class="components-app__rules">
-                        <div><dt>Level 0</dt><dd><code>--rux-elevation-0</code><output data-token-value="--rux-elevation-0"></output></dd></div>
-                        <div><dt>Level 1</dt><dd><code>--rux-elevation-1</code><output data-token-value="--rux-elevation-1"></output></dd></div>
-                        <div><dt>Level 2</dt><dd><code>--rux-elevation-2</code><output data-token-value="--rux-elevation-2"></output></dd></div>
-                        <div><dt>Level 3</dt><dd><code>--rux-elevation-3</code><output data-token-value="--rux-elevation-3"></output></dd></div>
-                        <div><dt>Level 4</dt><dd><code>--rux-elevation-4</code><output data-token-value="--rux-elevation-4"></output></dd></div>
-                      </dl>
-                    </div>
-                  </article>
-                  <article class="rux-card components-app__token-group">
-                    <div class="rux-card__body components-app__specimen-body">
                       <h3>Text and action</h3>
                       <div class="components-app__swatch" style="--_swatch: var(--rux-fg)"><span></span><code>--rux-fg</code></div>
                       <div class="components-app__swatch" style="--_swatch: var(--rux-fg-muted)"><span></span><code>--rux-fg-muted</code></div>
@@ -2053,7 +2040,7 @@
       // ── Module navigation ───────────────────────────────────────────────
 
       const moduleSections = document.querySelectorAll(".scheduler-app__module[data-module]");
-      const moduleButtons  = document.querySelectorAll(".scheduler-app__module-button[data-module]");
+      const moduleButtons  = document.querySelectorAll("button[data-module]");
 
       function showModule(name) {
         document.body.dataset.activeModule = name;
@@ -2224,84 +2211,84 @@
 
       // ── Trip panel drawer ───────────────────────────────────────────────
 
-      // ── Topbar visibility ───────────────────────────────────────────────
+      // ── App-header visibility ──────────────────────────────────────────
       // Always starts expanded on load — deliberately not persisted, unlike
       // the panels' open/closed state.
-      const topbar = document.querySelector(".scheduler-app__topbar");
+      const appHeader = document.querySelector(".rux-app-header");
       const appEl = document.querySelector(".scheduler-app");
-      let topbarCollapsed = false;
+      let appHeaderCollapsed = false;
 
-      // The topbar's open height is implicit (auto), so it can't transition
+      // The app header's open height is implicit (auto), so it can't transition
       // smoothly on its own — `height` jumps to its target instantly while
       // only `padding` animates. Pin an explicit px height before toggling so
       // the transition has two real numbers to interpolate between, then
       // release back to auto once it settles so it stays responsive to
       // content/viewport changes at rest.
-      function collapseTopbarSmooth() {
-        const h = topbar.getBoundingClientRect().height;
-        topbar.style.overflow = "hidden";
-        topbar.style.height = h + "px";
-        topbar.getBoundingClientRect();
-        topbar.classList.add("is-collapsed");
-        topbar.style.height = "0px";
-        topbar.addEventListener("transitionend", function handler(e) {
-          if (e.target !== topbar || e.propertyName !== "height") return;
-          topbar.style.height = "";
-          topbar.style.overflow = "";
-          topbar.removeEventListener("transitionend", handler);
+      function collapseAppHeaderSmooth() {
+        const h = appHeader.getBoundingClientRect().height;
+        appHeader.style.overflow = "hidden";
+        appHeader.style.height = h + "px";
+        appHeader.getBoundingClientRect();
+        appHeader.classList.add("is-collapsed");
+        appHeader.style.height = "0px";
+        appHeader.addEventListener("transitionend", function handler(e) {
+          if (e.target !== appHeader || e.propertyName !== "height") return;
+          appHeader.style.height = "";
+          appHeader.style.overflow = "";
+          appHeader.removeEventListener("transitionend", handler);
         });
       }
-      function expandTopbarSmooth() {
-        topbar.style.overflow = "hidden";
+      function expandAppHeaderSmooth() {
+        appHeader.style.overflow = "hidden";
         // Pin height AND padding to the collapsed (0) state explicitly. With
         // box-sizing: border-box, height alone can't reach 0 once padding is
         // restored — padding always reserves its own space — so both must be
         // pinned together to get a true 0 "from" snapshot.
-        topbar.style.height = "0px";
-        topbar.style.paddingTop = "0px";
-        topbar.style.paddingBottom = "0px";
-        topbar.getBoundingClientRect();
+        appHeader.style.height = "0px";
+        appHeader.style.paddingTop = "0px";
+        appHeader.style.paddingBottom = "0px";
+        appHeader.getBoundingClientRect();
         // Briefly disable transitions so removing is-collapsed settles
         // instantly, letting us measure the true natural size.
-        const prevTransition = topbar.style.transition;
-        topbar.style.transition = "none";
-        topbar.classList.remove("is-collapsed");
-        topbar.style.height = "";
-        topbar.style.paddingTop = "";
-        topbar.style.paddingBottom = "";
-        const naturalH = topbar.getBoundingClientRect().height;
-        const naturalPadTop = getComputedStyle(topbar).paddingTop;
-        const naturalPadBottom = getComputedStyle(topbar).paddingBottom;
-        topbar.style.height = "0px";
-        topbar.style.paddingTop = "0px";
-        topbar.style.paddingBottom = "0px";
-        topbar.getBoundingClientRect();
-        topbar.style.transition = prevTransition;
-        topbar.getBoundingClientRect();
-        topbar.style.height = naturalH + "px";
-        topbar.style.paddingTop = naturalPadTop;
-        topbar.style.paddingBottom = naturalPadBottom;
-        topbar.addEventListener("transitionend", function handler(e) {
-          if (e.target !== topbar || e.propertyName !== "height") return;
-          topbar.style.height = "";
-          topbar.style.paddingTop = "";
-          topbar.style.paddingBottom = "";
-          topbar.style.overflow = "";
-          topbar.removeEventListener("transitionend", handler);
+        const prevTransition = appHeader.style.transition;
+        appHeader.style.transition = "none";
+        appHeader.classList.remove("is-collapsed");
+        appHeader.style.height = "";
+        appHeader.style.paddingTop = "";
+        appHeader.style.paddingBottom = "";
+        const naturalH = appHeader.getBoundingClientRect().height;
+        const naturalPadTop = getComputedStyle(appHeader).paddingTop;
+        const naturalPadBottom = getComputedStyle(appHeader).paddingBottom;
+        appHeader.style.height = "0px";
+        appHeader.style.paddingTop = "0px";
+        appHeader.style.paddingBottom = "0px";
+        appHeader.getBoundingClientRect();
+        appHeader.style.transition = prevTransition;
+        appHeader.getBoundingClientRect();
+        appHeader.style.height = naturalH + "px";
+        appHeader.style.paddingTop = naturalPadTop;
+        appHeader.style.paddingBottom = naturalPadBottom;
+        appHeader.addEventListener("transitionend", function handler(e) {
+          if (e.target !== appHeader || e.propertyName !== "height") return;
+          appHeader.style.height = "";
+          appHeader.style.paddingTop = "";
+          appHeader.style.paddingBottom = "";
+          appHeader.style.overflow = "";
+          appHeader.removeEventListener("transitionend", handler);
         });
       }
 
-      function setTopbarCollapsed(collapsed) {
-        if (topbarCollapsed === collapsed) return;
-        topbarCollapsed = collapsed;
-        topbarCollapsed ? collapseTopbarSmooth() : expandTopbarSmooth();
+      function setAppHeaderCollapsed(collapsed) {
+        if (appHeaderCollapsed === collapsed) return;
+        appHeaderCollapsed = collapsed;
+        appHeaderCollapsed ? collapseAppHeaderSmooth() : expandAppHeaderSmooth();
       }
 
       // Lives in the right panel's View Options card now, not the ⋮ menu —
       // "on" reads as "nav is hidden" (matching the "Hide navigation bar"
-      // label), the same direction as topbarCollapsed, so this is a direct
+      // label), the same direction as appHeaderCollapsed, so this is a direct
       // pass-through rather than an inversion.
-      initToggle("opt-hide-nav", topbarCollapsed, (on) => setTopbarCollapsed(on));
+      initToggle("opt-hide-nav", appHeaderCollapsed, (on) => setAppHeaderCollapsed(on));
 
       const drawer  = document.getElementById("trip-panel-drawer");
       const rightDrawer = document.getElementById("right-panel-drawer");

@@ -17,6 +17,7 @@
    -----------------------
    icons.css        .rux-icon and custom pictogram variants
    controls.css     .rux-button, .rux-segmented
+   app-header.css   .rux-app-header and its brand, navigation, and actions
    badges.css       .rux-badge, .rux-trip-itinerary__badge  ← single source of truth for all badge rules
    form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
                     .rux-switch, .rux-checkbox, .rux-input-group,
@@ -36,11 +37,12 @@
    trip-panel.css   .rux-trip-panel — side-panel form editor for trip details
    itinerary.css    .rux-trip-itinerary — timeline stop editor for the Itinerary tab
    scheduler.css    .rux-scheduler — week-grid component
-   scheduler-app.css  .scheduler-app — full-page application shell layout
+   scheduler-app.css  .scheduler-app shell and app-header coordination
    ========================================================================== */
 
 @import "./base/icons.css";
 @import "./base/controls.css";
+@import "./base/app-header.css";
 @import "./base/badges.css";
 @import "./base/form.css";
 @import "./base/workspace.css?v=2";

@@ -132,7 +132,6 @@
 	background: var(--rux-surface-modal);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
-	box-shadow: var(--rux-elevation-4);
 }
 
 .settings-app__suggestions[hidden] {
@@ -319,7 +318,6 @@
 	background: var(--rux-surface-modal);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
-	box-shadow: var(--rux-elevation-4);
 }
 
 .req-icon-picker[hidden] {

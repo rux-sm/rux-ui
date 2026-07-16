@@ -15,7 +15,6 @@
 	border-inline: var(--rux-panel-border-inline);
 	border-block: var(--rux-panel-border-block);
 	border-radius: var(--rux-panel-radius);
-	box-shadow: var(--rux-panel-shadow);
 	isolation: isolate;
 }
 
@@ -101,11 +100,6 @@
 	display: none;
 }
 
-.rux-panel__nav.is-scrolled,
-.rux-panel__tabs.is-scrolled {
-	box-shadow: var(--rux-panel-nav-shadow);
-}
-
 .rux-panel__footer {
 	display: flex;
 	min-height: auto;
@@ -116,10 +110,6 @@
 	position: relative;
 	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-}
-
-.rux-panel__footer.is-scrolled {
-	box-shadow: var(--rux-panel-footer-shadow);
 }
 
 .rux-panel__footer > .rux-button {

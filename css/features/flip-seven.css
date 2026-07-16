@@ -156,7 +156,6 @@
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-xl);
 	background: var(--rux-surface-canvas);
-	box-shadow: var(--rux-inset-1);
 }
 .flip-seven__turn {
 	grid-area: center;
@@ -170,7 +169,6 @@
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-surface-modal);
-	box-shadow: var(--rux-shadow-2);
 	text-align: left;
 }
 .flip-seven__turn-status {
@@ -227,7 +225,6 @@
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-surface-modal);
-	box-shadow: var(--rux-shadow-2);
 	pointer-events: auto;
 }
 .flip-seven__player-hand--top { grid-area: top; }
@@ -285,7 +282,6 @@
 	border: var(--rux-border-width) solid var(--rux-border-strong);
 	border-radius: var(--rux-radius-sm);
 	background: var(--rux-surface-modal);
-	box-shadow: var(--rux-shadow-2);
 	color: var(--rux-fg);
 	font: var(--rux-weight-bold) var(--rux-text-md)/1 var(--rux-font-mono);
 }
@@ -293,7 +289,7 @@
 .flip-seven__card.is-bust-card {
 	border-color: var(--rux-danger);
 	color: var(--rux-danger);
-	box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-danger), var(--rux-shadow-2);
+	box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-danger);
 }
 .flip-seven__round-total { justify-self: center; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
 .flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-fg); font: var(--rux-weight-bold) var(--rux-text-xl)/1 var(--rux-font-mono); }

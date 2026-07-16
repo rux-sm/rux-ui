@@ -197,7 +197,7 @@
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,
 .rux-scheduler__day-head--today .rux-scheduler__day-number {
-	color: var(--rux-color-white);
+	color: var(--rux-white);
 }
 
 /* ---------- Time-aligned mode ---------- */
@@ -443,13 +443,13 @@
 	background-image: linear-gradient(
 		to right,
 		transparent 24.99%,
-		oklch(from var(--rux-color-white) l c h / 0.03) 25%,
+		oklch(from var(--rux-white) l c h / 0.03) 25%,
 		transparent 25.5%,
 		transparent 49.99%,
-		oklch(from var(--rux-color-white) l c h / 0.05) 50%,
+		oklch(from var(--rux-white) l c h / 0.05) 50%,
 		transparent 50.5%,
 		transparent 74.99%,
-		oklch(from var(--rux-color-white) l c h / 0.03) 75%,
+		oklch(from var(--rux-white) l c h / 0.03) 75%,
 		transparent 75.5%
 	);
 }

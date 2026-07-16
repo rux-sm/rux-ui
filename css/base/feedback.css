@@ -38,7 +38,6 @@
   background: var(--rux-surface-modal);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
-  box-shadow: var(--rux-elevation-2);
   font-size: var(--rux-text-sm);
   min-width: var(--rux-toast-min-width);
 }
@@ -65,7 +64,6 @@
   background: var(--rux-surface-modal);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xl);
-  box-shadow: var(--rux-elevation-4);
   overflow: hidden;
   animation: rux-modal-in var(--rux-duration-base) var(--rux-ease-out);
 }
@@ -135,7 +133,6 @@
   white-space: nowrap;
   pointer-events: none;
   z-index: var(--rux-z-overlay);
-  box-shadow: var(--rux-elevation-3);
 }
 
 .rux-tooltip {
@@ -152,7 +149,6 @@
   pointer-events: none;
   white-space: nowrap;
   z-index: var(--rux-z-overlay);
-  box-shadow: var(--rux-elevation-3);
 }
 
 .rux-tooltip[hidden] {

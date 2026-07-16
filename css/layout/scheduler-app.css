@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SCHEDULER APP SHELL  ·  scheduler-app, topbar, toolbar, nav
+   SCHEDULER APP SHELL  ·  scheduler-app, app header, toolbar, nav
    --------------------------------------------------------------------------
    Full-page application shell that hosts .rux-scheduler. These layout
    classes are app-specific scaffolding; .rux-scheduler itself is the
@@ -50,7 +50,7 @@
 	position: relative;
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
-	row-gap: var(--rux-shell-topbar-gap);
+	row-gap: var(--rux-shell-app-header-gap);
 	width: auto;
 	margin: 0 var(--rux-shell-margin-inline) var(--rux-shell-margin-bottom);
 	block-size: calc(100dvh - var(--rux-shell-margin-bottom));
@@ -58,14 +58,6 @@
 	min-height: 0;
 	overflow: clip;
 	background: var(--rux-surface-canvas);
-}
-
-.scheduler-app__topbar.is-collapsed {
-	height: 0;
-	min-height: 0;
-	overflow: hidden;
-	padding: 0;
-	border: none;
 }
 
 .scheduler-app__body {
@@ -90,81 +82,10 @@
 	padding: var(--scheduler-app-module-padding);
 }
 
-.scheduler-app__topbar {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	background: var(--rux-topbar-bg);
-	min-width: 0;
-	gap: var(--rux-space-2);
-	padding: var(--rux-topbar-padding);
-	border-bottom: var(--rux-topbar-border);
-	transition: height var(--rux-duration-slow) var(--rux-ease-in-out),
-		padding var(--rux-duration-slow) var(--rux-ease-in-out);
-}
-
-.scheduler-app__topbar-start,
-.scheduler-app__account {
-	display: flex;
-	align-items: center;
-	min-width: 0;
-}
-
-/* Topbar menus must float above the mobile drawer, which sits at --rux-z-modal
+/* App-header menus must float above the mobile drawer, which sits at --rux-z-modal
    while open (see "Drawer fills full viewport" below) */
 #profile-menu {
 	z-index: calc(var(--rux-z-modal) + 1);
-}
-
-.scheduler-app__topbar-start {
-	flex: 1 1 auto;
-	gap: var(--rux-space-0);
-}
-
-.scheduler-app__module-nav {
-	display: flex;
-	align-items: center;
-	flex: 1;
-	min-width: 0;
-	gap: var(--rux-space-2);
-	overflow-x: auto;
-	scrollbar-width: none;
-}
-
-.scheduler-app__module-nav::-webkit-scrollbar {
-	display: none;
-}
-
-.scheduler-app__module-button {
-	flex: none;
-}
-
-/* Plain ghost button (no --toggle), so it never picks up the toggle
-   variant's --_fg swap on .is-active — only the icon's fill axis flips via
-   the shared .rux-button:is(.is-active,...) > .rux-icon rule in controls.css.
-   Foreground needs its own override here to go full-white to match. */
-.scheduler-app__module-button.is-active {
-	--_fg: var(--rux-fg);
-}
-
-.scheduler-app__account {
-	flex: none;
-	gap: var(--rux-space-3);
-}
-
-
-
-.scheduler-app__profile {
-	overflow: hidden;
-	border: var(--rux-button-border);
-	border-radius: var(--rux-radius-control);
-}
-
-.scheduler-app__profile img {
-	display: block;
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
 }
 
 .scheduler-app__nav {
@@ -550,8 +471,8 @@
 }
 
 .rux-right-panel__tab[aria-selected="true"] {
-	--_bg: var(--rux-button-default-bg);
-	--_fg: var(--rux-button-default-fg);
+	--_bg: var(--rux-button-default-background);
+	--_fg: var(--rux-button-default-text);
 }
 
 .rux-right-panel__tab-label {
@@ -870,9 +791,9 @@
 }
 
 @media (max-width: 500px) {
-	/* On mobile the topbar is always collapsed (there's no toggle for it),
+	/* On mobile the app header is always collapsed (there's no toggle for it),
 	   so it never needs the row-gap every other viewport gets between the
-	   topbar and body. */
+	   app header and body. */
 	.scheduler-app {
 		row-gap: 0;
 	}
@@ -1044,15 +965,15 @@
 		padding-bottom: 0;
 	}
 
-	.scheduler-app:has(.scheduler-app__drawer.is-open) .scheduler-app__module-nav {
+	.scheduler-app:has(.scheduler-app__drawer.is-open) .rux-app-header__nav {
 		display: none;
 	}
 
-	.scheduler-app:has(.scheduler-app__drawer.is-closing) .scheduler-app__module-nav {
+	.scheduler-app:has(.scheduler-app__drawer.is-closing) .rux-app-header__nav {
 		display: none;
 	}
 
-	body[data-active-module="game"] .scheduler-app__module-nav {
+	body[data-active-module="game"] .rux-app-header__nav {
 		display: none;
 	}
 
@@ -1075,58 +996,6 @@
 	/* Push bar below notch/Dynamic Island */
 	.rux-workspace__header {
 		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
-	}
-
-	/* Collapse topbar to zero height — visibility:hidden lets fixed nav child override */
-	.scheduler-app__topbar {
-		visibility: hidden;
-		padding: 0;
-		height: 0;
-		overflow: hidden;
-	}
-
-	.scheduler-app__module-nav {
-		visibility: visible;
-	}
-
-	/* Fixed bottom tab bar — translucent + blurred (iOS tab bar material)
-	   instead of a solid fill, so it reads as a distinct floating layer over
-	   the schedule instead of just another flat gray blending into it. Only
-	   a top hairline separator (no full border) since the other three edges
-	   are flush with the viewport and would never be visible anyway. */
-	.scheduler-app__module-nav {
-		position: fixed;
-		inset-inline: 0;
-		bottom: 0;
-		z-index: var(--rux-z-overlay);
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		gap: var(--rux-space-2);
-		margin: 0;
-		padding: var(--rux-space-2) var(--rux-space-3);
-		overflow: visible;
-		background: color-mix(in oklch, var(--rux-surface-modal) 72%, transparent);
-		backdrop-filter: blur(var(--rux-overlay-blur));
-		-webkit-backdrop-filter: blur(var(--rux-overlay-blur));
-		border-top: var(--rux-border-width) solid var(--rux-border);
-	}
-
-	/* Nav style: stacked icon + micro label */
-	.scheduler-app__module-button {
-		flex: 1 1 0;
-		flex-direction: column;
-		height: auto;
-		width: 0;
-		min-width: 0;
-		max-width: none;
-		padding: var(--rux-space-1) var(--rux-space-0-5);
-		gap: var(--rux-space-1);
-		overflow: hidden;
-		line-height: 1;
-		font-size: 11px;
-		font-weight: var(--rux-weight-medium);
-		letter-spacing: 0;
 	}
 
 }
@@ -1198,48 +1067,6 @@
 	border-radius: calc(var(--rux-calendar-radius) - var(--rux-border-width));
 }
 
-.calendar-app__viewport::after {
-	content: "";
-	position: absolute;
-	inset: var(--rux-scheduler-head-height, var(--rux-button-height)) 0 0 var(--rux-scheduler-col-head-width, var(--rux-button-height));
-	pointer-events: none;
-	z-index: var(--rux-z-sticky, 200);
-	/* per-side scroll-clip shadows: each side's var stays a no-op until its
-	   .is-clipped-* class swaps in a real shadow below */
-	--_clip-shadow-color: oklch(from var(--rux-color-black) l c h / 0.5);
-	--_shadow-top: 0 0 transparent;
-	--_shadow-right: 0 0 transparent;
-	--_shadow-bottom: 0 0 transparent;
-	--_shadow-left: 0 0 transparent;
-	box-shadow:
-		inset var(--_shadow-top),
-		inset var(--_shadow-right),
-		inset var(--_shadow-bottom),
-		inset var(--_shadow-left);
-	opacity: 0;
-	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out), opacity var(--rux-duration-base) var(--rux-ease-out);
-}
-
-.calendar-app__viewport:is(.is-clipped-top, .is-clipped-right, .is-clipped-bottom, .is-clipped-left)::after {
-	opacity: 1;
-}
-
-.calendar-app__viewport.is-clipped-top::after {
-	--_shadow-top: 0 10px 16px -8px var(--_clip-shadow-color);
-}
-
-.calendar-app__viewport.is-clipped-right::after {
-	--_shadow-right: -10px 0 16px -8px var(--_clip-shadow-color);
-}
-
-.calendar-app__viewport.is-clipped-bottom::after {
-	--_shadow-bottom: 0 -10px 16px -8px var(--_clip-shadow-color);
-}
-
-.calendar-app__viewport.is-clipped-left::after {
-	--_shadow-left: 10px 0 16px -8px var(--_clip-shadow-color);
-}
-
 /* — Pull-to-change-week hint — */
 /* Feedback for the click-drag-to-change-week gesture (installWeekDrag() in
    index.html) — dragging horizontally on empty scheduler background, not
@@ -1258,7 +1085,6 @@
 	border-radius: 50%;
 	background: color-mix(in oklch, var(--rux-accent) 85%, transparent);
 	color: var(--rux-fg-on-accent);
-	box-shadow: 0 4px 12px oklch(from var(--rux-color-black) l c h / 0.35);
 	opacity: 0;
 	pointer-events: none;
 	z-index: var(--rux-z-overlay);
@@ -1309,32 +1135,6 @@
 	z-index: var(--rux-z-dropdown);
 }
 
-@media (max-width: 580px) {
-	.scheduler-app__module-nav {
-		justify-content: flex-start;
-	}
-
-	.scheduler-app__module-button {
-		flex: 1 1 0;
-		width: 0;
-		min-width: 0;
-		max-width: none;
-		justify-content: center;
-	}
-
-	.scheduler-app__module-button {
-		flex-direction: column;
-		height: 42px;
-		padding: var(--rux-space-1) var(--rux-space-0-5);
-		gap: 3px; /* below the 4px step; intentional compact exception for this breakpoint only */
-		overflow: hidden;
-		line-height: 1;
-		font-size: 10px;
-		font-weight: var(--rux-weight-medium);
-		letter-spacing: 0;
-	}
-}
-
 @media (max-width: 500px) {
 	.scheduler-app {
 		width: 100%;
@@ -1352,10 +1152,4 @@
 		justify-content: flex-start;
 	}
 
-	.scheduler-app__module-button {
-		flex: 1;
-		width: auto;
-		min-width: 42px;
-		height: 42px;
-	}
 }

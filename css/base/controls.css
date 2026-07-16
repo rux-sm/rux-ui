@@ -9,15 +9,13 @@
 		2. Background is transparent by default so ghost buttons can inherit the strip bg
 		3. Foreground is a CSS variable so it can be overridden by accent and danger modifiers
 		4. Border is transparent by default so ghost buttons can inherit the strip bg
-		5. Shadow is none by default so ghost buttons can inherit the strip shadow
-		6. Press-y is a CSS variable so it can be overridden by size modifiers
-		7. State overlay is transparent by default so ghost buttons can inherit the strip bg */
+		5. Press-y is a CSS variable so it can be overridden by size modifiers
+		6. State overlay is transparent by default so ghost buttons can inherit the strip bg */
 
 	--_h: var(--rux-button-height);
 	--_bg: transparent;
-	--_fg: var(--rux-button-default-fg);
+	--_fg: var(--rux-button-default-text);
 	--_border: transparent;
-	--_shadow: var(--rux-button-shadow);
 	--_press-y: var(--rux-button-border-width);
 	--_state-overlay: transparent;
 
@@ -29,11 +27,9 @@
 	height: var(--_h);
 	padding: 0 var(--rux-button-padding-inline);
 	background-color: var(--_bg);
-	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--_fg);
 	border: var(--rux-button-border);
 	border-radius: var(--rux-button-radius);
-	box-shadow: var(--_shadow);
 	font: inherit;
 	font-family: var(--rux-button-font-family);
 	font-size: var(--rux-button-font-size);
@@ -52,7 +48,8 @@
 }
 
 .rux-button:hover:not(:disabled):not([aria-disabled="true"]) {
-	--_state-overlay: var(--rux-button-hover-overlay);
+	border: var(--rux-button-hover-border);
+	color: var(--rux-button-hover-text);
 }
 .rux-button:active:not(:disabled):not([aria-disabled="true"]) {
 	--_state-overlay: var(--rux-button-active-overlay);
@@ -64,7 +61,6 @@
 	color: var(--rux-button-disabled-text);
 	background: var(--rux-button-disabled-background);
 	border: var(--rux-button-disabled-border);
-	box-shadow: var(--rux-button-disabled-shadow);
 	cursor: not-allowed;
 	pointer-events: none;
 }
@@ -78,10 +74,35 @@
 
 }
 
+.rux-button--default:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-default-hover-background);
+}
+
+.rux-button--default:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-default-active-background);
+}
+
 .rux-button--accent {
 	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
 	border: var(--rux-button-accent-border);
+}
+
+/* Solid fill — the generic .rux-button:hover rule above turns border/text
+   accent-blue, which is meant for transparent-bg buttons (default/ghost);
+   on an already-accent-filled button that would put blue text on a
+   lightened-blue background. Override back to the variant's own text/border
+   so only the background actually shifts. */
+.rux-button--accent:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-accent-hover-background);
+	border-color: var(--rux-button-accent-hover-background);
+	color: var(--rux-button-accent-text);
+}
+
+.rux-button--accent:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-accent-active-background);
+	border-color: var(--rux-button-accent-active-background);
+	color: var(--rux-button-accent-text);
 }
 
 /* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
@@ -89,7 +110,6 @@
 	background: var(--rux-button-ghost-background);
 	color: var(--rux-button-ghost-text);
 	border: var(--rux-button-ghost-border);
-	--_shadow: var(--rux-button-shadow);
 }
 
 /* The plain hover rule above (.rux-button:hover...) has higher specificity
@@ -97,10 +117,17 @@
    re-applies the white overlay tint on hover regardless of source order —
    ghost needs its own hover rule at matching specificity to actually stay
    background-free. Foreground goes fully white on hover (muted at rest, per
-   --rux-button-ghost-fg above) instead of just tinting the overlay. */
+   --rux-button-ghost-fg above) instead of just tinting the overlay. The
+   white-alpha background here IS that overlay, now token-driven instead of
+   left unset. */
 .rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
 	--_state-overlay: transparent;
-	--_fg: var(--rux-color-white);
+	--_fg: var(--rux-white);
+	background: var(--rux-button-ghost-hover-background);
+}
+
+.rux-button--ghost:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-ghost-active-background);
 }
 
 /* ghost has no background in any other state, so disabled shouldn't add one either */
@@ -113,27 +140,53 @@
 .rux-button--toggle[aria-pressed="true"] {
 	--_bg: var(--rux-button-selected-bg);
 	--_fg: var(--rux-button-selected-fg);
-
-	--_shadow: var(--rux-button-selected-shadow);
 }
 
 /* danger is an intent modifier; combine it with an emphasis modifier */
 .rux-button--danger {
 	background: var(--rux-button-danger-background);
 	border: var(--rux-button-danger-border);
-	color: var(--rux-button-text);
+	color: var(--rux-button-danger-text);
 }
 
 .rux-button--accent.rux-button--danger {
 	background: var(--rux-button-danger-background);
 	border: var(--rux-button-danger-border);
-	color: var(--rux-button-text);
+	color: var(--rux-button-danger-text);
+}
+
+.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-danger-hover-background);
+	border-color: var(--rux-button-danger-hover-background);
+	color: var(--rux-button-danger-text);
+}
+
+.rux-button--danger:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-danger-active-background);
+	border-color: var(--rux-button-danger-active-background);
+	color: var(--rux-button-danger-text);
 }
 
 .rux-button--ghost.rux-button--danger {
 	border: var(--rux-button-danger-ghost-border);
 	color: var(--rux-button-danger-ghost-text);
 	background: var(--rux-button-danger-ghost-background);
+}
+
+/* Both .rux-button--ghost:hover and .rux-button--danger:hover above match
+   this element (equal specificity, so whichever is later in source would
+   otherwise win outright) — without this override the ghost-danger button
+   would pick up the solid lightness-shifted danger fill on hover/press
+   instead of staying a transparent "quiet" button. Two extra classes here
+   beats both. */
+.rux-button--ghost.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-ghost-hover-background);
+	border-color: var(--rux-button-danger-ghost-border);
+	color: var(--rux-button-danger-ghost-text);
+}
+
+.rux-button--ghost.rux-button--danger:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-ghost-active-background);
 }
 
 /* — loading — */
@@ -248,26 +301,12 @@
 .rux-button--icon.rux-button--toggle[aria-pressed="true"] {
 	--_bg: var(--rux-button-selected-bg);
 	--_fg: var(--rux-button-selected-fg);
-
-	--_shadow: var(--rux-button-selected-shadow);
 }
 
 .rux-button--icon.rux-button--block {
 	flex: 1 1 0;
 	width: 100%;
 	max-width: none;
-}
-
-/* Roomier touch target on mobile — for now, scoped to just the module nav
-   (the bottom tab bar on mobile) rather than every standard button. This
-   used to apply broadly (any .rux-button not --sm/--xs/segmented), which
-   was also bumping things like trip-bar action buttons to 36px height
-   without that being asked for; narrowed down while that gets revisited. */
-@media (pointer: coarse) {
-	.scheduler-app__module-button {
-		--_h: var(--rux-button-mobile-height);
-		--rux-button-icon-size: var(--rux-button-mobile-icon-size);
-	}
 }
 
 /* ==========================================================================
@@ -281,11 +320,10 @@
 	align-items: center;
 	gap: var(--rux-space-0);
 	height: var(--rux-control-height);
-	background-color: var(--rux-button-default-bg);
+	background-color: var(--rux-button-default-background);
 	border: var(--rux-border-width) solid var(--rux-button-border); /* invisible but real — keeps box size identical to bordered states */
 	border-radius: var(--rux-radius-control);
-	box-shadow: none;
-	overflow: hidden; /* clips active button corners to strip radius; inset shadow paints above children */
+	overflow: hidden; /* clips active button corners to strip radius */
 }
 
 .rux-segmented--inline {
@@ -300,9 +338,8 @@
 
 .rux-segmented > .rux-button {
 	--_h: var(--rux-segmented-height);
-	--_bg: var(--rux-button-ghost-bg); /* matches strip bg so inactive items blend into the strip */
+	--_bg: var(--rux-button-ghost-background); /* matches strip bg so inactive items blend into the strip */
 	--_fg: var(--rux-fg-muted); /* muted at rest so hover's brighten-to-white is visible, same as .rux-button--ghost */
-	--_shadow: var(--rux-elevation-0);
 	flex: 1;
 	min-width: 0;
 }
@@ -310,7 +347,6 @@
 .rux-segmented > .rux-button[aria-disabled="true"] {
 	--_bg: transparent;
 	--_fg: var(--rux-fg-disabled);
-	--_shadow: none;
 }
 
 /* Unselected items brighten instead of picking up the generic
@@ -319,7 +355,7 @@
    keeping whatever hover treatment they already had. */
 .rux-segmented > .rux-button:hover:not(.is-active):not([aria-pressed="true"]):not([aria-selected="true"]) {
 	--_state-overlay: transparent;
-	--_fg: var(--rux-color-white);
+	--_fg: var(--rux-white);
 }
 
 /* Same selected-state tokens as .rux-button--toggle.is-active — segmented
@@ -329,14 +365,12 @@
 .rux-segmented > .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-button-selected-bg);
 	--_fg: var(--rux-button-selected-fg);
-	--_shadow: var(--rux-button-selected-shadow);
 }
 
 /* — ghost active — transparent track with quiet selected item */
 .rux-segmented--ghost {
 	background-color: transparent;
 	border: var(--rux-button-border);
-	box-shadow: none;
 }
 
 .rux-segmented--ghost > .rux-button {
@@ -350,7 +384,6 @@
 .rux-segmented--ghost > .rux-button[aria-selected="true"] {
 	--_bg: var(--rux-button-quiet-selected-bg);
 	--_fg: var(--rux-fg);
-	--_shadow: none;
 }
 
 /* ==========================================================================
@@ -378,15 +411,14 @@
 		- (2 * var(--rux-border-width))
 	);
 	background: var(--rux-segment-background);
-	--_fg: var(--rux-segment-fg);
-	--_shadow: none;
+	color: var(--rux-segment-fg);
 	border-radius: var(--rux-segment-radius);
 	padding: 0 var(--rux-segment-padding-inline);
 	border: var(--rux-segment-border);
 }
 
 .rux-button--segment:hover:not(.is-active):not([aria-pressed="true"]) {
-	--_fg: var(--rux-segment-fg-hover);
+	color: var(--rux-segment-fg-hover);
 	--_state-overlay: var(--rux-segment-hover-bg);
 }
 
@@ -394,7 +426,14 @@
 .rux-button--segment[aria-pressed="true"] {
 	background: var(--rux-segment-active-background);
 	color: var(--rux-segment-active-text);
-	--_shadow: var(--rux-segment-active-shadow);
+	border: var(--rux-segment-active-border-color);
+}
+
+/* The generic button hover selector writes its accent directly to `color`.
+   Reassert the selected segment foreground at matching state specificity so
+   hovering never turns active text into the accent color. */
+.rux-button--segment:is(.is-active, [aria-pressed="true"]):hover:not(:disabled):not([aria-disabled="true"]) {
+	color: var(--rux-segment-active-text);
 	border: var(--rux-segment-active-border-color);
 }
 

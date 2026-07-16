@@ -41,7 +41,7 @@
 	flex-shrink: 0;
 	width: var(--rux-avatar-md);
 	height: var(--rux-avatar-md);
-	background: var(--rux-color-white);
+	background: var(--rux-white);
 	border-radius: var(--rux-radius-xl);
 	color: var(--rux-fg);
 	user-select: none;

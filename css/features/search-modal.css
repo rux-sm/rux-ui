@@ -28,7 +28,6 @@
 	background: var(--rux-surface-modal);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-lg);
-	box-shadow: var(--rux-elevation-4);
 	overflow: hidden;
 	animation: rux-search-in var(--rux-duration-fast) var(--rux-ease-out);
 }

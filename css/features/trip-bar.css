@@ -58,27 +58,13 @@
 	--rux-trip-bar-tight-gap: var(--rux-space-px);
 	--rux-trip-bar-compact-padding: var(--rux-space-2);
 	--rux-trip-bar-actions-bg: transparent;
-	--rux-trip-bar-bus-label-bg: var(--rux-color-white);
+	--rux-trip-bar-bus-label-bg: var(--rux-white);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
 	--rux-trip-bar-detail-border-color: color-mix(in oklch, var(--rux-fg) 8%, transparent);
 	--rux-trip-bar-action-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
 	--rux-trip-bar-active-height: calc(var(--rux-trip-bar-collapsed-height) + var(--rux-trip-bar-action-height));
-	/* embossed surface treatment shared by the bar, multi-day head, and
-	   tail: light inner top edge, dark inner bottom edge, soft drop.
-	   -flat is the same relief with a shorter drop (continuation rail). */
-	--rux-trip-bar-surface-shadow:
-		inset 0 1px var(--rux-alpha-white-10),
-		inset 0 -1px oklch(from var(--rux-color-black) l c h / 0.2),
-		0 2px 6px oklch(from var(--rux-color-black) l c h / 0.34);
-	--rux-trip-bar-surface-shadow-flat:
-		inset 0 1px var(--rux-alpha-white-10),
-		inset 0 -1px oklch(from var(--rux-color-black) l c h / 0.2),
-		0 1px 3px oklch(from var(--rux-color-black) l c h / 0.24);
-	--rux-trip-bar-lifted-shadow:
-		0 16px 48px oklch(from var(--rux-color-black) l c h / 0.5),
-		0 4px 12px oklch(from var(--rux-color-black) l c h / 0.3);
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;
@@ -96,10 +82,9 @@
 	box-sizing: border-box;
 	container-type: inline-size;
 	background-color: var(--_surface);
-	border-radius: var(--rux-radius-container);
-	border: var(--rux-card-border);
+	border-radius: var(--rux-trip-bar-radius);
+	border: var(--rux-trip-bar-border-width) solid var(--_surface);
 	overflow: hidden;
-	box-shadow: var(--rux-trip-bar-surface-shadow);
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;
 	user-select: none;
@@ -137,9 +122,6 @@
 	border-radius: var(--rux-radius-container);
 	border: 2px solid var(--_ghost-tone, var(--rux-accent));
 	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) 16%, transparent);
-	/* ghost is appended outside any .rux-trip-bar, so it can't read the
-	   local --rux-trip-bar-* shadow tokens above — inline but token-derived */
-	box-shadow: 0 8px 20px oklch(from var(--rux-color-black) l c h / 0.45);
 	transition: none;
 	cursor: grabbing;
 	/* Above --rux-z-sticky (200 — the row-head label column, and any track
@@ -175,14 +157,12 @@
 .rux-trip-bar.is-active {
 	--_bus-label-fg: var(--_surface-active);
 	background-color: var(--_surface-active);
-	box-shadow: var(--rux-trip-bar-lifted-shadow);
 	z-index: var(--rux-trip-bar-active-z-index);
 }
 
 .rux-trip-bar--multi-day:hover,
 .rux-trip-bar--multi-day.is-active {
 	background-color: transparent;
-	box-shadow: none;
 }
 
 .rux-trip-bar--multi-day.is-active {
@@ -372,7 +352,6 @@
 	grid-template-columns: var(--rux-trip-bar-day-inline-size, 50%) 1fr;
 	grid-template-rows: 1fr auto;
 	background-color: transparent;
-	box-shadow: none;
 	overflow: visible;
 	border: none;
 	border-radius: 0;
@@ -397,8 +376,8 @@
 	display: flex;
 	flex-direction: column;
 	background-color: var(--_surface);
-	border-radius: var(--rux-radius-container);
-	border: var(--rux-card-border);
+	border-radius: var(--rux-trip-bar-radius);
+	border: var(--rux-trip-bar-border-width) solid var(--_surface);
 	overflow: hidden;
 	/* The base .rux-trip-bar rule (single-day) declares "transform" in its
 	   own transition list, which incidentally keeps it GPU-composited at all
@@ -408,7 +387,6 @@
 	   square bounds poke through instead. translateZ(0) forces the same
 	   compositing here without needing an always-on transition. */
 	transform: translateZ(0);
-	box-shadow: var(--rux-trip-bar-surface-shadow);
 }
 
 .rux-trip-bar--multi-day:hover .rux-trip-bar__head {
@@ -431,10 +409,9 @@
 	align-self: stretch;
 	z-index: 1;
 	background-color: color-mix(in oklch, var(--_surface)32%, transparent);
-	border-radius: var(--rux-radius-container);
-	border: var(--rux-card-border);
+	border-radius: var(--rux-trip-bar-radius);
+	border: var(--rux-trip-bar-border-width) solid var(--_surface);
 	overflow: hidden;
-	box-shadow: var(--rux-trip-bar-surface-shadow-flat);
 	-webkit-backdrop-filter: blur(16px) saturate(1.2);
 	backdrop-filter: blur(16px) saturate(1.2);
 }
@@ -710,7 +687,7 @@
 	justify-content: center;
 	align-self: stretch;
 	gap: var(--rux-trip-bar-tight-gap);
-	background: var(--rux-button-default-bg);
+	background: var(--rux-button-default-background);
 	height: 20px;
 	padding: 0;
 	border-radius: 0;
@@ -765,7 +742,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: var(--rux-space-1);
-	background: var(--rux-button-default-bg);
+	background: var(--rux-button-default-background);
 	padding: 0 var(--rux-space-1);
 	height: 20px;
 	border-radius: 0;
@@ -873,7 +850,7 @@
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-1);
 	padding: var(--rux-trip-bar-compact-padding);
-	background: oklch(from var(--rux-color-black) l c h / 0.24);
+	background: oklch(from var(--rux-black) l c h / 0.24);
 	border-top: none;
 }
 
