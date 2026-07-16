@@ -49,7 +49,9 @@
 	--rux-text-primary:  	oklch(from var(--rux-neutral) l c h / 85%);
 	--rux-text-secondary:	oklch(from var(--rux-neutral) l c h / 65%);
 	--rux-text-disabled:  	oklch(from var(--rux-neutral) l c h / 25%);
-	--rux-border: 			oklch(from var(--rux-neutral) 38% c h / 100%);
+
+	--rux-border-button: 	oklch(from var(--rux-neutral) 38% c h / 100%);
+	--rux-border: 			oklch(from var(--rux-neutral) 30% c h / 100%);
 	--rux-divider: 			oklch(from var(--rux-neutral) l c h / 12%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -596,7 +598,7 @@
 	--rux-button-content-gap: var(--rux-space-2);
 	--rux-button-radius: var(--rux-radius-control);
 	--rux-button-border-width: var(--rux-border-width);
-	--rux-button-border: var(--rux-button-border-width) solid transparent;
+	--rux-button-border: var(--rux-button-border-width) solid var(--rux-warning);
 	--rux-button-font-family: var(--rux-font-sans);
 	--rux-button-font-size: var(--rux-text-sm);
 	--rux-button-font-weight: var(--rux-weight-regular);
@@ -612,7 +614,12 @@
 	   border-color: var(--rux-border) on the default variant), never a
 	   milky white fill — */
 	--rux-button-default-bg: var(--rux-alpha-white-4);
+	--rux-button-default-border: #d9d9d9;
 	--rux-button-default-fg: var(--rux-fg);
+
+	--rux-button-default-background: transparent;
+	--rux-button-default-border: 1px solid var(--rux-border-button);
+	--rux-button-default-text: var(--rux-fg);
 
 	/* — accent — */
 	--rux-button-accent-bg: var(--rux-accent);

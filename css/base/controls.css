@@ -73,12 +73,10 @@
 /* — variants — */
 
 .rux-button--default {
-	--_bg: var(--rux-button-default-bg);
-	--_fg: var(--rux-button-default-fg);
-	/* --_border isn't wired to the base rule's actual `border` property (that
-	   reads var(--rux-button-border) directly, not --_border) — so a crisp
-	   edge needs border-color set here, not the custom property. */
-	border-color: var(--rux-button-border);
+	background: 		var(--rux-button-default-background);
+	color: 		var(--rux-button-default-text);
+	border: 	var(--rux-button-default-border);
+
 }
 
 .rux-button--accent {
