@@ -16,29 +16,51 @@
 :root {
 	color-scheme: dark;
 
-	/* ======================================================================
+	/* ========================================================================
 	   PRIMITIVES
-	   ====================================================================== */
+	   ======================================================================== */
 
-	/* ─── COLOR · neutral foundation ─────────────────────────────────────── */
-	/* One hue/chroma pair drives every neutral in the system — surfaces,
-	   text, borders, overlays — so the whole UI cools together. */
+	/* ─── COLOR · neutral ──────────────────────────────────────────────────── */
+
+	--rux-white:	oklch(100.0% .002 259.0); /* white   */
+	--rux-black:	oklch(000.0% .002 259.0); /* black   */
+	--rux-neutral:	oklch(050.0% .002 259.0); /* neutral */
+
+	/* ─── COLOR · accent/primaty ───────────────────────────────────────────── */ 
+	/* trip bar bg, accent color, button accent, button danger */
+
+	--rux-red:		oklch(055.7% .210 025.4); /* 211 032 042 red-5     */
+	--rux-orange:	oklch(060.0% .186 060.0); /* 216 074 028 volcano-5 */
+	--rux-yellow:	oklch(076.7% .151 090.4); /* 215 150 021 gold-5    */
+	--rux-green:	oklch(065.4% .193 138.2); /* 073 170 025 green-5   */
+	--rux-cyan:		oklch(066.3% .110 194.8); /* 021 168 168 cyan-5    */
+	--rux-blue:		oklch(054.0% .192 259.0); /* 023 104 220 blue-5    */
+	--rux-purple:	oklch(044.8% .202 296.4); /* 100 041 180 purple-5  */
+	--rux-pink:		oklch(057.1% .207 352.6); /* 203 043 131 magenta-5 */
+
+	/* ─── COLOR · status ───────────────────────────────────────────────────── */
+	/* status icons */
+
+	--rux-error: 	oklch(55.7% .210 025.4); /* 211 032 042 red-5   */
+	--rux-warning:	oklch(79.5% .145 083.8); /* 232 179 057 gold-6  */
+	--rux-success:	oklch(72.2% .189 135.5); /* 107 190 050 green-6 */
+	--rux-info:		oklch(62.7% .162 256.0); /* 061 136 232 blue-6  */
+
+	/* NEW CANON COLOR TOKEN ABOVE THIS LINE ────────────────────────────────── */
 
 	--rux-neutral-h: 250;
 	--rux-neutral-c: 0.002;
-
-	--rux-white: 100% 0 0; /* pure White Seed */
-	--rux-black: 0% 0 0;   /* pure black seed */
 
 	--rux-color-black: oklch(var(--rux-black));
 	--rux-color-white: oklch(var(--rux-white));
 	--rux-color-base: oklch(50% var(--rux-neutral-c) var(--rux-neutral-h));
 	--rux-color-neutral-70: oklch(from var(--rux-color-base) 70% c h);
 
-	/* ─── COLOR · alpha primitives ───────────────────────────────────────── */
-	/* Compositing colors only: interaction overlays, highlights, borders,
-	   disabled treatments, and adaptive foregrounds. Structural surfaces use
-	   the opaque semantic roles in COLOR · surfaces instead. */
+	/* ─── COLOR · alpha primitives ────────────────────────────────────────────────── */
+
+	--rux-accent-l: 54.1%;
+	--rux-accent-c: 0.1927;
+	--rux-accent-h: 258.9;
 
 	/* — white overlays — */
 	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);
@@ -58,10 +80,9 @@
 	--rux-alpha-black-60: oklch(var(--rux-black) / 60%);
 
 	/* ─── COLOR · accent foundation ──────────────────────────────────────── */
-
-	--rux-accent-h: 259;
-	--rux-accent-l: 54%;
-	--rux-accent-c: 0.192;
+	--rux-accent-l: 54.1%;
+	--rux-accent-c: 0.1927;
+	--rux-accent-h: 258.9;
 
 	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
 
