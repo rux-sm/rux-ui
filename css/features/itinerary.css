@@ -251,7 +251,7 @@
 
 .rux-trip-itinerary__source {
 	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
 	text-transform: uppercase;

@@ -53,7 +53,7 @@
 .rux-table th {
 	padding: var(--rux-space-2) var(--rux-space-4);
 	text-align: left;
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	color: var(--rux-fg-subtle);
 	text-transform: uppercase;
@@ -134,7 +134,7 @@
 	background: var(--rux-surface-card);
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	font-family: var(--rux-font-mono);
 	letter-spacing: 0;
@@ -165,7 +165,7 @@
 
 .driver-app__driver-ref {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-medium);
 }

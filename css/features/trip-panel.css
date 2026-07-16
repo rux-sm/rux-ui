@@ -563,7 +563,7 @@
 	background: var(--rux-surface-canvas);
 }
 .rux-trip-panel__driver-row--head span {
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	color: var(--rux-fg-subtle);
 	text-transform: uppercase;

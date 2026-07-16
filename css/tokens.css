@@ -63,10 +63,6 @@
 
 	/* ─── COLOR · alpha primitives ────────────────────────────────────────────────── */
 
-	--rux-accent-l: 54.1%;
-	--rux-accent-c: 0.1927;
-	--rux-accent-h: 258.9;
-
 	/* — white overlays — */
 	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);
 	--rux-alpha-white-4:  oklch(var(--rux-white) / 4%);
@@ -84,11 +80,6 @@
 	--rux-alpha-black-12: oklch(var(--rux-neutral) l c h / 12%);
 	--rux-alpha-black-60: oklch(var(--rux-neutral) l c h / 60%);
 
-	/* ─── COLOR · accent foundation ──────────────────────────────────────── */
-	--rux-accent-l: 54.1%;
-	--rux-accent-c: 0.1927;
-	--rux-accent-h: 258.9;
-
 	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
 
 	--rux-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
@@ -96,28 +87,47 @@
 
 	/* ─── TYPOGRAPHY · size scale ────────────────────────────────────────── */
 
-	--rux-text-2xs: 0.6875rem;
-	--rux-text-xs: 0.75rem;
-	--rux-text-sm: 0.875rem;
-	--rux-text-md: 1rem;
-	--rux-text-lg: 1.125rem;
-	--rux-text-xl: 1.5rem;
-	--rux-text-2xl: 2rem;
-	--rux-text-3xl: 2.75rem;
-	--rux-text-4xl: 4rem;
+    --rux-text-xs: 0.75rem;    /* 12px */
+    --rux-text-sm: 0.875rem;   /* 14px */
+    --rux-text-md: 1rem;       /* 16px */
+    --rux-text-lg: 1.125rem;   /* 20px */ 
+    --rux-text-xl: 1.5rem;     /* 24px */
+    --rux-text-2xl: 2rem;      /* 30px */
+    --rux-text-3xl: 2.75rem;   /* 38px */
+    --rux-text-4xl: 4rem;      /* 46px */
 
-	/* ─── TYPOGRAPHY · weight ────────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · font size ────────────────────────────────────────── */
 
-	--rux-weight-regular: 400;
-	--rux-weight-medium: 500;
-	--rux-weight-semibold: 600;
-	--rux-weight-bold: 700;
+	--rux-text-100: 0.75rem;   /* 12px */
+    --rux-text-200: 0.875rem;  /* 14px */
+    --rux-text-300: 1rem;      /* 16px */
+    --rux-text-400: 1.25rem;   /* 20px */
+    --rux-text-500: 1.5rem;    /* 24px */
+    --rux-text-600: 1.875rem;  /* 30px */
+    --rux-text-700: 2.375rem;  /* 38px */
+    --rux-text-800: 2.875rem;  /* 46px */
 
 	/* ─── TYPOGRAPHY · line-height ───────────────────────────────────────── */
 
 	--rux-leading-tight: 1.15;
 	--rux-leading-snug: 1.3;
 	--rux-leading-normal: 1.5;
+
+	--rux-line-height-100: 1.25rem;   /* 20px */
+    --rux-line-height-200: 1.375rem;  /* 22px */
+    --rux-line-height-300: 1.5rem;    /* 24px */
+    --rux-line-height-400: 1.75rem;   /* 28px */
+    --rux-line-height-500: 2rem;      /* 32px */
+    --rux-line-height-600: 2.375rem;  /* 38px */
+    --rux-line-height-700: 2.875rem;  /* 46px */
+    --rux-line-height-800: 3.375rem;  /* 54px */
+
+	/* ─── TYPOGRAPHY · font weight ────────────────────────────────────────────── */
+
+	--rux-weight-regular:	400;
+	--rux-weight-medium:	500;
+	--rux-weight-semibold:	600;
+	--rux-weight-bold: 		700;
 
 	/* ─── TYPOGRAPHY · tracking ──────────────────────────────────────────── */
 
@@ -374,10 +384,10 @@
 
 	--rux-heading-panel-size: var(--rux-text-md);
 	--rux-heading-panel-weight: var(--rux-weight-semibold);
-	--rux-label-eyebrow-size: var(--rux-text-2xs);
+	--rux-label-eyebrow-size: var(--rux-text-100);
 	--rux-label-eyebrow-weight: var(--rux-weight-semibold);
 	--rux-label-eyebrow-tracking: var(--rux-tracking-wide);
-	--rux-label-eyebrow-color: var(--rux-fg-subtle);
+	--rux-label-eyebrow-color: var(--rux-text-secondary);
 
 	/* ─── SPACING · shared roles ──────────────────────────────────────────── */
 
@@ -579,6 +589,7 @@
 	   Border is 1px solid TRANSPARENT at rest (anti-shift): variants that
 	   gain a visible edge only swap border-color, so geometry never
 	   jitters between states. — */
+	
 	--rux-button-height: var(--rux-control-height);
 	--rux-button-mobile-height: 36px;
 	--rux-button-padding-inline: var(--rux-space-3);
@@ -643,7 +654,7 @@
 	/* — xs / micro — reserved for space-constrained inline controls such as
 	   trip-bar disclosure buttons; not part of the standard form grid. */
 	--rux-button-xs-height: 20px;
-	--rux-button-xs-font-size: var(--rux-text-2xs);
+	--rux-button-xs-font-size: var(--rux-text-100);
 	--rux-button-xs-padding-inline: var(--rux-space-1-5);
 	--rux-button-xs-content-gap: var(--rux-space-3);
 

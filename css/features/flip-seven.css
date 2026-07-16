@@ -328,7 +328,7 @@
 	.flip-seven__messages p { font-size: var(--rux-text-xs); }
 	.flip-seven__player-hand { padding: var(--rux-space-2); }
 	.flip-seven__player-hand-header { grid-template-columns: var(--rux-avatar-sm) minmax(0, 1fr); }
-	.flip-seven__player-hand-header .rux-avatar { width: var(--rux-avatar-sm); height: var(--rux-avatar-sm); font-size: var(--rux-text-2xs); }
+	.flip-seven__player-hand-header .rux-avatar { width: var(--rux-avatar-sm); height: var(--rux-avatar-sm); font-size: var(--rux-text-100); }
 	.flip-seven__player-hand-score { grid-column: 1 / -1; }
 	.flip-seven__player-hand--left .flip-seven__player-hand-header,
 	.flip-seven__player-hand--right .flip-seven__player-hand-header { grid-template-columns: 1fr; justify-items: center; text-align: center; }

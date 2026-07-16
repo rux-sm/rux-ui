@@ -61,7 +61,7 @@
 
 .fleet-app__vehicle-ref {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-medium);
 }

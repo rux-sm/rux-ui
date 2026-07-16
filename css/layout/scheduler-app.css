@@ -642,7 +642,7 @@
 	display: grid;
 	grid-template-columns: repeat(7, 1fr);
 	text-align: center;
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-medium);
 	color: var(--rux-fg-subtle);
 	letter-spacing: var(--rux-tracking-wide);
@@ -784,7 +784,7 @@
 
 .rux-driver-grid__day-label {
 	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-medium);
 	text-align: center;
 	text-transform: uppercase;

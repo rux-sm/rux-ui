@@ -24,7 +24,7 @@
 .rux-bus-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
 	margin-bottom: var(--rux-space-1);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	color: var(--rux-fg-muted);
 	text-transform: uppercase;
@@ -94,7 +94,7 @@
 
 .rux-col-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	color: var(--rux-fg-muted);
 	text-transform: uppercase;

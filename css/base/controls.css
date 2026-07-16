@@ -78,7 +78,7 @@
 	/* --_border isn't wired to the base rule's actual `border` property (that
 	   reads var(--rux-button-border) directly, not --_border) — so a crisp
 	   edge needs border-color set here, not the custom property. */
-	border-color: var(--rux-border);
+	border-color: var(--rux-button-border);
 }
 
 .rux-button--accent {
@@ -443,7 +443,7 @@
 
 .rux-number-stepper:hover {
 	background: var(--rux-input-hover-bg);
-	border-color: var(--rux-border-strong);
+	border-color: var(--rux-button-border);
 }
 
 .rux-number-stepper:focus-within {

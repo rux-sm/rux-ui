@@ -215,15 +215,15 @@ hr {
 /* ─── Semantic type utility classes ─────────────────────────────────────── */
 /* Use these when an element is the wrong tag but needs a specific scale.    */
 
-.rux-display   { font-size: var(--rux-text-4xl); font-weight: var(--rux-weight-bold); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-leading-tight); }
-.rux-h1        { font-size: var(--rux-text-3xl); font-weight: var(--rux-weight-bold); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-leading-tight); }
-.rux-h2        { font-size: var(--rux-text-2xl); font-weight: var(--rux-weight-semibold); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-leading-tight); }
-.rux-h3        { font-size: var(--rux-text-xl);  font-weight: var(--rux-weight-semibold); line-height: var(--rux-leading-snug); }
-.rux-lead      { font-size: var(--rux-text-lg);  color: var(--rux-fg-muted); line-height: var(--rux-leading-normal); }
-.rux-body      { font-size: var(--rux-text-md);  line-height: var(--rux-leading-normal); }
-.rux-body-sm   { font-size: var(--rux-text-sm);  line-height: var(--rux-leading-normal); }
-.rux-caption   { font-size: var(--rux-text-xs);  color: var(--rux-fg-muted); }
-.rux-overline  { font-size: var(--rux-text-2xs); text-transform: uppercase; letter-spacing: var(--rux-tracking-wide); color: var(--rux-fg-muted); font-weight: var(--rux-weight-semibold); }
+.rux-display   { font-size: var(--rux-text-900); font-weight: var(--rux-weight-bold); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-leading-tight); }
+.rux-h1        { font-size: var(--rux-text-800); font-weight: var(--rux-weight-bold); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-leading-tight); }
+.rux-h2        { font-size: var(--rux-text-700); font-weight: var(--rux-weight-semibold); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-leading-tight); }
+.rux-h3        { font-size: var(--rux-text-600);  font-weight: var(--rux-weight-semibold); line-height: var(--rux-leading-snug); }
+.rux-lead      { font-size: var(--rux-text-500);  color: var(--rux-fg-muted); line-height: var(--rux-leading-normal); }
+.rux-body      { font-size: var(--rux-text-400);  line-height: var(--rux-leading-normal); }
+.rux-body-sm   { font-size: var(--rux-text-300);  line-height: var(--rux-leading-normal); }
+.rux-caption   { font-size: var(--rux-text-200);  color: var(--rux-fg-muted); }
+.rux-overline  { font-size: var(--rux-text-100); text-transform: uppercase; letter-spacing: var(--rux-tracking-wide); color: var(--rux-fg-muted); font-weight: var(--rux-weight-semibold); }
 .rux-mono      { font-family: var(--rux-font-mono); }
 .rux-muted     { color: var(--rux-fg-muted); }
 .rux-subtle    { color: var(--rux-fg-subtle); }

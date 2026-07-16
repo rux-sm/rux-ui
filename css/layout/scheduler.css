@@ -419,7 +419,7 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	font-size: var(--rux-text-2xs);
+	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-bold);
 	line-height: 1;
 	white-space: nowrap;
