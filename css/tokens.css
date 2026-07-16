@@ -46,14 +46,20 @@
 	--rux-success:	oklch(72.2% .189 135.5); /* 107 190 050 green-6 */
 	--rux-info:		oklch(62.7% .162 256.0); /* 061 136 232 blue-6  */
 
-	/* NEW CANON COLOR TOKEN ABOVE THIS LINE ────────────────────────────────── */
+	/* ─── COLOR · text ───────────────────────────────────────────────────── */
 
-	--rux-neutral-h: 250;
-	--rux-neutral-c: 0.002;
+	--rux-heading:  		oklch(from var(--rux-white) l c h / 85%);
+	--rux-text-primary:  	oklch(from var(--rux-white) l c h / 85%);
+	--rux-text-secondary:	oklch(from var(--rux-white) l c h / 65%);
+	--rux-text-disabled:  	oklch(from var(--rux-white) l c h / 25%);
+	--rux-border: 			oklch(from var(--rux-white) 38% .28 20 / 100%);
+	--rux-divider: 			oklch(from var(--rux-white) l c h / 12%);
+
+	/* NEW CANON COLOR TOKEN ABOVE THIS LINE ────────────────────────────────── */
 
 	--rux-color-black: oklch(var(--rux-black));
 	--rux-color-white: oklch(var(--rux-white));
-	--rux-color-base: oklch(50% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-color-base: var(--rux-neutral);
 	--rux-color-neutral-70: oklch(from var(--rux-color-base) 70% c h);
 
 	/* ─── COLOR · alpha primitives ────────────────────────────────────────────────── */
@@ -270,27 +276,33 @@
 	   for a fixed structural hierarchy. Each of these is a known, absolute
 	   value regardless of what it's nested inside. */
 
-	--rux-surface-canvas:          oklch(10% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-workspace:       oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-panel:           oklch(20% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-calendar:        oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-calendar-header: oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-card:            oklch(22% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-surface-modal:           oklch(26% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-surface-canvas:          oklch(from var(--rux-neutral) 10% c h);
+	--rux-surface-workspace:       oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-panel:           oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-calendar:        oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-modal:           oklch(from var(--rux-neutral) 26% c h);
+
+	/* ─── COLOR · border roles ───────────────────────────────────────────── */
+	/* Glassy hairlines ordered by contrast: subtle < default < strong. */
+
+	--rux-border-subtle: oklch(from var(--rux-neutral) 100% c h / 0.08);
+	--rux-border-strong: oklch(from var(--rux-neutral) 100% c h / 0.16);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
 	   surface depth (they layer onto any tier), so they stay separate. */
 
-	--rux-bg-hover: oklch(26% var(--rux-neutral-c) var(--rux-neutral-h));
-	--rux-bg-active: oklch(30% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-bg-hover: oklch(from var(--rux-neutral) 26% c h);
+	--rux-bg-active: oklch(from var(--rux-neutral) 30% c h);
 	--rux-bg-overlay: var(--rux-alpha-black-60);
 
 	/* ─── COLOR · recessed well ──────────────────────────────────────────── */
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg: oklch(18% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-well-bg: oklch(from var(--rux-neutral) 18% c h);
 	--rux-well-bg-hover: var(--rux-alpha-white-4);
 	--rux-well-bg-focus: var(--rux-alpha-white-6);
 
@@ -306,13 +318,6 @@
 	--rux-fg-on-accent: oklch(var(--rux-white));
 	--rux-fg-on-accent-muted: oklch(var(--rux-white) / 75%);
 	--rux-fg-on-accent-subtle: oklch(var(--rux-white) / 55%);
-
-	/* ─── COLOR · border roles ───────────────────────────────────────────── */
-	/* Glassy hairlines ordered by contrast: subtle < default < strong. */
-
-	--rux-border: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.1);
-	--rux-border-subtle: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.08);
-	--rux-border-strong: oklch(100% var(--rux-neutral-c) var(--rux-neutral-h) / 0.16);
 
 	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
 
@@ -545,10 +550,10 @@
 	/* — variants: elevated / interactive hover — */
 	/* Own step, not --rux-surface-card — "elevated" needs to actually look
 	   raised above a plain card, between card (12%) and modal (16%). */
-	--rux-card-elevated-bg: oklch(14% var(--rux-neutral-c) var(--rux-neutral-h));
+	--rux-card-elevated-bg: oklch(from var(--rux-neutral) 14% c h);
 	--rux-card-elevated-shadow: var(--rux-elevation-3);
 	--rux-card-hover-bg: var(--rux-bg-hover);
-	--rux-card-hover-border: var(--rux-border-strong);
+	--rux-card-hover-border: var(--rux-border);
 
 	/* — shared across header/body/footer/section, not any one part's own — */
 	--rux-card-padding: var(--rux-space-4);
@@ -738,7 +743,7 @@
 
 	--rux-menu-bg: var(--rux-surface-modal);
 	--rux-menu-fg: var(--rux-fg);
-	--rux-menu-border: var(--rux-border-width) solid var(--rux-border-strong);
+	--rux-menu-border: var(--rux-border-width) solid var(--rux-border);
 	--rux-menu-radius: var(--rux-radius-container);
 	--rux-menu-shadow: var(--rux-elevation-3);
 	--rux-menu-min-width: 200px;
