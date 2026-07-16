@@ -15,7 +15,7 @@
   max-width: 100%;
   height: var(--rux-input-height);
   padding: 0 var(--rux-control-padding-inline);
-  background-color: var(--rux-input-bg);
+  background-color: var(--rux-input-background);
   color: var(--rux-fg);
   border: var(--rux-input-border);
   border-radius: var(--rux-radius-control);

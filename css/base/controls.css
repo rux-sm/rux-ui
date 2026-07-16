@@ -61,10 +61,9 @@
 
 .rux-button:disabled,
 .rux-button[aria-disabled="true"] {
-	color: var(--rux-button-disabled-fg);
-	background-color: var(--rux-button-disabled-bg);
-	background-image: none;
-	border-color: var(--rux-button-disabled-border);
+	color: var(--rux-button-disabled-text);
+	background: var(--rux-button-disabled-background);
+	border: var(--rux-button-disabled-border);
 	box-shadow: var(--rux-button-disabled-shadow);
 	cursor: not-allowed;
 	pointer-events: none;
@@ -80,20 +79,17 @@
 }
 
 .rux-button--accent {
-	--_bg: var(--rux-button-accent-bg);
-	--_fg: var(--rux-button-accent-fg);
+	background: var(--rux-button-accent-background);
+	color: var(--rux-button-accent-text);
+	border: var(--rux-button-accent-border);
 }
 
 /* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
 .rux-button--ghost {
-	--_bg: var(--rux-button-ghost-bg);
-	--_fg: var(--rux-button-ghost-fg);
+	background: var(--rux-button-ghost-background);
+	color: var(--rux-button-ghost-text);
+	border: var(--rux-button-ghost-border);
 	--_shadow: var(--rux-button-shadow);
-	--_state-overlay: transparent;
-	/* border-color directly, not --_border — the base rule's real `border`
-	   property never reads --_border. Set --rux-button-ghost-border-color to
-	   transparent in tokens.css to hide this again later. */
-	border-color: var(--rux-button-ghost-border-color);
 }
 
 /* The plain hover rule above (.rux-button:hover...) has higher specificity
@@ -110,7 +106,7 @@
 /* ghost has no background in any other state, so disabled shouldn't add one either */
 .rux-button--ghost:disabled,
 .rux-button--ghost[aria-disabled="true"] {
-	background-color: transparent;
+	background: var(--rux-button-disabled-background);
 }
 
 .rux-button--toggle.is-active,
@@ -123,17 +119,21 @@
 
 /* danger is an intent modifier; combine it with an emphasis modifier */
 .rux-button--danger {
-	--_fg: var(--rux-button-danger-quiet-fg);
+	background: var(--rux-button-danger-background);
+	border: var(--rux-button-danger-border);
+	color: var(--rux-button-text);
 }
 
 .rux-button--accent.rux-button--danger {
-	--_bg: var(--rux-button-danger-bg);
-	--_fg: var(--rux-button-danger-fg);
+	background: var(--rux-button-danger-background);
+	border: var(--rux-button-danger-border);
+	color: var(--rux-button-text);
 }
 
 .rux-button--ghost.rux-button--danger {
-	--_bg: var(--rux-button-ghost-bg);
-	--_fg: var(--rux-button-danger-quiet-fg);
+	border: var(--rux-button-danger-ghost-border);
+	color: var(--rux-button-danger-ghost-text);
+	background: var(--rux-button-danger-ghost-background);
 }
 
 /* — loading — */
@@ -377,11 +377,12 @@
 		- (2 * var(--rux-segmented-track-padding))
 		- (2 * var(--rux-border-width))
 	);
-	--_bg: transparent;
+	background: var(--rux-segment-background);
 	--_fg: var(--rux-segment-fg);
 	--_shadow: none;
 	border-radius: var(--rux-segment-radius);
 	padding: 0 var(--rux-segment-padding-inline);
+	border: var(--rux-segment-border);
 }
 
 .rux-button--segment:hover:not(.is-active):not([aria-pressed="true"]) {
@@ -391,10 +392,10 @@
 
 .rux-button--segment.is-active,
 .rux-button--segment[aria-pressed="true"] {
-	--_bg: var(--rux-segment-active-bg);
-	--_fg: var(--rux-segment-active-fg);
+	background: var(--rux-segment-active-background);
+	color: var(--rux-segment-active-text);
 	--_shadow: var(--rux-segment-active-shadow);
-	border-color: var(--rux-segment-active-border-color);
+	border: var(--rux-segment-active-border-color);
 }
 
 /* ==========================================================================

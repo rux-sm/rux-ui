@@ -51,6 +51,7 @@
 	--rux-text-disabled:  	oklch(from var(--rux-neutral) l c h / 25%);
 
 	--rux-border-button: 	oklch(from var(--rux-neutral) 38% c h / 100%);
+	--rux-border-input:		oklch(from var(--rux-neutral) 38% c h / 100%);
 	--rux-border: 			oklch(from var(--rux-neutral) 30% c h / 100%);
 	--rux-divider: 			oklch(from var(--rux-neutral) l c h / 12%);
 
@@ -287,13 +288,14 @@
 	   for a fixed structural hierarchy. Each of these is a known, absolute
 	   value regardless of what it's nested inside. */
 
-	--rux-surface-canvas:          oklch(from var(--rux-neutral) 10% c h);
-	--rux-surface-workspace:       oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-panel:           oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-calendar:        oklch(from var(--rux-neutral) 18% c h);
-	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 18% c h);
-	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-modal:           oklch(from var(--rux-neutral) 26% c h);
+	--rux-surface-canvas:			oklch(from var(--rux-neutral) 10% c h);
+	--rux-surface-workspace:       	oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-panel:           	oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-calendar:        	oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-calendar-header: 	oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-card:            	oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-field:			oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-modal:           	oklch(from var(--rux-neutral) 26% c h);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
@@ -569,84 +571,84 @@
 	   ever differ by direction, never by contrast. */
 	--rux-trip-bar-overlay: var(--rux-alpha-white-8);
 
-	/* ─── COMPONENT · input ──────────────────────────────────────────────── */
+	/* ─── COMPONENT · input (rename to FIELD) ──────────────────────────────────────────────── */
 	/* .rux-input/.rux-select/.rux-textarea. Recessed-well treatment — bg
 	   states come from the shared --rux-well-* group so fields and segmented
 	   tracks always match. Height/radius/padding are shared control roles
 	   (--rux-field-height, --rux-control-*), so only what's genuinely unique
 	   to this component lives here. */
 
-	--rux-input-height: var(--rux-control-height);
-	--rux-input-border: var(--rux-border-width) solid var(--rux-border);
-	--rux-textarea-min-height: 84px;
-	--rux-input-bg: var(--rux-well-bg);
+	--rux-input-height:			var(--rux-control-height);
+	--rux-input-border: 		1px solid var(--rux-border-input);
+	--rux-textarea-min-height: 	84px;
+	--rux-input-background:		var(--rux-surface-field);
 	--rux-input-hover-bg: var(--rux-well-bg-hover);
 	--rux-input-focus-bg: var(--rux-well-bg-focus);
 	--rux-input-disabled-bg: var(--rux-alpha-black-12);
 	--rux-input-focus-ring: 0 0 0 3px var(--rux-accent-subtle);
+	--rux-input-border-radius: var(--rux-radius-control);
 
-	/* ─── COMPONENT · button ─────────────────────────────────────────────── */
-
-	/* — base — shared by every variant/size below unless overridden.
-	   Border is 1px solid TRANSPARENT at rest (anti-shift): variants that
-	   gain a visible edge only swap border-color, so geometry never
-	   jitters between states. — */
+	/* ─── COMPONENT · button base ─────────────────────────────────────────────── */
 	
-	--rux-button-height: var(--rux-control-height);
-	--rux-button-mobile-height: 36px;
-	--rux-button-padding-inline: var(--rux-space-3);
-	--rux-button-content-gap: var(--rux-space-2);
-	--rux-button-radius: var(--rux-radius-control);
-	--rux-button-border-width: var(--rux-border-width);
-	--rux-button-border: var(--rux-button-border-width) solid var(--rux-warning);
-	--rux-button-font-family: var(--rux-font-sans);
-	--rux-button-font-size: var(--rux-text-sm);
-	--rux-button-font-weight: var(--rux-weight-regular);
-	--rux-button-icon-size: var(--rux-icon-md);
-	--rux-button-mobile-icon-size: 24px;
-	--rux-button-shadow: var(--rux-elevation-0);
-	--rux-button-hover-overlay: var(--rux-alpha-white-8);
-	--rux-button-active-overlay: var(--rux-alpha-black-12);
-	--rux-button-transition-duration: var(--rux-duration-instant);
-	--rux-button-transition-easing: var(--rux-ease-out);
+	--rux-button-height: 				var(--rux-control-height);
+	--rux-button-mobile-height: 		36px;
+	--rux-button-padding-inline: 		var(--rux-space-3);
+	--rux-button-content-gap: 			var(--rux-space-2);
+	--rux-button-radius: 				var(--rux-radius-control);
+	--rux-button-border-width: 			var(--rux-border-width);
+	--rux-button-border: 				var(--rux-button-border-width) solid var(--rux-border-button);
+	--rux-button-font-family: 			var(--rux-font-sans);
+	--rux-button-font-size: 			var(--rux-text-sm);
+	--rux-button-font-weight: 			var(--rux-weight-regular);
+	--rux-button-icon-size: 			var(--rux-icon-md);
+	--rux-button-mobile-icon-size:		24px;
+	--rux-button-shadow: 				var(--rux-elevation-0);
+	--rux-button-hover-overlay: 		var(--rux-alpha-white-8);
+	--rux-button-active-overlay: 		var(--rux-alpha-black-12);
+	--rux-button-transition-duration:	var(--rux-duration-instant);
+	--rux-button-transition-easing: 	var(--rux-ease-out);
 
-	/* — default — raised surface tier + glassy hairline (controls.css sets
-	   border-color: var(--rux-border) on the default variant), never a
-	   milky white fill — */
-	--rux-button-default-bg: var(--rux-alpha-white-4);
-	--rux-button-default-border: #d9d9d9;
-	--rux-button-default-fg: var(--rux-fg);
+	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background: transparent;
-	--rux-button-default-border: 1px solid var(--rux-border-button);
-	--rux-button-default-text: var(--rux-fg);
+	--rux-button-default-background:	transparent;
+	--rux-button-default-border:		1px solid var(--rux-border-button);
+	--rux-button-default-text:			var(--rux-fg);
 
-	/* — accent — */
-	--rux-button-accent-bg: var(--rux-accent);
-	--rux-button-accent-fg: var(--rux-fg-on-accent);
+	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
-	/* — ghost — */
-	--rux-button-ghost-bg: transparent;
-	--rux-button-ghost-fg: var(--rux-fg-muted);
-	/* Color only (not a full border value) — .rux-button--ghost sets this via
-	   border-color directly, since the base .rux-button rule's real `border`
-	   property never reads --_border (a pre-existing dead custom property).
-	   Set to transparent here to hide the border again later. */
-	--rux-button-ghost-border-color: var(--rux-border);
+	--rux-button-accent-background:		var(--rux-accent);
+	--rux-button-accent-text:			var(--rux-text);
+	--rux-button-accent-border:			1px solid var(--rux-button-accent-background);
 
-	/* — danger — */
-	--rux-button-danger-bg: var(--rux-danger);
-	--rux-button-danger-fg: var(--rux-fg-on-accent);
-	--rux-button-danger-quiet-fg: var(--rux-danger-bright);
+	/* ─── COMPONENT · button ghost ─────────────────────────────────────────────── */
 
-	/* — disabled — */
-	--rux-button-disabled-bg: var(--rux-alpha-white-2);
-	--rux-button-disabled-fg: var(--rux-fg-disabled);
-	--rux-button-disabled-shadow: var(--rux-elevation-0);
-	--rux-button-disabled-border: var(--rux-alpha-white-4);
+	--rux-button-ghost-background:		transparent;
+	--rux-button-ghost-text:			var(--rux-text);
+	--rux-button-ghost-border:			1px solid transparent;
+
+	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
+	
+	--rux-button-danger-background:		var(--rux-red);
+	--rux-button-danger-text:			var(--rux-text);
+	--rux-button-danger-border:			var(--rux-button-danger-background);
+
+	/* ─── COMPONENT · button ghost danger ─────────────────────────────────────────────── */
+	
+	--rux-button-danger-ghost-background:	transparent;
+	--rux-button-danger-ghost-text:			var(--rux-red);
+	--rux-button-danger-ghost-border:		var(--rux-red);
+
+	/* ─── COMPONENT · button disabled ─────────────────────────────────────────────── */
+	
+	--rux-button-disabled-background:	oklch(from var(--rux-neutral) 26.8% c h);
+	--rux-button-disabled-text:			var(--rux-text-disabled);
+	--rux-button-disabled-shadow:		var(--rux-elevation-0);
+	--rux-button-disabled-border:		var(--rux-button-border);
+
+
 
 	/* — selected (.is-active / [aria-pressed="true"]) — */
-	--rux-button-selected-bg: var(--rux-button-accent-bg);
+	--rux-button-selected-bg: var(--rux-button-accent-background);
 	--rux-button-quiet-selected-bg: var(--rux-alpha-white-8);
 	--rux-button-selected-fg: var(--rux-button-accent-fg);
 	--rux-button-icon-selected-bg: var(--rux-text);
@@ -676,32 +678,24 @@
 	--rux-segmented-height: var(--rux-control-height-sm);
 
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
-	/* .rux-segmented-track + .rux-button--segment — a "floating pill"
-	   toggle. The track is a recessed well (same --rux-well-bg as inputs,
-	   so both read as punched into the same surface). Padding on the track
-	   itself (not overflow:hidden + flush edges, like .rux-segmented above)
-	   leaves room for the active pill's real focus ring without clipping.
-	   The 32px border-box track contains 28px pills exactly: 28px pill + two
-	   1px insets + two 1px track borders = 32px. Concentric math remains 8px
-	   track − (1px border + 1px inset) = 6px pill. Inactive pills keep the
-	   base button's 1px transparent border, so gaining the active glassy
-	   border never shifts layout. */
 
-	--rux-segmented-track-bg: var(--rux-well-bg);
-	--rux-segmented-track-padding: var(--rux-space-px);
-	--rux-segmented-track-radius: var(--rux-radius-container);
-	--rux-segmented-track-height: var(--rux-control-height);
-	--rux-segmented-track-border: var(--rux-border-width) solid var(--rux-border);
-	--rux-segmented-track-gap: var(--rux-space-0-5);
-	--rux-segment-radius: var(--rux-radius-control);
-	--rux-segment-padding-inline: var(--rux-space-4);
-	--rux-segment-fg: var(--rux-fg-muted);
-	--rux-segment-fg-hover: var(--rux-fg);
-	--rux-segment-hover-bg: var(--rux-button-hover-overlay);
-	--rux-segment-active-bg: var(--rux-button-default-bg);
-	--rux-segment-active-fg: var(--rux-fg);
-	--rux-segment-active-border-color: var(--rux-border);
-	--rux-segment-active-shadow: var(--rux-shadow-1);
+	--rux-segmented-track-bg:			var(--rux-input-background);
+	--rux-segmented-track-padding:		var(--rux-space-0-5);
+	--rux-segmented-track-radius:		var(--rux-input-border-radius);
+	--rux-segmented-track-height:		var(--rux-input-height);
+	--rux-segmented-track-border:		var(--rux-input-border);
+	--rux-segmented-track-gap:			var(--rux-space-0-5);
+	--rux-segment-radius:				calc(var(--rux-input-border-radius) - 2px);
+	--rux-segment-padding-inline:		var(--rux-space-4);
+	--rux-segment-background:			var(--rux-button-ghost-background);
+	--rux-segment-border:				var(--rux-button-ghost-border);
+	--rux-segment-fg:					var(--rux-text-secondary);
+	--rux-segment-fg-hover:				var(--rux-fg);
+	--rux-segment-hover-bg:				var(--rux-button-hover-overlay);
+	--rux-segment-active-background:	var(--rux-button-accent-background);
+	--rux-segment-active-text:			var(--rux-button-accent-text);
+	--rux-segment-active-border-color:	var(--rux-button-accent-border);
+	--rux-segment-active-shadow: 		var(--rux-shadow-1);
 
 	/* ─── COMPONENT · number stepper ─────────────────────────────────────── */
 	/* .rux-number-stepper — [-] [editable value] [+]. Bg/border/radius reuse
