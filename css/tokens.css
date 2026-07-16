@@ -20,15 +20,10 @@
 	   PRIMITIVES
 	   ======================================================================== */
 
-	/* ─── COLOR · neutral ──────────────────────────────────────────────────── */
-
-	--rux-white:	oklch(100.0% .002 259.0); /* white   */
-	--rux-black:	oklch(000.0% .002 259.0); /* black   */
-	--rux-neutral:	oklch(050.0% .002 259.0); /* neutral */
-
 	/* ─── COLOR · accent/primaty ───────────────────────────────────────────── */ 
 	/* trip bar bg, accent color, button accent, button danger */
 
+	--rux-neutral:	oklch(050.0% .002 259.0); /* neutral */
 	--rux-red:		oklch(055.7% .210 025.4); /* 211 032 042 red-5     */
 	--rux-orange:	oklch(060.0% .186 060.0); /* 216 074 028 volcano-5 */
 	--rux-yellow:	oklch(076.7% .151 090.4); /* 215 150 021 gold-5    */
@@ -48,12 +43,21 @@
 
 	/* ─── COLOR · text ───────────────────────────────────────────────────── */
 
-	--rux-heading:  		oklch(from var(--rux-white) l c h / 85%);
-	--rux-text-primary:  	oklch(from var(--rux-white) l c h / 85%);
-	--rux-text-secondary:	oklch(from var(--rux-white) l c h / 65%);
-	--rux-text-disabled:  	oklch(from var(--rux-white) l c h / 25%);
-	--rux-border: 			oklch(from var(--rux-white) 38% .28 20 / 100%);
-	--rux-divider: 			oklch(from var(--rux-white) l c h / 12%);
+	--rux-heading:  		oklch(from var(--rux-neutral) l c h / 85%);
+	--rux-text-primary:  	oklch(from var(--rux-neutral) l c h / 85%);
+	--rux-text-secondary:	oklch(from var(--rux-neutral) l c h / 65%);
+	--rux-text-disabled:  	oklch(from var(--rux-neutral) l c h / 25%);
+	--rux-border: 			oklch(from var(--rux-neutral) 38% c h / 100%);
+	--rux-divider: 			oklch(from var(--rux-neutral) l c h / 12%);
+
+	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
+
+	--rux-accent: 			var(--rux-blue);
+	--rux-accent-hover: 	oklch(from var(--rux-accent) 70% c h);
+	--rux-accent-subtle:	oklch(from var(--rux-accent) l c h / 0.14);
+	--rux-accent-ring: 		oklch(from var(--rux-accent) 70% 0.28 h);
+	--rux-selection-bg: 	var(--rux-accent);
+	--rux-selection-fg: 	var(--rux-fg-on-accent);
 
 	/* NEW CANON COLOR TOKEN ABOVE THIS LINE ────────────────────────────────── */
 
@@ -82,8 +86,8 @@
 	--rux-alpha-white-90: oklch(var(--rux-white) / 90%);
 
 	/* — black overlays — */
-	--rux-alpha-black-12: oklch(var(--rux-black) / 12%);
-	--rux-alpha-black-60: oklch(var(--rux-black) / 60%);
+	--rux-alpha-black-12: oklch(var(--rux-neutral) l c h / 12%);
+	--rux-alpha-black-60: oklch(var(--rux-neutral) l c h / 60%);
 
 	/* ─── COLOR · accent foundation ──────────────────────────────────────── */
 	--rux-accent-l: 54.1%;
@@ -284,12 +288,6 @@
 	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-modal:           oklch(from var(--rux-neutral) 26% c h);
 
-	/* ─── COLOR · border roles ───────────────────────────────────────────── */
-	/* Glassy hairlines ordered by contrast: subtle < default < strong. */
-
-	--rux-border-subtle: oklch(from var(--rux-neutral) 100% c h / 0.08);
-	--rux-border-strong: oklch(from var(--rux-neutral) 100% c h / 0.16);
-
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
 	   surface depth (they layer onto any tier), so they stay separate. */
@@ -318,15 +316,6 @@
 	--rux-fg-on-accent: oklch(var(--rux-white));
 	--rux-fg-on-accent-muted: oklch(var(--rux-white) / 75%);
 	--rux-fg-on-accent-subtle: oklch(var(--rux-white) / 55%);
-
-	/* ─── COLOR · accent roles ───────────────────────────────────────────── */
-
-	--rux-accent: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h));
-	--rux-accent-hover: oklch(70% var(--rux-accent-c) var(--rux-accent-h));
-	--rux-accent-subtle: oklch(var(--rux-accent-l) var(--rux-accent-c) var(--rux-accent-h) / 0.14);
-	--rux-accent-ring: oklch(70% 0.28 var(--rux-accent-h));
-	--rux-selection-bg: var(--rux-accent);
-	--rux-selection-fg: var(--rux-fg-on-accent);
 
 	/* ─── COLOR · status roles ───────────────────────────────────────────── */
 
