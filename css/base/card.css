@@ -61,12 +61,13 @@
 	display: flex;
 	flex: none;
 	width: 100%;
-	min-height: var(--rux-card-header-min-height);
+	padding: var(--rux-card-header-padding);
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-card-content-gap);
 	background: var(--rux-card-header-bg);
 	border-bottom: var(--rux-card-header-border);
+	height: var(--rux-card-header-height);
 }
 
 .rux-card__footer {

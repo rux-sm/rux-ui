@@ -43,7 +43,7 @@
 .rux-app-header__logo {
 	display: block;
 	inline-size: auto;
-	block-size: 100%;
+	block-size: var(--rux-app-header-logo-height);
 }
 
 .rux-app-header__nav {

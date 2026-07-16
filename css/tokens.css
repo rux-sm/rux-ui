@@ -38,7 +38,7 @@
 	/* ─── COLOR · status ───────────────────────────────────────────────────── */
 	/* status icons */
 
-	--rux-error: 	oklch(55.7% .210 025.4); /* 211 032 042 red-5   */
+	--rux-danger: 	oklch(55.7% .210 025.4); /* 211 032 042 red-5   */
 	--rux-warning:	oklch(79.5% .145 083.8); /* 232 179 057 gold-6  */
 	--rux-success:	oklch(72.2% .189 135.5); /* 107 190 050 green-6 */
 	--rux-info:		oklch(62.7% .162 256.0); /* 061 136 232 blue-6  */
@@ -229,18 +229,14 @@
 
 	/* ─── COLOR · status roles ───────────────────────────────────────────── */
 
-	--rux-success: oklch(60% 0.22 155);
 	--rux-success-bright: oklch(85% 0.2 155);
 	--rux-success-subtle: oklch(70% 0.22 155 / 0.14);
 
-	--rux-warning: oklch(60% 0.22 90);
 	--rux-warning-bright: oklch(85% 0.2 90);
 	--rux-warning-subtle: oklch(80% 0.22 90 / 0.14);
 
-	--rux-info: oklch(60% 0.22 230);
 	--rux-info-subtle: oklch(70% 0.22 230 / 0.14);
 
-	--rux-danger: oklch(60% 0.22 24);
 	--rux-danger-bright: oklch(85% 0.2 24);
 	--rux-danger-hover: oklch(90% 0.18 24);
 	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
@@ -332,11 +328,12 @@
 
 	--rux-app-header-bg: var(--rux-shell-bg);
 	--rux-app-header-border: none;
-	--rux-app-header-height: 56px;
+	--rux-app-header-height: auto;
 	--rux-app-header-padding: var(--rux-space-3) var(--rux-space-4);
 	--rux-app-header-gap: var(--rux-space-2);
 	--rux-app-header-brand-padding-inline-end: var(--rux-space-4);
 	--rux-app-header-brand-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-app-header-logo-height: 24px;
 	--rux-app-header-nav-gap: var(--rux-space-2);
 	--rux-app-header-nav-item-active-fg: var(--rux-fg);
 	--rux-app-header-actions-gap: var(--rux-space-3);
@@ -353,7 +350,7 @@
 	   header's left edge can't drift from the body content's left edge
 	   below it (calendar/table views inset via margin-inline using the
 	   same token, in scheduler-app.css). */
-	--rux-workspace-header-padding: var(--rux-space-4) var(--rux-workspace-gutter);
+	--rux-workspace-header-padding: var(--rux-space-3) var(--rux-workspace-gutter);
 
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* .calendar-app__viewport (scheduler-app.css) — the outer frame that owns
@@ -386,7 +383,7 @@
 
 	/* — nav / tabs (one shared strip; tabs is just a scroll-state of the
 	   same chrome, not a visually distinct part) — */
-	--rux-panel-nav-padding: var(--rux-space-4) var(--rux-space-4);
+	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-4);
 
 	/* — footer (bg/border reuse the shell's above — needed as-is since the
 	   footer repaints over scrolled body content via z-index) — */
@@ -429,9 +426,10 @@
 	--rux-card-radius: var(--rux-radius-container);
 
 	/* — header — */
-	--rux-card-header-min-height: calc(var(--rux-button-height) + (2 * var(--rux-card-padding)) + var(--rux-card-border-width));
 	--rux-card-header-bg: transparent;
 	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-header-padding: var(--rux-space-3) var(--rux-space-4);
+	--rux-card-header-height: 57px;
 
 	/* — footer — */
 	--rux-card-footer-bg: transparent;
