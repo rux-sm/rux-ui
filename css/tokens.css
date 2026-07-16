@@ -24,6 +24,8 @@
 	/* trip bar bg, accent color, button accent, button danger */
 
 	--rux-neutral:	oklch(050.0% .002 259.0); /* neutral */
+	--rux-white:	oklch(from var(--rux-neutral) 100% c h);
+	--rux-black:	oklch(from var(--rux-neutral) 000% c h);
 	--rux-red:		oklch(055.7% .210 025.4); /* 211 032 042 red-5     */
 	--rux-orange:	oklch(060.0% .186 060.0); /* 216 074 028 volcano-5 */
 	--rux-yellow:	oklch(076.7% .151 090.4); /* 215 150 021 gold-5    */
@@ -58,13 +60,6 @@
 	--rux-accent-ring: 		oklch(from var(--rux-accent) 70% 0.28 h);
 	--rux-selection-bg: 	var(--rux-accent);
 	--rux-selection-fg: 	var(--rux-fg-on-accent);
-
-	/* NEW CANON COLOR TOKEN ABOVE THIS LINE ────────────────────────────────── */
-
-	--rux-color-black: oklch(var(--rux-black));
-	--rux-color-white: oklch(var(--rux-white));
-	--rux-color-base: var(--rux-neutral);
-	--rux-color-neutral-70: oklch(from var(--rux-color-base) 70% c h);
 
 	/* ─── COLOR · alpha primitives ────────────────────────────────────────────────── */
 
@@ -168,35 +163,35 @@
 	/* ─── SHADOW · elevation scale ───────────────────────────────────────── */
 
 	--rux-shadow-highlight:
-		inset 0 1px 0.5px oklch(from var(--rux-color-white) l c h / 0.06);
+		inset 0 1px 0.5px oklch(from var(--rux-white) l c h / 0.06);
 
 	--rux-shadow-1-y: 1px;
 	--rux-shadow-1-blur: 2px;
 	--rux-shadow-1-spread: 0;
-	--rux-shadow-1-color: oklch(from var(--rux-color-black) l c h / 0.24);
+	--rux-shadow-1-color: oklch(from var(--rux-black) l c h / 0.24);
 
 	--rux-shadow-2-y: 2px;
 	--rux-shadow-2-blur: 3px;
 	--rux-shadow-2-spread: -1px;
-	--rux-shadow-2-color: oklch(from var(--rux-color-black) l c h / 0.6);
+	--rux-shadow-2-color: oklch(from var(--rux-black) l c h / 0.6);
 
 	--rux-shadow-3-far-y: 8px;
 	--rux-shadow-3-far-blur: 16px;
 	--rux-shadow-3-far-spread: -4px;
-	--rux-shadow-3-far-color: oklch(from var(--rux-color-black) l c h / 0.4);
+	--rux-shadow-3-far-color: oklch(from var(--rux-black) l c h / 0.4);
 	--rux-shadow-3-near-y: 2px;
 	--rux-shadow-3-near-blur: 6px;
 	--rux-shadow-3-near-spread: -1px;
-	--rux-shadow-3-near-color: oklch(from var(--rux-color-black) l c h / 0.7);
+	--rux-shadow-3-near-color: oklch(from var(--rux-black) l c h / 0.7);
 
 	--rux-shadow-4-far-y: 16px;
 	--rux-shadow-4-far-blur: 32px;
 	--rux-shadow-4-far-spread: -6px;
-	--rux-shadow-4-far-color: oklch(from var(--rux-color-black) l c h / 0.4);
+	--rux-shadow-4-far-color: oklch(from var(--rux-black) l c h / 0.4);
 	--rux-shadow-4-near-y: 6px;
 	--rux-shadow-4-near-blur: 14px;
 	--rux-shadow-4-near-spread: -2px;
-	--rux-shadow-4-near-color: oklch(from var(--rux-color-black) l c h / 0.75);
+	--rux-shadow-4-near-color: oklch(from var(--rux-black) l c h / 0.75);
 
 	--rux-shadow-0: none;
 	--rux-shadow-1:
@@ -233,7 +228,7 @@
 
 	--rux-inset-0: none;
 	--rux-inset-1:
-		inset 0 1px 2px oklch(from var(--rux-color-black) l c h / 0.35),
+		inset 0 1px 2px oklch(from var(--rux-black) l c h / 0.35),
 		inset 0 1px 0 var(--rux-alpha-white-8);
 
 	--rux-edge-shadow-top:
@@ -410,8 +405,8 @@
 
 	/* ─── FOCUS ──────────────────────────────────────────────────────────── */
 
-	--rux-ring-focus: 0 0 0 6px var(--rux-color-black), 0 0 0 4px var(--rux-accent-ring);
-	--rux-ring-danger: 0 0 0 2px var(--rux-color-black), 0 0 0 4px var(--rux-danger);
+	--rux-ring-focus: 0 0 0 6px var(--rux-black), 0 0 0 4px var(--rux-accent-ring);
+	--rux-ring-danger: 0 0 0 2px var(--rux-black), 0 0 0 4px var(--rux-danger);
 
 
 
@@ -636,7 +631,7 @@
 	--rux-button-selected-bg: var(--rux-button-accent-bg);
 	--rux-button-quiet-selected-bg: var(--rux-alpha-white-8);
 	--rux-button-selected-fg: var(--rux-button-accent-fg);
-	--rux-button-icon-selected-bg: var(--rux-color-neutral-70);
+	--rux-button-icon-selected-bg: var(--rux-text);
 	--rux-button-selected-shadow: var(--rux-inset-0);
 
 	/* — sm / compact — 28px is the shared nested-control tier. */
@@ -792,7 +787,7 @@
 	/* ─── COMPONENT · fleet / bus chip ───────────────────────────────────── */
 
 	/* color-mix partner for bus color chips (fleet-panel.js), not a depth tier */
-	--rux-bg-bus: var(--rux-color-base);
+	--rux-bg-bus: var(--rux-neutral);
 }
 
 /* ==========================================================================
