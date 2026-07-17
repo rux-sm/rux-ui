@@ -263,8 +263,13 @@
 
 		const segment = stops.slice(startIdx, endIdx).filter((s) => s.type !== "day");
 
-		const totalMiles = segment.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
-		const totalDrive = segment.reduce((n, s) => n + parseDriveMins(s.drive), 0);
+		// Sleeper never travels — its miles/drive should always be zero (see
+		// syncSleeperLeg), but excluding it here too is a cheap safety net so
+		// travel totals stay honest even if a stop's own fields are ever wrong
+		// (stale data from before that fix, a bad import, etc.).
+		const travelSegment = segment.filter((s) => s.type !== "sleeper");
+		const totalMiles = travelSegment.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
+		const totalDrive = travelSegment.reduce((n, s) => n + parseDriveMins(s.drive), 0);
 
 		// Gross = wall clock first departPrev → last arrive/spot (includes sleeper rest)
 		let firstDepart = null;
@@ -411,8 +416,11 @@
 
 	function renderSummary(stops) {
 		const real = stops.filter((s) => s.type !== "day");
-		const totalMiles = real.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
-		const totalDrive = real.reduce((n, s) => n + parseDriveMins(s.drive), 0);
+		// Sleeper never travels — excluded from travel totals as a safety net
+		// even though its own fields should always be zero (see syncSleeperLeg).
+		const travelStops = real.filter((s) => s.type !== "sleeper");
+		const totalMiles = travelStops.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
+		const totalDrive = travelStops.reduce((n, s) => n + parseDriveMins(s.drive), 0);
 		const dayCount = stops.filter((s) => s.type === "day").length + 1;
 		const onDutyMins = computeOnDuty(stops);
 
@@ -1027,26 +1035,45 @@
 			}
 		}
 
+		// A sleeper never travels — it rests wherever the previous real stop
+		// already is, by definition (see sleeperFromPrev/previousStopAddress).
+		// So its own "leg" is always zero, and re-deriving that through a route
+		// call would depend on its cached lat/lng still matching the current
+		// previous stop's — which silently goes stale the moment the stops
+		// around it get reordered or a new stop lands next to it (nothing else
+		// re-syncs it). Rather than trust a snapshot that can drift, treat
+		// sleeper's zero-distance leg as a fact about its type, not something
+		// to compute from coordinates and cache.
+		async function syncSleeperLeg(idx) {
+			const stop = stops[idx];
+			const prev = await previousLocation(idx);
+			if (prev) {
+				stop.lat = prev.lat;
+				stop.lng = prev.lng;
+			}
+			stop.miles = "0.0";
+			stop.drive = "0:00";
+			stop.milesSource = "estimated";
+			stop.driveSource = "estimated";
+			stop.routeStatus = "current";
+			renderStopList();
+			updateSummary();
+			return true;
+		}
+
 		async function estimateLeg(idx, options = {}) {
 			const force = !!options.force;
-			const token = getMapboxToken();
 			const stop = stops[idx];
-			if (!token || !stop || stop.type === "day") return false;
+			if (!stop || stop.type === "day") return false;
+			if (stop.type === "sleeper") return syncSleeperLeg(idx);
+			const token = getMapboxToken();
+			if (!token) return false;
 			if (stop.lat == null || stop.lng == null) {
 				if (stop.type === "return") {
 					const yc = await geocodeYard();
 					if (!yc) return false;
 					stop.lat = yc.lat;
 					stop.lng = yc.lng;
-				} else if (stop.type === "sleeper") {
-					// Sleeper has no address to geocode — it just needs to
-					// re-inherit whatever the previous real stop's location is
-					// now (its initial snapshot from sleeperFromPrev can go
-					// stale if that stop wasn't geocoded yet at insert time).
-					const prev = await previousLocation(idx);
-					if (!prev) return false;
-					stop.lat = prev.lat;
-					stop.lng = prev.lng;
 				} else if (!(await geocodeStop(idx))) {
 					return false;
 				}

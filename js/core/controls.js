@@ -59,6 +59,53 @@
 		sync();
 	}
 
+	function initSegmentedIndicator(group) {
+		if (group.dataset.ruxIndicatorInit === "true") return;
+		group.dataset.ruxIndicatorInit = "true";
+
+		const indicator = document.createElement("span");
+		indicator.className = "rux-segmented__indicator";
+		indicator.setAttribute("aria-hidden", "true");
+		group.prepend(indicator);
+
+		let frame;
+		const sync = () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(() => {
+				const active = group.querySelector(
+					'.rux-button.is-active, .rux-button[aria-pressed="true"], .rux-button[aria-selected="true"]'
+				);
+				if (!active || active.offsetWidth === 0 || active.offsetHeight === 0) {
+					group.dataset.ruxIndicatorReady = "false";
+					return;
+				}
+
+				group.style.setProperty("--_rux-segment-indicator-x", `${active.offsetLeft}px`);
+				group.style.setProperty("--_rux-segment-indicator-y", `${active.offsetTop}px`);
+				group.style.setProperty("--_rux-segment-indicator-width", `${active.offsetWidth}px`);
+				group.style.setProperty("--_rux-segment-indicator-height", `${active.offsetHeight}px`);
+				group.dataset.ruxIndicatorReady = "true";
+			});
+		};
+
+		const stateObserver = new MutationObserver(sync);
+		stateObserver.observe(group, {
+			subtree: true,
+			attributes: true,
+			attributeFilter: ["aria-pressed", "aria-selected", "class", "disabled"],
+		});
+
+		const sizeObserver = new ResizeObserver(sync);
+		sizeObserver.observe(group);
+		group.querySelectorAll(":scope > .rux-button").forEach((button) => sizeObserver.observe(button));
+		sync();
+	}
+
+	function initSegmentedIndicators(root) {
+		root.querySelectorAll?.(".rux-segmented, .rux-segmented-track").forEach(initSegmentedIndicator);
+		if (root.matches?.(".rux-segmented, .rux-segmented-track")) initSegmentedIndicator(root);
+	}
+
 	/* ── Click ──────────────────────────────────────────────────────────────── */
 
 	document.addEventListener("click", function (e) {
@@ -149,12 +196,17 @@
 	};
 
 	document.addEventListener("DOMContentLoaded", function () {
+		initSegmentedIndicators(document);
 		document.querySelectorAll("[data-rux-tabs]").forEach((group) => {
 			const active = group.querySelector('.rux-tab[aria-selected="true"]') || group.querySelector(".rux-tab");
 			if (active) setActiveItem(group, active, ".rux-tab", "aria-selected");
 		});
 		document.querySelectorAll(".rux-panel").forEach(initPanelScrollEdges);
 		window.Rux.syncSelectPlaceholders(document);
+
+		new MutationObserver((records) => {
+			records.forEach((record) => record.addedNodes.forEach(initSegmentedIndicators));
+		}).observe(document.body, { childList: true, subtree: true });
 	});
 
 	/* ── Keyboard navigation ────────────────────────────────────────────────── */

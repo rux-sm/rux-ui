@@ -100,10 +100,15 @@
 
 /* — field — */
 
-.rux-field          { display: flex; flex-direction: column; gap: var(--rux-stack-gap); min-width: 0; }
-.rux-field__label   { font-size: var(--rux-text-xs); font-weight: var(--rux-weight-medium); color: var(--rux-fg-muted); }
-.rux-field__help    { font-size: var(--rux-text-xs); color: var(--rux-fg-subtle); }
-.rux-field__error   { font-size: var(--rux-text-xs); color: var(--rux-danger); }
+.rux-field          { display: flex; flex-direction: column; gap: var(--rux-field-gap); min-width: 0; }
+
+.rux-field__label   { 
+  font-size: var(--rux-field-label-size); 
+  font-weight: var(--rux-field-label-weight); 
+  color: var(--rux-field-label-fg); 
+}
+.rux-field__help    { font-size: var(--rux-field-label-size); color: var(--rux-field-help-fg); }
+.rux-field__error   { font-size: var(--rux-field-label-size); color: var(--rux-field-error-fg); }
 
 
 /* — switch — */
@@ -111,10 +116,10 @@
 .rux-switch {
   --_w: var(--rux-switch-width);
   --_h: var(--rux-switch-height);
-  --_p: var(--rux-radius-xs);
+  --_p: var(--rux-switch-padding);
   --_track: var(--rux-switch-track-bg);
   --_state-overlay: transparent;
-  --_thumb: var(--rux-fg);
+  --_thumb: var(--rux-switch-thumb-bg);
 
   position: relative;
   display: inline-block;
@@ -126,16 +131,16 @@
 .rux-switch__track {
   position: absolute;
   inset: 0;
-  background-color: var(--_track);
+  background-color: var(--rux-surface-switch-track);
   background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
-  border-radius: var(--rux-radius-full);
+  border-radius: var(--rux-switch-radius);
   /* 1px transparent, not none — reserves space for the focus-visible
      border-color forwarded from the (invisible) input below, so it
      doesn't shift the track by 1px when it appears. */
-  border: 1px solid transparent;
+  border: var(--rux-switch-track-border);
   transition:
-    background-color var(--rux-duration-fast) var(--rux-ease-out),
-    box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+    background-color var(--rux-switch-transition),
+    box-shadow var(--rux-switch-transition);
 }
 .rux-switch__thumb {
   position: absolute;
@@ -143,16 +148,16 @@
   left: var(--_p);
   width: calc(var(--_h) - var(--_p) * 2);
   height: calc(var(--_h) - var(--_p) * 2);
-  background: var(--_thumb);
-  border-radius: var(--rux-radius-full);
+  background: var(--rux-surface-switch-thumb);
+  border-radius: var(--rux-switch-radius);
   transition:
-    background-color var(--rux-duration-fast) var(--rux-ease-out),
-    box-shadow var(--rux-duration-fast) var(--rux-ease-out),
-    transform var(--rux-duration-fast) var(--rux-ease-out);
+    background-color var(--rux-switch-transition),
+    box-shadow var(--rux-switch-transition),
+    transform var(--rux-switch-transition);
 }
 .rux-switch:hover { --_state-overlay: var(--rux-switch-hover-overlay); }
 .rux-switch:active { --_state-overlay: var(--rux-switch-active-overlay); }
-.rux-switch input:checked ~ .rux-switch__track { --_track: var(--rux-accent); }
+.rux-switch input:checked ~ .rux-switch__track { background: var(--rux-switch-checked-bg); border:  1px solid var(--rux-accent);}
 /* The real <input> is invisible (opacity: 0 above) — the visible switch is
    its sibling .rux-switch__track, so the global :focus-visible rule
    (colors_and_type.css) has nothing to actually render on: it only ever
@@ -160,7 +165,7 @@
    element here has no visible box. Forwarded to the track the same way
    :checked already forwards its own state above. */
 .rux-switch input:focus-visible ~ .rux-switch__track {
-  border-color: var(--rux-danger-bright);
+  border-color: var(--rux-switch-focus-border);
 }
 .rux-switch:has(input:disabled) {
   --_state-overlay: transparent;
@@ -169,10 +174,10 @@
 }
 .rux-switch:has(input:disabled) .rux-switch__track { --_track: var(--rux-switch-disabled-bg); }
 .rux-switch input:checked ~ .rux-switch__thumb {
-  background-color: var(--rux-fg-on-accent);
+  background-color: var(--rux-surface-switch-thumb);
   transform: translateX(calc(var(--_w) - var(--_h)));
 }
-.rux-switch:has(input:disabled) .rux-switch__thumb { background-color: var(--rux-fg-disabled); }
+.rux-switch:has(input:disabled) .rux-switch__thumb { background-color: var(--rux-switch-disabled-thumb-bg); }
 
 
 /* — checkbox — */
@@ -180,10 +185,10 @@
 .rux-checkbox {
   display: inline-flex;
   align-items: center;
-  gap: var(--rux-control-content-gap);
+  gap: var(--rux-checkbox-content-gap);
   min-height: var(--rux-checkbox-target-height);
   cursor: pointer;
-  font-size: var(--rux-text-sm);
+  font-size: var(--rux-checkbox-font-size);
   user-select: none;
 }
 .rux-checkbox input {
@@ -191,23 +196,23 @@
   flex: none;
   width: var(--rux-checkbox-size);
   height: var(--rux-checkbox-size);
-  background-color: var(--rux-surface-canvas);
-  border: var(--rux-border-width) solid var(--rux-border-strong);
-  border-radius: var(--rux-radius-xs);
+  background-color: var(--rux-checkbox-bg);
+  border: var(--rux-checkbox-border);
+  border-radius: var(--rux-checkbox-radius);
   cursor: pointer;
-  transition: background-color var(--rux-duration-instant), border-color var(--rux-duration-instant);
+  transition: background-color var(--rux-checkbox-transition-speed), border-color var(--rux-checkbox-transition-speed);
   display: inline-grid;
   place-items: center;
 }
 .rux-checkbox input:checked {
-  background-color: var(--rux-accent);
-  border-color: var(--rux-accent);
+  background-color: var(--rux-checkbox-checked-bg);
+  border-color: var(--rux-checkbox-checked-border);
 }
 .rux-checkbox input:checked::after {
   content: "";
   width: var(--rux-checkbox-mark-width);
   height: var(--rux-checkbox-mark-height);
-  border: solid var(--rux-fg-on-accent);
+  border: solid var(--rux-checkbox-mark-color);
   border-width: 0 calc(var(--rux-border-width) * 2) calc(var(--rux-border-width) * 2) 0;
   transform: rotate(45deg) translate(calc(var(--rux-border-width) * -1), calc(var(--rux-border-width) * -1));
 }
@@ -354,8 +359,8 @@
 
 .rux-color-swatch {
   position: relative;
-  width: var(--rux-icon-xl);
-  height: var(--rux-icon-xl);
+  width: var(--rux-color-swatch-size);
+  height: var(--rux-color-swatch-size);
   cursor: pointer;
   flex: none;
 }
@@ -370,28 +375,28 @@
 
 .rux-color-swatch__dot {
   display: block;
-  width: var(--rux-icon-xl);
-  height: var(--rux-icon-xl);
-  border-radius: var(--rux-radius-full);
+  width: var(--rux-color-swatch-size);
+  height: var(--rux-color-swatch-size);
+  border-radius: var(--rux-color-swatch-radius);
   /* 1px transparent, not none — reserves space for the focus-visible
      border-color forwarded from the (invisible) input below. */
-  border: 1px solid transparent;
+  border: var(--rux-color-swatch-border);
   background-color: var(--color, var(--rux-accent));
-  transition: box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+  transition: box-shadow var(--rux-color-swatch-transition);
 }
 
 .rux-color-swatch:hover .rux-color-swatch__dot {
-  box-shadow: 0 0 0 2px var(--rux-surface-canvas), 0 0 0 3px var(--color, var(--rux-accent));
+  box-shadow: var(--rux-color-swatch-hover-ring);
 }
 
 .rux-color-swatch input:checked + .rux-color-swatch__dot {
-  box-shadow: 0 0 0 2px var(--rux-surface-canvas), 0 0 0 4px var(--color, var(--rux-accent));
+  box-shadow: var(--rux-color-swatch-checked-ring);
 }
 
 /* The real <input> is invisible (opacity: 0 above) — see the same note on
    .rux-switch input:focus-visible ~ .rux-switch__track above. */
 .rux-color-swatch input:focus-visible + .rux-color-swatch__dot {
-  border-color: var(--rux-danger-bright);
+  border-color: var(--rux-color-swatch-focus-border);
 }
 
 
@@ -407,29 +412,29 @@
 .rux-color-picker__trigger {
   display: flex;
   align-items: center;
-  gap: var(--rux-control-content-gap);
+  gap: var(--rux-color-picker-content-gap);
   width: 100%;
-  height: var(--rux-field-height);
-  padding: 0 var(--rux-control-padding-inline);
-  background: var(--rux-surface-canvas);
-  color: var(--rux-fg);
-  border: var(--rux-border-width) solid var(--rux-border);
-  border-radius: var(--rux-radius-sm);
+  height: var(--rux-color-picker-height);
+  padding: 0 var(--rux-color-picker-padding-inline);
+  background: var(--rux-color-picker-bg);
+  color: var(--rux-color-picker-fg);
+  border: var(--rux-color-picker-border);
+  border-radius: var(--rux-color-picker-radius);
   font: inherit;
   font-size: var(--rux-text-sm);
   cursor: pointer;
   transition:
-    border-color var(--rux-duration-fast) var(--rux-ease-out),
-    box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+    border-color var(--rux-color-picker-transition),
+    box-shadow var(--rux-color-picker-transition);
 }
 
-.rux-color-picker__trigger:hover { border-color: var(--rux-border-strong); }
+.rux-color-picker__trigger:hover { border-color: var(--rux-color-picker-hover-border); }
 
 .rux-color-picker__preview {
   display: block;
   flex: none;
-  width: 14px;
-  height: 14px;
+  width: var(--rux-color-picker-preview-size);
+  height: var(--rux-color-picker-preview-size);
   border-radius: var(--rux-radius-full);
   background: var(--color, var(--rux-accent));
   pointer-events: none;
@@ -457,19 +462,19 @@
   z-index: var(--rux-z-dropdown);
   display: flex;
   flex-wrap: wrap;
-  gap: var(--rux-control-content-gap);
-  padding: var(--rux-control-padding-inline);
-  background: var(--rux-surface-modal);
-  border: var(--rux-border-width) solid var(--rux-border);
-  border-radius: var(--rux-radius-md);
+  gap: var(--rux-color-picker-content-gap);
+  padding: var(--rux-color-picker-padding-inline);
+  background: var(--rux-color-picker-popover-bg);
+  border: var(--rux-color-picker-border);
+  border-radius: var(--rux-color-picker-popover-radius);
 }
 
 .rux-color-picker__popover[hidden] { display: none; }
 
 .rux-color-picker__option {
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: var(--rux-color-picker-option-size);
+  height: var(--rux-color-picker-option-size);
   cursor: pointer;
   flex: none;
 }
@@ -486,32 +491,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: var(--rux-color-picker-option-size);
+  height: var(--rux-color-picker-option-size);
   border-radius: var(--rux-radius-full);
   /* 1px transparent, not none — reserves space for the focus-visible
      border-color forwarded from the (invisible) input below. */
-  border: 1px solid transparent;
+  border: var(--rux-color-picker-option-border);
   background: var(--color, var(--rux-accent));
-  transition: transform var(--rux-duration-fast) var(--rux-ease-out);
+  transition: transform var(--rux-color-picker-transition);
 }
 
 .rux-color-picker__option:hover .rux-color-picker__dot {
-  transform: scale(1.18);
+  transform: scale(var(--rux-color-picker-option-scale));
 }
 
 /* The real <input> is invisible (opacity: 0 above) — see the same note on
    .rux-switch input:focus-visible ~ .rux-switch__track above. */
 .rux-color-picker__option input:focus-visible + .rux-color-picker__dot {
-  border-color: var(--rux-danger-bright);
+  border-color: var(--rux-color-picker-focus-border);
 }
 
 .rux-color-picker__dot::after {
   content: "";
   display: none;
-  width: 5px;
-  height: 9px;
-  border: 2px solid white;
+  width: var(--rux-color-picker-check-width);
+  height: var(--rux-color-picker-check-height);
+  border: calc(var(--rux-border-width) * 2) solid var(--rux-color-picker-check-color);
   border-top: none;
   border-left: none;
   transform: rotate(45deg) translate(-1px, -1px);
@@ -528,29 +533,29 @@
 .rux-color-input {
   display: flex;
   align-items: center;
-  gap: var(--rux-control-content-gap);
+  gap: var(--rux-color-input-content-gap);
   box-sizing: border-box;
   width: 100%;
-  height: var(--rux-field-height);
-  padding: 0 var(--rux-control-padding-inline);
-  background-color: var(--rux-surface-canvas);
-  border: var(--rux-border-width) solid transparent;
-  border-radius: var(--rux-radius-md);
+  height: var(--rux-color-input-height);
+  padding: 0 var(--rux-color-input-padding-inline);
+  background-color: var(--rux-color-input-bg);
+  border: var(--rux-color-input-border);
+  border-radius: var(--rux-color-input-radius);
   transition:
-    border-color var(--rux-duration-fast) var(--rux-ease-out),
-    box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+    border-color var(--rux-color-input-transition),
+    box-shadow var(--rux-color-input-transition);
 }
 
 .rux-color-input:hover {
-  border-color: var(--rux-border-strong);
+  border-color: var(--rux-color-input-hover-border);
 }
 
 .rux-color-input__swatch {
   flex-shrink: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  border: var(--rux-border-width) solid color-mix(in srgb, currentColor 25%, transparent);
-  border-radius: var(--rux-radius-xs);
+  width: var(--rux-color-input-swatch-size);
+  height: var(--rux-color-input-swatch-size);
+  border: var(--rux-color-input-swatch-border);
+  border-radius: var(--rux-color-input-swatch-radius);
   background: var(--rux-surface-card);
   cursor: pointer;
   padding: 0;
@@ -573,7 +578,7 @@
   /* 1px transparent, not none — reserves the same space a focus-visible
      border-color swap will use, so focusing this doesn't shift its
      sibling elements by 1px. */
-  border: 1px solid transparent;
+  border: var(--rux-color-input-text-border);
   box-shadow: none;
   outline: none;
   color: var(--rux-fg);

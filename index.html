@@ -260,15 +260,25 @@
                 <!-- Billing -->
                 <div id="pane-billing" class="rux-panel__pane rux-trip-panel__pane" role="tabpanel" hidden>
                   <div class="rux-card">
+                    <header class="rux-card__header">
+                      <p class="rux-card__title">Billing details</p>
+                    </header>
                     <div class="rux-card__body rux-card__body--stack">
-                      <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group>
-                        <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
-                        <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
+                      <div class="rux-field">
+                        <span class="rux-field__label" id="tp-billing-type-label">Service type</span>
+                        <div class="rux-segmented-track rux-trip-panel__trip-type" id="tp-billing-type-group" data-rux-toggle-group role="group" aria-labelledby="tp-billing-type-label">
+                          <button class="rux-button rux-button--segment is-active" type="button" aria-pressed="true" data-value="charter" aria-label="Charter trip" title="Charter trip"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-btn-label">Charter</span></button>
+                          <button class="rux-button rux-button--segment" type="button" aria-pressed="false" data-value="ticketed" aria-label="Ticketed trip" title="Ticketed trip"><span class="rux-icon" aria-hidden="true">confirmation_number</span><span class="rux-btn-label">Ticketed</span></button>
+                        </div>
                       </div>
-                      <button class="rux-button rux-button--default" type="button" id="tp-view-manifest-btn" disabled title="Toggle Ticketed to enable">
-                        <span class="rux-icon" aria-hidden="true">groups</span>
-                        <span class="rux-btn-label">View manifest</span>
-                      </button>
+                      <div class="rux-trip-panel__manifest-action" id="tp-manifest-action" aria-hidden="true">
+                        <div class="rux-trip-panel__manifest-action-inner">
+                          <button class="rux-button rux-button--default" type="button" id="tp-view-manifest-btn" disabled title="Toggle Ticketed to enable">
+                            <span class="rux-icon" aria-hidden="true">groups</span>
+                            <span class="rux-btn-label">View manifest</span>
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div class="rux-card" id="tp-ticket-pricing-card" hidden>

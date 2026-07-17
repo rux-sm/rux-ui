@@ -16,12 +16,13 @@
    Modules (in load order)
    -----------------------
    icons.css        .rux-icon and custom pictogram variants
-   controls.css     .rux-button, .rux-segmented
+   controls.css     .rux-button, .rux-segmented, .rux-number-stepper
    app-header.css   .rux-app-header and its brand, navigation, and actions
    badges.css       .rux-badge, .rux-trip-itinerary__badge  ← single source of truth for all badge rules
    form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
-                    .rux-switch, .rux-checkbox, .rux-input-group,
-                    .rux-color-swatches, .rux-color-picker
+	                   .rux-switch, .rux-checkbox, .rux-input-group,
+	                   .rux-color-swatches, .rux-color-picker,
+	                   .rux-color-input, .rux-output
    workspace.css    .rux-workspace — primary application view shell
    panel.css        .rux-panel and its header, navigation, body, pane, and footer
    menu.css         .rux-menu, items, headers, dividers, and states

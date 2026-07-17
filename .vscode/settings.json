@@ -1,0 +1,12 @@
+{
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.insertSpaces": false,
+	"editor.tabSize": 4,
+	"[css]": {
+		"editor.formatOnSave": false,
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"prettier.useTabs": true,
+	"prettier.tabWidth": 4
+}

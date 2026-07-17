@@ -42,6 +42,43 @@
 	white-space: nowrap;
 }
 
+.rux-trip-panel__manifest-action {
+	display: grid;
+	grid-template-rows: 0fr;
+	margin-block-start: calc(0px - var(--rux-card-content-gap));
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(calc(0px - var(--rux-trip-panel-reveal-distance)));
+	transition:
+		grid-template-rows var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing),
+		margin-block-start var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing),
+		opacity var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing),
+		transform var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing);
+}
+
+.rux-trip-panel__manifest-action.is-visible {
+	grid-template-rows: 1fr;
+	margin-block-start: 0;
+	opacity: 1;
+	pointer-events: auto;
+	transform: translateY(0);
+}
+
+.rux-trip-panel__manifest-action-inner {
+	min-height: 0;
+	overflow: hidden;
+}
+
+.rux-trip-panel__manifest-action .rux-button {
+	width: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rux-trip-panel__manifest-action {
+		transition: none;
+	}
+}
+
 /* Plain buttons instead of a segmented/contained tab track — active looks
    like .rux-button--default (filled), inactive like .rux-button--ghost
    (transparent, brightens on hover). Keying the override off
@@ -652,7 +689,7 @@
 	padding: 0 var(--rux-control-padding-inline);
 	border: 0;
 	border-radius: var(--rux-button-radius);
-	background: var(--rux-button-accent-bg);
+	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
 	cursor: pointer;
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);

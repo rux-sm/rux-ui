@@ -70,7 +70,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: var(--rux-weight-semibold);
   line-height: var(--rux-leading-tight);
   letter-spacing: var(--rux-tracking-tight);
-  color: var(--rux-fg);
+  color: var(--rux-heading);
 }
 
 h1 { font-size: var(--rux-text-3xl); font-weight: var(--rux-weight-bold); }

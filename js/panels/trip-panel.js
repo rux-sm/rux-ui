@@ -721,11 +721,18 @@ function setBillingType(root, value) {
 	syncTicketPricingVisibility(root);
 }
 
-// Ticket Pricing only makes sense for Ticketed trips — Charter trips bill a
-// single quoted price, not per-passenger options.
+// Ticket pricing and the passenger manifest only apply to Ticketed trips.
+// Availability remains separate: trip-db.js keeps the manifest action
+// disabled until the trip has been saved and therefore has an id.
 function syncTicketPricingVisibility(root) {
+	const isTicketed = getBillingType(root) === "ticketed";
 	const card = root.querySelector("#tp-ticket-pricing-card");
-	if (card) card.hidden = getBillingType(root) !== "ticketed";
+	const manifestAction = root.querySelector("#tp-manifest-action");
+	if (card) card.hidden = !isTicketed;
+	if (manifestAction) {
+		manifestAction.classList.toggle("is-visible", isTicketed);
+		manifestAction.setAttribute("aria-hidden", String(!isTicketed));
+	}
 }
 
 // Trips where no trip contact will ever exist (e.g. self-organized groups) or

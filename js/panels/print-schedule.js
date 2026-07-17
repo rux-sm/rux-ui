@@ -103,11 +103,14 @@
   }
 
   // Same formula as the Itinerary tab's own Trip Summary card (renderSummary()
-  // in itinerary.js) — "day" markers aren't real travel segments, so they're
-  // excluded from the sum. Falls back to the manually entered Billing-tab
-  // estimate (trip.estimatedMiles) only when there's no itinerary data yet.
+  // in itinerary.js) — "day" markers aren't real travel segments and sleeper
+  // stops never travel (their own miles should always be zero — see
+  // syncSleeperLeg in itinerary.js — excluded again here as a safety net), so
+  // both are excluded from the sum. Falls back to the manually entered
+  // Billing-tab estimate (trip.estimatedMiles) only when there's no itinerary
+  // data yet.
   function itineraryMiles(trip) {
-    const real = sortedTripStops(trip).filter((s) => s.type !== "day");
+    const real = sortedTripStops(trip).filter((s) => s.type !== "day" && s.type !== "sleeper");
     const total = real.reduce((n, s) => n + (parseFloat(s.miles) || 0), 0);
     return total > 0 ? total : null;
   }

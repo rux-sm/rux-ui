@@ -47,6 +47,10 @@
 		transform var(--rux-button-transition-duration) var(--rux-button-transition-easing);
 }
 
+.rux-button[hidden] {
+	display: none;
+}
+
 .rux-button:hover:not(:disabled):not([aria-disabled="true"]) {
 	border: var(--rux-button-hover-border);
 	color: var(--rux-button-hover-text);
@@ -315,7 +319,7 @@
    ========================================================================== */
 
 .rux-segmented {
-
+	position: relative;
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-0);
@@ -394,6 +398,7 @@
    ========================================================================== */
 
 .rux-segmented-track {
+	position: relative;
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-segmented-track-gap);
@@ -402,6 +407,50 @@
 	background: var(--rux-segmented-track-bg);
 	border-radius: var(--rux-segmented-track-radius);
 	border: var(--rux-segmented-track-border);
+}
+
+.rux-segmented__indicator {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 0;
+	width: var(--_rux-segment-indicator-width, 0);
+	height: var(--_rux-segment-indicator-height, 0);
+	background: var(--rux-button-selected-bg);
+	border-radius: var(--rux-segment-radius);
+	pointer-events: none;
+	transform: translate(
+		var(--_rux-segment-indicator-x, 0),
+		var(--_rux-segment-indicator-y, 0)
+	);
+}
+
+[data-rux-indicator-ready="true"] > .rux-segmented__indicator {
+	transition:
+		transform var(--rux-segment-indicator-duration) var(--rux-segment-indicator-easing),
+		width var(--rux-segment-indicator-duration) var(--rux-segment-indicator-easing),
+		height var(--rux-segment-indicator-duration) var(--rux-segment-indicator-easing);
+}
+
+.rux-segmented--ghost > .rux-segmented__indicator {
+	background: var(--rux-button-quiet-selected-bg);
+}
+
+.rux-segmented-track > .rux-segmented__indicator {
+	background: var(--rux-segment-active-background);
+	border: var(--rux-segment-active-border-color);
+}
+
+.rux-segmented > .rux-button,
+.rux-segmented-track > .rux-button {
+	position: relative;
+	z-index: 1;
+}
+
+.rux-segmented[data-rux-indicator-ready="true"] > .rux-button:is(.is-active, [aria-pressed="true"], [aria-selected="true"]),
+.rux-segmented-track[data-rux-indicator-ready="true"] > .rux-button:is(.is-active, [aria-pressed="true"], [aria-selected="true"]) {
+	--_bg: transparent;
+	background: transparent;
 }
 
 .rux-button--segment {
@@ -435,6 +484,12 @@
 .rux-button--segment:is(.is-active, [aria-pressed="true"]):hover:not(:disabled):not([aria-disabled="true"]) {
 	color: var(--rux-segment-active-text);
 	border: var(--rux-segment-active-border-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rux-segmented__indicator {
+		transition: none !important;
+	}
 }
 
 /* ==========================================================================

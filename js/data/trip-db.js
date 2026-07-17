@@ -990,7 +990,7 @@ import { supabase } from "./supabase.js";
 				syncManifestBtn(root);
 			}
 
-			setSaveButtonState(saveBtn, { label: "Saved", icon: "check", disabled: true });
+			setSaveButtonState(saveBtn, { label: "Saved", icon: "check", disabled: false });
 			root.dispatchEvent(new CustomEvent("rux:trip-saved", { bubbles: true, detail: { id: savedId } }));
 			if (window.Rux) Rux.toast("Trip saved");
 			clearForm(root, itinerary);
@@ -1426,16 +1426,10 @@ export function initTripDB(root, itinerary) {
 
 	function markClean() {
 		cleanSnapshot = snapshotForm();
-		if (saveBtn) saveBtn.disabled = true;
 	}
 
 	function isFormDirty() {
 		return snapshotForm() !== cleanSnapshot;
-	}
-
-	function syncSaveBtn() {
-		if (root.classList.contains("rux-trip-panel--loading")) return;
-		if (saveBtn) saveBtn.disabled = !isFormDirty();
 	}
 
 	markClean();
@@ -1443,12 +1437,7 @@ export function initTripDB(root, itinerary) {
 	root.addEventListener("rux:trip-prefilled", markClean);
 	root.addEventListener("rux:trip-loaded", markClean);
 
-	root.addEventListener("input", syncSaveBtn);
-	root.addEventListener("change", syncSaveBtn);
 	root.addEventListener("click", (e) => {
-		if (e.target.closest("[data-req], [data-rux-toggle-button], [data-role], .rux-trip-panel__role-label")) {
-			requestAnimationFrame(syncSaveBtn);
-		}
 		if (e.target.closest("#tp-billing-type-group")) {
 			requestAnimationFrame(() => syncManifestBtn(root));
 		}
@@ -1457,7 +1446,6 @@ export function initTripDB(root, itinerary) {
 	saveBtn?.addEventListener("click", async () => {
 		const saved = await save(root, itinerary, saveBtn);
 		if (saved) markClean();
-		else syncSaveBtn();
 	});
 	clearBtn?.addEventListener("click",  () => {
 		if (isFormDirty() && !confirm("Discard unsaved changes?")) return;
