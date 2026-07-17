@@ -8,30 +8,32 @@
 .rux-input,
 .rux-select,
 .rux-textarea {
+  --_focus-border: var(--rux-input-focus-border);
+
   box-sizing: border-box;
   display: block;
   width: 100%;
   min-width: 0;
   max-width: 100%;
   height: var(--rux-input-height);
-  padding: 0 var(--rux-control-padding-inline);
+  padding: 0 var(--rux-input-padding-inline);
   background-color: var(--rux-input-background);
-  color: var(--rux-fg);
+  color: var(--rux-input-fg);
   border: var(--rux-input-border);
-  border-radius: var(--rux-radius-control);
+  border-radius: var(--rux-input-border-radius);
   font: inherit;
-  font-size: var(--rux-text-sm);
+  font-size: var(--rux-input-font-size);
   outline: none;
   transition:
-    background-color var(--rux-duration-fast) var(--rux-ease-out),
-    border-color var(--rux-duration-fast) var(--rux-ease-out),
-    box-shadow var(--rux-duration-fast) var(--rux-ease-out),
-    color var(--rux-duration-fast) var(--rux-ease-out);
+    background-color var(--rux-input-transition),
+    border-color var(--rux-input-transition),
+    box-shadow var(--rux-input-transition),
+    color var(--rux-input-transition);
 }
 
 .rux-input::placeholder,
 .rux-textarea::placeholder {
-  color: var(--rux-fg-subtle);
+  color: var(--rux-input-placeholder-fg);
 }
 
 .rux-input:hover,
@@ -44,6 +46,7 @@
 .rux-select:focus-visible,
 .rux-textarea:focus-visible {
   background-color: var(--rux-input-focus-bg);
+	border-color: var(--rux-input-focus-border);
   box-shadow: var(--rux-input-focus-ring);
 }
 
@@ -51,20 +54,20 @@
 .rux-select:disabled,
 .rux-textarea:disabled {
   background-color: var(--rux-input-disabled-bg);
-  border-color: var(--rux-border);
-  color: var(--rux-fg-disabled);
+  border-color: var(--rux-input-disabled-border);
+  color: var(--rux-input-disabled-fg);
   cursor: not-allowed;
 }
 
 .rux-input:disabled::placeholder,
 .rux-textarea:disabled::placeholder {
-  color: var(--rux-fg-disabled);
+  color: var(--rux-input-disabled-fg);
 }
 
 .rux-input[aria-invalid="true"],
 .rux-select[aria-invalid="true"],
 .rux-textarea[aria-invalid="true"] {
-  border-color: var(--rux-danger);
+  border-color: var(--rux-input-invalid-border);
 }
 
 .rux-textarea {
@@ -86,7 +89,7 @@
 }
 
 .rux-select.is-placeholder:not(:disabled) {
-  color: var(--rux-fg-subtle);
+  color: var(--rux-input-placeholder-fg);
 }
 
 .rux-select option {
@@ -131,7 +134,7 @@
 .rux-switch__track {
   position: absolute;
   inset: 0;
-  background-color: var(--rux-surface-switch-track);
+  background-color: var(--_track);
   background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
   border-radius: var(--rux-switch-radius);
   /* 1px transparent, not none — reserves space for the focus-visible
@@ -148,7 +151,7 @@
   left: var(--_p);
   width: calc(var(--_h) - var(--_p) * 2);
   height: calc(var(--_h) - var(--_p) * 2);
-  background: var(--rux-surface-switch-thumb);
+  background: var(--_thumb);
   border-radius: var(--rux-switch-radius);
   transition:
     background-color var(--rux-switch-transition),
@@ -157,7 +160,10 @@
 }
 .rux-switch:hover { --_state-overlay: var(--rux-switch-hover-overlay); }
 .rux-switch:active { --_state-overlay: var(--rux-switch-active-overlay); }
-.rux-switch input:checked ~ .rux-switch__track { background: var(--rux-switch-checked-bg); border:  1px solid var(--rux-accent);}
+.rux-switch input:checked ~ .rux-switch__track {
+  background: var(--rux-switch-checked-bg);
+  border: var(--rux-switch-checked-border);
+}
 /* The real <input> is invisible (opacity: 0 above) — the visible switch is
    its sibling .rux-switch__track, so the global :focus-visible rule
    (colors_and_type.css) has nothing to actually render on: it only ever
@@ -174,7 +180,7 @@
 }
 .rux-switch:has(input:disabled) .rux-switch__track { --_track: var(--rux-switch-disabled-bg); }
 .rux-switch input:checked ~ .rux-switch__thumb {
-  background-color: var(--rux-surface-switch-thumb);
+  background-color: var(--rux-switch-checked-thumb-bg);
   transform: translateX(calc(var(--_w) - var(--_h)));
 }
 .rux-switch:has(input:disabled) .rux-switch__thumb { background-color: var(--rux-switch-disabled-thumb-bg); }
@@ -192,6 +198,8 @@
   user-select: none;
 }
 .rux-checkbox input {
+  --_focus-border: var(--rux-checkbox-focus-border);
+
   appearance: none;
   flex: none;
   width: var(--rux-checkbox-size);
@@ -207,6 +215,33 @@
 .rux-checkbox input:checked {
   background-color: var(--rux-checkbox-checked-bg);
   border-color: var(--rux-checkbox-checked-border);
+}
+.rux-checkbox:hover input:not(:disabled):not(:checked) {
+  background-color: var(--rux-checkbox-hover-bg);
+  border-color: var(--rux-checkbox-hover-border);
+}
+.rux-checkbox:active input:not(:disabled):not(:checked) {
+  background-color: var(--rux-checkbox-active-bg);
+}
+.rux-checkbox:hover input:checked:not(:disabled) {
+  background-color: var(--rux-checkbox-checked-hover-bg);
+}
+.rux-checkbox:active input:checked:not(:disabled) {
+  background-color: var(--rux-checkbox-checked-active-bg);
+}
+.rux-checkbox input:focus-visible {
+  border-color: var(--rux-checkbox-focus-border);
+  box-shadow: var(--rux-checkbox-focus-ring);
+  outline: none;
+}
+.rux-checkbox:has(input:disabled) {
+  color: var(--rux-checkbox-disabled-fg);
+  cursor: not-allowed;
+}
+.rux-checkbox input:disabled {
+  background-color: var(--rux-checkbox-disabled-bg);
+  border-color: var(--rux-checkbox-disabled-border);
+  cursor: not-allowed;
 }
 .rux-checkbox input:checked::after {
   content: "";
@@ -592,15 +627,15 @@
 	align-items: center;
 	justify-content: center;
 	min-width: 0;
-	height: var(--rux-field-height);
-	padding: 0;
-	border: var(--rux-input-border);
-	border-radius: var(--rux-radius-control);
-	background: var(--rux-surface-canvas);
-	color: var(--rux-fg-muted);
+	height: var(--rux-output-height);
+	padding: var(--rux-output-padding);
+	border: var(--rux-output-border);
+	border-radius: var(--rux-output-radius);
+	background: var(--rux-output-bg);
+	color: var(--rux-output-fg);
 	font: inherit;
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-regular);
+	font-size: var(--rux-output-font-size);
+	font-weight: var(--rux-output-font-weight);
 	font-variant-numeric: tabular-nums;
 	cursor: default;
 }

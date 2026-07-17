@@ -640,17 +640,25 @@
                         <p class="rux-subtle">Loading drivers…</p>
                       </div>
                     </div>
-                    <footer class="rux-card__footer">
-                      <button class="rux-button rux-button--default" type="button" id="rp-driver-add-timeoff-btn" disabled title="Select a driver first">
-                        <span class="rux-icon" aria-hidden="true">event_busy</span>
-                        <span class="rux-btn-label">Add Time Off</span>
-                      </button>
-                    </footer>
                   </article>
                 </div>
                 <div id="rp-pane-tasks" class="rux-panel__pane" role="tabpanel" hidden>
                 </div>
               </div>
+              <!-- Fixed action slot at the bottom of the panel, shared across
+                   tabs — contents are per-tab (only one group shown at a
+                   time, matching the active pane), but the footer itself
+                   stays in the same place instead of each pane owning (and
+                   popping in/out) its own footer. Hidden entirely when the
+                   active tab has no action of its own (Nav, Tasks for now). -->
+              <footer class="rux-panel__footer" id="rp-panel-footer" hidden>
+                <div class="rux-right-panel__footer-group" data-rp-footer-for="rp-pane-drivers">
+                  <button class="rux-button rux-button--default" type="button" id="rp-driver-add-timeoff-btn" disabled title="Select a driver first">
+                    <span class="rux-icon" aria-hidden="true">event_busy</span>
+                    <span class="rux-btn-label">Add Time Off</span>
+                  </button>
+                </div>
+              </footer>
             </aside>
           </div>
 
@@ -2042,6 +2050,7 @@
       import { createTripBar, clearTripBars, applyItineraryUploaded } from "./js/components/trip-bar.js?v=7";
       import BusPicker, { findConflict as findBusConflict } from "./js/components/bus-picker.js";
       import { loadRequirements } from "./js/data/requirements-db.js";
+      import { supabase } from "./js/data/supabase.js";
 
       // Load requirements before trip panel is used (window.appRequirements cache)
       if (!window.appRequirements) window.appRequirements = await loadRequirements();
@@ -3701,6 +3710,8 @@
       // Right panel tab switching
       const rpTabs = rightDrawer.querySelectorAll("[data-right-tabs] .rux-right-panel__tab[aria-controls]");
       const rpPanes = rightDrawer.querySelectorAll(".rux-panel__pane");
+      const rpFooter = document.getElementById("rp-panel-footer");
+      const rpFooterGroups = rpFooter ? rpFooter.querySelectorAll("[data-rp-footer-for]") : [];
 
       rpTabs.forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -3709,6 +3720,16 @@
           btn.classList.add("is-active"); btn.setAttribute("aria-selected", "true");
           rpPanes.forEach((p) => { p.hidden = p.id !== paneId; });
           if (paneId === "rp-pane-drivers") ensureDriverGridData().then(renderDriverGrid);
+          // Footer stays in a fixed spot across tabs — only the action group
+          // matching the active pane shows, and the footer itself hides
+          // entirely when the active tab has none (Nav, Tasks for now).
+          let hasFooterAction = false;
+          rpFooterGroups.forEach((group) => {
+            const show = group.dataset.rpFooterFor === paneId;
+            group.hidden = !show;
+            if (show) hasFooterAction = true;
+          });
+          if (rpFooter) rpFooter.hidden = !hasFooterAction;
         });
       });
 
@@ -4111,9 +4132,38 @@
           try { drivers = await db.fetchDrivers(); } catch (err) { console.warn("Could not load drivers:", err); }
           TripPanel.updateOptions(tripPanel, { buses, drivers });
           await loadTripsFromDB();
+          initTripsRealtimeSync();
         } catch (err) {
           console.warn("Could not initialize trip DB:", err);
         }
+      }
+
+      // Multiple dispatchers can have the same week open at once — Realtime
+      // is the primary path so an edit from one person shows up for everyone
+      // without a manual refresh (same recipe as flip-seven.js's channel).
+      // loadTripsFromDB() already coalesces overlapping calls (_loadInProgress/
+      // _loadQueued above), so firing it straight from every change event is
+      // safe even if several rows change at once. Polling stays as a fallback
+      // for networks that block or drop the Realtime WebSocket — much slower
+      // than flip-seven's since this is a safety net, not the primary path.
+      function initTripsRealtimeSync() {
+        supabase
+          .channel("scheduler-trips")
+          .on("postgres_changes", { event: "*", schema: "public", table: "trips" }, loadTripsFromDB)
+          .on("postgres_changes", { event: "*", schema: "public", table: "trip_stops" }, loadTripsFromDB)
+          .subscribe((status) => {
+            if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+              console.warn(`Trips Realtime status: ${status}. Polling fallback remains active.`);
+            }
+          });
+
+        window.setInterval(() => {
+          if (!document.hidden) loadTripsFromDB();
+        }, 30000);
+        document.addEventListener("visibilitychange", () => {
+          if (!document.hidden) loadTripsFromDB();
+        });
+        window.addEventListener("focus", loadTripsFromDB);
       }
 
       initSchedulerData().then(() => {

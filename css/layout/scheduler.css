@@ -49,7 +49,7 @@
 	--rux-scheduler-max-block-size: none;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
-	--rux-scheduler-today-bg: color-mix(in srgb, var(--rux-accent) 50%, transparent);
+	--rux-scheduler-today-bg: color-mix(in srgb, var(--rux-accent) 100%, transparent);
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
 	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
 	   is the empty-row fallback, so an empty row sits at the same height a
@@ -192,7 +192,7 @@
 
 .rux-scheduler__day-head--today .rux-scheduler__day-label {
 	background: var(--rux-scheduler-today-bg);
-	border: 1px solid var(--rux-border);
+	border: 1px solid var(--rux-accent);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,

@@ -69,10 +69,10 @@
 	--_details-height: 0px;
 	--_conflict-height: 0px;
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
-	--_tone-ring: var(--rux-ring-focus);
-	--_surface: oklch(from var(--_tone) l c h/ 1);
-	--_surface-hover: oklch(from var(--_tone) 40% 0.22 h);
-	--_surface-active: oklch(from var(--_tone) 48% 0.22 h);
+	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 100%);
+	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--rux-trip-bar-hover-bg-chroma) h / 100%);
+	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--rux-trip-bar-pressed-bg-chroma) h / 100%);
+	--_surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--rux-trip-bar-selected-bg-chroma) h / 100%);
 	--_bus-label-fg: var(--_surface);
 
 	position: relative;
@@ -154,6 +154,22 @@
 	background-color: var(--_surface-hover);
 }
 
+.rux-trip-bar:active:not(.is-active) {
+	--_bus-label-fg: var(--_surface-pressed);
+	background-color: var(--_surface-pressed);
+}
+
+.rux-trip-bar:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-trip-bar-focus-ring);
+}
+
+.rux-trip-bar[aria-disabled="true"] {
+	opacity: var(--rux-trip-bar-disabled-opacity);
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
 .rux-trip-bar.is-active {
 	--_bus-label-fg: var(--_surface-active);
 	background-color: var(--_surface-active);
@@ -187,7 +203,7 @@
 
 .rux-trip-bar--unconfirmed {
 	--_tone: var(--rux-danger);
-	--_tone-ring: var(--rux-ring-danger);
+	--rux-trip-bar-focus-ring: var(--rux-ring-danger);
 }
 
 /* ---------- Modifier: trip-type pattern overlays ---------- */
@@ -393,6 +409,10 @@
 	background-color: var(--_surface-hover);
 }
 
+.rux-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__head {
+	background-color: var(--_surface-pressed);
+}
+
 .rux-trip-bar--multi-day.is-active .rux-trip-bar__head {
 	background-color: var(--_surface-active);
 }
@@ -408,7 +428,7 @@
 	justify-content: flex-end;
 	align-self: stretch;
 	z-index: 1;
-	background-color: color-mix(in oklch, var(--_surface)32%, transparent);
+	background-color: color-mix(in oklch, var(--_surface) var(--rux-trip-bar-tail-opacity), transparent);
 	border-radius: var(--rux-trip-bar-radius);
 	border: var(--rux-trip-bar-border-width) solid var(--_surface);
 	overflow: hidden;
@@ -422,7 +442,11 @@
    same hover/active response __head already has or the two halves of a
    multi-day bar visibly desync on interaction. */
 .rux-trip-bar--multi-day:hover .rux-trip-bar__tail {
-	background-color: color-mix(in oklch, var(--_surface-hover) 75%, transparent);
+	background-color: color-mix(in oklch, var(--_surface-hover) var(--rux-trip-bar-tail-hover-opacity), transparent);
+}
+
+.rux-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__tail {
+	background-color: color-mix(in oklch, var(--_surface-pressed) var(--rux-trip-bar-tail-pressed-opacity), transparent);
 }
 
 .rux-trip-bar--multi-day.is-active .rux-trip-bar__tail {
@@ -458,6 +482,36 @@
 		opacity var(--rux-duration-fast) var(--rux-ease-out),
 		transform var(--rux-duration-base) var(--rux-ease-out),
 		visibility 0s linear var(--rux-duration-base);
+}
+
+.rux-trip-bar__action {
+	--_focus-border: var(--rux-trip-bar-action-focus-border);
+	background: var(--rux-trip-bar-action-bg);
+	color: var(--rux-trip-bar-action-fg);
+	border: var(--rux-trip-bar-action-border);
+}
+
+.rux-trip-bar__action:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-trip-bar-action-hover-bg);
+	color: var(--rux-trip-bar-action-fg);
+	border: var(--rux-trip-bar-action-hover-border);
+}
+
+.rux-trip-bar__action:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-trip-bar-action-pressed-bg);
+	color: var(--rux-trip-bar-action-fg);
+	border: var(--rux-trip-bar-action-pressed-border);
+}
+
+.rux-trip-bar__action:focus-visible {
+	box-shadow: var(--rux-trip-bar-action-focus-ring);
+}
+
+.rux-trip-bar__action:disabled,
+.rux-trip-bar__action[aria-disabled="true"] {
+	background: var(--rux-trip-bar-action-disabled-bg);
+	color: var(--rux-trip-bar-action-disabled-fg);
+	border: var(--rux-trip-bar-action-disabled-border);
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {

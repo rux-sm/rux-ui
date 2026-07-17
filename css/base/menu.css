@@ -12,7 +12,7 @@
 	min-width: var(--rux-menu-min-width);
 	padding: var(--rux-menu-padding);
 	background: var(--rux-menu-bg);
-	color: var(--rux-menu-fg);
+	color: var(--rux-menu-item-fg);
 	border: var(--rux-menu-border);
 	border-radius: var(--rux-menu-radius);
 }
@@ -22,6 +22,8 @@
 }
 
 .rux-menu__item {
+	--_focus-border: var(--rux-menu-item-focus-border);
+
 	display: flex;
 	width: 100%;
 	height: var(--rux-menu-item-height);
@@ -40,15 +42,32 @@
 
 .rux-menu__item:hover {
 	background: var(--rux-menu-item-hover-bg);
+	color: var(--rux-menu-item-hover-fg);
+}
+
+.rux-menu__item:active {
+	background: var(--rux-menu-item-pressed-bg);
+}
+
+.rux-menu__item:focus-visible {
+	border-color: var(--rux-menu-item-focus-border);
+}
+
+.rux-menu__item:disabled,
+.rux-menu__item[aria-disabled="true"] {
+	color: var(--rux-menu-item-disabled-fg);
+	cursor: not-allowed;
+	pointer-events: none;
 }
 
 .rux-menu__item.is-active,
 .rux-menu__item[aria-checked="true"] {
 	background: var(--rux-menu-item-active-bg);
+	color: var(--rux-menu-item-active-fg);
 }
 
 .rux-menu__item--danger {
-	color: var(--rux-danger);
+	color: var(--rux-menu-item-danger-fg);
 }
 
 .rux-menu__divider {

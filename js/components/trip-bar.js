@@ -655,6 +655,8 @@ export function createTripBar(trip, callbacks = {}) {
     bar.dataset.tripBarColor = trip.trip_bar_color;
   }
   bar.tabIndex = 0;
+  bar.setAttribute("role", "button");
+  bar.setAttribute("aria-pressed", "false");
   bar.setAttribute(
     "aria-label",
     `${trip.destination || "Trip"} ${confirmed ? "confirmed" : "unconfirmed"}`,
@@ -665,7 +667,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--default rux-button--icon rux-button--block";
+  openBtn.className = "rux-button rux-button--icon rux-button--block rux-trip-bar__action";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("add"));
@@ -720,7 +722,7 @@ export function createTripBar(trip, callbacks = {}) {
       };
 
   const pdfBtn = button(
-    "rux-button rux-button--default rux-button--icon rux-button--block",
+    "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
     pdfLabel,
     pdfIcon,
     () => onPdf(),
@@ -733,7 +735,7 @@ export function createTripBar(trip, callbacks = {}) {
   // button on every bar) but disabled otherwise, same as the Billing tab's
   // own manifest toggle.
   const manifestBtn = button(
-    "rux-button rux-button--default rux-button--icon rux-button--block",
+    "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
     trip.is_self_organized ? "View manifest" : "Toggle Ticketed to enable",
     "groups",
     () => callbacks.onOpenManifest?.(trip),
@@ -744,7 +746,7 @@ export function createTripBar(trip, callbacks = {}) {
     openBtn,
     pdfBtn,
     button(
-      "rux-button rux-button--default rux-button--icon rux-button--block",
+      "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
       "Move bus",
       "swap_vert",
       () => callbacks.onChangeBus?.(trip),
@@ -1070,6 +1072,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   bar.setActive = (value) => {
     const active = Boolean(value);
+    bar.setAttribute("aria-pressed", String(active));
     if (active) {
       deactivateTripBars(bar);
       bar.classList.add("is-active");

@@ -95,6 +95,14 @@
 	flex: 1;
 }
 
+/* .rux-button--ghost sets color directly (not through --_fg), so the
+   selected-state override below only needs --_fg for the icon/hover system —
+   but the unselected color needs its own explicit override here to actually
+   win over .rux-button--ghost's color declaration. */
+.rux-trip-panel__tab:not([aria-selected="true"]) {
+	color: var(--rux-text-secondary);
+}
+
 .rux-trip-panel__tab[aria-selected="true"] {
 	--_bg: var(--rux-trip-panel-tab-selected-bg);
 	--_fg: var(--rux-trip-panel-tab-selected-fg);

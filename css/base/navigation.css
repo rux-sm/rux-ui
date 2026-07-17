@@ -52,6 +52,7 @@
 
 .rux-tab {
 	--_state-overlay: transparent;
+	--_focus-border: var(--rux-tab-focus-border);
 
 	display: inline-flex;
 	align-items: center;
@@ -83,7 +84,23 @@
    cascade at equal specificity, so it still wins on hover. */
 .rux-tab:hover {
 	--_state-overlay: transparent;
-	color: var(--rux-fg);
+	background-color: var(--rux-tab-hover-bg);
+	color: var(--rux-tab-hover-fg);
+}
+
+.rux-tab:active:not(:disabled) {
+	--_state-overlay: var(--rux-tab-pressed-bg);
+}
+
+.rux-tab:focus-visible {
+	border-color: var(--rux-tab-focus-border);
+}
+
+.rux-tab:disabled,
+.rux-tab[aria-disabled="true"] {
+	color: var(--rux-tab-disabled-fg);
+	cursor: not-allowed;
+	pointer-events: none;
 }
 
 .rux-tab.is-active,
@@ -101,7 +118,7 @@
 
 .rux-tabs--contained > .rux-tab:hover {
 	--_state-overlay: transparent;
-	color: var(--rux-fg);
+	color: var(--rux-tabs-contained-tab-hover-fg);
 }
 
 .rux-tabs--contained > .rux-tab.is-active,
@@ -121,7 +138,7 @@
 
 .rux-tabs--attached > .rux-tab:hover {
 	--_state-overlay: transparent;
-	color: var(--rux-fg);
+	color: var(--rux-tabs-attached-tab-hover-fg);
 }
 
 .rux-tabs--attached > .rux-tab.is-active,
@@ -130,7 +147,7 @@
 	z-index: 1;
 	margin-bottom: calc(var(--rux-border-width) * -1);
 	background-color: var(--rux-tabs-attached-tab-selected-bg);
-	border-color: var(--rux-border);
+	border-color: var(--rux-tabs-attached-tab-selected-border);
 	color: var(--rux-tabs-attached-tab-selected-fg);
 }
 

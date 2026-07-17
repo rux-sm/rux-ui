@@ -18,6 +18,7 @@
 	--_border: transparent;
 	--_press-y: var(--rux-button-border-width);
 	--_state-overlay: transparent;
+	--_focus-border: var(--rux-button-focus-border);
 
 	position: relative;
 	display: inline-flex;
@@ -49,6 +50,10 @@
 
 .rux-button[hidden] {
 	display: none;
+}
+
+.rux-button:focus-visible {
+	box-shadow: var(--rux-button-focus-ring);
 }
 
 .rux-button:hover:not(:disabled):not([aria-disabled="true"]) {
@@ -342,15 +347,15 @@
 
 .rux-segmented > .rux-button {
 	--_h: var(--rux-segmented-height);
-	--_bg: var(--rux-button-ghost-background); /* matches strip bg so inactive items blend into the strip */
-	--_fg: var(--rux-fg-muted); /* muted at rest so hover's brighten-to-white is visible, same as .rux-button--ghost */
+	--_bg: var(--rux-segmented-item-bg);
+	--_fg: var(--rux-segmented-item-fg);
 	flex: 1;
 	min-width: 0;
 }
 .rux-segmented > .rux-button:disabled,
 .rux-segmented > .rux-button[aria-disabled="true"] {
-	--_bg: transparent;
-	--_fg: var(--rux-fg-disabled);
+	--_bg: var(--rux-segmented-item-disabled-bg);
+	--_fg: var(--rux-segmented-item-disabled-fg);
 }
 
 /* Unselected items brighten instead of picking up the generic
@@ -359,7 +364,7 @@
    keeping whatever hover treatment they already had. */
 .rux-segmented > .rux-button:hover:not(.is-active):not([aria-pressed="true"]):not([aria-selected="true"]) {
 	--_state-overlay: transparent;
-	--_fg: var(--rux-white);
+	--_fg: var(--rux-segmented-item-hover-fg);
 }
 
 /* Same selected-state tokens as .rux-button--toggle.is-active — segmented
@@ -367,27 +372,27 @@
 .rux-segmented > .rux-button.is-active,
 .rux-segmented > .rux-button[aria-pressed="true"],
 .rux-segmented > .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-button-selected-bg);
-	--_fg: var(--rux-button-selected-fg);
+	--_bg: var(--rux-segmented-item-selected-bg);
+	--_fg: var(--rux-segmented-item-selected-fg);
 }
 
 /* — ghost active — transparent track with quiet selected item */
 .rux-segmented--ghost {
-	background-color: transparent;
-	border: var(--rux-button-border);
+	background-color: var(--rux-segmented-ghost-bg);
+	border: var(--rux-segmented-ghost-border);
 }
 
 .rux-segmented--ghost > .rux-button {
-	--_bg: transparent;
-	--_border: transparent;
-	--_fg: var(--rux-fg-muted);
+	--_bg: var(--rux-segmented-ghost-item-bg);
+	--_border: var(--rux-segmented-ghost-item-border);
+	--_fg: var(--rux-segmented-ghost-item-fg);
 }
 
 .rux-segmented--ghost > .rux-button.is-active,
 .rux-segmented--ghost > .rux-button[aria-pressed="true"],
 .rux-segmented--ghost > .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-button-quiet-selected-bg);
-	--_fg: var(--rux-fg);
+	--_bg: var(--rux-segmented-ghost-selected-bg);
+	--_fg: var(--rux-segmented-ghost-selected-fg);
 }
 
 /* ==========================================================================
@@ -501,12 +506,12 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 2rem;
-	padding: 0 var(--rux-space-2);
-	height: var(--rux-segmented-height);
-	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	min-width: var(--rux-stepper-count-min-width);
+	padding: 0 var(--rux-stepper-count-padding);
+	height: var(--rux-stepper-count-height);
+	color: var(--rux-stepper-count-fg);
+	font-size: var(--rux-stepper-count-font-size);
+	font-weight: var(--rux-stepper-count-font-weight);
 	font-variant-numeric: tabular-nums;
 	user-select: none;
 }
@@ -529,20 +534,20 @@
 	   a hovered edge button's square hover bg pokes past the rounded frame. */
 	overflow: hidden;
 	transition:
-		background-color var(--rux-duration-fast) var(--rux-ease-out),
-		border-color var(--rux-duration-fast) var(--rux-ease-out),
-		box-shadow var(--rux-duration-fast) var(--rux-ease-out);
+		background-color var(--rux-number-stepper-transition),
+		border-color var(--rux-number-stepper-transition),
+		box-shadow var(--rux-number-stepper-transition);
 }
 
 .rux-number-stepper:hover {
-	background: var(--rux-input-hover-bg);
-	border-color: var(--rux-button-border);
+	background: var(--rux-number-stepper-hover-bg);
+	border-color: var(--rux-number-stepper-hover-border);
 }
 
 .rux-number-stepper:focus-within {
-	background: var(--rux-input-focus-bg);
-	border-color: var(--rux-accent);
-	box-shadow: var(--rux-input-focus-ring);
+	background: var(--rux-number-stepper-focus-bg);
+	border-color: var(--rux-number-stepper-focus-border);
+	box-shadow: var(--rux-number-stepper-focus-ring);
 }
 
 .rux-number-stepper__btn {
@@ -553,7 +558,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: transparent;
+	background: var(--rux-number-stepper-btn-bg);
 	border: 0;
 	color: var(--rux-number-stepper-btn-fg);
 	cursor: pointer;
@@ -562,6 +567,10 @@
 
 .rux-number-stepper__btn:hover:not(:disabled) {
 	background: var(--rux-number-stepper-btn-hover-bg);
+}
+
+.rux-number-stepper__btn:active:not(:disabled) {
+	background: var(--rux-number-stepper-btn-active-bg);
 }
 
 .rux-number-stepper__btn:disabled {
@@ -580,9 +589,9 @@
 	border: 0;
 	border-inline: var(--rux-number-stepper-divider);
 	border-radius: 0;
-	background: transparent;
-	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
+	background: var(--rux-number-stepper-value-bg);
+	color: var(--rux-number-stepper-value-fg);
+	font-size: var(--rux-number-stepper-value-font-size);
 	text-align: center;
 	appearance: textfield;
 	-moz-appearance: textfield;
@@ -592,7 +601,7 @@
 /* The group owns the focus treatment; keep the editable value's internal
    dividers neutral instead of turning both of them accent blue. */
 .rux-number-stepper__input:focus-visible {
-	border-color: var(--rux-border) !important;
+	border-color: var(--rux-number-stepper-value-focus-border) !important;
 }
 
 .rux-number-stepper__input::-webkit-outer-spin-button,

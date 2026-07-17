@@ -425,15 +425,18 @@
 		const onDutyMins = computeOnDuty(stops);
 
 		const stats = [
-			{ id: "days", value: `${dayCount}`, unit: dayCount === 1 ? "day" : "days" },
-			{ id: "miles", value: totalMiles > 0 ? `${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)}` : "—", unit: "mi" },
-			{ id: "drive", value: totalDrive > 0 ? formatDriveValue(totalDrive) : "—", unit: "hr" },
-			{ id: "duty", value: onDutyMins !== null && onDutyMins > 0 ? formatDriveValue(onDutyMins) : "—", unit: "hr" },
+			{ id: "days", label: "Days", value: `${dayCount}` },
+			{ id: "miles", label: "Miles", value: totalMiles > 0 ? `${totalMiles % 1 === 0 ? totalMiles : totalMiles.toFixed(1)}` : "—" },
+			{ id: "drive", label: "Drive", value: totalDrive > 0 ? formatDriveValue(totalDrive) : "—" },
+			{ id: "duty", label: "On-Duty", value: onDutyMins !== null && onDutyMins > 0 ? formatDriveValue(onDutyMins) : "—" },
 		];
 		const statsHtml = stats
 			.map(
 				(s) => `
-        <output class="rux-output" id="tp-itin-summary-${s.id}">${escHtml(s.value)} <span class="rux-trip-itinerary__unit">${s.unit}</span></output>`
+        <div class="rux-field">
+          <label class="rux-field__label" for="tp-itin-summary-${s.id}">${s.label}</label>
+          <output class="rux-output" id="tp-itin-summary-${s.id}">${escHtml(s.value)}</output>
+        </div>`
 			)
 			.join("");
 

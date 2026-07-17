@@ -77,8 +77,8 @@
 
 .rux-app-header__profile {
 	overflow: hidden;
-	border: var(--rux-button-border);
-	border-radius: var(--rux-radius-control);
+	border: 1px solid transparent;
+	border-radius: var(--rux-radius-full);
 }
 
 .rux-app-header__profile img {

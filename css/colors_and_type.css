@@ -209,7 +209,7 @@ hr {
    "resolve overrides via specificity, not !important". */
 :focus-visible {
   outline: none !important;
-  border-color: var(--rux-accent) !important;
+  border-color: var(--_focus-border, var(--rux-accent)) !important;
 }
 
 /* ─── Semantic type utility classes ─────────────────────────────────────── */

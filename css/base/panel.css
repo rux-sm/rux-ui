@@ -112,6 +112,10 @@
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
 }
 
+.rux-panel__footer[hidden] {
+	display: none;
+}
+
 .rux-panel__footer > .rux-button {
 	flex: 1;
 	min-width: 0;
