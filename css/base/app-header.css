@@ -141,7 +141,10 @@
 		visibility: visible;
 		gap: var(--rux-space-2);
 		margin: 0;
-		padding: var(--rux-space-2) var(--rux-space-3);
+		padding:
+			var(--rux-app-header-mobile-nav-padding-block-start)
+			var(--rux-app-header-mobile-nav-padding-inline)
+			var(--rux-app-header-mobile-nav-padding-block-end);
 		overflow: visible;
 		background: color-mix(in oklch, var(--rux-surface-modal) 72%, transparent);
 		backdrop-filter: blur(var(--rux-overlay-blur));

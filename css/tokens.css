@@ -350,10 +350,15 @@
 	--rux-app-header-brand-padding-inline-end: var(--rux-space-4);
 	--rux-app-header-brand-border:             var(--rux-border-width) solid
 		var(--rux-border);
-	--rux-app-header-logo-height:        24px;
-	--rux-app-header-nav-gap:            var(--rux-space-2);
-	--rux-app-header-nav-item-active-fg: var(--rux-fg);
-	--rux-app-header-actions-gap:        var(--rux-space-3);
+	--rux-app-header-logo-height:                    24px;
+	--rux-app-header-nav-gap:                        var(--rux-space-2);
+	--rux-app-header-nav-item-active-fg:             var(--rux-fg);
+	--rux-app-header-actions-gap:                    var(--rux-space-3);
+	--rux-app-header-mobile-nav-padding-block-start: var(--rux-space-2);
+	--rux-app-header-mobile-nav-padding-inline:      var(--rux-space-3);
+	--rux-app-header-mobile-nav-padding-block-end:   calc(
+		var(--rux-space-2) + env(safe-area-inset-bottom, 0px)
+	);
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
