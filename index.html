@@ -1010,699 +1010,102 @@
              MODULE: COMPONENTS
              ════════════════════════════════════════════════════════════════ -->
         <div class="scheduler-app__module" data-module="components" hidden>
-          <section class="rux-workspace components-app" aria-labelledby="components-title">
-            <header class="rux-workspace__header components-app__header">
+
+          <aside class="rux-panel components-app__list" aria-label="Component list">
+            <header class="rux-panel__header">
+              <h2 class="rux-panel__title">Components</h2>
+            </header>
+            <div class="rux-panel__body">
+              <div class="rux-panel__pane">
+                <div class="rux-card">
+                  <header class="rux-card__header">
+                    <p class="rux-card__title">Actions</p>
+                  </header>
+                  <div class="rux-card__body">
+                    <nav class="rux-menu components-app__nav" aria-label="Action components" data-component-nav>
+                      <button class="rux-menu__item" type="button" data-component-target="button">Button</button>
+                      <button class="rux-menu__item" type="button" data-component-target="icon-button">Icon button</button>
+                      <button class="rux-menu__item" type="button" data-component-target="toggle-button">Toggle button</button>
+                      <button class="rux-menu__item" type="button" data-component-target="segmented">Segmented control</button>
+                      <button class="rux-menu__item" type="button" data-component-target="stepper">Stepper</button>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="rux-workspace" aria-labelledby="components-title">
+            <header class="rux-workspace__header">
               <div class="rux-workspace__heading">
                 <h1 class="rux-workspace__title" id="components-title">Components</h1>
-                <p class="rux-workspace__subtitle components-app__subtitle">Live specimens built from the same tokens and classes used by the scheduler.</p>
+                <p class="rux-workspace__subtitle">Specimens of the components actually used across the app.</p>
               </div>
             </header>
 
-            <div class="rux-workspace__body components-app__body">
-              <aside class="components-app__sidebar">
-                <nav class="components-app__component-nav" aria-label="Components">
-                  <p class="components-app__nav-group">General</p>
-                  <button type="button" data-component-target="buttons" aria-current="page">Button</button>
-                  <p class="components-app__nav-group">Navigation</p>
-                  <button type="button" data-component-target="tabs">Tabs</button>
-                  <p class="components-app__nav-group">Selection</p>
-                  <button type="button" data-component-target="selection">Segmented &amp; stepper</button>
-                  <p class="components-app__nav-group">Data entry</p>
-                  <button type="button" data-component-target="forms">Form controls</button>
-                  <p class="components-app__nav-group">Data display</p>
-                  <button type="button" data-component-target="panels">Panel</button>
-                  <button type="button" data-component-target="cards">Card</button>
-                  <p class="components-app__nav-group">Foundations</p>
-                  <button type="button" data-component-target="tokens">Tokens</button>
-                </nav>
-              </aside>
-
-              <div class="components-app__content">
-              <section class="components-app__section components-app__page" id="component-buttons" data-component-page="buttons" aria-labelledby="component-buttons-title">
-                <div class="components-app__section-heading">
-                  <div>
-                    <h2 id="component-buttons-title">Buttons</h2>
-                    <p>One base class with purpose, size, and shape modifiers.</p>
-                  </div>
-                  <code>.rux-button</code>
-                </div>
-
-                <div class="components-app__examples" aria-label="Button examples">
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview">
-                      <button class="rux-button rux-button--accent" type="button">Accent</button>
-                      <button class="rux-button rux-button--default" type="button">Default</button>
-                      <button class="rux-button rux-button--ghost" type="button">Ghost</button>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Emphasis</h3>
-                      <p>Use accent for the preferred action, then reduce emphasis with default and ghost buttons.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-button--accent · --default · --ghost</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview">
-                      <button class="rux-button rux-button--default" type="button">No icon</button>
-                      <button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">add</span>Icon before</button>
-                      <button class="rux-button rux-button--default rux-button--icon" type="button" aria-label="Add"><span class="rux-icon" aria-hidden="true">add</span></button>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Content layout</h3>
-                      <p>Use a label alone, a meaningful leading icon, or an accessible icon-only control.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-button--icon</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview">
-                      <button class="rux-button rux-button--accent rux-button--danger" type="button">Delete</button>
-                      <button class="rux-button rux-button--default rux-button--danger" type="button">Remove</button>
-                      <button class="rux-button rux-button--ghost rux-button--danger" type="button">Delete</button>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Destructive intent</h3>
-                      <p>Danger combines with any emphasis. Reserve filled danger for explicit confirmation.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-button--danger</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview">
-                      <button class="rux-button rux-button--accent" type="button" disabled>Accent</button>
-                      <button class="rux-button rux-button--default" type="button" disabled>Default</button>
-                      <button class="rux-button rux-button--ghost" type="button" disabled>Ghost</button>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Disabled</h3>
-                      <p>Use the native <code>disabled</code> attribute when an action is temporarily unavailable.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>disabled</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview components-app__example-preview--block">
-                      <button class="rux-button rux-button--accent rux-button--block" type="button">Accent block action</button>
-                      <button class="rux-button rux-button--default rux-button--block" type="button">Default block action</button>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Block</h3>
-                      <p>A block button fills the available inline width of its parent.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-button--block</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview">
-                      <button class="rux-button rux-button--accent rux-button--loading" type="button" aria-busy="true" disabled>
-                        <span class="rux-button__spinner" aria-hidden="true"></span>
-                        Saving
-                      </button>
-                      <button class="rux-button rux-button--default rux-button--loading rux-button--icon" type="button" aria-label="Loading" aria-busy="true" disabled>
-                        <span class="rux-button__spinner" aria-hidden="true"></span>
-                      </button>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Loading</h3>
-                      <p>Preserve the button width, announce busy state, and prevent duplicate submissions.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-button--loading · aria-busy="true"</code>
-                    </footer>
-                  </article>
-                </div>
-
-                <div class="components-app__specimen-grid">
-                  <article class="rux-card components-app__specimen components-app__specimen--reference">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <div class="components-app__preview">
-                        <div>
-                          <h3>Base button</h3>
-                          <p class="components-app__note">Shared anatomy and visual states for every button variant.</p>
-                        </div>
-                        <div class="components-app__demo">
-                          <button class="rux-button rux-button--default" type="button">Default</button>
-                          <button class="rux-button rux-button--accent" type="button">Accent</button>
-                          <button class="rux-button rux-button--ghost" type="button">Ghost</button>
-                          <button class="rux-button rux-button--accent rux-button--danger" type="button">Danger</button>
-                          <button class="rux-button rux-button--default" type="button" disabled>Disabled</button>
-                        </div>
-                      </div>
-
-                      <section class="components-app__anatomy" aria-labelledby="button-anatomy-title">
-                        <div class="components-app__subheading">
-                          <h4 id="button-anatomy-title">Anatomy</h4>
-                          <p>Diagram enlarged for clarity; annotations show the current production token values.</p>
-                        </div>
-                        <div class="components-app__anatomy-stage">
-                          <div class="components-app__anatomy-diagram">
-                            <div class="components-app__anatomy-control">
-                              <button class="rux-button rux-button--default" type="button" tabindex="-1">Button label</button>
-                              <span class="components-app__padding-zone components-app__padding-zone--start" aria-hidden="true"></span>
-                              <span class="components-app__padding-zone components-app__padding-zone--end" aria-hidden="true"></span>
-                            </div>
-
-                            <div class="components-app__annotation components-app__annotation--padding">
-                              <span>Inline padding</span>
-                              <code>--rux-button-padding-inline</code>
-                              <output data-token-value="--rux-button-padding-inline"></output>
-                            </div>
-                            <div class="components-app__annotation components-app__annotation--type">
-                              <span>Label</span>
-                              <code>--rux-button-font-size · --rux-button-font-weight</code>
-                              <span><output data-token-value="--rux-button-font-size"></output> / <output data-token-value="--rux-button-font-weight"></output></span>
-                            </div>
-                            <div class="components-app__annotation components-app__annotation--radius">
-                              <span>Corner radius</span>
-                              <code>--rux-button-radius</code>
-                              <output data-token-value="--rux-button-radius"></output>
-                            </div>
-                            <div class="components-app__annotation components-app__annotation--height">
-                              <span>Control height</span>
-                              <code>--rux-button-height</code>
-                              <output data-token-value="--rux-button-height"></output>
-                            </div>
-                            <div class="components-app__annotation components-app__annotation--border">
-                              <span>Border</span>
-                              <code>--rux-button-border-width</code>
-                              <output data-token-value="--rux-button-border-width"></output>
-                            </div>
-                            <div class="components-app__annotation components-app__annotation--surface">
-                              <span>Surface</span>
-                              <code>--rux-button-default-background</code>
-                              <output data-token-value="--rux-button-default-background"></output>
-                            </div>
-                            <div class="components-app__annotation components-app__annotation--foreground">
-                              <span>Label color</span>
-                              <code>--rux-button-default-text</code>
-                              <output data-token-value="--rux-button-default-text"></output>
-                            </div>
-                          </div>
-                        </div>
-                      </section>
-
-                      <section class="components-app__states" aria-labelledby="button-states-title">
-                        <div class="components-app__subheading">
-                          <h4 id="button-states-title">Variant matrix</h4>
-                          <p>Emphasis, intent, and content layout are independent choices.</p>
-                        </div>
-                        <div class="components-app__state-matrix">
-                          <span></span><strong>No icon</strong><strong>Icon before</strong><strong>Icon only</strong>
-                          <span>Action · Accent</span>
-                          <button class="rux-button rux-button--accent" type="button">Save</button>
-                          <button class="rux-button rux-button--accent" type="button"><span class="rux-icon" aria-hidden="true">save</span>Save</button>
-                          <button class="rux-button rux-button--accent rux-button--icon" type="button" aria-label="Save"><span class="rux-icon" aria-hidden="true">save</span></button>
-                          <span>Action · Default</span>
-                          <button class="rux-button rux-button--default" type="button">Cancel</button>
-                          <button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">edit</span>Edit</button>
-                          <button class="rux-button rux-button--default rux-button--icon" type="button" aria-label="Edit"><span class="rux-icon" aria-hidden="true">edit</span></button>
-                          <span>Action · Ghost</span>
-                          <button class="rux-button rux-button--ghost" type="button">More</button>
-                          <button class="rux-button rux-button--ghost" type="button"><span class="rux-icon" aria-hidden="true">more_horiz</span>More</button>
-                          <button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="More options"><span class="rux-icon" aria-hidden="true">more_horiz</span></button>
-                          <span>Destructive · Accent</span>
-                          <button class="rux-button rux-button--accent rux-button--danger" type="button">Delete</button>
-                          <button class="rux-button rux-button--accent rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">delete</span>Delete</button>
-                          <button class="rux-button rux-button--accent rux-button--danger rux-button--icon" type="button" aria-label="Delete"><span class="rux-icon" aria-hidden="true">delete</span></button>
-                          <span>Destructive · Default</span>
-                          <button class="rux-button rux-button--default rux-button--danger" type="button">Remove</button>
-                          <button class="rux-button rux-button--default rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">remove_circle</span>Remove</button>
-                          <button class="rux-button rux-button--default rux-button--danger rux-button--icon" type="button" aria-label="Remove"><span class="rux-icon" aria-hidden="true">remove_circle</span></button>
-                          <span>Destructive · Ghost</span>
-                          <button class="rux-button rux-button--ghost rux-button--danger" type="button">Delete</button>
-                          <button class="rux-button rux-button--ghost rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">delete</span>Delete</button>
-                          <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" aria-label="Delete"><span class="rux-icon" aria-hidden="true">delete</span></button>
-                        </div>
-                      </section>
-
-                      <aside class="components-app__guidance" aria-labelledby="button-guidance-title">
-                        <h4 id="button-guidance-title">Usage guidelines</h4>
-                        <ul>
-                          <li><strong>Accent</strong> identifies the single preferred action in a view or workflow step.</li>
-                          <li><strong>Default</strong> supports regular actions that do not need primary emphasis.</li>
-                          <li><strong>Ghost</strong> is for secondary, low-emphasis actions in compact toolbars.</li>
-                          <li><strong>Destructive primary</strong> belongs in explicit confirmation flows.</li>
-                          <li><strong>Destructive ghost</strong> suits compact row and toolbar actions.</li>
-                        </ul>
-                      </aside>
-
-                      <div class="components-app__property-groups">
-                        <section class="components-app__property-group" aria-labelledby="button-sizing-title">
-                          <div class="components-app__subheading">
-                            <h4 id="button-sizing-title">Sizing &amp; spacing</h4>
-                          </div>
-                          <div class="components-app__rules-heading" aria-hidden="true">
-                            <span>Property</span><span>Token</span><span>Resolved value</span>
-                          </div>
-                          <dl class="components-app__rules">
-                            <div><dt>Height</dt><dd><code>--rux-button-height</code><output data-token-value="--rux-button-height"></output></dd></div>
-                            <div><dt>Inline padding</dt><dd><code>--rux-button-padding-inline</code><output data-token-value="--rux-button-padding-inline"></output></dd></div>
-                            <div><dt>Content gap</dt><dd><code>--rux-button-content-gap</code><output data-token-value="--rux-button-content-gap"></output></dd></div>
-                            <div><dt>Corner radius</dt><dd><code>--rux-button-radius</code><output data-token-value="--rux-button-radius"></output></dd></div>
-                          </dl>
-                        </section>
-
-                        <section class="components-app__property-group" aria-labelledby="button-type-title">
-                          <div class="components-app__subheading">
-                            <h4 id="button-type-title">Typography</h4>
-                          </div>
-                          <div class="components-app__rules-heading" aria-hidden="true">
-                            <span>Property</span><span>Token</span><span>Resolved value</span>
-                          </div>
-                          <dl class="components-app__rules">
-                            <div><dt>Font family</dt><dd><code>--rux-button-font-family</code><output data-token-value="--rux-button-font-family"></output></dd></div>
-                            <div><dt>Font size</dt><dd><code>--rux-button-font-size</code><output data-token-value="--rux-button-font-size"></output></dd></div>
-                            <div><dt>Font weight</dt><dd><code>--rux-button-font-weight</code><output data-token-value="--rux-button-font-weight"></output></dd></div>
-                          </dl>
-                        </section>
-
-                        <section class="components-app__property-group" aria-labelledby="button-state-tokens-title">
-                          <div class="components-app__subheading">
-                            <h4 id="button-state-tokens-title">Colors &amp; states</h4>
-                          </div>
-                          <div class="components-app__rules-heading" aria-hidden="true">
-                            <span>Property</span><span>Token</span><span>Resolved value</span>
-                          </div>
-                          <dl class="components-app__rules">
-                            <div><dt>Text color</dt><dd><code>--rux-button-default-text</code><output data-token-value="--rux-button-default-text"></output></dd></div>
-                            <div><dt>Background</dt><dd><code>--rux-button-default-background</code><output data-token-value="--rux-button-default-background"></output></dd></div>
-                            <div><dt>Hover overlay</dt><dd><code>--rux-button-hover-overlay</code><output data-token-value="--rux-button-hover-overlay"></output></dd></div>
-                            <div><dt>Focus ring</dt><dd><code>--rux-button-focus-ring</code><output data-token-value="--rux-button-focus-ring"></output></dd></div>
-                            <div><dt>Transition</dt><dd><code>--rux-button-transition-duration</code><output data-token-value="--rux-button-transition-duration"></output></dd></div>
-                          </dl>
-                        </section>
-                      </div>
-                    </div>
-                  </article>
-
-                  <article class="rux-card components-app__specimen">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <h3>Icons and sizes</h3>
-                    <div class="components-app__demo">
-                      <button class="rux-button rux-button--accent" type="button">
-                        <span class="rux-icon" aria-hidden="true">add</span>
-                        Add trip
-                      </button>
-                      <button class="rux-button rux-button--default rux-button--sm" type="button">Small</button>
-                      <button class="rux-button rux-button--default rux-button--xs" type="button">Extra small</button>
-                      <button class="rux-button rux-button--default rux-button--icon" type="button" aria-label="More options">
-                        <span class="rux-icon" aria-hidden="true">more_horiz</span>
-                      </button>
-                      <button class="rux-button rux-button--ghost rux-button--danger rux-button--icon" type="button" aria-label="Delete">
-                        <span class="rux-icon" aria-hidden="true">delete</span>
-                      </button>
-                    </div>
-                      <p class="components-app__note">Icon-only buttons remain square; all text buttons share the global inline padding and gap.</p>
-                    </div>
-                  </article>
-
-                  <article class="rux-card components-app__specimen">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <h3>Toggle</h3>
-                    <div class="components-app__demo">
-                      <button class="rux-button rux-button--default rux-button--toggle" type="button" data-rux-toggle-button aria-pressed="false">
-                        <span class="rux-icon" aria-hidden="true">accessible</span>
-                        ADA lift
-                      </button>
-                      <button class="rux-button rux-button--default rux-button--toggle is-active" type="button" data-rux-toggle-button aria-pressed="true">
-                        <span class="rux-icon" aria-hidden="true">bed</span>
-                        Sleeper
-                      </button>
-                    </div>
-                      <p class="components-app__note">Use <code>aria-pressed</code> for a persistent on/off action.</p>
-                    </div>
-                  </article>
-                </div>
-              </section>
-
-              <section class="components-app__section components-app__page" id="component-tabs" data-component-page="tabs" aria-labelledby="component-tabs-title" hidden>
-                <div class="components-app__section-heading">
-                  <div>
-                    <h2 id="component-tabs-title">Tabs</h2>
-                    <p>Switch between related content views without representing a form value.</p>
-                  </div>
-                  <code>.rux-tabs · .rux-tab</code>
-                </div>
-
-                <div class="components-app__examples components-app__examples--tabs">
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview">
-                      <nav class="rux-tabs" role="tablist" aria-label="Example sections" data-rux-tabs>
-                        <button class="rux-tab" type="button" role="tab" aria-selected="true">Info</button>
-                        <button class="rux-tab" type="button" role="tab" aria-selected="false">Billing</button>
-                        <button class="rux-tab" type="button" role="tab" aria-selected="false">Fleet</button>
-                      </nav>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Basic tabs</h3>
-                      <p>The selected tab shares the standard selected white surface, black content, and inset shadow.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-tabs · .rux-tab · aria-selected</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview">
-                      <nav class="rux-tabs rux-tabs--fill" role="tablist" aria-label="Example editor sections" data-rux-tabs>
-                        <button class="rux-tab" type="button" role="tab" aria-selected="true"><span class="rux-icon" aria-hidden="true">assignment</span>Info</button>
-                        <button class="rux-tab" type="button" role="tab" aria-selected="false"><span class="rux-icon" aria-hidden="true">payments</span>Billing</button>
-                        <button class="rux-tab" type="button" role="tab" aria-selected="false"><span class="rux-icon" aria-hidden="true">map</span>Trip</button>
-                      </nav>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Fill with leading icons</h3>
-                      <p>Use equal-width tabs for compact editor navigation. Icons support—not replace—the label.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-tabs--fill</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview components-app__example-preview--block">
-                      <aside class="rux-panel components-app__tabs-panel-demo" aria-label="Contained tabs panel example">
-                        <div class="rux-panel__nav">
-                          <nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Contained panel sections" data-rux-tabs>
-                            <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="contained-tabs-details">
-                              <span class="rux-icon" aria-hidden="true">assignment</span>Info
-                            </button>
-                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-billing">
-                              <span class="rux-icon" aria-hidden="true">payments</span>Billing
-                            </button>
-                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="contained-tabs-fleet">
-                              <span class="rux-icon" aria-hidden="true">group_add</span>Fleet
-                            </button>
-                          </nav>
-                        </div>
-                        <div class="rux-panel__body">
-                          <div class="rux-panel__pane" id="contained-tabs-details" role="tabpanel">
-                            <div class="rux-field">
-                              <label class="rux-field__label" for="contained-tabs-destination">Destination</label>
-                              <input class="rux-input" id="contained-tabs-destination" type="text" value="Houston" />
-                            </div>
-                          </div>
-                          <div class="rux-panel__pane" id="contained-tabs-billing" role="tabpanel" hidden>
-                            <div class="rux-field">
-                              <label class="rux-field__label" for="contained-tabs-rate">Rate</label>
-                              <input class="rux-input" id="contained-tabs-rate" type="text" value="$4,850" />
-                            </div>
-                          </div>
-                          <div class="rux-panel__pane" id="contained-tabs-fleet" role="tabpanel" hidden>
-                            <div class="rux-field">
-                              <label class="rux-field__label" for="contained-tabs-bus">Bus</label>
-                              <input class="rux-input" id="contained-tabs-bus" type="text" value="218" />
-                            </div>
-                          </div>
-                        </div>
-                      </aside>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Contained panel tabs</h3>
-                      <p>Use this when a panel needs clearer pane switching than loose header tabs provide.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-tabs--contained</code>
-                    </footer>
-                  </article>
-
-                  <article class="components-app__example">
-                    <div class="components-app__example-preview components-app__example-preview--block">
-                      <aside class="rux-panel components-app__tabs-panel-demo components-app__tabs-panel-demo--attached" aria-label="Attached tabs panel example">
-                        <div class="rux-panel__nav rux-panel__nav--attached">
-                          <nav class="rux-tabs rux-tabs--attached rux-tabs--fill" role="tablist" aria-label="Attached panel sections" data-rux-tabs>
-                            <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="attached-tabs-active">Active</button>
-                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-inactive">Inactive</button>
-                            <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="attached-tabs-other">Other</button>
-                          </nav>
-                        </div>
-                        <div class="rux-panel__body">
-                          <div class="rux-panel__pane" id="attached-tabs-active" role="tabpanel">
-                            <div class="rux-field">
-                              <label class="rux-field__label" for="attached-tabs-email">Email</label>
-                              <input class="rux-input" id="attached-tabs-email" type="email" value="dispatch@example.com" />
-                            </div>
-                          </div>
-                          <div class="rux-panel__pane" id="attached-tabs-inactive" role="tabpanel" hidden>
-                            <div class="rux-field">
-                              <label class="rux-field__label" for="attached-tabs-password">Password</label>
-                              <input class="rux-input" id="attached-tabs-password" type="password" value="contained" />
-                            </div>
-                          </div>
-                          <div class="rux-panel__pane" id="attached-tabs-other" role="tabpanel" hidden>
-                            <div class="rux-field">
-                              <label class="rux-field__label" for="attached-tabs-note">Note</label>
-                              <input class="rux-input" id="attached-tabs-note" type="text" value="Secondary pane" />
-                            </div>
-                          </div>
-                        </div>
-                      </aside>
-                    </div>
-                    <div class="components-app__example-copy">
-                      <h3>Attached panel tabs</h3>
-                      <p>Use when the selected tab should feel physically connected to the pane below.</p>
-                    </div>
-                    <footer class="components-app__example-footer">
-                      <code>.rux-tabs--attached</code>
-                    </footer>
-                  </article>
-                </div>
-              </section>
-
-              <section class="components-app__section components-app__page" id="component-selection" data-component-page="selection" aria-labelledby="component-selection-title" hidden>
-                <div class="components-app__section-heading">
-                  <div>
-                    <h2 id="component-selection-title">Selection controls</h2>
-                    <p>Button-like controls for choosing one option or adjusting a value.</p>
-                  </div>
-                  <code>.rux-segmented</code>
-                </div>
-
-                <div class="components-app__specimen-grid">
-                  <article class="rux-card components-app__specimen">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <h3>Segmented</h3>
-                    <div class="components-app__demo components-app__demo--stack">
-                      <div class="rux-segmented rux-segmented--inline" data-rux-toggle-group aria-label="View density">
-                        <button class="rux-button rux-button--default is-active" type="button" aria-pressed="true">Comfortable</button>
-                        <button class="rux-button rux-button--default" type="button" aria-pressed="false">Compact</button>
-                      </div>
-                      </div>
-                    </div>
-                  </article>
-
-                  <article class="rux-card components-app__specimen">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <h3>Stepper</h3>
-                    <div class="components-app__demo">
-                      <div class="rux-segmented rux-segmented--inline" data-rux-stepper>
-                        <button class="rux-button rux-button--default rux-button--icon" type="button" data-stepper-dec aria-label="Decrease passengers">
-                          <span class="rux-icon" aria-hidden="true">remove</span>
-                        </button>
-                        <span class="rux-stepper__count" aria-live="polite">24</span>
-                        <button class="rux-button rux-button--default rux-button--icon" type="button" data-stepper-inc aria-label="Increase passengers">
-                          <span class="rux-icon" aria-hidden="true">add</span>
-                        </button>
-                        <input type="hidden" value="24" min="1" max="60" step="1" />
-                      </div>
-                    </div>
-                      <p class="components-app__note">The stepper reuses segmented and icon-button primitives.</p>
-                    </div>
-                  </article>
-                </div>
-              </section>
-
-              <section class="components-app__section components-app__page" id="component-forms" data-component-page="forms" aria-labelledby="component-forms-title" hidden>
-                <div class="components-app__section-heading">
-                  <div>
-                    <h2 id="component-forms-title">Forms</h2>
-                    <p>Consistent field height, padding, labels, help text, and focus rings.</p>
-                  </div>
-                  <code>.rux-field</code>
-                </div>
-
-                <div class="components-app__form-grid">
-                  <div class="rux-field">
-                    <label class="rux-field__label" for="demo-name">Trip name</label>
-                    <input class="rux-input" id="demo-name" type="text" value="Austin conference" />
-                    <span class="rux-field__help">A short recognizable name.</span>
-                  </div>
-                  <div class="rux-field">
-                    <label class="rux-field__label" for="demo-status">Status</label>
-                    <select class="rux-select" id="demo-status">
-                      <option>Confirmed</option>
-                      <option>Pending</option>
-                      <option>Cancelled</option>
-                    </select>
-                  </div>
-                  <div class="rux-field">
-                    <label class="rux-field__label" for="demo-error">Invalid field</label>
-                    <input class="rux-input" id="demo-error" type="text" value="Incorrect value" aria-invalid="true" />
-                    <span class="rux-field__error">Review this value.</span>
-                  </div>
-                  <div class="rux-field">
-                    <span class="rux-field__label">Options</span>
-                    <div class="components-app__demo">
-                      <label class="rux-checkbox"><input type="checkbox" checked /> Send reminder</label>
-                      <label class="rux-switch" aria-label="Trip is confirmed">
-                        <input type="checkbox" checked />
-                        <span class="rux-switch__track"></span>
-                        <span class="rux-switch__thumb"></span>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="rux-field components-app__form-wide">
-                    <label class="rux-field__label" for="demo-notes">Notes</label>
-                    <textarea class="rux-textarea" id="demo-notes" placeholder="Optional details"></textarea>
-                  </div>
-                </div>
-              </section>
-
-              <section class="components-app__section components-app__page" id="component-panels" data-component-page="panels" aria-labelledby="component-panels-title" hidden>
-                <div class="components-app__section-heading">
-                  <div>
-                    <h2 id="component-panels-title">Panels</h2>
-                    <p>This anatomy specimen shows every modular region. Production panels include only the header, navigation, body, and footer they need.</p>
-                  </div>
-                  <code>.rux-panel</code>
-                </div>
-                <aside class="rux-panel components-app__panel-demo" aria-label="Example panel">
-                  <header class="rux-panel__header components-app__panel-demo-header">
-                    <div>
-                      <h3 class="rux-panel__title">Trip editor</h3>
-                      <p>Header · optional</p>
-                    </div>
-                    <button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="Close example panel"><span class="rux-icon">close</span></button>
+            <div class="rux-workspace__body components-app__stage">
+              <div data-component-page="button">
+                <div class="rux-card">
+                  <header class="rux-card__header">
+                    <p class="rux-card__title">Button</p>
                   </header>
-                  <div class="rux-panel__nav">
-                    <nav class="rux-tabs rux-tabs--fill" role="tablist" aria-label="Example panel sections" data-rux-tabs>
-                      <button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="panel-demo-overview">Overview</button>
-                      <button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-demo-activity">Activity</button>
-                    </nav>
-                  </div>
-                  <div class="rux-panel__body components-app__panel-demo-body">
-                    <div class="rux-panel__pane" id="panel-demo-overview" role="tabpanel">
-                      <article class="rux-card rux-card--stack">
-                        <header class="rux-card__header"><h3 class="rux-card__title">Trip details</h3></header>
-                        <p>Cards group distinct content inside a panel; they are not required around every field or section.</p>
-                      </article>
-                    </div>
-                    <div class="rux-panel__pane" id="panel-demo-activity" role="tabpanel" hidden>
-                      <p>Recent edits and status changes belong in this pane.</p>
-                    </div>
-                  </div>
-                  <footer class="rux-panel__footer">
-                    <button class="rux-button rux-button--default" type="button">Cancel</button>
-                    <button class="rux-button rux-button--accent" type="button">Save</button>
-                  </footer>
-                </aside>
-                <p class="components-app__guidance">Panel anatomy owns structure and spacing. Resizing belongs to a drawer or workspace shell and should be demonstrated as a separate composition.</p>
-                <dl class="components-app__rules">
-                  <div><dt>Composition</dt><dd>Header, navigation, panes, cards, and footer are independently optional.</dd></div>
-                  <div><dt>Radius</dt><dd><code>--rux-panel-radius</code><output data-token-value="--rux-panel-radius"></output></dd></div>
-                  <div><dt>Background</dt><dd><code>--rux-panel-bg</code><output data-token-value="--rux-panel-bg"></output></dd></div>
-                  <div><dt>Border</dt><dd><code>--rux-panel-border</code><output data-token-value="--rux-panel-border"></output></dd></div>
-                  <div><dt>Navigation divider</dt><dd><code>--rux-panel-nav-border</code><output data-token-value="--rux-panel-nav-border"></output></dd></div>
-                  <div><dt>Footer divider</dt><dd><code>--rux-panel-footer-border</code><output data-token-value="--rux-panel-footer-border"></output></dd></div>
-                  <div><dt>Panel inset</dt><dd><code>--rux-panel-padding</code><output data-token-value="--rux-panel-padding"></output></dd></div>
-                  <div><dt>Content gap</dt><dd><code>--rux-panel-content-gap</code><output data-token-value="--rux-panel-content-gap"></output></dd></div>
-                  <div><dt>Card radius</dt><dd><code>--rux-card-radius</code><output data-token-value="--rux-card-radius"></output></dd></div>
-                  <div><dt>Card inset</dt><dd><code>--rux-card-padding</code><output data-token-value="--rux-card-padding"></output></dd></div>
-                </dl>
-              </section>
-
-              <section class="components-app__section components-app__page" id="component-cards" data-component-page="cards" aria-labelledby="component-cards-title" hidden>
-                <div class="components-app__section-heading">
-                  <div>
-                    <h2 id="component-cards-title">Cards</h2>
-                    <p>Use cards to group related content—not as decoration around every field.</p>
-                  </div>
-                  <code>.rux-card</code>
-                </div>
-                <div class="components-app__card-grid">
-                  <article class="rux-card">
-                    <header class="rux-card__header">
-                      <div>
-                        <h3 class="rux-card__title">Standard card</h3>
-                        <p class="rux-card__subtitle">Header, body, and optional footer.</p>
+                  <div class="rux-card__body rux-card__body--stack">
+                    <div>
+                      <p class="rux-subtle">Primary</p>
+                      <div class="components-app__specimens components-app__specimens--grid">
+                        <button class="rux-button rux-button--accent" type="button">Accent</button>
+                        <button class="rux-button rux-button--default" type="button">Default</button>
+                        <button class="rux-button rux-button--ghost" type="button">Ghost</button>
                       </div>
-                      <span class="rux-badge rux-badge--info">Draft</span>
-                    </header>
-                    <div class="rux-card__body">Use a standard card for a distinct group with its own heading or actions.</div>
-                    <footer class="rux-card__footer">
-                      <button class="rux-button rux-button--accent rux-button--sm" type="button">Save</button>
-                    </footer>
-                  </article>
-                  <article class="rux-card rux-card--interactive" tabindex="0">
-                    <div class="rux-card__body">
-                      <h3 class="rux-card__title">Interactive card</h3>
-                      <p class="rux-card__subtitle">The whole surface represents one destination.</p>
                     </div>
-                  </article>
-                </div>
-                <dl class="components-app__rules">
-                  <div><dt>Background</dt><dd><code>--rux-card-bg</code><output data-token-value="--rux-card-bg"></output></dd></div>
-                  <div><dt>Border</dt><dd><code>--rux-card-border</code><output data-token-value="--rux-card-border"></output></dd></div>
-                  <div><dt>Header divider</dt><dd><code>--rux-card-header-border</code><output data-token-value="--rux-card-header-border"></output></dd></div>
-                  <div><dt>Footer divider</dt><dd><code>--rux-card-footer-border</code><output data-token-value="--rux-card-footer-border"></output></dd></div>
-                  <div><dt>Radius</dt><dd><code>--rux-card-radius</code><output data-token-value="--rux-card-radius"></output></dd></div>
-                  <div><dt>Section padding</dt><dd><code>--rux-card-padding</code><output data-token-value="--rux-card-padding"></output></dd></div>
-                  <div><dt>Content gap</dt><dd><code>--rux-card-content-gap</code><output data-token-value="--rux-card-content-gap"></output></dd></div>
-                </dl>
-              </section>
-
-              <section class="components-app__section components-app__page" id="component-tokens" data-component-page="tokens" aria-labelledby="component-tokens-title" hidden>
-                <div class="components-app__section-heading">
-                  <div>
-                    <h2 id="component-tokens-title">Core tokens</h2>
-                    <p>A compact reference for the foundations shared by these specimens.</p>
+                    <div>
+                      <p class="rux-subtle">Danger</p>
+                      <div class="components-app__specimens components-app__specimens--grid">
+                        <button class="rux-button rux-button--accent rux-button--danger" type="button">Danger</button>
+                        <button class="rux-button rux-button--default rux-button--danger" type="button">Danger Default</button>
+                        <button class="rux-button rux-button--ghost rux-button--danger" type="button">Danger Ghost</button>
+                        <button class="rux-button rux-button--accent rux-button--danger" type="button" disabled>Danger</button>
+                        <button class="rux-button rux-button--default rux-button--danger" type="button" disabled>Danger Default</button>
+                        <button class="rux-button rux-button--ghost rux-button--danger" type="button" disabled>Danger Ghost</button>
+                      </div>
+                      <p class="rux-subtle components-app__note">The solid <code>rux-button--accent rux-button--danger</code> combo is fully styled but not used anywhere in the app yet — every real danger button today is <code>rux-button--default rux-button--danger</code> or <code>rux-button--ghost rux-button--danger</code>. Disabled now renders differently per shape: solid stays filled, default stays a muted outline, ghost stays borderless text.</p>
+                    </div>
+                    <div>
+                      <p class="rux-subtle">Sizes</p>
+                      <div class="components-app__specimens">
+                        <button class="rux-button rux-button--accent rux-button--sm" type="button">Accent Small</button>
+                        <button class="rux-button rux-button--ghost rux-button--sm" type="button">Ghost Small</button>
+                      </div>
+                    </div>
+                    <div>
+                      <p class="rux-subtle">Fill</p>
+                      <div class="components-app__pair">
+                        <div class="rux-card">
+                          <header class="rux-card__header">
+                            <p class="rux-card__title">Standalone</p>
+                          </header>
+                          <div class="rux-card__body">
+                            <div class="rux-cluster">
+                              <button class="rux-button rux-button--default" type="button">Clear</button>
+                              <button class="rux-button rux-button--accent" type="button">Save</button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="rux-card">
+                          <header class="rux-card__header">
+                            <p class="rux-card__title">Panel footer</p>
+                          </header>
+                          <footer class="rux-panel__footer">
+                            <button class="rux-button rux-button--default rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">delete</span><span class="rux-btn-label">Delete</span></button>
+                            <button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">backspace</span><span class="rux-btn-label">Clear</span></button>
+                            <button class="rux-button rux-button--accent" type="button"><span class="rux-icon" aria-hidden="true">save</span><span class="rux-btn-label">Save</span></button>
+                          </footer>
+                        </div>
+                      </div>
+                      <p class="rux-subtle components-app__note">Buttons inside <code>.rux-panel__footer</code> stretch evenly (<code>flex: 1</code>) — this is how Delete/Clear/Save split the row in the trip, fleet, and driver editors. <code>rux-button--block</code> is a separate, currently-unused utility for a single full-width button, not for splitting several evenly.</p>
+                    </div>
                   </div>
-                  <code>tokens.css</code>
                 </div>
-                <div class="components-app__token-grid">
-                  <article class="rux-card components-app__token-group">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <h3>Surfaces</h3>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-surface-canvas)"><span></span><code>--rux-surface-canvas</code></div>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-surface-panel)"><span></span><code>--rux-surface-panel</code></div>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-surface-card)"><span></span><code>--rux-surface-card</code></div>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-surface-modal)"><span></span><code>--rux-surface-modal</code></div>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-surface-4)"><span></span><code>--rux-surface-4</code></div>
-                    </div>
-                  </article>
-                  <article class="rux-card components-app__token-group">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <h3>Text and action</h3>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-fg)"><span></span><code>--rux-fg</code></div>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-fg-muted)"><span></span><code>--rux-fg-muted</code></div>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-accent)"><span></span><code>--rux-accent</code></div>
-                      <div class="components-app__swatch" style="--_swatch: var(--rux-danger)"><span></span><code>--rux-danger</code></div>
-                    </div>
-                  </article>
-                  <article class="rux-card components-app__token-group">
-                    <div class="rux-card__body components-app__specimen-body">
-                      <h3>Geometry</h3>
-                      <dl class="components-app__rules">
-                        <div><dt>Field height</dt><dd><code>--rux-field-height</code><output data-token-value="--rux-field-height"></output></dd></div>
-                        <div><dt>Control height</dt><dd><code>--rux-control-height</code><output data-token-value="--rux-control-height"></output></dd></div>
-                        <div><dt>Card radius</dt><dd><code>--rux-card-radius</code><output data-token-value="--rux-card-radius"></output></dd></div>
-                        <div><dt>Focus ring</dt><dd><code>--rux-ring-focus</code><output data-token-value="--rux-ring-focus"></output></dd></div>
-                        <div><dt>Field focus</dt><dd><code>--rux-ring-field-focus</code><output data-token-value="--rux-ring-field-focus"></output></dd></div>
-                      </dl>
-                    </div>
-                  </article>
-                </div>
-              </section>
               </div>
             </div>
           </section>

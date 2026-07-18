@@ -83,12 +83,32 @@
 
 }
 
+/* No background change, ever — default is an outline, and border/color is
+   the entire hover cue. Also overrides border/color so they don't fall
+   through to the generic .rux-button:hover rule above, which tints them
+   accent-blue (meant for focus-adjacent affordance, not a plain hover). */
 .rux-button--default:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-default-hover-background);
+	border-color: var(--rux-button-default-hover-border);
+	color: var(--rux-button-default-hover-text);
 }
 
+/* Pressed mirrors hover's direction, same as accent/danger's fill: -10%
+   instead of +10%. On a real click both :hover and :active match at once
+   and tie in specificity with :hover above — declared later, so this wins
+   and the darker pressed shade shows instead of the lighter hover one. */
 .rux-button--default:active:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-default-active-background);
+	border-color: var(--rux-button-default-active-border);
+	color: var(--rux-button-default-active-text);
+}
+
+/* default is an outline, not a fill — the generic .rux-button:disabled rule
+   above fills every disabled button solid gray regardless of variant, which
+   would make a disabled outline button look heavier/more prominent than an
+   enabled one. Keep it transparent; border/text still come from the base
+   disabled rule. */
+.rux-button--default:disabled,
+.rux-button--default[aria-disabled="true"] {
+	background: transparent;
 }
 
 .rux-button--accent {
@@ -121,28 +141,30 @@
 	border: var(--rux-button-ghost-border);
 }
 
-/* The plain hover rule above (.rux-button:hover...) has higher specificity
-   (4 compound selectors) than .rux-button--ghost alone (1), so it wins and
-   re-applies the white overlay tint on hover regardless of source order —
-   ghost needs its own hover rule at matching specificity to actually stay
-   background-free. Foreground goes fully white on hover (muted at rest, per
-   --rux-button-ghost-fg above) instead of just tinting the overlay. The
-   white-alpha background here IS that overlay, now token-driven instead of
-   left unset. */
+/* The generic .rux-button:hover rule above sets border/color directly (not
+   through --_fg), at higher specificity than plain .rux-button--ghost — so
+   it wins outright regardless of what --_fg is set to here. Setting --_fg
+   alone (the previous approach) was a no-op for color; border-color and
+   color need to be declared directly to actually block the accent-blue
+   leak. Matches Accent/Danger's convention: only the background moves. */
 .rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
-	--_state-overlay: transparent;
-	--_fg: var(--rux-white);
 	background: var(--rux-button-ghost-hover-background);
+	border-color: transparent;
+	color: var(--rux-button-ghost-text);
 }
 
 .rux-button--ghost:active:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-ghost-active-background);
 }
 
-/* ghost has no background in any other state, so disabled shouldn't add one either */
+/* ghost has no background or border in any other state, so disabled shouldn't
+   add either — this previously set the solid disabled-background token,
+   which contradicted this very comment and made disabled ghost buttons show
+   a filled gray box where an enabled ghost button shows nothing at all. */
 .rux-button--ghost:disabled,
 .rux-button--ghost[aria-disabled="true"] {
-	background: var(--rux-button-disabled-background);
+	background: transparent;
+	border: var(--rux-button-ghost-border);
 }
 
 .rux-button--toggle.is-active,
@@ -158,7 +180,41 @@
 	color: var(--rux-button-danger-text);
 }
 
-.rux-button--accent.rux-button--danger {
+/* Explicit compound so this doesn't depend on rule order — .rux-button--default
+   and bare .rux-button--danger set the exact same three properties, so without
+   this, whichever rule sits later in the file wins by source order alone.
+   :not(:disabled) guards matter here too: a two-class compound is exactly as
+   specific as .rux-button:disabled (both are one element + two selectors), so
+   without the guard this would tie with — and, by sitting later, beat — the
+   disabled rule instead of losing to it. */
+.rux-button--default.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-danger-default-background);
+	border: var(--rux-button-danger-default-border);
+	color: var(--rux-button-danger-default-text);
+}
+
+/* No background change, ever — border/text lightness is the whole hover cue,
+   same as plain default. background: transparent is still declared (not
+   omitted) because bare .rux-button--danger:hover sets a solid lightness-
+   shifted red background at tying specificity — omitting this would let
+   that leak through instead of falling back to "no background." */
+.rux-button--default.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: transparent;
+	border-color: var(--rux-button-danger-default-hover-text);
+	color: var(--rux-button-danger-default-hover-text);
+}
+
+/* background pinned to transparent to block the bare .rux-button--danger:active
+   solid-fill leak. border-color/color darken -10% off rest, same direction
+   as plain default's pressed state — not the flat rest-state red, and not
+   bare danger's own lightness-shifted red either. */
+.rux-button--default.rux-button--danger:active:not(:disabled):not([aria-disabled="true"]) {
+	background: transparent;
+	border-color: var(--rux-button-danger-default-active-text);
+	color: var(--rux-button-danger-default-active-text);
+}
+
+.rux-button--accent.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-danger-background);
 	border: var(--rux-button-danger-border);
 	color: var(--rux-button-danger-text);
@@ -176,7 +232,7 @@
 	color: var(--rux-button-danger-text);
 }
 
-.rux-button--ghost.rux-button--danger {
+.rux-button--ghost.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
 	border: var(--rux-button-danger-ghost-border);
 	color: var(--rux-button-danger-ghost-text);
 	background: var(--rux-button-danger-ghost-background);
@@ -189,13 +245,18 @@
    instead of staying a transparent "quiet" button. Two extra classes here
    beats both. */
 .rux-button--ghost.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-ghost-hover-background);
+	background: var(--rux-button-danger-ghost-hover-background);
 	border-color: var(--rux-button-danger-ghost-border);
 	color: var(--rux-button-danger-ghost-text);
 }
 
+/* Same restatement, and for the same reason — this currently wins the tie
+   against bare .rux-button--danger:active only because this rule happens to
+   sit later in the file. Making it explicit removes that dependency. */
 .rux-button--ghost.rux-button--danger:active:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-ghost-active-background);
+	background: var(--rux-button-danger-ghost-active-background);
+	border-color: var(--rux-button-danger-ghost-border);
+	color: var(--rux-button-danger-ghost-text);
 }
 
 /* — loading — */

@@ -69,21 +69,32 @@
 	/* ─── COLOR · alpha ────────────────────────────────────────────────────── */
 
 	/* — white overlays — */
-	--rux-alpha-white-2:  oklch(var(--rux-white) / 2%);
-	--rux-alpha-white-4:  oklch(var(--rux-white) / 4%);
-	--rux-alpha-white-6:  oklch(var(--rux-white) / 6%);
-	--rux-alpha-white-8:  oklch(var(--rux-white) / 8%);
-	--rux-alpha-white-10: oklch(var(--rux-white) / 10%);
-	--rux-alpha-white-16: oklch(var(--rux-white) / 16%);
+	/* Relative color syntax requires "from": without it, var(--rux-white)
+	   substitutes as literal text, nesting a full oklch(...) color inside
+	   another oklch()'s lightness slot — invalid, and invalid at computed-
+	   value time resolves to the property's initial value (e.g. transparent
+	   for background), which is why these overlays previously rendered as
+	   if they weren't there at all. */
+	--rux-alpha-white-2:  oklch(from var(--rux-white) l c h / 2%);
+	--rux-alpha-white-4:  oklch(from var(--rux-white) l c h / 4%);
+	--rux-alpha-white-6:  oklch(from var(--rux-white) l c h / 6%);
+	--rux-alpha-white-8:  oklch(from var(--rux-white) l c h / 8%);
+	--rux-alpha-white-10: oklch(from var(--rux-white) l c h / 10%);
+	--rux-alpha-white-16: oklch(from var(--rux-white) l c h / 16%);
+	--rux-alpha-white-20: oklch(from var(--rux-white) l c h / 20%);
 
 	/* — adaptive foregrounds — */
-	--rux-alpha-white-40: oklch(var(--rux-white) / 40%);
-	--rux-alpha-white-65: oklch(var(--rux-white) / 65%);
-	--rux-alpha-white-90: oklch(var(--rux-white) / 90%);
+	--rux-alpha-white-40: oklch(from var(--rux-white) l c h / 40%);
+	--rux-alpha-white-65: oklch(from var(--rux-white) l c h / 65%);
+	--rux-alpha-white-90: oklch(from var(--rux-white) l c h / 90%);
 
 	/* — black overlays — */
-	--rux-alpha-black-12: oklch(var(--rux-neutral) l c h / 12%);
-	--rux-alpha-black-60: oklch(var(--rux-neutral) l c h / 60%);
+	--rux-alpha-black-12: oklch(from var(--rux-neutral) l c h / 12%);
+	--rux-alpha-black-60: oklch(from var(--rux-neutral) l c h / 60%);
+
+	/* — danger overlays — same ramp as white, off the red hue, for ghost-danger's hover/press wash */
+	--rux-alpha-danger-10: oklch(from var(--rux-red) l c h / 10%);
+	--rux-alpha-danger-20: oklch(from var(--rux-red) l c h / 20%);
 
 	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
 
@@ -551,7 +562,7 @@
 	--rux-button-border:              var(--rux-button-border-width) solid var(--rux-border-button);
 	--rux-button-font-family:         var(--rux-font-sans);
 	--rux-button-font-size:           var(--rux-text-sm);
-	--rux-button-font-weight:         var(--rux-weight-regular);
+	--rux-button-font-weight:         var(--rux-weight-semibold);
 	--rux-button-icon-size:           var(--rux-icon-md);
 	--rux-button-mobile-icon-size:    24px;
 	--rux-button-hover-text:          var(--rux-accent);
@@ -568,9 +579,16 @@
 	--rux-button-default-background: transparent;
 	--rux-button-default-border:     1px solid var(--rux-border-button);
 	--rux-button-default-text:       var(--rux-fg);
-	/* Transparent buttons use alpha overlays because there is no base lightness to shift. */
+	/* Default never changes background — border and text carry hover/active
+	   instead, with the same +10%/-10% lightness shift accent/danger use on
+	   their background. (hover/active-background tokens below are kept for
+	   an unrelated consumer in scheduler-app.css, not used by the button itself.) */
 	--rux-button-default-hover-background:  var(--rux-alpha-white-6);
 	--rux-button-default-active-background: var(--rux-alpha-white-10);
+	--rux-button-default-hover-border:  oklch(from var(--rux-border-button) calc(l + 0.1) c h);
+	--rux-button-default-hover-text:    oklch(from var(--rux-fg) calc(l + 0.1) c h);
+	--rux-button-default-active-border: oklch(from var(--rux-border-button) calc(l - 0.1) c h);
+	--rux-button-default-active-text:   oklch(from var(--rux-fg) calc(l - 0.1) c h);
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
@@ -590,9 +608,10 @@
 	--rux-button-ghost-background: transparent;
 	--rux-button-ghost-text:       var(--rux-fg);
 	--rux-button-ghost-border:     1px solid transparent;
-	/* Ghost buttons use the same alpha-overlay interaction model. */
-	--rux-button-ghost-hover-background:  var(--rux-alpha-white-6);
-	--rux-button-ghost-active-background: var(--rux-alpha-white-10);
+	/* Ghost buttons use the same alpha-overlay interaction model: a neutral
+	   wash that steps up in strength from rest → hover → pressed. */
+	--rux-button-ghost-hover-background:  var(--rux-alpha-white-10);
+	--rux-button-ghost-active-background: var(--rux-alpha-white-20);
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
@@ -606,11 +625,27 @@
 		from var(--rux-button-danger-background) calc(l - 0.1) c h
 	);
 
+	/* ─── COMPONENT · button default danger ─────────────────────────────────────────────── */
+	/* Transparent like default, but with an always-visible red border/text
+	   instead of default's neutral one — needs the full border shorthand
+	   (width + style), not just a color, or border-style resets to its
+	   initial "none" and no border renders at all. */
+
+	--rux-button-danger-default-background:  transparent;
+	--rux-button-danger-default-text:        var(--rux-red);
+	--rux-button-danger-default-border:      var(--rux-button-border-width) solid var(--rux-red);
+	--rux-button-danger-default-hover-text:  oklch(from var(--rux-red) calc(l + 0.1) c h);
+	--rux-button-danger-default-active-text: oklch(from var(--rux-red) calc(l - 0.1) c h);
+
 	/* ─── COMPONENT · button ghost danger ─────────────────────────────────────────────── */
 
 	--rux-button-danger-ghost-background: transparent;
 	--rux-button-danger-ghost-text:       var(--rux-red);
 	--rux-button-danger-ghost-border:     var(--rux-red);
+	/* Same wash steps as plain ghost, off the danger hue instead of neutral —
+	   reinforces intent through color rather than just a neutral brightening. */
+	--rux-button-danger-ghost-hover-background:  var(--rux-alpha-danger-10);
+	--rux-button-danger-ghost-active-background: var(--rux-alpha-danger-20);
 
 	/* ─── COMPONENT · button disabled ─────────────────────────────────────────────── */
 
@@ -701,8 +736,7 @@
 	--rux-number-stepper-bg:      var(--rux-input-background);
 	--rux-number-stepper-border:  var(--rux-input-border);
 	--rux-number-stepper-radius:  var(--rux-radius-control);
-	--rux-number-stepper-divider: var(--rux-border-width) solid
-		var(--rux-border);
+	--rux-number-stepper-divider: var(--rux-border-width) solid var(--rux-border);
 	--rux-number-stepper-btn-width:          var(--rux-field-height);
 	--rux-number-stepper-hover-bg:           var(--rux-input-hover-bg);
 	--rux-number-stepper-hover-border:       var(--rux-button-border);

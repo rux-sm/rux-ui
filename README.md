@@ -58,12 +58,12 @@ To use in a new page:
 
 ### Casing
 
-- **Sentence case** for everything: buttons, headings, menu items, labels, toast messages.
-  - ✅ `New trip`, `Save changes`, `Driver assignments`
-  - ❌ `New Trip`, `Save Changes`, `Driver Assignments`
+- **Title Case** for everything: buttons, headings, menu items, labels, toast messages.
+  - ✅ `New Trip`, `Save Changes`, `Driver Assignments`
+  - ❌ `New trip`, `Save changes`, `Driver assignments`
 - **UPPERCASE** only for overlines and badges that need to read as a category, not a sentence. Track them out (`letter-spacing: 0.04em`).
   - ✅ `DRAFT`, `INCOMPLETE`, `NEW`
-- **Title Case** is forbidden in UI. It looks dated.
+- **Sentence case** is forbidden in UI controls. Use Title Case instead.
 
 ### Punctuation
 
@@ -89,8 +89,8 @@ To use in a new page:
 | Empty state | `No trips this week` | `Looks like you don't have any trips yet! 🚌` |
 | Error | `Couldn't save. Check your connection and try again.` | `Oops! Something went wrong saving your trip!` |
 | Confirm | `Delete this trip?` `This can't be undone.` | `Are you sure you want to permanently delete this?` |
-| Toast | `Trip saved` | `Trip successfully saved.` |
-| Button | `Save` `Delete trip…` | `Save Trip` `DELETE` |
+| Toast | `Trip Saved` | `Trip successfully saved.` |
+| Button | `Save` `Delete Trip…` | `save trip` `DELETE` |
 
 ---
 

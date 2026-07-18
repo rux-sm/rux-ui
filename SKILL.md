@@ -18,14 +18,14 @@ Read `README.md` in this skill first; it has the full visual and content rules. 
 
 ## What this brand is
 
-Rux UI is a dark-only design system. Clean, minimalist, modern — the restraint of Apple, the density of Linear, the energy of Spotify. Near-black canvas, hairline borders, single blue accent, sentence-case copy, no emoji, no gradients, no glass.
+Rux UI is a dark-only design system. Clean, minimalist, modern — the restraint of Apple, the density of Linear, the energy of Spotify. Near-black canvas, hairline borders, single blue accent, Title Case copy, no emoji, no gradients, no glass.
 
 ## When you build with it
 
 1. **Always** import the three CSS files in order: `css/tokens.css`, `css/colors_and_type.css`, `css/components.css`. Add `utilities.js` if you need toasts/modals.
 2. **Never hardcode** a color, radius, shadow, or spacing value. Use a `--rux-*` token. If a value is missing, that's a signal to add a token, not a one-off.
 3. **Compose, don't redesign.** A new screen is almost always `.rux-card` + `.rux-button` + `.rux-input` arranged with `.rux-stack` and `.rux-cluster`. Resist inventing components.
-4. **Match the copy voice.** Sentence case. No exclamation marks. No emoji. Verb-first button labels. Short error messages that say what happened and what to do.
+4. **Match the copy voice.** Title Case. No exclamation marks. No emoji. Verb-first button labels. Short error messages that say what happened and what to do.
 5. **Icons are Lucide.** Inline SVG with `class="rux-icon"`. Never Material Symbols, never emoji.
 6. **Optical radius nesting.** Nested elements step *down* one level in the radius scale. A 6px input inside a 16px card.
 
