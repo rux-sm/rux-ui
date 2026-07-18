@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
     <link rel="stylesheet" href="./css/features/search-modal.css" />
     <link rel="stylesheet" href="./css/features/print-schedule.css?v=29" />
+    <link rel="stylesheet" href="./css/features/trip-envelope.css?v=1" />
     <link rel="stylesheet" href="./css/features/doc-viewer.css?v=1" />
     <link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" />
@@ -2042,6 +2043,7 @@
     <script src="./js/panels/trips-list.js?v=8" defer></script>
     <script src="./js/panels/trip-manifest.js?v=1" defer></script>
     <script src="./js/panels/print-schedule.js?v=29" defer></script>
+    <script src="./js/panels/trip-envelope.js?v=1" defer></script>
     <script src="./js/panels/components-panel.js" defer></script>
     <script type="module" src="./js/panels/flip-seven.js?v=19"></script>
     <script type="module" src="./js/panels/requirements-panel.js"></script>
@@ -2776,6 +2778,7 @@
             performBusReassign(trip, newBus, conflictAssignmentId);
           });
         },
+        onPrintEnvelope: (trip) => window.TripEnvelope?.open(trip, schedulerBuses),
         onOther:       (trip) => console.log("other options", trip.id),
       };
 

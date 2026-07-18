@@ -1,0 +1,419 @@
+/* ==========================================================================
+   TRIP ENVELOPE — floating preview window + printable page
+   --------------------------------------------------------------------------
+   Built by js/panels/trip-envelope.js as a draggable/resizable
+   .rux-floating-window — same recipe and default size as
+   css/features/doc-viewer.css's .rux-doc-viewer (RuxDocViewer), so it
+   behaves and sits on screen just like the itinerary PDF viewer instead of
+   blocking the whole page like a modal. Positioning/drag/resize mechanics
+   live in the shared base (css/base/floating-window.css) — this file is
+   just this window's own size/position defaults and content styling.
+   The envelope card itself is a deliberate light-on-paper world with its
+   own scoped palette, same idea as print-schedule.css's --print-* tokens
+   but scoped to .rux-trip-envelope instead.
+   ========================================================================== */
+
+.rux-trip-envelope-window {
+	top: 8%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: min(640px, calc(100vw - var(--rux-space-6) * 2));
+	height: min(828px, calc(100vh - var(--rux-space-6) * 2));
+	min-width: 360px;
+	min-height: 280px;
+	max-width: calc(100vw - var(--rux-space-4));
+	max-height: calc(100vh - var(--rux-space-4));
+}
+
+.rux-trip-envelope-window__body {
+	overflow: auto;
+	padding: var(--rux-space-4);
+	background: oklch(35% 0.005 259);
+}
+
+.rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope-window__body {
+	background: oklch(35% 0.005 259);
+}
+
+.rux-trip-envelope-window[data-tint="yellow"] .rux-trip-envelope-window__body {
+	background: oklch(30% 0.02 95);
+}
+
+.rux-trip-envelope-window__footer {
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.rux-trip-envelope-window__spacer {
+	flex: 1;
+}
+
+/* ── The envelope card itself — a deliberate light-on-paper world ───────── */
+
+.rux-trip-envelope {
+	--env-paper: oklch(100% 0 0);
+	--env-ink: oklch(18% 0 0);
+	--env-ink-muted: oklch(45% 0 0);
+	--env-rule: oklch(25% 0 0);
+
+	margin: 0 auto;
+	width: 100%;
+	max-width: 8.5in;
+	box-sizing: border-box;
+	padding: var(--rux-space-6);
+	background: var(--env-paper);
+	color: var(--env-ink);
+	font-family: var(--rux-font-sans);
+}
+
+.rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope {
+	--env-paper: oklch(100% 0 0);
+}
+
+.rux-trip-envelope-window[data-tint="yellow"] .rux-trip-envelope {
+	--env-paper: oklch(88% 0.05 95);
+}
+
+.rux-trip-envelope__header {
+	text-align: center;
+	margin-block-end: var(--rux-space-4);
+}
+
+.rux-trip-envelope__day {
+	margin: 0;
+	font-size: var(--rux-text-3xl);
+	font-weight: var(--rux-weight-bold);
+	letter-spacing: var(--rux-tracking-normal);
+	text-transform: uppercase;
+	color: var(--env-ink);
+}
+
+.rux-trip-envelope__logo {
+	display: block;
+	height: 48px;
+	width: auto;
+	margin: var(--rux-space-2) auto 0;
+}
+
+.rux-trip-envelope__company-line {
+	margin: 0;
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--env-ink-muted);
+}
+
+.rux-trip-envelope__section-title {
+	margin: var(--rux-space-4) 0 0;
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-bold);
+	letter-spacing: var(--rux-tracking-widest);
+	text-transform: uppercase;
+	color: var(--env-ink);
+}
+
+.rux-trip-envelope__grid {
+	border: 1px solid var(--env-rule);
+	border-top: 0;
+}
+
+.rux-trip-envelope__row {
+	display: grid;
+	border-top: 1px solid var(--env-rule);
+}
+
+.rux-trip-envelope__row--1 { grid-template-columns: 1fr; }
+.rux-trip-envelope__row--2 { grid-template-columns: repeat(2, 1fr); }
+.rux-trip-envelope__row--3 { grid-template-columns: repeat(3, 1fr); }
+
+.rux-trip-envelope__cell {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	border-left: 1px solid var(--env-rule);
+}
+
+.rux-trip-envelope__cell:first-child {
+	border-left: 0;
+}
+
+.rux-trip-envelope__label {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
+	color: var(--env-ink-muted);
+}
+
+.rux-trip-envelope__value {
+	font-size: var(--rux-text-lg);
+	font-weight: var(--rux-weight-bold);
+	color: var(--env-ink);
+	min-height: 1.2em;
+}
+
+/* ── Footer: ELD / CC / cost lines, always blank ─────────────────────── */
+
+/* Two footer-lines per visual row (label|checks on the left, label|amount on
+   the right) — a plain 2-col grid over the flat child list lines them up in
+   pairs automatically, since buildFooterGrid() always appends a checks/blank
+   line immediately followed by an amount line. */
+.rux-trip-envelope__footer-grid {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	margin-block-start: var(--rux-space-4);
+	border: 1px solid var(--env-rule);
+}
+
+.rux-trip-envelope__footer-line {
+	display: grid;
+	grid-template-columns: 1.4fr 1fr;
+	align-items: center;
+	border-top: 1px solid var(--env-rule);
+}
+
+.rux-trip-envelope__footer-grid > .rux-trip-envelope__footer-line:nth-child(-n+2) {
+	border-top: 0;
+}
+
+.rux-trip-envelope__footer-grid > .rux-trip-envelope__footer-line:nth-child(even) {
+	border-left: 1px solid var(--env-rule);
+}
+
+.rux-trip-envelope__footer-label {
+	padding: var(--rux-space-2) var(--rux-space-3);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	text-transform: uppercase;
+	color: var(--env-ink);
+}
+
+.rux-trip-envelope__footer-checks {
+	display: flex;
+	gap: var(--rux-space-4);
+	padding-inline-end: var(--rux-space-3);
+}
+
+.rux-trip-envelope__check {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	text-transform: uppercase;
+	color: var(--env-ink);
+}
+
+.rux-trip-envelope__box {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	border: 1px solid var(--env-ink);
+	flex: none;
+}
+
+.rux-trip-envelope__footer-amount {
+	padding: var(--rux-space-2) var(--rux-space-3);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--env-ink);
+}
+
+.rux-trip-envelope__footer-fill {
+	display: block;
+	height: 1em;
+}
+
+/* ── Notes ───────────────────────────────────────────────────────────── */
+
+.rux-trip-envelope__notes {
+	margin-block-start: var(--rux-space-4);
+}
+
+.rux-trip-envelope__notes .rux-trip-envelope__footer-label {
+	padding: 0;
+}
+
+/* ── MVM location/time/odometer log table ───────────────────────────── */
+
+.rux-trip-envelope__log {
+	width: 100%;
+	margin-block-start: var(--rux-space-4);
+	border-collapse: collapse;
+	border: 1px solid var(--env-rule);
+}
+
+.rux-trip-envelope__log th,
+.rux-trip-envelope__log td {
+	border: 1px solid var(--env-rule);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	text-align: left;
+}
+
+.rux-trip-envelope__log th {
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
+	color: var(--env-ink-muted);
+}
+
+.rux-trip-envelope__log td {
+	height: 2em;
+}
+
+/* ── Print output — plain paper regardless of the on-screen tint ────── */
+
+@media print {
+	/* Also exempts .rux-print-root (print-schedule.css) for the same reason
+	   its own rule now exempts this window — see that file's comment. */
+	body > *:not(.rux-trip-envelope-window):not(.rux-print-root) {
+		display: none !important;
+	}
+
+	/* Explicit width:100% everywhere in this chain rather than relying on
+	   default block/flex stretch behavior — the window is a flex container
+	   on screen (for its header/body/footer layout), and leaving that flex
+	   context active into print left cross-axis sizing to "however wide the
+	   content wants to be" instead of the full page, so display:block +
+	   width:100% at every level forces it explicitly instead. */
+	html, body {
+		width: 100%;
+	}
+
+	.rux-trip-envelope-window {
+		display: block !important;
+		position: static !important;
+		inset: auto !important;
+		/* Screen-only centering rule (top:8%; left:50%; transform:
+		   translateX(-50%)) doesn't get removed just by overriding
+		   position/inset — the transform still applies to a static-flow
+		   box too, and against a now-100%-wide box it shifted the whole
+		   thing half its own (much larger) width off the page's left
+		   edge. That's what was cutting text off on the left and leaving
+		   the rest of the sheet blank. */
+		transform: none !important;
+		width: 100% !important;
+		height: auto !important;
+		max-width: none !important;
+		max-height: none !important;
+		resize: none !important;
+		/* .rux-card/.rux-card--elevated (the other classes on this same
+		   element) add their own border/radius/background — fine for the
+		   floating window on screen, but it's chrome, not the form, so it
+		   shouldn't print. */
+		border: 0 !important;
+		border-radius: 0 !important;
+		overflow: visible !important;
+		background: none !important;
+	}
+
+	.rux-trip-envelope-window__header,
+	.rux-trip-envelope-window__footer {
+		display: none !important;
+	}
+
+	.rux-trip-envelope-window__body {
+		display: block !important;
+		width: 100%;
+		overflow: visible !important;
+		padding: 0 !important;
+		background: none !important;
+	}
+
+	.rux-trip-envelope-window__body [data-envelope-content] {
+		width: 100%;
+	}
+
+	/* Physical stock is 6in x 9in envelopes, not letter paper — the on-screen
+	   preview keeps the app's normal --rux- type scale for comfortable
+	   reading in the floating window, but that scale is sized for a desktop
+	   screen, not a 5.7in-wide printable area, so print gets its own
+	   deliberately compact sizing below rather than shrinking via transform
+	   (which would also blur/misalign the ruled borders). */
+	.rux-trip-envelope {
+		--env-paper: oklch(100% 0 0);
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		/* @page's own margin isn't reliably respected here — the OS/print
+		   driver appears to cache a fixed margin against the named "Trip
+		   Envelope" custom paper size and reuse it regardless of what CSS
+		   asks for (confirmed: setting @page margin-top to 2in had no
+		   visible effect). So @page margin is left at 0 below and every bit
+		   of spacing is controlled here instead, via plain padding on the
+		   card itself — a box-model property this stylesheet has full,
+		   reliable control over no matter what the print driver caches. */
+		padding: .70in 0.25in 0.05in 0.25in;
+	}
+
+	/* --- Print Trip Envelope --- */
+
+	.rux-trip-envelope__day { 
+		font-size: 32pt;
+	}
+
+	.rux-trip-envelope__logo {
+		height: 32px;
+	}
+
+	.rux-trip-envelope__company-line {
+		font-size: 9pt;
+	}
+
+	.rux-trip-envelope__section-title {
+		margin-block-start: 0.1in;
+		font-size: 14pt;
+	}
+
+	.rux-trip-envelope__cell {
+		padding: 0.06in 0.06in;
+	}
+
+	.rux-trip-envelope__label {
+		font-size: 9pt;
+	}
+
+	.rux-trip-envelope__value {
+		font-size: 10pt;
+	}
+
+	.rux-trip-envelope__footer-line {
+		padding-block: 0.02in;
+	}
+
+	.rux-trip-envelope__footer-label,
+	.rux-trip-envelope__footer-amount {
+		padding: 0.05in 0.07in;
+		font-size: 7pt;
+	}
+
+	.rux-trip-envelope__check {
+		font-size: 7pt;
+	}
+
+	.rux-trip-envelope__box {
+		width: 9px;
+		height: 9px;
+	}
+
+	.rux-trip-envelope__log th,
+	.rux-trip-envelope__log td {
+		padding: 0.05in 0.07in;
+		font-size: 7pt;
+	}
+
+	.rux-trip-envelope__log td {
+		height: 0.25in;
+	}
+
+	@page {
+		size: 6in 9in;
+		/* Not reliably respected by the print driver here (see the comment
+		   on .rux-trip-envelope above) — left at 0 so it can't fight the
+		   card's own padding, which is what actually controls spacing now. */
+		margin: 0;
+	}
+}

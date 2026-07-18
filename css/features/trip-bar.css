@@ -459,7 +459,7 @@
 .rux-trip-bar__actions {
 	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-columns: repeat(5, minmax(0, 1fr));
 	align-items: center;
 	flex: 0 0 auto;
 	gap: var(--rux-control-content-gap);

@@ -752,6 +752,12 @@ export function createTripBar(trip, callbacks = {}) {
       () => callbacks.onChangeBus?.(trip),
     ),
     manifestBtn,
+    button(
+      "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
+      "Print trip envelope",
+      "drafts",
+      () => callbacks.onPrintEnvelope?.(trip),
+    ),
   );
 
   const body = document.createElement("div");

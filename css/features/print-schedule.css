@@ -671,7 +671,12 @@
 }
 
 @media print {
-	body > *:not(.rux-print-root) {
+	/* Also exempts .rux-trip-envelope-window (js/panels/trip-envelope.js) —
+	   a blanket ":not(.rux-print-root)" would hide that feature's own print
+	   root too, since both stylesheets are loaded on the page at once and
+	   this rule doesn't know which feature actually triggered window.print().
+	   Any future printable feature needs the same treatment here. */
+	body > *:not(.rux-print-root):not(.rux-trip-envelope-window) {
 		display: none !important;
 	}
 
