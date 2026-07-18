@@ -32,6 +32,10 @@
 	justify-content: space-between;
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-padding);
+	/* Vertical padding matches .rux-workspace__header's space-3 (not the
+	   shared --rux-panel-padding's space-4) so both headers land on the
+	   same 56px height: control-height + space-3 top/bottom. */
+	padding-block: var(--rux-space-3);
 	position: relative;
 	z-index: 2;
 	background: var(--rux-panel-bg);

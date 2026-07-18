@@ -24,6 +24,7 @@
 	align-items: center;
 	justify-content: flex-start;
 	min-width: 0;
+	min-height: var(--rux-workspace-header-min-height);
 	gap: var(--rux-space-2);
 	padding: var(--rux-workspace-header-padding);
 	container-type: inline-size;

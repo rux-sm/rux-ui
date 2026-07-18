@@ -384,6 +384,8 @@
 	/* Keep header and view content on the same inline grid. */
 	--rux-workspace-header-padding: var(--rux-space-3)
 		var(--rux-workspace-gutter);
+	/* control height + space-3 top/bottom = 56px, matching panel header */
+	--rux-workspace-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-3) * 2));
 
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
@@ -407,8 +409,8 @@
 		var(--rux-border);
 	--rux-panel-radius: var(--rux-radius-0);
 
-	/* — header — */
-	--rux-panel-header-min-height: 0px;
+	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */
+	--rux-panel-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-3) * 2));
 
 	/* — nav / tabs — */
 	--rux-panel-nav-padding: var(--rux-space-3) var(--rux-space-4);

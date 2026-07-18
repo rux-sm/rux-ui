@@ -1039,72 +1039,59 @@
             <header class="rux-workspace__header">
               <div class="rux-workspace__heading">
                 <h1 class="rux-workspace__title" id="components-title">Components</h1>
-                <p class="rux-workspace__subtitle">Specimens of the components actually used across the app.</p>
               </div>
             </header>
 
             <div class="rux-workspace__body components-app__stage">
-              <div data-component-page="button">
+              <div data-component-page="button" data-component-title="Buttons" class="components-app__page">
                 <div class="rux-card">
                   <header class="rux-card__header">
-                    <p class="rux-card__title">Button</p>
+                    <p class="rux-card__title">Button Anatomy</p>
                   </header>
-                  <div class="rux-card__body rux-card__body--stack">
-                    <div>
-                      <p class="rux-subtle">Primary</p>
-                      <div class="components-app__specimens components-app__specimens--grid">
-                        <button class="rux-button rux-button--accent" type="button">Accent</button>
-                        <button class="rux-button rux-button--default" type="button">Default</button>
-                        <button class="rux-button rux-button--ghost" type="button">Ghost</button>
-                      </div>
+                  <div class="rux-card__body components-app__anatomy">
+                    <div class="components-app__anatomy-stage">
+                      <button class="rux-button rux-button--accent" type="button">Save</button>
                     </div>
-                    <div>
-                      <p class="rux-subtle">Danger</p>
-                      <div class="components-app__specimens components-app__specimens--grid">
-                        <button class="rux-button rux-button--accent rux-button--danger" type="button">Danger</button>
-                        <button class="rux-button rux-button--default rux-button--danger" type="button">Danger Default</button>
-                        <button class="rux-button rux-button--ghost rux-button--danger" type="button">Danger Ghost</button>
-                        <button class="rux-button rux-button--accent rux-button--danger" type="button" disabled>Danger</button>
-                        <button class="rux-button rux-button--default rux-button--danger" type="button" disabled>Danger Default</button>
-                        <button class="rux-button rux-button--ghost rux-button--danger" type="button" disabled>Danger Ghost</button>
-                      </div>
-                      <p class="rux-subtle components-app__note">The solid <code>rux-button--accent rux-button--danger</code> combo is fully styled but not used anywhere in the app yet — every real danger button today is <code>rux-button--default rux-button--danger</code> or <code>rux-button--ghost rux-button--danger</code>. Disabled now renders differently per shape: solid stays filled, default stays a muted outline, ghost stays borderless text.</p>
+                    <dl class="components-app__specs">
+                      <div><dt>Height</dt><dd><output data-token-value="--rux-button-height"></output></dd></div>
+                      <div><dt>Padding inline</dt><dd><output data-token-value="--rux-button-padding-inline"></output></dd></div>
+                      <div><dt>Content gap</dt><dd><output data-token-value="--rux-button-content-gap"></output></dd></div>
+                      <div><dt>Border radius</dt><dd><output data-token-value="--rux-button-radius"></output></dd></div>
+                      <div><dt>Border width</dt><dd><output data-token-value="--rux-button-border-width"></output></dd></div>
+                      <div><dt>Font size</dt><dd><output data-token-value="--rux-button-font-size"></output></dd></div>
+                      <div><dt>Font weight</dt><dd><output data-token-value="--rux-button-font-weight"></output></dd></div>
+                    </dl>
+                  </div>
+                </div>
+                <div class="rux-card">
+                  <header class="rux-card__header">
+                    <p class="rux-card__title">Button Variants</p>
+                  </header>
+                  <div class="rux-card__body components-app__variants">
+                    <div class="components-app__specimens components-app__specimens--grid">
+                      <button class="rux-button rux-button--accent" type="button">Accent</button>
+                      <button class="rux-button rux-button--default" type="button">Default</button>
+                      <button class="rux-button rux-button--ghost" type="button">Ghost</button>
                     </div>
-                    <div>
-                      <p class="rux-subtle">Sizes</p>
-                      <div class="components-app__specimens">
-                        <button class="rux-button rux-button--accent rux-button--sm" type="button">Accent Small</button>
-                        <button class="rux-button rux-button--ghost rux-button--sm" type="button">Ghost Small</button>
-                      </div>
-                    </div>
-                    <div>
-                      <p class="rux-subtle">Fill</p>
-                      <div class="components-app__pair">
-                        <div class="rux-card">
-                          <header class="rux-card__header">
-                            <p class="rux-card__title">Standalone</p>
-                          </header>
-                          <div class="rux-card__body">
-                            <div class="rux-cluster">
-                              <button class="rux-button rux-button--default" type="button">Clear</button>
-                              <button class="rux-button rux-button--accent" type="button">Save</button>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="rux-card">
-                          <header class="rux-card__header">
-                            <p class="rux-card__title">Panel footer</p>
-                          </header>
-                          <footer class="rux-panel__footer">
-                            <button class="rux-button rux-button--default rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">delete</span><span class="rux-btn-label">Delete</span></button>
-                            <button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">backspace</span><span class="rux-btn-label">Clear</span></button>
-                            <button class="rux-button rux-button--accent" type="button"><span class="rux-icon" aria-hidden="true">save</span><span class="rux-btn-label">Save</span></button>
-                          </footer>
-                        </div>
-                      </div>
-                      <p class="rux-subtle components-app__note">Buttons inside <code>.rux-panel__footer</code> stretch evenly (<code>flex: 1</code>) — this is how Delete/Clear/Save split the row in the trip, fleet, and driver editors. <code>rux-button--block</code> is a separate, currently-unused utility for a single full-width button, not for splitting several evenly.</p>
+                    <div class="components-app__specimens components-app__specimens--grid">
+                      <button class="rux-button rux-button--accent rux-button--danger" type="button">Danger</button>
+                      <button class="rux-button rux-button--default rux-button--danger" type="button">Danger Default</button>
+                      <button class="rux-button rux-button--ghost rux-button--danger" type="button">Danger Ghost</button>
+                      <button class="rux-button rux-button--accent rux-button--danger" type="button" disabled>Danger</button>
+                      <button class="rux-button rux-button--default rux-button--danger" type="button" disabled>Danger Default</button>
+                      <button class="rux-button rux-button--ghost rux-button--danger" type="button" disabled>Danger Ghost</button>
                     </div>
                   </div>
+                </div>
+                <div class="rux-card">
+                  <header class="rux-card__header">
+                    <p class="rux-card__title">Button Block</p>
+                  </header>
+                  <footer class="rux-panel__footer">
+                    <button class="rux-button rux-button--default rux-button--danger" type="button"><span class="rux-icon" aria-hidden="true">delete</span><span class="rux-btn-label">Delete</span></button>
+                    <button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">backspace</span><span class="rux-btn-label">Clear</span></button>
+                    <button class="rux-button rux-button--accent" type="button"><span class="rux-icon" aria-hidden="true">save</span><span class="rux-btn-label">Save</span></button>
+                  </footer>
                 </div>
               </div>
             </div>
