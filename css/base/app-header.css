@@ -52,7 +52,7 @@
 	flex: 1 1 auto;
 	min-width: 0;
 	gap: var(--rux-app-header-nav-gap);
-	overflow-x: auto;
+	overflow: visible;
 	scrollbar-width: none;
 }
 

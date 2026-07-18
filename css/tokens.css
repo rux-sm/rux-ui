@@ -280,7 +280,7 @@
 
 	/* ─── ICON ───────────────────────────────────────────────────────────── */
 
-	--rux-icon-font-family:         "Material Symbols Outlined";
+	--rux-icon-font-family:         "Material Symbols Sharp";
 	--rux-icon-fill-default:        0;
 	--rux-icon-fill-selected:       1;
 	--rux-icon-weight-default:      400;
@@ -336,8 +336,7 @@
 
 	/* ─── FOCUS RINGS ─────────────────────────────────────────────────────── */
 
-	--rux-ring-focus:
-		0 0 0 6px var(--rux-black), 0 0 0 4px var(--rux-accent-ring);
+	--rux-ring-focus: 0 0 0 2px oklch(from var(--rux-warning) l c h / 0.20);
 	--rux-ring-danger: 0 0 0 2px var(--rux-black), 0 0 0 4px var(--rux-danger);
 
 	/* ======================================================================
@@ -543,7 +542,7 @@
 	--rux-input-placeholder-fg:  var(--rux-fg-subtle);
 	--rux-input-hover:           var(--rux-accent);
 	--rux-input-hover-bg:        var(--rux-well-bg-hover);
-	--rux-input-focus-border:    var(--rux-accent);
+	--rux-input-focus-border:    var(--rux-ring-focus);
 	--rux-input-focus-bg:        var(--rux-well-bg-focus);
 	--rux-input-disabled-bg:     var(--rux-alpha-black-12);
 	--rux-input-disabled-border: var(--rux-border);
