@@ -38,6 +38,9 @@
 	   also drives the (still-uniform) inter-panel gutter and inner content
 	   insets below, which aren't part of this ask. */
 	--scheduler-app-module-padding: 0;
+	--scheduler-app-resize-hit-width: 20px;
+	--scheduler-app-resize-handle-width: 3px;
+	--scheduler-app-resize-handle-height: 32px;
 	--scheduler-app-resize-line-width: 1px;
 	/* Left/editor and right/tools drawers intentionally have independent
 	   defaults. Resize limits remain shared. */
@@ -395,27 +398,57 @@
 .scheduler-app__resize-gutter {
 	cursor: col-resize;
 	z-index: 10;
+	touch-action: none;
 }
 
+/* Large transparent hit target centered on the zero-width flex boundary. */
 .scheduler-app__resize-gutter::before {
 	content: "";
 	position: absolute;
-	top: 0;
-	left: 50%;
-	width: var(--scheduler-app-resize-line-width);
-	height: 100%;
-	background: color-mix(in oklch, var(--rux-fg) 55%, transparent);
+	inset-block: 0;
+	inset-inline-start: 50%;
+	inline-size: var(--scheduler-app-resize-hit-width);
+	background:
+		linear-gradient(
+			color-mix(in oklch, var(--rux-fg) 55%, transparent),
+			color-mix(in oklch, var(--rux-fg) 55%, transparent)
+		)
+		center / var(--scheduler-app-resize-line-width) 100% no-repeat;
 	opacity: 0;
 	transform: translateX(-50%);
 	transition: opacity var(--rux-duration-fast);
 }
 
+/* Short centered grip remains independent of the draggable hit target. */
+.scheduler-app__resize-gutter::after {
+	content: "";
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: 50%;
+	inline-size: var(--scheduler-app-resize-handle-width);
+	block-size: var(--scheduler-app-resize-handle-height);
+	background: color-mix(in oklch, var(--rux-fg) 75%, transparent);
+	border-radius: var(--rux-radius-full);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -50%);
+	transition: opacity var(--rux-duration-fast);
+}
+
 .scheduler-app__resize-gutter:hover::before,
-.scheduler-app__resize-gutter.is-resizing::before {
+.scheduler-app__resize-gutter:hover::after,
+.scheduler-app__resize-gutter.is-resizing::before,
+.scheduler-app__resize-gutter.is-resizing::after {
 	opacity: 1;
 }
 
 .scheduler-app__resize-gutter.is-resizing::before {
+	background:
+		linear-gradient(var(--rux-accent), var(--rux-accent))
+		center / var(--scheduler-app-resize-line-width) 100% no-repeat;
+}
+
+.scheduler-app__resize-gutter.is-resizing::after {
 	background: var(--rux-accent);
 }
 

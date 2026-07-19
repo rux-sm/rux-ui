@@ -44,6 +44,7 @@
 	--rux-border-button: oklch(from var(--rux-neutral) 38% c h / 100%);
 	--rux-border-input:  oklch(from var(--rux-neutral) 38% c h / 100%);
 	--rux-border:        oklch(from var(--rux-neutral) 30% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 38% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) l c h / 12%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */

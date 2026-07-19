@@ -31,6 +31,8 @@
 .rux-floating-window__header {
 	cursor: move;
 	flex: none;
+	background: var(--rux-surface-modal);
+	border-bottom: 1px solid var(--rux-border-strong);
 }
 
 .rux-floating-window__body {

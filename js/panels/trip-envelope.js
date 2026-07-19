@@ -33,7 +33,11 @@
 		if (!value) return null;
 		const match = String(value).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
 		if (!match) return null;
-		return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+		return new Date(
+			Number(match[1]),
+			Number(match[2]) - 1,
+			Number(match[3]),
+		);
 	}
 
 	function fmtDate(value) {
@@ -105,7 +109,9 @@
 
 	function buildHeader(trip) {
 		const header = el("header", "rux-trip-envelope__header");
-		header.appendChild(el("h1", "rux-trip-envelope__day", fmtWeekday(trip.startDate)));
+		header.appendChild(
+			el("h1", "rux-trip-envelope__day", fmtWeekday(trip.startDate)),
+		);
 
 		const logo = document.createElement("img");
 		logo.className = "rux-trip-envelope__logo";
@@ -114,12 +120,23 @@
 		header.appendChild(logo);
 
 		const yard = window.RuxSettings?.getYard?.() || {};
-		if (yard.address) header.appendChild(el("p", "rux-trip-envelope__company-line", yard.address));
+		if (yard.address)
+			header.appendChild(
+				el("p", "rux-trip-envelope__company-line", yard.address),
+			);
 		// Settings only stores yard name/address today — these numbers are
 		// static company info, not per-trip data.
-		header.appendChild(el("p", "rux-trip-envelope__company-line", "(956) 994-1169 / Fax 994-9491 / Cell 648-9691"));
+		header.appendChild(
+			el(
+				"p",
+				"rux-trip-envelope__company-line",
+				"(956) 994-1169 / Fax 994-9491 / Cell 648-9691",
+			),
+		);
 
-		header.appendChild(el("h2", "rux-trip-envelope__section-title", "Trip Information"));
+		header.appendChild(
+			el("h2", "rux-trip-envelope__section-title", "Trip Information"),
+		);
 		return header;
 	}
 
@@ -128,24 +145,36 @@
 	function buildScheduleRows(trip, busNumber) {
 		const frag = document.createDocumentFragment();
 
-		frag.appendChild(row(
-			"rux-trip-envelope__row--3",
-			cell("Bus:", busNumber),
-			cell("Driver:", driverByRole(trip, "driver")?.name),
-			cell("Co-Driver:", driverByRole(trip, "co-driver")?.name),
-		));
+		frag.appendChild(
+			row(
+				"rux-trip-envelope__row--3",
+				cell("Bus:", busNumber),
+				cell("Driver:", driverByRole(trip, "driver")?.name),
+				cell("Co-Driver:", driverByRole(trip, "co-driver")?.name),
+			),
+		);
 
 		const stop = pickupStop(trip);
 		const spotTime = fmtTime(stop?.spot || trip.spotTime);
-		const isMultiDay = trip.startDate && trip.endDate && trip.startDate !== trip.endDate;
-		frag.appendChild(row(
-			isMultiDay ? "rux-trip-envelope__row--3" : "rux-trip-envelope__row--2",
-			cell("Trip Date:", fmtDate(trip.startDate)),
-			...(isMultiDay ? [cell("Return:", fmtDate(trip.endDate))] : []),
-			cell("Spot Time:", spotTime),
-		));
+		const isMultiDay =
+			trip.startDate && trip.endDate && trip.startDate !== trip.endDate;
+		frag.appendChild(
+			row(
+				isMultiDay
+					? "rux-trip-envelope__row--3"
+					: "rux-trip-envelope__row--2",
+				cell("Trip Date:", fmtDate(trip.startDate)),
+				...(isMultiDay ? [cell("Return:", fmtDate(trip.endDate))] : []),
+				cell("Spot Time:", spotTime),
+			),
+		);
 
-		frag.appendChild(row("rux-trip-envelope__row--1", cell("Pick Up Address:", stop?.address)));
+		frag.appendChild(
+			row(
+				"rux-trip-envelope__row--1",
+				cell("Pick Up Address:", stop?.address),
+			),
+		);
 
 		return frag;
 	}
@@ -156,7 +185,9 @@
 		const grid = el("div", "rux-trip-envelope__footer-grid");
 		const checks = (labelText, options) => {
 			const line = el("div", "rux-trip-envelope__footer-line");
-			line.appendChild(el("span", "rux-trip-envelope__footer-label", labelText));
+			line.appendChild(
+				el("span", "rux-trip-envelope__footer-label", labelText),
+			);
 			const boxes = el("span", "rux-trip-envelope__footer-checks");
 			options.forEach((optionLabel) => {
 				const opt = el("label", "rux-trip-envelope__check");
@@ -169,13 +200,19 @@
 		};
 		const amount = (labelText) => {
 			const line = el("div", "rux-trip-envelope__footer-line");
-			line.appendChild(el("span", "rux-trip-envelope__footer-label", labelText));
-			line.appendChild(el("span", "rux-trip-envelope__footer-amount", "$"));
+			line.appendChild(
+				el("span", "rux-trip-envelope__footer-label", labelText),
+			);
+			line.appendChild(
+				el("span", "rux-trip-envelope__footer-amount", "$"),
+			);
 			return line;
 		};
 		const blankLine = (labelText) => {
 			const line = el("div", "rux-trip-envelope__footer-line");
-			line.appendChild(el("span", "rux-trip-envelope__footer-label", labelText));
+			line.appendChild(
+				el("span", "rux-trip-envelope__footer-label", labelText),
+			);
 			line.appendChild(el("span", "rux-trip-envelope__footer-fill"));
 			return line;
 		};
@@ -201,16 +238,35 @@
 		const grid = el("div", "rux-trip-envelope__grid");
 		const scheduleFrag = buildScheduleRows(trip, busNumber);
 		grid.appendChild(scheduleFrag);
-		grid.appendChild(row("rux-trip-envelope__row--1", cell("Destination:", trip.destination)));
+		grid.appendChild(
+			row(
+				"rux-trip-envelope__row--1",
+				cell("Destination:", trip.destination),
+			),
+		);
 		const contact = contactFor(trip);
-		grid.appendChild(row("rux-trip-envelope__row--2", cell("Contact:", contact.name), cell("Phone:", contact.phone)));
-		grid.appendChild(row("rux-trip-envelope__row--2", blankCell("Starting Odometer:"), blankCell("Ending Odometer:")));
+		grid.appendChild(
+			row(
+				"rux-trip-envelope__row--2",
+				cell("Contact:", contact.name),
+				cell("Phone:", contact.phone),
+			),
+		);
+		grid.appendChild(
+			row(
+				"rux-trip-envelope__row--2",
+				blankCell("Starting Odometer:"),
+				blankCell("Ending Odometer:"),
+			),
+		);
 		card.appendChild(grid);
 
 		card.appendChild(buildFooterGrid());
 
 		const notes = el("div", "rux-trip-envelope__notes");
-		notes.appendChild(el("span", "rux-trip-envelope__footer-label", "Notes:"));
+		notes.appendChild(
+			el("span", "rux-trip-envelope__footer-label", "Notes:"),
+		);
 		card.appendChild(notes);
 
 		return card;
@@ -223,7 +279,13 @@
 		const grid = el("div", "rux-trip-envelope__grid");
 		grid.appendChild(buildScheduleRows(trip, busNumber));
 		const contact = contactFor(trip);
-		grid.appendChild(row("rux-trip-envelope__row--2", cell("Contact Person:", contact.name), cell("Phone:", contact.phone)));
+		grid.appendChild(
+			row(
+				"rux-trip-envelope__row--2",
+				cell("Contact Person:", contact.name),
+				cell("Phone:", contact.phone),
+			),
+		);
 		card.appendChild(grid);
 
 		const table = document.createElement("table");
@@ -262,16 +324,20 @@
 		const container = panelEl.querySelector("[data-envelope-content]");
 		container.innerHTML = "";
 		if (!current) return;
-		const card = activeTemplate === "mvm"
-			? buildMvmEnvelope(current.trip, current.busNumber)
-			: buildStandardEnvelope(current.trip, current.busNumber);
+		const card =
+			activeTemplate === "mvm"
+				? buildMvmEnvelope(current.trip, current.busNumber)
+				: buildStandardEnvelope(current.trip, current.busNumber);
 		container.appendChild(card);
 	}
 
-	// Screen-only "fit to height" so the whole form is always visible without
-	// scrolling, regardless of window size or which template is active — print
-	// is untouched (trip-envelope.css's @media print resets this transform the
-	// same way it already resets the window's own screen-only positioning).
+	// The one and only sizing mechanism for the on-screen preview (the
+	// window itself is a fixed size in trip-envelope.css) — scales the
+	// whole card up or down, uncapped, to exactly fill whatever space the
+	// window body has, keeping its natural proportions. Constrained by both
+	// width and height so scaling up on a short trip can't push the card
+	// wider than the window (the window's width doesn't grow, only its
+	// visual scale does).
 	function fitToHeight() {
 		if (!panelEl || panelEl.hidden) return;
 		const container = panelEl.querySelector("[data-envelope-content]");
@@ -282,23 +348,26 @@
 		card.style.transform = "";
 		container.style.height = "";
 		const naturalHeight = card.offsetHeight;
-		if (!naturalHeight) return;
+		const naturalWidth = card.offsetWidth;
+		if (!naturalHeight || !naturalWidth) return;
 
 		const bodyStyles = getComputedStyle(body);
 		const availableHeight = body.clientHeight
 			- parseFloat(bodyStyles.paddingTop)
 			- parseFloat(bodyStyles.paddingBottom);
-		const scale = Math.min(1, availableHeight / naturalHeight);
-		if (scale < 1) {
-			// Default transform-origin is center — shrinking around the
-			// middle leaves an empty gap above equal to half the shrunk
-			// amount, since the card's layout box (unaffected by transform)
-			// is still naturally taller than the resized container around
-			// it. Anchoring to the top instead keeps the top edge flush.
-			card.style.transformOrigin = "top center";
-			card.style.transform = `scale(${scale})`;
-			container.style.height = `${naturalHeight * scale}px`;
-		}
+		const availableWidth = body.clientWidth
+			- parseFloat(bodyStyles.paddingLeft)
+			- parseFloat(bodyStyles.paddingRight);
+		const scale = Math.min(availableHeight / naturalHeight, availableWidth / naturalWidth);
+
+		// Default transform-origin is center — scaling around the middle
+		// would leave an empty gap above equal to half the size change,
+		// since the card's own layout box (unaffected by transform) still
+		// occupies its natural, unscaled height. Anchoring to the top keeps
+		// the top edge flush instead, both shrinking and growing.
+		card.style.transformOrigin = "top center";
+		card.style.transform = `scale(${scale})`;
+		container.style.height = `${naturalHeight * scale}px`;
 	}
 
 	function setTemplate(value) {
@@ -330,7 +399,8 @@
 		if (panelEl) return panelEl;
 
 		panelEl = document.createElement("div");
-		panelEl.className = "rux-floating-window rux-trip-envelope-window rux-card rux-card--elevated";
+		panelEl.className =
+			"rux-floating-window rux-trip-envelope-window rux-card rux-card--elevated";
 		panelEl.hidden = true;
 		panelEl.dataset.tint = "white";
 		panelEl.innerHTML = `
@@ -360,22 +430,35 @@
 		`;
 		document.body.appendChild(panelEl);
 
-		panelEl.querySelector("[data-envelope-close]").addEventListener("click", close);
-		panelEl.querySelector("[data-envelope-print]").addEventListener("click", () => window.print());
-		panelEl.querySelector("[data-envelope-template]").addEventListener("click", (e) => {
-			const btn = e.target.closest(".rux-button");
-			if (btn) setTemplate(btn.dataset.value);
-		});
-		panelEl.querySelector("[data-envelope-tint]").addEventListener("click", (e) => {
-			const btn = e.target.closest(".rux-button");
-			if (btn) setTint(btn.dataset.value);
-		});
-		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-floating-window__header"));
+		panelEl
+			.querySelector("[data-envelope-close]")
+			.addEventListener("click", close);
+		panelEl
+			.querySelector("[data-envelope-print]")
+			.addEventListener("click", () => window.print());
+		panelEl
+			.querySelector("[data-envelope-template]")
+			.addEventListener("click", (e) => {
+				const btn = e.target.closest(".rux-button");
+				if (btn) setTemplate(btn.dataset.value);
+			});
+		panelEl
+			.querySelector("[data-envelope-tint]")
+			.addEventListener("click", (e) => {
+				const btn = e.target.closest(".rux-button");
+				if (btn) setTint(btn.dataset.value);
+			});
+		window.RuxFloatingWindow.attachDrag(
+			panelEl,
+			panelEl.querySelector(".rux-floating-window__header"),
+		);
 
-		// Covers both native resize:both drag and the window's own
-		// height changing with the viewport (its CSS height is a min()
-		// against 100vh), so fit-to-height stays correct either way.
-		new ResizeObserver(fitToHeight).observe(panelEl.querySelector(".rux-trip-envelope-window__body"));
+		// Covers native resize:both dragging and the window's own height
+		// changing with the viewport (max-height is a calc(100vh - ...)),
+		// so the shrink fallback stays correct either way.
+		new ResizeObserver(fitToHeight).observe(
+			panelEl.querySelector(".rux-trip-envelope-window__body"),
+		);
 
 		document.addEventListener("keydown", (e) => {
 			if (e.key === "Escape" && panelEl && !panelEl.hidden) close();
@@ -390,16 +473,20 @@
 		current = { trip, busNumber: busNumberFor(trip, schedulerBuses) };
 		activeTemplate = "standard";
 		panelEl.dataset.tint = "white";
-		panelEl.querySelectorAll("[data-envelope-template] .rux-button").forEach((b) => {
-			const active = b.dataset.value === "standard";
-			b.classList.toggle("is-active", active);
-			b.setAttribute("aria-pressed", String(active));
-		});
-		panelEl.querySelectorAll("[data-envelope-tint] .rux-button").forEach((b) => {
-			const active = b.dataset.value === "white";
-			b.classList.toggle("is-active", active);
-			b.setAttribute("aria-pressed", String(active));
-		});
+		panelEl
+			.querySelectorAll("[data-envelope-template] .rux-button")
+			.forEach((b) => {
+				const active = b.dataset.value === "standard";
+				b.classList.toggle("is-active", active);
+				b.setAttribute("aria-pressed", String(active));
+			});
+		panelEl
+			.querySelectorAll("[data-envelope-tint] .rux-button")
+			.forEach((b) => {
+				const active = b.dataset.value === "white";
+				b.classList.toggle("is-active", active);
+				b.setAttribute("aria-pressed", String(active));
+			});
 		renderCard();
 		panelEl.hidden = false;
 		fitToHeight();

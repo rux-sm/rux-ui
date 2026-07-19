@@ -16,7 +16,15 @@
 /* ── Floating window chrome (screen only — none of this prints) ────────── */
 
 .rux-trip-envelope-window {
-	top: 0%;
+	/* Anchored near the top and only centered horizontally — same as
+	   doc-viewer.css's .rux-doc-viewer, the pattern this window is built to
+	   match. Fixed size on purpose: trip-envelope.js's fitToHeight() is the
+	   one and only thing that scales the card (both up and down) to fit
+	   whatever space this box provides — a second CSS-side mechanism trying
+	   to also resize the window was fighting it (aspect-ratio + height:
+	   fit-content vs the JS transform), which is what caused the last few
+	   rounds of clipping/positioning bugs. One sizing system, not two. */
+	top: 8%;
 	left: 50%;
 	transform: translateX(-50%);
 	width: min(640px, calc(100vw - var(--rux-space-6) * 2));
@@ -28,13 +36,37 @@
 }
 
 .rux-trip-envelope-window__body {
-	overflow: auto;
-	padding: var(--rux-space-4);
-	background: oklch(35% 0.005 259);
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-height: 0; /* lets this actually shrink to the window's real size instead of refusing to go below the card's natural (pre-scale) content size */
+    padding: var(--rux-space-4);
+    background: oklch(35% 0.005 259);
+    /* Fallback only, not the primary mechanism — fitToHeight() computes an
+       exact scale to fit this space, so overflow shouldn't normally trigger. */
+    overflow: auto;
+}
+
+/* align-items:flex-start (not center) matches the card's transform-origin:
+   top in trip-envelope.js — transform:scale doesn't shrink the card's actual
+   layout box, only its painted size, so centering that still-full-size box
+   would shift its anchor point away from where the top-anchored scale
+   expects it, pushing the visible (scaled) card upward with the "missing"
+   space reappearing as slack below. Top-aligning keeps both anchored at the
+   same point. overflow:hidden clips the leftover unscaled layout space
+   (invisible but still present in the box model) so it doesn't inflate the
+   body's scrollable area either. justify-content:center is fine as-is,
+   horizontally, since transform-origin's horizontal component is center —
+   same anchor assumption both places, no mismatch there. */
+.rux-trip-envelope-window__body [data-envelope-content] {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
 }
 
 .rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope-window__body {
-	background: oklch(35% 0.005 259);
+	background: var(--rux-surface-modal);
 }
 
 .rux-trip-envelope-window[data-tint="yellow"] .rux-trip-envelope-window__body {
@@ -46,6 +78,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
+	background: var(--rux-surface-modal);
 }
 
 .rux-trip-envelope-window__spacer {
@@ -54,20 +87,29 @@
 
 /* ── The envelope card itself — a deliberate light-on-paper world ───────── */
 
-.rux-trip-envelope {
-	--env-paper: oklch(100% 0 0);
-	--env-ink: oklch(18% 0 0);
-	--env-ink-muted: oklch(45% 0 0);
-	--env-rule: oklch(25% 0 0);
 
-	margin: 0 auto;
-	width: 100%;
-	max-width: 8.5in;
-	box-sizing: border-box;
-	padding: var(--rux-space-6);
-	background: var(--env-paper);
-	color: var(--env-ink);
-	font-family: var(--rux-font-sans);
+.rux-trip-envelope {
+
+	    --env-paper: oklch(100% 0 0);
+    --env-ink: oklch(18% 0 0);
+    --env-ink-muted: oklch(45% 0 0);
+    --env-rule: oklch(25% 0 0);
+    /* Width matches the real print stock (6in, see @page below); height is
+       fully natural/content-driven — no aspect-ratio. trip-envelope.js's
+       fitToHeight() scales this whole box (via transform, preserving
+       whatever shape the natural width/height turns out to be) to fit
+       the window, so this doesn't need to pre-constrain its own shape. */
+    width: min(6in, 100%);
+    min-width: 0;
+
+    /* Make the text fluid */
+    container-type: inline-size;
+    container-name: envelope;
+
+    padding: var(--rux-space-6) var(--rux-space-4) var(--rux-space-6) var(--rux-space-4);
+    background: var(--env-paper);
+    color: var(--env-ink);
+    font-family: var(--rux-font-sans);
 }
 
 .rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope {
@@ -330,10 +372,13 @@
 	}
 
 	.rux-trip-envelope-window__body [data-envelope-content] {
+		/* Screen-only rule above makes this a centering flex container, and
+		   fitToHeight() (trip-envelope.js) sets an inline height on it to
+		   match the scaled-down card when shrinking is needed — print needs
+		   neither (the card goes back to plain width:100%/margin:0 below),
+		   so this resets back to a plain block at full natural height. */
+		display: block !important;
 		width: 100%;
-		/* Screen-only fit-to-height (trip-envelope.js) sets an inline height
-		   here to match the scaled-down card below — reset needs !important
-		   since it's overriding an inline style, not just a stylesheet rule. */
 		height: auto !important;
 	}
 
@@ -342,9 +387,7 @@
 	   reading in the floating window, but that scale is sized for a desktop
 	   screen, not a 5.7in-wide printable area, so print gets its own
 	   deliberately compact sizing below rather than shrinking via transform
-	   (which would also blur/misalign the ruled borders). This is also why
-	   fit-to-height's inline transform: scale() needs resetting here too —
-	   same reasoning, print has its own sizing and never shrinks via transform. */
+	   (which would also blur/misalign the ruled borders). */
 	.rux-trip-envelope {
 		--env-paper: oklch(100% 0 0);
 		width: 100%;
