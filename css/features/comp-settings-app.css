@@ -155,7 +155,6 @@
 }
 
 .settings-app__suggestion:hover {
-	outline: none;
 	background: var(--rux-button-hover-overlay);
 }
 

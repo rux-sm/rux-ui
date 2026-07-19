@@ -206,8 +206,6 @@
 	opacity: 0;
 	padding: 0;
 	background: none;
-	/* 1px transparent, not none — reserves space so a focus-visible
-	   border-color swap doesn't shift anything by 1px once this expands. */
 	border: 1px solid transparent;
 	color: var(--rux-danger);
 	cursor: pointer;
@@ -416,9 +414,6 @@
 	padding: 0 var(--rux-control-padding-inline) 0 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	/* 1px transparent, not none — reserves the same space a focus-visible
-	   border-color swap will use, so focusing this doesn't shift its
-	   sibling icon by 1px. */
 	border: 1px solid transparent;
 }
 .rux-trip-panel__payment-reference {
@@ -487,8 +482,6 @@
 	opacity: 0;
 	padding: 0;
 	background: none;
-	/* 1px transparent, not none — reserves space so a focus-visible
-	   border-color swap doesn't shift anything by 1px once this expands. */
 	border: 1px solid transparent;
 	color: var(--rux-danger);
 	cursor: pointer;
@@ -745,8 +738,6 @@
 	opacity: 0;
 	padding: 0;
 	background: none;
-	/* 1px transparent, not none — reserves space so a focus-visible
-	   border-color swap doesn't shift anything by 1px once this expands. */
 	border: 1px solid transparent;
 	color: var(--rux-danger);
 	cursor: pointer;
@@ -845,13 +836,10 @@
 	}
 }
 
-/* .rux-segmented-track + .rux-button--segment (base/controls.css) — a
-   floating-pill toggle whose padding leaves room for a real focus ring,
-   unlike the old flush/clipped .rux-segmented strip. Active-state look is
-   handled by .rux-button--segment itself; flex:1 here just splits the
-   track's width evenly between the two options, since .rux-segmented-track
-   doesn't stretch its children on its own. Shared by both Trip Type and
-   Billing Type, which both carry this class. */
+/* .rux-segmented-track + .rux-button--segment (base/controls.css) provides
+   the floating-pill toggle. Active-state styling belongs to the shared
+   button; flex: 1 splits the track evenly between both options. Shared by
+   Trip Type and Billing Type. */
 .rux-trip-panel__trip-type > .rux-button {
 	flex: 1;
 	min-width: 0;

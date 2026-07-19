@@ -52,7 +52,6 @@
 
 .rux-tab {
 	--_state-overlay: transparent;
-	--_focus-border: var(--rux-tab-focus-border);
 
 	display: inline-flex;
 	align-items: center;
@@ -90,10 +89,6 @@
 
 .rux-tab:active:not(:disabled) {
 	--_state-overlay: var(--rux-tab-pressed-bg);
-}
-
-.rux-tab:focus-visible {
-	border-color: var(--rux-tab-focus-border);
 }
 
 .rux-tab:disabled,

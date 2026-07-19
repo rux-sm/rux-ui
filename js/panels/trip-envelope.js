@@ -268,9 +268,43 @@
 		container.appendChild(card);
 	}
 
+	// Screen-only "fit to height" so the whole form is always visible without
+	// scrolling, regardless of window size or which template is active — print
+	// is untouched (trip-envelope.css's @media print resets this transform the
+	// same way it already resets the window's own screen-only positioning).
+	function fitToHeight() {
+		if (!panelEl || panelEl.hidden) return;
+		const container = panelEl.querySelector("[data-envelope-content]");
+		const body = panelEl.querySelector(".rux-trip-envelope-window__body");
+		const card = container?.querySelector(".rux-trip-envelope");
+		if (!container || !body || !card) return;
+
+		card.style.transform = "";
+		container.style.height = "";
+		const naturalHeight = card.offsetHeight;
+		if (!naturalHeight) return;
+
+		const bodyStyles = getComputedStyle(body);
+		const availableHeight = body.clientHeight
+			- parseFloat(bodyStyles.paddingTop)
+			- parseFloat(bodyStyles.paddingBottom);
+		const scale = Math.min(1, availableHeight / naturalHeight);
+		if (scale < 1) {
+			// Default transform-origin is center — shrinking around the
+			// middle leaves an empty gap above equal to half the shrunk
+			// amount, since the card's layout box (unaffected by transform)
+			// is still naturally taller than the resized container around
+			// it. Anchoring to the top instead keeps the top edge flush.
+			card.style.transformOrigin = "top center";
+			card.style.transform = `scale(${scale})`;
+			container.style.height = `${naturalHeight * scale}px`;
+		}
+	}
+
 	function setTemplate(value) {
 		activeTemplate = value === "mvm" ? "mvm" : "standard";
 		renderCard();
+		fitToHeight();
 	}
 
 	// Cosmetic only — mimics the two paper stock colors so the preview reads
@@ -285,6 +319,11 @@
 		if (!panelEl || panelEl.hidden) return;
 		panelEl.hidden = true;
 		current = null;
+		// Drag/resize set inline left/top/width/height that would otherwise
+		// persist on this singleton panel across trips — clear them here so
+		// the next open() always starts from the CSS defaults, not wherever
+		// this session last left the window.
+		window.RuxFloatingWindow.resetGeometry(panelEl);
 	}
 
 	function ensurePanel() {
@@ -333,6 +372,11 @@
 		});
 		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-floating-window__header"));
 
+		// Covers both native resize:both drag and the window's own
+		// height changing with the viewport (its CSS height is a min()
+		// against 100vh), so fit-to-height stays correct either way.
+		new ResizeObserver(fitToHeight).observe(panelEl.querySelector(".rux-trip-envelope-window__body"));
+
 		document.addEventListener("keydown", (e) => {
 			if (e.key === "Escape" && panelEl && !panelEl.hidden) close();
 		});
@@ -358,6 +402,7 @@
 		});
 		renderCard();
 		panelEl.hidden = false;
+		fitToHeight();
 	}
 
 	window.TripEnvelope = { open };

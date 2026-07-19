@@ -366,7 +366,6 @@
 }
 
 .rux-trip-itinerary__suggestion:hover {
-	outline: none;
 	background: var(--rux-button-hover-overlay);
 }
 

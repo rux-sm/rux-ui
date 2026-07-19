@@ -1,16 +1,5 @@
 /* ==========================================================================
    RUX UI — TOKENS
-   --------------------------------------------------------------------------
-   Architecture: PRIMITIVES → SEMANTIC → COMPONENT, strictly one-directional.
-   All color math is OKLCH on a single cool-neutral axis (hue 250).
-   Depth model:
-     · opaque surface roles built on explicit lightness shifts (10–24% L)
-     · translucent white for borders, highlights, and interaction overlays
-     · a shared opaque recessed well for inputs and segmented tracks, with
-       translucent hover/focus states
-   Shape model:
-     · 4px grid; containers 8px radius, nested controls 6px
-     · concentric nesting: inner radius = outer radius − inset padding
    ========================================================================== */
 
 :root {
@@ -233,7 +222,6 @@
 
 	--rux-well-bg:       oklch(from var(--rux-neutral) 18% c h);
 	--rux-well-bg-hover: var(--rux-alpha-white-4);
-	--rux-well-bg-focus: var(--rux-alpha-white-6);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 	/* Primary → muted → subtle is a descending contrast hierarchy, aliased
@@ -333,11 +321,6 @@
 	--rux-z-sticky:   200;
 	--rux-z-overlay:  300;
 	--rux-z-modal:    400;
-
-	/* ─── FOCUS RINGS ─────────────────────────────────────────────────────── */
-
-	--rux-ring-focus: 0 0 0 2px oklch(from var(--rux-warning) l c h / 0.20);
-	--rux-ring-danger: 0 0 0 2px var(--rux-black), 0 0 0 4px var(--rux-danger);
 
 	/* ======================================================================
 	   COMPONENT TOKENS
@@ -491,7 +474,6 @@
 	--rux-trip-bar-pressed-bg-chroma:     0.18;
 	--rux-trip-bar-selected-bg-lightness: 60%;
 	--rux-trip-bar-selected-bg-chroma:    0.22;
-	--rux-trip-bar-focus-ring:            var(--rux-ring-focus);
 	--rux-trip-bar-disabled-opacity:      0.45;
 	--rux-trip-bar-tail-opacity:          32%;
 	--rux-trip-bar-tail-hover-opacity:    75%;
@@ -505,8 +487,6 @@
 	--rux-trip-bar-action-hover-border:    var(--rux-border-width) solid var(--rux-alpha-white-65);
 	--rux-trip-bar-action-pressed-bg:      var(--rux-alpha-white-16);
 	--rux-trip-bar-action-pressed-border:  var(--rux-border-width) solid var(--rux-alpha-white-90);
-	--rux-trip-bar-action-focus-border:    var(--rux-alpha-white-90);
-	--rux-trip-bar-action-focus-ring:      0 0 0 3px var(--rux-alpha-white-40);
 	--rux-trip-bar-action-disabled-bg:     var(--rux-alpha-white-4);
 	--rux-trip-bar-action-disabled-fg:     var(--rux-alpha-white-40);
 	--rux-trip-bar-action-disabled-border: var(--rux-border-width) solid var(--rux-alpha-white-16);
@@ -542,13 +522,10 @@
 	--rux-input-placeholder-fg:  var(--rux-fg-subtle);
 	--rux-input-hover:           var(--rux-accent);
 	--rux-input-hover-bg:        var(--rux-well-bg-hover);
-	--rux-input-focus-border:    var(--rux-ring-focus);
-	--rux-input-focus-bg:        var(--rux-well-bg-focus);
 	--rux-input-disabled-bg:     var(--rux-alpha-black-12);
 	--rux-input-disabled-border: var(--rux-border);
 	--rux-input-disabled-fg:     var(--rux-fg-disabled);
 	--rux-input-invalid-border:  var(--rux-danger);
-	--rux-input-focus-ring:      0 0 0 3px var(--rux-accent-subtle);
 	--rux-input-border-radius:   var(--rux-radius-control);
 	--rux-input-transition:      var(--rux-duration-fast) var(--rux-ease-out);
 
@@ -570,8 +547,6 @@
 	--rux-button-hover-border:        1px solid var(--rux-accent);
 	--rux-button-hover-overlay:       var(--rux-alpha-white-6);
 	--rux-button-active-overlay:      var(--rux-alpha-black-12);
-	--rux-button-focus-border:        var(--rux-accent);
-	--rux-button-focus-ring:          var(--rux-ring-focus);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing:   var(--rux-ease-out);
 
@@ -586,10 +561,10 @@
 	   an unrelated consumer in scheduler-app.css, not used by the button itself.) */
 	--rux-button-default-hover-background:  var(--rux-alpha-white-6);
 	--rux-button-default-active-background: var(--rux-alpha-white-10);
-	--rux-button-default-hover-border:  oklch(from var(--rux-border-button) calc(l + 0.1) c h);
-	--rux-button-default-hover-text:    oklch(from var(--rux-fg) calc(l + 0.1) c h);
-	--rux-button-default-active-border: oklch(from var(--rux-border-button) calc(l - 0.1) c h);
-	--rux-button-default-active-text:   oklch(from var(--rux-fg) calc(l - 0.1) c h);
+	--rux-button-default-hover-border:      oklch(from var(--rux-border-button) calc(l + 0.1) c h);
+	--rux-button-default-hover-text:        oklch(from var(--rux-fg) calc(l + 0.1) c h);
+	--rux-button-default-active-border:     oklch(from var(--rux-border-button) calc(l - 0.1) c h);
+	--rux-button-default-active-text:       oklch(from var(--rux-fg) calc(l - 0.1) c h);
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
@@ -733,28 +708,24 @@
 	/* ─── COMPONENT · number stepper ─────────────────────────────────────── */
 	/* The editable stepper reuses field chrome and defines only its unique anatomy. */
 
-	--rux-number-stepper-height:  var(--rux-input-height);
-	--rux-number-stepper-bg:      var(--rux-input-background);
-	--rux-number-stepper-border:  var(--rux-input-border);
-	--rux-number-stepper-radius:  var(--rux-radius-control);
-	--rux-number-stepper-divider: var(--rux-border-width) solid var(--rux-border);
-	--rux-number-stepper-btn-width:          var(--rux-field-height);
-	--rux-number-stepper-hover-bg:           var(--rux-input-hover-bg);
-	--rux-number-stepper-hover-border:       var(--rux-button-border);
-	--rux-number-stepper-focus-bg:           var(--rux-input-focus-bg);
-	--rux-number-stepper-focus-border:       var(--rux-accent);
-	--rux-number-stepper-focus-ring:         var(--rux-input-focus-ring);
-	--rux-number-stepper-transition:         var(--rux-duration-fast) var(--rux-ease-out);
-	--rux-number-stepper-btn-bg:             transparent;
-	--rux-number-stepper-btn-hover-bg:       var(--rux-bg-hover);
-	--rux-number-stepper-btn-active-bg:      var(--rux-bg-active);
-	--rux-number-stepper-btn-fg:             var(--rux-fg);
-	--rux-number-stepper-btn-fg-disabled:    var(--rux-fg-disabled);
-	--rux-number-stepper-value-width:        3rem;
-	--rux-number-stepper-value-bg:           transparent;
-	--rux-number-stepper-value-fg:           var(--rux-fg);
-	--rux-number-stepper-value-font-size:    var(--rux-text-sm);
-	--rux-number-stepper-value-focus-border: var(--rux-border);
+	--rux-number-stepper-height:          var(--rux-input-height);
+	--rux-number-stepper-bg:              var(--rux-input-background);
+	--rux-number-stepper-border:          var(--rux-input-border);
+	--rux-number-stepper-radius:          var(--rux-radius-control);
+	--rux-number-stepper-divider:         var(--rux-border-width) solid var(--rux-border);
+	--rux-number-stepper-btn-width:       var(--rux-field-height);
+	--rux-number-stepper-hover-bg:        var(--rux-input-hover-bg);
+	--rux-number-stepper-hover-border:    var(--rux-button-border);
+	--rux-number-stepper-transition:      var(--rux-duration-fast) var(--rux-ease-out);
+	--rux-number-stepper-btn-bg:          transparent;
+	--rux-number-stepper-btn-hover-bg:    var(--rux-bg-hover);
+	--rux-number-stepper-btn-active-bg:   var(--rux-bg-active);
+	--rux-number-stepper-btn-fg:          var(--rux-fg);
+	--rux-number-stepper-btn-fg-disabled: var(--rux-fg-disabled);
+	--rux-number-stepper-value-width:     3rem;
+	--rux-number-stepper-value-bg:        transparent;
+	--rux-number-stepper-value-fg:        var(--rux-fg);
+	--rux-number-stepper-value-font-size: var(--rux-text-sm);
 
 	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
 
@@ -769,7 +740,6 @@
 	--rux-switch-checked-thumb-bg:  var(--rux-text-primary);
 	--rux-switch-hover-overlay:     var(--rux-button-hover-overlay);
 	--rux-switch-active-overlay:    var(--rux-button-active-overlay);
-	--rux-switch-focus-border:      var(--rux-danger-bright);
 	--rux-switch-disabled-bg:       var(--rux-button-disabled-background);
 	--rux-switch-disabled-thumb-bg: var(--rux-fg-disabled);
 	--rux-switch-radius:            var(--rux-radius-full);
@@ -791,8 +761,6 @@
 	--rux-checkbox-hover-bg:          var(--rux-well-bg-hover);
 	--rux-checkbox-hover-border:      var(--rux-accent);
 	--rux-checkbox-active-bg:         var(--rux-bg-active);
-	--rux-checkbox-focus-border:      var(--rux-accent);
-	--rux-checkbox-focus-ring:        var(--rux-input-focus-ring);
 	--rux-checkbox-disabled-bg:       var(--rux-input-disabled-bg);
 	--rux-checkbox-disabled-border:   var(--rux-input-disabled-border);
 	--rux-checkbox-disabled-fg:       var(--rux-fg-disabled);
@@ -806,7 +774,6 @@
 	--rux-color-swatch-size:         var(--rux-icon-xl);
 	--rux-color-swatch-radius:       var(--rux-radius-full);
 	--rux-color-swatch-border:       var(--rux-border-width) solid transparent;
-	--rux-color-swatch-focus-border: var(--rux-danger-bright);
 	--rux-color-swatch-ring-bg:      var(--rux-surface-canvas);
 	--rux-color-swatch-hover-ring:   0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 3px var(--color, var(--rux-accent));
 	--rux-color-swatch-checked-ring: 0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 4px var(--color, var(--rux-accent));
@@ -826,7 +793,6 @@
 	--rux-color-picker-option-size:    22px;
 	--rux-color-picker-option-border:  var(--rux-border-width) solid transparent;
 	--rux-color-picker-option-scale:   1.18;
-	--rux-color-picker-focus-border:   var(--rux-danger-bright);
 	--rux-color-picker-popover-bg:     var(--rux-surface-modal);
 	--rux-color-picker-popover-radius: var(--rux-radius-md);
 	--rux-color-picker-check-color:    var(--rux-fg-on-accent);
@@ -881,7 +847,6 @@
 	--rux-menu-item-pressed-bg:     var(--rux-bg-active);
 	--rux-menu-item-active-bg:      var(--rux-bg-active);
 	--rux-menu-item-active-fg:      var(--rux-fg);
-	--rux-menu-item-focus-border:   var(--rux-accent);
 	--rux-menu-item-disabled-fg:    var(--rux-fg-disabled);
 	--rux-menu-item-danger-fg:      var(--rux-danger);
 	--rux-menu-divider:             var(--rux-border);
@@ -902,7 +867,6 @@
 	--rux-tab-hover-bg:            transparent;
 	--rux-tab-hover-fg:            var(--rux-fg);
 	--rux-tab-pressed-bg:          var(--rux-button-active-overlay);
-	--rux-tab-focus-border:        var(--rux-accent);
 	--rux-tab-disabled-fg:         var(--rux-fg-disabled);
 	--rux-tab-selected-bg:         var(--rux-button-default-background);
 	--rux-tab-selected-fg:         var(--rux-button-default-text);

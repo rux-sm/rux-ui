@@ -22,8 +22,6 @@
 }
 
 .rux-menu__item {
-	--_focus-border: var(--rux-menu-item-focus-border);
-
 	display: flex;
 	width: 100%;
 	height: var(--rux-menu-item-height);
@@ -47,10 +45,6 @@
 
 .rux-menu__item:active {
 	background: var(--rux-menu-item-pressed-bg);
-}
-
-.rux-menu__item:focus-visible {
-	border-color: var(--rux-menu-item-focus-border);
 }
 
 .rux-menu__item:disabled,

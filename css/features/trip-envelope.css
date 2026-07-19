@@ -13,8 +13,10 @@
    but scoped to .rux-trip-envelope instead.
    ========================================================================== */
 
+/* ── Floating window chrome (screen only — none of this prints) ────────── */
+
 .rux-trip-envelope-window {
-	top: 8%;
+	top: 0%;
 	left: 50%;
 	transform: translateX(-50%);
 	width: min(640px, calc(100vw - var(--rux-space-6) * 2));
@@ -76,6 +78,8 @@
 	--env-paper: oklch(88% 0.05 95);
 }
 
+/* ── Header — day, logo, company info (shared by Standard and MVM) ─────── */
+
 .rux-trip-envelope__header {
 	text-align: center;
 	margin-block-end: var(--rux-space-4);
@@ -112,6 +116,8 @@
 	text-transform: uppercase;
 	color: var(--env-ink);
 }
+
+/* ── Field grid — Bus/Driver/Trip Date/etc rows (shared by Standard and MVM) ── */
 
 .rux-trip-envelope__grid {
 	border: 1px solid var(--env-rule);
@@ -154,7 +160,7 @@
 	min-height: 1.2em;
 }
 
-/* ── Footer: ELD / CC / cost lines, always blank ─────────────────────── */
+/* ── Footer — ELD / CC / cost lines, always blank (shared by Standard and MVM) ── */
 
 /* Two footer-lines per visual row (label|checks on the left, label|amount on
    the right) — a plain 2-col grid over the flat child list lines them up in
@@ -226,7 +232,7 @@
 	height: 1em;
 }
 
-/* ── Notes ───────────────────────────────────────────────────────────── */
+/* ── Notes (Standard-only) ──────────────────────────────────────────── */
 
 .rux-trip-envelope__notes {
 	margin-block-start: var(--rux-space-4);
@@ -236,7 +242,7 @@
 	padding: 0;
 }
 
-/* ── MVM location/time/odometer log table ───────────────────────────── */
+/* ── Stop log table (MVM-only) ───────────────────────────────────────── */
 
 .rux-trip-envelope__log {
 	width: 100%;
@@ -325,6 +331,10 @@
 
 	.rux-trip-envelope-window__body [data-envelope-content] {
 		width: 100%;
+		/* Screen-only fit-to-height (trip-envelope.js) sets an inline height
+		   here to match the scaled-down card below — reset needs !important
+		   since it's overriding an inline style, not just a stylesheet rule. */
+		height: auto !important;
 	}
 
 	/* Physical stock is 6in x 9in envelopes, not letter paper — the on-screen
@@ -332,12 +342,15 @@
 	   reading in the floating window, but that scale is sized for a desktop
 	   screen, not a 5.7in-wide printable area, so print gets its own
 	   deliberately compact sizing below rather than shrinking via transform
-	   (which would also blur/misalign the ruled borders). */
+	   (which would also blur/misalign the ruled borders). This is also why
+	   fit-to-height's inline transform: scale() needs resetting here too —
+	   same reasoning, print has its own sizing and never shrinks via transform. */
 	.rux-trip-envelope {
 		--env-paper: oklch(100% 0 0);
 		width: 100%;
 		max-width: 100%;
 		margin: 0;
+		transform: none !important;
 		/* @page's own margin isn't reliably respected here — the OS/print
 		   driver appears to cache a fixed margin against the named "Trip
 		   Envelope" custom paper size and reuse it regardless of what CSS
@@ -349,9 +362,10 @@
 		padding: .70in 0.25in 0.05in 0.25in;
 	}
 
-	/* --- Print Trip Envelope --- */
+	/* ── Print sizing overrides — shared by Standard and MVM, same as the
+	   screen-only rules above they're overriding ────────────────────────── */
 
-	.rux-trip-envelope__day { 
+	.rux-trip-envelope__day {
 		font-size: 32pt;
 	}
 

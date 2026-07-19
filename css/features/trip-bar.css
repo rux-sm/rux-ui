@@ -159,11 +159,6 @@
 	background-color: var(--_surface-pressed);
 }
 
-.rux-trip-bar:focus-visible {
-	outline: none;
-	box-shadow: var(--rux-trip-bar-focus-ring);
-}
-
 .rux-trip-bar[aria-disabled="true"] {
 	opacity: var(--rux-trip-bar-disabled-opacity);
 	cursor: not-allowed;
@@ -203,7 +198,6 @@
 
 .rux-trip-bar--unconfirmed {
 	--_tone: var(--rux-danger);
-	--rux-trip-bar-focus-ring: var(--rux-ring-danger);
 }
 
 /* ---------- Modifier: trip-type pattern overlays ---------- */
@@ -485,7 +479,6 @@
 }
 
 .rux-trip-bar__action {
-	--_focus-border: var(--rux-trip-bar-action-focus-border);
 	background: var(--rux-trip-bar-action-bg);
 	color: var(--rux-trip-bar-action-fg);
 	border: var(--rux-trip-bar-action-border);
@@ -501,10 +494,6 @@
 	background: var(--rux-trip-bar-action-pressed-bg);
 	color: var(--rux-trip-bar-action-fg);
 	border: var(--rux-trip-bar-action-pressed-border);
-}
-
-.rux-trip-bar__action:focus-visible {
-	box-shadow: var(--rux-trip-bar-action-focus-ring);
 }
 
 .rux-trip-bar__action:disabled,
