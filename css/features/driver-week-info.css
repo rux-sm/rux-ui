@@ -1,0 +1,159 @@
+/* ==========================================================================
+   DRIVER WEEK INFO
+   Copy-ready, driver-specific assignment summaries for the loaded schedule.
+   ========================================================================== */
+
+.rux-right-panel__footer-group {
+	display: flex;
+	width: 100%;
+	gap: var(--rux-panel-content-gap);
+}
+
+.rux-right-panel__footer-group[hidden] {
+	display: none;
+}
+
+.rux-right-panel__footer-group > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-driver-week-info {
+	display: flex;
+	flex-direction: column;
+	width: min(56rem, 100%);
+	max-width: 56rem;
+	max-height: min(52rem, calc(100dvh - 2 * var(--rux-space-5)));
+}
+
+.rux-driver-week-info .rux-modal__header {
+	flex: none;
+}
+
+.rux-driver-week-info__heading {
+	min-width: 0;
+}
+
+.rux-driver-week-info__heading .rux-modal__title {
+	margin: 0;
+}
+
+.rux-driver-week-info__range {
+	margin: var(--rux-space-1) 0 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-driver-week-info__body {
+	display: grid;
+	grid-template-columns: minmax(17rem, 0.9fr) minmax(22rem, 1.35fr);
+	gap: var(--rux-space-4);
+	min-height: 0;
+	overflow: hidden;
+}
+
+.rux-driver-week-info__section {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	min-height: 0;
+}
+
+.rux-driver-week-info__section-title {
+	margin: 0 0 var(--rux-space-2);
+	color: var(--rux-fg-default);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-driver-week-info__trips {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	overflow: auto;
+}
+
+.rux-driver-week-info__trip {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3);
+	background: var(--rux-surface-canvas);
+	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-radius: var(--rux-radius-lg);
+}
+
+.rux-driver-week-info__trip-check {
+	align-self: start;
+	min-height: var(--rux-checkbox-size);
+	margin-top: 0.15rem;
+}
+
+.rux-driver-week-info__trip-content {
+	min-width: 0;
+}
+
+.rux-driver-week-info__trip-title,
+.rux-driver-week-info__trip-meta {
+	margin: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-driver-week-info__trip-title {
+	color: var(--rux-fg-default);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-driver-week-info__trip-meta {
+	margin-top: var(--rux-space-1);
+	font-size: var(--rux-text-xs);
+}
+
+.rux-driver-week-info__trip-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-1);
+	margin-top: var(--rux-space-2);
+}
+
+.rux-driver-week-info__preview {
+	flex: 1;
+	width: 100%;
+	min-height: 23rem;
+	resize: none;
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+.rux-driver-week-info__empty {
+	margin: 0;
+	padding: var(--rux-space-4);
+	text-align: center;
+	background: var(--rux-surface-canvas);
+	border: var(--rux-border-width) dashed var(--rux-border);
+	border-radius: var(--rux-radius-lg);
+}
+
+.rux-driver-week-info .rux-modal__footer {
+	flex: none;
+}
+
+@media (max-width: 720px) {
+	.rux-driver-week-info__body {
+		grid-template-columns: 1fr;
+		overflow: auto;
+	}
+
+	.rux-driver-week-info__trips {
+		max-height: 15rem;
+	}
+
+	.rux-driver-week-info__preview {
+		min-height: 18rem;
+	}
+}

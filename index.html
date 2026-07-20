@@ -28,6 +28,7 @@
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=34" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=6" />
+		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=1" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=2" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
 		<link
@@ -2284,6 +2285,18 @@
 										<span class="rux-btn-label"
 											>Add Time Off</span
 										>
+									</button>
+									<button
+										class="rux-button rux-button--accent"
+										type="button"
+										id="rp-driver-info-btn"
+										disabled
+										title="Select a driver first"
+									>
+										<span class="rux-icon" aria-hidden="true"
+											>sms</span
+										>
+										<span class="rux-btn-label">Driver Info</span>
 									</button>
 								</div>
 							</footer>
@@ -5365,6 +5378,7 @@
 		<script src="./js/panels/trip-manifest.js?v=1" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=7" defer></script>
+		<script src="./js/panels/driver-week-info.js?v=1" defer></script>
 		<script src="./js/panels/components-panel.js" defer></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
@@ -7944,6 +7958,7 @@
 			const driverAddTimeOffBtn = document.getElementById(
 				"rp-driver-add-timeoff-btn",
 			);
+			const driverInfoBtn = document.getElementById("rp-driver-info-btn");
 			driverGridEl?.addEventListener("click", (e) => {
 				const row = e.target.closest(
 					".rux-driver-grid__row[data-driver-id]",
@@ -7958,11 +7973,29 @@
 					driverAddTimeOffBtn.disabled = false;
 					driverAddTimeOffBtn.title = "";
 				}
+				if (driverInfoBtn) {
+					driverInfoBtn.disabled = false;
+					driverInfoBtn.title = "";
+				}
 			});
 			driverAddTimeOffBtn?.addEventListener("click", () => {
 				if (!selectedGridDriverId) return;
 				showModule("drivers");
 				window.DriverPanel?.openTimeOff(selectedGridDriverId);
+			});
+			driverInfoBtn?.addEventListener("click", () => {
+				if (!selectedGridDriverId) return;
+				const driver = allDrivers.find(
+					(item) => String(item.id) === String(selectedGridDriverId),
+				);
+				if (!driver) return;
+				window.DriverWeekInfo?.open({
+					driver,
+					trips: allTripsRaw,
+					weekStart: new Date(currentWeekStart),
+					viewDays,
+					buses: schedulerBuses,
+				});
 			});
 
 			// ── Mini calendar ────────────────────────────────────────────────────
