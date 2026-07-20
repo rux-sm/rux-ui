@@ -480,8 +480,9 @@
 	--rux-trip-bar-tail-hover-opacity:    75%;
 	--rux-trip-bar-tail-pressed-opacity:  75%;
 
-	/* Shared ink keeps directional patterns equal in contrast. */
-	--rux-trip-bar-overlay: oklch(var(--rux-white) / 8%);
+	/* One-way/split-trip SVG stripe overlay. */
+	--rux-trip-bar-stripe-color:   var(--rux-white);
+	--rux-trip-bar-stripe-opacity: 0.1;
 
 	--rux-trip-bar-border-width: var(--rux-border-width);
 	--rux-trip-bar-radius:       var(--rux-radius-container);

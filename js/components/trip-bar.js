@@ -19,6 +19,8 @@ let floatingTooltipInstalled = false;
 let floatingTooltip = null;
 let floatingTooltipTarget = null;
 const tripBars = new Set();
+const SVG_NS = "http://www.w3.org/2000/svg";
+let tripBarStripePatternId = 0;
 
 /* ── Selection ──────────────────────────────────────────────────────────── */
 
@@ -89,6 +91,37 @@ function icon(name, className = "rux-icon") {
   el.className = className;
   el.textContent = ICON_MAP[name] || name;
   return el;
+}
+
+function createStripeLayer() {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  const patternId = `rux-trip-bar-stripes-${++tripBarStripePatternId}`;
+  svg.setAttribute("class", "rux-trip-bar__stripe-layer");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+
+  const defs = document.createElementNS(SVG_NS, "defs");
+  const pattern = document.createElementNS(SVG_NS, "pattern");
+  pattern.setAttribute("id", patternId);
+  pattern.setAttribute("width", "14");
+  pattern.setAttribute("height", "14");
+  pattern.setAttribute("patternUnits", "userSpaceOnUse");
+  pattern.setAttribute("patternTransform", "rotate(45)");
+  const stripe = document.createElementNS(SVG_NS, "rect");
+  stripe.setAttribute("class", "rux-trip-bar__stripe-mark");
+  stripe.setAttribute("width", "7");
+  stripe.setAttribute("height", "14");
+  pattern.appendChild(stripe);
+  defs.appendChild(pattern);
+
+  const fill = document.createElementNS(SVG_NS, "rect");
+  fill.setAttribute("width", "100%");
+  fill.setAttribute("height", "100%");
+  fill.setAttribute("fill", `url(#${patternId})`);
+  svg.append(defs, fill);
+  return svg;
 }
 
 function isPdfFile(file) {
@@ -764,6 +797,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const confirmed = trip.driverStatus === "confirmed";
   const singleDay = isSameTripDay(trip);
+  const patterned = trip.trip_type === "one_way" || trip.trip_type === "dropoff_pickup";
   const bar = document.createElement("article");
   bar.className = [
     "rux-trip-bar",
@@ -1129,10 +1163,12 @@ export function createTripBar(trip, callbacks = {}) {
   if (!singleDay) {
     const head = document.createElement("div");
     head.className = "rux-trip-bar__head";
+    if (patterned) head.appendChild(createStripeLayer());
     head.append(actions, body, details);
 
     const tail = document.createElement("div");
     tail.className = "rux-trip-bar__tail";
+    if (patterned) tail.appendChild(createStripeLayer());
 
     bar.append(head, tail);
 
@@ -1146,6 +1182,7 @@ export function createTripBar(trip, callbacks = {}) {
       bar.appendChild(conflict);
     }
   } else {
+    if (patterned) bar.appendChild(createStripeLayer());
     bar.append(actions, body);
 
     if (trip.conflict) {

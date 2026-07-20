@@ -200,111 +200,34 @@
 	--_tone: var(--rux-danger);
 }
 
-/* ---------- Modifier: trip-type pattern overlays ---------- */
-/* A thin diagonal hatch that bends at a center seam to form ONE big point
-   across the whole bar:
-     one-way:      top/bottom split  → point right
-     drop-off leg (start date): left/right split → point up
-     pick-up leg (return date): left/right split → point down
-
-   ::after is NOT a second, independently-angled gradient — it's the exact
-   SAME gradient as ::before, mirrored with an actual transform
-   (scaleY/scaleX(-1)), same clip-path as ::before. Two *different* angles
-   (e.g. 45deg + 135deg), even sharing one full-size box, don't reliably
-   meet at the seam: CSS computes each gradient's phase from where its own
-   angled line crosses the box's corners, and for a non-square box (a wide,
-   short trip bar) that computation differs per angle — so the two edges
-   only "happen" to line up, and in practice they don't (this is the
-   alternating/disconnected look from the previous version). A transform
-   has no such ambiguity: reflecting X is provably X reflected, so at the
-   mirror axis (which IS the seam, since transform-origin defaults to the
-   element's own center) the two halves' pixel values are identical by
-   construction, not by coincidence.
-
-   ::before/::after are pure decoration (no text of their own), but still
-   need z-index:-1 to stay behind the bar's REAL text, and __head/__tail/
-   the single-day base each need to be genuine stacking contexts
-   (isolation: isolate for the base; __head/__tail already have their own
-   explicit z-index) so that -1 never bleeds into a sibling bar's stacking.
-   All three share one ink token (--rux-trip-bar-overlay). */
-.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day),
-.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day),
-.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day) {
-	isolation: isolate;
-}
-
-.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::before,
-.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--one-way .rux-trip-bar__head::before,
-.rux-trip-bar--one-way .rux-trip-bar__head::after,
-.rux-trip-bar--one-way .rux-trip-bar__tail::before,
-.rux-trip-bar--one-way .rux-trip-bar__tail::after,
-.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::before,
-.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__head::before,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::before,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after,
-.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::before,
-.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--pickup-leg .rux-trip-bar__head::before,
-.rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
-.rux-trip-bar--pickup-leg .rux-trip-bar__tail::before,
-.rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
-	content: "";
+/* ---------- Modifier: trip-type pattern overlay ---------- */
+/* One simple SVG hatch is shared by one-way and both split-trip legs. The
+   existing icon communicates direction; the pattern only communicates that
+   this is a special trip type. It inherits the bar's blue/red/override
+   surface and stays beneath every interactive/content layer. */
+.rux-trip-bar__stripe-layer {
 	position: absolute;
 	inset: 0;
-	z-index: -1;
+	display: block;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
 	pointer-events: none;
-	background-image: repeating-linear-gradient(var(--_hatch-angle), var(--rux-trip-bar-overlay) 0 14px, transparent 14px 28px);
 }
 
-/* one-way: ::before = top half (45deg base), ::after = SAME gradient mirrored (scaleY) into the bottom half */
-.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::before,
-.rux-trip-bar--one-way .rux-trip-bar__head::before,
-.rux-trip-bar--one-way .rux-trip-bar__tail::before,
-.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--one-way .rux-trip-bar__head::after,
-.rux-trip-bar--one-way .rux-trip-bar__tail::after {
-	--_hatch-angle: 45deg;
-	clip-path: inset(0 0 50% 0);
-}
-.rux-trip-bar--one-way:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--one-way .rux-trip-bar__head::after,
-.rux-trip-bar--one-way .rux-trip-bar__tail::after {
-	transform: scaleY(-1);
+.rux-trip-bar > .rux-trip-bar__stripe-layer {
+	position: absolute;
+	z-index: 0;
 }
 
-/* drop-off leg (start date) points UP: ::before = left half (135deg base), ::after = SAME gradient mirrored (scaleX) into the right half */
-.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::before,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__head::before,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::before,
-.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after {
-	--_hatch-angle: 45deg;
-	clip-path: inset(0 0 50% 0);
-}
-.rux-trip-bar--dropoff-leg:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__head::after,
-.rux-trip-bar--dropoff-leg .rux-trip-bar__tail::after {
-	transform: scaleY(-1);
+.rux-trip-bar__stripe-mark {
+	fill: var(--rux-trip-bar-stripe-color);
+	fill-opacity: var(--rux-trip-bar-stripe-opacity);
 }
 
-/* pick-up leg (return date) points DOWN: ::before = left half (45deg base), ::after = SAME gradient mirrored (scaleX) into the right half */
-.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::before,
-.rux-trip-bar--pickup-leg .rux-trip-bar__head::before,
-.rux-trip-bar--pickup-leg .rux-trip-bar__tail::before,
-.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
-.rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
-	--_hatch-angle: -45deg;
-	clip-path: inset(0 0 50% 0);
-}
-.rux-trip-bar--pickup-leg:not(.rux-trip-bar--multi-day)::after,
-.rux-trip-bar--pickup-leg .rux-trip-bar__head::after,
-.rux-trip-bar--pickup-leg .rux-trip-bar__tail::after {
-	transform: scaleY(-1);
+.rux-trip-bar__head > :not(.rux-trip-bar__stripe-layer) {
+	position: relative;
+	z-index: 1;
 }
 
 /* ---------- Modifier: from-prev ---------- */
