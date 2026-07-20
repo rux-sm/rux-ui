@@ -530,7 +530,7 @@
 	--rux-button-border:              var(--rux-button-border-width) solid var(--rux-border-button);
 	--rux-button-font-family:         var(--rux-font-sans);
 	--rux-button-font-size:           var(--rux-text-sm);
-	--rux-button-font-weight:         var(--rux-weight-semibold);
+	--rux-button-font-weight:         var(--rux-weight-medium);
 	--rux-button-icon-size:           var(--rux-icon-md);
 	--rux-button-mobile-icon-size:    24px;
 	--rux-button-hover-text:          var(--rux-accent);
