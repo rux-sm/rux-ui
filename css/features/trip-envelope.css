@@ -41,7 +41,7 @@
     flex-grow: 1;
     min-height: 0; /* lets this actually shrink to the window's real size instead of refusing to go below the card's natural (pre-scale) content size */
     padding: var(--rux-space-4);
-    background: oklch(35% 0.005 259);
+    background: var(--rux-surface-modal);
     /* Fallback only, not the primary mechanism — fitToHeight() computes an
        exact scale to fit this space, so overflow shouldn't normally trigger. */
     overflow: auto;
@@ -66,18 +66,18 @@
 }
 
 .rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope-window__body {
-	background: var(--rux-surface-modal);
+    --env-paper: oklch(100% 0.0 0);
 }
 
 .rux-trip-envelope-window[data-tint="yellow"] .rux-trip-envelope-window__body {
-	background: oklch(30% 0.02 95);
+    --env-paper: oklch(87% 0.04 95);
 }
 
 .rux-trip-envelope-window__footer {
 	flex: none;
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-3);
+	gap: var(--rux-space-2);
 	background: var(--rux-surface-modal);
 }
 
@@ -89,27 +89,27 @@
 
 
 .rux-trip-envelope {
+	--env-paper: oklch(100% 0 0);
+	--env-ink: oklch(18% 0 0);
+	--env-ink-muted: oklch(45% 0 0);
+	--env-rule: oklch(25% 0 0);
+	/* Width matches the real print stock (6in, see @page below); height is
+	   fully natural/content-driven — no aspect-ratio. trip-envelope.js's
+	   fitToHeight() scales this whole box (via transform, preserving
+	   whatever shape the natural width/height turns out to be) to fit
+	   the window, so this doesn't need to pre-constrain its own shape. */
+	width: 6in;
+	min-width: 6in;
+	flex: 0 0 auto;
 
-	    --env-paper: oklch(100% 0 0);
-    --env-ink: oklch(18% 0 0);
-    --env-ink-muted: oklch(45% 0 0);
-    --env-rule: oklch(25% 0 0);
-    /* Width matches the real print stock (6in, see @page below); height is
-       fully natural/content-driven — no aspect-ratio. trip-envelope.js's
-       fitToHeight() scales this whole box (via transform, preserving
-       whatever shape the natural width/height turns out to be) to fit
-       the window, so this doesn't need to pre-constrain its own shape. */
-    width: min(6in, 100%);
-    min-width: 0;
+	/* Make the text fluid */
+	container-type: inline-size;
+	container-name: envelope;
 
-    /* Make the text fluid */
-    container-type: inline-size;
-    container-name: envelope;
-
-    padding: var(--rux-space-6) var(--rux-space-4) var(--rux-space-6) var(--rux-space-4);
-    background: var(--env-paper);
-    color: var(--env-ink);
-    font-family: var(--rux-font-sans);
+	padding: var(--rux-space-1) var(--rux-space-4);
+	background: var(--env-paper);
+	color: var(--env-ink);
+	font-family: var(--rux-font-sans);
 }
 
 .rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope {
@@ -124,6 +124,7 @@
 
 .rux-trip-envelope__header {
 	text-align: center;
+	margin-block-start: var(--rux-space-6);
 	margin-block-end: var(--rux-space-4);
 }
 
@@ -188,18 +189,20 @@
 }
 
 .rux-trip-envelope__label {
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
+	line-height: 1;
 	letter-spacing: var(--rux-tracking-wide);
 	text-transform: uppercase;
 	color: var(--env-ink-muted);
 }
 
 .rux-trip-envelope__value {
-	font-size: var(--rux-text-lg);
+	font-size: var(--rux-text-sm);
+	line-height: 1;
+	text-transform: uppercase;
 	font-weight: var(--rux-weight-bold);
 	color: var(--env-ink);
-	min-height: 1.2em;
 }
 
 /* ── Footer — ELD / CC / cost lines, always blank (shared by Standard and MVM) ── */
@@ -278,6 +281,7 @@
 
 .rux-trip-envelope__notes {
 	margin-block-start: var(--rux-space-4);
+	padding-bottom: 120px;
 }
 
 .rux-trip-envelope__notes .rux-trip-envelope__footer-label {
