@@ -414,12 +414,18 @@
 		return Math.max(0, gross - sleeperDwell);
 	}
 
+	function calculatedMiles(stops) {
+		return stops
+			.filter((s) => s.type !== "day" && s.type !== "sleeper")
+			.reduce((total, stop) => total + parseFloat(stop.miles || 0), 0);
+	}
+
 	function renderSummary(stops) {
 		const real = stops.filter((s) => s.type !== "day");
 		// Sleeper never travels — excluded from travel totals as a safety net
 		// even though its own fields should always be zero (see syncSleeperLeg).
 		const travelStops = real.filter((s) => s.type !== "sleeper");
-		const totalMiles = travelStops.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
+		const totalMiles = calculatedMiles(travelStops);
 		const totalDrive = travelStops.reduce((n, s) => n + parseDriveMins(s.drive), 0);
 		const dayCount = stops.filter((s) => s.type === "day").length + 1;
 		const onDutyMins = computeOnDuty(stops);
@@ -650,6 +656,7 @@
 		const importBtn = root.querySelector("#tp-import-btn");
 		const legToggleEl = root.querySelector("#tp-itin-leg-toggle");
 		const legCardEl = root.querySelector("#tp-itin-leg-card");
+		const resetLegBtn = root.querySelector("#tp-itin-reset-leg");
 		let activeDayMode = { day: null, mode: null };
 
 		// Split trips get a second, independent stop list (pickup -> stops ->
@@ -663,12 +670,34 @@
 		let legBuffers = { outbound: null, return: null };
 
 		function setLegToggleValue(leg) {
-			if (!legToggleEl) return;
-			legToggleEl.querySelectorAll(".rux-button").forEach((btn) => {
+			legToggleEl?.querySelectorAll(".rux-button").forEach((btn) => {
 				const on = btn.dataset.value === leg;
 				btn.setAttribute("aria-pressed", String(on));
 				btn.classList.toggle("is-active", on);
 			});
+			if (resetLegBtn) {
+				const legLabel = leg === "return" ? "Inbound" : "Outbound";
+				resetLegBtn.title = `Reset ${legLabel} itinerary`;
+				resetLegBtn.setAttribute("aria-label", `Reset ${legLabel} itinerary`);
+				const label = resetLegBtn.querySelector("[data-reset-leg-label]");
+				if (label) label.textContent = `Reset ${legLabel}`;
+			}
+		}
+
+		function resetActiveLeg() {
+			const legLabel = activeLeg === "return" ? "Inbound" : "Outbound";
+			if (
+				!confirm(
+					`Reset the ${legLabel} itinerary? This clears its addresses, times, mileage, and added days. The other leg will not change.`,
+				)
+			) return false;
+
+			stops.length = 0;
+			stops.push(...defaultStops());
+			activeDayMode = { day: null, mode: null };
+			updateSummary();
+			renderStopList();
+			return true;
 		}
 
 		function switchLeg(leg) {
@@ -792,6 +821,18 @@
 
 		function updateSummary() {
 			summaryEl.innerHTML = renderSummary(stops);
+			const outboundStops = activeLeg === "outbound"
+				? stops
+				: (legBuffers.outbound ?? []);
+			const returnStops = activeLeg === "return"
+				? stops
+				: (legBuffers.return ?? []);
+			const totalMiles = calculatedMiles(outboundStops) + calculatedMiles(returnStops);
+			const roundedMiles = Math.round(totalMiles * 10) / 10;
+			root.dispatchEvent(new CustomEvent("rux:itinerary-miles-changed", {
+				bubbles: true,
+				detail: { miles: roundedMiles > 0 ? roundedMiles : null },
+			}));
 			const actions = summaryEl.querySelector(".rux-trip-itinerary__summary-actions");
 			if (!actions) return;
 			if (importBtn) actions.appendChild(importBtn);
@@ -1158,6 +1199,7 @@
 			// indices, silently misapplying results to the wrong leg — lock the
 			// toggle for the duration.
 			legToggleEl?.querySelectorAll(".rux-button").forEach((btn) => { btn.disabled = true; });
+			if (resetLegBtn) resetLegBtn.disabled = true;
 			let routed = 0;
 			for (let i = 0; i < stops.length; i++) {
 				if (await estimateLeg(i, options)) routed++;
@@ -1166,6 +1208,7 @@
 			autoPopulatePickupSpot(stops);
 			autoPopulatePickupDepart(stops);
 			legToggleEl?.querySelectorAll(".rux-button").forEach((btn) => { btn.disabled = false; });
+			if (resetLegBtn) resetLegBtn.disabled = false;
 			if (recalcBtn) {
 				recalcBtn.disabled = false;
 				recalcBtn.classList.remove("is-routing");
@@ -1478,6 +1521,7 @@
 		root.querySelector("#tp-itin-recalc")?.addEventListener("click", () => {
 			recalculateRoute({ force: true });
 		});
+		resetLegBtn?.addEventListener("click", resetActiveLeg);
 
 		const api = {
 			// Defaults to whichever leg is currently on screen (not a literal
@@ -1497,6 +1541,7 @@
 					renderStopList();
 				} else {
 					legBuffers[leg] = normalized;
+					updateSummary();
 				}
 			},
 			clearStops: () => {
@@ -1510,6 +1555,7 @@
 			},
 			setActiveLeg: (leg) => switchLeg(leg),
 			getActiveLeg: () => activeLeg,
+			resetActiveLeg,
 			setLegToggleVisible: (visible) => {
 				if (legCardEl) legCardEl.hidden = !visible;
 				if (!visible && activeLeg !== "outbound") switchLeg("outbound");

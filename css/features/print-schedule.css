@@ -245,7 +245,6 @@
 .rux-print-trip {
 	--_print-trip-tint: var(--_print-trip-override-tint, var(--print-accent-tint));
 	--_print-trip-line: var(--_print-trip-override-line, var(--print-accent-line));
-	--_print-trip-stripe: color-mix(in oklch, var(--_print-trip-line) 28%, var(--_print-trip-tint));
 	box-sizing: border-box;
 	position: relative;
 	isolation: isolate;
@@ -294,77 +293,37 @@
 	--_print-trip-line: var(--print-danger-line);
 }
 
-/* A thin diagonal hatch that bends at a center seam to form ONE big point
-   across the whole card (see trip-bar.css for the full technique and why
-   it's built this way). ::after is NOT a second, independently-angled
-   gradient — it's the exact SAME gradient as ::before, mirrored with an
-   actual transform (scaleY/scaleX(-1)), same clip-path as ::before, so the
-   two halves are provably identical at the seam by construction rather
-   than by hoping two differently-angled gradients happen to phase-match on
-   this card's non-square box. Reuses --_print-trip-stripe, already the one
-   ink shared across this card's other tints, in place of the screen
-   token. */
-.rux-print-trip--one-way::before,
-.rux-print-trip--one-way::after,
-.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content::before,
-.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content::after,
-.rux-print-trip--dropoff-leg::before,
-.rux-print-trip--dropoff-leg::after,
-.rux-print-trip--dropoff-leg.rux-print-trip--multi-day .rux-print-trip__content::before,
-.rux-print-trip--dropoff-leg.rux-print-trip--multi-day .rux-print-trip__content::after,
-.rux-print-trip--pickup-leg::before,
-.rux-print-trip--pickup-leg::after,
-.rux-print-trip--pickup-leg.rux-print-trip--multi-day .rux-print-trip__content::before,
-.rux-print-trip--pickup-leg.rux-print-trip--multi-day .rux-print-trip__content::after {
-	content: "";
+.rux-print-trip--one-way,
+.rux-print-trip--dropoff-leg,
+.rux-print-trip--pickup-leg,
+.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content,
+.rux-print-trip--dropoff-leg.rux-print-trip--multi-day .rux-print-trip__content,
+.rux-print-trip--pickup-leg.rux-print-trip--multi-day .rux-print-trip__content {
+	background-color: transparent;
+}
+
+/* Print-only SVG pattern: a vector color field plus simple white 45°
+   stripes. It is foreground artwork rather than a CSS background image,
+   so print engines preserve it more reliably. */
+.rux-print-trip__stripe-layer {
 	position: absolute;
 	inset: 0;
-	z-index: -1;
-	background-image: repeating-linear-gradient(var(--_hatch-angle), var(--_print-trip-stripe) 0 3px, transparent 3px 7px);
+	z-index: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
 }
 
-/* one-way: ::before = top half (45deg base), ::after = SAME gradient mirrored (scaleY) into the bottom half */
-.rux-print-trip--one-way::before,
-.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content::before,
-.rux-print-trip--one-way::after,
-.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content::after {
-	--_hatch-angle: 45deg;
-	clip-path: inset(0 0 50% 0);
-}
-.rux-print-trip--one-way::after,
-.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content::after {
-	transform: scaleY(-1);
-}
-
-/* drop-off leg (start date) points UP: ::before = left half (135deg base), ::after = SAME gradient mirrored (scaleX) into the right half */
-.rux-print-trip--dropoff-leg::before,
-.rux-print-trip--dropoff-leg.rux-print-trip--multi-day .rux-print-trip__content::before,
-.rux-print-trip--dropoff-leg::after,
-.rux-print-trip--dropoff-leg.rux-print-trip--multi-day .rux-print-trip__content::after {
-	--_hatch-angle: 135deg;
-	clip-path: inset(0 50% 0 0);
-}
-.rux-print-trip--dropoff-leg::after,
-.rux-print-trip--dropoff-leg.rux-print-trip--multi-day .rux-print-trip__content::after {
-	transform: scaleX(-1);
-}
-
-/* pick-up leg (return date) points DOWN: ::before = left half (45deg base), ::after = SAME gradient mirrored (scaleX) into the right half */
-.rux-print-trip--pickup-leg::before,
-.rux-print-trip--pickup-leg.rux-print-trip--multi-day .rux-print-trip__content::before,
-.rux-print-trip--pickup-leg::after,
-.rux-print-trip--pickup-leg.rux-print-trip--multi-day .rux-print-trip__content::after {
-	--_hatch-angle: 45deg;
-	clip-path: inset(0 50% 0 0);
-}
-.rux-print-trip--pickup-leg::after,
-.rux-print-trip--pickup-leg.rux-print-trip--multi-day .rux-print-trip__content::after {
-	transform: scaleX(-1);
+.rux-print-trip__stripe-base {
+	fill: var(--_print-trip-line);
+	fill-opacity: 0.28;
 }
 
 .rux-print-trip__content {
 	box-sizing: border-box;
 	position: relative;
+	z-index: 1;
 	isolation: isolate;
 	display: grid;
 	grid-auto-rows: minmax(0, 1fr);

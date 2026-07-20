@@ -76,6 +76,44 @@
     return el("span", className, ICON_MAP[name] || name);
   }
 
+  const SVG_NS = "http://www.w3.org/2000/svg";
+  let printStripePatternId = 0;
+
+  function createPrintStripeLayer() {
+    const svg = document.createElementNS(SVG_NS, "svg");
+    const patternId = `rux-print-stripes-${++printStripePatternId}`;
+    svg.setAttribute("class", "rux-print-trip__stripe-layer");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "100%");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+
+    const defs = document.createElementNS(SVG_NS, "defs");
+    const pattern = document.createElementNS(SVG_NS, "pattern");
+    pattern.setAttribute("id", patternId);
+    pattern.setAttribute("width", "8");
+    pattern.setAttribute("height", "8");
+    pattern.setAttribute("patternUnits", "userSpaceOnUse");
+    pattern.setAttribute("patternTransform", "rotate(45)");
+    const stripe = document.createElementNS(SVG_NS, "rect");
+    stripe.setAttribute("width", "3");
+    stripe.setAttribute("height", "8");
+    stripe.setAttribute("fill", "white");
+    pattern.appendChild(stripe);
+    defs.appendChild(pattern);
+
+    const base = document.createElementNS(SVG_NS, "rect");
+    base.setAttribute("class", "rux-print-trip__stripe-base");
+    base.setAttribute("width", "100%");
+    base.setAttribute("height", "100%");
+    const stripes = document.createElementNS(SVG_NS, "rect");
+    stripes.setAttribute("width", "100%");
+    stripes.setAttribute("height", "100%");
+    stripes.setAttribute("fill", `url(#${patternId})`);
+    svg.append(defs, base, stripes);
+    return svg;
+  }
+
   function fmtTime(value) {
     if (!value) return "--:--";
     const text = String(value).trim();
@@ -106,9 +144,8 @@
   // in itinerary.js) — "day" markers aren't real travel segments and sleeper
   // stops never travel (their own miles should always be zero — see
   // syncSleeperLeg in itinerary.js — excluded again here as a safety net), so
-  // both are excluded from the sum. Falls back to the manually entered
-  // Billing-tab estimate (trip.estimatedMiles) only when there's no itinerary
-  // data yet.
+  // both are excluded from the sum. A manually entered Billing-tab estimate
+  // is applied later as an explicit override of this calculated total.
   function itineraryMiles(trip) {
     const real = sortedTripStops(trip).filter((s) => s.type !== "day" && s.type !== "sleeper");
     const total = real.reduce((n, s) => n + (parseFloat(s.miles) || 0), 0);
@@ -249,9 +286,11 @@
     if (["cyan", "green", "purple", "yellow", "orange", "pink"].includes(tripBarColor)) {
       card.dataset.tripBarColor = tripBarColor;
     }
-    if ((trip.trip_type || trip.tripType) === "one_way") card.classList.add("rux-print-trip--one-way");
-    if ((trip.trip_type || trip.tripType) === "dropoff_pickup" && trip.leg === "outbound") card.classList.add("rux-print-trip--dropoff-leg");
-    if ((trip.trip_type || trip.tripType) === "dropoff_pickup" && trip.leg === "return") card.classList.add("rux-print-trip--pickup-leg");
+    const tripTypeVal = trip.trip_type || trip.tripType;
+    const isPatternedTrip = tripTypeVal === "one_way" || tripTypeVal === "dropoff_pickup";
+    if (tripTypeVal === "one_way") card.classList.add("rux-print-trip--one-way");
+    if (tripTypeVal === "dropoff_pickup" && trip.leg === "outbound") card.classList.add("rux-print-trip--dropoff-leg");
+    if (tripTypeVal === "dropoff_pickup" && trip.leg === "return") card.classList.add("rux-print-trip--pickup-leg");
     if (entry.span > 1 || entry.fromPrev || entry.toNext) card.classList.add("rux-print-trip--multi-day");
     if (entry.fromPrev) card.classList.add("rux-print-trip--from-prev");
     if (entry.toNext) card.classList.add("rux-print-trip--to-next");
@@ -263,6 +302,13 @@
         ? `calc((100% - ${Math.max(0, entry.span - 1) * 4}px) / ${entry.span})`
         : "100%",
     );
+    if (isPatternedTrip) card.appendChild(createPrintStripeLayer());
+
+    // Match the live scheduler's from-prev treatment: once a trip's head
+    // occurred in the previous week, this week's clipped placement is only
+    // its continuation rail. Repeating destination/times/details on Monday
+    // makes the printout look as though the trip starts again this week.
+    if (entry.fromPrev) return card;
 
     const content = el("div", "rux-print-trip__content");
 
@@ -275,7 +321,6 @@
       if (datePaid) paidBadge.appendChild(el("span", "rux-print-trip__paid-date", datePaid));
       destinationRow.appendChild(paidBadge);
     }
-    const tripTypeVal = trip.trip_type || trip.tripType;
     if (tripTypeVal === "dropoff_pickup") {
       // start (|→, leaving a fixed point) / keyboard_tab (→|, arriving at
       // one) — true mirror images of each other, both already pointing
@@ -347,7 +392,7 @@
         ? trip.drivers.map((driver, i) => [i === 0 ? "D1" : `R${i}`, driver.pay || ""])
         : [["D1", ""]];
       appendDetailRow(content, driverPayFields, "rux-print-trip__detail-row--after-drivers");
-      appendDetailRow(content, [["Mi", formatMiles(itineraryMiles(trip) ?? trip.estimatedMiles)], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
+      appendDetailRow(content, [["Mi", formatMiles(trip.estimatedMiles ?? itineraryMiles(trip))], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
       appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", trip.paymentRef || ""]]);
       appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "rux-print-trip__detail-row--single");
       appendDetailRow(content, [["Pmt", "", buildPaymentValueEl(trip)]], "rux-print-trip__detail-row--single");

@@ -496,9 +496,8 @@ function sortedTripStops(trip) {
 // (renderSummary() in itinerary.js) — "day" markers aren't real travel
 // segments and sleeper stops never travel (their own miles should always be
 // zero — see syncSleeperLeg in itinerary.js — excluded again here as a safety
-// net), so both are excluded from the sum. Falls back to the manually entered
-// Billing-tab estimate (trip.estimatedMiles) only when there's no itinerary
-// data yet, so that field still has a purpose before a route's been built out.
+// net), so both are excluded from the sum. A manually entered Billing-tab
+// estimate is applied later as an explicit override of this calculated total.
 function itineraryMiles(trip) {
   const real = sortedTripStops(trip).filter((s) => s.type !== "day" && s.type !== "sleeper");
   const total = real.reduce((n, s) => n + (parseFloat(s.miles) || 0), 0);
@@ -1074,7 +1073,7 @@ export function createTripBar(trip, callbacks = {}) {
   }));
 
   const restFields = [
-    ["Mi", formatMiles(itineraryMiles(trip) ?? trip.estimatedMiles)],
+    ["Mi", formatMiles(trip.estimatedMiles ?? itineraryMiles(trip))],
     ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""],
     ["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""],
     ["PO", trip.paymentRef || ""],

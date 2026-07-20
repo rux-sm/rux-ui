@@ -21,6 +21,7 @@ import { supabase } from "./supabase.js";
 	let currentTripSnapshot = null;
 	let currentAssignments = [];
 	let currentLoadedTrip = null;
+	let currentStopsHydrated = true;
 
 	/* ── Trip ref ────────────────────────────────────────────────────────── */
 
@@ -89,6 +90,24 @@ import { supabase } from "./supabase.js";
 
 	function optionalNumVal(root, id) {
 		return root.querySelector(`#${id}`) ? numVal(root, id) : undefined;
+	}
+
+	// The visible field mirrors the live itinerary total while in auto mode,
+	// but only an explicit manual edit is persisted. Keeping calculated miles
+	// in trip_stops avoids freezing a duplicate estimate that would immediately
+	// become stale the next time the route changes.
+	function estimatedMilesOverride(root) {
+		const input = root.querySelector("#tp-est-mi");
+		if (!input || input.dataset.milesMode !== "manual") return null;
+		return numVal(root, "tp-est-mi");
+	}
+
+	function setEstimatedMilesField(root, override) {
+		const input = root.querySelector("#tp-est-mi");
+		if (!input) return;
+		const hasOverride = override !== null && override !== undefined && override !== "";
+		input.dataset.milesMode = hasOverride ? "manual" : "auto";
+		input.value = hasOverride ? override : (input.dataset.calculatedMiles || "");
 	}
 
 	function intVal(root, id, fallback = null) {
@@ -237,7 +256,7 @@ import { supabase } from "./supabase.js";
 			contract_status:  contractSigned ? "Signed" : "Pending",
 			contract_note:    contractSigned ? fieldVal(root, "tp-contract-note") : null,
 			quoted_price:     quotedPrice,
-			est_miles:        optionalNumVal(root, "tp-est-mi"),
+			est_miles:        estimatedMilesOverride(root),
 			driving_hours:    optionalNumVal(root, "tp-drive-hr"),
 			on_duty_hours:    optionalNumVal(root, "tp-duty-hr"),
 			invoice_status:   invoiced ? "Invoiced" : "Pending",
@@ -556,7 +575,7 @@ import { supabase } from "./supabase.js";
 		if (balancePaidEl) balancePaidEl.checked = !!(trip.balance_paid || trip.date_paid);
 		setVal(root, "tp-contract-note", trip.contract_note);
 		setVal(root, "tp-price",    trip.quoted_price);
-		setVal(root, "tp-est-mi",   trip.est_miles);
+		setEstimatedMilesField(root, trip.est_miles);
 		setVal(root, "tp-drive-hr", trip.driving_hours);
 		setVal(root, "tp-duty-hr",  trip.on_duty_hours);
 		setVal(root, "tp-po",        trip.po_ref);
@@ -751,20 +770,36 @@ import { supabase } from "./supabase.js";
 	}
 
 	// Rows missing `leg` (pre-migration data, or the legacy-schema save
-	// fallback) default to "outbound" so old trips keep loading unchanged.
-	function populateStops(itinerary, rows) {
+	// fallback) default to outbound; split-trip legacy sequences are repaired
+	// below when their old concatenated shape can be identified safely.
+	function populateStops(itinerary, rows, { splitTrip = false } = {}) {
 		// itinerary.js is a singleton reused across every trip opened —
 		// force the view back to Outbound before loading this trip's stops,
 		// otherwise a Split trip loaded right after another Split trip that
 		// was left on "Inbound" would populate outbound data into a buffer
 		// instead of the visible array, opening on the wrong leg.
 		itinerary.setActiveLeg("outbound");
-		const outboundRows = rows
+		let outboundRows = rows
 			.filter((r) => (r.leg ?? "outbound") !== "return")
 			.sort((a, b) => a.position - b.position);
-		const returnRows = rows
+		let returnRows = rows
 			.filter((r) => r.leg === "return")
 			.sort((a, b) => a.position - b.position);
+
+		// Before trip_stops.leg existed, split-trip saves fell back to the column's
+		// default and both leg sequences became outbound. The old shape is
+		// unambiguous when a second Pickup begins after the first Return. Repair it
+		// in memory; the next normal save writes the trailing rows back as return.
+		if (splitTrip && returnRows.length === 0) {
+			const firstReturnIndex = outboundRows.findIndex((row) => row.type === "return");
+			const secondPickupIndex = outboundRows.findIndex(
+				(row, index) => index > firstReturnIndex && row.type === "pickup",
+			);
+			if (firstReturnIndex >= 0 && secondPickupIndex > firstReturnIndex) {
+				returnRows = outboundRows.slice(secondPickupIndex);
+				outboundRows = outboundRows.slice(0, secondPickupIndex);
+			}
+		}
 		itinerary.setStops(outboundRows.map(stopFromRow), "outbound");
 		itinerary.setStops(returnRows.map(stopFromRow), "return");
 	}
@@ -803,6 +838,7 @@ import { supabase } from "./supabase.js";
 		window.TripPanel?.setItineraryNotNeeded(root, false);
 		const defaultTripBarColor = root.querySelector("[name='tripBarColor'][value='']");
 		if (defaultTripBarColor) defaultTripBarColor.checked = true;
+		setEstimatedMilesField(root, null);
 		resetPaymentRows(root);
 		resetTicketOptionRows(root);
 		root.querySelectorAll("[data-req]").forEach((btn) => {
@@ -822,6 +858,7 @@ import { supabase } from "./supabase.js";
 		currentTripSnapshot = null;
 		currentAssignments = [];
 		currentLoadedTrip = null;
+		currentStopsHydrated = true;
 		syncManifestBtn(root);
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
@@ -857,6 +894,9 @@ import { supabase } from "./supabase.js";
 		setSaveButtonState(saveBtn, { busy: true, label: "Saving" });
 
 		try {
+			if (!currentStopsHydrated) {
+				throw new Error("Both split-trip itinerary legs were not loaded. Reopen the trip before saving.");
+			}
 			const nextTripData = collectTrip(root);
 			const tripData = savingTripId
 				? mergeUpdate(nextTripData, savingSnapshot || {})
@@ -1174,6 +1214,12 @@ export function loadTrip(root, itinerary, trip) {
 		balance_paid:   trip.balance_paid   ?? false,
 		deposit_amount: trip.deposit_amount ?? null,
 	};
+	// A scheduler placement without allTripStops is a leg-filtered projection.
+	// Mark that load unsafe so the replace-all stop save cannot erase the leg
+	// that never reached the editor (also protects already-rendered cached bars).
+	currentStopsHydrated = normalized.trip_type !== "dropoff_pickup"
+		|| Array.isArray(trip.allTripStops)
+		|| !trip.leg;
 	const loadedAssignments = trip.assignments ?? trip.trip_assignments ?? [];
 	const outboundAssignments = loadedAssignments.filter((a) => (a.leg ?? "outbound") !== "return");
 	const returnAssignments = loadedAssignments.filter((a) => a.leg === "return");
@@ -1205,7 +1251,17 @@ export function loadTrip(root, itinerary, trip) {
 	populatePayments(root, trip.trip_payments ?? []);
 	populateTicketOptions(root, trip.trip_ticket_options ?? []);
 	root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
-	populateStops(itinerary, trip.trip_stops ?? trip.stops ?? []);
+	// Scheduler bars carry leg-filtered trip_stops for their own summary, plus
+	// allTripStops for the editor. Prefer the complete array so opening either
+	// the outbound or return placement hydrates both itinerary buffers.
+	populateStops(
+		itinerary,
+		trip.allTripStops ?? trip.trip_stops ?? trip.stops ?? [],
+		{ splitTrip: normalized.trip_type === "dropoff_pickup" },
+	);
+	if (normalized.trip_type === "dropoff_pickup" && trip.leg === "return") {
+		itinerary.setActiveLeg("return");
+	}
 
 	if (currentTripId) {
 		// Freeze which trip this fetch is for — loadTrip() isn't awaited by its
@@ -1399,6 +1455,29 @@ export function initTripDB(root, itinerary) {
 	const clearBtn  = root.querySelector("#tp-btn-clear");
 	const deleteBtn = root.querySelector("#tp-btn-delete");
 	const manifestBtn = root.querySelector("#tp-view-manifest-btn");
+	const estimatedMilesInput = root.querySelector("#tp-est-mi");
+
+	function syncCalculatedMiles(value) {
+		if (!estimatedMilesInput) return;
+		estimatedMilesInput.dataset.calculatedMiles = value == null ? "" : String(value);
+		if (estimatedMilesInput.dataset.milesMode !== "manual") {
+			estimatedMilesInput.dataset.milesMode = "auto";
+			estimatedMilesInput.value = estimatedMilesInput.dataset.calculatedMiles;
+		}
+	}
+
+	estimatedMilesInput?.addEventListener("input", () => {
+		if (estimatedMilesInput.value.trim() === "") {
+			estimatedMilesInput.dataset.milesMode = "auto";
+			estimatedMilesInput.value = estimatedMilesInput.dataset.calculatedMiles || "";
+			return;
+		}
+		estimatedMilesInput.dataset.milesMode = "manual";
+	});
+
+	root.addEventListener("rux:itinerary-miles-changed", (event) => {
+		syncCalculatedMiles(event.detail?.miles ?? null);
+	});
 
 	let cleanSnapshot = null;
 

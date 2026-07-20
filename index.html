@@ -26,7 +26,7 @@
 		<link rel="stylesheet" href="./css/features/flip-seven.css?v=17" />
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
-		<link rel="stylesheet" href="./css/features/print-schedule.css?v=29" />
+		<link rel="stylesheet" href="./css/features/print-schedule.css?v=34" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=2" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=2" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
@@ -992,7 +992,7 @@
 														name="estMiles"
 														type="number"
 														min="0"
-														step="1"
+														step="0.1"
 														placeholder="0"
 														aria-label="Estimated miles"
 													/>
@@ -1304,6 +1304,22 @@
 												<p class="rux-card__title">
 													Split Trip
 												</p>
+												<button
+													class="rux-button rux-button--ghost rux-button--danger"
+													id="tp-itin-reset-leg"
+													type="button"
+													title="Reset Outbound itinerary"
+													aria-label="Reset Outbound itinerary"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>restart_alt</span
+													>
+													<span data-reset-leg-label
+														>Reset Outbound</span
+													>
+												</button>
 											</header>
 											<div class="rux-card__body">
 												<div class="rux-field">
@@ -4861,7 +4877,7 @@
 		<script src="./js/panels/settings-panel.js?v=2" defer></script>
 		<script src="./js/panels/trips-list.js?v=8" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=1" defer></script>
-		<script src="./js/panels/print-schedule.js?v=29" defer></script>
+		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=2" defer></script>
 		<script src="./js/panels/components-panel.js" defer></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
@@ -5839,7 +5855,14 @@
 					)
 						return;
 					openDrawer();
-					if (loadTrip) loadTrip(tripPanel, itinerary, trip);
+					// A scheduler bar is a leg-specific projection. Resolve the
+					// complete fetched record by trip id before opening the editor so
+					// both Outbound and Inbound itinerary buffers are always present.
+					const fullTrip = allTripsRaw.find((candidate) => candidate.id === trip.id);
+					const editorTrip = fullTrip
+						? { ...trip, ...fullTrip, allTripStops: fullTrip.trip_stops ?? [] }
+						: trip;
+					if (loadTrip) loadTrip(tripPanel, itinerary, editorTrip);
 				},
 				onOpenManifest: (trip) => {
 					// Doesn't touch the trip panel at all anymore — the manifest window
@@ -6704,6 +6727,9 @@
 							trip_stops: (t.trip_stops ?? []).filter(
 								(s) => (s.leg ?? "outbound") === leg,
 							),
+							// The bar needs the filtered array above, but opening either
+							// leg in the editor must hydrate both itinerary buffers.
+							allTripStops: t.trip_stops ?? [],
 							trip_payments: t.trip_payments ?? [],
 							trip_documents: t.trip_documents ?? [],
 							trip_passengers: t.trip_passengers ?? [],
@@ -7690,18 +7716,71 @@
 			// safe even if several rows change at once. Polling stays as a fallback
 			// for networks that block or drop the Realtime WebSocket — much slower
 			// than flip-seven's since this is a safety net, not the primary path.
+			// Saving a single trip touches several tables in sequence (trips,
+			// then a delete+insert per bus in trip_assignments, then
+			// trip_stops/trip_payments/trip_ticket_options) — each write fires
+			// its own postgres_changes event, including back to the client that
+			// made the change. _loadInProgress/_loadQueued (inside
+			// loadTripsFromDB) only collapses events that land *while* a fetch
+			// is already running; a burst spread out enough to land between
+			// fetches would still trigger the full teardown-and-rebuild
+			// (renderScheduler()) more than once for one save. Debouncing here
+			// collapses that whole burst into a single reload — 300ms is short
+			// enough to still feel instant, long enough to outlast one save's
+			// entire write sequence.
+			let _reloadDebounceTimer = null;
+			function scheduleTripsReload() {
+				clearTimeout(_reloadDebounceTimer);
+				_reloadDebounceTimer = setTimeout(loadTripsFromDB, 300);
+			}
+
 			function initTripsRealtimeSync() {
 				supabase
 					.channel("scheduler-trips")
 					.on(
 						"postgres_changes",
 						{ event: "*", schema: "public", table: "trips" },
-						loadTripsFromDB,
+						scheduleTripsReload,
 					)
 					.on(
 						"postgres_changes",
 						{ event: "*", schema: "public", table: "trip_stops" },
-						loadTripsFromDB,
+						scheduleTripsReload,
+					)
+					// fetchTrips() (trip-db.js) already pulls all of these in
+					// alongside trips/trip_stops on every load — bus/driver
+					// reassignment, document uploads, payments, the passenger
+					// roster, and ticket options all live here, but none of them
+					// were wired into Realtime, so only the two tables above ever
+					// pushed instantly; everything else silently waited for the
+					// 30s poll below. Same debounced trigger, just more tables
+					// watched — requires each of these also being added to the
+					// supabase_realtime publication (see
+					// supabase/scheduler-realtime-patch.sql).
+					.on(
+						"postgres_changes",
+						{ event: "*", schema: "public", table: "trip_assignments" },
+						scheduleTripsReload,
+					)
+					.on(
+						"postgres_changes",
+						{ event: "*", schema: "public", table: "trip_documents" },
+						scheduleTripsReload,
+					)
+					.on(
+						"postgres_changes",
+						{ event: "*", schema: "public", table: "trip_payments" },
+						scheduleTripsReload,
+					)
+					.on(
+						"postgres_changes",
+						{ event: "*", schema: "public", table: "trip_passengers" },
+						scheduleTripsReload,
+					)
+					.on(
+						"postgres_changes",
+						{ event: "*", schema: "public", table: "trip_ticket_options" },
+						scheduleTripsReload,
 					)
 					.subscribe((status) => {
 						if (
