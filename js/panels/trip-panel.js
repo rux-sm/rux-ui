@@ -1041,12 +1041,24 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		};
 		const deleteDoc = async (row) => {
 			const docId = row.dataset.docId;
+			const label = row.dataset.docLabel;
 			if (!confirm("Delete this document?")) return;
 			try {
 				await window.RuxDocs.delete(docId);
 				row.remove();
 				setDocSelecting(false);
 				syncDocButtons();
+				if (label === "Itinerary") {
+					// Same event the trip bar's own itinerary shortcut dispatches
+					// on delete — keeps every bus track's bar in sync, since
+					// deleting via the panel otherwise never touched any bar at all.
+					const tripId = window.RuxDocs?.tripId?.();
+					if (tripId) {
+						document.dispatchEvent(
+							new CustomEvent("rux:itinerary-deleted", { detail: { tripId, docId } }),
+						);
+					}
+				}
 				window.Rux?.toast("Document deleted");
 			} catch (err) {
 				console.error("Delete failed:", err);
@@ -1062,6 +1074,18 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				await window.RuxDocs.delete(row.dataset.docId);
 				row.remove();
 				docList?.prepend(createDocRow(doc, { isUpdate: true }));
+				if (label === "Itinerary") {
+					// Both events, not just the upload half — a replace is a
+					// delete-then-upload, and anything only watching for the
+					// upload half (e.g. a trip bar's pending-itinerary indicator)
+					// would otherwise never learn the old doc is gone.
+					document.dispatchEvent(
+						new CustomEvent("rux:itinerary-deleted", { detail: { tripId, docId: row.dataset.docId } }),
+					);
+					document.dispatchEvent(
+						new CustomEvent("rux:itinerary-uploaded", { detail: { tripId, doc } }),
+					);
+				}
 				window.Rux?.toast(`${DOC_TYPE_LABELS[label] || label} replaced`);
 			} catch (err) {
 				console.error("Replace failed:", err);
@@ -1134,6 +1158,28 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			docNewBtn.disabled = false;
 			docFileInput.value = "";
 		};
+
+		// Keeps this drawer's own document list in sync when the itinerary
+		// changes from elsewhere (the trip bar's paperclip shortcut) while this
+		// trip happens to be the one currently open here. Idempotent by design
+		// — checks the DOM before touching it — since this panel's own
+		// uploadDoc/replaceDoc/deleteDoc above already update the list directly
+		// and fire these same events, so a self-dispatched event just finds
+		// nothing left to do.
+		document.addEventListener("rux:itinerary-uploaded", (e) => {
+			const { tripId, doc } = e.detail || {};
+			if (!tripId || !doc || tripId !== window.RuxDocs?.tripId?.()) return;
+			if (docList?.querySelector(`[data-doc-id="${doc.id}"]`)) return;
+			docList?.prepend(createDocRow(doc, { isUpdate: true }));
+			syncDocButtons();
+		});
+
+		document.addEventListener("rux:itinerary-deleted", (e) => {
+			const { tripId, docId } = e.detail || {};
+			if (!tripId || !docId || tripId !== window.RuxDocs?.tripId?.()) return;
+			docList?.querySelector(`[data-doc-id="${docId}"]`)?.remove();
+			syncDocButtons();
+		});
 
 		docFileInput.addEventListener("change", () => {
 			const file = docFileInput.files[0];

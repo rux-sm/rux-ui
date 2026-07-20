@@ -54,6 +54,31 @@
 	gap: var(--rux-space-2);
 }
 
+.components-app__accent-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+	gap: var(--rux-space-3);
+}
+
+.components-app__accent-swatch {
+	display: flex;
+	aspect-ratio: 1;
+	min-width: 0;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-space-3);
+	background: var(--_accent-surface, var(--rux-accent));
+	border: var(--rux-border-width) solid var(--rux-alpha-white-16);
+	border-radius: var(--rux-radius-container);
+}
+
+.components-app__accent-label {
+	color: var(--rux-fg-on-accent);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+}
+
 .components-app__page {
 	display: flex;
 	flex-direction: column;

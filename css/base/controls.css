@@ -65,7 +65,18 @@
 	color: var(--rux-button-disabled-text);
 	background: var(--rux-button-disabled-background);
 	border: var(--rux-button-disabled-border);
+}
+
+/* Native disabled controls already prevent activation, so keep them in the
+   pointer hit-test to expose the disabled cursor. */
+.rux-button:disabled {
 	cursor: not-allowed;
+}
+
+/* ARIA communicates state but does not suppress activation on its own. Until
+   an aria-disabled button has an explicit JS activation guard, keep pointer
+   input blocked here. */
+.rux-button[aria-disabled="true"] {
 	pointer-events: none;
 }
 
@@ -126,6 +137,32 @@
 	background: var(--rux-button-accent-active-background);
 	border-color: var(--rux-button-accent-active-background);
 	color: var(--rux-button-accent-text);
+}
+
+/* on-accent — translucent control for saturated/colored surfaces */
+.rux-button--on-accent {
+	background: var(--rux-button-on-accent-background);
+	color: var(--rux-button-on-accent-text);
+	border: var(--rux-button-on-accent-border);
+}
+
+.rux-button--on-accent:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-on-accent-hover-background);
+	color: var(--rux-button-on-accent-text);
+	border: var(--rux-button-on-accent-hover-border);
+}
+
+.rux-button--on-accent:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-on-accent-active-background);
+	color: var(--rux-button-on-accent-text);
+	border: var(--rux-button-on-accent-active-border);
+}
+
+.rux-button--on-accent:disabled,
+.rux-button--on-accent[aria-disabled="true"] {
+	background: var(--rux-button-on-accent-disabled-background);
+	color: var(--rux-button-on-accent-disabled-text);
+	border: var(--rux-button-on-accent-disabled-border);
 }
 
 /* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
@@ -263,6 +300,7 @@
 	color: var(--_fg);
 	background-color: var(--_bg);
 	opacity: var(--rux-button-loading-opacity);
+	cursor: wait;
 }
 
 .rux-button__spinner {

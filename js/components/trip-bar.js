@@ -109,6 +109,106 @@ function openDocInViewer(doc, options = {}) {
   window.RuxDocViewer.open({ url, fileName: doc.file_name, icon: "route", ...options });
 }
 
+// Uploads a fresh itinerary for a trip that doesn't have one yet — shared by
+// the trip bar's "Upload Itinerary" button and applyItineraryDeleted's
+// rebuilt button (a delete reverts a bar to this same not-uploaded state).
+// Dispatches the same event the trip panel's own uploader fires, so every
+// sibling bar for this trip id (multi-bus trips render one per bus track)
+// stays in sync regardless of which surface the upload happened from.
+function uploadItineraryDoc(tripId) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".pdf,application/pdf";
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if (!file || !tripId) return;
+    if (!isPdfFile(file)) {
+      window.Rux?.toast("Only PDF files are supported.");
+      return;
+    }
+    try {
+      const doc = await window.RuxDocs?.upload(tripId, "Itinerary", file);
+      window.Rux?.toast("Itinerary uploaded");
+      if (doc) {
+        document.dispatchEvent(
+          new CustomEvent("rux:itinerary-uploaded", { detail: { tripId, doc } }),
+        );
+      }
+    } catch (err) {
+      console.error("Upload failed:", err);
+      window.Rux?.toast("Upload failed");
+    }
+  });
+  input.click();
+}
+
+// Deletes the itinerary currently open in the doc viewer — wired as that
+// viewer's Delete button. Dispatches rux:itinerary-deleted so every sibling
+// bar for this trip, and the trip panel's own document list if this trip
+// happens to be open there too, can revert in sync.
+async function deleteItineraryDoc(trip, doc) {
+  if (!confirm("Delete this itinerary?")) return;
+  try {
+    await window.RuxDocs?.delete(doc.id);
+    window.RuxDocViewer?.close();
+    window.Rux?.toast("Itinerary deleted");
+    document.dispatchEvent(
+      new CustomEvent("rux:itinerary-deleted", { detail: { tripId: trip.id, docId: doc.id } }),
+    );
+  } catch (err) {
+    console.error("Delete failed:", err);
+    window.Rux?.toast("Delete failed — try again.");
+  }
+}
+
+// Replaces the itinerary currently open in the doc viewer — wired as that
+// viewer's Replace button. Upload-then-delete-the-old-one, same shape as the
+// trip panel's own replaceDoc. Dispatches both events (not just -uploaded) —
+// a replace is a delete and an upload, and anything only watching for the
+// upload half (e.g. the trip panel's own document list, if this trip happens
+// to be open there too) would otherwise keep a stale row pointing at the
+// file that just got deleted.
+function replaceItineraryDoc(trip, doc) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".pdf,application/pdf";
+  input.addEventListener("change", async () => {
+    const file = input.files[0];
+    if (!file) return;
+    if (!isPdfFile(file)) {
+      window.Rux?.toast("Only PDF files are supported.");
+      return;
+    }
+    try {
+      const newDoc = await window.RuxDocs.upload(trip.id, "Itinerary", file);
+      await window.RuxDocs.delete(doc.id);
+      window.RuxDocViewer?.close();
+      window.Rux?.toast("Itinerary replaced");
+      document.dispatchEvent(
+        new CustomEvent("rux:itinerary-deleted", { detail: { tripId: trip.id, docId: doc.id } }),
+      );
+      document.dispatchEvent(
+        new CustomEvent("rux:itinerary-uploaded", { detail: { tripId: trip.id, doc: newDoc } }),
+      );
+    } catch (err) {
+      console.error("Replace failed:", err);
+      window.Rux?.toast("Replace failed — try again.");
+    }
+  });
+  input.click();
+}
+
+// Opens the itinerary viewer with Delete/Replace wired up — the shared entry
+// point for every "view itinerary" click, whether from a bar's own button
+// (createTripBar) or one just patched after an upload (applyItineraryUploaded).
+function viewItineraryDoc(trip, doc) {
+  openDocInViewer(doc, {
+    title: "Itinerary",
+    onDelete: () => deleteItineraryDoc(trip, doc),
+    onUpdate: () => replaceItineraryDoc(trip, doc),
+  });
+}
+
 function containsNode(el, node) {
   return node instanceof Node && el.contains(node);
 }
@@ -612,7 +712,7 @@ export function clearTripBars() {
 // other tracks) needs this called on each of its bars individually after an
 // upload — see the "rux:itinerary-uploaded" listener in index.html, which
 // finds every sibling via activePlacements and calls this on all of them.
-export function applyItineraryUploaded(bar, doc) {
+export function applyItineraryUploaded(bar, doc, trip) {
   const pdfBtn = bar.querySelector('[data-role="itinerary-btn"]');
   if (pdfBtn) {
     const iconEl = pdfBtn.querySelector(".rux-icon");
@@ -622,11 +722,39 @@ export function applyItineraryUploaded(bar, doc) {
     const newBtn = pdfBtn.cloneNode(true);
     newBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      openDocInViewer(doc, { title: "Itinerary" });
+      viewItineraryDoc(trip, doc);
     });
     pdfBtn.replaceWith(newBtn);
   }
   bar.querySelector('.rux-trip-bar__pending-icon[data-tooltip="Pending itinerary"]')?.remove();
+}
+
+// Inverse of applyItineraryUploaded — patches a bar back to "no itinerary"
+// after a delete: button reverts to upload mode, and the pending-itinerary
+// indicator reappears unless something else (itinerary_not_needed, a
+// received status) says it shouldn't. Same multi-bus sibling-patching need
+// as the upload path — see the "rux:itinerary-deleted" listener in index.html.
+export function applyItineraryDeleted(bar, trip) {
+  const pdfBtn = bar.querySelector('[data-role="itinerary-btn"]');
+  if (pdfBtn) {
+    const iconEl = pdfBtn.querySelector(".rux-icon");
+    if (iconEl) iconEl.textContent = ICON_MAP["upload"] || "upload";
+    pdfBtn.setAttribute("aria-label", "Upload Itinerary");
+    pdfBtn.dataset.tooltip = "Upload Itinerary";
+    const newBtn = pdfBtn.cloneNode(true);
+    newBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      uploadItineraryDoc(trip.id);
+    });
+    pdfBtn.replaceWith(newBtn);
+  }
+  const pendingItem = PENDING_INDICATORS.find((item) => item.key === "itinerary");
+  const alreadyShown = bar.querySelector('.rux-trip-bar__pending-icon[data-tooltip="Pending itinerary"]');
+  if (pendingItem && !alreadyShown && pendingItem.check(trip)) {
+    const marker = icon(pendingItem.icon, "rux-icon rux-trip-bar__pending-icon");
+    setFloatingTooltip(marker, pendingItem.label);
+    bar.querySelector(".rux-trip-bar__pending")?.prepend(marker);
+  }
 }
 
 /* ── Factory ────────────────────────────────────────────────────────────── */
@@ -667,7 +795,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--icon rux-button--block rux-trip-bar__action";
+  openBtn.className = "rux-button rux-button--on-accent rux-button--icon rux-button--block rux-trip-bar__action";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("add"));
@@ -683,46 +811,15 @@ export function createTripBar(trip, callbacks = {}) {
   const onPdf = pdfUploaded
     ? () => {
         if (itineraryDoc) {
-          openDocInViewer(itineraryDoc, { title: "Itinerary" });
+          viewItineraryDoc(trip, itineraryDoc);
         } else {
           (callbacks.onViewPdf || callbacks.onViewPDF)?.(trip);
         }
       }
-    : () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".pdf,application/pdf";
-        input.addEventListener("change", async () => {
-          const file = input.files[0];
-          const tripId = trip.id;
-          if (!file || !tripId) return;
-          if (!isPdfFile(file)) {
-            window.Rux?.toast("Only PDF files are supported.");
-            return;
-          }
-          try {
-            const doc = await window.RuxDocs?.upload(tripId, "Itinerary", file);
-            window.Rux?.toast("Itinerary uploaded");
-            // This bar doesn't patch itself directly — dispatching lets the
-            // "rux:itinerary-uploaded" listener (index.html) update the
-            // shared trip_documents data AND patch every bar for this trip
-            // id uniformly, this one included, since a multi-bus trip
-            // renders one bar per bus track that all need the same update.
-            if (doc) {
-              document.dispatchEvent(
-                new CustomEvent("rux:itinerary-uploaded", { detail: { tripId, doc } }),
-              );
-            }
-          } catch (err) {
-            console.error("Upload failed:", err);
-            window.Rux?.toast("Upload failed");
-          }
-        });
-        input.click();
-      };
+    : () => uploadItineraryDoc(trip.id);
 
   const pdfBtn = button(
-    "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
+    "rux-button rux-button--on-accent rux-button--icon rux-button--block rux-trip-bar__action",
     pdfLabel,
     pdfIcon,
     () => onPdf(),
@@ -735,7 +832,7 @@ export function createTripBar(trip, callbacks = {}) {
   // button on every bar) but disabled otherwise, same as the Billing tab's
   // own manifest toggle.
   const manifestBtn = button(
-    "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
+    "rux-button rux-button--on-accent rux-button--icon rux-button--block rux-trip-bar__action",
     trip.is_self_organized ? "View manifest" : "Toggle Ticketed to enable",
     "groups",
     () => callbacks.onOpenManifest?.(trip),
@@ -746,18 +843,18 @@ export function createTripBar(trip, callbacks = {}) {
     openBtn,
     pdfBtn,
     button(
-      "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
+      "rux-button rux-button--on-accent rux-button--icon rux-button--block rux-trip-bar__action",
       "Move bus",
       "swap_vert",
       () => callbacks.onChangeBus?.(trip),
     ),
-    manifestBtn,
     button(
-      "rux-button rux-button--icon rux-button--block rux-trip-bar__action",
+      "rux-button rux-button--on-accent rux-button--icon rux-button--block rux-trip-bar__action",
       "Print trip envelope",
       "drafts",
       () => callbacks.onPrintEnvelope?.(trip),
     ),
+    manifestBtn,
   );
 
   const body = document.createElement("div");

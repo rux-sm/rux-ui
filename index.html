@@ -27,8 +27,8 @@
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=29" />
-		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=1" />
-		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=1" />
+		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=2" />
+		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=2" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
 		<link
 			rel="stylesheet"
@@ -3966,6 +3966,79 @@
 										</button>
 									</footer>
 								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Button on Accent
+										</p>
+									</header>
+									<div class="rux-card__body components-app__accent-grid">
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-accent)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Accent</span>
+										</div>
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-trip-color-cyan)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Cyan</span>
+										</div>
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-trip-color-green)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Green</span>
+										</div>
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-trip-color-purple)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Purple</span>
+										</div>
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-trip-color-yellow)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Yellow</span>
+										</div>
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-trip-color-orange)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Orange</span>
+										</div>
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-trip-color-pink)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Pink</span>
+										</div>
+										<div
+											class="components-app__accent-swatch"
+											style="--_accent-surface: var(--rux-danger)"
+										>
+											<button class="rux-button rux-button--on-accent" type="button">Action</button>
+											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
+											<span class="components-app__accent-label">Danger</span>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</section>
@@ -4780,8 +4853,8 @@
 		<script src="./js/core/controls.js?v=2" defer></script>
 		<script src="./js/core/billing-config.js?v=2"></script>
 		<script src="./js/core/floating-window.js?v=1"></script>
-		<script src="./js/core/doc-viewer.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=14"></script>
+		<script src="./js/core/doc-viewer.js?v=4"></script>
+		<script src="./js/panels/trip-panel.js?v=15"></script>
 		<script src="./js/components/itinerary.js?v=14"></script>
 		<script src="./js/panels/driver-panel.js?v=6" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
@@ -4789,7 +4862,7 @@
 		<script src="./js/panels/trips-list.js?v=8" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=1" defer></script>
 		<script src="./js/panels/print-schedule.js?v=29" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=1" defer></script>
+		<script src="./js/panels/trip-envelope.js?v=2" defer></script>
 		<script src="./js/panels/components-panel.js" defer></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
@@ -4799,7 +4872,8 @@
 				createTripBar,
 				clearTripBars,
 				applyItineraryUploaded,
-			} from "./js/components/trip-bar.js?v=7";
+				applyItineraryDeleted,
+			} from "./js/components/trip-bar.js?v=8";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js";
@@ -6784,7 +6858,25 @@
 							p.trip.trip_documents ||
 							(p.trip.trip_documents = []);
 						if (!docs.some((d) => d.id === doc.id)) docs.push(doc);
-						if (p.bar) applyItineraryUploaded(p.bar, doc);
+						if (p.bar) applyItineraryUploaded(p.bar, doc, p.trip);
+					});
+			});
+
+			// Inverse of the listener above — same sibling-patching need, but for
+			// a delete instead of an upload/replace, so every bar for this trip id
+			// reverts to "Upload Itinerary" instead of pointing at a deleted file.
+			document.addEventListener("rux:itinerary-deleted", (e) => {
+				const { tripId, docId } = e.detail || {};
+				if (!tripId || !docId) return;
+				activePlacements
+					.filter((p) => p.trip.id === tripId)
+					.forEach((p) => {
+						if (p.trip.trip_documents) {
+							p.trip.trip_documents = p.trip.trip_documents.filter(
+								(d) => d.id !== docId,
+							);
+						}
+						if (p.bar) applyItineraryDeleted(p.bar, p.trip);
 					});
 			});
 

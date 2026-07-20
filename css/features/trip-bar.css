@@ -479,28 +479,7 @@
 }
 
 .rux-trip-bar__action {
-	background: var(--rux-trip-bar-action-bg);
-	color: var(--rux-trip-bar-action-fg);
-	border: var(--rux-trip-bar-action-border);
-}
-
-.rux-trip-bar__action:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-trip-bar-action-hover-bg);
-	color: var(--rux-trip-bar-action-fg);
-	border: var(--rux-trip-bar-action-hover-border);
-}
-
-.rux-trip-bar__action:active:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-trip-bar-action-pressed-bg);
-	color: var(--rux-trip-bar-action-fg);
-	border: var(--rux-trip-bar-action-pressed-border);
-}
-
-.rux-trip-bar__action:disabled,
-.rux-trip-bar__action[aria-disabled="true"] {
-	background: var(--rux-trip-bar-action-disabled-bg);
-	color: var(--rux-trip-bar-action-disabled-fg);
-	border: var(--rux-trip-bar-action-disabled-border);
+	min-width: 0;
 }
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {

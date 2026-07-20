@@ -15,25 +15,14 @@
 
 /* ── Floating window chrome (screen only — none of this prints) ────────── */
 
-.rux-trip-envelope-window {
-	/* Anchored near the top and only centered horizontally — same as
-	   doc-viewer.css's .rux-doc-viewer, the pattern this window is built to
-	   match. Fixed size on purpose: trip-envelope.js's fitToHeight() is the
-	   one and only thing that scales the card (both up and down) to fit
-	   whatever space this box provides — a second CSS-side mechanism trying
-	   to also resize the window was fighting it (aspect-ratio + height:
-	   fit-content vs the JS transform), which is what caused the last few
-	   rounds of clipping/positioning bugs. One sizing system, not two. */
-	top: 8%;
-	left: 50%;
-	transform: translateX(-50%);
-	width: min(640px, calc(100vw - var(--rux-space-6) * 2));
-	height: min(828px, calc(100vh - var(--rux-space-6) * 2));
-	min-width: 360px;
-	min-height: 280px;
-	max-width: calc(100vw - var(--rux-space-4));
-	max-height: calc(100vh - var(--rux-space-4));
-}
+/* Size/position: .rux-floating-window--default-size (css/base/floating-window.css)
+   — same footprint as the doc viewer, on purpose. Fixed size otherwise:
+   trip-envelope.js's fitToHeight() is the one and only thing that scales the
+   card (both up and down) to fit whatever space this box provides — a second
+   CSS-side mechanism trying to also resize the window was fighting it
+   (aspect-ratio + height: fit-content vs the JS transform), which is what
+   caused the last few rounds of clipping/positioning bugs. One sizing
+   system, not two. */
 
 .rux-trip-envelope-window__body {
     display: flex;
@@ -73,17 +62,16 @@
     --env-paper: oklch(87% 0.04 95);
 }
 
+/* flex:none and the modal surface background come from the shared
+   .rux-floating-window__footer; this window just wants a tighter gap than
+   .rux-card__footer's default. */
 .rux-trip-envelope-window__footer {
-	flex: none;
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
-	background: var(--rux-surface-modal);
 }
 
-.rux-trip-envelope-window__spacer {
-	flex: 1;
-}
+/* .rux-trip-envelope-window__spacer removed — use .rux-floating-window__spacer */
 
 /* ── The envelope card itself — a deliberate light-on-paper world ───────── */
 
@@ -93,14 +81,15 @@
 	--env-ink: oklch(18% 0 0);
 	--env-ink-muted: oklch(45% 0 0);
 	--env-rule: oklch(25% 0 0);
-	/* Width matches the real print stock (6in, see @page below); height is
-	   fully natural/content-driven — no aspect-ratio. trip-envelope.js's
-	   fitToHeight() scales this whole box (via transform, preserving
-	   whatever shape the natural width/height turns out to be) to fit
-	   the window, so this doesn't need to pre-constrain its own shape. */
+	/* Match the physical 6in x 9in stock. trip-envelope.js scales this fixed
+	   shape as one unit so Standard and MVM retain the same proportions at
+	   every floating-window size. */
 	width: 6in;
+	height: 9in;
 	min-width: 6in;
 	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
 
 	/* Make the text fluid */
 	container-type: inline-size;
@@ -280,8 +269,9 @@
 /* ── Notes (Standard-only) ──────────────────────────────────────────── */
 
 .rux-trip-envelope__notes {
+	flex: 1;
+	min-height: 120px;
 	margin-block-start: var(--rux-space-4);
-	padding-bottom: 120px;
 }
 
 .rux-trip-envelope__notes .rux-trip-envelope__footer-label {
@@ -295,6 +285,12 @@
 	margin-block-start: var(--rux-space-4);
 	border-collapse: collapse;
 	border: 1px solid var(--env-rule);
+}
+
+.rux-trip-envelope--mvm .rux-trip-envelope__log {
+	flex: 1;
+	min-height: 0;
+	table-layout: fixed;
 }
 
 .rux-trip-envelope__log th,
@@ -314,6 +310,23 @@
 
 .rux-trip-envelope__log td {
 	height: 2em;
+}
+
+.rux-trip-envelope--mvm .rux-trip-envelope__log th {
+	line-height: 1;
+}
+
+.rux-trip-envelope--mvm .rux-trip-envelope__log th,
+.rux-trip-envelope--mvm .rux-trip-envelope__log td {
+	padding: var(--rux-space-1) var(--rux-space-2);
+}
+
+.rux-trip-envelope--mvm .rux-trip-envelope__log th:first-child {
+	width: 46%;
+}
+
+.rux-trip-envelope--mvm .rux-trip-envelope__log th:not(:first-child) {
+	width: 18%;
 }
 
 /* ── Print output — plain paper regardless of the on-screen tint ────── */

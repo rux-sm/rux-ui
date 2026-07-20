@@ -232,7 +232,10 @@
 	}
 
 	function buildStandardEnvelope(trip, busNumber) {
-		const card = el("article", "rux-trip-envelope");
+		const card = el(
+			"article",
+			"rux-trip-envelope rux-trip-envelope--standard",
+		);
 		card.appendChild(buildHeader(trip));
 
 		const grid = el("div", "rux-trip-envelope__grid");
@@ -273,11 +276,20 @@
 	}
 
 	function buildMvmEnvelope(trip, busNumber) {
-		const card = el("article", "rux-trip-envelope");
+		const card = el(
+			"article",
+			"rux-trip-envelope rux-trip-envelope--mvm",
+		);
 		card.appendChild(buildHeader(trip));
 
 		const grid = el("div", "rux-trip-envelope__grid");
 		grid.appendChild(buildScheduleRows(trip, busNumber));
+		grid.appendChild(
+			row(
+				"rux-trip-envelope__row--1",
+				cell("Destination:", trip.destination),
+			),
+		);
 		const contact = contactFor(trip);
 		grid.appendChild(
 			row(
@@ -400,9 +412,9 @@
 
 		panelEl = document.createElement("div");
 		panelEl.className =
-			"rux-floating-window rux-trip-envelope-window rux-card rux-card--elevated";
+			"rux-floating-window rux-floating-window--default-size rux-trip-envelope-window rux-card rux-card--elevated";
 		panelEl.hidden = true;
-		panelEl.dataset.tint = "white";
+		panelEl.dataset.tint = "yellow";
 		panelEl.innerHTML = `
 			<header class="rux-floating-window__header rux-trip-envelope-window__header rux-card__header">
 				<span class="rux-card__title">Trip Envelope</span>
@@ -413,16 +425,16 @@
 			<div class="rux-floating-window__body rux-trip-envelope-window__body rux-card__body">
 				<div data-envelope-content></div>
 			</div>
-			<footer class="rux-trip-envelope-window__footer rux-card__footer">
-				<div class="rux-segmented rux-segmented--inline" data-rux-toggle-group data-envelope-template>
-					<button type="button" class="rux-button rux-button--default is-active" aria-pressed="true" data-value="standard">Standard</button>
-					<button type="button" class="rux-button rux-button--default" aria-pressed="false" data-value="mvm">MVM</button>
+			<footer class="rux-floating-window__footer rux-trip-envelope-window__footer rux-card__footer">
+				<div class="rux-segmented-track" data-rux-toggle-group data-envelope-template>
+					<button type="button" class="rux-button rux-button--segment is-active" aria-pressed="true" data-value="standard">Standard</button>
+					<button type="button" class="rux-button rux-button--segment" aria-pressed="false" data-value="mvm">MVM</button>
 				</div>
-				<div class="rux-segmented rux-segmented--inline" data-rux-toggle-group data-envelope-tint>
-					<button type="button" class="rux-button rux-button--default is-active" aria-pressed="true" data-value="white">White</button>
-					<button type="button" class="rux-button rux-button--default" aria-pressed="false" data-value="yellow">Yellow</button>
+				<div class="rux-segmented-track" data-rux-toggle-group data-envelope-tint>
+					<button type="button" class="rux-button rux-button--segment is-active" aria-pressed="true" data-value="yellow">Yellow</button>
+					<button type="button" class="rux-button rux-button--segment" aria-pressed="false" data-value="white">White</button>
 				</div>
-				<span class="rux-trip-envelope-window__spacer"></span>
+				<span class="rux-floating-window__spacer"></span>
 				<button type="button" class="rux-button rux-button--accent" data-envelope-print>
 					<span class="rux-icon" aria-hidden="true">print</span> Print
 				</button>
@@ -472,7 +484,7 @@
 		ensurePanel();
 		current = { trip, busNumber: busNumberFor(trip, schedulerBuses) };
 		activeTemplate = "standard";
-		panelEl.dataset.tint = "white";
+		panelEl.dataset.tint = "yellow";
 		panelEl
 			.querySelectorAll("[data-envelope-template] .rux-button")
 			.forEach((b) => {
@@ -483,7 +495,7 @@
 		panelEl
 			.querySelectorAll("[data-envelope-tint] .rux-button")
 			.forEach((b) => {
-				const active = b.dataset.value === "white";
+				const active = b.dataset.value === "yellow";
 				b.classList.toggle("is-active", active);
 				b.setAttribute("aria-pressed", String(active));
 			});

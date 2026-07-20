@@ -480,18 +480,6 @@
 	--rux-trip-bar-tail-hover-opacity:    75%;
 	--rux-trip-bar-tail-pressed-opacity:  75%;
 
-	/* — action toolbar buttons — */
-	--rux-trip-bar-action-bg:              oklch(from var(--rux-neutral) 100% c h / 20%);
-	--rux-trip-bar-action-fg:              var(--rux-fg-on-accent);
-	--rux-trip-bar-action-border:          var(--rux-border-width) solid var(--rux-alpha-white-40);
-	--rux-trip-bar-action-hover-bg:        var(--rux-alpha-white-10);
-	--rux-trip-bar-action-hover-border:    var(--rux-border-width) solid var(--rux-alpha-white-65);
-	--rux-trip-bar-action-pressed-bg:      var(--rux-alpha-white-16);
-	--rux-trip-bar-action-pressed-border:  var(--rux-border-width) solid var(--rux-alpha-white-90);
-	--rux-trip-bar-action-disabled-bg:     var(--rux-alpha-white-4);
-	--rux-trip-bar-action-disabled-fg:     var(--rux-alpha-white-40);
-	--rux-trip-bar-action-disabled-border: var(--rux-border-width) solid var(--rux-alpha-white-16);
-
 	/* Shared ink keeps directional patterns equal in contrast. */
 	--rux-trip-bar-overlay: oklch(var(--rux-white) / 8%);
 
@@ -579,6 +567,21 @@
 	--rux-button-accent-active-background: oklch(
 		from var(--rux-button-accent-background) calc(l - 0.1) c h
 	);
+
+	/* ─── COMPONENT · button on accent ──────────────────────────────────────────── */
+	/* Contextual button for saturated surfaces. White-alpha fills preserve the
+	   parent surface's hue while increasing emphasis through each state. */
+
+	--rux-button-on-accent-background:          var(--rux-alpha-white-10);
+	--rux-button-on-accent-text:                var(--rux-fg-on-accent);
+	--rux-button-on-accent-border:              var(--rux-button-border-width) solid var(--rux-alpha-white-40);
+	--rux-button-on-accent-hover-background:    var(--rux-alpha-white-16);
+	--rux-button-on-accent-hover-border:        var(--rux-button-border-width) solid var(--rux-alpha-white-65);
+	--rux-button-on-accent-active-background:   var(--rux-alpha-white-20);
+	--rux-button-on-accent-active-border:       var(--rux-button-border-width) solid var(--rux-alpha-white-90);
+	--rux-button-on-accent-disabled-background: var(--rux-alpha-white-4);
+	--rux-button-on-accent-disabled-text:       var(--rux-alpha-white-40);
+	--rux-button-on-accent-disabled-border:     var(--rux-button-border-width) solid var(--rux-alpha-white-16);
 
 	/* ─── COMPONENT · button ghost ─────────────────────────────────────────────── */
 
