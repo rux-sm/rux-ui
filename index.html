@@ -27,7 +27,7 @@
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=34" />
-		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=2" />
+		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=6" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=2" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
 		<link
@@ -3891,6 +3891,27 @@
 											>
 												Ghost
 											</button>
+											<button
+												class="rux-button rux-button--accent"
+												type="button"
+												disabled
+											>
+												Accent
+											</button>
+											<button
+												class="rux-button rux-button--default"
+												type="button"
+												disabled
+											>
+												Default
+											</button>
+											<button
+												class="rux-button rux-button--ghost"
+												type="button"
+												disabled
+											>
+												Ghost
+											</button>
 										</div>
 										<div
 											class="components-app__specimens components-app__specimens--grid"
@@ -3913,37 +3934,23 @@
 											>
 												Danger Ghost
 											</button>
-											<button
-												class="rux-button rux-button--accent rux-button--danger"
-												type="button"
-												disabled
-											>
-												Danger
-											</button>
-											<button
-												class="rux-button rux-button--default rux-button--danger"
-												type="button"
-												disabled
-											>
-												Danger Default
-											</button>
-											<button
-												class="rux-button rux-button--ghost rux-button--danger"
-												type="button"
-												disabled
-											>
-												Danger Ghost
-											</button>
 										</div>
+										<!-- Disabled danger isn't shown separately -- --danger has no
+										     :disabled override of its own, so it falls through to the same
+										     generic .rux-button:disabled rule every other variant uses above
+										     (see disabled Accent/Default/Ghost). It would render
+										     pixel-identical to those, not add anything new. -->
 									</div>
 								</div>
 								<div class="rux-card">
 									<header class="rux-card__header">
 										<p class="rux-card__title">
-											Button Block
+											Button with Icon
 										</p>
 									</header>
-									<footer class="rux-panel__footer">
+									<div
+										class="rux-card__body components-app__specimens"
+									>
 										<button
 											class="rux-button rux-button--default rux-button--danger"
 											type="button"
@@ -3980,7 +3987,146 @@
 												>Save</span
 											>
 										</button>
-									</footer>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Button Block
+										</p>
+									</header>
+									<div class="rux-card__body">
+										<div class="components-app__block-demo">
+											<button
+												class="rux-button rux-button--accent rux-button--block"
+												type="button"
+											>
+												Continue
+											</button>
+											<button
+												class="rux-button rux-button--default rux-button--block"
+												type="button"
+											>
+												Cancel
+											</button>
+										</div>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Button Sizes
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--accent rux-button--xs"
+											type="button"
+										>
+											XS
+										</button>
+										<button
+											class="rux-button rux-button--accent rux-button--sm"
+											type="button"
+										>
+											SM
+										</button>
+										<button
+											class="rux-button rux-button--accent"
+											type="button"
+										>
+											Default
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Button Loading
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--accent"
+											type="button"
+										>
+											<span
+												class="rux-icon rux-button__idle-icon"
+												aria-hidden="true"
+												>save</span
+											>
+											<span
+												class="rux-button__spinner"
+												aria-hidden="true"
+											></span>
+											<span class="rux-btn-label"
+												>Save</span
+											>
+										</button>
+										<button
+											class="rux-button rux-button--accent rux-button--loading"
+											type="button"
+											disabled
+										>
+											<span
+												class="rux-icon rux-button__idle-icon"
+												aria-hidden="true"
+												>save</span
+											>
+											<span
+												class="rux-button__spinner"
+												aria-hidden="true"
+											></span>
+											<span class="rux-btn-label"
+												>Saving</span
+											>
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Button Disclosure
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--default"
+											type="button"
+											aria-haspopup="menu"
+											aria-expanded="false"
+										>
+											<span class="rux-btn-label"
+												>Options</span
+											>
+											<span
+												class="rux-icon rux-button__disclosure-icon"
+												aria-hidden="true"
+												>keyboard_arrow_down</span
+											>
+										</button>
+										<button
+											class="rux-button rux-button--default"
+											type="button"
+											aria-haspopup="menu"
+											aria-expanded="true"
+										>
+											<span class="rux-btn-label"
+												>Options</span
+											>
+											<span
+												class="rux-icon rux-button__disclosure-icon"
+												aria-hidden="true"
+												>keyboard_arrow_down</span
+											>
+										</button>
+									</div>
 								</div>
 								<div class="rux-card">
 									<header class="rux-card__header">
@@ -4053,6 +4199,346 @@
 											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
 											<span class="components-app__accent-label">Danger</span>
 										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								data-component-page="toggle-button"
+								data-component-title="Toggle Buttons"
+								class="components-app__page"
+							>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Toggle Anatomy
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__anatomy"
+									>
+										<div
+											class="components-app__anatomy-stage"
+										>
+											<button
+												class="rux-button rux-button--ghost rux-button--icon rux-button--toggle is-active"
+												type="button"
+												aria-pressed="true"
+												aria-label="Mark as not needed"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+												>block</span>
+											</button>
+										</div>
+										<dl class="components-app__specs">
+											<div>
+												<dt>Selected background</dt>
+												<dd>
+													<output
+														data-token-value="--rux-button-selected-bg"
+													></output>
+												</dd>
+											</div>
+											<div>
+												<dt>Selected text</dt>
+												<dd>
+													<output
+														data-token-value="--rux-button-selected-fg"
+													></output>
+												</dd>
+											</div>
+											<div>
+												<dt>Icon fill (selected)</dt>
+												<dd>
+													<output
+														data-token-value="--rux-icon-fill-selected"
+													></output>
+												</dd>
+											</div>
+										</dl>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Toggle States
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--default rux-button--toggle"
+											type="button"
+											aria-pressed="false"
+											data-rux-toggle-button
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>accessible</span>
+											<span class="rux-btn-label">ADA lift</span>
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--toggle is-active"
+											type="button"
+											aria-pressed="true"
+											data-rux-toggle-button
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>accessible</span>
+											<span class="rux-btn-label">ADA lift</span>
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Icon Toggle
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+											type="button"
+											aria-pressed="false"
+											data-rux-toggle-button
+											aria-label="Mark as not needed"
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>block</span>
+										</button>
+										<button
+											class="rux-button rux-button--ghost rux-button--icon rux-button--toggle is-active"
+											type="button"
+											aria-pressed="true"
+											data-rux-toggle-button
+											aria-label="Mark as not needed"
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>block</span>
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Icon Toggle — On/Off Swap
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--default rux-button--icon rux-button--toggle"
+											type="button"
+											aria-pressed="false"
+											data-rux-toggle-button
+											aria-label="Toggle panel"
+										>
+											<span
+												class="rux-icon icon-off"
+												aria-hidden="true"
+											>left_panel_open</span>
+											<span
+												class="rux-icon icon-on"
+												aria-hidden="true"
+											>left_panel_close</span>
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--icon rux-button--toggle is-active"
+											type="button"
+											aria-pressed="true"
+											data-rux-toggle-button
+											aria-label="Toggle panel"
+										>
+											<span
+												class="rux-icon icon-off"
+												aria-hidden="true"
+											>left_panel_open</span>
+											<span
+												class="rux-icon icon-on"
+												aria-hidden="true"
+											>left_panel_close</span>
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Role Toggle Group
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--ghost rux-button--toggle rux-button--icon is-active"
+											type="button"
+											aria-pressed="true"
+											data-rux-toggle-button
+											title="Co-driver"
+											aria-label="Co-driver"
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>group</span>
+										</button>
+										<button
+											class="rux-button rux-button--ghost rux-button--toggle rux-button--icon"
+											type="button"
+											aria-pressed="false"
+											data-rux-toggle-button
+											title="Relief 1 — start"
+											aria-label="Relief 1 — start"
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>person_add</span>
+										</button>
+										<button
+											class="rux-button rux-button--ghost rux-button--toggle rux-button--icon"
+											type="button"
+											aria-pressed="false"
+											data-rux-toggle-button
+											title="Relief 2 — end"
+											aria-label="Relief 2 — end"
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>person_remove</span>
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Toggle Chip
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--default rux-button--toggle is-active"
+											type="button"
+											aria-pressed="true"
+											data-rux-toggle-button
+											title="Passenger vehicles"
+										>
+											P
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--toggle"
+											type="button"
+											aria-pressed="false"
+											data-rux-toggle-button
+											title="School bus"
+										>
+											S
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--toggle is-active"
+											type="button"
+											aria-pressed="true"
+											data-rux-toggle-button
+											title="Hazmat"
+										>
+											H
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--toggle"
+											type="button"
+											aria-pressed="false"
+											data-rux-toggle-button
+											title="Tanker + Hazmat"
+										>
+											X
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Toggle Block
+										</p>
+									</header>
+									<div class="rux-card__body">
+										<div class="components-app__block-demo">
+											<button
+												class="rux-button rux-button--default rux-button--toggle rux-button--block is-active"
+												type="button"
+												aria-pressed="true"
+												data-rux-toggle-button
+												title="Sleeper"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+												>airline_seat_flat</span>
+												<span class="rux-btn-label"> Sleeper</span>
+											</button>
+											<button
+												class="rux-button rux-button--default rux-button--toggle rux-button--block"
+												type="button"
+												aria-pressed="false"
+												data-rux-toggle-button
+												title="56 pax"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+												>tatami_seat</span>
+												<span class="rux-btn-label"> 56 pax</span>
+											</button>
+										</div>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
+											Disabled Toggle
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+											type="button"
+											aria-pressed="false"
+											disabled
+											aria-label="Mark as not needed"
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>block</span>
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--toggle"
+											type="button"
+											aria-pressed="true"
+											disabled
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+											>accessible</span>
+											<span class="rux-btn-label">ADA lift</span>
+										</button>
 									</div>
 								</div>
 							</div>
@@ -4878,7 +5364,7 @@
 		<script src="./js/panels/trips-list.js?v=8" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=1" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=2" defer></script>
+		<script src="./js/panels/trip-envelope.js?v=7" defer></script>
 		<script src="./js/panels/components-panel.js" defer></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>

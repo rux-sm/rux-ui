@@ -73,6 +73,12 @@
 	border-radius: var(--rux-radius-container);
 }
 
+.components-app__block-demo {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
 .components-app__accent-label {
 	color: var(--rux-fg-on-accent);
 	font-size: var(--rux-text-xs);

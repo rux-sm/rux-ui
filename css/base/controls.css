@@ -204,6 +204,25 @@
 	--_fg: var(--rux-button-selected-fg);
 }
 
+/* Explicit compound, same reasoning as --default.rux-button--danger below —
+   .rux-button--default and .rux-button--ghost each hardcode their own
+   background/color directly (not through --_bg/--_fg), which otherwise
+   completely blocks the --_bg/--_fg assignment above from ever having a
+   visible effect. Every real toggle in the app pairs --toggle with one of
+   these two variants (trip-panel.js's requirement chips, role toggles, the
+   mobile panel open/close buttons) — without this override, the "selected"
+   look never actually renders anywhere, and only the icon's fill (outline
+   → solid, see .rux-icon below) changes, which reads as too subtle on its
+   own. :not(:disabled) guards for the same tie-breaking reason as the danger
+   compounds — a two-class compound ties with .rux-button:disabled's
+   specificity. */
+.rux-button--default.rux-button--toggle:is(.is-active, [aria-pressed="true"]):not(:disabled):not([aria-disabled="true"]),
+.rux-button--ghost.rux-button--toggle:is(.is-active, [aria-pressed="true"]):not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-selected-bg);
+	border-color: transparent;
+	color: var(--rux-button-selected-fg);
+}
+
 /* danger is an intent modifier; combine it with an emphasis modifier */
 .rux-button--danger {
 	background: var(--rux-button-danger-background);

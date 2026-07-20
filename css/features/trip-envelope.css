@@ -62,13 +62,40 @@
     --env-paper: oklch(87% 0.04 95);
 }
 
+.rux-trip-envelope-window__toolbar {
+	display: flex;
+	align-items: center;
+	flex: none;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3) var(--rux-space-4);
+	background: var(--rux-surface-modal);
+	border-bottom: var(--rux-card-section-border);
+}
+
 /* flex:none and the modal surface background come from the shared
    .rux-floating-window__footer; this window just wants a tighter gap than
    .rux-card__footer's default. */
 .rux-trip-envelope-window__footer {
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	gap: var(--rux-space-2);
+}
+
+.rux-trip-envelope-window__recipient {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	min-width: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	white-space: nowrap;
+}
+
+.rux-trip-envelope-window__recipient .rux-select {
+	width: clamp(10rem, 18vw, 14rem);
 }
 
 /* .rux-trip-envelope-window__spacer removed — use .rux-floating-window__spacer */
@@ -274,8 +301,59 @@
 	margin-block-start: var(--rux-space-4);
 }
 
-.rux-trip-envelope__notes .rux-trip-envelope__footer-label {
-	padding: 0;
+.rux-trip-envelope__notes-label {
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	line-height: 1;
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
+	color: var(--env-ink-muted);
+}
+
+.rux-trip-envelope--mvm .rux-trip-envelope__notes {
+	flex: none;
+	min-height: 0;
+	margin-block-start: var(--rux-space-2);
+}
+
+.rux-trip-envelope__requirements {
+	display: grid;
+	gap: var(--rux-space-1);
+	margin-block-start: var(--rux-space-2);
+}
+
+.rux-trip-envelope__requirement {
+	display: grid;
+	grid-template-columns: 1.25rem max-content minmax(0, 1fr);
+	align-items: center;
+	column-gap: var(--rux-space-2);
+	min-width: 0;
+	color: var(--env-ink);
+}
+
+.rux-trip-envelope__requirement-icon {
+	--_icon-fill: 1;
+	display: inline-flex;
+	width: 1.25rem;
+	height: 1.25rem;
+	align-items: center;
+	justify-content: center;
+	font-size: var(--rux-text-md);
+	line-height: 1;
+}
+
+.rux-trip-envelope__requirement-label {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-snug);
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.rux-trip-envelope__requirement-write-in {
+	width: 1.5in;
+	min-width: 0.75in;
+	border-bottom: 1px solid var(--env-ink);
 }
 
 /* ── Stop log table (MVM-only) ───────────────────────────────────────── */
@@ -376,6 +454,7 @@
 	}
 
 	.rux-trip-envelope-window__header,
+	.rux-trip-envelope-window__toolbar,
 	.rux-trip-envelope-window__footer {
 		display: none !important;
 	}
@@ -399,6 +478,18 @@
 		height: auto !important;
 	}
 
+	.rux-trip-envelope-window__body [data-envelope-content].is-batch-print > .rux-trip-envelope {
+		break-inside: avoid;
+		page-break-inside: avoid;
+		break-after: page;
+		page-break-after: always;
+	}
+
+	.rux-trip-envelope-window__body [data-envelope-content].is-batch-print > .rux-trip-envelope:last-child {
+		break-after: auto;
+		page-break-after: auto;
+	}
+
 	/* Physical stock is 6in x 9in envelopes, not letter paper — the on-screen
 	   preview keeps the app's normal --rux- type scale for comfortable
 	   reading in the floating window, but that scale is sized for a desktop
@@ -419,7 +510,7 @@
 		   of spacing is controlled here instead, via plain padding on the
 		   card itself — a box-model property this stylesheet has full,
 		   reliable control over no matter what the print driver caches. */
-		padding: .70in 0.25in 0.05in 0.25in;
+		padding: .25in 0.25in 0.05in 0.25in;
 	}
 
 	/* ── Print sizing overrides — shared by Standard and MVM, same as the
@@ -431,15 +522,17 @@
 
 	.rux-trip-envelope__logo {
 		height: 32px;
+		margin-bottom: 0.1in;
 	}
 
 	.rux-trip-envelope__company-line {
-		font-size: 9pt;
+
+	font-size: 8pt;
 	}
 
 	.rux-trip-envelope__section-title {
 		margin-block-start: 0.1in;
-		font-size: 14pt;
+		font-size: 9pt;
 	}
 
 	.rux-trip-envelope__cell {
@@ -461,11 +554,35 @@
 	.rux-trip-envelope__footer-label,
 	.rux-trip-envelope__footer-amount {
 		padding: 0.05in 0.07in;
-		font-size: 7pt;
+		font-size: 9pt;
 	}
 
 	.rux-trip-envelope__check {
-		font-size: 7pt;
+		font-size: 9pt;
+	}
+
+	.rux-trip-envelope__requirements {
+		gap: 0.04in;
+		margin-block-start: 0.06in;
+	}
+
+	.rux-trip-envelope__notes-label {
+		font-size: 9pt;
+	}
+
+	.rux-trip-envelope__requirement {
+		grid-template-columns: 0.22in max-content minmax(0, 1fr);
+		column-gap: 0.06in;
+	}
+
+	.rux-trip-envelope__requirement-icon {
+		width: 0.22in;
+		height: 0.22in;
+		font-size: 16pt;
+	}
+
+	.rux-trip-envelope__requirement-label {
+		font-size: 9pt;
 	}
 
 	.rux-trip-envelope__box {
@@ -484,7 +601,7 @@
 	}
 
 	@page {
-		size: 6in 9in;
+		size: 6.5in 9in;
 		/* Not reliably respected by the print driver here (see the comment
 		   on .rux-trip-envelope above) — left at 0 so it can't fight the
 		   card's own padding, which is what actually controls spacing now. */
