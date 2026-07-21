@@ -53,6 +53,20 @@ function fmtTime(value) {
 	return `${hour}:${match[2]} ${suffix}`;
 }
 
+// share.updatedAt is an ISO timestamp (driver_schedule_shares.updated_at) —
+// when dispatch last confirmed this schedule's trip selection, via the
+// Driver Link panel's Create/Update action. Not a guarantee every field on
+// every included trip is untouched since, just the best available signal.
+function fmtUpdatedAt(value) {
+	if (!value) return "";
+	const date = new Date(value);
+	if (Number.isNaN(date.getTime())) return "";
+	const time = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+	if (date.toDateString() === new Date().toDateString()) return `Updated today at ${time}`;
+	const day = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+	return `Updated ${day} at ${time}`;
+}
+
 function roleLabel(role) {
 	if (role === "co-driver") return "Co-Driver";
 	if (role === "relief-start" || role === "relief-end") return "Relief Driver";
@@ -248,9 +262,9 @@ function telUrl(phone) {
 // (crew/requirements/notes) that stays available but doesn't compete with
 // the two things a driver checks a link for: what time, and where.
 function renderCard(entry) {
-	const card = el("article", "driver-assignment-card");
+	const card = el("article", "rux-card rux-card--elevated driver-assignment-card");
 
-	const header = el("header", "driver-assignment-card__header");
+	const header = el("header", "rux-card__header driver-assignment-card__header");
 	const dateText = entry.startDate === entry.endDate
 		? fmtDate(entry.startDate)
 		: `${fmtDate(entry.startDate)} – ${fmtDate(entry.endDate, { weekday: false })}`;
@@ -260,13 +274,13 @@ function renderCard(entry) {
 	);
 	card.appendChild(header);
 
-	card.appendChild(el(
+	const body = el("div", "rux-card__body driver-assignment-card__body");
+
+	body.appendChild(el(
 		"p",
 		"driver-assignment-card__route",
 		`${shortLocation(entry.from) || "Pickup"} → ${shortLocation(entry.to) || "Destination"}`,
 	));
-
-	const body = el("div", "driver-assignment-card__body");
 
 	const relief = isReliefRole(entry.role);
 	const timeLabelParts = [relief ? "Swap Time" : "Spot Time", roleLabel(entry.role)];
@@ -346,7 +360,7 @@ function renderCard(entry) {
 	}
 	card.appendChild(body);
 
-	const actions = el("footer", "driver-assignment-card__actions");
+	const actions = el("footer", "rux-card__footer driver-assignment-card__actions");
 	if (entry.itineraryUrl) actions.appendChild(actionLink("View Itinerary", "description", entry.itineraryUrl));
 	const envelopeButton = document.createElement("button");
 	envelopeButton.type = "button";
@@ -495,16 +509,15 @@ async function load() {
 	root.innerHTML = "";
 	const intro = el("section", "driver-share__intro");
 	intro.append(
-		el("p", "driver-share__eyebrow", "Current assignments"),
-		el("h1", "driver-share__title", `Hi ${share.driver.shortName || share.driver.name}`),
-		el("p", "driver-share__range", fmtRange(share.rangeStart, share.rangeEnd)),
+		el("h1", "driver-share__title", `Hello ${share.driver.shortName || share.driver.name}`),
+		el("p", "driver-share__range", `Here are the current assignments for week of ${fmtRange(share.rangeStart, share.rangeEnd)}`),
 	);
-	const notice = el("div", "driver-share__notice");
-	notice.append(
-		el("span", "rux-icon", "sync"),
-		el("span", "", "This page reflects the latest saved trip information. Contact dispatch if anything looks incorrect."),
-	);
-	intro.appendChild(notice);
+	const updatedText = fmtUpdatedAt(share.updatedAt);
+	if (updatedText) {
+		const notice = el("div", "driver-share__notice");
+		notice.append(el("span", "rux-icon", "sync"), el("span", "", updatedText));
+		intro.appendChild(notice);
+	}
 	root.appendChild(intro);
 	const list = el("section", "driver-share__list");
 	entries.forEach((entry) => list.appendChild(renderCard(entry)));

@@ -51,15 +51,6 @@ html {
 	margin-bottom: var(--rux-space-5);
 }
 
-.driver-share__eyebrow {
-	margin: 0 0 var(--rux-space-1);
-	color: var(--rux-accent);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-bold);
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-}
-
 .driver-share__title {
 	margin: 0;
 	font-size: clamp(1.7rem, 7vw, 2.35rem);
@@ -69,18 +60,22 @@ html {
 .driver-share__range {
 	margin: var(--rux-space-2) 0 0;
 	color: var(--rux-fg-muted);
+	line-height: var(--rux-leading-normal);
 }
 
+/* Compact single-line timestamp, not the old multi-line disclaimer box —
+   just enough to answer "is this current" at a glance. */
 .driver-share__notice {
 	display: flex;
+	align-items: center;
 	gap: var(--rux-space-2);
-	margin-top: var(--rux-space-4);
-	padding: var(--rux-space-3);
-	background: var(--rux-info-subtle);
-	border-radius: var(--rux-radius-lg);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-sm);
-	line-height: var(--rux-leading-normal);
+	margin-top: var(--rux-space-3);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-xs);
+}
+
+.driver-share__notice .rux-icon {
+	font-size: 1rem;
 }
 
 .driver-share__list {
@@ -93,22 +88,13 @@ html {
    pass. Two backgrounds instead of one card-wide surface: the header/route
    sits on the canvas color (open, printed-ticket top), the body reads like
    a slightly recessed pocket, matching the physical-stub metaphor. */
+/* Base look/spacing (background, radius, header/body/footer padding) comes
+   from .rux-card + .rux-card--elevated/__header/__body/__footer — this file
+   only adds what's actually unique to the ticket-stub read: dashed sides
+   instead of .rux-card's uniform border, and the content styling below. */
 .driver-assignment-card {
-	overflow: hidden;
-	background: var(--rux-surface-modal);
-	border-top: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
-	border-left: var(--rux-border-width) dashed var(--rux-border);
-	border-right: var(--rux-border-width) dashed var(--rux-border);
-	border-radius: var(--rux-radius-lg);
-}
-
-.driver-assignment-card__header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-3);
-	padding: var(--rux-space-4) var(--rux-space-4) 0;
+	border-left-style: dashed;
+	border-right-style: dashed;
 }
 
 .driver-assignment-card__date {
@@ -131,17 +117,14 @@ html {
 	white-space: nowrap;
 }
 
+/* No border-bottom of its own — .rux-card__header already closes with one
+   right above this, so a second line directly beneath it would just double
+   up. Margin alone gives it room to breathe. */
 .driver-assignment-card__route {
-	margin: var(--rux-space-1) var(--rux-space-4) 0;
-	padding-bottom: var(--rux-space-4);
-	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+	margin: 0 0 var(--rux-space-4);
 	font-size: 1.05rem;
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-snug);
-}
-
-.driver-assignment-card__body {
-	padding: var(--rux-space-4);
 }
 
 /* The one number a driver actually opens this link to check — biggest,
@@ -264,11 +247,14 @@ html {
 	font-weight: var(--rux-weight-semibold);
 }
 
+/* .rux-card__footer defaults to a right-aligned row (Delete/Clear/Save-style
+   actions) — this footer is two stacked full-width buttons instead, same
+   idea as the sketch. Padding/gap/border-top/background all stay the
+   shared card-footer defaults. */
 .driver-assignment-card__actions {
-	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
-	padding: 0 var(--rux-space-4) var(--rux-space-4);
+	align-items: stretch;
+	justify-content: flex-start;
 }
 
 .driver-assignment-card__actions .rux-button {
