@@ -178,3 +178,22 @@ export async function fetchDriverTrips(driverId) {
     .filter(Boolean)
     .sort((a, b) => (b.startDate || "").localeCompare(a.startDate || ""));
 }
+
+/* ── Shared driver schedule ─────────────────────────────────────────────── */
+
+export async function fetchDriverScheduleShare(driverId) {
+  const { data, error } = await supabase.rpc(
+    "get_driver_schedule_share_for_driver",
+    { p_driver_id: driverId },
+  );
+  if (error) throw error;
+  return data || null;
+}
+
+export async function deactivateDriverScheduleShare(token) {
+  const { data, error } = await supabase.rpc("revoke_driver_schedule_share", {
+    p_token: token,
+  });
+  if (error) throw error;
+  return Boolean(data);
+}

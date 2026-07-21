@@ -1,5 +1,6 @@
 import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
+import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
@@ -507,6 +508,7 @@ async function load() {
 			return assignment ? normalizeAssignment({ ...assignment, trips: trip }, share.driver.id) : null;
 		})
 		.filter(Boolean)
+		.filter((entry) => isCurrentOrUpcomingLeg(entry.endDate || entry.startDate))
 		.sort((a, b) => String(a.startDate).localeCompare(String(b.startDate)));
 	if (!entries.length) {
 		showStatus("event_busy", "No assignments", "There are no active trips on this shared schedule.");

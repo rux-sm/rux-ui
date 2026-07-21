@@ -11,6 +11,7 @@
    ========================================================================== */
 
 import { supabase } from "../data/supabase.js";
+import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 
 (() => {
 	"use strict";
@@ -216,7 +217,13 @@ import { supabase } from "../data/supabase.js";
 					: trip.end_date || startDate;
 				const start = parseIsoDate(startDate);
 				const end = parseIsoDate(endDate);
-				if (!start || !end || end < rangeStart || start > rangeEnd) continue;
+				if (
+					!start
+					|| !end
+					|| !isCurrentOrUpcomingLeg(end)
+					|| end < rangeStart
+					|| start > rangeEnd
+				) continue;
 
 				const stops = stopsForLeg(trip, leg);
 				const pickup = stops.find((stop) => stop.type === "pickup") || {};
@@ -378,6 +385,13 @@ import { supabase } from "../data/supabase.js";
 		});
 	}
 
+	function notifyShareChanged() {
+		if (!state?.driver?.id) return;
+		window.dispatchEvent(new CustomEvent("rux:driver-schedule-share-changed", {
+			detail: { driverId: state.driver.id },
+		}));
+	}
+
 	function renderShareControls() {
 		if (!modal || !state) return;
 		const empty = modal.querySelector("[data-driver-share-empty]");
@@ -439,6 +453,7 @@ import { supabase } from "../data/supabase.js";
 		} catch (_) {}
 		renderShareControls();
 		refreshPreview();
+		notifyShareChanged();
 		window.Rux?.toast?.(update ? "Driver link updated" : "Driver link activated");
 	}
 
@@ -461,6 +476,7 @@ import { supabase } from "../data/supabase.js";
 		state.share = null;
 		renderShareControls();
 		refreshPreview();
+		notifyShareChanged();
 		window.Rux?.toast?.("Driver link deactivated");
 	}
 

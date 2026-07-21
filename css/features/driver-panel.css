@@ -183,6 +183,38 @@
 
 /* — Trips: read-only trip list — */
 
+.rux-driver-panel__schedule-card {
+	margin-bottom: var(--rux-space-4);
+	overflow: hidden;
+}
+
+.rux-driver-panel__schedule-card .rux-card__header {
+	align-items: center;
+}
+
+.rux-driver-panel__schedule-summary {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	line-height: var(--rux-leading-normal);
+}
+
+.rux-driver-panel__schedule-actions {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-2);
+	margin-top: var(--rux-space-3);
+}
+
+.rux-driver-panel__schedule-actions .rux-button {
+	width: 100%;
+	min-width: 0;
+}
+
+.rux-driver-panel__schedule-actions #dp-schedule-manage {
+	grid-column: 1 / -1;
+}
+
 .rux-driver-panel__trip-list {
 	display: flex;
 	flex-direction: column;

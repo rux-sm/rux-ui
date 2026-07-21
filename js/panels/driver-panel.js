@@ -10,6 +10,12 @@
   const panes       = document.querySelectorAll(".rux-driver-panel__pane");
   const cdlGroup     = document.getElementById("dp-cdl-group");
   const tripList     = document.getElementById("dp-trip-list");
+  const scheduleStatus = document.getElementById("dp-schedule-status");
+  const scheduleSummary = document.getElementById("dp-schedule-summary");
+  const scheduleManageBtn = document.getElementById("dp-schedule-manage");
+  const scheduleOpenBtn = document.getElementById("dp-schedule-open");
+  const scheduleCopyBtn = document.getElementById("dp-schedule-copy");
+  const scheduleDeactivateBtn = document.getElementById("dp-schedule-deactivate");
   const saveOrderBtn = document.getElementById("driver-save-order-btn");
   const dpAvatarBtn       = document.getElementById("dp-avatar");
   const dpAvatarMain      = document.getElementById("dp-avatar-main");
@@ -19,8 +25,12 @@
   let db         = null;
   let settingsDb = null;
   let selectedId = null;
+  let selectedScheduleShare = null;
+  let scheduleLoadRequest = 0;
   let allDrivers = [];
   let colConfig  = [];
+
+  const DRIVER_SHARE_ORIGIN = "https://rux-sm.github.io/rux-ui/";
 
   // ── Drawer ────────────────────────────────────────────────────────────────
   // Open/close/resize behavior lives in RuxDrawer (js/core/drawer.js), shared
@@ -36,6 +46,8 @@
     onClose: () => {
       tbody.querySelectorAll(".driver-app__row").forEach(r => r.classList.remove("is-selected"));
       selectedId = null;
+      scheduleLoadRequest += 1;
+      renderScheduleShare(null);
     },
   });
   const openDrawer  = drawerHandle.open;
@@ -116,6 +128,82 @@
     return new Date(+y, +m - 1, +d).toLocaleDateString("en-US", {
       month: "short", day: "numeric", year: "numeric",
     });
+  }
+
+  function driverScheduleUrl(token) {
+    const url = new URL("d.html", DRIVER_SHARE_ORIGIN);
+    url.searchParams.set("s", token);
+    return url.href;
+  }
+
+  function isScheduleShareLive(share) {
+    if (!share?.token || !share.expiresAt) return false;
+    const expiresAt = new Date(share.expiresAt).getTime();
+    return Number.isFinite(expiresAt) && expiresAt > Date.now();
+  }
+
+  function setScheduleStatus(label, variant = "") {
+    scheduleStatus.className = `rux-badge rux-badge--dot${variant ? ` rux-badge--${variant}` : ""}`;
+    scheduleStatus.textContent = label;
+  }
+
+  function renderScheduleShare(share, state = "ready") {
+    selectedScheduleShare = share || null;
+    scheduleManageBtn.disabled = !selectedId || state === "loading";
+    scheduleOpenBtn.disabled = true;
+    scheduleCopyBtn.disabled = true;
+    scheduleDeactivateBtn.disabled = true;
+
+    if (state === "loading") {
+      setScheduleStatus("Loading");
+      scheduleSummary.textContent = "Checking this driver’s shared schedule…";
+      return;
+    }
+    if (state === "error") {
+      setScheduleStatus("Unavailable", "danger");
+      scheduleSummary.textContent = "The shared schedule status could not be loaded.";
+      return;
+    }
+    if (!selectedId) {
+      setScheduleStatus("Inactive");
+      scheduleSummary.textContent = "Select a driver to view their shared schedule.";
+      return;
+    }
+    if (!share?.token) {
+      setScheduleStatus("Inactive");
+      scheduleSummary.textContent = "No active link. Manage assignments to activate this driver’s permanent URL.";
+      return;
+    }
+
+    const live = isScheduleShareLive(share);
+    scheduleDeactivateBtn.disabled = false;
+    if (!live) {
+      setScheduleStatus("Expired", "warning");
+      scheduleSummary.textContent = "Manage assignments to restore access without changing the URL.";
+      return;
+    }
+
+    setScheduleStatus("Active", "success");
+    scheduleOpenBtn.disabled = false;
+    scheduleCopyBtn.disabled = false;
+    const range = share.rangeStart && share.rangeEnd
+      ? `${fmtDate(share.rangeStart)} – ${fmtDate(share.rangeEnd)}`
+      : "Upcoming assignments";
+    scheduleSummary.textContent = `Current shared schedule · ${range}`;
+  }
+
+  async function loadDriverScheduleShare(driverId) {
+    const requestId = ++scheduleLoadRequest;
+    renderScheduleShare(null, "loading");
+    try {
+      const share = await db.fetchDriverScheduleShare(driverId);
+      if (requestId !== scheduleLoadRequest || String(driverId) !== String(selectedId)) return;
+      renderScheduleShare(share);
+    } catch (err) {
+      if (requestId !== scheduleLoadRequest) return;
+      console.warn("Could not load driver schedule link:", err);
+      renderScheduleShare(null, "error");
+    }
   }
 
   function localIsoDate(date = new Date()) {
@@ -343,6 +431,7 @@
     selectedId = d.id;
     populatePanel(d);
     loadDriverTrips(d.id);
+    loadDriverScheduleShare(d.id);
     loadTimeOff(d.id);
     openDrawer();
   }
@@ -634,6 +723,8 @@
   function clearPanel() {
     tbody.querySelectorAll(".driver-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
+    scheduleLoadRequest += 1;
+    renderScheduleShare(null);
 
     renderAvatar(null);
 
@@ -657,6 +748,56 @@
   }
 
   document.getElementById("dp-btn-clear").addEventListener("click", clearPanel);
+
+  scheduleManageBtn?.addEventListener("click", () => {
+    if (!selectedId) return;
+    const driver = allDrivers.find((item) => String(item.id) === String(selectedId));
+    window.dispatchEvent(new CustomEvent("rux:manage-driver-schedule", {
+      detail: { driverId: selectedId, driver },
+    }));
+  });
+
+  scheduleOpenBtn?.addEventListener("click", () => {
+    if (!isScheduleShareLive(selectedScheduleShare)) return;
+    window.open(driverScheduleUrl(selectedScheduleShare.token), "_blank", "noopener");
+  });
+
+  scheduleCopyBtn?.addEventListener("click", async () => {
+    if (!isScheduleShareLive(selectedScheduleShare)) return;
+    const url = driverScheduleUrl(selectedScheduleShare.token);
+    let copied = false;
+    try {
+      copied = Boolean(await window.Rux?.copy?.(url));
+      if (!copied && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+        copied = true;
+      }
+    } catch (_) {
+      copied = false;
+    }
+    window.Rux?.toast?.(copied ? "Driver link copied" : "Could not copy the driver link");
+  });
+
+  scheduleDeactivateBtn?.addEventListener("click", async () => {
+    if (!selectedScheduleShare?.token) return;
+    if (!confirm("Deactivate this driver schedule link? Reactivating it later will use the same URL.")) return;
+    scheduleDeactivateBtn.disabled = true;
+    try {
+      const deactivated = await db.deactivateDriverScheduleShare(selectedScheduleShare.token);
+      if (!deactivated) throw new Error("Driver schedule link was not active");
+      renderScheduleShare(null);
+      window.Rux?.toast?.("Driver link deactivated");
+    } catch (err) {
+      console.warn("Could not deactivate driver schedule link:", err);
+      scheduleDeactivateBtn.disabled = false;
+      window.Rux?.toast?.("Could not deactivate the driver link");
+    }
+  });
+
+  window.addEventListener("rux:driver-schedule-share-changed", (event) => {
+    if (!selectedId || String(event.detail?.driverId) !== String(selectedId)) return;
+    loadDriverScheduleShare(selectedId);
+  });
 
   // ── Avatar photo upload ───────────────────────────────────────────────────
 
