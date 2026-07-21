@@ -2,8 +2,6 @@ import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 
 const root = document.getElementById("driver-share-root");
-const envelopeDialog = document.getElementById("driver-share-envelope");
-const envelopeHost = envelopeDialog.querySelector("[data-envelope-sheet]");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
 let requirementLabels = new Map();
 
@@ -205,6 +203,7 @@ function normalizeAssignment(row, driverId) {
 			? trip.return_end_date || trip.return_start_date
 			: trip.end_date || trip.start_date,
 		busNumber: row.buses?.number ?? "Unassigned",
+		driverId,
 		role: driverAssignment.role || "driver",
 		roleReportTime: driverAssignment.report_time || "",
 		instructions: driverAssignment.instructions || "",
@@ -388,69 +387,53 @@ function renderCard(entry) {
 	return card;
 }
 
-function envelopeField(label, value, full = false) {
-	const field = el("div", `driver-envelope-sheet__field${full ? " driver-envelope-sheet__field--full" : ""}`);
-	field.append(
-		el("span", "driver-envelope-sheet__label", label),
-		el("span", "driver-envelope-sheet__value", value || ""),
-	);
-	return field;
+function envelopeTrip(entry) {
+	const drivers = entry.drivers.map((item) => ({
+		id: item.driver_id,
+		name: item.drivers?.name || item.drivers?.short_name || "",
+		shortName: item.drivers?.short_name || item.drivers?.name || "",
+		phone: item.drivers?.phone || "",
+		role: item.role,
+		reportTime: item.report_time || "",
+		instructions: item.instructions || "",
+	}));
+	return {
+		id: entry.trip.id,
+		trip_ref: entry.trip.trip_ref,
+		startDate: entry.startDate,
+		endDate: entry.endDate,
+		destination: entry.to,
+		trip_type: entry.trip.trip_type,
+		spotTime: entry.spotTime,
+		trip_stops: stopsForLeg(entry.trip, entry.leg),
+		bookingContact: {
+			name: entry.trip.booking_contact_name || "",
+			phone: entry.trip.booking_contact_phone || "",
+		},
+		tripContact: {
+			name: entry.trip.trip_contact_1_name || "",
+			phone: entry.trip.trip_contact_1_phone || "",
+		},
+		trip_reqs: entry.trip.trip_reqs || {},
+		req_sleeper: entry.trip.req_sleeper,
+		req_56pax: entry.trip.req_56pax,
+		req_ada: entry.trip.req_ada,
+		need_hotel: entry.trip.need_hotel,
+		need_fuel_card: entry.trip.need_fuel_card,
+		drivers,
+	};
 }
 
 function openEnvelope(entry) {
-	envelopeHost.innerHTML = "";
-	const sheet = el("article", "driver-envelope-sheet");
-	const header = el("header", "driver-envelope-sheet__header");
-	header.append(
-		el("h1", "driver-envelope-sheet__day", fmtDate(entry.startDate).split(",")[0]),
-	);
-	const logo = document.createElement("img");
-	logo.className = "driver-envelope-sheet__logo";
-	logo.src = "./assets/logo.png";
-	logo.alt = "Scarmilla Tour Buses";
-	header.append(logo, el("h2", "driver-envelope-sheet__title", "Trip Information"));
-	sheet.appendChild(header);
-
-	const selected = entry.drivers.find((item) => item.role === entry.role);
-	const primary = entry.drivers.find((item) => item.role === "driver");
-	const selectedName = selected?.drivers?.name || "";
-	const primaryName = primary?.drivers?.name || "";
-	const grid = el("div", "driver-envelope-sheet__grid");
-	grid.append(
-		envelopeField("Bus", String(entry.busNumber)),
-		envelopeField(roleLabel(entry.role), selectedName),
-		envelopeField("Trip Date", fmtDate(entry.startDate, { weekday: false, year: true })),
-		envelopeField(
-			entry.role === "driver" ? "Spot Time" : "Swap Time",
-			entry.role === "driver" ? fmtTime(entry.spotTime) : fmtTime(entry.roleReportTime),
-		),
-		...(entry.role === "driver" ? [] : [envelopeField("Driver", primaryName)]),
-		envelopeField("Pick Up Address", entry.from, true),
-		envelopeField("Destination", entry.to, true),
-		envelopeField("Contact", entry.contact.name),
-		envelopeField("Phone", entry.contact.phone),
-		envelopeField("Starting Odometer", ""),
-		envelopeField("Ending Odometer", ""),
-	);
-	sheet.appendChild(grid);
-	const notes = el("div", "driver-envelope-sheet__notes");
-	notes.appendChild(el("span", "driver-envelope-sheet__notes-label", "Notes:"));
-	if (entry.requirements.length) {
-		const list = document.createElement("ul");
-		entry.requirements.forEach((item) => list.appendChild(el("li", "", item)));
-		notes.appendChild(list);
-	}
-	if (entry.instructions) {
-		let list = notes.querySelector("ul");
-		if (!list) {
-			list = document.createElement("ul");
-			notes.appendChild(list);
-		}
-		list.appendChild(el("li", "", entry.instructions));
-	}
-	sheet.appendChild(notes);
-	envelopeHost.appendChild(sheet);
-	envelopeDialog.showModal();
+	const trip = envelopeTrip(entry);
+	const recipient = trip.drivers.find(
+		(driver) => String(driver.id) === String(entry.driverId),
+	) || trip.drivers.find((driver) => driver.role === entry.role);
+	window.TripEnvelope?.open(trip, [], {
+		busNumber: entry.busNumber,
+		recipient,
+		recipientOnly: true,
+	});
 }
 
 async function load() {
@@ -462,6 +445,7 @@ async function load() {
 	try {
 		const requirements = await loadRequirements();
 		requirementLabels = new Map(requirements.map((item) => [item.id, item.label]));
+		window.appRequirements = requirements;
 	} catch (_) {
 		requirementLabels = new Map();
 	}
@@ -539,12 +523,6 @@ async function load() {
 	entries.forEach((entry) => list.appendChild(renderCard(entry)));
 	root.appendChild(list);
 }
-
-envelopeDialog.querySelector("[data-envelope-dismiss]").addEventListener("click", () => envelopeDialog.close());
-envelopeDialog.querySelector("[data-envelope-print]").addEventListener("click", () => window.print());
-envelopeDialog.addEventListener("click", (event) => {
-	if (event.target === envelopeDialog) envelopeDialog.close();
-});
 
 load().catch((error) => {
 	console.error("Driver schedule failed:", error);

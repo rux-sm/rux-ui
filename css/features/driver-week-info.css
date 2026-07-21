@@ -126,6 +126,7 @@
 	border-radius: var(--rux-radius-lg);
 }
 
+.rux-driver-week-info__list-heading,
 .rux-driver-week-info__share-heading {
 	display: flex;
 	align-items: baseline;
@@ -133,6 +134,7 @@
 	gap: var(--rux-space-2);
 }
 
+.rux-driver-week-info__list-heading .rux-driver-week-info__section-title,
 .rux-driver-week-info__share-heading .rux-driver-week-info__section-title {
 	margin-bottom: var(--rux-space-1);
 }

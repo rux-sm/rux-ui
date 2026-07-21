@@ -58,7 +58,7 @@
 		if (!value) return "";
 		const text = String(value).trim();
 		if (/[ap]m$/i.test(text)) return text.toUpperCase();
-		const match = text.match(/^(\d{1,2}):(\d{2})$/);
+		const match = text.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
 		if (!match) return text;
 		let hour = Number(match[1]);
 		const suffix = hour < 12 ? "AM" : "PM";
@@ -229,9 +229,11 @@
 		header.appendChild(logo);
 
 		const yard = window.RuxSettings?.getYard?.() || {};
-		if (yard.address)
+		const yardAddress = yard.address
+			|| "2801 Zinnia Avenue, McAllen, Texas 78504, United States";
+		if (yardAddress)
 			header.appendChild(
-				el("p", "rux-trip-envelope__company-line", yard.address),
+				el("p", "rux-trip-envelope__company-line", yardAddress),
 			);
 		// Settings only stores yard name/address today — these numbers are
 		// static company info, not per-trip data.
@@ -265,7 +267,11 @@
 		);
 
 		const stop = pickupStop(trip);
-		const spotTime = fmtTime(stop?.spot || trip.spotTime);
+		const isRelief = recipient
+			&& (recipient.role === "relief-start" || recipient.role === "relief-end");
+		const scheduleTime = isRelief
+			? fmtTime(recipient.reportTime)
+			: fmtTime(stop?.spot || trip.spotTime);
 		const isMultiDay =
 			trip.startDate && trip.endDate && trip.startDate !== trip.endDate;
 		frag.appendChild(
@@ -275,7 +281,7 @@
 					: "rux-trip-envelope__row--2",
 				cell("Trip Date:", fmtDate(trip.startDate)),
 				...(isMultiDay ? [cell("Return:", fmtDate(trip.endDate))] : []),
-				cell("Spot Time:", spotTime),
+				cell(isRelief ? "Swap Time:" : "Spot Time:", scheduleTime),
 			),
 		);
 
@@ -341,13 +347,14 @@
 		return grid;
 	}
 
-	function buildNotes(trip) {
+	function buildNotes(trip, recipient) {
 		const notes = el("div", "rux-trip-envelope__notes");
 		notes.appendChild(
 			el("span", "rux-trip-envelope__notes-label", "Notes:"),
 		);
 		const requirements = envelopeRequirements(trip);
-		if (!requirements.length) return notes;
+		const driverNote = String(recipient?.instructions || "").trim();
+		if (!requirements.length && !driverNote) return notes;
 
 		const list = el("div", "rux-trip-envelope__requirements");
 		requirements.forEach((requirement) => {
@@ -363,6 +370,19 @@
 			}
 			list.appendChild(item);
 		});
+		if (driverNote) {
+			const item = el(
+				"div",
+				"rux-trip-envelope__requirement rux-trip-envelope__driver-note",
+			);
+			item.appendChild(
+				el("span", "rux-icon rux-trip-envelope__requirement-icon", "info"),
+			);
+			item.appendChild(
+				el("span", "rux-trip-envelope__requirement-label", driverNote),
+			);
+			list.appendChild(item);
+		}
 		notes.appendChild(list);
 		return notes;
 	}
@@ -402,7 +422,7 @@
 
 		card.appendChild(buildFooterGrid());
 
-		card.appendChild(buildNotes(trip));
+		card.appendChild(buildNotes(trip, recipient));
 
 		return card;
 	}
@@ -450,7 +470,7 @@
 		table.appendChild(tbody);
 		card.appendChild(table);
 
-		const notes = buildNotes(trip);
+		const notes = buildNotes(trip, recipient);
 		if (notes.querySelector(".rux-trip-envelope__requirements")) {
 			card.appendChild(notes);
 		}
@@ -713,16 +733,31 @@
 		return panelEl;
 	}
 
-	function open(trip, schedulerBuses) {
+	function open(trip, schedulerBuses, options = {}) {
 		if (!trip) return;
 		ensurePanel();
-		const recipients = envelopeRecipients(trip);
+		const allRecipients = envelopeRecipients(trip);
+		const requestedRecipient = options.recipient
+			? allRecipients.find((driver) => driver === options.recipient)
+				|| allRecipients.find((driver) =>
+					String(driver.name || "").toLocaleLowerCase()
+						=== String(options.recipient.name || "").toLocaleLowerCase()
+					&& driver.role === options.recipient.role,
+				)
+			: null;
+		const recipients = options.recipientOnly && requestedRecipient
+			? [requestedRecipient]
+			: allRecipients;
 		const primaryIndex = recipients.findIndex((driver) => driver.role === "driver");
 		current = {
 			trip,
-			busNumber: busNumberFor(trip, schedulerBuses),
+			busNumber: options.busNumber != null
+				? String(options.busNumber)
+				: busNumberFor(trip, schedulerBuses),
 			recipients,
-			selectedRecipientIndex: primaryIndex >= 0 ? primaryIndex : 0,
+			selectedRecipientIndex: requestedRecipient && !options.recipientOnly
+				? Math.max(0, recipients.indexOf(requestedRecipient))
+				: primaryIndex >= 0 ? primaryIndex : 0,
 		};
 		activeTemplate = "standard";
 		panelEl.dataset.tint = "yellow";

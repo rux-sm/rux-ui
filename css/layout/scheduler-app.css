@@ -45,7 +45,7 @@
 	/* Left/editor and right/tools drawers intentionally have independent
 	   defaults. Resize limits remain shared. */
 	--scheduler-app-left-drawer-default-width: 400px;
-	--scheduler-app-right-drawer-default-width: 275px;
+	--scheduler-app-right-drawer-default-width: 400px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */

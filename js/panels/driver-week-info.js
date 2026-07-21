@@ -646,7 +646,14 @@ import { supabase } from "../data/supabase.js";
 				</header>
 				<div class="rux-modal__body rux-driver-week-info__body">
 					<section class="rux-driver-week-info__section">
-						<h3 class="rux-driver-week-info__section-title">Assignments to include</h3>
+						<div class="rux-driver-week-info__list-heading">
+							<h3 class="rux-driver-week-info__section-title">Assignments to include</h3>
+							<div class="rux-segmented" data-rux-toggle-group data-driver-range-weeks>
+								<button class="rux-button rux-button--default rux-button--sm" type="button" aria-pressed="false" data-value="1">1 wk</button>
+								<button class="rux-button rux-button--default rux-button--sm" type="button" aria-pressed="false" data-value="2">2 wk</button>
+								<button class="rux-button rux-button--default rux-button--sm" type="button" aria-pressed="false" data-value="3">3 wk</button>
+							</div>
+						</div>
 						<div class="rux-driver-week-info__trips" data-driver-info-trips></div>
 					</section>
 					<section class="rux-driver-week-info__section">
@@ -697,6 +704,11 @@ import { supabase } from "../data/supabase.js";
 		});
 
 		modal.addEventListener("click", async (event) => {
+			const rangeButton = event.target.closest("[data-driver-range-weeks] .rux-button");
+			if (rangeButton) {
+				await setRangeWeeks(rangeButton.dataset.value);
+				return;
+			}
 			const shareAction = event.target.closest("[data-driver-share-action]");
 			if (shareAction) {
 				const action = shareAction.dataset.driverShareAction;
@@ -732,16 +744,64 @@ import { supabase } from "../data/supabase.js";
 		return modal;
 	}
 
+	function syncRangeButtons(weeks) {
+		modal.querySelectorAll("[data-driver-range-weeks] .rux-button").forEach((button) => {
+			const active = Number(button.dataset.value) === weeks;
+			button.classList.toggle("is-active", active);
+			button.setAttribute("aria-pressed", active ? "true" : "false");
+		});
+	}
+
+	function updateRangeLabel() {
+		modal.querySelector("[data-driver-info-range]").textContent = [
+			fmtRange(state.rangeStart, state.rangeEnd),
+			state.driver.phone,
+		].filter(Boolean).join(" · ");
+	}
+
+	async function setRangeWeeks(weeks) {
+		if (!state) return;
+		weeks = Math.max(1, Math.min(3, Number(weeks) || 1));
+		if (weeks === state.weeks) return;
+		const previousKeys = new Set(state.entries.map((entry) => entry.key));
+		const entries = entriesForDriver({
+			driver: state.driver,
+			trips: state.trips,
+			weekStart: state.rangeStart,
+			viewDays: weeks * 7,
+		});
+		const selected = new Set(
+			[...state.selected].filter((key) => entries.some((entry) => entry.key === key)),
+		);
+		entries.forEach((entry) => {
+			if (!previousKeys.has(entry.key)) selected.add(entry.key);
+		});
+		state.weeks = weeks;
+		state.rangeEnd = addDays(state.rangeStart, weeks * 7 - 1);
+		state.entries = entries;
+		state.selected = selected;
+		state.share = null;
+		syncRangeButtons(weeks);
+		updateRangeLabel();
+		renderTrips();
+		renderShareControls();
+		refreshPreview();
+		await restoreShare();
+	}
+
 	function open({ driver, trips, weekStart, viewDays = 7, buses = [] }) {
 		if (!driver || !weekStart) return;
 		ensureModal();
 		const rangeStart = new Date(weekStart);
 		rangeStart.setHours(0, 0, 0, 0);
-		const rangeEnd = addDays(rangeStart, Math.max(1, Number(viewDays) || 7) - 1);
-		const entries = entriesForDriver({ driver, trips, weekStart: rangeStart, viewDays });
+		const weeks = Math.max(1, Math.min(3, Math.round((Number(viewDays) || 7) / 7)));
+		const rangeEnd = addDays(rangeStart, weeks * 7 - 1);
+		const entries = entriesForDriver({ driver, trips, weekStart: rangeStart, viewDays: weeks * 7 });
 		state = {
 			driver,
 			buses,
+			trips,
+			weeks,
 			entries,
 			rangeStart,
 			rangeEnd,
@@ -750,10 +810,8 @@ import { supabase } from "../data/supabase.js";
 		};
 
 		modal.querySelector("[data-driver-info-title]").textContent = `Driver Info · ${fullDriverName(driver)}`;
-		modal.querySelector("[data-driver-info-range]").textContent = [
-			fmtRange(rangeStart, rangeEnd),
-			driver.phone,
-		].filter(Boolean).join(" · ");
+		syncRangeButtons(weeks);
+		updateRangeLabel();
 		renderTrips();
 		renderShareControls();
 		refreshPreview();

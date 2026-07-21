@@ -350,6 +350,10 @@
 	white-space: nowrap;
 }
 
+.rux-trip-envelope__driver-note .rux-trip-envelope__requirement-label {
+	white-space: normal;
+}
+
 .rux-trip-envelope__requirement-write-in {
 	width: 1.5in;
 	min-width: 0.75in;
