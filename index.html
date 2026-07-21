@@ -15,10 +15,11 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=19" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=54" />
+		<link rel="stylesheet" href="./css/components.css?v=55" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=2" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
+		<link rel="stylesheet" href="./css/features/customer-panel.css?v=1" />
 		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
 		<link rel="stylesheet" href="./css/features/comp-settings-app.css" />
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=1" />
@@ -28,7 +29,7 @@
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=34" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=6" />
-		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=1" />
+		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=2" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=2" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
 		<link
@@ -104,6 +105,15 @@
 							>directions_bus</span
 						>
 						Fleet
+					</button>
+
+					<button
+						class="rux-button rux-button--ghost rux-app-header__nav-item"
+						type="button"
+						data-module="customers"
+					>
+						<span class="rux-icon" aria-hidden="true">groups</span>
+						Customers
 					</button>
 
 					<button
@@ -3693,17 +3703,109 @@
 				<!-- /module:drivers -->
 
 				<!-- ════════════════════════════════════════════════════════════════
-             MODULE: CUSTOMERS  (placeholder)
+             MODULE: CUSTOMERS
              ════════════════════════════════════════════════════════════════ -->
-				<div
-					class="scheduler-app__module"
-					data-module="customers"
-					hidden
-				>
-					<div class="module-placeholder">
-						Clients module — coming soon
+				<div class="scheduler-app__module" data-module="customers" hidden>
+					<!-- Customer panel drawer -->
+					<div class="scheduler-app__drawer" id="customer-panel-drawer">
+						<aside
+							class="rux-panel rux-panel--left rux-customer-panel"
+							role="dialog"
+							aria-label="Customer editor"
+						>
+							<div class="rux-panel__body rux-customer-panel__body">
+								<div class="rux-panel__pane rux-customer-panel__pane">
+									<div class="rux-field">
+										<label class="rux-field__label" for="cp-name">Name</label>
+										<input class="rux-input" id="cp-name" name="name" type="text" placeholder="e.g. Jane Smith" />
+									</div>
+									<div class="rux-field">
+										<label class="rux-field__label" for="cp-client">Client</label>
+										<input class="rux-input" id="cp-client" name="client" type="text" placeholder="e.g. Calvary Baptist Church" />
+									</div>
+									<div class="rux-customer-panel__cols-2">
+										<div class="rux-field">
+											<label class="rux-field__label" for="cp-phone">Phone</label>
+											<input class="rux-input" id="cp-phone" name="phone" type="tel" />
+										</div>
+										<div class="rux-field">
+											<label class="rux-field__label" for="cp-email">Email</label>
+											<input class="rux-input" id="cp-email" name="email" type="email" />
+										</div>
+									</div>
+									<div class="rux-customer-panel__trips">
+										<p class="rux-customer-panel__section-label">Trips</p>
+										<ul class="rux-customer-panel__trip-list" id="cp-trip-list"></ul>
+									</div>
+								</div>
+							</div>
+							<footer class="rux-panel__footer">
+								<button class="rux-button rux-button--default rux-button--danger" id="cp-btn-delete" type="button">
+									<span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span>
+								</button>
+								<button class="rux-button rux-button--default" id="cp-btn-clear" type="button">
+									<span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span>
+								</button>
+								<button class="rux-button rux-button--accent" id="cp-btn-save" type="button">
+									<span class="rux-icon">save</span><span class="rux-btn-label"> Save</span>
+								</button>
+							</footer>
+						</aside>
 					</div>
+					<div
+						class="scheduler-app__gutter scheduler-app__resize-gutter"
+						id="customer-panel-resize-gutter"
+						role="separator"
+						aria-orientation="vertical"
+						aria-label="Resize customer panel"
+						aria-controls="customer-panel-drawer"
+						tabindex="0"
+					></div>
+					<!-- /customer-panel-drawer -->
+
+					<section class="rux-workspace customer-app__main" aria-label="Customer roster">
+						<header class="rux-workspace__header rux-workspace__header--table">
+							<button
+								class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
+								type="button"
+								id="customer-panel-toggle-btn"
+								aria-label="Open customer panel"
+								aria-pressed="false"
+								data-opens="customer-panel-drawer"
+							>
+								<span class="rux-icon icon-off">left_panel_open</span>
+								<span class="rux-icon icon-on">left_panel_close</span>
+							</button>
+							<div class="rux-workspace__toolbar">
+								<input
+									class="rux-input"
+									id="customer-search"
+									type="search"
+									placeholder="Search customers…"
+									aria-label="Search customers"
+								/>
+								<button class="rux-button rux-button--ghost" id="customer-new-btn" type="button">
+									<span class="rux-icon" aria-hidden="true">add</span>
+									<span class="rux-btn-label">New customer</span>
+								</button>
+							</div>
+						</header>
+						<div class="rux-workspace__body customer-app__table-wrap">
+							<table class="rux-table customer-app__table" aria-label="Customer roster">
+								<thead>
+									<tr>
+										<th scope="col">Name</th>
+										<th scope="col">Client</th>
+										<th scope="col">Phone</th>
+										<th scope="col">Email</th>
+									</tr>
+								</thead>
+								<tbody id="customer-roster-body"></tbody>
+							</table>
+						</div>
+					</section>
 				</div>
+				<!-- /module:customers -->
 
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: COMPONENTS
@@ -5369,16 +5471,18 @@
 		<script src="./js/core/billing-config.js?v=2"></script>
 		<script src="./js/core/floating-window.js?v=1"></script>
 		<script src="./js/core/doc-viewer.js?v=4"></script>
-		<script src="./js/panels/trip-panel.js?v=15"></script>
+		<script src="./js/core/suggestions.js?v=1"></script>
+		<script src="./js/panels/trip-panel.js?v=18"></script>
 		<script src="./js/components/itinerary.js?v=14"></script>
 		<script src="./js/panels/driver-panel.js?v=6" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
+		<script src="./js/panels/customers-panel.js?v=2" defer></script>
 		<script src="./js/panels/settings-panel.js?v=2" defer></script>
 		<script src="./js/panels/trips-list.js?v=8" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=1" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=7" defer></script>
-		<script src="./js/panels/driver-week-info.js?v=1" defer></script>
+		<script type="module" src="./js/panels/driver-week-info.js?v=4"></script>
 		<script src="./js/panels/components-panel.js" defer></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
@@ -5424,6 +5528,7 @@
 				history.replaceState(null, "", "#" + name);
 				if (name === "drivers") window.DriverPanel?.init();
 				if (name === "fleet") window.FleetPanel?.init();
+				if (name === "customers") window.CustomersPanel?.init();
 				if (name === "settings") window.SettingsPanel?.init();
 			}
 
@@ -6128,7 +6233,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js");
+					const db = await import("./js/data/trip-db.js?v=5");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -7300,6 +7405,9 @@
 								role: td.role,
 								status: "confirmed",
 								pay: td.pay != null ? `$${td.pay}` : "",
+								phone: td.drivers?.phone || "",
+								reportTime: td.report_time || "",
+								instructions: td.instructions || "",
 							})),
 							activeRoles: assignment.active_roles ?? ["driver"],
 							driverId: primaryDriver?.driver_id ?? null,
@@ -8192,7 +8300,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js");
+					const db = await import("./js/data/trip-db.js?v=5");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
@@ -8204,6 +8312,13 @@
 						fetch: db.fetchDocuments,
 						url: db.getDocumentUrl,
 						tripId: db.getCurrentTripId,
+					};
+					window.RuxContacts = {
+						fetch: db.fetchContacts,
+						search: db.searchContacts,
+						upsert: db.upsertContact,
+						delete: db.deleteContact,
+						trips: db.fetchContactTrips,
 					};
 					let buses = [],
 						drivers = [];

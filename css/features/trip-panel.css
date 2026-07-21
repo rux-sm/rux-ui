@@ -608,6 +608,23 @@
 	letter-spacing: var(--rux-tracking-wide);
 }
 
+.rux-trip-panel__relief-details {
+	display: grid;
+	grid-template-columns: minmax(8rem, 0.55fr) minmax(0, 1.45fr);
+	grid-column: 1 / -1;
+	gap: var(--rux-control-content-gap);
+	padding: var(--rux-space-2);
+	background: var(--rux-surface-canvas);
+	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-radius: var(--rux-radius-md);
+}
+
+@media (max-width: 440px) {
+	.rux-trip-panel__relief-details {
+		grid-template-columns: 1fr;
+	}
+}
+
 /* 32px select shell + 28px nested status action. This composite gets its own
    class so the tighter inset and matching text offset do not affect ordinary
    actionable input groups. */

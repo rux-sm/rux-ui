@@ -1062,7 +1062,7 @@
 	margin-inline: var(--rux-workspace-gutter);
 }
 
-.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
+.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) {
 	flex: 1;
 	margin-inline: var(--rux-workspace-gutter);
 	background: var(--rux-surface-workspace);
@@ -1071,7 +1071,7 @@
 }
 
 .calendar-app__viewport,
-.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap) {
+.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) {
 	block-size: 100%;
 }
 

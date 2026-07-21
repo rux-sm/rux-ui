@@ -22,6 +22,7 @@ import { supabase } from "./supabase.js";
 	let currentAssignments = [];
 	let currentLoadedTrip = null;
 	let currentStopsHydrated = true;
+	let driverShareFieldsAvailable = null;
 
 	/* ── Trip ref ────────────────────────────────────────────────────────── */
 
@@ -197,6 +198,8 @@ import { supabase } from "./supabase.js";
 				driver_id: driver.driver_id ?? null,
 				role: driver.role ?? null,
 				pay: driver.pay ?? null,
+				report_time: driver.report_time ?? null,
+				instructions: driver.instructions ?? null,
 			})),
 		}));
 	}
@@ -247,10 +250,17 @@ import { supabase } from "./supabase.js";
 			booking_contact_name:  fieldVal(root, "tp-book-name"),
 			booking_contact_phone: fieldVal(root, "tp-book-phone"),
 			booking_contact_email: fieldVal(root, "tp-book-email"),
+			// Set by the autofill dropdown (js/panels/trip-panel.js) when a saved
+			// contact is picked, and cleared the moment the name is hand-edited
+			// afterward — save() below re-resolves whenever this is empty, so a
+			// stale link never survives editing the name into someone else.
+			booking_contact_id:    root.querySelector("#tp-book-name")?.dataset.contactId || null,
 			trip_contact_1_name:   root.querySelector("#tp-trip1-name")?.value?.trim() || null,
 			trip_contact_1_phone:  root.querySelector("#tp-trip1-phone")?.value?.trim() || null,
+			trip_contact_1_id:     root.querySelector("#tp-trip1-name")?.dataset.contactId || null,
 			trip_contact_2_name:   root.querySelector("#tp-trip2-name")?.value?.trim() || null,
 			trip_contact_2_phone:  root.querySelector("#tp-trip2-phone")?.value?.trim() || null,
+			trip_contact_2_id:     root.querySelector("#tp-trip2-name")?.dataset.contactId || null,
 			notes:                 fieldVal(root, "tp-notes"),
 			// Billing
 			contract_status:  contractSigned ? "Signed" : "Pending",
@@ -306,17 +316,29 @@ import { supabase } from "./supabase.js";
 			if (!busId) continue;
 
 			const driverRoles = [
-				{ role: "driver",       nameField: `${fieldPrefix}[${i}].driver.name`,  payField: `${fieldPrefix}[${i}].driver.pay`  },
-				{ role: "co-driver",    nameField: `${fieldPrefix}[${i}].coDriver.name`, payField: `${fieldPrefix}[${i}].coDriver.pay` },
-				{ role: "relief-start", nameField: `${fieldPrefix}[${i}].relief1.name`,  payField: `${fieldPrefix}[${i}].relief1.pay`  },
-				{ role: "relief-end",   nameField: `${fieldPrefix}[${i}].relief2.name`,  payField: `${fieldPrefix}[${i}].relief2.pay`  },
+				{ role: "driver",       roleKey: "driver",   nameField: `${fieldPrefix}[${i}].driver.name`,  payField: `${fieldPrefix}[${i}].driver.pay`  },
+				{ role: "co-driver",    roleKey: "coDriver", nameField: `${fieldPrefix}[${i}].coDriver.name`, payField: `${fieldPrefix}[${i}].coDriver.pay` },
+				{ role: "relief-start", roleKey: "relief1",  nameField: `${fieldPrefix}[${i}].relief1.name`,  payField: `${fieldPrefix}[${i}].relief1.pay`  },
+				{ role: "relief-end",   roleKey: "relief2",  nameField: `${fieldPrefix}[${i}].relief2.name`,  payField: `${fieldPrefix}[${i}].relief2.pay`  },
 			];
 
 			const drivers = driverRoles
-				.map(({ role, nameField, payField }) => {
+				.map(({ role, roleKey, nameField, payField }) => {
 					const driverId = root.querySelector(`[name="${nameField}"]`)?.value || null;
 					const pay = parseFloat(root.querySelector(`[name="${payField}"]`)?.value) || null;
-					return driverId ? { driver_id: driverId, role, pay } : null;
+					const reportTime = root.querySelector(
+						`[name="${fieldPrefix}[${i}].${roleKey}.reportTime"]`,
+					)?.value || null;
+					const instructions = root.querySelector(
+						`[name="${fieldPrefix}[${i}].${roleKey}.instructions"]`,
+					)?.value?.trim() || null;
+					return driverId ? {
+						driver_id: driverId,
+						role,
+						pay,
+						report_time: reportTime,
+						instructions,
+					} : null;
 				})
 				.filter(Boolean);
 
@@ -548,6 +570,8 @@ import { supabase } from "./supabase.js";
 		setVal(root, "tp-book-name",   trip.booking_contact_name);
 		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
 		setVal(root, "tp-book-email",  trip.booking_contact_email);
+		const bookNameInput = root.querySelector("#tp-book-name");
+		if (bookNameInput) bookNameInput.dataset.contactId = trip.booking_contact_id || "";
 		const contactList = root.querySelector("#tp-contacts-list");
 		contactList?.querySelectorAll("[data-trip-contact]").forEach((row) => row.remove());
 		root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
@@ -556,6 +580,8 @@ import { supabase } from "./supabase.js";
 				if (!root.querySelector(`#tp-trip${i}-name`)) root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
 				setVal(root, `tp-trip${i}-name`,  trip[`trip_contact_${i}_name`]);
 				setVal(root, `tp-trip${i}-phone`, trip[`trip_contact_${i}_phone`]);
+				const tripContactInput = root.querySelector(`#tp-trip${i}-name`);
+				if (tripContactInput) tripContactInput.dataset.contactId = trip[`trip_contact_${i}_id`] || "";
 			}
 		}
 		window.TripPanel?.setContactNotNeeded(root, !!trip.contact_not_needed);
@@ -730,13 +756,29 @@ import { supabase } from "./supabase.js";
 				}
 			});
 
-			(assignment.drivers || []).forEach(({ driver_id, role, pay }) => {
+			(assignment.drivers || []).forEach(({
+				driver_id,
+				role,
+				pay,
+				report_time,
+				instructions,
+			}) => {
 				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
 				const driverSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.name"]`);
 				if (driverSelect && driver_id) driverSelect.value = driver_id;
 				const payInput = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.pay"]`);
 				if (payInput && pay != null) payInput.value = pay;
+				const reportTimeInput = root.querySelector(
+					`[name="${fieldPrefix}[${slot}].${roleKey}.reportTime"]`,
+				);
+				if (reportTimeInput) {
+					reportTimeInput.value = report_time ? String(report_time).slice(0, 5) : "";
+				}
+				const instructionsInput = root.querySelector(
+					`[name="${fieldPrefix}[${slot}].${roleKey}.instructions"]`,
+				);
+				if (instructionsInput) instructionsInput.value = instructions || "";
 			});
 		});
 	}
@@ -936,6 +978,16 @@ import { supabase } from "./supabase.js";
 				return false;
 			}
 
+			await detectDriverShareFields();
+			const hasReliefDetails = assignments.some((assignment) =>
+				(assignment.drivers || []).some((driver) => driver.report_time || driver.instructions),
+			);
+			if (!driverShareFieldsAvailable && hasReliefDetails) {
+				throw new Error(
+					"Run driver-schedule-shares-patch.sql before saving relief meet times or notes.",
+				);
+			}
+
 			// Generate human-readable ref for new trips only
 			if (!savingTripId && tripData.start_date && !savingTripRef) {
 				currentTripRef = await generateTripRef(tripData.start_date);
@@ -969,9 +1021,16 @@ import { supabase } from "./supabase.js";
 				if (assignErr) throw assignErr;
 
 				if (drivers.length) {
+					const driverRows = drivers.map((driver) => {
+						if (driverShareFieldsAvailable) {
+							return { ...driver, assignment_id: assignment.id };
+						}
+						const { report_time, instructions, ...legacyDriver } = driver;
+						return { ...legacyDriver, assignment_id: assignment.id };
+					});
 					const { error: driversErr } = await supabase
 						.from("trip_drivers")
-						.insert(drivers.map(d => ({ ...d, assignment_id: assignment.id })));
+						.insert(driverRows);
 					if (driversErr) throw driversErr;
 				}
 			}
@@ -1019,6 +1078,57 @@ import { supabase } from "./supabase.js";
 					.from("trip_ticket_options")
 					.insert(ticketOptions.map(o => ({ trip_id: savedId, ...o })));
 				if (ticketOptionsErr) throw ticketOptionsErr;
+			}
+
+			// Resolve booking/trip contacts against the saved roster. A name typed
+			// fresh (no id yet — the autofill dropdown wasn't used, or was picked
+			// then hand-edited since) gets matched to an existing contact by
+			// phone/name or creates a new one. An already-linked contact is left
+			// alone entirely — once linked, the Customers module is the only
+			// place that actually edits a contact's info; trip-form edits to its
+			// phone/email/client stay local to this trip's own snapshot columns
+			// and never write back, so a one-off "different number for this
+			// trip" can't silently corrupt someone's permanent roster entry.
+			// Non-fatal on failure — the trip itself already saved successfully
+			// above, and the contact roster is a convenience layer on top, not
+			// something worth failing the whole save over.
+			const contactSlots = [
+				// client seeds a brand-new booking contact only (matchOrCreateContact's
+				// create fallback) — trip_contact_1/2 have no natural client of their
+				// own (a day-of chaperone doesn't necessarily work for the same org
+				// the trip's Client field names), so they don't pass one at all.
+				{ idField: "booking_contact_id", inputId: "tp-book-name", name: tripData.booking_contact_name, phone: tripData.booking_contact_phone, email: tripData.booking_contact_email, id: tripData.booking_contact_id, client: tripData.customer },
+				{ idField: "trip_contact_1_id", inputId: "tp-trip1-name", name: tripData.trip_contact_1_name, phone: tripData.trip_contact_1_phone, email: null, id: tripData.trip_contact_1_id },
+				{ idField: "trip_contact_2_id", inputId: "tp-trip2-name", name: tripData.trip_contact_2_name, phone: tripData.trip_contact_2_phone, email: null, id: tripData.trip_contact_2_id },
+			];
+			const contactUpdates = {};
+			for (const slot of contactSlots) {
+				if (!slot.name) {
+					contactUpdates[slot.idField] = null;
+					continue;
+				}
+				if (slot.id) {
+					contactUpdates[slot.idField] = slot.id;
+					continue;
+				}
+				try {
+					const resolved = await matchOrCreateContact({ name: slot.name, phone: slot.phone, email: slot.email, client: slot.client });
+					contactUpdates[slot.idField] = resolved?.id ?? null;
+					const input = root.querySelector(`#${slot.inputId}`);
+					if (input) input.dataset.contactId = resolved?.id || "";
+				} catch (err) {
+					console.warn("Contact save failed (non-fatal):", err);
+					contactUpdates[slot.idField] = null;
+				}
+			}
+			const { error: contactLinkErr } = await supabase
+				.from("trips")
+				.update(contactUpdates)
+				.eq("id", savedId);
+			if (contactLinkErr) {
+				console.warn("Linking contacts to trip failed (non-fatal):", contactLinkErr);
+			} else {
+				Object.assign(tripData, contactUpdates);
 			}
 
 			// Only update module state if the user hasn't navigated to a different trip mid-save.
@@ -1070,21 +1180,45 @@ import { supabase } from "./supabase.js";
 	}
 
 	/* ── Fetch ───────────────────────────────────────────────────────────── */
-
-export async function fetchTrips() {
-	const [tripsResult, paymentsResult, docsResult, passengersResult, ticketOptionsResult] = await Promise.all([
-		supabase
+	function fetchTripRows(includeDriverShareFields = true) {
+		const driverShareFields = includeDriverShareFields
+			? ", report_time, instructions"
+			: "";
+		return supabase
 			.from("trips")
 			.select(`
 				*,
 				trip_assignments(
 					id, position, bus_id, active_roles, leg,
 					buses(id, number),
-					trip_drivers(id, driver_id, role, pay, drivers(id, name, short_name))
+					trip_drivers(id, driver_id, role, pay${driverShareFields}, drivers(id, name, short_name, phone))
 				),
 				trip_stops(*)
 			`)
-			.order("start_date", { ascending: true }),
+			.order("start_date", { ascending: true });
+	}
+
+	function isMissingDriverShareField(error) {
+		const detail = [error?.message, error?.details, error?.hint]
+			.filter(Boolean)
+			.join(" ");
+		return /\b(report_time|instructions)\b/i.test(detail);
+	}
+
+	async function detectDriverShareFields() {
+		if (driverShareFieldsAvailable !== null) return driverShareFieldsAvailable;
+		const { error } = await supabase
+			.from("trip_drivers")
+			.select("report_time, instructions")
+			.limit(1);
+		if (error && !isMissingDriverShareField(error)) throw error;
+		driverShareFieldsAvailable = !error;
+		return driverShareFieldsAvailable;
+	}
+
+export async function fetchTrips() {
+	let [tripsResult, paymentsResult, docsResult, passengersResult, ticketOptionsResult] = await Promise.all([
+		fetchTripRows(true),
 		supabase
 			.from("trip_payments")
 			.select("*")
@@ -1102,6 +1236,15 @@ export async function fetchTrips() {
 			.select("*")
 			.order("position", { ascending: true }),
 	]);
+	if (tripsResult.error && isMissingDriverShareField(tripsResult.error)) {
+		driverShareFieldsAvailable = false;
+		console.warn(
+			"Relief meet-time columns are not available yet; loading trips without them.",
+		);
+		tripsResult = await fetchTripRows(false);
+	} else if (!tripsResult.error) {
+		driverShareFieldsAvailable = true;
+	}
 	if (tripsResult.error) throw tripsResult.error;
 	if (paymentsResult.error) throw paymentsResult.error;
 
@@ -1182,10 +1325,13 @@ export function loadTrip(root, itinerary, trip) {
 		booking_contact_name:  trip.booking_contact_name  ?? trip.bookingContact?.name  ?? null,
 		booking_contact_phone: trip.booking_contact_phone ?? trip.bookingContact?.phone ?? null,
 		booking_contact_email: trip.booking_contact_email ?? trip.bookingContact?.email ?? null,
+		booking_contact_id:    trip.booking_contact_id ?? null,
 		trip_contact_1_name:   trip.trip_contact_1_name   ?? trip.tripContact?.name    ?? null,
 		trip_contact_1_phone:  trip.trip_contact_1_phone  ?? trip.tripContact?.phone   ?? null,
+		trip_contact_1_id:     trip.trip_contact_1_id ?? null,
 		trip_contact_2_name:   trip.trip_contact_2_name   ?? trip.tripContact2?.name   ?? null,
 		trip_contact_2_phone:  trip.trip_contact_2_phone  ?? trip.tripContact2?.phone  ?? null,
+		trip_contact_2_id:     trip.trip_contact_2_id ?? null,
 		notes:                 trip.notes ?? null,
 		contract_status:       trip.contract_status ?? null,
 		contract_note:         trip.contract_note ?? null,
@@ -1431,6 +1577,106 @@ export async function fetchDocuments(tripId) {
 
 export function getCurrentTripId() {
 	return currentTripId;
+}
+
+/* ── Contacts ────────────────────────────────────────────────────────── */
+// Backs both the Customers module (full roster CRUD) and the trip panel's
+// booking/trip-contact autofill (search + the match-or-create path below).
+
+export async function fetchContacts() {
+	const { data, error } = await supabase
+		.from("contacts")
+		.select("id, name, phone, email, client")
+		.order("name");
+	if (error) throw error;
+	return data ?? [];
+}
+
+export async function searchContacts(query) {
+	const q = String(query ?? "").trim();
+	if (q.length < 2) return [];
+	const { data, error } = await supabase
+		.from("contacts")
+		.select("id, name, phone, email, client")
+		.ilike("name", `%${q}%`)
+		.order("name")
+		.limit(5);
+	if (error) throw error;
+	return data ?? [];
+}
+
+// client (the business/school/organization this contact represents) is
+// deliberately partial-update: only written when the caller actually passes
+// it. Every trip-save-driven refresh (below, and inside matchOrCreateContact)
+// omits it on purpose — a trip's single Client field can't be trusted to
+// describe every contact slot on that trip (the booking contact and a
+// day-of chaperone may work for entirely different organizations), so only
+// an explicit edit (Customers module, or seeding a brand-new contact at
+// creation) should ever touch it.
+export async function upsertContact({ id, name, phone, email, client }) {
+	const payload = { name, phone: phone || null, email: email || null };
+	if (client !== undefined) payload.client = client || null;
+	const query = id
+		? supabase.from("contacts").update(payload).eq("id", id)
+		: supabase.from("contacts").insert(payload);
+	const { data, error } = await query.select("id, name, phone, email, client").single();
+	if (error) throw error;
+	return data;
+}
+
+export async function deleteContact(contactId) {
+	const { error } = await supabase.from("contacts").delete().eq("id", contactId);
+	if (error) throw error;
+}
+
+// Trips linked to a contact via any of the three slots — backs the
+// Customers module's "past trips" list, the actual payoff of linking
+// contacts to trips instead of only ever copying freetext (see
+// contacts-patch.sql's header comment).
+export async function fetchContactTrips(contactId) {
+	const { data, error } = await supabase
+		.from("trips")
+		.select("id, trip_ref, customer, destination, start_date, end_date")
+		.or(`booking_contact_id.eq.${contactId},trip_contact_1_id.eq.${contactId},trip_contact_2_id.eq.${contactId}`)
+		.order("start_date", { ascending: false });
+	if (error) throw error;
+	return data ?? [];
+}
+
+// Finds-or-creates a contact for a name/phone/email typed directly into a
+// trip's booking/trip-contact fields (as opposed to picked from an autofill
+// suggestion, which already carries a real id and goes through
+// upsertContact above instead). Matches by phone first — the more reliable
+// key when present — falling back to an exact case-insensitive name match,
+// so re-typing an existing customer's info without bothering to pick the
+// suggestion doesn't spawn a duplicate roster entry.
+// client only applies to the create fallback (a brand-new contact has
+// nothing better to seed it with) — the two match branches deliberately
+// leave an existing contact's client untouched, same reasoning as
+// upsertContact's own client handling above.
+export async function matchOrCreateContact({ name, phone, email, client }) {
+	const trimmedName = String(name ?? "").trim();
+	if (!trimmedName) return null;
+
+	if (phone) {
+		const { data: byPhone } = await supabase
+			.from("contacts")
+			.select("id, name, phone, email, client")
+			.eq("phone", phone)
+			.limit(1)
+			.maybeSingle();
+		if (byPhone) return upsertContact({ id: byPhone.id, name: trimmedName, phone, email: email || byPhone.email });
+	}
+
+	const { data: byName } = await supabase
+		.from("contacts")
+		.select("id, name, phone, email, client")
+		.ilike("name", trimmedName)
+		.limit(1)
+		.maybeSingle();
+	if (byName) return upsertContact({ id: byName.id, name: trimmedName, phone: phone || byName.phone, email: email || byName.email });
+
+	return upsertContact({ name: trimmedName, phone, email, client });
 }
 
 // Manifest only makes sense for a saved, ticketed trip — Passenger Roster

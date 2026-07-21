@@ -197,12 +197,12 @@
 	/* ─── COLOR · surfaces ────────────────────────────────────────────────── */
 
 	--rux-surface-canvas:          oklch(from var(--rux-neutral) 10% c h);
-	--rux-surface-workspace:       oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-panel:           oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-workspace:       oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-panel:           oklch(from var(--rux-neutral) 18% c h);
 	--rux-surface-calendar:        oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-field:           oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-field:           oklch(from var(--rux-neutral) 14% c h);
 	--rux-surface-modal:           oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-switch-track:    oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-switch-thumb:    oklch(from var(--rux-neutral) 100% c h);

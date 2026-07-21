@@ -133,7 +133,20 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 		{ role: "relief2", icon: "person_remove", title: "Relief 2 — end" },
 	]
 		.map(
-			(r) => `
+			(r) => {
+				const reliefDetails = r.role.startsWith("relief")
+					? `<div class="rux-trip-panel__relief-details">
+						<div class="rux-field">
+							<label class="rux-field__label" for="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time">Meet / swap time</label>
+							<input class="rux-input" id="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.reportTime" type="time" aria-label="${escHtml(r.title)} meet or swap time" />
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label" for="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-instructions">Driver note</label>
+							<input class="rux-input" id="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-instructions" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.instructions" type="text" maxlength="160" placeholder="Meet at hotel bus entrance…" aria-label="${escHtml(r.title)} instructions" />
+						</div>
+					</div>`
+					: "";
+				return `
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
         <span class="rux-input-group__prefix">
@@ -147,7 +160,9 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
         <span class="rux-input-group__prefix">$</span>
         <input class="rux-input" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.pay" type="number" min="0" placeholder="0" aria-label="${escHtml(r.title)} pay" />
       </div>
-    </div>`,
+	  ${reliefDetails}
+	</div>`;
+			},
 		)
 		.join("");
 
@@ -815,6 +830,46 @@ function initTripTabs(root) {
 	}
 }
 
+/* ── Contact autofill ───────────────────────────────────────────────────── */
+// Search-as-you-type against the saved contacts roster (js/core/suggestions.js
+// + window.RuxContacts, wired in index.html). Picking a suggestion fills the
+// paired phone/email input(s) and stamps nameInput.dataset.contactId so
+// trip-db.js's save() links this trip to that contact instead of re-matching
+// or creating a duplicate. Hand-editing the name afterward clears that stamp
+// — the link is only trustworthy while the name still matches what was
+// picked, and save() already knows how to re-resolve a blank one.
+
+function attachContactAutofill(nameInput, { phoneInput, emailInput, clientInput } = {}) {
+	if (!nameInput || !window.RuxSuggestions) return;
+	window.RuxSuggestions.attach(nameInput, {
+		fetch: async (query) => {
+			const results = await window.RuxContacts?.search?.(query);
+			return (results ?? []).map((c) => ({
+				label: c.name,
+				sublabel: [c.client, c.phone, c.email].filter(Boolean).join(" · "),
+				...c,
+			}));
+		},
+		onSelect: (contact) => {
+			nameInput.value = contact.name;
+			nameInput.dataset.contactId = contact.id;
+			if (phoneInput) phoneInput.value = contact.phone || "";
+			if (emailInput) emailInput.value = contact.email || "";
+			// Only fills an empty field — this trip's own Client is the
+			// authoritative record of who it's actually for, so a contact
+			// picked here should offer a starting point, not overwrite
+			// something already typed (which may legitimately differ from
+			// this contact's usual client on other trips).
+			if (clientInput && !clientInput.value.trim() && contact.client) {
+				clientInput.value = contact.client;
+			}
+		},
+	});
+	nameInput.addEventListener("input", () => {
+		nameInput.dataset.contactId = "";
+	});
+}
+
 /* ── Init ───────────────────────────────────────────────────────────────── */
 
 function initTripPanel(root, { buses = [], drivers = [] } = {}) {
@@ -866,6 +921,12 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		
 	}
 
+	attachContactAutofill(root.querySelector("#tp-book-name"), {
+		phoneInput: root.querySelector("#tp-book-phone"),
+		emailInput: root.querySelector("#tp-book-email"),
+		clientInput: root.querySelector("#tp-customer"),
+	});
+
 	/* ── Trip Contacts ─────────────────────────────────────────────────── */
 
 	const contactList = root.querySelector("#tp-contacts-list");
@@ -903,6 +964,9 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				</button>`;
 			contactList.appendChild(row);
 			syncContactButtons();
+			attachContactAutofill(row.querySelector(`#tp-trip${idx}-name`), {
+				phoneInput: row.querySelector(`#tp-trip${idx}-phone`),
+			});
 			if (focus) row.querySelector(`#tp-trip${idx}-name`)?.focus();
 		};
 
@@ -1377,8 +1441,7 @@ function initBusGroupSection(root, busGroupsEl, busesInput, fieldPrefix) {
 			if (!nowActive) {
 				const select = row.querySelector("select[name]");
 				if (select) select.value = "";
-				const payInput = row.querySelector("input[name]");
-				if (payInput) payInput.value = "";
+				row.querySelectorAll("input[name]").forEach((input) => { input.value = ""; });
 				const label = row.querySelector(".rux-trip-panel__role-label");
 				if (label) setRoleStatus(label, "off");
 			}

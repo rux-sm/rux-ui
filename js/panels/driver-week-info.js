@@ -10,6 +10,8 @@
    window.DriverWeekInfo.open({ driver, trips, weekStart, viewDays, buses })
    ========================================================================== */
 
+import { supabase } from "../data/supabase.js";
+
 (() => {
 	"use strict";
 
@@ -69,6 +71,16 @@
 		return `${hour}:${match[2]} ${suffix}`;
 	}
 
+	function fmtMessageDate(startValue, endValue) {
+		const start = parseIsoDate(startValue);
+		const end = parseIsoDate(endValue || startValue);
+		if (!start) return "";
+		const day = (date) => date.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
+		const numeric = (date) => `${date.getMonth() + 1}/${date.getDate()}`;
+		if (!end || isoDate(start) === isoDate(end)) return `${day(start)} ${numeric(start)}`;
+		return `${day(start)} ${numeric(start)}–${day(end)} ${numeric(end)}`;
+	}
+
 	function driverName(driver) {
 		return String(driver?.short_name || driver?.name || "Driver").trim();
 	}
@@ -81,6 +93,10 @@
 		if (role === "co-driver") return "Co-Driver";
 		if (role === "relief-start" || role === "relief-end") return "Relief Driver";
 		return "Driver";
+	}
+
+	function isReliefRole(role) {
+		return role === "relief-start" || role === "relief-end";
 	}
 
 	function stopsForLeg(trip, leg) {
@@ -106,11 +122,29 @@
 		return leg === "return" ? inbound : outbound;
 	}
 
-	function itineraryUrl(trip) {
+	function itineraryDocument(trip) {
 		const doc = (trip.trip_documents || []).find(
 			(item) => String(item.label || "").toLowerCase() === "itinerary",
 		);
-		return doc?.file_path ? window.RuxDocs?.url?.(doc.file_path) || "" : "";
+		if (!doc) return { publicUrl: "", shortUrl: "" };
+		return {
+			publicUrl: doc.file_path ? window.RuxDocs?.url?.(doc.file_path) || "" : "",
+			shortUrl: doc.id
+				? `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, "")}doc.html?id=${encodeURIComponent(doc.id)}`
+				: "",
+		};
+	}
+
+	function shortLocation(value) {
+		const text = String(value || "").trim();
+		if (!text) return "";
+		const parts = text.split(",").map((part) => part.trim()).filter(Boolean);
+		if (parts.length < 2) return text;
+		if (/^(united states|usa|us)$/i.test(parts.at(-1))) parts.pop();
+		if (parts.length > 1 && /^(texas|tx|oklahoma|ok)(\s+\d{5}(?:-\d{4})?)?$/i.test(parts.at(-1))) {
+			parts.pop();
+		}
+		return parts.at(-1) || text;
 	}
 
 	function activeRequirements(trip) {
@@ -188,6 +222,7 @@
 				const pickup = stops.find((stop) => stop.type === "pickup") || {};
 				const returnStop = [...stops].reverse().find((stop) => stop.type === "return") || {};
 				const busNumber = assignment.buses?.number ?? "Unassigned";
+				const itinerary = itineraryDocument(trip);
 				entries.push({
 					key: String(assignment.id || `${trip.id}:${leg}:${driver.id}`),
 					trip,
@@ -202,13 +237,16 @@
 					reportTime: pickup.depart_prev || trip.departure_time || "",
 					spotTime: pickup.spot || trip.spot_time || "",
 					returnTime: returnStop.arrive || trip.return_time || "",
+					roleReportTime: driverAssignment.report_time || "",
+					instructions: driverAssignment.instructions || "",
 					from: pickup.address || pickup.name || "",
 					to: isInbound
 						? returnStop.address || returnStop.name || "Yard"
 						: trip.destination || "",
 					requirements: activeRequirements(trip),
 					contact: contactFor(trip),
-					itineraryUrl: itineraryUrl(trip),
+					itineraryUrl: itinerary.publicUrl,
+					itineraryShareUrl: itinerary.shortUrl || itinerary.publicUrl,
 				});
 			}
 		}
@@ -222,46 +260,220 @@
 		});
 	}
 
-	function assignmentLines(entry) {
+	function assignmentLines(entry, { includeItinerary = true } = {}) {
 		const lines = [];
-		const date = entry.startDate === entry.endDate
-			? fmtDate(entry.startDate)
-			: `${fmtDate(entry.startDate)} – ${fmtDate(entry.endDate, { weekday: false })}`;
 		const leg = entry.trip.trip_type === "dropoff_pickup"
 			? entry.leg === "return" ? "Inbound" : "Outbound"
 			: "";
 		lines.push(
-			[date, roleLabel(entry.driverAssignment.role), leg].filter(Boolean).join(" · "),
+			[fmtMessageDate(entry.startDate, entry.endDate), `Bus ${entry.busNumber}`, roleLabel(entry.driverAssignment.role), leg]
+				.filter(Boolean)
+				.join(" • "),
 		);
-		lines.push(`Bus: ${entry.busNumber}`);
-		if (entry.trip.customer) lines.push(`Group: ${entry.trip.customer}`);
-		if (entry.reportTime) lines.push(`Report/Yard: ${fmtTime(entry.reportTime)}`);
-		if (entry.spotTime) lines.push(`Spot: ${fmtTime(entry.spotTime)}`);
-		if (entry.from) lines.push(`From: ${entry.from}`);
-		if (entry.to) lines.push(`To: ${entry.to}`);
-		if (entry.returnTime) lines.push(`Estimated return: ${fmtTime(entry.returnTime)}`);
-		if (entry.requirements.length) {
-			lines.push(`Requirements: ${entry.requirements.join(" · ")}`);
+		if (isReliefRole(entry.driverAssignment.role)) {
+			lines.push(entry.roleReportTime
+				? `${fmtTime(entry.roleReportTime)} swap`
+				: "Swap time not set");
+			if (entry.instructions) lines.push(entry.instructions);
+		} else if (entry.spotTime) {
+			lines.push(`${fmtTime(entry.spotTime)} spot`);
 		}
-		if (entry.contact.name || entry.contact.phone) {
-			lines.push(
-				`Trip contact: ${[entry.contact.name, entry.contact.phone].filter(Boolean).join(" · ")}`,
-			);
+		const from = shortLocation(entry.from);
+		const to = shortLocation(entry.to);
+		if (from || to) lines.push(`${from || "Pickup"} → ${to || "Destination"}`);
+		if (includeItinerary && entry.itineraryShareUrl) {
+			lines.push(`Itinerary: ${entry.itineraryShareUrl}`);
 		}
-		if (entry.itineraryUrl) lines.push(`Itinerary: ${entry.itineraryUrl}`);
 		return lines;
 	}
 
-	function buildMessage(entries, driver, rangeStart, rangeEnd, single = false) {
+	function buildMessage(entries, driver, rangeStart, rangeEnd, single = false, shareUrl = "") {
 		const greetingName = driverName(driver).split(/\s+/)[0] || "Driver";
 		const intro = single
 			? `Hi ${greetingName}, here is your trip assignment:`
 			: `Hi ${greetingName}, here are your assignments for ${fmtRange(rangeStart, rangeEnd)}:`;
 		if (!entries.length) return `${intro}\n\nNo trips are currently assigned.`;
-		return [
+		const message = [
 			intro,
-			...entries.map((entry) => `\n${assignmentLines(entry).join("\n")}`),
-		].join("\n");
+			...entries.map((entry) => `\n${assignmentLines(entry, {
+				includeItinerary: single || !shareUrl,
+			}).join("\n")}`),
+		];
+		if (shareUrl) message.push(`\nTrip details and itineraries:\n${shareUrl}`);
+		return message.join("\n");
+	}
+
+	// Always the real, publicly-reachable site — never window.location.href.
+	// This link goes to a driver's phone, which may be on cellular with no
+	// access to wherever the admin app itself happens to be running (a local
+	// dev server's hostname isn't resolvable off that machine's own network
+	// at all, so a link built from it would never have worked regardless of
+	// whether the machine was on).
+	const SITE_ORIGIN = "https://rux-sm.github.io/rux-ui/";
+
+	function shareUrl(token) {
+		const url = new URL("d.html", SITE_ORIGIN);
+		url.searchParams.set("s", token);
+		return url.href;
+	}
+
+	function shareStorageKey() {
+		if (!state) return "";
+		return [
+			"rux:driver-schedule-share",
+			state.driver.id,
+			isoDate(state.rangeStart),
+			isoDate(state.rangeEnd),
+		].join(":");
+	}
+
+	function selectedAssignmentIds() {
+		return selectedEntries().map((entry) => entry.assignment.id).filter(Boolean);
+	}
+
+	function selectedReliefWithoutTime() {
+		return selectedEntries().find(
+			(entry) => isReliefRole(entry.driverAssignment.role) && !entry.roleReportTime,
+		) || null;
+	}
+
+	function selectedAssignmentRefs() {
+		const unique = new Map();
+		selectedEntries().forEach((entry) => {
+			const ref = { tripId: String(entry.trip.id), leg: entry.leg || "outbound" };
+			unique.set(assignmentRefKey(ref), ref);
+		});
+		return [...unique.values()];
+	}
+
+	function assignmentRefKey(ref) {
+		return `${ref.tripId}:${ref.leg || "outbound"}`;
+	}
+
+	function shareMatchesSelection() {
+		if (!state?.share) return false;
+		const selected = selectedAssignmentRefs().map(assignmentRefKey).sort();
+		const shared = (state.share.assignmentRefs || []).map(assignmentRefKey).sort();
+		return selected.length === shared.length && selected.every((id, index) => id === shared[index]);
+	}
+
+	function activeShareUrl() {
+		return shareMatchesSelection() ? state.share.url : "";
+	}
+
+	function setShareBusy(busy) {
+		modal.querySelectorAll("[data-driver-share-action]").forEach((button) => {
+			button.disabled = busy;
+		});
+	}
+
+	function renderShareControls() {
+		if (!modal || !state) return;
+		const empty = modal.querySelector("[data-driver-share-empty]");
+		const active = modal.querySelector("[data-driver-share-active]");
+		const createButton = modal.querySelector("[data-driver-share-create]");
+		const updateButton = modal.querySelector("[data-driver-share-update]");
+		const missingReliefTime = selectedReliefWithoutTime();
+		if (!state.share) {
+			empty.hidden = false;
+			active.hidden = true;
+			createButton.disabled = !selectedEntries().length || Boolean(missingReliefTime);
+			modal.querySelector("[data-driver-share-state]").textContent = missingReliefTime
+				? `Set ${driverName(state.driver)}’s relief swap time before sharing`
+				: "";
+			return;
+		}
+		empty.hidden = true;
+		active.hidden = false;
+		modal.querySelector("[data-driver-share-url]").value = state.share.url;
+		const current = shareMatchesSelection();
+		modal.querySelector("[data-driver-share-state]").textContent = missingReliefTime
+			? `Set ${driverName(state.driver)}’s relief swap time before updating`
+			: current
+				? "Live link · selected trips are up to date"
+				: "Selection changed · update the link before sending";
+		updateButton.hidden = current;
+		updateButton.disabled = !selectedEntries().length || Boolean(missingReliefTime);
+	}
+
+	async function createOrUpdateShare(update = false) {
+		const assignmentIds = selectedAssignmentIds();
+		if (!assignmentIds.length || selectedReliefWithoutTime()) return;
+		setShareBusy(true);
+		const functionName = update ? "update_driver_schedule_share" : "create_driver_schedule_share";
+		const params = {
+			p_assignment_ids: assignmentIds,
+			p_range_start: isoDate(state.rangeStart),
+			p_range_end: isoDate(state.rangeEnd),
+		};
+		if (update) params.p_token = state.share.token;
+		else params.p_driver_id = state.driver.id;
+		const { data, error } = await supabase.rpc(functionName, params);
+		setShareBusy(false);
+		if (error || !data?.token) {
+			console.error("Could not save driver schedule link:", error);
+			window.Rux?.toast?.(
+				error?.code === "PGRST202" || error?.code === "42883"
+					? "Run driver-schedule-shares-patch.sql in Supabase first"
+					: "Could not create the driver link",
+				{ duration: 4200 },
+			);
+			return;
+		}
+		state.share = { ...data, url: shareUrl(data.token) };
+		try {
+			localStorage.setItem(shareStorageKey(), data.token);
+		} catch (_) {}
+		renderShareControls();
+		refreshPreview();
+		window.Rux?.toast?.(update ? "Driver link updated" : "Driver link created");
+	}
+
+	async function revokeShare() {
+		if (!state?.share) return;
+		if (!confirm("Revoke this driver schedule link? It will stop opening immediately.")) return;
+		setShareBusy(true);
+		const { data, error } = await supabase.rpc("revoke_driver_schedule_share", {
+			p_token: state.share.token,
+		});
+		setShareBusy(false);
+		if (error || !data) {
+			window.Rux?.toast?.("Could not revoke the driver link");
+			return;
+		}
+		try {
+			localStorage.removeItem(shareStorageKey());
+		} catch (_) {}
+		state.share = null;
+		renderShareControls();
+		refreshPreview();
+		window.Rux?.toast?.("Driver link revoked");
+	}
+
+	async function restoreShare() {
+		let storedToken = "";
+		try {
+			storedToken = localStorage.getItem(shareStorageKey()) || "";
+		} catch (_) {}
+		if (!storedToken || !state) return;
+		const { data, error } = await supabase.rpc("get_driver_schedule_share", {
+			p_token: storedToken,
+		});
+		if (state && !error && data?.token && String(data.driver?.id) === String(state.driver.id)) {
+			state.share = { ...data, url: shareUrl(data.token) };
+			const sharedRefs = new Set((data.assignmentRefs || []).map(assignmentRefKey));
+			state.selected = new Set(
+				state.entries
+					.filter((entry) => sharedRefs.has(assignmentRefKey({
+						tripId: String(entry.trip.id),
+						leg: entry.leg,
+					})))
+					.map((entry) => entry.key),
+			);
+			renderTrips();
+			refreshPreview();
+		}
+		renderShareControls();
 	}
 
 	async function copyText(text) {
@@ -327,7 +539,10 @@
 			drivers: (assignment.drivers || []).map((item) => ({
 				name: item.drivers?.name || item.name || "",
 				shortName: item.drivers?.short_name || item.drivers?.name || item.name || "",
+				phone: item.drivers?.phone || item.phone || "",
 				role: item.role,
+				reportTime: item.report_time || item.reportTime || "",
+				instructions: item.instructions || "",
 				status: "confirmed",
 				pay: item.pay != null ? `$${item.pay}` : "",
 			})),
@@ -349,6 +564,8 @@
 			state.driver,
 			state.rangeStart,
 			state.rangeEnd,
+			false,
+			activeShareUrl(),
 		);
 		modal.querySelector("[data-driver-info-copy-week]").disabled = !selected.length;
 	}
@@ -433,7 +650,30 @@
 						<div class="rux-driver-week-info__trips" data-driver-info-trips></div>
 					</section>
 					<section class="rux-driver-week-info__section">
-						<h3 class="rux-driver-week-info__section-title">Message preview</h3>
+						<div class="rux-driver-week-info__share">
+							<div class="rux-driver-week-info__share-heading">
+								<h3 class="rux-driver-week-info__section-title">Driver link</h3>
+								<span class="rux-driver-week-info__share-state" data-driver-share-state></span>
+							</div>
+							<div data-driver-share-empty>
+								<p class="rux-driver-week-info__share-copy">Create one mobile link for the checked assignments, itineraries, directions, and envelopes.</p>
+								<button type="button" class="rux-button rux-button--accent rux-button--sm" data-driver-share-action="create" data-driver-share-create>
+									<span class="rux-icon" aria-hidden="true">link</span><span>Create driver link</span>
+								</button>
+							</div>
+							<div data-driver-share-active hidden>
+								<div class="rux-driver-week-info__share-url-row">
+									<input class="rux-input" type="text" readonly data-driver-share-url aria-label="Driver schedule link" />
+									<button type="button" class="rux-button rux-button--accent rux-button--sm" data-driver-share-action="update" data-driver-share-update hidden>Update link</button>
+								</div>
+								<div class="rux-driver-week-info__share-actions">
+									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="copy"><span class="rux-icon" aria-hidden="true">content_copy</span>Copy link</button>
+									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="preview"><span class="rux-icon" aria-hidden="true">open_in_new</span>Preview</button>
+									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--sm" data-driver-share-action="revoke">Revoke</button>
+								</div>
+							</div>
+						</div>
+						<h3 class="rux-driver-week-info__section-title rux-driver-week-info__preview-title">Message preview</h3>
 						<textarea class="rux-textarea rux-driver-week-info__preview" readonly data-driver-info-preview aria-label="Driver message preview"></textarea>
 					</section>
 				</div>
@@ -441,7 +681,7 @@
 					<button type="button" class="rux-button rux-button--default" data-rux-dismiss>Close</button>
 					<button type="button" class="rux-button rux-button--accent" data-driver-info-copy-week>
 						<span class="rux-icon" aria-hidden="true">content_copy</span>
-						<span>Copy week text</span>
+						<span>Copy message</span>
 					</button>
 				</footer>
 			</section>`;
@@ -452,10 +692,22 @@
 			if (!check || !state) return;
 			if (check.checked) state.selected.add(check.dataset.entryKey);
 			else state.selected.delete(check.dataset.entryKey);
+			renderShareControls();
 			refreshPreview();
 		});
 
 		modal.addEventListener("click", async (event) => {
+			const shareAction = event.target.closest("[data-driver-share-action]");
+			if (shareAction) {
+				const action = shareAction.dataset.driverShareAction;
+				if (action === "create") await createOrUpdateShare(false);
+				else if (action === "update") await createOrUpdateShare(true);
+				else if (action === "copy") await copyText(state.share?.url || "");
+				else if (action === "preview" && state.share?.url) {
+					window.open(state.share.url, "_blank", "noopener");
+				} else if (action === "revoke") await revokeShare();
+				return;
+			}
 			const weekButton = event.target.closest("[data-driver-info-copy-week]");
 			if (weekButton) {
 				await copyText(modal.querySelector("[data-driver-info-preview]").value);
@@ -467,7 +719,7 @@
 			if (!entry) return;
 			if (actionButton.dataset.action === "copy-trip") {
 				await copyText(
-					buildMessage([entry], state.driver, state.rangeStart, state.rangeEnd, true),
+					buildMessage([entry], state.driver, state.rangeStart, state.rangeEnd, true, ""),
 				);
 			} else if (actionButton.dataset.action === "itinerary") {
 				window.open(entry.itineraryUrl, "_blank", "noopener");
@@ -494,6 +746,7 @@
 			rangeStart,
 			rangeEnd,
 			selected: new Set(entries.map((entry) => entry.key)),
+			share: null,
 		};
 
 		modal.querySelector("[data-driver-info-title]").textContent = `Driver Info · ${fullDriverName(driver)}`;
@@ -502,8 +755,10 @@
 			driver.phone,
 		].filter(Boolean).join(" · ");
 		renderTrips();
+		renderShareControls();
 		refreshPreview();
 		window.Rux?.openModal?.(modal);
+		restoreShare();
 	}
 
 	window.DriverWeekInfo = { open };
