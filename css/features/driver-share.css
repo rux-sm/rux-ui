@@ -84,22 +84,17 @@ html {
 	gap: var(--rux-space-4);
 }
 
-/* Ticket-stub layout — dashed side edges, solid top/bottom, like a boarding
-   pass. Two backgrounds instead of one card-wide surface: the header/route
-   sits on the canvas color (open, printed-ticket top), the body reads like
-   a slightly recessed pocket, matching the physical-stub metaphor. */
-/* Base look/spacing (background, radius, header/body/footer padding) comes
-   from .rux-card + .rux-card--elevated/__header/__body/__footer — this file
-   only adds what's actually unique to the ticket-stub read: dashed sides
-   instead of .rux-card's uniform border, and the content styling below. */
-.driver-assignment-card {
-	border-left-style: dashed;
-	border-right-style: dashed;
-}
+/* No dashed ticket-stub sides anymore — this is meant to look like every
+   other card in the app, not a distinct printed-stub metaphor, so it's
+   plain .rux-card (background, border, radius) with no override at all.
+   Sections (route, time, contact, each crew member, notes, requirements)
+   are still independent .rux-card__section bands — present only when that
+   trip has the data for them — so the styling below is per-section rather
+   than one flowing body, that part hasn't changed. */
 
 .driver-assignment-card__date {
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-xs);
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-bold);
 	letter-spacing: 0.055em;
 	text-transform: uppercase;
@@ -127,22 +122,39 @@ html {
 	line-height: var(--rux-leading-snug);
 }
 
-/* The one number a driver actually opens this link to check — biggest,
-   boldest thing on the card, on purpose. */
-.driver-assignment-card__time-block {
-	margin-bottom: var(--rux-space-4);
-}
-
-.driver-assignment-card__time-block.is-missing .driver-assignment-card__time {
-	color: var(--rux-warning);
-}
-
-.driver-assignment-card__time-label {
+/* — Shared eyebrow label — every section's small muted uppercase heading
+   (SPOT TIME, CONTACT, CO-DRIVER, NOTES, REQUIREMENTS), one class instead
+   of a per-section copy so they're guaranteed to match. */
+.driver-assignment-card__section-label {
+	display: block;
 	color: var(--rux-fg-muted);
 	font-size: 0.68rem;
 	font-weight: var(--rux-weight-semibold);
 	letter-spacing: 0.045em;
 	text-transform: uppercase;
+}
+
+/* — Route section — */
+
+.driver-assignment-card__route {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-snug);
+}
+
+.driver-assignment-card__client,
+.driver-assignment-card__pickup-name {
+	margin: var(--rux-space-1) 0 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+/* — Time section — the one number a driver actually opens this link to
+   check, biggest/boldest thing on the card, on purpose. */
+
+.driver-assignment-card__time-section.is-missing .driver-assignment-card__time {
+	color: var(--rux-warning);
 }
 
 .driver-assignment-card__time {
@@ -152,99 +164,78 @@ html {
 	line-height: 1;
 }
 
-.driver-assignment-card__location,
-.driver-assignment-card__contact {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-1);
-	margin-bottom: var(--rux-space-3);
+.driver-assignment-card__address {
+	margin: var(--rux-space-1) 0 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
 }
 
-.driver-assignment-card__location-name,
+/* — Shared row shape: a text block on the left, a circular action button
+   on the right — used by the time section (address + Maps) and by every
+   contact-shaped section (name/phone + Call). — */
+
+.driver-assignment-card__time-row,
+.driver-assignment-card__contact-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+}
+
+/* Trip contact rides inside the route section instead of its own band (see
+   renderCard()) — needs its own top margin to separate from the
+   client/pickup-name text above it, since there's no section padding/divider
+   doing that job here the way there is for Contact-shaped sections proper. */
+.driver-assignment-card__contact-row--inline {
+	margin-top: var(--rux-space-3);
+}
+
+.driver-assignment-card__contact-text {
+	min-width: 0;
+}
+
 .driver-assignment-card__contact-name {
+	margin: 0;
 	font-weight: var(--rux-weight-semibold);
 }
 
-/* Shared by the address and phone lines — icon + tappable text, same treatment
-   the sketch gives both (pin/address, phone/number), so either one is a
-   single tap into Maps or the dialer instead of a separate button. */
-.driver-assignment-card__link {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--rux-space-2);
-	color: var(--rux-accent);
+.driver-assignment-card__contact-phone {
+	margin: var(--rux-space-1) 0 0;
+	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
+}
+
+.driver-assignment-card__icon-btn {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 2.75rem;
+	height: 2.75rem;
+	border-radius: var(--rux-radius-lg);
 	text-decoration: none;
 }
 
-.driver-assignment-card__link .rux-icon {
-	flex: none;
-	font-size: 1.1rem;
+.driver-assignment-card__icon-btn--call {
+	background: color-mix(in oklch, var(--rux-success) 20%, var(--rux-surface-modal));
+	color: var(--rux-success);
 }
+
+.driver-assignment-card__icon-btn--maps {
+	background: color-mix(in oklch, var(--rux-accent) 20%, var(--rux-surface-modal));
+	color: var(--rux-accent);
+}
+
+/* — Notes section — */
 
 .driver-assignment-card__note {
 	display: flex;
 	align-items: flex-start;
 	gap: var(--rux-space-2);
-	margin-bottom: var(--rux-space-3);
-	padding: var(--rux-space-3);
-	background: var(--rux-info-subtle);
-	border-radius: var(--rux-radius-lg);
+	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
 	line-height: var(--rux-leading-normal);
-}
-
-/* — Secondary context: present but visually quieter than the info above,
-   since it's not what most drivers need on most trips — */
-
-.driver-assignment-card__crew {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
-	margin-bottom: var(--rux-space-3);
-	padding-top: var(--rux-space-3);
-	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
-}
-
-.driver-assignment-card__crew-label {
-	color: var(--rux-fg-muted);
-	font-size: 0.68rem;
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: 0.045em;
-	text-transform: uppercase;
-}
-
-.driver-assignment-card__crew-member {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-3);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-sm);
-}
-
-.driver-assignment-card__crew-call {
-	flex: none;
-	color: var(--rux-accent);
-	font-weight: var(--rux-weight-semibold);
-	text-decoration: none;
-}
-
-.driver-assignment-card__requirements {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--rux-space-2);
-	margin: 0;
-}
-
-.driver-assignment-card__requirement {
-	padding: var(--rux-space-1) var(--rux-space-2);
-	background: var(--rux-bg-active);
-	border-radius: var(--rux-radius-full);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
 }
 
 /* .rux-card__footer defaults to a right-aligned row (Delete/Clear/Save-style

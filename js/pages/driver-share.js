@@ -255,14 +255,49 @@ function telUrl(phone) {
 	return `tel:${phone.replace(/[^+\d]/g, "")}`;
 }
 
-// Ticket-stub layout: date/bus up top, route, then one big focus number (the
-// single time this driver actually needs — Spot to drop off, Swap to hand
-// off to relief) so it reads at a glance instead of requiring a scan through
-// a dense card. Everything below the contact line is secondary context
-// (crew/requirements/notes) that stays available but doesn't compete with
-// the two things a driver checks a link for: what time, and where.
+// Circular action button — the tappable half of a section (call a contact,
+// open an address in Maps). variant just picks the tint (call = green,
+// maps = accent blue), same convention as a phone app's own call button.
+function iconButton(icon, href, ariaLabel, variant) {
+	const link = document.createElement("a");
+	link.className = `driver-assignment-card__icon-btn driver-assignment-card__icon-btn--${variant}`;
+	link.href = href;
+	link.setAttribute("aria-label", ariaLabel);
+	if (!href.startsWith("tel:")) {
+		link.target = "_blank";
+		link.rel = "noopener";
+	}
+	link.appendChild(el("span", "rux-icon", icon));
+	return link;
+}
+
+// Shared shape for Trip Contact and each crew member (co-driver, relief
+// driver) — an eyebrow label, name, phone, and a call button. Returns null
+// if there's neither a name nor a phone to show (e.g. a crew slot whose
+// driver record has no phone on file), so the caller can skip appending an
+// empty section entirely.
+function contactSection(label, name, phone) {
+	if (!name && !phone) return null;
+	const section = el("div", "rux-card__section driver-assignment-card__contact-section");
+	section.appendChild(el("span", "driver-assignment-card__section-label", label));
+	const row = el("div", "driver-assignment-card__contact-row");
+	const text = el("div", "driver-assignment-card__contact-text");
+	if (name) text.appendChild(el("p", "driver-assignment-card__contact-name", name));
+	if (phone) text.appendChild(el("p", "driver-assignment-card__contact-phone", phone));
+	row.appendChild(text);
+	if (phone) row.appendChild(iconButton("call", telUrl(phone), `Call ${name || label}`, "call"));
+	section.appendChild(row);
+	return section;
+}
+
+// Modular ticket layout — each .rux-card__section below is an independent
+// band (dividers come free from .rux-card__section + .rux-card__section in
+// card.css), so sections can be added/removed per trip without any of this
+// needing to know what else is present. Route/Time/Actions are always
+// there; Contact/Crew/Requirements/Notes only render when that trip
+// actually has the data for them.
 function renderCard(entry) {
-	const card = el("article", "rux-card rux-card--elevated driver-assignment-card");
+	const card = el("article", "rux-card driver-assignment-card");
 
 	const header = el("header", "rux-card__header driver-assignment-card__header");
 	const dateText = entry.startDate === entry.endDate
@@ -274,97 +309,75 @@ function renderCard(entry) {
 	);
 	card.appendChild(header);
 
-	const body = el("div", "rux-card__body driver-assignment-card__body");
-
-	body.appendChild(el(
+	// Trip contact rides along in this same section (right after client/pickup)
+	// rather than getting its own divided band — it's part of "who/where this
+	// trip is for," not a separate concern. Crew below still gets one full
+	// section per person; there can be more than one of them, and they're not
+	// what identifies whose trip this is the way the trip contact is.
+	const routeSection = el("div", "rux-card__section driver-assignment-card__route-section");
+	routeSection.appendChild(el(
 		"p",
 		"driver-assignment-card__route",
 		`${shortLocation(entry.from) || "Pickup"} → ${shortLocation(entry.to) || "Destination"}`,
 	));
+	if (entry.trip.customer) routeSection.appendChild(el("p", "driver-assignment-card__client", entry.trip.customer));
+	if (entry.pickupName) routeSection.appendChild(el("p", "driver-assignment-card__pickup-name", entry.pickupName));
+	if (entry.contact.name || entry.contact.phone) {
+		const row = el("div", "driver-assignment-card__contact-row driver-assignment-card__contact-row--inline");
+		const text = el("div", "driver-assignment-card__contact-text");
+		if (entry.contact.name) text.appendChild(el("p", "driver-assignment-card__contact-name", entry.contact.name));
+		if (entry.contact.phone) text.appendChild(el("p", "driver-assignment-card__contact-phone", entry.contact.phone));
+		row.appendChild(text);
+		if (entry.contact.phone) {
+			row.appendChild(iconButton("call", telUrl(entry.contact.phone), `Call ${entry.contact.name || "trip contact"}`, "call"));
+		}
+		routeSection.appendChild(row);
+	}
+	card.appendChild(routeSection);
 
 	const relief = isReliefRole(entry.role);
 	const timeLabelParts = [relief ? "Swap Time" : "Spot Time", roleLabel(entry.role)];
 	if (entry.trip.trip_type === "dropoff_pickup") timeLabelParts.push(entry.leg === "return" ? "Inbound" : "Outbound");
-	const timeBlock = el(
+	const hasAddress = entry.from && entry.from !== "Pickup not provided";
+	const timeSection = el(
 		"div",
-		`driver-assignment-card__time-block${relief && !entry.roleReportTime ? " is-missing" : ""}`,
+		`rux-card__section driver-assignment-card__time-section${relief && !entry.roleReportTime ? " is-missing" : ""}`,
 	);
-	timeBlock.append(
-		el("span", "driver-assignment-card__time-label", timeLabelParts.join(" · ")),
+	const timeRow = el("div", "driver-assignment-card__time-row");
+	const timeText = el("div", "driver-assignment-card__contact-text");
+	timeText.append(
+		el("span", "driver-assignment-card__section-label", timeLabelParts.join(" · ")),
 		el(
 			"p",
 			"driver-assignment-card__time",
 			relief ? (entry.roleReportTime ? fmtTime(entry.roleReportTime) : "Not set") : fmtTime(entry.spotTime),
 		),
 	);
-	body.appendChild(timeBlock);
+	if (hasAddress) timeText.appendChild(el("p", "driver-assignment-card__address", entry.from));
+	timeRow.appendChild(timeText);
+	if (hasAddress) timeRow.appendChild(iconButton("navigation", mapsUrl(entry.from), "Open in Maps", "maps"));
+	timeSection.appendChild(timeRow);
+	card.appendChild(timeSection);
 
-	if (entry.from && entry.from !== "Pickup not provided") {
-		const location = el("div", "driver-assignment-card__location");
-		if (entry.pickupName) location.appendChild(el("span", "driver-assignment-card__location-name", entry.pickupName));
-		const addressLink = el("a", "driver-assignment-card__link", entry.from);
-		addressLink.href = mapsUrl(entry.from);
-		addressLink.target = "_blank";
-		addressLink.rel = "noopener";
-		addressLink.prepend(el("span", "rux-icon", "location_on"));
-		location.appendChild(addressLink);
-		body.appendChild(location);
-	}
-
-	if (entry.contact.name || entry.contact.phone) {
-		const contact = el("div", "driver-assignment-card__contact");
-		if (entry.contact.name) {
-			const nameLine = el("span", "driver-assignment-card__contact-name");
-			nameLine.append(el("strong", "", "Contact: "), document.createTextNode(entry.contact.name));
-			contact.appendChild(nameLine);
-		}
-		if (entry.contact.phone) {
-			const callLink = el("a", "driver-assignment-card__link", entry.contact.phone);
-			callLink.href = telUrl(entry.contact.phone);
-			callLink.prepend(el("span", "rux-icon", "call"));
-			contact.appendChild(callLink);
-		}
-		body.appendChild(contact);
-	}
+	entry.crew.forEach((member) => {
+		const crewSection = contactSection(roleLabel(member.role), member.drivers?.name, member.drivers?.phone);
+		if (crewSection) card.appendChild(crewSection);
+	});
 
 	if (entry.instructions) {
-		const note = el("div", "driver-assignment-card__note");
-		note.append(el("span", "rux-icon", "info"), el("span", "", entry.instructions));
-		body.appendChild(note);
+		const note = el("div", "rux-card__section driver-assignment-card__note-section");
+		note.appendChild(el("span", "driver-assignment-card__section-label", "Notes"));
+		const noteBody = el("p", "driver-assignment-card__note");
+		noteBody.append(el("span", "rux-icon", "info"), document.createTextNode(entry.instructions));
+		note.appendChild(noteBody);
+		card.appendChild(note);
 	}
-
-	if (entry.crew.length) {
-		const crew = el("section", "driver-assignment-card__crew");
-		crew.appendChild(el("span", "driver-assignment-card__crew-label", "Also on this trip"));
-		entry.crew.forEach((member) => {
-			const memberRow = el("div", "driver-assignment-card__crew-member");
-			const name = member.drivers?.name || "Assigned driver";
-			memberRow.appendChild(el("span", "", `${name} · ${roleLabel(member.role)}`));
-			if (member.drivers?.phone) {
-				const call = el("a", "driver-assignment-card__crew-call", "Call");
-				call.href = telUrl(member.drivers.phone);
-				call.setAttribute("aria-label", `Call ${name}`);
-				memberRow.appendChild(call);
-			}
-			crew.appendChild(memberRow);
-		});
-		body.appendChild(crew);
-	}
-
-	if (entry.requirements.length) {
-		const requirements = el("div", "driver-assignment-card__requirements");
-		entry.requirements.forEach((item) => {
-			requirements.appendChild(el("span", "driver-assignment-card__requirement", item));
-		});
-		body.appendChild(requirements);
-	}
-	card.appendChild(body);
 
 	const actions = el("footer", "rux-card__footer driver-assignment-card__actions");
-	if (entry.itineraryUrl) actions.appendChild(actionLink("View Itinerary", "description", entry.itineraryUrl));
+	if (entry.itineraryUrl) actions.appendChild(actionLink("View Itinerary", "description", entry.itineraryUrl, true));
 	const envelopeButton = document.createElement("button");
 	envelopeButton.type = "button";
-	envelopeButton.className = "rux-button rux-button--default rux-button--block";
+	envelopeButton.className = "rux-button rux-button--accent rux-button--block";
 	envelopeButton.innerHTML = '<span class="rux-icon" aria-hidden="true">mail</span><span>View Envelope</span>';
 	envelopeButton.addEventListener("click", () => openEnvelope(entry));
 	actions.appendChild(envelopeButton);

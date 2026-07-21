@@ -30,6 +30,7 @@
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=34" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=6" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=2" />
+		<link rel="stylesheet" href="./css/features/driver-share.css?v=11" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=2" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=2" />
 		<link
@@ -3872,6 +3873,26 @@
 										</nav>
 									</div>
 								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">Cards</p>
+									</header>
+									<div class="rux-card__body">
+										<nav
+											class="rux-menu components-app__nav"
+											aria-label="Card components"
+											data-component-nav
+										>
+											<button
+												class="rux-menu__item"
+												type="button"
+												data-component-target="driver-card"
+											>
+												Driver Assignment Card
+											</button>
+										</nav>
+									</div>
+								</div>
 							</div>
 						</div>
 					</aside>
@@ -4654,6 +4675,111 @@
 											>accessible</span>
 											<span class="rux-btn-label">ADA lift</span>
 										</button>
+									</div>
+								</div>
+							</div>
+							<div
+								data-component-page="driver-card"
+								data-component-title="Driver Assignment Card"
+								class="components-app__page"
+							>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">Driver Assignment Card</p>
+									</header>
+									<div class="rux-card__body">
+										<div class="components-app__anatomy-stage">
+											<article
+												class="rux-card driver-assignment-card"
+												style="max-width: 26rem; width: 100%;"
+											>
+												<header class="rux-card__header driver-assignment-card__header">
+													<span class="driver-assignment-card__date">THU JUL 23 – SAT JUL 26</span>
+													<span class="driver-assignment-card__bus">Bus 763</span>
+												</header>
+												<div class="rux-card__section driver-assignment-card__route-section">
+													<p class="driver-assignment-card__route">Donna → Austin</p>
+													<p class="driver-assignment-card__client">Boys &amp; Girls Club</p>
+													<p class="driver-assignment-card__pickup-name">Donna High School</p>
+													<div class="driver-assignment-card__contact-row driver-assignment-card__contact-row--inline">
+														<div class="driver-assignment-card__contact-text">
+															<p class="driver-assignment-card__contact-name">Maria Reyes</p>
+															<p class="driver-assignment-card__contact-phone">(956) 555-0148</p>
+														</div>
+														<a
+															class="driver-assignment-card__icon-btn driver-assignment-card__icon-btn--call"
+															href="tel:9565550148"
+															aria-label="Call Maria Reyes"
+														>
+															<span class="rux-icon" aria-hidden="true">call</span>
+														</a>
+													</div>
+												</div>
+												<div class="rux-card__section driver-assignment-card__time-section">
+													<div class="driver-assignment-card__time-row">
+														<div class="driver-assignment-card__contact-text">
+															<span class="driver-assignment-card__section-label">Spot Time · Driver · Outbound</span>
+															<p class="driver-assignment-card__time">5:15 AM</p>
+															<p class="driver-assignment-card__address">1200 N Fir St, Donna, TX</p>
+														</div>
+														<a
+															class="driver-assignment-card__icon-btn driver-assignment-card__icon-btn--maps"
+															href="#"
+															aria-label="Open in Maps"
+														>
+															<span class="rux-icon" aria-hidden="true">navigation</span>
+														</a>
+													</div>
+												</div>
+												<div class="rux-card__section driver-assignment-card__contact-section">
+													<span class="driver-assignment-card__section-label">Co-Driver</span>
+													<div class="driver-assignment-card__contact-row">
+														<div class="driver-assignment-card__contact-text">
+															<p class="driver-assignment-card__contact-name">Miguel Torres</p>
+															<p class="driver-assignment-card__contact-phone">(956) 555-0199</p>
+														</div>
+														<a
+															class="driver-assignment-card__icon-btn driver-assignment-card__icon-btn--call"
+															href="tel:9565550199"
+															aria-label="Call Miguel Torres"
+														>
+															<span class="rux-icon" aria-hidden="true">call</span>
+														</a>
+													</div>
+												</div>
+												<div class="rux-card__section driver-assignment-card__contact-section">
+													<span class="driver-assignment-card__section-label">Relief Driver</span>
+													<div class="driver-assignment-card__contact-row">
+														<div class="driver-assignment-card__contact-text">
+															<p class="driver-assignment-card__contact-name">James Cole</p>
+															<p class="driver-assignment-card__contact-phone">(956) 555-0142</p>
+														</div>
+														<a
+															class="driver-assignment-card__icon-btn driver-assignment-card__icon-btn--call"
+															href="tel:9565550142"
+															aria-label="Call James Cole"
+														>
+															<span class="rux-icon" aria-hidden="true">call</span>
+														</a>
+													</div>
+												</div>
+												<div class="rux-card__section driver-assignment-card__note-section">
+													<span class="driver-assignment-card__section-label">Notes</span>
+													<p class="driver-assignment-card__note">
+														<span class="rux-icon" aria-hidden="true">info</span>
+														Meet relief driver at the Pilot Travel Center off I-35, exit 178.
+													</p>
+												</div>
+												<footer class="rux-card__footer driver-assignment-card__actions">
+													<a class="rux-button rux-button--accent rux-button--block" href="#">
+														<span class="rux-icon" aria-hidden="true">description</span><span>View Itinerary</span>
+													</a>
+													<button type="button" class="rux-button rux-button--accent rux-button--block">
+														<span class="rux-icon" aria-hidden="true">mail</span><span>View Envelope</span>
+													</button>
+												</footer>
+											</article>
+										</div>
 									</div>
 								</div>
 							</div>
