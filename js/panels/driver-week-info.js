@@ -2,12 +2,13 @@
    RUX UI — DRIVER WEEK INFO
    --------------------------------------------------------------------------
    Builds driver-facing assignment text from the scheduler's already-loaded
-   trip records. Nothing is sent automatically: dispatchers review the text,
-   choose which assignments to include, and copy it into their messaging app.
+   current and upcoming trip records. Nothing is sent automatically:
+   dispatchers review the text, choose which assignments to include, and copy
+   it into their messaging app.
 
    API
    ---
-   window.DriverWeekInfo.open({ driver, trips, weekStart, viewDays, buses })
+   window.DriverWeekInfo.open({ driver, trips, buses })
    ========================================================================== */
 
 import { supabase } from "../data/supabase.js";
@@ -18,6 +19,7 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 
 	let modal = null;
 	let state = null;
+	const MAX_SHARED_ASSIGNMENTS = 50;
 
 	function parseIsoDate(value) {
 		if (!value) return null;
@@ -195,11 +197,7 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		};
 	}
 
-	function entriesForDriver({ driver, trips, weekStart, viewDays }) {
-		const rangeStart = new Date(weekStart);
-		rangeStart.setHours(0, 0, 0, 0);
-		const rangeEnd = addDays(rangeStart, Math.max(1, Number(viewDays) || 7) - 1);
-		rangeEnd.setHours(23, 59, 59, 999);
+	function entriesForDriver({ driver, trips }) {
 		const entries = [];
 
 		for (const trip of trips || []) {
@@ -217,13 +215,7 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 					: trip.end_date || startDate;
 				const start = parseIsoDate(startDate);
 				const end = parseIsoDate(endDate);
-				if (
-					!start
-					|| !end
-					|| !isCurrentOrUpcomingLeg(end)
-					|| end < rangeStart
-					|| start > rangeEnd
-				) continue;
+				if (!start || !end || !isCurrentOrUpcomingLeg(end)) continue;
 
 				const stops = stopsForLeg(trip, leg);
 				const pickup = stops.find((stop) => stop.type === "pickup") || {};
@@ -298,7 +290,9 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		const greetingName = driverName(driver).split(/\s+/)[0] || "Driver";
 		const intro = single
 			? `Hi ${greetingName}, here is your trip assignment:`
-			: `Hi ${greetingName}, here are your assignments for ${fmtRange(rangeStart, rangeEnd)}:`;
+			: rangeStart && rangeEnd
+				? `Hi ${greetingName}, here are your assignments for ${fmtRange(rangeStart, rangeEnd)}:`
+				: `Hi ${greetingName}, here are your upcoming assignments:`;
 		if (!entries.length) return `${intro}\n\nNo trips are currently assigned.`;
 		const message = [
 			intro,
@@ -334,8 +328,8 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		return [
 			"rux:driver-schedule-share",
 			state.driver.id,
-			isoDate(state.rangeStart),
-			isoDate(state.rangeEnd),
+			isoDate(state.legacyRangeStart || state.rangeStart),
+			isoDate(state.legacyRangeEnd || state.rangeEnd),
 		].join(":");
 	}
 
@@ -343,10 +337,41 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		return selectedEntries().map((entry) => entry.assignment.id).filter(Boolean);
 	}
 
+	function rangeForEntries(entries) {
+		let start = null;
+		let end = null;
+		for (const entry of entries || []) {
+			const entryStart = parseIsoDate(entry.startDate);
+			const entryEnd = parseIsoDate(entry.endDate || entry.startDate);
+			if (!entryStart || !entryEnd) continue;
+			if (!start || entryStart < start) start = entryStart;
+			if (!end || entryEnd > end) end = entryEnd;
+		}
+		return start && end ? { start, end } : null;
+	}
+
+	function selectedRange() {
+		return rangeForEntries(selectedEntries());
+	}
+
+	function syncSelectedRange() {
+		if (!state) return null;
+		const range = selectedRange();
+		if (range) {
+			state.rangeStart = range.start;
+			state.rangeEnd = range.end;
+		}
+		return range;
+	}
+
 	function selectedReliefWithoutTime() {
 		return selectedEntries().find(
 			(entry) => isReliefRole(entry.driverAssignment.role) && !entry.roleReportTime,
 		) || null;
+	}
+
+	function selectionLimitExceeded() {
+		return selectedAssignmentRefs().length > MAX_SHARED_ASSIGNMENTS;
 	}
 
 	function selectedAssignmentRefs() {
@@ -366,7 +391,12 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		if (!state?.share) return false;
 		const selected = selectedAssignmentRefs().map(assignmentRefKey).sort();
 		const shared = (state.share.assignmentRefs || []).map(assignmentRefKey).sort();
-		return selected.length === shared.length && selected.every((id, index) => id === shared[index]);
+		const range = selectedRange();
+		return Boolean(range)
+			&& selected.length === shared.length
+			&& selected.every((id, index) => id === shared[index])
+			&& String(state.share.rangeStart || "") === isoDate(range.start)
+			&& String(state.share.rangeEnd || "") === isoDate(range.end);
 	}
 
 	function activeShareUrl() {
@@ -393,37 +423,48 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		const createButton = modal.querySelector("[data-driver-share-create]");
 		const updateButton = modal.querySelector("[data-driver-share-update]");
 		const missingReliefTime = selectedReliefWithoutTime();
+		const tooManyAssignments = selectionLimitExceeded();
 		if (!state.share) {
 			empty.hidden = false;
 			active.hidden = true;
-			createButton.disabled = !selectedEntries().length || Boolean(missingReliefTime);
-			modal.querySelector("[data-driver-share-state]").textContent = missingReliefTime
-				? `Set ${driverName(state.driver)}’s relief swap time before sharing`
-				: "";
+			createButton.disabled = !selectedEntries().length || Boolean(missingReliefTime) || tooManyAssignments;
+			modal.querySelector("[data-driver-share-state]").textContent = tooManyAssignments
+				? `Choose no more than ${MAX_SHARED_ASSIGNMENTS} assignments`
+				: missingReliefTime
+					? `Set ${driverName(state.driver)}’s relief swap time before sharing`
+					: "";
 			return;
 		}
 		empty.hidden = true;
 		active.hidden = false;
 		modal.querySelector("[data-driver-share-url]").value = state.share.url;
 		const current = shareMatchesSelection();
-		modal.querySelector("[data-driver-share-state]").textContent = missingReliefTime
-			? `Set ${driverName(state.driver)}’s relief swap time before updating`
-			: current
-				? "Live link · selected trips are up to date"
-				: "Selection changed · update the link before sending";
+		modal.querySelector("[data-driver-share-state]").textContent = tooManyAssignments
+			? `Choose no more than ${MAX_SHARED_ASSIGNMENTS} assignments`
+			: missingReliefTime
+				? `Set ${driverName(state.driver)}’s relief swap time before updating`
+				: current
+					? "Live link · selected trips are up to date"
+					: "Selection changed · update the link before sending";
 		updateButton.hidden = current;
-		updateButton.disabled = !selectedEntries().length || Boolean(missingReliefTime);
+		updateButton.disabled = !selectedEntries().length || Boolean(missingReliefTime) || tooManyAssignments;
 	}
 
 	async function createOrUpdateShare(update = false) {
 		const assignmentIds = selectedAssignmentIds();
-		if (!assignmentIds.length || selectedReliefWithoutTime()) return;
+		const range = syncSelectedRange();
+		if (
+			!assignmentIds.length
+			|| !range
+			|| selectedReliefWithoutTime()
+			|| selectionLimitExceeded()
+		) return;
 		setShareBusy(true);
 		const functionName = update ? "update_driver_schedule_share" : "create_driver_schedule_share";
 		const params = {
 			p_assignment_ids: assignmentIds,
-			p_range_start: isoDate(state.rangeStart),
-			p_range_end: isoDate(state.rangeEnd),
+			p_range_start: isoDate(range.start),
+			p_range_end: isoDate(range.end),
 		};
 		if (update) params.p_token = state.share.token;
 		else params.p_driver_id = state.driver.id;
@@ -513,6 +554,8 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 					})))
 					.map((entry) => entry.key),
 			);
+			syncSelectedRange();
+			updateRangeLabel();
 			renderTrips();
 			refreshPreview();
 		}
@@ -602,11 +645,12 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		if (!modal || !state) return;
 		const textarea = modal.querySelector("[data-driver-info-preview]");
 		const selected = selectedEntries();
+		const range = syncSelectedRange();
 		textarea.value = buildMessage(
 			selected,
 			state.driver,
-			state.rangeStart,
-			state.rangeEnd,
+			range?.start,
+			range?.end,
 			false,
 			activeShareUrl(),
 		);
@@ -629,12 +673,28 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		if (!state.entries.length) {
 			const empty = document.createElement("p");
 			empty.className = "rux-driver-week-info__empty";
-			empty.textContent = "No assignments for this driver in the loaded date range.";
+			empty.textContent = "No current or upcoming assignments for this driver.";
 			host.appendChild(empty);
 			return;
 		}
 
+		const showMonthGroups = state.entries.length > 6;
+		let previousMonth = "";
 		state.entries.forEach((entry) => {
+			const entryDate = parseIsoDate(entry.startDate);
+			const monthKey = entryDate
+				? `${entryDate.getFullYear()}-${entryDate.getMonth()}`
+				: "";
+			if (showMonthGroups && monthKey && monthKey !== previousMonth) {
+				const monthHeading = document.createElement("h4");
+				monthHeading.className = "rux-driver-week-info__month";
+				monthHeading.textContent = entryDate.toLocaleDateString("en-US", {
+					month: "long",
+					year: "numeric",
+				});
+				host.appendChild(monthHeading);
+				previousMonth = monthKey;
+			}
 			const card = document.createElement("article");
 			card.className = "rux-driver-week-info__trip";
 
@@ -691,11 +751,7 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 					<section class="rux-driver-week-info__section">
 						<div class="rux-driver-week-info__list-heading">
 							<h3 class="rux-driver-week-info__section-title">Assignments to include</h3>
-							<div class="rux-segmented" data-rux-toggle-group data-driver-range-weeks>
-								<button class="rux-button rux-button--default rux-button--sm" type="button" aria-pressed="false" data-value="1">1 wk</button>
-								<button class="rux-button rux-button--default rux-button--sm" type="button" aria-pressed="false" data-value="2">2 wk</button>
-								<button class="rux-button rux-button--default rux-button--sm" type="button" aria-pressed="false" data-value="3">3 wk</button>
-							</div>
+							<span class="rux-driver-week-info__list-scope">Current &amp; upcoming</span>
 						</div>
 						<div class="rux-driver-week-info__trips" data-driver-info-trips></div>
 					</section>
@@ -742,16 +798,13 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 			if (!check || !state) return;
 			if (check.checked) state.selected.add(check.dataset.entryKey);
 			else state.selected.delete(check.dataset.entryKey);
+			syncSelectedRange();
+			updateRangeLabel();
 			renderShareControls();
 			refreshPreview();
 		});
 
 		modal.addEventListener("click", async (event) => {
-			const rangeButton = event.target.closest("[data-driver-range-weeks] .rux-button");
-			if (rangeButton) {
-				await setRangeWeeks(rangeButton.dataset.value);
-				return;
-			}
 			const shareAction = event.target.closest("[data-driver-share-action]");
 			if (shareAction) {
 				const action = shareAction.dataset.driverShareAction;
@@ -787,73 +840,42 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		return modal;
 	}
 
-	function syncRangeButtons(weeks) {
-		modal.querySelectorAll("[data-driver-range-weeks] .rux-button").forEach((button) => {
-			const active = Number(button.dataset.value) === weeks;
-			button.classList.toggle("is-active", active);
-			button.setAttribute("aria-pressed", active ? "true" : "false");
-		});
-	}
-
 	function updateRangeLabel() {
+		const range = selectedRange();
+		const assignmentCount = selectedEntries().length;
 		modal.querySelector("[data-driver-info-range]").textContent = [
-			fmtRange(state.rangeStart, state.rangeEnd),
+			range
+				? `${fmtRange(range.start, range.end)} · ${assignmentCount} ${assignmentCount === 1 ? "assignment" : "assignments"}`
+				: "No assignments selected",
 			state.driver.phone,
 		].filter(Boolean).join(" · ");
 	}
 
-	async function setRangeWeeks(weeks) {
-		if (!state) return;
-		weeks = Math.max(1, Math.min(3, Number(weeks) || 1));
-		if (weeks === state.weeks) return;
-		const previousKeys = new Set(state.entries.map((entry) => entry.key));
-		const entries = entriesForDriver({
-			driver: state.driver,
-			trips: state.trips,
-			weekStart: state.rangeStart,
-			viewDays: weeks * 7,
-		});
-		const selected = new Set(
-			[...state.selected].filter((key) => entries.some((entry) => entry.key === key)),
-		);
-		entries.forEach((entry) => {
-			if (!previousKeys.has(entry.key)) selected.add(entry.key);
-		});
-		state.weeks = weeks;
-		state.rangeEnd = addDays(state.rangeStart, weeks * 7 - 1);
-		state.entries = entries;
-		state.selected = selected;
-		state.share = null;
-		syncRangeButtons(weeks);
-		updateRangeLabel();
-		renderTrips();
-		renderShareControls();
-		refreshPreview();
-		await restoreShare();
-	}
-
-	function open({ driver, trips, weekStart, viewDays = 7, buses = [] }) {
-		if (!driver || !weekStart) return;
+	function open({ driver, trips, weekStart = new Date(), viewDays = 21, buses = [] }) {
+		if (!driver) return;
 		ensureModal();
-		const rangeStart = new Date(weekStart);
-		rangeStart.setHours(0, 0, 0, 0);
-		const weeks = Math.max(1, Math.min(3, Math.round((Number(viewDays) || 7) / 7)));
-		const rangeEnd = addDays(rangeStart, weeks * 7 - 1);
-		const entries = entriesForDriver({ driver, trips, weekStart: rangeStart, viewDays: weeks * 7 });
+		const legacyRangeStart = new Date(weekStart);
+		legacyRangeStart.setHours(0, 0, 0, 0);
+		const legacyRangeEnd = addDays(
+			legacyRangeStart,
+			Math.max(1, Number(viewDays) || 21) - 1,
+		);
+		const entries = entriesForDriver({ driver, trips });
+		const range = rangeForEntries(entries);
 		state = {
 			driver,
 			buses,
 			trips,
-			weeks,
 			entries,
-			rangeStart,
-			rangeEnd,
+			rangeStart: range?.start || legacyRangeStart,
+			rangeEnd: range?.end || legacyRangeEnd,
+			legacyRangeStart,
+			legacyRangeEnd,
 			selected: new Set(entries.map((entry) => entry.key)),
 			share: null,
 		};
 
 		modal.querySelector("[data-driver-info-title]").textContent = `Driver Info · ${fullDriverName(driver)}`;
-		syncRangeButtons(weeks);
 		updateRangeLabel();
 		renderTrips();
 		renderShareControls();

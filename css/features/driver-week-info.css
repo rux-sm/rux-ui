@@ -73,6 +73,20 @@
 	overflow: auto;
 }
 
+.rux-driver-week-info__month {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	margin: 0;
+	padding: var(--rux-space-1) 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+	background: var(--rux-surface-modal);
+}
+
 .rux-driver-week-info__trip {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
@@ -143,6 +157,12 @@
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-xs);
 	text-align: right;
+}
+
+.rux-driver-week-info__list-scope {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	white-space: nowrap;
 }
 
 .rux-driver-week-info__share-copy {
