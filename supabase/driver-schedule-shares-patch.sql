@@ -24,7 +24,7 @@ create table if not exists public.driver_schedule_shares (
 	trip_legs jsonb not null default '[]'::jsonb,
 	range_start date not null,
 	range_end date not null,
-	expires_at timestamptz not null,
+	expires_at timestamptz,
 	revoked_at timestamptz,
 	created_at timestamptz not null default now(),
 	updated_at timestamptz not null default now(),
@@ -33,6 +33,17 @@ create table if not exists public.driver_schedule_shares (
 		jsonb_typeof(trip_legs) = 'array' and jsonb_array_length(trip_legs) between 1 and 50
 	)
 );
+
+-- Driver URLs are permanent until dispatch explicitly deactivates them.
+-- Keep the legacy column nullable so this patch upgrades existing installs
+-- without rebuilding the table or changing the public response shape.
+alter table public.driver_schedule_shares
+	alter column expires_at drop not null;
+update public.driver_schedule_shares
+	set expires_at = null
+	where expires_at is not null;
+comment on column public.driver_schedule_shares.expires_at is
+	'Legacy field retained for compatibility; active driver links no longer expire.';
 
 alter table public.driver_schedule_shares enable row level security;
 revoke all on table public.driver_schedule_shares from anon, authenticated;
@@ -47,7 +58,7 @@ with ranked_active_shares as (
 	select id,
 		row_number() over (
 			partition by driver_id
-			order by (expires_at > now()) desc, updated_at desc, created_at desc, id desc
+			order by updated_at desc, created_at desc, id desc
 		) as active_rank
 	from public.driver_schedule_shares
 	where revoked_at is null
@@ -126,7 +137,7 @@ begin
 		set trip_legs = v_trip_legs,
 			range_start = p_range_start,
 			range_end = p_range_end,
-			expires_at = greatest((p_range_end + 14)::timestamptz, now() + interval '14 days'),
+			expires_at = null,
 			revoked_at = null,
 			updated_at = now()
 		where id = v_share.id
@@ -136,15 +147,13 @@ begin
 			driver_id,
 			trip_legs,
 			range_start,
-			range_end,
-			expires_at
+			range_end
 		)
 		values (
 			p_driver_id,
 			v_trip_legs,
 			p_range_start,
-			p_range_end,
-			greatest((p_range_end + 14)::timestamptz, now() + interval '14 days')
+			p_range_end
 		)
 		returning * into v_share;
 	end if;
@@ -215,7 +224,7 @@ begin
 	set trip_legs = v_trip_legs,
 		range_start = p_range_start,
 		range_end = p_range_end,
-		expires_at = greatest((p_range_end + 14)::timestamptz, now() + interval '14 days'),
+		expires_at = null,
 		updated_at = now()
 	where id = v_share.id
 	returning * into v_share;
@@ -231,8 +240,7 @@ begin
 end;
 $$;
 
--- Admin-side discovery for the stable per-driver URL. This deliberately returns
--- an expired share so dispatch can refresh it without changing the token.
+-- Admin-side discovery for the stable per-driver URL.
 create or replace function public.get_driver_schedule_share_for_driver(p_driver_id uuid)
 returns jsonb
 language sql
@@ -285,7 +293,6 @@ as $$
 	join public.drivers driver on driver.id = share.driver_id
 	where share.token = lower(trim(p_token))
 		and share.revoked_at is null
-		and share.expires_at > now()
 	limit 1;
 $$;
 

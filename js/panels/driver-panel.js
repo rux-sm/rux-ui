@@ -136,10 +136,8 @@
     return url.href;
   }
 
-  function isScheduleShareLive(share) {
-    if (!share?.token || !share.expiresAt) return false;
-    const expiresAt = new Date(share.expiresAt).getTime();
-    return Number.isFinite(expiresAt) && expiresAt > Date.now();
+  function isScheduleShareActive(share) {
+    return Boolean(share?.token);
   }
 
   function setScheduleStatus(label, variant = "") {
@@ -175,14 +173,7 @@
       return;
     }
 
-    const live = isScheduleShareLive(share);
     scheduleDeactivateBtn.disabled = false;
-    if (!live) {
-      setScheduleStatus("Expired", "warning");
-      scheduleSummary.textContent = "Manage assignments to restore access without changing the URL.";
-      return;
-    }
-
     setScheduleStatus("Active", "success");
     scheduleOpenBtn.disabled = false;
     scheduleCopyBtn.disabled = false;
@@ -758,12 +749,12 @@
   });
 
   scheduleOpenBtn?.addEventListener("click", () => {
-    if (!isScheduleShareLive(selectedScheduleShare)) return;
+    if (!isScheduleShareActive(selectedScheduleShare)) return;
     window.open(driverScheduleUrl(selectedScheduleShare.token), "_blank", "noopener");
   });
 
   scheduleCopyBtn?.addEventListener("click", async () => {
-    if (!isScheduleShareLive(selectedScheduleShare)) return;
+    if (!isScheduleShareActive(selectedScheduleShare)) return;
     const url = driverScheduleUrl(selectedScheduleShare.token);
     let copied = false;
     try {

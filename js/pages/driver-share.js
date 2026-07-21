@@ -463,7 +463,7 @@ async function load() {
 		{ p_token: token },
 	);
 	if (shareError || !share) {
-		showStatus("link_off", "Schedule unavailable", "This link has expired or was revoked. Ask dispatch for a new link.");
+		showStatus("link_off", "Schedule unavailable", "This link is inactive. Contact dispatch if you still need access.");
 		return;
 	}
 
@@ -519,7 +519,7 @@ async function load() {
 	const intro = el("section", "driver-share__intro");
 	intro.append(
 		el("h1", "driver-share__title", `Hello ${share.driver.shortName || share.driver.name}`),
-		el("p", "driver-share__range", `Here are the current assignments for week of ${fmtRange(share.rangeStart, share.rangeEnd)}`),
+		el("p", "driver-share__range", `Here are the current assignments for ${fmtRange(share.rangeStart, share.rangeEnd)}`),
 	);
 	const updatedText = fmtUpdatedAt(share.updatedAt);
 	if (updatedText) {

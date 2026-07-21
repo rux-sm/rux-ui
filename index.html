@@ -8637,8 +8637,8 @@
 				window.DriverWeekInfo?.open({
 					driver,
 					trips: allTripsRaw,
-					weekStart: new Date(currentWeekStart),
-					viewDays,
+					weekStart: startOfWeek(new Date()),
+					viewDays: 21,
 					buses: schedulerBuses,
 				});
 			}

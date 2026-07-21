@@ -369,14 +369,8 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		return selected.length === shared.length && selected.every((id, index) => id === shared[index]);
 	}
 
-	function shareIsLive() {
-		if (!state?.share?.expiresAt) return Boolean(state?.share);
-		const expiresAt = new Date(state.share.expiresAt).getTime();
-		return Number.isFinite(expiresAt) && expiresAt > Date.now();
-	}
-
 	function activeShareUrl() {
-		return shareMatchesSelection() && shareIsLive() ? state.share.url : "";
+		return shareMatchesSelection() ? state.share.url : "";
 	}
 
 	function setShareBusy(busy) {
@@ -414,12 +408,10 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 		const current = shareMatchesSelection();
 		modal.querySelector("[data-driver-share-state]").textContent = missingReliefTime
 			? `Set ${driverName(state.driver)}’s relief swap time before updating`
-			: !shareIsLive()
-				? "Link expired · update it to restore access"
-				: current
-					? "Live link · selected trips are up to date"
-					: "Selection changed · update the link before sending";
-		updateButton.hidden = current && shareIsLive();
+			: current
+				? "Live link · selected trips are up to date"
+				: "Selection changed · update the link before sending";
+		updateButton.hidden = current;
 		updateButton.disabled = !selectedEntries().length || Boolean(missingReliefTime);
 	}
 

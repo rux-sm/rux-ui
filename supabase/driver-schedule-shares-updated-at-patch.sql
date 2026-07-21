@@ -32,7 +32,6 @@ as $$
 	join public.drivers driver on driver.id = share.driver_id
 	where share.token = lower(trim(p_token))
 		and share.revoked_at is null
-		and share.expires_at > now()
 	limit 1;
 $$;
 
