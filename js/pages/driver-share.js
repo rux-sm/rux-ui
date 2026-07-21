@@ -233,16 +233,15 @@ function showStatus(icon, title, message) {
 	root.appendChild(status);
 }
 
-function actionLink(label, icon, href, accent = false) {
-	const link = document.createElement("a");
-	link.className = `rux-button rux-button--${accent ? "accent" : "default"} rux-button--block`;
-	link.href = href;
-	if (!href.startsWith("tel:")) {
-		link.target = "_blank";
-		link.rel = "noopener";
-	}
-	link.innerHTML = `<span class="rux-icon" aria-hidden="true">${icon}</span><span>${label}</span>`;
-	return link;
+function openItinerary(entry) {
+	window.RuxDocViewer?.open({
+		url: entry.itineraryUrl,
+		externalUrl: entry.itineraryUrl,
+		title: `Itinerary · Bus ${entry.busNumber}`,
+		fileName: "Itinerary",
+		icon: "route",
+		presentationOnly: true,
+	});
 }
 
 function mapsUrl(address) {
@@ -376,7 +375,14 @@ function renderCard(entry) {
 	}
 
 	const actions = el("footer", "rux-card__footer driver-assignment-card__actions");
-	if (entry.itineraryUrl) actions.appendChild(actionLink("View Itinerary", "description", entry.itineraryUrl, true));
+	if (entry.itineraryUrl) {
+		const itineraryButton = document.createElement("button");
+		itineraryButton.type = "button";
+		itineraryButton.className = "rux-button rux-button--accent rux-button--block";
+		itineraryButton.innerHTML = '<span class="rux-icon" aria-hidden="true">description</span><span>View Itinerary</span>';
+		itineraryButton.addEventListener("click", () => openItinerary(entry));
+		actions.appendChild(itineraryButton);
+	}
 	const envelopeButton = document.createElement("button");
 	envelopeButton.type = "button";
 	envelopeButton.className = "rux-button rux-button--accent rux-button--block";

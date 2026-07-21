@@ -20,6 +20,7 @@
 
 	let panelEl = null;
 	let current = null;
+	let previousFocus = null;
 
 	function ensurePanel() {
 		if (panelEl) return panelEl;
@@ -49,6 +50,9 @@
 					<span class="rux-icon" aria-hidden="true">upload_file</span> Replace
 				</button>
 				<span class="rux-floating-window__spacer"></span>
+				<a class="rux-button rux-button--default" data-doc-viewer-external target="_blank" rel="noopener">
+					<span class="rux-icon" aria-hidden="true">open_in_new</span> Open Externally
+				</a>
 			</footer>
 		`;
 		document.body.appendChild(panelEl);
@@ -76,11 +80,15 @@
 		// whatever size/position a previous document was left at. Same
 		// cleanup trip-envelope.js's close() already does for the same reason.
 		window.RuxFloatingWindow.resetGeometry(panelEl);
+		previousFocus?.focus?.({ preventScroll: true });
+		previousFocus = null;
 	}
 
 	function open(options = {}) {
 		const panel = ensurePanel();
+		previousFocus = document.activeElement;
 		current = options;
+		panel.classList.toggle("rux-doc-viewer--presentation", Boolean(options.presentationOnly));
 		panel.querySelector("[data-doc-viewer-title]").textContent = options.title || options.fileName || "Document";
 		panel.querySelector("[data-doc-viewer-icon]").textContent = options.icon || "description";
 		// #view=Fit is a PDF open parameter Chromium's built-in PDF viewer
@@ -93,7 +101,11 @@
 		panel.querySelector(".rux-doc-viewer__frame").src = url;
 		panel.querySelector("[data-doc-viewer-delete]").hidden = !options.onDelete;
 		panel.querySelector("[data-doc-viewer-update]").hidden = !options.onUpdate;
+		const externalLink = panel.querySelector("[data-doc-viewer-external]");
+		externalLink.hidden = !options.externalUrl;
+		externalLink.href = options.externalUrl || "#";
 		panel.hidden = false;
+		panel.querySelector("[data-doc-viewer-close]").focus({ preventScroll: true });
 	}
 
 	window.RuxDocViewer = { open, close };
