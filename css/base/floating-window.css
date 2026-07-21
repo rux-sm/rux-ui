@@ -56,6 +56,39 @@
 	max-height: calc(100vh - var(--rux-space-4));
 }
 
+/* Read-only mobile presentations (driver itinerary/envelope) stay inside the
+   device's usable rectangle, including notches, rounded corners, and the home
+   indicator. `100dvh` follows browser chrome as it expands/collapses; the
+   safe-area env values become non-zero on supporting devices because both app
+   entry points opt into viewport-fit=cover. Components can narrow the shared
+   desktop ceiling with --rux-floating-window-safe-max-width. */
+.rux-floating-window--safe-viewport {
+	--rux-floating-window-safe-margin: var(--rux-space-2);
+	top: calc(var(--rux-floating-window-safe-margin) + env(safe-area-inset-top, 0px));
+	right: calc(var(--rux-floating-window-safe-margin) + env(safe-area-inset-right, 0px));
+	bottom: calc(var(--rux-floating-window-safe-margin) + env(safe-area-inset-bottom, 0px));
+	left: calc(var(--rux-floating-window-safe-margin) + env(safe-area-inset-left, 0px));
+	width: min(
+		var(--rux-floating-window-safe-max-width, 64rem),
+		calc(
+			100vw - 2 * var(--rux-floating-window-safe-margin) - env(safe-area-inset-left, 0px) -
+				env(safe-area-inset-right, 0px)
+		)
+	);
+	height: auto;
+	margin-inline: auto;
+	min-width: 0;
+	min-height: 0;
+	max-width: none;
+	max-height: none;
+	transform: none;
+	resize: none;
+}
+
+.rux-floating-window--safe-viewport .rux-floating-window__header {
+	cursor: default;
+}
+
 .rux-floating-window__header {
 	cursor: move;
 	flex: none;
@@ -76,4 +109,35 @@
 
 .rux-floating-window__spacer {
 	flex: 1;
+}
+
+/* Phones use one window frame contract regardless of which component is
+   inside it. A 16px inline / 24px block visual inset sits inside the hardware
+   safe area, so every floating window clears browser chrome, notches, rounded
+   corners, and the home indicator consistently without feeling too tall.
+   Component-specific desktop width/height rules are overridden here. */
+@media (max-width: 580px) {
+	/* Doubled class specificity deliberately outranks later feature-level
+	   desktop sizing such as .rux-manifest-window. */
+	.rux-floating-window.rux-floating-window {
+		--rux-floating-window-mobile-inset-inline: var(--rux-space-4);
+		--rux-floating-window-mobile-inset-block: var(--rux-space-5);
+		top: calc(var(--rux-floating-window-mobile-inset-block) + env(safe-area-inset-top, 0px));
+		right: calc(var(--rux-floating-window-mobile-inset-inline) + env(safe-area-inset-right, 0px));
+		bottom: calc(var(--rux-floating-window-mobile-inset-block) + env(safe-area-inset-bottom, 0px));
+		left: calc(var(--rux-floating-window-mobile-inset-inline) + env(safe-area-inset-left, 0px));
+		width: auto;
+		height: auto;
+		margin: 0;
+		min-width: 0;
+		min-height: 0;
+		max-width: none;
+		max-height: none;
+		transform: none;
+		resize: none;
+	}
+
+	.rux-floating-window.rux-floating-window .rux-floating-window__header {
+		cursor: default;
+	}
 }

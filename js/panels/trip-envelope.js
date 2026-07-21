@@ -740,6 +740,10 @@
 			"rux-trip-envelope-window--presentation",
 			Boolean(options.presentationOnly),
 		);
+		panelEl.classList.toggle(
+			"rux-floating-window--safe-viewport",
+			Boolean(options.presentationOnly),
+		);
 		const allRecipients = envelopeRecipients(trip);
 		const requestedRecipient = options.recipient
 			? allRecipients.find((driver) => driver === options.recipient)

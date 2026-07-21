@@ -90,6 +90,7 @@
 		previousFocus = document.activeElement;
 		current = options;
 		panel.classList.toggle("rux-doc-viewer--presentation", Boolean(options.presentationOnly));
+		panel.classList.toggle("rux-floating-window--safe-viewport", Boolean(options.presentationOnly));
 		panel.querySelector("[data-doc-viewer-title]").textContent = options.title || options.fileName || "Document";
 		panel.querySelector("[data-doc-viewer-icon]").textContent = options.icon || "description";
 		// Native PDF viewers do not all recognize the same open parameter.

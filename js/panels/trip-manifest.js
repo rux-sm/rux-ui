@@ -22,8 +22,8 @@
       window.TripView?.set("calendar");
     });
     const header = manifestWindow.querySelector(".rux-floating-window__header");
-    // 580px matches the CSS breakpoint (trip-manifest.css) where the window
-    // becomes a full-screen sheet — nothing to drag at that point.
+    // 580px matches the shared floating-window mobile breakpoint, where all
+    // windows receive the same fixed safe-area inset — nothing to drag there.
     if (header) window.RuxFloatingWindow?.attachDrag(manifestWindow, header, { minViewportWidth: 580 });
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape" || manifestWindow.hidden) return;

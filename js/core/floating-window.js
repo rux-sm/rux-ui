@@ -26,6 +26,8 @@
 
 		function startDrag(event) {
 			if (window.innerWidth <= minViewportWidth) return;
+			if (window.matchMedia("(max-width: 580px)").matches) return;
+			if (panelEl.classList.contains("rux-floating-window--safe-viewport")) return;
 			// Header may contain its own controls (close button, etc.) —
 			// any of those should act normally, not start a drag.
 			if (event.target.closest("button")) return;
@@ -62,6 +64,10 @@
 		}
 
 		handleEl.addEventListener("pointerdown", startDrag);
+		const mobileWindowQuery = window.matchMedia("(max-width: 580px)");
+		mobileWindowQuery.addEventListener("change", (event) => {
+			if (event.matches) resetGeometry(panelEl);
+		});
 	}
 
 	// Drag sets left/top/transform inline, and native resize:both sets

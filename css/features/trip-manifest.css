@@ -23,30 +23,10 @@
 	max-height: calc(100vh - var(--rux-space-4));
 }
 
-/* Below phone width, a floating/draggable/resizable box is the wrong
-   paradigm — there's no room to drag or resize into. Same breakpoint as
-   this app's other mobile drawers (scheduler-app.css). Becomes a full-screen
-   sheet instead: no drag (js/panels/trip-manifest.js gates attachDrag's
-   minViewportWidth at the same value), no resize handle, no rounded corners. */
+/* Outer mobile position and size come from the shared floating-window rule,
+   so the manifest uses the same safe-area-aware inset as every other window.
+   This breakpoint now only owns manifest-specific content behavior. */
 @media (max-width: 580px) {
-	.rux-manifest-window {
-		top: 0;
-		left: 0;
-		transform: none;
-		width: 100%;
-		height: 100%;
-		min-width: 0;
-		min-height: 0;
-		max-width: 100%;
-		max-height: 100%;
-		border-radius: 0;
-		resize: none;
-	}
-
-	.rux-manifest-window__header {
-		cursor: default;
-	}
-
 	.rux-manifest-window__passenger-panel {
 		width: 100%;
 		min-width: 0;

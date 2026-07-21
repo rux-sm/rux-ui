@@ -24,6 +24,10 @@
    caused the last few rounds of clipping/positioning bugs. One sizing
    system, not two. */
 
+.rux-trip-envelope-window {
+	--rux-floating-window-safe-max-width: 40rem;
+}
+
 .rux-trip-envelope-window__body {
     display: flex;
     flex-direction: column;

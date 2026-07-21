@@ -51,26 +51,8 @@
 	display: none;
 }
 
-.rux-doc-viewer--presentation {
-	top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
-	left: 50%;
-	width: min(
-		64rem,
-		calc(100vw - 2 * var(--rux-space-2) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px))
-	);
-	height: calc(
-		100dvh - 2 * var(--rux-space-2) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
-	);
-	min-width: 0;
-	min-height: 0;
-	max-width: none;
-	max-height: none;
-	transform: translateX(-50%);
-	resize: none;
-}
-
-.rux-doc-viewer--presentation .rux-doc-viewer__header {
-	cursor: default;
+.rux-doc-viewer {
+	--rux-floating-window-safe-max-width: 64rem;
 }
 
 /* Layout: .rux-floating-window__footer / __spacer (css/base/floating-window.css) */
