@@ -319,6 +319,11 @@ import { supabase } from "../data/supabase.js";
 
 	function shareStorageKey() {
 		if (!state) return "";
+		return ["rux:driver-schedule-share", state.driver.id].join(":");
+	}
+
+	function legacyShareStorageKey() {
+		if (!state) return "";
 		return [
 			"rux:driver-schedule-share",
 			state.driver.id,
@@ -357,8 +362,14 @@ import { supabase } from "../data/supabase.js";
 		return selected.length === shared.length && selected.every((id, index) => id === shared[index]);
 	}
 
+	function shareIsLive() {
+		if (!state?.share?.expiresAt) return Boolean(state?.share);
+		const expiresAt = new Date(state.share.expiresAt).getTime();
+		return Number.isFinite(expiresAt) && expiresAt > Date.now();
+	}
+
 	function activeShareUrl() {
-		return shareMatchesSelection() ? state.share.url : "";
+		return shareMatchesSelection() && shareIsLive() ? state.share.url : "";
 	}
 
 	function setShareBusy(busy) {
@@ -389,10 +400,12 @@ import { supabase } from "../data/supabase.js";
 		const current = shareMatchesSelection();
 		modal.querySelector("[data-driver-share-state]").textContent = missingReliefTime
 			? `Set ${driverName(state.driver)}’s relief swap time before updating`
-			: current
-				? "Live link · selected trips are up to date"
-				: "Selection changed · update the link before sending";
-		updateButton.hidden = current;
+			: !shareIsLive()
+				? "Link expired · update it to restore access"
+				: current
+					? "Live link · selected trips are up to date"
+					: "Selection changed · update the link before sending";
+		updateButton.hidden = current && shareIsLive();
 		updateButton.disabled = !selectedEntries().length || Boolean(missingReliefTime);
 	}
 
@@ -426,12 +439,12 @@ import { supabase } from "../data/supabase.js";
 		} catch (_) {}
 		renderShareControls();
 		refreshPreview();
-		window.Rux?.toast?.(update ? "Driver link updated" : "Driver link created");
+		window.Rux?.toast?.(update ? "Driver link updated" : "Driver link activated");
 	}
 
 	async function revokeShare() {
 		if (!state?.share) return;
-		if (!confirm("Revoke this driver schedule link? It will stop opening immediately.")) return;
+		if (!confirm("Deactivate this driver schedule link? It will stop opening immediately, but reactivating it will use the same URL.")) return;
 		setShareBusy(true);
 		const { data, error } = await supabase.rpc("revoke_driver_schedule_share", {
 			p_token: state.share.token,
@@ -443,24 +456,46 @@ import { supabase } from "../data/supabase.js";
 		}
 		try {
 			localStorage.removeItem(shareStorageKey());
+			localStorage.removeItem(legacyShareStorageKey());
 		} catch (_) {}
 		state.share = null;
 		renderShareControls();
 		refreshPreview();
-		window.Rux?.toast?.("Driver link revoked");
+		window.Rux?.toast?.("Driver link deactivated");
 	}
 
 	async function restoreShare() {
-		let storedToken = "";
-		try {
-			storedToken = localStorage.getItem(shareStorageKey()) || "";
-		} catch (_) {}
-		if (!storedToken || !state) return;
-		const { data, error } = await supabase.rpc("get_driver_schedule_share", {
-			p_token: storedToken,
+		if (!state) return;
+		const requestedState = state;
+		let { data, error } = await supabase.rpc("get_driver_schedule_share_for_driver", {
+			p_driver_id: requestedState.driver.id,
 		});
-		if (state && !error && data?.token && String(data.driver?.id) === String(state.driver.id)) {
+
+		// Compatibility fallback while the stable-link database patch is being
+		// deployed, and for tokens saved under the former driver+range key.
+		if (!data) {
+			let storedToken = "";
+			try {
+				storedToken = localStorage.getItem(shareStorageKey())
+					|| localStorage.getItem(legacyShareStorageKey())
+					|| "";
+			} catch (_) {}
+			if (storedToken) {
+				const fallback = await supabase.rpc("get_driver_schedule_share", {
+					p_token: storedToken,
+				});
+				data = fallback.data;
+				error = fallback.error;
+			}
+		}
+
+		if (state !== requestedState) return;
+		if (!error && data?.token && String(data.driver?.id) === String(state.driver.id)) {
 			state.share = { ...data, url: shareUrl(data.token) };
+			try {
+				localStorage.setItem(shareStorageKey(), data.token);
+				localStorage.removeItem(legacyShareStorageKey());
+			} catch (_) {}
 			const sharedRefs = new Set((data.assignmentRefs || []).map(assignmentRefKey));
 			state.selected = new Set(
 				state.entries
@@ -663,9 +698,9 @@ import { supabase } from "../data/supabase.js";
 								<span class="rux-driver-week-info__share-state" data-driver-share-state></span>
 							</div>
 							<div data-driver-share-empty>
-								<p class="rux-driver-week-info__share-copy">Create one mobile link for the checked assignments, itineraries, directions, and envelopes.</p>
+								<p class="rux-driver-week-info__share-copy">Activate this driver’s permanent mobile link for the checked assignments, itineraries, directions, and envelopes.</p>
 								<button type="button" class="rux-button rux-button--accent rux-button--sm" data-driver-share-action="create" data-driver-share-create>
-									<span class="rux-icon" aria-hidden="true">link</span><span>Create driver link</span>
+									<span class="rux-icon" aria-hidden="true">link</span><span>Activate driver link</span>
 								</button>
 							</div>
 							<div data-driver-share-active hidden>
@@ -676,7 +711,7 @@ import { supabase } from "../data/supabase.js";
 								<div class="rux-driver-week-info__share-actions">
 									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="copy"><span class="rux-icon" aria-hidden="true">content_copy</span>Copy link</button>
 									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="preview"><span class="rux-icon" aria-hidden="true">open_in_new</span>Preview</button>
-									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--sm" data-driver-share-action="revoke">Revoke</button>
+									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--sm" data-driver-share-action="revoke">Deactivate</button>
 								</div>
 							</div>
 						</div>
