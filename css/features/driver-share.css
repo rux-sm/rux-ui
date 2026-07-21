@@ -143,8 +143,7 @@ html {
 	line-height: var(--rux-leading-snug);
 }
 
-.driver-assignment-card__client,
-.driver-assignment-card__pickup-name {
+.driver-assignment-card__client {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
@@ -183,9 +182,9 @@ html {
 }
 
 /* Trip contact rides inside the route section instead of its own band (see
-   renderCard()) — needs its own top margin to separate from the
-   client/pickup-name text above it, since there's no section padding/divider
-   doing that job here the way there is for Contact-shaped sections proper. */
+   renderCard()) — needs its own top margin to separate from the route/client
+   text above it, since there's no section padding/divider doing that job
+   here the way there is for Contact-shaped sections proper. */
 .driver-assignment-card__contact-row--inline {
 	margin-top: var(--rux-space-3);
 }

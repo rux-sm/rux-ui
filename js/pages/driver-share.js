@@ -212,7 +212,6 @@ function normalizeAssignment(row, driverId) {
 		crew,
 		pickup,
 		returnStop,
-		pickupName: pickup.name || "",
 		from: pickup.address || pickup.name || "Pickup not provided",
 		to: inbound ? returnStop.address || returnStop.name || "Yard" : trip.destination || "Destination",
 		reportTime: pickup.depart_prev || trip.departure_time,
@@ -320,8 +319,12 @@ function renderCard(entry) {
 		"driver-assignment-card__route",
 		`${shortLocation(entry.from) || "Pickup"} → ${shortLocation(entry.to) || "Destination"}`,
 	));
+	// Just Client, not the pickup stop's own "name" field too — that second
+	// value was the actual source of the duplicate-looking text (sometimes
+	// identical to Client, sometimes just a copy of the stop's own street
+	// address), and the Spot section below already shows the full address,
+	// so there's nothing this line was adding that isn't said somewhere else.
 	if (entry.trip.customer) routeSection.appendChild(el("p", "driver-assignment-card__client", entry.trip.customer));
-	if (entry.pickupName) routeSection.appendChild(el("p", "driver-assignment-card__pickup-name", entry.pickupName));
 	if (entry.contact.name || entry.contact.phone) {
 		const row = el("div", "driver-assignment-card__contact-row driver-assignment-card__contact-row--inline");
 		const text = el("div", "driver-assignment-card__contact-text");
