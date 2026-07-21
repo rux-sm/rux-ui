@@ -35,6 +35,9 @@
 					<span class="rux-icon" aria-hidden="true" data-doc-viewer-icon>description</span>
 					<p class="rux-card__title rux-doc-viewer__title" data-doc-viewer-title></p>
 				</div>
+				<a class="rux-button rux-button--ghost rux-button--icon" data-doc-viewer-external target="_blank" rel="noopener" aria-label="Open document externally" title="Open externally">
+					<span class="rux-icon" aria-hidden="true">open_in_new</span>
+				</a>
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-doc-viewer-close aria-label="Close document viewer">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
@@ -50,14 +53,12 @@
 					<span class="rux-icon" aria-hidden="true">upload_file</span> Replace
 				</button>
 				<span class="rux-floating-window__spacer"></span>
-				<a class="rux-button rux-button--default" data-doc-viewer-external target="_blank" rel="noopener">
-					<span class="rux-icon" aria-hidden="true">open_in_new</span> Open Externally
-				</a>
 			</footer>
 		`;
 		document.body.appendChild(panelEl);
 
 		panelEl.querySelector("[data-doc-viewer-close]").addEventListener("click", close);
+		panelEl.querySelector("[data-doc-viewer-external]").addEventListener("pointerdown", (event) => event.stopPropagation());
 		panelEl.querySelector("[data-doc-viewer-delete]").addEventListener("click", () => current?.onDelete?.());
 		panelEl.querySelector("[data-doc-viewer-update]").addEventListener("click", () => current?.onUpdate?.());
 		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-floating-window__header"));
@@ -91,16 +92,17 @@
 		panel.classList.toggle("rux-doc-viewer--presentation", Boolean(options.presentationOnly));
 		panel.querySelector("[data-doc-viewer-title]").textContent = options.title || options.fileName || "Document";
 		panel.querySelector("[data-doc-viewer-icon]").textContent = options.icon || "description";
-		// #view=Fit is a PDF open parameter Chromium's built-in PDF viewer
-		// honors — it forces "fit whole page" zoom on load instead of its own
-		// default (fit width), which can leave a tall page's bottom edge
-		// scrolled out of view even when the window has room to shrink it in.
+		// Native PDF viewers do not all recognize the same open parameter.
+		// `view=Fit` covers Chromium/Acrobat-style viewers while
+		// `zoom=page-fit` covers PDF.js-style viewers. Browsers that ignore
+		// either parameter simply fall back to their native zoom behavior.
 		const url = options.url
-			? `${options.url}${options.url.includes("#") ? "" : "#view=Fit"}`
+			? `${options.url}${options.url.includes("#") ? "&" : "#"}page=1&view=Fit&zoom=page-fit`
 			: "about:blank";
 		panel.querySelector(".rux-doc-viewer__frame").src = url;
 		panel.querySelector("[data-doc-viewer-delete]").hidden = !options.onDelete;
 		panel.querySelector("[data-doc-viewer-update]").hidden = !options.onUpdate;
+		panel.querySelector(".rux-doc-viewer__footer").hidden = !options.onDelete && !options.onUpdate;
 		const externalLink = panel.querySelector("[data-doc-viewer-external]");
 		externalLink.hidden = !options.externalUrl;
 		externalLink.href = options.externalUrl || "#";

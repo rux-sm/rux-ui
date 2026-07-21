@@ -13,6 +13,7 @@
 
 .rux-doc-viewer__title-group {
 	display: flex;
+	flex: 1;
 	align-items: center;
 	gap: var(--rux-space-2);
 	min-width: 0;
@@ -42,27 +43,34 @@
 	background: var(--rux-white);
 }
 
-.rux-doc-viewer__footer [data-doc-viewer-external] {
+.rux-doc-viewer [data-doc-viewer-external] {
 	text-decoration: none;
 }
 
-@media (max-width: 500px) {
-	.rux-doc-viewer--presentation {
-		top: max(var(--rux-space-2), env(safe-area-inset-top));
-		left: var(--rux-space-2);
-		width: calc(100vw - 2 * var(--rux-space-2));
-		height: calc(100dvh - 2 * var(--rux-space-2) - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-		min-width: 0;
-		min-height: 0;
-		max-width: none;
-		max-height: none;
-		transform: none;
-		resize: none;
-	}
+.rux-doc-viewer__footer[hidden] {
+	display: none;
+}
 
-	.rux-doc-viewer--presentation .rux-doc-viewer__header {
-		cursor: default;
-	}
+.rux-doc-viewer--presentation {
+	top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
+	left: 50%;
+	width: min(
+		64rem,
+		calc(100vw - 2 * var(--rux-space-2) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px))
+	);
+	height: calc(
+		100dvh - 2 * var(--rux-space-2) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)
+	);
+	min-width: 0;
+	min-height: 0;
+	max-width: none;
+	max-height: none;
+	transform: translateX(-50%);
+	resize: none;
+}
+
+.rux-doc-viewer--presentation .rux-doc-viewer__header {
+	cursor: default;
 }
 
 /* Layout: .rux-floating-window__footer / __spacer (css/base/floating-window.css) */
