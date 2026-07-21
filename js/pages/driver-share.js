@@ -433,6 +433,7 @@ function openEnvelope(entry) {
 		busNumber: entry.busNumber,
 		recipient,
 		recipientOnly: true,
+		presentationOnly: true,
 	});
 }
 

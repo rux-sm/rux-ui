@@ -736,6 +736,10 @@
 	function open(trip, schedulerBuses, options = {}) {
 		if (!trip) return;
 		ensurePanel();
+		panelEl.classList.toggle(
+			"rux-trip-envelope-window--presentation",
+			Boolean(options.presentationOnly),
+		);
 		const allRecipients = envelopeRecipients(trip);
 		const requestedRecipient = options.recipient
 			? allRecipients.find((driver) => driver === options.recipient)

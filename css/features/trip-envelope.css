@@ -83,6 +83,14 @@
 	gap: var(--rux-space-2);
 }
 
+/* Public driver links use the exact same envelope and responsive fitting,
+   but are intentionally read-only: the driver sees their assigned copy,
+   without dispatch-only format, stock, recipient, or print controls. */
+.rux-trip-envelope-window--presentation .rux-trip-envelope-window__toolbar,
+.rux-trip-envelope-window--presentation .rux-trip-envelope-window__footer {
+	display: none;
+}
+
 .rux-trip-envelope-window__recipient {
 	display: inline-flex;
 	align-items: center;
