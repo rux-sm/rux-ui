@@ -143,10 +143,7 @@
 
 /* — Stop row — */
 
-/* Marker (left) + content (fields) + delete (absolute, right) — the Maps-style
-   layout requested: a rail of dots/pins down the left edge, address/time/stats
-   filling the middle, delete tucked into a reserved right-hand gutter instead
-   of pushing the row's width around when it appears. */
+/* Marker (left) + content (fields) + delete (absolute, right). */
 .rux-trip-itinerary__stop {
 	position: relative;
 	display: flex;
@@ -155,7 +152,6 @@
 }
 
 /* — Rail marker — */
-
 .rux-trip-itinerary__marker {
 	position: relative;
 	flex: none;
@@ -166,12 +162,6 @@
 	justify-content: center;
 }
 
-/* The connecting line: starts at the dot/pin's own center and runs to this
-   row's bottom edge. Stops sit flush (0 gap, see file header), so that's
-   exactly where the next row's marker begins — no per-pair math needed, the
-   line just chains itself down the whole rail. --terminal (return) skips it:
-   nothing follows the last stop but the Add-row below, and Maps' own rail
-   leaves that same gap rather than running the line into its "+" too. */
 .rux-trip-itinerary__marker::before {
 	content: "";
 	position: absolute;
@@ -219,10 +209,6 @@
 	line-height: 1;
 }
 
-/* Line-only marker — used by the End-of-Day summary/divider, which has no
-   dot or pin of its own but still sits between two things the rail should
-   keep connecting: the last real stop above it and the Add-row's "+" below.
-   Starts the line at the very top of the section (no dot to center on). */
 .rux-trip-itinerary__marker--line {
 	padding-top: 0;
 }
@@ -232,7 +218,7 @@
 }
 
 /* Drag handle overlays the dot in the same spot — crossfades in on hover
-   instead of the two competing for a second slot in the rail. Pickup/return
+   instead of the two competing for a second slot in the row. Pickup/return
    never render a handle at all (not draggable), so this has nothing to
    overlay there. */
 .rux-trip-itinerary__marker .rux-trip-itinerary__inline-action--move {
@@ -274,13 +260,7 @@
 	transition: padding-right var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-/* Gutter for the absolutely-positioned delete button opens up on reveal
-   instead of sitting reserved at rest — fields fill the full row width
-   normally, then animate over as delete fades in. :has() scopes this to
-   rows that actually have a delete button at all (pickup/return never do),
-   so those never gain a gutter they'd have nothing to put in it. */
-.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):focus-within .rux-trip-itinerary__content,
-.rux-trip-itinerary__day-group.is-deleting .rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete) .rux-trip-itinerary__content {
+.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):focus-within .rux-trip-itinerary__content {
 	padding-right: calc(var(--rux-field-height) + var(--rux-space-1));
 }
 
@@ -290,14 +270,6 @@
 	}
 }
 
-/* Row spacing uses margin-top on every row but the first (via the `> * + *`
-   adjacent-sibling rule below) instead of a flex `gap` — a `gap` on the
-   card would apply uniformly to every child with no way to single one row
-   out. One
-   row's spacing can now be tuned independently by giving that row its own
-   margin-top, without touching every other row. --rux-stack-gap is tighter
-   than .rux-card's own default --rux-space-3 — address/time/stats read as
-   one grouped stop, not three separately-spaced sections. */
 .rux-trip-itinerary__content > * + * {
 	margin-top: var(--rux-stack-gap);
 }
@@ -313,7 +285,7 @@
 	display: flex;
 	align-items: end;
 }
-/* Statistics span the full section; expansion is controlled by the day header. */
+
 .rux-trip-itinerary__fields--pair {
 	display: block;
 }
@@ -382,14 +354,6 @@
 	cursor: grab;
 }
 
-/* Explicit mode toggle (Day header's Delete/Reorder buttons) — still the way
-   in on touch, where nothing below can ever fire since touch has no :hover. */
-.rux-trip-itinerary__day-group.is-deleting .rux-trip-itinerary__inline-action--delete,
-.rux-trip-itinerary__day-group.is-reordering .rux-trip-itinerary__inline-action--move {
-	opacity: 1;
-	pointer-events: auto;
-}
-
 /* Keyboard focus reveals a row's own controls regardless of pointer type —
    unlike :hover this isn't something only mouse/touch users get. */
 .rux-trip-itinerary__stop:focus-within .rux-trip-itinerary__inline-action {
@@ -403,8 +367,9 @@
 
 /* Mouse-hover reveal — the Maps-style "hover a row, see delete/handle without
    entering a mode first" this was requested for. Gated to devices that
-   actually have a hover state; touch devices keep using the mode toggle
-   above, since a hover-only control would simply never appear for them. */
+   actually have a hover state — on touch, :focus-within above still reveals
+   these (tapping into the row's own address/time field focuses it), just
+   without a visible hint until you do. */
 @media (hover: hover) {
 	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__inline-action {
 		opacity: 1;

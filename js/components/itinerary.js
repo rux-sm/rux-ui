@@ -673,7 +673,6 @@
 		const legToggleEl = root.querySelector("#tp-itin-leg-toggle");
 		const legCardEl = root.querySelector("#tp-itin-leg-card");
 		const resetLegBtn = root.querySelector("#tp-itin-reset-leg");
-		let activeDayMode = { day: null, mode: null };
 
 		// Split trips get a second, independent stop list (pickup -> stops ->
 		// return-to-yard) for the return leg. `stops` above always holds
@@ -710,7 +709,6 @@
 
 			stops.length = 0;
 			stops.push(...defaultStops());
-			activeDayMode = { day: null, mode: null };
 			updateSummary();
 			renderStopList();
 			return true;
@@ -784,20 +782,16 @@
 			autoPopulatePickupDepart(stops);
 			let dayNumber = 1;
 			let daySections = "";
-			let dayCanDelete = false;
-			let dayCanReorder = false;
 			let dayExpandableCount = 0;
 			let dayExpandedCount = 0;
 			const dayCards = [];
 			const closeDayCard = () => {
 				if (!daySections) return;
 				dayCards.push(`
-					<article class="rux-card rux-trip-itinerary__day-group${activeDayMode.day === dayNumber && activeDayMode.mode === "delete" ? " is-deleting" : ""}${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? " is-reordering" : ""}" data-day-number="${dayNumber}">
+					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">
 						<header class="rux-card__header">
 							<h3 class="rux-card__title">Day ${dayNumber}</h3>
 							<div class="rux-cluster">
-								<button type="button" class="rux-button rux-button--default rux-button--danger rux-button--icon" data-day-mode="delete" ${dayCanDelete ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "delete"}" aria-label="Delete from Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "delete" ? "close" : "delete"}</span></button>
-								<button type="button" class="rux-button rux-button--default rux-button--icon" data-day-mode="reorder" ${dayCanReorder ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder"}" aria-label="Reorder Day ${dayNumber} stops"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? "close" : "swap_vert"}</span></button>
 								<button type="button" class="rux-button rux-button--default rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 							</div>
 						</header>
@@ -812,20 +806,12 @@
 						</div>
 					</article>`);
 				daySections = "";
-				dayCanDelete = false;
-				dayCanReorder = false;
 				dayExpandableCount = 0;
 				dayExpandedCount = 0;
 				dayNumber += 1;
 			};
 
 			stops.forEach((item, idx) => {
-				if (item.type === "stop" || item.type === "sleeper") {
-					dayCanDelete = true;
-					dayCanReorder = true;
-				} else if (item.type === "day") {
-					dayCanDelete = true;
-				}
 				if (item.type !== "day") {
 					dayExpandableCount += 1;
 					if (item.statsExpanded) dayExpandedCount += 1;
@@ -1364,36 +1350,10 @@
 				renderStopList();
 				return;
 			}
-			const modeButton = e.target.closest("[data-day-mode]");
-			if (modeButton) {
-				closeDayAddMenu();
-				const day = Number(modeButton.closest("[data-day-number]")?.dataset.dayNumber);
-				const mode = modeButton.dataset.dayMode;
-				const alreadyActive = activeDayMode.day === day && activeDayMode.mode === mode;
-				activeDayMode = alreadyActive ? { day: null, mode: null } : { day, mode };
-				stopsEl.querySelectorAll("[data-day-number]").forEach((group) => {
-					const groupDay = Number(group.dataset.dayNumber);
-					group.classList.toggle("is-deleting", activeDayMode.day === groupDay && activeDayMode.mode === "delete");
-					group.classList.toggle("is-reordering", activeDayMode.day === groupDay && activeDayMode.mode === "reorder");
-					group.querySelectorAll("[data-day-mode]").forEach((button) => {
-						const active = activeDayMode.day === groupDay && activeDayMode.mode === button.dataset.dayMode;
-						button.setAttribute("aria-pressed", String(active));
-						const icon = button.querySelector(".rux-icon");
-						if (icon) icon.textContent = active ? "close" : button.dataset.dayMode === "delete" ? "delete" : "swap_vert";
-					});
-				});
-				return;
-			}
 			const addButton = e.target.closest("[data-day-add]");
 			if (addButton) {
 				const day = Number(addButton.closest("[data-day-number]")?.dataset.dayNumber);
-				if (activeDayMode.mode) {
-					activeDayMode = { day: null, mode: null };
-					renderStopList();
-					openDayAddMenu(day, stopsEl.querySelector(`[data-day-number="${day}"] [data-day-add]`));
-				} else {
-					openDayAddMenu(day, addButton);
-				}
+				openDayAddMenu(day, addButton);
 				return;
 			}
 			const deleteButton = e.target.closest("[data-inline-delete]");
@@ -1404,7 +1364,6 @@
 				const what = item.type === "day" ? "end-of-day marker" : item.type;
 				if (!confirm(`Delete this ${what}?`)) return;
 				stops.splice(idx, 1);
-				activeDayMode = { day: null, mode: null };
 				const nextIdx = idx < stops.length ? nextRealStopIndex(idx - 1) : -1;
 				if (nextIdx >= 0) markLegStale(nextIdx);
 				updateSummary();
@@ -1432,9 +1391,6 @@
 		document.addEventListener("keydown", (e) => {
 			if (e.key !== "Escape") return;
 			closeDayAddMenu();
-			if (!activeDayMode.mode) return;
-			activeDayMode = { day: null, mode: null };
-			renderStopList();
 		});
 
 		/* — drag to reorder — */

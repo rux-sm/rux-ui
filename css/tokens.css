@@ -870,9 +870,9 @@
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
 	--rux-tabs-gap:                var(--rux-space-2);
-	--rux-tab-height:              var(--rux-control-height-sm);
+	--rux-tab-height:              var(--rux-control-height);
 	--rux-tab-padding-inline:      var(--rux-space-3);
-	--rux-tab-content-gap:         var(--rux-space-1);
+	--rux-tab-content-gap:         var(--rux-control-content-gap);
 	--rux-tab-bg:                  transparent; /* ghost at rest — never a milky white fill */
 	--rux-tab-fg:                  var(--rux-fg-muted);
 	--rux-tab-hover-bg:            transparent;
