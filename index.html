@@ -15,7 +15,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=20" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=67" />
+		<link rel="stylesheet" href="./css/components.css?v=69" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -30,7 +30,7 @@
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=34" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=10" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=5" />
-		<link rel="stylesheet" href="./css/features/driver-share.css?v=13" />
+		<link rel="stylesheet" href="./css/features/driver-share.css?v=14" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=3" />
 		<link
@@ -5661,6 +5661,7 @@
 
 		<!-- ── Scripts ─────────────────────────────────────────────────────────── -->
 		<script src="./js/core/utilities.js"></script>
+		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./js/core/drawer.js?v=1"></script>
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
@@ -5670,7 +5671,7 @@
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=19"></script>
-		<script src="./js/components/itinerary.js?v=17"></script>
+		<script src="./js/components/itinerary.js?v=18"></script>
 		<script src="./js/panels/driver-panel.js?v=9" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=2" defer></script>
@@ -5678,7 +5679,7 @@
 		<script src="./js/panels/trips-list.js?v=8" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=1" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=11" defer></script>
+		<script src="./js/panels/trip-envelope.js?v=12" defer></script>
 		<script type="module" src="./js/panels/driver-week-info.js?v=9"></script>
 		<script type="module" src="./js/panels/components-panel.js?v=3"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
@@ -8367,11 +8368,17 @@
 				headRow.className =
 					"rux-driver-grid__row rux-driver-grid__row--head";
 				headRow.setAttribute("role", "row");
+				const headNameCell = document.createElement("span");
+				headNameCell.className = "rux-driver-grid__name-cell";
+				headNameCell.setAttribute("role", "columnheader");
 				const headName = document.createElement("span");
 				headName.className = "rux-driver-grid__name";
-				headName.textContent = "Driver";
-				headName.setAttribute("role", "columnheader");
-				headRow.appendChild(headName);
+				const headNameLabel = document.createElement("span");
+				headNameLabel.className = "rux-driver-grid__name-label";
+				headNameLabel.textContent = "Driver";
+				headName.appendChild(headNameLabel);
+				headNameCell.appendChild(headName);
+				headRow.appendChild(headNameCell);
 				const headDays = document.createElement("div");
 				headDays.className = "rux-driver-grid__days";
 				headDays.setAttribute("role", "presentation");
@@ -8413,6 +8420,9 @@
 						String(String(driver.id) === String(selectedGridDriverId)),
 					);
 
+					const nameCell = document.createElement("div");
+					nameCell.className = "rux-driver-grid__name-cell";
+					nameCell.setAttribute("role", "rowheader");
 					const nameEl = document.createElement("button");
 					nameEl.type = "button";
 					nameEl.className = "rux-driver-grid__name";
@@ -8427,9 +8437,13 @@
 					nameDot.setAttribute("aria-hidden", "true");
 					nameEl.append(
 						nameDot,
-						document.createTextNode(driver.short_name || driver.name),
+						Object.assign(document.createElement("span"), {
+							className: "rux-driver-grid__name-label",
+							textContent: driver.short_name || driver.name,
+						}),
 					);
-					row.appendChild(nameEl);
+					nameCell.appendChild(nameEl);
+					row.appendChild(nameCell);
 
 					const daysEl = document.createElement("div");
 					daysEl.className = "rux-driver-grid__days";

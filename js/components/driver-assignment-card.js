@@ -118,6 +118,43 @@ function actionButton(label, icon, callback) {
 	return button;
 }
 
+// Unconfirmed: one prominent action, same weight as Itinerary/Envelope below.
+// Confirmed: stays confirmed regardless of later trip edits (see
+// trip-driver-confirmation-patch.sql) — confirmationStale just flags that
+// something changed since, with a quiet way to re-confirm against the
+// current version instead of losing the original confirmation outright.
+function confirmSection(entry, options) {
+	if (typeof options.onConfirm !== "function") return null;
+	const section = el("div", "rux-card__section driver-assignment-card__confirm-section");
+	if (!entry.confirmedAt) {
+		const button = document.createElement("button");
+		button.type = "button";
+		button.className = "rux-button rux-button--accent rux-button--block";
+		button.innerHTML = `<span class="rux-icon" aria-hidden="true">check_circle</span><span>Confirm Trip</span>`;
+		button.addEventListener("click", () => options.onConfirm(entry, button));
+		section.appendChild(button);
+		return section;
+	}
+	const status = el(
+		"div",
+		`driver-assignment-card__confirm-status${entry.confirmationStale ? " is-stale" : ""}`,
+	);
+	status.append(
+		el("span", "rux-icon", entry.confirmationStale ? "update" : "check_circle"),
+		el("span", "", entry.confirmationStale ? "Confirmed · trip updated since" : "Trip confirmed"),
+	);
+	section.appendChild(status);
+	if (entry.confirmationStale) {
+		const reconfirm = document.createElement("button");
+		reconfirm.type = "button";
+		reconfirm.className = "rux-button rux-button--default rux-button--sm driver-assignment-card__reconfirm";
+		reconfirm.textContent = "Re-confirm";
+		reconfirm.addEventListener("click", () => options.onConfirm(entry, reconfirm));
+		section.appendChild(reconfirm);
+	}
+	return section;
+}
+
 export function renderDriverAssignmentCard(entry, options = {}) {
 	const card = el("article", "rux-card driver-assignment-card");
 	const trip = entry.trip || {};
@@ -132,6 +169,9 @@ export function renderDriverAssignmentCard(entry, options = {}) {
 		el("span", "driver-assignment-card__bus", `Bus ${entry.busNumber ?? "Unassigned"}`),
 	);
 	card.appendChild(header);
+
+	const confirm = confirmSection(entry, options);
+	if (confirm) card.appendChild(confirm);
 
 	const routeSection = el("div", "rux-card__section driver-assignment-card__route-section");
 	routeSection.appendChild(el(

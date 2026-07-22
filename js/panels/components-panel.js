@@ -1,4 +1,4 @@
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=1";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=2";
 import { createTripBar } from "../components/trip-bar.js?v=9";
 import BusPicker from "../components/bus-picker.js?v=2";
 

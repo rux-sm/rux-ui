@@ -39,6 +39,7 @@
 /* — Outer container — */
 
 .rux-trip-itinerary {
+	--rux-trip-itinerary-label-height: 1.125rem;
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-panel-content-gap);
@@ -88,33 +89,55 @@
 
 /* — Day card — */
 
-/* Same marker + content row shape as .rux-trip-itinerary__stop — the rail's
-   line needs to keep running through this section (no dot here, just the
-   line) so it reaches the Add-row's "+" below instead of stopping dead at
-   the last real stop. */
+/* Same label + primary-row anatomy as .rux-trip-itinerary__stop. End of Day
+   is a summary rather than a location, so it has no rail or waypoint marker;
+   its left lane holds the day-scoped Add action instead. */
 .rux-trip-itinerary__day {
 	position: relative;
-	display: flex;
-	align-items: flex-start;
-	gap: var(--rux-space-2);
+	display: grid;
+	grid-template-columns: var(--rux-field-height) minmax(0, 1fr);
+	grid-template-rows: auto auto;
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-stack-gap);
 }
 
+/* Let the section grid own both content rows. This makes the Add button and
+   statistics share the exact same second-row box instead of estimating the
+   label height with a margin calculation. */
+.rux-trip-itinerary__day > .rux-trip-itinerary__content {
+	display: contents;
+}
+
+.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__label-row {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__day-header {
+	grid-column: 2;
+	grid-row: 2;
+	min-width: 0;
+}
+
+.rux-trip-itinerary__day > .rux-trip-itinerary__content > * + * {
+	margin-top: 0;
+}
 /* position: relative anchors this row's own .rux-trip-itinerary__inline-action
-   --delete (End-of-Day marker's delete button, shared class with the stop
-   rail's — see below) — without it, that button's new absolute positioning
+   --delete (the End-of-Day section action, shared with stop rows below) —
+   without it, that button's absolute positioning
    would anchor to the nearest positioned ancestor instead of this row.
-   :has() scopes the reserved gutter to headers that actually have a delete
-   button — the trailing End-of-Day *summary* (no break to delete) reuses
-   this same class without one, and shouldn't have its stat grid narrowed
-   for a button that was never going to appear. */
+   The action gutter is added only while the hidden action is being revealed;
+   the trailing summary has no delete action and always uses the full width. */
 .rux-trip-itinerary__day-header {
 	position: relative;
 	display: flex;
 	align-items: center;
+	padding-right: 0;
+	transition: padding-right var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.rux-trip-itinerary__day-header:has(.rux-trip-itinerary__inline-action--delete) {
-	padding-right: var(--rux-field-height);
+.rux-trip-itinerary__day:has(.rux-trip-itinerary__inline-action--delete:focus-visible) .rux-trip-itinerary__day-header {
+	padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
 }
 
 .rux-trip-itinerary__day-header .rux-trip-itinerary__day-stats {
@@ -143,12 +166,82 @@
 
 /* — Stop row — */
 
-/* Marker (left) + content (fields) + delete (absolute, right). */
+/* Three-column stop anatomy: a fixed marker/action lane, flexible address,
+   and fixed delete lane. Labels, times, and stats align to the address edges. */
 .rux-trip-itinerary__stop {
 	position: relative;
-	display: flex;
-	align-items: flex-start;
-	gap: var(--rux-space-2);
+}
+
+.rux-trip-itinerary__stop::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: calc(var(--rux-card-padding) + (var(--rux-field-height) / 2));
+	width: var(--rux-border-width);
+	background: var(--rux-border-subtle);
+}
+
+/* Pickup is the timeline origin, so it has no incoming rail. Its marker sits
+   after the label row: card padding + the label's inherited 1.5 line-height
+   + the stack gap + half the address-field height reaches its exact center. */
+.rux-trip-itinerary__stop:has(.rux-trip-itinerary__marker-dot--pickup)::before {
+	top: calc(
+		var(--rux-card-padding)
+		+ var(--rux-trip-itinerary-label-height)
+		+ var(--rux-stack-gap)
+		+ (var(--rux-field-height) / 2)
+	);
+}
+
+/* Return to Yard accepts the incoming rail but has no outgoing segment. */
+.rux-trip-itinerary__stop--terminal::before {
+	bottom: auto;
+	height: calc(
+		var(--rux-card-padding)
+		+ var(--rux-trip-itinerary-label-height)
+		+ var(--rux-stack-gap)
+		+ (var(--rux-field-height) / 2)
+	);
+}
+
+/* Each day is a self-contained location timeline: begin at its first marker
+   and terminate at its last location before the disconnected day summary or
+   fallback Add row. */
+.rux-trip-itinerary__day-group > .rux-card__header + .rux-trip-itinerary__stop::before {
+	top: calc(
+		var(--rux-card-padding)
+		+ var(--rux-trip-itinerary-label-height)
+		+ var(--rux-stack-gap)
+		+ (var(--rux-field-height) / 2)
+	);
+}
+
+.rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__day)::before,
+.rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__add-row)::before {
+	bottom: auto;
+	height: calc(
+		var(--rux-card-padding)
+		+ var(--rux-trip-itinerary-label-height)
+		+ var(--rux-stack-gap)
+		+ (var(--rux-field-height) / 2)
+	);
+}
+
+/* A one-location day has neither an incoming nor outgoing segment. */
+.rux-trip-itinerary__day-group > .rux-card__header + .rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__day)::before,
+.rux-trip-itinerary__day-group > .rux-card__header + .rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__add-row)::before {
+	display: none;
+}
+
+.rux-trip-itinerary__stop > * + * {
+	margin-top: var(--rux-stack-gap);
+}
+
+.rux-trip-itinerary__stop > .rux-trip-itinerary__label-row,
+.rux-trip-itinerary__stop > .rux-trip-itinerary__time-row,
+.rux-trip-itinerary__stop > .rux-trip-itinerary__fields--pair {
+	margin-left: calc(var(--rux-field-height) + var(--rux-space-2));
 }
 
 /* — Rail marker — */
@@ -156,25 +249,10 @@
 	position: relative;
 	flex: none;
 	align-self: stretch;
-	width: 20px;
+	width: var(--rux-field-height);
 	padding-top: 3px;
 	display: flex;
 	justify-content: center;
-}
-
-.rux-trip-itinerary__marker::before {
-	content: "";
-	position: absolute;
-	top: 17px;
-	bottom: 0;
-	left: 50%;
-	width: var(--rux-border-width);
-	transform: translateX(-50%);
-	background: var(--rux-border-subtle);
-}
-
-.rux-trip-itinerary__stop--terminal .rux-trip-itinerary__marker::before {
-	display: none;
 }
 
 /* Hollow ring for every waypoint (pickup/stop/sleeper) — tinted per type,
@@ -209,14 +287,6 @@
 	line-height: 1;
 }
 
-.rux-trip-itinerary__marker--line {
-	padding-top: 0;
-}
-
-.rux-trip-itinerary__marker--line::before {
-	top: 0;
-}
-
 /* Drag handle overlays the dot in the same spot — crossfades in on hover
    instead of the two competing for a second slot in the row. Pickup/return
    never render a handle at all (not draggable), so this has nothing to
@@ -232,10 +302,20 @@
 	opacity: 0;
 }
 
+.rux-trip-itinerary__stop .rux-trip-itinerary__marker {
+	align-self: center;
+	height: var(--rux-field-height);
+	padding-top: 0;
+	align-items: center;
+}
+
+.rux-trip-itinerary__stop .rux-trip-itinerary__marker-dot {
+	margin-top: 0;
+}
+
 /* — Add-stop row — */
-/* Sits at the bottom of the rail, same marker column width as every stop
-   above it, so its "+" lines up directly under their dots/pin instead of
-   living up in the day header as a detached toolbar icon. */
+/* Fallback for a day that has no End-of-Day summary. Summarized days place
+   this same action directly in the summary's left action lane. */
 
 /* Two classes to match (and beat, on source order) .rux-card__section +
    .rux-card__section's own divider rule in card.css — a single-class
@@ -244,11 +324,22 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
+	padding-top: 0;
 	border-top: none;
 }
 
 .rux-trip-itinerary__marker--add {
 	align-self: center;
+}
+
+.rux-trip-itinerary__day > .rux-trip-itinerary__marker--add {
+	grid-column: 1;
+	grid-row: 2;
+	align-self: stretch;
+	height: auto;
+	margin-top: 0;
+	padding-top: 0;
+	align-items: center;
 }
 
 /* — Content column — */
@@ -282,8 +373,19 @@
 }
 
 .rux-trip-itinerary__fields {
-	display: flex;
-	align-items: end;
+	box-sizing: border-box;
+	position: relative;
+	display: grid;
+	width: 100%;
+	grid-template-columns: var(--rux-field-height) minmax(0, 1fr);
+	align-items: center;
+	column-gap: var(--rux-space-2);
+	padding-right: 0;
+	transition: padding-right var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete:focus-visible) .rux-trip-itinerary__fields {
+	padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
 }
 
 .rux-trip-itinerary__fields--pair {
@@ -339,9 +441,7 @@
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-/* Sits in the content column's reserved right-hand gutter (see
-   .rux-trip-itinerary__content's padding-right above), vertically centered
-   against the whole stop — not any one field row inside it. */
+/* Positioned in the owning row's animated action gutter. */
 .rux-trip-itinerary__inline-action--delete {
 	position: absolute;
 	top: 50%;
@@ -354,29 +454,64 @@
 	cursor: grab;
 }
 
-/* Keyboard focus reveals a row's own controls regardless of pointer type —
-   unlike :hover this isn't something only mouse/touch users get. */
-.rux-trip-itinerary__stop:focus-within .rux-trip-itinerary__inline-action {
+/* Keep hidden row actions keyboard-accessible without revealing them merely
+   because an address or time input elsewhere in the stop has focus. */
+.rux-trip-itinerary__inline-action:focus-visible {
 	opacity: 1;
 	pointer-events: auto;
 }
 
-.rux-trip-itinerary__stop:focus-within .rux-trip-itinerary__marker-dot {
+.rux-trip-itinerary__marker:has(.rux-trip-itinerary__inline-action--move:focus-visible) .rux-trip-itinerary__marker-dot {
 	opacity: 0;
 }
 
-/* Mouse-hover reveal — the Maps-style "hover a row, see delete/handle without
-   entering a mode first" this was requested for. Gated to devices that
-   actually have a hover state — on touch, :focus-within above still reveals
-   these (tapping into the row's own address/time field focuses it), just
-   without a visible hint until you do. */
+/* Mouse-hover reveal — focusing an address or time field alone does not show
+   the row actions. */
 @media (hover: hover) {
+	.rux-trip-itinerary__day:has(.rux-trip-itinerary__inline-action--delete):hover .rux-trip-itinerary__day-header {
+		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
+	}
+
+	.rux-trip-itinerary__day:hover .rux-trip-itinerary__inline-action {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):hover .rux-trip-itinerary__fields {
+		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
+	}
+
 	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
 	}
 
-	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__marker-dot {
+	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__marker:has(.rux-trip-itinerary__inline-action--move) .rux-trip-itinerary__marker-dot {
+		opacity: 0;
+	}
+}
+
+/* Touch has no hover state, so keep the actions directly available there. */
+@media (hover: none) {
+	.rux-trip-itinerary__day:has(.rux-trip-itinerary__inline-action--delete) .rux-trip-itinerary__day-header {
+		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
+	}
+
+	.rux-trip-itinerary__day .rux-trip-itinerary__inline-action {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete) .rux-trip-itinerary__fields {
+		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
+	}
+
+	.rux-trip-itinerary__stop .rux-trip-itinerary__inline-action {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.rux-trip-itinerary__stop .rux-trip-itinerary__marker:has(.rux-trip-itinerary__inline-action) .rux-trip-itinerary__marker-dot {
 		opacity: 0;
 	}
 }

@@ -738,13 +738,23 @@
 	border-radius: var(--rux-radius-sm);
 }
 
-.rux-driver-grid__name {
+.rux-driver-grid__name-cell {
 	position: sticky;
 	left: 0;
 	z-index: 2;
 	display: flex;
 	width: 100%;
 	height: var(--rux-driver-grid-cell-size);
+	align-items: center;
+	background: var(--rux-card-bg);
+	box-shadow: var(--rux-space-1) 0 0 var(--rux-card-bg);
+}
+
+.rux-driver-grid__name {
+	position: relative;
+	display: flex;
+	width: 100%;
+	height: 100%;
 	align-items: center;
 	gap: var(--rux-space-1);
 	min-width: 0;
@@ -764,6 +774,13 @@
 	white-space: nowrap;
 }
 
+.rux-driver-grid__name-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 /* Ghost-button-style hover, same overlay token .rux-mini-cal__date and every
    ghost .rux-button use — this is a real <button>, so it should feel like
    one. Independent of the row's own :hover outline below (that one signals
@@ -778,7 +795,6 @@
 }
 
 .rux-driver-grid__row--head .rux-driver-grid__name {
-	z-index: 4;
 	height: 2.5rem;
 	align-items: flex-end;
 	padding-bottom: var(--rux-space-1);
@@ -786,6 +802,11 @@
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 	text-transform: uppercase;
+}
+
+.rux-driver-grid__row--head .rux-driver-grid__name-cell {
+	z-index: 4;
+	height: 2.5rem;
 }
 
 .rux-driver-grid__row--head {

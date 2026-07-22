@@ -67,6 +67,11 @@
 		return `${hour}:${match[2]} ${suffix}`;
 	}
 
+	function displayAddress(address) {
+		return window.RuxAddress?.display?.(address)
+			?? String(address || "").trim();
+	}
+
 	function pickupStop(trip) {
 		return (trip.trip_stops || []).find((s) => s.type === "pickup") || null;
 	}
@@ -233,7 +238,7 @@
 			|| "2801 Zinnia Avenue, McAllen, Texas 78504, United States";
 		if (yardAddress)
 			header.appendChild(
-				el("p", "rux-trip-envelope__company-line", yardAddress),
+				el("p", "rux-trip-envelope__company-line", displayAddress(yardAddress)),
 			);
 		// Settings only stores yard name/address today — these numbers are
 		// static company info, not per-trip data.
@@ -288,7 +293,7 @@
 		frag.appendChild(
 			row(
 				"rux-trip-envelope__row--1",
-				cell("Pick Up Address:", stop?.address),
+				cell("Pick Up Address:", displayAddress(stop?.address)),
 			),
 		);
 

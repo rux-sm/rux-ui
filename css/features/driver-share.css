@@ -112,6 +112,37 @@ html {
 	white-space: nowrap;
 }
 
+/* — Confirm section — */
+/* Unconfirmed: a full-width accent button, same weight as Itinerary/Envelope
+   in the footer. Confirmed: a quiet status line — confirming shouldn't keep
+   demanding attention once it's done. Stays confirmed through later trip
+   edits (see trip-driver-confirmation-patch.sql); is-stale only adds the
+   warning tint + a small re-confirm action, it never reverts to unconfirmed
+   on its own. */
+.driver-assignment-card__confirm-section {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-2);
+}
+
+.driver-assignment-card__confirm-status {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	color: var(--rux-success-bright);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.driver-assignment-card__confirm-status.is-stale {
+	color: var(--rux-warning-bright);
+}
+
+.driver-assignment-card__reconfirm {
+	flex: none;
+}
+
 /* No border-bottom of its own — .rux-card__header already closes with one
    right above this, so a second line directly beneath it would just double
    up. Margin alone gives it room to breathe. */

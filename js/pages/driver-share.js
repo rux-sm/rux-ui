@@ -1,7 +1,7 @@
 import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=1";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=2";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
@@ -122,7 +122,7 @@ function publicDocumentUrl(trip) {
 function fetchSharedTrips(tripIds, includeReliefDetails = true) {
 	const reliefFields = includeReliefDetails ? ", report_time, instructions" : "";
 	return supabase.from("trips").select(`
-		id, trip_ref, start_date, end_date, return_start_date, return_end_date,
+		id, trip_ref, start_date, end_date, return_start_date, return_end_date, updated_at,
 		trip_type, destination, customer, departure_time, spot_time, return_time,
 		booking_contact_name, booking_contact_phone,
 		trip_contact_1_name, trip_contact_1_phone,
@@ -142,9 +142,16 @@ function isMissingReliefField(error) {
 	);
 }
 
-function normalizeAssignment(row, driverId) {
+function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 	const trip = row.trips || {};
 	const leg = row.leg || "outbound";
+	const confirmedAt = confirmationsByKey.get(`${trip.id}:${leg}`) || "";
+	// trips.updated_at is bumped by a DB trigger on every save() (see
+	// trip-driver-confirmation-patch.sql) — if the trip's own save happened
+	// after this confirmation, something about it may have changed since the
+	// driver last saw it. Confirmation itself stays either way; this only
+	// flags it.
+	const confirmationStale = !!(confirmedAt && trip.updated_at && new Date(trip.updated_at) > new Date(confirmedAt));
 	const inbound = leg === "return" && trip.trip_type === "dropoff_pickup";
 	const stops = stopsForLeg(trip, leg);
 	const pickup = stops.find((stop) => stop.type === "pickup") || {};
@@ -186,6 +193,8 @@ function normalizeAssignment(row, driverId) {
 		requirements: requirementsFor(trip),
 		contact: contactFor(trip),
 		itineraryUrl: publicDocumentUrl(trip),
+		confirmedAt,
+		confirmationStale,
 	};
 }
 
@@ -286,12 +295,13 @@ async function load() {
 
 	const assignmentRefs = share.assignmentRefs || [];
 	const tripIds = [...new Set(assignmentRefs.map((ref) => ref.tripId).filter(Boolean))];
-	let [tripsResult, documentsResult] = await Promise.all([
+	let [tripsResult, documentsResult, confirmationsResult] = await Promise.all([
 		fetchSharedTrips(tripIds, true),
 		supabase
 			.from("trip_documents")
 			.select("id, trip_id, label, file_name, file_path")
 			.in("trip_id", tripIds),
+		supabase.rpc("get_driver_confirmations", { p_token: token }),
 	]);
 	if (tripsResult.error && isMissingReliefField(tripsResult.error)) {
 		tripsResult = await fetchSharedTrips(tripIds, false);
@@ -305,12 +315,16 @@ async function load() {
 		return;
 	}
 	if (documentsError) console.warn("Could not load shared itineraries:", documentsError);
+	if (confirmationsResult.error) console.warn("Could not load trip confirmations:", confirmationsResult.error);
 	const documentsByTrip = new Map();
 	for (const document of documents || []) {
 		if (!documentsByTrip.has(document.trip_id)) documentsByTrip.set(document.trip_id, []);
 		documentsByTrip.get(document.trip_id).push(document);
 	}
 	for (const trip of trips || []) trip.trip_documents = documentsByTrip.get(trip.id) || [];
+	const confirmationsByKey = new Map(
+		(confirmationsResult.data || []).map((item) => [`${item.tripId}:${item.leg || "outbound"}`, item.confirmedAt]),
+	);
 
 	const entries = assignmentRefs
 		.map((ref) => {
@@ -322,7 +336,9 @@ async function load() {
 					(driver) => String(driver.driver_id) === String(share.driver.id),
 				),
 			);
-			return assignment ? normalizeAssignment({ ...assignment, trips: trip }, share.driver.id) : null;
+			return assignment
+				? normalizeAssignment({ ...assignment, trips: trip }, share.driver.id, confirmationsByKey)
+				: null;
 		})
 		.filter(Boolean)
 		.filter((entry) => isCurrentOrUpcomingLeg(entry.endDate || entry.startDate))
@@ -346,10 +362,30 @@ async function load() {
 	}
 	root.appendChild(intro);
 	const list = el("section", "driver-share__list");
-	entries.forEach((entry) => list.appendChild(renderDriverAssignmentCard(entry, {
+	const cardOptions = {
 		onItinerary: openItinerary,
 		onEnvelope: openEnvelope,
-	})));
+		onConfirm: async (entry, triggerEl) => {
+			const cardEl = triggerEl.closest(".driver-assignment-card");
+			triggerEl.disabled = true;
+			try {
+				const { data, error } = await supabase.rpc("confirm_trip_assignment", {
+					p_token: token,
+					p_trip_id: entry.trip.id,
+					p_leg: entry.leg,
+				});
+				if (error || !data) throw error || new Error("Could not confirm trip");
+				entry.confirmedAt = data.confirmedAt;
+				entry.confirmationStale = false;
+				cardEl?.replaceWith(renderDriverAssignmentCard(entry, cardOptions));
+			} catch (err) {
+				console.error("Could not confirm trip:", err);
+				triggerEl.disabled = false;
+				alert("Could not confirm this trip. Please try again.");
+			}
+		},
+	};
+	entries.forEach((entry) => list.appendChild(renderDriverAssignmentCard(entry, cardOptions)));
 	root.appendChild(list);
 }
 

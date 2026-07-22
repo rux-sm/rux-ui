@@ -47,6 +47,11 @@
 		return window.RuxSettings?.getMapboxToken?.() || "";
 	}
 
+	function displayAddress(address) {
+		return window.RuxAddress?.display?.(address)
+			?? String(address || "").trim();
+	}
+
 	/* ── Default demo data ───────────────────────────────────────────────── */
 
 	function defaultPickup() {
@@ -481,9 +486,15 @@
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
       <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--final">
-        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--line"></div>
+        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNum}" title="Add to Day ${dayNum}">
+            <span class="rux-icon" aria-hidden="true">add</span>
+          </button>
+        </div>
         <div class="rux-trip-itinerary__content">
-          <label class="rux-field__label">End of Day ${dayNum}</label>
+          <div class="rux-trip-itinerary__label-row">
+            <label class="rux-field__label">End of Day ${dayNum}</label>
+          </div>
           <div class="rux-trip-itinerary__day-header">
             ${renderDayStatsGrid(stats)}
           </div>
@@ -504,9 +515,15 @@
 		const dayNum = dayNumberFor(stops, idx);
 		return `
       <section class="rux-card__section rux-trip-itinerary__day" data-stop-idx="${idx}" title="${escHtml(label)}">
-        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--line"></div>
+        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNum}" title="Add to Day ${dayNum}">
+            <span class="rux-icon" aria-hidden="true">add</span>
+          </button>
+        </div>
         <div class="rux-trip-itinerary__content">
-          <label class="rux-field__label">End of Day ${dayNum}</label>
+          <div class="rux-trip-itinerary__label-row">
+            <label class="rux-field__label">End of Day ${dayNum}</label>
+          </div>
           <div class="rux-trip-itinerary__day-header">
             ${renderDayStatsGrid(stats)}
             <button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete End of Day ${dayNum}">
@@ -581,21 +598,23 @@
 		// the yard name folds into the accessible label instead of its own
 		// heading (which used to awkwardly interrupt the card's field rows).
 		const sleeperAddr = type === "sleeper" ? previousStopAddress(stops, idx) : "";
+		const visibleAddress = displayAddress(stop.address);
+		const visibleSleeperAddr = displayAddress(sleeperAddr);
 		const addrFieldId = `itin-addr-${idx}`;
 		const addrEl = type === "sleeper"
 			? `<div class="rux-trip-itinerary__address-wrap">
-               <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(sleeperAddr)}" readonly
+               <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleSleeperAddr)}" readonly
                       placeholder="Inherits previous stop's address"
-                      aria-label="${sleeperAddr ? `Resting at ${escHtml(sleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
+                      aria-label="${visibleSleeperAddr ? `Resting at ${escHtml(visibleSleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
              </div>`
 			: isReturn
 				? `<div class="rux-trip-itinerary__address-wrap">
-               <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(stop.address)}" readonly
-                      aria-label="${escHtml(stop.name)} — ${escHtml(stop.address)}" />
+               <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleAddress)}" readonly
+                      aria-label="${escHtml(stop.name)} — ${escHtml(visibleAddress)}" />
              </div>`
 				: `<div class="rux-trip-itinerary__address-wrap${showAddrIcon ? " is-verified" : ""}">
                <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="street-address"
-                      value="${escHtml(stop.address)}" placeholder="${addressPlaceholder}" />
+                      value="${escHtml(visibleAddress)}" placeholder="${addressPlaceholder}" />
                ${isStale
 				? '<span class="rux-icon rux-trip-itinerary__addr-check rux-trip-itinerary__addr-check--stale">error</span>'
 				: isVerified
@@ -635,28 +654,26 @@
 
 		return `
       <section class="rux-card__section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
-          <div class="rux-trip-itinerary__marker">
-            ${markerIcon}
-            ${moveControl}
+          ${fieldLabel}
+          <div class="rux-trip-itinerary__fields">
+            <span class="rux-trip-itinerary__marker">
+              ${markerIcon}
+              ${moveControl}
+            </span>
+            ${addrEl}
+            ${deleteControl}
           </div>
-          <div class="rux-trip-itinerary__content">
-            ${fieldLabel}
-            <div class="rux-trip-itinerary__fields">
-              ${addrEl}
-            </div>
-            <div class="rux-trip-itinerary__time-row">
-              <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
-                     aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
-              <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
-                     aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
-            </div>
-            <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
-              <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
-                ${statsInner}
-              </div>
+          <div class="rux-trip-itinerary__time-row">
+            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
+                   aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
+            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
+                   aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
+          </div>
+          <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
+            <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
+              ${statsInner}
             </div>
           </div>
-          ${deleteControl}
       </section>`;
 	}
 
@@ -784,9 +801,19 @@
 			let daySections = "";
 			let dayExpandableCount = 0;
 			let dayExpandedCount = 0;
+			let dayHasSummary = false;
 			const dayCards = [];
 			const closeDayCard = () => {
 				if (!daySections) return;
+				const addRow = dayHasSummary ? "" : `
+						<div class="rux-card__section rux-trip-itinerary__add-row">
+							<div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
+								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}" title="Add to Day ${dayNumber}">
+									<span class="rux-icon" aria-hidden="true">add</span>
+								</button>
+							</div>
+							<span class="rux-field__label">Add stop</span>
+						</div>`;
 				dayCards.push(`
 					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">
 						<header class="rux-card__header">
@@ -796,18 +823,12 @@
 							</div>
 						</header>
 						${daySections}
-						<div class="rux-card__section rux-trip-itinerary__add-row">
-							<div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
-								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}">
-									<span class="rux-icon" aria-hidden="true">add</span>
-								</button>
-							</div>
-							<span class="rux-field__label">Add stop</span>
-						</div>
+						${addRow}
 					</article>`);
 				daySections = "";
 				dayExpandableCount = 0;
 				dayExpandedCount = 0;
+				dayHasSummary = false;
 				dayNumber += 1;
 			};
 
@@ -816,12 +837,17 @@
 					dayExpandableCount += 1;
 					if (item.statsExpanded) dayExpandedCount += 1;
 				}
-				daySections += item.type === "day"
-					? renderDay(item, idx, stops)
-					: renderStop(item, idx, stops);
+				if (item.type === "day") {
+					daySections += renderDay(item, idx, stops);
+					dayHasSummary = true;
+				} else {
+					daySections += renderStop(item, idx, stops);
+				}
 				if (item.type === "day") closeDayCard();
 			});
-			daySections += renderFinalDaySummary(stops);
+			const finalDaySummary = renderFinalDaySummary(stops);
+			daySections += finalDaySummary;
+			dayHasSummary = !!finalDaySummary;
 			closeDayCard();
 
 			stopsEl.innerHTML = dayCards.join("");
