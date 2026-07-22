@@ -181,6 +181,7 @@ export function renderDriverAssignmentCard(entry, options = {}) {
 	));
 	if (trip.customer) routeSection.appendChild(el("p", "driver-assignment-card__client", trip.customer));
 	if (contact.name || contact.phone) {
+		routeSection.appendChild(el("span", "driver-assignment-card__section-label", "Trip Contact"));
 		const row = el("div", "driver-assignment-card__contact-row driver-assignment-card__contact-row--inline");
 		const text = el("div", "driver-assignment-card__contact-text");
 		text.appendChild(contactIdentity(contact.name, contact.phone));

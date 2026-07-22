@@ -213,11 +213,16 @@ html {
 }
 
 /* Trip contact rides inside the route section instead of its own band (see
-   renderCard()) — needs its own top margin to separate from the route/client
-   text above it, since there's no section padding/divider doing that job
-   here the way there is for Contact-shaped sections proper. */
-.driver-assignment-card__contact-row--inline {
+   renderCard()) — its "Trip Contact" label carries the top margin that
+   separates it from the route/client text above (same label class crew
+   sections use, so the two read as the same kind of thing); the row itself
+   stays flush under its own label, same as those crew sections do. */
+.driver-assignment-card__route-section .driver-assignment-card__section-label {
 	margin-top: var(--rux-space-3);
+}
+
+.driver-assignment-card__contact-row--inline {
+	margin-top: var(--rux-space-1);
 }
 
 .driver-assignment-card__contact-text {
@@ -276,17 +281,12 @@ html {
 	line-height: var(--rux-leading-normal);
 }
 
-/* .rux-card__footer defaults to a right-aligned row (Delete/Clear/Save-style
-   actions) — this footer is two stacked full-width buttons instead, same
-   idea as the sketch. Padding/gap/border-top/background all stay the
-   shared card-footer defaults. */
-.driver-assignment-card__actions {
-	flex-direction: column;
-	align-items: stretch;
-	justify-content: flex-start;
-}
-
+/* .rux-card__footer defaults to a right-aligned row of auto-width buttons
+   (Delete/Clear/Save-style actions) — Itinerary/Envelope split the width
+   evenly instead, side by side. Padding/gap/border-top/background all stay
+   the shared card-footer defaults. */
 .driver-assignment-card__actions .rux-button {
+	flex: 1;
 	justify-content: center;
 	text-decoration: none;
 }
