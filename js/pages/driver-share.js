@@ -1,7 +1,7 @@
 import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=3";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=4";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();

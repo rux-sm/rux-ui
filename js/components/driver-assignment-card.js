@@ -112,13 +112,15 @@ function contactSection(label, name, phone) {
 function actionButton(label, icon, callback) {
 	const button = document.createElement("button");
 	button.type = "button";
-	button.className = "rux-button rux-button--accent rux-button--block";
+	button.className = "rux-button rux-button--default rux-button--block";
 	button.innerHTML = `<span class="rux-icon" aria-hidden="true">${icon}</span><span>${label}</span>`;
 	button.addEventListener("click", callback);
 	return button;
 }
 
-// Unconfirmed: one prominent action, same weight as Itinerary/Envelope below.
+// Unconfirmed: the one accent action on the card — Itinerary/Envelope below
+// are reference actions a driver reaches for as needed, not something to
+// compete with confirming for attention.
 // Confirmed: stays confirmed regardless of later trip edits (see
 // trip-driver-confirmation-patch.sql) — confirmationStale just flags that
 // something changed since, with a quiet way to re-confirm against the
