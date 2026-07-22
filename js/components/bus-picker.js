@@ -3,6 +3,8 @@
 // onSelect(newBus, conflictAssignmentId | null)
 //   conflictAssignmentId is set when the user clicks "Swap" — signals that
 //   the conflicting trip should be moved back to the original bus.
+// Optional anchor keeps catalog/secondary launchers aligned without requiring
+// an active scheduler trip bar.
 
 let el        = null;
 let listEl    = null;
@@ -139,7 +141,7 @@ function onOutsideClick(e) {
 
 // ── Public API ─────────────────────────────────────────────────────────────
 
-export function show(trip, buses, currentTrips, onSelect) {
+export function show(trip, buses, currentTrips, onSelect, anchor = null) {
   if (!el) build();
   _onSelect = onSelect;
 
@@ -148,10 +150,11 @@ export function show(trip, buses, currentTrips, onSelect) {
   el.style.visibility = "hidden";
   el.removeAttribute("hidden");
 
-  const anchor = document.querySelector(".rux-trip-bar.is-active .rux-trip-bar__actions")
+  const resolvedAnchor = anchor
+    || document.querySelector(".rux-trip-bar.is-active .rux-trip-bar__actions")
     || document.querySelector(".rux-trip-bar.is-active")
     || document.body;
-  position(anchor);
+  position(resolvedAnchor);
 
   el.style.visibility = "";
 }

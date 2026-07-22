@@ -107,7 +107,7 @@
 .rux-panel__footer {
 	display: flex;
 	min-height: auto;
-	gap: var(--rux-panel-content-gap);
+	gap: var(--rux-button-group-gap);
 	padding: var(--rux-panel-footer-padding);
 	background: var(--rux-panel-footer-bg);
 	border-top: var(--rux-panel-footer-border);

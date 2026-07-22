@@ -67,7 +67,7 @@
 .rux-trip-itinerary__summary-actions {
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-2);
+	gap: var(--rux-button-group-gap);
 }
 
 .rux-trip-itinerary__summary-actions > .rux-button {

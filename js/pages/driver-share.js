@@ -1,6 +1,7 @@
 import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=1";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
@@ -39,19 +40,6 @@ function fmtRange(start, end) {
 	})}`;
 }
 
-function fmtTime(value) {
-	if (!value) return "—";
-	const text = String(value).trim();
-	if (/[ap]m$/i.test(text)) return text.toUpperCase();
-	const match = text.match(/^(\d{1,2}):(\d{2})/);
-	if (!match) return text;
-	let hour = Number(match[1]);
-	const suffix = hour < 12 ? "AM" : "PM";
-	if (hour === 0) hour = 12;
-	else if (hour > 12) hour -= 12;
-	return `${hour}:${match[2]} ${suffix}`;
-}
-
 // share.updatedAt is an ISO timestamp (driver_schedule_shares.updated_at) —
 // when dispatch last confirmed this schedule's trip selection, via the
 // Driver Link panel's Create/Update action. Not a guarantee every field on
@@ -64,28 +52,6 @@ function fmtUpdatedAt(value) {
 	if (date.toDateString() === new Date().toDateString()) return `Updated today at ${time}`;
 	const day = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 	return `Updated ${day} at ${time}`;
-}
-
-function roleLabel(role) {
-	if (role === "co-driver") return "Co-Driver";
-	if (role === "relief-start" || role === "relief-end") return "Relief Driver";
-	return "Driver";
-}
-
-function shortLocation(value) {
-	const text = String(value || "").trim();
-	if (!text) return "";
-	const parts = text.split(",").map((part) => part.trim()).filter(Boolean);
-	if (parts.length < 2) return text;
-	if (/^(united states|usa|us)$/i.test(parts.at(-1))) parts.pop();
-	if (parts.length > 1 && /^(texas|tx|oklahoma|ok)(\s+\d{5}(?:-\d{4})?)?$/i.test(parts.at(-1))) {
-		parts.pop();
-	}
-	return parts.at(-1) || text;
-}
-
-function isReliefRole(role) {
-	return role === "relief-start" || role === "relief-end";
 }
 
 function stopsForLeg(trip, leg) {
@@ -245,155 +211,6 @@ function openItinerary(entry) {
 	});
 }
 
-function mapsUrl(address) {
-	return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-}
-
-function telUrl(phone) {
-	return `tel:${phone.replace(/[^+\d]/g, "")}`;
-}
-
-// Circular action button — the tappable half of a section (call a contact,
-// open an address in Maps). variant just picks the tint (call = green,
-// maps = accent blue), same convention as a phone app's own call button.
-function iconButton(icon, href, ariaLabel, variant) {
-	const link = document.createElement("a");
-	link.className = `driver-assignment-card__icon-btn driver-assignment-card__icon-btn--${variant}`;
-	link.href = href;
-	link.setAttribute("aria-label", ariaLabel);
-	if (!href.startsWith("tel:")) {
-		link.target = "_blank";
-		link.rel = "noopener";
-	}
-	link.appendChild(el("span", "rux-icon", icon));
-	return link;
-}
-
-// Shared shape for Trip Contact and each crew member (co-driver, relief
-// driver) — an eyebrow label, name, phone, and a call button. Returns null
-// if there's neither a name nor a phone to show (e.g. a crew slot whose
-// driver record has no phone on file), so the caller can skip appending an
-// empty section entirely.
-function contactSection(label, name, phone) {
-	if (!name && !phone) return null;
-	const section = el("div", "rux-card__section driver-assignment-card__contact-section");
-	section.appendChild(el("span", "driver-assignment-card__section-label", label));
-	const row = el("div", "driver-assignment-card__contact-row");
-	const text = el("div", "driver-assignment-card__contact-text");
-	if (name) text.appendChild(el("p", "driver-assignment-card__contact-name", name));
-	if (phone) text.appendChild(el("p", "driver-assignment-card__contact-phone", phone));
-	row.appendChild(text);
-	if (phone) row.appendChild(iconButton("call", telUrl(phone), `Call ${name || label}`, "call"));
-	section.appendChild(row);
-	return section;
-}
-
-// Modular ticket layout — each .rux-card__section below is an independent
-// band (dividers come free from .rux-card__section + .rux-card__section in
-// card.css), so sections can be added/removed per trip without any of this
-// needing to know what else is present. Route/Time/Actions are always
-// there; Contact/Crew/Requirements/Notes only render when that trip
-// actually has the data for them.
-function renderCard(entry) {
-	const card = el("article", "rux-card driver-assignment-card");
-
-	const header = el("header", "rux-card__header driver-assignment-card__header");
-	const dateText = entry.startDate === entry.endDate
-		? fmtDate(entry.startDate)
-		: `${fmtDate(entry.startDate)} – ${fmtDate(entry.endDate, { weekday: false })}`;
-	header.append(
-		el("span", "driver-assignment-card__date", dateText),
-		el("span", "driver-assignment-card__bus", `Bus ${entry.busNumber}`),
-	);
-	card.appendChild(header);
-
-	// Trip contact rides along in this same section (right after client/pickup)
-	// rather than getting its own divided band — it's part of "who/where this
-	// trip is for," not a separate concern. Crew below still gets one full
-	// section per person; there can be more than one of them, and they're not
-	// what identifies whose trip this is the way the trip contact is.
-	const routeSection = el("div", "rux-card__section driver-assignment-card__route-section");
-	routeSection.appendChild(el(
-		"p",
-		"driver-assignment-card__route",
-		`${shortLocation(entry.from) || "Pickup"} → ${shortLocation(entry.to) || "Destination"}`,
-	));
-	// Just Client, not the pickup stop's own "name" field too — that second
-	// value was the actual source of the duplicate-looking text (sometimes
-	// identical to Client, sometimes just a copy of the stop's own street
-	// address), and the Spot section below already shows the full address,
-	// so there's nothing this line was adding that isn't said somewhere else.
-	if (entry.trip.customer) routeSection.appendChild(el("p", "driver-assignment-card__client", entry.trip.customer));
-	if (entry.contact.name || entry.contact.phone) {
-		const row = el("div", "driver-assignment-card__contact-row driver-assignment-card__contact-row--inline");
-		const text = el("div", "driver-assignment-card__contact-text");
-		if (entry.contact.name) text.appendChild(el("p", "driver-assignment-card__contact-name", entry.contact.name));
-		if (entry.contact.phone) text.appendChild(el("p", "driver-assignment-card__contact-phone", entry.contact.phone));
-		row.appendChild(text);
-		if (entry.contact.phone) {
-			row.appendChild(iconButton("call", telUrl(entry.contact.phone), `Call ${entry.contact.name || "trip contact"}`, "call"));
-		}
-		routeSection.appendChild(row);
-	}
-	card.appendChild(routeSection);
-
-	const relief = isReliefRole(entry.role);
-	const timeLabelParts = [relief ? "Swap Time" : "Spot Time", roleLabel(entry.role)];
-	if (entry.trip.trip_type === "dropoff_pickup") timeLabelParts.push(entry.leg === "return" ? "Inbound" : "Outbound");
-	const hasAddress = entry.from && entry.from !== "Pickup not provided";
-	const timeSection = el(
-		"div",
-		`rux-card__section driver-assignment-card__time-section${relief && !entry.roleReportTime ? " is-missing" : ""}`,
-	);
-	const timeRow = el("div", "driver-assignment-card__time-row");
-	const timeText = el("div", "driver-assignment-card__contact-text");
-	timeText.append(
-		el("span", "driver-assignment-card__section-label", timeLabelParts.join(" · ")),
-		el(
-			"p",
-			"driver-assignment-card__time",
-			relief ? (entry.roleReportTime ? fmtTime(entry.roleReportTime) : "Not set") : fmtTime(entry.spotTime),
-		),
-	);
-	if (hasAddress) timeText.appendChild(el("p", "driver-assignment-card__address", entry.from));
-	timeRow.appendChild(timeText);
-	if (hasAddress) timeRow.appendChild(iconButton("navigation", mapsUrl(entry.from), "Open in Maps", "maps"));
-	timeSection.appendChild(timeRow);
-	card.appendChild(timeSection);
-
-	entry.crew.forEach((member) => {
-		const crewSection = contactSection(roleLabel(member.role), member.drivers?.name, member.drivers?.phone);
-		if (crewSection) card.appendChild(crewSection);
-	});
-
-	if (entry.instructions) {
-		const note = el("div", "rux-card__section driver-assignment-card__note-section");
-		note.appendChild(el("span", "driver-assignment-card__section-label", "Notes"));
-		const noteBody = el("p", "driver-assignment-card__note");
-		noteBody.append(el("span", "rux-icon", "info"), document.createTextNode(entry.instructions));
-		note.appendChild(noteBody);
-		card.appendChild(note);
-	}
-
-	const actions = el("footer", "rux-card__footer driver-assignment-card__actions");
-	if (entry.itineraryUrl) {
-		const itineraryButton = document.createElement("button");
-		itineraryButton.type = "button";
-		itineraryButton.className = "rux-button rux-button--accent rux-button--block";
-		itineraryButton.innerHTML = '<span class="rux-icon" aria-hidden="true">description</span><span>View Itinerary</span>';
-		itineraryButton.addEventListener("click", () => openItinerary(entry));
-		actions.appendChild(itineraryButton);
-	}
-	const envelopeButton = document.createElement("button");
-	envelopeButton.type = "button";
-	envelopeButton.className = "rux-button rux-button--accent rux-button--block";
-	envelopeButton.innerHTML = '<span class="rux-icon" aria-hidden="true">mail</span><span>View Envelope</span>';
-	envelopeButton.addEventListener("click", () => openEnvelope(entry));
-	actions.appendChild(envelopeButton);
-	card.appendChild(actions);
-	return card;
-}
-
 function envelopeTrip(entry) {
 	const drivers = entry.drivers.map((item) => ({
 		id: item.driver_id,
@@ -529,7 +346,10 @@ async function load() {
 	}
 	root.appendChild(intro);
 	const list = el("section", "driver-share__list");
-	entries.forEach((entry) => list.appendChild(renderCard(entry)));
+	entries.forEach((entry) => list.appendChild(renderDriverAssignmentCard(entry, {
+		onItinerary: openItinerary,
+		onEnvelope: openEnvelope,
+	})));
 	root.appendChild(list);
 }
 

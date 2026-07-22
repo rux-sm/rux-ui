@@ -6,7 +6,7 @@
 .rux-right-panel__footer-group {
 	display: flex;
 	width: 100%;
-	gap: var(--rux-panel-content-gap);
+	gap: var(--rux-button-group-gap);
 }
 
 .rux-right-panel__footer-group[hidden] {
@@ -129,7 +129,7 @@
 .rux-driver-week-info__trip-actions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: var(--rux-space-1);
+	gap: var(--rux-button-group-gap);
 	margin-top: var(--rux-space-2);
 }
 

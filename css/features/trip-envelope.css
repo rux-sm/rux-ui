@@ -71,20 +71,20 @@
 	align-items: center;
 	flex: none;
 	flex-wrap: wrap;
-	gap: var(--rux-space-2);
+	gap: var(--rux-button-group-gap);
 	padding: var(--rux-space-3) var(--rux-space-4);
 	background: var(--rux-surface-modal);
 	border-bottom: var(--rux-card-section-border);
 }
 
 /* flex:none and the modal surface background come from the shared
-   .rux-floating-window__footer; this window just wants a tighter gap than
-   .rux-card__footer's default. */
+   .rux-floating-window__footer; the shared button-group token keeps this
+   wrapping toolbar consistent with card and panel action rows. */
 .rux-trip-envelope-window__footer {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: var(--rux-space-2);
+	gap: var(--rux-button-group-gap);
 }
 
 /* Public driver links use the exact same envelope and responsive fitting,

@@ -39,7 +39,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: var(--rux-space-2);
+	gap: var(--rux-button-group-gap);
 }
 
 .components-app__specimens--grid {
@@ -51,7 +51,7 @@
 .components-app__variants {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-button-group-gap);
 }
 
 .components-app__accent-grid {
@@ -67,7 +67,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: var(--rux-space-3);
+	gap: var(--rux-button-group-gap);
 	background: var(--_accent-surface, var(--rux-accent));
 	border: var(--rux-border-width) solid var(--rux-alpha-white-16);
 	border-radius: var(--rux-radius-container);
@@ -76,7 +76,7 @@
 .components-app__block-demo {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-2);
+	gap: var(--rux-button-group-gap);
 }
 
 .components-app__accent-label {
@@ -86,9 +86,28 @@
 }
 
 .components-app__page {
-	display: flex;
-	flex-direction: column;
+	--components-app-card-min-inline-size: 28rem;
+	--components-app-card-max-inline-size: 44rem;
+	display: grid;
+	grid-template-columns: repeat(
+		auto-fit,
+		minmax(min(100%, var(--components-app-card-min-inline-size)), 1fr)
+	);
+	align-items: start;
 	gap: var(--rux-space-4);
+}
+
+/* Author-level display rules override the browser's native [hidden] rule.
+   Keep component specimens as true, independent workspaces so the catalog
+   controller can reveal exactly one page at a time. */
+.components-app__page[hidden] {
+	display: none;
+}
+
+.components-app__page > .rux-card {
+	width: 100%;
+	max-width: var(--components-app-card-max-inline-size);
+	justify-self: center;
 }
 
 .components-app__anatomy {
@@ -107,6 +126,21 @@
 	padding: var(--rux-space-6);
 	background: var(--rux-surface-canvas);
 	border-radius: var(--rux-card-radius);
+}
+
+.components-app__driver-assignment-demo {
+	width: 100%;
+	max-width: 26rem;
+}
+
+.components-app__anatomy-stage--trip-bar {
+	align-items: flex-start;
+	min-height: 22rem;
+	overflow: visible;
+}
+
+.components-app__trip-bar-demo {
+	width: min(42rem, 100%);
 }
 
 .components-app__specs {

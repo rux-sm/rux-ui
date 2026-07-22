@@ -193,15 +193,23 @@ html {
 	min-width: 0;
 }
 
-.driver-assignment-card__contact-name {
+.driver-assignment-card__contact-identity {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-space-1);
 	margin: 0;
+}
+
+.driver-assignment-card__contact-name {
 	font-weight: var(--rux-weight-semibold);
 }
 
 .driver-assignment-card__contact-phone {
-	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
+	white-space: nowrap;
 }
 
 .driver-assignment-card__icon-btn {

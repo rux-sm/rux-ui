@@ -75,7 +75,7 @@
 	flex: none;
 	align-items: center;
 	justify-content: flex-end;
-	gap: var(--rux-card-content-gap);
+	gap: var(--rux-button-group-gap);
 	background: var(--rux-card-footer-bg);
 	border-top: var(--rux-card-footer-border);
 }

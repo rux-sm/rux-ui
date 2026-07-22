@@ -67,7 +67,7 @@
 	align-items: center;
 	justify-content: flex-end;
 	flex-wrap: nowrap;
-	gap: var(--rux-space-2);
+	gap: var(--rux-button-group-gap);
 	container-type: inline-size;
 }
 

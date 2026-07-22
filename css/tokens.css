@@ -347,7 +347,7 @@
 	--rux-app-header-logo-height:                    24px;
 	--rux-app-header-nav-gap:                        var(--rux-space-2);
 	--rux-app-header-nav-item-active-fg:             var(--rux-fg);
-	--rux-app-header-actions-gap:                    var(--rux-space-3);
+	--rux-app-header-actions-gap:                    var(--rux-button-group-gap);
 	--rux-app-header-mobile-nav-padding-block-start: var(--rux-space-2);
 	--rux-app-header-mobile-nav-padding-inline:      var(--rux-space-3);
 	--rux-app-header-mobile-nav-padding-block-end:   calc(
@@ -525,6 +525,7 @@
 	--rux-button-mobile-height:       36px;
 	--rux-button-padding-inline:      var(--rux-space-3);
 	--rux-button-content-gap:         var(--rux-space-2);
+	--rux-button-group-gap:           var(--rux-space-2);
 	--rux-button-radius:              var(--rux-radius-control);
 	--rux-button-border-width:        var(--rux-border-width);
 	--rux-button-border:              var(--rux-button-border-width) solid var(--rux-border-button);
