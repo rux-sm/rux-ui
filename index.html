@@ -15,8 +15,8 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=20" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=59" />
-		<link rel="stylesheet" href="./css/features/driver-panel.css?v=3" />
+		<link rel="stylesheet" href="./css/components.css?v=67" />
+		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
 		<link rel="stylesheet" href="./css/features/customer-panel.css?v=1" />
@@ -2248,22 +2248,6 @@
 								>
 									<article class="rux-card">
 										<div class="rux-card__body">
-											<div class="rux-driver-grid__controls">
-												<input
-													class="rux-input"
-													type="search"
-													id="rp-driver-grid-search"
-													placeholder="Search drivers"
-													aria-label="Search drivers"
-												/>
-												<select
-													class="rux-select"
-													id="rp-driver-grid-availability"
-													aria-label="Filter drivers by availability"
-												>
-													<option value="">All drivers</option>
-												</select>
-											</div>
 											<ul class="rux-driver-grid__legend" aria-label="Driver assignment legend">
 												<li><span class="rux-driver-grid__legend-swatch" aria-hidden="true"></span>Available</li>
 												<li><span class="rux-driver-grid__legend-swatch rux-driver-grid__legend-swatch--busy" aria-hidden="true"></span>Assigned</li>
@@ -3510,6 +3494,77 @@
 												aria-pressed="false"
 											>
 												Seasonal
+											</button>
+										</div>
+									</div>
+									<div class="rux-field">
+										<label class="rux-field__label"
+											>Priority</label
+										>
+										<div
+											class="rux-segmented rux-driver-panel__priority-group"
+											data-rux-toggle-group
+											data-priority-group
+										>
+											<button
+												class="rux-button rux-button--default"
+												type="button"
+												aria-pressed="false"
+											>
+												<span
+													class="rux-priority-dot"
+													data-priority="1"
+													aria-hidden="true"
+												></span
+												><span>1</span>
+											</button>
+											<button
+												class="rux-button rux-button--default"
+												type="button"
+												aria-pressed="false"
+											>
+												<span
+													class="rux-priority-dot"
+													data-priority="2"
+													aria-hidden="true"
+												></span
+												><span>2</span>
+											</button>
+											<button
+												class="rux-button rux-button--default is-active"
+												type="button"
+												aria-pressed="true"
+											>
+												<span
+													class="rux-priority-dot"
+													data-priority="3"
+													aria-hidden="true"
+												></span
+												><span>3</span>
+											</button>
+											<button
+												class="rux-button rux-button--default"
+												type="button"
+												aria-pressed="false"
+											>
+												<span
+													class="rux-priority-dot"
+													data-priority="4"
+													aria-hidden="true"
+												></span
+												><span>4</span>
+											</button>
+											<button
+												class="rux-button rux-button--default"
+												type="button"
+												aria-pressed="false"
+											>
+												<span
+													class="rux-priority-dot"
+													data-priority="5"
+													aria-hidden="true"
+												></span
+												><span>5</span>
 											</button>
 										</div>
 									</div>
@@ -5614,7 +5669,7 @@
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=18"></script>
 		<script src="./js/components/itinerary.js?v=14"></script>
-		<script src="./js/panels/driver-panel.js?v=7" defer></script>
+		<script src="./js/panels/driver-panel.js?v=9" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=2" defer></script>
 		<script src="./js/panels/settings-panel.js?v=2" defer></script>
@@ -7967,6 +8022,19 @@
 			let driverGridPopover = null;
 			let driverGridPopoverAnchor = null;
 
+			// Full-time drivers always sort above part-time/contract/seasonal;
+			// within each group, lower priority number (1) sorts first — same
+			// rule as driver-panel.js's "priority" SORT_DEFS entry, kept in sync
+			// by hand since the two live in separate modules.
+			const DRIVER_GRID_EMPLOYMENT_ORDER = { "full-time": 0, "part-time": 1, contract: 2, seasonal: 3 };
+			function driverPriorityCompare(a, b) {
+				return (
+					(DRIVER_GRID_EMPLOYMENT_ORDER[a.employment_type] ?? 9) -
+						(DRIVER_GRID_EMPLOYMENT_ORDER[b.employment_type] ?? 9)
+				) || ((a.priority || 3) - (b.priority || 3))
+					|| (a.name || "").localeCompare(b.name || "");
+			}
+
 			async function ensureDriverGridData() {
 				if (driverGridDataLoaded) return;
 				try {
@@ -7978,9 +8046,9 @@
 							return [];
 						}),
 					]);
-					allDrivers = drivers.filter(
-						(d) => (d.status || "active") === "active",
-					);
+					allDrivers = drivers
+						.filter((d) => (d.status || "active") === "active")
+						.sort(driverPriorityCompare);
 					allTimeOffRaw = timeOff;
 					driverGridDataLoaded = true;
 				} catch (err) {
@@ -8239,29 +8307,6 @@
 				window.RuxPopover?.position(anchor, popover, { placement: "bottom-center" });
 			}
 
-			function syncDriverAvailabilityOptions(days) {
-				const select = document.getElementById("rp-driver-grid-availability");
-				if (!select) return "";
-				const previous = select.value;
-				select.replaceChildren();
-				const allOption = document.createElement("option");
-				allOption.value = "";
-				allOption.textContent = "All drivers";
-				select.appendChild(allOption);
-				days.forEach((date) => {
-					const option = document.createElement("option");
-					option.value = isoDate(date);
-					option.textContent = `Available · ${date.toLocaleDateString("en-US", {
-						weekday: "short",
-						month: "short",
-						day: "numeric",
-					})}`;
-					select.appendChild(option);
-				});
-				select.value = days.some((date) => isoDate(date) === previous) ? previous : "";
-				return select.value;
-			}
-
 			function updateDriverGridSelection() {
 				const summary = document.getElementById("rp-driver-grid-selection");
 				if (!summary || !selectedGridDriverId || !driverGridRenderState) {
@@ -8311,22 +8356,9 @@
 					days.push(addDays(currentWeekStart, i));
 				const dayMap = buildDriverDayMap();
 				const timeOffMap = buildDriverTimeOffMap();
-				const availabilityDate = syncDriverAvailabilityOptions(days);
-				const searchQuery = String(
-					document.getElementById("rp-driver-grid-search")?.value || "",
-				)
-					.trim()
-					.toLocaleLowerCase();
-				const visibleDrivers = allDrivers.filter((driver) => {
-					const name = `${driver.short_name || ""} ${driver.name || ""}`.toLocaleLowerCase();
-					if (searchQuery && !name.includes(searchQuery)) return false;
-					if (!availabilityDate) return true;
-					return !dayMap.get(driver.id)?.get(availabilityDate)?.length
-						&& !timeOffMap.get(driver.id)?.get(availabilityDate);
-				});
 				driverGridRenderState = { days, dayMap, timeOffMap };
 				grid.setAttribute("aria-colcount", String(days.length + 1));
-				grid.setAttribute("aria-rowcount", String(visibleDrivers.length + 1));
+				grid.setAttribute("aria-rowcount", String(allDrivers.length + 1));
 
 				const headRow = document.createElement("div");
 				headRow.className =
@@ -8355,8 +8387,6 @@
 					if (date.getDay() === 0 || date.getDay() === 6)
 						label.classList.add("is-weekend");
 					if (isoDate(date) === todayIso) label.classList.add("is-today");
-					if (isoDate(date) === availabilityDate)
-						label.classList.add("is-filtered");
 					const weekday = document.createElement("span");
 					weekday.className = "rux-driver-grid__day-label-weekday";
 					weekday.textContent = date
@@ -8370,16 +8400,7 @@
 				headRow.appendChild(headDays);
 				grid.appendChild(headRow);
 
-				if (!visibleDrivers.length) {
-					const empty = document.createElement("p");
-					empty.className = "rux-driver-grid__empty";
-					empty.textContent = "No drivers match the current filters.";
-					grid.appendChild(empty);
-					updateDriverGridSelection();
-					return;
-				}
-
-				visibleDrivers.forEach((driver) => {
+				allDrivers.forEach((driver) => {
 					const row = document.createElement("div");
 					row.className = "rux-driver-grid__row";
 					row.dataset.driverId = driver.id;
@@ -8392,11 +8413,18 @@
 					const nameEl = document.createElement("button");
 					nameEl.type = "button";
 					nameEl.className = "rux-driver-grid__name";
-					nameEl.textContent = driver.short_name || driver.name;
 					nameEl.title = driver.name || "";
 					nameEl.setAttribute(
 						"aria-label",
 						`Select ${driver.name || driver.short_name}`,
+					);
+					const nameDot = document.createElement("span");
+					nameDot.className = "rux-priority-dot";
+					nameDot.dataset.priority = String(driver.priority || 3);
+					nameDot.setAttribute("aria-hidden", "true");
+					nameEl.append(
+						nameDot,
+						document.createTextNode(driver.short_name || driver.name),
 					);
 					row.appendChild(nameEl);
 
@@ -8472,12 +8500,6 @@
 				"rp-driver-add-timeoff-btn",
 			);
 			const driverInfoBtn = document.getElementById("rp-driver-info-btn");
-			const driverGridSearchInput = document.getElementById(
-				"rp-driver-grid-search",
-			);
-			const driverGridAvailabilitySelect = document.getElementById(
-				"rp-driver-grid-availability",
-			);
 			const driverGridScroller = document.querySelector(
 				".rux-driver-grid__scroller",
 			);
@@ -8531,8 +8553,6 @@
 					driverGridRenderState.timeOffMap.get(driver.id)?.get(cell.dataset.date) || "";
 				showDriverGridPopover(cell, driver, date, entries, timeOffTooltip);
 			});
-			driverGridSearchInput?.addEventListener("input", renderDriverGrid);
-			driverGridAvailabilitySelect?.addEventListener("change", renderDriverGrid);
 			driverGridScroller?.addEventListener("scroll", closeDriverGridPopover, {
 				passive: true,
 			});

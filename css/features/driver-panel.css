@@ -181,6 +181,27 @@
 	min-width: 0;
 }
 
+/* — Status: priority segmented (RPG-rarity-style tiers, 1 highest) — */
+
+.rux-driver-panel__priority-group .rux-button {
+	flex: 1;
+	min-width: 0;
+	gap: var(--rux-space-1);
+}
+
+.rux-priority-dot {
+	width: var(--rux-space-2);
+	height: var(--rux-space-2);
+	flex: none;
+	border-radius: var(--rux-radius-full);
+}
+
+.rux-priority-dot[data-priority="1"] { background: var(--rux-warning); }
+.rux-priority-dot[data-priority="2"] { background: var(--rux-purple); }
+.rux-priority-dot[data-priority="3"] { background: var(--rux-info); }
+.rux-priority-dot[data-priority="4"] { background: var(--rux-success); }
+.rux-priority-dot[data-priority="5"] { background: var(--rux-white); }
+
 /* — Trips: read-only trip list — */
 
 .rux-driver-panel__schedule-card {

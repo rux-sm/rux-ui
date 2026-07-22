@@ -287,6 +287,9 @@
     { key: "employment-type",  label: "Employment",        defaultOn: false,
       head: `<th scope="col" data-col="employment-type" data-col-filter="employment-type" data-sort="employment-type">Employment <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
       cell: d => `<td data-col="employment-type">${d.employment_type || "—"}</td>` },
+    { key: "priority",         label: "Priority",          defaultOn: true,
+      head: `<th scope="col" data-col="priority" data-sort="priority">Priority</th>`,
+      cell: d => `<td data-col="priority"><span class="rux-badge"><span class="rux-priority-dot" data-priority="${d.priority || 3}" aria-hidden="true"></span>${d.priority || 3}</span></td>` },
     { key: "license-number",   label: "License #",         defaultOn: false,
       head: `<th scope="col" data-col="license-number">License #</th>`,
       cell: d => `<td data-col="license-number" class="rux-mono">${d.license_number || "—"}</td>` },
@@ -467,7 +470,7 @@
     const statusLabels = { active: "Active", "on-leave": "On Leave", inactive: "Inactive" };
     const target = statusLabels[d.status] || "Active";
     panelEl.querySelectorAll(".rux-driver-panel__status-group .rux-button").forEach((btn) => {
-      const on = btn.querySelector("span")?.textContent.trim() === target;
+      const on = btn.querySelector("span:not(.rux-icon)")?.textContent.trim() === target;
       btn.setAttribute("aria-pressed", on ? "true" : "false");
       btn.classList.toggle("is-active", on);
     });
@@ -477,6 +480,14 @@
     const empTarget = empTypeLabels[d.employment_type || "full-time"] || "Full-time";
     panelEl.querySelectorAll("[data-emp-type-group] .rux-button").forEach((btn) => {
       const on = btn.textContent.trim() === empTarget;
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.classList.toggle("is-active", on);
+    });
+
+    // Priority
+    const priorityTarget = String(d.priority || 3);
+    panelEl.querySelectorAll("[data-priority-group] .rux-button").forEach((btn) => {
+      const on = btn.querySelector(".rux-priority-dot")?.dataset.priority === priorityTarget;
       btn.setAttribute("aria-pressed", on ? "true" : "false");
       btn.classList.toggle("is-active", on);
     });
@@ -503,7 +514,7 @@
       ".rux-driver-panel__status-group .rux-button[aria-pressed='true']"
     );
     const statusRevMap = { Active: "active", "On Leave": "on-leave", Inactive: "inactive" };
-    const statusText = statusBtn?.querySelector("span")?.textContent.trim() || "Active";
+    const statusText = statusBtn?.querySelector("span:not(.rux-icon)")?.textContent.trim() || "Active";
 
     const cdlBtn = cdlGroup?.querySelector(".rux-button[aria-pressed='true']");
     const cdlClass = cdlBtn ? cdlBtn.textContent.trim().replace("Class ", "") : "A";
@@ -511,6 +522,9 @@
     const empTypeBtn = panelEl.querySelector("[data-emp-type-group] .rux-button[aria-pressed='true']");
     const empTypeMap = { "Full-time": "full-time", "Part-time": "part-time", "Contract": "contract", "Seasonal": "seasonal" };
     const empType = empTypeMap[empTypeBtn?.textContent.trim()] || "full-time";
+
+    const priorityBtn = panelEl.querySelector("[data-priority-group] .rux-button[aria-pressed='true']");
+    const priority = parseInt(priorityBtn?.querySelector(".rux-priority-dot")?.dataset.priority, 10) || 3;
 
     const endorsements = [...panelEl.querySelectorAll(
       ".rux-driver-panel__endorsements .rux-button[aria-pressed='true']"
@@ -538,6 +552,7 @@
       endorsements:              endorsements.length ? endorsements : null,
       status:                    statusRevMap[statusText] || "active",
       employment_type:           empType,
+      priority:                  priority,
       emergency_contact_name:    document.getElementById("dp-ec-name").value.trim()  || null,
       emergency_contact_phone:   document.getElementById("dp-ec-phone").value.trim() || null,
       notes:                     document.getElementById("dp-notes").value.trim()     || null,
@@ -728,6 +743,14 @@
         btn.setAttribute("aria-pressed", on ? "true" : "false");
         btn.classList.toggle("is-active", on);
       });
+    });
+    // Priority defaults to the middle tier (3), not the first button (1) —
+    // matches the drivers.priority column default and populatePanel()'s
+    // fallback, so a never-saved new driver reads the same as a saved one.
+    panelEl.querySelectorAll("[data-priority-group] .rux-button").forEach((btn) => {
+      const on = btn.querySelector(".rux-priority-dot")?.dataset.priority === "3";
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+      btn.classList.toggle("is-active", on);
     });
     panelEl.querySelectorAll(".rux-driver-panel__endorsements .rux-button")
       .forEach(btn => { btn.setAttribute("aria-pressed", "false"); btn.classList.remove("is-active"); });
@@ -1099,6 +1122,12 @@
     "employment-type": (a, b) => {
       const o = { "full-time": 0, "part-time": 1, contract: 2, seasonal: 3 };
       return ((o[a.employment_type] ?? 9) - (o[b.employment_type] ?? 9)) || (a.name || "").localeCompare(b.name || "");
+    },
+    priority: (a, b) => {
+      const o = { "full-time": 0, "part-time": 1, contract: 2, seasonal: 3 };
+      return ((o[a.employment_type] ?? 9) - (o[b.employment_type] ?? 9))
+        || ((a.priority || 3) - (b.priority || 3))
+        || (a.name || "").localeCompare(b.name || "");
     },
     cdl:             (a, b) => (a.cdl_class || "").localeCompare(b.cdl_class || "") || (a.name || "").localeCompare(b.name || ""),
     expiry:          (a, b) => (a.license_exp || "9999").localeCompare(b.license_exp || "9999") || (a.name || "").localeCompare(b.name || ""),

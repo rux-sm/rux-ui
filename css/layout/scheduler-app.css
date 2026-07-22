@@ -45,7 +45,7 @@
 	/* Left/editor and right/tools drawers intentionally have independent
 	   defaults. Resize limits remain shared. */
 	--scheduler-app-left-drawer-default-width: 400px;
-	--scheduler-app-right-drawer-default-width: 320px;
+	--scheduler-app-right-drawer-default-width: 380px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -678,7 +678,11 @@
 
 .rux-driver-grid {
 	--rux-driver-grid-cell-size: 1.75rem;
-	--rux-driver-grid-name-width: 7.5rem;
+	--rux-driver-grid-name-width: 100px;
+	/* Same cell-to-cell rhythm as .rux-mini-cal__dates, not the row/gutter
+	   --rux-space-1 gap used elsewhere in this component — keeps the two
+	   square-grid components feeling like one family. */
+	--rux-driver-grid-cell-gap: var(--rux-space-0-5);
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
@@ -686,15 +690,8 @@
 	min-width: calc(
 		var(--rux-driver-grid-name-width) + var(--rux-space-1) +
 			(var(--rux-driver-grid-days, 7) * var(--rux-driver-grid-cell-size)) +
-			((var(--rux-driver-grid-days, 7) - 1) * var(--rux-space-1))
+			((var(--rux-driver-grid-days, 7) - 1) * var(--rux-driver-grid-cell-gap))
 	);
-}
-
-.rux-driver-grid__controls {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) minmax(10rem, auto);
-	gap: var(--rux-space-2);
-	margin-bottom: var(--rux-space-3);
 }
 
 .rux-driver-grid__legend {
@@ -747,13 +744,10 @@
 .rux-driver-grid__row {
 	display: grid;
 	grid-template-columns:
-		var(--rux-driver-grid-name-width)
-		minmax(
-			calc(
-				(var(--rux-driver-grid-days, 7) * var(--rux-driver-grid-cell-size)) +
-					((var(--rux-driver-grid-days, 7) - 1) * var(--rux-space-1))
-			),
-			1fr
+		minmax(var(--rux-driver-grid-name-width), 1fr)
+		calc(
+			(var(--rux-driver-grid-days, 7) * var(--rux-driver-grid-cell-size)) +
+				((var(--rux-driver-grid-days, 7) - 1) * var(--rux-driver-grid-cell-gap))
 		);
 	align-items: center;
 	min-height: var(--rux-driver-grid-cell-size);
@@ -770,18 +764,35 @@
 	width: 100%;
 	height: var(--rux-driver-grid-cell-size);
 	align-items: center;
+	gap: var(--rux-space-1);
 	min-width: 0;
 	padding: 0 var(--rux-space-1);
 	overflow: hidden;
 	background: var(--rux-card-bg);
 	color: var(--rux-text-secondary);
-	border: 0;
+	/* Transparent, not 0 — reserves the width .is-selected's border-color
+	   below needs, so gaining a real border doesn't shift the row's content
+	   by a pixel. */
+	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-sm);
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+/* Ghost-button-style hover, same overlay token .rux-mini-cal__date and every
+   ghost .rux-button use — this is a real <button>, so it should feel like
+   one. Independent of the row's own :hover outline below (that one signals
+   "hovering somewhere in this row", this one signals "hovering this
+   specific button"). Scoped to driver rows only — the head row reuses this
+   class on a plain, non-interactive <span> label. */
+.rux-driver-grid__row[data-driver-id] .rux-driver-grid__name:hover {
+	background-image: linear-gradient(
+		var(--rux-button-hover-overlay),
+		var(--rux-button-hover-overlay)
+	);
 }
 
 .rux-driver-grid__row--head .rux-driver-grid__name {
@@ -808,25 +819,25 @@
 	cursor: pointer;
 }
 
-.rux-driver-grid__row[data-driver-id]:hover {
-	box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-border);
-}
-
-.rux-driver-grid__row.is-selected {
-	background: var(--rux-accent-subtle);
-	box-shadow: inset 3px 0 0 var(--rux-accent);
-}
-
+/* Hover and selection both live entirely on .rux-driver-grid__name now, not
+   the row — a row-wide outline/tint always ended up either clipped by the
+   opaque day cells sitting on top of it, or (once that was fixed) sitting
+   right next to and competing with .rux-driver-grid__cell--busy's accent
+   fill, the legend's color for "Assigned". Keeping both states off the row
+   entirely, confined to the name button, sidesteps all of that — hover gets
+   the same ghost-overlay tint every .rux-button uses, and selection gets the
+   same bg + border pairing as .rux-mini-cal__date--active-week. */
 .rux-driver-grid__row.is-selected .rux-driver-grid__name {
 	background: var(--rux-accent-subtle);
+	border-color: var(--rux-accent);
 	color: var(--rux-fg);
 	font-weight: var(--rux-weight-semibold);
 }
 
 .rux-driver-grid__days {
 	display: grid;
-	grid-template-columns: repeat(var(--rux-driver-grid-days, 7), minmax(var(--rux-driver-grid-cell-size), 1fr));
-	gap: var(--rux-space-1);
+	grid-template-columns: repeat(var(--rux-driver-grid-days, 7), var(--rux-driver-grid-cell-size));
+	gap: var(--rux-driver-grid-cell-gap);
 	min-width: 0;
 }
 
@@ -871,16 +882,6 @@
 	color: var(--rux-accent);
 }
 
-.rux-driver-grid__day-label.is-filtered {
-	background: var(--rux-accent-subtle);
-	border-radius: var(--rux-radius-sm);
-}
-
-.rux-driver-grid__day-label.is-filtered .rux-driver-grid__day-label-weekday,
-.rux-driver-grid__day-label.is-filtered .rux-driver-grid__day-label-date {
-	color: var(--rux-fg);
-}
-
 .rux-driver-grid__cell {
 	display: block;
 	width: 100%;
@@ -888,7 +889,12 @@
 	padding: 0;
 	border-radius: var(--rux-radius-sm);
 	background: var(--rux-surface-field);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	/* Transparent, not --rux-border-subtle: an idle cell should read as
+	   quietly as a plain .rux-mini-cal__date, which has no border at all
+	   until it means something (today/active-week). The status modifiers
+	   below still set a real border-color, same border-width throughout so
+	   nothing shifts size when a cell's state changes. */
+	border: var(--rux-border-width) solid transparent;
 	cursor: pointer;
 }
 
@@ -1040,12 +1046,6 @@
 .rux-driver-grid__empty {
 	color: var(--rux-text-secondary);
 	font-size: var(--rux-text-sm);
-}
-
-@media (max-width: 580px) {
-	.rux-driver-grid__controls {
-		grid-template-columns: 1fr;
-	}
 }
 
 /* — View options — */
