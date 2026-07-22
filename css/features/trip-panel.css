@@ -27,8 +27,6 @@
 /* — Panel shell — */
 
 .rux-trip-panel {
-	--rux-trip-panel-tab-selected-bg: var(--rux-button-default-background);
-	--rux-trip-panel-tab-selected-fg: var(--rux-button-default-text);
 	height: 100%;
 	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
@@ -79,35 +77,8 @@
 	}
 }
 
-/* Plain buttons instead of a segmented/contained tab track — active looks
-   like .rux-button--default (filled), inactive like .rux-button--ghost
-   (transparent, brightens on hover). Keying the override off
-   [aria-selected="true"] rather than swapping variant classes in JS matches
-   how the workspace header's Week/List buttons and the right panel's
-   Nav/Drivers/Tasks tabs already do this. */
-.rux-trip-panel__tabs {
-	display: flex;
-	width: 100%;
-	gap: var(--rux-tabs-gap);
-}
-
-.rux-trip-panel__tab {
-	flex: 1;
-}
-
-/* .rux-button--ghost sets color directly (not through --_fg), so the
-   selected-state override below only needs --_fg for the icon/hover system —
-   but the unselected color needs its own explicit override here to actually
-   win over .rux-button--ghost's color declaration. */
-.rux-trip-panel__tab:not([aria-selected="true"]) {
-	color: var(--rux-text-secondary);
-}
-
-.rux-trip-panel__tab[aria-selected="true"] {
-	--_bg: var(--rux-trip-panel-tab-selected-bg);
-	--_fg: var(--rux-trip-panel-tab-selected-fg);
-	border-color: var(--rux-tab-selected-border);
-}
+/* Main panel navigation uses the shared .rux-tabs/.rux-tab component. Only
+   the responsive icon/label collapse below is specific to this panel. */
 
 /* — Body / panes — */
 

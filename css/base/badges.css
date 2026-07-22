@@ -11,20 +11,6 @@
    .rux-badge--danger            Danger-subtle bg · danger fg
    .rux-badge--info              Info-subtle bg · info fg
    .rux-badge--dot               ::before dot in currentColor (combine with a color modifier)
-
-   Stop-type labels — same base as .rux-badge, flex:none added for itinerary grid.
-   Each pairs a subtle tint background with a solid matching-color border,
-   mirroring the "today" pill treatment in scheduler.css:
-   .rux-trip-itinerary__badge--endday      danger-subtle bg · danger border/fg (day-break header)
-   .rux-trip-itinerary__badge--yard        success-subtle bg · success border/fg
-
-   --pickup/--stop/--sleeper/--return used to exist here too (colored type
-   badges on each stop card), but every stop card now ends its address row
-   in a plain more_vert trigger instead — see .rux-trip-itinerary__stop-menu in
-   itinerary.css and openStopMenu() in itinerary.js. --endday survives only
-   on .rux-trip-itinerary__day--final's decorative (non-interactive) summary badge —
-   28x28 icon badge (event_busy), lined up on .rux-trip-itinerary__day-header's grid
-   in itinerary.css. --yard is unused (demo-only) and left as a text pill.
    ========================================================================== */
 
 /* — base — */
@@ -61,36 +47,3 @@
   background: currentColor;
 }
 
-/* — stop-type labels (itinerary) — */
-
-.rux-trip-itinerary__badge {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  gap: var(--rux-space-1);
-  height: 28px;
-  padding: 0 var(--rux-space-2);
-  border: var(--rux-border-width) solid transparent;
-  border-radius: var(--rux-radius-control);
-
-  font-size: var(--rux-text-xs);
-  font-weight: var(--rux-weight-regular);
-  white-space: nowrap;
-  flex: none;
-}
-
-.rux-trip-itinerary__badge--yard    { background: var(--rux-success-subtle); border-color: var(--rux-success-bright); color: var(--rux-success-bright); }
-
-.rux-trip-itinerary__badge--endday {
-  /* --rux-trip-itinerary-lead-w is set on a stop's direct .rux-card child
-     in itinerary.css — every row
-     in the card lines up on this same lead-column width, so it's defined
-     once there rather than hardcoded separately in each place. */
-  width: var(--rux-trip-itinerary-lead-w, 28px);
-  padding: 0;
-  justify-content: center;
-  font-weight: var(--rux-weight-semibold);
-  background: var(--rux-danger-subtle);
-  border-color: var(--rux-danger-bright);
-  color: var(--rux-danger-bright);
-}

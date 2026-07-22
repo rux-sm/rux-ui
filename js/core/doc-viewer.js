@@ -35,10 +35,10 @@
 					<span class="rux-icon" aria-hidden="true" data-doc-viewer-icon>description</span>
 					<p class="rux-card__title rux-doc-viewer__title" data-doc-viewer-title></p>
 				</div>
-				<a class="rux-button rux-button--ghost rux-button--icon" data-doc-viewer-external target="_blank" rel="noopener" aria-label="Open document externally" title="Open externally">
+				<a class="rux-button rux-button--default rux-button--icon" data-doc-viewer-external target="_blank" rel="noopener" aria-label="Open document externally" title="Open externally">
 					<span class="rux-icon" aria-hidden="true">open_in_new</span>
 				</a>
-				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-doc-viewer-close aria-label="Close document viewer">
+				<button type="button" class="rux-button rux-button--default rux-button--icon" data-doc-viewer-close aria-label="Close document viewer">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
@@ -46,10 +46,10 @@
 				<iframe class="rux-doc-viewer__frame" title="Document preview"></iframe>
 			</div>
 			<footer class="rux-floating-window__footer rux-doc-viewer__footer rux-card__footer">
-				<button type="button" class="rux-button rux-button--ghost rux-button--danger" data-doc-viewer-delete>
+				<button type="button" class="rux-button rux-button--default rux-button--danger" data-doc-viewer-delete>
 					<span class="rux-icon" aria-hidden="true">delete</span> Delete
 				</button>
-				<button type="button" class="rux-button rux-button--ghost" data-doc-viewer-update>
+				<button type="button" class="rux-button rux-button--default" data-doc-viewer-update>
 					<span class="rux-icon" aria-hidden="true">upload_file</span> Replace
 				</button>
 				<span class="rux-floating-window__spacer"></span>

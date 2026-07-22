@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rux-sm.github.io/rux-ui/docs/trip-import-schema-v2.json",
+  "title": "RUX UI Trip Draft Import v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "trip"],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "trip": { "$ref": "#/$defs/trip" }
+  },
+  "$defs": {
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" }
+      }
+    },
+    "tripContact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "phone": { "type": "string" }
+      }
+    },
+    "ticketOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "price"],
+      "properties": {
+        "label": { "type": "string", "minLength": 1 },
+        "price": { "type": "number", "minimum": 0 }
+      }
+    },
+    "leg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_date", "end_date", "stops"],
+      "properties": {
+        "start_date": { "type": "string", "format": "date" },
+        "end_date": { "type": "string", "format": "date" },
+        "bus_count": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "stops": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/stop" }
+        }
+      }
+    },
+    "stop": {
+      "oneOf": [
+        { "$ref": "#/$defs/pickup" },
+        { "$ref": "#/$defs/routeStop" },
+        { "$ref": "#/$defs/sleeper" },
+        { "$ref": "#/$defs/day" },
+        { "$ref": "#/$defs/return" }
+      ]
+    },
+    "locationFields": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "distance_miles": { "type": "number", "minimum": 0 },
+        "drive_time": { "type": "string", "pattern": "^[0-9]+:[0-5][0-9]$" }
+      }
+    },
+    "pickup": {
+      "allOf": [
+        { "$ref": "#/$defs/locationFields" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "pickup" },
+            "name": { "type": "string" },
+            "address": { "type": "string" },
+            "yard_departure_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" },
+            "spot_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" },
+            "departure_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" },
+            "distance_miles": { "type": "number", "minimum": 0 },
+            "drive_time": { "type": "string", "pattern": "^[0-9]+:[0-5][0-9]$" }
+          }
+        }
+      ]
+    },
+    "routeStop": {
+      "allOf": [
+        { "$ref": "#/$defs/locationFields" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "stop" },
+            "name": { "type": "string" },
+            "address": { "type": "string" },
+            "arrival_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" },
+            "departure_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" },
+            "distance_miles": { "type": "number", "minimum": 0 },
+            "drive_time": { "type": "string", "pattern": "^[0-9]+:[0-5][0-9]$" }
+          }
+        }
+      ]
+    },
+    "sleeper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "sleeper" },
+        "name": { "type": "string" },
+        "address": { "type": "string" },
+        "rest_start_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" },
+        "rest_end_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" }
+      }
+    },
+    "day": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type"],
+      "properties": {
+        "type": { "const": "day" },
+        "date": { "type": "string", "format": "date" },
+        "label": { "type": "string" }
+      }
+    },
+    "return": {
+      "allOf": [
+        { "$ref": "#/$defs/locationFields" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "properties": {
+            "type": { "const": "return" },
+            "name": { "type": "string" },
+            "address": { "type": "string" },
+            "arrival_time": { "type": "string", "pattern": "^(?:[01][0-9]|2[0-3]):[0-5][0-9]$" },
+            "distance_miles": { "type": "number", "minimum": 0 },
+            "drive_time": { "type": "string", "pattern": "^[0-9]+:[0-5][0-9]$" }
+          }
+        }
+      ]
+    },
+    "trip": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "service_type", "destination", "legs"],
+      "properties": {
+        "type": {
+          "enum": ["round_trip", "one_way", "dropoff_pickup"]
+        },
+        "service_type": {
+          "enum": ["charter", "ticketed"]
+        },
+        "client": { "type": "string" },
+        "destination": { "type": "string", "minLength": 1 },
+        "booking_contact": { "$ref": "#/$defs/contact" },
+        "trip_contacts": {
+          "type": "array",
+          "maxItems": 2,
+          "items": { "$ref": "#/$defs/tripContact" }
+        },
+        "contact_not_needed": { "type": "boolean" },
+        "itinerary_not_needed": { "type": "boolean" },
+        "notes": { "type": "string" },
+        "requirements": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "quoted_price": { "type": "number", "minimum": 0 },
+        "estimated_miles_override": { "type": "number", "minimum": 0 },
+        "ticket_options": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ticketOption" }
+        },
+        "legs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["outbound"],
+          "properties": {
+            "outbound": { "$ref": "#/$defs/leg" },
+            "return": { "$ref": "#/$defs/leg" }
+          }
+        }
+      }
+    }
+  }
+}

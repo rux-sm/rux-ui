@@ -150,7 +150,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
         <span class="rux-input-group__prefix">
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+          <button type="button" class="rux-button rux-button--default rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
             <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
           </button>
         </span>
@@ -172,13 +172,13 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <header class="rux-card__header">
       <p class="rux-card__title">Bus ${idx + 1}</p>
       <div class="rux-cluster">
-        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
+        <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
           <span class="rux-icon" aria-hidden="true">group</span>
         </button>
-        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
+        <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
           <span class="rux-icon" aria-hidden="true">person_add</span>
         </button>
-        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
+        <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
           <span class="rux-icon" aria-hidden="true">person_remove</span>
         </button>
       </div>
@@ -194,7 +194,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
       <div class="rux-trip-panel__driver-row">
         <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
           <span class="rux-input-group__prefix">
-            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+            <button type="button" class="rux-button rux-button--default rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
               <span class="rux-icon" aria-hidden="true">person</span>
             </button>
           </span>

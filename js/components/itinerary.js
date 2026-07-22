@@ -481,12 +481,12 @@
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
       <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--final">
-        <label class="rux-field__label">End of Day ${dayNum}</label>
-        <div class="rux-trip-itinerary__day-header">
-          ${renderDayStatsGrid(stats)}
-          <span class="rux-trip-itinerary__badge rux-trip-itinerary__badge--endday" title="Day ${dayNum}" aria-label="Day ${dayNum} summary">
-            <span class="rux-icon" aria-hidden="true">event_busy</span>
-          </span>
+        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--line"></div>
+        <div class="rux-trip-itinerary__content">
+          <label class="rux-field__label">End of Day ${dayNum}</label>
+          <div class="rux-trip-itinerary__day-header">
+            ${renderDayStatsGrid(stats)}
+          </div>
         </div>
       </section>`;
 	}
@@ -504,12 +504,15 @@
 		const dayNum = dayNumberFor(stops, idx);
 		return `
       <section class="rux-card__section rux-trip-itinerary__day" data-stop-idx="${idx}" title="${escHtml(label)}">
-        <label class="rux-field__label">End of Day ${dayNum}</label>
-        <div class="rux-trip-itinerary__day-header">
-          ${renderDayStatsGrid(stats)}
-          <button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete End of Day ${dayNum}">
-				<span class="rux-icon" aria-hidden="true">delete</span>
-			</button>
+        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--line"></div>
+        <div class="rux-trip-itinerary__content">
+          <label class="rux-field__label">End of Day ${dayNum}</label>
+          <div class="rux-trip-itinerary__day-header">
+            ${renderDayStatsGrid(stats)}
+            <button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete End of Day ${dayNum}">
+					<span class="rux-icon" aria-hidden="true">delete</span>
+				</button>
+          </div>
         </div>
       </section>`;
 	}
@@ -614,6 +617,14 @@
               <span class="rux-icon" aria-hidden="true">drag_indicator</span>
             </button>`
 			: "";
+		// Rail marker — a plain ring for pickup/stop/sleeper (tinted per type,
+		// same colors as the stop's badge), a solid pin for return, matching
+		// how Google Maps only pins the final destination and leaves every
+		// waypoint before it as a hollow dot. isReturn also drops the
+		// connecting line below it — nothing follows the last stop.
+		const markerIcon = isReturn
+			? `<span class="rux-icon rux-trip-itinerary__marker-pin" aria-hidden="true">location_on</span>`
+			: `<span class="rux-trip-itinerary__marker-dot rux-trip-itinerary__marker-dot--${type}" aria-hidden="true"></span>`;
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
 		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";
@@ -623,24 +634,29 @@
       <output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
 
 		return `
-      <section class="rux-card__section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
-          ${fieldLabel}
-          <div class="rux-trip-itinerary__fields">
-            ${addrEl}
-            ${deleteControl}
-          </div>
-          <div class="rux-trip-itinerary__time-row">
-            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
-                   aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
-            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
-                   aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
+      <section class="rux-card__section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
+          <div class="rux-trip-itinerary__marker">
+            ${markerIcon}
             ${moveControl}
           </div>
-          <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
-            <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
-              ${statsInner}
+          <div class="rux-trip-itinerary__content">
+            ${fieldLabel}
+            <div class="rux-trip-itinerary__fields">
+              ${addrEl}
+            </div>
+            <div class="rux-trip-itinerary__time-row">
+              <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
+                     aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
+              <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
+                     aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
+            </div>
+            <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
+              <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
+                ${statsInner}
+              </div>
             </div>
           </div>
+          ${deleteControl}
       </section>`;
 	}
 
@@ -780,13 +796,20 @@
 						<header class="rux-card__header">
 							<h3 class="rux-card__title">Day ${dayNumber}</h3>
 							<div class="rux-cluster">
-								<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--icon" data-day-mode="delete" ${dayCanDelete ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "delete"}" aria-label="Delete from Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "delete" ? "close" : "delete"}</span></button>
-								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-mode="reorder" ${dayCanReorder ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder"}" aria-label="Reorder Day ${dayNumber} stops"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? "close" : "swap_vert"}</span></button>
-								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
-								<button type="button" class="rux-button rux-button--default rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">add</span></button>
+								<button type="button" class="rux-button rux-button--default rux-button--danger rux-button--icon" data-day-mode="delete" ${dayCanDelete ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "delete"}" aria-label="Delete from Day ${dayNumber}"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "delete" ? "close" : "delete"}</span></button>
+								<button type="button" class="rux-button rux-button--default rux-button--icon" data-day-mode="reorder" ${dayCanReorder ? "" : "disabled"} aria-pressed="${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder"}" aria-label="Reorder Day ${dayNumber} stops"><span class="rux-icon" aria-hidden="true">${activeDayMode.day === dayNumber && activeDayMode.mode === "reorder" ? "close" : "swap_vert"}</span></button>
+								<button type="button" class="rux-button rux-button--default rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 							</div>
 						</header>
 						${daySections}
+						<div class="rux-card__section rux-trip-itinerary__add-row">
+							<div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
+								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}">
+									<span class="rux-icon" aria-hidden="true">add</span>
+								</button>
+							</div>
+							<span class="rux-field__label">Add stop</span>
+						</div>
 					</article>`);
 				daySections = "";
 				dayCanDelete = false;

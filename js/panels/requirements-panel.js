@@ -68,7 +68,7 @@
   // Build picker DOM once
   pickerEl.innerHTML = ICON_OPTIONS
     .map(icon =>
-      `<button class="rux-button rux-button--ghost rux-button--icon req-icon-option" type="button" data-icon="${icon}" title="${icon}">
+      `<button class="rux-button rux-button--default rux-button--icon req-icon-option" type="button" data-icon="${icon}" title="${icon}">
         <span class="rux-icon">${icon}</span>
       </button>`
     ).join("");
@@ -133,7 +133,7 @@
         <span class="rux-switch__track"></span>
         <span class="rux-switch__thumb"></span>
       </label>
-      <button class="rux-button rux-button--ghost rux-button--icon rux-button--sm" type="button"
+      <button class="rux-button rux-button--default rux-button--icon rux-button--sm" type="button"
               data-req-delete="${escHtml(req.id)}" aria-label="Delete ${escHtml(req.label)}">
         <span class="rux-icon">delete</span>
       </button>

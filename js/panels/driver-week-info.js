@@ -743,7 +743,7 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 						<h2 class="rux-modal__title" id="driver-week-info-title" data-driver-info-title>Driver Info</h2>
 						<p class="rux-driver-week-info__range" data-driver-info-range></p>
 					</div>
-					<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-rux-dismiss aria-label="Close driver info">
+					<button type="button" class="rux-button rux-button--default rux-button--icon" data-rux-dismiss aria-label="Close driver info">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>
@@ -775,7 +775,7 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 								<div class="rux-driver-week-info__share-actions">
 									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="copy"><span class="rux-icon" aria-hidden="true">content_copy</span>Copy link</button>
 									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="preview"><span class="rux-icon" aria-hidden="true">open_in_new</span>Preview</button>
-									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--sm" data-driver-share-action="revoke">Deactivate</button>
+									<button type="button" class="rux-button rux-button--default rux-button--danger rux-button--sm" data-driver-share-action="revoke">Deactivate</button>
 								</div>
 							</div>
 						</div>

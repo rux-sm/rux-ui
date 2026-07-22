@@ -88,22 +88,33 @@
 
 /* — Day card — */
 
-.rux-trip-itinerary__day-group {
-	--rux-trip-itinerary-lead-w: 28px;
-}
-
+/* Same marker + content row shape as .rux-trip-itinerary__stop — the rail's
+   line needs to keep running through this section (no dot here, just the
+   line) so it reaches the Add-row's "+" below instead of stopping dead at
+   the last real stop. */
 .rux-trip-itinerary__day {
+	position: relative;
 	display: flex;
-	flex-direction: column;
+	align-items: flex-start;
 	gap: var(--rux-space-2);
 }
 
-/* Badge is the lead column (same width every other card's badge/icon column
-   uses) with the stat grid inline beside it — one row, not a header row
-   plus a separate full-width stat row below. */
+/* position: relative anchors this row's own .rux-trip-itinerary__inline-action
+   --delete (End-of-Day marker's delete button, shared class with the stop
+   rail's — see below) — without it, that button's new absolute positioning
+   would anchor to the nearest positioned ancestor instead of this row.
+   :has() scopes the reserved gutter to headers that actually have a delete
+   button — the trailing End-of-Day *summary* (no break to delete) reuses
+   this same class without one, and shouldn't have its stat grid narrowed
+   for a button that was never going to appear. */
 .rux-trip-itinerary__day-header {
+	position: relative;
 	display: flex;
 	align-items: center;
+}
+
+.rux-trip-itinerary__day-header:has(.rux-trip-itinerary__inline-action--delete) {
+	padding-right: var(--rux-field-height);
 }
 
 .rux-trip-itinerary__day-header .rux-trip-itinerary__day-stats {
@@ -132,17 +143,154 @@
 
 /* — Stop row — */
 
+/* Marker (left) + content (fields) + delete (absolute, right) — the Maps-style
+   layout requested: a rail of dots/pins down the left edge, address/time/stats
+   filling the middle, delete tucked into a reserved right-hand gutter instead
+   of pushing the row's width around when it appears. */
 .rux-trip-itinerary__stop {
-	display: block;
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
 }
 
-/* — Stop-type badge — see css/badges.css — */
+/* — Rail marker — */
 
-/* — Card content columns —
-   Address and time rows fill the section width. Their mode-specific action
-   controls collapse to zero width until Delete or Reorder is active.
+.rux-trip-itinerary__marker {
+	position: relative;
+	flex: none;
+	align-self: stretch;
+	width: 20px;
+	padding-top: 3px;
+	display: flex;
+	justify-content: center;
+}
 
-   Row spacing uses margin-top on every row but the first (via the `> * + *`
+/* The connecting line: starts at the dot/pin's own center and runs to this
+   row's bottom edge. Stops sit flush (0 gap, see file header), so that's
+   exactly where the next row's marker begins — no per-pair math needed, the
+   line just chains itself down the whole rail. --terminal (return) skips it:
+   nothing follows the last stop but the Add-row below, and Maps' own rail
+   leaves that same gap rather than running the line into its "+" too. */
+.rux-trip-itinerary__marker::before {
+	content: "";
+	position: absolute;
+	top: 17px;
+	bottom: 0;
+	left: 50%;
+	width: var(--rux-border-width);
+	transform: translateX(-50%);
+	background: var(--rux-border-subtle);
+}
+
+.rux-trip-itinerary__stop--terminal .rux-trip-itinerary__marker::before {
+	display: none;
+}
+
+/* Hollow ring for every waypoint (pickup/stop/sleeper) — tinted per type,
+   same colors as that stop's badge (see css/base/badges.css). Background
+   matches the card so it visually "cuts" the line passing behind it instead
+   of the line showing through the ring's hollow center. */
+.rux-trip-itinerary__marker-dot {
+	position: relative;
+	z-index: 1;
+	flex: none;
+	width: 12px;
+	height: 12px;
+	margin-top: 3px;
+	border-radius: var(--rux-radius-full);
+	background: var(--rux-card-bg);
+	border: 2px solid var(--rux-fg-muted);
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-trip-itinerary__marker-dot--pickup  { border-color: var(--rux-success-bright); }
+.rux-trip-itinerary__marker-dot--stop    { border-color: var(--rux-warning-bright); }
+.rux-trip-itinerary__marker-dot--sleeper { border-color: var(--rux-info); }
+
+/* Solid pin for the final destination only — same convention Maps uses
+   (every waypoint before it stays a plain dot). */
+.rux-trip-itinerary__marker-pin {
+	position: relative;
+	z-index: 1;
+	background: var(--rux-card-bg);
+	color: var(--rux-danger-bright);
+	font-size: 20px;
+	line-height: 1;
+}
+
+/* Line-only marker — used by the End-of-Day summary/divider, which has no
+   dot or pin of its own but still sits between two things the rail should
+   keep connecting: the last real stop above it and the Add-row's "+" below.
+   Starts the line at the very top of the section (no dot to center on). */
+.rux-trip-itinerary__marker--line {
+	padding-top: 0;
+}
+
+.rux-trip-itinerary__marker--line::before {
+	top: 0;
+}
+
+/* Drag handle overlays the dot in the same spot — crossfades in on hover
+   instead of the two competing for a second slot in the rail. Pickup/return
+   never render a handle at all (not draggable), so this has nothing to
+   overlay there. */
+.rux-trip-itinerary__marker .rux-trip-itinerary__inline-action--move {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	width: var(--rux-field-height);
+	height: var(--rux-field-height);
+	margin-left: 0;
+	opacity: 0;
+}
+
+/* — Add-stop row — */
+/* Sits at the bottom of the rail, same marker column width as every stop
+   above it, so its "+" lines up directly under their dots/pin instead of
+   living up in the day header as a detached toolbar icon. */
+
+/* Two classes to match (and beat, on source order) .rux-card__section +
+   .rux-card__section's own divider rule in card.css — a single-class
+   selector here would lose on specificity and the divider would still show. */
+.rux-card__section.rux-trip-itinerary__add-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	border-top: none;
+}
+
+.rux-trip-itinerary__marker--add {
+	align-self: center;
+}
+
+/* — Content column — */
+
+.rux-trip-itinerary__content {
+	flex: 1;
+	min-width: 0;
+	padding-right: 0;
+	transition: padding-right var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+/* Gutter for the absolutely-positioned delete button opens up on reveal
+   instead of sitting reserved at rest — fields fill the full row width
+   normally, then animate over as delete fades in. :has() scopes this to
+   rows that actually have a delete button at all (pickup/return never do),
+   so those never gain a gutter they'd have nothing to put in it. */
+.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):focus-within .rux-trip-itinerary__content,
+.rux-trip-itinerary__day-group.is-deleting .rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete) .rux-trip-itinerary__content {
+	padding-right: calc(var(--rux-field-height) + var(--rux-space-1));
+}
+
+@media (hover: hover) {
+	.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):hover .rux-trip-itinerary__content {
+		padding-right: calc(var(--rux-field-height) + var(--rux-space-1));
+	}
+}
+
+/* Row spacing uses margin-top on every row but the first (via the `> * + *`
    adjacent-sibling rule below) instead of a flex `gap` — a `gap` on the
    card would apply uniformly to every child with no way to single one row
    out. One
@@ -150,11 +298,10 @@
    margin-top, without touching every other row. --rux-stack-gap is tighter
    than .rux-card's own default --rux-space-3 — address/time/stats read as
    one grouped stop, not three separately-spaced sections. */
-.rux-trip-itinerary__stop > * + * {
+.rux-trip-itinerary__content > * + * {
 	margin-top: var(--rux-stack-gap);
 }
 
-/* Label row also hosts the inline trash control during delete mode. */
 .rux-trip-itinerary__label-row {
 	display: flex;
 	align-items: center;
@@ -208,24 +355,26 @@
 	align-items: center;
 	justify-content: center;
 	flex: none;
-	width: 0;
+	width: var(--rux-field-height);
 	height: var(--rux-field-height);
-	margin-left: 0;
-	overflow: hidden;
-	opacity: 0;
 	padding: 0;
 	background: none;
 	border: none;
 	color: var(--rux-fg-muted);
 	cursor: pointer;
+	opacity: 0;
 	pointer-events: none;
-	transition:
-		width var(--rux-duration-base) var(--rux-ease-out),
-		margin-left var(--rux-duration-base) var(--rux-ease-out),
-		opacity var(--rux-duration-fast) var(--rux-ease-out);
+	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
+/* Sits in the content column's reserved right-hand gutter (see
+   .rux-trip-itinerary__content's padding-right above), vertically centered
+   against the whole stop — not any one field row inside it. */
 .rux-trip-itinerary__inline-action--delete {
+	position: absolute;
+	top: 50%;
+	right: 0;
+	transform: translateY(-50%);
 	color: var(--rux-danger);
 }
 
@@ -233,12 +382,38 @@
 	cursor: grab;
 }
 
+/* Explicit mode toggle (Day header's Delete/Reorder buttons) — still the way
+   in on touch, where nothing below can ever fire since touch has no :hover. */
 .rux-trip-itinerary__day-group.is-deleting .rux-trip-itinerary__inline-action--delete,
 .rux-trip-itinerary__day-group.is-reordering .rux-trip-itinerary__inline-action--move {
-	width: var(--rux-field-height);
-	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
+}
+
+/* Keyboard focus reveals a row's own controls regardless of pointer type —
+   unlike :hover this isn't something only mouse/touch users get. */
+.rux-trip-itinerary__stop:focus-within .rux-trip-itinerary__inline-action {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.rux-trip-itinerary__stop:focus-within .rux-trip-itinerary__marker-dot {
+	opacity: 0;
+}
+
+/* Mouse-hover reveal — the Maps-style "hover a row, see delete/handle without
+   entering a mode first" this was requested for. Gated to devices that
+   actually have a hover state; touch devices keep using the mode toggle
+   above, since a hover-only control would simply never appear for them. */
+@media (hover: hover) {
+	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__inline-action {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__marker-dot {
+		opacity: 0;
+	}
 }
 
 /* Miles/Drive unit suffix — no field label above these, the unit inline

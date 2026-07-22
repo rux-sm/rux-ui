@@ -17,27 +17,18 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.24 020.0); /* 211 032 042 red-5     */
-	--rux-orange: oklch(70.0% 0.24 050.0); /* 216 074 028 volcano-5 */
-	--rux-yellow: oklch(80.0% 0.24 090.0); /* 215 150 021 gold-5    */
-	--rux-green:  oklch(55.0% 0.24 140.0); /* druid green */
-	--rux-cyan:   oklch(60.0% 0.24 195.0); /* frost */
-	--rux-blue:   oklch(55.0% 0.24 250.0); /* mana blue */
-	--rux-purple: oklch(55.0% 0.24 290.0); /* 100 041 180 purple-5  */
-	--rux-pink:   oklch(60.0% 0.24 350.0); /* 203 043 131 magenta-5 */
-
-	--rux-red:    oklch(60.0% 0.23 020.0); /* Infernal — Vivid, true red */
+	--rux-red:    oklch(60.0% 0.23 022.0); /* Infernal — Vivid, true red */
 	--rux-orange: oklch(70.0% 0.21 050.0); /* Phoenix  — Punchy warm orange */
-	--rux-yellow: oklch(84.0% 0.19 090.0); /* Aura     — Bright, glowing yellow */
+	--rux-yellow: oklch(70.0% 0.19 085.0); /* Coin     — Bright, glowing yellow */
 	--rux-green:  oklch(58.0% 0.21 140.0); /* Druid    — Rich emerald green */
 	--rux-cyan:   oklch(62.0% 0.19 195.0); /* Frost    — Crisp electric cyan */
-	--rux-blue:   oklch(58.0% 0.22 250.0); /* Mana     — Vibrant cobalt blue */
-	--rux-purple: oklch(58.0% 0.22 290.0); /* Arcane   — Neon violet */
-	--rux-pink:   oklch(62.0% 0.22 350.0); /* Charm    — Radiant magenta */
+	--rux-blue:   oklch(58.0% 0.22 255.0); /* Mana     — Vibrant cobalt blue */
+	--rux-purple: oklch(58.0% 0.22 290.0); /* Void — Neon violet */
+	--rux-pink:   oklch(62.0% 0.22 350.0); /* Faye — Radiant magenta */
 
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
-	--rux-danger:  oklch(60.0% 0.23 020.0); /* Infernal — Vivid, true red */
+	--rux-danger:  oklch(60.0% 0.23 022.0); /* Infernal — Vivid, true red */
 	--rux-warning: oklch(79.5% 0.145 083.8); /* 232 179 057 gold-6  */
 	--rux-success: oklch(72.2% 0.189 135.5); /* 107 190 050 green-6 */
 	--rux-info:    oklch(62.7% 0.162 256); /* 061 136 232 blue-6  */

@@ -133,7 +133,7 @@
 					aria-label="Account actions"
 				>
 					<button
-						class="rux-button rux-button--ghost rux-button--icon rux-app-header__profile"
+						class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
 						type="button"
 						id="profile-menu-btn"
 						aria-label="Profile menu"
@@ -195,13 +195,14 @@
 						>
 							<div class="rux-panel__nav">
 								<nav
-									class="rux-trip-panel__tabs"
+									class="rux-tabs rux-tabs--fill rux-trip-panel__tabs"
 									role="tablist"
 									aria-label="Trip editor sections"
+									data-rux-tabs
 									data-trip-tabs
 								>
 									<button
-										class="rux-button rux-button--ghost rux-trip-panel__tab"
+										class="rux-tab rux-trip-panel__tab"
 										type="button"
 										role="tab"
 										aria-selected="true"
@@ -218,7 +219,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-trip-panel__tab"
+										class="rux-tab rux-trip-panel__tab"
 										type="button"
 										role="tab"
 										aria-selected="false"
@@ -235,7 +236,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-trip-panel__tab"
+										class="rux-tab rux-trip-panel__tab"
 										type="button"
 										role="tab"
 										aria-selected="false"
@@ -252,7 +253,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-trip-panel__tab"
+										class="rux-tab rux-trip-panel__tab"
 										type="button"
 										role="tab"
 										aria-selected="false"
@@ -513,7 +514,7 @@
 											</p>
 											<div class="rux-cluster">
 												<button
-													class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+													class="rux-button rux-button--default rux-button--icon rux-button--toggle"
 													type="button"
 													id="tp-contact-toggle-btn"
 													aria-pressed="false"
@@ -526,7 +527,7 @@
 													>
 												</button>
 												<button
-													class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
+													class="rux-button rux-button--default rux-button--danger rux-button--icon"
 													type="button"
 													id="tp-contact-delete-btn"
 													disabled
@@ -569,7 +570,7 @@
 											<p class="rux-card__title">Files</p>
 											<div class="rux-cluster">
 												<button
-													class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+													class="rux-button rux-button--default rux-button--icon rux-button--toggle"
 													type="button"
 													id="tp-doc-toggle-btn"
 													aria-pressed="false"
@@ -582,7 +583,7 @@
 													>
 												</button>
 												<button
-													class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
+													class="rux-button rux-button--default rux-button--danger rux-button--icon"
 													type="button"
 													id="tp-doc-delete-btn"
 													disabled
@@ -914,7 +915,7 @@
 											</p>
 											<div class="rux-cluster">
 												<button
-													class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
+													class="rux-button rux-button--default rux-button--danger rux-button--icon"
 													type="button"
 													id="tp-ticket-delete-btn"
 													disabled
@@ -1200,7 +1201,7 @@
 											</p>
 											<div class="rux-cluster">
 												<button
-													class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
+													class="rux-button rux-button--default rux-button--danger rux-button--icon"
 													type="button"
 													id="tp-payment-delete-btn"
 													disabled
@@ -1271,7 +1272,7 @@
 													class="rux-trip-itinerary__summary-actions"
 												>
 													<button
-														class="rux-button rux-button--ghost"
+														class="rux-button rux-button--default"
 														type="button"
 														id="tp-import-btn"
 														title="Upload JSON"
@@ -1317,7 +1318,7 @@
 													Split Trip
 												</p>
 												<button
-													class="rux-button rux-button--ghost rux-button--danger"
+													class="rux-button rux-button--default rux-button--danger"
 													id="tp-itin-reset-leg"
 													type="button"
 													title="Reset Outbound itinerary"
@@ -1617,7 +1618,7 @@
 								></div>
 								<div class="calendar-app__date-controls">
 									<button
-										class="rux-button rux-button--ghost rux-button--icon calendar-app__nav"
+										class="rux-button rux-button--default rux-button--icon calendar-app__nav"
 										id="prev-week"
 										aria-label="Previous week"
 									>
@@ -1626,7 +1627,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost"
+										class="rux-button rux-button--default"
 										id="today-btn"
 										type="button"
 										aria-label="Jump to current week"
@@ -1639,7 +1640,7 @@
 										<span class="rux-btn-label">Today</span>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-button--icon calendar-app__nav"
+										class="rux-button rux-button--default rux-button--icon calendar-app__nav"
 										id="next-week"
 										aria-label="Next week"
 									>
@@ -1649,7 +1650,7 @@
 									</button>
 								</div>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon"
+									class="rux-button rux-button--default rux-button--icon"
 									id="print-schedule-btn"
 									type="button"
 									aria-label="Print schedule"
@@ -1756,13 +1757,14 @@
 						>
 							<div class="rux-panel__nav">
 								<nav
-									class="rux-right-panel__tabs"
+									class="rux-tabs rux-tabs--fill rux-right-panel__tabs"
 									role="tablist"
 									aria-label="Right panel sections"
+									data-rux-tabs
 									data-right-tabs
 								>
 									<button
-										class="rux-button rux-button--ghost rux-right-panel__tab"
+										class="rux-tab rux-right-panel__tab"
 										type="button"
 										role="tab"
 										aria-selected="true"
@@ -1779,7 +1781,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-right-panel__tab"
+										class="rux-tab rux-right-panel__tab"
 										type="button"
 										role="tab"
 										aria-selected="false"
@@ -1796,7 +1798,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-right-panel__tab"
+										class="rux-tab rux-right-panel__tab"
 										type="button"
 										role="tab"
 										aria-selected="false"
@@ -1831,7 +1833,7 @@
 												class="rux-mini-cal__header"
 											>
 												<button
-													class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
+													class="rux-button rux-button--default rux-button--icon rux-button--sm"
 													id="mini-cal-prev"
 													type="button"
 													aria-label="Previous month"
@@ -1845,7 +1847,7 @@
 													id="mini-cal-title"
 												></span>
 												<button
-													class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
+													class="rux-button rux-button--default rux-button--icon rux-button--sm"
 													id="mini-cal-next"
 													type="button"
 													aria-label="Next month"
@@ -1884,7 +1886,7 @@
 												Filter By
 											</h3>
 											<button
-												class="rux-button rux-button--ghost"
+												class="rux-button rux-button--default"
 												id="tf-clear-btn"
 												type="button"
 											>
@@ -2861,7 +2863,7 @@
 							</button>
 							<div class="rux-workspace__toolbar">
 								<button
-									class="rux-button rux-button--ghost"
+									class="rux-button rux-button--default"
 									id="fleet-save-order-btn"
 									type="button"
 									hidden
@@ -2875,7 +2877,7 @@
 									>
 								</button>
 								<button
-									class="rux-button rux-button--ghost"
+									class="rux-button rux-button--default"
 									id="fleet-cols-btn"
 									type="button"
 									title="Show / hide columns"
@@ -3610,7 +3612,7 @@
 										<span class="rux-spacer"></span>
 										<div class="rux-cluster">
 											<button
-												class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
+												class="rux-button rux-button--default rux-button--danger rux-button--icon"
 												type="button"
 												id="dp-timeoff-delete-btn"
 												disabled
@@ -3710,7 +3712,7 @@
 													<span>Copy Link</span>
 												</button>
 												<button
-													class="rux-button rux-button--ghost rux-button--danger"
+													class="rux-button rux-button--default rux-button--danger"
 													type="button"
 													id="dp-schedule-deactivate"
 													disabled
@@ -3793,7 +3795,7 @@
 							</button>
 							<div class="rux-workspace__toolbar">
 								<button
-									class="rux-button rux-button--ghost"
+									class="rux-button rux-button--default"
 									id="driver-save-order-btn"
 									type="button"
 									hidden
@@ -3807,7 +3809,7 @@
 									>
 								</button>
 								<button
-									class="rux-button rux-button--ghost"
+									class="rux-button rux-button--default"
 									id="driver-cols-btn"
 									type="button"
 									title="Show / hide columns"
@@ -3937,7 +3939,7 @@
 									placeholder="Search customers…"
 									aria-label="Search customers"
 								/>
-								<button class="rux-button rux-button--ghost" id="customer-new-btn" type="button">
+								<button class="rux-button rux-button--default" id="customer-new-btn" type="button">
 									<span class="rux-icon" aria-hidden="true">add</span>
 									<span class="rux-btn-label">New customer</span>
 								</button>
@@ -4182,7 +4184,7 @@
 												Default
 											</button>
 											<button
-												class="rux-button rux-button--ghost"
+												class="rux-button rux-button--default"
 												type="button"
 											>
 												Ghost
@@ -4202,7 +4204,7 @@
 												Default
 											</button>
 											<button
-												class="rux-button rux-button--ghost"
+												class="rux-button rux-button--default"
 												type="button"
 												disabled
 											>
@@ -4225,7 +4227,7 @@
 												Danger Default
 											</button>
 											<button
-												class="rux-button rux-button--ghost rux-button--danger"
+												class="rux-button rux-button--default rux-button--danger"
 												type="button"
 											>
 												Danger Ghost
@@ -4516,7 +4518,7 @@
 											class="components-app__anatomy-stage"
 										>
 											<button
-												class="rux-button rux-button--ghost rux-button--icon rux-button--toggle is-active"
+												class="rux-button rux-button--default rux-button--icon rux-button--toggle is-active"
 												type="button"
 												aria-pressed="true"
 												aria-label="Mark as not needed"
@@ -4600,7 +4602,7 @@
 										class="rux-card__body components-app__specimens"
 									>
 										<button
-											class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+											class="rux-button rux-button--default rux-button--icon rux-button--toggle"
 											type="button"
 											aria-pressed="false"
 											data-rux-toggle-button
@@ -4612,7 +4614,7 @@
 											>block</span>
 										</button>
 										<button
-											class="rux-button rux-button--ghost rux-button--icon rux-button--toggle is-active"
+											class="rux-button rux-button--default rux-button--icon rux-button--toggle is-active"
 											type="button"
 											aria-pressed="true"
 											data-rux-toggle-button
@@ -4678,7 +4680,7 @@
 										class="rux-card__body components-app__specimens"
 									>
 										<button
-											class="rux-button rux-button--ghost rux-button--toggle rux-button--icon is-active"
+											class="rux-button rux-button--default rux-button--toggle rux-button--icon is-active"
 											type="button"
 											aria-pressed="true"
 											data-rux-toggle-button
@@ -4691,7 +4693,7 @@
 											>group</span>
 										</button>
 										<button
-											class="rux-button rux-button--ghost rux-button--toggle rux-button--icon"
+											class="rux-button rux-button--default rux-button--toggle rux-button--icon"
 											type="button"
 											aria-pressed="false"
 											data-rux-toggle-button
@@ -4704,7 +4706,7 @@
 											>person_add</span>
 										</button>
 										<button
-											class="rux-button rux-button--ghost rux-button--toggle rux-button--icon"
+											class="rux-button rux-button--default rux-button--toggle rux-button--icon"
 											type="button"
 											aria-pressed="false"
 											data-rux-toggle-button
@@ -4812,7 +4814,7 @@
 										class="rux-card__body components-app__specimens"
 									>
 										<button
-											class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+											class="rux-button rux-button--default rux-button--icon rux-button--toggle"
 											type="button"
 											aria-pressed="false"
 											disabled
@@ -4879,7 +4881,7 @@
 											Join the table to play
 										</p>
 										<button
-											class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
+											class="rux-button rux-button--default rux-button--danger rux-button--icon"
 											id="game-reset"
 											type="button"
 											hidden
@@ -4893,7 +4895,7 @@
 											>
 										</button>
 										<button
-											class="rux-button rux-button--ghost rux-button--icon flip-seven__quit"
+											class="rux-button rux-button--default rux-button--icon flip-seven__quit"
 											id="game-leave"
 											type="button"
 											aria-label="Quit game"
@@ -4988,7 +4990,7 @@
 												Start match
 											</button>
 											<button
-												class="rux-button rux-button--ghost rux-button--danger"
+												class="rux-button rux-button--default rux-button--danger"
 												id="game-lobby-reset"
 												type="button"
 												hidden
@@ -5529,7 +5531,7 @@
 									></div>
 									<div class="settings-req-add-area">
 										<button
-											class="rux-button rux-button--ghost"
+											class="rux-button rux-button--default"
 											type="button"
 											id="settings-req-add-btn"
 										>
@@ -5581,7 +5583,7 @@
 												Add
 											</button>
 											<button
-												class="rux-button rux-button--ghost rux-button--sm"
+												class="rux-button rux-button--default rux-button--sm"
 												type="button"
 												id="settings-req-cancel-btn"
 											>
@@ -5665,10 +5667,10 @@
 		<script src="./js/core/controls.js?v=2" defer></script>
 		<script src="./js/core/billing-config.js?v=2"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
-		<script src="./js/core/doc-viewer.js?v=7"></script>
+		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=18"></script>
-		<script src="./js/components/itinerary.js?v=14"></script>
+		<script src="./js/panels/trip-panel.js?v=19"></script>
+		<script src="./js/components/itinerary.js?v=17"></script>
 		<script src="./js/panels/driver-panel.js?v=9" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=2" defer></script>
@@ -5676,8 +5678,8 @@
 		<script src="./js/panels/trips-list.js?v=8" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=1" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=10" defer></script>
-		<script type="module" src="./js/panels/driver-week-info.js?v=8"></script>
+		<script src="./js/panels/trip-envelope.js?v=11" defer></script>
+		<script type="module" src="./js/panels/driver-week-info.js?v=9"></script>
 		<script type="module" src="./js/panels/components-panel.js?v=3"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
@@ -5691,8 +5693,9 @@
 			} from "./js/components/trip-bar.js?v=9";
 			import BusPicker, {
 				findConflict as findBusConflict,
-			} from "./js/components/bus-picker.js?v=2";
+			} from "./js/components/bus-picker.js?v=3";
 			import { loadRequirements } from "./js/data/requirements-db.js";
+			import { normalizeTripImport } from "./js/data/trip-import.js?v=1";
 			import { supabase } from "./js/data/supabase.js";
 
 			// Load requirements before trip panel is used (window.appRequirements cache)
@@ -8228,7 +8231,7 @@
 				driverGridPopover.innerHTML = `
 					<header class="rux-card__header">
 						<p class="rux-card__title" data-driver-grid-popover-title></p>
-						<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-driver-grid-popover-close aria-label="Close assignment details">
+						<button type="button" class="rux-button rux-button--default rux-button--icon" data-driver-grid-popover-close aria-label="Close assignment details">
 							<span class="rux-icon" aria-hidden="true">close</span>
 						</button>
 					</header>
@@ -8977,20 +8980,32 @@
 								"Invalid JSON — check the format and try again.";
 							return;
 						}
-						if (!parsed || typeof parsed !== "object") {
-							importError.textContent = "Expected a JSON object.";
+						if (!loadTrip) {
+							importError.textContent = "Trip editor is still loading — try again in a moment.";
 							return;
 						}
-						if (!parsed.stops && parsed.trip_stops)
-							parsed.stops = parsed.trip_stops;
-						if (parsed.stops) {
-							itinerary.setStops(parsed.stops);
-						} else if (loadTrip) {
-							loadTrip(tripPanel, itinerary, parsed);
+						let imported;
+						try {
+							imported = normalizeTripImport(parsed, window.appRequirements ?? []);
+						} catch (error) {
+							importError.textContent = error?.message || "This trip JSON is not supported.";
+							return;
 						}
+						// Always hydrate the complete sanitized draft. The old branch only
+						// called setStops() when an itinerary existed, silently dropping all
+						// top-level trip fields and the second leg of split trips.
+						loadTrip(tripPanel, itinerary, imported.trip);
 						setActiveTripPane("pane-itinerary");
 						openDrawer();
 						importModal.hidden = true;
+						if (imported.warnings.length) {
+							console.warn("Trip JSON import warnings:", imported.warnings);
+							const warningSummary = imported.warnings.slice(0, 2).join(" ");
+							const moreWarnings = imported.warnings.length > 2 ? ` (+${imported.warnings.length - 2} more)` : "";
+							window.Rux?.toast?.(`Trip imported. ${warningSummary}${moreWarnings}`);
+						} else {
+							window.Rux?.toast?.("Trip draft imported");
+						}
 					});
 			}
 
@@ -9056,7 +9071,7 @@
 							"
 						>
 							<label
-								class="rux-button rux-button--ghost"
+								class="rux-button rux-button--default"
 								style="cursor: pointer"
 							>
 								<span class="rux-icon">upload_file</span>
@@ -9081,7 +9096,7 @@
 				</div>
 				<div class="rux-modal__footer">
 					<button
-						class="rux-button rux-button--ghost"
+						class="rux-button rux-button--default"
 						id="tp-import-cancel"
 					>
 						Cancel
@@ -9201,7 +9216,7 @@
 				</div>
 				<div class="rux-modal__footer">
 					<button
-						class="rux-button rux-button--ghost"
+						class="rux-button rux-button--default"
 						data-rux-dismiss
 					>
 						Cancel
@@ -9232,7 +9247,7 @@
 				</p>
 				<button
 					type="button"
-					class="rux-button rux-button--ghost rux-button--icon"
+					class="rux-button rux-button--default rux-button--icon"
 					id="manifest-window-close"
 					aria-label="Close manifest"
 				>
@@ -9261,7 +9276,7 @@
                the one action that actually does something today. -->
 						<button
 							type="button"
-							class="rux-button rux-button--ghost rux-button--icon"
+							class="rux-button rux-button--default rux-button--icon"
 							id="rpm-print-manifest-btn"
 							title="Print Manifest"
 							aria-label="Print Manifest"
@@ -9272,7 +9287,7 @@
 						</button>
 						<button
 							type="button"
-							class="rux-button rux-button--ghost rux-button--icon"
+							class="rux-button rux-button--default rux-button--icon"
 							id="rpm-print-report-2-btn"
 							title="Print Report 2"
 							aria-label="Print Report 2"
@@ -9283,7 +9298,7 @@
 						</button>
 						<button
 							type="button"
-							class="rux-button rux-button--ghost rux-button--icon"
+							class="rux-button rux-button--default rux-button--icon"
 							id="rpm-print-report-3-btn"
 							title="Print Report 3"
 							aria-label="Print Report 3"
@@ -9294,7 +9309,7 @@
 						</button>
 						<button
 							type="button"
-							class="rux-button rux-button--ghost rux-button--icon"
+							class="rux-button rux-button--default rux-button--icon"
 							id="rpm-seating-chart-btn"
 							title="Seating Chart"
 							aria-label="Seating Chart"
@@ -9350,7 +9365,7 @@
 					<header class="rux-card__header">
 						<button
 							type="button"
-							class="rux-button rux-button--ghost rux-button--icon"
+							class="rux-button rux-button--default rux-button--icon"
 							id="rpm-back-btn"
 							aria-label="Back to manifest"
 						>
@@ -9527,7 +9542,7 @@
 									<p class="rux-card__title">Payments</p>
 									<div class="rux-cluster">
 										<button
-											class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
+											class="rux-button rux-button--default rux-button--danger rux-button--icon"
 											type="button"
 											id="rpm-payment-delete-btn"
 											disabled
