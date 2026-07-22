@@ -1,4 +1,5 @@
 import { supabase } from "./supabase.js";
+import { isAssignmentRoleActive } from "../core/trip-assignment-roles.js";
 
 export async function fetchDrivers() {
   const { data, error } = await supabase
@@ -149,7 +150,7 @@ export async function fetchDriverTrips(driverId) {
     .select(`
       role,
       trip_assignments(
-        leg,
+        leg, active_roles,
         trips(trip_ref, start_date, end_date, return_start_date, return_end_date, trip_type, destination, invoice_status),
         buses(number)
       )
@@ -162,6 +163,7 @@ export async function fetchDriverTrips(driverId) {
       const ta   = td.trip_assignments;
       const trip = ta?.trips;
       if (!trip?.trip_ref) return null;
+      if (!isAssignmentRoleActive(ta, td.role)) return null;
       // Return-leg assignments run on the trip's separate return date range,
       // not its outbound start/end — only meaningful for dropoff_pickup trips.
       const isReturnLeg = ta.leg === "return" && trip.trip_type === "dropoff_pickup";

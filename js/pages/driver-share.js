@@ -1,6 +1,7 @@
 import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
+import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=4";
 
 const root = document.getElementById("driver-share-root");
@@ -129,7 +130,7 @@ function fetchSharedTrips(tripIds, includeReliefDetails = true) {
 		trip_reqs, req_sleeper, req_56pax, req_ada, need_hotel, need_fuel_card,
 		trip_stops(*),
 		trip_assignments(
-			id, leg, bus_id,
+			id, leg, bus_id, active_roles,
 			buses(number),
 			trip_drivers(driver_id, role${reliefFields}, drivers(id, name, short_name, phone))
 		)
@@ -156,10 +157,11 @@ function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 	const stops = stopsForLeg(trip, leg);
 	const pickup = stops.find((stop) => stop.type === "pickup") || {};
 	const returnStop = [...stops].reverse().find((stop) => stop.type === "return") || {};
-	const driverAssignment = (row.trip_drivers || []).find(
+	const activeDrivers = activeAssignmentDrivers(row);
+	const driverAssignment = activeDrivers.find(
 		(item) => String(item.driver_id) === String(driverId),
 	) || {};
-	const crew = (row.trip_drivers || [])
+	const crew = activeDrivers
 		.filter((item) => String(item.driver_id) !== String(driverId))
 		.sort((a, b) => {
 			if (driverAssignment.role !== "driver") {
@@ -332,7 +334,7 @@ async function load() {
 			if (!trip) return null;
 			const assignment = (trip.trip_assignments || []).find((item) =>
 				(item.leg || "outbound") === (ref.leg || "outbound")
-				&& (item.trip_drivers || []).some(
+				&& activeAssignmentDrivers(item).some(
 					(driver) => String(driver.driver_id) === String(share.driver.id),
 				),
 			);

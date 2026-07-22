@@ -1241,7 +1241,7 @@
   async function init() {
     if (!db) {
       try {
-        db = await import("../data/driver-db.js");
+        db = await import("../data/driver-db.js?v=2");
       } catch (err) {
         console.warn("Could not load driver-db:", err);
         return;

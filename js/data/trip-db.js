@@ -15,6 +15,7 @@
    ========================================================================== */
 
 import { supabase } from "./supabase.js";
+import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 
 	let currentTripId  = null;
 	let currentTripRef = null;
@@ -187,14 +188,14 @@ import { supabase } from "./supabase.js";
 	}
 
 	function hasAssignments(assignments) {
-		return assignments.some((assignment) => assignment.bus_id || (assignment.drivers || []).length);
+		return assignments.some((assignment) => assignment.bus_id || activeAssignmentDrivers(assignment).length);
 	}
 
 	function snapshotAssignments(assignments = []) {
 		return assignments.map((assignment) => ({
 			bus_id: assignment.bus_id ?? null,
 			position: assignment.position ?? null,
-			drivers: (assignment.trip_drivers || assignment.drivers || []).map((driver) => ({
+			drivers: activeAssignmentDrivers(assignment).map((driver) => ({
 				driver_id: driver.driver_id ?? null,
 				role: driver.role ?? null,
 				pay: driver.pay ?? null,
@@ -315,6 +316,7 @@ import { supabase } from "./supabase.js";
 			const busId = root.querySelector(`[name="${fieldPrefix}[${i}].busId"]`)?.value || null;
 			if (!busId) continue;
 
+			const busGroup = container?.querySelectorAll(".rux-trip-panel__bus-group")[i];
 			const driverRoles = [
 				{ role: "driver",       roleKey: "driver",   nameField: `${fieldPrefix}[${i}].driver.name`,  payField: `${fieldPrefix}[${i}].driver.pay`  },
 				{ role: "co-driver",    roleKey: "coDriver", nameField: `${fieldPrefix}[${i}].coDriver.name`, payField: `${fieldPrefix}[${i}].coDriver.pay` },
@@ -324,6 +326,9 @@ import { supabase } from "./supabase.js";
 
 			const drivers = driverRoles
 				.map(({ role, roleKey, nameField, payField }) => {
+					const roleIsActive = role === "driver"
+						|| busGroup?.querySelector(`[data-role="${roleKey}"]`)?.getAttribute("aria-pressed") === "true";
+					if (!roleIsActive) return null;
 					const driverId = root.querySelector(`[name="${nameField}"]`)?.value || null;
 					const pay = parseFloat(root.querySelector(`[name="${payField}"]`)?.value) || null;
 					const reportTime = root.querySelector(
@@ -342,7 +347,6 @@ import { supabase } from "./supabase.js";
 				})
 				.filter(Boolean);
 
-			const busGroup = container?.querySelectorAll(".rux-trip-panel__bus-group")[i];
 			const activeRoles = [];
 			if (busGroup) {
 				const roleMap = { coDriver: "co-driver", relief1: "relief-start", relief2: "relief-end" };
@@ -730,8 +734,25 @@ import { supabase } from "./supabase.js";
 			const busSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].busId"]`);
 			if (busSelect && assignment.bus_id) busSelect.value = assignment.bus_id;
 
-			// Restore active role toggles and label color states
-			(assignment.active_roles || ["driver"]).forEach((entry) => {
+			// active_roles is authoritative whenever it exists. Older assignments
+			// created before that column was populated can still be recovered by
+			// inferring their optional roles from the saved driver rows.
+			const savedRoles = Array.isArray(assignment.active_roles)
+				? assignment.active_roles
+				: null;
+			const activeRoleEntries = savedRoles ?? [
+				"driver",
+				...activeAssignmentDrivers(assignment)
+					.map((driver) => driver.role)
+					.filter((role) => role && role !== "driver"),
+			];
+			const activeRoleKeys = new Set(
+				activeRoleEntries.map((entry) => String(entry).split(":", 1)[0]),
+			);
+
+			// Restore active role toggles and label color states.
+			activeRoleEntries.forEach((rawEntry) => {
+				const entry = String(rawEntry);
 				const [role, savedState] = entry.includes(":") ? entry.split(":") : [entry, "off"];
 				const state = normalizeDriverStatus(savedState);
 				const roleKey = roleKeyMap[role];
@@ -756,7 +777,7 @@ import { supabase } from "./supabase.js";
 				}
 			});
 
-			(assignment.drivers || []).forEach(({
+			activeAssignmentDrivers(assignment).forEach(({
 				driver_id,
 				role,
 				pay,
@@ -765,6 +786,10 @@ import { supabase } from "./supabase.js";
 			}) => {
 				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
+				// Never hydrate a hidden optional role merely because an old or
+				// inconsistent trip_drivers row still exists. The role toggle is the
+				// source of truth; primary driver is always available.
+				if (role !== "driver" && !activeRoleKeys.has(role)) return;
 				const driverSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.name"]`);
 				if (driverSelect && driver_id) driverSelect.value = driver_id;
 				const payInput = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.pay"]`);
@@ -781,6 +806,25 @@ import { supabase } from "./supabase.js";
 				if (instructionsInput) instructionsInput.value = instructions || "";
 			});
 		});
+	}
+
+	function resetAssignmentGroups(root) {
+		root.querySelectorAll("#tp-bus-groups .rux-trip-panel__bus-group, #tp-return-bus-groups .rux-trip-panel__bus-group")
+			.forEach((group) => {
+				group.querySelectorAll("select[name], input[name]").forEach((control) => {
+					control.value = "";
+				});
+				group.querySelectorAll("[data-role]").forEach((button) => {
+					button.setAttribute("aria-pressed", "false");
+					button.classList.remove("is-active");
+				});
+				group.querySelectorAll("[data-role-row]").forEach((row) => {
+					row.hidden = true;
+				});
+				group.querySelectorAll(".rux-trip-panel__role-label").forEach((label) => {
+					restoreDriverStatus(label, "off");
+				});
+			});
 	}
 
 	function populateAssignments(root, assignments) {
@@ -1276,7 +1320,7 @@ export async function fetchTrips() {
 		...trip,
 		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...a }) => ({
 			...a,
-			drivers: trip_drivers ?? [],
+			drivers: activeAssignmentDrivers({ ...a, trip_drivers }),
 		})),
 		trip_payments: paymentsByTrip.get(trip.id) ?? [],
 		trip_passengers: passengersByTrip.get(trip.id) ?? [],
@@ -1366,7 +1410,12 @@ export function loadTrip(root, itinerary, trip) {
 	currentStopsHydrated = normalized.trip_type !== "dropoff_pickup"
 		|| Array.isArray(trip.allTripStops)
 		|| !trip.leg;
-	const loadedAssignments = trip.assignments ?? trip.trip_assignments ?? [];
+	// Prefer the complete database relation whenever it is present. Scheduler
+	// bars also carry an `assignments` projection for rendering; that projection
+	// can be older than allTripsRaw during a realtime refresh and must not win.
+	const loadedAssignments = Array.isArray(trip.trip_assignments)
+		? trip.trip_assignments
+		: (Array.isArray(trip.assignments) ? trip.assignments : []);
 	const outboundAssignments = loadedAssignments.filter((a) => (a.leg ?? "outbound") !== "return");
 	const returnAssignments = loadedAssignments.filter((a) => a.leg === "return");
 	const busCount = Math.max(1, normalized.bus_count || 0, outboundAssignments.length);
@@ -1388,11 +1437,14 @@ export function loadTrip(root, itinerary, trip) {
 	window.Rux?.syncDateInputs(root);
 	syncBusCount(root, busCount);
 	syncReturnBusCount(root, returnBusCount);
+	// Bus-count rendering preserves existing cards so user edits survive an
+	// interactive count change. A trip load is different: every assignment
+	// control must start clean or an optional driver from the previous trip can
+	// leak into this one (and, before save-side gating, become persistent).
+	resetAssignmentGroups(root);
 
 	// Pre-select bus and drivers from the assignment embedded in the trip object
-	if (loadedAssignments.length) {
-		populateAssignments(root, loadedAssignments);
-	}
+	populateAssignments(root, loadedAssignments);
 
 	populatePayments(root, trip.trip_payments ?? []);
 	populateTicketOptions(root, trip.trip_ticket_options ?? []);
