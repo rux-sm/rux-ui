@@ -57,6 +57,9 @@
 
 	/* ─── COLOR · alpha ────────────────────────────────────────────────────── */
 
+	/* Shared tint strength: components supply their own semantic/base color. */
+	--rux-opacity-subtle-tint: 16%;
+
 	/* — white overlays — */
 	/* Relative color syntax requires "from": without it, var(--rux-white)
 	   substitutes as literal text, nesting a full oklch(...) color inside
@@ -379,6 +382,7 @@
 	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-border);
 	--rux-calendar-radius:        var(--rux-radius-container);
 	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-border);
+	--rux-mini-cal-active-week-opacity: var(--rux-opacity-subtle-tint);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 	/* The body is intentionally a bare scrolling region. */
@@ -476,7 +480,7 @@
 	--rux-trip-bar-selected-bg-lightness: 60%;
 	--rux-trip-bar-selected-bg-chroma:    0.22;
 	--rux-trip-bar-disabled-opacity:      0.45;
-	--rux-trip-bar-tail-opacity:          20%;
+	--rux-trip-bar-tail-opacity:          var(--rux-opacity-subtle-tint);
 	--rux-trip-bar-tail-hover-opacity:    75%;
 	--rux-trip-bar-tail-pressed-opacity:  75%;
 

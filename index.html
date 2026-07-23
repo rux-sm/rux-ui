@@ -13,9 +13,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=20" />
+		<link rel="stylesheet" href="./css/tokens.css?v=21" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=73" />
+		<link rel="stylesheet" href="./css/components.css?v=75" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -1814,6 +1814,23 @@
 											>Tasks</span
 										>
 									</button>
+									<button
+										class="rux-tab rux-right-panel__tab"
+										type="button"
+										role="tab"
+										aria-selected="false"
+										aria-controls="rp-pane-history"
+										title="History"
+									>
+										<span
+											class="rux-icon"
+											aria-hidden="true"
+											>history</span
+										><span
+											class="rux-right-panel__tab-label"
+											>History</span
+										>
+									</button>
 								</nav>
 							</div>
 							<div class="rux-panel__body">
@@ -2287,13 +2304,58 @@
 									role="tabpanel"
 									hidden
 								></div>
+								<div
+									id="rp-pane-history"
+									class="rux-panel__pane"
+									role="tabpanel"
+									hidden
+								>
+									<section
+										class="rux-trip-history"
+										id="rp-trip-history"
+										aria-label="Trip change history"
+									>
+										<header class="rux-trip-history__toolbar">
+											<div>
+												<h3 class="rux-trip-history__title">All trip history</h3>
+												<p class="rux-trip-history__subtitle">Newest changes first</p>
+											</div>
+											<button
+												class="rux-button rux-button--default rux-button--sm rux-trip-history__filter"
+												id="rp-history-trip-filter"
+												type="button"
+												hidden
+												aria-label="Clear selected trip filter"
+											></button>
+										</header>
+										<p
+											class="rux-trip-history__status rux-subtle"
+											id="rp-history-status"
+											aria-live="polite"
+										>
+											Open History to load changes.
+										</p>
+										<div
+											class="rux-trip-history__list"
+											id="rp-history-list"
+										></div>
+										<button
+											class="rux-button rux-button--default rux-button--block"
+											id="rp-history-load-more"
+											type="button"
+											hidden
+										>
+											Load more
+										</button>
+									</section>
+								</div>
 							</div>
 							<!-- Fixed action slot at the bottom of the panel, shared across
                    tabs — contents are per-tab (only one group shown at a
                    time, matching the active pane), but the footer itself
                    stays in the same place instead of each pane owning (and
                    popping in/out) its own footer. Hidden entirely when the
-                   active tab has no action of its own (Nav, Tasks for now). -->
+                   active tab has no action of its own (Nav, Tasks, History). -->
 							<footer
 								class="rux-panel__footer"
 								id="rp-panel-footer"
@@ -5682,6 +5744,7 @@
 		<script src="./js/panels/trip-envelope.js?v=12" defer></script>
 		<script type="module" src="./js/panels/driver-week-info.js?v=9"></script>
 		<script type="module" src="./js/panels/components-panel.js?v=3"></script>
+		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -5691,7 +5754,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=10";
+			} from "./js/components/trip-bar.js?v=11";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -6432,7 +6495,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=6");
+					const db = await import("./js/data/trip-db.js?v=7");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -7999,9 +8062,11 @@
 					});
 					if (paneId === "rp-pane-drivers")
 						ensureDriverGridData().then(renderDriverGrid);
+					if (paneId === "rp-pane-history")
+						window.TripHistory?.activate();
 					// Footer stays in a fixed spot across tabs — only the action group
 					// matching the active pane shows, and the footer itself hides
-					// entirely when the active tab has none (Nav, Tasks for now).
+					// entirely when the active tab has none (Nav, Tasks, History).
 					let hasFooterAction = false;
 					rpFooterGroups.forEach((group) => {
 						const show = group.dataset.rpFooterFor === paneId;
@@ -8798,7 +8863,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=6");
+					const db = await import("./js/data/trip-db.js?v=7");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

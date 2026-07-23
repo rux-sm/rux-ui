@@ -733,6 +733,11 @@ function isSameTripDay(trip) {
 function refreshIcons() {}
 
 export function clearTripBars() {
+  if ([...tripBars].some((bar) => bar.classList.contains("is-active"))) {
+    window.dispatchEvent(new CustomEvent("rux:trip-selection-changed", {
+      detail: { trip: null },
+    }));
+  }
   tripBars.clear();
   hideFloatingTooltip();
 }
@@ -1192,11 +1197,17 @@ export function createTripBar(trip, callbacks = {}) {
 
   bar.setActive = (value) => {
     const active = Boolean(value);
+    const wasActive = bar.classList.contains("is-active");
     bar.setAttribute("aria-pressed", String(active));
     if (active) {
       deactivateTripBars(bar);
       bar.classList.add("is-active");
       setExpanded(true);
+      if (!wasActive) {
+        window.dispatchEvent(new CustomEvent("rux:trip-selection-changed", {
+          detail: { trip },
+        }));
+      }
     } else {
       const wasExpanded = bar.classList.contains("is-expanded");
       setExpanded(false);
@@ -1204,6 +1215,11 @@ export function createTripBar(trip, callbacks = {}) {
       setTimeout(() => {
         bar.classList.remove("is-active");
       }, delay);
+      if (wasActive) {
+        window.dispatchEvent(new CustomEvent("rux:trip-selection-changed", {
+          detail: { trip: null },
+        }));
+      }
     }
   };
   bar.setExpanded = (value) => bar.setActive(Boolean(value));

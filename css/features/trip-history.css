@@ -1,0 +1,219 @@
+/* ==========================================================================
+   RUX UI — TRIP HISTORY
+   Global newest-first audit feed in the scheduler's right panel.
+   ========================================================================== */
+
+.rux-trip-history {
+	--rux-trip-history-change-grid: minmax(6.5rem, 0.42fr) minmax(0, 1fr);
+
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+	padding-block-end: var(--rux-panel-padding-block);
+}
+
+.rux-trip-history__toolbar {
+	display: flex;
+	min-width: 0;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) 0;
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-trip-history__title,
+.rux-trip-history__subtitle,
+.rux-trip-history__status,
+.rux-trip-history__group-title {
+	margin: 0;
+}
+
+.rux-trip-history__title {
+	color: var(--rux-heading);
+	font-size: var(--rux-heading-panel-size);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-trip-history__subtitle {
+	margin-top: var(--rux-space-1);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-trip-history__filter {
+	flex: 0 1 auto;
+	max-width: 55%;
+}
+
+.rux-trip-history__filter .rux-btn-label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-trip-history__list {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+}
+
+.rux-trip-history__group {
+	display: flex;
+	min-width: 0;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.rux-trip-history__group-title {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
+}
+
+.rux-trip-history__card {
+	min-width: 0;
+}
+
+.rux-trip-history__card-header {
+	display: flex;
+	min-width: 0;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3);
+	background: var(--rux-card-header-bg);
+	border-bottom: var(--rux-card-header-border);
+}
+
+.rux-trip-history__timestamp {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-trip-history__actor {
+	margin-top: var(--rux-space-1);
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-trip-history__action {
+	flex: none;
+	color: var(--rux-accent);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-semibold);
+	text-transform: capitalize;
+}
+
+.rux-trip-history__action[data-action="deleted"],
+.rux-trip-history__action[data-action="document_deleted"] {
+	color: var(--rux-danger);
+}
+
+.rux-trip-history__action[data-action="created"],
+.rux-trip-history__action[data-action="document_uploaded"] {
+	color: var(--rux-success);
+}
+
+.rux-trip-history__context {
+	padding: var(--rux-space-3);
+}
+
+.rux-trip-history__route {
+	overflow: hidden;
+	color: var(--rux-heading);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-trip-history__meta {
+	margin-top: var(--rux-space-1);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+}
+
+.rux-trip-history__changes {
+	display: grid;
+	min-width: 0;
+	margin: 0;
+	border-top: var(--rux-card-section-border);
+}
+
+.rux-trip-history__change {
+	display: grid;
+	grid-template-columns: var(--rux-trip-history-change-grid);
+	min-width: 0;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-2) var(--rux-space-3);
+}
+
+.rux-trip-history__change + .rux-trip-history__change {
+	border-top: var(--rux-card-section-border);
+}
+
+.rux-trip-history__change dt,
+.rux-trip-history__change dd {
+	min-width: 0;
+	margin: 0;
+}
+
+.rux-trip-history__change dt {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-trip-history__change dd {
+	color: var(--rux-fg);
+	font-size: var(--rux-text-xs);
+	overflow-wrap: anywhere;
+}
+
+.rux-trip-history__old {
+	color: var(--rux-fg-muted);
+}
+
+.rux-trip-history__arrow {
+	padding-inline: var(--rux-space-1);
+	color: var(--rux-fg-subtle);
+}
+
+.rux-trip-history__new {
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-trip-history__more {
+	width: 100%;
+	border: 0;
+	border-top: var(--rux-card-section-border);
+	border-radius: 0;
+}
+
+.rux-trip-history__empty {
+	padding: var(--rux-space-6) var(--rux-space-3);
+	text-align: center;
+}
+
+@container (max-width: 340px) {
+	.rux-trip-history__toolbar {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.rux-trip-history__filter {
+		max-width: none;
+	}
+
+	.rux-trip-history__change {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--rux-space-1);
+	}
+}

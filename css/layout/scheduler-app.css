@@ -630,7 +630,11 @@
 }
 
 .rux-mini-cal__date--active-week {
-	background-color: var(--rux-accent-subtle);
+	background-color: color-mix(
+		in oklch,
+		var(--rux-accent) var(--rux-mini-cal-active-week-opacity),
+		transparent
+	);
 	border: var(--rux-border-width) solid var(--rux-accent);
 }
 

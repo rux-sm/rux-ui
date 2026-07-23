@@ -16,6 +16,10 @@
 
 import { supabase } from "./supabase.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
+import {
+	buildTripHistoryChanges,
+	recordTripHistory,
+} from "./trip-history-db.js";
 
 	let currentTripId  = null;
 	let currentTripRef = null;
@@ -195,6 +199,8 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 		return assignments.map((assignment) => ({
 			bus_id: assignment.bus_id ?? null,
 			position: assignment.position ?? null,
+			active_roles: cloneHistoryValue(assignment.active_roles ?? ["driver"]),
+			leg: assignment.leg ?? "outbound",
 			drivers: activeAssignmentDrivers(assignment).map((driver) => ({
 				driver_id: driver.driver_id ?? null,
 				role: driver.role ?? null,
@@ -203,6 +209,43 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 				instructions: driver.instructions ?? null,
 			})),
 		}));
+	}
+
+	function cloneHistoryValue(value) {
+		if (value === undefined) return undefined;
+		return JSON.parse(JSON.stringify(value));
+	}
+
+	async function safelyRecordTripHistory(entry) {
+		try {
+			return await recordTripHistory(entry);
+		} catch (error) {
+			// History is additive and must never turn an otherwise successful
+			// operational save into a failed trip save. This also lets the app
+			// remain usable before trip-history-patch.sql has been installed.
+			console.warn("Trip history could not be recorded:", error);
+			return null;
+		}
+	}
+
+	async function fetchTripHistorySnapshot(tripId) {
+		const { data, error } = await supabase
+			.from("trips")
+			.select("id, trip_ref, start_date, end_date, customer, destination")
+			.eq("id", tripId)
+			.maybeSingle();
+		if (error) throw error;
+		return data;
+	}
+
+	async function safelyRecordTripHistoryForTrip(tripId, entry) {
+		try {
+			const snapshot = entry.snapshot || await fetchTripHistorySnapshot(tripId);
+			return await recordTripHistory({ ...entry, tripId, snapshot });
+		} catch (error) {
+			console.warn("Trip history could not be recorded:", error);
+			return null;
+		}
 	}
 
 	/* ── Collect ─────────────────────────────────────────────────────────── */
@@ -974,7 +1017,9 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 		// Freeze identity at call time so a mid-save loadTrip can't corrupt state.
 		const savingTripId       = currentTripId;
 		const savingTripRef      = currentTripRef;
-		const savingSnapshot     = currentTripSnapshot;
+		const savingSnapshot     = cloneHistoryValue(currentTripSnapshot);
+		const savingAssignments  = cloneHistoryValue(currentAssignments) || [];
+		const savingLoadedTrip   = cloneHistoryValue(currentLoadedTrip);
 		const saveAttempt = String(Number(saveBtn.dataset.saveAttempt || 0) + 1);
 		saveBtn.dataset.saveAttempt = saveAttempt;
 		setSaveButtonState(saveBtn, { busy: true, label: "Saving" });
@@ -990,6 +1035,10 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 			const assignments = collectAssignments(root);
 			const payments = collectPayments(root);
 			const ticketOptions = collectTicketOptions(root);
+			const stopsData = collectStops(
+				itinerary,
+				tripData.trip_type === "dropoff_pickup",
+			);
 
 			if (!tripData.start_date || !tripData.end_date) {
 				throw new Error("Start date and end date are required.");
@@ -1085,14 +1134,14 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 				.delete()
 				.eq("trip_id", savedId);
 			if (deleteStopsErr) throw deleteStopsErr;
-			const stopsData = collectStops(itinerary, tripData.trip_type === "dropoff_pickup").map((s) => ({ trip_id: savedId, ...s }));
-			if (stopsData.length) {
-				const { error: stopsErr } = await supabase.from("trip_stops").insert(stopsData);
+			const savedStopsData = stopsData.map((stop) => ({ trip_id: savedId, ...stop }));
+			if (savedStopsData.length) {
+				const { error: stopsErr } = await supabase.from("trip_stops").insert(savedStopsData);
 				if (stopsErr) {
 					const missingOptionalStopColumns = /lat|lng|mapbox_id|miles_source|drive_source|route_status|schema cache|column/i.test(stopsErr.message || "");
 					if (!missingOptionalStopColumns) throw stopsErr;
 					console.warn("trip_stops optional route columns are missing; saving legacy stop fields only.", stopsErr);
-					const legacyStopsData = stopsData.map(legacyStopPayload);
+					const legacyStopsData = savedStopsData.map(legacyStopPayload);
 					const { error: legacyStopsErr } = await supabase.from("trip_stops").insert(legacyStopsData);
 					if (legacyStopsErr) throw legacyStopsErr;
 				}
@@ -1175,6 +1224,28 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 				Object.assign(tripData, contactUpdates);
 			}
 
+			const historyChanges = buildTripHistoryChanges({
+				beforeTrip: savingTripId ? savingSnapshot : null,
+				afterTrip: tripData,
+				beforeAssignments: savingAssignments,
+				afterAssignments: snapshotAssignments(assignments),
+				beforeStops: savingLoadedTrip?.allTripStops
+					?? savingLoadedTrip?.trip_stops
+					?? [],
+				afterStops: stopsData,
+				beforePayments: savingLoadedTrip?.trip_payments ?? [],
+				afterPayments: payments,
+				beforeTicketOptions: savingLoadedTrip?.trip_ticket_options ?? [],
+				afterTicketOptions: ticketOptions,
+				options: root.__ruxTripPanelOptions || {},
+			});
+			await safelyRecordTripHistory({
+				tripId: savedId,
+				action: savingTripId ? "updated" : "created",
+				snapshot: tripData,
+				changes: historyChanges,
+			});
+
 			// Only update module state if the user hasn't navigated to a different trip mid-save.
 			if (currentTripId === savingTripId) {
 				currentTripId       = savedId;
@@ -1217,7 +1288,22 @@ import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 		}
 		if (!confirm("Delete this trip? This cannot be undone.")) return;
 		const deletedId = currentTripId;
-		await supabase.from("trips").delete().eq("id", deletedId);
+		const deletedSnapshot = cloneHistoryValue(currentLoadedTrip)
+			|| cloneHistoryValue(currentTripSnapshot)
+			|| { id: deletedId };
+		const { error } = await supabase.from("trips").delete().eq("id", deletedId);
+		if (error) throw error;
+		await safelyRecordTripHistory({
+			tripId: deletedId,
+			action: "deleted",
+			snapshot: deletedSnapshot,
+			changes: [{
+				field: "trip",
+				label: "Trip",
+				before: "Active",
+				after: "Deleted",
+			}],
+		});
 		clearForm(root, itinerary);
 		root.dispatchEvent(new CustomEvent("rux:trip-deleted", { bubbles: true, detail: { id: deletedId } }));
 		if (window.Rux) Rux.toast("Trip deleted");
@@ -1491,11 +1577,37 @@ export function newTrip(root, itinerary) {
 	/* ── Init ────────────────────────────────────────────────────────────── */
 
 export async function reassignBus(assignmentId, newBusId) {
+	const { data: previous, error: previousError } = await supabase
+		.from("trip_assignments")
+		.select("trip_id, bus_id")
+		.eq("id", assignmentId)
+		.single();
+	if (previousError) throw previousError;
 	const { error } = await supabase
 		.from("trip_assignments")
 		.update({ bus_id: newBusId })
 		.eq("id", assignmentId);
 	if (error) throw error;
+	try {
+		const [snapshot, busesResult] = await Promise.all([
+			fetchTripHistorySnapshot(previous.trip_id),
+			supabase.from("buses").select("id, number").in("id", [previous.bus_id, newBusId].filter(Boolean)),
+		]);
+		const busNames = new Map((busesResult.data || []).map((bus) => [String(bus.id), String(bus.number)]));
+		await safelyRecordTripHistory({
+			tripId: previous.trip_id,
+			action: "assignment_changed",
+			snapshot,
+			changes: [{
+				field: "bus",
+				label: "Bus",
+				before: previous.bus_id ? `Bus ${busNames.get(String(previous.bus_id)) || previous.bus_id}` : null,
+				after: newBusId ? `Bus ${busNames.get(String(newBusId)) || newBusId}` : null,
+			}],
+		});
+	} catch (historyError) {
+		console.warn("Bus reassignment history could not be recorded:", historyError);
+	}
 }
 
 /* ── Documents ──────────────────────────────────────────────────────────── */
@@ -1575,6 +1687,16 @@ export async function uploadDocument(tripId, label, file) {
 		.select("id, label, file_name, file_path, created_at")
 		.single();
 	if (dbErr) throw dbErr;
+	await safelyRecordTripHistoryForTrip(tripId, {
+		action: "document_uploaded",
+		changes: [{
+			field: "document",
+			label: "Document",
+			before: null,
+			after: `${label || "Document"} uploaded`,
+		}],
+		metadata: { documentId: doc.id, fileName },
+	});
 	return doc;
 }
 
@@ -1602,19 +1724,42 @@ export async function replaceDocument(docId, file) {
 		.update({ file_name: fileName, file_path: filePath, file_size: uploadFile.size })
 		.eq("id", docId);
 	if (updateErr) throw updateErr;
+	await safelyRecordTripHistoryForTrip(existing.trip_id, {
+		action: "document_replaced",
+		changes: [{
+			field: "document",
+			label: "Document",
+			before: existing.label || "Previous file",
+			after: `${existing.label || "Document"} replaced`,
+		}],
+		metadata: { documentId: docId, fileName },
+	});
 	return { ...existing, file_name: fileName, file_path: filePath };
 }
 
 export async function deleteDocument(docId) {
 	const { data: doc } = await supabase
 		.from("trip_documents")
-		.select("file_path")
+		.select("trip_id, label, file_name, file_path")
 		.eq("id", docId)
 		.single();
 	if (doc?.file_path) {
 		await supabase.storage.from(BUCKET).remove([doc.file_path]);
 	}
-	await supabase.from("trip_documents").delete().eq("id", docId);
+	const { error } = await supabase.from("trip_documents").delete().eq("id", docId);
+	if (error) throw error;
+	if (doc?.trip_id) {
+		await safelyRecordTripHistoryForTrip(doc.trip_id, {
+			action: "document_deleted",
+			changes: [{
+				field: "document",
+				label: "Document",
+				before: doc.label || doc.file_name || "Document",
+				after: "Deleted",
+			}],
+			metadata: { documentId: docId, fileName: doc.file_name },
+		});
+	}
 }
 
 export async function fetchDocuments(tripId) {

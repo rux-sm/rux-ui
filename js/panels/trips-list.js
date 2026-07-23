@@ -303,7 +303,7 @@
   async function init() {
     if (!db) {
       try {
-        db = await import("../data/trip-db.js?v=6");
+        db = await import("../data/trip-db.js?v=7");
       } catch (err) {
         console.warn("Could not load trip-db:", err);
         return;
