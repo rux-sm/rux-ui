@@ -7,8 +7,8 @@
    API
    ---
    createTripBar(trip, callbacks)   → create and return a .rux-trip-bar element
-   el.setActive(bool)               → toggle selected state on the bar
-   el.setExpanded(bool)             → toggle expanded/collapsed state
+   el.setActive(bool)               → toggle selected + expanded state
+   el.setExpanded(bool)             → legacy alias for setActive
    el.tripData                      → read the trip data object for this bar
    ========================================================================== */
 
@@ -1017,10 +1017,6 @@ export function createTripBar(trip, callbacks = {}) {
       drivers.appendChild(item);
     }
   });
-  const meta = document.createElement("div");
-  meta.className = "rux-trip-bar__drivers-meta";
-  drivers.appendChild(meta);
-
   const spacer = document.createElement("div");
   spacer.className = "rux-trip-bar__spacer";
 
@@ -1122,14 +1118,6 @@ export function createTripBar(trip, callbacks = {}) {
   });
   details.appendChild(detailsInner);
 
-  const expandBtn = document.createElement("button");
-  expandBtn.type = "button";
-  expandBtn.className =
-    "rux-button rux-button--default rux-button--icon rux-button--xs rux-trip-bar__expand";
-  const expandIcon = icon("keyboard_arrow_down", "rux-icon rux-button__disclosure-icon");
-  expandBtn.append(expandIcon);
-  meta.appendChild(expandBtn);
-
   function setDetailsHeight() {
     bar.style.setProperty(
       "--_details-height",
@@ -1151,14 +1139,7 @@ export function createTripBar(trip, callbacks = {}) {
       setDetailsHeight();
     }
     bar.classList.toggle("is-expanded", expanded);
-    expandBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
   }
-
-  expandBtn.addEventListener("click", (event) => {
-    event.stopPropagation();
-    bar.setActive(true);
-    setExpanded(!bar.classList.contains("is-expanded"));
-  });
 
   if (!singleDay) {
     const head = document.createElement("div");
@@ -1215,6 +1196,7 @@ export function createTripBar(trip, callbacks = {}) {
     if (active) {
       deactivateTripBars(bar);
       bar.classList.add("is-active");
+      setExpanded(true);
     } else {
       const wasExpanded = bar.classList.contains("is-expanded");
       setExpanded(false);
@@ -1224,12 +1206,11 @@ export function createTripBar(trip, callbacks = {}) {
       }, delay);
     }
   };
-  bar.setExpanded = setExpanded;
+  bar.setExpanded = (value) => bar.setActive(Boolean(value));
   bar.tripData = trip;
 
   tripBars.add(bar);
   bar.setActive(Boolean(trip.active || trip.expanded));
-  setExpanded(Boolean(trip.expanded));
   refreshIcons();
 
   return bar;

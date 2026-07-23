@@ -37,14 +37,13 @@
 	/* Retained for existing consumers; new components should use semantic roles. */
 
 	--rux-heading:        oklch(from var(--rux-neutral) 100% c h / 85%);
-	--rux-text-primary:   oklch(from var(--rux-neutral) 100% c h / 90%);
-	--rux-text-secondary: oklch(from var(--rux-neutral) 100% c h / 65%);
+	--rux-text-primary:   oklch(from var(--rux-neutral) 100% c h / 100%);
+	--rux-text-secondary: oklch(from var(--rux-neutral) 100% c h / 50%);
 	--rux-text-disabled:  oklch(from var(--rux-neutral) 100% c h / 25%);
 
-	--rux-border-button: oklch(from var(--rux-neutral) 38% c h / 100%);
-	--rux-border-input:  oklch(from var(--rux-neutral) 38% c h / 100%);
+	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-border-input:  oklch(from var(--rux-neutral) 30% c h / 100%);
 	--rux-border:        oklch(from var(--rux-neutral) 30% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 34% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) l c h / 12%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -196,14 +195,15 @@
 
 	/* ─── COLOR · surfaces ────────────────────────────────────────────────── */
 
-	--rux-surface-canvas:          oklch(from var(--rux-neutral) 18% c h);
-	--rux-surface-workspace:       oklch(from var(--rux-neutral) 18% c h);
-	--rux-surface-panel:           oklch(from var(--rux-neutral) 18% c h);
-	--rux-surface-calendar:        oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-field:           oklch(from var(--rux-neutral) 14% c h);
-	--rux-surface-modal:           oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-canvas:          oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-workspace:       oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-panel:           oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-calendar:        oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-card:            oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-card-header:     oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-field:           oklch(from var(--rux-neutral) 32% c h);
+	--rux-surface-modal:           oklch(from var(--rux-neutral) 26% c h);
 	--rux-surface-switch-track:    oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-switch-thumb:    oklch(from var(--rux-neutral) 100% c h);
 
@@ -264,8 +264,8 @@
 	   steppers, tabs, segments) take 6px. Concentric rule: inner radius =
 	   outer radius − inset padding. */
 
-	--rux-radius-container: var(--rux-radius-md); /* 8px */
-	--rux-radius-control:   var(--rux-radius-sm); /* 6px */
+	--rux-radius-container: var(--rux-radius-lg); /* 8px */
+	--rux-radius-control:   var(--rux-radius-md); /* 6px */
 
 	/* ─── ICON ───────────────────────────────────────────────────────────── */
 
@@ -432,7 +432,7 @@
 	--rux-card-radius:       var(--rux-radius-container);
 
 	/* — header — */
-	--rux-card-header-bg:     transparent;
+	--rux-card-header-bg:     var(--rux-surface-card-header);
 	--rux-card-header-border: var(--rux-card-border-width) solid
 		var(--rux-border);
 	--rux-card-header-padding: var(--rux-space-3) var(--rux-space-4);
@@ -476,7 +476,7 @@
 	--rux-trip-bar-selected-bg-lightness: 60%;
 	--rux-trip-bar-selected-bg-chroma:    0.22;
 	--rux-trip-bar-disabled-opacity:      0.45;
-	--rux-trip-bar-tail-opacity:          32%;
+	--rux-trip-bar-tail-opacity:          20%;
 	--rux-trip-bar-tail-hover-opacity:    75%;
 	--rux-trip-bar-tail-pressed-opacity:  75%;
 
@@ -504,7 +504,7 @@
 	--rux-field-error-fg:        var(--rux-danger);
 	--rux-input-height:          var(--rux-control-height);
 	--rux-input-padding-inline:  var(--rux-control-padding-inline);
-	--rux-input-border:          1px solid var(--rux-border-input);
+	--rux-input-border:          1px solid var(--rux-surface-field);
 	--rux-textarea-min-height:   84px;
 	--rux-input-background:      var(--rux-surface-field);
 	--rux-input-fg:              var(--rux-fg);
@@ -743,8 +743,8 @@
 	--rux-switch-width:             52px;
 	--rux-switch-height:            32px;
 	--rux-switch-padding:           var(--rux-radius-xs);
-	--rux-switch-track-bg:          var(--rux-surface-switch-track);
-	--rux-switch-track-border:      var(--rux-button-border);
+	--rux-switch-track-bg:          var(--rux-surface-field);
+	--rux-switch-track-border:      var(--rux-surface-field);
 	--rux-switch-thumb-bg:          var(--rux-surface-switch-thumb);
 	--rux-switch-checked-bg:        var(--rux-accent);
 	--rux-switch-checked-border:    var(--rux-border-width) solid var(--rux-accent);

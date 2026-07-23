@@ -50,6 +50,8 @@
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
 	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
 	--rux-scheduler-today-bg: color-mix(in srgb, var(--rux-accent) 100%, transparent);
+	--rux-scheduler-now-line-z-index: 1;
+	--rux-scheduler-trip-bar-z-index: 2;
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
 	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
 	   is the empty-row fallback, so an empty row sits at the same height a
@@ -384,6 +386,10 @@
 	pointer-events: none;
 }
 
+.rux-scheduler__track > .rux-trip-bar {
+	z-index: var(--rux-scheduler-trip-bar-z-index);
+}
+
 .rux-scheduler__track-day {
 	border-inline-end: var(--rux-calendar-grid);
 }
@@ -399,7 +405,7 @@
 	bottom: 0;
 	width: 2px;
 	background: var(--rux-accent);
-	z-index: 2;
+	z-index: var(--rux-scheduler-now-line-z-index);
 	pointer-events: auto;
 	opacity: 0.8;
 	cursor: default;

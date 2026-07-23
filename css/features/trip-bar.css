@@ -24,8 +24,8 @@
 
    State classes (JS-toggled, no rux- prefix)
    ------------------------------------------
-   .is-active    Bar is selected; reveals action toolbar and expand chevron.
-   .is-expanded  Details drawer is open. Requires .is-active to be visible.
+   .is-active    Bar is selected; reveals the action toolbar and details.
+   .is-expanded  Details drawer is open. Kept in sync with .is-active.
 
    Row typography — scan rows (body, top to bottom). Line-height is 1
    throughout (destination's row min-height is derived from this).
@@ -47,6 +47,7 @@
 	--rux-trip-bar-collapsed-height: 138px;
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-action-padding-inline: 0;
+	--rux-trip-bar-action-button-size: var(--rux-control-height-sm);
 	--rux-trip-bar-continuation-width: 1.5rem;
 	--rux-trip-bar-rail-height: 34px;
 	--rux-trip-bar-rail-offset-y: 24px;
@@ -63,7 +64,7 @@
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
 	--rux-trip-bar-detail-border-color: color-mix(in oklch, var(--rux-fg) 8%, transparent);
-	--rux-trip-bar-action-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
+	--rux-trip-bar-action-height: calc(var(--rux-trip-bar-action-button-size) + (var(--rux-space-2) * 2));
 	--rux-trip-bar-active-height: calc(var(--rux-trip-bar-collapsed-height) + var(--rux-trip-bar-action-height));
 
 	--_details-height: 0px;
@@ -401,6 +402,8 @@
 }
 
 .rux-trip-bar__action {
+	--_h: var(--rux-trip-bar-action-button-size);
+
 	min-width: 0;
 }
 
@@ -707,10 +710,10 @@
 .rux-trip-bar__driver:first-child {
 	border-bottom-left-radius: var(--rux-button-radius);
 }
-.rux-trip-bar__driver:nth-last-child(2) {
+.rux-trip-bar__driver:last-child {
 	border-bottom-right-radius: var(--rux-button-radius);
 }
-.rux-trip-bar__driver:first-child:nth-last-child(2) {
+.rux-trip-bar__driver:first-child:last-child {
 	border-bottom-left-radius: var(--rux-button-radius);
 	border-bottom-right-radius: var(--rux-button-radius);
 }
@@ -748,17 +751,6 @@
 }
 .rux-trip-bar__driver-dot--unconfirmed {
 	background: var(--rux-danger);
-}
-
-.rux-trip-bar__drivers-meta {
-	display: none;
-	align-items: center;
-	gap: var(--rux-space-1);
-	flex: none;
-	margin-left: auto;
-}
-.rux-trip-bar.is-active .rux-trip-bar__drivers-meta {
-	display: flex;
 }
 
 /* ---------- Conflict row ---------- */
@@ -865,24 +857,6 @@
    1px top/bottom crop doesn't touch the ink. */
 .rux-trip-bar__payment-entry .rux-trip-bar__payment-icon {
 	flex: none;
-}
-
-/* ---------- Expand button ---------- */
-
-.rux-trip-bar__expand {
-	opacity: 0;
-	pointer-events: none;
-	transition:
-		opacity var(--rux-duration-fast) var(--rux-ease-out);
-}
-
-.rux-trip-bar.is-active .rux-trip-bar__expand {
-	opacity: 1;
-	pointer-events: auto;
-}
-
-.rux-trip-bar.is-active .rux-trip-bar__driver:nth-last-child(2) {
-	border-bottom-right-radius: 0;
 }
 
 /* ---------- Responsive container queries ---------- */
