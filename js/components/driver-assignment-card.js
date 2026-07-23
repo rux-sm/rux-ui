@@ -56,6 +56,16 @@ function isReliefRole(role) {
 	return role === "relief-start" || role === "relief-end";
 }
 
+function tripTypeLabel(tripType, leg) {
+	if (tripType === "one_way") return "One-Way";
+	if (tripType === "dropoff_pickup") {
+		return leg === "return"
+			? "One-Way · Inbound"
+			: "One-Way · Outbound";
+	}
+	return "Round-Trip";
+}
+
 function shortLocation(value) {
 	const text = String(value || "").trim();
 	if (!text) return "";
@@ -170,22 +180,34 @@ export function renderDriverAssignmentCard(entry, options = {}) {
 	const dateText = entry.startDate === entry.endDate
 		? fmtDate(entry.startDate)
 		: `${fmtDate(entry.startDate)} – ${fmtDate(entry.endDate, { weekday: false })}`;
+	const headerBadges = el("span", "driver-assignment-card__header-badges");
 	header.append(
 		el("span", "driver-assignment-card__date", dateText),
-		el("span", "driver-assignment-card__bus", `Bus ${entry.busNumber ?? "Unassigned"}`),
 	);
+	headerBadges.append(
+		el("span", "driver-assignment-card__badge driver-assignment-card__bus", `Bus ${entry.busNumber ?? "Unassigned"}`),
+		el("span", "driver-assignment-card__badge driver-assignment-card__role", roleLabel(entry.role)),
+	);
+	header.appendChild(headerBadges);
 	card.appendChild(header);
 
 	const confirm = confirmSection(entry, options);
 	if (confirm) card.appendChild(confirm);
 
 	const routeSection = el("div", "rux-card__section driver-assignment-card__route-section");
-	routeSection.appendChild(el(
-		"p",
-		"driver-assignment-card__route",
-		`${shortLocation(entry.from) || "Pickup"} → ${shortLocation(entry.to) || "Destination"}`,
-	));
 	if (trip.customer) routeSection.appendChild(el("p", "driver-assignment-card__client", trip.customer));
+	const route = el("p", "driver-assignment-card__route");
+	route.append(
+		document.createTextNode(
+			`${shortLocation(entry.from) || "Pickup"} → ${shortLocation(entry.to) || "Destination"} `,
+		),
+		el(
+			"span",
+			"driver-assignment-card__trip-type",
+			`(${tripTypeLabel(trip.trip_type, entry.leg)})`,
+		),
+	);
+	routeSection.appendChild(route);
 	if (contact.name || contact.phone) {
 		routeSection.appendChild(el("span", "driver-assignment-card__section-label", "Trip Contact"));
 		const row = el("div", "driver-assignment-card__contact-row driver-assignment-card__contact-row--inline");
@@ -200,10 +222,6 @@ export function renderDriverAssignmentCard(entry, options = {}) {
 	card.appendChild(routeSection);
 
 	const relief = isReliefRole(entry.role);
-	const timeLabelParts = [relief ? "Swap Time" : "Spot Time", roleLabel(entry.role)];
-	if (trip.trip_type === "dropoff_pickup") {
-		timeLabelParts.push(entry.leg === "return" ? "Inbound" : "Outbound");
-	}
 	const hasAddress = entry.from && entry.from !== "Pickup not provided";
 	const timeSection = el(
 		"div",
@@ -212,7 +230,7 @@ export function renderDriverAssignmentCard(entry, options = {}) {
 	const timeRow = el("div", "driver-assignment-card__time-row");
 	const timeText = el("div", "driver-assignment-card__contact-text");
 	timeText.append(
-		el("span", "driver-assignment-card__section-label", timeLabelParts.join(" · ")),
+		el("span", "driver-assignment-card__section-label", relief ? "Swap Time" : "Spot Time"),
 		el(
 			"p",
 			"driver-assignment-card__time",

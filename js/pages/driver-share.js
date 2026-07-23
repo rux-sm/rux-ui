@@ -2,7 +2,7 @@ import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=5";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=6";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
