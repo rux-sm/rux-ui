@@ -367,7 +367,7 @@
 }
 
 .rux-trip-bar--multi-day.is-active .rux-trip-bar__tail {
-	background-color: var(--_surface-active);
+    background-color: color-mix(in oklch, var(--_surface-pressed) var(--rux-trip-bar-tail-pressed-opacity), transparent);
 }
 
 

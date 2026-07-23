@@ -481,8 +481,8 @@
 	--rux-trip-bar-selected-bg-chroma:    0.22;
 	--rux-trip-bar-disabled-opacity:      0.45;
 	--rux-trip-bar-tail-opacity:          var(--rux-opacity-subtle-tint);
-	--rux-trip-bar-tail-hover-opacity:    75%;
-	--rux-trip-bar-tail-pressed-opacity:  75%;
+	--rux-trip-bar-tail-hover-opacity:    var(--rux-opacity-subtle-tint);
+	--rux-trip-bar-tail-pressed-opacity:  var(--rux-opacity-subtle-tint);
 
 	/* One-way/split-trip SVG stripe overlay. */
 	--rux-trip-bar-stripe-color:   var(--rux-white);
