@@ -494,35 +494,9 @@
 	white-space: nowrap;
 }
 
-/* Two-step tab collapse as the panel narrows: icon+text → text only → icon
-   only — see the matching comment in trip-panel.css for the rationale. */
-@container (max-width: 380px) {
-	[data-right-tabs] .rux-right-panel__tab > .rux-icon {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-}
-
-@container (max-width: 300px) {
-	[data-right-tabs] .rux-right-panel__tab > .rux-icon {
-		position: static;
-		width: var(--_icon-size);
-		height: var(--_icon-size);
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		clip: auto;
-		white-space: normal;
-		border: 0;
-	}
-
+/* Single-step tab collapse as the panel narrows: icon+text → icon only, both
+   at the same breakpoint (no intermediate text-only stage). */
+@container (max-width: 340px) {
 	.rux-right-panel__tab-label {
 		position: absolute;
 		width: 1px;
@@ -762,7 +736,7 @@
 	align-items: center;
 	gap: var(--rux-space-1);
 	min-width: 0;
-	padding: 0 var(--rux-space-1);
+	padding: 0 var(--rux-space-2);
 	overflow: hidden;
 	background: var(--rux-card-bg);
 	color: var(--rux-text-secondary);
@@ -970,34 +944,6 @@
 	outline-offset: 1px;
 }
 
-.rux-driver-grid__selection {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	gap: var(--rux-space-1) var(--rux-space-2);
-	margin-top: var(--rux-space-3);
-	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-accent-subtle);
-	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-xs);
-}
-
-.rux-driver-grid__selection[hidden] {
-	display: none;
-}
-
-.rux-driver-grid__selection-label {
-	color: var(--rux-fg-subtle);
-	font-weight: var(--rux-weight-medium);
-	text-transform: uppercase;
-}
-
-.rux-driver-grid__selection strong {
-	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
-}
-
 .rux-driver-grid__popover {
 	z-index: calc(var(--rux-z-modal) + 1);
 	width: min(19rem, calc(100vw - 2 * var(--rux-space-4)));
@@ -1009,6 +955,47 @@
 	position: sticky;
 	top: 0;
 	z-index: 1;
+}
+
+.rux-driver-grid__popover-profile {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.rux-driver-grid__popover-avatar {
+	flex: none;
+}
+
+.rux-driver-grid__popover-info {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	margin: 0;
+	min-width: 0;
+}
+
+.rux-driver-grid__popover-info-row {
+	display: flex;
+	align-items: baseline;
+	gap: var(--rux-space-1);
+}
+
+.rux-driver-grid__popover-info dt {
+	flex: none;
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-xs);
+}
+
+.rux-driver-grid__popover-info dd {
+	margin: 0;
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-driver-grid__popover-info dd a {
+	color: inherit;
+	text-decoration: none;
 }
 
 .rux-driver-grid__popover-list {
@@ -1048,6 +1035,18 @@
 	color: var(--rux-danger-bright);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-driver-grid__popover-timeoff:has(+ .rux-driver-grid__popover-notes) {
+	margin-bottom: var(--rux-space-1);
+}
+
+.rux-driver-grid__popover-notes {
+	margin: 0 0 var(--rux-space-3);
+	padding-left: calc(var(--rux-icon-sm) + var(--rux-space-1));
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	line-height: var(--rux-leading-normal);
 }
 
 .rux-driver-grid__empty {

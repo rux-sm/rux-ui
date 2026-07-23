@@ -596,6 +596,9 @@
             <option value="other">Other</option>
           </select>
         </div>
+        <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-notes-${index + 1}">Notes</label>
+          <input class="rux-input" id="dp-timeoff-notes-${index + 1}" type="text" placeholder="Optional" data-timeoff-notes />
+        </div>
       </div>
       <button type="button" class="rux-trip-panel__contact-select" data-timeoff-select aria-label="Delete time off">
         <span class="rux-icon" aria-hidden="true">delete</span>
@@ -645,6 +648,7 @@
       start_date: row.querySelector("[data-timeoff-start]")?.value || null,
       end_date: row.querySelector("[data-timeoff-end]")?.value || null,
       reason: row.querySelector("[data-timeoff-reason]")?.value || null,
+      notes: row.querySelector("[data-timeoff-notes]")?.value.trim() || null,
     })).filter((e) => e.start_date && e.end_date);
   }
 
@@ -657,6 +661,7 @@
       if (entry.start_date) row.querySelector("[data-timeoff-start]").value = entry.start_date;
       if (entry.end_date) row.querySelector("[data-timeoff-end]").value = entry.end_date;
       if (entry.reason) row.querySelector("[data-timeoff-reason]").value = entry.reason;
+      if (entry.notes) row.querySelector("[data-timeoff-notes]").value = entry.notes;
     });
     syncTimeOffButtons();
     window.Rux?.syncDateInputs(timeoffRows);

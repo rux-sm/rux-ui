@@ -2285,16 +2285,6 @@
 													</p>
 												</div>
 											</div>
-											<div
-												class="rux-driver-grid__selection"
-												id="rp-driver-grid-selection"
-												aria-live="polite"
-												hidden
-											>
-												<span class="rux-driver-grid__selection-label">Selected</span>
-												<strong data-driver-grid-selection-name></strong>
-												<span data-driver-grid-selection-meta></span>
-											</div>
 										</div>
 									</article>
 								</div>
@@ -2365,6 +2355,25 @@
 									class="rux-right-panel__footer-group"
 									data-rp-footer-for="rp-pane-drivers"
 								>
+									<button
+										class="rux-button rux-button--default"
+										type="button"
+										id="rp-driver-details-btn"
+										disabled
+										title="Select a driver first"
+										aria-haspopup="dialog"
+										aria-expanded="false"
+										aria-controls="rux-driver-grid-popover"
+									>
+										<span
+											class="rux-icon"
+											aria-hidden="true"
+											>info</span
+										>
+										<span class="rux-btn-label"
+											>Details</span
+										>
+									</button>
 									<button
 										class="rux-button rux-button--default"
 										type="button"
@@ -8091,6 +8100,7 @@
 			let driverGridRenderState = null;
 			let driverGridPopover = null;
 			let driverGridPopoverAnchor = null;
+			let getDriverPhotoUrl = null;
 
 			// Full-time drivers always sort above part-time/contract/seasonal;
 			// within each group, lower priority number (1) sorts first — same
@@ -8109,6 +8119,7 @@
 				if (driverGridDataLoaded) return;
 				try {
 					const driverDb = await import("./js/data/driver-db.js?v=2");
+					getDriverPhotoUrl = driverDb.getDriverPhotoUrl;
 					const [drivers, timeOff] = await Promise.all([
 						driverDb.fetchDrivers(),
 						driverDb.fetchAllTimeOff().catch((err) => {
@@ -8135,6 +8146,42 @@
 						grid.appendChild(p);
 					}
 				}
+			}
+
+			function driverNameIcon(driver) {
+				const dot = document.createElement("span");
+				dot.className = "rux-priority-dot";
+				dot.dataset.priority = String(driver.priority || 3);
+				dot.setAttribute("aria-hidden", "true");
+				return dot;
+			}
+
+			function driverInitials(name) {
+				const parts = (name || "").split(" ");
+				return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "?";
+			}
+
+			// Same 3-month warning window as the Drivers roster's expiry columns
+			// (licExpiryClass in driver-panel.js) — kept in sync by hand since the
+			// two live in separate modules.
+			function driverExpiryClass(iso) {
+				if (!iso) return "";
+				const today = isoDate(new Date());
+				if (iso < today) return "driver-app__expiry--expired";
+				const warn = new Date();
+				warn.setMonth(warn.getMonth() + 3);
+				if (iso <= isoDate(warn)) return "driver-app__expiry--warn";
+				return "";
+			}
+
+			function driverExpiryLabel(iso) {
+				const date = parseIsoDate(iso);
+				if (!date) return "";
+				return date.toLocaleDateString("en-US", {
+					month: "short",
+					day: "numeric",
+					year: "numeric",
+				});
 			}
 
 			function driverGridRoleLabel(role) {
@@ -8269,11 +8316,12 @@
 					const label =
 						TIME_OFF_REASON_LABELS[entry.reason] || "Time off";
 					const tooltip = `${label}: ${fmtDateRange(entry.start_date, entry.end_date)}`;
+					const notes = (entry.notes || "").trim() || null;
 					for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
 						const iso = isoDate(d);
 						if (!map.has(entry.driver_id))
 							map.set(entry.driver_id, new Map());
-						map.get(entry.driver_id).set(iso, tooltip);
+						map.get(entry.driver_id).set(iso, { tooltip, notes });
 					}
 				}
 				return map;
@@ -8311,7 +8359,7 @@
 				document.addEventListener("click", (event) => {
 					if (driverGridPopover.hidden) return;
 					if (driverGridPopover.contains(event.target)) return;
-					if (event.target.closest(".rux-driver-grid__cell")) return;
+					if (event.target.closest(".rux-driver-grid__cell, #rp-driver-details-btn")) return;
 					closeDriverGridPopover();
 				});
 				document.addEventListener("keydown", (event) => {
@@ -8322,7 +8370,74 @@
 				return driverGridPopover;
 			}
 
-			function showDriverGridPopover(anchor, driver, date, entries, timeOffTooltip) {
+			// Quick-glance driver card — bigger photo plus the handful of fields
+			// that matter for a last-minute "who's close and legal to drive"
+			// call: city (proximity), phone, and license/medical expiry (reusing
+			// the roster's expired/soon-to-expire coloring).
+			function showDriverInfoPopover(anchor, driver) {
+				const popover = ensureDriverGridPopover();
+				const title = popover.querySelector("[data-driver-grid-popover-title]");
+				const body = popover.querySelector("[data-driver-grid-popover-body]");
+				title.textContent = driver.name || driver.short_name;
+				body.replaceChildren();
+
+				const profile = document.createElement("div");
+				profile.className = "rux-driver-grid__popover-profile";
+
+				const avatar = document.createElement("span");
+				avatar.className = "rux-avatar rux-avatar--lg rux-driver-grid__popover-avatar";
+				if (driver.photo_path && getDriverPhotoUrl) {
+					const img = document.createElement("img");
+					img.src = getDriverPhotoUrl(driver.photo_path);
+					img.alt = "";
+					avatar.appendChild(img);
+				} else {
+					avatar.textContent = driverInitials(driver.short_name || driver.name);
+				}
+				profile.appendChild(avatar);
+
+				const info = document.createElement("dl");
+				info.className = "rux-driver-grid__popover-info";
+				const addRow = (label, value, opts = {}) => {
+					if (!value) return;
+					const row = document.createElement("div");
+					row.className = "rux-driver-grid__popover-info-row";
+					row.appendChild(Object.assign(document.createElement("dt"), { textContent: label }));
+					const dd = document.createElement("dd");
+					if (opts.cls) dd.className = opts.cls;
+					if (opts.href) {
+						const link = Object.assign(document.createElement("a"), {
+							href: opts.href,
+							textContent: value,
+						});
+						dd.appendChild(link);
+					} else {
+						dd.textContent = value;
+					}
+					row.appendChild(dd);
+					info.appendChild(row);
+				};
+				addRow("City", driver.city);
+				addRow("Phone", driver.phone, {
+					href: driver.phone ? `tel:${driver.phone.replace(/[^+\d]/g, "")}` : "",
+				});
+				addRow("License exp.", driverExpiryLabel(driver.license_exp), {
+					cls: driverExpiryClass(driver.license_exp),
+				});
+				addRow("Medical exp.", driverExpiryLabel(driver.med_card_expiry), {
+					cls: driverExpiryClass(driver.med_card_expiry),
+				});
+				if (info.childElementCount) profile.appendChild(info);
+				body.appendChild(profile);
+
+				driverGridPopoverAnchor?.setAttribute("aria-expanded", "false");
+				driverGridPopoverAnchor = anchor;
+				anchor.setAttribute("aria-expanded", "true");
+				popover.hidden = false;
+				window.RuxPopover?.position(anchor, popover, { placement: "bottom-center" });
+			}
+
+			function showDriverGridPopover(anchor, driver, date, entries, timeOffTooltip, timeOffNotes) {
 				if (!entries.length && !timeOffTooltip) {
 					closeDriverGridPopover();
 					return;
@@ -8345,6 +8460,12 @@
 					icon.textContent = "event_busy";
 					timeOff.append(icon, document.createTextNode(timeOffTooltip));
 					body.appendChild(timeOff);
+					if (timeOffNotes) {
+						const notes = document.createElement("p");
+						notes.className = "rux-driver-grid__popover-notes";
+						notes.textContent = timeOffNotes;
+						body.appendChild(notes);
+					}
 				}
 				if (entries.length) {
 					const list = document.createElement("div");
@@ -8375,35 +8496,6 @@
 				anchor.setAttribute("aria-expanded", "true");
 				popover.hidden = false;
 				window.RuxPopover?.position(anchor, popover, { placement: "bottom-center" });
-			}
-
-			function updateDriverGridSelection() {
-				const summary = document.getElementById("rp-driver-grid-selection");
-				if (!summary || !selectedGridDriverId || !driverGridRenderState) {
-					if (summary) summary.hidden = true;
-					return;
-				}
-				const driver = allDrivers.find(
-					(item) => String(item.id) === String(selectedGridDriverId),
-				);
-				if (!driver) {
-					summary.hidden = true;
-					return;
-				}
-				const driverDates = driverGridRenderState.dayMap.get(driver.id);
-				const driverTimeOff = driverGridRenderState.timeOffMap.get(driver.id);
-				let assignedDays = 0;
-				let availableDays = 0;
-				driverGridRenderState.days.forEach((date) => {
-					const iso = isoDate(date);
-					if (driverDates?.get(iso)?.length) assignedDays += 1;
-					else if (!driverTimeOff?.get(iso)) availableDays += 1;
-				});
-				summary.querySelector("[data-driver-grid-selection-name]").textContent =
-					driver.short_name || driver.name;
-				summary.querySelector("[data-driver-grid-selection-meta]").textContent =
-					`${assignedDays} assigned · ${availableDays} available`;
-				summary.hidden = false;
 			}
 
 			function renderDriverGrid() {
@@ -8497,12 +8589,8 @@
 						"aria-label",
 						`Select ${driver.name || driver.short_name}`,
 					);
-					const nameDot = document.createElement("span");
-					nameDot.className = "rux-priority-dot";
-					nameDot.dataset.priority = String(driver.priority || 3);
-					nameDot.setAttribute("aria-hidden", "true");
 					nameEl.append(
-						nameDot,
+						driverNameIcon(driver),
 						Object.assign(document.createElement("span"), {
 							className: "rux-driver-grid__name-label",
 							textContent: driver.short_name || driver.name,
@@ -8519,7 +8607,8 @@
 					days.forEach((date) => {
 						const iso = isoDate(date);
 						const entries = driverDates?.get(iso) || [];
-						const timeOffTooltip = driverTimeOff?.get(iso);
+						const timeOff = driverTimeOff?.get(iso);
+						const timeOffTooltip = timeOff?.tooltip;
 						const cell = document.createElement("button");
 						cell.type = "button";
 						cell.className = "rux-driver-grid__cell";
@@ -8570,7 +8659,6 @@
 						row.classList.add("is-selected");
 					grid.appendChild(row);
 				});
-				updateDriverGridSelection();
 			}
 
 			// Select a driver in the grid (click any of their day cells too, not
@@ -8579,6 +8667,7 @@
 			// week navigation instead of silently clearing.
 			let selectedGridDriverId = null;
 			const driverGridEl = document.getElementById("rp-driver-grid");
+			const driverDetailsBtn = document.getElementById("rp-driver-details-btn");
 			const driverAddTimeOffBtn = document.getElementById(
 				"rp-driver-add-timeoff-btn",
 			);
@@ -8599,6 +8688,12 @@
 				const driver = allDrivers.find(
 					(item) => String(item.id) === String(driverId),
 				);
+				if (driverDetailsBtn) {
+					driverDetailsBtn.disabled = false;
+					driverDetailsBtn.title = driver
+						? `View details for ${driver.short_name || driver.name}`
+						: "";
+				}
 				if (driverAddTimeOffBtn) {
 					driverAddTimeOffBtn.disabled = false;
 					driverAddTimeOffBtn.title = driver
@@ -8611,8 +8706,15 @@
 						? `Share schedule for ${driver.short_name || driver.name}`
 						: "";
 				}
-				updateDriverGridSelection();
 			}
+
+			driverDetailsBtn?.addEventListener("click", () => {
+				if (!selectedGridDriverId) return;
+				const driver = allDrivers.find(
+					(item) => String(item.id) === String(selectedGridDriverId),
+				);
+				if (driver) showDriverInfoPopover(driverDetailsBtn, driver);
+			});
 
 			driverGridEl?.addEventListener("click", (e) => {
 				const row = e.target.closest(
@@ -8632,9 +8734,9 @@
 				if (!driver || !date) return;
 				const entries =
 					driverGridRenderState.dayMap.get(driver.id)?.get(cell.dataset.date) || [];
-				const timeOffTooltip =
-					driverGridRenderState.timeOffMap.get(driver.id)?.get(cell.dataset.date) || "";
-				showDriverGridPopover(cell, driver, date, entries, timeOffTooltip);
+				const timeOff =
+					driverGridRenderState.timeOffMap.get(driver.id)?.get(cell.dataset.date) || null;
+				showDriverGridPopover(cell, driver, date, entries, timeOff?.tooltip || "", timeOff?.notes || "");
 			});
 			driverGridScroller?.addEventListener("scroll", closeDriverGridPopover, {
 				passive: true,

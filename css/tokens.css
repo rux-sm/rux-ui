@@ -45,8 +45,8 @@
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-border-input:  oklch(from var(--rux-neutral) 30% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 30% c h / 100%);
-	--rux-divider:       oklch(from var(--rux-neutral) l c h / 12%);
+	--rux-border:        oklch(from var(--rux-neutral) 100% c h / 16%);
+	--rux-divider:       oklch(from var(--rux-neutral) l c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
@@ -788,7 +788,7 @@
 
 	/* ─── COMPONENT · color swatch ────────────────────────────────────────── */
 
-	--rux-color-swatch-size:         var(--rux-icon-xl);
+	--rux-color-swatch-size:         var(--rux-button-height);
 	--rux-color-swatch-radius:       var(--rux-radius-full);
 	--rux-color-swatch-border:       var(--rux-border-width) solid transparent;
 	--rux-color-swatch-ring-bg:      var(--rux-surface-canvas);

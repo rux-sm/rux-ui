@@ -108,12 +108,16 @@ html {
 }
 
 .driver-assignment-card__badge {
+	display: inline-flex;
+	align-items: center;
 	flex: none;
-	padding: var(--rux-space-1) var(--rux-space-3);
+	height: var(--rux-button-sm-height);
+	padding: 0 var(--rux-space-3);
 	border-radius: var(--rux-radius-md);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-bold);
 	letter-spacing: 0.02em;
+	line-height: 1;
 	white-space: nowrap;
 }
 

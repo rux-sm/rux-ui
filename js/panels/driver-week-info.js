@@ -13,6 +13,7 @@
 
 import { supabase } from "../data/supabase.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
+import { latestDocument } from "../core/trip-documents.js";
 
 (() => {
 	"use strict";
@@ -126,9 +127,7 @@ import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 	}
 
 	function itineraryDocument(trip) {
-		const doc = (trip.trip_documents || []).find(
-			(item) => String(item.label || "").toLowerCase() === "itinerary",
-		);
+		const doc = latestDocument(trip.trip_documents, "Itinerary");
 		if (!doc) return { publicUrl: "", shortUrl: "" };
 		return {
 			publicUrl: doc.file_path ? window.RuxDocs?.url?.(doc.file_path) || "" : "",

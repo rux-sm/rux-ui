@@ -2,6 +2,7 @@ import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
+import { latestDocument } from "../core/trip-documents.js";
 import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=6";
 
 const root = document.getElementById("driver-share-root");
@@ -120,9 +121,7 @@ function contactFor(trip) {
 }
 
 function publicDocumentUrl(trip) {
-	const doc = (trip.trip_documents || []).find(
-		(item) => String(item.label || "").toLowerCase() === "itinerary",
-	);
+	const doc = latestDocument(trip.trip_documents, "Itinerary");
 	if (!doc?.file_path) return "";
 	return supabase.storage.from("trip-documents").getPublicUrl(doc.file_path).data?.publicUrl || "";
 }
@@ -321,7 +320,7 @@ async function load() {
 		fetchSharedTrips(tripIds, true),
 		supabase
 			.from("trip_documents")
-			.select("id, trip_id, label, file_name, file_path")
+			.select("id, trip_id, label, file_name, file_path, created_at")
 			.in("trip_id", tripIds),
 		supabase.rpc("get_driver_confirmations", { p_token: token }),
 	]);

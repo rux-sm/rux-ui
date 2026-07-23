@@ -1479,7 +1479,7 @@ export async function fetchTrips() {
 			.order("position", { ascending: true }),
 		supabase
 			.from("trip_documents")
-			.select("id, trip_id, label, file_name, file_path")
+			.select("id, trip_id, label, file_name, file_path, created_at")
 			.order("created_at", { ascending: true }),
 		supabase
 			.from("trip_passengers")

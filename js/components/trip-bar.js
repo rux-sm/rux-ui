@@ -12,6 +12,8 @@
    el.tripData                      → read the trip data object for this bar
    ========================================================================== */
 
+import { latestDocument } from "../core/trip-documents.js";
+
 /* ── Module state ───────────────────────────────────────────────────────── */
 
 let outsideDismissInstalled = false;
@@ -590,7 +592,7 @@ function getPendingIndicators(trip) {
 }
 
 function getItineraryDoc(trip) {
-  return (trip.trip_documents || []).find(d => d.label === "Itinerary") || null;
+  return latestDocument(trip.trip_documents, "Itinerary");
 }
 
 function hasTripPdf(trip) {
