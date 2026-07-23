@@ -1,4 +1,4 @@
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=4";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=5";
 import { createTripBar } from "../components/trip-bar.js?v=11";
 import BusPicker from "../components/bus-picker.js?v=2";
 
@@ -299,12 +299,20 @@ import BusPicker from "../components/bus-picker.js?v=2";
 			instructions: "Meet relief driver at the Pilot Travel Center off I-35, exit 178.",
 			itineraryUrl: "demo",
 		};
-		const card = renderDriverAssignmentCard(sampleAssignment, {
-			onItinerary: () => window.Rux?.toast?.("Itinerary preview action"),
-			onEnvelope: () => window.Rux?.toast?.("Envelope preview action"),
-		});
-		card.classList.add("components-app__driver-assignment-demo");
-		host.replaceChildren(card);
+		const render = () => {
+			const card = renderDriverAssignmentCard(sampleAssignment, {
+				onItinerary: () => window.Rux?.toast?.("Itinerary preview action"),
+				onEnvelope: () => window.Rux?.toast?.("Envelope preview action"),
+				onConfirm: () => {
+					sampleAssignment.confirmedAt = new Date().toISOString();
+					sampleAssignment.confirmedSource = "driver";
+					render();
+				},
+			});
+			card.classList.add("components-app__driver-assignment-demo");
+			host.replaceChildren(card);
+		};
+		render();
 	}
 
 	function showComponent(name) {

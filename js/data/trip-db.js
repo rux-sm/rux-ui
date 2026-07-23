@@ -20,6 +20,13 @@ import {
 	buildTripHistoryChanges,
 	recordTripHistory,
 } from "./trip-history-db.js";
+import {
+	fetchTripDriverStatuses,
+	indexTripDriverStatuses,
+	mergeAssignmentDriverStatuses,
+	normalizeDriverRoleStatus,
+	syncTripDriverStatuses,
+} from "./trip-driver-status-db.js";
 
 	let currentTripId  = null;
 	let currentTripRef = null;
@@ -46,25 +53,25 @@ import {
 	/* ── Helpers ─────────────────────────────────────────────────────────── */
 
 	function normalizeDriverStatus(value) {
-		const legacy = {
-			default: "off",
-			danger: "pending-assignment",
-			warning: "pending-response",
-			success: "confirmed",
-		};
-		const normalized = legacy[value] || value || "off";
-		return ["off", "pending-assignment", "pending-response", "confirmed"].includes(normalized)
-			? normalized
-			: "off";
+		return normalizeDriverRoleStatus(value);
 	}
 
-	function restoreDriverStatus(button, value) {
+	function restoreDriverStatus(button, value, metadata = {}) {
 		const state = normalizeDriverStatus(value);
 		if (window.TripPanel?.setRoleStatus) {
-			window.TripPanel.setRoleStatus(button, state);
+			window.TripPanel.setRoleStatus(button, state, {
+				dirty: false,
+				source: metadata.source || "dispatcher",
+				updatedAt: metadata.updatedAt || null,
+				acceptedAt: metadata.acceptedAt || null,
+			});
 			return;
 		}
 		button.dataset.roleState = state;
+		button.dataset.statusDirty = "false";
+		button.dataset.statusSource = metadata.source || "dispatcher";
+		button.dataset.statusUpdatedAt = metadata.updatedAt || "";
+		button.dataset.acceptedAt = metadata.acceptedAt || "";
 		button.classList.remove(
 			"rux-role--pending-assignment",
 			"rux-role--pending-response",
@@ -74,6 +81,55 @@ import {
 			"rux-role--success",
 		);
 		if (state !== "off") button.classList.add(`rux-role--${state}`);
+	}
+
+	function restoreSyncedDriverStatuses(root, statusRows = []) {
+		const statusByIdentity = new Map(
+			statusRows.map((status) => [
+				[
+					status.driverId,
+					status.leg || "outbound",
+					status.role || "driver",
+				].map(String).join(":"),
+				status,
+			]),
+		);
+		const sections = [
+			{ selector: "#tp-bus-groups", leg: "outbound" },
+			{ selector: "#tp-return-bus-groups", leg: "return" },
+		];
+		const roleByKey = {
+			coDriver: "co-driver",
+			relief1: "relief-start",
+			relief2: "relief-end",
+		};
+
+		for (const section of sections) {
+			root.querySelectorAll(
+				`${section.selector} .rux-trip-panel__driver-row`,
+			).forEach((row) => {
+				const role = row.dataset.roleRow
+					? roleByKey[row.dataset.roleRow]
+					: "driver";
+				const select = row.querySelector("select[name$='.name']");
+				const label = row.querySelector(".rux-trip-panel__role-label");
+				if (!role || !label) return;
+				const status = select?.value
+					? statusByIdentity.get(
+						[select.value, section.leg, role].map(String).join(":"),
+					)
+					: null;
+				restoreDriverStatus(label, status?.status ?? label.dataset.roleState, {
+					source: status?.source || label.dataset.statusSource || "dispatcher",
+					updatedAt: status
+						? status.updatedAt
+						: label.dataset.statusUpdatedAt || null,
+					acceptedAt: status
+						? status.acceptedAt
+						: label.dataset.acceptedAt || null,
+				});
+			});
+		}
 	}
 
 	function defaultSaveLabel() {
@@ -390,6 +446,28 @@ import {
 				})
 				.filter(Boolean);
 
+			const statusButtonForRole = (role) => {
+				const roleKey = driverRoles.find((item) => item.role === role)?.roleKey;
+				if (!roleKey || !busGroup) return null;
+				return role === "driver"
+					? busGroup.querySelector(
+						".rux-trip-panel__driver-row:not([data-role-row]) .rux-trip-panel__role-label",
+					)
+					: busGroup.querySelector(
+						`[data-role-row="${roleKey}"] .rux-trip-panel__role-label`,
+					);
+			};
+			const driverStatuses = drivers.map((driver) => {
+				const label = statusButtonForRole(driver.role);
+				return {
+					driverId: driver.driver_id,
+					leg,
+					role: driver.role,
+					status: normalizeDriverStatus(label?.dataset.roleState),
+					dirty: label?.dataset.statusDirty === "true",
+				};
+			});
+
 			const activeRoles = [];
 			if (busGroup) {
 				const roleMap = { coDriver: "co-driver", relief1: "relief-start", relief2: "relief-end" };
@@ -410,7 +488,14 @@ import {
 			} else {
 				activeRoles.push("driver");
 			}
-			assignments.push({ bus_id: busId, position: positionOffset + i, drivers, active_roles: activeRoles, leg });
+			assignments.push({
+				bus_id: busId,
+				position: positionOffset + i,
+				drivers,
+				driver_statuses: driverStatuses,
+				active_roles: activeRoles,
+				leg,
+			});
 		}
 
 		return assignments;
@@ -820,13 +905,18 @@ import {
 				}
 			});
 
-			activeAssignmentDrivers(assignment).forEach(({
-				driver_id,
-				role,
-				pay,
-				report_time,
-				instructions,
-			}) => {
+			activeAssignmentDrivers(assignment).forEach((driverRow) => {
+				const {
+					driver_id,
+					role,
+					pay,
+					report_time,
+					instructions,
+					driver_status,
+					driver_status_source,
+					driver_status_updated_at,
+					driver_accepted_at,
+				} = driverRow;
 				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
 				// Never hydrate a hidden optional role merely because an old or
@@ -835,6 +925,24 @@ import {
 				if (role !== "driver" && !activeRoleKeys.has(role)) return;
 				const driverSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.name"]`);
 				if (driverSelect && driver_id) driverSelect.value = driver_id;
+				const label = role === "driver"
+					? busGroup?.querySelector(
+						".rux-trip-panel__driver-row:not([data-role-row]) .rux-trip-panel__role-label",
+					)
+					: busGroup?.querySelector(
+						`[data-role-row="${roleKey}"] .rux-trip-panel__role-label`,
+					);
+				if (label) {
+					restoreDriverStatus(
+						label,
+						driver_status ?? label.dataset.roleState,
+						{
+							source: driver_status_source,
+							updatedAt: driver_status_updated_at,
+							acceptedAt: driver_accepted_at,
+						},
+					);
+				}
 				const payInput = root.querySelector(`[name="${fieldPrefix}[${slot}].${roleKey}.pay"]`);
 				if (payInput && pay != null) payInput.value = pay;
 				const reportTimeInput = root.querySelector(
@@ -1128,6 +1236,22 @@ import {
 				}
 			}
 
+			// Assignment rows are intentionally replaced on every save, but role
+			// statuses live in a stable table. Non-dirty entries preserve a newer
+			// driver acceptance that may have arrived while this form was open;
+			// only an icon the dispatcher explicitly clicked may override it.
+			try {
+				const syncedDriverStatuses = await syncTripDriverStatuses(
+					savedId,
+					assignments.flatMap((assignment) => assignment.driver_statuses || []),
+				);
+				restoreSyncedDriverStatuses(root, syncedDriverStatuses);
+			} catch (statusError) {
+				// Status enrichment must not turn a successful trip write into a
+				// failed save. active_roles remains a complete legacy fallback.
+				console.warn("Driver statuses could not be synchronized:", statusError);
+			}
+
 			// Replace stops
 			const { error: deleteStopsErr } = await supabase
 				.from("trip_stops")
@@ -1378,6 +1502,18 @@ export async function fetchTrips() {
 	if (tripsResult.error) throw tripsResult.error;
 	if (paymentsResult.error) throw paymentsResult.error;
 
+	let canonicalDriverStatuses = [];
+	try {
+		canonicalDriverStatuses = await fetchTripDriverStatuses(
+			(tripsResult.data || []).map((trip) => trip.id),
+		);
+	} catch (statusError) {
+		// Status enrichment is additive. Legacy active_roles still renders the
+		// scheduler if the status RPC is temporarily unavailable.
+		console.warn("Canonical driver statuses could not be loaded:", statusError);
+	}
+	const driverStatusesByKey = indexTripDriverStatuses(canonicalDriverStatuses);
+
 	const paymentsByTrip = new Map();
 	for (const p of paymentsResult.data ?? []) {
 		if (!paymentsByTrip.has(p.trip_id)) paymentsByTrip.set(p.trip_id, []);
@@ -1404,10 +1540,13 @@ export async function fetchTrips() {
 
 	return (tripsResult.data ?? []).map(trip => ({
 		...trip,
-		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...a }) => ({
-			...a,
-			drivers: activeAssignmentDrivers({ ...a, trip_drivers }),
-		})),
+		trip_assignments: (trip.trip_assignments ?? []).map(({ trip_drivers, ...assignment }) =>
+			mergeAssignmentDriverStatuses(
+				trip.id,
+				{ ...assignment, trip_drivers },
+				driverStatusesByKey,
+			),
+		),
 		trip_payments: paymentsByTrip.get(trip.id) ?? [],
 		trip_passengers: passengersByTrip.get(trip.id) ?? [],
 		trip_documents: docsByTrip.get(trip.id) ?? [],

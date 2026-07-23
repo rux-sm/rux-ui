@@ -43,12 +43,32 @@ function normalizeRoleStatus(value) {
 	return ROLE_STATUS_STATES.some((status) => status.value === normalized) ? normalized : "off";
 }
 
-function setRoleStatus(button, value) {
+function formatRoleStatusTime(value) {
+	if (!value) return "";
+	const date = new Date(value);
+	if (Number.isNaN(date.getTime())) return "";
+	return new Intl.DateTimeFormat(undefined, {
+		month: "short",
+		day: "numeric",
+		hour: "numeric",
+		minute: "2-digit",
+	}).format(date);
+}
+
+function setRoleStatus(button, value, metadata = {}) {
 	if (!button) return;
 	const state = normalizeRoleStatus(value);
 	const status = ROLE_STATUS_STATES.find((item) => item.value === state);
 	const role = button.dataset.roleLabel || "Driver";
+	const dirty = metadata.dirty ?? true;
+	const source = dirty ? "dispatcher" : (metadata.source || "dispatcher");
+	const updatedAt = dirty ? "" : (metadata.updatedAt || "");
+	const acceptedAt = dirty ? "" : (metadata.acceptedAt || "");
 	button.dataset.roleState = state;
+	button.dataset.statusDirty = String(dirty);
+	button.dataset.statusSource = source;
+	button.dataset.statusUpdatedAt = updatedAt;
+	button.dataset.acceptedAt = acceptedAt;
 	button.classList.remove(
 		"rux-role--pending-assignment",
 		"rux-role--pending-response",
@@ -58,8 +78,18 @@ function setRoleStatus(button, value) {
 		"rux-role--success",
 	);
 	if (state !== "off") button.classList.add(`rux-role--${state}`);
-	button.title = `${role} status: ${status.label}`;
-	button.setAttribute("aria-label", `${role} status: ${status.label}`);
+	let detail = "";
+	if (dirty) {
+		detail = " · pending save by dispatch";
+	} else if (source === "driver" && state === "confirmed") {
+		const accepted = formatRoleStatusTime(acceptedAt || updatedAt);
+		detail = ` · accepted by driver${accepted ? ` ${accepted}` : ""}`;
+	} else if (updatedAt) {
+		const updated = formatRoleStatusTime(updatedAt);
+		detail = ` · set by dispatch${updated ? ` ${updated}` : ""}`;
+	}
+	button.title = `${role} status: ${status.label}${detail}`;
+	button.setAttribute("aria-label", `${role} status: ${status.label}${detail}`);
 }
 
 function activeReqsByType(type) {
@@ -1457,6 +1487,20 @@ function initBusGroupSection(root, busGroupsEl, busesInput, fieldPrefix) {
 		const currentIndex = ROLE_STATUS_STATES.findIndex((status) => status.value === current);
 		const next = ROLE_STATUS_STATES[(currentIndex + 1) % ROLE_STATUS_STATES.length];
 		setRoleStatus(label, next.value);
+	});
+
+	// A status belongs to one specific driver/leg/role identity. When dispatch
+	// replaces the selected driver, never carry the previous driver's green
+	// (or pending) state onto the replacement.
+	busGroupsEl.addEventListener("change", (e) => {
+		const select = e.target.closest(
+			".rux-trip-panel__driver-row select[name$='.name']",
+		);
+		if (!select) return;
+		const label = select
+			.closest(".rux-trip-panel__driver-row")
+			?.querySelector(".rux-trip-panel__role-label");
+		if (label) setRoleStatus(label, "off");
 	});
 }
 

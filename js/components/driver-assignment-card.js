@@ -118,7 +118,7 @@ function actionButton(label, icon, callback) {
 	return button;
 }
 
-// Unconfirmed: the one accent action on the card — Itinerary/Envelope below
+// Unaccepted: the one accent action on the card — Itinerary/Envelope below
 // are reference actions a driver reaches for as needed, not something to
 // compete with confirming for attention.
 // Confirmed: stays confirmed regardless of later trip edits (see
@@ -132,7 +132,7 @@ function confirmSection(entry, options) {
 		const button = document.createElement("button");
 		button.type = "button";
 		button.className = "rux-button rux-button--accent rux-button--block";
-		button.innerHTML = `<span class="rux-icon" aria-hidden="true">check_circle</span><span>Confirm Trip</span>`;
+		button.innerHTML = `<span class="rux-icon" aria-hidden="true">check_circle</span><span>Accept Assignment</span>`;
 		button.addEventListener("click", () => options.onConfirm(entry, button));
 		section.appendChild(button);
 		return section;
@@ -141,16 +141,20 @@ function confirmSection(entry, options) {
 		"div",
 		`driver-assignment-card__confirm-status${entry.confirmationStale ? " is-stale" : ""}`,
 	);
+	const acceptedByDriver = entry.confirmedSource !== "dispatcher";
+	const statusText = entry.confirmationStale
+		? `${acceptedByDriver ? "Accepted" : "Confirmed"} · trip updated since`
+		: (acceptedByDriver ? "Assignment accepted" : "Confirmed by dispatch");
 	status.append(
 		el("span", "rux-icon", entry.confirmationStale ? "update" : "check_circle"),
-		el("span", "", entry.confirmationStale ? "Confirmed · trip updated since" : "Trip confirmed"),
+		el("span", "", statusText),
 	);
 	section.appendChild(status);
 	if (entry.confirmationStale) {
 		const reconfirm = document.createElement("button");
 		reconfirm.type = "button";
 		reconfirm.className = "rux-button rux-button--default rux-button--sm driver-assignment-card__reconfirm";
-		reconfirm.textContent = "Re-confirm";
+		reconfirm.textContent = "Review & accept";
 		reconfirm.addEventListener("click", () => options.onConfirm(entry, reconfirm));
 		section.appendChild(reconfirm);
 	}

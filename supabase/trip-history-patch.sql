@@ -28,6 +28,7 @@ create table if not exists public.trip_history (
 			'updated',
 			'deleted',
 			'assignment_changed',
+			'driver_status_changed',
 			'document_uploaded',
 			'document_replaced',
 			'document_deleted'
@@ -36,6 +37,24 @@ create table if not exists public.trip_history (
 	constraint trip_history_changes_check check (jsonb_typeof(changes) = 'array'),
 	constraint trip_history_metadata_check check (jsonb_typeof(metadata) = 'object')
 );
+
+-- CREATE TABLE IF NOT EXISTS does not revise a constraint on an existing
+-- installation, so rerunning this patch explicitly upgrades the action list.
+alter table public.trip_history
+	drop constraint if exists trip_history_action_check;
+alter table public.trip_history
+	add constraint trip_history_action_check check (
+		action in (
+			'created',
+			'updated',
+			'deleted',
+			'assignment_changed',
+			'driver_status_changed',
+			'document_uploaded',
+			'document_replaced',
+			'document_deleted'
+		)
+	);
 
 alter table public.trip_history enable row level security;
 revoke all on table public.trip_history from anon, authenticated;
@@ -139,4 +158,3 @@ grant execute on function public.record_trip_history(uuid, text, jsonb, jsonb, t
 	to anon, authenticated;
 grant execute on function public.get_trip_history(integer, timestamptz, bigint, uuid)
 	to anon, authenticated;
-

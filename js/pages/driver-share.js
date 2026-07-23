@@ -2,11 +2,18 @@ import { supabase } from "../data/supabase.js";
 import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=4";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=5";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
 let requirementLabels = new Map();
+const driverStatusChannel = supabase
+	.channel("scheduler-trips")
+	.subscribe((status) => {
+		if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+			console.warn(`Driver status broadcast channel: ${status}`);
+		}
+	});
 
 function el(tag, className, text) {
 	const node = document.createElement(tag);
@@ -146,7 +153,23 @@ function isMissingReliefField(error) {
 function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 	const trip = row.trips || {};
 	const leg = row.leg || "outbound";
-	const confirmedAt = confirmationsByKey.get(`${trip.id}:${leg}`) || "";
+	const activeDrivers = activeAssignmentDrivers(row);
+	const driverAssignment = activeDrivers.find(
+		(item) => String(item.driver_id) === String(driverId),
+	) || {};
+	const role = driverAssignment.role || "driver";
+	const confirmation = confirmationsByKey.get(
+		`${trip.id}:${leg}:${role}`,
+	) || confirmationsByKey.get(`${trip.id}:${leg}`) || null;
+	const legacyRoleEntry = (row.active_roles || []).find(
+		(entry) => String(entry).split(":", 1)[0] === role,
+	);
+	const legacyRoleState = String(legacyRoleEntry || "").split(":", 2)[1] || "off";
+	const dispatchConfirmed = ["confirmed", "success"].includes(legacyRoleState);
+	const confirmedAt = confirmation?.confirmedAt
+		|| (dispatchConfirmed ? trip.updated_at || "" : "");
+	const confirmedSource = confirmation?.source
+		|| (dispatchConfirmed ? "dispatcher" : "");
 	// trips.updated_at is bumped by a DB trigger on every save() (see
 	// trip-driver-confirmation-patch.sql) — if the trip's own save happened
 	// after this confirmation, something about it may have changed since the
@@ -157,10 +180,6 @@ function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 	const stops = stopsForLeg(trip, leg);
 	const pickup = stops.find((stop) => stop.type === "pickup") || {};
 	const returnStop = [...stops].reverse().find((stop) => stop.type === "return") || {};
-	const activeDrivers = activeAssignmentDrivers(row);
-	const driverAssignment = activeDrivers.find(
-		(item) => String(item.driver_id) === String(driverId),
-	) || {};
 	const crew = activeDrivers
 		.filter((item) => String(item.driver_id) !== String(driverId))
 		.sort((a, b) => {
@@ -180,7 +199,7 @@ function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 			: trip.end_date || trip.start_date,
 		busNumber: row.buses?.number ?? "Unassigned",
 		driverId,
-		role: driverAssignment.role || "driver",
+		role,
 		roleReportTime: driverAssignment.report_time || "",
 		instructions: driverAssignment.instructions || "",
 		drivers: row.trip_drivers || [],
@@ -196,6 +215,7 @@ function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 		contact: contactFor(trip),
 		itineraryUrl: publicDocumentUrl(trip),
 		confirmedAt,
+		confirmedSource,
 		confirmationStale,
 	};
 }
@@ -325,7 +345,10 @@ async function load() {
 	}
 	for (const trip of trips || []) trip.trip_documents = documentsByTrip.get(trip.id) || [];
 	const confirmationsByKey = new Map(
-		(confirmationsResult.data || []).map((item) => [`${item.tripId}:${item.leg || "outbound"}`, item.confirmedAt]),
+		(confirmationsResult.data || []).map((item) => [
+			`${item.tripId}:${item.leg || "outbound"}:${item.role || "driver"}`,
+			item,
+		]),
 	);
 
 	const entries = assignmentRefs
@@ -378,8 +401,24 @@ async function load() {
 				});
 				if (error || !data) throw error || new Error("Could not confirm trip");
 				entry.confirmedAt = data.confirmedAt;
+				entry.confirmedSource = data.source || "driver";
 				entry.confirmationStale = false;
 				cardEl?.replaceWith(renderDriverAssignmentCard(entry, cardOptions));
+				driverStatusChannel.send({
+					type: "broadcast",
+					event: "driver-status-changed",
+					payload: {
+						tripId: data.tripId || entry.trip.id,
+						driverId: data.driverId || entry.driverId,
+						leg: data.leg || entry.leg,
+						role: data.role || entry.role,
+					},
+				}).catch((broadcastError) => {
+					// Acceptance is already durable in Postgres. Realtime is an
+					// acceleration only; the scheduler's polling fallback still
+					// reconciles the status.
+					console.warn("Driver status broadcast was not delivered:", broadcastError);
+				});
 			} catch (err) {
 				console.error("Could not confirm trip:", err);
 				triggerEl.disabled = false;
