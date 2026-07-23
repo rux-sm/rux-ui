@@ -9,14 +9,12 @@
 		2. Background is transparent by default so ghost buttons can inherit the strip bg
 		3. Foreground is a CSS variable so it can be overridden by accent and danger modifiers
 		4. Border is transparent by default so ghost buttons can inherit the strip bg
-		5. Press-y is a CSS variable so it can be overridden by size modifiers
-		6. State overlay is transparent by default so ghost buttons can inherit the strip bg */
+		5. State overlay is transparent by default so ghost buttons can inherit the strip bg */
 
 	--_h: var(--rux-button-height);
 	--_bg: transparent;
 	--_fg: var(--rux-button-default-text);
 	--_border: transparent;
-	--_press-y: var(--rux-button-border-width);
 	--_state-overlay: transparent;
 
 	position: relative;
@@ -43,8 +41,7 @@
 		background-color var(--rux-button-transition-duration) var(--rux-button-transition-easing),
 		color var(--rux-button-transition-duration) var(--rux-button-transition-easing),
 		border-color var(--rux-button-transition-duration) var(--rux-button-transition-easing),
-		box-shadow var(--rux-button-transition-duration) var(--rux-button-transition-easing),
-		transform var(--rux-button-transition-duration) var(--rux-button-transition-easing);
+		box-shadow var(--rux-button-transition-duration) var(--rux-button-transition-easing);
 }
 
 .rux-button[hidden] {
@@ -57,7 +54,6 @@
 }
 .rux-button:active:not(:disabled):not([aria-disabled="true"]) {
 	--_state-overlay: var(--rux-button-active-overlay);
-	transform: translateY(var(--_press-y));
 }
 
 .rux-button:disabled,
@@ -509,7 +505,7 @@
 
 /* ==========================================================================
    SEGMENTED TRACK  ·  .rux-segmented-track + .rux-button--segment
-   — a "floating pill" toggle: recessed track + inset padding
+   — a full-height selected layer that slides over a recessed track
    ========================================================================== */
 
 .rux-segmented-track {
@@ -522,6 +518,7 @@
 	background: var(--rux-segmented-track-bg);
 	border-radius: var(--rux-segmented-track-radius);
 	border: var(--rux-segmented-track-border);
+	overflow: hidden;
 }
 
 .rux-segmented__indicator {
@@ -572,7 +569,6 @@
 	--_h: calc(
 		var(--rux-segmented-track-height)
 		- (2 * var(--rux-segmented-track-padding))
-		- (2 * var(--rux-border-width))
 	);
 	background: var(--rux-segment-background);
 	color: var(--rux-segment-fg);

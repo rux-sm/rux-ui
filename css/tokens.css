@@ -11,7 +11,7 @@
 
 	/* ─── COLOR · base ─────────────────────────────────────────────────────── */
 
-	--rux-neutral: oklch(050% 0.002 259); /* neutral */
+	--rux-neutral: oklch(050% 0.004 255); /* neutral */
 	--rux-white:   oklch(from var(--rux-neutral) 100% c h);
 	--rux-black:   oklch(from var(--rux-neutral) 000% c h);
 
@@ -36,10 +36,12 @@
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
 
-	--rux-heading:        oklch(from var(--rux-neutral) 100% c h / 85%);
-	--rux-text-primary:   oklch(from var(--rux-neutral) 100% c h / 100%);
-	--rux-text-secondary: oklch(from var(--rux-neutral) 100% c h / 50%);
-	--rux-text-disabled:  oklch(from var(--rux-neutral) 100% c h / 25%);
+	--rux-heading:          oklch(from var(--rux-neutral) 100% c h / 100%);
+	--rux-text-primary:     oklch(from var(--rux-neutral) 100% c h / 100%);
+	--rux-text-secondary:   oklch(from var(--rux-neutral) 100% c h / 68%);
+	--rux-text-tertiary:    oklch(from var(--rux-neutral) 100% c h / 40%);
+	--rux-text-quaternary:  oklch(from var(--rux-neutral) 100% c h / 28%);
+	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-border-input:  oklch(from var(--rux-neutral) 30% c h / 100%);
@@ -198,13 +200,13 @@
 
 	/* ─── COLOR · surfaces ────────────────────────────────────────────────── */
 
-	--rux-surface-canvas:          oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-workspace:       oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-panel:           oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-calendar:        oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-card:            oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-card-header:     oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-canvas:          oklch(from var(--rux-neutral) 0% c h);
+	--rux-surface-workspace:       oklch(from var(--rux-neutral) 0% c h);
+	--rux-surface-panel:           oklch(from var(--rux-neutral) 0% c h);
+	--rux-surface-calendar:        oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-card-header:     oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-field:           oklch(from var(--rux-neutral) 32% c h);
 	--rux-surface-modal:           oklch(from var(--rux-neutral) 26% c h);
 	--rux-surface-switch-track:    oklch(from var(--rux-neutral) 22% c h);
@@ -308,7 +310,7 @@
 	--rux-stack-gap-tight:        var(--rux-space-px);
 	--rux-section-label-gap:      var(--rux-space-2);
 	--rux-control-padding-inline: var(--rux-space-2);
-	--rux-control-content-gap:    var(--rux-space-2);
+	--rux-control-content-gap:    var(--rux-space-3);
 
 	/* ─── LAYOUT ROLES ───────────────────────────────────────────────────── */
 
@@ -379,7 +381,7 @@
 	--rux-calendar-bg:            var(--rux-surface-calendar);
 	--rux-calendar-header-bg:     var(--rux-surface-calendar-header);
 	--rux-calendar-edge-guard-bg: var(--rux-surface-calendar-header);
-	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-surface-calendar-header);
 	--rux-calendar-radius:        var(--rux-radius-container);
 	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-border);
 	--rux-mini-cal-active-week-opacity: var(--rux-opacity-subtle-tint);
@@ -432,7 +434,7 @@
 	--rux-card-bg:           var(--rux-surface-card);
 	--rux-card-fg:           var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border:       var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-border:       var(--rux-card-border-width) solid var(--rux-surface-card);
 	--rux-card-radius:       var(--rux-radius-container);
 
 	/* — header — */
@@ -690,15 +692,15 @@
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
 
 	--rux-segmented-track-bg:         var(--rux-input-background);
-	--rux-segmented-track-padding:    var(--rux-space-0-5);
+	--rux-segmented-track-padding:    var(--rux-space-0);
 	--rux-segmented-track-radius:     var(--rux-input-border-radius);
 	--rux-segmented-track-height:     var(--rux-input-height);
-	--rux-segmented-track-border:     var(--rux-input-border);
-	--rux-segmented-track-gap:        var(--rux-space-0-5);
+	--rux-segmented-track-border:     0 solid transparent;
+	--rux-segmented-track-gap:        var(--rux-space-0);
 	--rux-segment-indicator-duration: var(--rux-duration-base);
 	--rux-segment-indicator-easing:   var(--rux-ease-out);
 
-	--rux-segment-radius:         calc(var(--rux-input-border-radius) - 2px);
+	--rux-segment-radius:         var(--rux-segmented-track-radius);
 	--rux-segment-padding-inline: var(--rux-space-4);
 	--rux-segment-background:     var(--rux-button-ghost-background);
 	--rux-segment-border:         var(--rux-button-ghost-border);

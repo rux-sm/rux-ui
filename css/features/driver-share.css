@@ -11,7 +11,7 @@ html {
 	min-height: 100dvh;
 	margin: 0;
 	background:
-		radial-gradient(circle at 50% -10rem, color-mix(in oklch, var(--rux-accent) 16%, transparent), transparent 34rem),
+		radial-gradient(circle at 50% -10rem, color-mix(in oklch, var(--rux-accent) 0%, transparent), transparent 34rem),
 		var(--rux-surface-canvas);
 	color: var(--rux-fg);
 }
@@ -22,7 +22,7 @@ html {
 	justify-content: space-between;
 	height: 4.5rem;
 	padding: 0 max(var(--rux-space-4), env(safe-area-inset-left));
-	background: color-mix(in oklch, var(--rux-surface-canvas) 92%, transparent);
+	background: var(--rux-surface-canvas);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 	backdrop-filter: blur(12px);
 	position: sticky;

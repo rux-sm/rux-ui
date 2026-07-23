@@ -33,6 +33,28 @@ import BusPicker from "../components/bus-picker.js?v=2";
 		return button;
 	}
 
+	function cloneLiveComponent(selector, ariaLabel) {
+		const source = document.querySelector(selector);
+		if (!source) return null;
+
+		const clone = source.cloneNode(true);
+		clone.removeAttribute("id");
+		if (ariaLabel) clone.setAttribute("aria-label", ariaLabel);
+
+		// Runtime indicator geometry belongs to the source instance. The shared
+		// controls runtime initializes a fresh indicator for this clone, keeping
+		// the demo on the exact production component without copying live state.
+		clone.querySelector(":scope > .rux-segmented__indicator")?.remove();
+		delete clone.dataset.ruxIndicatorInit;
+		delete clone.dataset.ruxIndicatorReady;
+		clone.style.removeProperty("--_rux-segment-indicator-x");
+		clone.style.removeProperty("--_rux-segment-indicator-y");
+		clone.style.removeProperty("--_rux-segment-indicator-width");
+		clone.style.removeProperty("--_rux-segment-indicator-height");
+
+		return clone;
+	}
+
 	function demoPage(name, title, hostClass = "") {
 		const page = el("div", "components-app__page");
 		page.dataset.componentPage = name;
@@ -97,15 +119,16 @@ import BusPicker from "../components/bus-picker.js?v=2";
 
 		if (!document.querySelector('[data-component-page="segmented"]')) {
 			const host = demoPage("segmented", "Segmented Control");
-			const group = el("div", "rux-segmented rux-segmented--inline");
-			group.dataset.ruxToggleGroup = "";
-			[["Day", true], ["Week", false], ["Month", false]].forEach(([label, active]) => {
-				const button = el("button", `rux-button rux-button--default${active ? " is-active" : ""}`, label);
-				button.type = "button";
-				button.setAttribute("aria-pressed", String(active));
-				group.appendChild(button);
-			});
-			host.appendChild(group);
+			const group = cloneLiveComponent("#trip-view-group", "Segmented control demo");
+			if (group) {
+				host.appendChild(group);
+			} else {
+				host.appendChild(el(
+					"p",
+					"components-app__empty",
+					"Live segmented control is unavailable.",
+				));
+			}
 		}
 
 		if (!document.querySelector('[data-component-page="stepper"]')) {
