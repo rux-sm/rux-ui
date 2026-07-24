@@ -2358,25 +2358,6 @@
 									<button
 										class="rux-button rux-button--default"
 										type="button"
-										id="rp-driver-details-btn"
-										disabled
-										title="Select a driver first"
-										aria-haspopup="dialog"
-										aria-expanded="false"
-										aria-controls="rux-driver-grid-popover"
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>info</span
-										>
-										<span class="rux-btn-label"
-											>Details</span
-										>
-									</button>
-									<button
-										class="rux-button rux-button--default"
-										type="button"
 										id="rp-driver-add-timeoff-btn"
 										disabled
 										title="Select a driver first"
@@ -8359,7 +8340,7 @@
 				document.addEventListener("click", (event) => {
 					if (driverGridPopover.hidden) return;
 					if (driverGridPopover.contains(event.target)) return;
-					if (event.target.closest(".rux-driver-grid__cell, #rp-driver-details-btn")) return;
+					if (event.target.closest(".rux-driver-grid__cell")) return;
 					closeDriverGridPopover();
 				});
 				document.addEventListener("keydown", (event) => {
@@ -8434,7 +8415,7 @@
 				driverGridPopoverAnchor = anchor;
 				anchor.setAttribute("aria-expanded", "true");
 				popover.hidden = false;
-				window.RuxPopover?.position(anchor, popover, { placement: "bottom-center" });
+				window.RuxPopover?.position(anchor, popover, { placement: "left-start" });
 			}
 
 			function showDriverGridPopover(anchor, driver, date, entries, timeOffTooltip, timeOffNotes) {
@@ -8662,12 +8643,12 @@
 			}
 
 			// Select a driver in the grid (click any of their day cells too, not
-			// just the name) — footer button targets whichever driver is selected.
-			// Re-applied after every re-render above so the selection survives
-			// week navigation instead of silently clearing.
+			// just the name) — single click selects, double click opens the
+			// details popover; footer buttons target whichever driver is
+			// selected. Re-applied after every re-render above so the selection
+			// survives week navigation instead of silently clearing.
 			let selectedGridDriverId = null;
 			const driverGridEl = document.getElementById("rp-driver-grid");
-			const driverDetailsBtn = document.getElementById("rp-driver-details-btn");
 			const driverAddTimeOffBtn = document.getElementById(
 				"rp-driver-add-timeoff-btn",
 			);
@@ -8688,12 +8669,6 @@
 				const driver = allDrivers.find(
 					(item) => String(item.id) === String(driverId),
 				);
-				if (driverDetailsBtn) {
-					driverDetailsBtn.disabled = false;
-					driverDetailsBtn.title = driver
-						? `View details for ${driver.short_name || driver.name}`
-						: "";
-				}
 				if (driverAddTimeOffBtn) {
 					driverAddTimeOffBtn.disabled = false;
 					driverAddTimeOffBtn.title = driver
@@ -8708,12 +8683,16 @@
 				}
 			}
 
-			driverDetailsBtn?.addEventListener("click", () => {
-				if (!selectedGridDriverId) return;
-				const driver = allDrivers.find(
-					(item) => String(item.id) === String(selectedGridDriverId),
+			driverGridEl?.addEventListener("dblclick", (e) => {
+				if (e.target.closest(".rux-driver-grid__cell")) return;
+				const row = e.target.closest(
+					".rux-driver-grid__row[data-driver-id]",
 				);
-				if (driver) showDriverInfoPopover(driverDetailsBtn, driver);
+				if (!row) return;
+				const driver = allDrivers.find(
+					(item) => String(item.id) === String(row.dataset.driverId),
+				);
+				if (driver) showDriverInfoPopover(row, driver);
 			});
 
 			driverGridEl?.addEventListener("click", (e) => {

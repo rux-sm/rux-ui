@@ -28,6 +28,28 @@
 		const anchorRect = anchor.getBoundingClientRect();
 		const popoverRect = measure(popover);
 		const align = placement.endsWith("start") ? "start" : placement.endsWith("center") ? "center" : "end";
+
+		if (placement.startsWith("left") || placement.startsWith("right")) {
+			const preferLeft = placement.startsWith("left");
+			let top = align === "start"
+				? anchorRect.top
+				: align === "center"
+					? anchorRect.top + (anchorRect.height - popoverRect.height) / 2
+					: anchorRect.bottom - popoverRect.height;
+			top = clamp(top, padding, window.innerHeight - popoverRect.height - padding);
+
+			const beforeLeft = anchorRect.left - popoverRect.width - offset;
+			const afterLeft = anchorRect.right + offset;
+			const fitsBefore = beforeLeft >= padding;
+			const fitsAfter = afterLeft + popoverRect.width <= window.innerWidth - padding;
+			const useLeft = preferLeft ? fitsBefore || !fitsAfter : !fitsAfter && fitsBefore;
+			let left = useLeft ? beforeLeft : afterLeft;
+			left = clamp(left, padding, window.innerWidth - popoverRect.width - padding);
+
+			finish(popover, left, top, `${useLeft ? "left" : "right"}-${align}`);
+			return;
+		}
+
 		const preferTop = placement.startsWith("top");
 
 		let left = align === "start"
