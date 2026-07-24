@@ -8834,7 +8834,7 @@
 			let rightAutoCollapsed = false;
 			let leftAutoCollapsed = false;
 
-			// ── Default boot state ──────────────────────────────────────────────
+			// ── Default panel state ─────────────────────────────────────────────
 			// Both panels open by default on desktop — the left (trip editor)
 			// panel has no trip loaded yet at this point, so it opens empty until
 			// a trip / "+ New trip" / a trip bar's manifest shortcut populates it.
@@ -8843,61 +8843,69 @@
 			// Neither opens on desktop either if the viewport can't fit the
 			// schedule plus both panels at their default widths — avoids opening
 			// both and having checkPanelFit() immediately snap one shut again.
-			drawer.style.setProperty(
-				"--drawer-width",
-				LEFT_DRAWER_DEFAULT + "px",
-			);
-			drawer.style.setProperty(
-				"--drawer-open-width",
-				LEFT_DRAWER_DEFAULT + "px",
-			);
-			rightDrawer.style.setProperty(
-				"--drawer-width",
-				RIGHT_DRAWER_DEFAULT + "px",
-			);
-			rightDrawer.style.setProperty(
-				"--drawer-open-width",
-				RIGHT_DRAWER_DEFAULT + "px",
-			);
+			// Shared by initial boot and by the mobile→desktop resize crossing
+			// below, so widening back out of mobile re-opens what now fits
+			// instead of leaving both closed until manually toggled.
+			function applyDefaultPanelState() {
+				drawer.style.setProperty(
+					"--drawer-width",
+					LEFT_DRAWER_DEFAULT + "px",
+				);
+				drawer.style.setProperty(
+					"--drawer-open-width",
+					LEFT_DRAWER_DEFAULT + "px",
+				);
+				rightDrawer.style.setProperty(
+					"--drawer-width",
+					RIGHT_DRAWER_DEFAULT + "px",
+				);
+				rightDrawer.style.setProperty(
+					"--drawer-open-width",
+					RIGHT_DRAWER_DEFAULT + "px",
+				);
 
-			const bootScheduleEl = document.querySelector(
-				"[data-module='calendar'] .rux-workspace",
-			);
-			// Measured before either drawer opens, so this is the schedule's full
-			// unsqueezed width — same available-space check checkPanelFit() runs
-			// later, just done once up front instead of open-then-recollapse.
-			const fitsBothPanelsAtBoot =
-				!!bootScheduleEl &&
-				bootScheduleEl.offsetWidth - LEFT_DRAWER_DEFAULT - RIGHT_DRAWER_DEFAULT >=
-					SCHEDULE_MIN;
+				const scheduleEl = document.querySelector(
+					"[data-module='calendar'] .rux-workspace",
+				);
+				// Measured before either drawer opens, so this is the schedule's
+				// full unsqueezed width — same available-space check
+				// checkPanelFit() runs later, just done once up front instead of
+				// open-then-recollapse.
+				const fitsBothPanels =
+					!!scheduleEl &&
+					scheduleEl.offsetWidth - LEFT_DRAWER_DEFAULT - RIGHT_DRAWER_DEFAULT >=
+						SCHEDULE_MIN;
 
-			if (mobilePanelQuery.matches || !fitsBothPanelsAtBoot) {
-				drawer.style.setProperty("--drawer-width", "0px");
-				tripPanel.inert = true;
-				drawer.setAttribute("aria-hidden", "true");
-				leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
+				if (mobilePanelQuery.matches || !fitsBothPanels) {
+					drawer.style.setProperty("--drawer-width", "0px");
+					tripPanel.inert = true;
+					drawer.setAttribute("aria-hidden", "true");
+					leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
 
-				rightDrawer.style.setProperty("--drawer-width", "0px");
-				rightPanel.inert = true;
-				rightDrawer.setAttribute("aria-hidden", "true");
+					rightDrawer.style.setProperty("--drawer-width", "0px");
+					rightPanel.inert = true;
+					rightDrawer.setAttribute("aria-hidden", "true");
 
-				if (!mobilePanelQuery.matches) {
-					leftAutoCollapsed = true;
-					rightAutoCollapsed = true;
+					if (!mobilePanelQuery.matches) {
+						leftAutoCollapsed = true;
+						rightAutoCollapsed = true;
+					}
+				} else {
+					drawer.classList.add("is-open");
+					tripPanel.inert = false;
+					drawer.setAttribute("aria-hidden", "false");
+					leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
+
+					rightDrawer.classList.add("is-open");
+					rightPanel.inert = false;
+					rightDrawer.setAttribute("aria-hidden", "false");
+					rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
 				}
-			} else {
-				drawer.classList.add("is-open");
-				tripPanel.inert = false;
-				drawer.setAttribute("aria-hidden", "false");
-				leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
-
-				rightDrawer.classList.add("is-open");
-				rightPanel.inert = false;
-				rightDrawer.setAttribute("aria-hidden", "false");
-				rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
+				tripDrawerHandle.syncHandle();
+				rightDrawerHandle.syncHandle();
 			}
-			tripDrawerHandle.syncHandle();
-			rightDrawerHandle.syncHandle();
+
+			applyDefaultPanelState();
 
 			document.addEventListener("keydown", (event) => {
 				if (event.key !== "Escape" || !mobilePanelQuery.matches) return;
@@ -8909,9 +8917,12 @@
 			});
 
 			mobilePanelQuery.addEventListener("change", (event) => {
-				if (!event.matches) return;
-				closeRightDrawer();
-				closeDrawer();
+				if (event.matches) {
+					closeRightDrawer();
+					closeDrawer();
+					return;
+				}
+				applyDefaultPanelState();
 			});
 
 			function getDrawerWidth(el) {
