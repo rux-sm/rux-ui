@@ -784,7 +784,7 @@
    only. Text drops first — a short label still reads faster than a bare
    icon — so the icon goes quiet before the label does, then at the
    narrowest width the roles swap: label goes quiet, icon comes back. */
-@container (max-width: 380px) {
+@container (max-width: 400px) {
 	[data-trip-tabs] .rux-trip-panel__tab > .rux-icon {
 		position: absolute;
 		width: 1px;

@@ -207,15 +207,15 @@
 										role="tab"
 										aria-selected="true"
 										aria-controls="pane-trip"
-										aria-label="Info"
-										title="Info"
+										aria-label="Details"
+										title="Details"
 									>
 										<span
 											class="rux-icon"
 											aria-hidden="true"
 											>assignment</span
 										><span class="rux-trip-panel__tab-label"
-											>Info</span
+											>Details</span
 										>
 									</button>
 									<button
@@ -241,15 +241,15 @@
 										role="tab"
 										aria-selected="false"
 										aria-controls="pane-itinerary"
-										aria-label="Trip"
-										title="Trip"
+										aria-label="Itinerary"
+										title="Itinerary"
 									>
 										<span
 											class="rux-icon"
 											aria-hidden="true"
 											>location_on</span
 										><span class="rux-trip-panel__tab-label"
-											>Trip</span
+											>Itinerary</span
 										>
 									</button>
 									<button
@@ -1769,7 +1769,7 @@
 										role="tab"
 										aria-selected="true"
 										aria-controls="rp-pane-navigate"
-										title="Navigate"
+										title="Calendar"
 									>
 										<span
 											class="rux-icon"
@@ -1777,7 +1777,7 @@
 											>calendar_month</span
 										><span
 											class="rux-right-panel__tab-label"
-											>Nav</span
+											>Calendar</span
 										>
 									</button>
 									<button
@@ -8826,13 +8826,27 @@
 				});
 			renderMiniCal();
 
+			// ── Auto-close panels when viewport is too narrow ──────────────────
+			// Declared here (ahead of the boot state below) so the boot check can
+			// flag a panel as auto-collapsed when it skips opening for lack of
+			// room — checkPanelFit() then reopens it automatically once a resize
+			// gives back enough space, same as the narrowing-after-boot case.
+			let rightAutoCollapsed = false;
+			let leftAutoCollapsed = false;
+
 			// ── Default boot state ──────────────────────────────────────────────
-			// Only the right (tools) panel opens by default — the left (trip
-			// editor) panel starts closed and opens on demand, same as clicking a
-			// trip / "+ New trip" / a trip bar's manifest shortcut already does.
+			// Both panels open by default on desktop — the left (trip editor)
+			// panel has no trip loaded yet at this point, so it opens empty until
+			// a trip / "+ New trip" / a trip bar's manifest shortcut populates it.
 			// Mobile begins with the schedule visible and opens only one
 			// full-screen panel at a time either way, so both start closed there.
-			drawer.style.setProperty("--drawer-width", "0px");
+			// Neither opens on desktop either if the viewport can't fit the
+			// schedule plus both panels at their default widths — avoids opening
+			// both and having checkPanelFit() immediately snap one shut again.
+			drawer.style.setProperty(
+				"--drawer-width",
+				LEFT_DRAWER_DEFAULT + "px",
+			);
 			drawer.style.setProperty(
 				"--drawer-open-width",
 				LEFT_DRAWER_DEFAULT + "px",
@@ -8846,15 +8860,37 @@
 				RIGHT_DRAWER_DEFAULT + "px",
 			);
 
-			tripPanel.inert = true;
-			drawer.setAttribute("aria-hidden", "true");
-			leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
+			const bootScheduleEl = document.querySelector(
+				"[data-module='calendar'] .rux-workspace",
+			);
+			// Measured before either drawer opens, so this is the schedule's full
+			// unsqueezed width — same available-space check checkPanelFit() runs
+			// later, just done once up front instead of open-then-recollapse.
+			const fitsBothPanelsAtBoot =
+				!!bootScheduleEl &&
+				bootScheduleEl.offsetWidth - LEFT_DRAWER_DEFAULT - RIGHT_DRAWER_DEFAULT >=
+					SCHEDULE_MIN;
 
-			if (mobilePanelQuery.matches) {
+			if (mobilePanelQuery.matches || !fitsBothPanelsAtBoot) {
+				drawer.style.setProperty("--drawer-width", "0px");
+				tripPanel.inert = true;
+				drawer.setAttribute("aria-hidden", "true");
+				leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
+
 				rightDrawer.style.setProperty("--drawer-width", "0px");
 				rightPanel.inert = true;
 				rightDrawer.setAttribute("aria-hidden", "true");
+
+				if (!mobilePanelQuery.matches) {
+					leftAutoCollapsed = true;
+					rightAutoCollapsed = true;
+				}
 			} else {
+				drawer.classList.add("is-open");
+				tripPanel.inert = false;
+				drawer.setAttribute("aria-hidden", "false");
+				leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
+
 				rightDrawer.classList.add("is-open");
 				rightPanel.inert = false;
 				rightDrawer.setAttribute("aria-hidden", "false");
@@ -8877,10 +8913,6 @@
 				closeRightDrawer();
 				closeDrawer();
 			});
-
-			// ── Auto-close panels when viewport is too narrow ──────────────────
-			let rightAutoCollapsed = false;
-			let leftAutoCollapsed = false;
 
 			function getDrawerWidth(el) {
 				const width = parseInt(
