@@ -96,6 +96,7 @@ html {
 /* Card shell and header --------------------------------------------------- */
 
 .driver-assignment-card {
+	container: driver-assignment-card / inline-size;
 	background: var(--rux-driver-card-bg);
 	border: var(--rux-driver-card-border);
 	border-radius: var(--rux-driver-card-radius);
@@ -239,7 +240,6 @@ html {
 	color: var(--rux-danger);
 }
 
-.driver-assignment-card__response-actions .rux-button,
 .driver-share-dialog .rux-button {
 	--_h: var(--rux-driver-touch-target);
 }
@@ -856,36 +856,19 @@ html {
 	box-shadow: var(--rux-driver-focus-ring);
 }
 
-@media (max-width: 479px) {
-	.driver-share-header {
-		padding-inline: var(--rux-driver-page-gutter);
-	}
-
-	.driver-share {
-		padding-top: var(--rux-space-5);
-	}
-
+@container driver-assignment-card (max-width: 479px) {
 	.driver-assignment-card__header {
 		grid-template-columns: minmax(0, 1fr);
 		align-items: start;
 	}
 
 	.driver-assignment-card__response {
-		align-items: stretch;
+		align-items: flex-start;
 	}
 
 	.driver-assignment-card__response-actions {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(0, auto);
-		justify-content: stretch;
-	}
-
-	.driver-assignment-card__response-actions .rux-button {
-		width: 100%;
-	}
-
-	.driver-assignment-card__response[data-status="accepted"] .driver-assignment-card__response-actions {
-		display: block;
+		display: flex;
+		justify-content: flex-start;
 	}
 
 	.driver-assignment-card__response[data-status="accepted"] .driver-assignment-card__decline--quiet {
@@ -934,22 +917,10 @@ html {
 	}
 }
 
-@media (max-width: 359px) {
-	.driver-share-header__logo {
-		width: var(--rux-driver-logo-width-compact);
-	}
-
-	.driver-share {
-		padding-inline: var(--rux-driver-page-gutter-compact);
-	}
-
+@container driver-assignment-card (max-width: 359px) {
 	.driver-assignment-card__header,
 	.driver-assignment-card > .rux-card__section {
 		padding-inline: var(--rux-driver-page-gutter);
-	}
-
-	.driver-assignment-card__response-actions {
-		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.assignment-module__action-wrap {
@@ -978,6 +949,26 @@ html {
 
 	.driver-assignment-card__documents {
 		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 479px) {
+	.driver-share-header {
+		padding-inline: var(--rux-driver-page-gutter);
+	}
+
+	.driver-share {
+		padding-top: var(--rux-space-5);
+	}
+}
+
+@media (max-width: 359px) {
+	.driver-share-header__logo {
+		width: var(--rux-driver-logo-width-compact);
+	}
+
+	.driver-share {
+		padding-inline: var(--rux-driver-page-gutter-compact);
 	}
 
 	.driver-share-dialog__footer {

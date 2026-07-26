@@ -129,8 +129,7 @@
 }
 
 .components-app__driver-assignment-demo {
-	width: 100%;
-	max-width: 26rem;
+	width: min(100%, var(--rux-driver-phone-preview-max-width));
 }
 
 .components-app__anatomy-stage--trip-bar {

@@ -467,6 +467,7 @@
 	/* ─── DRIVER ASSIGNMENT CARD ────────────────────────────────────────── */
 
 	--rux-driver-page-max-width:       760px;
+	--rux-driver-phone-preview-max-width: 430px;
 	--rux-driver-page-gutter:          var(--rux-space-4);
 	--rux-driver-page-gutter-compact:  var(--rux-space-3);
 	--rux-driver-page-bottom-padding:  var(--rux-space-7);

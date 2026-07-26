@@ -366,11 +366,22 @@ test("generic module buttons expose one fixed layout and every semantic tone", a
 });
 
 test("responsive CSS protects narrow layouts and touch targets", async () => {
-	const css = await readFile(
-		new URL("../css/features/driver-share.css", import.meta.url),
-		"utf8",
-	);
+	const [css, componentDemoCss, tokens] = await Promise.all([
+		readFile(new URL("../css/features/driver-share.css", import.meta.url), "utf8"),
+		readFile(new URL("../css/features/comp-components-app.css", import.meta.url), "utf8"),
+		readFile(new URL("../css/tokens.css", import.meta.url), "utf8"),
+	]);
 	assert.match(css, /@media \(max-width: 479px\)/);
+	assert.match(css, /container:\s*driver-assignment-card\s*\/\s*inline-size/);
+	assert.match(css, /@container driver-assignment-card \(max-width: 479px\)/);
+	assert.doesNotMatch(
+		css,
+		/\.driver-assignment-card__response-actions \.rux-button[\s\S]*?width:\s*100%/,
+	);
+	assert.match(
+		css,
+		/@container driver-assignment-card \(max-width: 479px\)[\s\S]*?\.driver-assignment-card__response-actions\s*\{[\s\S]*?display:\s*flex/,
+	);
 	assert.match(css, /overflow-x: hidden/);
 	assert.match(css, /--rux-driver-touch-target/);
 	assert.match(css, /grid-template-columns: minmax\(0, 1fr\)/);
@@ -378,4 +389,9 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	assert.match(css, /\.assignment-module__content:last-child\s*\{\s*grid-column:\s*2\s*\/\s*-1/);
 	assert.match(css, /\.assignment-module__action-wrap\s*\{[^}]*justify-self:\s*end/s);
 	assert.match(css, /\.driver-assignment-card__crew-member \.rux-module-button\s*\{[^}]*margin-inline-start:\s*auto/s);
+	assert.match(tokens, /--rux-driver-phone-preview-max-width:\s*430px/);
+	assert.match(
+		componentDemoCss,
+		/width:\s*min\(100%, var\(--rux-driver-phone-preview-max-width\)\)/,
+	);
 });
