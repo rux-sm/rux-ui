@@ -311,7 +311,7 @@ export function buildAssignmentViewModel(entry = {}) {
 		dateRange: formatAssignmentDateRange(entry.startDate, entry.endDate),
 		datePrimary: headerDate.primary,
 		dateWeekdays: headerDate.weekdays,
-		busLabel: entry.busNumber ? `Bus ${entry.busNumber}` : "Bus Unassigned",
+		busLabel: entry.busNumber ? `Bus: ${entry.busNumber}` : "Bus: Unassigned",
 		roleLabel: assignmentRoleLabel(entry.role),
 		status,
 		customerName: clean(entry.customerName || trip.customer),

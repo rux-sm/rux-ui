@@ -7,8 +7,8 @@ import {
 	formatAssignmentDate,
 	normalizeFleetAssignments,
 	normalizeSpotLocation,
-} from "../components/driver-assignment-model.js?v=5";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=12";
+} from "../components/driver-assignment-model.js?v=6";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=13";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();

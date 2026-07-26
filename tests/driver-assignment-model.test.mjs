@@ -47,7 +47,7 @@ test("one-day trip formats one date and omits single-driver fleet", () => {
 	assert.equal(view.dateRange, "THU, JUL 23");
 	assert.equal(view.datePrimary, "Jul 23");
 	assert.equal(view.dateWeekdays, "Thursday");
-	assert.equal(view.busLabel, "Bus 763");
+	assert.equal(view.busLabel, "Bus: 763");
 	assert.equal(view.modules.some((module) => module.key === "crew-fleet"), false);
 });
 

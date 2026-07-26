@@ -105,8 +105,9 @@ html {
 .driver-assignment-card__header {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: center;
-	gap: var(--rux-space-5);
+	align-items: start;
+	column-gap: var(--rux-space-5);
+	row-gap: var(--rux-space-5);
 	min-height: var(--rux-driver-card-header-min-size);
 	padding: var(--rux-driver-card-header-padding);
 	background: var(--rux-driver-card-bg);
@@ -114,10 +115,16 @@ html {
 }
 
 .driver-assignment-card__identity {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
 	min-width: 0;
 }
 
 .driver-assignment-card__date {
+	justify-self: end;
+	text-align: end;
 	font-variant-numeric: tabular-nums;
 }
 
@@ -139,14 +146,6 @@ html {
 	font-size: var(--rux-driver-date-weekday-size);
 	font-weight: var(--rux-driver-date-weekday-weight);
 	letter-spacing: var(--rux-driver-date-weekday-tracking);
-}
-
-.driver-assignment-card__title-row {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: var(--rux-space-3);
-	margin-top: var(--rux-space-2);
 }
 
 .driver-assignment-card__bus {
@@ -172,6 +171,7 @@ html {
 }
 
 .driver-assignment-card__role-badge {
+	width: max-content;
 	background: var(--rux-driver-accent-soft);
 	color: var(--rux-accent);
 	border: var(--rux-border-width) solid
@@ -179,10 +179,13 @@ html {
 }
 
 .driver-assignment-card__response {
+	grid-column: 1 / -1;
 	display: flex;
-	flex-direction: column;
-	align-items: flex-end;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
 	gap: var(--rux-space-2);
+	width: 100%;
 	max-width: 100%;
 }
 
@@ -221,6 +224,7 @@ html {
 	justify-content: flex-end;
 	flex-wrap: wrap;
 	gap: var(--rux-space-2);
+	margin-inline-start: auto;
 }
 
 .driver-assignment-card__decline--quiet {
@@ -229,10 +233,6 @@ html {
 	padding: var(--rux-space-2) 0;
 	color: var(--rux-fg-muted);
 	font-size: 0.9375rem;
-}
-
-.driver-assignment-card__response[data-status="accepted"] .driver-assignment-card__response-actions {
-	margin-top: calc(0px - var(--rux-space-1));
 }
 
 .driver-assignment-card__decline--quiet.rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]),
@@ -249,6 +249,7 @@ html {
 }
 
 .driver-assignment-card__action-error {
+	flex: 1 0 100%;
 	max-width: var(--rux-driver-copy-max-width);
 	margin: 0;
 	color: var(--rux-danger-bright);
@@ -389,6 +390,10 @@ html {
 
 .driver-assignment-card__departure-briefing {
 	min-width: 0;
+}
+
+.driver-assignment-card__spot-summary {
+	margin-top: var(--rux-space-5);
 }
 
 .driver-assignment-card__departure-label {
@@ -858,17 +863,13 @@ html {
 
 @container driver-assignment-card (max-width: 479px) {
 	.driver-assignment-card__header {
-		grid-template-columns: minmax(0, 1fr);
-		align-items: start;
-	}
-
-	.driver-assignment-card__response {
 		align-items: flex-start;
 	}
 
 	.driver-assignment-card__response-actions {
 		display: flex;
 		justify-content: flex-start;
+		margin-inline-start: 0;
 	}
 
 	.driver-assignment-card__response[data-status="accepted"] .driver-assignment-card__decline--quiet {

@@ -7,7 +7,7 @@ import {
 	assignmentRoleLabel,
 	buildAssignmentViewModel,
 	formatAssignmentTime,
-} from "./driver-assignment-model.js?v=5";
+} from "./driver-assignment-model.js?v=6";
 
 const ICONS = {
 	alerts: "warning",
@@ -22,7 +22,6 @@ const ICONS = {
 	navigate: "navigation",
 	notes: "notes",
 	role: "verified",
-	trip: "location_on",
 };
 
 let moduleId = 0;
@@ -267,8 +266,7 @@ function assignmentHeader(entry, view, options, card) {
 	const title = el("h2", "driver-assignment-card__bus", view.busLabel);
 	title.id = titleId;
 	card.setAttribute("aria-labelledby", titleId);
-	const titleRow = el("div", "driver-assignment-card__title-row");
-	titleRow.append(title, el("span", "driver-assignment-card__role-badge", view.roleLabel));
+	info.append(title, el("span", "driver-assignment-card__role-badge", view.roleLabel));
 	const date = el("div", "driver-assignment-card__date");
 	if (view.datePrimary) {
 		date.appendChild(el("p", "driver-assignment-card__date-primary", view.datePrimary));
@@ -276,18 +274,14 @@ function assignmentHeader(entry, view, options, card) {
 	if (view.dateWeekdays) {
 		date.appendChild(el("p", "driver-assignment-card__date-weekdays", view.dateWeekdays));
 	}
-	info.append(
-		date,
-		titleRow,
-	);
-	header.append(info, createStatus(entry, view, options, card));
+	header.append(info, date, createStatus(entry, view, options, card));
 	return header;
 }
 
 function tripOverviewModule(entry, view) {
 	const content = el(
 		"div",
-		"assignment-module__content driver-assignment-card__trip-overview",
+		"driver-assignment-card__trip-overview",
 	);
 	const hasTripSummary = Boolean(
 		entry.trip
@@ -299,9 +293,6 @@ function tripOverviewModule(entry, view) {
 	);
 	if (hasTripSummary) {
 		const summary = el("div", "driver-assignment-card__trip-content");
-		if (view.customerName) {
-			summary.appendChild(el("p", "driver-assignment-card__customer", view.customerName));
-		}
 		const route = el("div", "driver-assignment-card__route");
 		route.append(
 			el("span", "driver-assignment-card__route-place", view.origin),
@@ -313,21 +304,19 @@ function tripOverviewModule(entry, view) {
 	}
 
 	const fullAddress = addressText(view.spotLocation);
-	if (view.spotTime || fullAddress) {
+	const hasDepartureBriefing = Boolean(view.customerName || view.spotTime || fullAddress);
+	if (hasDepartureBriefing) {
 		if (hasTripSummary) {
 			content.appendChild(el("div", "driver-assignment-card__overview-divider"));
 		}
 		const departure = el("div", "driver-assignment-card__departure");
 		const briefing = el("div", "driver-assignment-card__departure-briefing");
-		briefing.appendChild(el(
-			"p",
-			"driver-assignment-card__departure-label",
-			view.roleLabel === "Relief Driver" ? "Report Time" : "Spot Time",
-		));
-		if (view.spotTime) {
-			const time = el("time", "driver-assignment-card__time", view.spotTime);
-			if (entry.spotTime) time.dateTime = String(entry.spotTime);
-			briefing.appendChild(time);
+		if (view.customerName) {
+			briefing.appendChild(el(
+				"p",
+				"driver-assignment-card__customer",
+				view.customerName,
+			));
 		}
 		if (fullAddress) {
 			const location = view.spotLocation || {};
@@ -353,6 +342,18 @@ function tripOverviewModule(entry, view) {
 			}
 			briefing.appendChild(address);
 		}
+		if (view.spotTime) {
+			const spot = el("div", "driver-assignment-card__spot-summary");
+			spot.appendChild(el(
+				"p",
+				"driver-assignment-card__departure-label",
+				view.roleLabel === "Relief Driver" ? "Report Time" : "Spot Time",
+			));
+			const time = el("time", "driver-assignment-card__time", view.spotTime);
+			if (entry.spotTime) time.dateTime = String(entry.spotTime);
+			spot.appendChild(time);
+			briefing.appendChild(spot);
+		}
 		departure.appendChild(briefing);
 		if (fullAddress) {
 			const action = createActionLink(
@@ -367,13 +368,14 @@ function tripOverviewModule(entry, view) {
 		content.appendChild(departure);
 	}
 
-	return createAssignmentModule({
-		key: "trip-overview",
-		iconName: ICONS.trip,
-		label: "Trip Overview",
-		content,
-		tone: "accent",
-	});
+	const section = el(
+		"section",
+		"rux-card__section driver-assignment-card__trip-overview-section",
+	);
+	section.dataset.module = "trip-overview";
+	section.setAttribute("aria-label", "Trip overview");
+	section.appendChild(content);
+	return section;
 }
 
 function roleModule(entry, view) {

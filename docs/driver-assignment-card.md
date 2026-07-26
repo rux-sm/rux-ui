@@ -41,6 +41,8 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Optional data: Assigned bus and response callbacks.
 - Visibility: Always.
 - Primary action: Accept Assignment when pending.
+- Layout: Places `Bus: 763` above the role badge at the upper left, the compact
+  date at the upper right, and response status/actions on a dedicated row.
 - Date behavior: Uses a compact primary range such as `Jul 26–29` with
   supporting weekday context such as `Sun–Wed`. One-day assignments use
   `Jul 26` and `Sunday`; cross-month and cross-year ranges retain only the
@@ -60,6 +62,9 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
   coordinates.
 - Visibility: When either trip or report information exists.
 - Primary action: Navigate to the report location.
+- Layout: Uses a purpose-built full-width briefing rather than the generic
+  label column. Route and trip type come first, followed by an internal
+  divider, customer/address with Navigate, and Spot Time beneath the location.
 - Empty behavior: Trip and departure subsections render independently; the
   internal divider appears only when both exist.
 - Loading behavior: Covered by the assignment skeleton.

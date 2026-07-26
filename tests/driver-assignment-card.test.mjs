@@ -107,6 +107,17 @@ test("header presents a compact date with supporting weekday context", () => {
 	assert.equal(card.textContent.includes("SUN, JUL 26"), false);
 });
 
+test("header places bus above role and keeps the date at peer level", () => {
+	const card = renderDriverAssignmentCard(assignment());
+	const identity = card.querySelector(".driver-assignment-card__identity");
+	assert.equal(identity.childNodes[0].textContent, "Bus: 763");
+	assert.equal(identity.childNodes[1].textContent, "Driver");
+	assert.equal(
+		card.querySelector(".driver-assignment-card__date-primary").textContent,
+		"Jul 23",
+	);
+});
+
 test("accepted assignment presents status without a large green surface", () => {
 	const card = renderDriverAssignmentCard(assignment({ status: "accepted" }), {
 		onDecline: async () => ({ status: "declined" }),
@@ -146,6 +157,9 @@ test("trip and spot time render as one departure-focused overview", () => {
 	assert.ok(overview.textContent.includes("Donna High School"));
 	assert.ok(overview.textContent.includes("5:15 AM"));
 	assert.ok(overview.textContent.includes("Navigate"));
+	assert.equal(overview.textContent.includes("Trip Overview"), false);
+	assert.ok(overview.textContent.indexOf("Donna") < overview.textContent.indexOf("Donna High School"));
+	assert.ok(overview.textContent.indexOf("Donna High School") < overview.textContent.indexOf("Spot Time"));
 });
 
 test("contact and navigation actions have full screen-reader labels", () => {
