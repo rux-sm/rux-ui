@@ -20,6 +20,13 @@ function clean(value) {
 	return String(value ?? "").trim();
 }
 
+const STATE_ABBREVIATIONS = {
+	texas: "TX",
+	tx: "TX",
+	oklahoma: "OK",
+	ok: "OK",
+};
+
 function dateOnly(value) {
 	const match = clean(value).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
 	if (!match) return null;
@@ -110,6 +117,42 @@ export function shortAssignmentLocation(value) {
 		parts.pop();
 	}
 	return parts.at(-1) || text;
+}
+
+export function normalizeSpotLocation(name, address) {
+	const locationName = clean(name);
+	const rawAddress = clean(address);
+	if (!rawAddress) return { name: locationName };
+	const parts = rawAddress.split(",").map((part) => part.trim()).filter(Boolean);
+	if (/^(united states|usa|us)$/i.test(parts.at(-1))) parts.pop();
+	if (parts.length < 3) {
+		return {
+			name: locationName,
+			addressLine1: parts.join(", "),
+		};
+	}
+	const region = parts.at(-1);
+	const regionMatch = region.match(/^([a-z ]+?)(?:\s+(\d{5}(?:-\d{4})?))?$/i);
+	const stateName = clean(regionMatch?.[1]).toLowerCase();
+	return {
+		name: locationName,
+		addressLine1: parts.slice(0, -2).join(", "),
+		city: parts.at(-2),
+		state: STATE_ABBREVIATIONS[stateName] || clean(regionMatch?.[1]),
+		postalCode: clean(regionMatch?.[2]),
+	};
+}
+
+export function formatOperationalNotes(value) {
+	let text = clean(value);
+	if (!text) return "";
+	if (text === text.toLowerCase() && /^[a-z]/.test(text)) {
+		text = `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
+	}
+	if (!text.includes("\n") && text.length <= 160 && !/[.!?]$/.test(text)) {
+		text = `${text}.`;
+	}
+	return text;
 }
 
 export function sortAssignmentAlerts(alerts = []) {
@@ -220,7 +263,7 @@ export function buildAssignmentViewModel(entry = {}) {
 		fleetAssignments: entry.fleetAssignments || [],
 		alerts: sortAssignmentAlerts(entry.alerts || []),
 		documents: entry.documents || [],
-		notes: clean(entry.notes || entry.instructions),
+		notes: formatOperationalNotes(entry.notes || entry.instructions),
 		modules: visibleAssignmentModules(entry),
 	};
 }

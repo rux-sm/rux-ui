@@ -7,7 +7,7 @@ import {
 	assignmentRoleLabel,
 	buildAssignmentViewModel,
 	formatAssignmentTime,
-} from "./driver-assignment-model.js";
+} from "./driver-assignment-model.js?v=2";
 
 const ICONS = {
 	alerts: "warning",
@@ -172,6 +172,7 @@ function createAssignmentModule({
 
 function createStatus(entry, view, options, card) {
 	const wrap = el("div", "driver-assignment-card__response");
+	wrap.dataset.status = view.status;
 	const meta = statusMeta(view.status);
 	const status = el(
 		"div",
@@ -224,9 +225,10 @@ function createStatus(entry, view, options, card) {
 
 	const addDecline = () => {
 		if (typeof options.onDecline !== "function") return;
+		const accepted = view.status === "accepted";
 		const decline = createButton(view.status === "accepted" ? "Unable To Drive" : "Decline", {
-			variant: "default",
-			className: "driver-assignment-card__decline",
+			variant: accepted ? "ghost" : "default",
+			className: `driver-assignment-card__decline${accepted ? " driver-assignment-card__decline--quiet" : ""}`,
 		});
 		decline.addEventListener("click", async () => {
 			if (typeof options.confirmDecline === "function") {
@@ -296,18 +298,47 @@ function tripSummaryModule(view) {
 function roleModule(entry, view) {
 	const content = el("div", "assignment-module__content");
 	content.appendChild(el("p", "assignment-module__primary", view.roleLabel));
-	const details = el("dl", "driver-assignment-card__detail-list");
-	const addDetail = (label, value) => {
-		if (!value) return;
-		const group = el("div", "driver-assignment-card__detail");
-		group.append(el("dt", "", label), el("dd", "", value));
-		details.appendChild(group);
-	};
-	addDetail("Assigned Bus", view.roleDetails.assignedBus);
-	addDetail("Takeover Time", view.roleDetails.takeoverTime);
-	addDetail("Takeover Location", view.roleDetails.takeoverLocation);
-	addDetail("Relieves", view.roleDetails.relievesDriverName);
-	if (details.childElementCount) content.appendChild(details);
+	const isRelief = view.roleLabel === "Relief Driver";
+	const assignedBus = view.roleDetails.assignedBus;
+	if (isRelief) {
+		if (view.roleDetails.takeoverTime) {
+			content.appendChild(el(
+				"p",
+				"driver-assignment-card__role-context",
+				`Handoff at ${view.roleDetails.takeoverTime}`,
+			));
+		}
+		if (view.roleDetails.takeoverLocation) {
+			content.appendChild(el(
+				"p",
+				"driver-assignment-card__role-location",
+				view.roleDetails.takeoverLocation,
+			));
+		}
+		if (view.roleDetails.relievesDriverName) {
+			content.appendChild(el(
+				"p",
+				"driver-assignment-card__role-relieves",
+				`Relieves ${view.roleDetails.relievesDriverName}`,
+			));
+		}
+		if (!view.roleDetails.takeoverTime && !view.roleDetails.takeoverLocation) {
+			content.appendChild(el(
+				"p",
+				"driver-assignment-card__role-context",
+				assignedBus ? `Relief operator for Bus ${assignedBus}` : "Relief operator",
+			));
+		}
+	} else {
+		const responsibility = view.roleLabel === "Co-Driver"
+			? "Supporting operator"
+			: "Primary operator";
+		content.appendChild(el(
+			"p",
+			"driver-assignment-card__role-context",
+			assignedBus ? `${responsibility} for Bus ${assignedBus}` : responsibility,
+		));
+	}
 	if (view.roleDetails.instructions) {
 		content.appendChild(el(
 			"p",
@@ -333,7 +364,28 @@ function spotTimeModule(entry, view) {
 	}
 	const fullAddress = addressText(view.spotLocation);
 	if (fullAddress) {
-		content.appendChild(el("address", "driver-assignment-card__address", fullAddress));
+		const location = view.spotLocation || {};
+		const address = el("address", "driver-assignment-card__address");
+		if (location.name) {
+			address.appendChild(el(
+				"span",
+				"driver-assignment-card__location-name",
+				location.name,
+			));
+		}
+		const lines = [
+			location.addressLine1,
+			location.addressLine2,
+			[location.city, location.state, location.postalCode].filter(Boolean).join(" "),
+		].filter(Boolean).join("\n");
+		if (lines) {
+			address.appendChild(el(
+				"span",
+				"driver-assignment-card__address-lines",
+				lines,
+			));
+		}
+		content.appendChild(address);
 	}
 	const action = fullAddress
 		? createActionLink(
@@ -385,7 +437,11 @@ function crewMemberRow(member) {
 	const row = el("li", "driver-assignment-card__crew-member");
 	const identity = el("div", "driver-assignment-card__crew-identity");
 	identity.append(
-		el("span", "driver-assignment-card__crew-name", member.name || "Crew Member"),
+		el(
+			"span",
+			"driver-assignment-card__crew-name",
+			member.isCurrentUser ? "You" : member.name || "Crew Member",
+		),
 		el("span", "driver-assignment-card__crew-role", assignmentRoleLabel(member.role)),
 	);
 	row.appendChild(identity);
@@ -485,12 +541,13 @@ function alertsModule(alerts, critical = false) {
 		list.appendChild(row);
 	});
 	content.appendChild(list);
+	const hasWarning = alerts.some((alert) => alert.severity === "warning");
 	return createAssignmentModule({
 		key: critical ? "critical-alerts" : "alerts",
 		iconName: ICONS.alerts,
 		label: critical ? "Critical Alerts" : "Alerts",
 		content,
-		tone: critical ? "danger" : "warning",
+		tone: critical ? "danger" : (hasWarning ? "warning" : "accent"),
 	});
 }
 
@@ -519,7 +576,12 @@ function documentAction(document, entry, options) {
 		el("span", "driver-assignment-card__document-label", document.label),
 	);
 	if (document.statusLabel) {
-		control.appendChild(el("span", "driver-assignment-card__document-status", document.statusLabel));
+		const unavailable = document.status === "unavailable";
+		control.appendChild(el(
+			"span",
+			`driver-assignment-card__document-status${unavailable ? " driver-assignment-card__document-status--unavailable" : ""}`,
+			document.statusLabel,
+		));
 	}
 	return control;
 }

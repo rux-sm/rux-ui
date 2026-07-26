@@ -88,10 +88,28 @@ test("pending assignment exposes dominant accept and quieter decline controls", 
 });
 
 test("accepted assignment presents status without a large green surface", () => {
-	const card = renderDriverAssignmentCard(assignment({ status: "accepted" }));
+	const card = renderDriverAssignmentCard(assignment({ status: "accepted" }), {
+		onDecline: async () => ({ status: "declined" }),
+	});
 	assert.equal(card.dataset.status, "accepted");
 	assert.ok(card.querySelector(".driver-assignment-card__status--success"));
 	assert.equal(buttonByLabel(card, "Accept Assignment"), null);
+	assert.ok(buttonByLabel(card, "Unable To Drive").classList.contains("rux-button--ghost"));
+});
+
+test("role module explains responsibility instead of repeating a field label", () => {
+	const standard = renderDriverAssignmentCard(assignment());
+	assert.ok(standard.textContent.includes("Primary operator for Bus 763"));
+	assert.equal(standard.textContent.includes("Assigned Bus"), false);
+	const relief = renderDriverAssignmentCard(assignment({
+		role: "relief-start",
+		roleDetails: {
+			takeoverTime: "15:45",
+			takeoverLocation: "Austin Convention Center",
+		},
+	}));
+	assert.ok(relief.textContent.includes("Handoff at 3:45 PM"));
+	assert.ok(relief.textContent.includes("Austin Convention Center"));
 });
 
 test("contact and navigation actions have full screen-reader labels", () => {
@@ -120,6 +138,21 @@ test("current user is not rendered as external crew", () => {
 	assert.equal(card.textContent.includes("Jorge Current User"), false);
 	assert.equal(card.textContent.includes("Maria Lopez"), true);
 	assert.equal(card.textContent.includes("Jose Garcia"), true);
+});
+
+test("explicit current-user crew rows use You instead of repeating a name", () => {
+	const card = renderDriverAssignmentCard(assignment({
+		fleetAssignments: [{
+			busNumber: "763",
+			isCurrentBus: true,
+			crew: [
+				{ id: "current", name: "Jorge Garcia", role: "driver", isCurrentUser: true },
+				{ id: "relief", name: "Maria Lopez", role: "relief-start" },
+			],
+		}],
+	}));
+	assert.ok(card.textContent.includes("YouDriver"));
+	assert.equal(card.textContent.includes("Jorge Garcia"), false);
 });
 
 test("fleet disclosure exposes aria-expanded and controlled content", async () => {
@@ -202,6 +235,8 @@ test("documents render actionable and unavailable resources correctly", () => {
 		(node) => node.getAttribute("aria-disabled") === "true",
 	);
 	assert.ok(unavailable.textContent.includes("RosterNot Yet Available"));
+	assert.ok(card.querySelector(".driver-assignment-card__document-status"));
+	assert.ok(card.querySelector(".driver-assignment-card__document-status--unavailable"));
 });
 
 test("responsive CSS protects narrow layouts and touch targets", async () => {

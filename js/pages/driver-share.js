@@ -6,8 +6,9 @@ import { latestDocument } from "../core/trip-documents.js";
 import {
 	formatAssignmentDate,
 	normalizeFleetAssignments,
-} from "../components/driver-assignment-model.js";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=7";
+	normalizeSpotLocation,
+} from "../components/driver-assignment-model.js?v=2";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=8";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
@@ -108,21 +109,21 @@ function alertsFor(trip) {
 			title: "Wheelchair Lift Required",
 		},
 		fuelCard: {
-			severity: "info",
+			severity: "warning",
 			title: "Fuel Card Required",
 		},
 		sleeper: {
-			severity: "info",
+			severity: "warning",
 			title: "Sleeper Bus Required",
 		},
 		pax56: {
-			severity: "info",
+			severity: "warning",
 			title: "56-Passenger Bus Required",
 		},
 	};
 	return selectedRequirementIds(trip).map((id) => {
 		const fallbackLabel = requirementLabels.get(id) || id;
-		const item = metadata[id] || { severity: "info", title: fallbackLabel };
+		const item = metadata[id] || { severity: "warning", title: fallbackLabel };
 		return {
 			id: `requirement-${id}`,
 			...item,
@@ -292,10 +293,7 @@ export function normalizeAssignment(row, driverId, statusesByKey = new Map()) {
 		spotTime: role.includes("relief")
 			? driverAssignment.report_time || pickup.spot || trip.spot_time
 			: pickup.spot || trip.spot_time,
-		spotLocation: {
-			name: pickup.name || "",
-			addressLine1: pickup.address || "",
-		},
+		spotLocation: normalizeSpotLocation(pickup.name, pickup.address),
 		reportTime: pickup.depart_prev || trip.departure_time,
 		returnTime: returnStop.arrive || trip.return_time,
 		contact: contactFor(trip),

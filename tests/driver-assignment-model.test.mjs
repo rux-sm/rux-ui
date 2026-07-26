@@ -7,7 +7,9 @@ import {
 	buildAssignmentViewModel,
 	formatAssignmentDateRange,
 	formatAssignmentTime,
+	formatOperationalNotes,
 	normalizeFleetAssignments,
+	normalizeSpotLocation,
 	showCrewFleetModule,
 	sortAssignmentAlerts,
 	visibleAssignmentModules,
@@ -193,5 +195,29 @@ test("timezone-aware timestamps use the trip timezone", () => {
 	assert.equal(
 		formatAssignmentTime("2026-07-23T10:15:00Z", "America/Chicago"),
 		"5:15 AM",
+	);
+});
+
+test("domestic spot locations split into scannable lines", () => {
+	assert.deepEqual(
+		normalizeSpotLocation(
+			"Raymondville High School",
+			"601 FM 3168, Raymondville, Texas 78580, United States",
+		),
+		{
+			name: "Raymondville High School",
+			addressLine1: "601 FM 3168",
+			city: "Raymondville",
+			state: "TX",
+			postalCode: "78580",
+		},
+	);
+});
+
+test("short lowercase operational notes receive light presentation normalization", () => {
+	assert.equal(formatOperationalNotes("relief driver needed"), "Relief driver needed.");
+	assert.equal(
+		formatOperationalNotes("Call dispatch before leaving Austin."),
+		"Call dispatch before leaving Austin.",
 	);
 });

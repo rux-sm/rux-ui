@@ -47,15 +47,18 @@ are the only information allowed to move ahead of the normal workflow order.
 
 ## Role
 
-- Purpose: Explains the driver's responsibility and assigned bus.
+- Purpose: Explains the driver's responsibility without merely repeating the
+  header.
 - Required data: Role, bus, or role detail.
 - Optional data: Takeover time/location, relieved driver, and instructions.
 - Visibility: When any role-specific field exists.
 - Primary action: None.
-- Empty behavior: Omits unavailable detail labels.
+- Empty behavior: Standard drivers receive a concise primary-operator
+  description; relief drivers show the available handoff context without empty
+  detail labels.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Role details use a definition list; `Relief Driver` is never
-  shortened in normal layouts.
+- Accessibility: Responsibility and handoff details remain plain readable
+  text; `Relief Driver` is never shortened in normal layouts.
 
 ## Spot Time
 
@@ -66,8 +69,9 @@ are the only information allowed to move ahead of the normal workflow order.
 - Primary action: Navigate.
 - Empty behavior: Renders whichever of time or location is available.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Uses `time` and `address`; the navigation label contains the
-  complete destination.
+- Accessibility: Uses `time` and `address`; domestic addresses are normalized
+  into location, street, and city/state lines, while the navigation label
+  contains the complete destination.
 
 ## Crew & Fleet
 
@@ -103,7 +107,9 @@ are the only information allowed to move ahead of the normal workflow order.
 - Primary action: None.
 - Empty behavior: Does not render.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Uses a semantic list plus distinct icons and text.
+- Accessibility: Uses a semantic list plus distinct icons and text. Operational
+  pre-departure requirements use warning treatment; genuinely informational
+  rows and their module heading use informational treatment.
 
 ## Documents
 
@@ -116,8 +122,9 @@ are the only information allowed to move ahead of the normal workflow order.
 - Empty behavior: Does not render. Unavailable resources render as
   non-clickable items with availability text.
 - Loading behavior: Document availability is resolved with the assignment.
-- Accessibility: Uses buttons or links, visible names/statuses, and full
-  keyboard focus treatment.
+- Accessibility: Uses buttons or links, visible names/statuses, normal
+  secondary contrast for available resources, disabled contrast only for
+  unavailable resources, and full keyboard focus treatment.
 
 ## Notes
 
@@ -128,8 +135,9 @@ are the only information allowed to move ahead of the normal workflow order.
 - Primary action: View Full Notes when the note exceeds 240 characters.
 - Empty behavior: Does not render.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Preserves whitespace and exposes disclosure state with
-  `aria-expanded` and `aria-controls`.
+- Accessibility: Preserves whitespace, lightly normalizes short all-lowercase
+  operational notes for presentation, uses a subtle non-alert inset surface,
+  and exposes disclosure state with `aria-expanded` and `aria-controls`.
 
 ## Extension Contract
 
