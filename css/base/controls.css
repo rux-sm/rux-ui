@@ -234,6 +234,7 @@
 	justify-content: center;
 	gap: var(--rux-module-button-gap);
 	width: var(--rux-module-button-width);
+	height: var(--rux-module-button-height);
 	min-height: var(--rux-module-button-min-height);
 	padding: var(--rux-module-button-padding);
 	border: var(--rux-module-button-border);
@@ -258,6 +259,18 @@
 
 .rux-module-button .rux-icon {
 	--_icon-size: var(--rux-module-button-icon-size);
+}
+
+.rux-module-button__label {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 .rux-module-button:hover:not(:disabled):not([aria-disabled="true"]) {

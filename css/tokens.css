@@ -481,7 +481,6 @@
 	--rux-driver-card-header-padding:  28px var(--rux-space-5);
 	--rux-driver-card-header-min-size: 112px;
 	--rux-driver-module-padding:       20px var(--rux-space-5);
-	--rux-driver-overview-padding:     var(--rux-space-6) var(--rux-space-5);
 	--rux-driver-module-label-min:     112px;
 	--rux-driver-module-label-width:   124px;
 	--rux-driver-module-icon-size:     48px;
@@ -489,33 +488,20 @@
 	--rux-driver-module-divider:       oklch(from var(--rux-neutral) 100% c h / 12%);
 	--rux-driver-internal-divider:     oklch(from var(--rux-neutral) 100% c h / 9%);
 	--rux-driver-touch-target:         48px;
-	--rux-driver-document-min-width:   140px;
-	--rux-driver-document-min-height:  76px;
-	--rux-driver-document-padding:     14px var(--rux-space-4);
-	--rux-driver-document-radius:      var(--rux-radius-lg);
-	--rux-driver-document-status-size: 0.8125rem;
 	--rux-driver-copy-max-width:       28rem;
 	--rux-driver-status-min-height:    60dvh;
 	--rux-driver-page-title-size:      clamp(2.25rem, 7vw, 2.5rem);
-	--rux-driver-date-primary-size:    0.9375rem;
+	--rux-driver-date-primary-size:    1.5rem;
 	--rux-driver-date-primary-weight:  650;
-	--rux-driver-date-weekday-size:    var(--rux-text-xs);
-	--rux-driver-date-weekday-weight:  550;
-	--rux-driver-date-weekday-tracking: 0.02em;
-	--rux-driver-date-line-gap:        3px;
-	--rux-driver-bus-size:             var(--rux-text-xl);
-	--rux-driver-route-size:           clamp(1.5rem, 6vw, 1.75rem);
-	--rux-driver-time-size:            clamp(2.625rem, 11vw, 3.25rem);
+	--rux-driver-bus-size:             1.5rem;
+	--rux-driver-route-size:           1.5rem;
+	--rux-driver-time-size:            1.5rem;
 	--rux-driver-primary-size:         1.125rem;
 	--rux-driver-secondary-size:       var(--rux-text-md);
 	--rux-driver-label-size:           var(--rux-text-xs);
 	--rux-driver-control-bg:           var(--rux-surface-field);
 	--rux-driver-control-hover-bg:     var(--rux-bg-hover);
 	--rux-driver-control-radius:       var(--rux-radius-lg);
-	--rux-driver-document-bg:          var(--rux-alpha-white-6);
-	--rux-driver-document-hover-bg:    var(--rux-alpha-white-10);
-	--rux-driver-notes-bg:             color-mix(in oklch, var(--rux-fg) 2.5%, transparent);
-	--rux-driver-notes-radius:         10px;
 	--rux-driver-accent-soft:          color-mix(in oklch, var(--rux-accent) 16%, transparent);
 	--rux-driver-success-soft:         color-mix(in oklch, var(--rux-success) 12%, transparent);
 	--rux-driver-warning-soft:         color-mix(in oklch, var(--rux-warning) 12%, transparent);
@@ -616,14 +602,14 @@
 	--rux-button-transition-easing:   var(--rux-ease-out);
 
 	/* ─── COMPONENT · module button ───────────────────────────────────────────── */
-	/* Compact contextual action with a stable footprint and vertical
-	   icon-over-label anatomy. Semantic variants change tone, not layout. */
+	/* Compact contextual icon action. Semantic variants change tone, not layout. */
 
-	--rux-module-button-width:       112px;
-	--rux-module-button-min-height:  88px;
-	--rux-module-button-padding:     var(--rux-space-3) var(--rux-space-4);
-	--rux-module-button-gap:         var(--rux-space-2);
-	--rux-module-button-radius:      14px;
+	--rux-module-button-width:       44px;
+	--rux-module-button-height:      44px;
+	--rux-module-button-min-height:  44px;
+	--rux-module-button-padding:     0;
+	--rux-module-button-gap:         0;
+	--rux-module-button-radius:      var(--rux-radius-md);
 	--rux-module-button-font-size:   var(--rux-text-md);
 	--rux-module-button-font-weight: var(--rux-weight-medium);
 	--rux-module-button-icon-size:   var(--rux-icon-md);

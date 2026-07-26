@@ -10,12 +10,6 @@ export const ASSIGNMENT_STATUSES = [
 	"cancelled",
 ];
 
-export const ALERT_SEVERITY_ORDER = {
-	critical: 0,
-	warning: 1,
-	info: 2,
-};
-
 function clean(value) {
 	return String(value ?? "").trim();
 }
@@ -47,14 +41,33 @@ export function formatAssignmentDate(value, options = {}) {
 
 export function formatAssignmentDateRange(start, end, options = {}) {
 	if (!start) return "";
-	if (!end || clean(start) === clean(end)) {
-		return formatAssignmentDate(start, options);
-	}
-	const startYear = clean(start).slice(0, 4);
-	const endYear = clean(end).slice(0, 4);
-	const includeYear = options.year || (startYear && endYear && startYear !== endYear);
-	const rangeOptions = { ...options, year: includeYear };
-	return `${formatAssignmentDate(start, rangeOptions)} – ${formatAssignmentDate(end, rangeOptions)}`;
+	const startDate = start instanceof Date ? start : dateOnly(start);
+	const parsedEnd = end instanceof Date ? end : dateOnly(end);
+	if (!startDate || Number.isNaN(startDate.getTime())) return "";
+	const endDate = parsedEnd && !Number.isNaN(parsedEnd.getTime())
+		? parsedEnd
+		: startDate;
+	const sameDay = startDate.getTime() === endDate.getTime();
+	const differentYears = startDate.getUTCFullYear() !== endDate.getUTCFullYear();
+	const includeYear = Boolean(options.year || differentYears);
+	const locale = options.locale || DEFAULT_LOCALE;
+	const format = (date, formatOptions) => new Intl.DateTimeFormat(locale, {
+		timeZone: "UTC",
+		...formatOptions,
+	}).format(date).toUpperCase();
+	const startLabel = format(startDate, {
+		weekday: "long",
+		month: "short",
+		day: "numeric",
+		year: includeYear ? "numeric" : undefined,
+	});
+	if (sameDay) return startLabel;
+	const endLabel = format(endDate, {
+		month: "short",
+		day: "numeric",
+		year: includeYear ? "numeric" : undefined,
+	});
+	return `${startLabel} – ${endLabel}`;
 }
 
 export function formatAssignmentHeaderDateRange(start, end, options = {}) {
@@ -133,14 +146,11 @@ export function assignmentRoleLabel(role) {
 }
 
 export function assignmentTripTypeLabel(type, leg) {
-	if (type === "one_way") return "One Way";
-	if (type === "dropoff_pickup") {
-		return leg === "return" ? "One Way · Inbound" : "One Way · Outbound";
-	}
+	if (type === "one_way" || type === "dropoff_pickup") return "One-Way";
 	if (type === "shuttle") return "Shuttle";
 	if (type === "local") return "Local";
 	if (type === "multi_day") return "Multi-Day";
-	return "Round Trip";
+	return "Round-Trip";
 }
 
 export function assignmentStatus(entry = {}) {
@@ -157,8 +167,13 @@ export function shortAssignmentLocation(value) {
 	const parts = text.split(",").map((part) => part.trim()).filter(Boolean);
 	if (parts.length < 2) return text;
 	if (/^(united states|usa|us)$/i.test(parts.at(-1))) parts.pop();
-	if (/^(texas|tx|oklahoma|ok)(\s+\d{5}(?:-\d{4})?)?$/i.test(parts.at(-1))) {
-		parts.pop();
+	const region = parts.at(-1).match(
+		/^(texas|tx|oklahoma|ok)(?:\s+\d{5}(?:-\d{4})?)?$/i,
+	);
+	if (region) {
+		const state = STATE_ABBREVIATIONS[region[1].toLowerCase()]
+			|| region[1].toUpperCase();
+		return `${parts.at(-2)}, ${state}`;
 	}
 	return parts.at(-1) || text;
 }
@@ -197,12 +212,6 @@ export function formatOperationalNotes(value) {
 		text = `${text}.`;
 	}
 	return text;
-}
-
-export function sortAssignmentAlerts(alerts = []) {
-	return [...alerts].sort((a, b) =>
-		(ALERT_SEVERITY_ORDER[a.severity] ?? ALERT_SEVERITY_ORDER.info)
-		- (ALERT_SEVERITY_ORDER[b.severity] ?? ALERT_SEVERITY_ORDER.info));
 }
 
 export function totalExternalCrew(fleetAssignments = []) {
@@ -274,30 +283,28 @@ export function showCrewFleetModule(entry = {}) {
 	const fleet = Array.isArray(entry.fleetAssignments) ? entry.fleetAssignments : [];
 	// The current driver is intentionally excluded from crew rows, so one
 	// external member still represents a two-person assignment.
-	return fleet.length > 1 || totalExternalCrew(fleet) > 0;
+	return totalExternalCrew(fleet) > 0;
 }
 
 export function visibleAssignmentModules(entry = {}) {
-	const alerts = sortAssignmentAlerts(entry.alerts || []);
 	const documents = driverDocuments(
 		Array.isArray(entry.documents) ? entry.documents : [],
 	);
-	const hasTripOverview = Boolean(
-		entry.trip
-		|| entry.customerName
+	const hasSpotLocation = Boolean(
+		entry.customerName
+		|| entry.trip?.customer
 		|| entry.from
-		|| entry.to
-		|| entry.spotTime
 		|| entry.spotLocation,
 	);
 	const modules = [];
-	if (hasTripOverview) modules.push({ key: "trip-overview" });
-	if (alerts.length) modules.push({ key: "alerts", data: alerts });
+	if (entry.spotTime || hasSpotLocation) {
+		modules.push({ key: "spot-location" });
+	}
+	if (entry.contact?.name || entry.contact?.phone) modules.push({ key: "contact" });
 	if (showRoleModule(entry)) modules.push({ key: "role" });
 	if (showCrewFleetModule(entry)) modules.push({ key: "crew-fleet" });
-	if (entry.contact?.name || entry.contact?.phone) modules.push({ key: "contact" });
-	if (documents.length) modules.push({ key: "documents" });
 	if (clean(entry.notes || entry.instructions)) modules.push({ key: "notes" });
+	if (documents.length) modules.push({ key: "documents" });
 	return modules;
 }
 
@@ -311,7 +318,7 @@ export function buildAssignmentViewModel(entry = {}) {
 		dateRange: formatAssignmentDateRange(entry.startDate, entry.endDate),
 		datePrimary: headerDate.primary,
 		dateWeekdays: headerDate.weekdays,
-		busLabel: entry.busNumber ? `Bus: ${entry.busNumber}` : "Bus: Unassigned",
+		busLabel: entry.busNumber ? `Bus ${entry.busNumber}` : "Bus Unassigned",
 		roleLabel: assignmentRoleLabel(entry.role),
 		status,
 		customerName: clean(entry.customerName || trip.customer),
@@ -336,7 +343,6 @@ export function buildAssignmentViewModel(entry = {}) {
 		},
 		contact: entry.contact || {},
 		fleetAssignments: entry.fleetAssignments || [],
-		alerts: sortAssignmentAlerts(entry.alerts || []),
 		documents: driverDocuments(entry.documents || []),
 		notes: formatOperationalNotes(entry.notes || entry.instructions),
 		modules: visibleAssignmentModules(entry),

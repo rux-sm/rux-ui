@@ -42,7 +42,7 @@
    ========================================================================== */
 
 @import "./base/icons.css";
-@import "./base/controls.css?v=2";
+@import "./base/controls.css?v=3";
 @import "./base/app-header.css";
 @import "./base/badges.css";
 @import "./base/form.css";

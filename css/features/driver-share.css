@@ -106,7 +106,7 @@ html {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: start;
-	column-gap: var(--rux-space-5);
+	column-gap: var(--rux-space-4);
 	row-gap: var(--rux-space-5);
 	min-height: var(--rux-driver-card-header-min-size);
 	padding: var(--rux-driver-card-header-padding);
@@ -114,52 +114,34 @@ html {
 	border-bottom: var(--rux-border-width) solid var(--rux-driver-module-divider);
 }
 
-.driver-assignment-card__identity {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	gap: var(--rux-space-2);
-	min-width: 0;
-}
-
-.driver-assignment-card__date {
-	justify-self: end;
-	text-align: end;
-	font-variant-numeric: tabular-nums;
-}
-
-.driver-assignment-card__date-primary,
-.driver-assignment-card__date-weekdays {
+.driver-assignment-card__date-range {
 	margin: 0;
-	line-height: 1.2;
-}
-
-.driver-assignment-card__date-primary {
 	color: var(--rux-fg);
 	font-size: var(--rux-driver-date-primary-size);
 	font-weight: var(--rux-driver-date-primary-weight);
+	line-height: 1.2;
+	font-variant-numeric: tabular-nums;
 }
 
-.driver-assignment-card__date-weekdays {
-	margin-top: var(--rux-driver-date-line-gap);
-	color: var(--rux-fg-subtle);
-	font-size: var(--rux-driver-date-weekday-size);
-	font-weight: var(--rux-driver-date-weekday-weight);
-	letter-spacing: var(--rux-driver-date-weekday-tracking);
-}
-
-.driver-assignment-card__bus {
-	margin: 0;
-	color: var(--rux-fg);
+.driver-assignment-card__bus-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	justify-self: end;
+	min-height: var(--rux-touch-target-min);
+	padding-inline: var(--rux-space-4);
+	border-radius: var(--rux-radius-lg);
+	background: var(--rux-driver-accent-soft);
+	color: var(--rux-accent);
 	font-size: var(--rux-driver-bus-size);
 	font-weight: var(--rux-weight-bold);
 	line-height: var(--rux-leading-tight);
 	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
 }
 
 .driver-assignment-card__role-badge,
-.driver-assignment-card__trip-type,
-.driver-assignment-card__current-bus {
+.driver-assignment-card__trip-type {
 	display: inline-flex;
 	align-items: center;
 	min-height: var(--rux-button-sm-height);
@@ -178,13 +160,30 @@ html {
 		color-mix(in oklch, var(--rux-accent) 42%, transparent);
 }
 
+.driver-assignment-card__header-route {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
+	min-width: 0;
+}
+
+.driver-assignment-card__header-metadata {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+}
+
 .driver-assignment-card__response {
 	grid-column: 1 / -1;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	flex-wrap: wrap;
-	gap: var(--rux-space-2);
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-space-1);
 	width: 100%;
 	max-width: 100%;
 }
@@ -225,6 +224,18 @@ html {
 	flex-wrap: wrap;
 	gap: var(--rux-space-2);
 	margin-inline-start: auto;
+}
+
+.driver-assignment-card__response[data-status="pending"] .driver-assignment-card__response-actions {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	flex: 1 0 100%;
+	width: 100%;
+	margin-inline-start: 0;
+}
+
+.driver-assignment-card__response[data-status="pending"] .driver-assignment-card__response-actions .rux-button {
+	width: 100%;
 }
 
 .driver-assignment-card__decline--quiet {
@@ -270,10 +281,6 @@ html {
 
 .driver-assignment-card > .rux-card__section + .rux-card__section {
 	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
-}
-
-.driver-assignment-card > [data-module="trip-overview"] {
-	padding: var(--rux-driver-overview-padding);
 }
 
 .assignment-module {
@@ -370,53 +377,6 @@ html {
 
 /* Trip, role, and time ---------------------------------------------------- */
 
-.driver-assignment-card__trip-overview {
-	display: flex;
-	flex-direction: column;
-}
-
-.driver-assignment-card__overview-divider {
-	height: var(--rux-border-width);
-	margin-block: var(--rux-space-5);
-	background: var(--rux-driver-internal-divider);
-}
-
-.driver-assignment-card__departure {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	align-items: center;
-	gap: var(--rux-driver-module-grid-gap);
-}
-
-.driver-assignment-card__departure-briefing {
-	min-width: 0;
-}
-
-.driver-assignment-card__spot-summary {
-	margin-top: var(--rux-space-5);
-}
-
-.driver-assignment-card__departure-label {
-	margin: 0 0 var(--rux-space-2);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-driver-label-size);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: var(--rux-tracking-wide);
-	line-height: var(--rux-leading-snug);
-	text-transform: uppercase;
-}
-
-.driver-assignment-card__overview-action {
-	justify-self: end;
-}
-
-.driver-assignment-card__customer {
-	margin: 0 0 var(--rux-space-3);
-	color: var(--rux-fg);
-	font-size: var(--rux-driver-primary-size);
-	font-weight: var(--rux-weight-medium);
-}
-
 .driver-assignment-card__route {
 	display: flex;
 	align-items: center;
@@ -425,7 +385,7 @@ html {
 	margin: 0;
 	color: var(--rux-fg);
 	font-size: var(--rux-driver-route-size);
-	font-weight: var(--rux-weight-bold);
+	font-weight: 650;
 	line-height: var(--rux-leading-snug);
 }
 
@@ -440,7 +400,8 @@ html {
 }
 
 .driver-assignment-card__trip-type {
-	margin-top: var(--rux-space-3);
+	flex-shrink: 0;
+	white-space: nowrap;
 	background: var(--rux-driver-control-bg);
 	color: var(--rux-fg-muted);
 	border: var(--rux-border-width) solid var(--rux-border);
@@ -476,6 +437,7 @@ html {
 
 .driver-assignment-card__time {
 	display: block;
+	margin-top: var(--rux-space-2);
 	color: var(--rux-fg);
 	font-size: var(--rux-driver-time-size);
 	font-weight: var(--rux-weight-bold);
@@ -484,101 +446,95 @@ html {
 	font-variant-numeric: tabular-nums;
 }
 
-.driver-assignment-card__address {
-	margin: var(--rux-space-3) 0 0;
+/* Compact operational modules and crew ----------------------------------- */
+
+.assignment-compact-module {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--rux-driver-module-grid-gap);
+}
+
+.assignment-compact-module__details {
+	min-width: 0;
+}
+
+.driver-assignment-card__spot-time {
+	margin-bottom: var(--rux-space-5);
+	min-width: 0;
+}
+
+.assignment-compact-module__body {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
+	margin-top: var(--rux-space-3);
+}
+
+.assignment-compact-module__primary {
+	margin: 0;
+	color: var(--rux-fg);
+	font-size: var(--rux-driver-primary-size);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-snug);
+}
+
+.assignment-compact-module__secondary {
+	margin: 0;
 	color: var(--rux-fg-muted);
-	font-size: var(--rux-driver-secondary-size);
+	font-size: var(--rux-text-md);
 	font-style: normal;
 	line-height: var(--rux-leading-normal);
 	white-space: pre-line;
 }
 
-.driver-assignment-card__location-name,
-.driver-assignment-card__address-lines {
-	display: block;
+.assignment-compact-module__actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--rux-space-2);
+	align-self: center;
+	justify-self: end;
 }
-
-.driver-assignment-card__location-name {
-	color: var(--rux-fg);
-	font-weight: var(--rux-weight-medium);
-}
-
-.driver-assignment-card__address-lines {
-	margin-top: var(--rux-space-2);
-}
-
-/* Contact, crew, alerts --------------------------------------------------- */
 
 .driver-assignment-card__phone {
-	display: inline-flex;
-	align-items: center;
-	min-height: var(--rux-driver-touch-target);
-	margin-top: var(--rux-space-1);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-md);
 	font-variant-numeric: tabular-nums;
 }
 
 .driver-assignment-card__fleet-list,
-.driver-assignment-card__crew-list,
-.driver-assignment-card__alert-list {
+.driver-assignment-card__crew-list {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.driver-assignment-card__fleet-row + .driver-assignment-card__fleet-row {
-	margin-top: var(--rux-space-4);
-	padding-top: var(--rux-space-4);
-	border-top: var(--rux-border-width) solid var(--rux-driver-internal-divider);
-}
-
-.driver-assignment-card__fleet-bus {
+.driver-assignment-card__fleet-list {
 	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: var(--rux-space-2);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: var(--rux-tracking-wide);
-	text-transform: uppercase;
-	font-variant-numeric: tabular-nums;
-}
-
-.driver-assignment-card__fleet-bus > .rux-icon {
-	color: var(--rux-accent);
-}
-
-.driver-assignment-card__current-bus {
-	min-height: auto;
-	background: var(--rux-driver-accent-soft);
-	color: var(--rux-accent);
-	font-size: var(--rux-text-xs);
+	flex-direction: column;
+	gap: var(--rux-space-5);
 }
 
 .driver-assignment-card__crew-list {
-	margin-top: var(--rux-space-2);
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
 }
 
-.driver-assignment-card__crew-list--people-only {
-	margin-top: 0;
+.driver-assignment-card__fleet-row > .driver-assignment-card__crew-context {
+	margin-bottom: var(--rux-space-3);
 }
 
 .driver-assignment-card__crew-member {
-	display: flex;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
-	justify-content: space-between;
 	gap: var(--rux-space-3);
 	min-height: var(--rux-driver-touch-target);
 }
 
-.driver-assignment-card__crew-member .rux-module-button {
+.driver-assignment-card__crew-actions {
 	margin-inline-start: auto;
-}
-
-.driver-assignment-card__crew-member + .driver-assignment-card__crew-member {
-	border-top: var(--rux-border-width) solid var(--rux-driver-internal-divider);
 }
 
 .driver-assignment-card__crew-identity {
@@ -587,16 +543,21 @@ html {
 	min-width: 0;
 }
 
+.driver-assignment-card__crew-identity > .assignment-compact-module__body:first-child {
+	margin-top: 0;
+}
+
+.driver-assignment-card__crew-context {
+	font-variant-numeric: tabular-nums;
+}
+
 .driver-assignment-card__crew-name {
-	color: var(--rux-fg);
-	font-size: var(--rux-text-md);
 	font-weight: var(--rux-weight-medium);
 	overflow-wrap: anywhere;
 }
 
-.driver-assignment-card__crew-role {
-	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-sm);
+.driver-assignment-card__crew-phone {
+	font-variant-numeric: tabular-nums;
 }
 
 .driver-assignment-card__disclosure {
@@ -606,80 +567,45 @@ html {
 	color: var(--rux-accent);
 }
 
-.driver-assignment-card__alert {
-	display: flex;
-	align-items: flex-start;
-	gap: var(--rux-space-3);
-	color: var(--rux-fg-muted);
-}
-
-.driver-assignment-card__alert + .driver-assignment-card__alert {
-	margin-top: var(--rux-space-3);
-}
-
-.driver-assignment-card__alert--info > .rux-icon {
-	color: var(--rux-info);
-}
-
-.driver-assignment-card__alert--warning > .rux-icon {
-	color: var(--rux-warning);
-}
-
-.driver-assignment-card__alert--critical > .rux-icon {
-	color: var(--rux-danger);
-}
-
-.driver-assignment-card__alert-title {
-	color: var(--rux-fg);
-	font-size: var(--rux-text-md);
-	font-weight: var(--rux-weight-medium);
-	line-height: var(--rux-leading-snug);
-}
-
-.driver-assignment-card__alert-description {
-	margin-top: var(--rux-space-1);
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-sm);
-	line-height: var(--rux-leading-normal);
-}
-
 /* Documents and notes ---------------------------------------------------- */
 
 .driver-assignment-card__documents {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(var(--rux-driver-document-min-width), 1fr));
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-3);
 }
 
 .driver-assignment-card__document {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
+	display: inline-flex;
 	align-items: center;
+	justify-content: center;
 	gap: var(--rux-space-2);
-	min-height: var(--rux-driver-document-min-height);
-	padding: var(--rux-driver-document-padding);
-	background: var(--rux-driver-document-bg);
-	color: var(--rux-fg);
-	border: var(--rux-border-width) solid var(--rux-driver-module-divider);
-	border-radius: var(--rux-driver-document-radius);
+	min-width: 0;
+	min-height: var(--rux-driver-touch-target);
+	padding-inline: var(--rux-space-3);
+	background: var(--rux-module-button-warning-bg);
+	color: var(--rux-module-button-warning-fg);
+	border: var(--rux-border-width) solid var(--rux-module-button-warning-border);
+	border-radius: var(--rux-radius-md);
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
-	text-align: start;
+	text-align: center;
 	text-decoration: none;
 	cursor: pointer;
 }
 
 .driver-assignment-card__document:hover:not(.is-unavailable) {
-	background: var(--rux-driver-document-hover-bg);
-	border-color: var(--rux-border-strong);
-	color: var(--rux-fg);
+	background: var(--rux-module-button-warning-hover-bg);
+	border-color: var(--rux-warning);
+	color: var(--rux-module-button-warning-fg);
 	text-decoration: none;
 }
 
 .driver-assignment-card__document.is-unavailable {
 	background: transparent;
 	color: var(--rux-fg-disabled);
+	border-color: var(--rux-border-subtle);
 	cursor: default;
 }
 
@@ -688,22 +614,10 @@ html {
 	overflow-wrap: anywhere;
 }
 
-.driver-assignment-card__document-status {
-	grid-column: 2;
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-driver-document-status-size);
-	font-weight: var(--rux-weight-regular);
-}
-
-.driver-assignment-card__document-status--unavailable {
-	color: var(--rux-fg-disabled);
-}
-
 .driver-assignment-card__notes {
-	margin: 0;
-	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-driver-notes-bg);
-	border-radius: var(--rux-driver-notes-radius);
+	margin: var(--rux-space-3) 0 0;
+	padding: 0;
+	background: transparent;
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-md);
 	font-weight: var(--rux-weight-regular);
@@ -854,7 +768,6 @@ html {
 	.driver-assignment-card .rux-button,
 	.assignment-module__action,
 	.driver-assignment-card__document,
-	.driver-assignment-card__phone,
 	.driver-share-dialog .rux-button
 ):focus-visible {
 	outline: none;
@@ -929,28 +842,6 @@ html {
 		width: 100%;
 	}
 
-	.driver-assignment-card__crew-member {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.driver-assignment-card__crew-member .rux-module-button {
-		justify-self: center;
-		margin: var(--rux-space-3) 0 0;
-	}
-
-	.driver-assignment-card__departure {
-		grid-template-columns: minmax(0, 1fr);
-	}
-
-	.driver-assignment-card__overview-action {
-		justify-self: center;
-		margin-top: var(--rux-space-3);
-	}
-
-	.driver-assignment-card__documents {
-		grid-template-columns: minmax(0, 1fr);
-	}
 }
 
 @media (max-width: 479px) {

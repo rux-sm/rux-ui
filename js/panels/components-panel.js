@@ -1,4 +1,4 @@
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=13";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=34";
 import { createTripBar } from "../components/trip-bar.js?v=11";
 import BusPicker from "../components/bus-picker.js?v=2";
 
@@ -39,9 +39,11 @@ import BusPicker from "../components/bus-picker.js?v=2";
 			`rux-module-button rux-module-button--${tone}`,
 		);
 		button.type = "button";
+		button.setAttribute("aria-label", label);
+		button.title = label;
 		button.append(
 			el("span", "rux-icon", iconName),
-			el("span", "", label),
+			el("span", "rux-module-button__label", label),
 		);
 		return button;
 	}

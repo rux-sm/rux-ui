@@ -14,7 +14,6 @@ import {
 	normalizeSpotLocation,
 	showCrewFleetModule,
 	showRoleModule,
-	sortAssignmentAlerts,
 	visibleAssignmentModules,
 } from "../js/components/driver-assignment-model.js";
 
@@ -44,25 +43,33 @@ function assignment(overrides = {}) {
 
 test("one-day trip formats one date and omits single-driver fleet", () => {
 	const view = buildAssignmentViewModel(assignment());
-	assert.equal(view.dateRange, "THU, JUL 23");
+	assert.equal(view.dateRange, "THURSDAY, JUL 23");
 	assert.equal(view.datePrimary, "Jul 23");
 	assert.equal(view.dateWeekdays, "Thursday");
-	assert.equal(view.busLabel, "Bus: 763");
+	assert.equal(view.busLabel, "Bus 763");
 	assert.equal(view.modules.some((module) => module.key === "crew-fleet"), false);
 });
 
 test("multi-day round trip formats a predictable range", () => {
 	const view = buildAssignmentViewModel(assignment({ endDate: "2026-07-26" }));
-	assert.equal(view.dateRange, "THU, JUL 23 – SUN, JUL 26");
+	assert.equal(view.dateRange, "THURSDAY, JUL 23 – JUL 26");
 	assert.equal(view.datePrimary, "Jul 23–26");
 	assert.equal(view.dateWeekdays, "Thu–Sun");
-	assert.equal(view.tripType, "Round Trip");
+	assert.equal(view.tripType, "Round-Trip");
+	assert.equal(view.origin, "Donna, TX");
+	assert.equal(view.destination, "Austin, TX");
+	assert.equal(
+		buildAssignmentViewModel(assignment({
+			trip: { customer: "Donna High School", trip_type: "one_way" },
+		})).tripType,
+		"One-Way",
+	);
 });
 
 test("date formatting handles different months", () => {
 	assert.equal(
 		formatAssignmentDateRange("2026-07-30", "2026-08-02"),
-		"THU, JUL 30 – SUN, AUG 2",
+		"THURSDAY, JUL 30 – AUG 2",
 	);
 	assert.deepEqual(
 		formatAssignmentHeaderDateRange("2026-07-30", "2026-08-02"),
@@ -155,23 +162,21 @@ test("pending, accepted, and declined statuses normalize", () => {
 	assert.equal(assignmentStatus(assignment({ status: "declined" })), "declined");
 });
 
-test("critical alerts sort first directly after Trip Overview", () => {
+test("spot location and trip contact follow the assignment summary header", () => {
 	const entry = assignment({
+		contact: { name: "Anna Partida", phone: "956-292-9255" },
 		alerts: [
 			{ id: "info", severity: "info", title: "Trailer Attached" },
 			{ id: "critical", severity: "critical", title: "Do Not Depart" },
 			{ id: "warning", severity: "warning", title: "Hotel Required" },
 		],
 	});
-	assert.equal(sortAssignmentAlerts(entry.alerts)[0].id, "critical");
 	const modules = visibleAssignmentModules(entry);
-	assert.equal(modules[0].key, "trip-overview");
-	assert.equal(modules[1].key, "alerts");
-	assert.equal(modules[1].data[0].id, "critical");
-});
-
-test("assignments without alerts do not render an Alerts module", () => {
-	const keys = visibleAssignmentModules(assignment()).map((module) => module.key);
+	assert.deepEqual(
+		modules.slice(0, 2).map((module) => module.key),
+		["spot-location", "contact"],
+	);
+	const keys = modules.map((module) => module.key);
 	assert.equal(keys.includes("alerts"), false);
 	assert.equal(keys.includes("critical-alerts"), false);
 });
@@ -228,7 +233,26 @@ test("missing optional data produces no empty optional modules", () => {
 		notes: "  ",
 		fleetAssignments: [],
 	}));
-	assert.deepEqual(keys.map((module) => module.key), ["trip-overview"]);
+	assert.deepEqual(
+		keys.map((module) => module.key),
+		["spot-location"],
+	);
+});
+
+test("spot time without route or location still renders in the spot section", () => {
+	const modules = visibleAssignmentModules(assignment({
+		from: "",
+		to: "",
+		origin: null,
+		destination: null,
+		customerName: "",
+		trip: {},
+		spotLocation: null,
+	}));
+	assert.deepEqual(
+		modules.map((module) => module.key),
+		["spot-location"],
+	);
 });
 
 test("timezone-aware timestamps use the trip timezone", () => {

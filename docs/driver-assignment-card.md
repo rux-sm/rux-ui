@@ -6,8 +6,8 @@ connected card surface. `driver-share.js` adapts Supabase trip records;
 `driver-assignment-card.js` renders independently testable modules.
 
 Modules never render empty headings or placeholder dividers. The stable
-workflow order is Trip Overview, Alerts, special Role detail, Crew, Contact,
-Documents, and Notes.
+workflow order is Assignment Summary, Spot Time & Location, Trip Contact,
+special Role detail, Crew, Notes, and Documents.
 
 ## Module Button Primitive
 
@@ -24,14 +24,13 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 </a>
 ```
 
-- Anatomy: Icon above a centered label.
-- Footprint: All variants are 112px wide with an 88px minimum height.
+- Anatomy: Centered icon with a visually hidden accessible label.
+- Footprint: All variants are exactly 44×44px.
 - Variants: `--neutral`, `--info`, `--success`, `--warning`, and `--danger`.
 - Semantics: Use an `a` for navigation, telephone, or messaging destinations;
   use a `button` for in-application actions.
-- Accessibility: Supply an accessible name that includes the action target
-  when the visible label alone is not sufficient. All states retain a visible
-  focus indicator and a touch target larger than 44px.
+- Accessibility: Supply an accessible name that includes the action target.
+  All states retain a visible focus indicator and a 44×44px touch target.
 - Empty behavior: Do not render a module action when it cannot be performed.
 
 ## Assignment Header
@@ -40,37 +39,37 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Required data: Date, role, and assignment status.
 - Optional data: Assigned bus and response callbacks.
 - Visibility: Always.
-- Primary action: Accept Assignment when pending.
-- Layout: Places `Bus: 763` above the role badge at the upper left, the compact
-  date at the upper right, and response status/actions on a dedicated row.
-- Date behavior: Uses a compact primary range such as `Jul 26–29` with
-  supporting weekday context such as `Sun–Wed`. One-day assignments use
-  `Jul 26` and `Sunday`; cross-month and cross-year ranges retain only the
-  month/year information needed to remove ambiguity.
-- Empty behavior: Displays `Bus Unassigned` when a bus is not assigned.
+- Primary action: Accept when pending.
+- Layout: Places the complete date range at the upper left and a prominent
+  blue `Bus 763` badge at the upper right. `Donna, TX → Austin, TX` follows on
+  its own row, with trip type and role badges beneath it. Response status and
+  equal-width pending actions complete the section. Date, bus, route, and
+  Spot Time share a compact 24px primary scale.
+- Date behavior: Uses the complete operational range, such as
+  `SUNDAY, JUL 26 – JUL 29`, as the card heading. One-day assignments render
+  one date and cross-month or cross-year ranges retain the necessary context.
+- Empty behavior: Reporting details display `Bus Unassigned` when a bus is not
+  assigned.
 - Loading behavior: Disables the active action and shows `Accepting…` or
   `Declining…`; duplicate submission is prevented.
 - Accessibility: Uses the card's `h2`, visible status icon and text, real
   buttons, inline `role="alert"` failures, and a page-level polite live region.
+  Route cities remain real text and can wrap at 200% zoom.
 
-## Trip Overview
+## Spot Time & Location
 
-- Purpose: Gives the complete departure briefing in the card's highest
-  priority content area.
-- Required data: Any trip-summary, spot-time, or spot-location field.
-- Optional data: Customer, route, trip type, location name, full address, and
-  coordinates.
-- Visibility: When either trip or report information exists.
-- Primary action: Navigate to the report location.
-- Layout: Uses a purpose-built full-width briefing rather than the generic
-  label column. Route and trip type come first, followed by an internal
-  divider, customer/address with Navigate, and Spot Time beneath the location.
-- Empty behavior: Trip and departure subsections render independently; the
-  internal divider appears only when both exist.
+- Purpose: Shows when and where the driver must report.
+- Required data: Spot Time, customer/location name, or report address.
+- Optional data: Coordinates and any one of the required fields.
+- Visibility: When report-time or report-location information exists.
+- Primary action: Navigate.
+- Layout: Places Spot Time immediately before Spot Location. Location name and
+  address occupy separate lines; the 44×44 Navigate action aligns at the right
+  of the combined block.
+- Empty behavior: Does not render when neither time nor location exists.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Route text remains real text and may wrap at 200% zoom. Spot
-  time uses `time`, location uses `address`, and Navigate includes the complete
-  destination in its accessible name.
+- Accessibility: Uses semantic `time` and `address` elements, tabular numerals,
+  and a Navigate label containing the complete destination.
 
 ## Role
 
@@ -91,16 +90,22 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Purpose: Coordinates assignments involving multiple buses or crew members.
 - Required data: More than one fleet assignment or at least one external crew
   member.
-- Optional data: Phone/message capability and current-bus identity.
+- Optional data: Phone, messaging/calling capabilities, and current-bus identity.
 - Visibility: Based on the normalized fleet and crew counts.
-- Primary action: Message, only when a phone number is available.
+- Primary actions: Message followed by Call, when a phone number is available
+  and the corresponding capability is enabled.
+- Layout: Uses contextual groups without a visible `Crew & Fleet` heading,
+  large module icon, or header divider. Current-bus companions are headed by
+  their role, followed by name and phone on separate lines. Additional buses
+  are headed by `Bus 746` and list each person as `James Cole (Driver)` with
+  their phone beneath. Role and bus headings use the shared module-label
+  typography. The 44×44 Message and Call actions remain at the right; Call
+  always follows Message.
 - Empty behavior: Does not render for a simple one-driver, one-bus assignment.
-  A single-bus assignment uses a people-first `Crew` view and describes roles
-  relative to “your bus” without repeating the bus number. Multiple buses use
-  bus-grouped `Crew & Fleet`.
+  Fleet entries without crew are omitted.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Uses nested lists, full message labels, `Your Bus` text, and
-  an `aria-expanded`/`aria-controls` disclosure after two buses.
+- Accessibility: Uses nested lists, full message labels, and an
+  `aria-expanded`/`aria-controls` disclosure after two populated buses.
 
 ## Trip Contact
 
@@ -108,25 +113,17 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Required data: Contact name or phone.
 - Optional data: Either field may appear independently.
 - Visibility: When contact data exists.
-- Primary action: Call.
+- Primary actions: Text followed by Call, when the phone number and
+  corresponding capability are available.
+- Layout: Follows Spot Location as a compact two-column row. The label, contact
+  name, and phone number occupy separate lines; the 44×44 Call action aligns
+  at the right beside Text. It does not use a large module icon or internal
+  divider. Compact operational modules use 12px from label to primary content
+  and 8px from primary to secondary content.
 - Empty behavior: Does not render.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Uses a `tel:` link and includes the contact's name in the
-  accessible call label.
-
-## Alerts
-
-- Purpose: Shows preparation, warning, informational, and departure-blocking
-  requirements directly after Trip Overview.
-- Required data: At least one alert.
-- Optional data: Description.
-- Visibility: Immediately after Trip Overview when alerts exist.
-- Primary action: None.
-- Empty behavior: Does not render.
-- Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Uses a semantic list plus distinct icons and text. Critical,
-  warning, and informational rows retain their own icon and tone; the module
-  adopts the highest contained severity without relying on color alone.
+- Accessibility: Uses dedicated `sms:` and `tel:` action links and includes the
+  contact's name in each accessible label.
 
 ## Documents
 
@@ -135,13 +132,15 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Optional data: URL, status, and an application callback.
 - Visibility: When resources exist.
 - Primary action: Open the selected resource.
+- Layout: The final card section has no visible Documents heading. Itinerary
+  and Envelope render as equal-width warning-tone actions in one 50/50 row.
 - Empty behavior: Does not render. Unavailable resources render as
-  non-clickable items with availability text. Purchase orders and unrelated
+  non-clickable items. Purchase orders and unrelated
   operational attachments are excluded before rendering.
 - Loading behavior: Document availability is resolved with the assignment.
-- Accessibility: Uses buttons or links, visible names/statuses, normal
-  secondary contrast for available resources, disabled contrast only for
-  unavailable resources, and full keyboard focus treatment.
+- Accessibility: The section keeps an accessible name, uses buttons or links,
+  exposes availability details as a title when supplied, reserves disabled
+  contrast for unavailable resources, and retains full keyboard focus treatment.
 
 ## Notes
 
@@ -153,7 +152,7 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Empty behavior: Does not render.
 - Loading behavior: Covered by the assignment skeleton.
 - Accessibility: Preserves whitespace, lightly normalizes short all-lowercase
-  operational notes for presentation, uses a subtle non-alert inset surface,
+  operational notes for presentation, uses plain label-and-text formatting,
   and exposes disclosure state with `aria-expanded` and `aria-controls`.
 
 ## Extension Contract
