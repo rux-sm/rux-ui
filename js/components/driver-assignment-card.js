@@ -7,7 +7,7 @@ import {
 	assignmentRoleLabel,
 	buildAssignmentViewModel,
 	formatAssignmentTime,
-} from "./driver-assignment-model.js?v=3";
+} from "./driver-assignment-model.js?v=4";
 
 const ICONS = {
 	alerts: "warning",

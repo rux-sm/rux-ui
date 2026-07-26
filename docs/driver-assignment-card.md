@@ -121,14 +121,14 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 
 ## Documents
 
-- Purpose: Opens trip resources such as itineraries, envelopes, rosters, and
-  permits.
-- Required data: At least one normalized document or generated trip resource.
+- Purpose: Opens the two driver-facing trip resources: Itinerary and Envelope.
+- Required data: An itinerary document or generated trip envelope.
 - Optional data: URL, status, and an application callback.
 - Visibility: When resources exist.
 - Primary action: Open the selected resource.
 - Empty behavior: Does not render. Unavailable resources render as
-  non-clickable items with availability text.
+  non-clickable items with availability text. Purchase orders and unrelated
+  operational attachments are excluded before rendering.
 - Loading behavior: Document availability is resolved with the assignment.
 - Accessibility: Uses buttons or links, visible names/statuses, normal
   secondary contrast for available resources, disabled contrast only for

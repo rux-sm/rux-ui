@@ -5,6 +5,7 @@ import {
 	assignmentRoleLabel,
 	assignmentStatus,
 	buildAssignmentViewModel,
+	driverDocuments,
 	formatAssignmentDateRange,
 	formatAssignmentTime,
 	formatOperationalNotes,
@@ -170,6 +171,19 @@ test("several documents produce one Documents module", () => {
 		],
 	})).map((module) => module.key);
 	assert.equal(keys.filter((key) => key === "documents").length, 1);
+});
+
+test("driver resources exclude purchase orders and unrelated attachments", () => {
+	const documents = driverDocuments([
+		{ id: "1", type: "itinerary", label: "Itinerary" },
+		{ id: "2", type: "purchase_order", label: "PO" },
+		{ id: "3", type: "envelope", label: "Envelope" },
+		{ id: "4", type: "roster", label: "Roster" },
+	]);
+	assert.deepEqual(documents.map((document) => document.label), [
+		"Itinerary",
+		"Envelope",
+	]);
 });
 
 test("long locations remain intact in the view model", () => {

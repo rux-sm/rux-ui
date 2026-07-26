@@ -168,6 +168,17 @@ export function totalExternalCrew(fleetAssignments = []) {
 	);
 }
 
+export function driverDocuments(documents = []) {
+	return documents.filter((document) => {
+		const type = clean(document?.type || document?.label)
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, "_")
+			.replace(/^_|_$/g, "");
+		const typeParts = type.split("_");
+		return typeParts.includes("itinerary") || typeParts.includes("envelope");
+	});
+}
+
 export function normalizeFleetAssignments(
 	trip,
 	leg,
@@ -224,6 +235,9 @@ export function showCrewFleetModule(entry = {}) {
 
 export function visibleAssignmentModules(entry = {}) {
 	const alerts = sortAssignmentAlerts(entry.alerts || []);
+	const documents = driverDocuments(
+		Array.isArray(entry.documents) ? entry.documents : [],
+	);
 	const hasTripOverview = Boolean(
 		entry.trip
 		|| entry.customerName
@@ -238,7 +252,7 @@ export function visibleAssignmentModules(entry = {}) {
 	if (showRoleModule(entry)) modules.push({ key: "role" });
 	if (showCrewFleetModule(entry)) modules.push({ key: "crew-fleet" });
 	if (entry.contact?.name || entry.contact?.phone) modules.push({ key: "contact" });
-	if (Array.isArray(entry.documents) && entry.documents.length) modules.push({ key: "documents" });
+	if (documents.length) modules.push({ key: "documents" });
 	if (clean(entry.notes || entry.instructions)) modules.push({ key: "notes" });
 	return modules;
 }
@@ -276,7 +290,7 @@ export function buildAssignmentViewModel(entry = {}) {
 		contact: entry.contact || {},
 		fleetAssignments: entry.fleetAssignments || [],
 		alerts: sortAssignmentAlerts(entry.alerts || []),
-		documents: entry.documents || [],
+		documents: driverDocuments(entry.documents || []),
 		notes: formatOperationalNotes(entry.notes || entry.instructions),
 		modules: visibleAssignmentModules(entry),
 	};

@@ -7,8 +7,8 @@ import {
 	formatAssignmentDate,
 	normalizeFleetAssignments,
 	normalizeSpotLocation,
-} from "../components/driver-assignment-model.js?v=3";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=10";
+} from "../components/driver-assignment-model.js?v=4";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=11";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
@@ -159,7 +159,8 @@ function documentType(label) {
 
 function documentsFor(trip) {
 	const rows = Array.isArray(trip.trip_documents) ? trip.trip_documents : [];
-	const labels = [...new Set(rows.map((document) => document.label).filter(Boolean))];
+	const labels = [...new Set(rows.map((document) => document.label).filter(Boolean))]
+		.filter((label) => documentType(label).split("_").includes("itinerary"));
 	const documents = labels.map((label) => {
 		const latest = latestDocument(rows, label);
 		const hasPreviousVersion = rows.filter((document) => document.label === label).length > 1;

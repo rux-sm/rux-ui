@@ -237,11 +237,12 @@ test("failed accept preserves pending state and exposes an alert", async () => {
 	assert.equal(accept.disabled, false);
 });
 
-test("documents render actionable and unavailable resources correctly", () => {
+test("driver documents include only itinerary and envelope resources", () => {
 	const card = renderDriverAssignmentCard(assignment({
 		documents: [
 			{ id: "1", type: "itinerary", label: "Itinerary", status: "available" },
-			{ id: "2", type: "roster", label: "Roster", status: "unavailable", statusLabel: "Not Yet Available" },
+			{ id: "2", type: "purchase_order", label: "PO", status: "available" },
+			{ id: "3", type: "envelope", label: "Envelope", status: "unavailable", statusLabel: "Not Yet Available" },
 		],
 	}), {
 		onItinerary: () => {},
@@ -254,7 +255,8 @@ test("documents render actionable and unavailable resources correctly", () => {
 	const unavailable = allElements(card).find(
 		(node) => node.getAttribute("aria-disabled") === "true",
 	);
-	assert.ok(unavailable.textContent.includes("RosterNot Yet Available"));
+	assert.ok(unavailable.textContent.includes("EnvelopeNot Yet Available"));
+	assert.equal(card.textContent.includes("PO"), false);
 	assert.ok(card.querySelector(".driver-assignment-card__document-status"));
 	assert.ok(card.querySelector(".driver-assignment-card__document-status--unavailable"));
 });
