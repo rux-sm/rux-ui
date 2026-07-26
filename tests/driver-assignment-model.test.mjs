@@ -11,6 +11,7 @@ import {
 	normalizeFleetAssignments,
 	normalizeSpotLocation,
 	showCrewFleetModule,
+	showRoleModule,
 	sortAssignmentAlerts,
 	visibleAssignmentModules,
 } from "../js/components/driver-assignment-model.js";
@@ -71,6 +72,8 @@ test("relief driver preserves full role label and handoff fields", () => {
 	assert.equal(assignmentRoleLabel("relief-start"), "Relief Driver");
 	assert.equal(view.roleDetails.takeoverTime, "3:45 PM");
 	assert.equal(view.roleDetails.takeoverLocation, "Austin Convention Center");
+	assert.equal(showRoleModule(assignment()), false);
+	assert.equal(showRoleModule(assignment({ role: "relief-start" })), true);
 });
 
 test("multi-bus trips show Crew & Fleet", () => {
@@ -131,7 +134,7 @@ test("pending, accepted, and declined statuses normalize", () => {
 	assert.equal(assignmentStatus(assignment({ status: "declined" })), "declined");
 });
 
-test("critical alerts sort first and occupy the first module", () => {
+test("critical alerts sort first directly after Trip Overview", () => {
 	const entry = assignment({
 		alerts: [
 			{ id: "info", severity: "info", title: "Trailer Attached" },
@@ -140,7 +143,10 @@ test("critical alerts sort first and occupy the first module", () => {
 		],
 	});
 	assert.equal(sortAssignmentAlerts(entry.alerts)[0].id, "critical");
-	assert.equal(visibleAssignmentModules(entry)[0].key, "critical-alerts");
+	const modules = visibleAssignmentModules(entry);
+	assert.equal(modules[0].key, "trip-overview");
+	assert.equal(modules[1].key, "alerts");
+	assert.equal(modules[1].data[0].id, "critical");
 });
 
 test("assignments without alerts do not render an Alerts module", () => {
@@ -188,7 +194,7 @@ test("missing optional data produces no empty optional modules", () => {
 		notes: "  ",
 		fleetAssignments: [],
 	}));
-	assert.deepEqual(keys.map((module) => module.key), ["trip", "role", "spot-time"]);
+	assert.deepEqual(keys.map((module) => module.key), ["trip-overview"]);
 });
 
 test("timezone-aware timestamps use the trip timezone", () => {

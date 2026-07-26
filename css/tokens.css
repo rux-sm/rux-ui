@@ -480,7 +480,7 @@
 	--rux-driver-card-header-padding:  28px var(--rux-space-5);
 	--rux-driver-card-header-min-size: 112px;
 	--rux-driver-module-padding:       20px var(--rux-space-5);
-	--rux-driver-spot-padding:         var(--rux-space-6) var(--rux-space-5);
+	--rux-driver-overview-padding:     var(--rux-space-6) var(--rux-space-5);
 	--rux-driver-module-label-min:     112px;
 	--rux-driver-module-label-width:   124px;
 	--rux-driver-module-icon-size:     48px;
@@ -489,6 +489,10 @@
 	--rux-driver-internal-divider:     oklch(from var(--rux-neutral) 100% c h / 9%);
 	--rux-driver-touch-target:         48px;
 	--rux-driver-document-min-width:   140px;
+	--rux-driver-document-min-height:  76px;
+	--rux-driver-document-padding:     14px var(--rux-space-4);
+	--rux-driver-document-radius:      var(--rux-radius-lg);
+	--rux-driver-document-status-size: 0.8125rem;
 	--rux-driver-copy-max-width:       28rem;
 	--rux-driver-status-min-height:    60dvh;
 	--rux-driver-page-title-size:      clamp(2.25rem, 7vw, 2.5rem);
@@ -608,12 +612,12 @@
 	/* Compact contextual action with a stable footprint and vertical
 	   icon-over-label anatomy. Semantic variants change tone, not layout. */
 
-	--rux-module-button-width:       96px;
-	--rux-module-button-min-height:  80px;
-	--rux-module-button-padding:     var(--rux-space-3);
+	--rux-module-button-width:       112px;
+	--rux-module-button-min-height:  88px;
+	--rux-module-button-padding:     var(--rux-space-3) var(--rux-space-4);
 	--rux-module-button-gap:         var(--rux-space-2);
-	--rux-module-button-radius:      var(--rux-radius-lg);
-	--rux-module-button-font-size:   var(--rux-text-sm);
+	--rux-module-button-radius:      14px;
+	--rux-module-button-font-size:   var(--rux-text-md);
 	--rux-module-button-font-weight: var(--rux-weight-medium);
 	--rux-module-button-icon-size:   var(--rux-icon-md);
 	--rux-module-button-border:      var(--rux-border-width) solid var(--rux-border);
@@ -623,7 +627,7 @@
 	--rux-module-button-neutral-bg:       var(--rux-alpha-white-10);
 	--rux-module-button-neutral-hover-bg: var(--rux-alpha-white-16);
 	--rux-module-button-neutral-fg:       var(--rux-fg);
-	--rux-module-button-neutral-border:   var(--rux-border-strong);
+	--rux-module-button-neutral-border:   var(--rux-alpha-white-10);
 
 	--rux-module-button-info-bg:       color-mix(in oklch, var(--rux-info) 16%, transparent);
 	--rux-module-button-info-hover-bg: color-mix(in oklch, var(--rux-info) 23%, transparent);

@@ -46,6 +46,10 @@ function buttonByLabel(card, label) {
 	return buttons(card).find((button) => button.dataset.idleLabel === label) || null;
 }
 
+function moduleByKey(card, key) {
+	return allElements(card).find((node) => node.dataset.module === key) || null;
+}
+
 test("card uses semantic headings, sections, buttons, links, and time", () => {
 	const card = renderDriverAssignmentCard(assignment({
 		contact: { name: "Anna Partida", phone: "956-292-9255" },
@@ -55,7 +59,7 @@ test("card uses semantic headings, sections, buttons, links, and time", () => {
 	});
 	assert.equal(card.tagName, "ARTICLE");
 	assert.ok(card.querySelector("h2"));
-	assert.ok(card.querySelectorAll("section").length >= 4);
+	assert.ok(card.querySelectorAll("section").length >= 2);
 	assert.ok(card.querySelector("time"));
 	assert.ok(card.querySelector("a"));
 	assert.ok(buttons(card).every((button) => button.type === "button"));
@@ -94,22 +98,38 @@ test("accepted assignment presents status without a large green surface", () => 
 	assert.equal(card.dataset.status, "accepted");
 	assert.ok(card.querySelector(".driver-assignment-card__status--success"));
 	assert.equal(buttonByLabel(card, "Accept Assignment"), null);
-	assert.ok(buttonByLabel(card, "Unable To Drive").classList.contains("rux-button--ghost"));
+	assert.ok(buttonByLabel(card, "Unable to drive?").classList.contains("rux-button--ghost"));
 });
 
-test("role module explains responsibility instead of repeating a field label", () => {
+test("ordinary drivers rely on the header role while relief assignments show handoff detail", () => {
 	const standard = renderDriverAssignmentCard(assignment());
-	assert.ok(standard.textContent.includes("Primary operator for Bus 763"));
+	assert.equal(moduleByKey(standard, "role"), null);
+	assert.ok(standard.textContent.includes("Driver"));
+	assert.equal(standard.textContent.includes("Primary operator"), false);
 	assert.equal(standard.textContent.includes("Assigned Bus"), false);
 	const relief = renderDriverAssignmentCard(assignment({
 		role: "relief-start",
 		roleDetails: {
 			takeoverTime: "15:45",
 			takeoverLocation: "Austin Convention Center",
+			relievesDriverName: "Rigoberto Gomez",
 		},
 	}));
+	assert.ok(relief.textContent.includes("Relief Assignment"));
+	assert.ok(relief.textContent.includes("Take over from Rigoberto Gomez"));
 	assert.ok(relief.textContent.includes("Handoff at 3:45 PM"));
 	assert.ok(relief.textContent.includes("Austin Convention Center"));
+});
+
+test("trip and spot time render as one departure-focused overview", () => {
+	const card = renderDriverAssignmentCard(assignment());
+	const overview = moduleByKey(card, "trip-overview");
+	assert.ok(overview);
+	assert.equal(moduleByKey(card, "trip"), null);
+	assert.equal(moduleByKey(card, "spot-time"), null);
+	assert.ok(overview.textContent.includes("Donna High School"));
+	assert.ok(overview.textContent.includes("5:15 AM"));
+	assert.ok(overview.textContent.includes("Navigate"));
 });
 
 test("contact and navigation actions have full screen-reader labels", () => {
@@ -279,6 +299,37 @@ test("assignment actions use the generic semantic module-button primitive", () =
 	assert.ok(message.classList.contains("rux-module-button--neutral"));
 });
 
+test("single-bus crew is people-first while multiple buses retain fleet grouping", () => {
+	const singleBus = renderDriverAssignmentCard(assignment({
+		fleetAssignments: [{
+			busNumber: "763",
+			isCurrentBus: true,
+			crew: [{
+				id: "crew-2",
+				name: "Maria Lopez",
+				role: "relief_driver",
+				phone: "956-555-0112",
+			}],
+		}],
+	}));
+	const crew = moduleByKey(singleBus, "crew-fleet");
+	assert.ok(crew.textContent.includes("Crew"));
+	assert.equal(crew.textContent.includes("Crew & Fleet"), false);
+	assert.equal(crew.textContent.includes("Bus 763"), false);
+	assert.ok(crew.textContent.includes("Relief Driver for your bus"));
+
+	const multiBus = renderDriverAssignmentCard(assignment({
+		fleetAssignments: [
+			{ busNumber: "763", isCurrentBus: true, crew: [] },
+			{ busNumber: "746", crew: [{ id: "crew-3", name: "Jose", role: "driver" }] },
+		],
+	}));
+	const fleet = moduleByKey(multiBus, "crew-fleet");
+	assert.ok(fleet.textContent.includes("Crew & Fleet"));
+	assert.ok(fleet.textContent.includes("Bus 763"));
+	assert.ok(fleet.textContent.includes("Bus 746"));
+});
+
 test("generic module buttons expose one fixed layout and every semantic tone", async () => {
 	const [controls, tokens] = await Promise.all([
 		readFile(new URL("../css/base/controls.css", import.meta.url), "utf8"),
@@ -292,8 +343,8 @@ test("generic module buttons expose one fixed layout and every semantic tone", a
 	for (const tone of ["neutral", "info", "success", "warning", "danger"]) {
 		assert.match(controls, new RegExp(`\\.rux-module-button--${tone}\\s*\\{`));
 	}
-	assert.match(tokens, /--rux-module-button-width:\s*96px/);
-	assert.match(tokens, /--rux-module-button-min-height:\s*80px/);
+	assert.match(tokens, /--rux-module-button-width:\s*112px/);
+	assert.match(tokens, /--rux-module-button-min-height:\s*88px/);
 });
 
 test("responsive CSS protects narrow layouts and touch targets", async () => {

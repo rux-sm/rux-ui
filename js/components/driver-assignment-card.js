@@ -7,7 +7,7 @@ import {
 	assignmentRoleLabel,
 	buildAssignmentViewModel,
 	formatAssignmentTime,
-} from "./driver-assignment-model.js?v=2";
+} from "./driver-assignment-model.js?v=3";
 
 const ICONS = {
 	alerts: "warning",
@@ -22,7 +22,6 @@ const ICONS = {
 	navigate: "navigation",
 	notes: "notes",
 	role: "verified",
-	spot: "schedule",
 	trip: "location_on",
 };
 
@@ -229,7 +228,7 @@ function createStatus(entry, view, options, card) {
 	const addDecline = () => {
 		if (typeof options.onDecline !== "function") return;
 		const accepted = view.status === "accepted";
-		const decline = createButton(view.status === "accepted" ? "Unable To Drive" : "Decline", {
+		const decline = createButton(view.status === "accepted" ? "Unable to drive?" : "Decline", {
 			variant: accepted ? "ghost" : "default",
 			className: `driver-assignment-card__decline${accepted ? " driver-assignment-card__decline--quiet" : ""}`,
 		});
@@ -278,68 +277,133 @@ function assignmentHeader(entry, view, options, card) {
 	return header;
 }
 
-function tripSummaryModule(view) {
-	const content = el("div", "assignment-module__content driver-assignment-card__trip-content");
-	if (view.customerName) {
-		content.appendChild(el("p", "driver-assignment-card__customer", view.customerName));
-	}
-	const route = el("div", "driver-assignment-card__route");
-	route.append(
-		el("span", "driver-assignment-card__route-place", view.origin),
-		icon("arrow_forward", "driver-assignment-card__route-arrow"),
-		el("span", "driver-assignment-card__route-place", view.destination),
+function tripOverviewModule(entry, view) {
+	const content = el(
+		"div",
+		"assignment-module__content driver-assignment-card__trip-overview",
 	);
-	content.append(route, el("span", "driver-assignment-card__trip-type", view.tripType));
+	const hasTripSummary = Boolean(
+		entry.trip
+		|| entry.customerName
+		|| entry.from
+		|| entry.to
+		|| entry.origin
+		|| entry.destination,
+	);
+	if (hasTripSummary) {
+		const summary = el("div", "driver-assignment-card__trip-content");
+		if (view.customerName) {
+			summary.appendChild(el("p", "driver-assignment-card__customer", view.customerName));
+		}
+		const route = el("div", "driver-assignment-card__route");
+		route.append(
+			el("span", "driver-assignment-card__route-place", view.origin),
+			icon("arrow_forward", "driver-assignment-card__route-arrow"),
+			el("span", "driver-assignment-card__route-place", view.destination),
+		);
+		summary.append(route, el("span", "driver-assignment-card__trip-type", view.tripType));
+		content.appendChild(summary);
+	}
+
+	const fullAddress = addressText(view.spotLocation);
+	if (view.spotTime || fullAddress) {
+		if (hasTripSummary) {
+			content.appendChild(el("div", "driver-assignment-card__overview-divider"));
+		}
+		const departure = el("div", "driver-assignment-card__departure");
+		const briefing = el("div", "driver-assignment-card__departure-briefing");
+		briefing.appendChild(el(
+			"p",
+			"driver-assignment-card__departure-label",
+			view.roleLabel === "Relief Driver" ? "Report Time" : "Spot Time",
+		));
+		if (view.spotTime) {
+			const time = el("time", "driver-assignment-card__time", view.spotTime);
+			if (entry.spotTime) time.dateTime = String(entry.spotTime);
+			briefing.appendChild(time);
+		}
+		if (fullAddress) {
+			const location = view.spotLocation || {};
+			const address = el("address", "driver-assignment-card__address");
+			if (location.name) {
+				address.appendChild(el(
+					"span",
+					"driver-assignment-card__location-name",
+					location.name,
+				));
+			}
+			const lines = [
+				location.addressLine1,
+				location.addressLine2,
+				[location.city, location.state, location.postalCode].filter(Boolean).join(" "),
+			].filter(Boolean).join("\n");
+			if (lines) {
+				address.appendChild(el(
+					"span",
+					"driver-assignment-card__address-lines",
+					lines,
+				));
+			}
+			briefing.appendChild(address);
+		}
+		departure.appendChild(briefing);
+		if (fullAddress) {
+			const action = createActionLink(
+				"Navigate",
+				ICONS.navigate,
+				mapsUrl(fullAddress),
+				`Navigate to ${fullAddress.replace(/\n/g, ", ")}`,
+			);
+			action.classList.add("driver-assignment-card__overview-action");
+			departure.appendChild(action);
+		}
+		content.appendChild(departure);
+	}
+
 	return createAssignmentModule({
-		key: "trip",
+		key: "trip-overview",
 		iconName: ICONS.trip,
-		label: "Trip",
+		label: "Trip Overview",
 		content,
+		tone: "accent",
 	});
 }
 
 function roleModule(entry, view) {
 	const content = el("div", "assignment-module__content");
-	content.appendChild(el("p", "assignment-module__primary", view.roleLabel));
 	const isRelief = view.roleLabel === "Relief Driver";
-	const assignedBus = view.roleDetails.assignedBus;
-	if (isRelief) {
-		if (view.roleDetails.takeoverTime) {
-			content.appendChild(el(
-				"p",
-				"driver-assignment-card__role-context",
-				`Handoff at ${view.roleDetails.takeoverTime}`,
-			));
-		}
-		if (view.roleDetails.takeoverLocation) {
-			content.appendChild(el(
-				"p",
-				"driver-assignment-card__role-location",
-				view.roleDetails.takeoverLocation,
-			));
-		}
-		if (view.roleDetails.relievesDriverName) {
-			content.appendChild(el(
-				"p",
-				"driver-assignment-card__role-relieves",
-				`Relieves ${view.roleDetails.relievesDriverName}`,
-			));
-		}
-		if (!view.roleDetails.takeoverTime && !view.roleDetails.takeoverLocation) {
-			content.appendChild(el(
-				"p",
-				"driver-assignment-card__role-context",
-				assignedBus ? `Relief operator for Bus ${assignedBus}` : "Relief operator",
-			));
-		}
-	} else {
-		const responsibility = view.roleLabel === "Co-Driver"
-			? "Supporting operator"
-			: "Primary operator";
+	if (view.roleDetails.relievesDriverName) {
 		content.appendChild(el(
 			"p",
 			"driver-assignment-card__role-context",
-			assignedBus ? `${responsibility} for Bus ${assignedBus}` : responsibility,
+			`Take over from ${view.roleDetails.relievesDriverName}`,
+		));
+	}
+	if (view.roleDetails.takeoverTime) {
+		content.appendChild(el(
+			"p",
+			"driver-assignment-card__role-context",
+			`Handoff at ${view.roleDetails.takeoverTime}`,
+		));
+	}
+	if (view.roleDetails.takeoverLocation) {
+		content.appendChild(el(
+			"p",
+			"driver-assignment-card__role-location",
+			view.roleDetails.takeoverLocation,
+		));
+	}
+	if (
+		isRelief
+		&& !view.roleDetails.relievesDriverName
+		&& !view.roleDetails.takeoverTime
+		&& !view.roleDetails.takeoverLocation
+		&& !view.roleDetails.instructions
+	) {
+		content.appendChild(el(
+			"p",
+			"driver-assignment-card__role-context",
+			"Relief assignment details will be provided by dispatch.",
 		));
 	}
 	if (view.roleDetails.instructions) {
@@ -352,59 +416,9 @@ function roleModule(entry, view) {
 	return createAssignmentModule({
 		key: "role",
 		iconName: ICONS.role,
-		label: "Your Role",
+		label: isRelief ? "Relief Assignment" : "Role Details",
 		content,
-		tone: entry.role?.includes("relief") ? "accent" : "neutral",
-	});
-}
-
-function spotTimeModule(entry, view) {
-	const content = el("div", "assignment-module__content");
-	if (view.spotTime) {
-		const time = el("time", "driver-assignment-card__time", view.spotTime);
-		if (entry.spotTime) time.dateTime = String(entry.spotTime);
-		content.appendChild(time);
-	}
-	const fullAddress = addressText(view.spotLocation);
-	if (fullAddress) {
-		const location = view.spotLocation || {};
-		const address = el("address", "driver-assignment-card__address");
-		if (location.name) {
-			address.appendChild(el(
-				"span",
-				"driver-assignment-card__location-name",
-				location.name,
-			));
-		}
-		const lines = [
-			location.addressLine1,
-			location.addressLine2,
-			[location.city, location.state, location.postalCode].filter(Boolean).join(" "),
-		].filter(Boolean).join("\n");
-		if (lines) {
-			address.appendChild(el(
-				"span",
-				"driver-assignment-card__address-lines",
-				lines,
-			));
-		}
-		content.appendChild(address);
-	}
-	const action = fullAddress
-		? createActionLink(
-			"Navigate",
-			ICONS.navigate,
-			mapsUrl(fullAddress),
-			`Navigate to ${fullAddress.replace(/\n/g, ", ")}`,
-		)
-		: null;
-	return createAssignmentModule({
-		key: "spot-time",
-		iconName: ICONS.spot,
-		label: entry.role?.includes("relief") ? "Report Time" : "Spot Time",
-		content,
-		action,
-		tone: "accent",
+		tone: isRelief ? "accent" : "neutral",
 	});
 }
 
@@ -436,16 +450,21 @@ function contactModule(view) {
 	});
 }
 
-function crewMemberRow(member) {
+function crewMemberRow(member, peopleOnly = false) {
 	const row = el("li", "driver-assignment-card__crew-member");
 	const identity = el("div", "driver-assignment-card__crew-identity");
+	const role = assignmentRoleLabel(member.role);
 	identity.append(
 		el(
 			"span",
 			"driver-assignment-card__crew-name",
 			member.isCurrentUser ? "You" : member.name || "Crew Member",
 		),
-		el("span", "driver-assignment-card__crew-role", assignmentRoleLabel(member.role)),
+		el(
+			"span",
+			"driver-assignment-card__crew-role",
+			peopleOnly ? `${role} for your bus` : role,
+		),
 	);
 	row.appendChild(identity);
 	if (member.phone && member.canMessage !== false) {
@@ -479,14 +498,27 @@ function fleetRow(fleet) {
 
 function crewFleetModule(view) {
 	const content = el("div", "assignment-module__content");
+	const peopleOnly = view.fleetAssignments.length === 1;
 	const listId = `fleet-${safeId(view.id)}`;
-	const list = el("ul", "driver-assignment-card__fleet-list");
-	list.id = listId;
-	view.fleetAssignments.forEach((fleet, index) => {
-		const row = fleetRow(fleet);
-		if (index > 1) row.hidden = true;
-		list.appendChild(row);
-	});
+	let list;
+	if (peopleOnly) {
+		list = el(
+			"ul",
+			"driver-assignment-card__crew-list driver-assignment-card__crew-list--people-only",
+		);
+		list.id = listId;
+		(view.fleetAssignments[0]?.crew || []).forEach((member) => {
+			list.appendChild(crewMemberRow(member, true));
+		});
+	} else {
+		list = el("ul", "driver-assignment-card__fleet-list");
+		list.id = listId;
+		view.fleetAssignments.forEach((fleet, index) => {
+			const row = fleetRow(fleet);
+			if (index > 1) row.hidden = true;
+			list.appendChild(row);
+		});
+	}
 	content.appendChild(list);
 	if (view.fleetAssignments.length > 2) {
 		const totalCrew = view.fleetAssignments.reduce(
@@ -516,7 +548,7 @@ function crewFleetModule(view) {
 	return createAssignmentModule({
 		key: "crew-fleet",
 		iconName: ICONS.crew,
-		label: "Crew & Fleet",
+		label: peopleOnly ? "Crew" : "Crew & Fleet",
 		content,
 	});
 }
@@ -527,7 +559,7 @@ function alertIcon(severity) {
 	return "info";
 }
 
-function alertsModule(alerts, critical = false) {
+function alertsModule(alerts) {
 	const content = el("div", "assignment-module__content");
 	const list = el("ul", "driver-assignment-card__alert-list");
 	alerts.forEach((alert) => {
@@ -544,13 +576,14 @@ function alertsModule(alerts, critical = false) {
 		list.appendChild(row);
 	});
 	content.appendChild(list);
+	const hasCritical = alerts.some((alert) => alert.severity === "critical");
 	const hasWarning = alerts.some((alert) => alert.severity === "warning");
 	return createAssignmentModule({
-		key: critical ? "critical-alerts" : "alerts",
+		key: "alerts",
 		iconName: ICONS.alerts,
-		label: critical ? "Critical Alerts" : "Alerts",
+		label: "Alerts",
 		content,
-		tone: critical ? "danger" : (hasWarning ? "warning" : "accent"),
+		tone: hasCritical ? "danger" : (hasWarning ? "warning" : "accent"),
 	});
 }
 
@@ -640,20 +673,16 @@ function notesModule(view) {
 
 function renderModule(module, entry, view, options) {
 	switch (module.key) {
-	case "critical-alerts":
-		return alertsModule(module.data, true);
-	case "trip":
-		return tripSummaryModule(view);
+	case "trip-overview":
+		return tripOverviewModule(entry, view);
 	case "role":
 		return roleModule(entry, view);
-	case "spot-time":
-		return spotTimeModule(entry, view);
 	case "crew-fleet":
 		return crewFleetModule(view);
 	case "contact":
 		return contactModule(view);
 	case "alerts":
-		return alertsModule(module.data, false);
+		return alertsModule(module.data);
 	case "documents":
 		return documentsModule(entry, view, options);
 	case "notes":

@@ -210,16 +210,20 @@ html {
 }
 
 .driver-assignment-card__decline--quiet {
-	padding-inline: var(--rux-space-2);
+	--_h: auto;
+	min-height: var(--rux-driver-touch-target);
+	padding: var(--rux-space-2) 0;
 	color: var(--rux-fg-muted);
+	font-size: 0.9375rem;
 }
 
 .driver-assignment-card__response[data-status="accepted"] .driver-assignment-card__response-actions {
 	margin-top: calc(0px - var(--rux-space-1));
 }
 
-.driver-assignment-card__decline--quiet:hover:not(:disabled) {
-	color: var(--rux-fg);
+.driver-assignment-card__decline--quiet.rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]),
+.driver-assignment-card__decline--quiet.rux-button--ghost:focus-visible {
+	color: var(--rux-danger);
 }
 
 .driver-assignment-card__response-actions .rux-button,
@@ -254,8 +258,8 @@ html {
 	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
 }
 
-.driver-assignment-card > [data-module="spot-time"] {
-	padding: var(--rux-driver-spot-padding);
+.driver-assignment-card > [data-module="trip-overview"] {
+	padding: var(--rux-driver-overview-padding);
 }
 
 .assignment-module {
@@ -351,6 +355,42 @@ html {
 }
 
 /* Trip, role, and time ---------------------------------------------------- */
+
+.driver-assignment-card__trip-overview {
+	display: flex;
+	flex-direction: column;
+}
+
+.driver-assignment-card__overview-divider {
+	height: var(--rux-border-width);
+	margin-block: var(--rux-space-5);
+	background: var(--rux-driver-internal-divider);
+}
+
+.driver-assignment-card__departure {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--rux-driver-module-grid-gap);
+}
+
+.driver-assignment-card__departure-briefing {
+	min-width: 0;
+}
+
+.driver-assignment-card__departure-label {
+	margin: 0 0 var(--rux-space-2);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-driver-label-size);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: var(--rux-tracking-wide);
+	line-height: var(--rux-leading-snug);
+	text-transform: uppercase;
+}
+
+.driver-assignment-card__overview-action {
+	justify-self: end;
+}
 
 .driver-assignment-card__customer {
 	margin: 0 0 var(--rux-space-3);
@@ -480,9 +520,16 @@ html {
 	align-items: center;
 	flex-wrap: wrap;
 	gap: var(--rux-space-2);
-	color: var(--rux-accent);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
+	letter-spacing: var(--rux-tracking-wide);
+	text-transform: uppercase;
 	font-variant-numeric: tabular-nums;
+}
+
+.driver-assignment-card__fleet-bus > .rux-icon {
+	color: var(--rux-accent);
 }
 
 .driver-assignment-card__current-bus {
@@ -494,6 +541,10 @@ html {
 
 .driver-assignment-card__crew-list {
 	margin-top: var(--rux-space-2);
+}
+
+.driver-assignment-card__crew-list--people-only {
+	margin-top: 0;
 }
 
 .driver-assignment-card__crew-member {
@@ -587,12 +638,12 @@ html {
 	grid-template-columns: auto minmax(0, 1fr);
 	align-items: center;
 	gap: var(--rux-space-2);
-	min-height: var(--rux-driver-touch-target);
-	padding: var(--rux-space-3);
+	min-height: var(--rux-driver-document-min-height);
+	padding: var(--rux-driver-document-padding);
 	background: var(--rux-driver-document-bg);
 	color: var(--rux-fg);
 	border: var(--rux-border-width) solid var(--rux-driver-module-divider);
-	border-radius: var(--rux-driver-control-radius);
+	border-radius: var(--rux-driver-document-radius);
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
@@ -622,7 +673,7 @@ html {
 .driver-assignment-card__document-status {
 	grid-column: 2;
 	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-driver-document-status-size);
 	font-weight: var(--rux-weight-regular);
 }
 
@@ -901,6 +952,15 @@ html {
 	.driver-assignment-card__crew-member .rux-module-button {
 		justify-self: center;
 		margin: var(--rux-space-3) 0 0;
+	}
+
+	.driver-assignment-card__departure {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.driver-assignment-card__overview-action {
+		justify-self: center;
+		margin-top: var(--rux-space-3);
 	}
 
 	.driver-assignment-card__documents {

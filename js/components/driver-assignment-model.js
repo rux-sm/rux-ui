@@ -200,13 +200,18 @@ export function normalizeFleetAssignments(
 
 export function showRoleModule(entry = {}) {
 	const details = entry.roleDetails || {};
+	const isReliefDriver = assignmentRoleLabel(entry.role) === "Relief Driver";
 	return Boolean(
-		entry.role
-		|| entry.busNumber
+		isReliefDriver
 		|| details.takeoverTime
+		|| entry.takeoverTime
+		|| entry.roleReportTime
 		|| details.takeoverLocation
+		|| entry.takeoverLocation
 		|| details.relievesDriverName
-		|| details.instructions,
+		|| entry.relievesDriverName
+		|| details.instructions
+		|| entry.roleInstructions,
 	);
 }
 
@@ -219,16 +224,20 @@ export function showCrewFleetModule(entry = {}) {
 
 export function visibleAssignmentModules(entry = {}) {
 	const alerts = sortAssignmentAlerts(entry.alerts || []);
-	const criticalAlerts = alerts.filter((alert) => alert.severity === "critical");
-	const standardAlerts = alerts.filter((alert) => alert.severity !== "critical");
+	const hasTripOverview = Boolean(
+		entry.trip
+		|| entry.customerName
+		|| entry.from
+		|| entry.to
+		|| entry.spotTime
+		|| entry.spotLocation,
+	);
 	const modules = [];
-	if (criticalAlerts.length) modules.push({ key: "critical-alerts", data: criticalAlerts });
-	if (entry.trip || entry.customerName || entry.from || entry.to) modules.push({ key: "trip" });
+	if (hasTripOverview) modules.push({ key: "trip-overview" });
+	if (alerts.length) modules.push({ key: "alerts", data: alerts });
 	if (showRoleModule(entry)) modules.push({ key: "role" });
-	if (entry.spotTime || entry.spotLocation || entry.from) modules.push({ key: "spot-time" });
 	if (showCrewFleetModule(entry)) modules.push({ key: "crew-fleet" });
 	if (entry.contact?.name || entry.contact?.phone) modules.push({ key: "contact" });
-	if (standardAlerts.length) modules.push({ key: "alerts", data: standardAlerts });
 	if (Array.isArray(entry.documents) && entry.documents.length) modules.push({ key: "documents" });
 	if (clean(entry.notes || entry.instructions)) modules.push({ key: "notes" });
 	return modules;
@@ -254,10 +263,15 @@ export function buildAssignmentViewModel(entry = {}) {
 		},
 		roleDetails: {
 			assignedBus: entry.assignedBus?.number || entry.busNumber || "",
-			takeoverTime: formatAssignmentTime(roleDetails.takeoverTime || entry.roleReportTime, entry.timezone),
-			takeoverLocation: clean(roleDetails.takeoverLocation),
-			relievesDriverName: clean(roleDetails.relievesDriverName),
-			instructions: clean(roleDetails.instructions),
+			takeoverTime: formatAssignmentTime(
+				roleDetails.takeoverTime || entry.takeoverTime || entry.roleReportTime,
+				entry.timezone,
+			),
+			takeoverLocation: clean(roleDetails.takeoverLocation || entry.takeoverLocation),
+			relievesDriverName: clean(
+				roleDetails.relievesDriverName || entry.relievesDriverName,
+			),
+			instructions: clean(roleDetails.instructions || entry.roleInstructions),
 		},
 		contact: entry.contact || {},
 		fleetAssignments: entry.fleetAssignments || [],
