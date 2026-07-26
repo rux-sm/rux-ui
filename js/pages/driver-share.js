@@ -3,11 +3,21 @@ import { loadRequirements } from "../data/requirements-db.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
 import { latestDocument } from "../core/trip-documents.js";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=6";
+import {
+	formatAssignmentDate,
+	normalizeFleetAssignments,
+} from "../components/driver-assignment-model.js";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=7";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
+const statusAnnouncer = document.getElementById("driver-share-announcer");
+const declineDialog = document.getElementById("driver-share-decline-dialog");
+const DEFAULT_TRIP_TIMEZONE = "America/Chicago";
+
 let requirementLabels = new Map();
+let declineDialogResolver = null;
+
 const driverStatusChannel = supabase
 	.channel("scheduler-trips")
 	.subscribe((status) => {
@@ -23,44 +33,31 @@ function el(tag, className, text) {
 	return node;
 }
 
-function parseIsoDate(value) {
-	if (!value) return null;
-	const match = String(value).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-	if (!match) return null;
-	return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
-}
-
-function fmtDate(value, options = {}) {
-	const date = value instanceof Date ? value : parseIsoDate(value);
-	if (!date) return "";
-	return date.toLocaleDateString("en-US", {
-		weekday: options.weekday === false ? undefined : "long",
-		month: "short",
-		day: "numeric",
-		year: options.year ? "numeric" : undefined,
-	});
-}
-
 function fmtRange(start, end) {
-	if (start === end) return fmtDate(start, { year: true });
-	return `${fmtDate(start, { weekday: false })} – ${fmtDate(end, {
+	if (!start) return "";
+	if (!end || start === end) return formatAssignmentDate(start, { year: true });
+	return `${formatAssignmentDate(start, { weekday: false })} – ${formatAssignmentDate(end, {
 		weekday: false,
 		year: true,
 	})}`;
 }
 
-// share.updatedAt is an ISO timestamp (driver_schedule_shares.updated_at) —
-// when dispatch last confirmed this schedule's trip selection, via the
-// Driver Link panel's Create/Update action. Not a guarantee every field on
-// every included trip is untouched since, just the best available signal.
 function fmtUpdatedAt(value) {
 	if (!value) return "";
 	const date = new Date(value);
 	if (Number.isNaN(date.getTime())) return "";
 	const time = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-	if (date.toDateString() === new Date().toDateString()) return `Updated today at ${time}`;
+	if (date.toDateString() === new Date().toDateString()) return `Updated Today At ${time}`;
 	const day = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-	return `Updated ${day} at ${time}`;
+	return `Updated ${day} At ${time}`;
+}
+
+function announce(message) {
+	if (!statusAnnouncer) return;
+	statusAnnouncer.textContent = "";
+	window.requestAnimationFrame(() => {
+		statusAnnouncer.textContent = message;
+	});
 }
 
 function stopsForLeg(trip, leg) {
@@ -82,62 +79,125 @@ function stopsForLeg(trip, leg) {
 	return leg === "return" ? inbound : outbound;
 }
 
-function requirementsFor(trip) {
-	const fallbacks = {
-		sleeper: "Sleeper",
-		pax56: "56 Pax",
-		adaLift: "Wheelchair Lift",
-		hotel: "Hotel",
-		fuelCard: "Fuel Card",
-	};
-	let ids;
+function selectedRequirementIds(trip) {
 	if (trip.trip_reqs && Object.keys(trip.trip_reqs).length) {
-		ids = Object.entries(trip.trip_reqs)
-			.filter(([, selected]) => selected)
-			.map(([id]) => id);
-	} else {
-		ids = [
-			["sleeper", trip.req_sleeper],
-			["pax56", trip.req_56pax],
-			["adaLift", trip.req_ada],
-			["hotel", trip.need_hotel],
-			["fuelCard", trip.need_fuel_card],
-		]
+		return Object.entries(trip.trip_reqs)
 			.filter(([, selected]) => selected)
 			.map(([id]) => id);
 	}
-	const result = ids.map((id) => fallbacks[id] || requirementLabels.get(id) || id);
-	if (trip.trip_type === "one_way" || trip.trip_type === "dropoff_pickup") {
-		result.push("One-Way");
-	}
-	return result;
+	return [
+		["sleeper", trip.req_sleeper],
+		["pax56", trip.req_56pax],
+		["adaLift", trip.req_ada],
+		["hotel", trip.need_hotel],
+		["fuelCard", trip.need_fuel_card],
+	]
+		.filter(([, selected]) => selected)
+		.map(([id]) => id);
+}
+
+function alertsFor(trip) {
+	const metadata = {
+		hotel: {
+			severity: "warning",
+			title: "Hotel Required",
+			description: "Review lodging and check-in details before departure.",
+		},
+		adaLift: {
+			severity: "warning",
+			title: "Wheelchair Lift Required",
+		},
+		fuelCard: {
+			severity: "info",
+			title: "Fuel Card Required",
+		},
+		sleeper: {
+			severity: "info",
+			title: "Sleeper Bus Required",
+		},
+		pax56: {
+			severity: "info",
+			title: "56-Passenger Bus Required",
+		},
+	};
+	return selectedRequirementIds(trip).map((id) => {
+		const fallbackLabel = requirementLabels.get(id) || id;
+		const item = metadata[id] || { severity: "info", title: fallbackLabel };
+		return {
+			id: `requirement-${id}`,
+			...item,
+		};
+	});
 }
 
 function contactFor(trip) {
 	if (trip.booking_contact_name || trip.booking_contact_phone) {
-		return { name: trip.booking_contact_name || "", phone: trip.booking_contact_phone || "" };
+		return {
+			name: trip.booking_contact_name || "",
+			phone: trip.booking_contact_phone || "",
+		};
 	}
-	return { name: trip.trip_contact_1_name || "", phone: trip.trip_contact_1_phone || "" };
+	return {
+		name: trip.trip_contact_1_name || "",
+		phone: trip.trip_contact_1_phone || "",
+	};
 }
 
-function publicDocumentUrl(trip) {
-	const doc = latestDocument(trip.trip_documents, "Itinerary");
-	if (!doc?.file_path) return "";
-	return supabase.storage.from("trip-documents").getPublicUrl(doc.file_path).data?.publicUrl || "";
+function documentUrl(document) {
+	if (!document?.file_path) return "";
+	return supabase.storage.from("trip-documents").getPublicUrl(document.file_path).data?.publicUrl || "";
+}
+
+function documentType(label) {
+	return String(label || "attachment")
+		.trim()
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, "_")
+		.replace(/^_|_$/g, "");
+}
+
+function documentsFor(trip) {
+	const rows = Array.isArray(trip.trip_documents) ? trip.trip_documents : [];
+	const labels = [...new Set(rows.map((document) => document.label).filter(Boolean))];
+	const documents = labels.map((label) => {
+		const latest = latestDocument(rows, label);
+		const hasPreviousVersion = rows.filter((document) => document.label === label).length > 1;
+		return {
+			id: latest?.id || documentType(label),
+			type: documentType(label),
+			label,
+			url: documentUrl(latest),
+			status: "available",
+			statusLabel: hasPreviousVersion ? "Updated" : "Available",
+		};
+	});
+	documents.sort((a, b) => {
+		if (a.type === "itinerary") return -1;
+		if (b.type === "itinerary") return 1;
+		return a.label.localeCompare(b.label);
+	});
+	documents.push({
+		id: "trip-envelope",
+		type: "envelope",
+		label: "Envelope",
+		status: "available",
+		statusLabel: "Available",
+	});
+	return documents;
 }
 
 function fetchSharedTrips(tripIds, includeReliefDetails = true) {
 	const reliefFields = includeReliefDetails ? ", report_time, instructions" : "";
 	return supabase.from("trips").select(`
 		id, trip_ref, start_date, end_date, return_start_date, return_end_date, updated_at,
-		trip_type, destination, customer, departure_time, spot_time, return_time,
+		trip_type, destination, customer, departure_time, spot_time, return_time, notes,
 		booking_contact_name, booking_contact_phone,
 		trip_contact_1_name, trip_contact_1_phone,
 		trip_reqs, req_sleeper, req_56pax, req_ada, need_hotel, need_fuel_card,
 		trip_stops(*),
 		trip_assignments(
 			id, leg, bus_id, active_roles,
-			buses(number),
+			buses(id, number),
 			trip_drivers(driver_id, role${reliefFields}, drivers(id, name, short_name, phone))
 		)
 	`).in("id", tripIds);
@@ -149,7 +209,25 @@ function isMissingReliefField(error) {
 	);
 }
 
-function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
+function isMissingRpc(error, functionName) {
+	return new RegExp(`${functionName}|schema cache|function`, "i").test(
+		[error?.message, error?.details, error?.hint].filter(Boolean).join(" "),
+	);
+}
+
+function statusKey(tripId, leg, role) {
+	return `${tripId}:${leg || "outbound"}:${role || "driver"}`;
+}
+
+function normalizeStatus(statusRow, dispatchConfirmed) {
+	if (statusRow?.status === "declined") return "declined";
+	if (statusRow?.status === "confirmed" || statusRow?.confirmedAt || dispatchConfirmed) {
+		return "accepted";
+	}
+	return "pending";
+}
+
+export function normalizeAssignment(row, driverId, statusesByKey = new Map()) {
 	const trip = row.trips || {};
 	const leg = row.leg || "outbound";
 	const activeDrivers = activeAssignmentDrivers(row);
@@ -157,37 +235,32 @@ function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 		(item) => String(item.driver_id) === String(driverId),
 	) || {};
 	const role = driverAssignment.role || "driver";
-	const confirmation = confirmationsByKey.get(
-		`${trip.id}:${leg}:${role}`,
-	) || confirmationsByKey.get(`${trip.id}:${leg}`) || null;
+	const statusRow = statusesByKey.get(statusKey(trip.id, leg, role))
+		|| statusesByKey.get(statusKey(trip.id, leg, "driver"))
+		|| null;
 	const legacyRoleEntry = (row.active_roles || []).find(
 		(entry) => String(entry).split(":", 1)[0] === role,
 	);
 	const legacyRoleState = String(legacyRoleEntry || "").split(":", 2)[1] || "off";
 	const dispatchConfirmed = ["confirmed", "success"].includes(legacyRoleState);
-	const confirmedAt = confirmation?.confirmedAt
+	const confirmedAt = statusRow?.confirmedAt
+		|| statusRow?.acceptedAt
 		|| (dispatchConfirmed ? trip.updated_at || "" : "");
-	const confirmedSource = confirmation?.source
+	const confirmedSource = statusRow?.source
 		|| (dispatchConfirmed ? "dispatcher" : "");
-	// trips.updated_at is bumped by a DB trigger on every save() (see
-	// trip-driver-confirmation-patch.sql) — if the trip's own save happened
-	// after this confirmation, something about it may have changed since the
-	// driver last saw it. Confirmation itself stays either way; this only
-	// flags it.
-	const confirmationStale = !!(confirmedAt && trip.updated_at && new Date(trip.updated_at) > new Date(confirmedAt));
+	const status = normalizeStatus(statusRow, dispatchConfirmed);
+	const confirmationStale = status === "accepted"
+		&& Boolean(confirmedAt && trip.updated_at && new Date(trip.updated_at) > new Date(confirmedAt));
 	const inbound = leg === "return" && trip.trip_type === "dropoff_pickup";
 	const stops = stopsForLeg(trip, leg);
 	const pickup = stops.find((stop) => stop.type === "pickup") || {};
 	const returnStop = [...stops].reverse().find((stop) => stop.type === "return") || {};
-	const crew = activeDrivers
-		.filter((item) => String(item.driver_id) !== String(driverId))
-		.sort((a, b) => {
-			if (driverAssignment.role !== "driver") {
-				if (a.role === "driver") return -1;
-				if (b.role === "driver") return 1;
-			}
-			return String(a.role || "").localeCompare(String(b.role || ""));
-		});
+	const from = pickup.address || pickup.name || "Pickup not provided";
+	const to = inbound
+		? returnStop.address || returnStop.name || "Yard"
+		: trip.destination || "Destination";
+	const documents = documentsFor(trip);
+	const itinerary = documents.find((document) => document.type === "itinerary");
 	return {
 		id: row.id,
 		trip,
@@ -196,47 +269,116 @@ function normalizeAssignment(row, driverId, confirmationsByKey = new Map()) {
 		endDate: inbound
 			? trip.return_end_date || trip.return_start_date
 			: trip.end_date || trip.start_date,
-		busNumber: row.buses?.number ?? "Unassigned",
+		timezone: trip.timezone || DEFAULT_TRIP_TIMEZONE,
+		customerName: trip.customer || "",
+		origin: { label: from },
+		destination: { label: to },
+		from,
+		to,
+		tripType: trip.trip_type,
+		busNumber: row.buses?.number || "",
+		assignedBus: {
+			id: row.bus_id || row.buses?.id || "",
+			number: row.buses?.number || "",
+		},
 		driverId,
 		role,
 		roleReportTime: driverAssignment.report_time || "",
-		instructions: driverAssignment.instructions || "",
+		roleDetails: {
+			takeoverTime: driverAssignment.report_time || "",
+			instructions: driverAssignment.instructions || "",
+		},
+		status: confirmationStale ? "changes_requested" : status,
+		spotTime: role.includes("relief")
+			? driverAssignment.report_time || pickup.spot || trip.spot_time
+			: pickup.spot || trip.spot_time,
+		spotLocation: {
+			name: pickup.name || "",
+			addressLine1: pickup.address || "",
+		},
+		reportTime: pickup.depart_prev || trip.departure_time,
+		returnTime: returnStop.arrive || trip.return_time,
+		contact: contactFor(trip),
+		fleetAssignments: normalizeFleetAssignments(trip, leg, row, driverId),
+		alerts: alertsFor(trip),
+		documents,
+		notes: trip.notes || "",
 		drivers: row.trip_drivers || [],
-		crew,
 		pickup,
 		returnStop,
-		from: pickup.address || pickup.name || "Pickup not provided",
-		to: inbound ? returnStop.address || returnStop.name || "Yard" : trip.destination || "Destination",
-		reportTime: pickup.depart_prev || trip.departure_time,
-		spotTime: pickup.spot || trip.spot_time,
-		returnTime: returnStop.arrive || trip.return_time,
-		requirements: requirementsFor(trip),
-		contact: contactFor(trip),
-		itineraryUrl: publicDocumentUrl(trip),
+		itineraryUrl: itinerary?.url || "",
 		confirmedAt,
 		confirmedSource,
 		confirmationStale,
 	};
 }
 
-function showStatus(icon, title, message) {
+function showStatus(iconName, title, message, options = {}) {
 	root.innerHTML = "";
 	const status = el("section", "driver-share-status");
 	const wrap = el("div");
-	wrap.appendChild(el("span", "rux-icon", icon));
-	wrap.appendChild(el("h1", "driver-share-status__title", title));
-	wrap.appendChild(el("p", "", message));
+	const iconWrap = el("span", "driver-share-status__icon");
+	const statusIcon = el("span", "rux-icon", iconName);
+	statusIcon.setAttribute("aria-hidden", "true");
+	iconWrap.appendChild(statusIcon);
+	wrap.append(
+		iconWrap,
+		el("h1", "driver-share-status__title", title),
+		el("p", "", message),
+	);
+	if (options.retry) {
+		const retry = el("button", "rux-button rux-button--default", "Try Again");
+		retry.type = "button";
+		retry.addEventListener("click", options.retry);
+		wrap.appendChild(retry);
+	}
 	status.appendChild(wrap);
 	root.appendChild(status);
+}
+
+function assignmentErrorCard(message, onRetry) {
+	const card = el("article", "rux-card driver-assignment-card driver-assignment-card--error");
+	const section = el("section", "rux-card__section driver-share-status");
+	const wrap = el("div");
+	const iconWrap = el("span", "driver-share-status__icon");
+	const statusIcon = el("span", "rux-icon", "error");
+	statusIcon.setAttribute("aria-hidden", "true");
+	iconWrap.appendChild(statusIcon);
+	wrap.append(
+		iconWrap,
+		el("h2", "driver-share-status__title", "Assignment Unavailable"),
+		el("p", "", message),
+	);
+	if (onRetry) {
+		const retry = el("button", "rux-button rux-button--default", "Try Again");
+		retry.type = "button";
+		retry.addEventListener("click", onRetry);
+		wrap.appendChild(retry);
+	}
+	section.appendChild(wrap);
+	card.appendChild(section);
+	return card;
 }
 
 function openItinerary(entry) {
 	window.RuxDocViewer?.open({
 		url: entry.itineraryUrl,
 		externalUrl: entry.itineraryUrl,
-		title: `Itinerary · Bus ${entry.busNumber}`,
+		title: `Itinerary · Bus ${entry.busNumber || "Unassigned"}`,
 		fileName: "Itinerary",
 		icon: "route",
+		presentationOnly: true,
+	});
+}
+
+function openDocument(entry, document) {
+	if (!document?.url) return;
+	window.RuxDocViewer?.open({
+		url: document.url,
+		externalUrl: document.url,
+		title: `${document.label} · Bus ${entry.busNumber || "Unassigned"}`,
+		fileName: document.label,
+		icon: "description",
 		presentationOnly: true,
 	});
 }
@@ -291,9 +433,98 @@ function openEnvelope(entry) {
 	});
 }
 
+function confirmDecline() {
+	if (!declineDialog?.showModal) {
+		return Promise.resolve(window.confirm("Decline this assignment? Dispatch will be notified."));
+	}
+	if (declineDialog.open) declineDialog.close("cancel");
+	declineDialog.showModal();
+	declineDialog.querySelector("[data-decline-cancel]")?.focus();
+	return new Promise((resolve) => {
+		declineDialogResolver = resolve;
+	});
+}
+
+function resolveDeclineDialog(result) {
+	if (!declineDialogResolver) return;
+	const resolve = declineDialogResolver;
+	declineDialogResolver = null;
+	resolve(result);
+}
+
+declineDialog?.addEventListener("close", () => {
+	resolveDeclineDialog(declineDialog.returnValue === "decline");
+});
+declineDialog?.addEventListener("cancel", () => {
+	resolveDeclineDialog(false);
+});
+declineDialog?.querySelector("[data-decline-cancel]")?.addEventListener("click", () => {
+	declineDialog.close("cancel");
+});
+declineDialog?.querySelector("[data-decline-confirm]")?.addEventListener("click", () => {
+	declineDialog.close("decline");
+});
+
+async function fetchAssignmentStatuses() {
+	const current = await supabase.rpc("get_driver_assignment_statuses", { p_token: token });
+	if (!current.error) return current;
+	if (!isMissingRpc(current.error, "get_driver_assignment_statuses")) return current;
+	const legacy = await supabase.rpc("get_driver_confirmations", { p_token: token });
+	return legacy;
+}
+
+async function updateAssignmentStatus(entry, action) {
+	const functionName = action === "accept"
+		? "confirm_trip_assignment"
+		: "decline_trip_assignment";
+	const { data, error } = await supabase.rpc(functionName, {
+		p_token: token,
+		p_trip_id: entry.trip.id,
+		p_leg: entry.leg,
+	});
+	if (error || !data) {
+		const actionError = error || new Error(`Could not ${action} assignment`);
+		actionError.userMessage = action === "accept"
+			? "We couldn’t accept this assignment. Check your connection and try again."
+			: "We couldn’t decline this assignment. Check your connection and try again.";
+		throw actionError;
+	}
+	driverStatusChannel.send({
+		type: "broadcast",
+		event: "driver-status-changed",
+		payload: {
+			tripId: data.tripId || entry.trip.id,
+			driverId: data.driverId || entry.driverId,
+			leg: data.leg || entry.leg,
+			role: data.role || entry.role,
+		},
+	}).catch((broadcastError) => {
+		console.warn("Driver status broadcast was not delivered:", broadcastError);
+	});
+	return action === "accept"
+		? {
+			status: "accepted",
+			confirmedAt: data.confirmedAt || data.acceptedAt || data.updatedAt,
+			confirmedSource: data.source || "driver",
+			declinedAt: "",
+			confirmationStale: false,
+		}
+		: {
+			status: "declined",
+			declinedAt: data.declinedAt || data.updatedAt,
+			confirmedAt: "",
+			confirmedSource: "",
+			confirmationStale: false,
+		};
+}
+
 async function load() {
 	if (!token) {
-		showStatus("link_off", "Invalid schedule link", "Ask dispatch for a new driver schedule link.");
+		showStatus(
+			"link_off",
+			"Invalid Schedule Link",
+			"Ask dispatch for a new driver schedule link.",
+		);
 		return;
 	}
 
@@ -310,19 +541,24 @@ async function load() {
 		{ p_token: token },
 	);
 	if (shareError || !share) {
-		showStatus("link_off", "Schedule unavailable", "This link is inactive. Contact dispatch if you still need access.");
+		showStatus(
+			"link_off",
+			"Schedule Unavailable",
+			"This link is inactive. Contact dispatch if you still need access.",
+			{ retry: load },
+		);
 		return;
 	}
 
 	const assignmentRefs = share.assignmentRefs || [];
 	const tripIds = [...new Set(assignmentRefs.map((ref) => ref.tripId).filter(Boolean))];
-	let [tripsResult, documentsResult, confirmationsResult] = await Promise.all([
+	let [tripsResult, documentsResult, statusesResult] = await Promise.all([
 		fetchSharedTrips(tripIds, true),
 		supabase
 			.from("trip_documents")
 			.select("id, trip_id, label, file_name, file_path, created_at")
 			.in("trip_id", tripIds),
-		supabase.rpc("get_driver_confirmations", { p_token: token }),
+		fetchAssignmentStatuses(),
 	]);
 	if (tripsResult.error && isMissingReliefField(tripsResult.error)) {
 		tripsResult = await fetchSharedTrips(tripIds, false);
@@ -332,104 +568,126 @@ async function load() {
 
 	if (tripsError) {
 		console.error("Could not load shared driver assignments:", tripsError);
-		showStatus("error", "Could not load assignments", "Please try the link again or contact dispatch.");
+		showStatus(
+			"error",
+			"Could Not Load Assignments",
+			"Check your connection and try again.",
+			{ retry: load },
+		);
 		return;
 	}
-	if (documentsError) console.warn("Could not load shared itineraries:", documentsError);
-	if (confirmationsResult.error) console.warn("Could not load trip confirmations:", confirmationsResult.error);
+	if (documentsError) console.warn("Could not load shared trip documents:", documentsError);
+	if (statusesResult.error) console.warn("Could not load driver statuses:", statusesResult.error);
+
 	const documentsByTrip = new Map();
 	for (const document of documents || []) {
 		if (!documentsByTrip.has(document.trip_id)) documentsByTrip.set(document.trip_id, []);
 		documentsByTrip.get(document.trip_id).push(document);
 	}
 	for (const trip of trips || []) trip.trip_documents = documentsByTrip.get(trip.id) || [];
-	const confirmationsByKey = new Map(
-		(confirmationsResult.data || []).map((item) => [
-			`${item.tripId}:${item.leg || "outbound"}:${item.role || "driver"}`,
+
+	const statusesByKey = new Map(
+		(statusesResult.data || []).map((item) => [
+			statusKey(item.tripId, item.leg, item.role),
 			item,
 		]),
 	);
 
-	const entries = assignmentRefs
-		.map((ref) => {
-			const trip = (trips || []).find((item) => String(item.id) === String(ref.tripId));
-			if (!trip) return null;
-			const assignment = (trip.trip_assignments || []).find((item) =>
-				(item.leg || "outbound") === (ref.leg || "outbound")
+	const normalized = assignmentRefs.map((ref) => {
+		const trip = (trips || []).find((item) => String(item.id) === String(ref.tripId));
+		if (!trip) {
+			return {
+				error: "This assignment could not be loaded.",
+				ref,
+			};
+		}
+		const assignment = (trip.trip_assignments || []).find((item) =>
+			(item.leg || "outbound") === (ref.leg || "outbound")
 				&& activeAssignmentDrivers(item).some(
 					(driver) => String(driver.driver_id) === String(share.driver.id),
 				),
-			);
-			return assignment
-				? normalizeAssignment({ ...assignment, trips: trip }, share.driver.id, confirmationsByKey)
-				: null;
-		})
-		.filter(Boolean)
-		.filter((entry) => isCurrentOrUpcomingLeg(entry.endDate || entry.startDate))
-		.sort((a, b) => String(a.startDate).localeCompare(String(b.startDate)));
-	if (!entries.length) {
-		showStatus("event_busy", "No assignments", "There are no active trips on this shared schedule.");
+		);
+		if (!assignment) {
+			return {
+				error: "This assignment is no longer assigned to you.",
+				ref,
+			};
+		}
+		return {
+			entry: normalizeAssignment(
+				{ ...assignment, trips: trip },
+				share.driver.id,
+				statusesByKey,
+			),
+		};
+	});
+
+	const activeItems = normalized
+		.filter((item) => item.error || isCurrentOrUpcomingLeg(
+			item.entry.endDate || item.entry.startDate,
+		))
+		.sort((a, b) => String(a.entry?.startDate || "").localeCompare(
+			String(b.entry?.startDate || ""),
+		));
+
+	if (!activeItems.length) {
+		showStatus(
+			"event_busy",
+			"No Current Assignments",
+			"New assignments will appear here after dispatch schedules them.",
+		);
 		return;
 	}
 
 	root.innerHTML = "";
 	const intro = el("section", "driver-share__intro");
+	intro.setAttribute("aria-labelledby", "driver-share-title");
+	const title = el(
+		"h1",
+		"driver-share__title",
+		`Hello ${share.driver.shortName || share.driver.name}`,
+	);
+	title.id = "driver-share-title";
 	intro.append(
-		el("h1", "driver-share__title", `Hello ${share.driver.shortName || share.driver.name}`),
-		el("p", "driver-share__range", `Here are the current assignments for ${fmtRange(share.rangeStart, share.rangeEnd)}`),
+		title,
+		el("p", "driver-share__subtitle", "Here Are Your Current Assignments"),
+		el("p", "driver-share__range", fmtRange(share.rangeStart, share.rangeEnd)),
 	);
 	const updatedText = fmtUpdatedAt(share.updatedAt);
 	if (updatedText) {
 		const notice = el("div", "driver-share__notice");
-		notice.append(el("span", "rux-icon", "sync"), el("span", "", updatedText));
+		const noticeIcon = el("span", "rux-icon", "sync");
+		noticeIcon.setAttribute("aria-hidden", "true");
+		notice.append(noticeIcon, el("span", "", updatedText));
 		intro.appendChild(notice);
 	}
 	root.appendChild(intro);
+
 	const list = el("section", "driver-share__list");
+	list.setAttribute("aria-label", "Driver Assignments");
 	const cardOptions = {
 		onItinerary: openItinerary,
 		onEnvelope: openEnvelope,
-		onConfirm: async (entry, triggerEl) => {
-			const cardEl = triggerEl.closest(".driver-assignment-card");
-			triggerEl.disabled = true;
-			try {
-				const { data, error } = await supabase.rpc("confirm_trip_assignment", {
-					p_token: token,
-					p_trip_id: entry.trip.id,
-					p_leg: entry.leg,
-				});
-				if (error || !data) throw error || new Error("Could not confirm trip");
-				entry.confirmedAt = data.confirmedAt;
-				entry.confirmedSource = data.source || "driver";
-				entry.confirmationStale = false;
-				cardEl?.replaceWith(renderDriverAssignmentCard(entry, cardOptions));
-				driverStatusChannel.send({
-					type: "broadcast",
-					event: "driver-status-changed",
-					payload: {
-						tripId: data.tripId || entry.trip.id,
-						driverId: data.driverId || entry.driverId,
-						leg: data.leg || entry.leg,
-						role: data.role || entry.role,
-					},
-				}).catch((broadcastError) => {
-					// Acceptance is already durable in Postgres. Realtime is an
-					// acceleration only; the scheduler's polling fallback still
-					// reconciles the status.
-					console.warn("Driver status broadcast was not delivered:", broadcastError);
-				});
-			} catch (err) {
-				console.error("Could not confirm trip:", err);
-				triggerEl.disabled = false;
-				alert("Could not confirm this trip. Please try again.");
-			}
-		},
+		onDocument: openDocument,
+		onAccept: (entry) => updateAssignmentStatus(entry, "accept"),
+		onDecline: (entry) => updateAssignmentStatus(entry, "decline"),
+		confirmDecline,
+		onStatusChange: announce,
 	};
-	entries.forEach((entry) => list.appendChild(renderDriverAssignmentCard(entry, cardOptions)));
+	activeItems.forEach((item) => {
+		list.appendChild(item.entry
+			? renderDriverAssignmentCard(item.entry, cardOptions)
+			: assignmentErrorCard(item.error, load));
+	});
 	root.appendChild(list);
 }
 
 load().catch((error) => {
 	console.error("Driver schedule failed:", error);
-	showStatus("error", "Something went wrong", "Please try again or contact dispatch.");
+	showStatus(
+		"error",
+		"Something Went Wrong",
+		"Check your connection and try again.",
+		{ retry: load },
+	);
 });

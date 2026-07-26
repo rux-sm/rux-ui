@@ -1,4 +1,4 @@
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=6";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=7";
 import { createTripBar } from "../components/trip-bar.js?v=11";
 import BusPicker from "../components/bus-picker.js?v=2";
 
@@ -293,6 +293,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 		const host = document.querySelector("[data-driver-assignment-card-demo]");
 		if (!host) return;
 		const sampleAssignment = {
+			id: "component-driver-assignment",
 			startDate: "2026-07-23",
 			endDate: "2026-07-26",
 			busNumber: "763",
@@ -301,6 +302,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 			spotTime: "05:15",
 			role: "driver",
 			leg: "outbound",
+			status: "pending",
 			trip: {
 				customer: "Boys & Girls Club",
 				trip_type: "dropoff_pickup",
@@ -309,30 +311,75 @@ import BusPicker from "../components/bus-picker.js?v=2";
 				name: "Maria Reyes",
 				phone: "(956) 555-0148",
 			},
-			crew: [
+			fleetAssignments: [
 				{
-					role: "co-driver",
-					drivers: { name: "Miguel Torres", phone: "(956) 555-0199" },
+					busId: "bus-763",
+					busNumber: "763",
+					isCurrentBus: true,
+					crew: [
+						{
+							id: "driver-miguel",
+							role: "co-driver",
+							name: "Miguel Torres",
+							phone: "(956) 555-0199",
+							canMessage: true,
+						},
+					],
 				},
 				{
-					role: "relief-start",
-					drivers: { name: "James Cole", phone: "(956) 555-0142" },
+					busId: "bus-746",
+					busNumber: "746",
+					crew: [
+						{
+							id: "driver-james",
+							role: "relief-start",
+							name: "James Cole",
+							phone: "(956) 555-0142",
+							canMessage: true,
+						},
+					],
 				},
 			],
-			instructions: "Meet relief driver at the Pilot Travel Center off I-35, exit 178.",
+			alerts: [
+				{ id: "hotel", severity: "warning", title: "Hotel Required" },
+				{ id: "fuel", severity: "info", title: "Fuel Card Required" },
+			],
+			notes: "Meet relief driver at the Pilot Travel Center off I-35, exit 178.",
 			itineraryUrl: "demo",
+			documents: [
+				{
+					id: "itinerary",
+					type: "itinerary",
+					label: "Itinerary",
+					status: "available",
+					statusLabel: "Updated",
+				},
+				{
+					id: "envelope",
+					type: "envelope",
+					label: "Envelope",
+					status: "available",
+					statusLabel: "Available",
+				},
+			],
 		};
 		const render = () => {
 			const card = renderDriverAssignmentCard(sampleAssignment, {
+				className: "components-app__driver-assignment-demo",
 				onItinerary: () => window.Rux?.toast?.("Itinerary preview action"),
 				onEnvelope: () => window.Rux?.toast?.("Envelope preview action"),
-				onConfirm: () => {
-					sampleAssignment.confirmedAt = new Date().toISOString();
-					sampleAssignment.confirmedSource = "driver";
-					render();
-				},
+				onAccept: async () => ({
+					status: "accepted",
+					confirmedAt: new Date().toISOString(),
+					confirmedSource: "driver",
+				}),
+				onDecline: async () => ({
+					status: "declined",
+					declinedAt: new Date().toISOString(),
+					confirmedAt: "",
+				}),
+				confirmDecline: async () => window.confirm("Decline this assignment?"),
 			});
-			card.classList.add("components-app__driver-assignment-demo");
 			host.replaceChildren(card);
 		};
 		render();

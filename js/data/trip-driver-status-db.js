@@ -6,6 +6,7 @@ export const DRIVER_ROLE_STATUSES = [
 	"pending-assignment",
 	"pending-response",
 	"confirmed",
+	"declined",
 ];
 
 const LEGACY_STATUS = {
@@ -119,6 +120,7 @@ export function mergeAssignmentDriverStatuses(
 			driver_status_source: canonical?.source || "dispatcher",
 			driver_status_updated_at: canonical?.updatedAt || null,
 			driver_accepted_at: canonical?.acceptedAt || null,
+			driver_declined_at: canonical?.declinedAt || null,
 		};
 	});
 

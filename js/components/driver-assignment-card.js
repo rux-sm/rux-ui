@@ -1,12 +1,32 @@
 /* ==========================================================================
    RUX UI — DRIVER ASSIGNMENT CARD
-   --------------------------------------------------------------------------
-   Shared renderer used by the public driver schedule and component demo.
-
-   API
-   ---
-   renderDriverAssignmentCard(entry, { onItinerary, onEnvelope })
+   Modular renderer shared by the public driver schedule and component demo.
    ========================================================================== */
+
+import {
+	assignmentRoleLabel,
+	buildAssignmentViewModel,
+	formatAssignmentTime,
+} from "./driver-assignment-model.js";
+
+const ICONS = {
+	alerts: "warning",
+	call: "call",
+	contact: "person",
+	crew: "groups",
+	documents: "description",
+	envelope: "mail",
+	expand: "expand_more",
+	itinerary: "description",
+	message: "chat_bubble",
+	navigate: "navigation",
+	notes: "notes",
+	role: "verified",
+	spot: "schedule",
+	trip: "location_on",
+};
+
+let moduleId = 0;
 
 function el(tag, className, text) {
 	const node = document.createElement(tag);
@@ -15,67 +35,14 @@ function el(tag, className, text) {
 	return node;
 }
 
-function parseIsoDate(value) {
-	if (!value) return null;
-	const match = String(value).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-	if (!match) return null;
-	return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+function icon(name, className = "") {
+	const node = el("span", `rux-icon${className ? ` ${className}` : ""}`, name);
+	node.setAttribute("aria-hidden", "true");
+	return node;
 }
 
-function fmtDate(value, options = {}) {
-	const date = value instanceof Date ? value : parseIsoDate(value);
-	if (!date) return "";
-	return date.toLocaleDateString("en-US", {
-		weekday: options.weekday === false ? undefined : "long",
-		month: "short",
-		day: "numeric",
-		year: options.year ? "numeric" : undefined,
-	});
-}
-
-function fmtTime(value) {
-	if (!value) return "—";
-	const text = String(value).trim();
-	if (/[ap]m$/i.test(text)) return text.toUpperCase();
-	const match = text.match(/^(\d{1,2}):(\d{2})/);
-	if (!match) return text;
-	let hour = Number(match[1]);
-	const suffix = hour < 12 ? "AM" : "PM";
-	if (hour === 0) hour = 12;
-	else if (hour > 12) hour -= 12;
-	return `${hour}:${match[2]} ${suffix}`;
-}
-
-function roleLabel(role) {
-	if (role === "co-driver") return "Co-Driver";
-	if (role === "relief-start" || role === "relief-end") return "Relief Driver";
-	return "Driver";
-}
-
-function isReliefRole(role) {
-	return role === "relief-start" || role === "relief-end";
-}
-
-function tripTypeLabel(tripType, leg) {
-	if (tripType === "one_way") return "One-Way";
-	if (tripType === "dropoff_pickup") {
-		return leg === "return"
-			? "One-Way · Inbound"
-			: "One-Way · Outbound";
-	}
-	return "Round-Trip";
-}
-
-function shortLocation(value) {
-	const text = String(value || "").trim();
-	if (!text) return "";
-	const parts = text.split(",").map((part) => part.trim()).filter(Boolean);
-	if (parts.length < 2) return text;
-	if (/^(united states|usa|us)$/i.test(parts.at(-1))) parts.pop();
-	if (parts.length > 1 && /^(texas|tx|oklahoma|ok)(\s+\d{5}(?:-\d{4})?)?$/i.test(parts.at(-1))) {
-		parts.pop();
-	}
-	return parts.at(-1) || text;
+function safeId(value) {
+	return String(value || "assignment").replace(/[^a-z0-9_-]/gi, "-");
 }
 
 function mapsUrl(address) {
@@ -86,199 +53,570 @@ function telUrl(phone) {
 	return `tel:${String(phone).replace(/[^+\d]/g, "")}`;
 }
 
-function iconButton(icon, href, ariaLabel, variant) {
-	const link = document.createElement("a");
-	link.className = `driver-assignment-card__icon-btn driver-assignment-card__icon-btn--${variant}`;
-	link.href = href;
-	link.setAttribute("aria-label", ariaLabel);
-	if (!href.startsWith("tel:")) {
-		link.target = "_blank";
-		link.rel = "noopener";
-	}
-	link.appendChild(el("span", "rux-icon", icon));
-	return link;
+function smsUrl(phone) {
+	return `sms:${String(phone).replace(/[^+\d]/g, "")}`;
 }
 
-function contactIdentity(name, phone) {
-	const identity = el("p", "driver-assignment-card__contact-identity");
-	if (name) identity.appendChild(el("span", "driver-assignment-card__contact-name", name));
-	if (phone) identity.appendChild(el("span", "driver-assignment-card__contact-phone", phone));
-	return identity;
+function addressText(location = {}) {
+	return [
+		location.name,
+		location.addressLine1,
+		location.addressLine2,
+		[location.city, location.state, location.postalCode].filter(Boolean).join(" "),
+	].filter(Boolean).join("\n");
 }
 
-function contactSection(label, name, phone) {
-	if (!name && !phone) return null;
-	const section = el("div", "rux-card__section driver-assignment-card__contact-section");
-	section.appendChild(el("span", "driver-assignment-card__section-label", label));
-	const row = el("div", "driver-assignment-card__contact-row");
-	const text = el("div", "driver-assignment-card__contact-text");
-	text.appendChild(contactIdentity(name, phone));
-	row.appendChild(text);
-	if (phone) row.appendChild(iconButton("call", telUrl(phone), `Call ${name || label}`, "call"));
-	section.appendChild(row);
-	return section;
+function statusMeta(status) {
+	const statuses = {
+		pending: {
+			icon: "schedule",
+			label: "Awaiting Response",
+			tone: "pending",
+		},
+		accepted: {
+			icon: "check_circle",
+			label: "Accepted",
+			tone: "success",
+		},
+		declined: {
+			icon: "cancel",
+			label: "Declined",
+			tone: "danger",
+		},
+		changes_requested: {
+			icon: "rate_review",
+			label: "Changes Requested",
+			tone: "warning",
+		},
+		cancelled: {
+			icon: "event_busy",
+			label: "Cancelled",
+			tone: "neutral",
+		},
+	};
+	return statuses[status] || statuses.pending;
 }
 
-function actionButton(label, icon, callback) {
-	const button = document.createElement("button");
+function setButtonLoading(button, loading, label) {
+	button.disabled = loading;
+	button.classList.toggle("rux-button--loading", loading);
+	button.setAttribute("aria-busy", String(loading));
+	const labelNode = button.querySelector(".rux-btn-label");
+	if (labelNode) labelNode.textContent = loading ? label : button.dataset.idleLabel;
+}
+
+function createButton(label, {
+	iconName,
+	variant = "default",
+	className = "",
+	onClick,
+} = {}) {
+	const button = el(
+		"button",
+		`rux-button rux-button--${variant}${className ? ` ${className}` : ""}`,
+	);
 	button.type = "button";
-	button.className = "rux-button rux-button--default rux-button--block";
-	button.innerHTML = `<span class="rux-icon" aria-hidden="true">${icon}</span><span>${label}</span>`;
-	button.addEventListener("click", callback);
+	button.dataset.idleLabel = label;
+	if (iconName) button.appendChild(icon(iconName, "rux-button__idle-icon"));
+	button.append(
+		el("span", "rux-button__spinner"),
+		el("span", "rux-btn-label", label),
+	);
+	if (onClick) button.addEventListener("click", onClick);
 	return button;
 }
 
-// Unaccepted: the one accent action on the card — Itinerary/Envelope below
-// are reference actions a driver reaches for as needed, not something to
-// compete with confirming for attention.
-// Confirmed: stays confirmed regardless of later trip edits (see
-// trip-driver-confirmation-patch.sql) — confirmationStale just flags that
-// something changed since, with a quiet way to re-confirm against the
-// current version instead of losing the original confirmation outright.
-function confirmSection(entry, options) {
-	if (typeof options.onConfirm !== "function") return null;
-	const section = el("div", "rux-card__section driver-assignment-card__confirm-section");
-	if (!entry.confirmedAt) {
-		const button = document.createElement("button");
-		button.type = "button";
-		button.className = "rux-button rux-button--accent rux-button--block";
-		button.innerHTML = `<span class="rux-icon" aria-hidden="true">check_circle</span><span>Accept Assignment</span>`;
-		button.addEventListener("click", () => options.onConfirm(entry, button));
-		section.appendChild(button);
-		return section;
+function createActionLink(label, iconName, href, ariaLabel, tone = "accent") {
+	const link = el("a", `assignment-module__action assignment-module__action--${tone}`);
+	link.href = href;
+	link.setAttribute("aria-label", ariaLabel || label);
+	if (!href.startsWith("tel:") && !href.startsWith("sms:")) {
+		link.target = "_blank";
+		link.rel = "noopener";
 	}
-	const status = el(
-		"div",
-		`driver-assignment-card__confirm-status${entry.confirmationStale ? " is-stale" : ""}`,
+	link.append(icon(iconName), el("span", "", label));
+	return link;
+}
+
+function createAssignmentModule({
+	key,
+	iconName,
+	label,
+	tone = "neutral",
+	content,
+	action,
+}) {
+	const section = el(
+		"section",
+		`rux-card__section assignment-module assignment-module--${tone}`,
 	);
-	const acceptedByDriver = entry.confirmedSource !== "dispatcher";
-	const statusText = entry.confirmationStale
-		? `${acceptedByDriver ? "Accepted" : "Confirmed"} · trip updated since`
-		: (acceptedByDriver ? "Assignment accepted" : "Confirmed by dispatch");
-	status.append(
-		el("span", "rux-icon", entry.confirmationStale ? "update" : "check_circle"),
-		el("span", "", statusText),
-	);
-	section.appendChild(status);
-	if (entry.confirmationStale) {
-		const reconfirm = document.createElement("button");
-		reconfirm.type = "button";
-		reconfirm.className = "rux-button rux-button--default rux-button--sm driver-assignment-card__reconfirm";
-		reconfirm.textContent = "Review & accept";
-		reconfirm.addEventListener("click", () => options.onConfirm(entry, reconfirm));
-		section.appendChild(reconfirm);
+	section.dataset.module = key;
+	moduleId += 1;
+	const headingId = `assignment-module-${safeId(key)}-${moduleId}`;
+	section.setAttribute("aria-labelledby", headingId);
+	const labelWrap = el("div", "assignment-module__label-wrap");
+	const iconWrap = el("span", "assignment-module__icon");
+	iconWrap.appendChild(icon(iconName));
+	labelWrap.appendChild(iconWrap);
+	const heading = el("h3", "assignment-module__label", label);
+	heading.id = headingId;
+	labelWrap.appendChild(heading);
+	section.append(labelWrap, content);
+	if (action) {
+		const actionWrap = el("div", "assignment-module__action-wrap");
+		actionWrap.appendChild(action);
+		section.appendChild(actionWrap);
 	}
 	return section;
 }
 
-export function renderDriverAssignmentCard(entry, options = {}) {
-	const card = el("article", "rux-card driver-assignment-card");
-	const trip = entry.trip || {};
-	const contact = entry.contact || {};
-
-	const header = el("header", "rux-card__header driver-assignment-card__header");
-	const dateText = entry.startDate === entry.endDate
-		? fmtDate(entry.startDate)
-		: `${fmtDate(entry.startDate)} – ${fmtDate(entry.endDate, { weekday: false })}`;
-	const headerBadges = el("span", "driver-assignment-card__header-badges");
-	header.append(
-		el("span", "driver-assignment-card__date", dateText),
-	);
-	headerBadges.append(
-		el("span", "driver-assignment-card__badge driver-assignment-card__bus", `Bus ${entry.busNumber ?? "Unassigned"}`),
-		el("span", "driver-assignment-card__badge driver-assignment-card__role", roleLabel(entry.role)),
-	);
-	header.appendChild(headerBadges);
-	card.appendChild(header);
-
-	const confirm = confirmSection(entry, options);
-	if (confirm) card.appendChild(confirm);
-
-	const routeSection = el("div", "rux-card__section driver-assignment-card__route-section");
-	if (trip.customer) routeSection.appendChild(el("p", "driver-assignment-card__client", trip.customer));
-	const route = el("p", "driver-assignment-card__route");
-	route.append(
-		document.createTextNode(
-			`${shortLocation(entry.from) || "Pickup"} → ${shortLocation(entry.to) || "Destination"} `,
-		),
-		el(
-			"span",
-			"driver-assignment-card__trip-type",
-			`(${tripTypeLabel(trip.trip_type, entry.leg)})`,
-		),
-	);
-	routeSection.appendChild(route);
-	if (contact.name || contact.phone) {
-		routeSection.appendChild(el("span", "driver-assignment-card__section-label", "Trip Contact"));
-		const row = el("div", "driver-assignment-card__contact-row driver-assignment-card__contact-row--inline");
-		const text = el("div", "driver-assignment-card__contact-text");
-		text.appendChild(contactIdentity(contact.name, contact.phone));
-		row.appendChild(text);
-		if (contact.phone) {
-			row.appendChild(iconButton("call", telUrl(contact.phone), `Call ${contact.name || "trip contact"}`, "call"));
-		}
-		routeSection.appendChild(row);
-	}
-	card.appendChild(routeSection);
-
-	const relief = isReliefRole(entry.role);
-	const hasAddress = entry.from && entry.from !== "Pickup not provided";
-	const timeSection = el(
+function createStatus(entry, view, options, card) {
+	const wrap = el("div", "driver-assignment-card__response");
+	const meta = statusMeta(view.status);
+	const status = el(
 		"div",
-		`rux-card__section driver-assignment-card__time-section${relief && !entry.roleReportTime ? " is-missing" : ""}`,
+		`driver-assignment-card__status driver-assignment-card__status--${meta.tone}`,
 	);
-	const timeRow = el("div", "driver-assignment-card__time-row");
-	const timeText = el("div", "driver-assignment-card__contact-text");
-	timeText.append(
-		el("span", "driver-assignment-card__section-label", relief ? "Swap Time" : "Spot Time"),
-		el(
+	status.append(icon(meta.icon), el("span", "", meta.label));
+	wrap.appendChild(status);
+
+	const actions = el("div", "driver-assignment-card__response-actions");
+	const error = el("p", "driver-assignment-card__action-error");
+	error.hidden = true;
+	error.setAttribute("role", "alert");
+	error.tabIndex = -1;
+
+	const perform = async (button, loadingLabel, handler, successMessage) => {
+		if (typeof handler !== "function") return;
+		error.hidden = true;
+		setButtonLoading(button, true, loadingLabel);
+		try {
+			const update = await handler(entry);
+			if (update && typeof update === "object") Object.assign(entry, update);
+			const replacement = renderDriverAssignmentCard(entry, options);
+			card.replaceWith(replacement);
+			options.onStatusChange?.(successMessage);
+		} catch (actionError) {
+			console.error(`Driver assignment action failed:`, actionError);
+			setButtonLoading(button, false, loadingLabel);
+			error.textContent = actionError?.userMessage
+				|| "The assignment could not be updated. Check your connection and try again.";
+			error.hidden = false;
+			error.focus?.();
+		}
+	};
+
+	const addAccept = () => {
+		if (typeof options.onAccept !== "function" && typeof options.onConfirm !== "function") return;
+		const accept = createButton("Accept Assignment", {
+			iconName: "check_circle",
+			variant: "accent",
+			className: "driver-assignment-card__accept",
+		});
+		accept.addEventListener("click", () => perform(
+			accept,
+			"Accepting…",
+			options.onAccept || options.onConfirm,
+			"Assignment accepted",
+		));
+		actions.appendChild(accept);
+	};
+
+	const addDecline = () => {
+		if (typeof options.onDecline !== "function") return;
+		const decline = createButton(view.status === "accepted" ? "Unable To Drive" : "Decline", {
+			variant: "default",
+			className: "driver-assignment-card__decline",
+		});
+		decline.addEventListener("click", async () => {
+			if (typeof options.confirmDecline === "function") {
+				const confirmed = await options.confirmDecline(entry, decline);
+				if (!confirmed) return;
+			}
+			await perform(
+				decline,
+				"Declining…",
+				options.onDecline,
+				"Assignment declined",
+			);
+		});
+		actions.appendChild(decline);
+	};
+
+	if (view.status === "pending") {
+		addAccept();
+		addDecline();
+	} else if (view.status === "accepted") {
+		addDecline();
+	} else if (view.status === "declined" || view.status === "changes_requested") {
+		addAccept();
+	}
+	if (actions.childElementCount) wrap.appendChild(actions);
+	wrap.appendChild(error);
+	return wrap;
+}
+
+function assignmentHeader(entry, view, options, card) {
+	const header = el("header", "driver-assignment-card__header");
+	const info = el("div", "driver-assignment-card__identity");
+	const titleId = `assignment-${safeId(view.id)}-title`;
+	const title = el("h2", "driver-assignment-card__bus", view.busLabel);
+	title.id = titleId;
+	card.setAttribute("aria-labelledby", titleId);
+	const titleRow = el("div", "driver-assignment-card__title-row");
+	titleRow.append(title, el("span", "driver-assignment-card__role-badge", view.roleLabel));
+	info.append(
+		el("p", "driver-assignment-card__date", view.dateRange),
+		titleRow,
+	);
+	header.append(info, createStatus(entry, view, options, card));
+	return header;
+}
+
+function tripSummaryModule(view) {
+	const content = el("div", "assignment-module__content driver-assignment-card__trip-content");
+	if (view.customerName) {
+		content.appendChild(el("p", "driver-assignment-card__customer", view.customerName));
+	}
+	const route = el("div", "driver-assignment-card__route");
+	route.append(
+		el("span", "driver-assignment-card__route-place", view.origin),
+		icon("arrow_forward", "driver-assignment-card__route-arrow"),
+		el("span", "driver-assignment-card__route-place", view.destination),
+	);
+	content.append(route, el("span", "driver-assignment-card__trip-type", view.tripType));
+	return createAssignmentModule({
+		key: "trip",
+		iconName: ICONS.trip,
+		label: "Trip",
+		content,
+	});
+}
+
+function roleModule(entry, view) {
+	const content = el("div", "assignment-module__content");
+	content.appendChild(el("p", "assignment-module__primary", view.roleLabel));
+	const details = el("dl", "driver-assignment-card__detail-list");
+	const addDetail = (label, value) => {
+		if (!value) return;
+		const group = el("div", "driver-assignment-card__detail");
+		group.append(el("dt", "", label), el("dd", "", value));
+		details.appendChild(group);
+	};
+	addDetail("Assigned Bus", view.roleDetails.assignedBus);
+	addDetail("Takeover Time", view.roleDetails.takeoverTime);
+	addDetail("Takeover Location", view.roleDetails.takeoverLocation);
+	addDetail("Relieves", view.roleDetails.relievesDriverName);
+	if (details.childElementCount) content.appendChild(details);
+	if (view.roleDetails.instructions) {
+		content.appendChild(el(
 			"p",
-			"driver-assignment-card__time",
-			relief ? (entry.roleReportTime ? fmtTime(entry.roleReportTime) : "Not set") : fmtTime(entry.spotTime),
-		),
+			"driver-assignment-card__role-instructions",
+			view.roleDetails.instructions,
+		));
+	}
+	return createAssignmentModule({
+		key: "role",
+		iconName: ICONS.role,
+		label: "Your Role",
+		content,
+		tone: entry.role?.includes("relief") ? "accent" : "neutral",
+	});
+}
+
+function spotTimeModule(entry, view) {
+	const content = el("div", "assignment-module__content");
+	if (view.spotTime) {
+		const time = el("time", "driver-assignment-card__time", view.spotTime);
+		if (entry.spotTime) time.dateTime = String(entry.spotTime);
+		content.appendChild(time);
+	}
+	const fullAddress = addressText(view.spotLocation);
+	if (fullAddress) {
+		content.appendChild(el("address", "driver-assignment-card__address", fullAddress));
+	}
+	const action = fullAddress
+		? createActionLink(
+			"Navigate",
+			ICONS.navigate,
+			mapsUrl(fullAddress),
+			`Navigate to ${fullAddress.replace(/\n/g, ", ")}`,
+		)
+		: null;
+	return createAssignmentModule({
+		key: "spot-time",
+		iconName: ICONS.spot,
+		label: entry.role?.includes("relief") ? "Report Time" : "Spot Time",
+		content,
+		action,
+		tone: "accent",
+	});
+}
+
+function contactModule(view) {
+	const contact = view.contact || {};
+	const content = el("div", "assignment-module__content");
+	if (contact.name) content.appendChild(el("p", "assignment-module__primary", contact.name));
+	if (contact.phone) {
+		const phone = el("a", "driver-assignment-card__phone", contact.phone);
+		phone.href = telUrl(contact.phone);
+		phone.setAttribute("aria-label", `Call ${contact.name || "trip contact"} at ${contact.phone}`);
+		content.appendChild(phone);
+	}
+	const action = contact.phone
+		? createActionLink(
+			"Call",
+			ICONS.call,
+			telUrl(contact.phone),
+			`Call ${contact.name || "trip contact"}`,
+			"success",
+		)
+		: null;
+	return createAssignmentModule({
+		key: "contact",
+		iconName: ICONS.contact,
+		label: "Trip Contact",
+		content,
+		action,
+	});
+}
+
+function crewMemberRow(member) {
+	const row = el("li", "driver-assignment-card__crew-member");
+	const identity = el("div", "driver-assignment-card__crew-identity");
+	identity.append(
+		el("span", "driver-assignment-card__crew-name", member.name || "Crew Member"),
+		el("span", "driver-assignment-card__crew-role", assignmentRoleLabel(member.role)),
 	);
-	if (hasAddress) timeText.appendChild(el("p", "driver-assignment-card__address", entry.from));
-	timeRow.appendChild(timeText);
-	if (hasAddress) timeRow.appendChild(iconButton("navigation", mapsUrl(entry.from), "Open in Maps", "maps"));
-	timeSection.appendChild(timeRow);
-	card.appendChild(timeSection);
+	row.appendChild(identity);
+	if (member.phone && member.canMessage !== false) {
+		row.appendChild(createActionLink(
+			"Message",
+			ICONS.message,
+			smsUrl(member.phone),
+			`Message ${member.name || "crew member"}`,
+			"neutral",
+		));
+	}
+	return row;
+}
 
-	for (const member of entry.crew || []) {
-		const crewSection = contactSection(
-			roleLabel(member.role),
-			member.drivers?.name || member.name,
-			member.drivers?.phone || member.phone,
+function fleetRow(fleet) {
+	const row = el("li", "driver-assignment-card__fleet-row");
+	const bus = el("div", "driver-assignment-card__fleet-bus");
+	bus.append(
+		icon("directions_bus"),
+		el("span", "", `Bus ${fleet.busNumber || "Unassigned"}`),
+	);
+	if (fleet.isCurrentBus) {
+		bus.appendChild(el("span", "driver-assignment-card__current-bus", "Your Bus"));
+	}
+	row.appendChild(bus);
+	const crew = el("ul", "driver-assignment-card__crew-list");
+	(fleet.crew || []).forEach((member) => crew.appendChild(crewMemberRow(member)));
+	if (crew.childElementCount) row.appendChild(crew);
+	return row;
+}
+
+function crewFleetModule(view) {
+	const content = el("div", "assignment-module__content");
+	const listId = `fleet-${safeId(view.id)}`;
+	const list = el("ul", "driver-assignment-card__fleet-list");
+	list.id = listId;
+	view.fleetAssignments.forEach((fleet, index) => {
+		const row = fleetRow(fleet);
+		if (index > 1) row.hidden = true;
+		list.appendChild(row);
+	});
+	content.appendChild(list);
+	if (view.fleetAssignments.length > 2) {
+		const totalCrew = view.fleetAssignments.reduce(
+			(total, fleet) => total + (fleet.crew?.length || 0),
+			0,
 		);
-		if (crewSection) card.appendChild(crewSection);
+		const disclosure = createButton(`View All Crew (${totalCrew})`, {
+			iconName: ICONS.expand,
+			variant: "ghost",
+			className: "driver-assignment-card__disclosure",
+		});
+		disclosure.setAttribute("aria-expanded", "false");
+		disclosure.setAttribute("aria-controls", listId);
+		disclosure.querySelector(".rux-button__idle-icon")?.classList.add("rux-button__disclosure-icon");
+		disclosure.addEventListener("click", () => {
+			const expanded = disclosure.getAttribute("aria-expanded") !== "true";
+			disclosure.setAttribute("aria-expanded", String(expanded));
+			list.querySelectorAll(":scope > li").forEach((row, index) => {
+				if (index > 1) row.hidden = !expanded;
+			});
+			disclosure.querySelector(".rux-btn-label").textContent = expanded
+				? "Show Less Crew"
+				: `View All Crew (${totalCrew})`;
+		});
+		content.appendChild(disclosure);
 	}
+	return createAssignmentModule({
+		key: "crew-fleet",
+		iconName: ICONS.crew,
+		label: "Crew & Fleet",
+		content,
+	});
+}
 
-	if (entry.instructions) {
-		const note = el("div", "rux-card__section driver-assignment-card__note-section");
-		note.appendChild(el("span", "driver-assignment-card__section-label", "Notes"));
-		const noteBody = el("p", "driver-assignment-card__note");
-		noteBody.append(el("span", "rux-icon", "info"), document.createTextNode(entry.instructions));
-		note.appendChild(noteBody);
-		card.appendChild(note);
-	}
+function alertIcon(severity) {
+	if (severity === "critical") return "error";
+	if (severity === "warning") return "warning";
+	return "info";
+}
 
-	const actions = el("footer", "rux-card__footer driver-assignment-card__actions");
-	if (entry.itineraryUrl && typeof options.onItinerary === "function") {
-		actions.appendChild(actionButton(
-			"View Itinerary",
-			"description",
-			() => options.onItinerary(entry),
-		));
-	}
-	if (typeof options.onEnvelope === "function") {
-		actions.appendChild(actionButton(
-			"View Envelope",
-			"mail",
-			() => options.onEnvelope(entry),
-		));
-	}
-	if (actions.childElementCount) card.appendChild(actions);
+function alertsModule(alerts, critical = false) {
+	const content = el("div", "assignment-module__content");
+	const list = el("ul", "driver-assignment-card__alert-list");
+	alerts.forEach((alert) => {
+		const row = el(
+			"li",
+			`driver-assignment-card__alert driver-assignment-card__alert--${alert.severity || "info"}`,
+		);
+		const text = el("div", "");
+		text.appendChild(el("p", "driver-assignment-card__alert-title", alert.title));
+		if (alert.description) {
+			text.appendChild(el("p", "driver-assignment-card__alert-description", alert.description));
+		}
+		row.append(icon(alertIcon(alert.severity)), text);
+		list.appendChild(row);
+	});
+	content.appendChild(list);
+	return createAssignmentModule({
+		key: critical ? "critical-alerts" : "alerts",
+		iconName: ICONS.alerts,
+		label: critical ? "Critical Alerts" : "Alerts",
+		content,
+		tone: critical ? "danger" : "warning",
+	});
+}
 
+function documentAction(document, entry, options) {
+	const className = `driver-assignment-card__document${document.status === "unavailable" ? " is-unavailable" : ""}`;
+	let control;
+	const callback = document.action
+		|| (document.type === "itinerary" ? options.onItinerary : null)
+		|| (document.type === "envelope" ? options.onEnvelope : null)
+		|| options.onDocument;
+	if (document.status === "unavailable" || (!document.url && typeof callback !== "function")) {
+		control = el("div", className);
+		control.setAttribute("aria-disabled", "true");
+	} else if (document.url && typeof callback !== "function") {
+		control = el("a", className);
+		control.href = document.url;
+		control.target = "_blank";
+		control.rel = "noopener";
+	} else {
+		control = el("button", className);
+		control.type = "button";
+		control.addEventListener("click", () => callback(entry, document, control));
+	}
+	control.append(
+		icon(document.icon || (document.type === "envelope" ? ICONS.envelope : ICONS.itinerary)),
+		el("span", "driver-assignment-card__document-label", document.label),
+	);
+	if (document.statusLabel) {
+		control.appendChild(el("span", "driver-assignment-card__document-status", document.statusLabel));
+	}
+	return control;
+}
+
+function documentsModule(entry, view, options) {
+	const content = el("div", "assignment-module__content");
+	const grid = el("div", "driver-assignment-card__documents");
+	view.documents.forEach((document) => {
+		grid.appendChild(documentAction(document, entry, options));
+	});
+	content.appendChild(grid);
+	return createAssignmentModule({
+		key: "documents",
+		iconName: ICONS.documents,
+		label: "Documents",
+		content,
+	});
+}
+
+function notesModule(view) {
+	const content = el("div", "assignment-module__content");
+	const notesId = `notes-${safeId(view.id)}`;
+	const notes = el("p", "driver-assignment-card__notes", view.notes);
+	notes.id = notesId;
+	content.appendChild(notes);
+	if (view.notes.length > 240) {
+		notes.classList.add("is-collapsed");
+		const disclosure = createButton("View Full Notes", {
+			iconName: ICONS.expand,
+			variant: "ghost",
+			className: "driver-assignment-card__disclosure",
+		});
+		disclosure.setAttribute("aria-expanded", "false");
+		disclosure.setAttribute("aria-controls", notesId);
+		disclosure.querySelector(".rux-button__idle-icon")?.classList.add("rux-button__disclosure-icon");
+		disclosure.addEventListener("click", () => {
+			const expanded = disclosure.getAttribute("aria-expanded") !== "true";
+			disclosure.setAttribute("aria-expanded", String(expanded));
+			notes.classList.toggle("is-collapsed", !expanded);
+			disclosure.querySelector(".rux-btn-label").textContent = expanded
+				? "Show Less"
+				: "View Full Notes";
+		});
+		content.appendChild(disclosure);
+	}
+	return createAssignmentModule({
+		key: "notes",
+		iconName: ICONS.notes,
+		label: "Notes",
+		content,
+	});
+}
+
+function renderModule(module, entry, view, options) {
+	switch (module.key) {
+	case "critical-alerts":
+		return alertsModule(module.data, true);
+	case "trip":
+		return tripSummaryModule(view);
+	case "role":
+		return roleModule(entry, view);
+	case "spot-time":
+		return spotTimeModule(entry, view);
+	case "crew-fleet":
+		return crewFleetModule(view);
+	case "contact":
+		return contactModule(view);
+	case "alerts":
+		return alertsModule(module.data, false);
+	case "documents":
+		return documentsModule(entry, view, options);
+	case "notes":
+		return notesModule(view);
+	default:
+		return null;
+	}
+}
+
+export function renderDriverAssignmentCard(entry, options = {}) {
+	const view = buildAssignmentViewModel(entry);
+	const card = el(
+		"article",
+		`rux-card driver-assignment-card${options.className ? ` ${options.className}` : ""}`,
+	);
+	card.dataset.assignmentId = view.id;
+	card.dataset.status = view.status;
+	card.appendChild(assignmentHeader(entry, view, options, card));
+	view.modules.forEach((module) => {
+		const rendered = renderModule(module, entry, view, options);
+		if (rendered) card.appendChild(rendered);
+	});
 	return card;
 }
+
+export {
+	buildAssignmentViewModel,
+	formatAssignmentTime,
+};
 
 export default renderDriverAssignmentCard;

@@ -6,12 +6,12 @@
 		<meta name="theme-color" content="#101112" />
 		<title>Upcoming Trips · Escrmilla Tour Buses</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=22" />
+		<link rel="stylesheet" href="./css/tokens.css?v=23" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
 		<link rel="stylesheet" href="./css/components.css?v=68" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=10" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
-		<link rel="stylesheet" href="./css/features/driver-share.css?v=17" />
+		<link rel="stylesheet" href="./css/features/driver-share.css?v=18" />
 		<link
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap"
@@ -24,17 +24,67 @@
 		</header>
 
 		<main class="driver-share" id="driver-share-root">
-			<section class="driver-share-status" data-share-status>
-				<span class="rux-spinner" aria-hidden="true"></span>
-				<p>Loading assignments…</p>
+			<section class="driver-share-skeleton" aria-label="Loading assignments" aria-busy="true">
+				<div class="driver-share-skeleton__card">
+					<div class="driver-share-skeleton__header">
+						<div class="driver-share-skeleton__line"></div>
+						<div class="driver-share-skeleton__line"></div>
+					</div>
+					<div class="driver-share-skeleton__module">
+						<div class="driver-share-skeleton__line"></div>
+						<div class="driver-share-skeleton__line"></div>
+					</div>
+					<div class="driver-share-skeleton__module">
+						<div class="driver-share-skeleton__line"></div>
+						<div class="driver-share-skeleton__line"></div>
+					</div>
+				</div>
 			</section>
 		</main>
+
+		<div
+			class="driver-share-announcer"
+			id="driver-share-announcer"
+			role="status"
+			aria-live="polite"
+			aria-atomic="true"
+		></div>
+
+		<dialog
+			class="driver-share-dialog"
+			id="driver-share-decline-dialog"
+			aria-labelledby="driver-share-decline-title"
+			aria-describedby="driver-share-decline-description"
+		>
+			<header class="driver-share-dialog__header">
+				<h2 class="driver-share-dialog__title" id="driver-share-decline-title">
+					Decline This Assignment?
+				</h2>
+			</header>
+			<div class="driver-share-dialog__body">
+				<p id="driver-share-decline-description">
+					Dispatch will be notified that you are unable to take this trip.
+				</p>
+			</div>
+			<footer class="driver-share-dialog__footer">
+				<button class="rux-button rux-button--default" type="button" data-decline-cancel>
+					Cancel
+				</button>
+				<button
+					class="rux-button rux-button--accent rux-button--danger"
+					type="button"
+					data-decline-confirm
+				>
+					Decline Assignment
+				</button>
+			</footer>
+		</dialog>
 
 		<script src="./js/core/controls.js?v=2"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./js/panels/trip-envelope.js?v=12"></script>
-		<script type="module" src="./js/pages/driver-share.js?v=21"></script>
+		<script type="module" src="./js/pages/driver-share.js?v=22"></script>
 	</body>
 </html>

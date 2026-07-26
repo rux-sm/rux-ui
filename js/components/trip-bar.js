@@ -990,6 +990,7 @@ export function createTripBar(trip, callbacks = {}) {
     "pending-assignment": "var(--rux-danger-bright)",
     "pending-response": "var(--rux-warning-bright)",
     "confirmed": "var(--rux-success-bright)",
+    "declined": "var(--rux-danger-bright)",
   };
 
   function applyDriverStatus(iconEl, state) {

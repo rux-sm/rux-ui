@@ -70,7 +70,7 @@
 	--_details-height: 0px;
 	--_conflict-height: 0px;
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
-	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 100%);
+	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 32%);
 	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--rux-trip-bar-hover-bg-chroma) h / 100%);
 	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--rux-trip-bar-pressed-bg-chroma) h / 100%);
 	--_surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--rux-trip-bar-selected-bg-chroma) h / 100%);
@@ -84,7 +84,7 @@
 	container-type: inline-size;
 	background-color: var(--_surface);
 	border-radius: var(--rux-trip-bar-radius);
-	border: var(--rux-trip-bar-border-width) solid var(--_surface);
+	border: var(--rux-trip-bar-border-width) solid oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 100%);
 	overflow: hidden;
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;

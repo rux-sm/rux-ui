@@ -1,6 +1,6 @@
 /* ==========================================================================
    PUBLIC DRIVER SCHEDULE
-   Mobile-first, read-only assignment cards reached through a revocable link.
+   Mobile-first, modular assignment cards reached through a revocable link.
    ========================================================================== */
 
 html {
@@ -8,11 +8,11 @@ html {
 }
 
 .driver-share-page {
+	min-width: 0;
 	min-height: 100dvh;
 	margin: 0;
-	background:
-		radial-gradient(circle at 50% -10rem, color-mix(in oklch, var(--rux-accent) 0%, transparent), transparent 34rem),
-		var(--rux-surface-canvas);
+	overflow-x: hidden;
+	background: var(--rux-surface-canvas);
 	color: var(--rux-fg);
 }
 
@@ -20,331 +20,865 @@ html {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	height: 4.5rem;
-	padding: 0 max(var(--rux-space-4), env(safe-area-inset-left));
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-5) max(var(--rux-driver-page-gutter), env(safe-area-inset-left));
 	background: var(--rux-surface-canvas);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
-	backdrop-filter: blur(12px);
-	position: sticky;
-	top: 0;
-	z-index: 10;
 }
 
 .driver-share-header__logo {
-	width: 9.5rem;
+	width: var(--rux-driver-logo-width);
+	max-width: var(--rux-driver-logo-max-width);
 	height: auto;
 }
 
 .driver-share-header__label {
 	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-driver-secondary-size);
+	font-weight: var(--rux-weight-medium);
+	white-space: nowrap;
 }
 
 .driver-share {
-	width: min(44rem, 100%);
-	margin: 0 auto;
-	padding: var(--rux-space-5) var(--rux-space-4) calc(var(--rux-space-8) + env(safe-area-inset-bottom));
+	width: min(var(--rux-driver-page-max-width), 100%);
+	margin-inline: auto;
+	padding: var(--rux-space-6) var(--rux-driver-page-gutter)
+		calc(var(--rux-driver-page-bottom-padding) + env(safe-area-inset-bottom));
 }
 
 .driver-share__intro {
-	margin-bottom: var(--rux-space-5);
+	margin-bottom: var(--rux-space-6);
 }
 
 .driver-share__title {
 	margin: 0;
-	font-size: clamp(1.7rem, 7vw, 2.35rem);
+	font-size: var(--rux-driver-page-title-size);
+	font-weight: var(--rux-weight-bold);
 	line-height: var(--rux-leading-tight);
 }
 
+.driver-share__subtitle,
 .driver-share__range {
-	margin: var(--rux-space-2) 0 0;
 	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-lg);
 	line-height: var(--rux-leading-normal);
 }
 
-/* Compact single-line timestamp, not the old multi-line disclaimer box —
-   just enough to answer "is this current" at a glance. */
+.driver-share__subtitle {
+	margin-top: var(--rux-space-2);
+}
+
+.driver-share__range {
+	margin-top: var(--rux-space-1);
+	font-variant-numeric: tabular-nums;
+}
+
 .driver-share__notice {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
-	margin-top: var(--rux-space-3);
+	margin-top: var(--rux-space-4);
 	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-text-sm);
+	font-variant-numeric: tabular-nums;
 }
 
 .driver-share__notice .rux-icon {
-	font-size: 1rem;
+	--_icon-size: var(--rux-icon-md);
 }
 
 .driver-share__list {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-4);
+	gap: var(--rux-driver-card-gap);
 }
 
-/* No dashed ticket-stub sides anymore — this is meant to look like every
-   other card in the app, not a distinct printed-stub metaphor, so it's
-   plain .rux-card (background, border, radius) with no override at all.
-   Sections (route, time, contact, each crew member, notes, requirements)
-   are still independent .rux-card__section bands — present only when that
-   trip has the data for them — so the styling below is per-section rather
-   than one flowing body, that part hasn't changed. */
+/* Card shell and header --------------------------------------------------- */
+
+.driver-assignment-card {
+	background: var(--rux-driver-card-bg);
+	border: var(--rux-driver-card-border);
+	border-radius: var(--rux-driver-card-radius);
+}
+
+.driver-assignment-card__header {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--rux-space-5);
+	min-height: var(--rux-driver-card-header-min-size);
+	padding: var(--rux-driver-card-header-padding);
+	background: var(--rux-driver-card-bg);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.driver-assignment-card__identity {
+	min-width: 0;
+}
 
 .driver-assignment-card__date {
-	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-bold);
-	letter-spacing: 0.055em;
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-driver-label-size);
+	font-weight: var(--rux-weight-semibold);
+	letter-spacing: var(--rux-tracking-wide);
+	line-height: var(--rux-leading-snug);
 	text-transform: uppercase;
+	font-variant-numeric: tabular-nums;
 }
 
-.driver-assignment-card__header-badges {
+.driver-assignment-card__title-row {
 	display: flex;
-	flex: none;
 	align-items: center;
-	gap: var(--rux-space-2);
-}
-
-.driver-assignment-card__badge {
-	display: inline-flex;
-	align-items: center;
-	flex: none;
-	height: var(--rux-button-sm-height);
-	padding: 0 var(--rux-space-3);
-	border-radius: var(--rux-radius-md);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-bold);
-	letter-spacing: 0.02em;
-	line-height: 1;
-	white-space: nowrap;
+	flex-wrap: wrap;
+	gap: var(--rux-space-3);
+	margin-top: var(--rux-space-2);
 }
 
 .driver-assignment-card__bus {
-	background: color-mix(in oklch, var(--rux-accent) 22%, var(--rux-surface-modal));
+	margin: 0;
+	color: var(--rux-fg);
+	font-size: var(--rux-driver-bus-size);
+	font-weight: var(--rux-weight-bold);
+	line-height: var(--rux-leading-tight);
+	font-variant-numeric: tabular-nums;
+}
+
+.driver-assignment-card__role-badge,
+.driver-assignment-card__trip-type,
+.driver-assignment-card__current-bus {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--rux-button-sm-height);
+	padding-inline: var(--rux-space-2);
+	border-radius: var(--rux-radius-md);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+	line-height: 1;
+}
+
+.driver-assignment-card__role-badge {
+	background: var(--rux-driver-accent-soft);
 	color: var(--rux-accent);
+	border: var(--rux-border-width) solid
+		color-mix(in oklch, var(--rux-accent) 42%, transparent);
 }
 
-.driver-assignment-card__role {
-	background: var(--rux-well-bg);
-	color: var(--rux-fg-muted);
-	box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-border-subtle);
-}
-
-/* — Confirm section — */
-/* Unconfirmed: a full-width accent button, same weight as Itinerary/Envelope
-   in the footer. Confirmed: a quiet status line — confirming shouldn't keep
-   demanding attention once it's done. Stays confirmed through later trip
-   edits (see trip-driver-confirmation-patch.sql); is-stale only adds the
-   warning tint + a small re-confirm action, it never reverts to unconfirmed
-   on its own. */
-.driver-assignment-card__confirm-section {
+.driver-assignment-card__response {
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-2);
+	flex-direction: column;
+	align-items: flex-end;
+	gap: var(--rux-space-3);
+	max-width: 100%;
 }
 
-.driver-assignment-card__confirm-status {
-	display: flex;
+.driver-assignment-card__status {
+	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-2);
-	color: var(--rux-success-bright);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
+	white-space: nowrap;
 }
 
-.driver-assignment-card__confirm-status.is-stale {
+.driver-assignment-card__status--pending {
+	color: var(--rux-fg-muted);
+}
+
+.driver-assignment-card__status--success {
+	color: var(--rux-success-bright);
+}
+
+.driver-assignment-card__status--warning {
 	color: var(--rux-warning-bright);
 }
 
-.driver-assignment-card__reconfirm {
-	flex: none;
+.driver-assignment-card__status--danger {
+	color: var(--rux-danger-bright);
 }
 
-/* — Shared eyebrow label — every section's small muted uppercase heading
-   (SPOT TIME, CONTACT, CO-DRIVER, NOTES, REQUIREMENTS), one class instead
-   of a per-section copy so they're guaranteed to match. */
-.driver-assignment-card__section-label {
-	display: block;
+.driver-assignment-card__status--neutral {
+	color: var(--rux-fg-subtle);
+}
+
+.driver-assignment-card__response-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+}
+
+.driver-assignment-card__response-actions .rux-button,
+.driver-share-dialog .rux-button {
+	--_h: var(--rux-driver-touch-target);
+}
+
+.driver-assignment-card__accept {
+	min-width: max-content;
+}
+
+.driver-assignment-card__action-error {
+	max-width: var(--rux-driver-copy-max-width);
+	margin: 0;
+	color: var(--rux-danger-bright);
+	font-size: var(--rux-text-sm);
+	line-height: var(--rux-leading-normal);
+	text-align: right;
+}
+
+.driver-assignment-card__action-error[hidden] {
+	display: none;
+}
+
+/* Shared assignment module ------------------------------------------------ */
+
+.driver-assignment-card > .rux-card__section {
+	padding: var(--rux-driver-module-padding);
+}
+
+.driver-assignment-card > .rux-card__section + .rux-card__section {
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.assignment-module {
+	display: grid;
+	grid-template-columns:
+		minmax(var(--rux-driver-module-label-min), var(--rux-driver-module-label-width))
+		minmax(0, 1fr)
+		auto;
+	align-items: center;
+	gap: var(--rux-driver-module-grid-gap);
+}
+
+.assignment-module__label-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
+	min-width: 0;
+	align-self: stretch;
+	padding-inline-end: var(--rux-space-4);
+	border-inline-end: var(--rux-border-width) solid var(--rux-border);
+}
+
+.assignment-module__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--rux-driver-module-icon-size);
+	height: var(--rux-driver-module-icon-size);
+	border-radius: var(--rux-driver-control-radius);
+	background: var(--rux-driver-control-bg);
 	color: var(--rux-fg-muted);
-	font-size: 0.68rem;
+}
+
+.assignment-module__icon .rux-icon {
+	--_icon-size: var(--rux-icon-md);
+}
+
+.assignment-module--accent .assignment-module__icon {
+	background: var(--rux-driver-accent-soft);
+	color: var(--rux-accent);
+}
+
+.assignment-module--warning .assignment-module__icon {
+	background: var(--rux-driver-warning-soft);
+	color: var(--rux-warning);
+}
+
+.assignment-module--danger .assignment-module__icon {
+	background: var(--rux-driver-danger-soft);
+	color: var(--rux-danger);
+}
+
+.assignment-module__label {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-driver-label-size);
 	font-weight: var(--rux-weight-semibold);
-	letter-spacing: 0.045em;
+	letter-spacing: var(--rux-tracking-wide);
+	line-height: var(--rux-leading-snug);
 	text-transform: uppercase;
 }
 
-/* — Route section — */
+.assignment-module__content {
+	min-width: 0;
+}
 
-.driver-assignment-card__route {
-	margin: var(--rux-space-1) 0 0;
-	font-size: 1.05rem;
+.assignment-module__primary {
+	margin: 0;
+	color: var(--rux-fg);
+	font-size: var(--rux-driver-primary-size);
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-snug);
 }
 
-.driver-assignment-card__trip-type {
-	color: var(--rux-fg-muted);
-	font-size: 0.9em;
-	font-weight: var(--rux-weight-semibold);
-	white-space: nowrap;
+.assignment-module__action-wrap {
+	align-self: center;
 }
 
-.driver-assignment-card__client {
-	margin: 0;
-	color: var(--rux-fg-muted);
+.assignment-module__action {
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-space-1);
+	min-width: var(--rux-driver-touch-target);
+	min-height: var(--rux-driver-touch-target);
+	padding: var(--rux-space-2);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-driver-control-radius);
+	background: var(--rux-driver-control-bg);
+	color: var(--rux-fg);
 	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-medium);
+	line-height: 1;
+	text-decoration: none;
+	transition:
+		background-color var(--rux-duration-fast) var(--rux-ease-out),
+		border-color var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-/* — Time section — the one number a driver actually opens this link to
-   check, biggest/boldest thing on the card, on purpose. */
+.assignment-module__action:hover {
+	background: var(--rux-driver-control-hover-bg);
+	border-color: var(--rux-border-strong);
+	color: var(--rux-fg);
+	text-decoration: none;
+}
 
-.driver-assignment-card__time-section.is-missing .driver-assignment-card__time {
-	color: var(--rux-warning);
+.assignment-module__action--accent {
+	background: var(--rux-driver-accent-soft);
+	color: var(--rux-accent);
+}
+
+.assignment-module__action--success {
+	background: var(--rux-driver-success-soft);
+	color: var(--rux-success-bright);
+}
+
+.assignment-module__action--neutral {
+	flex-direction: row;
+	padding-inline: var(--rux-space-3);
+}
+
+/* Trip, role, and time ---------------------------------------------------- */
+
+.driver-assignment-card__customer {
+	margin: 0 0 var(--rux-space-3);
+	color: var(--rux-fg);
+	font-size: var(--rux-driver-primary-size);
+	font-weight: var(--rux-weight-medium);
+}
+
+.driver-assignment-card__route {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+	margin: 0;
+	color: var(--rux-fg);
+	font-size: var(--rux-driver-route-size);
+	font-weight: var(--rux-weight-bold);
+	line-height: var(--rux-leading-snug);
+}
+
+.driver-assignment-card__route-place {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.driver-assignment-card__route-arrow {
+	--_icon-size: var(--rux-icon-md);
+	color: var(--rux-accent);
+}
+
+.driver-assignment-card__trip-type {
+	margin-top: var(--rux-space-3);
+	background: var(--rux-driver-control-bg);
+	color: var(--rux-fg-muted);
+	border: var(--rux-border-width) solid var(--rux-border);
+}
+
+.driver-assignment-card__detail-list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(var(--rux-driver-document-min-width), 1fr));
+	gap: var(--rux-space-4);
+	margin: var(--rux-space-4) 0 0;
+}
+
+.driver-assignment-card__detail dt {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-medium);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-wide);
+}
+
+.driver-assignment-card__detail dd {
+	margin: var(--rux-space-1) 0 0;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-medium);
+	font-variant-numeric: tabular-nums;
+}
+
+.driver-assignment-card__role-instructions {
+	margin-top: var(--rux-space-4);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-md);
+	line-height: var(--rux-leading-normal);
+	white-space: pre-wrap;
 }
 
 .driver-assignment-card__time {
-	margin: var(--rux-space-1) 0 0;
-	font-size: 2.5rem;
+	display: block;
+	color: var(--rux-fg);
+	font-size: var(--rux-driver-time-size);
 	font-weight: var(--rux-weight-bold);
 	line-height: 1;
+	letter-spacing: var(--rux-tracking-tight);
+	font-variant-numeric: tabular-nums;
 }
 
 .driver-assignment-card__address {
-	margin: var(--rux-space-1) 0 0;
+	margin: var(--rux-space-3) 0 0;
 	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-driver-secondary-size);
+	font-style: normal;
+	line-height: var(--rux-leading-normal);
+	white-space: pre-line;
 }
 
-/* — Shared row shape: a text block on the left, a circular action button
-   on the right — used by the time section (address + Maps) and by every
-   contact-shaped section (name/phone + Call). — */
+/* Contact, crew, alerts --------------------------------------------------- */
 
-.driver-assignment-card__time-row,
-.driver-assignment-card__contact-row {
+.driver-assignment-card__phone {
+	display: inline-flex;
+	align-items: center;
+	min-height: var(--rux-driver-touch-target);
+	margin-top: var(--rux-space-1);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-md);
+	font-variant-numeric: tabular-nums;
+}
+
+.driver-assignment-card__fleet-list,
+.driver-assignment-card__crew-list,
+.driver-assignment-card__alert-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.driver-assignment-card__fleet-row + .driver-assignment-card__fleet-row {
+	margin-top: var(--rux-space-4);
+	padding-top: var(--rux-space-4);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.driver-assignment-card__fleet-bus {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--rux-space-2);
+	color: var(--rux-accent);
+	font-weight: var(--rux-weight-semibold);
+	font-variant-numeric: tabular-nums;
+}
+
+.driver-assignment-card__current-bus {
+	min-height: auto;
+	background: var(--rux-driver-accent-soft);
+	color: var(--rux-accent);
+	font-size: var(--rux-text-xs);
+}
+
+.driver-assignment-card__crew-list {
+	margin-top: var(--rux-space-2);
+}
+
+.driver-assignment-card__crew-member {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
+	min-height: var(--rux-driver-touch-target);
 }
 
-/* Trip contact rides inside the route section instead of its own band (see
-   renderCard()) — its "Trip Contact" label carries the top margin that
-   separates it from the route/client text above (same label class crew
-   sections use, so the two read as the same kind of thing); the row itself
-   stays flush under its own label, same as those crew sections do. */
-.driver-assignment-card__route-section .driver-assignment-card__section-label {
-	margin-top: var(--rux-space-3);
+.driver-assignment-card__crew-member + .driver-assignment-card__crew-member {
+	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
-.driver-assignment-card__contact-row--inline {
-	margin-top: var(--rux-space-1);
-}
-
-.driver-assignment-card__contact-text {
+.driver-assignment-card__crew-identity {
+	display: flex;
+	flex-direction: column;
 	min-width: 0;
 }
 
-.driver-assignment-card__contact-identity {
-	display: flex;
-	align-items: baseline;
-	flex-wrap: wrap;
-	column-gap: var(--rux-space-2);
-	row-gap: var(--rux-space-1);
-	margin: 0;
+.driver-assignment-card__crew-name {
+	color: var(--rux-fg);
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-medium);
+	overflow-wrap: anywhere;
 }
 
-.driver-assignment-card__contact-name {
-	font-weight: var(--rux-weight-semibold);
-}
-
-.driver-assignment-card__contact-phone {
-	color: var(--rux-fg-muted);
+.driver-assignment-card__crew-role {
+	color: var(--rux-fg-subtle);
 	font-size: var(--rux-text-sm);
-	white-space: nowrap;
 }
 
-.driver-assignment-card__icon-btn {
-	display: flex;
-	flex: none;
-	align-items: center;
-	justify-content: center;
-	width: 2.75rem;
-	height: 2.75rem;
-	border-radius: var(--rux-radius-lg);
-	text-decoration: none;
-}
-
-.driver-assignment-card__icon-btn--call {
-	background: color-mix(in oklch, var(--rux-success) 20%, var(--rux-surface-modal));
-	color: var(--rux-success);
-}
-
-.driver-assignment-card__icon-btn--maps {
-	background: color-mix(in oklch, var(--rux-accent) 20%, var(--rux-surface-modal));
+.driver-assignment-card__disclosure {
+	--_h: var(--rux-driver-touch-target);
+	margin-top: var(--rux-space-3);
+	padding-inline: 0;
 	color: var(--rux-accent);
 }
 
-/* — Notes section — */
-
-.driver-assignment-card__note {
+.driver-assignment-card__alert {
 	display: flex;
 	align-items: flex-start;
-	gap: var(--rux-space-2);
-	margin: var(--rux-space-1) 0 0;
+	gap: var(--rux-space-3);
+	color: var(--rux-fg-muted);
+}
+
+.driver-assignment-card__alert + .driver-assignment-card__alert {
+	margin-top: var(--rux-space-3);
+}
+
+.driver-assignment-card__alert--info > .rux-icon {
+	color: var(--rux-info);
+}
+
+.driver-assignment-card__alert--warning > .rux-icon {
+	color: var(--rux-warning);
+}
+
+.driver-assignment-card__alert--critical > .rux-icon {
+	color: var(--rux-danger);
+}
+
+.driver-assignment-card__alert-title {
+	color: var(--rux-fg);
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-medium);
+	line-height: var(--rux-leading-snug);
+}
+
+.driver-assignment-card__alert-description {
+	margin-top: var(--rux-space-1);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
 	line-height: var(--rux-leading-normal);
 }
 
-/* .rux-card__footer defaults to a right-aligned row of auto-width buttons
-   (Delete/Clear/Save-style actions) — Itinerary/Envelope split the width
-   evenly instead, side by side. Padding/gap/border-top/background all stay
-   the shared card-footer defaults. */
-.driver-assignment-card__actions .rux-button {
-	flex: 1;
-	justify-content: center;
+/* Documents and notes ---------------------------------------------------- */
+
+.driver-assignment-card__documents {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(var(--rux-driver-document-min-width), 1fr));
+	gap: var(--rux-space-3);
+}
+
+.driver-assignment-card__document {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	gap: var(--rux-space-2);
+	min-height: var(--rux-driver-touch-target);
+	padding: var(--rux-space-3);
+	background: var(--rux-driver-control-bg);
+	color: var(--rux-fg);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-driver-control-radius);
+	font: inherit;
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+	text-align: start;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.driver-assignment-card__document:hover:not(.is-unavailable) {
+	background: var(--rux-driver-control-hover-bg);
+	border-color: var(--rux-border-strong);
+	color: var(--rux-fg);
 	text-decoration: none;
 }
+
+.driver-assignment-card__document.is-unavailable {
+	color: var(--rux-fg-disabled);
+	cursor: default;
+}
+
+.driver-assignment-card__document-label {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.driver-assignment-card__document-status {
+	grid-column: 2;
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-xs);
+	font-weight: var(--rux-weight-regular);
+}
+
+.driver-assignment-card__notes {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-md);
+	font-weight: var(--rux-weight-regular);
+	line-height: var(--rux-leading-normal);
+	overflow-wrap: anywhere;
+	white-space: pre-wrap;
+}
+
+.driver-assignment-card__notes.is-collapsed {
+	display: -webkit-box;
+	max-height: var(--rux-driver-notes-clamp);
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: var(--rux-driver-notes-lines);
+}
+
+/* Loading, empty, errors, and dialog ------------------------------------- */
 
 .driver-share-status {
 	display: grid;
 	place-items: center;
-	min-height: 60dvh;
+	min-height: var(--rux-driver-status-min-height);
+	padding: var(--rux-space-6);
+	color: var(--rux-fg-muted);
 	text-align: center;
+}
+
+.driver-share-status__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--rux-driver-module-icon-size);
+	height: var(--rux-driver-module-icon-size);
+	margin-inline: auto;
+	border-radius: var(--rux-driver-control-radius);
+	background: var(--rux-driver-control-bg);
 	color: var(--rux-fg-muted);
 }
 
-.driver-share-status .rux-icon {
-	font-size: 2.5rem;
-}
-
 .driver-share-status__title {
-	margin: var(--rux-space-3) 0 var(--rux-space-1);
+	margin: var(--rux-space-4) 0 var(--rux-space-2);
 	color: var(--rux-fg);
-	font-size: var(--rux-text-lg);
+	font-size: var(--rux-text-xl);
 }
 
 .driver-share-status p {
+	max-width: var(--rux-driver-copy-max-width);
 	margin: 0;
 }
 
-@media (max-width: 430px) {
-	.driver-share-header__logo {
-		width: 8rem;
+.driver-share-status .rux-button {
+	--_h: var(--rux-driver-touch-target);
+	margin-top: var(--rux-space-4);
+}
+
+.driver-share-skeleton {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-driver-card-gap);
+}
+
+.driver-share-announcer {
+	position: absolute;
+	width: var(--rux-space-px);
+	height: var(--rux-space-px);
+	padding: 0;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}
+
+.driver-share-skeleton__card {
+	overflow: hidden;
+	border: var(--rux-driver-card-border);
+	border-radius: var(--rux-driver-card-radius);
+	background: var(--rux-driver-card-bg);
+}
+
+.driver-share-skeleton__header,
+.driver-share-skeleton__module {
+	padding: var(--rux-driver-module-padding);
+}
+
+.driver-share-skeleton__module {
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.driver-share-skeleton__line {
+	height: var(--rux-space-4);
+	border-radius: var(--rux-radius-md);
+	background: var(--rux-bg-hover);
+	animation: driver-share-skeleton-pulse var(--rux-duration-slow) var(--rux-ease-in-out) infinite alternate;
+}
+
+.driver-share-skeleton__line + .driver-share-skeleton__line {
+	width: var(--rux-driver-skeleton-line-width);
+	margin-top: var(--rux-space-3);
+}
+
+@keyframes driver-share-skeleton-pulse {
+	from { opacity: var(--rux-driver-skeleton-opacity); }
+	to { opacity: 1; }
+}
+
+.driver-share-dialog {
+	width: min(var(--rux-container-xs), calc(100% - (var(--rux-space-4) * 2)));
+	padding: 0;
+	overflow: hidden;
+	background: var(--rux-surface-modal);
+	color: var(--rux-fg);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-xl);
+}
+
+.driver-share-dialog::backdrop {
+	background: var(--rux-bg-overlay);
+	backdrop-filter: blur(var(--rux-overlay-blur));
+}
+
+.driver-share-dialog__header,
+.driver-share-dialog__body,
+.driver-share-dialog__footer {
+	padding: var(--rux-space-5);
+}
+
+.driver-share-dialog__header {
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.driver-share-dialog__title {
+	font-size: var(--rux-text-xl);
+}
+
+.driver-share-dialog__body {
+	color: var(--rux-fg-muted);
+}
+
+.driver-share-dialog__footer {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--rux-space-3);
+	background: var(--rux-surface-canvas);
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+:is(
+	.driver-assignment-card .rux-button,
+	.assignment-module__action,
+	.driver-assignment-card__document,
+	.driver-assignment-card__phone,
+	.driver-share-dialog .rux-button
+):focus-visible {
+	outline: none;
+	box-shadow: var(--rux-driver-focus-ring);
+}
+
+@media (max-width: 479px) {
+	.driver-share-header {
+		padding-inline: var(--rux-driver-page-gutter);
+	}
+
+	.driver-share {
+		padding-top: var(--rux-space-5);
+	}
+
+	.driver-assignment-card__header {
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+	}
+
+	.driver-assignment-card__response {
+		align-items: stretch;
+	}
+
+	.driver-assignment-card__response-actions {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+		justify-content: stretch;
+	}
+
+	.driver-assignment-card__response-actions .rux-button {
+		width: 100%;
+	}
+
+	.driver-assignment-card__action-error {
+		text-align: start;
+	}
+
+	.assignment-module {
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: start;
+	}
+
+	.assignment-module__label-wrap {
+		grid-column: 1 / -1;
+		flex-direction: row;
+		align-items: center;
+		align-self: auto;
+		padding: 0 0 var(--rux-space-3);
+		border-inline-end: 0;
+		border-bottom: var(--rux-border-width) solid var(--rux-border);
+	}
+
+	.assignment-module__icon {
+		width: var(--rux-driver-touch-target);
+		height: var(--rux-driver-touch-target);
+	}
+
+	.assignment-module__content {
+		align-self: center;
+	}
+
+	.assignment-module__action-wrap {
+		grid-column: 2;
+	}
+
+	.driver-assignment-card__route {
+		align-items: flex-start;
 	}
 }
 
-@media (max-width: 370px) {
-	.driver-assignment-card__header {
-		flex-wrap: wrap;
-		height: auto;
-		min-height: var(--rux-card-header-height);
+@media (max-width: 359px) {
+	.driver-share-header__logo {
+		width: var(--rux-driver-logo-width-compact);
 	}
 
-	.driver-assignment-card__header-badges {
+	.driver-share {
+		padding-inline: var(--rux-driver-page-gutter-compact);
+	}
+
+	.driver-assignment-card__header,
+	.driver-assignment-card > .rux-card__section {
+		padding-inline: var(--rux-driver-page-gutter);
+	}
+
+	.driver-assignment-card__response-actions {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.assignment-module__action-wrap {
+		grid-column: 1 / -1;
 		width: 100%;
+	}
+
+	.assignment-module__action {
+		width: 100%;
+		flex-direction: row;
+	}
+
+	.driver-assignment-card__documents {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.driver-share-dialog__footer {
+		flex-direction: column-reverse;
 	}
 }

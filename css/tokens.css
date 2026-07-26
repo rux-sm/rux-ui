@@ -164,6 +164,7 @@
 	--rux-space-4:   1rem;      /* 16px */
 	--rux-space-5:   1.5rem;    /* 24px */
 	--rux-space-6:   2rem;      /* 32px */
+	--rux-space-7:   3rem;      /* 48px */
 	--rux-space-8:   4rem;      /* 64px */
 
 	/* ─── SIZE · shared foundations ──────────────────────────────────────── */
@@ -203,7 +204,7 @@
 	--rux-surface-canvas:          oklch(from var(--rux-neutral) 0% c h);
 	--rux-surface-workspace:       oklch(from var(--rux-neutral) 0% c h);
 	--rux-surface-panel:           oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-calendar:        oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-calendar:        oklch(from var(--rux-neutral) 16% c h);
 	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
 	--rux-surface-card-header:     oklch(from var(--rux-neutral) 22% c h);
@@ -269,8 +270,8 @@
 	   steppers, tabs, segments) take 6px. Concentric rule: inner radius =
 	   outer radius − inset padding. */
 
-	--rux-radius-container: var(--rux-radius-lg); /* 8px */
-	--rux-radius-control:   var(--rux-radius-md); /* 6px */
+	--rux-radius-container: var(--rux-radius-0); /* 8px */
+	--rux-radius-control:   var(--rux-radius-0); /* 6px */
 
 	/* ─── ICON ───────────────────────────────────────────────────────────── */
 
@@ -463,6 +464,50 @@
 	--rux-card-padding:     var(--rux-space-4);
 	--rux-card-content-gap: var(--rux-space-4);
 
+	/* ─── DRIVER ASSIGNMENT CARD ────────────────────────────────────────── */
+
+	--rux-driver-page-max-width:       760px;
+	--rux-driver-page-gutter:          var(--rux-space-4);
+	--rux-driver-page-gutter-compact:  var(--rux-space-3);
+	--rux-driver-page-bottom-padding:  var(--rux-space-7);
+	--rux-driver-card-gap:             var(--rux-space-5);
+	--rux-driver-logo-width:           160px;
+	--rux-driver-logo-width-compact:   136px;
+	--rux-driver-logo-max-width:       52vw;
+	--rux-driver-card-bg:              var(--rux-surface-card);
+	--rux-driver-card-border:          var(--rux-border-width) solid var(--rux-border);
+	--rux-driver-card-radius:          20px;
+	--rux-driver-card-header-padding:  var(--rux-space-5);
+	--rux-driver-card-header-min-size: 112px;
+	--rux-driver-module-padding:       var(--rux-space-5);
+	--rux-driver-module-label-min:     104px;
+	--rux-driver-module-label-width:   128px;
+	--rux-driver-module-icon-size:     48px;
+	--rux-driver-module-grid-gap:      var(--rux-space-4);
+	--rux-driver-touch-target:         48px;
+	--rux-driver-document-min-width:   140px;
+	--rux-driver-copy-max-width:       28rem;
+	--rux-driver-status-min-height:    60dvh;
+	--rux-driver-page-title-size:      clamp(2.25rem, 7vw, 2.5rem);
+	--rux-driver-bus-size:             clamp(1.75rem, 7vw, 2rem);
+	--rux-driver-route-size:           clamp(1.5rem, 6vw, 1.75rem);
+	--rux-driver-time-size:            clamp(2.625rem, 11vw, 3.25rem);
+	--rux-driver-primary-size:         1.125rem;
+	--rux-driver-secondary-size:       var(--rux-text-md);
+	--rux-driver-label-size:           var(--rux-text-xs);
+	--rux-driver-control-bg:           var(--rux-surface-field);
+	--rux-driver-control-hover-bg:     var(--rux-bg-hover);
+	--rux-driver-control-radius:       var(--rux-radius-lg);
+	--rux-driver-accent-soft:          color-mix(in oklch, var(--rux-accent) 16%, transparent);
+	--rux-driver-success-soft:         color-mix(in oklch, var(--rux-success) 12%, transparent);
+	--rux-driver-warning-soft:         color-mix(in oklch, var(--rux-warning) 12%, transparent);
+	--rux-driver-danger-soft:          color-mix(in oklch, var(--rux-danger) 12%, transparent);
+	--rux-driver-notes-clamp:          6lh;
+	--rux-driver-notes-lines:          4;
+	--rux-driver-skeleton-line-width:  62%;
+	--rux-driver-skeleton-opacity:     0.48;
+	--rux-driver-focus-ring:           0 0 0 3px var(--rux-accent-ring);
+
 	/* ─── COMPONENT · trip bar · category colors ──────────────────────────── */
 
 	--rux-trip-color-cyan:   var(--rux-cyan);
@@ -570,7 +615,7 @@
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
-	--rux-button-accent-background: var(--rux-accent);
+	--rux-button-accent-background:  oklch(from var(--rux-accent) 64% .28 h / 64%);
 	--rux-button-accent-text:       var(--rux-fg-on-accent);
 	--rux-button-accent-border:     1px solid var(--rux-button-accent-background);
 	/* Shift only lightness so interaction states preserve hue and chroma. */

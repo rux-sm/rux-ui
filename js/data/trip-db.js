@@ -64,6 +64,7 @@ import {
 				source: metadata.source || "dispatcher",
 				updatedAt: metadata.updatedAt || null,
 				acceptedAt: metadata.acceptedAt || null,
+				declinedAt: metadata.declinedAt || null,
 			});
 			return;
 		}
@@ -72,10 +73,12 @@ import {
 		button.dataset.statusSource = metadata.source || "dispatcher";
 		button.dataset.statusUpdatedAt = metadata.updatedAt || "";
 		button.dataset.acceptedAt = metadata.acceptedAt || "";
+		button.dataset.declinedAt = metadata.declinedAt || "";
 		button.classList.remove(
 			"rux-role--pending-assignment",
 			"rux-role--pending-response",
 			"rux-role--confirmed",
+			"rux-role--declined",
 			"rux-role--danger",
 			"rux-role--warning",
 			"rux-role--success",
@@ -127,6 +130,9 @@ import {
 					acceptedAt: status
 						? status.acceptedAt
 						: label.dataset.acceptedAt || null,
+					declinedAt: status
+						? status.declinedAt
+						: label.dataset.declinedAt || null,
 				});
 			});
 		}
@@ -916,6 +922,7 @@ import {
 					driver_status_source,
 					driver_status_updated_at,
 					driver_accepted_at,
+					driver_declined_at,
 				} = driverRow;
 				const roleKey = roleKeyMap[role];
 				if (!roleKey) return;
@@ -940,6 +947,7 @@ import {
 							source: driver_status_source,
 							updatedAt: driver_status_updated_at,
 							acceptedAt: driver_accepted_at,
+							declinedAt: driver_declined_at,
 						},
 					);
 				}

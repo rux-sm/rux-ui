@@ -30,6 +30,7 @@ const ROLE_STATUS_STATES = [
 	{ value: "pending-assignment", label: "Pending assignment" },
 	{ value: "pending-response", label: "Pending response" },
 	{ value: "confirmed", label: "Confirmed" },
+	{ value: "declined", label: "Declined" },
 ];
 const LEGACY_ROLE_STATUS = {
 	default: "off",
@@ -69,10 +70,12 @@ function setRoleStatus(button, value, metadata = {}) {
 	button.dataset.statusSource = source;
 	button.dataset.statusUpdatedAt = updatedAt;
 	button.dataset.acceptedAt = acceptedAt;
+	button.dataset.declinedAt = dirty ? "" : (metadata.declinedAt || "");
 	button.classList.remove(
 		"rux-role--pending-assignment",
 		"rux-role--pending-response",
 		"rux-role--confirmed",
+		"rux-role--declined",
 		"rux-role--danger",
 		"rux-role--warning",
 		"rux-role--success",
@@ -84,6 +87,9 @@ function setRoleStatus(button, value, metadata = {}) {
 	} else if (source === "driver" && state === "confirmed") {
 		const accepted = formatRoleStatusTime(acceptedAt || updatedAt);
 		detail = ` · accepted by driver${accepted ? ` ${accepted}` : ""}`;
+	} else if (source === "driver" && state === "declined") {
+		const declined = formatRoleStatusTime(metadata.declinedAt || updatedAt);
+		detail = ` · declined by driver${declined ? ` ${declined}` : ""}`;
 	} else if (updatedAt) {
 		const updated = formatRoleStatusTime(updatedAt);
 		detail = ` · set by dispatch${updated ? ` ${updated}` : ""}`;
@@ -1479,7 +1485,7 @@ function initBusGroupSection(root, busGroupsEl, busesInput, fieldPrefix) {
 		window.Rux?.syncSelectPlaceholders?.(group);
 	});
 
-	// Role status icons: off → pending assignment → pending response → confirmed.
+	// Role status icons: off → pending assignment → pending response → confirmed → declined.
 	busGroupsEl.addEventListener("click", (e) => {
 		const label = e.target.closest(".rux-trip-panel__role-label");
 		if (!label) return;

@@ -11,6 +11,7 @@
 --   pending-assignment dispatcher action required
 --   pending-response   sent to driver, awaiting response
 --   confirmed          accepted by driver or confirmed by dispatch
+--   declined           driver is unable to take the assignment
 --
 -- The older trip_driver_confirmations table is retained and migrated so this
 -- patch can safely be rerun on databases where the first confirmation version
@@ -47,6 +48,7 @@ create table if not exists public.trip_driver_statuses (
 	status text not null default 'off',
 	source text not null default 'dispatcher',
 	accepted_at timestamptz,
+	declined_at timestamptz,
 	created_at timestamptz not null default now(),
 	updated_at timestamptz not null default now(),
 	constraint trip_driver_statuses_leg_check
@@ -54,7 +56,7 @@ create table if not exists public.trip_driver_statuses (
 	constraint trip_driver_statuses_role_check
 		check (role in ('driver', 'co-driver', 'relief-start', 'relief-end')),
 	constraint trip_driver_statuses_status_check
-		check (status in ('off', 'pending-assignment', 'pending-response', 'confirmed')),
+		check (status in ('off', 'pending-assignment', 'pending-response', 'confirmed', 'declined')),
 	constraint trip_driver_statuses_source_check
 		check (source in ('dispatcher', 'driver')),
 	constraint trip_driver_statuses_unique
@@ -63,6 +65,15 @@ create table if not exists public.trip_driver_statuses (
 
 alter table public.trip_driver_statuses enable row level security;
 revoke all on table public.trip_driver_statuses from anon, authenticated;
+
+-- Upgrade installations created before driver decline was supported.
+alter table public.trip_driver_statuses
+	add column if not exists declined_at timestamptz;
+alter table public.trip_driver_statuses
+	drop constraint if exists trip_driver_statuses_status_check;
+alter table public.trip_driver_statuses
+	add constraint trip_driver_statuses_status_check
+		check (status in ('off', 'pending-assignment', 'pending-response', 'confirmed', 'declined'));
 
 create index if not exists trip_driver_statuses_trip_idx
 	on public.trip_driver_statuses (trip_id);
@@ -249,6 +260,7 @@ begin
 		status = 'confirmed',
 		source = 'driver',
 		accepted_at = now(),
+		declined_at = null,
 		updated_at = now()
 	returning * into v_row;
 
@@ -326,6 +338,177 @@ begin
 		'status', v_row.status,
 		'source', v_row.source,
 		'confirmedAt', v_row.accepted_at,
+		'declinedAt', v_row.declined_at,
+		'updatedAt', v_row.updated_at
+	);
+end;
+$$;
+
+-- Decline a trip leg after an explicit confirmation in the driver UI.
+-- The same share-token ownership checks used by confirmation prevent one
+-- driver's public link from changing another driver's assignment.
+create or replace function public.decline_trip_assignment(
+	p_token text,
+	p_trip_id uuid,
+	p_leg text default 'outbound'
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+	v_driver_id uuid;
+	v_driver_name text;
+	v_role text;
+	v_before_status text;
+	v_row public.trip_driver_statuses;
+begin
+	select share.driver_id, driver.name
+	into v_driver_id, v_driver_name
+	from public.driver_schedule_shares share
+	join public.drivers driver on driver.id = share.driver_id
+	where share.token = lower(trim(p_token))
+		and share.revoked_at is null
+		and (share.expires_at is null or share.expires_at > now());
+
+	if v_driver_id is null then
+		raise exception 'Invalid or expired driver link';
+	end if;
+
+	select driver_row.role
+	into v_role
+	from public.trip_assignments assignment
+	join public.trip_drivers driver_row
+		on driver_row.assignment_id = assignment.id
+	where assignment.trip_id = p_trip_id
+		and coalesce(assignment.leg, 'outbound') = coalesce(p_leg, 'outbound')
+		and driver_row.driver_id = v_driver_id
+	order by case driver_row.role
+		when 'driver' then 0
+		when 'co-driver' then 1
+		when 'relief-start' then 2
+		else 3
+	end
+	limit 1;
+
+	if v_role is null then
+		raise exception 'This trip is not assigned to you';
+	end if;
+
+	select status
+	into v_before_status
+	from public.trip_driver_statuses
+	where trip_id = p_trip_id
+		and driver_id = v_driver_id
+		and leg = coalesce(p_leg, 'outbound')
+		and role = v_role;
+
+	insert into public.trip_driver_statuses (
+		trip_id,
+		driver_id,
+		leg,
+		role,
+		status,
+		source,
+		accepted_at,
+		declined_at,
+		updated_at
+	)
+	values (
+		p_trip_id,
+		v_driver_id,
+		coalesce(p_leg, 'outbound'),
+		v_role,
+		'declined',
+		'driver',
+		null,
+		now(),
+		now()
+	)
+	on conflict on constraint trip_driver_statuses_unique
+	do update set
+		status = 'declined',
+		source = 'driver',
+		accepted_at = null,
+		declined_at = now(),
+		updated_at = now()
+	returning * into v_row;
+
+	-- Older clients only understand confirmation rows. Removing the legacy
+	-- confirmation prevents a decline from appearing accepted there.
+	delete from public.trip_driver_confirmations
+	where trip_id = p_trip_id
+		and driver_id = v_driver_id
+		and leg = coalesce(p_leg, 'outbound');
+
+	if v_before_status is distinct from 'declined'
+		and to_regclass('public.trip_history') is not null then
+		begin
+			execute $history$
+				insert into public.trip_history (
+					trip_id,
+					trip_ref,
+					trip_start_date,
+					trip_end_date,
+					customer_name,
+					destination,
+					actor_name,
+					action,
+					changes,
+					metadata
+				)
+				select
+					trip.id,
+					trip.trip_ref,
+					trip.start_date,
+					trip.end_date,
+					trip.customer,
+					trip.destination,
+					$2,
+					'driver_status_changed',
+					jsonb_build_array(jsonb_build_object(
+						'field', 'driver_status',
+						'label', $3 || ' status',
+						'before', case $4
+							when 'pending-assignment' then 'Pending assignment'
+							when 'pending-response' then 'Pending response'
+							when 'confirmed' then 'Confirmed'
+							when 'declined' then 'Declined'
+							else 'Off'
+						end,
+						'after', 'Declined'
+					)),
+					jsonb_build_object(
+						'driverId', $5,
+						'leg', $6,
+						'role', $3,
+						'source', 'driver'
+					)
+				from public.trips trip
+				where trip.id = $1
+			$history$
+			using
+				p_trip_id,
+				coalesce(v_driver_name, 'Driver'),
+				v_role,
+				v_before_status,
+				v_driver_id,
+				coalesce(p_leg, 'outbound');
+		exception when others then
+			raise warning 'Driver status history could not be recorded: %', sqlerrm;
+		end;
+	end if;
+
+	return jsonb_build_object(
+		'tripId', v_row.trip_id,
+		'driverId', v_row.driver_id,
+		'leg', v_row.leg,
+		'role', v_row.role,
+		'status', v_row.status,
+		'source', v_row.source,
+		'acceptedAt', v_row.accepted_at,
+		'declinedAt', v_row.declined_at,
 		'updatedAt', v_row.updated_at
 	);
 end;
@@ -385,7 +568,7 @@ begin
 		if v_driver_id is null
 			or v_leg not in ('outbound', 'return')
 			or v_role not in ('driver', 'co-driver', 'relief-start', 'relief-end')
-			or v_status not in ('off', 'pending-assignment', 'pending-response', 'confirmed') then
+			or v_status not in ('off', 'pending-assignment', 'pending-response', 'confirmed', 'declined') then
 			continue;
 		end if;
 
@@ -410,6 +593,8 @@ begin
 			role,
 			status,
 			source,
+			accepted_at,
+			declined_at,
 			updated_at
 		)
 		values (
@@ -419,6 +604,8 @@ begin
 			v_role,
 			v_status,
 			'dispatcher',
+			case when v_status = 'confirmed' then now() else null end,
+			case when v_status = 'declined' then now() else null end,
 			now()
 		)
 		on conflict on constraint trip_driver_statuses_unique
@@ -432,8 +619,14 @@ begin
 				else public.trip_driver_statuses.source
 			end,
 			accepted_at = case
-				when v_dirty then null
+				when v_dirty and excluded.status <> 'confirmed' then null
+				when v_dirty and excluded.status = 'confirmed' then now()
 				else public.trip_driver_statuses.accepted_at
+			end,
+			declined_at = case
+				when v_dirty and excluded.status = 'declined' then now()
+				when v_dirty then null
+				else public.trip_driver_statuses.declined_at
 			end,
 			updated_at = case
 				when v_dirty then now()
@@ -452,6 +645,7 @@ begin
 					'status', status_row.status,
 					'source', status_row.source,
 					'acceptedAt', status_row.accepted_at,
+					'declinedAt', status_row.declined_at,
 					'updatedAt', status_row.updated_at
 				)
 				order by status_row.updated_at desc
@@ -482,6 +676,7 @@ as $$
 				'status', status_row.status,
 				'source', status_row.source,
 				'acceptedAt', status_row.accepted_at,
+				'declinedAt', status_row.declined_at,
 				'updatedAt', status_row.updated_at
 			)
 			order by status_row.updated_at desc
@@ -490,6 +685,42 @@ as $$
 	)
 	from public.trip_driver_statuses status_row
 	where status_row.trip_id = any(coalesce(p_trip_ids, '{}'::uuid[]));
+$$;
+
+-- Read every current response state for one public driver share. This is the
+-- status source for the modular driver card; the legacy confirmations RPC is
+-- retained below for older deployed clients.
+create or replace function public.get_driver_assignment_statuses(p_token text)
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public
+as $$
+	select coalesce(
+		jsonb_agg(jsonb_build_object(
+			'tripId', status_row.trip_id,
+			'leg', status_row.leg,
+			'role', status_row.role,
+			'status', status_row.status,
+			'source', status_row.source,
+			'confirmedAt', case
+				when status_row.status = 'confirmed'
+					then coalesce(status_row.accepted_at, status_row.updated_at)
+				else null
+			end,
+			'acceptedAt', status_row.accepted_at,
+			'declinedAt', status_row.declined_at,
+			'updatedAt', status_row.updated_at
+		)),
+		'[]'::jsonb
+	)
+	from public.trip_driver_statuses status_row
+	join public.driver_schedule_shares share
+		on share.driver_id = status_row.driver_id
+	where share.token = lower(trim(p_token))
+		and share.revoked_at is null
+		and (share.expires_at is null or share.expires_at > now());
 $$;
 
 -- Read back confirmed statuses for one driver share.
@@ -525,11 +756,15 @@ as $$
 $$;
 
 revoke all on function public.confirm_trip_assignment(text, uuid, text) from public;
+revoke all on function public.decline_trip_assignment(text, uuid, text) from public;
 revoke all on function public.sync_trip_driver_statuses(uuid, jsonb) from public;
 revoke all on function public.get_trip_driver_statuses(uuid[]) from public;
+revoke all on function public.get_driver_assignment_statuses(text) from public;
 revoke all on function public.get_driver_confirmations(text) from public;
 
 grant execute on function public.confirm_trip_assignment(text, uuid, text) to anon, authenticated;
+grant execute on function public.decline_trip_assignment(text, uuid, text) to anon, authenticated;
 grant execute on function public.sync_trip_driver_statuses(uuid, jsonb) to anon, authenticated;
 grant execute on function public.get_trip_driver_statuses(uuid[]) to anon, authenticated;
+grant execute on function public.get_driver_assignment_statuses(text) to anon, authenticated;
 grant execute on function public.get_driver_confirmations(text) to anon, authenticated;
