@@ -306,4 +306,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	assert.match(css, /--rux-driver-touch-target/);
 	assert.match(css, /grid-template-columns: minmax\(0, 1fr\)/);
 	assert.match(css, /:focus-visible/);
+	assert.match(css, /\.assignment-module__content:last-child\s*\{\s*grid-column:\s*2\s*\/\s*-1/);
+	assert.match(css, /\.assignment-module__action-wrap\s*\{[^}]*justify-self:\s*end/s);
+	assert.match(css, /\.driver-assignment-card__crew-member \.rux-module-button\s*\{[^}]*margin-inline-start:\s*auto/s);
 });
