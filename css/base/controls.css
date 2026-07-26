@@ -219,6 +219,108 @@
 	color: var(--rux-button-selected-fg);
 }
 
+/* — module button — */
+
+.rux-module-button {
+	--_module-button-bg: var(--rux-module-button-neutral-bg);
+	--_module-button-hover-bg: var(--rux-module-button-neutral-hover-bg);
+	--_module-button-fg: var(--rux-module-button-neutral-fg);
+	--_module-button-border-color: var(--rux-module-button-neutral-border);
+
+	display: inline-flex;
+	flex: none;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--rux-module-button-gap);
+	width: var(--rux-module-button-width);
+	min-height: var(--rux-module-button-min-height);
+	padding: var(--rux-module-button-padding);
+	border: var(--rux-module-button-border);
+	border-color: var(--_module-button-border-color);
+	border-radius: var(--rux-module-button-radius);
+	background: var(--_module-button-bg);
+	color: var(--_module-button-fg);
+	font: inherit;
+	font-size: var(--rux-module-button-font-size);
+	font-weight: var(--rux-module-button-font-weight);
+	line-height: 1.15;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	user-select: none;
+	transition:
+		background-color var(--rux-duration-fast) var(--rux-ease-out),
+		border-color var(--rux-duration-fast) var(--rux-ease-out),
+		box-shadow var(--rux-duration-fast) var(--rux-ease-out),
+		transform var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-module-button .rux-icon {
+	--_icon-size: var(--rux-module-button-icon-size);
+}
+
+.rux-module-button:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--_module-button-hover-bg);
+	border-color: var(--_module-button-fg);
+	color: var(--_module-button-fg);
+	text-decoration: none;
+}
+
+.rux-module-button:active:not(:disabled):not([aria-disabled="true"]) {
+	transform: translateY(var(--rux-border-width));
+}
+
+.rux-module-button:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-module-button-focus-ring);
+}
+
+.rux-module-button:disabled,
+.rux-module-button[aria-disabled="true"] {
+	opacity: var(--rux-module-button-disabled-opacity);
+	cursor: not-allowed;
+}
+
+.rux-module-button[aria-disabled="true"] {
+	pointer-events: none;
+}
+
+.rux-module-button--neutral {
+	--_module-button-bg: var(--rux-module-button-neutral-bg);
+	--_module-button-hover-bg: var(--rux-module-button-neutral-hover-bg);
+	--_module-button-fg: var(--rux-module-button-neutral-fg);
+	--_module-button-border-color: var(--rux-module-button-neutral-border);
+}
+
+.rux-module-button--info {
+	--_module-button-bg: var(--rux-module-button-info-bg);
+	--_module-button-hover-bg: var(--rux-module-button-info-hover-bg);
+	--_module-button-fg: var(--rux-module-button-info-fg);
+	--_module-button-border-color: var(--rux-module-button-info-border);
+}
+
+.rux-module-button--success {
+	--_module-button-bg: var(--rux-module-button-success-bg);
+	--_module-button-hover-bg: var(--rux-module-button-success-hover-bg);
+	--_module-button-fg: var(--rux-module-button-success-fg);
+	--_module-button-border-color: var(--rux-module-button-success-border);
+}
+
+.rux-module-button--warning {
+	--_module-button-bg: var(--rux-module-button-warning-bg);
+	--_module-button-hover-bg: var(--rux-module-button-warning-hover-bg);
+	--_module-button-fg: var(--rux-module-button-warning-fg);
+	--_module-button-border-color: var(--rux-module-button-warning-border);
+}
+
+.rux-module-button--danger {
+	--_module-button-bg: var(--rux-module-button-danger-bg);
+	--_module-button-hover-bg: var(--rux-module-button-danger-hover-bg);
+	--_module-button-fg: var(--rux-module-button-danger-fg);
+	--_module-button-border-color: var(--rux-module-button-danger-border);
+}
+
 /* danger is an intent modifier; combine it with an emphasis modifier */
 .rux-button--danger {
 	background: var(--rux-button-danger-background);

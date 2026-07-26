@@ -333,50 +333,12 @@ html {
 
 .assignment-module__action-wrap {
 	align-self: center;
+	display: flex;
+	justify-content: center;
 }
 
 .assignment-module__action {
-	display: inline-flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: var(--rux-space-1);
-	min-width: var(--rux-driver-touch-target);
-	min-height: var(--rux-driver-touch-target);
-	padding: var(--rux-space-2);
-	border: var(--rux-border-width) solid var(--rux-border);
-	border-radius: var(--rux-driver-control-radius);
-	background: var(--rux-driver-control-bg);
-	color: var(--rux-fg);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
-	line-height: 1;
-	text-decoration: none;
-	transition:
-		background-color var(--rux-duration-fast) var(--rux-ease-out),
-		border-color var(--rux-duration-fast) var(--rux-ease-out);
-}
-
-.assignment-module__action:hover {
-	background: var(--rux-driver-control-hover-bg);
-	border-color: var(--rux-border-strong);
-	color: var(--rux-fg);
-	text-decoration: none;
-}
-
-.assignment-module__action--accent {
-	background: var(--rux-driver-accent-soft);
-	color: var(--rux-accent);
-}
-
-.assignment-module__action--success {
-	background: var(--rux-driver-success-soft);
-	color: var(--rux-success-bright);
-}
-
-.assignment-module__action--neutral {
-	flex-direction: row;
-	padding-inline: var(--rux-space-3);
+	flex-shrink: 0;
 }
 
 /* Trip, role, and time ---------------------------------------------------- */
@@ -912,11 +874,6 @@ html {
 	.assignment-module__action-wrap {
 		grid-column: 1 / -1;
 		width: 100%;
-	}
-
-	.assignment-module__action {
-		width: 100%;
-		flex-direction: row;
 	}
 
 	.driver-assignment-card__documents {

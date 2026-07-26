@@ -239,6 +239,63 @@ test("documents render actionable and unavailable resources correctly", () => {
 	assert.ok(card.querySelector(".driver-assignment-card__document-status--unavailable"));
 });
 
+test("assignment actions use the generic semantic module-button primitive", () => {
+	const card = renderDriverAssignmentCard(assignment({
+		contact: { name: "Anna Partida", phone: "956-292-9255" },
+		fleetAssignments: [
+			{
+				busId: "bus-763",
+				busNumber: "763",
+				isCurrentBus: true,
+				crew: [
+					{
+						id: "crew-2",
+						name: "Maria Lopez",
+						role: "relief_driver",
+						phone: "956-555-0112",
+						canMessage: true,
+					},
+				],
+			},
+			{
+				busId: "bus-746",
+				busNumber: "746",
+				crew: [{ id: "crew-3", name: "Jose Garcia", role: "driver" }],
+			},
+		],
+	}));
+	const links = card.querySelectorAll("a");
+	const navigate = links.find((link) => link.textContent.includes("Navigate"));
+	const call = links.find((link) => link.textContent.includes("Call"));
+	const message = links.find((link) => link.textContent.includes("Message"));
+
+	for (const action of [navigate, call, message]) {
+		assert.ok(action);
+		assert.ok(action.classList.contains("rux-module-button"));
+		assert.ok(action.classList.contains("assignment-module__action"));
+	}
+	assert.ok(navigate.classList.contains("rux-module-button--info"));
+	assert.ok(call.classList.contains("rux-module-button--success"));
+	assert.ok(message.classList.contains("rux-module-button--neutral"));
+});
+
+test("generic module buttons expose one fixed layout and every semantic tone", async () => {
+	const [controls, tokens] = await Promise.all([
+		readFile(new URL("../css/base/controls.css", import.meta.url), "utf8"),
+		readFile(new URL("../css/tokens.css", import.meta.url), "utf8"),
+	]);
+
+	assert.match(controls, /\.rux-module-button\s*\{/);
+	assert.match(controls, /flex-direction:\s*column/);
+	assert.match(controls, /width:\s*var\(--rux-module-button-width\)/);
+	assert.match(controls, /min-height:\s*var\(--rux-module-button-min-height\)/);
+	for (const tone of ["neutral", "info", "success", "warning", "danger"]) {
+		assert.match(controls, new RegExp(`\\.rux-module-button--${tone}\\s*\\{`));
+	}
+	assert.match(tokens, /--rux-module-button-width:\s*96px/);
+	assert.match(tokens, /--rux-module-button-min-height:\s*80px/);
+});
+
 test("responsive CSS protects narrow layouts and touch targets", async () => {
 	const css = await readFile(
 		new URL("../css/features/driver-share.css", import.meta.url),

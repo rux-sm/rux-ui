@@ -604,6 +604,47 @@
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing:   var(--rux-ease-out);
 
+	/* ─── COMPONENT · module button ───────────────────────────────────────────── */
+	/* Compact contextual action with a stable footprint and vertical
+	   icon-over-label anatomy. Semantic variants change tone, not layout. */
+
+	--rux-module-button-width:       96px;
+	--rux-module-button-min-height:  80px;
+	--rux-module-button-padding:     var(--rux-space-3);
+	--rux-module-button-gap:         var(--rux-space-2);
+	--rux-module-button-radius:      var(--rux-radius-lg);
+	--rux-module-button-font-size:   var(--rux-text-sm);
+	--rux-module-button-font-weight: var(--rux-weight-medium);
+	--rux-module-button-icon-size:   var(--rux-icon-md);
+	--rux-module-button-border:      var(--rux-border-width) solid var(--rux-border);
+	--rux-module-button-focus-ring:  0 0 0 3px var(--rux-accent-ring);
+	--rux-module-button-disabled-opacity: 0.45;
+
+	--rux-module-button-neutral-bg:       var(--rux-alpha-white-10);
+	--rux-module-button-neutral-hover-bg: var(--rux-alpha-white-16);
+	--rux-module-button-neutral-fg:       var(--rux-fg);
+	--rux-module-button-neutral-border:   var(--rux-border-strong);
+
+	--rux-module-button-info-bg:       color-mix(in oklch, var(--rux-info) 16%, transparent);
+	--rux-module-button-info-hover-bg: color-mix(in oklch, var(--rux-info) 23%, transparent);
+	--rux-module-button-info-fg:       var(--rux-info);
+	--rux-module-button-info-border:   color-mix(in oklch, var(--rux-info) 34%, transparent);
+
+	--rux-module-button-success-bg:       color-mix(in oklch, var(--rux-success) 14%, transparent);
+	--rux-module-button-success-hover-bg: color-mix(in oklch, var(--rux-success) 21%, transparent);
+	--rux-module-button-success-fg:       var(--rux-success-bright);
+	--rux-module-button-success-border:   color-mix(in oklch, var(--rux-success) 32%, transparent);
+
+	--rux-module-button-warning-bg:       color-mix(in oklch, var(--rux-warning) 14%, transparent);
+	--rux-module-button-warning-hover-bg: color-mix(in oklch, var(--rux-warning) 21%, transparent);
+	--rux-module-button-warning-fg:       var(--rux-warning);
+	--rux-module-button-warning-border:   color-mix(in oklch, var(--rux-warning) 32%, transparent);
+
+	--rux-module-button-danger-bg:       color-mix(in oklch, var(--rux-danger) 14%, transparent);
+	--rux-module-button-danger-hover-bg: color-mix(in oklch, var(--rux-danger) 21%, transparent);
+	--rux-module-button-danger-fg:       var(--rux-danger);
+	--rux-module-button-danger-border:   color-mix(in oklch, var(--rux-danger) 32%, transparent);
+
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
 	--rux-button-default-background: transparent;

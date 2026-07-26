@@ -1,4 +1,4 @@
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=8";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=9";
 import { createTripBar } from "../components/trip-bar.js?v=11";
 import BusPicker from "../components/bus-picker.js?v=2";
 
@@ -30,6 +30,19 @@ import BusPicker from "../components/bus-picker.js?v=2";
 		button.setAttribute("aria-label", label);
 		button.title = label;
 		button.appendChild(el("span", "rux-icon", icon));
+		return button;
+	}
+
+	function moduleButton(iconName, label, tone = "neutral") {
+		const button = el(
+			"button",
+			`rux-module-button rux-module-button--${tone}`,
+		);
+		button.type = "button";
+		button.append(
+			el("span", "rux-icon", iconName),
+			el("span", "", label),
+		);
 		return button;
 	}
 
@@ -85,6 +98,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 		nav.dataset.liveComponentNav = "";
 		nav.setAttribute("aria-label", "Live components");
 		[
+			["module-button", "Module Buttons"],
 			["trip-bar", "Trip Bar"],
 			["bus-picker", "Bus Picker"],
 			["document-viewer", "Document Viewer"],
@@ -101,6 +115,19 @@ import BusPicker from "../components/bus-picker.js?v=2";
 	}
 
 	function mountPrimitivePages() {
+		if (!document.querySelector('[data-component-page="module-button"]')) {
+			const host = demoPage("module-button", "Module Buttons");
+			const specimens = el("div", "components-app__specimens");
+			specimens.append(
+				moduleButton("more_horiz", "Neutral", "neutral"),
+				moduleButton("info", "Info", "info"),
+				moduleButton("check_circle", "Success", "success"),
+				moduleButton("warning", "Warning", "warning"),
+				moduleButton("error", "Danger", "danger"),
+			);
+			host.appendChild(specimens);
+		}
+
 		if (!document.querySelector('[data-component-page="icon-button"]')) {
 			const host = demoPage("icon-button", "Icon Buttons");
 			const specimens = el("div", "components-app__specimens");

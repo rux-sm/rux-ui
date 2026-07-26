@@ -8,6 +8,31 @@ connected card surface. `driver-share.js` adapts Supabase trip records;
 Modules never render empty headings or placeholder dividers. Critical alerts
 are the only information allowed to move ahead of the normal workflow order.
 
+## Module Button Primitive
+
+Contextual module actions use the generic `.rux-module-button` primitive.
+Assignment cards add `.assignment-module__action` only as a layout hook.
+
+```html
+<a
+  class="rux-module-button rux-module-button--info"
+  href="..."
+>
+  <span class="rux-icon" aria-hidden="true">navigation</span>
+  <span>Navigate</span>
+</a>
+```
+
+- Anatomy: Icon above a centered label.
+- Footprint: All variants are 96px wide with an 80px minimum height.
+- Variants: `--neutral`, `--info`, `--success`, `--warning`, and `--danger`.
+- Semantics: Use an `a` for navigation, telephone, or messaging destinations;
+  use a `button` for in-application actions.
+- Accessibility: Supply an accessible name that includes the action target
+  when the visible label alone is not sufficient. All states retain a visible
+  focus indicator and a touch target larger than 44px.
+- Empty behavior: Do not render a module action when it cannot be performed.
+
 ## Assignment Header
 
 - Purpose: Identifies the assignment and exposes its response state.

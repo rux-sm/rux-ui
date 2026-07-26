@@ -126,8 +126,11 @@ function createButton(label, {
 	return button;
 }
 
-function createActionLink(label, iconName, href, ariaLabel, tone = "accent") {
-	const link = el("a", `assignment-module__action assignment-module__action--${tone}`);
+function createActionLink(label, iconName, href, ariaLabel, tone = "info") {
+	const link = el(
+		"a",
+		`rux-module-button rux-module-button--${tone} assignment-module__action`,
+	);
 	link.href = href;
 	link.setAttribute("aria-label", ariaLabel || label);
 	if (!href.startsWith("tel:") && !href.startsWith("sms:")) {
