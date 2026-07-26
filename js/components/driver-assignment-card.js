@@ -7,7 +7,7 @@ import {
 	assignmentRoleLabel,
 	buildAssignmentViewModel,
 	formatAssignmentTime,
-} from "./driver-assignment-model.js?v=4";
+} from "./driver-assignment-model.js?v=5";
 
 const ICONS = {
 	alerts: "warning",
@@ -269,8 +269,15 @@ function assignmentHeader(entry, view, options, card) {
 	card.setAttribute("aria-labelledby", titleId);
 	const titleRow = el("div", "driver-assignment-card__title-row");
 	titleRow.append(title, el("span", "driver-assignment-card__role-badge", view.roleLabel));
+	const date = el("div", "driver-assignment-card__date");
+	if (view.datePrimary) {
+		date.appendChild(el("p", "driver-assignment-card__date-primary", view.datePrimary));
+	}
+	if (view.dateWeekdays) {
+		date.appendChild(el("p", "driver-assignment-card__date-weekdays", view.dateWeekdays));
+	}
 	info.append(
-		el("p", "driver-assignment-card__date", view.dateRange),
+		date,
 		titleRow,
 	);
 	header.append(info, createStatus(entry, view, options, card));

@@ -496,6 +496,12 @@
 	--rux-driver-copy-max-width:       28rem;
 	--rux-driver-status-min-height:    60dvh;
 	--rux-driver-page-title-size:      clamp(2.25rem, 7vw, 2.5rem);
+	--rux-driver-date-primary-size:    0.9375rem;
+	--rux-driver-date-primary-weight:  650;
+	--rux-driver-date-weekday-size:    var(--rux-text-xs);
+	--rux-driver-date-weekday-weight:  550;
+	--rux-driver-date-weekday-tracking: 0.02em;
+	--rux-driver-date-line-gap:        3px;
 	--rux-driver-bus-size:             clamp(1.75rem, 7vw, 2rem);
 	--rux-driver-route-size:           clamp(1.5rem, 6vw, 1.75rem);
 	--rux-driver-time-size:            clamp(2.625rem, 11vw, 3.25rem);

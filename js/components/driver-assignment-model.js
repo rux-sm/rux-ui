@@ -57,6 +57,50 @@ export function formatAssignmentDateRange(start, end, options = {}) {
 	return `${formatAssignmentDate(start, rangeOptions)} – ${formatAssignmentDate(end, rangeOptions)}`;
 }
 
+export function formatAssignmentHeaderDateRange(start, end, options = {}) {
+	const locale = options.locale || DEFAULT_LOCALE;
+	const startDate = start instanceof Date ? start : dateOnly(start);
+	const parsedEnd = end instanceof Date ? end : dateOnly(end);
+	if (!startDate || Number.isNaN(startDate.getTime())) {
+		return { primary: "", weekdays: "" };
+	}
+	const endDate = parsedEnd && !Number.isNaN(parsedEnd.getTime())
+		? parsedEnd
+		: startDate;
+	const sameDay = startDate.getTime() === endDate.getTime();
+	const sameMonth = startDate.getUTCFullYear() === endDate.getUTCFullYear()
+		&& startDate.getUTCMonth() === endDate.getUTCMonth();
+	const sameYear = startDate.getUTCFullYear() === endDate.getUTCFullYear();
+	const format = (date, formatOptions) => new Intl.DateTimeFormat(locale, {
+		timeZone: "UTC",
+		...formatOptions,
+	}).format(date);
+	const monthDay = (date, includeYear = false) => format(date, {
+		month: "short",
+		day: "numeric",
+		year: includeYear ? "numeric" : undefined,
+	});
+	const includeYear = Boolean(options.year);
+	let primary;
+	if (sameDay) {
+		primary = monthDay(startDate, includeYear);
+	} else if (!sameYear) {
+		primary = `${monthDay(startDate, true)}–${monthDay(endDate, true)}`;
+	} else if (sameMonth) {
+		primary = `${monthDay(startDate)}–${format(endDate, { day: "numeric" })}`;
+		if (includeYear) primary = `${primary}, ${format(endDate, { year: "numeric" })}`;
+	} else {
+		primary = `${monthDay(startDate)}–${monthDay(endDate)}`;
+		if (includeYear) primary = `${primary}, ${format(endDate, { year: "numeric" })}`;
+	}
+	const weekdayStyle = sameDay ? "long" : "short";
+	const startWeekday = format(startDate, { weekday: weekdayStyle });
+	const weekdays = sameDay
+		? startWeekday
+		: `${startWeekday}–${format(endDate, { weekday: weekdayStyle })}`;
+	return { primary, weekdays };
+}
+
 export function formatAssignmentTime(value, timezone, locale = DEFAULT_LOCALE) {
 	if (!value) return "";
 	const text = clean(value);
@@ -261,9 +305,12 @@ export function buildAssignmentViewModel(entry = {}) {
 	const trip = entry.trip || {};
 	const roleDetails = entry.roleDetails || {};
 	const status = assignmentStatus(entry);
+	const headerDate = formatAssignmentHeaderDateRange(entry.startDate, entry.endDate);
 	return {
 		id: clean(entry.id || `${entry.startDate || "assignment"}-${entry.busNumber || "bus"}`),
 		dateRange: formatAssignmentDateRange(entry.startDate, entry.endDate),
+		datePrimary: headerDate.primary,
+		dateWeekdays: headerDate.weekdays,
 		busLabel: entry.busNumber ? `Bus ${entry.busNumber}` : "Bus Unassigned",
 		roleLabel: assignmentRoleLabel(entry.role),
 		status,

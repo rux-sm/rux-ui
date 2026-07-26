@@ -7,6 +7,7 @@ import {
 	buildAssignmentViewModel,
 	driverDocuments,
 	formatAssignmentDateRange,
+	formatAssignmentHeaderDateRange,
 	formatAssignmentTime,
 	formatOperationalNotes,
 	normalizeFleetAssignments,
@@ -44,6 +45,8 @@ function assignment(overrides = {}) {
 test("one-day trip formats one date and omits single-driver fleet", () => {
 	const view = buildAssignmentViewModel(assignment());
 	assert.equal(view.dateRange, "THU, JUL 23");
+	assert.equal(view.datePrimary, "Jul 23");
+	assert.equal(view.dateWeekdays, "Thursday");
 	assert.equal(view.busLabel, "Bus 763");
 	assert.equal(view.modules.some((module) => module.key === "crew-fleet"), false);
 });
@@ -51,6 +54,8 @@ test("one-day trip formats one date and omits single-driver fleet", () => {
 test("multi-day round trip formats a predictable range", () => {
 	const view = buildAssignmentViewModel(assignment({ endDate: "2026-07-26" }));
 	assert.equal(view.dateRange, "THU, JUL 23 – SUN, JUL 26");
+	assert.equal(view.datePrimary, "Jul 23–26");
+	assert.equal(view.dateWeekdays, "Thu–Sun");
 	assert.equal(view.tripType, "Round Trip");
 });
 
@@ -58,6 +63,21 @@ test("date formatting handles different months", () => {
 	assert.equal(
 		formatAssignmentDateRange("2026-07-30", "2026-08-02"),
 		"THU, JUL 30 – SUN, AUG 2",
+	);
+	assert.deepEqual(
+		formatAssignmentHeaderDateRange("2026-07-30", "2026-08-02"),
+		{ primary: "Jul 30–Aug 2", weekdays: "Thu–Sun" },
+	);
+});
+
+test("compact header dates handle the reference range and different years", () => {
+	assert.deepEqual(
+		formatAssignmentHeaderDateRange("2026-07-26", "2026-07-29"),
+		{ primary: "Jul 26–29", weekdays: "Sun–Wed" },
+	);
+	assert.deepEqual(
+		formatAssignmentHeaderDateRange("2026-12-30", "2027-01-02"),
+		{ primary: "Dec 30, 2026–Jan 2, 2027", weekdays: "Wed–Sat" },
 	);
 });
 

@@ -117,14 +117,27 @@ html {
 }
 
 .driver-assignment-card__date {
-	margin: 0;
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-driver-label-size);
-	font-weight: var(--rux-weight-semibold);
-	letter-spacing: var(--rux-tracking-wide);
-	line-height: var(--rux-leading-snug);
-	text-transform: uppercase;
 	font-variant-numeric: tabular-nums;
+}
+
+.driver-assignment-card__date-primary,
+.driver-assignment-card__date-weekdays {
+	margin: 0;
+	line-height: 1.2;
+}
+
+.driver-assignment-card__date-primary {
+	color: var(--rux-fg);
+	font-size: var(--rux-driver-date-primary-size);
+	font-weight: var(--rux-driver-date-primary-weight);
+}
+
+.driver-assignment-card__date-weekdays {
+	margin-top: var(--rux-driver-date-line-gap);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-driver-date-weekday-size);
+	font-weight: var(--rux-driver-date-weekday-weight);
+	letter-spacing: var(--rux-driver-date-weekday-tracking);
 }
 
 .driver-assignment-card__title-row {

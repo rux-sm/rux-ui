@@ -91,6 +91,22 @@ test("pending assignment exposes dominant accept and quieter decline controls", 
 	assert.ok(decline.classList.contains("rux-button--default"));
 });
 
+test("header presents a compact date with supporting weekday context", () => {
+	const card = renderDriverAssignmentCard(assignment({
+		startDate: "2026-07-26",
+		endDate: "2026-07-29",
+	}));
+	assert.equal(
+		card.querySelector(".driver-assignment-card__date-primary").textContent,
+		"Jul 26–29",
+	);
+	assert.equal(
+		card.querySelector(".driver-assignment-card__date-weekdays").textContent,
+		"Sun–Wed",
+	);
+	assert.equal(card.textContent.includes("SUN, JUL 26"), false);
+});
+
 test("accepted assignment presents status without a large green surface", () => {
 	const card = renderDriverAssignmentCard(assignment({ status: "accepted" }), {
 		onDecline: async () => ({ status: "declined" }),

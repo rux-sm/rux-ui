@@ -41,6 +41,10 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Optional data: Assigned bus and response callbacks.
 - Visibility: Always.
 - Primary action: Accept Assignment when pending.
+- Date behavior: Uses a compact primary range such as `Jul 26–29` with
+  supporting weekday context such as `Sun–Wed`. One-day assignments use
+  `Jul 26` and `Sunday`; cross-month and cross-year ranges retain only the
+  month/year information needed to remove ambiguity.
 - Empty behavior: Displays `Bus Unassigned` when a bus is not assigned.
 - Loading behavior: Disables the active action and shows `Accepting…` or
   `Declining…`; duplicate submission is prevented.
