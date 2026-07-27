@@ -28,7 +28,7 @@
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=34" />
-		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=10" />
+		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=11" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=5" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=70" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
@@ -3987,7 +3987,13 @@
 								<input
 									class="rux-input"
 									id="customer-search"
+									name="customer-roster-filter"
 									type="search"
+									autocomplete="off"
+									autocapitalize="none"
+									spellcheck="false"
+									data-1p-ignore="true"
+									data-lpignore="true"
 									placeholder="Search customers…"
 									aria-label="Search customers"
 								/>
@@ -5726,14 +5732,14 @@
 		<script src="./js/components/itinerary.js?v=18"></script>
 		<script src="./js/panels/driver-panel.js?v=10" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
-		<script src="./js/panels/customers-panel.js?v=3" defer></script>
+		<script src="./js/panels/customers-panel.js?v=4" defer></script>
 		<script src="./js/panels/settings-panel.js?v=2" defer></script>
-		<script src="./js/panels/trips-list.js?v=9" defer></script>
-		<script src="./js/panels/trip-manifest.js?v=2" defer></script>
+		<script src="./js/panels/trips-list.js?v=10" defer></script>
+		<script src="./js/panels/trip-manifest.js?v=3" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=12" defer></script>
-		<script type="module" src="./js/panels/driver-week-info.js?v=10"></script>
-		<script type="module" src="./js/panels/components-panel.js?v=38"></script>
+		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
+		<script type="module" src="./js/panels/driver-week-info.js?v=11"></script>
+		<script type="module" src="./js/panels/components-panel.js?v=39"></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
@@ -6485,7 +6491,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=8");
+					const db = await import("./js/data/trip-db.js?v=9");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -8988,7 +8994,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=8");
+					const db = await import("./js/data/trip-db.js?v=9");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

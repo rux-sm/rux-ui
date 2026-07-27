@@ -12,6 +12,7 @@ import {
 	formatOperationalNotes,
 	normalizeFleetAssignments,
 	normalizeSpotLocation,
+	operationalTripContact,
 	showCrewFleetModule,
 	showRoleModule,
 	visibleAssignmentModules,
@@ -180,6 +181,39 @@ test("spot location and trip contact share one reporting module", () => {
 	assert.equal(keys.includes("contact"), false);
 	assert.equal(keys.includes("alerts"), false);
 	assert.equal(keys.includes("critical-alerts"), false);
+});
+
+test("assignment cards prefer operational trip contacts over booking contacts", () => {
+	const trip = {
+		booking_contact_name: "Carla Dominguez",
+		booking_contact_phone: "956-111-0000",
+		trip_contact_1_name: "Gabriela Najera",
+		trip_contact_1_phone: "956-314-9165",
+		trip_contact_2_name: "Chris Hernandez",
+		trip_contact_2_phone: "361-947-9207",
+	};
+	assert.deepEqual(
+		operationalTripContact(trip),
+		{ name: "Gabriela Najera", phone: "956-314-9165" },
+	);
+});
+
+test("assignment contact falls back through secondary and booking contacts", () => {
+	assert.deepEqual(
+		operationalTripContact({
+			trip_contact_2_name: "Chris Hernandez",
+			trip_contact_2_phone: "361-947-9207",
+			booking_contact_name: "Carla Dominguez",
+		}),
+		{ name: "Chris Hernandez", phone: "361-947-9207" },
+	);
+	assert.deepEqual(
+		operationalTripContact({
+			booking_contact_name: "Carla Dominguez",
+			booking_contact_phone: "956-111-0000",
+		}),
+		{ name: "Carla Dominguez", phone: "956-111-0000" },
+	);
 });
 
 test("assignments without contacts retain reporting details without a contact module", () => {

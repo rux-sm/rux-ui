@@ -214,6 +214,32 @@ export function formatOperationalNotes(value) {
 	return text;
 }
 
+export function operationalTripContact(trip = {}) {
+	const candidates = [
+		trip.tripContact,
+		{
+			name: trip.trip_contact_1_name,
+			phone: trip.trip_contact_1_phone,
+		},
+		trip.tripContact2,
+		{
+			name: trip.trip_contact_2_name,
+			phone: trip.trip_contact_2_phone,
+		},
+		trip.bookingContact,
+		{
+			name: trip.booking_contact_name,
+			phone: trip.booking_contact_phone,
+		},
+	];
+	for (const candidate of candidates) {
+		const name = clean(candidate?.name);
+		const phone = clean(candidate?.phone);
+		if (name || phone) return { name, phone };
+	}
+	return {};
+}
+
 export function totalExternalCrew(fleetAssignments = []) {
 	return fleetAssignments.reduce(
 		(total, fleet) => total + (Array.isArray(fleet.crew) ? fleet.crew.length : 0),

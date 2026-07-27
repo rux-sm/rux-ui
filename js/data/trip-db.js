@@ -16,6 +16,7 @@
 
 import { supabase } from "./supabase.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
+import { contactsShareIdentity } from "../core/contact-identity.js?v=1";
 import {
 	buildTripHistoryChanges,
 	recordTripHistory,
@@ -1308,12 +1309,13 @@ import {
 			// Resolve booking/trip contacts against the saved roster. A name typed
 			// fresh (no id yet — the autofill dropdown wasn't used, or was picked
 			// then hand-edited since) gets matched to an existing contact by
-			// phone/name or creates a new one. An already-linked contact is left
-			// alone entirely — once linked, the Customers module is the only
-			// place that actually edits a contact's info; trip-form edits to its
-			// phone/email/client stay local to this trip's own snapshot columns
-			// and never write back, so a one-off "different number for this
-			// trip" can't silently corrupt someone's permanent roster entry.
+// phone/email/name or creates a new one. An existing id is reused only when
+			// its roster identity still agrees with the visible trip fields. This
+			// prevents stale ids from silently linking a trip to the wrong person.
+			// Once validated, the linked contact is left alone — the Customers
+			// module is the only place that edits permanent roster information.
+			// Trip-form phone/email/client edits remain local to the trip snapshot,
+			// so a one-off number cannot corrupt the permanent roster entry.
 			// Non-fatal on failure — the trip itself already saved successfully
 			// above, and the contact roster is a convenience layer on top, not
 			// something worth failing the whole save over.
@@ -1327,23 +1329,49 @@ import {
 				{ idField: "trip_contact_2_id", inputId: "tp-trip2-name", name: tripData.trip_contact_2_name, phone: tripData.trip_contact_2_phone, email: null, id: tripData.trip_contact_2_id },
 			];
 			const contactUpdates = {};
+			const contactSyncWarnings = [];
+			let contactRosterChanged = false;
 			for (const slot of contactSlots) {
 				if (!slot.name) {
 					contactUpdates[slot.idField] = null;
 					continue;
 				}
-				if (slot.id) {
-					contactUpdates[slot.idField] = slot.id;
-					continue;
-				}
+				let staleLink = false;
 				try {
-					const resolved = await matchOrCreateContact({ name: slot.name, phone: slot.phone, email: slot.email, client: slot.client });
+					let resolved = null;
+					if (slot.id) {
+						const linkedContact = await fetchContactById(slot.id);
+						if (linkedContact && contactsShareIdentity(linkedContact, slot)) {
+							resolved = linkedContact;
+						} else {
+							staleLink = true;
+							console.warn(
+								`Ignoring stale ${slot.idField} link while saving ${slot.name}.`,
+							);
+						}
+					}
+					if (!resolved) {
+						resolved = await matchOrCreateContact({
+							name: slot.name,
+							phone: slot.phone,
+							email: slot.email,
+							client: slot.client,
+						});
+						contactRosterChanged = true;
+					}
 					contactUpdates[slot.idField] = resolved?.id ?? null;
 					const input = root.querySelector(`#${slot.inputId}`);
 					if (input) input.dataset.contactId = resolved?.id || "";
 				} catch (err) {
 					console.warn("Contact save failed (non-fatal):", err);
-					contactUpdates[slot.idField] = null;
+					contactSyncWarnings.push(slot.name);
+					// Do not preserve a link proven to belong to a different
+					// person. If validation itself failed, retaining the prior
+					// link is safer than silently unlinking an otherwise valid
+					// historical contact.
+					contactUpdates[slot.idField] = staleLink
+						? null
+						: slot.id || null;
 				}
 			}
 			const { error: contactLinkErr } = await supabase
@@ -1352,8 +1380,12 @@ import {
 				.eq("id", savedId);
 			if (contactLinkErr) {
 				console.warn("Linking contacts to trip failed (non-fatal):", contactLinkErr);
+				contactSyncWarnings.push("trip contact links");
 			} else {
 				Object.assign(tripData, contactUpdates);
+			}
+			if (contactRosterChanged) {
+				window.dispatchEvent(new CustomEvent("rux:contacts-changed"));
 			}
 
 			const historyChanges = buildTripHistoryChanges({
@@ -1387,9 +1419,23 @@ import {
 				syncManifestBtn(root);
 			}
 
-			setSaveButtonState(saveBtn, { label: "Saved", icon: "check", disabled: false });
-			root.dispatchEvent(new CustomEvent("rux:trip-saved", { bubbles: true, detail: { id: savedId } }));
-			if (window.Rux) Rux.toast("Trip saved");
+			const contactSyncWarning = contactSyncWarnings.length > 0;
+			setSaveButtonState(saveBtn, {
+				label: contactSyncWarning ? "Saved with warning" : "Saved",
+				icon: contactSyncWarning ? "warning" : "check",
+				disabled: false,
+			});
+			root.dispatchEvent(new CustomEvent("rux:trip-saved", {
+				bubbles: true,
+				detail: { id: savedId, contactSyncWarning },
+			}));
+			if (window.Rux) {
+				Rux.toast(
+					contactSyncWarning
+						? "Trip saved, but one or more contacts could not be added."
+						: "Trip saved",
+				);
+			}
 			clearForm(root, itinerary);
 			setTimeout(() => {
 				if (saveBtn.dataset.saveAttempt === saveAttempt && !saveBtn.hasAttribute("aria-busy")) {
@@ -1987,13 +2033,24 @@ export async function fetchContactTrips(contactId) {
 	return data ?? [];
 }
 
+async function fetchContactById(contactId) {
+	if (!contactId) return null;
+	const { data, error } = await supabase
+		.from("contacts")
+		.select("id, name, phone, email, client")
+		.eq("id", contactId)
+		.maybeSingle();
+	if (error) throw error;
+	return data;
+}
+
 // Finds-or-creates a contact for a name/phone/email typed directly into a
 // trip's booking/trip-contact fields (as opposed to picked from an autofill
 // suggestion, which already carries a real id and goes through
 // upsertContact above instead). Matches by phone first — the more reliable
-// key when present — falling back to an exact case-insensitive name match,
+// key when present — then email, then an exact case-insensitive name match,
 // so re-typing an existing customer's info without bothering to pick the
-// suggestion doesn't spawn a duplicate roster entry.
+// suggestion does not spawn a duplicate roster entry.
 // client only applies to the create fallback (a brand-new contact has
 // nothing better to seed it with) — the two match branches deliberately
 // leave an existing contact's client untouched, same reasoning as
@@ -2003,22 +2060,35 @@ export async function matchOrCreateContact({ name, phone, email, client }) {
 	if (!trimmedName) return null;
 
 	if (phone) {
-		const { data: byPhone } = await supabase
+		const { data: byPhone, error: phoneError } = await supabase
 			.from("contacts")
 			.select("id, name, phone, email, client")
 			.eq("phone", phone)
 			.limit(1)
 			.maybeSingle();
-		if (byPhone) return upsertContact({ id: byPhone.id, name: trimmedName, phone, email: email || byPhone.email });
+		if (phoneError) throw phoneError;
+		if (byPhone) return byPhone;
 	}
 
-	const { data: byName } = await supabase
+	if (email) {
+		const { data: byEmail, error: emailError } = await supabase
+			.from("contacts")
+			.select("id, name, phone, email, client")
+			.ilike("email", String(email).trim())
+			.limit(1)
+			.maybeSingle();
+		if (emailError) throw emailError;
+		if (byEmail) return byEmail;
+	}
+
+	const { data: byName, error: nameError } = await supabase
 		.from("contacts")
 		.select("id, name, phone, email, client")
 		.ilike("name", trimmedName)
 		.limit(1)
 		.maybeSingle();
-	if (byName) return upsertContact({ id: byName.id, name: trimmedName, phone: phone || byName.phone, email: email || byName.email });
+	if (nameError) throw nameError;
+	if (byName) return byName;
 
 	return upsertContact({ name: trimmedName, phone, email, client });
 }

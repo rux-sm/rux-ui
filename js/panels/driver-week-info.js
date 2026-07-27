@@ -14,6 +14,7 @@
 import { supabase } from "../data/supabase.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { latestDocument } from "../core/trip-documents.js";
+import { operationalTripContact } from "../components/driver-assignment-model.js?v=19";
 
 (() => {
 	"use strict";
@@ -183,19 +184,6 @@ import { latestDocument } from "../core/trip-documents.js";
 		return result;
 	}
 
-	function contactFor(trip) {
-		if (trip.booking_contact_name || trip.booking_contact_phone) {
-			return {
-				name: trip.booking_contact_name || "",
-				phone: trip.booking_contact_phone || "",
-			};
-		}
-		return {
-			name: trip.trip_contact_1_name || "",
-			phone: trip.trip_contact_1_phone || "",
-		};
-	}
-
 	function entriesForDriver({ driver, trips }) {
 		const entries = [];
 
@@ -242,7 +230,7 @@ import { latestDocument } from "../core/trip-documents.js";
 						? returnStop.address || returnStop.name || "Yard"
 						: trip.destination || "",
 					requirements: activeRequirements(trip),
-					contact: contactFor(trip),
+					contact: operationalTripContact(trip),
 					itineraryUrl: itinerary.publicUrl,
 					itineraryShareUrl: itinerary.shortUrl || itinerary.publicUrl,
 				});

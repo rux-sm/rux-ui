@@ -29,13 +29,14 @@
 
 	let allContacts = [];
 	let selectedId = null;
+	let filterQuery = "";
 	let contactsDbPromise = null;
 	let loadPromise = null;
 	let loaded = false;
 
 	function getContactsDb() {
 		if (!contactsDbPromise) {
-			contactsDbPromise = import("../data/trip-db.js?v=8").catch((error) => {
+			contactsDbPromise = import("../data/trip-db.js?v=9").catch((error) => {
 				// A failed dynamic import may be retried on the next panel load.
 				contactsDbPromise = null;
 				throw error;
@@ -76,10 +77,10 @@
 		return haystack.includes(query);
 	}
 
-	function renderRows(contacts) {
+	function renderRows(contacts, emptyMessage = "No customers yet.") {
 		tbody.innerHTML = "";
 		if (!contacts.length) {
-			tbody.innerHTML = `<tr><td colspan="4" class="customer-app__empty">No customers yet.</td></tr>`;
+			tbody.innerHTML = `<tr><td colspan="4" class="customer-app__empty">${emptyMessage}</td></tr>`;
 			return;
 		}
 		contacts.forEach((c) => {
@@ -131,8 +132,10 @@
 	}
 
 	function applyFilter() {
-		const query = searchInput?.value.trim().toLowerCase() || "";
-		renderRows(allContacts.filter((c) => matchesSearch(c, query)));
+		renderRows(
+			allContacts.filter((contact) => matchesSearch(contact, filterQuery)),
+			filterQuery ? "No matching customers." : "No customers yet.",
+		);
 	}
 
 	function escHtml(value) {
@@ -141,7 +144,21 @@
 		}[c]));
 	}
 
-	searchInput?.addEventListener("input", applyFilter);
+	if (searchInput) {
+		// Browser form restoration and password managers have populated this
+		// search field with account email addresses. Keep the filter state
+		// explicit so restored values cannot hide a successfully loaded roster.
+		searchInput.value = "";
+		searchInput.addEventListener("input", () => {
+			filterQuery = searchInput.value.trim().toLowerCase();
+			applyFilter();
+		});
+		window.addEventListener("pageshow", () => {
+			filterQuery = "";
+			searchInput.value = "";
+			if (loaded) applyFilter();
+		});
+	}
 
 	function selectRow(tr, contact) {
 		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
@@ -222,11 +239,16 @@
 		try {
 			const db = await getContactsDb();
 			await db.upsertContact(selectedId ? { id: selectedId, ...payload } : payload);
-			await loadCustomers({ force: true });
+			const refreshed = await loadCustomers({ force: true });
 			resetPanel();
+			window.Rux?.toast?.(
+				refreshed
+					? "Customer saved"
+					: "Customer saved. Retry the list refresh to see it.",
+			);
 		} catch (err) {
 			console.error("Could not save customer:", err);
-			window.Rux?.toast("Save failed — try again.");
+			window.Rux?.toast?.("Save failed — try again.");
 		} finally {
 			btn.disabled = false;
 		}
@@ -241,11 +263,16 @@
 			const db = await getContactsDb();
 			await db.deleteContact(selectedId);
 			selectedId = null;
-			await loadCustomers({ force: true });
+			const refreshed = await loadCustomers({ force: true });
 			resetPanel();
+			window.Rux?.toast?.(
+				refreshed
+					? "Customer deleted"
+					: "Customer deleted. Retry the list refresh.",
+			);
 		} catch (err) {
 			console.error("Could not delete customer:", err);
-			window.Rux?.toast("Delete failed — try again.");
+			window.Rux?.toast?.("Delete failed — try again.");
 		} finally {
 			btn.disabled = false;
 		}
@@ -302,6 +329,24 @@
 		init,
 		reload: () => loadCustomers({ force: true }),
 	};
+
+	// Trip saves may create or relink contacts while this panel is already
+	// mounted. Invalidate the roster immediately so a newly saved customer
+	// cannot remain hidden behind the prior successful response.
+	window.addEventListener("rux:contacts-changed", () => {
+		loaded = false;
+		if (loadPromise) {
+			// Do not let an older request win the race and restore a roster
+			// snapshot captured before the trip created its contact.
+			const pendingLoad = loadPromise;
+			void pendingLoad.finally(() => {
+				loaded = false;
+				void loadCustomers({ force: true });
+			});
+			return;
+		}
+		void loadCustomers({ force: true });
+	});
 
 	// A direct #customers load can run before the module-navigation script calls
 	// init(). Starting here as well is safe because loadPromise deduplicates it.

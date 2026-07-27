@@ -120,6 +120,7 @@
 	--env-ink: oklch(18% 0 0);
 	--env-ink-muted: oklch(45% 0 0);
 	--env-rule: oklch(25% 0 0);
+	--rux-trip-envelope-field-row-min-height: 46px;
 	/* Match the physical 6in x 9in stock. trip-envelope.js scales this fixed
 	   shape as one unit so Standard and MVM retain the same proportions at
 	   every floating-window size. */
@@ -193,6 +194,20 @@
 .rux-trip-envelope__grid {
 	border: 1px solid var(--env-rule);
 	border-top: 0;
+}
+
+/* The Standard form always contains six ruled information rows. Equal
+   flexible tracks keep blank fields (especially the odometers) the same
+   height as populated fields. The shared minimum matches one label/value
+   stack with the standard gap and vertical padding; if long operational
+   text needs more room, all rows grow together instead of clipping it. */
+.rux-trip-envelope--standard .rux-trip-envelope__grid {
+	display: grid;
+	grid-auto-rows: minmax(
+		var(--rux-trip-envelope-field-row-min-height),
+		1fr
+	);
+	align-items: stretch;
 }
 
 .rux-trip-envelope__row {

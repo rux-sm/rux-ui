@@ -7,8 +7,9 @@ import {
 	formatAssignmentDate,
 	normalizeFleetAssignments,
 	normalizeSpotLocation,
-} from "../components/driver-assignment-model.js?v=18";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=53";
+	operationalTripContact,
+} from "../components/driver-assignment-model.js?v=19";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=54";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();
@@ -131,19 +132,6 @@ function alertsFor(trip) {
 	});
 }
 
-function contactFor(trip) {
-	if (trip.booking_contact_name || trip.booking_contact_phone) {
-		return {
-			name: trip.booking_contact_name || "",
-			phone: trip.booking_contact_phone || "",
-		};
-	}
-	return {
-		name: trip.trip_contact_1_name || "",
-		phone: trip.trip_contact_1_phone || "",
-	};
-}
-
 function documentUrl(document) {
 	if (!document?.file_path) return "";
 	return supabase.storage.from("trip-documents").getPublicUrl(document.file_path).data?.publicUrl || "";
@@ -195,6 +183,7 @@ function fetchSharedTrips(tripIds, includeReliefDetails = true) {
 		trip_type, destination, customer, departure_time, spot_time, return_time, notes,
 		booking_contact_name, booking_contact_phone,
 		trip_contact_1_name, trip_contact_1_phone,
+		trip_contact_2_name, trip_contact_2_phone,
 		trip_reqs, req_sleeper, req_56pax, req_ada, need_hotel, need_fuel_card,
 		trip_stops(*),
 		trip_assignments(
@@ -297,7 +286,7 @@ export function normalizeAssignment(row, driverId, statusesByKey = new Map()) {
 		spotLocation: normalizeSpotLocation(pickup.name, pickup.address),
 		reportTime: pickup.depart_prev || trip.departure_time,
 		returnTime: returnStop.arrive || trip.return_time,
-		contact: contactFor(trip),
+		contact: operationalTripContact(trip),
 		fleetAssignments: normalizeFleetAssignments(trip, leg, row, driverId),
 		alerts: alertsFor(trip),
 		documents,
@@ -408,6 +397,10 @@ function envelopeTrip(entry) {
 		tripContact: {
 			name: entry.trip.trip_contact_1_name || "",
 			phone: entry.trip.trip_contact_1_phone || "",
+		},
+		tripContact2: {
+			name: entry.trip.trip_contact_2_name || "",
+			phone: entry.trip.trip_contact_2_phone || "",
 		},
 		trip_reqs: entry.trip.trip_reqs || {},
 		req_sleeper: entry.trip.req_sleeper,

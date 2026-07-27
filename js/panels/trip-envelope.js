@@ -126,12 +126,15 @@
 		return bus?.number != null ? String(bus.number) : "";
 	}
 
-	// Same precedence the rest of the app already uses (trip-bar.js,
-	// print-schedule.js) — booking contact first, trip contact 1 as fallback.
+	// The envelope travels with the driver, so its contact must come from the
+	// trip's operational contact fields. Keep booking contact only as a legacy
+	// fallback for older trips that do not have either trip contact populated.
 	function contactFor(trip) {
-		const booking = trip.bookingContact;
-		if (booking?.name || booking?.phone) return booking;
-		return trip.tripContact || {};
+		const primary = trip.tripContact;
+		if (primary?.name || primary?.phone) return primary;
+		const secondary = trip.tripContact2;
+		if (secondary?.name || secondary?.phone) return secondary;
+		return trip.bookingContact || {};
 	}
 
 	const ENVELOPE_REQUIREMENT_FALLBACKS = {

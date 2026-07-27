@@ -7,7 +7,7 @@ import {
 	assignmentRoleLabel,
 	buildAssignmentViewModel,
 	formatAssignmentTime,
-} from "./driver-assignment-model.js?v=18";
+} from "./driver-assignment-model.js?v=19";
 
 const ICONS = {
 	bus: "directions_bus",
