@@ -128,3 +128,24 @@
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 }
+
+/* — Active profiles (header, left of the profile button) — */
+/* Overlapping avatar stack, Slack/Docs-presence style — name is a native
+   title tooltip rather than inline text, since this sits in the header nav
+   rather than a dropdown with room for labels. */
+
+.rux-app-header__active-profiles {
+	display: flex;
+	align-items: center;
+}
+
+.rux-app-header__active-avatar {
+	flex: none;
+	border-radius: 50%;
+	border: 2px solid var(--rux-surface-canvas);
+	margin-inline-start: calc(-1 * var(--rux-space-2));
+}
+
+.rux-app-header__active-avatar:first-child {
+	margin-inline-start: 0;
+}

@@ -39,6 +39,10 @@ function datesOverlap(aStart, aEnd, bStart, bEnd) {
 }
 
 export function findConflict(busId, trip, currentTrips) {
+  // No bus means no such thing as a double-booking — without this, every
+  // pair of unassigned trips with overlapping dates would spuriously match
+  // each other (both have busId === null/undefined).
+  if (!busId) return null;
   return Object.values(currentTrips).find(
     t => t.busId === busId &&
          t.assignmentId !== trip.assignmentId &&

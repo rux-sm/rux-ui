@@ -133,6 +133,16 @@
 					class="rux-app-header__actions"
 					aria-label="Account actions"
 				>
+					<!-- Who else currently has a profile active (excludes yourself —
+					     that's the button right next to it) — Supabase Realtime
+					     Presence, keyed by profile id so multiple tabs/devices of the
+					     same profile collapse into one entry. See the presence wiring
+					     further down for the join/track logic. -->
+					<div
+						class="rux-app-header__active-profiles"
+						id="header-active-profiles"
+						hidden
+					></div>
 					<button
 						class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
 						type="button"
@@ -6024,6 +6034,8 @@
 				getCurrentProfile,
 				getRememberedProfileId,
 				setCurrentProfile,
+				touchProfileActivity,
+				isProfileStale,
 			} from "./js/core/profile.js";
 
 			// Load requirements before trip panel is used (window.appRequirements cache)
@@ -6181,6 +6193,69 @@
 
 			window.addEventListener("rux:profile-changed", (event) => {
 				renderHeaderAvatar(event.detail.profile);
+			});
+
+			// ── Active profiles — who else currently has a profile selected ────
+			// Supabase Realtime Presence, keyed by profile id (not a per-tab
+			// random key) so multiple tabs/devices signed in as the same person
+			// collapse into a single "Active now" entry, per the ask to see
+			// distinct active profiles rather than instance counts.
+			const headerActiveProfiles = document.getElementById("header-active-profiles");
+			let presenceChannel = null;
+
+			function renderActiveProfiles() {
+				const state = presenceChannel?.presenceState() || {};
+				// Exclude yourself — you're already shown by the profile button
+				// right next to this stack.
+				const otherIds = Object.keys(state).filter(
+					(id) => String(id) !== String(getCurrentProfile()?.id),
+				);
+				headerActiveProfiles.hidden = !otherIds.length;
+				headerActiveProfiles.replaceChildren();
+				otherIds.forEach((id) => {
+					const meta = state[id][0];
+					const avatar = profileAvatarEl(
+						meta,
+						"rux-avatar--sm rux-app-header__active-avatar",
+					);
+					avatar.title = meta.display_name;
+					headerActiveProfiles.appendChild(avatar);
+				});
+			}
+
+			function leavePresenceChannel() {
+				if (!presenceChannel) return;
+				supabase.removeChannel(presenceChannel);
+				presenceChannel = null;
+				headerActiveProfiles.hidden = true;
+				headerActiveProfiles.replaceChildren();
+			}
+
+			function joinPresenceChannel(profile) {
+				leavePresenceChannel();
+				presenceChannel = supabase.channel("rux-presence", {
+					config: { presence: { key: String(profile.id) } },
+				});
+				presenceChannel
+					.on("presence", { event: "sync" }, renderActiveProfiles)
+					.subscribe(async (status) => {
+						if (status !== "SUBSCRIBED") return;
+						await presenceChannel.track({
+							display_name: profile.display_name,
+							photo_path: profile.photo_path,
+							avatar_color: profile.avatar_color,
+						});
+					});
+			}
+
+			window.addEventListener("rux:profile-changed", (event) => {
+				const profile = event.detail.profile;
+				if (profile) joinPresenceChannel(profile);
+				else leavePresenceChannel();
+			});
+
+			window.addEventListener("beforeunload", () => {
+				presenceChannel?.untrack();
 			});
 
 			const profilePickerAddColorInputs = [
@@ -6416,20 +6491,41 @@
 				}
 			});
 
+			// A remembered profile only carries over silently if it was active
+			// recently — past this, a fresh reload re-prompts instead of quietly
+			// trusting a stale session (e.g. a personal device left signed in
+			// for hours). Ongoing use resets the clock via touchProfileActivity
+			// below, so this only bites actual idle gaps, not normal work.
+			const PROFILE_IDLE_LIMIT_MS = 60 * 60 * 1000; // 1 hour
+
 			async function initProfilePicker() {
 				await refreshProfiles();
 				const rememberedId = getRememberedProfileId();
 				const remembered = rememberedId
 					? allProfiles.find((p) => String(p.id) === String(rememberedId))
 					: null;
-				if (remembered) {
+				if (remembered && !isProfileStale(PROFILE_IDLE_LIMIT_MS)) {
 					setCurrentProfile(remembered);
 				} else {
-					// Mandatory: no remembered/valid profile means the app can't be
+					// Mandatory: no remembered/fresh profile means the app can't be
 					// used yet — not dismissible until one is picked or created.
 					openProfilePicker(false);
 				}
 			}
+
+			// Keeps the remembered profile's activity timestamp fresh during
+			// actual use, throttled so it's a cheap localStorage write rather
+			// than one per click/keystroke.
+			let lastActivityTouch = 0;
+			function handleProfileActivity() {
+				if (!getCurrentProfile()) return;
+				const now = Date.now();
+				if (now - lastActivityTouch < 60000) return;
+				lastActivityTouch = now;
+				touchProfileActivity();
+			}
+			document.addEventListener("click", handleProfileActivity, { passive: true });
+			document.addEventListener("keydown", handleProfileActivity);
 
 			// Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
 			const initialModule =
@@ -6818,6 +6914,13 @@
 				return `track-${String(number ?? "").replace(/[^A-Za-z0-9_-]/g, "_")}`;
 			}
 
+			// Synthetic track for trips whose assignment has no bus yet — lets a
+			// week's worth of unassigned trips surface in the grid instead of
+			// being invisible (previously only findable via search). Deliberately
+			// not run through trackIdForBusNumber so it can never collide with a
+			// real bus's track id.
+			const UNASSIGNED_TRACK_ID = "track-unassigned";
+
 			function busNumberFromTrack(track) {
 				return (
 					track?.dataset.busNumber ||
@@ -7164,6 +7267,12 @@
 							)
 								return;
 							moved = true;
+							// Reveal the unassigned row for the duration of the drag even
+							// if it's currently empty (hidden) — otherwise there'd be no
+							// way to drag the *first* unassigned trip of the week into it,
+							// since a hidden track has a zero-size rect below. Restored to
+							// its correct hidden/shown state in onUp once the drag ends.
+							if (unassignedRowEl) unassignedRowEl.hidden = false;
 							rowRects = [
 								...schedulerEl.querySelectorAll(
 									".rux-scheduler__track",
@@ -7226,7 +7335,16 @@
 								),
 							);
 							targetTrack = hitTrack;
-							if (
+							if (targetTrack?.dataset.unassigned) {
+								// No such thing as a double-booking on the unassigned row —
+								// always a plain valid target, never a conflict. No-op only
+								// when the trip is already sitting there.
+								if (trip.busId) {
+									targetTrack.classList.add(
+										"rux-scheduler__track--drop-target",
+									);
+								}
+							} else if (
 								targetTrack &&
 								targetTrack.dataset.busId !== trip.busId
 							) {
@@ -7269,7 +7387,12 @@
 						ghost = null;
 
 						let reassigning = false;
-						if (
+						if (targetTrack?.dataset.unassigned) {
+							if (trip.busId) {
+								reassigning = true;
+								performBusReassign(trip, { id: null }, null, true);
+							}
+						} else if (
 							targetTrack &&
 							targetTrack.dataset.busId !== trip.busId
 						) {
@@ -7290,6 +7413,17 @@
 									true,
 								);
 							}
+						}
+
+						// The reveal-for-drag in onMove may have shown the unassigned
+						// row even though nothing ended up there (e.g. dropped back on
+						// the original track) — a real reassign will correct this shortly
+						// via loadTripsFromDB()'s renderScheduler() call regardless, but
+						// this avoids it sitting visibly empty in the meantime either way.
+						if (unassignedRowEl) {
+							unassignedRowEl.hidden = !activePlacements.some(
+								(p) => p.trackId === UNASSIGNED_TRACK_ID,
+							);
 						}
 
 						if (reassigning) {
@@ -7663,6 +7797,11 @@
 				}
 			}
 
+			// Set by renderBusRows below; renderScheduler() toggles its hidden
+			// attribute per week based on whether any trip is currently placed
+			// on UNASSIGNED_TRACK_ID.
+			let unassignedRowEl = null;
+
 			function renderBusRows(buses = []) {
 				schedulerEl
 					.querySelectorAll(".rux-scheduler__row")
@@ -7715,6 +7854,35 @@
 					schedulerEl.appendChild(row);
 					buildTrackGrid(track);
 				});
+
+				// Trailing "Unassigned" row — always created, hidden by default;
+				// renderScheduler() reveals it only for weeks that actually have a
+				// trip parked there (see UNASSIGNED_TRACK_ID). Deliberately no
+				// dataset.busId — its absence is how the drag handlers and
+				// findConflict tell this apart from a real bus track.
+				const unassignedRow = document.createElement("div");
+				unassignedRow.className =
+					"rux-scheduler__row rux-scheduler__row--unassigned";
+				unassignedRow.hidden = true;
+				const unassignedHead = document.createElement("div");
+				unassignedHead.className = "rux-scheduler__row-head";
+				unassignedHead.setAttribute("aria-label", "Unassigned trips");
+				unassignedHead.title =
+					"Trips this week without a bus assigned";
+				const unassignedIcon = document.createElement("span");
+				unassignedIcon.className = "rux-icon rux-scheduler__bus-oos";
+				unassignedIcon.textContent = "warning";
+				unassignedIcon.setAttribute("aria-hidden", "true");
+				unassignedHead.appendChild(unassignedIcon);
+				const unassignedTrack = document.createElement("div");
+				unassignedTrack.className = "rux-scheduler__track";
+				unassignedTrack.id = UNASSIGNED_TRACK_ID;
+				unassignedTrack.dataset.unassigned = "true";
+				unassignedRow.append(unassignedHead, unassignedTrack);
+				schedulerEl.appendChild(unassignedRow);
+				buildTrackGrid(unassignedTrack);
+				unassignedRowEl = unassignedRow;
+
 				trackOrder = buses
 					.map((bus) => trackIdForBusNumber(bus.number))
 					.filter((id) => document.getElementById(id));
@@ -7885,6 +8053,11 @@
 					trips[key].groupLabel = computeBusLabel(key);
 				});
 				activePlacements = getWeekPlacements(currentWeekStart, trips);
+				if (unassignedRowEl) {
+					unassignedRowEl.hidden = !activePlacements.some(
+						(p) => p.trackId === UNASSIGNED_TRACK_ID,
+					);
+				}
 				activePlacements.forEach((placement) => {
 					const track = document.getElementById(placement.trackId);
 					if (!track) return;
@@ -8157,7 +8330,6 @@
 						window.RuxBilling?.deriveRecordStatus?.(t) ||
 						t.contract_status;
 					(t.trip_assignments ?? []).forEach((assignment) => {
-						if (!assignment.buses) return;
 						const key = assignment.id;
 						const leg = assignment.leg ?? "outbound";
 						// A Drop-off / Pick-up trip's return-leg assignments occupy the
@@ -8284,9 +8456,11 @@
 							activeRoles: assignment.active_roles ?? ["driver"],
 							driverId: primaryDriver?.driver_id ?? null,
 						};
-						const trackId = trackIdForBusNumber(
-							assignment.buses.number,
-						);
+						// No bus yet — route to the synthetic Unassigned track
+						// instead of dropping this assignment on the floor.
+						const trackId = assignment.buses
+							? trackIdForBusNumber(assignment.buses.number)
+							: UNASSIGNED_TRACK_ID;
 						if (!document.getElementById(trackId)) return;
 						tripTrackMap[key] = { trackId, lane: 0 };
 					});

@@ -257,6 +257,14 @@
 	--_row-height: calc(138px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
+/* display: contents above is an author style, which beats the browser's
+   default [hidden] { display: none } UA rule at equal specificity (author
+   origin always wins) — without this override, toggling the hidden
+   attribute on the unassigned row would have no visual effect. */
+.rux-scheduler__row[hidden] {
+	display: none;
+}
+
 .rux-scheduler--compact {
 	/* 110px must match .rux-scheduler--compact .rux-trip-bar's
 	   --rux-trip-bar-collapsed-height (trip-bar.css) — see the non-compact
@@ -335,17 +343,34 @@
 	opacity: 0.7;
 }
 
+/* — Unassigned row — */
+/* Same diagonal-stripe technique as out-of-service above, neutral-tinted
+   instead of warning-tinted — reads as "not a real bus lane" rather than
+   "problem with this bus". */
+.rux-scheduler__row--unassigned .rux-scheduler__track {
+	background-image: repeating-linear-gradient(
+		-45deg,
+		transparent 0px 6px,
+		color-mix(in srgb, var(--rux-fg-subtle) 8%, transparent) 6px 12px
+	);
+}
+
 /* No corner-radius matching needed here anymore — .calendar-app__viewport
    (scheduler-app.css) now owns the card's border/radius/clipping as the
    outer frame, so it clips whatever's currently scrolled to its edges
    automatically, at any scroll position. These rules just drop the
    last row's own internal divider, since there's no next row to separate
-   from. */
-.rux-scheduler__row:last-child .rux-scheduler__row-head {
+   from. The unassigned row is always the structural last child (appended
+   once, after every real bus row) but starts out hidden — so the
+   :has() alternative covers "last *visible* row" once it's hidden, same
+   effect :last-child already gives when the unassigned row is shown. */
+.rux-scheduler__row:last-child .rux-scheduler__row-head,
+.rux-scheduler__row:has(+ .rux-scheduler__row--unassigned[hidden]) .rux-scheduler__row-head {
 	border-block-end: none;
 }
 
-.rux-scheduler__row:last-child .rux-scheduler__track {
+.rux-scheduler__row:last-child .rux-scheduler__track,
+.rux-scheduler__row:has(+ .rux-scheduler__row--unassigned[hidden]) .rux-scheduler__track {
 	border: none;
 }
 
