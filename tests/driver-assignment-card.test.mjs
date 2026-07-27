@@ -117,8 +117,9 @@ test("header stacks bus and role beside the date and destination", () => {
 	const roleBadge = card.querySelector(".driver-assignment-card__role-badge");
 	assert.equal(
 		busBadge.querySelector(".rux-badge__label").textContent,
-		"Bus 763",
+		"763",
 	);
+	assert.equal(busBadge.getAttribute("aria-label"), "Bus 763");
 	assert.equal(
 		roleBadge.querySelector(".rux-badge__label").textContent,
 		"Driver",
@@ -204,7 +205,7 @@ test("ordinary drivers use header badges while relief assignments show handoff d
 			.querySelector(".driver-assignment-card__bus-badge")
 			.querySelector(".rux-badge__label")
 			.textContent,
-		"Bus 763",
+		"763",
 	);
 	const relief = renderDriverAssignmentCard(assignment({
 		role: "relief-start",
@@ -241,14 +242,18 @@ test("header destination is followed by spot time and spot location", () => {
 	assert.ok(spotLocation.textContent.includes("7250 Val Verde Rd"));
 	assert.ok(spotLocation.textContent.includes("Navigate"));
 	const spotDetails = spotLocation.querySelector(".assignment-compact-module__details");
-	const time = spotDetails.childNodes[0];
-	assert.equal(time.tagName, "TIME");
-	assert.ok(time.classList.contains("driver-assignment-card__time"));
-	assert.equal(time.getAttribute("aria-label"), "Spot time: 5:15 AM");
-	const address = spotDetails.childNodes[1];
+	const address = spotDetails.childNodes[0];
 	assert.equal(address.tagName, "ADDRESS");
 	assert.ok(address.classList.contains("driver-assignment-card__spot-address"));
 	assert.equal(address.textContent, "7250 Val Verde Rd, Donna TX 78537");
+	assert.equal(
+		address.getAttribute("aria-label"),
+		"Spot location: 7250 Val Verde Rd, Donna TX 78537",
+	);
+	const time = spotDetails.childNodes[1];
+	assert.equal(time.tagName, "TIME");
+	assert.ok(time.classList.contains("driver-assignment-card__time"));
+	assert.equal(time.getAttribute("aria-label"), "Spot time: 5:15 AM");
 	assert.equal(spotLocation.textContent.includes("Spot Time"), false);
 	assert.equal(spotLocation.textContent.includes("Spot Location"), false);
 	assert.equal(spotLocation.textContent.includes("Austin"), false);
@@ -295,6 +300,7 @@ test("trip contact shares reporting details and alerts are omitted", () => {
 	const reporting = moduleByKey(card, "spot-location");
 	const contact = reporting.querySelector(".driver-assignment-card__reporting-contact");
 	assert.ok(contact);
+	assert.ok(contact.classList.contains("assignment-compact-module--actions"));
 	assert.equal(reporting.getAttribute("aria-label"), "Reporting details and trip contact");
 	assert.equal(contact.querySelector(".assignment-module__label-wrap"), null);
 	assert.ok(contact.querySelector(".assignment-compact-module__body"));
@@ -523,6 +529,7 @@ test("crew and fleet uses compact bus-person rows", () => {
 	assert.equal(crew.textContent.includes("956-555-0112"), false);
 	assert.equal(crew.querySelector(".assignment-module__label-wrap"), null);
 	const crewActions = crew.querySelector(".driver-assignment-card__crew-actions");
+	assert.ok(crewActions.parentNode.classList.contains("assignment-compact-module--actions"));
 	const crewActionLabels = crewActions.childNodes.map(
 		(action) => action.getAttribute("aria-label"),
 	);
@@ -659,12 +666,15 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/\.driver-assignment-card__header-metadata\s*\{[^}]*display:\s*contents/s,
 	);
-	assert.match(tokens, /--rux-driver-card-header-padding:\s+var\(--rux-space-5\)/);
+	assert.match(
+		tokens,
+		/--rux-driver-card-header-padding:\s+28px var\(--rux-space-5\)/,
+	);
 	assert.match(tokens, /--rux-badge-background-opacity:\s+12%/);
 	assert.match(tokens, /--rux-badge-module-height:\s+var\(--rux-module-button-height\)/);
 	assert.match(
 		tokens,
-		/--rux-driver-module-padding:\s+var\(--rux-space-4\) var\(--rux-space-5\)/,
+		/--rux-driver-module-padding:\s+20px var\(--rux-space-5\)/,
 	);
 	assert.match(
 		badges,
@@ -721,11 +731,15 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	assert.match(tokens, /--rux-driver-action-rail-width:\s*96px/);
 	assert.match(
 		css,
-		/\.assignment-compact-module--actions\s*\{[^}]*var\(--rux-driver-action-rail-width\)/s,
+		/\.assignment-compact-module--actions\s*\{[^}]*var\(--rux-driver-action-rail-width,\s*96px\)/s,
 	);
 	assert.match(
 		css,
-		/\.assignment-compact-module__actions\s*\{[^}]*width:\s*var\(--rux-driver-action-rail-width\)/s,
+		/\.assignment-compact-module__actions\s*\{[^}]*width:\s*var\(--rux-driver-action-rail-width,\s*96px\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__crew-member\.assignment-compact-module--actions\s*\{[^}]*var\(--rux-driver-action-rail-width,\s*96px\)/s,
 	);
 	assert.match(
 		css,

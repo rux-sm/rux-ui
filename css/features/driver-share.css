@@ -494,7 +494,7 @@ html {
 .assignment-compact-module--actions {
 	grid-template-columns:
 		minmax(0, 1fr)
-		var(--rux-driver-action-rail-width);
+		var(--rux-driver-action-rail-width, 96px);
 }
 
 .driver-assignment-card__reporting-section {
@@ -550,7 +550,7 @@ html {
 	align-items: center;
 	justify-content: flex-end;
 	gap: var(--rux-space-2);
-	width: var(--rux-driver-action-rail-width);
+	width: var(--rux-driver-action-rail-width, 96px);
 	align-self: center;
 	justify-self: end;
 }
@@ -595,7 +595,7 @@ html {
 .driver-assignment-card__crew-member.assignment-compact-module--actions {
 	grid-template-columns:
 		minmax(0, 1fr)
-		var(--rux-driver-action-rail-width);
+		var(--rux-driver-action-rail-width, 96px);
 }
 
 .driver-assignment-card__crew-actions {

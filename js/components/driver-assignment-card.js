@@ -333,7 +333,11 @@ function assignmentHeader(entry, view, options, card) {
 	busBadge.setAttribute("aria-label", view.busLabel);
 	busBadge.append(
 		icon(ICONS.bus, "rux-badge__icon"),
-		el("span", "rux-badge__label", view.busLabel),
+		el(
+			"span",
+			"rux-badge__label",
+			view.busLabel.replace(/^Bus\s+/i, ""),
+		),
 	);
 	const roleBadge = el(
 		"span",
@@ -381,19 +385,24 @@ function spotLocationModule(entry, view) {
 		"div",
 		"assignment-compact-module__details driver-assignment-card__reporting-details",
 	);
+	if (visibleAddress) {
+		const address = el(
+			"address",
+			"assignment-compact-module__secondary driver-assignment-card__spot-address",
+			visibleAddress.replace(/\n/g, ", "),
+		);
+		address.setAttribute(
+			"aria-label",
+			`Spot location: ${visibleAddress.replace(/\n/g, ", ")}`,
+		);
+		details.appendChild(address);
+	}
 	if (view.spotTime) {
 		const time = el("time", "driver-assignment-card__time", view.spotTime);
 		if (entry.spotTime) time.dateTime = String(entry.spotTime);
 		const timeLabel = view.roleLabel === "Relief Driver" ? "Report time" : "Spot time";
 		time.setAttribute("aria-label", `${timeLabel}: ${view.spotTime}`);
 		details.appendChild(time);
-	}
-	if (visibleAddress) {
-		details.appendChild(el(
-			"address",
-			"assignment-compact-module__secondary driver-assignment-card__spot-address",
-			visibleAddress.replace(/\n/g, ", "),
-		));
 	}
 	if (details.childElementCount) reportingRow.appendChild(details);
 	if (navigationTarget) {

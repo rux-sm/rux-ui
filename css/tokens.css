@@ -485,6 +485,7 @@
 	--rux-driver-module-label-width:   124px;
 	--rux-driver-module-icon-size:     48px;
 	--rux-driver-module-grid-gap:      var(--rux-space-4);
+	--rux-driver-action-rail-width:    96px;
 	--rux-driver-module-divider:       oklch(from var(--rux-neutral) 100% c h / 12%);
 	--rux-driver-internal-divider:     oklch(from var(--rux-neutral) 100% c h / 9%);
 	--rux-driver-touch-target:         48px;
@@ -572,6 +573,20 @@
 	--rux-input-invalid-border:  var(--rux-danger);
 	--rux-input-border-radius:   var(--rux-radius-control);
 	--rux-input-transition:      var(--rux-duration-fast) var(--rux-ease-out);
+
+	/* ─── COMPONENT · badge ─────────────────────────────────────────────── */
+
+	--rux-badge-height:              28px;
+	--rux-badge-padding-inline:      var(--rux-space-2);
+	--rux-badge-radius:              var(--rux-radius-md);
+	--rux-badge-font-size:           var(--rux-text-sm);
+	--rux-badge-font-weight:         var(--rux-weight-medium);
+	--rux-badge-background-opacity:  12%;
+	--rux-badge-module-gap:          var(--rux-space-2);
+	--rux-badge-module-height:       var(--rux-module-button-height);
+	--rux-badge-module-padding:      var(--rux-space-3);
+	--rux-badge-module-radius:       var(--rux-module-button-radius);
+	--rux-badge-module-icon-size:    var(--rux-icon-sm);
 
 	/* ─── COMPONENT · button base ─────────────────────────────────────────────── */
 

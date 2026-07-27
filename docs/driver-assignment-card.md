@@ -84,11 +84,13 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
   exists.
 - Primary actions: Navigate, Text, and Call when their corresponding data is
   available.
-- Layout: Presents Spot Time first and the report address directly beneath it
+- Layout: Presents the report address first and Spot Time directly beneath it
   as one compact stack without redundant visible field labels. Customer is
   owned by the assignment header and is not repeated here. The 44×44 Navigate
   action is vertically centered at the right. Trip Contact appears as a second
-  compact row inside the same connected card section.
+  compact row inside the same connected card section. Contact and crew rows
+  reserve the same 96px action rail, keeping Message and Call inline with the
+  associated text block.
 - Empty behavior: Does not render when time, location, and contact are all
   unavailable.
 - Loading behavior: Covered by the assignment skeleton.
