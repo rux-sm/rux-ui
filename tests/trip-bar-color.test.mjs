@@ -41,3 +41,26 @@ test("trip bar color data is assigned independently of confirmation status", () 
 	assert.match(colorAssignment, /bar\.dataset\.tripBarColor = trip\.trip_bar_color/);
 	assert.doesNotMatch(colorAssignment, /confirmed/);
 });
+
+test("base, head, and tail outlines share a fully opaque color channel", () => {
+	assert.match(
+		tripBarCss,
+		/--_outline:\s*oklch\(\s*from var\(--_tone\)[\s\S]*?h\s*\/\s*100%\s*\)/,
+	);
+	assert.match(
+		tripBarCss,
+		/\.rux-trip-bar\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
+	);
+	assert.match(
+		tripBarCss,
+		/\.rux-trip-bar__head\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
+	);
+	assert.match(
+		tripBarCss,
+		/\.rux-trip-bar__tail\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
+	);
+	assert.doesNotMatch(
+		tripBarCss,
+		/border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_surface\)/,
+	);
+});

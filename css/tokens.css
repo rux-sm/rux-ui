@@ -60,7 +60,7 @@
 	/* ─── COLOR · alpha ────────────────────────────────────────────────────── */
 
 	/* Shared tint strength: components supply their own semantic/base color. */
-	--rux-opacity-subtle-tint: 16%;
+	--rux-opacity-subtle-tint: 32%;
 
 	/* — white overlays — */
 	/* Relative color syntax requires "from": without it, var(--rux-white)
@@ -522,8 +522,8 @@
 	--rux-trip-color-pink:   var(--rux-pink);
 
 	/* State channels are applied to each bar's category color in trip-bar.css. */
-	--rux-trip-bar-bg-lightness:          l;
-	--rux-trip-bar-bg-chroma:             c;
+	--rux-trip-bar-bg-lightness:          60%;
+	--rux-trip-bar-bg-chroma:             .28;
 	--rux-trip-bar-hover-bg-lightness:    60%;
 	--rux-trip-bar-hover-bg-chroma:       0.22;
 	--rux-trip-bar-pressed-bg-lightness:  40%;

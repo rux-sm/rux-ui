@@ -70,6 +70,12 @@
 	--_details-height: 0px;
 	--_conflict-height: 0px;
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
+	--_outline: oklch(
+		from var(--_tone)
+		var(--rux-trip-bar-bg-lightness)
+		var(--rux-trip-bar-bg-chroma)
+		h / 100%
+	);
 	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 32%);
 	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--rux-trip-bar-hover-bg-chroma) h / 100%);
 	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--rux-trip-bar-pressed-bg-chroma) h / 100%);
@@ -84,7 +90,7 @@
 	container-type: inline-size;
 	background-color: var(--_surface);
 	border-radius: var(--rux-trip-bar-radius);
-	border: var(--rux-trip-bar-border-width) solid oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 100%);
+	border: var(--rux-trip-bar-border-width) solid var(--_outline);
 	overflow: hidden;
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;
@@ -311,7 +317,7 @@
 	flex-direction: column;
 	background-color: var(--_surface);
 	border-radius: var(--rux-trip-bar-radius);
-	border: var(--rux-trip-bar-border-width) solid var(--_surface);
+	border: var(--rux-trip-bar-border-width) solid var(--_outline);
 	overflow: hidden;
 	/* The base .rux-trip-bar rule (single-day) declares "transform" in its
 	   own transition list, which incidentally keeps it GPU-composited at all
@@ -348,7 +354,7 @@
 	z-index: 1;
 	background-color: color-mix(in oklch, var(--_surface) var(--rux-trip-bar-tail-opacity), transparent);
 	border-radius: var(--rux-trip-bar-radius);
-	border: var(--rux-trip-bar-border-width) solid var(--_surface);
+	border: var(--rux-trip-bar-border-width) solid var(--_outline);
 	overflow: hidden;
 
 }
