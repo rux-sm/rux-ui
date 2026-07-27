@@ -3,16 +3,16 @@ import { supabase } from "./supabase.js";
 export async function fetchProfiles() {
 	const { data, error } = await supabase
 		.from("profiles")
-		.select("id, display_name, photo_path, settings, created_at")
+		.select("id, display_name, photo_path, avatar_color, settings, created_at")
 		.order("display_name");
 	if (error) throw error;
 	return data ?? [];
 }
 
-export async function createProfile({ display_name }) {
+export async function createProfile({ display_name, avatar_color }) {
 	const { data, error } = await supabase
 		.from("profiles")
-		.insert({ display_name })
+		.insert({ display_name, avatar_color })
 		.select()
 		.single();
 	if (error) throw error;

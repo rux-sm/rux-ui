@@ -335,8 +335,11 @@ export function buildTripHistoryChanges({
 	return changes;
 }
 
+// A profile is required to use the app, so this should always resolve to a
+// real name — no hardcoded fallback name here. (record_trip_history's own
+// default still covers direct/edge-case RPC calls made without one.)
 export function historyActorName() {
-	return getCurrentProfile()?.display_name?.trim() || "Dispatcher";
+	return getCurrentProfile()?.display_name?.trim() || "";
 }
 
 export async function recordTripHistory({

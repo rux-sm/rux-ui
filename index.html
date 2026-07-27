@@ -141,7 +141,7 @@
 						aria-haspopup="menu"
 						aria-expanded="false"
 					>
-						<img src="./assets/rux-profile-pic.png" alt="" />
+						<span class="rux-icon" aria-hidden="true">person</span>
 					</button>
 				</div>
 			</header>
@@ -195,10 +195,13 @@
 				</button>
 			</div>
 
-			<!-- Profile picker — password-less "who's using this" selector. Shown
-			     once per load (unless a remembered profile is still valid) and
-			     reopenable anytime from the profile menu's "Switch profile" item.
-			     See profile.js / profile-db.js for the data side. -->
+			<!-- Profile picker — password-less "who's using this" selector.
+			     Mandatory: no skip/dismiss until a profile is selected or
+			     created, so trip history always has a real name attached.
+			     Shown once per load (unless a remembered profile is still
+			     valid) and reopenable anytime from the profile menu's "Switch
+			     profile" item (dismissible in that case — a profile is already
+			     active). See profile.js / profile-db.js for the data side. -->
 			<div class="rux-modal-backdrop" id="profile-picker-modal" hidden>
 				<div
 					class="rux-modal rux-profile-picker"
@@ -229,7 +232,7 @@
 								aria-label="Add photo"
 							>
 								<span
-									class="rux-avatar rux-avatar--lg rux-profile-picker__add-avatar"
+									class="rux-avatar rux-profile-picker__add-avatar"
 									id="profile-picker-add-avatar"
 								>
 									<span class="rux-icon" aria-hidden="true"
@@ -243,6 +246,103 @@
 									hidden
 								/>
 							</button>
+							<!-- Background color for the initials avatar, used when no
+							     photo is uploaded — same preset palette as Trip Bar
+							     Color (rux-color-swatches), not a freeform picker, so
+							     avatars stay visually consistent with the rest of the
+							     app. -->
+							<div
+								class="rux-color-swatches"
+								id="profile-picker-add-color"
+								role="radiogroup"
+								aria-label="Avatar color"
+							>
+								<label class="rux-color-swatch" title="Gray">
+									<input
+										type="radio"
+										name="profileAvatarColor"
+										value=""
+										checked
+										aria-label="Gray"
+									/>
+									<span
+										class="rux-color-swatch__dot"
+										style="--color: var(--rux-bg-active)"
+									></span>
+								</label>
+								<label class="rux-color-swatch" title="Cyan">
+									<input
+										type="radio"
+										name="profileAvatarColor"
+										value="cyan"
+										aria-label="Cyan"
+									/>
+									<span
+										class="rux-color-swatch__dot"
+										style="--color: var(--rux-trip-color-cyan)"
+									></span>
+								</label>
+								<label class="rux-color-swatch" title="Green">
+									<input
+										type="radio"
+										name="profileAvatarColor"
+										value="green"
+										aria-label="Green"
+									/>
+									<span
+										class="rux-color-swatch__dot"
+										style="--color: var(--rux-trip-color-green)"
+									></span>
+								</label>
+								<label class="rux-color-swatch" title="Purple">
+									<input
+										type="radio"
+										name="profileAvatarColor"
+										value="purple"
+										aria-label="Purple"
+									/>
+									<span
+										class="rux-color-swatch__dot"
+										style="--color: var(--rux-trip-color-purple)"
+									></span>
+								</label>
+								<label class="rux-color-swatch" title="Yellow">
+									<input
+										type="radio"
+										name="profileAvatarColor"
+										value="yellow"
+										aria-label="Yellow"
+									/>
+									<span
+										class="rux-color-swatch__dot"
+										style="--color: var(--rux-trip-color-yellow)"
+									></span>
+								</label>
+								<label class="rux-color-swatch" title="Orange">
+									<input
+										type="radio"
+										name="profileAvatarColor"
+										value="orange"
+										aria-label="Orange"
+									/>
+									<span
+										class="rux-color-swatch__dot"
+										style="--color: var(--rux-trip-color-orange)"
+									></span>
+								</label>
+								<label class="rux-color-swatch" title="Pink">
+									<input
+										type="radio"
+										name="profileAvatarColor"
+										value="pink"
+										aria-label="Pink"
+									/>
+									<span
+										class="rux-color-swatch__dot"
+										style="--color: var(--rux-trip-color-pink)"
+									></span>
+								</label>
+							</div>
 							<input
 								type="text"
 								class="rux-input rux-profile-picker__add-name"
@@ -279,16 +379,40 @@
 							<span>Add profile</span>
 						</button>
 					</div>
-					<div class="rux-modal__footer">
-						<button
-							type="button"
-							class="rux-button rux-button--default"
-							id="profile-picker-skip-btn"
-						>
-							Not now
-						</button>
-					</div>
 				</div>
+			</div>
+
+			<!-- Shared row-actions menu for the profile picker list — one
+			     popover, repositioned to whichever row's "more" button was
+			     clicked (see openProfileRowMenu), same recipe as the driver
+			     grid's assignment popover. Needs to render above the picker
+			     modal itself (z-modal), same override #profile-menu already
+			     uses. -->
+			<div
+				class="rux-menu rux-popover"
+				id="profile-row-menu"
+				role="menu"
+				style="z-index: calc(var(--rux-z-modal) + 1)"
+				hidden
+			>
+				<button
+					class="rux-menu__item"
+					type="button"
+					role="menuitem"
+					id="profile-row-menu-edit"
+				>
+					<span class="rux-icon" aria-hidden="true">edit</span>
+					<span>Edit</span>
+				</button>
+				<button
+					class="rux-menu__item"
+					type="button"
+					role="menuitem"
+					id="profile-row-menu-delete"
+				>
+					<span class="rux-icon" aria-hidden="true">delete</span>
+					<span>Delete</span>
+				</button>
 			</div>
 
 			<div class="scheduler-app__body">
@@ -5978,12 +6102,12 @@
 			const profilePickerAddAvatarBtn = document.getElementById("profile-picker-add-avatar-btn");
 			const profilePickerAddAvatar = document.getElementById("profile-picker-add-avatar");
 			const profilePickerAddPhotoInput = document.getElementById("profile-picker-add-photo-input");
-			const profilePickerSkipBtn = document.getElementById("profile-picker-skip-btn");
 			const profileMenuSwitchBtn = document.getElementById("profile-menu-switch-btn");
 
 			let allProfiles = [];
 			let profilePickerDismissible = true;
 			let pendingAddPhotoFile = null;
+			let pendingAddPreviewUrl = null;
 
 			function iconSpan(name) {
 				const span = document.createElement("span");
@@ -5991,6 +6115,23 @@
 				span.setAttribute("aria-hidden", "true");
 				span.textContent = name;
 				return span;
+			}
+
+			// Preset background colors for the initials avatar (no freeform
+			// picker) — same palette/tokens as the Trip Bar Color swatches, so
+			// avatars stay visually consistent with the rest of the app.
+			const AVATAR_COLOR_TOKENS = {
+				cyan: "--rux-trip-color-cyan",
+				green: "--rux-trip-color-green",
+				purple: "--rux-trip-color-purple",
+				yellow: "--rux-trip-color-yellow",
+				orange: "--rux-trip-color-orange",
+				pink: "--rux-trip-color-pink",
+			};
+
+			function avatarColorValue(key) {
+				const token = AVATAR_COLOR_TOKENS[key];
+				return token ? `var(${token})` : "";
 			}
 
 			function profileAvatarEl(profile, extraClass = "") {
@@ -6003,6 +6144,7 @@
 					img.alt = "";
 					el.appendChild(img);
 				} else {
+					el.style.backgroundColor = avatarColorValue(profile?.avatar_color);
 					el.textContent = driverInitials(profile?.display_name || "");
 				}
 				return el;
@@ -6020,6 +6162,7 @@
 					} else {
 						const initials = document.createElement("span");
 						initials.className = "rux-app-header__profile-initials";
+						initials.style.backgroundColor = avatarColorValue(profile.avatar_color);
 						initials.textContent = driverInitials(profile.display_name);
 						profileMenuBtn.appendChild(initials);
 					}
@@ -6028,10 +6171,10 @@
 						`Profile menu — ${profile.display_name}`,
 					);
 				} else {
-					const img = document.createElement("img");
-					img.src = "./assets/rux-profile-pic.png";
-					img.alt = "";
-					profileMenuBtn.appendChild(img);
+					// Shouldn't happen post-boot — a profile is required to use the
+					// app — but covers the brief window before initProfilePicker()
+					// resolves.
+					profileMenuBtn.appendChild(iconSpan("person"));
 					profileMenuBtn.setAttribute("aria-label", "Profile menu");
 				}
 			}
@@ -6040,15 +6183,34 @@
 				renderHeaderAvatar(event.detail.profile);
 			});
 
-			function setAddAvatarPreview(url, initials) {
+			const profilePickerAddColorInputs = [
+				...document.querySelectorAll('input[name="profileAvatarColor"]'),
+			];
+
+			function getSelectedAvatarColor() {
+				return profilePickerAddColorInputs.find((input) => input.checked)?.value || "";
+			}
+
+			function setSelectedAvatarColor(color) {
+				profilePickerAddColorInputs.forEach((input) => {
+					input.checked = input.value === (color || "");
+				});
+			}
+
+			profilePickerAddColorInputs.forEach((input) => {
+				input.addEventListener("change", () => {
+					setAddAvatarPreview(pendingAddPreviewUrl, input.value);
+				});
+			});
+
+			function setAddAvatarPreview(url, color) {
 				profilePickerAddAvatar.replaceChildren();
+				profilePickerAddAvatar.style.backgroundColor = avatarColorValue(color);
 				if (url) {
 					const img = document.createElement("img");
 					img.src = url;
 					img.alt = "";
 					profilePickerAddAvatar.appendChild(img);
-				} else if (initials) {
-					profilePickerAddAvatar.textContent = initials;
 				} else {
 					profilePickerAddAvatar.appendChild(iconSpan("add_a_photo"));
 				}
@@ -6060,10 +6222,11 @@
 				profilePickerAddForm.dataset.editId = editProfile?.id || "";
 				profilePickerAddName.value = editProfile?.display_name || "";
 				pendingAddPhotoFile = null;
-				setAddAvatarPreview(
-					editProfile?.photo_path ? getProfilePhotoUrl(editProfile.photo_path) : null,
-					null,
-				);
+				pendingAddPreviewUrl = editProfile?.photo_path
+					? getProfilePhotoUrl(editProfile.photo_path)
+					: null;
+				setSelectedAvatarColor(editProfile?.avatar_color);
+				setAddAvatarPreview(pendingAddPreviewUrl, editProfile?.avatar_color);
 				profilePickerAddName.focus();
 			}
 
@@ -6073,7 +6236,9 @@
 				profilePickerAddForm.dataset.editId = "";
 				profilePickerAddName.value = "";
 				pendingAddPhotoFile = null;
-				setAddAvatarPreview(null, null);
+				pendingAddPreviewUrl = null;
+				setSelectedAvatarColor("");
+				setAddAvatarPreview(null, "");
 			}
 
 			function selectProfile(id) {
@@ -6123,50 +6288,71 @@
 					const actions = document.createElement("div");
 					actions.className = "rux-profile-picker__row-actions";
 
-					const editBtn = document.createElement("button");
-					editBtn.type = "button";
-					editBtn.className =
+					const moreBtn = document.createElement("button");
+					moreBtn.type = "button";
+					moreBtn.className =
 						"rux-button rux-button--ghost rux-button--icon rux-button--sm";
-					editBtn.setAttribute("aria-label", `Edit ${profile.display_name}`);
-					editBtn.appendChild(iconSpan("edit"));
-					editBtn.addEventListener("click", (event) => {
+					moreBtn.setAttribute("aria-label", `${profile.display_name} actions`);
+					moreBtn.setAttribute("aria-haspopup", "menu");
+					moreBtn.setAttribute("aria-expanded", "false");
+					moreBtn.appendChild(iconSpan("more_vert"));
+					moreBtn.addEventListener("click", (event) => {
 						event.stopPropagation();
-						openAddForm(profile);
+						openProfileRowMenu(moreBtn, profile);
 					});
-					actions.appendChild(editBtn);
-
-					const deleteBtn = document.createElement("button");
-					deleteBtn.type = "button";
-					deleteBtn.className =
-						"rux-button rux-button--ghost rux-button--icon rux-button--sm";
-					deleteBtn.setAttribute("aria-label", `Delete ${profile.display_name}`);
-					deleteBtn.appendChild(iconSpan("delete"));
-					deleteBtn.addEventListener("click", async (event) => {
-						event.stopPropagation();
-						if (!confirm(`Remove profile "${profile.display_name}"?`)) return;
-						try {
-							await deleteProfile(profile.id);
-							if (String(getCurrentProfile()?.id) === String(profile.id)) {
-								setCurrentProfile(null);
-							}
-							await refreshProfiles();
-						} catch (err) {
-							console.error("Delete profile failed:", err);
-							window.Rux?.toast?.("Could not delete profile — try again.");
-						}
-					});
-					actions.appendChild(deleteBtn);
+					actions.appendChild(moreBtn);
 
 					row.appendChild(actions);
 					profilePickerList.appendChild(row);
 				});
 			}
 
+			// Single shared popover for every row's "more" button, repositioned
+			// to whichever trigger was clicked — same recipe as the driver
+			// grid's assignment popover earlier in this file.
+			const profileRowMenu = document.getElementById("profile-row-menu");
+			const profileRowMenuEditBtn = document.getElementById("profile-row-menu-edit");
+			const profileRowMenuDeleteBtn = document.getElementById("profile-row-menu-delete");
+			let profileRowMenuTarget = null;
+
+			function openProfileRowMenu(trigger, profile) {
+				profileRowMenuTarget = profile;
+				window.RuxMenu.open(trigger, profileRowMenu, { placement: "bottom-end" });
+			}
+
+			profileRowMenuEditBtn.addEventListener("click", () => {
+				if (profileRowMenuTarget) openAddForm(profileRowMenuTarget);
+			});
+
+			profileRowMenuDeleteBtn.addEventListener("click", async () => {
+				const profile = profileRowMenuTarget;
+				if (!profile) return;
+				if (!confirm(`Remove profile "${profile.display_name}"?`)) return;
+				try {
+					await deleteProfile(profile.id);
+					if (String(getCurrentProfile()?.id) === String(profile.id)) {
+						// The app always needs a selected profile — deleting the one
+						// in use re-imposes the mandatory (non-dismissible) picker
+						// even if it was opened via the dismissible "Switch profile" path.
+						setCurrentProfile(null);
+						profilePickerDismissible = false;
+					}
+					await refreshProfiles();
+					if (!allProfiles.length) openAddForm(null);
+				} catch (err) {
+					console.error("Delete profile failed:", err);
+					window.Rux?.toast?.("Could not delete profile — try again.");
+				}
+			});
+
 			function openProfilePicker(dismissible) {
 				profilePickerDismissible = dismissible;
 				closeAddForm();
 				renderProfilePickerList();
 				profilePickerModal.hidden = false;
+				// Nothing to pick from — skip straight to creating one instead of
+				// making them click "Add profile" for an empty list.
+				if (!allProfiles.length) openAddForm(null);
 			}
 
 			function closeProfilePicker() {
@@ -6177,11 +6363,6 @@
 				if (event.target === profilePickerModal && profilePickerDismissible) {
 					closeProfilePicker();
 				}
-			});
-
-			profilePickerSkipBtn.addEventListener("click", () => {
-				setCurrentProfile(null);
-				closeProfilePicker();
 			});
 
 			profileMenuSwitchBtn?.addEventListener("click", () => {
@@ -6199,7 +6380,10 @@
 				if (!file) return;
 				pendingAddPhotoFile = file;
 				const reader = new FileReader();
-				reader.onload = (event) => setAddAvatarPreview(event.target.result, null);
+				reader.onload = (event) => {
+					pendingAddPreviewUrl = event.target.result;
+					setAddAvatarPreview(pendingAddPreviewUrl, getSelectedAvatarColor());
+				};
 				reader.readAsDataURL(file);
 			});
 
@@ -6208,11 +6392,12 @@
 				const name = profilePickerAddName.value.trim();
 				if (!name) return;
 				const editId = profilePickerAddForm.dataset.editId || null;
+				const avatarColor = getSelectedAvatarColor() || null;
 				profilePickerAddSave.disabled = true;
 				try {
 					let profile = editId
-						? await updateProfile(editId, { display_name: name })
-						: await createProfile({ display_name: name });
+						? await updateProfile(editId, { display_name: name, avatar_color: avatarColor })
+						: await createProfile({ display_name: name, avatar_color: avatarColor });
 					if (pendingAddPhotoFile) {
 						const photoPath = await uploadProfilePhoto(profile.id, pendingAddPhotoFile);
 						profile = { ...profile, photo_path: photoPath };
@@ -6240,7 +6425,9 @@
 				if (remembered) {
 					setCurrentProfile(remembered);
 				} else {
-					openProfilePicker(true);
+					// Mandatory: no remembered/valid profile means the app can't be
+					// used yet — not dismissible until one is picked or created.
+					openProfilePicker(false);
 				}
 			}
 

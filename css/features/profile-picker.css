@@ -76,6 +76,13 @@
 	padding: var(--rux-space-3) 0;
 }
 
+/* Author styles beat the UA [hidden] rule at equal specificity — without
+   this, toggling the `hidden` attribute in JS has no visual effect since
+   the display: flex above always wins. */
+.rux-profile-picker__add[hidden] {
+	display: none;
+}
+
 .rux-profile-picker__add-avatar-btn {
 	background: none;
 	border: none;
@@ -85,8 +92,8 @@
 
 .rux-profile-picker__add-avatar {
 	border-radius: 50%;
-	width: var(--rux-avatar-lg);
-	height: var(--rux-avatar-lg);
+	width: var(--rux-avatar-md);
+	height: var(--rux-avatar-md);
 	color: var(--rux-fg-subtle);
 }
 
@@ -96,19 +103,18 @@
 
 .rux-profile-picker__add-actions {
 	display: flex;
-	justify-content: flex-end;
 	gap: var(--rux-space-2);
 	width: 100%;
 }
 
-/* — Header avatar (top-right) — */
-
-.rux-app-header__profile img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 50%;
+.rux-profile-picker__add-actions .rux-button {
+	flex: 1 1 0;
 }
+
+/* — Header avatar (top-right) — */
+/* Sizing/clipping to a circle is already handled by base/app-header.css's
+   .rux-app-header__profile (overflow: hidden + radius-full) and its own
+   img rule — only the initials fallback (new) needs styling here. */
 
 .rux-app-header__profile-initials {
 	display: inline-flex;
