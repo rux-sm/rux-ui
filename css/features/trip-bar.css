@@ -152,7 +152,8 @@
 }
 
 .rux-trip-bar:not(.rux-trip-bar--multi-day),
-.rux-trip-bar__head {
+.rux-trip-bar__head,
+.rux-trip-bar__tail {
 	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
@@ -274,13 +275,17 @@
 
 .rux-trip-bar--from-prev.is-active .rux-trip-bar__head {
 	display: flex;
+	border-inline-start: 0;
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
 }
 
 .rux-trip-bar--from-prev.is-active .rux-trip-bar__tail {
-	grid-column: 1 / -1;
+	grid-column: 2 / -1;
 	margin-left: 0;
 	border-inline-start: 0;
-	border-radius: 0 var(--rux-radius-container) var(--rux-radius-container) 0;
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
 }
 
 /* ---------- Modifier: to-next ---------- */
@@ -330,6 +335,9 @@
 	background-color: var(--_surface);
 	border-radius: var(--rux-trip-bar-radius);
 	border: var(--rux-trip-bar-border-width) solid var(--_outline);
+	border-inline-end: 0;
+	border-start-end-radius: 0;
+	border-end-end-radius: 0;
 	overflow: hidden;
 	/* The base .rux-trip-bar rule (single-day) declares "transform" in its
 	   own transition list, which incidentally keeps it GPU-composited at all
@@ -360,7 +368,7 @@
 /* ---------- Tail (continuation rail for multi-day) ---------- */
 
 .rux-trip-bar__tail {
-	grid-column: 1 / -1;
+	grid-column: 2 / -1;
 	grid-row: 1;
 	position: relative;
 	display: flex;
@@ -371,6 +379,9 @@
 	background-color: color-mix(in oklch, var(--_surface) var(--rux-trip-bar-tail-opacity), transparent);
 	border-radius: var(--rux-trip-bar-radius);
 	border: var(--rux-trip-bar-border-width) solid var(--_outline);
+	border-inline-start: 0;
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
 	overflow: hidden;
 
 }
@@ -402,6 +413,8 @@
 .rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__head {
 	display: flex;
 	grid-column: 1 / -1;
+	border-inline-end: var(--rux-trip-bar-border-width) solid var(--_outline);
+	border-radius: var(--rux-trip-bar-radius);
 }
 
 .rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__head-content {

@@ -57,7 +57,7 @@
 @import "./base/feedback.css";
 @import "./base/navigation.css";
 @import "./base/utils.css?v=2";
-@import "./features/trip-bar.css?v=8";
+@import "./features/trip-bar.css?v=10";
 @import "./features/trip-panel.css";
 @import "./features/trip-history.css?v=1";
 @import "./features/itinerary.css";

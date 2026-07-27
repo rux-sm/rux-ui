@@ -541,7 +541,7 @@
 
 	--rux-trip-bar-border-width: var(--rux-border-width);
 	--rux-trip-bar-radius:       var(--rux-radius-container);
-	--rux-trip-bar-head-backdrop-blur: 3px;
+	--rux-trip-bar-head-backdrop-blur: 4px;
 
 	/* ─── COMPONENT · trip panel ──────────────────────────────────────────── */
 

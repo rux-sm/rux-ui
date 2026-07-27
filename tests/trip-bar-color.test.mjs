@@ -122,17 +122,28 @@ test("centered identity text applies to single and multi-day bars without moving
 	assert.match(appSource, />Center trip details<\/span/);
 });
 
-test("trip information surfaces soften scheduler lines without blurring tails", () => {
+test("connected trip surfaces share one backdrop blur", () => {
 	assert.match(
 		tokensCss,
-		/--rux-trip-bar-head-backdrop-blur:\s*3px/,
+		/--rux-trip-bar-head-backdrop-blur:\s*[1-9]\d*px/,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar:not\(\.rux-trip-bar--multi-day\),\s*\.rux-trip-bar__head\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)[^}]*backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)/s,
+		/\.rux-trip-bar:not\(\.rux-trip-bar--multi-day\),\s*\.rux-trip-bar__head,\s*\.rux-trip-bar__tail\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)[^}]*backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)/s,
 	);
-	assert.doesNotMatch(
+});
+
+test("default multi-day heads and tails meet at one shared edge", () => {
+	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar__tail\s*\{[^}]*backdrop-filter/s,
+		/\.rux-trip-bar__head\s*\{[^}]*border-inline-end:\s*0[^}]*border-start-end-radius:\s*0[^}]*border-end-end-radius:\s*0/s,
+	);
+	assert.match(
+		tripBarCss,
+		/\.rux-trip-bar__tail\s*\{[^}]*grid-column:\s*2\s*\/\s*-1[^}]*border-inline-start:\s*0[^}]*border-start-start-radius:\s*0[^}]*border-end-start-radius:\s*0/s,
+	);
+	assert.match(
+		tripBarCss,
+		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar--multi-day \.rux-trip-bar__head\s*\{[^}]*border-inline-end:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)[^}]*border-radius:\s*var\(--rux-trip-bar-radius\)/s,
 	);
 });
