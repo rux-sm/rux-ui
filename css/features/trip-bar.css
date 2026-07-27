@@ -22,6 +22,12 @@
    .rux-trip-bar--to-next       Trip ends after the current week window; removes
                                 the right border radius.
 
+   Scheduler view modifiers
+   ------------------------
+   .rux-scheduler--centered-trip-heads
+                                Makes the full multi-day span the primary head
+                                surface and centers a one-day-width content column.
+
    State classes (JS-toggled, no rux- prefix)
    ------------------------------------------
    .is-active    Bar is selected; reveals the action toolbar and details.
@@ -329,6 +335,10 @@
 	transform: translateZ(0);
 }
 
+.rux-trip-bar__head-content {
+	display: contents;
+}
+
 .rux-trip-bar--multi-day:hover .rux-trip-bar__head {
 	background-color: var(--_surface-hover);
 }
@@ -374,6 +384,72 @@
 
 .rux-trip-bar--multi-day.is-active .rux-trip-bar__tail {
     background-color: color-mix(in oklch, var(--_surface-pressed) var(--rux-trip-bar-tail-pressed-opacity), transparent);
+}
+
+/* Alternate multi-day presentation. The full trip span becomes one connected
+   head surface, while its readable content stays the same width as an ordinary
+   single-day head and is centered within that span. */
+.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__head {
+	display: flex;
+	grid-column: 1 / -1;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__head-content {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	width: min(var(--rux-trip-bar-day-inline-size, 100%), 100%);
+	max-width: 100%;
+	min-width: 0;
+	margin-inline: auto;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__summary {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__destination {
+	grid-column: 2;
+	justify-content: center;
+	text-align: center;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__paid-badge {
+	grid-column: 3;
+	justify-self: end;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar :is(
+	.rux-trip-bar__client,
+	.rux-trip-bar__contact
+) {
+	justify-content: center;
+	text-align: center;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__reqs .rux-trip-bar__pending {
+	margin-inline-start: auto;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__tail {
+	display: none;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day.rux-trip-bar--from-prev .rux-trip-bar__head {
+	border-inline-start: 0;
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
+}
+
+.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day.rux-trip-bar--to-next .rux-trip-bar__head {
+	border-inline-end: 0;
+	border-start-end-radius: 0;
+	border-end-end-radius: 0;
 }
 
 

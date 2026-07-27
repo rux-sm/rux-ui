@@ -1153,7 +1153,10 @@ export function createTripBar(trip, callbacks = {}) {
     const head = document.createElement("div");
     head.className = "rux-trip-bar__head";
     if (patterned) head.appendChild(createStripeLayer());
-    head.append(actions, body, details);
+    const headContent = document.createElement("div");
+    headContent.className = "rux-trip-bar__head-content";
+    headContent.append(actions, body, details);
+    head.appendChild(headContent);
 
     const tail = document.createElement("div");
     tail.className = "rux-trip-bar__tail";

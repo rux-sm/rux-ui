@@ -15,7 +15,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=45" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=84" />
+		<link rel="stylesheet" href="./css/components.css?v=87" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -2180,6 +2180,27 @@
 													<label class="rux-switch">
 														<input
 															id="opt-compact"
+															type="checkbox"
+															role="switch"
+														/>
+														<span
+															class="rux-switch__track"
+														></span>
+														<span
+															class="rux-switch__thumb"
+														></span>
+													</label>
+												</div>
+												<div
+													class="rux-view-options__row"
+												>
+													<span
+														class="rux-view-options__label"
+														>Center trip details</span
+													>
+													<label class="rux-switch">
+														<input
+															id="opt-centered-trip-heads"
 															type="checkbox"
 															role="switch"
 														/>
@@ -5750,7 +5771,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=11";
+			} from "./js/components/trip-bar.js?v=12";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -7823,6 +7844,31 @@
 				} catch (_) {}
 				layoutScheduler();
 			});
+
+			let centeredTripHeadsEnabled = false;
+			try {
+				centeredTripHeadsEnabled =
+					localStorage.getItem("rux:centered-trip-heads") === "true";
+			} catch (_) {}
+			schedulerEl?.classList.toggle(
+				"rux-scheduler--centered-trip-heads",
+				centeredTripHeadsEnabled,
+			);
+			initToggle(
+				"opt-centered-trip-heads",
+				centeredTripHeadsEnabled,
+				(on) => {
+					centeredTripHeadsEnabled = on;
+					schedulerEl?.classList.toggle(
+						"rux-scheduler--centered-trip-heads",
+						on,
+					);
+					try {
+						localStorage.setItem("rux:centered-trip-heads", on);
+					} catch (_) {}
+					layoutScheduler();
+				},
+			);
 
 			initToggle("opt-two-weeks", viewDays === 14, (on) => {
 				viewDays = on ? 14 : 7;
