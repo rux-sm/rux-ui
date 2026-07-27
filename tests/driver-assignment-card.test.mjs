@@ -86,7 +86,7 @@ test("pending assignment exposes dominant accept and quieter decline controls", 
 		onDecline: async () => ({ status: "declined" }),
 	});
 	const accept = buttonByLabel(card, "Accept");
-	const decline = buttonByLabel(card, "Not Available");
+	const decline = buttonByLabel(card, "Decline");
 	assert.ok(accept.classList.contains("rux-button--accent"));
 	assert.ok(decline.classList.contains("rux-button--default"));
 	assert.ok(decline.classList.contains("rux-button--danger"));
@@ -164,35 +164,40 @@ test("header combines assignment date, destination, metadata, and response detai
 	assert.ok(header.childNodes.includes(response));
 });
 
-test("accepted assignment replaces the accept action with a green status control", () => {
+test("accepted assignment replaces response actions with a non-interactive status", () => {
 	const card = renderDriverAssignmentCard(assignment({ status: "accepted" }), {
 		onDecline: async () => ({ status: "declined" }),
 	});
 	assert.equal(card.dataset.status, "accepted");
-	assert.equal(card.querySelector(".driver-assignment-card__status--success"), null);
 	assert.equal(buttonByLabel(card, "Accept"), null);
-	assert.ok(buttonByLabel(card, "Unable to Drive").classList.contains("rux-button--danger"));
-	const accepted = card.querySelector(".driver-assignment-card__accepted-control");
+	assert.equal(buttonByLabel(card, "Decline"), null);
+	assert.equal(card.querySelector(".driver-assignment-card__response-actions"), null);
+	const accepted = card.querySelector(
+		".driver-assignment-card__response-state--success",
+	);
 	assert.equal(accepted.getAttribute("role"), "status");
 	assert.equal(accepted.getAttribute("aria-live"), "polite");
-	assert.ok(accepted.classList.contains("driver-assignment-card__response-control"));
-	assert.equal(accepted.querySelector(".rux-btn-label").textContent, "Accepted");
+	assert.equal(
+		accepted.querySelector(".driver-assignment-card__response-state-label").textContent,
+		"Accepted",
+	);
 });
 
-test("declined assignment uses equal standard controls for status and accept", () => {
+test("declined assignment replaces response actions with a non-interactive status", () => {
 	const card = renderDriverAssignmentCard(assignment({ status: "declined" }), {
 		onAccept: async () => ({ status: "accepted" }),
 	});
-	const actions = card.querySelector(".driver-assignment-card__response-actions");
-	const declined = card.querySelector(".driver-assignment-card__status-control--danger");
-	const accept = buttonByLabel(card, "Accept");
-	assert.equal(card.querySelector(".driver-assignment-card__status--danger"), null);
-	assert.equal(actions.childNodes[0], declined);
-	assert.equal(actions.childNodes[1], accept);
-	assert.ok(declined.classList.contains("driver-assignment-card__response-control"));
-	assert.ok(accept.classList.contains("driver-assignment-card__response-control"));
+	const declined = card.querySelector(
+		".driver-assignment-card__response-state--danger",
+	);
+	assert.equal(card.querySelector(".driver-assignment-card__response-actions"), null);
+	assert.equal(buttonByLabel(card, "Accept"), null);
+	assert.equal(buttonByLabel(card, "Decline"), null);
 	assert.equal(declined.getAttribute("role"), "status");
-	assert.equal(declined.querySelector(".rux-btn-label").textContent, "Declined");
+	assert.equal(
+		declined.querySelector(".driver-assignment-card__response-state-label").textContent,
+		"Declined",
+	);
 });
 
 test("ordinary drivers use header badges while relief assignments show handoff detail", () => {
@@ -389,7 +394,7 @@ test("decline confirmation precedes a successful decline", async () => {
 			return { status: "declined", declinedAt: "2026-07-22T12:00:00Z" };
 		},
 	}));
-	const decline = buttonByLabel(host, "Not Available");
+	const decline = buttonByLabel(host, "Decline");
 	await decline.dispatch("click");
 	assert.equal(confirmationCount, 1);
 	assert.equal(declineCount, 1);
@@ -698,7 +703,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	assert.doesNotMatch(css, /\.driver-assignment-card__trip-type/);
 	assert.match(
 		css,
-		/\.driver-assignment-card__response\[data-status="pending"\] \.driver-assignment-card__response-actions,\s*\.driver-assignment-card__response\[data-status="accepted"\] \.driver-assignment-card__response-actions,\s*\.driver-assignment-card__response\[data-status="declined"\] \.driver-assignment-card__response-actions,\s*\.driver-assignment-card__response\[data-status="changes_requested"\] \.driver-assignment-card__response-actions\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)[^}]*width:\s*100%/s,
+		/\.driver-assignment-card__response-actions\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)[^}]*width:\s*100%/s,
 	);
 	assert.match(
 		css,
@@ -710,11 +715,11 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__accepted-control\s*\{[^}]*background:\s*var\(--rux-success\)[^}]*border-color:\s*var\(--rux-success\)[^}]*color:\s*var\(--rux-surface-canvas\)/s,
+		/\.driver-assignment-card__response-state\s*\{[^}]*min-width:\s*10rem[^}]*min-height:\s*var\(--rux-button-height\)[^}]*margin-inline:\s*auto[^}]*border:\s*var\(--rux-border-width\) solid var\(--_state-color\)/s,
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__status-control--danger\s*\{[^}]*background:\s*var\(--rux-danger\)[^}]*border-color:\s*var\(--rux-danger\)/s,
+		/\.driver-assignment-card__response-state--danger\s*\{[^}]*--_state-color:\s*var\(--rux-danger-bright\)/s,
 	);
 	assert.match(tokens, /--rux-driver-(?:date-primary|bus|route|time)-size:\s+1\.5rem/g);
 	assert.doesNotMatch(
@@ -761,6 +766,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/\.driver-assignment-card__crew-bus-section\s*\{[^}]*display:\s*grid[^}]*gap:\s*var\(--rux-space-3\)[^}]*padding:\s*var\(--rux-driver-module-padding\)[^}]*border-top:/s,
 	);
+	assert.match(tokens, /--rux-driver-page-max-width:\s*520px/);
 	assert.match(tokens, /--rux-driver-phone-preview-max-width:\s*430px/);
 	assert.match(
 		componentDemoCss,

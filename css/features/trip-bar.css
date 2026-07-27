@@ -197,7 +197,7 @@
 .rux-trip-bar[data-trip-bar-color="orange"] { --_trip-bar-color: var(--rux-trip-color-orange); }
 .rux-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
 
-.rux-trip-bar--unconfirmed {
+.rux-trip-bar--unconfirmed:not([data-trip-bar-color]) {
 	--_tone: var(--rux-danger);
 }
 

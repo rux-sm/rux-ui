@@ -163,25 +163,25 @@ function createStatus(entry, view, options, card) {
 	const wrap = el("div", "driver-assignment-card__response");
 	wrap.dataset.status = view.status;
 	const meta = statusMeta(view.status);
-	const status = el(
-		"div",
-		`driver-assignment-card__status driver-assignment-card__status--${meta.tone}`,
-	);
-	status.append(icon(meta.icon), el("span", "", meta.label));
+
+	if (view.status !== "pending") {
+		const state = el(
+			"div",
+			`driver-assignment-card__response-state driver-assignment-card__response-state--${meta.tone}`,
+		);
+		state.setAttribute("role", "status");
+		state.setAttribute("aria-live", "polite");
+		state.append(
+			icon(meta.icon, "driver-assignment-card__response-state-icon"),
+			el("span", "driver-assignment-card__response-state-label", meta.label),
+		);
+		wrap.appendChild(state);
+		return wrap;
+	}
+
 	const canAccept =
 		typeof options.onAccept === "function"
 		|| typeof options.onConfirm === "function";
-	const usesPairedStatusControl =
-		(view.status === "declined" || view.status === "changes_requested")
-		&& canAccept;
-	if (
-		view.status !== "pending"
-		&& view.status !== "accepted"
-		&& !usesPairedStatusControl
-	) {
-		wrap.appendChild(status);
-	}
-
 	const actions = el("div", "driver-assignment-card__response-actions");
 	const error = el("p", "driver-assignment-card__action-error");
 	error.hidden = true;
@@ -227,8 +227,7 @@ function createStatus(entry, view, options, card) {
 
 	const addDecline = () => {
 		if (typeof options.onDecline !== "function") return;
-		const accepted = view.status === "accepted";
-		const decline = createButton(accepted ? "Unable to Drive" : "Not Available", {
+		const decline = createButton("Decline", {
 			variant: "default",
 			className:
 				"rux-button--danger driver-assignment-card__response-control driver-assignment-card__decline driver-assignment-card__decline--availability",
@@ -248,45 +247,26 @@ function createStatus(entry, view, options, card) {
 		actions.appendChild(decline);
 	};
 
-	const addAcceptedStatus = () => {
-		const accepted = el(
-			"div",
-			"rux-button driver-assignment-card__response-control driver-assignment-card__accepted-control",
-		);
-		accepted.setAttribute("role", "status");
-		accepted.setAttribute("aria-live", "polite");
-		accepted.append(
-			icon("check_circle", "rux-button__idle-icon"),
-			el("span", "rux-btn-label", "Accepted"),
-		);
-		actions.appendChild(accepted);
-	};
-
-	const addStatusControl = () => {
-		const control = el(
-			"div",
-			`rux-button driver-assignment-card__response-control driver-assignment-card__status-control driver-assignment-card__status-control--${meta.tone}`,
-		);
-		control.setAttribute("role", "status");
-		control.setAttribute("aria-live", "polite");
-		control.append(
-			icon(meta.icon, "rux-button__idle-icon"),
-			el("span", "rux-btn-label", meta.label),
-		);
-		actions.appendChild(control);
-	};
-
-	if (view.status === "pending") {
-		addDecline();
-		addAccept();
-	} else if (view.status === "accepted") {
-		addDecline();
-		addAcceptedStatus();
-	} else if (view.status === "declined" || view.status === "changes_requested") {
-		if (usesPairedStatusControl) addStatusControl();
-		addAccept();
+	addDecline();
+	addAccept();
+	if (actions.childElementCount === 1) {
+		actions.classList.add("driver-assignment-card__response-actions--single");
 	}
-	if (actions.childElementCount) wrap.appendChild(actions);
+
+	if (actions.childElementCount) {
+		wrap.appendChild(actions);
+	} else {
+		const state = el(
+			"div",
+			"driver-assignment-card__response-state driver-assignment-card__response-state--pending",
+		);
+		state.setAttribute("role", "status");
+		state.append(
+			icon(meta.icon, "driver-assignment-card__response-state-icon"),
+			el("span", "driver-assignment-card__response-state-label", meta.label),
+		);
+		wrap.appendChild(state);
+	}
 	wrap.appendChild(error);
 	return wrap;
 }

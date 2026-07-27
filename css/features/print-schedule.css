@@ -288,7 +288,7 @@
 	--_print-trip-override-tint: var(--print-pink-tint);
 }
 
-.rux-print-trip--unconfirmed {
+.rux-print-trip--unconfirmed:not([data-trip-bar-color]) {
 	--_print-trip-tint: var(--print-danger-tint);
 	--_print-trip-line: var(--print-danger-line);
 }
