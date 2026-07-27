@@ -521,19 +521,27 @@
 	--rux-trip-color-orange: var(--rux-orange);
 	--rux-trip-color-pink:   var(--rux-pink);
 
-	/* State channels are applied to each bar's category color in trip-bar.css. */
-	--rux-trip-bar-bg-lightness:          60%;
-	--rux-trip-bar-bg-chroma:             .28;
-	--rux-trip-bar-hover-bg-lightness:    60%;
-	--rux-trip-bar-hover-bg-chroma:       0.22;
-	--rux-trip-bar-pressed-bg-lightness:  40%;
-	--rux-trip-bar-pressed-bg-chroma:     0.18;
-	--rux-trip-bar-selected-bg-lightness: 60%;
-	--rux-trip-bar-selected-bg-chroma:    0.22;
-	--rux-trip-bar-disabled-opacity:      0.45;
-	--rux-trip-bar-tail-opacity:          var(--rux-opacity-subtle-tint);
-	--rux-trip-bar-tail-hover-opacity:    var(--rux-opacity-subtle-tint);
-	--rux-trip-bar-tail-pressed-opacity:  var(--rux-opacity-subtle-tint);
+	/* State channels are applied to each bar's category color in trip-bar.css.
+	   Brightness preferences only need to replace the base lightness: every
+	   interaction state remains a predictable ±4 percentage points from it. */
+	--rux-trip-bar-bg-lightness:              60%;
+	--rux-trip-bar-state-lightness-step:      4%;
+	--rux-trip-bar-hover-bg-lightness:        calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
+	--rux-trip-bar-pressed-bg-lightness:      calc(var(--rux-trip-bar-bg-lightness) - var(--rux-trip-bar-state-lightness-step));
+	--rux-trip-bar-selected-bg-lightness:     calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
+	--rux-trip-bar-bg-chroma:                 .28;
+	--rux-trip-bar-hover-bg-chroma:           .22;
+	--rux-trip-bar-pressed-bg-chroma:         .18;
+	--rux-trip-bar-selected-bg-chroma:        .22;
+	--rux-trip-bar-bg-opacity:                32%;
+	--rux-trip-bar-hover-bg-opacity:          40%;
+	--rux-trip-bar-pressed-bg-opacity:        44%;
+	--rux-trip-bar-selected-bg-opacity:       48%;
+	--rux-trip-bar-tail-opacity:              16%;
+	--rux-trip-bar-tail-hover-opacity:        22%;
+	--rux-trip-bar-tail-pressed-opacity:      26%;
+	--rux-trip-bar-tail-selected-opacity:     28%;
+	--rux-trip-bar-disabled-opacity:          0.45;
 
 	/* One-way/split-trip SVG stripe overlay. */
 	--rux-trip-bar-stripe-color:   var(--rux-white);

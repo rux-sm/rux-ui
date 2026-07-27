@@ -1,4 +1,5 @@
 import { supabase } from "./supabase.js";
+import { getCurrentProfile } from "../core/profile.js";
 
 const HISTORY_PAGE_SIZE = 50;
 
@@ -335,7 +336,7 @@ export function buildTripHistoryChanges({
 }
 
 export function historyActorName() {
-	return localStorage.getItem("rux-history-actor-name")?.trim() || "Dispatcher";
+	return getCurrentProfile()?.display_name?.trim() || "Dispatcher";
 }
 
 export async function recordTripHistory({

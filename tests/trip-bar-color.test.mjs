@@ -122,6 +122,43 @@ test("centered identity text applies to single and multi-day bars without moving
 	assert.match(appSource, />Center trip details<\/span/);
 });
 
+test("bus-count pills use black text on their white surface", () => {
+	assert.match(
+		tripBarCss,
+		/\.rux-trip-bar__bus-label\s*\{[^}]*background:\s*var\(--rux-trip-bar-bus-label-bg\)[^}]*color:\s*var\(--rux-black\)/s,
+	);
+});
+
+test("trip interaction surfaces derive modest state changes from one base brightness", () => {
+	assert.match(tokensCss, /--rux-trip-bar-bg-lightness:\s*60%/);
+	assert.match(tokensCss, /--rux-trip-bar-state-lightness-step:\s*4%/);
+	assert.match(
+		tokensCss,
+		/--rux-trip-bar-hover-bg-lightness:\s*calc\(var\(--rux-trip-bar-bg-lightness\) \+ var\(--rux-trip-bar-state-lightness-step\)\)/,
+	);
+	assert.match(
+		tokensCss,
+		/--rux-trip-bar-pressed-bg-lightness:\s*calc\(var\(--rux-trip-bar-bg-lightness\) - var\(--rux-trip-bar-state-lightness-step\)\)/,
+	);
+	assert.match(tokensCss, /--rux-trip-bar-bg-opacity:\s*32%/);
+	assert.match(tokensCss, /--rux-trip-bar-hover-bg-opacity:\s*40%/);
+	assert.match(tokensCss, /--rux-trip-bar-pressed-bg-opacity:\s*44%/);
+	assert.match(tokensCss, /--rux-trip-bar-selected-bg-opacity:\s*48%/);
+});
+
+test("trip tails use direct state surfaces instead of compounding transparency", () => {
+	assert.match(tripBarCss, /--_tail-surface:\s*oklch\([^;]*var\(--rux-trip-bar-tail-opacity\)\)/);
+	assert.match(tripBarCss, /--_tail-surface-active:\s*oklch\([^;]*var\(--rux-trip-bar-tail-selected-opacity\)\)/);
+	assert.match(
+		tripBarCss,
+		/\.rux-trip-bar--multi-day\.is-active \.rux-trip-bar__tail\s*\{[^}]*background-color:\s*var\(--_tail-surface-active\)/s,
+	);
+	assert.doesNotMatch(
+		tripBarCss,
+		/\.rux-trip-bar__tail\s*\{[^}]*background-color:\s*color-mix\(/s,
+	);
+});
+
 test("connected trip surfaces share one backdrop blur", () => {
 	assert.match(
 		tokensCss,

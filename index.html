@@ -13,9 +13,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=46" />
+		<link rel="stylesheet" href="./css/tokens.css?v=47" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=90" />
+		<link rel="stylesheet" href="./css/components.css?v=92" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -27,6 +27,7 @@
 		<link rel="stylesheet" href="./css/features/flip-seven.css?v=17" />
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
+		<link rel="stylesheet" href="./css/features/profile-picker.css" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=35" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=11" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=5" />
@@ -154,6 +155,18 @@
 					class="rux-menu__item"
 					type="button"
 					role="menuitem"
+					id="profile-menu-switch-btn"
+				>
+					<span class="rux-icon" aria-hidden="true"
+						>switch_account</span
+					>
+					<span>Switch profile</span>
+				</button>
+				<div class="rux-menu__divider" role="separator"></div>
+				<button
+					class="rux-menu__item"
+					type="button"
+					role="menuitem"
 					data-module="components"
 				>
 					<span class="rux-icon" aria-hidden="true">widgets</span>
@@ -181,6 +194,103 @@
 					<span>Configuration</span>
 				</button>
 			</div>
+
+			<!-- Profile picker — password-less "who's using this" selector. Shown
+			     once per load (unless a remembered profile is still valid) and
+			     reopenable anytime from the profile menu's "Switch profile" item.
+			     See profile.js / profile-db.js for the data side. -->
+			<div class="rux-modal-backdrop" id="profile-picker-modal" hidden>
+				<div
+					class="rux-modal rux-profile-picker"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="profile-picker-title"
+					style="width: min(380px, calc(100vw - var(--rux-space-8)))"
+				>
+					<div class="rux-modal__header">
+						<div class="rux-modal__title" id="profile-picker-title">
+							Who's this?
+						</div>
+					</div>
+					<div class="rux-modal__body">
+						<div
+							class="rux-profile-picker__list"
+							id="profile-picker-list"
+						></div>
+						<form
+							class="rux-profile-picker__add"
+							id="profile-picker-add-form"
+							hidden
+						>
+							<button
+								type="button"
+								class="rux-profile-picker__add-avatar-btn"
+								id="profile-picker-add-avatar-btn"
+								aria-label="Add photo"
+							>
+								<span
+									class="rux-avatar rux-avatar--lg rux-profile-picker__add-avatar"
+									id="profile-picker-add-avatar"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>add_a_photo</span
+									>
+								</span>
+								<input
+									type="file"
+									accept="image/*"
+									id="profile-picker-add-photo-input"
+									hidden
+								/>
+							</button>
+							<input
+								type="text"
+								class="rux-input rux-profile-picker__add-name"
+								id="profile-picker-add-name"
+								placeholder="Display name"
+								autocomplete="off"
+								required
+							/>
+							<div class="rux-profile-picker__add-actions">
+								<button
+									type="button"
+									class="rux-button rux-button--default"
+									id="profile-picker-add-cancel"
+								>
+									Cancel
+								</button>
+								<button
+									type="submit"
+									class="rux-button rux-button--accent"
+									id="profile-picker-add-save"
+								>
+									Save
+								</button>
+							</div>
+						</form>
+						<button
+							type="button"
+							class="rux-button rux-button--default rux-button--block"
+							id="profile-picker-add-btn"
+						>
+							<span class="rux-icon" aria-hidden="true"
+								>person_add</span
+							>
+							<span>Add profile</span>
+						</button>
+					</div>
+					<div class="rux-modal__footer">
+						<button
+							type="button"
+							class="rux-button rux-button--default"
+							id="profile-picker-skip-btn"
+						>
+							Not now
+						</button>
+					</div>
+				</div>
+			</div>
+
 			<div class="scheduler-app__body">
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: CALENDAR
@@ -5778,6 +5888,19 @@
 			import { loadRequirements } from "./js/data/requirements-db.js";
 			import { normalizeTripImport } from "./js/data/trip-import.js?v=1";
 			import { supabase } from "./js/data/supabase.js";
+			import {
+				fetchProfiles,
+				createProfile,
+				updateProfile,
+				deleteProfile,
+				getProfilePhotoUrl,
+				uploadProfilePhoto,
+			} from "./js/data/profile-db.js";
+			import {
+				getCurrentProfile,
+				getRememberedProfileId,
+				setCurrentProfile,
+			} from "./js/core/profile.js";
 
 			// Load requirements before trip panel is used (window.appRequirements cache)
 			if (!window.appRequirements)
@@ -5839,6 +5962,287 @@
 				}
 			}
 			profileMenuBtn?.addEventListener("click", toggleProfileMenu);
+
+			// ── Profile picker — password-less "who's using this" selector ──────
+			// No auth: just a shared list of names (+ optional photo) so trip
+			// history attribution and the header avatar show a real person
+			// instead of the generic "Dispatcher" fallback. See profile.js
+			// (current-selection state) and profile-db.js (Supabase CRUD).
+			const profilePickerModal = document.getElementById("profile-picker-modal");
+			const profilePickerList = document.getElementById("profile-picker-list");
+			const profilePickerAddBtn = document.getElementById("profile-picker-add-btn");
+			const profilePickerAddForm = document.getElementById("profile-picker-add-form");
+			const profilePickerAddName = document.getElementById("profile-picker-add-name");
+			const profilePickerAddSave = document.getElementById("profile-picker-add-save");
+			const profilePickerAddCancel = document.getElementById("profile-picker-add-cancel");
+			const profilePickerAddAvatarBtn = document.getElementById("profile-picker-add-avatar-btn");
+			const profilePickerAddAvatar = document.getElementById("profile-picker-add-avatar");
+			const profilePickerAddPhotoInput = document.getElementById("profile-picker-add-photo-input");
+			const profilePickerSkipBtn = document.getElementById("profile-picker-skip-btn");
+			const profileMenuSwitchBtn = document.getElementById("profile-menu-switch-btn");
+
+			let allProfiles = [];
+			let profilePickerDismissible = true;
+			let pendingAddPhotoFile = null;
+
+			function iconSpan(name) {
+				const span = document.createElement("span");
+				span.className = "rux-icon";
+				span.setAttribute("aria-hidden", "true");
+				span.textContent = name;
+				return span;
+			}
+
+			function profileAvatarEl(profile, extraClass = "") {
+				const el = document.createElement("span");
+				el.className = extraClass ? `rux-avatar ${extraClass}` : "rux-avatar";
+				const url = profile?.photo_path ? getProfilePhotoUrl(profile.photo_path) : null;
+				if (url) {
+					const img = document.createElement("img");
+					img.src = url;
+					img.alt = "";
+					el.appendChild(img);
+				} else {
+					el.textContent = driverInitials(profile?.display_name || "");
+				}
+				return el;
+			}
+
+			function renderHeaderAvatar(profile) {
+				profileMenuBtn.replaceChildren();
+				if (profile) {
+					const url = profile.photo_path ? getProfilePhotoUrl(profile.photo_path) : null;
+					if (url) {
+						const img = document.createElement("img");
+						img.src = url;
+						img.alt = "";
+						profileMenuBtn.appendChild(img);
+					} else {
+						const initials = document.createElement("span");
+						initials.className = "rux-app-header__profile-initials";
+						initials.textContent = driverInitials(profile.display_name);
+						profileMenuBtn.appendChild(initials);
+					}
+					profileMenuBtn.setAttribute(
+						"aria-label",
+						`Profile menu — ${profile.display_name}`,
+					);
+				} else {
+					const img = document.createElement("img");
+					img.src = "./assets/rux-profile-pic.png";
+					img.alt = "";
+					profileMenuBtn.appendChild(img);
+					profileMenuBtn.setAttribute("aria-label", "Profile menu");
+				}
+			}
+
+			window.addEventListener("rux:profile-changed", (event) => {
+				renderHeaderAvatar(event.detail.profile);
+			});
+
+			function setAddAvatarPreview(url, initials) {
+				profilePickerAddAvatar.replaceChildren();
+				if (url) {
+					const img = document.createElement("img");
+					img.src = url;
+					img.alt = "";
+					profilePickerAddAvatar.appendChild(img);
+				} else if (initials) {
+					profilePickerAddAvatar.textContent = initials;
+				} else {
+					profilePickerAddAvatar.appendChild(iconSpan("add_a_photo"));
+				}
+			}
+
+			function openAddForm(editProfile = null) {
+				profilePickerAddForm.hidden = false;
+				profilePickerAddBtn.hidden = true;
+				profilePickerAddForm.dataset.editId = editProfile?.id || "";
+				profilePickerAddName.value = editProfile?.display_name || "";
+				pendingAddPhotoFile = null;
+				setAddAvatarPreview(
+					editProfile?.photo_path ? getProfilePhotoUrl(editProfile.photo_path) : null,
+					null,
+				);
+				profilePickerAddName.focus();
+			}
+
+			function closeAddForm() {
+				profilePickerAddForm.hidden = true;
+				profilePickerAddBtn.hidden = false;
+				profilePickerAddForm.dataset.editId = "";
+				profilePickerAddName.value = "";
+				pendingAddPhotoFile = null;
+				setAddAvatarPreview(null, null);
+			}
+
+			function selectProfile(id) {
+				const profile = allProfiles.find((p) => String(p.id) === String(id));
+				if (!profile) return;
+				setCurrentProfile(profile);
+				closeProfilePicker();
+			}
+
+			async function refreshProfiles() {
+				try {
+					allProfiles = await fetchProfiles();
+				} catch (err) {
+					console.error("Could not load profiles:", err);
+					allProfiles = [];
+				}
+				renderProfilePickerList();
+			}
+
+			function renderProfilePickerList() {
+				profilePickerList.replaceChildren();
+				if (!allProfiles.length) {
+					const empty = document.createElement("p");
+					empty.className = "rux-profile-picker__empty";
+					empty.textContent = "No profiles yet — add one below.";
+					profilePickerList.appendChild(empty);
+					return;
+				}
+				allProfiles.forEach((profile) => {
+					const row = document.createElement("div");
+					row.className = "rux-profile-picker__row";
+					row.dataset.profileId = profile.id;
+
+					const main = document.createElement("button");
+					main.type = "button";
+					main.className = "rux-profile-picker__row-main";
+					main.appendChild(
+						profileAvatarEl(profile, "rux-profile-picker__row-avatar"),
+					);
+					const nameEl = document.createElement("span");
+					nameEl.className = "rux-profile-picker__name";
+					nameEl.textContent = profile.display_name;
+					main.appendChild(nameEl);
+					main.addEventListener("click", () => selectProfile(profile.id));
+					row.appendChild(main);
+
+					const actions = document.createElement("div");
+					actions.className = "rux-profile-picker__row-actions";
+
+					const editBtn = document.createElement("button");
+					editBtn.type = "button";
+					editBtn.className =
+						"rux-button rux-button--ghost rux-button--icon rux-button--sm";
+					editBtn.setAttribute("aria-label", `Edit ${profile.display_name}`);
+					editBtn.appendChild(iconSpan("edit"));
+					editBtn.addEventListener("click", (event) => {
+						event.stopPropagation();
+						openAddForm(profile);
+					});
+					actions.appendChild(editBtn);
+
+					const deleteBtn = document.createElement("button");
+					deleteBtn.type = "button";
+					deleteBtn.className =
+						"rux-button rux-button--ghost rux-button--icon rux-button--sm";
+					deleteBtn.setAttribute("aria-label", `Delete ${profile.display_name}`);
+					deleteBtn.appendChild(iconSpan("delete"));
+					deleteBtn.addEventListener("click", async (event) => {
+						event.stopPropagation();
+						if (!confirm(`Remove profile "${profile.display_name}"?`)) return;
+						try {
+							await deleteProfile(profile.id);
+							if (String(getCurrentProfile()?.id) === String(profile.id)) {
+								setCurrentProfile(null);
+							}
+							await refreshProfiles();
+						} catch (err) {
+							console.error("Delete profile failed:", err);
+							window.Rux?.toast?.("Could not delete profile — try again.");
+						}
+					});
+					actions.appendChild(deleteBtn);
+
+					row.appendChild(actions);
+					profilePickerList.appendChild(row);
+				});
+			}
+
+			function openProfilePicker(dismissible) {
+				profilePickerDismissible = dismissible;
+				closeAddForm();
+				renderProfilePickerList();
+				profilePickerModal.hidden = false;
+			}
+
+			function closeProfilePicker() {
+				profilePickerModal.hidden = true;
+			}
+
+			profilePickerModal.addEventListener("click", (event) => {
+				if (event.target === profilePickerModal && profilePickerDismissible) {
+					closeProfilePicker();
+				}
+			});
+
+			profilePickerSkipBtn.addEventListener("click", () => {
+				setCurrentProfile(null);
+				closeProfilePicker();
+			});
+
+			profileMenuSwitchBtn?.addEventListener("click", () => {
+				openProfilePicker(true);
+			});
+
+			profilePickerAddBtn.addEventListener("click", () => openAddForm(null));
+			profilePickerAddCancel.addEventListener("click", () => closeAddForm());
+			profilePickerAddAvatarBtn.addEventListener("click", () => {
+				profilePickerAddPhotoInput.click();
+			});
+			profilePickerAddPhotoInput.addEventListener("change", () => {
+				const file = profilePickerAddPhotoInput.files[0];
+				profilePickerAddPhotoInput.value = "";
+				if (!file) return;
+				pendingAddPhotoFile = file;
+				const reader = new FileReader();
+				reader.onload = (event) => setAddAvatarPreview(event.target.result, null);
+				reader.readAsDataURL(file);
+			});
+
+			profilePickerAddForm.addEventListener("submit", async (event) => {
+				event.preventDefault();
+				const name = profilePickerAddName.value.trim();
+				if (!name) return;
+				const editId = profilePickerAddForm.dataset.editId || null;
+				profilePickerAddSave.disabled = true;
+				try {
+					let profile = editId
+						? await updateProfile(editId, { display_name: name })
+						: await createProfile({ display_name: name });
+					if (pendingAddPhotoFile) {
+						const photoPath = await uploadProfilePhoto(profile.id, pendingAddPhotoFile);
+						profile = { ...profile, photo_path: photoPath };
+					}
+					await refreshProfiles();
+					closeAddForm();
+					if (!editId) selectProfile(profile.id);
+					else if (String(getCurrentProfile()?.id) === String(profile.id)) {
+						setCurrentProfile(profile);
+					}
+				} catch (err) {
+					console.error("Save profile failed:", err);
+					window.Rux?.toast?.("Could not save profile — try again.");
+				} finally {
+					profilePickerAddSave.disabled = false;
+				}
+			});
+
+			async function initProfilePicker() {
+				await refreshProfiles();
+				const rememberedId = getRememberedProfileId();
+				const remembered = rememberedId
+					? allProfiles.find((p) => String(p.id) === String(rememberedId))
+					: null;
+				if (remembered) {
+					setCurrentProfile(remembered);
+				} else {
+					openProfilePicker(true);
+				}
+			}
 
 			// Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
 			const initialModule =
@@ -6101,9 +6505,10 @@
 			// "on" reads as "nav is hidden" (matching the "Hide navigation bar"
 			// label), the same direction as appHeaderCollapsed, so this is a direct
 			// pass-through rather than an inversion.
-			initToggle("opt-hide-nav", appHeaderCollapsed, (on) =>
-				setAppHeaderCollapsed(on),
-			);
+			initToggle("opt-hide-nav", appHeaderCollapsed, (on) => {
+				setAppHeaderCollapsed(on);
+				patchProfileSettings({ hideNav: on });
+			});
 
 			const drawer = document.getElementById("trip-panel-drawer");
 			const rightDrawer = document.getElementById("right-panel-drawer");
@@ -7827,6 +8232,7 @@
 					on,
 				);
 				renderScheduler();
+				patchProfileSettings({ timeAlign: on });
 			});
 
 			let compactEnabled = false;
@@ -7843,6 +8249,7 @@
 					localStorage.setItem("rux:compact-trips", on);
 				} catch (_) {}
 				layoutScheduler();
+				patchProfileSettings({ compactTrips: on });
 			});
 
 			let centeredTripHeadsEnabled = false;
@@ -7867,6 +8274,7 @@
 						localStorage.setItem("rux:centered-trip-heads", on);
 					} catch (_) {}
 					layoutScheduler();
+					patchProfileSettings({ centeredTripHeads: on });
 				},
 			);
 
@@ -7876,6 +8284,7 @@
 					localStorage.setItem("rux:two-weeks", on);
 				} catch (_) {}
 				renderScheduler();
+				patchProfileSettings({ twoWeeks: on });
 			});
 
 			// ── Trip View: Calendar grid vs. flat Trips list ────────────────────────
@@ -8028,8 +8437,81 @@
 					} catch (_) {}
 					currentWeekStart = startOfWeek(currentWeekStart);
 					renderScheduler();
+					patchProfileSettings({ sundayStart });
 				});
 			}
+
+			// ── Per-profile view settings ───────────────────────────────────────
+			// patchProfileSettings persists one setting into the active profile's
+			// `settings` jsonb (no-op if no profile is selected — the plain
+			// localStorage writes above already cover that anonymous case).
+			// applyProfileSettings does the reverse: pushes a profile's saved
+			// settings into the six toggles above (and their side effects) when
+			// switching profiles, same code paths each toggle's own onChange uses.
+			function patchProfileSettings(patch) {
+				const profile = getCurrentProfile();
+				if (!profile) return;
+				profile.settings = { ...profile.settings, ...patch };
+				updateProfile(profile.id, { settings: profile.settings }).catch((err) => {
+					console.error("Could not save setting:", err);
+				});
+			}
+
+			function applyProfileSettings(profile) {
+				const settings = profile?.settings || {};
+
+				if ("timeAlign" in settings) {
+					timeAlignEnabled = !!settings.timeAlign;
+					const input = document.getElementById("opt-time-align");
+					if (input) input.checked = timeAlignEnabled;
+					schedulerEl?.classList.toggle(
+						"rux-scheduler--time-aligned",
+						timeAlignEnabled,
+					);
+				}
+
+				if ("compactTrips" in settings) {
+					compactEnabled = !!settings.compactTrips;
+					const input = document.getElementById("opt-compact");
+					if (input) input.checked = compactEnabled;
+					schedulerEl?.classList.toggle("rux-scheduler--compact", compactEnabled);
+				}
+
+				if ("centeredTripHeads" in settings) {
+					centeredTripHeadsEnabled = !!settings.centeredTripHeads;
+					const input = document.getElementById("opt-centered-trip-heads");
+					if (input) input.checked = centeredTripHeadsEnabled;
+					schedulerEl?.classList.toggle(
+						"rux-scheduler--centered-trip-heads",
+						centeredTripHeadsEnabled,
+					);
+				}
+
+				if ("twoWeeks" in settings) {
+					viewDays = settings.twoWeeks ? 14 : 7;
+					const input = document.getElementById("opt-two-weeks");
+					if (input) input.checked = settings.twoWeeks;
+				}
+
+				if ("hideNav" in settings) {
+					const input = document.getElementById("opt-hide-nav");
+					if (input) input.checked = !!settings.hideNav;
+					setAppHeaderCollapsed(!!settings.hideNav);
+				}
+
+				if ("sundayStart" in settings) {
+					sundayStart = !!settings.sundayStart;
+					if (optSundayStart) optSundayStart.checked = sundayStart;
+					currentWeekStart = startOfWeek(currentWeekStart);
+				}
+
+				renderScheduler();
+				layoutScheduler();
+			}
+
+			window.addEventListener("rux:profile-changed", (event) => {
+				if (event.detail.profile) applyProfileSettings(event.detail.profile);
+			});
 
 			const dayPickerBtn = document.getElementById("day-picker-btn");
 			const dayPickerInput = document.getElementById("day-picker-input");
@@ -9287,6 +9769,11 @@
 				generateTripId,
 				computeBusLabel,
 			};
+
+			// Runs last so every listener above (header avatar, per-profile
+			// settings) is already registered before a remembered profile (or
+			// the picker's own selection) can fire rux:profile-changed.
+			initProfilePicker();
 		</script>
 
 		<!-- Import trip modal -->
