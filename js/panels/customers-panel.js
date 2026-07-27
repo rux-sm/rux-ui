@@ -6,9 +6,9 @@
    panels — a .scheduler-app__drawer with a RuxDrawer-managed left panel,
    a roster table on the right — trimmed down since a contact is only
    name/phone/email plus its linked trip history, not a multi-tab record.
-   Talks to Supabase only through window.RuxContacts (js/data/trip-db.js,
-   wired in index.html), the same bridge the trip panel's contact autofill
-   uses, so both surfaces share one source of truth.
+   Imports the contact persistence API directly from js/data/trip-db.js.
+   The trip panel exposes the same functions through window.RuxContacts for
+   autofill, but this panel does not depend on scheduler startup order.
 
    API
    ---
@@ -29,6 +29,20 @@
 
 	let allContacts = [];
 	let selectedId = null;
+	let contactsDbPromise = null;
+	let loadPromise = null;
+	let loaded = false;
+
+	function getContactsDb() {
+		if (!contactsDbPromise) {
+			contactsDbPromise = import("../data/trip-db.js?v=8").catch((error) => {
+				// A failed dynamic import may be retried on the next panel load.
+				contactsDbPromise = null;
+				throw error;
+			});
+		}
+		return contactsDbPromise;
+	}
 
 	/* ── Drawer ─────────────────────────────────────────────────────────── */
 
@@ -90,6 +104,32 @@
 		});
 	}
 
+	function renderRosterState(message, { error = false, retry = false } = {}) {
+		const row = document.createElement("tr");
+		const cell = document.createElement("td");
+		cell.colSpan = 4;
+		cell.className = "customer-app__empty";
+		cell.textContent = message;
+		if (error) {
+			cell.style.color = "var(--rux-danger)";
+			cell.setAttribute("role", "alert");
+		} else {
+			cell.setAttribute("role", "status");
+		}
+		if (retry) {
+			const retryButton = document.createElement("button");
+			retryButton.type = "button";
+			retryButton.className = "rux-button rux-button--default";
+			retryButton.textContent = "Retry";
+			retryButton.addEventListener("click", () => {
+				void loadCustomers({ force: true });
+			});
+			cell.append(" ", retryButton);
+		}
+		row.appendChild(cell);
+		tbody.replaceChildren(row);
+	}
+
 	function applyFilter() {
 		const query = searchInput?.value.trim().toLowerCase() || "";
 		renderRows(allContacts.filter((c) => matchesSearch(c, query)));
@@ -134,7 +174,9 @@
 		if (!tripList) return;
 		tripList.innerHTML = `<li class="rux-customer-panel__trip-item"><span class="rux-subtle">Loading…</span></li>`;
 		try {
-			const trips = await window.RuxContacts?.trips?.(contactId) ?? [];
+			const db = await getContactsDb();
+			const trips = await db.fetchContactTrips(contactId);
+			if (selectedId !== contactId) return;
 			if (!trips.length) {
 				tripList.innerHTML = `<li class="rux-customer-panel__trip-item"><span class="rux-subtle">No trips yet.</span></li>`;
 				return;
@@ -149,6 +191,7 @@
 				})
 				.join("");
 		} catch (err) {
+			if (selectedId !== contactId) return;
 			console.warn("Could not load customer trips:", err);
 			tripList.innerHTML = `<li class="rux-customer-panel__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
 		}
@@ -177,8 +220,9 @@
 		const btn = document.getElementById("cp-btn-save");
 		btn.disabled = true;
 		try {
-			await window.RuxContacts.upsert(selectedId ? { id: selectedId, ...payload } : payload);
-			await loadCustomers();
+			const db = await getContactsDb();
+			await db.upsertContact(selectedId ? { id: selectedId, ...payload } : payload);
+			await loadCustomers({ force: true });
 			resetPanel();
 		} catch (err) {
 			console.error("Could not save customer:", err);
@@ -194,9 +238,10 @@
 		const btn = document.getElementById("cp-btn-delete");
 		btn.disabled = true;
 		try {
-			await window.RuxContacts.delete(selectedId);
+			const db = await getContactsDb();
+			await db.deleteContact(selectedId);
 			selectedId = null;
-			await loadCustomers();
+			await loadCustomers({ force: true });
 			resetPanel();
 		} catch (err) {
 			console.error("Could not delete customer:", err);
@@ -215,36 +260,55 @@
 
 	/* ── Data loading ───────────────────────────────────────────────────── */
 
-	async function loadCustomers() {
-		try {
-			allContacts = await window.RuxContacts.fetch();
-			applyFilter();
-		} catch (err) {
-			console.error("fetchContacts failed:", err);
-			tbody.innerHTML = `<tr><td colspan="3" class="customer-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
-		}
+	function loadCustomers({ force = false } = {}) {
+		if (loadPromise) return loadPromise;
+		if (loaded && !force) return Promise.resolve(true);
+
+		renderRosterState("Loading customers…");
+		if (searchInput) searchInput.disabled = true;
+
+		loadPromise = (async () => {
+			try {
+				const db = await getContactsDb();
+				allContacts = await db.fetchContacts();
+				loaded = true;
+				applyFilter();
+				return true;
+			} catch (err) {
+				loaded = false;
+				console.error("fetchContacts failed:", err);
+				renderRosterState("Customers could not be loaded.", {
+					error: true,
+					retry: true,
+				});
+				return false;
+			} finally {
+				if (searchInput) searchInput.disabled = false;
+			}
+		})().finally(() => {
+			loadPromise = null;
+		});
+
+		return loadPromise;
 	}
 
 	/* ── Public API ─────────────────────────────────────────────────────── */
 
-	let loaded = false;
-	async function init() {
-		if (loaded) return;
-		// The calendar module's own async data init is what sets up
-		// window.RuxContacts — normally already done by the time anyone
-		// navigates here, but not guaranteed if Customers is the very first
-		// module shown (e.g. a direct #customers link on a cold load). Wait
-		// briefly rather than silently failing.
-		for (let i = 0; i < 20 && !window.RuxContacts; i++) {
-			await new Promise((resolve) => setTimeout(resolve, 100));
-		}
-		if (!window.RuxContacts) {
-			console.warn("RuxContacts never became available — Customers module can't load.");
-			return;
-		}
-		loaded = true;
-		await loadCustomers();
+	function init() {
+		return loadCustomers();
 	}
 
-	window.CustomersPanel = { init, reload: loadCustomers };
+	window.CustomersPanel = {
+		init,
+		reload: () => loadCustomers({ force: true }),
+	};
+
+	// A direct #customers load can run before the module-navigation script calls
+	// init(). Starting here as well is safe because loadPromise deduplicates it.
+	if (
+		document.body.dataset.activeModule === "customers"
+		|| location.hash.slice(1).split("/")[0] === "customers"
+	) {
+		void init();
+	}
 })();
