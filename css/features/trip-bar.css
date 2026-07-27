@@ -151,6 +151,12 @@
 	height: calc(var(--rux-trip-bar-collapsed-height) + var(--_conflict-height));
 }
 
+.rux-trip-bar:not(.rux-trip-bar--multi-day),
+.rux-trip-bar__head {
+	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+}
+
 .rux-trip-bar.is-active {
 	height: calc(var(--rux-trip-bar-active-height) + var(--_conflict-height));
 	min-width: var(--rux-trip-bar-day-inline-size, 100%);

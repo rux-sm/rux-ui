@@ -6,6 +6,10 @@ const tripBarCss = await readFile(
 	new URL("../css/features/trip-bar.css", import.meta.url),
 	"utf8",
 );
+const tokensCss = await readFile(
+	new URL("../css/tokens.css", import.meta.url),
+	"utf8",
+);
 const printScheduleCss = await readFile(
 	new URL("../css/features/print-schedule.css", import.meta.url),
 	"utf8",
@@ -116,4 +120,19 @@ test("centered identity text applies to single and multi-day bars without moving
 		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar \.rux-trip-bar__reqs \.rux-trip-bar__pending\s*\{[^}]*margin-inline-start:\s*auto/s,
 	);
 	assert.match(appSource, />Center trip details<\/span/);
+});
+
+test("trip information surfaces soften scheduler lines without blurring tails", () => {
+	assert.match(
+		tokensCss,
+		/--rux-trip-bar-head-backdrop-blur:\s*3px/,
+	);
+	assert.match(
+		tripBarCss,
+		/\.rux-trip-bar:not\(\.rux-trip-bar--multi-day\),\s*\.rux-trip-bar__head\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)[^}]*backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)/s,
+	);
+	assert.doesNotMatch(
+		tripBarCss,
+		/\.rux-trip-bar__tail\s*\{[^}]*backdrop-filter/s,
+	);
 });
