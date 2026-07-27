@@ -86,10 +86,13 @@ test("pending assignment exposes dominant accept and quieter decline controls", 
 		onDecline: async () => ({ status: "declined" }),
 	});
 	const accept = buttonByLabel(card, "Accept");
-	const decline = buttonByLabel(card, "Decline");
+	const decline = buttonByLabel(card, "Not Available");
 	assert.ok(accept.classList.contains("rux-button--accent"));
 	assert.ok(decline.classList.contains("rux-button--default"));
 	assert.ok(decline.classList.contains("rux-button--danger"));
+	assert.ok(accept.classList.contains("driver-assignment-card__response-control"));
+	assert.ok(decline.classList.contains("driver-assignment-card__response-control"));
+	assert.equal(card.textContent.includes("Awaiting Response"), false);
 	const actions = card.querySelector(".driver-assignment-card__response-actions");
 	assert.equal(actions.childNodes[0], decline);
 	assert.equal(actions.childNodes[1], accept);
@@ -107,37 +110,88 @@ test("header presents the full date range as its own top row", () => {
 	assert.equal(card.querySelector(".driver-assignment-card__date-weekdays"), null);
 });
 
-test("header places the assigned bus at top right and role with route metadata", () => {
+test("header stacks bus and role beside the date and destination", () => {
 	const card = renderDriverAssignmentCard(assignment());
-	assert.equal(card.querySelector(".driver-assignment-card__bus-badge").textContent, "Bus 763");
 	const metadata = card.querySelector(".driver-assignment-card__header-metadata");
-	assert.ok(metadata.textContent.includes("Round-Trip"));
-	assert.ok(metadata.textContent.includes("Driver"));
+	const busBadge = card.querySelector(".driver-assignment-card__bus-badge");
+	const roleBadge = card.querySelector(".driver-assignment-card__role-badge");
+	assert.equal(
+		busBadge.querySelector(".rux-badge__label").textContent,
+		"Bus 763",
+	);
+	assert.equal(
+		roleBadge.querySelector(".rux-badge__label").textContent,
+		"Driver",
+	);
+	for (const badge of [busBadge, roleBadge]) {
+		assert.ok(badge.classList.contains("rux-badge"));
+		assert.ok(badge.classList.contains("rux-badge--info"));
+		assert.ok(badge.classList.contains("rux-badge--module"));
+	}
+	assert.deepEqual(
+		metadata.childNodes.map(
+			(badge) => badge.querySelector(".rux-badge__icon").textContent,
+		),
+		["directions_bus", "badge"],
+	);
+	assert.equal(card.querySelector(".driver-assignment-card__trip-type"), null);
 });
 
-test("header combines assignment identity, route, and response details", () => {
+test("header combines assignment date, destination, metadata, and response details", () => {
 	const card = renderDriverAssignmentCard(assignment(), {
 		onAccept: async () => ({ status: "accepted" }),
 		onDecline: async () => ({ status: "declined" }),
 	});
 	const header = card.querySelector(".driver-assignment-card__header");
-	const route = card.querySelector(".driver-assignment-card__header-route");
+	const destination = card.querySelector(".driver-assignment-card__destination");
+	const customer = card.querySelector(".driver-assignment-card__customer");
 	const response = card.querySelector(".driver-assignment-card__response");
-	assert.ok(route.textContent.includes("Donna, TX"));
-	assert.ok(route.textContent.includes("Austin, TX"));
-	assert.ok(route.textContent.includes("Round-Trip"));
+	assert.equal(destination.textContent, "Austin, TX");
+	assert.equal(customer.textContent, "Donna High School");
+	assert.equal(destination.parentNode, customer.parentNode);
+	assert.ok(
+		destination.parentNode.classList.contains(
+			"driver-assignment-card__destination-group",
+		),
+	);
+	assert.equal(customer.getAttribute("aria-label"), "Customer: Donna High School");
+	assert.equal(destination.getAttribute("aria-label"), "Destination: Austin, TX");
+	assert.equal(destination.getAttribute("title"), "Austin, TX");
+	assert.equal(header.textContent.includes("Donna, TX"), false);
+	assert.equal(header.textContent.includes("Round-Trip"), false);
 	assert.equal(moduleByKey(card, "departure-summary"), null);
 	assert.ok(header.childNodes.includes(response));
 });
 
-test("accepted assignment presents status without a large green surface", () => {
+test("accepted assignment replaces the accept action with a green status control", () => {
 	const card = renderDriverAssignmentCard(assignment({ status: "accepted" }), {
 		onDecline: async () => ({ status: "declined" }),
 	});
 	assert.equal(card.dataset.status, "accepted");
-	assert.ok(card.querySelector(".driver-assignment-card__status--success"));
+	assert.equal(card.querySelector(".driver-assignment-card__status--success"), null);
 	assert.equal(buttonByLabel(card, "Accept"), null);
-	assert.ok(buttonByLabel(card, "Unable to drive?").classList.contains("rux-button--ghost"));
+	assert.ok(buttonByLabel(card, "Unable to Drive").classList.contains("rux-button--danger"));
+	const accepted = card.querySelector(".driver-assignment-card__accepted-control");
+	assert.equal(accepted.getAttribute("role"), "status");
+	assert.equal(accepted.getAttribute("aria-live"), "polite");
+	assert.ok(accepted.classList.contains("driver-assignment-card__response-control"));
+	assert.equal(accepted.querySelector(".rux-btn-label").textContent, "Accepted");
+});
+
+test("declined assignment uses equal standard controls for status and accept", () => {
+	const card = renderDriverAssignmentCard(assignment({ status: "declined" }), {
+		onAccept: async () => ({ status: "accepted" }),
+	});
+	const actions = card.querySelector(".driver-assignment-card__response-actions");
+	const declined = card.querySelector(".driver-assignment-card__status-control--danger");
+	const accept = buttonByLabel(card, "Accept");
+	assert.equal(card.querySelector(".driver-assignment-card__status--danger"), null);
+	assert.equal(actions.childNodes[0], declined);
+	assert.equal(actions.childNodes[1], accept);
+	assert.ok(declined.classList.contains("driver-assignment-card__response-control"));
+	assert.ok(accept.classList.contains("driver-assignment-card__response-control"));
+	assert.equal(declined.getAttribute("role"), "status");
+	assert.equal(declined.querySelector(".rux-btn-label").textContent, "Declined");
 });
 
 test("ordinary drivers use header badges while relief assignments show handoff detail", () => {
@@ -145,7 +199,13 @@ test("ordinary drivers use header badges while relief assignments show handoff d
 	assert.equal(moduleByKey(standard, "role"), null);
 	assert.ok(standard.textContent.includes("Driver"));
 	assert.equal(standard.textContent.includes("Primary operator"), false);
-	assert.equal(standard.querySelector(".driver-assignment-card__bus-badge").textContent, "Bus 763");
+	assert.equal(
+		standard
+			.querySelector(".driver-assignment-card__bus-badge")
+			.querySelector(".rux-badge__label")
+			.textContent,
+		"Bus 763",
+	);
 	const relief = renderDriverAssignmentCard(assignment({
 		role: "relief-start",
 		roleDetails: {
@@ -160,28 +220,55 @@ test("ordinary drivers use header badges while relief assignments show handoff d
 	assert.ok(relief.textContent.includes("Austin Convention Center"));
 });
 
-test("header route is followed by spot time and spot location", () => {
+test("header destination is followed by spot time and spot location", () => {
 	const card = renderDriverAssignmentCard(assignment());
-	const route = card.querySelector(".driver-assignment-card__header-route");
+	const destination = card.querySelector(".driver-assignment-card__destination");
 	const spotLocation = moduleByKey(card, "spot-location");
-	assert.ok(route);
+	assert.ok(destination);
 	assert.ok(spotLocation);
 	assert.equal(moduleByKey(card, "trip"), null);
 	assert.equal(moduleByKey(card, "trip-overview"), null);
 	assert.equal(moduleByKey(card, "spot-time"), null);
-	assert.ok(route.textContent.includes("Donna, TX"));
-	assert.ok(route.textContent.includes("Austin, TX"));
-	assert.ok(route.textContent.includes("Round-Trip"));
-	assert.equal(route.textContent.includes("5:15 AM"), false);
-	assert.ok(spotLocation.textContent.includes("Spot Time"));
+	assert.equal(destination.textContent, "Austin, TX");
+	assert.equal(
+		card.querySelector(".driver-assignment-card__customer").textContent,
+		"Donna High School",
+	);
+	assert.equal(card.querySelector(".driver-assignment-card__header").textContent.includes("Round-Trip"), false);
+	assert.equal(destination.textContent.includes("5:15 AM"), false);
 	assert.ok(spotLocation.textContent.includes("5:15 AM"));
-	assert.ok(spotLocation.textContent.includes("Donna High School"));
+	assert.equal(spotLocation.textContent.includes("Donna High School"), false);
+	assert.ok(spotLocation.textContent.includes("7250 Val Verde Rd"));
 	assert.ok(spotLocation.textContent.includes("Navigate"));
 	const spotDetails = spotLocation.querySelector(".assignment-compact-module__details");
-	assert.ok(spotDetails.childNodes[0].classList.contains("driver-assignment-card__spot-time"));
-	assert.equal(spotDetails.childNodes[1].textContent, "Spot Location");
+	const time = spotDetails.childNodes[0];
+	assert.equal(time.tagName, "TIME");
+	assert.ok(time.classList.contains("driver-assignment-card__time"));
+	assert.equal(time.getAttribute("aria-label"), "Spot time: 5:15 AM");
+	const address = spotDetails.childNodes[1];
+	assert.equal(address.tagName, "ADDRESS");
+	assert.ok(address.classList.contains("driver-assignment-card__spot-address"));
+	assert.equal(address.textContent, "7250 Val Verde Rd, Donna TX 78537");
+	assert.equal(spotLocation.textContent.includes("Spot Time"), false);
+	assert.equal(spotLocation.textContent.includes("Spot Location"), false);
 	assert.equal(spotLocation.textContent.includes("Austin"), false);
 	assert.equal(spotLocation.textContent.includes("Round-Trip"), false);
+});
+
+test("reporting details show the address even when customer data exists", () => {
+	const card = renderDriverAssignmentCard(assignment({
+		spotLocation: {
+			addressLine1: "7250 Val Verde Rd",
+			city: "Donna",
+			state: "TX",
+			postalCode: "78537",
+		},
+	}));
+	const reporting = moduleByKey(card, "spot-location");
+	const address = reporting.querySelector(".driver-assignment-card__spot-address");
+	assert.ok(address);
+	assert.equal(address.textContent, "7250 Val Verde Rd, Donna TX 78537");
+	assert.equal(reporting.textContent.includes("Donna High School"), false);
 });
 
 test("contact and navigation actions have full screen-reader labels", () => {
@@ -194,7 +281,7 @@ test("contact and navigation actions have full screen-reader labels", () => {
 	assert.ok(labels.some((label) => label?.includes("7250 Val Verde Rd")));
 });
 
-test("trip contact follows spot time and alerts are omitted", () => {
+test("trip contact shares reporting details and alerts are omitted", () => {
 	const card = renderDriverAssignmentCard(assignment({
 		contact: { name: "Anna Partida", phone: "956-292-9255" },
 		alerts: [{ id: "warning", severity: "warning", title: "Hotel Required" }],
@@ -202,22 +289,31 @@ test("trip contact follows spot time and alerts are omitted", () => {
 	const modules = allElements(card)
 		.filter((node) => node.dataset.module)
 		.map((node) => node.dataset.module);
-	assert.deepEqual(modules.slice(0, 2), ["spot-location", "contact"]);
+	assert.deepEqual(modules, ["spot-location"]);
 	assert.equal(modules.includes("alerts"), false);
 	assert.equal(card.textContent.includes("Hotel Required"), false);
-	const contact = moduleByKey(card, "contact");
+	const reporting = moduleByKey(card, "spot-location");
+	const contact = reporting.querySelector(".driver-assignment-card__reporting-contact");
+	assert.ok(contact);
+	assert.equal(reporting.getAttribute("aria-label"), "Reporting details and trip contact");
 	assert.equal(contact.querySelector(".assignment-module__label-wrap"), null);
 	assert.ok(contact.querySelector(".assignment-compact-module__body"));
 	assert.equal(
-		contact.querySelector(".driver-assignment-card__phone").parentNode
-			.querySelector(".assignment-compact-module__primary").textContent,
+		contact.querySelector(".assignment-compact-module__primary").textContent,
 		"Anna Partida",
 	);
+	assert.equal(contact.textContent.includes("956-292-9255"), false);
 	assert.deepEqual(
 		contact.querySelector(".assignment-compact-module__actions").childNodes.map(
 			(action) => action.getAttribute("aria-label"),
 		),
 		["Text Anna Partida", "Call Anna Partida"],
+	);
+	assert.deepEqual(
+		contact.querySelector(".assignment-compact-module__actions").childNodes.map(
+			(action) => action.href,
+		),
+		["sms:9562929255", "tel:9562929255"],
 	);
 });
 
@@ -251,7 +347,8 @@ test("explicit current-user crew rows use You instead of repeating a name", () =
 			],
 		}],
 	}));
-	assert.ok(card.textContent.includes("DriverYou"));
+	assert.equal(card.querySelector(".driver-assignment-card__crew-name").textContent, "You");
+	assert.equal(card.querySelector(".driver-assignment-card__crew-role").textContent, "Driver");
 	assert.equal(card.textContent.includes("Jorge Garcia"), false);
 });
 
@@ -286,7 +383,7 @@ test("decline confirmation precedes a successful decline", async () => {
 			return { status: "declined", declinedAt: "2026-07-22T12:00:00Z" };
 		},
 	}));
-	const decline = buttonByLabel(host, "Decline");
+	const decline = buttonByLabel(host, "Not Available");
 	await decline.dispatch("click");
 	assert.equal(confirmationCount, 1);
 	assert.equal(declineCount, 1);
@@ -420,9 +517,10 @@ test("crew and fleet uses compact bus-person rows", () => {
 	const crew = moduleByKey(singleBus, "crew-fleet");
 	assert.equal(crew.textContent.includes("Crew & Fleet"), false);
 	assert.equal(crew.textContent.includes("Bus 763"), false);
+	assert.ok(crew.textContent.includes("Your Bus"));
 	assert.ok(crew.textContent.includes("Maria Lopez"));
 	assert.ok(crew.textContent.includes("Relief Driver"));
-	assert.ok(crew.textContent.includes("956-555-0112"));
+	assert.equal(crew.textContent.includes("956-555-0112"), false);
 	assert.equal(crew.querySelector(".assignment-module__label-wrap"), null);
 	const crewActions = crew.querySelector(".driver-assignment-card__crew-actions");
 	const crewActionLabels = crewActions.childNodes.map(
@@ -464,17 +562,41 @@ test("crew and fleet uses compact bus-person rows", () => {
 	const fleet = moduleByKey(multiBus, "crew-fleet");
 	assert.equal(fleet.textContent.includes("Crew & Fleet"), false);
 	assert.equal(fleet.textContent.includes("Bus 763"), false);
+	assert.ok(fleet.textContent.includes("Your Bus"));
 	assert.ok(fleet.textContent.includes("Bus 746"));
-	assert.ok(fleet.textContent.includes("Co-Driver"));
 	assert.ok(fleet.textContent.includes("Miguel Torres"));
-	assert.ok(fleet.textContent.includes("111-333-4444"));
-	assert.ok(fleet.textContent.includes("James Cole (Driver)"));
-	assert.ok(fleet.textContent.includes("Jose Garcia (Driver)"));
-	assert.equal(fleet.textContent.match(/Bus 746/g)?.length, 1);
-	assert.ok(
-		fleet.querySelectorAll(".driver-assignment-card__crew-context")
-			.every((context) => context.classList.contains("assignment-module__label")),
+	assert.ok(fleet.textContent.includes("Co-Driver"));
+	assert.equal(fleet.textContent.includes("111-333-4444"), false);
+	assert.equal(fleet.textContent.includes("909-111-1111"), false);
+	assert.equal(fleet.textContent.includes("909-222-2222"), false);
+	assert.ok(fleet.textContent.includes("James Cole"));
+	assert.ok(fleet.textContent.includes("Jose Garcia"));
+	assert.equal(
+		fleet.querySelectorAll(".driver-assignment-card__crew-role")
+			.filter((role) => role.textContent === "Driver").length,
+		2,
 	);
+	assert.equal(fleet.textContent.match(/Bus 746/g)?.length, 1);
+	const busSections = fleet.querySelectorAll(".driver-assignment-card__crew-bus-section");
+	assert.equal(busSections.length, 2);
+	assert.equal(busSections[0].getAttribute("aria-labelledby"), busSections[0].querySelector("h3").id);
+	assert.equal(busSections[1].getAttribute("aria-labelledby"), busSections[1].querySelector("h3").id);
+});
+
+test("document actions use neutral styling unless attention is required", () => {
+	const card = renderDriverAssignmentCard(assignment({
+		documents: [
+			{ id: "1", type: "itinerary", label: "Itinerary", status: "available" },
+			{ id: "2", type: "envelope", label: "Envelope", status: "required" },
+		],
+	}), {
+		onItinerary: () => {},
+		onEnvelope: () => {},
+	});
+	const documents = card.querySelectorAll(".driver-assignment-card__document");
+	assert.equal(documents.length, 2);
+	assert.equal(documents[0].classList.contains("is-attention-needed"), false);
+	assert.equal(documents[1].classList.contains("is-attention-needed"), true);
 });
 
 test("generic module buttons expose one fixed layout and every semantic tone", async () => {
@@ -498,22 +620,94 @@ test("generic module buttons expose one fixed layout and every semantic tone", a
 });
 
 test("responsive CSS protects narrow layouts and touch targets", async () => {
-	const [css, componentDemoCss, tokens] = await Promise.all([
+	const [css, componentDemoCss, tokens, badges] = await Promise.all([
 		readFile(new URL("../css/features/driver-share.css", import.meta.url), "utf8"),
 		readFile(new URL("../css/features/comp-components-app.css", import.meta.url), "utf8"),
 		readFile(new URL("../css/tokens.css", import.meta.url), "utf8"),
+		readFile(new URL("../css/base/badges.css", import.meta.url), "utf8"),
 	]);
 	assert.match(css, /@media \(max-width: 479px\)/);
 	assert.match(css, /container:\s*driver-assignment-card\s*\/\s*inline-size/);
 	assert.match(css, /@container driver-assignment-card \(max-width: 479px\)/);
-	assert.match(css, /\.driver-assignment-card__bus-badge\s*\{[^}]*justify-self:\s*end/s);
-	assert.match(css, /\.driver-assignment-card__header-route\s*\{[^}]*display:\s*flex/s);
 	assert.match(
 		css,
-		/\.driver-assignment-card__response\[data-status="pending"\] \.driver-assignment-card__response-actions\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)[^}]*width:\s*100%/s,
+		/\.driver-assignment-card__bus-badge,\s*\.driver-assignment-card__role-badge\s*\{/s,
+	);
+	assert.match(css, /\.driver-assignment-card__date-range\s*\{[^}]*color:\s*var\(--rux-fg-muted\)/s);
+	assert.match(tokens, /--rux-driver-date-primary-size:\s+1rem/);
+	assert.match(
+		css,
+		/\.driver-assignment-card__header-summary\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) clamp\(104px,\s*24cqi,\s*128px\)[^}]*grid-template-areas:[^}]*"date bus"[^}]*"destination role"[^}]*row-gap:\s*var\(--rux-space-2\)[^}]*padding:\s*var\(--rux-driver-card-header-padding\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__destination-group\s*\{[^}]*grid-area:\s*destination[^}]*display:\s*grid[^}]*gap:\s*var\(--rux-space-1\)[^}]*min-width:\s*0/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__destination\s*\{[^}]*overflow:\s*hidden[^}]*min-width:\s*0[^}]*font-size:\s*var\(--rux-text-500\)[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__customer\s*\{[^}]*color:\s*var\(--rux-fg-muted\)[^}]*font-size:\s*var\(--rux-text-md\)[^}]*text-overflow:\s*ellipsis/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__bus-badge,\s*\.driver-assignment-card__role-badge\s*\{[^}]*justify-content:\s*center[^}]*width:\s*100%[^}]*min-width:\s*0/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__header-metadata\s*\{[^}]*display:\s*contents/s,
+	);
+	assert.match(tokens, /--rux-driver-card-header-padding:\s+var\(--rux-space-5\)/);
+	assert.match(tokens, /--rux-badge-background-opacity:\s+12%/);
+	assert.match(tokens, /--rux-badge-module-height:\s+var\(--rux-module-button-height\)/);
+	assert.match(
+		tokens,
+		/--rux-driver-module-padding:\s+var\(--rux-space-4\) var\(--rux-space-5\)/,
+	);
+	assert.match(
+		badges,
+		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid var\(--_badge-color\)[^}]*color:\s*var\(--_badge-color\)/s,
+	);
+	for (const [tone, color] of [
+		["info", "info"],
+		["success", "success"],
+		["warning", "warning"],
+		["danger", "danger"],
+	]) {
+		assert.match(
+			badges,
+			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${color}\\)`),
+		);
+	}
+	assert.match(
+		badges,
+		/\.rux-badge--module\s*\{[^}]*height:\s*var\(--rux-badge-module-height\)[^}]*border-radius:\s*var\(--rux-badge-module-radius\)/s,
+	);
+	assert.doesNotMatch(css, /\.driver-assignment-card__trip-type/);
+	assert.match(
+		css,
+		/\.driver-assignment-card__response\[data-status="pending"\] \.driver-assignment-card__response-actions,\s*\.driver-assignment-card__response\[data-status="accepted"\] \.driver-assignment-card__response-actions,\s*\.driver-assignment-card__response\[data-status="declined"\] \.driver-assignment-card__response-actions,\s*\.driver-assignment-card__response\[data-status="changes_requested"\] \.driver-assignment-card__response-actions\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)[^}]*width:\s*100%/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__response-control\s*\{[^}]*width:\s*100%[^}]*height:\s*var\(--rux-button-height\)[^}]*min-height:\s*var\(--rux-button-height\)[^}]*border-radius:\s*var\(--rux-button-radius\)[^}]*font-size:\s*var\(--rux-button-font-size\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__decline--availability\.rux-button--default\.rux-button--danger[^}]*\{[^}]*border-color:\s*var\(--rux-border\)[^}]*color:\s*var\(--rux-danger\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__accepted-control\s*\{[^}]*background:\s*var\(--rux-success\)[^}]*border-color:\s*var\(--rux-success\)[^}]*color:\s*var\(--rux-surface-canvas\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__status-control--danger\s*\{[^}]*background:\s*var\(--rux-danger\)[^}]*border-color:\s*var\(--rux-danger\)/s,
 	);
 	assert.match(tokens, /--rux-driver-(?:date-primary|bus|route|time)-size:\s+1\.5rem/g);
-	assert.match(
+	assert.doesNotMatch(
 		css,
 		/@container driver-assignment-card \(max-width: 479px\)[\s\S]*?\.driver-assignment-card__response-actions\s*\{[\s\S]*?display:\s*flex/,
 	);
@@ -524,6 +718,35 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	assert.match(css, /\.assignment-module__content:last-child\s*\{\s*grid-column:\s*2\s*\/\s*-1/);
 	assert.match(css, /\.assignment-module__action-wrap\s*\{[^}]*justify-self:\s*end/s);
 	assert.match(css, /\.driver-assignment-card__crew-actions\s*\{[^}]*margin-inline-start:\s*auto/s);
+	assert.match(tokens, /--rux-driver-action-rail-width:\s*96px/);
+	assert.match(
+		css,
+		/\.assignment-compact-module--actions\s*\{[^}]*var\(--rux-driver-action-rail-width\)/s,
+	);
+	assert.match(
+		css,
+		/\.assignment-compact-module__actions\s*\{[^}]*width:\s*var\(--rux-driver-action-rail-width\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__crew-role\s*\{[^}]*font-size:\s*var\(--rux-text-sm\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__document\s*\{[^}]*background:\s*var\(--rux-module-button-neutral-bg\)[^}]*color:\s*var\(--rux-module-button-neutral-fg\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__document\.is-attention-needed\s*\{[^}]*background:\s*var\(--rux-module-button-warning-bg\)/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__crew-member\s*\{[^}]*margin:\s*0/s,
+	);
+	assert.match(
+		css,
+		/\.driver-assignment-card__crew-bus-section\s*\{[^}]*display:\s*grid[^}]*gap:\s*var\(--rux-space-3\)[^}]*padding:\s*var\(--rux-driver-module-padding\)[^}]*border-top:/s,
+	);
 	assert.match(tokens, /--rux-driver-phone-preview-max-width:\s*430px/);
 	assert.match(
 		componentDemoCss,

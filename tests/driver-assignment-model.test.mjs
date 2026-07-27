@@ -162,7 +162,7 @@ test("pending, accepted, and declined statuses normalize", () => {
 	assert.equal(assignmentStatus(assignment({ status: "declined" })), "declined");
 });
 
-test("spot location and trip contact follow the assignment summary header", () => {
+test("spot location and trip contact share one reporting module", () => {
 	const entry = assignment({
 		contact: { name: "Anna Partida", phone: "956-292-9255" },
 		alerts: [
@@ -173,17 +173,19 @@ test("spot location and trip contact follow the assignment summary header", () =
 	});
 	const modules = visibleAssignmentModules(entry);
 	assert.deepEqual(
-		modules.slice(0, 2).map((module) => module.key),
-		["spot-location", "contact"],
+		modules.slice(0, 1).map((module) => module.key),
+		["spot-location"],
 	);
 	const keys = modules.map((module) => module.key);
+	assert.equal(keys.includes("contact"), false);
 	assert.equal(keys.includes("alerts"), false);
 	assert.equal(keys.includes("critical-alerts"), false);
 });
 
-test("assignments without contacts do not render Trip Contact", () => {
+test("assignments without contacts retain reporting details without a contact module", () => {
 	const keys = visibleAssignmentModules(assignment({ contact: undefined }))
 		.map((module) => module.key);
+	assert.equal(keys.includes("spot-location"), true);
 	assert.equal(keys.includes("contact"), false);
 });
 

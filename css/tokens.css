@@ -491,13 +491,12 @@
 	--rux-driver-copy-max-width:       28rem;
 	--rux-driver-status-min-height:    60dvh;
 	--rux-driver-page-title-size:      clamp(2.25rem, 7vw, 2.5rem);
-	--rux-driver-date-primary-size:    1.5rem;
-	--rux-driver-date-primary-weight:  650;
-	--rux-driver-bus-size:             1.5rem;
-	--rux-driver-route-size:           1.5rem;
+	--rux-driver-date-primary-size:    1rem;
+	--rux-driver-date-primary-weight:  var(--rux-weight-medium);
+	--rux-driver-route-size:           1.25rem;
 	--rux-driver-time-size:            1.5rem;
-	--rux-driver-primary-size:         1.125rem;
-	--rux-driver-secondary-size:       var(--rux-text-md);
+	--rux-driver-primary-size:         var(--rux-text-lg);
+	--rux-driver-secondary-size:       var(--rux-text-lg);
 	--rux-driver-label-size:           var(--rux-text-xs);
 	--rux-driver-control-bg:           var(--rux-surface-field);
 	--rux-driver-control-hover-bg:     var(--rux-bg-hover);

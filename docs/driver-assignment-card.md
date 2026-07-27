@@ -40,36 +40,62 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Optional data: Assigned bus and response callbacks.
 - Visibility: Always.
 - Primary action: Accept when pending.
-- Layout: Places the complete date range at the upper left and a prominent
-  blue `Bus 763` badge at the upper right. `Donna, TX → Austin, TX` follows on
-  its own row, with trip type and role badges beneath it. Response status and
-  equal-width pending actions complete the section. Date, bus, route, and
-  Spot Time share a compact 24px primary scale.
+- Layout: Uses two header rows: Date ↔ Bus, then Destination + Customer ↔
+  Role. Destination and Customer share one grid cell with a 4px internal gap;
+  the customer appears as muted supporting text without creating a third row.
+  Both metadata controls use the shared Info status badge with familiar icons, a
+  tokenized 12% background tint, a solid semantic border, and the shared 44px
+  module-button height. Ordinary badges remain 22px. The two header rows use
+  an 8px gap. This preserves the solid accent treatment for the primary Accept
+  action while keeping badge color behavior consistent with Success, Warning,
+  and Danger badges across the application. Trip Type is intentionally omitted
+  from the header and
+  may be communicated in Notes when operationally useful. A quiet divider
+  separates this summary from the response row. Pending assignments show only
+  the equal-width `Not Available` and `Accept` actions. Every response control
+  uses the shared standard button height, radius, padding, and type treatment
+  in two exact 50/50 columns at every card width. Accepted
+  assignments replace Accept with a green, non-interactive `Accepted` status
+  control and use `Unable to Drive` for the exception action. Declined and
+  changes-requested assignments use the same two-column contract: the status
+  occupies the left half and `Accept` occupies the right half. The destination
+  uses the shared `--rux-text-500` 24px typography token, remains on one line,
+  and truncates safely with its complete value exposed as an accessible label
+  and tooltip.
 - Date behavior: Uses the complete operational range, such as
   `SUNDAY, JUL 26 – JUL 29`, as the card heading. One-day assignments render
   one date and cross-month or cross-year ranges retain the necessary context.
-- Empty behavior: Reporting details display `Bus Unassigned` when a bus is not
-  assigned.
+- Empty behavior: Displays `Bus Unassigned` when a bus is not assigned.
 - Loading behavior: Disables the active action and shows `Accepting…` or
   `Declining…`; duplicate submission is prevented.
-- Accessibility: Uses the card's `h2`, visible status icon and text, real
-  buttons, inline `role="alert"` failures, and a page-level polite live region.
-  Route cities remain real text and can wrap at 200% zoom.
+- Accessibility: Uses the card's `h2`, real action buttons, a polite status
+  control for Accepted, inline `role="alert"` failures, and a page-level polite
+  live region. Route cities retain their full accessible label when visually
+  truncated.
 
-## Spot Time & Location
+## Reporting Details
 
-- Purpose: Shows when and where the driver must report.
-- Required data: Spot Time, customer/location name, or report address.
+- Purpose: Shows when and where the driver must report and identifies the
+  primary trip contact.
+- Required data: Spot Time, report address/location, or trip
+  contact.
 - Optional data: Coordinates and any one of the required fields.
-- Visibility: When report-time or report-location information exists.
-- Primary action: Navigate.
-- Layout: Places Spot Time immediately before Spot Location. Location name and
-  address occupy separate lines; the 44×44 Navigate action aligns at the right
-  of the combined block.
-- Empty behavior: Does not render when neither time nor location exists.
+- Visibility: When report-time, report-location, or trip-contact information
+  exists.
+- Primary actions: Navigate, Text, and Call when their corresponding data is
+  available.
+- Layout: Presents Spot Time first and the report address directly beneath it
+  as one compact stack without redundant visible field labels. Customer is
+  owned by the assignment header and is not repeated here. The 44×44 Navigate
+  action is vertically centered at the right. Trip Contact appears as a second
+  compact row inside the same connected card section.
+- Empty behavior: Does not render when time, location, and contact are all
+  unavailable.
 - Loading behavior: Covered by the assignment skeleton.
-- Accessibility: Uses semantic `time` and `address` elements, tabular numerals,
-  and a Navigate label containing the complete destination.
+- Accessibility: Uses a semantic `time`, a semantic `address`, tabular
+  numerals, an explicit accessible Spot Time or Report Time
+  label, and a Navigate label containing the complete destination. Contact
+  actions include the contact's name in their accessible labels.
 
 ## Role
 
@@ -94,13 +120,13 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Visibility: Based on the normalized fleet and crew counts.
 - Primary actions: Message followed by Call, when a phone number is available
   and the corresponding capability is enabled.
-- Layout: Uses contextual groups without a visible `Crew & Fleet` heading,
-  large module icon, or header divider. Current-bus companions are headed by
-  their role, followed by name and phone on separate lines. Additional buses
-  are headed by `Bus 746` and list each person as `James Cole (Driver)` with
-  their phone beneath. Role and bus headings use the shared module-label
-  typography. The 44×44 Message and Call actions remain at the right; Call
-  always follows Message.
+- Layout: Renders one connected card section per bus without a redundant
+  `Crew & Fleet` heading or large module icon. The current assignment is headed
+  `Your Bus`; additional groups use `Bus 746`, `Bus 752`, and so on. Each
+  section presents the crew member's name as primary text and their role on a
+  smaller muted line. A shared 96px action rail holds the 44×44 Message and Call
+  actions at the right. Phone numbers remain action destinations but are not
+  repeated visually.
 - Empty behavior: Does not render for a simple one-driver, one-bus assignment.
   Fleet entries without crew are omitted.
 - Loading behavior: Covered by the assignment skeleton.
@@ -109,17 +135,16 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 
 ## Trip Contact
 
-- Purpose: Shows the trip contact and phone number.
+- Purpose: Identifies the trip contact and provides direct contact actions.
 - Required data: Contact name or phone.
 - Optional data: Either field may appear independently.
 - Visibility: When contact data exists.
 - Primary actions: Text followed by Call, when the phone number and
   corresponding capability are available.
-- Layout: Follows Spot Location as a compact two-column row. The label, contact
-  name, and phone number occupy separate lines; the 44×44 Call action aligns
-  at the right beside Text. It does not use a large module icon or internal
-  divider. Compact operational modules use 12px from label to primary content
-  and 8px from primary to secondary content.
+- Layout: Appears inside Reporting Details as a compact two-column row. The
+  label, contact name, and 44×44 actions form one compact row. The stored phone
+  number is not repeated visually because Text and Call expose the same
+  destination. Call aligns at the right beside Text.
 - Empty behavior: Does not render.
 - Loading behavior: Covered by the assignment skeleton.
 - Accessibility: Uses dedicated `sms:` and `tel:` action links and includes the
@@ -133,7 +158,9 @@ Assignment cards add `.assignment-module__action` only as a layout hook.
 - Visibility: When resources exist.
 - Primary action: Open the selected resource.
 - Layout: The final card section has no visible Documents heading. Itinerary
-  and Envelope render as equal-width warning-tone actions in one 50/50 row.
+  and Envelope render as equal-width neutral actions in one 50/50 row. Amber is
+  reserved for resources whose status is `required` or otherwise needs
+  attention.
 - Empty behavior: Does not render. Unavailable resources render as
   non-clickable items. Purchase orders and unrelated
   operational attachments are excluded before rendering.

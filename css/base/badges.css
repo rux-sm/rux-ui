@@ -4,38 +4,67 @@
    All badge rules live here. No other file should define badge shapes,
    colors, or sizes — reference this file only.
 
-   .rux-badge                    Base pill: bg-elevated, fg-muted, semibold, radius-full
-   .rux-badge--accent            Accent-subtle bg · accent fg
-   .rux-badge--success           Success-subtle bg · success fg
-   .rux-badge--warning           Warning-subtle bg · warning fg
-   .rux-badge--danger            Danger-subtle bg · danger fg
-   .rux-badge--info              Info-subtle bg · info fg
+   .rux-badge                    Info status by default
+   .rux-badge--accent            Alias of Info for legacy consumers
+   .rux-badge--success           Success palette
+   .rux-badge--warning           Warning palette
+   .rux-badge--danger            Danger palette
+   .rux-badge--info              Info palette
+   .rux-badge--module            Larger metadata/module treatment
    .rux-badge--dot               ::before dot in currentColor (combine with a color modifier)
+
+   Every status badge uses the same background-opacity token and a solid
+   semantic border. Shape and color rules remain centralized here.
    ========================================================================== */
 
 /* — base — */
 
 .rux-badge {
+  --_badge-color: var(--rux-info);
+
   display: inline-flex;
   align-items: center;
   gap: var(--rux-space-1);
-  height: 22px;
-  padding: 0 var(--rux-space-2);
-  background: var(--rux-surface-modal);
-  border: var(--rux-border-width) solid transparent;
-  border-radius: var(--rux-radius-full);
-  color: var(--rux-fg-muted);
-  font-size: var(--rux-text-sm);
-  font-weight: var(--rux-weight-regular);
+  height: var(--rux-badge-height);
+  padding: 0 var(--rux-badge-padding-inline);
+  background: color-mix(
+    in oklch,
+    var(--_badge-color) var(--rux-badge-background-opacity),
+    transparent
+  );
+  border: var(--rux-border-width) solid var(--_badge-color);
+  border-radius: var(--rux-badge-radius);
+  color: var(--_badge-color);
+  font-size: var(--rux-badge-font-size);
+  font-weight: var(--rux-badge-font-weight);
   white-space: nowrap;
 }
+
+.rux-badge--module {
+  gap: var(--rux-badge-module-gap);
+  height: var(--rux-badge-module-height);
+  padding-inline: var(--rux-badge-module-padding);
+  border-radius: var(--rux-badge-module-radius);
+}
+
+.rux-badge__icon {
+  --_icon-size: var(--rux-badge-module-icon-size);
+  flex: 0 0 auto;
+}
+
+.rux-badge__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* — color variants — */
 
-.rux-badge--accent  { background: var(--rux-accent-subtle);  color: var(--rux-accent); }
-.rux-badge--success { background: var(--rux-success-subtle); color: var(--rux-success); }
-.rux-badge--warning { background: var(--rux-warning-subtle); color: var(--rux-warning); }
-.rux-badge--danger  { background: var(--rux-danger-subtle);  color: var(--rux-danger); }
-.rux-badge--info    { background: var(--rux-info-subtle);    color: var(--rux-info); }
+.rux-badge--accent,
+.rux-badge--info    { --_badge-color: var(--rux-info); }
+.rux-badge--success { --_badge-color: var(--rux-success); }
+.rux-badge--warning { --_badge-color: var(--rux-warning); }
+.rux-badge--danger  { --_badge-color: var(--rux-danger); }
 
 /* — dot indicator — */
 
@@ -46,4 +75,3 @@
   border-radius: var(--rux-radius-full);
   background: currentColor;
 }
-

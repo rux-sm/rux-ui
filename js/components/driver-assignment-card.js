@@ -7,16 +7,17 @@ import {
 	assignmentRoleLabel,
 	buildAssignmentViewModel,
 	formatAssignmentTime,
-} from "./driver-assignment-model.js?v=17";
+} from "./driver-assignment-model.js?v=18";
 
 const ICONS = {
+	bus: "directions_bus",
 	call: "call",
 	envelope: "mail",
 	expand: "expand_more",
 	itinerary: "description",
 	message: "chat_bubble",
 	navigate: "navigation",
-	role: "verified",
+	role: "badge",
 };
 
 let moduleId = 0;
@@ -167,7 +168,19 @@ function createStatus(entry, view, options, card) {
 		`driver-assignment-card__status driver-assignment-card__status--${meta.tone}`,
 	);
 	status.append(icon(meta.icon), el("span", "", meta.label));
-	wrap.appendChild(status);
+	const canAccept =
+		typeof options.onAccept === "function"
+		|| typeof options.onConfirm === "function";
+	const usesPairedStatusControl =
+		(view.status === "declined" || view.status === "changes_requested")
+		&& canAccept;
+	if (
+		view.status !== "pending"
+		&& view.status !== "accepted"
+		&& !usesPairedStatusControl
+	) {
+		wrap.appendChild(status);
+	}
 
 	const actions = el("div", "driver-assignment-card__response-actions");
 	const error = el("p", "driver-assignment-card__action-error");
@@ -196,11 +209,12 @@ function createStatus(entry, view, options, card) {
 	};
 
 	const addAccept = () => {
-		if (typeof options.onAccept !== "function" && typeof options.onConfirm !== "function") return;
+		if (!canAccept) return;
 		const accept = createButton("Accept", {
 			iconName: "check_circle",
 			variant: "accent",
-			className: "driver-assignment-card__accept",
+			className:
+				"driver-assignment-card__response-control driver-assignment-card__accept",
 		});
 		accept.addEventListener("click", () => perform(
 			accept,
@@ -214,11 +228,10 @@ function createStatus(entry, view, options, card) {
 	const addDecline = () => {
 		if (typeof options.onDecline !== "function") return;
 		const accepted = view.status === "accepted";
-		const decline = createButton(view.status === "accepted" ? "Unable to drive?" : "Decline", {
-			variant: accepted ? "ghost" : "default",
-			className: accepted
-				? "driver-assignment-card__decline driver-assignment-card__decline--quiet"
-				: "rux-button--danger driver-assignment-card__decline",
+		const decline = createButton(accepted ? "Unable to Drive" : "Not Available", {
+			variant: "default",
+			className:
+				"rux-button--danger driver-assignment-card__response-control driver-assignment-card__decline driver-assignment-card__decline--availability",
 		});
 		decline.addEventListener("click", async () => {
 			if (typeof options.confirmDecline === "function") {
@@ -235,12 +248,42 @@ function createStatus(entry, view, options, card) {
 		actions.appendChild(decline);
 	};
 
+	const addAcceptedStatus = () => {
+		const accepted = el(
+			"div",
+			"rux-button driver-assignment-card__response-control driver-assignment-card__accepted-control",
+		);
+		accepted.setAttribute("role", "status");
+		accepted.setAttribute("aria-live", "polite");
+		accepted.append(
+			icon("check_circle", "rux-button__idle-icon"),
+			el("span", "rux-btn-label", "Accepted"),
+		);
+		actions.appendChild(accepted);
+	};
+
+	const addStatusControl = () => {
+		const control = el(
+			"div",
+			`rux-button driver-assignment-card__response-control driver-assignment-card__status-control driver-assignment-card__status-control--${meta.tone}`,
+		);
+		control.setAttribute("role", "status");
+		control.setAttribute("aria-live", "polite");
+		control.append(
+			icon(meta.icon, "rux-button__idle-icon"),
+			el("span", "rux-btn-label", meta.label),
+		);
+		actions.appendChild(control);
+	};
+
 	if (view.status === "pending") {
 		addDecline();
 		addAccept();
 	} else if (view.status === "accepted") {
 		addDecline();
+		addAcceptedStatus();
 	} else if (view.status === "declined" || view.status === "changes_requested") {
+		if (usesPairedStatusControl) addStatusControl();
 		addAccept();
 	}
 	if (actions.childElementCount) wrap.appendChild(actions);
@@ -254,79 +297,106 @@ function assignmentHeader(entry, view, options, card) {
 	const title = el("h2", "driver-assignment-card__date-range", view.dateRange || "Assignment");
 	title.id = titleId;
 	card.setAttribute("aria-labelledby", titleId);
-	header.append(
-		title,
-		el("div", "driver-assignment-card__bus-badge", view.busLabel),
+	const primary = el("div", "driver-assignment-card__header-primary");
+	primary.appendChild(title);
+	const destinationGroup = el(
+		"div",
+		"driver-assignment-card__destination-group",
 	);
-	if (entry.from || entry.to || entry.origin || entry.destination) {
-		const routeSummary = el("div", "driver-assignment-card__header-route");
-		const route = el("div", "driver-assignment-card__route");
-		route.append(
-			el("span", "driver-assignment-card__route-place", view.origin),
-			icon("arrow_forward", "driver-assignment-card__route-arrow"),
-			el("span", "driver-assignment-card__route-place", view.destination),
+	const destinationLabel = view.destination || view.origin;
+	if (destinationLabel) {
+		const destination = el(
+			"p",
+			"driver-assignment-card__destination",
+			destinationLabel,
 		);
-		const metadata = el("div", "driver-assignment-card__header-metadata");
-		metadata.append(
-			el("span", "driver-assignment-card__trip-type", view.tripType),
-			el("span", "driver-assignment-card__role-badge", view.roleLabel),
-		);
-		routeSummary.append(route, metadata);
-		header.appendChild(routeSummary);
+		destination.setAttribute("aria-label", `Destination: ${destinationLabel}`);
+		destination.setAttribute("title", destinationLabel);
+		destinationGroup.appendChild(destination);
 	}
+	if (view.customerName) {
+		const customer = el(
+			"p",
+			"driver-assignment-card__customer",
+			view.customerName,
+		);
+		customer.setAttribute("aria-label", `Customer: ${view.customerName}`);
+		customer.setAttribute("title", view.customerName);
+		destinationGroup.appendChild(customer);
+	}
+	if (destinationGroup.childElementCount) primary.appendChild(destinationGroup);
+	const metadata = el("div", "driver-assignment-card__header-metadata");
+	const busBadge = el(
+		"span",
+		"rux-badge rux-badge--info rux-badge--module driver-assignment-card__bus-badge",
+	);
+	busBadge.setAttribute("aria-label", view.busLabel);
+	busBadge.append(
+		icon(ICONS.bus, "rux-badge__icon"),
+		el("span", "rux-badge__label", view.busLabel),
+	);
+	const roleBadge = el(
+		"span",
+		"rux-badge rux-badge--info rux-badge--module driver-assignment-card__role-badge",
+	);
+	roleBadge.setAttribute("aria-label", view.roleLabel);
+	roleBadge.append(
+		icon(ICONS.role, "rux-badge__icon"),
+		el("span", "rux-badge__label", view.roleLabel),
+	);
+	metadata.append(busBadge, roleBadge);
+	const summary = el("div", "driver-assignment-card__header-summary");
+	summary.append(primary, metadata);
+	header.appendChild(summary);
 	header.appendChild(createStatus(entry, view, options, card));
 	return header;
 }
 
 function spotLocationModule(entry, view) {
 	const location = view.spotLocation || {};
-	const primary = location.name || view.customerName;
 	const addressLines = [
 		location.addressLine1,
 		location.addressLine2,
 		[location.city, location.state, location.postalCode].filter(Boolean).join(" "),
 	].filter(Boolean).join("\n");
-	const navigationTarget = [primary, addressLines].filter(Boolean).join("\n");
+	const visibleAddress = addressLines || location.name || view.customerName;
+	const navigationTarget = [location.name, addressLines].filter(Boolean).join("\n")
+		|| view.customerName;
 	const section = el(
 		"section",
-		"rux-card__section assignment-compact-module",
+		"rux-card__section driver-assignment-card__reporting-section",
 	);
 	section.dataset.module = "spot-location";
-	section.setAttribute("aria-label", "Reporting details");
-	const details = el("div", "assignment-compact-module__details");
+	section.setAttribute(
+		"aria-label",
+		view.contact?.name || view.contact?.phone
+			? "Reporting details and trip contact"
+			: "Reporting details",
+	);
+	const reportingRow = el(
+		"div",
+		"assignment-compact-module driver-assignment-card__reporting-row",
+	);
+	const details = el(
+		"div",
+		"assignment-compact-module__details driver-assignment-card__reporting-details",
+	);
 	if (view.spotTime) {
-		const spotTime = el("div", "driver-assignment-card__spot-time");
-		spotTime.appendChild(el(
-			"p",
-			"assignment-module__label",
-			view.roleLabel === "Relief Driver" ? "Report Time" : "Spot Time",
-		));
 		const time = el("time", "driver-assignment-card__time", view.spotTime);
 		if (entry.spotTime) time.dateTime = String(entry.spotTime);
-		spotTime.appendChild(time);
-		details.appendChild(spotTime);
+		const timeLabel = view.roleLabel === "Relief Driver" ? "Report time" : "Spot time";
+		time.setAttribute("aria-label", `${timeLabel}: ${view.spotTime}`);
+		details.appendChild(time);
 	}
-	if (primary || addressLines) {
-		details.appendChild(el("p", "assignment-module__label", "Spot Location"));
-		const body = el("div", "assignment-compact-module__body");
-		if (primary) {
-			body.appendChild(el(
-				"p",
-				"assignment-compact-module__primary",
-				primary,
-			));
-		}
-		if (addressLines) {
-			body.appendChild(el(
-				"address",
-				"assignment-compact-module__secondary",
-				addressLines,
-			));
-		}
-		details.appendChild(body);
+	if (visibleAddress) {
+		details.appendChild(el(
+			"address",
+			"assignment-compact-module__secondary driver-assignment-card__spot-address",
+			visibleAddress.replace(/\n/g, ", "),
+		));
 	}
-	section.appendChild(details);
-	if (addressLines) {
+	if (details.childElementCount) reportingRow.appendChild(details);
+	if (navigationTarget) {
 		const actions = el("div", "assignment-compact-module__actions");
 		actions.appendChild(createActionLink(
 			"Navigate",
@@ -334,8 +404,12 @@ function spotLocationModule(entry, view) {
 			mapsUrl(navigationTarget),
 			`Navigate to ${navigationTarget.replace(/\n/g, ", ")}`,
 		));
-		section.appendChild(actions);
+		reportingRow.classList.add("assignment-compact-module--actions");
+		reportingRow.appendChild(actions);
 	}
+	if (reportingRow.childElementCount) section.appendChild(reportingRow);
+	const contact = contactRow(view);
+	if (contact) section.appendChild(contact);
 	return section;
 }
 
@@ -392,14 +466,14 @@ function roleModule(entry, view) {
 	});
 }
 
-function contactModule(view) {
+function contactRow(view) {
 	const contact = view.contact || {};
-	const section = el(
-		"section",
-		"rux-card__section assignment-compact-module",
+	if (!contact.name && !contact.phone) return null;
+	const row = el(
+		"div",
+		"assignment-compact-module driver-assignment-card__reporting-contact",
 	);
-	section.dataset.module = "contact";
-	section.setAttribute("aria-label", "Trip contact");
+	row.setAttribute("aria-label", "Trip contact");
 	const details = el("div", "assignment-compact-module__details");
 	details.appendChild(el("p", "assignment-module__label", "Trip Contact"));
 	const identity = el("div", "assignment-compact-module__body");
@@ -410,16 +484,8 @@ function contactModule(view) {
 			contact.name,
 		));
 	}
-	if (contact.phone) {
-		const phone = el(
-			"span",
-			"assignment-compact-module__secondary driver-assignment-card__phone",
-			contact.phone,
-		);
-		identity.appendChild(phone);
-	}
-	details.appendChild(identity);
-	section.appendChild(details);
+	if (identity.childElementCount) details.appendChild(identity);
+	row.appendChild(details);
 	const actions = el("div", "assignment-compact-module__actions");
 	if (contact.phone && contact.canMessage !== false) {
 		actions.appendChild(createActionLink(
@@ -439,35 +505,29 @@ function contactModule(view) {
 			"success",
 		));
 	}
-	if (actions.childElementCount) section.appendChild(actions);
-	return section;
+	if (actions.childElementCount) {
+		row.classList.add("assignment-compact-module--actions");
+		row.appendChild(actions);
+	}
+	return row;
 }
 
-function crewMemberRow(member, isCurrentBus) {
+function crewMemberRow(member) {
 	const row = el("li", "driver-assignment-card__crew-member");
 	const identity = el("div", "driver-assignment-card__crew-identity");
 	const role = assignmentRoleLabel(member.role);
 	const name = member.isCurrentUser ? "You" : member.name || "Crew Member";
-	if (isCurrentBus) {
-		identity.appendChild(el(
-			"p",
-			"assignment-module__label driver-assignment-card__crew-context",
-			role,
-		));
-	}
 	const body = el("div", "assignment-compact-module__body");
 	body.appendChild(el(
 		"p",
 		"assignment-compact-module__primary driver-assignment-card__crew-name",
-		isCurrentBus ? name : `${name} (${role})`,
+		name,
 	));
-	if (member.phone) {
-		body.appendChild(el(
-			"span",
-			"assignment-compact-module__secondary driver-assignment-card__crew-phone",
-			member.phone,
-		));
-	}
+	body.appendChild(el(
+		"p",
+		"assignment-compact-module__secondary driver-assignment-card__crew-role",
+		role,
+	));
 	identity.appendChild(body);
 	row.appendChild(identity);
 	const actions = el(
@@ -492,49 +552,55 @@ function crewMemberRow(member, isCurrentBus) {
 			"success",
 		));
 	}
-	if (actions.childElementCount) row.appendChild(actions);
+	if (actions.childElementCount) {
+		row.classList.add("assignment-compact-module--actions");
+		row.appendChild(actions);
+	}
 	return row;
 }
 
-function fleetRow(fleet, fleetIndex) {
-	if (!fleet.crew?.length) return null;
-	const row = el("li", "driver-assignment-card__fleet-row");
+function crewBusSection(fleet, fleetIndex, assignmentId) {
 	const isCurrentBus = Boolean(fleet.isCurrentBus || fleetIndex === 0);
-	if (!isCurrentBus) {
-		row.appendChild(el(
-			"p",
-			"assignment-module__label driver-assignment-card__crew-context",
-			`Bus ${fleet.busNumber || "Unassigned"}`,
-		));
-	}
+	const section = el(
+		"section",
+		"rux-card__section driver-assignment-card__crew-bus-section",
+	);
+	const headingId = `crew-${safeId(assignmentId)}-${safeId(fleet.busNumber || fleetIndex)}`;
+	const heading = el(
+		"h3",
+		"assignment-module__label driver-assignment-card__crew-bus-heading",
+		isCurrentBus ? "Your Bus" : `Bus ${fleet.busNumber || "Unassigned"}`,
+	);
+	heading.id = headingId;
+	section.setAttribute("aria-labelledby", headingId);
+	section.dataset.busNumber = fleet.busNumber || "";
+	if (isCurrentBus) section.dataset.currentBus = "true";
 	const crew = el("ul", "driver-assignment-card__crew-list");
 	fleet.crew.forEach((member) => {
-		crew.appendChild(crewMemberRow(member, isCurrentBus));
+		crew.appendChild(crewMemberRow(member));
 	});
-	row.appendChild(crew);
-	return row;
+	section.append(heading, crew);
+	return section;
 }
 
 function crewFleetModule(view) {
-	const peopleOnly = view.fleetAssignments.length === 1;
 	const listId = `fleet-${safeId(view.id)}`;
-	const section = el(
-		"section",
-		"rux-card__section driver-assignment-card__crew-fleet-section",
-	);
-	section.dataset.module = "crew-fleet";
-	section.setAttribute("aria-label", peopleOnly ? "Crew" : "Crew and fleet");
-	const list = el("ul", "driver-assignment-card__fleet-list");
+	const group = el("div", "driver-assignment-card__crew-fleet-group");
+	group.dataset.module = "crew-fleet";
+	group.setAttribute("aria-label", "Crew by bus");
+	const list = el("div", "driver-assignment-card__crew-bus-list");
 	list.id = listId;
 	const populatedFleets = view.fleetAssignments
 		.map((fleet, index) => ({ fleet, index }))
 		.filter(({ fleet }) => fleet.crew?.length);
+	const busSections = [];
 	populatedFleets.forEach(({ fleet, index }, renderedIndex) => {
-		const row = fleetRow(fleet, index);
-		if (renderedIndex > 1) row.hidden = true;
-		list.appendChild(row);
+		const busSection = crewBusSection(fleet, index, view.id);
+		if (renderedIndex > 1) busSection.hidden = true;
+		busSections.push(busSection);
+		list.appendChild(busSection);
 	});
-	section.appendChild(list);
+	group.appendChild(list);
 	if (populatedFleets.length > 2) {
 		const totalCrew = populatedFleets.reduce(
 			(total, { fleet }) => total + fleet.crew.length,
@@ -551,26 +617,38 @@ function crewFleetModule(view) {
 		disclosure.addEventListener("click", () => {
 			const expanded = disclosure.getAttribute("aria-expanded") !== "true";
 			disclosure.setAttribute("aria-expanded", String(expanded));
-			list.querySelectorAll(":scope > li").forEach((row, index) => {
-				if (index > 1) row.hidden = !expanded;
+			busSections.forEach((busSection, index) => {
+				if (index > 1) busSection.hidden = !expanded;
 			});
 			disclosure.querySelector(".rux-btn-label").textContent = expanded
 				? "Show Less Crew"
 				: `View All Crew (${totalCrew})`;
 		});
-		section.appendChild(disclosure);
+		const disclosureSection = el(
+			"div",
+			"rux-card__section driver-assignment-card__crew-disclosure-section",
+		);
+		disclosureSection.appendChild(disclosure);
+		group.appendChild(disclosureSection);
 	}
-	return section;
+	return group;
 }
 
 function documentAction(document, entry, options) {
-	const className = `driver-assignment-card__document${document.status === "unavailable" ? " is-unavailable" : ""}`;
+	const unavailable = document.status === "unavailable";
+	const attentionNeeded = document.status === "required"
+		|| document.status === "attention";
+	const className = [
+		"driver-assignment-card__document",
+		unavailable ? "is-unavailable" : "",
+		attentionNeeded ? "is-attention-needed" : "",
+	].filter(Boolean).join(" ");
 	let control;
 	const callback = document.action
 		|| (document.type === "itinerary" ? options.onItinerary : null)
 		|| (document.type === "envelope" ? options.onEnvelope : null)
 		|| options.onDocument;
-	if (document.status === "unavailable" || (!document.url && typeof callback !== "function")) {
+	if (unavailable || (!document.url && typeof callback !== "function")) {
 		control = el("div", className);
 		control.setAttribute("aria-disabled", "true");
 	} else if (document.url && typeof callback !== "function") {
@@ -649,8 +727,6 @@ function renderModule(module, entry, view, options) {
 		return roleModule(entry, view);
 	case "crew-fleet":
 		return crewFleetModule(view);
-	case "contact":
-		return contactModule(view);
 	case "documents":
 		return documentsModule(entry, view, options);
 	case "notes":

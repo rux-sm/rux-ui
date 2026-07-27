@@ -296,11 +296,11 @@ export function visibleAssignmentModules(entry = {}) {
 		|| entry.from
 		|| entry.spotLocation,
 	);
+	const hasTripContact = Boolean(entry.contact?.name || entry.contact?.phone);
 	const modules = [];
-	if (entry.spotTime || hasSpotLocation) {
+	if (entry.spotTime || hasSpotLocation || hasTripContact) {
 		modules.push({ key: "spot-location" });
 	}
-	if (entry.contact?.name || entry.contact?.phone) modules.push({ key: "contact" });
 	if (showRoleModule(entry)) modules.push({ key: "role" });
 	if (showCrewFleetModule(entry)) modules.push({ key: "crew-fleet" });
 	if (clean(entry.notes || entry.instructions)) modules.push({ key: "notes" });
