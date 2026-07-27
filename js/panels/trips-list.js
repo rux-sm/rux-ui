@@ -96,7 +96,7 @@
 
       const confirmedBadge = confirmed
         ? `<span class="rux-badge rux-badge--dot rux-badge--success">Confirmed</span>`
-        : `<span class="rux-badge rux-badge--dot">Unconfirmed</span>`;
+        : `<span class="rux-badge rux-badge--dot rux-badge--danger">Unconfirmed</span>`;
 
       const invoiceBadge = t.invoice_number
         ? `<span class="rux-badge rux-badge--dot rux-badge--success">Invoiced</span>`

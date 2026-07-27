@@ -38,6 +38,8 @@
   font-size: var(--rux-badge-font-size);
   font-weight: var(--rux-badge-font-weight);
   white-space: nowrap;
+  -webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+  backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
 .rux-badge--module {

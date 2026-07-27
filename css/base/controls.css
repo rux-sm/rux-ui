@@ -116,6 +116,8 @@
 	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
 	border: var(--rux-button-accent-border);
+	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
 /* Solid fill — the generic .rux-button:hover rule above turns border/text
@@ -140,6 +142,8 @@
 	background: var(--rux-button-on-accent-background);
 	color: var(--rux-button-on-accent-text);
 	border: var(--rux-button-on-accent-border);
+	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
 .rux-button--on-accent:hover:not(:disabled):not([aria-disabled="true"]) {
@@ -215,8 +219,10 @@
 .rux-button--default.rux-button--toggle:is(.is-active, [aria-pressed="true"]):not(:disabled):not([aria-disabled="true"]),
 .rux-button--ghost.rux-button--toggle:is(.is-active, [aria-pressed="true"]):not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-selected-bg);
-	border-color: transparent;
+	border-color: var(--rux-button-selected-border);
 	color: var(--rux-button-selected-fg);
+	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
 /* — module button — */
@@ -339,6 +345,8 @@
 	background: var(--rux-button-danger-background);
 	border: var(--rux-button-danger-border);
 	color: var(--rux-button-danger-text);
+	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
 /* Explicit compound so this doesn't depend on rule order — .rux-button--default

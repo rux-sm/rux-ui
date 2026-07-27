@@ -667,7 +667,7 @@
 .rux-trip-panel__doc-row {
 	display: flex;
 	align-items: center;
-	min-height: 28px;
+	min-height: var(--rux-control-height);
 	user-select: none;
 }
 .rux-trip-panel__doc-content {
@@ -676,13 +676,15 @@
 	gap: var(--rux-control-content-gap);
 	flex: 1;
 	min-width: 0;
-	height: 28px;
+	height: var(--rux-control-height);
 	padding: 0 var(--rux-control-padding-inline);
-	border: 0;
+	border: var(--rux-button-accent-border);
 	border-radius: var(--rux-button-radius);
 	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
 	cursor: pointer;
+	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
 }
 .rux-trip-panel__doc-row:hover .rux-trip-panel__doc-content {

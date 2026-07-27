@@ -178,6 +178,7 @@
 	/* ─── RADIUS · 4px-grid scale ────────────────────────────────────────── */
 
 	--rux-radius-0:    0;
+	--rux-radius-xxs:  2px;
 	--rux-radius-xs:   4px;
 	--rux-radius-sm:   6px;
 	--rux-radius-md:   8px;
@@ -683,9 +684,14 @@
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
-	--rux-button-accent-background:  oklch(from var(--rux-accent) 64% .28 h / 64%);
-	--rux-button-accent-text:       var(--rux-fg-on-accent);
-	--rux-button-accent-border:     1px solid var(--rux-button-accent-background);
+	/* Same glass formula as the trip bar (css/features/trip-bar.css's --_surface/
+	   --_outline) — transparent tinted fill, solid (100% opacity) border in the
+	   same hue/lightness/chroma, so accent buttons read as one family with the
+	   trip bars instead of a flatter, more opaque fill. */
+	--rux-button-accent-background:   oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / var(--rux-trip-bar-bg-opacity));
+	--rux-button-accent-text:         var(--rux-fg-on-accent);
+	--rux-button-accent-border-color: oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 100%);
+	--rux-button-accent-border:       var(--rux-button-border-width) solid var(--rux-button-accent-border-color);
 	/* Shift only lightness so interaction states preserve hue and chroma. */
 	--rux-button-accent-hover-background: oklch(
 		from var(--rux-button-accent-background) calc(l + 0.1) c h
@@ -695,16 +701,21 @@
 	);
 
 	/* ─── COMPONENT · button on accent ──────────────────────────────────────────── */
-	/* Contextual button for saturated surfaces. White-alpha fills preserve the
-	   parent surface's hue while increasing emphasis through each state. */
+	/* Contextual button for saturated surfaces (trip bar actions) — same glass
+	   formula as the trip bar itself (bg opacity steps from
+	   --rux-trip-bar-bg-opacity through its hover/pressed values), just kept
+	   neutral (white, uncolored) instead of hue-tinted, since these sit on top
+	   of a bar whose hue already varies per trip. Border is always solid
+	   (100% white) rather than another alpha step, matching how accent/danger
+	   buttons pair a translucent fill with a solid border. */
 
-	--rux-button-on-accent-background:          var(--rux-alpha-white-10);
+	--rux-button-on-accent-background:          oklch(from var(--rux-white) l c h / var(--rux-trip-bar-bg-opacity));
 	--rux-button-on-accent-text:                var(--rux-fg-on-accent);
-	--rux-button-on-accent-border:              var(--rux-button-border-width) solid var(--rux-alpha-white-40);
-	--rux-button-on-accent-hover-background:    var(--rux-alpha-white-16);
-	--rux-button-on-accent-hover-border:        var(--rux-button-border-width) solid var(--rux-alpha-white-65);
-	--rux-button-on-accent-active-background:   var(--rux-alpha-white-20);
-	--rux-button-on-accent-active-border:       var(--rux-button-border-width) solid var(--rux-alpha-white-90);
+	--rux-button-on-accent-border:              var(--rux-button-border-width) solid var(--rux-white);
+	--rux-button-on-accent-hover-background:    oklch(from var(--rux-white) l c h / var(--rux-trip-bar-hover-bg-opacity));
+	--rux-button-on-accent-hover-border:        var(--rux-button-border-width) solid var(--rux-white);
+	--rux-button-on-accent-active-background:   oklch(from var(--rux-white) l c h / var(--rux-trip-bar-pressed-bg-opacity));
+	--rux-button-on-accent-active-border:       var(--rux-button-border-width) solid var(--rux-white);
 	--rux-button-on-accent-disabled-background: var(--rux-alpha-white-4);
 	--rux-button-on-accent-disabled-text:       var(--rux-alpha-white-40);
 	--rux-button-on-accent-disabled-border:     var(--rux-button-border-width) solid var(--rux-alpha-white-16);
@@ -721,9 +732,11 @@
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
-	--rux-button-danger-background:       var(--rux-red);
+	/* Same glass formula as accent above (and the trip bar it's borrowed from):
+	   transparent tinted fill, solid border in the same hue/lightness/chroma. */
+	--rux-button-danger-background:       oklch(from var(--rux-red) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / var(--rux-trip-bar-bg-opacity));
 	--rux-button-danger-text:             var(--rux-fg-on-accent);
-	--rux-button-danger-border:           var(--rux-button-danger-background);
+	--rux-button-danger-border:           var(--rux-button-border-width) solid oklch(from var(--rux-red) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / 100%);
 	--rux-button-danger-hover-background: oklch(
 		from var(--rux-button-danger-background) calc(l + 0.1) c h
 	);
@@ -764,6 +777,7 @@
 	--rux-button-selected-bg:       var(--rux-button-accent-background);
 	--rux-button-quiet-selected-bg: var(--rux-alpha-white-8);
 	--rux-button-selected-fg:       var(--rux-button-accent-text);
+	--rux-button-selected-border:   var(--rux-button-accent-border-color);
 	--rux-button-icon-selected-bg:  var(--rux-button-quiet-selected-bg);
 
 	/* ─── COMPONENT · button sizes ────────────────────────────────────────── */
