@@ -466,12 +466,26 @@ function contactRow(view) {
 	const details = el("div", "assignment-compact-module__details");
 	details.appendChild(el("p", "assignment-module__label", "Trip Contact"));
 	const identity = el("div", "assignment-compact-module__body");
-	if (contact.name) {
-		identity.appendChild(el(
+	if (contact.name || contact.phone) {
+		const contactLine = el(
 			"p",
-			"assignment-compact-module__primary",
-			contact.name,
-		));
+			"assignment-compact-module__primary driver-assignment-card__contact-line",
+		);
+		if (contact.name) {
+			contactLine.appendChild(el(
+				"span",
+				"driver-assignment-card__contact-name",
+				contact.name,
+			));
+		}
+		if (contact.phone) {
+			contactLine.appendChild(el(
+				"span",
+				"driver-assignment-card__contact-phone",
+				contact.phone,
+			));
+		}
+		identity.appendChild(contactLine);
 	}
 	if (identity.childElementCount) details.appendChild(identity);
 	row.appendChild(details);

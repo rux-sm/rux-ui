@@ -493,6 +493,28 @@ html {
 	line-height: var(--rux-leading-snug);
 }
 
+.driver-assignment-card__contact-line {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-space-1);
+	min-width: 0;
+}
+
+.driver-assignment-card__contact-name {
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.driver-assignment-card__contact-phone {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-regular);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
 .driver-assignment-card__spot-address {
 	font-size: var(--rux-text-md);
 	font-style: normal;

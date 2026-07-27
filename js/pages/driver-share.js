@@ -9,7 +9,7 @@ import {
 	normalizeSpotLocation,
 	operationalTripContact,
 } from "../components/driver-assignment-model.js?v=19";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=55";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=56";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();

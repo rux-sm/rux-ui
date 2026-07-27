@@ -310,10 +310,14 @@ test("trip contact shares reporting details and alerts are omitted", () => {
 	assert.equal(contact.querySelector(".assignment-module__label-wrap"), null);
 	assert.ok(contact.querySelector(".assignment-compact-module__body"));
 	assert.equal(
-		contact.querySelector(".assignment-compact-module__primary").textContent,
+		contact.querySelector(".driver-assignment-card__contact-name").textContent,
 		"Anna Partida",
 	);
-	assert.equal(contact.textContent.includes("956-292-9255"), false);
+	assert.equal(
+		contact.querySelector(".driver-assignment-card__contact-phone").textContent,
+		"956-292-9255",
+	);
+	assert.equal(contact.textContent.includes("956-292-9255"), true);
 	assert.deepEqual(
 		contact.querySelector(".assignment-compact-module__actions").childNodes.map(
 			(action) => action.getAttribute("aria-label"),
