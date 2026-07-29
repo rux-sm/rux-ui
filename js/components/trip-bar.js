@@ -44,6 +44,11 @@ function installOutsideDismiss() {
   document.addEventListener(
     "pointerdown",
     (event) => {
+      // Anything reading the active bar's selection (Contact Info, its
+      // modal) opts out of dismissal with this attribute — otherwise this
+      // capture-phase pointerdown deactivates the bar (and disables the
+      // button reading it) before the button's own click handler runs.
+      if (event.target?.closest?.("[data-rux-keep-trip-selection]")) return;
       const currentBar = event.target?.closest?.(".rux-trip-bar") || null;
       deactivateTripBars(currentBar);
     },

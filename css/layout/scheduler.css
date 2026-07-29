@@ -48,8 +48,6 @@
 	--rux-scheduler-row-head-color: var(--rux-fg);
 	--rux-scheduler-max-block-size: none;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
-	--rux-scheduler-today-color: oklch(from var(--rux-accent) 100% 0 0 / 100%);
-	--rux-scheduler-today-bg: color-mix(in srgb, var(--rux-accent) 100%, transparent);
 	--rux-scheduler-now-line-z-index: 1;
 	--rux-scheduler-trip-bar-z-index: 2;
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
@@ -188,18 +186,13 @@
 	padding: var(--rux-space-1) var(--rux-space-2);
 	background: var(--rux-calendar-header-bg);
 	border-radius: var(--rux-radius-full);
-	height: 24px;
+	height: 28px;
 	white-space: nowrap;
-}
-
-.rux-scheduler__day-head--today .rux-scheduler__day-label {
-	background: var(--rux-scheduler-today-bg);
-	border: 1px solid var(--rux-accent);
 }
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,
 .rux-scheduler__day-head--today .rux-scheduler__day-number {
-	color: var(--rux-white);
+	color: var(--rux-accent);
 }
 
 /* ---------- Time-aligned mode ---------- */

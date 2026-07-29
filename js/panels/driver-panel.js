@@ -20,7 +20,6 @@
   const dpAvatarBtn       = document.getElementById("dp-avatar");
   const dpAvatarMain      = document.getElementById("dp-avatar-main");
   const dpAvatarInput     = document.getElementById("dp-avatar-input");
-  const dpAvatarRemoveBtn = document.getElementById("dp-avatar-remove");
 
   let db         = null;
   let settingsDb = null;
@@ -108,7 +107,6 @@
       : d?.name
         ? initials(d.name)
         : '<span class="rux-icon">person</span>';
-    dpAvatarRemoveBtn.hidden = !photoUrl;
   }
 
   function avatarCellHtml(d) {
@@ -819,13 +817,67 @@
   });
 
   // ── Avatar photo upload ───────────────────────────────────────────────────
+  // Clicking the avatar opens a small menu (Upload / Remove) instead of
+  // jumping straight to the file picker — same dynamic-popover pattern as
+  // openDriverColFilter below, opened via the shared RuxMenu.
+
+  async function removeDriverPhoto() {
+    if (!selectedId || !db) return;
+    if (!confirm("Remove this driver's photo?")) return;
+    try {
+      await db.removeDriverPhoto(selectedId);
+      const driver = allDrivers.find(x => x.id === selectedId);
+      if (driver) driver.photo_path = null;
+      renderAvatar(driver);
+      renderRows(getSortedDrivers());
+      applyFilter();
+    } catch (err) {
+      console.error("Remove photo failed:", err);
+      window.Rux?.toast("Could not remove photo — try again.");
+    }
+  }
+
+  let dpAvatarMenu = null;
+
+  function openAvatarMenu() {
+    if (!dpAvatarMenu) {
+      dpAvatarMenu = document.createElement("div");
+      dpAvatarMenu.className = "rux-menu rux-popover";
+      dpAvatarMenu.setAttribute("hidden", "");
+      dpAvatarMenu.setAttribute("role", "menu");
+      document.body.appendChild(dpAvatarMenu);
+    }
+
+    const hasPhoto = Boolean(driverPhotoUrl(allDrivers.find(x => x.id === selectedId)));
+    dpAvatarMenu.innerHTML = "";
+
+    const uploadBtn = document.createElement("button");
+    uploadBtn.type = "button";
+    uploadBtn.className = "rux-menu__item";
+    uploadBtn.setAttribute("role", "menuitem");
+    uploadBtn.innerHTML = '<span class="rux-icon" aria-hidden="true">upload</span><span>Upload photo</span>';
+    uploadBtn.addEventListener("click", () => dpAvatarInput.click());
+    dpAvatarMenu.appendChild(uploadBtn);
+
+    if (hasPhoto) {
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "rux-menu__item";
+      removeBtn.setAttribute("role", "menuitem");
+      removeBtn.innerHTML = '<span class="rux-icon" aria-hidden="true">delete</span><span>Remove photo</span>';
+      removeBtn.addEventListener("click", () => removeDriverPhoto());
+      dpAvatarMenu.appendChild(removeBtn);
+    }
+
+    window.RuxMenu.open(dpAvatarBtn, dpAvatarMenu, { placement: "bottom-start" });
+  }
 
   dpAvatarBtn.addEventListener("click", () => {
     if (!selectedId) {
       window.Rux?.toast("Save the driver before adding a photo.");
       return;
     }
-    dpAvatarInput.click();
+    openAvatarMenu();
   });
 
   dpAvatarInput.addEventListener("change", async () => {
@@ -842,7 +894,6 @@
       const photoPath = await db.uploadDriverPhoto(selectedId, file);
       const driver = allDrivers.find(x => x.id === selectedId);
       if (driver) driver.photo_path = photoPath;
-      dpAvatarRemoveBtn.hidden = false;
       renderRows(getSortedDrivers());
       applyFilter();
     } catch (err) {
@@ -851,25 +902,6 @@
       renderAvatar(allDrivers.find(x => x.id === selectedId));
     } finally {
       dpAvatarBtn.classList.remove("is-uploading");
-    }
-  });
-
-  dpAvatarRemoveBtn.addEventListener("click", async () => {
-    if (!selectedId || !db) return;
-    if (!confirm("Remove this driver's photo?")) return;
-    dpAvatarRemoveBtn.disabled = true;
-    try {
-      await db.removeDriverPhoto(selectedId);
-      const driver = allDrivers.find(x => x.id === selectedId);
-      if (driver) driver.photo_path = null;
-      renderAvatar(driver);
-      renderRows(getSortedDrivers());
-      applyFilter();
-    } catch (err) {
-      console.error("Remove photo failed:", err);
-      window.Rux?.toast("Could not remove photo — try again.");
-    } finally {
-      dpAvatarRemoveBtn.disabled = false;
     }
   });
 

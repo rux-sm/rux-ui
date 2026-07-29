@@ -90,7 +90,7 @@
 	padding: 0;
 	background: var(--rux-surface-card);
 	border: 0;
-	border-radius: var(--rux-radius-sm);
+	border-radius: var(--rux-radius-0);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
@@ -134,27 +134,6 @@
 
 .rux-driver-panel__avatar.is-uploading .rux-driver-panel__avatar-overlay .rux-icon {
 	animation: rux-spin 700ms linear infinite; /* shared keyframe, utils.css */
-}
-
-.rux-driver-panel__avatar-remove {
-	position: absolute;
-	top: -6px;
-	right: -6px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 18px;
-	height: 18px;
-	padding: 0;
-	background: var(--rux-surface-modal);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
-	border-radius: var(--rux-radius-full);
-	color: var(--rux-fg-muted);
-	cursor: pointer;
-}
-
-.rux-driver-panel__avatar-remove .rux-icon {
-	font-size: 12px;
 }
 
 /* — License: endorsement toggles — */

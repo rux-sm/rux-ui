@@ -54,6 +54,16 @@
 		);
 	}
 
+	// Shared with the --railable panel-width override in
+	// css/layout/scheduler-app.css so a railable drawer's close animation
+	// targets the exact width its own container-query reflow (icon-only
+	// tabs, css/features/trip-panel.css) is tuned for.
+	function schedulerAppRailWidth() {
+		return parseFloat(
+			getComputedStyle(document.querySelector(".scheduler-app")).getPropertyValue("--scheduler-app-rail-width"),
+		);
+	}
+
 	function moduleGutterWidth(drawerEl) {
 		const moduleEl = drawerEl.closest(".scheduler-app__module");
 		if (!moduleEl) return 0;
@@ -106,13 +116,38 @@
 			scheduleMin = 0,
 			onOpen = null,
 			onClose = null,
+			// True for a drawer whose own panel collapses to an icon-only rail
+			// on desktop (see the --railable CSS override) instead of
+			// disappearing entirely — close() shrinks to that rail width
+			// instead of 0.
+			railWidth = false,
 		} = options;
 
 		const DRAWER_DEFAULT = schedulerAppDefaultWidth(drawer);
-		const DRAWER_MIN = Math.ceil(parseFloat(getComputedStyle(panel).minWidth));
+
+		// A function, not a frozen constant — for a railable drawer,
+		// --rux-panel-min-width's *resolved* value is only the true "don't
+		// resize the open panel narrower than this" floor while open; it's
+		// relaxed to the rail width while closed (see scheduler-app.css).
+		// Reading it once at create() time would freeze whichever value
+		// happened to be active at boot (closed), so every call site below
+		// re-reads it live instead, at points where .is-open is already
+		// guaranteed present.
+		function drawerMin() {
+			return Math.ceil(parseFloat(getComputedStyle(panel).minWidth));
+		}
 
 		function isOpen() {
 			return drawer.classList.contains("is-open");
+		}
+
+		// Where a railable drawer rests when not open: the rail width, on
+		// desktop. Non-railable drawers (Fleet/Driver/Customer) and mobile
+		// (rail never applies there) both fall through to fully closed (0).
+		// Shared by close() and the drag-from-closed paths below so all
+		// three agree on where "closed" starts from.
+		function closedTargetWidth() {
+			return railWidth && !mobilePanelQuery.matches ? schedulerAppRailWidth() : 0;
 		}
 
 		function open() {
@@ -138,10 +173,17 @@
 		// transition — scheduler-app.css forces transition:none on them, so the
 		// desktop close path's transitionend listener never fires there.
 		function close() {
-			// Leave --drawer-open-width untouched so the panel content freezes at
-			// its pre-close size and only gets clipped by the shrinking drawer,
-			// instead of snapping to its min-width before the drawer animates.
-			drawer.style.setProperty("--drawer-width", "0px");
+			// A railable drawer's own panel keeps rendering at rail width
+			// instead of display:none (see the --railable override in
+			// scheduler-app.css) — its container-query reflow (icon-only,
+			// then stacked tabs) animates continuously as --drawer-width
+			// shrinks toward that target, so there's no separate element to
+			// hand off to. --drawer-open-width is left untouched regardless,
+			// same as always, so a non-railable panel's content freezes at
+			// its pre-close size and only gets clipped by the shrinking
+			// drawer, instead of snapping to its min-width before the drawer
+			// animates.
+			drawer.style.setProperty("--drawer-width", closedTargetWidth() + "px");
 			panel.inert = true;
 			drawer.setAttribute("aria-hidden", "true");
 			toggleBtn?.setAttribute("aria-pressed", "false");
@@ -205,7 +247,6 @@
 		handle.addEventListener("keydown", (e) => {
 			const growKey = direction === "left" ? "ArrowRight" : "ArrowLeft";
 			const shrinkKey = direction === "left" ? "ArrowLeft" : "ArrowRight";
-			let nextW = null;
 
 			if (e.key === "Enter" || e.key === " ") {
 				e.preventDefault();
@@ -213,14 +254,22 @@
 				requestAnimationFrame(syncHandle);
 				return;
 			}
-			if (e.key === growKey) nextW = drawerWidth() + DRAWER_KEYBOARD_STEP;
-			if (e.key === shrinkKey) nextW = drawerWidth() - DRAWER_KEYBOARD_STEP;
-			if (e.key === "Home") nextW = DRAWER_MIN;
-			if (e.key === "End") nextW = maxDrawerWidth();
-			if (nextW === null) return;
+			if (![growKey, shrinkKey, "Home", "End"].includes(e.key)) return;
 
 			e.preventDefault();
+			// Open first, before reading drawerMin() below — for a railable
+			// drawer its min-width floor is only the "open" value once
+			// .is-open is present (relaxed to the rail width while closed);
+			// computing Home's target width before this would read the
+			// relaxed floor instead of the intended resize-clamp one.
 			if (!isOpen()) open();
+
+			let nextW = null;
+			if (e.key === growKey) nextW = drawerWidth() + DRAWER_KEYBOARD_STEP;
+			if (e.key === shrinkKey) nextW = drawerWidth() - DRAWER_KEYBOARD_STEP;
+			if (e.key === "Home") nextW = drawerMin();
+			if (e.key === "End") nextW = maxDrawerWidth();
+
 			const w = setDrawerWidth(nextW);
 			if (w < DRAWER_SNAP_CLOSE) close();
 			syncHandle();
@@ -230,7 +279,11 @@
 			e.preventDefault();
 			const wasOpen = isOpen();
 			const startX = e.clientX;
-			const startW = wasOpen ? drawerWidth() : 0;
+			// Drag can start from a railed (32px) drawer, not just a fully
+			// closed (0) one — closedTargetWidth() is the same helper close()
+			// itself uses, so this always starts measuring from wherever the
+			// drawer actually is, not a hardcoded assumption.
+			const startW = wasOpen ? drawerWidth() : closedTargetWidth();
 			let lastW = startW;
 			let moved = false;
 
@@ -247,8 +300,9 @@
 						drawer.classList.add("is-open");
 						panel.inert = false;
 						drawer.setAttribute("aria-hidden", "false");
-						drawer.style.setProperty("--drawer-width", "0px");
-						drawer.style.setProperty("--drawer-open-width", "0px");
+						const w = closedTargetWidth() + "px";
+						drawer.style.setProperty("--drawer-width", w);
+						drawer.style.setProperty("--drawer-open-width", w);
 						toggleBtn?.setAttribute("aria-pressed", "true");
 					}
 				}
@@ -264,11 +318,12 @@
 				document.body.style.userSelect = "";
 				if (!moved) {
 					wasOpen ? close() : open();
-				} else if (lastW < DRAWER_SNAP_CLOSE || maxDrawerWidth() < DRAWER_MIN) {
+				} else if (lastW < DRAWER_SNAP_CLOSE || maxDrawerWidth() < drawerMin()) {
 					close();
-				} else if (lastW < DRAWER_MIN) {
-					drawer.style.setProperty("--drawer-width", DRAWER_MIN + "px");
-					drawer.style.setProperty("--drawer-open-width", DRAWER_MIN + "px");
+				} else if (lastW < drawerMin()) {
+					const w = drawerMin() + "px";
+					drawer.style.setProperty("--drawer-width", w);
+					drawer.style.setProperty("--drawer-open-width", w);
 				}
 				syncHandle();
 				document.removeEventListener("mousemove", onMove);

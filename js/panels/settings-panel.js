@@ -4,6 +4,8 @@
   const YARD_KEY = "yard-location-v1";
   const MAPBOX_TOKEN_KEY = "mapbox-token-v1";
   const SPOT_PADDING_KEY = "spot-padding-v1";
+  const MISSIVE_URL_KEY = "missive-search-url-v1";
+  const DEFAULT_MISSIVE_URL = "https://mail.missive.app/#search/";
   const DEFAULT_SPOT_PADDING = 15;
   const DEFAULT_YARD = {
     name: "Yard",
@@ -27,6 +29,10 @@
   const mapboxMessageEl = document.getElementById("settings-mapbox-message");
   const mapboxSaveBtn = document.getElementById("settings-mapbox-save-btn");
 
+  const missiveUrlInput = document.getElementById("settings-missive-url");
+  const missiveMessageEl = document.getElementById("settings-integrations-message");
+  const missiveSaveBtn = document.getElementById("settings-integrations-save-btn");
+
   const spotPaddingInput = document.getElementById("settings-spot-padding");
   const billingWorkflowEl = document.getElementById("settings-billing-workflow");
   const billingConfirmEl = document.getElementById("settings-billing-confirm");
@@ -40,6 +46,7 @@
   let spotPaddingMins = DEFAULT_SPOT_PADDING;
   let billingConfig = window.RuxBilling?.getConfig?.() || null;
   let mapboxToken = "";
+  let missiveSearchUrl = DEFAULT_MISSIVE_URL;
   let yardSearchTimer = null;
   let yardSearchSeq = 0;
   let yardSessionToken = uuid();
@@ -354,6 +361,34 @@
     setMapboxMessage(normalized ? "Mapbox token saved." : "Mapbox token cleared.", "success");
   }
 
+  function setIntegrationsMessage(text, type) {
+    if (!missiveMessageEl) return;
+    missiveMessageEl.textContent = text || "";
+    missiveMessageEl.className = "settings-app__message" + (type ? ` settings-app__message--${type}` : "");
+  }
+
+  function publishMissiveUrl(url) {
+    missiveSearchUrl = url || DEFAULT_MISSIVE_URL;
+    window.RuxSettings = { ...(window.RuxSettings || {}), getMissiveSearchUrl: () => missiveSearchUrl };
+    document.dispatchEvent(new CustomEvent("settings:missive", { detail: { url: missiveSearchUrl } }));
+  }
+
+  async function loadMissiveUrl() {
+    if (!db) db = await import("../data/settings-db.js");
+    const saved = await db.getSetting(MISSIVE_URL_KEY);
+    const url = typeof saved === "string" && saved.trim() ? saved.trim() : DEFAULT_MISSIVE_URL;
+    publishMissiveUrl(url);
+    if (missiveUrlInput) missiveUrlInput.value = url;
+  }
+
+  async function saveMissiveUrl(url) {
+    if (!db) db = await import("../data/settings-db.js");
+    const normalized = String(url || "").trim() || DEFAULT_MISSIVE_URL;
+    await db.setSetting(MISSIVE_URL_KEY, normalized);
+    publishMissiveUrl(normalized);
+    setIntegrationsMessage("Saved.", "success");
+  }
+
   function publishSpotPadding(mins) {
     spotPaddingMins = Number.isFinite(mins) && mins >= 0 ? mins : DEFAULT_SPOT_PADDING;
     window.RuxSettings = {
@@ -461,6 +496,7 @@
     await loadMapboxToken();
     await loadSpotPadding();
     await loadBilling();
+    await loadMissiveUrl();
   }
 
   saveBtn?.addEventListener("click", async () => {
@@ -578,17 +614,31 @@
     renderBillingSettings(billingConfig);
   });
 
+  missiveSaveBtn?.addEventListener("click", async () => {
+    missiveSaveBtn.disabled = true;
+    setIntegrationsMessage("Saving...");
+    try {
+      await saveMissiveUrl(missiveUrlInput?.value || "");
+    } catch (err) {
+      setIntegrationsMessage(err?.message || "Could not save.", "error");
+    } finally {
+      missiveSaveBtn.disabled = false;
+    }
+  });
+
   window.RuxSettings = {
     ...(window.RuxSettings || {}),
     DEFAULT_YARD,
+    DEFAULT_MISSIVE_URL,
     getYard: () => ({ ...currentYard }),
     getMapboxToken: () => mapboxToken,
     getSpotPadding: () => spotPaddingMins,
     getBillingWorkflow: () => window.RuxBilling?.getConfig?.() || billingConfig,
+    getMissiveSearchUrl: () => missiveSearchUrl,
     saveYard,
     saveMapboxToken,
   };
-  window.SettingsPanel = { init, reload: async () => { await loadYard(); await loadBilling(); } };
+  window.SettingsPanel = { init, reload: async () => { await loadYard(); await loadBilling(); await loadMissiveUrl(); } };
 
   if (document.readyState !== "loading") init().catch(err => console.error("SettingsPanel init failed:", err));
 })();

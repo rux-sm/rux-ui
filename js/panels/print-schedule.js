@@ -344,10 +344,10 @@
       : trip.customer;
     content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", customer || "\u00a0"));
 
-    // Trip Overview drops everything below the time row: contact line,
+    // Maintenance Report drops everything below the time row: contact line,
     // drivers, driver pay, and the billing/logistics detail rows, down to
     // just destination/req icons/customer/times, same fields the user asked
-    // for. Trip Report (default) keeps the full stack as before.
+    // for. Billing Report (default) keeps the full stack as before.
     if (reportType !== "overview") {
       const contact = trip.bookingContact || trip.tripContact || {};
       const contactText = [contact.name, contact.phone].filter(Boolean).join("  ");
@@ -656,7 +656,7 @@
   }
 
   function init() {
-    const btn = document.getElementById("print-schedule-btn");
+    const btn = document.getElementById("print-schedule-menu-btn");
     const modal = document.getElementById("print-schedule-modal");
     const paperSizeSelect = document.getElementById("ps-paper-size");
     const orientationGroup = document.getElementById("ps-orientation-group");

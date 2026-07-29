@@ -831,6 +831,7 @@ function initTripTabs(root) {
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
 	const allTabBtns = tabs?.querySelectorAll(".rux-trip-panel__tab[aria-controls]") || [];
 	const scrollBody = root.querySelector(".rux-panel__body");
+	const drawer = root.closest(".scheduler-app__drawer");
 	allTabBtns.forEach((btn) => {
 		btn.addEventListener("click", () => {
 			const panelId = btn.getAttribute("aria-controls");
@@ -845,6 +846,16 @@ function initTripTabs(root) {
 				p.hidden = p.id !== panelId;
 			});
 			if (scrollBody) scrollBody.scrollTop = 0;
+			// A railable drawer's own tabs double as its collapsed rail (see
+			// css/layout/scheduler-app.css's --railable override and the
+			// @container rule in css/features/trip-panel.css) — clicking one
+			// while collapsed should also reopen the panel, not just record
+			// which tab to land on. RuxDrawer isn't known here, so bridge
+			// with a bubbling event index.html's boot code (which holds the
+			// drawer handle) listens for.
+			if (drawer && !drawer.classList.contains("is-open")) {
+				drawer.dispatchEvent(new CustomEvent("rux:trip-tab-expand-request", { bubbles: true }));
+			}
 		});
 	});
 

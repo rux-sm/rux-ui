@@ -46,6 +46,11 @@
 	   defaults. Resize limits remain shared. */
 	--scheduler-app-left-drawer-default-width: 400px;
 	--scheduler-app-right-drawer-default-width: 400px;
+	/* Read by both the rail's own CSS width and drawer.js's close() (see
+	   schedulerAppRailWidth there) so the drawer's own shrink animation
+	   lands on exactly the rail's resting width — one source of truth, no
+	   risk of the two drifting out of sync. */
+	--scheduler-app-rail-width: 32px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -114,26 +119,6 @@
 	gap: var(--rux-space-2);
 }
 
-/* Drop the Week/List icons before the row ever has to wrap or overflow —
-   icon drops first, not the text (a short label still reads faster than a
-   bare icon), same convention as the trip-panel/right-panel tab collapse
-   elsewhere. .rux-workspace__header is already a query container
-   (container-type: inline-size, see base/workspace.css), so this keys
-   directly off its own width with no extra setup. */
-@container (max-width: 700px) {
-	#trip-view-group .rux-button > .rux-icon {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-}
-
 /* #today-btn shows text-only by default (no icon) — its icon is hidden at
    rest and only revealed at the narrower 560px breakpoint below. */
 #today-btn > .rux-icon {
@@ -148,13 +133,12 @@
 	border: 0;
 }
 
-/* Second, narrower step of the same two-step collapse used for the
-   trip-panel/right-panel tabs: text-only wasn't enough room saved, so now
-   the roles swap — label goes quiet, icon comes back (for Week/List) or
-   appears for the first time (Today, using the calendar_today-style "today"
-   icon in place of its text). */
+/* Narrow step: Today shows text-only by default (above), then swaps to an
+   icon (the calendar_today-style "today" icon in place of its text) once
+   the header itself gets this tight. Week/List moved out to the right
+   panel (above the mini calendar) and no longer collapses with it — see
+   #trip-view-group's own styling there instead. */
 @container (max-width: 560px) {
-	#trip-view-group .rux-button > .rux-icon,
 	#today-btn > .rux-icon {
 		position: static;
 		width: var(--_icon-size);
@@ -167,7 +151,6 @@
 		border: 0;
 	}
 
-	#trip-view-group .rux-btn-label,
 	#today-btn .rux-btn-label {
 		position: absolute;
 		width: 1px;
@@ -184,7 +167,6 @@
 	   matches --_h (the button's own height var, 28px by default) instead
 	   of a hardcoded number, and padding-inline collapses to 0 now that
 	   there's no label left to pad around. */
-	#trip-view-group .rux-button,
 	#today-btn {
 		flex: 0 0 var(--_h);
 		width: var(--_h);
@@ -200,13 +182,12 @@
 	gap: var(--rux-space-2);
 }
 
-/* Desktop: 3-column grid so the date navigator is truly centered regardless
-   of how wide the left (panel toggle + Week/List) and right (Today + panel
-   toggle) zones are — flexbox space-between would only look centered when
-   both sides happen to be equal width, which they aren't here. */
+/* Desktop: left/right zones stay their natural (auto) width; the nav column
+   takes whatever's left and left-aligns the title right after the panel
+   toggle, instead of the title floating at the true center of the header. */
 .scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
 	display: grid;
-	grid-template-columns: 1fr auto 1fr;
+	grid-template-columns: auto 1fr auto;
 	align-items: center;
 }
 
@@ -217,7 +198,7 @@
 .rux-workspace__nav {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	gap: var(--rux-space-2);
 	min-width: 0;
 }
@@ -378,6 +359,46 @@
 	display: none;
 }
 
+/* Railable drawer (currently just the trip panel): the panel keeps
+   rendering — narrow, not display:none — whenever it's not fully open, so
+   its own @container queries (css/features/trip-panel.css) can reflow the
+   tabs to icon-only / stacked as it narrows, instead of a separate rail
+   element popping in once the panel vanishes. Width tracks the *live*
+   --drawer-width (not the frozen --drawer-open-width the base rule above
+   uses) so the container query re-evaluates continuously as the drawer
+   animates, and min-width is fully relaxed so it can actually reach
+   --scheduler-app-rail-width — both only for this modifier, so Fleet/
+   Driver/Customer's drawers (no --railable class) keep the original
+   frozen-width clip-then-vanish behavior unchanged. */
+.scheduler-app__drawer--railable {
+	overflow: hidden;
+}
+
+/* The base .scheduler-app__drawer rule hardcodes width:0 for the not-open
+   case, ignoring --drawer-width entirely (only .is-open reads it) — a
+   railable drawer needs its own outer box to actually be rail-width once
+   settled, not 0, or the panel below (however wide it thinks it is) has
+   nothing but a 0-width, overflow:hidden box to render inside. */
+.scheduler-app__drawer--railable:not(.is-open) {
+	width: var(--scheduler-app-rail-width);
+}
+
+/* The panel fills the drawer's live rendered width (100%) rather than
+   tracking --drawer-width directly. --drawer-width is the *target* value
+   set immediately by close() — not the animated value — so using it
+   directly would snap the panel to rail-width while the outer drawer box
+   still shows its full open width, leaving a canvas-coloured gap at the
+   right edge throughout the entire closing animation. 100% always matches
+   whatever the drawer's outer box currently is, whether animating or settled. */
+.scheduler-app__drawer--railable :is(.rux-trip-panel, .rux-right-panel) {
+	width: 100%;
+	min-width: 0;
+}
+
+.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel) {
+	display: flex;
+}
+
 .scheduler-app__gutter {
 	position: relative;
 	flex: 0 0 0;
@@ -471,10 +492,11 @@
 	height: auto;
 	width: var(--drawer-open-width, var(--scheduler-app-right-drawer-default-width));
 	overflow: hidden;
-
 }
 
-.scheduler-app__drawer--right:not(.is-open) :is(.rux-right-panel) {
+/* With --railable the panel fills live drawer width and stays rendered;
+   without it the base display:none-when-closed rule above still applies. */
+.scheduler-app__drawer--right:not(.is-open):not(.scheduler-app__drawer--railable) :is(.rux-right-panel) {
 	display: none;
 }
 
@@ -536,6 +558,41 @@
 	}
 }
 
+/* — Right panel header & rail — */
+
+.rux-right-panel__header {
+	display: none;
+}
+
+.rux-right-panel__drawer-open {
+	display: none;
+}
+
+/* At true rail width hide header, tabs, and footer; only the open button
+   (outside the inert aside) remains as the sole affordance to expand. */
+@container (max-width: 44px) {
+	.rux-right-panel__header {
+		display: none !important;
+	}
+
+	.rux-panel__nav,
+	.rux-panel__body,
+	.rux-panel__footer {
+		display: none !important;
+	}
+}
+
+/* Week/List — lives above the mini calendar in the right panel now
+   be in the workspace header's toolbar). #rp-pane-navigate is a flex column
+   (base/panel.css's .rux-panel__pane), so the track already stretches to
+   the pane's full width by default flex-item behavior; flex: 1 on the
+   buttons is what actually splits that width evenly, same recipe as
+   .rux-trip-panel__trip-type's Round/One-way/Split. */
+#trip-view-group > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
 /* — Mini calendar — */
 
 .rux-mini-cal {
@@ -576,9 +633,10 @@
 
 .rux-mini-cal__day-names {
 	display: grid;
-	grid-template-columns: repeat(7, 1fr);
+	grid-template-columns: repeat(7, minmax(28px, 1fr));
+	gap: var(--rux-space-1);
 	text-align: center;
-	font-size: var(--rux-text-100);
+	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-medium);
 	color: var(--rux-fg-subtle);
 	letter-spacing: var(--rux-tracking-wide);
@@ -588,7 +646,7 @@
 
 .rux-mini-cal__dates {
 	display: grid;
-	grid-template-columns: repeat(7, 1fr);
+	grid-template-columns: repeat(7, minmax(28px, 1fr));
 	gap: var(--rux-space-1);
 }
 
@@ -599,11 +657,11 @@
 	width: 100%;
 	height: 28px;
 	border: none;
-	border-radius: var(--rux-radius-sm);
+	border-radius: var(--rux-button-radius);
 	background: transparent;
 	color: var(--rux-fg);
 	font: inherit;
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-regular);
 	line-height: 1;
 	cursor: pointer;
@@ -626,16 +684,13 @@
 	background-color: var(--rux-accent);
 	color: var(--rux-fg-on-accent);
 	font-weight: var(--rux-weight-bold);
-	border-radius: var(--rux-radius-sm);
 }
 
+/* Same glass formula as accent buttons/trip bars now — transparent tinted
+   fill, solid (100% opacity) border — instead of its own bespoke color-mix. */
 .rux-mini-cal__date--active-week {
-	background-color: color-mix(
-		in oklch,
-		var(--rux-accent) var(--rux-mini-cal-active-week-opacity),
-		transparent
-	);
-	border: var(--rux-border-width) solid var(--rux-accent);
+	background-color: var(--rux-button-accent-background);
+	border: var(--rux-button-accent-border);
 }
 
 .rux-mini-cal__date--active-week.rux-mini-cal__date--today {
@@ -665,10 +720,9 @@
 .rux-driver-grid {
 	--rux-driver-grid-cell-size: 1.75rem;
 	--rux-driver-grid-name-width: 100px;
-	/* Same cell-to-cell rhythm as .rux-mini-cal__dates, not the row/gutter
-	   --rux-space-1 gap used elsewhere in this component — keeps the two
-	   square-grid components feeling like one family. */
-	--rux-driver-grid-cell-gap: var(--rux-space-0-5);
+	/* Matches the row/gutter gap below — cell-to-cell and row-to-row are the
+	   same rhythm now, not a deliberately tighter cell gap. */
+	--rux-driver-grid-cell-gap: var(--rux-space-1);
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
@@ -678,46 +732,6 @@
 			(var(--rux-driver-grid-days, 7) * var(--rux-driver-grid-cell-size)) +
 			((var(--rux-driver-grid-days, 7) - 1) * var(--rux-driver-grid-cell-gap))
 	);
-}
-
-.rux-driver-grid__legend {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--rux-space-2) var(--rux-space-3);
-	margin: 0 0 var(--rux-space-3);
-	padding: 0;
-	color: var(--rux-fg-muted);
-	font-size: var(--rux-text-xs);
-	list-style: none;
-}
-
-.rux-driver-grid__legend li {
-	display: inline-flex;
-	align-items: center;
-	gap: var(--rux-space-1);
-}
-
-.rux-driver-grid__legend-swatch {
-	width: var(--rux-space-3);
-	height: var(--rux-space-3);
-	background: var(--rux-surface-field);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
-	border-radius: var(--rux-radius-xs);
-}
-
-.rux-driver-grid__legend-swatch--busy {
-	background: var(--rux-accent);
-	border-color: var(--rux-accent);
-}
-
-.rux-driver-grid__legend-swatch--unavailable {
-	background: var(--rux-danger);
-	border-color: var(--rux-danger);
-}
-
-.rux-driver-grid__legend-swatch--conflict {
-	background: var(--rux-warning);
-	border-color: var(--rux-warning);
 }
 
 .rux-driver-grid__scroller {
@@ -770,7 +784,7 @@
 	   below needs, so gaining a real border doesn't shift the row's content
 	   by a pixel. */
 	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-sm);
+	border-radius: var(--rux-radius-0);
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	text-align: left;
@@ -833,10 +847,12 @@
    fill, the legend's color for "Assigned". Keeping both states off the row
    entirely, confined to the name button, sidesteps all of that — hover gets
    the same ghost-overlay tint every .rux-button uses, and selection gets the
-   same bg + border pairing as .rux-mini-cal__date--active-week. */
+   same bg + border pairing as the accent button (and, by extension,
+   .rux-mini-cal__date--active-week and the driver-grid's own "Assigned"
+   cells, which all share this same token). */
 .rux-driver-grid__row.is-selected .rux-driver-grid__name {
-	background: var(--rux-accent-subtle);
-	border-color: var(--rux-accent);
+	background: var(--rux-button-accent-background);
+	border-color: var(--rux-button-accent-border-color);
 	color: var(--rux-fg);
 	font-weight: var(--rux-weight-semibold);
 }
@@ -894,35 +910,43 @@
 	width: 100%;
 	height: var(--rux-driver-grid-cell-size);
 	padding: 0;
-	border-radius: var(--rux-radius-sm);
-	background: var(--rux-surface-field);
+	border-radius: var(--rux-radius-0);
+	background: var(--rux-surface-button-default);
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
 	   quietly as a plain .rux-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
 	   below still set a real border-color, same border-width throughout so
 	   nothing shifts size when a cell's state changes. */
-	border: var(--rux-border-width) solid transparent;
+	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	cursor: pointer;
 }
 
+/* Same glass RECIPE as accent/danger buttons and the trip bars — same
+   lightness/chroma/opacity — but pre-mixed opaque against the canvas rather
+   than a real alpha blend (see --rux-button-accent-background in
+   css/tokens.css for why): these are small, dense cells, and a real
+   transparent fill could end up barely distinguishable from the idle gray
+   fill above depending on what's actually behind a given cell. Conflict has
+   no button-family token to borrow (no .rux-button--warning exists), so its
+   pair is built inline off the same shared trip-bar primitives. */
 .rux-driver-grid__cell--busy {
-	background: var(--rux-accent);
-	border-color: var(--rux-accent);
+	background: var(--rux-button-accent-background);
+	border-color: var(--rux-button-accent-border-color);
 }
 
 /* Same driver, two overlapping trips the same day — flagged distinctly from
    a normal single-trip day rather than just looking "extra busy". */
 .rux-driver-grid__cell--conflict {
-	background: var(--rux-warning);
-	border-color: var(--rux-warning);
+	background: color-mix(in oklab, oklch(from var(--rux-warning) var(--rux-trip-bar-bg-lightness) c h) var(--rux-trip-bar-bg-opacity), var(--rux-surface-field));
+	border-color: oklch(from var(--rux-warning) var(--rux-trip-bar-bg-lightness) c h / 100%);
 }
 
 /* Marked time off (Driver panel → Time Off tab) — its own color, distinct
    from a trip-conflict, so "unavailable" and "double-booked" never look
    like the same problem. */
 .rux-driver-grid__cell--unavailable {
-	background: var(--rux-danger);
-	border-color: var(--rux-danger);
+	background: var(--rux-button-danger-background);
+	border-color: var(--rux-button-danger-border-color);
 }
 
 .rux-driver-grid__cell--unavailable::after,
@@ -938,10 +962,13 @@
 	color: var(--rux-fg-on-accent);
 }
 
+/* Both glyphs now sit on a mostly-dark tinted-glass fill instead of a solid
+   saturated one, so this needs to be light text like the "—" above, not the
+   dark canvas color the old fully-opaque warning background could carry. */
 .rux-driver-grid__cell--conflict::after,
 .rux-driver-grid__cell--busy.rux-driver-grid__cell--unavailable::after {
 	content: "!";
-	color: var(--rux-surface-canvas);
+	color: var(--rux-fg-on-accent);
 }
 
 /* Worst case: a trip is assigned on a day the driver is marked unavailable.
@@ -989,8 +1016,13 @@
 	gap: var(--rux-space-3);
 }
 
+/* Overrides the generic .rux-avatar's circular radius (see index.html,
+   built as "rux-avatar rux-avatar--lg rux-driver-grid__popover-avatar") —
+   driver photos/initials are square everywhere in this app, not just in
+   the driver panel/roster. */
 .rux-driver-grid__popover-avatar {
 	flex: none;
+	border-radius: var(--rux-radius-0);
 }
 
 .rux-driver-grid__popover-info {
@@ -1106,12 +1138,58 @@
 	color: var(--rux-fg-muted);
 }
 
-/* Always visible now — with the drawer's closed-state sliver gone (see
-   .scheduler-app__drawer's width above), this is the only way to open a
-   closed panel on desktop too, not just on mobile. */
+/* On desktop the left-panel toggle in the workspace heading acts as the
+   [>] reopener — visible only when the panel is closed. When the panel is
+   open the header's own [<] close button takes over, so the heading button
+   hides itself to avoid duplication. On mobile both states are always
+   handled by the heading button (no panel header close button is shown). */
 .scheduler-app__mobile-panel-btn {
 	display: inline-flex;
 	flex: none;
+}
+
+/* ── Desktop left-panel header ────────────────────────────────────────── */
+
+/* Panel header (title + close button) is desktop-only, and only shown
+   while the panel is actually open — a railed panel has no title/close
+   button, just its (now icon-only, see css/features/trip-panel.css)
+   tabs, since the panel no longer disappears entirely when collapsed. */
+.rux-trip-panel__header {
+	display: none;
+}
+
+@media (min-width: 501px) {
+	/* Hide workspace-heading panel toggles on desktop — the railed panels'
+	   own header close buttons and icon-rail open buttons take over.
+	   Scoped to calendar module so Fleet/Driver/Customer toggles are unaffected. */
+	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--left,
+	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--right {
+		display: none;
+	}
+
+	/* Panel headers — shown only while open on desktop. */
+	.scheduler-app__drawer.is-open .rux-trip-panel__header,
+	.scheduler-app__drawer.is-open .rux-right-panel__header {
+		display: flex;
+	}
+
+	/* Open buttons sit outside the inert <aside> so they stay clickable
+	   when collapsed. Hidden once the panel opens. */
+	.scheduler-app__drawer--railable .rux-trip-panel__drawer-open,
+	.scheduler-app__drawer--railable .rux-right-panel__drawer-open {
+		display: inline-flex;
+		position: absolute;
+		top: var(--rux-space-3);
+		left: 0;
+		right: 0;
+		margin-inline: auto;
+		z-index: 10;
+	}
+
+	.scheduler-app__drawer--railable.is-open .rux-trip-panel__drawer-open,
+	.scheduler-app__drawer--railable.is-open .rux-right-panel__drawer-open {
+		display: none;
+	}
 }
 
 @media (max-width: 500px) {
@@ -1154,8 +1232,8 @@
 	/* .heading, .nav, and .toolbar all collapse to display:contents above, so
 	   everything below is a direct item of this grid regardless of markup
 	   nesting. The title takes its own full-width row; every calendar action
-	   stays on the second row. Week/List and Today use icons at this width so
-	   the complete toolbar still fits without wrapping. */
+	   stays on the second row. Today uses an icon at this width so the
+	   complete toolbar still fits without wrapping. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__title {
 		grid-column: 1 / -1;
 		grid-row: 1;
@@ -1166,11 +1244,6 @@
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .scheduler-app__mobile-panel-btn--left {
 		grid-column: 1;
-		grid-row: 2;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #trip-view-group {
-		grid-column: 3;
 		grid-row: 2;
 	}
 
@@ -1192,12 +1265,6 @@
 		margin-inline-start: var(--rux-space-2);
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #print-schedule-btn {
-		grid-column: 7;
-		grid-row: 2;
-		margin-inline-start: var(--rux-space-2);
-	}
-
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .scheduler-app__mobile-panel-btn--right {
 		grid-column: 9;
 		grid-row: 2;
@@ -1208,10 +1275,7 @@
 		grid-row: 3;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header :is(
-		#trip-view-group .rux-button > .rux-icon,
-		#today-btn > .rux-icon
-	) {
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn > .rux-icon {
 		position: static;
 		width: var(--_icon-size);
 		height: var(--_icon-size);
@@ -1223,10 +1287,7 @@
 		border: 0;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header :is(
-		#trip-view-group .rux-btn-label,
-		#today-btn .rux-btn-label
-	) {
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn .rux-btn-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -1238,10 +1299,7 @@
 		border: 0;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header :is(
-		#trip-view-group .rux-button,
-		#today-btn
-	) {
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn {
 		flex: 0 0 var(--_h);
 		width: var(--_h);
 		min-width: var(--_h);

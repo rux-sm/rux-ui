@@ -27,10 +27,21 @@
   gap: var(--rux-space-1);
   height: var(--rux-badge-height);
   padding: 0 var(--rux-badge-padding-inline);
+  /* Pre-mixed opaque against the base canvas, not a real alpha blend — same
+     reasoning as --rux-button-accent-background (css/tokens.css): badges
+     appear in dense lists where a small, genuinely transparent fill can end
+     up barely distinguishable from a neutral background depending on what's
+     actually behind it. */
+  /* oklab, not oklch: --rux-surface-field carries a tiny residual chroma
+     inherited from --rux-neutral, and oklch's hue-arc interpolation can pull
+     the mix through an unrelated hue (e.g. red drifting toward purple) on
+     its way toward a backdrop that's visually just "gray". oklab blends the
+     Cartesian a/b axes directly instead, so a near-zero-chroma backdrop
+     can't warp the result's hue. */
   background: color-mix(
-    in oklch,
+    in oklab,
     var(--_badge-color) var(--rux-badge-background-opacity),
-    transparent
+    var(--rux-surface-field)
   );
   border: var(--rux-border-width) solid var(--_badge-color);
   border-radius: var(--rux-badge-radius);

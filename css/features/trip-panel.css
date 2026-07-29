@@ -26,6 +26,13 @@
 
 /* — Panel shell — */
 
+/* Open button: lives outside the inert <aside> as a direct child of the
+   drawer div, so it stays clickable when the panel is collapsed. Hidden
+   by default — only shown at <=44px via the container query below. */
+.rux-trip-panel__drawer-open {
+	display: none;
+}
+
 .rux-trip-panel {
 	height: 100%;
 	min-width: var(--rux-panel-min-width);
@@ -825,6 +832,47 @@
 		clip: rect(0 0 0 0);
 		white-space: nowrap;
 		border: 0;
+	}
+}
+
+/* Third step, once even a row of icon-only tabs no longer fits: stack them
+   into a vertical rail instead. This is what a collapsed (railed) trip
+   panel drawer actually looks like — no separate rail element, just this
+   same nav reflowing as the panel narrows past --scheduler-app-rail-width
+   (see the --railable override in css/layout/scheduler-app.css). */
+@container (max-width: 64px) {
+	.rux-panel__nav {
+		padding-inline: 0;
+	}
+
+	[data-trip-tabs] {
+		flex-direction: column;
+		height: auto;
+	}
+
+	[data-trip-tabs] .rux-trip-panel__tab {
+		flex: none;
+		width: 100%;
+	}
+}
+
+/* Fourth step: at true rail width (<=44px) the stacked icon tabs no longer
+   fit. Hide them, hide the title header, and flip the toggle to its
+   open-panel state so there's always one clear affordance to expand. */
+@container (max-width: 44px) {
+	/* The scheduler-app rule that shows this header keys off
+	   .scheduler-app__drawer.is-open (two-class specificity) and also
+	   fires during the closing animation while is-open is still present —
+	   !important is the only reliable way to ensure the container query
+	   wins at this width regardless of the drawer's open state. */
+	.rux-trip-panel__header {
+		display: none !important;
+	}
+
+	.rux-panel__nav,
+	.rux-panel__body,
+	.rux-panel__footer {
+		display: none !important;
 	}
 }
 

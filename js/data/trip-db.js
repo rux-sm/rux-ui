@@ -34,6 +34,12 @@ import {
 	let currentTripSnapshot = null;
 	let currentAssignments = [];
 	let currentLoadedTrip = null;
+	// A calendar trip bar going active (single click, no editor involved) also
+	// counts as "there's a trip in play" for Contact Info — set via
+	// setSelectedTrip() below, wired to the scheduler's rux:trip-selection-
+	// changed event. Kept separate from currentLoadedTrip so selecting a bar
+	// never touches the editor's own dirty/delete-enabled state.
+	let selectedBarTrip = null;
 	let currentStopsHydrated = true;
 	let driverShareFieldsAvailable = null;
 
@@ -357,6 +363,7 @@ import {
 			booking_contact_name:  fieldVal(root, "tp-book-name"),
 			booking_contact_phone: fieldVal(root, "tp-book-phone"),
 			booking_contact_email: fieldVal(root, "tp-book-email"),
+			booking_contact_missive_url: fieldVal(root, "tp-book-missive-url") || null,
 			// Set by the autofill dropdown (js/panels/trip-panel.js) when a saved
 			// contact is picked, and cleared the moment the name is hand-edited
 			// afterward — save() below re-resolves whenever this is empty, so a
@@ -706,9 +713,10 @@ import {
 		if (tripBarColorInput) tripBarColorInput.checked = true;
 		syncManifestBtn(root);
 
-		setVal(root, "tp-book-name",   trip.booking_contact_name);
-		setVal(root, "tp-book-phone",  trip.booking_contact_phone);
-		setVal(root, "tp-book-email",  trip.booking_contact_email);
+		setVal(root, "tp-book-name",        trip.booking_contact_name);
+		setVal(root, "tp-book-phone",       trip.booking_contact_phone);
+		setVal(root, "tp-book-email",       trip.booking_contact_email);
+		setVal(root, "tp-book-missive-url", trip.booking_contact_missive_url);
 		const bookNameInput = root.querySelector("#tp-book-name");
 		if (bookNameInput) bookNameInput.dataset.contactId = trip.booking_contact_id || "";
 		const contactList = root.querySelector("#tp-contacts-list");
@@ -1106,6 +1114,7 @@ import {
 		currentLoadedTrip = null;
 		currentStopsHydrated = true;
 		syncManifestBtn(root);
+		syncContactInfoBtn();
 		root.querySelector("#tp-price")?.dispatchEvent(new Event("input"));
 		window.Rux?.syncDateInputs(root);
 		window.Rux?.syncSelectPlaceholders?.(root);
@@ -1645,10 +1654,11 @@ export function loadTrip(root, itinerary, trip) {
 		trip_bar_color:        trip.trip_bar_color ?? trip.tripBarColor ?? null,
 		is_self_organized:     trip.is_self_organized ?? false,
 
-		booking_contact_name:  trip.booking_contact_name  ?? trip.bookingContact?.name  ?? null,
-		booking_contact_phone: trip.booking_contact_phone ?? trip.bookingContact?.phone ?? null,
-		booking_contact_email: trip.booking_contact_email ?? trip.bookingContact?.email ?? null,
-		booking_contact_id:    trip.booking_contact_id ?? null,
+		booking_contact_name:         trip.booking_contact_name  ?? trip.bookingContact?.name  ?? null,
+		booking_contact_phone:        trip.booking_contact_phone ?? trip.bookingContact?.phone ?? null,
+		booking_contact_email:        trip.booking_contact_email ?? trip.bookingContact?.email ?? null,
+		booking_contact_missive_url:  trip.booking_contact_missive_url ?? null,
+		booking_contact_id:           trip.booking_contact_id ?? null,
 		trip_contact_1_name:   trip.trip_contact_1_name   ?? trip.tripContact?.name    ?? null,
 		trip_contact_1_phone:  trip.trip_contact_1_phone  ?? trip.tripContact?.phone   ?? null,
 		trip_contact_1_id:     trip.trip_contact_1_id ?? null,
@@ -1705,6 +1715,7 @@ export function loadTrip(root, itinerary, trip) {
 	currentTripId  = UUID_RE.test(String(trip.id ?? "")) ? trip.id : null;
 	currentTripRef = trip.trip_ref ?? null;
 	currentLoadedTrip = trip;
+	syncContactInfoBtn();
 	const delBtn = root.querySelector("#tp-btn-delete");
 	if (delBtn) delBtn.disabled = !currentTripId;
 	currentTripSnapshot = { ...normalized };
@@ -2110,10 +2121,102 @@ function syncManifestBtn(root) {
 			: "Save this trip to enable";
 }
 
+// Editor trip wins if one's open; otherwise fall back to whichever bar is
+// currently selected on the calendar.
+function activeContactTrip() {
+	return currentLoadedTrip || selectedBarTrip;
+}
+
+// Called from the scheduler's rux:trip-selection-changed listener (index.html)
+// with the fully-resolved trip (same allTripsRaw lookup onOpenTrip uses) so
+// Contact Info always sees real trip_assignments/bus/driver data, never the
+// scheduler bar's own lighter leg-projection.
+export function setSelectedTrip(trip) {
+	selectedBarTrip = trip || null;
+	syncContactInfoBtn();
+}
+
+// Lives in the right panel's Calendar-tab footer now, outside the trip
+// panel's own root — looked up from the document, same as the driver-tab
+// footer buttons it sits alongside.
+function syncContactInfoBtn() {
+	const btn = document.getElementById("rp-contact-info-btn");
+	if (!btn) return;
+	const available = !!activeContactTrip();
+	btn.disabled = !available;
+	btn.title = available
+		? "Copy driver contact info for the client"
+		: "Select a trip first";
+}
+
+// One contact per bus for the client message: the active "driver" role, or
+// whichever active role stands in for it (co-driver, then anyone else still
+// on) — a relief-only assignment shouldn't produce an empty contact line.
+function primaryContactDriver(assignment) {
+	const active = activeAssignmentDrivers(assignment);
+	return (
+		active.find((d) => d.role === "driver")
+		|| active.find((d) => d.role === "co-driver")
+		|| active[0]
+		|| null
+	);
+}
+
+// trip.start_date is a bare "YYYY-MM-DD" string; parsing it with `new
+// Date(string)` reads it as UTC and can print the wrong weekday/day for
+// anyone west of UTC. Building the Date from its parts keeps it local.
+function formatContactInfoDate(isoDate) {
+	if (!isoDate) return "";
+	const [y, m, d] = String(isoDate).split("-").map(Number);
+	if (!y || !m || !d) return "";
+	return new Date(y, m - 1, d).toLocaleDateString("en-US", {
+		weekday: "long",
+		month: "long",
+		day: "numeric",
+		year: "numeric",
+	});
+}
+
+function buildContactInfoMessage(trip) {
+	// trip_assignments is the raw DB relation (bus/driver phone numbers all
+	// joined in); assignments is the scheduler bar's lighter leg-projection,
+	// kept as a fallback in case the full record wasn't resolved in time.
+	const assignments = Array.isArray(trip.trip_assignments)
+		? trip.trip_assignments
+		: (Array.isArray(trip.assignments) ? trip.assignments : []);
+	const lines = assignments
+		.map((a) => {
+			const driver = primaryContactDriver(a);
+			const name = driver?.drivers?.name || driver?.name;
+			if (!name) return null;
+			return {
+				name,
+				phone: driver?.drivers?.phone || driver?.phone || "",
+				bus: a.buses?.number ?? a.bus?.number ?? "",
+			};
+		})
+		.filter(Boolean);
+	if (!lines.length) return null;
+
+	const dateText = formatContactInfoDate(trip.start_date);
+	const destination = trip.destination || "";
+	const intro = `Below is the driver contact information for your trip`
+		+ (dateText ? ` on ${dateText}` : "")
+		+ (destination ? ` going to ${destination}` : "")
+		+ ":";
+	const body = lines
+		.map((l) => `Name:  ${l.name}\nPhone: ${l.phone}\nBus:   ${l.bus}`)
+		.join("\n\n");
+
+	return `Hello,\n\n${intro}\n\n${body}\n\nThank you!`;
+}
+
 export function initTripDB(root, itinerary) {
 	const saveBtn   = root.querySelector("#tp-btn-save");
 	const clearBtn  = root.querySelector("#tp-btn-clear");
 	const deleteBtn = root.querySelector("#tp-btn-delete");
+	const contactInfoBtn = document.getElementById("rp-contact-info-btn");
+	syncContactInfoBtn();
 	const manifestBtn = root.querySelector("#tp-view-manifest-btn");
 	const estimatedMilesInput = root.querySelector("#tp-est-mi");
 
@@ -2191,6 +2294,15 @@ export function initTripDB(root, itinerary) {
 		clearForm(root, itinerary);
 	});
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
+	contactInfoBtn?.addEventListener("click", () => {
+		const trip = activeContactTrip();
+		const message = trip && buildContactInfoMessage(trip);
+		if (!message) {
+			window.Rux?.toast?.("No driver/bus contact info to share yet");
+			return;
+		}
+		window.ContactInfoModal?.open(message);
+	});
 	manifestBtn?.addEventListener("click", () => {
 		if (window.TripView?.get() === "manifest") {
 			window.TripView.set("calendar");

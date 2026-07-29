@@ -1,0 +1,22 @@
+/* ==========================================================================
+   CONTACT INFO MODAL
+   Copy-ready driver/bus message for the currently loaded trip.
+   ========================================================================== */
+
+.rux-contact-info-modal {
+	display: flex;
+	flex-direction: column;
+	width: min(32rem, 100%);
+	max-height: min(32rem, calc(100dvh - 2 * var(--rux-space-5)));
+}
+
+.rux-contact-info-modal__preview {
+	flex: 1;
+	width: 100%;
+	min-height: 14rem;
+	resize: none;
+	font-family: var(--rux-font-mono);
+	font-size: var(--rux-text-sm);
+	line-height: 1.5;
+	white-space: pre-wrap;
+}

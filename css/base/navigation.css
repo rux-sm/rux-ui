@@ -127,7 +127,6 @@
 	background-color: var(--rux-tabs-attached-tab-bg);
 	color: var(--rux-tabs-attached-tab-fg);
 	border: var(--rux-tabs-attached-tab-border);
-	border-bottom: 0;
 	border-radius: var(--rux-radius-control) var(--rux-radius-control) 0 0;
 }
 
@@ -143,6 +142,7 @@
 	margin-bottom: calc(var(--rux-border-width) * -1);
 	background-color: var(--rux-tabs-attached-tab-selected-bg);
 	border-color: var(--rux-tabs-attached-tab-selected-border);
+	border-bottom: none;
 	color: var(--rux-tabs-attached-tab-selected-fg);
 }
 
@@ -175,4 +175,5 @@
 .rux-tab.is-active > .rux-icon,
 .rux-tab[aria-selected="true"] > .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
+
 }

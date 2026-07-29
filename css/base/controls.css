@@ -700,9 +700,14 @@
 	border: var(--rux-segment-border);
 }
 
+/* Text color is the only hover cue — bg/border stay exactly as they are at
+   rest. border-color is still reasserted (not just omitted) to block the
+   generic .rux-button:hover rule's accent-blue border from leaking in; an
+   inactive segment isn't "selected," so it shouldn't borrow the active
+   segment's own blue outline just from being hovered. */
 .rux-button--segment:hover:not(.is-active):not([aria-pressed="true"]) {
+	border-color: transparent;
 	color: var(--rux-segment-fg-hover);
-	--_state-overlay: var(--rux-segment-hover-bg);
 }
 
 .rux-button--segment.is-active,
@@ -724,6 +729,16 @@
 	.rux-segmented__indicator {
 		transition: none !important;
 	}
+}
+
+/* Print schedule modal — Orientation and Report type are always exactly two
+   options, so split the track evenly instead of sizing each segment to its
+   own label (same recipe as #trip-view-group in scheduler-app.css and
+   .rux-trip-panel__trip-type). */
+#ps-orientation-group > .rux-button,
+#ps-report-type-group > .rux-button {
+	flex: 1;
+	min-width: 0;
 }
 
 /* ==========================================================================

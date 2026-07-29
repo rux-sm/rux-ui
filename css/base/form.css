@@ -273,6 +273,34 @@
   padding-left: calc(var(--rux-control-padding-inline) + var(--rux-control-height) + var(--rux-control-content-gap));
 }
 
+.rux-input-group--action.rux-input-group--suffix .rux-input,
+.rux-input-group--action.rux-input-group--suffix .rux-select {
+  padding-right: calc(var(--rux-control-padding-inline) + var(--rux-control-height) + var(--rux-control-content-gap));
+}
+
+/* Action suffix button: fill the right inset of the group so its hit
+   target matches --rux-control-height (same as the prefix rule above). */
+.rux-input-group--action .rux-input-group__suffix:is(button, a) {
+  width: var(--rux-control-height);
+  height: var(--rux-control-height);
+  right: 0;
+  border-radius: var(--rux-radius-control);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--rux-fg-subtle);
+  transition: color var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+.rux-input-group--action .rux-input-group__suffix:is(button, a):hover:not(:disabled) {
+  color: var(--rux-fg);
+}
+
+.rux-input-group--action .rux-input-group__suffix:is(button, a):disabled {
+  opacity: var(--rux-disabled-opacity);
+  cursor: not-allowed;
+}
+
 /* — number — hide native spin buttons — */
 
 .rux-input[type="number"]::-webkit-inner-spin-button,

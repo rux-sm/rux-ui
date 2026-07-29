@@ -60,14 +60,18 @@
 	display: none;
 }
 
+/* .rux-button--ghost sets `color` directly rather than through --_fg, so
+   both rest and active states below have to match that directly too (a
+   --_fg override alone is a no-op here) — same reasoning as the ghost
+   :hover rule in controls.css. Muted at rest, full fg when current; the
+   icon glyph's own fill is a second, independent cue for selection. */
 .rux-app-header__nav-item {
 	flex: none;
+	color: var(--rux-app-header-nav-item-fg);
 }
 
-/* A ghost nav item keeps its normal foreground when current; the shared
-   button rule independently fills the icon to communicate selection. */
 .rux-app-header__nav-item.is-active {
-	--_fg: var(--rux-app-header-nav-item-active-fg);
+	color: var(--rux-app-header-nav-item-active-fg);
 }
 
 .rux-app-header__actions {

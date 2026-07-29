@@ -79,17 +79,17 @@
 	--_outline: oklch(
 		from var(--_tone)
 		var(--rux-trip-bar-bg-lightness)
-		var(--rux-trip-bar-bg-chroma)
+		c
 		h / 100%
 	);
-	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / var(--rux-trip-bar-bg-opacity));
-	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--rux-trip-bar-hover-bg-chroma) h / var(--rux-trip-bar-hover-bg-opacity));
-	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--rux-trip-bar-pressed-bg-chroma) h / var(--rux-trip-bar-pressed-bg-opacity));
-	--_surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--rux-trip-bar-selected-bg-chroma) h / var(--rux-trip-bar-selected-bg-opacity));
-	--_tail-surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--rux-trip-bar-bg-chroma) h / var(--rux-trip-bar-tail-opacity));
-	--_tail-surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--rux-trip-bar-hover-bg-chroma) h / var(--rux-trip-bar-tail-hover-opacity));
-	--_tail-surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--rux-trip-bar-pressed-bg-chroma) h / var(--rux-trip-bar-tail-pressed-opacity));
-	--_tail-surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--rux-trip-bar-selected-bg-chroma) h / var(--rux-trip-bar-tail-selected-opacity));
+	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) c h / var(--rux-trip-bar-bg-opacity));
+	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) c h / var(--rux-trip-bar-hover-bg-opacity));
+	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) c h / var(--rux-trip-bar-pressed-bg-opacity));
+	--_surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) c h / var(--rux-trip-bar-selected-bg-opacity));
+	--_tail-surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) c h / var(--rux-trip-bar-tail-opacity));
+	--_tail-surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) c h / var(--rux-trip-bar-tail-hover-opacity));
+	--_tail-surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) c h / var(--rux-trip-bar-tail-pressed-opacity));
+	--_tail-surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) c h / var(--rux-trip-bar-tail-selected-opacity));
 
 	position: relative;
 	display: flex;
