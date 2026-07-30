@@ -108,8 +108,17 @@ function tripBar(item, start, end) {
 	bar.style.gridColumn = `${offset(visibleStart, start) + 1} / span ${Math.max(1, offset(visibleEnd, visibleStart) + 1)}`;
 	bar.style.gridRow = String(item.lane + 1);
 	if (item.trip.tripBarColor) bar.dataset.tripBarColor = item.trip.tripBarColor;
-	if (item.trip.tripType === "one_way") bar.classList.add("maintenance-trip--one-way");
-	if (!item.trip.confirmed) bar.classList.add("maintenance-trip--unconfirmed");
+	const tripType = String(item.trip.tripType || "")
+		.trim()
+		.toLowerCase()
+		.replaceAll("-", "_");
+	if (["one_way", "oneway"].includes(tripType)) {
+		bar.classList.add("maintenance-trip--one-way");
+	}
+	if (["dropoff_pickup", "split"].includes(tripType)) {
+		bar.classList.add("maintenance-trip--split");
+	}
+	if (item.trip.confirmed === false) bar.classList.add("maintenance-trip--unconfirmed");
 	const clippedStart = item.start < start;
 	const clippedEnd = item.end > end;
 	if (clippedStart) bar.classList.add("is-clipped-start");

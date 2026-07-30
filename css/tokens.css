@@ -30,7 +30,7 @@
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
 	--rux-danger:  oklch(60.0% 0.23 022.0); /* Infernal — Vivid, true red */
-	--rux-warning: oklch(79.5% 0.145 083.8); /* 232 179 057 gold-6  */
+	--rux-warning: oklch(85.5% 0.2 083.8); /* 232 179 057 gold-6  */
 	--rux-success: oklch(72.2% 0.189 135.5); /* 107 190 050 green-6 */
 	--rux-info:    oklch(62.7% 0.162 256); /* 061 136 232 blue-6  */
 
