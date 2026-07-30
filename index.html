@@ -15,7 +15,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=47" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=92" />
+		<link rel="stylesheet" href="./css/components.css?v=96" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -32,6 +32,7 @@
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=11" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=5" />
 		<link rel="stylesheet" href="./css/features/contact-info.css?v=1" />
+		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=72" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=3" />
@@ -145,6 +146,17 @@
 						hidden
 					></div>
 					<button
+						class="rux-button rux-button--ghost rux-button--icon rux-app-header__notif-btn"
+						type="button"
+						id="notifications-menu-btn"
+						aria-label="Notifications"
+						aria-haspopup="menu"
+						aria-expanded="false"
+					>
+						<span class="rux-icon" aria-hidden="true">notifications</span>
+						<span class="rux-app-header__notif-badge" id="notifications-badge" hidden></span>
+					</button>
+					<button
 						class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
 						type="button"
 						id="profile-menu-btn"
@@ -214,6 +226,16 @@
 					<span class="rux-icon" aria-hidden="true">settings</span>
 					<span>Configuration</span>
 				</button>
+			</div>
+
+			<div
+				class="rux-menu rux-popover rux-notifications-menu"
+				id="notifications-menu"
+				role="menu"
+				hidden
+			>
+				<div class="rux-menu__header">Notifications</div>
+				<ul class="rux-notifications__list" data-notifications-list></ul>
 			</div>
 
 			<!-- Profile picker — password-less "who's using this" selector.
@@ -557,17 +579,12 @@
 								>
 									<div class="rux-card">
 										<header class="rux-card__header">
-											<p class="rux-card__title">
-												Trip Details
-											</p>
+											<p class="rux-card__title">Trip Details</p>
 										</header>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
 											<div class="rux-field">
-												<label class="rux-field__label"
-													>Trip Type</label
-												>
 												<div
 													class="rux-segmented-track rux-trip-panel__trip-type"
 													id="tp-trip-type-group"
@@ -685,32 +702,39 @@
 													/>
 												</div>
 											</div>
-											<div class="rux-trip-panel__cols-2">
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-destination"
-														>Destination</label
-													><input
-														class="rux-input"
-														id="tp-destination"
-														name="destination"
-														type="text"
-													/>
-												</div>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-customer"
-														>Client</label
-													><input
-														class="rux-input"
-														id="tp-customer"
-														name="customer"
-														type="text"
-													/>
-												</div>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-destination"
+													>Destination</label
+												><input
+													class="rux-input"
+													id="tp-destination"
+													name="destination"
+													type="text"
+												/>
 											</div>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-notes"
+													>Notes</label
+												><input
+													class="rux-input"
+													id="tp-notes"
+													name="notes"
+													type="text"
+												/>
+											</div>
+										</div>
+									</div>
+									<div class="rux-card">
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												Customer Details
+											</p>
+										</header>
+										<div class="rux-card__body rux-card__body--stack">
 											<div class="rux-trip-panel__cols-2">
 												<div class="rux-field">
 													<label
@@ -740,6 +764,18 @@
 											<div class="rux-field">
 												<label
 													class="rux-field__label"
+													for="tp-customer"
+													>Business/School</label
+												><input
+													class="rux-input"
+													id="tp-customer"
+													name="customer"
+													type="text"
+												/>
+											</div>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
 													for="tp-book-email"
 													>Email</label
 												><input
@@ -753,7 +789,7 @@
 												<label
 													class="rux-field__label"
 													for="tp-book-missive-url"
-													>Missive thread</label
+													>Email Thread</label
 												><div class="rux-input-group rux-input-group--suffix rux-input-group--action">
 													<input
 														class="rux-input"
@@ -774,17 +810,19 @@
 													</button>
 												</div>
 											</div>
-											<div class="rux-field">
-												<label
-													class="rux-field__label"
-													for="tp-notes"
-													>Notes</label
-												><input
-													class="rux-input"
-													id="tp-notes"
-													name="notes"
-													type="text"
-												/>
+										</div>
+									</div>
+									<div class="rux-card">
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												Trip Contact
+											</p>
+										</header>
+										<div class="rux-card__body">
+											<div
+												id="tp-contacts-list"
+												class="rux-trip-panel__contacts-list"
+											>
 											</div>
 										</div>
 									</div>
@@ -795,76 +833,20 @@
 											</p>
 										</header>
 										<div class="rux-card__body">
-											<div
-												class="rux-trip-panel__requirements-grid"
-											>
+											<div class="rux-field">
 												<div
-													class="rux-trip-panel__reqs"
-													id="tp-vehicle-reqs"
-												></div>
-												<div
-													class="rux-cluster"
-													id="tp-driver-needs"
-												></div>
+													class="rux-trip-panel__requirements-grid"
+												>
+													<div
+														class="rux-trip-panel__reqs"
+														id="tp-vehicle-reqs"
+													></div>
+													<div
+														class="rux-cluster"
+														id="tp-driver-needs"
+													></div>
+												</div>
 											</div>
-										</div>
-									</div>
-									<div class="rux-card">
-										<header class="rux-card__header">
-											<p class="rux-card__title">
-												Trip Contacts
-											</p>
-											<div class="rux-cluster">
-												<button
-													class="rux-button rux-button--default rux-button--icon rux-button--toggle"
-													type="button"
-													id="tp-contact-toggle-btn"
-													aria-pressed="false"
-													aria-label="Mark contact as not needed"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>block</span
-													>
-												</button>
-												<button
-													class="rux-button rux-button--default rux-button--danger rux-button--icon"
-													type="button"
-													id="tp-contact-delete-btn"
-													disabled
-													aria-pressed="false"
-													aria-label="Delete a contact"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>delete</span
-													>
-												</button>
-												<button
-													class="rux-button rux-button--default rux-button--icon"
-													type="button"
-													id="tp-contact-add-btn"
-													aria-label="Add contact"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>add</span
-													>
-												</button>
-											</div>
-										</header>
-										<div class="rux-card__body">
-											<div
-												id="tp-contacts-list"
-												style="
-													display: flex;
-													flex-direction: column;
-													gap: var(--rux-space-4);
-												"
-											></div>
 										</div>
 									</div>
 									<div class="rux-card">
@@ -882,19 +864,6 @@
 														class="rux-icon"
 														aria-hidden="true"
 														>block</span
-													>
-												</button>
-												<button
-													class="rux-button rux-button--default rux-button--danger rux-button--icon"
-													type="button"
-													id="tp-doc-delete-btn"
-													disabled
-													aria-label="Delete selected document"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>delete</span
 													>
 												</button>
 												<button
@@ -1809,7 +1778,7 @@
 							</div>
 							<footer class="rux-panel__footer">
 								<button
-									class="rux-button rux-button--default rux-button--danger"
+									class="rux-button rux-button--danger"
 									id="tp-btn-delete"
 									disabled
 								>
@@ -1888,7 +1857,7 @@
 								></div>
 								<div class="calendar-app__date-controls">
 									<button
-										class="rux-button rux-button--default rux-button--icon calendar-app__nav"
+										class="rux-button rux-button--ghost rux-button--icon calendar-app__nav"
 										id="prev-week"
 										aria-label="Previous week"
 									>
@@ -1897,7 +1866,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--default"
+										class="rux-button rux-button--ghost"
 										id="today-btn"
 										type="button"
 										aria-label="Jump to current week"
@@ -1910,7 +1879,7 @@
 										<span class="rux-btn-label">Today</span>
 									</button>
 									<button
-										class="rux-button rux-button--default rux-button--icon calendar-app__nav"
+										class="rux-button rux-button--ghost rux-button--icon calendar-app__nav"
 										id="next-week"
 										aria-label="Next week"
 									>
@@ -2708,6 +2677,20 @@
 										>
 										<span class="rux-btn-label"
 											>Contact Info</span
+										>
+									</button>
+									<button
+										class="rux-button rux-button--default rux-button--block"
+										type="button"
+										id="rp-trip-reminder-btn"
+										disabled
+										title="Select a trip first"
+									>
+										<span class="rux-icon" aria-hidden="true"
+											>notifications_active</span
+										>
+										<span class="rux-btn-label"
+											>Trip Reminder</span
 										>
 									</button>
 								</div>
@@ -6129,7 +6112,7 @@
 		<!-- ── Scripts ─────────────────────────────────────────────────────────── -->
 		<script src="./js/core/utilities.js"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
-		<script src="./js/core/drawer.js?v=1"></script>
+		<script src="./js/core/drawer.js?v=3"></script>
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
 		<script src="./js/core/controls.js?v=2" defer></script>
@@ -6137,7 +6120,7 @@
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=21"></script>
+		<script src="./js/panels/trip-panel.js?v=24"></script>
 		<script src="./js/components/itinerary.js?v=18"></script>
 		<script src="./js/panels/driver-panel.js?v=10" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
@@ -6148,7 +6131,8 @@
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
 		<script type="module" src="./js/panels/driver-week-info.js?v=11"></script>
-		<script type="module" src="./js/panels/contact-info-modal.js?v=1"></script>
+		<script type="module" src="./js/panels/contact-info-modal.js?v=2"></script>
+		<script type="module" src="./js/panels/notifications-panel.js?v=1"></script>
 		<script type="module" src="./js/panels/components-panel.js?v=39"></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
@@ -7384,7 +7368,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=9");
+					const db = await import("./js/data/trip-db.js?v=12");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10083,7 +10067,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=9");
+					const db = await import("./js/data/trip-db.js?v=12");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
@@ -10135,8 +10119,39 @@
 					TripPanel.updateOptions(tripPanel, { buses, drivers });
 					await loadTripsFromDB();
 					initTripsRealtimeSync();
+					window.RuxTrips = { list: () => allTripsRaw };
+					runNotificationChecks();
+					// Re-run periodically (not just at boot) so a tab left open
+					// across midnight still catches newly-crossed expiry
+					// thresholds and the next day's departures — hourly is plenty
+					// since credential dates don't need second-level precision;
+					// visibilitychange catches it right away when a dispatcher
+					// returns to an already-open tab after the day rolled over.
+					window.setInterval(() => {
+						if (!document.hidden) runNotificationChecks();
+					}, 60 * 60 * 1000);
+					document.addEventListener("visibilitychange", () => {
+						if (!document.hidden) runNotificationChecks();
+					});
 				} catch (err) {
 					console.warn("Could not initialize trip DB:", err);
+				}
+			}
+
+			// Idempotent (dedupe_key unique index; driver-expiry rows are
+			// updated in place, not duplicated, so re-running never spams) —
+			// safe to run from every dispatcher's client rather than needing a
+			// server cron.
+			async function runNotificationChecks() {
+				try {
+					const { generateDriverExpiryAlerts, generateTripDepartureSummary } =
+						await import("./js/data/notification-db.js");
+					await generateDriverExpiryAlerts().catch((err) =>
+						console.warn("Could not generate driver expiry alerts:", err));
+					await generateTripDepartureSummary(allTripsRaw).catch((err) =>
+						console.warn("Could not generate trip departure summary:", err));
+				} catch (err) {
+					console.warn("Could not run notification checks:", err);
 				}
 			}
 

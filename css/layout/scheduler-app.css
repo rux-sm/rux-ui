@@ -381,6 +381,9 @@
    nothing but a 0-width, overflow:hidden box to render inside. */
 .scheduler-app__drawer--railable:not(.is-open) {
 	width: var(--scheduler-app-rail-width);
+	/* Match the minimized panel's fill so any sub-pixel gap at the wrapper
+	   boundary cannot reveal scheduler row/day borders. */
+	background: var(--rux-panel-bg);
 }
 
 /* The panel fills the drawer's live rendered width (100%) rather than
@@ -397,6 +400,36 @@
 
 .scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel) {
 	display: flex;
+	/* The panel itself becomes the rail: keep its shell and full border,
+	   while its container queries hide every content region at this width.
+	   The opener is overlaid above it as the only visible control. */
+	background: var(--rux-panel-bg);
+	border: var(--rux-panel-border-width) solid var(--rux-border);
+	border-radius: var(--rux-panel-radius);
+	pointer-events: none;
+}
+
+/* The workspace already owns the shared seam. Avoid drawing a second line
+   directly beside it while retaining the rail's three exposed edges. */
+.scheduler-app__drawer--railable:not(.scheduler-app__drawer--right):not(.is-open)
+	> .rux-trip-panel {
+	border-inline-end: 0;
+}
+
+.scheduler-app__drawer--railable.scheduler-app__drawer--right:not(.is-open)
+	> .rux-right-panel {
+	border-inline-start: 0;
+}
+
+/* Do not rely on the panel container query for the settled state. Explicitly
+   remove every content region once the drawer is closed, leaving only the
+   panel shell and its sibling opener visible. This also prevents descendants
+   with their own positioning/paint containment from leaking through the
+   narrow panel clip. */
+.scheduler-app__drawer--railable:not(.is-open)
+	> :is(.rux-trip-panel, .rux-right-panel)
+	> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
+	display: none !important;
 }
 
 .scheduler-app__gutter {

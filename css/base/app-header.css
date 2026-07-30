@@ -85,6 +85,25 @@
 	border-radius: var(--rux-radius-full);
 }
 
+.rux-app-header__notif-btn {
+	position: relative;
+}
+
+.rux-app-header__notif-badge {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	width: var(--rux-status-dot-size);
+	height: var(--rux-status-dot-size);
+	background: var(--rux-warning);
+	border: 1px solid var(--rux-app-header-bg);
+	border-radius: var(--rux-radius-full);
+}
+
+.rux-app-header__notif-badge[hidden] {
+	display: none;
+}
+
 .rux-app-header__profile img {
 	display: block;
 	width: 100%;

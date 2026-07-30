@@ -40,7 +40,6 @@
 
 	const mobilePanelQuery = window.matchMedia("(max-width: 500px)");
 
-	const DRAWER_SNAP_CLOSE = 200;
 	const DRAWER_MAX = 640;
 	const HANDLE_DRAG_THRESHOLD = 5; // px of cursor movement before a click counts as a drag
 	const DRAWER_KEYBOARD_STEP = 16;
@@ -231,14 +230,19 @@
 		}
 
 		function setDrawerWidth(width) {
-			const w = Math.min(maxDrawerWidth(), Math.max(0, width));
+			const max = maxDrawerWidth();
+			const min = isOpen() ? Math.min(drawerMin(), max) : 0;
+			const w = Math.min(max, Math.max(min, width));
 			drawer.style.setProperty("--drawer-width", w + "px");
 			drawer.style.setProperty("--drawer-open-width", w + "px");
 			return w;
 		}
 
 		function syncHandle() {
-			handle.setAttribute("aria-valuemin", "0");
+			handle.setAttribute(
+				"aria-valuemin",
+				String(Math.round(isOpen() ? drawerMin() : closedTargetWidth())),
+			);
 			handle.setAttribute("aria-valuemax", String(Math.round(maxDrawerWidth())));
 			handle.setAttribute("aria-valuenow", String(Math.round(drawerWidth())));
 		}
@@ -270,8 +274,7 @@
 			if (e.key === "Home") nextW = drawerMin();
 			if (e.key === "End") nextW = maxDrawerWidth();
 
-			const w = setDrawerWidth(nextW);
-			if (w < DRAWER_SNAP_CLOSE) close();
+			setDrawerWidth(nextW);
 			syncHandle();
 		});
 
@@ -318,12 +321,25 @@
 				document.body.style.userSelect = "";
 				if (!moved) {
 					wasOpen ? close() : open();
-				} else if (lastW < DRAWER_SNAP_CLOSE || maxDrawerWidth() < drawerMin()) {
+				} else if (maxDrawerWidth() < drawerMin()) {
 					close();
 				} else if (lastW < drawerMin()) {
-					const w = drawerMin() + "px";
-					drawer.style.setProperty("--drawer-width", w);
-					drawer.style.setProperty("--drawer-open-width", w);
+					/* The rendered panel stops at its minimum width during the
+					   drag, so content never compresses past its responsive
+					   floor. The pointer's unclamped width still decides the
+					   release: crossing more than half of the remaining distance
+					   from min-width to the closed rail commits the collapse;
+					   otherwise the panel settles back against the min wall. */
+					const minW = drawerMin();
+					const closedW = closedTargetWidth();
+					const closeThreshold = closedW + (minW - closedW) / 2;
+					if (lastW < closeThreshold) {
+						close();
+					} else {
+						const w = minW + "px";
+						drawer.style.setProperty("--drawer-width", w);
+						drawer.style.setProperty("--drawer-open-width", w);
+					}
 				}
 				syncHandle();
 				document.removeEventListener("mousemove", onMove);

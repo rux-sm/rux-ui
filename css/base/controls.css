@@ -85,10 +85,11 @@
 
 }
 
-/* No background change, ever — default is an outline, and border/color is
-   the entire hover cue. Also overrides border/color so they don't fall
-   through to the generic. */
+/* Hover raises only the gray fill's OKLCH lightness. The border remains at
+   its fully opaque resting color instead of inheriting the generic accent
+   hover border. */
 .rux-button--default:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-default-hover-background);
 	border-color: var(--rux-button-default-hover-border);
 	color: var(--rux-button-default-hover-text);
 }

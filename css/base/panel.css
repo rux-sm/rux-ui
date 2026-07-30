@@ -10,7 +10,7 @@
 	flex-direction: column;
 	min-height: 0;
 	overflow: clip;
-	background: var(--rux-panel-bg);
+	background: var(--rux-surface-card);
 	color: var(--rux-panel-fg);
 	border-inline: var(--rux-panel-border-inline);
 	border-block: var(--rux-panel-border-block);
@@ -31,11 +31,11 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-panel-content-gap);
-	padding: var(--rux-panel-padding);
+	padding: var(--rux-panel-header-padding);
 	/* Vertical padding matches .rux-workspace__header's space-3 (not the
 	   shared --rux-panel-padding's space-4) so both headers land on the
 	   same 56px height: control-height + space-3 top/bottom. */
-	padding-block: var(--rux-space-3);
+	padding-block: var(--rux-space-2);
 	position: relative;
 	z-index: 2;
 	background: var(--rux-panel-bg);
@@ -50,7 +50,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	flex: 1;
-	padding-inline: var(--rux-space-2);
+	padding-inline: var(--rux-space-0);
 }
 
 .rux-panel__body {
@@ -82,6 +82,7 @@
 	position: relative;
 	z-index: 1;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+
 }
 
 .rux-panel__nav {
@@ -89,6 +90,8 @@
 	align-items: center;
 	gap: var(--rux-panel-content-gap);
 	overflow: visible;
+	background: var(--rux-panel-nav-background);
+	border-bottom: var(--rux-panel-nav-border);
 }
 
 .rux-panel__tabs {

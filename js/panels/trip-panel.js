@@ -796,11 +796,10 @@ function getContactNotNeeded(root) {
 
 function setContactNotNeeded(root, value) {
 	const btn = root.querySelector("#tp-contact-toggle-btn");
-	if (btn) {
-		btn.setAttribute("aria-pressed", String(value));
-		btn.classList.toggle("is-active", value);
-		btn.setAttribute("aria-label", value ? "Mark contact as needed" : "Mark contact as not needed");
-	}
+	if (!btn) return;
+	btn.setAttribute("aria-pressed", String(value));
+	btn.classList.toggle("is-active", value);
+	btn.setAttribute("aria-label", value ? "Mark contact as needed" : "Mark contact as not needed");
 	root.querySelector("#tp-contacts-list")?.querySelectorAll("input").forEach((input) => { input.disabled = value; });
 	const addBtn = root.querySelector("#tp-contact-add-btn");
 	if (addBtn) addBtn.disabled = value;
@@ -977,80 +976,28 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	/* ── Trip Contacts ─────────────────────────────────────────────────── */
 
 	const contactList = root.querySelector("#tp-contacts-list");
-	const contactAddBtn = root.querySelector("#tp-contact-add-btn");
-	const contactDeleteBtn = root.querySelector("#tp-contact-delete-btn");
-	const contactToggleBtn = root.querySelector("#tp-contact-toggle-btn");
-	contactToggleBtn?.addEventListener("click", () => {
-		setContactNotNeeded(root, !getContactNotNeeded(root));
-	});
-	const MAX_CONTACTS = 2;
 	if (contactList) {
 		const contactCount = () => contactList.querySelectorAll("[data-trip-contact]").length;
-		// Keep one primary contact visible at all times. Add/Delete manage the
-		// optional secondary contact.
-		const syncContactButtons = () => {
-			const count = contactCount();
-			contactList.style.display = "flex";
-			if (contactAddBtn) contactAddBtn.disabled = count >= MAX_CONTACTS;
-			if (contactDeleteBtn) contactDeleteBtn.disabled = count <= 1;
-		};
-		const addContactRow = ({ focus = true } = {}) => {
-			if (contactCount() >= MAX_CONTACTS) return;
-			const idx = [1, 2].find(i => !root.querySelector(`#tp-trip${i}-name`));
-			const label = idx === 1 ? "Primary" : "Secondary";
+		const addContactRow = ({ focus = false } = {}) => {
+			if (contactCount() >= 1) return;
 			const row = document.createElement("div");
 			row.className = "rux-trip-panel__contact-row";
 			row.dataset.tripContact = "";
 			row.innerHTML =
 				`<div class="rux-trip-panel__contact-fields">
-					<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-name">${label}</label><input class="rux-input" id="tp-trip${idx}-name" name="tripContact${idx}.name" type="text" /></div>
-					<div class="rux-field"><label class="rux-field__label" for="tp-trip${idx}-phone">Phone</label><input class="rux-input" id="tp-trip${idx}-phone" name="tripContact${idx}.phone" type="tel" /></div>
-				</div>
-				<button type="button" class="rux-trip-panel__contact-select" data-contact-select aria-label="Delete ${label} contact">
-					<span class="rux-icon" aria-hidden="true">delete</span>
-				</button>`;
+					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-name">Name</label><input class="rux-input" id="tp-trip1-name" name="tripContact1.name" type="text" /></div>
+					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-phone">Phone</label><input class="rux-input" id="tp-trip1-phone" name="tripContact1.phone" type="tel" /></div>
+				</div>`;
 			contactList.appendChild(row);
-			syncContactButtons();
-			attachContactAutofill(row.querySelector(`#tp-trip${idx}-name`), {
-				phoneInput: row.querySelector(`#tp-trip${idx}-phone`),
+			contactList.style.display = "flex";
+			attachContactAutofill(row.querySelector("#tp-trip1-name"), {
+				phoneInput: row.querySelector("#tp-trip1-phone"),
 			});
-			if (focus) row.querySelector(`#tp-trip${idx}-name`)?.focus();
+			if (focus) row.querySelector("#tp-trip1-name")?.focus();
 		};
 
-		// Delete arms "select which one" mode instead of guessing — rows
-		// reveal a circle (see .rux-trip-panel__contact-select in
-		// trip-panel.css); clicking one deletes that specific contact and
-		// disarms. Clicking Delete again while armed cancels.
-		let selecting = false;
-		const setSelecting = (on) => {
-			selecting = on;
-			contactList.classList.toggle("is-selecting", on);
-			if (contactDeleteBtn) {
-				contactDeleteBtn.setAttribute("aria-pressed", String(on));
-				contactDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
-				contactDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete a contact");
-			}
-		};
-		const deleteContact = (row) => {
-			if (contactCount() <= 1) return;
-			const hasData = Array.from(row.querySelectorAll("input")).some((el) => el.value);
-			if (hasData && !confirm("Delete this contact?")) return;
-			row.remove();
-			setSelecting(false);
-			syncContactButtons();
-		};
-
-		contactAddBtn?.addEventListener("click", () => addContactRow());
-		contactDeleteBtn?.addEventListener("click", () => setSelecting(!selecting));
-		contactList.addEventListener("click", (e) => {
-			const selectBtn = e.target.closest("[data-contact-select]");
-			if (selectBtn && selecting) deleteContact(selectBtn.closest(".rux-trip-panel__contact-row"));
-		});
-		document.addEventListener("keydown", (e) => {
-			if (e.key === "Escape" && selecting) setSelecting(false);
-		});
-		// trip-db.js's populateTrip fires this per saved contact slot to
-		// create the row a loaded trip's data needs.
+		// Loading/clearing a trip asks for the single permanent row after the
+		// previous row has been removed.
 		root.addEventListener("rux:contact-row-needed", () => addContactRow({ focus: false }));
 
 		addContactRow({ focus: false });
@@ -1059,7 +1006,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	/* ── Documents ────────────────────────────────────────────────────────── */
 
 	const docNewBtn = root.querySelector("#tp-doc-new-btn");
-	const docDeleteBtn = root.querySelector("#tp-doc-delete-btn");
 	const docToggleBtn = root.querySelector("#tp-doc-toggle-btn");
 	docToggleBtn?.addEventListener("click", () => {
 		setItineraryNotNeeded(root, !getItineraryNotNeeded(root));
@@ -1105,12 +1051,9 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		return "description";
 	};
 
-	// The primary button opens the file. The header Delete button
-	// arms "select which one" mode — same recipe as Trip Contacts above —
-	// which reveals this row's trash icon; clicking it deletes that specific
-	// document and disarms. Icon, label, and date live in their own button
-	// (.rux-trip-panel__doc-content) so the trash icon's width/margin can
-	// collapse to true zero when hidden, instead of leaving a stray gap.
+	// The primary button opens the file. Each row owns a hover/focus-revealed
+	// delete action, matching itinerary stop rows, so deletion never requires
+	// a separate header-level selection mode.
 	function createDocRow(doc, { isUpdate = false } = {}) {
 		const displayLabel = DOC_TYPE_LABELS[doc.label] || doc.label;
 		const uploadedDate = formatDocumentDate(doc.created_at);
@@ -1136,20 +1079,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	if (docNewBtn && docFileInput) {
 		let pendingUploadLabel = null;
 		let pendingReplaceRow = null;
-		let docSelecting = false;
-
-		const syncDocButtons = () => {
-			if (docDeleteBtn) docDeleteBtn.disabled = !docList?.querySelector(".rux-trip-panel__doc-row");
-		};
-		const setDocSelecting = (on) => {
-			docSelecting = on;
-			docList?.classList.toggle("is-selecting", on);
-			if (docDeleteBtn) {
-				docDeleteBtn.setAttribute("aria-pressed", String(on));
-				docDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
-				docDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete a document");
-			}
-		};
 		const deleteDoc = async (row) => {
 			const docId = row.dataset.docId;
 			const label = row.dataset.docLabel;
@@ -1157,8 +1086,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			try {
 				await window.RuxDocs.delete(docId);
 				row.remove();
-				setDocSelecting(false);
-				syncDocButtons();
 				if (label === "Itinerary") {
 					// Same event the trip bar's own itinerary shortcut dispatches
 					// on delete — keeps every bus track's bar in sync, since
@@ -1243,7 +1170,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 					.some((row) => row.dataset.docLabel === label);
 				const doc = await window.RuxDocs.upload(tripId, label, file);
 				docList?.prepend(createDocRow(doc, { isUpdate: hasExistingLabel }));
-				syncDocButtons();
 				if (label === "PO") {
 					const poToggle = root.querySelector("#tp-po-received");
 					if (poToggle && !poToggle.checked) {
@@ -1282,14 +1208,12 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			if (!tripId || !doc || tripId !== window.RuxDocs?.tripId?.()) return;
 			if (docList?.querySelector(`[data-doc-id="${doc.id}"]`)) return;
 			docList?.prepend(createDocRow(doc, { isUpdate: true }));
-			syncDocButtons();
 		});
 
 		document.addEventListener("rux:itinerary-deleted", (e) => {
 			const { tripId, docId } = e.detail || {};
 			if (!tripId || !docId || tripId !== window.RuxDocs?.tripId?.()) return;
 			docList?.querySelector(`[data-doc-id="${docId}"]`)?.remove();
-			syncDocButtons();
 		});
 
 		docFileInput.addEventListener("change", () => {
@@ -1352,48 +1276,29 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		docList?.addEventListener("click", (e) => {
 			const selectBtn = e.target.closest("[data-doc-select]");
 			if (selectBtn) {
-				if (docSelecting) deleteDoc(selectBtn.closest(".rux-trip-panel__doc-row"));
+				deleteDoc(selectBtn.closest(".rux-trip-panel__doc-row"));
 				return;
 			}
 			const row = e.target.closest("[data-doc-open]")?.closest(".rux-trip-panel__doc-row");
 			if (row) openDocRow(row);
 		});
 
-		docDeleteBtn?.addEventListener("click", () => setDocSelecting(!docSelecting));
-		document.addEventListener("keydown", (e) => {
-			if (e.key === "Escape" && docSelecting) setDocSelecting(false);
-		});
 	}
 
 	root.addEventListener("rux:trip-cleared", () => {
 		if (docList) {
 			docList.querySelectorAll(".rux-trip-panel__doc-row").forEach((row) => row.remove());
-			docList.classList.remove("is-selecting");
-		}
-		if (docDeleteBtn) {
-			docDeleteBtn.disabled = true;
-			docDeleteBtn.setAttribute("aria-pressed", "false");
-			docDeleteBtn.querySelector(".rux-icon").textContent = "delete";
-			docDeleteBtn.setAttribute("aria-label", "Delete a document");
 		}
 		if (contactList) {
 			contactList.querySelectorAll("[data-trip-contact]").forEach(r => r.remove());
 			root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
 			contactList.classList.remove("is-selecting");
-			if (contactAddBtn) contactAddBtn.disabled = false;
-			if (contactDeleteBtn) {
-				contactDeleteBtn.disabled = true;
-				contactDeleteBtn.setAttribute("aria-pressed", "false");
-				contactDeleteBtn.querySelector(".rux-icon").textContent = "delete";
-				contactDeleteBtn.setAttribute("aria-label", "Delete a contact");
-			}
 		}
 	});
 
 	root.addEventListener("rux:documents-loaded", (event) => {
 		if (!docList) return;
 		docList.querySelectorAll(".rux-trip-panel__doc-row").forEach((row) => row.remove());
-		docList.classList.remove("is-selecting");
 		// Documents arrive oldest-first (created_at ascending); a doc is an
 		// "update" if an earlier document already used the same label — e.g.
 		// a second Itinerary upload. Walking newest-first and appending each
@@ -1407,12 +1312,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		docs.slice().reverse().forEach((doc) => {
 			docList.appendChild(createDocRow(doc, { isUpdate: doc.created_at !== earliestByLabel.get(doc.label) }));
 		});
-		if (docDeleteBtn) {
-			docDeleteBtn.disabled = !docList.querySelector(".rux-trip-panel__doc-row");
-			docDeleteBtn.setAttribute("aria-pressed", "false");
-			docDeleteBtn.querySelector(".rux-icon").textContent = "delete";
-			docDeleteBtn.setAttribute("aria-label", "Delete a document");
-		}
 	});
 
 	/* ── Bus groups ───────────────────────────────────────────────────────── */

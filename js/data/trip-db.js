@@ -722,15 +722,10 @@ import {
 		const contactList = root.querySelector("#tp-contacts-list");
 		contactList?.querySelectorAll("[data-trip-contact]").forEach((row) => row.remove());
 		root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
-		for (const i of [1, 2]) {
-			if (trip[`trip_contact_${i}_name`] || trip[`trip_contact_${i}_phone`]) {
-				if (!root.querySelector(`#tp-trip${i}-name`)) root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
-				setVal(root, `tp-trip${i}-name`,  trip[`trip_contact_${i}_name`]);
-				setVal(root, `tp-trip${i}-phone`, trip[`trip_contact_${i}_phone`]);
-				const tripContactInput = root.querySelector(`#tp-trip${i}-name`);
-				if (tripContactInput) tripContactInput.dataset.contactId = trip[`trip_contact_${i}_id`] || "";
-			}
-		}
+		setVal(root, "tp-trip1-name", trip.trip_contact_1_name);
+		setVal(root, "tp-trip1-phone", trip.trip_contact_1_phone);
+		const tripContactInput = root.querySelector("#tp-trip1-name");
+		if (tripContactInput) tripContactInput.dataset.contactId = trip.trip_contact_1_id || "";
 		window.TripPanel?.setContactNotNeeded(root, !!trip.contact_not_needed);
 		window.TripPanel?.setItineraryNotNeeded(root, !!trip.itinerary_not_needed);
 		setVal(root, "tp-notes",       trip.notes);
@@ -1792,6 +1787,39 @@ export async function reassignBus(assignmentId, newBusId) {
 		.update({ bus_id: newBusId })
 		.eq("id", assignmentId);
 	if (error) throw error;
+
+	// The scheduler refreshes after this mutation, but Contact Info may still
+	// be reading the editor's currently loaded trip (which intentionally wins
+	// over the selected bar). Patch both cached trip sources immediately so a
+	// message opened before/requiring no editor reload shows the new bus.
+	const { data: newBus, error: newBusError } = await supabase
+		.from("buses")
+		.select("id, number")
+		.eq("id", newBusId)
+		.maybeSingle();
+	if (newBusError) {
+		console.warn("Reassigned bus number could not be refreshed:", newBusError);
+	}
+	const patchCachedTrip = (trip) => {
+		if (!trip || String(trip.id) !== String(previous.trip_id)) return;
+		for (const collectionName of ["trip_assignments", "assignments"]) {
+			const assignments = trip[collectionName];
+			if (!Array.isArray(assignments)) continue;
+			const assignment = assignments.find(
+				(item) => String(item.id ?? item.assignmentId) === String(assignmentId),
+			);
+			if (!assignment) continue;
+			assignment.bus_id = newBusId;
+			assignment.busId = newBusId;
+			if (newBus) {
+				assignment.buses = { ...(assignment.buses || {}), ...newBus };
+				assignment.bus = { ...(assignment.bus || {}), ...newBus };
+			}
+		}
+	};
+	patchCachedTrip(currentLoadedTrip);
+	patchCachedTrip(selectedBarTrip);
+
 	try {
 		const [snapshot, busesResult] = await Promise.all([
 			fetchTripHistorySnapshot(previous.trip_id),
@@ -2140,13 +2168,21 @@ export function setSelectedTrip(trip) {
 // panel's own root — looked up from the document, same as the driver-tab
 // footer buttons it sits alongside.
 function syncContactInfoBtn() {
-	const btn = document.getElementById("rp-contact-info-btn");
-	if (!btn) return;
+	const contactBtn = document.getElementById("rp-contact-info-btn");
+	const reminderBtn = document.getElementById("rp-trip-reminder-btn");
 	const available = !!activeContactTrip();
-	btn.disabled = !available;
-	btn.title = available
-		? "Copy driver contact info for the client"
-		: "Select a trip first";
+	if (contactBtn) {
+		contactBtn.disabled = !available;
+		contactBtn.title = available
+			? "Copy driver contact info for the client"
+			: "Select a trip first";
+	}
+	if (reminderBtn) {
+		reminderBtn.disabled = !available;
+		reminderBtn.title = available
+			? "Create a reminder for the selected trip"
+			: "Select a trip first";
+	}
 }
 
 // One contact per bus for the client message: the active "driver" role, or
@@ -2211,11 +2247,65 @@ function buildContactInfoMessage(trip) {
 	return `Hello,\n\n${intro}\n\n${body}\n\nThank you!`;
 }
 
+function formatReminderTime(value) {
+	if (!value) return "[Add spot time]";
+	const match = String(value).trim().match(/^(\d{1,2}):(\d{2})/);
+	if (!match) return String(value);
+	const hour = Number(match[1]);
+	const minute = match[2];
+	if (!Number.isFinite(hour) || hour > 23) return String(value);
+	const period = hour >= 12 ? "PM" : "AM";
+	const displayHour = hour % 12 || 12;
+	return `${displayHour}:${minute} ${period}`;
+}
+
+function buildTripReminderMessage(trip) {
+	const assignments = Array.isArray(trip.trip_assignments)
+		? trip.trip_assignments
+		: (Array.isArray(trip.assignments) ? trip.assignments : []);
+	const outboundStops = (trip.trip_stops || []).filter(
+		(stop) => (stop.leg || "outbound") === "outbound",
+	);
+	const pickup = outboundStops.find((stop) => stop.type === "pickup");
+	const dateText = formatContactInfoDate(trip.start_date) || "[Add trip date]";
+	const spotTime = formatReminderTime(pickup?.spot || trip.spot_time);
+	const contacts = assignments
+		.filter((assignment) => (assignment.leg || "outbound") === "outbound")
+		.map((assignment) => {
+			const driver = primaryContactDriver(assignment);
+			return {
+				name: driver?.drivers?.name || driver?.name || "[Add name]",
+				phone: driver?.drivers?.phone || driver?.phone || "[Add phone]",
+				bus: assignment.buses?.number ?? assignment.bus?.number ?? "[Add bus]",
+			};
+		});
+
+	if (!contacts.length) {
+		contacts.push({
+			name: "[Add name]",
+			phone: "[Add phone]",
+			bus: "[Add bus]",
+		});
+	}
+
+	const contactLines = contacts
+		.map((contact) =>
+			`Name: ${contact.name}\nPhone: ${contact.phone}\nBus: ${contact.bus}`,
+		)
+		.join("\n\n");
+
+	return `Trip reminder — ${dateText}\n`
+		+ `Spot time: ${spotTime}\n\n`
+		+ `${contactLines}\n\n`
+		+ "Notes: [Add notes or remove this line]";
+}
+
 export function initTripDB(root, itinerary) {
 	const saveBtn   = root.querySelector("#tp-btn-save");
 	const clearBtn  = root.querySelector("#tp-btn-clear");
 	const deleteBtn = root.querySelector("#tp-btn-delete");
 	const contactInfoBtn = document.getElementById("rp-contact-info-btn");
+	const tripReminderBtn = document.getElementById("rp-trip-reminder-btn");
 	syncContactInfoBtn();
 	const manifestBtn = root.querySelector("#tp-view-manifest-btn");
 	const estimatedMilesInput = root.querySelector("#tp-est-mi");
@@ -2302,6 +2392,18 @@ export function initTripDB(root, itinerary) {
 			return;
 		}
 		window.ContactInfoModal?.open(message);
+	});
+	tripReminderBtn?.addEventListener("click", () => {
+		const trip = activeContactTrip();
+		if (!trip) {
+			window.Rux?.toast?.("Select a trip first");
+			return;
+		}
+		window.ContactInfoModal?.open(buildTripReminderMessage(trip), {
+			title: "Trip Reminder",
+			previewLabel: "Editable trip reminder message preview",
+			editable: true,
+		});
 	});
 	manifestBtn?.addEventListener("click", () => {
 		if (window.TripView?.get() === "manifest") {

@@ -69,9 +69,18 @@
 		return copied;
 	}
 
-	function open(message) {
+	function open(message, {
+		title = "Contact Info",
+		previewLabel = "Contact info message preview",
+		editable = false,
+	} = {}) {
 		ensureModal();
-		modal.querySelector("[data-contact-info-preview]").value = message;
+		const titleEl = modal.querySelector("#contact-info-modal-title");
+		const preview = modal.querySelector("[data-contact-info-preview]");
+		titleEl.textContent = title;
+		preview.setAttribute("aria-label", previewLabel);
+		preview.readOnly = !editable;
+		preview.value = message;
 		window.Rux?.openModal?.(modal);
 	}
 

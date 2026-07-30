@@ -32,7 +32,7 @@
 	display: flex;
 	align-items: flex-end;
 	gap: var(--rux-tabs-contained-gap);
-	padding: 0 var(--rux-tabs-contained-padding);
+	padding: var(--rux-tabs-contained-padding);
 	background: var(--rux-tabs-attached-bg);
 	border: var(--rux-tabs-attached-border);
 	border-bottom: 0;
@@ -149,12 +149,14 @@
 .rux-panel__tabs.rux-tabs--contained {
 	margin: var(--rux-panel-nav-padding);
 	padding: var(--rux-tabs-contained-padding);
+
 }
 
 .rux-panel__tabs.rux-tabs--attached {
 	margin: var(--rux-panel-nav-padding);
 	margin-bottom: 0;
 	padding: 0;
+
 }
 
 .rux-panel__nav--attached {

@@ -99,7 +99,7 @@
 	transition: none;
 }
 .rux-trip-panel__pane {
-	padding-block: 0;
+	padding-block: var(--rux-panel-padding-block);
 }
 .rux-trip-panel__pane[hidden] {
 	display: none;
@@ -167,6 +167,13 @@
 	flex: 1;
 	min-width: 0;
 }
+
+.rux-trip-panel__contacts-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-4);
+}
+
 /* Hidden by default — the header Delete button arms "select which one"
    mode (#tp-contacts-list.is-selecting), which reveals this trash icon on
    every row. Clicking it deletes that specific contact immediately and
@@ -654,13 +661,20 @@
 	gap: var(--rux-control-content-gap);
 }
 .rux-trip-panel__doc-empty {
+	box-sizing: border-box;
 	display: flex;
-	min-height: var(--rux-field-height);
+	width: 100%;
+	min-height: var(--rux-input-height);
 	align-items: center;
 	gap: var(--rux-control-content-gap);
 	padding-inline: var(--rux-control-padding-inline);
-	color: var(--rux-fg-muted);
+	background-color: var(--rux-input-disabled-bg);
+	color: var(--rux-input-disabled-fg);
+	border: var(--rux-input-border);
+	border-color: var(--rux-input-disabled-border);
+	border-radius: var(--rux-input-border-radius);
 	font-size: var(--rux-text-sm);
+	cursor: not-allowed;
 }
 .rux-trip-panel__doc-list:has(.rux-trip-panel__doc-row) > .rux-trip-panel__doc-empty {
 	display: none;
@@ -720,11 +734,9 @@
 	font-variant-numeric: tabular-nums;
 	color: var(--rux-fg-on-accent-muted);
 }
-/* Hidden by default — header Delete arms select mode (#tp-doc-list.is-selecting),
-   revealing this trash icon on every row; width + margin-left animate
-   together so no gap is left when hidden (same recipe as
-   .rux-trip-panel__contact-select above). Clicking it deletes that
-   specific document immediately and disarms the mode. */
+/* Each document owns its delete action. It stays collapsed until its row is
+   hovered or the action receives keyboard focus; width and margin animate
+   together so the file button shrinks to make room without leaving a gap. */
 .rux-trip-panel__doc-select {
 	display: flex;
 	align-items: center;
@@ -749,11 +761,30 @@
 .rux-trip-panel__doc-select:hover {
 	color: var(--rux-danger-hover);
 }
-#tp-doc-list.is-selecting .rux-trip-panel__doc-select {
+
+.rux-trip-panel__doc-select:focus-visible {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
+}
+
+@media (hover: hover) {
+	.rux-trip-panel__doc-row:hover .rux-trip-panel__doc-select {
+		width: var(--rux-field-height);
+		margin-left: var(--rux-space-2);
+		opacity: 1;
+		pointer-events: auto;
+	}
+}
+
+@media (hover: none) {
+	.rux-trip-panel__doc-select {
+		width: var(--rux-field-height);
+		margin-left: var(--rux-space-2);
+		opacity: 1;
+		pointer-events: auto;
+	}
 }
 
 /* ==========================================================================

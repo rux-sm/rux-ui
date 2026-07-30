@@ -66,6 +66,7 @@
 	--rux-trip-bar-compact-padding: var(--rux-space-2);
 	--rux-trip-bar-actions-bg: transparent;
 	--rux-trip-bar-bus-label-bg: var(--rux-white);
+	--rux-trip-bar-meta-bg:  color-mix(in oklch, var(--rux-neutral) 20%, transparent);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
@@ -735,7 +736,7 @@
 	justify-content: center;
 	align-self: stretch;
 	gap: var(--rux-trip-bar-tight-gap);
-	background: var(--rux-button-default-background);
+	background: var(--rux-trip-bar-meta-bg);
 	height: 20px;
 	padding: 0;
 	border-radius: 0;
@@ -790,7 +791,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: var(--rux-space-1);
-	background: var(--rux-button-default-background);
+	background: var(--rux-trip-bar-meta-bg);
 	padding: 0 var(--rux-space-1);
 	height: 20px;
 	border-radius: 0;
