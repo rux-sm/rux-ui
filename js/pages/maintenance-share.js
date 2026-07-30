@@ -80,6 +80,27 @@ function operationalTimes(trip, leg) {
 	};
 }
 
+function timeLine(times, showDepart, showArrive) {
+	const line = el("small", "maintenance-trip__times");
+	if (showDepart) {
+		const depart = el("span", "maintenance-trip__time maintenance-trip__time--depart");
+		depart.append(
+			document.createTextNode("D "),
+			el("span", "maintenance-trip__time-value", time(times.depart)),
+		);
+		line.append(depart);
+	}
+	if (showArrive) {
+		const arrive = el("span", "maintenance-trip__time maintenance-trip__time--arrive");
+		arrive.append(
+			document.createTextNode("A "),
+			el("span", "maintenance-trip__time-value", time(times.arrive)),
+		);
+		line.append(arrive);
+	}
+	return line;
+}
+
 function tripBar(item, start, end) {
 	const visibleStart = item.start < start ? start : item.start;
 	const visibleEnd = item.end > end ? end : item.end;
@@ -87,19 +108,21 @@ function tripBar(item, start, end) {
 	bar.style.gridColumn = `${offset(visibleStart, start) + 1} / span ${Math.max(1, offset(visibleEnd, visibleStart) + 1)}`;
 	bar.style.gridRow = String(item.lane + 1);
 	if (item.trip.tripBarColor) bar.dataset.tripBarColor = item.trip.tripBarColor;
-	if (item.start < start) bar.classList.add("is-clipped-start");
-	if (item.end > end) bar.classList.add("is-clipped-end");
+	if (item.trip.tripType === "one_way") bar.classList.add("maintenance-trip--one-way");
+	if (!item.trip.confirmed) bar.classList.add("maintenance-trip--unconfirmed");
+	const clippedStart = item.start < start;
+	const clippedEnd = item.end > end;
+	if (clippedStart) bar.classList.add("is-clipped-start");
+	if (clippedEnd) bar.classList.add("is-clipped-end");
 	const times = operationalTimes(item.trip, item.leg);
 	bar.title = `${item.trip.destination || "Trip"} · ${item.trip.customer || ""} · Yard Depart ${time(times.depart)} · Yard Arrive ${time(times.arrive)}`;
 	bar.append(
 		el("strong", "", item.trip.destination || "Trip"),
 		el("span", "", item.trip.customer || "—"),
-		el(
-			"small",
-			"",
-			`${item.leg === "return" ? "Return · " : ""}Yard Depart ${time(times.depart)} · Yard Arrive ${time(times.arrive)}`,
-		),
 	);
+	const showDepart = !clippedStart;
+	const showArrive = !clippedEnd;
+	if (showDepart || showArrive) bar.append(timeLine(times, showDepart, showArrive));
 	return bar;
 }
 
@@ -117,6 +140,14 @@ function render(data) {
 
 	const scroll = el("div", "maintenance-schedule__scroll");
 	const schedule = el("section", "maintenance-schedule");
+	const todayOffset = offset(new Date(), start);
+	if (todayOffset >= 0 && todayOffset < 14) {
+		schedule.classList.add("has-today");
+		schedule.style.setProperty(
+			"--maintenance-today-position",
+			`${((todayOffset + 0.5) / 14) * 100}%`,
+		);
+	}
 	const weeks = el("div", "maintenance-schedule__weeks");
 	weeks.append(el("span", "", "Bus"), el("span", "", `Current Week · ${range(start, addDays(start, 6))}`), el("span", "", `Next Week · ${range(addDays(start, 7), end)}`));
 	schedule.append(weeks);

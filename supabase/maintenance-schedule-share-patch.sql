@@ -54,6 +54,7 @@ begin
 		select jsonb_build_object(
 			'id', t.id, 'tripRef', t.trip_ref, 'tripType', t.trip_type,
 			'destination', t.destination, 'customer', t.customer,
+			'confirmed', coalesce(t.confirmed, false),
 			'startDate', t.start_date, 'endDate', t.end_date,
 			'returnStartDate', t.return_start_date, 'returnEndDate', t.return_end_date,
 			'departureTime', t.departure_time, 'returnTime', t.return_time,
