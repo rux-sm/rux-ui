@@ -33,6 +33,7 @@
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=5" />
 		<link rel="stylesheet" href="./css/features/contact-info.css?v=1" />
 		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
+		<link rel="stylesheet" href="./css/features/team-chat.css?v=1" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=72" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=3" />
@@ -146,6 +147,15 @@
 						hidden
 					></div>
 					<button
+						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__chat-btn"
+						type="button"
+						id="team-chat-btn"
+						aria-label="Team chat"
+					>
+						<span class="rux-icon" aria-hidden="true">chat</span>
+						<span class="rux-app-header__badge-dot" id="team-chat-badge" hidden></span>
+					</button>
+					<button
 						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__notif-btn"
 						type="button"
 						id="notifications-menu-btn"
@@ -154,7 +164,7 @@
 						aria-expanded="false"
 					>
 						<span class="rux-icon" aria-hidden="true">notifications</span>
-						<span class="rux-app-header__notif-badge" id="notifications-badge" hidden></span>
+						<span class="rux-app-header__badge-dot" id="notifications-badge" hidden></span>
 					</button>
 					<button
 						class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
@@ -6146,8 +6156,10 @@
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
 		<script type="module" src="./js/panels/driver-week-info.js?v=11"></script>
+		<script type="module" src="./js/panels/maintenance-link.js?v=2"></script>
 		<script type="module" src="./js/panels/contact-info-modal.js?v=2"></script>
 		<script type="module" src="./js/panels/notifications-panel.js?v=1"></script>
+		<script type="module" src="./js/panels/team-chat.js?v=1"></script>
 		<script type="module" src="./js/panels/components-panel.js?v=39"></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
@@ -6181,6 +6193,11 @@
 				touchProfileActivity,
 				isProfileStale,
 			} from "./js/core/profile.js";
+			import {
+				profileAvatarEl,
+				avatarColorValue,
+				driverInitials,
+			} from "./js/core/avatar.js";
 
 			// Load requirements before trip panel is used (window.appRequirements cache)
 			if (!window.appRequirements)
@@ -6271,39 +6288,6 @@
 				span.setAttribute("aria-hidden", "true");
 				span.textContent = name;
 				return span;
-			}
-
-			// Preset background colors for the initials avatar (no freeform
-			// picker) — same palette/tokens as the Trip Bar Color swatches, so
-			// avatars stay visually consistent with the rest of the app.
-			const AVATAR_COLOR_TOKENS = {
-				cyan: "--rux-trip-color-cyan",
-				green: "--rux-trip-color-green",
-				purple: "--rux-trip-color-purple",
-				yellow: "--rux-trip-color-yellow",
-				orange: "--rux-trip-color-orange",
-				pink: "--rux-trip-color-pink",
-			};
-
-			function avatarColorValue(key) {
-				const token = AVATAR_COLOR_TOKENS[key];
-				return token ? `var(${token})` : "";
-			}
-
-			function profileAvatarEl(profile, extraClass = "") {
-				const el = document.createElement("span");
-				el.className = extraClass ? `rux-avatar ${extraClass}` : "rux-avatar";
-				const url = profile?.photo_path ? getProfilePhotoUrl(profile.photo_path) : null;
-				if (url) {
-					const img = document.createElement("img");
-					img.src = url;
-					img.alt = "";
-					el.appendChild(img);
-				} else {
-					el.style.backgroundColor = avatarColorValue(profile?.avatar_color);
-					el.textContent = driverInitials(profile?.display_name || "");
-				}
-				return el;
 			}
 
 			function renderHeaderAvatar(profile) {
@@ -9231,11 +9215,6 @@
 				return dot;
 			}
 
-			function driverInitials(name) {
-				const parts = (name || "").split(" ");
-				return ((parts[0]?.[0] || "") + (parts[1]?.[0] || "")).toUpperCase() || "?";
-			}
-
 			// Same 3-month warning window as the Drivers roster's expiry columns
 			// (licExpiryClass in driver-panel.js) — kept in sync by hand since the
 			// two live in separate modules.
@@ -10572,6 +10551,14 @@
 					</div>
 				</div>
 				<div class="rux-modal__footer">
+					<button
+						class="rux-button rux-button--outline"
+						id="ps-maintenance-link"
+						type="button"
+					>
+						<span class="rux-icon" aria-hidden="true">link</span>
+						<span class="rux-btn-label">Open Maintenance</span>
+					</button>
 					<button
 						class="rux-button rux-button--default"
 						data-rux-dismiss

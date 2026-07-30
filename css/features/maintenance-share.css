@@ -1,0 +1,41 @@
+.maintenance-share-page { margin: 0; background: var(--rux-surface-canvas); color: var(--rux-fg); }
+.maintenance-share-header { position: sticky; z-index: 10; top: 0; }
+.maintenance-share-header__title { color: var(--rux-heading); font-size: var(--rux-heading-panel-size); font-weight: var(--rux-heading-panel-weight); line-height: var(--rux-leading-snug); }
+.maintenance-share { padding: var(--rux-space-4); }
+.maintenance-share__status :is(h1, p) { margin: 0; }
+.maintenance-share__status { display: grid; place-items: center; gap: var(--rux-space-3); min-height: 50vh; text-align: center; }
+.maintenance-share__status .rux-icon { color: var(--rux-fg-muted); font-size: 40px; }
+.maintenance-schedule__scroll { overflow-x: auto; border: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule { min-width: 1180px; background: var(--rux-surface-card); }
+.maintenance-schedule__weeks { display: grid; grid-template-columns: 112px repeat(2, 1fr); background: var(--rux-panel-nav-background); border-bottom: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__weeks span { padding: var(--rux-space-2); text-align: center; font-weight: var(--rux-weight-bold); }
+.maintenance-schedule__weeks span + span { border-left: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__days { display: grid; grid-template-columns: 112px repeat(14, 1fr); border-bottom: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__days span { display: grid; place-items: center; height: 36px; border-left: var(--rux-border-width) solid var(--rux-divider); color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
+.maintenance-schedule__days span:first-child { border-left: 0; }
+.maintenance-schedule__days .is-today { background: var(--rux-button-selected-bg); color: var(--rux-button-selected-fg); }
+.maintenance-schedule__row { display: grid; grid-template-columns: 112px 1fr; border-bottom: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__row > strong { display: grid; place-items: center; min-height: calc(var(--lanes) * 72px + var(--rux-space-2)); padding: var(--rux-space-2); font-size: var(--rux-text-lg); }
+.maintenance-schedule__track { display: grid; grid-template-columns: repeat(14, 1fr); grid-auto-rows: 68px; gap: var(--rux-space-1) 0; padding-block: var(--rux-space-1); background-image: repeating-linear-gradient(to right, transparent 0, transparent calc((100% / 14) - 1px), var(--rux-divider) calc((100% / 14) - 1px), var(--rux-divider) calc(100% / 14)); }
+.maintenance-trip { z-index: 1; display: grid; min-width: 0; margin-inline: 2px; padding: var(--rux-space-1) var(--rux-space-2); overflow: hidden; background: var(--rux-button-accent-background); color: var(--rux-button-accent-text); border: var(--rux-button-accent-border); font-size: 12px; }
+.maintenance-trip > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.maintenance-trip :is(strong, span, small) { font-size: inherit; }
+.maintenance-trip small { align-self: end; font-weight: var(--rux-weight-bold); }
+.maintenance-trip.is-clipped-start { border-left-style: dashed; }
+.maintenance-trip.is-clipped-end { border-right-style: dashed; }
+.maintenance-trip[data-trip-bar-color="cyan"] { --rux-accent: var(--rux-trip-color-cyan); }
+.maintenance-trip[data-trip-bar-color="green"] { --rux-accent: var(--rux-trip-color-green); }
+.maintenance-trip[data-trip-bar-color="purple"] { --rux-accent: var(--rux-trip-color-purple); }
+.maintenance-trip[data-trip-bar-color="yellow"] { --rux-accent: var(--rux-trip-color-yellow); }
+.maintenance-trip[data-trip-bar-color="orange"] { --rux-accent: var(--rux-trip-color-orange); }
+.maintenance-trip[data-trip-bar-color="pink"] { --rux-accent: var(--rux-trip-color-pink); }
+@media (max-width: 640px) { .maintenance-share { padding: var(--rux-space-3); } }
+@media (max-width: 500px) {
+	.maintenance-share-header.rux-app-header {
+		visibility: visible;
+		height: var(--rux-app-header-height);
+		overflow: visible;
+		padding: var(--rux-app-header-padding);
+		border-bottom: var(--rux-app-header-border);
+	}
+}

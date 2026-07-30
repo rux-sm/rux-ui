@@ -405,7 +405,9 @@
 	   The opener is overlaid above it as the only visible control. */
 	background: var(--rux-panel-bg);
 	border: var(--rux-panel-border-width) solid var(--rux-border);
-	border-radius: var(--rux-panel-radius);
+	/* The app header already draws its own bottom border directly above —
+	   a top border here would double that line right at the seam. */
+	border-block-start: 0;
 	pointer-events: none;
 }
 

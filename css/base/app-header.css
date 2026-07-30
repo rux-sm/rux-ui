@@ -85,18 +85,20 @@
 	border-radius: var(--rux-radius-full);
 }
 
-.rux-app-header__notif-btn {
+.rux-app-header__notif-btn,
+.rux-app-header__chat-btn {
 	position: relative;
 }
 
-.rux-app-header__notif-badge {
+/* Shared unread-indicator dot for header icon buttons (notifications, team
+   chat). Deliberately its own size, not --rux-status-dot-size (6px) — that
+   token is shared with small inline dots elsewhere (priority, driver
+   status) and this needs to read clearly at a glance against a full icon
+   button, not just as a subtle inline marker. */
+.rux-app-header__badge-dot {
 	position: absolute;
 	top: 4px;
 	right: 4px;
-	/* Deliberately its own size, not --rux-status-dot-size (6px) — that
-	   token is shared with small inline dots elsewhere (priority, driver
-	   status) and this needs to read clearly at a glance against a full
-	   icon button, not just as a subtle inline marker. */
 	width: 10px;
 	height: 10px;
 	background: var(--rux-warning);
@@ -104,7 +106,7 @@
 	border-radius: var(--rux-radius-full);
 }
 
-.rux-app-header__notif-badge[hidden] {
+.rux-app-header__badge-dot[hidden] {
 	display: none;
 }
 

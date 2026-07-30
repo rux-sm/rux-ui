@@ -396,8 +396,8 @@
 	--rux-panel-bg:            var(--rux-surface-panel);
 	--rux-panel-fg:            var(--rux-fg);
 	--rux-panel-border-width:  var(--rux-border-width);
-	--rux-panel-border-inline: none;
-	--rux-panel-border-block:  var(--rux-panel-border-width) solid transparent;
+	--rux-panel-border-inline: var(--rux-panel-border-width) solid var(--rux-border);
+	--rux-panel-border-block:  none;
 	--rux-panel-radius: var(--rux-radius-0);
 
 	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */

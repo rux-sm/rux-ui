@@ -1,0 +1,87 @@
+/* ==========================================================================
+   TEAM CHAT WINDOW
+   Single shared channel all dispatchers can see. Floating/draggable/
+   resizable shell from css/base/floating-window.css (same recipe as the
+   document viewer and trip manifest) — this file only styles content
+   that's unique to chat: the message list, rows, and the input row.
+   ========================================================================== */
+
+.rux-team-chat-window {
+	top: 15%;
+	right: var(--rux-space-5);
+	width: min(23rem, calc(100vw - var(--rux-space-4) * 2));
+	height: min(32rem, calc(100vh - var(--rux-space-4) * 2));
+	min-width: 280px;
+	min-height: 320px;
+	max-width: calc(100vw - var(--rux-space-4));
+	max-height: calc(100vh - var(--rux-space-4));
+}
+
+.rux-team-chat__messages {
+	flex: 1;
+	overflow-y: auto;
+	min-height: 0;
+	padding: var(--rux-space-4) var(--rux-space-5);
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+
+.rux-team-chat__empty {
+	margin: auto 0;
+	color: var(--rux-text-tertiary);
+	font-size: var(--rux-text-200);
+	text-align: center;
+}
+
+.rux-team-chat__message {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
+}
+
+.rux-team-chat__message .rux-avatar {
+	flex: none;
+}
+
+.rux-team-chat__message-body {
+	min-width: 0;
+}
+
+.rux-team-chat__message-meta {
+	display: flex;
+	align-items: baseline;
+	gap: var(--rux-space-2);
+}
+
+.rux-team-chat__message-name {
+	font-size: var(--rux-text-100);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-text-primary);
+}
+
+.rux-team-chat__message-time {
+	color: var(--rux-text-tertiary);
+	font-size: var(--rux-text-100);
+}
+
+.rux-team-chat__message-text {
+	margin: var(--rux-space-0-5) 0 0;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-200);
+	line-height: 1.4;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+/* .rux-card__footer (already on the <footer>) supplies padding/background/
+   border — this just makes the form itself a flex row filling that footer. */
+.rux-team-chat__form {
+	display: flex;
+	width: 100%;
+	gap: var(--rux-space-2);
+}
+
+.rux-team-chat__input {
+	flex: 1;
+}
