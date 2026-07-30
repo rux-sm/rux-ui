@@ -4,8 +4,13 @@ const button = document.getElementById("ps-maintenance-link");
 
 async function copyText(value) {
 	if (navigator.clipboard?.writeText && window.isSecureContext) {
-		await navigator.clipboard.writeText(value);
-		return true;
+		try {
+			await navigator.clipboard.writeText(value);
+			return true;
+		} catch (_) {
+			// Clipboard permission can be denied even in a secure context.
+			// Continue to the selection-based fallback without failing open.
+		}
 	}
 	const input = document.createElement("textarea");
 	input.value = value;
@@ -31,7 +36,11 @@ button?.addEventListener("click", async () => {
 		const url = new URL("./m.html", location.href);
 		url.searchParams.set("s", result.data.token);
 		if (maintenanceWindow) maintenanceWindow.location.replace(url.href);
-		const copied = await copyText(url.href);
+		const copied = await copyText(url.href).catch(() => false);
+		if (!maintenanceWindow) {
+			window.location.assign(url.href);
+			return;
+		}
 		if (label) label.textContent = copied ? "Opened + Copied" : "Schedule Opened";
 	} catch (error) {
 		console.error("Could not copy maintenance link:", error);
