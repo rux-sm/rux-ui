@@ -58,6 +58,17 @@ begin
 			'returnStartDate', t.return_start_date, 'returnEndDate', t.return_end_date,
 			'departureTime', t.departure_time, 'returnTime', t.return_time,
 			'tripBarColor', t.trip_bar_color, 'tripReqs', t.trip_reqs,
+			'stops', coalesce((
+				select jsonb_agg(jsonb_build_object(
+					'type', stop.type,
+					'leg', coalesce(stop.leg, 'outbound'),
+					'position', stop.position,
+					'departPrev', stop.depart_prev,
+					'arrive', stop.arrive
+				) order by stop.position)
+				from public.trip_stops stop
+				where stop.trip_id = t.id
+			), '[]'::jsonb),
 			'assignments', coalesce((
 				select jsonb_agg(jsonb_build_object(
 					'id', a.id, 'leg', coalesce(a.leg, 'outbound'),

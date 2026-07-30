@@ -67,6 +67,19 @@ function withLanes(items) {
 	});
 }
 
+function operationalTimes(trip, leg) {
+	const allStops = Array.isArray(trip.stops) ? trip.stops : [];
+	const legStops = allStops
+		.filter((stop) => (stop.leg || "outbound") === (leg || "outbound"))
+		.sort((a, b) => Number(a.position || 0) - Number(b.position || 0));
+	const pickup = legStops.find((stop) => stop.type === "pickup");
+	const returnStop = [...legStops].reverse().find((stop) => stop.type === "return");
+	return {
+		depart: pickup?.departPrev || trip.departureTime,
+		arrive: returnStop?.arrive || trip.returnTime,
+	};
+}
+
 function tripBar(item, start, end) {
 	const visibleStart = item.start < start ? start : item.start;
 	const visibleEnd = item.end > end ? end : item.end;
@@ -76,14 +89,15 @@ function tripBar(item, start, end) {
 	if (item.trip.tripBarColor) bar.dataset.tripBarColor = item.trip.tripBarColor;
 	if (item.start < start) bar.classList.add("is-clipped-start");
 	if (item.end > end) bar.classList.add("is-clipped-end");
-	bar.title = `${item.trip.destination || "Trip"} · ${item.trip.customer || ""} · Yard Depart ${time(item.trip.departureTime)} · Yard Arrive ${time(item.trip.returnTime)}`;
+	const times = operationalTimes(item.trip, item.leg);
+	bar.title = `${item.trip.destination || "Trip"} · ${item.trip.customer || ""} · Yard Depart ${time(times.depart)} · Yard Arrive ${time(times.arrive)}`;
 	bar.append(
 		el("strong", "", item.trip.destination || "Trip"),
 		el("span", "", item.trip.customer || "—"),
 		el(
 			"small",
 			"",
-			`${item.leg === "return" ? "Return · " : ""}Yard Depart ${time(item.trip.departureTime)} · Yard Arrive ${time(item.trip.returnTime)}`,
+			`${item.leg === "return" ? "Return · " : ""}Yard Depart ${time(times.depart)} · Yard Arrive ${time(times.arrive)}`,
 		),
 	);
 	return bar;
