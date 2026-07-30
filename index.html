@@ -13,9 +13,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=47" />
+		<link rel="stylesheet" href="./css/tokens.css?v=48" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=96" />
+		<link rel="stylesheet" href="./css/components.css?v=101" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -23,7 +23,7 @@
 		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
 		<link rel="stylesheet" href="./css/features/comp-settings-app.css?v=2" />
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=1" />
-		<link rel="stylesheet" href="./css/features/comp-components-app.css?v=7" />
+		<link rel="stylesheet" href="./css/features/comp-components-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/flip-seven.css?v=17" />
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
@@ -146,7 +146,7 @@
 						hidden
 					></div>
 					<button
-						class="rux-button rux-button--ghost rux-button--icon rux-app-header__notif-btn"
+						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__notif-btn"
 						type="button"
 						id="notifications-menu-btn"
 						aria-label="Notifications"
@@ -579,7 +579,9 @@
 								>
 									<div class="rux-card">
 										<header class="rux-card__header">
-											<p class="rux-card__title">Trip Details</p>
+											<p class="rux-card__title">
+												Trip Details
+											</p>
 										</header>
 										<div
 											class="rux-card__body rux-card__body--stack"
@@ -740,7 +742,7 @@
 													<label
 														class="rux-field__label"
 														for="tp-book-name"
-														>Name</label
+														>Customer Name</label
 													><input
 														class="rux-input"
 														id="tp-book-name"
@@ -752,7 +754,7 @@
 													<label
 														class="rux-field__label"
 														for="tp-book-phone"
-														>Phone</label
+														>Customer Phone</label
 													><input
 														class="rux-input"
 														id="tp-book-phone"
@@ -1186,7 +1188,7 @@
 											</p>
 											<div class="rux-cluster">
 												<button
-													class="rux-button rux-button--default rux-button--danger rux-button--icon"
+													class="rux-button rux-button--outline rux-button--danger rux-button--icon"
 													type="button"
 													id="tp-ticket-delete-btn"
 													disabled
@@ -1472,7 +1474,7 @@
 											</p>
 											<div class="rux-cluster">
 												<button
-													class="rux-button rux-button--default rux-button--danger rux-button--icon"
+													class="rux-button rux-button--outline rux-button--danger rux-button--icon"
 													type="button"
 													id="tp-payment-delete-btn"
 													disabled
@@ -1589,7 +1591,7 @@
 													Split Trip
 												</p>
 												<button
-													class="rux-button rux-button--default rux-button--danger"
+													class="rux-button rux-button--outline rux-button--danger"
 													id="tp-itin-reset-leg"
 													type="button"
 													title="Reset Outbound itinerary"
@@ -3198,7 +3200,7 @@
 							</div>
 							<footer class="rux-panel__footer">
 								<button
-									class="rux-button rux-button--default rux-button--danger"
+									class="rux-button rux-button--outline rux-button--danger"
 									id="fp-btn-delete"
 									type="button"
 								>
@@ -3998,7 +4000,7 @@
 										<span class="rux-spacer"></span>
 										<div class="rux-cluster">
 											<button
-												class="rux-button rux-button--default rux-button--danger rux-button--icon"
+												class="rux-button rux-button--outline rux-button--danger rux-button--icon"
 												type="button"
 												id="dp-timeoff-delete-btn"
 												disabled
@@ -4098,7 +4100,7 @@
 													<span>Copy Link</span>
 												</button>
 												<button
-													class="rux-button rux-button--default rux-button--danger"
+													class="rux-button rux-button--outline rux-button--danger"
 													type="button"
 													id="dp-schedule-deactivate"
 													disabled
@@ -4120,7 +4122,7 @@
 							</div>
 							<footer class="rux-panel__footer">
 								<button
-									class="rux-button rux-button--default rux-button--danger"
+									class="rux-button rux-button--outline rux-button--danger"
 									id="dp-btn-delete"
 									type="button"
 								>
@@ -4281,7 +4283,7 @@
 								</div>
 							</div>
 							<footer class="rux-panel__footer">
-								<button class="rux-button rux-button--default rux-button--danger" id="cp-btn-delete" type="button">
+								<button class="rux-button rux-button--outline rux-button--danger" id="cp-btn-delete" type="button">
 									<span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span>
 								</button>
 								<button class="rux-button rux-button--default" id="cp-btn-clear" type="button">
@@ -4576,7 +4578,13 @@
 												Default
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--outline"
+												type="button"
+											>
+												Outline
+											</button>
+											<button
+												class="rux-button rux-button--ghost"
 												type="button"
 											>
 												Ghost
@@ -4596,7 +4604,14 @@
 												Default
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--outline"
+												type="button"
+												disabled
+											>
+												Outline
+											</button>
+											<button
+												class="rux-button rux-button--ghost"
 												type="button"
 												disabled
 											>
@@ -4613,13 +4628,13 @@
 												Danger
 											</button>
 											<button
-												class="rux-button rux-button--default rux-button--danger"
+												class="rux-button rux-button--outline rux-button--danger"
 												type="button"
 											>
-												Danger Default
+												Danger Outline
 											</button>
 											<button
-												class="rux-button rux-button--default rux-button--danger"
+												class="rux-button rux-button--ghost rux-button--danger"
 												type="button"
 											>
 												Danger Ghost
@@ -4642,7 +4657,7 @@
 										class="rux-card__body components-app__specimens"
 									>
 										<button
-											class="rux-button rux-button--default rux-button--danger"
+											class="rux-button rux-button--outline rux-button--danger"
 											type="button"
 										>
 											<span
@@ -5273,7 +5288,7 @@
 											Join the table to play
 										</p>
 										<button
-											class="rux-button rux-button--default rux-button--danger rux-button--icon"
+											class="rux-button rux-button--outline rux-button--danger rux-button--icon"
 											id="game-reset"
 											type="button"
 											hidden
@@ -5382,7 +5397,7 @@
 												Start match
 											</button>
 											<button
-												class="rux-button rux-button--default rux-button--danger"
+												class="rux-button rux-button--outline rux-button--danger"
 												id="game-lobby-reset"
 												type="button"
 												hidden
@@ -6120,7 +6135,7 @@
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=24"></script>
+		<script src="./js/panels/trip-panel.js?v=25"></script>
 		<script src="./js/components/itinerary.js?v=18"></script>
 		<script src="./js/panels/driver-panel.js?v=10" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
@@ -10884,7 +10899,7 @@
 									<p class="rux-card__title">Payments</p>
 									<div class="rux-cluster">
 										<button
-											class="rux-button rux-button--default rux-button--danger rux-button--icon"
+											class="rux-button rux-button--outline rux-button--danger rux-button--icon"
 											type="button"
 											id="rpm-payment-delete-btn"
 											disabled
@@ -10999,7 +11014,7 @@
 					</div>
 					<footer class="rux-card__footer">
 						<button
-							class="rux-button rux-button--default rux-button--danger"
+							class="rux-button rux-button--outline rux-button--danger"
 							id="rpm-btn-delete"
 							type="button"
 							disabled

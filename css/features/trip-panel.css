@@ -104,6 +104,27 @@
 .rux-trip-panel__pane[hidden] {
 	display: none;
 }
+
+/* Card bottoms own every inter-card seam below. Remove the headers' default
+   top border so a titled card following another card does not draw the same
+   divider a second time. The panel nav owns the pane's top seam. */
+.rux-trip-panel__pane > .rux-card > .rux-card__header {
+	border-top: 0;
+}
+
+/* Cards share a single divider: every card with another card after it owns
+   the bottom seam. The final card stays borderless so it does not double the
+   panel footer's existing top border. */
+.rux-trip-panel__pane > .rux-card:has(~ .rux-card) {
+	border-bottom: var(--rux-border-width) solid var(--rux-divider);
+}
+
+/* The footer owns the pane's final seam. Base cards have a bottom border by
+   default, so explicitly remove it from the last card to avoid doubling. */
+.rux-trip-panel__pane > .rux-card:last-child {
+	border-bottom: 0;
+}
+
 /* — Card — */
 
 /* Where do buttons go in a card? Sort by what the control DOES, not by

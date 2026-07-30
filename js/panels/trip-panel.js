@@ -985,8 +985,8 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 			row.dataset.tripContact = "";
 			row.innerHTML =
 				`<div class="rux-trip-panel__contact-fields">
-					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-name">Name</label><input class="rux-input" id="tp-trip1-name" name="tripContact1.name" type="text" /></div>
-					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-phone">Phone</label><input class="rux-input" id="tp-trip1-phone" name="tripContact1.phone" type="tel" /></div>
+					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-name">Trip Contact Name</label><input class="rux-input" id="tp-trip1-name" name="tripContact1.name" type="text" /></div>
+					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-phone">Trip Contact Phone</label><input class="rux-input" id="tp-trip1-phone" name="tripContact1.phone" type="tel" /></div>
 				</div>`;
 			contactList.appendChild(row);
 			contactList.style.display = "flex";

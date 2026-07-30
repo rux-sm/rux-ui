@@ -99,17 +99,32 @@
    and tie in specificity with :hover above — declared later, so this wins
    and the darker pressed shade shows instead of the lighter hover one. */
 .rux-button--default:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-default-active-background);
 	border-color: var(--rux-button-default-active-border);
 	color: var(--rux-button-default-active-text);
 }
 
-/* default is an outline, not a fill — the generic .rux-button:disabled rule
-   above fills every disabled button solid gray regardless of variant, which
-   would make a disabled outline button look heavier/more prominent than an
-   enabled one. Keep it transparent; border/text still come from the base
-   disabled rule. */
-.rux-button--default:disabled,
-.rux-button--default[aria-disabled="true"] {
+/* Outline — transparent surface with a visible neutral border. */
+.rux-button--outline {
+	background: var(--rux-button-outline-background);
+	color: var(--rux-button-outline-text);
+	border: var(--rux-button-outline-border);
+}
+
+.rux-button--outline:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-outline-hover-background);
+	border-color: var(--rux-button-outline-hover-border);
+	color: var(--rux-button-outline-text);
+}
+
+.rux-button--outline:active:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-outline-active-background);
+	border-color: var(--rux-button-outline-active-border);
+	color: var(--rux-button-outline-text);
+}
+
+.rux-button--outline:disabled,
+.rux-button--outline[aria-disabled="true"] {
 	background: transparent;
 }
 
@@ -350,17 +365,17 @@
 	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
-/* Explicit compound so this doesn't depend on rule order — .rux-button--default
+/* Explicit compound so this doesn't depend on rule order — .rux-button--outline
    and bare .rux-button--danger set the exact same three properties, so without
    this, whichever rule sits later in the file wins by source order alone.
    :not(:disabled) guards matter here too: a two-class compound is exactly as
    specific as .rux-button:disabled (both are one element + two selectors), so
    without the guard this would tie with — and, by sitting later, beat — the
    disabled rule instead of losing to it. */
-.rux-button--default.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-danger-default-background);
-	border: var(--rux-button-danger-default-border);
-	color: var(--rux-button-danger-default-text);
+.rux-button--outline.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-button-danger-outline-background);
+	border: var(--rux-button-danger-outline-border);
+	color: var(--rux-button-danger-outline-text);
 }
 
 /* No background change, ever — border/text lightness is the whole hover cue,
@@ -368,20 +383,20 @@
    omitted) because bare .rux-button--danger:hover sets a solid lightness-
    shifted red background at tying specificity — omitting this would let
    that leak through instead of falling back to "no background." */
-.rux-button--default.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+.rux-button--outline.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: transparent;
-	border-color: var(--rux-button-danger-default-hover-text);
-	color: var(--rux-button-danger-default-hover-text);
+	border-color: var(--rux-button-danger-outline-hover-text);
+	color: var(--rux-button-danger-outline-hover-text);
 }
 
 /* background pinned to transparent to block the bare .rux-button--danger:active
    solid-fill leak. border-color/color darken -10% off rest, same direction
    as plain default's pressed state — not the flat rest-state red, and not
    bare danger's own lightness-shifted red either. */
-.rux-button--default.rux-button--danger:active:not(:disabled):not([aria-disabled="true"]) {
+.rux-button--outline.rux-button--danger:active:not(:disabled):not([aria-disabled="true"]) {
 	background: transparent;
-	border-color: var(--rux-button-danger-default-active-text);
-	color: var(--rux-button-danger-default-active-text);
+	border-color: var(--rux-button-danger-outline-active-text);
+	color: var(--rux-button-danger-outline-active-text);
 }
 
 .rux-button--accent.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
@@ -535,6 +550,15 @@
 .rux-button--icon.is-active,
 .rux-button--icon[aria-pressed="true"] {
 	--_bg: var(--rux-button-icon-selected-bg);
+}
+
+/* Bumps just the glyph to --rux-icon-md — the button footprint (--_h)
+   doesn't change, only .rux-icon's own --_icon-size, since .rux-icon sets
+   that on itself and a parent-level override alone is a no-op. For
+   standalone icon-only actions (header bell, etc.) where the default
+   --rux-icon-sm glyph reads too small against a full 28px button box. */
+.rux-button--icon-lg > .rux-icon {
+	--_icon-size: var(--rux-icon-md);
 }
 
 /* toggle wins over icon active — three-class specificity beats two */

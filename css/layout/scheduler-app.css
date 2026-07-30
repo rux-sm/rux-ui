@@ -44,8 +44,8 @@
 	--scheduler-app-resize-line-width: 1px;
 	/* Left/editor and right/tools drawers intentionally have independent
 	   defaults. Resize limits remain shared. */
-	--scheduler-app-left-drawer-default-width: 400px;
-	--scheduler-app-right-drawer-default-width: 400px;
+	--scheduler-app-left-drawer-default-width: 360px;
+	--scheduler-app-right-drawer-default-width: 360px;
 	/* Read by both the rail's own CSS width and drawer.js's close() (see
 	   schedulerAppRailWidth there) so the drawer's own shrink animation
 	   lands on exactly the rail's resting width — one source of truth, no

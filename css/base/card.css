@@ -7,7 +7,7 @@
 .rux-card {
 	background: var(--rux-card-bg);
 	color: var(--rux-card-fg);
-	border: var(--rux-card-border);
+	border-bottom: var(--rux-card-border);
 	border-radius: var(--rux-card-radius);
 	overflow: hidden;
 }

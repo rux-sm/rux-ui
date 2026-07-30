@@ -38,7 +38,10 @@ if (btn && menu && list) {
 		const hasContact = !!(trip.contact_not_needed
 			|| trip.booking_contact_name?.trim()
 			|| trip.trip_contact_1_name?.trim());
-		return !!(trip.po_received && trip.confirmed && hasContact);
+		// A PO only matters as proof payment is coming — moot once the
+		// balance is already paid.
+		const poOk = !!(trip.po_received || trip.balance_paid);
+		return !!(poOk && trip.confirmed && hasContact);
 	}
 
 	// The summary row's dedupe_key ("trip_departure_summary:{date}") already

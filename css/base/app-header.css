@@ -91,17 +91,31 @@
 
 .rux-app-header__notif-badge {
 	position: absolute;
-	top: 6px;
-	right: 6px;
-	width: var(--rux-status-dot-size);
-	height: var(--rux-status-dot-size);
+	top: 4px;
+	right: 4px;
+	/* Deliberately its own size, not --rux-status-dot-size (6px) — that
+	   token is shared with small inline dots elsewhere (priority, driver
+	   status) and this needs to read clearly at a glance against a full
+	   icon button, not just as a subtle inline marker. */
+	width: 10px;
+	height: 10px;
 	background: var(--rux-warning);
-	border: 1px solid var(--rux-app-header-bg);
+	border: 2px solid var(--rux-app-header-bg);
 	border-radius: var(--rux-radius-full);
 }
 
 .rux-app-header__notif-badge[hidden] {
 	display: none;
+}
+
+/* Both anchor to header buttons and need to float above the scheduler's
+   sticky day-header row (--rux-z-sticky, 200) — the shared .rux-popover
+   z-index (--rux-z-dropdown, 100) sits below that, so without this
+   override the sticky calendar header renders on top of these menus
+   instead of the other way around. */
+#notifications-menu,
+#profile-menu {
+	z-index: var(--rux-z-overlay);
 }
 
 .rux-app-header__profile img {
