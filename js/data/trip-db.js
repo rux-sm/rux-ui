@@ -1775,6 +1775,14 @@ export function newTrip(root, itinerary) {
 
 	/* ── Init ────────────────────────────────────────────────────────────── */
 
+// Direct field update, no full-trip save-flow needed — used by the Tasks
+// tab's prep checklist (js/panels/tasks-panel.js) to flip one flag at a
+// time (driver_contact_sent, trip_reminder_sent, envelope_printed).
+export async function updateTripTaskFlags(tripId, fields) {
+	const { error } = await supabase.from("trips").update(fields).eq("id", tripId);
+	if (error) throw error;
+}
+
 export async function reassignBus(assignmentId, newBusId) {
 	const { data: previous, error: previousError } = await supabase
 		.from("trip_assignments")

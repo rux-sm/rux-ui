@@ -115,38 +115,6 @@ export async function generateDriverExpiryAlerts() {
 	}
 }
 
-function isTripReady(trip) {
-	const hasContact = !!(trip.contact_not_needed
-		|| trip.booking_contact_name?.trim()
-		|| trip.trip_contact_1_name?.trim());
-	// A PO only matters as proof payment is coming — moot once the balance
-	// is already paid.
-	const poOk = !!(trip.po_received || trip.balance_paid);
-	return !!(poOk && trip.confirmed && hasContact);
-}
-
-// One summary row per calendar date, not one row per trip — a dispatcher
-// wants a single "N trips depart tomorrow, M pending" alert that expands
-// into a live checklist (see notifications-panel.js), not a flood of
-// per-trip rows that go stale the moment someone fixes a field.
-export async function generateTripDepartureSummary(trips) {
-	const tomorrow = addDays(localIsoDate(), 1);
-	const departing = (trips || []).filter((trip) => trip.start_date === tomorrow);
-	if (!departing.length) return;
-	const pending = departing.filter((trip) => !isTripReady(trip));
-	await upsertNotification({
-		type: "trip_departure_summary",
-		severity: pending.length ? "warning" : "info",
-		title: `${departing.length} trip${departing.length === 1 ? "" : "s"} departing tomorrow`,
-		body: pending.length
-			? `${pending.length} of ${departing.length} still need attention`
-			: "All set",
-		ref_table: null,
-		ref_id: null,
-		dedupe_key: `trip_departure_summary:${tomorrow}`,
-	});
-}
-
 export async function fetchNotifications(profileId) {
 	const today = localIsoDate();
 	const since = addDays(today, -30);
@@ -169,9 +137,7 @@ export async function fetchNotifications(profileId) {
 			// generateDriverExpiryAlerts), so treating either as permanent
 			// would mean reading or dismissing it once silences it forever
 			// instead of it acting as a standing daily reminder until the
-			// credential is actually renewed. Harmless for same-day rows
-			// like trip_departure_summary, since those already get a fresh
-			// row each day regardless.
+			// credential is actually renewed.
 			const isToday = (iso) => !!iso && localIsoDate(new Date(iso)) === today;
 			return {
 				...row,

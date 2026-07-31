@@ -34,6 +34,7 @@
 		<link rel="stylesheet" href="./css/features/contact-info.css?v=1" />
 		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
 		<link rel="stylesheet" href="./css/features/team-chat.css?v=1" />
+		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=1" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=72" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=3" />
@@ -146,6 +147,16 @@
 						id="header-active-profiles"
 						hidden
 					></div>
+					<a
+						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg"
+						href="https://cloud.samsara.com/o/5005667/fleet/list?bounds=25.531218%2C-101.984582%2C30.594115%2C-93.569055&amp;z=8"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Open Samsara GPS"
+						title="Open Samsara GPS"
+					>
+						<span class="rux-icon" aria-hidden="true">location_on</span>
+					</a>
 					<button
 						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__chat-btn"
 						type="button"
@@ -2065,6 +2076,7 @@
 										aria-selected="false"
 										aria-controls="rp-pane-tasks"
 										title="Tasks"
+										id="rp-tasks-tab-btn"
 									>
 										<span
 											class="rux-icon"
@@ -2073,7 +2085,11 @@
 										><span
 											class="rux-right-panel__tab-label"
 											>Tasks</span
-										>
+										><span
+											class="rux-tasks__tab-badge"
+											id="rp-tasks-tab-badge"
+											hidden
+										></span>
 									</button>
 									<button
 										class="rux-tab rux-right-panel__tab"
@@ -2615,7 +2631,19 @@
 									class="rux-panel__pane"
 									role="tabpanel"
 									hidden
-								></div>
+								>
+									<article class="rux-card" id="rp-tasks-departures-card">
+										<header class="rux-card__header">
+											<h3 class="rux-card__title" id="rp-tasks-departures-title">
+												Departing Tomorrow
+											</h3>
+										</header>
+										<div
+											class="rux-card__body rux-card__body--stack"
+											id="rp-tasks-departures-body"
+										></div>
+									</article>
+								</div>
 								<div
 									id="rp-pane-history"
 									class="rux-panel__pane"
@@ -6162,6 +6190,7 @@
 		<script type="module" src="./js/panels/team-chat.js?v=1"></script>
 		<script type="module" src="./js/panels/components-panel.js?v=39"></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=1"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -9131,6 +9160,8 @@
 					});
 					if (paneId === "rp-pane-drivers")
 						ensureDriverGridData().then(renderDriverGrid);
+					if (paneId === "rp-pane-tasks")
+						window.RuxTasks?.activate();
 					if (paneId === "rp-pane-history")
 						window.TripHistory?.activate();
 					// Footer stays in a fixed spot across tabs — only the action group
@@ -10138,12 +10169,9 @@
 			// server cron.
 			async function runNotificationChecks() {
 				try {
-					const { generateDriverExpiryAlerts, generateTripDepartureSummary } =
-						await import("./js/data/notification-db.js");
+					const { generateDriverExpiryAlerts } = await import("./js/data/notification-db.js");
 					await generateDriverExpiryAlerts().catch((err) =>
 						console.warn("Could not generate driver expiry alerts:", err));
-					await generateTripDepartureSummary(allTripsRaw).catch((err) =>
-						console.warn("Could not generate trip departure summary:", err));
 				} catch (err) {
 					console.warn("Could not run notification checks:", err);
 				}

@@ -30,44 +30,6 @@ if (btn && menu && list) {
 		return `${Math.round(hours / 24)}d ago`;
 	}
 
-	function tripLabel(trip) {
-		return [trip.trip_ref, trip.customer, trip.destination].filter(Boolean).join(" — ") || "Trip";
-	}
-
-	function isTripReady(trip) {
-		const hasContact = !!(trip.contact_not_needed
-			|| trip.booking_contact_name?.trim()
-			|| trip.trip_contact_1_name?.trim());
-		// A PO only matters as proof payment is coming — moot once the
-		// balance is already paid.
-		const poOk = !!(trip.po_received || trip.balance_paid);
-		return !!(poOk && trip.confirmed && hasContact);
-	}
-
-	// The summary row's dedupe_key ("trip_departure_summary:{date}") already
-	// carries the exact date it was generated for — reading it back out
-	// avoids recomputing "tomorrow" (which would silently drift if the panel
-	// is opened after midnight relative to when the row was created).
-	function renderChecklist(row, container) {
-		const date = row.dedupe_key.split(":")[1];
-		const trips = (window.RuxTrips?.list() || []).filter((t) => t.start_date === date);
-		if (!trips.length) {
-			container.innerHTML = `<p class="rux-notifications__checklist-empty">No trips found for this date.</p>`;
-			return;
-		}
-		container.innerHTML = trips
-			.map((trip) => {
-				const ready = isTripReady(trip);
-				return `
-					<div class="rux-notifications__checklist-row">
-						<span>${tripLabel(trip)}</span>
-						<span class="rux-badge ${ready ? "rux-badge--success" : "rux-badge--warning"}">${ready ? "Ready" : "Pending"}</span>
-					</div>
-				`;
-			})
-			.join("");
-	}
-
 	// Tied to "not dismissed" rather than "unread" — fetchNotifications
 	// already excludes dismissed rows, so any row still in the list means
 	// there's something outstanding to clear, whether or not it's been
@@ -98,7 +60,6 @@ if (btn && menu && list) {
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</div>
-				${row.type === "trip_departure_summary" ? `<div class="rux-notifications__checklist" data-checklist hidden></div>` : ""}
 			`;
 			li.addEventListener("click", async (event) => {
 				const profileId = getCurrentProfile()?.id;
@@ -114,12 +75,6 @@ if (btn && menu && list) {
 					row.read = true;
 					li.classList.remove("is-unread");
 					markRead(row.id, profileId).catch((err) => console.warn("Could not mark notification read:", err));
-				}
-				if (row.type === "trip_departure_summary") {
-					const checklist = li.querySelector("[data-checklist]");
-					const wasOpen = !checklist.hidden;
-					checklist.hidden = wasOpen;
-					if (!wasOpen) renderChecklist(row, checklist);
 				}
 			});
 			list.appendChild(li);
