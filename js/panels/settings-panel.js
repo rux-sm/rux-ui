@@ -33,6 +33,9 @@
   const missiveMessageEl = document.getElementById("settings-integrations-message");
   const missiveSaveBtn = document.getElementById("settings-integrations-save-btn");
 
+  const forceRefreshBtn = document.getElementById("settings-force-refresh-btn");
+  const forceRefreshMessageEl = document.getElementById("settings-force-refresh-message");
+
   const spotPaddingInput = document.getElementById("settings-spot-padding");
   const billingWorkflowEl = document.getElementById("settings-billing-workflow");
   const billingConfirmEl = document.getElementById("settings-billing-confirm");
@@ -612,6 +615,28 @@
   document.addEventListener("settings:billing", (event) => {
     billingConfig = event.detail?.config || window.RuxBilling?.getConfig?.();
     renderBillingSettings(billingConfig);
+  });
+
+  function setForceRefreshMessage(text = "", state = "") {
+    if (!forceRefreshMessageEl) return;
+    forceRefreshMessageEl.textContent = text;
+    forceRefreshMessageEl.classList.toggle("is-error", state === "error");
+    forceRefreshMessageEl.classList.toggle("is-success", state === "success");
+  }
+
+  forceRefreshBtn?.addEventListener("click", async () => {
+    if (!window.confirm("Force refresh every open tab right now? Anyone with unsaved work will lose it.")) return;
+    forceRefreshBtn.disabled = true;
+    setForceRefreshMessage("Refreshing everyone...");
+    try {
+      await window.RuxAppReload?.triggerReload?.();
+      setForceRefreshMessage("Refresh sent.", "success");
+    } catch (err) {
+      console.error("Force refresh failed:", err);
+      setForceRefreshMessage("Could not reach the refresh channel.", "error");
+    } finally {
+      forceRefreshBtn.disabled = false;
+    }
   });
 
   missiveSaveBtn?.addEventListener("click", async () => {

@@ -6096,6 +6096,52 @@
 									</div>
 								</div>
 							</section>
+
+							<section
+								class="settings-app__panel"
+								aria-labelledby="settings-refresh-title"
+							>
+								<header class="settings-app__panel-header">
+									<div>
+										<h2
+											class="settings-app__panel-title"
+											id="settings-refresh-title"
+										>
+											App Updates
+										</h2>
+										<p class="settings-app__panel-copy">
+											Push an immediate reload to every
+											open tab — dispatch, driver, and
+											maintenance pages alike. Use right
+											after deploying a change everyone
+											needs now. Anyone with unsaved
+											work will lose it.
+										</p>
+									</div>
+								</header>
+
+								<footer class="settings-app__footer">
+									<p
+										class="settings-app__message"
+										id="settings-force-refresh-message"
+										aria-live="polite"
+									></p>
+									<div class="settings-app__actions">
+										<button
+											class="rux-button rux-button--outline rux-button--danger"
+											id="settings-force-refresh-btn"
+											type="button"
+										>
+											<span class="rux-icon"
+												>refresh</span
+											>
+											<span class="rux-btn-label"
+												>Force refresh all users</span
+											>
+										</button>
+									</div>
+								</footer>
+							</section>
 						</div>
 					</section>
 				</div>
@@ -6183,6 +6229,7 @@
 		<script src="./js/panels/trip-manifest.js?v=3" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
+		<script type="module" src="./js/core/app-reload.js?v=1"></script>
 		<script type="module" src="./js/panels/driver-week-info.js?v=11"></script>
 		<script type="module" src="./js/panels/maintenance-link.js?v=3"></script>
 		<script type="module" src="./js/panels/contact-info-modal.js?v=2"></script>
