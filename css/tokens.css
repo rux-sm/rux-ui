@@ -529,7 +529,7 @@
 	   chroma is much lower than --rux-accent's), so forcing one shared number
 	   made some categories clip and read duller than others. Preserving each
 	   color's own chroma keeps every category equally "full strength". */
-	--rux-trip-bar-bg-lightness:              55%;
+	--rux-trip-bar-bg-lightness:              60%;
 	--rux-trip-bar-state-lightness-step:      4%;
 	--rux-trip-bar-hover-bg-lightness:        calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
 	--rux-trip-bar-pressed-bg-lightness:      calc(var(--rux-trip-bar-bg-lightness) - var(--rux-trip-bar-state-lightness-step));
