@@ -199,7 +199,7 @@ function driverReminderMessage(trip, driver, leg, assignmentsUrl = "") {
 	const spot = pickup?.spot || (isReturn ? trip.return_spot_time : trip.spot_time) || "[Add spot time]";
 	const firstName = String(driver.name || "Driver").trim().split(/\s+/)[0] || "Driver";
 	const assignments = assignmentsUrl ? `\n\nYour assignments:\n${assignmentsUrl}` : "";
-	return `Hi ${firstName}\n\nDriver reminder for ${dateText}${trip.destination ? ` — ${trip.destination}` : ""}.\nBus: ${driver.busNumber}\nSpot time: ${spot}${assignments}`;
+	return `Hi ${firstName}\n\nTrip reminder for ${dateText}${trip.destination ? ` to ${trip.destination}` : ""}.\nBus: ${driver.busNumber}\nSpot time: ${spot}${assignments}`;
 }
 
 async function driverAssignmentsUrl(driverId) {
