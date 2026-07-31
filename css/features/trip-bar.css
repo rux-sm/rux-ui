@@ -213,8 +213,22 @@
 .rux-trip-bar[data-trip-bar-color="cyan"] { --_trip-bar-color: var(--rux-trip-color-cyan); }
 .rux-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--rux-trip-color-green); }
 .rux-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--rux-trip-color-purple); }
-.rux-trip-bar[data-trip-bar-color="yellow"] { --_trip-bar-color: var(--rux-trip-color-yellow); }
-.rux-trip-bar[data-trip-bar-color="orange"] { --_trip-bar-color: var(--rux-trip-color-orange); }
+/* Yellow and orange alone read muddy at the shared --rux-trip-bar-bg-
+   lightness (70%) — noticeably darker than their own native 80% lightness
+   (--rux-yellow/--rux-orange), unlike the other trip colors which sit
+   closer to their native value already. Scoped to just these two so the
+   other colors and every other consumer of --rux-trip-bar-bg-lightness
+   (accent/danger button glass, see tokens.css) are untouched;
+   --hover/--pressed/--selected are calc()'d off this token at :root, so
+   they pick up the lighter base automatically. */
+.rux-trip-bar[data-trip-bar-color="yellow"] {
+	--_trip-bar-color: var(--rux-trip-color-yellow);
+	--rux-trip-bar-bg-lightness: 80%;
+}
+.rux-trip-bar[data-trip-bar-color="orange"] {
+	--_trip-bar-color: var(--rux-trip-color-orange);
+	--rux-trip-bar-bg-lightness: 80%;
+}
 .rux-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
 
 .rux-trip-bar--unconfirmed:not([data-trip-bar-color]) {
