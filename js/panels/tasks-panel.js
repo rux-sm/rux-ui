@@ -7,7 +7,6 @@ import { latestDocument } from "../core/trip-documents.js";
 import { supabase } from "../data/supabase.js";
 
 const pane = document.getElementById("rp-pane-tasks");
-const titleEl = document.getElementById("rp-tasks-departures-title");
 const body = document.getElementById("rp-tasks-departures-body");
 const tabBadge = document.getElementById("rp-tasks-tab-badge");
 
@@ -27,6 +26,18 @@ function formatDayLabel(iso) {
 		month: "short",
 		day: "numeric",
 	});
+}
+
+// "Departing Sunday, August 3" — each day-group's own heading (see
+// renderDayGroup), month spelled out in full. formatDayLabel above stays
+// abbreviated for its own use (the driver reminder message text).
+function formatDepartingTitle(iso) {
+	const dateText = new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
+		weekday: "long",
+		month: "long",
+		day: "numeric",
+	});
+	return `Departing ${dateText}`;
 }
 
 function escapeHtml(value) {
@@ -61,35 +72,41 @@ function legLabel(trip, leg) {
 // checkbox, so the dispatcher doesn't have to reopen the trip to find out.
 const COMPUTED_ITEMS = [
 	{
-		label: "Payment",
-		checked: (trip) => !!(trip.po_received || trip.balance_paid),
+		// Whether the itinerary document has been received/uploaded — not
+		// to be confused with "Itinerary printed" in To Do, which is about
+		// physically printing it for the driver envelope afterward.
+		label: "Itinerary",
+		checked: (trip) => !!(trip.itinerary_not_needed || latestDocument(trip.trip_documents, "Itinerary")),
 		detail: (trip) => {
-			const parts = [];
-			if (trip.po_received) parts.push("PO received");
-			if (trip.balance_paid) parts.push("Balance paid");
-			return parts.join(" · ") || "Not received";
+			if (trip.itinerary_not_needed) return "Not Required";
+			return latestDocument(trip.trip_documents, "Itinerary") ? "Received" : "Not Received";
 		},
 	},
 	{
-		label: "Confirmed",
+		label: "Trip Contact",
+		checked: (trip) => !!(trip.contact_not_needed
+			|| trip.booking_contact_name?.trim()
+			|| trip.trip_contact_1_name?.trim()),
+		// Same Received/Not Received/Not Required vocabulary as Itinerary
+		// above, instead of naming the actual contact.
+		detail: (trip) => {
+			if (trip.contact_not_needed) return "Not Required";
+			return (trip.booking_contact_name?.trim() || trip.trip_contact_1_name?.trim())
+				? "Received"
+				: "Not Received";
+		},
+	},
+	{
+		// Labeled "Payment" — what this actually checks is trip.confirmed,
+		// via the same status pipeline the trip editor's own billing badge
+		// uses (js/core/billing-config.js) — reused here instead of
+		// re-deriving "signed vs. PO vs. deposit" from scratch.
+		label: "Payment",
 		checked: (trip) => !!trip.confirmed,
-		// Same status pipeline the trip editor's own billing badge uses
-		// (js/core/billing-config.js) — reused here instead of re-deriving
-		// "signed vs. PO vs. deposit" from scratch.
 		detail: (trip) => {
 			const status = window.RuxBilling?.deriveRecordStatus?.(trip) || "pending";
 			if (status === "pending") return "Not confirmed";
 			return window.RuxBilling?.statusMeta?.(status)?.label || status;
-		},
-	},
-	{
-		label: "Contact",
-		checked: (trip) => !!(trip.contact_not_needed
-			|| trip.booking_contact_name?.trim()
-			|| trip.trip_contact_1_name?.trim()),
-		detail: (trip) => {
-			if (trip.contact_not_needed) return "Not needed";
-			return trip.booking_contact_name?.trim() || trip.trip_contact_1_name?.trim() || "Missing";
 		},
 	},
 ];
@@ -104,9 +121,9 @@ const COMPUTED_ITEMS = [
 // item entirely rather than just leaving it unchecked — hos_form_printed
 // only means anything once a part-time driver is actually assigned.
 const MANUAL_ITEMS = [
-	{ suffix: "driver_contact_sent", label: "Driver contact sent" },
-	{ suffix: "itinerary_printed", label: "Itinerary printed" },
-	{ suffix: "hos_form_printed", label: "HOS form", visible: hasPartTimeDriver },
+	{ suffix: "driver_contact_sent", label: "Driver Contact Info Sent" },
+	{ suffix: "itinerary_printed", label: "Print Itinerary" },
+	{ suffix: "hos_form_printed", label: "HOS Form", visible: hasPartTimeDriver },
 ];
 
 function visibleManualItems(trip, leg) {
@@ -143,6 +160,7 @@ function reminderDrivers(trip, leg) {
 			source: driver,
 			busNumber,
 			name: driver.drivers?.name || driver.drivers?.short_name || driver.name || "Unassigned driver",
+			shortName: driver.drivers?.short_name || driver.drivers?.name || driver.name || "Unassigned driver",
 			textingUrl: driver.drivers?.texting_url || driver.texting_url || "",
 			employmentType: driver.drivers?.employment_type || driver.employment_type || "",
 		}));
@@ -366,13 +384,16 @@ function renderTrip(trip, leg) {
 	const ready = isTripReady(trip);
 	const computedRows = COMPUTED_ITEMS
 		.map((item) => {
-			const detail = item.detail?.(trip);
+			const detail = item.detail?.(trip) || "";
 			const checked = item.checked(trip);
 			return `
-				<label class="rux-checkbox rux-tasks__automatic-check ${checked ? "rux-tasks__automatic-check--complete" : ""}">
-					<input type="checkbox" disabled ${checked ? "checked" : ""} />
-					<span>${item.label}${detail ? ` <span class="rux-tasks__item-detail">· ${escapeHtml(detail)}</span>` : ""}</span>
-				</label>
+				<div class="rux-tasks__requirement-row">
+					<label class="rux-checkbox rux-tasks__automatic-check ${checked ? "rux-tasks__automatic-check--complete" : ""}">
+						<input type="checkbox" disabled ${checked ? "checked" : ""} />
+						${item.label}
+					</label>
+					<input class="rux-input rux-tasks__requirement-input" type="text" disabled value="${escapeAttr(detail)}" aria-label="${escapeAttr(item.label)} status" />
+				</div>
 			`;
 		})
 		.join("");
@@ -398,7 +419,7 @@ function renderTrip(trip, leg) {
 			<div class="rux-tasks__task-row">
 				<label class="rux-checkbox rux-tasks__driver-reminder">
 					<input type="checkbox" data-driver-reminder-id="${driver.id}" data-task-trip="${trip.id}" ${driver.trip_reminder_sent ? "checked" : ""} />
-					<span>${escapeHtml(driver.name)} <span class="rux-tasks__driver-bus">· Bus ${escapeHtml(driver.busNumber)}</span></span>
+					Trip Reminder <span class="rux-tasks__driver-name">${escapeHtml(driver.shortName)} · ${escapeHtml(driver.busNumber)}</span>
 				</label>
 				${taskActionButton("driver-reminder", `Open reminder for ${escapeAttr(driver.name)}`, `data-task-trip="${trip.id}" data-task-leg="${leg}" data-trip-driver-id="${driver.id}"`)}
 			</div>
@@ -410,7 +431,7 @@ function renderTrip(trip, leg) {
 			<div class="rux-tasks__task-row">
 				<label class="rux-checkbox rux-tasks__driver-reminder">
 					<input type="checkbox" data-driver-envelope-id="${driver.id}" data-task-trip="${trip.id}" ${driver.envelope_printed ? "checked" : ""} />
-					<span>${escapeHtml(driver.name)} <span class="rux-tasks__driver-bus">· Print Envelope</span></span>
+					Print Envelope <span class="rux-tasks__driver-name">${escapeHtml(driver.shortName)} · ${escapeHtml(driver.busNumber)}</span>
 				</label>
 				${taskActionButton("print-envelope", `Print envelope for ${escapeAttr(driver.name)}`, `data-task-trip="${trip.id}" data-task-leg="${leg}" data-trip-driver-id="${driver.id}"`)}
 			</div>
@@ -440,7 +461,7 @@ function renderTrip(trip, leg) {
 							<input type="checkbox" disabled ${row.checked ? "checked" : ""} />
 							${row.label}
 						</label>
-						<span class="rux-tasks__requirement-detail ${row.severity === "conflict" ? "rux-tasks__requirement-detail--danger" : row.checked ? "" : "rux-tasks__requirement-detail--warning"}">${row.detail}</span>
+						<div class="rux-input rux-tasks__requirement-input rux-tasks__requirement-input--readonly ${row.severity === "conflict" ? "rux-tasks__requirement-input--danger" : row.checked ? "" : "rux-tasks__requirement-input--warning"}" role="status">${row.detail}</div>
 					</div>
 				`).join("")}
 			</div>
@@ -458,36 +479,51 @@ function renderTrip(trip, leg) {
 			</div>
 			<div class="rux-tasks__section rux-tasks__section--readiness">
 				<div class="rux-tasks__checklist">
-					<p class="rux-tasks__requirements-title">Trip Readiness</p>
+					<p class="rux-tasks__requirements-title">Trip Status</p>
 					${computedRows}
 				</div>
 			</div>
+			${requirementsHtml}
 			<div class="rux-tasks__section rux-tasks__section--prep">
 				<div class="rux-tasks__checklist">
 					<p class="rux-tasks__requirements-title">To Do</p>
 					${manualRows}
 					${envelopeRows}
+					${reminderRows}
 				</div>
 			</div>
-			<div class="rux-tasks__section rux-tasks__section--prep">
-				<div class="rux-tasks__checklist">
-					<p class="rux-tasks__requirements-title">Driver Reminder</p>
-					<div class="rux-tasks__driver-reminders-list">${reminderRows}</div>
-				</div>
-			</div>
-			${requirementsHtml}
 		</div>
 	`;
 }
 
+// Keeps an empty day the same card shape as a day with trips, rather than
+// a lone line of text that breaks the rhythm of cards scrolling down the
+// panel — reused for both the weekend view's per-day empty state and the
+// single-day view's whole-panel empty state below.
+function emptyTripCard(text = "No Trips") {
+	return `
+		<div class="rux-tasks__trip rux-tasks__trip--empty">
+			<p class="rux-tasks__empty">${escapeHtml(text)}</p>
+		</div>
+	`;
+}
+
+// Each day gets its own full card (header + body) — the same
+// .rux-card__header/__title the old single top-level header used, just
+// repeated once per day instead of describing only the first of however
+// many days are showing.
 function renderDayGroup(iso, entries) {
 	return `
-		<div class="rux-tasks__day-group">
-			<h4 class="rux-tasks__day-label">${formatDayLabel(iso)}</h4>
-			${entries.length
-				? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
-				: `<p class="rux-tasks__empty">Nothing scheduled</p>`}
-		</div>
+		<article class="rux-card rux-tasks__day-group">
+			<header class="rux-card__header">
+				<h4 class="rux-card__title">${formatDepartingTitle(iso)}</h4>
+			</header>
+			<div class="rux-card__body">
+				${entries.length
+					? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
+					: emptyTripCard()}
+			</div>
+		</article>
 	`;
 }
 
@@ -516,22 +552,15 @@ function updateTabBadge(byDate) {
 	tabBadge.classList.toggle("rux-tasks__tab-badge--danger", missingRequirements);
 }
 
+// No card header anymore — each day-group below carries its own
+// "Departing [Day], [Month] [Day]" heading (see renderDayGroup) instead of
+// a single date-specific line up top that only ever described the first
+// of however many days are showing.
 function render() {
 	const byDate = entriesByDate();
 	updateTabBadge(byDate);
 	if (!body) return;
-	const isWeekendMode = byDate.length > 1;
-	if (titleEl) titleEl.textContent = isWeekendMode ? "Departing This Weekend" : "Departing Tomorrow";
-
-	if (isWeekendMode) {
-		body.innerHTML = byDate.map(({ iso, entries }) => renderDayGroup(iso, entries)).join("");
-		return;
-	}
-
-	const entries = byDate[0].entries;
-	body.innerHTML = entries.length
-		? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
-		: `<p class="rux-tasks__empty">No trips departing</p>`;
+	body.innerHTML = byDate.map(({ iso, entries }) => renderDayGroup(iso, entries)).join("");
 }
 
 // Auto-checks the matching box when its shortcut is actually opened —

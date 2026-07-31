@@ -3,30 +3,31 @@
    Trip-departure readiness + prep checklist — see js/panels/tasks-panel.js.
    ========================================================================== */
 
-.rux-tasks__day-group + .rux-tasks__day-group {
-	margin-top: var(--rux-space-4);
-	padding-top: var(--rux-space-4);
-	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
-}
-
-.rux-tasks__day-label {
-	margin: 0 0 var(--rux-space-3);
-	color: var(--rux-text-secondary);
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-semibold);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
-}
+/* Each day-group is now its own .rux-card (see renderDayGroup in
+   tasks-panel.js) — spacing between stacked day-cards already comes from
+   the outer #rp-tasks-departures-body's own .rux-card__body--stack flex
+   gap, so no margin rule needed here on top of that. */
 
 .rux-tasks__trip {
-	padding: var(--rux-space-3);
+	padding: var(--rux-space-4);
 	background: var(--rux-surface-field);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-0);
 }
 
 .rux-tasks__trip + .rux-tasks__trip {
-	margin-top: var(--rux-space-2);
+	margin-top: var(--rux-space-4);
+}
+
+.rux-tasks__trip--empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 4rem;
+}
+
+.rux-tasks__trip--empty .rux-tasks__empty {
+	padding: 0;
 }
 
 /* One status indicator per trip now (see statusIndicator in
@@ -35,7 +36,7 @@
    card. */
 .rux-tasks__trip-header {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 }
@@ -101,11 +102,6 @@
 	min-width: 0;
 }
 
-.rux-tasks__driver-reminders-list {
-	display: flex;
-	flex-direction: column;
-}
-
 .rux-tasks__task-row {
 	display: flex;
 	align-items: center;
@@ -121,9 +117,14 @@
 	flex: none;
 }
 
-.rux-tasks__driver-bus,
-.rux-tasks__driver-empty,
-.rux-tasks__item-detail {
+/* The action word (Reminder/Print Envelope) stays primary/bright — the
+   driver's own name is secondary, same weight as the row's other muted
+   detail text elsewhere in this panel. */
+.rux-tasks__driver-name {
+	color: var(--rux-text-secondary);
+}
+
+.rux-tasks__driver-empty {
 	color: var(--rux-text-tertiary);
 	font-size: var(--rux-text-100);
 }
@@ -174,28 +175,35 @@
 }
 
 /* Sized like every other .rux-input in the app (--rux-input-height/
-   --rux-input-font-size) — only min-width/max-width/justify-self are this
-   context's own; height and font-size used to be overridden smaller/taller
-   than the standard input, which made this one field read as visually
-   distinct from the rest. Capped narrower than its grid column (which also
-   sizes the automatic rows' bus/equipment detail) and pinned to the right
-   edge so it lines up with those rows instead of stretching to fill. */
+   --rux-input-font-size) — only min-width/justify-self are this context's
+   own; height and font-size used to be overridden smaller/taller than the
+   standard input, which made this one field read as visually distinct
+   from the rest. Pinned to the right edge so it lines up with the other
+   rows' right-aligned detail instead of stretching to fill the column.
+   Same width whether it's Fuel Card/Hotel's editable reference number or
+   one of the read-only fields below — one consistent field size down the
+   whole Requirements list rather than each row picking its own. */
 .rux-tasks__requirement-input {
 	min-width: 0;
-	max-width: 80px;
 	justify-self: end;
 	text-align: right;
 }
 
-.rux-tasks__requirement-detail {
+/* A plain div styled to match .rux-input:disabled — real <input disabled>
+   works fine for Payment/Confirmed/Contact (plain text), but the
+   Sleeper/56 Passenger/Lift rows need actual icon markup (equipment
+   glyphs, see .rux-tasks__equip-icon below), which a native input can't
+   render inside itself. Same box, same width, same disabled look either
+   way, just a div where icons are involved. */
+.rux-tasks__requirement-input--readonly {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	gap: var(--rux-space-1);
-	color: var(--rux-text-tertiary);
-	font-size: var(--rux-text-100);
-	line-height: 1.3;
-	text-align: right;
+	background-color: var(--rux-input-disabled-bg);
+	border-color: var(--rux-input-disabled-border);
+	color: var(--rux-input-disabled-fg);
+	cursor: not-allowed;
 }
 
 /* Same icon set/style as the Fleet tab's own Equipment column
@@ -216,14 +224,14 @@
 	font-weight: var(--rux-weight-semibold);
 }
 
-.rux-tasks__requirement-detail--warning {
+.rux-tasks__requirement-input--warning {
 	color: var(--rux-warning-text, var(--rux-warning));
 }
 
 /* An assigned bus that fails the requirement (wrong capacity, no lift, no
    sleeper) is an active conflict to fix, not just an outstanding task —
    distinct from --warning, which is "no bus assigned yet" (still normal). */
-.rux-tasks__requirement-detail--danger {
+.rux-tasks__requirement-input--danger {
 	color: var(--rux-danger-text, var(--rux-danger));
 }
 
