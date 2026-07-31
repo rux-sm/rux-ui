@@ -34,7 +34,7 @@
 		<link rel="stylesheet" href="./css/features/contact-info.css?v=2" />
 		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
 		<link rel="stylesheet" href="./css/features/team-chat.css?v=4" />
-		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=8" />
+		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=20" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=72" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=3" />
@@ -6247,7 +6247,7 @@
 		<script type="module" src="./js/panels/team-chat.js?v=3"></script>
 		<script type="module" src="./js/panels/components-panel.js?v=39"></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=16"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=26"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -7453,7 +7453,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=20");
+					const db = await import("./js/data/trip-db.js?v=21");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10184,7 +10184,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=20");
+					const db = await import("./js/data/trip-db.js?v=21");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

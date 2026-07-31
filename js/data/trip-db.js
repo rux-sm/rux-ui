@@ -1515,7 +1515,7 @@ import {
 				trip_assignments(
 					id, position, bus_id, active_roles, leg,
 					buses(id, number, capacity, ada_lift, sleeper),
-					trip_drivers(id, driver_id, role, pay${driverShareFields}, drivers(id, name, short_name, phone${driverProfileFields}))
+					trip_drivers(id, driver_id, role, pay${driverShareFields}, drivers(id, name, short_name, phone, employment_type${driverProfileFields}))
 				),
 				trip_stops(*)
 			`)

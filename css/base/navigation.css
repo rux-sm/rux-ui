@@ -101,8 +101,9 @@
 .rux-tab.is-active,
 .rux-tab[aria-selected="true"] {
 	--_state-overlay: transparent;
-	background-color: var(--rux-tab-selected-bg);
+	background-color: var(--rux-button-default-background);
 	color: var(--rux-tab-selected-fg);
+	border: var(--rux-default-button-border);
 }
 
 .rux-tabs--contained > .rux-tab {

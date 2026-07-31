@@ -2,7 +2,7 @@ import {
 	openTripContactInfo,
 	updateTripDriverTaskFlag,
 	updateTripTaskFlags,
-} from "../data/trip-db.js?v=20";
+} from "../data/trip-db.js?v=21";
 import { latestDocument } from "../core/trip-documents.js";
 
 const pane = document.getElementById("rp-pane-tasks");
@@ -55,18 +55,41 @@ function legLabel(trip, leg) {
 // Read-only — reflects data that's already tracked elsewhere in the trip
 // record. Kept as a list (rather than one combined boolean) so the
 // checklist can show each requirement individually instead of collapsing
-// them into a single Ready/Pending badge.
+// them into a single Ready/Pending badge. `detail` surfaces *why* an item
+// is checked (which billing status, whose name) instead of just a bare
+// checkbox, so the dispatcher doesn't have to reopen the trip to find out.
 const COMPUTED_ITEMS = [
 	{
-		label: "PO received / balance paid",
+		label: "Payment",
 		checked: (trip) => !!(trip.po_received || trip.balance_paid),
+		detail: (trip) => {
+			const parts = [];
+			if (trip.po_received) parts.push("PO received");
+			if (trip.balance_paid) parts.push("Balance paid");
+			return parts.join(" · ") || "Not received";
+		},
 	},
-	{ label: "Confirmed", checked: (trip) => !!trip.confirmed },
 	{
-		label: "Contact on file",
+		label: "Confirmed",
+		checked: (trip) => !!trip.confirmed,
+		// Same status pipeline the trip editor's own billing badge uses
+		// (js/core/billing-config.js) — reused here instead of re-deriving
+		// "signed vs. PO vs. deposit" from scratch.
+		detail: (trip) => {
+			const status = window.RuxBilling?.deriveRecordStatus?.(trip) || "pending";
+			if (status === "pending") return "Not confirmed";
+			return window.RuxBilling?.statusMeta?.(status)?.label || status;
+		},
+	},
+	{
+		label: "Contact",
 		checked: (trip) => !!(trip.contact_not_needed
 			|| trip.booking_contact_name?.trim()
 			|| trip.trip_contact_1_name?.trim()),
+		detail: (trip) => {
+			if (trip.contact_not_needed) return "Not needed";
+			return trip.booking_contact_name?.trim() || trip.trip_contact_1_name?.trim() || "Missing";
+		},
 	},
 ];
 
@@ -74,13 +97,20 @@ const COMPUTED_ITEMS = [
 // so they don't factor into the Ready/Pending badge the way COMPUTED_ITEMS
 // does. Persisted directly on trips as `${suffix}_outbound`/`${suffix}_return`
 // (see supabase/trip-task-flags-patch.sql, supabase/trip-itinerary-printed-
-// patch.sql) — a split trip's return leg is often a different driver/bus
-// dispatched much later, so it gets its own set rather than sharing the
-// outbound leg's checkboxes.
+// patch.sql, supabase/trip-hos-form-patch.sql) — a split trip's return leg
+// is often a different driver/bus dispatched much later, so it gets its own
+// set rather than sharing the outbound leg's checkboxes. `visible` hides an
+// item entirely rather than just leaving it unchecked — hos_form_printed
+// only means anything once a part-time driver is actually assigned.
 const MANUAL_ITEMS = [
 	{ suffix: "driver_contact_sent", label: "Driver contact sent" },
 	{ suffix: "itinerary_printed", label: "Itinerary printed" },
+	{ suffix: "hos_form_printed", label: "HOS form", visible: hasPartTimeDriver },
 ];
+
+function visibleManualItems(trip, leg) {
+	return MANUAL_ITEMS.filter((item) => !item.visible || item.visible(trip, leg));
+}
 
 const LEGACY_REQUIREMENTS = {
 	sleeper: "req_sleeper",
@@ -113,14 +143,31 @@ function reminderDrivers(trip, leg) {
 			busNumber,
 			name: driver.drivers?.name || driver.drivers?.short_name || driver.name || "Unassigned driver",
 			textingUrl: driver.drivers?.texting_url || driver.texting_url || "",
+			employmentType: driver.drivers?.employment_type || driver.employment_type || "",
 		}));
 	});
+}
+
+function hasPartTimeDriver(trip, leg) {
+	return reminderDrivers(trip, leg).some((driver) => driver.employmentType === "part-time");
 }
 
 function taskActionButton(action, label, extra = "") {
 	return `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-tasks__shortcut" data-task-action="${action}" ${extra} aria-label="${label}" title="${label}">
 		<span class="rux-icon" aria-hidden="true">open_in_new</span>
 	</button>`;
+}
+
+// Replaces the section header's old "Ready/Done" vs. "Pending" text badge —
+// a checkmark reads as complete on its own (the section title next to it
+// already says what "complete" means here), and the incomplete state stays
+// a small warning-colored marker rather than disappearing, so an
+// unfinished section still catches the eye when scanning down the card.
+function statusIndicator(done, doneLabel = "Complete", pendingLabel = "Pending") {
+	const icon = done ? "check_circle" : "schedule";
+	const modifier = done ? "complete" : "pending";
+	const label = done ? doneLabel : pendingLabel;
+	return `<span class="rux-tasks__status rux-tasks__status--${modifier}" role="img" aria-label="${escapeAttr(label)}"><span class="rux-icon" aria-hidden="true">${icon}</span></span>`;
 }
 
 // Same floating doc viewer trip-bar.js's own itinerary shortcut opens
@@ -130,15 +177,16 @@ function openTripItineraryDoc(trip) {
 	const doc = latestDocument(trip.trip_documents, "Itinerary");
 	if (!doc) {
 		window.Rux?.toast?.("No itinerary uploaded yet");
-		return;
+		return false;
 	}
 	const url = window.RuxDocs?.url?.(doc.file_path);
-	if (!url) return;
+	if (!url) return false;
 	if (!window.RuxDocViewer) {
 		window.open(url, "_blank");
-		return;
+		return true;
 	}
 	window.RuxDocViewer.open({ url, fileName: doc.file_name, icon: "route" });
+	return true;
 }
 
 function driverReminderMessage(trip, driver, leg) {
@@ -180,9 +228,34 @@ function envelopeTrip(trip, leg) {
 	};
 }
 
+// Same icon set/style as the Fleet tab's own Equipment column
+// (js/panels/fleet-panel.js's fleet-app__equipment-cell) — reused here so a
+// bus's equipment reads the same way everywhere it shows up. Capacity has
+// no natural icon, so it gets a plain number badge instead.
+function busEquipmentBadges(bus) {
+	if (!bus) return "";
+	const badges = [];
+	if (bus.sleeper) badges.push('<span class="rux-icon rux-tasks__equip-icon" title="Sleeper">airline_seat_flat</span>');
+	if (Number(bus.capacity || 0) >= 56) {
+		badges.push(`<span class="rux-tasks__equip-badge" title="${escapeAttr(bus.capacity)} passengers">${escapeHtml(bus.capacity)}</span>`);
+	}
+	if (bus.ada_lift) badges.push('<span class="rux-icon rux-tasks__equip-icon" title="ADA lift">accessible</span>');
+	return badges.join("");
+}
+
+function busDetailLine(bus) {
+	if (!bus) return "Bus details unavailable";
+	return `${busEquipmentBadges(bus)}<span>Bus ${escapeHtml(bus.number ?? "—")}</span>`;
+}
+
+// `severity` splits "not checked" into two distinct problems: no bus
+// assigned yet is a normal, still-in-progress state (warning/yellow, same
+// as any other not-done-yet item); a bus that IS assigned but doesn't meet
+// the requirement is an active conflict someone needs to fix (danger/red),
+// not just an outstanding task.
 function equipmentResult(trip, leg, id) {
 	const assignments = assignmentsForLeg(trip, leg);
-	if (!assignments.length) return { checked: false, detail: "No bus assigned" };
+	if (!assignments.length) return { checked: false, severity: "missing", detail: "No bus assigned" };
 	const failures = assignments.filter((assignment) => {
 		const bus = assignment.buses || assignment.bus;
 		if (!bus) return true;
@@ -193,17 +266,13 @@ function equipmentResult(trip, leg, id) {
 	if (!failures.length) {
 		return {
 			checked: true,
-			detail: assignments.map((a) => `Bus ${a.buses?.number ?? a.bus?.number ?? "—"}`).join(", "),
+			detail: assignments.map((a) => busDetailLine(a.buses || a.bus)).join(", "),
 		};
 	}
 	return {
 		checked: false,
-		detail: failures.map((a) => {
-			const bus = a.buses || a.bus;
-			if (!bus) return "Bus details unavailable";
-			if (id === "pax56") return `Bus ${bus.number ?? "—"} seats ${bus.capacity || 0}`;
-			return `Bus ${bus.number ?? "—"} does not qualify`;
-		}).join(", "),
+		severity: "conflict",
+		detail: failures.map((a) => busDetailLine(a.buses || a.bus)).join(", "),
 	};
 }
 
@@ -243,7 +312,7 @@ function isTripReady(trip) {
 }
 
 function isPrepDone(trip, leg) {
-	const prepDone = MANUAL_ITEMS.every((item) => trip[`${item.suffix}_${leg}`]);
+	const prepDone = visibleManualItems(trip, leg).every((item) => trip[`${item.suffix}_${leg}`]);
 	const drivers = reminderDrivers(trip, leg);
 	const remindersDone = drivers.length > 0 && drivers.every((driver) => driver.trip_reminder_sent);
 	const envelopesDone = drivers.length > 0 && drivers.every((driver) => driver.envelope_printed);
@@ -282,18 +351,21 @@ function tripsForDate(allTrips, iso) {
 function renderTrip(trip, leg) {
 	const ready = isTripReady(trip);
 	const computedRows = COMPUTED_ITEMS
-		.map(
-			(item) => `
-				<label class="rux-checkbox">
-					<input type="checkbox" disabled ${item.checked(trip) ? "checked" : ""} />
-					${item.label}
+		.map((item) => {
+			const detail = item.detail?.(trip);
+			const checked = item.checked(trip);
+			return `
+				<label class="rux-checkbox rux-tasks__automatic-check ${checked ? "rux-tasks__automatic-check--complete" : ""}">
+					<input type="checkbox" disabled ${checked ? "checked" : ""} />
+					<span>${item.label}${detail ? ` <span class="rux-tasks__item-detail">· ${escapeHtml(detail)}</span>` : ""}</span>
 				</label>
-			`,
-		)
+			`;
+		})
 		.join("");
-	const manualFields = MANUAL_ITEMS.map((item) => `${item.suffix}_${leg}`);
-	const manualDone = MANUAL_ITEMS.every((item) => trip[`${item.suffix}_${leg}`]);
-	const manualRows = MANUAL_ITEMS
+	const manualItems = visibleManualItems(trip, leg);
+	const manualFields = manualItems.map((item) => `${item.suffix}_${leg}`);
+	const manualDone = manualItems.every((item) => trip[`${item.suffix}_${leg}`]);
+	const manualRows = manualItems
 		.map((item, i) => `
 			<div class="rux-tasks__task-row">
 				<label class="rux-checkbox">
@@ -337,13 +409,10 @@ function renderTrip(trip, leg) {
 	const requirementsHtml = requirementRows.length ? `
 		<div class="rux-tasks__section rux-tasks__section--prep">
 			<div class="rux-tasks__checklist">
-				<div class="rux-tasks__section-header">
-					<p class="rux-tasks__requirements-title">Requirements</p>
-					<span class="rux-badge ${requirementsDone ? "rux-badge--success" : "rux-badge--warning"}">${requirementsDone ? "Done" : "Pending"}</span>
-				</div>
+				<p class="rux-tasks__requirements-title">Requirements</p>
 				${requirementRows.map((row) => row.kind === "manual" ? `
 					<div class="rux-tasks__requirement-row">
-						<label class="rux-checkbox">
+						<label class="rux-checkbox rux-tasks__automatic-check ${row.checked ? "rux-tasks__automatic-check--complete" : ""}">
 							<input type="checkbox" data-task-trip="${trip.id}" data-task-field="${row.field}" ${trip[row.field] ? "checked" : ""} />
 							${row.label}
 						</label>
@@ -353,56 +422,43 @@ function renderTrip(trip, leg) {
 					</div>
 				` : `
 					<div class="rux-tasks__requirement-row rux-tasks__requirement-row--automatic">
-						<label class="rux-checkbox">
+						<label class="rux-checkbox rux-tasks__automatic-check ${row.checked ? "rux-tasks__automatic-check--complete" : ""}">
 							<input type="checkbox" disabled ${row.checked ? "checked" : ""} />
 							${row.label}
 						</label>
-						<span class="rux-tasks__requirement-detail ${row.checked ? "" : "rux-tasks__requirement-detail--warning"}">${escapeHtml(row.detail)}</span>
+						<span class="rux-tasks__requirement-detail ${row.severity === "conflict" ? "rux-tasks__requirement-detail--danger" : row.checked ? "" : "rux-tasks__requirement-detail--warning"}">${row.detail}</span>
 					</div>
 				`).join("")}
 			</div>
 		</div>
 	` : "";
+	const overallDone = ready && manualDone && envelopesDone && remindersDone && requirementsDone;
 	return `
 		<div class="rux-tasks__trip">
 			<div class="rux-tasks__trip-header">
-				<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
-				<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")}</p>
+				<div>
+					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
+					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")}</p>
+				</div>
+				${statusIndicator(overallDone, "All done", "Still needs attention")}
 			</div>
 			<div class="rux-tasks__section rux-tasks__section--readiness">
 				<div class="rux-tasks__checklist">
-					<div class="rux-tasks__section-header">
-						<p class="rux-tasks__requirements-title">Trip Readiness</p>
-						<span class="rux-badge ${ready ? "rux-badge--success" : "rux-badge--warning"}">${ready ? "Ready" : "Pending"}</span>
-					</div>
+					<p class="rux-tasks__requirements-title">Trip Readiness</p>
 					${computedRows}
 				</div>
 			</div>
 			<div class="rux-tasks__section rux-tasks__section--prep">
 				<div class="rux-tasks__checklist">
-					<div class="rux-tasks__section-header">
-						<p class="rux-tasks__requirements-title">To Do</p>
-						<span class="rux-badge ${manualDone ? "rux-badge--success" : "rux-badge--warning"}">${manualDone ? "Done" : "Pending"}</span>
-					</div>
+					<p class="rux-tasks__requirements-title">To Do</p>
 					${manualRows}
+					${envelopeRows}
 				</div>
 			</div>
 			<div class="rux-tasks__section rux-tasks__section--prep">
 				<div class="rux-tasks__checklist">
-					<div class="rux-tasks__section-header">
-						<p class="rux-tasks__requirements-title">Driver Reminder</p>
-						<span class="rux-badge ${remindersDone ? "rux-badge--success" : "rux-badge--warning"}">${remindersDone ? "Done" : "Pending"}</span>
-					</div>
+					<p class="rux-tasks__requirements-title">Driver Reminder</p>
 					<div class="rux-tasks__driver-reminders-list">${reminderRows}</div>
-				</div>
-			</div>
-			<div class="rux-tasks__section rux-tasks__section--prep">
-				<div class="rux-tasks__checklist">
-					<div class="rux-tasks__section-header">
-						<p class="rux-tasks__requirements-title">Print Envelope</p>
-						<span class="rux-badge ${envelopesDone ? "rux-badge--success" : "rux-badge--warning"}">${envelopesDone ? "Done" : "Pending"}</span>
-					</div>
-					<div class="rux-tasks__driver-reminders-list">${envelopeRows}</div>
 				</div>
 			</div>
 			${requirementsHtml}
@@ -464,6 +520,39 @@ function render() {
 		: `<p class="rux-tasks__empty">No trips departing</p>`;
 }
 
+// Auto-checks the matching box when its shortcut is actually opened —
+// clicking "Open contact info"/"Print envelope"/etc. only happens when
+// someone's about to do that step, so there's no real "opened but didn't
+// do it" case worth a confirm() prompt for. No-op if already checked, so
+// re-opening something already marked done doesn't re-fire a write.
+async function markTripFieldDone(trip, field) {
+	if (trip[field]) return;
+	trip[field] = true;
+	render();
+	try {
+		await updateTripTaskFlags(trip.id, { [field]: true });
+	} catch (err) {
+		console.warn(`Could not save ${field}:`, err);
+		trip[field] = false;
+		render();
+		window.Rux?.toast?.("Could not save — try again", { variant: "danger" });
+	}
+}
+
+async function markDriverFieldDone(driver, field) {
+	if (driver[field]) return;
+	driver.source[field] = true;
+	render();
+	try {
+		await updateTripDriverTaskFlag(driver.id, field, true);
+	} catch (err) {
+		console.warn(`Could not save ${field}:`, err);
+		driver.source[field] = false;
+		render();
+		window.Rux?.toast?.("Could not save — try again", { variant: "danger" });
+	}
+}
+
 // Optimistic: flips the checkbox and the in-memory trip object (the same
 // object window.RuxTrips.list() returns, so it stays consistent with the
 // scheduler's own view) immediately, then persists in the background.
@@ -521,6 +610,36 @@ body?.addEventListener("change", async (event) => {
 	}
 });
 
+// Shared "Open" / "Open & Mark as Complete" popover for every task
+// shortcut — one instance, content is static so it's built once instead of
+// per-open like the menus elsewhere in this app that rebuild per click.
+let taskActionMenu = null;
+let pendingTaskAction = null;
+
+function ensureTaskActionMenu() {
+	if (taskActionMenu) return taskActionMenu;
+	taskActionMenu = document.createElement("div");
+	taskActionMenu.className = "rux-menu rux-popover";
+	taskActionMenu.hidden = true;
+	taskActionMenu.setAttribute("role", "menu");
+	taskActionMenu.innerHTML = `
+		<button type="button" class="rux-menu__item" role="menuitem" data-task-menu-choice="open">Open</button>
+		<button type="button" class="rux-menu__item" role="menuitem" data-task-menu-choice="open-complete">Open &amp; Mark as Complete</button>
+	`;
+	document.body.appendChild(taskActionMenu);
+	taskActionMenu.addEventListener("click", (event) => {
+		const choice = event.target.closest("[data-task-menu-choice]");
+		if (!choice || !pendingTaskAction) return;
+		const { open, markDone } = pendingTaskAction;
+		const opened = open();
+		if (choice.dataset.taskMenuChoice === "open-complete" && opened !== false) markDone();
+	});
+	taskActionMenu.addEventListener("rux:menu-close", () => {
+		pendingTaskAction = null;
+	});
+	return taskActionMenu;
+}
+
 body?.addEventListener("click", (event) => {
 	const action = event.target.closest("[data-task-action]");
 	if (!action) return;
@@ -529,43 +648,55 @@ body?.addEventListener("click", (event) => {
 	);
 	if (!trip) return;
 	const leg = action.dataset.taskLeg || "outbound";
+
+	let open = null;
+	let markDone = null;
+
 	if (action.dataset.taskAction === "contact-info") {
-		openTripContactInfo(trip, leg);
-		return;
-	}
-	if (action.dataset.taskAction === "driver-reminder") {
+		open = () => openTripContactInfo(trip, leg);
+		markDone = () => markTripFieldDone(trip, `driver_contact_sent_${leg}`);
+	} else if (action.dataset.taskAction === "driver-reminder") {
 		const driver = reminderDrivers(trip, leg).find(
 			(item) => String(item.id) === String(action.dataset.tripDriverId),
 		);
 		if (!driver) return;
-		window.ContactInfoModal?.open(driverReminderMessage(trip, driver, leg), {
-			title: `Driver Reminder — ${driver.name}`,
-			previewLabel: `Editable reminder for ${driver.name}`,
-			editable: true,
-			externalUrl: driver.textingUrl,
-		});
-		return;
-	}
-	if (action.dataset.taskAction === "print-envelope") {
+		open = () => {
+			window.ContactInfoModal?.open(driverReminderMessage(trip, driver, leg), {
+				title: `Driver Reminder — ${driver.name}`,
+				previewLabel: `Editable reminder for ${driver.name}`,
+				editable: true,
+				externalUrl: driver.textingUrl,
+			});
+			return true;
+		};
+		markDone = () => markDriverFieldDone(driver, "trip_reminder_sent");
+	} else if (action.dataset.taskAction === "print-envelope") {
 		const driver = reminderDrivers(trip, leg).find(
 			(item) => String(item.id) === String(action.dataset.tripDriverId),
 		);
 		if (!driver) return;
-		const prepared = envelopeTrip(trip, leg);
-		if (!prepared) {
-			window.Rux?.toast?.("Assign a bus before opening the envelope");
-			return;
-		}
-		const assignment = assignmentsForLeg(trip, leg)[0];
-		window.TripEnvelope?.open(prepared, [], {
-			busNumber: assignment?.buses?.number ?? assignment?.bus?.number ?? "",
-			recipient: { name: driver.name, role: driver.role },
-		});
-		return;
+		open = () => {
+			const prepared = envelopeTrip(trip, leg);
+			if (!prepared) {
+				window.Rux?.toast?.("Assign a bus before opening the envelope");
+				return false;
+			}
+			const assignment = assignmentsForLeg(trip, leg)[0];
+			window.TripEnvelope?.open(prepared, [], {
+				busNumber: assignment?.buses?.number ?? assignment?.bus?.number ?? "",
+				recipient: { name: driver.name, role: driver.role },
+			});
+			return true;
+		};
+		markDone = () => markDriverFieldDone(driver, "envelope_printed");
+	} else if (action.dataset.taskAction === "itinerary") {
+		open = () => openTripItineraryDoc(trip);
+		markDone = () => markTripFieldDone(trip, `itinerary_printed_${leg}`);
 	}
-	if (action.dataset.taskAction === "itinerary") {
-		openTripItineraryDoc(trip);
-	}
+
+	if (!open) return;
+	pendingTaskAction = { open, markDone };
+	window.RuxMenu?.open(action, ensureTaskActionMenu(), { placement: "bottom-end" });
 });
 
 // Same polling recipe as trip-history.js — the underlying trips array is

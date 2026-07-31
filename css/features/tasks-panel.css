@@ -21,12 +21,23 @@
 .rux-tasks__trip {
 	padding: var(--rux-space-3);
 	background: var(--rux-surface-field);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
-	border-radius: var(--rux-radius-md);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-0);
 }
 
 .rux-tasks__trip + .rux-tasks__trip {
 	margin-top: var(--rux-space-2);
+}
+
+/* One status indicator per trip now (see statusIndicator in
+   tasks-panel.js), not one per section — right-aligned against the
+   destination/trip-type + customer stack rather than repeated down the
+   card. */
+.rux-tasks__trip-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-2);
 }
 
 .rux-tasks__trip-title {
@@ -61,16 +72,23 @@
 	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
-.rux-tasks__section-header {
-	display: flex;
+/* One overall status per trip (see statusIndicator in tasks-panel.js) —
+   complete is a checkmark, incomplete is the same "schedule" clock icon
+   billing-config.js's own pending status uses, so "still pending" reads
+   the same way everywhere in the app. */
+.rux-tasks__status {
+	display: inline-flex;
+	flex: none;
 	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-space-2);
-	margin-bottom: var(--rux-space-1);
+	justify-content: center;
 }
 
-.rux-tasks__section-header .rux-tasks__requirements-title {
-	margin-bottom: 0;
+.rux-tasks__status--complete {
+	color: var(--rux-success);
+}
+
+.rux-tasks__status--pending {
+	color: var(--rux-warning);
 }
 
 /* .rux-checkbox (css/base/form.css) already handles the row layout, the
@@ -103,18 +121,26 @@
 	flex: none;
 }
 
-.rux-tasks__driver-reminder {
-	color: var(--rux-text-secondary);
-}
-
 .rux-tasks__driver-bus,
-.rux-tasks__driver-empty {
+.rux-tasks__driver-empty,
+.rux-tasks__item-detail {
 	color: var(--rux-text-tertiary);
 	font-size: var(--rux-text-100);
 }
 
 .rux-tasks__driver-empty {
 	display: block;
+}
+
+/* Automated checks remain disabled, but successful results use the same
+   accent checkbox and readable text treatment as completed manual tasks. */
+.rux-tasks__automatic-check--complete:has(input:disabled) {
+	color: var(--rux-text-primary);
+}
+
+.rux-tasks__automatic-check--complete input:checked:disabled {
+	background-color: var(--rux-checkbox-checked-bg);
+	border-color: var(--rux-checkbox-checked-border);
 }
 
 .rux-tasks__empty {
@@ -144,24 +170,61 @@
 	grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.7fr);
 	align-items: center;
 	gap: var(--rux-space-2);
-	min-height: 2rem;
+	min-height: var(--rux-input-height);
 }
 
+/* Sized like every other .rux-input in the app (--rux-input-height/
+   --rux-input-font-size) — only min-width/max-width/justify-self are this
+   context's own; height and font-size used to be overridden smaller/taller
+   than the standard input, which made this one field read as visually
+   distinct from the rest. Capped narrower than its grid column (which also
+   sizes the automatic rows' bus/equipment detail) and pinned to the right
+   edge so it lines up with those rows instead of stretching to fill. */
 .rux-tasks__requirement-input {
 	min-width: 0;
-	height: 2rem;
-	padding-block: 0;
-	font-size: var(--rux-text-100);
+	max-width: 80px;
+	justify-self: end;
+	text-align: right;
 }
 
 .rux-tasks__requirement-detail {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--rux-space-1);
 	color: var(--rux-text-tertiary);
 	font-size: var(--rux-text-100);
 	line-height: 1.3;
+	text-align: right;
+}
+
+/* Same icon set/style as the Fleet tab's own Equipment column
+   (.fleet-app__equip-icon) — shows the assigned bus's full equipment at a
+   glance, not just whichever single requirement this row is checking.
+   --_icon-size (not width/height directly) is what .rux-icon actually
+   drives its glyph's font-size from. Sized to --rux-button-icon-size, the
+   same glyph size buttons use everywhere else, rather than a one-off value
+   for this context. */
+.rux-tasks__equip-icon {
+	--_icon-size: var(--rux-button-icon-size);
+	flex-shrink: 0;
+}
+
+.rux-tasks__equip-badge {
+	flex-shrink: 0;
+	color: inherit;
+	font-weight: var(--rux-weight-semibold);
 }
 
 .rux-tasks__requirement-detail--warning {
 	color: var(--rux-warning-text, var(--rux-warning));
+}
+
+/* An assigned bus that fails the requirement (wrong capacity, no lift, no
+   sleeper) is an active conflict to fix, not just an outstanding task —
+   distinct from --warning, which is "no bus assigned yet" (still normal). */
+.rux-tasks__requirement-detail--danger {
+	color: var(--rux-danger-text, var(--rux-danger));
 }
 
 @media (max-width: 420px) {

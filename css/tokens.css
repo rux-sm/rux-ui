@@ -17,15 +17,15 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.28 022.0); /* Infernal — Vivid, true red */
-	--rux-orange: oklch(50.0% 0.28 050.0); /* Phoenix  — Punchy warm orange */
-	--rux-yellow: oklch(50.0% 0.28 085.0); /* Coin     — Bright, glowing yellow */
-	--rux-green:  oklch(50.0% 0.28 140.0); /* Druid    — Rich emerald green */
-	--rux-cyan:   oklch(50.0% 0.28 195.0); /* Frost    — Crisp electric cyan */
-	--rux-blue:   oklch(60.0% 0.28 255.0); /* Mana     — Vibrant cobalt blue */
-	--rux-purple: oklch(50.0% 0.28 290.0); /* Void — Neon violet */
-	--rux-pink:   oklch(50.0% 0.28 350.0); /* Faye — Radiant magenta */
-	--rux-gray:   oklch(40.0% 0.00 255.0); /* Faye — Radiant magenta */
+	--rux-red:    oklch(60.0% 0.28 022.0); /* Infernal — Vivid, true red         */
+	--rux-orange: oklch(80.0% 0.24 050.0); /* Phoenix  — Punchy warm orange      */
+	--rux-yellow: oklch(80.0% 0.22 085.0); /* Coin     — Bright, glowing yellow  */
+	--rux-green:  oklch(50.0% 0.28 140.0); /* Druid    — Rich emerald green      */
+	--rux-cyan:   oklch(50.0% 0.28 195.0); /* Frost    — Crisp electric cyan     */
+	--rux-blue:   oklch(60.0% 0.28 255.0); /* Mana     — Vibrant cobalt blue     */
+	--rux-purple: oklch(50.0% 0.28 290.0); /* Void     — Neon violet             */
+	--rux-pink:   oklch(50.0% 0.28 350.0); /* Faye     — Radiant magenta         */
+	--rux-gray:   oklch(40.0% 0.00 255.0); /* Coal     —                         */
 
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
