@@ -4,6 +4,7 @@ import {
 	updateTripTaskFlags,
 } from "../data/trip-db.js?v=21";
 import { latestDocument } from "../core/trip-documents.js";
+import { supabase } from "../data/supabase.js";
 
 const pane = document.getElementById("rp-pane-tasks");
 const titleEl = document.getElementById("rp-tasks-departures-title");
@@ -189,14 +190,27 @@ function openTripItineraryDoc(trip) {
 	return true;
 }
 
-function driverReminderMessage(trip, driver, leg) {
+function driverReminderMessage(trip, driver, leg, assignmentsUrl = "") {
 	const isReturn = leg === "return";
 	const date = isReturn ? trip.return_start_date : trip.start_date;
 	const dateText = date ? formatDayLabel(date) : "[Add date]";
 	const stops = (trip.trip_stops || []).filter((stop) => (stop.leg || "outbound") === leg);
 	const pickup = stops.find((stop) => stop.type === "pickup");
 	const spot = pickup?.spot || (isReturn ? trip.return_spot_time : trip.spot_time) || "[Add spot time]";
-	return `Hi ${driver.name},\n\nDriver reminder for ${dateText}${trip.destination ? ` — ${trip.destination}` : ""}.\nBus: ${driver.busNumber}\nSpot time: ${spot}`;
+	const firstName = String(driver.name || "Driver").trim().split(/\s+/)[0] || "Driver";
+	const assignments = assignmentsUrl ? `\n\nYour assignments:\n${assignmentsUrl}` : "";
+	return `Hi ${firstName}\n\nDriver reminder for ${dateText}${trip.destination ? ` — ${trip.destination}` : ""}.\nBus: ${driver.busNumber}\nSpot time: ${spot}${assignments}`;
+}
+
+async function driverAssignmentsUrl(driverId) {
+	if (!driverId) return "";
+	const { data, error } = await supabase.rpc("get_driver_schedule_share_for_driver", {
+		p_driver_id: driverId,
+	});
+	if (error || !data?.token) return "";
+	const url = new URL("d.html", "https://rux-sm.github.io/rux-ui/");
+	url.searchParams.set("s", data.token);
+	return url.href;
 }
 
 function envelopeTrip(trip, leg) {
@@ -373,7 +387,7 @@ function renderTrip(trip, leg) {
 					${item.label}
 				</label>
 				${item.suffix === "driver_contact_sent" ? taskActionButton("contact-info", "Open contact info", `data-task-trip="${trip.id}" data-task-leg="${leg}"`) : ""}
-				${item.suffix === "itinerary_printed" ? taskActionButton("itinerary", "Open itinerary", `data-task-trip="${trip.id}"`) : ""}
+				${item.suffix === "itinerary_printed" ? taskActionButton("itinerary", "Open itinerary", `data-task-trip="${trip.id}" data-task-leg="${leg}"`) : ""}
 			</div>
 		`)
 		.join("");
@@ -660,12 +674,16 @@ body?.addEventListener("click", (event) => {
 			(item) => String(item.id) === String(action.dataset.tripDriverId),
 		);
 		if (!driver) return;
+		const assignmentsUrlPromise = driverAssignmentsUrl(driver.driver_id);
 		open = () => {
-			window.ContactInfoModal?.open(driverReminderMessage(trip, driver, leg), {
-				title: `Driver Reminder — ${driver.name}`,
-				previewLabel: `Editable reminder for ${driver.name}`,
-				editable: true,
-				externalUrl: driver.textingUrl,
+			void assignmentsUrlPromise.then((assignmentsUrl) => {
+				if (!assignmentsUrl) window.Rux?.toast?.("No active assignment link for this driver");
+				window.ContactInfoModal?.open(driverReminderMessage(trip, driver, leg, assignmentsUrl), {
+					title: `Driver Reminder — ${driver.name}`,
+					previewLabel: `Editable reminder for ${driver.name}`,
+					editable: true,
+					externalUrl: driver.textingUrl,
+				});
 			});
 			return true;
 		};
