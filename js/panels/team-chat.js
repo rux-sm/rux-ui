@@ -22,6 +22,18 @@ const EMOJI_CATEGORIES = [
 	{ label: "Other", emoji: ["🎉", "🎈", "🚀", "💯", "✅", "❌", "⚠️", "💤", "🔔", "📌", "💡", "⏰", "🚌", "👀"] },
 ];
 
+// A message that's only emoji (optionally with whitespace between them) reads
+// as a reaction-in-message-form — render it larger, same "jumbomoji" idea as
+// Slack/Discord. Capped at 6 glyphs so a long run of emoji doesn't turn into
+// a wall of giant characters.
+const EMOJI_ONLY_RE = /^[\p{Extended_Pictographic}\u200D\uFE0F\s]+$/u;
+function isEmojiOnlyMessage(text) {
+	const trimmed = String(text || "").trim();
+	if (!trimmed || !EMOJI_ONLY_RE.test(trimmed)) return false;
+	const count = trimmed.match(/\p{Extended_Pictographic}/gu)?.length || 0;
+	return count > 0 && count <= 6;
+}
+
 const btn = document.getElementById("team-chat-btn");
 const badge = document.getElementById("team-chat-badge");
 
@@ -270,7 +282,7 @@ if (btn && badge) {
 				const pillsHtml = [...groups.entries()]
 					.map(([emoji, profileIds]) => {
 						const mine = myProfileId && profileIds.includes(myProfileId);
-						return `<button type="button" class="rux-team-chat__reaction-pill${mine ? " is-active" : ""}" data-react-emoji="${emoji}" data-message-id="${message.id}">${emoji} ${profileIds.length}</button>`;
+						return `<button type="button" class="rux-team-chat__reaction-pill${mine ? " is-active" : ""}" data-react-emoji="${emoji}" data-message-id="${message.id}"><span class="rux-team-chat__reaction-emoji">${emoji}</span> ${profileIds.length}</button>`;
 					})
 					.join("");
 				return `
@@ -281,7 +293,7 @@ if (btn && badge) {
 								<span class="rux-team-chat__message-name">${escapeHtml(message.sender_name)}</span>
 								<span class="rux-team-chat__message-time">${timeLabel(message.created_at)}</span>
 							</div>
-							<p class="rux-team-chat__message-text">${escapeHtml(message.body)}</p>
+							<p class="rux-team-chat__message-text${isEmojiOnlyMessage(message.body) ? " rux-team-chat__message-text--jumbo" : ""}">${escapeHtml(message.body)}</p>
 							${pillsHtml ? `<div class="rux-team-chat__reactions">${pillsHtml}</div>` : ""}
 						</div>
 						<div class="rux-team-chat__message-actions">

@@ -940,6 +940,16 @@
 	color: var(--rux-accent);
 }
 
+/* A trip bar is selected on the calendar — marks which day column(s) it
+   spans so it's obvious at a glance which drivers are free during that
+   window. Background (not box-shadow) on the header so it layers cleanly
+   under .is-today's own inset box-shadow instead of fighting over the same
+   property. */
+.rux-driver-grid__day-label.is-trip-range {
+	background: color-mix(in oklab, var(--rux-accent) 16%, transparent);
+	border-radius: var(--rux-radius-sm) var(--rux-radius-sm) 0 0;
+}
+
 .rux-driver-grid__cell {
 	display: block;
 	width: 100%;
@@ -1022,14 +1032,24 @@
 	box-shadow: 0 0 0 2px var(--rux-danger);
 }
 
+/* Same trip-range marker as the day header above, on every cell in that
+   column regardless of driver. outline (not box-shadow) so it never fights
+   the inset box-shadow rings the busy/conflict/unavailable combos already
+   use for their own signal. */
+.rux-driver-grid__cell.is-trip-range {
+	outline: 1px solid var(--rux-gray);
+	outline-offset: -1px;
+}
+
 .rux-driver-grid__cell:hover {
 	filter: brightness(1.12);
 }
 
+/* revisit */
 .rux-driver-grid__cell:focus-visible,
 .rux-driver-grid__name:focus-visible {
-	outline: 2px solid var(--rux-accent);
-	outline-offset: 1px;
+	outline: 1px solid var(--rux-white);
+	outline-offset: 0;
 }
 
 .rux-driver-grid__popover {

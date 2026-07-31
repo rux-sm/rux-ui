@@ -11,7 +11,7 @@
 
 	/* ─── COLOR · base ─────────────────────────────────────────────────────── */
 
-	--rux-neutral: oklch(60% 0.004 255); /* neutral */
+	--rux-neutral: oklch(50% 0.004 255); /* neutral */
 	--rux-white:   oklch(from var(--rux-neutral) 100% c h);
 	--rux-black:   oklch(from var(--rux-neutral) 000% c h);
 
@@ -25,7 +25,7 @@
 	--rux-blue:   oklch(60.0% 0.28 255.0); /* Mana     — Vibrant cobalt blue */
 	--rux-purple: oklch(50.0% 0.28 290.0); /* Void — Neon violet */
 	--rux-pink:   oklch(50.0% 0.28 350.0); /* Faye — Radiant magenta */
-	--rux-gray:   oklch(60.0% 0.00 255.0); /* Faye — Radiant magenta */
+	--rux-gray:   oklch(40.0% 0.00 255.0); /* Faye — Radiant magenta */
 
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
@@ -46,8 +46,8 @@
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-border-input:  oklch(from var(--rux-neutral) 30% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 36% c h / 100%);
-	--rux-divider:       oklch(from var(--rux-neutral) 36% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
@@ -668,7 +668,7 @@
 
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background:       oklch(from var(--rux-gray) l c h / 50%);
+	--rux-button-default-background:       oklch(from var(--rux-gray) l c h / 100%);
 	--rux-button-default-border:           var(--rux-button-border-width) solid
 	                                        oklch(from var(--rux-gray) l c h / 100%);
 	--rux-button-default-text:             var(--rux-fg);
@@ -712,7 +712,7 @@
 	   toward a backdrop that's visually just "gray" — oklab blends the
 	   Cartesian a/b axes directly instead, so that can't happen. */
 	--rux-button-accent-background:   	color-mix(in oklab, oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) c h) var(--rux-trip-bar-bg-opacity), var(--rux-surface-card));
-	--rux-button-accent-background:   	color-mix(in oklch, var(--rux-accent) 50%, transparent);
+	--rux-button-accent-background:   	color-mix(in oklch, var(--rux-accent) 100%, transparent);
 	--rux-button-accent-text:         	var(--rux-fg-on-accent);
 	--rux-button-accent-border-color:	oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) c h / 100%);
 	--rux-button-accent-border:       	var(--rux-button-border-width) solid var(--rux-button-accent-border-color);

@@ -5,7 +5,7 @@
   const MAPBOX_TOKEN_KEY = "mapbox-token-v1";
   const SPOT_PADDING_KEY = "spot-padding-v1";
   const MISSIVE_URL_KEY = "missive-search-url-v1";
-  const DEFAULT_MISSIVE_URL = "https://mail.missive.app/#search/";
+  const DEFAULT_MISSIVE_URL = "https://mail.missiveapp.com/#search/";
   const DEFAULT_SPOT_PADDING = 15;
   const DEFAULT_YARD = {
     name: "Yard",

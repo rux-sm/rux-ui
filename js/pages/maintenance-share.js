@@ -35,6 +35,38 @@ const range = (start, end) => `${start.toLocaleDateString("en-US", {
 	month: "short", day: "numeric", year: "numeric",
 })}`;
 
+function changeTimestamp(value) {
+	const d = new Date(value);
+	if (Number.isNaN(d.getTime())) return "";
+	return d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+}
+
+function changeLine(row) {
+	const label = row.destination || row.tripRef || "Trip";
+	if (row.action === "created") return `Added — ${label}`;
+	if (row.action === "deleted") return `Removed — ${label}`;
+	if (row.action === "assignment_changed") {
+		const bus = (row.changes || []).find((change) => change.field === "bus");
+		if (bus?.before && bus?.after) return `Moved — ${label}: ${bus.before} → ${bus.after}`;
+		if (bus?.after) return `Assigned — ${label}: ${bus.after}`;
+		if (bus?.before) return `Unassigned — ${label}: removed from ${bus.before}`;
+	}
+	return `Updated — ${label}`;
+}
+
+function renderChanges(rows) {
+	const section = el("section", "maintenance-changes");
+	section.append(el("h2", "maintenance-changes__title", "Recent Changes"));
+	if (!rows.length) {
+		section.append(el("p", "maintenance-changes__empty", "No recent changes."));
+		return section;
+	}
+	rows.forEach((row) => {
+		section.append(el("p", "maintenance-changes__line", `${changeTimestamp(row.createdAt)} — ${changeLine(row)}`));
+	});
+	return section;
+}
+
 function status(icon, title, message) {
 	root.replaceChildren();
 	const section = el("section", "maintenance-share__status");
@@ -135,7 +167,7 @@ function tripBar(item, start, end) {
 	return bar;
 }
 
-function render(data) {
+function render(data, changes = []) {
 	const start = date(data.rangeStart);
 	const end = date(data.rangeEnd);
 	const entries = entriesFor(data.trips || []);
@@ -158,10 +190,12 @@ function render(data) {
 		);
 	}
 	const days = el("div", "maintenance-schedule__days");
-	days.append(el("span", "", "Bus"));
+	days.append(el("span", "", "Bus #"));
 	for (let i = 0; i < 14; i += 1) {
 		const d = addDays(start, i);
-		const cell = el("span", "", `${d.toLocaleDateString("en-US", { weekday: "short" })} ${d.getDate()}`);
+		const weekday = d.toLocaleDateString("en-US", { weekday: "short" });
+		const month = d.toLocaleDateString("en-US", { month: "short" });
+		const cell = el("span", "", `${weekday} ${month} ${d.getDate()}`);
 		if (d.toDateString() === new Date().toDateString()) cell.classList.add("is-today");
 		days.append(cell);
 	}
@@ -186,6 +220,7 @@ function render(data) {
 	}
 	scroll.append(schedule);
 	root.append(scroll);
+	root.append(renderChanges(changes));
 }
 
 async function load() {
@@ -194,12 +229,16 @@ async function load() {
 	const scrollPosition = previousScroller
 		? { left: previousScroller.scrollLeft, top: previousScroller.scrollTop }
 		: null;
-	const { data, error } = await supabase.rpc("get_maintenance_schedule", { p_token: token });
+	const [{ data, error }, changesResult] = await Promise.all([
+		supabase.rpc("get_maintenance_schedule", { p_token: token }),
+		supabase.rpc("get_maintenance_schedule_changes", { p_token: token }),
+	]);
 	if (error || !data) {
 		console.error(error);
 		return status("link_off", "Schedule Unavailable", "This link is inactive or has not been configured.");
 	}
-	render(data);
+	if (changesResult.error) console.warn("Maintenance schedule changes could not be loaded:", changesResult.error);
+	render(data, changesResult.data?.changes || []);
 	if (scrollPosition) {
 		const nextScroller = root.querySelector(".maintenance-schedule__scroll");
 		if (nextScroller) {

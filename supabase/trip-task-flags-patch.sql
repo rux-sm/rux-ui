@@ -19,3 +19,20 @@ alter table public.trips add column if not exists envelope_printed_outbound bool
 alter table public.trips add column if not exists driver_contact_sent_return boolean not null default false;
 alter table public.trips add column if not exists trip_reminder_sent_return boolean not null default false;
 alter table public.trips add column if not exists envelope_printed_return boolean not null default false;
+
+-- Conditional last-minute requirements. The booleans are required for a
+-- task to be complete only when the matching trip requirement is enabled;
+-- reference numbers remain optional. Equipment checks (sleeper, 56 seats,
+-- ADA lift) are derived live from the assigned buses and need no flags.
+alter table public.trips add column if not exists fuel_card_assigned_outbound boolean not null default false;
+alter table public.trips add column if not exists fuel_card_number_outbound text;
+alter table public.trips add column if not exists hotel_booked_outbound boolean not null default false;
+alter table public.trips add column if not exists hotel_itinerary_number_outbound text;
+alter table public.trips add column if not exists fuel_card_assigned_return boolean not null default false;
+alter table public.trips add column if not exists fuel_card_number_return text;
+alter table public.trips add column if not exists hotel_booked_return boolean not null default false;
+alter table public.trips add column if not exists hotel_itinerary_number_return text;
+
+-- Per-recipient reminder state. A replacement driver gets a new assignment
+-- row and therefore starts unchecked instead of inheriting the prior state.
+alter table public.trip_drivers add column if not exists trip_reminder_sent boolean not null default false;

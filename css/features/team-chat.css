@@ -75,7 +75,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	height: 22px;
+	height: var(--rux-control-height);
 	padding: 0 var(--rux-space-2);
 	background: var(--rux-surface-field);
 	border: var(--rux-border-width) solid var(--rux-border);
@@ -87,6 +87,14 @@
 
 .rux-team-chat__reaction-pill:hover {
 	border-color: var(--rux-border-strong);
+}
+
+/* Emoji glyph reads bigger than the count next to it, not scaled together
+   with the pill's own font-size. Same 20px as the picker grid and a jumbo
+   emoji-only message — one consistent emoji size across the chat. */
+.rux-team-chat__reaction-emoji {
+	font-size: var(--rux-text-400);
+	line-height: 1;
 }
 
 .rux-team-chat__reaction-pill.is-active {
@@ -114,11 +122,19 @@
 
 .rux-team-chat__message-text {
 	margin: var(--rux-space-0-5) 0 0;
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-text-200);
 	line-height: 1.4;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
+}
+
+/* A message that's nothing but emoji (see isEmojiOnlyMessage in
+   team-chat.js) reads as a reaction-in-message-form — same 20px as the
+   reaction pills and picker grid, one consistent emoji size everywhere. */
+.rux-team-chat__message-text--jumbo {
+	font-size: var(--rux-text-400);
+	line-height: 1.2;
 }
 
 /* Full emoji picker popover — same .rux-menu/.rux-popover shell as the

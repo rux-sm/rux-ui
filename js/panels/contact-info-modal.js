@@ -24,7 +24,10 @@
 					<textarea class="rux-textarea rux-contact-info-modal__preview" readonly data-contact-info-preview aria-label="Contact info message preview"></textarea>
 				</div>
 				<footer class="rux-modal__footer">
-					<button type="button" class="rux-button rux-button--default" data-rux-dismiss>Close</button>
+					<a class="rux-button rux-button--default" data-contact-info-external target="_blank" rel="noopener noreferrer" hidden>
+						<span class="rux-icon" aria-hidden="true">sms</span>
+						<span data-contact-info-external-label>Copy &amp; open Messages</span>
+					</a>
 					<button type="button" class="rux-button rux-button--accent" data-contact-info-copy>
 						<span class="rux-icon" aria-hidden="true">content_copy</span>
 						<span>Copy message</span>
@@ -34,6 +37,11 @@
 		document.body.appendChild(modal);
 
 		modal.addEventListener("click", async (event) => {
+			const external = event.target.closest("[data-contact-info-external]");
+			if (external && external.href) {
+				void copyText(modal.querySelector("[data-contact-info-preview]").value);
+				return;
+			}
 			const copyBtn = event.target.closest("[data-contact-info-copy]");
 			if (!copyBtn) return;
 			await copyText(modal.querySelector("[data-contact-info-preview]").value);
@@ -69,10 +77,20 @@
 		return copied;
 	}
 
+	// Allowlist, not a free-form link — this URL can come from saved trip/
+	// driver fields, so it's validated the same way regardless of caller.
+	// Google Messages is a driver's own texting link (see driver-reminder in
+	// tasks-panel.js); Missive is a trip's saved customer email thread (see
+	// openTripContactInfo in trip-db.js).
+	const EXTERNAL_HOSTS = new Set(["messages.google.com", "mail.missiveapp.com"]);
+
 	function open(message, {
 		title = "Contact Info",
 		previewLabel = "Contact info message preview",
 		editable = false,
+		externalUrl = "",
+		externalLabel = "Copy & open Messages",
+		externalIcon = "sms",
 	} = {}) {
 		ensureModal();
 		const titleEl = modal.querySelector("#contact-info-modal-title");
@@ -81,6 +99,21 @@
 		preview.setAttribute("aria-label", previewLabel);
 		preview.readOnly = !editable;
 		preview.value = message;
+		const external = modal.querySelector("[data-contact-info-external]");
+		let safeExternalUrl = "";
+		try {
+			const parsed = new URL(externalUrl);
+			if (parsed.protocol === "https:" && EXTERNAL_HOSTS.has(parsed.hostname)) {
+				safeExternalUrl = parsed.href;
+			}
+		} catch (_) {
+			safeExternalUrl = "";
+		}
+		external.hidden = !safeExternalUrl;
+		external.removeAttribute("href");
+		if (safeExternalUrl) external.href = safeExternalUrl;
+		modal.querySelector("[data-contact-info-external-label]").textContent = externalLabel;
+		external.querySelector(".rux-icon").textContent = externalIcon;
 		window.Rux?.openModal?.(modal);
 	}
 

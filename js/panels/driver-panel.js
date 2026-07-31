@@ -441,6 +441,7 @@
     document.getElementById("dp-last-name").value       = last;
     document.getElementById("dp-short-name").value      = d.short_name || "";
     document.getElementById("dp-phone").value           = d.phone          || "";
+		document.getElementById("dp-texting-url").value     = d.texting_url    || "";
     document.getElementById("dp-email").value           = d.email          || "";
     document.getElementById("dp-address").value         = d.address        || "";
     document.getElementById("dp-city").value            = d.city           || "";
@@ -536,6 +537,7 @@
       short_name:      document.getElementById("dp-short-name").value.trim() || null,
       email:           document.getElementById("dp-email").value.trim()      || null,
       phone:           document.getElementById("dp-phone").value.trim()      || null,
+			texting_url:     document.getElementById("dp-texting-url").value.trim() || null,
       address:         document.getElementById("dp-address").value.trim()    || null,
       city:            document.getElementById("dp-city").value.trim()       || null,
       address_state:   document.getElementById("dp-state").value.trim().toUpperCase() || null,
@@ -690,6 +692,20 @@
 
   document.getElementById("dp-btn-save").addEventListener("click", async () => {
     if (!db) return;
+		const textingUrlInput = document.getElementById("dp-texting-url");
+		textingUrlInput.setCustomValidity("");
+		if (textingUrlInput.value.trim()) {
+			try {
+				const textingUrl = new URL(textingUrlInput.value.trim());
+				if (textingUrl.protocol !== "https:" || textingUrl.hostname !== "messages.google.com") {
+					throw new Error("Unsupported texting URL");
+				}
+			} catch (_) {
+				textingUrlInput.setCustomValidity("Enter a secure messages.google.com conversation URL");
+				textingUrlInput.reportValidity();
+				return;
+			}
+		}
     const payload = readForm();
     if (!payload.name) {
       document.getElementById("dp-first-name").focus();
@@ -1278,7 +1294,7 @@
   async function init() {
     if (!db) {
       try {
-        db = await import("../data/driver-db.js?v=2");
+			db = await import("../data/driver-db.js?v=3");
       } catch (err) {
         console.warn("Could not load driver-db:", err);
         return;

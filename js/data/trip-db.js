@@ -40,6 +40,17 @@ import {
 	// changed event. Kept separate from currentLoadedTrip so selecting a bar
 	// never touches the editor's own dirty/delete-enabled state.
 	let selectedBarTrip = null;
+	// Which leg's bar was actually clicked to produce selectedBarTrip — lets
+	// the Contact Info button infer outbound vs. return on a split trip
+	// straight from bar selection instead of always asking (see
+	// activeContactLeg below). Only trusted when it's still about the same
+	// trip id activeContactTrip() resolves to.
+	let selectedBarLeg = null;
+	// Leg-picker popover for the general Contact Info button — fallback for
+	// when a split trip's leg can't be inferred from bar selection (see
+	// contactInfoBtn in initTripDB). Lazily created, one shared instance
+	// same as the other singleton menus/modals in this app.
+	let contactLegMenu = null;
 	let currentStopsHydrated = true;
 	let driverShareFieldsAvailable = null;
 
@@ -651,7 +662,7 @@ import {
 				return_start_date, return_end_date, trip_type,
 				trip_assignments(
 					id, bus_id, leg,
-					buses(id, number),
+					buses(id, number, capacity, ada_lift, sleeper),
 					trip_drivers(driver_id, drivers(id, name))
 				)
 			`);
@@ -1494,16 +1505,17 @@ import {
 	/* ── Fetch ───────────────────────────────────────────────────────────── */
 	function fetchTripRows(includeDriverShareFields = true) {
 		const driverShareFields = includeDriverShareFields
-			? ", report_time, instructions"
+			? ", report_time, instructions, trip_reminder_sent, envelope_printed"
 			: "";
+		const driverProfileFields = includeDriverShareFields ? ", texting_url" : "";
 		return supabase
 			.from("trips")
 			.select(`
 				*,
 				trip_assignments(
 					id, position, bus_id, active_roles, leg,
-					buses(id, number),
-					trip_drivers(id, driver_id, role, pay${driverShareFields}, drivers(id, name, short_name, phone))
+					buses(id, number, capacity, ada_lift, sleeper),
+					trip_drivers(id, driver_id, role, pay${driverShareFields}, drivers(id, name, short_name, phone${driverProfileFields}))
 				),
 				trip_stops(*)
 			`)
@@ -1514,7 +1526,7 @@ import {
 		const detail = [error?.message, error?.details, error?.hint]
 			.filter(Boolean)
 			.join(" ");
-		return /\b(report_time|instructions)\b/i.test(detail);
+		return /\b(report_time|instructions|trip_reminder_sent|texting_url|envelope_printed)\b/i.test(detail);
 	}
 
 	async function detectDriverShareFields() {
@@ -1777,9 +1789,21 @@ export function newTrip(root, itinerary) {
 
 // Direct field update, no full-trip save-flow needed — used by the Tasks
 // tab's prep checklist (js/panels/tasks-panel.js) to flip one flag at a
-// time (driver_contact_sent, trip_reminder_sent, envelope_printed).
+// time (driver_contact_sent, itinerary_printed, and conditional requirement
+// fields; envelope_printed moved to trip_drivers, see updateTripDriverTaskFlag).
 export async function updateTripTaskFlags(tripId, fields) {
 	const { error } = await supabase.from("trips").update(fields).eq("id", tripId);
+	if (error) throw error;
+}
+
+// Generic over field name (trip_reminder_sent, envelope_printed, ...) —
+// same one-column-per-flag convention as updateTripTaskFlags above, just
+// scoped to trip_drivers instead of trips.
+export async function updateTripDriverTaskFlag(tripDriverId, field, value) {
+	const { error } = await supabase
+		.from("trip_drivers")
+		.update({ [field]: value })
+		.eq("id", tripDriverId);
 	if (error) throw error;
 }
 
@@ -2163,12 +2187,24 @@ function activeContactTrip() {
 	return currentLoadedTrip || selectedBarTrip;
 }
 
+// Which leg to use for `trip` without asking — the leg of whichever bar was
+// last clicked, but only if that click was actually for this same trip (the
+// editor can be showing a different trip than whatever bar is selected
+// elsewhere on the calendar; see activeContactTrip's own precedence note).
+function activeContactLeg(trip) {
+	if (!trip || !selectedBarTrip || !selectedBarLeg) return null;
+	return String(selectedBarTrip.id) === String(trip.id) ? selectedBarLeg : null;
+}
+
 // Called from the scheduler's rux:trip-selection-changed listener (index.html)
 // with the fully-resolved trip (same allTripsRaw lookup onOpenTrip uses) so
 // Contact Info always sees real trip_assignments/bus/driver data, never the
-// scheduler bar's own lighter leg-projection.
-export function setSelectedTrip(trip) {
+// scheduler bar's own lighter leg-projection — leg is passed separately
+// since it comes from the bar's own (leg-specific) tripData, not the
+// resolved record.
+export function setSelectedTrip(trip, leg = null) {
 	selectedBarTrip = trip || null;
+	selectedBarLeg = trip ? leg : null;
 	syncContactInfoBtn();
 }
 
@@ -2221,7 +2257,20 @@ function formatContactInfoDate(isoDate) {
 	});
 }
 
-function buildContactInfoMessage(trip) {
+// Short form for the leg-picker menu (see contactInfoBtn below) — the
+// message body itself uses the full weekday/year form above.
+function formatContactLegDate(isoDate) {
+	if (!isoDate) return "";
+	const [y, m, d] = String(isoDate).split("-").map(Number);
+	if (!y || !m || !d) return "";
+	return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+// leg-aware like driverReminderMessage (tasks-panel.js) — a split
+// (dropoff_pickup) trip's return leg is often a different bus/driver
+// dispatched on a different date, so the customer message for that day
+// shouldn't also list the outbound leg's driver.
+function buildContactInfoMessage(trip, leg = "outbound") {
 	// trip_assignments is the raw DB relation (bus/driver phone numbers all
 	// joined in); assignments is the scheduler bar's lighter leg-projection,
 	// kept as a fallback in case the full record wasn't resolved in time.
@@ -2229,6 +2278,7 @@ function buildContactInfoMessage(trip) {
 		? trip.trip_assignments
 		: (Array.isArray(trip.assignments) ? trip.assignments : []);
 	const lines = assignments
+		.filter((a) => (a.leg || "outbound") === leg)
 		.map((a) => {
 			const driver = primaryContactDriver(a);
 			const name = driver?.drivers?.name || driver?.name;
@@ -2242,7 +2292,8 @@ function buildContactInfoMessage(trip) {
 		.filter(Boolean);
 	if (!lines.length) return null;
 
-	const dateText = formatContactInfoDate(trip.start_date);
+	const isReturn = leg === "return";
+	const dateText = formatContactInfoDate(isReturn ? trip.return_start_date : trip.start_date);
 	const destination = trip.destination || "";
 	const intro = `Below is the driver contact information for your trip`
 		+ (dateText ? ` on ${dateText}` : "")
@@ -2253,6 +2304,37 @@ function buildContactInfoMessage(trip) {
 		.join("\n\n");
 
 	return `Hello,\n\n${intro}\n\n${body}\n\nThank you!`;
+}
+
+export function openTripContactInfo(trip, leg = "outbound") {
+	const message = trip && buildContactInfoMessage(trip, leg);
+	if (!message) {
+		window.Rux?.toast?.("No driver/bus contact info to share yet");
+		return false;
+	}
+	window.ContactInfoModal?.open(message, {
+		externalUrl: trip.booking_contact_missive_url || "",
+		externalLabel: "Copy & Email",
+		externalIcon: "mail",
+	});
+	return true;
+}
+
+// Same singleton-popover idiom as itinerary.js's dayAddMenu — one shared
+// element, content rebuilt on each open.
+function ensureContactLegMenu() {
+	if (contactLegMenu) return contactLegMenu;
+	contactLegMenu = document.createElement("div");
+	contactLegMenu.className = "rux-menu rux-popover";
+	contactLegMenu.hidden = true;
+	contactLegMenu.setAttribute("role", "menu");
+	document.body.appendChild(contactLegMenu);
+	contactLegMenu.addEventListener("click", (event) => {
+		const item = event.target.closest("[data-contact-leg]");
+		if (!item) return;
+		openTripContactInfo(activeContactTrip(), item.dataset.contactLeg);
+	});
+	return contactLegMenu;
 }
 
 function formatReminderTime(value) {
@@ -2394,12 +2476,29 @@ export function initTripDB(root, itinerary) {
 	deleteBtn?.addEventListener("click", () => deleteTrip(root, itinerary));
 	contactInfoBtn?.addEventListener("click", () => {
 		const trip = activeContactTrip();
-		const message = trip && buildContactInfoMessage(trip);
-		if (!message) {
-			window.Rux?.toast?.("No driver/bus contact info to share yet");
+		if (!trip) {
+			window.Rux?.toast?.("Select a trip first");
 			return;
 		}
-		window.ContactInfoModal?.open(message);
+		// This button has no specific day to key off of the way the Tasks tab
+		// does — for a split (dropoff_pickup) trip, use whichever leg's bar is
+		// actually selected on the calendar, and only ask (instead of guessing
+		// outbound or, the old behavior, merging both legs' drivers into one
+		// unlabeled message) when that can't be inferred.
+		if (trip.trip_type !== "dropoff_pickup" || !trip.return_start_date) {
+			openTripContactInfo(trip, "outbound");
+			return;
+		}
+		const inferredLeg = activeContactLeg(trip);
+		if (inferredLeg) {
+			openTripContactInfo(trip, inferredLeg);
+			return;
+		}
+		const menu = ensureContactLegMenu();
+		menu.innerHTML = `
+			<button type="button" class="rux-menu__item" role="menuitem" data-contact-leg="outbound"><span class="rux-icon" aria-hidden="true">north_east</span>Outbound — ${formatContactLegDate(trip.start_date) || "[Add date]"}</button>
+			<button type="button" class="rux-menu__item" role="menuitem" data-contact-leg="return"><span class="rux-icon" aria-hidden="true">south_west</span>Return — ${formatContactLegDate(trip.return_start_date) || "[Add date]"}</button>`;
+		window.RuxMenu?.open(contactInfoBtn, menu, { placement: "bottom-end" });
 	});
 	tripReminderBtn?.addEventListener("click", () => {
 		const trip = activeContactTrip();
