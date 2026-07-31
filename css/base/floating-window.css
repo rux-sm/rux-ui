@@ -45,8 +45,8 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: min(640px, calc(100vw - var(--rux-space-4) * 2));
-	height: min(880px, calc(100vh - var(--rux-space-4) * 2));
+	width: min(750px, calc(100vw - var(--rux-space-4) * 2));
+	height: min(1000px, calc(100vh - var(--rux-space-4) * 2));
 	/* 460px ≈ 360px × letter's own 8.5:11 ratio — keeps the floor roughly
 	   portrait-shaped (not a short landscape strip) at the smallest size
 	   either a letter PDF or the 6x9 envelope gets dragged down to. */
