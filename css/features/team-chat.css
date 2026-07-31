@@ -45,7 +45,54 @@
 }
 
 .rux-team-chat__message-body {
+	flex: 1;
 	min-width: 0;
+}
+
+/* Muted until hovered/focused — a permanently-visible row of react/delete
+   icons on every message would be a lot of visual noise in a fast-moving
+   chat list. */
+.rux-team-chat__message-actions {
+	display: flex;
+	align-items: center;
+	flex: none;
+	opacity: 0;
+}
+
+.rux-team-chat__message:hover .rux-team-chat__message-actions,
+.rux-team-chat__message-actions:focus-within {
+	opacity: 1;
+}
+
+.rux-team-chat__reactions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-1);
+	margin-top: var(--rux-space-1);
+}
+
+.rux-team-chat__reaction-pill {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	height: 22px;
+	padding: 0 var(--rux-space-2);
+	background: var(--rux-surface-field);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-full);
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-100);
+	cursor: pointer;
+}
+
+.rux-team-chat__reaction-pill:hover {
+	border-color: var(--rux-border-strong);
+}
+
+.rux-team-chat__reaction-pill.is-active {
+	background: color-mix(in oklab, var(--rux-accent) 16%, var(--rux-surface-field));
+	border-color: var(--rux-accent);
+	color: var(--rux-accent);
 }
 
 .rux-team-chat__message-meta {
@@ -72,6 +119,59 @@
 	line-height: 1.4;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
+}
+
+/* Full emoji picker popover — same .rux-menu/.rux-popover shell as the
+   notifications/profile dropdowns, sized to fit a scrollable grid instead
+   of a list of menu rows. */
+.rux-team-chat__emoji-menu {
+	width: 15rem;
+	max-height: 18rem;
+	overflow-y: auto;
+	/* .rux-popover's own z-index (--rux-z-dropdown, 100) loses to the
+	   scheduler's sticky day-header row (--rux-z-sticky, 200) — same bug as
+	   the notifications/profile menus (see app-header.css). This popover
+	   also floats out of the chat window itself (--rux-z-modal, 400), so it
+	   needs to clear that too, not just the calendar. */
+	z-index: calc(var(--rux-z-modal) + 1);
+}
+
+.rux-team-chat__emoji-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-1);
+	padding: 0 var(--rux-menu-padding) var(--rux-space-2);
+}
+
+.rux-team-chat__emoji-option {
+	flex: none;
+	width: 32px;
+	height: 32px;
+	padding: 0;
+	background: none;
+	border: none;
+	border-radius: var(--rux-menu-item-radius);
+	font-size: var(--rux-text-400);
+	line-height: 1;
+	cursor: pointer;
+}
+
+.rux-team-chat__emoji-option:hover,
+.rux-team-chat__emoji-option:focus-visible {
+	background: var(--rux-menu-item-hover-bg);
+}
+
+.rux-team-chat__typing {
+	flex: none;
+	margin: 0;
+	padding: var(--rux-space-1) var(--rux-space-5);
+	color: var(--rux-text-tertiary);
+	font-size: var(--rux-text-100);
+	font-style: italic;
+}
+
+.rux-team-chat__typing[hidden] {
+	display: none;
 }
 
 /* .rux-card__footer (already on the <footer>) supplies padding/background/

@@ -1,21 +1,42 @@
 import {
 	fetchMessages,
 	sendMessage,
+	deleteMessage,
+	toggleReaction,
 	fetchLastRead,
 	markChatRead,
 	subscribeToTeamChat,
 } from "../data/team-chat-db.js";
+import { supabase } from "../data/supabase.js";
 import { getCurrentProfile } from "../core/profile.js";
 import { profileAvatarEl } from "../core/avatar.js";
+
+// Curated, not the full Unicode set — hand-picked so there's no external
+// picker dependency (no CDN, nothing to verify without a live browser).
+const EMOJI_CATEGORIES = [
+	{ label: "Smileys", emoji: ["😀", "😂", "😅", "😊", "😍", "😘", "🤔", "😐", "😴", "😢", "😭", "😡", "🤯", "🥳", "😎", "🙄", "😬", "🤗", "🤢", "😱"] },
+	{ label: "Gestures", emoji: ["👍", "👎", "👏", "🙌", "🙏", "💪", "🤝", "👋", "✌️", "🤞", "👌", "🤙", "✋"] },
+	{ label: "Hearts", emoji: ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💔", "💕"] },
+	{ label: "Nature", emoji: ["🐶", "🐱", "🐻", "🦁", "🐸", "🦄", "🌞", "🌧️", "🔥", "⭐", "🌈"] },
+	{ label: "Food", emoji: ["🍕", "🍔", "🌮", "🍩", "☕", "🍺", "🎂"] },
+	{ label: "Other", emoji: ["🎉", "🎈", "🚀", "💯", "✅", "❌", "⚠️", "💤", "🔔", "📌", "💡", "⏰", "🚌", "👀"] },
+];
 
 const btn = document.getElementById("team-chat-btn");
 const badge = document.getElementById("team-chat-badge");
 
 if (btn && badge) {
 	let panelEl = null;
+	let emojiMenuEl = null;
+	// { type: "react", messageId } when opened from a message's add-reaction
+	// button, or { type: "compose" } when opened from the input's own emoji
+	// button — same shared picker, different action on pick.
+	let emojiMenuMode = null;
 	let messages = [];
 	let lastReadAt = null;
 	let previousFocus = null;
+	let typingChannel = null;
+	let typingTimeout = null;
 
 	function isPanelOpen() {
 		return !!panelEl && !panelEl.hidden;
@@ -55,8 +76,12 @@ if (btn && badge) {
 			<div class="rux-floating-window__body rux-team-chat__body rux-card__body">
 				<div class="rux-team-chat__messages" data-team-chat-messages></div>
 			</div>
+			<p class="rux-team-chat__typing" data-team-chat-typing hidden></p>
 			<footer class="rux-floating-window__footer rux-team-chat__footer rux-card__footer">
 				<form class="rux-team-chat__form" data-team-chat-form>
+					<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-team-chat-compose-emoji aria-label="Insert emoji">
+						<span class="rux-icon" aria-hidden="true">mood</span>
+					</button>
 					<input class="rux-input rux-team-chat__input" type="text" maxlength="2000" placeholder="Message the team…" aria-label="Message" data-team-chat-input autocomplete="off" />
 					<button type="submit" class="rux-button rux-button--accent rux-button--icon" aria-label="Send">
 						<span class="rux-icon" aria-hidden="true">send</span>
@@ -74,10 +99,46 @@ if (btn && badge) {
 			const body = input.value;
 			if (!body.trim()) return;
 			input.value = "";
+			clearTimeout(typingTimeout);
+			trackTyping(false);
 			try {
 				await sendMessage(body, profile);
 			} catch (err) {
 				console.warn("Could not send message:", err);
+			}
+		});
+
+		panelEl.querySelector("[data-team-chat-input]").addEventListener("input", () => {
+			trackTyping(true);
+			clearTimeout(typingTimeout);
+			typingTimeout = setTimeout(() => trackTyping(false), 3000);
+		});
+
+		panelEl.querySelector("[data-team-chat-compose-emoji]").addEventListener("click", (event) => {
+			emojiMenuMode = { type: "compose" };
+			window.RuxMenu?.open(event.currentTarget, ensureEmojiMenu(), { placement: "top-start" });
+		});
+
+		panelEl.querySelector("[data-team-chat-messages]").addEventListener("click", async (event) => {
+			const deleteBtn = event.target.closest("[data-delete-message]");
+			if (deleteBtn) {
+				if (!window.confirm("Delete this message?")) return;
+				try {
+					await deleteMessage(deleteBtn.dataset.deleteMessage);
+				} catch (err) {
+					console.warn("Could not delete message:", err);
+				}
+				return;
+			}
+			const openBtn = event.target.closest("[data-open-emoji-menu]");
+			if (openBtn) {
+				emojiMenuMode = { type: "react", messageId: openBtn.dataset.openEmojiMenu };
+				window.RuxMenu?.open(openBtn, ensureEmojiMenu(), { placement: "top" });
+				return;
+			}
+			const reactBtn = event.target.closest("[data-react-emoji]");
+			if (reactBtn) {
+				await applyReaction(reactBtn.dataset.messageId, reactBtn.dataset.reactEmoji);
 			}
 		});
 
@@ -88,6 +149,82 @@ if (btn && badge) {
 		});
 
 		return panelEl;
+	}
+
+	// Singleton popover, same idiom as #notifications-menu/#profile-menu —
+	// one shared instance reused for both "react to this message" (opened
+	// from a message's add-reaction button) and "insert into the message
+	// I'm composing" (opened from the input's own emoji button), switching
+	// behavior on emojiMenuMode rather than building two separate pickers.
+	// role="menuitem" on each emoji gets Escape/outside-click dismissal and
+	// arrow-key navigation for free from js/core/menu.js, and clicking a
+	// menuitem auto-closes the menu the same way any other RuxMenu item
+	// does — no manual close() call needed.
+	function ensureEmojiMenu() {
+		if (emojiMenuEl) return emojiMenuEl;
+		emojiMenuEl = document.createElement("div");
+		emojiMenuEl.className = "rux-menu rux-popover rux-team-chat__emoji-menu";
+		emojiMenuEl.id = "team-chat-emoji-menu";
+		emojiMenuEl.role = "menu";
+		emojiMenuEl.hidden = true;
+		emojiMenuEl.innerHTML = EMOJI_CATEGORIES
+			.map(
+				(category) => `
+					<div class="rux-menu__header">${category.label}</div>
+					<div class="rux-team-chat__emoji-grid">
+						${category.emoji
+							.map(
+								(emoji) => `<button type="button" class="rux-team-chat__emoji-option" role="menuitem" data-react-emoji="${emoji}">${emoji}</button>`,
+							)
+							.join("")}
+					</div>
+				`,
+			)
+			.join("");
+		document.body.appendChild(emojiMenuEl);
+
+		emojiMenuEl.addEventListener("click", (event) => {
+			const emojiBtn = event.target.closest("[data-react-emoji]");
+			if (!emojiBtn || !emojiMenuMode) return;
+			const emoji = emojiBtn.dataset.reactEmoji;
+			if (emojiMenuMode.type === "react") {
+				applyReaction(emojiMenuMode.messageId, emoji);
+			} else if (emojiMenuMode.type === "compose") {
+				insertEmojiIntoInput(emoji);
+			}
+		});
+
+		return emojiMenuEl;
+	}
+
+	// Inserts at the cursor rather than just appending, so picking an emoji
+	// mid-sentence doesn't jump it to the end of whatever's already typed.
+	function insertEmojiIntoInput(emoji) {
+		const input = panelEl?.querySelector("[data-team-chat-input]");
+		if (!input) return;
+		const start = input.selectionStart ?? input.value.length;
+		const end = input.selectionEnd ?? input.value.length;
+		input.value = input.value.slice(0, start) + emoji + input.value.slice(end);
+		const cursor = start + emoji.length;
+		input.setSelectionRange(cursor, cursor);
+		input.focus();
+		trackTyping(true);
+		clearTimeout(typingTimeout);
+		typingTimeout = setTimeout(() => trackTyping(false), 3000);
+	}
+
+	async function applyReaction(messageId, emoji) {
+		const profile = getCurrentProfile();
+		if (!profile) return;
+		const message = messages.find((m) => String(m.id) === String(messageId));
+		const alreadyReacted = (message?.team_message_reactions || []).some(
+			(r) => String(r.profile_id) === String(profile.id) && r.emoji === emoji,
+		);
+		try {
+			await toggleReaction(messageId, profile.id, emoji, alreadyReacted);
+		} catch (err) {
+			console.warn("Could not toggle reaction:", err);
+		}
 	}
 
 	function close() {
@@ -109,6 +246,7 @@ if (btn && badge) {
 			container.innerHTML = `<p class="rux-team-chat__empty">No messages yet</p>`;
 			return;
 		}
+		const myProfileId = String(getCurrentProfile()?.id || "");
 		container.innerHTML = messages
 			.map((message) => {
 				const avatar = profileAvatarEl({
@@ -116,6 +254,25 @@ if (btn && badge) {
 					avatar_color: message.sender_avatar_color,
 					display_name: message.sender_name,
 				});
+				// Own-message-only, enforced client-side — profiles here aren't
+				// real logged-in accounts (no auth.uid() for RLS to check
+				// against), so this is the same honor-system trust level the
+				// rest of the app already runs on, not a security boundary.
+				const canDelete = myProfileId && String(message.profile_id) === myProfileId;
+
+				// Group this message's reactions by emoji into count pills,
+				// e.g. two 👍 + one 🎉 becomes ["👍", ["a","b"]], ["🎉", ["c"]].
+				const groups = new Map();
+				(message.team_message_reactions || []).forEach((r) => {
+					if (!groups.has(r.emoji)) groups.set(r.emoji, []);
+					groups.get(r.emoji).push(String(r.profile_id));
+				});
+				const pillsHtml = [...groups.entries()]
+					.map(([emoji, profileIds]) => {
+						const mine = myProfileId && profileIds.includes(myProfileId);
+						return `<button type="button" class="rux-team-chat__reaction-pill${mine ? " is-active" : ""}" data-react-emoji="${emoji}" data-message-id="${message.id}">${emoji} ${profileIds.length}</button>`;
+					})
+					.join("");
 				return `
 					<div class="rux-team-chat__message">
 						${avatar.outerHTML}
@@ -125,6 +282,17 @@ if (btn && badge) {
 								<span class="rux-team-chat__message-time">${timeLabel(message.created_at)}</span>
 							</div>
 							<p class="rux-team-chat__message-text">${escapeHtml(message.body)}</p>
+							${pillsHtml ? `<div class="rux-team-chat__reactions">${pillsHtml}</div>` : ""}
+						</div>
+						<div class="rux-team-chat__message-actions">
+							<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-open-emoji-menu="${message.id}" aria-label="Add reaction">
+								<span class="rux-icon" aria-hidden="true">add_reaction</span>
+							</button>
+							${canDelete ? `
+								<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-team-chat__message-delete" data-delete-message="${message.id}" aria-label="Delete message">
+									<span class="rux-icon" aria-hidden="true">delete</span>
+								</button>
+							` : ""}
 						</div>
 					</div>
 				`;
@@ -138,8 +306,67 @@ if (btn && badge) {
 			badge.hidden = true;
 			return;
 		}
-		const latest = messages[messages.length - 1];
-		badge.hidden = !latest || (lastReadAt && latest.created_at <= lastReadAt);
+		// Skip my own messages — otherwise closing the window in the instant
+		// before my own send's realtime confirmation round-trips back would
+		// light the badge for something I just wrote myself (last_read_at is
+		// only bumped on open/markChatRead, not on every send).
+		const myProfileId = String(getCurrentProfile()?.id || "");
+		const unread = messages.filter(
+			(m) => String(m.profile_id) !== myProfileId && (!lastReadAt || m.created_at > lastReadAt),
+		);
+		badge.hidden = unread.length === 0;
+		badge.textContent = unread.length > 9 ? "9+" : String(unread.length);
+	}
+
+	// Own channel, separate from the header's "rux-presence" — reusing that
+	// one would mean every typing flicker also re-renders the unrelated
+	// "who's active" avatar bar. Same recipe as joinPresenceChannel/
+	// renderActiveProfiles in index.html, just scoped to chat and keyed on
+	// a `typing` flag instead of always-present identity.
+	function leaveTypingChannel() {
+		if (!typingChannel) return;
+		supabase.removeChannel(typingChannel);
+		typingChannel = null;
+	}
+
+	function joinTypingChannel(profile) {
+		leaveTypingChannel();
+		typingChannel = supabase.channel("team-chat-typing", {
+			config: { presence: { key: String(profile.id) } },
+		});
+		typingChannel
+			.on("presence", { event: "sync" }, renderTyping)
+			.subscribe(async (status) => {
+				if (status !== "SUBSCRIBED") return;
+				await typingChannel.track({ display_name: profile.display_name, typing: false });
+			});
+	}
+
+	function renderTyping() {
+		const el = panelEl?.querySelector("[data-team-chat-typing]");
+		if (!el) return;
+		const state = typingChannel?.presenceState() || {};
+		const myId = String(getCurrentProfile()?.id || "");
+		const names = Object.entries(state)
+			.filter(([id, entries]) => id !== myId && entries[0]?.typing)
+			.map(([, entries]) => entries[0].display_name);
+		if (!names.length) {
+			el.hidden = true;
+			return;
+		}
+		let text;
+		if (names.length === 1) text = `${names[0]} is typing…`;
+		else if (names.length === 2) text = `${names[0]} and ${names[1]} are typing…`;
+		else text = `${names[0]}, ${names[1]} and ${names.length - 2} other${names.length - 2 === 1 ? "" : "s"} are typing…`;
+		el.textContent = text;
+		el.hidden = false;
+	}
+
+	function trackTyping(isTyping) {
+		if (!typingChannel) return;
+		const profile = getCurrentProfile();
+		if (!profile) return;
+		typingChannel.track({ display_name: profile.display_name, typing: isTyping });
 	}
 
 	async function refresh() {
@@ -173,7 +400,11 @@ if (btn && badge) {
 
 	window.addEventListener("rux:profile-changed", async () => {
 		const profile = getCurrentProfile();
-		if (!profile) return;
+		if (!profile) {
+			leaveTypingChannel();
+			return;
+		}
+		joinTypingChannel(profile);
 		try {
 			lastReadAt = await fetchLastRead(profile.id);
 		} catch (err) {
@@ -187,6 +418,7 @@ if (btn && badge) {
 	(async () => {
 		const profile = getCurrentProfile();
 		if (profile) {
+			joinTypingChannel(profile);
 			try {
 				lastReadAt = await fetchLastRead(profile.id);
 			} catch (err) {

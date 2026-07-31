@@ -5,21 +5,20 @@
 .maintenance-share__status :is(h1, p) { margin: 0; }
 .maintenance-share__status { display: grid; place-items: center; gap: var(--rux-space-3); min-height: 50vh; text-align: center; }
 .maintenance-share__status .rux-icon { color: var(--rux-fg-muted); font-size: 40px; }
-.maintenance-schedule__scroll { overflow-x: auto; border: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__scroll { max-height: calc(100dvh - var(--rux-app-header-height) - var(--rux-space-4) - var(--rux-space-4)); overflow: auto; border: var(--rux-border-width) solid var(--rux-divider); }
 .maintenance-schedule { min-width: calc(var(--maintenance-bus-column-width) + 2240px); background: var(--rux-surface-card); }
-.maintenance-schedule__weeks { display: grid; grid-template-columns: var(--maintenance-bus-column-width) repeat(2, 1fr); background: var(--rux-panel-nav-background); border-bottom: var(--rux-border-width) solid var(--rux-divider); }
-.maintenance-schedule__weeks span { padding: var(--rux-space-2); text-align: center; font-weight: var(--rux-weight-bold); }
-.maintenance-schedule__weeks span + span { border-left: var(--rux-border-width) solid var(--rux-divider); }
-.maintenance-schedule__days { display: grid; grid-template-columns: var(--maintenance-bus-column-width) repeat(14, minmax(var(--maintenance-day-column-min-width), 1fr)); border-bottom: var(--rux-border-width) solid var(--rux-divider); }
-.maintenance-schedule__days span { display: grid; place-items: center; height: 36px; border-left: var(--rux-border-width) solid var(--rux-divider); color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
-.maintenance-schedule__days span:first-child { border-left: 0; }
+.maintenance-schedule__days { position: sticky; z-index: 5; top: 0; display: grid; grid-template-columns: var(--maintenance-bus-column-width) repeat(14, minmax(var(--maintenance-day-column-min-width), 1fr)); background: var(--rux-surface-card); border-bottom: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__days span { display: grid; place-items: center; height: 36px; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
+.maintenance-schedule__days span:nth-child(n + 3) { border-left: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__days span:first-child { position: sticky; z-index: 3; left: 0; background: var(--rux-surface-card); border-left: 0; border-inline-end: var(--rux-border-width) solid var(--rux-divider); color: var(--rux-fg); font-weight: var(--rux-weight-bold); }
 .maintenance-schedule__days .is-today {
 	background: transparent;
 	color: var(--rux-accent);
 }
 .maintenance-schedule__row { display: grid; grid-template-columns: var(--maintenance-bus-column-width) 1fr; border-bottom: var(--rux-border-width) solid var(--rux-divider); }
-.maintenance-schedule__row > strong { display: grid; place-items: center; min-height: calc(var(--lanes) * 72px + var(--rux-space-2)); padding: var(--rux-space-2); border-inline-end: var(--rux-border-width) solid var(--rux-divider); font-size: 14px; }
-.maintenance-schedule__track { position: relative; display: grid; align-content: center; grid-template-columns: repeat(14, minmax(var(--maintenance-day-column-min-width), 1fr)); grid-auto-rows: 68px; gap: var(--rux-space-1) 0; padding-block: var(--rux-space-1); background-image: repeating-linear-gradient(to right, transparent 0, transparent calc((100% / 14) - 1px), var(--rux-divider) calc((100% / 14) - 1px), var(--rux-divider) calc(100% / 14)); }
+.maintenance-schedule__row:last-child { border-bottom: 0; }
+.maintenance-schedule__row > strong { position: sticky; z-index: 3; left: 0; display: grid; place-items: center; padding: var(--rux-space-2); background: var(--rux-surface-card); border-inline-end: var(--rux-border-width) solid var(--rux-divider); font-size: 14px; }
+.maintenance-schedule__track { position: relative; display: grid; align-content: center; grid-template-columns: repeat(14, minmax(var(--maintenance-day-column-min-width), 1fr)); grid-auto-rows: 44px; gap: var(--rux-space-1) 0; padding-block: var(--rux-space-1); background-image: repeating-linear-gradient(to right, transparent 0, transparent calc((100% / 14) - 1px), var(--rux-divider) calc((100% / 14) - 1px), var(--rux-divider) calc(100% / 14)); }
 .maintenance-schedule.has-today .maintenance-schedule__track::after { content: ""; position: absolute; z-index: 0; inset-block: -1px; left: var(--maintenance-today-position); width: var(--rux-space-0-5); background: var(--rux-accent); pointer-events: none; }
 .maintenance-trip { position: relative; z-index: 1; display: grid; min-width: 0; margin-inline: 2px; padding: var(--rux-space-1) var(--rux-space-2); overflow: hidden; background: var(--rux-button-accent-background); color: var(--rux-button-accent-text); border: var(--rux-button-accent-border); font-size: 12px; }
 .maintenance-trip > * { position: relative; z-index: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

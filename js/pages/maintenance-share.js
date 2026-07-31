@@ -48,7 +48,8 @@ function entriesFor(trips) {
 		return assigned.map((assignment) => {
 			const isReturn = assignment.leg === "return";
 			return {
-				trip, bus: String(assignment.busNumber), leg: assignment.leg,
+				trip, bus: String(assignment.busNumber), busSortOrder: assignment.busSortOrder,
+				leg: assignment.leg,
 				start: date(isReturn ? trip.returnStartDate : trip.startDate) || date(trip.startDate),
 				end: date(isReturn ? trip.returnEndDate : trip.endDate)
 					|| date(trip.returnEndDate) || date(trip.endDate) || date(trip.startDate),
@@ -127,7 +128,6 @@ function tripBar(item, start, end) {
 	bar.title = `${item.trip.destination || "Trip"} · ${item.trip.customer || ""} · Yard Depart ${time(times.depart)} · Yard Arrive ${time(times.arrive)}`;
 	bar.append(
 		el("strong", "", item.trip.destination || "Trip"),
-		el("span", "", item.trip.customer || "—"),
 	);
 	const showDepart = !clippedStart;
 	const showArrive = !clippedEnd;
@@ -157,11 +157,8 @@ function render(data) {
 			`${((todayOffset + 0.5) / 14) * 100}%`,
 		);
 	}
-	const weeks = el("div", "maintenance-schedule__weeks");
-	weeks.append(el("span", "", "Bus"), el("span", "", `Current Week · ${range(start, addDays(start, 6))}`), el("span", "", `Next Week · ${range(addDays(start, 7), end)}`));
-	schedule.append(weeks);
 	const days = el("div", "maintenance-schedule__days");
-	days.append(el("span"));
+	days.append(el("span", "", "Bus"));
 	for (let i = 0; i < 14; i += 1) {
 		const d = addDays(start, i);
 		const cell = el("span", "", `${d.toLocaleDateString("en-US", { weekday: "short" })} ${d.getDate()}`);
@@ -169,7 +166,14 @@ function render(data) {
 		days.append(cell);
 	}
 	schedule.append(days);
-	const buses = [...rows.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+	const busOrder = (bus) => {
+		const value = rows.get(bus)?.find((item) => item.busSortOrder != null)?.busSortOrder;
+		const number = Number(value);
+		return Number.isFinite(number) ? number : Number.POSITIVE_INFINITY;
+	};
+	const buses = [...rows.keys()].sort((a, b) =>
+		busOrder(a) - busOrder(b) || a.localeCompare(b, undefined, { numeric: true }),
+	);
 	for (const bus of buses) {
 		const items = withLanes(rows.get(bus));
 		const row = el("div", "maintenance-schedule__row");
@@ -186,11 +190,68 @@ function render(data) {
 
 async function load() {
 	if (!token) return status("link_off", "Invalid Maintenance Link", "Ask dispatch for the current link.");
+	const previousScroller = root.querySelector(".maintenance-schedule__scroll");
+	const scrollPosition = previousScroller
+		? { left: previousScroller.scrollLeft, top: previousScroller.scrollTop }
+		: null;
 	const { data, error } = await supabase.rpc("get_maintenance_schedule", { p_token: token });
 	if (error || !data) {
 		console.error(error);
 		return status("link_off", "Schedule Unavailable", "This link is inactive or has not been configured.");
 	}
 	render(data);
+	if (scrollPosition) {
+		const nextScroller = root.querySelector(".maintenance-schedule__scroll");
+		if (nextScroller) {
+			nextScroller.scrollLeft = scrollPosition.left;
+			nextScroller.scrollTop = scrollPosition.top;
+		}
+	}
 }
-load();
+
+let reloadTimer = null;
+let loadInProgress = false;
+let loadQueued = false;
+
+async function reload() {
+	if (loadInProgress) {
+		loadQueued = true;
+		return;
+	}
+	loadInProgress = true;
+	try {
+		await load();
+	} finally {
+		loadInProgress = false;
+		if (loadQueued) {
+			loadQueued = false;
+			reload();
+		}
+	}
+}
+
+function scheduleReload() {
+	clearTimeout(reloadTimer);
+	reloadTimer = window.setTimeout(reload, 300);
+}
+
+const scheduleChannel = supabase
+	.channel("maintenance-schedule")
+	.on("postgres_changes", { event: "*", schema: "public", table: "trips" }, scheduleReload)
+	.on("postgres_changes", { event: "*", schema: "public", table: "trip_assignments" }, scheduleReload)
+	.on("postgres_changes", { event: "*", schema: "public", table: "trip_stops" }, scheduleReload)
+	.on("postgres_changes", { event: "*", schema: "public", table: "buses" }, scheduleReload)
+	.subscribe((channelStatus) => {
+		if (["CHANNEL_ERROR", "TIMED_OUT"].includes(channelStatus)) {
+			console.warn(`Maintenance schedule realtime: ${channelStatus}`);
+		}
+	});
+
+window.addEventListener("focus", scheduleReload);
+window.setInterval(scheduleReload, 30000);
+window.addEventListener("pagehide", () => {
+	clearTimeout(reloadTimer);
+	supabase.removeChannel(scheduleChannel);
+}, { once: true });
+
+reload();

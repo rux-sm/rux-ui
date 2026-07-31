@@ -10,6 +10,27 @@ create table if not exists public.maintenance_schedule_shares (
 alter table public.maintenance_schedule_shares enable row level security;
 revoke all on table public.maintenance_schedule_shares from anon, authenticated;
 
+-- The maintenance page listens to these tables and refreshes its narrow RPC
+-- result after a save. Publication membership is required before Postgres
+-- changes can reach the browser.
+do $$
+declare
+	v_table text;
+begin
+	foreach v_table in array array['trips', 'trip_assignments', 'trip_stops', 'buses']
+	loop
+		if not exists (
+			select 1
+			from pg_publication_tables
+			where pubname = 'supabase_realtime'
+				and schemaname = 'public'
+				and tablename = v_table
+		) then
+			execute format('alter publication supabase_realtime add table public.%I', v_table);
+		end if;
+	end loop;
+end $$;
+
 create or replace function public.create_maintenance_schedule_share()
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare v_share public.maintenance_schedule_shares;
@@ -80,7 +101,8 @@ begin
 			'assignments', coalesce((
 				select jsonb_agg(jsonb_build_object(
 					'id', a.id, 'leg', coalesce(a.leg, 'outbound'),
-					'busId', a.bus_id, 'busNumber', b.number
+					'busId', a.bus_id, 'busNumber', b.number,
+					'busSortOrder', b.sort_order
 				))
 				from public.trip_assignments a
 				left join public.buses b on b.id = a.bus_id
