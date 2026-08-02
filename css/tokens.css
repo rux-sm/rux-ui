@@ -47,7 +47,7 @@
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-border-input:  oklch(from var(--rux-neutral) 30% c h / 100%);
 	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-divider:       oklch(from var(--rux-info) 32% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
@@ -205,7 +205,7 @@
 	   for a tinted-overlay look, where a drop shadow wants to stay neutral
 	   black regardless of theme. */
 
-	--rux-shadow-1: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+	--rux-shadow-1: inset 0 2px 4px rgba(0, 0, 0, .4);
 
 	--rux-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4);
 	--rux-shadow-3:
@@ -243,13 +243,14 @@
 
 	--rux-surface-canvas:          oklch(from var(--rux-neutral) 0% c h);
 	--rux-surface-workspace:       oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-panel:           oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-panel-header:    oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-panel:           oklch(from var(--rux-neutral) 20% c h);
 	--rux-surface-calendar:        oklch(from var(--rux-neutral) 0% c h);
 	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-card:            oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-card-header:     oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-track:		   oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-field:           oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-card:            oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-card-header:     oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-track:		   oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-field:           oklch(from var(--rux-neutral) 20% c h);
 	--rux-surface-modal:           oklch(from var(--rux-neutral) 26% c h);
 	--rux-surface-switch-track:    oklch(from var(--rux-neutral) 20% c h);
 	--rux-surface-switch-thumb:    oklch(from var(--rux-neutral) 90% c h);
@@ -392,7 +393,7 @@
 	/* ─── COMPONENT · app header ──────────────────────────────────────────── */
 
 	--rux-app-header-bg:                       var(--rux-shell-bg);
-	--rux-app-header-border:                   1px solid var(--rux-divider);
+	--rux-app-header-border:                   1px solid var(--rux-border);
 	--rux-app-header-height:                   auto;
 	--rux-app-header-padding:                  var(--rux-space-2) var(--rux-space-4);
 	--rux-app-header-gap:                      var(--rux-space-2);
@@ -449,6 +450,7 @@
 	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */
 	--rux-panel-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
 	--rux-panel-header-padding:    var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
+	--rux-panel-header-bg: var(--rux-surface-panel-header);
 
 	/* — nav / tabs — */
 	--rux-panel-nav-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
@@ -488,7 +490,7 @@
 	--rux-card-header-bg:     var(--rux-surface-card-header);
 	--rux-card-header-border:var(--rux-border-width) solid var(--rux-divider);
 	--rux-card-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
-	--rux-card-header-height: 53px;
+	--rux-card-header-height: 44px;
 
 	/* — footer — */
 	--rux-card-footer-bg:     transparent;
@@ -615,10 +617,11 @@
 	--rux-field-error-fg:        var(--rux-danger);
 	--rux-input-height:          28px;
 	--rux-input-padding-inline:  var(--rux-control-padding-inline);
-	--rux-input-border: 1px solid transparent; 
+	--rux-input-border: 1px solid var(--rux-border);
   
   /* 2. New token specifically for the gradient border-image */
   	--rux-input-border-image:    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.2) 100%) 1;
+	--rux-input-border-image: none;
 	--rux-textarea-min-height:   84px;
 	--rux-input-shadow:          var(--rux-shadow-1);
 	--rux-input-background:      var(--rux-surface-field);
@@ -903,6 +906,11 @@
 	--rux-segmented-track-height:     var(--rux-input-height);
 	--rux-segmented-track-border:     none;
 	--rux-segmented-track-gap:        var(--rux-space-0);
+	/* Same recessed-well shadow as --rux-input-shadow — both are a punched-
+	   in well holding a control, not just a bordered box. Aliased to
+	   --rux-shadow-1 (same indirection --rux-input-shadow uses), not
+	   hardcoded, so the two can't drift apart by editing only one. */
+	--rux-segmented-track-shadow:     var(--rux-shadow-1);
 	--rux-segment-indicator-duration: var(--rux-duration-base);
 	--rux-segment-indicator-easing:   var(--rux-ease-out);
 
@@ -1085,7 +1093,7 @@
 	--rux-tab-height:              32px;
 	--rux-tab-padding-inline:      var(--rux-space-3);
 	--rux-tab-content-gap:         var(--rux-control-content-gap);
-	--rux-tab-bg:                  transparent; /* ghost at rest — never a milky white fill */
+	--rux-tab-bg:                  var(--rux-surface-panel-header); /* ghost at rest — never a milky white fill */
 	--rux-tab-fg:                  var(--rux-fg-muted);
 	--rux-tab-hover-bg:            transparent;
 	--rux-tab-hover-fg:            var(--rux-fg);
@@ -1110,7 +1118,7 @@
 	--rux-tabs-contained-tab-selected-bg: var(--rux-tab-selected-bg);
 	--rux-tabs-contained-tab-selected-fg: var(--rux-tab-selected-fg);
 
-	--rux-tabs-attached-bg:                  transparent;
+	--rux-tabs-attached-bg:                  var(--rux-surface-panel-header);
 	--rux-tabs-attached-border:              0 solid transparent;
 	--rux-tabs-attached-tab-bg:              transparent;
 	--rux-tabs-attached-tab-fg:              var(--rux-fg-muted);

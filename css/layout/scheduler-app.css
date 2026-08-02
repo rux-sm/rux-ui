@@ -374,64 +374,75 @@
 	overflow: hidden;
 }
 
-/* The base .scheduler-app__drawer rule hardcodes width:0 for the not-open
-   case, ignoring --drawer-width entirely (only .is-open reads it) — a
-   railable drawer needs its own outer box to actually be rail-width once
-   settled, not 0, or the panel below (however wide it thinks it is) has
-   nothing but a 0-width, overflow:hidden box to render inside. */
-.scheduler-app__drawer--railable:not(.is-open) {
-	width: var(--scheduler-app-rail-width);
-	/* Match the minimized panel's fill so any sub-pixel gap at the wrapper
-	   boundary cannot reveal scheduler row/day borders. */
-	background: var(--rux-panel-bg);
-}
-
 /* The panel fills the drawer's live rendered width (100%) rather than
    tracking --drawer-width directly. --drawer-width is the *target* value
    set immediately by close() — not the animated value — so using it
    directly would snap the panel to rail-width while the outer drawer box
    still shows its full open width, leaving a canvas-coloured gap at the
    right edge throughout the entire closing animation. 100% always matches
-   whatever the drawer's outer box currently is, whether animating or settled. */
+   whatever the drawer's outer box currently is, whether animating or settled.
+   Not rail-specific — a plain sizing rule, so it's not scoped to desktop
+   below like the rest of this block. */
 .scheduler-app__drawer--railable :is(.rux-trip-panel, .rux-right-panel) {
 	width: 100%;
 	min-width: 0;
 }
 
-.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel) {
-	display: flex;
-	/* The panel itself becomes the rail: keep its shell and full border,
-	   while its container queries hide every content region at this width.
-	   The opener is overlaid above it as the only visible control. */
-	background: var(--rux-panel-bg);
-	border: var(--rux-panel-border-width) solid var(--rux-border);
-	/* The app header already draws its own bottom border directly above —
-	   a top border here would double that line right at the seam. */
-	border-block-start: 0;
-	pointer-events: none;
-}
+/* Rail-collapse is a desktop-only concept — a narrow icon strip a panel
+   settles into instead of fully closing. Mobile has no equivalent: drawers
+   there are full-screen overlays that are simply open, closing, or fully
+   closed (width: 0, see the mobile media query below), never a
+   collapsed-but-visible sliver. Scoping the whole thing here, rather than
+   excluding .is-closing selector-by-selector, is deliberate: .is-closing is
+   itself mobile-only (RuxDrawer's close(), js/core/drawer.js, only ever
+   adds it inside its mobilePanelQuery branch), so it can't occur inside a
+   min-width media query at all — one guard here is equivalent to, and less
+   fragile than, chasing every mobile-reachable state one at a time in each
+   rail rule. Previously this leaked onto mobile because these rules only
+   checked :not(.is-open), which is also true for the entire mobile close
+   animation (mobile swaps .is-open for .is-closing, never has both) — the
+   rail's flat background/border/hidden-content state was replacing the
+   actual sliding panel for that whole animation instead of never applying
+   there at all. */
+@media (min-width: 501px) {
+	/* The base .scheduler-app__drawer rule hardcodes width:0 for the not-
+	   open case, ignoring --drawer-width entirely (only .is-open reads it)
+	   — a railable drawer needs its own outer box to actually be rail-width
+	   once settled, not 0, or the panel below (however wide it thinks it
+	   is) has nothing but a 0-width, overflow:hidden box to render inside. */
+	.scheduler-app__drawer--railable:not(.is-open) {
+		width: var(--scheduler-app-rail-width);
+		/* Match the minimized panel's fill so any sub-pixel gap at the
+		   wrapper boundary cannot reveal scheduler row/day borders. */
+		background: var(--rux-panel-bg);
+	}
 
-/* The workspace already owns the shared seam. Avoid drawing a second line
-   directly beside it while retaining the rail's three exposed edges. */
-.scheduler-app__drawer--railable:not(.scheduler-app__drawer--right):not(.is-open)
-	> .rux-trip-panel {
-	border-inline-end: 0;
-}
+	/* Full border, all four sides — this doubles the line against the app
+	   header above and the workspace beside it (both already draw their
+	   own border on that same seam), but that's the intended look here:
+	   the rail should read as a fully boxed-in strip on its own, not rely
+	   on a neighboring element to supply two of its four edges. */
+	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel) {
+		display: flex;
+		/* The panel itself becomes the rail: keep its shell and full
+		   border, while its container queries hide every content region
+		   at this width. The opener is overlaid above it as the only
+		   visible control. */
+		background: var(--rux-panel-bg);
+		border: var(--rux-panel-border-width) solid var(--rux-border);
+		pointer-events: none;
+	}
 
-.scheduler-app__drawer--railable.scheduler-app__drawer--right:not(.is-open)
-	> .rux-right-panel {
-	border-inline-start: 0;
-}
-
-/* Do not rely on the panel container query for the settled state. Explicitly
-   remove every content region once the drawer is closed, leaving only the
-   panel shell and its sibling opener visible. This also prevents descendants
-   with their own positioning/paint containment from leaking through the
-   narrow panel clip. */
-.scheduler-app__drawer--railable:not(.is-open)
-	> :is(.rux-trip-panel, .rux-right-panel)
-	> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
-	display: none !important;
+	/* Do not rely on the panel container query for the settled state.
+	   Explicitly remove every content region once the drawer is closed,
+	   leaving only the panel shell and its sibling opener visible. This
+	   also prevents descendants with their own positioning/paint
+	   containment from leaking through the narrow panel clip. */
+	.scheduler-app__drawer--railable:not(.is-open)
+		> :is(.rux-trip-panel, .rux-right-panel)
+		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
+		display: none !important;
+	}
 }
 
 .scheduler-app__gutter {
@@ -1203,14 +1214,29 @@
 	flex: none;
 }
 
-/* ── Desktop left-panel header ────────────────────────────────────────── */
+/* ── Panel header (trip + right panel) ────────────────────────────────── */
 
-/* Panel header (title + close button) is desktop-only, and only shown
-   while the panel is actually open — a railed panel has no title/close
-   button, just its (now icon-only, see css/features/trip-panel.css)
-   tabs, since the panel no longer disappears entirely when collapsed. */
+/* Panel header (title + close button) is hidden by default — a railed
+   panel (desktop-only concept, see the rail-collapse media query above)
+   has no title/close button, just its icon-only tabs, since the panel no
+   longer disappears entirely when collapsed there. Shown below whenever
+   the drawer is actually open, on any viewport: mobile needs its own
+   title/close affordance every bit as much as desktop does — it was never
+   meant to depend on a workspace-heading toggle button that a full-screen
+   drawer overlay can end up covering. (The mobile safe-area padding for
+   this exact header, a bit further down in the mobile media query, has
+   been here the whole time waiting for the header it's padding to actually
+   be visible.) */
 .rux-trip-panel__header {
 	display: none;
+}
+
+/* :is(.is-open, .is-closing), not just .is-open — matches the mobile close
+   animation too, so the header doesn't vanish a frame before the panel
+   itself finishes sliding away. */
+.scheduler-app__drawer:is(.is-open, .is-closing) .rux-trip-panel__header,
+.scheduler-app__drawer:is(.is-open, .is-closing) .rux-right-panel__header {
+	display: flex;
 }
 
 @media (min-width: 501px) {
@@ -1222,14 +1248,9 @@
 		display: none;
 	}
 
-	/* Panel headers — shown only while open on desktop. */
-	.scheduler-app__drawer.is-open .rux-trip-panel__header,
-	.scheduler-app__drawer.is-open .rux-right-panel__header {
-		display: flex;
-	}
-
 	/* Open buttons sit outside the inert <aside> so they stay clickable
-	   when collapsed. Hidden once the panel opens. */
+	   when collapsed. Hidden once the panel opens. Rail-collapse is
+	   desktop-only (see above), so these are meaningless on mobile anyway. */
 	.scheduler-app__drawer--railable .rux-trip-panel__drawer-open,
 	.scheduler-app__drawer--railable .rux-right-panel__drawer-open {
 		display: inline-flex;

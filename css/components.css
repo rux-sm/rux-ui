@@ -42,7 +42,7 @@
    ========================================================================== */
 
 @import "./base/icons.css";
-@import "./base/controls.css?v=4";
+@import "./base/controls.css?v=5";
 @import "./base/app-header.css";
 @import "./base/badges.css";
 @import "./base/form.css";
@@ -62,4 +62,4 @@
 @import "./features/trip-history.css?v=1";
 @import "./features/itinerary.css";
 @import "./layout/scheduler.css?v=1";
-@import "./layout/scheduler-app.css?v=28";
+@import "./layout/scheduler-app.css?v=33";

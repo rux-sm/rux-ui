@@ -38,7 +38,7 @@
 	padding-block: var(--rux-space-2);
 	position: relative;
 	z-index: 2;
-	background: var(--rux-panel-bg);
+	background: var(--rux-panel-header-bg);
 }
 
 .rux-panel__title {

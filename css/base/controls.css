@@ -666,6 +666,7 @@
 	background: var(--rux-segmented-track-bg);
 	border-radius: var(--rux-segmented-track-radius);
 	border: var(--rux-segmented-track-border);
+	box-shadow: var(--rux-segmented-track-shadow);
 	overflow: hidden;
 }
 
