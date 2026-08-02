@@ -98,9 +98,10 @@
 	opacity: 0;
 	transition: none;
 }
-.rux-trip-panel__pane {
-	padding-block: var(--rux-panel-padding-block);
-}
+/* Top padding comes from navigation.css's generic --attached pane rule now
+   (every --attached panel's pane gets it, not just this one) — this used
+   to carry its own padding-block override for the same value, which is
+   what the Tools panel's own panes were missing until that rule existed. */
 .rux-trip-panel__pane[hidden] {
 	display: none;
 }
@@ -907,6 +908,24 @@
 	[data-trip-tabs] .rux-trip-panel__tab {
 		flex: none;
 		width: 100%;
+	}
+
+	/* --attached's border-collapse and corner-rounding (navigation.css) both
+	   assume a horizontal row: margin-left pulls each tab onto the previous
+	   one's right edge, and only the first/last tab keep rounded top
+	   corners (interior seams are squared off left/right). Stacked
+	   vertically here, neither assumption holds — flip the collapse to
+	   margin-top so adjacent tabs still overlap by one border-width instead
+	   of doubling into a 2px seam, and drop corner rounding entirely rather
+	   than work out which corner each stacked position "should" keep. At
+	   rail width these are small icon squares where rounded corners aren't
+	   a legible detail anyway. */
+	[data-trip-tabs] .rux-tab + .rux-tab {
+		margin-left: 0;
+		margin-top: calc(var(--rux-border-width) * -1);
+	}
+	[data-trip-tabs] .rux-tab {
+		border-radius: 0;
 	}
 }
 

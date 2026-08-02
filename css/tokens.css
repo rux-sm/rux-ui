@@ -1120,15 +1120,15 @@
 	   other) — whichever one this ends up nested under, they still match. */
 	--rux-tabs-attached-tab-selected-bg:     var(--rux-surface-panel);
 	--rux-tabs-attached-tab-selected-fg:     var(--rux-fg);
-	/* Inactive tabs own the visible border — it's what reads as a row of
-	   tabs at rest. The active tab has none at all (not just no bottom):
-	   with a matching background and no top/left/right border either, it
-	   drops the "boxed button" look and just flows straight into the pane,
-	   which is the entire point of "attached". border-color (not `border:
-	   none`) so it still reserves the same width as an inactive tab's real
-	   border — no height jump when a tab is activated. */
+	/* Same visible border as an inactive tab on top/left/right — the active
+	   tab is still a "tab", just one that also flows into the pane below
+	   it. That merge comes entirely from navigation.css overriding its
+	   border-bottom to transparent (same width, invisible color) and
+	   matching the pane's background, not from this token — this is the
+	   one full border shape both states share. Aliased, not duplicated,
+	   so the two states can't drift apart by editing only one of them. */
 	--rux-tabs-attached-tab-border:          var(--rux-border-width) solid var(--rux-border);
-	--rux-tabs-attached-tab-selected-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-tabs-attached-tab-selected-border: var(--rux-tabs-attached-tab-border);
 	--rux-tabs-attached-pane-bg:             var(--rux-surface-panel);
 	--rux-tabs-attached-pane-border:         var(--rux-border-width) solid
 		var(--rux-border);

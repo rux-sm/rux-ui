@@ -55,12 +55,12 @@
 	flex: 1;
 }
 
-/* Adjacent inactive tabs each carry a full border (see
-   --rux-tabs-attached-tab-border in tokens.css) — with no gap between them,
-   that'd double up into a 2px seam where they touch. Pull each tab's left
-   edge back by one border-width so it overlaps the previous tab's right
-   edge instead, same border-collapse trick the active tab's own
-   margin-bottom already uses against the pane below. */
+/* Every tab carries a full border (see --rux-tabs-attached-tab-border in
+   tokens.css) — with no gap between them, that'd double up into a 2px seam
+   where they touch. Pull each tab's left edge back by one border-width so
+   it overlaps the previous tab's right edge instead — a border-collapse
+   trick, not a layout gap, so it applies regardless of which tab (if any)
+   is active. */
 .rux-tabs--attached > .rux-tab + .rux-tab {
 	margin-left: calc(var(--rux-border-width) * -1);
 }
@@ -231,19 +231,6 @@
 	border-right: 0;
 }
 
-.rux-panel__tabs.rux-tabs--contained {
-	margin: var(--rux-panel-nav-padding);
-	padding: var(--rux-tabs-contained-padding);
-
-}
-
-.rux-panel__tabs.rux-tabs--attached {
-	margin: var(--rux-panel-nav-padding);
-	margin-bottom: 0;
-	padding: 0;
-
-}
-
 /* .rux-panel__nav's own border-top/border-bottom (panel.css) would each
    double up against a line the tabs/pane already own: border-top against
    every tab's own top border (--rux-tabs-attached-tab-border), border-
@@ -258,10 +245,21 @@
    against them — the entire point of "attached" is spanning edge-to-edge,
    the same as the header/pane below leave their own insets to their own
    content instead. */
+/* margin-bottom (not the pane's own padding-top, and not padding-top on
+   .rux-panel__body either) — this is the one place that actually stays put
+   while the pane scrolls. .rux-panel__body has overflow-y: auto, and *any*
+   padding on a scroll container's own box is really just the starting
+   offset of its scrollable content: it's part of the same stream that
+   scrollTop shifts, so it scrolls out of view the instant you scroll past
+   0, same as .rux-panel__pane's own padding did before. margin-bottom on
+   this wrapper instead is space *between* two sibling boxes (the nav and
+   the body after it) — entirely outside the scrolling element, so nothing
+   about scrolling the body can ever move or hide it. */
 .rux-panel__nav--attached {
 	padding: 0;
 	border-top: 0;
 	border-bottom: 0;
+	margin-bottom: var(--rux-panel-padding-block);
 }
 
 /* No top border — the active tab sits directly above with a matching
@@ -280,6 +278,17 @@
 	border-left: 0;
 	border-right: 0;
 	border-radius: 0 0 var(--rux-tabs-contained-radius) var(--rux-tabs-contained-radius);
+}
+
+/* When a .rux-panel__footer follows (Trip Editor's Delete/Clear/Save row),
+   its own border-top (panel.css) owns this same seam — the pane's
+   border-bottom above would double up against it exactly the way the nav
+   wrapper's borders doubled against the tabs/pane. No footer (the
+   Components-catalog demo) means nothing else draws that edge, so the pane
+   keeps its own border-bottom in that case. */
+.rux-panel__nav--attached + .rux-panel__body:has(+ .rux-panel__footer),
+.rux-tabs--attached + .rux-panel__body:has(+ .rux-panel__footer) {
+	border-bottom: 0;
 }
 
 .rux-tab > .rux-icon {
