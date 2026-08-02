@@ -17,7 +17,11 @@
   padding: 0 var(--rux-input-padding-inline);
   background-color: var(--rux-input-background);
   color: var(--rux-input-fg);
+  
   border: var(--rux-input-border);
+  border-image: var(--rux-input-border-image);
+  box-shadow: var(--rux-input-shadow);
+
   border-radius: var(--rux-input-border-radius);
   font: inherit;
   font-size: var(--rux-input-font-size);

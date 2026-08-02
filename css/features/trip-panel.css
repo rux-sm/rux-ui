@@ -121,9 +121,11 @@
 
 /* The footer owns the pane's final seam. Base cards have a bottom border by
    default, so explicitly remove it from the last card to avoid doubling. */
-.rux-trip-panel__pane > .rux-card:last-child {
+/*
+   .rux-trip-panel__pane > .rux-card:last-child {
 	border-bottom: 0;
-}
+} 
+*/
 
 /* — Card — */
 
@@ -930,8 +932,11 @@
 
 /* .rux-segmented-track + .rux-button--segment (base/controls.css) provides
    the floating-pill toggle. Active-state styling belongs to the shared
-   button; flex: 1 splits the track evenly between both options. Shared by
-   Trip Type and Billing Type. */
+   button; flex: 1 splits the track evenly across all options (Split ends
+   up with more visual slack around its own 16px padding than a longer
+   label like One-way, since both take the same equal share regardless of
+   content — an accepted tradeoff for every button staying the same
+   width). Shared by Trip Type and Billing Type. */
 .rux-trip-panel__trip-type > .rux-button {
 	flex: 1;
 	min-width: 0;

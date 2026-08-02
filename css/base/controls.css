@@ -725,6 +725,20 @@
 	border: var(--rux-segment-border);
 }
 
+/* Icon-only segment (e.g. the calendar header's Week/List toggle) — plain
+   .rux-button--icon's padding: 0 doesn't actually win here (same one-class
+   specificity as .rux-button--segment's own padding, sized for a text
+   label, and source order favors --segment), so a 20px icon would be
+   squeezed into a 28px box minus 32px of horizontal padding. This compound
+   selector outranks both on specificity, forcing an exact square the
+   segmented track's own height (28px at this app's current tokens) with
+   no label padding to fight. */
+.rux-button--segment.rux-button--segment-icon {
+	width: var(--_h);
+	min-width: var(--_h);
+	padding: 0;
+}
+
 /* Text color is the only hover cue — bg/border stay exactly as they are at
    rest. border-color is still reasserted (not just omitted) to block the
    generic .rux-button:hover rule's accent-blue border from leaking in; an

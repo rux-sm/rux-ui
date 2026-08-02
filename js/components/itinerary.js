@@ -378,10 +378,15 @@
 	//   Stop1.departPrev (manual, the anchor)
 	//     → Pickup.spot = Stop1.departPrev − boarding padding
 	//         → Pickup.departPrev = Pickup.spot − yard-to-pickup drive time
+	//             − (a reset sitting between Pickup and boarding, if any)
 	// "Spot padding" is the boarding buffer for the first step (how much
 	// earlier the bus should be ready than the scheduled passenger
 	// departure) — it has nothing to do with the yard leg, which is pure
-	// travel time.
+	// travel time. A sleeper card between Pickup and Stop 1 means Spot is
+	// when boarding happens, not when the driver arrived — its own
+	// duration has to come off the chain too, on top of the drive itself,
+	// or the derived yard-departure time comes out however long the reset
+	// took too late.
 
 	function autoPopulatePickupSpot(stops) {
 		const pickup = stops.find((s) => s.type === "pickup");
@@ -394,14 +399,31 @@
 		pickup.spot = minsToTimeStr(((depMins - padding) % 1440 + 1440) % 1440);
 	}
 
+	// Reset sitting between Pickup and boarding (Stop 1) — chronologically
+	// "before" the pickup event even though, in the list, its card comes
+	// after Pickup's (it inherits Pickup's own address, so it has to).
+	function resetBeforeBoardingMins(stops, pickupIdx) {
+		const firstStopIdx = stops.findIndex((s) => s.type === "stop");
+		const boardingIdx = firstStopIdx >= 0 ? firstStopIdx : stops.length;
+		const resetStop = stops.slice(pickupIdx + 1, boardingIdx).find((s) => s.type === "sleeper");
+		if (!resetStop) return 0;
+		const str = parseClockMins(resetStop.departPrev);
+		const end = parseClockMins(resetStop.arrive);
+		if (str === null || end === null) return 0;
+		return minutesBetween(str, end) || 0;
+	}
+
 	function autoPopulatePickupDepart(stops) {
-		const pickup = stops.find((s) => s.type === "pickup");
+		const pickupIdx = stops.findIndex((s) => s.type === "pickup");
+		if (pickupIdx < 0) return;
+		const pickup = stops[pickupIdx];
 		if (!pickup?.spot) return;
 		const spotMins = parseClockMins(pickup.spot);
 		if (spotMins === null) return;
 		const driveMins = parseDriveMins(pickup.drive);
 		if (driveMins <= 0) return;
-		pickup.departPrev = minsToTimeStr(((spotMins - driveMins) % 1440 + 1440) % 1440);
+		const resetMins = resetBeforeBoardingMins(stops, pickupIdx);
+		pickup.departPrev = minsToTimeStr(((spotMins - driveMins - resetMins) % 1440 + 1440) % 1440);
 	}
 
 	function computeOnDuty(stops) {
@@ -567,6 +589,22 @@
 			const s = stops[i];
 			if (!s || s.type === "day" || s.type === "sleeper") continue;
 			return s.address || "";
+		}
+		return "";
+	}
+
+	// The previous real stop's own "arrival" time — Pickup's is its Spot
+	// time (its time2 field is "spot", not "arrive"; see time2 in
+	// renderStop), everything else uses Arrive. Used to default a new
+	// sleeper's Str to when the driver actually got there, instead of
+	// blank/whatever was last typed — a reset that's logged starting before
+	// the driver even arrived (or departed for) that stop isn't a real
+	// reset window.
+	function previousStopArrivalTime(stops, idx) {
+		for (let i = idx - 1; i >= 0; i--) {
+			const s = stops[i];
+			if (!s || s.type === "day" || s.type === "sleeper") continue;
+			return (s.type === "pickup" ? s.spot : s.arrive) || "";
 		}
 		return "";
 	}
@@ -1489,7 +1527,12 @@
 
 		function newSleeperStop(insertIdx) {
 			const prev = sleeperFromPrev(insertIdx);
-			return { type: "sleeper", name: "", address: prev.address, miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: "", arrive: "", lat: prev.lat, lng: prev.lng, mapboxId: prev.mapboxId };
+			// Str defaults to the previous stop's own arrival time (Spot for
+			// Pickup, Arrive otherwise) — still just a starting value the
+			// driver/dispatcher can edit, same as the address is a one-time
+			// snapshot rather than something permanently locked to it.
+			const defaultStr = previousStopArrivalTime(stops, insertIdx);
+			return { type: "sleeper", name: "", address: prev.address, miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: defaultStr, arrive: "", lat: prev.lat, lng: prev.lng, mapboxId: prev.mapboxId };
 		}
 
 		document.addEventListener("settings:yard", () => {

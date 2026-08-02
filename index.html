@@ -13,9 +13,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=48" />
+		<link rel="stylesheet" href="./css/tokens.css?v=51" />
 		<link rel="stylesheet" href="./css/colors_and_type.css" />
-		<link rel="stylesheet" href="./css/components.css?v=103" />
+		<link rel="stylesheet" href="./css/components.css?v=111" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=2" />
@@ -23,7 +23,7 @@
 		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
 		<link rel="stylesheet" href="./css/features/comp-settings-app.css?v=2" />
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=1" />
-		<link rel="stylesheet" href="./css/features/comp-components-app.css?v=8" />
+		<link rel="stylesheet" href="./css/features/comp-components-app.css?v=10" />
 		<link rel="stylesheet" href="./css/features/flip-seven.css?v=17" />
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/search-modal.css" />
@@ -34,7 +34,7 @@
 		<link rel="stylesheet" href="./css/features/contact-info.css?v=2" />
 		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
 		<link rel="stylesheet" href="./css/features/team-chat.css?v=4" />
-		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=28" />
+		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=32" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=72" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=5" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=3" />
@@ -91,6 +91,15 @@
 					>
 						<span class="rux-icon" aria-hidden="true">map</span>
 						Trips
+					</button>
+
+					<button
+						class="rux-button rux-button--ghost rux-app-header__nav-item"
+						type="button"
+						data-module="list"
+					>
+						<span class="rux-icon" aria-hidden="true">list_alt</span>
+						List
 					</button>
 
 					<button
@@ -1873,11 +1882,6 @@
 								role="group"
 								aria-label="View controls"
 							>
-								<div
-									class="rux-cluster"
-									id="trips-filter-badges"
-									hidden
-								></div>
 								<div class="calendar-app__date-controls">
 									<button
 										class="rux-button rux-button--ghost rux-button--icon calendar-app__nav"
@@ -1956,34 +1960,6 @@
 									>chevron_right</span
 								>
 							</div>
-						</div>
-						<div
-							class="rux-workspace__body trips-app__table-wrap"
-							id="calendar-list-view"
-							hidden
-						>
-							<table
-								class="rux-table trips-app__table"
-								aria-label="Trips roster"
-							>
-								<thead>
-									<tr>
-										<th scope="col">Trip</th>
-										<th scope="col">Destination</th>
-										<th scope="col">Dates</th>
-										<th scope="col">Bus</th>
-										<th scope="col">Confirmed</th>
-										<th scope="col">Invoice</th>
-										<th scope="col" class="col-payment">
-											Payment
-										</th>
-										<th scope="col" class="col-quoted">
-											Quoted
-										</th>
-									</tr>
-								</thead>
-								<tbody id="trips-roster-body"></tbody>
-							</table>
 						</div>
 					</section>
 					<div
@@ -2116,47 +2092,6 @@
 									class="rux-panel__pane"
 									role="tabpanel"
 								>
-									<article class="rux-card" id="rp-schedule-view-card">
-										<header class="rux-card__header">
-											<h3 class="rux-card__title">
-												Schedule View
-											</h3>
-										</header>
-										<div class="rux-card__body rux-card__body--stack">
-											<div
-												class="rux-segmented-track"
-												id="trip-view-group"
-												role="group"
-												aria-label="Schedule view"
-												data-rux-toggle-group
-											>
-												<button
-													class="rux-button rux-button--segment is-active"
-													type="button"
-													aria-pressed="true"
-													data-value="calendar"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>calendar_view_month</span
-													><span class="rux-btn-label">Week</span>
-												</button>
-												<button
-													class="rux-button rux-button--segment"
-													type="button"
-													aria-pressed="false"
-													data-value="list"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>view_list</span
-													><span class="rux-btn-label">List</span>
-												</button>
-											</div>
-										</div>
-									</article>
 									<article
 										class="rux-card rux-mini-cal"
 										id="rp-minical-card"
@@ -2168,7 +2103,7 @@
 												class="rux-mini-cal__header"
 											>
 												<button
-													class="rux-button rux-button--default rux-button--icon rux-button--sm"
+													class="rux-button rux-button--ghost rux-button--icon"
 													id="mini-cal-prev"
 													type="button"
 													aria-label="Previous month"
@@ -2182,7 +2117,7 @@
 													id="mini-cal-title"
 												></span>
 												<button
-													class="rux-button rux-button--default rux-button--icon rux-button--sm"
+													class="rux-button rux-button--ghost rux-button--icon"
 													id="mini-cal-next"
 													type="button"
 													aria-label="Next month"
@@ -2213,8 +2148,421 @@
 									</article>
 									<article
 										class="rux-card"
+										id="rp-view-options-card"
+									>
+										<div class="rux-card__body">
+											<div class="rux-view-options">
+												<div
+													class="rux-view-options__row"
+												>
+													<span
+														class="rux-view-options__label"
+														>Time-aligned mode</span
+													>
+													<label class="rux-switch">
+														<input
+															id="opt-time-align"
+															type="checkbox"
+															role="switch"
+														/>
+														<span
+															class="rux-switch__track"
+														></span>
+														<span
+															class="rux-switch__thumb"
+														></span>
+													</label>
+												</div>
+												<div
+													class="rux-view-options__row"
+												>
+													<span
+														class="rux-view-options__label"
+														>Compact rows</span
+													>
+													<label class="rux-switch">
+														<input
+															id="opt-compact"
+															type="checkbox"
+															role="switch"
+														/>
+														<span
+															class="rux-switch__track"
+														></span>
+														<span
+															class="rux-switch__thumb"
+														></span>
+													</label>
+												</div>
+												<div
+													class="rux-view-options__row"
+												>
+													<span
+														class="rux-view-options__label"
+														>Center trip details</span
+													>
+													<label class="rux-switch">
+														<input
+															id="opt-centered-trip-heads"
+															type="checkbox"
+															role="switch"
+														/>
+														<span
+															class="rux-switch__track"
+														></span>
+														<span
+															class="rux-switch__thumb"
+														></span>
+													</label>
+												</div>
+												<div
+													class="rux-view-options__row"
+												>
+													<span
+														class="rux-view-options__label"
+														>Two-week view</span
+													>
+													<label class="rux-switch">
+														<input
+															id="opt-two-weeks"
+															type="checkbox"
+															role="switch"
+														/>
+														<span
+															class="rux-switch__track"
+														></span>
+														<span
+															class="rux-switch__thumb"
+														></span>
+													</label>
+												</div>
+												<div
+													class="rux-view-options__row"
+												>
+													<span
+														class="rux-view-options__label"
+														>Start on Sunday</span
+													>
+													<label class="rux-switch">
+														<input
+															id="opt-sunday-start"
+															type="checkbox"
+															role="switch"
+														/>
+														<span
+															class="rux-switch__track"
+														></span>
+														<span
+															class="rux-switch__thumb"
+														></span>
+													</label>
+												</div>
+												<div
+													class="rux-view-options__row"
+												>
+													<span
+														class="rux-view-options__label"
+														>Hide navigation
+														bar</span
+													>
+													<label class="rux-switch">
+														<input
+															id="opt-hide-nav"
+															type="checkbox"
+															role="switch"
+														/>
+														<span
+															class="rux-switch__track"
+														></span>
+														<span
+															class="rux-switch__thumb"
+														></span>
+													</label>
+												</div>
+											</div>
+										</div>
+									</article>
+								</div>
+								<div
+									id="rp-pane-drivers"
+									class="rux-panel__pane"
+									role="tabpanel"
+									hidden
+								>
+									<article class="rux-card">
+										<header class="rux-card__header">
+											<h3 class="rux-card__title">
+												Driver Availability
+											</h3>
+										</header>
+										<div class="rux-card__body">
+											<div class="rux-driver-grid__scroller">
+												<div
+													class="rux-driver-grid"
+													id="rp-driver-grid"
+													role="grid"
+													aria-label="Driver assignments by day"
+												>
+													<p class="rux-subtle">
+														Loading drivers…
+													</p>
+												</div>
+											</div>
+										</div>
+									</article>
+								</div>
+								<div
+									id="rp-pane-tasks"
+									class="rux-panel__pane"
+									role="tabpanel"
+									hidden
+								>
+									<div id="rp-tasks-departures-body"></div>
+								</div>
+								<div
+									id="rp-pane-history"
+									class="rux-panel__pane"
+									role="tabpanel"
+									hidden
+								>
+									<section
+										class="rux-trip-history"
+										id="rp-trip-history"
+										aria-label="Trip change history"
+									>
+										<header class="rux-trip-history__toolbar">
+											<div>
+												<h3 class="rux-trip-history__title">All trip history</h3>
+												<p class="rux-trip-history__subtitle">Newest changes first</p>
+											</div>
+											<button
+												class="rux-button rux-button--default rux-button--sm rux-trip-history__filter"
+												id="rp-history-trip-filter"
+												type="button"
+												hidden
+												aria-label="Clear selected trip filter"
+											></button>
+										</header>
+										<p
+											class="rux-trip-history__status rux-subtle"
+											id="rp-history-status"
+											aria-live="polite"
+										>
+											Open History to load changes.
+										</p>
+										<div
+											class="rux-trip-history__list"
+											id="rp-history-list"
+										></div>
+										<button
+											class="rux-button rux-button--default rux-button--block"
+											id="rp-history-load-more"
+											type="button"
+											hidden
+										>
+											Load more
+										</button>
+									</section>
+								</div>
+							</div>
+							<!-- Fixed action slot at the bottom of the panel, shared across
+                   tabs — contents are per-tab (only one group shown at a
+                   time, matching the active pane), but the footer itself
+                   stays in the same place instead of each pane owning (and
+                   popping in/out) its own footer. Hidden entirely when the
+                   active tab has no action of its own (History). -->
+							<footer
+								class="rux-panel__footer"
+								id="rp-panel-footer"
+							>
+								<div
+									class="rux-right-panel__footer-group"
+									data-rp-footer-for="rp-pane-navigate"
+									data-rux-keep-trip-selection
+								>
+									<button
+										class="rux-button rux-button--default rux-button--block"
+										type="button"
+										id="rp-contact-info-btn"
+										disabled
+										title="Select a trip first"
+									>
+										<span class="rux-icon" aria-hidden="true"
+											>contact_phone</span
+										>
+										<span class="rux-btn-label"
+											>Contact Info</span
+										>
+									</button>
+									<button
+										class="rux-button rux-button--default rux-button--block"
+										type="button"
+										id="rp-trip-reminder-btn"
+										disabled
+										title="Select a trip first"
+									>
+										<span class="rux-icon" aria-hidden="true"
+											>notifications_active</span
+										>
+										<span class="rux-btn-label"
+											>Trip Reminder</span
+										>
+									</button>
+								</div>
+								<div
+									class="rux-right-panel__footer-group"
+									data-rp-footer-for="rp-pane-tasks"
+									hidden
+								>
+									<div class="rux-tasks__nav" id="rp-tasks-nav">
+										<button
+											type="button"
+											class="rux-button rux-button--default"
+											data-tasks-nav="prev"
+										>
+											<span class="rux-icon" aria-hidden="true"
+												>chevron_left</span
+											><span class="rux-btn-label">Prev</span>
+										</button>
+										<button
+											type="button"
+											class="rux-button rux-button--accent"
+											id="rp-tasks-nav-today"
+											data-tasks-nav="today"
+										>
+											Today
+										</button>
+										<button
+											type="button"
+											class="rux-button rux-button--default"
+											data-tasks-nav="next"
+										>
+											<span class="rux-btn-label">Next</span
+											><span class="rux-icon" aria-hidden="true"
+												>chevron_right</span
+											>
+										</button>
+									</div>
+								</div>
+								<div
+									class="rux-right-panel__footer-group"
+									data-rp-footer-for="rp-pane-drivers"
+									hidden
+								>
+									<button
+										class="rux-button rux-button--default"
+										type="button"
+										id="rp-driver-add-timeoff-btn"
+										disabled
+										title="Select a driver first"
+									>
+										<span
+											class="rux-icon"
+											aria-hidden="true"
+											>event_busy</span
+										>
+										<span class="rux-btn-label"
+											>Add Time Off</span
+										>
+									</button>
+									<button
+										class="rux-button rux-button--accent"
+										type="button"
+										id="rp-driver-info-btn"
+										disabled
+										title="Select a driver first"
+									>
+										<span class="rux-icon" aria-hidden="true"
+											>sms</span
+										>
+										<span class="rux-btn-label">Share Schedule</span>
+									</button>
+								</div>
+							</footer>
+						</aside>
+					</div>
+				</div>
+				<!-- /module:calendar -->
+
+				<!-- ════════════════════════════════════════════════════════════════
+             MODULE: LIST
+             ════════════════════════════════════════════════════════════════ -->
+				<div class="scheduler-app__module" data-module="list" hidden>
+					<section class="rux-workspace trips-app__main" aria-label="Trip list">
+						<header class="rux-workspace__header rux-workspace__header--table">
+							<div class="rux-workspace__nav">
+								<h1 class="rux-workspace__title" id="trips-list-title"></h1>
+							</div>
+							<div class="rux-workspace__toolbar">
+								<div class="rux-cluster" id="trips-filter-badges" hidden></div>
+								<input
+									class="rux-input"
+									id="trips-search"
+									name="trips-roster-filter"
+									type="search"
+									autocomplete="off"
+									autocapitalize="none"
+									spellcheck="false"
+									data-1p-ignore="true"
+									data-lpignore="true"
+									placeholder="Search trips…"
+									aria-label="Search trips"
+								/>
+								<button class="rux-button rux-button--default" id="trips-btn-add" type="button">
+									<span class="rux-icon" aria-hidden="true">add</span>
+									<span class="rux-btn-label">New trip</span>
+								</button>
+								<button
+									class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
+									type="button"
+									id="list-filter-toggle-btn"
+									aria-label="Open filters"
+									aria-pressed="false"
+								>
+									<span class="rux-icon icon-off">right_panel_open</span>
+									<span class="rux-icon icon-on">right_panel_close</span>
+								</button>
+							</div>
+						</header>
+						<div class="rux-workspace__body trips-app__table-wrap">
+							<table class="rux-table trips-app__table" aria-label="Trips roster">
+								<thead>
+									<tr>
+										<th scope="col">Trip</th>
+										<th scope="col">Destination</th>
+										<th scope="col">Dates</th>
+										<th scope="col">Bus</th>
+										<th scope="col">Confirmed</th>
+										<th scope="col">Invoice</th>
+										<th scope="col" class="col-payment">Payment</th>
+										<th scope="col" class="col-quoted">Quoted</th>
+									</tr>
+								</thead>
+								<tbody id="trips-roster-body"></tbody>
+							</table>
+						</div>
+					</section>
+					<div
+						class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right"
+						id="list-filter-resize-gutter"
+						role="separator"
+						aria-orientation="vertical"
+						aria-label="Resize filter panel"
+						aria-controls="list-filter-drawer"
+						tabindex="0"
+					></div>
+					<!-- Trip filter drawer -->
+					<div class="scheduler-app__drawer scheduler-app__drawer--right" id="list-filter-drawer">
+						<aside
+							class="rux-panel rux-panel--right rux-list-filter-panel"
+							role="dialog"
+							aria-label="Trip filters"
+						>
+							<div class="rux-panel__body">
+								<div class="rux-panel__pane">
+									<article
+										class="rux-card"
 										id="rp-filter-card"
-										hidden
 									>
 										<header class="rux-card__header">
 											<h3 class="rux-card__title">
@@ -2461,308 +2809,12 @@
 											</div>
 										</div>
 									</article>
-									<article
-										class="rux-card"
-										id="rp-view-options-card"
-									>
-										<div class="rux-card__body">
-											<div class="rux-view-options">
-												<div
-													class="rux-view-options__row"
-												>
-													<span
-														class="rux-view-options__label"
-														>Time-aligned mode</span
-													>
-													<label class="rux-switch">
-														<input
-															id="opt-time-align"
-															type="checkbox"
-															role="switch"
-														/>
-														<span
-															class="rux-switch__track"
-														></span>
-														<span
-															class="rux-switch__thumb"
-														></span>
-													</label>
-												</div>
-												<div
-													class="rux-view-options__row"
-												>
-													<span
-														class="rux-view-options__label"
-														>Compact rows</span
-													>
-													<label class="rux-switch">
-														<input
-															id="opt-compact"
-															type="checkbox"
-															role="switch"
-														/>
-														<span
-															class="rux-switch__track"
-														></span>
-														<span
-															class="rux-switch__thumb"
-														></span>
-													</label>
-												</div>
-												<div
-													class="rux-view-options__row"
-												>
-													<span
-														class="rux-view-options__label"
-														>Center trip details</span
-													>
-													<label class="rux-switch">
-														<input
-															id="opt-centered-trip-heads"
-															type="checkbox"
-															role="switch"
-														/>
-														<span
-															class="rux-switch__track"
-														></span>
-														<span
-															class="rux-switch__thumb"
-														></span>
-													</label>
-												</div>
-												<div
-													class="rux-view-options__row"
-												>
-													<span
-														class="rux-view-options__label"
-														>Two-week view</span
-													>
-													<label class="rux-switch">
-														<input
-															id="opt-two-weeks"
-															type="checkbox"
-															role="switch"
-														/>
-														<span
-															class="rux-switch__track"
-														></span>
-														<span
-															class="rux-switch__thumb"
-														></span>
-													</label>
-												</div>
-												<div
-													class="rux-view-options__row"
-												>
-													<span
-														class="rux-view-options__label"
-														>Start on Sunday</span
-													>
-													<label class="rux-switch">
-														<input
-															id="opt-sunday-start"
-															type="checkbox"
-															role="switch"
-														/>
-														<span
-															class="rux-switch__track"
-														></span>
-														<span
-															class="rux-switch__thumb"
-														></span>
-													</label>
-												</div>
-												<div
-													class="rux-view-options__row"
-												>
-													<span
-														class="rux-view-options__label"
-														>Hide navigation
-														bar</span
-													>
-													<label class="rux-switch">
-														<input
-															id="opt-hide-nav"
-															type="checkbox"
-															role="switch"
-														/>
-														<span
-															class="rux-switch__track"
-														></span>
-														<span
-															class="rux-switch__thumb"
-														></span>
-													</label>
-												</div>
-											</div>
-										</div>
-									</article>
-								</div>
-								<div
-									id="rp-pane-drivers"
-									class="rux-panel__pane"
-									role="tabpanel"
-									hidden
-								>
-									<article class="rux-card">
-										<header class="rux-card__header">
-											<h3 class="rux-card__title">
-												Driver Availability
-											</h3>
-										</header>
-										<div class="rux-card__body">
-											<div class="rux-driver-grid__scroller">
-												<div
-													class="rux-driver-grid"
-													id="rp-driver-grid"
-													role="grid"
-													aria-label="Driver assignments by day"
-												>
-													<p class="rux-subtle">
-														Loading drivers…
-													</p>
-												</div>
-											</div>
-										</div>
-									</article>
-								</div>
-								<div
-									id="rp-pane-tasks"
-									class="rux-panel__pane"
-									role="tabpanel"
-									hidden
-								>
-									<div id="rp-tasks-departures-body"></div>
-								</div>
-								<div
-									id="rp-pane-history"
-									class="rux-panel__pane"
-									role="tabpanel"
-									hidden
-								>
-									<section
-										class="rux-trip-history"
-										id="rp-trip-history"
-										aria-label="Trip change history"
-									>
-										<header class="rux-trip-history__toolbar">
-											<div>
-												<h3 class="rux-trip-history__title">All trip history</h3>
-												<p class="rux-trip-history__subtitle">Newest changes first</p>
-											</div>
-											<button
-												class="rux-button rux-button--default rux-button--sm rux-trip-history__filter"
-												id="rp-history-trip-filter"
-												type="button"
-												hidden
-												aria-label="Clear selected trip filter"
-											></button>
-										</header>
-										<p
-											class="rux-trip-history__status rux-subtle"
-											id="rp-history-status"
-											aria-live="polite"
-										>
-											Open History to load changes.
-										</p>
-										<div
-											class="rux-trip-history__list"
-											id="rp-history-list"
-										></div>
-										<button
-											class="rux-button rux-button--default rux-button--block"
-											id="rp-history-load-more"
-											type="button"
-											hidden
-										>
-											Load more
-										</button>
-									</section>
 								</div>
 							</div>
-							<!-- Fixed action slot at the bottom of the panel, shared across
-                   tabs — contents are per-tab (only one group shown at a
-                   time, matching the active pane), but the footer itself
-                   stays in the same place instead of each pane owning (and
-                   popping in/out) its own footer. Hidden entirely when the
-                   active tab has no action of its own (Nav, Tasks, History). -->
-							<footer
-								class="rux-panel__footer"
-								id="rp-panel-footer"
-							>
-								<div
-									class="rux-right-panel__footer-group"
-									data-rp-footer-for="rp-pane-navigate"
-									data-rux-keep-trip-selection
-								>
-									<button
-										class="rux-button rux-button--default rux-button--block"
-										type="button"
-										id="rp-contact-info-btn"
-										disabled
-										title="Select a trip first"
-									>
-										<span class="rux-icon" aria-hidden="true"
-											>contact_phone</span
-										>
-										<span class="rux-btn-label"
-											>Contact Info</span
-										>
-									</button>
-									<button
-										class="rux-button rux-button--default rux-button--block"
-										type="button"
-										id="rp-trip-reminder-btn"
-										disabled
-										title="Select a trip first"
-									>
-										<span class="rux-icon" aria-hidden="true"
-											>notifications_active</span
-										>
-										<span class="rux-btn-label"
-											>Trip Reminder</span
-										>
-									</button>
-								</div>
-								<div
-									class="rux-right-panel__footer-group"
-									data-rp-footer-for="rp-pane-drivers"
-									hidden
-								>
-									<button
-										class="rux-button rux-button--default"
-										type="button"
-										id="rp-driver-add-timeoff-btn"
-										disabled
-										title="Select a driver first"
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>event_busy</span
-										>
-										<span class="rux-btn-label"
-											>Add Time Off</span
-										>
-									</button>
-									<button
-										class="rux-button rux-button--accent"
-										type="button"
-										id="rp-driver-info-btn"
-										disabled
-										title="Select a driver first"
-									>
-										<span class="rux-icon" aria-hidden="true"
-											>sms</span
-										>
-										<span class="rux-btn-label">Share Schedule</span>
-									</button>
-								</div>
-							</footer>
 						</aside>
 					</div>
 				</div>
-				<!-- /module:calendar -->
+				<!-- /module:list -->
 
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: FLEET
@@ -6220,12 +6272,12 @@
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=25"></script>
-		<script src="./js/components/itinerary.js?v=18"></script>
+		<script src="./js/components/itinerary.js?v=20"></script>
 		<script src="./js/panels/driver-panel.js?v=11" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=4" defer></script>
 		<script src="./js/panels/settings-panel.js?v=3" defer></script>
-		<script src="./js/panels/trips-list.js?v=10" defer></script>
+		<script src="./js/panels/trips-list.js?v=11" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=3" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
@@ -6235,9 +6287,9 @@
 		<script type="module" src="./js/panels/contact-info-modal.js?v=6"></script>
 		<script type="module" src="./js/panels/notifications-panel.js?v=1"></script>
 		<script type="module" src="./js/panels/team-chat.js?v=3"></script>
-		<script type="module" src="./js/panels/components-panel.js?v=39"></script>
+		<script type="module" src="./js/panels/components-panel.js?v=45"></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=43"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=47"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -6305,6 +6357,7 @@
 				if (name === "fleet") window.FleetPanel?.init();
 				if (name === "customers") window.CustomersPanel?.init();
 				if (name === "settings") window.SettingsPanel?.init();
+				if (name === "list") window.TripsListPanel?.reload?.();
 			}
 
 			moduleButtons.forEach((btn) => {
@@ -6741,6 +6794,7 @@
 			showModule(
 				[
 					"calendar",
+					"list",
 					"fleet",
 					"drivers",
 					"customers",
@@ -7065,10 +7119,7 @@
 					return;
 				const { trip } = e.detail;
 				showModule("calendar");
-				// Skip the week-jump/re-render while the List view is showing — the
-				// grid is hidden anyway, and re-rendering would stomp the "Trips"
-				// week-label text with a date range for no visible benefit.
-				if (tripViewMode !== "list" && trip.start_date) {
+				if (trip.start_date) {
 					currentWeekStart = startOfWeek(
 						parseIsoDate(trip.start_date),
 					);
@@ -8907,36 +8958,21 @@
 				patchProfileSettings({ twoWeeks: on });
 			});
 
-			// ── Trip View: Calendar grid vs. flat Trips list ────────────────────────
-			// Manifest is a floating window (see css/features/trip-manifest.css,
-			// js/panels/trip-manifest.js) layered OVER whichever of Calendar/List is
-			// active, not a third mutually-exclusive mode — so `tripViewMode` only
-			// ever holds "calendar"/"list", and `manifestOpen` tracks the overlay
-			// independently. window.TripView.get() still reports "manifest" while
-			// it's open so existing callers (the Billing-tab toggle, trip-manifest.js's
+			// ── Trip View: Calendar grid + Manifest overlay ─────────────────────────
+			// List used to be a sub-mode toggled within this same module (hiding
+			// the grid, borrowing this module's right panel) — it's its own
+			// top-level module now (data-module="list"), so this only has
+			// Calendar's own grid plus the Manifest floating window (see
+			// css/features/trip-manifest.css, js/panels/trip-manifest.js) layered
+			// over it. window.TripView.get() still reports "manifest" while it's
+			// open so existing callers (the Billing-tab toggle, trip-manifest.js's
 			// own auto-close-when-not-ticketed guard) don't need to change.
 
-			let tripViewMode = "calendar";
 			let manifestOpen = false;
 
-			const calendarViewportEl = document.querySelector(
-				".calendar-app__viewport",
-			);
-			const calendarListViewEl =
-				document.getElementById("calendar-list-view");
 			const calendarManifestViewEl = document.getElementById(
 				"calendar-manifest-view",
 			);
-			const calendarNavEls =
-				document.querySelectorAll(".calendar-app__nav");
-			const tripsFilterBadgesEl = document.getElementById(
-				"trips-filter-badges",
-			);
-			const rpMiniCalCard = document.getElementById("rp-minical-card");
-			const rpViewOptionsCard = document.getElementById(
-				"rp-view-options-card",
-			);
-			const rpFilterCard = document.getElementById("rp-filter-card");
 			const tpManifestBtn = document.getElementById(
 				"tp-view-manifest-btn",
 			);
@@ -8984,67 +9020,20 @@
 				syncManifestBtnLabel();
 			}
 
+			// Calendar's grid is never hidden anymore (List no longer shares this
+			// module, so there's no other mode competing for the same space) —
+			// this only ever needs to open or close the Manifest overlay now.
 			function setTripView(mode, trip) {
 				if (mode === "manifest") {
 					openManifestWindow(trip);
 					return;
 				}
 				closeManifestWindow();
-				tripViewMode = mode;
-				const isCalendar = mode === "calendar";
-				const isList = mode === "list";
-				if (calendarViewportEl) calendarViewportEl.hidden = !isCalendar;
-				if (calendarListViewEl) calendarListViewEl.hidden = !isList;
-				calendarNavEls.forEach((el) => {
-					el.hidden = !isCalendar;
-				});
-				if (rpMiniCalCard) rpMiniCalCard.hidden = !isCalendar;
-				if (rpViewOptionsCard) rpViewOptionsCard.hidden = !isCalendar;
-				if (rpFilterCard) rpFilterCard.hidden = !isList;
-				if (tripsFilterBadgesEl) {
-					tripsFilterBadgesEl.hidden = isList
-						? tripsFilterBadgesEl.children.length === 0
-						: true;
-				}
-				// setTripView() is the single source of truth for this toggle's
-				// pressed state, not just the generic [data-rux-toggle-group] click
-				// handler in controls.js — that handler only fires for an actual
-				// click inside #trip-view-group.
-				document
-					.querySelectorAll("#trip-view-group .rux-button")
-					.forEach((btn) => {
-						const on = btn.dataset.value === mode;
-						btn.setAttribute("aria-pressed", String(on));
-						btn.classList.toggle("is-active", on);
-					});
-				if (isList) {
-					window.TripsListPanel?.updateTitle?.();
-				} else {
-					renderDayHeaders(currentWeekStart);
-					// The scheduler was just unhidden (calendarViewportEl.hidden =
-					// false above) — every .rux-scheduler__track collapsed to 0
-					// height while hidden, so their row heights need recomputing now
-					// that they're actually visible again.
-					layoutScheduler();
-				}
-			}
-
-			const tripViewGroup = document.getElementById("trip-view-group");
-			if (tripViewGroup) {
-				tripViewGroup.querySelectorAll(".rux-button").forEach((btn) => {
-					const on = btn.dataset.value === tripViewMode;
-					btn.setAttribute("aria-pressed", String(on));
-					btn.classList.toggle("is-active", on);
-				});
-				tripViewGroup.addEventListener("click", (e) => {
-					const btn = e.target.closest(".rux-button");
-					if (btn) setTripView(btn.dataset.value);
-				});
 			}
 
 			window.TripView = {
 				set: setTripView,
-				get: () => (manifestOpen ? "manifest" : tripViewMode),
+				get: () => (manifestOpen ? "manifest" : "calendar"),
 			};
 
 			const optSundayStart = document.getElementById("opt-sunday-start");
@@ -9213,7 +9202,7 @@
 						window.TripHistory?.activate();
 					// Footer stays in a fixed spot across tabs — only the action group
 					// matching the active pane shows, and the footer itself hides
-					// entirely when the active tab has none (Nav, Tasks, History).
+					// entirely when the active tab has none (History).
 					let hasFooterAction = false;
 					rpFooterGroups.forEach((group) => {
 						const show = group.dataset.rpFooterFor === paneId;

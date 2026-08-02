@@ -9,6 +9,8 @@ import { supabase } from "../data/supabase.js";
 const pane = document.getElementById("rp-pane-tasks");
 const body = document.getElementById("rp-tasks-departures-body");
 const tabBadge = document.getElementById("rp-tasks-tab-badge");
+const navGroup = document.getElementById("rp-tasks-nav");
+const navTodayBtn = document.getElementById("rp-tasks-nav-today");
 
 function localIsoDate(date = new Date()) {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -354,14 +356,35 @@ function isPrepDone(trip, leg) {
 	return prepDone && remindersDone && envelopesDone && requirementsDone;
 }
 
+// null = the default view (tomorrow, or the Fri→Mon weekend cluster below)
+// — set by the Prev/Next/Today controls (see the navGroup click listener
+// below) to page through a single specific day instead, for marking things
+// ahead of time or reviewing a day that's already passed.
+let navigatedDate = null;
+
 // Friday: nobody's back in the office until Monday, so surface the whole
 // weekend's departures at once instead of just Saturday's.
-function targetDates() {
+function defaultTargetDates() {
 	const today = localIsoDate();
 	if (new Date(`${today}T00:00:00`).getDay() === 5) {
 		return [addDays(today, 1), addDays(today, 2), addDays(today, 3)];
 	}
 	return [addDays(today, 1)];
+}
+
+// Only for the default view; once someone's paged to a specific day, it's
+// just that one day regardless of which weekday it lands on.
+function targetDates() {
+	return navigatedDate ? [navigatedDate] : defaultTargetDates();
+}
+
+// The tab badge always reflects the true upcoming default (tomorrow/
+// weekend), never whatever day someone's currently paged to — otherwise
+// reviewing a past day (nothing left to do) or a far-future one could
+// clear a badge that's actually still flagging tomorrow's real gap.
+function defaultEntriesByDate() {
+	const allTrips = window.RuxTrips?.list() || [];
+	return defaultTargetDates().map((iso) => ({ iso, entries: tripsForDate(allTrips, iso) }));
 }
 
 // Which leg (if any) of this trip departs on this date — a split
@@ -552,13 +575,26 @@ function updateTabBadge(byDate) {
 	tabBadge.classList.toggle("rux-tasks__tab-badge--danger", missingRequirements);
 }
 
+// Prev/Next page one day at a time from whichever end of the currently
+// shown range (a single day, or the Fri→Mon default cluster) is being
+// moved away from. Today jumps back to the default view rather than the
+// literal calendar date — there's nothing to prep "today", only tomorrow
+// onward, so it means "back to the normal view" the same way it would on
+// a calendar app. The buttons themselves are static markup in the shared
+// #rp-panel-footer (index.html, data-rp-footer-for="rp-pane-tasks") now,
+// not re-rendered here — this just syncs the one bit of dynamic state.
+function syncNav() {
+	if (navTodayBtn) navTodayBtn.disabled = !navigatedDate;
+}
+
 // No card header anymore — each day-group below carries its own
 // "Departing [Day], [Month] [Day]" heading (see renderDayGroup) instead of
 // a single date-specific line up top that only ever described the first
 // of however many days are showing.
 function render() {
 	const byDate = entriesByDate();
-	updateTabBadge(byDate);
+	updateTabBadge(defaultEntriesByDate());
+	syncNav();
 	if (!body) return;
 	body.innerHTML = byDate.map(({ iso, entries }) => renderDayGroup(iso, entries)).join("");
 }
@@ -683,6 +719,16 @@ function ensureTaskActionMenu() {
 	return taskActionMenu;
 }
 
+navGroup?.addEventListener("click", (event) => {
+	const navBtn = event.target.closest("[data-tasks-nav]");
+	if (!navBtn) return;
+	const dates = targetDates();
+	if (navBtn.dataset.tasksNav === "prev") navigatedDate = addDays(dates[0], -1);
+	else if (navBtn.dataset.tasksNav === "next") navigatedDate = addDays(dates[dates.length - 1], 1);
+	else if (navBtn.dataset.tasksNav === "today") navigatedDate = null;
+	render();
+});
+
 body?.addEventListener("click", (event) => {
 	const action = event.target.closest("[data-task-action]");
 	if (!action) return;
@@ -756,7 +802,7 @@ body?.addEventListener("click", (event) => {
 // clicking into in the first place.
 window.setInterval(() => {
 	if (!pane?.hidden) render();
-	else updateTabBadge(entriesByDate());
+	else updateTabBadge(defaultEntriesByDate());
 }, 30000);
 
 // window.RuxTrips is set asynchronously by index.html's initSchedulerData()
@@ -765,7 +811,7 @@ window.setInterval(() => {
 // until the 30s poll (or a tab click) happened to catch it. Retry briefly
 // instead of waiting a full 30s for the badge to ever become correct.
 function primeBadge(attempt = 0) {
-	updateTabBadge(entriesByDate());
+	updateTabBadge(defaultEntriesByDate());
 	if (window.RuxTrips?.list()?.length || attempt >= 10) return;
 	setTimeout(() => primeBadge(attempt + 1), 1000);
 }

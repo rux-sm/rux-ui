@@ -28,11 +28,16 @@
 	display: none;
 }
 
+/* Always full-width, evenly split, edge-to-edge (no gap) — unlike --contained
+   or plain .rux-tabs, which size to their own content, "attached" tabs are
+   meant to read as one continuous strip across the header, the same way the
+   reference folder-tab pattern does. */
 .rux-tabs--attached {
 	display: flex;
+	width: 100%;
 	align-items: flex-end;
-	gap: var(--rux-tabs-contained-gap);
-	padding: var(--rux-tabs-contained-padding);
+	gap: 0;
+	padding: 0;
 	background: var(--rux-tabs-attached-bg);
 	border: var(--rux-tabs-attached-border);
 	border-bottom: 0;
@@ -44,6 +49,20 @@
 
 .rux-tabs--attached::-webkit-scrollbar {
 	display: none;
+}
+
+.rux-tabs--attached > .rux-tab {
+	flex: 1;
+}
+
+/* Adjacent inactive tabs each carry a full border (see
+   --rux-tabs-attached-tab-border in tokens.css) — with no gap between them,
+   that'd double up into a 2px seam where they touch. Pull each tab's left
+   edge back by one border-width so it overlaps the previous tab's right
+   edge instead, same border-collapse trick the active tab's own
+   margin-bottom already uses against the pane below. */
+.rux-tabs--attached > .rux-tab + .rux-tab {
+	margin-left: calc(var(--rux-border-width) * -1);
 }
 
 .rux-tabs--fill > .rux-tab {
@@ -91,6 +110,17 @@
 	--_state-overlay: var(--rux-tab-pressed-bg);
 }
 
+/* Was falling through to the browser default outline (a stark white box)
+   — no .rux-tab focus style existed at all before this. position/z-index
+   so the ring isn't clipped by a neighboring tab's own background when
+   tabs sit edge-to-edge (--attached) or a scroll container clips overflow. */
+.rux-tab:focus-visible {
+	position: relative;
+	z-index: 2;
+	outline: none;
+	box-shadow: var(--rux-tab-focus-ring);
+}
+
 .rux-tab:disabled,
 .rux-tab[aria-disabled="true"] {
 	color: var(--rux-tab-disabled-fg);
@@ -101,9 +131,9 @@
 .rux-tab.is-active,
 .rux-tab[aria-selected="true"] {
 	--_state-overlay: transparent;
-	background-color: var(--rux-button-default-background);
+	background-color: var(--rux-tab-selected-bg);
 	color: var(--rux-tab-selected-fg);
-	border: var(--rux-default-button-border);
+	border: var(--rux-tab-selected-border);
 }
 
 .rux-tabs--contained > .rux-tab {
@@ -121,14 +151,37 @@
 .rux-tabs--contained > .rux-tab[aria-selected="true"] {
 	background-color: var(--rux-tabs-contained-tab-selected-bg);
 	color: var(--rux-tabs-contained-tab-selected-fg);
+	border: var(--rux-tab-selected-border);
 }
 
 .rux-tabs--attached > .rux-tab {
-	height: calc(var(--rux-tab-height) + var(--rux-space-2));
+	height: var(--rux-tab-height);
 	background-color: var(--rux-tabs-attached-tab-bg);
 	color: var(--rux-tabs-attached-tab-fg);
 	border: var(--rux-tabs-attached-tab-border);
 	border-radius: var(--rux-radius-control) var(--rux-radius-control) 0 0;
+}
+
+/* Rounding every tab's top corners looks fine with a gap between them, but
+   flush edge-to-edge (see the width/margin rules above) it notches a little
+   triangle of background out of each shared seam. Only the two ends of the
+   strip actually border open space, so only they stay rounded. */
+.rux-tabs--attached > .rux-tab:not(:first-child) {
+	border-top-left-radius: 0;
+}
+.rux-tabs--attached > .rux-tab:not(:last-child) {
+	border-top-right-radius: 0;
+}
+
+/* --attached always lives inside a .rux-panel (see the pane rule below),
+   which already draws its own border-inline down both sides — the strip's
+   own padding is 0, so the first/last tab's own side border would sit
+   right on top of the panel's, doubling into a visibly thicker edge. */
+.rux-tabs--attached > .rux-tab:first-child {
+	border-left: 0;
+}
+.rux-tabs--attached > .rux-tab:last-child {
+	border-right: 0;
 }
 
 .rux-tabs--attached > .rux-tab:hover {
@@ -140,11 +193,42 @@
 .rux-tabs--attached > .rux-tab[aria-selected="true"] {
 	position: relative;
 	z-index: 1;
-	margin-bottom: calc(var(--rux-border-width) * -1);
 	background-color: var(--rux-tabs-attached-tab-selected-bg);
-	border-color: var(--rux-tabs-attached-tab-selected-border);
-	border-bottom: none;
+	/* --rux-tabs-attached-tab-selected-border is a full width+style+color
+	   shorthand (same shape as --rux-tabs-attached-tab-border, so the
+	   active tab matches inactive ones exactly) — `border:`, not
+	   `border-color:`. Feeding a full shorthand string into border-color
+	   (which only accepts a color) is an invalid value, and an invalid
+	   custom-property substitution resets the property to its *initial*
+	   value at computed-value time — border-color's initial is
+	   currentColor, which is this tab's own (white) text color. That's
+	   what was rendering as a bright white border instead of the intended
+	   one. */
+	border: var(--rux-tabs-attached-tab-selected-border);
+	/* Transparent, not `none` — `none` drops the bottom border's width along
+	   with its color, leaving 1px less border reserved at the bottom than
+	   at the top. .rux-tab centers its content vertically, so that 1px
+	   asymmetry recenters into the extra space and the text creeps down by
+	   ~1px right when a tab becomes active. Keeping the same width, just
+	   invisible, keeps the content box identical to an inactive tab's — no
+	   visible seam against the pane, no text shift either. */
+	border-bottom: var(--rux-border-width) solid transparent;
 	color: var(--rux-tabs-attached-tab-selected-fg);
+}
+
+/* The active-tab rule above's `border:` shorthand reinstates a left/right
+   border on every side, undoing the :first-child/:last-child border-left/
+   border-right: 0 above whenever the active tab happens to be at either
+   end — same specificity (0,3,0), and this rule comes later, so it was
+   winning. Bumped to 0,4,0 here so it wins regardless of source order,
+   instead of only working by accident of rule placement. */
+.rux-tabs--attached > .rux-tab.is-active:first-child,
+.rux-tabs--attached > .rux-tab[aria-selected="true"]:first-child {
+	border-left: 0;
+}
+.rux-tabs--attached > .rux-tab.is-active:last-child,
+.rux-tabs--attached > .rux-tab[aria-selected="true"]:last-child {
+	border-right: 0;
 }
 
 .rux-panel__tabs.rux-tabs--contained {
@@ -164,10 +248,21 @@
 	padding-bottom: 0;
 }
 
+/* No top border — the active tab sits directly above with a matching
+   background and no border of its own (see --rux-tabs-attached-tab-selected-
+   border in tokens.css), so a top border here would draw a line right
+   through that seam and undo the "attached" look. No left/right border
+   either — this pane always lives inside a .rux-panel, which already draws
+   its own border-inline down both sides; drawing it again here would
+   double it up right next to the panel's own edge. Only the bottom is this
+   pane's own to own, since .rux-panel itself has no border-block. */
 .rux-panel__nav--attached + .rux-panel__body,
 .rux-tabs--attached + .rux-panel__body {
 	background: var(--rux-tabs-attached-pane-bg);
 	border: var(--rux-tabs-attached-pane-border);
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
 	border-radius: 0 0 var(--rux-tabs-contained-radius) var(--rux-tabs-contained-radius);
 }
 

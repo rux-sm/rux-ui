@@ -93,13 +93,17 @@ import BusPicker from "../components/bus-picker.js?v=2";
 		if (!pane || pane.querySelector("[data-live-component-nav]")) return;
 		const card = el("div", "rux-card");
 		const header = el("header", "rux-card__header");
-		header.appendChild(el("p", "rux-card__title", "Live Components"));
+		header.appendChild(el("p", "rux-card__title", "Production Catalog"));
 		const body = el("div", "rux-card__body");
 		const nav = el("nav", "rux-menu components-app__nav");
 		nav.dataset.componentNav = "";
 		nav.dataset.liveComponentNav = "";
 		nav.setAttribute("aria-label", "Live components");
 		[
+			["form-controls", "Form Controls"],
+			["feedback-status", "Feedback & Status"],
+			["navigation", "Navigation"],
+			["surfaces-content", "Surfaces & Content"],
 			["module-button", "Module Buttons"],
 			["trip-bar", "Trip Bar"],
 			["bus-picker", "Bus Picker"],
@@ -114,6 +118,93 @@ import BusPicker from "../components/bus-picker.js?v=2";
 		body.appendChild(nav);
 		card.append(header, body);
 		pane.appendChild(card);
+	}
+
+	function mountCatalogFamilyPages() {
+		if (!document.querySelector('[data-component-page="form-controls"]')) {
+			const host = demoPage("form-controls", "Form Controls", "components-app__anatomy-stage--column");
+			host.innerHTML = `
+				<div class="components-app__catalog-grid">
+					<div class="rux-field"><label class="rux-field__label" for="component-text-input">Text input</label><input class="rux-input" id="component-text-input" value="Scarmilla Tours" /><span class="rux-field__help">Standard field help</span></div>
+					<div class="rux-field"><label class="rux-field__label" for="component-select">Select</label><select class="rux-select" id="component-select"><option>Bus 763</option><option>Bus 607</option></select></div>
+					<div class="rux-field"><label class="rux-field__label" for="component-date">Date</label><input class="rux-input has-value" id="component-date" type="date" value="2026-08-01" /></div>
+					<div class="rux-field"><label class="rux-field__label" for="component-time">Time</label><input class="rux-input has-value" id="component-time" type="time" value="09:15" /></div>
+					<div class="rux-field components-app__catalog-span"><label class="rux-field__label" for="component-textarea">Textarea</label><textarea class="rux-textarea" id="component-textarea">Driver instructions</textarea></div>
+					<div class="rux-field"><span class="rux-field__label">Checkbox</span><label class="rux-checkbox"><input type="checkbox" checked /> Confirmed</label></div>
+					<div class="rux-field"><span class="rux-field__label">Switch</span><label class="rux-switch"><input type="checkbox" checked /><span class="rux-switch__track"></span><span class="rux-switch__thumb"></span></label></div>
+					<div class="rux-field"><span class="rux-field__label">Number stepper</span><div class="rux-number-stepper"><button class="rux-number-stepper__btn" type="button" aria-label="Decrease"><span class="rux-icon">remove</span></button><input class="rux-number-stepper__input" type="number" value="2" min="1" /><button class="rux-number-stepper__btn" type="button" aria-label="Increase"><span class="rux-icon">add</span></button></div></div>
+					<div class="rux-field"><label class="rux-field__label" for="component-color">Color input</label><div class="rux-color-input"><span class="rux-color-input__swatch" style="background:#0b78ff"></span><input class="rux-color-input__picker" id="component-color" type="color" value="#0b78ff" /><output class="rux-color-input__hex">#0B78FF</output></div></div>
+					<div class="rux-field"><span class="rux-field__label">Color swatches</span><div class="rux-color-swatches"><label class="rux-color-swatch"><input type="radio" name="component-swatch" checked /><span class="rux-color-swatch__dot" style="--color:var(--rux-accent)"></span></label><label class="rux-color-swatch"><input type="radio" name="component-swatch" /><span class="rux-color-swatch__dot" style="--color:var(--rux-success)"></span></label><label class="rux-color-swatch"><input type="radio" name="component-swatch" /><span class="rux-color-swatch__dot" style="--color:var(--rux-warning)"></span></label></div></div>
+					<div class="rux-field"><span class="rux-field__label">Color picker</span><div class="rux-color-picker" data-component-color-picker><button class="rux-color-picker__trigger" type="button" aria-expanded="false"><span class="rux-color-picker__preview" style="--color:var(--rux-accent)"></span><span class="rux-color-picker__label">Accent</span><span class="rux-color-picker__chevron rux-icon">expand_more</span></button><div class="rux-color-picker__popover" hidden><label class="rux-color-picker__option"><input type="radio" name="component-picker" checked data-label="Accent" data-color="var(--rux-accent)" /><span class="rux-color-picker__dot" style="--color:var(--rux-accent)"></span></label><label class="rux-color-picker__option"><input type="radio" name="component-picker" data-label="Success" data-color="var(--rux-success)" /><span class="rux-color-picker__dot" style="--color:var(--rux-success)"></span></label><label class="rux-color-picker__option"><input type="radio" name="component-picker" data-label="Warning" data-color="var(--rux-warning)" /><span class="rux-color-picker__dot" style="--color:var(--rux-warning)"></span></label></div></div></div>
+					<div class="rux-field"><span class="rux-field__label">Output</span><output class="rux-output">508 miles</output></div>
+					<div class="rux-field components-app__catalog-span"><label class="rux-field__label" for="component-prefix">Input group</label><div class="rux-input-group rux-input-group--prefix rux-input-group--suffix"><span class="rux-input-group__prefix"><span class="rux-icon">attach_money</span></span><input class="rux-input" id="component-prefix" value="450" /><span class="rux-input-group__suffix">USD</span></div></div>
+				</div>`;
+			host.querySelectorAll(".rux-number-stepper__btn").forEach((button) => {
+				button.addEventListener("click", () => {
+					const input = button.parentElement.querySelector(".rux-number-stepper__input");
+					input.stepUp(button === button.parentElement.lastElementChild ? 1 : -1);
+					input.dispatchEvent(new Event("change", { bubbles: true }));
+				});
+			});
+			const colorPicker = host.querySelector("[data-component-color-picker]");
+			colorPicker?.querySelector(".rux-color-picker__trigger")?.addEventListener("click", (event) => {
+				const popover = colorPicker.querySelector(".rux-color-picker__popover");
+				popover.hidden = !popover.hidden;
+				event.currentTarget.setAttribute("aria-expanded", String(!popover.hidden));
+			});
+			colorPicker?.addEventListener("change", (event) => {
+				const option = event.target.closest(".rux-color-picker__option input");
+				if (!option) return;
+				colorPicker.querySelector(".rux-color-picker__preview").style.setProperty("--color", option.dataset.color);
+				colorPicker.querySelector(".rux-color-picker__label").textContent = option.dataset.label;
+				colorPicker.querySelector(".rux-color-picker__popover").hidden = true;
+				colorPicker.querySelector(".rux-color-picker__trigger").setAttribute("aria-expanded", "false");
+			});
+		}
+
+		if (!document.querySelector('[data-component-page="feedback-status"]')) {
+			const host = demoPage("feedback-status", "Feedback & Status", "components-app__anatomy-stage--column");
+			host.innerHTML = `
+				<div class="components-app__catalog-block"><span class="rux-badge">Default</span><span class="rux-badge rux-badge--accent">Accent</span><span class="rux-badge rux-badge--info">Info</span><span class="rux-badge rux-badge--success">Success</span><span class="rux-badge rux-badge--warning">Warning</span><span class="rux-badge rux-badge--danger">Danger</span><span class="rux-badge rux-badge--dot">Active</span></div>
+				<div class="components-app__catalog-stack"><div class="rux-alert rux-alert--info"><span class="rux-alert__icon rux-icon">info</span><div class="rux-alert__body"><strong class="rux-alert__title">Information</strong><span>Shared alert component.</span></div></div><div class="rux-alert rux-alert--success"><span class="rux-alert__icon rux-icon">check_circle</span><div class="rux-alert__body"><strong class="rux-alert__title">Complete</strong><span>Everything is ready.</span></div></div><div class="rux-alert rux-alert--warning"><span class="rux-alert__icon rux-icon">warning</span><div class="rux-alert__body"><strong class="rux-alert__title">Attention</strong><span>Review this item.</span></div></div><div class="rux-alert rux-alert--danger"><span class="rux-alert__icon rux-icon">error</span><div class="rux-alert__body"><strong class="rux-alert__title">Error</strong><span>Action is required.</span></div></div></div>
+				<div class="rux-progress" aria-label="Progress"><span class="rux-progress__bar" style="width:64%"></span></div>
+				<div class="components-app__catalog-block"><button class="rux-button rux-button--default" type="button" data-component-toast>Show toast</button><button class="rux-button rux-button--default" type="button" data-component-modal>Open modal</button><button class="rux-button rux-button--ghost" type="button" data-rux-tooltip="floating" data-tooltip="Production tooltip">Tooltip target</button></div>`;
+			host.querySelector("[data-component-toast]")?.addEventListener("click", () => window.Rux?.toast?.("Component toast"));
+			host.querySelector("[data-component-modal]")?.addEventListener("click", () => window.ContactInfoModal?.open("This is the production modal component.", { title: "Modal" }));
+		}
+
+		if (!document.querySelector('[data-component-page="navigation"]')) {
+			const host = demoPage("navigation", "Navigation", "components-app__anatomy-stage--column");
+			host.innerHTML = `
+				<nav class="rux-app-header__nav" aria-label="Primary navigation demo"><button class="rux-button rux-button--ghost rux-app-header__nav-item is-active" type="button">Calendar</button><button class="rux-button rux-button--ghost rux-app-header__nav-item" type="button">Trips</button><button class="rux-button rux-button--ghost rux-app-header__nav-item" type="button">Fleet</button></nav>
+				<nav class="rux-tabs rux-tabs--fill" role="tablist" aria-label="Fill tabs" data-rux-tabs><button class="rux-tab" role="tab" type="button" aria-selected="true">Details</button><button class="rux-tab" role="tab" type="button" aria-selected="false">Billing</button><button class="rux-tab" role="tab" type="button" aria-selected="false">Fleet</button></nav>
+				<nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Contained tabs" data-rux-tabs><button class="rux-tab" role="tab" type="button" aria-selected="true">Schedule</button><button class="rux-tab" role="tab" type="button" aria-selected="false">Drivers</button></nav>
+				<section class="rux-panel components-app__panel-demo" aria-label="Attached tabs demo">
+					<nav class="rux-tabs rux-tabs--attached" role="tablist" aria-label="Attached tabs" data-rux-tabs>
+						<button class="rux-tab" role="tab" type="button" aria-selected="true" aria-controls="demo-attached-pane-1">Tab one</button>
+						<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-2">Tab two</button>
+						<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-3">Tab three</button>
+						<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-4">Tab four</button>
+					</nav>
+					<div class="rux-panel__body">
+						<div class="rux-panel__pane" id="demo-attached-pane-1"><p class="rux-card__subtitle">TAB ONE</p><p>Content for the first tab sits right here, flush against the active tab above it.</p></div>
+						<div class="rux-panel__pane" id="demo-attached-pane-2" hidden><p class="rux-card__subtitle">TAB TWO</p><p>Switching tabs swaps this pane — the same [data-rux-tabs] runtime every other tab group in the app already uses.</p></div>
+						<div class="rux-panel__pane" id="demo-attached-pane-3" hidden><p class="rux-card__subtitle">TAB THREE</p><p>No custom JS needed here — aria-controls on each tab is all this demo adds.</p></div>
+						<div class="rux-panel__pane" id="demo-attached-pane-4" hidden><p class="rux-card__subtitle">TAB FOUR</p><p>.rux-tabs--attached is already in navigation.css, just not used in any panel yet.</p></div>
+					</div>
+				</section>
+				<nav class="rux-menu components-app__menu-demo" aria-label="Menu demo"><span class="rux-menu__header">Actions</span><button class="rux-menu__item" type="button">Open trip</button><button class="rux-menu__item" type="button">Duplicate</button><span class="rux-menu__divider"></span><button class="rux-menu__item rux-menu__item--danger" type="button">Delete</button></nav>
+				<div class="components-app__catalog-block" aria-label="Calendar navigation"><button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="Previous"><span class="rux-icon">chevron_left</span></button><button class="rux-button rux-button--default" type="button">Today</button><button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="Next"><span class="rux-icon">chevron_right</span></button></div>`;
+		}
+
+		if (!document.querySelector('[data-component-page="surfaces-content"]')) {
+			const host = demoPage("surfaces-content", "Surfaces & Content", "components-app__anatomy-stage--column");
+			host.innerHTML = `
+				<div class="components-app__catalog-block"><span class="rux-avatar rux-avatar--sm">JG</span><span class="rux-avatar">ML</span><span class="rux-avatar rux-avatar--lg">DH</span><span class="rux-tag">Bus 763</span></div>
+				<div class="components-app__surface-grid"><article class="rux-card"><header class="rux-card__header"><p class="rux-card__title">Standard card</p></header><div class="rux-card__body">Card body</div><footer class="rux-card__footer"><button class="rux-button rux-button--default rux-button--sm">Action</button></footer></article><article class="rux-card rux-card--elevated"><header class="rux-card__header"><p class="rux-card__title">Elevated card</p></header><div class="rux-card__body">Elevated surface</div></article><article class="rux-card rux-card--borderless"><div class="rux-card__body">Borderless card</div></article></div>
+				<section class="rux-panel components-app__panel-demo"><header class="rux-panel__header"><h2 class="rux-panel__title">Panel</h2></header><div class="rux-panel__body"><div class="rux-panel__pane">Panel body and pane</div></div><footer class="rux-panel__footer"><button class="rux-button rux-button--accent">Save</button></footer></section>
+				<div class="rux-suggestions components-app__suggestions-demo" role="listbox"><button class="rux-suggestions__item" type="button" role="option"><span class="rux-suggestions__label">McAllen Convention Center</span><span class="rux-suggestions__sublabel">700 Convention Center Blvd</span></button><button class="rux-suggestions__item" type="button" role="option"><span class="rux-suggestions__label">Scarmilla Yard</span><span class="rux-suggestions__sublabel">Saved location</span></button></div>`;
+		}
 	}
 
 	function mountPrimitivePages() {
@@ -148,7 +239,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 
 		if (!document.querySelector('[data-component-page="segmented"]')) {
 			const host = demoPage("segmented", "Segmented Control");
-			const group = cloneLiveComponent("#trip-view-group", "Segmented control demo");
+			const group = cloneLiveComponent("#tp-trip-type-group", "Segmented control demo");
 			if (group) {
 				host.appendChild(group);
 			} else {
@@ -453,6 +544,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 	});
 
 	mountPrimitivePages();
+	mountCatalogFamilyPages();
 	mountLiveComponentPages();
 
 	const firstPage = document.querySelector(pageSelector);

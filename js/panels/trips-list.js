@@ -10,6 +10,29 @@
   let db       = null;
   let allTrips = [];
 
+  // ── Filter drawer ────────────────────────────────────────────────────────
+  // Self-contained, same pattern as Fleet/Driver/Customer's own panel drawers
+  // (js/panels/fleet-panel.js) — this module owns its drawer instead of
+  // relying on the shared right-panel-drawer's hardcoded toggle handler.
+
+  const filterDrawer = document.getElementById("list-filter-drawer");
+  const filterToggleBtn = document.getElementById("list-filter-toggle-btn");
+
+  if (filterDrawer && filterToggleBtn) {
+    const filterDrawerHandle = RuxDrawer.create({
+      drawer: filterDrawer,
+      panel: filterDrawer.querySelector(".rux-list-filter-panel"),
+      toggleBtn: filterToggleBtn,
+      handle: document.getElementById("list-filter-resize-gutter"),
+      direction: "right",
+    });
+    filterToggleBtn.addEventListener("click", () => {
+      filterDrawer.classList.contains("is-open")
+        ? filterDrawerHandle.close()
+        : filterDrawerHandle.open();
+    });
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   function fmtDate(iso) {
@@ -229,11 +252,10 @@
   const STATUS_TITLE = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
 
   function updateListTitle() {
-    const listViewEl = document.getElementById("calendar-list-view");
-    const weekLabelEl = document.getElementById("week-label");
-    if (!listViewEl || listViewEl.hidden || !weekLabelEl) return;
+    const titleEl = document.getElementById("trips-list-title");
+    if (!titleEl) return;
     const parts = [WHEN_TITLE[dateFilter], STATUS_TITLE[statusFilter]].filter(Boolean);
-    weekLabelEl.textContent = parts.length ? `${parts.join(" ")} Trips` : "All Trips";
+    titleEl.textContent = parts.length ? `${parts.join(" ")} Trips` : "All Trips";
   }
 
   // ── Active-filter badges (right-aligned in the List view header) ─────────

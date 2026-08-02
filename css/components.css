@@ -55,7 +55,7 @@
 @import "./base/floating-window.css";
 @import "./base/content.css";
 @import "./base/feedback.css";
-@import "./base/navigation.css";
+@import "./base/navigation.css?v=8";
 @import "./base/utils.css?v=2";
 @import "./features/trip-bar.css?v=14";
 @import "./features/trip-panel.css";
