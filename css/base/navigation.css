@@ -244,8 +244,24 @@
 
 }
 
+/* .rux-panel__nav's own border-top/border-bottom (panel.css) would each
+   double up against a line the tabs/pane already own: border-top against
+   every tab's own top border (--rux-tabs-attached-tab-border), border-
+   bottom against the pane's merge seam below. With this wrapper's own
+   padding zeroed too, those pairs sit flush with nothing between them, so
+   both read as one thicker line instead of the individual borders they
+   actually are. The tabs and the pane below own their own edges here —
+   this wrapper shouldn't draw either of theirs a second time.
+   Padding goes too, on every side, not just the bottom: --rux-panel-nav-
+   padding insets .rux-panel__nav on all sides, which would float the tab
+   strip 16px in from the panel's own left/right/top edges instead of flush
+   against them — the entire point of "attached" is spanning edge-to-edge,
+   the same as the header/pane below leave their own insets to their own
+   content instead. */
 .rux-panel__nav--attached {
-	padding-bottom: 0;
+	padding: 0;
+	border-top: 0;
+	border-bottom: 0;
 }
 
 /* No top border — the active tab sits directly above with a matching

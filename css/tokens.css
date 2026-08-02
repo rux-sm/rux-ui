@@ -414,10 +414,8 @@
 
 	--rux-workspace-bg:            var(--rux-surface-workspace);
 	--rux-workspace-fg:            var(--rux-fg);
-	--rux-workspace-border-inline: var(--rux-border-width) solid
-		transparent;
-	--rux-workspace-border-block: var(--rux-border-width) solid
-		transparent;
+	--rux-workspace-border-inline: none;
+	--rux-workspace-border-block: none;
 	--rux-workspace-radius: var(--rux-radius-0);
 	--rux-workspace-gutter: var(--rux-space-4);
 	/* Keep header and view content on the same inline grid. */
@@ -435,6 +433,7 @@
 	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-border);
 	--rux-calendar-radius:        var(--rux-radius-0);
 	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-header-height: 31px;
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 	/* The body is intentionally a bare scrolling region. */
@@ -448,7 +447,7 @@
 	--rux-panel-radius: var(--rux-radius-0);
 
 	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */
-	--rux-panel-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-4) * 2));
+	--rux-panel-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
 	--rux-panel-header-padding:    var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
 
 	/* — nav / tabs — */
@@ -1083,7 +1082,7 @@
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
 	--rux-tabs-gap:                var(--rux-space-2);
-	--rux-tab-height:              var(--rux-control-height);
+	--rux-tab-height:              32px;
 	--rux-tab-padding-inline:      var(--rux-space-3);
 	--rux-tab-content-gap:         var(--rux-control-content-gap);
 	--rux-tab-bg:                  transparent; /* ghost at rest — never a milky white fill */
@@ -1104,7 +1103,7 @@
 
 	--rux-tabs-contained-padding:         var(--rux-space-2);
 	--rux-tabs-contained-gap:             var(--rux-space-3);
-	--rux-tabs-contained-bg:              var(--rux-card-bg);
+	--rux-tabs-contained-bg:              var(--rux-tab-bg);
 	--rux-tabs-contained-radius:          var(--rux-radius-0);
 	--rux-tabs-contained-tab-fg:          var(--rux-fg-muted);
 	--rux-tabs-contained-tab-hover-fg:    var(--rux-fg);
