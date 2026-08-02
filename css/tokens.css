@@ -225,6 +225,26 @@
 		0 16px 32px rgba(0, 0, 0, 0.5),
 		0 4px 12px rgba(0, 0, 0, 0.35);
 
+	/* Not part of the 1–6 elevation ladder above — those describe how far
+	   something sits *off* the canvas (drop shadows) or punched *into* it
+	   (step 1's inset). This describes depth on the object's own face: a
+	   bevel, for solid-fill buttons that should read as physically raised
+	   rather than a flat color swatch. Three layers — inset top-edge
+	   highlight (light catching the raised top), inset bottom-edge shade
+	   (the underside falling into shadow), and a soft drop shadow for lift
+	   off the surface beneath it. --rux-alpha-white-10 for the highlight
+	   (already effectively hue-neutral — see --rux-white's near-zero
+	   chroma — same reasoning as the --alpha-white-* overlays used
+	   elsewhere), plain rgba(black) for the two dark layers, matching the
+	   elevation scale's own convention above. Paired with -pressed: swap to
+	   this on :active so the highlight/lift disappear and the button reads
+	   as pushed in rather than just darkening in place. */
+	--rux-shadow-button-raised:
+		inset 0 1px 0 var(--rux-alpha-white-10),
+		inset 0 -1px 0 rgba(0, 0, 0, 0.35),
+		0 1px 2px rgba(0, 0, 0, 0.35);
+	--rux-shadow-button-pressed: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+
 	/* ─── MOTION ─────────────────────────────────────────────────────────── */
 
 	--rux-duration-instant: 80ms;
@@ -260,7 +280,7 @@
 	--rux-surface-1: oklch(from var(--rux-neutral) 18% c h); /* panel */
 	--rux-surface-2: oklch(from var(--rux-neutral) 22% c h); /* card */
 	--rux-surface-3: oklch(from var(--rux-neutral) 24% c h); /* control track */
-	--rux-surface-4: oklch(from var(--rux-neutral) 30% c h);  /* default button */
+	--rux-surface-4: oklch(from var(--rux-neutral) 40% c h);  /* default button */
 	--rux-surface-5: oklch(from var(--rux-neutral) 0% c h);  /* base level, fields */
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
@@ -677,6 +697,10 @@
 	--rux-button-active-overlay:      var(--rux-alpha-black-12);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing:   var(--rux-ease-out);
+	/* Solid-fill variants only (default/accent/danger) — see --rux-shadow-
+	   button-raised/-pressed above for what these actually are. */
+	--rux-button-shadow-raised:       var(--rux-shadow-button-raised);
+	--rux-button-shadow-pressed:      var(--rux-shadow-button-pressed);
 
 	/* ─── COMPONENT · module button ───────────────────────────────────────────── */
 	/* Compact contextual icon action. Semantic variants change tone, not layout. */
@@ -721,13 +745,24 @@
 
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background:       var(--rux-surface-button);
+	--rux-button-default-background:       var(--rux-surface-4);
 	--rux-button-default-border:           1px solid rgba(255, 255, 255, 0.08); /* Subtle light edge */
+	--rux-button-default-border:           none;
+
 	--rux-button-default-text:             var(--rux-fg);
+	/* Same technique as accent/danger below — ±10% OKLCH lightness off the
+	   variant's own resting background, not a flat overlay or a shift off
+	   some other token. Previously derived from --rux-gray (not this
+	   button's own --rux-button-default-background) at 50% alpha for
+	   hover, and a flat --rux-alpha-white-10 wash for active — two
+	   different, mutually inconsistent mechanisms, and neither an actual
+	   lightness shift of the resting fill. */
 	--rux-button-default-hover-background: oklch(
-		from var(--rux-gray) calc(l + 0.1) c h / 50%
+		from var(--rux-button-default-background) calc(l + 0.05) c h
 	);
-	--rux-button-default-active-background: var(--rux-alpha-white-10);
+	--rux-button-default-active-background: oklch(
+		from var(--rux-button-default-background) calc(l - 0.05) c h
+	);
 	--rux-button-default-hover-border:      oklch(from var(--rux-gray) l c h / 100%);
 	--rux-button-default-hover-text:        var(--rux-fg);
 	--rux-button-default-active-border:     oklch(from var(--rux-border-button) calc(l - 0.1) c h);
@@ -769,13 +804,13 @@
 	--rux-button-accent-border-color:	oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) c h / 100%);
 	--rux-button-accent-border:       	var(--rux-button-border-width) solid var(--rux-button-accent-border-color);
 	--rux-button-accent-border:       	1px solid oklch(from var(--rux-accent) l c h / 90%);
-	--rux-button-accent-border:       	1px solid var(--rux-accent);
+	--rux-button-accent-border:       	none;
 
 	--rux-button-accent-hover-background: oklch(
-		from var(--rux-button-accent-background) calc(l + 0.1) c h
+		from var(--rux-button-accent-background) calc(l + 0.05) c h
 	);
 	--rux-button-accent-active-background: oklch(
-		from var(--rux-button-accent-background) calc(l - 0.1) c h
+		from var(--rux-button-accent-background) calc(l - 0.05) c h
 	);
 
 	/* ─── COMPONENT · button on accent ──────────────────────────────────────────── */
@@ -792,6 +827,7 @@
 	--rux-button-on-accent-border:              var(--rux-button-border-width) solid color-mix(in oklch, var(--rux-white) 0%, transparent);
 	--rux-button-on-accent-hover-background:    oklch(from var(--rux-white) l c h / var(--rux-trip-bar-hover-bg-opacity));
 	--rux-button-on-accent-hover-border:        var(--rux-button-border-width) solid color-mix(in oklch, var(--rux-white) 0%, transparent);
+
 	--rux-button-on-accent-active-background:   oklch(from var(--rux-white) l c h / var(--rux-trip-bar-pressed-bg-opacity));
 	--rux-button-on-accent-active-border:       var(--rux-button-border-width) solid color-mix(in oklch, var(--rux-white) 0%, transparent);
 	--rux-button-on-accent-disabled-background: var(--rux-alpha-white-4);
@@ -818,12 +854,12 @@
 	--rux-button-danger-text:             var(--rux-fg-on-accent);
 	--rux-button-danger-border-color:     oklch(from var(--rux-red) var(--rux-trip-bar-bg-lightness) c h / 100%);
 	--rux-button-danger-border:           var(--rux-button-border-width) solid var(--rux-button-danger-border-color);
-	--rux-button-danger-border:           1px solid var(--rux-danger);
+	--rux-button-danger-border:           none;
 	--rux-button-danger-hover-background: oklch(
-		from var(--rux-button-danger-background) calc(l + 0.1) c h
+		from var(--rux-button-danger-background) calc(l + 0.05) c h
 	);
 	--rux-button-danger-active-background: oklch(
-		from var(--rux-button-danger-background) calc(l - 0.1) c h
+		from var(--rux-button-danger-background) calc(l - 0.05) c h
 	);
 
 	/* ─── COMPONENT · button outline danger ─────────────────────────────────────── */
@@ -852,7 +888,7 @@
 
 	--rux-button-disabled-background: oklch(from var(--rux-neutral) 26.8% c h);
 	--rux-button-disabled-text:       var(--rux-text-disabled);
-	--rux-button-disabled-border:     var(--rux-button-border);
+	--rux-button-disabled-border:     none;
 
 	/* ─── COMPONENT · button selected / toggle ────────────────────────────── */
 
@@ -904,7 +940,14 @@
 	--rux-segmented-track-padding:    var(--rux-space-0);
 	--rux-segmented-track-radius:     var(--rux-radius-0);
 	--rux-segmented-track-height:     var(--rux-input-height);
-	--rux-segmented-track-border:     none;
+	/* Same border as .rux-input, aliased not duplicated — box-sizing:
+	   border-box (global reset) keeps the track's own explicit height
+	   unaffected, and the sliding indicator's size/position are computed
+	   live off the actual button (initSegmentedIndicators, controls.js),
+	   not hardcoded against the track's old borderless interior — so it
+	   naturally measures against the slightly smaller interior a border
+	   introduces instead of overflowing/clipping against it. */
+	--rux-segmented-track-border:     var(--rux-input-border);
 	--rux-segmented-track-gap:        var(--rux-space-0);
 	/* Same recessed-well shadow as --rux-input-shadow — both are a punched-
 	   in well holding a control, not just a bordered box. Aliased to
@@ -924,7 +967,22 @@
 
 	--rux-segment-active-background:   var(--rux-button-default-background);
 	--rux-segment-active-text:         var(--rux-fg);
-	--rux-segment-active-border-color: var(--rux-button-default-border);
+	/* A real color (transparent), not var(--rux-button-default-border) —
+	   that token is now `none` (a full shorthand, not a color), and this
+	   gets used through border-color: below. Matches --rux-segment-border's
+	   own color component (1px solid transparent) exactly, so switching a
+	   segment active/inactive never actually changes border-width or
+	   -style, only interpolates a color that starts and ends the same —
+	   nothing to flash mid-transition. Previously this fed the shorthand
+	   value into `border:`, which reset width/style to their initial
+	   values (medium / none) on the active segment — invisible in both the
+	   active and inactive resting states, but border-color is one of the
+	   explicitly transitioned properties on .rux-button, so for the first
+	   half of the transition (before the discrete border-style flip) the
+	   border was still solid while its color animated toward white
+	   (border-color's own initial value, currentColor) — a visible white
+	   flash right as a segment became active. */
+	--rux-segment-active-border-color: transparent;
 
 	/* ─── COMPONENT · stepper ─────────────────────────────────────────────── */
 	/* Read-only count flanked by decrement and increment buttons. */

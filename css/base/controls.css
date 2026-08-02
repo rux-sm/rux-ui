@@ -61,6 +61,10 @@
 	color: var(--rux-button-disabled-text);
 	background: var(--rux-button-disabled-background);
 	border: var(--rux-button-disabled-border);
+	/* Flattens the solid variants' raised bevel (--rux-button-shadow-raised)
+	   — a disabled button should read as inert, not still physically
+	   raised off the surface. */
+	box-shadow: none;
 }
 
 /* Native disabled controls already prevent activation, so keep them in the
@@ -82,15 +86,22 @@
 	background: 		var(--rux-button-default-background);
 	color: 		var(--rux-button-default-text);
 	border: 	var(--rux-button-default-border);
+	box-shadow: var(--rux-button-shadow-raised);
 
 }
 
-/* Hover raises only the gray fill's OKLCH lightness. The border remains at
-   its fully opaque resting color instead of inheriting the generic accent
-   hover border. */
+/* Hover raises only the gray fill's OKLCH lightness. border: none (not
+   border-color) — the generic .rux-button:hover rule above sets the full
+   border shorthand (width + style + color), and since border-color alone
+   doesn't touch width/style, that shorthand was the only rule supplying
+   them during hover. With --rux-button-default-border now none (no width/
+   style of its own to inherit at rest), that meant a real 1px solid border
+   was popping into existence on hover — the button visibly grew a border
+   it didn't have a moment before. border: none cancels the shorthand's
+   width/style outright, keeping hover borderless like rest. */
 .rux-button--default:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-default-hover-background);
-	border-color: var(--rux-button-default-hover-border);
+	border: none;
 	color: var(--rux-button-default-hover-text);
 }
 
@@ -102,6 +113,7 @@
 	background: var(--rux-button-default-active-background);
 	border-color: var(--rux-button-default-active-border);
 	color: var(--rux-button-default-active-text);
+	box-shadow: var(--rux-button-shadow-pressed);
 }
 
 /* Outline — transparent surface with a visible neutral border. */
@@ -132,6 +144,7 @@
 	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
 	border: var(--rux-button-accent-border);
+	box-shadow: var(--rux-button-shadow-raised);
 	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
@@ -143,7 +156,13 @@
    so only the background actually shifts. */
 .rux-button--accent:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-accent-hover-background);
-	border-color: var(--rux-button-accent-hover-background);
+	/* border: none, not border-color — see the equivalent comment on
+	   .rux-button--default:hover. Same shorthand-vs-longhand gap: the
+	   generic .rux-button:hover rule is the only thing setting border-
+	   width/style during hover, so a border-color-only override here still
+	   let a real 1px border render where --rux-button-accent-border (none
+	   at rest) has none. */
+	border: none;
 	color: var(--rux-button-accent-text);
 }
 
@@ -151,6 +170,7 @@
 	background: var(--rux-button-accent-active-background);
 	border-color: var(--rux-button-accent-active-background);
 	color: var(--rux-button-accent-text);
+	box-shadow: var(--rux-button-shadow-pressed);
 }
 
 /* on-accent — translucent control for saturated/colored surfaces */
@@ -365,6 +385,20 @@
 	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
+/* Solid fill only — plain .rux-button--danger would also match the
+   .rux-button--outline.rux-button--danger / .rux-button--ghost.rux-button--
+   danger compounds below (an element with both classes matches either
+   single-class selector), and neither of those has a background to bevel;
+   a raised-edge shadow over a transparent fill would just look like a
+   stray outline. :not(:disabled) too, and at the same two-:not() count as
+   .rux-button:disabled itself — this compound is otherwise more specific
+   than the plain disabled rule (three :not()s vs. one pseudo-class) and
+   would win the box-shadow over it by specificity regardless of source
+   order, leaving a disabled danger button still looking raised. */
+.rux-button--danger:not(.rux-button--outline):not(.rux-button--ghost):not(:disabled):not([aria-disabled="true"]) {
+	box-shadow: var(--rux-button-shadow-raised);
+}
+
 /* Explicit compound so this doesn't depend on rule order — .rux-button--outline
    and bare .rux-button--danger set the exact same three properties, so without
    this, whichever rule sits later in the file wins by source order alone.
@@ -407,7 +441,13 @@
 
 .rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-danger-hover-background);
-	border-color: var(--rux-button-danger-hover-background);
+	/* border: none, not border-color — same shorthand-vs-longhand gap as
+	   .rux-button--default:hover/--accent:hover. Only the bare (solid-fill)
+	   variant needs this: --outline.rux-button--danger and
+	   --ghost.rux-button--danger both have a real border at rest already
+	   (untouched by --rux-button-danger-border's change to none), so their
+	   own :hover rules were never affected. */
+	border: none;
 	color: var(--rux-button-danger-text);
 }
 
@@ -415,6 +455,10 @@
 	background: var(--rux-button-danger-active-background);
 	border-color: var(--rux-button-danger-active-background);
 	color: var(--rux-button-danger-text);
+}
+
+.rux-button--danger:not(.rux-button--outline):not(.rux-button--ghost):active:not(:disabled):not([aria-disabled="true"]) {
+	box-shadow: var(--rux-button-shadow-pressed);
 }
 
 .rux-button--ghost.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
@@ -699,7 +743,7 @@
 
 .rux-segmented-track > .rux-segmented__indicator {
 	background: var(--rux-segment-active-background);
-	border: var(--rux-segment-active-border-color);
+	border-color: var(--rux-segment-active-border-color);
 }
 
 .rux-segmented > .rux-button,
@@ -754,7 +798,12 @@
 .rux-button--segment[aria-pressed="true"] {
 	background: var(--rux-segment-active-background);
 	color: var(--rux-segment-active-text);
-	border: var(--rux-segment-active-border-color);
+	/* border-color, not the `border` shorthand — width/style stay exactly
+	   what the resting .rux-button--segment rule already set (1px solid),
+	   so going active only ever animates a color, and it starts/ends on
+	   the same transparent value besides. See --rux-segment-active-border-
+	   color in tokens.css for the transition-flash bug this replaces. */
+	border-color: var(--rux-segment-active-border-color);
 }
 
 /* The generic button hover selector writes its accent directly to `color`.
@@ -762,7 +811,7 @@
    hovering never turns active text into the accent color. */
 .rux-button--segment:is(.is-active, [aria-pressed="true"]):hover:not(:disabled):not([aria-disabled="true"]) {
 	color: var(--rux-segment-active-text);
-	border: var(--rux-segment-active-border-color);
+	border-color: var(--rux-segment-active-border-color);
 }
 
 @media (prefers-reduced-motion: reduce) {
