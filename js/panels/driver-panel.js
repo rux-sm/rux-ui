@@ -248,6 +248,13 @@
 
   // ── Column definitions ────────────────────────────────────────────────────
 
+  const EMPLOYMENT_TYPE_LABELS = {
+    "full-time": "Full-time",
+    "part-time": "Part-time",
+    contract: "Contract",
+    seasonal: "Seasonal",
+  };
+
   const ALL_DRIVER_COLS = [
     { key: "order",            label: "#",                 defaultOn: true,
       head: `<th scope="col" data-col="order" class="col-order" data-sort="order">#</th>`,
@@ -261,8 +268,8 @@
     { key: "cdl",              label: "CDL",               defaultOn: true,
       head: `<th scope="col" data-col="cdl" data-sort="cdl">CDL</th>`,
       cell: d => `<td data-col="cdl">${d.cdl_class ? `<span class="rux-tag">CDL-${d.cdl_class}</span>` : `<span class="rux-subtle">—</span>`}</td>` },
-    { key: "expiry",           label: "Lic. expiry",       defaultOn: true,
-      head: `<th scope="col" data-col="expiry" data-sort="expiry">Lic. expiry</th>`,
+    { key: "expiry",           label: "License Exp",       defaultOn: true,
+      head: `<th scope="col" data-col="expiry" data-sort="expiry">License Exp</th>`,
       cell: d => { const e = d.license_exp || ""; return `<td class="${licExpiryClass(e)} col-expiry" data-col="expiry">${fmtDate(e)}</td>`; } },
     { key: "short-name",       label: "Short name",        defaultOn: false,
       head: `<th scope="col" data-col="short-name">Short name</th>`,
@@ -276,15 +283,15 @@
     { key: "hire-date",        label: "Hire date",         defaultOn: false,
       head: `<th scope="col" data-col="hire-date" data-sort="hire-date">Hire date</th>`,
       cell: d => `<td data-col="hire-date">${fmtDate(d.hire_date)}</td>` },
-    { key: "med-card-exp",     label: "Med card exp",      defaultOn: false,
-      head: `<th scope="col" data-col="med-card-exp" data-sort="med-card-exp">Med card exp</th>`,
+    { key: "med-card-exp",     label: "Medical Exp",       defaultOn: false,
+      head: `<th scope="col" data-col="med-card-exp" data-sort="med-card-exp">Medical Exp</th>`,
       cell: d => { const e = d.med_card_expiry || ""; return `<td class="${licExpiryClass(e)}" data-col="med-card-exp">${fmtDate(e)}</td>`; } },
     { key: "endorsements",     label: "Endorsements",      defaultOn: false,
       head: `<th scope="col" data-col="endorsements">Endorsements</th>`,
       cell: d => `<td data-col="endorsements">${d.endorsements || "—"}</td>` },
     { key: "employment-type",  label: "Employment",        defaultOn: false,
       head: `<th scope="col" data-col="employment-type" data-col-filter="employment-type" data-sort="employment-type">Employment <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
-      cell: d => `<td data-col="employment-type">${d.employment_type || "—"}</td>` },
+      cell: d => `<td data-col="employment-type">${EMPLOYMENT_TYPE_LABELS[d.employment_type] || "—"}</td>` },
     { key: "priority",         label: "Priority",          defaultOn: true,
       head: `<th scope="col" data-col="priority" data-sort="priority">Priority</th>`,
       cell: d => `<td data-col="priority"><span class="rux-badge"><span class="rux-priority-dot" data-priority="${d.priority || 3}" aria-hidden="true"></span>${d.priority || 3}</span></td>` },

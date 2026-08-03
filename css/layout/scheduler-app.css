@@ -50,7 +50,7 @@
 	   schedulerAppRailWidth there) so the drawer's own shrink animation
 	   lands on exactly the rail's resting width — one source of truth, no
 	   risk of the two drifting out of sync. */
-	--scheduler-app-rail-width: 32px;
+	--scheduler-app-rail-width: 36px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -405,6 +405,19 @@
    actual sliding panel for that whole animation instead of never applying
    there at all. */
 @media (min-width: 501px) {
+	/* Open panels also avoid borders against the window. Keep only the
+	   workspace-facing divider: right edge on the left panel, left edge on
+	   the right panel. */
+	.scheduler-app__drawer--railable.is-open .rux-trip-panel {
+		border: 0;
+		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+	}
+
+	.scheduler-app__drawer--railable.is-open .rux-right-panel {
+		border: 0;
+		border-left: var(--rux-panel-border-width) solid var(--rux-border);
+	}
+
 	/* The base .scheduler-app__drawer rule hardcodes width:0 for the not-
 	   open case, ignoring --drawer-width entirely (only .is-open reads it)
 	   — a railable drawer needs its own outer box to actually be rail-width
@@ -414,23 +427,24 @@
 		width: var(--scheduler-app-rail-width);
 		/* Match the minimized panel's fill so any sub-pixel gap at the
 		   wrapper boundary cannot reveal scheduler row/day borders. */
-		background: var(--rux-panel-bg);
+		background: var(--rux-surface-2);
 	}
 
-	/* Full border, all four sides — this doubles the line against the app
-	   header above and the workspace beside it (both already draw their
-	   own border on that same seam), but that's the intended look here:
-	   the rail should read as a fully boxed-in strip on its own, not rely
-	   on a neighboring element to supply two of its four edges. */
+	/* Keep only the edge facing the workspace so the collapsed rail reads
+	   as a divider without boxing in its top, bottom, or outside edge. */
 	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel) {
 		display: flex;
-		/* The panel itself becomes the rail: keep its shell and full
-		   border, while its container queries hide every content region
-		   at this width. The opener is overlaid above it as the only
-		   visible control. */
-		background: var(--rux-panel-bg);
-		border: var(--rux-panel-border-width) solid var(--rux-border);
+		background: var(--rux-surface-2);
+		border: 0;
 		pointer-events: none;
+	}
+
+	.scheduler-app__drawer--railable:not(.is-open) .rux-trip-panel {
+		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+	}
+
+	.scheduler-app__drawer--railable:not(.is-open) .rux-right-panel {
+		border-left: var(--rux-panel-border-width) solid var(--rux-border);
 	}
 
 	/* Do not rely on the panel container query for the settled state.
