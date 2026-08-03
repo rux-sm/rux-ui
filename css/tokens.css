@@ -186,7 +186,9 @@
 	--rux-surface-5:        oklch(from var(--rux-neutral) 30% c h);
 	--rux-surface-6:        oklch(from var(--rux-neutral) 34% c h);
 	--rux-surface-7:        oklch(from var(--rux-neutral) 38% c h);
-	--rux-surface-contrast: oklch(from var(--rux-neutral) 42% c h);
+	--rux-surface-8:        oklch(from var(--rux-neutral) 42% c h);
+	--rux-surface-9:        oklch(from var(--rux-neutral) 46% c h);
+	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
@@ -408,7 +410,7 @@
 	/* — header — */
 	--rux-card-header-bg:     var(--rux-surface-4);
 	--rux-card-header-border:var(--rux-border-width) solid var(--rux-divider);
-	--rux-card-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
+	--rux-card-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-card-header-height: 44px;
 
 	/* — footer — */
@@ -801,16 +803,21 @@
 	--rux-switch-width:             52px;
 	--rux-switch-height:            var(--rux-button-height);
 	--rux-switch-padding:           var(--rux-space-1);
-	--rux-switch-track-bg:          var(--rux-surface-3);
+	--rux-switch-track-bg:          var(--rux-input-background);
 	--rux-switch-track-border:      var(--rux-input-border);
+	--rux-switch-track-shadow:      var(--rux-input-shadow);
 	--rux-switch-thumb-bg:          var(--rux-surface-contrast);
-	--rux-switch-checked-bg:        var(--rux-button-accent-background);
-	--rux-switch-checked-border:    var(--rux-button-accent-border);
-	--rux-switch-checked-thumb-bg:  var(--rux-text-primary);
+	--rux-switch-thumb-shadow:      var(--rux-button-shadow-raised);
+	--rux-switch-thumb-pressed-shadow: var(--rux-button-shadow-pressed);
+	--rux-switch-checked-bg:        var(--rux-accent);
+	--rux-switch-checked-border:    1px solid var(--rux-surface-4);
+	--rux-switch-checked-shadow:    none;
+	--rux-switch-checked-thumb-bg:  var(--rux-surface-contrast);
 	--rux-switch-hover-overlay:     var(--rux-button-hover-overlay);
 	--rux-switch-active-overlay:    var(--rux-button-active-overlay);
-	--rux-switch-disabled-bg:       var(--rux-button-disabled-background);
+	--rux-switch-disabled-bg:       var(--rux-input-disabled-bg);
 	--rux-switch-disabled-thumb-bg: var(--rux-fg-disabled);
+	--rux-switch-disabled-shadow:   none;
 	--rux-switch-radius:            var(--rux-radius-control);
 	--rux-switch-transition:        var(--rux-duration-fast) var(--rux-ease-out);
 

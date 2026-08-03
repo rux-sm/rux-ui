@@ -21,9 +21,15 @@
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
 		<link rel="stylesheet" href="./css/features/customer-panel.css?v=2" />
 		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
-		<link rel="stylesheet" href="./css/features/comp-settings-app.css?v=3" />
+		<link
+			rel="stylesheet"
+			href="./css/features/comp-settings-app.css?v=3"
+		/>
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=3" />
-		<link rel="stylesheet" href="./css/features/comp-components-app.css?v=12" />
+		<link
+			rel="stylesheet"
+			href="./css/features/comp-components-app.css?v=12"
+		/>
 		<link rel="stylesheet" href="./css/features/flip-seven.css?v=18" />
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=4" />
 		<link rel="stylesheet" href="./css/features/search-modal.css?v=2" />
@@ -98,7 +104,9 @@
 						type="button"
 						data-module="list"
 					>
-						<span class="rux-icon" aria-hidden="true">list_alt</span>
+						<span class="rux-icon" aria-hidden="true"
+							>list_alt</span
+						>
 						List
 					</button>
 
@@ -164,7 +172,9 @@
 						aria-label="Open Samsara GPS"
 						title="Open Samsara GPS"
 					>
-						<span class="rux-icon" aria-hidden="true">location_on</span>
+						<span class="rux-icon" aria-hidden="true"
+							>location_on</span
+						>
 					</a>
 					<button
 						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__chat-btn"
@@ -173,7 +183,11 @@
 						aria-label="Team chat"
 					>
 						<span class="rux-icon" aria-hidden="true">chat</span>
-						<span class="rux-app-header__badge-count" id="team-chat-badge" hidden></span>
+						<span
+							class="rux-app-header__badge-count"
+							id="team-chat-badge"
+							hidden
+						></span>
 					</button>
 					<button
 						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__notif-btn"
@@ -183,8 +197,14 @@
 						aria-haspopup="menu"
 						aria-expanded="false"
 					>
-						<span class="rux-icon" aria-hidden="true">notifications</span>
-						<span class="rux-app-header__badge-dot" id="notifications-badge" hidden></span>
+						<span class="rux-icon" aria-hidden="true"
+							>notifications</span
+						>
+						<span
+							class="rux-app-header__badge-dot"
+							id="notifications-badge"
+							hidden
+						></span>
 					</button>
 					<button
 						class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
@@ -265,7 +285,10 @@
 				hidden
 			>
 				<div class="rux-menu__header">Notifications</div>
-				<ul class="rux-notifications__list" data-notifications-list></ul>
+				<ul
+					class="rux-notifications__list"
+					data-notifications-list
+				></ul>
 			</div>
 
 			<!-- Profile picker — password-less "who's using this" selector.
@@ -352,7 +375,9 @@
 									/>
 									<span
 										class="rux-color-swatch__dot"
-										style="--color: var(--rux-trip-color-cyan)"
+										style="
+											--color: var(--rux-trip-color-cyan);
+										"
 									></span>
 								</label>
 								<label class="rux-color-swatch" title="Green">
@@ -364,7 +389,11 @@
 									/>
 									<span
 										class="rux-color-swatch__dot"
-										style="--color: var(--rux-trip-color-green)"
+										style="
+											--color: var(
+												--rux-trip-color-green
+											);
+										"
 									></span>
 								</label>
 								<label class="rux-color-swatch" title="Purple">
@@ -376,7 +405,11 @@
 									/>
 									<span
 										class="rux-color-swatch__dot"
-										style="--color: var(--rux-trip-color-purple)"
+										style="
+											--color: var(
+												--rux-trip-color-purple
+											);
+										"
 									></span>
 								</label>
 								<label class="rux-color-swatch" title="Yellow">
@@ -388,7 +421,11 @@
 									/>
 									<span
 										class="rux-color-swatch__dot"
-										style="--color: var(--rux-trip-color-yellow)"
+										style="
+											--color: var(
+												--rux-trip-color-yellow
+											);
+										"
 									></span>
 								</label>
 								<label class="rux-color-swatch" title="Orange">
@@ -400,7 +437,11 @@
 									/>
 									<span
 										class="rux-color-swatch__dot"
-										style="--color: var(--rux-trip-color-orange)"
+										style="
+											--color: var(
+												--rux-trip-color-orange
+											);
+										"
 									></span>
 								</label>
 								<label class="rux-color-swatch" title="Pink">
@@ -412,7 +453,9 @@
 									/>
 									<span
 										class="rux-color-swatch__dot"
-										style="--color: var(--rux-trip-color-pink)"
+										style="
+											--color: var(--rux-trip-color-pink);
+										"
 									></span>
 								</label>
 							</div>
@@ -494,7 +537,10 @@
              ════════════════════════════════════════════════════════════════ -->
 				<div class="scheduler-app__module" data-module="calendar">
 					<!-- Trip panel drawer -->
-					<div class="scheduler-app__drawer scheduler-app__drawer--railable" id="trip-panel-drawer">
+					<div
+						class="scheduler-app__drawer scheduler-app__drawer--railable"
+						id="trip-panel-drawer"
+					>
 						<!-- Open button: outside the inert <aside> so it stays clickable
 						     when the panel is collapsed. Only visible at <=44px rail width
 						     via the container query in trip-panel.css. -->
@@ -504,14 +550,18 @@
 							aria-label="Open trip editor"
 							data-opens="trip-panel-drawer"
 						>
-							<span class="rux-icon" aria-hidden="true">left_panel_open</span>
+							<span class="rux-icon" aria-hidden="true"
+								>left_panel_open</span
+							>
 						</button>
 						<aside
 							class="rux-panel rux-panel--left rux-trip-panel"
 							role="dialog"
 							aria-label="Trip editor"
 						>
-							<header class="rux-panel__header rux-trip-panel__header">
+							<header
+								class="rux-panel__header rux-trip-panel__header"
+							>
 								<h2 class="rux-panel__title">Trip Editor</h2>
 								<button
 									class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn"
@@ -519,10 +569,14 @@
 									aria-label="Close trip editor"
 									data-opens="trip-panel-drawer"
 								>
-									<span class="rux-icon" aria-hidden="true">left_panel_close</span>
+									<span class="rux-icon" aria-hidden="true"
+										>left_panel_close</span
+									>
 								</button>
 							</header>
-							<div class="rux-panel__nav rux-panel__nav--attached">
+							<div
+								class="rux-panel__nav rux-panel__nav--attached"
+							>
 								<nav
 									class="rux-tabs rux-tabs--attached rux-trip-panel__tabs"
 									role="tablist"
@@ -771,7 +825,9 @@
 												Customer Details
 											</p>
 										</header>
-										<div class="rux-card__body rux-card__body--stack">
+										<div
+											class="rux-card__body rux-card__body--stack"
+										>
 											<div class="rux-trip-panel__cols-2">
 												<div class="rux-field">
 													<label
@@ -827,7 +883,10 @@
 													class="rux-field__label"
 													for="tp-book-missive-url"
 													>Email Thread</label
-												><div class="rux-input-group rux-input-group--suffix rux-input-group--action">
+												>
+												<div
+													class="rux-input-group rux-input-group--suffix rux-input-group--action"
+												>
 													<input
 														class="rux-input"
 														id="tp-book-missive-url"
@@ -843,7 +902,11 @@
 														aria-label="Open in Missive"
 														disabled
 													>
-														<span class="rux-icon" aria-hidden="true">open_in_new</span>
+														<span
+															class="rux-icon"
+															aria-hidden="true"
+															>open_in_new</span
+														>
 													</button>
 												</div>
 											</div>
@@ -854,16 +917,24 @@
 											<p class="rux-card__title">
 												Trip Contact
 											</p>
-											<button class="rux-button rux-button--ghost rux-button--icon" type="button" id="tp-contact-add-btn" aria-label="Add trip contact">
-												<span class="rux-icon" aria-hidden="true">add</span>
+											<button
+												class="rux-button rux-button--ghost rux-button--icon"
+												type="button"
+												id="tp-contact-add-btn"
+												aria-label="Add trip contact"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>add</span
+												>
 											</button>
 										</header>
 										<div class="rux-card__body">
 											<div
 												id="tp-contacts-list"
 												class="rux-trip-panel__contacts-list"
-											>
-											</div>
+											></div>
 										</div>
 									</div>
 									<div class="rux-card">
@@ -1131,7 +1202,7 @@
 									<div class="rux-card">
 										<header class="rux-card__header">
 											<p class="rux-card__title">
-												Billing details
+												Billing Details
 											</p>
 										</header>
 										<div
@@ -1141,7 +1212,7 @@
 												<span
 													class="rux-field__label"
 													id="tp-billing-type-label"
-													>Service type</span
+													>Service Type</span
 												>
 												<div
 													class="rux-segmented-track rux-trip-panel__trip-type"
@@ -1195,9 +1266,9 @@
 													class="rux-trip-panel__manifest-action-inner"
 												>
 													<button
-													class="rux-button rux-button--default"
-													type="button"
-													id="tp-view-manifest-btn"
+														class="rux-button rux-button--default"
+														type="button"
+														id="tp-view-manifest-btn"
 														disabled
 														title="Toggle Ticketed to enable"
 													>
@@ -1263,6 +1334,11 @@
 										</div>
 									</div>
 									<div class="rux-card">
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												Pricing
+											</p>
+										</header>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1366,6 +1442,11 @@
 									<div
 										class="rux-card rux-trip-panel__billing-workflow"
 									>
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												Billing Status
+											</p>
+										</header>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1966,14 +2047,18 @@
 							aria-label="Open tools panel"
 							data-opens="right-panel-drawer"
 						>
-							<span class="rux-icon" aria-hidden="true">right_panel_open</span>
+							<span class="rux-icon" aria-hidden="true"
+								>right_panel_open</span
+							>
 						</button>
 						<aside
 							class="rux-panel rux-panel--right rux-right-panel"
 							role="dialog"
 							aria-label="Tools panel"
 						>
-							<header class="rux-panel__header rux-right-panel__header">
+							<header
+								class="rux-panel__header rux-right-panel__header"
+							>
 								<h2 class="rux-panel__title">Tools</h2>
 								<button
 									class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn"
@@ -1981,10 +2066,14 @@
 									aria-label="Close tools panel"
 									data-opens="right-panel-drawer"
 								>
-									<span class="rux-icon" aria-hidden="true">right_panel_close</span>
+									<span class="rux-icon" aria-hidden="true"
+										>right_panel_close</span
+									>
 								</button>
 							</header>
-							<div class="rux-panel__nav rux-panel__nav--attached">
+							<div
+								class="rux-panel__nav rux-panel__nav--attached"
+							>
 								<nav
 									class="rux-tabs rux-tabs--attached rux-right-panel__tabs"
 									role="tablist"
@@ -2180,7 +2269,8 @@
 												>
 													<span
 														class="rux-view-options__label"
-														>Center trip details</span
+														>Center trip
+														details</span
 													>
 													<label class="rux-switch">
 														<input
@@ -2277,7 +2367,9 @@
 											</h3>
 										</header>
 										<div class="rux-card__body">
-											<div class="rux-driver-grid__scroller">
+											<div
+												class="rux-driver-grid__scroller"
+											>
 												<div
 													class="rux-driver-grid"
 													id="rp-driver-grid"
@@ -2311,10 +2403,20 @@
 										id="rp-trip-history"
 										aria-label="Trip change history"
 									>
-										<header class="rux-trip-history__toolbar">
+										<header
+											class="rux-trip-history__toolbar"
+										>
 											<div>
-												<h3 class="rux-trip-history__title">All trip history</h3>
-												<p class="rux-trip-history__subtitle">Newest changes first</p>
+												<h3
+													class="rux-trip-history__title"
+												>
+													All trip history
+												</h3>
+												<p
+													class="rux-trip-history__subtitle"
+												>
+													Newest changes first
+												</p>
 											</div>
 											<button
 												class="rux-button rux-button--default rux-button--sm rux-trip-history__filter"
@@ -2368,7 +2470,9 @@
 										disabled
 										title="Select a trip first"
 									>
-										<span class="rux-icon" aria-hidden="true"
+										<span
+											class="rux-icon"
+											aria-hidden="true"
 											>contact_phone</span
 										>
 										<span class="rux-btn-label"
@@ -2382,7 +2486,9 @@
 										disabled
 										title="Select a trip first"
 									>
-										<span class="rux-icon" aria-hidden="true"
+										<span
+											class="rux-icon"
+											aria-hidden="true"
 											>notifications_active</span
 										>
 										<span class="rux-btn-label"
@@ -2395,15 +2501,22 @@
 									data-rp-footer-for="rp-pane-tasks"
 									hidden
 								>
-									<div class="rux-tasks__nav" id="rp-tasks-nav">
+									<div
+										class="rux-tasks__nav"
+										id="rp-tasks-nav"
+									>
 										<button
 											type="button"
 											class="rux-button rux-button--default"
 											data-tasks-nav="prev"
 										>
-											<span class="rux-icon" aria-hidden="true"
+											<span
+												class="rux-icon"
+												aria-hidden="true"
 												>chevron_left</span
-											><span class="rux-btn-label">Prev</span>
+											><span class="rux-btn-label"
+												>Prev</span
+											>
 										</button>
 										<button
 											type="button"
@@ -2418,8 +2531,11 @@
 											class="rux-button rux-button--default"
 											data-tasks-nav="next"
 										>
-											<span class="rux-btn-label">Next</span
-											><span class="rux-icon" aria-hidden="true"
+											<span class="rux-btn-label"
+												>Next</span
+											><span
+												class="rux-icon"
+												aria-hidden="true"
 												>chevron_right</span
 											>
 										</button>
@@ -2453,10 +2569,14 @@
 										disabled
 										title="Select a driver first"
 									>
-										<span class="rux-icon" aria-hidden="true"
+										<span
+											class="rux-icon"
+											aria-hidden="true"
 											>sms</span
 										>
-										<span class="rux-btn-label">Share Schedule</span>
+										<span class="rux-btn-label"
+											>Share Schedule</span
+										>
 									</button>
 								</div>
 							</footer>
@@ -2469,13 +2589,25 @@
              MODULE: LIST
              ════════════════════════════════════════════════════════════════ -->
 				<div class="scheduler-app__module" data-module="list" hidden>
-					<section class="rux-workspace trips-app__main" aria-label="Trip list">
-						<header class="rux-workspace__header rux-workspace__header--table">
+					<section
+						class="rux-workspace trips-app__main"
+						aria-label="Trip list"
+					>
+						<header
+							class="rux-workspace__header rux-workspace__header--table"
+						>
 							<div class="rux-workspace__nav">
-								<h1 class="rux-workspace__title" id="trips-list-title"></h1>
+								<h1
+									class="rux-workspace__title"
+									id="trips-list-title"
+								></h1>
 							</div>
 							<div class="rux-workspace__toolbar">
-								<div class="rux-cluster" id="trips-filter-badges" hidden></div>
+								<div
+									class="rux-cluster"
+									id="trips-filter-badges"
+									hidden
+								></div>
 								<input
 									class="rux-input"
 									id="trips-search"
@@ -2489,8 +2621,14 @@
 									placeholder="Search trips…"
 									aria-label="Search trips"
 								/>
-								<button class="rux-button rux-button--default" id="trips-btn-add" type="button">
-									<span class="rux-icon" aria-hidden="true">add</span>
+								<button
+									class="rux-button rux-button--default"
+									id="trips-btn-add"
+									type="button"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>add</span
+									>
 									<span class="rux-btn-label">New trip</span>
 								</button>
 								<button
@@ -2500,13 +2638,20 @@
 									aria-label="Open filters"
 									aria-pressed="false"
 								>
-									<span class="rux-icon icon-off">right_panel_open</span>
-									<span class="rux-icon icon-on">right_panel_close</span>
+									<span class="rux-icon icon-off"
+										>right_panel_open</span
+									>
+									<span class="rux-icon icon-on"
+										>right_panel_close</span
+									>
 								</button>
 							</div>
 						</header>
 						<div class="rux-workspace__body trips-app__table-wrap">
-							<table class="rux-table trips-app__table" aria-label="Trips roster">
+							<table
+								class="rux-table trips-app__table"
+								aria-label="Trips roster"
+							>
 								<thead>
 									<tr>
 										<th scope="col">Trip</th>
@@ -2515,8 +2660,12 @@
 										<th scope="col">Bus</th>
 										<th scope="col">Confirmed</th>
 										<th scope="col">Invoice</th>
-										<th scope="col" class="col-payment">Payment</th>
-										<th scope="col" class="col-quoted">Quoted</th>
+										<th scope="col" class="col-payment">
+											Payment
+										</th>
+										<th scope="col" class="col-quoted">
+											Quoted
+										</th>
 									</tr>
 								</thead>
 								<tbody id="trips-roster-body"></tbody>
@@ -2533,7 +2682,10 @@
 						tabindex="0"
 					></div>
 					<!-- Trip filter drawer -->
-					<div class="scheduler-app__drawer scheduler-app__drawer--right" id="list-filter-drawer">
+					<div
+						class="scheduler-app__drawer scheduler-app__drawer--right"
+						id="list-filter-drawer"
+					>
 						<aside
 							class="rux-panel rux-panel--right rux-list-filter-panel"
 							role="dialog"
@@ -3613,7 +3765,11 @@
 										/>
 									</div>
 									<div class="rux-field">
-										<label class="rux-field__label" for="dp-texting-url">Google Messages URL</label>
+										<label
+											class="rux-field__label"
+											for="dp-texting-url"
+											>Google Messages URL</label
+										>
 										<input
 											class="rux-input"
 											id="dp-texting-url"
@@ -4126,7 +4282,10 @@
 										aria-labelledby="dp-schedule-title"
 									>
 										<header class="rux-card__header">
-											<p class="rux-card__title" id="dp-schedule-title">
+											<p
+												class="rux-card__title"
+												id="dp-schedule-title"
+											>
 												Shared schedule
 											</p>
 											<span
@@ -4140,17 +4299,27 @@
 												class="rux-driver-panel__schedule-summary"
 												id="dp-schedule-summary"
 											>
-												Select a driver to view their shared schedule.
+												Select a driver to view their
+												shared schedule.
 											</p>
-											<div class="rux-driver-panel__schedule-actions">
+											<div
+												class="rux-driver-panel__schedule-actions"
+											>
 												<button
 													class="rux-button rux-button--accent"
 													type="button"
 													id="dp-schedule-manage"
 													disabled
 												>
-													<span class="rux-icon" aria-hidden="true">checklist</span>
-													<span>Manage Assignments</span>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>checklist</span
+													>
+													<span
+														>Manage
+														Assignments</span
+													>
 												</button>
 												<button
 													class="rux-button rux-button--default"
@@ -4158,7 +4327,11 @@
 													id="dp-schedule-open"
 													disabled
 												>
-													<span class="rux-icon" aria-hidden="true">open_in_new</span>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>open_in_new</span
+													>
 													<span>Open</span>
 												</button>
 												<button
@@ -4167,7 +4340,11 @@
 													id="dp-schedule-copy"
 													disabled
 												>
-													<span class="rux-icon" aria-hidden="true">content_copy</span>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>content_copy</span
+													>
 													<span>Copy Link</span>
 												</button>
 												<button
@@ -4176,7 +4353,11 @@
 													id="dp-schedule-deactivate"
 													disabled
 												>
-													<span class="rux-icon" aria-hidden="true">link_off</span>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>link_off</span
+													>
 													<span>Deactivate</span>
 												</button>
 											</div>
@@ -4319,49 +4500,120 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: CUSTOMERS
              ════════════════════════════════════════════════════════════════ -->
-				<div class="scheduler-app__module" data-module="customers" hidden>
+				<div
+					class="scheduler-app__module"
+					data-module="customers"
+					hidden
+				>
 					<!-- Customer panel drawer -->
-					<div class="scheduler-app__drawer" id="customer-panel-drawer">
+					<div
+						class="scheduler-app__drawer"
+						id="customer-panel-drawer"
+					>
 						<aside
 							class="rux-panel rux-panel--left rux-customer-panel"
 							role="dialog"
 							aria-label="Customer editor"
 						>
-							<div class="rux-panel__body rux-customer-panel__body">
-								<div class="rux-panel__pane rux-customer-panel__pane">
+							<div
+								class="rux-panel__body rux-customer-panel__body"
+							>
+								<div
+									class="rux-panel__pane rux-customer-panel__pane"
+								>
 									<div class="rux-field">
-										<label class="rux-field__label" for="cp-name">Name</label>
-										<input class="rux-input" id="cp-name" name="name" type="text" placeholder="e.g. Jane Smith" />
+										<label
+											class="rux-field__label"
+											for="cp-name"
+											>Name</label
+										>
+										<input
+											class="rux-input"
+											id="cp-name"
+											name="name"
+											type="text"
+											placeholder="e.g. Jane Smith"
+										/>
 									</div>
 									<div class="rux-field">
-										<label class="rux-field__label" for="cp-client">Client</label>
-										<input class="rux-input" id="cp-client" name="client" type="text" placeholder="e.g. Calvary Baptist Church" />
+										<label
+											class="rux-field__label"
+											for="cp-client"
+											>Client</label
+										>
+										<input
+											class="rux-input"
+											id="cp-client"
+											name="client"
+											type="text"
+											placeholder="e.g. Calvary Baptist Church"
+										/>
 									</div>
 									<div class="rux-customer-panel__cols-2">
 										<div class="rux-field">
-											<label class="rux-field__label" for="cp-phone">Phone</label>
-											<input class="rux-input" id="cp-phone" name="phone" type="tel" />
+											<label
+												class="rux-field__label"
+												for="cp-phone"
+												>Phone</label
+											>
+											<input
+												class="rux-input"
+												id="cp-phone"
+												name="phone"
+												type="tel"
+											/>
 										</div>
 										<div class="rux-field">
-											<label class="rux-field__label" for="cp-email">Email</label>
-											<input class="rux-input" id="cp-email" name="email" type="email" />
+											<label
+												class="rux-field__label"
+												for="cp-email"
+												>Email</label
+											>
+											<input
+												class="rux-input"
+												id="cp-email"
+												name="email"
+												type="email"
+											/>
 										</div>
 									</div>
 									<div class="rux-customer-panel__trips">
-										<p class="rux-customer-panel__section-label">Trips</p>
-										<ul class="rux-customer-panel__trip-list" id="cp-trip-list"></ul>
+										<p
+											class="rux-customer-panel__section-label"
+										>
+											Trips
+										</p>
+										<ul
+											class="rux-customer-panel__trip-list"
+											id="cp-trip-list"
+										></ul>
 									</div>
 								</div>
 							</div>
 							<footer class="rux-panel__footer">
-								<button class="rux-button rux-button--outline rux-button--danger" id="cp-btn-delete" type="button">
-									<span class="rux-icon">delete</span><span class="rux-btn-label"> Delete</span>
+								<button
+									class="rux-button rux-button--outline rux-button--danger"
+									id="cp-btn-delete"
+									type="button"
+								>
+									<span class="rux-icon">delete</span
+									><span class="rux-btn-label"> Delete</span>
 								</button>
-								<button class="rux-button rux-button--default" id="cp-btn-clear" type="button">
-									<span class="rux-icon">backspace</span><span class="rux-btn-label"> Clear</span>
+								<button
+									class="rux-button rux-button--default"
+									id="cp-btn-clear"
+									type="button"
+								>
+									<span class="rux-icon">backspace</span
+									><span class="rux-btn-label"> Clear</span>
 								</button>
-								<button class="rux-button rux-button--accent" id="cp-btn-save" type="button">
-									<span class="rux-icon">save</span><span class="rux-btn-label"> Save</span>
+								<button
+									class="rux-button rux-button--accent"
+									id="cp-btn-save"
+									type="button"
+								>
+									<span class="rux-icon">save</span
+									><span class="rux-btn-label"> Save</span>
 								</button>
 							</footer>
 						</aside>
@@ -4377,8 +4629,13 @@
 					></div>
 					<!-- /customer-panel-drawer -->
 
-					<section class="rux-workspace customer-app__main" aria-label="Customer roster">
-						<header class="rux-workspace__header rux-workspace__header--table">
+					<section
+						class="rux-workspace customer-app__main"
+						aria-label="Customer roster"
+					>
+						<header
+							class="rux-workspace__header rux-workspace__header--table"
+						>
 							<button
 								class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
 								type="button"
@@ -4387,8 +4644,12 @@
 								aria-pressed="false"
 								data-opens="customer-panel-drawer"
 							>
-								<span class="rux-icon icon-off">left_panel_open</span>
-								<span class="rux-icon icon-on">left_panel_close</span>
+								<span class="rux-icon icon-off"
+									>left_panel_open</span
+								>
+								<span class="rux-icon icon-on"
+									>left_panel_close</span
+								>
 							</button>
 							<div class="rux-workspace__toolbar">
 								<input
@@ -4404,14 +4665,27 @@
 									placeholder="Search customers…"
 									aria-label="Search customers"
 								/>
-								<button class="rux-button rux-button--default" id="customer-new-btn" type="button">
-									<span class="rux-icon" aria-hidden="true">add</span>
-									<span class="rux-btn-label">New customer</span>
+								<button
+									class="rux-button rux-button--default"
+									id="customer-new-btn"
+									type="button"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>add</span
+									>
+									<span class="rux-btn-label"
+										>New customer</span
+									>
 								</button>
 							</div>
 						</header>
-						<div class="rux-workspace__body customer-app__table-wrap">
-							<table class="rux-table customer-app__table" aria-label="Customer roster">
+						<div
+							class="rux-workspace__body customer-app__table-wrap"
+						>
+							<table
+								class="rux-table customer-app__table"
+								aria-label="Customer roster"
+							>
 								<thead>
 									<tr>
 										<th scope="col">Name</th>
@@ -4910,70 +5184,216 @@
 											Button on Accent
 										</p>
 									</header>
-									<div class="rux-card__body components-app__accent-grid">
+									<div
+										class="rux-card__body components-app__accent-grid"
+									>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-accent)"
+											style="
+												--_accent-surface: var(
+													--rux-accent
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Accent</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Accent</span
+											>
 										</div>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-trip-color-cyan)"
+											style="
+												--_accent-surface: var(
+													--rux-trip-color-cyan
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Cyan</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Cyan</span
+											>
 										</div>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-trip-color-green)"
+											style="
+												--_accent-surface: var(
+													--rux-trip-color-green
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Green</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Green</span
+											>
 										</div>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-trip-color-purple)"
+											style="
+												--_accent-surface: var(
+													--rux-trip-color-purple
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Purple</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Purple</span
+											>
 										</div>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-trip-color-yellow)"
+											style="
+												--_accent-surface: var(
+													--rux-trip-color-yellow
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Yellow</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Yellow</span
+											>
 										</div>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-trip-color-orange)"
+											style="
+												--_accent-surface: var(
+													--rux-trip-color-orange
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Orange</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Orange</span
+											>
 										</div>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-trip-color-pink)"
+											style="
+												--_accent-surface: var(
+													--rux-trip-color-pink
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Pink</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Pink</span
+											>
 										</div>
 										<div
 											class="components-app__accent-swatch"
-											style="--_accent-surface: var(--rux-danger)"
+											style="
+												--_accent-surface: var(
+													--rux-danger
+												);
+											"
 										>
-											<button class="rux-button rux-button--on-accent" type="button">Action</button>
-											<button class="rux-button rux-button--on-accent" type="button" disabled>Disabled</button>
-											<span class="components-app__accent-label">Danger</span>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+											>
+												Action
+											</button>
+											<button
+												class="rux-button rux-button--on-accent"
+												type="button"
+												disabled
+											>
+												Disabled
+											</button>
+											<span
+												class="components-app__accent-label"
+												>Danger</span
+											>
 										</div>
 									</div>
 								</div>
@@ -5004,7 +5424,8 @@
 												<span
 													class="rux-icon"
 													aria-hidden="true"
-												>block</span>
+													>block</span
+												>
 											</button>
 										</div>
 										<dl class="components-app__specs">
@@ -5053,8 +5474,11 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>accessible</span>
-											<span class="rux-btn-label">ADA lift</span>
+												>accessible</span
+											>
+											<span class="rux-btn-label"
+												>ADA lift</span
+											>
 										</button>
 										<button
 											class="rux-button rux-button--default rux-button--toggle is-active"
@@ -5065,8 +5489,11 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>accessible</span>
-											<span class="rux-btn-label">ADA lift</span>
+												>accessible</span
+											>
+											<span class="rux-btn-label"
+												>ADA lift</span
+											>
 										</button>
 									</div>
 								</div>
@@ -5089,7 +5516,8 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>block</span>
+												>block</span
+											>
 										</button>
 										<button
 											class="rux-button rux-button--default rux-button--icon rux-button--toggle is-active"
@@ -5101,7 +5529,8 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>block</span>
+												>block</span
+											>
 										</button>
 									</div>
 								</div>
@@ -5124,11 +5553,13 @@
 											<span
 												class="rux-icon icon-off"
 												aria-hidden="true"
-											>left_panel_open</span>
+												>left_panel_open</span
+											>
 											<span
 												class="rux-icon icon-on"
 												aria-hidden="true"
-											>left_panel_close</span>
+												>left_panel_close</span
+											>
 										</button>
 										<button
 											class="rux-button rux-button--default rux-button--icon rux-button--toggle is-active"
@@ -5140,11 +5571,13 @@
 											<span
 												class="rux-icon icon-off"
 												aria-hidden="true"
-											>left_panel_open</span>
+												>left_panel_open</span
+											>
 											<span
 												class="rux-icon icon-on"
 												aria-hidden="true"
-											>left_panel_close</span>
+												>left_panel_close</span
+											>
 										</button>
 									</div>
 								</div>
@@ -5168,7 +5601,8 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>group</span>
+												>group</span
+											>
 										</button>
 										<button
 											class="rux-button rux-button--default rux-button--toggle rux-button--icon"
@@ -5181,7 +5615,8 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>person_add</span>
+												>person_add</span
+											>
 										</button>
 										<button
 											class="rux-button rux-button--default rux-button--toggle rux-button--icon"
@@ -5194,7 +5629,8 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>person_remove</span>
+												>person_remove</span
+											>
 										</button>
 									</div>
 								</div>
@@ -5263,8 +5699,11 @@
 												<span
 													class="rux-icon"
 													aria-hidden="true"
-												>airline_seat_flat</span>
-												<span class="rux-btn-label"> Sleeper</span>
+													>airline_seat_flat</span
+												>
+												<span class="rux-btn-label">
+													Sleeper</span
+												>
 											</button>
 											<button
 												class="rux-button rux-button--default rux-button--toggle rux-button--block"
@@ -5276,8 +5715,11 @@
 												<span
 													class="rux-icon"
 													aria-hidden="true"
-												>tatami_seat</span>
-												<span class="rux-btn-label"> 56 pax</span>
+													>tatami_seat</span
+												>
+												<span class="rux-btn-label">
+													56 pax</span
+												>
 											</button>
 										</div>
 									</div>
@@ -5301,7 +5743,8 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>block</span>
+												>block</span
+											>
 										</button>
 										<button
 											class="rux-button rux-button--default rux-button--toggle"
@@ -5312,8 +5755,11 @@
 											<span
 												class="rux-icon"
 												aria-hidden="true"
-											>accessible</span>
-											<span class="rux-btn-label">ADA lift</span>
+												>accessible</span
+											>
+											<span class="rux-btn-label"
+												>ADA lift</span
+											>
 										</button>
 									</div>
 								</div>
@@ -5325,10 +5771,15 @@
 							>
 								<div class="rux-card">
 									<header class="rux-card__header">
-										<p class="rux-card__title">Driver Assignment Card</p>
+										<p class="rux-card__title">
+											Driver Assignment Card
+										</p>
 									</header>
 									<div class="rux-card__body">
-										<div class="components-app__anatomy-stage" data-driver-assignment-card-demo></div>
+										<div
+											class="components-app__anatomy-stage"
+											data-driver-assignment-card-demo
+										></div>
 									</div>
 								</div>
 							</div>
@@ -5812,9 +6263,10 @@
 											placeholder="https://mail.missiveapp.com/#search/"
 										/>
 										<span class="rux-field__help"
-											>Base URL for the email search button on
-											trip booking contacts. The contact's
-											email address is appended automatically.</span
+											>Base URL for the email search
+											button on trip booking contacts. The
+											contact's email address is appended
+											automatically.</span
 										>
 									</div>
 								</div>
@@ -5832,7 +6284,9 @@
 											type="button"
 										>
 											<span class="rux-icon">save</span>
-											<span class="rux-btn-label">Save</span>
+											<span class="rux-btn-label"
+												>Save</span
+											>
 										</button>
 									</div>
 								</footer>
@@ -6147,8 +6601,8 @@
 											open tab — dispatch, driver, and
 											maintenance pages alike. Use right
 											after deploying a change everyone
-											needs now. Anyone with unsaved
-											work will lose it.
+											needs now. Anyone with unsaved work
+											will lose it.
 										</p>
 									</div>
 								</header>
@@ -6263,12 +6717,27 @@
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=1"></script>
-		<script type="module" src="./js/panels/driver-week-info.js?v=11"></script>
-		<script type="module" src="./js/panels/maintenance-link.js?v=3"></script>
-		<script type="module" src="./js/panels/contact-info-modal.js?v=6"></script>
-		<script type="module" src="./js/panels/notifications-panel.js?v=1"></script>
+		<script
+			type="module"
+			src="./js/panels/driver-week-info.js?v=11"
+		></script>
+		<script
+			type="module"
+			src="./js/panels/maintenance-link.js?v=3"
+		></script>
+		<script
+			type="module"
+			src="./js/panels/contact-info-modal.js?v=6"
+		></script>
+		<script
+			type="module"
+			src="./js/panels/notifications-panel.js?v=1"
+		></script>
 		<script type="module" src="./js/panels/team-chat.js?v=3"></script>
-		<script type="module" src="./js/panels/components-panel.js?v=45"></script>
+		<script
+			type="module"
+			src="./js/panels/components-panel.js?v=45"
+		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/tasks-panel.js?v=47"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
@@ -6375,17 +6844,39 @@
 			// history attribution and the header avatar show a real person
 			// instead of the generic "Dispatcher" fallback. See profile.js
 			// (current-selection state) and profile-db.js (Supabase CRUD).
-			const profilePickerModal = document.getElementById("profile-picker-modal");
-			const profilePickerList = document.getElementById("profile-picker-list");
-			const profilePickerAddBtn = document.getElementById("profile-picker-add-btn");
-			const profilePickerAddForm = document.getElementById("profile-picker-add-form");
-			const profilePickerAddName = document.getElementById("profile-picker-add-name");
-			const profilePickerAddSave = document.getElementById("profile-picker-add-save");
-			const profilePickerAddCancel = document.getElementById("profile-picker-add-cancel");
-			const profilePickerAddAvatarBtn = document.getElementById("profile-picker-add-avatar-btn");
-			const profilePickerAddAvatar = document.getElementById("profile-picker-add-avatar");
-			const profilePickerAddPhotoInput = document.getElementById("profile-picker-add-photo-input");
-			const profileMenuSwitchBtn = document.getElementById("profile-menu-switch-btn");
+			const profilePickerModal = document.getElementById(
+				"profile-picker-modal",
+			);
+			const profilePickerList = document.getElementById(
+				"profile-picker-list",
+			);
+			const profilePickerAddBtn = document.getElementById(
+				"profile-picker-add-btn",
+			);
+			const profilePickerAddForm = document.getElementById(
+				"profile-picker-add-form",
+			);
+			const profilePickerAddName = document.getElementById(
+				"profile-picker-add-name",
+			);
+			const profilePickerAddSave = document.getElementById(
+				"profile-picker-add-save",
+			);
+			const profilePickerAddCancel = document.getElementById(
+				"profile-picker-add-cancel",
+			);
+			const profilePickerAddAvatarBtn = document.getElementById(
+				"profile-picker-add-avatar-btn",
+			);
+			const profilePickerAddAvatar = document.getElementById(
+				"profile-picker-add-avatar",
+			);
+			const profilePickerAddPhotoInput = document.getElementById(
+				"profile-picker-add-photo-input",
+			);
+			const profileMenuSwitchBtn = document.getElementById(
+				"profile-menu-switch-btn",
+			);
 
 			let allProfiles = [];
 			let profilePickerDismissible = true;
@@ -6403,7 +6894,9 @@
 			function renderHeaderAvatar(profile) {
 				profileMenuBtn.replaceChildren();
 				if (profile) {
-					const url = profile.photo_path ? getProfilePhotoUrl(profile.photo_path) : null;
+					const url = profile.photo_path
+						? getProfilePhotoUrl(profile.photo_path)
+						: null;
 					if (url) {
 						const img = document.createElement("img");
 						img.src = url;
@@ -6412,8 +6905,12 @@
 					} else {
 						const initials = document.createElement("span");
 						initials.className = "rux-app-header__profile-initials";
-						initials.style.backgroundColor = avatarColorValue(profile.avatar_color);
-						initials.textContent = driverInitials(profile.display_name);
+						initials.style.backgroundColor = avatarColorValue(
+							profile.avatar_color,
+						);
+						initials.textContent = driverInitials(
+							profile.display_name,
+						);
 						profileMenuBtn.appendChild(initials);
 					}
 					profileMenuBtn.setAttribute(
@@ -6438,7 +6935,9 @@
 			// random key) so multiple tabs/devices signed in as the same person
 			// collapse into a single "Active now" entry, per the ask to see
 			// distinct active profiles rather than instance counts.
-			const headerActiveProfiles = document.getElementById("header-active-profiles");
+			const headerActiveProfiles = document.getElementById(
+				"header-active-profiles",
+			);
 			let presenceChannel = null;
 
 			function renderActiveProfiles() {
@@ -6497,11 +6996,16 @@
 			});
 
 			const profilePickerAddColorInputs = [
-				...document.querySelectorAll('input[name="profileAvatarColor"]'),
+				...document.querySelectorAll(
+					'input[name="profileAvatarColor"]',
+				),
 			];
 
 			function getSelectedAvatarColor() {
-				return profilePickerAddColorInputs.find((input) => input.checked)?.value || "";
+				return (
+					profilePickerAddColorInputs.find((input) => input.checked)
+						?.value || ""
+				);
 			}
 
 			function setSelectedAvatarColor(color) {
@@ -6518,7 +7022,8 @@
 
 			function setAddAvatarPreview(url, color) {
 				profilePickerAddAvatar.replaceChildren();
-				profilePickerAddAvatar.style.backgroundColor = avatarColorValue(color);
+				profilePickerAddAvatar.style.backgroundColor =
+					avatarColorValue(color);
 				if (url) {
 					const img = document.createElement("img");
 					img.src = url;
@@ -6539,7 +7044,10 @@
 					? getProfilePhotoUrl(editProfile.photo_path)
 					: null;
 				setSelectedAvatarColor(editProfile?.avatar_color);
-				setAddAvatarPreview(pendingAddPreviewUrl, editProfile?.avatar_color);
+				setAddAvatarPreview(
+					pendingAddPreviewUrl,
+					editProfile?.avatar_color,
+				);
 				profilePickerAddName.focus();
 			}
 
@@ -6555,7 +7063,9 @@
 			}
 
 			function selectProfile(id) {
-				const profile = allProfiles.find((p) => String(p.id) === String(id));
+				const profile = allProfiles.find(
+					(p) => String(p.id) === String(id),
+				);
 				if (!profile) return;
 				setCurrentProfile(profile);
 				closeProfilePicker();
@@ -6589,13 +7099,18 @@
 					main.type = "button";
 					main.className = "rux-profile-picker__row-main";
 					main.appendChild(
-						profileAvatarEl(profile, "rux-profile-picker__row-avatar"),
+						profileAvatarEl(
+							profile,
+							"rux-profile-picker__row-avatar",
+						),
 					);
 					const nameEl = document.createElement("span");
 					nameEl.className = "rux-profile-picker__name";
 					nameEl.textContent = profile.display_name;
 					main.appendChild(nameEl);
-					main.addEventListener("click", () => selectProfile(profile.id));
+					main.addEventListener("click", () =>
+						selectProfile(profile.id),
+					);
 					row.appendChild(main);
 
 					const actions = document.createElement("div");
@@ -6605,7 +7120,10 @@
 					moreBtn.type = "button";
 					moreBtn.className =
 						"rux-button rux-button--ghost rux-button--icon rux-button--sm";
-					moreBtn.setAttribute("aria-label", `${profile.display_name} actions`);
+					moreBtn.setAttribute(
+						"aria-label",
+						`${profile.display_name} actions`,
+					);
 					moreBtn.setAttribute("aria-haspopup", "menu");
 					moreBtn.setAttribute("aria-expanded", "false");
 					moreBtn.appendChild(iconSpan("more_vert"));
@@ -6624,13 +7142,19 @@
 			// to whichever trigger was clicked — same recipe as the driver
 			// grid's assignment popover earlier in this file.
 			const profileRowMenu = document.getElementById("profile-row-menu");
-			const profileRowMenuEditBtn = document.getElementById("profile-row-menu-edit");
-			const profileRowMenuDeleteBtn = document.getElementById("profile-row-menu-delete");
+			const profileRowMenuEditBtn = document.getElementById(
+				"profile-row-menu-edit",
+			);
+			const profileRowMenuDeleteBtn = document.getElementById(
+				"profile-row-menu-delete",
+			);
 			let profileRowMenuTarget = null;
 
 			function openProfileRowMenu(trigger, profile) {
 				profileRowMenuTarget = profile;
-				window.RuxMenu.open(trigger, profileRowMenu, { placement: "bottom-end" });
+				window.RuxMenu.open(trigger, profileRowMenu, {
+					placement: "bottom-end",
+				});
 			}
 
 			profileRowMenuEditBtn.addEventListener("click", () => {
@@ -6640,10 +7164,13 @@
 			profileRowMenuDeleteBtn.addEventListener("click", async () => {
 				const profile = profileRowMenuTarget;
 				if (!profile) return;
-				if (!confirm(`Remove profile "${profile.display_name}"?`)) return;
+				if (!confirm(`Remove profile "${profile.display_name}"?`))
+					return;
 				try {
 					await deleteProfile(profile.id);
-					if (String(getCurrentProfile()?.id) === String(profile.id)) {
+					if (
+						String(getCurrentProfile()?.id) === String(profile.id)
+					) {
 						// The app always needs a selected profile — deleting the one
 						// in use re-imposes the mandatory (non-dismissible) picker
 						// even if it was opened via the dismissible "Switch profile" path.
@@ -6654,7 +7181,9 @@
 					if (!allProfiles.length) openAddForm(null);
 				} catch (err) {
 					console.error("Delete profile failed:", err);
-					window.Rux?.toast?.("Could not delete profile — try again.");
+					window.Rux?.toast?.(
+						"Could not delete profile — try again.",
+					);
 				}
 			});
 
@@ -6673,7 +7202,10 @@
 			}
 
 			profilePickerModal.addEventListener("click", (event) => {
-				if (event.target === profilePickerModal && profilePickerDismissible) {
+				if (
+					event.target === profilePickerModal &&
+					profilePickerDismissible
+				) {
 					closeProfilePicker();
 				}
 			});
@@ -6682,8 +7214,12 @@
 				openProfilePicker(true);
 			});
 
-			profilePickerAddBtn.addEventListener("click", () => openAddForm(null));
-			profilePickerAddCancel.addEventListener("click", () => closeAddForm());
+			profilePickerAddBtn.addEventListener("click", () =>
+				openAddForm(null),
+			);
+			profilePickerAddCancel.addEventListener("click", () =>
+				closeAddForm(),
+			);
 			profilePickerAddAvatarBtn.addEventListener("click", () => {
 				profilePickerAddPhotoInput.click();
 			});
@@ -6695,7 +7231,10 @@
 				const reader = new FileReader();
 				reader.onload = (event) => {
 					pendingAddPreviewUrl = event.target.result;
-					setAddAvatarPreview(pendingAddPreviewUrl, getSelectedAvatarColor());
+					setAddAvatarPreview(
+						pendingAddPreviewUrl,
+						getSelectedAvatarColor(),
+					);
 				};
 				reader.readAsDataURL(file);
 			});
@@ -6709,16 +7248,27 @@
 				profilePickerAddSave.disabled = true;
 				try {
 					let profile = editId
-						? await updateProfile(editId, { display_name: name, avatar_color: avatarColor })
-						: await createProfile({ display_name: name, avatar_color: avatarColor });
+						? await updateProfile(editId, {
+								display_name: name,
+								avatar_color: avatarColor,
+							})
+						: await createProfile({
+								display_name: name,
+								avatar_color: avatarColor,
+							});
 					if (pendingAddPhotoFile) {
-						const photoPath = await uploadProfilePhoto(profile.id, pendingAddPhotoFile);
+						const photoPath = await uploadProfilePhoto(
+							profile.id,
+							pendingAddPhotoFile,
+						);
 						profile = { ...profile, photo_path: photoPath };
 					}
 					await refreshProfiles();
 					closeAddForm();
 					if (!editId) selectProfile(profile.id);
-					else if (String(getCurrentProfile()?.id) === String(profile.id)) {
+					else if (
+						String(getCurrentProfile()?.id) === String(profile.id)
+					) {
 						setCurrentProfile(profile);
 					}
 				} catch (err) {
@@ -6740,7 +7290,9 @@
 				await refreshProfiles();
 				const rememberedId = getRememberedProfileId();
 				const remembered = rememberedId
-					? allProfiles.find((p) => String(p.id) === String(rememberedId))
+					? allProfiles.find(
+							(p) => String(p.id) === String(rememberedId),
+						)
 					: null;
 				if (remembered && !isProfileStale(PROFILE_IDLE_LIMIT_MS)) {
 					setCurrentProfile(remembered);
@@ -6762,7 +7314,9 @@
 				lastActivityTouch = now;
 				touchProfileActivity();
 			}
-			document.addEventListener("click", handleProfileActivity, { passive: true });
+			document.addEventListener("click", handleProfileActivity, {
+				passive: true,
+			});
 			document.addEventListener("keydown", handleProfileActivity);
 
 			// Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
@@ -7186,15 +7740,23 @@
 			// The button lives inside the email field as a suffix action; it stays
 			// disabled while the field is empty (no email = nothing useful to search).
 			{
-				const missiveUrlInput = tripPanel.querySelector("#tp-book-missive-url");
+				const missiveUrlInput = tripPanel.querySelector(
+					"#tp-book-missive-url",
+				);
 				const missiveBtn = tripPanel.querySelector("#tp-missive-btn");
 				if (missiveUrlInput && missiveBtn) {
 					const syncMissiveBtn = () => {
 						missiveBtn.disabled = !missiveUrlInput.value.trim();
 					};
 					missiveUrlInput.addEventListener("input", syncMissiveBtn);
-					tripPanel.addEventListener("rux:trip-loaded", syncMissiveBtn);
-					tripPanel.addEventListener("rux:trip-cleared", syncMissiveBtn);
+					tripPanel.addEventListener(
+						"rux:trip-loaded",
+						syncMissiveBtn,
+					);
+					tripPanel.addEventListener(
+						"rux:trip-cleared",
+						syncMissiveBtn,
+					);
 					missiveBtn.addEventListener("click", () => {
 						const url = missiveUrlInput.value.trim();
 						if (!url) return;
@@ -7282,7 +7844,8 @@
 			}
 			const todayIso = isoDate(new Date());
 			let currentWeekStart = startOfWeek(new Date());
-			const weekLabelMobileQuery = window.matchMedia("(max-width: 500px)");
+			const weekLabelMobileQuery =
+				window.matchMedia("(max-width: 500px)");
 
 			renderDayHeaders(currentWeekStart);
 
@@ -7658,7 +8221,12 @@
 						if (targetTrack?.dataset.unassigned) {
 							if (trip.busId) {
 								reassigning = true;
-								performBusReassign(trip, { id: null }, null, true);
+								performBusReassign(
+									trip,
+									{ id: null },
+									null,
+									true,
+								);
 							}
 						} else if (
 							targetTrack &&
@@ -7736,9 +8304,15 @@
 					// A scheduler bar is a leg-specific projection. Resolve the
 					// complete fetched record by trip id before opening the editor so
 					// both Outbound and Inbound itinerary buffers are always present.
-					const fullTrip = allTripsRaw.find((candidate) => candidate.id === trip.id);
+					const fullTrip = allTripsRaw.find(
+						(candidate) => candidate.id === trip.id,
+					);
 					const editorTrip = fullTrip
-						? { ...trip, ...fullTrip, allTripStops: fullTrip.trip_stops ?? [] }
+						? {
+								...trip,
+								...fullTrip,
+								allTripStops: fullTrip.trip_stops ?? [],
+							}
 						: trip;
 					if (loadTrip) loadTrip(tripPanel, itinerary, editorTrip);
 				},
@@ -7848,17 +8422,19 @@
 			function fmtWeekRange(weekStart, monthStyle) {
 				const weekEnd = addDays(weekStart, 6);
 				const sameMonth = weekStart.getMonth() === weekEnd.getMonth();
-				const sameYear = weekStart.getFullYear() === weekEnd.getFullYear();
+				const sameYear =
+					weekStart.getFullYear() === weekEnd.getFullYear();
 				// Year is appended manually rather than via Intl's `year` option:
 				// asking Intl for {day, year} with no month (the same-month case's
 				// end date) doesn't resolve to a normal locale pattern — it falls
 				// back to something like "2026 (day: 12)" instead of just "12".
 				// month+day (with or without year) has no such issue, so year
 				// only ever goes through Intl on the rare cross-year start date.
-				const startStr = weekStart.toLocaleDateString("en-US", {
-					month: monthStyle,
-					day: "numeric",
-				}) + (sameYear ? "" : `, ${weekStart.getFullYear()}`);
+				const startStr =
+					weekStart.toLocaleDateString("en-US", {
+						month: monthStyle,
+						day: "numeric",
+					}) + (sameYear ? "" : `, ${weekStart.getFullYear()}`);
 				const endStr = weekEnd.toLocaleDateString("en-US", {
 					month: sameMonth ? undefined : monthStyle,
 					day: "numeric",
@@ -8158,8 +8734,7 @@
 				const unassignedHead = document.createElement("div");
 				unassignedHead.className = "rux-scheduler__row-head";
 				unassignedHead.setAttribute("aria-label", "Unassigned trips");
-				unassignedHead.title =
-					"Trips this week without a bus assigned";
+				unassignedHead.title = "Trips this week without a bus assigned";
 				const unassignedIcon = document.createElement("span");
 				unassignedIcon.className = "rux-icon rux-scheduler__bus-oos";
 				unassignedIcon.textContent = "warning";
@@ -8738,7 +9313,8 @@
 									td.drivers?.short_name || td.drivers?.name,
 								role: td.role,
 								status: td.driver_status || "off",
-								statusSource: td.driver_status_source || "dispatcher",
+								statusSource:
+									td.driver_status_source || "dispatcher",
 								pay: td.pay != null ? `$${td.pay}` : "",
 								phone: td.drivers?.phone || "",
 								reportTime: td.report_time || "",
@@ -8843,9 +9419,10 @@
 					.filter((p) => p.trip.id === tripId)
 					.forEach((p) => {
 						if (p.trip.trip_documents) {
-							p.trip.trip_documents = p.trip.trip_documents.filter(
-								(d) => d.id !== docId,
-							);
+							p.trip.trip_documents =
+								p.trip.trip_documents.filter(
+									(d) => d.id !== docId,
+								);
 						}
 						if (p.bar) applyItineraryDeleted(p.bar, p.trip);
 					});
@@ -9042,9 +9619,11 @@
 				const profile = getCurrentProfile();
 				if (!profile) return;
 				profile.settings = { ...profile.settings, ...patch };
-				updateProfile(profile.id, { settings: profile.settings }).catch((err) => {
-					console.error("Could not save setting:", err);
-				});
+				updateProfile(profile.id, { settings: profile.settings }).catch(
+					(err) => {
+						console.error("Could not save setting:", err);
+					},
+				);
 			}
 
 			function applyProfileSettings(profile) {
@@ -9064,12 +9643,17 @@
 					compactEnabled = !!settings.compactTrips;
 					const input = document.getElementById("opt-compact");
 					if (input) input.checked = compactEnabled;
-					schedulerEl?.classList.toggle("rux-scheduler--compact", compactEnabled);
+					schedulerEl?.classList.toggle(
+						"rux-scheduler--compact",
+						compactEnabled,
+					);
 				}
 
 				if ("centeredTripHeads" in settings) {
 					centeredTripHeadsEnabled = !!settings.centeredTripHeads;
-					const input = document.getElementById("opt-centered-trip-heads");
+					const input = document.getElementById(
+						"opt-centered-trip-heads",
+					);
 					if (input) input.checked = centeredTripHeadsEnabled;
 					schedulerEl?.classList.toggle(
 						"rux-scheduler--centered-trip-heads",
@@ -9100,7 +9684,8 @@
 			}
 
 			window.addEventListener("rux:profile-changed", (event) => {
-				if (event.detail.profile) applyProfileSettings(event.detail.profile);
+				if (event.detail.profile)
+					applyProfileSettings(event.detail.profile);
 			});
 
 			const dayPickerBtn = document.getElementById("day-picker-btn");
@@ -9177,8 +9762,7 @@
 					});
 					if (paneId === "rp-pane-drivers")
 						ensureDriverGridData().then(renderDriverGrid);
-					if (paneId === "rp-pane-tasks")
-						window.RuxTasks?.activate();
+					if (paneId === "rp-pane-tasks") window.RuxTasks?.activate();
 					if (paneId === "rp-pane-history")
 						window.TripHistory?.activate();
 					// Footer stays in a fixed spot across tabs — only the action group
@@ -9213,13 +9797,20 @@
 			// within each group, lower priority number (1) sorts first — same
 			// rule as driver-panel.js's "priority" SORT_DEFS entry, kept in sync
 			// by hand since the two live in separate modules.
-			const DRIVER_GRID_EMPLOYMENT_ORDER = { "full-time": 0, "part-time": 1, contract: 2, seasonal: 3 };
+			const DRIVER_GRID_EMPLOYMENT_ORDER = {
+				"full-time": 0,
+				"part-time": 1,
+				contract: 2,
+				seasonal: 3,
+			};
 			function driverPriorityCompare(a, b) {
 				return (
 					(DRIVER_GRID_EMPLOYMENT_ORDER[a.employment_type] ?? 9) -
-						(DRIVER_GRID_EMPLOYMENT_ORDER[b.employment_type] ?? 9)
-				) || ((a.priority || 3) - (b.priority || 3))
-					|| (a.name || "").localeCompare(b.name || "");
+						(DRIVER_GRID_EMPLOYMENT_ORDER[b.employment_type] ??
+							9) ||
+					(a.priority || 3) - (b.priority || 3) ||
+					(a.name || "").localeCompare(b.name || "")
+				);
 			}
 
 			async function ensureDriverGridData() {
@@ -9328,18 +9919,29 @@
 						if (!legStart) continue;
 						const driversById = new Map();
 						for (const driverAssignment of a.drivers || []) {
-							if (driverAssignment.driver_id && !driversById.has(driverAssignment.driver_id))
-								driversById.set(driverAssignment.driver_id, driverAssignment);
+							if (
+								driverAssignment.driver_id &&
+								!driversById.has(driverAssignment.driver_id)
+							)
+								driversById.set(
+									driverAssignment.driver_id,
+									driverAssignment,
+								);
 						}
 						if (!driversById.size) continue;
 						const start = parseIsoDate(legStart);
 						const end = parseIsoDate(legEnd || legStart);
-						const destination = trip.destination || trip.trip_ref || "Trip";
+						const destination =
+							trip.destination || trip.trip_ref || "Trip";
 						const busNumber = a.buses?.number ?? "Unassigned";
 						const assignmentStops = (trip.trip_stops || []).filter(
-							(stop) => (stop.leg || "outbound") === (a.leg || "outbound"),
+							(stop) =>
+								(stop.leg || "outbound") ===
+								(a.leg || "outbound"),
 						);
-						const pickupStop = assignmentStops.find((stop) => stop.type === "pickup");
+						const pickupStop = assignmentStops.find(
+							(stop) => stop.type === "pickup",
+						);
 						const spotTime = pickupStop?.spot || trip.spot_time;
 						for (
 							let d = new Date(start);
@@ -9351,15 +9953,27 @@
 								if (!map.has(id)) map.set(id, new Map());
 								const dayMap = map.get(id);
 								if (!dayMap.has(iso)) dayMap.set(iso, []);
-								const relief = driverAssignment.role === "relief-start" || driverAssignment.role === "relief-end";
+								const relief =
+									driverAssignment.role === "relief-start" ||
+									driverAssignment.role === "relief-end";
 								dayMap.get(iso).push({
 									assignmentId: a.id,
 									destination,
 									busNumber: String(busNumber),
-									role: driverGridRoleLabel(driverAssignment.role),
-									leg: isReturnLeg ? "Inbound" : trip.trip_type === "dropoff_pickup" ? "Outbound" : "",
+									role: driverGridRoleLabel(
+										driverAssignment.role,
+									),
+									leg: isReturnLeg
+										? "Inbound"
+										: trip.trip_type === "dropoff_pickup"
+											? "Outbound"
+											: "",
 									timeLabel: relief ? "Swap" : "Spot",
-									time: driverGridTime(relief ? driverAssignment.report_time : spotTime),
+									time: driverGridTime(
+										relief
+											? driverAssignment.report_time
+											: spotTime,
+									),
 								});
 							});
 						}
@@ -9478,8 +10092,12 @@
 			// the roster's expired/soon-to-expire coloring).
 			function showDriverInfoPopover(anchor, driver) {
 				const popover = ensureDriverGridPopover();
-				const title = popover.querySelector("[data-driver-grid-popover-title]");
-				const body = popover.querySelector("[data-driver-grid-popover-body]");
+				const title = popover.querySelector(
+					"[data-driver-grid-popover-title]",
+				);
+				const body = popover.querySelector(
+					"[data-driver-grid-popover-body]",
+				);
 				title.textContent = driver.name || driver.short_name;
 				body.replaceChildren();
 
@@ -9487,14 +10105,17 @@
 				profile.className = "rux-driver-grid__popover-profile";
 
 				const avatar = document.createElement("span");
-				avatar.className = "rux-avatar rux-avatar--lg rux-driver-grid__popover-avatar";
+				avatar.className =
+					"rux-avatar rux-avatar--lg rux-driver-grid__popover-avatar";
 				if (driver.photo_path && getDriverPhotoUrl) {
 					const img = document.createElement("img");
 					img.src = getDriverPhotoUrl(driver.photo_path);
 					img.alt = "";
 					avatar.appendChild(img);
 				} else {
-					avatar.textContent = driverInitials(driver.short_name || driver.name);
+					avatar.textContent = driverInitials(
+						driver.short_name || driver.name,
+					);
 				}
 				profile.appendChild(avatar);
 
@@ -9504,14 +10125,21 @@
 					if (!value) return;
 					const row = document.createElement("div");
 					row.className = "rux-driver-grid__popover-info-row";
-					row.appendChild(Object.assign(document.createElement("dt"), { textContent: label }));
+					row.appendChild(
+						Object.assign(document.createElement("dt"), {
+							textContent: label,
+						}),
+					);
 					const dd = document.createElement("dd");
 					if (opts.cls) dd.className = opts.cls;
 					if (opts.href) {
-						const link = Object.assign(document.createElement("a"), {
-							href: opts.href,
-							textContent: value,
-						});
+						const link = Object.assign(
+							document.createElement("a"),
+							{
+								href: opts.href,
+								textContent: value,
+							},
+						);
 						dd.appendChild(link);
 					} else {
 						dd.textContent = value;
@@ -9521,14 +10149,20 @@
 				};
 				addRow("City", driver.city);
 				addRow("Phone", driver.phone, {
-					href: driver.phone ? `tel:${driver.phone.replace(/[^+\d]/g, "")}` : "",
+					href: driver.phone
+						? `tel:${driver.phone.replace(/[^+\d]/g, "")}`
+						: "",
 				});
 				addRow("License exp.", driverExpiryLabel(driver.license_exp), {
 					cls: driverExpiryClass(driver.license_exp),
 				});
-				addRow("Medical exp.", driverExpiryLabel(driver.med_card_expiry), {
-					cls: driverExpiryClass(driver.med_card_expiry),
-				});
+				addRow(
+					"Medical exp.",
+					driverExpiryLabel(driver.med_card_expiry),
+					{
+						cls: driverExpiryClass(driver.med_card_expiry),
+					},
+				);
 				if (info.childElementCount) profile.appendChild(info);
 				body.appendChild(profile);
 
@@ -9536,22 +10170,38 @@
 				driverGridPopoverAnchor = anchor;
 				anchor.setAttribute("aria-expanded", "true");
 				popover.hidden = false;
-				window.RuxPopover?.position(anchor, popover, { placement: "left-start" });
+				window.RuxPopover?.position(anchor, popover, {
+					placement: "left-start",
+				});
 			}
 
-			function showDriverGridPopover(anchor, driver, date, entries, timeOffTooltip, timeOffNotes) {
+			function showDriverGridPopover(
+				anchor,
+				driver,
+				date,
+				entries,
+				timeOffTooltip,
+				timeOffNotes,
+			) {
 				if (!entries.length && !timeOffTooltip) {
 					closeDriverGridPopover();
 					return;
 				}
 				const popover = ensureDriverGridPopover();
-				const title = popover.querySelector("[data-driver-grid-popover-title]");
-				const body = popover.querySelector("[data-driver-grid-popover-body]");
-				title.textContent = `${driver.short_name || driver.name} · ${date.toLocaleDateString("en-US", {
-					weekday: "short",
-					month: "short",
-					day: "numeric",
-				})}`;
+				const title = popover.querySelector(
+					"[data-driver-grid-popover-title]",
+				);
+				const body = popover.querySelector(
+					"[data-driver-grid-popover-body]",
+				);
+				title.textContent = `${driver.short_name || driver.name} · ${date.toLocaleDateString(
+					"en-US",
+					{
+						weekday: "short",
+						month: "short",
+						day: "numeric",
+					},
+				)}`;
 				body.replaceChildren();
 				if (timeOffTooltip) {
 					const timeOff = document.createElement("p");
@@ -9560,7 +10210,10 @@
 					icon.className = "rux-icon";
 					icon.setAttribute("aria-hidden", "true");
 					icon.textContent = "event_busy";
-					timeOff.append(icon, document.createTextNode(timeOffTooltip));
+					timeOff.append(
+						icon,
+						document.createTextNode(timeOffTooltip),
+					);
 					body.appendChild(timeOff);
 					if (timeOffNotes) {
 						const notes = document.createElement("p");
@@ -9584,7 +10237,9 @@
 							`Bus ${entry.busNumber}`,
 							entry.role,
 							entry.leg,
-							entry.time ? `${entry.timeLabel} ${entry.time}` : "",
+							entry.time
+								? `${entry.timeLabel} ${entry.time}`
+								: "",
 						]
 							.filter(Boolean)
 							.join(" · ");
@@ -9597,7 +10252,9 @@
 				driverGridPopoverAnchor = anchor;
 				anchor.setAttribute("aria-expanded", "true");
 				popover.hidden = false;
-				window.RuxPopover?.position(anchor, popover, { placement: "bottom-center" });
+				window.RuxPopover?.position(anchor, popover, {
+					placement: "bottom-center",
+				});
 			}
 
 			function renderDriverGrid() {
@@ -9622,7 +10279,10 @@
 				const timeOffMap = buildDriverTimeOffMap();
 				driverGridRenderState = { days, dayMap, timeOffMap };
 				grid.setAttribute("aria-colcount", String(days.length + 1));
-				grid.setAttribute("aria-rowcount", String(allDrivers.length + 1));
+				grid.setAttribute(
+					"aria-rowcount",
+					String(allDrivers.length + 1),
+				);
 
 				const headRow = document.createElement("div");
 				headRow.className =
@@ -9657,11 +10317,13 @@
 					label.setAttribute("aria-label", label.title);
 					if (date.getDay() === 0 || date.getDay() === 6)
 						label.classList.add("is-weekend");
-					if (isoDate(date) === todayIso) label.classList.add("is-today");
+					if (isoDate(date) === todayIso)
+						label.classList.add("is-today");
 					const weekday = document.createElement("span");
 					weekday.className = "rux-driver-grid__day-label-weekday";
-					weekday.textContent = date
-						.toLocaleDateString("en-US", { weekday: "narrow" });
+					weekday.textContent = date.toLocaleDateString("en-US", {
+						weekday: "narrow",
+					});
 					const dayNumber = document.createElement("span");
 					dayNumber.className = "rux-driver-grid__day-label-date";
 					dayNumber.textContent = String(date.getDate());
@@ -9678,7 +10340,9 @@
 					row.setAttribute("role", "row");
 					row.setAttribute(
 						"aria-selected",
-						String(String(driver.id) === String(selectedGridDriverId)),
+						String(
+							String(driver.id) === String(selectedGridDriverId),
+						),
 					);
 
 					const nameCell = document.createElement("div");
@@ -9753,7 +10417,10 @@
 						if (titleParts.length) {
 							cell.setAttribute("aria-haspopup", "dialog");
 							cell.setAttribute("aria-expanded", "false");
-							cell.setAttribute("aria-controls", "rux-driver-grid-popover");
+							cell.setAttribute(
+								"aria-controls",
+								"rux-driver-grid-popover",
+							);
 						}
 						daysEl.appendChild(cell);
 					});
@@ -9781,7 +10448,8 @@
 				if (!trip?.startDate) return null;
 				const start = parseIsoDate(trip.startDate);
 				if (!start) return null;
-				const end = parseIsoDate(trip.endDate || trip.startDate) || start;
+				const end =
+					parseIsoDate(trip.endDate || trip.startDate) || start;
 				return { startIso: isoDate(start), endIso: isoDate(end) };
 			}
 
@@ -9818,7 +10486,8 @@
 				driverGridEl
 					?.querySelectorAll(".rux-driver-grid__row[data-driver-id]")
 					.forEach((row) => {
-						const selected = String(row.dataset.driverId) === String(driverId);
+						const selected =
+							String(row.dataset.driverId) === String(driverId);
 						row.classList.toggle("is-selected", selected);
 						row.setAttribute("aria-selected", String(selected));
 					});
@@ -9868,27 +10537,49 @@
 				const date = parseIsoDate(cell.dataset.date);
 				if (!driver || !date) return;
 				const entries =
-					driverGridRenderState.dayMap.get(driver.id)?.get(cell.dataset.date) || [];
+					driverGridRenderState.dayMap
+						.get(driver.id)
+						?.get(cell.dataset.date) || [];
 				const timeOff =
-					driverGridRenderState.timeOffMap.get(driver.id)?.get(cell.dataset.date) || null;
-				showDriverGridPopover(cell, driver, date, entries, timeOff?.tooltip || "", timeOff?.notes || "");
+					driverGridRenderState.timeOffMap
+						.get(driver.id)
+						?.get(cell.dataset.date) || null;
+				showDriverGridPopover(
+					cell,
+					driver,
+					date,
+					entries,
+					timeOff?.tooltip || "",
+					timeOff?.notes || "",
+				);
 			});
-			driverGridScroller?.addEventListener("scroll", closeDriverGridPopover, {
-				passive: true,
-			});
+			driverGridScroller?.addEventListener(
+				"scroll",
+				closeDriverGridPopover,
+				{
+					passive: true,
+				},
+			);
 			driverAddTimeOffBtn?.addEventListener("click", () => {
 				if (!selectedGridDriverId) return;
 				showModule("drivers");
 				window.DriverPanel?.openTimeOff(selectedGridDriverId);
 			});
-			async function openDriverScheduleManager(driverId, driverRecord = null) {
+			async function openDriverScheduleManager(
+				driverId,
+				driverRecord = null,
+			) {
 				if (!driverId) return;
 				await ensureDriverGridData();
-				const driver = driverRecord || allDrivers.find(
-					(item) => String(item.id) === String(driverId),
-				);
+				const driver =
+					driverRecord ||
+					allDrivers.find(
+						(item) => String(item.id) === String(driverId),
+					);
 				if (!driver) {
-					window.Rux?.toast?.("Could not load this driver’s assignments");
+					window.Rux?.toast?.(
+						"Could not load this driver’s assignments",
+					);
 					return;
 				}
 				showModule("calendar");
@@ -9904,7 +10595,10 @@
 			});
 
 			window.addEventListener("rux:manage-driver-schedule", (event) => {
-				openDriverScheduleManager(event.detail?.driverId, event.detail?.driver);
+				openDriverScheduleManager(
+					event.detail?.driverId,
+					event.detail?.driver,
+				);
 			});
 
 			// ── Mini calendar ────────────────────────────────────────────────────
@@ -10029,7 +10723,9 @@
 				// open-then-recollapse.
 				const fitsBothPanels =
 					!!scheduleEl &&
-					scheduleEl.offsetWidth - LEFT_DRAWER_DEFAULT - RIGHT_DRAWER_DEFAULT >=
+					scheduleEl.offsetWidth -
+						LEFT_DRAWER_DEFAULT -
+						RIGHT_DRAWER_DEFAULT >=
 						SCHEDULE_MIN;
 
 				if (mobilePanelQuery.matches || !fitsBothPanels) {
@@ -10155,18 +10851,26 @@
 					// leg-projection (no joined bus number, drivers not fully
 					// shaped), so resolve the complete fetched record the same way
 					// onOpenTrip does before handing it to trip-db.js.
-					window.addEventListener("rux:trip-selection-changed", (e) => {
-						const trip = e.detail?.trip;
-						if (!trip) {
-							db.setSelectedTrip(null);
-							return;
-						}
-						const fullTrip = allTripsRaw.find((candidate) => candidate.id === trip.id);
-						// fullTrip has no leg of its own (it's the whole record, both
-						// legs merged) — pass the bar's own leg separately so Contact
-						// Info can still tell which leg's bar was actually clicked.
-						db.setSelectedTrip(fullTrip || trip, trip.leg || "outbound");
-					});
+					window.addEventListener(
+						"rux:trip-selection-changed",
+						(e) => {
+							const trip = e.detail?.trip;
+							if (!trip) {
+								db.setSelectedTrip(null);
+								return;
+							}
+							const fullTrip = allTripsRaw.find(
+								(candidate) => candidate.id === trip.id,
+							);
+							// fullTrip has no leg of its own (it's the whole record, both
+							// legs merged) — pass the bar's own leg separately so Contact
+							// Info can still tell which leg's bar was actually clicked.
+							db.setSelectedTrip(
+								fullTrip || trip,
+								trip.leg || "outbound",
+							);
+						},
+					);
 					window.RuxDocs = {
 						upload: db.uploadDocument,
 						replace: db.replaceDocument,
@@ -10207,9 +10911,12 @@
 					// since credential dates don't need second-level precision;
 					// visibilitychange catches it right away when a dispatcher
 					// returns to an already-open tab after the day rolled over.
-					window.setInterval(() => {
-						if (!document.hidden) runNotificationChecks();
-					}, 60 * 60 * 1000);
+					window.setInterval(
+						() => {
+							if (!document.hidden) runNotificationChecks();
+						},
+						60 * 60 * 1000,
+					);
 					document.addEventListener("visibilitychange", () => {
 						if (!document.hidden) runNotificationChecks();
 					});
@@ -10224,9 +10931,14 @@
 			// server cron.
 			async function runNotificationChecks() {
 				try {
-					const { generateDriverExpiryAlerts } = await import("./js/data/notification-db.js");
+					const { generateDriverExpiryAlerts } =
+						await import("./js/data/notification-db.js");
 					await generateDriverExpiryAlerts().catch((err) =>
-						console.warn("Could not generate driver expiry alerts:", err));
+						console.warn(
+							"Could not generate driver expiry alerts:",
+							err,
+						),
+					);
 				} catch (err) {
 					console.warn("Could not run notification checks:", err);
 				}
@@ -10283,27 +10995,47 @@
 					// supabase/scheduler-realtime-patch.sql).
 					.on(
 						"postgres_changes",
-						{ event: "*", schema: "public", table: "trip_assignments" },
+						{
+							event: "*",
+							schema: "public",
+							table: "trip_assignments",
+						},
 						scheduleTripsReload,
 					)
 					.on(
 						"postgres_changes",
-						{ event: "*", schema: "public", table: "trip_documents" },
+						{
+							event: "*",
+							schema: "public",
+							table: "trip_documents",
+						},
 						scheduleTripsReload,
 					)
 					.on(
 						"postgres_changes",
-						{ event: "*", schema: "public", table: "trip_payments" },
+						{
+							event: "*",
+							schema: "public",
+							table: "trip_payments",
+						},
 						scheduleTripsReload,
 					)
 					.on(
 						"postgres_changes",
-						{ event: "*", schema: "public", table: "trip_passengers" },
+						{
+							event: "*",
+							schema: "public",
+							table: "trip_passengers",
+						},
 						scheduleTripsReload,
 					)
 					.on(
 						"postgres_changes",
-						{ event: "*", schema: "public", table: "trip_ticket_options" },
+						{
+							event: "*",
+							schema: "public",
+							table: "trip_ticket_options",
+						},
 						scheduleTripsReload,
 					)
 					.on(
@@ -10392,14 +11124,20 @@
 							return;
 						}
 						if (!loadTrip) {
-							importError.textContent = "Trip editor is still loading — try again in a moment.";
+							importError.textContent =
+								"Trip editor is still loading — try again in a moment.";
 							return;
 						}
 						let imported;
 						try {
-							imported = normalizeTripImport(parsed, window.appRequirements ?? []);
+							imported = normalizeTripImport(
+								parsed,
+								window.appRequirements ?? [],
+							);
 						} catch (error) {
-							importError.textContent = error?.message || "This trip JSON is not supported.";
+							importError.textContent =
+								error?.message ||
+								"This trip JSON is not supported.";
 							return;
 						}
 						// Always hydrate the complete sanitized draft. The old branch only
@@ -10410,10 +11148,20 @@
 						openDrawer();
 						importModal.hidden = true;
 						if (imported.warnings.length) {
-							console.warn("Trip JSON import warnings:", imported.warnings);
-							const warningSummary = imported.warnings.slice(0, 2).join(" ");
-							const moreWarnings = imported.warnings.length > 2 ? ` (+${imported.warnings.length - 2} more)` : "";
-							window.Rux?.toast?.(`Trip imported. ${warningSummary}${moreWarnings}`);
+							console.warn(
+								"Trip JSON import warnings:",
+								imported.warnings,
+							);
+							const warningSummary = imported.warnings
+								.slice(0, 2)
+								.join(" ");
+							const moreWarnings =
+								imported.warnings.length > 2
+									? ` (+${imported.warnings.length - 2} more)`
+									: "";
+							window.Rux?.toast?.(
+								`Trip imported. ${warningSummary}${moreWarnings}`,
+							);
 						} else {
 							window.Rux?.toast?.("Trip draft imported");
 						}
@@ -10619,7 +11367,9 @@
 									aria-pressed="true"
 									data-value="report"
 								>
-									<span class="rux-btn-label">Billing Report</span>
+									<span class="rux-btn-label"
+										>Billing Report</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--segment"
@@ -10627,7 +11377,9 @@
 									aria-pressed="false"
 									data-value="overview"
 								>
-									<span class="rux-btn-label">Maintenance Report</span>
+									<span class="rux-btn-label"
+										>Maintenance Report</span
+									>
 								</button>
 							</div>
 						</div>

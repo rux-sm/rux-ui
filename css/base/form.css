@@ -131,6 +131,7 @@
   background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
   border-radius: var(--rux-switch-radius);
   border: var(--rux-switch-track-border);
+  box-shadow: var(--rux-switch-track-shadow);
   transition:
     background-color var(--rux-switch-transition),
     box-shadow var(--rux-switch-transition);
@@ -143,6 +144,7 @@
   height: calc(var(--_h) - var(--_p) * 2);
   background: var(--_thumb);
   border-radius: var(--rux-switch-radius);
+  box-shadow: var(--rux-switch-thumb-shadow);
   transition:
     background-color var(--rux-switch-transition),
     box-shadow var(--rux-switch-transition),
@@ -150,9 +152,13 @@
 }
 .rux-switch:hover { --_state-overlay: var(--rux-switch-hover-overlay); }
 .rux-switch:active { --_state-overlay: var(--rux-switch-active-overlay); }
+.rux-switch:active .rux-switch__thumb {
+  box-shadow: var(--rux-switch-thumb-pressed-shadow);
+}
 .rux-switch input:checked ~ .rux-switch__track {
   background: var(--rux-switch-checked-bg);
   border: var(--rux-switch-checked-border);
+  box-shadow: var(--rux-switch-checked-shadow);
 }
 
 .rux-switch:has(input:disabled) {
@@ -160,12 +166,18 @@
   cursor: not-allowed;
   pointer-events: none;
 }
-.rux-switch:has(input:disabled) .rux-switch__track { --_track: var(--rux-switch-disabled-bg); }
+.rux-switch:has(input:disabled) .rux-switch__track {
+  --_track: var(--rux-switch-disabled-bg);
+  box-shadow: var(--rux-switch-disabled-shadow);
+}
 .rux-switch input:checked ~ .rux-switch__thumb {
   background-color: var(--rux-switch-checked-thumb-bg);
   transform: translateX(calc(var(--_w) - var(--_h)));
 }
-.rux-switch:has(input:disabled) .rux-switch__thumb { background-color: var(--rux-switch-disabled-thumb-bg); }
+.rux-switch:has(input:disabled) .rux-switch__thumb {
+  background-color: var(--rux-switch-disabled-thumb-bg);
+  box-shadow: var(--rux-switch-disabled-shadow);
+}
 
 
 /* — checkbox — */
