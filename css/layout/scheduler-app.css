@@ -1263,23 +1263,93 @@
 		display: none;
 	}
 
-	/* Open buttons sit outside the inert <aside> so they stay clickable
-	   when collapsed. Hidden once the panel opens. Rail-collapse is
-	   desktop-only (see above), so these are meaningless on mobile anyway. */
+	/* One persistent desktop toggle travels from the open panel header into
+	   the center of the collapsed rail. Keeping the same element mounted
+	   avoids a visible handoff between separate open and close buttons. */
 	.scheduler-app__drawer--railable .rux-trip-panel__drawer-open,
 	.scheduler-app__drawer--railable .rux-right-panel__drawer-open {
 		display: inline-flex;
 		position: absolute;
 		top: var(--rux-space-3);
-		left: 0;
-		right: 0;
-		margin-inline: auto;
+		left: 50%;
+		transform: translateX(-50%);
 		z-index: 10;
+		transition:
+			left var(--rux-duration-slow) var(--rux-ease-in-out),
+			transform var(--rux-duration-slow) var(--rux-ease-in-out),
+			opacity var(--rux-duration-fast) var(--rux-ease-out);
 	}
 
 	.scheduler-app__drawer--railable.is-open .rux-trip-panel__drawer-open,
 	.scheduler-app__drawer--railable.is-open .rux-right-panel__drawer-open {
+		left: calc(100% - var(--rux-space-3) - var(--rux-control-height));
+		transform: none;
+	}
+
+	.scheduler-app__drawer--railable.is-collapsing .rux-trip-panel__drawer-open,
+	.scheduler-app__drawer--railable.is-collapsing .rux-right-panel__drawer-open {
+		left: 50%;
+		transform: translateX(-50%);
+	}
+
+	.scheduler-app__drawer--railable
+		:is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+	}
+
+	/* Material's panel glyphs have unequal visual weight around their nominal
+	   icon box. Mirror a small optical correction so the mark, not merely its
+	   bounding box, appears centered in the button. */
+	.scheduler-app__drawer--railable:not(.scheduler-app__drawer--right)
+		:is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
+		transform: translateX(2px);
+	}
+
+	.scheduler-app__drawer--right.scheduler-app__drawer--railable
+		:is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
+		transform: translateX(-2px);
+	}
+
+	.scheduler-app__drawer--railable .scheduler-app__drawer-toggle-close,
+	.scheduler-app__drawer--railable.is-open .scheduler-app__drawer-toggle-open {
+		opacity: 0;
+	}
+
+	.scheduler-app__drawer--railable.is-open .scheduler-app__drawer-toggle-close {
+		opacity: 1;
+	}
+
+	/* The persistent desktop toggle replaces the duplicate button in the
+	   panel header. Mobile retains the header button for its overlay drawer. */
+	.scheduler-app__drawer--railable .scheduler-app__panel-header-toggle {
 		display: none;
+	}
+
+	.scheduler-app__drawer--railable
+		> :is(.rux-trip-panel, .rux-right-panel)
+		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
+		transition:
+			opacity var(--rux-duration-fast) var(--rux-ease-out),
+			transform var(--rux-duration-fast) var(--rux-ease-out);
+	}
+
+	.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
+		> :is(.rux-trip-panel, .rux-right-panel)
+		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
+		opacity: 0;
+		transform: translateX(-4px);
+		pointer-events: none;
+	}
+
+	.scheduler-app__drawer--right.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
+		> .rux-right-panel
+		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
+		transform: translateX(4px);
 	}
 }
 

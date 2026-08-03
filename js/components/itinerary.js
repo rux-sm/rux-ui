@@ -6,10 +6,10 @@
    Data model
    ----------
    stops[]  — flat array mixing stop objects and day-break markers:
-     { type: "day",    label }
-     { type: "pickup", name, address, miles, drive, departPrev, spot }
-     { type: "stop",   name, address, miles, drive, departPrev, arrive }
-     { type: "return", name, address, miles, drive, departPrev, arrive }
+	 { type: "day", label: "YYYY-MM-DD", departPrev: "00:00" } // non-stop boundary
+	 { type: "pickup", name, address, miles, drive, departPrevDate, departPrev, spotDate, spot }
+	 { type: "stop", name, address, miles, drive, departPrevDate, departPrev, arriveDate, arrive }
+	 { type: "return", name, address, miles, drive, departPrevDate, departPrev, arriveDate, arrive }
 
    Each card always answers "the journey to get here":
      departPrev  = time you left the previous location heading to this card
@@ -52,11 +52,39 @@
 			?? String(address || "").trim();
 	}
 
+	function isIsoDate(value) {
+		return /^\d{4}-\d{2}-\d{2}$/.test(String(value || ""));
+	}
+
+	function addIsoDays(iso, days) {
+		if (!isIsoDate(iso)) return "";
+		const date = new Date(`${iso}T12:00:00`);
+		date.setDate(date.getDate() + days);
+		return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+	}
+
+	function inclusiveIsoDayCount(start, end) {
+		if (!isIsoDate(start) || !isIsoDate(end) || end < start) return 1;
+		const startMs = new Date(`${start}T12:00:00`).getTime();
+		const endMs = new Date(`${end}T12:00:00`).getTime();
+		return Math.max(1, Math.round((endMs - startMs) / 86400000) + 1);
+	}
+
+	function formatBoundaryDate(iso) {
+		if (!isIsoDate(iso)) return "Date needed";
+		return new Date(`${iso}T12:00:00`).toLocaleDateString("en-US", {
+			weekday: "short",
+			month: "short",
+			day: "numeric",
+		});
+	}
+
 	/* ── Default demo data ───────────────────────────────────────────────── */
 
 	function defaultPickup() {
 		return {
 			type: "pickup",
+			originMode: "pickup",
 			name: "",
 			address: "",
 			miles: "",
@@ -65,7 +93,9 @@
 			driveSource: "estimated",
 			routeStatus: "stale",
 			departPrev: "",
+			departPrevDate: "",
 			spot: "",
+			spotDate: "",
 			lat: null,
 			lng: null,
 			mapboxId: null,
@@ -83,7 +113,10 @@
 			driveSource: "estimated",
 			routeStatus: "stale",
 			departPrev: "",
+			departPrevDate: "",
 			arrive: "",
+			arriveDate: "",
+			dwellStatus: "off",
 			lat: null,
 			lng: null,
 			mapboxId: null,
@@ -104,7 +137,9 @@
 			driveSource: "estimated",
 			routeStatus: "stale",
 			departPrev: "",
+			departPrevDate: "",
 			arrive: "",
+			arriveDate: "",
 		};
 	}
 
@@ -117,9 +152,13 @@
 
 	function normalizeStop(stop) {
 		const value = stop && typeof stop === "object" ? stop : {};
+		const type = value.type || "stop";
 		return {
 			...value,
-			type: value.type || "stop",
+			type,
+			originMode: type === "pickup" && (value.originMode === "yard" || value.label === "origin:yard")
+				? "yard"
+				: "pickup",
 			name: value.name || "",
 			address: value.address || "",
 			miles: value.miles || "",
@@ -128,8 +167,12 @@
 			driveSource: value.driveSource === "manual" ? "manual" : "estimated",
 			routeStatus: value.routeStatus === "stale" ? "stale" : "current",
 			departPrev: value.departPrev || "",
+			departPrevDate: value.departPrevDate || "",
 			arrive: value.arrive || "",
+			dwellStatus: ["off", "sleeper", "on"].includes(value.dwellStatus) ? value.dwellStatus : "off",
+			arriveDate: value.arriveDate || "",
 			spot: value.spot || "",
+			spotDate: value.spotDate || "",
 			lat: value.lat ?? null,
 			lng: value.lng ?? null,
 			mapboxId: value.mapboxId || null,
@@ -226,10 +269,28 @@
 		return diff < 0 ? diff + 24 * 60 : diff;
 	}
 
+	function elapsedMinutes(startDate, startTime, endDate, endTime) {
+		if (isIsoDate(startDate) && startTime && isIsoDate(endDate) && endTime) {
+			const start = new Date(`${startDate}T${startTime}:00`).getTime();
+			const end = new Date(`${endDate}T${endTime}:00`).getTime();
+			if (Number.isFinite(start) && Number.isFinite(end) && end >= start) {
+				return Math.round((end - start) / 60000);
+			}
+		}
+		return minutesBetween(parseTimeToMins(startTime), parseTimeToMins(endTime));
+	}
+
+	function datedMinute(date, time) {
+		if (!isIsoDate(date) || !time) return null;
+		const value = new Date(`${date}T${time}:00`).getTime();
+		return Number.isFinite(value) ? Math.round(value / 60000) : null;
+	}
+
 	// Name of the stop that precedes index idx (skipping day items).
 	// Returns null if idx is the first real stop (origin = yard).
 	function prevStopName(stops, idx) {
 		for (let i = idx - 1; i >= 0; i--) {
+			if (stops[i].type === "pickup" && stops[i].originMode === "yard") return getYard().name || "Yard";
 			if (stops[i].type !== "day") return stops[i].name || "previous stop";
 		}
 		return null;
@@ -238,6 +299,47 @@
 	function fromYardText() {
 		const yard = getYard();
 		return `From ${yard.name || "yard"}`;
+	}
+
+	function dutyMinutesInWindow(stops, windowStart = null, windowEnd = null) {
+		const intervals = [];
+		const addInterval = (startDate, startTime, endDate, endTime) => {
+			const start = datedMinute(startDate, startTime);
+			const end = datedMinute(endDate, endTime);
+			if (start === null || end === null || end <= start) return;
+			intervals.push({ start, end });
+		};
+
+		for (let i = 0; i < stops.length; i += 1) {
+			const current = stops[i];
+			if (!current || current.type === "day" || current.type === "sleeper") continue;
+
+			// Every routed leg is driving: departure from the previous location
+			// through arrival at this one.
+			const arrivalDate = current.type === "pickup" ? current.spotDate : current.arriveDate;
+			const arrivalTime = current.type === "pickup" ? current.spot : current.arrive;
+			addInterval(current.departPrevDate, current.departPrev, arrivalDate, arrivalTime);
+
+			// Meet-at-yard begins duty before the bus moves. Its synthetic Pickup
+			// record stores Meet in spot/spotDate and Yard Depart in departPrev.
+			if (current.type === "pickup" && current.originMode === "yard") {
+				addInterval(current.spotDate, current.spot, current.departPrevDate, current.departPrev);
+			}
+
+			// A stop's selected status owns the stationary interval after arrival
+			// and before the next routed leg. Off and sleeper deliberately add no
+			// duty; only On duty contributes.
+			if ((current.dwellStatus || "off") !== "on" || current.type === "return") continue;
+			const next = stops.slice(i + 1).find((item) => item.type !== "day" && item.type !== "sleeper");
+			if (next) addInterval(arrivalDate, arrivalTime, next.departPrevDate, next.departPrev);
+		}
+
+		if (!intervals.length) return null;
+		return intervals.reduce((total, interval) => {
+			const start = windowStart === null ? interval.start : Math.max(interval.start, windowStart);
+			const end = windowEnd === null ? interval.end : Math.min(interval.end, windowEnd);
+			return total + Math.max(0, end - start);
+		}, 0);
 	}
 
 	// Compute stats for the day segment ending at dayIdx (an "End day" marker).
@@ -273,34 +375,92 @@
 		// travel totals stay honest even if a stop's own fields are ever wrong
 		// (stale data from before that fix, a bad import, etc.).
 		const travelSegment = segment.filter((s) => s.type !== "sleeper");
-		const totalMiles = travelSegment.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
-		const totalDrive = travelSegment.reduce((n, s) => n + parseDriveMins(s.drive), 0);
+		let totalMiles = travelSegment.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
+		let totalDrive = travelSegment.reduce((n, s) => n + parseDriveMins(s.drive), 0);
+
+		// When dated events are available, a calendar boundary may cut through
+		// an incoming leg without becoming a stop. Allocate that leg's route
+		// totals to each day by the fraction of elapsed leg time on that side.
+		const previousBoundary = [...stops.slice(0, startIdx)].reverse().find((item) => item.type === "day");
+		const currentBoundary = stops[dayIdx]?.type === "day" ? stops[dayIdx] : null;
+		const windowStart = previousBoundary ? datedMinute(previousBoundary.label, previousBoundary.departPrev || "00:00") : null;
+		const windowEnd = currentBoundary ? datedMinute(currentBoundary.label, currentBoundary.departPrev || "00:00") : null;
+		const datedLegs = stops.filter((item) => {
+			if (item.type === "day" || item.type === "sleeper") return false;
+			const arriveTime = item.type === "pickup" ? item.spot : item.arrive;
+			const arriveDate = item.type === "pickup" ? item.spotDate : item.arriveDate;
+			return datedMinute(item.departPrevDate, item.departPrev) !== null
+				&& datedMinute(arriveDate, arriveTime) !== null;
+		});
+		if ((windowStart !== null || windowEnd !== null) && datedLegs.length) {
+			totalMiles = 0;
+			totalDrive = 0;
+			for (const item of datedLegs) {
+				const arriveTime = item.type === "pickup" ? item.spot : item.arrive;
+				const arriveDate = item.type === "pickup" ? item.spotDate : item.arriveDate;
+				const legStart = datedMinute(item.departPrevDate, item.departPrev);
+				const legEnd = datedMinute(arriveDate, arriveTime);
+				if (legStart === null || legEnd === null || legEnd <= legStart) continue;
+				const overlapStart = windowStart === null ? legStart : Math.max(legStart, windowStart);
+				const overlapEnd = windowEnd === null ? legEnd : Math.min(legEnd, windowEnd);
+				if (overlapEnd <= overlapStart) continue;
+				const fraction = (overlapEnd - overlapStart) / (legEnd - legStart);
+				totalMiles += parseFloat(item.miles || 0) * fraction;
+				totalDrive += parseDriveMins(item.drive) * fraction;
+			}
+		}
 
 		// Gross = wall clock first departPrev → last arrive/spot (includes sleeper rest)
 		let firstDepart = null;
 		let lastArrive = null;
 		for (const s of segment) {
-			if (s.departPrev && firstDepart === null) firstDepart = parseTimeToMins(s.departPrev);
+			if (s.departPrev && firstDepart === null) firstDepart = { date: s.departPrevDate, time: s.departPrev };
+		}
+		if (previousBoundary && windowStart !== null && firstDepart) {
+			const firstMinute = datedMinute(firstDepart.date, firstDepart.time);
+			if (firstMinute !== null && firstMinute < windowStart) {
+				firstDepart = { date: previousBoundary.label, time: previousBoundary.departPrev || "00:00" };
+			}
 		}
 		for (let i = segment.length - 1; i >= 0; i--) {
-			const t = segment[i].arrive || segment[i].spot;
+			const item = segment[i];
+			const t = item.arrive || item.spot;
 			if (t) {
-				lastArrive = parseTimeToMins(t);
+				lastArrive = { date: item.arriveDate || item.spotDate, time: t };
 				break;
 			}
 		}
-		const grossMins = minutesBetween(firstDepart, lastArrive);
+		if (currentBoundary && windowEnd !== null && firstDepart) {
+			const firstMinute = datedMinute(firstDepart.date, firstDepart.time);
+			if (firstMinute !== null && firstMinute < windowEnd) {
+				lastArrive = { date: currentBoundary.label, time: currentBoundary.departPrev || "00:00" };
+			}
+		}
+		const grossMins = firstDepart && lastArrive
+			? elapsedMinutes(firstDepart.date, firstDepart.time, lastArrive.date, lastArrive.time)
+			: null;
 
 		// Sleeper rest = departPrev (STR) → arrive (END), same interval shown on the sleeper card.
 		let sleeperDwell = 0;
 		for (let i = startIdx; i < endIdx; i++) {
 			if (stops[i].type !== "sleeper") continue;
-			const d = minutesBetween(parseTimeToMins(stops[i].departPrev), parseTimeToMins(stops[i].arrive));
+			const d = elapsedMinutes(
+				stops[i].departPrevDate,
+				stops[i].departPrev,
+				stops[i].arriveDate,
+				stops[i].arrive,
+			);
 			if (d !== null) sleeperDwell += d;
 		}
-		const netMins = grossMins !== null ? Math.max(0, grossMins - sleeperDwell) : null;
+		// Duty is built from explicit work intervals instead of treating every
+		// minute until midnight as work. This is what lets an arrival at 15:00
+		// followed by Off duty produce an accurate Day 1 total.
+		const explicitDutyMins = dutyMinutesInWindow(stops, windowStart, windowEnd);
+		const netMins = explicitDutyMins !== null
+			? explicitDutyMins
+			: (grossMins !== null ? Math.max(0, grossMins - sleeperDwell) : null);
 
-		return { totalMiles, totalDrive, grossMins, netMins };
+		return { totalMiles, totalDrive: Math.round(totalDrive), grossMins, netMins };
 	}
 
 	// Same value+unit format as the per-stop Miles/Drive boxes — no labels,
@@ -309,8 +469,9 @@
 		const miVal = totalMiles > 0 ? (totalMiles % 1 === 0 ? String(totalMiles) : totalMiles.toFixed(1)) : "—";
 		const drVal = totalDrive > 0 ? formatDriveValue(totalDrive) : "—";
 		const dutyVal = netMins !== null && netMins > 0 ? formatDriveValue(netMins) : "—";
-		const drWarn = totalDrive > 11 * 60;
-		const dutyWarn = netMins !== null && netMins > 14 * 60;
+		// Passenger-carrier thresholds: 10 driving hours and 15 on-duty hours.
+		const drWarn = totalDrive > 10 * 60;
+		const dutyWarn = netMins !== null && netMins > 15 * 60;
 		const field = (val, unit, warn) => `
         <output class="rux-output${warn ? " rux-trip-itinerary__seg-stat--warn" : ""}">${escHtml(val)} <span class="rux-trip-itinerary__unit">${unit}</span></output>`;
 		return `<div class="rux-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}</div>`;
@@ -323,7 +484,9 @@
 	function renderSleeperStats(stop, stops) {
 		const dep = parseTimeToMins(stop.departPrev);
 		const arr = parseTimeToMins(stop.arrive);
-		const thisMins = dep !== null && arr !== null ? minutesBetween(dep, arr) : null;
+		const thisMins = dep !== null && arr !== null
+			? elapsedMinutes(stop.departPrevDate, stop.departPrev, stop.arriveDate, stop.arrive)
+			: null;
 
 		const RESET = 8 * 60;
 		const SPLIT_MIN = 2 * 60;
@@ -334,7 +497,7 @@
 		if (thisMins !== null) {
 			const allMins = stops
 				.filter((s) => s.type === "sleeper")
-				.map((s) => minutesBetween(parseTimeToMins(s.departPrev), parseTimeToMins(s.arrive)) || 0)
+				.map((s) => elapsedMinutes(s.departPrevDate, s.departPrev, s.arriveDate, s.arrive) || 0)
 				.filter((d) => d > 0);
 
 			const singleOk = allMins.some((d) => d >= RESET);
@@ -364,11 +527,18 @@
 		const prevArrMins = parseClockMins(prev.arrive);
 		if (prevArrMins === null) return;
 		const buffer = window.RuxSettings?.getReturnBuffer?.() ?? 15;
-		const depMins = (prevArrMins + buffer) % 1440;
-		ret.departPrev = minsToTimeStr(depMins);
+		const suggestedDepMins = (prevArrMins + buffer) % 1440;
+		if (!ret.departPrev) ret.departPrev = minsToTimeStr(suggestedDepMins);
+		const depMins = parseClockMins(ret.departPrev);
+		if (depMins === null) return;
+		const prevDate = prev.arriveDate || prev.spotDate || prev.departPrevDate;
+		if (prevDate && !ret.departPrevDate) {
+			ret.departPrevDate = suggestedDepMins < prevArrMins ? addIsoDays(prevDate, 1) : prevDate;
+		}
 		const driveMins = parseDriveMins(ret.drive);
 		if (driveMins > 0) {
 			ret.arrive = minsToTimeStr((depMins + driveMins) % 1440);
+			if (ret.departPrevDate) ret.arriveDate = addIsoDays(ret.departPrevDate, Math.floor((depMins + driveMins) / 1440));
 		}
 	}
 
@@ -420,25 +590,32 @@
 		if (!pickup?.spot) return;
 		const spotMins = parseClockMins(pickup.spot);
 		if (spotMins === null) return;
+		const firstStop = stops.find((s) => s.type === "stop");
+		if (pickup.originMode === "yard" && firstStop?.departPrev) {
+			pickup.departPrev = firstStop.departPrev;
+			pickup.departPrevDate = firstStop.departPrevDate || pickup.departPrevDate;
+			const departMins = parseClockMins(pickup.departPrev);
+			if (pickup.departPrevDate && departMins !== null) {
+				pickup.spotDate = spotMins > departMins
+					? addIsoDays(pickup.departPrevDate, -1)
+					: pickup.departPrevDate;
+			}
+			return;
+		}
 		const driveMins = parseDriveMins(pickup.drive);
 		if (driveMins <= 0) return;
 		const resetMins = resetBeforeBoardingMins(stops, pickupIdx);
 		pickup.departPrev = minsToTimeStr(((spotMins - driveMins - resetMins) % 1440 + 1440) % 1440);
+		const departMins = parseClockMins(pickup.departPrev);
+		if (pickup.departPrevDate && departMins !== null) {
+			pickup.spotDate = spotMins < departMins
+				? addIsoDays(pickup.departPrevDate, 1)
+				: pickup.departPrevDate;
+		}
 	}
 
 	function computeOnDuty(stops) {
-		const pickup = stops.find((s) => s.type === "pickup");
-		const ret = stops.find((s) => s.type === "return");
-		if (!pickup?.departPrev || !ret?.arrive) return null;
-		const gross = minutesBetween(parseTimeToMins(pickup.departPrev), parseTimeToMins(ret.arrive));
-		if (gross === null) return null;
-		let sleeperDwell = 0;
-		for (const s of stops) {
-			if (s.type !== "sleeper") continue;
-			const dwell = minutesBetween(parseTimeToMins(s.departPrev), parseTimeToMins(s.arrive));
-			if (dwell !== null) sleeperDwell += dwell;
-		}
-		return Math.max(0, gross - sleeperDwell);
+		return dutyMinutesInWindow(stops);
 	}
 
 	function calculatedMiles(stops) {
@@ -525,18 +702,126 @@
 	}
 
 	function formatDayLabel(label) {
-		const m = label.match(/^(\w+),\s+(\w+)\s+(\d+),\s+\d{4}$/);
+		if (isIsoDate(label)) return formatBoundaryDate(label);
+		const m = String(label || "").match(/^(\w+),\s+(\w+)\s+(\d+),\s+\d{4}$/);
 		if (!m) return label;
 		const [, weekday, month, day] = m;
 		return `${weekday.slice(0, 3).toUpperCase()} · ${month.slice(0, 3).toUpperCase()} ${day}`;
 	}
 
-	function renderDay(item, idx, stops) {
+	function renderYardDeparture(stops, startDate) {
+		const yard = getYard();
+		const pickup = stops.find((stop) => stop.type === "pickup");
+		const mode = pickup?.originMode === "yard" ? "yard" : "pickup";
+		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? " is-active" : ""}" data-origin-mode="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-btn-label">${label}</span></button>`;
+		return `
+		<section class="rux-card__section rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
+			<div class="rux-trip-itinerary__label-row">
+				<label class="rux-field__label">Depart From</label>
+			</div>
+			<div class="rux-segmented-track rux-trip-itinerary__origin-mode" role="group" aria-label="Trip origin">
+				${modeButton("yard", "Yard", "garage")}
+				${modeButton("pickup", "Pickup", "location_on")}
+			</div>
+			<div class="rux-trip-itinerary__label-row">
+				<label class="rux-field__label">Yard</label>
+			</div>
+			<div class="rux-trip-itinerary__fields">
+				<span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin" aria-hidden="true">garage</span></span>
+				<input class="rux-input" type="text" value="${escHtml(displayAddress(yard.address))}" readonly aria-label="Departure yard" />
+			</div>
+			<div class="rux-trip-itinerary__yard-times${mode === "yard" ? " rux-trip-itinerary__yard-times--meet" : ""}">
+				${mode === "yard" ? `<div class="rux-field"><label class="rux-field__label">Meet</label><div class="rux-trip-itinerary__datetime"><input class="rux-input" type="date" value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>` : ""}
+				<div class="rux-field"><label class="rux-field__label">Depart</label><div class="rux-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
+			</div>
+		</section>`;
+	}
+
+	function boundaryActivity(stops, boundaryIdx) {
+		const boundary = stops[boundaryIdx];
+		const boundaryMinute = datedMinute(boundary?.label, boundary?.departPrev || "00:00");
+		const continuedDriving = boundaryMinute !== null && stops.some((item) => {
+			if (!item || item.type === "day" || item.type === "sleeper") return false;
+			const arrivalDate = item.type === "pickup" ? item.spotDate : item.arriveDate;
+			const arrivalTime = item.type === "pickup" ? item.spot : item.arrive;
+			const legStart = datedMinute(item.departPrevDate, item.departPrev);
+			const legEnd = datedMinute(arrivalDate, arrivalTime);
+			return legStart !== null && legEnd !== null
+				&& legStart < boundaryMinute && boundaryMinute < legEnd;
+		});
+		if (continuedDriving) return { moving: true, location: "" };
+
+		for (let index = boundaryIdx - 1; index >= 0; index -= 1) {
+			const item = stops[index];
+			if (!item || item.type === "day" || item.type === "sleeper") continue;
+			if (item.type === "pickup" && item.originMode === "yard") {
+				return { moving: false, location: getYard().name || "Yard" };
+			}
+			const location = item.name || displayAddress(item.address);
+			if (location) return { moving: false, location };
+		}
+		return { moving: false, location: "last location" };
+	}
+
+	function activityAtBoundaryIsMoving(stops, boundaryIdx) {
+		return boundaryActivity(stops, boundaryIdx).moving;
+	}
+
+	function boundarySegmentHasActivity(stops, boundaryIdx) {
+		let startIdx = 0;
+		for (let i = boundaryIdx - 1; i >= 0; i -= 1) {
+			if (stops[i]?.type === "day") {
+				startIdx = i + 1;
+				break;
+			}
+		}
+		return stops.slice(startIdx, boundaryIdx).some((item) =>
+			item && item.type !== "day" && item.type !== "sleeper",
+		);
+	}
+
+	function statusAtBoundary(stops, boundaryIdx) {
+		for (let i = boundaryIdx - 1; i >= 0; i -= 1) {
+			const item = stops[i];
+			if (!item || item.type === "day" || item.type === "sleeper") continue;
+			return ["off", "sleeper", "on"].includes(item.dwellStatus) ? item.dwellStatus : "off";
+		}
+		return "off";
+	}
+
+	function renderDay(item, idx, stops, rangeGenerated = false) {
 		const stats = computeSegmentStats(stops, idx);
 		const label = formatDayLabel(item.label);
 		const dayNum = dayNumberFor(stops, idx);
+		const activity = boundaryActivity(stops, idx);
+		const segmentHasActivity = boundarySegmentHasActivity(stops, idx);
+
+		// An automatic midnight marker after an active day is calculation data,
+		// not another form row. The next card's header already communicates the
+		// new date, so keep this boundary invisible unless a leg crosses it.
+		if (!activity.moving && segmentHasActivity) return "";
+
+		// A date with no routed leg remains visible as a compact idle-day card.
+		// Its midnight boundary stays in the model, while the UI shows only the
+		// operational facts a dispatcher needs: status and inherited location.
+		if (!activity.moving) {
+			const status = statusAtBoundary(stops, idx);
+			const statusLabel = status === "sleeper" ? "Sleeper berth" : status === "on" ? "On duty" : "Off duty";
+			return `
+			  <div class="rux-card__section rux-trip-itinerary__idle-day">
+				<span class="rux-icon" aria-hidden="true">pause_circle</span>
+				<div>
+				  <strong>No bus movement</strong>
+				  <span>${escHtml(statusLabel)} at ${escHtml(activity.location)}</span>
+				</div>
+			  </div>`;
+		}
+		const hasStats = stats.totalMiles > 0 || stats.totalDrive > 0 || (stats.netMins ?? 0) > 0;
+		const activityNote = activity.moving
+			? '<span class="rux-icon" aria-hidden="true">route</span> Continued driving · not a stop'
+			: `<span class="rux-icon" aria-hidden="true">pause_circle</span> No bus movement · remains at ${escHtml(activity.location)}`;
 		return `
-      <section class="rux-card__section rux-trip-itinerary__day" data-stop-idx="${idx}" title="${escHtml(label)}">
+      <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--boundary" data-stop-idx="${idx}" title="${activity.moving ? "Continued driving" : "No bus movement"} into ${escHtml(label)}">
         <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
           <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNum}" title="Add to Day ${dayNum}">
             <span class="rux-icon" aria-hidden="true">add</span>
@@ -544,13 +829,18 @@
         </div>
         <div class="rux-trip-itinerary__content">
           <div class="rux-trip-itinerary__label-row">
-            <label class="rux-field__label">End of Day ${dayNum}</label>
+            <label class="rux-field__label">Day ${dayNum} → Day ${dayNum + 1}</label>
           </div>
+		  <div class="rux-trip-itinerary__boundary-fields">
+			<input class="rux-input" type="date" value="${isIsoDate(item.label) ? escHtml(item.label) : ""}" aria-label="Calendar day boundary date" readonly />
+			<input class="rux-input" type="time" value="${escHtml(item.departPrev || "00:00")}" aria-label="Calendar day boundary time" readonly />
+		  </div>
+		  <p class="rux-trip-itinerary__boundary-note${activity.moving ? " is-moving" : " is-stationary"}">${activityNote}</p>
           <div class="rux-trip-itinerary__day-header">
-            ${renderDayStatsGrid(stats)}
-            <button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete End of Day ${dayNum}">
+			${hasStats ? renderDayStatsGrid(stats) : ""}
+			${rangeGenerated ? "" : `<button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete Day ${dayNum} boundary">
 					<span class="rux-icon" aria-hidden="true">delete</span>
-				</button>
+				</button>`}
           </div>
         </div>
       </section>`;
@@ -588,6 +878,7 @@
 		for (let i = idx - 1; i >= 0; i--) {
 			const s = stops[i];
 			if (!s || s.type === "day" || s.type === "sleeper") continue;
+			if (s.type === "pickup" && s.originMode === "yard") return getYard().address;
 			return s.address || "";
 		}
 		return "";
@@ -614,12 +905,15 @@
 		const isReturn = type === "return";
 		const isPickup = type === "pickup";
 		const isStale = stop.routeStatus === "stale" && type !== "sleeper";
+		const nextTravelStop = stops.slice(idx + 1).find((item) => item.type !== "day" && item.type !== "sleeper");
+		const showDwellStatus = type !== "sleeper" && type !== "return" && !!nextTravelStop;
+		const dwellStatus = ["off", "sleeper", "on"].includes(stop.dwellStatus) ? stop.dwellStatus : "off";
 
 		const time1Label = type === "sleeper" ? "Str" : "Dep";
 		const time2 =
-			type === "pickup"  ? { label: "Spt", field: "spot"   } :
-			type === "sleeper" ? { label: "End", field: "arrive" } :
-			                     { label: "Arr", field: "arrive" };
+			type === "pickup"  ? { label: "Spt", field: "spot", dateField: "spotDate" } :
+			type === "sleeper" ? { label: "End", field: "arrive", dateField: "arriveDate" } :
+			                     { label: "Arr", field: "arrive", dateField: "arriveDate" };
 
 		const isVerified = !!(stop.lat && stop.lng);
 		const showAddrIcon = isStale || isVerified;
@@ -689,6 +983,15 @@
 			? renderSleeperStats(stop, stops)
 			: `<output class="rux-output">${escHtml(milesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
       <output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
+		const dwellControl = showDwellStatus ? `
+		  <div class="rux-trip-itinerary__dwell-status" role="group" aria-label="Duty status until next departure">
+			<span class="rux-field__label">Until next departure</span>
+			<div class="rux-segmented-track">
+			  <button type="button" class="rux-button rux-button--icon${dwellStatus === "off" ? " is-active" : ""}" data-dwell-status="off" aria-label="Off duty until next departure" title="Off duty" aria-pressed="${dwellStatus === "off"}"><span class="rux-icon" aria-hidden="true">bedtime</span></button>
+			  <button type="button" class="rux-button rux-button--icon${dwellStatus === "sleeper" ? " is-active" : ""}" data-dwell-status="sleeper" aria-label="Sleeper berth until next departure" title="Sleeper berth" aria-pressed="${dwellStatus === "sleeper"}"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span></button>
+			  <button type="button" class="rux-button rux-button--icon${dwellStatus === "on" ? " is-active" : ""}" data-dwell-status="on" aria-label="On duty until next departure" title="On duty" aria-pressed="${dwellStatus === "on"}"><span class="rux-icon" aria-hidden="true">badge</span></button>
+			</div>
+		  </div>` : "";
 
 		return `
       <section class="rux-card__section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
@@ -701,12 +1004,17 @@
             ${addrEl}
             ${deleteControl}
           </div>
-          <div class="rux-trip-itinerary__time-row">
-            <input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}"
-                   aria-label="${isPickup ? "Yard departure — calculated from Stop 1" : time1Label}" ${isPickup ? "readonly" : ""} />
-            <input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}"
-                   aria-label="${isPickup ? "Spot time — calculated from Stop 1" : time2.label}" ${isPickup ? "readonly" : ""} />
-          </div>
+		  <div class="rux-trip-itinerary__time-row${isPickup ? " rux-trip-itinerary__time-row--single" : ""}">
+			${isPickup ? "" : `<div class="rux-trip-itinerary__datetime">
+				<input class="rux-input" type="date" data-field="departPrevDate" value="${escHtml(stop.departPrevDate)}" aria-label="${time1Label} date" />
+				<input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" aria-label="${time1Label} time" />
+			</div>`}
+			<div class="rux-trip-itinerary__datetime">
+				<input class="rux-input" type="date" data-field="${time2.dateField}" value="${escHtml(stop[time2.dateField])}" aria-label="${time2.label} date" ${isPickup ? "readonly" : ""} />
+				<input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" aria-label="${isPickup ? "Spot time — calculated from Stop 1" : `${time2.label} time`}" ${isPickup ? "readonly" : ""} />
+			</div>
+		  </div>
+		  ${dwellControl}
           <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
             <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
               ${statsInner}
@@ -788,7 +1096,10 @@
 		/* — render helpers — */
 
 		function hasStaleRoutes() {
-			return stops.some((stop) => stop?.type !== "day" && stop?.type !== "sleeper" && stop.routeStatus === "stale");
+			return stops.some((stop) => stop?.type !== "day"
+				&& stop?.type !== "sleeper"
+				&& !(stop.type === "pickup" && stop.originMode === "yard")
+				&& stop.routeStatus === "stale");
 		}
 
 		function hasRoutableLegs() {
@@ -831,18 +1142,114 @@
 			syncRouteButton();
 		}
 
+		function tripStartDate() {
+			return root.querySelector(activeLeg === "return" ? "#tp-return-start" : "#tp-start")?.value || "";
+		}
+
+		function tripEndDate() {
+			return root.querySelector(activeLeg === "return" ? "#tp-return-end" : "#tp-end")?.value || "";
+		}
+
+		function scaffoldDaysFromTripRange() {
+			const start = tripStartDate();
+			const end = tripEndDate();
+			if (!isIsoDate(start) || !isIsoDate(end) || end < start) return;
+			const desiredBoundaries = inclusiveIsoDayCount(start, end) - 1;
+			let boundaryIndices = stops
+				.map((item, index) => item.type === "day" ? index : -1)
+				.filter((index) => index >= 0);
+
+			while (boundaryIndices.length > desiredBoundaries) {
+				stops.splice(boundaryIndices.pop(), 1);
+				boundaryIndices = stops
+					.map((item, index) => item.type === "day" ? index : -1)
+					.filter((index) => index >= 0);
+			}
+
+			while (boundaryIndices.length < desiredBoundaries) {
+				const returnIndex = stops.findIndex((item) => item.type === "return");
+				const insertIndex = returnIndex >= 0 ? returnIndex : stops.length;
+				stops.splice(insertIndex, 0, {
+					type: "day",
+					label: "",
+					name: "continued_driving",
+					departPrev: "00:00",
+				});
+				boundaryIndices = stops
+					.map((item, index) => item.type === "day" ? index : -1)
+					.filter((index) => index >= 0);
+			}
+
+			boundaryIndices.forEach((index, boundaryIndex) => {
+				stops[index].label = addIsoDays(start, boundaryIndex + 1);
+				stops[index].departPrev ||= "00:00";
+				stops[index].name = "continued_driving";
+			});
+		}
+
+		function normalizeBoundaryDates() {
+			const start = tripStartDate();
+			let boundaryNumber = 0;
+			let currentDate = start;
+			for (const item of stops) {
+				if (item.type === "day") {
+					boundaryNumber += 1;
+					if (!isIsoDate(item.label) && start) item.label = addIsoDays(start, boundaryNumber);
+					if (!item.departPrev) item.departPrev = "00:00";
+					item.name = "continued_driving";
+					if (isIsoDate(item.label)) currentDate = item.label;
+					continue;
+				}
+				if (!currentDate) continue;
+				if (!item.departPrevDate) item.departPrevDate = currentDate;
+				if (item.type === "pickup") {
+					if (!item.spotDate) item.spotDate = currentDate;
+				} else if (!item.arriveDate) {
+					item.arriveDate = currentDate;
+				}
+			}
+		}
+
+		function syncTripDatesFromBoundaries() {
+			const startInput = root.querySelector(activeLeg === "return" ? "#tp-return-start" : "#tp-start");
+			const endInput = root.querySelector(activeLeg === "return" ? "#tp-return-end" : "#tp-end");
+			const start = startInput?.value || "";
+			if (!start || !endInput) return;
+			const eventDates = stops.flatMap((item) => [
+				item.departPrevDate,
+				item.arriveDate,
+				item.spotDate,
+				item.type === "day" ? item.label : null,
+			]).filter(isIsoDate);
+			const datedBoundaries = eventDates.sort();
+			const itineraryEnd = datedBoundaries.at(-1) || start;
+			root.dispatchEvent(new CustomEvent("rux:itinerary-dates-changed", {
+				bubbles: true,
+				detail: {
+					leg: activeLeg,
+					startDate: start,
+					endDate: endInput.value,
+					itineraryEndDate: itineraryEnd,
+					outsideTripRange: itineraryEnd > endInput.value,
+				},
+			}));
+		}
+
 		function renderStopList() {
+			scaffoldDaysFromTripRange();
+			normalizeBoundaryDates();
 			autoPopulateReturnTimes(stops);
 			autoPopulatePickupSpot(stops);
 			autoPopulatePickupDepart(stops);
 			let dayNumber = 1;
-			let daySections = "";
+			let daySections = renderYardDeparture(stops, tripStartDate());
 			let dayExpandableCount = 0;
 			let dayExpandedCount = 0;
 			let dayHasSummary = false;
 			const dayCards = [];
 			const closeDayCard = () => {
 				if (!daySections) return;
+				const dayDate = addIsoDays(tripStartDate(), dayNumber - 1);
 				const addRow = dayHasSummary ? "" : `
 						<div class="rux-card__section rux-trip-itinerary__add-row">
 							<div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
@@ -855,10 +1262,10 @@
 				dayCards.push(`
 					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">
 						<header class="rux-card__header">
-							<h3 class="rux-card__title">Day ${dayNumber}</h3>
-							<div class="rux-cluster">
+							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="rux-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}</span>` : ""}</h3>
+							${dayExpandableCount > 0 ? `<div class="rux-cluster">
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
-							</div>
+							</div>` : ""}
 						</header>
 						${daySections}
 						${addRow}
@@ -871,14 +1278,21 @@
 			};
 
 			stops.forEach((item, idx) => {
-				if (item.type !== "day") {
+				const hiddenYardPickup = item.type === "pickup" && item.originMode === "yard";
+				if (item.type !== "day" && !hiddenYardPickup) {
 					dayExpandableCount += 1;
 					if (item.statsExpanded) dayExpandedCount += 1;
 				}
 				if (item.type === "day") {
-					daySections += renderDay(item, idx, stops);
-					dayHasSummary = true;
-				} else {
+					const boundarySection = renderDay(
+						item,
+						idx,
+						stops,
+						isIsoDate(tripStartDate()) && isIsoDate(tripEndDate()),
+					);
+					daySections += boundarySection;
+					dayHasSummary = activityAtBoundaryIsMoving(stops, idx) && !!boundarySection;
+				} else if (!hiddenYardPickup) {
 					daySections += renderStop(item, idx, stops);
 				}
 				if (item.type === "day") closeDayCard();
@@ -955,10 +1369,11 @@
 			activeAddDay = dayNumber;
 			const insertIndex = dayInsertIndex(dayNumber);
 			const hasEndDay = stops[insertIndex]?.type === "day";
+			const datesDriveDays = isIsoDate(tripStartDate()) && isIsoDate(tripEndDate());
 			dayAddMenu.innerHTML = `
 				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="stop"><span class="rux-icon" aria-hidden="true">location_on</span>Add stop</button>
 				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="sleeper"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span>Add sleeper</button>
-				${hasEndDay ? "" : '<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="day"><span class="rux-icon" aria-hidden="true">event_busy</span>End day</button>'}`;
+				${hasEndDay || datesDriveDays ? "" : '<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="day"><span class="rux-icon" aria-hidden="true">route</span>Add driving day boundary</button>'}`;
 			window.RuxMenu.open(trigger, dayAddMenu, { placement: "bottom-end" });
 		};
 		dayAddMenu.addEventListener("rux:menu-close", () => {
@@ -1096,6 +1511,7 @@
 				// blocks routing for every stop after it, no matter how many
 				// times Recalculate runs.
 				if (stop.type === "sleeper") continue;
+				if (stop.type === "pickup" && stop.originMode === "yard") return geocodeYard();
 				if (stop.lat != null && stop.lng != null) return { lat: stop.lat, lng: stop.lng };
 				if (await geocodeStop(i)) return { lat: stop.lat, lng: stop.lng };
 				return null;
@@ -1183,6 +1599,12 @@
 			const stop = stops[idx];
 			if (!stop || stop.type === "day") return false;
 			if (stop.type === "sleeper") return syncSleeperLeg(idx);
+			if (stop.type === "pickup" && stop.originMode === "yard") {
+				stop.miles = "0.0";
+				stop.drive = "0:00";
+				stop.routeStatus = "current";
+				return true;
+			}
 			const token = getMapboxToken();
 			if (!token) return false;
 			if (stop.lat == null || stop.lng == null) {
@@ -1260,6 +1682,20 @@
 		updateSummary();
 		renderStopList();
 
+		root.addEventListener("change", (event) => {
+			const startId = activeLeg === "return" ? "tp-return-start" : "tp-start";
+			const endId = activeLeg === "return" ? "tp-return-end" : "tp-end";
+			if (![startId, endId].includes(event.target?.id)) return;
+			if (event.target.id === startId) {
+				const pickup = stops.find((item) => item.type === "pickup");
+				if (pickup) pickup.departPrevDate = event.target.value;
+			}
+			scaffoldDaysFromTripRange();
+			normalizeBoundaryDates();
+			syncTripDatesFromBoundaries();
+			renderStopList();
+		});
+
 		async function recalculateRoute(options = {}) {
 			const recalcLabel = recalcBtn?.querySelector("[data-recalc-label]");
 			if (recalcBtn) {
@@ -1301,6 +1737,27 @@
 
 		/* — input changes — */
 		stopsEl.addEventListener("input", (e) => {
+			if (e.target.matches("[data-yard-depart-date]")) {
+				const startInput = root.querySelector(activeLeg === "return" ? "#tp-return-start" : "#tp-start");
+				if (startInput) startInput.value = e.target.value;
+				const pickup = stops.find((item) => item.type === "pickup");
+				if (pickup) pickup.departPrevDate = e.target.value;
+				if (pickup?.originMode === "yard") {
+					const firstStop = stops.find((item) => item.type === "stop");
+					if (firstStop) firstStop.departPrevDate = e.target.value;
+				}
+				normalizeBoundaryDates();
+				syncTripDatesFromBoundaries();
+				return;
+			}
+			if (e.target.matches("[data-yard-depart-time]")) {
+				const pickup = stops.find((item) => item.type === "pickup");
+				if (!pickup || pickup.originMode !== "yard") return;
+				pickup.departPrev = e.target.value;
+				const firstStop = stops.find((item) => item.type === "stop");
+				if (firstStop) firstStop.departPrev = e.target.value;
+				return;
+			}
 			const stopEl = e.target.closest("[data-stop-idx]");
 			if (!stopEl) return;
 			const idx = parseInt(stopEl.dataset.stopIdx, 10);
@@ -1386,8 +1843,17 @@
 		// renderStopList() re-runs the whole Stop1→Spot→Pickup-departure chain
 		// on every render, so changing any time field naturally cascades —
 		// no need to special-case which field triggers which derived value here.
-		const TIME_FIELDS = new Set(["departPrev", "arrive", "spot"]);
+		const TIME_FIELDS = new Set([
+			"departPrev", "departPrevDate", "arrive", "arriveDate", "spot", "spotDate", "label",
+		]);
 		stopsEl.addEventListener("change", (e) => {
+			if (e.target.matches("[data-yard-depart-date], [data-yard-depart-time]")) {
+				normalizeBoundaryDates();
+				syncTripDatesFromBoundaries();
+				renderStopList();
+				updateSummary();
+				return;
+			}
 			const field = e.target.dataset.field;
 			if (field && TIME_FIELDS.has(field)) {
 				const stopEl = e.target.closest("[data-stop-idx]");
@@ -1396,6 +1862,7 @@
 					const stop = stops[idx];
 					if (stop) stop[field] = e.target.value;
 				}
+				if (field?.endsWith("Date") || field === "label") syncTripDatesFromBoundaries();
 				renderStopList();
 				updateSummary();
 			}
@@ -1403,6 +1870,40 @@
 
 		/* — day header actions and inline section controls — */
 		stopsEl.addEventListener("click", (e) => {
+			const dwellButton = e.target.closest("[data-dwell-status]");
+			if (dwellButton) {
+				const idx = Number(dwellButton.closest("[data-stop-idx]")?.dataset.stopIdx);
+				const stop = stops[idx];
+				if (!stop) return;
+				stop.dwellStatus = dwellButton.dataset.dwellStatus;
+				updateSummary();
+				renderStopList();
+				return;
+			}
+			const originButton = e.target.closest("[data-origin-mode]");
+			if (originButton) {
+				const pickup = stops.find((item) => item.type === "pickup");
+				if (!pickup) return;
+				pickup.originMode = originButton.dataset.originMode === "yard" ? "yard" : "pickup";
+				pickup.label = pickup.originMode === "yard" ? "origin:yard" : null;
+				if (pickup.originMode === "yard") {
+					pickup.miles = "0.0";
+					pickup.drive = "0:00";
+					pickup.routeStatus = "current";
+					const firstStop = stops.find((item) => item.type === "stop");
+					if (firstStop?.departPrev) {
+						pickup.departPrev = firstStop.departPrev;
+						pickup.departPrevDate = firstStop.departPrevDate || pickup.departPrevDate;
+					}
+				} else {
+					pickup.routeStatus = "stale";
+					if (pickup.milesSource !== "manual") pickup.miles = "";
+					if (pickup.driveSource !== "manual") pickup.drive = "";
+				}
+				updateSummary();
+				renderStopList();
+				return;
+			}
 			const expandButton = e.target.closest("[data-day-expand]");
 			if (expandButton) {
 				const group = expandButton.closest("[data-day-number]");
@@ -1425,12 +1926,13 @@
 				const idx = Number(deleteButton.closest("[data-stop-idx]")?.dataset.stopIdx);
 				const item = stops[idx];
 				if (!item || item.type === "pickup" || item.type === "return") return;
-				const what = item.type === "day" ? "end-of-day marker" : item.type;
+				const what = item.type === "day" ? "driving day boundary" : item.type;
 				if (!confirm(`Delete this ${what}?`)) return;
 				stops.splice(idx, 1);
 				const nextIdx = idx < stops.length ? nextRealStopIndex(idx - 1) : -1;
 				if (nextIdx >= 0) markLegStale(nextIdx);
 				updateSummary();
+				if (item.type === "day") syncTripDatesFromBoundaries();
 				renderStopList();
 				return;
 			}
@@ -1445,11 +1947,12 @@
 			const type = button.dataset.dayAddType;
 			closeDayAddMenu();
 			const item = type === "day"
-				? { type: "day", label: `Day ${day}` }
+				? { type: "day", label: addIsoDays(tripStartDate(), day), name: "continued_driving", departPrev: "00:00" }
 				: type === "sleeper"
 					? newSleeperStop(insertIndex)
 					: defaultStop();
 			insertAtIndex(insertIndex, item);
+			if (type === "day") syncTripDatesFromBoundaries();
 		});
 
 		document.addEventListener("keydown", (e) => {
@@ -1532,7 +2035,9 @@
 			// driver/dispatcher can edit, same as the address is a one-time
 			// snapshot rather than something permanently locked to it.
 			const defaultStr = previousStopArrivalTime(stops, insertIdx);
-			return { type: "sleeper", name: "", address: prev.address, miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: defaultStr, arrive: "", lat: prev.lat, lng: prev.lng, mapboxId: prev.mapboxId };
+			const previous = [...stops.slice(0, insertIdx)].reverse().find((item) => item.type !== "day");
+			const defaultDate = previous?.arriveDate || previous?.spotDate || previous?.departPrevDate || tripStartDate();
+			return { type: "sleeper", name: "", address: prev.address, miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: defaultStr, departPrevDate: defaultDate, arrive: "", arriveDate: defaultDate, lat: prev.lat, lng: prev.lng, mapboxId: prev.mapboxId };
 		}
 
 		document.addEventListener("settings:yard", () => {

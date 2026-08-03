@@ -156,7 +156,13 @@
 				drawer.style.setProperty("--drawer-width", w);
 				drawer.style.setProperty("--drawer-open-width", w);
 			}
-			drawer.classList.remove("is-closing");
+			drawer.classList.remove("is-closing", "is-collapsing");
+			if (railWidth && !mobilePanelQuery.matches && !isOpen()) {
+				drawer.classList.add("is-expanding");
+				requestAnimationFrame(() =>
+					requestAnimationFrame(() => drawer.classList.remove("is-expanding")),
+				);
+			}
 			drawer.classList.add("is-open");
 			panel.inert = false;
 			drawer.setAttribute("aria-hidden", "false");
@@ -181,6 +187,9 @@
 			// drawer, instead of snapping to its min-width before the drawer
 			// animates.
 			drawer.style.setProperty("--drawer-width", closedTargetWidth() + "px");
+			if (railWidth && !mobilePanelQuery.matches) {
+				drawer.classList.add("is-collapsing");
+			}
 			panel.inert = true;
 			drawer.setAttribute("aria-hidden", "true");
 			toggleBtn?.setAttribute("aria-pressed", "false");
@@ -202,7 +211,7 @@
 			// slides shut instead of vanishing the moment the class comes off.
 			drawer.addEventListener("transitionend", function handler(e) {
 				if (e.target !== drawer || e.propertyName !== "width") return;
-				drawer.classList.remove("is-open");
+				drawer.classList.remove("is-open", "is-collapsing");
 				drawer.removeEventListener("transitionend", handler);
 			});
 		}

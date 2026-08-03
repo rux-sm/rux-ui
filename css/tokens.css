@@ -405,7 +405,7 @@
 	--rux-card-fg:           var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
 	--rux-card-border:       1px solid var(--rux-border);
-	--rux-card-radius:       var(--rux-radius-container);
+	--rux-card-radius:       var(--rux-radius-md);
 
 	/* — header — */
 	--rux-card-header-bg:     var(--rux-surface-4);
@@ -419,8 +419,7 @@
 		transparent;
 
 	/* — section (divider between stacked .rux-card__section siblings) — */
-	--rux-card-section-border: var(--rux-card-border-width) solid
-		var(--rux-border);
+	--rux-card-section-border: none;
 	--rux-card-section-bg: var(--rux-surface-5);
 	--rux-card-section-outline: var(--rux-card-border);
 	--rux-card-section-header-bg: var(--rux-card-section-bg);
@@ -434,7 +433,7 @@
 	--rux-card-hover-border: var(--rux-border);
 
 	/* — shared across header/body/footer/section, not any one part's own — */
-	--rux-card-padding-block:  var(--rux-space-4);
+	--rux-card-padding-block:  0 var(--rux-space-4);
 	--rux-card-padding-inline: var(--rux-space-4);
 	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
 	--rux-card-content-gap: var(--rux-space-4);
@@ -504,7 +503,7 @@
 	--rux-input-disabled-border: var(--rux-border);
 	--rux-input-disabled-fg:     var(--rux-fg-disabled);
 	--rux-input-invalid-border:  var(--rux-danger);
-	--rux-input-border-radius:   var(--rux-radius-control);
+	--rux-input-border-radius:   var(--rux-radius-xs);
 	--rux-input-transition:      var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · badge ─────────────────────────────────────────────── */
@@ -528,7 +527,7 @@
 	--rux-button-padding-inline:      var(--rux-space-3);
 	--rux-button-content-gap:         var(--rux-space-2);
 	--rux-button-group-gap:           var(--rux-space-2);
-	--rux-button-radius:              var(--rux-radius-0);
+	--rux-button-radius:              var(--rux-radius-xs);
 	--rux-button-border-width:        var(--rux-border-width);
 	--rux-button-border:              var(--rux-button-border-width) solid var(--rux-border-button);
 	--rux-button-font-family:         var(--rux-font-sans);
@@ -743,7 +742,7 @@
 
 	--rux-segmented-track-bg:         var(--rux-surface-3);
 	--rux-segmented-track-padding:    var(--rux-border-width);
-	--rux-segmented-track-radius:     var(--rux-radius-container);
+	--rux-segmented-track-radius:     var(--rux-radius-xs);
 	--rux-segmented-track-height:     var(--rux-space-6);
 	/* The track shares input chrome; its indicator is measured at runtime. */
 	--rux-segmented-track-border:     var(--rux-input-border);

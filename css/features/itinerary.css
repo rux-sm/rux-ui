@@ -81,6 +81,13 @@
 
 /* — Day card — */
 
+.rux-trip-itinerary__day-date {
+	margin-left: var(--rux-space-2);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-normal);
+}
+
 /* Same label + primary-row anatomy as .rux-trip-itinerary__stop. End of Day
    is a summary rather than a location, so it has no rail or waypoint marker;
    its left lane holds the day-scoped Add action instead. */
@@ -88,7 +95,7 @@
 	position: relative;
 	display: grid;
 	grid-template-columns: var(--rux-field-height) minmax(0, 1fr);
-	grid-template-rows: auto auto;
+	grid-template-rows: auto auto auto auto;
 	column-gap: var(--rux-space-2);
 	row-gap: var(--rux-stack-gap);
 }
@@ -107,8 +114,63 @@
 
 .rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__day-header {
 	grid-column: 2;
-	grid-row: 2;
+	grid-row: 4;
 	min-width: 0;
+}
+
+.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__boundary-fields {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__boundary-note {
+	grid-column: 2;
+	grid-row: 3;
+}
+
+.rux-trip-itinerary__boundary-fields {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-2);
+}
+
+.rux-trip-itinerary__boundary-note {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+}
+
+.rux-trip-itinerary__boundary-note .rux-icon {
+	color: var(--rux-info);
+}
+
+.rux-trip-itinerary__idle-day {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--rux-space-2);
+	color: var(--rux-fg-muted);
+}
+
+.rux-trip-itinerary__idle-day > .rux-icon {
+	flex: 0 0 auto;
+	margin-top: 0.125rem;
+}
+
+.rux-trip-itinerary__idle-day > div {
+	display: grid;
+	gap: var(--rux-space-1);
+}
+
+.rux-trip-itinerary__idle-day strong {
+	color: var(--rux-fg-default);
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-trip-itinerary__boundary-note.is-stationary .rux-icon {
+	color: var(--rux-fg-muted);
 }
 
 .rux-trip-itinerary__day > .rux-trip-itinerary__content > * + * {
@@ -174,18 +236,6 @@
 	background: var(--rux-border-subtle);
 }
 
-/* Pickup is the timeline origin, so it has no incoming rail. Its marker sits
-   after the label row: card padding + the label's inherited 1.5 line-height
-   + the stack gap + half the address-field height reaches its exact center. */
-.rux-trip-itinerary__stop:has(.rux-trip-itinerary__marker-dot--pickup)::before {
-	top: calc(
-		var(--rux-card-padding-block)
-		+ var(--rux-trip-itinerary-label-height)
-		+ var(--rux-stack-gap)
-		+ (var(--rux-field-height) / 2)
-	);
-}
-
 /* Return to Yard accepts the incoming rail but has no outgoing segment. */
 .rux-trip-itinerary__stop--terminal::before {
 	bottom: auto;
@@ -232,7 +282,8 @@
 
 .rux-trip-itinerary__stop > .rux-trip-itinerary__label-row,
 .rux-trip-itinerary__stop > .rux-trip-itinerary__time-row,
-.rux-trip-itinerary__stop > .rux-trip-itinerary__fields--pair {
+.rux-trip-itinerary__stop > .rux-trip-itinerary__fields--pair,
+.rux-trip-itinerary__stop--yard > .rux-trip-itinerary__yard-times {
 	margin-left: calc(var(--rux-itinerary-marker-size) + var(--rux-space-2));
 }
 
@@ -326,12 +377,39 @@
 
 .rux-trip-itinerary__day > .rux-trip-itinerary__marker--add {
 	grid-column: 1;
-	grid-row: 2;
+	grid-row: 4;
 	align-self: stretch;
 	height: auto;
 	margin-top: 0;
 	padding-top: 0;
 	align-items: center;
+}
+
+.rux-trip-itinerary__stop--yard .rux-trip-itinerary__marker-pin {
+	color: var(--rux-fg-muted);
+}
+
+.rux-trip-itinerary__origin-mode {
+	width: 100%;
+}
+
+.rux-trip-itinerary__origin-mode > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-trip-itinerary__origin-mode + .rux-trip-itinerary__label-row {
+	margin-top: var(--rux-space-4);
+}
+
+.rux-trip-itinerary__yard-times {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	gap: var(--rux-space-2);
+}
+
+.rux-trip-itinerary__yard-times--meet {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* — Content column — */
@@ -407,13 +485,47 @@
 	align-items: center;
 }
 
-.rux-trip-itinerary__time-row > .rux-input {
+.rux-trip-itinerary__dwell-status {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	gap: var(--rux-space-3);
+	margin-left: calc(var(--rux-itinerary-marker-size) + var(--rux-space-2));
+}
+
+.rux-trip-itinerary__dwell-status > .rux-segmented-track {
+	min-width: 0;
+	height: 2rem;
+}
+
+.rux-trip-itinerary__dwell-status .rux-button {
+	flex: 1;
+	min-width: 0;
+	height: 100%;
+	padding-inline: var(--rux-space-2);
+}
+
+@media (max-width: 42rem) {
+	.rux-trip-itinerary__dwell-status {
+		grid-template-columns: 1fr;
+		gap: var(--rux-space-1);
+	}
+}
+
+.rux-trip-itinerary__datetime {
+	display: grid;
+	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	gap: var(--rux-space-2);
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-trip-itinerary__time-row > .rux-input + .rux-input {
+.rux-trip-itinerary__time-row > .rux-trip-itinerary__datetime + .rux-trip-itinerary__datetime {
 	margin-left: var(--rux-space-2);
+}
+
+.rux-trip-itinerary__time-row--single > .rux-trip-itinerary__datetime {
+	flex: 0 1 calc(50% - (var(--rux-space-2) / 2));
 }
 
 .rux-trip-itinerary__inline-action {
@@ -646,4 +758,27 @@
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
+}
+
+@container (max-width: 460px) {
+	.rux-trip-itinerary__yard-times--meet {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.rux-trip-itinerary__time-row {
+		flex-direction: column;
+		align-items: stretch;
+		gap: var(--rux-space-2);
+	}
+
+	.rux-trip-itinerary__time-row > .rux-trip-itinerary__datetime,
+	.rux-trip-itinerary__time-row--single > .rux-trip-itinerary__datetime {
+		flex-basis: auto;
+		width: 100%;
+		margin-left: 0;
+	}
+
+	.rux-trip-itinerary__time-row > .rux-trip-itinerary__datetime + .rux-trip-itinerary__datetime {
+		margin-left: 0;
+	}
 }

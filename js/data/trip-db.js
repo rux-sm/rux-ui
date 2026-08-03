@@ -567,7 +567,7 @@ import {
 			position,
 			leg,
 			type:        s.type,
-			label:       s.label || null,
+			label:       s.type === "pickup" && s.originMode === "yard" ? "origin:yard" : (s.label || null),
 			name:        s.name || null,
 			address:     s.address || null,
 			miles:       s.miles ? parseFloat(s.miles) : null,
@@ -579,8 +579,12 @@ import {
 			drive_source: s.driveSource || "estimated",
 			route_status: s.routeStatus || "current",
 			depart_prev: s.departPrev || null,
+			depart_prev_date: s.departPrevDate || null,
 			arrive:      s.arrive || null,
+			arrive_date: s.arriveDate || null,
 			spot:        s.spot || null,
+			spot_date:   s.spotDate || null,
+			dwell_status: s.dwellStatus || "off",
 		};
 	}
 
@@ -604,6 +608,10 @@ import {
 			miles_source,
 			drive_source,
 			route_status,
+			depart_prev_date,
+			arrive_date,
+			spot_date,
+			dwell_status,
 			leg,
 			...legacy
 		} = stop;
@@ -1031,8 +1039,12 @@ import {
 			driveSource: r.drive_source || "estimated",
 			routeStatus: r.route_status === "stale" ? "stale" : "current",
 			departPrev: r.depart_prev || "",
+			departPrevDate: r.depart_prev_date || "",
 			arrive:     r.arrive || "",
+			arriveDate: r.arrive_date || "",
 			spot:       r.spot || "",
+			spotDate:   r.spot_date || "",
+			dwellStatus: ["off", "sleeper", "on"].includes(r.dwell_status) ? r.dwell_status : "off",
 		};
 	}
 
@@ -1293,7 +1305,7 @@ import {
 			if (savedStopsData.length) {
 				const { error: stopsErr } = await supabase.from("trip_stops").insert(savedStopsData);
 				if (stopsErr) {
-					const missingOptionalStopColumns = /lat|lng|mapbox_id|miles_source|drive_source|route_status|schema cache|column/i.test(stopsErr.message || "");
+					const missingOptionalStopColumns = /lat|lng|mapbox_id|miles_source|drive_source|route_status|depart_prev_date|arrive_date|spot_date|schema cache|column/i.test(stopsErr.message || "");
 					if (!missingOptionalStopColumns) throw stopsErr;
 					console.warn("trip_stops optional route columns are missing; saving legacy stop fields only.", stopsErr);
 					const legacyStopsData = savedStopsData.map(legacyStopPayload);
