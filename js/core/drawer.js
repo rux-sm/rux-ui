@@ -124,16 +124,14 @@
 
 		const DRAWER_DEFAULT = schedulerAppDefaultWidth(drawer);
 
-		// A function, not a frozen constant — for a railable drawer,
-		// --rux-panel-min-width's *resolved* value is only the true "don't
-		// resize the open panel narrower than this" floor while open; it's
-		// relaxed to the rail width while closed (see scheduler-app.css).
-		// Reading it once at create() time would freeze whichever value
-		// happened to be active at boot (closed), so every call site below
-		// re-reads it live instead, at points where .is-open is already
-		// guaranteed present.
+		// Railable panels use computed min-width: 0 so closing can reach the
+		// rail. Resize clamping must read the inherited panel token instead.
 		function drawerMin() {
-			return Math.ceil(parseFloat(getComputedStyle(panel).minWidth));
+			const panelStyle = getComputedStyle(panel);
+			const tokenMin = parseFloat(panelStyle.getPropertyValue("--rux-panel-min-width"));
+			const fallbackMin = parseFloat(panelStyle.minWidth);
+			const min = Number.isFinite(tokenMin) ? tokenMin : fallbackMin;
+			return Number.isFinite(min) ? Math.ceil(min) : 0;
 		}
 
 		function isOpen() {

@@ -131,7 +131,7 @@ function renderRequirements(container, items, { block = true } = {}) {
 		.map(
 			(req) =>
 				`<button class="rux-button rux-button--default rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.id ?? req.key)}" title="${escHtml(req.label)}">
-					<span class="rux-icon">${escHtml(mapIcon(req.icon))}</span><span class="rux-btn-label"> ${escHtml(req.label)}</span>
+					<span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(req.icon))}</span><span class="rux-btn-label"> ${escHtml(req.label)}</span>
 				</button>`,
 		)
 		.join("");

@@ -222,15 +222,19 @@ Use component semantic tokens in component CSS; use the primitive scale only whe
 
 Panels use `--rux-panel-radius`, cards use `--rux-card-radius`, buttons use `--rux-button-radius`, and fields use `--rux-radius-field`. A drawer shell may override the outer panel radius at a viewport edge; that is layout behavior, not a new panel variant.
 
+### Surface depth
+
+`--rux-surface-1` through `--rux-surface-7` form the canonical dark-to-light depth scale. Higher numbers appear visually closer, so adjusting a component's depth is a one-number change. `--rux-surface-contrast` is reserved for light elements such as switch thumbs; it is not another normal depth tier.
+
 ### Borders & shadows
 
 Borders are **hairlines** (always 1px) at one of three intensities (`--rux-border-subtle`, `--rux-border`, `--rux-border-strong`). Solid buttons, segmented controls, and base cards keep a transparent border slot so hover, focus, and active states never shift layout. Shadows are reserved for floating surfaces and subtle tactile lift on buttons.
 
 The active shadow recipes are intentionally small:
 
-- `--rux-shadow-1` — recessed inputs and segmented tracks
-- `--rux-shadow-button-raised` — tactile solid-button rest state
-- `--rux-shadow-button-pressed` — tactile solid-button pressed state
+- `--rux-shadow-recessed` — recessed inputs and segmented tracks
+- `--rux-shadow-raised` — tactile control rest state
+- `--rux-shadow-pressed` — tactile control pressed state
 
 Floating surfaces remain flat. Add a new elevation token only when a rendered component actually needs it.
 

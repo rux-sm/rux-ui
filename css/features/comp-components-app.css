@@ -11,7 +11,7 @@
 
 .scheduler-app__module[data-module="components"] {
 	gap: var(--scheduler-app-gap);
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 }
 
 .components-app__list {
@@ -124,7 +124,7 @@
 	align-items: center;
 	justify-content: center;
 	padding: var(--rux-space-6);
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border-radius: var(--rux-card-radius);
 }
 

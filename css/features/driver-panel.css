@@ -88,7 +88,7 @@
 	aspect-ratio: 1;
 	margin: 0;
 	padding: 0;
-	background: var(--rux-surface-card);
+	background: var(--rux-surface-4);
 	border: 0;
 	border-radius: var(--rux-radius-container);
 	color: var(--rux-fg-muted);
@@ -228,7 +228,7 @@
 	align-items: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) var(--rux-space-3);
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	border-radius: var(--rux-radius-md);
 }
@@ -287,7 +287,7 @@
 	align-items: flex-end;
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-3);
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	border-radius: var(--rux-radius-md);
 }

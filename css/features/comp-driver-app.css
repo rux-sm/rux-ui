@@ -39,14 +39,14 @@
 	width: 100%;
 	border-collapse: collapse;
 	font-size: var(--rux-text-sm);
-	background: var(--rux-surface-card);
+	background: var(--rux-surface-4);
 }
 
 .rux-table thead {
 	position: sticky;
 	top: 0;
 	z-index: var(--rux-z-base);
-	background: var(--rux-surface-card);
+	background: var(--rux-surface-4);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 
@@ -131,7 +131,7 @@
 	overflow: hidden;
 	width: var(--rux-avatar-md);
 	height: var(--rux-avatar-md);
-	background: var(--rux-surface-card);
+	background: var(--rux-surface-4);
 	border-radius: var(--rux-radius-control);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-100);

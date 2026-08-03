@@ -77,7 +77,7 @@
 	gap: var(--rux-space-1);
 	height: var(--rux-control-height);
 	padding: 0 var(--rux-space-2);
-	background: var(--rux-surface-field);
+	background: var(--rux-surface-3);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-text-secondary);
@@ -98,7 +98,7 @@
 }
 
 .rux-team-chat__reaction-pill.is-active {
-	background: color-mix(in oklab, var(--rux-accent) 16%, var(--rux-surface-field));
+	background: color-mix(in oklab, var(--rux-accent) 16%, var(--rux-surface-3));
 	border-color: var(--rux-accent);
 	color: var(--rux-accent);
 }

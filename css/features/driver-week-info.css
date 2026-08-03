@@ -84,7 +84,7 @@
 	font-weight: var(--rux-weight-semibold);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
-	background: var(--rux-surface-modal);
+	background: var(--rux-surface-5);
 }
 
 .rux-driver-week-info__trip {
@@ -92,7 +92,7 @@
 	grid-template-columns: auto minmax(0, 1fr);
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-3);
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	border-radius: var(--rux-radius-lg);
 }
@@ -135,7 +135,7 @@
 
 .rux-driver-week-info__share {
 	padding: var(--rux-space-3);
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	border-radius: var(--rux-radius-lg);
 }
@@ -208,7 +208,7 @@
 	margin: 0;
 	padding: var(--rux-space-4);
 	text-align: center;
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) dashed var(--rux-border);
 	border-radius: var(--rux-radius-lg);
 }

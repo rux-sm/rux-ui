@@ -34,7 +34,7 @@
     flex-grow: 1;
     min-height: 0; /* lets this actually shrink to the window's real size instead of refusing to go below the card's natural (pre-scale) content size */
     padding: var(--rux-space-4);
-    background: var(--rux-surface-modal);
+    background: var(--rux-surface-5);
     /* Fallback only, not the primary mechanism — fitToHeight() computes an
        exact scale to fit this space, so overflow shouldn't normally trigger. */
     overflow: auto;
@@ -73,7 +73,7 @@
 	flex-wrap: wrap;
 	gap: var(--rux-button-group-gap);
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-surface-modal);
+	background: var(--rux-surface-5);
 	border-bottom: var(--rux-card-section-border);
 }
 

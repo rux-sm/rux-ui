@@ -32,7 +32,7 @@
 }
 
 .rux-doc-viewer__body {
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 }
 
 .rux-doc-viewer__frame {

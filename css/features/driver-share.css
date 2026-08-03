@@ -18,7 +18,7 @@
 	--rux-driver-logo-width:              160px;
 	--rux-driver-logo-width-compact:      136px;
 	--rux-driver-logo-max-width:          52vw;
-	--rux-driver-card-bg:                 var(--rux-surface-card);
+	--rux-driver-card-bg:                 var(--rux-surface-4);
 	--rux-driver-card-border:             var(--rux-border-width) solid var(--rux-border);
 	--rux-driver-card-radius:             var(--rux-radius-container);
 	--rux-driver-card-header-padding:     28px var(--rux-space-5);
@@ -41,7 +41,7 @@
 	--rux-driver-primary-size:            var(--rux-text-lg);
 	--rux-driver-secondary-size:          var(--rux-text-lg);
 	--rux-driver-label-size:              var(--rux-text-xs);
-	--rux-driver-control-bg:              var(--rux-surface-field);
+	--rux-driver-control-bg:              var(--rux-surface-3);
 	--rux-driver-control-radius:          var(--rux-radius-lg);
 	--rux-driver-accent-soft:             color-mix(in oklch, var(--rux-accent) 16%, transparent);
 	--rux-driver-warning-soft:            color-mix(in oklch, var(--rux-warning) 12%, transparent);
@@ -54,7 +54,7 @@
 }
 
 html {
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 }
 
 .driver-share-page {
@@ -62,7 +62,7 @@ html {
 	min-height: 100dvh;
 	margin: 0;
 	overflow-x: hidden;
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	color: var(--rux-fg);
 }
 
@@ -72,7 +72,7 @@ html {
 	justify-content: space-between;
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-5) max(var(--rux-driver-page-gutter), env(safe-area-inset-left));
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
@@ -846,7 +846,7 @@ html {
 	width: min(var(--rux-container-xs), calc(100% - (var(--rux-space-4) * 2)));
 	padding: 0;
 	overflow: hidden;
-	background: var(--rux-surface-modal);
+	background: var(--rux-surface-5);
 	color: var(--rux-fg);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-xl);
@@ -879,7 +879,7 @@ html {
 	display: flex;
 	justify-content: flex-end;
 	gap: var(--rux-space-3);
-	background: var(--rux-surface-canvas);
+	background: var(--rux-surface-1);
 	border-top: var(--rux-border-width) solid var(--rux-border);
 }
 

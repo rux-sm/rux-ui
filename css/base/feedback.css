@@ -8,7 +8,7 @@
   display: flex;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-surface-modal);
+  background: var(--rux-surface-5);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   font-size: var(--rux-text-sm);
@@ -35,7 +35,7 @@
   align-items: center;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-surface-modal);
+  background: var(--rux-surface-5);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   font-size: var(--rux-text-sm);
@@ -61,7 +61,7 @@
 .rux-modal {
   width: 100%;
   max-width: var(--rux-container-xs);
-  background: var(--rux-surface-modal);
+  background: var(--rux-surface-5);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xl);
   overflow: hidden;
@@ -81,7 +81,7 @@
   justify-content: flex-end;
   gap: var(--rux-button-group-gap);
   padding: var(--rux-space-4) var(--rux-space-5);
-  background: var(--rux-surface-canvas);
+  background: var(--rux-surface-1);
   border-top: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 

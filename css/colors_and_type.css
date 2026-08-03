@@ -44,7 +44,7 @@ body {
 }
 
 html {
-  background: var(--rux-surface-canvas);
+  background: var(--rux-surface-1);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -53,7 +53,7 @@ html {
 
 body {
   display: flow-root; /* new BFC so .scheduler-app's margin-bottom paints as body's own background instead of collapsing through to html's */
-  background: var(--rux-surface-canvas);
+  background: var(--rux-surface-1);
   color: var(--rux-fg);
   font-family: var(--rux-font-sans);
   font-size: var(--rux-text-md);
@@ -125,14 +125,14 @@ code, kbd, samp, pre {
 
 code {
   padding: 0.12em 0.4em;
-  background: var(--rux-surface-canvas);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xs);
   color: var(--rux-fg);
 }
 
 pre {
-  background: var(--rux-surface-canvas);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
   padding: var(--rux-space-4);
@@ -150,7 +150,7 @@ pre code {
 kbd {
   display: inline-block;
   padding: 0.15em 0.5em;
-  background: var(--rux-surface-canvas);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border-strong);
   border-bottom-width: calc(var(--rux-border-width) * 2);
   border-radius: var(--rux-radius-xs);

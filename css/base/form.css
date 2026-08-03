@@ -577,7 +577,7 @@
   height: var(--rux-color-input-swatch-size);
   border: var(--rux-color-input-swatch-border);
   border-radius: var(--rux-color-input-swatch-radius);
-  background: var(--rux-surface-card);
+  background: var(--rux-surface-4);
   cursor: pointer;
   padding: 0;
 }

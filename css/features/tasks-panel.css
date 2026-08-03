@@ -37,7 +37,7 @@
 
 .rux-tasks__trip {
 	padding: var(--rux-space-4);
-	background: var(--rux-surface-field);
+	background: var(--rux-surface-3);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-container);
 }

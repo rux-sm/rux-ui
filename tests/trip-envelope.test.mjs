@@ -53,6 +53,6 @@ test("standard envelope field rows share one equal-height track size", () => {
 });
 
 test("both scheduler and driver pages load the equal-height envelope styles", () => {
-	assert.match(pageSource, /trip-envelope\.css\?v=11/);
-	assert.match(driverPageSource, /trip-envelope\.css\?v=11/);
+	assert.match(pageSource, /trip-envelope\.css\?v=12/);
+	assert.match(driverPageSource, /trip-envelope\.css\?v=12/);
 });

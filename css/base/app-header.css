@@ -211,7 +211,7 @@
 			var(--rux-app-header-mobile-nav-padding-inline)
 			var(--rux-app-header-mobile-nav-padding-block-end);
 		overflow: visible;
-		background: color-mix(in oklch, var(--rux-surface-modal) 72%, transparent);
+		background: color-mix(in oklch, var(--rux-surface-5) 72%, transparent);
 		backdrop-filter: blur(var(--rux-overlay-blur));
 		-webkit-backdrop-filter: blur(var(--rux-overlay-blur));
 		border-top: var(--rux-border-width) solid var(--rux-border);
