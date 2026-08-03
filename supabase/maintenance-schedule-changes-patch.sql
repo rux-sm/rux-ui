@@ -32,6 +32,7 @@ begin
 	from (
 		select jsonb_build_object(
 			'createdAt', h.created_at,
+			'actorName', h.actor_name,
 			'action', h.action,
 			'tripRef', h.trip_ref,
 			'destination', h.destination,

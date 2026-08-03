@@ -62,7 +62,8 @@ function renderChanges(rows) {
 		return section;
 	}
 	rows.forEach((row) => {
-		section.append(el("p", "maintenance-changes__line", `${changeTimestamp(row.createdAt)} — ${changeLine(row)}`));
+		const actor = String(row.actorName || "Dispatcher").trim() || "Dispatcher";
+		section.append(el("p", "maintenance-changes__line", `${changeTimestamp(row.createdAt)} — ${actor} — ${changeLine(row)}`));
 	});
 	return section;
 }
