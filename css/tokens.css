@@ -411,7 +411,7 @@
 	--rux-card-header-bg:     var(--rux-surface-4);
 	--rux-card-header-border:var(--rux-border-width) solid var(--rux-divider);
 	--rux-card-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
-	--rux-card-header-height: 44px;
+	--rux-card-header-height: 60px;
 
 	/* — footer — */
 	--rux-card-footer-bg:     transparent;
