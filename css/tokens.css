@@ -23,22 +23,22 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.24 024.0); /*  Gore  */
-	--rux-orange: oklch(80.0% 0.24 050.0); /*  Pyro  */
-	--rux-yellow: oklch(80.0% 0.22 085.0); /*  Gold  */
-	--rux-green:  oklch(60.0% 0.24 140.0); /*  Moss  */
-	--rux-cyan:   oklch(60.0% 0.24 195.0); /*  Wind  */
-	--rux-blue:   oklch(60.0% 0.24 255.0); /*  Mana  */
-	--rux-purple: oklch(60.0% 0.24 290.0); /*  Void  */
-	--rux-pink:   oklch(60.0% 0.24 350.0); /*  Neon  */
-	--rux-gray:   oklch(48.0% 0.00 255.0); /*  Iron  */
+	--rux-red:    oklch(60.0% 0.240 024.0); /*  Gore  */
+	--rux-orange: oklch(80.0% 0.240 050.0); /*  Pyro  */
+	--rux-yellow: oklch(80.0% 0.220 085.0); /*  Gold  */
+	--rux-green:  oklch(60.0% 0.240 140.0); /*  Moss  */
+	--rux-cyan:   oklch(60.0% 0.240 195.0); /*  Wind  */
+	--rux-blue:   oklch(60.0% 0.240 255.0); /*  Mana  */
+	--rux-purple: oklch(60.0% 0.240 290.0); /*  Void  */
+	--rux-pink:   oklch(60.0% 0.240 350.0); /*  Neon  */
+	--rux-gray:   oklch(48.0% 0.004 255.0); /*  Iron  */
 
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
-	--rux-danger:  oklch(60.0% 0.24 024.0); /* Infernal — Vivid, true red */
-	--rux-warning: oklch(85.5% 0.2 083.8); /* 232 179 057 gold-6  */
-	--rux-success: oklch(72.2% 0.189 135.5); /* 107 190 050 green-6 */
-	--rux-info:    oklch(62.7% 0.162 256); /* 061 136 232 blue-6  */
+	--rux-danger:  oklch(60.0% 0.24 024.0);
+	--rux-warning: oklch(85.5% 0.2 083.8);
+	--rux-success: oklch(72.2% 0.189 135.5);
+	--rux-info:    oklch(62.7% 0.162 256);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
@@ -153,17 +153,7 @@
 
 	--rux-shadow-1: inset 0 2px 4px rgba(0, 0, 0, .4);
 
-	/* Not part of the 1–6 elevation ladder above — those describe how far
-	   something sits *off* the canvas (drop shadows) or punched *into* it
-	   (step 1's inset). This describes depth on the object's own face: a
-	   bevel, for solid-fill buttons that should read as physically raised
-	   rather than a flat color swatch. Three layers — inset top-edge
-	   highlight (light catching the raised top), inset bottom-edge shade
-	   (the underside falling into shadow), and a soft drop shadow for lift
-	   off the surface beneath it. The shared hover overlay supplies the
-	   highlight; plain rgba(black) supplies the dark layers. Paired with
-	   -pressed, the highlight/lift disappear so the button reads as pushed
-	   in rather than merely changing color. */
+	/* Solid buttons use a three-layer bevel; the pressed state removes lift. */
 	--rux-shadow-button-raised:
 		inset 0 1px 0 var(--rux-state-hover-overlay),
 		inset 0 -1px 0 rgba(0, 0, 0, 0.35),
@@ -226,14 +216,8 @@
 	--rux-well-bg: var(--rux-surface-subtle);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
-	/* Primary → muted → subtle is a descending contrast hierarchy, aliased
-	   onto the canon text-color scale (--rux-heading/--rux-text-primary/
-	   --rux-text-secondary/--rux-text-disabled above) instead of the old
-	   fixed alpha-white values — every color: var(--rux-fg*) declaration in
-	   the component CSS routes through here, so this is the one place that
-	   needs to change for all of them to track the canon scale. That scale
-	   has no separate "subtle" tier between secondary and disabled, so
-	   subtle/placeholder/disabled all collapse onto --rux-text-disabled. */
+	/* Components use this shared foreground hierarchy. Subtle, placeholder,
+	   and disabled currently share the lowest-contrast value. */
 
 	--rux-fg:             var(--rux-text-primary);
 	--rux-fg-muted:       var(--rux-text-secondary);
@@ -460,15 +444,8 @@
 	--rux-trip-color-orange: var(--rux-orange);
 	--rux-trip-color-pink:   var(--rux-pink);
 
-	/* State channels are applied to each bar's category color in trip-bar.css.
-	   Brightness preferences only need to replace the base lightness: every
-	   interaction state remains a predictable ±4 percentage points from it.
-	   Chroma is never forced to a fixed number here (see the "c" keyword at
-	   each oklch(from ...) call site instead) — a single chroma value doesn't
-	   sit in-gamut the same way across every hue (e.g. --rux-red's own native
-	   chroma is much lower than --rux-accent's), so forcing one shared number
-	   made some categories clip and read duller than others. Preserving each
-	   color's own chroma keeps every category equally "full strength". */
+	/* Trip states shift lightness predictably while preserving each category's
+	   native chroma to avoid hue-dependent gamut clipping. */
 	--rux-trip-bar-bg-lightness:              60%;
 	--rux-trip-bar-state-lightness-step:      4%;
 	--rux-trip-bar-hover-bg-lightness:        calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
@@ -552,11 +529,7 @@
 	--rux-button-font-family:         var(--rux-font-sans);
 	--rux-button-font-size:           var(--rux-text-sm);
 	--rux-button-font-weight:         var(--rux-weight-medium);
-	/* Matches --rux-icon-sm, the size a plain .rux-icon actually renders at
-	   inside a button (icons.css's base rule, un-overridden for button
-	   context) — this token's only real consumer is .rux-button__spinner,
-	   which needs to match that so it doesn't look larger than the idle
-	   icon it visually replaces during --loading. */
+	/* The loading spinner matches the button's idle icon size. */
 	--rux-button-icon-size:           var(--rux-icon-sm);
 	--rux-button-mobile-icon-size:    24px;
 	--rux-button-hover-text:          var(--rux-accent);
@@ -565,15 +538,10 @@
 	--rux-button-active-overlay:      var(--rux-state-active-overlay);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing:   var(--rux-ease-out);
-	/* Solid-fill variants only (default/accent/danger) — see --rux-shadow-
-	   button-raised/-pressed above for what these actually are. */
+	/* Tactile shadows apply only to solid-fill variants. */
 	--rux-button-shadow-raised:       var(--rux-shadow-button-raised);
 	--rux-button-shadow-pressed:      var(--rux-shadow-button-pressed);
-	/* Same recipe as --rux-tab-focus-ring/--rux-module-button-focus-ring —
-	   .rux-button never had its own, so it fell through to the browser's
-	   default outline, which reads as a stark white box against this dark
-	   theme (most visible on a segment button: click one to focus it, then
-	   hover it — the default outline shows on top of the hover state). */
+	/* Shared focus ring replaces inconsistent browser outlines. */
 	--rux-button-focus-ring:          0 0 0 3px var(--rux-accent-ring);
 
 	/* ─── COMPONENT · module button ───────────────────────────────────────────── */
@@ -623,11 +591,7 @@
 	--rux-button-default-border:           none;
 
 	--rux-button-default-text:             var(--rux-fg);
-	/* Same technique as accent/danger below — ±10% OKLCH lightness off the
-	   variant's own resting background, not a flat overlay or a shift off
-	   some other token. Previously derived from --rux-gray (not this
-	   button's own --rux-button-default-background) at 50% alpha for hover,
-	   rather than an actual lightness shift of the resting fill. */
+	/* Hover and active shift the resting fill's own OKLCH lightness. */
 	--rux-button-default-hover-background: oklch(
 		from var(--rux-button-default-background) calc(l + 0.05) c h
 	);
@@ -664,13 +628,7 @@
 	);
 
 	/* ─── COMPONENT · button on accent ──────────────────────────────────────────── */
-	/* Contextual button for saturated surfaces (trip bar actions) — same glass
-	   formula as the trip bar itself (bg opacity steps from
-	   --rux-trip-bar-bg-opacity through its hover/pressed values), just kept
-	   neutral (white, uncolored) instead of hue-tinted, since these sit on top
-	   of a bar whose hue already varies per trip. Border is always solid
-	   (100% white) rather than another alpha step, matching how accent/danger
-	   buttons pair a translucent fill with a solid border. */
+	/* Buttons on saturated surfaces use neutral trip-bar opacity steps. */
 
 	--rux-button-on-accent-background:          transparent;
 	--rux-button-on-accent-text:                var(--rux-fg-on-accent);
@@ -708,10 +666,7 @@
 	);
 
 	/* ─── COMPONENT · button outline danger ─────────────────────────────────────── */
-	/* Transparent like outline, but with an always-visible red border/text
-	   instead of outline's neutral one — needs the full border shorthand
-	   (width + style), not just a color, or border-style resets to its
-	   initial "none" and no border renders at all. */
+	/* Danger outline keeps a complete red border shorthand at rest. */
 
 	--rux-button-danger-outline-background:  transparent;
 	--rux-button-danger-outline-text:        var(--rux-red);
@@ -785,19 +740,10 @@
 	--rux-segmented-track-padding:    var(--rux-space-0);
 	--rux-segmented-track-radius:     var(--rux-radius-container);
 	--rux-segmented-track-height:     var(--rux-input-height);
-	/* Same border as .rux-input, aliased not duplicated — box-sizing:
-	   border-box (global reset) keeps the track's own explicit height
-	   unaffected, and the sliding indicator's size/position are computed
-	   live off the actual button (initSegmentedIndicators, controls.js),
-	   not hardcoded against the track's old borderless interior — so it
-	   naturally measures against the slightly smaller interior a border
-	   introduces instead of overflowing/clipping against it. */
+	/* The track shares input chrome; its indicator is measured at runtime. */
 	--rux-segmented-track-border:     var(--rux-input-border);
 	--rux-segmented-track-gap:        var(--rux-space-0);
-	/* Same recessed-well shadow as --rux-input-shadow — both are a punched-
-	   in well holding a control, not just a bordered box. Aliased to
-	   --rux-shadow-1 (same indirection --rux-input-shadow uses), not
-	   hardcoded, so the two can't drift apart by editing only one. */
+	/* Inputs and segmented tracks share one recessed-well shadow. */
 	--rux-segmented-track-shadow:     var(--rux-shadow-1);
 	--rux-segment-indicator-duration: var(--rux-duration-base);
 	--rux-segment-indicator-easing:   var(--rux-ease-out);
@@ -810,27 +756,9 @@
 	--rux-segment-fg-hover:       var(--rux-fg);
 	--rux-segment-active-background:   var(--rux-button-default-background);
 	--rux-segment-active-text:         var(--rux-fg);
-	/* Must be a real <color> — `transparent`, not `none`. This is consumed
-	   through border-color: (a longhand — see the three call sites in
-	   controls.css), which only accepts a color; `none` isn't one. That
-	   isn't caught as a parse error, because it arrives via var()
-	   substitution rather than being written literally — it's only
-	   invalid once the custom property is substituted in, at computed-
-	   value time. Per spec, a property that's invalid at computed-value
-	   time doesn't fall through to some other rule in the cascade; it
-	   resets to its own initial value. border-color's initial value is
-	   currentColor — this segment's own (white) text — which is exactly
-	   the white border that kept reappearing here. `transparent` matches
-	   --rux-segment-border's own color component (1px solid transparent)
-	   exactly, so switching a segment active/inactive never actually
-	   changes border-width or -style, only interpolates a color that
-	   starts and ends the same — nothing to transition at all. */
+	/* Must be a valid border color: `none` resolves to currentColor here. */
 	--rux-segment-active-border-color: transparent;
-	/* Same raised bevel as .rux-button--default (--rux-segment-active-
-	   background already matches that variant's own fill) — the active
-	   segment is meant to read as that same physical, raised button, not
-	   just borrow its color. Aliased, not duplicated, so both stay in sync
-	   if the button bevel ever changes. */
+	/* Active segments reuse the default button's raised bevel. */
 	--rux-segment-active-shadow:       var(--rux-button-shadow-raised);
 
 	/* ─── COMPONENT · stepper ─────────────────────────────────────────────── */
@@ -1011,9 +939,7 @@
 	--rux-tab-selected-border:     1px solid var(--rux-border);
 	--rux-tab-transition-duration: var(--rux-duration-instant);
 	--rux-tab-transition-easing:   var(--rux-ease-out);
-	/* Same recipe as --rux-module-button-focus-ring — .rux-tab never had its
-	   own, so it fell through to the browser's default outline, which reads
-	   as a stark white box against this dark theme. */
+	/* Shared focus ring replaces the browser's default tab outline. */
 	--rux-tab-focus-ring:          0 0 0 3px var(--rux-accent-ring);
 
 	--rux-tabs-contained-padding:         var(--rux-space-2);
@@ -1030,18 +956,11 @@
 	--rux-tabs-attached-tab-bg:              transparent;
 	--rux-tabs-attached-tab-fg:              var(--rux-fg-muted);
 	--rux-tabs-attached-tab-hover-fg:        var(--rux-fg);
-	/* The active tab and the pane below it are one contiguous surface, so
-	   both read off --rux-surface-panel directly (not aliased through each
-	   other) — whichever one this ends up nested under, they still match. */
+	/* Active attached tabs and their pane share one surface. */
 	--rux-tabs-attached-tab-selected-bg:     var(--rux-surface-panel);
 	--rux-tabs-attached-tab-selected-fg:     var(--rux-fg);
-	/* Same visible border as an inactive tab on top/left/right — the active
-	   tab is still a "tab", just one that also flows into the pane below
-	   it. That merge comes entirely from navigation.css overriding its
-	   border-bottom to transparent (same width, invisible color) and
-	   matching the pane's background, not from this token — this is the
-	   one full border shape both states share. Aliased, not duplicated,
-	   so the two states can't drift apart by editing only one of them. */
+	/* Attached tab states share one border; navigation.css hides the active
+	   tab's bottom edge to merge it with the pane. */
 	--rux-tabs-attached-tab-border:          var(--rux-border-width) solid var(--rux-border);
 	--rux-tabs-attached-tab-selected-border: var(--rux-tabs-attached-tab-border);
 	--rux-tabs-attached-pane-bg:             var(--rux-surface-panel);
