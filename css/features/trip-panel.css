@@ -106,10 +106,8 @@
 	display: none;
 }
 
-/* Card bottoms own every inter-card seam below. Remove the headers' default
-   top border so a titled card following another card does not draw the same
-   divider a second time. The panel nav owns the pane's top seam. */
-.rux-trip-panel__pane > .rux-card > .rux-card__header {
+/* The card shell owns the outline; headers do not add a second top edge. */
+.rux-trip-panel__pane .rux-card > .rux-card__header {
 	border-top: 0;
 }
 
@@ -342,158 +340,102 @@
 .rux-trip-panel__payment-rows:has([data-ticket-option-row]) > .rux-trip-panel__payment-empty {
 	display: none;
 }
-/* Outer row is unstyled layout only — the pill background/border lives on
-   the inner .rux-trip-panel__payment-content instead, so the trash button
-   sits genuinely outside the pill (like .rux-trip-panel__doc-content /
-   .rux-trip-panel__contact-fields above) and visibly pushes/shrinks it on
-   reveal, instead of being just another item painted inside the same box. */
+/* Payment method becomes the group header; the remaining values are labeled fields. */
 .rux-trip-panel__payment-row {
+	min-width: 0;
+}
+.rux-trip-panel__payment-content {
+	min-width: 0;
+	overflow: hidden;
+	background: var(--rux-card-bg);
+	border: var(--rux-card-border);
+	border-radius: var(--rux-card-radius);
+	transition: border-color var(--rux-input-transition);
+}
+.rux-trip-panel__payment-content:hover,
+.rux-trip-panel__payment-content:focus-within {
+	border-color: var(--rux-input-hover);
+}
+
+.rux-trip-panel__payment-header {
 	display: flex;
 	align-items: center;
+	min-height: var(--rux-field-height);
+	padding-inline-start: var(--rux-control-padding-inline);
+	background: var(--rux-card-header-bg);
+	border-bottom: var(--rux-card-section-border);
 }
-/* Single-line pill: type icon as Reference prefix · date · amount, replacing the
-   old label+grid layout. Method is fixed at creation (see PAYMENT_METHODS
-   in trip-panel.js) and shown as the icon, not an editable field —
-   consistent with Files, where type is likewise fixed once created.
-   Icon gets a fixed-width slot up front; date and amount are fixed-width
-   too (120px — enough for MM/DD/YYYY and a 3-digit balance) so they never
-   get squeezed. Reference is the only flexible column: a minmax(0, 1fr)
-   track ignores min-width when sizing itself, so if date/amount were fr
-   tracks too they'd shrink and overflow their own box under pressure
-   instead of holding size — reference is the one column allowed to give
-   up space and ellipsis, the ledger/statement convention of scanning
-   dates on the left and summing amounts on the right. */
-.rux-trip-panel__payment-content {
-	--_payment-date-width: calc(
-		8ch +
-		(var(--rux-border-width) * 2)
-	);
-	--_payment-amount-min-width: 112px;
-	--_payment-amount-max-width: 116px;
-	display: grid;
-	grid-template-columns:
-		minmax(0, 1fr)
-		var(--_payment-date-width)
-		minmax(var(--_payment-amount-min-width), var(--_payment-amount-max-width));
-	grid-template-areas: "reference date amount";
+.rux-trip-panel__payment-method {
+	display: flex;
 	align-items: center;
-	gap: var(--rux-space-0);
+	gap: var(--rux-space-2);
 	flex: 1;
 	min-width: 0;
-	min-height: var(--rux-field-height);
-	border: none;
-	border-radius: var(--rux-button-radius);
-	background: var(--rux-button-default-background);
 }
 .rux-trip-panel__payment-icon {
 	flex: none;
-	width: calc(var(--rux-icon-sm) + (var(--rux-control-padding-inline) * 2));
-	height: var(--rux-icon-sm);
 	color: var(--rux-fg);
-	padding: 0 var(--rux-control-padding-inline);
-
 }
-/* Amount reuses the standard .rux-input-group prefix pattern (same as
-   Quoted Price) — a real bordered field with "$" inside it. */
-.rux-trip-panel__payment-amount .rux-input {
-	height: var(--rux-field-height);
+.rux-trip-panel__payment-method-label {
+	min-width: 0;
+	overflow: hidden;
+	color: var(--rux-fg);
 	font-size: var(--rux-text-sm);
-	background: none;
-	text-align: right;
-	width: 100%;
-	margin: 0;
-	border: var(--rux-input-border);
-	border-radius: 0 var(--rux-button-radius) var(--rux-button-radius) 0;
+	font-weight: var(--rux-weight-medium);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-trip-panel__payment-fields {
+	display: grid;
+	grid-template-columns: minmax(7rem, 1fr) 7rem 8rem;
+	grid-template-areas: "reference date amount";
+	column-gap: var(--rux-control-content-gap);
+	row-gap: var(--rux-card-content-gap);
+	padding: var(--rux-card-padding);
+}
+.rux-trip-panel__payment-reference {
+	grid-area: reference;
+}
+.rux-trip-panel__payment-date-field {
+	grid-area: date;
 }
 .rux-trip-panel__payment-amount {
 	grid-area: amount;
 }
-/* Native number stepper reads as "a counter", not "an amount" — hide it,
-   same rule .rux-input[type=number] already gets in form.css. */
-.rux-trip-panel__payment-amount .rux-input[type="number"]::-webkit-inner-spin-button,
-.rux-trip-panel__payment-amount .rux-input[type="number"]::-webkit-outer-spin-button {
-	-webkit-appearance: none;
-}
-.rux-trip-panel__payment-amount .rux-input[type="number"] {
-	appearance: textfield;
-	padding-inline: var(--rux-control-padding-inline);
-}
-.rux-trip-panel__payment-input {
-	background: none;
-	border: var(--rux-input-border);
-	padding: 0;
-	font: inherit;
-	font-size: var(--rux-text-sm);
-	color: var(--rux-fg);
-	margin: 0;
-}
-.rux-trip-panel__payment-input::placeholder {
-	color: var(--rux-fg-subtle);
-}
-.rux-trip-panel__payment-ref {
-	flex: 1;
-	width: 100%;
-	min-width: 0;
-	height: var(--rux-field-height);
-	padding: 0 var(--rux-control-padding-inline) 0 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	border: 1px solid transparent;
-}
-.rux-trip-panel__payment-reference {
-	grid-area: reference;
-	display: flex;
-	align-items: center;
-	min-width: 0;
-	height: var(--rux-field-height);
-	border: var(--rux-border-width) solid var(--_border);
-	border-radius: var(--rux-button-radius) 0 0 var(--rux-button-radius);
-}
 .rux-trip-panel__payment-date-control {
-	grid-area: date;
 	position: relative;
+	display: block;
+	width: 100%;
 	min-width: 0;
 	height: var(--rux-field-height);
 	font-variant-numeric: tabular-nums;
 }
 .rux-trip-panel__payment-date-label {
 	position: absolute;
-	inset-block: 0;
-	inset-inline: 0;
-	z-index: 1;
+	inset: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	padding-inline: var(--rux-space-2);
 	color: var(--rux-fg);
 	font-size: var(--rux-text-sm);
 	pointer-events: none;
 }
 .rux-trip-panel__payment-date {
-	width: 100%;
-	height: var(--rux-field-height);
-	padding: 0;
-	text-align: center;
-	color: transparent;
-	border: var(--rux-border-width) solid var(--_border);
-	border-right: none;
-}
-.rux-trip-panel__payment-date::-webkit-datetime-edit {
-	color: transparent;
-}
-.rux-trip-panel__payment-date::-webkit-calendar-picker-indicator {
 	position: absolute;
 	inset: 0;
 	width: 100%;
 	height: 100%;
-	margin: 0;
-	padding: 0;
 	opacity: 0;
 	cursor: pointer;
 }
-/* Hidden by default — header Delete arms select mode
-   (#tp-payment-rows.is-selecting), revealing this trash icon; width +
-   margin-left animate together so no gap is left when hidden (same recipe
-   as .rux-trip-panel__contact-select / doc-select above). */
+
+.rux-trip-panel__payment-amount-input {
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+/* Each payment reveals its own delete action on hover or focus. */
 .rux-trip-panel__payment-select {
 	display: flex;
 	align-items: center;
@@ -506,7 +448,7 @@
 	opacity: 0;
 	padding: 0;
 	background: none;
-	border: 1px solid transparent;
+	border: var(--rux-border-width) solid transparent;
 	color: var(--rux-danger);
 	cursor: pointer;
 	pointer-events: none;
@@ -518,16 +460,7 @@
 .rux-trip-panel__payment-select:hover {
 	color: var(--rux-danger-hover);
 }
-#tp-payment-rows.is-selecting .rux-trip-panel__payment-select,
-#rpm-payment-rows.is-selecting .rux-trip-panel__payment-select {
-	width: var(--rux-field-height);
-	margin-left: var(--rux-space-2);
-	opacity: 1;
-	pointer-events: auto;
-}
-#tp-payment-delete-btn:disabled,
 #tp-ticket-delete-btn:disabled,
-#rpm-payment-delete-btn:disabled,
 #dp-timeoff-delete-btn:disabled {
 	display: none;
 }
@@ -785,7 +718,8 @@
 	color: var(--rux-danger-hover);
 }
 
-.rux-trip-panel__doc-select:focus-visible {
+.rux-trip-panel__doc-select:focus-visible,
+.rux-trip-panel__payment-select:focus-visible {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
@@ -793,7 +727,8 @@
 }
 
 @media (hover: hover) {
-	.rux-trip-panel__doc-row:hover .rux-trip-panel__doc-select {
+	.rux-trip-panel__doc-row:hover .rux-trip-panel__doc-select,
+	.rux-trip-panel__payment-row:hover .rux-trip-panel__payment-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -802,7 +737,8 @@
 }
 
 @media (hover: none) {
-	.rux-trip-panel__doc-select {
+	.rux-trip-panel__doc-select,
+	.rux-trip-panel__payment-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -819,11 +755,21 @@
 
    Field grids:            320px
    Logistics controls:     320px
+   Payment entries:        520px / 320px
    Tab labels:             430px
    Footer action labels:   300px
    Trip type labels:        420px
    Requirement buttons:    400px
    ========================================================================== */
+
+@container (max-width: 520px) {
+	.rux-trip-panel__payment-fields {
+		grid-template-columns: minmax(0, 1fr) 7rem;
+		grid-template-areas:
+			"reference reference"
+			"date amount";
+	}
+}
 
 @container (max-width: 320px) {
 	.rux-trip-panel__cols-2,
@@ -847,6 +793,18 @@
 
 	.rux-trip-panel__doc-date {
 		display: none;
+	}
+
+	.rux-trip-panel__payment-fields {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"reference"
+			"date"
+			"amount";
+	}
+
+	.rux-trip-panel__payment-method {
+		gap: var(--rux-space-1);
 	}
 }
 

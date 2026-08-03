@@ -352,35 +352,44 @@ function initBillingWorkflow(root) {
 	];
 	const PAYMENT_METHOD_ICONS = Object.fromEntries(PAYMENT_METHODS.map((m) => [m.value, m.icon]));
 	const paymentRowCount = () => paymentRows?.querySelectorAll("[data-payment-row]").length || 0;
-	// Single-line pill: type icon as Reference prefix · date · amount. Method is
-	// fixed at creation — picked from the header "+" menu and shown as the
-	// icon, not an editable field, consistent with Files (delete + re-add
-	// to change the type). Amount reuses the standard .rux-input-group
-	// prefix pattern (same as Quoted Price) instead of a bare borderless
-	// number — a real bordered field, not a stepper.
+	// Method is fixed at creation and becomes the compact group header.
 	const createPaymentRow = (index) => {
 		const row = document.createElement("div");
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-trip-panel__payment-content">
-				<div class="rux-trip-panel__payment-reference">
-					<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
-					<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
-					<input class="rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
+			<div class="rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+				<div class="rux-trip-panel__payment-header">
+					<div class="rux-trip-panel__payment-method">
+						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+						<span class="rux-trip-panel__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
+						<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
+					</div>
+					<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
+						<span class="rux-icon" aria-hidden="true">delete</span>
+					</button>
 				</div>
-				<div class="rux-trip-panel__payment-date-control">
-					<span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
-					<input class="rux-input rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+				<div class="rux-trip-panel__payment-fields">
+					<label class="rux-field rux-trip-panel__payment-reference">
+						<span class="rux-field__label">Reference</span>
+						<input class="rux-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" />
+					</label>
+					<label class="rux-field rux-trip-panel__payment-date-field">
+						<span class="rux-field__label">Date</span>
+						<span class="rux-input rux-trip-panel__payment-date-control">
+							<span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
+							<input class="rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+						</span>
+					</label>
+					<label class="rux-field rux-trip-panel__payment-amount">
+						<span class="rux-field__label">Amount</span>
+						<span class="rux-input-group rux-input-group--prefix">
+							<span class="rux-input-group__prefix" aria-hidden="true">$</span>
+							<input class="rux-input rux-trip-panel__payment-amount-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
+						</span>
+					</label>
 				</div>
-				<div class="rux-input-group rux-input-group--prefix rux-trip-panel__payment-amount">
-					<span class="rux-input-group__prefix">$</span>
-					<input class="rux-input rux-trip-panel__payment-field" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
-				</div>
-			</div>
-			<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
-				<span class="rux-icon" aria-hidden="true">delete</span>
-			</button>`;
+			</div>`;
 		return row;
 	};
 	const setPaymentRowMethod = (row, method) => {
@@ -391,9 +400,12 @@ function initBillingWorkflow(root) {
 			icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
 			icon.title = safeMethod;
 		});
+		const methodLabel = row.querySelector("[data-payment-method-label]");
+		if (methodLabel) methodLabel.textContent = `${safeMethod} Payment`;
+		const deleteButton = row.querySelector("[data-payment-select]");
+		if (deleteButton) deleteButton.setAttribute("aria-label", `Delete ${safeMethod} payment`);
 		if (content) {
-			content.setAttribute("role", "group");
-			content.setAttribute("aria-label", `${safeMethod} payment`);
+			content.setAttribute("aria-labelledby", methodLabel?.id || "");
 		}
 		if (methodInput) methodInput.value = safeMethod;
 	};
@@ -403,6 +415,10 @@ function initBillingWorkflow(root) {
 			const method = row.querySelector("[data-payment-method]");
 			const date = row.querySelector("[data-payment-date]");
 			const ref = row.querySelector("[data-payment-ref]");
+			const content = row.querySelector(".rux-trip-panel__payment-content");
+			const methodLabel = row.querySelector("[data-payment-method-label]");
+			if (methodLabel) methodLabel.id = `tp-payment-label-${index + 1}`;
+			if (content) content.setAttribute("aria-labelledby", `tp-payment-label-${index + 1}`);
 			if (amount) {
 				amount.id = `tp-payment-amount-${index + 1}`;
 				amount.name = `payments[${index}].amount`;
@@ -472,14 +488,11 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	};
 
 	const paymentAddBtn = root.querySelector("#tp-payment-add-btn");
-	const paymentDeleteBtn = root.querySelector("#tp-payment-delete-btn");
 
 	// Keep the rows container visible so its accessible empty-state row
 	// preserves the same footprint as one payment.
 	const syncPaymentButtons = () => {
-		const count = paymentRowCount();
 		if (paymentRows) paymentRows.style.display = "flex";
-		if (paymentDeleteBtn) paymentDeleteBtn.disabled = count === 0;
 	};
 	const addPaymentRow = (method) => {
 		if (!paymentRows) return;
@@ -502,24 +515,8 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		row.remove();
 		paymentRows.dataset.paymentsTouched = "true";
 		renumberPaymentRows();
-		setPaymentSelecting(false);
 		syncPaymentButtons();
 		sync();
-	};
-
-	// Delete arms "select which one" mode instead of guessing — rows reveal
-	// a trash icon (see .rux-trip-panel__payment-select in trip-panel.css);
-	// clicking one deletes that specific payment and disarms. Clicking
-	// Delete again while armed cancels. Same recipe as Files/Trip Contacts.
-	let paymentSelecting = false;
-	const setPaymentSelecting = (on) => {
-		paymentSelecting = on;
-		paymentRows?.classList.toggle("is-selecting", on);
-		if (paymentDeleteBtn) {
-			paymentDeleteBtn.setAttribute("aria-pressed", String(on));
-			paymentDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
-			paymentDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete a payment");
-		}
 	};
 
 	/* — Add-type menu — .rux-menu popover listing payment methods; picking
@@ -563,9 +560,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	});
 	paymentRows?.addEventListener("click", (event) => {
 		const selectBtn = event.target.closest("[data-payment-select]");
-		if (selectBtn) {
-			if (paymentSelecting) deletePaymentRow(selectBtn.closest("[data-payment-row]"));
-		}
+		if (selectBtn) deletePaymentRow(selectBtn.closest("[data-payment-row]"));
 	});
 	paymentAddBtn?.addEventListener("click", () => {
 		if (!paymentMenuEl.hidden) {
@@ -579,10 +574,6 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (!btn) return;
 		closePaymentMenu();
 		addPaymentRow(btn.dataset.paymentMethodChoice);
-	});
-	paymentDeleteBtn?.addEventListener("click", () => setPaymentSelecting(!paymentSelecting));
-	document.addEventListener("keydown", (event) => {
-		if (event.key === "Escape" && paymentSelecting) setPaymentSelecting(false);
 	});
 	root.addEventListener("rux:payments-loaded", (event) => {
 		if (!paymentRows) return;
@@ -610,14 +601,8 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (paymentRows) {
 			paymentRows.dataset.paymentsTouched = "true";
 			paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
-			paymentRows.classList.remove("is-selecting");
 			syncPaymentButtons();
 			sync();
-		}
-		if (paymentDeleteBtn) {
-			paymentDeleteBtn.setAttribute("aria-pressed", "false");
-			paymentDeleteBtn.querySelector(".rux-icon").textContent = "delete";
-			paymentDeleteBtn.setAttribute("aria-label", "Delete a payment");
 		}
 	});
 	document.addEventListener("settings:billing", () => {

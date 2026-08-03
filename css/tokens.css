@@ -51,7 +51,7 @@
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-divider:       oklch(from var(--rux-info) 32% c h / 100%);
+	--rux-divider:       oklch(from var(--rux-neutral) 28% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 

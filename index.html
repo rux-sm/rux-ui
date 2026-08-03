@@ -15,7 +15,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=67" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=144" />
+		<link rel="stylesheet" href="./css/components.css?v=150" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=6" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=2" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
@@ -37,7 +37,7 @@
 		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=34" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=76" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=6" />
-		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=4" />
+		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=5" />
 		<link
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
@@ -1508,19 +1508,6 @@
 												Payments
 											</p>
 											<div class="rux-cluster">
-												<button
-													class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
-													type="button"
-													id="tp-payment-delete-btn"
-													disabled
-													aria-label="Delete a payment"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>delete</span
-													>
-												</button>
 												<button
 													class="rux-button rux-button--ghost rux-button--icon"
 													type="button"
@@ -6276,14 +6263,14 @@
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=26"></script>
+		<script src="./js/panels/trip-panel.js?v=29"></script>
 		<script src="./js/components/itinerary.js?v=20"></script>
 		<script src="./js/panels/driver-panel.js?v=11" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=4" defer></script>
 		<script src="./js/panels/settings-panel.js?v=3" defer></script>
 		<script src="./js/panels/trips-list.js?v=11" defer></script>
-		<script src="./js/panels/trip-manifest.js?v=3" defer></script>
+		<script src="./js/panels/trip-manifest.js?v=6" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=1"></script>
@@ -7499,7 +7486,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=21");
+					const db = await import("./js/data/trip-db.js?v=24");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10168,7 +10155,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=21");
+					const db = await import("./js/data/trip-db.js?v=24");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
@@ -10992,19 +10979,6 @@
 								<header class="rux-card__header">
 									<p class="rux-card__title">Payments</p>
 									<div class="rux-cluster">
-										<button
-											class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
-											type="button"
-											id="rpm-payment-delete-btn"
-											disabled
-											aria-label="Delete a payment"
-										>
-											<span
-												class="rux-icon"
-												aria-hidden="true"
-												>delete</span
-											>
-										</button>
 										<button
 											class="rux-button rux-button--ghost rux-button--icon"
 											type="button"

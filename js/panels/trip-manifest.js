@@ -79,7 +79,6 @@
   const balanceOutput = document.getElementById("rpm-balance");
   const paymentRows = document.getElementById("rpm-payment-rows");
   const paymentAddBtn = document.getElementById("rpm-payment-add-btn");
-  const paymentDeleteBtn = document.getElementById("rpm-payment-delete-btn");
   const statusBadge = document.getElementById("rpm-status-badge");
   const titleEl = document.getElementById("rpm-title");
   const saveBtn = document.getElementById("rpm-btn-save");
@@ -176,24 +175,38 @@
     row.className = "rux-trip-panel__payment-row";
     row.dataset.paymentRow = "";
     row.innerHTML = `
-      <div class="rux-trip-panel__payment-content">
-        <div class="rux-trip-panel__payment-reference">
-          <span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
-          <input type="hidden" data-payment-method id="rpm-payment-method-${index + 1}" />
-          <input class="rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="rpm-payment-ref-${index + 1}" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
+      <div class="rux-trip-panel__payment-content" role="group" aria-labelledby="rpm-payment-label-${index + 1}">
+        <div class="rux-trip-panel__payment-header">
+          <div class="rux-trip-panel__payment-method">
+            <span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+            <span class="rux-trip-panel__payment-method-label" id="rpm-payment-label-${index + 1}" data-payment-method-label>Payment</span>
+            <input type="hidden" data-payment-method id="rpm-payment-method-${index + 1}" />
+          </div>
+          <button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
+            <span class="rux-icon" aria-hidden="true">delete</span>
+          </button>
         </div>
-        <div class="rux-trip-panel__payment-date-control">
-          <span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
-          <input class="rux-input rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-date" id="rpm-payment-date-${index + 1}" data-payment-date type="date" aria-label="Payment date" />
+        <div class="rux-trip-panel__payment-fields">
+          <label class="rux-field rux-trip-panel__payment-reference">
+            <span class="rux-field__label">Reference</span>
+            <input class="rux-input rux-trip-panel__payment-ref" id="rpm-payment-ref-${index + 1}" data-payment-ref type="text" placeholder="Optional" />
+          </label>
+          <label class="rux-field rux-trip-panel__payment-date-field">
+            <span class="rux-field__label">Date</span>
+            <span class="rux-input rux-trip-panel__payment-date-control">
+              <span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
+              <input class="rux-trip-panel__payment-date" id="rpm-payment-date-${index + 1}" data-payment-date type="date" aria-label="Payment date" />
+            </span>
+          </label>
+          <label class="rux-field rux-trip-panel__payment-amount">
+            <span class="rux-field__label">Amount</span>
+            <span class="rux-input-group rux-input-group--prefix">
+              <span class="rux-input-group__prefix" aria-hidden="true">$</span>
+              <input class="rux-input rux-trip-panel__payment-amount-input" id="rpm-payment-amount-${index + 1}" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
+            </span>
+          </label>
         </div>
-        <div class="rux-input-group rux-input-group--prefix rux-trip-panel__payment-amount">
-          <span class="rux-input-group__prefix">$</span>
-          <input class="rux-input rux-trip-panel__payment-field" id="rpm-payment-amount-${index + 1}" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
-        </div>
-      </div>
-      <button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
-        <span class="rux-icon" aria-hidden="true">delete</span>
-      </button>`;
+      </div>`;
     return row;
   }
 
@@ -204,9 +217,12 @@
       icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
       icon.title = safeMethod;
     });
+    const methodLabel = row.querySelector("[data-payment-method-label]");
+    if (methodLabel) methodLabel.textContent = `${safeMethod} Payment`;
+    const deleteButton = row.querySelector("[data-payment-select]");
+    if (deleteButton) deleteButton.setAttribute("aria-label", `Delete ${safeMethod} payment`);
     if (content) {
-      content.setAttribute("role", "group");
-      content.setAttribute("aria-label", `${safeMethod} payment`);
+      content.setAttribute("aria-labelledby", methodLabel?.id || "");
     }
     row.querySelector("[data-payment-method]").value = safeMethod;
   }
@@ -229,7 +245,6 @@
 
   function syncPaymentButtons() {
     if (paymentRows) paymentRows.style.display = "flex";
-    if (paymentDeleteBtn) paymentDeleteBtn.disabled = paymentRowCount() === 0;
   }
 
   function addPaymentRow(method) {
@@ -247,25 +262,32 @@
     row.querySelector("[data-payment-amount]")?.focus();
   }
 
+  function renumberPaymentRows() {
+    paymentRows?.querySelectorAll("[data-payment-row]").forEach((row, index) => {
+      const suffix = index + 1;
+      const content = row.querySelector(".rux-trip-panel__payment-content");
+      const methodLabel = row.querySelector("[data-payment-method-label]");
+      if (methodLabel) methodLabel.id = `rpm-payment-label-${suffix}`;
+      if (content) content.setAttribute("aria-labelledby", `rpm-payment-label-${suffix}`);
+      const method = row.querySelector("[data-payment-method]");
+      const date = row.querySelector("[data-payment-date]");
+      const ref = row.querySelector("[data-payment-ref]");
+      const amount = row.querySelector("[data-payment-amount]");
+      if (method) method.id = `rpm-payment-method-${suffix}`;
+      if (date) date.id = `rpm-payment-date-${suffix}`;
+      if (ref) ref.id = `rpm-payment-ref-${suffix}`;
+      if (amount) amount.id = `rpm-payment-amount-${suffix}`;
+    });
+  }
+
   function deletePaymentRow(row) {
     if (!paymentRows || !row) return;
     const hasData = Array.from(row.querySelectorAll("input")).some((el) => el.type !== "hidden" && el.value);
     if (hasData && !confirm("Delete this payment?")) return;
     row.remove();
-    setPaymentSelecting(false);
+    renumberPaymentRows();
     syncPaymentButtons();
     syncBalance();
-  }
-
-  let paymentSelecting = false;
-  function setPaymentSelecting(on) {
-    paymentSelecting = on;
-    paymentRows?.classList.toggle("is-selecting", on);
-    if (paymentDeleteBtn) {
-      paymentDeleteBtn.setAttribute("aria-pressed", String(on));
-      paymentDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
-      paymentDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete a payment");
-    }
   }
 
   const paymentMenuEl = document.createElement("div");
@@ -298,7 +320,7 @@
   });
   paymentRows?.addEventListener("click", (event) => {
     const selectBtn = event.target.closest("[data-payment-select]");
-    if (selectBtn && paymentSelecting) deletePaymentRow(selectBtn.closest("[data-payment-row]"));
+    if (selectBtn) deletePaymentRow(selectBtn.closest("[data-payment-row]"));
   });
   paymentAddBtn?.addEventListener("click", () => {
     if (!paymentMenuEl.hidden) { closePaymentMenu(); return; }
@@ -310,15 +332,9 @@
     closePaymentMenu();
     addPaymentRow(btn.dataset.paymentMethodChoice);
   });
-  paymentDeleteBtn?.addEventListener("click", () => setPaymentSelecting(!paymentSelecting));
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && paymentSelecting) setPaymentSelecting(false);
-  });
-
   function resetPaymentRows() {
     if (!paymentRows) return;
     paymentRows.querySelectorAll("[data-payment-row]").forEach((row) => row.remove());
-    setPaymentSelecting(false);
     syncPaymentButtons();
   }
 

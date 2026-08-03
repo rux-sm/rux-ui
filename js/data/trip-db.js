@@ -774,41 +774,38 @@ import {
 
 	const PAYMENT_METHOD_ICONS = { Cash: "universal_currency_alt", Check: "checkbook", Card: "credit_card", ACH: "account_balance", Zelle: "bolt", Other: "more_horiz" };
 
-	// Single-line pill: type icon as Reference prefix · date · amount — mirrors
-	// createPaymentRow in trip-panel.js. Method is set via DOM property
-	// (not string-interpolated) since it comes from saved trip data here,
-	// not a fixed trusted menu list.
+	// Mirrors the labeled payment group in trip-panel.js. Saved method data
+	// is applied through DOM properties after the trusted template is created.
 	function createPaymentRow(index, method) {
 		const row = document.createElement("div");
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-trip-panel__payment-content">
-				<div class="rux-trip-panel__payment-reference">
-					<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
-					<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
-					<input class="rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Reference" aria-label="Reference number" />
+			<div class="rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+				<div class="rux-trip-panel__payment-header">
+					<div class="rux-trip-panel__payment-method">
+						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+						<span class="rux-trip-panel__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
+						<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
+					</div>
+					<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
 				</div>
-				<div class="rux-trip-panel__payment-date-control">
-					<span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
-					<input class="rux-input rux-trip-panel__payment-field rux-trip-panel__payment-input rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" />
+				<div class="rux-trip-panel__payment-fields">
+					<label class="rux-field rux-trip-panel__payment-reference"><span class="rux-field__label">Reference</span><input class="rux-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" /></label>
+					<label class="rux-field rux-trip-panel__payment-date-field"><span class="rux-field__label">Date</span><span class="rux-input rux-trip-panel__payment-date-control"><span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span><input class="rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" /></span></label>
+					<label class="rux-field rux-trip-panel__payment-amount"><span class="rux-field__label">Amount</span><span class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix" aria-hidden="true">$</span><input class="rux-input rux-trip-panel__payment-amount-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" /></span></label>
 				</div>
-				<div class="rux-input-group rux-input-group--prefix rux-trip-panel__payment-amount">
-					<span class="rux-input-group__prefix">$</span>
-					<input class="rux-input rux-trip-panel__payment-field" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" aria-label="Amount" />
-				</div>
-			</div>
-			<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
-				<span class="rux-icon" aria-hidden="true">delete</span>
-			</button>`;
+			</div>`;
 		const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
 		const content = row.querySelector(".rux-trip-panel__payment-content");
 		row.querySelectorAll("[data-payment-method-icon]").forEach((icon) => {
 			icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
 			icon.title = safeMethod;
 		});
-		content.setAttribute("role", "group");
-		content.setAttribute("aria-label", `${safeMethod} payment`);
+		const methodLabel = row.querySelector("[data-payment-method-label]");
+		methodLabel.textContent = `${safeMethod} Payment`;
+		content.setAttribute("aria-labelledby", methodLabel.id);
+		row.querySelector("[data-payment-select]").setAttribute("aria-label", `Delete ${safeMethod} payment`);
 		row.querySelector("[data-payment-method]").value = safeMethod;
 		return row;
 	}
@@ -833,10 +830,7 @@ import {
 			}
 			if (payment.ref) row.querySelector("[data-payment-ref]").value = payment.ref;
 		}
-		const hasPayments = Boolean(paymentRows.querySelector("[data-payment-row]"));
 		paymentRows.style.display = "flex";
-		const paymentDeleteBtn = root.querySelector("#tp-payment-delete-btn");
-		if (paymentDeleteBtn) paymentDeleteBtn.disabled = !hasPayments;
 	}
 
 	// Mirrors createTicketOptionRow's add-button counterpart in trip-panel.js.

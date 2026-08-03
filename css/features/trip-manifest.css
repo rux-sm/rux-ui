@@ -112,6 +112,7 @@
 	z-index: 2;
 	display: flex;
 	flex-direction: column;
+	container-type: inline-size;
 	background: var(--rux-card-bg);
 	transform: translateX(-100%);
 	transition: transform var(--rux-duration-base) var(--rux-ease-out);
