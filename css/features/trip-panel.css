@@ -347,7 +347,7 @@
 .rux-trip-panel__payment-content {
 	min-width: 0;
 	overflow: hidden;
-	background: var(--rux-card-bg);
+	background: var(--rux-input-background);
 	border: var(--rux-card-border);
 	border-radius: var(--rux-card-radius);
 	transition: border-color var(--rux-input-transition);
@@ -362,7 +362,7 @@
 	align-items: center;
 	min-height: var(--rux-field-height);
 	padding-inline-start: var(--rux-control-padding-inline);
-	background: var(--rux-card-header-bg);
+	background: var(--rux-surface-5);
 	border-bottom: var(--rux-card-section-border);
 }
 .rux-trip-panel__payment-method {
@@ -393,6 +393,7 @@
 	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-card-content-gap);
 	padding: var(--rux-card-padding);
+	background: var(--rux-surface-5);
 }
 .rux-trip-panel__payment-reference {
 	grid-area: reference;
