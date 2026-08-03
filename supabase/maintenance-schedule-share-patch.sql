@@ -63,6 +63,7 @@ declare
 	v_start date;
 	v_end date;
 	v_trips jsonb;
+	v_buses jsonb;
 begin
 	if not exists (
 		select 1 from public.maintenance_schedule_shares
@@ -70,6 +71,13 @@ begin
 	) then return null; end if;
 	v_start := v_today - (extract(isodow from v_today)::integer - 1);
 	v_end := v_start + 13;
+	select coalesce(jsonb_agg(jsonb_build_object(
+		'id', b.id,
+		'number', b.number,
+		'sortOrder', b.sort_order
+	) order by b.sort_order nulls last, b.number), '[]'::jsonb)
+	into v_buses
+	from public.buses b;
 	select coalesce(jsonb_agg(item order by item->>'startDate'), '[]'::jsonb) into v_trips
 	from (
 		select jsonb_build_object(
@@ -121,7 +129,7 @@ begin
 	) items;
 	return jsonb_build_object(
 		'rangeStart', v_start, 'rangeEnd', v_end,
-		'generatedAt', now(), 'trips', v_trips
+		'generatedAt', now(), 'buses', v_buses, 'trips', v_trips
 	);
 end; $$;
 

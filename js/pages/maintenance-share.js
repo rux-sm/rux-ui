@@ -173,12 +173,16 @@ function render(data, changes = []) {
 	const end = date(data.rangeEnd);
 	const entries = entriesFor(data.trips || []);
 	const rows = new Map();
+	const fleet = Array.isArray(data.buses) ? data.buses : [];
+	for (const bus of fleet) {
+		if (bus?.number != null && String(bus.number).trim()) rows.set(String(bus.number), []);
+	}
 	for (const item of entries) {
 		if (!rows.has(item.bus)) rows.set(item.bus, []);
 		rows.get(item.bus).push(item);
 	}
 	root.replaceChildren();
-	if (!entries.length) return status("event_available", "No Trips Scheduled", "No main-calendar trips fall within these two weeks.");
+	if (!rows.size) return status("directions_bus", "No Buses", "No buses are available in the fleet roster.");
 
 	const scroll = el("div", "maintenance-schedule__scroll");
 	const schedule = el("section", "maintenance-schedule");
@@ -201,8 +205,9 @@ function render(data, changes = []) {
 		days.append(cell);
 	}
 	schedule.append(days);
+	const fleetOrder = new Map(fleet.map((bus) => [String(bus.number), bus.sortOrder]));
 	const busOrder = (bus) => {
-		const value = rows.get(bus)?.find((item) => item.busSortOrder != null)?.busSortOrder;
+		const value = fleetOrder.get(bus) ?? rows.get(bus)?.find((item) => item.busSortOrder != null)?.busSortOrder;
 		const number = Number(value);
 		return Number.isFinite(number) ? number : Number.POSITIVE_INFINITY;
 	};
@@ -212,7 +217,7 @@ function render(data, changes = []) {
 	for (const bus of buses) {
 		const items = withLanes(rows.get(bus));
 		const row = el("div", "maintenance-schedule__row");
-		row.style.setProperty("--lanes", Math.max(...items.map((item) => item.lane + 1)));
+		row.style.setProperty("--lanes", Math.max(1, ...items.map((item) => item.lane + 1)));
 		const label = el("strong", "", bus);
 		const track = el("div", "maintenance-schedule__track");
 		items.forEach((item) => track.append(tripBar(item, start, end)));
