@@ -52,7 +52,7 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-3);
-	padding: var(--rux-space-3) var(--rux-card-padding);
+	padding: var(--rux-space-3) var(--rux-card-padding-inline);
 	background: var(--rux-card-header-bg);
 	border-bottom: var(--rux-card-header-border);
 }

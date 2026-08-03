@@ -220,8 +220,30 @@
 .rux-trip-panel__contact-select:hover {
 	color: var(--rux-danger-hover);
 }
+#tp-contacts-list .rux-trip-panel__contact-row:focus-within .rux-trip-panel__contact-select,
+#tp-contacts-list .rux-trip-panel__contact-select:focus-visible {
+	width: var(--rux-field-height);
+	margin-left: var(--rux-space-2);
+	opacity: 1;
+	pointer-events: auto;
+}
+@media (hover: hover) {
+	#tp-contacts-list .rux-trip-panel__contact-row:hover .rux-trip-panel__contact-select {
+		width: var(--rux-field-height);
+		margin-left: var(--rux-space-2);
+		opacity: 1;
+		pointer-events: auto;
+	}
+}
+@media (hover: none) {
+	#tp-contacts-list .rux-trip-panel__contact-select {
+		width: var(--rux-field-height);
+		margin-left: var(--rux-space-2);
+		opacity: 1;
+		pointer-events: auto;
+	}
+}
 #tp-contacts-list.is-selecting .rux-trip-panel__contact-select,
-#tp-ticket-options-list.is-selecting .rux-trip-panel__contact-select,
 #dp-timeoff-rows.is-selecting .rux-trip-panel__contact-select {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
@@ -345,11 +367,6 @@
 	min-width: 0;
 }
 .rux-trip-panel__payment-content {
-	min-width: 0;
-	overflow: hidden;
-	background: var(--rux-input-background);
-	border: var(--rux-card-border);
-	border-radius: var(--rux-card-radius);
 	transition: border-color var(--rux-input-transition);
 }
 .rux-trip-panel__payment-content:hover,
@@ -357,14 +374,6 @@
 	border-color: var(--rux-input-hover);
 }
 
-.rux-trip-panel__payment-header {
-	display: flex;
-	align-items: center;
-	min-height: var(--rux-field-height);
-	padding-inline-start: var(--rux-control-padding-inline);
-	background: var(--rux-surface-5);
-	border-bottom: var(--rux-card-section-border);
-}
 .rux-trip-panel__payment-method {
 	display: flex;
 	align-items: center;
@@ -388,12 +397,12 @@
 
 .rux-trip-panel__payment-fields {
 	display: grid;
-	grid-template-columns: minmax(7rem, 1fr) 7rem 8rem;
-	grid-template-areas: "reference date amount";
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	grid-template-areas:
+		"date amount"
+		"reference reference";
 	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-card-content-gap);
-	padding: var(--rux-card-padding);
-	background: var(--rux-surface-5);
 }
 .rux-trip-panel__payment-reference {
 	grid-area: reference;
@@ -461,7 +470,6 @@
 .rux-trip-panel__payment-select:hover {
 	color: var(--rux-danger-hover);
 }
-#tp-ticket-delete-btn:disabled,
 #dp-timeoff-delete-btn:disabled {
 	display: none;
 }
@@ -568,19 +576,10 @@
 
 .rux-trip-panel__relief-details {
 	display: grid;
-	grid-template-columns: minmax(8rem, 0.55fr) minmax(0, 1.45fr);
+	grid-template-columns: minmax(0, 1fr);
 	grid-column: 1 / -1;
 	gap: var(--rux-control-content-gap);
 	padding: var(--rux-space-2);
-	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
-	border-radius: var(--rux-radius-md);
-}
-
-@media (max-width: 440px) {
-	.rux-trip-panel__relief-details {
-		grid-template-columns: 1fr;
-	}
 }
 
 /* 32px select shell + 28px nested status action. This composite gets its own
@@ -720,7 +719,9 @@
 }
 
 .rux-trip-panel__doc-select:focus-visible,
-.rux-trip-panel__payment-select:focus-visible {
+.rux-trip-panel__payment-select:focus-visible,
+#tp-ticket-options-list .rux-trip-panel__contact-row:focus-within .rux-trip-panel__contact-select,
+#tp-ticket-options-list .rux-trip-panel__contact-select:focus-visible {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
@@ -729,7 +730,8 @@
 
 @media (hover: hover) {
 	.rux-trip-panel__doc-row:hover .rux-trip-panel__doc-select,
-	.rux-trip-panel__payment-row:hover .rux-trip-panel__payment-select {
+	.rux-trip-panel__payment-row:hover .rux-trip-panel__payment-select,
+	#tp-ticket-options-list .rux-trip-panel__contact-row:hover .rux-trip-panel__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -739,7 +741,8 @@
 
 @media (hover: none) {
 	.rux-trip-panel__doc-select,
-	.rux-trip-panel__payment-select {
+	.rux-trip-panel__payment-select,
+	#tp-ticket-options-list .rux-trip-panel__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -765,10 +768,10 @@
 
 @container (max-width: 520px) {
 	.rux-trip-panel__payment-fields {
-		grid-template-columns: minmax(0, 1fr) 7rem;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		grid-template-areas:
-			"reference reference"
-			"date amount";
+			"date amount"
+			"reference reference";
 	}
 }
 
@@ -799,9 +802,9 @@
 	.rux-trip-panel__payment-fields {
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-areas:
-			"reference"
 			"date"
-			"amount";
+			"amount"
+			"reference";
 	}
 
 	.rux-trip-panel__payment-method {

@@ -386,6 +386,15 @@ import {
 			trip_contact_2_name:   root.querySelector("#tp-trip2-name")?.value?.trim() || null,
 			trip_contact_2_phone:  root.querySelector("#tp-trip2-phone")?.value?.trim() || null,
 			trip_contact_2_id:     root.querySelector("#tp-trip2-name")?.dataset.contactId || null,
+			trip_contact_3_name:   root.querySelector("#tp-trip3-name")?.value?.trim() || null,
+			trip_contact_3_phone:  root.querySelector("#tp-trip3-phone")?.value?.trim() || null,
+			trip_contact_3_id:     root.querySelector("#tp-trip3-name")?.dataset.contactId || null,
+			trip_contact_4_name:   root.querySelector("#tp-trip4-name")?.value?.trim() || null,
+			trip_contact_4_phone:  root.querySelector("#tp-trip4-phone")?.value?.trim() || null,
+			trip_contact_4_id:     root.querySelector("#tp-trip4-name")?.dataset.contactId || null,
+			trip_contact_5_name:   root.querySelector("#tp-trip5-name")?.value?.trim() || null,
+			trip_contact_5_phone:  root.querySelector("#tp-trip5-phone")?.value?.trim() || null,
+			trip_contact_5_id:     root.querySelector("#tp-trip5-name")?.dataset.contactId || null,
 			notes:                 fieldVal(root, "tp-notes"),
 			// Billing
 			contract_status:  contractSigned ? "Signed" : "Pending",
@@ -732,11 +741,17 @@ import {
 		if (bookNameInput) bookNameInput.dataset.contactId = trip.booking_contact_id || "";
 		const contactList = root.querySelector("#tp-contacts-list");
 		contactList?.querySelectorAll("[data-trip-contact]").forEach((row) => row.remove());
-		root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
-		setVal(root, "tp-trip1-name", trip.trip_contact_1_name);
-		setVal(root, "tp-trip1-phone", trip.trip_contact_1_phone);
-		const tripContactInput = root.querySelector("#tp-trip1-name");
-		if (tripContactInput) tripContactInput.dataset.contactId = trip.trip_contact_1_id || "";
+		let lastContactSlot = 1;
+		for (let number = 2; number <= 5; number += 1) {
+			if (trip[`trip_contact_${number}_name`] || trip[`trip_contact_${number}_phone`]) lastContactSlot = number;
+		}
+		for (let number = 1; number <= lastContactSlot; number += 1) {
+			root.dispatchEvent(new CustomEvent("rux:contact-row-needed", { bubbles: true }));
+			setVal(root, `tp-trip${number}-name`, trip[`trip_contact_${number}_name`]);
+			setVal(root, `tp-trip${number}-phone`, trip[`trip_contact_${number}_phone`]);
+			const input = root.querySelector(`#tp-trip${number}-name`);
+			if (input) input.dataset.contactId = trip[`trip_contact_${number}_id`] || "";
+		}
 		window.TripPanel?.setContactNotNeeded(root, !!trip.contact_not_needed);
 		window.TripPanel?.setItineraryNotNeeded(root, !!trip.itinerary_not_needed);
 		setVal(root, "tp-notes",       trip.notes);
@@ -781,8 +796,8 @@ import {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
-				<div class="rux-trip-panel__payment-header">
+			<div class="rux-card-section rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+				<div class="rux-card-section__header rux-trip-panel__payment-header">
 					<div class="rux-trip-panel__payment-method">
 						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
 						<span class="rux-trip-panel__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
@@ -790,10 +805,10 @@ import {
 					</div>
 					<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
 				</div>
-				<div class="rux-trip-panel__payment-fields">
-					<label class="rux-field rux-trip-panel__payment-reference"><span class="rux-field__label">Reference</span><input class="rux-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" /></label>
+				<div class="rux-card-section__body rux-trip-panel__payment-fields">
 					<label class="rux-field rux-trip-panel__payment-date-field"><span class="rux-field__label">Date</span><span class="rux-input rux-trip-panel__payment-date-control"><span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span><input class="rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" /></span></label>
 					<label class="rux-field rux-trip-panel__payment-amount"><span class="rux-field__label">Amount</span><span class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix" aria-hidden="true">$</span><input class="rux-input rux-trip-panel__payment-amount-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" /></span></label>
+					<label class="rux-field rux-trip-panel__payment-reference"><span class="rux-field__label">Reference</span><input class="rux-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" /></label>
 				</div>
 			</div>`;
 		const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
@@ -859,8 +874,6 @@ import {
 			if (option.label) row.querySelector("[data-ticket-label]").value = option.label;
 			if (option.price != null) row.querySelector("[data-ticket-price]").value = option.price;
 		});
-		const ticketDeleteBtn = root.querySelector("#tp-ticket-delete-btn");
-		if (ticketDeleteBtn) ticketDeleteBtn.disabled = !sorted.length;
 	}
 
 	// slot is this assignment's index *within its own leg* (derived by sorted
@@ -1336,6 +1349,7 @@ import {
 				{ idField: "booking_contact_id", inputId: "tp-book-name", name: tripData.booking_contact_name, phone: tripData.booking_contact_phone, email: tripData.booking_contact_email, id: tripData.booking_contact_id, client: tripData.customer },
 				{ idField: "trip_contact_1_id", inputId: "tp-trip1-name", name: tripData.trip_contact_1_name, phone: tripData.trip_contact_1_phone, email: null, id: tripData.trip_contact_1_id },
 				{ idField: "trip_contact_2_id", inputId: "tp-trip2-name", name: tripData.trip_contact_2_name, phone: tripData.trip_contact_2_phone, email: null, id: tripData.trip_contact_2_id },
+				...([3, 4, 5].map((number) => ({ idField: `trip_contact_${number}_id`, inputId: `tp-trip${number}-name`, name: tripData[`trip_contact_${number}_name`], phone: tripData[`trip_contact_${number}_phone`], email: null, id: tripData[`trip_contact_${number}_id`] }))),
 			];
 			const contactUpdates = {};
 			const contactSyncWarnings = [];
@@ -1666,6 +1680,15 @@ export function loadTrip(root, itinerary, trip) {
 		trip_contact_2_name:   trip.trip_contact_2_name   ?? trip.tripContact2?.name   ?? null,
 		trip_contact_2_phone:  trip.trip_contact_2_phone  ?? trip.tripContact2?.phone  ?? null,
 		trip_contact_2_id:     trip.trip_contact_2_id ?? null,
+		trip_contact_3_name:   trip.trip_contact_3_name ?? trip.tripContact3?.name ?? null,
+		trip_contact_3_phone:  trip.trip_contact_3_phone ?? trip.tripContact3?.phone ?? null,
+		trip_contact_3_id:     trip.trip_contact_3_id ?? null,
+		trip_contact_4_name:   trip.trip_contact_4_name ?? trip.tripContact4?.name ?? null,
+		trip_contact_4_phone:  trip.trip_contact_4_phone ?? trip.tripContact4?.phone ?? null,
+		trip_contact_4_id:     trip.trip_contact_4_id ?? null,
+		trip_contact_5_name:   trip.trip_contact_5_name ?? trip.tripContact5?.name ?? null,
+		trip_contact_5_phone:  trip.trip_contact_5_phone ?? trip.tripContact5?.phone ?? null,
+		trip_contact_5_id:     trip.trip_contact_5_id ?? null,
 		notes:                 trip.notes ?? null,
 		contract_status:       trip.contract_status ?? null,
 		contract_note:         trip.contract_note ?? null,
@@ -2092,7 +2115,7 @@ export async function fetchContactTrips(contactId) {
 	const { data, error } = await supabase
 		.from("trips")
 		.select("id, trip_ref, customer, destination, start_date, end_date")
-		.or(`booking_contact_id.eq.${contactId},trip_contact_1_id.eq.${contactId},trip_contact_2_id.eq.${contactId}`)
+		.or(`booking_contact_id.eq.${contactId},trip_contact_1_id.eq.${contactId},trip_contact_2_id.eq.${contactId},trip_contact_3_id.eq.${contactId},trip_contact_4_id.eq.${contactId},trip_contact_5_id.eq.${contactId}`)
 		.order("start_date", { ascending: false });
 	if (error) throw error;
 	return data ?? [];

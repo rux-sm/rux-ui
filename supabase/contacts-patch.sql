@@ -41,8 +41,20 @@ end $$;
 alter table public.trips
   add column if not exists booking_contact_id  uuid references public.contacts(id) on delete set null,
   add column if not exists trip_contact_1_id    uuid references public.contacts(id) on delete set null,
-  add column if not exists trip_contact_2_id    uuid references public.contacts(id) on delete set null;
+	add column if not exists trip_contact_2_id    uuid references public.contacts(id) on delete set null,
+	add column if not exists trip_contact_3_name  text,
+	add column if not exists trip_contact_3_phone text,
+	add column if not exists trip_contact_3_id    uuid references public.contacts(id) on delete set null,
+	add column if not exists trip_contact_4_name  text,
+	add column if not exists trip_contact_4_phone text,
+	add column if not exists trip_contact_4_id    uuid references public.contacts(id) on delete set null,
+	add column if not exists trip_contact_5_name  text,
+	add column if not exists trip_contact_5_phone text,
+	add column if not exists trip_contact_5_id    uuid references public.contacts(id) on delete set null;
 
 create index if not exists trips_booking_contact_id_idx on public.trips (booking_contact_id);
 create index if not exists trips_trip_contact_1_id_idx  on public.trips (trip_contact_1_id);
 create index if not exists trips_trip_contact_2_id_idx  on public.trips (trip_contact_2_id);
+create index if not exists trips_trip_contact_3_id_idx  on public.trips (trip_contact_3_id);
+create index if not exists trips_trip_contact_4_id_idx  on public.trips (trip_contact_4_id);
+create index if not exists trips_trip_contact_5_id_idx  on public.trips (trip_contact_5_id);

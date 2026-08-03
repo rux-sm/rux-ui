@@ -73,18 +73,10 @@
 
 .rux-trip-itinerary__summary-actions > .rux-button {
 	flex: none;
-	width: auto;
 }
 
-@container (max-width: 32rem) {
-	.rux-trip-itinerary__summary-actions .rux-btn-label {
-		display: none;
-	}
-
-	.rux-trip-itinerary__summary-actions > .rux-button {
-		width: var(--rux-control-height);
-		padding-inline: 0;
-	}
+.rux-trip-itinerary__summary-actions .rux-btn-label {
+	display: none;
 }
 
 /* — Day card — */
@@ -166,8 +158,8 @@
 
 /* — Stop row — */
 
-/* Three-column stop anatomy: a fixed marker/action lane, flexible address,
-   and fixed delete lane. Labels, times, and stats align to the address edges. */
+/* Three-column stop anatomy: an intrinsic marker lane, flexible address,
+   and transient delete lane. Labels, times, and stats align to the address. */
 .rux-trip-itinerary__stop {
 	position: relative;
 }
@@ -177,7 +169,7 @@
 	position: absolute;
 	top: 0;
 	bottom: 0;
-	left: calc(var(--rux-card-padding) + (var(--rux-field-height) / 2));
+	left: calc(var(--rux-card-padding-inline) + (var(--rux-itinerary-marker-size) / 2));
 	width: var(--rux-border-width);
 	background: var(--rux-border-subtle);
 }
@@ -187,7 +179,7 @@
    + the stack gap + half the address-field height reaches its exact center. */
 .rux-trip-itinerary__stop:has(.rux-trip-itinerary__marker-dot--pickup)::before {
 	top: calc(
-		var(--rux-card-padding)
+		var(--rux-card-padding-block)
 		+ var(--rux-trip-itinerary-label-height)
 		+ var(--rux-stack-gap)
 		+ (var(--rux-field-height) / 2)
@@ -198,7 +190,7 @@
 .rux-trip-itinerary__stop--terminal::before {
 	bottom: auto;
 	height: calc(
-		var(--rux-card-padding)
+		var(--rux-card-padding-block)
 		+ var(--rux-trip-itinerary-label-height)
 		+ var(--rux-stack-gap)
 		+ (var(--rux-field-height) / 2)
@@ -210,7 +202,7 @@
    fallback Add row. */
 .rux-trip-itinerary__day-group > .rux-card__header + .rux-trip-itinerary__stop::before {
 	top: calc(
-		var(--rux-card-padding)
+		var(--rux-card-padding-block)
 		+ var(--rux-trip-itinerary-label-height)
 		+ var(--rux-stack-gap)
 		+ (var(--rux-field-height) / 2)
@@ -221,7 +213,7 @@
 .rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__add-row)::before {
 	bottom: auto;
 	height: calc(
-		var(--rux-card-padding)
+		var(--rux-card-padding-block)
 		+ var(--rux-trip-itinerary-label-height)
 		+ var(--rux-stack-gap)
 		+ (var(--rux-field-height) / 2)
@@ -241,7 +233,7 @@
 .rux-trip-itinerary__stop > .rux-trip-itinerary__label-row,
 .rux-trip-itinerary__stop > .rux-trip-itinerary__time-row,
 .rux-trip-itinerary__stop > .rux-trip-itinerary__fields--pair {
-	margin-left: calc(var(--rux-field-height) + var(--rux-space-2));
+	margin-left: calc(var(--rux-itinerary-marker-size) + var(--rux-space-2));
 }
 
 /* — Rail marker — */
@@ -249,7 +241,7 @@
 	position: relative;
 	flex: none;
 	align-self: stretch;
-	width: var(--rux-field-height);
+	width: var(--rux-itinerary-marker-size);
 	padding-top: 3px;
 	display: flex;
 	justify-content: center;
@@ -263,8 +255,8 @@
 	position: relative;
 	z-index: 1;
 	flex: none;
-	width: 12px;
-	height: 12px;
+	width: var(--rux-itinerary-marker-size);
+	height: var(--rux-itinerary-marker-size);
 	margin-top: 3px;
 	border-radius: var(--rux-radius-full);
 	background: var(--rux-card-bg);
@@ -377,7 +369,7 @@
 	position: relative;
 	display: grid;
 	width: 100%;
-	grid-template-columns: var(--rux-field-height) minmax(0, 1fr);
+	grid-template-columns: var(--rux-itinerary-marker-size) minmax(0, 1fr);
 	align-items: center;
 	column-gap: var(--rux-space-2);
 	padding-right: 0;

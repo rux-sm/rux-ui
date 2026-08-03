@@ -9,6 +9,7 @@
 	color: var(--rux-card-fg);
 	border: var(--rux-card-border);
 	border-radius: var(--rux-card-radius);
+	box-shadow: var(--rux-card-shadow);
 	overflow: hidden;
 }
 
@@ -18,6 +19,7 @@
 
 .rux-card--elevated {
 	background: var(--rux-card-elevated-bg);
+	box-shadow: var(--rux-card-elevated-shadow);
 }
 
 .rux-card--stack {
@@ -33,7 +35,10 @@
 
 .rux-card--stack > .rux-card__header {
 	width: auto;
-	margin: calc(0px - var(--rux-card-padding)) calc(0px - var(--rux-card-padding)) 0;
+	margin:
+		calc(0px - var(--rux-card-padding-block))
+		calc(0px - var(--rux-card-padding-inline))
+		0;
 }
 
 .rux-card__header,
@@ -55,6 +60,30 @@
 
 .rux-card__section + .rux-card__section {
 	border-top: var(--rux-card-section-border);
+}
+
+/* Bordered content group nested inside a card without creating another
+   elevation level. Its regions deliberately reuse the parent card's spacing. */
+.rux-card-section {
+	min-width: 0;
+	overflow: hidden;
+	background: var(--rux-card-section-bg);
+	border: var(--rux-card-section-outline);
+	border-radius: var(--rux-card-radius);
+}
+
+.rux-card-section__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-card-content-gap);
+	min-height: var(--rux-card-header-height);
+	padding: var(--rux-card-header-padding);
+	background: var(--rux-card-section-header-bg);
+}
+
+.rux-card-section__body {
+	padding: var(--rux-card-padding);
 }
 
 .rux-card__header {

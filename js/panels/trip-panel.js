@@ -171,7 +171,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 		.map(
 			(r) => {
 				const reliefDetails = r.role.startsWith("relief")
-					? `<div class="rux-trip-panel__relief-details">
+					? `<div class="rux-card-section rux-trip-panel__relief-details">
 						<div class="rux-field">
 							<label class="rux-field__label" for="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time">Meet / swap time</label>
 							<input class="rux-input" id="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.reportTime" type="time" aria-label="${escHtml(r.title)} meet or swap time" />
@@ -186,7 +186,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
         <span class="rux-input-group__prefix">
-          <button type="button" class="rux-button rux-button--default rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
             <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
           </button>
         </span>
@@ -208,13 +208,13 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <header class="rux-card__header">
       <p class="rux-card__title">Bus ${idx + 1}</p>
       <div class="rux-cluster">
-        <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
+        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
           <span class="rux-icon" aria-hidden="true">group</span>
         </button>
-        <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
+        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief1" title="Relief 1 — start" aria-label="Relief 1 — start">
           <span class="rux-icon" aria-hidden="true">person_add</span>
         </button>
-        <button class="rux-button rux-button--default rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
+        <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="relief2" title="Relief 2 — end" aria-label="Relief 2 — end">
           <span class="rux-icon" aria-hidden="true">person_remove</span>
         </button>
       </div>
@@ -230,7 +230,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
       <div class="rux-trip-panel__driver-row">
         <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
           <span class="rux-input-group__prefix">
-            <button type="button" class="rux-button rux-button--default rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
               <span class="rux-icon" aria-hidden="true">person</span>
             </button>
           </span>
@@ -358,8 +358,8 @@ function initBillingWorkflow(root) {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
-				<div class="rux-trip-panel__payment-header">
+			<div class="rux-card-section rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+				<div class="rux-card-section__header rux-trip-panel__payment-header">
 					<div class="rux-trip-panel__payment-method">
 						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
 						<span class="rux-trip-panel__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
@@ -369,11 +369,7 @@ function initBillingWorkflow(root) {
 						<span class="rux-icon" aria-hidden="true">delete</span>
 					</button>
 				</div>
-				<div class="rux-trip-panel__payment-fields">
-					<label class="rux-field rux-trip-panel__payment-reference">
-						<span class="rux-field__label">Reference</span>
-						<input class="rux-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" />
-					</label>
+				<div class="rux-card-section__body rux-trip-panel__payment-fields">
 					<label class="rux-field rux-trip-panel__payment-date-field">
 						<span class="rux-field__label">Date</span>
 						<span class="rux-input rux-trip-panel__payment-date-control">
@@ -387,6 +383,10 @@ function initBillingWorkflow(root) {
 							<span class="rux-input-group__prefix" aria-hidden="true">$</span>
 							<input class="rux-input rux-trip-panel__payment-amount-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
 						</span>
+					</label>
+					<label class="rux-field rux-trip-panel__payment-reference">
+						<span class="rux-field__label">Reference</span>
+						<input class="rux-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" />
 					</label>
 				</div>
 			</div>`;
@@ -617,19 +617,14 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 
 // Named price options a Ticketed trip can offer (e.g. "Single", "Double —
 // per person"). Same repeating-list recipe as Trip Contacts: a plain "+"
-// appends a blank row immediately (no type menu needed, unlike Payments),
-// and the header Delete button arms "select which one" mode.
+// appends a blank row immediately (no type menu needed, unlike Payments).
+// Each row exposes its own delete action on hover/focus.
 function initTicketPricing(root) {
 	const ticketList = root.querySelector("#tp-ticket-options-list");
 	const ticketAddBtn = root.querySelector("#tp-ticket-add-btn");
-	const ticketDeleteBtn = root.querySelector("#tp-ticket-delete-btn");
 	if (!ticketList) return;
 
 	let rowSeq = 0;
-	const ticketOptionCount = () => ticketList.querySelectorAll("[data-ticket-option-row]").length;
-	const syncTicketButtons = () => {
-		if (ticketDeleteBtn) ticketDeleteBtn.disabled = ticketOptionCount() === 0;
-	};
 	const createTicketOptionRow = () => {
 		const n = ++rowSeq;
 		const row = document.createElement("div");
@@ -648,46 +643,24 @@ function initTicketPricing(root) {
 	const addTicketOptionRow = ({ focus = true } = {}) => {
 		const row = createTicketOptionRow();
 		ticketList.appendChild(row);
-		syncTicketButtons();
 		if (focus) row.querySelector("[data-ticket-label]")?.focus();
 		return row;
-	};
-
-	let selecting = false;
-	const setSelecting = (on) => {
-		selecting = on;
-		ticketList.classList.toggle("is-selecting", on);
-		if (ticketDeleteBtn) {
-			ticketDeleteBtn.setAttribute("aria-pressed", String(on));
-			ticketDeleteBtn.querySelector(".rux-icon").textContent = on ? "close" : "delete";
-			ticketDeleteBtn.setAttribute("aria-label", on ? "Cancel delete" : "Delete an option");
-		}
 	};
 	const deleteTicketOption = (row) => {
 		const hasData = Array.from(row.querySelectorAll("input")).some((el) => el.value);
 		if (hasData && !confirm("Delete this option?")) return;
 		row.remove();
-		setSelecting(false);
-		syncTicketButtons();
 	};
 
 	ticketAddBtn?.addEventListener("click", () => addTicketOptionRow());
-	ticketDeleteBtn?.addEventListener("click", () => setSelecting(!selecting));
 	ticketList.addEventListener("click", (e) => {
 		const selectBtn = e.target.closest("[data-ticket-option-select]");
-		if (selectBtn && selecting) deleteTicketOption(selectBtn.closest("[data-ticket-option-row]"));
-	});
-	document.addEventListener("keydown", (e) => {
-		if (e.key === "Escape" && selecting) setSelecting(false);
+		if (selectBtn) deleteTicketOption(selectBtn.closest("[data-ticket-option-row]"));
 	});
 	root.addEventListener("rux:ticket-option-row-needed", () => addTicketOptionRow({ focus: false }));
 	root.addEventListener("rux:trip-cleared", () => {
 		ticketList.querySelectorAll("[data-ticket-option-row]").forEach((row) => row.remove());
-		setSelecting(false);
-		syncTicketButtons();
 	});
-
-	syncTicketButtons();
 }
 
 /* ── Trip Type / Billing Type ────────────────────────────────────────────── */
@@ -962,28 +935,55 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	const contactList = root.querySelector("#tp-contacts-list");
 	if (contactList) {
+		const contactAddBtn = root.querySelector("#tp-contact-add-btn");
 		const contactCount = () => contactList.querySelectorAll("[data-trip-contact]").length;
+		const renumberContactRows = () => {
+			contactList.querySelectorAll("[data-trip-contact]").forEach((row, offset) => {
+				const number = offset + 1;
+				const nameInput = row.querySelector("[data-trip-contact-name]");
+				const phoneInput = row.querySelector("[data-trip-contact-phone]");
+				const nameLabel = row.querySelector("[data-trip-contact-name-label]");
+				const phoneLabel = row.querySelector("[data-trip-contact-phone-label]");
+				nameInput.id = `tp-trip${number}-name`;
+				nameInput.name = `tripContact${number}.name`;
+				phoneInput.id = `tp-trip${number}-phone`;
+				phoneInput.name = `tripContact${number}.phone`;
+				nameLabel.htmlFor = nameInput.id;
+				nameLabel.textContent = `Contact Name ${number}`;
+				phoneLabel.htmlFor = phoneInput.id;
+				phoneLabel.textContent = `Contact Phone ${number}`;
+			});
+			if (contactAddBtn) contactAddBtn.disabled = contactCount() >= 5;
+		};
 		const addContactRow = ({ focus = false } = {}) => {
-			if (contactCount() >= 1) return;
+			if (contactCount() >= 5) return;
 			const row = document.createElement("div");
 			row.className = "rux-trip-panel__contact-row";
 			row.dataset.tripContact = "";
 			row.innerHTML =
 				`<div class="rux-trip-panel__contact-fields">
-					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-name">Trip Contact Name</label><input class="rux-input" id="tp-trip1-name" name="tripContact1.name" type="text" /></div>
-					<div class="rux-field"><label class="rux-field__label" for="tp-trip1-phone">Trip Contact Phone</label><input class="rux-input" id="tp-trip1-phone" name="tripContact1.phone" type="tel" /></div>
-				</div>`;
+					<div class="rux-field"><label class="rux-field__label" data-trip-contact-name-label></label><input class="rux-input" data-trip-contact-name type="text" /></div>
+					<div class="rux-field"><label class="rux-field__label" data-trip-contact-phone-label></label><input class="rux-input" data-trip-contact-phone type="tel" /></div>
+				</div>
+				<button type="button" class="rux-trip-panel__contact-select" data-trip-contact-delete aria-label="Delete trip contact"><span class="rux-icon" aria-hidden="true">delete</span></button>`;
 			contactList.appendChild(row);
 			contactList.style.display = "flex";
-			attachContactAutofill(row.querySelector("#tp-trip1-name"), {
-				phoneInput: row.querySelector("#tp-trip1-phone"),
+			renumberContactRows();
+			const nameInput = row.querySelector("[data-trip-contact-name]");
+			attachContactAutofill(nameInput, {
+				phoneInput: row.querySelector("[data-trip-contact-phone]"),
 			});
-			if (focus) row.querySelector("#tp-trip1-name")?.focus();
+			if (focus) nameInput?.focus();
 		};
 
-		// Loading/clearing a trip asks for the single permanent row after the
-		// previous row has been removed.
 		root.addEventListener("rux:contact-row-needed", () => addContactRow({ focus: false }));
+		contactAddBtn?.addEventListener("click", () => addContactRow({ focus: true }));
+		contactList.addEventListener("click", (event) => {
+			const button = event.target.closest("[data-trip-contact-delete]");
+			if (!button || contactCount() <= 1) return;
+			button.closest("[data-trip-contact]")?.remove();
+			renumberContactRows();
+		});
 
 		addContactRow({ focus: false });
 	}

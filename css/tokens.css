@@ -23,15 +23,15 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.240 024.0); /*  Gore  */
+	--rux-red:    oklch(60.0% 0.280 024.0); /*  Gore  */
 	--rux-orange: oklch(80.0% 0.240 050.0); /*  Pyro  */
 	--rux-yellow: oklch(80.0% 0.220 085.0); /*  Gold  */
-	--rux-green:  oklch(60.0% 0.240 140.0); /*  Moss  */
-	--rux-cyan:   oklch(60.0% 0.240 195.0); /*  Wind  */
-	--rux-blue:   oklch(60.0% 0.240 255.0); /*  Mana  */
-	--rux-purple: oklch(60.0% 0.240 290.0); /*  Void  */
-	--rux-pink:   oklch(60.0% 0.240 350.0); /*  Neon  */
-	--rux-gray:   oklch(60.0% 0.004 255.0); /*  Iron  */
+	--rux-green:  oklch(60.0% 0.280 140.0); /*  Moss  */
+	--rux-cyan:   oklch(60.0% 0.280 195.0); /*  Wind  */
+	--rux-blue:   oklch(60.0% 0.280 255.0); /*  Mana  */
+	--rux-purple: oklch(60.0% 0.280 290.0); /*  Void  */
+	--rux-pink:   oklch(60.0% 0.280 350.0); /*  Neon  */
+	--rux-gray:   oklch(40.0% 0.004 255.0); /*  Iron  */
 
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
@@ -50,7 +50,7 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 36% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) 28% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -152,11 +152,15 @@
 	--rux-shadow-recessed: /* Recessed fields and tracks. */
 		inset 0 2px 4px rgba(0, 0, 0, 0.4);
 
-	--rux-shadow-raised: /* Raised and pressed control states. */
-		inset 0 1px 0 var(--rux-state-hover-overlay),
-		inset 0 -1px 0 rgba(0, 0, 0, 0.35),
-		0 1px 2px rgba(0, 0, 0, 0.35);
+	--rux-shadow-raised: /* Universal inset bevel for solid controls. */
+		inset 0 2px 0px rgb(255 255 255 / 8%),
+		inset 0 -2px 0px rgb(0 0 0 / 16%),
+		inset 2px 0 0px rgb(255 255 255 / 5%),
+		inset -2px 0 0px rgb(255 255 255 / 5%),
+		0 2px 4px rgb(0 0 0 / 28%);
+
 	--rux-shadow-pressed: inset 0 1px 2px rgba(0, 0, 0, 0.35);
+	--rux-card-shadow: 0 2px 4px rgb(0 0 0 / 20%);
 
 	/* ─── MOTION ─────────────────────────────────────────────────────────── */
 
@@ -176,13 +180,13 @@
 	/* Higher numbers are lighter and visually closer. */
 
 	--rux-surface-1:        oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-2:        oklch(from var(--rux-neutral) 16% c h);
-	--rux-surface-3:        oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-4:        oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-5:        oklch(from var(--rux-neutral) 28% c h);
-	--rux-surface-6:        oklch(from var(--rux-neutral) 32% c h);
-	--rux-surface-7:        oklch(from var(--rux-neutral) 36% c h);
-	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
+	--rux-surface-2:        oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-3:        oklch(from var(--rux-neutral) 22% c h);
+	--rux-surface-4:        oklch(from var(--rux-neutral) 26% c h);
+	--rux-surface-5:        oklch(from var(--rux-neutral) 30% c h);
+	--rux-surface-6:        oklch(from var(--rux-neutral) 34% c h);
+	--rux-surface-7:        oklch(from var(--rux-neutral) 38% c h);
+	--rux-surface-contrast: oklch(from var(--rux-neutral) 42% c h);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
@@ -204,7 +208,7 @@
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg: var(--rux-surface-2);
+	--rux-well-bg: var(--rux-surface-3);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 	/* Components use this shared foreground hierarchy. Subtle, placeholder,
@@ -259,7 +263,7 @@
 
 	--rux-control-height:    28px;
 	--rux-control-height-sm: var(--rux-control-height);
-	--rux-field-height:      var(--rux-control-height);
+	--rux-field-height:      32px;
 
 	--rux-avatar-sm: 24px;
 	--rux-avatar-md: 32px;
@@ -415,16 +419,24 @@
 	/* — section (divider between stacked .rux-card__section siblings) — */
 	--rux-card-section-border: var(--rux-card-border-width) solid
 		var(--rux-border);
+	--rux-card-section-bg: var(--rux-surface-5);
+	--rux-card-section-outline: var(--rux-card-border);
+	--rux-card-section-header-bg: var(--rux-card-section-bg);
+	--rux-card-section-header-border: var(--rux-card-section-border);
 
 	/* — variants: elevated / interactive hover — */
 	/* Elevated cards use their own depth between the card and modal tiers. */
 	--rux-card-elevated-bg:  oklch(from var(--rux-neutral) 14% c h);
+	--rux-card-elevated-shadow: var(--rux-card-shadow);
 	--rux-card-hover-bg:     var(--rux-bg-hover);
 	--rux-card-hover-border: var(--rux-border);
 
 	/* — shared across header/body/footer/section, not any one part's own — */
-	--rux-card-padding:     var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
+	--rux-card-padding-block:  var(--rux-space-4);
+	--rux-card-padding-inline: var(--rux-space-4);
+	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
 	--rux-card-content-gap: var(--rux-space-4);
+	--rux-itinerary-marker-size: 12px;
 
 	/* ─── COMPONENT · trip bar · category colors ──────────────────────────── */
 
@@ -475,18 +487,18 @@
 	--rux-field-label-fg:        var(--rux-text-secondary);
 	--rux-field-help-fg:         var(--rux-fg-subtle);
 	--rux-field-error-fg:        var(--rux-danger);
-	--rux-input-height:          var(--rux-control-height);
+	--rux-input-height:          var(--rux-field-height);
 	--rux-input-padding-inline:  var(--rux-control-padding-inline);
 	--rux-input-border:       1px solid var(--rux-border);
 	--rux-input-border-image: none;
 	--rux-textarea-min-height:   84px;
 	--rux-input-shadow:          var(--rux-shadow-recessed);
-	--rux-input-background:      var(--rux-surface-3);
+	--rux-input-background:      var(--rux-well-bg);
 	--rux-input-fg:              var(--rux-fg);
 	--rux-input-font-size:       var(--rux-text-sm);
 	--rux-input-placeholder-fg:  var(--rux-fg-subtle);
 	--rux-input-hover:           var(--rux-accent);
-	--rux-input-disabled-bg:     var(--rux-surface-2);
+	--rux-input-disabled-bg:     var(--rux-surface-4);
 	--rux-input-disabled-border: var(--rux-border);
 	--rux-input-disabled-fg:     var(--rux-fg-disabled);
 	--rux-input-invalid-border:  var(--rux-danger);
@@ -578,7 +590,7 @@
 
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background:       var(--rux-surface-7);
+	--rux-button-default-background:       var(--rux-gray);
 	--rux-button-default-border:           none;
 
 	--rux-button-default-text:             var(--rux-fg);
@@ -728,9 +740,9 @@
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
 
 	--rux-segmented-track-bg:         var(--rux-surface-3);
-	--rux-segmented-track-padding:    var(--rux-space-0);
+	--rux-segmented-track-padding:    var(--rux-border-width);
 	--rux-segmented-track-radius:     var(--rux-radius-container);
-	--rux-segmented-track-height:     var(--rux-input-height);
+	--rux-segmented-track-height:     var(--rux-space-6);
 	/* The track shares input chrome; its indicator is measured at runtime. */
 	--rux-segmented-track-border:     var(--rux-input-border);
 	--rux-segmented-track-gap:        var(--rux-space-0);
