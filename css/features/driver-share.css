@@ -3,6 +3,56 @@
    Mobile-first, modular assignment cards reached through a revocable link.
    ========================================================================== */
 
+/* Feature contract --------------------------------------------------------
+   These values belong to the driver schedule and its components-demo
+   specimen. Keeping them here prevents one-off page anatomy from expanding
+   the global token system. :where() keeps the defaults easy to override. */
+
+:where(.driver-share-page, .components-app__driver-assignment-demo) {
+	--rux-driver-page-max-width:          520px;
+	--rux-driver-phone-preview-max-width: 430px;
+	--rux-driver-page-gutter:             var(--rux-space-4);
+	--rux-driver-page-gutter-compact:     var(--rux-space-3);
+	--rux-driver-page-bottom-padding:     var(--rux-space-7);
+	--rux-driver-card-gap:                var(--rux-space-5);
+	--rux-driver-logo-width:              160px;
+	--rux-driver-logo-width-compact:      136px;
+	--rux-driver-logo-max-width:          52vw;
+	--rux-driver-card-bg:                 var(--rux-surface-card);
+	--rux-driver-card-border:             var(--rux-border-width) solid var(--rux-border);
+	--rux-driver-card-radius:             var(--rux-radius-container);
+	--rux-driver-card-header-padding:     28px var(--rux-space-5);
+	--rux-driver-card-header-min-size:    112px;
+	--rux-driver-module-padding:          20px var(--rux-space-5);
+	--rux-driver-module-label-min:        112px;
+	--rux-driver-module-label-width:      124px;
+	--rux-driver-module-icon-size:        48px;
+	--rux-driver-module-grid-gap:         var(--rux-space-4);
+	--rux-driver-action-rail-width:       96px;
+	--rux-driver-module-divider:          oklch(from var(--rux-neutral) 100% c h / 12%);
+	--rux-driver-internal-divider:        oklch(from var(--rux-neutral) 100% c h / 9%);
+	--rux-driver-touch-target:            48px;
+	--rux-driver-copy-max-width:          28rem;
+	--rux-driver-status-min-height:       60dvh;
+	--rux-driver-page-title-size:         clamp(2.25rem, 7vw, 2.5rem);
+	--rux-driver-date-primary-size:       1rem;
+	--rux-driver-date-primary-weight:     var(--rux-weight-medium);
+	--rux-driver-time-size:               1.5rem;
+	--rux-driver-primary-size:            var(--rux-text-lg);
+	--rux-driver-secondary-size:          var(--rux-text-lg);
+	--rux-driver-label-size:              var(--rux-text-xs);
+	--rux-driver-control-bg:              var(--rux-surface-field);
+	--rux-driver-control-radius:          var(--rux-radius-lg);
+	--rux-driver-accent-soft:             color-mix(in oklch, var(--rux-accent) 16%, transparent);
+	--rux-driver-warning-soft:            color-mix(in oklch, var(--rux-warning) 12%, transparent);
+	--rux-driver-danger-soft:             color-mix(in oklch, var(--rux-danger) 12%, transparent);
+	--rux-driver-notes-clamp:             6lh;
+	--rux-driver-notes-lines:             4;
+	--rux-driver-skeleton-line-width:     62%;
+	--rux-driver-skeleton-opacity:        0.48;
+	--rux-driver-focus-ring:              0 0 0 3px var(--rux-accent-ring);
+}
+
 html {
 	background: var(--rux-surface-canvas);
 }
@@ -803,7 +853,7 @@ html {
 }
 
 .driver-share-dialog::backdrop {
-	background: var(--rux-bg-overlay);
+	background: var(--rux-overlay-scrim);
 	backdrop-filter: blur(var(--rux-overlay-blur));
 }
 

@@ -48,7 +48,7 @@
 .rux-modal-backdrop {
   position: fixed;
   inset: 0;
-  background: var(--rux-bg-overlay);
+  background: var(--rux-overlay-scrim);
   backdrop-filter: blur(var(--rux-overlay-blur));
   -webkit-backdrop-filter: blur(var(--rux-overlay-blur));
   z-index: var(--rux-z-modal);

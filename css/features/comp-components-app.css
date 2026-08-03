@@ -69,7 +69,7 @@
 	justify-content: center;
 	gap: var(--rux-button-group-gap);
 	background: var(--_accent-surface, var(--rux-accent));
-	border: var(--rux-border-width) solid var(--rux-alpha-white-16);
+	border: var(--rux-border-width) solid var(--rux-state-active-overlay);
 	border-radius: var(--rux-radius-container);
 }
 

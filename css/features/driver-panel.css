@@ -90,7 +90,7 @@
 	padding: 0;
 	background: var(--rux-surface-card);
 	border: 0;
-	border-radius: var(--rux-radius-0);
+	border-radius: var(--rux-radius-container);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);

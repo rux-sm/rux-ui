@@ -140,7 +140,7 @@ test("trip interaction surfaces derive modest state changes from one base bright
 		tokensCss,
 		/--rux-trip-bar-pressed-bg-lightness:\s*calc\(var\(--rux-trip-bar-bg-lightness\) - var\(--rux-trip-bar-state-lightness-step\)\)/,
 	);
-	assert.match(tokensCss, /--rux-trip-bar-bg-opacity:\s*32%/);
+	assert.match(tokensCss, /--rux-trip-bar-bg-opacity:\s*24%/);
 	assert.match(tokensCss, /--rux-trip-bar-hover-bg-opacity:\s*40%/);
 	assert.match(tokensCss, /--rux-trip-bar-pressed-bg-opacity:\s*44%/);
 	assert.match(tokensCss, /--rux-trip-bar-selected-bg-opacity:\s*48%/);

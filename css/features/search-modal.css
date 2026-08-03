@@ -13,7 +13,7 @@
 }
 
 .rux-search-modal::backdrop {
-	background: var(--rux-bg-overlay);
+	background: var(--rux-overlay-scrim);
 	backdrop-filter: blur(var(--rux-overlay-blur));
 	-webkit-backdrop-filter: blur(var(--rux-overlay-blur));
 }

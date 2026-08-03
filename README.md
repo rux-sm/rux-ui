@@ -107,7 +107,7 @@ The system has **four background planes**, all near-black with subtle separation
 | `--rux-bg-elevated` | `oklch(24% 0.004 260)` | Cards, panels, menus, modals |
 | `--rux-bg-hover` / `--rux-bg-active` | `#292929` / `#303030` | Interactive states |
 
-**No gradients** except `--rux-bg-overlay` (a flat 60% black scrim for modals). No full-bleed imagery as background. No textures, patterns, grain. Surfaces are flat color separated by hairlines.
+**No gradients** except `--rux-overlay-scrim` (a flat 60% black scrim for modals). No full-bleed imagery as background. No textures, patterns, grain. Surfaces are flat color separated by hairlines.
 
 ### Color
 
@@ -212,11 +212,11 @@ Use component semantic tokens in component CSS; use the primitive scale only whe
 
 ```
 --rux-radius-0       0px
---rux-radius-xs      2px
---rux-radius-sm      4px
+--rux-radius-xs      4px
+--rux-radius-sm      6px
 --rux-radius-md      8px
---rux-radius-lg     16px
---rux-radius-xl     24px
+--rux-radius-lg     12px
+--rux-radius-xl     16px
 --rux-radius-full 9999px
 ```
 
@@ -226,14 +226,13 @@ Panels use `--rux-panel-radius`, cards use `--rux-card-radius`, buttons use `--r
 
 Borders are **hairlines** (always 1px) at one of three intensities (`--rux-border-subtle`, `--rux-border`, `--rux-border-strong`). Solid buttons, segmented controls, and base cards keep a transparent border slot so hover, focus, and active states never shift layout. Shadows are reserved for floating surfaces and subtle tactile lift on buttons.
 
-**Shadow scale:**
-- `--rux-shadow-0` — no shadow
-- `--rux-shadow-1` — minimally raised surfaces
-- `--rux-shadow-2` — buttons, selected controls, and toasts
-- `--rux-shadow-3` — menus and tooltips
-- `--rux-shadow-4` — modals and high overlays
+The active shadow recipes are intentionally small:
 
-> **Current state:** All shadow tokens are set to `none` in `tokens.css` — the app runs flat for now. Some inset shadows on form fields and the segmented button are hardcoded and also disabled. A shadow toggle (flat vs. elevated) is planned; enabling it will uncomment all shadow values in one place.
+- `--rux-shadow-1` — recessed inputs and segmented tracks
+- `--rux-shadow-button-raised` — tactile solid-button rest state
+- `--rux-shadow-button-pressed` — tactile solid-button pressed state
+
+Floating surfaces remain flat. Add a new elevation token only when a rendered component actually needs it.
 
 Use inset shadows only when they describe state or material: form fields are permanent recessed containers; pressed toggle buttons are latched controls. Do not add decorative bevels to cards or generic surfaces.
 
@@ -278,7 +277,7 @@ Default easing is `--rux-ease-out` (`cubic-bezier(0.22, 1, 0.36, 1)`) — fast s
 
 ### Transparency & blur
 
-Used in exactly one place: the modal scrim (`--rux-bg-overlay`, 60% black + `backdrop-filter: blur(4px)`). Everywhere else, surfaces are opaque. No glass cards, no frosted panels, no translucent sidebars — they create ambiguity about what's a layer and what's a state.
+Used for modal and blocking-layer scrims (`--rux-overlay-scrim`, 60% black + `backdrop-filter: blur(4px)`). Everywhere else, surfaces are opaque. No glass cards, no frosted panels, no translucent sidebars — they create ambiguity about what's a layer and what's a state.
 
 ### Imagery
 

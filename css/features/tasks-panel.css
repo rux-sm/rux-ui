@@ -39,7 +39,7 @@
 	padding: var(--rux-space-4);
 	background: var(--rux-surface-field);
 	border: var(--rux-border-width) solid var(--rux-border);
-	border-radius: var(--rux-radius-0);
+	border-radius: var(--rux-radius-container);
 }
 
 .rux-tasks__trip + .rux-tasks__trip {
@@ -252,14 +252,14 @@
 }
 
 .rux-tasks__requirement-input--warning {
-	color: var(--rux-warning-text, var(--rux-warning));
+	color: var(--rux-warning);
 }
 
 /* An assigned bus that fails the requirement (wrong capacity, no lift, no
    sleeper) is an active conflict to fix, not just an outstanding task —
    distinct from --warning, which is "no bus assigned yet" (still normal). */
 .rux-tasks__requirement-input--danger {
-	color: var(--rux-danger-text, var(--rux-danger));
+	color: var(--rux-danger);
 }
 
 @media (max-width: 420px) {

@@ -132,7 +132,7 @@
 	width: var(--rux-avatar-md);
 	height: var(--rux-avatar-md);
 	background: var(--rux-surface-card);
-	border-radius: var(--rux-radius-0);
+	border-radius: var(--rux-radius-control);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);

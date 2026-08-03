@@ -28,7 +28,7 @@
 }
 
 .trips-filter-chip__remove:hover {
-	background: var(--rux-alpha-white-16);
+	background: var(--rux-state-hover-overlay);
 }
 
 .trips-filter-chip__remove .rux-icon {

@@ -56,6 +56,23 @@
 	--_state-overlay: var(--rux-button-active-overlay);
 }
 
+/* Unconditional, not just :focus-visible — a mouse click still triggers
+   plain :focus (and with it the browser's own default outline from its UA
+   stylesheet), even in browsers whose :focus-visible heuristics decide the
+   interaction doesn't warrant a *visible* focus ring. Suppressing the
+   native outline only inside :focus-visible left that gap: Safari in
+   particular still drew its default outline on a mouse-focused button
+   here, which is exactly the "border comes back" report this was meant to
+   fix. Outline is always off; the custom ring below only ever shows for
+   the subset of focus events :focus-visible actually matches. */
+.rux-button:focus {
+	outline: none;
+}
+
+.rux-button:focus-visible {
+	box-shadow: var(--rux-button-focus-ring);
+}
+
 .rux-button:disabled,
 .rux-button[aria-disabled="true"] {
 	color: var(--rux-button-disabled-text);
@@ -784,13 +801,18 @@
 	padding: 0;
 }
 
-/* Text color is the only hover cue — bg/border stay exactly as they are at
-   rest. border-color is still reasserted (not just omitted) to block the
-   generic .rux-button:hover rule's accent-blue border from leaking in; an
-   inactive segment isn't "selected," so it shouldn't borrow the active
-   segment's own blue outline just from being hovered. */
+/* Text color is the only hover cue — bg stays exactly as it is at rest.
+   border: none (not border-color) — --rux-segment-border (the resting
+   border) is now `none` itself (0 width), not a real 1px transparent
+   border, so hover has to match that same 0 width or the generic
+   .rux-button:hover rule's uncontested 1px solid becomes the only rule
+   supplying border-width/style and the button visibly grows a border on
+   hover (the pixel-shift bug). Reasserting `none` (not just omitting it)
+   also blocks that rule's accent-blue color from leaking in — an inactive
+   segment isn't "selected," so it shouldn't borrow the active segment's
+   own border just from being hovered. */
 .rux-button--segment:hover:not(.is-active):not([aria-pressed="true"]) {
-	border-color: transparent;
+	border: none;
 	color: var(--rux-segment-fg-hover);
 }
 
@@ -798,20 +820,20 @@
 .rux-button--segment[aria-pressed="true"] {
 	background: var(--rux-segment-active-background);
 	color: var(--rux-segment-active-text);
-	/* border-color, not the `border` shorthand — width/style stay exactly
-	   what the resting .rux-button--segment rule already set (1px solid),
-	   so going active only ever animates a color, and it starts/ends on
-	   the same transparent value besides. See --rux-segment-active-border-
-	   color in tokens.css for the transition-flash bug this replaces. */
-	border-color: var(--rux-segment-active-border-color);
+	/* Same reasoning as the inactive :hover rule above — border: none, not
+	   border-color, matching --rux-segment-border's own 0 width so nothing
+	   changes width between resting/active/hover. */
+	border: none;
+	box-shadow: var(--rux-segment-active-shadow);
 }
 
-/* The generic button hover selector writes its accent directly to `color`.
-   Reassert the selected segment foreground at matching state specificity so
-   hovering never turns active text into the accent color. */
+/* The generic button hover selector writes its accent directly to `color`
+   and border. Reassert the selected segment's own foreground at matching
+   state specificity, and keep border at none, so hovering an already-
+   active segment doesn't turn its text accent-blue or grow a border. */
 .rux-button--segment:is(.is-active, [aria-pressed="true"]):hover:not(:disabled):not([aria-disabled="true"]) {
 	color: var(--rux-segment-active-text);
-	border-color: var(--rux-segment-active-border-color);
+	border: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

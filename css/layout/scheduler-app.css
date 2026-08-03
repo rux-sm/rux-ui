@@ -830,7 +830,7 @@
 	   below needs, so gaining a real border doesn't shift the row's content
 	   by a pixel. */
 	border: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-radius-0);
+	border-radius: var(--rux-radius-control);
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	text-align: left;
@@ -966,8 +966,8 @@
 	width: 100%;
 	height: var(--rux-driver-grid-cell-size);
 	padding: 0;
-	border-radius: var(--rux-radius-0);
-	background: var(--rux-surface-button-default);
+	border-radius: var(--rux-radius-control);
+	background: var(--rux-button-default-background);
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
 	   quietly as a plain .rux-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
@@ -1088,7 +1088,7 @@
    the driver panel/roster. */
 .rux-driver-grid__popover-avatar {
 	flex: none;
-	border-radius: var(--rux-radius-0);
+	border-radius: var(--rux-radius-control);
 }
 
 .rux-driver-grid__popover-info {
@@ -1410,7 +1410,7 @@
 		position: fixed;
 		inset: 0;
 		z-index: calc(var(--rux-z-modal) - 1);
-		background: var(--rux-bg-overlay);
+		background: var(--rux-overlay-scrim);
 		opacity: 0;
 		pointer-events: none;
 		transition: opacity var(--rux-duration-slow) var(--rux-ease-in-out);

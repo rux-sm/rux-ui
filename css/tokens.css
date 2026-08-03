@@ -1,5 +1,11 @@
 /* ==========================================================================
-   RUX UI — TOKENS
+   RUX UI — GLOBAL TOKENS
+   --------------------------------------------------------------------------
+   Keep this file boring and predictable:
+   1. Primitives are raw palette, type, spacing, radius, shadow, and motion.
+   2. Semantics describe reusable intent: surfaces, text, states, and layout.
+   3. Component contracts may alias semantics when a component needs a stable
+      public hook. Feature-only values belong in that feature's stylesheet.
    ========================================================================== */
 
 :root {
@@ -17,19 +23,19 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.24 022.0); /* Infernal — Vivid, true red         */
-	--rux-orange: oklch(80.0% 0.24 050.0); /* Phoenix  — Punchy warm orange      */
-	--rux-yellow: oklch(80.0% 0.22 085.0); /* Coin     — Bright, glowing yellow  */
-	--rux-green:  oklch(60.0% 0.24 140.0); /* Druid    — Rich emerald green      */
-	--rux-cyan:   oklch(60.0% 0.24 195.0); /* Frost    — Crisp electric cyan     */
-	--rux-blue:   oklch(60.0% 0.24 255.0); /* Mana     — Vibrant cobalt blue     */
-	--rux-purple: oklch(60.0% 0.24 290.0); /* Void     — Neon violet             */
-	--rux-pink:   oklch(60.0% 0.24 350.0); /* Faye     — Radiant magenta         */
-	--rux-gray:   oklch(48.0% 0.00 255.0); /* Coal     —                         */
+	--rux-red:    oklch(60.0% 0.24 024.0); /*  Gore  */
+	--rux-orange: oklch(80.0% 0.24 050.0); /*  Pyro  */
+	--rux-yellow: oklch(80.0% 0.22 085.0); /*  Gold  */
+	--rux-green:  oklch(60.0% 0.24 140.0); /*  Moss  */
+	--rux-cyan:   oklch(60.0% 0.24 195.0); /*  Wind  */
+	--rux-blue:   oklch(60.0% 0.24 255.0); /*  Mana  */
+	--rux-purple: oklch(60.0% 0.24 290.0); /*  Void  */
+	--rux-pink:   oklch(60.0% 0.24 350.0); /*  Neon  */
+	--rux-gray:   oklch(48.0% 0.00 255.0); /*  Iron  */
 
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
-	--rux-danger:  oklch(60.0% 0.23 022.0); /* Infernal — Vivid, true red */
+	--rux-danger:  oklch(60.0% 0.24 024.0); /* Infernal — Vivid, true red */
 	--rux-warning: oklch(85.5% 0.2 083.8); /* 232 179 057 gold-6  */
 	--rux-success: oklch(72.2% 0.189 135.5); /* 107 190 050 green-6 */
 	--rux-info:    oklch(62.7% 0.162 256); /* 061 136 232 blue-6  */
@@ -41,11 +47,9 @@
 	--rux-text-primary:     oklch(from var(--rux-neutral) 100% c h / 100%);
 	--rux-text-secondary:   oklch(from var(--rux-neutral) 60% c h / 100%);
 	--rux-text-tertiary:    oklch(from var(--rux-neutral) 100% c h / 40%);
-	--rux-text-quaternary:  oklch(from var(--rux-neutral) 100% c h / 28%);
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border-input:  oklch(from var(--rux-neutral) 30% c h / 100%);
 	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-info) 32% c h / 100%);
 
@@ -57,39 +61,6 @@
 	--rux-accent-ring:   oklch(from var(--rux-accent) 70% 0.28 h);
 	--rux-selection-bg:  var(--rux-accent);
 	--rux-selection-fg:  var(--rux-fg-on-accent);
-
-	/* ─── COLOR · alpha ────────────────────────────────────────────────────── */
-
-	/* Shared tint strength: components supply their own semantic/base color. */
-	--rux-opacity-subtle-tint: 32%;
-
-	/* — white overlays — */
-	/* Relative color syntax requires "from": without it, var(--rux-white)
-	   substitutes as literal text, nesting a full oklch(...) color inside
-	   another oklch()'s lightness slot — invalid, and invalid at computed-
-	   value time resolves to the property's initial value (e.g. transparent
-	   for background), which is why these overlays previously rendered as
-	   if they weren't there at all. */
-	--rux-alpha-white-2:  oklch(from var(--rux-white) l c h / 2%);
-	--rux-alpha-white-4:  oklch(from var(--rux-white) l c h / 4%);
-	--rux-alpha-white-6:  oklch(from var(--rux-white) l c h / 6%);
-	--rux-alpha-white-8:  oklch(from var(--rux-white) l c h / 8%);
-	--rux-alpha-white-10: oklch(from var(--rux-white) l c h / 10%);
-	--rux-alpha-white-16: oklch(from var(--rux-white) l c h / 16%);
-	--rux-alpha-white-20: oklch(from var(--rux-white) l c h / 20%);
-
-	/* — adaptive foregrounds — */
-	--rux-alpha-white-40: oklch(from var(--rux-white) l c h / 40%);
-	--rux-alpha-white-65: oklch(from var(--rux-white) l c h / 65%);
-	--rux-alpha-white-90: oklch(from var(--rux-white) l c h / 90%);
-
-	/* — black overlays — */
-	--rux-alpha-black-12: oklch(from var(--rux-neutral) l c h / 12%);
-	--rux-alpha-black-60: oklch(from var(--rux-neutral) l c h / 60%);
-
-	/* — danger overlays — same ramp as white, off the red hue, for ghost-danger's hover/press wash */
-	--rux-alpha-danger-10: oklch(from var(--rux-red) l c h / 10%);
-	--rux-alpha-danger-20: oklch(from var(--rux-red) l c h / 20%);
 
 	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
 
@@ -109,7 +80,6 @@
 	--rux-text-xl:  1.5rem;     /* 24px */
 	--rux-text-2xl: 2rem;       /* 30px */
 	--rux-text-3xl: 2.75rem;    /* 38px */
-	--rux-text-4xl: 4rem;       /* 46px */
 
 	/* ─── TYPOGRAPHY · numeric size scale ─────────────────────────────────── */
 
@@ -121,21 +91,13 @@
 	--rux-text-600: 1.875rem;   /* 30px */
 	--rux-text-700: 2.375rem;   /* 38px */
 	--rux-text-800: 2.875rem;   /* 46px */
+	--rux-text-900: 3.5rem;     /* 56px */
 
 	/* ─── TYPOGRAPHY · line-height ───────────────────────────────────────── */
 
 	--rux-leading-tight:  1.15;
 	--rux-leading-snug:   1.3;
 	--rux-leading-normal: 1.5;
-
-	--rux-line-height-100: 1.25rem; /* 20px */
-	--rux-line-height-200: 1.375rem; /* 22px */
-	--rux-line-height-300: 1.5rem; /* 24px */
-	--rux-line-height-400: 1.75rem; /* 28px */
-	--rux-line-height-500: 2rem; /* 32px */
-	--rux-line-height-600: 2.375rem; /* 38px */
-	--rux-line-height-700: 2.875rem; /* 46px */
-	--rux-line-height-800: 3.375rem; /* 54px */
 
 	/* ─── TYPOGRAPHY · font weight ────────────────────────────────────────────── */
 
@@ -174,12 +136,10 @@
 
 	--rux-icon-sm: 20px;
 	--rux-icon-md: 24px;
-	--rux-icon-xl: 40px;
 
 	/* ─── RADIUS · 4px-grid scale ────────────────────────────────────────── */
 
 	--rux-radius-0:    0;
-	--rux-radius-xxs:  2px;
 	--rux-radius-xs:   4px;
 	--rux-radius-sm:   6px;
 	--rux-radius-md:   8px;
@@ -187,43 +147,11 @@
 	--rux-radius-xl:   16px;
 	--rux-radius-full: 9999px;
 
-	/* ─── SHADOW · 6-step elevation scale ─────────────────────────────────── */
-	/* Low → high. 1 is the sole inset step — recessed wells (inputs,
-	   segmented tracks) reading as punched *into* the surface, not sitting
-	   above it, so it doesn't fit the same escalating-elevation logic as
-	   2–6. It's the pre-existing recessed-input shadow (previously a
-	   one-off on --rux-input-shadow, see below) promoted to a primitive so
-	   any other recessed-well surface can reuse the exact same depth
-	   instead of re-deriving it.
-	   2–6 escalate blur/spread/opacity together, each pairing a tight
-	   "contact" shadow with a softer, larger "ambient" one (from step 3 up)
-	   the same way Radix's own scale layers two shadows per step — so
-	   higher elevation reads as sitting farther off the surface, not just
-	   "more blurred". Plain rgba(black), not the oklch-mixed
-	   --rux-alpha-black-* overlays used for gray washes elsewhere in this
-	   file — those intentionally carry --rux-neutral's own hue/lightness
-	   for a tinted-overlay look, where a drop shadow wants to stay neutral
-	   black regardless of theme. */
+	/* ─── SHADOW · active recipes ──────────────────────────────────────────── */
+	/* Recessed wells use the inset shadow; solid buttons use the tactile pair.
+	   No unused speculative elevation ladder is kept in the global API. */
 
 	--rux-shadow-1: inset 0 2px 4px rgba(0, 0, 0, .4);
-
-	--rux-shadow-2: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--rux-shadow-3:
-		0 2px 4px rgba(0, 0, 0, 0.4),
-		0 1px 2px rgba(0, 0, 0, 0.3);
-
-	/* Smaller overlay panels — hover cards, popovers, menus. */
-	--rux-shadow-4:
-		0 4px 8px rgba(0, 0, 0, 0.45),
-		0 2px 4px rgba(0, 0, 0, 0.3);
-	--rux-shadow-5:
-		0 8px 16px rgba(0, 0, 0, 0.45),
-		0 2px 6px rgba(0, 0, 0, 0.3);
-
-	/* Larger overlay panels — dialogs/modals. */
-	--rux-shadow-6:
-		0 16px 32px rgba(0, 0, 0, 0.5),
-		0 4px 12px rgba(0, 0, 0, 0.35);
 
 	/* Not part of the 1–6 elevation ladder above — those describe how far
 	   something sits *off* the canvas (drop shadows) or punched *into* it
@@ -232,15 +160,12 @@
 	   rather than a flat color swatch. Three layers — inset top-edge
 	   highlight (light catching the raised top), inset bottom-edge shade
 	   (the underside falling into shadow), and a soft drop shadow for lift
-	   off the surface beneath it. --rux-alpha-white-10 for the highlight
-	   (already effectively hue-neutral — see --rux-white's near-zero
-	   chroma — same reasoning as the --alpha-white-* overlays used
-	   elsewhere), plain rgba(black) for the two dark layers, matching the
-	   elevation scale's own convention above. Paired with -pressed: swap to
-	   this on :active so the highlight/lift disappear and the button reads
-	   as pushed in rather than just darkening in place. */
+	   off the surface beneath it. The shared hover overlay supplies the
+	   highlight; plain rgba(black) supplies the dark layers. Paired with
+	   -pressed, the highlight/lift disappear so the button reads as pushed
+	   in rather than merely changing color. */
 	--rux-shadow-button-raised:
-		inset 0 1px 0 var(--rux-alpha-white-10),
+		inset 0 1px 0 var(--rux-state-hover-overlay),
 		inset 0 -1px 0 rgba(0, 0, 0, 0.35),
 		0 1px 2px rgba(0, 0, 0, 0.35);
 	--rux-shadow-button-pressed: inset 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -260,45 +185,45 @@
 	   ====================================================================== */
 
 	/* ─── COLOR · surfaces ────────────────────────────────────────────────── */
+	/* Canonical depth scale. Named role aliases below preserve component
+	   meaning without maintaining duplicate color formulas. */
 
-	--rux-surface-canvas:          oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-workspace:       oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-panel-header:    oklch(from var(--rux-neutral) 18% c h);
-	--rux-surface-panel:           oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-calendar:        oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-calendar-header: oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-card:            oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-card-header:     oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-track:		   oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-field:           oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-modal:           oklch(from var(--rux-neutral) 26% c h);
-	--rux-surface-switch-track:    oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-canvas:         oklch(from var(--rux-neutral) 0% c h);
+	--rux-surface-subtle:         oklch(from var(--rux-neutral) 18% c h);
+	--rux-surface-raised:         oklch(from var(--rux-neutral) 20% c h);
+	--rux-surface-card:           oklch(from var(--rux-neutral) 24% c h);
+	--rux-surface-overlay:        oklch(from var(--rux-neutral) 26% c h);
+	--rux-surface-control:        oklch(from var(--rux-neutral) 30% c h);
+	--rux-surface-control-raised: oklch(from var(--rux-neutral) 40% c h);
+
+	/* Compatibility roles still used across multiple independent features. */
+	--rux-surface-workspace:       var(--rux-surface-canvas);
+	--rux-surface-panel:           var(--rux-surface-raised);
+	--rux-surface-field:           var(--rux-surface-raised);
+	--rux-surface-modal:           var(--rux-surface-overlay);
 	--rux-surface-switch-thumb:    oklch(from var(--rux-neutral) 90% c h);
-	--rux-surface-button:          oklch(from var(--rux-neutral) 30% c h);
-
-	--rux-surface-0: oklch(from var(--rux-neutral) 0% c h);  /* base level, fields */
-	--rux-surface-1: oklch(from var(--rux-neutral) 18% c h); /* panel */
-	--rux-surface-2: oklch(from var(--rux-neutral) 22% c h); /* card */
-	--rux-surface-3: oklch(from var(--rux-neutral) 24% c h); /* control track */
-	--rux-surface-4: oklch(from var(--rux-neutral) 40% c h);  /* default button */
-	--rux-surface-5: oklch(from var(--rux-neutral) 0% c h);  /* base level, fields */
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
 	   surface depth (they layer onto any tier), so they stay separate. */
 
-	--rux-bg-hover:      oklch(from var(--rux-neutral) 26% c h);
-	--rux-bg-active:     oklch(from var(--rux-neutral) 30% c h);
-	--rux-bg-overlay:    var(--rux-alpha-black-60);
+	--rux-bg-hover:      var(--rux-surface-overlay);
+	--rux-bg-active:     var(--rux-surface-control);
 	--rux-border-subtle: var(--rux-divider);
 	--rux-border-strong: var(--rux-border-button);
+
+	/* One interaction recipe for every neutral control. Selected aliases hover
+	   so components can express intent without introducing another color. */
+	--rux-state-hover-overlay:    oklch(from var(--rux-white) l c h / 10%);
+	--rux-state-active-overlay:   oklch(from var(--rux-white) l c h / 20%);
+	--rux-state-selected-overlay: var(--rux-state-hover-overlay);
+	--rux-overlay-scrim:          oklch(from var(--rux-black) l c h / 60%);
 
 	/* ─── COLOR · recessed well ──────────────────────────────────────────── */
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg:       oklch(from var(--rux-neutral) 18% c h);
-	--rux-well-bg-hover: var(--rux-alpha-white-4);
+	--rux-well-bg: var(--rux-surface-subtle);
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 	/* Primary → muted → subtle is a descending contrast hierarchy, aliased
@@ -316,9 +241,10 @@
 	--rux-fg-placeholder: var(--rux-text-disabled);
 	--rux-fg-disabled:    var(--rux-text-disabled);
 
-	--rux-fg-on-accent:        oklch(var(--rux-white));
-	--rux-fg-on-accent-muted:  oklch(var(--rux-white) / 75%);
-	--rux-fg-on-accent-subtle: oklch(var(--rux-white) / 55%);
+	--rux-fg-on-accent:        var(--rux-white);
+	--rux-fg-on-accent-muted:  oklch(from var(--rux-white) l c h / 75%);
+	--rux-fg-on-accent-subtle: oklch(from var(--rux-white) l c h / 55%);
+	--rux-fg-on-accent-disabled: oklch(from var(--rux-white) l c h / 40%);
 
 	/* ─── COLOR · status roles ───────────────────────────────────────────── */
 
@@ -334,14 +260,14 @@
 	--rux-danger-hover:  oklch(90% 0.18 24);
 	--rux-danger-subtle: oklch(67% 0.22 24 / 0.14);
 
-	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
-	/* The 8/6 pair: containers (cards, panels, workspace, calendar, menus,
-	   segmented tracks) take 8px; nested controls (buttons, inputs,
-	   steppers, tabs, segments) take 6px. Concentric rule: inner radius =
-	   outer radius − inset padding. */
+	--rux-disabled-opacity: 0.45;
 
-	--rux-radius-container: var(--rux-radius-0); /* 8px */
-	--rux-radius-control:   var(--rux-radius-0); /* 6px */
+	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
+	/* Components route through these roles even while both are square. This
+	   keeps a future radius change to two intentional edits. */
+
+	--rux-radius-container: var(--rux-radius-0);
+	--rux-radius-control:   var(--rux-radius-0);
 
 	/* ─── ICON ───────────────────────────────────────────────────────────── */
 
@@ -357,7 +283,7 @@
 	/* ─── SIZE · shared roles ─────────────────────────────────────────────── */
 
 	--rux-control-height:    28px;
-	--rux-control-height-sm: 28px;
+	--rux-control-height-sm: var(--rux-control-height);
 	--rux-field-height:      var(--rux-control-height);
 
 	--rux-avatar-sm: 24px;
@@ -433,11 +359,11 @@
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
-	--rux-workspace-bg:            var(--rux-surface-workspace);
+	--rux-workspace-bg:            var(--rux-surface-canvas);
 	--rux-workspace-fg:            var(--rux-fg);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block: none;
-	--rux-workspace-radius: var(--rux-radius-0);
+	--rux-workspace-radius: var(--rux-radius-container);
 	--rux-workspace-gutter: var(--rux-space-4);
 	/* Keep header and view content on the same inline grid. */
 	--rux-workspace-header-padding: var(--rux-space-2)
@@ -448,11 +374,10 @@
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
-	--rux-calendar-bg:            var(--rux-surface-calendar);
-	--rux-calendar-header-bg:     var(--rux-surface-calendar-header);
-	--rux-calendar-edge-guard-bg: var(--rux-surface-calendar-header);
+	--rux-calendar-bg:            var(--rux-surface-canvas);
+	--rux-calendar-header-bg:     var(--rux-surface-canvas);
 	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-border);
-	--rux-calendar-radius:        var(--rux-radius-0);
+	--rux-calendar-radius:        var(--rux-radius-container);
 	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-border);
 	--rux-calendar-header-height: 31px;
 
@@ -465,12 +390,12 @@
 	--rux-panel-border-width:  var(--rux-border-width);
 	--rux-panel-border-inline: var(--rux-panel-border-width) solid var(--rux-border);
 	--rux-panel-border-block:  none;
-	--rux-panel-radius: var(--rux-radius-0);
+	--rux-panel-radius: var(--rux-radius-container);
 
 	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */
 	--rux-panel-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
 	--rux-panel-header-padding:    var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
-	--rux-panel-header-bg: var(--rux-surface-panel-header);
+	--rux-panel-header-bg: var(--rux-surface-subtle);
 
 	/* — nav / tabs — */
 	--rux-panel-nav-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
@@ -486,14 +411,9 @@
 	--rux-panel-padding:     var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-content-gap: var(--rux-space-4);
 	/* Also consumed by feature layouts and safe-area calculations. */
-	--rux-panel-padding-block:  var(--rux-space-4);
-	--rux-panel-padding-inline: var(--rux-space-0);
+	--rux-panel-padding-block: var(--rux-space-4);
 
 	/* — minimum sizing shared by panel-shaped feature layouts — */
-	--rux-panel-min-field-width:   116px;
-	--rux-panel-min-content-width: calc(
-		(2 * var(--rux-panel-min-field-width)) + var(--rux-control-content-gap)
-	);
 	--rux-panel-min-width: 184px;
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
@@ -507,7 +427,7 @@
 	--rux-card-radius:       var(--rux-radius-container);
 
 	/* — header — */
-	--rux-card-header-bg:     var(--rux-surface-card-header);
+	--rux-card-header-bg:     var(--rux-surface-card);
 	--rux-card-header-border:var(--rux-border-width) solid var(--rux-divider);
 	--rux-card-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
 	--rux-card-header-height: 44px;
@@ -530,54 +450,6 @@
 	/* — shared across header/body/footer/section, not any one part's own — */
 	--rux-card-padding:     var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-card-content-gap: var(--rux-space-4);
-
-	/* ─── DRIVER ASSIGNMENT CARD ────────────────────────────────────────── */
-
-	--rux-driver-page-max-width:       520px;
-	--rux-driver-phone-preview-max-width: 430px;
-	--rux-driver-page-gutter:          var(--rux-space-4);
-	--rux-driver-page-gutter-compact:  var(--rux-space-3);
-	--rux-driver-page-bottom-padding:  var(--rux-space-7);
-	--rux-driver-card-gap:             var(--rux-space-5);
-	--rux-driver-logo-width:           160px;
-	--rux-driver-logo-width-compact:   136px;
-	--rux-driver-logo-max-width:       52vw;
-	--rux-driver-card-bg:              var(--rux-surface-card);
-	--rux-driver-card-border:          var(--rux-border-width) solid var(--rux-border);
-	--rux-driver-card-radius:          var(--rux-radius-0);
-	--rux-driver-card-header-padding:  28px var(--rux-space-5);
-	--rux-driver-card-header-min-size: 112px;
-	--rux-driver-module-padding:       20px var(--rux-space-5);
-	--rux-driver-module-label-min:     112px;
-	--rux-driver-module-label-width:   124px;
-	--rux-driver-module-icon-size:     48px;
-	--rux-driver-module-grid-gap:      var(--rux-space-4);
-	--rux-driver-action-rail-width:    96px;
-	--rux-driver-module-divider:       oklch(from var(--rux-neutral) 100% c h / 12%);
-	--rux-driver-internal-divider:     oklch(from var(--rux-neutral) 100% c h / 9%);
-	--rux-driver-touch-target:         48px;
-	--rux-driver-copy-max-width:       28rem;
-	--rux-driver-status-min-height:    60dvh;
-	--rux-driver-page-title-size:      clamp(2.25rem, 7vw, 2.5rem);
-	--rux-driver-date-primary-size:    1rem;
-	--rux-driver-date-primary-weight:  var(--rux-weight-medium);
-	--rux-driver-route-size:           1.25rem;
-	--rux-driver-time-size:            1.5rem;
-	--rux-driver-primary-size:         var(--rux-text-lg);
-	--rux-driver-secondary-size:       var(--rux-text-lg);
-	--rux-driver-label-size:           var(--rux-text-xs);
-	--rux-driver-control-bg:           var(--rux-surface-field);
-	--rux-driver-control-hover-bg:     var(--rux-bg-hover);
-	--rux-driver-control-radius:       var(--rux-radius-lg);
-	--rux-driver-accent-soft:          color-mix(in oklch, var(--rux-accent) 16%, transparent);
-	--rux-driver-success-soft:         color-mix(in oklch, var(--rux-success) 12%, transparent);
-	--rux-driver-warning-soft:         color-mix(in oklch, var(--rux-warning) 12%, transparent);
-	--rux-driver-danger-soft:          color-mix(in oklch, var(--rux-danger) 12%, transparent);
-	--rux-driver-notes-clamp:          6lh;
-	--rux-driver-notes-lines:          4;
-	--rux-driver-skeleton-line-width:  62%;
-	--rux-driver-skeleton-opacity:     0.48;
-	--rux-driver-focus-ring:           0 0 0 3px var(--rux-accent-ring);
 
 	/* ─── COMPONENT · trip bar · category colors ──────────────────────────── */
 
@@ -617,7 +489,7 @@
 	--rux-trip-bar-stripe-opacity: 0.1;
 
 	--rux-trip-bar-border-width: var(--rux-border-width);
-	--rux-trip-bar-radius:       var(--rux-radius-0);
+	--rux-trip-bar-radius:       var(--rux-radius-control);
 	--rux-trip-bar-head-backdrop-blur: 4px;
 
 	/* ─── COMPONENT · trip panel ──────────────────────────────────────────── */
@@ -635,12 +507,9 @@
 	--rux-field-label-fg:        var(--rux-text-secondary);
 	--rux-field-help-fg:         var(--rux-fg-subtle);
 	--rux-field-error-fg:        var(--rux-danger);
-	--rux-input-height:          28px;
+	--rux-input-height:          var(--rux-control-height);
 	--rux-input-padding-inline:  var(--rux-control-padding-inline);
-	--rux-input-border: 1px solid var(--rux-border);
-  
-  /* 2. New token specifically for the gradient border-image */
-  	--rux-input-border-image:    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.2) 100%) 1;
+	--rux-input-border:       1px solid var(--rux-border);
 	--rux-input-border-image: none;
 	--rux-textarea-min-height:   84px;
 	--rux-input-shadow:          var(--rux-shadow-1);
@@ -649,26 +518,25 @@
 	--rux-input-font-size:       var(--rux-text-sm);
 	--rux-input-placeholder-fg:  var(--rux-fg-subtle);
 	--rux-input-hover:           var(--rux-accent);
-	--rux-input-hover-bg:        var(--rux-well-bg-hover);
-	--rux-input-disabled-bg:     var(--rux-alpha-black-12);
+	--rux-input-disabled-bg:     var(--rux-surface-subtle);
 	--rux-input-disabled-border: var(--rux-border);
 	--rux-input-disabled-fg:     var(--rux-fg-disabled);
 	--rux-input-invalid-border:  var(--rux-danger);
-	--rux-input-border-radius:   var(--rux-radius-0);
+	--rux-input-border-radius:   var(--rux-radius-control);
 	--rux-input-transition:      var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · badge ─────────────────────────────────────────────── */
 
-	--rux-badge-height:              28px;
+	--rux-badge-height:              var(--rux-control-height);
 	--rux-badge-padding-inline:      var(--rux-space-2);
-	--rux-badge-radius:              var(--rux-radius-0);
+	--rux-badge-radius:              var(--rux-radius-control);
 	--rux-badge-font-size:           var(--rux-text-sm);
 	--rux-badge-font-weight:         var(--rux-weight-medium);
 	--rux-badge-background-opacity:  12%;
 	--rux-badge-module-gap:          var(--rux-space-2);
 	--rux-badge-module-height:       var(--rux-module-button-height);
 	--rux-badge-module-padding:      var(--rux-space-3);
-	--rux-badge-module-radius:       var(--rux-radius-0);
+	--rux-badge-module-radius:       var(--rux-radius-control);
 	--rux-badge-module-icon-size:    var(--rux-icon-sm);
 
 	/* ─── COMPONENT · button base ─────────────────────────────────────────────── */
@@ -678,7 +546,7 @@
 	--rux-button-padding-inline:      var(--rux-space-3);
 	--rux-button-content-gap:         var(--rux-space-2);
 	--rux-button-group-gap:           var(--rux-space-2);
-	--rux-button-radius:              var(--rux-radius-0);
+	--rux-button-radius:              var(--rux-radius-xs);
 	--rux-button-border-width:        var(--rux-border-width);
 	--rux-button-border:              var(--rux-button-border-width) solid var(--rux-border-button);
 	--rux-button-font-family:         var(--rux-font-sans);
@@ -693,14 +561,20 @@
 	--rux-button-mobile-icon-size:    24px;
 	--rux-button-hover-text:          var(--rux-accent);
 	--rux-button-hover-border:        1px solid var(--rux-accent);
-	--rux-button-hover-overlay:       var(--rux-alpha-white-6);
-	--rux-button-active-overlay:      var(--rux-alpha-black-12);
+	--rux-button-hover-overlay:       var(--rux-state-hover-overlay);
+	--rux-button-active-overlay:      var(--rux-state-active-overlay);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing:   var(--rux-ease-out);
 	/* Solid-fill variants only (default/accent/danger) — see --rux-shadow-
 	   button-raised/-pressed above for what these actually are. */
 	--rux-button-shadow-raised:       var(--rux-shadow-button-raised);
 	--rux-button-shadow-pressed:      var(--rux-shadow-button-pressed);
+	/* Same recipe as --rux-tab-focus-ring/--rux-module-button-focus-ring —
+	   .rux-button never had its own, so it fell through to the browser's
+	   default outline, which reads as a stark white box against this dark
+	   theme (most visible on a segment button: click one to focus it, then
+	   hover it — the default outline shows on top of the hover state). */
+	--rux-button-focus-ring:          0 0 0 3px var(--rux-accent-ring);
 
 	/* ─── COMPONENT · module button ───────────────────────────────────────────── */
 	/* Compact contextual icon action. Semantic variants change tone, not layout. */
@@ -710,7 +584,7 @@
 	--rux-module-button-min-height:  44px;
 	--rux-module-button-padding:     0;
 	--rux-module-button-gap:         0;
-	--rux-module-button-radius:      var(--rux-radius-0);
+	--rux-module-button-radius:      var(--rux-radius-control);
 	--rux-module-button-font-size:   var(--rux-text-md);
 	--rux-module-button-font-weight: var(--rux-weight-medium);
 	--rux-module-button-icon-size:   var(--rux-icon-md);
@@ -718,10 +592,10 @@
 	--rux-module-button-focus-ring:  0 0 0 3px var(--rux-accent-ring);
 	--rux-module-button-disabled-opacity: 0.45;
 
-	--rux-module-button-neutral-bg:       var(--rux-alpha-white-10);
-	--rux-module-button-neutral-hover-bg: var(--rux-alpha-white-16);
+	--rux-module-button-neutral-bg:       var(--rux-state-hover-overlay);
+	--rux-module-button-neutral-hover-bg: var(--rux-state-active-overlay);
 	--rux-module-button-neutral-fg:       var(--rux-fg);
-	--rux-module-button-neutral-border:   var(--rux-alpha-white-10);
+	--rux-module-button-neutral-border:   var(--rux-state-hover-overlay);
 
 	--rux-module-button-info-bg:       color-mix(in oklch, var(--rux-info) 16%, transparent);
 	--rux-module-button-info-hover-bg: color-mix(in oklch, var(--rux-info) 23%, transparent);
@@ -745,25 +619,21 @@
 
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background:       var(--rux-surface-4);
-	--rux-button-default-border:           1px solid rgba(255, 255, 255, 0.08); /* Subtle light edge */
+	--rux-button-default-background:       var(--rux-surface-control-raised);
 	--rux-button-default-border:           none;
 
 	--rux-button-default-text:             var(--rux-fg);
 	/* Same technique as accent/danger below — ±10% OKLCH lightness off the
 	   variant's own resting background, not a flat overlay or a shift off
 	   some other token. Previously derived from --rux-gray (not this
-	   button's own --rux-button-default-background) at 50% alpha for
-	   hover, and a flat --rux-alpha-white-10 wash for active — two
-	   different, mutually inconsistent mechanisms, and neither an actual
-	   lightness shift of the resting fill. */
+	   button's own --rux-button-default-background) at 50% alpha for hover,
+	   rather than an actual lightness shift of the resting fill. */
 	--rux-button-default-hover-background: oklch(
 		from var(--rux-button-default-background) calc(l + 0.05) c h
 	);
 	--rux-button-default-active-background: oklch(
 		from var(--rux-button-default-background) calc(l - 0.05) c h
 	);
-	--rux-button-default-hover-border:      oklch(from var(--rux-gray) l c h / 100%);
 	--rux-button-default-hover-text:        var(--rux-fg);
 	--rux-button-default-active-border:     oklch(from var(--rux-border-button) calc(l - 0.1) c h);
 	--rux-button-default-active-text:       oklch(from var(--rux-fg) calc(l - 0.1) c h);
@@ -774,36 +644,16 @@
 	--rux-button-outline-border:           var(--rux-button-border-width) solid
 	                                       oklch(from var(--rux-gray) l c h / 100%);
 	--rux-button-outline-text:             var(--rux-fg);
-	--rux-button-outline-hover-background: var(--rux-alpha-white-10);
+	--rux-button-outline-hover-background: var(--rux-state-hover-overlay);
 	--rux-button-outline-hover-border:     oklch(from var(--rux-gray) l c h / 100%);
-	--rux-button-outline-active-background: var(--rux-alpha-white-20);
+	--rux-button-outline-active-background: var(--rux-state-active-overlay);
 	--rux-button-outline-active-border:     oklch(from var(--rux-gray) l c h / 100%);
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
-	/* Same glass RECIPE as the trip bar (css/features/trip-bar.css's --_surface/
-	   --_outline) — same lightness/chroma/opacity — but pre-mixed to an opaque
-	   color against the app's base canvas instead of a real alpha blend.
-	   Trip bars sit directly on the calendar grid and are meant to be genuinely
-	   see-through; buttons only borrowed the transparent look for visual
-	   consistency, not for any functional reason, and a real alpha blend on a
-	   small/dense control (e.g. driver-grid cells reusing this same token)
-	   can end up barely distinguishable from a neutral idle fill depending on
-	   what's actually behind it. color-mix bakes in the same apparent result
-	   against a known backdrop, so it always reads the same regardless of
-	   context. Border stays a real solid color either way (100% opacity is
-	   already opaque, nothing to simulate). Mixed in oklab, not oklch:
-	   --rux-surface-field carries a tiny residual chroma inherited from
-	   --rux-neutral, and oklch's hue-arc interpolation can pull the mix
-	   through an unrelated hue (red drifting toward purple, here) on its way
-	   toward a backdrop that's visually just "gray" — oklab blends the
-	   Cartesian a/b axes directly instead, so that can't happen. */
-	--rux-button-accent-background:   	color-mix(in oklab, oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) c h) var(--rux-trip-bar-bg-opacity), var(--rux-surface-card));
-	--rux-button-accent-background:   	color-mix(in oklch, var(--rux-accent) 100%, transparent);
+	--rux-button-accent-background:   	var(--rux-accent);
 	--rux-button-accent-text:         	var(--rux-fg-on-accent);
 	--rux-button-accent-border-color:	oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) c h / 100%);
-	--rux-button-accent-border:       	var(--rux-button-border-width) solid var(--rux-button-accent-border-color);
-	--rux-button-accent-border:       	1px solid oklch(from var(--rux-accent) l c h / 90%);
 	--rux-button-accent-border:       	none;
 
 	--rux-button-accent-hover-background: oklch(
@@ -830,8 +680,8 @@
 
 	--rux-button-on-accent-active-background:   oklch(from var(--rux-white) l c h / var(--rux-trip-bar-pressed-bg-opacity));
 	--rux-button-on-accent-active-border:       var(--rux-button-border-width) solid color-mix(in oklch, var(--rux-white) 0%, transparent);
-	--rux-button-on-accent-disabled-background: var(--rux-alpha-white-4);
-	--rux-button-on-accent-disabled-text:       var(--rux-alpha-white-40);
+	--rux-button-on-accent-disabled-background: transparent;
+	--rux-button-on-accent-disabled-text:       var(--rux-fg-on-accent-disabled);
 	--rux-button-on-accent-disabled-border:     var(--rux-button-border-width) solid color-mix(in oklch, var(--rux-white) 0%, transparent);
 
 	/* ─── COMPONENT · button ghost ─────────────────────────────────────────────── */
@@ -841,19 +691,14 @@
 	--rux-button-ghost-border:     1px solid transparent;
 	/* Ghost buttons use the same alpha-overlay interaction model: a neutral
 	   wash that steps up in strength from rest → hover → pressed. */
-	--rux-button-ghost-hover-background:  var(--rux-alpha-white-10);
-	--rux-button-ghost-active-background: var(--rux-alpha-white-20);
+	--rux-button-ghost-hover-background:  var(--rux-state-hover-overlay);
+	--rux-button-ghost-active-background: var(--rux-state-active-overlay);
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
-	/* Same recipe as accent above — pre-mixed opaque against the base canvas
-	   rather than a real alpha blend. See the comment on
-	   --rux-button-accent-background for why. */
-	--rux-button-danger-background:       color-mix(in oklab, oklch(from var(--rux-red) var(--rux-trip-bar-bg-lightness) c h) var(--rux-trip-bar-bg-opacity), var(--rux-surface-field));
-	--rux-button-danger-background:       color-mix(in oklch, var(--rux-danger) 100%, transparent);
+	--rux-button-danger-background:       var(--rux-danger);
 	--rux-button-danger-text:             var(--rux-fg-on-accent);
 	--rux-button-danger-border-color:     oklch(from var(--rux-red) var(--rux-trip-bar-bg-lightness) c h / 100%);
-	--rux-button-danger-border:           var(--rux-button-border-width) solid var(--rux-button-danger-border-color);
 	--rux-button-danger-border:           none;
 	--rux-button-danger-hover-background: oklch(
 		from var(--rux-button-danger-background) calc(l + 0.05) c h
@@ -881,8 +726,8 @@
 	--rux-button-danger-ghost-border:     var(--rux-button-border-width) solid transparent;
 	/* Same wash steps as plain ghost, off the danger hue instead of neutral —
 	   reinforces intent through color rather than just a neutral brightening. */
-	--rux-button-danger-ghost-hover-background:  var(--rux-alpha-danger-10);
-	--rux-button-danger-ghost-active-background: var(--rux-alpha-danger-20);
+	--rux-button-danger-ghost-hover-background:  oklch(from var(--rux-danger) l c h / 10%);
+	--rux-button-danger-ghost-active-background: oklch(from var(--rux-danger) l c h / 20%);
 
 	/* ─── COMPONENT · button disabled ─────────────────────────────────────────────── */
 
@@ -893,7 +738,7 @@
 	/* ─── COMPONENT · button selected / toggle ────────────────────────────── */
 
 	--rux-button-selected-bg:       var(--rux-button-accent-background);
-	--rux-button-quiet-selected-bg: var(--rux-alpha-white-8);
+	--rux-button-quiet-selected-bg: var(--rux-state-selected-overlay);
 	--rux-button-selected-fg:       var(--rux-button-accent-text);
 	--rux-button-selected-border:   var(--rux-button-accent-border-color);
 	--rux-button-icon-selected-bg:  var(--rux-button-quiet-selected-bg);
@@ -929,16 +774,16 @@
 	--rux-segmented-ghost-selected-bg: var(--rux-button-quiet-selected-bg);
 	--rux-segmented-ghost-selected-fg: var(--rux-fg);
 	--rux-segmented-ghost-bg:          transparent;
-	--rux-segmented-ghost-border:      var(--rux-button-border);
+	--rux-segmented-ghost-border:      none;
 	--rux-segmented-ghost-item-bg:     transparent;
 	--rux-segmented-ghost-item-border: transparent;
 	--rux-segmented-ghost-item-fg:     var(--rux-fg-muted);
 
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
 
-	--rux-segmented-track-bg:         var(--rux-surface-track);
+	--rux-segmented-track-bg:         var(--rux-surface-raised);
 	--rux-segmented-track-padding:    var(--rux-space-0);
-	--rux-segmented-track-radius:     var(--rux-radius-0);
+	--rux-segmented-track-radius:     var(--rux-radius-container);
 	--rux-segmented-track-height:     var(--rux-input-height);
 	/* Same border as .rux-input, aliased not duplicated — box-sizing:
 	   border-box (global reset) keeps the track's own explicit height
@@ -957,32 +802,36 @@
 	--rux-segment-indicator-duration: var(--rux-duration-base);
 	--rux-segment-indicator-easing:   var(--rux-ease-out);
 
-	--rux-segment-radius:         var(--rux-radius-0);
+	--rux-segment-radius:         var(--rux-radius-control);
 	--rux-segment-padding-inline: var(--rux-space-4);
 	--rux-segment-background:     var(--rux-button-ghost-background);
-	--rux-segment-border:         var(--rux-button-ghost-border);
+	--rux-segment-border:         none;
 	--rux-segment-fg:             var(--rux-text-secondary);
 	--rux-segment-fg-hover:       var(--rux-fg);
-	--rux-segment-hover-bg:       var(--rux-button-hover-overlay);
-
 	--rux-segment-active-background:   var(--rux-button-default-background);
 	--rux-segment-active-text:         var(--rux-fg);
-	/* A real color (transparent), not var(--rux-button-default-border) —
-	   that token is now `none` (a full shorthand, not a color), and this
-	   gets used through border-color: below. Matches --rux-segment-border's
-	   own color component (1px solid transparent) exactly, so switching a
-	   segment active/inactive never actually changes border-width or
-	   -style, only interpolates a color that starts and ends the same —
-	   nothing to flash mid-transition. Previously this fed the shorthand
-	   value into `border:`, which reset width/style to their initial
-	   values (medium / none) on the active segment — invisible in both the
-	   active and inactive resting states, but border-color is one of the
-	   explicitly transitioned properties on .rux-button, so for the first
-	   half of the transition (before the discrete border-style flip) the
-	   border was still solid while its color animated toward white
-	   (border-color's own initial value, currentColor) — a visible white
-	   flash right as a segment became active. */
+	/* Must be a real <color> — `transparent`, not `none`. This is consumed
+	   through border-color: (a longhand — see the three call sites in
+	   controls.css), which only accepts a color; `none` isn't one. That
+	   isn't caught as a parse error, because it arrives via var()
+	   substitution rather than being written literally — it's only
+	   invalid once the custom property is substituted in, at computed-
+	   value time. Per spec, a property that's invalid at computed-value
+	   time doesn't fall through to some other rule in the cascade; it
+	   resets to its own initial value. border-color's initial value is
+	   currentColor — this segment's own (white) text — which is exactly
+	   the white border that kept reappearing here. `transparent` matches
+	   --rux-segment-border's own color component (1px solid transparent)
+	   exactly, so switching a segment active/inactive never actually
+	   changes border-width or -style, only interpolates a color that
+	   starts and ends the same — nothing to transition at all. */
 	--rux-segment-active-border-color: transparent;
+	/* Same raised bevel as .rux-button--default (--rux-segment-active-
+	   background already matches that variant's own fill) — the active
+	   segment is meant to read as that same physical, raised button, not
+	   just borrow its color. Aliased, not duplicated, so both stay in sync
+	   if the button bevel ever changes. */
+	--rux-segment-active-shadow:       var(--rux-button-shadow-raised);
 
 	/* ─── COMPONENT · stepper ─────────────────────────────────────────────── */
 	/* Read-only count flanked by decrement and increment buttons. */
@@ -1000,10 +849,10 @@
 	--rux-number-stepper-height:          var(--rux-input-height);
 	--rux-number-stepper-bg:              var(--rux-input-background);
 	--rux-number-stepper-border:          var(--rux-input-border);
-	--rux-number-stepper-radius:          var(--rux-radius-0);
+	--rux-number-stepper-radius:          var(--rux-radius-container);
 	--rux-number-stepper-divider:         var(--rux-border-width) solid var(--rux-border);
 	--rux-number-stepper-btn-width:       var(--rux-field-height);
-	--rux-number-stepper-hover-bg:        var(--rux-input-hover-bg);
+	--rux-number-stepper-hover-bg:        var(--rux-state-hover-overlay);
 	--rux-number-stepper-hover-border:    var(--rux-button-border);
 	--rux-number-stepper-transition:      var(--rux-duration-fast) var(--rux-ease-out);
 	--rux-number-stepper-btn-bg:          transparent;
@@ -1031,7 +880,7 @@
 	--rux-switch-active-overlay:    var(--rux-button-active-overlay);
 	--rux-switch-disabled-bg:       var(--rux-button-disabled-background);
 	--rux-switch-disabled-thumb-bg: var(--rux-fg-disabled);
-	--rux-switch-radius:            var(--rux-radius-0);
+	--rux-switch-radius:            var(--rux-radius-control);
 	--rux-switch-transition:        var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */
@@ -1042,12 +891,12 @@
 	--rux-checkbox-font-size:         var(--rux-text-sm);
 	--rux-checkbox-bg:                var(--rux-surface-canvas);
 	--rux-checkbox-border:            var(--rux-border-width) solid var(--rux-border-strong);
-	--rux-checkbox-radius:            var(--rux-radius-0);
+	--rux-checkbox-radius:            var(--rux-radius-control);
 	--rux-checkbox-checked-bg:        var(--rux-accent);
 	--rux-checkbox-checked-border:    var(--rux-accent);
 	--rux-checkbox-checked-hover-bg:  var(--rux-accent-hover);
 	--rux-checkbox-checked-active-bg: var(--rux-accent);
-	--rux-checkbox-hover-bg:          var(--rux-well-bg-hover);
+	--rux-checkbox-hover-bg:          var(--rux-state-hover-overlay);
 	--rux-checkbox-hover-border:      var(--rux-accent);
 	--rux-checkbox-active-bg:         var(--rux-bg-active);
 	--rux-checkbox-disabled-bg:       var(--rux-input-disabled-bg);
@@ -1061,7 +910,7 @@
 	/* ─── COMPONENT · color swatch ────────────────────────────────────────── */
 
 	--rux-color-swatch-size:         var(--rux-button-height);
-	--rux-color-swatch-radius:       var(--rux-radius-0);
+	--rux-color-swatch-radius:       var(--rux-radius-control);
 	--rux-color-swatch-border:       var(--rux-border-width) solid transparent;
 	--rux-color-swatch-ring-bg:      var(--rux-surface-canvas);
 	--rux-color-swatch-hover-ring:   0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 3px var(--color, var(--rux-accent));
@@ -1077,13 +926,13 @@
 	--rux-color-picker-fg:             var(--rux-fg);
 	--rux-color-picker-border:         var(--rux-border-width) solid var(--rux-border);
 	--rux-color-picker-hover-border:   var(--rux-border-strong);
-	--rux-color-picker-radius:         var(--rux-radius-0);
+	--rux-color-picker-radius:         var(--rux-radius-control);
 	--rux-color-picker-preview-size:   14px;
 	--rux-color-picker-option-size:    22px;
 	--rux-color-picker-option-border:  var(--rux-border-width) solid transparent;
 	--rux-color-picker-option-scale:   1.18;
 	--rux-color-picker-popover-bg:     var(--rux-surface-modal);
-	--rux-color-picker-popover-radius: var(--rux-radius-0);
+	--rux-color-picker-popover-radius: var(--rux-radius-container);
 	--rux-color-picker-check-color:    var(--rux-fg-on-accent);
 	--rux-color-picker-check-width:    5px;
 	--rux-color-picker-check-height:   9px;
@@ -1097,10 +946,10 @@
 	--rux-color-input-bg:             var(--rux-surface-canvas);
 	--rux-color-input-border:         var(--rux-border-width) solid transparent;
 	--rux-color-input-hover-border:   var(--rux-border-strong);
-	--rux-color-input-radius:         var(--rux-radius-0);
+	--rux-color-input-radius:         var(--rux-radius-control);
 	--rux-color-input-swatch-size:    1.25rem;
 	--rux-color-input-swatch-border:  var(--rux-border-width) solid color-mix(in srgb, currentColor 25%, transparent);
-	--rux-color-input-swatch-radius:  var(--rux-radius-0);
+	--rux-color-input-swatch-radius:  var(--rux-radius-control);
 	--rux-color-input-text-border:    var(--rux-border-width) solid transparent;
 	--rux-color-input-transition:     var(--rux-duration-fast) var(--rux-ease-out);
 
@@ -1109,7 +958,7 @@
 	--rux-output-height:      var(--rux-field-height);
 	--rux-output-padding:     var(--rux-space-0);
 	--rux-output-border:      var(--rux-input-border);
-	--rux-output-radius:      var(--rux-radius-0);
+	--rux-output-radius:      var(--rux-radius-control);
 	--rux-output-bg:          var(--rux-surface-canvas);
 	--rux-output-fg:          var(--rux-fg-muted);
 	--rux-output-font-size:   var(--rux-text-sm);
@@ -1121,14 +970,14 @@
 	--rux-menu-bg:                  var(--rux-surface-modal);
 	--rux-menu-fg:                  var(--rux-fg);
 	--rux-menu-border:              var(--rux-border-width) solid var(--rux-border);
-	--rux-menu-radius:              var(--rux-radius-0);
+	--rux-menu-radius:              var(--rux-radius-container);
 	--rux-menu-min-width:           200px;
 	--rux-menu-padding:             var(--rux-space-1);
 	--rux-menu-item-height:         var(--rux-button-height);
 	--rux-menu-item-padding-block:  var(--rux-space-2);
 	--rux-menu-item-padding-inline: var(--rux-space-3);
 	--rux-menu-item-gap:            var(--rux-space-2);
-	--rux-menu-item-radius:         var(--rux-radius-0);
+	--rux-menu-item-radius:         var(--rux-radius-control);
 	--rux-menu-item-font-size:      var(--rux-text-sm);
 	--rux-menu-item-fg:             var(--rux-menu-fg);
 	--rux-menu-item-hover-bg:       var(--rux-button-hover-overlay);
@@ -1151,7 +1000,7 @@
 	--rux-tab-height:              32px;
 	--rux-tab-padding-inline:      var(--rux-space-3);
 	--rux-tab-content-gap:         var(--rux-control-content-gap);
-	--rux-tab-bg:                  var(--rux-surface-panel-header); /* ghost at rest — never a milky white fill */
+	--rux-tab-bg:                  var(--rux-surface-subtle); /* ghost at rest — never a milky white fill */
 	--rux-tab-fg:                  var(--rux-fg-muted);
 	--rux-tab-hover-bg:            transparent;
 	--rux-tab-hover-fg:            var(--rux-fg);
@@ -1170,13 +1019,13 @@
 	--rux-tabs-contained-padding:         var(--rux-space-2);
 	--rux-tabs-contained-gap:             var(--rux-space-3);
 	--rux-tabs-contained-bg:              var(--rux-tab-bg);
-	--rux-tabs-contained-radius:          var(--rux-radius-0);
+	--rux-tabs-contained-radius:          var(--rux-radius-container);
 	--rux-tabs-contained-tab-fg:          var(--rux-fg-muted);
 	--rux-tabs-contained-tab-hover-fg:    var(--rux-fg);
 	--rux-tabs-contained-tab-selected-bg: var(--rux-tab-selected-bg);
 	--rux-tabs-contained-tab-selected-fg: var(--rux-tab-selected-fg);
 
-	--rux-tabs-attached-bg:                  var(--rux-surface-panel-header);
+	--rux-tabs-attached-bg:                  var(--rux-surface-subtle);
 	--rux-tabs-attached-border:              0 solid transparent;
 	--rux-tabs-attached-tab-bg:              transparent;
 	--rux-tabs-attached-tab-fg:              var(--rux-fg-muted);
@@ -1207,21 +1056,4 @@
 
 	/* color-mix partner for bus chips; not a surface-depth role */
 	--rux-bg-bus: var(--rux-neutral);
-}
-
-/* ==========================================================================
-   ACCENT THEMES
-   ========================================================================== */
-
-[data-rux-accent="violet"] {
-	--rux-accent-h: 295;
-}
-
-[data-rux-accent="green"] {
-	--rux-accent-h: 155;
-}
-
-[data-rux-accent="amber"] {
-	--rux-accent-h: 70;
-	--rux-accent-c: 0.16;
 }
