@@ -2172,37 +2172,37 @@
 										class="rux-card rux-mini-cal"
 										id="rp-minical-card"
 									>
+										<header
+											class="rux-card__header rux-mini-cal__header"
+										>
+											<button
+												class="rux-button rux-button--ghost rux-button--icon"
+												id="mini-cal-prev"
+												type="button"
+												aria-label="Previous month"
+											>
+												<span class="rux-icon"
+													>chevron_left</span
+												>
+											</button>
+											<span
+												class="rux-card__title rux-mini-cal__title"
+												id="mini-cal-title"
+											></span>
+											<button
+												class="rux-button rux-button--ghost rux-button--icon"
+												id="mini-cal-next"
+												type="button"
+												aria-label="Next month"
+											>
+												<span class="rux-icon"
+													>chevron_right</span
+												>
+											</button>
+										</header>
 										<div
 											class="rux-card__body rux-mini-cal__body"
 										>
-											<header
-												class="rux-mini-cal__header"
-											>
-												<button
-													class="rux-button rux-button--ghost rux-button--icon"
-													id="mini-cal-prev"
-													type="button"
-													aria-label="Previous month"
-												>
-													<span class="rux-icon"
-														>chevron_left</span
-													>
-												</button>
-												<span
-													class="rux-mini-cal__title"
-													id="mini-cal-title"
-												></span>
-												<button
-													class="rux-button rux-button--ghost rux-button--icon"
-													id="mini-cal-next"
-													type="button"
-													aria-label="Next month"
-												>
-													<span class="rux-icon"
-														>chevron_right</span
-													>
-												</button>
-											</header>
 											<div
 												class="rux-mini-cal__grid"
 												role="grid"
@@ -2226,6 +2226,11 @@
 										class="rux-card"
 										id="rp-view-options-card"
 									>
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												View Options
+											</p>
+										</header>
 										<div class="rux-card__body">
 											<div class="rux-view-options">
 												<div
@@ -8894,6 +8899,35 @@
 			let activeObservers = [];
 			let layoutFrame = 0;
 
+			// .rux-scheduler already sizes to its own content (grid, no forced
+			// stretch) — the empty space dispatchers see below a short row list
+			// is .calendar-app__viewport's own background, pinned to full height
+			// by block-size:100% (see css/layout/scheduler-app.css's comment on
+			// .scheduler-app__module > .rux-workspace) so .rux-scheduler has a
+			// definite ancestor height to cap its own max-block-size:100% against
+			// and scroll internally once content actually exceeds it. Pin the
+			// viewport down to the shorter of the two instead of always 100%.
+			function fitSchedulerHeight() {
+				if (!scheduleWrap || schedulerEl.offsetParent === null) return;
+				// Clear any cap we set on a previous (possibly shorter) week first,
+				// so the measurement below reads the CSS default (block-size:100%,
+				// the true available space) instead of clamping against our own
+				// prior result.
+				//
+				// max-height, not height: .calendar-app__viewport is `flex: 1`
+				// (flex-basis:0%), and a flex item's `height` is ignored entirely
+				// for sizing — flex-grow/shrink resolve against flex-basis, not
+				// height. max-height is still honored as a hard clamp on top of
+				// that flex-resolved size, so it's the only property that can
+				// actually pin this down to content height.
+				scheduleWrap.style.removeProperty("max-height");
+				const available = scheduleWrap.clientHeight;
+				const contentHeight = schedulerEl.scrollHeight;
+				if (available && contentHeight < available) {
+					scheduleWrap.style.maxHeight = `${contentHeight}px`;
+				}
+			}
+
 			function layoutScheduler() {
 				cancelAnimationFrame(layoutFrame);
 				layoutFrame = requestAnimationFrame(() => {
@@ -8911,6 +8945,7 @@
 					document
 						.querySelectorAll(".rux-scheduler__track")
 						.forEach((track) => layoutTrack(track));
+					fitSchedulerHeight();
 				});
 			}
 

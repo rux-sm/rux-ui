@@ -670,17 +670,15 @@
 	gap: var(--rux-card-content-gap);
 }
 
+/* .rux-card__header already supplies the flex/align/justify layout — this
+   just tightens its default 16px gap to match the compact prev/title/next row. */
 .rux-mini-cal__header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
 	gap: var(--rux-space-2);
 }
 
+/* .rux-card__title supplies the standard heading type/color — this just
+   positions it centered between the prev/next chevrons. */
 .rux-mini-cal__title {
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
-	color: var(--rux-fg);
 	text-align: center;
 	flex: 1;
 }
