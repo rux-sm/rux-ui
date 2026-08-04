@@ -17,15 +17,159 @@
 	overflow: hidden;
 }
 
+.driver-app__body {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.driver-app__view-switch {
+	flex: 0 1 14rem;
+	max-width: 14rem;
+}
+
+.driver-app__view-switch--panel {
+	flex: none;
+	width: 100%;
+	max-width: none;
+}
+
+.driver-app__view-switch > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+.driver-app--workload #driver-view-options-card,
+.driver-app--workload #driver-filters-card {
+	display: none;
+}
+
+.driver-app__workload-options[hidden] {
+	display: none;
+}
+
+@media (min-width: 501px) {
+	/* The rail's persistent control owns desktop open/close. Retain this
+	   workspace button only as the mobile entry point for Table Options. */
+	.scheduler-app__module[data-module="drivers"] #driver-tools-toggle-btn {
+		display: none;
+	}
+}
+
 /* — Table wrap — */
 
 .driver-app__table-wrap {
 	flex: 1;
+	min-width: 0;
+	min-height: 0;
 	overflow-y: auto;
 	overflow-x: auto;
 	overscroll-behavior: contain;
 	padding-bottom: var(--rux-space-4);
 	border: var(--rux-table-wrap-border);
+}
+
+/* — Shared roster / workload results — */
+
+.driver-app__results {
+	display: flex;
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	flex-direction: column;
+}
+
+.driver-app__workload-presets {
+	width: 100%;
+}
+
+.driver-app__workload-presets > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+.driver-app__workload-through {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-2);
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+.driver-app__workload-through strong {
+	color: var(--rux-fg);
+	font-weight: var(--rux-weight-medium);
+}
+
+.driver-app__workload-alert {
+	position: absolute;
+	z-index: var(--rux-z-sticky);
+	inset-inline: var(--rux-space-4);
+	bottom: var(--rux-space-4);
+	max-height: min(8rem, calc(100% - (var(--rux-space-4) * 2)));
+	margin: 0;
+	overflow: auto;
+	box-shadow: var(--rux-card-elevated-shadow);
+}
+
+.driver-app__workload-alert[hidden] {
+	display: none;
+}
+
+/* The banner floats above the results, so it never moves the table's top
+   edge. Scroll clearance keeps the final rows reachable above the banner. */
+.driver-app--workload .driver-app__results.has-workload-alert .driver-app__table-wrap {
+	padding-bottom: calc(var(--rux-space-8) + var(--rux-space-6));
+	scroll-padding-bottom: calc(var(--rux-space-8) + var(--rux-space-6));
+}
+
+.driver-app__table--workload {
+	width: 100%;
+	min-width: 42rem;
+}
+
+.driver-app__sort-button {
+	appearance: none;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	padding: 0;
+	background: transparent;
+	color: inherit;
+	border: 0;
+	font: inherit;
+	font-weight: inherit;
+	letter-spacing: inherit;
+	cursor: pointer;
+}
+
+.driver-app__sort-button:hover,
+.driver-app__sort-button:focus-visible {
+	color: var(--rux-fg);
+}
+
+.driver-app__workload-stat {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+}
+
+.driver-app__workload-warning {
+	--_icon-size: var(--rux-icon-sm);
+	color: var(--rux-warning);
+}
+
+.driver-app__table--workload td:not(:first-child),
+.driver-app__table--workload th:not(:first-child) {
+	text-align: right;
+}
+
+.driver-app__table--workload th:not(:first-child) .driver-app__sort-button {
+	justify-content: flex-end;
+	width: 100%;
 }
 
 /* ==========================================================================
@@ -145,6 +289,15 @@
 .rux-status-text--warning { color: var(--rux-warning); }
 .rux-status-text--danger  { color: var(--rux-danger); }
 
+/* Employment column also carries the priority dot (merged from the old
+   standalone Priority column) — it no longer sits inside .rux-badge, which
+   used to provide the flex gap/alignment, so restore that spacing here. */
+.rux-table td[data-col="employment-type"] .rux-priority-dot {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: var(--rux-space-2);
+}
+
 /* — Driver identity cell — */
 
 .driver-app__driver-cell {
@@ -249,33 +402,6 @@
 	content: " ↓";
 	color: var(--rux-accent);
 	font-style: normal;
-}
-
-/* — Row drag-to-reorder — */
-
-.driver-app__table.is-manual-order .driver-app__row {
-	cursor: grab;
-}
-
-.driver-app__table.is-manual-order .driver-app__row:active {
-	cursor: grabbing;
-}
-
-.driver-app__row.is-dragging {
-	opacity: 0.4;
-}
-
-.driver-app__row.is-drag-target td {
-	border-top: 2px solid var(--rux-accent);
-}
-
-/* — Order column — */
-
-.driver-app__order {
-	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
-	color: var(--rux-fg-subtle);
-	text-align: center;
 }
 
 /* — Mobile — */

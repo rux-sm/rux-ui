@@ -18,20 +18,42 @@
 	const scheduleDeactivateBtn = document.getElementById(
 		"dp-schedule-deactivate",
 	);
-	const saveOrderBtn = document.getElementById("driver-save-order-btn");
 	const dpAvatarBtn = document.getElementById("dp-avatar");
 	const dpAvatarMain = document.getElementById("dp-avatar-main");
 	const dpAvatarInput = document.getElementById("dp-avatar-input");
+	const driverModule = document.querySelector(
+		'.scheduler-app__module[data-module="drivers"]',
+	);
+	const rosterView = document.getElementById("driver-roster-view");
+	const driverTable = document.getElementById("driver-roster-table");
+	const workloadOptionsCard = document.getElementById(
+		"driver-workload-options-card",
+	);
+	const workloadStartInput = document.getElementById("driver-workload-start");
+	const workloadEndLabel = document.getElementById(
+		"driver-workload-end-label",
+	);
+	const workloadAlert = document.getElementById("driver-workload-alert");
+	const workloadAlertText = document.getElementById(
+		"driver-workload-alert-text",
+	);
+	const driverToolsTitle = document.getElementById("driver-tools-title");
 
 	let db = null;
 	let settingsDb = null;
+	let workloadUtils = null;
 	let selectedId = null;
 	let selectedScheduleShare = null;
 	let scheduleLoadRequest = 0;
 	let allDrivers = [];
 	let colConfig = [];
+	let allWorkloadAssignments = null;
+	let workloadControlsReady = false;
+	let activeDriverView = "roster";
+	let workloadSort = { key: "days", direction: "asc" };
 
 	const DRIVER_SHARE_ORIGIN = "https://rux-sm.github.io/rux-ui/";
+	const DRIVER_WORKLOAD_START_KEY = "rux:driver-workload-start";
 
 	// ── Drawer ────────────────────────────────────────────────────────────────
 	// Open/close/resize behavior lives in RuxDrawer (js/core/drawer.js), shared
@@ -64,6 +86,31 @@
 				drawer.classList.contains("is-open")
 					? closeDrawer()
 					: openDrawer();
+			});
+		});
+
+	// Right-side "Table Options" drawer (View Options + Filters) — same
+	// RuxDrawer machinery as above, no resize handle (fixed width).
+	const toolsDrawer = document.getElementById("driver-tools-drawer");
+	const toolsPanelEl = toolsDrawer.querySelector(".rux-right-panel");
+
+	const toolsDrawerHandle = RuxDrawer.create({
+		drawer: toolsDrawer,
+		panel: toolsPanelEl,
+		toggleBtn: document.getElementById("driver-tools-toggle-btn"),
+		direction: "right",
+		railWidth: true,
+	});
+	const openToolsDrawer = toolsDrawerHandle.open;
+	const closeToolsDrawer = toolsDrawerHandle.close;
+
+	document
+		.querySelectorAll("[data-driver-tools-toggle]")
+		.forEach((button) => {
+			button.addEventListener("click", () => {
+				toolsDrawer.classList.contains("is-open")
+					? closeToolsDrawer()
+					: openToolsDrawer();
 			});
 		});
 
@@ -242,6 +289,328 @@
 			: `${sl} – ${e.toLocaleDateString("en-US", mo)}`;
 	}
 
+	function escapeHtml(value) {
+		return String(value ?? "")
+			.replace(/&/g, "&amp;")
+			.replace(/</g, "&lt;")
+			.replace(/>/g, "&gt;")
+			.replace(/"/g, "&quot;");
+	}
+
+	function formatWorkloadMoney(value) {
+		return new Intl.NumberFormat("en-US", {
+			style: "currency",
+			currency: "USD",
+			minimumFractionDigits: 0,
+			maximumFractionDigits: 2,
+		}).format(value || 0);
+	}
+
+	function formatWorkloadMiles(value) {
+		return `${new Intl.NumberFormat("en-US", {
+			maximumFractionDigits: 1,
+		}).format(value || 0)} mi`;
+	}
+
+	function workloadWarningHtml(message) {
+		const safe = escapeHtml(message);
+		return `<span class="rux-icon driver-app__workload-warning" role="img" aria-label="${safe}" title="${safe}">warning</span>`;
+	}
+
+	function workloadStatHtml(value, warning) {
+		return `<span class="driver-app__workload-stat"><span>${value}</span>${warning ? workloadWarningHtml(warning) : ""}</span>`;
+	}
+
+	function workloadSortValue(row, key) {
+		if (key === "name") return row.driver.name || "";
+		if (key === "days") return row.daysWorked;
+		if (key === "trips") return row.tripsAssigned;
+		if (key === "miles") return row.milesTotal;
+		if (key === "pay") return row.payTotal;
+		return 0;
+	}
+
+	function sortedWorkloadRows(rows) {
+		const direction = workloadSort.direction === "desc" ? -1 : 1;
+		return [...rows].sort((a, b) => {
+			const aValue = workloadSortValue(a, workloadSort.key);
+			const bValue = workloadSortValue(b, workloadSort.key);
+			const comparison = typeof aValue === "string"
+				? aValue.localeCompare(bValue)
+				: aValue - bValue;
+			return comparison * direction
+				|| (a.driver.name || "").localeCompare(b.driver.name || "");
+		});
+	}
+
+	function syncWorkloadSortHeaders() {
+		rosterView
+			?.querySelectorAll("[data-workload-sort]")
+			.forEach((button) => {
+				const header = button.closest("th");
+				const key = button.dataset.workloadSort;
+				header.setAttribute(
+					"aria-sort",
+					key === workloadSort.key
+						? workloadSort.direction === "asc"
+							? "ascending"
+							: "descending"
+						: "none",
+				);
+			});
+	}
+
+	function renderWorkloadRows(result) {
+		const rows = sortedWorkloadRows(result.rows);
+		const theadRow = driverTable.querySelector("thead tr");
+		theadRow.innerHTML = `
+			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="name">Driver</button></th>
+			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="days">Days Worked</button></th>
+			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="trips">Trips Assigned</button></th>
+			<th scope="col" aria-sort="none" title="Actual trip miles when present; otherwise estimated miles"><button type="button" class="driver-app__sort-button" data-workload-sort="miles">Assigned Miles</button></th>
+			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="pay">Total Pay</button></th>`;
+		syncWorkloadSortHeaders();
+		if (!rows.length) {
+			tbody.innerHTML = `<tr><td colspan="5" class="driver-app__empty">No drivers found.</td></tr>`;
+			return;
+		}
+
+		tbody.innerHTML = rows
+			.map((row) => {
+				const payWarning = row.payMissingCount
+					? `Pay incomplete — ${row.payMissingCount} of ${row.assignmentCount} driver assignments ${row.payMissingCount === 1 ? "is" : "are"} missing pay`
+					: "";
+				const mileageWarning = row.milesMissingCount
+					? `Mileage incomplete — ${row.milesMissingCount} of ${row.tripsAssigned} assigned trips ${row.milesMissingCount === 1 ? "is" : "are"} missing mileage`
+					: "";
+				const payValue = row.payMissingCount && !row.payKnownCount
+					? "—"
+					: formatWorkloadMoney(row.payTotal);
+				const milesValue = row.milesMissingCount && !row.milesKnownTripCount
+					? "—"
+					: formatWorkloadMiles(row.milesTotal);
+				return `
+					<tr class="driver-app__row driver-app__workload-row${String(row.driverId) === String(selectedId) ? " is-selected" : ""}" tabindex="0" data-id="${escapeHtml(row.driverId)}" data-status="${escapeHtml(row.driver.status || "active")}" data-employment-type="${escapeHtml(row.driver.employment_type || "")}">
+						<td>
+							<div class="driver-app__driver-cell">
+								<div class="driver-app__avatar${row.driver.status === "inactive" ? " driver-app__avatar--inactive" : ""}" aria-hidden="true">${avatarCellHtml(row.driver)}</div>
+								<div class="driver-app__driver-info"><span class="driver-app__driver-name">${escapeHtml(row.driver.name)}</span></div>
+							</div>
+						</td>
+						<td>${row.daysWorked}</td>
+						<td>${row.tripsAssigned}</td>
+						<td>${workloadStatHtml(milesValue, mileageWarning)}</td>
+						<td>${workloadStatHtml(payValue, payWarning)}</td>
+					</tr>`;
+			})
+			.join("");
+	}
+
+	function renderWorkloadAlert(result) {
+		const messages = [];
+		if (result.missingPayAssignments) {
+			messages.push(
+				`pay is missing from ${result.missingPayAssignments} driver ${result.missingPayAssignments === 1 ? "assignment" : "assignments"}`,
+			);
+		}
+		if (result.missingMileageTrips) {
+			messages.push(
+				`mileage is missing from ${result.missingMileageTrips} ${result.missingMileageTrips === 1 ? "trip" : "trips"}`,
+			);
+		}
+		rosterView.classList.toggle(
+			"has-workload-alert",
+			messages.length > 0,
+		);
+		workloadAlert.hidden = messages.length === 0;
+		if (!messages.length) {
+			workloadAlertText.textContent = "";
+			return;
+		}
+		workloadAlertText.textContent = `Some totals are incomplete for ${fmtDate(workloadStartInput.value)} through ${fmtDate(localIsoDate())}: ${messages.join("; ")}.`;
+	}
+
+	function renderWorkload() {
+		if (
+			activeDriverView !== "workload" ||
+			!workloadUtils ||
+			!allWorkloadAssignments
+		)
+			return;
+		const result = workloadUtils.aggregateDriverWorkload(
+			allDrivers,
+			allWorkloadAssignments,
+			{
+				startDate: workloadStartInput.value,
+				endDate: localIsoDate(),
+			},
+		);
+		renderWorkloadAlert(result);
+		renderWorkloadRows(result);
+	}
+
+	function syncWorkloadPresetButtons() {
+		const today = localIsoDate();
+		workloadOptionsCard
+			?.querySelectorAll("[data-workload-preset]")
+			.forEach((button) => {
+				const on = workloadStartInput.value
+					=== workloadUtils.workloadPresetStartDate(
+						button.dataset.workloadPreset,
+						today,
+					);
+				button.classList.toggle("is-active", on);
+				button.setAttribute("aria-pressed", String(on));
+			});
+	}
+
+	async function loadWorkloadData({ refresh = false } = {}) {
+		if (!db || !workloadUtils) return;
+		if (refresh) allWorkloadAssignments = null;
+		if (!allWorkloadAssignments) {
+			if (activeDriverView === "workload") {
+				tbody.innerHTML = `<tr><td colspan="5" class="driver-app__empty">Calculating workload…</td></tr>`;
+			}
+			workloadAlert.hidden = true;
+			try {
+				allWorkloadAssignments =
+					await db.fetchDriverWorkloadAssignments();
+			} catch (err) {
+				console.error("fetchDriverWorkloadAssignments failed:", err);
+				if (activeDriverView === "workload") {
+					tbody.innerHTML = `<tr><td colspan="5" class="driver-app__empty" style="color:var(--rux-danger)">Could not calculate workload: ${escapeHtml(err?.message || err)}</td></tr>`;
+				}
+				return;
+			}
+		}
+		if (activeDriverView === "workload") renderWorkload();
+	}
+
+	async function setDriverView(view) {
+		activeDriverView = view === "workload" ? "workload" : "roster";
+		const showWorkload = activeDriverView === "workload";
+		driverModule
+			?.querySelectorAll("[data-driver-view]")
+			.forEach((button) => {
+				const on = button.dataset.driverView === activeDriverView;
+				button.classList.toggle("is-active", on);
+				button.setAttribute("aria-pressed", String(on));
+			});
+		driverModule?.classList.toggle("driver-app--workload", showWorkload);
+		workloadOptionsCard.hidden = !showWorkload;
+		workloadAlert.hidden = true;
+		driverTable.classList.toggle("driver-app__table--workload", showWorkload);
+		driverTable.setAttribute(
+			"aria-label",
+			showWorkload ? "Driver workload totals" : "Driver roster",
+		);
+		rosterView.setAttribute(
+			"aria-label",
+			showWorkload ? "Driver workload" : "Driver roster",
+		);
+		if (driverToolsTitle) {
+			driverToolsTitle.textContent = showWorkload
+				? "Workload Options"
+				: "Table Options";
+		}
+		if (showWorkload) {
+			await loadWorkloadData();
+		} else {
+			renderRoster();
+		}
+	}
+
+	function setupWorkloadControls() {
+		if (workloadControlsReady || !workloadOptionsCard || !workloadUtils) return;
+		workloadControlsReady = true;
+		const today = localIsoDate();
+		let storedStart = "";
+		try {
+			storedStart = localStorage.getItem(DRIVER_WORKLOAD_START_KEY) || "";
+		} catch (_) {
+			/* storage is optional */
+		}
+		const validStoredStart = /^\d{4}-\d{2}-\d{2}$/.test(storedStart)
+			&& storedStart <= today;
+		workloadStartInput.max = today;
+		workloadStartInput.value = validStoredStart
+			? storedStart
+			: workloadUtils.workloadPresetStartDate("ytd", today);
+		workloadEndLabel.textContent = fmtDate(today);
+		syncWorkloadPresetButtons();
+
+		driverModule.querySelectorAll("[data-driver-view]").forEach((button) => {
+			button.addEventListener("click", () => {
+				setDriverView(button.dataset.driverView);
+			});
+		});
+
+		workloadOptionsCard
+			.querySelectorAll("[data-workload-preset]")
+			.forEach((button) => {
+				button.addEventListener("click", () => {
+					workloadStartInput.value =
+						workloadUtils.workloadPresetStartDate(
+							button.dataset.workloadPreset,
+							today,
+						);
+					workloadStartInput.dispatchEvent(
+						new Event("change", { bubbles: true }),
+					);
+				});
+			});
+
+		workloadStartInput.addEventListener("change", () => {
+			if (!workloadStartInput.value || workloadStartInput.value > today) {
+				workloadStartInput.value =
+					workloadUtils.workloadPresetStartDate("ytd", today);
+			}
+			try {
+				localStorage.setItem(
+					DRIVER_WORKLOAD_START_KEY,
+					workloadStartInput.value,
+				);
+			} catch (_) {
+				/* storage is optional */
+			}
+			syncWorkloadPresetButtons();
+			renderWorkload();
+		});
+
+		driverTable
+			.querySelector("thead")
+			.addEventListener("click", (event) => {
+				if (activeDriverView !== "workload") return;
+				const button = event.target.closest("[data-workload-sort]");
+				if (!button) return;
+				const key = button.dataset.workloadSort;
+				if (workloadSort.key === key) {
+					workloadSort.direction =
+						workloadSort.direction === "asc" ? "desc" : "asc";
+				} else {
+					workloadSort = { key, direction: "asc" };
+				}
+				renderWorkload();
+			});
+
+		const openWorkloadDriver = (event) => {
+			if (activeDriverView !== "workload") return;
+			const row = event.target.closest("[data-id]");
+			if (!row) return;
+			if (event.type === "keydown" && !["Enter", " "].includes(event.key)) {
+				return;
+			}
+			if (event.type === "keydown") event.preventDefault();
+			const driver = allDrivers.find(
+				(item) => String(item.id) === String(row.dataset.id),
+			);
+			if (driver) selectRow(row, driver);
+		};
+		tbody.addEventListener("click", openWorkloadDriver);
+		tbody.addEventListener("keydown", openWorkloadDriver);
+		window.Rux?.syncDateInputs(workloadOptionsCard);
+	}
+
 	function renderTripList(trips) {
 		if (!trips.length) {
 			tripList.innerHTML = `<li class="rux-driver-panel__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
@@ -292,18 +661,10 @@
 
 	const ALL_DRIVER_COLS = [
 		{
-			key: "order",
-			label: "#",
-			defaultOn: true,
-			head: `<th scope="col" data-col="order" class="col-order" data-sort="order">#</th>`,
-			cell: (d) =>
-				`<td data-col="order" class="col-order driver-app__order">${d.sort_order ?? "—"}</td>`,
-		},
-		{
 			key: "status",
 			label: "Status",
 			defaultOn: true,
-			head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
+			head: `<th scope="col" data-col="status">Status</th>`,
 			cell: (d) => {
 				const s = statusMeta(d.status);
 				return `<td data-col="status"><span class="rux-status-text ${s.cls}">${s.label}</span></td>`;
@@ -321,7 +682,7 @@
 			key: "cdl",
 			label: "CDL",
 			defaultOn: true,
-			head: `<th scope="col" data-col="cdl" data-sort="cdl">CDL</th>`,
+			head: `<th scope="col" data-col="cdl">CDL</th>`,
 			cell: (d) =>
 				`<td data-col="cdl">${d.cdl_class ? `<span class="rux-tag">CDL-${d.cdl_class}</span>` : `<span class="rux-subtle">—</span>`}</td>`,
 		},
@@ -329,7 +690,7 @@
 			key: "expiry",
 			label: "License Exp",
 			defaultOn: true,
-			head: `<th scope="col" data-col="expiry" data-sort="expiry">License Exp</th>`,
+			head: `<th scope="col" data-col="expiry">License Exp</th>`,
 			cell: (d) => {
 				const e = d.license_exp || "";
 				return `<td class="${licExpiryClass(e)} col-expiry" data-col="expiry">${fmtDate(e)}</td>`;
@@ -361,7 +722,7 @@
 			key: "hire-date",
 			label: "Hire date",
 			defaultOn: false,
-			head: `<th scope="col" data-col="hire-date" data-sort="hire-date">Hire date</th>`,
+			head: `<th scope="col" data-col="hire-date">Hire date</th>`,
 			cell: (d) =>
 				`<td data-col="hire-date">${fmtDate(d.hire_date)}</td>`,
 		},
@@ -369,7 +730,7 @@
 			key: "med-card-exp",
 			label: "Medical Exp",
 			defaultOn: false,
-			head: `<th scope="col" data-col="med-card-exp" data-sort="med-card-exp">Medical Exp</th>`,
+			head: `<th scope="col" data-col="med-card-exp">Medical Exp</th>`,
 			cell: (d) => {
 				const e = d.med_card_expiry || "";
 				return `<td class="${licExpiryClass(e)}" data-col="med-card-exp">${fmtDate(e)}</td>`;
@@ -385,19 +746,11 @@
 		},
 		{
 			key: "employment-type",
-			label: "Status",
-			defaultOn: false,
-			head: `<th scope="col" data-col="employment-type" data-col-filter="employment-type" data-sort="employment-type">Employment <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
-			cell: (d) =>
-				`<td data-col="employment-type">${EMPLOYMENT_TYPE_LABELS[d.employment_type] || "—"}</td>`,
-		},
-		{
-			key: "priority",
-			label: "Priority",
+			label: "Employment",
 			defaultOn: true,
-			head: `<th scope="col" data-col="priority" data-sort="priority">Priority</th>`,
+			head: `<th scope="col" data-col="employment-type">Employment</th>`,
 			cell: (d) =>
-				`<td data-col="priority"><span class="rux-badge"><span class="rux-priority-dot" data-priority="${d.priority || 3}" aria-hidden="true"></span>${d.priority || 3}</span></td>`,
+				`<td data-col="employment-type"><span class="rux-priority-dot" data-priority="${d.priority || 3}" aria-hidden="true" title="Priority ${d.priority || 3}"></span>${EMPLOYMENT_TYPE_LABELS[d.employment_type] || "—"}</td>`,
 		},
 		{
 			key: "license-number",
@@ -457,20 +810,14 @@
 		// Rebuild thead
 		const theadRow = table.querySelector("thead tr");
 		theadRow.innerHTML =
-			`<th scope="col" data-sort="driver">Driver</th>` +
+			`<th scope="col">Driver</th>` +
 			activeCols.map((c) => c.head).join("");
-
-		updateFilterHeaders(table);
-		updateSortHeaders(table);
 
 		tbody.innerHTML = "";
 		if (!list.length) {
 			tbody.innerHTML = `<tr><td colspan="${1 + activeCols.length}" class="driver-app__empty">No drivers — add one to get started.</td></tr>`;
 			return;
 		}
-
-		let dragSrcIdx = null;
-		let didDragRow = false;
 
 		list.forEach((d, idx) => {
 			const tr = document.createElement("tr");
@@ -480,48 +827,6 @@
 			tr.dataset.idx = idx;
 			tr.dataset.status = d.status || "active";
 			tr.dataset.employmentType = d.employment_type || "";
-			tr.draggable = sortKey === "order";
-
-			tr.addEventListener("dragstart", (e) => {
-				if (sortKey !== "order") {
-					e.preventDefault();
-					return;
-				}
-				dragSrcIdx = idx;
-				didDragRow = true;
-				tr.classList.add("is-dragging");
-				e.dataTransfer.effectAllowed = "move";
-			});
-			tr.addEventListener("dragend", () => {
-				tr.classList.remove("is-dragging");
-				tbody
-					.querySelectorAll(".is-drag-target")
-					.forEach((el) => el.classList.remove("is-drag-target"));
-				setTimeout(() => {
-					didDragRow = false;
-				}, 0);
-			});
-			tr.addEventListener("dragover", (e) => {
-				if (dragSrcIdx !== null && dragSrcIdx !== idx) {
-					e.preventDefault();
-					e.dataTransfer.dropEffect = "move";
-					tbody
-						.querySelectorAll(".is-drag-target")
-						.forEach((el) => el.classList.remove("is-drag-target"));
-					tr.classList.add("is-drag-target");
-				}
-			});
-			tr.addEventListener("drop", async (e) => {
-				e.preventDefault();
-				if (dragSrcIdx === null || dragSrcIdx === idx) return;
-				const toIdx = idx;
-				const orderedDrivers = getSortedDrivers();
-				const [moved] = orderedDrivers.splice(dragSrcIdx, 1);
-				orderedDrivers.splice(toIdx, 0, moved);
-				allDrivers = orderedDrivers;
-				dragSrcIdx = null;
-				await saveDriverOrder();
-			});
 
 			tr.innerHTML =
 				`
@@ -536,13 +841,7 @@
         </td>
       ` + activeCols.map((c) => c.cell(d)).join("");
 
-			tr.addEventListener("click", (e) => {
-				if (didDragRow) {
-					e.preventDefault();
-					return;
-				}
-				selectRow(tr, d);
-			});
+			tr.addEventListener("click", () => selectRow(tr, d));
 			tr.addEventListener("keydown", (e) => {
 				if (e.key === "Enter" || e.key === " ") {
 					e.preventDefault();
@@ -554,20 +853,16 @@
 		});
 	}
 
-	async function saveDriverOrder() {
-		const updates = allDrivers.map((d, i) => ({
-			id: d.id,
-			sort_order: i + 1,
-		}));
-		allDrivers.forEach((d, i) => {
-			d.sort_order = i + 1;
-		});
+	function renderRoster() {
 		renderRows(getSortedDrivers());
 		applyFilter();
-		try {
-			await db.reorderDrivers(updates);
-		} catch (err) {
-			console.error("reorderDrivers failed:", err);
+	}
+
+	function renderCurrentDriverView() {
+		if (activeDriverView === "workload") {
+			renderWorkload();
+		} else {
+			renderRoster();
 		}
 	}
 
@@ -1132,8 +1427,8 @@
 
 	// ── Avatar photo upload ───────────────────────────────────────────────────
 	// Clicking the avatar opens a small menu (Upload / Remove) instead of
-	// jumping straight to the file picker — same dynamic-popover pattern as
-	// openDriverColFilter below, opened via the shared RuxMenu.
+	// jumping straight to the file picker — a dynamic popover opened via the
+	// shared RuxMenu.
 
 	async function removeDriverPhoto() {
 		if (!selectedId || !db) return;
@@ -1143,8 +1438,7 @@
 			const driver = allDrivers.find((x) => x.id === selectedId);
 			if (driver) driver.photo_path = null;
 			renderAvatar(driver);
-			renderRows(getSortedDrivers());
-			applyFilter();
+			renderCurrentDriverView();
 		} catch (err) {
 			console.error("Remove photo failed:", err);
 			window.Rux?.toast("Could not remove photo — try again.");
@@ -1216,8 +1510,7 @@
 			const photoPath = await db.uploadDriverPhoto(selectedId, file);
 			const driver = allDrivers.find((x) => x.id === selectedId);
 			if (driver) driver.photo_path = photoPath;
-			renderRows(getSortedDrivers());
-			applyFilter();
+			renderCurrentDriverView();
 		} catch (err) {
 			console.error("Photo upload failed:", err);
 			window.Rux?.toast("Photo upload failed — try again.");
@@ -1230,8 +1523,9 @@
 	// ── Column picker v2 — Supabase-persisted, drag-to-reorder ───────────────
 
 	const DRIVER_COLS_KEY = "driver-cols-v2";
-	const driverColsBtn = document.getElementById("driver-cols-btn");
-	let driverColPicker = null;
+	const driverViewOptionsList = document.getElementById(
+		"driver-view-options-list",
+	);
 	let dragKey = null;
 
 	function defaultConfig() {
@@ -1276,127 +1570,79 @@
 		}
 	}
 
-	function buildDriverColPicker() {
-		driverColPicker = document.createElement("div");
-		driverColPicker.className = "rux-col-picker";
-		driverColPicker.setAttribute("hidden", "");
-		driverColPicker.setAttribute("role", "dialog");
-		driverColPicker.setAttribute("aria-label", "Column visibility");
+	// Renders directly into the Table Options panel's View Options card —
+	// always visible there instead of a floating popover, so there's no
+	// open/close/position bookkeeping to do anymore.
+	function renderColPicker() {
+		if (!driverViewOptionsList) return;
+		driverViewOptionsList.innerHTML = "";
+		colConfig.forEach((c) => {
+			const def = ALL_DRIVER_COLS.find((d) => d.key === c.key);
+			if (!def) return;
 
-		const heading = document.createElement("p");
-		heading.className = "rux-col-picker__heading";
-		heading.textContent = "Columns";
-		driverColPicker.appendChild(heading);
+			const row = document.createElement("div");
+			row.className = "rux-col-picker__row";
+			row.draggable = true;
+			row.dataset.key = c.key;
 
-		const list = document.createElement("div");
-		list.className = "rux-col-picker__list";
-		driverColPicker.appendChild(list);
+			const handle = document.createElement("span");
+			handle.className = "rux-col-picker__handle";
+			handle.innerHTML = `<span class="rux-icon">drag_indicator</span>`;
 
-		function renderPickerRows() {
-			list.innerHTML = "";
-			colConfig.forEach((c) => {
-				const def = ALL_DRIVER_COLS.find((d) => d.key === c.key);
-				if (!def) return;
-
-				const row = document.createElement("div");
-				row.className = "rux-col-picker__row";
-				row.draggable = true;
-				row.dataset.key = c.key;
-
-				const handle = document.createElement("span");
-				handle.className = "rux-col-picker__handle";
-				handle.innerHTML = `<span class="rux-icon">drag_indicator</span>`;
-
-				const cb = document.createElement("input");
-				cb.type = "checkbox";
-				cb.checked = c.visible;
-				cb.id = `dcol-${c.key}`;
-				cb.addEventListener("change", async () => {
-					c.visible = cb.checked;
-					renderRows(getSortedDrivers());
-					await saveColConfig();
-				});
-
-				const lbl = document.createElement("label");
-				lbl.htmlFor = cb.id;
-				lbl.className = "rux-col-picker__label";
-				lbl.textContent = def.label;
-
-				row.append(handle, cb, lbl);
-
-				row.addEventListener("dragstart", (e) => {
-					dragKey = c.key;
-					row.classList.add("is-dragging");
-					e.dataTransfer.effectAllowed = "move";
-				});
-				row.addEventListener("dragend", () => {
-					dragKey = null;
-					row.classList.remove("is-dragging");
-					list.querySelectorAll(".is-over").forEach((el) =>
-						el.classList.remove("is-over"),
-					);
-				});
-				row.addEventListener("dragover", (e) => {
-					if (dragKey && dragKey !== c.key) {
-						e.preventDefault();
-						e.dataTransfer.dropEffect = "move";
-						list.querySelectorAll(".is-over").forEach((el) =>
-							el.classList.remove("is-over"),
-						);
-						row.classList.add("is-over");
-					}
-				});
-				row.addEventListener("drop", async (e) => {
-					e.preventDefault();
-					if (!dragKey || dragKey === c.key) return;
-					const fromIdx = colConfig.findIndex(
-						(x) => x.key === dragKey,
-					);
-					const toIdx = colConfig.findIndex((x) => x.key === c.key);
-					const [item] = colConfig.splice(fromIdx, 1);
-					colConfig.splice(toIdx, 0, item);
-					renderPickerRows();
-
-					renderRows(getSortedDrivers());
-					await saveColConfig();
-				});
-
-				list.appendChild(row);
+			const cb = document.createElement("input");
+			cb.type = "checkbox";
+			cb.checked = c.visible;
+			cb.id = `dcol-${c.key}`;
+			cb.addEventListener("change", async () => {
+				c.visible = cb.checked;
+				renderCurrentDriverView();
+				await saveColConfig();
 			});
-		}
 
-		renderPickerRows();
-		document.body.appendChild(driverColPicker);
+			const lbl = document.createElement("label");
+			lbl.htmlFor = cb.id;
+			lbl.className = "rux-col-picker__label";
+			lbl.textContent = def.label;
 
-		document.addEventListener("keydown", (e) => {
-			if (e.key === "Escape" && !driverColPicker.hidden)
-				driverColPicker.setAttribute("hidden", "");
-		});
-		document.addEventListener("mousedown", (e) => {
-			if (
-				!driverColPicker.hidden &&
-				!driverColPicker.contains(e.target) &&
-				e.target !== driverColsBtn
-			)
-				driverColPicker.setAttribute("hidden", "");
+			row.append(handle, cb, lbl);
+
+			row.addEventListener("dragstart", (e) => {
+				dragKey = c.key;
+				row.classList.add("is-dragging");
+				e.dataTransfer.effectAllowed = "move";
+			});
+			row.addEventListener("dragend", () => {
+				dragKey = null;
+				row.classList.remove("is-dragging");
+				driverViewOptionsList
+					.querySelectorAll(".is-over")
+					.forEach((el) => el.classList.remove("is-over"));
+			});
+			row.addEventListener("dragover", (e) => {
+				if (dragKey && dragKey !== c.key) {
+					e.preventDefault();
+					e.dataTransfer.dropEffect = "move";
+					driverViewOptionsList
+						.querySelectorAll(".is-over")
+						.forEach((el) => el.classList.remove("is-over"));
+					row.classList.add("is-over");
+				}
+			});
+			row.addEventListener("drop", async (e) => {
+				e.preventDefault();
+				if (!dragKey || dragKey === c.key) return;
+				const fromIdx = colConfig.findIndex((x) => x.key === dragKey);
+				const toIdx = colConfig.findIndex((x) => x.key === c.key);
+				const [item] = colConfig.splice(fromIdx, 1);
+				colConfig.splice(toIdx, 0, item);
+				renderColPicker();
+				renderCurrentDriverView();
+				await saveColConfig();
+			});
+
+			driverViewOptionsList.appendChild(row);
 		});
 	}
-
-	driverColsBtn.addEventListener("click", () => {
-		if (!driverColPicker) buildDriverColPicker();
-		if (!driverColPicker.hidden) {
-			driverColPicker.setAttribute("hidden", "");
-			return;
-		}
-		driverColPicker.style.visibility = "hidden";
-		driverColPicker.removeAttribute("hidden");
-		const ar = driverColsBtn.getBoundingClientRect();
-		const pr = driverColPicker.getBoundingClientRect();
-		const m = 8;
-		driverColPicker.style.left = `${Math.max(m, Math.min(ar.right - pr.width, window.innerWidth - pr.width - m))}px`;
-		driverColPicker.style.top = `${ar.bottom + 6}px`;
-		driverColPicker.style.visibility = "";
-	});
 
 	// ── Search & filter ───────────────────────────────────────────────────────
 
@@ -1440,45 +1686,16 @@
 				row.dataset.employmentType === employmentFilter;
 			row.hidden = !(matchF && matchE);
 		});
-		updateSaveOrderState();
 	}
 
-	function updateFilterHeaders(table) {
-		table.querySelectorAll("th[data-col-filter]").forEach((th) => {
-			const def = DRIVER_COL_FILTERS[th.dataset.colFilter];
-			th.tabIndex = 0;
-			th.setAttribute("aria-haspopup", "menu");
-			if (!th.hasAttribute("aria-expanded"))
-				th.setAttribute("aria-expanded", "false");
-			if (def) th.classList.toggle("is-filtered", def.get() !== "all");
-		});
-	}
-
-	let driverColFilterPopover = null;
-	let activeFilterTh = null;
-
-	function openDriverColFilter(th, filterKey) {
+	// Renders one filter's option list into the Table Options panel's
+	// Filters card — a static role="radiogroup" list of .rux-menu__item
+	// buttons, same look as the old popover but always visible in place.
+	function renderFilterGroup(containerId, filterKey) {
+		const container = document.getElementById(containerId);
 		const def = DRIVER_COL_FILTERS[filterKey];
-		if (!def) return;
-
-		if (!driverColFilterPopover) {
-			driverColFilterPopover = document.createElement("div");
-			driverColFilterPopover.className = "rux-menu rux-popover";
-			driverColFilterPopover.setAttribute("hidden", "");
-			driverColFilterPopover.setAttribute("role", "menu");
-			driverColFilterPopover.addEventListener("rux:menu-close", () => {
-				activeFilterTh = null;
-			});
-			document.body.appendChild(driverColFilterPopover);
-		}
-
-		if (activeFilterTh === th && !driverColFilterPopover.hidden) {
-			window.RuxMenu.close(driverColFilterPopover);
-			return;
-		}
-		activeFilterTh = th;
-
-		driverColFilterPopover.innerHTML = "";
+		if (!container || !def) return;
+		container.innerHTML = "";
 		def.options.forEach((opt) => {
 			const btn = document.createElement("button");
 			btn.type = "button";
@@ -1489,164 +1706,36 @@
 			btn.textContent = opt.label;
 			btn.addEventListener("click", () => {
 				def.set(opt.value);
-				updateFilterHeaders(tbody.closest("table"));
+				renderFilterGroup(containerId, filterKey);
 				applyFilter();
-				window.RuxMenu.close(driverColFilterPopover);
 			});
-			driverColFilterPopover.appendChild(btn);
-		});
-
-		window.RuxMenu.open(th, driverColFilterPopover, {
-			placement: "bottom-start",
+			container.appendChild(btn);
 		});
 	}
 
 	// ── Sort ──────────────────────────────────────────────────────────────────
-
-	let sortKey = "order";
-	let sortDir = "asc";
-
-	const SORT_DEFS = {
-		driver: (a, b) => (a.name || "").localeCompare(b.name || ""),
-		order: (a, b) => {
-			if (a.sort_order == null && b.sort_order == null)
-				return (a.name || "").localeCompare(b.name || "");
-			if (a.sort_order == null) return 1;
-			if (b.sort_order == null) return -1;
-			return a.sort_order - b.sort_order;
-		},
-		status: (a, b) => {
-			const o = { active: 0, "on-leave": 1, inactive: 2 };
-			return (
-				(o[a.status] ?? 9) - (o[b.status] ?? 9) ||
-				(a.name || "").localeCompare(b.name || "")
-			);
-		},
-		"employment-type": (a, b) => {
-			const o = {
-				"full-time": 0,
-				"part-time": 1,
-				contract: 2,
-				seasonal: 3,
-			};
-			return (
-				(o[a.employment_type] ?? 9) - (o[b.employment_type] ?? 9) ||
-				(a.name || "").localeCompare(b.name || "")
-			);
-		},
-		priority: (a, b) => {
-			const o = {
-				"full-time": 0,
-				"part-time": 1,
-				contract: 2,
-				seasonal: 3,
-			};
-			return (
-				(o[a.employment_type] ?? 9) - (o[b.employment_type] ?? 9) ||
-				(a.priority || 3) - (b.priority || 3) ||
-				(a.name || "").localeCompare(b.name || "")
-			);
-		},
-		cdl: (a, b) =>
-			(a.cdl_class || "").localeCompare(b.cdl_class || "") ||
-			(a.name || "").localeCompare(b.name || ""),
-		expiry: (a, b) =>
-			(a.license_exp || "9999").localeCompare(b.license_exp || "9999") ||
-			(a.name || "").localeCompare(b.name || ""),
-		"hire-date": (a, b) =>
-			(a.hire_date || "").localeCompare(b.hire_date || "") ||
-			(a.name || "").localeCompare(b.name || ""),
-		"med-card-exp": (a, b) =>
-			(a.med_card_expiry || "9999").localeCompare(
-				b.med_card_expiry || "9999",
-			) || (a.name || "").localeCompare(b.name || ""),
-	};
-
+	// No user-facing sort — the table always shows the fixed Employment
+	// (Full-time→Part-time→Contract→Seasonal) → Status (Active→On Leave→
+	// Inactive) → Priority (1→5) order, name as final tiebreak. Column
+	// headers are plain labels now; there's no click-to-sort or manual
+	// drag-reorder anymore.
 	function getSortedDrivers() {
-		const fn = SORT_DEFS[sortKey] || SORT_DEFS.order;
-		const list = [...allDrivers].sort(fn);
-		return sortDir === "desc" ? list.reverse() : list;
-	}
-
-	function updateSortHeaders(table) {
-		table.querySelectorAll("th[data-sort]").forEach((th) => {
-			const key = th.dataset.sort;
-			th.classList.toggle(
-				"is-sort-asc",
-				key === sortKey && sortDir === "asc",
-			);
-			th.classList.toggle(
-				"is-sort-desc",
-				key === sortKey && sortDir === "desc",
-			);
-		});
-		table.classList.toggle("is-manual-order", sortKey === "order");
-		updateSaveOrderState();
-	}
-
-	function hasActiveDriverFilter() {
-		return Object.values(DRIVER_COL_FILTERS).some(
-			(def) => def.get() !== "all",
+		const empOrder = {
+			"full-time": 0,
+			"part-time": 1,
+			contract: 2,
+			seasonal: 3,
+		};
+		const statusOrder = { active: 0, "on-leave": 1, inactive: 2 };
+		return [...allDrivers].sort(
+			(a, b) =>
+				(empOrder[a.employment_type] ?? 9) -
+					(empOrder[b.employment_type] ?? 9) ||
+				(statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9) ||
+				(a.priority || 3) - (b.priority || 3) ||
+				(a.name || "").localeCompare(b.name || ""),
 		);
 	}
-
-	function updateSaveOrderState() {
-		if (!saveOrderBtn) return;
-		const isManualOrder = sortKey === "order";
-		const blockedByFilter = hasActiveDriverFilter();
-		saveOrderBtn.hidden = isManualOrder;
-		saveOrderBtn.disabled = !isManualOrder && blockedByFilter;
-		saveOrderBtn.title = blockedByFilter
-			? "Clear search and filters before setting manual order"
-			: "Set current sort as manual order";
-	}
-
-	async function lockCurrentOrder() {
-		if (sortKey === "order" || hasActiveDriverFilter()) return;
-		allDrivers = getSortedDrivers();
-		sortKey = "order";
-		sortDir = "asc";
-		await saveDriverOrder();
-	}
-
-	saveOrderBtn?.addEventListener("click", lockCurrentOrder);
-
-	tbody.closest("table").addEventListener("click", (e) => {
-		// Filter icon → open filter (takes priority)
-		const filterIcon = e.target.closest(".rux-col-filter-icon");
-		if (filterIcon) {
-			const th = filterIcon.closest("th[data-col-filter]");
-			if (th) {
-				openDriverColFilter(th, th.dataset.colFilter);
-				return;
-			}
-		}
-
-		// Sort header
-		const sortTh = e.target.closest("th[data-sort]");
-		if (sortTh) {
-			const key = sortTh.dataset.sort;
-			if (key === sortKey) {
-				sortDir = sortDir === "asc" ? "desc" : "asc";
-			} else {
-				sortKey = key;
-				sortDir = "asc";
-			}
-			renderRows(getSortedDrivers());
-			applyFilter();
-			return;
-		}
-
-		// Filter header (no sort on this th)
-		const filterTh = e.target.closest("th[data-col-filter]");
-		if (filterTh) openDriverColFilter(filterTh, filterTh.dataset.colFilter);
-	});
-	tbody.closest("table").addEventListener("keydown", (e) => {
-		const filterTh = e.target.closest("th[data-col-filter]");
-		if (!filterTh || (e.key !== "Enter" && e.key !== " ")) return;
-		e.preventDefault();
-		openDriverColFilter(filterTh, filterTh.dataset.colFilter);
-	});
 
 	// ── Data loading ──────────────────────────────────────────────────────────
 
@@ -1664,8 +1753,11 @@
 	async function loadDrivers() {
 		try {
 			allDrivers = await db.fetchDrivers();
-			renderRows(getSortedDrivers());
-			applyFilter();
+			if (activeDriverView === "workload") {
+				await loadWorkloadData({ refresh: true });
+			} else {
+				renderRoster();
+			}
 		} catch (err) {
 			console.error("fetchDrivers failed:", err);
 			tbody.innerHTML = `<tr><td colspan="6" class="driver-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
@@ -1683,8 +1775,28 @@
 				return;
 			}
 		}
+		if (!workloadUtils) {
+			try {
+				workloadUtils = await import("../core/driver-workload.js?v=1");
+			} catch (err) {
+				console.warn("Could not load driver workload helpers:", err);
+			}
+		}
+		setupWorkloadControls();
 		await loadColConfig();
+		renderColPicker();
+		renderFilterGroup("driver-filter-status-list", "status");
+		renderFilterGroup("driver-filter-employment-list", "employment-type");
 		await loadDrivers();
+
+		// Both side panels open by default on desktop, same as the Calendar
+		// module's trip/tools drawers — mobile stays closed (panels are
+		// full-screen overlays there, and there's no trip/driver selected
+		// yet to show anyway).
+		if (!window.matchMedia("(max-width: 500px)").matches) {
+			openDrawer();
+			openToolsDrawer();
+		}
 	}
 
 	// Called from the Trips module's right-panel Drivers grid ("Add Time Off"

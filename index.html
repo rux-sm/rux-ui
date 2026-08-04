@@ -15,9 +15,9 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=67" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=152" />
+		<link rel="stylesheet" href="./css/components.css?v=157" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
-		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=2" />
+		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=6" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
 		<link rel="stylesheet" href="./css/features/customer-panel.css?v=2" />
 		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
@@ -550,16 +550,14 @@
 							aria-label="Toggle trip editor"
 							data-opens="trip-panel-drawer"
 						>
-							<span
-								class="rux-icon scheduler-app__drawer-toggle-open"
-								aria-hidden="true"
-								>left_panel_open</span
-							>
-							<span
-								class="rux-icon scheduler-app__drawer-toggle-close"
-								aria-hidden="true"
-								>left_panel_close</span
-							>
+							<span class="scheduler-app__drawer-icon-stack" aria-hidden="true">
+								<span class="rux-icon scheduler-app__drawer-toggle-open"
+									>left_panel_open</span
+								>
+								<span class="rux-icon scheduler-app__drawer-toggle-close"
+									>left_panel_close</span
+								>
+							</span>
 						</button>
 						<aside
 							class="rux-panel rux-panel--left rux-trip-panel"
@@ -2054,16 +2052,14 @@
 							aria-label="Toggle tools panel"
 							data-opens="right-panel-drawer"
 						>
-							<span
-								class="rux-icon scheduler-app__drawer-toggle-open"
-								aria-hidden="true"
-								>right_panel_open</span
-							>
-							<span
-								class="rux-icon scheduler-app__drawer-toggle-close"
-								aria-hidden="true"
-								>right_panel_close</span
-							>
+							<span class="scheduler-app__drawer-icon-stack" aria-hidden="true">
+								<span class="rux-icon scheduler-app__drawer-toggle-open"
+									>right_panel_open</span
+								>
+								<span class="rux-icon scheduler-app__drawer-toggle-close"
+									>right_panel_close</span
+								>
+							</span>
 						</button>
 						<aside
 							class="rux-panel rux-panel--right rux-right-panel"
@@ -3575,16 +3571,14 @@
 							aria-label="Toggle driver editor"
 							data-driver-drawer-toggle
 						>
-							<span
-								class="rux-icon scheduler-app__drawer-toggle-open"
-								aria-hidden="true"
-								>left_panel_open</span
-							>
-							<span
-								class="rux-icon scheduler-app__drawer-toggle-close"
-								aria-hidden="true"
-								>left_panel_close</span
-							>
+							<span class="scheduler-app__drawer-icon-stack" aria-hidden="true">
+								<span class="rux-icon scheduler-app__drawer-toggle-open"
+									>left_panel_open</span
+								>
+								<span class="rux-icon scheduler-app__drawer-toggle-close"
+									>left_panel_close</span
+								>
+							</span>
 						</button>
 						<aside
 							class="rux-panel rux-panel--left rux-driver-panel"
@@ -4491,65 +4485,212 @@
 							</button>
 							<div class="rux-workspace__toolbar">
 								<button
-									class="rux-button rux-button--default"
-									id="driver-save-order-btn"
+									class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
 									type="button"
-									hidden
-									title="Set current sort as manual order"
+									id="driver-tools-toggle-btn"
+									aria-label="Open table options"
+									aria-pressed="false"
+									data-driver-tools-toggle
 								>
-									<span class="rux-icon" aria-hidden="true"
-										>save</span
+									<span class="rux-icon icon-off" aria-hidden="true"
+										>right_panel_open</span
 									>
-									<span class="rux-btn-label"
-										>Set as order</span
+									<span class="rux-icon icon-on" aria-hidden="true"
+										>right_panel_close</span
 									>
-								</button>
-								<button
-									class="rux-button rux-button--default"
-									id="driver-cols-btn"
-									type="button"
-									title="Show / hide columns"
-								>
-									<span class="rux-icon">view_column</span>
-									<span class="rux-btn-label">Columns</span>
 								</button>
 							</div>
 						</header>
-						<div class="rux-workspace__body driver-app__table-wrap">
-							<table
-								class="rux-table driver-app__table"
+						<div class="rux-workspace__body driver-app__body">
+							<section
+								class="driver-app__results"
+								id="driver-roster-view"
 								aria-label="Driver roster"
 							>
-								<thead>
-									<tr>
-										<th scope="col">Driver</th>
-										<th scope="col" data-col="status">
-											Status
-										</th>
-										<th
-											scope="col"
-											class="col-phone"
-											data-col="phone"
-										>
-											Phone
-										</th>
-										<th scope="col" data-col="cdl">CDL</th>
-										<th
-											scope="col"
-											class="col-expiry"
-											data-col="expiry"
-										>
-											License Exp
-										</th>
-										<th scope="col" data-col="next-trip">
-											Next trip
-										</th>
-									</tr>
-								</thead>
-								<tbody id="driver-roster-body"></tbody>
-							</table>
+								<div
+									class="rux-alert rux-alert--warning driver-app__workload-alert"
+									id="driver-workload-alert"
+									role="status"
+									aria-live="polite"
+									hidden
+								>
+									<span class="rux-icon rux-alert__icon" aria-hidden="true">warning</span>
+									<div class="rux-alert__body" id="driver-workload-alert-text"></div>
+								</div>
+								<div class="driver-app__table-wrap">
+									<table class="rux-table driver-app__table" id="driver-roster-table" aria-label="Driver roster">
+										<thead>
+											<tr>
+												<th scope="col">Driver</th>
+											</tr>
+										</thead>
+										<tbody id="driver-roster-body"></tbody>
+									</table>
+								</div>
+							</section>
 						</div>
 					</section>
+
+					<!-- Driver tools drawer (View Options + Filters) -->
+					<div
+						class="scheduler-app__drawer scheduler-app__drawer--right scheduler-app__drawer--railable"
+						id="driver-tools-drawer"
+					>
+						<!-- Open button: outside the inert <aside> so it stays clickable
+						     when the panel is collapsed. Only visible at <=44px rail width. -->
+						<button
+							class="rux-button rux-button--ghost rux-button--icon rux-right-panel__drawer-open scheduler-app__mobile-panel-btn"
+							type="button"
+							aria-label="Toggle table options"
+							data-driver-tools-toggle
+						>
+							<span
+								class="scheduler-app__drawer-icon-stack"
+								aria-hidden="true"
+							>
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-open"
+									>right_panel_open</span
+								>
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-close"
+									>right_panel_close</span
+								>
+							</span>
+						</button>
+						<aside
+							class="rux-panel rux-panel--right rux-right-panel"
+							role="dialog"
+							aria-label="Table options"
+						>
+							<header
+								class="rux-panel__header rux-right-panel__header"
+							>
+								<h2 class="rux-panel__title" id="driver-tools-title">Table Options</h2>
+								<button
+									class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
+									type="button"
+									aria-label="Close table options"
+									data-driver-tools-toggle
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>right_panel_close</span
+									>
+								</button>
+							</header>
+							<div class="rux-panel__body">
+								<div class="rux-panel__pane" role="tabpanel">
+									<div
+										class="rux-segmented-track driver-app__view-switch driver-app__view-switch--panel"
+										role="group"
+										aria-label="Driver view"
+									>
+										<button
+											class="rux-button rux-button--segment is-active"
+											type="button"
+											aria-pressed="true"
+											data-driver-view="roster"
+										>
+											Roster
+										</button>
+										<button
+											class="rux-button rux-button--segment"
+											type="button"
+											aria-pressed="false"
+											data-driver-view="workload"
+										>
+											Workload
+										</button>
+									</div>
+									<article
+										class="rux-card driver-app__workload-options"
+										id="driver-workload-options-card"
+										hidden
+									>
+										<header class="rux-card__header">
+											<p class="rux-card__title">Date Range</p>
+										</header>
+										<div class="rux-card__body rux-card__body--stack">
+											<div
+												class="rux-segmented-track driver-app__workload-presets"
+												role="group"
+												aria-label="Workload date presets"
+											>
+												<button class="rux-button rux-button--segment" type="button" data-workload-preset="30" aria-pressed="false">30 Days</button>
+												<button class="rux-button rux-button--segment" type="button" data-workload-preset="90" aria-pressed="false">90 Days</button>
+												<button class="rux-button rux-button--segment is-active" type="button" data-workload-preset="ytd" aria-pressed="true">YTD</button>
+											</div>
+											<div class="rux-field">
+												<label class="rux-field__label" for="driver-workload-start">Starting</label>
+												<input class="rux-input" id="driver-workload-start" type="date" />
+											</div>
+											<p class="driver-app__workload-through">
+												<span>Through</span>
+												<strong id="driver-workload-end-label">Today</strong>
+											</p>
+										</div>
+									</article>
+									<article
+										class="rux-card"
+										id="driver-view-options-card"
+									>
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												View Options
+											</p>
+										</header>
+										<div class="rux-card__body">
+											<div
+												class="rux-col-picker__list"
+												id="driver-view-options-list"
+											></div>
+										</div>
+									</article>
+									<article
+										class="rux-card"
+										id="driver-filters-card"
+									>
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												Filters
+											</p>
+										</header>
+										<div
+											class="rux-card__body rux-card__body--stack"
+										>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													id="driver-filter-status-label"
+													>Status</label
+												>
+												<div
+													class="rux-menu"
+													role="radiogroup"
+													aria-labelledby="driver-filter-status-label"
+													id="driver-filter-status-list"
+												></div>
+											</div>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													id="driver-filter-employment-label"
+													>Employment</label
+												>
+												<div
+													class="rux-menu"
+													role="radiogroup"
+													aria-labelledby="driver-filter-employment-label"
+													id="driver-filter-employment-list"
+												></div>
+											</div>
+										</div>
+									</article>
+								</div>
+							</div>
+						</aside>
+					</div>
+					<!-- /driver-tools-drawer -->
 				</div>
 				<!-- /module:drivers -->
 
@@ -6764,7 +6905,7 @@
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=29"></script>
 		<script src="./js/components/itinerary.js?v=20"></script>
-		<script src="./js/panels/driver-panel.js?v=12" defer></script>
+		<script src="./js/panels/driver-panel.js?v=16" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=4" defer></script>
 		<script src="./js/panels/settings-panel.js?v=3" defer></script>
@@ -9881,8 +10022,8 @@
 
 			// Full-time drivers always sort above part-time/contract/seasonal;
 			// within each group, lower priority number (1) sorts first — same
-			// rule as driver-panel.js's "priority" SORT_DEFS entry, kept in sync
-			// by hand since the two live in separate modules.
+			// rule as driver-panel.js's getSortedDrivers(), kept in sync by
+			// hand since the two live in separate modules.
 			const DRIVER_GRID_EMPLOYMENT_ORDER = {
 				"full-time": 0,
 				"part-time": 1,

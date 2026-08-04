@@ -181,6 +181,72 @@ export async function fetchDriverTrips(driverId) {
     .sort((a, b) => (b.startDate || "").localeCompare(a.startDate || ""));
 }
 
+/* ── Workload reporting ───────────────────────────────────────────────── */
+
+// Fetch once for the comparison table, then apply the user's start-date
+// range in the client. A driver receives the full trip mileage for every
+// trip they are assigned to; the aggregator de-duplicates that trip-level
+// value while still summing each individual driver-pay field.
+export async function fetchDriverWorkloadAssignments() {
+  const { data, error } = await supabase
+    .from("trip_drivers")
+    .select(`
+      id, driver_id, role, pay,
+      trip_assignments!inner(
+        id, leg, active_roles,
+        trips!inner(
+          id, trip_ref, trip_type,
+          start_date, end_date,
+          return_start_date, return_end_date,
+          est_miles, actual_miles
+        )
+      )
+    `);
+  if (error) throw error;
+
+  return (data ?? [])
+    .map((tripDriver) => {
+      const assignment = tripDriver.trip_assignments;
+      const trip = assignment?.trips;
+      if (!trip?.id || !isAssignmentRoleActive(assignment, tripDriver.role)) {
+        return null;
+      }
+      const isReturnLeg = assignment.leg === "return"
+        && trip.trip_type === "dropoff_pickup";
+      const actualMiles = trip.actual_miles;
+      const estimatedMiles = trip.est_miles;
+      const hasActualMiles = actualMiles !== null
+        && actualMiles !== undefined
+        && actualMiles !== "";
+      const hasEstimatedMiles = estimatedMiles !== null
+        && estimatedMiles !== undefined
+        && estimatedMiles !== "";
+
+      return {
+        assignmentId: assignment.id,
+        tripDriverId: tripDriver.id,
+        driverId: tripDriver.driver_id,
+        tripId: trip.id,
+        tripRef: trip.trip_ref,
+        role: tripDriver.role,
+        pay: tripDriver.pay,
+        startDate: isReturnLeg ? trip.return_start_date : trip.start_date,
+        endDate: isReturnLeg ? trip.return_end_date : trip.end_date,
+        miles: hasActualMiles
+          ? actualMiles
+          : hasEstimatedMiles
+            ? estimatedMiles
+            : null,
+        milesSource: hasActualMiles
+          ? "actual"
+          : hasEstimatedMiles
+            ? "estimated"
+            : "missing",
+      };
+    })
+    .filter(Boolean);
+}
+
 /* ── Shared driver schedule ─────────────────────────────────────────────── */
 
 export async function fetchDriverScheduleShare(driverId) {

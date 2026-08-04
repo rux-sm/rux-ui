@@ -463,7 +463,9 @@ import {
 						|| busGroup?.querySelector(`[data-role="${roleKey}"]`)?.getAttribute("aria-pressed") === "true";
 					if (!roleIsActive) return null;
 					const driverId = root.querySelector(`[name="${nameField}"]`)?.value || null;
-					const pay = parseFloat(root.querySelector(`[name="${payField}"]`)?.value) || null;
+					const payRaw = root.querySelector(`[name="${payField}"]`)?.value?.trim() ?? "";
+					const payNumber = payRaw === "" ? null : Number(payRaw);
+					const pay = Number.isFinite(payNumber) ? payNumber : null;
 					const reportTime = root.querySelector(
 						`[name="${fieldPrefix}[${i}].${roleKey}.reportTime"]`,
 					)?.value || null;

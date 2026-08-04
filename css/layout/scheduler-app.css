@@ -259,9 +259,7 @@
 
 @container (max-width: 640px) {
 	#fleet-save-order-btn .rux-btn-label,
-	#driver-save-order-btn .rux-btn-label,
 	#fleet-cols-btn .rux-btn-label,
-	#driver-cols-btn .rux-btn-label,
 	#trips-btn-add .rux-btn-label,
 	#fp-btn-add .rux-btn-label,
 	#dp-btn-add .rux-btn-label {
@@ -269,9 +267,7 @@
 	}
 
 	#fleet-save-order-btn,
-	#driver-save-order-btn,
 	#fleet-cols-btn,
-	#driver-cols-btn,
 	#trips-btn-add,
 	#fp-btn-add,
 	#dp-btn-add {
@@ -1281,9 +1277,14 @@
 	.scheduler-app__drawer--railable .rux-right-panel__drawer-open {
 		display: inline-flex;
 		position: absolute;
-		top: var(--rux-space-3);
-		left: 50%;
-		transform: translateX(-50%);
+		/* The persistent toggle is a sibling of the panel header, so it does not
+		   participate in the header's flex centering. Match the header's actual
+		   block padding directly: 8px + 28px control + 8px = its 44px row. */
+		top: var(--rux-space-2);
+		/* Center the button's physical box, not its transform origin. Rail and
+		   control widths are tokenized, so this remains pixel-aligned. */
+		left: calc((100% - var(--rux-control-height)) / 2);
+		transform: none;
 		z-index: 10;
 		transition:
 			left var(--rux-duration-slow) var(--rux-ease-in-out),
@@ -1301,31 +1302,26 @@
 	.scheduler-app__drawer--railable.is-collapsing .rux-trip-panel__drawer-open,
 	.scheduler-app__drawer--railable.is-collapsing .rux-driver-panel__drawer-open,
 	.scheduler-app__drawer--railable.is-collapsing .rux-right-panel__drawer-open {
-		left: 50%;
-		transform: translateX(-50%);
+		left: calc((100% - var(--rux-control-height)) / 2);
+		transform: none;
+	}
+
+	/* The stack participates in the icon button's normal flex centering. Only
+	   its two glyphs overlap, so switching states cannot move the button or
+	   change its layout footprint. */
+	.scheduler-app__drawer--railable .scheduler-app__drawer-icon-stack {
+		display: grid;
+		flex: none;
+		width: var(--rux-icon-sm);
+		height: var(--rux-icon-sm);
+		place-items: center;
 	}
 
 	.scheduler-app__drawer--railable
-		:is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
+		.scheduler-app__drawer-icon-stack
+		> :is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
+		grid-area: 1 / 1;
 		transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
-	}
-
-	/* Material's panel glyphs have unequal visual weight around their nominal
-	   icon box. Mirror a small optical correction so the mark, not merely its
-	   bounding box, appears centered in the button. */
-	.scheduler-app__drawer--railable:not(.scheduler-app__drawer--right)
-		:is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
-		transform: translateX(2px);
-	}
-
-	.scheduler-app__drawer--right.scheduler-app__drawer--railable
-		:is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
-		transform: translateX(-2px);
 	}
 
 	.scheduler-app__drawer--railable .scheduler-app__drawer-toggle-close,
