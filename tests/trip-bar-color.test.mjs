@@ -52,6 +52,11 @@ test("trip bar color data is assigned independently of confirmation status", () 
 
 test("trip bar email shortcut replaces the manifest shortcut", () => {
 	assert.match(tripBarSource, /trip\.booking_contact_missive_url/);
+	assert.match(tripBarSource, /trip\.bookingContact\?\.missiveUrl/);
+	assert.match(
+		appSource,
+		/booking_contact_missive_url:\s*t\.booking_contact_missive_url/,
+	);
 	assert.match(tripBarSource, /"alternate-email"/);
 	assert.match(tripBarSource, /emailThreadBtn\.disabled = !emailThreadUrl/);
 	assert.match(tripBarSource, /emailThreadBtn\.dataset\.role = "email-thread-btn"/);

@@ -62,14 +62,15 @@
 	border-top: var(--rux-card-section-border);
 }
 
-/* Bordered content group nested inside a card without creating another
-   elevation level. Its regions deliberately reuse the parent card's spacing. */
+/* Bordered content group nested inside a card. Its regions deliberately reuse
+   the parent card's spacing and its outer surface uses the standard card lift. */
 .rux-card-section {
 	min-width: 0;
 	overflow: hidden;
 	background: var(--rux-card-section-bg);
 	border: var(--rux-card-section-outline);
 	border-radius: var(--rux-card-radius);
+	box-shadow: var(--rux-card-section-shadow);
 }
 
 .rux-card-section__header {

@@ -428,14 +428,14 @@
 		width: var(--scheduler-app-rail-width);
 		/* Match the minimized panel's fill so any sub-pixel gap at the
 		   wrapper boundary cannot reveal scheduler row/day borders. */
-		background: var(--rux-surface-2);
+		background: var(--rux-panel-bg);
 	}
 
 	/* Keep only the edge facing the workspace so the collapsed rail reads
 	   as a divider without boxing in its top, bottom, or outside edge. */
 	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel) {
 		display: flex;
-		background: var(--rux-surface-2);
+		background: var(--rux-panel-bg);
 		border: 0;
 		pointer-events: none;
 	}

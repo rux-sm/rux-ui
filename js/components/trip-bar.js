@@ -875,7 +875,9 @@ export function createTripBar(trip, callbacks = {}) {
   // Opens the customer email thread saved on the trip. Keep the action in a
   // stable slot on every bar so the row does not shift, but disable it when
   // the trip has no saved thread URL.
-  const emailThreadUrl = String(trip.booking_contact_missive_url || "").trim();
+  const emailThreadUrl = String(
+    trip.booking_contact_missive_url || trip.bookingContact?.missiveUrl || "",
+  ).trim();
   const emailThreadBtn = button(
     "rux-button rux-button--on-accent rux-button--icon rux-button--block rux-trip-bar__action",
     emailThreadUrl ? "Open email thread" : "No email thread saved",

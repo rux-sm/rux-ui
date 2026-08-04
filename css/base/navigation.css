@@ -272,7 +272,7 @@
    pane's own to own, since .rux-panel itself has no border-block. */
 .rux-panel__nav--attached + .rux-panel__body,
 .rux-tabs--attached + .rux-panel__body {
-	background: var(--rux-tabs-attached-pane-bg);
+	background: var(--rux-panel-bg);
 	border: var(--rux-tabs-attached-pane-border);
 	border-top: 0;
 	border-left: 0;

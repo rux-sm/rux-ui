@@ -1256,13 +1256,10 @@
 			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__dwell-card-icon--${status}" aria-hidden="true">${icon}</span></span>
 			  <h4 class="rux-card__title">${escHtml(label)}</h4>
 			</div>
-			<span class="rux-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time">${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span></span>
 		  </header>
 		  <div class="rux-card-section__body rux-trip-itinerary__stop-body">
 		  <div class="rux-trip-itinerary__fields">
-			<output class="rux-output rux-trip-itinerary__dwell-status-output" aria-label="Duty reset status">
-			  <span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span>
-			</output>
+			<output class="rux-output" aria-label="Total ${escHtml(label)} time">${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span> <span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
 		  </div>
 		  ${sessionBlock}
 		  </div>
