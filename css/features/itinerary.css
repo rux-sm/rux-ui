@@ -250,14 +250,6 @@
 	gap: var(--rux-space-2);
 }
 
-.rux-trip-itinerary__stop-heading .rux-trip-itinerary__marker {
-	align-self: center;
-	align-items: center;
-	width: var(--rux-control-height);
-	height: var(--rux-control-height);
-	padding-top: 0;
-}
-
 /* Stops use the dedicated nested-card section surface. Insets keep the outer
    Day card readable as the parent while the outline clearly groups each
    waypoint's address, timing, duty state, and statistics. */
@@ -320,6 +312,9 @@
 .rux-trip-itinerary__marker-dot--sleeper { border-color: var(--rux-info); }
 .rux-trip-itinerary__marker-dot--yard    { border-color: var(--rux-fg); }
 
+.rux-trip-itinerary__dwell-card-icon--sleeper { color: var(--rux-info); }
+.rux-trip-itinerary__dwell-card-icon--off     { color: var(--rux-danger); }
+
 /* Solid pin for the final destination only — same convention Maps uses
    (every waypoint before it stays a plain dot). */
 .rux-trip-itinerary__marker-pin {
@@ -331,26 +326,12 @@
 	line-height: 1;
 }
 
-/* Drag handle overlays the dot in the same spot — crossfades in on hover
-   instead of the two competing for a second slot in the row. Pickup/return
-   never render a handle at all (not draggable), so this has nothing to
-   overlay there. */
-.rux-trip-itinerary__marker .rux-trip-itinerary__inline-action--move {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: var(--rux-control-height);
-	height: var(--rux-control-height);
-	margin-left: 0;
-	opacity: 0;
-}
-
 .rux-trip-itinerary__stop .rux-trip-itinerary__marker {
 	align-self: center;
-	height: var(--rux-itinerary-marker-size);
-	padding-top: 0;
 	align-items: center;
+	width: var(--rux-control-height);
+	height: var(--rux-control-height);
+	padding-top: 0;
 }
 
 .rux-trip-itinerary__stop .rux-trip-itinerary__marker-dot {
@@ -529,11 +510,19 @@
 	color: var(--rux-danger);
 }
 
-/* The stop header's own padding is the containing block's edge for its
-   absolutely positioned children, so right: 0 above would sit flush against
-   the card border, ignoring the padding. Inset it back in by that amount. */
-.rux-trip-itinerary__stop-header .rux-trip-itinerary__inline-action--delete {
-	right: var(--rux-space-4);
+/* Move + delete sit together as normal flex children of the header instead
+   of each individually anchored — overrides the absolute owning-row gutter
+   positioning above for this context. */
+.rux-trip-itinerary__stop-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	flex: none;
+}
+
+.rux-trip-itinerary__stop-actions .rux-trip-itinerary__inline-action {
+	position: static;
+	transform: none;
 }
 
 .rux-trip-itinerary__inline-action--move {
@@ -545,10 +534,6 @@
 .rux-trip-itinerary__inline-action:focus-visible {
 	opacity: 1;
 	pointer-events: auto;
-}
-
-.rux-trip-itinerary__marker:has(.rux-trip-itinerary__inline-action--move:focus-visible) .rux-trip-itinerary__marker-dot {
-	opacity: 0;
 }
 
 /* Mouse-hover reveal — focusing an address or time field alone does not show
@@ -567,10 +552,6 @@
 		opacity: 1;
 		pointer-events: auto;
 	}
-
-	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__marker:has(.rux-trip-itinerary__inline-action--move) .rux-trip-itinerary__marker-dot {
-		opacity: 0;
-	}
 }
 
 /* Touch has no hover state, so keep the actions directly available there. */
@@ -587,10 +568,6 @@
 	.rux-trip-itinerary__stop .rux-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
-	}
-
-	.rux-trip-itinerary__stop .rux-trip-itinerary__marker:has(.rux-trip-itinerary__inline-action) .rux-trip-itinerary__marker-dot {
-		opacity: 0;
 	}
 }
 

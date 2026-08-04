@@ -343,6 +343,32 @@
 		}, 0);
 	}
 
+	// Stationary time dutyMinutesInWindow excludes from duty — Sleeper cards'
+	// own Str/End, plus a real stop's arrival→next-departure gap whenever its
+	// dwell status is off/sleeper. Used only by computeSegmentStats' gross-
+	// minus-dwell fallback below, for days with no dated legs to build
+	// dutyMinutesInWindow's explicit intervals from.
+	function excludedDwellMinutes(stops, startIdx, endIdx) {
+		let total = 0;
+		for (let i = startIdx; i < endIdx; i++) {
+			const stop = stops[i];
+			if (stop.type === "sleeper") {
+				const d = elapsedMinutes(stop.departPrevDate, stop.departPrev, stop.arriveDate, stop.arrive);
+				if (d !== null) total += d;
+				continue;
+			}
+			if (stop.type === "day" || stop.type === "return") continue;
+			if ((stop.dwellStatus || "on") === "on") continue;
+			const arriveDate = stop.type === "pickup" ? stop.spotDate : stop.arriveDate;
+			const arriveTime = stop.type === "pickup" ? stop.spot : stop.arrive;
+			const next = stops.slice(i + 1).find((item) => item.type !== "day" && item.type !== "sleeper");
+			if (!next) continue;
+			const d = elapsedMinutes(arriveDate, arriveTime, next.departPrevDate, next.departPrev);
+			if (d !== null) total += d;
+		}
+		return total;
+	}
+
 	// Compute stats for the day segment ending at dayIdx (an "End day" marker).
 	// Segment = stops between the previous "day" marker and this one (exclusive both ends).
 	// Sleeper cards sit INSIDE a segment; their dwell time is subtracted from gross → net.
@@ -441,18 +467,8 @@
 			? elapsedMinutes(firstDepart.date, firstDepart.time, lastArrive.date, lastArrive.time)
 			: null;
 
-		// Sleeper rest = departPrev (STR) → arrive (END), same interval shown on the sleeper card.
-		let sleeperDwell = 0;
-		for (let i = startIdx; i < endIdx; i++) {
-			if (stops[i].type !== "sleeper") continue;
-			const d = elapsedMinutes(
-				stops[i].departPrevDate,
-				stops[i].departPrev,
-				stops[i].arriveDate,
-				stops[i].arrive,
-			);
-			if (d !== null) sleeperDwell += d;
-		}
+		// Sleeper cards + off/sleeper dwell status, same exclusions dutyMinutesInWindow makes.
+		const sleeperDwell = excludedDwellMinutes(stops, startIdx, endIdx);
 		// Duty is built from explicit work intervals instead of treating every
 		// minute until midnight as work. This is what lets an arrival at 15:00
 		// followed by Off duty produce an accurate Day 1 total.
@@ -996,10 +1012,13 @@
 	  <section class="rux-card-section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
 		  <header class="rux-card-section__header rux-trip-itinerary__stop-header">
 			<div class="rux-trip-itinerary__stop-heading">
-			  <span class="rux-trip-itinerary__marker">${markerIcon}${moveControl}</span>
+			  <span class="rux-trip-itinerary__marker">${markerIcon}</span>
 			  <h4 class="rux-card__title">${escHtml(sectionLabel)}</h4>
 			</div>
-			${deleteControl}
+			<div class="rux-trip-itinerary__stop-actions">
+			  ${deleteControl}
+			  ${moveControl}
+			</div>
 		  </header>
 		  <div class="rux-card-section__body rux-trip-itinerary__stop-body">
 		  <div class="rux-trip-itinerary__fields">
@@ -1021,6 +1040,48 @@
             </div>
 		  </div>
 		  ${dwellControl}
+		  </div>
+	  </section>`;
+	}
+
+	// A lightweight, read-only summary card that appears right after a stop
+	// whenever its dwell status is off/sleeper — total dwell time (computed,
+	// same interval dutyMinutesInWindow excludes) plus a manually-set Reset
+	// flag for whether this period qualifies as an HOS restart. Not a stops[]
+	// entry: purely derived from the anchor stop + whatever comes after it,
+	// so there's nothing to keep in sync on reorder/delete.
+	function renderDwellSummaryCard(stop, idx, stops) {
+		const type = TYPE_LABEL[stop.type] ? stop.type : "stop";
+		if (type === "sleeper" || type === "return") return "";
+		const status = stop.dwellStatus === "off" || stop.dwellStatus === "sleeper" ? stop.dwellStatus : null;
+		if (!status) return "";
+		const next = stops.slice(idx + 1).find((item) => item.type !== "day" && item.type !== "sleeper");
+		if (!next) return "";
+
+		const arriveDate = type === "pickup" ? stop.spotDate : stop.arriveDate;
+		const arriveTime = type === "pickup" ? stop.spot : stop.arrive;
+		const mins = elapsedMinutes(arriveDate, arriveTime, next.departPrevDate, next.departPrev);
+		const totalVal = mins !== null && mins > 0 ? formatDriveValue(mins) : "—";
+		const label = status === "sleeper" ? "Sleeper" : "Off Duty";
+		const icon = status === "sleeper" ? "airline_seat_flat" : "logout";
+		// Passenger-carrier HOS: 8 consecutive hours off duty/sleeper berth
+		// resets the 10hr driving / 15hr on-duty clock (same thresholds already
+		// used for the drive/duty warn states below).
+		const resetsClock = mins !== null && mins >= 8 * 60;
+
+		return `
+	  <section class="rux-card-section rux-trip-itinerary__dwell-card" data-stop-idx="${idx}">
+		  <header class="rux-card-section__header rux-trip-itinerary__stop-header">
+			<div class="rux-trip-itinerary__stop-heading">
+			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__dwell-card-icon--${status}" aria-hidden="true">${icon}</span></span>
+			  <h4 class="rux-card__title">${escHtml(label)}</h4>
+			</div>
+			<span class="rux-badge rux-badge--dot ${resetsClock ? "rux-badge--success" : "rux-badge--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span>
+		  </header>
+		  <div class="rux-card-section__body rux-trip-itinerary__stop-body">
+		  <div class="rux-trip-itinerary__fields">
+			<output class="rux-output" aria-label="Total ${escHtml(label)} time">${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+		  </div>
 		  </div>
 	  </section>`;
 	}
@@ -1296,6 +1357,7 @@
 					dayHasSummary = activityAtBoundaryIsMoving(stops, idx) && !!boundarySection;
 				} else if (!hiddenYardPickup) {
 					daySections += renderStop(item, idx, stops);
+				daySections += renderDwellSummaryCard(item, idx, stops);
 				}
 				if (item.type === "day") closeDayCard();
 			});
@@ -1326,30 +1388,6 @@
 			if (!actions) return;
 			if (importBtn) actions.appendChild(importBtn);
 			if (recalcBtn) actions.appendChild(recalcBtn);
-		}
-
-		function updateDutyPresentation() {
-			// Update only the derived pieces affected by a duty-status choice.
-			// Replacing the complete stop list here made every segmented control
-			// flash even though only one three-button group had changed.
-			stopsEl.querySelectorAll(".rux-trip-itinerary__day--boundary[data-stop-idx]").forEach((section) => {
-				const idx = Number(section.dataset.stopIdx);
-				const stats = section.querySelector(".rux-trip-itinerary__day-stats");
-				if (stats && stops[idx]?.type === "day") {
-					stats.outerHTML = renderDayStatsGrid(computeSegmentStats(stops, idx));
-				}
-			});
-			const finalStats = stopsEl.querySelector(".rux-trip-itinerary__day--final .rux-trip-itinerary__day-stats");
-			if (finalStats) finalStats.outerHTML = renderDayStatsGrid(computeSegmentStats(stops, stops.length));
-
-			stops.forEach((item, idx) => {
-				if (item.type !== "day" || boundaryActivity(stops, idx).moving || boundarySegmentHasActivity(stops, idx)) return;
-				const status = statusAtBoundary(stops, idx);
-				const statusLabel = status === "sleeper" ? "Sleeper berth" : status === "on" ? "On duty" : "Off duty";
-				const location = boundaryActivity(stops, idx).location;
-				const line = stopsEl.querySelector(`[data-day-number="${dayNumberFor(stops, idx)}"] .rux-trip-itinerary__idle-day span:not(.rux-icon)`);
-				if (line) line.textContent = `${statusLabel} at ${location}`;
-			});
 		}
 
 		// Update just the "From …" labels without re-rendering the whole list.
@@ -1902,14 +1940,8 @@
 				const stop = stops[idx];
 				if (!stop) return;
 				stop.dwellStatus = dwellButton.dataset.dwellStatus;
-				const group = dwellButton.closest("[role=group]");
-				group?.querySelectorAll("[data-dwell-status]").forEach((button) => {
-					const active = button === dwellButton;
-					button.classList.toggle("is-active", active);
-					button.setAttribute("aria-pressed", String(active));
-				});
 				updateSummary();
-				updateDutyPresentation();
+				renderStopList();
 				return;
 			}
 			const originButton = e.target.closest("[data-origin-mode]");
