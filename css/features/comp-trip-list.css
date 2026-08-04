@@ -43,9 +43,7 @@
 	overflow-x: auto;
 	overscroll-behavior: contain;
 	padding-bottom: var(--rux-space-4);
-	background: var(--rux-surface-1);
-	border-radius: var(--rux-card-radius);
-	border: var(--rux-card-border);
+	border: var(--rux-table-wrap-border);
 }
 
 /* — Trip identity cell — */

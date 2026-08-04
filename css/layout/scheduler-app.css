@@ -383,7 +383,7 @@
    whatever the drawer's outer box currently is, whether animating or settled.
    Not rail-specific — a plain sizing rule, so it's not scoped to desktop
    below like the rest of this block. */
-.scheduler-app__drawer--railable :is(.rux-trip-panel, .rux-right-panel) {
+.scheduler-app__drawer--railable :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel) {
 	width: 100%;
 	min-width: 0;
 }
@@ -413,6 +413,11 @@
 		border-right: var(--rux-panel-border-width) solid var(--rux-border);
 	}
 
+	.scheduler-app__drawer--railable.is-open .rux-driver-panel {
+		border: 0;
+		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+	}
+
 	.scheduler-app__drawer--railable.is-open .rux-right-panel {
 		border: 0;
 		border-left: var(--rux-panel-border-width) solid var(--rux-border);
@@ -432,7 +437,7 @@
 
 	/* Keep only the edge facing the workspace so the collapsed rail reads
 	   as a divider without boxing in its top, bottom, or outside edge. */
-	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel) {
+	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel) {
 		display: flex;
 		background: var(--rux-surface-2);
 		border: 0;
@@ -440,6 +445,10 @@
 	}
 
 	.scheduler-app__drawer--railable:not(.is-open) .rux-trip-panel {
+		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+	}
+
+	.scheduler-app__drawer--railable:not(.is-open) .rux-driver-panel {
 		border-right: var(--rux-panel-border-width) solid var(--rux-border);
 	}
 
@@ -453,7 +462,7 @@
 	   also prevents descendants with their own positioning/paint
 	   containment from leaking through the narrow panel clip. */
 	.scheduler-app__drawer--railable:not(.is-open)
-		> :is(.rux-trip-panel, .rux-right-panel)
+		> :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		display: none !important;
 	}
@@ -1240,7 +1249,8 @@
    this exact header, a bit further down in the mobile media query, has
    been here the whole time waiting for the header it's padding to actually
    be visible.) */
-.rux-trip-panel__header {
+.rux-trip-panel__header,
+.rux-driver-panel__header {
 	display: none;
 }
 
@@ -1248,6 +1258,7 @@
    animation too, so the header doesn't vanish a frame before the panel
    itself finishes sliding away. */
 .scheduler-app__drawer:is(.is-open, .is-closing) .rux-trip-panel__header,
+.scheduler-app__drawer:is(.is-open, .is-closing) .rux-driver-panel__header,
 .scheduler-app__drawer:is(.is-open, .is-closing) .rux-right-panel__header {
 	display: flex;
 }
@@ -1257,7 +1268,8 @@
 	   own header close buttons and icon-rail open buttons take over.
 	   Scoped to calendar module so Fleet/Driver/Customer toggles are unaffected. */
 	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--left,
-	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--right {
+	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--right,
+	.scheduler-app__module[data-module="drivers"] .scheduler-app__mobile-panel-btn--left {
 		display: none;
 	}
 
@@ -1265,6 +1277,7 @@
 	   the center of the collapsed rail. Keeping the same element mounted
 	   avoids a visible handoff between separate open and close buttons. */
 	.scheduler-app__drawer--railable .rux-trip-panel__drawer-open,
+	.scheduler-app__drawer--railable .rux-driver-panel__drawer-open,
 	.scheduler-app__drawer--railable .rux-right-panel__drawer-open {
 		display: inline-flex;
 		position: absolute;
@@ -1279,12 +1292,14 @@
 	}
 
 	.scheduler-app__drawer--railable.is-open .rux-trip-panel__drawer-open,
+	.scheduler-app__drawer--railable.is-open .rux-driver-panel__drawer-open,
 	.scheduler-app__drawer--railable.is-open .rux-right-panel__drawer-open {
 		left: calc(100% - var(--rux-space-3) - var(--rux-control-height));
 		transform: none;
 	}
 
 	.scheduler-app__drawer--railable.is-collapsing .rux-trip-panel__drawer-open,
+	.scheduler-app__drawer--railable.is-collapsing .rux-driver-panel__drawer-open,
 	.scheduler-app__drawer--railable.is-collapsing .rux-right-panel__drawer-open {
 		left: 50%;
 		transform: translateX(-50%);
@@ -1329,7 +1344,7 @@
 	}
 
 	.scheduler-app__drawer--railable
-		> :is(.rux-trip-panel, .rux-right-panel)
+		> :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		transition:
 			opacity var(--rux-duration-fast) var(--rux-ease-out),
@@ -1337,7 +1352,7 @@
 	}
 
 	.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> :is(.rux-trip-panel, .rux-right-panel)
+		> :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		opacity: 0;
 		transform: translateX(-4px);
@@ -1631,11 +1646,26 @@
 	margin-inline: var(--rux-workspace-gutter);
 }
 
+/* align-self:center overrides .rux-workspace's default align-items:stretch,
+   which would otherwise force these full cross-axis (horizontal) width
+   regardless of the .rux-table inside — same reason .rux-table itself
+   dropped width:100%. width:fit-content then sizes the wrap to that
+   table's actual content width instead of the old full-bleed box.
+   max-width subtracts the gutter margin explicitly — unlike
+   align-items:stretch (how .calendar-app__viewport keeps its own margin
+   safe below), a plain percentage max-width caps the border-box only,
+   and margin-inline sits outside that box. Left at a flat 100%, the
+   margin would push the wrap past the workspace edge (and past an open
+   drawer) the moment content actually needs the full cap, instead of the
+   gutter holding as a true minimum gap on both sides. */
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) {
 	flex: 1;
+	align-self: center;
+	width: fit-content;
+	max-width: calc(100% - (var(--rux-workspace-gutter) * 2));
 	margin-inline: var(--rux-workspace-gutter);
-	background: var(--rux-surface-1);
-	border-radius: var(--calendar-border-radius);
+	background: var(--rux-table-wrap-bg);
+	border-radius: var(--rux-table-wrap-radius);
 	overflow: auto;
 }
 

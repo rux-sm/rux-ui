@@ -439,6 +439,36 @@
 	--rux-card-content-gap: var(--rux-space-4);
 	--rux-itinerary-marker-size: 12px;
 
+	/* ─── COMPONENT · table ──────────────────────────────────────────────── */
+	/* Content-width data table (.rux-table) — auto layout, columns size to
+	   their own content. Shared by the driver/trips/fleet/customer tables. */
+
+	/* — shell — */
+	--rux-table-bg:           var(--rux-surface-2);
+	--rux-table-fg:           var(--rux-fg);
+	--rux-table-border-width: var(--rux-border-width);
+	--rux-table-border-color: var(--rux-border);
+
+	/* — wrap (scrollable container around the table) — */
+	--rux-table-wrap-bg:     var(--rux-surface-1);
+	--rux-table-wrap-border: var(--rux-card-border);
+	--rux-table-wrap-radius: var(--rux-radius-md);
+
+	/* — header — */
+	--rux-table-header-bg:       var(--rux-surface-3);
+	--rux-table-header-fg:       var(--rux-fg);
+	--rux-table-header-weight:   var(--rux-weight-semibold);
+	--rux-table-header-tracking: var(--rux-tracking-wide);
+
+	/* — row / cell — */
+	--rux-table-row-height:           36px;
+	--rux-table-cell-padding-inline:  var(--rux-space-2);
+	--rux-table-edge-padding-inline:  var(--rux-space-4);
+	--rux-table-cell-font-size:       var(--rux-text-200);
+	--rux-table-cell-weight:          var(--rux-weight-regular);
+	--rux-table-row-hover-bg:         var(--rux-bg-hover);
+	--rux-table-row-selected-bg:      var(--rux-accent-subtle);
+
 	/* ─── COMPONENT · trip bar · category colors ──────────────────────────── */
 
 	--rux-trip-color-cyan:   var(--rux-cyan);

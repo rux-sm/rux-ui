@@ -25,55 +25,68 @@
 	overflow-x: auto;
 	overscroll-behavior: contain;
 	padding-bottom: var(--rux-space-4);
-	border: var(--rux-card-border);
+	border: var(--rux-table-wrap-border);
 }
 
 /* ==========================================================================
    RUX TABLE COMPONENT
    --------------------------------------------------------------------------
-   Full-width data table. Sticky header, hover + selection states.
-   Uses auto layout — column widths are driven by content.
+   Content-width data table — auto layout, no width:100%, so columns hug
+   their content instead of stretching to fill the wrap (matches Radix's
+   table). The wrap's own overflow-x:auto handles the rare case where
+   content is wider than the available space. Sticky header, hover +
+   selection states.
    ========================================================================== */
 
 .rux-table {
-	width: 100%;
 	border-collapse: collapse;
 	font-size: var(--rux-text-sm);
-	background: var(--rux-surface-2);
+	background: var(--rux-table-bg);
 }
 
 .rux-table thead {
 	position: sticky;
 	top: 0;
 	z-index: var(--rux-z-base);
-	background: var(--rux-surface-3);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	background: var(--rux-table-header-bg);
+	border-bottom: var(--rux-table-border-width) solid var(--rux-table-border-color);
 }
 
 .rux-table th {
-	padding: 0 var(--rux-space-2);
+	padding: 0 var(--rux-table-cell-padding-inline);
 	text-align: left;
-	font-size: var(--rux-text-200);
-	font-weight: var(--rux-weight-semibold);
-	color: var(--rux-primary);
-	letter-spacing: var(--rux-tracking-wide);
-	height: 36px;
+	font-size: var(--rux-table-cell-font-size);
+	font-weight: var(--rux-table-header-weight);
+	color: var(--rux-table-header-fg);
+	letter-spacing: var(--rux-table-header-tracking);
+	height: var(--rux-table-row-height);
 	white-space: nowrap;
-	/*border-top: var(--rux-border-width) solid var(--rux-border);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);*/
 }
 
 .rux-table td {
-	padding: 0 var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	padding: 0 var(--rux-table-cell-padding-inline);
+	border-bottom: var(--rux-table-border-width) solid var(--rux-table-border-color);
 	vertical-align: middle;
-	font-size: var(--rux-text-200);
-	color: var(--rux-primary);
+	font-size: var(--rux-table-cell-font-size);
+	color: var(--rux-table-fg);
 	white-space: nowrap;
-	font-weight: var(--rux-weight-regular);
+	font-weight: var(--rux-table-cell-weight);
 	overflow: hidden;
 	text-overflow: ellipsis;
-	height: 36px;
+	height: var(--rux-table-row-height);
+}
+
+/* Outer edges get the wider gutter inset instead of the tighter
+   inter-column padding, so the first/last column's content doesn't sit
+   flush against the table's own edge. */
+.rux-table th:first-child,
+.rux-table td:first-child {
+	padding-left: var(--rux-table-edge-padding-inline);
+}
+
+.rux-table th:last-child,
+.rux-table td:last-child {
+	padding-right: var(--rux-table-edge-padding-inline);
 }
 
 .rux-table tbody tr {
@@ -82,11 +95,11 @@
 }
 
 .rux-table tbody tr:hover {
-	background: var(--rux-bg-hover);
+	background: var(--rux-table-row-hover-bg);
 }
 
 .rux-table tbody tr.is-selected {
-	background: var(--rux-accent-subtle);
+	background: var(--rux-table-row-selected-bg);
 }
 
 /* — Filterable column headers (shared by all .rux-table instances) — */
@@ -117,6 +130,20 @@
 .rux-table th[data-col-filter].is-filtered .rux-col-filter-icon {
 	opacity: 1;
 }
+
+/* — Status text — */
+/* Driver table's Status column: plain colored text, not .rux-badge
+   (badges.css) — no pill background, border, or dot, just the semantic
+   color carried on the label itself. */
+
+.rux-status-text {
+	color: var(--rux-info);
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-status-text--success { color: var(--rux-success); }
+.rux-status-text--warning { color: var(--rux-warning); }
+.rux-status-text--danger  { color: var(--rux-danger); }
 
 /* — Driver identity cell — */
 
