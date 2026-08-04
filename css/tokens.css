@@ -17,7 +17,7 @@
 
 	/* ─── COLOR · base ─────────────────────────────────────────────────────── */
 
-	--rux-neutral: oklch(50% 0.004 255); /* neutral */
+	--rux-neutral: oklch(50% 0.006 255); /* neutral */
 	--rux-white:   oklch(from var(--rux-neutral) 100% c h);
 	--rux-black:   oklch(from var(--rux-neutral) 000% c h);
 
@@ -140,8 +140,8 @@
 	/* ─── RADIUS · 4px-grid scale ────────────────────────────────────────── */
 
 	--rux-radius-0:    0;
-	--rux-radius-xs:   4px;
-	--rux-radius-sm:   6px;
+	--rux-radius-xs:   2px;
+	--rux-radius-sm:   4px;
 	--rux-radius-md:   8px;
 	--rux-radius-lg:   12px;
 	--rux-radius-xl:   16px;
@@ -503,7 +503,7 @@
 	--rux-input-disabled-border: var(--rux-border);
 	--rux-input-disabled-fg:     var(--rux-fg-disabled);
 	--rux-input-invalid-border:  var(--rux-danger);
-	--rux-input-border-radius:   var(--rux-radius-xs);
+	--rux-input-border-radius:   var(--rux-radius-sm);
 	--rux-input-transition:      var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · badge ─────────────────────────────────────────────── */
@@ -742,7 +742,7 @@
 
 	--rux-segmented-track-bg:         var(--rux-surface-3);
 	--rux-segmented-track-padding:    var(--rux-border-width);
-	--rux-segmented-track-radius:     var(--rux-radius-xs);
+	--rux-segmented-track-radius:     var(--rux-input-border-radius);
 	--rux-segmented-track-height:     var(--rux-space-6);
 	/* The track shares input chrome; its indicator is measured at runtime. */
 	--rux-segmented-track-border:     var(--rux-input-border);
@@ -752,7 +752,7 @@
 	--rux-segment-indicator-duration: var(--rux-duration-base);
 	--rux-segment-indicator-easing:   var(--rux-ease-out);
 
-	--rux-segment-radius:         var(--rux-radius-control);
+	--rux-segment-radius:         var(--rux-radius-xs);
 	--rux-segment-padding-inline: var(--rux-space-4);
 	--rux-segment-background:     var(--rux-button-ghost-background);
 	--rux-segment-border:         none;
@@ -817,7 +817,7 @@
 	--rux-switch-disabled-bg:       var(--rux-input-disabled-bg);
 	--rux-switch-disabled-thumb-bg: var(--rux-fg-disabled);
 	--rux-switch-disabled-shadow:   none;
-	--rux-switch-radius:            var(--rux-radius-control);
+	--rux-switch-radius:            var(--rux-radius-xs);
 	--rux-switch-transition:        var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */

@@ -584,7 +584,7 @@ import {
 			arrive_date: s.arriveDate || null,
 			spot:        s.spot || null,
 			spot_date:   s.spotDate || null,
-			dwell_status: s.dwellStatus || "off",
+			dwell_status: s.dwellStatus || "on",
 		};
 	}
 
@@ -1044,7 +1044,7 @@ import {
 			arriveDate: r.arrive_date || "",
 			spot:       r.spot || "",
 			spotDate:   r.spot_date || "",
-			dwellStatus: ["off", "sleeper", "on"].includes(r.dwell_status) ? r.dwell_status : "off",
+			dwellStatus: ["off", "sleeper", "on"].includes(r.dwell_status) ? r.dwell_status : "on",
 		};
 	}
 

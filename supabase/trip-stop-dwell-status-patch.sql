@@ -1,6 +1,9 @@
 -- Duty status for the interval from arrival at this stop until the next leg departs.
 alter table public.trip_stops
-  add column if not exists dwell_status text not null default 'off';
+  add column if not exists dwell_status text not null default 'on';
+
+alter table public.trip_stops
+  alter column dwell_status set default 'on';
 
 alter table public.trip_stops
   drop constraint if exists trip_stops_dwell_status_check;

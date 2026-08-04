@@ -826,6 +826,7 @@
 .rux-button--segment[aria-pressed="true"] {
 	background: var(--rux-segment-active-background);
 	color: var(--rux-segment-active-text);
+	border-radius: var(--rux-segment-radius);
 	/* Same reasoning as the inactive :hover rule above — border: none, not
 	   border-color, matching --rux-segment-border's own 0 width so nothing
 	   changes width between resting/active/hover. */

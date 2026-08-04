@@ -45,6 +45,19 @@
 	gap: var(--rux-panel-content-gap);
 }
 
+/* Fixed and calculated itinerary values remain selectable/readable, but use
+   the same visual tokens as disabled fields so editable inputs are obvious. */
+.rux-trip-itinerary .rux-input[readonly] {
+	background-color: var(--rux-input-disabled-bg);
+	border-color: var(--rux-input-disabled-border);
+	color: var(--rux-input-disabled-fg);
+	cursor: not-allowed;
+}
+
+.rux-trip-itinerary .rux-input[readonly]::placeholder {
+	color: var(--rux-input-disabled-fg);
+}
+
 .rux-trip-itinerary__stops {
 	display: flex;
 	flex-direction: column;
@@ -226,65 +239,51 @@
 	position: relative;
 }
 
-.rux-trip-itinerary__stop::before {
-	content: "";
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: calc(var(--rux-card-padding-inline) + (var(--rux-itinerary-marker-size) / 2));
-	width: var(--rux-border-width);
-	background: var(--rux-border-subtle);
+.rux-trip-itinerary__stop-header {
+	position: relative;
 }
 
-/* Return to Yard accepts the incoming rail but has no outgoing segment. */
-.rux-trip-itinerary__stop--terminal::before {
-	bottom: auto;
-	height: calc(
-		var(--rux-card-padding-block)
-		+ var(--rux-trip-itinerary-label-height)
-		+ var(--rux-stack-gap)
-		+ (var(--rux-field-height) / 2)
-	);
+.rux-trip-itinerary__stop-heading {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	gap: var(--rux-space-2);
 }
 
-/* Each day is a self-contained location timeline: begin at its first marker
-   and terminate at its last location before the disconnected day summary or
-   fallback Add row. */
-.rux-trip-itinerary__day-group > .rux-card__header + .rux-trip-itinerary__stop::before {
-	top: calc(
-		var(--rux-card-padding-block)
-		+ var(--rux-trip-itinerary-label-height)
-		+ var(--rux-stack-gap)
-		+ (var(--rux-field-height) / 2)
-	);
+.rux-trip-itinerary__stop-heading .rux-trip-itinerary__marker {
+	align-self: center;
+	align-items: center;
+	width: var(--rux-control-height);
+	height: var(--rux-control-height);
+	padding-top: 0;
 }
 
-.rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__day)::before,
-.rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__add-row)::before {
-	bottom: auto;
-	height: calc(
-		var(--rux-card-padding-block)
-		+ var(--rux-trip-itinerary-label-height)
-		+ var(--rux-stack-gap)
-		+ (var(--rux-field-height) / 2)
-	);
+/* Stops use the dedicated nested-card section surface. Insets keep the outer
+   Day card readable as the parent while the outline clearly groups each
+   waypoint's address, timing, duty state, and statistics. */
+.rux-trip-itinerary__day-group > .rux-card-section {
+	margin-inline: var(--rux-space-4);
+	margin-bottom: var(--rux-space-4);
 }
 
-/* A one-location day has neither an incoming nor outgoing segment. */
-.rux-trip-itinerary__day-group > .rux-card__header + .rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__day)::before,
-.rux-trip-itinerary__day-group > .rux-card__header + .rux-trip-itinerary__stop:has(+ .rux-trip-itinerary__add-row)::before {
-	display: none;
+.rux-trip-itinerary__day-group > .rux-card__header + .rux-card-section {
+	margin-top: 0;
 }
 
-.rux-trip-itinerary__stop > * + * {
+.rux-trip-itinerary__stop-body > * + * {
 	margin-top: var(--rux-stack-gap);
 }
 
-.rux-trip-itinerary__stop > .rux-trip-itinerary__label-row,
-.rux-trip-itinerary__stop > .rux-trip-itinerary__time-row,
-.rux-trip-itinerary__stop > .rux-trip-itinerary__fields--pair,
-.rux-trip-itinerary__stop--yard > .rux-trip-itinerary__yard-times {
-	margin-left: calc(var(--rux-itinerary-marker-size) + var(--rux-space-2));
+/* Trip Start uses the tighter 8px field gap throughout — address, meet, and
+   depart are all part of the same origin field group. */
+.rux-trip-itinerary__stop--yard .rux-trip-itinerary__stop-body {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.rux-trip-itinerary__stop--yard .rux-trip-itinerary__stop-body > * + * {
+	margin-top: var(--rux-space-2);
 }
 
 /* — Rail marker — */
@@ -305,6 +304,7 @@
 .rux-trip-itinerary__marker-dot {
 	position: relative;
 	z-index: 1;
+	pointer-events: none;
 	flex: none;
 	width: var(--rux-itinerary-marker-size);
 	height: var(--rux-itinerary-marker-size);
@@ -318,13 +318,14 @@
 .rux-trip-itinerary__marker-dot--pickup  { border-color: var(--rux-success-bright); }
 .rux-trip-itinerary__marker-dot--stop    { border-color: var(--rux-warning-bright); }
 .rux-trip-itinerary__marker-dot--sleeper { border-color: var(--rux-info); }
+.rux-trip-itinerary__marker-dot--yard    { border-color: var(--rux-fg); }
 
 /* Solid pin for the final destination only — same convention Maps uses
    (every waypoint before it stays a plain dot). */
 .rux-trip-itinerary__marker-pin {
 	position: relative;
 	z-index: 1;
-	background: var(--rux-card-bg);
+	background: var(--rux-card-section-bg);
 	color: var(--rux-danger-bright);
 	font-size: 20px;
 	line-height: 1;
@@ -336,18 +337,18 @@
    overlay there. */
 .rux-trip-itinerary__marker .rux-trip-itinerary__inline-action--move {
 	position: absolute;
-	top: 0;
+	top: 50%;
 	left: 50%;
-	transform: translateX(-50%);
-	width: var(--rux-field-height);
-	height: var(--rux-field-height);
+	transform: translate(-50%, -50%);
+	width: var(--rux-control-height);
+	height: var(--rux-control-height);
 	margin-left: 0;
 	opacity: 0;
 }
 
 .rux-trip-itinerary__stop .rux-trip-itinerary__marker {
 	align-self: center;
-	height: var(--rux-field-height);
+	height: var(--rux-itinerary-marker-size);
 	padding-top: 0;
 	align-items: center;
 }
@@ -398,14 +399,11 @@
 	min-width: 0;
 }
 
-.rux-trip-itinerary__origin-mode + .rux-trip-itinerary__label-row {
-	margin-top: var(--rux-space-4);
-}
-
 .rux-trip-itinerary__yard-times {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
-	gap: var(--rux-space-2);
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-space-2);
 }
 
 .rux-trip-itinerary__yard-times--meet {
@@ -444,18 +442,11 @@
 
 .rux-trip-itinerary__fields {
 	box-sizing: border-box;
-	position: relative;
 	display: grid;
 	width: 100%;
-	grid-template-columns: var(--rux-itinerary-marker-size) minmax(0, 1fr);
+	grid-template-columns: minmax(0, 1fr);
 	align-items: center;
 	column-gap: var(--rux-space-2);
-	padding-right: 0;
-	transition: padding-right var(--rux-duration-fast) var(--rux-ease-out);
-}
-
-.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete:focus-visible) .rux-trip-itinerary__fields {
-	padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
 }
 
 .rux-trip-itinerary__fields--pair {
@@ -486,35 +477,23 @@
 }
 
 .rux-trip-itinerary__dwell-status {
-	display: grid;
-	grid-template-columns: auto minmax(0, 1fr);
-	align-items: center;
-	gap: var(--rux-space-3);
-	margin-left: calc(var(--rux-itinerary-marker-size) + var(--rux-space-2));
+	display: block;
 }
 
 .rux-trip-itinerary__dwell-status > .rux-segmented-track {
-	min-width: 0;
+	width: 100%;
 	height: 2rem;
 }
 
-.rux-trip-itinerary__dwell-status .rux-button {
+.rux-trip-itinerary__dwell-status .rux-button--segment-icon {
 	flex: 1;
+	width: auto;
 	min-width: 0;
-	height: 100%;
-	padding-inline: var(--rux-space-2);
-}
-
-@media (max-width: 42rem) {
-	.rux-trip-itinerary__dwell-status {
-		grid-template-columns: 1fr;
-		gap: var(--rux-space-1);
-	}
 }
 
 .rux-trip-itinerary__datetime {
 	display: grid;
-	grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-2);
 	flex: 1;
 	min-width: 0;
@@ -522,10 +501,6 @@
 
 .rux-trip-itinerary__time-row > .rux-trip-itinerary__datetime + .rux-trip-itinerary__datetime {
 	margin-left: var(--rux-space-2);
-}
-
-.rux-trip-itinerary__time-row--single > .rux-trip-itinerary__datetime {
-	flex: 0 1 calc(50% - (var(--rux-space-2) / 2));
 }
 
 .rux-trip-itinerary__inline-action {
@@ -552,6 +527,13 @@
 	right: 0;
 	transform: translateY(-50%);
 	color: var(--rux-danger);
+}
+
+/* The stop header's own padding is the containing block's edge for its
+   absolutely positioned children, so right: 0 above would sit flush against
+   the card border, ignoring the padding. Inset it back in by that amount. */
+.rux-trip-itinerary__stop-header .rux-trip-itinerary__inline-action--delete {
+	right: var(--rux-space-4);
 }
 
 .rux-trip-itinerary__inline-action--move {
@@ -581,10 +563,6 @@
 		pointer-events: auto;
 	}
 
-	.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):hover .rux-trip-itinerary__fields {
-		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
-	}
-
 	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
@@ -604,10 +582,6 @@
 	.rux-trip-itinerary__day .rux-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
-	}
-
-	.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete) .rux-trip-itinerary__fields {
-		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
 	}
 
 	.rux-trip-itinerary__stop .rux-trip-itinerary__inline-action {
