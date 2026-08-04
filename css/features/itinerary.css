@@ -212,12 +212,14 @@
 	min-width: 0;
 }
 
-/* Same 3-col boxed stat grid as .rux-trip-itinerary__summary-grid (Route Summary),
-   just Miles/Drive/On-Duty instead of Days/Miles/Drive/On-Duty. */
+/* 2x2 boxed stat grid: Miles/Drive on top, On-Duty/Off-Duty below. Was a
+   single 3-col row (Miles/Drive/On-Duty, matching .rux-trip-itinerary__
+   summary-grid) — adding Off-Duty as a 4th stat moved it to 2x2 instead of
+   squeezing a 4th column into the same row. */
 .rux-trip-itinerary__day-stats {
 	display: grid;
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-	column-gap: var(--rux-space-2);
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-2);
 }
 
 /* Shared warn/ok tint — also used by renderDayStatsGrid's over-limit outputs */
@@ -314,6 +316,21 @@
 
 .rux-trip-itinerary__dwell-card-icon--sleeper { color: var(--rux-info); }
 .rux-trip-itinerary__dwell-card-icon--off     { color: var(--rux-danger); }
+
+/* Total dwell time, inline with the card title instead of its own field row. */
+.rux-trip-itinerary__dwell-total {
+	flex: none;
+	color: var(--rux-fg-muted);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
+/* .rux-output defaults to centered content — this field now holds only the
+   plain-text reset status (.rux-status-text, no badge chrome), right-aligned
+   since the time it used to show moved up into the header title row. */
+.rux-trip-itinerary__dwell-status-output {
+	justify-content: flex-end;
+}
 
 /* Solid pin for the final destination only — same convention Maps uses
    (every waypoint before it stays a plain dot). */
@@ -450,6 +467,18 @@
 }
 .rux-trip-itinerary__stats-values.is-expanded {
 	max-height: calc(var(--rux-field-height) * 1.5);
+}
+
+/* Dwell card's "Session ending here" row — on-duty/drive/miles, one more
+   column than the base 2-up Miles/Drive stat pair used elsewhere. Each cell
+   is its own labeled .rux-field (label + output stacked) rather than a bare
+   suffix-labeled output, so it needs more than the base 1.5x allowance —
+   .rux-field's own label + gap + output runs taller than a lone output row. */
+.rux-trip-itinerary__stats-values--3col {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.rux-trip-itinerary__stats-values--3col.is-expanded {
+	max-height: calc(var(--rux-field-height) * 2.5);
 }
 
 .rux-trip-itinerary__time-row {
@@ -679,6 +708,21 @@
 	display: none;
 }
 
+.rux-trip-itinerary__suggestion-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	border-radius: var(--rux-radius-sm);
+}
+
+.rux-trip-itinerary__suggestion-row.is-saved {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.rux-trip-itinerary__suggestion-row:hover {
+	background: var(--rux-button-hover-overlay);
+}
+
 .rux-trip-itinerary__suggestion {
 	display: flex;
 	flex-direction: column;
@@ -696,7 +740,16 @@
 }
 
 .rux-trip-itinerary__suggestion:hover {
-	background: var(--rux-button-hover-overlay);
+	background: transparent;
+}
+
+.rux-trip-itinerary__suggestion-save {
+	flex: none;
+	margin-right: var(--rux-space-1);
+}
+
+.rux-trip-itinerary__suggestion-row.is-saved .rux-trip-itinerary__suggestion-name {
+	color: var(--rux-accent);
 }
 
 .rux-trip-itinerary__suggestion-name {

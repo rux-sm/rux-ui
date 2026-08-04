@@ -50,6 +50,14 @@ test("trip bar color data is assigned independently of confirmation status", () 
 	assert.doesNotMatch(colorAssignment, /confirmed/);
 });
 
+test("trip bar email shortcut replaces the manifest shortcut", () => {
+	assert.match(tripBarSource, /trip\.booking_contact_missive_url/);
+	assert.match(tripBarSource, /"alternate-email"/);
+	assert.match(tripBarSource, /emailThreadBtn\.disabled = !emailThreadUrl/);
+	assert.match(tripBarSource, /emailThreadBtn\.dataset\.role = "email-thread-btn"/);
+	assert.doesNotMatch(tripBarSource, /callbacks\.onOpenManifest/);
+});
+
 test("base, head, and tail outlines share a fully opaque color channel", () => {
 	assert.match(
 		tripBarCss,

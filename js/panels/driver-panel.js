@@ -38,6 +38,9 @@
 		"driver-workload-alert-text",
 	);
 	const driverToolsTitle = document.getElementById("driver-tools-title");
+	const driverWorkspaceTitle = document.getElementById(
+		"driver-workspace-title",
+	);
 
 	let db = null;
 	let settingsDb = null;
@@ -50,7 +53,6 @@
 	let allWorkloadAssignments = null;
 	let workloadControlsReady = false;
 	let activeDriverView = "roster";
-	let workloadSort = { key: "days", direction: "asc" };
 
 	const DRIVER_SHARE_ORIGIN = "https://rux-sm.github.io/rux-ui/";
 	const DRIVER_WORKLOAD_START_KEY = "rux:driver-workload-start";
@@ -177,6 +179,27 @@
 	function avatarCellHtml(d) {
 		const photoUrl = driverPhotoUrl(d);
 		return photoUrl ? `<img src="${photoUrl}" alt="">` : initials(d.name);
+	}
+
+	function driverIdentityCellHtml(d) {
+		return `
+			<td data-col="driver">
+				<div class="driver-app__driver-cell">
+					<div class="driver-app__avatar${d.status === "inactive" ? " driver-app__avatar--inactive" : ""}" aria-hidden="true">${avatarCellHtml(d)}</div>
+					<div class="driver-app__driver-info"><span class="driver-app__driver-name">${escapeHtml(d.name)}</span></div>
+				</div>
+			</td>`;
+	}
+
+	const EMPLOYMENT_TYPE_LABELS = {
+		"full-time": "Full-time",
+		"part-time": "Part-time",
+		contract: "Contract",
+		seasonal: "Seasonal",
+	};
+
+	function employmentCellHtml(d) {
+		return `<td data-col="employment-type"><span class="rux-priority-dot" data-priority="${d.priority || 3}" aria-hidden="true" title="Priority ${d.priority || 3}"></span>${EMPLOYMENT_TYPE_LABELS[d.employment_type] || "—"}</td>`;
 	}
 
 	function statusMeta(s) {
@@ -321,57 +344,27 @@
 		return `<span class="driver-app__workload-stat"><span>${value}</span>${warning ? workloadWarningHtml(warning) : ""}</span>`;
 	}
 
-	function workloadSortValue(row, key) {
-		if (key === "name") return row.driver.name || "";
-		if (key === "days") return row.daysWorked;
-		if (key === "trips") return row.tripsAssigned;
-		if (key === "miles") return row.milesTotal;
-		if (key === "pay") return row.payTotal;
-		return 0;
-	}
-
-	function sortedWorkloadRows(rows) {
-		const direction = workloadSort.direction === "desc" ? -1 : 1;
-		return [...rows].sort((a, b) => {
-			const aValue = workloadSortValue(a, workloadSort.key);
-			const bValue = workloadSortValue(b, workloadSort.key);
-			const comparison = typeof aValue === "string"
-				? aValue.localeCompare(bValue)
-				: aValue - bValue;
-			return comparison * direction
-				|| (a.driver.name || "").localeCompare(b.driver.name || "");
-		});
-	}
-
-	function syncWorkloadSortHeaders() {
-		rosterView
-			?.querySelectorAll("[data-workload-sort]")
-			.forEach((button) => {
-				const header = button.closest("th");
-				const key = button.dataset.workloadSort;
-				header.setAttribute(
-					"aria-sort",
-					key === workloadSort.key
-						? workloadSort.direction === "asc"
-							? "ascending"
-							: "descending"
-						: "none",
-				);
-			});
+	function rosterOrderedWorkloadRows(rows) {
+		const rowsByDriverId = new Map(
+			rows.map((row) => [String(row.driverId), row]),
+		);
+		return getSortedDrivers()
+			.map((driver) => rowsByDriverId.get(String(driver.id)))
+			.filter(Boolean);
 	}
 
 	function renderWorkloadRows(result) {
-		const rows = sortedWorkloadRows(result.rows);
+		const rows = rosterOrderedWorkloadRows(result.rows);
 		const theadRow = driverTable.querySelector("thead tr");
 		theadRow.innerHTML = `
-			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="name">Driver</button></th>
-			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="days">Days Worked</button></th>
-			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="trips">Trips Assigned</button></th>
-			<th scope="col" aria-sort="none" title="Actual trip miles when present; otherwise estimated miles"><button type="button" class="driver-app__sort-button" data-workload-sort="miles">Assigned Miles</button></th>
-			<th scope="col" aria-sort="none"><button type="button" class="driver-app__sort-button" data-workload-sort="pay">Total Pay</button></th>`;
-		syncWorkloadSortHeaders();
+			<th scope="col" data-col="driver">Driver</th>
+			<th scope="col" data-col="employment-type">Employment</th>
+			<th scope="col">Days</th>
+			<th scope="col">Trips</th>
+			<th scope="col" title="Actual trip miles when present; otherwise estimated miles">Miles</th>
+			<th scope="col">Pay</th>`;
 		if (!rows.length) {
-			tbody.innerHTML = `<tr><td colspan="5" class="driver-app__empty">No drivers found.</td></tr>`;
+			tbody.innerHTML = `<tr><td colspan="6" class="driver-app__empty">No drivers found.</td></tr>`;
 			return;
 		}
 
@@ -391,12 +384,8 @@
 					: formatWorkloadMiles(row.milesTotal);
 				return `
 					<tr class="driver-app__row driver-app__workload-row${String(row.driverId) === String(selectedId) ? " is-selected" : ""}" tabindex="0" data-id="${escapeHtml(row.driverId)}" data-status="${escapeHtml(row.driver.status || "active")}" data-employment-type="${escapeHtml(row.driver.employment_type || "")}">
-						<td>
-							<div class="driver-app__driver-cell">
-								<div class="driver-app__avatar${row.driver.status === "inactive" ? " driver-app__avatar--inactive" : ""}" aria-hidden="true">${avatarCellHtml(row.driver)}</div>
-								<div class="driver-app__driver-info"><span class="driver-app__driver-name">${escapeHtml(row.driver.name)}</span></div>
-							</div>
-						</td>
+						${driverIdentityCellHtml(row.driver)}
+						${employmentCellHtml(row.driver)}
 						<td>${row.daysWorked}</td>
 						<td>${row.tripsAssigned}</td>
 						<td>${workloadStatHtml(milesValue, mileageWarning)}</td>
@@ -418,10 +407,6 @@
 				`mileage is missing from ${result.missingMileageTrips} ${result.missingMileageTrips === 1 ? "trip" : "trips"}`,
 			);
 		}
-		rosterView.classList.toggle(
-			"has-workload-alert",
-			messages.length > 0,
-		);
 		workloadAlert.hidden = messages.length === 0;
 		if (!messages.length) {
 			workloadAlertText.textContent = "";
@@ -469,7 +454,7 @@
 		if (refresh) allWorkloadAssignments = null;
 		if (!allWorkloadAssignments) {
 			if (activeDriverView === "workload") {
-				tbody.innerHTML = `<tr><td colspan="5" class="driver-app__empty">Calculating workload…</td></tr>`;
+				tbody.innerHTML = `<tr><td colspan="6" class="driver-app__empty">Calculating workload…</td></tr>`;
 			}
 			workloadAlert.hidden = true;
 			try {
@@ -478,7 +463,7 @@
 			} catch (err) {
 				console.error("fetchDriverWorkloadAssignments failed:", err);
 				if (activeDriverView === "workload") {
-					tbody.innerHTML = `<tr><td colspan="5" class="driver-app__empty" style="color:var(--rux-danger)">Could not calculate workload: ${escapeHtml(err?.message || err)}</td></tr>`;
+					tbody.innerHTML = `<tr><td colspan="6" class="driver-app__empty" style="color:var(--rux-danger)">Could not calculate workload: ${escapeHtml(err?.message || err)}</td></tr>`;
 				}
 				return;
 			}
@@ -512,6 +497,11 @@
 			driverToolsTitle.textContent = showWorkload
 				? "Workload Options"
 				: "Table Options";
+		}
+		if (driverWorkspaceTitle) {
+			driverWorkspaceTitle.textContent = showWorkload
+				? "Driver Workload"
+				: "Driver Roster";
 		}
 		if (showWorkload) {
 			await loadWorkloadData();
@@ -577,22 +567,6 @@
 			renderWorkload();
 		});
 
-		driverTable
-			.querySelector("thead")
-			.addEventListener("click", (event) => {
-				if (activeDriverView !== "workload") return;
-				const button = event.target.closest("[data-workload-sort]");
-				if (!button) return;
-				const key = button.dataset.workloadSort;
-				if (workloadSort.key === key) {
-					workloadSort.direction =
-						workloadSort.direction === "asc" ? "desc" : "asc";
-				} else {
-					workloadSort = { key, direction: "asc" };
-				}
-				renderWorkload();
-			});
-
 		const openWorkloadDriver = (event) => {
 			if (activeDriverView !== "workload") return;
 			const row = event.target.closest("[data-id]");
@@ -651,13 +625,6 @@
 	}
 
 	// ── Column definitions ────────────────────────────────────────────────────
-
-	const EMPLOYMENT_TYPE_LABELS = {
-		"full-time": "Full-time",
-		"part-time": "Part-time",
-		contract: "Contract",
-		seasonal: "Seasonal",
-	};
 
 	const ALL_DRIVER_COLS = [
 		{
@@ -745,14 +712,6 @@
 				`<td data-col="endorsements">${d.endorsements || "—"}</td>`,
 		},
 		{
-			key: "employment-type",
-			label: "Employment",
-			defaultOn: true,
-			head: `<th scope="col" data-col="employment-type">Employment</th>`,
-			cell: (d) =>
-				`<td data-col="employment-type"><span class="rux-priority-dot" data-priority="${d.priority || 3}" aria-hidden="true" title="Priority ${d.priority || 3}"></span>${EMPLOYMENT_TYPE_LABELS[d.employment_type] || "—"}</td>`,
-		},
-		{
 			key: "license-number",
 			label: "License #",
 			defaultOn: false,
@@ -810,12 +769,13 @@
 		// Rebuild thead
 		const theadRow = table.querySelector("thead tr");
 		theadRow.innerHTML =
-			`<th scope="col">Driver</th>` +
+			`<th scope="col" data-col="driver">Driver</th>` +
+			`<th scope="col" data-col="employment-type">Employment</th>` +
 			activeCols.map((c) => c.head).join("");
 
 		tbody.innerHTML = "";
 		if (!list.length) {
-			tbody.innerHTML = `<tr><td colspan="${1 + activeCols.length}" class="driver-app__empty">No drivers — add one to get started.</td></tr>`;
+			tbody.innerHTML = `<tr><td colspan="${2 + activeCols.length}" class="driver-app__empty">No drivers — add one to get started.</td></tr>`;
 			return;
 		}
 
@@ -829,17 +789,9 @@
 			tr.dataset.employmentType = d.employment_type || "";
 
 			tr.innerHTML =
-				`
-        <td>
-          <div class="driver-app__driver-cell">
-            <div class="driver-app__avatar${d.status === "inactive" ? " driver-app__avatar--inactive" : ""}"
-                 aria-hidden="true">${avatarCellHtml(d)}</div>
-            <div class="driver-app__driver-info">
-              <span class="driver-app__driver-name">${d.name}</span>
-            </div>
-          </div>
-        </td>
-      ` + activeCols.map((c) => c.cell(d)).join("");
+				driverIdentityCellHtml(d) +
+				employmentCellHtml(d) +
+				activeCols.map((c) => c.cell(d)).join("");
 
 			tr.addEventListener("click", () => selectRow(tr, d));
 			tr.addEventListener("keydown", (e) => {

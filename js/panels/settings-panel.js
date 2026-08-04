@@ -29,6 +29,18 @@
   const mapboxMessageEl = document.getElementById("settings-mapbox-message");
   const mapboxSaveBtn = document.getElementById("settings-mapbox-save-btn");
 
+  const locationsListEl = document.getElementById("settings-locations-list");
+  const locationEditorEl = document.getElementById("settings-location-editor");
+  const locationNameInput = document.getElementById("settings-location-name");
+  const locationAddressInput = document.getElementById("settings-location-address");
+  const locationLatInput = document.getElementById("settings-location-lat");
+  const locationLngInput = document.getElementById("settings-location-lng");
+  const locationsMessageEl = document.getElementById("settings-locations-message");
+  const locationAddBtn = document.getElementById("settings-location-add-btn");
+  const locationVerifyBtn = document.getElementById("settings-location-verify-btn");
+  const locationCancelBtn = document.getElementById("settings-location-cancel-btn");
+  const locationSaveBtn = document.getElementById("settings-location-save-btn");
+
   const missiveUrlInput = document.getElementById("settings-missive-url");
   const missiveMessageEl = document.getElementById("settings-integrations-message");
   const missiveSaveBtn = document.getElementById("settings-integrations-save-btn");
@@ -44,6 +56,7 @@
   const billingDefaultBtn = document.getElementById("settings-billing-default-btn");
 
   let db = null;
+  let locationsDb = null;
   let initialized = false;
   let currentYard = { ...DEFAULT_YARD };
   let spotPaddingMins = DEFAULT_SPOT_PADDING;
@@ -55,6 +68,8 @@
   let yardSessionToken = uuid();
   let yardSuggestions = [];
   let yardSuggestionsEl = null;
+  let savedLocations = [];
+  let editingLocationId = null;
 
   function escHtml(value) {
     return String(value ?? "")
@@ -97,6 +112,13 @@
     mapboxMessageEl.textContent = text;
     mapboxMessageEl.classList.toggle("is-error", state === "error");
     mapboxMessageEl.classList.toggle("is-success", state === "success");
+  }
+
+  function setLocationsMessage(text = "", state = "") {
+    if (!locationsMessageEl) return;
+    locationsMessageEl.textContent = text;
+    locationsMessageEl.classList.toggle("is-error", state === "error");
+    locationsMessageEl.classList.toggle("is-success", state === "success");
   }
 
   function setBillingMessage(text = "", state = "") {
@@ -364,6 +386,116 @@
     setMapboxMessage(normalized ? "Mapbox token saved." : "Mapbox token cleared.", "success");
   }
 
+  async function ensureLocationsDb() {
+    if (!locationsDb) locationsDb = await import("../data/locations-db.js?v=1");
+    return locationsDb;
+  }
+
+  function renderLocations() {
+    if (!locationsListEl) return;
+    if (!savedLocations.length) {
+      locationsListEl.innerHTML = '<p class="settings-locations-empty">No saved locations yet.</p>';
+      return;
+    }
+    locationsListEl.innerHTML = savedLocations.map((location) => `
+      <div class="settings-location-row" data-location-id="${escHtml(location.id)}">
+        <div class="settings-location-row__details">
+          <span class="settings-location-row__name">${escHtml(location.name)}</span>
+          <span class="settings-location-row__address" title="${escHtml(location.address)}">${escHtml(location.address)}</span>
+        </div>
+        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-location-edit aria-label="Edit ${escHtml(location.name)}" title="Edit location">
+          <span class="rux-icon" aria-hidden="true">edit</span>
+        </button>
+        <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-location-delete aria-label="Delete ${escHtml(location.name)}" title="Delete location">
+          <span class="rux-icon" aria-hidden="true">delete</span>
+        </button>
+      </div>`).join("");
+  }
+
+  async function loadLocations() {
+    if (!locationsListEl) return;
+    try {
+      savedLocations = await (await ensureLocationsDb()).loadLocations({ refresh: true });
+      renderLocations();
+      setLocationsMessage("");
+    } catch (err) {
+      console.warn("Could not load saved locations:", err);
+      locationsListEl.innerHTML = '<p class="settings-locations-empty">Saved locations are unavailable.</p>';
+      setLocationsMessage(err?.message || "Could not load saved locations.", "error");
+    }
+  }
+
+  function showLocationEditor(location = null) {
+    editingLocationId = location?.id || null;
+    locationNameInput.value = location?.name || "";
+    locationAddressInput.value = location?.address || "";
+    locationLatInput.value = location?.lat == null ? "" : String(location.lat);
+    locationLngInput.value = location?.lng == null ? "" : String(location.lng);
+    locationEditorEl.dataset.mapboxId = location?.mapboxId || "";
+    locationEditorEl.hidden = false;
+    locationAddBtn.hidden = true;
+    locationVerifyBtn.hidden = false;
+    locationCancelBtn.hidden = false;
+    locationSaveBtn.hidden = false;
+    setLocationsMessage(location ? "Editing saved location." : "Enter and verify a new location.");
+    locationNameInput.focus();
+  }
+
+  function hideLocationEditor() {
+    editingLocationId = null;
+    locationEditorEl.hidden = true;
+    locationAddBtn.hidden = false;
+    locationVerifyBtn.hidden = true;
+    locationCancelBtn.hidden = true;
+    locationSaveBtn.hidden = true;
+    setLocationsMessage("");
+  }
+
+  async function verifyLocationAddress() {
+    const q = locationAddressInput.value.trim();
+    if (!mapboxToken) throw new Error("Save a Mapbox public token first.");
+    if (q.length < 3) throw new Error("Enter an address to verify.");
+    const url = new URL("https://api.mapbox.com/search/searchbox/v1/forward");
+    url.searchParams.set("q", q);
+    url.searchParams.set("access_token", mapboxToken);
+    url.searchParams.set("country", "US");
+    url.searchParams.set("types", "address,poi");
+    url.searchParams.set("limit", "1");
+    url.searchParams.set("proximity", "ip");
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Mapbox verify failed: ${response.status}`);
+    const data = await response.json();
+    const feature = data.features?.[0];
+    if (!feature) throw new Error("No verified location found.");
+    const props = feature.properties || {};
+    const coords = feature.geometry?.coordinates || [
+      props.coordinates?.longitude,
+      props.coordinates?.latitude,
+    ];
+    const lng = Number(coords?.[0]);
+    const lat = Number(coords?.[1]);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      throw new Error("Mapbox did not return coordinates for that location.");
+    }
+    locationAddressInput.value = featureLabel(feature, q);
+    locationLatInput.value = String(lat);
+    locationLngInput.value = String(lng);
+    locationEditorEl.dataset.mapboxId = props.mapbox_id || props.feature_id || "";
+    if (!locationNameInput.value.trim() && props.name) locationNameInput.value = props.name;
+    setLocationsMessage("Location verified. Save to add it to autofill.", "success");
+  }
+
+  function readLocationForm() {
+    return {
+      id: editingLocationId,
+      name: locationNameInput.value.trim(),
+      address: locationAddressInput.value.trim(),
+      lat: locationLatInput.value,
+      lng: locationLngInput.value,
+      mapboxId: locationEditorEl.dataset.mapboxId || null,
+    };
+  }
+
   function setIntegrationsMessage(text, type) {
     if (!missiveMessageEl) return;
     missiveMessageEl.textContent = text || "";
@@ -497,6 +629,7 @@
     initialized = true;
     await loadYard();
     await loadMapboxToken();
+    await loadLocations();
     await loadSpotPadding();
     await loadBilling();
     await loadMissiveUrl();
@@ -576,6 +709,65 @@
       setMapboxMessage(err?.message || "Could not save Mapbox token.", "error");
     } finally {
       mapboxSaveBtn.disabled = false;
+    }
+  });
+
+  locationAddBtn?.addEventListener("click", () => showLocationEditor());
+  locationCancelBtn?.addEventListener("click", hideLocationEditor);
+
+  locationAddressInput?.addEventListener("input", () => {
+    locationLatInput.value = "";
+    locationLngInput.value = "";
+    locationEditorEl.dataset.mapboxId = "";
+    setLocationsMessage("Verify the changed address before saving.");
+  });
+
+  locationVerifyBtn?.addEventListener("click", async () => {
+    locationVerifyBtn.disabled = true;
+    setLocationsMessage("Verifying address...");
+    try {
+      await verifyLocationAddress();
+    } catch (err) {
+      setLocationsMessage(err?.message || "Could not verify location.", "error");
+    } finally {
+      locationVerifyBtn.disabled = false;
+    }
+  });
+
+  locationSaveBtn?.addEventListener("click", async () => {
+    locationSaveBtn.disabled = true;
+    setLocationsMessage("Saving...");
+    try {
+      await (await ensureLocationsDb()).saveLocation(readLocationForm());
+      savedLocations = await locationsDb.loadLocations({ refresh: true });
+      renderLocations();
+      hideLocationEditor();
+      setLocationsMessage("Location saved.", "success");
+    } catch (err) {
+      setLocationsMessage(err?.message || "Could not save location.", "error");
+    } finally {
+      locationSaveBtn.disabled = false;
+    }
+  });
+
+  locationsListEl?.addEventListener("click", async (event) => {
+    const row = event.target.closest("[data-location-id]");
+    if (!row) return;
+    const location = savedLocations.find((item) => item.id === row.dataset.locationId);
+    if (!location) return;
+    if (event.target.closest("[data-location-edit]")) {
+      showLocationEditor(location);
+      return;
+    }
+    if (!event.target.closest("[data-location-delete]")) return;
+    if (!window.confirm(`Delete ${location.name} from saved locations?`)) return;
+    try {
+      await (await ensureLocationsDb()).deleteLocation(location.id);
+      savedLocations = await locationsDb.loadLocations({ refresh: true });
+      renderLocations();
+      setLocationsMessage("Location deleted.", "success");
+    } catch (err) {
+      setLocationsMessage(err?.message || "Could not delete location.", "error");
     }
   });
 
@@ -663,7 +855,7 @@
     saveYard,
     saveMapboxToken,
   };
-  window.SettingsPanel = { init, reload: async () => { await loadYard(); await loadBilling(); await loadMissiveUrl(); } };
+  window.SettingsPanel = { init, reload: async () => { await loadYard(); await loadLocations(); await loadBilling(); await loadMissiveUrl(); } };
 
   if (document.readyState !== "loading") init().catch(err => console.error("SettingsPanel init failed:", err));
 })();

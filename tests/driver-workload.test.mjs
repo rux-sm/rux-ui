@@ -82,8 +82,16 @@ test("range presets are inclusive of today", () => {
 
 test("roster and workload share one table while workload controls live in options", () => {
 	const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+	const panelJs = readFileSync(
+		new URL("../js/panels/driver-panel.js", import.meta.url),
+		"utf8",
+	);
 	assert.equal(html.match(/id="driver-roster-body"/g)?.length, 1);
 	assert.doesNotMatch(html, /id="driver-workload-(?:view|body)"/);
+	assert.ok(
+		html.indexOf('id="driver-workload-alert"') >
+			html.indexOf('id="driver-roster-table"'),
+	);
 
 	const optionsStart = html.indexOf('id="driver-workload-options-card"');
 	const optionsEnd = html.indexOf('id="driver-view-options-card"');
@@ -91,4 +99,10 @@ test("roster and workload share one table while workload controls live in option
 	assert.ok(optionsStart > -1 && optionsEnd > optionsStart);
 	assert.match(optionsMarkup, /data-workload-preset="30"/);
 	assert.match(optionsMarkup, /id="driver-workload-start"/);
+	assert.match(panelJs, /function rosterOrderedWorkloadRows/);
+	assert.match(
+		panelJs,
+		/<th scope="col" data-col="driver">Driver<\/th>\s*<th scope="col" data-col="employment-type">Employment<\/th>/,
+	);
+	assert.doesNotMatch(panelJs, /data-workload-sort/);
 });

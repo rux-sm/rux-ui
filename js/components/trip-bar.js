@@ -88,6 +88,7 @@ const ICON_MAP = {
   "zap": "power", "bolt": "power",
   "groups": "tatami_seat",
   "external-link": "open_in_new",
+  "alternate-email": "alternate_email",
   "phone": "phone",
   "start": "start",
   "keyboard-tab": "keyboard_tab",
@@ -871,18 +872,18 @@ export function createTripBar(trip, callbacks = {}) {
   );
   pdfBtn.dataset.role = "itinerary-btn";
 
-  // Jumps straight past the trip panel's own tabs into the passenger
-  // manifest — only meaningful for ticketed trips (there's no roster to
-  // view/build for a charter), so it's always present (consistent 4th
-  // button on every bar) but disabled otherwise, same as the Billing tab's
-  // own manifest toggle.
-  const manifestBtn = button(
+  // Opens the customer email thread saved on the trip. Keep the action in a
+  // stable slot on every bar so the row does not shift, but disable it when
+  // the trip has no saved thread URL.
+  const emailThreadUrl = String(trip.booking_contact_missive_url || "").trim();
+  const emailThreadBtn = button(
     "rux-button rux-button--on-accent rux-button--icon rux-button--block rux-trip-bar__action",
-    trip.is_self_organized ? "View manifest" : "Toggle Ticketed to enable",
-    "groups",
-    () => callbacks.onOpenManifest?.(trip),
+    emailThreadUrl ? "Open email thread" : "No email thread saved",
+    "alternate-email",
+    () => window.open(emailThreadUrl, "missive", "noopener,noreferrer"),
   );
-  manifestBtn.disabled = !trip.is_self_organized;
+  emailThreadBtn.disabled = !emailThreadUrl;
+  emailThreadBtn.dataset.role = "email-thread-btn";
 
   actions.append(
     openBtn,
@@ -899,7 +900,7 @@ export function createTripBar(trip, callbacks = {}) {
       "drafts",
       () => callbacks.onPrintEnvelope?.(trip),
     ),
-    manifestBtn,
+    emailThreadBtn,
   );
 
   const body = document.createElement("div");

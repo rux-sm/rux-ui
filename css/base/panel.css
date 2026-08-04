@@ -10,7 +10,7 @@
 	flex-direction: column;
 	min-height: 0;
 	overflow: clip;
-	background: var(--rux-surface-3);
+	background: var(--rux-panel-bg);
 	color: var(--rux-panel-fg);
 	border-inline: var(--rux-panel-border-inline);
 	border-block: var(--rux-panel-border-block);

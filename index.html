@@ -15,15 +15,15 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=67" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=157" />
+		<link rel="stylesheet" href="./css/components.css?v=158" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
-		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=6" />
+		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
 		<link rel="stylesheet" href="./css/features/customer-panel.css?v=2" />
 		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
 		<link
 			rel="stylesheet"
-			href="./css/features/comp-settings-app.css?v=3"
+			href="./css/features/comp-settings-app.css?v=4"
 		/>
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=3" />
 		<link
@@ -4468,21 +4468,24 @@
 						<header
 							class="rux-workspace__header rux-workspace__header--table"
 						>
-							<button
-								class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
-								type="button"
-								id="driver-panel-toggle-btn"
-								aria-label="Open driver panel"
-								aria-pressed="false"
-								data-opens="driver-panel-drawer"
-							>
-								<span class="rux-icon icon-off"
-									>left_panel_open</span
+							<div class="rux-workspace__heading">
+								<button
+									class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
+									type="button"
+									id="driver-panel-toggle-btn"
+									aria-label="Open driver panel"
+									aria-pressed="false"
+									data-opens="driver-panel-drawer"
 								>
-								<span class="rux-icon icon-on"
-									>left_panel_close</span
-								>
-							</button>
+									<span class="rux-icon icon-off">left_panel_open</span>
+									<span class="rux-icon icon-on">left_panel_close</span>
+								</button>
+							</div>
+							<div class="rux-workspace__nav">
+								<h1 class="rux-workspace__title" id="driver-workspace-title">
+									Driver Roster
+								</h1>
+							</div>
 							<div class="rux-workspace__toolbar">
 								<button
 									class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
@@ -4507,6 +4510,17 @@
 								id="driver-roster-view"
 								aria-label="Driver roster"
 							>
+								<div class="driver-app__table-wrap">
+									<table class="rux-table driver-app__table" id="driver-roster-table" aria-label="Driver roster">
+										<thead>
+											<tr>
+												<th scope="col" data-col="driver">Driver</th>
+												<th scope="col" data-col="employment-type">Employment</th>
+											</tr>
+										</thead>
+										<tbody id="driver-roster-body"></tbody>
+									</table>
+								</div>
 								<div
 									class="rux-alert rux-alert--warning driver-app__workload-alert"
 									id="driver-workload-alert"
@@ -4516,16 +4530,6 @@
 								>
 									<span class="rux-icon rux-alert__icon" aria-hidden="true">warning</span>
 									<div class="rux-alert__body" id="driver-workload-alert-text"></div>
-								</div>
-								<div class="driver-app__table-wrap">
-									<table class="rux-table driver-app__table" id="driver-roster-table" aria-label="Driver roster">
-										<thead>
-											<tr>
-												<th scope="col">Driver</th>
-											</tr>
-										</thead>
-										<tbody id="driver-roster-body"></tbody>
-									</table>
 								</div>
 							</section>
 						</div>
@@ -6692,6 +6696,73 @@
 									</div>
 								</footer>
 							</section>
+
+							<section
+								class="settings-app__panel"
+								aria-labelledby="settings-locations-title"
+							>
+								<header class="settings-app__panel-header">
+									<div>
+										<h2
+											class="settings-app__panel-title"
+											id="settings-locations-title"
+										>
+											Locations
+										</h2>
+										<p class="settings-app__panel-copy">
+											Saved destinations appear before Mapbox results when building an itinerary.
+										</p>
+									</div>
+								</header>
+
+								<div class="settings-app__form">
+									<div
+										class="settings-locations-list"
+										id="settings-locations-list"
+									></div>
+									<div
+										class="settings-location-editor"
+										id="settings-location-editor"
+										hidden
+									>
+										<div class="rux-field">
+											<label class="rux-field__label" for="settings-location-name">Location name</label>
+											<input class="rux-input" id="settings-location-name" type="text" placeholder="e.g. Paragon Casino" />
+										</div>
+										<div class="rux-field">
+											<label class="rux-field__label" for="settings-location-address">Address</label>
+											<input class="rux-input" id="settings-location-address" type="text" autocomplete="off" placeholder="Street address" />
+											<span class="rux-field__help">Verify with Mapbox before saving.</span>
+										</div>
+										<div class="settings-app__grid-2">
+											<div class="rux-field">
+												<label class="rux-field__label" for="settings-location-lat">Latitude</label>
+												<input class="rux-input" id="settings-location-lat" type="number" step="any" readonly />
+											</div>
+											<div class="rux-field">
+												<label class="rux-field__label" for="settings-location-lng">Longitude</label>
+												<input class="rux-input" id="settings-location-lng" type="number" step="any" readonly />
+											</div>
+										</div>
+									</div>
+								</div>
+
+								<footer class="settings-app__footer">
+									<p class="settings-app__message" id="settings-locations-message" aria-live="polite"></p>
+									<div class="settings-app__actions">
+										<button class="rux-button rux-button--default" id="settings-location-add-btn" type="button">
+											<span class="rux-icon">add</span><span class="rux-btn-label">Add location</span>
+										</button>
+										<button class="rux-button rux-button--default" id="settings-location-verify-btn" type="button" hidden>
+											<span class="rux-icon">where_to_vote</span><span class="rux-btn-label">Verify</span>
+										</button>
+										<button class="rux-button rux-button--default" id="settings-location-cancel-btn" type="button" hidden>Cancel</button>
+										<button class="rux-button rux-button--accent" id="settings-location-save-btn" type="button" hidden>
+											<span class="rux-icon">save</span><span class="rux-btn-label">Save location</span>
+										</button>
+									</div>
+								</footer>
+							</section>
 							<section
 								class="settings-app__panel"
 								aria-labelledby="settings-req-title"
@@ -6904,11 +6975,11 @@
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=29"></script>
-		<script src="./js/components/itinerary.js?v=20"></script>
-		<script src="./js/panels/driver-panel.js?v=16" defer></script>
+		<script src="./js/components/itinerary.js?v=21"></script>
+		<script src="./js/panels/driver-panel.js?v=20" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=4" defer></script>
-		<script src="./js/panels/settings-panel.js?v=3" defer></script>
+		<script src="./js/panels/settings-panel.js?v=4" defer></script>
 		<script src="./js/panels/trips-list.js?v=11" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=6" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
@@ -6946,7 +7017,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=12";
+			} from "./js/components/trip-bar.js?v=13";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -8512,15 +8583,6 @@
 							}
 						: trip;
 					if (loadTrip) loadTrip(tripPanel, itinerary, editorTrip);
-				},
-				onOpenManifest: (trip) => {
-					// Doesn't touch the trip panel at all anymore — the manifest window
-					// takes trip.id/is_self_organized directly (TripManifest.refresh(),
-					// js/panels/trip-manifest.js), so there's no loadTrip() populating
-					// the whole form just to read an id and a billing type back out of
-					// it, and nothing to dirty-check/discard since the panel's own
-					// state (open or closed, whatever trip it's on) is left untouched.
-					window.TripView?.set("manifest", trip);
 				},
 				onUploadPdf: (trip) => console.log("upload pdf", trip.id),
 				onViewPdf: (trip) => console.log("view pdf", trip.id),

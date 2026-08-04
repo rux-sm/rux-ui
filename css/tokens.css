@@ -366,7 +366,7 @@
 	/* The body is intentionally a bare scrolling region. */
 
 	/* — shell — */
-	--rux-panel-bg:            var(--rux-surface-3);
+	--rux-panel-bg:            var(--rux-surface-2);
 	--rux-panel-fg:            var(--rux-fg);
 	--rux-panel-border-width:  var(--rux-border-width);
 	--rux-panel-border-inline: var(--rux-panel-border-width) solid var(--rux-border);

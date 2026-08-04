@@ -170,6 +170,60 @@
 	line-height: var(--rux-leading-snug);
 }
 
+/* — Saved locations ————————————————————————————————————————————————————— */
+
+.settings-locations-list,
+.settings-location-editor {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.settings-location-editor[hidden] {
+	display: none;
+}
+
+.settings-location-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto auto;
+	align-items: center;
+	gap: var(--rux-space-2);
+	min-height: var(--rux-control-height);
+	padding: var(--rux-space-2);
+	background: var(--rux-surface-4);
+	border-radius: var(--rux-radius-md);
+}
+
+.settings-location-row__details {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.settings-location-row__name,
+.settings-location-row__address {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.settings-location-row__name {
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+}
+
+.settings-location-row__address {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+}
+
+.settings-locations-empty {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
 /* — Requirements panel ————————————————————————————————————————————————— */
 
 .settings-req-list {

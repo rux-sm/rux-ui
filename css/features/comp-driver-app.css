@@ -73,7 +73,6 @@
 
 .driver-app__results {
 	display: flex;
-	position: relative;
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
@@ -105,12 +104,9 @@
 }
 
 .driver-app__workload-alert {
-	position: absolute;
-	z-index: var(--rux-z-sticky);
-	inset-inline: var(--rux-space-4);
-	bottom: var(--rux-space-4);
-	max-height: min(8rem, calc(100% - (var(--rux-space-4) * 2)));
-	margin: 0;
+	flex: none;
+	max-height: 8rem;
+	margin: var(--rux-space-4);
 	overflow: auto;
 	box-shadow: var(--rux-card-elevated-shadow);
 }
@@ -119,36 +115,9 @@
 	display: none;
 }
 
-/* The banner floats above the results, so it never moves the table's top
-   edge. Scroll clearance keeps the final rows reachable above the banner. */
-.driver-app--workload .driver-app__results.has-workload-alert .driver-app__table-wrap {
-	padding-bottom: calc(var(--rux-space-8) + var(--rux-space-6));
-	scroll-padding-bottom: calc(var(--rux-space-8) + var(--rux-space-6));
-}
-
 .driver-app__table--workload {
 	width: 100%;
 	min-width: 42rem;
-}
-
-.driver-app__sort-button {
-	appearance: none;
-	display: inline-flex;
-	align-items: center;
-	gap: var(--rux-space-1);
-	padding: 0;
-	background: transparent;
-	color: inherit;
-	border: 0;
-	font: inherit;
-	font-weight: inherit;
-	letter-spacing: inherit;
-	cursor: pointer;
-}
-
-.driver-app__sort-button:hover,
-.driver-app__sort-button:focus-visible {
-	color: var(--rux-fg);
 }
 
 .driver-app__workload-stat {
@@ -162,14 +131,9 @@
 	color: var(--rux-warning);
 }
 
-.driver-app__table--workload td:not(:first-child),
-.driver-app__table--workload th:not(:first-child) {
+.driver-app__table--workload td:nth-child(n + 3),
+.driver-app__table--workload th:nth-child(n + 3) {
 	text-align: right;
-}
-
-.driver-app__table--workload th:not(:first-child) .driver-app__sort-button {
-	justify-content: flex-end;
-	width: 100%;
 }
 
 /* ==========================================================================

@@ -302,39 +302,106 @@
 		return `From ${yard.name || "yard"}`;
 	}
 
-	function dutyMinutesInWindow(stops, windowStart = null, windowEnd = null) {
-		const intervals = [];
-		const addInterval = (startDate, startTime, endDate, endTime) => {
+	// Single pass over stops building the raw duty data everything else (day-
+	// card totals, off-duty totals, cross-midnight session totals) derives
+	// from. Alongside on-duty/off-duty intervals, it assigns each stop a
+	// `sessionId` — a duty session is a maximal run of on-duty activity
+	// bounded by off-duty/sleeper periods (real HOS duty-day segmentation,
+	// not calendar midnight), so a session that runs past midnight without a
+	// break still accumulates as one continuous total for the 10hr driving /
+	// 15hr duty warnings, instead of resetting at the calendar boundary.
+	function dutyIntervalData(stops) {
+		const onDuty = []; // { start, end, sessionId, kind: "drive" | "stationary" }
+		const offDuty = []; // { start, end }
+		const legs = []; // { sessionId, arriveMinute, miles } — one per real stop, for session mileage totals
+		// Session id "as of" each stop's own arrival — captured before that
+		// stop's own off/sleeper status (if any) closes it out, so a dwell
+		// card can look up totals for the session its own arrival concluded.
+		const sessionIdByStopIdx = new Map();
+		let sessionId = 0;
+		let sessionHasActivity = false;
+
+		const pushInterval = (arr, startDate, startTime, endDate, endTime, extra) => {
 			const start = datedMinute(startDate, startTime);
 			const end = datedMinute(endDate, endTime);
 			if (start === null || end === null || end <= start) return;
-			intervals.push({ start, end });
+			arr.push({ start, end, ...extra });
+		};
+		const breakSession = () => {
+			if (sessionHasActivity) {
+				sessionId += 1;
+				sessionHasActivity = false;
+			}
 		};
 
 		for (let i = 0; i < stops.length; i += 1) {
 			const current = stops[i];
-			if (!current || current.type === "day" || current.type === "sleeper") continue;
+			if (!current || current.type === "day") continue;
+
+			if (current.type === "sleeper") {
+				// Sleeper pauses a session instead of ending it — it contributes
+				// nothing to on-duty/drive/miles (correctly excluded below), but
+				// the session spanning it stays one continuous window through to
+				// the next real Off Duty, matching how a multi-day run with a
+				// sleeper break in the middle is still "one trip" for mileage/
+				// drive-hour purposes. Off duty (not sleeper) is what actually
+				// resets the session — see the status!=="on" branch below.
+				sessionIdByStopIdx.set(i, sessionId);
+				pushInterval(offDuty, current.departPrevDate, current.departPrev, current.arriveDate, current.arrive);
+				continue;
+			}
 
 			// Every routed leg is driving: departure from the previous location
-			// through arrival at this one.
+			// through arrival at this one. Tagged kind:"drive" — the wall-clock
+			// scheduled duration, not the separate route-estimate .drive field,
+			// so a session's drive total stays consistent with its on-duty
+			// total (same source data) instead of drifting from it by whatever
+			// buffer the schedule builds in beyond the raw estimate.
 			const arrivalDate = current.type === "pickup" ? current.spotDate : current.arriveDate;
 			const arrivalTime = current.type === "pickup" ? current.spot : current.arrive;
-			addInterval(current.departPrevDate, current.departPrev, arrivalDate, arrivalTime);
+			const before = onDuty.length;
+			pushInterval(onDuty, current.departPrevDate, current.departPrev, arrivalDate, arrivalTime, { sessionId, kind: "drive" });
+			if (onDuty.length > before) sessionHasActivity = true;
 
 			// Meet-at-yard begins duty before the bus moves. Its synthetic Pickup
 			// record stores Meet in spot/spotDate and Yard Depart in departPrev.
 			if (current.type === "pickup" && current.originMode === "yard") {
-				addInterval(current.spotDate, current.spot, current.departPrevDate, current.departPrev);
+				const beforeMeet = onDuty.length;
+				pushInterval(onDuty, current.spotDate, current.spot, current.departPrevDate, current.departPrev, { sessionId, kind: "stationary" });
+				if (onDuty.length > beforeMeet) sessionHasActivity = true;
 			}
 
-			// A stop's selected status owns the stationary interval after arrival
-			// and before the next routed leg. Off and sleeper deliberately add no
-			// duty; only On duty contributes.
-			if ((current.dwellStatus || "on") !== "on" || current.type === "return") continue;
-			const next = stops.slice(i + 1).find((item) => item.type !== "day" && item.type !== "sleeper");
-			if (next) addInterval(arrivalDate, arrivalTime, next.departPrevDate, next.departPrev);
-		}
+			legs.push({ sessionId, arriveMinute: datedMinute(arrivalDate, arrivalTime), miles: parseFloat(current.miles || 0) });
 
+			if (current.type === "return") continue;
+
+			// A stop's selected status owns the stationary interval after arrival
+			// and before whatever comes next — a Sleeper card counts here too:
+			// its own Str (departPrev) is exactly where this stop's dwell ends,
+			// not something to skip past in search of the next travel stop
+			// (that would either wrongly stretch this interval across the
+			// entire rest period, or silently drop it if nothing dated
+			// follows the sleeper yet). On duty contributes to onDuty; off/
+			// sleeper contribute to offDuty, but only "off" ends the session —
+			// "sleeper" pauses it, same reasoning as the Sleeper-card branch.
+			const status = current.dwellStatus || "on";
+			const next = stops.slice(i + 1).find((item) => item.type !== "day");
+			if (status === "on") {
+				if (next) {
+					const beforeStationary = onDuty.length;
+					pushInterval(onDuty, arrivalDate, arrivalTime, next.departPrevDate, next.departPrev, { sessionId, kind: "stationary" });
+					if (onDuty.length > beforeStationary) sessionHasActivity = true;
+				}
+			} else {
+				sessionIdByStopIdx.set(i, sessionId);
+				if (next) pushInterval(offDuty, arrivalDate, arrivalTime, next.departPrevDate, next.departPrev);
+				if (status === "off") breakSession();
+			}
+		}
+		return { onDuty, offDuty, legs, sessionIdByStopIdx };
+	}
+
+	function sumIntervalsInWindow(intervals, windowStart = null, windowEnd = null) {
 		if (!intervals.length) return null;
 		return intervals.reduce((total, interval) => {
 			const start = windowStart === null ? interval.start : Math.max(interval.start, windowStart);
@@ -343,11 +410,14 @@
 		}, 0);
 	}
 
-	// Stationary time dutyMinutesInWindow excludes from duty — Sleeper cards'
-	// own Str/End, plus a real stop's arrival→next-departure gap whenever its
-	// dwell status is off/sleeper. Used only by computeSegmentStats' gross-
-	// minus-dwell fallback below, for days with no dated legs to build
-	// dutyMinutesInWindow's explicit intervals from.
+	function dutyMinutesInWindow(stops, windowStart = null, windowEnd = null) {
+		return sumIntervalsInWindow(dutyIntervalData(stops).onDuty, windowStart, windowEnd);
+	}
+
+	// Undated-tolerant fallback (elapsedMinutes works off bare times, unlike
+	// datedMinute which dutyIntervalData requires) — used only by
+	// computeSegmentStats' gross-minus-dwell fallback below, for days with
+	// no dated legs to build dutyIntervalData's explicit intervals from.
 	function excludedDwellMinutes(stops, startIdx, endIdx) {
 		let total = 0;
 		for (let i = startIdx; i < endIdx; i++) {
@@ -361,10 +431,61 @@
 			if ((stop.dwellStatus || "on") === "on") continue;
 			const arriveDate = stop.type === "pickup" ? stop.spotDate : stop.arriveDate;
 			const arriveTime = stop.type === "pickup" ? stop.spot : stop.arrive;
-			const next = stops.slice(i + 1).find((item) => item.type !== "day" && item.type !== "sleeper");
+			const next = stops.slice(i + 1).find((item) => item.type !== "day");
 			if (!next) continue;
 			const d = elapsedMinutes(arriveDate, arriveTime, next.departPrevDate, next.departPrev);
 			if (d !== null) total += d;
+		}
+		return total;
+	}
+
+	// Which duty session is "current" as of windowEnd — the session whose
+	// on-duty activity is closest to (but not after) that point. Sessions
+	// are chronological by construction, so the last interval starting
+	// before windowEnd identifies it.
+	function activeSessionIdThroughWindow(onDuty, windowEnd) {
+		const relevant = windowEnd === null ? onDuty : onDuty.filter((iv) => iv.start < windowEnd);
+		if (!relevant.length) return null;
+		return relevant[relevant.length - 1].sessionId;
+	}
+
+	// Running on-duty/drive totals for one session, from its true start (not
+	// clipped to any calendar day) up through windowEnd — the amount "used"
+	// against that session's 10hr/15hr HOS limits as of this point, letting
+	// a session that crosses midnight still trip the warning correctly.
+	function sessionOnDutyThroughWindow(onDuty, sessionId, windowEnd) {
+		if (sessionId === null) return null;
+		let total = 0;
+		for (const iv of onDuty) {
+			if (iv.sessionId !== sessionId) continue;
+			const end = windowEnd === null ? iv.end : Math.min(iv.end, windowEnd);
+			total += Math.max(0, end - iv.start);
+		}
+		return total;
+	}
+
+	// Same source data as sessionOnDutyThroughWindow (the wall-clock intervals
+	// in onDuty), just restricted to kind:"drive" — so drive is guaranteed a
+	// subset of on-duty for the same session, never an inconsistent number
+	// pulled from a separate route-estimate field.
+	function sessionDriveThroughWindow(onDuty, sessionId, windowEnd) {
+		if (sessionId === null) return null;
+		let total = 0;
+		for (const iv of onDuty) {
+			if (iv.sessionId !== sessionId || iv.kind !== "drive") continue;
+			const end = windowEnd === null ? iv.end : Math.min(iv.end, windowEnd);
+			total += Math.max(0, end - iv.start);
+		}
+		return total;
+	}
+
+	function sessionMilesThroughWindow(legs, sessionId, windowEnd) {
+		if (sessionId === null) return null;
+		let total = 0;
+		for (const leg of legs) {
+			if (leg.sessionId !== sessionId) continue;
+			if (windowEnd !== null && leg.arriveMinute !== null && leg.arriveMinute > windowEnd) continue;
+			total += leg.miles;
 		}
 		return total;
 	}
@@ -472,26 +593,51 @@
 		// Duty is built from explicit work intervals instead of treating every
 		// minute until midnight as work. This is what lets an arrival at 15:00
 		// followed by Off duty produce an accurate Day 1 total.
-		const explicitDutyMins = dutyMinutesInWindow(stops, windowStart, windowEnd);
+		const { onDuty, offDuty } = dutyIntervalData(stops);
+		const explicitDutyMins = sumIntervalsInWindow(onDuty, windowStart, windowEnd);
 		const netMins = explicitDutyMins !== null
 			? explicitDutyMins
 			: (grossMins !== null ? Math.max(0, grossMins - sleeperDwell) : null);
+		const offDutyMins = sumIntervalsInWindow(offDuty, windowStart, windowEnd);
 
-		return { totalMiles, totalDrive: Math.round(totalDrive), grossMins, netMins };
+		// 10hr driving / 15hr duty warnings check the current duty SESSION's
+		// running total (since the last off-duty/sleeper period) rather than
+		// this calendar day's own isolated slice — see dutyIntervalData.
+		const activeSessionId = activeSessionIdThroughWindow(onDuty, windowEnd);
+		const sessionDutyMins = sessionOnDutyThroughWindow(onDuty, activeSessionId, windowEnd);
+		const sessionDriveMins = sessionDriveThroughWindow(onDuty, activeSessionId, windowEnd);
+
+		return {
+			totalMiles,
+			totalDrive: Math.round(totalDrive),
+			grossMins,
+			netMins,
+			offDutyMins,
+			sessionDutyMins,
+			sessionDriveMins,
+		};
 	}
 
 	// Same value+unit format as the per-stop Miles/Drive boxes — no labels,
 	// the unit suffix communicates what the number means.
-	function renderDayStatsGrid({ totalMiles, totalDrive, netMins } = {}) {
+	function renderDayStatsGrid({ totalMiles, totalDrive, netMins, offDutyMins, sessionDriveMins, sessionDutyMins } = {}) {
 		const miVal = totalMiles > 0 ? (totalMiles % 1 === 0 ? String(totalMiles) : totalMiles.toFixed(1)) : "—";
 		const drVal = totalDrive > 0 ? formatDriveValue(totalDrive) : "—";
 		const dutyVal = netMins !== null && netMins > 0 ? formatDriveValue(netMins) : "—";
-		// Passenger-carrier thresholds: 10 driving hours and 15 on-duty hours.
-		const drWarn = totalDrive > 10 * 60;
-		const dutyWarn = netMins !== null && netMins > 15 * 60;
+		const offVal = offDutyMins !== null && offDutyMins > 0 ? formatDriveValue(offDutyMins) : "—";
+		// Passenger-carrier thresholds: 10 driving hours and 15 on-duty hours,
+		// checked against the current duty session's running total (since the
+		// last off-duty/sleeper period) rather than this calendar day's own
+		// isolated slice — see dutyIntervalData. A session that runs past
+		// midnight without a break still flags once IT exceeds the limit,
+		// instead of resetting at whichever day happens to hold the tail end.
+		const driveForWarn = sessionDriveMins ?? totalDrive;
+		const dutyForWarn = sessionDutyMins ?? netMins;
+		const drWarn = driveForWarn > 10 * 60;
+		const dutyWarn = dutyForWarn !== null && dutyForWarn > 15 * 60;
 		const field = (val, unit, warn) => `
         <output class="rux-output${warn ? " rux-trip-itinerary__seg-stat--warn" : ""}">${escHtml(val)} <span class="rux-trip-itinerary__unit">${unit}</span></output>`;
-		return `<div class="rux-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}</div>`;
+		return `<div class="rux-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}${field(offVal, "hr", false)}</div>`;
 	}
 
 	// Returns just the two boxed outputs (status + duration) — the caller
@@ -834,7 +980,7 @@
 				</div>
 			  </div>`;
 		}
-		const hasStats = stats.totalMiles > 0 || stats.totalDrive > 0 || (stats.netMins ?? 0) > 0;
+		const hasStats = stats.totalMiles > 0 || stats.totalDrive > 0 || (stats.netMins ?? 0) > 0 || (stats.offDutyMins ?? 0) > 0;
 		const activityNote = activity.moving
 			? '<span class="rux-icon" aria-hidden="true">route</span> Continued driving · not a stop'
 			: `<span class="rux-icon" aria-hidden="true">pause_circle</span> No bus movement · remains at ${escHtml(activity.location)}`;
@@ -1069,6 +1215,40 @@
 		// used for the drive/duty warn states below).
 		const resetsClock = mins !== null && mins >= 8 * 60;
 
+		// Off Duty is the only thing that actually ends a session now — Sleeper
+		// pauses it instead (see dutyIntervalData), so only an Off Duty card
+		// shows "session ending here"; a Sleeper card would be reporting a
+		// running total that's still open and will keep growing past it.
+		let sessionBlock = "";
+		if (status === "off") {
+			const { onDuty, legs, sessionIdByStopIdx } = dutyIntervalData(stops);
+			const sessionId = sessionIdByStopIdx.get(idx);
+			const sessionDutyMins = sessionId !== undefined ? sessionOnDutyThroughWindow(onDuty, sessionId, null) : null;
+			const sessionDriveMins = sessionId !== undefined ? sessionDriveThroughWindow(onDuty, sessionId, null) : null;
+			const sessionMiles = sessionId !== undefined ? sessionMilesThroughWindow(legs, sessionId, null) : null;
+			const sessionDutyVal = sessionDutyMins !== null && sessionDutyMins > 0 ? formatDriveValue(sessionDutyMins) : "—";
+			const sessionDriveVal = sessionDriveMins !== null && sessionDriveMins > 0 ? formatDriveValue(sessionDriveMins) : "—";
+			const sessionMilesVal = sessionMiles !== null && sessionMiles > 0 ? (sessionMiles % 1 === 0 ? String(sessionMiles) : sessionMiles.toFixed(1)) : "—";
+			sessionBlock = `
+		  <div class="rux-field">
+			<label class="rux-field__label">Session ending here</label>
+			<div class="rux-trip-itinerary__stats-values rux-trip-itinerary__stats-values--3col is-expanded">
+			  <div class="rux-field">
+				<label class="rux-field__label">On-Duty</label>
+				<output class="rux-output">${escHtml(sessionDutyVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+			  </div>
+			  <div class="rux-field">
+				<label class="rux-field__label">Drive</label>
+				<output class="rux-output">${escHtml(sessionDriveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+			  </div>
+			  <div class="rux-field">
+				<label class="rux-field__label">Miles</label>
+				<output class="rux-output">${escHtml(sessionMilesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
+			  </div>
+			</div>
+		  </div>`;
+		}
+
 		return `
 	  <section class="rux-card-section rux-trip-itinerary__dwell-card" data-stop-idx="${idx}">
 		  <header class="rux-card-section__header rux-trip-itinerary__stop-header">
@@ -1076,12 +1256,15 @@
 			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__dwell-card-icon--${status}" aria-hidden="true">${icon}</span></span>
 			  <h4 class="rux-card__title">${escHtml(label)}</h4>
 			</div>
-			<span class="rux-badge rux-badge--dot ${resetsClock ? "rux-badge--success" : "rux-badge--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span>
+			<span class="rux-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time">${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span></span>
 		  </header>
 		  <div class="rux-card-section__body rux-trip-itinerary__stop-body">
 		  <div class="rux-trip-itinerary__fields">
-			<output class="rux-output" aria-label="Total ${escHtml(label)} time">${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+			<output class="rux-output rux-trip-itinerary__dwell-status-output" aria-label="Duty reset status">
+			  <span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span>
+			</output>
 		  </div>
+		  ${sessionBlock}
 		  </div>
 	  </section>`;
 	}
@@ -1419,10 +1602,22 @@
 			activeAddDay = null;
 		};
 		const dayInsertIndex = (dayNumber) => {
-			const start = dayNumber === 1
+			let start = dayNumber === 1
 				? 0
 				: stops.findIndex((item, idx) => item.type !== "day" && dayNumberFor(stops, idx) === dayNumber);
-			if (start < 0) return Math.max(0, stops.length - 1);
+			if (start < 0) {
+				// Idle day with no stops of its own — locate it via its own
+				// "day" boundary marker (the (dayNumber-1)th one in the
+				// array) instead of falling back to stops.length, which
+				// always landed on whichever day happens to be last,
+				// regardless of which idle middle day was actually clicked.
+				const dayMarkerIdxs = [];
+				stops.forEach((item, idx) => {
+					if (item.type === "day") dayMarkerIdxs.push(idx);
+				});
+				const marker = dayMarkerIdxs[dayNumber - 2];
+				start = marker != null ? marker + 1 : stops.length;
+			}
 			for (let idx = start; idx < stops.length; idx += 1) {
 				if (stops[idx].type === "day" || stops[idx].type === "return") return idx;
 				if (dayNumberFor(stops, idx) > dayNumber) return idx;
@@ -1450,6 +1645,7 @@
 		let addressSessionToken = uuid();
 		let activeAddressIdx = null;
 		let activeSuggestions = [];
+		let locationsDbPromise = null;
 
 		const suggestionsEl = document.createElement("div");
 		suggestionsEl.className = "rux-trip-itinerary__suggestions";
@@ -1479,6 +1675,7 @@
 		}
 
 		function suggestionLabel(suggestion) {
+			if (suggestion.source === "saved") return suggestion.location.address;
 			return suggestion.full_address ||
 				[suggestion.name, suggestion.place_formatted].filter(Boolean).join(", ") ||
 				suggestion.name ||
@@ -1492,23 +1689,65 @@
 				return;
 			}
 			positionSuggestions(input);
-			suggestionsEl.innerHTML = suggestions.map((suggestion, i) => `
-        <button class="rux-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
-          <span class="rux-trip-itinerary__suggestion-name">${escHtml(suggestion.name || suggestionLabel(suggestion))}</span>
-          <span class="rux-trip-itinerary__suggestion-address">${escHtml(suggestion.place_formatted || suggestion.full_address || "")}</span>
-        </button>
-      `).join("");
+			suggestionsEl.innerHTML = suggestions.map((suggestion, i) => {
+				const isSaved = suggestion.source === "saved";
+				const name = isSaved
+					? suggestion.location.name
+					: suggestion.name || suggestionLabel(suggestion);
+				const address = isSaved
+					? suggestion.location.address
+					: suggestion.place_formatted || suggestion.full_address || "";
+				return `
+					<div class="rux-trip-itinerary__suggestion-row${isSaved ? " is-saved" : ""}">
+						<button class="rux-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
+							<span class="rux-trip-itinerary__suggestion-name">${escHtml(name)}</span>
+							<span class="rux-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
+						</button>
+						${isSaved ? "" : `<button class="rux-button rux-button--ghost rux-button--icon rux-trip-itinerary__suggestion-save" type="button" data-save-suggestion-idx="${i}" aria-label="Use and save ${escHtml(name)}" title="Use and save location"><span class="rux-icon" aria-hidden="true">bookmark_add</span></button>`}
+					</div>`;
+			}).join("");
 			suggestionsEl.hidden = false;
+		}
+
+		async function getLocationsDb() {
+			if (!locationsDbPromise) {
+				locationsDbPromise = import("../data/locations-db.js?v=1").catch((err) => {
+					locationsDbPromise = null;
+					throw err;
+				});
+			}
+			return locationsDbPromise;
+		}
+
+		async function savedLocationSuggestions(query) {
+			try {
+				const locations = await (await getLocationsDb()).searchLocations(query, 5);
+				return locations.map((location) => ({
+					source: "saved",
+					location,
+					name: location.name,
+					full_address: location.address,
+				}));
+			} catch (err) {
+				console.warn("Saved location search failed:", err);
+				return [];
+			}
 		}
 
 		async function suggestAddress(input, idx) {
 			const token = getMapboxToken();
 			const q = input.value.trim();
-			if (!token || q.length < 3) {
+			if (q.length < 2) {
 				hideSuggestions();
 				return;
 			}
 			const seq = ++addressSearchSeq;
+			const saved = await savedLocationSuggestions(q);
+			if (seq !== addressSearchSeq || activeAddressIdx !== idx) return;
+			if (!token || q.length < 3) {
+				renderSuggestions(input, saved);
+				return;
+			}
 			const url = new URL("https://api.mapbox.com/search/searchbox/v1/suggest");
 			url.searchParams.set("q", q);
 			url.searchParams.set("session_token", addressSessionToken);
@@ -1522,10 +1761,16 @@
 				if (!response.ok) throw new Error(`Mapbox suggest failed: ${response.status}`);
 				const data = await response.json();
 				if (seq !== addressSearchSeq || activeAddressIdx !== idx) return;
-				renderSuggestions(input, data.suggestions || []);
+				const savedAddresses = new Set(
+					saved.map((item) => item.location.address.toLowerCase()),
+				);
+				const mapbox = (data.suggestions || [])
+					.filter((item) => !savedAddresses.has(suggestionLabel(item).toLowerCase()))
+					.map((item) => ({ ...item, source: "mapbox" }));
+				renderSuggestions(input, [...saved, ...mapbox]);
 			} catch (err) {
 				console.warn("Address suggestions failed:", err);
-				hideSuggestions();
+				renderSuggestions(input, saved);
 			}
 		}
 
@@ -1714,7 +1959,47 @@
 			}
 		}
 
-		async function retrieveSuggestion(idx, suggestion) {
+		async function finishAddressSelection(idx) {
+			const stop = stops[idx];
+			stop.milesSource = stop.milesSource === "manual" ? "manual" : "estimated";
+			stop.driveSource = stop.driveSource === "manual" ? "manual" : "estimated";
+			hideSuggestions();
+			renderStopList();
+			updateFromLabels();
+			await estimateLeg(idx);
+			const nextIdx = nextRealStopIndex(idx);
+			if (nextIdx >= 0) await estimateLeg(nextIdx);
+		}
+
+		async function applySavedLocation(idx, suggestion) {
+			const stop = stops[idx];
+			const location = suggestion?.location;
+			if (!stop || !location) return;
+			stop.address = location.address;
+			stop.name = stop.name || location.name;
+			stop.lat = location.lat;
+			stop.lng = location.lng;
+			stop.mapboxId = location.mapboxId || null;
+			await finishAddressSelection(idx);
+		}
+
+		async function saveSelectedLocation(stop, suggestion) {
+			try {
+				await (await getLocationsDb()).saveLocation({
+					name: suggestion?.name || stop.name || stop.address,
+					address: stop.address,
+					lat: stop.lat,
+					lng: stop.lng,
+					mapboxId: stop.mapboxId,
+				});
+				window.Rux?.toast?.("Location saved for future autofill.");
+			} catch (err) {
+				console.warn("Could not save selected location:", err);
+				window.Rux?.toast?.(err?.message || "Could not save location.");
+			}
+		}
+
+		async function retrieveSuggestion(idx, suggestion, { save = false } = {}) {
 			const token = getMapboxToken();
 			const stop = stops[idx];
 			if (!token || !stop || !suggestion?.mapbox_id) return;
@@ -1725,18 +2010,17 @@
 				const response = await fetch(url);
 				if (!response.ok) throw new Error(`Mapbox retrieve failed: ${response.status}`);
 				const data = await response.json();
-				applyFeatureToStop(stop, data.features?.[0], suggestionLabel(suggestion));
+				if (!applyFeatureToStop(stop, data.features?.[0], suggestionLabel(suggestion))) {
+					throw new Error("Mapbox did not return coordinates for that location.");
+				}
 				stop.mapboxId = suggestion.mapbox_id || stop.mapboxId;
 				stop.name = stop.name || suggestion.name || "";
-				stop.milesSource = stop.milesSource === "manual" ? "manual" : "estimated";
-				stop.driveSource = stop.driveSource === "manual" ? "manual" : "estimated";
 				addressSessionToken = uuid();
-				hideSuggestions();
-				renderStopList();
-				updateFromLabels();
-				await estimateLeg(idx);
-				const nextIdx = nextRealStopIndex(idx);
-				if (nextIdx >= 0) await estimateLeg(nextIdx);
+				const savePromise = save
+					? saveSelectedLocation(stop, suggestion)
+					: null;
+				await finishAddressSelection(idx);
+				if (savePromise) await savePromise;
 			} catch (err) {
 				console.warn("Address retrieve failed:", err);
 			}
@@ -1876,10 +2160,21 @@
 		});
 
 		suggestionsEl.addEventListener("click", (e) => {
+			const saveBtn = e.target.closest("[data-save-suggestion-idx]");
 			const btn = e.target.closest("[data-suggestion-idx]");
-			if (!btn || activeAddressIdx === null) return;
-			const suggestion = activeSuggestions[parseInt(btn.dataset.suggestionIdx, 10)];
-			retrieveSuggestion(activeAddressIdx, suggestion);
+			if ((!btn && !saveBtn) || activeAddressIdx === null) return;
+			const suggestionIndex = parseInt(
+				saveBtn?.dataset.saveSuggestionIdx ?? btn.dataset.suggestionIdx,
+				10,
+			);
+			const suggestion = activeSuggestions[suggestionIndex];
+			if (suggestion?.source === "saved") {
+				applySavedLocation(activeAddressIdx, suggestion);
+			} else {
+				retrieveSuggestion(activeAddressIdx, suggestion, {
+					save: Boolean(saveBtn),
+				});
+			}
 		});
 
 		document.addEventListener("mousedown", (e) => {
