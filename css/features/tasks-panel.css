@@ -15,6 +15,22 @@
 	border-top: 0;
 }
 
+/* Trips / Post Trip toggle, sat above the day-group card stack. The stack
+   itself is flush against the pane (see the note above), so this is the one
+   place in the pane that needs its own inset. */
+.rux-tasks__header {
+	padding: var(--rux-panel-padding-block);
+	padding-bottom: var(--rux-space-2);
+}
+
+.rux-tasks__list-toggle {
+	width: 100%;
+}
+
+.rux-tasks__list-toggle > .rux-button {
+	flex: 1;
+}
+
 /* Prev/Today/Next day paging — lives in the shared #rp-panel-footer
    (index.html), same fixed action slot the Navigate/Drivers tabs use, not
    inline in the scrolling body, since it's reached for infrequently. The

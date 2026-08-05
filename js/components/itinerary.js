@@ -880,7 +880,7 @@
 		return `
 		<section class="rux-card-section rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
 			<header class="rux-card-section__header rux-trip-itinerary__stop-header">
-				<div class="rux-trip-itinerary__stop-heading"><span class="rux-trip-itinerary__marker"><span class="rux-trip-itinerary__marker-dot rux-trip-itinerary__marker-dot--yard" aria-hidden="true"></span></span><h4 class="rux-card__title">Trip Start</h4></div>
+				<div class="rux-trip-itinerary__stop-heading"><span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--yard" aria-hidden="true">location_on</span></span><h4 class="rux-card__title">Trip Start</h4></div>
 			</header>
 			<div class="rux-card-section__body rux-trip-itinerary__stop-body">
 			<div class="rux-field">
@@ -1130,14 +1130,11 @@
               <span class="rux-icon" aria-hidden="true">drag_indicator</span>
             </button>`
 			: "";
-		// Rail marker — a plain ring for pickup/stop/sleeper (tinted per type,
-		// same colors as the stop's badge), a solid pin for return, matching
-		// how Google Maps only pins the final destination and leaves every
-		// waypoint before it as a hollow dot. isReturn also drops the
-		// connecting line below it — nothing follows the last stop.
-		const markerIcon = isReturn
-			? `<span class="rux-icon rux-trip-itinerary__marker-pin" aria-hidden="true">location_on</span>`
-			: `<span class="rux-trip-itinerary__marker-dot rux-trip-itinerary__marker-dot--${type}" aria-hidden="true"></span>`;
+		// Every location card uses the same pin silhouette; type color carries
+		// the route meaning without changing the card-header vocabulary.
+		// isReturn still drops the connecting line below it — nothing follows
+		// the last stop.
+		const markerIcon = `<span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${type}" aria-hidden="true">location_on</span>`;
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
 		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";

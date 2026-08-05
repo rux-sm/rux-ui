@@ -2405,6 +2405,36 @@
 									role="tabpanel"
 									hidden
 								>
+									<div class="rux-tasks__header">
+										<div
+											class="rux-segmented-track rux-tasks__list-toggle"
+											id="rp-tasks-list-toggle"
+											data-rux-toggle-group
+											role="group"
+											aria-label="Task list"
+										>
+											<button
+												class="rux-button rux-button--segment is-active"
+												type="button"
+												aria-pressed="true"
+												data-value="trips"
+											>
+												<span class="rux-btn-label"
+													>Trips</span
+												>
+											</button>
+											<button
+												class="rux-button rux-button--segment"
+												type="button"
+												aria-pressed="false"
+												data-value="post_trip"
+											>
+												<span class="rux-btn-label"
+													>Post Trip</span
+												>
+											</button>
+										</div>
+									</div>
 									<div id="rp-tasks-departures-body"></div>
 								</div>
 								<div
@@ -9092,9 +9122,15 @@
 				// Standard mode is intentionally date-based, but a multi-day trip
 				// beginning late in its first day needs a small partial-day cue. Snap
 				// departures at/after 4 PM to the midpoint instead of implying that
-				// the bus is occupied for that entire day. Time-aligned mode returns
-				// above with the exact fraction, and week continuations still begin at
-				// the track edge because their real first day is outside this view.
+				// the bus is occupied for that entire day. Only the bar's own left
+				// edge/width shift to convey that — the head keeps the full-day width
+				// layoutTrack already set on --rux-trip-bar-day-inline-size before
+				// calling this, same as any regular head, just starting half a day
+				// later. The tail's own end position is untouched either way (left +
+				// width both move by the same offset), so it still lands on the
+				// trip's real last day. Time-aligned mode returns above with the
+				// exact fraction, and week continuations still begin at the track
+				// edge because their real first day is outside this view.
 				const depFrac = timeToFraction(placement.trip._depTime);
 				const lateMultiDayStart =
 					placement.span > 1 &&
@@ -9102,19 +9138,6 @@
 					depFrac !== null &&
 					depFrac >= 16 / 24;
 				const standardStartOffset = lateMultiDayStart ? dayPct / 2 : 0;
-
-				if (lateMultiDayStart) {
-					const trackWidth = bar.parentElement.clientWidth;
-					const inset = tokenPx("--rux-space-2");
-					const halfDayHeadWidth = Math.max(
-						0,
-						trackWidth / days / 2 - inset,
-					);
-					bar.style.setProperty(
-						"--rux-trip-bar-day-inline-size",
-						`${halfDayHeadWidth}px`,
-					);
-				}
 
 				if (fromPrev && toNext) {
 					bar.style.left = bar.style.right = "0";

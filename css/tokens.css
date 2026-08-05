@@ -383,7 +383,7 @@
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
-	--rux-workspace-bg:            var(--rux-surface-0);
+	--rux-workspace-bg:            var(--rux-surface-1);
 	--rux-workspace-fg:            var(--rux-fg);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block: none;
@@ -398,8 +398,8 @@
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
-	--rux-calendar-bg:            var(--rux-surface-0);
-	--rux-calendar-header-bg:     var(--rux-surface-0);
+	--rux-calendar-bg:            var(--rux-surface-1);
+	--rux-calendar-header-bg:     var(--rux-surface-1);
 	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-calendar-radius:        var(--rux-radius-container);
 	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-surface-3);

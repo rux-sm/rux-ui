@@ -11,6 +11,16 @@ const body = document.getElementById("rp-tasks-departures-body");
 const tabBadge = document.getElementById("rp-tasks-tab-badge");
 const navGroup = document.getElementById("rp-tasks-nav");
 const navTodayBtn = document.getElementById("rp-tasks-nav-today");
+const listToggle = document.getElementById("rp-tasks-list-toggle");
+
+// "trips" (departure readiness/prep, the panel's original content) or
+// "post_trip" — there's no post-trip data model yet, so that list is a
+// placeholder until one exists.
+let activeList = "trips";
+listToggle?.addEventListener("rux:segment-change", (e) => {
+	activeList = e.detail.value;
+	render();
+});
 
 function localIsoDate(date = new Date()) {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -600,6 +610,10 @@ function render() {
 	updateTabBadge(defaultEntriesByDate());
 	syncNav();
 	if (!body) return;
+	if (activeList === "post_trip") {
+		body.innerHTML = emptyTripCard("Post-trip tasks aren't tracked yet");
+		return;
+	}
 	body.innerHTML = byDate.map(({ iso, entries }) => renderDayGroup(iso, entries)).join("");
 }
 
