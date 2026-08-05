@@ -9089,6 +9089,33 @@
 					}
 				}
 
+				// Standard mode is intentionally date-based, but a multi-day trip
+				// beginning late in its first day needs a small partial-day cue. Snap
+				// departures at/after 4 PM to the midpoint instead of implying that
+				// the bus is occupied for that entire day. Time-aligned mode returns
+				// above with the exact fraction, and week continuations still begin at
+				// the track edge because their real first day is outside this view.
+				const depFrac = timeToFraction(placement.trip._depTime);
+				const lateMultiDayStart =
+					placement.span > 1 &&
+					!fromPrev &&
+					depFrac !== null &&
+					depFrac >= 16 / 24;
+				const standardStartOffset = lateMultiDayStart ? dayPct / 2 : 0;
+
+				if (lateMultiDayStart) {
+					const trackWidth = bar.parentElement.clientWidth;
+					const inset = tokenPx("--rux-space-2");
+					const halfDayHeadWidth = Math.max(
+						0,
+						trackWidth / days / 2 - inset,
+					);
+					bar.style.setProperty(
+						"--rux-trip-bar-day-inline-size",
+						`${halfDayHeadWidth}px`,
+					);
+				}
+
 				if (fromPrev && toNext) {
 					bar.style.left = bar.style.right = "0";
 					bar.style.width = "auto";
@@ -9099,12 +9126,12 @@
 					bar.style.width = `calc(${spanPct}% - ${insetL})`;
 					return;
 				}
-				bar.style.left = `calc(${startPct}% + ${insetL})`;
+				bar.style.left = `calc(${startPct + standardStartOffset}% + ${insetL})`;
 				if (toNext) {
 					bar.style.right = "0";
 					bar.style.width = "auto";
 				} else {
-					bar.style.width = `calc(${spanPct}% - ${totalInset})`;
+					bar.style.width = `calc(${spanPct - standardStartOffset}% - ${totalInset})`;
 				}
 			}
 

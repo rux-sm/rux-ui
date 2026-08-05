@@ -197,3 +197,22 @@ test("default multi-day heads and tails meet at one shared edge", () => {
 		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar--multi-day \.rux-trip-bar__head\s*\{[^}]*border-inline-end:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)[^}]*border-radius:\s*var\(--rux-trip-bar-radius\)/s,
 	);
 });
+
+test("standard mode gives late-starting multi-day trips a half-day cue", () => {
+	assert.match(
+		appSource,
+		/const lateMultiDayStart\s*=\s*placement\.span > 1\s*&&\s*!fromPrev\s*&&\s*depFrac !== null\s*&&\s*depFrac >= 16 \/ 24/s,
+	);
+	assert.match(
+		appSource,
+		/const standardStartOffset = lateMultiDayStart \? dayPct \/ 2 : 0/,
+	);
+	assert.match(
+		appSource,
+		/trackWidth \/ days \/ 2 - inset/,
+	);
+	assert.match(
+		appSource,
+		/spanPct - standardStartOffset/,
+	);
+});
