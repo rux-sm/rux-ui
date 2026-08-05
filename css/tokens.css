@@ -180,26 +180,18 @@
    own top edge and read as a seam/ridge right at the header/tab boundary. */
 --rux-shadow-panel-header: none;
 
-/* Inactive tabs borrow their top rim from --rux-shadow-raised (level with
-   the header above) and their bottom rim from --rux-shadow-recessed (same
-   light rim that token uses, not a dark shadow) — exact values, not
-   approximations, so both edges read as the same materials used elsewhere.
-   The actual recessed depth — toward the active tab — lives on the sides. */
---rux-tabs-attached-tab-shadow:
-    inset 0 1px 0 oklch(100% 0 0 / 16%),  /* Top rim highlight, from --rux-shadow-raised */
-    inset 0 -1px 0 oklch(100% 0 0 / 18%), /* Bottom rim highlight, from --rux-shadow-recessed */
-    inset 2px 0 4px -2px oklch(0% 0 0 / 40%),  /* Recessed left edge */
-    inset -2px 0 4px -2px oklch(0% 0 0 / 40%); /* Recessed right edge */
+/* Tabs need their own material recipes: inactive tabs keep the raised
+   control's top highlight and cast restrained shadows into the lower gaps.
+   The connected pane owns the continuous light bottom rim; the active tab
+   lifts above its neighbors without a full-height ambient side shadow. */
+--rux-shadow-tab-inactive:
+    inset 0 1px 0 oklch(100% 0 0 / 16%),
+    -2px 0 3px -2px oklch(0% 0 0 / 55%),
+    2px 0 3px -2px oklch(0% 0 0 / 55%);
 
-/* Hybrid Tab: Button inset + Card intensity */
---rux-tabs-attached-tab-selected-shadow:
-    /* 1. The Button Element: Crisp inner top highlight */
-    inset 0 1px 0 oklch(100% 0 0 / 12%),
-
-    /* 2. The Card Element: Deep upward and outward shadows */
-    0 -2px 4px oklch(0% 0 0 / 60%),       /* Top shadow */
-    -2px 0 4px -2px oklch(0% 0 0 / 60%),  /* Left shadow */
-    2px 0 4px -2px oklch(0% 0 0 / 60%);   /* Right shadow */
+--rux-shadow-tab-active:
+    inset 0 1px 0 oklch(100% 0 0 / 18%),
+    0 -2px 4px oklch(0% 0 0 / 60%);
 	/* ─── MOTION ─────────────────────────────────────────────────────────── */
 
 	--rux-duration-instant: 80ms;
@@ -680,7 +672,7 @@
 
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background:       var(--rux-gray);
+	--rux-button-default-background:       var(--rux-surface-7);
 	--rux-button-default-border:           none;
 
 	--rux-button-default-text:             var(--rux-fg);
@@ -1049,23 +1041,30 @@
 	--rux-tabs-contained-tab-selected-bg: var(--rux-tab-selected-bg);
 	--rux-tabs-contained-tab-selected-fg: var(--rux-tab-selected-fg);
 
-	--rux-tabs-attached-bg:                  var(--rux-surface-3);
+	/* A real gap separates the tab surfaces without overlapping their rims. */
+	--rux-tabs-attached-gap:                 var(--rux-space-0-5);
+	--rux-tabs-attached-gap-bg:              var(--rux-surface-1);
+	--rux-tabs-attached-bg:                  var(--rux-surface-2);
 	--rux-tabs-attached-border:              none;
 	--rux-tabs-attached-tab-bg:              transparent;
 	--rux-tabs-attached-tab-fg:              var(--rux-fg-muted);
 	--rux-tabs-attached-tab-hover-fg:        var(--rux-fg);
-	--rux-tabs-attached-divider:             oklch(0% 0 0 / 0%);
+	--rux-tabs-attached-tab-shadow:          var(--rux-shadow-tab-inactive);
+	--rux-tabs-attached-tab-inline-border:   var(--rux-border-width) solid var(--rux-surface-3);
+	--rux-tabs-attached-tab-top-left-radius: var(--rux-radius-xs);
+	--rux-tabs-attached-tab-top-right-radius: var(--rux-radius-xs);
+	--rux-tabs-attached-pane-rim:            oklch(100% 0 0 / 18%);
 	/* Active attached tabs and their pane share one surface. */
 	--rux-tabs-attached-tab-selected-bg:     var(--rux-surface-3);
 	--rux-tabs-attached-tab-selected-fg:     var(--rux-fg);
-	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-0);
+	--rux-tabs-attached-tab-selected-inline-border:   var(--rux-border-width) solid var(--rux-surface-4);
+
+	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-xs);
+	--rux-tabs-attached-tab-selected-shadow: var(--rux-shadow-tab-active);
 	/* Attached tab states share one border; navigation.css hides the active
 	   tab's bottom edge to merge it with the pane. */
 	--rux-tabs-attached-tab-border:          none;
 	--rux-tabs-attached-tab-selected-border: none;
-	/* Same depth as the standard card shadow, directed upward and sideways so
-	   the selected tab stays visually attached to the pane below it. */
-
 	--rux-tabs-attached-pane-bg:             var(--rux-surface-3);
 	--rux-tabs-attached-pane-border:         none;
 

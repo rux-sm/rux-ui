@@ -28,15 +28,19 @@
 	display: none;
 }
 
-/* Always full-width, evenly split, edge-to-edge (no gap) — unlike --contained
-   or plain .rux-tabs, which size to their own content, "attached" tabs are
-   meant to read as one continuous strip across the header, the same way the
-   reference folder-tab pattern does. */
+/* Always full-width and evenly split — unlike --contained or plain
+   .rux-tabs, which size to their own content, "attached" tabs are meant to
+   read as one group spanning the header, the same way the reference
+   folder-tab pattern does. A small real gap (--rux-tabs-attached-gap) keeps
+   each tab physically separate, so their own recessed side shadows read as
+   a genuine seam instead of a divider line drawn on top of a fused strip. */
 .rux-tabs--attached {
+	position: relative;
+	isolation: isolate;
 	display: flex;
 	width: 100%;
 	align-items: flex-end;
-	gap: 0;
+	gap: var(--rux-tabs-attached-gap);
 	padding: 0;
 	/* Keep an internal runway for the tabs' upward shadows. The matching
 	   negative margin preserves the strip's original outer block size. */
@@ -51,32 +55,29 @@
 	scrollbar-width: none;
 }
 
+/* One continuous rim represents the connected pane's top edge. It sits
+   above inactive-tab shadows so they cannot break it at the gaps, while the
+   higher opaque active tab covers the segment directly beneath itself. */
+.rux-tabs--attached::after {
+	content: "";
+	position: absolute;
+	z-index: 2;
+	inset-inline: 0;
+	bottom: 0;
+	height: var(--rux-border-width);
+	background: var(--rux-tabs-attached-pane-rim);
+	pointer-events: none;
+}
+
 .rux-tabs--attached::-webkit-scrollbar {
 	display: none;
 }
 
 .rux-tabs--attached > .rux-tab {
 	position: relative;
+	z-index: 1;
 	flex: 1;
 	box-shadow: var(--rux-tabs-attached-tab-shadow);
-}
-
-/* A short recessed divider separates neighboring inactive tabs without
-   intersecting the top rim or bottom tuck shadows. The active tab's own
-   elevation supplies its separation, so suppress dividers on either side. */
-.rux-tabs--attached > .rux-tab + .rux-tab::before {
-	content: "";
-	position: absolute;
-	inset-block: var(--rux-space-0);
-	inset-inline-start: 0;
-	width: var(--rux-border-width);
-	background: var(--rux-tabs-attached-divider);
-	pointer-events: none;
-}
-
-.rux-tabs--attached > .rux-tab:is(.is-active, [aria-selected="true"])::before,
-.rux-tabs--attached > .rux-tab:is(.is-active, [aria-selected="true"]) + .rux-tab::before {
-	display: none;
 }
 
 .rux-tabs--fill > .rux-tab {
@@ -173,8 +174,12 @@
 	background-color: var(--rux-tabs-attached-tab-bg);
 	color: var(--rux-tabs-attached-tab-fg);
 	border: 0;
+	border-inline: var(--rux-tabs-attached-tab-inline-border);
 	border-bottom: var(--rux-tabs-attached-tab-border);
-	border-radius: 0;
+	border-radius:
+		var(--rux-tabs-attached-tab-top-left-radius)
+		var(--rux-tabs-attached-tab-top-right-radius)
+		0 0;
 }
 
 /* --attached always lives inside a .rux-panel (see the pane rule below),
@@ -196,7 +201,7 @@
 .rux-tabs--attached > .rux-tab.is-active,
 .rux-tabs--attached > .rux-tab[aria-selected="true"] {
 	position: relative;
-	z-index: 1;
+	z-index: 3;
 	background-color: var(--rux-tabs-attached-tab-selected-bg);
 	/* --rux-tabs-attached-tab-selected-border is a full width+style+color
 	   shorthand (same shape as --rux-tabs-attached-tab-border, so the
@@ -209,6 +214,7 @@
 	   what was rendering as a bright white border instead of the intended
 	   one. */
 	border: var(--rux-tabs-attached-tab-selected-border);
+	border-inline: var(--rux-tabs-attached-tab-selected-inline-border);
 	/* Transparent, not `none` — `none` drops the bottom border's width along
 	   with its color, leaving 1px less border reserved at the bottom than
 	   at the top. .rux-tab centers its content vertically, so that 1px
@@ -219,7 +225,7 @@
 	border-bottom: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-tabs-attached-tab-selected-radius) var(--rux-tabs-attached-tab-selected-radius) 0 0;
 	color: var(--rux-tabs-attached-tab-selected-fg);
-	box-shadow: var(--rux-tabs-attached-tab-selected-shadow);
+	
 }
 
 /* The selected-state shadow is declared after the generic focus rule, so
