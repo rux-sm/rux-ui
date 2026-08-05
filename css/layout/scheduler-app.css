@@ -406,7 +406,7 @@
 	   the right panel. */
 	.scheduler-app__drawer--railable.is-open .rux-trip-panel {
 		border: 0;
-		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+		border-right: var(--rux-left-panel-border);
 	}
 
 	.scheduler-app__drawer--railable.is-open .rux-driver-panel {
@@ -416,7 +416,7 @@
 
 	.scheduler-app__drawer--railable.is-open .rux-right-panel {
 		border: 0;
-		border-left: var(--rux-panel-border-width) solid var(--rux-border);
+		border-left: var(--rux-right-panel-border);
 	}
 
 	/* The base .scheduler-app__drawer rule hardcodes width:0 for the not-

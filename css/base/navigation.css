@@ -56,18 +56,27 @@
 }
 
 .rux-tabs--attached > .rux-tab {
+	position: relative;
 	flex: 1;
 	box-shadow: var(--rux-tabs-attached-tab-shadow);
 }
 
-/* Every tab carries a full border (see --rux-tabs-attached-tab-border in
-   tokens.css) — with no gap between them, that'd double up into a 2px seam
-   where they touch. Pull each tab's left edge back by one border-width so
-   it overlaps the previous tab's right edge instead — a border-collapse
-   trick, not a layout gap, so it applies regardless of which tab (if any)
-   is active. */
-.rux-tabs--attached > .rux-tab + .rux-tab {
-	margin-left: calc(var(--rux-border-width) * -1);
+/* A short recessed divider separates neighboring inactive tabs without
+   intersecting the top rim or bottom tuck shadows. The active tab's own
+   elevation supplies its separation, so suppress dividers on either side. */
+.rux-tabs--attached > .rux-tab + .rux-tab::before {
+	content: "";
+	position: absolute;
+	inset-block: var(--rux-space-0);
+	inset-inline-start: 0;
+	width: var(--rux-border-width);
+	background: var(--rux-tabs-attached-divider);
+	pointer-events: none;
+}
+
+.rux-tabs--attached > .rux-tab:is(.is-active, [aria-selected="true"])::before,
+.rux-tabs--attached > .rux-tab:is(.is-active, [aria-selected="true"]) + .rux-tab::before {
+	display: none;
 }
 
 .rux-tabs--fill > .rux-tab {
@@ -163,19 +172,9 @@
 	height: var(--rux-tab-height);
 	background-color: var(--rux-tabs-attached-tab-bg);
 	color: var(--rux-tabs-attached-tab-fg);
+	border: 0;
 	border-bottom: var(--rux-tabs-attached-tab-border);
-	border-radius: var(--rux-radius-control) var(--rux-radius-control) 0 0;
-}
-
-/* Rounding every tab's top corners looks fine with a gap between them, but
-   flush edge-to-edge (see the width/margin rules above) it notches a little
-   triangle of background out of each shared seam. Only the two ends of the
-   strip actually border open space, so only they stay rounded. */
-.rux-tabs--attached > .rux-tab:not(:first-child) {
-	border-top-left-radius: 0;
-}
-.rux-tabs--attached > .rux-tab:not(:last-child) {
-	border-top-right-radius: 0;
+	border-radius: 0;
 }
 
 /* --attached always lives inside a .rux-panel (see the pane rule below),
@@ -218,7 +217,7 @@
 	   invisible, keeps the content box identical to an inactive tab's — no
 	   visible seam against the pane, no text shift either. */
 	border-bottom: var(--rux-border-width) solid transparent;
-	border-radius: var(--rux-tabs-attached-tab-selected-radius);
+	border-radius: var(--rux-tabs-attached-tab-selected-radius) var(--rux-tabs-attached-tab-selected-radius) 0 0;
 	color: var(--rux-tabs-attached-tab-selected-fg);
 	box-shadow: var(--rux-tabs-attached-tab-selected-shadow);
 }
@@ -281,6 +280,8 @@
 	border-top: 0;
 	border-bottom: var(--rux-panel-nav-border);
 	padding-bottom: var(--rux-panel-padding-block);
+	border-radius: 0;
+	background: transparent;
 }
 
 /* No top border — the active tab sits directly above with a matching
@@ -293,12 +294,12 @@
    pane's own to own, since .rux-panel itself has no border-block. */
 .rux-panel__nav--attached + .rux-panel__body,
 .rux-tabs--attached + .rux-panel__body {
-	background: var(--rux-panel-bg);
+	background: transparent;
 	border: var(--rux-tabs-attached-pane-border);
 	border-top: 0;
 	border-left: 0;
 	border-right: 0;
-	border-radius: 0 0 var(--rux-tabs-contained-radius) var(--rux-tabs-contained-radius);
+
 }
 
 /* When a .rux-panel__footer follows (Trip Editor's Delete/Clear/Save row),

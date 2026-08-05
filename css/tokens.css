@@ -17,7 +17,7 @@
 
 	/* ─── COLOR · base ─────────────────────────────────────────────────────── */
 
-	--rux-neutral: oklch(50% 0.004 250); /* neutral */
+	--rux-neutral: oklch(50% 0.006 255); /* neutral */
 	--rux-white:   oklch(from var(--rux-neutral) 100% c h);
 	--rux-black:   oklch(from var(--rux-neutral) 000% c h);
 
@@ -152,17 +152,17 @@
 /* Crisper recessed inputs - adjusted to match card elevation depth */
 --rux-shadow-recessed: 
     inset 0 2px 4px rgb(0 0 0 / 60%),     /* Matched to card's close drop shadow */
-    inset 0 -1px 0 oklch(100% 0 0 / 16%);  /* Subtle bottom inner rim light */
+    inset 0 -1px 0 oklch(100% 0 0 / 18%);  /* Subtle bottom inner rim light */
 
 /* Updated Card Shadow with Top Highlight */
 --rux-card-shadow:
-    inset 0 1px 0 oklch(100% 0 0 / 16%),   /* Crisp top rim light */
+    inset 0 1px 0 oklch(100% 0 0 / 18%),   /* Crisp top rim light */
     0 2px 4px rgb(0 0 0 / 60%),            /* Close drop shadow */
     0 8px 16px rgb(0 0 0 / 40%);           /* Ambient shadow */
 
 /* Modern, sharp dark mode button */
 --rux-shadow-raised: 
-    inset 0 1px 0 oklch(100% 0 0 / 12%), /* Sharp top highlight */
+    inset 0 1px 0 oklch(100% 0 0 / 16%), /* Sharp top highlight */
     inset 0 -1px 0 oklch(0% 0 0 / 30%),  /* Sharp bottom shadow */
     0 4px 6px oklch(0% 0 0 / 50%);       /* Stronger drop shadow for dark mode */
 
@@ -178,9 +178,11 @@
 /* Recedes a panel header beneath the attached tab strip below it. */
 --rux-shadow-panel-header: var(--rux-shadow-tucked);
 
-/* Inactive attached tabs only lift into the strip's top padding. */
-/* Creates the illusion of sliding behind the active content panel */
---rux-tabs-attached-tab-shadow: var(--rux-shadow-tucked);
+/* Inactive tabs share the raised control's top rim, then tuck beneath the
+   active tab/content surface at the bottom. */
+--rux-tabs-attached-tab-shadow:
+    inset 0 1px 0 oklch(100% 0 0 / 12%),
+    var(--rux-shadow-tucked);
 
 /* Hybrid Tab: Button inset + Card intensity */
 --rux-tabs-attached-tab-selected-shadow:
@@ -220,16 +222,16 @@
 	--rux-surface-9:        oklch(from var(--rux-neutral) 46% c h);
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
 
-	--rux-surface-0:        oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-1:        oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-2:        oklch(from var(--rux-neutral) 24% c h);
-	--rux-surface-3:        oklch(from var(--rux-neutral) 26% c h);
-	--rux-surface-4:        oklch(from var(--rux-neutral) 30% c h);
-	--rux-surface-5:        oklch(from var(--rux-neutral) 34% c h);
-	--rux-surface-6:        oklch(from var(--rux-neutral) 38% c h);
-	--rux-surface-7:        oklch(from var(--rux-neutral) 42% c h);
-	--rux-surface-8:        oklch(from var(--rux-neutral) 46% c h);
-	--rux-surface-9:        oklch(from var(--rux-neutral) 50% c h);
+	--rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /*  */
+	--rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* input */
+	--rux-surface-2:        oklch(from var(--rux-neutral) 22% c h); /* card */
+	--rux-surface-3:        oklch(from var(--rux-neutral) 24% c h); /* panel */
+	--rux-surface-4:        oklch(from var(--rux-neutral) 28% c h);
+	--rux-surface-5:        oklch(from var(--rux-neutral) 32% c h);
+	--rux-surface-6:        oklch(from var(--rux-neutral) 36% c h);
+	--rux-surface-7:        oklch(from var(--rux-neutral) 40% c h);
+	--rux-surface-8:        oklch(from var(--rux-neutral) 44% c h);
+	--rux-surface-9:        oklch(from var(--rux-neutral) 48% c h);
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
@@ -362,7 +364,7 @@
 	/* ─── COMPONENT · app header ──────────────────────────────────────────── */
 
 	--rux-app-header-bg:                       var(--rux-shell-bg);
-	--rux-app-header-border:                   1px solid var(--rux-border);
+	--rux-app-header-border:                   1px solid var(--rux-surface-4);
 	--rux-app-header-height:                   auto;
 	--rux-app-header-padding:                  var(--rux-space-2) var(--rux-space-4);
 	--rux-app-header-gap:                      var(--rux-space-2);
@@ -382,7 +384,7 @@
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
-	--rux-workspace-bg:            var(--rux-surface-1);
+	--rux-workspace-bg:            var(--rux-surface-0);
 	--rux-workspace-fg:            var(--rux-fg);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block: none;
@@ -397,11 +399,11 @@
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
-	--rux-calendar-bg:            var(--rux-surface-1);
-	--rux-calendar-header-bg:     var(--rux-surface-2);
-	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-bg:            var(--rux-surface-0);
+	--rux-calendar-header-bg:     var(--rux-surface-0);
+	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-calendar-radius:        var(--rux-radius-container);
-	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-calendar-header-height: 31px;
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
@@ -436,6 +438,8 @@
 	--rux-panel-content-gap: var(--rux-space-4);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
+	--rux-right-panel-border: 1px solid var(--rux-surface-4);
+	--rux-left-panel-border: 1px solid var(--rux-surface-4);
 
 	/* — minimum sizing shared by panel-shaped feature layouts — */
 	--rux-panel-min-width: 224px;
@@ -447,8 +451,7 @@
 	--rux-card-bg:           var(--rux-surface-2);
 	--rux-card-fg:           var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border:       1px solid var(--rux-surface-5);
-	--rux-card-border:       none;
+	--rux-card-border:       1px solid var(--rux-surface-4);
 	--rux-card-radius:       var(--rux-radius-md);
 
 	/* — header — */
@@ -465,10 +468,9 @@
 		transparent;
 
 	/* — section (divider between stacked .rux-card__section siblings) — */
-	--rux-card-section-border: 1px solid var(--rux-surface-6);
-	--rux-card-section-border: none;
+	--rux-card-section-border: 1px solid var(--rux-surface-5);
 	--rux-card-section-bg: var(--rux-surface-3);
-	--rux-card-section-outline: none;
+	--rux-card-section-outline: 1px solid var(--rux-surface-4);
 	--rux-card-section-shadow: var(--rux-card-shadow);
 	/* Transparent so the section's continuous inset shadow remains visible
 	   through the header instead of being covered by a duplicate paint layer. */
@@ -570,7 +572,7 @@
 	--rux-field-error-fg:        var(--rux-danger);
 	--rux-input-height:          var(--rux-field-height);
 	--rux-input-padding-inline:  var(--rux-control-padding-inline);
-	--rux-input-border:       	 none;
+	--rux-input-border:       	 var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-input-border-image: 	 none;
 	--rux-textarea-min-height:   84px;
 	--rux-input-shadow:          var(--rux-shadow-recessed);
@@ -1045,13 +1047,14 @@
 	--rux-tabs-attached-tab-bg:              transparent;
 	--rux-tabs-attached-tab-fg:              var(--rux-fg-muted);
 	--rux-tabs-attached-tab-hover-fg:        var(--rux-fg);
+	--rux-tabs-attached-divider:             oklch(0% 0 0 / 30%);
 	/* Active attached tabs and their pane share one surface. */
 	--rux-tabs-attached-tab-selected-bg:     var(--rux-surface-3);
 	--rux-tabs-attached-tab-selected-fg:     var(--rux-fg);
-	--rux-tabs-attached-tab-selected-radius: var(--rux-button-radius);
+	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-0);
 	/* Attached tab states share one border; navigation.css hides the active
 	   tab's bottom edge to merge it with the pane. */
-	--rux-tabs-attached-tab-border:          var(--rux-border-width) solid var(--rux-surface-5);
+	--rux-tabs-attached-tab-border:          1px solid var(--rux-surface-4);
 	--rux-tabs-attached-tab-selected-border: none;
 	/* Same depth as the standard card shadow, directed upward and sideways so
 	   the selected tab stays visually attached to the pane below it. */
