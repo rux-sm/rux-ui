@@ -222,8 +222,8 @@
 	--rux-surface-9:        oklch(from var(--rux-neutral) 46% c h);
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
 
-	--rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /*  */
-	--rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* input */
+	--rux-surface-0:        oklch(from var(--rux-neutral) 0% c h);  /*  */
+	--rux-surface-1:        oklch(from var(--rux-neutral) 18% c h); /* input */
 	--rux-surface-2:        oklch(from var(--rux-neutral) 22% c h); /* card */
 	--rux-surface-3:        oklch(from var(--rux-neutral) 24% c h); /* panel */
 	--rux-surface-4:        oklch(from var(--rux-neutral) 28% c h);
@@ -1054,7 +1054,7 @@
 	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-0);
 	/* Attached tab states share one border; navigation.css hides the active
 	   tab's bottom edge to merge it with the pane. */
-	--rux-tabs-attached-tab-border:          1px solid var(--rux-surface-4);
+	--rux-tabs-attached-tab-border:          1px solid var(--rux-surface-5);
 	--rux-tabs-attached-tab-selected-border: none;
 	/* Same depth as the standard card shadow, directed upward and sideways so
 	   the selected tab stays visually attached to the pane below it. */
