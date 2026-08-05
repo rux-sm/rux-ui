@@ -615,11 +615,14 @@
   font-size: var(--rux-text-md);
 }
 
-/* Read-only computed value with the same footprint as a field. */
+/* Read-only computed value — same height as a field so it still lines up in
+   a row of real inputs, but deliberately not boxed like one (see the
+   --rux-output-* tokens). Left-aligned to match where an input's own text
+   sits, not centered like the old boxed treatment. */
 .rux-output {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: flex-start;
 	min-width: 0;
 	height: var(--rux-output-height);
 	padding: var(--rux-output-padding);

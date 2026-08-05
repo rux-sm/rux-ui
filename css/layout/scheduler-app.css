@@ -1674,8 +1674,22 @@
 	position: relative;
 	overflow: hidden;
 	background: var(--rux-calendar-bg);
-	border: var(--rux-calendar-border);
+	border: var(--rux-calendar-border);;
+	border-bottom: var(--rux-calendar-border);
+	border-top: var(--rux-calendar-top-border);
 	border-radius: var(--rux-calendar-radius);
+}
+
+/* The viewport owns the one continuous raised top rim because it also owns
+   the outer radius. Header cells beneath it only draw internal separators. */
+.calendar-app__viewport::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: calc(var(--rux-z-sticky) + 2);
+	pointer-events: none;
+	border-radius: inherit;
+	box-shadow: var(--rux-calendar-viewport-rim-shadow);
 }
 
 /* — Pull-to-change-week hint — */

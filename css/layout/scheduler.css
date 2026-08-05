@@ -80,7 +80,7 @@
 	   clip-path — cannot mask it, so without this rule the sticky header
 	   corner paints square past the viewport's rounded corner. Verified by
 	   toggling this rule in-browser. Must match the viewport's radius. */
-	border-radius: var(--rux-calendar-radius);
+	border-radius: var(--rux-calendar-header-radius);
 }
 
 .rux-scheduler::-webkit-scrollbar {
@@ -144,10 +144,17 @@
 	min-height: var(--rux-scheduler-head-height);
 	padding: 0 var(--rux-space-3);
 	background: var(--rux-calendar-header-bg);
-	border-inline-end: var(--rux-calendar-grid);
-	border-block-end: var(--rux-calendar-grid);
+	border-inline-end: var(--rux-calendar-header-divider);
+	border-block-end: var(--rux-calendar-header-border);
 	color: var(--rux-scheduler-header-color);
+}
 
+.rux-scheduler__day-head:has(+ .rux-scheduler__row) {
+	border-inline-end: none;
+}
+
+.rux-scheduler__col-head {
+	border-inline-start: none;
 }
 
 .rux-scheduler__day-name {
@@ -174,9 +181,31 @@
    does not double with the scheduler's outer border. Day-heads and rows are
    both plain <div>s under the same parent, so :last-of-type can't tell them
    apart — match on the day-head immediately followed by the first row. */
-.rux-scheduler__day-head:has(+ .rux-scheduler__row) {
+
+/*
+   .rux-scheduler__day-head:has(+ .rux-scheduler__row) {
 	border-inline-end: none;
+}*/
+
+/* Header cells only own their internal lower separator. The rounded viewport
+   owns the continuous top highlight, so no square cell rim can cut across
+   its outer corner. */
+.rux-scheduler__day-head {
+	box-shadow: var(--rux-calendar-header-shadow);
 }
+
+/* A directional strip—not a blurred box-shadow—keeps elevation exclusively
+   below the header row and cannot create vertical halos between day cells. */
+.rux-scheduler__day-head::after {
+	content: "";
+	position: absolute;
+	inset: auto -1px -6px 0;
+	height: 6px;
+	pointer-events: none;
+	
+}
+
+
 
 .rux-scheduler__day-label {
 	display: flex;
@@ -301,13 +330,17 @@
 	min-height: var(--_row-height);
 	padding: var(--rux-scheduler-row-block-inset) 0;
 	background: var(--rux-calendar-header-bg);
-	border-inline-end: var(--rux-calendar-grid);
-	border-block-end:  var(--rux-calendar-grid);
+	border-inline-end: var(--rux-calendar-header-border);
+	border-block-end: var(--rux-calendar-header-border);
+	border-inline-start: none;
 	color: var(--rux-scheduler-row-head-color);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
+	box-shadow: var(--rux-calendar-row-header-shadow);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
+
+
 
 .rux-scheduler__bus-number {
 	display: flex;
@@ -360,6 +393,7 @@
 .rux-scheduler__row:last-child .rux-scheduler__row-head,
 .rux-scheduler__row:has(+ .rux-scheduler__row--unassigned[hidden]) .rux-scheduler__row-head {
 	border-block-end: none;
+	box-shadow: var(--rux-calendar-row-header-end-shadow);
 }
 
 .rux-scheduler__row:last-child .rux-scheduler__track,

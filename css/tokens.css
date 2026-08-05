@@ -23,12 +23,12 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(50.0% 0.20 024.0); /*  Gore  */
+	--rux-red:    oklch(50.0% 0.24 024.0); /*  Gore  */
 	--rux-orange: oklch(80.0% 0.240 050.0); /*  Pyro  */
 	--rux-yellow: oklch(80.0% 0.220 085.0); /*  Gold  */
 	--rux-green:  oklch(60.0% 0.280 140.0); /*  Moss  */
 	--rux-cyan:   oklch(60.0% 0.280 195.0); /*  Wind  */
-	--rux-blue:   oklch(50.0% 0.20 255.0); /*  Mana  */
+	--rux-blue:   oklch(50.0% 0.24 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.280 290.0); /*  Void  */
 	--rux-pink:   oklch(60.0% 0.280 350.0); /*  Neon  */
 	--rux-gray: 	oklch(from var(--rux-neutral) 34.0% c h);
@@ -161,8 +161,9 @@
 	/* ─── SHADOW · active recipes ──────────────────────────────────────────── */
 
 /* Crisper recessed inputs - adjusted to match card elevation depth */
+--rux-shadow-recessed-color: rgb(0 0 0 / 60%);
 --rux-shadow-recessed: 
-    inset 0 2px 4px rgb(0 0 0 / 60%),     /* Matched to card's close drop shadow */
+    inset 0 2px 4px var(--rux-shadow-recessed-color), /* Matched to card's close drop shadow */
     inset 0 -1px 0 oklch(100% 0 0 / 18%);  /* Subtle bottom inner rim light */
 
 /* Updated Card Shadow with Top Highlight */
@@ -398,7 +399,7 @@
 	--rux-workspace-fg:            var(--rux-fg);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block: none;
-	--rux-workspace-radius: var(--rux-radius-container);
+	--rux-workspace-radius: var(--rux-radius-0);
 	--rux-workspace-gutter: var(--rux-space-4);
 	/* Keep header and view content on the same inline grid. */
 	--rux-workspace-header-padding: var(--rux-space-2)
@@ -410,11 +411,31 @@
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
 	--rux-calendar-bg:            var(--rux-surface-1);
-	--rux-calendar-header-bg:     var(--rux-surface-2);
+	--rux-calendar-header-bg:     var(--rux-surface-1);
 	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-radius:        var(--rux-radius-sm);
+	--rux-calendar-top-border:    var(--rux-border-width) solid var(--rux-surface-3);
+	--rux-calendar-radius:        var(--rux-radius-0);
+	--rux-calendar-header-radius: var(--rux-radius-0);
+	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-calendar-header-height: 31px;
+	/* Header cells share one plane: retain the raised control's rim lighting
+	   without its ambient drop shadow between neighboring cells. */
+	--rux-calendar-viewport-rim-shadow: none;
+	--rux-calendar-header-shadow: none;
+	--rux-calendar-header-bottom-shadow:none;
+	--rux-calendar-header-divider: 1px solid var(--rux-surface-3);
+	--rux-calendar-corner-shadow: none;
+	/* No top rim here, unlike the horizontal header row above — these stack
+	   vertically, so a top highlight repeated on every cell lands at a
+	   different height each time and reads as each row being its own
+	   separately-raised button instead of one flat rail. The corner/header
+	   cell above already caps the rail's real top edge with its own rim; a
+	   bus row only needs the side shadow that separates the sticky rail
+	   from the scrollable grid, same at every row regardless of position. */
+	--rux-calendar-row-header-shadow: none;
+	--rux-calendar-row-header-end-shadow: none;
+	--rux-calendar-row-header-edge-shadow: linear-gradient(to right, rgb(0 0 0 / 35%), rgb(0 0 0 / 18%) 2px, transparent 6px);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 	/* The body is intentionally a bare scrolling region. */
@@ -989,15 +1010,19 @@
 	--rux-color-input-transition:     var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · output ──────────────────────────────────────────────── */
-
+	/* Deliberately NOT input-shaped — no border, no box, no recessed shadow.
+	   A read-only computed value (Paid, Balance, etc.) sitting in a bordered
+	   box next to actual inputs reads as "this field is disabled," not "this
+	   is a stat." Flat + brighter + bolder than the input text around it
+	   reads as data instead, no matter how its border/bg is tinted. */
 	--rux-output-height:      var(--rux-field-height);
 	--rux-output-padding:     var(--rux-space-0);
-	--rux-output-border:      var(--rux-input-border);
-	--rux-output-radius:      var(--rux-radius-control);
-	--rux-output-bg:          var(--rux-surface-1);
-	--rux-output-fg:          var(--rux-fg-muted);
-	--rux-output-font-size:   var(--rux-text-sm);
-	--rux-output-font-weight: var(--rux-weight-regular);
+	--rux-output-border:      none;
+	--rux-output-radius:      var(--rux-radius-0);
+	--rux-output-bg:          transparent;
+	--rux-output-fg:          var(--rux-fg);
+	--rux-output-font-size:   var(--rux-text-md);
+	--rux-output-font-weight: var(--rux-weight-semibold);
 
 	/* ─── COMPONENT · menu ───────────────────────────────────────────────── */
 	/* Concentric math: 8px menu − 4px padding = 4px items. */
