@@ -291,8 +291,8 @@
 	justify-content: center;
 }
 
-.rux-trip-itinerary__dwell-card-icon--sleeper { color: var(--rux-info); }
-.rux-trip-itinerary__dwell-card-icon--off     { color: var(--rux-danger); }
+.rux-trip-itinerary__dwell-card-icon--sleeper { color: var(--rux-itinerary-status-sleeper); }
+.rux-trip-itinerary__dwell-card-icon--off     { color: var(--rux-itinerary-status-off-duty); }
 
 /* One pin silhouette identifies every location card; color carries its type. */
 .rux-trip-itinerary__marker-pin {
@@ -304,11 +304,11 @@
 	line-height: 1;
 }
 
-.rux-trip-itinerary__marker-pin--yard    { color: var(--rux-fg); }
-.rux-trip-itinerary__marker-pin--pickup  { color: var(--rux-success-bright); }
-.rux-trip-itinerary__marker-pin--stop    { color: var(--rux-warning-bright); }
-.rux-trip-itinerary__marker-pin--sleeper { color: var(--rux-info); }
-.rux-trip-itinerary__marker-pin--return  { color: var(--rux-danger-bright); }
+.rux-trip-itinerary__marker-pin--depart-yard { color: var(--rux-itinerary-status-depart-yard); }
+.rux-trip-itinerary__marker-pin--pickup      { color: var(--rux-itinerary-status-pickup); }
+.rux-trip-itinerary__marker-pin--stop        { color: var(--rux-itinerary-status-stop); }
+.rux-trip-itinerary__marker-pin--sleeper     { color: var(--rux-itinerary-status-sleeper); }
+.rux-trip-itinerary__marker-pin--return      { color: var(--rux-itinerary-status-return-yard); }
 
 .rux-trip-itinerary__stop .rux-trip-itinerary__marker {
 	align-self: center;

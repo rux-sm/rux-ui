@@ -2,6 +2,7 @@
 	"use strict";
 
 	let modal = null;
+	let callbacks = {};
 
 	function ensureModal() {
 		if (modal) return modal;
@@ -24,6 +25,14 @@
 					<textarea class="rux-textarea rux-contact-info-modal__preview" readonly data-contact-info-preview aria-label="Contact info message preview"></textarea>
 				</div>
 				<footer class="rux-modal__footer">
+					<button type="button" class="rux-button rux-button--default" data-contact-info-save hidden>
+						<span class="rux-icon" aria-hidden="true">save</span>
+						<span data-contact-info-save-label>Save message</span>
+					</button>
+					<button type="button" class="rux-button rux-button--default" data-contact-info-template hidden>
+						<span class="rux-icon" aria-hidden="true">edit_note</span>
+						<span data-contact-info-template-label>Update template</span>
+					</button>
 					<a class="rux-button rux-button--default" data-contact-info-external target="_blank" rel="noopener noreferrer" hidden>
 						<span class="rux-icon" aria-hidden="true">sms</span>
 						<span data-contact-info-external-label>Copy &amp; open Messages</span>
@@ -37,6 +46,23 @@
 		document.body.appendChild(modal);
 
 		modal.addEventListener("click", async (event) => {
+			const saveBtn = event.target.closest("[data-contact-info-save]");
+			const templateBtn = event.target.closest("[data-contact-info-template]");
+			if (saveBtn || templateBtn) {
+				const callback = saveBtn ? callbacks.onSave : callbacks.onSaveTemplate;
+				if (!callback) return;
+				const button = saveBtn || templateBtn;
+				button.disabled = true;
+				try {
+					await callback(modal.querySelector("[data-contact-info-preview]").value);
+				} catch (err) {
+					console.warn("Could not save contact message:", err);
+					window.Rux?.toast?.("Could not save — try again", { variant: "danger" });
+				} finally {
+					button.disabled = false;
+				}
+				return;
+			}
 			const external = event.target.closest("[data-contact-info-external]");
 			if (external && external.href) {
 				void copyText(modal.querySelector("[data-contact-info-preview]").value);
@@ -91,14 +117,25 @@
 		externalUrl = "",
 		externalLabel = "Copy & open Messages",
 		externalIcon = "sms",
+		onSave = null,
+		onSaveTemplate = null,
+		saveLabel = "Save message",
+		templateLabel = "Update template",
 	} = {}) {
 		ensureModal();
+		callbacks = { onSave, onSaveTemplate };
 		const titleEl = modal.querySelector("#contact-info-modal-title");
 		const preview = modal.querySelector("[data-contact-info-preview]");
 		titleEl.textContent = title;
 		preview.setAttribute("aria-label", previewLabel);
 		preview.readOnly = !editable;
 		preview.value = message;
+		const save = modal.querySelector("[data-contact-info-save]");
+		const template = modal.querySelector("[data-contact-info-template]");
+		save.hidden = typeof onSave !== "function";
+		template.hidden = typeof onSaveTemplate !== "function";
+		modal.querySelector("[data-contact-info-save-label]").textContent = saveLabel;
+		modal.querySelector("[data-contact-info-template-label]").textContent = templateLabel;
 		const external = modal.querySelector("[data-contact-info-external]");
 		let safeExternalUrl = "";
 		try {

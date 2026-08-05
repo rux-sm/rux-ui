@@ -26,4 +26,9 @@
    modals also use with layouts that don't want this. */
 .rux-contact-info-modal .rux-modal__footer > * {
 	flex: 1;
+	min-width: 9rem;
+}
+
+.rux-contact-info-modal .rux-modal__footer {
+	flex-wrap: wrap;
 }

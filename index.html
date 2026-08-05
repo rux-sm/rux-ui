@@ -15,7 +15,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=76" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=165" />
+		<link rel="stylesheet" href="./css/components.css?v=166" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
@@ -37,10 +37,10 @@
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=35" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=12" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=6" />
-		<link rel="stylesheet" href="./css/features/contact-info.css?v=2" />
+		<link rel="stylesheet" href="./css/features/contact-info.css?v=3" />
 		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
 		<link rel="stylesheet" href="./css/features/team-chat.css?v=5" />
-		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=35" />
+		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=41" />
 		<link rel="stylesheet" href="./css/features/driver-share.css?v=76" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=6" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=5" />
@@ -2142,10 +2142,13 @@
 											class="rux-right-panel__tab-label"
 											>Tasks</span
 										><span
-											class="rux-tasks__tab-badge"
+											class="rux-icon rux-tasks__tab-badge"
 											id="rp-tasks-tab-badge"
+											role="img"
+											aria-label="Pending tasks"
 											hidden
-										></span>
+											>schedule</span
+										>
 									</button>
 									<button
 										class="rux-tab rux-right-panel__tab"
@@ -2419,20 +2422,36 @@
 												aria-pressed="true"
 												data-value="trips"
 											>
-												<span class="rux-btn-label"
-													>Trips</span
-												>
-											</button>
+											<span class="rux-btn-label"
+												>Trips</span
+											>
+											<span
+												class="rux-icon rux-tasks__segment-status"
+												id="rp-trips-status"
+												role="img"
+												aria-label="Pending trip tasks"
+												hidden
+												>schedule</span
+											>
+										</button>
 											<button
 												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 												data-value="post_trip"
 											>
-												<span class="rux-btn-label"
-													>Post Trip</span
-												>
-											</button>
+											<span class="rux-btn-label"
+												>Post Trip</span
+											>
+											<span
+												class="rux-icon rux-tasks__segment-status"
+												id="rp-post-trip-status"
+												role="img"
+												aria-label="Pending post-trip tasks"
+												hidden
+												>schedule</span
+											>
+										</button>
 										</div>
 									</div>
 									<div id="rp-tasks-departures-body"></div>
@@ -2561,6 +2580,13 @@
 												>chevron_left</span
 											><span class="rux-btn-label"
 												>Prev</span
+											><span
+												class="rux-icon rux-tasks__nav-alert"
+												id="rp-tasks-nav-prev-alert"
+												role="img"
+												aria-label="Pending trip tasks before departure"
+												hidden
+												>schedule</span
 											>
 										</button>
 										<button
@@ -2585,6 +2611,17 @@
 											>
 										</button>
 									</div>
+									<button
+										type="button"
+										class="rux-button rux-button--default rux-button--block"
+										id="rp-post-trip-filter-btn"
+										aria-haspopup="menu"
+										hidden
+									>
+										<span class="rux-icon" aria-hidden="true">filter_list</span>
+										<span id="rp-post-trip-filter-label">All</span>
+										<span class="rux-icon" aria-hidden="true">arrow_drop_down</span>
+									</button>
 								</div>
 								<div
 									class="rux-right-panel__footer-group"
@@ -7025,7 +7062,7 @@
 		></script>
 		<script
 			type="module"
-			src="./js/panels/contact-info-modal.js?v=6"
+			src="./js/panels/contact-info-modal.js?v=7"
 		></script>
 		<script
 			type="module"
@@ -7037,7 +7074,7 @@
 			src="./js/panels/components-panel.js?v=45"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=48"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=56"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 

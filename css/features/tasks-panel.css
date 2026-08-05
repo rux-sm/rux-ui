@@ -31,6 +31,22 @@
 	flex: 1;
 }
 
+.rux-tasks__segment-status {
+	display: inline-flex;
+	flex: none;
+	color: var(--rux-warning);
+	font-size: 20px;
+	line-height: 1;
+}
+
+.rux-tasks__segment-status--danger {
+	color: var(--rux-danger);
+}
+
+.rux-tasks__segment-status[hidden] {
+	display: none;
+}
+
 /* Prev/Today/Next day paging — lives in the shared #rp-panel-footer
    (index.html), same fixed action slot the Navigate/Drivers tabs use, not
    inline in the scrolling body, since it's reached for infrequently. The
@@ -46,12 +62,26 @@
 	gap: var(--rux-space-2);
 }
 
+.rux-tasks__nav[hidden],
+#rp-post-trip-filter-btn[hidden] {
+	display: none;
+}
+
 .rux-tasks__nav > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-tasks__trip + .rux-tasks__trip {
+#rp-post-trip-filter-btn {
+	justify-content: center;
+}
+
+/* Only between multiple trip entries sharing one day-group's .rux-card__body
+   (renderTrip) — Post Trip's own cards (renderPostTripCard) are top-level
+   .rux-card siblings of #rp-tasks-departures-body instead, stacking flush
+   the same seamless way day-groups themselves do (see the note up top),
+   not spaced apart like items nested inside one shared card. */
+.rux-card__body > .rux-tasks__trip + .rux-tasks__trip {
 	margin-top: var(--rux-space-4);
 }
 
@@ -129,6 +159,10 @@
 	color: var(--rux-warning);
 }
 
+.rux-tasks__status--overdue {
+	color: var(--rux-danger);
+}
+
 /* .rux-checkbox (css/base/form.css) already handles the row layout, the
    checkbox's own appearance, and disabled-state muting — this just tightens
    its gap for a dense checklist context. */
@@ -168,6 +202,23 @@
 
 .rux-tasks__driver-empty {
 	display: block;
+}
+
+/* Bus/driver reference row on a Post Trip card — reuses .rux-tasks__driver-
+   name/--empty above, just wrapped to flow across multiple bus/driver pairs
+   instead of the one-per-row list the Trips checklist uses. */
+.rux-tasks__post-trip-reference {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--rux-space-1) var(--rux-space-3);
+	margin-top: var(--rux-space-1);
+	font-size: var(--rux-text-200);
+}
+
+.rux-tasks__note-input {
+	width: 100%;
+	margin-top: var(--rux-space-2);
+	resize: vertical;
 }
 
 /* Automated checks remain disabled, but successful results use the same
@@ -280,33 +331,34 @@
 	}
 }
 
-/* Tab badge — reflects an ongoing unresolved condition (a trip missing PO/
-   confirmation/contact, or prep steps not done), not an "unseen" ping like
-   the header bell/chat badges, so it stays visible whether or not the tab
-   is currently the active one. Red outranks yellow when both apply — a
-   missing business requirement is more urgent than an undone prep step. */
-#rp-tasks-tab-btn {
-	position: relative;
-}
-
+/* Inline pending badge — an ongoing unresolved condition, not an unseen
+	 notification. It stays visible after the Tasks tab has been opened and
+	 uses the same schedule glyph as pending task-card statuses. */
 .rux-tasks__tab-badge {
-	position: absolute;
-	top: 0px;
-	right: 0px;
-	width: 8px;
-	height: 8px;
-	background: var(--rux-warning);
-	/* --rux-tab-bg is transparent (ghost at rest) — border against the
-	   panel's own surface color instead, so the badge still reads as a
-	   distinct dot against whatever's actually behind the tab. */
-	border: none;
-	border-radius: var(--rux-radius-full);
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	color: var(--rux-warning);
+	font-size: 20px;
+	line-height: 1;
 }
 
-.rux-tasks__tab-badge--danger {
-	background: var(--rux-danger);
+.rux-tasks__tab-badge--danger,
+.rux-tasks__nav-alert {
+	color: var(--rux-danger);
 }
 
-.rux-tasks__tab-badge[hidden] {
+.rux-tasks__nav-alert {
+	display: inline-flex;
+	flex: none;
+	font-size: 20px;
+	line-height: 1;
+}
+
+.rux-tasks__tab-badge[hidden],
+.rux-tasks__nav-alert[hidden] {
 	display: none;
 }

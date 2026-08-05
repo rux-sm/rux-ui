@@ -876,11 +876,12 @@
 		const yard = getYard();
 		const pickup = stops.find((stop) => stop.type === "pickup");
 		const mode = pickup?.originMode === "yard" ? "yard" : "pickup";
+		const startMarkerType = mode === "yard" ? "pickup" : "depart-yard";
 		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? " is-active" : ""}" data-value="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-btn-label">${label}</span></button>`;
 		return `
 		<section class="rux-card-section rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
 			<header class="rux-card-section__header rux-trip-itinerary__stop-header">
-				<div class="rux-trip-itinerary__stop-heading"><span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--yard" aria-hidden="true">location_on</span></span><h4 class="rux-card__title">Trip Start</h4></div>
+				<div class="rux-trip-itinerary__stop-heading"><span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${startMarkerType}" aria-hidden="true">location_on</span></span><h4 class="rux-card__title">Trip Start</h4></div>
 			</header>
 			<div class="rux-card-section__body rux-trip-itinerary__stop-body">
 			<div class="rux-field">
@@ -1589,6 +1590,11 @@
 		function syncOriginModeUi(pickup) {
 			const mode = pickup.originMode === "yard" ? "yard" : "pickup";
 			const section = stopsEl.querySelector(".rux-trip-itinerary__stop--yard");
+			const startMarker = section?.querySelector(".rux-trip-itinerary__marker-pin");
+			if (startMarker) {
+				startMarker.classList.toggle("rux-trip-itinerary__marker-pin--pickup", mode === "yard");
+				startMarker.classList.toggle("rux-trip-itinerary__marker-pin--depart-yard", mode !== "yard");
+			}
 			const times = section?.querySelector(".rux-trip-itinerary__yard-times");
 			const meetRow = section?.querySelector("[data-yard-meet-row]");
 			if (times) times.classList.toggle("rux-trip-itinerary__yard-times--meet", mode === "yard");

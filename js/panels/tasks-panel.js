@@ -5,21 +5,64 @@ import {
 } from "../data/trip-db.js?v=21";
 import { latestDocument } from "../core/trip-documents.js";
 import { supabase } from "../data/supabase.js";
+import { getSetting, setSetting } from "../data/settings-db.js";
 
 const pane = document.getElementById("rp-pane-tasks");
 const body = document.getElementById("rp-tasks-departures-body");
 const tabBadge = document.getElementById("rp-tasks-tab-badge");
 const navGroup = document.getElementById("rp-tasks-nav");
 const navTodayBtn = document.getElementById("rp-tasks-nav-today");
+const navPrevAlert = document.getElementById("rp-tasks-nav-prev-alert");
 const listToggle = document.getElementById("rp-tasks-list-toggle");
+const postTripFilterBtn = document.getElementById("rp-post-trip-filter-btn");
+const postTripFilterLabel = document.getElementById("rp-post-trip-filter-label");
+const tripsStatus = document.getElementById("rp-trips-status");
+const postTripStatus = document.getElementById("rp-post-trip-status");
 
 // "trips" (departure readiness/prep, the panel's original content) or
-// "post_trip" — there's no post-trip data model yet, so that list is a
-// placeholder until one exists.
+// "post_trip" (trips whose end date has already passed — see tripEndDate —
+// tracked for sending the post-trip survey, per supabase/post-trip-survey-patch.sql).
 let activeList = "trips";
+let postTripFilter = "all";
 listToggle?.addEventListener("rux:segment-change", (e) => {
 	activeList = e.detail.value;
 	render();
+});
+
+const POST_TRIP_FILTERS = {
+	needs_follow_up: "Needs Follow-up",
+	yesterday: "Yesterday",
+	last_7_days: "Last 7 Days",
+	all: "All",
+};
+
+let postTripFilterMenu = null;
+function ensurePostTripFilterMenu() {
+	if (postTripFilterMenu) return postTripFilterMenu;
+	postTripFilterMenu = document.createElement("div");
+	postTripFilterMenu.className = "rux-menu rux-popover";
+	postTripFilterMenu.hidden = true;
+	postTripFilterMenu.setAttribute("role", "menu");
+	document.body.appendChild(postTripFilterMenu);
+	postTripFilterMenu.addEventListener("click", (event) => {
+		const choice = event.target.closest("[data-post-trip-filter]");
+		if (!choice) return;
+		postTripFilter = choice.dataset.postTripFilter;
+		window.RuxMenu?.close?.();
+		render();
+	});
+	return postTripFilterMenu;
+}
+
+postTripFilterBtn?.addEventListener("click", () => {
+	const menu = ensurePostTripFilterMenu();
+	menu.innerHTML = Object.entries(POST_TRIP_FILTERS).map(([value, label]) => `
+		<button type="button" class="rux-menu__item" role="menuitemradio" aria-checked="${value === postTripFilter}" data-post-trip-filter="${value}">
+			<span class="rux-icon" aria-hidden="true">${value === postTripFilter ? "check" : ""}</span>
+			${label}
+		</button>
+	`).join("");
+	window.RuxMenu?.open(postTripFilterBtn, menu, { placement: "top-end" });
 });
 
 function localIsoDate(date = new Date()) {
@@ -194,9 +237,9 @@ function taskActionButton(action, label, extra = "") {
 // already says what "complete" means here), and the incomplete state stays
 // a small warning-colored marker rather than disappearing, so an
 // unfinished section still catches the eye when scanning down the card.
-function statusIndicator(done, doneLabel = "Complete", pendingLabel = "Pending") {
+function statusIndicator(done, doneLabel = "Complete", pendingLabel = "Pending", overdue = false) {
 	const icon = done ? "check_circle" : "schedule";
-	const modifier = done ? "complete" : "pending";
+	const modifier = done ? "complete" : overdue ? "overdue" : "pending";
 	const label = done ? doneLabel : pendingLabel;
 	return `<span class="rux-tasks__status rux-tasks__status--${modifier}" role="img" aria-label="${escapeAttr(label)}"><span class="rux-icon" aria-hidden="true">${icon}</span></span>`;
 }
@@ -366,6 +409,41 @@ function isPrepDone(trip, leg) {
 	return prepDone && remindersDone && envelopesDone && requirementsDone;
 }
 
+function departureMoment(trip, leg) {
+	const stops = (trip.trip_stops || [])
+		.filter((stop) => (stop.leg || "outbound") === leg)
+		.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+	const pickup = stops.find((stop) => stop.type === "pickup");
+	const date = pickup?.depart_prev_date
+		|| (leg === "return" ? trip.return_start_date : trip.start_date);
+	const time = pickup?.depart_prev
+		|| (leg === "return" ? trip.return_departure_time : trip.departure_time);
+	const match = String(time || "").match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+	if (!date || !match) return null;
+	const [, hour, minute, second = "00"] = match;
+	const moment = new Date(`${date}T${hour.padStart(2, "0")}:${minute}:${second}`);
+	return Number.isNaN(moment.getTime()) ? null : moment;
+}
+
+function hasPendingWork(trip, leg) {
+	return !isTripReady(trip) || !isPrepDone(trip, leg);
+}
+
+function isRecoverablePreviousEntry(trip, leg) {
+	const previousDate = addDays(defaultTargetDates()[0], -1);
+	if (legForDate(trip, previousDate) !== leg || !hasPendingWork(trip, leg)) return false;
+	const departure = departureMoment(trip, leg);
+	return departure !== null && departure.getTime() > Date.now();
+}
+
+function recoverablePreviousTasks() {
+	const previousDate = addDays(defaultTargetDates()[0], -1);
+	const allTrips = window.RuxTrips?.list() || [];
+	const hasRecoverableTrip = tripsForDate(allTrips, previousDate)
+		.some(({ trip, leg }) => isRecoverablePreviousEntry(trip, leg));
+	return { date: previousDate, hasRecoverableTrip };
+}
+
 // null = the default view (tomorrow, or the Fri→Mon weekend cluster below)
 // — set by the Prev/Next/Today controls (see the navGroup click listener
 // below) to page through a single specific day instead, for marking things
@@ -501,6 +579,7 @@ function renderTrip(trip, leg) {
 		</div>
 	` : "";
 	const overallDone = ready && manualDone && envelopesDone && remindersDone && requirementsDone;
+	const overdue = !overallDone && isRecoverablePreviousEntry(trip, leg);
 	return `
 		<div class="rux-card-section rux-tasks__trip">
 			<header class="rux-card-section__header rux-tasks__trip-header">
@@ -508,7 +587,7 @@ function renderTrip(trip, leg) {
 					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
 					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")}</p>
 				</div>
-				${statusIndicator(overallDone, "All done", "Still needs attention")}
+				${statusIndicator(overallDone, "All done", overdue ? "Overdue tasks before departure" : "Still needs attention", overdue)}
 			</header>
 			<div class="rux-card-section__body rux-tasks__trip-body">
 				<div class="rux-tasks__section rux-tasks__section--readiness">
@@ -528,6 +607,125 @@ function renderTrip(trip, leg) {
 				</div>
 			</div>
 		</div>
+	`;
+}
+
+// "Over" means the trip's last relevant date has already passed. Split
+// (dropoff_pickup) trips end with the return leg; round-trip/one-way trips
+// just use their own end date — same leg-picking logic tripEndDateForLeg
+// already used for envelopes uses at trip-db.js:629-632, collapsed to
+// whichever one date actually marks the trip as finished.
+function tripEndDate(trip) {
+	if (trip.trip_type === "dropoff_pickup") {
+		return trip.return_end_date || trip.return_start_date || trip.end_date || trip.start_date;
+	}
+	return trip.end_date || trip.start_date;
+}
+
+// Bus + driver across both legs, deduped — a post-trip survey/incident note
+// is about the whole trip, not one leg, so unlike renderTrip's per-leg
+// checklist this doesn't split outbound/return.
+function postTripReference(trip) {
+	const drivers = [...reminderDrivers(trip, "outbound"), ...reminderDrivers(trip, "return")];
+	const seen = new Set();
+	const unique = drivers.filter(({ busNumber, shortName }) => {
+		const key = `${busNumber}·${shortName}`;
+		if (seen.has(key)) return false;
+		seen.add(key);
+		return true;
+	});
+	return unique.length
+		? unique.map(({ busNumber, shortName }) => `<span class="rux-tasks__driver-name">Bus ${escapeHtml(busNumber)} · ${escapeHtml(shortName)}</span>`).join("")
+		: `<span class="rux-tasks__driver-empty">No drivers assigned</span>`;
+}
+
+// No survey link/tool is wired up yet — this is a plain, editable note the
+// same way driverReminderMessage is, not a real survey invite. Same "Copy &
+// Email" flow as openTripContactInfo (trip-db.js), pointed at the trip's own
+// saved Missive thread rather than a driver's texting link.
+const POST_TRIP_SURVEY_TEMPLATE_KEY = "post-trip-survey-template-v1";
+const DEFAULT_POST_TRIP_SURVEY_TEMPLATE = "{{greeting}},\n\nThank you for traveling with us{{destination}}{{date}}. We'd love to hear how your trip went — please take a moment to share your feedback.\n\nThank you!";
+let postTripSurveyTemplate = null;
+
+function postTripSurveyParts(trip) {
+	const end = tripEndDate(trip);
+	const dateText = end ? formatDayLabel(end) : "";
+	const contact = trip.trip_contact_1_name || trip.booking_contact_name || "";
+	const greeting = contact ? `Hi ${String(contact).trim().split(/\s+/)[0]}` : "Hi";
+	return {
+		greeting,
+		destination: trip.destination ? ` to ${trip.destination}` : "",
+		date: dateText ? ` on ${dateText}` : "",
+	};
+}
+
+function renderPostTripSurveyTemplate(template, trip) {
+	const parts = postTripSurveyParts(trip);
+	return String(template || DEFAULT_POST_TRIP_SURVEY_TEMPLATE)
+		.replaceAll("{{greeting}}", parts.greeting)
+		.replaceAll("{{destination}}", parts.destination)
+		.replaceAll("{{date}}", parts.date);
+}
+
+async function loadPostTripSurveyTemplate() {
+	if (postTripSurveyTemplate !== null) return postTripSurveyTemplate;
+	try {
+		postTripSurveyTemplate = await getSetting(POST_TRIP_SURVEY_TEMPLATE_KEY) || DEFAULT_POST_TRIP_SURVEY_TEMPLATE;
+	} catch (err) {
+		console.warn("Could not load post-trip survey template:", err);
+		postTripSurveyTemplate = DEFAULT_POST_TRIP_SURVEY_TEMPLATE;
+	}
+	return postTripSurveyTemplate;
+}
+
+function templateFromEditedMessage(message, trip) {
+	const parts = postTripSurveyParts(trip);
+	let template = String(message);
+	for (const [token, value] of Object.entries(parts)) {
+		if (value && template.includes(value)) template = template.replace(value, `{{${token}}}`);
+	}
+	return template;
+}
+
+// Reuses the same data-task-trip/data-task-field convention renderTrip's
+// checklist rows use — the delegated `change` handler below already reads
+// checkbox vs. text/textarea generically, so no new wiring is needed here.
+function renderPostTripCard(trip) {
+	const endDate = tripEndDate(trip);
+	return `
+		<article class="rux-card rux-tasks__trip">
+			<header class="rux-card__header rux-tasks__trip-header">
+				<div>
+					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")}</p>
+					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")} · Returned ${endDate ? formatDayLabel(endDate) : "—"}</p>
+				</div>
+				${statusIndicator(!!trip.post_trip_survey_sent, "Survey sent", "Survey not sent")}
+			</header>
+			<div class="rux-card__body rux-tasks__trip-body">
+				<div class="rux-tasks__section rux-tasks__section--readiness">
+					<p class="rux-tasks__requirements-title">Reference</p>
+					<div class="rux-tasks__post-trip-reference">${postTripReference(trip)}</div>
+				</div>
+				<div class="rux-tasks__section rux-tasks__section--prep">
+					<div class="rux-tasks__checklist">
+						<div class="rux-tasks__task-row">
+							<label class="rux-checkbox">
+								<input type="checkbox" data-task-trip="${trip.id}" data-task-field="post_trip_survey_sent" ${trip.post_trip_survey_sent ? "checked" : ""} />
+								Survey sent
+							</label>
+							${taskActionButton("post-trip-survey", "Send post-trip survey", `data-task-trip="${trip.id}"`)}
+						</div>
+						<div class="rux-tasks__task-row">
+							<label class="rux-checkbox">
+								<input type="checkbox" data-task-trip="${trip.id}" data-task-field="post_trip_incident" ${trip.post_trip_incident ? "checked" : ""} />
+								Incident occurred
+							</label>
+						</div>
+						<textarea class="rux-textarea rux-tasks__note-input" rows="2" placeholder="Add a note…" data-task-trip="${trip.id}" data-task-field="post_trip_note" aria-label="Post-trip note">${escapeHtml(trip.post_trip_note || "")}</textarea>
+					</div>
+				</div>
+			</div>
+		</article>
 	`;
 }
 
@@ -574,19 +772,33 @@ function entriesByDate() {
 // or prep steps not done) rather than an "unseen" ping, so unlike the header
 // bell/chat badges this stays visible whether or not the tab is active —
 // clicking into Tasks doesn't resolve a trip that's still actually missing
-// its PO. Red (a real business requirement missing) outranks yellow (a
-// manual prep step not done yet) when both apply to different trips.
+// its PO. Every unresolved condition uses the same inline pending clock;
+// task-card details communicate the specific requirement and severity.
 function updateTabBadge(byDate) {
 	if (!tabBadge) return;
 	const allEntries = byDate.flatMap((d) => d.entries);
 	const missingRequirements = allEntries.some(({ trip }) => !isTripReady(trip));
 	const missingPrep = allEntries.some(({ trip, leg }) => !isPrepDone(trip, leg));
-	if (!missingRequirements && !missingPrep) {
+	const previous = recoverablePreviousTasks();
+	const hasPending = missingRequirements || missingPrep || previous.hasRecoverableTrip;
+	if (!hasPending) {
 		tabBadge.hidden = true;
-		return;
+	} else {
+		tabBadge.hidden = false;
+		tabBadge.classList.toggle("rux-tasks__tab-badge--danger", previous.hasRecoverableTrip);
 	}
-	tabBadge.hidden = false;
-	tabBadge.classList.toggle("rux-tasks__tab-badge--danger", missingRequirements);
+	if (navPrevAlert) {
+		const previousNavDate = addDays(targetDates()[0], -1);
+		navPrevAlert.hidden = !previous.hasRecoverableTrip || previousNavDate !== previous.date;
+	}
+	if (tripsStatus) {
+		tripsStatus.hidden = !hasPending;
+		tripsStatus.classList.toggle("rux-tasks__segment-status--danger", previous.hasRecoverableTrip);
+		tripsStatus.setAttribute(
+			"aria-label",
+			previous.hasRecoverableTrip ? "Overdue trip tasks" : "Pending trip tasks",
+		);
+	}
 }
 
 // Prev/Next page one day at a time from whichever end of the currently
@@ -598,7 +810,36 @@ function updateTabBadge(byDate) {
 // #rp-panel-footer (index.html, data-rp-footer-for="rp-pane-tasks") now,
 // not re-rendered here — this just syncs the one bit of dynamic state.
 function syncNav() {
+	if (navGroup) navGroup.hidden = activeList === "post_trip";
+	if (postTripFilterBtn) postTripFilterBtn.hidden = activeList !== "post_trip";
+	if (postTripFilterLabel) postTripFilterLabel.textContent = POST_TRIP_FILTERS[postTripFilter];
 	if (navTodayBtn) navTodayBtn.disabled = !navigatedDate;
+}
+
+function updatePostTripStatus() {
+	if (!postTripStatus) return;
+	const today = localIsoDate();
+	const yesterday = addDays(today, -1);
+	const pending = (window.RuxTrips?.list() || []).filter((trip) => {
+		const end = tripEndDate(trip);
+		return end && end < today && !trip.post_trip_survey_sent;
+	});
+	postTripStatus.hidden = pending.length === 0;
+	const overdue = pending.some((trip) => tripEndDate(trip) < yesterday);
+	postTripStatus.classList.toggle("rux-tasks__segment-status--danger", overdue);
+	postTripStatus.setAttribute(
+		"aria-label",
+		overdue ? "Overdue post-trip tasks" : "Pending post-trip tasks",
+	);
+}
+
+function matchesPostTripFilter(trip, today) {
+	const end = tripEndDate(trip);
+	if (!end || end >= today) return false;
+	if (postTripFilter === "needs_follow_up") return !trip.post_trip_survey_sent;
+	if (postTripFilter === "yesterday") return end === addDays(today, -1);
+	if (postTripFilter === "last_7_days") return end >= addDays(today, -7);
+	return true;
 }
 
 // No card header anymore — each day-group below carries its own
@@ -606,14 +847,21 @@ function syncNav() {
 // a single date-specific line up top that only ever described the first
 // of however many days are showing.
 function render() {
-	const byDate = entriesByDate();
 	updateTabBadge(defaultEntriesByDate());
+	updatePostTripStatus();
 	syncNav();
 	if (!body) return;
 	if (activeList === "post_trip") {
-		body.innerHTML = emptyTripCard("Post-trip tasks aren't tracked yet");
+		const today = localIsoDate();
+		const overTrips = (window.RuxTrips?.list() || [])
+			.filter((trip) => matchesPostTripFilter(trip, today))
+			.sort((a, b) => tripEndDate(b).localeCompare(tripEndDate(a)));
+		body.innerHTML = overTrips.length
+			? overTrips.map(renderPostTripCard).join("")
+			: emptyTripCard(postTripFilter === "needs_follow_up" ? "No post-trip follow-up needed" : "No completed trips match this filter");
 		return;
 	}
+	const byDate = entriesByDate();
 	body.innerHTML = byDate.map(({ iso, entries }) => renderDayGroup(iso, entries)).join("");
 }
 
@@ -803,6 +1051,36 @@ body?.addEventListener("click", (event) => {
 	} else if (action.dataset.taskAction === "itinerary") {
 		open = () => openTripItineraryDoc(trip);
 		markDone = () => markTripFieldDone(trip, `itinerary_printed_${leg}`);
+	} else if (action.dataset.taskAction === "post-trip-survey") {
+		open = () => {
+			void loadPostTripSurveyTemplate().then((template) => {
+				window.ContactInfoModal?.open(
+					trip.post_trip_survey_message || renderPostTripSurveyTemplate(template, trip),
+					{
+						title: `Post-Trip Survey — ${trip.customer || trip.destination || "Trip"}`,
+						previewLabel: `Editable post-trip survey message for ${trip.customer || "this trip"}`,
+						editable: true,
+						externalUrl: trip.booking_contact_missive_url || "",
+						externalLabel: "Copy & Email",
+						externalIcon: "mail",
+						saveLabel: "Save for trip",
+						onSave: async (message) => {
+							await updateTripTaskFlags(trip.id, { post_trip_survey_message: message });
+							trip.post_trip_survey_message = message;
+							window.Rux?.toast?.("Post-trip message saved");
+						},
+						onSaveTemplate: async (message) => {
+							const updatedTemplate = templateFromEditedMessage(message, trip);
+							await setSetting(POST_TRIP_SURVEY_TEMPLATE_KEY, updatedTemplate);
+							postTripSurveyTemplate = updatedTemplate;
+							window.Rux?.toast?.("Post-trip template updated for future trips");
+						},
+					},
+				);
+			});
+			return true;
+		};
+		markDone = () => markTripFieldDone(trip, "post_trip_survey_sent");
 	}
 
 	if (!open) return;

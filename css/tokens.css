@@ -23,22 +23,33 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.280 024.0); /*  Gore  */
+	--rux-red:    oklch(50.0% 0.20 024.0); /*  Gore  */
 	--rux-orange: oklch(80.0% 0.240 050.0); /*  Pyro  */
 	--rux-yellow: oklch(80.0% 0.220 085.0); /*  Gold  */
 	--rux-green:  oklch(60.0% 0.280 140.0); /*  Moss  */
 	--rux-cyan:   oklch(60.0% 0.280 195.0); /*  Wind  */
-	--rux-blue:   oklch(60.0% 0.280 255.0); /*  Mana  */
+	--rux-blue:   oklch(50.0% 0.20 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.280 290.0); /*  Void  */
 	--rux-pink:   oklch(60.0% 0.280 350.0); /*  Neon  */
 	--rux-gray: 	oklch(from var(--rux-neutral) 34.0% c h);
 
 	/* ─── COLOR · status palette ───────────────────────────────────────────── */
 
-	--rux-danger:  oklch(60.0% 0.24 024.0);
-	--rux-warning: oklch(85.5% 0.2 083.8);
-	--rux-success: oklch(72.2% 0.189 135.5);
-	--rux-info:    oklch(62.7% 0.162 256);
+	--rux-status-red:    oklch(70.0% 0.24 024.0);
+	--rux-status-orange: var(--rux-orange);
+	--rux-status-yellow: oklch(85.5% 0.2 083.8);
+	--rux-status-green:  oklch(72.2% 0.189 135.5);
+	--rux-status-cyan:   var(--rux-cyan);
+	--rux-status-blue:   oklch(62.7% 0.162 256);
+	--rux-status-purple: var(--rux-purple);
+	--rux-status-pink:   var(--rux-pink);
+	--rux-status-gray:   var(--rux-gray);
+
+	/* Semantic status aliases retained for intent-driven consumers. */
+	--rux-danger:  var(--rux-status-red);
+	--rux-warning: var(--rux-status-yellow);
+	--rux-success: var(--rux-status-green);
+	--rux-info:    var(--rux-status-blue);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
@@ -399,9 +410,9 @@
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
 	--rux-calendar-bg:            var(--rux-surface-1);
-	--rux-calendar-header-bg:     var(--rux-surface-1);
+	--rux-calendar-header-bg:     var(--rux-surface-2);
 	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-radius:        var(--rux-radius-container);
+	--rux-calendar-radius:        var(--rux-radius-sm);
 	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-calendar-header-height: 31px;
 
@@ -489,6 +500,12 @@
 	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
 	--rux-card-content-gap: var(--rux-space-4);
 	--rux-itinerary-marker-size: 12px;
+	--rux-itinerary-status-depart-yard: var(--rux-status-cyan);
+	--rux-itinerary-status-pickup:      var(--rux-status-green);
+	--rux-itinerary-status-stop:        var(--rux-status-orange);
+	--rux-itinerary-status-sleeper:     var(--rux-status-purple);
+	--rux-itinerary-status-off-duty:    var(--rux-status-gray);
+	--rux-itinerary-status-return-yard: var(--rux-status-blue);
 
 	/* ─── COMPONENT · table ──────────────────────────────────────────────── */
 	/* Content-width data table (.rux-table) — auto layout, columns size to
@@ -739,7 +756,7 @@
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
-	--rux-button-danger-background:       var(--rux-danger);
+	--rux-button-danger-background:       var(--rux-red);
 	--rux-button-danger-text:             var(--rux-fg-on-accent);
 	--rux-button-danger-border-color:     oklch(from var(--rux-red) var(--rux-trip-bar-bg-lightness) c h / 100%);
 	--rux-button-danger-border:           none;

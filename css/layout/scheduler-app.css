@@ -584,7 +584,7 @@
 /* Two-step tab collapse as the panel narrows: icon+text → text only → icon
    only — same convention as the trip panel's tab collapse (trip-panel.css). */
 @container (max-width: 400px) {
-	[data-right-tabs] .rux-right-panel__tab > .rux-icon {
+	[data-right-tabs] .rux-right-panel__tab > .rux-icon:first-child {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -598,7 +598,7 @@
 }
 
 @container (max-width: 340px) {
-	[data-right-tabs] .rux-right-panel__tab > .rux-icon {
+	[data-right-tabs] .rux-right-panel__tab > .rux-icon:first-child {
 		position: static;
 		width: var(--_icon-size);
 		height: var(--_icon-size);
