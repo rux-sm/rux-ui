@@ -847,7 +847,7 @@
 		const dayNum = stops.filter((s) => s.type === "day").length + 1;
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
-      <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--final">
+      <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--final" data-itinerary-final-summary>
         <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
           <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNum}" title="Add to Day ${dayNum}">
             <span class="rux-icon" aria-hidden="true">add</span>
@@ -876,7 +876,7 @@
 		const yard = getYard();
 		const pickup = stops.find((stop) => stop.type === "pickup");
 		const mode = pickup?.originMode === "yard" ? "yard" : "pickup";
-		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? " is-active" : ""}" data-origin-mode="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-btn-label">${label}</span></button>`;
+		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? " is-active" : ""}" data-value="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-btn-label">${label}</span></button>`;
 		return `
 		<section class="rux-card-section rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
 			<header class="rux-card-section__header rux-trip-itinerary__stop-header">
@@ -885,7 +885,7 @@
 			<div class="rux-card-section__body rux-trip-itinerary__stop-body">
 			<div class="rux-field">
 				<label class="rux-field__label">Passengers Board At</label>
-				<div class="rux-segmented-track rux-trip-itinerary__origin-mode" role="group" aria-label="Passengers board at">
+				<div class="rux-segmented-track rux-trip-itinerary__origin-mode" data-rux-segmented data-itinerary-segment="origin-mode" aria-label="Passengers board at">
 					${modeButton("pickup", "Pickup", "location_on")}
 					${modeButton("yard", "Yard", "garage")}
 				</div>
@@ -894,7 +894,7 @@
 				</div>
 			</div>
 			<div class="rux-trip-itinerary__yard-times${mode === "yard" ? " rux-trip-itinerary__yard-times--meet" : ""}">
-				${mode === "yard" ? `<div class="rux-field"><div class="rux-trip-itinerary__datetime"><input class="rux-input" type="date" value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>` : ""}
+				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><div class="rux-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
 				<div class="rux-field"><div class="rux-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
 			</div>
 			</div>
@@ -972,7 +972,7 @@
 			const status = statusAtBoundary(stops, idx);
 			const statusLabel = status === "sleeper" ? "Sleeper berth" : status === "on" ? "On duty" : "Off duty";
 			return `
-			  <div class="rux-card-section rux-trip-itinerary__idle-day">
+			  <div class="rux-card-section rux-trip-itinerary__idle-day" data-itinerary-day-summary data-stop-idx="${idx}">
 				<span class="rux-icon" aria-hidden="true">pause_circle</span>
 				<div>
 				  <strong>No bus movement</strong>
@@ -985,7 +985,7 @@
 			? '<span class="rux-icon" aria-hidden="true">route</span> Continued driving · not a stop'
 			: `<span class="rux-icon" aria-hidden="true">pause_circle</span> No bus movement · remains at ${escHtml(activity.location)}`;
 		return `
-      <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--boundary" data-stop-idx="${idx}" title="${activity.moving ? "Continued driving" : "No bus movement"} into ${escHtml(label)}">
+      <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--boundary" data-itinerary-day-summary data-stop-idx="${idx}" title="${activity.moving ? "Continued driving" : "No bus movement"} into ${escHtml(label)}">
         <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
           <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNum}" title="Add to Day ${dayNum}">
             <span class="rux-icon" aria-hidden="true">add</span>
@@ -1146,16 +1146,16 @@
 			: `<output class="rux-output">${escHtml(milesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
       <output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
 		const dwellControl = showDwellStatus ? `
-		  <div class="rux-trip-itinerary__dwell-status" role="group" aria-label="Duty status until next departure">
-			<div class="rux-segmented-track">
-			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "on" ? " is-active" : ""}" data-dwell-status="on" aria-label="On duty until next departure" title="On duty" aria-pressed="${dwellStatus === "on"}"><span class="rux-icon" aria-hidden="true">search_hands_free</span></button>
-			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "sleeper" ? " is-active" : ""}" data-dwell-status="sleeper" aria-label="Sleeper berth until next departure" title="Sleeper berth" aria-pressed="${dwellStatus === "sleeper"}"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span></button>
-			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "off" ? " is-active" : ""}" data-dwell-status="off" aria-label="Off duty until next departure" title="Off duty" aria-pressed="${dwellStatus === "off"}"><span class="rux-icon" aria-hidden="true">logout</span></button>
+		  <div class="rux-trip-itinerary__dwell-status">
+			<div class="rux-segmented-track" data-rux-segmented data-itinerary-segment="dwell-status" aria-label="Duty status until next departure">
+			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "on" ? " is-active" : ""}" data-value="on" aria-label="On duty until next departure" title="On duty" aria-pressed="${dwellStatus === "on"}"><span class="rux-icon" aria-hidden="true">search_hands_free</span></button>
+			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "sleeper" ? " is-active" : ""}" data-value="sleeper" aria-label="Sleeper berth until next departure" title="Sleeper berth" aria-pressed="${dwellStatus === "sleeper"}"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span></button>
+			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "off" ? " is-active" : ""}" data-value="off" aria-label="Off duty until next departure" title="Off duty" aria-pressed="${dwellStatus === "off"}"><span class="rux-icon" aria-hidden="true">logout</span></button>
 			</div>
 		  </div>` : "";
 
 		return `
-	  <section class="rux-card-section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isDraggable ? ' draggable="true"' : ""}>
+	  <section class="rux-card-section rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isPickup && stop.originMode === "yard" ? " hidden" : ""}${isDraggable ? ' draggable="true"' : ""}>
 		  <header class="rux-card-section__header rux-trip-itinerary__stop-header">
 			<div class="rux-trip-itinerary__stop-heading">
 			  <span class="rux-trip-itinerary__marker">${markerIcon}</span>
@@ -1250,7 +1250,7 @@
 		}
 
 		return `
-	  <section class="rux-card-section rux-trip-itinerary__dwell-card" data-stop-idx="${idx}">
+	  <section class="rux-card-section rux-trip-itinerary__dwell-card" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
 		  <header class="rux-card-section__header rux-trip-itinerary__stop-header">
 			<div class="rux-trip-itinerary__stop-heading">
 			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__dwell-card-icon--${status}" aria-hidden="true">${icon}</span></span>
@@ -1535,9 +1535,9 @@
 					);
 					daySections += boundarySection;
 					dayHasSummary = activityAtBoundaryIsMoving(stops, idx) && !!boundarySection;
-				} else if (!hiddenYardPickup) {
+				} else {
 					daySections += renderStop(item, idx, stops);
-				daySections += renderDwellSummaryCard(item, idx, stops);
+					daySections += renderDwellSummaryCard(item, idx, stops);
 				}
 				if (item.type === "day") closeDayCard();
 			});
@@ -1548,6 +1548,80 @@
 
 			stopsEl.innerHTML = dayCards.join("");
 			syncRouteButton();
+		}
+
+		function elementFromMarkup(markup) {
+			if (!markup) return null;
+			const template = document.createElement("template");
+			template.innerHTML = markup.trim();
+			return template.content.firstElementChild;
+		}
+
+		function syncDwellSummaryCard(stop, idx) {
+			const stopSection = stopsEl.querySelector(`.rux-trip-itinerary__stop[data-stop-idx="${idx}"]`);
+			if (!stopSection) return;
+			const existing = stopsEl.querySelector(`.rux-trip-itinerary__dwell-card[data-stop-idx="${idx}"]`);
+			const replacement = elementFromMarkup(renderDwellSummaryCard(stop, idx, stops));
+			if (!replacement) {
+				existing?.remove();
+				return;
+			}
+			if (existing) existing.replaceWith(replacement);
+			else stopSection.insertAdjacentElement("afterend", replacement);
+		}
+
+		function syncDaySummaryCards() {
+			const rangeGenerated = isIsoDate(tripStartDate()) && isIsoDate(tripEndDate());
+			stops.forEach((item, idx) => {
+				if (item.type !== "day") return;
+				const existing = stopsEl.querySelector(`[data-itinerary-day-summary][data-stop-idx="${idx}"]`);
+				if (!existing) return;
+				const replacement = elementFromMarkup(renderDay(item, idx, stops, rangeGenerated));
+				if (replacement) existing.replaceWith(replacement);
+				else existing.remove();
+			});
+
+			const finalSummary = stopsEl.querySelector("[data-itinerary-final-summary]");
+			if (finalSummary) {
+				const replacement = elementFromMarkup(renderFinalDaySummary(stops));
+				if (replacement) finalSummary.replaceWith(replacement);
+				else finalSummary.remove();
+			}
+		}
+
+		function syncOriginModeUi(pickup) {
+			const mode = pickup.originMode === "yard" ? "yard" : "pickup";
+			const section = stopsEl.querySelector(".rux-trip-itinerary__stop--yard");
+			const times = section?.querySelector(".rux-trip-itinerary__yard-times");
+			const meetRow = section?.querySelector("[data-yard-meet-row]");
+			if (times) times.classList.toggle("rux-trip-itinerary__yard-times--meet", mode === "yard");
+			if (meetRow) meetRow.hidden = mode !== "yard";
+			const meetDate = section?.querySelector("[data-yard-meet-date]");
+			const meetTime = section?.querySelector("[data-yard-meet-time]");
+			if (meetDate) meetDate.value = pickup.spotDate || tripStartDate() || "";
+			if (meetTime) meetTime.value = pickup.spot || "";
+
+			const departDate = section?.querySelector("[data-yard-depart-date]");
+			const departTime = section?.querySelector("[data-yard-depart-time]");
+			[departDate, departTime].forEach((input) => {
+				if (!input) return;
+				input.readOnly = mode === "pickup";
+				if (mode === "pickup") input.title = "Calculated from pickup timing and route duration";
+				else input.removeAttribute("title");
+			});
+			if (departDate) departDate.value = pickup.departPrevDate || tripStartDate() || "";
+			if (departTime) departTime.value = pickup.departPrev || "";
+
+			const pickupIdx = stops.indexOf(pickup);
+			if (mode === "yard" && activeAddressIdx === pickupIdx) {
+				hideSuggestions();
+				activeAddressIdx = null;
+			}
+			const currentPickup = stopsEl.querySelector(`.rux-trip-itinerary__stop[data-stop-idx="${pickupIdx}"]`);
+			const replacementPickup = elementFromMarkup(renderStop(pickup, pickupIdx, stops));
+			if (currentPickup && replacementPickup) currentPickup.replaceWith(replacementPickup);
+			syncDwellSummaryCard(pickup, pickupIdx);
+			window.Rux?.syncDateInputs?.(section);
 		}
 
 		function updateSummary() {
@@ -1659,7 +1733,7 @@
 
 		function selectedAddressInput() {
 			if (activeAddressIdx === null) return null;
-			return stopsEl.querySelector(`[data-stop-idx="${activeAddressIdx}"] [data-field="address"]`);
+			return stopsEl.querySelector(`.rux-trip-itinerary__stop[data-stop-idx="${activeAddressIdx}"]:not([hidden]) [data-field="address"]`);
 		}
 
 		function positionSuggestions(input) {
@@ -2225,22 +2299,25 @@
 		});
 
 		/* — day header actions and inline section controls — */
-		stopsEl.addEventListener("click", (e) => {
-			const dwellButton = e.target.closest("[data-dwell-status]");
-			if (dwellButton) {
-				const idx = Number(dwellButton.closest("[data-stop-idx]")?.dataset.stopIdx);
+		stopsEl.addEventListener("rux:segment-change", (e) => {
+			const group = e.target.closest?.("[data-itinerary-segment]");
+			if (!group) return;
+
+			if (group.dataset.itinerarySegment === "dwell-status") {
+				const idx = Number(group.closest("[data-stop-idx]")?.dataset.stopIdx);
 				const stop = stops[idx];
 				if (!stop) return;
-				stop.dwellStatus = dwellButton.dataset.dwellStatus;
+				stop.dwellStatus = ["on", "sleeper", "off"].includes(e.detail.value) ? e.detail.value : "on";
+				syncDwellSummaryCard(stop, idx);
+				syncDaySummaryCards();
 				updateSummary();
-				renderStopList();
 				return;
 			}
-			const originButton = e.target.closest("[data-origin-mode]");
-			if (originButton) {
+
+			if (group.dataset.itinerarySegment === "origin-mode") {
 				const pickup = stops.find((item) => item.type === "pickup");
 				if (!pickup) return;
-				pickup.originMode = originButton.dataset.originMode === "yard" ? "yard" : "pickup";
+				pickup.originMode = e.detail.value === "yard" ? "yard" : "pickup";
 				pickup.label = pickup.originMode === "yard" ? "origin:yard" : null;
 				if (pickup.originMode === "yard") {
 					pickup.miles = "0.0";
@@ -2256,14 +2333,20 @@
 					if (pickup.milesSource !== "manual") pickup.miles = "";
 					if (pickup.driveSource !== "manual") pickup.drive = "";
 				}
+				autoPopulatePickupSpot(stops);
+				autoPopulatePickupDepart(stops);
+				syncOriginModeUi(pickup);
+				syncDaySummaryCards();
 				updateSummary();
-				renderStopList();
-				return;
+				syncRouteButton();
 			}
+		});
+
+		stopsEl.addEventListener("click", (e) => {
 			const expandButton = e.target.closest("[data-day-expand]");
 			if (expandButton) {
 				const group = expandButton.closest("[data-day-number]");
-				const indices = Array.from(group?.querySelectorAll("[data-stop-idx]") || [])
+				const indices = Array.from(group?.querySelectorAll(".rux-trip-itinerary__stop[data-stop-idx]:not([hidden])") || [])
 					.map((section) => Number(section.dataset.stopIdx))
 					.filter((idx) => stops[idx] && stops[idx].type !== "day");
 				const expand = !indices.every((idx) => stops[idx].statsExpanded);

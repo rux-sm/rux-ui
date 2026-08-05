@@ -35,22 +35,16 @@
 	min-width: 0;
 }
 
-.rux-tasks__trip {
-	padding: var(--rux-space-4);
-	background: var(--rux-surface-3);
-	border: var(--rux-border-width) solid var(--rux-border);
-	border-radius: var(--rux-radius-container);
-}
-
 .rux-tasks__trip + .rux-tasks__trip {
 	margin-top: var(--rux-space-4);
 }
 
-.rux-tasks__trip--empty {
+.rux-tasks__trip--empty > .rux-card-section__body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	min-height: 4rem;
+	padding: var(--rux-space-4);
 }
 
 .rux-tasks__trip--empty .rux-tasks__empty {

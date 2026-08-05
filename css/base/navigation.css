@@ -38,6 +38,10 @@
 	align-items: flex-end;
 	gap: 0;
 	padding: 0;
+	/* Keep an internal runway for the tabs' upward shadows. The matching
+	   negative margin preserves the strip's original outer block size. */
+	padding-block-start: var(--rux-space-1);
+	margin-block-start: calc(var(--rux-space-1) * -1);
 	background: var(--rux-tabs-attached-bg);
 	border: var(--rux-tabs-attached-border);
 	border-bottom: 0;
@@ -53,6 +57,7 @@
 
 .rux-tabs--attached > .rux-tab {
 	flex: 1;
+	box-shadow: var(--rux-tabs-attached-tab-shadow);
 }
 
 /* Every tab carries a full border (see --rux-tabs-attached-tab-border in
@@ -158,7 +163,7 @@
 	height: var(--rux-tab-height);
 	background-color: var(--rux-tabs-attached-tab-bg);
 	color: var(--rux-tabs-attached-tab-fg);
-	border: var(--rux-tabs-attached-tab-border);
+	border-bottom: var(--rux-tabs-attached-tab-border);
 	border-radius: var(--rux-radius-control) var(--rux-radius-control) 0 0;
 }
 
@@ -213,7 +218,23 @@
 	   invisible, keeps the content box identical to an inactive tab's — no
 	   visible seam against the pane, no text shift either. */
 	border-bottom: var(--rux-border-width) solid transparent;
+	border-radius: var(--rux-tabs-attached-tab-selected-radius);
 	color: var(--rux-tabs-attached-tab-selected-fg);
+	box-shadow: var(--rux-tabs-attached-tab-selected-shadow);
+}
+
+/* The selected-state shadow is declared after the generic focus rule, so
+   explicitly compose both recipes when an active attached tab has focus. */
+.rux-tabs--attached > .rux-tab:is(.is-active, [aria-selected="true"]):focus-visible {
+	box-shadow:
+		var(--rux-tabs-attached-tab-selected-shadow),
+		var(--rux-tab-focus-ring);
+}
+
+.rux-tabs--attached > .rux-tab:not(.is-active):not([aria-selected="true"]):focus-visible {
+	box-shadow:
+		var(--rux-tabs-attached-tab-shadow),
+		var(--rux-tab-focus-ring);
 }
 
 /* The active-tab rule above's `border:` shorthand reinstates a left/right
@@ -258,8 +279,8 @@
 .rux-panel__nav--attached {
 	padding: 0;
 	border-top: 0;
-	border-bottom: 0;
-	margin-bottom: var(--rux-panel-padding-block);
+	border-bottom: var(--rux-panel-nav-border);
+	padding-bottom: var(--rux-panel-padding-block);
 }
 
 /* No top border — the active tab sits directly above with a matching
@@ -286,7 +307,7 @@
    wrapper's borders doubled against the tabs/pane. No footer (the
    Components-catalog demo) means nothing else draws that edge, so the pane
    keeps its own border-bottom in that case. */
-.rux-panel__nav--attached + .rux-panel__body:has(+ .rux-panel__footer),
+.rux-panel__body:has(+ .rux-panel__footer),
 .rux-tabs--attached + .rux-panel__body:has(+ .rux-panel__footer) {
 	border-bottom: 0;
 }

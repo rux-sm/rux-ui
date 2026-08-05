@@ -477,13 +477,20 @@
 
 .rux-trip-itinerary__dwell-status > .rux-segmented-track {
 	width: 100%;
-	height: 2rem;
 }
 
 .rux-trip-itinerary__dwell-status .rux-button--segment-icon {
 	flex: 1;
 	width: auto;
 	min-width: 0;
+}
+
+/* These rows stay mounted so changing a segmented value never rebuilds the
+   control (and therefore never restarts every indicator in the itinerary). */
+.rux-trip-itinerary__stop[hidden],
+.rux-trip-itinerary__dwell-card[hidden],
+.rux-trip-itinerary__yard-times > .rux-field[hidden] {
+	display: none;
 }
 
 .rux-trip-itinerary__datetime {

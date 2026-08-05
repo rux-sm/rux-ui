@@ -492,27 +492,29 @@ function renderTrip(trip, leg) {
 	` : "";
 	const overallDone = ready && manualDone && envelopesDone && remindersDone && requirementsDone;
 	return `
-		<div class="rux-tasks__trip">
-			<div class="rux-tasks__trip-header">
+		<div class="rux-card-section rux-tasks__trip">
+			<header class="rux-card-section__header rux-tasks__trip-header">
 				<div>
 					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
 					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")}</p>
 				</div>
 				${statusIndicator(overallDone, "All done", "Still needs attention")}
-			</div>
-			<div class="rux-tasks__section rux-tasks__section--readiness">
-				<div class="rux-tasks__checklist">
-					<p class="rux-tasks__requirements-title">Trip Status</p>
-					${computedRows}
+			</header>
+			<div class="rux-card-section__body rux-tasks__trip-body">
+				<div class="rux-tasks__section rux-tasks__section--readiness">
+					<div class="rux-tasks__checklist">
+						<p class="rux-tasks__requirements-title">Trip Status</p>
+						${computedRows}
+					</div>
 				</div>
-			</div>
-			${requirementsHtml}
-			<div class="rux-tasks__section rux-tasks__section--prep">
-				<div class="rux-tasks__checklist">
-					<p class="rux-tasks__requirements-title">To Do</p>
-					${manualRows}
-					${envelopeRows}
-					${reminderRows}
+				${requirementsHtml}
+				<div class="rux-tasks__section rux-tasks__section--prep">
+					<div class="rux-tasks__checklist">
+						<p class="rux-tasks__requirements-title">To Do</p>
+						${manualRows}
+						${envelopeRows}
+						${reminderRows}
+					</div>
 				</div>
 			</div>
 		</div>
@@ -525,8 +527,10 @@ function renderTrip(trip, leg) {
 // single-day view's whole-panel empty state below.
 function emptyTripCard(text = "No Trips") {
 	return `
-		<div class="rux-tasks__trip rux-tasks__trip--empty">
-			<p class="rux-tasks__empty">${escapeHtml(text)}</p>
+		<div class="rux-card-section rux-tasks__trip rux-tasks__trip--empty">
+			<div class="rux-card-section__body">
+				<p class="rux-tasks__empty">${escapeHtml(text)}</p>
+			</div>
 		</div>
 	`;
 }
