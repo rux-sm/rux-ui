@@ -983,15 +983,16 @@
 	width: 100%;
 	height: var(--rux-driver-grid-cell-size);
 	padding: 0;
-	border-radius: var(--rux-radius-control);
-	background: var(--rux-surface-2);
+	border-radius: var(--rux-radius-0);
+	background: var(--rux-well-bg);
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
 	   quietly as a plain .rux-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
 	   below still set a real border-color, same border-width throughout so
 	   nothing shifts size when a cell's state changes. */
-	border: var(--rux-border-width) solid var(--rux-surface-2);
+	border: var(--rux-border-width) solid var(--rux-well-surface);
 	cursor: pointer;
+	box-shadow: var(--rux-input-shadow);
 
 }
 
