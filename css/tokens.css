@@ -211,12 +211,12 @@
 	/* Higher numbers are lighter and visually closer. */
 
 
-    --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* Deepest background / canvas */
+    --rux-surface-0:        oklch(from var(--rux-neutral) 22% c h); /* Deepest background / canvas */
     --rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* 16px Base cards / containers */
     --rux-surface-2:        oklch(from var(--rux-neutral) 20% c h); /* Raised elements */
-    --rux-surface-3:        oklch(from var(--rux-neutral) 23% c h); /* Hover states */
+    --rux-surface-3:        oklch(from var(--rux-neutral) 24% c h); /* Hover states */
     --rux-surface-4:        oklch(from var(--rux-neutral) 26% c h); /* Active / Selected states */
-    --rux-surface-5:        oklch(from var(--rux-neutral) 29% c h); /* Borders / Dividers (prominent) */
+    --rux-surface-5:        oklch(from var(--rux-neutral) 28% c h); /* Borders / Dividers (prominent) */
     --rux-surface-6:        oklch(from var(--rux-neutral) 44% c h); /* Disabled inputs */
     --rux-surface-7:        oklch(from var(--rux-neutral) 53% c h); /* Low contrast icons */
     --rux-surface-8:        oklch(from var(--rux-neutral) 63% c h); /* Secondary text elements */
@@ -239,7 +239,7 @@
 	--rux-state-selected-overlay: var(--rux-state-hover-overlay);
 	--rux-overlay-scrim:          oklch(from var(--rux-black) l c h / 60%);
 
-	/* ─── COLOR · recessed well ──────────────────────────────────────────── */
+	/* ─── COLOR · recessed well ─────────────────────────────────────────── */
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
@@ -1049,10 +1049,10 @@
 	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-switch-width:      52px;
-	--rux-switch-height:     var(--rux-button-height);
-	--rux-switch-radius:     var(--rux-radius-xs);
-	--rux-switch-padding:    var(--rux-space-1);
+	--rux-switch-width:      60px;
+	--rux-switch-height:     28px;
+	--rux-switch-radius:     var(--rux-radius-md);
+	--rux-switch-padding:    2px;
 	--rux-switch-transition: var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* — track — */
@@ -1064,12 +1064,14 @@
 	--rux-switch-thumb-bg:             var(--rux-surface-contrast);
 	--rux-switch-thumb-shadow:         var(--rux-button-shadow-raised);
 	--rux-switch-thumb-pressed-shadow: var(--rux-button-shadow-pressed);
+	--rux-switch-thumb-radius:         var(--rux-radius-sm);
+	--rux-switch-thumb-size:           24px;
 
 	/* — checked — */
 	--rux-switch-checked-bg:       var(--rux-accent);
 	--rux-switch-checked-border:   1px solid var(--rux-surface-4);
 	--rux-switch-checked-shadow:   none;
-	--rux-switch-checked-thumb-bg: var(--rux-surface-contrast);
+	--rux-switch-checked-thumb-bg: var(--rux-surface-6);
 
 	/* — states — */
 	--rux-switch-hover-overlay:     var(--rux-button-hover-overlay);
@@ -1077,6 +1079,22 @@
 	--rux-switch-disabled-bg:       var(--rux-input-disabled-bg);
 	--rux-switch-disabled-thumb-bg: var(--rux-fg-disabled);
 	--rux-switch-disabled-shadow:   none;
+
+	/* — theme variant (light/dark toggle) — icon-in-thumb switch. The
+	   thumb always shows one glyph (colored, matching the active theme);
+	   the track shows the other, fixed in place and dim, exposed on
+	   whichever side the thumb has slid away from. */
+	--rux-switch-theme-icon-size:        18px;
+	--rux-switch-theme-sun-color:        var(--rux-text-primary);
+	--rux-switch-theme-moon-color:       var(--rux-text-primary);
+	--rux-switch-theme-track-icon-color: var(--rux-fg-subtle);
+	--rux-switch-theme-sun-shadow:       drop-shadow(0 1px 2px oklch(0% 0 0 / 40%));
+	/* Own inset, separate from --rux-switch-padding (the thumb's structural
+	   fit within the track) — that value is too tight for a resting icon
+	   and would crowd it against the track's rounded end. Still well inside
+	   the thumb's covered span at rest, so the active-side icon stays fully
+	   hidden underneath it. */
+	--rux-switch-theme-track-icon-inset: 6px;
 
 	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */
 
@@ -1305,4 +1323,115 @@
 
 	/* color-mix partner for bus chips; not a surface-depth role */
 	--rux-bg-bus: var(--rux-neutral);
+}
+
+/* ==========================================================================
+   THEME · light mode
+   --------------------------------------------------------------------------
+   Two triggers, same values:
+   1. Auto — follows the OS/browser's prefers-color-scheme, only while
+      nothing has been manually chosen (:not([data-theme])).
+   2. Manual — [data-theme="light"], set by the header theme toggle
+      (js/core/theme.js) and persisted to localStorage. Higher specificity
+      than the plain :root the media query targets, so it always wins over
+      the OS preference once a user has actually chosen a side. There's no
+      matching [data-theme="dark"] block because dark is already the
+      unconditional default in :root above — forcing dark just means NOT
+      matching either trigger here.
+   Same semantic names as the dark values in :root above — only the values
+   invert, so every component downstream (which only ever reads the
+   semantic/component tokens, never these directly) needs no changes to
+   support both themes.
+   ========================================================================== */
+
+@media (prefers-color-scheme: light) {
+	:root:not([data-theme]) {
+		color-scheme: light;
+
+		--rux-heading:          oklch(from var(--rux-neutral) 20% c h);
+		--rux-text-primary:     oklch(from var(--rux-neutral) 24% c h);
+		--rux-text-secondary:   oklch(from var(--rux-neutral) 43% c h);
+		--rux-text-tertiary:    oklch(from var(--rux-neutral) 52% c h);
+		--rux-text-disabled:    oklch(from var(--rux-neutral) 64% c h);
+		--rux-gray:             oklch(from var(--rux-neutral) 91% c h);
+
+		--rux-surface-0:        oklch(from var(--rux-neutral) 94.5% c h);
+		--rux-surface-1:        oklch(from var(--rux-neutral) 98.5% c h);
+		--rux-surface-2:        oklch(from var(--rux-neutral) 96.5% c h);
+		--rux-surface-3:        oklch(from var(--rux-neutral) 97.5% c h);
+		--rux-surface-4:        oklch(from var(--rux-neutral) 91.5% c h);
+		--rux-surface-5:        oklch(from var(--rux-neutral) 87% c h);
+		--rux-surface-6:        oklch(from var(--rux-neutral) 80% c h);
+		--rux-surface-7:        oklch(from var(--rux-neutral) 62% c h);
+		--rux-surface-8:        oklch(from var(--rux-neutral) 45% c h);
+		--rux-surface-9:        oklch(from var(--rux-neutral) 28% c h);
+		--rux-surface-contrast: oklch(from var(--rux-neutral) 18% c h);
+
+		--rux-border:        oklch(from var(--rux-neutral) 84% c h);
+		--rux-border-button: oklch(from var(--rux-neutral) 76% c h);
+		--rux-divider:       oklch(from var(--rux-neutral) 88% c h);
+		--rux-well-bg:       oklch(from var(--rux-neutral) 93% c h);
+		--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
+		--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
+		--rux-calendar-grid: 1px solid var(--rux-surface-5);
+
+		--rux-shadow-recessed-color: oklch(0% 0 0 / 12%);
+		--rux-shadow-recessed: inset 0 1px 2px var(--rux-shadow-recessed-color), inset 0 1px 0 oklch(0% 0 0 / 3%);
+		--rux-shadow-elevated: 0 1px 2px oklch(0% 0 0 / 8%), 0 6px 18px oklch(0% 0 0 / 8%);
+		--rux-shadow-raised: inset 0 1px 0 oklch(100% 0 0 / 80%), 0 1px 2px oklch(0% 0 0 / 14%);
+		--rux-shadow-raised-tab: inset 0 1px 0 oklch(100% 0 0 / 80%);
+		--rux-shadow-raised-tab-active: 0 1px 3px oklch(0% 0 0 / 12%);
+		--rux-shadow-pressed: inset 0 1px 3px oklch(0% 0 0 / 15%);
+		--rux-shadow-tab-inactive: inset 0 1px 0 oklch(100% 0 0 / 80%);
+		--rux-shadow-tab-active: 0 -1px 3px oklch(0% 0 0 / 10%);
+		--rux-calendar-row-header-edge-shadow: linear-gradient(to right, oklch(0% 0 0 / 8%), transparent 5px);
+	}
+}
+
+:root[data-theme="light"] {
+	color-scheme: light;
+
+	--rux-heading:          oklch(from var(--rux-neutral) 20% c h);
+	--rux-text-primary:     oklch(from var(--rux-neutral) 24% c h);
+	--rux-text-secondary:   oklch(from var(--rux-neutral) 43% c h);
+	--rux-text-tertiary:    oklch(from var(--rux-neutral) 52% c h);
+	--rux-text-disabled:    oklch(from var(--rux-neutral) 64% c h);
+	--rux-gray:             oklch(from var(--rux-neutral) 91% c h);
+
+	--rux-surface-0:        oklch(from var(--rux-neutral) 94.5% c h);
+	--rux-surface-1:        oklch(from var(--rux-neutral) 98.5% c h);
+	--rux-surface-2:        oklch(from var(--rux-neutral) 96.5% c h);
+	--rux-surface-3:        oklch(from var(--rux-neutral) 97.5% c h);
+	--rux-surface-4:        oklch(from var(--rux-neutral) 91.5% c h);
+	--rux-surface-5:        oklch(from var(--rux-neutral) 87% c h);
+	--rux-surface-6:        oklch(from var(--rux-neutral) 80% c h);
+	--rux-surface-7:        oklch(from var(--rux-neutral) 62% c h);
+	--rux-surface-8:        oklch(from var(--rux-neutral) 45% c h);
+	--rux-surface-9:        oklch(from var(--rux-neutral) 28% c h);
+	--rux-surface-contrast: oklch(from var(--rux-neutral) 18% c h);
+
+	--rux-border:        oklch(from var(--rux-neutral) 84% c h);
+	--rux-border-button: oklch(from var(--rux-neutral) 76% c h);
+	--rux-divider:       oklch(from var(--rux-neutral) 88% c h);
+	--rux-well-bg:       oklch(from var(--rux-neutral) 93% c h);
+	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
+	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
+	--rux-calendar-grid: 1px solid var(--rux-surface-5);
+
+	--rux-shadow-recessed-color: oklch(0% 0 0 / 12%);
+	--rux-shadow-recessed: inset 0 1px 2px var(--rux-shadow-recessed-color), inset 0 1px 0 oklch(0% 0 0 / 3%);
+	--rux-shadow-elevated: 0 1px 2px oklch(0% 0 0 / 8%), 0 6px 18px oklch(0% 0 0 / 8%);
+	--rux-shadow-raised: inset 0 1px 0 oklch(100% 0 0 / 80%), 0 1px 2px oklch(0% 0 0 / 14%);
+	--rux-shadow-raised-tab: inset 0 1px 0 oklch(100% 0 0 / 80%);
+	--rux-shadow-raised-tab-active: 0 1px 3px oklch(0% 0 0 / 12%);
+	--rux-shadow-pressed: inset 0 1px 3px oklch(0% 0 0 / 15%);
+	--rux-shadow-tab-inactive: inset 0 1px 0 oklch(100% 0 0 / 80%);
+	--rux-shadow-tab-active: 0 -1px 3px oklch(0% 0 0 / 10%);
+	--rux-calendar-row-header-edge-shadow: linear-gradient(to right, oklch(0% 0 0 / 8%), transparent 5px);
+
+	--rux-button-disabled-background: transparent;
+	--rux-button-disabled-text:       var(--rux-text-disabled);
+	--rux-button-disabled-border:     none;
+
+	--rux-switch-thumb-bg:             var(--rux-gray);
 }

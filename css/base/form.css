@@ -140,10 +140,10 @@
   position: absolute;
   top: var(--_p);
   left: var(--_p);
-  width: calc(var(--_h) - var(--_p) * 2);
-  height: calc(var(--_h) - var(--_p) * 2);
+  width: var(--rux-switch-thumb-size);
+  height: var(--rux-switch-thumb-size);
   background: var(--_thumb);
-  border-radius: var(--rux-switch-radius);
+  border-radius: var(--rux-switch-thumb-radius);
   box-shadow: var(--rux-switch-thumb-shadow);
   transition:
     background-color var(--rux-switch-transition),
@@ -177,6 +177,58 @@
 .rux-switch:has(input:disabled) .rux-switch__thumb {
   background-color: var(--rux-switch-disabled-thumb-bg);
   box-shadow: var(--rux-switch-disabled-shadow);
+}
+
+/* — switch (theme variant) — icon-in-thumb light/dark toggle. The thumb
+   always shows one glyph (colored, matching the active theme); the track
+   shows the other, fixed in place and dim — the thumb, painted later in
+   DOM order, naturally covers whichever side it currently sits on, so
+   only the inactive track icon ever peeks out. */
+.rux-switch--theme {
+  /* This toggle isn't an on/off preference like other switches — checked
+     just means "dark" — so its track has no business turning accent-blue.
+     Well bg keeps it a neutral, recessed control in either state. */
+  --rux-switch-checked-bg: var(--rux-well-bg);
+}
+.rux-switch--theme .rux-switch__thumb {
+  display: grid;
+  place-items: center;
+}
+.rux-switch--theme .rux-switch__thumb-icon,
+.rux-switch--theme .rux-switch__track-icon {
+  --_icon-size: var(--rux-switch-theme-icon-size);
+  --_icon-fill: var(--rux-icon-fill-selected);
+}
+.rux-switch--theme .rux-switch__thumb-icon {
+  grid-area: 1 / 1;
+  transition: opacity var(--rux-switch-transition);
+}
+.rux-switch--theme .rux-switch__thumb-icon--sun {
+  color: var(--rux-switch-theme-sun-color);
+  opacity: 1;
+  filter: var(--rux-switch-theme-sun-shadow);
+}
+.rux-switch--theme .rux-switch__thumb-icon--moon {
+  color: var(--rux-switch-theme-moon-color);
+  opacity: 0;
+}
+.rux-switch--theme input:checked ~ .rux-switch__thumb .rux-switch__thumb-icon--sun {
+  opacity: 0;
+}
+.rux-switch--theme input:checked ~ .rux-switch__thumb .rux-switch__thumb-icon--moon {
+  opacity: 1;
+}
+.rux-switch--theme .rux-switch__track-icon {
+  position: absolute;
+  top: 50%;
+  color: var(--rux-switch-theme-track-icon-color);
+  transform: translateY(-50%);
+}
+.rux-switch--theme .rux-switch__track-icon--sun {
+  left: var(--rux-switch-theme-track-icon-inset);
+}
+.rux-switch--theme .rux-switch__track-icon--moon {
+  right: var(--rux-switch-theme-track-icon-inset);
 }
 
 
@@ -339,8 +391,9 @@
   text-align: left;
   color: var(--rux-fg-placeholder);
 
-  /* Force Safari to treat the fields as a dark-theme control */
-  color-scheme: dark;
+  /* Follow the active app theme so native calendar/clock affordances keep
+     the right contrast in both light and dark mode. */
+  color-scheme: inherit;
   line-height: var(--rux-field-height); 
 }
 

@@ -6,7 +6,19 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
 		/>
-		<meta name="theme-color" content="#202022" />
+		<meta name="theme-color" content="#f0f1f3" media="(prefers-color-scheme: light)" />
+		<meta name="theme-color" content="#202022" media="(prefers-color-scheme: dark)" />
+		<script>
+			// Applied synchronously, before first paint, so a stored light
+			// preference never flashes dark first. Toggle wiring itself lives
+			// in js/core/theme.js, loaded with the rest of the app's scripts.
+			(function () {
+				var stored = localStorage.getItem("rux-theme");
+				if (stored === "light" || stored === "dark") {
+					document.documentElement.setAttribute("data-theme", stored);
+				}
+			})();
+		</script>
 		<meta
 			http-equiv="Content-Security-Policy"
 			content="connect-src 'self' https://white-boat-9932.rux-smercado.workers.dev wss://white-boat-9932.rux-smercado.workers.dev https://api.mapbox.com https://cdn.jsdelivr.net https://unpkg.com ws://127.0.0.1:* ws://localhost:*;"
@@ -206,6 +218,36 @@
 							hidden
 						></span>
 					</button>
+					<label
+						class="rux-switch rux-switch--theme"
+						id="theme-toggle"
+						title="Toggle light/dark theme"
+					>
+						<input
+							type="checkbox"
+							aria-label="Toggle light/dark theme"
+						/><span class="rux-switch__track"
+							><span
+								class="rux-icon rux-switch__track-icon rux-switch__track-icon--sun"
+								aria-hidden="true"
+								>light_mode</span
+							><span
+								class="rux-icon rux-switch__track-icon rux-switch__track-icon--moon"
+								aria-hidden="true"
+								>dark_mode</span
+							></span
+						><span class="rux-switch__thumb"
+							><span
+								class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--sun"
+								aria-hidden="true"
+								>light_mode</span
+							><span
+								class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--moon"
+								aria-hidden="true"
+								>dark_mode</span
+							></span
+						>
+					</label>
 					<button
 						class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
 						type="button"
@@ -7028,6 +7070,7 @@
 
 		<!-- ── Scripts ─────────────────────────────────────────────────────────── -->
 		<script src="./js/core/utilities.js"></script>
+		<script src="./js/core/theme.js?v=1"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./js/core/drawer.js?v=4"></script>
 		<script src="./js/core/popover.js?v=1"></script>
