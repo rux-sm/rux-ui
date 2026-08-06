@@ -15,7 +15,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=86" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=177" />
+		<link rel="stylesheet" href="./css/components.css?v=179" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
@@ -1347,28 +1347,42 @@
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
-											<div class="rux-field">
-												<label
-													class="rux-field__label"
-													for="tp-price"
-													>Quoted Price</label
-												>
-												<div
-													class="rux-input-group rux-input-group--prefix"
-												>
-													<span
-														class="rux-input-group__prefix"
-														>$</span
-													><input
-														class="rux-input"
-														id="tp-price"
-														name="quotedPrice"
-														type="number"
-														min="0"
-														step="0.01"
-														placeholder="0.00"
-														aria-label="Quoted price"
-													/>
+											<div class="rux-trip-panel__cols-2">
+												<div class="rux-field">
+													<label
+														class="rux-field__label"
+														for="tp-price"
+														>Quoted Price</label
+													>
+													<div
+														class="rux-input-group rux-input-group--prefix"
+													>
+														<span
+															class="rux-input-group__prefix"
+															>$</span
+														><input
+															class="rux-input"
+															id="tp-price"
+															name="quotedPrice"
+															type="number"
+															min="0"
+															step="0.01"
+															placeholder="0.00"
+															aria-label="Quoted price"
+														/>
+													</div>
+												</div>
+												<div class="rux-field">
+													<label
+														class="rux-field__label"
+														for="tp-balance-due"
+														>Balance</label
+													><output
+														class="rux-output rux-output--boxed"
+														id="tp-balance-due"
+														for="tp-price tp-payment-rows"
+														>$0.00</output
+													>
 												</div>
 											</div>
 											<div class="rux-trip-panel__cols-2">
@@ -1403,32 +1417,6 @@
 														placeholder="0"
 														aria-label="Actual miles"
 													/>
-												</div>
-											</div>
-											<div class="rux-trip-panel__cols-2">
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-total-paid"
-														>Paid</label
-													><output
-														class="rux-output"
-														id="tp-total-paid"
-														for="tp-payment-rows"
-														>$0.00</output
-													>
-												</div>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-balance-due"
-														>Balance</label
-													><output
-														class="rux-output"
-														id="tp-balance-due"
-														for="tp-price tp-payment-rows"
-														>$0.00</output
-													>
 												</div>
 											</div>
 											<input
@@ -1881,8 +1869,8 @@
 									id="tp-btn-delete"
 									disabled
 								>
-									<span class="rux-icon">delete</span
-									><span class="rux-btn-label">Delete</span>
+									<span class="rux-icon">event_busy</span
+									><span class="rux-btn-label">Cancel Trip</span>
 								</button>
 								<button
 									class="rux-button rux-button--default"
@@ -2914,6 +2902,14 @@
 														data-value="confirmed"
 													>
 														Confirmed
+													</button>
+													<button
+														class="rux-button rux-button--default"
+														type="button"
+														aria-pressed="false"
+														data-value="cancelled"
+													>
+														Cancelled
 													</button>
 												</div>
 											</div>
@@ -7041,7 +7037,7 @@
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=29"></script>
+		<script src="./js/panels/trip-panel.js?v=31"></script>
 		<script src="./js/components/itinerary.js?v=22"></script>
 		<script src="./js/panels/driver-panel.js?v=20" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
@@ -9565,6 +9561,10 @@
 					(k) => delete tripTrackMap[k],
 				);
 				data.forEach((t) => {
+					// Cancelled trips stay in allTripsRaw (Trips list, search,
+					// window.RuxTrips.list()) but never become bars — this is the
+					// one place "all trips" narrows to "trips shown on the grid".
+					if (t.cancelled_at) return;
 					const isBillingConfirmed =
 						window.RuxBilling?.isRecordConfirmed?.(t) ??
 						t.confirmed;
@@ -9738,10 +9738,10 @@
 				loadTripsFromDB();
 				resetTripPanelView();
 			});
-			tripPanel.addEventListener("rux:trip-deleted", async (e) => {
-				const deletedId = e.detail?.id;
+			tripPanel.addEventListener("rux:trip-cancelled", async (e) => {
+				const cancelledId = e.detail?.id;
 				const bars = activePlacements
-					.filter((p) => p.trip.id === deletedId)
+					.filter((p) => p.trip.id === cancelledId)
 					.map((p) => p.bar)
 					.filter(Boolean);
 				if (bars.length) {
@@ -9772,7 +9772,7 @@
 			// since trip_documents is normally the same array by reference across
 			// every sibling's trip copy, but this stays correct even if that ever
 			// isn't the case) and patches every bar for this trip id, uniformly —
-			// same sibling-lookup pattern as rux:trip-deleted above, just patching
+			// same sibling-lookup pattern as rux:trip-cancelled above, just patching
 			// in place instead of removing.
 			document.addEventListener("rux:itinerary-uploaded", (e) => {
 				const { tripId, doc } = e.detail || {};

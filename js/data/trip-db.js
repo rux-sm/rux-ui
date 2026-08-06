@@ -1494,34 +1494,108 @@ import {
 		}
 	}
 
-	/* ── Delete ──────────────────────────────────────────────────────────── */
+	/* ── Cancel (soft-delete) ────────────────────────────────────────────── */
+	// "Delete" no longer removes the row — see supabase/trip-cancellation-
+	// patch.sql. The trip stays in trips/the Trips list, marked cancelled
+	// with a reason; loadTripsFromDB (index.html) is what actually keeps it
+	// off the schedule grid, by skipping cancelled_at trips when building
+	// bars. Dispatches rux:trip-cancelled — the three listeners across
+	// index.html/trips-list.js/trip-manifest.js do exactly the right thing
+	// for a cancellation (fade the bar, refresh the list, stop watching the
+	// panel for drift), same as they did under the old rux:trip-deleted name
+	// when this was a hard delete.
+
+	let cancelTripModal = null;
+
+	function ensureCancelTripModal() {
+		if (cancelTripModal) return cancelTripModal;
+		cancelTripModal = document.createElement("div");
+		cancelTripModal.className = "rux-modal-backdrop";
+		cancelTripModal.hidden = true;
+		cancelTripModal.innerHTML = `
+			<section class="rux-modal rux-cancel-trip-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-trip-modal-title">
+				<header class="rux-modal__header">
+					<h2 class="rux-modal__title" id="cancel-trip-modal-title">Cancel Trip</h2>
+					<button type="button" class="rux-button rux-button--default rux-button--icon" data-rux-dismiss aria-label="Close">
+						<span class="rux-icon" aria-hidden="true">close</span>
+					</button>
+				</header>
+				<div class="rux-modal__body">
+					<p class="rux-cancel-trip-modal__note">The trip stays on record, marked Cancelled, and comes off the schedule — it isn't deleted.</p>
+					<div class="rux-field">
+						<label class="rux-field__label" for="cancel-trip-reason">Reason</label>
+						<textarea class="rux-textarea" id="cancel-trip-reason" data-cancel-trip-reason rows="3" placeholder="Why is this trip being cancelled?"></textarea>
+					</div>
+				</div>
+				<footer class="rux-modal__footer">
+					<button type="button" class="rux-button rux-button--default" data-rux-dismiss>Keep Trip</button>
+					<button type="button" class="rux-button rux-button--danger" data-cancel-trip-confirm>Cancel Trip</button>
+				</footer>
+			</section>`;
+		document.body.appendChild(cancelTripModal);
+		return cancelTripModal;
+	}
+
+	// Resolves with the trimmed reason on confirm, or null if the modal
+	// closes any other way (X, Escape, backdrop, Keep Trip). Those all route
+	// through the app-wide [data-rux-dismiss]/backdrop/Escape handling in
+	// utilities.js, none of which fire an event this could listen for — a
+	// MutationObserver on the shared `hidden` attribute catches every one of
+	// those paths uniformly instead of duplicating each one's detection here.
+	function promptCancelReason() {
+		const modal = ensureCancelTripModal();
+		const reasonInput = modal.querySelector("[data-cancel-trip-reason]");
+		reasonInput.value = "";
+		window.Rux?.openModal?.(modal);
+		reasonInput.focus();
+		return new Promise((resolve) => {
+			let confirmed = null;
+			function onClick(event) {
+				if (!event.target.closest("[data-cancel-trip-confirm]")) return;
+				confirmed = reasonInput.value.trim();
+				window.Rux?.closeModal?.(modal);
+			}
+			modal.addEventListener("click", onClick);
+			const observer = new MutationObserver(() => {
+				if (!modal.hidden) return;
+				observer.disconnect();
+				modal.removeEventListener("click", onClick);
+				resolve(confirmed);
+			});
+			observer.observe(modal, { attributes: true, attributeFilter: ["hidden"] });
+		});
+	}
 
 	async function deleteTrip(root, itinerary) {
 		if (!currentTripId) {
 			clearForm(root, itinerary);
 			return;
 		}
-		if (!confirm("Delete this trip? This cannot be undone.")) return;
-		const deletedId = currentTripId;
-		const deletedSnapshot = cloneHistoryValue(currentLoadedTrip)
+		const reason = await promptCancelReason();
+		if (reason === null) return;
+		const cancelledId = currentTripId;
+		const cancelledSnapshot = cloneHistoryValue(currentLoadedTrip)
 			|| cloneHistoryValue(currentTripSnapshot)
-			|| { id: deletedId };
-		const { error } = await supabase.from("trips").delete().eq("id", deletedId);
+			|| { id: cancelledId };
+		const { error } = await supabase
+			.from("trips")
+			.update({ cancelled_at: new Date().toISOString(), cancellation_reason: reason || null })
+			.eq("id", cancelledId);
 		if (error) throw error;
 		await safelyRecordTripHistory({
-			tripId: deletedId,
-			action: "deleted",
-			snapshot: deletedSnapshot,
+			tripId: cancelledId,
+			action: "cancelled",
+			snapshot: cancelledSnapshot,
 			changes: [{
 				field: "trip",
 				label: "Trip",
 				before: "Active",
-				after: "Deleted",
+				after: reason ? `Cancelled — ${reason}` : "Cancelled",
 			}],
 		});
 		clearForm(root, itinerary);
-		root.dispatchEvent(new CustomEvent("rux:trip-deleted", { bubbles: true, detail: { id: deletedId } }));
-		if (window.Rux) Rux.toast("Trip deleted");
+		root.dispatchEvent(new CustomEvent("rux:trip-cancelled", { bubbles: true, detail: { id: cancelledId } }));
+		if (window.Rux) Rux.toast("Trip cancelled");
 	}
 
 	/* ── Fetch ───────────────────────────────────────────────────────────── */

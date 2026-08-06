@@ -316,7 +316,6 @@ function formatDisplayDate(value) {
 function initBillingWorkflow(root) {
 	const toggles = root.querySelectorAll("[data-billing-toggle]");
 	const priceEl = root.querySelector("#tp-price");
-	const totalPaid = root.querySelector("#tp-total-paid");
 	const balanceDue = root.querySelector("#tp-balance-due");
 	const balancePaidEl = root.querySelector("#tp-balance-paid");
 	const datePaidEl = root.querySelector("#tp-date-paid");
@@ -455,11 +454,18 @@ function initBillingWorkflow(root) {
 			.sort()
 			.pop() || "";
 		const fullyPaid = price > 0 && balance <= 0;
+		const overpaid = price > 0 && balance < 0;
 
-		if (totalPaid) totalPaid.textContent = formatMoney(paid);
+		// Four states, not two: nothing paid yet (red) reads very differently
+		// from a partial payment already in (yellow), even though both used to
+		// collapse into the same "balance open" yellow. Green/blue (fully
+		// paid / overpaid) are unchanged, just renamed to match.
 		if (balanceDue) {
 			balanceDue.textContent = formatMoney(balance);
-			balanceDue.classList.toggle("is-negative", balance < 0);
+			balanceDue.classList.toggle("is-balance-overpaid", overpaid);
+			balanceDue.classList.toggle("is-balance-paid", fullyPaid && !overpaid);
+			balanceDue.classList.toggle("is-balance-partial", price > 0 && paid > 0 && balance > 0);
+			balanceDue.classList.toggle("is-balance-full", price > 0 && paid <= 0 && balance > 0);
 		}
 if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (datePaidEl) datePaidEl.value = fullyPaid ? latestPaymentDate : "";
@@ -546,6 +552,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 
 	toggles.forEach((toggle) => toggle.addEventListener("change", sync));
 	priceEl?.addEventListener("input", sync);
+	priceEl?.addEventListener("focusout", () => formatPaymentAmount(priceEl));
 	paymentRows?.addEventListener("input", (event) => {
 		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
 		sync();

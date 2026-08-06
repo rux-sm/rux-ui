@@ -1251,14 +1251,12 @@
 	  <section class="rux-card-section rux-trip-itinerary__dwell-card" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
 		  <header class="rux-card-section__header rux-trip-itinerary__stop-header">
 			<div class="rux-trip-itinerary__stop-heading">
-			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__dwell-card-icon--${status}" aria-hidden="true">${icon}</span></span>
+			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${status === "sleeper" ? "sleeper" : "off"}" aria-hidden="true">${icon}</span></span>
 			  <h4 class="rux-card__title">${escHtml(label)}</h4>
 			</div>
+			<output class="rux-output rux-output--boxed rux-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time"><span>${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span></span><span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
 		  </header>
 		  <div class="rux-card-section__body rux-trip-itinerary__stop-body">
-		  <div class="rux-trip-itinerary__fields">
-			<output class="rux-output" aria-label="Total ${escHtml(label)} time">${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span> <span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
-		  </div>
 		  ${sessionBlock}
 		  </div>
 	  </section>`;

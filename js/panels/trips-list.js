@@ -35,6 +35,15 @@
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
+  // Only used for the cancellation-reason tooltip below — a free-text field,
+  // unlike the rest of this file's row data (trip ref, customer, etc., which
+  // come from constrained/structured entry, not an open textarea).
+  function escapeAttr(value) {
+    const node = document.createElement("span");
+    node.textContent = value ?? "";
+    return node.innerHTML.replaceAll('"', "&quot;");
+  }
+
   function fmtDate(iso) {
     if (!iso) return null;
     const [y, m, d] = iso.split("-");
@@ -110,6 +119,7 @@
       tr.dataset.invoiceLevel = invLevel;
       tr.dataset.isPast       = (t.start_date && t.start_date < today) ? "yes" : "no";
       tr.dataset.confirmed    = confirmed ? "yes" : "no";
+      tr.dataset.cancelled    = t.cancelled_at ? "yes" : "no";
       tr.dataset.tripType     = tripTypeOf(t);
       tr.dataset.billingType  = billingTypeOf(t);
 
@@ -117,9 +127,15 @@
         ? buses.map(n => `<span class="rux-tag">Bus ${n}</span>`).join(" ")
         : `<span class="trips-app__unassigned">Unassigned</span>`;
 
-      const confirmedBadge = confirmed
-        ? `<span class="rux-badge rux-badge--dot rux-badge--success">Confirmed</span>`
-        : `<span class="rux-badge rux-badge--dot rux-badge--danger">Unconfirmed</span>`;
+      // Cancelled outranks confirmed/unconfirmed here — once a trip's
+      // cancelled, whether it was ever confirmed stops being the useful
+      // thing to show at a glance. Reason (if any) surfaces as a tooltip
+      // rather than a second badge/column.
+      const confirmedBadge = t.cancelled_at
+        ? `<span class="rux-badge rux-badge--dot rux-badge--danger"${t.cancellation_reason ? ` title="${escapeAttr(t.cancellation_reason)}"` : ""}>Cancelled</span>`
+        : confirmed
+          ? `<span class="rux-badge rux-badge--dot rux-badge--success">Confirmed</span>`
+          : `<span class="rux-badge rux-badge--dot rux-badge--danger">Unconfirmed</span>`;
 
       const invoiceBadge = t.invoice_number
         ? `<span class="rux-badge rux-badge--dot rux-badge--success">Invoiced</span>`
@@ -233,7 +249,8 @@
       const matchStatus =
         statusFilter === "all" ||
         (statusFilter === "confirmed"   && row.dataset.confirmed === "yes") ||
-        (statusFilter === "unconfirmed" && row.dataset.confirmed === "no");
+        (statusFilter === "unconfirmed" && row.dataset.confirmed === "no") ||
+        (statusFilter === "cancelled"   && row.dataset.cancelled === "yes");
 
       const matchType = typeFilter === "all" || row.dataset.tripType === typeFilter;
 
@@ -249,7 +266,7 @@
   // ── Dynamic title ("All Trips" / "Upcoming Trips" / "Unconfirmed Trips"...) ─
 
   const WHEN_TITLE   = { upcoming: "Upcoming", past: "Past" };
-  const STATUS_TITLE = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
+  const STATUS_TITLE = { unconfirmed: "Unconfirmed", confirmed: "Confirmed", cancelled: "Cancelled" };
 
   function updateListTitle() {
     const titleEl = document.getElementById("trips-list-title");
@@ -261,7 +278,7 @@
   // ── Active-filter badges (right-aligned in the List view header) ─────────
 
   const WHEN_LABELS   = { upcoming: "Upcoming", past: "Past" };
-  const STATUS_LABELS = { unconfirmed: "Unconfirmed", confirmed: "Confirmed" };
+  const STATUS_LABELS = { unconfirmed: "Unconfirmed", confirmed: "Confirmed", cancelled: "Cancelled" };
   const TYPE_LABELS    = { round_trip: "Round Trip", one_way: "One-Way", dropoff_pickup: "Split" };
   const BUS_LABELS     = { assigned: "Assigned Bus", unassigned: "Unassigned Bus" };
   const BILLING_LABELS = { charter: "Charter", ticketed: "Ticketed" };
@@ -341,7 +358,7 @@
   document.addEventListener("rux:trip-saved", () => {
     if (db) loadTrips();
   });
-  document.addEventListener("rux:trip-deleted", () => {
+  document.addEventListener("rux:trip-cancelled", () => {
     if (db) loadTrips();
   });
   document.addEventListener("settings:billing", () => {

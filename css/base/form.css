@@ -47,7 +47,7 @@
 .rux-select:disabled,
 .rux-textarea:disabled {
   background-color: var(--rux-input-disabled-bg);
-  border-color: var(--rux-input-disabled-border);
+  border: var(--rux-input-disabled-border);
   color: var(--rux-input-disabled-fg);
   cursor: not-allowed;
 }
@@ -635,4 +635,35 @@
 	font-weight: var(--rux-output-font-weight);
 	font-variant-numeric: tabular-nums;
 	cursor: default;
+}
+
+/* Opt back into the input's own box and type size — for the one case where
+   a read-only value sits directly beside a real input in the same row
+   (Balance next to Quoted Price) and wants to match its footprint and text
+   exactly, not the bigger/bolder stat treatment .rux-output uses elsewhere.
+   Still not a real input: no focus ring. The status-color classes (.is-
+   balance-full/-partial/-paid/-overpaid in trip-panel.css) still apply on
+   top of this unchanged — this only touches size/shape, not color. */
+.rux-output--boxed {
+	padding: 0 var(--rux-input-padding-inline);
+	background-color: var(--rux-input-background);
+	border: var(--rux-input-border);
+	border-image: var(--rux-input-border-image);
+	box-shadow: var(--rux-input-shadow);
+	border-radius: var(--rux-input-border-radius);
+	font-size: var(--rux-input-font-size);
+	font-weight: var(--rux-weight-regular);
+	/* space-between, not the base .rux-output's flex-start — with a single
+	   child (Balance's plain "$0.00") it's equivalent to flex-start, no
+	   visual change there. With two (the itinerary dwell card's value span +
+	   .rux-status-text span) it pushes them to opposite edges: value left,
+	   status right. */
+	justify-content: space-between;
+	/* Same dim token its empty/placeholder-text neighbors use (--rux-input-
+	   placeholder-fg, not --rux-fg-muted — muted is a full step brighter and
+	   was still visibly heavier than the placeholders next to it). The four
+	   status classes in trip-panel.css (higher specificity: .rux-trip-panel
+	   .rux-output.is-balance-*) still override this the moment there's an
+	   actual balance worth calling out. */
+	color: var(--rux-input-placeholder-fg);
 }

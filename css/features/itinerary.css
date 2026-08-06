@@ -49,7 +49,7 @@
    the same visual tokens as disabled fields so editable inputs are obvious. */
 .rux-trip-itinerary .rux-input[readonly] {
 	background-color: var(--rux-input-disabled-bg);
-	border-color: var(--rux-input-disabled-border);
+	border: var(--rux-input-disabled-border);
 	color: var(--rux-input-disabled-fg);
 	cursor: not-allowed;
 }
@@ -291,8 +291,32 @@
 	justify-content: center;
 }
 
-.rux-trip-itinerary__dwell-card-icon--sleeper { color: var(--rux-itinerary-status-sleeper); }
-.rux-trip-itinerary__dwell-card-icon--off     { color: var(--rux-itinerary-status-off-duty); }
+/* The Reset/Not Reset text (.rux-status-text, comp-driver-app.css) carries
+   its own font-weight everywhere else it's used (a driver table's Status
+   column) — here it sits inside the dwell card's boxed total-time output
+   and should read as part of that same input-sized line, not stand out at
+   its own weight. Only size/weight change; --success/--warning still carry
+   the actual reset-vs-not color. */
+.rux-trip-itinerary__dwell-card .rux-output--boxed .rux-status-text {
+	font-size: inherit;
+	font-weight: inherit;
+}
+
+/* Sits inline with the card title in the header row (.rux-card-section__
+   header is already flex) instead of its own row in the body below. Both
+   sides get an equal, explicit 50% share (flex: 1 1 0% + min-width: 0 on
+   both) rather than one fixed width and the other shrink-to-content —
+   scoped to this card only, so the regular stop header (heading + fixed-
+   width actions) elsewhere in the itinerary is untouched. */
+.rux-trip-itinerary__dwell-card .rux-trip-itinerary__stop-heading {
+	flex: 1 1 0%;
+}
+
+.rux-trip-itinerary__dwell-total {
+	flex: 1 1 0%;
+	width: auto;
+	min-width: 0;
+}
 
 /* One pin silhouette identifies every location card; color carries its type. */
 .rux-trip-itinerary__marker-pin {
@@ -309,6 +333,8 @@
 .rux-trip-itinerary__marker-pin--stop        { color: var(--rux-itinerary-status-stop); }
 .rux-trip-itinerary__marker-pin--sleeper     { color: var(--rux-itinerary-status-sleeper); }
 .rux-trip-itinerary__marker-pin--return      { color: var(--rux-itinerary-status-return-yard); }
+/* Off Duty dwell card — same pin, no matching stop type of its own. */
+.rux-trip-itinerary__marker-pin--off         { color: var(--rux-itinerary-status-off-duty); }
 
 .rux-trip-itinerary__stop .rux-trip-itinerary__marker {
 	align-self: center;

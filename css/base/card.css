@@ -9,7 +9,7 @@
 	color: var(--rux-card-fg);
 	border: var(--rux-card-border);
 	border-radius: var(--rux-card-radius);
-	box-shadow: var(--rux-shadow-recessed);
+	box-shadow: var(--rux-card-shadow);
 	overflow: hidden;
 }
 

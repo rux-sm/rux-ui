@@ -654,7 +654,7 @@
   tripPanelRoot?.addEventListener("rux:trip-loaded", watchForDrift);
   tripPanelRoot?.addEventListener("rux:trip-saved", watchForDrift);
   tripPanelRoot?.addEventListener("rux:trip-cleared", watchForDrift);
-  tripPanelRoot?.addEventListener("rux:trip-deleted", watchForDrift);
+  tripPanelRoot?.addEventListener("rux:trip-cancelled", watchForDrift);
   tripPanelRoot?.addEventListener("click", (e) => {
     if (e.target.closest("#tp-billing-type-group")) {
       requestAnimationFrame(watchForDrift);

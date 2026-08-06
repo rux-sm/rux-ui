@@ -17,7 +17,7 @@
 
 	/* ─── COLOR · base ─────────────────────────────────────────────────────── */
 
-	--rux-neutral: oklch(50% 0.006 255); /* neutral */
+	--rux-neutral: oklch(50% 0.004 255); /* neutral */
 	--rux-white:   oklch(from var(--rux-neutral) 100% c h);
 	--rux-black:   oklch(from var(--rux-neutral) 000% c h);
 
@@ -167,7 +167,7 @@
     inset 0 -1px 0 oklch(100% 0 0 / 18%);  /* Subtle bottom inner rim light */
 
 /* Updated Card Shadow with Top Highlight */
---rux-card-shadow:
+--rux-shadow-elevated:
     inset 0 1px 0 oklch(100% 0 0 / 18%),   /* Crisp top rim light */
     0 2px 4px rgb(0 0 0 / 60%),            /* Close drop shadow */
     0 8px 16px rgb(0 0 0 / 40%);           /* Ambient shadow */
@@ -234,15 +234,15 @@
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
 
 	--rux-surface-0:        oklch(from var(--rux-neutral) 0% c h);  /*  */
-	--rux-surface-1:        oklch(from var(--rux-neutral) 18% c h); /* input */
-	--rux-surface-2:        oklch(from var(--rux-neutral) 22% c h); /* card */
-	--rux-surface-3:        oklch(from var(--rux-neutral) 26% c h); /* panel */
-	--rux-surface-4:        oklch(from var(--rux-neutral) 28% c h);
-	--rux-surface-5:        oklch(from var(--rux-neutral) 30% c h);
-	--rux-surface-6:        oklch(from var(--rux-neutral) 36% c h);
-	--rux-surface-7:        oklch(from var(--rux-neutral) 40% c h);
-	--rux-surface-8:        oklch(from var(--rux-neutral) 44% c h);
-	--rux-surface-9:        oklch(from var(--rux-neutral) 48% c h);
+	--rux-surface-1:        oklch(from var(--rux-neutral) 20% c h); /* input */
+	--rux-surface-2:        oklch(from var(--rux-neutral) 24% c h); /* card */
+	--rux-surface-3:        oklch(from var(--rux-neutral) 28% c h); /* panel */
+	--rux-surface-4:        oklch(from var(--rux-neutral) 32% c h);
+	--rux-surface-5:        oklch(from var(--rux-neutral) 36% c h);
+	--rux-surface-6:        oklch(from var(--rux-neutral) 40% c h);
+	--rux-surface-7:        oklch(from var(--rux-neutral) 44% c h);
+	--rux-surface-8:        oklch(from var(--rux-neutral) 48% c h);
+	--rux-surface-9:        oklch(from var(--rux-neutral) 52% c h);
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
@@ -366,6 +366,8 @@
 	   ====================================================================== */
 
 	/* ─── COMPONENT · app shell ───────────────────────────────────────────── */
+	/* Outermost full-bleed page canvas — no border/radius/shadow of its own,
+	   nothing else sits "above" it to cast one. */
 
 	--rux-shell-bg:             var(--rux-surface-0);
 	--rux-shell-margin-inline:  var(--rux-space-0);
@@ -374,19 +376,30 @@
 
 	/* ─── COMPONENT · app header ──────────────────────────────────────────── */
 
-	--rux-app-header-bg:                       var(--rux-shell-bg);
-	--rux-app-header-border:                   1px solid var(--rux-surface-4);
-	--rux-app-header-height:                   auto;
-	--rux-app-header-padding:                  var(--rux-space-2) var(--rux-space-4);
-	--rux-app-header-gap:                      var(--rux-space-2);
+	/* — shell — */
+	--rux-app-header-bg:     var(--rux-shell-bg);
+	--rux-app-header-border: 1px solid var(--rux-surface-4);
+	/* --rux-app-header-radius: not set — spans full width, no corners */
+	/* --rux-app-header-shadow: not set */
+	--rux-app-header-padding: var(--rux-space-2) var(--rux-space-4);
+	--rux-app-header-height:  auto;
+	--rux-app-header-gap:     var(--rux-space-2);
+
+	/* — brand — */
 	--rux-app-header-brand-padding-inline-end: var(--rux-space-4);
 	--rux-app-header-brand-border:             var(--rux-border-width) solid
 		var(--rux-border);
-	--rux-app-header-logo-height:                    24px;
-	--rux-app-header-nav-gap:                        var(--rux-space-2);
-	--rux-app-header-nav-item-fg:                    var(--rux-fg-muted);
-	--rux-app-header-nav-item-active-fg:             var(--rux-fg);
-	--rux-app-header-actions-gap:                    var(--rux-button-group-gap);
+	--rux-app-header-logo-height:              24px;
+
+	/* — nav — */
+	--rux-app-header-nav-gap:            var(--rux-space-2);
+	--rux-app-header-nav-item-fg:        var(--rux-fg-muted);
+	--rux-app-header-nav-item-active-fg: var(--rux-fg);
+
+	/* — actions — */
+	--rux-app-header-actions-gap: var(--rux-button-group-gap);
+
+	/* — mobile nav — */
 	--rux-app-header-mobile-nav-padding-block-start: var(--rux-space-2);
 	--rux-app-header-mobile-nav-padding-inline:      var(--rux-space-3);
 	--rux-app-header-mobile-nav-padding-block-end:   calc(
@@ -395,12 +408,16 @@
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
+	/* — shell — */
 	--rux-workspace-bg:            var(--rux-surface-1);
 	--rux-workspace-fg:            var(--rux-fg);
 	--rux-workspace-border-inline: none;
-	--rux-workspace-border-block: none;
-	--rux-workspace-radius: var(--rux-radius-0);
+	--rux-workspace-border-block:  none;
+	--rux-workspace-radius:        var(--rux-radius-0);
+	/* --rux-workspace-shadow: not set */
 	--rux-workspace-gutter: var(--rux-space-4);
+
+	/* — header — */
 	/* Keep header and view content on the same inline grid. */
 	--rux-workspace-header-padding: var(--rux-space-2)
 		var(--rux-workspace-gutter);
@@ -410,22 +427,29 @@
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
-	--rux-calendar-bg:            var(--rux-surface-1);
-	--rux-calendar-header-bg:     var(--rux-surface-1);
-	--rux-calendar-border:        var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-top-border:    var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-radius:        var(--rux-radius-0);
-	--rux-calendar-header-radius: var(--rux-radius-0);
-	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-grid:          var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-header-height: 31px;
+	/* — shell — */
+	--rux-calendar-bg:         var(--rux-surface-1);
+	--rux-calendar-border:     var(--rux-border-width) solid var(--rux-surface-3);
+	--rux-calendar-top-border: var(--rux-border-width) solid var(--rux-surface-3);
+	--rux-calendar-radius:     var(--rux-radius-0);
+	--rux-calendar-viewport-rim-shadow: none;
+
+	/* — header — */
 	/* Header cells share one plane: retain the raised control's rim lighting
 	   without its ambient drop shadow between neighboring cells. */
-	--rux-calendar-viewport-rim-shadow: none;
-	--rux-calendar-header-shadow: none;
-	--rux-calendar-header-bottom-shadow:none;
-	--rux-calendar-header-divider: 1px solid var(--rux-surface-3);
-	--rux-calendar-corner-shadow: none;
+	--rux-calendar-header-bg:     var(--rux-surface-1);
+	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-surface-3);
+	--rux-calendar-header-radius: var(--rux-radius-0);
+	--rux-calendar-header-height: 31px;
+	--rux-calendar-header-shadow:        none;
+	--rux-calendar-header-bottom-shadow: none;
+	--rux-calendar-header-divider:       1px solid var(--rux-surface-3);
+	--rux-calendar-corner-shadow:        none;
+
+	/* — grid — */
+	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-surface-3);
+
+	/* — row header (sticky bus-number rail) — */
 	/* No top rim here, unlike the horizontal header row above — these stack
 	   vertically, so a top highlight repeated on every cell lands at a
 	   different height each time and reads as each row being its own
@@ -433,8 +457,8 @@
 	   cell above already caps the rail's real top edge with its own rim; a
 	   bus row only needs the side shadow that separates the sticky rail
 	   from the scrollable grid, same at every row regardless of position. */
-	--rux-calendar-row-header-shadow: none;
-	--rux-calendar-row-header-end-shadow: none;
+	--rux-calendar-row-header-shadow:      none;
+	--rux-calendar-row-header-end-shadow:  none;
 	--rux-calendar-row-header-edge-shadow: linear-gradient(to right, rgb(0 0 0 / 35%), rgb(0 0 0 / 18%) 2px, transparent 6px);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
@@ -446,23 +470,24 @@
 	--rux-panel-border-width:  var(--rux-border-width);
 	--rux-panel-border-inline: none;
 	--rux-panel-border-block:  none;
-	--rux-panel-radius: var(--rux-radius-container);
+	--rux-panel-radius:        var(--rux-radius-container);
+	/* --rux-panel-shadow: not set */
 
 	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */
-	--rux-panel-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
+	--rux-panel-header-bg:         var(--rux-surface-2);
 	--rux-panel-header-padding:    var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
-	--rux-panel-header-bg: var(--rux-surface-2);
-	--rux-panel-header-shadow: var(--rux-shadow-panel-header);
+	--rux-panel-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
+	--rux-panel-header-shadow:     var(--rux-shadow-panel-header);
 
 	/* — nav / tabs — */
-	--rux-panel-nav-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-nav-background: var(--rux-surface-3);
-	--rux-panel-nav-border: none;
+	--rux-panel-nav-border:     none;
+	--rux-panel-nav-padding:    var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 
 	/* — footer — */
-	--rux-panel-footer-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
-	--rux-panel-footer-border:  none;
 	--rux-panel-footer-bg:      var(--rux-surface-3);
+	--rux-panel-footer-border:  none;
+	--rux-panel-footer-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
 	--rux-panel-padding:     var(--rux-space-4) var(--rux-space-4);
@@ -484,14 +509,19 @@
 	--rux-card-border-width: var(--rux-border-width);
 	--rux-card-border:       1px solid var(--rux-surface-4);
 	--rux-card-radius:       var(--rux-radius-md);
+	--rux-card-shadow:       var(--rux-shadow-elevated);
 
 	/* — header — */
 	/* Transparent so the card shell's inset top highlight remains visible
 	   through headers instead of being covered by a duplicate surface layer. */
-	--rux-card-header-bg:     transparent;
-	--rux-card-header-border: none;
+	--rux-card-header-bg:      transparent;
+	--rux-card-header-border:  none;
 	--rux-card-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
-	--rux-card-header-height: 60px;
+	--rux-card-header-height:  60px;
+
+	/* — body — */
+	/* No dedicated --rux-card-body-* tokens — see the shared padding/gap
+	   group below instead. */
 
 	/* — footer — */
 	--rux-card-footer-bg:     transparent;
@@ -499,19 +529,23 @@
 		transparent;
 
 	/* — section (divider between stacked .rux-card__section siblings) — */
-	--rux-card-section-border: 1px solid var(--rux-surface-5);
-	--rux-card-section-bg: var(--rux-surface-3);
+	--rux-card-section-bg:      var(--rux-surface-3);
+	--rux-card-section-border:  1px solid var(--rux-surface-5);
 	--rux-card-section-outline: 1px solid var(--rux-surface-4);
-	--rux-card-section-shadow: var(--rux-card-shadow);
+	/* Was var(--rux-card-shadow); flattened to none once sections stopped
+	   needing their own depth cue on top of the card's own. */
+	--rux-card-section-shadow: none;
 	/* Transparent so the section's continuous inset shadow remains visible
 	   through the header instead of being covered by a duplicate paint layer. */
-	--rux-card-section-header-bg: transparent;
+	--rux-card-section-header-bg:     transparent;
 	--rux-card-section-header-border: var(--rux-card-section-border);
 
 	/* — variants: elevated / interactive hover — */
 	/* Elevated cards use their own depth between the card and modal tiers. */
-	--rux-card-elevated-bg:  oklch(from var(--rux-neutral) 14% c h);
-	--rux-card-elevated-shadow: var(--rux-card-shadow);
+	--rux-card-elevated-bg: oklch(from var(--rux-neutral) 14% c h);
+	/* Was var(--rux-card-shadow); flattened to none for the same reason as
+	   --rux-card-section-shadow above. */
+	--rux-card-elevated-shadow: none;
 	--rux-card-hover-bg:     var(--rux-bg-hover);
 	--rux-card-hover-border: var(--rux-border);
 
@@ -520,6 +554,12 @@
 	--rux-card-padding-inline: var(--rux-space-4);
 	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
 	--rux-card-content-gap: var(--rux-space-4);
+
+	/* ─── COMPONENT · itinerary marker ────────────────────────────────────── */
+	/* Was filed under "card" (its markers sit inside .rux-card-section rows)
+	   — split out since these are itinerary-specific, not shared card
+	   tokens. */
+
 	--rux-itinerary-marker-size: 12px;
 	--rux-itinerary-status-depart-yard: var(--rux-status-cyan);
 	--rux-itinerary-status-pickup:      var(--rux-status-green);
@@ -537,11 +577,14 @@
 	--rux-table-fg:           var(--rux-fg);
 	--rux-table-border-width: var(--rux-border-width);
 	--rux-table-border-color: var(--rux-border);
+	/* --rux-table-radius: not set — the wrap below owns the rounded corners */
+	/* --rux-table-shadow: not set */
 
 	/* — wrap (scrollable container around the table) — */
 	--rux-table-wrap-bg:     var(--rux-surface-1);
 	--rux-table-wrap-border: var(--rux-card-border);
 	--rux-table-wrap-radius: var(--rux-radius-md);
+	/* --rux-table-wrap-shadow: not set */
 
 	/* — header — */
 	--rux-table-header-bg:       var(--rux-surface-3);
@@ -558,8 +601,19 @@
 	--rux-table-row-hover-bg:         var(--rux-bg-hover);
 	--rux-table-row-selected-bg:      var(--rux-accent-subtle);
 
-	/* ─── COMPONENT · trip bar · category colors ──────────────────────────── */
+	/* ─── COMPONENT · trip bar ─────────────────────────────────────────────── */
+	/* No flat --rux-trip-bar-bg/-border/-fg — color is computed per category
+	   (below) via the state lightness/opacity steps, not one static token. */
 
+	/* — shell — */
+	/* --rux-trip-bar-bg: computed — see category colors + state steps below */
+	/* --rux-trip-bar-fg: not set */
+	--rux-trip-bar-border-width: var(--rux-border-width);
+	/* --rux-trip-bar-border: computed alongside bg */
+	--rux-trip-bar-radius: var(--rux-radius-control);
+	/* --rux-trip-bar-shadow: not set */
+
+	/* — category colors — */
 	--rux-trip-color-cyan:   var(--rux-cyan);
 	--rux-trip-color-green:  var(--rux-green);
 	--rux-trip-color-purple: var(--rux-purple);
@@ -567,6 +621,7 @@
 	--rux-trip-color-orange: var(--rux-orange);
 	--rux-trip-color-pink:   var(--rux-pink);
 
+	/* — state lightness/opacity steps — */
 	/* Trip states shift lightness predictably while preserving each category's
 	   native chroma to avoid hue-dependent gamut clipping. */
 	--rux-trip-bar-bg-lightness:              60%;
@@ -588,11 +643,12 @@
 	--rux-trip-bar-stripe-color:   var(--rux-white);
 	--rux-trip-bar-stripe-opacity: 0.1;
 
-	--rux-trip-bar-border-width: var(--rux-border-width);
-	--rux-trip-bar-radius:       var(--rux-radius-control);
+	/* — head — */
 	--rux-trip-bar-head-backdrop-blur: 4px;
 
 	/* ─── COMPONENT · trip panel ──────────────────────────────────────────── */
+	/* Motion only — the trip panel is a reveal animation for the Trip Editor,
+	   not a boxed component of its own; no bg/border/radius/shadow apply. */
 
 	--rux-trip-panel-reveal-duration: var(--rux-duration-base);
 	--rux-trip-panel-reveal-easing:   var(--rux-ease-out);
@@ -601,129 +657,166 @@
 	/* ─── COMPONENT · field ───────────────────────────────────────────────── */
 	/* Inputs, selects, and textareas share the recessed-well treatment. */
 
-	--rux-field-gap:             var(--rux-stack-gap);
-	--rux-field-label-size:      var(--rux-text-xs);
-	--rux-field-label-weight:    var(--rux-weight-regular);
-	--rux-field-label-fg:        var(--rux-text-secondary);
-	--rux-field-help-fg:         var(--rux-fg-subtle);
-	--rux-field-error-fg:        var(--rux-danger);
-	--rux-input-height:          var(--rux-field-height);
-	--rux-input-padding-inline:  var(--rux-control-padding-inline);
-	--rux-input-border:       	 var(--rux-border-width) solid var(--rux-surface-2);
-	--rux-input-border-image: 	 none;
-	--rux-textarea-min-height:   84px;
-	--rux-input-shadow:          var(--rux-shadow-recessed);
-	--rux-input-background:      var(--rux-well-bg);
-	--rux-input-fg:              var(--rux-fg);
-	--rux-input-font-size:       var(--rux-text-sm);
-	--rux-input-placeholder-fg:  var(--rux-fg-subtle);
+	/* — label — */
+	--rux-field-gap:          var(--rux-stack-gap);
+	--rux-field-label-size:   var(--rux-text-xs);
+	--rux-field-label-weight: var(--rux-weight-regular);
+	--rux-field-label-fg:     var(--rux-text-secondary);
+	--rux-field-help-fg:      var(--rux-fg-subtle);
+	--rux-field-error-fg:     var(--rux-danger);
+
+	/* — input shell — */
+	--rux-input-background:     var(--rux-well-bg);
+	--rux-input-fg:             var(--rux-fg);
+	/* Was missing its trailing ";" — silently swallowed the next
+	   declaration (--rux-input-border-image) into this value instead of
+	   ever defining it. Harmless by accident (an undefined custom property
+	   used as a var() with no fallback resolves to the same "none" this was
+	   already meant to be), but fixed rather than left relying on that. */
+	--rux-input-border:         var(--rux-border-width) solid transparent;
+	--rux-input-border-image:   none;
+	--rux-input-border-radius:  var(--rux-radius-sm);
+	--rux-input-shadow:         var(--rux-shadow-recessed);
+	--rux-input-height:         var(--rux-field-height);
+	--rux-input-padding-inline: var(--rux-control-padding-inline);
+	--rux-input-font-size:      var(--rux-text-sm);
+	--rux-input-placeholder-fg: var(--rux-fg-subtle);
+	--rux-input-transition:     var(--rux-duration-fast) var(--rux-ease-out);
+
+	/* — textarea — */
+	--rux-textarea-min-height: 84px;
+
+	/* — states — */
 	--rux-input-hover:           var(--rux-accent);
-	--rux-input-disabled-bg:     var(--rux-surface-4);
+	--rux-input-disabled-bg:     transparent;
 	--rux-input-disabled-border: 1px solid transparent;
 	--rux-input-disabled-fg:     var(--rux-fg-disabled);
 	--rux-input-invalid-border:  var(--rux-danger);
-	--rux-input-border-radius:   var(--rux-radius-sm);
-	--rux-input-transition:      var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · badge ─────────────────────────────────────────────── */
 
-	--rux-badge-height:              var(--rux-control-height);
-	--rux-badge-padding-inline:      var(--rux-space-2);
-	--rux-badge-radius:              var(--rux-radius-control);
-	--rux-badge-font-size:           var(--rux-text-sm);
-	--rux-badge-font-weight:         var(--rux-weight-medium);
-	--rux-badge-background-opacity:  12%;
-	--rux-badge-module-gap:          var(--rux-space-2);
-	--rux-badge-module-height:       var(--rux-module-button-height);
-	--rux-badge-module-padding:      var(--rux-space-3);
-	--rux-badge-module-radius:       var(--rux-radius-control);
-	--rux-badge-module-icon-size:    var(--rux-icon-sm);
+	/* — shell — */
+	/* --rux-badge-bg: not set — per-variant colors are computed in
+	   badges.css via color-mix, not a flat token */
+	/* --rux-badge-fg: not set, same reason */
+	/* --rux-badge-border: not set */
+	--rux-badge-radius: var(--rux-radius-control);
+	/* --rux-badge-shadow: not set */
+	--rux-badge-padding-inline: var(--rux-space-2);
+	--rux-badge-height:         var(--rux-control-height);
+	--rux-badge-font-size:      var(--rux-text-sm);
+	--rux-badge-font-weight:    var(--rux-weight-medium);
+	--rux-badge-background-opacity: 12%;
+
+	/* — module badge variant — */
+	--rux-badge-module-gap:       var(--rux-space-2);
+	--rux-badge-module-height:    var(--rux-module-button-height);
+	--rux-badge-module-padding:   var(--rux-space-3);
+	--rux-badge-module-radius:    var(--rux-radius-control);
+	--rux-badge-module-icon-size: var(--rux-icon-sm);
 
 	/* ─── COMPONENT · button base ─────────────────────────────────────────────── */
 
-	--rux-button-height:              var(--rux-control-height);
-	--rux-button-mobile-height:       36px;
-	--rux-button-padding-inline:      var(--rux-space-3);
-	--rux-button-content-gap:         var(--rux-space-2);
-	--rux-button-group-gap:           var(--rux-space-2);
-	--rux-button-radius:              var(--rux-radius-xs);
-	--rux-button-border-width:        var(--rux-border-width);
-	--rux-button-border:              var(--rux-button-border-width) solid var(--rux-border-button);
-	--rux-button-font-family:         var(--rux-font-sans);
-	--rux-button-font-size:           var(--rux-text-sm);
-	--rux-button-font-weight:         var(--rux-weight-medium);
+	/* — shell — */
+	/* --rux-button-bg: not set — each variant (default/outline/accent/ghost/
+	   danger/...) below supplies its own */
+	/* --rux-button-fg: not set, same reason */
+	--rux-button-border-width: var(--rux-border-width);
+	--rux-button-border:       var(--rux-button-border-width) solid var(--rux-border-button);
+	--rux-button-radius:       var(--rux-radius-xs);
+	/* Tactile shadows apply only to solid-fill variants. */
+	--rux-button-shadow-raised:  var(--rux-shadow-raised);
+	--rux-button-shadow-pressed: var(--rux-shadow-pressed);
+	--rux-button-padding-inline: var(--rux-space-3);
+	--rux-button-height:         var(--rux-control-height);
+	--rux-button-mobile-height:  36px;
+	--rux-button-content-gap:    var(--rux-space-2);
+	--rux-button-group-gap:      var(--rux-space-2);
+
+	/* — typography — */
+	--rux-button-font-family: var(--rux-font-sans);
+	--rux-button-font-size:   var(--rux-text-sm);
+	--rux-button-font-weight: var(--rux-weight-medium);
+
+	/* — icon — */
 	/* The loading spinner matches the button's idle icon size. */
-	--rux-button-icon-size:           var(--rux-icon-sm);
-	--rux-button-mobile-icon-size:    24px;
+	--rux-button-icon-size:        var(--rux-icon-sm);
+	--rux-button-mobile-icon-size: 24px;
+
+	/* — states — */
 	--rux-button-hover-text:          var(--rux-accent);
 	--rux-button-hover-border:        1px solid var(--rux-accent);
 	--rux-button-hover-overlay:       var(--rux-state-hover-overlay);
 	--rux-button-active-overlay:      var(--rux-state-active-overlay);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing:   var(--rux-ease-out);
-	/* Tactile shadows apply only to solid-fill variants. */
-	--rux-button-shadow-raised:       var(--rux-shadow-raised);
-	--rux-button-shadow-pressed:      var(--rux-shadow-pressed);
 	/* Shared focus ring replaces inconsistent browser outlines. */
-	--rux-button-focus-ring:          0 0 0 3px var(--rux-accent-ring);
+	--rux-button-focus-ring: 0 0 0 3px var(--rux-accent-ring);
 
 	/* ─── COMPONENT · module button ───────────────────────────────────────────── */
 	/* Compact contextual icon action. Semantic variants change tone, not layout. */
 
-	--rux-module-button-width:       44px;
-	--rux-module-button-height:      44px;
-	--rux-module-button-min-height:  44px;
-	--rux-module-button-padding:     0;
-	--rux-module-button-gap:         0;
-	--rux-module-button-radius:      var(--rux-radius-control);
+	/* — shell — */
+	--rux-module-button-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-module-button-radius: var(--rux-radius-control);
+	--rux-module-button-width:      44px;
+	--rux-module-button-height:     44px;
+	--rux-module-button-min-height: 44px;
+	--rux-module-button-padding:    0;
+	--rux-module-button-gap:        0;
 	--rux-module-button-font-size:   var(--rux-text-md);
 	--rux-module-button-font-weight: var(--rux-weight-medium);
 	--rux-module-button-icon-size:   var(--rux-icon-md);
-	--rux-module-button-border:      var(--rux-border-width) solid var(--rux-border);
 	--rux-module-button-focus-ring:  0 0 0 3px var(--rux-accent-ring);
 	--rux-module-button-disabled-opacity: 0.45;
 
+	/* — neutral — */
 	--rux-module-button-neutral-bg:       var(--rux-state-hover-overlay);
-	--rux-module-button-neutral-hover-bg: var(--rux-state-active-overlay);
 	--rux-module-button-neutral-fg:       var(--rux-fg);
 	--rux-module-button-neutral-border:   var(--rux-state-hover-overlay);
+	--rux-module-button-neutral-hover-bg: var(--rux-state-active-overlay);
 
+	/* — info — */
 	--rux-module-button-info-bg:       color-mix(in oklch, var(--rux-info) 16%, transparent);
-	--rux-module-button-info-hover-bg: color-mix(in oklch, var(--rux-info) 23%, transparent);
 	--rux-module-button-info-fg:       var(--rux-info);
 	--rux-module-button-info-border:   color-mix(in oklch, var(--rux-info) 34%, transparent);
+	--rux-module-button-info-hover-bg: color-mix(in oklch, var(--rux-info) 23%, transparent);
 
+	/* — success — */
 	--rux-module-button-success-bg:       color-mix(in oklch, var(--rux-success) 14%, transparent);
-	--rux-module-button-success-hover-bg: color-mix(in oklch, var(--rux-success) 21%, transparent);
 	--rux-module-button-success-fg:       var(--rux-success-bright);
 	--rux-module-button-success-border:   color-mix(in oklch, var(--rux-success) 32%, transparent);
+	--rux-module-button-success-hover-bg: color-mix(in oklch, var(--rux-success) 21%, transparent);
 
+	/* — warning — */
 	--rux-module-button-warning-bg:       color-mix(in oklch, var(--rux-warning) 14%, transparent);
-	--rux-module-button-warning-hover-bg: color-mix(in oklch, var(--rux-warning) 21%, transparent);
 	--rux-module-button-warning-fg:       var(--rux-warning);
 	--rux-module-button-warning-border:   color-mix(in oklch, var(--rux-warning) 32%, transparent);
+	--rux-module-button-warning-hover-bg: color-mix(in oklch, var(--rux-warning) 21%, transparent);
 
+	/* — danger — */
 	--rux-module-button-danger-bg:       color-mix(in oklch, var(--rux-danger) 14%, transparent);
-	--rux-module-button-danger-hover-bg: color-mix(in oklch, var(--rux-danger) 21%, transparent);
 	--rux-module-button-danger-fg:       var(--rux-danger);
 	--rux-module-button-danger-border:   color-mix(in oklch, var(--rux-danger) 32%, transparent);
+	--rux-module-button-danger-hover-bg: color-mix(in oklch, var(--rux-danger) 21%, transparent);
 
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background:       var(--rux-surface-7);
-	--rux-button-default-border:           none;
+	--rux-button-default-background: var(--rux-surface-7);
+	--rux-button-default-text:       var(--rux-fg);
+	--rux-button-default-border:     none;
 
-	--rux-button-default-text:             var(--rux-fg);
 	/* Hover and active shift the resting fill's own OKLCH lightness. */
 	--rux-button-default-hover-background: oklch(
 		from var(--rux-button-default-background) calc(l + 0.05) c h
 	);
+	--rux-button-default-hover-text: var(--rux-fg);
+
 	--rux-button-default-active-background: oklch(
 		from var(--rux-button-default-background) calc(l - 0.05) c h
 	);
-	--rux-button-default-hover-text:        var(--rux-fg);
-	--rux-button-default-active-border:     oklch(from var(--rux-border-button) calc(l - 0.1) c h);
-	--rux-button-default-active-text:       oklch(from var(--rux-fg) calc(l - 0.1) c h);
+	--rux-button-default-active-border: oklch(from var(--rux-border-button) calc(l - 0.1) c h);
+	--rux-button-default-active-text:   oklch(from var(--rux-fg) calc(l - 0.1) c h);
 
 	/* ─── COMPONENT · button outline ────────────────────────────────────────────── */
 
@@ -816,9 +909,9 @@
 	/* ─── COMPONENT · button selected / toggle ────────────────────────────── */
 
 	--rux-button-selected-bg:       var(--rux-button-accent-background);
-	--rux-button-quiet-selected-bg: var(--rux-state-selected-overlay);
 	--rux-button-selected-fg:       var(--rux-button-accent-text);
 	--rux-button-selected-border:   var(--rux-button-accent-border-color);
+	--rux-button-quiet-selected-bg: var(--rux-state-selected-overlay);
 	--rux-button-icon-selected-bg:  var(--rux-button-quiet-selected-bg);
 
 	/* ─── COMPONENT · button sizes ────────────────────────────────────────── */
@@ -841,42 +934,49 @@
 	/* ─── COMPONENT · segmented ──────────────────────────────────────────── */
 	/* Segmented controls inherit their visual states from button tokens. */
 
-	--rux-segmented-height:            var(--rux-control-height-sm);
-	--rux-segmented-item-bg:           var(--rux-button-ghost-background);
-	--rux-segmented-item-fg:           var(--rux-fg-muted);
-	--rux-segmented-item-hover-fg:     var(--rux-white);
-	--rux-segmented-item-disabled-bg:  transparent;
-	--rux-segmented-item-disabled-fg:  var(--rux-fg-disabled);
-	--rux-segmented-item-selected-bg:  var(--rux-button-selected-bg);
-	--rux-segmented-item-selected-fg:  var(--rux-button-selected-fg);
-	--rux-segmented-ghost-selected-bg: var(--rux-button-quiet-selected-bg);
-	--rux-segmented-ghost-selected-fg: var(--rux-fg);
+	/* — item — */
+	--rux-segmented-height:           var(--rux-control-height-sm);
+	--rux-segmented-item-bg:          var(--rux-button-ghost-background);
+	--rux-segmented-item-fg:          var(--rux-fg-muted);
+	--rux-segmented-item-hover-fg:    var(--rux-white);
+	--rux-segmented-item-selected-bg: var(--rux-button-selected-bg);
+	--rux-segmented-item-selected-fg: var(--rux-button-selected-fg);
+	--rux-segmented-item-disabled-bg: transparent;
+	--rux-segmented-item-disabled-fg: var(--rux-fg-disabled);
+
+	/* — ghost variant — */
 	--rux-segmented-ghost-bg:          transparent;
 	--rux-segmented-ghost-border:      none;
 	--rux-segmented-ghost-item-bg:     transparent;
 	--rux-segmented-ghost-item-border: transparent;
 	--rux-segmented-ghost-item-fg:     var(--rux-fg-muted);
+	--rux-segmented-ghost-selected-bg: var(--rux-button-quiet-selected-bg);
+	--rux-segmented-ghost-selected-fg: var(--rux-fg);
 
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
 
-	--rux-segmented-track-bg:         var(--rux-well-bg);
-	--rux-segmented-track-padding:    var(--rux-border-width);
-	--rux-segmented-track-radius:     var(--rux-input-border-radius);
-	--rux-segmented-track-height:     var(--rux-space-6);
+	/* — track shell — */
+	--rux-segmented-track-bg: var(--rux-well-bg);
 	/* The track shares input chrome; its indicator is measured at runtime. */
-	--rux-segmented-track-border:     var(--rux-input-border);
-	--rux-segmented-track-gap:        var(--rux-space-0);
+	--rux-segmented-track-border: var(--rux-input-border);
+	--rux-segmented-track-radius: var(--rux-input-border-radius);
 	/* Inputs and segmented tracks share one recessed-well shadow. */
-	--rux-segmented-track-shadow:     var(--rux-shadow-recessed);
+	--rux-segmented-track-shadow:  var(--rux-shadow-recessed);
+	--rux-segmented-track-padding: var(--rux-border-width);
+	--rux-segmented-track-height:  var(--rux-space-6);
+	--rux-segmented-track-gap:     var(--rux-space-0);
 	--rux-segment-indicator-duration: var(--rux-duration-base);
 	--rux-segment-indicator-easing:   var(--rux-ease-out);
 
+	/* — segment item — */
+	--rux-segment-background:     var(--rux-button-ghost-background);
+	--rux-segment-fg:             var(--rux-text-secondary);
+	--rux-segment-border:         none;
 	--rux-segment-radius:         var(--rux-radius-xs);
 	--rux-segment-padding-inline: var(--rux-space-4);
-	--rux-segment-background:     var(--rux-button-ghost-background);
-	--rux-segment-border:         none;
-	--rux-segment-fg:             var(--rux-text-secondary);
 	--rux-segment-fg-hover:       var(--rux-fg);
+
+	/* — active segment — */
 	--rux-segment-active-background:   var(--rux-button-default-background);
 	--rux-segment-active-text:         var(--rux-fg);
 	/* Must be a valid border color: `none` resolves to currentColor here. */
@@ -887,30 +987,35 @@
 	/* ─── COMPONENT · stepper ─────────────────────────────────────────────── */
 	/* Read-only count flanked by decrement and increment buttons. */
 
+	--rux-stepper-count-fg:          var(--rux-fg);
 	--rux-stepper-count-min-width:   2rem;
 	--rux-stepper-count-padding:     var(--rux-space-2);
 	--rux-stepper-count-height:      var(--rux-segmented-height);
-	--rux-stepper-count-fg:          var(--rux-fg);
 	--rux-stepper-count-font-size:   var(--rux-text-sm);
 	--rux-stepper-count-font-weight: var(--rux-weight-semibold);
 
 	/* ─── COMPONENT · number stepper ─────────────────────────────────────── */
 	/* The editable stepper reuses field chrome and defines only its unique anatomy. */
 
-	--rux-number-stepper-height:          var(--rux-input-height);
-	--rux-number-stepper-bg:              var(--rux-input-background);
-	--rux-number-stepper-border:          var(--rux-input-border);
-	--rux-number-stepper-radius:          var(--rux-radius-container);
-	--rux-number-stepper-divider:         var(--rux-border-width) solid var(--rux-border);
+	/* — shell — */
+	--rux-number-stepper-bg:      var(--rux-input-background);
+	--rux-number-stepper-border:  var(--rux-input-border);
+	--rux-number-stepper-radius:  var(--rux-radius-container);
+	--rux-number-stepper-divider: var(--rux-border-width) solid var(--rux-border);
+	--rux-number-stepper-height:  var(--rux-input-height);
+	--rux-number-stepper-hover-bg:     var(--rux-state-hover-overlay);
+	--rux-number-stepper-hover-border: var(--rux-button-border);
+	--rux-number-stepper-transition:   var(--rux-duration-fast) var(--rux-ease-out);
+
+	/* — step buttons — */
 	--rux-number-stepper-btn-width:       var(--rux-field-height);
-	--rux-number-stepper-hover-bg:        var(--rux-state-hover-overlay);
-	--rux-number-stepper-hover-border:    var(--rux-button-border);
-	--rux-number-stepper-transition:      var(--rux-duration-fast) var(--rux-ease-out);
 	--rux-number-stepper-btn-bg:          transparent;
-	--rux-number-stepper-btn-hover-bg:    var(--rux-bg-hover);
-	--rux-number-stepper-btn-active-bg:   var(--rux-bg-active);
 	--rux-number-stepper-btn-fg:          var(--rux-fg);
 	--rux-number-stepper-btn-fg-disabled: var(--rux-fg-disabled);
+	--rux-number-stepper-btn-hover-bg:    var(--rux-bg-hover);
+	--rux-number-stepper-btn-active-bg:   var(--rux-bg-active);
+
+	/* — value — */
 	--rux-number-stepper-value-width:     3rem;
 	--rux-number-stepper-value-bg:        transparent;
 	--rux-number-stepper-value-fg:        var(--rux-fg);
@@ -918,56 +1023,76 @@
 
 	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
 
-	--rux-switch-width:             52px;
-	--rux-switch-height:            var(--rux-button-height);
-	--rux-switch-padding:           var(--rux-space-1);
-	--rux-switch-track-bg:          var(--rux-well-bg);
-	--rux-switch-track-border:      var(--rux-input-border);
-	--rux-switch-track-shadow:      var(--rux-input-shadow);
-	--rux-switch-thumb-bg:          var(--rux-surface-contrast);
-	--rux-switch-thumb-shadow:      var(--rux-button-shadow-raised);
+	/* — shell — */
+	--rux-switch-width:      52px;
+	--rux-switch-height:     var(--rux-button-height);
+	--rux-switch-radius:     var(--rux-radius-xs);
+	--rux-switch-padding:    var(--rux-space-1);
+	--rux-switch-transition: var(--rux-duration-fast) var(--rux-ease-out);
+
+	/* — track — */
+	--rux-switch-track-bg:     var(--rux-well-bg);
+	--rux-switch-track-border: var(--rux-input-border);
+	--rux-switch-track-shadow: var(--rux-input-shadow);
+
+	/* — thumb — */
+	--rux-switch-thumb-bg:             var(--rux-surface-contrast);
+	--rux-switch-thumb-shadow:         var(--rux-button-shadow-raised);
 	--rux-switch-thumb-pressed-shadow: var(--rux-button-shadow-pressed);
-	--rux-switch-checked-bg:        var(--rux-accent);
-	--rux-switch-checked-border:    1px solid var(--rux-surface-4);
-	--rux-switch-checked-shadow:    none;
-	--rux-switch-checked-thumb-bg:  var(--rux-surface-contrast);
+
+	/* — checked — */
+	--rux-switch-checked-bg:       var(--rux-accent);
+	--rux-switch-checked-border:   1px solid var(--rux-surface-4);
+	--rux-switch-checked-shadow:   none;
+	--rux-switch-checked-thumb-bg: var(--rux-surface-contrast);
+
+	/* — states — */
 	--rux-switch-hover-overlay:     var(--rux-button-hover-overlay);
 	--rux-switch-active-overlay:    var(--rux-button-active-overlay);
 	--rux-switch-disabled-bg:       var(--rux-input-disabled-bg);
 	--rux-switch-disabled-thumb-bg: var(--rux-fg-disabled);
 	--rux-switch-disabled-shadow:   none;
-	--rux-switch-radius:            var(--rux-radius-xs);
-	--rux-switch-transition:        var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */
 
-	--rux-checkbox-size:              18px;
-	--rux-checkbox-target-height:     32px;
-	--rux-checkbox-content-gap:       var(--rux-control-content-gap);
-	--rux-checkbox-font-size:         var(--rux-text-sm);
-	--rux-checkbox-bg:                var(--rux-surface-1);
-	--rux-checkbox-border:            var(--rux-border-width) solid var(--rux-border-strong);
-	--rux-checkbox-radius:            var(--rux-radius-control);
+	/* — shell — */
+	--rux-checkbox-bg:     var(--rux-surface-1);
+	--rux-checkbox-border: var(--rux-border-width) solid var(--rux-border-strong);
+	--rux-checkbox-radius: var(--rux-radius-control);
+	--rux-checkbox-size:             18px;
+	--rux-checkbox-target-height:    32px;
+	--rux-checkbox-content-gap:      var(--rux-control-content-gap);
+	--rux-checkbox-font-size:        var(--rux-text-sm);
+	--rux-checkbox-transition-speed: var(--rux-duration-instant);
+
+	/* — states — */
+	--rux-checkbox-hover-bg:     var(--rux-state-hover-overlay);
+	--rux-checkbox-hover-border: var(--rux-accent);
+	--rux-checkbox-active-bg:    var(--rux-bg-active);
+
+	/* — checked — */
 	--rux-checkbox-checked-bg:        var(--rux-accent);
 	--rux-checkbox-checked-border:    var(--rux-accent);
 	--rux-checkbox-checked-hover-bg:  var(--rux-accent-hover);
 	--rux-checkbox-checked-active-bg: var(--rux-accent);
-	--rux-checkbox-hover-bg:          var(--rux-state-hover-overlay);
-	--rux-checkbox-hover-border:      var(--rux-accent);
-	--rux-checkbox-active-bg:         var(--rux-bg-active);
-	--rux-checkbox-disabled-bg:       var(--rux-input-disabled-bg);
-	--rux-checkbox-disabled-border:   var(--rux-input-disabled-border);
-	--rux-checkbox-disabled-fg:       var(--rux-fg-disabled);
-	--rux-checkbox-mark-color:        var(--rux-fg-on-accent);
-	--rux-checkbox-mark-width:        6px;
-	--rux-checkbox-mark-height:       10px;
-	--rux-checkbox-transition-speed:  var(--rux-duration-instant);
+
+	/* — disabled — */
+	--rux-checkbox-disabled-bg:     var(--rux-input-disabled-bg);
+	--rux-checkbox-disabled-border: var(--rux-input-disabled-border);
+	--rux-checkbox-disabled-fg:     var(--rux-fg-disabled);
+
+	/* — check mark — */
+	--rux-checkbox-mark-color:  var(--rux-fg-on-accent);
+	--rux-checkbox-mark-width:  6px;
+	--rux-checkbox-mark-height: 10px;
 
 	/* ─── COMPONENT · color swatch ────────────────────────────────────────── */
 
-	--rux-color-swatch-size:         var(--rux-button-height);
-	--rux-color-swatch-radius:       var(--rux-radius-control);
-	--rux-color-swatch-border:       var(--rux-border-width) solid transparent;
+	/* --rux-color-swatch-bg: not set — the swatch's own fill comes from the
+	   inline --color custom property, not a shared token */
+	--rux-color-swatch-border: var(--rux-border-width) solid transparent;
+	--rux-color-swatch-radius: var(--rux-radius-control);
+	--rux-color-swatch-size:   var(--rux-button-height);
 	--rux-color-swatch-ring-bg:      var(--rux-surface-1);
 	--rux-color-swatch-hover-ring:   0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 3px var(--color, var(--rux-accent));
 	--rux-color-swatch-checked-ring: 0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 4px var(--color, var(--rux-accent));
@@ -975,39 +1100,53 @@
 
 	/* ─── COMPONENT · color picker ────────────────────────────────────────── */
 
+	/* — shell — */
+	--rux-color-picker-bg:           var(--rux-surface-1);
+	--rux-color-picker-fg:           var(--rux-fg);
+	--rux-color-picker-border:       var(--rux-border-width) solid var(--rux-border);
+	--rux-color-picker-hover-border: var(--rux-border-strong);
+	--rux-color-picker-radius:       var(--rux-radius-control);
 	--rux-color-picker-height:         var(--rux-field-height);
 	--rux-color-picker-padding-inline: var(--rux-control-padding-inline);
 	--rux-color-picker-content-gap:    var(--rux-control-content-gap);
-	--rux-color-picker-bg:             var(--rux-surface-1);
-	--rux-color-picker-fg:             var(--rux-fg);
-	--rux-color-picker-border:         var(--rux-border-width) solid var(--rux-border);
-	--rux-color-picker-hover-border:   var(--rux-border-strong);
-	--rux-color-picker-radius:         var(--rux-radius-control);
-	--rux-color-picker-preview-size:   14px;
-	--rux-color-picker-option-size:    22px;
-	--rux-color-picker-option-border:  var(--rux-border-width) solid transparent;
-	--rux-color-picker-option-scale:   1.18;
+	--rux-color-picker-transition:     var(--rux-duration-fast) var(--rux-ease-out);
+
+	/* — preview swatch — */
+	--rux-color-picker-preview-size: 14px;
+
+	/* — option swatches (popover) — */
+	--rux-color-picker-option-size:   22px;
+	--rux-color-picker-option-border: var(--rux-border-width) solid transparent;
+	--rux-color-picker-option-scale:  1.18;
+
+	/* — popover — */
 	--rux-color-picker-popover-bg:     var(--rux-surface-5);
 	--rux-color-picker-popover-radius: var(--rux-radius-container);
-	--rux-color-picker-check-color:    var(--rux-fg-on-accent);
-	--rux-color-picker-check-width:    5px;
-	--rux-color-picker-check-height:   9px;
-	--rux-color-picker-transition:     var(--rux-duration-fast) var(--rux-ease-out);
+
+	/* — check mark — */
+	--rux-color-picker-check-color:  var(--rux-fg-on-accent);
+	--rux-color-picker-check-width:  5px;
+	--rux-color-picker-check-height: 9px;
 
 	/* ─── COMPONENT · color input ─────────────────────────────────────────── */
 
+	/* — shell — */
+	--rux-color-input-bg:           var(--rux-surface-1);
+	--rux-color-input-border:       var(--rux-border-width) solid transparent;
+	--rux-color-input-hover-border: var(--rux-border-strong);
+	--rux-color-input-radius:       var(--rux-radius-control);
 	--rux-color-input-height:         var(--rux-field-height);
 	--rux-color-input-padding-inline: var(--rux-control-padding-inline);
 	--rux-color-input-content-gap:    var(--rux-control-content-gap);
-	--rux-color-input-bg:             var(--rux-surface-1);
-	--rux-color-input-border:         var(--rux-border-width) solid transparent;
-	--rux-color-input-hover-border:   var(--rux-border-strong);
-	--rux-color-input-radius:         var(--rux-radius-control);
-	--rux-color-input-swatch-size:    1.25rem;
-	--rux-color-input-swatch-border:  var(--rux-border-width) solid color-mix(in srgb, currentColor 25%, transparent);
-	--rux-color-input-swatch-radius:  var(--rux-radius-control);
-	--rux-color-input-text-border:    var(--rux-border-width) solid transparent;
 	--rux-color-input-transition:     var(--rux-duration-fast) var(--rux-ease-out);
+
+	/* — swatch — */
+	--rux-color-input-swatch-size:   1.25rem;
+	--rux-color-input-swatch-border: var(--rux-border-width) solid color-mix(in srgb, currentColor 25%, transparent);
+	--rux-color-input-swatch-radius: var(--rux-radius-control);
+
+	/* — text field — */
+	--rux-color-input-text-border: var(--rux-border-width) solid transparent;
 
 	/* ─── COMPONENT · output ──────────────────────────────────────────────── */
 	/* Deliberately NOT input-shaped — no border, no box, no recessed shadow.
@@ -1015,24 +1154,30 @@
 	   box next to actual inputs reads as "this field is disabled," not "this
 	   is a stat." Flat + brighter + bolder than the input text around it
 	   reads as data instead, no matter how its border/bg is tinted. */
-	--rux-output-height:      var(--rux-field-height);
-	--rux-output-padding:     var(--rux-space-0);
-	--rux-output-border:      none;
-	--rux-output-radius:      var(--rux-radius-0);
 	--rux-output-bg:          transparent;
 	--rux-output-fg:          var(--rux-fg);
+	--rux-output-border:      none;
+	--rux-output-radius:      var(--rux-radius-0);
+	/* --rux-output-shadow: not set — deliberately flat, see note above */
+	--rux-output-padding:     var(--rux-space-0);
+	--rux-output-height:      var(--rux-field-height);
 	--rux-output-font-size:   var(--rux-text-md);
 	--rux-output-font-weight: var(--rux-weight-semibold);
 
 	/* ─── COMPONENT · menu ───────────────────────────────────────────────── */
 	/* Concentric math: 8px menu − 4px padding = 4px items. */
 
-	--rux-menu-bg:                  var(--rux-surface-5);
-	--rux-menu-fg:                  var(--rux-fg);
-	--rux-menu-border:              var(--rux-border-width) solid var(--rux-border);
-	--rux-menu-radius:              var(--rux-radius-container);
-	--rux-menu-min-width:           200px;
-	--rux-menu-padding:             var(--rux-space-1);
+	/* — shell — */
+	--rux-menu-bg:     var(--rux-surface-5);
+	--rux-menu-fg:     var(--rux-fg);
+	--rux-menu-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-menu-radius: var(--rux-radius-container);
+	/* --rux-menu-shadow: not set — a floating overlay with no elevation
+	   shadow of its own */
+	--rux-menu-min-width: 200px;
+	--rux-menu-padding:   var(--rux-space-1);
+
+	/* — item — */
 	--rux-menu-item-height:         var(--rux-button-height);
 	--rux-menu-item-padding-block:  var(--rux-space-2);
 	--rux-menu-item-padding-inline: var(--rux-space-3);
@@ -1047,21 +1192,27 @@
 	--rux-menu-item-active-fg:      var(--rux-fg);
 	--rux-menu-item-disabled-fg:    var(--rux-fg-disabled);
 	--rux-menu-item-danger-fg:      var(--rux-danger);
-	--rux-menu-divider:             var(--rux-border);
+
+	/* — divider — */
+	--rux-menu-divider: var(--rux-border);
 
 	/* ─── COMPONENT · popover ────────────────────────────────────────────── */
+	/* Pure positioning wrapper — bg/border/radius/shadow belong to whatever
+	   is inside it (a menu, a color picker, ...), not the popover itself. */
 
 	--rux-popover-offset:           var(--rux-space-1);
 	--rux-popover-viewport-padding: var(--rux-space-2);
 
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
-	--rux-tabs-gap:                var(--rux-space-2);
-	--rux-tab-height:              32px;
-	--rux-tab-padding-inline:      var(--rux-space-3);
-	--rux-tab-content-gap:         var(--rux-control-content-gap);
-	--rux-tab-bg:                  var(--rux-surface-2); /* ghost at rest — never a milky white fill */
-	--rux-tab-fg:                  var(--rux-fg-muted);
+	/* — tab (plain) — */
+	--rux-tab-bg: var(--rux-surface-2); /* ghost at rest — never a milky white fill */
+	--rux-tab-fg: var(--rux-fg-muted);
+	/* --rux-tab-border: not set at rest — only the selected state below has one */
+	--rux-tabs-gap:           var(--rux-space-2);
+	--rux-tab-height:         32px;
+	--rux-tab-padding-inline: var(--rux-space-3);
+	--rux-tab-content-gap:    var(--rux-control-content-gap);
 	--rux-tab-hover-bg:            transparent;
 	--rux-tab-hover-fg:            var(--rux-fg);
 	--rux-tab-pressed-bg:          var(--rux-button-active-overlay);
@@ -1072,45 +1223,54 @@
 	--rux-tab-transition-duration: var(--rux-duration-instant);
 	--rux-tab-transition-easing:   var(--rux-ease-out);
 	/* Shared focus ring replaces the browser's default tab outline. */
-	--rux-tab-focus-ring:          0 0 0 3px var(--rux-accent-ring);
+	--rux-tab-focus-ring: 0 0 0 3px var(--rux-accent-ring);
 
-	--rux-tabs-contained-padding:         var(--rux-space-2);
-	--rux-tabs-contained-gap:             var(--rux-space-3);
-	--rux-tabs-contained-bg:              var(--rux-surface-2);
-	--rux-tabs-contained-radius:          var(--rux-radius-sm);
+	/* — tabs, contained variant — */
+	--rux-tabs-contained-bg:      var(--rux-surface-2);
+	--rux-tabs-contained-radius:  var(--rux-radius-sm);
+	--rux-tabs-contained-padding: var(--rux-space-2);
+	--rux-tabs-contained-gap:     var(--rux-space-3);
 	--rux-tabs-contained-tab-fg:          var(--rux-fg-muted);
 	--rux-tabs-contained-tab-hover-fg:    var(--rux-fg);
 	--rux-tabs-contained-tab-selected-bg: var(--rux-tab-selected-bg);
 	--rux-tabs-contained-tab-selected-fg: var(--rux-tab-selected-fg);
 
+	/* — tabs, attached variant — */
 	/* A real gap separates the tab surfaces without overlapping their rims. */
-	--rux-tabs-attached-gap:                 var(--rux-space-0-5);
-	--rux-tabs-attached-gap-bg:              var(--rux-surface-1);
-	--rux-tabs-attached-bg:                  var(--rux-surface-2);
-	--rux-tabs-attached-border:              none;
-	--rux-tabs-attached-tab-bg:              transparent;
-	--rux-tabs-attached-tab-fg:              var(--rux-fg-muted);
-	--rux-tabs-attached-tab-hover-fg:        var(--rux-fg);
-	--rux-tabs-attached-tab-shadow:          var(--rux-shadow-tab-inactive);
-	--rux-tabs-attached-tab-inline-border:   var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-tabs-attached-tab-top-left-radius: var(--rux-radius-xs);
-	--rux-tabs-attached-tab-top-right-radius: var(--rux-radius-xs);
-	--rux-tabs-attached-pane-rim:            oklch(100% 0 0 / 18%);
-	/* Active attached tabs and their pane share one surface. */
-	--rux-tabs-attached-tab-selected-bg:     var(--rux-surface-3);
-	--rux-tabs-attached-tab-selected-fg:     var(--rux-fg);
-	--rux-tabs-attached-tab-selected-inline-border:   var(--rux-border-width) solid var(--rux-surface-4);
+	--rux-tabs-attached-bg:     var(--rux-surface-2);
+	--rux-tabs-attached-border: none;
+	--rux-tabs-attached-gap:    var(--rux-space-0-5);
+	--rux-tabs-attached-gap-bg: var(--rux-surface-1);
 
-	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-xs);
-	--rux-tabs-attached-tab-selected-shadow: var(--rux-shadow-tab-active);
+	/* — attached tab, inactive — */
+	--rux-tabs-attached-tab-bg:     transparent;
+	--rux-tabs-attached-tab-fg:     var(--rux-fg-muted);
+	--rux-tabs-attached-tab-border: none;
+	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-xs);
+	--rux-tabs-attached-tab-top-right-radius: var(--rux-radius-xs);
+	--rux-tabs-attached-tab-shadow: var(--rux-shadow-tab-inactive);
+	--rux-tabs-attached-tab-hover-fg:      var(--rux-fg);
+	--rux-tabs-attached-tab-inline-border: var(--rux-border-width) solid var(--rux-surface-3);
+
+	/* — attached tab, selected — */
+	/* Active attached tabs and their pane share one surface. */
+	--rux-tabs-attached-tab-selected-bg: var(--rux-surface-3);
+	--rux-tabs-attached-tab-selected-fg: var(--rux-fg);
 	/* Attached tab states share one border; navigation.css hides the active
 	   tab's bottom edge to merge it with the pane. */
-	--rux-tabs-attached-tab-border:          none;
-	--rux-tabs-attached-tab-selected-border: none;
-	--rux-tabs-attached-pane-bg:             var(--rux-surface-3);
-	--rux-tabs-attached-pane-border:         none;
+	--rux-tabs-attached-tab-selected-border:        none;
+	--rux-tabs-attached-tab-selected-inline-border: var(--rux-border-width) solid var(--rux-surface-4);
+	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-xs);
+	--rux-tabs-attached-tab-selected-shadow: var(--rux-shadow-tab-active);
+
+	/* — attached pane (content area beneath the tabs) — */
+	--rux-tabs-attached-pane-bg:     var(--rux-surface-3);
+	--rux-tabs-attached-pane-border: none;
+	--rux-tabs-attached-pane-rim:    oklch(100% 0 0 / 18%);
 
 	/* ─── COMPONENT · progress ───────────────────────────────────────────── */
+	/* Only height is tokenized here — track/fill colors are set directly in
+	   the feature's own CSS, not shared tokens. */
 
 	--rux-progress-height: 6px;
 

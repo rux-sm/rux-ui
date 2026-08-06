@@ -288,9 +288,39 @@
 }
 
 /* — Billing workflow — */
+/* Balance's four states (js/panels/trip-panel.js's sync()): nothing paid
+   yet (red — the full quoted price is still owed), a partial payment in
+   (yellow — still owed, but not the whole thing), paid off exactly (green),
+   overpaid (blue). */
 
-.rux-trip-panel .rux-output.is-negative {
+.rux-trip-panel .rux-output.is-balance-full {
+	color: var(--rux-danger);
+}
+
+.rux-trip-panel .rux-output.is-balance-partial {
+	color: var(--rux-warning);
+}
+
+.rux-trip-panel .rux-output.is-balance-paid {
+	color: var(--rux-success);
+}
+
+.rux-trip-panel .rux-output.is-balance-overpaid {
 	color: var(--rux-info);
+}
+
+/* Billing quantities scan as one numeric column even though some are
+   editable inputs and others are computed outputs. The currency prefix
+   remains independently anchored by .rux-input-group__prefix. */
+#pane-billing :is(#tp-price, #tp-est-mi, #tp-act-mi) {
+	text-align: end;
+	font-variant-numeric: tabular-nums;
+}
+
+#pane-billing :is(#tp-total-paid, #tp-balance-due) {
+	justify-content: flex-end;
+	text-align: end;
+	font-variant-numeric: tabular-nums;
 }
 /* One card body holds all three workflow steps; its shared stack anatomy
    supplies the spacing while these rules handle only billing behavior. */
