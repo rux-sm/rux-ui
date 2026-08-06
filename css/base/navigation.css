@@ -98,7 +98,7 @@
 	background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
 	color: var(--rux-tab-fg);
 	border: var(--rux-button-border);
-	border-radius: var(--rux-radius-control);
+	border-radius: var(--rux-tab-radius);
 	font: inherit;
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-button-font-weight);
@@ -225,14 +225,24 @@
 	border-bottom: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-tabs-attached-tab-selected-radius) var(--rux-tabs-attached-tab-selected-radius) 0 0;
 	color: var(--rux-tabs-attached-tab-selected-fg);
-	
+	/* Was missing entirely — the active tab was silently inheriting the
+	   base rule's flat, inset-only shadow instead of its own elevated
+	   recipe (the one with real drop-shadow layers that cast onto the
+	   neighboring tabs). */
+	box-shadow: var(--rux-tabs-attached-tab-active-shadow);
 }
 
-/* The selected-state shadow is declared after the generic focus rule, so
-   explicitly compose both recipes when an active attached tab has focus. */
+/* The resting-state shadow is declared after the generic focus rule, so
+   explicitly compose both recipes when an active attached tab has focus.
+   (These two were swapped — the active tab's focus rule was pointing at
+   --rux-tabs-attached-tab-selected-shadow, a token that was never actually
+   defined anywhere, which silently invalidated the whole box-shadow
+   declaration — focus ring included — the moment an active tab was
+   keyboard-focused. The inactive tab's own focus rule had picked up the
+   *active* tab's shadow instead, which was backwards.) */
 .rux-tabs--attached > .rux-tab:is(.is-active, [aria-selected="true"]):focus-visible {
 	box-shadow:
-		var(--rux-tabs-attached-tab-selected-shadow),
+		var(--rux-tabs-attached-tab-active-shadow),
 		var(--rux-tab-focus-ring);
 }
 

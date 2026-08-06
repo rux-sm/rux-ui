@@ -973,12 +973,9 @@
 			const status = statusAtBoundary(stops, idx);
 			const statusLabel = status === "sleeper" ? "Sleeper berth" : status === "on" ? "On duty" : "Off duty";
 			return `
-			  <div class="rux-card-section rux-trip-itinerary__idle-day" data-itinerary-day-summary data-stop-idx="${idx}">
-				<span class="rux-icon" aria-hidden="true">pause_circle</span>
-				<div>
-				  <strong>No bus movement</strong>
-				  <span>${escHtml(statusLabel)} at ${escHtml(activity.location)}</span>
-				</div>
+			  <div class="rux-card__body rux-trip-itinerary__idle-day" data-itinerary-day-summary data-stop-idx="${idx}">
+				<strong>No activity</strong>
+				<span>${escHtml(statusLabel)} at ${escHtml(activity.location)}</span>
 			  </div>`;
 		}
 		const hasStats = stats.totalMiles > 0 || stats.totalDrive > 0 || (stats.netMins ?? 0) > 0 || (stats.offDutyMins ?? 0) > 0;
@@ -1012,10 +1009,6 @@
 	}
 
 	const TYPE_LABEL = { pickup: "Pickup", stop: "Stop", sleeper: "Sleeper", return: "Return" };
-	// Icon shown in the 28x28 badge — TYPE_LABEL stays the accessible name
-	// (title/aria-label). Pick-up and Stop share location_on since both are
-	// just "arrive at a place"; return uses home for "back to the yard".
-	const TYPE_ICON = { pickup: "location_on", stop: "location_on", sleeper: "airline_seat_flat", return: "home" };
 
 	function dayNumberFor(stops, idx) {
 		return stops.slice(0, idx).filter((s) => s.type === "day").length + 1;
@@ -1135,6 +1128,9 @@
 		// the route meaning without changing the card-header vocabulary.
 		// isReturn still drops the connecting line below it — nothing follows
 		// the last stop.
+		// Every waypoint type shares the same pin glyph — only the color (via
+		// the --marker-pin--${type} modifier) tells them apart. A different
+		// icon shape per type read as more inconsistent than helpful.
 		const markerIcon = `<span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${type}" aria-hidden="true">location_on</span>`;
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
@@ -1207,7 +1203,10 @@
 		const mins = elapsedMinutes(arriveDate, arriveTime, next.departPrevDate, next.departPrev);
 		const totalVal = mins !== null && mins > 0 ? formatDriveValue(mins) : "—";
 		const label = status === "sleeper" ? "Sleeper" : "Off Duty";
-		const icon = status === "sleeper" ? "airline_seat_flat" : "logout";
+		// Same pin glyph every other itinerary marker uses (see markerIcon in
+		// renderStop) — color alone (the --marker-pin--${status} modifier
+		// below) distinguishes this from other card types.
+		const icon = "location_on";
 		// Passenger-carrier HOS: 8 consecutive hours off duty/sleeper berth
 		// resets the 10hr driving / 15hr on-duty clock (same thresholds already
 		// used for the drive/duty warn states below).
@@ -1490,13 +1489,11 @@
 				if (!daySections) return;
 				const dayDate = addIsoDays(tripStartDate(), dayNumber - 1);
 				const addRow = dayHasSummary ? "" : `
-						<div class="rux-card__section rux-trip-itinerary__add-row">
-							<div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
-								<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}" title="Add to Day ${dayNumber}">
-									<span class="rux-icon" aria-hidden="true">add</span>
-								</button>
-							</div>
-							<span class="rux-field__label">Add stop</span>
+						<div class="rux-trip-itinerary__add-row">
+							<button type="button" class="rux-button rux-button--accent" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}" title="Add to Day ${dayNumber}">
+								<span class="rux-icon" aria-hidden="true">add</span>
+								<span class="rux-btn-label">Add stop</span>
+							</button>
 						</div>`;
 				dayCards.push(`
 					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">

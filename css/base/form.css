@@ -312,11 +312,6 @@
   color: var(--rux-fg);
 }
 
-.rux-input-group--action .rux-input-group__suffix:is(button, a):disabled {
-  opacity: var(--rux-disabled-opacity);
-  cursor: not-allowed;
-}
-
 /* — number — hide native spin buttons — */
 
 .rux-input[type="number"]::-webkit-inner-spin-button,

@@ -118,6 +118,7 @@
 	position: relative;
 	z-index: 2;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+	box-shadow: var(--rux-panel-footer-shadow);
 }
 
 .rux-panel__footer[hidden] {

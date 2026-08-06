@@ -59,7 +59,7 @@
 	// tabs, css/features/trip-panel.css) is tuned for.
 	function schedulerAppRailWidth() {
 		return parseFloat(
-			getComputedStyle(document.querySelector(".scheduler-app")).getPropertyValue("--scheduler-app-rail-width"),
+			getComputedStyle(document.querySelector(".scheduler-app")).getPropertyValue("--rux-panel-rail-width"),
 		);
 	}
 

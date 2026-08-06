@@ -34,10 +34,12 @@
 }
 
 .rux-trip-panel {
+	position: relative;
 	height: 100%;
 	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
 }
+
 
 .rux-trip-panel__status-group .rux-button {
 	min-width: 0;
@@ -218,7 +220,7 @@
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 .rux-trip-panel__contact-select:hover {
-	color: var(--rux-danger-hover);
+	color: var(--rux-danger-bright);
 }
 #tp-contacts-list .rux-trip-panel__contact-row:focus-within .rux-trip-panel__contact-select,
 #tp-contacts-list .rux-trip-panel__contact-select:focus-visible {
@@ -498,7 +500,7 @@
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 .rux-trip-panel__payment-select:hover {
-	color: var(--rux-danger-hover);
+	color: var(--rux-danger-bright);
 }
 #dp-timeoff-delete-btn:disabled {
 	display: none;
@@ -745,7 +747,7 @@
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 .rux-trip-panel__doc-select:hover {
-	color: var(--rux-danger-hover);
+	color: var(--rux-danger-bright);
 }
 
 .rux-trip-panel__doc-select:focus-visible,
@@ -889,7 +891,7 @@
 /* Third step, once even a row of icon-only tabs no longer fits: stack them
    into a vertical rail instead. This is what a collapsed (railed) trip
    panel drawer actually looks like — no separate rail element, just this
-   same nav reflowing as the panel narrows past --scheduler-app-rail-width
+   same nav reflowing as the panel narrows past --rux-panel-rail-width
    (see the --railable override in css/layout/scheduler-app.css). */
 @container (max-width: 64px) {
 	.rux-panel__nav {
@@ -916,18 +918,11 @@
 }
 
 /* Fourth step: at true rail width (<=44px) the stacked icon tabs no longer
-   fit. Hide them, hide the title header, and flip the toggle to its
-   open-panel state so there's always one clear affordance to expand. */
+   fit. Hide them and flip the toggle to its open-panel state so there's
+   always one clear affordance to expand. No header to hide here anymore —
+   the tabs themselves (hidden below, along with body/footer) were the only
+   thing left to hide at this width. */
 @container (max-width: 44px) {
-	/* The scheduler-app rule that shows this header keys off
-	   .scheduler-app__drawer.is-open (two-class specificity) and also
-	   fires during the closing animation while is-open is still present —
-	   !important is the only reliable way to ensure the container query
-	   wins at this width regardless of the drawer's open state. */
-	.rux-trip-panel__header {
-		display: none !important;
-	}
-
 	.rux-panel__nav,
 	.rux-panel__body,
 	.rux-panel__footer {

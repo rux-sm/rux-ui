@@ -564,21 +564,22 @@
 							role="dialog"
 							aria-label="Trip editor"
 						>
-							<header
-								class="rux-panel__header rux-trip-panel__header"
+							<!-- Desktop closes via the resize gutter now that the header's
+							     gone. Mobile has no resize-gutter interaction and the
+							     full-screen drawer overlay covers the workspace-heading
+							     toggle, so it still needs its own close affordance — shown
+							     only <=500px, only while the drawer is open/closing (see
+							     scheduler-app.css). -->
+							<button
+								class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__mobile-close"
+								type="button"
+								aria-label="Close trip editor"
+								data-opens="trip-panel-drawer"
 							>
-								<h2 class="rux-panel__title">Trip Editor</h2>
-								<button
-									class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
-									type="button"
-									aria-label="Close trip editor"
-									data-opens="trip-panel-drawer"
+								<span class="rux-icon" aria-hidden="true"
+									>left_panel_close</span
 								>
-									<span class="rux-icon" aria-hidden="true"
-										>left_panel_close</span
-									>
-								</button>
-							</header>
+							</button>
 							<div
 								class="rux-panel__nav rux-panel__nav--attached"
 							>
@@ -2054,21 +2055,20 @@
 							role="dialog"
 							aria-label="Tools panel"
 						>
-							<header
-								class="rux-panel__header rux-right-panel__header"
+							<!-- Same tabs-as-header treatment as the trip panel — desktop
+							     closes via its resize gutter, mobile gets this dedicated
+							     close button since the header (and its close button) no
+							     longer exists (see scheduler-app.css). -->
+							<button
+								class="rux-button rux-button--ghost rux-button--icon rux-right-panel__mobile-close"
+								type="button"
+								aria-label="Close tools panel"
+								data-opens="right-panel-drawer"
 							>
-								<h2 class="rux-panel__title">Tools</h2>
-								<button
-									class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
-									type="button"
-									aria-label="Close tools panel"
-									data-opens="right-panel-drawer"
+								<span class="rux-icon" aria-hidden="true"
+									>right_panel_close</span
 								>
-									<span class="rux-icon" aria-hidden="true"
-										>right_panel_close</span
-									>
-								</button>
-							</header>
+							</button>
 							<div
 								class="rux-panel__nav rux-panel__nav--attached"
 							>

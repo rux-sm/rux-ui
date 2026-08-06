@@ -46,11 +46,6 @@
 	   defaults. Resize limits remain shared. */
 	--scheduler-app-left-drawer-default-width: 360px;
 	--scheduler-app-right-drawer-default-width: 360px;
-	/* Read by both the rail's own CSS width and drawer.js's close() (see
-	   schedulerAppRailWidth there) so the drawer's own shrink animation
-	   lands on exactly the rail's resting width — one source of truth, no
-	   risk of the two drifting out of sync. */
-	--scheduler-app-rail-width: 36px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -363,7 +358,7 @@
    --drawer-width (not the frozen --drawer-open-width the base rule above
    uses) so the container query re-evaluates continuously as the drawer
    animates, and min-width is fully relaxed so it can actually reach
-   --scheduler-app-rail-width — both only for this modifier, so Fleet/
+   --rux-panel-rail-width — both only for this modifier, so Fleet/
    Driver/Customer's drawers (no --railable class) keep the original
    frozen-width clip-then-vanish behavior unchanged. */
 .scheduler-app__drawer--railable {
@@ -411,7 +406,7 @@
 
 	.scheduler-app__drawer--railable.is-open .rux-driver-panel {
 		border: 0;
-		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+		border-right: var(--rux-left-panel-border);
 	}
 
 	.scheduler-app__drawer--railable.is-open .rux-right-panel {
@@ -425,31 +420,33 @@
 	   once settled, not 0, or the panel below (however wide it thinks it
 	   is) has nothing but a 0-width, overflow:hidden box to render inside. */
 	.scheduler-app__drawer--railable:not(.is-open) {
-		width: var(--scheduler-app-rail-width);
+		width: var(--rux-panel-rail-width);
 		/* Match the minimized panel's fill so any sub-pixel gap at the
 		   wrapper boundary cannot reveal scheduler row/day borders. */
-		background: var(--rux-panel-bg);
+		background: var(--rux-panel-rail-bg);
 	}
 
 	/* Keep only the edge facing the workspace so the collapsed rail reads
 	   as a divider without boxing in its top, bottom, or outside edge. */
 	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel) {
 		display: flex;
-		background: var(--rux-panel-bg);
+		background: var(--rux-panel-rail-bg);
+		color: var(--rux-panel-rail-fg);
 		border: 0;
+		border-radius: var(--rux-panel-rail-radius);
 		pointer-events: none;
 	}
 
 	.scheduler-app__drawer--railable:not(.is-open) .rux-trip-panel {
-		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+		border-right: var(--rux-right-panel-border);
 	}
 
 	.scheduler-app__drawer--railable:not(.is-open) .rux-driver-panel {
-		border-right: var(--rux-panel-border-width) solid var(--rux-border);
+		border-right: var(--rux-right-panel-border);
 	}
 
 	.scheduler-app__drawer--railable:not(.is-open) .rux-right-panel {
-		border-left: var(--rux-panel-border-width) solid var(--rux-border);
+		border-left: var(--rux-right-panel-border);
 	}
 
 	/* Do not rely on the panel container query for the settled state.
@@ -568,6 +565,7 @@
 /* — Right panel shell — */
 
 .rux-right-panel {
+	position: relative;
 	box-sizing: border-box;
 	height: 100%;
 	min-width: var(--rux-panel-min-width);
@@ -623,23 +621,17 @@
 	}
 }
 
-/* — Right panel header & rail — */
-
-.rux-right-panel__header {
-	display: none;
-}
+/* — Right panel rail — */
+/* No header anymore — see .rux-right-panel__mobile-close further down for
+   what replaced it. */
 
 .rux-right-panel__drawer-open {
 	display: none;
 }
 
-/* At true rail width hide header, tabs, and footer; only the open button
+/* At true rail width hide tabs, body, and footer; only the open button
    (outside the inert aside) remains as the sole affordance to expand. */
 @container (max-width: 44px) {
-	.rux-right-panel__header {
-		display: none !important;
-	}
-
 	.rux-panel__nav,
 	.rux-panel__body,
 	.rux-panel__footer {
@@ -1233,7 +1225,7 @@
 	flex: none;
 }
 
-/* ── Panel header (trip + right panel) ────────────────────────────────── */
+/* ── Panel header (driver panel only) ─────────────────────────────────── */
 
 /* Panel header (title + close button) is hidden by default — a railed
    panel (desktop-only concept, see the rail-collapse media query above)
@@ -1245,8 +1237,10 @@
    drawer overlay can end up covering. (The mobile safe-area padding for
    this exact header, a bit further down in the mobile media query, has
    been here the whole time waiting for the header it's padding to actually
-   be visible.) */
-.rux-trip-panel__header,
+   be visible.)
+   Trip and right panel no longer have a header at all — their tabs are the
+   top-most element now (desktop closes via each one's own resize gutter),
+   and their own mobile-only close buttons below handle what this used to. */
 .rux-driver-panel__header {
 	display: none;
 }
@@ -1254,10 +1248,43 @@
 /* :is(.is-open, .is-closing), not just .is-open — matches the mobile close
    animation too, so the header doesn't vanish a frame before the panel
    itself finishes sliding away. */
-.scheduler-app__drawer:is(.is-open, .is-closing) .rux-trip-panel__header,
-.scheduler-app__drawer:is(.is-open, .is-closing) .rux-driver-panel__header,
-.scheduler-app__drawer:is(.is-open, .is-closing) .rux-right-panel__header {
+.scheduler-app__drawer:is(.is-open, .is-closing) .rux-driver-panel__header {
 	display: flex;
+}
+
+/* ── Trip panel mobile close (no header to hold it anymore) ──────────── */
+/* Desktop never shows this — the resize gutter handles open/close there.
+   Mobile has no resize-gutter interaction, and the full-screen drawer
+   overlay covers the workspace-heading toggle, so this is mobile's only
+   way to close the Trip Editor once it's open. */
+.rux-trip-panel__mobile-close {
+	display: none;
+}
+
+@media (max-width: 500px) {
+	.scheduler-app__drawer:is(.is-open, .is-closing) .rux-trip-panel__mobile-close {
+		display: inline-flex;
+		position: absolute;
+		top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
+		right: var(--rux-space-2);
+		z-index: var(--rux-z-sticky);
+	}
+}
+
+/* ── Right panel mobile close (no header to hold it anymore) ─────────── */
+/* Same reasoning as the trip panel's mobile close just above. */
+.rux-right-panel__mobile-close {
+	display: none;
+}
+
+@media (max-width: 500px) {
+	.scheduler-app__drawer:is(.is-open, .is-closing) .rux-right-panel__mobile-close {
+		display: inline-flex;
+		position: absolute;
+		top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
+		right: var(--rux-space-2);
+		z-index: var(--rux-z-sticky);
+	}
 }
 
 @media (min-width: 501px) {
@@ -1272,10 +1299,12 @@
 
 	/* One persistent desktop toggle travels from the open panel header into
 	   the center of the collapsed rail. Keeping the same element mounted
-	   avoids a visible handoff between separate open and close buttons. */
-	.scheduler-app__drawer--railable .rux-trip-panel__drawer-open,
-	.scheduler-app__drawer--railable .rux-driver-panel__drawer-open,
-	.scheduler-app__drawer--railable .rux-right-panel__drawer-open {
+	   avoids a visible handoff between separate open and close buttons.
+	   Driver panel only now — trip and right panel no longer have a header
+	   for this to travel into/out of (their own resize gutters handle
+	   open/close instead), so floating this button over their tabs would
+	   just overlap them with no header to visually "land" in. */
+	.scheduler-app__drawer--railable .rux-driver-panel__drawer-open {
 		display: inline-flex;
 		position: absolute;
 		/* The persistent toggle is a sibling of the panel header, so it does not
@@ -1293,16 +1322,12 @@
 			opacity var(--rux-duration-fast) var(--rux-ease-out);
 	}
 
-	.scheduler-app__drawer--railable.is-open .rux-trip-panel__drawer-open,
-	.scheduler-app__drawer--railable.is-open .rux-driver-panel__drawer-open,
-	.scheduler-app__drawer--railable.is-open .rux-right-panel__drawer-open {
+	.scheduler-app__drawer--railable.is-open .rux-driver-panel__drawer-open {
 		left: calc(100% - var(--rux-space-3) - var(--rux-control-height));
 		transform: none;
 	}
 
-	.scheduler-app__drawer--railable.is-collapsing .rux-trip-panel__drawer-open,
-	.scheduler-app__drawer--railable.is-collapsing .rux-driver-panel__drawer-open,
-	.scheduler-app__drawer--railable.is-collapsing .rux-right-panel__drawer-open {
+	.scheduler-app__drawer--railable.is-collapsing .rux-driver-panel__drawer-open {
 		left: calc((100% - var(--rux-control-height)) / 2);
 		transform: none;
 	}

@@ -160,25 +160,20 @@
 	color: var(--rux-info);
 }
 
+/* No icon anymore — just the two stacked lines (headline + status/location
+   detail), standard 14px body text instead of inheriting the ambient card
+   size, which is what read as oversized against everything around it. */
 .rux-trip-itinerary__idle-day {
-	display: flex;
-	align-items: flex-start;
-	gap: var(--rux-space-2);
-	color: var(--rux-fg-muted);
-}
-
-.rux-trip-itinerary__idle-day > .rux-icon {
-	flex: 0 0 auto;
-	margin-top: 0.125rem;
-}
-
-.rux-trip-itinerary__idle-day > div {
 	display: grid;
 	gap: var(--rux-space-1);
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
 }
 
 .rux-trip-itinerary__idle-day strong {
-	color: var(--rux-fg-default);
+	/* --rux-fg-default doesn't exist as a token — was silently falling back
+	   to the parent's muted color instead of actually standing out. */
+	color: var(--rux-fg);
 	font-weight: var(--rux-weight-medium);
 }
 
@@ -336,7 +331,13 @@
 /* Off Duty dwell card — same pin, no matching stop type of its own. */
 .rux-trip-itinerary__marker-pin--off         { color: var(--rux-itinerary-status-off-duty); }
 
-.rux-trip-itinerary__stop .rux-trip-itinerary__marker {
+/* Dwell cards (Sleeper/Off Duty) need the same treatment — they use their
+   own .rux-trip-itinerary__dwell-card wrapper, not .rux-trip-itinerary__
+   stop, so this selector has to name both or their marker falls back to
+   the bare 12px rail-strip sizing above (stretched to the row's full
+   height instead of a fixed, centered 28×28 badge). */
+.rux-trip-itinerary__stop .rux-trip-itinerary__marker,
+.rux-trip-itinerary__dwell-card .rux-trip-itinerary__marker {
 	align-self: center;
 	align-items: center;
 	width: var(--rux-control-height);
@@ -348,15 +349,15 @@
 /* Fallback for a day that has no End-of-Day summary. Summarized days place
    this same action directly in the summary's left action lane. */
 
-/* Two classes to match (and beat, on source order) .rux-card__section +
-   .rux-card__section's own divider rule in card.css — a single-class
-   selector here would lose on specificity and the divider would still show. */
-.rux-card__section.rux-trip-itinerary__add-row {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-space-2);
-	padding-top: 0;
-	border-top: none;
+/* No longer a .rux-card-section (no divider/background of its own to
+   fight) — just the day-group's own inset around one full-width button,
+   same horizontal margin the idle-day body above uses. */
+.rux-trip-itinerary__add-row {
+	padding: 0 var(--rux-card-padding-inline) var(--rux-card-padding-inline);
+}
+
+.rux-trip-itinerary__add-row > .rux-button {
+	width: 100%;
 }
 
 .rux-trip-itinerary__marker--add {
