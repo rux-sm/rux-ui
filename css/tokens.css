@@ -272,14 +272,14 @@
 	--rux-success-subtle: 	oklch(from var(--rux-success) 	60% 0.22 h / 0.14);
 	--rux-info-subtle: 		oklch(from var(--rux-info) 		60% 0.22 h / 0.14);
 	
-	--rux-danger:  		oklch(from var(--rux-red)    	90% .2 h);
-	--rux-warning: 		oklch(from var(--rux-yellow) 	90% .2 h);
-	--rux-success: 		oklch(from var(--rux-green)  	90% .2 h);
-	--rux-info:    		oklch(from var(--rux-blue)   	90% .2 h);
-	--rux-tag-cyan:    	oklch(from var(--rux-cyan)    	90% .2 h);
-	--rux-tag-purple:	oklch(from var(--rux-purple)   	90% .2 h);
-	--rux-tag-orange:   oklch(from var(--rux-orange)   	90% .2 h);
-	--rux-tag-pink:    	oklch(from var(--rux-pink)   	90% .2 h);
+	--rux-danger:  		oklch(from var(--rux-red)    	90% .28 h);
+	--rux-warning: 		oklch(from var(--rux-yellow) 	90% .28 h);
+	--rux-success: 		oklch(from var(--rux-green)  	90% .28 h);
+	--rux-info:    		oklch(from var(--rux-blue)   	90% .28 h);
+	--rux-tag-cyan:    	oklch(from var(--rux-cyan)    	90% .28 h);
+	--rux-tag-purple:	oklch(from var(--rux-purple)   	90% .28 h);
+	--rux-tag-orange:   oklch(from var(--rux-orange)   	90% .28 h);
+	--rux-tag-pink:    	oklch(from var(--rux-pink)   	90% .28 h);
 	--rux-tag-default:	oklch(from var(--rux-gray)   	90% .00 h);
 
 	--rux-danger-bright: 	oklch(from var(--rux-danger) 	85% 0.2  h);
@@ -918,7 +918,7 @@
 	/* ─── COMPONENT · button ghost danger ─────────────────────────────────────────────── */
 
 	--rux-button-danger-ghost-background: transparent;
-	--rux-button-danger-ghost-text:       var(--rux-red);
+	--rux-button-danger-ghost-text:       var(--rux-danger);
 	--rux-button-danger-ghost-border:     var(--rux-button-border-width) solid transparent;
 	/* Same wash steps as plain ghost, off the danger hue instead of neutral —
 	   reinforces intent through color rather than just a neutral brightening. */

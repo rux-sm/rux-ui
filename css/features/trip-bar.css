@@ -620,11 +620,11 @@
 }
 
 .rux-trip-bar__status--paid {
-	color: var(--rux-success-bright);
+	color: var(--rux-success);
 }
 
 .rux-trip-bar__status-date {
-	color: var(--rux-success-bright);
+	color: var(--rux-success);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
@@ -634,7 +634,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	color: var(--rux-danger-bright);
+	color: var(--rux-danger);
 }
 
 .rux-trip-bar__pending-icon {
@@ -697,7 +697,7 @@
 	white-space: nowrap;
 	min-height: 13px;
 	font-style: italic;
-	color: var(--rux-warning-bright);
+	color: var(--rux-warning);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 }

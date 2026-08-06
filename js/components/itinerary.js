@@ -1106,9 +1106,9 @@
 			   <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="street-address"
 					  value="${escHtml(visibleAddress)}" placeholder="${addressPlaceholder}" aria-label="${escHtml(fieldLabelFor(stops, idx, type))} address" />
                ${isStale
-				? '<span class="rux-icon rux-trip-itinerary__addr-check rux-trip-itinerary__addr-check--stale">error</span>'
+				? '<span class="rux-icon rux-trip-itinerary__addr-check rux-trip-itinerary__addr-check--stale">priority_high</span>'
 				: isVerified
-					? '<span class="rux-icon rux-trip-itinerary__addr-check">check_circle</span>'
+					? '<span class="rux-icon rux-trip-itinerary__addr-check">check</span>'
 					: ""}
              </div>`;
 
@@ -1228,7 +1228,6 @@
 			const sessionMilesVal = sessionMiles !== null && sessionMiles > 0 ? (sessionMiles % 1 === 0 ? String(sessionMiles) : sessionMiles.toFixed(1)) : "—";
 			sessionBlock = `
 		  <div class="rux-field">
-			<label class="rux-field__label">Session ending here</label>
 			<div class="rux-trip-itinerary__stats-values rux-trip-itinerary__stats-values--3col is-expanded">
 			  <div class="rux-field">
 				<label class="rux-field__label">On-Duty</label>

@@ -315,6 +315,7 @@
 
 /* One pin silhouette identifies every location card; color carries its type. */
 .rux-trip-itinerary__marker-pin {
+	--_icon-fill: 1;
 	position: relative;
 	z-index: 1;
 	background: var(--rux-card-section-bg);
@@ -673,7 +674,7 @@
 	right: var(--rux-space-2);
 	top: 50%;
 	transform: translateY(-50%);
-	color: var(--rux-success-bright);
+	color: var(--rux-success);
 	pointer-events: none;
 }
 .rux-trip-itinerary__addr-check--stale {

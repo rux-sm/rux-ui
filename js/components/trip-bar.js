@@ -995,10 +995,10 @@ export function createTripBar(trip, callbacks = {}) {
   });
 
   const STATUS_COLORS = {
-    "pending-assignment": "var(--rux-danger-bright)",
-    "pending-response": "var(--rux-warning-bright)",
-    "confirmed": "var(--rux-success-bright)",
-    "declined": "var(--rux-danger-bright)",
+    "pending-assignment": "var(--rux-danger)",
+    "pending-response": "var(--rux-warning)",
+    "confirmed": "var(--rux-success)",
+    "declined": "var(--rux-danger)",
   };
 
   function applyDriverStatus(iconEl, state) {

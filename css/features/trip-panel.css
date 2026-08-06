@@ -637,18 +637,14 @@
 }
 
 /* The button keeps standard RUX chrome; only its status glyph changes color. */
-.rux-trip-panel__role-label:is(
-	.rux-role--pending-assignment,
-	.rux-role--pending-response,
-	.rux-role--confirmed,
-	.rux-role--declined
-) .rux-icon {
+.rux-trip-panel__role-label .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
 }
-.rux-trip-panel__role-label.rux-role--pending-assignment .rux-icon { color: var(--rux-danger-bright); }
-.rux-trip-panel__role-label.rux-role--pending-response .rux-icon   { color: var(--rux-warning-bright); }
-.rux-trip-panel__role-label.rux-role--confirmed .rux-icon          { color: var(--rux-success-bright); }
-.rux-trip-panel__role-label.rux-role--declined .rux-icon           { color: var(--rux-danger-bright); }
+
+.rux-trip-panel__role-label.rux-role--pending-assignment .rux-icon { color: var(--rux-danger); }
+.rux-trip-panel__role-label.rux-role--pending-response .rux-icon   { color: var(--rux-warning); }
+.rux-trip-panel__role-label.rux-role--confirmed .rux-icon          { color: var(--rux-success); }
+.rux-trip-panel__role-label.rux-role--declined .rux-icon           { color: var(--rux-danger); }
 .rux-trip-panel__role-col {
 	display: flex;
 	flex-direction: column;
