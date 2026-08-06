@@ -13,9 +13,7 @@
 	var media = window.matchMedia("(prefers-color-scheme: light)");
 
 	function effectiveTheme() {
-		var stored = root.getAttribute("data-theme");
-		if (stored === "light" || stored === "dark") return stored;
-		return media.matches ? "light" : "dark";
+		return root.getAttribute("data-theme") === "light" ? "light" : "dark";
 	}
 
 	function syncCheckbox(input) {
@@ -35,11 +33,13 @@
 			localStorage.setItem(STORAGE_KEY, theme);
 		});
 
-		// Only matters while nothing's been manually chosen yet — once
-		// data-theme is set, the toggle's own change handler is the only
-		// thing that moves it.
+		// Continue following the OS only while there is no saved manual choice.
 		media.addEventListener("change", function () {
-			if (!root.getAttribute("data-theme")) syncCheckbox(input);
+			var stored = localStorage.getItem(STORAGE_KEY);
+			if (stored === "light" || stored === "dark") return;
+
+			root.setAttribute("data-theme", media.matches ? "light" : "dark");
+			syncCheckbox(input);
 		});
 	});
 })();

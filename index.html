@@ -9,14 +9,16 @@
 		<meta name="theme-color" content="#f0f1f3" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#202022" media="(prefers-color-scheme: dark)" />
 		<script>
-			// Applied synchronously, before first paint, so a stored light
-			// preference never flashes dark first. Toggle wiring itself lives
-			// in js/core/theme.js, loaded with the rest of the app's scripts.
+			// Resolve the effective theme synchronously to avoid a flash of the
+			// wrong palette. The controller later keeps system mode in sync.
 			(function () {
 				var stored = localStorage.getItem("rux-theme");
-				if (stored === "light" || stored === "dark") {
-					document.documentElement.setAttribute("data-theme", stored);
-				}
+				var theme = stored === "light" || stored === "dark"
+					? stored
+					: window.matchMedia("(prefers-color-scheme: light)").matches
+						? "light"
+						: "dark";
+				document.documentElement.setAttribute("data-theme", theme);
 			})();
 		</script>
 		<meta

@@ -369,7 +369,7 @@
 
 	/* — shell — */
 	--rux-app-header-bg:     var(--rux-shell-bg);
-	--rux-app-header-border: none;
+	--rux-app-header-border: var(--rux-border-width) solid var(--rux-surface-4);
 	/* --rux-app-header-radius: not set — spans full width, no corners */
 	/* --rux-app-header-shadow: not set */
 	--rux-app-header-padding: var(--rux-space-2) var(--rux-space-4);
@@ -1328,110 +1328,68 @@
 /* ==========================================================================
    THEME · light mode
    --------------------------------------------------------------------------
-   Two triggers, same values:
-   1. Auto — follows the OS/browser's prefers-color-scheme, only while
-      nothing has been manually chosen (:not([data-theme])).
-   2. Manual — [data-theme="light"], set by the header theme toggle
-      (js/core/theme.js) and persisted to localStorage. Higher specificity
-      than the plain :root the media query targets, so it always wins over
-      the OS preference once a user has actually chosen a side. There's no
-      matching [data-theme="dark"] block because dark is already the
-      unconditional default in :root above — forcing dark just means NOT
-      matching either trigger here.
+   The startup script resolves a saved preference or the OS preference into
+   one data-theme attribute before first paint. The header toggle maintains
+   that attribute and persists manual choices. Dark remains the default in
+   :root, so only the light overrides need their own block here.
    Same semantic names as the dark values in :root above — only the values
    invert, so every component downstream (which only ever reads the
    semantic/component tokens, never these directly) needs no changes to
    support both themes.
    ========================================================================== */
 
-@media (prefers-color-scheme: light) {
-	:root:not([data-theme]) {
-		color-scheme: light;
-
-		--rux-heading:          oklch(from var(--rux-neutral) 20% c h);
-		--rux-text-primary:     oklch(from var(--rux-neutral) 24% c h);
-		--rux-text-secondary:   oklch(from var(--rux-neutral) 43% c h);
-		--rux-text-tertiary:    oklch(from var(--rux-neutral) 52% c h);
-		--rux-text-disabled:    oklch(from var(--rux-neutral) 64% c h);
-		--rux-gray:             oklch(from var(--rux-neutral) 91% c h);
-
-		--rux-surface-0:        oklch(from var(--rux-neutral) 94.5% c h);
-		--rux-surface-1:        oklch(from var(--rux-neutral) 98.5% c h);
-		--rux-surface-2:        oklch(from var(--rux-neutral) 96.5% c h);
-		--rux-surface-3:        oklch(from var(--rux-neutral) 97.5% c h);
-		--rux-surface-4:        oklch(from var(--rux-neutral) 91.5% c h);
-		--rux-surface-5:        oklch(from var(--rux-neutral) 87% c h);
-		--rux-surface-6:        oklch(from var(--rux-neutral) 80% c h);
-		--rux-surface-7:        oklch(from var(--rux-neutral) 62% c h);
-		--rux-surface-8:        oklch(from var(--rux-neutral) 45% c h);
-		--rux-surface-9:        oklch(from var(--rux-neutral) 28% c h);
-		--rux-surface-contrast: oklch(from var(--rux-neutral) 18% c h);
-
-		--rux-border:        oklch(from var(--rux-neutral) 84% c h);
-		--rux-border-button: oklch(from var(--rux-neutral) 76% c h);
-		--rux-divider:       oklch(from var(--rux-neutral) 88% c h);
-		--rux-well-bg:       oklch(from var(--rux-neutral) 93% c h);
-		--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
-		--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
-		--rux-calendar-grid: 1px solid var(--rux-surface-5);
-
-		--rux-shadow-recessed-color: oklch(0% 0 0 / 12%);
-		--rux-shadow-recessed: inset 0 1px 2px var(--rux-shadow-recessed-color), inset 0 1px 0 oklch(0% 0 0 / 3%);
-		--rux-shadow-elevated: 0 1px 2px oklch(0% 0 0 / 8%), 0 6px 18px oklch(0% 0 0 / 8%);
-		--rux-shadow-raised: inset 0 1px 0 oklch(100% 0 0 / 80%), 0 1px 2px oklch(0% 0 0 / 14%);
-		--rux-shadow-raised-tab: inset 0 1px 0 oklch(100% 0 0 / 80%);
-		--rux-shadow-raised-tab-active: 0 1px 3px oklch(0% 0 0 / 12%);
-		--rux-shadow-pressed: inset 0 1px 3px oklch(0% 0 0 / 15%);
-		--rux-shadow-tab-inactive: inset 0 1px 0 oklch(100% 0 0 / 80%);
-		--rux-shadow-tab-active: 0 -1px 3px oklch(0% 0 0 / 10%);
-		--rux-calendar-row-header-edge-shadow: linear-gradient(to right, oklch(0% 0 0 / 8%), transparent 5px);
-	}
-}
-
 :root[data-theme="light"] {
-	color-scheme: light;
+    color-scheme: light;
 
-	--rux-heading:          oklch(from var(--rux-neutral) 20% c h);
-	--rux-text-primary:     oklch(from var(--rux-neutral) 24% c h);
-	--rux-text-secondary:   oklch(from var(--rux-neutral) 43% c h);
-	--rux-text-tertiary:    oklch(from var(--rux-neutral) 52% c h);
-	--rux-text-disabled:    oklch(from var(--rux-neutral) 64% c h);
-	--rux-gray:             oklch(from var(--rux-neutral) 91% c h);
+    --rux-heading:          oklch(from var(--rux-neutral) 20% c h);
+    --rux-text-primary:     oklch(from var(--rux-neutral) 24% c h);
+    --rux-text-secondary:   oklch(from var(--rux-neutral) 32% c h); /* Darkened slightly for better readability */
+    --rux-text-tertiary:    oklch(from var(--rux-neutral) 48% c h);
+    --rux-text-disabled:    oklch(from var(--rux-neutral) 58% c h);
+    --rux-gray:             oklch(from var(--rux-neutral) 91% c h);
 
-	--rux-surface-0:        oklch(from var(--rux-neutral) 94.5% c h);
-	--rux-surface-1:        oklch(from var(--rux-neutral) 98.5% c h);
-	--rux-surface-2:        oklch(from var(--rux-neutral) 96.5% c h);
-	--rux-surface-3:        oklch(from var(--rux-neutral) 97.5% c h);
-	--rux-surface-4:        oklch(from var(--rux-neutral) 91.5% c h);
-	--rux-surface-5:        oklch(from var(--rux-neutral) 87% c h);
-	--rux-surface-6:        oklch(from var(--rux-neutral) 80% c h);
-	--rux-surface-7:        oklch(from var(--rux-neutral) 62% c h);
-	--rux-surface-8:        oklch(from var(--rux-neutral) 45% c h);
-	--rux-surface-9:        oklch(from var(--rux-neutral) 28% c h);
-	--rux-surface-contrast: oklch(from var(--rux-neutral) 18% c h);
+    --rux-surface-0:        oklch(from var(--rux-neutral) 96% c h);   /* Brightened: App canvas, top header, attached-tab track */
+    --rux-surface-1:        oklch(from var(--rux-neutral) 100% c h);  /* Brightened: Pure white for Workspace/calendar, table wraps, popovers and modal bodies */
+    --rux-surface-2:        oklch(from var(--rux-neutral) 98% c h);   /* Adjusted to fit new scale: Neutral buttons/tabs, table body, default recessed-well fallback */
+    --rux-surface-3:        oklch(from var(--rux-neutral) 92% c h);   /* Adjusted to fit new scale: Side panels and headers, card sections, table headers */
+    --rux-surface-4:        oklch(from var(--rux-neutral) 94% c h);   /* Adjusted to fit new scale: Form cards, panel footers, calendar outlines and header dividers */
+    --rux-surface-5:        oklch(from var(--rux-neutral) 86% c h);   /* Adjusted to fit new scale: Grid lines, menus, suggestions, hover backgrounds */
+    --rux-surface-6:        oklch(from var(--rux-neutral) 74% c h);   /* Active neutral states and checked-switch thumb */
+    --rux-surface-7:        oklch(from var(--rux-neutral) 62% c h);   /* Reserved low-emphasis surface step; no direct component owner */
+    --rux-surface-8:        oklch(from var(--rux-neutral) 45% c h);   /* Reserved medium-emphasis surface step; no direct component owner */
+    --rux-surface-9:        oklch(from var(--rux-neutral) 28% c h);   /* Reserved high-emphasis surface step; no direct component owner */
+    --rux-surface-contrast: oklch(from var(--rux-neutral) 18% c h);   /* Highest-contrast control fill, primarily switch thumbs */
 
-	--rux-border:        oklch(from var(--rux-neutral) 84% c h);
-	--rux-border-button: oklch(from var(--rux-neutral) 76% c h);
-	--rux-divider:       oklch(from var(--rux-neutral) 88% c h);
-	--rux-well-bg:       oklch(from var(--rux-neutral) 93% c h);
-	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
-	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
-	--rux-calendar-grid: 1px solid var(--rux-surface-5);
+    --rux-border:        oklch(from var(--rux-neutral) 82% c h); /* Lightened for crisp, non-heavy division */
+    --rux-border-button: oklch(from var(--rux-neutral) 70% c h);
+    --rux-divider:       oklch(from var(--rux-neutral) 86% c h); /* Lightened slightly to match borders */
+    --rux-well-bg:       oklch(from var(--rux-neutral) 88% c h); /* Brightened panel background */
+    --rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
+    --rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
+    --rux-calendar-grid: 1px solid var(--rux-surface-5);
 
-	--rux-shadow-recessed-color: oklch(0% 0 0 / 12%);
-	--rux-shadow-recessed: inset 0 1px 2px var(--rux-shadow-recessed-color), inset 0 1px 0 oklch(0% 0 0 / 3%);
-	--rux-shadow-elevated: 0 1px 2px oklch(0% 0 0 / 8%), 0 6px 18px oklch(0% 0 0 / 8%);
-	--rux-shadow-raised: inset 0 1px 0 oklch(100% 0 0 / 80%), 0 1px 2px oklch(0% 0 0 / 14%);
-	--rux-shadow-raised-tab: inset 0 1px 0 oklch(100% 0 0 / 80%);
-	--rux-shadow-raised-tab-active: 0 1px 3px oklch(0% 0 0 / 12%);
-	--rux-shadow-pressed: inset 0 1px 3px oklch(0% 0 0 / 15%);
-	--rux-shadow-tab-inactive: inset 0 1px 0 oklch(100% 0 0 / 80%);
-	--rux-shadow-tab-active: 0 -1px 3px oklch(0% 0 0 / 10%);
-	--rux-calendar-row-header-edge-shadow: linear-gradient(to right, oklch(0% 0 0 / 8%), transparent 5px);
+    --rux-shadow-recessed-color: oklch(0% 0 0 / 50%);
+    --rux-shadow-recessed: inset 0 1px 2px var(--rux-shadow-recessed-color), inset 0 1px 0 oklch(0% 0 0 / 25%);
+    --rux-shadow-elevated: 0 1px 2px oklch(0% 0 0 / 50%), 0 6px 18px oklch(0% 0 0 / 25%);
+    --rux-shadow-raised: inset 0 1px 0 oklch(100% 0 0 / 80%), 0 1px 2px oklch(0% 0 0 / 14%);
+    --rux-shadow-raised-tab: inset 0 1px 0 oklch(100% 0 0 / 80%);
+    --rux-shadow-raised-tab-active: 0 1px 3px oklch(0% 0 0 / 50%);
+    --rux-shadow-pressed: inset 0 1px 3px oklch(0% 0 0 / 15%);
+    --rux-shadow-tab-inactive: inset 0 1px 0 oklch(100% 0 0 / 80%);
+    --rux-shadow-tab-active: 0 -1px 3px oklch(0% 0 0 / 10%);
+    --rux-calendar-row-header-edge-shadow: linear-gradient(to right, oklch(0% 0 0 / 8%), transparent 5px);
+    --rux-trip-bar-bg-opacity:             68%;
+    --rux-trip-bar-hover-bg-opacity:       76%;
+    --rux-trip-bar-pressed-bg-opacity:     82%;
+    --rux-trip-bar-selected-bg-opacity:    82%;
+    --rux-trip-bar-tail-opacity:           48%;
+    --rux-trip-bar-tail-hover-opacity:     58%;
+    --rux-trip-bar-tail-pressed-opacity:   64%;
+    --rux-trip-bar-tail-selected-opacity:  64%;
 
-	--rux-button-disabled-background: transparent;
-	--rux-button-disabled-text:       var(--rux-text-disabled);
-	--rux-button-disabled-border:     none;
+    --rux-button-disabled-background: transparent;
+    --rux-button-disabled-text:       var(--rux-text-disabled);
+    --rux-button-disabled-border:     none;
 
-	--rux-switch-thumb-bg:             var(--rux-gray);
+    --rux-switch-thumb-bg:             oklch(100% 0 0); /* Changed to pure white to pop against tracks */
 }
