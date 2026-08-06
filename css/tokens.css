@@ -183,10 +183,6 @@
     inset 0 2px 6px oklch(0% 0 0 / 60%),
     inset 0 1px 0 oklch(0% 0 0 / 80%);
 
-/* Shared structural depth for surfaces tucked beneath adjacent content. */
---rux-shadow-tucked:
-    inset 0 -6px 8px -4px oklch(0% 0 0 / 60%);
-
 /* The header stays flat — it's the tabs below it, not the header itself,
    that carry the recessed cue. A shadow here doubled up against the tabs'
    own top edge and read as a seam/ridge right at the header/tab boundary. */
@@ -221,20 +217,8 @@
 	/* ─── COLOR · surfaces ────────────────────────────────────────────────── */
 	/* Higher numbers are lighter and visually closer. */
 
-	--rux-surface-1:        oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-1:        oklch(from var(--rux-neutral) 0% c h);
-	--rux-surface-2:        oklch(from var(--rux-neutral) 18% c h);
-	--rux-surface-3:        oklch(from var(--rux-neutral) 22% c h);
-	--rux-surface-4:        oklch(from var(--rux-neutral) 26% c h);
-	--rux-surface-5:        oklch(from var(--rux-neutral) 30% c h);
-	--rux-surface-6:        oklch(from var(--rux-neutral) 34% c h);
-	--rux-surface-7:        oklch(from var(--rux-neutral) 38% c h);
-	--rux-surface-8:        oklch(from var(--rux-neutral) 42% c h);
-	--rux-surface-9:        oklch(from var(--rux-neutral) 46% c h);
-	--rux-surface-contrast: oklch(from var(--rux-neutral) 90% c h);
-
-	--rux-surface-0:        oklch(from var(--rux-neutral) 0% c h);  /*  */
-	--rux-surface-1:        oklch(from var(--rux-neutral) 20% c h); /* input */
+	--rux-surface-0:        oklch(from var(--rux-neutral) 0% c h);  /* canvas */
+	--rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* input */
 	--rux-surface-2:        oklch(from var(--rux-neutral) 24% c h); /* card */
 	--rux-surface-3:        oklch(from var(--rux-neutral) 28% c h); /* panel */
 	--rux-surface-4:        oklch(from var(--rux-neutral) 32% c h);
@@ -413,7 +397,10 @@
 	--rux-workspace-fg:            var(--rux-fg);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block:  none;
-	--rux-workspace-radius:        var(--rux-radius-0);
+	/* Routed through the container role (currently also 0) rather than
+	   hardcoded, so a future radius change only needs the two role tokens
+	   edited, per the role's own stated purpose above. */
+	--rux-workspace-radius: var(--rux-radius-container);
 	/* --rux-workspace-shadow: not set */
 	--rux-workspace-gutter: var(--rux-space-4);
 
@@ -431,7 +418,9 @@
 	--rux-calendar-bg:         var(--rux-surface-1);
 	--rux-calendar-border:     var(--rux-border-width) solid var(--rux-surface-3);
 	--rux-calendar-top-border: var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-radius:     var(--rux-radius-0);
+	/* Routed through the container role (currently also 0) rather than
+	   hardcoded — see --rux-workspace-radius above for why. */
+	--rux-calendar-radius: var(--rux-radius-container);
 	--rux-calendar-viewport-rim-shadow: none;
 
 	/* — header — */
@@ -439,7 +428,9 @@
 	   without its ambient drop shadow between neighboring cells. */
 	--rux-calendar-header-bg:     var(--rux-surface-1);
 	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-surface-3);
-	--rux-calendar-header-radius: var(--rux-radius-0);
+	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
+	   of the same container shape, not its own control. */
+	--rux-calendar-header-radius: var(--rux-radius-container);
 	--rux-calendar-header-height: 31px;
 	--rux-calendar-header-shadow:        none;
 	--rux-calendar-header-bottom-shadow: none;
