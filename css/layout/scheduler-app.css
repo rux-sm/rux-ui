@@ -396,6 +396,16 @@
    actual sliding panel for that whole animation instead of never applying
    there at all. */
 @media (min-width: 501px) {
+	/* .rux-panel's own box-shadow (--rux-panel-shadow) is a descendant of
+	   this always-overflow:hidden wrapper (see .scheduler-app__drawer
+	   --railable above), so it gets clipped at the wrapper's edge same as
+	   the rail's shadow did. Re-declare it here, on the wrapper itself,
+	   so the open panel's shadow can actually bleed onto the gutter and
+	   workspace instead of vanishing. */
+	.scheduler-app__drawer--railable.is-open {
+		box-shadow: var(--rux-panel-shadow);
+	}
+
 	/* Open panels also avoid borders against the window. Keep only the
 	   workspace-facing divider: right edge on the left panel, left edge on
 	   the right panel. */
@@ -424,6 +434,12 @@
 		/* Match the minimized panel's fill so any sub-pixel gap at the
 		   wrapper boundary cannot reveal scheduler row/day borders. */
 		background: var(--rux-panel-rail-bg);
+		/* Shadow lives on this wrapper, not the panel inside it — the
+		   wrapper's own overflow:hidden (see .scheduler-app__drawer--railable
+		   above) only clips a *descendant's* box-shadow, never its own, so
+		   this is the one place it can actually bleed onto the gutter and
+		   workspace instead of being clipped at the panel's edge. */
+		box-shadow: var(--rux-panel-rail-shadow);
 	}
 
 	/* Keep only the edge facing the workspace so the collapsed rail reads
@@ -438,15 +454,15 @@
 	}
 
 	.scheduler-app__drawer--railable:not(.is-open) .rux-trip-panel {
-		border-right: var(--rux-right-panel-border);
+		border-right: var(--rux-panel-rail-border);
 	}
 
 	.scheduler-app__drawer--railable:not(.is-open) .rux-driver-panel {
-		border-right: var(--rux-right-panel-border);
+		border-right: var(--rux-panel-rail-border);
 	}
 
 	.scheduler-app__drawer--railable:not(.is-open) .rux-right-panel {
-		border-left: var(--rux-right-panel-border);
+		border-left: var(--rux-panel-rail-border);
 	}
 
 	/* Do not rely on the panel container query for the settled state.

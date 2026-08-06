@@ -295,7 +295,7 @@
 	padding: 0;
 	border-top: 0;
 	border-bottom: var(--rux-panel-nav-border);
-	padding-bottom: var(--rux-panel-padding-block);
+	padding-bottom: var(--rux-panel-tabs-padding);
 	border-radius: 0;
 	background: transparent;
 }

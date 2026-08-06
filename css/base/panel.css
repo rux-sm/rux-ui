@@ -15,6 +15,7 @@
 	border-inline: var(--rux-panel-border-inline);
 	border-block: var(--rux-panel-border-block);
 	border-radius: var(--rux-panel-radius);
+	box-shadow: var(--rux-panel-shadow);
 	isolation: isolate;
 }
 
@@ -77,7 +78,6 @@
 .rux-panel__nav,
 .rux-panel__tabs {
 	min-height: auto;
-	padding: var(--rux-panel-nav-padding);
 	scrollbar-width: none;
 	position: relative;
 	z-index: 1;
@@ -90,17 +90,27 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-panel-content-gap);
+	padding: var(--rux-panel-nav-padding);
 	overflow: visible;
 	background: var(--rux-panel-nav-background);
 	border-bottom: var(--rux-panel-nav-border);
 }
 
 .rux-panel__tabs {
+	padding: var(--rux-panel-tabs-padding);
 	overflow-x: auto;
 }
 
 .rux-panel__nav > .rux-tabs {
 	width: 100%;
+}
+
+/* Solid at the very top; elevated once .rux-panel__body has scrolled
+   underneath it (.is-scrolled toggled by initPanelScrollEdges,
+   js/core/controls.js). */
+.rux-panel__nav.is-scrolled,
+.rux-panel__tabs.is-scrolled {
+	box-shadow: var(--rux-panel-nav-shadow);
 }
 
 .rux-panel__nav::-webkit-scrollbar,

@@ -212,7 +212,7 @@
 
 
     --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* Deepest background / canvas */
-    --rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* Base cards / containers */
+    --rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* 16px Base cards / containers */
     --rux-surface-2:        oklch(from var(--rux-neutral) 20% c h); /* Raised elements */
     --rux-surface-3:        oklch(from var(--rux-neutral) 23% c h); /* Hover states */
     --rux-surface-4:        oklch(from var(--rux-neutral) 26% c h); /* Active / Selected states */
@@ -469,7 +469,7 @@
 	--rux-panel-border-inline: none;
 	--rux-panel-border-block:  none;
 	--rux-panel-radius:        var(--rux-radius-container);
-	/* --rux-panel-shadow: not set */
+	--rux-panel-shadow:        var(--rux-shadow-elevated);
 
 	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */
 	--rux-panel-header-bg:         var(--rux-surface-3);
@@ -481,6 +481,11 @@
 	--rux-panel-nav-background: var(--rux-surface-3);
 	--rux-panel-nav-border:     none;
 	--rux-panel-nav-padding:    var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
+	--rux-panel-tabs-padding:   var(--rux-space-6);
+	/* Only cast while .rux-panel__body has scrolled under it (.is-scrolled,
+	   toggled by initPanelScrollEdges in js/core/controls.js) — flat/solid
+	   at rest, elevated once there's content underneath to separate from. */
+	--rux-panel-nav-shadow:     var(--rux-shadow-elevated);
 
 	/* — footer — */
 	--rux-panel-footer-bg:      var(--rux-surface-4);
@@ -489,7 +494,7 @@
 	--rux-panel-footer-shadow:  var(--rux-shadow-elevated);
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
-	--rux-panel-padding:     var(--rux-space-4) var(--rux-space-4);
+	--rux-panel-padding:   0 var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-content-gap: var(--rux-space-4);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
@@ -502,14 +507,17 @@
 	/* — rail (collapsed state) — the narrow icon strip a railable panel
 	   (trip / right / driver) settles into instead of fully closing.
 	   Desktop-only, see .scheduler-app__drawer--railable in
-	   layout/scheduler-app.css. The workspace-facing edge reuses
-	   --rux-left-panel-border / --rux-right-panel-border — same border in
-	   both open and railed states, not rail-specific. */
-	--rux-panel-rail-width:  16px;
-	--rux-panel-rail-bg:     var(--rux-panel-bg);
-	--rux-panel-rail-fg:     var(--rux-panel-fg);
-	--rux-panel-rail-radius: var(--rux-radius-0);
-	/* --rux-panel-rail-shadow: not set */
+	   layout/scheduler-app.css. Only ever one edge — the side facing the
+	   workspace — so a single shared border value covers left- and
+	   right-hand panels alike; which physical side it lands on is a
+	   selector concern (border-left vs border-right), not a token one. */
+	--rux-panel-rail-width:        16px;
+	--rux-panel-rail-bg:           var(--rux-panel-bg);
+	--rux-panel-rail-fg:           var(--rux-panel-fg);
+	--rux-panel-rail-border-width: var(--rux-panel-border-width);
+	--rux-panel-rail-border:       none;
+	--rux-panel-rail-radius:       var(--rux-radius-0);
+	--rux-panel-rail-shadow:       var(--rux-shadow-elevated);
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
 	/* The body is intentionally a bare content region. */
