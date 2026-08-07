@@ -52,14 +52,14 @@
 @import "./base/popover.css";
 @import "./base/suggestions.css?v=1";
 @import "./base/card.css";
-@import "./base/floating-window.css?v=1";
+@import "./base/floating-window.css?v=2";
 @import "./base/content.css?v=2";
 @import "./base/feedback.css?v=3";
 @import "./base/navigation.css?v=16";
 @import "./base/utils.css?v=2";
 @import "./features/trip-bar.css?v=15";
-@import "./features/trip-panel.css?v=22";
+@import "./features/trip-panel.css?v=28";
 @import "./features/trip-history.css?v=2";
 @import "./features/itinerary.css?v=4";
-@import "./layout/scheduler.css?v=12";
+@import "./layout/scheduler.css?v=13";
 @import "./layout/scheduler-app.css?v=46";

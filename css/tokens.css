@@ -31,7 +31,7 @@
 	--rux-blue:   oklch(60.0% 0.2 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
 	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
-	--rux-gray: 	oklch(from var(--rux-neutral) 42.0% c h);
+	--rux-gray: 	oklch(from var(--rux-neutral) 50.0% c h);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
@@ -136,9 +136,9 @@
 	--rux-radius-full: 9999px;
 
 	/* ─── SHADOW · elevation system ───────────────────────────────────────── */
-	/* One overhead light source, expressed as a tight contact layer plus a
-	   softer ambient layer. Themes override only these colors; component
-	   recipes stay identical. */
+	/* One overhead light source. Raised surfaces combine a subtle top rim,
+	   tight contact shadow, and softer ambient layer. Themes override only
+	   these colors; component recipes stay identical. */
 	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 0% c h / 45%);
 	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 0% c h / 28%);
 	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 0% c h / 34%);
@@ -149,12 +149,15 @@
 		inset 0 1px 2px var(--rux-shadow-inset-color),
 		inset 0 -1px 0 var(--rux-shadow-rim-color);
 	--rux-shadow-1:
+		inset 0 1px 0 var(--rux-shadow-rim-color),
 		0 1px 1px var(--rux-shadow-contact-color),
 		0 2px 4px var(--rux-shadow-ambient-color);
 	--rux-shadow-2:
+		inset 0 1px 0 var(--rux-shadow-rim-color),
 		0 1px 2px var(--rux-shadow-contact-color),
 		0 6px 14px var(--rux-shadow-ambient-color);
 	--rux-shadow-3:
+		inset 0 1px 0 var(--rux-shadow-rim-color),
 		0 2px 4px var(--rux-shadow-contact-color),
 		0 14px 32px var(--rux-shadow-overlay-color);
 	--rux-shadow-pressed: inset 0 1px 3px var(--rux-shadow-inset-color);
@@ -206,7 +209,7 @@
 	   translucent interaction colors adapt to the surface beneath them. */
 
 	--rux-well-bg: oklch(from var(--rux-neutral) 24% c h); /* Raised elements */
-	--rux-thumb-bg: oklch(from var(--rux-neutral) 72% c h); /* Raised elements */
+	--rux-thumb-bg: var(--rux-button-default-background); /* Raised elements */
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 	/* Components use this shared foreground hierarchy. Subtle, placeholder,
@@ -382,6 +385,9 @@
 	/* control height + space-3 top/bottom = 56px, matching panel header */
 	--rux-workspace-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
 
+	/* ─── COMPONENT · floating window ─────────────────────────────────────── */
+	--rux-floating-window-shadow: var(--rux-shadow-3);
+
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
@@ -395,8 +401,8 @@
 	--rux-calendar-viewport-rim-shadow: none;
 
 	/* — header — */
-	/* Header cells share one plane: retain the raised control's rim lighting
-	   without its ambient drop shadow between neighboring cells. */
+	/* Header cells share one flat plane; borders provide separation without
+	   repeating elevation or rim lighting across every grid cell. */
 	--rux-calendar-header-bg:     var(--rux-surface-1);
 	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-surface-4);
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
@@ -410,13 +416,8 @@
 	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-surface-4);
 
 	/* — row header (sticky bus-number rail) — */
-	/* No top rim here, unlike the horizontal header row above — these stack
-	   vertically, so a top highlight repeated on every cell lands at a
-	   different height each time and reads as each row being its own
-	   separately-raised button instead of one flat rail. The corner/header
-	   cell above already caps the rail's real top edge with its own rim; a
-	   bus row only needs the side shadow that separates the sticky rail
-	   from the scrollable grid, same at every row regardless of position. */
+	/* These stack vertically, so repeated elevation would make every row read
+	   as a separate raised button instead of one flat rail. */
 	--rux-calendar-row-header-shadow:      none;
 	--rux-calendar-row-header-end-shadow:  none;
 
@@ -510,8 +511,8 @@
 	--rux-card-section-bg:      var(--rux-surface-3);
 	--rux-card-section-border:  1px solid var(--rux-surface-4);
 	--rux-card-section-outline: 1px solid var(--rux-surface-4);
-	/* Was var(--rux-card-shadow); flattened to none once sections stopped
-	   needing their own depth cue on top of the card's own. */
+	/* Sections are recessed within their parent card rather than independently
+	   elevated above it. */
 	--rux-card-section-shadow: var(--rux-shadow-inset);
 	/* Transparent so the section's continuous inset shadow remains visible
 	   through the header instead of being covered by a duplicate paint layer. */
@@ -520,8 +521,6 @@
 	/* — elevated variant — */
 	/* Elevated cards use their own depth between the card and modal tiers. */
 	--rux-card-elevated-bg: oklch(from var(--rux-neutral) 14% c h);
-	/* Was var(--rux-card-shadow); flattened to none for the same reason as
-	   --rux-card-section-shadow above. */
 	--rux-card-elevated-shadow: var(--rux-shadow-2);
 
 	/* — shared across header/body/footer/section, not any one part's own — */

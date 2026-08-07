@@ -314,7 +314,7 @@
 /* Billing quantities scan as one numeric column even though some are
    editable inputs and others are computed outputs. The currency prefix
    remains independently anchored by .rux-input-group__prefix. */
-#pane-billing :is(#tp-price, #tp-est-mi, #tp-act-mi) {
+#pane-billing :is(#tp-price, #tp-po-amount, #tp-est-mi, #tp-act-mi) {
 	text-align: end;
 	font-variant-numeric: tabular-nums;
 }
@@ -355,17 +355,33 @@
 }
 .rux-trip-panel__po-details {
 	display: grid;
-
-	padding-inline-end: calc(var(--rux-switch-width) + var(--rux-control-content-gap));
+	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
+	align-items: end;
+	gap: var(--rux-control-content-gap);
 }
 .rux-trip-panel__po-details[hidden] {
 	display: none;
 }
 .rux-trip-panel__po-coverage {
-	margin: 0;
+	display: flex;
+	height: var(--rux-field-height);
+	align-items: center;
+	justify-content: center;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+	font-variant-numeric: tabular-nums;
+	font-weight: var(--rux-weight-regular);
+	line-height: 1;
+	white-space: nowrap;
+}
+.rux-trip-panel__po-coverage > .rux-icon {
+	--_icon-size: var(--rux-icon-sm);
+}
+.rux-trip-panel__po-coverage.is-empty {
+	color: var(--rux-danger);
 }
 .rux-trip-panel__po-coverage.is-partial {
-	color: var(--rux-warning);
+	color: var(--rux-orange);
 }
 .rux-trip-panel__po-coverage.is-complete {
 	color: var(--rux-success);

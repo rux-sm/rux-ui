@@ -303,6 +303,14 @@ function formatMoney(value) {
 	})}`;
 }
 
+function formatCoverageAmount(value) {
+	const amount = Math.max(0, Number.parseFloat(value) || 0);
+	return `$${amount.toLocaleString("en-US", {
+		minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+		maximumFractionDigits: 2,
+	})}`;
+}
+
 function localIsoDate(date = new Date()) {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
@@ -499,20 +507,30 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		});
 		if (poCoverageEl) {
 			const poEnabled = !!root.querySelector("#tp-po-received")?.checked;
-			let message = "";
 			let state = "";
-			if (poEnabled && price <= 0) message = "";
-			else if (poEnabled && poAmount <= 0) message = "Enter the amount authorized by this PO.";
-			else if (poEnabled && poAmount < price) {
-				message = `Partial coverage · ${formatMoney(price - poAmount)} not authorized`;
-				state = "partial";
-			} else if (poEnabled) {
-				message = poAmount > price
-					? `Fully authorized · ${formatMoney(poAmount - price)} over quote`
-					: "Fully authorized";
-				state = "complete";
+			const shortfall = Math.max(0, price - poAmount);
+			if (poEnabled && price > 0) {
+				if (poAmount <= 0) state = "empty";
+				else if (shortfall > 0) state = "partial";
+				else state = "complete";
 			}
-			poCoverageEl.textContent = message;
+
+			poCoverageEl.replaceChildren();
+			if (state === "complete") {
+				const checkIcon = document.createElement("span");
+				checkIcon.className = "rux-icon";
+				checkIcon.setAttribute("aria-hidden", "true");
+				checkIcon.textContent = "check";
+				poCoverageEl.append(checkIcon);
+			} else if (state) {
+				poCoverageEl.textContent = `-${formatCoverageAmount(shortfall)}`;
+			}
+			const coverageLabel = state === "complete"
+				? "PO fully covers the quoted price"
+				: state ? `${formatMoney(shortfall)} not authorized` : "";
+			poCoverageEl.setAttribute("aria-label", coverageLabel);
+			poCoverageEl.title = coverageLabel;
+			poCoverageEl.classList.toggle("is-empty", state === "empty");
 			poCoverageEl.classList.toggle("is-partial", state === "partial");
 			poCoverageEl.classList.toggle("is-complete", state === "complete");
 		}

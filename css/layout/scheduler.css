@@ -184,25 +184,11 @@
 	border-inline-end: none;
 }*/
 
-/* Header cells only own their internal lower separator. The rounded viewport
-   owns the continuous top highlight, so no square cell rim can cut across
-   its outer corner. */
+/* Header cells remain on one flat plane; their grid borders provide the
+   separation instead of repeating elevation on every cell. */
 .rux-scheduler__day-head {
 	box-shadow: var(--rux-calendar-header-shadow);
 }
-
-/* A directional strip—not a blurred box-shadow—keeps elevation exclusively
-   below the header row and cannot create vertical halos between day cells. */
-.rux-scheduler__day-head::after {
-	content: "";
-	position: absolute;
-	inset: auto -1px -6px 0;
-	height: 6px;
-	pointer-events: none;
-	
-}
-
-
 
 .rux-scheduler__day-label {
 	display: flex;
