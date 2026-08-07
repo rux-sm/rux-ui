@@ -124,15 +124,3 @@
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
 }
-
-.rux-card--interactive {
-	cursor: pointer;
-	transition:
-		border-color var(--rux-duration-fast) var(--rux-ease-out),
-		background-color var(--rux-duration-fast) var(--rux-ease-out);
-}
-
-.rux-card--interactive:hover {
-	border-color: var(--rux-card-hover-border);
-	background-color: var(--rux-card-hover-bg);
-}

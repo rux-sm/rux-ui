@@ -12,7 +12,6 @@
    .rux-segmented-track        → robust single-select segmented control
                                   (any button count; text, icon, or mixed)
    data-rux-tabs               → .rux-tab single-select group (arrow key navigation)
-   data-rux-stepper            → [−] count [+] stepper; reads min/max from hidden input
    ========================================================================== */
 
 (function () {
@@ -261,24 +260,6 @@
 			}
 		}
 
-		// [data-rux-stepper] — [−] count [+]
-		const stepBtn = e.target.closest("[data-rux-stepper] [data-stepper-dec], [data-rux-stepper] [data-stepper-inc]");
-		if (stepBtn && !stepBtn.disabled) {
-			const stepper = stepBtn.closest("[data-rux-stepper]");
-			const input = stepper.querySelector("input[type='hidden']");
-			const display = stepper.querySelector(".rux-stepper__count");
-			if (!input) return;
-			const min = parseInt(input.min, 10) || 1;
-			const max = parseInt(input.max, 10) || Infinity;
-			const step = parseInt(input.step, 10) || 1;
-			const inc = stepBtn.hasAttribute("data-stepper-inc");
-			const val = Math.min(max, Math.max(min, (parseInt(input.value, 10) || min) + (inc ? step : -step)));
-			input.value = val;
-			if (display) display.textContent = val;
-			stepper.querySelector("[data-stepper-dec]").disabled = val <= min;
-			stepper.querySelector("[data-stepper-inc]").disabled = val >= max;
-			input.dispatchEvent(new Event("input", { bubbles: true }));
-		}
 	});
 
 	/* ── Date / time input state ───────────────────────────────────────────── */

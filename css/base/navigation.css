@@ -65,7 +65,8 @@
 	inset-inline: 0;
 	bottom: 0;
 	height: var(--rux-border-width);
-	background: var(--rux-tabs-attached-pane-rim);
+	/* Reuse the elevation system's directional rim light at the tab/pane seam. */
+	background: var(--rux-shadow-rim-color);
 	pointer-events: none;
 }
 

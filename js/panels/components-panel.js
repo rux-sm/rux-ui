@@ -253,20 +253,20 @@ import BusPicker from "../components/bus-picker.js?v=2";
 
 		if (!document.querySelector('[data-component-page="stepper"]')) {
 			const host = demoPage("stepper", "Stepper");
-			const stepper = el("div", "rux-segmented rux-segmented--inline");
-			stepper.dataset.ruxStepper = "";
-			const input = document.createElement("input");
-			input.type = "hidden";
+			const stepper = el("div", "rux-number-stepper");
+			const decrement = iconButton("remove", "Decrease");
+			decrement.className = "rux-number-stepper__btn";
+			const input = el("input", "rux-number-stepper__input");
+			input.type = "number";
 			input.min = "1";
 			input.max = "10";
 			input.step = "1";
 			input.value = "3";
-			const decrement = iconButton("remove", "Decrease", "default");
-			decrement.dataset.stepperDec = "";
-			const count = el("span", "rux-stepper__count", "3");
-			const increment = iconButton("add", "Increase", "default");
-			increment.dataset.stepperInc = "";
-			stepper.append(input, decrement, count, increment);
+			const increment = iconButton("add", "Increase");
+			increment.className = "rux-number-stepper__btn";
+			stepper.append(decrement, input, increment);
+			decrement.addEventListener("click", () => input.stepDown());
+			increment.addEventListener("click", () => input.stepUp());
 			host.appendChild(stepper);
 		}
 	}

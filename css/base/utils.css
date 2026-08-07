@@ -1,41 +1,6 @@
 /* ==========================================================================
-   UTILS  ·  divider, stack/cluster, prefers-reduced-motion
+	UTILS  ·  shared animation and reduced-motion rules
    ========================================================================== */
-
-/* — divider — */
-
-.rux-divider {
-  border: 0;
-  border-top: var(--rux-border-width) solid var(--rux-border);
-  margin: 0;
-}
-.rux-divider--vertical {
-  border-top: 0;
-  border-left: var(--rux-border-width) solid var(--rux-border);
-  height: 100%;
-  width: 0;
-  margin: 0;
-}
-
-
-/* — stack / cluster — */
-
-.rux-stack    { display: flex; flex-direction: column; gap: var(--rux-space-4); }
-.rux-stack-sm { display: flex; flex-direction: column; gap: var(--rux-space-2); }
-.rux-stack-lg { display: flex; flex-direction: column; gap: var(--rux-space-5); }
-.rux-cluster  { display: flex; align-items: center; gap: var(--rux-space-2); flex-wrap: wrap; }
-.rux-row      { display: flex; align-items: center; gap: var(--rux-space-3); }
-.rux-spacer   { flex: 1; }
-
-/* display:flex above beats the UA [hidden]{display:none} default (same
-   origin/specificity, author wins) — without this, a hidden .rux-stack/
-   .rux-cluster/.rux-row still renders as an empty flex item and still
-   collects a gap from its siblings in whatever flex row it sits in. */
-:is(.rux-stack, .rux-stack-sm, .rux-stack-lg, .rux-cluster, .rux-row)[hidden] {
-	display: none;
-}
-
-
 
 /* — shared animation primitives — */
 

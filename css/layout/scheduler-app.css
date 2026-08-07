@@ -998,7 +998,7 @@
 	   until it means something (today/active-week). The status modifiers
 	   below still set a real border-color, same border-width throughout so
 	   nothing shifts size when a cell's state changes. */
-	border: var(--rux-border-width) solid var(--rux-well-surface);
+	border: var(--rux-border-width) solid transparent;
 	cursor: pointer;
 	box-shadow: var(--rux-input-shadow);
 

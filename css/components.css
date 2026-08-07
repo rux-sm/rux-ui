@@ -33,8 +33,7 @@
    feedback.css     .rux-alert, .rux-toast, .rux-modal, .rux-progress,
                     [data-tooltip], .rux-tooltip
    navigation.css   .rux-tabs, .rux-tab
-   utils.css        .rux-divider, .rux-stack, .rux-cluster, .rux-row,
-                    .rux-spacer, prefers-reduced-motion
+	utils.css        shared animation and reduced-motion rules
    trip-bar.css     .rux-trip-bar — Gantt bar for trip display
    trip-panel.css   .rux-trip-panel — side-panel form editor for trip details
    itinerary.css    .rux-trip-itinerary — timeline stop editor for the Itinerary tab

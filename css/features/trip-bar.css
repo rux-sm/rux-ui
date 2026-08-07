@@ -52,16 +52,9 @@
 .rux-trip-bar {
 	--rux-trip-bar-collapsed-height: 138px;
 	--rux-trip-bar-action-padding-block: 0;
-	--rux-trip-bar-action-padding-inline: 0;
 	--rux-trip-bar-action-button-size: var(--rux-control-height-sm);
-	--rux-trip-bar-continuation-width: 1.5rem;
-	--rux-trip-bar-rail-height: 34px;
-	--rux-trip-bar-rail-offset-y: 24px;
-	--rux-trip-bar-tail-overlap: 6px;
-	--rux-trip-bar-bus-label-min-width: 2.25rem;
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
-	--rux-trip-bar-paid-color: var(--rux-success);
 	--rux-trip-bar-tight-gap: var(--rux-space-px);
 	--rux-trip-bar-compact-padding: var(--rux-space-2);
 	--rux-trip-bar-actions-bg: transparent;
@@ -70,7 +63,6 @@
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
-	--rux-trip-bar-detail-border-color: color-mix(in oklch, var(--rux-fg) 8%, transparent);
 	--rux-trip-bar-action-height: calc(var(--rux-trip-bar-action-button-size) + (var(--rux-space-2) * 2));
 	--rux-trip-bar-active-height: calc(var(--rux-trip-bar-collapsed-height) + var(--rux-trip-bar-action-height));
 

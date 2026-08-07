@@ -350,7 +350,7 @@ Use full readable words.  Exception: `bg` for background.
 Use sentence case for UI copy.
 
 State classes (.is-*, .has-*) are JS-toggled, no rux- prefix.
-BEM for components: .rux-card, .rux-card__body, .rux-card--interactive.
+BEM for components: `.rux-card`, `.rux-card__body`, `.rux-card--elevated`.
 
 When in doubt, edit a token before adding a new component override.
 ```

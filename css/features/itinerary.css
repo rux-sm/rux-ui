@@ -39,7 +39,6 @@
 /* — Outer container — */
 
 .rux-trip-itinerary {
-	--rux-trip-itinerary-label-height: 1.125rem;
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-panel-content-gap);
@@ -98,7 +97,7 @@
 	margin-left: var(--rux-space-2);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-normal);
+	font-weight: var(--rux-weight-regular);
 }
 
 /* Same label + primary-row anatomy as .rux-trip-itinerary__stop. End of Day

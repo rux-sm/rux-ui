@@ -28,7 +28,7 @@
 	--rux-yellow: oklch(80.0% 0.22 085.0); /*  Gold  */
 	--rux-green:  oklch(60.0% 0.28 140.0); /*  Moss  */
 	--rux-cyan:   oklch(60.0% 0.28 195.0); /*  Wind  */
-	--rux-blue:   oklch(50.0% 0.24 255.0); /*  Mana  */
+	--rux-blue:   oklch(60.0% 0.2 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
 	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
 	--rux-gray: 	oklch(from var(--rux-neutral) 36.0% c h);
@@ -78,13 +78,8 @@
 
 	--rux-text-100: 0.75rem;    /* 12px */
 	--rux-text-200: 0.875rem;   /* 14px */
-	--rux-text-300: 1rem;       /* 16px */
 	--rux-text-400: 1.25rem;    /* 20px */
 	--rux-text-500: 1.5rem;     /* 24px */
-	--rux-text-600: 1.875rem;   /* 30px */
-	--rux-text-700: 2.375rem;   /* 38px */
-	--rux-text-800: 2.875rem;   /* 46px */
-	--rux-text-900: 3.5rem;     /* 56px */
 
 	/* ─── TYPOGRAPHY · line-height ───────────────────────────────────────── */
 
@@ -188,9 +183,6 @@
     --rux-surface-4:        oklch(from var(--rux-neutral) 26% c h); /* Active / Selected states */
     --rux-surface-5:        oklch(from var(--rux-neutral) 28% c h); /* Borders / Dividers (prominent) */
     --rux-surface-6:        oklch(from var(--rux-neutral) 44% c h); /* Disabled inputs */
-    --rux-surface-7:        oklch(from var(--rux-neutral) 53% c h); /* Low contrast icons */
-    --rux-surface-8:        oklch(from var(--rux-neutral) 63% c h); /* Secondary text elements */
-    --rux-surface-9:        oklch(from var(--rux-neutral) 74% c h); /* Subheadings */
     --rux-surface-contrast: oklch(from var(--rux-neutral) 50% c h); /* Primary text / High emphasis */
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
@@ -247,18 +239,12 @@
 	--rux-warning: 		oklch(from var(--rux-yellow) 	90% .28 h);
 	--rux-success: 		oklch(from var(--rux-green)  	90% .28 h);
 	--rux-info:    		oklch(from var(--rux-blue)   	90% .28 h);
-	--rux-tag-cyan:    	oklch(from var(--rux-cyan)    	90% .28 h);
 	--rux-tag-purple:	oklch(from var(--rux-purple)   	90% .28 h);
-	--rux-tag-orange:   oklch(from var(--rux-orange)   	90% .28 h);
-	--rux-tag-pink:    	oklch(from var(--rux-pink)   	90% .28 h);
 	--rux-tag-default:	oklch(from var(--rux-gray)   	90% .00 h);
 
 	--rux-danger-bright: 	oklch(from var(--rux-danger) 	85% 0.2  h);
 	--rux-warning-bright: 	oklch(from var(--rux-warning)	85% 0.2  h);
 	--rux-success-bright: 	oklch(from var(--rux-success) 	85% 0.2  h);
-	--rux-info-bright: 		oklch(from var(--rux-info) 		85% 0.2  h);
-
-	--rux-disabled-opacity: 0.45;
 
 	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
 	/* Components route through these roles even while both are square. This
@@ -411,9 +397,7 @@
 	--rux-calendar-header-radius: var(--rux-radius-container);
 	--rux-calendar-header-height: 31px;
 	--rux-calendar-header-shadow:        none;
-	--rux-calendar-header-bottom-shadow: none;
 	--rux-calendar-header-divider:       1px solid var(--rux-surface-4);
-	--rux-calendar-corner-shadow:        none;
 
 	/* — grid — */
 	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-surface-4);
@@ -428,7 +412,6 @@
 	   from the scrollable grid, same at every row regardless of position. */
 	--rux-calendar-row-header-shadow:      none;
 	--rux-calendar-row-header-end-shadow:  none;
-	--rux-calendar-row-header-edge-shadow: linear-gradient(to right, rgb(0 0 0 / 35%), rgb(0 0 0 / 18%) 2px, transparent 6px);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 	/* The body is intentionally a bare scrolling region. */
@@ -436,7 +419,6 @@
 	/* — shell — */
 	--rux-panel-bg:            var(--rux-surface-3);
 	--rux-panel-fg:            var(--rux-fg);
-	--rux-panel-border-width:  var(--rux-border-width);
 	--rux-panel-border-inline: none;
 	--rux-panel-border-block:  none;
 	--rux-panel-radius:        var(--rux-radius-container);
@@ -485,7 +467,6 @@
 	--rux-panel-rail-width:        16px;
 	--rux-panel-rail-bg:           var(--rux-panel-bg);
 	--rux-panel-rail-fg:           var(--rux-panel-fg);
-	--rux-panel-rail-border-width: var(--rux-panel-border-width);
 	--rux-panel-rail-border:       none;
 	--rux-panel-rail-radius:       var(--rux-radius-0);
 	--rux-panel-rail-shadow:       var(--rux-shadow-1);
@@ -528,16 +509,13 @@
 	/* Transparent so the section's continuous inset shadow remains visible
 	   through the header instead of being covered by a duplicate paint layer. */
 	--rux-card-section-header-bg:     transparent;
-	--rux-card-section-header-border: var(--rux-card-section-border);
 
-	/* — variants: elevated / interactive hover — */
+	/* — elevated variant — */
 	/* Elevated cards use their own depth between the card and modal tiers. */
 	--rux-card-elevated-bg: oklch(from var(--rux-neutral) 14% c h);
 	/* Was var(--rux-card-shadow); flattened to none for the same reason as
 	   --rux-card-section-shadow above. */
 	--rux-card-elevated-shadow: var(--rux-shadow-2);
-	--rux-card-hover-bg:     var(--rux-bg-hover);
-	--rux-card-hover-border: var(--rux-border);
 
 	/* — shared across header/body/footer/section, not any one part's own — */
 	--rux-card-padding-block:  0 var(--rux-space-4);
@@ -940,15 +918,6 @@
 	--rux-segmented-item-disabled-bg: transparent;
 	--rux-segmented-item-disabled-fg: var(--rux-fg-disabled);
 
-	/* — ghost variant — */
-	--rux-segmented-ghost-bg:          transparent;
-	--rux-segmented-ghost-border:      none;
-	--rux-segmented-ghost-item-bg:     transparent;
-	--rux-segmented-ghost-item-border: transparent;
-	--rux-segmented-ghost-item-fg:     var(--rux-fg-muted);
-	--rux-segmented-ghost-selected-bg: var(--rux-button-quiet-selected-bg);
-	--rux-segmented-ghost-selected-fg: var(--rux-fg);
-
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
 
 	/* — track shell — */
@@ -980,16 +949,6 @@
 	--rux-segment-active-border-color: transparent;
 	/* Active segments reuse the default button's raised bevel. */
 	--rux-segment-active-shadow:       var(--rux-button-shadow-raised);
-
-	/* ─── COMPONENT · stepper ─────────────────────────────────────────────── */
-	/* Read-only count flanked by decrement and increment buttons. */
-
-	--rux-stepper-count-fg:          var(--rux-fg);
-	--rux-stepper-count-min-width:   2rem;
-	--rux-stepper-count-padding:     var(--rux-space-2);
-	--rux-stepper-count-height:      var(--rux-segmented-height);
-	--rux-stepper-count-font-size:   var(--rux-text-sm);
-	--rux-stepper-count-font-weight: var(--rux-weight-semibold);
 
 	/* ─── COMPONENT · number stepper ─────────────────────────────────────── */
 	/* The editable stepper reuses field chrome and defines only its unique anatomy. */
@@ -1044,7 +1003,6 @@
 	/* — checked — */
 	--rux-switch-checked-bg:       var(--rux-accent);
 	--rux-switch-checked-border:   none;
-	--rux-switch-checked-shadow:   none;
 	--rux-switch-checked-thumb-bg: var(--rux-thumb-bg);
 
 	/* — states — */
@@ -1248,7 +1206,6 @@
 
 	/* — tabs, contained variant — */
 	--rux-tabs-contained-bg:      var(--rux-surface-2);
-	--rux-tabs-contained-radius:  var(--rux-radius-sm);
 	--rux-tabs-contained-padding: var(--rux-space-2);
 	--rux-tabs-contained-gap:     var(--rux-space-0);
 	--rux-tabs-contained-tab-fg:          var(--rux-fg-muted);
@@ -1261,7 +1218,6 @@
 	--rux-tabs-attached-bg:     var(--rux-surface-0);
 	--rux-tabs-attached-border: none;
 	--rux-tabs-attached-gap:    var(--rux-space-0);
-	--rux-tabs-attached-gap-bg: var(--rux-workspace-bg);
 
 	/* — attached tab, inactive — */
 	--rux-tabs-attached-tab-bg:     var(--rux-well-bg);
@@ -1285,9 +1241,7 @@
 	--rux-tabs-attached-tab-active-shadow: var(--rux-shadow-1);
 
 	/* — attached pane (content area beneath the tabs) — */
-	--rux-tabs-attached-pane-bg:     var(--rux-surface-3);
 	--rux-tabs-attached-pane-border: none;
-	--rux-tabs-attached-pane-rim:   oklch(100% 0 0 / 16%); 
 
 	/* ─── COMPONENT · progress ───────────────────────────────────────────── */
 	/* Only height is tokenized here — track/fill colors are set directly in
@@ -1315,62 +1269,9 @@
    ========================================================================== */
 
 :root[data-theme="light"] {
-    color-scheme: light;
+	color-scheme: light;
 
-    --rux-heading:          oklch(from var(--rux-neutral) 20% c h);
-    --rux-text-primary:     oklch(from var(--rux-neutral) 10% c h);
-    --rux-text-secondary:   oklch(from var(--rux-neutral) 32% c h); /* Darkened slightly for better readability */
-    --rux-text-tertiary:    oklch(from var(--rux-neutral) 48% c h);
-    --rux-text-disabled:    oklch(from var(--rux-neutral) 58% c h);
-    --rux-gray:             oklch(from var(--rux-neutral) 98% c h);
-
-    --rux-surface-0:        oklch(from var(--rux-neutral) 92% c h);   /* Brightened: App canvas, top header, attached-tab track */
-    --rux-surface-1:        oklch(from var(--rux-neutral) 96% c h);  /* Brightened: Pure white for Workspace/calendar, table wraps, popovers and modal bodies */
-    --rux-surface-2:        oklch(from var(--rux-neutral) 98% c h);   /* Adjusted to fit new scale: Neutral buttons/tabs, table body, default recessed-well fallback */
-    --rux-surface-3:        oklch(from var(--rux-neutral) 92% c h);   /* Adjusted to fit new scale: Side panels and headers, card sections, table headers */
-    --rux-surface-4:        oklch(from var(--rux-neutral) 98% c h);   /* Adjusted to fit new scale: Form cards, panel footers, calendar outlines and header dividers */
-    --rux-surface-5:        oklch(from var(--rux-neutral) 86% c h);   /* Adjusted to fit new scale: Grid lines, menus, suggestions, hover backgrounds */
-    --rux-surface-6:        oklch(from var(--rux-neutral) 74% c h);   /* Active neutral states and checked-switch thumb */
-    --rux-surface-7:        oklch(from var(--rux-neutral) 62% c h);   /* Reserved low-emphasis surface step; no direct component owner */
-    --rux-surface-8:        oklch(from var(--rux-neutral) 45% c h);   /* Reserved medium-emphasis surface step; no direct component owner */
-    --rux-surface-9:        oklch(from var(--rux-neutral) 28% c h);   /* Reserved high-emphasis surface step; no direct component owner */
-    --rux-surface-contrast: oklch(from var(--rux-neutral) 96% c h);   /* Highest-contrast control fill, primarily switch thumbs */
-
-    --rux-border:        oklch(from var(--rux-neutral) 82% c h); /* Lightened for crisp, non-heavy division */
-    --rux-border-button: oklch(from var(--rux-neutral) 70% c h);
-    --rux-divider:       oklch(from var(--rux-neutral) 86% c h); /* Lightened slightly to match borders */
-    --rux-well-bg:       oklch(from var(--rux-neutral) 88% c h); /* Brightened panel background */
-    --rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
-    --rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
-    --rux-calendar-grid: 1px solid var(--rux-surface-5);
-	--rux-calendar-header-border: 1px solid var(--rux-surface-5);
-	--rux-calendar-border:     var(--rux-border-width) solid var(--rux-surface-5);
-	--rux-calendar-top-border: var(--rux-border-width) solid var(--rux-surface-5);
-	--rux-calendar-header-divider:       1px solid var(--rux-surface-5);
-
-	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 28% c h / 16%);
-	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 28% c h / 10%);
-	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 24% c h / 14%);
-	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 28% c h / 20%);
-	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 55%);
-    --rux-calendar-row-header-edge-shadow: linear-gradient(to right, oklch(0% 0 0 / 8%), transparent 5px);
-	--rux-tabs-attached-pane-rim: oklch(100% 0 0 / 80%);
-    --rux-trip-bar-bg-opacity:             68%;
-    --rux-trip-bar-hover-bg-opacity:       76%;
-    --rux-trip-bar-pressed-bg-opacity:     82%;
-    --rux-trip-bar-selected-bg-opacity:    82%;
-    --rux-trip-bar-tail-opacity:           48%;
-    --rux-trip-bar-tail-hover-opacity:     58%;
-    --rux-trip-bar-tail-pressed-opacity:   64%;
-    --rux-trip-bar-tail-selected-opacity:  64%;
-
-    --rux-button-disabled-background: transparent;
-    --rux-button-disabled-text:       var(--rux-text-disabled);
-    --rux-button-disabled-border:     none;
-
-    --rux-thumb-bg:             var(--rux-surface-contrast); /* Changed to pure white to pop against tracks */
-	--rux-button-default-background: var(--rux-surface-contrast); /* Changed to pure white to pop against surfaces */
-
+	/* ─── Primitives ──────────────────────────────────────────────────────── */
 	--rux-red:    oklch(60.0% 0.22 024.0); /*  Gore  */
 	--rux-orange: oklch(80.0% 0.22 050.0); /*  Pyro  */
 	--rux-yellow: oklch(80.0% 0.22 085.0); /*  Gold  */
@@ -1379,4 +1280,59 @@
 	--rux-blue:   oklch(60.0% 0.24 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
 	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
+	--rux-gray:   oklch(from var(--rux-neutral) 98% c h);
+
+	/* ─── Text ────────────────────────────────────────────────────────────── */
+	--rux-heading:        oklch(from var(--rux-neutral) 20% c h);
+	--rux-text-primary:   oklch(from var(--rux-neutral) 10% c h);
+	--rux-text-secondary: oklch(from var(--rux-neutral) 32% c h);
+	--rux-text-tertiary:  oklch(from var(--rux-neutral) 48% c h);
+	--rux-text-disabled:  oklch(from var(--rux-neutral) 58% c h);
+
+	/* ─── Surfaces ────────────────────────────────────────────────────────── */
+	--rux-surface-0:        oklch(from var(--rux-neutral) 92% c h); /* App canvas and top header */
+	--rux-surface-1:        oklch(from var(--rux-neutral) 98% c h); /* Workspace, calendar and overlay bodies */
+	--rux-surface-2:        oklch(from var(--rux-neutral) 98% c h); /* Neutral controls and table bodies */
+	--rux-surface-3:        oklch(from var(--rux-neutral) 92% c h); /* Side panels and table headers */
+	--rux-surface-4:        oklch(from var(--rux-neutral) 98% c h); /* Cards and panel footers */
+	--rux-surface-5:        oklch(from var(--rux-neutral) 86% c h); /* Grid lines, menus and hover surfaces */
+	--rux-surface-6:        oklch(from var(--rux-neutral) 74% c h); /* Strong active neutral states */
+	--rux-surface-contrast: oklch(from var(--rux-neutral) 96% c h); /* Raised control and thumb fill */
+	--rux-well-bg:          oklch(from var(--rux-neutral) 88% c h); /* Recessed input and track fill */
+
+	/* ─── Borders and interaction ─────────────────────────────────────────── */
+	--rux-border:               oklch(from var(--rux-neutral) 82% c h);
+	--rux-border-button:        oklch(from var(--rux-neutral) 70% c h);
+	--rux-divider:              oklch(from var(--rux-neutral) 86% c h);
+	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
+	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
+
+	/* ─── Elevation colors ────────────────────────────────────────────────── */
+	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 28% c h / 16%);
+	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 28% c h / 10%);
+	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 24% c h / 14%);
+	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 28% c h / 20%);
+	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 55%);
+
+	/* ─── Component overrides ─────────────────────────────────────────────── */
+	--rux-calendar-grid:           var(--rux-border-width) solid var(--rux-surface-5);
+	--rux-calendar-border:         var(--rux-calendar-grid);
+	--rux-calendar-top-border:     var(--rux-calendar-grid);
+	--rux-calendar-header-border:  var(--rux-calendar-grid);
+	--rux-calendar-header-divider: var(--rux-calendar-grid);
+
+	--rux-trip-bar-bg-opacity:             68%;
+	--rux-trip-bar-hover-bg-opacity:       76%;
+	--rux-trip-bar-pressed-bg-opacity:     82%;
+	--rux-trip-bar-selected-bg-opacity:    82%;
+	--rux-trip-bar-tail-opacity:           48%;
+	--rux-trip-bar-tail-hover-opacity:     58%;
+	--rux-trip-bar-tail-pressed-opacity:   64%;
+	--rux-trip-bar-tail-selected-opacity:  64%;
+
+	--rux-button-default-background:  var(--rux-surface-contrast);
+	--rux-button-disabled-background: transparent;
+	--rux-button-disabled-text:       var(--rux-text-disabled);
+	--rux-button-disabled-border:     none;
+	--rux-thumb-bg:                   var(--rux-surface-contrast);
 }
