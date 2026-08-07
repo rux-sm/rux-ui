@@ -187,7 +187,10 @@
 	}
 
 	function isStatusConfirmed(status, cfg = config) {
-		return normalizeConfig(cfg).confirmWhen.includes(status);
+		// Partial PO is operationally confirmed by the same workflow choice as
+		// PO received, while its distinct status remains available for warnings.
+		const confirmationStatus = status === "po_partial" ? "po_received" : status;
+		return normalizeConfig(cfg).confirmWhen.includes(confirmationStatus);
 	}
 
 	function isStateConfirmed(state, cfg = config) {

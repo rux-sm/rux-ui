@@ -29,7 +29,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=90" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=181" />
+		<link rel="stylesheet" href="./css/components.css?v=184" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
@@ -6735,11 +6735,11 @@
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
 		<script src="./js/core/controls.js?v=4" defer></script>
-		<script src="./js/core/billing-config.js?v=3"></script>
+		<script src="./js/core/billing-config.js?v=4"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=32"></script>
+		<script src="./js/panels/trip-panel.js?v=33"></script>
 		<script src="./js/components/itinerary.js?v=23"></script>
 		<script src="./js/panels/driver-panel.js?v=20" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
@@ -6782,7 +6782,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=14";
+			} from "./js/components/trip-bar.js?v=16";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -7925,7 +7925,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=26");
+					const db = await import("./js/data/trip-db.js?v=27");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10766,7 +10766,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=26");
+					const db = await import("./js/data/trip-db.js?v=27");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;

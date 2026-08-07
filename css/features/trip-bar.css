@@ -104,6 +104,12 @@
 		transform var(--rux-duration-fast) var(--rux-ease-out);
 }
 
+/* Partial POs keep the confirmed trip surface (including color overrides),
+   while the shared outline warns that authorization is incomplete. */
+.rux-trip-bar--partial-po {
+	--_outline: var(--rux-warning);
+}
+
 /* Drag-to-reassign (see installBusDrag() in index.html) — the original bar
    stays put as a dimmed placeholder while a lightweight "ghost" outline (below)
    is what actually follows the cursor. Keeps the real bar's slot visible
@@ -633,6 +639,10 @@
 	flex: none;
 	stroke-width: 2;
 	padding-right: var(--rux-space-2);
+}
+
+.rux-trip-bar__pending-icon--warning {
+	color: var(--rux-warning);
 }
 
 /* ---------- Text rows ---------- */

@@ -1252,7 +1252,17 @@ import {
 				.select("id")
 				.single();
 
-			if (tripErr) throw tripErr;
+			if (tripErr) {
+				const detail = [tripErr.message, tripErr.details, tripErr.hint]
+					.filter(Boolean)
+					.join(" ");
+				if (/po_amount|schema cache/i.test(detail)) {
+					throw new Error(
+						"PO Amount requires the trip-po-coverage-patch.sql database update.",
+					);
+				}
+				throw tripErr;
+			}
 			const savedId = trip.id;
 
 			// Replace bus assignments (cascade deletes trip_drivers)

@@ -501,6 +501,13 @@ const PENDING_INDICATORS = [
     check: (trip) => trip.paymentStatus === "contract_signed",
   },
   {
+    key: "partial_po",
+    icon: "request_quote",
+    label: "Partial PO — authorization incomplete",
+    tone: "warning",
+    check: (trip) => trip.paymentStatus === "po_partial",
+  },
+  {
     key: "invoice",
     icon: "receipt",
     label: "Pending invoice",
@@ -815,6 +822,7 @@ export function createTripBar(trip, callbacks = {}) {
   bar.className = [
     "rux-trip-bar",
     confirmed ? "" : "rux-trip-bar--unconfirmed",
+    trip.paymentStatus === "po_partial" ? "rux-trip-bar--partial-po" : "",
     singleDay ? "" : "rux-trip-bar--multi-day",
     trip.conflict ? "rux-trip-bar--has-conflict" : "",
     trip.fromPrev ? "rux-trip-bar--from-prev" : "",
@@ -916,7 +924,10 @@ export function createTripBar(trip, callbacks = {}) {
   pending.className = "rux-trip-bar__pending";
   const summaryMarkerLabels = [...pendingItems.map((item) => item.label)];
   pendingItems.forEach((item) => {
-    const marker = icon(item.icon, "rux-icon rux-trip-bar__pending-icon");
+    const marker = icon(
+      item.icon,
+      `rux-icon rux-trip-bar__pending-icon${item.tone ? ` rux-trip-bar__pending-icon--${item.tone}` : ""}`,
+    );
     setFloatingTooltip(marker, item.label);
     pending.appendChild(marker);
   });

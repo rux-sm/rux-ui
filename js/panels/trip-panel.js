@@ -501,7 +501,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 			const poEnabled = !!root.querySelector("#tp-po-received")?.checked;
 			let message = "";
 			let state = "";
-			if (poEnabled && price <= 0) message = "Add a quoted price to verify PO coverage.";
+			if (poEnabled && price <= 0) message = "";
 			else if (poEnabled && poAmount <= 0) message = "Enter the amount authorized by this PO.";
 			else if (poEnabled && poAmount < price) {
 				message = `Partial coverage · ${formatMoney(price - poAmount)} not authorized`;

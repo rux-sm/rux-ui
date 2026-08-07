@@ -355,7 +355,8 @@
 }
 .rux-trip-panel__po-details {
 	display: grid;
-	gap: var(--rux-control-content-gap);
+
+	padding-inline-end: calc(var(--rux-switch-width) + var(--rux-control-content-gap));
 }
 .rux-trip-panel__po-details[hidden] {
 	display: none;
