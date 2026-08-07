@@ -3,23 +3,18 @@
    Trip-departure readiness + prep checklist — see js/panels/tasks-panel.js.
    ========================================================================== */
 
-/* Same seamless-card-stack technique as the Trip Editor's own panel
-   (.rux-trip-panel__pane in trip-panel.css) — day-group cards sit flush
-   against the pane (0 padding, same as .rux-panel__pane's default) and
-   flush against each other, each card's own 16px header/body padding
-   providing the edge inset instead of an extra wrapping card. Every
-   header's top border is dropped so it never doubles the previous card's
-   own bottom border (the first card just has no line above it, same as
-   any top-of-list item). */
+/* Day groups are separate cards, so use the standard component gap between
+   them while retaining the pane's existing outer inset. */
+#rp-tasks-departures-body > .rux-tasks__day-group + .rux-tasks__day-group {
+	margin-top: var(--rux-space-4);
+}
+
 #rp-tasks-departures-body > .rux-card > .rux-card__header {
 	border-top: 0;
 }
 
-/* Trips / Post Trip toggle, sat above the day-group card stack. The stack
-   itself is flush against the pane (see the note above), so this is the one
-   place in the pane that needs its own inset. */
+/* Trips / Post Trip toggle above the day-group card stack. */
 .rux-tasks__header {
-	padding: var(--rux-panel-padding-block);
 	padding-bottom: var(--rux-space-2);
 }
 

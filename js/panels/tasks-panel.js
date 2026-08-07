@@ -23,7 +23,7 @@ const postTripStatus = document.getElementById("rp-post-trip-status");
 // "post_trip" (trips whose end date has already passed — see tripEndDate —
 // tracked for sending the post-trip survey, per supabase/post-trip-survey-patch.sql).
 let activeList = "trips";
-let postTripFilter = "all";
+let postTripFilter = "needs_follow_up";
 listToggle?.addEventListener("rux:segment-change", (e) => {
 	activeList = e.detail.value;
 	render();
