@@ -381,7 +381,7 @@
 	color: var(--rux-danger);
 }
 .rux-trip-panel__po-coverage.is-partial {
-	color: var(--rux-orange);
+	color: var(--rux-warning);
 }
 .rux-trip-panel__po-coverage.is-complete {
 	color: var(--rux-success);

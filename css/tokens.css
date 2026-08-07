@@ -31,7 +31,7 @@
 	--rux-blue:   oklch(60.0% 0.2 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
 	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
-	--rux-gray: 	oklch(from var(--rux-neutral) 50.0% c h);
+	--rux-gray: 	oklch(from var(--rux-neutral) 56.0% c h);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
@@ -49,6 +49,7 @@
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
 	--rux-accent:        var(--rux-blue);
+	--rux-accent-fill:   oklch(from var(--rux-accent) l 0.16 h);
 	--rux-accent-hover:  oklch(from var(--rux-accent) 70% c h);
 	--rux-accent-subtle: oklch(from var(--rux-accent) l c h / 0.14);
 	--rux-accent-ring:   oklch(from var(--rux-accent) 70% 0.28 h);
@@ -227,27 +228,59 @@
 	--rux-fg-on-accent-disabled: oklch(from var(--rux-white) l c h / 40%);
 
 	/* ─── COLOR · status roles ───────────────────────────────────────────── */
-	/* Same derivation pattern as the status colors above — hue always comes
-	   from the matching --rux-success/warning/info/danger alias (the `h`
-	   keyword), not a separate hardcoded number, so a bright/subtle/hover
-	   variant can never drift to a different hue than its own base color.
-	   L/C/alpha are unchanged from before, just re-sourced. */
+	/* Base: ordinary semantic text/icons on the current theme's surfaces. */
+	--rux-danger-base:  oklch(from var(--rux-red)    90% 0.28 h);
+	--rux-warning-base: oklch(from var(--rux-yellow) 90% 0.28 h);
+	--rux-success-base: oklch(from var(--rux-green)  90% 0.28 h);
+	--rux-info-base:    oklch(from var(--rux-blue)   90% 0.28 h);
+	--rux-danger:  var(--rux-danger-base);
+	--rux-warning: var(--rux-warning-base);
+	--rux-success: var(--rux-success-base);
+	--rux-info:    var(--rux-info-base);
 
 	--rux-danger-subtle:	oklch(from var(--rux-danger) 	60% 0.22 h / 0.14);
 	--rux-warning-subtle: 	oklch(from var(--rux-warning) 	60% 0.22 h / 0.14);
 	--rux-success-subtle: 	oklch(from var(--rux-success) 	60% 0.22 h / 0.14);
 	--rux-info-subtle: 		oklch(from var(--rux-info) 		60% 0.22 h / 0.14);
-	
-	--rux-danger:  		oklch(from var(--rux-red)    	90% .28 h);
-	--rux-warning: 		oklch(from var(--rux-yellow) 	90% .28 h);
-	--rux-success: 		oklch(from var(--rux-green)  	90% .28 h);
-	--rux-info:    		oklch(from var(--rux-blue)   	90% .28 h);
+
+	/* Strong: prominent foregrounds such as status badges. */
+	--rux-danger-strong:  oklch(from var(--rux-danger)  85% 0.20 h);
+	--rux-warning-strong: oklch(from var(--rux-warning) 85% 0.20 h);
+	--rux-success-strong: oklch(from var(--rux-success) 85% 0.20 h);
+	--rux-info-strong:    oklch(from var(--rux-info)    85% 0.20 h);
+
+	/* Fill: solid controls; deliberately less chromatic than vivid trip bars. */
+	--rux-danger-fill:  oklch(from var(--rux-red)    60% 0.18 h);
+	--rux-warning-fill: oklch(from var(--rux-yellow) 60% 0.18 h);
+	--rux-success-fill: oklch(from var(--rux-green)  60% 0.18 h);
+	--rux-info-fill:    oklch(from var(--rux-blue)   60% 0.18 h);
+	--rux-danger-on-fill:  var(--rux-white);
+	--rux-warning-on-fill: var(--rux-black);
+	--rux-success-on-fill: var(--rux-white);
+	--rux-info-on-fill:    var(--rux-white);
+
+	/* Vivid: maximum-chroma data surfaces such as trip bars. */
+	--rux-danger-vivid:  oklch(from var(--rux-red)    60% 0.28 h);
+	--rux-warning-vivid: oklch(from var(--rux-yellow) 60% 0.28 h);
+	--rux-success-vivid: oklch(from var(--rux-green)  60% 0.28 h);
+	--rux-info-vivid:    oklch(from var(--rux-blue)   60% 0.28 h);
+	--rux-danger-on-vivid:  oklch(from var(--rux-danger)  90% 0.20 h);
+	--rux-warning-on-vivid: oklch(from var(--rux-warning) 90% 0.20 h);
+	--rux-success-on-vivid: oklch(from var(--rux-success) 90% 0.20 h);
+	--rux-info-on-vivid:    oklch(from var(--rux-info)    90% 0.20 h);
+
+	/* Compatibility aliases for existing consumers. */
+	--rux-danger-on-strong:  var(--rux-danger-on-vivid);
+	--rux-warning-on-strong: var(--rux-warning-on-vivid);
+	--rux-success-on-strong: var(--rux-success-on-vivid);
+	--rux-info-on-strong:    var(--rux-info-on-vivid);
+	--rux-danger-bright:  var(--rux-danger-on-vivid);
+	--rux-warning-bright: var(--rux-warning-on-vivid);
+	--rux-success-bright: var(--rux-success-on-vivid);
+	--rux-info-bright:    var(--rux-info-on-vivid);
+
 	--rux-tag-purple:	oklch(from var(--rux-purple)   	90% .28 h);
 	--rux-tag-default:	oklch(from var(--rux-gray)   	90% .00 h);
-
-	--rux-danger-bright: 	oklch(from var(--rux-danger) 	85% 0.2  h);
-	--rux-warning-bright: 	oklch(from var(--rux-warning)	85% 0.2  h);
-	--rux-success-bright: 	oklch(from var(--rux-success) 	85% 0.2  h);
 
 	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
 	/* Components route through these roles even while both are square. This
@@ -779,7 +812,7 @@
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
-	--rux-button-accent-background:   	var(--rux-accent);
+	--rux-button-accent-background:   	var(--rux-accent-fill);
 	--rux-button-accent-text:         	var(--rux-fg-on-accent);
 	--rux-button-accent-border-color:	oklch(from var(--rux-accent) var(--rux-trip-bar-bg-lightness) c h / 100%);
 	--rux-button-accent-border:       	none;
@@ -818,9 +851,9 @@
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
-	--rux-button-danger-background:       var(--rux-red);
-	--rux-button-danger-text:             var(--rux-fg-on-accent);
-	--rux-button-danger-border-color:     oklch(from var(--rux-red) var(--rux-trip-bar-bg-lightness) c h / 100%);
+	--rux-button-danger-background:       var(--rux-danger-fill);
+	--rux-button-danger-text:             var(--rux-danger-on-fill);
+	--rux-button-danger-border-color:     oklch(from var(--rux-danger-fill) var(--rux-trip-bar-bg-lightness) c h / 100%);
 	--rux-button-danger-border:           none;
 	--rux-button-danger-hover-background: oklch(
 		from var(--rux-button-danger-background) calc(l + 0.05) c h
@@ -1263,6 +1296,21 @@
 	--rux-text-secondary: oklch(from var(--rux-neutral) 32% c h);
 	--rux-text-tertiary:  oklch(from var(--rux-neutral) 48% c h);
 	--rux-text-disabled:  oklch(from var(--rux-neutral) 58% c h);
+
+	/* ─── Status ───────────────────────────────────────────────────────────── */
+	/* Darker foreground roles maintain readable contrast on the 92–98% light
+	   surfaces. Components continue to consume the same semantic names. */
+	--rux-danger-base:  oklch(from var(--rux-red)    70% 0.22 h);
+	--rux-warning-base: oklch(from var(--rux-yellow) 70% 0.24 h);
+	--rux-success-base: oklch(from var(--rux-green)  70% 0.22 h);
+	--rux-info-base:    oklch(from var(--rux-blue)   70% 0.22 h);
+
+	/* Strong foregrounds are darker than the light-theme base so compact
+	   badges retain definition against pale surfaces. */
+	--rux-danger-strong:  oklch(from var(--rux-danger)  60% 0.20 h);
+	--rux-warning-strong: oklch(from var(--rux-warning) 60% 0.20 h);
+	--rux-success-strong: oklch(from var(--rux-success) 60% 0.20 h);
+	--rux-info-strong:    oklch(from var(--rux-info)    60% 0.20 h);
 
 	/* ─── Surfaces ────────────────────────────────────────────────────────── */
 	--rux-surface-0:        oklch(from var(--rux-neutral) 92% c h); /* App canvas and top header */

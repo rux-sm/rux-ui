@@ -52,12 +52,12 @@ test("new records with an explicit empty PO amount remain partial", () => {
 
 test("trip bars render partial PO as a yellow warning indicator", () => {
 	assert.match(tripBarSource, /key:\s*"partial_po"[\s\S]*?icon:\s*"request_quote"[\s\S]*?tone:\s*"warning"[\s\S]*?paymentStatus === "po_partial"/);
-	assert.match(tripBarCss, /\.rux-trip-bar__pending-icon--warning\s*\{[^}]*color:\s*var\(--rux-warning\)/s);
+	assert.match(tripBarCss, /\.rux-trip-bar__pending-icon--warning\s*\{[^}]*color:\s*var\(--rux-warning-on-vivid\)/s);
 });
 
 test("partial PO warns through the outline without replacing the trip color", () => {
 	assert.match(tripBarSource, /paymentStatus === "po_partial"\s*\?\s*"rux-trip-bar--partial-po"/);
 	const rule = tripBarCss.match(/\.rux-trip-bar--partial-po\s*\{([^}]*)\}/s)?.[1] ?? "";
-	assert.match(rule, /--_outline:\s*var\(--rux-warning\)/);
+	assert.match(rule, /--_outline:\s*var\(--rux-warning-on-vivid\)/);
 	assert.doesNotMatch(rule, /--_tone|background/);
 });

@@ -107,7 +107,7 @@
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */
 .rux-trip-bar--partial-po {
-	--_outline: var(--rux-warning);
+	--_outline: var(--rux-warning-on-vivid);
 }
 
 /* Drag-to-reassign (see installBusDrag() in index.html) — the original bar
@@ -230,7 +230,7 @@
 .rux-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
 
 .rux-trip-bar--unconfirmed:not([data-trip-bar-color]) {
-	--_tone: var(--rux-danger);
+	--_tone: var(--rux-danger-vivid);
 }
 
 /* ---------- Modifier: trip-type pattern overlay ---------- */
@@ -618,11 +618,11 @@
 }
 
 .rux-trip-bar__status--paid {
-	color: var(--rux-success);
+	color: var(--rux-success-on-vivid);
 }
 
 .rux-trip-bar__status-date {
-	color: var(--rux-success);
+	color: var(--rux-success-on-vivid);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
@@ -632,7 +632,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	color: var(--rux-danger);
+	color: var(--rux-danger-on-vivid);
 }
 
 .rux-trip-bar__pending-icon {
@@ -642,7 +642,7 @@
 }
 
 .rux-trip-bar__pending-icon--warning {
-	color: var(--rux-warning);
+	color: var(--rux-warning-on-vivid);
 }
 
 /* ---------- Text rows ---------- */
@@ -699,7 +699,7 @@
 	white-space: nowrap;
 	min-height: 13px;
 	font-style: italic;
-	color: var(--rux-warning);
+	color: var(--rux-warning-on-vivid);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 }
@@ -861,14 +861,14 @@
 	height: var(--rux-status-dot-size);
 	flex: none;
 	border-radius: var(--rux-radius-full);
-	background: var(--rux-warning);
+	background: var(--rux-warning-on-vivid);
 }
 
 .rux-trip-bar__driver-dot--confirmed {
-	background: var(--rux-success);
+	background: var(--rux-success-on-vivid);
 }
 .rux-trip-bar__driver-dot--unconfirmed {
-	background: var(--rux-danger);
+	background: var(--rux-danger-on-vivid);
 }
 
 /* ---------- Conflict row ---------- */
@@ -880,7 +880,7 @@
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--rux-trip-bar-conflict-bg);
 	border-top: var(--rux-border-width) solid var(--rux-trip-bar-conflict-border-color);
-	color: var(--rux-danger);
+	color: var(--rux-danger-on-vivid);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-snug);
