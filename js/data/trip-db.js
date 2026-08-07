@@ -1499,11 +1499,12 @@ import {
 	// patch.sql. The trip stays in trips/the Trips list, marked cancelled
 	// with a reason; loadTripsFromDB (index.html) is what actually keeps it
 	// off the schedule grid, by skipping cancelled_at trips when building
-	// bars. Dispatches rux:trip-cancelled — the three listeners across
-	// index.html/trips-list.js/trip-manifest.js do exactly the right thing
-	// for a cancellation (fade the bar, refresh the list, stop watching the
-	// panel for drift), same as they did under the old rux:trip-deleted name
-	// when this was a hard delete.
+	// bars. Dispatches rux:trip-cancelled — the listeners across
+	// index.html/trip-manifest.js do exactly the right thing for a
+	// cancellation (fade the bar, stop watching the panel for drift), same
+	// as they did under the old rux:trip-deleted name when this was a hard
+	// delete. Trip Finder (js/panels/trip-finder.js) doesn't listen — it
+	// always refetches fresh on open instead.
 
 	let cancelTripModal = null;
 

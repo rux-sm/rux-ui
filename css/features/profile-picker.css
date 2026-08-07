@@ -141,8 +141,10 @@
 
 .rux-app-header__active-avatar {
 	flex: none;
+	width: 28px;
+	height: 28px;
 	border-radius: 50%;
-	border: 2px solid var(--rux-surface-1);
+	border: none;
 	margin-inline-start: calc(-1 * var(--rux-space-2));
 }
 

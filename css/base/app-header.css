@@ -76,12 +76,39 @@
 
 .rux-app-header__actions {
 	flex: none;
+	gap: var(--rux-app-header-actions-group-gap);
+}
+
+/* Two zones: actions (external links, chat, notifications) and identity
+   (theme toggle, presence avatars, your own profile) — grouped separately
+   so related controls read as one cluster instead of one undifferentiated
+   row of icons. */
+.rux-app-header__action-group {
+	display: flex;
+	align-items: center;
 	gap: var(--rux-app-header-actions-gap);
 }
 
+.rux-app-header__action-group:not(:last-child) {
+	padding-inline-end: var(--rux-app-header-actions-group-gap);
+	border-inline-end: var(--rux-app-header-actions-divider);
+}
+
+/* Tighter gap so presence avatars sit close to your own profile button
+   instead of spacing out like the action icons do. */
+.rux-app-header__action-group--identity {
+	gap: var(--rux-app-header-identity-gap);
+}
+
 .rux-app-header__profile {
+	/* .rux-button--icon sets flex: 0 0 var(--_h) (28px) — flex-basis wins
+	   over width for a flex item's main-axis size, so width alone couldn't
+	   override it; only height (the cross-axis dimension) was taking. */
+	flex: none;
+	width: 36px;
+	height: 36px;
 	overflow: hidden;
-	border: 1px solid transparent;
+	border: none;
 	border-radius: var(--rux-radius-full);
 }
 

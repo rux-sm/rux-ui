@@ -31,7 +31,7 @@
 	--rux-blue:   oklch(60.0% 0.2 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
 	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
-	--rux-gray: 	oklch(from var(--rux-neutral) 36.0% c h);
+	--rux-gray: 	oklch(from var(--rux-neutral) 42.0% c h);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
@@ -128,7 +128,7 @@
 	/* ─── RADIUS · 4px-grid scale ────────────────────────────────────────── */
 
 	--rux-radius-0:    0;
-	--rux-radius-xs:   4px;
+	--rux-radius-xs:   2px;
 	--rux-radius-sm:   6px;
 	--rux-radius-md:   8px;
 	--rux-radius-lg:   12px;
@@ -176,11 +176,11 @@
 	/* Higher numbers are lighter and visually closer. */
 
 
-    --rux-surface-0:        oklch(from var(--rux-neutral) 22% c h); /* Deepest background / canvas */
-    --rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* 16px Base cards / containers */
-    --rux-surface-2:        oklch(from var(--rux-neutral) 20% c h); /* Raised elements */
-    --rux-surface-3:        oklch(from var(--rux-neutral) 24% c h); /* Hover states */
-    --rux-surface-4:        oklch(from var(--rux-neutral) 26% c h); /* Active / Selected states */
+    --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* Deepest background / canvas */
+    --rux-surface-1:        oklch(from var(--rux-neutral) 18% c h); /* 16px Base cards / containers */
+    --rux-surface-2:        oklch(from var(--rux-neutral) 22% c h); /* Raised elements */
+    --rux-surface-3:        oklch(from var(--rux-neutral) 26% c h); /* Hover states */
+    --rux-surface-4:        oklch(from var(--rux-neutral) 30% c h); /* Active / Selected states */
     --rux-surface-5:        oklch(from var(--rux-neutral) 28% c h); /* Borders / Dividers (prominent) */
     --rux-surface-6:        oklch(from var(--rux-neutral) 44% c h); /* Disabled inputs */
     --rux-surface-contrast: oklch(from var(--rux-neutral) 50% c h); /* Primary text / High emphasis */
@@ -205,8 +205,8 @@
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg: var(--rux-surface-2);
-	--rux-thumb-bg: var(--rux-button-default-background); /* Changed to pure white to pop against tracks */
+	--rux-well-bg: oklch(from var(--rux-neutral) 24% c h); /* Raised elements */
+	--rux-thumb-bg: oklch(from var(--rux-neutral) 72% c h); /* Raised elements */
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 	/* Components use this shared foreground hierarchy. Subtle, placeholder,
@@ -346,6 +346,13 @@
 
 	/* — actions — */
 	--rux-app-header-actions-gap: var(--rux-button-group-gap);
+	/* Two zones: actions (external links, chat, notifications) and identity
+	   (theme toggle, presence avatars, your own profile) — a wider gap plus
+	   a divider between them, a tighter gap within the identity cluster so
+	   presence avatars and your own profile read as one related group. */
+	--rux-app-header-actions-group-gap: var(--rux-space-4);
+	--rux-app-header-actions-divider:   var(--rux-app-header-brand-border);
+	--rux-app-header-identity-gap:      var(--rux-space-2);
 
 	/* — mobile nav — */
 	--rux-app-header-mobile-nav-padding-block-start: var(--rux-space-2);
@@ -981,7 +988,7 @@
 	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-switch-width:      60px;
+	--rux-switch-width:      68px;
 	--rux-switch-height:     var(--rux-input-height);
 	--rux-switch-radius:     var(--rux-input-border-radius);
 	--rux-switch-padding:    4px;
@@ -1021,12 +1028,18 @@
 	--rux-switch-theme-moon-color:       var(--rux-text-primary);
 	--rux-switch-theme-track-icon-color: var(--rux-fg-subtle);
 	--rux-switch-theme-sun-shadow:       drop-shadow(0 1px 2px oklch(0% 0 0 / 40%));
-	/* Own inset, separate from --rux-switch-padding (the thumb's structural
-	   fit within the track) — that value is too tight for a resting icon
-	   and would crowd it against the track's rounded end. Still well inside
-	   the thumb's covered span at rest, so the active-side icon stays fully
-	   hidden underneath it. */
-	--rux-switch-theme-track-icon-inset: 6px;
+	/* Computed, not a flat value — a fixed px inset only looked right for
+	   one specific --rux-switch-width/thumb-size/padding combination and
+	   had to be re-tuned by hand every time those changed (twice already).
+	   This centers the icon in whatever space is left over once the thumb
+	   is subtracted, so it's correct for any switch size going forward.
+	   By symmetry the exposed zone is the same width on both sides (thumb
+	   travel is width - thumb-size - padding*2, split evenly), so one
+	   expression serves as both the sun's `left` and the moon's `right`. */
+	--rux-switch-theme-track-icon-inset: calc(
+		(var(--rux-switch-width) - var(--rux-switch-thumb-size) - var(--rux-switch-padding)) / 2
+			- var(--rux-switch-theme-icon-size) / 2
+	);
 
 	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */
 

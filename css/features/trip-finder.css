@@ -1,0 +1,101 @@
+/* ==========================================================================
+   TRIP FINDER  ·  .rux-trip-finder-window
+   --------------------------------------------------------------------------
+   Floating window chrome only — the shared .rux-floating-window component
+   (css/base/floating-window.css) owns drag/resize/mobile-breakpoint
+   mechanics, and the table itself reuses comp-trip-list.css's .trips-app__*
+   classes verbatim (also shared with the trip manifest's passenger table).
+   This file is just: window sizing, the search row, and the collapsible
+   filter panel.
+   ========================================================================== */
+
+/* Roomier than the default doc-preview size — needs to comfortably fit an
+   8-column table, not a single document page. */
+.rux-trip-finder-window {
+	top: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: clamp(600px, 70vw, 1100px);
+	height: clamp(400px, 70vh, 800px);
+	min-width: 480px;
+	min-height: 320px;
+	max-width: calc(100vw - var(--rux-space-4));
+	max-height: calc(100vh - var(--rux-space-4));
+}
+
+.rux-trip-finder-window__content {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	flex: 1;
+}
+
+.rux-trip-finder-window__toolbar {
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+/* — Search row — oversized borderless input, carried over from the old
+   ⌘K modal's look so that muscle memory still feels right. */
+
+.rux-trip-finder-window__search-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-3) var(--rux-space-4);
+}
+
+.rux-trip-finder-window__search-icon {
+	flex: none;
+	color: var(--rux-fg-subtle);
+}
+
+.rux-trip-finder-window__search-input {
+	flex: 1;
+	background: transparent;
+	border: 1px solid transparent;
+	font: inherit;
+	font-size: var(--rux-text-lg);
+	color: var(--rux-fg);
+	padding: 0;
+	min-width: 0;
+}
+
+.rux-trip-finder-window__search-input::placeholder {
+	color: var(--rux-fg-subtle);
+}
+
+.rux-trip-finder-window__search-input::-webkit-search-cancel-button {
+	display: none;
+}
+
+/* — Filter panel — plain collapsible block, not a drawer (the floating
+   window is already independently draggable/resizable; a full side-drawer
+   would eat most of its width). Wraps to multiple lines on narrower
+   window widths instead of needing its own scroll region. */
+
+.rux-trip-finder-window__filters {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	gap: var(--rux-space-4);
+	padding: 0 var(--rux-space-4) var(--rux-space-3);
+}
+
+.rux-trip-finder-window__filters[hidden] {
+	display: none;
+}
+
+.rux-trip-finder-window__filters .rux-field {
+	flex: none;
+}
+
+#trip-finder-filter-badges {
+	padding: 0 var(--rux-space-4) var(--rux-space-2);
+}
+
+#trip-finder-filter-badges[hidden] {
+	display: none;
+}

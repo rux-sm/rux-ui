@@ -27,7 +27,7 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=86" />
+		<link rel="stylesheet" href="./css/tokens.css?v=89" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
 		<link rel="stylesheet" href="./css/components.css?v=179" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
@@ -40,14 +40,14 @@
 			href="./css/features/comp-settings-app.css?v=4"
 		/>
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=3" />
+		<link rel="stylesheet" href="./css/features/trip-finder.css?v=1" />
 		<link
 			rel="stylesheet"
 			href="./css/features/comp-components-app.css?v=12"
 		/>
 		<link rel="stylesheet" href="./css/features/flip-seven.css?v=18" />
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=4" />
-		<link rel="stylesheet" href="./css/features/search-modal.css?v=2" />
-		<link rel="stylesheet" href="./css/features/profile-picker.css?v=1" />
+		<link rel="stylesheet" href="./css/features/profile-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=35" />
 		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=12" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=6" />
@@ -116,17 +116,6 @@
 					<button
 						class="rux-button rux-button--ghost rux-app-header__nav-item"
 						type="button"
-						data-module="list"
-					>
-						<span class="rux-icon" aria-hidden="true"
-							>list_alt</span
-						>
-						Trips
-					</button>
-
-					<button
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						type="button"
 						data-module="drivers"
 					>
 						<span class="rux-icon">person</span>
@@ -168,98 +157,102 @@
 					class="rux-app-header__actions"
 					aria-label="Account actions"
 				>
-					<!-- Who else currently has a profile active (excludes yourself —
-					     that's the button right next to it) — Supabase Realtime
-					     Presence, keyed by profile id so multiple tabs/devices of the
-					     same profile collapse into one entry. See the presence wiring
-					     further down for the join/track logic. -->
-					<div
-						class="rux-app-header__active-profiles"
-						id="header-active-profiles"
-						hidden
-					></div>
-					<a
-						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg"
-						href="https://cloud.samsara.com/o/5005667/fleet/list?bounds=25.531218%2C-101.984582%2C30.594115%2C-93.569055&amp;z=8"
-						target="_blank"
-						rel="noopener noreferrer"
-						aria-label="Open Samsara GPS"
-						title="Open Samsara GPS"
-					>
-						<span class="rux-icon" aria-hidden="true"
-							>location_on</span
+					<div class="rux-app-header__action-group">
+						<a
+							class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg"
+							href="https://cloud.samsara.com/o/5005667/fleet/list?bounds=25.531218%2C-101.984582%2C30.594115%2C-93.569055&amp;z=8"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="Open Samsara GPS"
+							title="Open Samsara GPS"
 						>
-					</a>
-					<button
-						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__chat-btn"
-						type="button"
-						id="team-chat-btn"
-						aria-label="Team chat"
-					>
-						<span class="rux-icon" aria-hidden="true">chat</span>
-						<span
-							class="rux-app-header__badge-count"
-							id="team-chat-badge"
+							<span class="rux-icon" aria-hidden="true"
+								>location_on</span
+							>
+						</a>
+						<button
+							class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__chat-btn"
+							type="button"
+							id="team-chat-btn"
+							aria-label="Team chat"
+						>
+							<span class="rux-icon" aria-hidden="true">chat</span>
+							<span
+								class="rux-app-header__badge-count"
+								id="team-chat-badge"
+								hidden
+							></span>
+						</button>
+						<button
+							class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__notif-btn"
+							type="button"
+							id="notifications-menu-btn"
+							aria-label="Notifications"
+							aria-haspopup="menu"
+							aria-expanded="false"
+						>
+							<span class="rux-icon" aria-hidden="true"
+								>notifications</span
+							>
+							<span
+								class="rux-app-header__badge-dot"
+								id="notifications-badge"
+								hidden
+							></span>
+						</button>
+					</div>
+					<div class="rux-app-header__action-group rux-app-header__action-group--identity">
+						<label
+							class="rux-switch rux-switch--theme"
+							id="theme-toggle"
+							title="Toggle light/dark theme"
+						>
+							<input
+								type="checkbox"
+								aria-label="Toggle light/dark theme"
+							/><span class="rux-switch__track"
+								><span
+									class="rux-icon rux-switch__track-icon rux-switch__track-icon--sun"
+									aria-hidden="true"
+									>light_mode</span
+								><span
+									class="rux-icon rux-switch__track-icon rux-switch__track-icon--moon"
+									aria-hidden="true"
+									>dark_mode</span
+								></span
+							><span class="rux-switch__thumb"
+								><span
+									class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--sun"
+									aria-hidden="true"
+									>light_mode</span
+								><span
+									class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--moon"
+									aria-hidden="true"
+									>dark_mode</span
+								></span
+							>
+						</label>
+						<!-- Who else currently has a profile active (excludes yourself —
+						     that's the button right next to it) — Supabase Realtime
+						     Presence, keyed by profile id so multiple tabs/devices of the
+						     same profile collapse into one entry. See the presence wiring
+						     further down for the join/track logic. -->
+						<div
+							class="rux-app-header__active-profiles"
+							id="header-active-profiles"
 							hidden
-						></span>
-					</button>
-					<button
-						class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__notif-btn"
-						type="button"
-						id="notifications-menu-btn"
-						aria-label="Notifications"
-						aria-haspopup="menu"
-						aria-expanded="false"
-					>
-						<span class="rux-icon" aria-hidden="true"
-							>notifications</span
+						></div>
+						<button
+							class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
+							type="button"
+							id="profile-menu-btn"
+							aria-label="Profile menu"
+							aria-haspopup="menu"
+							aria-expanded="false"
 						>
-						<span
-							class="rux-app-header__badge-dot"
-							id="notifications-badge"
-							hidden
-						></span>
-					</button>
-					<label
-						class="rux-switch rux-switch--theme"
-						id="theme-toggle"
-						title="Toggle light/dark theme"
-					>
-						<input
-							type="checkbox"
-							aria-label="Toggle light/dark theme"
-						/><span class="rux-switch__track"
-							><span
-								class="rux-icon rux-switch__track-icon rux-switch__track-icon--sun"
-								aria-hidden="true"
-								>light_mode</span
-							><span
-								class="rux-icon rux-switch__track-icon rux-switch__track-icon--moon"
-								aria-hidden="true"
-								>dark_mode</span
-							></span
-						><span class="rux-switch__thumb"
-							><span
-								class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--sun"
-								aria-hidden="true"
-								>light_mode</span
-							><span
-								class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--moon"
-								aria-hidden="true"
-								>dark_mode</span
-							></span
-						>
-					</label>
-					<button
-						class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
-						type="button"
-						id="profile-menu-btn"
-						aria-label="Profile menu"
-						aria-haspopup="menu"
-						aria-expanded="false"
-					>
-						<span class="rux-icon" aria-hidden="true">person</span>
-					</button>
+							<span class="rux-icon" aria-hidden="true">person</span>
+						</button>
+					</div>
 				</div>
 			</header>
 			<div
@@ -1316,7 +1309,7 @@
 													class="rux-trip-panel__manifest-action-inner"
 												>
 													<button
-														class="rux-button rux-button--default"
+														class="rux-button rux-button--accent"
 														type="button"
 														id="tp-view-manifest-btn"
 														disabled
@@ -2016,6 +2009,17 @@
 									</button>
 								</div>
 								<button
+									class="rux-button rux-button--ghost"
+									id="calendar-find-trip-btn"
+									type="button"
+									aria-label="Find a trip"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>search</span
+									>
+									<span class="rux-btn-label">Find Trip</span>
+								</button>
+								<button
 									class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
 									type="button"
 									aria-label="Open right panel"
@@ -2698,378 +2702,6 @@
 					</div>
 				</div>
 				<!-- /module:calendar -->
-
-				<!-- ════════════════════════════════════════════════════════════════
-             MODULE: LIST
-             ════════════════════════════════════════════════════════════════ -->
-				<div class="scheduler-app__module" data-module="list" hidden>
-					<section
-						class="rux-workspace trips-app__main"
-						aria-label="Trip list"
-					>
-						<header
-							class="rux-workspace__header rux-workspace__header--table"
-						>
-							<div class="rux-workspace__nav">
-								<h1
-									class="rux-workspace__title"
-									id="trips-list-title"
-								></h1>
-							</div>
-							<div class="rux-workspace__toolbar">
-								<div
-									class="rux-cluster"
-									id="trips-filter-badges"
-									hidden
-								></div>
-								<input
-									class="rux-input"
-									id="trips-search"
-									name="trips-roster-filter"
-									type="search"
-									autocomplete="off"
-									autocapitalize="none"
-									spellcheck="false"
-									data-1p-ignore="true"
-									data-lpignore="true"
-									placeholder="Search trips…"
-									aria-label="Search trips"
-								/>
-								<button
-									class="rux-button rux-button--default"
-									id="trips-btn-add"
-									type="button"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>add</span
-									>
-									<span class="rux-btn-label">New trip</span>
-								</button>
-								<button
-									class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
-									type="button"
-									id="list-filter-toggle-btn"
-									aria-label="Open filters"
-									aria-pressed="false"
-								>
-									<span class="rux-icon icon-off"
-										>right_panel_open</span
-									>
-									<span class="rux-icon icon-on"
-										>right_panel_close</span
-									>
-								</button>
-							</div>
-						</header>
-						<div class="rux-workspace__body trips-app__table-wrap">
-							<table
-								class="rux-table trips-app__table"
-								aria-label="Trips roster"
-							>
-								<thead>
-									<tr>
-										<th scope="col">Trip</th>
-										<th scope="col">Destination</th>
-										<th scope="col">Dates</th>
-										<th scope="col">Bus</th>
-										<th scope="col">Confirmed</th>
-										<th scope="col">Invoice</th>
-										<th scope="col" class="col-payment">
-											Payment
-										</th>
-										<th scope="col" class="col-quoted">
-											Quoted
-										</th>
-									</tr>
-								</thead>
-								<tbody id="trips-roster-body"></tbody>
-							</table>
-						</div>
-					</section>
-					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right"
-						id="list-filter-resize-gutter"
-						role="separator"
-						aria-orientation="vertical"
-						aria-label="Resize filter panel"
-						aria-controls="list-filter-drawer"
-						tabindex="0"
-					></div>
-					<!-- Trip filter drawer -->
-					<div
-						class="scheduler-app__drawer scheduler-app__drawer--right"
-						id="list-filter-drawer"
-					>
-						<aside
-							class="rux-panel rux-panel--right rux-list-filter-panel"
-							role="dialog"
-							aria-label="Trip filters"
-						>
-							<div class="rux-panel__body">
-								<div class="rux-panel__pane">
-									<article
-										class="rux-card"
-										id="rp-filter-card"
-									>
-										<header class="rux-card__header">
-											<h3 class="rux-card__title">
-												Filter By
-											</h3>
-											<button
-												class="rux-button rux-button--default"
-												id="tf-clear-btn"
-												type="button"
-											>
-												Clear
-											</button>
-										</header>
-										<div
-											class="rux-card__body rux-card__body--stack"
-										>
-											<div class="rux-field">
-												<label class="rux-field__label"
-													>Billing</label
-												>
-												<div
-													class="rux-segmented"
-													id="tf-billing-group"
-													data-rux-toggle-group
-												>
-													<button
-														class="rux-button rux-button--default is-active"
-														type="button"
-														aria-pressed="true"
-														data-value="all"
-													>
-														All
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="charter"
-														aria-label="Charter trip"
-														title="Charter trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>directions_bus</span
-														><span
-															class="rux-btn-label"
-															>Charter</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="ticketed"
-														aria-label="Ticketed trip"
-														title="Ticketed trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>confirmation_number</span
-														><span
-															class="rux-btn-label"
-															>Ticketed</span
-														>
-													</button>
-												</div>
-											</div>
-											<div class="rux-field">
-												<label class="rux-field__label"
-													>When</label
-												>
-												<div
-													class="rux-segmented"
-													id="tf-when-group"
-													data-rux-toggle-group
-												>
-													<button
-														class="rux-button rux-button--default is-active"
-														type="button"
-														aria-pressed="true"
-														data-value="all"
-													>
-														All
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="upcoming"
-													>
-														Upcoming
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="past"
-													>
-														Past
-													</button>
-												</div>
-											</div>
-											<div class="rux-field">
-												<label class="rux-field__label"
-													>Status</label
-												>
-												<div
-													class="rux-segmented"
-													id="tf-status-group"
-													data-rux-toggle-group
-												>
-													<button
-														class="rux-button rux-button--default is-active"
-														type="button"
-														aria-pressed="true"
-														data-value="all"
-													>
-														All
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="unconfirmed"
-													>
-														Unconfirmed
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="confirmed"
-													>
-														Confirmed
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="cancelled"
-													>
-														Cancelled
-													</button>
-												</div>
-											</div>
-											<div class="rux-field">
-												<label class="rux-field__label"
-													>Trip Type</label
-												>
-												<div
-													class="rux-segmented"
-													id="tf-type-group"
-													data-rux-toggle-group
-												>
-													<button
-														class="rux-button rux-button--default is-active"
-														type="button"
-														aria-pressed="true"
-														data-value="all"
-													>
-														All
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="round_trip"
-														aria-label="Round trip"
-														title="Round trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>autorenew</span
-														><span
-															class="rux-btn-label"
-															>Round</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="one_way"
-														aria-label="One-way trip"
-														title="One-way trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>arrow_forward</span
-														><span
-															class="rux-btn-label"
-															>One-way</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="dropoff_pickup"
-														aria-label="Split trip"
-														title="Split trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>mobiledata_arrows</span
-														><span
-															class="rux-btn-label"
-															>Split</span
-														>
-													</button>
-												</div>
-											</div>
-											<div class="rux-field">
-												<label class="rux-field__label"
-													>Bus</label
-												>
-												<div
-													class="rux-segmented"
-													id="tf-bus-group"
-													data-rux-toggle-group
-												>
-													<button
-														class="rux-button rux-button--default is-active"
-														type="button"
-														aria-pressed="true"
-														data-value="all"
-													>
-														All
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="assigned"
-													>
-														Assigned
-													</button>
-													<button
-														class="rux-button rux-button--default"
-														type="button"
-														aria-pressed="false"
-														data-value="unassigned"
-													>
-														Unassigned
-													</button>
-												</div>
-											</div>
-										</div>
-									</article>
-								</div>
-							</div>
-						</aside>
-					</div>
-				</div>
-				<!-- /module:list -->
 
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: FLEET
@@ -7011,44 +6643,6 @@
 			<!-- /scheduler-app__body -->
 		</main>
 
-		<!-- ── Global search modal ─────────────────────────────────────────── -->
-		<dialog class="rux-search-modal" id="search-modal" aria-label="Search">
-			<div class="rux-search-modal__panel">
-				<div class="rux-search-modal__input-row">
-					<span class="rux-icon rux-search-modal__icon">search</span>
-					<input
-						class="rux-search-modal__input"
-						id="search-modal-input"
-						type="search"
-						placeholder="Search trips, drivers, fleet, clients…"
-						autocomplete="off"
-						spellcheck="false"
-					/>
-					<kbd class="rux-kbd">Esc</kbd>
-				</div>
-				<div
-					class="rux-search-modal__results"
-					id="search-modal-results"
-				>
-					<p class="rux-search-modal__empty">
-						Start typing to search…
-					</p>
-				</div>
-				<footer class="rux-search-modal__footer">
-					<span class="rux-search-modal__hint"
-						><kbd class="rux-kbd">↑</kbd
-						><kbd class="rux-kbd">↓</kbd> Navigate</span
-					>
-					<span class="rux-search-modal__hint"
-						><kbd class="rux-kbd">↵</kbd> Open</span
-					>
-					<span class="rux-search-modal__hint"
-						><kbd class="rux-kbd">⌘K</kbd> Toggle</span
-					>
-				</footer>
-			</div>
-		</dialog>
-
 		<!-- Scheduler context menu (floats above everything) -->
 		<div
 			class="rux-menu rux-popover"
@@ -7074,7 +6668,7 @@
 		<script src="./js/core/utilities.js"></script>
 		<script src="./js/core/theme.js?v=1"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
-		<script src="./js/core/drawer.js?v=4"></script>
+		<script src="./js/core/drawer.js?v=5"></script>
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
 		<script src="./js/core/controls.js?v=4" defer></script>
@@ -7083,12 +6677,12 @@
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=31"></script>
-		<script src="./js/components/itinerary.js?v=22"></script>
+		<script src="./js/components/itinerary.js?v=23"></script>
 		<script src="./js/panels/driver-panel.js?v=20" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=4" defer></script>
 		<script src="./js/panels/settings-panel.js?v=4" defer></script>
-		<script src="./js/panels/trips-list.js?v=11" defer></script>
+		<script src="./js/panels/trip-finder.js?v=1" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=6" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
@@ -7125,7 +6719,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=13";
+			} from "./js/components/trip-bar.js?v=14";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -7183,7 +6777,6 @@
 				if (name === "fleet") window.FleetPanel?.init();
 				if (name === "customers") window.CustomersPanel?.init();
 				if (name === "settings") window.SettingsPanel?.init();
-				if (name === "list") window.TripsListPanel?.reload?.();
 			}
 
 			moduleButtons.forEach((btn) => {
@@ -7705,7 +7298,6 @@
 			showModule(
 				[
 					"calendar",
-					"list",
 					"fleet",
 					"drivers",
 					"customers",
@@ -7716,150 +7308,6 @@
 					? normalizedModule
 					: "calendar",
 			);
-
-			// ── Global search modal ─────────────────────────────────────────────
-			// Opened via the workspace header's search icon (desktop only — no
-			// room for it in the mobile header) or the ⌘K shortcut.
-			const searchModal = document.getElementById("search-modal");
-			const searchModalInput =
-				document.getElementById("search-modal-input");
-			const searchModalResults = document.getElementById(
-				"search-modal-results",
-			);
-			document
-				.getElementById("workspace-search-btn")
-				?.addEventListener("click", () => openSearchModal());
-
-			function openSearchModal() {
-				searchModal?.showModal();
-				searchModalInput.value = "";
-				renderSearchResults(
-					searchModalResults,
-					"",
-					onSelectSearchResult(closeSearchModal),
-				);
-				searchModalInput.focus();
-			}
-
-			function closeSearchModal() {
-				searchModal?.close();
-			}
-
-			searchModal?.addEventListener("click", (e) => {
-				if (e.target === searchModal) closeSearchModal();
-			});
-
-			document.addEventListener("keydown", (e) => {
-				if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-					e.preventDefault();
-					searchModal?.open ? closeSearchModal() : openSearchModal();
-				}
-			});
-
-			// Trips are the only thing worth searching right now — the richest
-			// dataset already loaded client-side. Matches on destination, customer,
-			// trip reference/ID, and either contact's name/phone.
-			function searchTrips(query) {
-				const q = query.trim().toLowerCase();
-				if (!q) return [];
-				return allTripsRaw.filter((t) =>
-					[
-						t.destination,
-						t.customer,
-						t.trip_ref,
-						t.id,
-						t.booking_contact_name,
-						t.booking_contact_phone,
-						t.trip_contact_1_name,
-					].some(
-						(field) =>
-							field && String(field).toLowerCase().includes(q),
-					),
-				);
-			}
-
-			function escapeHtml(str) {
-				return str.replace(/[<>&"]/g, (c) => `&#${c.charCodeAt(0)};`);
-			}
-
-			function renderSearchResults(container, query, onSelect) {
-				if (!container) return;
-				container.innerHTML = "";
-				const q = query.trim();
-				if (!q) {
-					container.innerHTML = `<p class="rux-search-modal__empty">Start typing to search…</p>`;
-					return;
-				}
-				const matches = searchTrips(q);
-				if (!matches.length) {
-					container.innerHTML = `<p class="rux-search-modal__empty">No trips match "${escapeHtml(q)}"</p>`;
-					return;
-				}
-				matches.slice(0, 20).forEach((t) => {
-					const item = document.createElement("button");
-					item.type = "button";
-					item.className = "rux-search-modal__item";
-					item.setAttribute("role", "option");
-
-					// Doubles as an unassigned-bus finder: red icon + no number means
-					// none of this trip's assignments have a bus yet (a trip can have
-					// several — e.g. a multi-bus charter — so this shows the first
-					// one found, not necessarily all of them).
-					const busNumbers = (t.trip_assignments ?? [])
-						.map((a) => a.buses?.number)
-						.filter(Boolean);
-					const busNumber = busNumbers[0] || null;
-					const icon = document.createElement("span");
-					icon.className =
-						"rux-search-modal__item-icon rux-search-modal__item-bus" +
-						(busNumber
-							? ""
-							: " rux-search-modal__item-bus--unassigned");
-					const busIcon = document.createElement("span");
-					busIcon.className = "rux-icon";
-					busIcon.textContent = "directions_bus";
-					icon.appendChild(busIcon);
-					if (busNumber) {
-						const busNumberEl = document.createElement("span");
-						busNumberEl.className =
-							"rux-search-modal__item-bus-number";
-						busNumberEl.textContent = busNumber;
-						icon.appendChild(busNumberEl);
-					}
-					const body = document.createElement("div");
-					body.className = "rux-search-modal__item-body";
-					const name = document.createElement("div");
-					name.className = "rux-search-modal__item-name";
-					name.textContent = t.destination || "Untitled trip";
-					const meta = document.createElement("div");
-					meta.className = "rux-search-modal__item-meta";
-					meta.textContent = [t.customer, t.start_date]
-						.filter(Boolean)
-						.join(" · ");
-					body.append(name, meta);
-					item.append(icon, body);
-					item.addEventListener("click", () => onSelect(t));
-					container.appendChild(item);
-				});
-			}
-
-			// Curries in "also close this modal" for the global search modal's
-			// onSelect, without the right panel's Search tab (which has no modal
-			// to close) needing to know or care about that.
-			function onSelectSearchResult(afterSelect) {
-				return (trip) => {
-					afterSelect?.();
-					callbacks.onOpenTrip(trip);
-				};
-			}
-
-			searchModalInput?.addEventListener("input", () => {
-				renderSearchResults(
-					searchModalResults,
-					searchModalInput.value,
-					onSelectSearchResult(closeSearchModal),
-				);
-			});
 
 			// ── Trip panel drawer ───────────────────────────────────────────────
 
@@ -9941,9 +9389,6 @@
 			});
 
 			// ── Trip View: Calendar grid + Manifest overlay ─────────────────────────
-			// List used to be a sub-mode toggled within this same module (hiding
-			// the grid, borrowing this module's right panel) — it's its own
-			// top-level module now (data-module="list"), so this only has
 			// Calendar's own grid plus the Manifest floating window (see
 			// css/features/trip-manifest.css, js/panels/trip-manifest.js) layered
 			// over it. window.TripView.get() still reports "manifest" while it's
@@ -9965,16 +9410,10 @@
 					manifestOpen ? "close" : "groups";
 				tpManifestBtn.querySelector(".rux-btn-label").textContent =
 					manifestOpen ? "Close manifest" : "View manifest";
-				// Accent = "this is currently engaged," not danger — closing the
-				// manifest just closes the window, nothing destructive happens.
-				tpManifestBtn.classList.toggle(
-					"rux-button--accent",
-					manifestOpen,
-				);
-				tpManifestBtn.classList.toggle(
-					"rux-button--default",
-					!manifestOpen,
-				);
+				// Always accent — this is the primary action for a ticketed,
+				// saved trip, not just something worth highlighting once
+				// engaged, so it needs to read as obviously clickable from
+				// the start.
 			}
 
 			function openManifestWindow(trip) {
@@ -12272,6 +11711,312 @@
 							><span class="rux-btn-label"> Save</span>
 						</button>
 					</footer>
+				</div>
+			</div>
+		</div>
+
+		<!-- Trip finder window — floating/draggable/resizable, same shell as the
+		     document viewer and trip manifest. Combines the old full-page Trips
+		     list with the old ⌘K search modal. See js/panels/trip-finder.js for
+		     open/close/filter/drag wiring. -->
+		<div
+			class="rux-floating-window rux-trip-finder-window rux-card rux-card--elevated"
+			id="trip-finder-window"
+			hidden
+		>
+			<header
+				class="rux-floating-window__header rux-trip-finder-window__header rux-card__header"
+			>
+				<p class="rux-card__title">Trip Finder</p>
+				<button
+					type="button"
+					class="rux-button rux-button--default rux-button--icon"
+					id="trip-finder-close-btn"
+					aria-label="Close trip finder"
+				>
+					<span class="rux-icon" aria-hidden="true">close</span>
+				</button>
+			</header>
+			<div class="rux-trip-finder-window__content">
+				<div class="rux-trip-finder-window__toolbar">
+					<div class="rux-trip-finder-window__search-row">
+						<span
+							class="rux-icon rux-trip-finder-window__search-icon"
+							aria-hidden="true"
+							>search</span
+						>
+						<input
+							class="rux-trip-finder-window__search-input"
+							id="trip-finder-search"
+							type="search"
+							placeholder="Search trips, contacts, phone…"
+							autocomplete="off"
+							autocapitalize="none"
+							spellcheck="false"
+							data-1p-ignore="true"
+							data-lpignore="true"
+							aria-label="Search trips"
+						/>
+						<button
+							type="button"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+							id="trip-finder-filters-toggle"
+							aria-pressed="false"
+							aria-controls="trip-finder-filters"
+							title="Filters"
+							aria-label="Toggle filters"
+						>
+							<span class="rux-icon" aria-hidden="true"
+								>filter_list</span
+							>
+						</button>
+						<button
+							class="rux-button rux-button--default"
+							id="trip-finder-new-btn"
+							type="button"
+						>
+							<span class="rux-icon" aria-hidden="true">add</span>
+							<span class="rux-btn-label">New trip</span>
+						</button>
+					</div>
+					<div
+						class="rux-cluster"
+						id="trip-finder-filter-badges"
+						hidden
+					></div>
+					<div
+						class="rux-trip-finder-window__filters"
+						id="trip-finder-filters"
+						hidden
+					>
+						<div class="rux-field">
+							<label class="rux-field__label">Billing</label>
+							<div
+								class="rux-segmented"
+								id="tff-billing-group"
+								data-rux-toggle-group
+							>
+								<button
+									class="rux-button rux-button--default is-active"
+									type="button"
+									aria-pressed="true"
+									data-value="all"
+								>
+									All
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="charter"
+									aria-label="Charter trip"
+									title="Charter trip"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>directions_bus</span
+									><span class="rux-btn-label">Charter</span>
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="ticketed"
+									aria-label="Ticketed trip"
+									title="Ticketed trip"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>confirmation_number</span
+									><span class="rux-btn-label">Ticketed</span>
+								</button>
+							</div>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label">When</label>
+							<div
+								class="rux-segmented"
+								id="tff-when-group"
+								data-rux-toggle-group
+							>
+								<button
+									class="rux-button rux-button--default is-active"
+									type="button"
+									aria-pressed="true"
+									data-value="all"
+								>
+									All
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="upcoming"
+								>
+									Upcoming
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="past"
+								>
+									Past
+								</button>
+							</div>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label">Status</label>
+							<div
+								class="rux-segmented"
+								id="tff-status-group"
+								data-rux-toggle-group
+							>
+								<button
+									class="rux-button rux-button--default is-active"
+									type="button"
+									aria-pressed="true"
+									data-value="all"
+								>
+									All
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="unconfirmed"
+								>
+									Unconfirmed
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="confirmed"
+								>
+									Confirmed
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="cancelled"
+								>
+									Cancelled
+								</button>
+							</div>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label">Trip Type</label>
+							<div
+								class="rux-segmented"
+								id="tff-type-group"
+								data-rux-toggle-group
+							>
+								<button
+									class="rux-button rux-button--default is-active"
+									type="button"
+									aria-pressed="true"
+									data-value="all"
+								>
+									All
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="round_trip"
+									aria-label="Round trip"
+									title="Round trip"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>autorenew</span
+									><span class="rux-btn-label">Round</span>
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="one_way"
+									aria-label="One-way trip"
+									title="One-way trip"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>arrow_forward</span
+									><span class="rux-btn-label">One-way</span>
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="dropoff_pickup"
+									aria-label="Split trip"
+									title="Split trip"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>mobiledata_arrows</span
+									><span class="rux-btn-label">Split</span>
+								</button>
+							</div>
+						</div>
+						<div class="rux-field">
+							<label class="rux-field__label">Bus</label>
+							<div
+								class="rux-segmented"
+								id="tff-bus-group"
+								data-rux-toggle-group
+							>
+								<button
+									class="rux-button rux-button--default is-active"
+									type="button"
+									aria-pressed="true"
+									data-value="all"
+								>
+									All
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="assigned"
+								>
+									Assigned
+								</button>
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									aria-pressed="false"
+									data-value="unassigned"
+								>
+									Unassigned
+								</button>
+							</div>
+						</div>
+						<button
+							class="rux-button rux-button--default"
+							id="tff-clear-btn"
+							type="button"
+						>
+							Clear
+						</button>
+					</div>
+				</div>
+				<div
+					class="rux-floating-window__body rux-trip-finder-window__body trips-app__table-wrap"
+				>
+					<table class="rux-table trips-app__table" aria-label="Trips">
+						<thead>
+							<tr>
+								<th scope="col">Trip</th>
+								<th scope="col">Destination</th>
+								<th scope="col">Dates</th>
+								<th scope="col">Bus</th>
+								<th scope="col">Confirmed</th>
+								<th scope="col">Invoice</th>
+								<th scope="col" class="col-payment">Payment</th>
+								<th scope="col" class="col-quoted">Quoted</th>
+							</tr>
+						</thead>
+						<tbody id="trip-finder-body"></tbody>
+					</table>
 				</div>
 			</div>
 		</div>
