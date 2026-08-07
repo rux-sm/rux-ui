@@ -28,10 +28,10 @@
 	--rux-yellow: oklch(50.0% 0.22 085.0); /*  Gold  */
 	--rux-green:  oklch(50.0% 0.28 140.0); /*  Moss  */
 	--rux-cyan:   oklch(50.0% 0.28 195.0); /*  Wind  */
-	--rux-blue:   oklch(60.0% 0.28 255.0); /*  Mana  */
+	--rux-blue:   oklch(50.0% 0.28 255.0); /*  Mana  */
 	--rux-purple: oklch(50.0% 0.28 290.0); /*  Void  */
 	--rux-pink:   oklch(50.0% 0.28 350.0); /*  Neon  */
-	--rux-gray: 	oklch(from var(--rux-neutral) 56.0% c h);
+	--rux-gray: 	oklch(from var(--rux-neutral) 50.0% c h);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
@@ -250,10 +250,10 @@
 	--rux-info-strong:    oklch(from var(--rux-info)    85% 0.20 h);
 
 	/* Fill: solid controls; deliberately less chromatic than vivid trip bars. */
-	--rux-danger-fill:  oklch(from var(--rux-red)    60% 0.2 h);
-	--rux-warning-fill: oklch(from var(--rux-yellow) 60% 0.2 h);
-	--rux-success-fill: oklch(from var(--rux-green)  60% 0.2 h);
-	--rux-info-fill:    oklch(from var(--rux-blue)   60% 0.2 h);
+	--rux-danger-fill:  oklch(from var(--rux-red)    64% 0.28 h);
+	--rux-warning-fill: oklch(from var(--rux-yellow) 64% 0.28 h);
+	--rux-success-fill: oklch(from var(--rux-green)  64% 0.2 h);
+	--rux-info-fill:    oklch(from var(--rux-blue)   64% 0.28 h);
 	--rux-danger-on-fill:  var(--rux-white);
 	--rux-warning-on-fill: var(--rux-black);
 	--rux-success-on-fill: var(--rux-white);
@@ -362,7 +362,7 @@
 
 	/* — shell — */
 	--rux-app-header-bg:     var(--rux-shell-bg);
-	--rux-app-header-border: var(--rux-border-width) solid var(--rux-surface-4);
+	--rux-app-header-border: var(--rux-border-width) solid var(--rux-border);
 	/* --rux-app-header-radius: not set — spans full width, no corners */
 	/* --rux-app-header-shadow: not set */
 	--rux-app-header-padding: var(--rux-space-2) var(--rux-space-4);
@@ -408,7 +408,7 @@
 	   hardcoded, so a future radius change only needs the two role tokens
 	   edited, per the role's own stated purpose above. */
 	--rux-workspace-radius: var(--rux-radius-container);
-	--rux-workspace-shadow: none;
+	--rux-workspace-shadow: var(--rux-shadow-inset);
 	--rux-workspace-gutter: var(--rux-space-4);
 
 	/* — header — */
@@ -417,9 +417,6 @@
 		var(--rux-workspace-gutter);
 	/* control height + space-3 top/bottom = 56px, matching panel header */
 	--rux-workspace-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
-
-	/* ─── COMPONENT · floating window ─────────────────────────────────────── */
-	--rux-floating-window-shadow: var(--rux-shadow-3);
 
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
@@ -496,8 +493,8 @@
 	--rux-panel-content-gap: var(--rux-space-4);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
-	--rux-right-panel-border: 0px solid oklch(100% 0 0 / 0%);
-	--rux-left-panel-border: 0px solid oklch(100% 0 0 / 0%);
+	--rux-right-panel-border: 1px solid var(--rux-border);
+	--rux-left-panel-border: 1px solid var(--rux-border);
 
 	/* — minimum sizing shared by panel-shaped feature layouts — */
 	--rux-panel-min-width: 224px;
@@ -566,6 +563,23 @@
 	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
 	--rux-card-content-gap: var(--rux-space-4);
 
+	/* ─── COMPONENT · floating window ─────────────────────────────────────── */
+	/* Floating windows extend .rux-card, which still owns their surface and
+	   radius. Header/footer padding is owned here, not by .rux-card-header/
+	   footer-padding — those are tuned for a card body's spacing (notably a
+	   0 top value on --rux-card-padding-block, correct for a body that sits
+	   right under a header, wrong for a footer, which wants the same 16px
+	   on every side). Body/content spacing remains .rux-card's job. */
+
+	--rux-floating-window-shadow:        var(--rux-shadow-3);
+	--rux-floating-window-header-bg:     var(--rux-surface-4);
+	--rux-floating-window-header-border: none;
+	--rux-floating-window-header-padding: var(--rux-space-4);
+	--rux-floating-window-footer-bg:     var(--rux-surface-4);
+	--rux-floating-window-footer-padding: var(--rux-space-4);
+	--rux-floating-window-footer-shadow:  var(--rux-shadow-1);
+	--rux-floating-window-background: var(--rux-surface-4);
+
 	/* ─── COMPONENT · itinerary marker ────────────────────────────────────── */
 	/* Was filed under "card" (its markers sit inside .rux-card-section rows)
 	   — split out since these are itinerary-specific, not shared card
@@ -627,8 +641,15 @@
 	/* --rux-trip-bar-fg: not set */
 	--rux-trip-bar-border-width: var(--rux-border-width);
 	/* --rux-trip-bar-border: computed alongside bg */
-	--rux-trip-bar-radius: var(--rux-radius-control);
-	/* --rux-trip-bar-shadow: not set */
+	--rux-trip-bar-radius: var(--rux-button-radius);
+	--rux-trip-bar-actions-radius:   var(--rux-radius-control);
+	--rux-trip-bar-bus-label-radius: var(--rux-radius-xs);
+	--rux-trip-bar-meta-radius:      var(--rux-radius-sm);
+	/* A translucent tonal wash preserves the trip category hue. Dark mode
+	   deepens the bar beneath light metadata text; light mode reverses this. */
+	--rux-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 40%);
+	--rux-trip-bar-meta-fg: var(--rux-fg-on-accent);
+	--rux-trip-bar-shadow: var(--rux-shadow-3);
 
 	/* — category colors — */
 	--rux-trip-color-cyan:   var(--rux-cyan);
@@ -911,19 +932,6 @@
 
 	--rux-button-loading-opacity: 0.65;
 
-	/* ─── COMPONENT · segmented ──────────────────────────────────────────── */
-	/* Segmented controls inherit their visual states from button tokens. */
-
-	/* — item — */
-	--rux-segmented-height:           var(--rux-control-height-sm);
-	--rux-segmented-item-bg:          var(--rux-button-ghost-background);
-	--rux-segmented-item-fg:          var(--rux-fg-muted);
-	--rux-segmented-item-hover-fg:    var(--rux-white);
-	--rux-segmented-item-selected-bg: var(--rux-button-selected-bg);
-	--rux-segmented-item-selected-fg: var(--rux-button-selected-fg);
-	--rux-segmented-item-disabled-bg: transparent;
-	--rux-segmented-item-disabled-fg: var(--rux-fg-disabled);
-
 	/* ─── COMPONENT · segmented track ────────────────────────────────────── */
 
 	/* — track shell — */
@@ -1007,7 +1015,7 @@
 	--rux-switch-thumb-size:           28px;
 
 	/* — checked — */
-	--rux-switch-checked-bg:       var(--rux-accent);
+	--rux-switch-checked-bg:       var(--rux-accent-fill);
 	--rux-switch-checked-border:   none;
 	--rux-switch-checked-thumb-bg: var(--rux-thumb-bg);
 
@@ -1356,6 +1364,7 @@
 	--rux-trip-bar-tail-hover-opacity:     58%;
 	--rux-trip-bar-tail-pressed-opacity:   64%;
 	--rux-trip-bar-tail-selected-opacity:  64%;
+	--rux-trip-bar-meta-bg: oklch(from var(--rux-white) l c h / 18%);
 
 	--rux-button-default-background:  var(--rux-surface-contrast);
 	--rux-button-disabled-background: transparent;

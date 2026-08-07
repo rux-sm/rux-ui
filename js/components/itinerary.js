@@ -1028,32 +1028,16 @@
 		return TYPE_LABEL[type];
 	}
 
-	// Sleeper always rests wherever the previous real stop is (see
-	// sleeperFromPrev) — computed fresh from the current list on every render
-	// so the displayed address can never go stale, unlike stop.address itself
-	// which is only a one-time snapshot taken when the sleeper was inserted.
+	// Sleeper always rests wherever the previous real stop is — computed
+	// fresh from the current list on every render so the displayed address
+	// can never go stale, unlike stop.address itself which is only a
+	// one-time snapshot taken when the sleeper was inserted.
 	function previousStopAddress(stops, idx) {
 		for (let i = idx - 1; i >= 0; i--) {
 			const s = stops[i];
 			if (!s || s.type === "day" || s.type === "sleeper") continue;
 			if (s.type === "pickup" && s.originMode === "yard") return getYard().address;
 			return s.address || "";
-		}
-		return "";
-	}
-
-	// The previous real stop's own "arrival" time — Pickup's is its Spot
-	// time (its time2 field is "spot", not "arrive"; see time2 in
-	// renderStop), everything else uses Arrive. Used to default a new
-	// sleeper's Str to when the driver actually got there, instead of
-	// blank/whatever was last typed — a reset that's logged starting before
-	// the driver even arrived (or departed for) that stop isn't a real
-	// reset window.
-	function previousStopArrivalTime(stops, idx) {
-		for (let i = idx - 1; i >= 0; i--) {
-			const s = stops[i];
-			if (!s || s.type === "day" || s.type === "sleeper") continue;
-			return (s.type === "pickup" ? s.spot : s.arrive) || "";
 		}
 		return "";
 	}
@@ -1693,14 +1677,25 @@
 			return stops.length;
 		};
 		const openDayAddMenu = (dayNumber, trigger) => {
-			activeAddDay = dayNumber;
 			const insertIndex = dayInsertIndex(dayNumber);
 			const hasEndDay = stops[insertIndex]?.type === "day";
 			const datesDriveDays = isIsoDate(tripStartDate()) && isIsoDate(tripEndDate());
+			const canAddDayBoundary = !(hasEndDay || datesDriveDays);
+
+			// Sleeper is a dwell-status toggle on a regular stop now, not its
+			// own insertable type, so "Add stop" is the only choice most of
+			// the time. Skip the menu and insert directly instead of popping
+			// up a single-item dropdown — only show it when there's an actual
+			// second option (a driving day boundary) to pick from.
+			if (!canAddDayBoundary) {
+				insertAtIndex(insertIndex, defaultStop());
+				return;
+			}
+
+			activeAddDay = dayNumber;
 			dayAddMenu.innerHTML = `
 				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="stop"><span class="rux-icon" aria-hidden="true">location_on</span>Add stop</button>
-				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="sleeper"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span>Add sleeper</button>
-				${hasEndDay || datesDriveDays ? "" : '<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="day"><span class="rux-icon" aria-hidden="true">route</span>Add driving day boundary</button>'}`;
+				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="day"><span class="rux-icon" aria-hidden="true">route</span>Add driving day boundary</button>`;
 			window.RuxMenu.open(trigger, dayAddMenu, { placement: "bottom-end" });
 		};
 		dayAddMenu.addEventListener("rux:menu-close", () => {
@@ -1882,8 +1877,8 @@
 				const stop = stops[i];
 				if (!stop || stop.type === "day") continue;
 				// Sleeper has no location of its own — it's always wherever the
-				// previous real stop already is (see sleeperFromPrev) — so skip
-				// past it instead of treating its lack of an address as a dead
+				// previous real stop already is (see previousStopAddress) — so
+				// skip past it instead of treating its lack of an address as a dead
 				// end. Without this, a stale/never-geocoded sleeper permanently
 				// blocks routing for every stop after it, no matter how many
 				// times Recalculate runs.
@@ -1946,7 +1941,7 @@
 		}
 
 		// A sleeper never travels — it rests wherever the previous real stop
-		// already is, by definition (see sleeperFromPrev/previousStopAddress).
+		// already is, by definition (see previousStopAddress).
 		// So its own "leg" is always zero, and re-deriving that through a route
 		// call would depend on its cached lat/lng still matching the current
 		// previous stop's — which silently goes stale the moment the stops
@@ -2384,9 +2379,7 @@
 			closeDayAddMenu();
 			const item = type === "day"
 				? { type: "day", label: addIsoDays(tripStartDate(), day), name: "continued_driving", departPrev: "00:00" }
-				: type === "sleeper"
-					? newSleeperStop(insertIndex)
-					: defaultStop();
+				: defaultStop();
 			insertAtIndex(insertIndex, item);
 			if (type === "day") syncTripDatesFromBoundaries();
 		});
@@ -2449,31 +2442,6 @@
 			markAffectedLegsStale(idx);
 			updateSummary();
 			renderStopList();
-		}
-
-		function sleeperFromPrev(insertIdx) {
-			for (let i = insertIdx - 1; i >= 0; i--) {
-				const s = stops[i];
-				if (!s || s.type === "day") continue;
-				// Skip past an earlier sleeper too, same reasoning as
-				// previousLocation() — copy a real stop's location, not
-				// another sleeper's possibly-still-unresolved snapshot.
-				if (s.type === "sleeper") continue;
-				return { address: s.address || "", lat: s.lat ?? null, lng: s.lng ?? null, mapboxId: s.mapboxId ?? null };
-			}
-			return { address: "", lat: null, lng: null, mapboxId: null };
-		}
-
-		function newSleeperStop(insertIdx) {
-			const prev = sleeperFromPrev(insertIdx);
-			// Str defaults to the previous stop's own arrival time (Spot for
-			// Pickup, Arrive otherwise) — still just a starting value the
-			// driver/dispatcher can edit, same as the address is a one-time
-			// snapshot rather than something permanently locked to it.
-			const defaultStr = previousStopArrivalTime(stops, insertIdx);
-			const previous = [...stops.slice(0, insertIdx)].reverse().find((item) => item.type !== "day");
-			const defaultDate = previous?.arriveDate || previous?.spotDate || previous?.departPrevDate || tripStartDate();
-			return { type: "sleeper", name: "", address: prev.address, miles: "", drive: "", milesSource: "estimated", driveSource: "estimated", routeStatus: "current", departPrev: defaultStr, departPrevDate: defaultDate, arrive: "", arriveDate: defaultDate, lat: prev.lat, lng: prev.lng, mapboxId: prev.mapboxId };
 		}
 
 		document.addEventListener("settings:yard", () => {

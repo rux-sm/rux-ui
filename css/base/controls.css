@@ -512,55 +512,6 @@
 }
 
 /* ==========================================================================
-   SEGMENTED  ·  .rux-segmented
-   — pill-strip container for any button variant: icon, text, or mixed
-   ========================================================================== */
-
-.rux-segmented {
-	position: relative;
-	display: flex;
-	align-items: center;
-	gap: var(--rux-space-0);
-	height: var(--rux-control-height);
-	background-color: var(--rux-button-default-background);
-	border: var(--rux-border-width) solid var(--rux-button-border); /* invisible but real — keeps box size identical to bordered states */
-	border-radius: var(--rux-radius-control);
-	overflow: hidden; /* clips active button corners to strip radius */
-}
-
-.rux-segmented > .rux-button {
-	--_h: var(--rux-segmented-height);
-	--_bg: var(--rux-segmented-item-bg);
-	--_fg: var(--rux-segmented-item-fg);
-	flex: 1;
-	min-width: 0;
-}
-.rux-segmented > .rux-button:disabled,
-.rux-segmented > .rux-button[aria-disabled="true"] {
-	--_bg: var(--rux-segmented-item-disabled-bg);
-	--_fg: var(--rux-segmented-item-disabled-fg);
-}
-
-/* Unselected items brighten instead of picking up the generic
-   .rux-button:hover background tint — same "ghost" feel as
-   .rux-button--ghost:hover. Selected items are unaffected (excluded below),
-   keeping whatever hover treatment they already had. */
-.rux-segmented > .rux-button:hover:not(.is-active):not([aria-pressed="true"]):not([aria-selected="true"]) {
-	--_state-overlay: transparent;
-	--_fg: var(--rux-segmented-item-hover-fg);
-}
-
-/* Same selected-state tokens as .rux-button--toggle.is-active — segmented
-   items are just buttons in a strip, not a separate styled component. */
-.rux-segmented > .rux-button.is-active,
-.rux-segmented > .rux-button[aria-pressed="true"],
-.rux-segmented > .rux-button[aria-selected="true"] {
-	--_bg: var(--rux-segmented-item-selected-bg);
-	--_fg: var(--rux-segmented-item-selected-fg);
-	box-shadow: var(--rux-button-shadow-raised);
-}
-
-/* ==========================================================================
    SEGMENTED TRACK  ·  .rux-segmented-track + .rux-button--segment
    — a full-height selected layer that slides over a recessed track
    ========================================================================== */
@@ -609,13 +560,11 @@
 	box-shadow: var(--rux-button-shadow-raised);
 }
 
-.rux-segmented > .rux-button,
 .rux-segmented-track > .rux-button {
 	position: relative;
 	z-index: 1;
 }
 
-.rux-segmented[data-rux-indicator-ready="true"] > .rux-button:is(.is-active, [aria-pressed="true"], [aria-selected="true"]),
 .rux-segmented-track[data-rux-indicator-ready="true"] > .rux-button:is(.is-active, [aria-pressed="true"], [aria-selected="true"]) {
 	--_bg: transparent;
 	background: transparent;
@@ -698,7 +647,7 @@
 /* ==========================================================================
    NUMBER STEPPER  ·  .rux-number-stepper
    — [-] [editable value] [+], a standalone control (not built on
-   .rux-segmented — its value is a real, directly-typeable input, not a
+   segmented control — its value is a real, directly-typeable input, not a
    read-only count)
    ========================================================================== */
 

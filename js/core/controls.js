@@ -8,7 +8,7 @@
    ---
    data-rux-toggle="#target"   → click toggles .is-open on target element
    data-rux-toggle-button      → standalone press toggle (.is-active / aria-pressed)
-   data-rux-toggle-group       → legacy single-select pressed button group
+   data-rux-toggle-group       → generic single-select pressed button group
    .rux-segmented-track        → robust single-select segmented control
                                   (any button count; text, icon, or mixed)
    data-rux-tabs               → .rux-tab single-select group (arrow key navigation)
@@ -151,21 +151,17 @@
 				// A segmented track reserves a real padding gutter around its buttons.
 				// Preserve that gutter explicitly so fractional flex widths can never
 				// place the final indicator a fraction of a pixel into the right edge.
-				// Plain .rux-segmented groups intentionally use different geometry, so
-				// they keep the measured button bounds without track-specific clamping.
-				if (group.classList.contains("rux-segmented-track")) {
-					const borderRight = px("border-right-width");
-					const borderBottom = px("border-bottom-width");
-					const minX = px("padding-left");
-					const minY = px("padding-top");
-					const maxRight = groupRect.width - borderLeft - borderRight - px("padding-right");
-					const maxBottom = groupRect.height - borderTop - borderBottom - px("padding-bottom");
+				const borderRight = px("border-right-width");
+				const borderBottom = px("border-bottom-width");
+				const minX = px("padding-left");
+				const minY = px("padding-top");
+				const maxRight = groupRect.width - borderLeft - borderRight - px("padding-right");
+				const maxBottom = groupRect.height - borderTop - borderBottom - px("padding-bottom");
 
-					x = Math.min(Math.max(x, minX), maxRight);
-					y = Math.min(Math.max(y, minY), maxBottom);
-					width = Math.max(0, Math.min(activeRect.width, maxRight - x));
-					height = Math.max(0, Math.min(activeRect.height, maxBottom - y));
-				}
+				x = Math.min(Math.max(x, minX), maxRight);
+				y = Math.min(Math.max(y, minY), maxBottom);
+				width = Math.max(0, Math.min(activeRect.width, maxRight - x));
+				height = Math.max(0, Math.min(activeRect.height, maxBottom - y));
 
 				group.style.setProperty("--_rux-segment-indicator-x", `${x}px`);
 				group.style.setProperty("--_rux-segment-indicator-y", `${y}px`);
@@ -183,9 +179,7 @@
 					if (node.matches?.(".rux-button--segment")) sizeObserver.observe(node);
 				});
 			});
-			if (childrenChanged && group.classList.contains("rux-segmented-track")) {
-				normalizeSegmentedControl(group);
-			}
+			if (childrenChanged) normalizeSegmentedControl(group);
 			sync();
 		});
 		stateObserver.observe(group, {
@@ -202,12 +196,12 @@
 	}
 
 	function initSegmentedIndicators(root) {
-		root.querySelectorAll?.(".rux-segmented, .rux-segmented-track").forEach((group) => {
-			if (group.classList.contains("rux-segmented-track")) initSegmentedControl(group);
+		root.querySelectorAll?.(".rux-segmented-track").forEach((group) => {
+			initSegmentedControl(group);
 			initSegmentedIndicator(group);
 		});
-		if (root.matches?.(".rux-segmented, .rux-segmented-track")) {
-			if (root.classList.contains("rux-segmented-track")) initSegmentedControl(root);
+		if (root.matches?.(".rux-segmented-track")) {
+			initSegmentedControl(root);
 			initSegmentedIndicator(root);
 		}
 	}
@@ -239,7 +233,7 @@
 			setActiveSegment(segmentButton.parentElement, segmentButton);
 		}
 
-		// [data-rux-toggle-group] — legacy single-select pressed button group
+		// [data-rux-toggle-group] — generic single-select pressed button group
 		const toggleButton = e.target.closest("[data-rux-toggle-group] .rux-button");
 		if (toggleButton && !toggleButton.disabled && !toggleButton.closest(".rux-segmented-track")) {
 			const group = toggleButton.closest("[data-rux-toggle-group]");

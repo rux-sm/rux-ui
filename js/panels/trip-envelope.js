@@ -571,12 +571,10 @@
 		if (!panelEl || !current) return;
 		const select = panelEl.querySelector("[data-envelope-driver]");
 		const printAllBtn = panelEl.querySelector("[data-envelope-print-all]");
-		const recipientLabel = panelEl.querySelector("[data-envelope-recipient-label]");
 		const title = panelEl.querySelector("[data-envelope-title]");
 		title.textContent = current.busNumber
 			? `Trip Envelope · Bus ${current.busNumber}`
 			: "Trip Envelope";
-		recipientLabel.textContent = "Copy for";
 		select.innerHTML = "";
 		if (!current.recipients.length) {
 			const option = document.createElement("option");
@@ -659,7 +657,7 @@
 		panelEl.innerHTML = `
 			<header class="rux-floating-window__header rux-trip-envelope-window__header rux-card__header">
 				<span class="rux-card__title" data-envelope-title>Trip Envelope</span>
-				<button type="button" class="rux-button rux-button--default rux-button--icon" data-envelope-close aria-label="Close trip envelope">
+				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-envelope-close aria-label="Close trip envelope">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
@@ -678,10 +676,8 @@
 			</div>
 			<footer class="rux-floating-window__footer rux-trip-envelope-window__footer rux-card__footer">
 				<label class="rux-trip-envelope-window__recipient">
-					<span data-envelope-recipient-label>Copy for</span>
 					<select class="rux-select" data-envelope-driver aria-label="Envelope copy for driver"></select>
 				</label>
-				<span class="rux-floating-window__spacer"></span>
 				<button type="button" class="rux-button rux-button--default" data-envelope-print>
 					<span class="rux-icon" aria-hidden="true">print</span> Print Driver
 				</button>

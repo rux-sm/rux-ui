@@ -17,7 +17,7 @@
    Modules (in load order)
    -----------------------
    icons.css        .rux-icon and custom pictogram variants
-   controls.css     .rux-button, .rux-segmented, .rux-number-stepper
+   controls.css     .rux-button, .rux-segmented-track, .rux-number-stepper
    app-header.css   .rux-app-header and its brand, navigation, and actions
    badges.css       .rux-badge, .rux-trip-itinerary__badge  ← single source of truth for all badge rules
    form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
@@ -42,7 +42,7 @@
    ========================================================================== */
 
 @import "./base/icons.css";
-@import "./base/controls.css?v=14";
+@import "./base/controls.css?v=15";
 @import "./base/app-header.css?v=4";
 @import "./base/badges.css?v=2";
 @import "./base/form.css?v=2";
@@ -52,12 +52,12 @@
 @import "./base/popover.css";
 @import "./base/suggestions.css?v=1";
 @import "./base/card.css";
-@import "./base/floating-window.css?v=2";
+@import "./base/floating-window.css?v=6";
 @import "./base/content.css?v=2";
 @import "./base/feedback.css?v=3";
 @import "./base/navigation.css?v=16";
 @import "./base/utils.css?v=2";
-@import "./features/trip-bar.css?v=17";
+@import "./features/trip-bar.css?v=24";
 @import "./features/trip-panel.css?v=29";
 @import "./features/trip-history.css?v=2";
 @import "./features/itinerary.css?v=4";

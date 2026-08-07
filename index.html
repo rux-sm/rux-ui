@@ -27,9 +27,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=96" />
+		<link rel="stylesheet" href="./css/tokens.css?v=106" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=198" />
+		<link rel="stylesheet" href="./css/components.css?v=208" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
@@ -40,7 +40,7 @@
 			href="./css/features/comp-settings-app.css?v=4"
 		/>
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=3" />
-		<link rel="stylesheet" href="./css/features/trip-finder.css?v=1" />
+		<link rel="stylesheet" href="./css/features/trip-finder.css?v=8" />
 		<link
 			rel="stylesheet"
 			href="./css/features/comp-components-app.css?v=12"
@@ -49,7 +49,7 @@
 		<link rel="stylesheet" href="./css/features/bus-picker.css?v=4" />
 		<link rel="stylesheet" href="./css/features/profile-picker.css?v=3" />
 		<link rel="stylesheet" href="./css/features/print-schedule.css?v=35" />
-		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=12" />
+		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=14" />
 		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=6" />
 		<link rel="stylesheet" href="./css/features/contact-info.css?v=3" />
 		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
@@ -2023,17 +2023,6 @@
 									</button>
 								</div>
 								<button
-									class="rux-button rux-button--ghost"
-									id="calendar-find-trip-btn"
-									type="button"
-									aria-label="Find a trip"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>search</span
-									>
-									<span class="rux-btn-label">Find Trip</span>
-								</button>
-								<button
 									class="rux-button rux-button--default rux-button--icon rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
 									type="button"
 									aria-label="Open right panel"
@@ -3008,12 +2997,12 @@
 											>Status</label
 										>
 										<div
-											class="rux-segmented"
+											class="rux-segmented-track"
 											id="fp-status-group"
 											data-rux-toggle-group
 										>
 											<button
-												class="rux-button rux-button--default is-active"
+												class="rux-button rux-button--segment is-active"
 												type="button"
 												aria-pressed="true"
 												data-value="active"
@@ -3024,7 +3013,7 @@
 												><span>Active</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 												data-value="maintenance"
@@ -3035,7 +3024,7 @@
 												><span>Maintenance</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 												data-value="out-of-service"
@@ -3046,7 +3035,7 @@
 												><span>Out of service</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 												data-value="retired"
@@ -3681,26 +3670,26 @@
 											>CDL class</label
 										>
 										<div
-											class="rux-segmented"
+											class="rux-segmented-track"
 											id="dp-cdl-group"
 											data-rux-toggle-group
 										>
 											<button
-												class="rux-button rux-button--default is-active"
+												class="rux-button rux-button--segment is-active"
 												type="button"
 												aria-pressed="true"
 											>
 												Class A
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
 												Class B
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
@@ -3843,11 +3832,11 @@
 											>Employment status</label
 										>
 										<div
-											class="rux-segmented rux-driver-panel__status-group"
+											class="rux-segmented-track rux-driver-panel__status-group"
 											data-rux-toggle-group
 										>
 											<button
-												class="rux-button rux-button--default is-active"
+												class="rux-button rux-button--segment is-active"
 												type="button"
 												aria-pressed="true"
 												title="Active"
@@ -3857,7 +3846,7 @@
 												><span>Active</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 												title="On Leave"
@@ -3867,7 +3856,7 @@
 												><span>On Leave</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 												title="Inactive"
@@ -3883,33 +3872,33 @@
 											>Employment type</label
 										>
 										<div
-											class="rux-segmented"
+											class="rux-segmented-track"
 											data-rux-toggle-group
 											data-emp-type-group
 										>
 											<button
-												class="rux-button rux-button--default is-active"
+												class="rux-button rux-button--segment is-active"
 												type="button"
 												aria-pressed="true"
 											>
 												Full-time
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
 												Part-time
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
 												Contract
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
@@ -3922,12 +3911,12 @@
 											>Priority</label
 										>
 										<div
-											class="rux-segmented rux-driver-panel__priority-group"
+											class="rux-segmented-track rux-driver-panel__priority-group"
 											data-rux-toggle-group
 											data-priority-group
 										>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
@@ -3939,7 +3928,7 @@
 												><span>1</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
@@ -3951,7 +3940,7 @@
 												><span>2</span>
 											</button>
 											<button
-												class="rux-button rux-button--default is-active"
+												class="rux-button rux-button--segment is-active"
 												type="button"
 												aria-pressed="true"
 											>
@@ -3963,7 +3952,7 @@
 												><span>3</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
@@ -3975,7 +3964,7 @@
 												><span>4</span>
 											</button>
 											<button
-												class="rux-button rux-button--default"
+												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 											>
@@ -6734,21 +6723,21 @@
 		<script src="./js/core/drawer.js?v=5"></script>
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
-		<script src="./js/core/controls.js?v=4" defer></script>
+		<script src="./js/core/controls.js?v=5" defer></script>
 		<script src="./js/core/billing-config.js?v=4"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
-		<script src="./js/core/doc-viewer.js?v=8"></script>
+		<script src="./js/core/doc-viewer.js?v=9"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=37"></script>
-		<script src="./js/components/itinerary.js?v=23"></script>
+		<script src="./js/components/itinerary.js?v=24"></script>
 		<script src="./js/panels/driver-panel.js?v=20" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=4" defer></script>
 		<script src="./js/panels/settings-panel.js?v=4" defer></script>
-		<script src="./js/panels/trip-finder.js?v=1" defer></script>
+		<script src="./js/panels/trip-finder.js?v=5" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=6" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=13" defer></script>
+		<script src="./js/panels/trip-envelope.js?v=15" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=1"></script>
 		<script
 			type="module"
@@ -11349,7 +11338,7 @@
 				</p>
 				<button
 					type="button"
-					class="rux-button rux-button--default rux-button--icon"
+					class="rux-button rux-button--ghost rux-button--icon"
 					id="manifest-window-close"
 					aria-label="Close manifest"
 				>
@@ -11790,7 +11779,7 @@
 				<p class="rux-card__title">Trip Finder</p>
 				<button
 					type="button"
-					class="rux-button rux-button--default rux-button--icon"
+					class="rux-button rux-button--ghost rux-button--icon"
 					id="trip-finder-close-btn"
 					aria-label="Close trip finder"
 				>
@@ -11806,7 +11795,7 @@
 							>search</span
 						>
 						<input
-							class="rux-trip-finder-window__search-input"
+							class="rux-input rux-trip-finder-window__search-input"
 							id="trip-finder-search"
 							type="search"
 							placeholder="Search trips, contacts, phone…"
@@ -11830,14 +11819,6 @@
 								>filter_list</span
 							>
 						</button>
-						<button
-							class="rux-button rux-button--default"
-							id="trip-finder-new-btn"
-							type="button"
-						>
-							<span class="rux-icon" aria-hidden="true">add</span>
-							<span class="rux-btn-label">New trip</span>
-						</button>
 					</div>
 					<div
 						class="rux-cluster"
@@ -11852,12 +11833,12 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Billing</label>
 							<div
-								class="rux-segmented"
+								class="rux-segmented-track"
 								id="tff-billing-group"
 								data-rux-toggle-group
 							>
 								<button
-									class="rux-button rux-button--default is-active"
+									class="rux-button rux-button--segment is-active"
 									type="button"
 									aria-pressed="true"
 									data-value="all"
@@ -11865,7 +11846,7 @@
 									All
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="charter"
@@ -11877,7 +11858,7 @@
 									><span class="rux-btn-label">Charter</span>
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="ticketed"
@@ -11893,12 +11874,12 @@
 						<div class="rux-field">
 							<label class="rux-field__label">When</label>
 							<div
-								class="rux-segmented"
+								class="rux-segmented-track"
 								id="tff-when-group"
 								data-rux-toggle-group
 							>
 								<button
-									class="rux-button rux-button--default is-active"
+									class="rux-button rux-button--segment is-active"
 									type="button"
 									aria-pressed="true"
 									data-value="all"
@@ -11906,7 +11887,7 @@
 									All
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="upcoming"
@@ -11914,7 +11895,7 @@
 									Upcoming
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="past"
@@ -11926,12 +11907,12 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Status</label>
 							<div
-								class="rux-segmented"
+								class="rux-segmented-track"
 								id="tff-status-group"
 								data-rux-toggle-group
 							>
 								<button
-									class="rux-button rux-button--default is-active"
+									class="rux-button rux-button--segment is-active"
 									type="button"
 									aria-pressed="true"
 									data-value="all"
@@ -11939,7 +11920,7 @@
 									All
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="unconfirmed"
@@ -11947,7 +11928,7 @@
 									Unconfirmed
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="confirmed"
@@ -11955,7 +11936,7 @@
 									Confirmed
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="cancelled"
@@ -11967,12 +11948,12 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Trip Type</label>
 							<div
-								class="rux-segmented"
+								class="rux-segmented-track"
 								id="tff-type-group"
 								data-rux-toggle-group
 							>
 								<button
-									class="rux-button rux-button--default is-active"
+									class="rux-button rux-button--segment is-active"
 									type="button"
 									aria-pressed="true"
 									data-value="all"
@@ -11980,7 +11961,7 @@
 									All
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="round_trip"
@@ -11992,7 +11973,7 @@
 									><span class="rux-btn-label">Round</span>
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="one_way"
@@ -12004,7 +11985,7 @@
 									><span class="rux-btn-label">One-way</span>
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="dropoff_pickup"
@@ -12020,12 +12001,12 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Bus</label>
 							<div
-								class="rux-segmented"
+								class="rux-segmented-track"
 								id="tff-bus-group"
 								data-rux-toggle-group
 							>
 								<button
-									class="rux-button rux-button--default is-active"
+									class="rux-button rux-button--segment is-active"
 									type="button"
 									aria-pressed="true"
 									data-value="all"
@@ -12033,7 +12014,7 @@
 									All
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="assigned"
@@ -12041,7 +12022,7 @@
 									Assigned
 								</button>
 								<button
-									class="rux-button rux-button--default"
+									class="rux-button rux-button--segment"
 									type="button"
 									aria-pressed="false"
 									data-value="unassigned"
@@ -12051,7 +12032,7 @@
 							</div>
 						</div>
 						<button
-							class="rux-button rux-button--default"
+							class="rux-button rux-button--ghost"
 							id="tff-clear-btn"
 							type="button"
 						>
@@ -12060,23 +12041,26 @@
 					</div>
 				</div>
 				<div
-					class="rux-floating-window__body rux-trip-finder-window__body trips-app__table-wrap"
+					class="rux-floating-window__body rux-trip-finder-window__body"
 				>
-					<table class="rux-table trips-app__table" aria-label="Trips">
-						<thead>
-							<tr>
-								<th scope="col">Trip</th>
-								<th scope="col">Destination</th>
-								<th scope="col">Dates</th>
-								<th scope="col">Bus</th>
-								<th scope="col">Confirmed</th>
-								<th scope="col">Invoice</th>
-								<th scope="col" class="col-payment">Payment</th>
-								<th scope="col" class="col-quoted">Quoted</th>
-							</tr>
-						</thead>
-						<tbody id="trip-finder-body"></tbody>
-					</table>
+					<div
+						class="rux-card-section rux-trip-finder-window__results trips-app__table-wrap"
+					>
+						<table
+							class="rux-table trips-app__table rux-trip-finder-window__table"
+							aria-label="Trip search results"
+						>
+							<thead>
+								<tr>
+									<th scope="col">Date</th>
+									<th scope="col">Customer</th>
+									<th scope="col">Destination</th>
+									<th scope="col">Status</th>
+								</tr>
+							</thead>
+							<tbody id="trip-finder-body"></tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>

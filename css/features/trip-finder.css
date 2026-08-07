@@ -12,6 +12,8 @@
 /* Roomier than the default doc-preview size — needs to comfortably fit an
    8-column table, not a single document page. */
 .rux-trip-finder-window {
+	container-name: trip-finder-window;
+	container-type: inline-size;
 	top: 10%;
 	left: 50%;
 	transform: translateX(-50%);
@@ -30,6 +32,47 @@
 	flex: 1;
 }
 
+.rux-trip-finder-window__body {
+	display: flex;
+	min-height: 0;
+	padding: var(--rux-space-4);
+	overflow: hidden;
+	background: var(--rux-floating-window-background);
+}
+
+.rux-trip-finder-window__results {
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+	padding-bottom: 0;
+}
+
+/* Adjacent 8px cell insets create exactly 16px between column content. */
+.rux-trip-finder-window__table {
+	width: 100%;
+}
+
+.rux-trip-finder-window__table th {
+	width: 25%;
+}
+
+.rux-trip-finder-window__table :is(th, td) {
+	padding-inline: var(--rux-space-2);
+}
+
+.rux-trip-finder-window__table td {
+	vertical-align: middle;
+}
+
+.rux-trip-finder-window__table :is(th, td):first-child {
+	padding-left: var(--rux-space-4);
+}
+
+.rux-trip-finder-window__table :is(th, td):last-child {
+	padding-right: var(--rux-space-4);
+}
+
 .rux-trip-finder-window__toolbar {
 	flex: none;
 	display: flex;
@@ -37,14 +80,14 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 
-/* — Search row — oversized borderless input, carried over from the old
-   ⌘K modal's look so that muscle memory still feels right. */
+/* — Search row — */
 
 .rux-trip-finder-window__search-row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) var(--rux-space-4);
+	background: var(--rux-floating-window-header-bg);
 }
 
 .rux-trip-finder-window__search-icon {
@@ -54,34 +97,22 @@
 
 .rux-trip-finder-window__search-input {
 	flex: 1;
-	background: transparent;
-	border: 1px solid transparent;
-	font: inherit;
-	font-size: var(--rux-text-lg);
-	color: var(--rux-fg);
-	padding: 0;
 	min-width: 0;
-}
-
-.rux-trip-finder-window__search-input::placeholder {
-	color: var(--rux-fg-subtle);
 }
 
 .rux-trip-finder-window__search-input::-webkit-search-cancel-button {
 	display: none;
 }
 
-/* — Filter panel — plain collapsible block, not a drawer (the floating
-   window is already independently draggable/resizable; a full side-drawer
-   would eat most of its width). Wraps to multiple lines on narrower
-   window widths instead of needing its own scroll region. */
+/* — Filter panel — responsive to the resized window, not the viewport. */
 
 .rux-trip-finder-window__filters {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: flex-end;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	align-items: end;
 	gap: var(--rux-space-4);
-	padding: 0 var(--rux-space-4) var(--rux-space-3);
+	padding: var(--rux-space-4);
+	background: var(--rux-floating-window-background);
 }
 
 .rux-trip-finder-window__filters[hidden] {
@@ -89,7 +120,21 @@
 }
 
 .rux-trip-finder-window__filters .rux-field {
-	flex: none;
+	min-width: 0;
+}
+
+.rux-trip-finder-window__filters .rux-segmented-track {
+	width: 100%;
+}
+
+.rux-trip-finder-window__filters .rux-segmented-track > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+#tff-clear-btn {
+	grid-column: 1 / -1;
+	justify-self: end;
 }
 
 #trip-finder-filter-badges {
@@ -98,4 +143,10 @@
 
 #trip-finder-filter-badges[hidden] {
 	display: none;
+}
+
+@container trip-finder-window (max-width: 800px) {
+	.rux-trip-finder-window__filters {
+		grid-template-columns: minmax(0, 1fr);
+	}
 }

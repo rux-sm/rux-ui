@@ -18,6 +18,7 @@
 	flex-direction: column;
 	resize: both;
 	z-index: var(--rux-z-modal);
+	background: var(--rux-floating-window-background);
 	box-shadow: var(--rux-floating-window-shadow);
 }
 
@@ -93,8 +94,9 @@
 .rux-floating-window__header {
 	cursor: move;
 	flex: none;
-	background: var(--rux-surface-5);
-	border-bottom: 1px solid var(--rux-border-strong);
+	padding: var(--rux-floating-window-header-padding);
+	background: var(--rux-floating-window-header-bg);
+	border-bottom: var(--rux-floating-window-header-border);
 }
 
 .rux-floating-window__body {
@@ -105,7 +107,9 @@
 
 .rux-floating-window__footer {
 	flex: none;
-	background: var(--rux-surface-5);
+	padding: var(--rux-floating-window-footer-padding);
+	background: var(--rux-floating-window-footer-bg);
+	box-shadow: var(--rux-floating-window-footer-shadow);
 }
 
 .rux-floating-window__spacer {

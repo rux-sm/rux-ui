@@ -11,7 +11,6 @@
   const badgesEl       = document.getElementById("trip-finder-filter-badges");
   const filtersToggleBtn = document.getElementById("trip-finder-filters-toggle");
   const filtersPanel   = document.getElementById("trip-finder-filters");
-  const newTripBtn     = document.getElementById("trip-finder-new-btn");
 
   let db       = null;
   let allTrips = [];
@@ -63,12 +62,6 @@
               t.po_ref || (t.deposit_amount > 0) || t.date_paid);
   }
 
-  function invoiceLevel(t) {
-    if (t.date_paid)                                    return "paid";
-    if (t.invoice_number || t.invoice_status === "Invoiced") return "invoiced";
-    return "pending";
-  }
-
   function tripTypeOf(t) {
     return t.trip_type === "one_way" ? "one_way" : t.trip_type === "dropoff_pickup" ? "dropoff_pickup" : "round_trip";
   }
@@ -100,7 +93,7 @@
     tbody.innerHTML = "";
     if (!list.length) {
       tbody.innerHTML =
-        `<tr><td colspan="8" class="trips-app__empty">No trips found.</td></tr>`;
+        `<tr><td colspan="4" class="trips-app__empty">No trips found.</td></tr>`;
       return;
     }
 
@@ -109,14 +102,11 @@
     list.forEach((t) => {
       const buses     = busNumbers(t);
       const confirmed = isConfirmed(t);
-      const invLevel  = invoiceLevel(t);
-
       const tr = document.createElement("tr");
       tr.className            = "trips-app__row";
       tr.tabIndex             = 0;
       tr.dataset.id           = t.id;
       tr.dataset.hasBus       = buses.length > 0 ? "yes" : "no";
-      tr.dataset.invoiceLevel = invLevel;
       tr.dataset.isPast       = (t.start_date && t.start_date < today) ? "yes" : "no";
       tr.dataset.confirmed    = confirmed ? "yes" : "no";
       tr.dataset.cancelled    = t.cancelled_at ? "yes" : "no";
@@ -124,42 +114,17 @@
       tr.dataset.billingType  = billingTypeOf(t);
       tr.dataset.search       = searchTextOf(t);
 
-      const busCell = buses.length
-        ? buses.map(n => `<span class="rux-tag">Bus ${n}</span>`).join(" ")
-        : `<span class="trips-app__unassigned">Unassigned</span>`;
-
-      const confirmedBadge = t.cancelled_at
-        ? `<span class="rux-badge rux-badge--dot rux-badge--danger"${t.cancellation_reason ? ` title="${escapeAttr(t.cancellation_reason)}"` : ""}>Cancelled</span>`
+      const statusBadge = t.cancelled_at
+        ? `<span class="rux-badge rux-badge--danger"${t.cancellation_reason ? ` title="${escapeAttr(t.cancellation_reason)}"` : ""}>Cancelled</span>`
         : confirmed
-          ? `<span class="rux-badge rux-badge--dot rux-badge--success">Confirmed</span>`
-          : `<span class="rux-badge rux-badge--dot rux-badge--danger">Unconfirmed</span>`;
-
-      const invoiceBadge = t.invoice_number
-        ? `<span class="rux-badge rux-badge--dot rux-badge--success">Invoiced</span>`
-        : `<span class="rux-badge rux-badge--dot">Pending</span>`;
-
-      const paymentBadge = t.date_paid
-        ? `<span class="rux-badge rux-badge--dot rux-badge--success">Paid ${fmtDate(t.date_paid)}</span>`
-        : `<span class="rux-subtle">—</span>`;
-
-      const quoted = t.quoted_price
-        ? `$${Number(t.quoted_price).toLocaleString("en-US", { minimumFractionDigits: 0 })}`
-        : "—";
+          ? `<span class="rux-badge rux-badge--success">Confirmed</span>`
+          : `<span class="rux-badge rux-badge--danger">Unconfirmed</span>`;
 
       tr.innerHTML = `
-        <td>
-          <div class="trips-app__trip-cell">
-            <span class="trips-app__trip-ref">${t.trip_ref || "—"}</span>
-            <span class="trips-app__customer">${t.customer || "—"}</span>
-          </div>
-        </td>
-        <td>${t.destination || "—"}</td>
         <td class="trips-app__dates">${fmtDates(t.start_date, t.end_date)}${t.trip_type === "dropoff_pickup" && t.return_start_date ? ` → ${fmtDates(t.return_start_date, t.return_end_date)}` : ""}</td>
-        <td class="trips-app__bus-cell">${busCell}</td>
-        <td>${confirmedBadge}</td>
-        <td>${invoiceBadge}</td>
-        <td class="col-payment">${paymentBadge}</td>
-        <td class="col-quoted">${quoted}</td>
+		<td class="trips-app__customer">${t.customer || "—"}</td>
+		<td>${t.destination || "—"}</td>
+		<td>${statusBadge}</td>
       `;
 
       tr.addEventListener("click", () => openInScheduler(t));
@@ -304,11 +269,6 @@
     filtersToggleBtn.setAttribute("aria-pressed", String(nowOpen));
   });
 
-  newTripBtn?.addEventListener("click", () => {
-    document.dispatchEvent(new CustomEvent("trips:new"));
-    close();
-  });
-
   // ── Data loading ──────────────────────────────────────────────────────────
 
   async function ensureDb() {
@@ -323,7 +283,7 @@
       applyFilter();
     } catch (err) {
       console.error("fetchTrips failed:", err);
-      tbody.innerHTML = `<tr><td colspan="8" class="trips-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="4" class="trips-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
     }
   }
 
@@ -353,7 +313,6 @@
 
   closeBtn?.addEventListener("click", close);
   document.getElementById("workspace-search-btn")?.addEventListener("click", open);
-  document.getElementById("calendar-find-trip-btn")?.addEventListener("click", open);
 
   document.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key === "k") {

@@ -171,15 +171,15 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 |---|---:|---:|---:|---:|
 | `.rux-button` | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
 | `.rux-button--icon` | `--rux-control-height` `32px` | icon only | `0` | n/a |
-| `.rux-segmented` | `40px` outer track | track | `--rux-space-1` `4px` inner depth | `--rux-space-1` `4px` |
-| segmented items | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | n/a |
+| `.rux-segmented-track` | `--rux-input-height` outer track | track | `--rux-segmented-track-padding` | `--rux-segmented-track-radius` |
+| `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-text-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
 
 - Use `--rux-weight-medium` for all button labels.
 - Icon-only buttons are square: width equals the resolved button height.
 - Do not add compact or large button variants. Use layout density, icon-only buttons, or progressive disclosure instead of changing button height.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
-- Segmented controls use a shallow recessed track around standard button items. The selected item uses `--rux-segmented-selected-bg` and is the only raised element in the strip.
+- Segmented controls use a shallow recessed `.rux-segmented-track` around `.rux-button--segment` items. The selected indicator uses `--rux-segment-active-background` and is the strip's only raised layer.
 - Keep labels short, sentence case, and action-oriented.
 
 ### Forms

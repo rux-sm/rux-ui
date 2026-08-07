@@ -34,7 +34,7 @@
     flex-grow: 1;
     min-height: 0; /* lets this actually shrink to the window's real size instead of refusing to go below the card's natural (pre-scale) content size */
     padding: var(--rux-space-4);
-    background: var(--rux-surface-5);
+    background: var(--rux-floating-window-background);
     /* Fallback only, not the primary mechanism — fitToHeight() computes an
        exact scale to fit this space, so overflow shouldn't normally trigger. */
     overflow: auto;
@@ -73,8 +73,21 @@
 	flex-wrap: wrap;
 	gap: var(--rux-button-group-gap);
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-surface-5);
+	background: var(--rux-floating-window-header-bg);
 	border-bottom: var(--rux-card-section-border);
+}
+
+/* Both option groups (format, tint) split the toolbar row evenly, and each
+   group's own options split evenly within it — no leftover empty space to
+   the row's right the way content-sized segmented tracks would leave. */
+.rux-trip-envelope-window__toolbar > .rux-segmented-track {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-trip-envelope-window__toolbar > .rux-segmented-track > .rux-button {
+	flex: 1;
+	min-width: 0;
 }
 
 /* flex:none and the modal surface background come from the shared
@@ -85,6 +98,15 @@
 	align-items: center;
 	flex-wrap: wrap;
 	gap: var(--rux-button-group-gap);
+}
+
+/* Print Driver / Print All split whatever space the recipient select
+   (fixed via clamp() below) doesn't take, instead of hugging the right
+   edge — same "no leftover empty space" intent as the toolbar above. */
+.rux-trip-envelope-window__footer > [data-envelope-print],
+.rux-trip-envelope-window__footer > [data-envelope-print-all] {
+	flex: 1;
+	min-width: 0;
 }
 
 /* Public driver links use the exact same envelope and responsive fitting,
@@ -109,8 +131,6 @@
 .rux-trip-envelope-window__recipient .rux-select {
 	width: clamp(10rem, 18vw, 14rem);
 }
-
-/* .rux-trip-envelope-window__spacer removed — use .rux-floating-window__spacer */
 
 /* ── The envelope card itself — a deliberate light-on-paper world ───────── */
 

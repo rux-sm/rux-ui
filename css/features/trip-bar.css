@@ -59,7 +59,6 @@
 	--rux-trip-bar-compact-padding: var(--rux-space-2);
 	--rux-trip-bar-actions-bg: transparent;
 	--rux-trip-bar-bus-label-bg: var(--rux-white);
-	--rux-trip-bar-meta-bg:  color-mix(in oklch, var(--rux-neutral) 20%, transparent);
 	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
 	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
 	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
@@ -93,6 +92,7 @@
 	background-color: var(--_surface);
 	border-radius: var(--rux-trip-bar-radius);
 	border: var(--rux-trip-bar-border-width) solid var(--_outline);
+	box-shadow: var(--rux-trip-bar-shadow);
 	overflow: hidden;
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;
@@ -107,7 +107,8 @@
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */
 .rux-trip-bar--partial-po {
-	--_outline: var(--rux-warning-on-vivid);
+	--_outline: var(--rux-warning-strong);
+	--rux-trip-bar-border-width: 2px;
 }
 
 /* Drag-to-reassign (see installBusDrag() in index.html) — the original bar
@@ -134,7 +135,7 @@
 	position: fixed;
 	box-sizing: border-box;
 	margin: 0;
-	border-radius: var(--rux-radius-container);
+	border-radius: var(--rux-trip-bar-radius);
 	border: 2px solid var(--_ghost-tone, var(--rux-accent));
 	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) 16%, transparent);
 	transition: none;
@@ -277,7 +278,7 @@
 	grid-column: 1 / -1;
 	margin-left: 0;
 	border-inline-start: 0;
-	border-radius: 0 var(--rux-radius-container) var(--rux-radius-container) 0;  /* flat left edge — trip enters from offscreen */
+	border-radius: 0 var(--rux-trip-bar-radius) var(--rux-trip-bar-radius) 0;  /* flat left edge — trip enters from offscreen */
 }
 
 
@@ -324,7 +325,19 @@
 	background-color: transparent;
 	overflow: visible;
 	border: none;
-	border-radius: 0;
+	/* The outer wrapper owns the shared shadow, so it must carry the same
+	   silhouette as its rounded head/tail surfaces. */
+	border-radius: var(--rux-trip-bar-radius);
+}
+
+.rux-trip-bar--multi-day.rux-trip-bar--from-prev {
+	border-start-start-radius: 0;
+	border-end-start-radius: 0;
+}
+
+.rux-trip-bar--multi-day.rux-trip-bar--to-next {
+	border-start-end-radius: 0;
+	border-end-end-radius: 0;
 }
 
 .rux-trip-bar--multi-day.rux-trip-bar--has-conflict {
@@ -498,7 +511,7 @@
 	padding-inline: 0;
 	margin: 0;
 	background: var(--rux-trip-bar-actions-bg);
-	border-radius: var(--rux-radius-control);
+	border-radius: var(--rux-trip-bar-actions-radius);
 }
 
 .rux-trip-bar__actions {
@@ -585,7 +598,7 @@
 	height: 12px;
 	padding: 0 var(--rux-space-0-5);
 	background: var(--rux-trip-bar-bus-label-bg);
-	border-radius: var(--rux-radius-xs);
+	border-radius: var(--rux-trip-bar-bus-label-radius);
 	color: var(--rux-black);
 	font-size: 10px;
 	font-weight: 900;
@@ -642,7 +655,7 @@
 }
 
 .rux-trip-bar__pending-icon--warning {
-	color: var(--rux-warning-on-vivid);
+	color: var(--rux-warning-strong);
 }
 
 /* ---------- Text rows ---------- */
@@ -698,7 +711,6 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	min-height: 13px;
-	font-style: italic;
 	color: var(--rux-warning-on-vivid);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
@@ -737,7 +749,9 @@
 	align-items: center;
 	margin-top: var(--rux-trip-bar-tight-gap);
 	gap: var(--rux-space-0-5);
-	color: var(--rux-fg);
+	background: var(--rux-trip-bar-meta-bg);
+	border-radius: var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius) 0 0;
+	color: var(--rux-trip-bar-meta-fg);
 	font-size: var(--rux-text-xs);
 	letter-spacing: -0.02em;
 	line-height: 1;
@@ -752,17 +766,11 @@
 	justify-content: center;
 	align-self: stretch;
 	gap: var(--rux-trip-bar-tight-gap);
-	background: var(--rux-trip-bar-meta-bg);
+	background: transparent;
 	height: 20px;
 	padding: 0;
 	border-radius: 0;
 	box-sizing: border-box;
-}
-.rux-trip-bar__time-item:first-child {
-	border-radius: var(--rux-button-radius) 0 0 0;
-}
-.rux-trip-bar__time-item:last-child {
-	border-radius: 0 var(--rux-button-radius) 0 0;
 }
 
 .rux-trip-bar__time-label {
@@ -798,6 +806,8 @@
 	align-items: center;
 	gap: var(--rux-space-0-5);
 	margin-top: var(--rux-trip-bar-tight-gap);
+	background: var(--rux-trip-bar-meta-bg);
+	border-radius: 0 0 var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius);
 }
 
 .rux-trip-bar__driver {
@@ -807,7 +817,7 @@
 	align-items: center;
 	justify-content: center;
 	gap: var(--rux-space-1);
-	background: var(--rux-trip-bar-meta-bg);
+	background: transparent;
 	padding: 0 var(--rux-space-1);
 	height: 20px;
 	border-radius: 0;
@@ -823,17 +833,6 @@
    corner's own overflow:hidden above. */
 .rux-trip-bar__driver:hover {
 	overflow: visible;
-}
-
-.rux-trip-bar__driver:first-child {
-	border-bottom-left-radius: var(--rux-button-radius);
-}
-.rux-trip-bar__driver:last-child {
-	border-bottom-right-radius: var(--rux-button-radius);
-}
-.rux-trip-bar__driver:first-child:last-child {
-	border-bottom-left-radius: var(--rux-button-radius);
-	border-bottom-right-radius: var(--rux-button-radius);
 }
 
 .rux-trip-bar__driver-name {
@@ -1009,14 +1008,6 @@
 
 	.rux-trip-bar__time-item:nth-child(2) {
 		display: none;
-	}
-
-	.rux-trip-bar__time-item:first-child {
-		border-radius: 6px 0 0 0;
-	}
-
-	.rux-trip-bar__time-item:last-child {
-		border-radius: 0 6px 0 0;
 	}
 
 	.rux-trip-bar__contact-phone {
