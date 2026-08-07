@@ -111,10 +111,27 @@ function createButton(label, {
 	return button;
 }
 
+// .rux-module-button (tone-tinted background component) was retired in favor
+// of the shared .rux-button variants — no info/success/warning color tones
+// exist there, so this flattens onto the closest existing look rather than
+// keeping a second button system alive for a handful of link actions.
+const ACTION_LINK_TONE_CLASS = {
+	neutral: "rux-button--default",
+	info:    "rux-button--default",
+	success: "rux-button--accent",
+	warning: "rux-button--outline",
+	danger:  "rux-button--outline rux-button--danger",
+};
+
+// Icon-only, same as .rux-module-button was (its __label was visually
+// hidden, sr-only) — accessibility comes from aria-label/title below, not a
+// visible label span, so this keeps the same footprint these action links
+// (Navigate/Text/Call) have always had.
 function createActionLink(label, iconName, href, ariaLabel, tone = "info") {
+	const toneClass = ACTION_LINK_TONE_CLASS[tone] || ACTION_LINK_TONE_CLASS.info;
 	const link = el(
 		"a",
-		`rux-module-button rux-module-button--${tone} assignment-module__action`,
+		`rux-button ${toneClass} rux-button--icon assignment-module__action`,
 	);
 	link.href = href;
 	link.setAttribute("aria-label", ariaLabel || label);
@@ -123,7 +140,7 @@ function createActionLink(label, iconName, href, ariaLabel, tone = "info") {
 		link.rel = "noopener";
 	}
 	link.title = label;
-	link.append(icon(iconName), el("span", "rux-module-button__label", label));
+	link.appendChild(icon(iconName));
 	return link;
 }
 

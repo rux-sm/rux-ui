@@ -27,9 +27,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=89" />
+		<link rel="stylesheet" href="./css/tokens.css?v=90" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=179" />
+		<link rel="stylesheet" href="./css/components.css?v=181" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
@@ -55,7 +55,7 @@
 		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
 		<link rel="stylesheet" href="./css/features/team-chat.css?v=5" />
 		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=41" />
-		<link rel="stylesheet" href="./css/features/driver-share.css?v=76" />
+		<link rel="stylesheet" href="./css/features/driver-share.css?v=77" />
 		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=6" />
 		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=5" />
 		<link
@@ -1551,8 +1551,8 @@
 															type="checkbox"
 															id="tp-po-received"
 															name="poReceived"
-															data-billing-toggle
-															data-billing-controls="tp-po" /><span
+													data-billing-toggle
+													data-billing-controls="tp-po tp-po-amount" /><span
 															class="rux-switch__track"
 														></span
 														><span
@@ -1600,6 +1600,20 @@
 														></span
 													></label>
 												</div>
+											</div>
+											<div
+												class="rux-trip-panel__po-details"
+												data-billing-details
+												hidden
+											>
+												<div class="rux-field">
+													<label class="rux-field__label" for="tp-po-amount">Authorized Amount</label>
+													<div class="rux-input-group rux-input-group--prefix">
+														<span class="rux-input-group__prefix" aria-hidden="true">$</span>
+														<input class="rux-input" id="tp-po-amount" name="poAmount" type="number" min="0" step="0.01" placeholder="0.00" aria-label="PO authorized amount" disabled />
+													</div>
+												</div>
+												<p class="rux-trip-panel__po-coverage rux-field__help" id="tp-po-coverage" role="status"></p>
 											</div>
 										</div>
 									</div>
@@ -4678,13 +4692,6 @@
 											<button
 												class="rux-menu__item"
 												type="button"
-												data-component-target="icon-button"
-											>
-												Icon button
-											</button>
-											<button
-												class="rux-menu__item"
-												type="button"
 												data-component-target="toggle-button"
 											>
 												Toggle button
@@ -4982,6 +4989,68 @@
 								<div class="rux-card">
 									<header class="rux-card__header">
 										<p class="rux-card__title">
+											Icon Buttons
+										</p>
+									</header>
+									<div
+										class="rux-card__body components-app__specimens"
+									>
+										<button
+											class="rux-button rux-button--accent rux-button--icon"
+											type="button"
+											aria-label="Add"
+											title="Add"
+										>
+											<span class="rux-icon" aria-hidden="true"
+												>add</span
+											>
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--icon"
+											type="button"
+											aria-label="Edit"
+											title="Edit"
+										>
+											<span class="rux-icon" aria-hidden="true"
+												>edit</span
+											>
+										</button>
+										<button
+											class="rux-button rux-button--ghost rux-button--icon"
+											type="button"
+											aria-label="More options"
+											title="More options"
+										>
+											<span class="rux-icon" aria-hidden="true"
+												>more_vert</span
+											>
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--icon rux-button--danger"
+											type="button"
+											aria-label="Delete"
+											title="Delete"
+										>
+											<span class="rux-icon" aria-hidden="true"
+												>delete</span
+											>
+										</button>
+										<button
+											class="rux-button rux-button--default rux-button--icon"
+											type="button"
+											aria-label="Unavailable"
+											title="Unavailable"
+											disabled
+										>
+											<span class="rux-icon" aria-hidden="true"
+												>block</span
+											>
+										</button>
+									</div>
+								</div>
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">
 											Button Block
 										</p>
 									</header>
@@ -5011,12 +5080,6 @@
 									<div
 										class="rux-card__body components-app__specimens"
 									>
-										<button
-											class="rux-button rux-button--accent rux-button--xs"
-											type="button"
-										>
-											XS
-										</button>
 										<button
 											class="rux-button rux-button--accent rux-button--sm"
 											type="button"
@@ -6672,11 +6735,11 @@
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
 		<script src="./js/core/controls.js?v=4" defer></script>
-		<script src="./js/core/billing-config.js?v=2"></script>
+		<script src="./js/core/billing-config.js?v=3"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=8"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=31"></script>
+		<script src="./js/panels/trip-panel.js?v=32"></script>
 		<script src="./js/components/itinerary.js?v=23"></script>
 		<script src="./js/panels/driver-panel.js?v=20" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
@@ -6701,15 +6764,15 @@
 		></script>
 		<script
 			type="module"
-			src="./js/panels/notifications-panel.js?v=2"
+				src="./js/panels/notifications-panel.js?v=3"
 		></script>
 		<script type="module" src="./js/panels/team-chat.js?v=3"></script>
 		<script
 			type="module"
-			src="./js/panels/components-panel.js?v=45"
+			src="./js/panels/components-panel.js?v=46"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=56"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=57"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -7862,7 +7925,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=24");
+					const db = await import("./js/data/trip-db.js?v=26");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -10703,7 +10766,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=24");
+					const db = await import("./js/data/trip-db.js?v=26");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
@@ -10794,7 +10857,7 @@
 			async function runNotificationChecks() {
 				try {
 					const { generateDriverExpiryAlerts, syncTripReadinessAlerts } =
-						await import("./js/data/notification-db.js?v=2");
+						await import("./js/data/notification-db.js?v=3");
 					await Promise.all([
 						generateDriverExpiryAlerts(),
 						syncTripReadinessAlerts(window.RuxTrips?.list() || []),

@@ -5,9 +5,10 @@
    confirmation rules.
 
    Statuses (derived from payment state):
-     pending            — no contract, no payment
-     contract_signed    — contract signed
-     po_received        — PO received
+	 pending            — no contract, no payment
+	 contract_signed    — contract signed
+	 po_partial         — PO received for less than the quoted price
+	 po_received        — PO received
      deposit_received   — partial payment received
      paid_full          — fully paid
      overpaid           — paid more than contract value
@@ -33,6 +34,7 @@
 	const STATUS_META = {
 		pending:            { label: "Pending",            badgeClass: "rux-badge--danger",    icon: "schedule" },
 		contract_signed:    { label: "Contract Signed",    badgeClass: "rux-badge--warning",   icon: "edit_document" },
+		po_partial:         { label: "Partial PO",         badgeClass: "rux-badge--warning",   icon: "pending_actions" },
 		po_received:        { label: "PO Received",        badgeClass: "rux-badge--info",      icon: "receipt_long" },
 		deposit_received:   { label: "Deposit Received",   badgeClass: "rux-badge--info",      icon: "payments" },
 		paid_full:          { label: "Paid in Full",       badgeClass: "rux-badge--success",   icon: "paid" },
@@ -92,12 +94,14 @@
 	function deriveStatus(state = {}) {
 		const contractSigned = isWorkflowActive("contractSigned") && !!state.contractSigned;
 		const poReceived = isWorkflowActive("poReceived") && !!state.poReceived;
+		const poAmount = paymentNumber(state.poAmount);
 		const price = paymentNumber(state.price);
 		const paid = paymentNumber(state.paid);
 		const balance = Number.isFinite(Number(state.balance)) ? Number(state.balance) : price - paid;
 
 		if (price > 0 && balance < 0) return "overpaid";
 		if (price > 0 && paid > 0 && balance <= 0) return "paid_full";
+		if (poReceived && price > 0 && poAmount < price) return "po_partial";
 		if (paid > 0 && (balance > 0 || price <= 0)) return "deposit_received";
 		if (poReceived) return "po_received";
 		if (contractSigned) return "contract_signed";
@@ -114,9 +118,14 @@
 		const hasPaidDate = !!(trip.date_paid || trip.datePaid);
 		const contractSigned = trip.contract_status === "Signed" || trip.contractSigned === true || !!trip.confirmed;
 		const poReceived = !!(trip.po_received || trip.poReceived || trip.po_ref || trip.paymentRef);
+		const hasPoAmount = Object.hasOwn(trip, "po_amount") || Object.hasOwn(trip, "poAmount");
+		const poAmount = hasPoAmount
+			? paymentNumber(trip.po_amount ?? trip.poAmount)
+			: (poReceived ? price : 0);
 		return {
 			contractSigned,
 			poReceived,
+			poAmount,
 			price,
 			paid: hasPaidDate && paid <= 0 ? price : paid,
 			balance: hasPaidDate && paid >= price ? 0 : price - paid,
@@ -168,7 +177,7 @@
 	 * Return the status key for the next pending step a trip needs to reach.
 	 * Returns null when the trip is already at its final status.
 	 */
-	const STEP_ORDER = ["contract_signed", "po_received", "deposit_received", "paid_full"];
+	const STEP_ORDER = ["contract_signed", "po_partial", "po_received", "deposit_received", "paid_full"];
 	function nextPendingStep(status) {
 		if (status === "overpaid") return null;
 		const idx = STEP_ORDER.indexOf(status);

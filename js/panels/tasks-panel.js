@@ -152,15 +152,14 @@ const COMPUTED_ITEMS = [
 		},
 	},
 	{
-		// Labeled "Payment" — what this actually checks is trip.confirmed,
-		// via the same status pipeline the trip editor's own billing badge
-		// uses (js/core/billing-config.js) — reused here instead of
-		// re-deriving "signed vs. PO vs. deposit" from scratch.
-		label: "Payment",
+		// Authorization reuses the trip editor's billing pipeline instead of
+		// re-deriving contract/PO coverage. Partial PO status remains pending;
+		// received cash continues to be tracked independently in Payments.
+		label: "Authorization",
 		checked: (trip) => !!trip.confirmed,
 		detail: (trip) => {
 			const status = window.RuxBilling?.deriveRecordStatus?.(trip) || "pending";
-			if (status === "pending") return "Not confirmed";
+			if (status === "pending") return "Not authorized";
 			return window.RuxBilling?.statusMeta?.(status)?.label || status;
 		},
 	},

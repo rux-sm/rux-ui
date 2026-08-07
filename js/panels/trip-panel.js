@@ -316,6 +316,11 @@ function formatDisplayDate(value) {
 function initBillingWorkflow(root) {
 	const toggles = root.querySelectorAll("[data-billing-toggle]");
 	const priceEl = root.querySelector("#tp-price");
+	const poAmountEl = root.querySelector("#tp-po-amount");
+	const poCoverageEl = root.querySelector("#tp-po-coverage");
+	const poDetails = root.querySelector("[data-billing-details]");
+	const poStep = root.querySelector('[data-billing-key="poReceived"]');
+	if (poStep && poDetails) poStep.append(poDetails);
 	const balanceDue = root.querySelector("#tp-balance-due");
 	const balancePaidEl = root.querySelector("#tp-balance-paid");
 	const datePaidEl = root.querySelector("#tp-date-paid");
@@ -455,6 +460,7 @@ function initBillingWorkflow(root) {
 			.pop() || "";
 		const fullyPaid = price > 0 && balance <= 0;
 		const overpaid = price > 0 && balance < 0;
+		const poAmount = readMoney(poAmountEl);
 
 		// Four states, not two: nothing paid yet (red) reads very differently
 		// from a partial payment already in (yellow), even though both used to
@@ -474,6 +480,8 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 			const enabled = toggle.checked;
 			const step = toggle.closest("[data-billing-step]");
 			step?.classList.toggle("is-enabled", enabled);
+			const details = step?.querySelector("[data-billing-details]");
+			if (details) details.hidden = !enabled;
 
 			(toggle.dataset.billingControls || "")
 				.split(/\s+/)
@@ -489,6 +497,25 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 					if (placeholder) control.placeholder = placeholder;
 				});
 		});
+		if (poCoverageEl) {
+			const poEnabled = !!root.querySelector("#tp-po-received")?.checked;
+			let message = "";
+			let state = "";
+			if (poEnabled && price <= 0) message = "Add a quoted price to verify PO coverage.";
+			else if (poEnabled && poAmount <= 0) message = "Enter the amount authorized by this PO.";
+			else if (poEnabled && poAmount < price) {
+				message = `Partial coverage · ${formatMoney(price - poAmount)} not authorized`;
+				state = "partial";
+			} else if (poEnabled) {
+				message = poAmount > price
+					? `Fully authorized · ${formatMoney(poAmount - price)} over quote`
+					: "Fully authorized";
+				state = "complete";
+			}
+			poCoverageEl.textContent = message;
+			poCoverageEl.classList.toggle("is-partial", state === "partial");
+			poCoverageEl.classList.toggle("is-complete", state === "complete");
+		}
 
 		window.Rux?.syncDateInputs(root);
 	};
@@ -552,7 +579,9 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 
 	toggles.forEach((toggle) => toggle.addEventListener("change", sync));
 	priceEl?.addEventListener("input", sync);
+	poAmountEl?.addEventListener("input", sync);
 	priceEl?.addEventListener("focusout", () => formatPaymentAmount(priceEl));
+	poAmountEl?.addEventListener("focusout", () => formatPaymentAmount(poAmountEl));
 	paymentRows?.addEventListener("input", (event) => {
 		if (event.target.closest("[data-payment-row]")) paymentRows.dataset.paymentsTouched = "true";
 		sync();

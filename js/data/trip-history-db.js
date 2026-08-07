@@ -32,6 +32,7 @@ const TRIP_FIELDS = [
 	["on_duty_hours", "On-duty hours", "number"],
 	["invoice_status", "Invoice status"],
 	["po_ref", "PO"],
+	["po_amount", "PO authorized amount", "money"],
 	["invoice_number", "Invoice"],
 	["date_paid", "Date paid"],
 	["bus_count", "Bus count", "number"],

@@ -147,7 +147,10 @@ function tripReadinessIssues(trip, leg) {
 		|| trip.date_paid;
 
 	if (!trip.confirmed) {
-		issues.push(hasPoOrEquivalent ? "payment confirmation" : "PO/payment confirmation");
+		const price = Number(trip.quoted_price || 0);
+		const poAmount = Number(trip.po_amount || 0);
+		if (trip.po_received && price > 0 && poAmount < price) issues.push("full PO authorization");
+		else issues.push(hasPoOrEquivalent ? "payment confirmation" : "PO/payment confirmation");
 	}
 	if (!hasItinerary) issues.push("itinerary");
 	if (!hasContact) issues.push("trip contact");

@@ -58,7 +58,7 @@ function renderChanges(rows) {
 	const section = el("section", "maintenance-changes");
 	section.append(el("h2", "maintenance-changes__title", "Recent Changes"));
 	if (!rows.length) {
-		section.append(el("p", "maintenance-changes__empty", "No recent changes."));
+		section.append(el("p", "maintenance-changes__empty", "No changes for the displayed schedule."));
 		return section;
 	}
 	rows.forEach((row) => {
@@ -66,6 +66,21 @@ function renderChanges(rows) {
 		section.append(el("p", "maintenance-changes__line", `${changeTimestamp(row.createdAt)} — ${actor} — ${changeLine(row)}`));
 	});
 	return section;
+}
+
+function changesForDisplayedRange(rows, data) {
+	const start = date(data.rangeStart);
+	const end = date(data.rangeEnd);
+	const displayedTrips = data.trips || [];
+	const displayedIds = new Set(displayedTrips.map((trip) => String(trip.id || "")).filter(Boolean));
+	const displayedRefs = new Set(displayedTrips.map((trip) => String(trip.tripRef || "")).filter(Boolean));
+	return (rows || []).filter((row) => {
+		if (row.tripId && displayedIds.has(String(row.tripId))) return true;
+		if (row.tripRef && displayedRefs.has(String(row.tripRef))) return true;
+		const tripStart = date(row.tripStartDate);
+		const tripEnd = date(row.tripEndDate) || tripStart;
+		return Boolean(start && end && tripStart && tripEnd && tripStart <= end && tripEnd >= start);
+	});
 }
 
 function status(icon, title, message) {
@@ -226,7 +241,7 @@ function render(data, changes = []) {
 	}
 	scroll.append(schedule);
 	root.append(scroll);
-	root.append(renderChanges(changes));
+	root.append(renderChanges(changesForDisplayedRange(changes, data)));
 }
 
 async function load() {

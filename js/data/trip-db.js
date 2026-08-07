@@ -20,7 +20,7 @@ import { contactsShareIdentity } from "../core/contact-identity.js?v=1";
 import {
 	buildTripHistoryChanges,
 	recordTripHistory,
-} from "./trip-history-db.js";
+} from "./trip-history-db.js?v=2";
 import {
 	fetchTripDriverStatuses,
 	indexTripDriverStatuses,
@@ -338,6 +338,7 @@ import {
 		const invoiced = !!root.querySelector("#tp-invoiced")?.checked;
 		const balancePaid = !!root.querySelector("#tp-balance-paid")?.checked;
 		const poRef = poReceived ? fieldVal(root, "tp-po") : null;
+		const poAmount = poReceived ? numVal(root, "tp-po-amount") : null;
 		const invoiceNumber = invoiced ? fieldVal(root, "tp-inv-num") : null;
 		const datePaid = balancePaid ? fieldVal(root, "tp-date-paid") : null;
 		const depositAmount = collectPayments(root).reduce((sum, p) => sum + (p.amount || 0), 0) || null;
@@ -345,6 +346,7 @@ import {
 		const billingConfirmed = window.RuxBilling?.isStateConfirmed?.({
 			contractSigned,
 			poReceived,
+			poAmount,
 			price: quotedPrice,
 			paid: depositAmount,
 			balance: (quotedPrice ?? 0) - (depositAmount ?? 0),
@@ -405,6 +407,7 @@ import {
 			on_duty_hours:    optionalNumVal(root, "tp-duty-hr"),
 			invoice_status:   invoiced ? "Invoiced" : "Pending",
 			po_ref:           poRef,
+			po_amount:        poAmount,
 			invoice_number:   invoiceNumber,
 			date_paid:        datePaid,
 			actual_miles:     optionalNumVal(root, "tp-act-mi"),
@@ -783,6 +786,7 @@ import {
 		setVal(root, "tp-drive-hr", trip.driving_hours);
 		setVal(root, "tp-duty-hr",  trip.on_duty_hours);
 		setVal(root, "tp-po",        trip.po_ref);
+		setVal(root, "tp-po-amount", trip.po_amount);
 		setVal(root, "tp-inv-num",   trip.invoice_number);
 		setVal(root, "tp-date-paid", trip.date_paid);
 		setVal(root, "tp-act-mi",    trip.actual_miles);
@@ -1787,6 +1791,7 @@ export function loadTrip(root, itinerary, trip) {
 		on_duty_hours:         trip.on_duty_hours  ?? null,
 		invoice_status:        trip.invoice_status ?? trip.invoiceStatus  ?? null,
 		po_ref:                trip.po_ref         ?? trip.paymentRef     ?? null,
+		po_amount:             trip.po_amount      ?? trip.poAmount       ?? null,
 		invoice_number:        trip.invoice_number ?? trip.invoiceNumber  ?? null,
 		date_paid:             trip.date_paid      ?? trip.datePaid       ?? null,
 		actual_miles:          trip.actual_miles   ?? trip.actualMiles    ?? null,

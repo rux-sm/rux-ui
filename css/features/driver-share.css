@@ -690,9 +690,9 @@ html {
 	min-width: 0;
 	min-height: var(--rux-driver-touch-target);
 	padding-inline: var(--rux-space-3);
-	background: var(--rux-module-button-neutral-bg);
-	color: var(--rux-module-button-neutral-fg);
-	border: var(--rux-border-width) solid var(--rux-module-button-neutral-border);
+	background: var(--rux-driver-doc-neutral-bg);
+	color: var(--rux-driver-doc-neutral-fg);
+	border: var(--rux-border-width) solid var(--rux-driver-doc-neutral-border);
 	border-radius: var(--rux-radius-md);
 	font: inherit;
 	font-size: var(--rux-text-sm);
@@ -703,22 +703,22 @@ html {
 }
 
 .driver-assignment-card__document:hover:not(.is-unavailable) {
-	background: var(--rux-module-button-neutral-hover-bg);
+	background: var(--rux-driver-doc-neutral-hover-bg);
 	border-color: var(--rux-border-strong);
-	color: var(--rux-module-button-neutral-fg);
+	color: var(--rux-driver-doc-neutral-fg);
 	text-decoration: none;
 }
 
 .driver-assignment-card__document.is-attention-needed {
-	background: var(--rux-module-button-warning-bg);
-	color: var(--rux-module-button-warning-fg);
-	border-color: var(--rux-module-button-warning-border);
+	background: var(--rux-driver-doc-warning-bg);
+	color: var(--rux-driver-doc-warning-fg);
+	border-color: var(--rux-driver-doc-warning-border);
 }
 
 .driver-assignment-card__document.is-attention-needed:hover {
-	background: var(--rux-module-button-warning-hover-bg);
+	background: var(--rux-driver-doc-warning-hover-bg);
 	border-color: var(--rux-warning);
-	color: var(--rux-module-button-warning-fg);
+	color: var(--rux-driver-doc-warning-fg);
 }
 
 .driver-assignment-card__document.is-unavailable {

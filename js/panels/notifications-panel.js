@@ -3,7 +3,7 @@ import {
 	markRead,
 	dismiss,
 	subscribeToNotifications,
-} from "../data/notification-db.js?v=2";
+} from "../data/notification-db.js?v=3";
 import { getCurrentProfile } from "../core/profile.js";
 
 const btn = document.getElementById("notifications-menu-btn");

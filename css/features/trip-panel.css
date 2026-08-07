@@ -353,6 +353,22 @@
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-tight);
 }
+.rux-trip-panel__po-details {
+	display: grid;
+	gap: var(--rux-control-content-gap);
+}
+.rux-trip-panel__po-details[hidden] {
+	display: none;
+}
+.rux-trip-panel__po-coverage {
+	margin: 0;
+}
+.rux-trip-panel__po-coverage.is-partial {
+	color: var(--rux-warning);
+}
+.rux-trip-panel__po-coverage.is-complete {
+	color: var(--rux-success);
+}
 .rux-trip-panel__billing-step--payments {
 	grid-template-columns: minmax(0, 1fr);
 }

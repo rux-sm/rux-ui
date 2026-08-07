@@ -1,4 +1,4 @@
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=56";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=57";
 import { createTripBar } from "../components/trip-bar.js?v=13";
 import BusPicker from "../components/bus-picker.js?v=2";
 
@@ -30,21 +30,6 @@ import BusPicker from "../components/bus-picker.js?v=2";
 		button.setAttribute("aria-label", label);
 		button.title = label;
 		button.appendChild(el("span", "rux-icon", icon));
-		return button;
-	}
-
-	function moduleButton(iconName, label, tone = "neutral") {
-		const button = el(
-			"button",
-			`rux-module-button rux-module-button--${tone}`,
-		);
-		button.type = "button";
-		button.setAttribute("aria-label", label);
-		button.title = label;
-		button.append(
-			el("span", "rux-icon", iconName),
-			el("span", "rux-module-button__label", label),
-		);
 		return button;
 	}
 
@@ -104,7 +89,6 @@ import BusPicker from "../components/bus-picker.js?v=2";
 			["feedback-status", "Feedback & Status"],
 			["navigation", "Navigation"],
 			["surfaces-content", "Surfaces & Content"],
-			["module-button", "Module Buttons"],
 			["trip-bar", "Trip Bar"],
 			["bus-picker", "Bus Picker"],
 			["document-viewer", "Document Viewer"],
@@ -208,35 +192,6 @@ import BusPicker from "../components/bus-picker.js?v=2";
 	}
 
 	function mountPrimitivePages() {
-		if (!document.querySelector('[data-component-page="module-button"]')) {
-			const host = demoPage("module-button", "Module Buttons");
-			const specimens = el("div", "components-app__specimens");
-			specimens.append(
-				moduleButton("more_horiz", "Neutral", "neutral"),
-				moduleButton("info", "Info", "info"),
-				moduleButton("check_circle", "Success", "success"),
-				moduleButton("warning", "Warning", "warning"),
-				moduleButton("error", "Danger", "danger"),
-			);
-			host.appendChild(specimens);
-		}
-
-		if (!document.querySelector('[data-component-page="icon-button"]')) {
-			const host = demoPage("icon-button", "Icon Buttons");
-			const specimens = el("div", "components-app__specimens");
-			specimens.append(
-				iconButton("add", "Add", "accent"),
-				iconButton("edit", "Edit", "default"),
-				iconButton("more_vert", "More options", "ghost"),
-				iconButton("delete", "Delete", "default"),
-			);
-			specimens.lastElementChild.classList.add("rux-button--danger");
-			const disabled = iconButton("block", "Unavailable", "default");
-			disabled.disabled = true;
-			specimens.appendChild(disabled);
-			host.appendChild(specimens);
-		}
-
 		if (!document.querySelector('[data-component-page="segmented"]')) {
 			const host = demoPage("segmented", "Segmented Control");
 			const group = cloneLiveComponent("#tp-trip-type-group", "Segmented control demo");

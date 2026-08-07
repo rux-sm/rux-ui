@@ -86,8 +86,13 @@ begin
 			'confirmed', (
 				coalesce(t.confirmed, false)
 				or t.contract_status = 'Signed'
-				or coalesce(t.po_received, false)
-				or nullif(trim(t.po_ref), '') is not null
+				or (
+					coalesce(t.po_received, false)
+					and (
+						coalesce(t.quoted_price, 0) <= 0
+						or coalesce(t.po_amount, 0) >= coalesce(t.quoted_price, 0)
+					)
+				)
 				or coalesce(t.deposit_amount, 0) > 0
 				or t.date_paid is not null
 			),
