@@ -1,5 +1,5 @@
 -- Adds a notifications inbox: driver license/medical expiry alerts and a
--- daily "trips departing tomorrow" readiness summary, surfaced via a bell
+-- current three-day trip-readiness alerts, surfaced via a bell
 -- icon in the header (see js/data/notification-db.js, js/panels/notifications-panel.js).
 -- Rows are generated client-side at app boot (no backend/cron exists — see
 -- scheduler-realtime-patch.sql for the same constraint on trips) and are

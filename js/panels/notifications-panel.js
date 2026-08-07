@@ -3,7 +3,7 @@ import {
 	markRead,
 	dismiss,
 	subscribeToNotifications,
-} from "../data/notification-db.js";
+} from "../data/notification-db.js?v=2";
 import { getCurrentProfile } from "../core/profile.js";
 
 const btn = document.getElementById("notifications-menu-btn");
@@ -30,6 +30,13 @@ if (btn && menu && list) {
 		return `${Math.round(hours / 24)}d ago`;
 	}
 
+	function notificationTimeLabel(row) {
+		if (row.type === "driver_license_expiry" || row.type === "driver_medical_expiry") {
+			return "Standing alert · active until resolved";
+		}
+		return timeAgo(row.created_at);
+	}
+
 	// Tied to "not dismissed" rather than "unread" — fetchNotifications
 	// already excludes dismissed rows, so any row still in the list means
 	// there's something outstanding to clear, whether or not it's been
@@ -54,7 +61,7 @@ if (btn && menu && list) {
 					<div class="rux-notifications__item-body">
 						<p class="rux-notifications__item-title">${row.title}</p>
 						${row.body ? `<p class="rux-notifications__item-detail">${row.body}</p>` : ""}
-						<p class="rux-notifications__item-time">${timeAgo(row.created_at)}</p>
+						<p class="rux-notifications__item-time">${notificationTimeLabel(row)}</p>
 					</div>
 					<button type="button" class="rux-button rux-button--default rux-button--icon" data-dismiss aria-label="Dismiss">
 						<span class="rux-icon" aria-hidden="true">close</span>

@@ -6,6 +6,7 @@ import { fetchDrivers } from "./driver-db.js";
 // urgent/actionable than the color a dispatcher would see browsing the
 // Drivers table.
 const EXPIRY_WARNING_DAYS = 30;
+const TRIP_ALERT_LOOKAHEAD_DAYS = 3;
 
 function localIsoDate(date = new Date()) {
 	return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
@@ -115,13 +116,108 @@ export async function generateDriverExpiryAlerts() {
 	}
 }
 
+function tripLegsInAlertWindow(trip, today) {
+	const through = addDays(today, TRIP_ALERT_LOOKAHEAD_DAYS);
+	const legs = [{ leg: "outbound", date: trip.start_date }];
+	if (trip.trip_type === "dropoff_pickup") {
+		legs.push({ leg: "return", date: trip.return_start_date });
+	}
+	return legs.filter(({ date }) => date && date >= today && date <= through);
+}
+
+function tripDriversForLeg(trip, leg) {
+	return (trip.trip_assignments || [])
+		.filter((assignment) => (assignment.leg || "outbound") === leg)
+		.flatMap((assignment) => assignment.drivers || assignment.trip_drivers || []);
+}
+
+function tripReadinessIssues(trip, leg) {
+	const issues = [];
+	const hasItinerary = trip.itinerary_not_needed
+		|| (trip.trip_documents || []).some(
+			(document) => String(document.label || "").toLowerCase() === "itinerary",
+		);
+	const hasContact = trip.contact_not_needed
+		|| trip.booking_contact_name?.trim()
+		|| trip.trip_contact_1_name?.trim();
+	const hasPoOrEquivalent = trip.po_received
+		|| trip.po_ref
+		|| trip.contract_status === "Signed"
+		|| Number(trip.deposit_amount || 0) > 0
+		|| trip.date_paid;
+
+	if (!trip.confirmed) {
+		issues.push(hasPoOrEquivalent ? "payment confirmation" : "PO/payment confirmation");
+	}
+	if (!hasItinerary) issues.push("itinerary");
+	if (!hasContact) issues.push("trip contact");
+
+	const drivers = tripDriversForLeg(trip, leg);
+	if (!drivers.length) {
+		issues.push("driver assignment");
+	} else if (drivers.some((driver) => driver.driver_status !== "confirmed")) {
+		issues.push("driver confirmation");
+	}
+	return issues;
+}
+
+function formatTripAlertDate(iso) {
+	return new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
+		weekday: "short",
+		month: "short",
+		day: "numeric",
+	});
+}
+
+// Trip alerts represent current work, not inbox history. A date-scoped key
+// gives each day a truthful timestamp; rows that are resolved, outside the
+// lookahead window, or left over from the retired summary generator are
+// deleted. Current rows are upserted in place so hourly checks do not reset
+// per-profile read/dismiss state.
+export async function syncTripReadinessAlerts(trips = []) {
+	const today = localIsoDate();
+	const current = [];
+	for (const trip of trips || []) {
+		if (trip.cancelled_at) continue;
+		for (const { leg, date } of tripLegsInAlertWindow(trip, today)) {
+			const issues = tripReadinessIssues(trip, leg);
+			if (!issues.length) continue;
+			const dedupeKey = `trip_departure_summary:${today}:${trip.id}:${leg}`;
+			const daysUntil = daysBetween(date, today);
+			const reference = trip.trip_ref || trip.destination || trip.customer || "Trip";
+			current.push({
+				type: "trip_departure_summary",
+				severity: daysUntil <= 1 ? "critical" : "warning",
+				title: `${reference} needs attention`,
+				body: `Departing ${formatTripAlertDate(date)}${leg === "return" ? " · Return" : ""} · Missing: ${issues.join(", ")}`,
+				ref_table: "trips",
+				ref_id: trip.id,
+				dedupe_key: dedupeKey,
+			});
+		}
+	}
+
+	const { data: existing, error: fetchError } = await supabase
+		.from("notifications")
+		.select("id, dedupe_key")
+		.eq("type", "trip_departure_summary");
+	if (fetchError) throw fetchError;
+	const currentKeys = new Set(current.map((row) => row.dedupe_key));
+	const staleIds = (existing || [])
+		.filter((row) => !currentKeys.has(row.dedupe_key))
+		.map((row) => row.id);
+	if (staleIds.length) {
+		const { error } = await supabase.from("notifications").delete().in("id", staleIds);
+		if (error) throw error;
+	}
+	for (const row of current) await upsertNotification(row);
+}
+
 export async function fetchNotifications(profileId) {
 	const today = localIsoDate();
-	const since = addDays(today, -30);
 	const { data, error } = await supabase
 		.from("notifications")
 		.select("*, notification_reads(profile_id, read_at, dismissed_at)")
-		.gte("created_at", `${since}T00:00:00`)
 		.order("created_at", { ascending: false });
 	if (error) throw error;
 	return (data ?? [])
