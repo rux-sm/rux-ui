@@ -68,20 +68,21 @@
 	--_details-height: 0px;
 	--_conflict-height: 0px;
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
+	--_chroma: calc(c * var(--rux-trip-bar-chroma-scale));
 	--_outline: oklch(
 		from var(--_tone)
 		var(--rux-trip-bar-bg-lightness)
-		c
+		var(--_chroma)
 		h / 100%
 	);
-	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) c h / var(--rux-trip-bar-bg-opacity));
-	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) c h / var(--rux-trip-bar-hover-bg-opacity));
-	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) c h / var(--rux-trip-bar-pressed-bg-opacity));
-	--_surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) c h / var(--rux-trip-bar-selected-bg-opacity));
-	--_tail-surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) c h / var(--rux-trip-bar-tail-opacity));
-	--_tail-surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) c h / var(--rux-trip-bar-tail-hover-opacity));
-	--_tail-surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) c h / var(--rux-trip-bar-tail-pressed-opacity));
-	--_tail-surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) c h / var(--rux-trip-bar-tail-selected-opacity));
+	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-bg-opacity));
+	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-hover-bg-opacity));
+	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-pressed-bg-opacity));
+	--_surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-selected-bg-opacity));
+	--_tail-surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-opacity));
+	--_tail-surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-hover-opacity));
+	--_tail-surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-pressed-opacity));
+	--_tail-surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-selected-opacity));
 
 	position: relative;
 	display: flex;
@@ -107,7 +108,7 @@
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */
 .rux-trip-bar--partial-po {
-	--_outline: var(--rux-warning-vivid);
+	--_outline: var(--rux-trip-bar-warning-border);
 	--rux-trip-bar-border-width: 1px;
 }
 
@@ -115,7 +116,7 @@
    further along than "pending contract," so it gets the stronger (danger)
    outline instead of partial-po's warning one. */
 .rux-trip-bar--pending-po {
-	--_outline: var(--rux-danger-vivid);
+	--_outline: var(--rux-trip-bar-danger-border);
 	--rux-trip-bar-border-width: 1px;
 }
 
@@ -145,7 +146,7 @@
 	margin: 0;
 	border-radius: var(--rux-trip-bar-radius);
 	border: 2px solid var(--_ghost-tone, var(--rux-accent));
-	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) 16%, transparent);
+	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) var(--rux-trip-bar-ghost-bg-opacity), transparent);
 	transition: none;
 	cursor: grabbing;
 	/* Above --rux-z-sticky (200 — the row-head label column, and any track
@@ -239,7 +240,7 @@
 .rux-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
 
 .rux-trip-bar--unconfirmed:not([data-trip-bar-color]) {
-	--_tone: var(--rux-danger-vivid);
+	--_tone: var(--rux-trip-bar-danger-border);
 }
 
 /* ---------- Modifier: trip-type pattern overlay ---------- */
@@ -653,7 +654,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	color: var(--rux-danger-base);
+	color: var(--rux-trip-bar-danger-icon);
 }
 
 .rux-trip-bar__pending-icon {
@@ -663,11 +664,11 @@
 }
 
 .rux-trip-bar__pending-icon--warning {
-	color: var(--rux-warning-base);
+	color: var(--rux-trip-bar-warning-icon);
 }
 
 .rux-trip-bar__pending-icon--success {
-	color: var(--rux-success-base);
+	color: var(--rux-trip-bar-success-icon);
 }
 
 /* ---------- Text rows ---------- */

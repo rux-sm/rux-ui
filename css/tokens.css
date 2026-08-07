@@ -23,14 +23,14 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(50.0% 0.22 024.0); /*  Gore  */
-	--rux-orange: oklch(50.0% 0.22 050.0); /*  Pyro  */
-	--rux-yellow: oklch(50.0% 0.22 085.0); /*  Gold  */
+	--rux-red:    oklch(50.0% 0.28 024.0); /*  Gore  */
+	--rux-orange: oklch(70.0% 0.28 050.0); /*  Pyro  */
+	--rux-yellow: oklch(80.0% 0.28 085.0); /*  Gold  */
 	--rux-green:  oklch(50.0% 0.28 140.0); /*  Moss  */
-	--rux-cyan:   oklch(50.0% 0.28 195.0); /*  Wind  */
+	--rux-cyan:   oklch(70.0% 0.28 195.0); /*  Wind  */
 	--rux-blue:   oklch(50.0% 0.28 255.0); /*  Mana  */
 	--rux-purple: oklch(50.0% 0.28 290.0); /*  Void  */
-	--rux-pink:   oklch(50.0% 0.28 350.0); /*  Neon  */
+	--rux-pink:   oklch(70.0% 0.28 350.0); /*  Neon  */
 	--rux-gray: 	oklch(from var(--rux-neutral) 42.0% c h);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
@@ -279,8 +279,69 @@
 	--rux-success-bright: var(--rux-success-on-vivid);
 	--rux-info-bright:    var(--rux-info-on-vivid);
 
+	/* Trip bar: dedicated aliases so the Gantt bar's status coloring (pending-
+	   icon markers + partial-po/pending-po border overrides) can be retuned
+	   without touching the shared base/vivid tiers every other consumer reads
+	   from. Two tiers, matching the bar's existing intensity split — icon
+	   markers stay muted (-base), border overrides stay punchy (-vivid). */
+	--rux-trip-bar-danger-icon:    var(--rux-danger-base);
+	--rux-trip-bar-warning-icon:   var(--rux-warning-base);
+	--rux-trip-bar-success-icon:   var(--rux-success-base);
+	--rux-trip-bar-warning-border: var(--rux-warning-vivid);
+	--rux-trip-bar-danger-border:  var(--rux-danger-vivid);
+
 	--rux-tag-purple:	oklch(from var(--rux-purple)   	90% .28 h);
 	--rux-tag-default:	oklch(from var(--rux-gray)   	90% .00 h);
+
+	/* ─── COLOR · trip bar ─────────────────────────────────────────────────── */
+	/* Every color input that feeds the Gantt bar's background: the category
+	   hue palette (--_tone in trip-bar.css), and the lightness/opacity steps
+	   that compute each state's surface from that hue. Shape/shadow/motion
+	   trip-bar tokens stay in COMPONENT · trip bar — this section is colors
+	   only. */
+
+	/* — category colors — */
+	--rux-trip-color-cyan:   var(--rux-cyan);
+	--rux-trip-color-green:  var(--rux-green);
+	--rux-trip-color-purple: var(--rux-purple);
+	--rux-trip-color-yellow: var(--rux-yellow);
+	--rux-trip-color-orange: var(--rux-orange);
+	--rux-trip-color-pink:   var(--rux-pink);
+
+	/* — chroma — */
+	/* Multiplier on each category color's own source chroma (relative-color
+	   `c`), not a fixed replacement value — keeps every hue's native chroma
+	   proportionally intact instead of clamping every category to one static
+	   number, which risks gamut clipping on hues that can't support it at
+	   these lightness levels. 1 = source chroma unchanged. */
+	--rux-trip-bar-chroma-scale: 1;
+
+	/* — state lightness/opacity steps — */
+	/* Trip states shift lightness predictably while preserving each category's
+	   native chroma to avoid hue-dependent gamut clipping. */
+	--rux-trip-bar-bg-lightness:              60%;
+	--rux-trip-bar-state-lightness-step:      4%;
+	--rux-trip-bar-hover-bg-lightness:        calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
+	--rux-trip-bar-pressed-bg-lightness:      calc(var(--rux-trip-bar-bg-lightness) - var(--rux-trip-bar-state-lightness-step));
+	--rux-trip-bar-selected-bg-lightness:     calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
+	--rux-trip-bar-bg-opacity:                80%;
+	--rux-trip-bar-hover-bg-opacity:          70%;
+	--rux-trip-bar-pressed-bg-opacity:        50%;
+	--rux-trip-bar-selected-bg-opacity:       80%;
+	--rux-trip-bar-tail-opacity:              20%;
+	--rux-trip-bar-tail-hover-opacity:        20%;
+	--rux-trip-bar-tail-pressed-opacity:      20%;
+	--rux-trip-bar-tail-selected-opacity:     20%;
+	--rux-trip-bar-disabled-opacity:          0.45;
+
+	/* Drag-ghost surface (see .rux-trip-bar-ghost) — same color-mix recipe as
+	   the tail surfaces above, just its own opacity since it isn't a
+	   rest/hover/pressed/selected state. */
+	--rux-trip-bar-ghost-bg-opacity:          16%;
+
+	/* A translucent tonal wash preserves the trip category hue. Dark mode
+	   deepens the bar beneath light metadata text; light mode reverses this. */
+	--rux-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 0%);
 
 	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
 	/* Components route through these roles even while both are square. This
@@ -493,8 +554,8 @@
 	--rux-panel-content-gap: var(--rux-space-4);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
-	--rux-right-panel-border: 1px solid var(--rux-border);
-	--rux-left-panel-border: 1px solid var(--rux-border);
+	--rux-right-panel-border: 0px solid var(--rux-border);
+	--rux-left-panel-border: 0px solid var(--rux-border);
 
 	/* — minimum sizing shared by panel-shaped feature layouts — */
 	--rux-panel-min-width: 224px;
@@ -634,51 +695,23 @@
 
 	/* ─── COMPONENT · trip bar ─────────────────────────────────────────────── */
 	/* No flat --rux-trip-bar-bg/-border/-fg — color is computed per category
-	   (below) via the state lightness/opacity steps, not one static token. */
+	   (see COLOR · trip bar) via the state lightness/opacity steps there, not
+	   one static token. This section is shape/shadow/motion only. */
 
 	/* — shell — */
-	/* --rux-trip-bar-bg: computed — see category colors + state steps below */
+	/* --rux-trip-bar-bg: computed — see COLOR · trip bar */
 	/* --rux-trip-bar-fg: not set */
-	--rux-trip-bar-border-width: 1px;
+	--rux-trip-bar-border-width: 0px;
 	/* --rux-trip-bar-border: computed alongside bg */
 	--rux-trip-bar-radius: var(--rux-button-radius);
 	--rux-trip-bar-actions-radius:   var(--rux-radius-control);
 	--rux-trip-bar-bus-label-radius: var(--rux-radius-xs);
 	--rux-trip-bar-meta-radius:      var(--rux-radius-sm);
-	/* A translucent tonal wash preserves the trip category hue. Dark mode
-	   deepens the bar beneath light metadata text; light mode reverses this. */
-	--rux-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 0%);
 	--rux-trip-bar-meta-fg: var(--rux-fg-on-accent);
 	--rux-trip-bar-shadow: var(--rux-shadow-3);
 	/* Same recessed rim used on input fields — gives the time/driver meta
 	   rows a subtle "readout" feel instead of a flat tonal wash. */
 	--rux-trip-bar-meta-shadow: var(--rux-shadow-inset);
-
-	/* — category colors — */
-	--rux-trip-color-cyan:   var(--rux-cyan);
-	--rux-trip-color-green:  var(--rux-green);
-	--rux-trip-color-purple: var(--rux-purple);
-	--rux-trip-color-yellow: var(--rux-yellow);
-	--rux-trip-color-orange: var(--rux-orange);
-	--rux-trip-color-pink:   var(--rux-pink);
-
-	/* — state lightness/opacity steps — */
-	/* Trip states shift lightness predictably while preserving each category's
-	   native chroma to avoid hue-dependent gamut clipping. */
-	--rux-trip-bar-bg-lightness:              60%;
-	--rux-trip-bar-state-lightness-step:      4%;
-	--rux-trip-bar-hover-bg-lightness:        calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
-	--rux-trip-bar-pressed-bg-lightness:      calc(var(--rux-trip-bar-bg-lightness) - var(--rux-trip-bar-state-lightness-step));
-	--rux-trip-bar-selected-bg-lightness:     calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
-	--rux-trip-bar-bg-opacity:                24%;
-	--rux-trip-bar-hover-bg-opacity:          40%;
-	--rux-trip-bar-pressed-bg-opacity:        44%;
-	--rux-trip-bar-selected-bg-opacity:       48%;
-	--rux-trip-bar-tail-opacity:              16%;
-	--rux-trip-bar-tail-hover-opacity:        22%;
-	--rux-trip-bar-tail-pressed-opacity:      26%;
-	--rux-trip-bar-tail-selected-opacity:     28%;
-	--rux-trip-bar-disabled-opacity:          0.45;
 
 	/* One-way/split-trip SVG stripe overlay. */
 	--rux-trip-bar-stripe-color:   var(--rux-white);
@@ -1260,7 +1293,7 @@
 	   tab's bottom edge to merge it with the pane. */
 	--rux-tabs-attached-tab-selected-border:        none;
 	--rux-tabs-attached-tab-selected-inline-border: none;
-	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-0);
+	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-sm);
 	--rux-tabs-attached-tab-active-shadow: var(--rux-shadow-1);
 
 	/* — attached pane (content area beneath the tabs) — */
