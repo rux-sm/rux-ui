@@ -204,7 +204,7 @@
 
 .rux-scheduler__day-head--today .rux-scheduler__day-name,
 .rux-scheduler__day-head--today .rux-scheduler__day-number {
-	color: var(--rux-accent);
+	color: var(--rux-calendar-today-fg);
 }
 
 /* ---------- Time-aligned mode ---------- */
@@ -439,7 +439,7 @@
 	top: 0;
 	bottom: 0;
 	width: 2px;
-	background: var(--rux-accent);
+	background: var(--rux-calendar-now-line-color);
 	z-index: var(--rux-scheduler-now-line-z-index);
 	pointer-events: auto;
 	opacity: 0.8;
@@ -464,8 +464,8 @@
 	font-weight: var(--rux-weight-bold);
 	line-height: 1;
 	white-space: nowrap;
-	color: var(--rux-fg-on-accent);
-	background: var(--rux-accent);
+	color: var(--rux-calendar-now-line-label-fg);
+	background: var(--rux-calendar-now-line-label-bg);
 	padding: var(--rux-space-1) var(--rux-space-2);
 	border-radius: var(--rux-radius-sm);
 	opacity: 0;

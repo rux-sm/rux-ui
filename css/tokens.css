@@ -23,14 +23,14 @@
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.22 024.0); /*  Gore  */
-	--rux-orange: oklch(80.0% 0.22 050.0); /*  Pyro  */
-	--rux-yellow: oklch(80.0% 0.22 085.0); /*  Gold  */
-	--rux-green:  oklch(60.0% 0.28 140.0); /*  Moss  */
-	--rux-cyan:   oklch(60.0% 0.28 195.0); /*  Wind  */
-	--rux-blue:   oklch(60.0% 0.2 255.0); /*  Mana  */
-	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
-	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
+	--rux-red:    oklch(50.0% 0.22 024.0); /*  Gore  */
+	--rux-orange: oklch(50.0% 0.22 050.0); /*  Pyro  */
+	--rux-yellow: oklch(50.0% 0.22 085.0); /*  Gold  */
+	--rux-green:  oklch(50.0% 0.28 140.0); /*  Moss  */
+	--rux-cyan:   oklch(50.0% 0.28 195.0); /*  Wind  */
+	--rux-blue:   oklch(60.0% 0.28 255.0); /*  Mana  */
+	--rux-purple: oklch(50.0% 0.28 290.0); /*  Void  */
+	--rux-pink:   oklch(50.0% 0.28 350.0); /*  Neon  */
 	--rux-gray: 	oklch(from var(--rux-neutral) 56.0% c h);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
@@ -49,7 +49,7 @@
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
 	--rux-accent:        var(--rux-blue);
-	--rux-accent-fill:   oklch(from var(--rux-accent) l 0.16 h);
+	--rux-accent-fill:   oklch(from var(--rux-accent) l 0.2 h);
 	--rux-accent-hover:  oklch(from var(--rux-accent) 70% c h);
 	--rux-accent-subtle: oklch(from var(--rux-accent) l c h / 0.14);
 	--rux-accent-ring:   oklch(from var(--rux-accent) 70% 0.28 h);
@@ -250,10 +250,10 @@
 	--rux-info-strong:    oklch(from var(--rux-info)    85% 0.20 h);
 
 	/* Fill: solid controls; deliberately less chromatic than vivid trip bars. */
-	--rux-danger-fill:  oklch(from var(--rux-red)    60% 0.18 h);
-	--rux-warning-fill: oklch(from var(--rux-yellow) 60% 0.18 h);
-	--rux-success-fill: oklch(from var(--rux-green)  60% 0.18 h);
-	--rux-info-fill:    oklch(from var(--rux-blue)   60% 0.18 h);
+	--rux-danger-fill:  oklch(from var(--rux-red)    60% 0.2 h);
+	--rux-warning-fill: oklch(from var(--rux-yellow) 60% 0.2 h);
+	--rux-success-fill: oklch(from var(--rux-green)  60% 0.2 h);
+	--rux-info-fill:    oklch(from var(--rux-blue)   60% 0.2 h);
 	--rux-danger-on-fill:  var(--rux-white);
 	--rux-warning-on-fill: var(--rux-black);
 	--rux-success-on-fill: var(--rux-white);
@@ -432,6 +432,10 @@
 	   hardcoded — see --rux-workspace-radius above for why. */
 	--rux-calendar-radius: var(--rux-radius-container);
 	--rux-calendar-viewport-rim-shadow: none;
+	--rux-calendar-now-line-color:    var(--rux-accent-fill);
+	--rux-calendar-now-line-label-bg: var(--rux-calendar-now-line-color);
+	--rux-calendar-now-line-label-fg: var(--rux-fg-on-accent);
+	--rux-calendar-today-fg:          var(--rux-accent-fill);
 
 	/* — header — */
 	/* Header cells share one flat plane; borders provide separation without
