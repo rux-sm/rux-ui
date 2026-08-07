@@ -117,29 +117,9 @@
 	position: relative;
 }
 
-/* Shared unread-indicator dot for header icon buttons (notifications, team
-   chat). Deliberately its own size, not --rux-status-dot-size (6px) — that
-   token is shared with small inline dots elsewhere (priority, driver
-   status) and this needs to read clearly at a glance against a full icon
-   button, not just as a subtle inline marker. */
-.rux-app-header__badge-dot {
-	position: absolute;
-	top: 4px;
-	right: 4px;
-	width: 10px;
-	height: 10px;
-	background: var(--rux-warning);
-	border: 2px solid var(--rux-app-header-bg);
-	border-radius: var(--rux-radius-full);
-}
-
-.rux-app-header__badge-dot[hidden] {
-	display: none;
-}
-
-/* Chat gets a bigger, red, numeric badge instead of the plain dot above —
-   a message count is worth surfacing at a glance, unlike the notification
-   bell's "something's outstanding" dot. */
+/* Numeric unread count shared by notifications and team chat. The button
+   itself switches from ghost to the standard solid/default treatment while
+   this badge is present. */
 .rux-app-header__badge-count {
 	position: absolute;
 	top: -4px;

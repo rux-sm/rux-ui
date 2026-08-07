@@ -37,12 +37,17 @@ if (btn && menu && list) {
 		return timeAgo(row.created_at);
 	}
 
-	// Tied to "not dismissed" rather than "unread" — fetchNotifications
-	// already excludes dismissed rows, so any row still in the list means
-	// there's something outstanding to clear, whether or not it's been
-	// opened/read yet.
 	function updateBadge() {
-		badge.hidden = notifications.length === 0;
+		const unreadCount = notifications.filter((row) => !row.read).length;
+		const hasUnread = unreadCount > 0;
+		badge.hidden = !hasUnread;
+		badge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
+		btn.classList.toggle("rux-button--default", hasUnread);
+		btn.classList.toggle("rux-button--ghost", !hasUnread);
+		btn.setAttribute(
+			"aria-label",
+			hasUnread ? `Notifications, ${unreadCount} unread` : "Notifications",
+		);
 	}
 
 	function renderRows() {
@@ -81,6 +86,7 @@ if (btn && menu && list) {
 				if (!row.read && profileId) {
 					row.read = true;
 					li.classList.remove("is-unread");
+					updateBadge();
 					markRead(row.id, profileId).catch((err) => console.warn("Could not mark notification read:", err));
 				}
 			});

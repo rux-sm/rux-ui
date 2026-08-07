@@ -43,7 +43,7 @@
 
 @import "./base/icons.css";
 @import "./base/controls.css?v=15";
-@import "./base/app-header.css?v=4";
+@import "./base/app-header.css?v=5";
 @import "./base/badges.css?v=2";
 @import "./base/form.css?v=2";
 @import "./base/workspace.css?v=3";
@@ -57,7 +57,7 @@
 @import "./base/feedback.css?v=3";
 @import "./base/navigation.css?v=16";
 @import "./base/utils.css?v=2";
-@import "./features/trip-bar.css?v=24";
+@import "./features/trip-bar.css?v=25";
 @import "./features/trip-panel.css?v=29";
 @import "./features/trip-history.css?v=2";
 @import "./features/itinerary.css?v=4";

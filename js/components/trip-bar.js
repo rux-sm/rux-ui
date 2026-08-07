@@ -823,6 +823,7 @@ export function createTripBar(trip, callbacks = {}) {
     "rux-trip-bar",
     confirmed ? "" : "rux-trip-bar--unconfirmed",
     trip.paymentStatus === "po_partial" ? "rux-trip-bar--partial-po" : "",
+    trip.paymentStatus === "contract_signed" ? "rux-trip-bar--pending-po" : "",
     singleDay ? "" : "rux-trip-bar--multi-day",
     trip.conflict ? "rux-trip-bar--has-conflict" : "",
     trip.fromPrev ? "rux-trip-bar--from-prev" : "",

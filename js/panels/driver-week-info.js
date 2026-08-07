@@ -4,7 +4,8 @@
    Builds driver-facing assignment text from the scheduler's already-loaded
    current and upcoming trip records. Nothing is sent automatically:
    dispatchers review the text, choose which assignments to include, and copy
-   it into their messaging app.
+   it into their messaging app. A successful copy records the selected,
+   unanswered assignments as sent so the scheduler can show them in yellow.
 
    API
    ---
@@ -15,6 +16,10 @@ import { supabase } from "../data/supabase.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { latestDocument } from "../core/trip-documents.js";
 import { operationalTripContact } from "../components/driver-assignment-model.js?v=19";
+import {
+	driverStatusKey,
+	syncTripDriverStatuses,
+} from "../data/trip-driver-status-db.js";
 
 (() => {
 	"use strict";
@@ -22,6 +27,7 @@ import { operationalTripContact } from "../components/driver-assignment-model.js
 	let modal = null;
 	let state = null;
 	const MAX_SHARED_ASSIGNMENTS = 50;
+	const driverStatusChannel = supabase.channel("scheduler-trips").subscribe();
 
 	function parseIsoDate(value) {
 		if (!value) return null;
@@ -629,6 +635,54 @@ import { operationalTripContact } from "../components/driver-assignment-model.js
 		return state.entries.filter((entry) => state.selected.has(entry.key));
 	}
 
+	async function markSelectedAssignmentsSent(entries) {
+		const targets = new Set(entries.map((entry) => driverStatusKey(
+			entry.trip.id,
+			entry.driverAssignment.driver_id,
+			entry.leg,
+			entry.driverAssignment.role,
+		)));
+		const trips = new Map(entries.map((entry) => [String(entry.trip.id), entry.trip]));
+		let markedCount = 0;
+
+		for (const trip of trips.values()) {
+			const statuses = (trip.trip_assignments || []).flatMap((assignment) => {
+				const leg = assignment.leg || "outbound";
+				return (assignment.drivers || assignment.trip_drivers || []).map((driver) => {
+					const key = driverStatusKey(trip.id, driver.driver_id, leg, driver.role);
+					const current = driver.driver_status || "off";
+					const terminal = current === "confirmed" || current === "declined";
+					const shouldMark = targets.has(key) && !terminal;
+					if (shouldMark && current !== "pending-response") markedCount += 1;
+					return {
+						driverId: driver.driver_id,
+						leg,
+						role: driver.role || "driver",
+						status: shouldMark ? "pending-response" : current,
+						dirty: shouldMark,
+					};
+				});
+			});
+			if (!statuses.length) continue;
+			const synced = await syncTripDriverStatuses(trip.id, statuses);
+			if (!synced.length) {
+				throw new Error("Driver status update requires the trip driver confirmation database patch.");
+			}
+		}
+
+		if (markedCount) {
+			window.dispatchEvent(new CustomEvent("rux:driver-status-changed", {
+				detail: { driverId: state.driver.id, status: "pending-response" },
+			}));
+			driverStatusChannel.send({
+				type: "broadcast",
+				event: "driver-status-changed",
+				payload: { driverId: state.driver.id, status: "pending-response" },
+			});
+		}
+		return markedCount;
+	}
+
 	function refreshPreview() {
 		if (!modal || !state) return;
 		const textarea = modal.querySelector("[data-driver-info-preview]");
@@ -775,7 +829,7 @@ import { operationalTripContact } from "../components/driver-assignment-model.js
 					<button type="button" class="rux-button rux-button--default" data-rux-dismiss>Close</button>
 					<button type="button" class="rux-button rux-button--accent" data-driver-info-copy-week>
 						<span class="rux-icon" aria-hidden="true">content_copy</span>
-						<span>Copy message</span>
+						<span>Copy message &amp; mark sent</span>
 					</button>
 				</footer>
 			</section>`;
@@ -806,7 +860,23 @@ import { operationalTripContact } from "../components/driver-assignment-model.js
 			}
 			const weekButton = event.target.closest("[data-driver-info-copy-week]");
 			if (weekButton) {
-				await copyText(modal.querySelector("[data-driver-info-preview]").value);
+				const selected = selectedEntries();
+				const copied = await copyText(modal.querySelector("[data-driver-info-preview]").value);
+				if (!copied) return;
+				weekButton.disabled = true;
+				try {
+					const marked = await markSelectedAssignmentsSent(selected);
+					window.Rux?.toast?.(
+						marked
+							? `Message copied · ${marked} ${marked === 1 ? "assignment" : "assignments"} marked sent`
+							: "Message copied · assignment statuses unchanged",
+					);
+				} catch (error) {
+					console.warn("Could not mark driver assignments sent:", error);
+					window.Rux?.toast?.("Message copied, but assignment status could not be updated");
+				} finally {
+					weekButton.disabled = selectedEntries().length === 0;
+				}
 				return;
 			}
 			const actionButton = event.target.closest("button[data-action][data-entry-key]");

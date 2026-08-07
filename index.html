@@ -29,7 +29,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./css/tokens.css?v=106" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=208" />
+		<link rel="stylesheet" href="./css/components.css?v=209" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
@@ -110,7 +110,7 @@
 						data-module="calendar"
 					>
 						<span class="rux-icon" aria-hidden="true">map</span>
-						Calendar
+						Trips
 					</button>
 
 					<button
@@ -195,7 +195,7 @@
 								>notifications</span
 							>
 							<span
-								class="rux-app-header__badge-dot"
+								class="rux-app-header__badge-count"
 								id="notifications-badge"
 								hidden
 							></span>
@@ -6741,7 +6741,7 @@
 		<script type="module" src="./js/core/app-reload.js?v=1"></script>
 		<script
 			type="module"
-			src="./js/panels/driver-week-info.js?v=11"
+				src="./js/panels/driver-week-info.js?v=12"
 		></script>
 		<script
 			type="module"
@@ -6753,9 +6753,9 @@
 		></script>
 		<script
 			type="module"
-				src="./js/panels/notifications-panel.js?v=3"
-		></script>
-		<script type="module" src="./js/panels/team-chat.js?v=3"></script>
+				src="./js/panels/notifications-panel.js?v=4"
+			></script>
+		<script type="module" src="./js/panels/team-chat.js?v=4"></script>
 		<script
 			type="module"
 			src="./js/panels/components-panel.js?v=46"
@@ -6771,7 +6771,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=16";
+			} from "./js/components/trip-bar.js?v=17";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -10973,6 +10973,7 @@
 					if (!document.hidden) loadTripsFromDB();
 				});
 				window.addEventListener("focus", loadTripsFromDB);
+				window.addEventListener("rux:driver-status-changed", loadTripsFromDB);
 			}
 
 			initSchedulerData().then(() => {

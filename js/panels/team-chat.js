@@ -316,6 +316,9 @@ if (btn && badge) {
 	function updateBadge() {
 		if (isPanelOpen()) {
 			badge.hidden = true;
+			btn.classList.add("rux-button--ghost");
+			btn.classList.remove("rux-button--default");
+			btn.setAttribute("aria-label", "Team chat");
 			return;
 		}
 		// Skip my own messages — otherwise closing the window in the instant
@@ -326,8 +329,15 @@ if (btn && badge) {
 		const unread = messages.filter(
 			(m) => String(m.profile_id) !== myProfileId && (!lastReadAt || m.created_at > lastReadAt),
 		);
-		badge.hidden = unread.length === 0;
-		badge.textContent = unread.length > 9 ? "9+" : String(unread.length);
+		const hasUnread = unread.length > 0;
+		badge.hidden = !hasUnread;
+		badge.textContent = unread.length > 99 ? "99+" : String(unread.length);
+		btn.classList.toggle("rux-button--default", hasUnread);
+		btn.classList.toggle("rux-button--ghost", !hasUnread);
+		btn.setAttribute(
+			"aria-label",
+			hasUnread ? `Team chat, ${unread.length} unread` : "Team chat",
+		);
 	}
 
 	// Own channel, separate from the header's "rux-presence" — reusing that

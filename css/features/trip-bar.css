@@ -108,7 +108,15 @@
    while the shared outline warns that authorization is incomplete. */
 .rux-trip-bar--partial-po {
 	--_outline: var(--rux-warning-strong);
-	--rux-trip-bar-border-width: 2px;
+	--rux-trip-bar-border-width: 1px;
+}
+
+/* Contract's signed but no PO has been requested/received yet — a step
+   further along than "pending contract," so it gets the stronger (danger)
+   outline instead of partial-po's warning one. */
+.rux-trip-bar--pending-po {
+	--_outline: var(--rux-danger-vivid);
+	--rux-trip-bar-border-width: 1px;
 }
 
 /* Drag-to-reassign (see installBusDrag() in index.html) — the original bar
