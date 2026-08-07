@@ -43,7 +43,7 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 36% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 30% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) 28% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -140,10 +140,10 @@
 	/* One overhead light source. Raised surfaces combine a subtle top rim,
 	   tight contact shadow, and softer ambient layer. Themes override only
 	   these colors; component recipes stay identical. */
-	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 0% c h / 45%);
+	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 0% c h / 86%);
 	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 0% c h / 28%);
 	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 0% c h / 34%);
-	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 0% c h / 55%);
+	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 0% c h / 86%);
 	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 10%);
 
 	--rux-shadow-inset:
@@ -1325,15 +1325,15 @@
 	--rux-info-strong:    oklch(from var(--rux-info)    60% 0.20 h);
 
 	/* ─── Surfaces ────────────────────────────────────────────────────────── */
-	--rux-surface-0:        oklch(from var(--rux-neutral) 92% c h); /* App canvas and top header */
+	--rux-surface-0:        oklch(from var(--rux-neutral) 90% c h); /* App canvas and top header */
 	--rux-surface-1:        oklch(from var(--rux-neutral) 98% c h); /* Workspace, calendar and overlay bodies */
 	--rux-surface-2:        oklch(from var(--rux-neutral) 98% c h); /* Neutral controls and table bodies */
-	--rux-surface-3:        oklch(from var(--rux-neutral) 92% c h); /* Side panels and table headers */
-	--rux-surface-4:        oklch(from var(--rux-neutral) 98% c h); /* Cards and panel footers */
+	--rux-surface-3:        oklch(from var(--rux-neutral) 84% c h); /* Side panels and table headers */
+	--rux-surface-4:        oklch(from var(--rux-neutral) 80% c h); /* Cards and panel footers */
 	--rux-surface-5:        oklch(from var(--rux-neutral) 86% c h); /* Grid lines, menus and hover surfaces */
 	--rux-surface-6:        oklch(from var(--rux-neutral) 74% c h); /* Strong active neutral states */
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 96% c h); /* Raised control and thumb fill */
-	--rux-well-bg:          oklch(from var(--rux-neutral) 88% c h); /* Recessed input and track fill */
+	--rux-well-bg:          oklch(from var(--rux-neutral) 90% c h); /* Recessed input and track fill */
 
 	/* ─── Borders and interaction ─────────────────────────────────────────── */
 	--rux-border:               oklch(from var(--rux-neutral) 82% c h);
@@ -1343,10 +1343,10 @@
 	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
 
 	/* ─── Elevation colors ────────────────────────────────────────────────── */
-	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 28% c h / 16%);
+	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 28% c h / 50%);
 	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 28% c h / 10%);
 	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 24% c h / 14%);
-	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 28% c h / 20%);
+	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 28% c h / 50%);
 	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 55%);
 
 	/* ─── Component overrides ─────────────────────────────────────────────── */
