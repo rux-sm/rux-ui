@@ -781,11 +781,7 @@
 }
 
 .rux-button--segment {
-	--_h: calc(
-		var(--rux-segmented-track-height)
-		- (2 * var(--rux-segmented-track-padding))
-		- (2 * var(--rux-border-width))
-	);
+	--_h: var(--rux-segment-height);
 	background: var(--rux-segment-background);
 	color: var(--rux-segment-fg);
 	border-radius: var(--rux-segment-radius);
@@ -797,10 +793,9 @@
    .rux-button--icon's padding: 0 doesn't actually win here (same one-class
    specificity as .rux-button--segment's own padding, sized for a text
    label, and source order favors --segment), so a 20px icon would be
-   squeezed into a 28px box minus 32px of horizontal padding. This compound
-   selector outranks both on specificity, forcing an exact square the
-   segmented track's own height (28px at this app's current tokens) with
-   no label padding to fight. */
+   squeezed by the text segment's horizontal padding. This compound selector
+   outranks both on specificity, forcing an exact square from the shared
+   28px segment-item height with no label padding to fight. */
 .rux-button--segment.rux-button--segment-icon {
 	width: var(--_h);
 	min-width: var(--_h);
@@ -892,6 +887,7 @@
 	background: var(--rux-number-stepper-bg);
 	border: var(--rux-number-stepper-border);
 	border-radius: var(--rux-number-stepper-radius);
+	box-shadow: var(--rux-number-stepper-shadow);
 	/* Clips button hover backgrounds to the rounded corners — without this
 	   a hovered edge button's square hover bg pokes past the rounded frame. */
 	overflow: hidden;
@@ -918,15 +914,20 @@
 	border: 0;
 	color: var(--rux-number-stepper-btn-fg);
 	cursor: pointer;
-	transition: background-color var(--rux-duration-fast) var(--rux-ease-out);
+	transition:
+		background-color var(--rux-duration-fast) var(--rux-ease-out),
+		color var(--rux-duration-fast) var(--rux-ease-out);
 }
 
 .rux-number-stepper__btn:hover:not(:disabled) {
 	background: var(--rux-number-stepper-btn-hover-bg);
+	color: var(--rux-segment-fg-hover);
 }
 
 .rux-number-stepper__btn:active:not(:disabled) {
 	background: var(--rux-number-stepper-btn-active-bg);
+	color: var(--rux-segment-fg-hover);
+	box-shadow: none;
 }
 
 .rux-number-stepper__btn:disabled {

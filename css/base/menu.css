@@ -15,6 +15,7 @@
 	color: var(--rux-menu-item-fg);
 	border: var(--rux-menu-border);
 	border-radius: var(--rux-menu-radius);
+	box-shadow: var(--rux-menu-shadow);
 }
 
 .rux-menu[hidden] {

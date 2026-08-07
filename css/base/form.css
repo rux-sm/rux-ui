@@ -112,6 +112,8 @@
 .rux-switch {
   --_w: var(--rux-switch-width);
   --_h: var(--rux-switch-height);
+  --_track-h: var(--rux-switch-track-height);
+  --_thumb-size: var(--rux-switch-thumb-size);
   --_p: var(--rux-switch-padding);
   --_track: var(--rux-switch-track-bg);
   --_state-overlay: transparent;
@@ -126,7 +128,8 @@
 .rux-switch input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
 .rux-switch__track {
   position: absolute;
-  inset: 0;
+  inset-block: calc((var(--_h) - var(--_track-h)) / 2);
+  inset-inline: 0;
   background-color: var(--_track);
   background-image: linear-gradient(var(--_state-overlay), var(--_state-overlay));
   border-radius: var(--rux-switch-radius);
@@ -138,10 +141,10 @@
 }
 .rux-switch__thumb {
   position: absolute;
-  top: var(--_p);
+  top: calc((var(--_h) - var(--_thumb-size)) / 2);
   left: var(--_p);
-  width: var(--rux-switch-thumb-size);
-  height: var(--rux-switch-thumb-size);
+  width: var(--_thumb-size);
+  height: var(--_thumb-size);
   background: var(--_thumb);
   border-radius: var(--rux-switch-thumb-radius);
   box-shadow: var(--rux-switch-thumb-shadow);
@@ -158,7 +161,7 @@
 .rux-switch input:checked ~ .rux-switch__track {
   background: var(--rux-switch-checked-bg);
   border: var(--rux-switch-checked-border);
-  box-shadow: var(--rux-switch-checked-shadow);
+  box-shadow: var(--rux-switch-track-shadow);
 }
 
 .rux-switch:has(input:disabled) {
@@ -172,7 +175,7 @@
 }
 .rux-switch input:checked ~ .rux-switch__thumb {
   background-color: var(--rux-switch-checked-thumb-bg);
-  transform: translateX(calc(var(--_w) - var(--_h)));
+  transform: translateX(calc(var(--_w) - var(--_thumb-size) - (var(--_p) * 2)));
 }
 .rux-switch:has(input:disabled) .rux-switch__thumb {
   background-color: var(--rux-switch-disabled-thumb-bg);
@@ -509,6 +512,7 @@
   color: var(--rux-color-picker-fg);
   border: var(--rux-color-picker-border);
   border-radius: var(--rux-color-picker-radius);
+  box-shadow: var(--rux-color-picker-shadow);
   font: inherit;
   font-size: var(--rux-text-sm);
   cursor: pointer;
@@ -556,6 +560,7 @@
   background: var(--rux-color-picker-popover-bg);
   border: var(--rux-color-picker-border);
   border-radius: var(--rux-color-picker-popover-radius);
+  box-shadow: var(--rux-color-picker-popover-shadow);
 }
 
 .rux-color-picker__popover[hidden] { display: none; }
@@ -622,6 +627,7 @@
   background-color: var(--rux-color-input-bg);
   border: var(--rux-color-input-border);
   border-radius: var(--rux-color-input-radius);
+  box-shadow: var(--rux-color-input-shadow);
   transition:
     border-color var(--rux-color-input-transition),
     box-shadow var(--rux-color-input-transition);
