@@ -108,7 +108,7 @@
   }
 
   async function ensureTripDb() {
-    if (!tripDb) tripDb = await import("../data/trip-db.js?v=9");
+    if (!tripDb) tripDb = await import("../data/trip-db.js?v=10");
     return tripDb;
   }
 

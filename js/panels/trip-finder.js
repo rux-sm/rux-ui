@@ -272,7 +272,7 @@
   // ── Data loading ──────────────────────────────────────────────────────────
 
   async function ensureDb() {
-    if (!db) db = await import("../data/trip-db.js?v=9");
+    if (!db) db = await import("../data/trip-db.js?v=10");
     return db;
   }
 

@@ -1186,6 +1186,7 @@ import {
 				throw new Error("Both split-trip itinerary legs were not loaded. Reopen the trip before saving.");
 			}
 			const nextTripData = collectTrip(root);
+			nextTripData.itinerary_confirmed = itinerary.getConfirmed?.() ?? false;
 			const tripData = savingTripId
 				? mergeUpdate(nextTripData, savingSnapshot || {})
 				: compactPayload(nextTripData);
@@ -1875,6 +1876,10 @@ export function loadTrip(root, itinerary, trip) {
 		trip.allTripStops ?? trip.trip_stops ?? trip.stops ?? [],
 		{ splitTrip: normalized.trip_type === "dropoff_pickup" },
 	);
+	// After populateStops, not before — its own setStops() calls run through
+	// updateSummary(), which unconditionally clears confirmed (an edit-tracking
+	// side effect that's correct for real edits but wrong for a load).
+	itinerary.setConfirmed?.(!!trip.itinerary_confirmed);
 	if (normalized.trip_type === "dropoff_pickup" && trip.leg === "return") {
 		itinerary.setActiveLeg("return");
 	}

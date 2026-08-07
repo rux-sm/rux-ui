@@ -414,31 +414,6 @@
 		return sumIntervalsInWindow(dutyIntervalData(stops).onDuty, windowStart, windowEnd);
 	}
 
-	// Undated-tolerant fallback (elapsedMinutes works off bare times, unlike
-	// datedMinute which dutyIntervalData requires) — used only by
-	// computeSegmentStats' gross-minus-dwell fallback below, for days with
-	// no dated legs to build dutyIntervalData's explicit intervals from.
-	function excludedDwellMinutes(stops, startIdx, endIdx) {
-		let total = 0;
-		for (let i = startIdx; i < endIdx; i++) {
-			const stop = stops[i];
-			if (stop.type === "sleeper") {
-				const d = elapsedMinutes(stop.departPrevDate, stop.departPrev, stop.arriveDate, stop.arrive);
-				if (d !== null) total += d;
-				continue;
-			}
-			if (stop.type === "day" || stop.type === "return") continue;
-			if ((stop.dwellStatus || "on") === "on") continue;
-			const arriveDate = stop.type === "pickup" ? stop.spotDate : stop.arriveDate;
-			const arriveTime = stop.type === "pickup" ? stop.spot : stop.arrive;
-			const next = stops.slice(i + 1).find((item) => item.type !== "day");
-			if (!next) continue;
-			const d = elapsedMinutes(arriveDate, arriveTime, next.departPrevDate, next.departPrev);
-			if (d !== null) total += d;
-		}
-		return total;
-	}
-
 	// Which duty session is "current" as of windowEnd — the session whose
 	// on-duty activity is closest to (but not after) that point. Sessions
 	// are chronological by construction, so the last interval starting
@@ -490,9 +465,17 @@
 		return total;
 	}
 
-	// Compute stats for the day segment ending at dayIdx (an "End day" marker).
-	// Segment = stops between the previous "day" marker and this one (exclusive both ends).
-	// Sleeper cards sit INSIDE a segment; their dwell time is subtracted from gross → net.
+	// Stats for the day-card ending at dayIdx (an "End day" marker, or
+	// stops.length for the trailing/Trip Complete segment). Day markers are
+	// a display/date concept only — which stops render under this card —
+	// and never clip the actual on-duty/drive/miles totals below. Those are
+	// always the FULL duty session that's active as of this card's own end
+	// point, reported in full on every day card a session touches, not a
+	// per-day slice — a long haul that runs past midnight without an Off
+	// Duty break is still one session, not two half-sessions that would
+	// under-count if split at the calendar boundary. Off Duty is the
+	// exception: a rest period is a discrete dated event, not something
+	// that spans sessions, so it stays scoped to this card's own window.
 	function computeSegmentStats(stops, dayIdx) {
 		// Find segment start (right after previous "day" marker, or 0)
 		let startIdx = 0;
@@ -518,103 +501,44 @@
 
 		const segment = stops.slice(startIdx, endIdx).filter((s) => s.type !== "day");
 
-		// Sleeper never travels — its miles/drive should always be zero (see
-		// syncSleeperLeg), but excluding it here too is a cheap safety net so
-		// travel totals stay honest even if a stop's own fields are ever wrong
-		// (stale data from before that fix, a bad import, etc.).
-		const travelSegment = segment.filter((s) => s.type !== "sleeper");
-		let totalMiles = travelSegment.reduce((n, s) => n + parseFloat(s.miles || 0), 0);
-		let totalDrive = travelSegment.reduce((n, s) => n + parseDriveMins(s.drive), 0);
-
-		// When dated events are available, a calendar boundary may cut through
-		// an incoming leg without becoming a stop. Allocate that leg's route
-		// totals to each day by the fraction of elapsed leg time on that side.
 		const previousBoundary = [...stops.slice(0, startIdx)].reverse().find((item) => item.type === "day");
 		const currentBoundary = stops[dayIdx]?.type === "day" ? stops[dayIdx] : null;
 		const windowStart = previousBoundary ? datedMinute(previousBoundary.label, previousBoundary.departPrev || "00:00") : null;
-		const windowEnd = currentBoundary ? datedMinute(currentBoundary.label, currentBoundary.departPrev || "00:00") : null;
-		const datedLegs = stops.filter((item) => {
-			if (item.type === "day" || item.type === "sleeper") return false;
-			const arriveTime = item.type === "pickup" ? item.spot : item.arrive;
-			const arriveDate = item.type === "pickup" ? item.spotDate : item.arriveDate;
-			return datedMinute(item.departPrevDate, item.departPrev) !== null
-				&& datedMinute(arriveDate, arriveTime) !== null;
-		});
-		if ((windowStart !== null || windowEnd !== null) && datedLegs.length) {
-			totalMiles = 0;
-			totalDrive = 0;
-			for (const item of datedLegs) {
-				const arriveTime = item.type === "pickup" ? item.spot : item.arrive;
-				const arriveDate = item.type === "pickup" ? item.spotDate : item.arriveDate;
-				const legStart = datedMinute(item.departPrevDate, item.departPrev);
-				const legEnd = datedMinute(arriveDate, arriveTime);
-				if (legStart === null || legEnd === null || legEnd <= legStart) continue;
-				const overlapStart = windowStart === null ? legStart : Math.max(legStart, windowStart);
-				const overlapEnd = windowEnd === null ? legEnd : Math.min(legEnd, windowEnd);
-				if (overlapEnd <= overlapStart) continue;
-				const fraction = (overlapEnd - overlapStart) / (legEnd - legStart);
-				totalMiles += parseFloat(item.miles || 0) * fraction;
-				totalDrive += parseDriveMins(item.drive) * fraction;
+
+		// Anchor for identifying which duty session governs this card: the day
+		// boundary's own end-of-day time if this card has one, else fall back
+		// to the segment's own last dated arrival (the trailing/Trip Complete
+		// card has no closing boundary to read a time from).
+		let windowEnd = currentBoundary ? datedMinute(currentBoundary.label, currentBoundary.departPrev || "00:00") : null;
+		if (windowEnd === null) {
+			for (let i = segment.length - 1; i >= 0; i--) {
+				const item = segment[i];
+				const t = item.type === "pickup" ? item.spot : item.arrive;
+				const d = item.type === "pickup" ? item.spotDate : item.arriveDate;
+				const minute = datedMinute(d, t);
+				if (minute !== null) { windowEnd = minute; break; }
 			}
 		}
 
-		// Gross = wall clock first departPrev → last arrive/spot (includes sleeper rest)
-		let firstDepart = null;
-		let lastArrive = null;
-		for (const s of segment) {
-			if (s.departPrev && firstDepart === null) firstDepart = { date: s.departPrevDate, time: s.departPrev };
-		}
-		if (previousBoundary && windowStart !== null && firstDepart) {
-			const firstMinute = datedMinute(firstDepart.date, firstDepart.time);
-			if (firstMinute !== null && firstMinute < windowStart) {
-				firstDepart = { date: previousBoundary.label, time: previousBoundary.departPrev || "00:00" };
-			}
-		}
-		for (let i = segment.length - 1; i >= 0; i--) {
-			const item = segment[i];
-			const t = item.arrive || item.spot;
-			if (t) {
-				lastArrive = { date: item.arriveDate || item.spotDate, time: t };
-				break;
-			}
-		}
-		if (currentBoundary && windowEnd !== null && firstDepart) {
-			const firstMinute = datedMinute(firstDepart.date, firstDepart.time);
-			if (firstMinute !== null && firstMinute < windowEnd) {
-				lastArrive = { date: currentBoundary.label, time: currentBoundary.departPrev || "00:00" };
-			}
-		}
-		const grossMins = firstDepart && lastArrive
-			? elapsedMinutes(firstDepart.date, firstDepart.time, lastArrive.date, lastArrive.time)
-			: null;
-
-		// Sleeper cards + off/sleeper dwell status, same exclusions dutyMinutesInWindow makes.
-		const sleeperDwell = excludedDwellMinutes(stops, startIdx, endIdx);
-		// Duty is built from explicit work intervals instead of treating every
-		// minute until midnight as work. This is what lets an arrival at 15:00
-		// followed by Off duty produce an accurate Day 1 total.
-		const { onDuty, offDuty } = dutyIntervalData(stops);
-		const explicitDutyMins = sumIntervalsInWindow(onDuty, windowStart, windowEnd);
-		const netMins = explicitDutyMins !== null
-			? explicitDutyMins
-			: (grossMins !== null ? Math.max(0, grossMins - sleeperDwell) : null);
-		const offDutyMins = sumIntervalsInWindow(offDuty, windowStart, windowEnd);
-
-		// 10hr driving / 15hr duty warnings check the current duty SESSION's
-		// running total (since the last off-duty/sleeper period) rather than
-		// this calendar day's own isolated slice — see dutyIntervalData.
+		const { onDuty, offDuty, legs } = dutyIntervalData(stops);
 		const activeSessionId = activeSessionIdThroughWindow(onDuty, windowEnd);
-		const sessionDutyMins = sessionOnDutyThroughWindow(onDuty, activeSessionId, windowEnd);
-		const sessionDriveMins = sessionDriveThroughWindow(onDuty, activeSessionId, windowEnd);
+
+		// Full session totals, unclipped (windowEnd: null) — see function
+		// comment above for why this doesn't stop at the calendar boundary.
+		const netMins = sessionOnDutyThroughWindow(onDuty, activeSessionId, null);
+		const totalDrive = sessionDriveThroughWindow(onDuty, activeSessionId, null) ?? 0;
+		const rawMiles = sessionMilesThroughWindow(legs, activeSessionId, null) ?? 0;
+		const totalMiles = Math.round(rawMiles * 10) / 10;
+
+		const offDutyMins = sumIntervalsInWindow(offDuty, windowStart, windowEnd);
 
 		return {
 			totalMiles,
 			totalDrive: Math.round(totalDrive),
-			grossMins,
 			netMins,
 			offDutyMins,
-			sessionDutyMins,
-			sessionDriveMins,
+			sessionDutyMins: netMins,
+			sessionDriveMins: totalDrive,
 		};
 	}
 
@@ -638,6 +562,34 @@
 		const field = (val, unit, warn) => `
         <output class="rux-output${warn ? " rux-trip-itinerary__seg-stat--warn" : ""}">${escHtml(val)} <span class="rux-trip-itinerary__unit">${unit}</span></output>`;
 		return `<div class="rux-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}${field(offVal, "hr", false)}</div>`;
+	}
+
+	// Shared three-stat anatomy for cards that close a duty period. Off Duty
+	// reports the duty session ending at that stop; Trip Complete reports the
+	// final calendar day's segment. Only the calculation scope and title differ.
+	function renderDutySummaryStats({ onDutyMins, driveMins, miles } = {}) {
+		const dutyVal = onDutyMins !== null && onDutyMins > 0 ? formatDriveValue(onDutyMins) : "—";
+		const driveVal = driveMins !== null && driveMins > 0 ? formatDriveValue(driveMins) : "—";
+		const milesVal = miles !== null && miles > 0
+			? (miles % 1 === 0 ? String(miles) : miles.toFixed(1))
+			: "—";
+		return `
+		  <div class="rux-field">
+			<div class="rux-trip-itinerary__stats-values rux-trip-itinerary__stats-values--3col is-expanded">
+			  <div class="rux-field">
+				<label class="rux-field__label">On-Duty</label>
+				<output class="rux-output">${escHtml(dutyVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+			  </div>
+			  <div class="rux-field">
+				<label class="rux-field__label">Drive</label>
+				<output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+			  </div>
+			  <div class="rux-field">
+				<label class="rux-field__label">Miles</label>
+				<output class="rux-output">${escHtml(milesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
+			  </div>
+			</div>
+		  </div>`;
 	}
 
 	// Returns just the two boxed outputs (status + duration) — the caller
@@ -844,24 +796,26 @@
 		const hasData = finalSegment.some((s) => s.miles || s.drive || s.departPrev || s.arrive || s.spot);
 		if (!hasData) return "";
 
-		const dayNum = stops.filter((s) => s.type === "day").length + 1;
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
-      <section class="rux-card__section rux-trip-itinerary__day rux-trip-itinerary__day--final" data-itinerary-final-summary>
-        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNum}" title="Add to Day ${dayNum}">
-            <span class="rux-icon" aria-hidden="true">add</span>
-          </button>
-        </div>
-        <div class="rux-trip-itinerary__content">
-          <div class="rux-trip-itinerary__label-row">
-            <label class="rux-field__label">End of Day ${dayNum}</label>
-          </div>
-          <div class="rux-trip-itinerary__day-header">
-            ${renderDayStatsGrid(stats)}
-          </div>
-        </div>
-      </section>`;
+      <section class="rux-card-section rux-trip-itinerary__dwell-card rux-trip-itinerary__trip-complete" data-itinerary-final-summary>
+		<header class="rux-card-section__header rux-trip-itinerary__stop-header">
+		  <div class="rux-trip-itinerary__stop-heading">
+			<span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--off" aria-hidden="true">location_on</span></span>
+			<h4 class="rux-card__title">Trip Complete</h4>
+		  </div>
+		  <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to final day" title="Add to final day">
+			<span class="rux-icon" aria-hidden="true">add</span>
+		  </button>
+		</header>
+		<div class="rux-card-section__body rux-trip-itinerary__stop-body">
+		  ${renderDutySummaryStats({
+			onDutyMins: stats.netMins,
+			driveMins: stats.totalDrive,
+			miles: stats.totalMiles,
+		  })}
+		</div>
+	  </section>`;
 	}
 
 	function formatDayLabel(label) {
@@ -1207,26 +1161,11 @@
 			const sessionDutyMins = sessionId !== undefined ? sessionOnDutyThroughWindow(onDuty, sessionId, null) : null;
 			const sessionDriveMins = sessionId !== undefined ? sessionDriveThroughWindow(onDuty, sessionId, null) : null;
 			const sessionMiles = sessionId !== undefined ? sessionMilesThroughWindow(legs, sessionId, null) : null;
-			const sessionDutyVal = sessionDutyMins !== null && sessionDutyMins > 0 ? formatDriveValue(sessionDutyMins) : "—";
-			const sessionDriveVal = sessionDriveMins !== null && sessionDriveMins > 0 ? formatDriveValue(sessionDriveMins) : "—";
-			const sessionMilesVal = sessionMiles !== null && sessionMiles > 0 ? (sessionMiles % 1 === 0 ? String(sessionMiles) : sessionMiles.toFixed(1)) : "—";
-			sessionBlock = `
-		  <div class="rux-field">
-			<div class="rux-trip-itinerary__stats-values rux-trip-itinerary__stats-values--3col is-expanded">
-			  <div class="rux-field">
-				<label class="rux-field__label">On-Duty</label>
-				<output class="rux-output">${escHtml(sessionDutyVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
-			  </div>
-			  <div class="rux-field">
-				<label class="rux-field__label">Drive</label>
-				<output class="rux-output">${escHtml(sessionDriveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
-			  </div>
-			  <div class="rux-field">
-				<label class="rux-field__label">Miles</label>
-				<output class="rux-output">${escHtml(sessionMilesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
-			  </div>
-			</div>
-		  </div>`;
+			sessionBlock = renderDutySummaryStats({
+				onDutyMins: sessionDutyMins,
+				driveMins: sessionDriveMins,
+				miles: sessionMiles,
+			});
 		}
 
 		return `
@@ -1254,9 +1193,27 @@
 		const stops = defaultStops();
 		const recalcBtn = root.querySelector("#tp-itin-recalc");
 		const importBtn = root.querySelector("#tp-import-btn");
+		const confirmBtn = root.querySelector("#tp-itin-confirm");
 		const legToggleEl = root.querySelector("#tp-itin-leg-toggle");
 		const legCardEl = root.querySelector("#tp-itin-leg-card");
 		const resetLegBtn = root.querySelector("#tp-itin-reset-leg");
+
+		// Manually set, not derived — a dispatcher confirming "I checked this
+		// itinerary, the miles/times are accurate" is a judgment call the data
+		// itself can't make. Cleared by updateSummary() below, which every
+		// edit path already calls, so any change after confirming — a new
+		// stop, an edited time, a recalculated route — silently un-confirms it
+		// rather than leaving a stale checkmark next to numbers that moved.
+		let confirmed = false;
+
+		function syncConfirmBtn() {
+			if (!confirmBtn) return;
+			confirmBtn.setAttribute("aria-pressed", String(confirmed));
+			confirmBtn.classList.toggle("is-active", confirmed);
+			confirmBtn.title = confirmed
+				? "Itinerary confirmed — click to unconfirm"
+				: "Confirm itinerary";
+		}
 
 		// Split trips get a second, independent stop list (pickup -> stops ->
 		// return-to-yard) for the return leg. `stops` above always holds
@@ -1606,6 +1563,7 @@
 		}
 
 		function updateSummary() {
+			confirmed = false;
 			summaryEl.innerHTML = renderSummary(stops);
 			const outboundStops = activeLeg === "outbound"
 				? stops
@@ -1623,6 +1581,8 @@
 			if (!actions) return;
 			if (importBtn) actions.appendChild(importBtn);
 			if (recalcBtn) actions.appendChild(recalcBtn);
+			if (confirmBtn) actions.appendChild(confirmBtn);
+			syncConfirmBtn();
 		}
 
 		// Update just the "From …" labels without re-rendering the whole list.
@@ -2478,6 +2438,13 @@
 		root.querySelector("#tp-itin-recalc")?.addEventListener("click", () => {
 			recalculateRoute({ force: true });
 		});
+		// Toggles confirmed directly rather than through updateSummary() (which
+		// always clears it) — confirming isn't an edit, it shouldn't immediately
+		// un-confirm itself.
+		confirmBtn?.addEventListener("click", () => {
+			confirmed = !confirmed;
+			syncConfirmBtn();
+		});
 		resetLegBtn?.addEventListener("click", resetActiveLeg);
 
 		const api = {
@@ -2513,6 +2480,14 @@
 			setActiveLeg: (leg) => switchLeg(leg),
 			getActiveLeg: () => activeLeg,
 			resetActiveLeg,
+			// Trip-level, not per-leg — set once on load (after setStops, whose
+			// own updateSummary() call would otherwise clear it right back to
+			// false) and read once at save time.
+			getConfirmed: () => confirmed,
+			setConfirmed: (value) => {
+				confirmed = !!value;
+				syncConfirmBtn();
+			},
 			setLegToggleVisible: (visible) => {
 				if (legCardEl) legCardEl.hidden = !visible;
 				if (!visible && activeLeg !== "outbound") switchLeg("outbound");

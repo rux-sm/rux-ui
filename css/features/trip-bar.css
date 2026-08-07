@@ -107,7 +107,7 @@
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */
 .rux-trip-bar--partial-po {
-	--_outline: var(--rux-warning-strong);
+	--_outline: var(--rux-warning-vivid);
 	--rux-trip-bar-border-width: 1px;
 }
 
@@ -653,7 +653,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	color: var(--rux-danger-on-vivid);
+	color: var(--rux-danger-base);
 }
 
 .rux-trip-bar__pending-icon {
@@ -663,7 +663,11 @@
 }
 
 .rux-trip-bar__pending-icon--warning {
-	color: var(--rux-warning-strong);
+	color: var(--rux-warning-base);
+}
+
+.rux-trip-bar__pending-icon--success {
+	color: var(--rux-success-base);
 }
 
 /* ---------- Text rows ---------- */
@@ -759,6 +763,7 @@
 	gap: var(--rux-space-0-5);
 	background: var(--rux-trip-bar-meta-bg);
 	border-radius: var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius) 0 0;
+	box-shadow: var(--rux-trip-bar-meta-shadow);
 	color: var(--rux-trip-bar-meta-fg);
 	font-size: var(--rux-text-xs);
 	letter-spacing: -0.02em;
@@ -816,6 +821,7 @@
 	margin-top: var(--rux-trip-bar-tight-gap);
 	background: var(--rux-trip-bar-meta-bg);
 	border-radius: 0 0 var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius);
+	box-shadow: var(--rux-trip-bar-meta-shadow);
 }
 
 .rux-trip-bar__driver {

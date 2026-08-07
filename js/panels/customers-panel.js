@@ -36,7 +36,7 @@
 
 	function getContactsDb() {
 		if (!contactsDbPromise) {
-			contactsDbPromise = import("../data/trip-db.js?v=9").catch((error) => {
+			contactsDbPromise = import("../data/trip-db.js?v=10").catch((error) => {
 				// A failed dynamic import may be retried on the next panel load.
 				contactsDbPromise = null;
 				throw error;

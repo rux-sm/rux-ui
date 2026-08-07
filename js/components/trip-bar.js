@@ -920,11 +920,14 @@ export function createTripBar(trip, callbacks = {}) {
   const summary = document.createElement("div");
   summary.className = "rux-trip-bar__summary";
   const pendingItems = getPendingIndicators(trip);
+  const summaryMarkers = trip.itinerary_confirmed
+    ? [...pendingItems, { icon: "checklist", label: "Itinerary confirmed", tone: "success" }]
+    : pendingItems;
   const paid = isPaidTrip(trip);
   const pending = document.createElement("span");
   pending.className = "rux-trip-bar__pending";
-  const summaryMarkerLabels = [...pendingItems.map((item) => item.label)];
-  pendingItems.forEach((item) => {
+  const summaryMarkerLabels = summaryMarkers.map((item) => item.label);
+  summaryMarkers.forEach((item) => {
     const marker = icon(
       item.icon,
       `rux-icon rux-trip-bar__pending-icon${item.tone ? ` rux-trip-bar__pending-icon--${item.tone}` : ""}`,

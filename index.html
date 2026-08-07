@@ -27,7 +27,7 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=106" />
+		<link rel="stylesheet" href="./css/tokens.css?v=108" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
 		<link rel="stylesheet" href="./css/components.css?v=209" />
 		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
@@ -1712,6 +1712,24 @@
 															class="rux-btn-label"
 															data-recalc-label
 															>Calculate</span
+														>
+													</button>
+													<button
+														class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
+														type="button"
+														id="tp-itin-confirm"
+														title="Confirm itinerary"
+														aria-label="Confirm itinerary"
+														aria-pressed="false"
+													>
+														<span
+															class="rux-icon icon-off"
+															aria-hidden="true"
+															>radio_button_unchecked</span
+														><span
+															class="rux-icon icon-on"
+															aria-hidden="true"
+															>check_circle</span
 														>
 													</button>
 												</div>
@@ -6729,7 +6747,7 @@
 		<script src="./js/core/doc-viewer.js?v=9"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=37"></script>
-		<script src="./js/components/itinerary.js?v=24"></script>
+		<script src="./js/components/itinerary.js?v=27"></script>
 		<script src="./js/panels/driver-panel.js?v=20" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=6" defer></script>
 		<script src="./js/panels/customers-panel.js?v=4" defer></script>
@@ -6771,7 +6789,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=17";
+			} from "./js/components/trip-bar.js?v=18";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -7914,7 +7932,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=27");
+					const db = await import("./js/data/trip-db.js?v=28");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -9214,6 +9232,7 @@
 							need_fuel_card: t.need_fuel_card,
 							contact_not_needed: t.contact_not_needed,
 							itinerary_not_needed: t.itinerary_not_needed,
+							itinerary_confirmed: t.itinerary_confirmed,
 							confirmed: isBillingConfirmed,
 							driverStatus: isBillingConfirmed
 								? "confirmed"
@@ -10755,7 +10774,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=27");
+					const db = await import("./js/data/trip-db.js?v=28");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
