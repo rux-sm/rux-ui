@@ -647,7 +647,7 @@
 	--rux-trip-bar-meta-radius:      var(--rux-radius-sm);
 	/* A translucent tonal wash preserves the trip category hue. Dark mode
 	   deepens the bar beneath light metadata text; light mode reverses this. */
-	--rux-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 40%);
+	--rux-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 0%);
 	--rux-trip-bar-meta-fg: var(--rux-fg-on-accent);
 	--rux-trip-bar-shadow: var(--rux-shadow-3);
 
@@ -679,7 +679,7 @@
 
 	/* One-way/split-trip SVG stripe overlay. */
 	--rux-trip-bar-stripe-color:   var(--rux-white);
-	--rux-trip-bar-stripe-opacity: 0.1;
+	--rux-trip-bar-stripe-opacity: 0.04;
 
 	/* — head — */
 	--rux-trip-bar-head-backdrop-blur: 4px;
