@@ -144,7 +144,7 @@
 	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 0% c h / 28%);
 	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 0% c h / 34%);
 	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 0% c h / 86%);
-	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 24%);
+	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 16%);
 
 	--rux-shadow-inset:
 		inset 0 1px 2px var(--rux-shadow-inset-color),
@@ -548,6 +548,7 @@
 	--rux-panel-footer-border:  none;
 	--rux-panel-footer-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-footer-shadow:  var(--rux-shadow-1);
+	--rux-panel-footer-mobile-button-height: 44px;
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
 	--rux-panel-padding:   0 var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);

@@ -27,12 +27,12 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=112" />
+		<link rel="stylesheet" href="./css/tokens.css?v=113" />
 		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=209" />
-		<link rel="stylesheet" href="./css/features/driver-panel.css?v=7" />
+		<link rel="stylesheet" href="./css/components.css?v=216" />
+		<link rel="stylesheet" href="./css/features/driver-panel.css?v=8" />
 		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
-		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=3" />
+		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=4" />
 		<link rel="stylesheet" href="./css/features/customer-panel.css?v=2" />
 		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
 		<link
@@ -1922,21 +1922,12 @@
 							</div>
 							<footer class="rux-panel__footer">
 								<button
-									type="button"
-									class="rux-button rux-button--ghost rux-panel__footer-close"
-									data-panel-close
-									aria-label="Close trip editor"
-								>
-									<span class="rux-icon" aria-hidden="true">close</span>
-									<span class="rux-btn-label">Close</span>
-								</button>
-								<button
 									class="rux-button rux-button--danger"
 									id="tp-btn-delete"
 									disabled
 								>
 									<span class="rux-icon">event_busy</span
-									><span class="rux-btn-label">Cancel Trip</span>
+									><span class="rux-btn-label">Cancel</span>
 								</button>
 								<button
 									class="rux-button rux-button--default"
@@ -1959,6 +1950,15 @@
 										aria-hidden="true"
 									></span>
 									<span class="rux-btn-label">Save</span>
+								</button>
+								<button
+									type="button"
+									class="rux-button rux-button--ghost rux-panel__footer-close"
+									data-panel-close
+									aria-label="Close trip editor"
+								>
+									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
 						</aside>
@@ -1984,7 +1984,7 @@
 									aria-pressed="false"
 									data-opens="trip-panel-drawer"
 								>
-									<span class="rux-icon" aria-hidden="true">chevron_left</span>
+									<span class="rux-icon" aria-hidden="true">left_panel_open</span>
 									<span class="rux-btn-label">Trip Editor</span>
 								</button>
 							</div>
@@ -2040,7 +2040,7 @@
 									data-opens="right-panel-drawer"
 								>
 									<span class="rux-btn-label">Options</span>
-									<span class="rux-icon" aria-hidden="true">chevron_right</span>
+									<span class="rux-icon" aria-hidden="true">right_panel_open</span>
 								</button>
 							</div>
 						</header>
@@ -3174,15 +3174,6 @@
 							</div>
 							<footer class="rux-panel__footer">
 								<button
-									type="button"
-									class="rux-button rux-button--ghost rux-panel__footer-close"
-									data-panel-close
-									aria-label="Close vehicle editor"
-								>
-									<span class="rux-icon" aria-hidden="true">close</span>
-									<span class="rux-btn-label">Close</span>
-								</button>
-								<button
 									class="rux-button rux-button--outline rux-button--danger"
 									id="fp-btn-delete"
 									type="button"
@@ -3205,6 +3196,15 @@
 								>
 									<span class="rux-icon">save</span
 									><span class="rux-btn-label"> Save</span>
+								</button>
+								<button
+									type="button"
+									class="rux-button rux-button--ghost rux-panel__footer-close"
+									data-panel-close
+									aria-label="Close vehicle editor"
+								>
+									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
 						</aside>
@@ -4179,15 +4179,6 @@
 							</div>
 							<footer class="rux-panel__footer">
 								<button
-									type="button"
-									class="rux-button rux-button--ghost rux-panel__footer-close"
-									data-panel-close
-									aria-label="Close driver editor"
-								>
-									<span class="rux-icon" aria-hidden="true">close</span>
-									<span class="rux-btn-label">Close</span>
-								</button>
-								<button
 									class="rux-button rux-button--outline rux-button--danger"
 									id="dp-btn-delete"
 									type="button"
@@ -4210,6 +4201,15 @@
 								>
 									<span class="rux-icon">save</span
 									><span class="rux-btn-label"> Save</span>
+								</button>
+								<button
+									type="button"
+									class="rux-button rux-button--ghost rux-panel__footer-close"
+									data-panel-close
+									aria-label="Close driver editor"
+								>
+									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
 						</aside>
@@ -4557,15 +4557,6 @@
 							</div>
 							<footer class="rux-panel__footer">
 								<button
-									type="button"
-									class="rux-button rux-button--ghost rux-panel__footer-close"
-									data-panel-close
-									aria-label="Close customer editor"
-								>
-									<span class="rux-icon" aria-hidden="true">close</span>
-									<span class="rux-btn-label">Close</span>
-								</button>
-								<button
 									class="rux-button rux-button--outline rux-button--danger"
 									id="cp-btn-delete"
 									type="button"
@@ -4588,6 +4579,15 @@
 								>
 									<span class="rux-icon">save</span
 									><span class="rux-btn-label"> Save</span>
+								</button>
+								<button
+									type="button"
+									class="rux-button rux-button--ghost rux-panel__footer-close"
+									data-panel-close
+									aria-label="Close customer editor"
+								>
+									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
 						</aside>

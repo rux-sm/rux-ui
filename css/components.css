@@ -58,8 +58,8 @@
 @import "./base/navigation.css?v=16";
 @import "./base/utils.css?v=2";
 @import "./features/trip-bar.css?v=31";
-@import "./features/trip-panel.css?v=29";
+@import "./features/trip-panel.css?v=30";
 @import "./features/trip-history.css?v=2";
 @import "./features/itinerary.css?v=4";
 @import "./layout/scheduler.css?v=15";
-@import "./layout/scheduler-app.css?v=52";
+@import "./layout/scheduler-app.css?v=59";

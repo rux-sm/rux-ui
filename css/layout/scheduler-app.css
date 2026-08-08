@@ -1273,7 +1273,7 @@
    Mobile has no resize-gutter interaction, and the full-screen drawer
    overlay covers the workspace-heading toggle, so every drawer panel
    (Trip, Fleet, Driver, Customer, and the right/Tools panel) gets a ghost
-   Close button inline with its other footer actions instead — one
+   Close button below its other footer actions — one
    consistent mobile close pattern shared by every panel that uses
    .rux-panel__footer. */
 .rux-panel__footer-close {
@@ -1281,17 +1281,30 @@
 }
 
 @media (max-width: 500px) {
-	.rux-panel__footer-close {
+	.rux-panel__footer > .rux-panel__footer-close {
 		display: inline-flex;
 		/* Its own full-width row below the panel's other footer buttons,
 		   rather than squeezing in as a cramped 4th equal-width flex item
 		   alongside Delete/Clear/Save (or the right panel's per-tab action
 		   group, which is already width:100% itself — see driver-week-info.css). */
+		flex: 0 0 100%;
 		width: 100%;
 	}
 
 	.rux-panel__footer {
 		flex-wrap: wrap;
+		column-gap: var(--rux-button-group-gap);
+		row-gap: var(--rux-space-1);
+	}
+
+	.rux-panel__footer .rux-button {
+		--_h: var(--rux-panel-footer-mobile-button-height);
+	}
+
+	/* Close is a secondary escape action: retain its full-width touch area
+	   without giving it the same visual weight as the primary action row. */
+	.rux-panel__footer > .rux-panel__footer-close {
+		--_h: var(--rux-button-mobile-height);
 	}
 
 	/* The right/Tools panel's footer normally hides itself entirely when the
@@ -1406,11 +1419,32 @@
 }
 
 @media (max-width: 500px) {
+	/* Desktop collapsed-rail reopeners live inside the drawer itself. A closed
+	   mobile drawer is also <=44px wide, which can trigger their container
+	   query accidentally; mobile uses the workspace Trip Editor/Options
+	   buttons instead. */
+	.scheduler-app__drawer > :is(
+		.rux-trip-panel__drawer-open,
+		.rux-right-panel__drawer-open,
+		.rux-driver-panel__drawer-open
+	) {
+		display: none;
+	}
+
 	/* On mobile the app header is always collapsed (there's no toggle for it),
 	   so it never needs the row-gap every other viewport gets between the
 	   app header and body. */
 	.scheduler-app {
 		row-gap: 0;
+	}
+
+	/* Taller tap target for panel section tabs (Trip/Fleet/Driver/Tools) —
+	   44px matches the same touch-target size already used for
+	   --rux-badge-module-height. Redefining the shared --rux-tab-height
+	   here, rather than overriding .rux-tab's own height rule, keeps every
+	   other .rux-tab consumer (app-header module tabs, etc.) untouched. */
+	.rux-panel__nav {
+		--rux-tab-height: 44px;
 	}
 
 
@@ -1621,21 +1655,6 @@
 
 	.scheduler-app:has(.scheduler-app__drawer.is-closing) .rux-app-header__nav {
 		display: none;
-	}
-
-	/* The mobile drawer's own slide (transform, not width) and the scrim's
-	   fade both run on the same duration, started in the same tick — so
-	   mid-animation the scrim is only partially opaque while the panel has
-	   only partially slid into/out of place, briefly exposing whatever's
-	   underneath through the drawer's own transparent (non-panel) area. The
-	   workspace-heading toggle buttons (Trip Editor / Options, and their
-	   Fleet/Driver/Customer equivalents) are what sits there — hide them
-	   for the same open/closing window the app nav above already covers,
-	   rather than fixing the scrim/slide race itself. visibility (not
-	   display) keeps their grid slot so nothing reflows once they return. */
-	.scheduler-app:has(.scheduler-app__drawer.is-open) .scheduler-app__mobile-panel-btn,
-	.scheduler-app:has(.scheduler-app__drawer.is-closing) .scheduler-app__mobile-panel-btn {
-		visibility: hidden;
 	}
 
 	body[data-active-module="game"] .rux-app-header__nav {

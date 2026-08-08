@@ -998,7 +998,7 @@
 }
 
 @container (max-width: 300px) {
-	.rux-trip-panel .rux-panel__footer .rux-btn-label {
+	.rux-trip-panel .rux-panel__footer .rux-button:not(.rux-panel__footer-close) .rux-btn-label {
 		position: absolute;
 		width: 1px;
 		height: 1px;
