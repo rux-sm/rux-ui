@@ -76,6 +76,12 @@
 	overflow: hidden;
 }
 
+/* Clip content only while the grid row collapses. Once revealed, allow the
+   standard button elevation to paint outside the inner row's exact height. */
+.rux-trip-panel__manifest-action.is-visible .rux-trip-panel__manifest-action-inner {
+	overflow: visible;
+}
+
 .rux-trip-panel__manifest-action .rux-button {
 	width: 100%;
 }
