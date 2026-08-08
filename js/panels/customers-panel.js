@@ -60,6 +60,8 @@
 	const openDrawer = drawerHandle.open;
 	const closeDrawer = drawerHandle.close;
 
+	panelEl.querySelector("[data-panel-close]")?.addEventListener("click", closeDrawer);
+
 	document.getElementById("customer-panel-toggle-btn")?.addEventListener("click", () => {
 		if (drawer.classList.contains("is-open")) {
 			closeDrawer();

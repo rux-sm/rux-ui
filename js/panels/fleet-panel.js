@@ -41,6 +41,8 @@
   const openDrawer  = drawerHandle.open;
   const closeDrawer = drawerHandle.close;
 
+  panelEl.querySelector("[data-panel-close]")?.addEventListener("click", closeDrawer);
+
   function resetPanel() {
     closeDrawer();
     switchTab(tabBtns[0]);

@@ -638,7 +638,7 @@
 }
 
 /* — Right panel rail — */
-/* No header anymore — see .rux-right-panel__mobile-close further down for
+/* No header anymore — see .rux-panel__footer-close further down for
    what replaced it. */
 
 .rux-right-panel__drawer-open {
@@ -1268,38 +1268,39 @@
 	display: flex;
 }
 
-/* ── Trip panel mobile close (no header to hold it anymore) ──────────── */
-/* Desktop never shows this — the resize gutter handles open/close there.
+/* ── Panel footer mobile close ────────────────────────────────────────── */
+/* Desktop never shows these — the resize gutter handles open/close there.
    Mobile has no resize-gutter interaction, and the full-screen drawer
-   overlay covers the workspace-heading toggle, so this is mobile's only
-   way to close the Trip Editor once it's open. */
-.rux-trip-panel__mobile-close {
+   overlay covers the workspace-heading toggle, so every drawer panel
+   (Trip, Fleet, Driver, Customer, and the right/Tools panel) gets a ghost
+   Close button inline with its other footer actions instead — one
+   consistent mobile close pattern shared by every panel that uses
+   .rux-panel__footer. */
+.rux-panel__footer-close {
 	display: none;
 }
 
 @media (max-width: 500px) {
-	.scheduler-app__drawer:is(.is-open, .is-closing) .rux-trip-panel__mobile-close {
+	.rux-panel__footer-close {
 		display: inline-flex;
-		position: absolute;
-		top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
-		right: var(--rux-space-2);
-		z-index: var(--rux-z-sticky);
+		/* Its own full-width row below the panel's other footer buttons,
+		   rather than squeezing in as a cramped 4th equal-width flex item
+		   alongside Delete/Clear/Save (or the right panel's per-tab action
+		   group, which is already width:100% itself — see driver-week-info.css). */
+		width: 100%;
 	}
-}
 
-/* ── Right panel mobile close (no header to hold it anymore) ─────────── */
-/* Same reasoning as the trip panel's mobile close just above. */
-.rux-right-panel__mobile-close {
-	display: none;
-}
+	.rux-panel__footer {
+		flex-wrap: wrap;
+	}
 
-@media (max-width: 500px) {
-	.scheduler-app__drawer:is(.is-open, .is-closing) .rux-right-panel__mobile-close {
-		display: inline-flex;
-		position: absolute;
-		top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
-		right: var(--rux-space-2);
-		z-index: var(--rux-z-sticky);
+	/* The right/Tools panel's footer normally hides itself entirely when the
+	   active tab has no action of its own (History) — see the rpFooter.hidden
+	   logic in index.html. On mobile the Close button lives in that same
+	   footer, so it must never fully disappear here even when no per-tab
+	   action group is showing. */
+	#rp-panel-footer[hidden] {
+		display: flex;
 	}
 }
 
@@ -1487,46 +1488,46 @@
 		grid-row: 3;
 	}
 
+	/* Text-only on mobile — the icon is redundant next to the word "Today"
+	   and the prev/next chevrons already flanking it. Full reset of all
+	   three @container(560px) rules above (icon reveal, label hide, square
+	   sizing), not just the icon: that's a container query on the toolbar's
+	   own width, not the viewport, so it fires here too by coincidence once
+	   the toolbar is this narrow — left alone, the icon-hide alone would
+	   leave the label still sr-only-hidden underneath it, an empty button. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn > .rux-icon {
-		position: static;
-		width: var(--_icon-size);
-		height: var(--_icon-size);
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		clip: auto;
-		white-space: normal;
-		border: 0;
+		display: none;
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn .rux-btn-label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
+		position: static;
+		width: auto;
+		height: auto;
+		margin: 0;
 		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
+		overflow: visible;
+		clip: auto;
 		white-space: nowrap;
 		border: 0;
 	}
 
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn {
-		flex: 0 0 var(--_h);
-		width: var(--_h);
-		min-width: var(--_h);
-		padding: 0;
+		flex: none;
+		width: auto;
+		min-width: 0;
+		padding: 0 var(--rux-button-padding-inline);
 	}
 
-	/* Drawer overlays the workspace as a partial-width panel, Gmail-nav-drawer
-	   style — a sliver of the workspace stays visible (and dimmed by the
-	   scrim below) instead of the drawer eating the full viewport. */
+	/* Drawer overlays the full viewport width — mobile screens are too narrow
+	   to spare room for a workspace sliver behind it, so open panels get the
+	   whole width instead of the Gmail-nav-drawer partial treatment desktop
+	   uses. The scrim (below) still backs it for tap-to-dismiss. */
 	.scheduler-app__drawer:is(.is-open, .is-closing) {
 		position: fixed;
 		inset-block: 0;
 		left: 0;
 		z-index: var(--rux-z-modal);
-		width: min(86vw, 320px);
+		width: 100%;
 		height: 100dvh;
 		margin-left: 0;
 		margin-right: 0;
@@ -1620,6 +1621,21 @@
 
 	.scheduler-app:has(.scheduler-app__drawer.is-closing) .rux-app-header__nav {
 		display: none;
+	}
+
+	/* The mobile drawer's own slide (transform, not width) and the scrim's
+	   fade both run on the same duration, started in the same tick — so
+	   mid-animation the scrim is only partially opaque while the panel has
+	   only partially slid into/out of place, briefly exposing whatever's
+	   underneath through the drawer's own transparent (non-panel) area. The
+	   workspace-heading toggle buttons (Trip Editor / Options, and their
+	   Fleet/Driver/Customer equivalents) are what sits there — hide them
+	   for the same open/closing window the app nav above already covers,
+	   rather than fixing the scrim/slide race itself. visibility (not
+	   display) keeps their grid slot so nothing reflows once they return. */
+	.scheduler-app:has(.scheduler-app__drawer.is-open) .scheduler-app__mobile-panel-btn,
+	.scheduler-app:has(.scheduler-app__drawer.is-closing) .scheduler-app__mobile-panel-btn {
+		visibility: hidden;
 	}
 
 	body[data-active-module="game"] .rux-app-header__nav {
