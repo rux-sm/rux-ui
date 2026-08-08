@@ -81,7 +81,7 @@
 	/* Flattens the solid variants' raised bevel (--rux-button-shadow-raised)
 	   — a disabled button should read as inert, not still physically
 	   raised off the surface. */
-	box-shadow: none;
+	box-shadow: var(--rux-button-disabled-shadow);
 }
 
 /* Native disabled controls already prevent activation, so keep them in the

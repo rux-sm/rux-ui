@@ -945,9 +945,10 @@
 
 	/* ─── COMPONENT · button disabled ─────────────────────────────────────────────── */
 
-	--rux-button-disabled-background: oklch(from var(--rux-neutral) 26.8% c h);
+	--rux-button-disabled-background: transparent;
 	--rux-button-disabled-text:       var(--rux-text-disabled);
 	--rux-button-disabled-border:     none;
+	--rux-button-disabled-shadow:     var(--rux-shadow-1);
 
 	/* ─── COMPONENT · button selected / toggle ────────────────────────────── */
 
