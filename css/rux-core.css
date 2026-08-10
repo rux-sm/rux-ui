@@ -1,0 +1,30 @@
+/* ==========================================================================
+   RUX UI — CORE ENTRYPOINT
+   --------------------------------------------------------------------------
+   Framework-agnostic foundations and reusable components for applications
+   that do not need the TripBoard-specific feature and scheduler styles.
+
+   Existing TripBoard pages should continue loading components.css. Keeping
+   this as a separate, additive entrypoint avoids changing current consumers.
+   ========================================================================== */
+
+@import "./tokens.css";
+@import "./colors_and_type.css";
+
+@import "./base/icons.css";
+@import "./base/controls.css";
+@import "./base/app-header.css";
+@import "./base/app-shell.css";
+@import "./base/badges.css";
+@import "./base/form.css";
+@import "./base/workspace.css";
+@import "./base/panel.css";
+@import "./base/menu.css";
+@import "./base/popover.css";
+@import "./base/suggestions.css";
+@import "./base/card.css";
+@import "./base/floating-window.css";
+@import "./base/content.css";
+@import "./base/feedback.css";
+@import "./base/navigation.css";
+@import "./base/utils.css";

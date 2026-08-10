@@ -428,6 +428,7 @@
 	/* --rux-app-header-shadow: not set */
 	--rux-app-header-padding: var(--rux-space-2) var(--rux-space-4);
 	--rux-app-header-height:  auto;
+	--rux-app-header-min-height: 52px;
 	--rux-app-header-gap:     var(--rux-space-2);
 
 	/* — brand — */
@@ -1295,7 +1296,7 @@
 	   tab's bottom edge to merge it with the pane. */
 	--rux-tabs-attached-tab-selected-border:        none;
 	--rux-tabs-attached-tab-selected-inline-border: none;
-	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-sm);
+	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-0);
 	--rux-tabs-attached-tab-active-shadow: var(--rux-shadow-1);
 
 	/* — attached pane (content area beneath the tabs) — */
@@ -1395,7 +1396,7 @@
 	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 16% c h / 10%);
 	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 16% c h / 14%);
 	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 16% c h / 70%);
-	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 40%);
+	/* --rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 40%); */
 
 	/* ─── Component overrides ─────────────────────────────────────────────── */
 	--rux-calendar-grid:           var(--rux-border-width) solid var(--rux-surface-5);

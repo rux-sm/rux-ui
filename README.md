@@ -1,6 +1,6 @@
 # Rux UI
 
-A lightweight, dark-only design system for Rux UI. Three CSS entrypoints, one JS file, one naming convention.
+A lightweight, theme-aware design system for Rux UI. Shared CSS, small vanilla-JS helpers, and one naming convention.
 
 > **Philosophy**: clean, minimalist, modern. Think the restraint of Apple, the density of Linear, the energy of Spotify. Near-black surfaces, hairline borders, single accent color, no decoration that doesn't earn its place.
 
@@ -17,27 +17,51 @@ The TripBoard codebase remains the reference for advanced patterns (the schedule
 ```
 .
 ├── README.md              ← you are here
-├── SKILL.md               ← Agent Skill spec (Claude Code / Claude.ai)
+├── SKILL.md               ← current build instructions for coding agents
 ├── css/
 │   ├── tokens.css          ← all design tokens: color, type, space, radius, motion
 │   ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
+│   ├── rux-core.css        ← reusable entrypoint for new applications
 │   └── components.css      ← component entrypoint importing the component partials
-├── utilities.js                 ← tiny JS helpers: Rux.toast, openModal, copy
-├── demo.html              ← live showcase of every component
+├── js/
+│   └── core/
+│       ├── utilities.js   ← toast, modal, copy, and accent helpers
+│       └── theme.js       ← light, dark, and system-theme behavior
+├── index.html             ← current full application and composition reference
 ├── assets/                ← logos, favicons
-├── preview/               ← Design System tab cards
-└── ui_kits/
-    └── showcase/          ← example app screen built from the system
+└── tests/                 ← component and application contract tests
 ```
 
-To use in a new page:
+To use the complete TripBoard-oriented bundle in an existing page:
 
 ```html
 <link rel="stylesheet" href="css/tokens.css" />
 <link rel="stylesheet" href="css/colors_and_type.css" />
 <link rel="stylesheet" href="css/components.css" />
-<script src="utilities.js" defer></script>
+<script src="js/core/utilities.js" defer></script>
 ```
+
+For a new application, use the framework-agnostic core entrypoint instead:
+
+```html
+<link rel="stylesheet" href="css/rux-core.css" />
+```
+
+`rux-core.css` includes the tokens, global type styles, and reusable base
+components. It deliberately excludes the scheduler and TripBoard-specific
+feature styles imported by `components.css`. Existing pages can keep loading
+the original three stylesheets without any migration.
+
+### Application composition
+
+Rux applications place a full-width app header directly above an attached
+application shell. The shell contains one required center workspace and may
+include side panels with no decorative gaps between structural siblings.
+
+See [Application Layout](docs/layout-composition.md) for the complete app-header,
+workspace, panel, card, spacing, scrolling, responsive, and accessibility
+contract. See [the reference layout](examples/app-layout.html) for copyable
+markup.
 
 ---
 
@@ -80,7 +104,7 @@ To use in a new page:
 
 ### Emoji
 
-**Do not use emoji** in Rux UI surfaces. Status is communicated by color, icon (Lucide), and badge component. Emoji are inconsistent across platforms and clash with the minimalist tone.
+**Do not use emoji** in Rux UI surfaces. Status is communicated by color, a Material Symbols icon, and the badge component. Emoji are inconsistent across platforms and clash with the minimalist tone.
 
 ### Example copy
 
@@ -298,42 +322,30 @@ When imagery appears (avatars, logos, attachments), it sits inside hairline-bord
 
 ## Iconography
 
-Rux UI uses **Lucide** ([lucide.dev](https://lucide.dev)) as its icon library. Lucide is:
-
-- Stroke-based, 24×24 viewBox, 1.5–2px stroke weight.
-- MIT-licensed, available via CDN, ESM, or React.
-- Visually compatible with Inter — both have rounded terminals and a similar geometric/humanist balance.
-
-### Why Lucide and not Material Symbols?
-
-The TripBoard codebase uses Material Symbols Outlined heavily. We migrated away because Material's variable-axis icons (`opsz`, `wght`, `GRAD`, `FILL`) require careful tuning to look right at small sizes, and their default fill style clashes with the minimalist stroke aesthetic. Lucide is more opinionated and consistent out of the box.
-
-> **FLAG:** TripBoard component CSS still references `material-symbols-outlined`. If you port a component from `trip-board/css/*.css`, swap those `<span class="material-symbols-outlined">` for inline Lucide SVGs.
+Rux UI currently uses **Material Symbols Sharp** through the shared `.rux-icon`
+contract. Size, fill, weight, grade, optical size, and motion are controlled by
+the icon tokens in `css/tokens.css`; reusable behavior lives in
+`css/base/icons.css`.
 
 ### Usage
 
-The simplest path is inline SVGs with `class="rux-icon"`. Sizes:
-
-```css
-.rux-icon        { width: 16px; height: 16px; stroke-width: 1.75; }
-.rux-icon--sm    { width: 14px; height: 14px; }
-.rux-icon--lg    { width: 20px; height: 20px; }
-.rux-icon--xl    { width: 24px; height: 24px; }
-```
-
-Via the CDN, you can drop them at runtime:
+Load the font once in the host page, then use a ligature name inside
+`.rux-icon`:
 
 ```html
-<script src="https://unpkg.com/lucide@latest"></script>
-<i data-lucide="check" class="rux-icon"></i>
-<script>lucide.createIcons();</script>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+/>
+<span class="rux-icon" aria-hidden="true">check</span>
 ```
 
-`assets/icons/` contains a small set of inline-SVG icons used in `demo.html` and the preview cards — copy them or pull more from lucide.dev.
+Use `aria-hidden="true"` for decorative icons. Give an icon-only interactive
+control its accessible name on the button or link.
 
 ### Emoji & unicode
 
-Both are **not** used as icons in Rux UI. Status is shown by color + Lucide icon + label. The only acceptable unicode character is `…` (ellipsis) in action labels and `–` (en dash) in ranges.
+Both are **not** used as icons in Rux UI. Status is shown by color + Material Symbols icon + label. The only acceptable unicode character is `…` (ellipsis) in action labels and `–` (en dash) in ranges.
 
 ### Logo
 
@@ -347,7 +359,7 @@ Both are **not** used as icons in Rux UI. Status is shown by color + Lucide icon
 Use --rux-* for every design token. No other prefix exists.
 Use oklch() for all color values.
 Use full readable words.  Exception: `bg` for background.
-Use sentence case for UI copy.
+Use Title Case for UI controls and headings, following the content rules above.
 
 State classes (.is-*, .has-*) are JS-toggled, no rux- prefix.
 BEM for components: `.rux-card`, `.rux-card__body`, `.rux-card--elevated`.
@@ -360,7 +372,7 @@ When in doubt, edit a token before adding a new component override.
 ## CAVEATS & SUBSTITUTIONS
 
 - **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `css/colors_and_type.css` if you need offline reliability.
-- **Lucide icons are referenced via CDN** in `demo.html` and preview cards. We did not vendor the full set.
+- **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is a typographic wordmark** generated in this project — no pre-existing Rux logo was found in the source materials. If a real logo exists, swap `assets/rux-logo.svg`.
 - The **TripBoard codebase still uses the old token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-fg`) are intentionally divergent. To migrate the app, the mapping is:
   ```

@@ -694,15 +694,16 @@ function layoutDetailFields(fields) {
   let col = 1;
   return fields.map(([label, value, options = {}]) => {
     const wide = !!options.wide;
+    const wrap = !!options.wrap;
     const valueEl = options.valueEl;
     const alignItems = options.alignItems;
     if (wide) {
       if (col !== 1) { row += 1; col = 1; }
-      const placed = { label, value, valueEl, alignItems, wide, gridRow: row, gridColumn: "1 / -1" };
+      const placed = { label, value, valueEl, alignItems, wide, wrap, gridRow: row, gridColumn: "1 / -1" };
       row += 1;
       return placed;
     }
-    const placed = { label, value, valueEl, alignItems, wide, gridRow: row, gridColumn: col };
+    const placed = { label, value, valueEl, alignItems, wide, wrap, gridRow: row, gridColumn: col };
     if (col === 1) col = 2;
     else { col = 1; row += 1; }
     return placed;
@@ -717,11 +718,11 @@ function layoutDetailFields(fields) {
 // since an inline-flex icon+text entry doesn't have the same text baseline
 // as a plain string value, so baseline-aligning it against its label
 // visibly mismatches every other (plain-text) row's alignment.
-function detailFieldEl({ label, value, valueEl, alignItems, wide, gridRow, gridColumn }) {
+function detailFieldEl({ label, value, valueEl, alignItems, wide, wrap, gridRow, gridColumn }) {
   const field = document.createElement("div");
   field.className = `rux-trip-bar__detail-field${
     wide ? " rux-trip-bar__detail-field--wide" : ""
-  }`;
+  }${wrap ? " rux-trip-bar__detail-field--wrap" : ""}`;
   field.style.gridRow = String(gridRow);
   field.style.gridColumn = String(gridColumn);
   if (alignItems) field.style.alignItems = alignItems;
@@ -1075,7 +1076,15 @@ export function createTripBar(trip, callbacks = {}) {
         );
       return el;
     })(),
-    textEl("div", "rux-trip-bar__notes", trip.notes),
+    (() => {
+      const el = textEl("div", "rux-trip-bar__notes", trip.notes);
+      // Notes are the field most likely to get truncated (free text, no
+      // length limit) — a hover tooltip surfaces the full text without
+      // needing to expand the whole bar. Only worth wiring up when there's
+      // something to show.
+      if (trip.notes) setFloatingTooltip(el, trip.notes);
+      return el;
+    })(),
     (() => {
       const row = document.createElement("div");
       row.className = "rux-trip-bar__reqs";
@@ -1134,6 +1143,7 @@ export function createTripBar(trip, callbacks = {}) {
   }));
 
   const restFields = [
+    ...(trip.notes ? [["Notes", trip.notes, { wide: true, wrap: true }]] : []),
     ["Mi", formatMiles(trip.estimatedMiles ?? itineraryMiles(trip))],
     ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""],
     ["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""],

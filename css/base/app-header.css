@@ -10,6 +10,7 @@
 	display: flex;
 	align-items: center;
 	height: var(--rux-app-header-height);
+	min-height: var(--rux-app-header-min-height);
 	min-width: 0;
 	gap: var(--rux-app-header-gap);
 	padding: var(--rux-app-header-padding);
@@ -198,6 +199,7 @@
 	.rux-app-header {
 		visibility: hidden;
 		height: 0;
+		min-height: 0;
 		overflow: hidden;
 		padding: 0;
 	}

@@ -942,6 +942,20 @@
 	grid-column: 1 / -1;
 }
 
+/* Notes is free text with no length cap — the fixed single-line row height
+   every other field relies on doesn't work here, so this field opts out of
+   it and lets its value wrap across as many lines as the text needs. */
+.rux-trip-bar__detail-field--wrap {
+	height: auto;
+}
+
+.rux-trip-bar__detail-field--wrap .rux-trip-bar__detail-field-value {
+	overflow: visible;
+	text-overflow: clip;
+	white-space: normal;
+	overflow-wrap: anywhere;
+}
+
 .rux-trip-bar__detail-field-label {
 	color: var(--rux-fg-muted);
 	font-weight: var(--rux-weight-medium);

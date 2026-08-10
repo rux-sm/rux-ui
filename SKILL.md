@@ -1,43 +1,154 @@
 ---
 name: rux-design
-description: Use this skill to generate well-branded interfaces and assets for Rux UI, either for production or throwaway prototypes/mocks/etc. Contains essential design guidelines, colors, type, fonts, assets, and UI kit components for prototyping.
+description: Build or revise web interfaces using the current Rux UI design system, component contracts, tokens, content rules, and shared CSS workflow.
 user-invocable: true
 ---
 
-# Rux Design — Skill
+# Rux Design
 
-Read `README.md` in this skill first; it has the full visual and content rules. Then explore:
+Use this guide when building a new Rux UI application, extending the current
+TripBoard application, or creating a prototype that should look and behave like
+the existing product.
 
-- `css/tokens.css` — every design token, all `--rux-*`
-- `css/colors_and_type.css` — webfonts + global element styles
-- `css/components.css` — component entrypoint for BEM-style `.rux-*`
-- `utilities.js` — tiny JS helpers (toast, modal, copy)
-- `demo.html` — live reference of every component composed together
-- `ui_kits/showcase/index.html` — an example app screen
-- `assets/` — logo + icon set
+## Read first
 
-## What this brand is
+Read `README.md` for the full visual and content rules. Inspect only the files
+needed for the task after that:
 
-Rux UI is a dark-only design system. Clean, minimalist, modern — the restraint of Apple, the density of Linear, the energy of Spotify. Near-black canvas, hairline borders, single blue accent, Title Case copy, no emoji, no gradients, no glass.
+- `css/rux-core.css` — reusable entrypoint for new applications
+- `css/tokens.css` — primitives, semantic tokens, component contracts, and themes
+- `css/colors_and_type.css` — webfonts, reset, global element styles, and type utilities
+- `css/base/` — reusable BEM-style `.rux-*` components
+- `css/components.css` — existing TripBoard bundle; includes base, scheduler, and trip features
+- `css/features/` — product-specific component and panel styles
+- `css/layout/` — scheduler and application-shell layout styles
+- `docs/layout-composition.md` — canonical app-header, shell, workspace, panel,
+  card, spacing, scrolling, and responsive composition contract
+- `js/core/utilities.js` — shared toast, modal, clipboard, and accent helpers
+- `js/core/theme.js` — light, dark, and system-theme behavior
+- `index.html` — current full application and the best composition reference
+- `assets/` — current logos, favicon, profile image, and splash asset
 
-## When you build with it
+Do not assume that a demo, preview, UI-kit, or root-level `utilities.js` file
+exists. The list above reflects the current repository.
 
-1. **Always** import the three CSS files in order: `css/tokens.css`, `css/colors_and_type.css`, `css/components.css`. Add `utilities.js` if you need toasts/modals.
-2. **Never hardcode** a color, radius, shadow, or spacing value. Use a `--rux-*` token. If a value is missing, that's a signal to add a token, not a one-off.
-3. **Compose, don't redesign.** A new screen is almost always `.rux-card` + `.rux-button` + `.rux-input` arranged with `.rux-stack` and `.rux-cluster`. Resist inventing components.
-4. **Match the copy voice.** Title Case. No exclamation marks. No emoji. Verb-first button labels. Short error messages that say what happened and what to do.
-5. **Icons are Lucide.** Inline SVG with `class="rux-icon"`. Never Material Symbols, never emoji.
-6. **Optical radius nesting.** Nested elements step *down* one level in the radius scale. A 6px input inside a 16px card.
+## Brand and interface character
 
-## When the user invokes this skill
+Rux UI is clean, compact, and operational: restrained like Apple, dense like
+Linear, and energetic like Spotify. Use flat surfaces, hairline borders, a
+single accent, deliberate hierarchy, and minimal decoration. The token system
+supports light and dark themes through `data-theme`; new work must remain
+usable in both unless the user explicitly scopes the task to one theme.
 
-If they ask for a Rux UI artifact (slide, mock, prototype, screen), build a static HTML file that links the three CSS files and uses `.rux-*` components. Copy assets from `assets/` into the artifact's folder so it works standalone. Show what you built.
+## Building a new application
 
-If they're working on production code, point them to the relevant token names and component classes. Treat the README as the source of truth for rules — quote it back when relevant.
+Copy the complete shared style tree so relative imports continue to resolve:
 
-If invoked with no other guidance, ask:
-- What are they building (slide, app screen, marketing page, prototype)?
-- What's the core content (real copy, real data, or placeholder)?
-- Do they need light mode? (Currently: **no light mode** — flag this if asked.)
+```text
+design-system/
+├── README.md
+├── SKILL.md
+└── css/
+    ├── rux-core.css
+    ├── tokens.css
+    ├── colors_and_type.css
+    └── base/
+```
 
-Then design like an expert with this brand at their fingertips.
+Load the shared system before app-specific styles:
+
+```html
+<link rel="stylesheet" href="design-system/css/rux-core.css" />
+<link rel="stylesheet" href="css/app.css" />
+```
+
+Treat `design-system/` as read-only in the consuming app. Make shared changes
+in the Rux UI source repository, then replace the copied directory as a unit.
+Keep layouts, features, and overrides unique to the consuming product in its
+own `app.css` or feature stylesheets.
+
+Do not use `css/components.css` for an unrelated app unless it genuinely needs
+the TripBoard scheduler, trip bar, itinerary, and trip-panel styles it imports.
+
+## Building inside the current application
+
+Preserve the existing stylesheet links and load order. Reuse a component from
+`css/base/` before adding a feature component. Put application-specific anatomy
+in `css/features/` and layout behavior in `css/layout/`. Do not move or rename
+existing files merely to make the new-app structure cleaner.
+
+## Design rules
+
+1. Compose with existing `.rux-*` components before inventing a new component.
+   Typical screens combine cards, panels, fields, buttons, menus, stacks, and
+   clusters.
+2. Use `--rux-*` tokens for color, type, spacing, size, radius, shadow, motion,
+   and stacking. Do not hardcode a design value when a suitable token exists.
+3. If a reusable value is missing, add a meaningful semantic or component token
+   in `tokens.css`. Keep truly feature-only values beside that feature.
+4. Follow the BEM contract: `.rux-{block}`, `.rux-{block}__{element}`, and
+   `.rux-{block}--{modifier}`. Use `.is-*` or `.has-*` for JavaScript state.
+5. Preserve optical radius nesting: nested controls normally step down one
+   radius level from their containing surface.
+6. Use the current `.rux-icon` contract, which is backed by Material Symbols
+   Sharp. Follow existing markup and load the font when the host page does not
+   already provide it. Do not use emoji as interface icons.
+7. Preserve semantic HTML, accessible names, keyboard interaction, visible
+   focus, reduced-motion behavior, and ARIA state for custom controls.
+8. Verify responsive layouts at narrow and wide widths and inspect both light
+   and dark themes when changing shared styles.
+
+## Application layout
+
+Before creating or modifying an application shell, read
+`docs/layout-composition.md`. Use `.rux-app-header` directly above
+`.rux-app-shell`, one required center `.rux-workspace`, and optional attached
+side `.rux-panel` elements. Structural siblings have no decorative gap.
+
+A panel must have an identifiable purpose, but its dedicated header is
+optional. It may begin with a header, attached tabs, or a header followed by
+attached tabs. Do not infer a new shell from a screenshot when the documented
+composition solves the task.
+
+Before completing layout work, verify:
+
+- The app header attaches directly to the shell.
+- The workspace occupies the flexible center and panels are attached.
+- Every panel has a header, attached tabs, or both, plus an accessible name.
+- Panel and workspace bodies own scrolling.
+- Cards and card sections follow the tokenized 16px visual rhythm.
+- Application drawer, rail, and minimum-width behavior has not leaked into
+  reusable shell components.
+
+## Content rules
+
+- Use direct, calm, plain language.
+- Use Title Case for buttons, headings, menu items, labels, and short toasts,
+  matching the current product convention.
+- Use verb-first action labels where possible.
+- Do not add exclamation marks or emoji.
+- Do not put periods on button labels, menu items, field labels, table headers,
+  short toasts, or single-line tooltips.
+- Use `…` for actions that open a follow-up step, such as `Export…`.
+- Error copy should say what happened and what the user can do next.
+
+## Agent workflow
+
+Before editing:
+
+1. Identify whether the work belongs to the reusable core or one application.
+2. Search for an existing component, token, and composition that already solves
+   the problem.
+3. Inspect `index.html` or the relevant feature markup for the current contract.
+
+After editing:
+
+1. Confirm every CSS import resolves.
+2. Check that existing class and token names remain compatible.
+3. Run the relevant tests.
+4. Render or open the affected interface when visual layout changed, then check
+   narrow and wide layouts plus both supported themes.
+
+Prefer additive changes to shared styles. Removing or renaming a public token or
+`.rux-*` class can break every consuming application and requires an explicit
+migration plan.

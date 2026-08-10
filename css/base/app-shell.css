@@ -1,0 +1,36 @@
+/* ==========================================================================
+   APP SHELL
+   --------------------------------------------------------------------------
+   Framework-agnostic application frame. It owns only the full-height header
+   and attached panel/workspace composition; resizing, drawers, rails, and
+   feature minimum widths belong to application layout CSS.
+   ========================================================================== */
+
+.rux-app {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	min-width: 0;
+	min-height: 100dvh;
+	overflow: hidden;
+	background: var(--rux-shell-bg);
+}
+
+.rux-app-shell {
+	display: flex;
+	min-width: 0;
+	min-height: 0;
+	gap: 0;
+	overflow: hidden;
+}
+
+.rux-app-shell__workspace {
+	flex: 1 1 auto;
+	min-width: 0;
+	min-height: 0;
+}
+
+.rux-app-shell__panel {
+	flex: none;
+	min-width: 0;
+	min-height: 0;
+}

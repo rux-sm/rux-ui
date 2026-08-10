@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Rux Application Layout</title>
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+		/>
+		<link rel="stylesheet" href="../css/rux-core.css" />
+		<style>
+			/* Example-only sizing. Drawer and responsive behavior belong to the app. */
+			.example-panel { flex-basis: 18rem; }
+			.example-workspace-content { padding: var(--rux-workspace-gutter); }
+			.example-workspace-content > * + * { margin-top: var(--rux-space-4); }
+			@media (max-width: 760px) {
+				.example-panel { display: none; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="rux-app">
+			<header class="rux-app-header">
+				<div class="rux-app-header__brand">
+					<strong>Rux</strong>
+				</div>
+				<nav class="rux-app-header__nav" aria-label="Primary Navigation">
+					<a
+						class="rux-button rux-button--ghost rux-app-header__nav-item is-active"
+						href="#workspace"
+						aria-current="page"
+					>
+						<span class="rux-icon" aria-hidden="true">calendar_month</span>
+						Calendar
+					</a>
+					<a
+						class="rux-button rux-button--ghost rux-app-header__nav-item"
+						href="#trips"
+					>
+						<span class="rux-icon" aria-hidden="true">route</span>
+						Trips
+					</a>
+				</nav>
+				<div class="rux-app-header__actions">
+					<div class="rux-app-header__action-group">
+						<button
+							class="rux-button rux-button--ghost rux-button--icon"
+							type="button"
+							aria-label="Search"
+							title="Search"
+						>
+							<span class="rux-icon" aria-hidden="true">search</span>
+						</button>
+					</div>
+					<div class="rux-app-header__action-group rux-app-header__action-group--identity">
+						<button
+							class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
+							type="button"
+							aria-label="Profile Menu"
+						>
+							<span class="rux-icon" aria-hidden="true">person</span>
+						</button>
+					</div>
+				</div>
+			</header>
+
+			<main class="rux-app-shell">
+				<aside
+					class="rux-panel rux-app-shell__panel example-panel"
+					aria-labelledby="editor-title"
+				>
+					<header class="rux-panel__header">
+						<h2 class="rux-panel__title" id="editor-title">Trip Editor</h2>
+					</header>
+					<div class="rux-panel__nav">
+						<div
+							class="rux-tabs rux-tabs--attached"
+							role="tablist"
+							aria-label="Trip Editor Sections"
+						>
+							<button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="example-trip-details">
+								Details
+							</button>
+							<button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="example-trip-billing" tabindex="-1">
+								Billing
+							</button>
+						</div>
+					</div>
+					<div class="rux-panel__body">
+						<div class="rux-panel__pane" id="example-trip-details" role="tabpanel">
+							<article class="rux-card">
+								<header class="rux-card__header">
+									<h3 class="rux-card__title">Trip Details</h3>
+								</header>
+								<div class="rux-card__body rux-card__body--stack">
+									<label class="rux-field">
+										<span class="rux-field__label">Trip Name</span>
+										<input class="rux-input" type="text" />
+									</label>
+									<section class="rux-card-section" aria-labelledby="requirements-title">
+										<header class="rux-card-section__header">
+											<h4 class="rux-card__title" id="requirements-title">Requirements</h4>
+										</header>
+										<div class="rux-card-section__body">Nested content group</div>
+									</section>
+								</div>
+							</article>
+						</div>
+						<div class="rux-panel__pane" id="example-trip-billing" role="tabpanel" hidden>
+							<p>Billing content</p>
+						</div>
+					</div>
+					<footer class="rux-panel__footer">
+						<button class="rux-button rux-button--accent" type="button">Save</button>
+					</footer>
+				</aside>
+
+				<section
+					class="rux-workspace rux-app-shell__workspace"
+					id="workspace"
+					aria-labelledby="workspace-title"
+				>
+					<header class="rux-workspace__header">
+						<div class="rux-workspace__heading">
+							<h1 class="rux-workspace__title" id="workspace-title">Calendar</h1>
+						</div>
+						<div class="rux-workspace__toolbar" aria-label="Calendar Actions">
+							<button class="rux-button rux-button--default" type="button">Today</button>
+							<button class="rux-button rux-button--accent" type="button">New Trip</button>
+						</div>
+					</header>
+					<div class="rux-workspace__body example-workspace-content">
+						<p>Primary workspace content</p>
+					</div>
+				</section>
+
+				<aside
+					class="rux-panel rux-app-shell__panel example-panel"
+					aria-label="Calendar Tools"
+				>
+					<div class="rux-panel__nav">
+						<div
+							class="rux-tabs rux-tabs--attached"
+							role="tablist"
+							aria-label="Calendar Tool Sections"
+						>
+							<button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="example-calendar-tools">
+								Calendar
+							</button>
+							<button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="example-driver-tools" tabindex="-1">
+								Drivers
+							</button>
+						</div>
+					</div>
+					<div class="rux-panel__body">
+						<div class="rux-panel__pane" id="example-calendar-tools" role="tabpanel">
+							<article class="rux-card">
+								<header class="rux-card__header">
+									<h2 class="rux-card__title">Mini Calendar</h2>
+								</header>
+								<div class="rux-card__body">Calendar controls</div>
+							</article>
+						</div>
+						<div class="rux-panel__pane" id="example-driver-tools" role="tabpanel" hidden>
+							<p>Driver tools</p>
+						</div>
+					</div>
+				</aside>
+			</main>
+		</div>
+	</body>
+</html>

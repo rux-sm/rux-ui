@@ -19,6 +19,7 @@
    icons.css        .rux-icon and custom pictogram variants
    controls.css     .rux-button, .rux-segmented-track, .rux-number-stepper
    app-header.css   .rux-app-header and its brand, navigation, and actions
+   app-shell.css    .rux-app and attached panel/workspace composition
    badges.css       .rux-badge, .rux-trip-itinerary__badge  ← single source of truth for all badge rules
    form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
 	                   .rux-switch, .rux-checkbox, .rux-input-group,
@@ -44,6 +45,7 @@
 @import "./base/icons.css";
 @import "./base/controls.css?v=15";
 @import "./base/app-header.css?v=5";
+@import "./base/app-shell.css?v=1";
 @import "./base/badges.css?v=2";
 @import "./base/form.css?v=2";
 @import "./base/workspace.css?v=3";
