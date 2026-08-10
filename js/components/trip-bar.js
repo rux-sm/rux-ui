@@ -1077,7 +1077,12 @@ export function createTripBar(trip, callbacks = {}) {
       return el;
     })(),
     (() => {
-      const el = textEl("div", "rux-trip-bar__notes", trip.notes);
+      const el = document.createElement("div");
+      el.className = "rux-trip-bar__notes";
+      // text-overflow:ellipsis must land on this inner span, not the flex
+      // container itself — a flex container's own (anonymous) text content
+      // hard-clips on overflow:hidden but never renders the "…" glyph.
+      el.append(textEl("span", "rux-trip-bar__notes-text", trip.notes));
       // Notes are the field most likely to get truncated (free text, no
       // length limit) — a hover tooltip surfaces the full text without
       // needing to expand the whole bar. Only worth wiring up when there's

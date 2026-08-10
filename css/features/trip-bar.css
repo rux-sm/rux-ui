@@ -720,13 +720,28 @@
 .rux-trip-bar__notes {
 	display: flex;
 	align-items: center;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 	min-height: 13px;
 	color: var(--rux-warning-on-vivid);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
+}
+
+/* Truncation lives here, not on .rux-trip-bar__notes itself — text-overflow
+   doesn't render the "…" glyph on a flex container's own text content, only
+   on a plain inline/block descendant. */
+.rux-trip-bar__notes-text {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* [data-tooltip] is only set when there are notes to show (see
+   setFloatingTooltip call in trip-bar.js) — the help cursor pairs with the
+   row's own text-overflow ellipsis to read as "truncated, hover for more"
+   instead of a dead-end clip. */
+.rux-trip-bar__notes[data-tooltip] {
+	cursor: help;
 }
 
 /* ---------- Requirements row ---------- */
