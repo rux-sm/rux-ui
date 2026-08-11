@@ -1,4 +1,4 @@
-# Rux UI / TripBoard Claude Instructions
+# Rux UI — Claude Instructions
 
 ## Context Routing
 
@@ -6,7 +6,7 @@
 - Do not scan the repository broadly for a narrow change.
 - UI or CSS: read `SKILL.md`, then the target markup/style file; inspect `css/tokens.css` when styling or tokens are involved.
 - Application behavior: start with the relevant file under `js/` or `index.html` and follow only directly connected dependencies.
-- Data or Supabase: start with the relevant module under `js/data/`, then inspect related SQL under `supabase/`.
+- Reference-application data layer: start with the relevant module under `js/data/`, then inspect related SQL under `supabase/`.
 - Hard debugging: trace the failing path and expand through callers/callees only as needed.
 - Do not read `SKILL.md` for tasks unrelated to UI or frontend work.
 
@@ -15,12 +15,12 @@
 - Reuse existing `--rux-*` tokens and `.rux-*` components before creating new primitives.
 - Avoid inline styles and hardcoded colors when an existing token or stylesheet applies.
 - Make the smallest coherent change that fulfills the request; do not refactor unrelated code.
-- Do not rename or remove public tokens, classes, JavaScript APIs, or schema elements unless explicitly requested.
+- Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested.
 - Planning is read-only. For architecture or migration planning, do not modify application, configuration, or SQL files.
 
 ## Data and Risk
 
-- Inspect the affected data module and existing SQL patches before schema work; this repository has no consolidated schema file.
+- When working on the reference application data layer: inspect the affected `js/data/` module and existing SQL patches before schema work; this repository has no consolidated schema file.
 - Treat the configured Supabase project as live. Do not create speculative test data or execute production mutations implicitly.
 - Destructive SQL, bulk deletion, authentication, secrets, permissions, breaking APIs, and irreversible migrations require an inspect-first proposal, compatibility and rollback analysis, and explicit authorization before execution.
 

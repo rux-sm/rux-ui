@@ -1,4 +1,4 @@
-# AI Coding Quick Reference — Rux UI / TripBoard
+# AI Coding Quick Reference — Rux UI
 
 > Classify first. Configure second. Escalate only for a reason.
 
@@ -90,7 +90,7 @@ Example:
 
 ```text
 TYPE: 2V
-GOAL: Add the TripBoard location row to assignment cards.
+GOAL: Add a status badge to .rux-card headers in the reference application.
 CONTEXT: Read SKILL.md, the assignment-card implementation, and css/tokens.css.
 CONSTRAINTS: Reuse Rux primitives; preserve cards without a location.
 SCOPE: Modify only required assignment-card files.

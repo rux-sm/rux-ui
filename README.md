@@ -8,7 +8,7 @@ A lightweight, theme-aware design system for Rux UI. Shared CSS, small vanilla-J
 
 This system was distilled from the historical **TripBoard** codebase, which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates tokens into one flat namespace and exposes one component entrypoint that imports focused component partials.
 
-The current TripBoard application in `index.html`, its styles under `css/`, and the documents under `docs/` are the reference for advanced patterns such as the schedule grid, trip bar geometry, and optical-radius math.
+The reference application in `index.html`, its styles under `css/`, and the documents under `docs/` are the reference for advanced patterns such as the schedule grid, trip bar geometry, and optical-radius math.
 
 ---
 
@@ -38,7 +38,7 @@ The current TripBoard application in `index.html`, its styles under `css/`, and 
 
 Human-facing AI references: start with the [AI Coding Quick Reference](docs/ai/AI_CODING_CHEAT_SHEET.md), then use the [full operating guide](docs/ai/AI_AGENT_WORKFLOW.md) when a task needs more detail.
 
-To use the complete TripBoard-oriented bundle in an existing page:
+To use the complete reference-application bundle in an existing page:
 
 ```html
 <link rel="stylesheet" href="css/tokens.css" />
@@ -54,7 +54,7 @@ For a new application, use the framework-agnostic core entrypoint instead:
 ```
 
 `rux-core.css` includes the tokens, global type styles, and reusable base
-components. It deliberately excludes the scheduler and TripBoard-specific
+components. It deliberately excludes the scheduler and reference-application
 feature styles imported by `components.css`. Existing pages can keep loading
 the original three stylesheets without any migration.
 
@@ -380,7 +380,7 @@ When in doubt, edit a token before adding a new component override.
 - **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `css/colors_and_type.css` if you need offline reliability.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is a typographic wordmark** generated in this project — no pre-existing Rux logo was found in the source materials. If a real logo exists, swap `assets/rux-logo.svg`.
-- The **TripBoard codebase still uses the old token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-fg`) are intentionally divergent. To migrate the app, the mapping is:
+- The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-fg`) are intentionally divergent. To migrate from the old codebase, the mapping is:
   ```
   --rux-bg-1   → --rux-bg
   --rux-bg-2/3/4 → --rux-bg-elevated

@@ -2,9 +2,10 @@
    RUX UI — CORE ENTRYPOINT
    --------------------------------------------------------------------------
    Framework-agnostic foundations and reusable components for applications
-   that do not need the TripBoard-specific feature and scheduler styles.
+   that do not need the reference-application feature and scheduler styles.
 
-   Existing TripBoard pages should continue loading components.css. Keeping
+   Existing pages that rely on the full component bundle should continue
+   loading components.css. Keeping
    this as a separate, additive entrypoint avoids changing current consumers.
    ========================================================================== */
 

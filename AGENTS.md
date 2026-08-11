@@ -1,4 +1,4 @@
-# Rux UI / TripBoard Agent Instructions
+# Rux UI Agent Instructions
 
 ## Before Editing
 
@@ -7,7 +7,7 @@
 - Follow this routing order:
   - UI or CSS: `SKILL.md`, then the target markup/style file; inspect `css/tokens.css` when styling or tokens are involved.
   - Application behavior: the relevant file under `js/` or `index.html`, then directly connected dependencies only.
-  - Data or Supabase: the relevant module under `js/data/`, then related SQL under `supabase/`.
+  - Reference-application data layer: the relevant module under `js/data/`, then related SQL under `supabase/`.
   - Hard debugging: the failing path first, expanding through callers and callees only as evidence requires.
 
 ## UI Tasks
@@ -19,12 +19,12 @@
 ## Scope and Planning
 
 - Make the smallest coherent change that satisfies the task; do not refactor unrelated code.
-- Do not rename or remove public tokens, classes, JavaScript APIs, or schema elements unless explicitly requested.
+- Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested.
 - Architecture and migration planning is read-only. During a planning task, do not modify application, configuration, or SQL files.
 
 ## Data and High-Risk Work
 
-- Inspect the affected data module and existing SQL patches before proposing schema changes. There is no consolidated schema file in this repository.
+- When working on the reference application data layer: inspect the affected `js/data/` module and existing SQL patches before proposing schema changes. There is no consolidated schema file in this repository.
 - Treat the configured Supabase project as live. Do not create test data or execute production mutations implicitly.
 - For destructive SQL, bulk deletion, authentication, secrets, permissions, breaking APIs, or irreversible migrations: inspect first, propose the exact change, identify compatibility and rollback concerns, and wait for explicit authorization before execution.
 

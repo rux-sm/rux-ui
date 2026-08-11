@@ -6,9 +6,9 @@ user-invocable: true
 
 # Rux Design
 
-Use this guide when building a new Rux UI application, extending the current
-TripBoard application, or creating a prototype that should look and behave like
-the existing product.
+Use this guide when building a new Rux UI application, extending the
+reference application in `index.html`, or creating a prototype that should
+look and behave like the existing product.
 
 ## Read first
 
@@ -19,7 +19,7 @@ needed for the task after that:
 - `css/tokens.css` — primitives, semantic tokens, component contracts, and themes
 - `css/colors_and_type.css` — webfonts, reset, global element styles, and type utilities
 - `css/base/` — reusable BEM-style `.rux-*` components
-- `css/components.css` — existing TripBoard bundle; includes base, scheduler, and trip features
+- `css/components.css` — reference-application bundle; includes base, scheduler, and trip features
 - `css/features/` — product-specific component and panel styles
 - `css/layout/` — scheduler and application-shell layout styles
 - `docs/layout-composition.md` — canonical app-header, shell, workspace, panel,
@@ -68,7 +68,8 @@ Keep layouts, features, and overrides unique to the consuming product in its
 own `app.css` or feature stylesheets.
 
 Do not use `css/components.css` for an unrelated app unless it genuinely needs
-the TripBoard scheduler, trip bar, itinerary, and trip-panel styles it imports.
+the reference-application scheduler, trip bar, itinerary, and trip-panel
+styles it imports.
 
 ## Building inside the current application
 

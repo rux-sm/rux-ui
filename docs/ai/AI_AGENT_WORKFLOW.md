@@ -1,4 +1,4 @@
-# AI Agent Operating Guide — Rux UI & TripBoard
+# AI Agent Operating Guide — Rux UI
 
 This is a human-facing guide for choosing an agent, model tier, mode, and verification posture. It is not required reading for every agent task; repository behavior is routed through `AGENTS.md`, `CLAUDE.md`, and `.cline/rules/project.md`.
 

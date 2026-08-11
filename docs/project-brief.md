@@ -19,11 +19,11 @@ Two things live side by side in this repo:
      radius, motion, component contracts)
    - `css/colors_and_type.css` — webfonts + global element styles
    - `css/rux-core.css` — framework-agnostic entrypoint for new applications
-   - `css/components.css` — full TripBoard-oriented bundle (base + scheduler + trips)
+   - `css/components.css` — full reference-application bundle (base + scheduler + trips)
    - `css/base/`, `css/features/`, `css/layout/` — component and layout partials
    - `js/core/` — shared toast, modal, theme, and accent helpers
 
-2. **The reference application** (TripBoard)
+2. **The reference application**
    - `index.html` — the full app (scheduler, trip panel, fleet, dispatch) and
      the canonical composition reference
    - `js/data/*` — Supabase data layer
