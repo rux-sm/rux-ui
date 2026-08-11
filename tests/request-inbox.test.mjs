@@ -31,7 +31,7 @@ test("the floating window + dialog + script/css are present", () => {
 	assert.match(page, /id="request-inbox-list"/);
 	assert.match(page, /id="request-inbox-new-btn"/);
 	assert.match(page, /id="request-inbox-dialog"/);
-	assert.match(page, /css\/features\/request-inbox\.css/);
+	assert.match(page, /scheduler\/css\/features\/request-inbox\.css/);
 	assert.match(page, /js\/panels\/request-inbox\.js/);
 });
 

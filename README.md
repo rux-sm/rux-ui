@@ -8,7 +8,7 @@ A lightweight, theme-aware design system for Rux UI. Shared CSS, small vanilla-J
 
 This system was distilled from the historical **TripBoard** codebase, which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates tokens into one flat namespace and exposes one component entrypoint that imports focused component partials.
 
-The reference application in `index.html`, its styles under `css/`, and the documents under `docs/` are the reference for advanced patterns such as the schedule grid, trip bar geometry, and optical-radius math.
+The reference application in `index.html`, its styles under `scheduler/css/`, and the documents under `docs/` are the reference for advanced patterns such as the schedule grid, trip bar geometry, and optical-radius math.
 
 ---
 
@@ -22,11 +22,18 @@ The reference application in `index.html`, its styles under `css/`, and the docu
 ├── CLAUDE.md              ← concise Claude Code repository policy
 ├── .cline/rules/          ← concise Cline project policy
 ├── docs/ai/               ← human-facing AI workflow and model routing
-├── css/
-│   ├── tokens.css          ← all design tokens: color, type, space, radius, motion
-│   ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
-│   ├── rux-core.css        ← reusable entrypoint for new applications
-│   └── components.css      ← component entrypoint importing the component partials
+├── rux-ui/
+│   └── css/
+│       ├── rux.css            ← single entry point for the full design system
+│       ├── tokens.css         ← all design tokens: color, type, space, radius, motion
+│       ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
+│       ├── rux-core.css       ← framework-agnostic entrypoint for new applications
+│       └── base/              ← 17 reusable BEM components
+├── scheduler/
+│   └── css/
+│       ├── components.css     ← scheduler bundle (base + features + layout)
+│       ├── features/          ← 29 scheduler-specific panels and components
+│       └── layout/            ← scheduler grid and application shell
 ├── js/
 │   └── core/
 │       ├── utilities.js   ← toast, modal, copy, and accent helpers
@@ -41,22 +48,19 @@ Human-facing AI references: start with the [AI Coding Quick Reference](docs/ai/A
 To use the complete reference-application bundle in an existing page:
 
 ```html
-<link rel="stylesheet" href="css/tokens.css" />
-<link rel="stylesheet" href="css/colors_and_type.css" />
-<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="rux-ui/css/tokens.css" />
+<link rel="stylesheet" href="rux-ui/css/colors_and_type.css" />
+<link rel="stylesheet" href="scheduler/css/components.css" />
 <script src="js/core/utilities.js" defer></script>
 ```
 
 For a new application, use the framework-agnostic core entrypoint instead:
 
 ```html
-<link rel="stylesheet" href="css/rux-core.css" />
+<link rel="stylesheet" href="rux-ui/css/rux.css" />
 ```
 
-`rux-core.css` includes the tokens, global type styles, and reusable base
-components. It deliberately excludes the scheduler and reference-application
-feature styles imported by `components.css`. Existing pages can keep loading
-the original three stylesheets without any migration.
+`rux.css` is the single entry point for the complete Rux visual system. It includes the tokens, global type styles, and all reusable base components. It deliberately excludes the scheduler and reference-application feature styles imported by `components.css`. Existing pages can keep loading the original three stylesheets without any migration.
 
 ### Application composition
 
@@ -307,7 +311,7 @@ Cards may group distinct content inside a panel, but do not wrap every field or 
 
 Default easing is `--rux-ease-out` (`cubic-bezier(0.22, 1, 0.36, 1)`) — fast start, gentle settle. Use `--rux-ease-in-out` only for symmetric motion (loops, indeterminate progress). `--rux-ease-spring` exists for playful affordances but should appear *almost never* — overshoot is a feature, not a vibe.
 
-`prefers-reduced-motion` is respected globally through `css/components.css`.
+`prefers-reduced-motion` is respected globally through `scheduler/css/components.css`.
 
 ### Transparency & blur
 
@@ -330,8 +334,8 @@ When imagery appears (avatars, logos, attachments), it sits inside hairline-bord
 
 Rux UI currently uses **Material Symbols Sharp** through the shared `.rux-icon`
 contract. Size, fill, weight, grade, optical size, and motion are controlled by
-the icon tokens in `css/tokens.css`; reusable behavior lives in
-`css/base/icons.css`.
+the icon tokens in `rux-ui/css/tokens.css`; reusable behavior lives in
+`rux-ui/css/base/icons.css`.
 
 ### Usage
 
@@ -377,7 +381,7 @@ When in doubt, edit a token before adding a new component override.
 
 ## CAVEATS & SUBSTITUTIONS
 
-- **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `css/colors_and_type.css` if you need offline reliability.
+- **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is a typographic wordmark** generated in this project — no pre-existing Rux logo was found in the source materials. If a real logo exists, swap `assets/rux-logo.svg`.
 - The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-fg`) are intentionally divergent. To migrate from the old codebase, the mapping is:

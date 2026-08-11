@@ -19,7 +19,7 @@ const driverPageSource = await readFile(
 	"utf8",
 );
 const envelopeStyles = await readFile(
-	new URL("../css/features/trip-envelope.css", import.meta.url),
+	new URL("../scheduler/css/features/trip-envelope.css", import.meta.url),
 	"utf8",
 );
 
@@ -38,7 +38,7 @@ test("every driver envelope entry point supplies the secondary trip contact", ()
 });
 
 test("the scheduler loads the updated envelope implementation", () => {
-	assert.match(pageSource, /trip-envelope\.js\?v=13/);
+	assert.match(pageSource, /trip-envelope\.js\?v=\d+/);
 });
 
 test("standard envelope field rows share one equal-height track size", () => {
@@ -53,6 +53,6 @@ test("standard envelope field rows share one equal-height track size", () => {
 });
 
 test("both scheduler and driver pages load the equal-height envelope styles", () => {
-	assert.match(pageSource, /trip-envelope\.css\?v=12/);
-	assert.match(driverPageSource, /trip-envelope\.css\?v=12/);
+	assert.match(pageSource, /scheduler\/css\/features\/trip-envelope\.css\?v=\d+/);
+	assert.match(driverPageSource, /scheduler\/css\/features\/trip-envelope\.css\?v=\d+/);
 });

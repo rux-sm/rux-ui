@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 
 const source = await readFile(new URL("../js/core/billing-config.js", import.meta.url), "utf8");
 const tripBarSource = await readFile(new URL("../js/components/trip-bar.js", import.meta.url), "utf8");
-const tripBarCss = await readFile(new URL("../css/features/trip-bar.css", import.meta.url), "utf8");
+const tripBarCss = await readFile(new URL("../scheduler/css/features/trip-bar.css", import.meta.url), "utf8");
 const context = {
 	window: {},
 	console,

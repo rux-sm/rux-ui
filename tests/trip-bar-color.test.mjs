@@ -3,15 +3,15 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const tripBarCss = await readFile(
-	new URL("../css/features/trip-bar.css", import.meta.url),
+	new URL("../scheduler/css/features/trip-bar.css", import.meta.url),
 	"utf8",
 );
 const tokensCss = await readFile(
-	new URL("../css/tokens.css", import.meta.url),
+	new URL("../rux-ui/css/tokens.css", import.meta.url),
 	"utf8",
 );
 const printScheduleCss = await readFile(
-	new URL("../css/features/print-schedule.css", import.meta.url),
+	new URL("../scheduler/css/features/print-schedule.css", import.meta.url),
 	"utf8",
 );
 const tripBarSource = await readFile(

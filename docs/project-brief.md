@@ -14,21 +14,24 @@ agents how to build with it.
 
 Two things live side by side in this repo:
 
-1. **The design system**
-   - `css/tokens.css` — all `--rux-*` design tokens (color, type, space,
+1. **The design system** (`rux-ui/`)
+   - `rux-ui/css/rux.css` — single entry point for the complete visual system
+   - `rux-ui/css/tokens.css` — all `--rux-*` design tokens (color, type, space,
      radius, motion, component contracts)
-   - `css/colors_and_type.css` — webfonts + global element styles
-   - `css/rux-core.css` — framework-agnostic entrypoint for new applications
-   - `css/components.css` — full reference-application bundle (base + scheduler + trips)
-   - `css/base/`, `css/features/`, `css/layout/` — component and layout partials
+   - `rux-ui/css/colors_and_type.css` — webfonts + global element styles
+   - `rux-ui/css/rux-core.css` — framework-agnostic entrypoint for new applications
+   - `rux-ui/css/base/` — 17 reusable BEM components
    - `js/core/` — shared toast, modal, theme, and accent helpers
 
-2. **The reference application**
+2. **The reference application** (`scheduler/`)
+   - `scheduler/css/components.css` — full reference-application bundle (base + scheduler + trips)
+   - `scheduler/css/features/` — 29 scheduler-specific panels and components
+   - `scheduler/css/layout/` — scheduler grid and application shell
    - `index.html` — the full app (scheduler, trip panel, fleet, dispatch) and
      the canonical composition reference
    - `js/data/*` — Supabase data layer
    - `supabase/*.sql` — schema/migration patches
-   - `examples/`, `demos/` — preview pages
+   - `examples/` — reference layout page
 
 **Design personality:** restrained like Apple, dense like Linear, energetic
 like Spotify. Near-black surfaces, hairline borders, a single accent color,
@@ -50,8 +53,8 @@ Agents (Cline, Claude Code, Codex — or a human) drive most of the work here:
 
 3. **Keep shared changes additive.** Prefer adding to shared styles over
    removing/renaming public tokens or classes, which would break every
-   consuming app. Put feature-specific styles in `css/features/` and layout in
-   `css/layout/`.
+   consuming app. Put feature-specific styles in `scheduler/css/features/` and layout in
+   `scheduler/css/layout/`.
 
 4. **Validate.** Confirm every CSS import resolves, classes and token names
    stay compatible, run the tests (`node --test`), and check narrow + wide

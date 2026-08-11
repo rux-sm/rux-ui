@@ -617,8 +617,8 @@ test("document actions use neutral styling unless attention is required", () => 
 
 test("generic module buttons expose one fixed layout and every semantic tone", async () => {
 	const [controls, tokens] = await Promise.all([
-		readFile(new URL("../css/base/controls.css", import.meta.url), "utf8"),
-		readFile(new URL("../css/tokens.css", import.meta.url), "utf8"),
+		readFile(new URL("../rux-ui/css/base/controls.css", import.meta.url), "utf8"),
+		readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8"),
 	]);
 
 	assert.match(controls, /\.rux-module-button\s*\{/);
@@ -637,10 +637,10 @@ test("generic module buttons expose one fixed layout and every semantic tone", a
 
 test("responsive CSS protects narrow layouts and touch targets", async () => {
 	const [css, componentDemoCss, tokens, badges] = await Promise.all([
-		readFile(new URL("../css/features/driver-share.css", import.meta.url), "utf8"),
-		readFile(new URL("../css/features/comp-components-app.css", import.meta.url), "utf8"),
-		readFile(new URL("../css/tokens.css", import.meta.url), "utf8"),
-		readFile(new URL("../css/base/badges.css", import.meta.url), "utf8"),
+		readFile(new URL("../scheduler/css/features/driver-share.css", import.meta.url), "utf8"),
+		readFile(new URL("../scheduler/css/features/comp-components-app.css", import.meta.url), "utf8"),
+		readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8"),
+		readFile(new URL("../rux-ui/css/base/badges.css", import.meta.url), "utf8"),
 	]);
 	assert.match(css, /@media \(max-width: 479px\)/);
 	assert.match(css, /container:\s*driver-assignment-card\s*\/\s*inline-size/);

@@ -4,11 +4,11 @@ import test from "node:test";
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
 
-const shellCss = read("css/base/app-shell.css");
-const headerCss = read("css/base/app-header.css");
-const tokensCss = read("css/tokens.css");
-const coreCss = read("css/rux-core.css");
-const componentsCss = read("css/components.css");
+const shellCss = read("rux-ui/css/base/app-shell.css");
+const headerCss = read("rux-ui/css/base/app-header.css");
+const tokensCss = read("rux-ui/css/tokens.css");
+const coreCss = read("rux-ui/css/rux-core.css");
+const componentsCss = read("scheduler/css/components.css");
 const exampleHtml = read("examples/app-layout.html");
 const layoutDocs = read("docs/layout-composition.md");
 const skillDocs = read("SKILL.md");
@@ -23,7 +23,7 @@ test("the reusable app shell keeps structural siblings attached", () => {
 
 test("both shared CSS entrypoints include the app shell", () => {
 	assert.match(coreCss, /@import "\.\/base\/app-shell\.css";/);
-	assert.match(componentsCss, /@import "\.\/base\/app-shell\.css\?v=\d+";/);
+	assert.match(componentsCss, /@import "\.\.\/rux-ui\/css\/base\/app-shell\.css\?v=\d+";/);
 });
 
 test("the app header uses a flexible 52px minimum-height contract", () => {

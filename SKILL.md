@@ -15,13 +15,14 @@ look and behave like the existing product.
 Read `README.md` for the full visual and content rules. Inspect only the files
 needed for the task after that:
 
-- `css/rux-core.css` — reusable entrypoint for new applications
-- `css/tokens.css` — primitives, semantic tokens, component contracts, and themes
-- `css/colors_and_type.css` — webfonts, reset, global element styles, and type utilities
-- `css/base/` — reusable BEM-style `.rux-*` components
-- `css/components.css` — reference-application bundle; includes base, scheduler, and trip features
-- `css/features/` — product-specific component and panel styles
-- `css/layout/` — scheduler and application-shell layout styles
+- `rux-ui/css/rux.css` — single entry point for the full design system
+- `rux-ui/css/rux-core.css` — framework-agnostic entrypoint for new applications
+- `rux-ui/css/tokens.css` — primitives, semantic tokens, component contracts, and themes
+- `rux-ui/css/colors_and_type.css` — webfonts, reset, global element styles, and type utilities
+- `rux-ui/css/base/` — reusable BEM-style `.rux-*` components
+- `scheduler/css/components.css` — reference-application bundle; includes base, scheduler, and trip features
+- `scheduler/css/features/` — product-specific component and panel styles
+- `scheduler/css/layout/` — scheduler and application-shell layout styles
 - `docs/layout-composition.md` — canonical app-header, shell, workspace, panel,
   card, spacing, scrolling, and responsive composition contract
 - `js/core/utilities.js` — shared toast, modal, clipboard, and accent helpers
@@ -45,10 +46,9 @@ usable in both unless the user explicitly scopes the task to one theme.
 Copy the complete shared style tree so relative imports continue to resolve:
 
 ```text
-design-system/
-├── README.md
-├── SKILL.md
+rux-ui/
 └── css/
+    ├── rux.css
     ├── rux-core.css
     ├── tokens.css
     ├── colors_and_type.css
@@ -58,24 +58,24 @@ design-system/
 Load the shared system before app-specific styles:
 
 ```html
-<link rel="stylesheet" href="design-system/css/rux-core.css" />
+<link rel="stylesheet" href="rux-ui/css/rux.css" />
 <link rel="stylesheet" href="css/app.css" />
 ```
 
-Treat `design-system/` as read-only in the consuming app. Make shared changes
+Treat `rux-ui/` as read-only in the consuming app. Make shared changes
 in the Rux UI source repository, then replace the copied directory as a unit.
 Keep layouts, features, and overrides unique to the consuming product in its
 own `app.css` or feature stylesheets.
 
-Do not use `css/components.css` for an unrelated app unless it genuinely needs
+Do not use `scheduler/css/components.css` for an unrelated app unless it genuinely needs
 the reference-application scheduler, trip bar, itinerary, and trip-panel
 styles it imports.
 
 ## Building inside the current application
 
 Preserve the existing stylesheet links and load order. Reuse a component from
-`css/base/` before adding a feature component. Put application-specific anatomy
-in `css/features/` and layout behavior in `css/layout/`. Do not move or rename
+`rux-ui/css/base/` before adding a feature component. Put application-specific anatomy
+in `scheduler/css/features/` and layout behavior in `scheduler/css/layout/`. Do not move or rename
 existing files merely to make the new-app structure cleaner.
 
 ## Design rules

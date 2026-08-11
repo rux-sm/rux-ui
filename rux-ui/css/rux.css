@@ -1,0 +1,38 @@
+/* ==========================================================================
+   RUX UI — COMPLETE DESIGN SYSTEM
+   --------------------------------------------------------------------------
+   Single entry point for the full Rux visual system.
+
+   Load this one stylesheet to get tokens, typography, reset, and every
+   reusable Rux component.
+
+   Usage:
+     <link rel="stylesheet" href="rux-ui/css/rux.css" />
+
+   For applications that need the scheduler and trip features on top of the
+   base system, load scheduler/css/components.css separately.
+
+   This file is the public API. The internal CSS remains modular under
+   tokens.css, colors_and_type.css, and base/ for maintainability.
+   ========================================================================== */
+
+@import "./tokens.css";
+@import "./colors_and_type.css";
+
+@import "./base/icons.css";
+@import "./base/controls.css";
+@import "./base/app-header.css";
+@import "./base/app-shell.css";
+@import "./base/badges.css";
+@import "./base/form.css";
+@import "./base/workspace.css";
+@import "./base/panel.css";
+@import "./base/menu.css";
+@import "./base/popover.css";
+@import "./base/suggestions.css";
+@import "./base/card.css";
+@import "./base/floating-window.css";
+@import "./base/content.css";
+@import "./base/feedback.css";
+@import "./base/navigation.css";
+@import "./base/utils.css";

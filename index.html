@@ -37,38 +37,38 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./css/tokens.css?v=113" />
-		<link rel="stylesheet" href="./css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./css/components.css?v=217" />
-		<link rel="stylesheet" href="./css/features/driver-panel.css?v=8" />
-		<link rel="stylesheet" href="./css/features/comp-driver-app.css?v=8" />
-		<link rel="stylesheet" href="./css/features/fleet-panel.css?v=4" />
-		<link rel="stylesheet" href="./css/features/customer-panel.css?v=2" />
-		<link rel="stylesheet" href="./css/features/comp-fleet-app.css" />
+		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=113" />
+		<link rel="stylesheet" href="./rux-ui/css/colors_and_type.css?v=1" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=217" />
+		<link rel="stylesheet" href="./scheduler/css/features/driver-panel.css?v=8" />
+		<link rel="stylesheet" href="./scheduler/css/features/comp-driver-app.css?v=8" />
+		<link rel="stylesheet" href="./scheduler/css/features/fleet-panel.css?v=4" />
+		<link rel="stylesheet" href="./scheduler/css/features/customer-panel.css?v=2" />
+		<link rel="stylesheet" href="./scheduler/css/features/comp-fleet-app.css" />
 		<link
 			rel="stylesheet"
-			href="./css/features/comp-settings-app.css?v=4"
+			href="./scheduler/css/features/comp-settings-app.css?v=4"
 		/>
-		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=3" />
-		<link rel="stylesheet" href="./css/features/trip-finder.css?v=8" />
-		<link rel="stylesheet" href="./css/features/request-inbox.css?v=1" />
+		<link rel="stylesheet" href="./scheduler/css/features/comp-trip-list.css?v=3" />
+		<link rel="stylesheet" href="./scheduler/css/features/trip-finder.css?v=8" />
+		<link rel="stylesheet" href="./scheduler/css/features/request-inbox.css?v=1" />
 		<link
 			rel="stylesheet"
-			href="./css/features/comp-components-app.css?v=12"
+			href="./scheduler/css/features/comp-components-app.css?v=12"
 		/>
-		<link rel="stylesheet" href="./css/features/flip-seven.css?v=18" />
-		<link rel="stylesheet" href="./css/features/bus-picker.css?v=4" />
-		<link rel="stylesheet" href="./css/features/profile-picker.css?v=3" />
-		<link rel="stylesheet" href="./css/features/print-schedule.css?v=35" />
-		<link rel="stylesheet" href="./css/features/trip-envelope.css?v=14" />
-		<link rel="stylesheet" href="./css/features/driver-week-info.css?v=6" />
-		<link rel="stylesheet" href="./css/features/contact-info.css?v=3" />
-		<link rel="stylesheet" href="./css/features/notifications.css?v=1" />
-		<link rel="stylesheet" href="./css/features/team-chat.css?v=5" />
-		<link rel="stylesheet" href="./css/features/tasks-panel.css?v=41" />
-		<link rel="stylesheet" href="./css/features/driver-share.css?v=77" />
-		<link rel="stylesheet" href="./css/features/doc-viewer.css?v=6" />
-		<link rel="stylesheet" href="./css/features/trip-manifest.css?v=5" />
+		<link rel="stylesheet" href="./scheduler/css/features/flip-seven.css?v=18" />
+		<link rel="stylesheet" href="./scheduler/css/features/bus-picker.css?v=4" />
+		<link rel="stylesheet" href="./scheduler/css/features/profile-picker.css?v=3" />
+		<link rel="stylesheet" href="./scheduler/css/features/print-schedule.css?v=35" />
+		<link rel="stylesheet" href="./scheduler/css/features/trip-envelope.css?v=14" />
+		<link rel="stylesheet" href="./scheduler/css/features/driver-week-info.css?v=6" />
+		<link rel="stylesheet" href="./scheduler/css/features/contact-info.css?v=3" />
+		<link rel="stylesheet" href="./scheduler/css/features/notifications.css?v=1" />
+		<link rel="stylesheet" href="./scheduler/css/features/team-chat.css?v=5" />
+		<link rel="stylesheet" href="./scheduler/css/features/tasks-panel.css?v=41" />
+		<link rel="stylesheet" href="./scheduler/css/features/driver-share.css?v=77" />
+		<link rel="stylesheet" href="./scheduler/css/features/doc-viewer.css?v=6" />
+		<link rel="stylesheet" href="./scheduler/css/features/trip-manifest.css?v=5" />
 		<link
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
@@ -11186,7 +11186,7 @@
 
 			function initTripsRealtimeSync() {
 				supabase
-					.channel("scheduler-trips")
+					.channel("scheduler-trips-db")
 					.on(
 						"postgres_changes",
 						{ event: "*", schema: "public", table: "trips" },
@@ -11252,6 +11252,21 @@
 						},
 						scheduleTripsReload,
 					)
+					.subscribe((status) => {
+						if (
+							status === "CHANNEL_ERROR" ||
+							status === "TIMED_OUT"
+						) {
+							console.warn(
+								`Trips DB Realtime status: ${status}. Polling fallback remains active.`,
+							);
+						}
+					});
+				// Broadcast channel — shares the "scheduler-trips" name with
+				// driver-week-info.js and driver-share.js so broadcast sends
+				// from those panels are received here.
+				supabase
+					.channel("scheduler-trips")
 					.on(
 						"broadcast",
 						{ event: "driver-status-changed" },
@@ -11263,10 +11278,12 @@
 							status === "TIMED_OUT"
 						) {
 							console.warn(
-								`Trips Realtime status: ${status}. Polling fallback remains active.`,
+								`Trips broadcast channel: ${status}. Polling fallback remains active.`,
 							);
 						}
 					});
+
+
 
 				window.setInterval(() => {
 					if (!document.hidden) loadTripsFromDB();
