@@ -29,8 +29,10 @@
 		</header>
 
 		<main class="trip-request" id="trip-request-root">
-			<section class="trip-request__card">
-				<h1 class="trip-request__title">Tell us about your trip</h1>
+			<article class="rux-card rux-card--elevated rux-card--stack">
+				<header class="rux-card__header">
+					<h1 class="rux-card__title">Tell us about your trip</h1>
+				</header>
 				<p class="trip-request__intro">
 					A few details are enough to get us started. We'll review
 					your request and follow up with details and pricing.
@@ -176,31 +178,21 @@
 							</label>
 							<label class="rux-field trip-request__span-2">
 								<span class="rux-field__label"
-									>Pickup location</span
-								>
-								<input
-									class="rux-input"
-									type="text"
-									data-field="pickup.name"
-									data-validate="pickup.name"
-									placeholder="School name or venue"
-								/>
-								<p
-									class="rux-field__error"
-									data-error-for="pickup.name"
-									hidden
-								></p>
-							</label>
-							<label class="rux-field trip-request__span-2">
-								<span class="rux-field__label"
-									>Pickup address</span
+									>Pickup address or venue</span
 								>
 								<input
 									class="rux-input"
 									type="text"
 									data-field="pickup.address"
+									data-validate="pickup.address"
 									placeholder="101 E Hackberry Ave, McAllen, TX"
+									autocomplete="street-address"
 								/>
+								<p
+									class="rux-field__error"
+									data-error-for="pickup.address"
+									hidden
+								></p>
 							</label>
 							<label class="rux-field">
 								<span class="rux-field__label"
@@ -276,72 +268,19 @@
 					</fieldset>
 					<fieldset class="trip-request__section">
 						<legend class="trip-request__section-title">
-							Service
+							Passengers
 						</legend>
-						<label class="rux-switch trip-request__switch">
+						<label class="rux-field" style="max-width:12rem">
+							<span class="rux-field__label">Passengers</span>
 							<input
-								type="checkbox"
-								data-switch="service.ticketed"
+								class="rux-input"
+								type="number"
+								min="1"
+								max="200"
+								data-field="passengerCount"
+								placeholder="About how many?"
 							/>
-							<span class="rux-switch__track"></span>
-							<span class="trip-request__switch-label"
-								>This is a ticketed trip (we sell passenger
-								tickets)</span
-							>
 						</label>
-						<div
-							class="trip-request__tickets"
-							id="trip-request-tickets"
-							hidden
-						>
-							<p class="trip-request__hint">
-								Add each ticket option with its price.
-							</p>
-							<div
-								class="trip-request__ticket-list"
-								id="trip-request-ticket-list"
-							></div>
-							<button
-								type="button"
-								class="rux-button rux-button--ghost rux-button--sm"
-								id="trip-request-add-ticket"
-							>
-								<span class="rux-icon" aria-hidden="true"
-									>add</span
-								>
-								<span class="rux-btn-label">Add option</span>
-							</button>
-						</div>
-					</fieldset>
-
-					<fieldset class="trip-request__section">
-						<legend class="trip-request__section-title">
-							Passengers &amp; equipment
-						</legend>
-						<div class="trip-request__grid">
-							<label class="rux-field">
-								<span class="rux-field__label">Passengers</span>
-								<input
-									class="rux-input"
-									type="number"
-									min="1"
-									max="200"
-									data-field="passengerCount"
-									placeholder="About how many?"
-								/>
-							</label>
-							<label class="rux-field">
-								<span class="rux-field__label">Buses</span>
-								<input
-									class="rux-input"
-									type="number"
-									min="1"
-									max="20"
-									data-field="busCount"
-									placeholder="1"
-								/>
-							</label>
-						</div>
 						<div class="rux-field">
 							<span class="rux-field__label"
 								>Anything the bus should have?</span
@@ -354,30 +293,9 @@
 									>
 								</label>
 								<label class="trip-request-check">
-									<input type="checkbox" data-req="pax56" />
-									<span class="trip-request-check__label"
-										>56-passenger capacity</span
-									>
-								</label>
-								<label class="trip-request-check">
 									<input type="checkbox" data-req="adaLift" />
 									<span class="trip-request-check__label"
 										>ADA / wheelchair lift</span
-									>
-								</label>
-								<label class="trip-request-check">
-									<input type="checkbox" data-req="hotel" />
-									<span class="trip-request-check__label"
-										>Driver hotel needed</span
-									>
-								</label>
-								<label class="trip-request-check">
-									<input
-										type="checkbox"
-										data-req="fuelCard"
-									/>
-									<span class="trip-request-check__label"
-										>Driver fuel card</span
 									>
 								</label>
 							</div>
@@ -390,11 +308,12 @@
 						<label class="rux-switch trip-request__switch">
 							<input
 								type="checkbox"
-								data-switch="service.noContact"
+								data-switch="contact.sameAsBooker"
+								checked
 							/>
 							<span class="rux-switch__track"></span>
 							<span class="trip-request__switch-label"
-								>No day-of contact needed</span
+								>I am the day-of contact</span
 							>
 						</label>
 						<div
@@ -478,7 +397,7 @@
 						shortly.
 					</p>
 				</div>
-			</section>
+			</article>
 		</main>
 
 		<script type="module" src="./js/pages/trip-request.js?v=1"></script>

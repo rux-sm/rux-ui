@@ -17,9 +17,6 @@ const form = document.getElementById("trip-request-form");
 const submitBtn = document.getElementById("trip-request-submit");
 const successEl = document.getElementById("trip-request-success");
 const successText = document.getElementById("trip-request-success-text");
-const ticketsEl = document.getElementById("trip-request-tickets");
-const ticketList = document.getElementById("trip-request-ticket-list");
-const addTicketBtn = document.getElementById("trip-request-add-ticket");
 
 const reference = new URLSearchParams(window.location.search).get("r")?.trim() ?? "";
 let submitting = false;
@@ -34,12 +31,8 @@ function selectedType() {
 	return form?.querySelector('input[name="type"]:checked')?.value ?? "round_trip";
 }
 
-function isTicketed() {
-	return form?.querySelector('[data-switch="service.ticketed"]')?.checked ?? false;
-}
-
-function isNoContact() {
-	return form?.querySelector('[data-switch="service.noContact"]')?.checked ?? false;
+function isDayOfContact() {
+	return form?.querySelector('[data-switch="contact.sameAsBooker"]')?.checked ?? false;
 }
 
 function collectRequirements() {
@@ -50,18 +43,9 @@ function collectRequirements() {
 	return codes;
 }
 
-function collectTicketOptions() {
-	if (!ticketList) return [];
-	return [...ticketList.children].map((row) => ({
-		label: row.querySelector("[data-ticket-label]")?.value ?? "",
-		price: row.querySelector("[data-ticket-price]")?.value ?? "",
-	}));
-}
-
 function collectValues() {
 	return {
 		type: selectedType(),
-		serviceType: isTicketed() ? "ticketed" : "charter",
 		client: valueOf("client"),
 		destination: valueOf("destination"),
 		bookingContact: {
@@ -72,7 +56,6 @@ function collectValues() {
 		pickup: {
 			date: valueOf("pickup.date"),
 			time: valueOf("pickup.time"),
-			name: valueOf("pickup.name"),
 			address: valueOf("pickup.address"),
 		},
 		returnDate: valueOf("returnDate"),
@@ -83,14 +66,12 @@ function collectValues() {
 			address: "",
 		},
 		passengerCount: valueOf("passengerCount"),
-		busCount: valueOf("busCount"),
 		requirements: collectRequirements(),
 		tripContact: {
 			name: valueOf("tripContact.name"),
 			phone: valueOf("tripContact.phone"),
 		},
-		contactNotNeeded: isNoContact(),
-		ticketOptions: collectTicketOptions(),
+		contactNotNeeded: isDayOfContact(),
 		notes: valueOf("notes"),
 	};
 }
@@ -129,33 +110,9 @@ function applyTypeSections() {
 		} else if (section.dataset.section === "split") {
 			section.hidden = type !== "dropoff_pickup";
 		} else if (section.dataset.section === "no-contact") {
-			section.hidden = isNoContact();
+			section.hidden = isDayOfContact();
 		}
 	});
-	if (ticketsEl) ticketsEl.hidden = !isTicketed();
-}
-
-// ── Ticket option rows ───────────────────────────────────────────────────
-
-function addTicketRow(label = "", price = "") {
-	if (!ticketList) return;
-	const row = document.createElement("div");
-	row.className = "trip-request__ticket-row";
-	row.innerHTML = `
-		<input class="rux-input" data-ticket-label type="text" placeholder="Adult" aria-label="Ticket name" />
-		<div class="rux-input-group rux-input-group--prefix">
-			<span class="rux-input-group__prefix" aria-hidden="true">$</span>
-			<input class="rux-input" data-ticket-price type="number" min="0" step="0.01" placeholder="0.00" aria-label="Ticket price" />
-		</div>
-		<button type="button" class="rux-button rux-button--ghost rux-button--icon" aria-label="Remove option">
-			<span class="rux-icon" aria-hidden="true">close</span>
-		</button>
-	`;
-	const removeBtn = row.querySelector("button");
-	removeBtn.addEventListener("click", () => row.remove());
-	ticketList.appendChild(row);
-	if (label) row.querySelector("[data-ticket-label]").value = label;
-	if (price) row.querySelector("[data-ticket-price]").value = price;
 }
 
 // ── Submit ───────────────────────────────────────────────────────────────
@@ -212,14 +169,9 @@ if (form) {
 		radio.addEventListener("change", applyTypeSections);
 	});
 	form
-		.querySelector('[data-switch="service.ticketed"]')
-		?.addEventListener("change", applyTypeSections);
-	form
-		.querySelector('[data-switch="service.noContact"]')
+		.querySelector('[data-switch="contact.sameAsBooker"]')
 		?.addEventListener("change", applyTypeSections);
 	form.addEventListener("submit", onSubmit);
 }
 
-addTicketBtn?.addEventListener("click", () => addTicketRow());
 applyTypeSections();
-addTicketRow();

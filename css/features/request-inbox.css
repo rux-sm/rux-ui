@@ -23,22 +23,10 @@
 	width: clamp(600px, 70vw, 1100px);
 	height: clamp(400px, 70vh, 800px);
 	min-width: 480px;
-	/* Tied to top:10% so the window never extends past the viewport bottom
-	   when the viewport shrinks. position:fixed content below the fold is
-	   unreachable (the page can't scroll it), so this cap is what keeps the
-	   footer reachable — the internal list scrolls instead. min-height uses
-	   min() so a very short viewport can pull the frame up to fit. */
-	min-height: min(320px, calc(100vh - 10% - var(--rux-space-4)));
-	min-height: min(320px, calc(100dvh - 10% - var(--rux-space-4)));
+	min-height: 320px;
 	max-width: calc(100vw - var(--rux-space-4));
-	max-height: calc(100vh - 10% - var(--rux-space-4));
-	max-height: calc(100dvh - 10% - var(--rux-space-4));
-	/* The window acts as a scroll container too: it contains wheel chaining
-	   and scroll-into-view on tab focus (so the browser scrolls the window,
-	   not the calendar behind it) without showing its own scrollbar in the
-	   normal case — the list absorbs the overflow. */
-	overflow-y: auto;
-	overscroll-behavior: contain;
+	max-height: calc(100vh - var(--rux-space-4));
+	max-height: calc(100dvh - var(--rux-space-4));
 }
 
 /* Same content column as .rux-trip-finder-window__content. */
@@ -165,6 +153,22 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
+}
+
+.rux-request-window__item-link {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+	margin-top: var(--rux-space-1);
+}
+
+.rux-request-window__item-link .rux-input {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--rux-text-xs);
+	height: var(--rux-control-sm);
+	/* Read-only invite URL — selectable, not editable */
+	cursor: text;
 }
 
 .rux-request-window__empty {

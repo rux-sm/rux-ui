@@ -4,7 +4,7 @@
    Public, no-login customer form page. Uses the shared rux tokens and form
    primitives (.rux-field/.rux-input/.rux-textarea/.rux-switch) — this file
    only lays out the page shell, the card, section grids, the radio-card
-   type picker, requirement checks, ticket rows, and the success state.
+   type picker, requirement checks, and the success state.
    ========================================================================== */
 
 .trip-request-page {
@@ -50,21 +50,7 @@
 	}
 }
 
-.trip-request__card {
-	background: var(--rux-surface-2);
-	border: var(--rux-border-width) solid var(--rux-border);
-	border-radius: var(--rux-radius-xl);
-	padding: var(--rux-space-6);
-	box-shadow: var(--rux-card-shadow);
-}
-
-.trip-request__title {
-	font-size: var(--rux-text-2xl);
-	font-weight: var(--rux-weight-semibold);
-}
-
 .trip-request__intro {
-	margin-top: var(--rux-space-2);
 	color: var(--rux-text-secondary);
 }
 
@@ -74,7 +60,6 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-5);
-	margin-top: var(--rux-space-5);
 }
 
 .trip-request__section {
@@ -107,11 +92,6 @@
 	.trip-request__span-2 {
 		grid-column: 1 / -1;
 	}
-}
-
-.trip-request__hint {
-	color: var(--rux-fg-subtle);
-	font-size: var(--rux-text-sm);
 }
 
 /* ── Type picker (radio cards) ────────────────────────────────────────── */
@@ -199,26 +179,6 @@
 
 .trip-request-check:has(input:checked) {
 	border-color: var(--rux-accent);
-}
-
-/* ── Ticket rows ──────────────────────────────────────────────────────── */
-
-.trip-request__tickets {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-3);
-}
-
-.trip-request__ticket-list {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
-}
-
-.trip-request__ticket-row {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-space-2);
 }
 
 /* ── Footer + success ─────────────────────────────────────────────────── */

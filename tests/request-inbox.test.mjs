@@ -61,6 +61,6 @@ test("the public form page collects the trip fields and submits a draft", () => 
 	assert.match(publicForm, /data-field="destination"/);
 	assert.match(publicForm, /data-field="pickup\.date"/);
 	assert.match(publicForm, /data-req="adaLift"/);
-	assert.match(publicForm, /data-switch="service\.ticketed"/);
+	assert.match(publicForm, /data-switch="contact\.sameAsBooker"/);
 	assert.match(publicForm, /js\/pages\/trip-request\.js/);
 });

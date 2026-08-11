@@ -85,6 +85,12 @@
 			try {
 				const mod = await ensureDb();
 				requests = await mod.listRequests();
+				// Pre-compute invite URLs so rowItem can use them synchronously.
+				for (const row of requests) {
+					if (row.status === "invited" && row.reference) {
+						row._url = mod.requestUrl(row.reference);
+					}
+				}
 				renderAll();
 			} catch (err) {
 				console.error("request-inbox load failed:", err);
@@ -176,6 +182,19 @@
 			? `<p class="rux-request-window__item-note">${escapeAttr(row.note)}</p>`
 			: "";
 
+		// Invite link — shown only for "invited" rows where we have a URL.
+		let linkBlock = "";
+		if (row.status === "invited" && row._url) {
+			const url = escapeAttr(row._url);
+			linkBlock = `
+				<div class="rux-request-window__item-link">
+					<input class="rux-input" type="text" readonly value="${url}" data-request-url aria-label="Invite link for ${title}" />
+					<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm" data-copy-url aria-label="Copy link">
+						<span class="rux-icon" aria-hidden="true">content_copy</span>
+					</button>
+				</div>`;
+		}
+
 		let actions = "";
 		if (row.status !== "closed") {
 			if (row.status !== "reviewed" && row.status !== "linked") {
@@ -183,6 +202,7 @@
 			}
 			actions += `<button type="button" class="rux-button rux-button--ghost rux-button--sm" data-request-action="closed" aria-label="Close ${escapeAttr(row.reference)}">Close</button>`;
 		}
+		actions += `<button type="button" class="rux-button rux-button--outline rux-button--danger rux-button--sm" data-request-action="delete" aria-label="Delete ${escapeAttr(row.reference)}">Delete</button>`;
 
 		li.innerHTML = `
 			<div class="rux-request-window__item-main">
@@ -192,14 +212,42 @@
 				</div>
 				<p class="rux-request-window__item-meta">${sample}</p>
 				${note}
+				${linkBlock}
 			</div>
 			${actions ? `<div class="rux-request-window__item-actions">${actions}</div>` : ""}
 		`;
 
+		// Status transitions (reviewed / closed).
 		li.querySelectorAll("[data-request-action]").forEach((btn) => {
 			btn.addEventListener("click", async () => {
-				await runStatus(row.id, btn.dataset.requestAction);
+				const action = btn.dataset.requestAction;
+				if (action === "delete") {
+					await deleteRequest(row.id);
+				} else {
+					await runStatus(row.id, action);
+				}
 			});
+		});
+
+		// Copy invite URL to clipboard.
+		li.querySelector("[data-copy-url]")?.addEventListener("click", async () => {
+			const urlInput = li.querySelector("[data-request-url]");
+			if (!urlInput) return;
+			try {
+				await navigator.clipboard.writeText(urlInput.value);
+				const copyBtn = li.querySelector("[data-copy-url]");
+				if (copyBtn) {
+					const icon = copyBtn.querySelector(".rux-icon");
+					if (icon) {
+						const prev = icon.textContent;
+						icon.textContent = "check";
+						setTimeout(() => { icon.textContent = prev; }, 1200);
+					}
+				}
+			} catch {
+				// Clipboard unavailable — select the text so the user can copy manually.
+				urlInput.select();
+			}
 		});
 
 		return li;
@@ -213,6 +261,17 @@
 			openBtn?.focus();
 		} catch (err) {
 			console.error("request-inbox status update failed:", err);
+		}
+	}
+
+	async function deleteRequest(id) {
+		try {
+			const mod = await ensureDb();
+			await mod.removeRequest(id);
+			await loadRequests();
+			openBtn?.focus();
+		} catch (err) {
+			console.error("request-inbox delete failed:", err);
 		}
 	}
 
@@ -365,6 +424,7 @@
 
 	function close() {
 		isOpen = false;
+		if (dialog?.open) dialog.close();
 		if (windowEl) windowEl.hidden = true;
 	}
 

@@ -77,25 +77,7 @@ function pickupStop(pickup = {}) {
 	return stop
 }
 
-function ticketOptionsOf(options) {
-	if (!Array.isArray(options)) return []
-	return options
-		.map((option) => {
-			const label = text(option.label)
-			const price = Number(option.price)
-			if (!label || !Number.isFinite(price) || price < 0) return null
-			return { label, price }
-		})
-		.filter(Boolean)
-}
-
 /* ── Normalizers (shared by the page and the window) ─────────────────────── */
-
-export function normalizeBusCount(value) {
-	const n = Math.round(Number(value))
-	if (!Number.isFinite(n) || n < 1) return 1
-	return Math.min(n, 20)
-}
 
 export function normalizePassengerCount(value) {
 	if (value === "" || value === null || value === undefined) return null
@@ -112,13 +94,13 @@ export function statusLabel(status) {
 
 /* values shape (collected by trip-request.js):
    {
-     type, serviceType, client, destination,
+     type, client, destination,
      bookingContact: { name, phone, email },
-     pickup: { date, time, name, address },
+     pickup: { date, time, address },
      returnDate,                              // round trips
      split: { date, time, name, address },    // split trips
-     passengerCount, busCount,
-     requirements: [], ticketOptions: [{ label, price }],
+     passengerCount,
+     requirements: [],
      tripContact: { name, phone }, contactNotNeeded, notes,
    }
 
@@ -128,12 +110,11 @@ export function statusLabel(status) {
    it doesn't understand. */
 export function buildDraft(values) {
 	const type = TRIP_TYPES.includes(values.type) ? values.type : "round_trip"
-	const serviceType = SERVICE_TYPES.includes(values.serviceType) ? values.serviceType : "charter"
 	const pickupDate = text(values.pickup?.date)
 
 	const trip = {
 		type,
-		service_type: serviceType,
+		service_type: "charter",
 		destination: text(values.destination),
 	}
 
@@ -142,11 +123,6 @@ export function buildDraft(values) {
 
 	const booking = contactFields(values.bookingContact, { email: true })
 	if (hasAny(booking)) trip.booking_contact = booking
-
-	if (serviceType === "ticketed") {
-		const options = ticketOptionsOf(values.ticketOptions)
-		if (options.length) trip.ticket_options = options
-	}
 
 	const requirements = unique(values.requirements ?? []).filter(isRequirement)
 	if (requirements.length) trip.requirements = requirements
@@ -161,8 +137,6 @@ export function buildDraft(values) {
 	const notes = text(values.notes)
 	if (notes) trip.notes = notes
 
-	const busCount = normalizeBusCount(values.busCount)
-
 	const legs = {
 		outbound: {
 			start_date: pickupDate,
@@ -170,7 +144,7 @@ export function buildDraft(values) {
 				type === "round_trip" && text(values.returnDate)
 					? text(values.returnDate)
 					: pickupDate,
-			bus_count: busCount,
+			bus_count: 1,
 			stops: [pickupStop(values.pickup)],
 		},
 	}
@@ -183,7 +157,7 @@ export function buildDraft(values) {
 		legs.return = {
 			start_date: splitDate,
 			end_date: splitDate,
-			bus_count: busCount,
+			bus_count: 1,
 			stops: [pickupStop(values.split)],
 		}
 	}
@@ -212,8 +186,8 @@ export function validateDraft(values) {
 
 	const pickupDate = text(values.pickup?.date)
 	if (!DATE_RE.test(pickupDate)) errors["pickup.date"] = "Choose a pickup date"
-	if (!text(values.pickup?.name) && !text(values.pickup?.address)) {
-		errors["pickup.name"] = "Enter the pickup location"
+	if (!text(values.pickup?.address)) {
+		errors["pickup.address"] = "Enter the pickup address or venue"
 	}
 
 	if (type === "round_trip" && text(values.returnDate)) {
@@ -226,17 +200,6 @@ export function validateDraft(values) {
 
 	if (type === "dropoff_pickup" && !DATE_RE.test(text(values.split?.date))) {
 		errors["split.date"] = "Enter the return pickup date"
-	}
-
-	if (values.serviceType === "ticketed" && Array.isArray(values.ticketOptions)) {
-		values.ticketOptions.forEach((option, index) => {
-			if (!text(option.label)) errors[`ticketOptions.${index}.label`] = "Enter a ticket name"
-			const price = Number(option.price)
-			if (Number.isFinite(price) && price >= 0) return
-			if (!errors[`ticketOptions.${index}.price`]) {
-				errors[`ticketOptions.${index}.price`] = "Enter a price"
-			}
-		})
 	}
 
 	return errors
