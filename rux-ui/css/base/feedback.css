@@ -58,6 +58,8 @@
   animation: rux-fade-in var(--rux-duration-base) var(--rux-ease-out);
 }
 .rux-modal-backdrop[hidden] { display: none; }
+.rux-modal.rux-modal--wide { max-width: var(--rux-modal-max-width-wide); }
+
 .rux-modal {
   width: 100%;
   max-width: var(--rux-container-xs);

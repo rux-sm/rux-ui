@@ -397,6 +397,7 @@
 	--rux-toast-min-width: var(--rux-panel-width-sm);
 	--rux-overlay-blur:    4px;
 	--rux-modal-enter-y:   12px;
+	--rux-modal-max-width-wide: 560px;
 
 	/* ─── STACKING ROLES ─────────────────────────────────────────────────── */
 

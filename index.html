@@ -604,42 +604,42 @@
              MODULE: CALENDAR
              ════════════════════════════════════════════════════════════════ -->
 				<div class="scheduler-app__module" data-module="calendar">
-					<!-- Trip panel drawer -->
+					<!-- Trip editor dialog -->
 					<div
-						class="scheduler-app__drawer scheduler-app__drawer--railable"
-						id="trip-panel-drawer"
+						class="rux-modal-backdrop"
+						id="trip-editor-dialog"
+						hidden
 					>
-						<!-- Open button: outside the inert <aside> so it stays clickable
-						     when the panel is collapsed. Only visible at <=44px rail width
-						     via the container query in trip-panel.css. -->
-						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-trip-panel__drawer-open scheduler-app__mobile-panel-btn"
-							type="button"
-							aria-label="Toggle trip editor"
-							data-opens="trip-panel-drawer"
-						>
-							<span
-								class="scheduler-app__drawer-icon-stack"
-								aria-hidden="true"
-							>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-open"
-									>left_panel_open</span
-								>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-close"
-									>left_panel_close</span
-								>
-							</span>
-						</button>
-						<aside
-							class="rux-panel rux-panel--left rux-trip-panel"
+						<div
+							class="rux-modal rux-modal--wide rux-trip-dialog"
 							role="dialog"
+							aria-modal="true"
+							aria-labelledby="trip-editor-dialog-title"
+						>
+							<header
+								class="rux-modal__header rux-trip-dialog__header"
+							>
+								<h2
+									class="rux-modal__title rux-trip-dialog__title"
+									id="trip-editor-dialog-title"
+								>
+									New Trip
+								</h2>
+								<button
+									type="button"
+									class="rux-button rux-button--ghost rux-button--icon"
+									id="trip-dialog-close-btn"
+									aria-label="Close trip editor"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
+								</button>
+							</header>
+							<aside
+							class="rux-panel rux-panel--left rux-trip-panel"
 							aria-label="Trip editor"
 						>
-							<!-- Desktop closes via the resize gutter now that the header's
-							     gone. Mobile gets a ghost Close button inline in the footer
-							     instead (see scheduler-app.css). -->
 							<div
 								class="rux-panel__nav rux-panel__nav--attached"
 							>
@@ -2012,32 +2012,14 @@
 									></span>
 									<span class="rux-btn-label">Save</span>
 								</button>
-								<button
-									type="button"
-									class="rux-button rux-button--ghost rux-panel__footer-close"
-									data-panel-close
-									aria-label="Close trip editor"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>close</span
-									>
-									<span class="rux-btn-label">Close</span>
-								</button>
 							</footer>
 						</aside>
+						</div>
 					</div>
-					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter"
-						id="trip-panel-resize-gutter"
-						role="separator"
-						aria-orientation="vertical"
-						aria-label="Resize trip panel"
-						aria-controls="trip-panel-drawer"
-						tabindex="0"
-					></div>
-					<!-- /trip-panel-drawer -->
-
-					<section class="rux-workspace" aria-label="Weekly schedule">
+					<section
+						class="rux-workspace"
+						aria-label="Weekly schedule"
+					>
 						<header class="rux-workspace__header">
 							<div class="rux-workspace__heading">
 								<button
@@ -2045,7 +2027,7 @@
 									type="button"
 									aria-label="Open trip editor"
 									aria-pressed="false"
-									data-opens="trip-panel-drawer"
+									data-opens="trip-editor-dialog"
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>left_panel_open</span
@@ -7654,7 +7636,7 @@
 					: "calendar",
 			);
 
-			// ── Trip panel drawer ───────────────────────────────────────────────
+			// ── Trip editor dialog ─────────────────────────────────────────────
 
 			// ── App-header visibility ──────────────────────────────────────────
 			// Always starts expanded on load — deliberately not persisted, unlike
@@ -7755,9 +7737,10 @@
 				patchProfileSettings({ hideNav: on });
 			});
 
-			const drawer = document.getElementById("trip-panel-drawer");
 			const rightDrawer = document.getElementById("right-panel-drawer");
-			const tripPanel = drawer.querySelector(".rux-trip-panel");
+			const tripPanel = document.querySelector(".rux-trip-panel");
+			const tripEditorDialogEl =
+				document.getElementById("trip-editor-dialog");
 			const rightPanel = rightDrawer.querySelector(".rux-right-panel");
 			const leftPanelToggleBtn = document.querySelector(
 				".scheduler-app__mobile-panel-btn--left",
@@ -7781,8 +7764,6 @@
 
 			function closeOtherMobilePanel(panel) {
 				if (!mobilePanelQuery.matches) return;
-				if (panel !== drawer && drawer.classList.contains("is-open"))
-					closeDrawer();
 				if (
 					panel !== rightDrawer &&
 					rightDrawer?.classList.contains("is-open")
@@ -7799,24 +7780,54 @@
 					?.focus();
 			}
 
-			// tripDrawerHandle/rightDrawerHandle are created below (once
-			// SCHEDULE_MIN is defined) via RuxDrawer (js/core/drawer.js), shared
-			// with the Fleet/Driver panel drawers. These wrappers exist because
-			// this file's many call sites were written against openDrawer() /
-			// closeDrawer() by name — forward-referencing the handle is safe since
-			// none of these fire until well after the whole script has run once.
-			function openDrawer() {
-				closeOtherMobilePanel(drawer);
-				tripDrawerHandle.open();
+			document
+				.getElementById("trip-dialog-close-btn")
+				?.addEventListener("click", closeTripDialog);
+
+			function openTripDialog() {
+				if (!tripEditorDialogEl || !window.Rux) return;
+				closeOtherMobilePanel(tripEditorDialogEl);
+				window.Rux.openModal(tripEditorDialogEl);
+
+				// The generic modal Escape handler closes immediately. The trip
+				// editor needs to route every close through its dirty-form check.
+				if (tripEditorDialogEl.__ruxOnEscape) {
+					document.removeEventListener(
+						"keydown",
+						tripEditorDialogEl.__ruxOnEscape,
+					);
+					delete tripEditorDialogEl.__ruxOnEscape;
+				}
+				// Backdrop clicks must not bypass closeTripDialog() either.
+				delete tripEditorDialogEl.dataset.ruxOpen;
+				leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
+				const scrollBody = tripPanel?.querySelector(
+					".rux-trip-panel__body",
+				);
+				if (scrollBody) scrollBody.scrollTop = 0;
 			}
-			function closeDrawer() {
-				restoreMobilePanelTrigger("trip-panel-drawer");
-				tripDrawerHandle.close();
+
+			function setTripDialogTitle(title) {
+				const titleEl = document.getElementById(
+					"trip-editor-dialog-title",
+				);
+				if (titleEl) titleEl.textContent = title;
 			}
-			drawer
-				.querySelector("[data-panel-close]")
-				?.addEventListener("click", closeDrawer);
-			// ── Trips module → scheduler bridge ────────────────────────────────────
+
+			function closeTripDialog() {
+				if (!tripEditorDialogEl || tripEditorDialogEl.hidden) return true;
+				if (
+					tripDBHandle?.isFormDirty?.() &&
+					!confirm("Discard unsaved changes?")
+				)
+					return false;
+				window.Rux?.closeModal(tripEditorDialogEl);
+				leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
+				leftPanelToggleBtn?.focus();
+				return true;
+			}
+
+			// ── Trips module → scheduler bridge ────────────────────────────────
 
 			document.addEventListener("trips:open", (e) => {
 				if (
@@ -7835,7 +7846,8 @@
 				}
 				if (loadTrip) loadTrip(tripPanel, itinerary, trip);
 				setActiveTripPane("pane-trip");
-				openDrawer();
+				setTripDialogTitle("Edit Trip");
+				openTripDialog();
 			});
 
 			document.addEventListener("trips:new", () => {
@@ -7847,7 +7859,8 @@
 				showModule("calendar");
 				if (newTrip) newTrip(tripPanel, itinerary);
 				setActiveTripPane("pane-trip");
-				openDrawer();
+				setTripDialogTitle("New Trip");
+				openTripDialog();
 			});
 
 			function setActiveTripPane(panelId) {
@@ -7978,7 +7991,8 @@
 				newTrip(tripPanel, itinerary);
 				prefillNewTripFromContext(context);
 				setActiveTripPane("pane-trip");
-				openDrawer();
+				setTripDialogTitle("New Trip");
+				openTripDialog();
 			}
 
 			let sundayStart = false;
@@ -8024,52 +8038,21 @@
 			TripPanel.init(tripPanel);
 			const itinerary = Itinerary.init(tripPanel);
 
-			// ── Resizable drawer ────────────────────────────────────────────────
+			// ── Right-side resizable drawer ─────────────────────────────────────
 			// Open/close/drag-resize behavior lives in RuxDrawer (js/core/drawer.js),
 			// shared with the Fleet/Driver panel drawers. Trips is the one place
 			// with two coordinating drawers (left+right), so these two pass
 			// getOtherDrawer + scheduleMin — Fleet/Driver's single drawer omits both.
 
-			// Tokenized separately in scheduler-app.css; read both so initial state
-			// and subsequent drawer opens use the same side-specific defaults.
+			// Read the right-side default so initial state and later drawer opens
+			// use the same tokenized width.
 			const appStyles = getComputedStyle(appEl);
-			const LEFT_DRAWER_DEFAULT = parseFloat(
-				appStyles.getPropertyValue(
-					"--scheduler-app-left-drawer-default-width",
-				),
-			);
 			const RIGHT_DRAWER_DEFAULT = parseFloat(
 				appStyles.getPropertyValue(
 					"--scheduler-app-right-drawer-default-width",
 				),
 			);
 			const SCHEDULE_MIN = 471;
-
-			const tripDrawerHandle = RuxDrawer.create({
-				drawer,
-				panel: tripPanel,
-				toggleBtn: leftPanelToggleBtn,
-				handle: document.getElementById("trip-panel-resize-gutter"),
-				direction: "left",
-				getOtherDrawer: () => rightDrawer,
-				scheduleMin: SCHEDULE_MIN,
-				railWidth: true,
-				onOpen: () => {
-					leftAutoCollapsed = false;
-					const scrollBody = tripPanel?.querySelector(
-						".rux-trip-panel__body",
-					);
-					if (scrollBody) scrollBody.scrollTop = 0;
-					document.activeElement?.blur();
-				},
-			});
-
-			// Clicking a tab in the collapsed rail (js/panels/trip-panel.js)
-			// reopens the panel — it already switched the active tab itself
-			// before dispatching this.
-			drawer.addEventListener("rux:trip-tab-expand-request", () => {
-				tripDrawerHandle.open();
-			});
 
 			const rightDrawerHandle = RuxDrawer.create({
 				drawer: rightDrawer,
@@ -8078,7 +8061,7 @@
 				handle: document.getElementById("right-panel-resize-gutter"),
 				direction: "right",
 				railWidth: true,
-				getOtherDrawer: () => drawer,
+				getOtherDrawer: () => null,
 				scheduleMin: SCHEDULE_MIN,
 				onOpen: () => {
 					rightAutoCollapsed = false;
@@ -8472,7 +8455,8 @@
 						!confirm("You have unsaved changes. Discard them?")
 					)
 						return;
-					openDrawer();
+					setTripDialogTitle("Edit Trip");
+					openTripDialog();
 					// A scheduler bar is a leg-specific projection. Resolve the
 					// complete fetched record by trip id before opening the editor so
 					// both Outbound and Inbound itinerary buffers are always present.
@@ -9572,7 +9556,7 @@
 					?.scrollTo({ top: 0, behavior: "instant" });
 			}
 			function resetTripPanel() {
-				closeDrawer();
+				closeTripDialog();
 				resetTripPanelView();
 			}
 
@@ -9925,10 +9909,10 @@
 				.forEach((btn) => {
 					btn.addEventListener("click", () => {
 						const targetId = btn.dataset.opens;
-						if (targetId === "trip-panel-drawer") {
-							drawer.classList.contains("is-open")
-								? closeDrawer()
-								: openDrawer();
+						if (targetId === "trip-editor-dialog") {
+							tripEditorDialogEl?.hidden
+								? openTripDialog()
+								: closeTripDialog();
 						} else if (targetId === "right-panel-drawer") {
 							document
 								.getElementById("right-panel-drawer")
@@ -9941,7 +9925,7 @@
 
 			// ── Right panel drawer ──────────────────────────────────────────────
 			// Wrappers over rightDrawerHandle (created above) — see the comment by
-			// openDrawer()/closeDrawer() for why these stay as named functions.
+			// openTripDialog()/closeTripDialog() for why these stay as named functions.
 			function openRightDrawer() {
 				closeOtherMobilePanel(rightDrawer);
 				rightDrawerHandle.open();
@@ -10892,34 +10876,14 @@
 			renderMiniCal();
 
 			// ── Auto-close panels when viewport is too narrow ──────────────────
-			// Declared here (ahead of the boot state below) so the boot check can
-			// flag a panel as auto-collapsed when it skips opening for lack of
-			// room — checkPanelFit() then reopens it automatically once a resize
-			// gives back enough space, same as the narrowing-after-boot case.
+			// Tracks whether the right tools drawer was closed only because the
+			// workspace became too narrow, so it can reopen when room returns.
 			let rightAutoCollapsed = false;
-			let leftAutoCollapsed = false;
 
 			// ── Default panel state ─────────────────────────────────────────────
-			// Both panels open by default on desktop — the left (trip editor)
-			// panel has no trip loaded yet at this point, so it opens empty until
-			// a trip / "+ New trip" / a trip bar's manifest shortcut populates it.
-			// Mobile begins with the schedule visible and opens only one
-			// full-screen panel at a time either way, so both start closed there.
-			// Neither opens on desktop either if the viewport can't fit the
-			// schedule plus both panels at their default widths — avoids opening
-			// both and having checkPanelFit() immediately snap one shut again.
-			// Shared by initial boot and by the mobile→desktop resize crossing
-			// below, so widening back out of mobile re-opens what now fits
-			// instead of leaving both closed until manually toggled.
+			// The trip editor is now an on-demand dialog. The right tools drawer
+			// retains its desktop default and is closed on the mobile breakpoint.
 			function applyDefaultPanelState() {
-				drawer.style.setProperty(
-					"--drawer-width",
-					LEFT_DRAWER_DEFAULT + "px",
-				);
-				drawer.style.setProperty(
-					"--drawer-open-width",
-					LEFT_DRAWER_DEFAULT + "px",
-				);
 				rightDrawer.style.setProperty(
 					"--drawer-width",
 					RIGHT_DRAWER_DEFAULT + "px",
@@ -10928,65 +10892,32 @@
 					"--drawer-open-width",
 					RIGHT_DRAWER_DEFAULT + "px",
 				);
-
-				const scheduleEl = document.querySelector(
-					"[data-module='calendar'] .rux-workspace",
-				);
-				// Measured before either drawer opens, so this is the schedule's
-				// full unsqueezed width — same available-space check
-				// checkPanelFit() runs later, just done once up front instead of
-				// open-then-recollapse.
-				const fitsBothPanels =
-					!!scheduleEl &&
-					scheduleEl.offsetWidth -
-						LEFT_DRAWER_DEFAULT -
-						RIGHT_DRAWER_DEFAULT >=
-						SCHEDULE_MIN;
-
-				if (mobilePanelQuery.matches || !fitsBothPanels) {
-					drawer.style.setProperty("--drawer-width", "0px");
-					tripPanel.inert = true;
-					drawer.setAttribute("aria-hidden", "true");
-					leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
-
-					rightDrawer.style.setProperty("--drawer-width", "0px");
-					rightPanel.inert = true;
-					rightDrawer.setAttribute("aria-hidden", "true");
-
-					if (!mobilePanelQuery.matches) {
-						leftAutoCollapsed = true;
-						rightAutoCollapsed = true;
-					}
-				} else {
-					drawer.classList.add("is-open");
-					tripPanel.inert = false;
-					drawer.setAttribute("aria-hidden", "false");
-					leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
-
-					rightDrawer.classList.add("is-open");
-					rightPanel.inert = false;
-					rightDrawer.setAttribute("aria-hidden", "false");
-					rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
-				}
-				tripDrawerHandle.syncHandle();
+				rightDrawer.classList.add("is-open");
+				rightPanel.inert = false;
+				rightDrawer.setAttribute("aria-hidden", "false");
+				rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
 				rightDrawerHandle.syncHandle();
 			}
 
 			applyDefaultPanelState();
 
 			document.addEventListener("keydown", (event) => {
-				if (event.key !== "Escape" || !mobilePanelQuery.matches) return;
+				if (event.key !== "Escape") return;
+				if (!tripEditorDialogEl?.hidden) {
+					event.preventDefault();
+					closeTripDialog();
+					return;
+				}
+				if (!mobilePanelQuery.matches) return;
 				if (rightDrawer.classList.contains("is-open")) {
 					closeRightDrawer();
-				} else if (drawer.classList.contains("is-open")) {
-					closeDrawer();
 				}
 			});
 
 			mobilePanelQuery.addEventListener("change", (event) => {
 				if (event.matches) {
 					closeRightDrawer();
-					closeDrawer();
+					closeTripDialog();
 					return;
 				}
 				applyDefaultPanelState();
@@ -11001,36 +10932,18 @@
 			}
 
 			function checkPanelFit() {
-				// Mobile drawers are full-screen overlays; schedule width is not a
-				// signal that they should be auto-collapsed.
 				if (mobilePanelQuery.matches) return;
-
 				const scheduleEl = document.querySelector(
 					"[data-module='calendar'] .rux-workspace",
 				);
 				if (!scheduleEl) return;
-				// Bail if the calendar module itself is hidden (a different
-				// top-level module like Fleet is active) — scheduleEl.offsetWidth
-				// reads 0 in that state, which is always < SCHEDULE_MIN and was
-				// wrongly read as "not enough room," auto-closing whichever panel(s)
-				// were open. Since .scheduler-app__body's own box doesn't
-				// necessarily change size on a module switch, nothing was
-				// guaranteed to re-run this with real measurements afterward, so
-				// the panel stayed closed even once you switched back and there was
-				// plenty of room again. Same fix as layoutScheduler()'s guard.
 				if (scheduleEl.offsetParent === null) return;
 				const available = scheduleEl.offsetWidth;
-				const leftOpen = drawer.classList.contains("is-open");
 				const rightOpen = rightDrawer.classList.contains("is-open");
-
 				if (available < SCHEDULE_MIN && rightOpen) {
 					closeRightDrawer();
 					rightAutoCollapsed = true;
-				} else if (available < SCHEDULE_MIN && leftOpen) {
-					closeDrawer();
-					leftAutoCollapsed = true;
 				}
-
 				if (!rightOpen && rightAutoCollapsed) {
 					const wouldFit = available - getDrawerWidth(rightDrawer);
 					if (wouldFit >= SCHEDULE_MIN) {
@@ -11038,15 +10951,7 @@
 						rightAutoCollapsed = false;
 					}
 				}
-				if (!leftOpen && leftAutoCollapsed) {
-					const wouldFit = available - getDrawerWidth(drawer);
-					if (wouldFit >= SCHEDULE_MIN) {
-						openDrawer();
-						leftAutoCollapsed = false;
-					}
-				}
 			}
-
 			new ResizeObserver(checkPanelFit).observe(
 				document.querySelector(".scheduler-app__body"),
 			);
@@ -11380,7 +11285,8 @@
 						// top-level trip fields and the second leg of split trips.
 						loadTrip(tripPanel, itinerary, imported.trip);
 						setActiveTripPane("pane-itinerary");
-						openDrawer();
+						setTripDialogTitle("Imported Trip");
+						openTripDialog();
 						importModal.hidden = true;
 						if (imported.warnings.length) {
 							console.warn(
