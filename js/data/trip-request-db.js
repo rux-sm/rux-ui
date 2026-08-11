@@ -19,7 +19,7 @@
 
 import { supabase } from "./supabase.js";
 
-const REQUEST_PAGE_URL = new URL("../request.html", import.meta.url).href;
+const REQUEST_PAGE_URL = new URL("../../request.html", import.meta.url).href;
 
 function rpcError(error) {
 	const err = new Error(error?.message || "The request could not be sent.");
