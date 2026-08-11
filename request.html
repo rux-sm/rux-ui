@@ -29,10 +29,11 @@
 		</header>
 
 		<main class="trip-request" id="trip-request-root">
-			<article class="rux-card rux-card--elevated rux-card--stack">
+			<article class="rux-card">
 				<header class="rux-card__header">
 					<h1 class="rux-card__title">Tell us about your trip</h1>
 				</header>
+			<div class="rux-card__body">
 				<p class="trip-request__intro">
 					A few details are enough to get us started. We'll review
 					your request and follow up with details and pricing.
@@ -360,22 +361,6 @@
 						</label>
 					</fieldset>
 
-					<div class="trip-request__footer">
-						<p class="trip-request__footer-note">
-							We'll review your request and get back to you with
-							details and pricing.
-						</p>
-						<button
-							type="submit"
-							class="rux-button rux-button--accent trip-request__submit"
-							id="trip-request-submit"
-						>
-							<span class="rux-icon" aria-hidden="true"
-								>send</span
-							>
-							<span class="rux-btn-label">Send trip request</span>
-						</button>
-					</div>
 				</form>
 
 				<div
@@ -397,7 +382,25 @@
 						shortly.
 					</p>
 				</div>
-			</article>
+			</div>
+			<footer class="rux-card__footer">
+				<p class="trip-request__footer-note">
+					We'll review your request and get back to you with
+					details and pricing.
+				</p>
+				<button
+					type="submit"
+					form="trip-request-form"
+					class="rux-button rux-button--accent trip-request__submit"
+					id="trip-request-submit"
+				>
+					<span class="rux-icon" aria-hidden="true"
+						>send</span
+					>
+					<span class="rux-btn-label">Send trip request</span>
+				</button>
+			</footer>
+		</article>
 		</main>
 
 		<script type="module" src="./js/pages/trip-request.js?v=1"></script>

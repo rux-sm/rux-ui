@@ -183,17 +183,18 @@
 
 /* ── Footer + success ─────────────────────────────────────────────────── */
 
-.trip-request__footer {
+.trip-request .rux-card__body {
 	display: flex;
-	align-items: center;
+	flex-direction: column;
+	gap: var(--rux-card-content-gap);
+}
+
+.rux-card__footer {
 	justify-content: space-between;
-	gap: var(--rux-space-3);
-	padding-top: var(--rux-space-4);
-	border-top: var(--rux-border-width) solid var(--rux-border);
 	flex-wrap: wrap;
 }
 
-.trip-request__footer-note {
+.rux-card__footer .trip-request__footer-note {
 	max-width: 22rem;
 	color: var(--rux-fg-subtle);
 	font-size: var(--rux-text-sm);
