@@ -201,7 +201,7 @@
 
 /* ── Invite dialog ────────────────────────────────────────────────────── */
 
-.rux-request-window__dialog {
+.rux-request-window__dialog[open] {
 	display: flex;
 	flex-direction: column;
 	width: min(var(--rux-container-xs), calc(100% - (var(--rux-space-4) * 2)));
