@@ -6,9 +6,9 @@ A lightweight, theme-aware design system for Rux UI. Shared CSS, small vanilla-J
 
 ## Sources
 
-This system was distilled from the **TripBoard** codebase (`trip-board/`), which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates tokens into one flat namespace and exposes one component entrypoint that imports focused component partials.
+This system was distilled from the historical **TripBoard** codebase, which originated a heavier 3-tier `--rux-*` token system across ~12 CSS files. This rebuild consolidates tokens into one flat namespace and exposes one component entrypoint that imports focused component partials.
 
-The TripBoard codebase remains the reference for advanced patterns (the schedule grid, trip bar geometry, optical-radius math) — see `trip-board/docs/RUX_UI.md` and `trip-board/docs/Rux_UI_Bible` for the original architecture write-ups.
+The current TripBoard application in `index.html`, its styles under `css/`, and the documents under `docs/` are the reference for advanced patterns such as the schedule grid, trip bar geometry, and optical-radius math.
 
 ---
 
@@ -18,6 +18,10 @@ The TripBoard codebase remains the reference for advanced patterns (the schedule
 .
 ├── README.md              ← you are here
 ├── SKILL.md               ← current build instructions for coding agents
+├── AGENTS.md              ← concise Codex repository policy
+├── CLAUDE.md              ← concise Claude Code repository policy
+├── .cline/rules/          ← concise Cline project policy
+├── docs/ai/               ← human-facing AI workflow and model routing
 ├── css/
 │   ├── tokens.css          ← all design tokens: color, type, space, radius, motion
 │   ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
@@ -31,6 +35,8 @@ The TripBoard codebase remains the reference for advanced patterns (the schedule
 ├── assets/                ← logos, favicons
 └── tests/                 ← component and application contract tests
 ```
+
+Human-facing AI references: start with the [AI Coding Quick Reference](docs/ai/AI_CODING_CHEAT_SHEET.md), then use the [full operating guide](docs/ai/AI_AGENT_WORKFLOW.md) when a task needs more detail.
 
 To use the complete TripBoard-oriented bundle in an existing page:
 
@@ -204,7 +210,7 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
 - Segmented controls use a shallow recessed `.rux-segmented-track` around `.rux-button--segment` items. The selected indicator uses `--rux-segment-active-background` and is the strip's only raised layer.
-- Keep labels short, sentence case, and action-oriented.
+- Keep labels short, Title Case, and action-oriented.
 
 ### Forms
 
@@ -215,14 +221,14 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 | `.rux-input`, `.rux-select` | `--rux-field-height` `36px` | Standard text-entry height |
 | `.rux-textarea` | `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed |
 | `.rux-field` | `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
-| `.rux-field__label` | `--rux-text-xs` `12px`, `--rux-weight-medium` | Muted, sentence case, no trailing period |
+| `.rux-field__label` | `--rux-text-xs` `12px`, `--rux-weight-medium` | Muted, Title Case, no trailing period |
 | placeholder | `--rux-fg-subtle` | Hint only; never required information |
 | help text | `--rux-text-xs`, `--rux-fg-subtle` | One short sentence when useful |
 | error text | `--rux-text-xs`, `--rux-danger` | Direct recovery instruction |
 
 - Field height is intentionally `36px`, while buttons are `32px`. Text-entry controls need a little more vertical room for the caret, placeholder, and typed values. Do not force inputs down to button height for visual matching.
 - Labels sit above fields. Do not use placeholder text as the only label.
-- Labels use sentence case and no trailing punctuation: `Driver name`, not `Driver Name`.
+- Labels use Title Case and no trailing punctuation: `Driver Name`, not `Driver name`.
 - Placeholder text describes format or an example value. Keep it short: `Ada Lovelace`, `name@example.com`, `Anything to remember…`.
 - Help text appears below the control and should explain how the value is used, not repeat the label.
 - Invalid fields use `aria-invalid="true"`, a danger border, and `--rux-ring-danger` on focus. The error message belongs directly under the field.

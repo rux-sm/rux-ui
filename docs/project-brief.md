@@ -39,10 +39,10 @@ themes via `data-theme`.
 
 Agents (Cline, Claude Code, Codex — or a human) drive most of the work here:
 
-1. **Read the source of truth first.** Read `README.md` and `SKILL.md` before
-   touching anything, then inspect only the files the task needs. Don't assume
-   a demo, UI-kit, or root `utilities.js` exists — the listed structure is
-   authoritative.
+1. **Route to the source of truth.** Read `README.md` for project orientation.
+   Read `SKILL.md` only for UI/frontend work, then inspect only the files the
+   task needs. Don't assume a demo, UI-kit, or root `utilities.js` exists — the
+   listed structure is authoritative.
 
 2. **Compose before inventing.** Reuse an existing `.rux-*` component or
    `--rux-*` token before creating anything new. If a token is genuinely
