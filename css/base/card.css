@@ -96,7 +96,7 @@
 	justify-content: space-between;
 	gap: var(--rux-card-content-gap);
 	background: var(--rux-card-header-bg);
-	border-top: var(--rux-card-header-border);
+	border-bottom: var(--rux-card-header-border);
 	height: var(--rux-card-header-height);
 }
 
@@ -113,8 +113,8 @@
 .rux-card__title {
 	margin: 0;
 	color: var(--rux-heading);
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-heading-panel-weight);
+	font-size: var(--rux-card-header-size);
+	font-weight: var(--rux-card-header-weight);
 	letter-spacing: 0;
 	line-height: var(--rux-leading-snug);
 }
