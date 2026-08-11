@@ -1,0 +1,157 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {
+	buildDraft,
+	validateDraft,
+	normalizeBusCount,
+	normalizePassengerCount,
+} from "../js/core/trip-request-model.js";
+
+const baseValues = {
+	type: "round_trip",
+	serviceType: "charter",
+	client: "Raymondville ISD",
+	destination: "Austin, TX",
+	bookingContact: { name: "Meredith Gonzalez", phone: "956-689-8184", email: "mg@isd.net" },
+	pickup: { date: "2026-07-26", time: "05:00", name: "McAllen Memorial HS", address: "101 E Hackberry Ave" },
+	returnDate: "2026-07-29",
+	passengerCount: "45",
+	busCount: "2",
+	requirements: ["sleeper", "fuelCard", "sleeper"],
+	tripContact: { name: "Ricky", phone: "956-555-0100" },
+	contactNotNeeded: false,
+	notes: "Bring water.",
+	ticketOptions: [],
+};
+
+test("buildDraft emits schema_version 2 with a round trip", () => {
+	const draft = buildDraft(baseValues);
+	assert.equal(draft.schema_version, 2);
+	assert.equal(draft.trip.type, "round_trip");
+	assert.equal(draft.trip.service_type, "charter");
+	assert.equal(draft.trip.destination, "Austin, TX");
+	assert.equal(draft.trip.client, "Raymondville ISD");
+	assert.equal(draft.trip.booking_contact.email, "mg@isd.net");
+	// Round trip: outbound end_date is the return date.
+	assert.equal(draft.trip.legs.outbound.start_date, "2026-07-26");
+	assert.equal(draft.trip.legs.outbound.end_date, "2026-07-29");
+	// Only one continuous leg for a round trip — no return leg.
+	assert.equal(draft.trip.legs.return, undefined);
+});
+
+test("buildDraft keeps selected pickup as the scheduling anchor stop", () => {
+	const [stop] = buildDraft(baseValues).trip.legs.outbound.stops;
+	assert.equal(stop.type, "pickup");
+	assert.equal(stop.name, "McAllen Memorial HS");
+	assert.equal(stop.spot_time, "05:00");
+});
+
+test("buildDraft dedupes and validates requirements to known ids", () => {
+	const draft = buildDraft({ ...baseValues, requirements: ["sleeper", "sleeper", "nonsense"] });
+	assert.deepEqual(draft.trip.requirements, ["sleeper"]);
+});
+
+test("buildDraft maps day-of contact and skips it when not needed", () => {
+	const withContact = buildDraft(baseValues);
+	assert.deepEqual(withContact.trip.trip_contacts, [{ name: "Ricky", phone: "956-555-0100" }]);
+
+	const noContact = buildDraft({ ...baseValues, contactNotNeeded: true });
+	assert.equal(noContact.trip.contact_not_needed, true);
+	assert.equal(noContact.trip.trip_contacts, undefined);
+});
+
+test("buildDraft produces two legs for a split trip", () => {
+	const draft = buildDraft({
+		...baseValues,
+		type: "dropoff_pickup",
+		split: { date: "2026-07-30", name: "Choctaw Casino", address: "4216 S Hwy 69/75" },
+	});
+	assert.equal(draft.trip.legs.outbound.start_date, "2026-07-26");
+	assert.equal(draft.trip.legs.return.start_date, "2026-07-30");
+	assert.equal(draft.trip.legs.return.stops[0].name, "Choctaw Casino");
+});
+
+test("buildDraft emits one-way outbound only", () => {
+	const draft = buildDraft({ ...baseValues, type: "one_way" });
+	assert.equal(draft.trip.type, "one_way");
+	assert.equal(draft.trip.legs.outbound.end_date, "2026-07-26");
+	assert.equal(draft.trip.legs.return, undefined);
+});
+
+test("buildDraft includes ticket options only for ticketed trips", () => {
+	const options = [{ label: "Adult", price: 45 }, { label: "Child", price: 25 }];
+	const ticketed = buildDraft({ ...baseValues, serviceType: "ticketed", ticketOptions: options });
+	assert.equal(ticketed.trip.service_type, "ticketed");
+	assert.deepEqual(ticketed.trip.ticket_options, options);
+
+	const charter = buildDraft({ ...baseValues, serviceType: "charter", ticketOptions: options });
+	assert.equal(charter.trip.ticket_options, undefined);
+});
+
+test("buildDraft omits empty ticket options", () => {
+	const draft = buildDraft({ ...baseValues, serviceType: "ticketed", ticketOptions: [{ label: "", price: "x" }] });
+	assert.equal(draft.trip.ticket_options, undefined);
+});
+
+test("normalizers clamp bus and passenger counts", () => {
+	assert.equal(normalizeBusCount(""), 1);
+	assert.equal(normalizeBusCount("0"), 1);
+	assert.equal(normalizeBusCount("3"), 3);
+	assert.equal(normalizeBusCount("99"), 20);
+	assert.equal(normalizePassengerCount(""), null);
+	assert.equal(normalizePassengerCount("45"), 45);
+	assert.equal(normalizePassengerCount("999"), 200);
+test("validateDraft returns no errors for a complete round trip", () => {
+	assert.deepEqual(validateDraft(baseValues), {});
+});
+
+test("validateDraft flags missing booking name and email", () => {
+	const errors = validateDraft({ ...baseValues, bookingContact: { name: "", email: "" } });
+	assert.equal(errors["booking.name"], "Enter a name we can reach you at");
+	assert.equal(errors["booking.email"], "Enter an email for your quote");
+});
+
+test("validateDraft rejects a bad email", () => {
+	const errors = validateDraft({ ...baseValues, bookingContact: { name: "A", email: "not-an-email" } });
+	assert.equal(errors["booking.email"], "Enter a valid email");
+});
+
+test("validateDraft requires a destination and pickup info", () => {
+	const errors = validateDraft({
+		...baseValues,
+		destination: "",
+		pickup: { date: "", name: "", address: "" },
+	});
+	assert.equal(errors.destination, "Enter the destination");
+	assert.equal(errors["pickup.date"], "Choose a pickup date");
+	assert.equal(errors["pickup.name"], "Enter the pickup location");
+});
+
+test("validateDraft accepts pickup when only an address is given", () => {
+	const errors = validateDraft({
+		...baseValues,
+		pickup: { date: "2026-07-26", name: "", address: "101 E Hackberry Ave" },
+	});
+	assert.equal(errors["pickup.name"], undefined);
+});
+
+test("validateDraft rejects a return date before the pickup date", () => {
+	const errors = validateDraft({ ...baseValues, returnDate: "2026-07-20" });
+	assert.equal(errors.returnDate, "Return date can't be before pickup date");
+});
+
+test("validateDraft requires a return pickup date for split trips", () => {
+	const errors = validateDraft({ ...baseValues, type: "dropoff_pickup", split: { date: "" } });
+	assert.equal(errors["split.date"], "Enter the return pickup date");
+});
+
+test("validateDraft flags ticketed options without a name or price", () => {
+	const errors = validateDraft({
+		...baseValues,
+		serviceType: "ticketed",
+		ticketOptions: [{ label: "", price: "5" }, { label: "Adult", price: "x" }],
+	});
+	assert.equal(errors["ticketOptions.0.label"], "Enter a ticket name");
+	assert.equal(errors["ticketOptions.1.price"], "Enter a price");
+});
+});

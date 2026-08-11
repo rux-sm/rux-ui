@@ -6,18 +6,28 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
 		/>
-		<meta name="theme-color" content="#f0f1f3" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#202022" media="(prefers-color-scheme: dark)" />
+		<meta
+			name="theme-color"
+			content="#f0f1f3"
+			media="(prefers-color-scheme: light)"
+		/>
+		<meta
+			name="theme-color"
+			content="#202022"
+			media="(prefers-color-scheme: dark)"
+		/>
 		<script>
 			// Resolve the effective theme synchronously to avoid a flash of the
 			// wrong palette. The controller later keeps system mode in sync.
 			(function () {
 				var stored = localStorage.getItem("rux-theme");
-				var theme = stored === "light" || stored === "dark"
-					? stored
-					: window.matchMedia("(prefers-color-scheme: light)").matches
-						? "light"
-						: "dark";
+				var theme =
+					stored === "light" || stored === "dark"
+						? stored
+						: window.matchMedia("(prefers-color-scheme: light)")
+									.matches
+							? "light"
+							: "dark";
 				document.documentElement.setAttribute("data-theme", theme);
 			})();
 		</script>
@@ -41,6 +51,7 @@
 		/>
 		<link rel="stylesheet" href="./css/features/comp-trip-list.css?v=3" />
 		<link rel="stylesheet" href="./css/features/trip-finder.css?v=8" />
+		<link rel="stylesheet" href="./css/features/request-inbox.css?v=1" />
 		<link
 			rel="stylesheet"
 			href="./css/features/comp-components-app.css?v=12"
@@ -96,7 +107,7 @@
 					<img
 						class="rux-app-header__logo"
 						src="./assets/logo.png"
-						alt="Scamilla Tour Buses"
+						alt="Escamilla Tour Buses"
 					/>
 				</div>
 
@@ -145,6 +156,20 @@
 					<button
 						class="rux-button rux-button--ghost rux-app-header__nav-item"
 						type="button"
+						id="request-inbox-btn"
+						title="Customer trip requests"
+					>
+						<span class="rux-icon" aria-hidden="true">inbox</span>
+						Requests
+						<span
+							class="rux-app-header__badge-count rux-app-header__badge-count--nav"
+							id="requests-badge"
+							hidden
+						></span>
+					</button>
+					<button
+						class="rux-button rux-button--ghost rux-app-header__nav-item"
+						type="button"
 						id="workspace-search-btn"
 						title="Search trips (⌘K)"
 					>
@@ -176,7 +201,9 @@
 							id="team-chat-btn"
 							aria-label="Team chat"
 						>
-							<span class="rux-icon" aria-hidden="true">chat</span>
+							<span class="rux-icon" aria-hidden="true"
+								>chat</span
+							>
 							<span
 								class="rux-app-header__badge-count"
 								id="team-chat-badge"
@@ -201,7 +228,9 @@
 							></span>
 						</button>
 					</div>
-					<div class="rux-app-header__action-group rux-app-header__action-group--identity">
+					<div
+						class="rux-app-header__action-group rux-app-header__action-group--identity"
+					>
 						<label
 							class="rux-switch rux-switch--theme"
 							id="theme-toggle"
@@ -250,7 +279,9 @@
 							aria-haspopup="menu"
 							aria-expanded="false"
 						>
-							<span class="rux-icon" aria-hidden="true">person</span>
+							<span class="rux-icon" aria-hidden="true"
+								>person</span
+							>
 						</button>
 					</div>
 				</div>
@@ -587,11 +618,16 @@
 							aria-label="Toggle trip editor"
 							data-opens="trip-panel-drawer"
 						>
-							<span class="scheduler-app__drawer-icon-stack" aria-hidden="true">
-								<span class="rux-icon scheduler-app__drawer-toggle-open"
+							<span
+								class="scheduler-app__drawer-icon-stack"
+								aria-hidden="true"
+							>
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-open"
 									>left_panel_open</span
 								>
-								<span class="rux-icon scheduler-app__drawer-toggle-close"
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-close"
 									>left_panel_close</span
 								>
 							</span>
@@ -1538,8 +1574,8 @@
 															type="checkbox"
 															id="tp-po-received"
 															name="poReceived"
-													data-billing-toggle
-													data-billing-controls="tp-po tp-po-amount" /><span
+															data-billing-toggle
+															data-billing-controls="tp-po tp-po-amount" /><span
 															class="rux-switch__track"
 														></span
 														><span
@@ -1594,13 +1630,38 @@
 												hidden
 											>
 												<div class="rux-field">
-													<label class="rux-field__label" for="tp-po-amount">Authorized Amount</label>
-													<div class="rux-input-group rux-input-group--prefix">
-														<span class="rux-input-group__prefix" aria-hidden="true">$</span>
-														<input class="rux-input" id="tp-po-amount" name="poAmount" type="number" min="0" step="0.01" placeholder="0.00" aria-label="PO authorized amount" disabled />
+													<label
+														class="rux-field__label"
+														for="tp-po-amount"
+														>Authorized
+														Amount</label
+													>
+													<div
+														class="rux-input-group rux-input-group--prefix"
+													>
+														<span
+															class="rux-input-group__prefix"
+															aria-hidden="true"
+															>$</span
+														>
+														<input
+															class="rux-input"
+															id="tp-po-amount"
+															name="poAmount"
+															type="number"
+															min="0"
+															step="0.01"
+															placeholder="0.00"
+															aria-label="PO authorized amount"
+															disabled
+														/>
 													</div>
 												</div>
-												<output class="rux-trip-panel__po-coverage" id="tp-po-coverage" aria-live="polite"></output>
+												<output
+													class="rux-trip-panel__po-coverage"
+													id="tp-po-coverage"
+													aria-live="polite"
+												></output>
 											</div>
 										</div>
 									</div>
@@ -1957,7 +2018,9 @@
 									data-panel-close
 									aria-label="Close trip editor"
 								>
-									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
 									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
@@ -1984,8 +2047,12 @@
 									aria-pressed="false"
 									data-opens="trip-panel-drawer"
 								>
-									<span class="rux-icon" aria-hidden="true">left_panel_open</span>
-									<span class="rux-btn-label">Trip Editor</span>
+									<span class="rux-icon" aria-hidden="true"
+										>left_panel_open</span
+									>
+									<span class="rux-btn-label"
+										>Trip Editor</span
+									>
 								</button>
 							</div>
 							<div class="rux-workspace__nav">
@@ -2040,7 +2107,9 @@
 									data-opens="right-panel-drawer"
 								>
 									<span class="rux-btn-label">Options</span>
-									<span class="rux-icon" aria-hidden="true">right_panel_open</span>
+									<span class="rux-icon" aria-hidden="true"
+										>right_panel_open</span
+									>
 								</button>
 							</div>
 						</header>
@@ -2098,11 +2167,16 @@
 							aria-label="Toggle tools panel"
 							data-opens="right-panel-drawer"
 						>
-							<span class="scheduler-app__drawer-icon-stack" aria-hidden="true">
-								<span class="rux-icon scheduler-app__drawer-toggle-open"
+							<span
+								class="scheduler-app__drawer-icon-stack"
+								aria-hidden="true"
+							>
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-open"
 									>right_panel_open</span
 								>
-								<span class="rux-icon scheduler-app__drawer-toggle-close"
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-close"
 									>right_panel_close</span
 								>
 							</span>
@@ -2456,36 +2530,36 @@
 												aria-pressed="true"
 												data-value="trips"
 											>
-											<span class="rux-btn-label"
-												>Trips</span
-											>
-											<span
-												class="rux-icon rux-tasks__segment-status"
-												id="rp-trips-status"
-												role="img"
-												aria-label="Pending trip tasks"
-												hidden
-												>schedule</span
-											>
-										</button>
+												<span class="rux-btn-label"
+													>Trips</span
+												>
+												<span
+													class="rux-icon rux-tasks__segment-status"
+													id="rp-trips-status"
+													role="img"
+													aria-label="Pending trip tasks"
+													hidden
+													>schedule</span
+												>
+											</button>
 											<button
 												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
 												data-value="post_trip"
 											>
-											<span class="rux-btn-label"
-												>Post Trip</span
-											>
-											<span
-												class="rux-icon rux-tasks__segment-status"
-												id="rp-post-trip-status"
-												role="img"
-												aria-label="Pending post-trip tasks"
-												hidden
-												>schedule</span
-											>
-										</button>
+												<span class="rux-btn-label"
+													>Post Trip</span
+												>
+												<span
+													class="rux-icon rux-tasks__segment-status"
+													id="rp-post-trip-status"
+													role="img"
+													aria-label="Pending post-trip tasks"
+													hidden
+													>schedule</span
+												>
+											</button>
 										</div>
 									</div>
 									<div id="rp-tasks-departures-body"></div>
@@ -2652,9 +2726,19 @@
 										aria-haspopup="menu"
 										hidden
 									>
-										<span class="rux-icon" aria-hidden="true">filter_list</span>
-										<span id="rp-post-trip-filter-label">Needs Follow-up</span>
-										<span class="rux-icon" aria-hidden="true">arrow_drop_down</span>
+										<span
+											class="rux-icon"
+											aria-hidden="true"
+											>filter_list</span
+										>
+										<span id="rp-post-trip-filter-label"
+											>Needs Follow-up</span
+										>
+										<span
+											class="rux-icon"
+											aria-hidden="true"
+											>arrow_drop_down</span
+										>
 									</button>
 								</div>
 								<div
@@ -2701,7 +2785,9 @@
 									data-panel-close
 									aria-label="Close tools panel"
 								>
-									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
 									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
@@ -3203,7 +3289,9 @@
 									data-panel-close
 									aria-label="Close vehicle editor"
 								>
-									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
 									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
@@ -3326,11 +3414,16 @@
 							aria-label="Toggle driver editor"
 							data-driver-drawer-toggle
 						>
-							<span class="scheduler-app__drawer-icon-stack" aria-hidden="true">
-								<span class="rux-icon scheduler-app__drawer-toggle-open"
+							<span
+								class="scheduler-app__drawer-icon-stack"
+								aria-hidden="true"
+							>
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-open"
 									>left_panel_open</span
 								>
-								<span class="rux-icon scheduler-app__drawer-toggle-close"
+								<span
+									class="rux-icon scheduler-app__drawer-toggle-close"
 									>left_panel_close</span
 								>
 							</span>
@@ -4208,7 +4301,9 @@
 									data-panel-close
 									aria-label="Close driver editor"
 								>
-									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
 									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
@@ -4241,12 +4336,19 @@
 									aria-pressed="false"
 									data-opens="driver-panel-drawer"
 								>
-									<span class="rux-icon icon-off">left_panel_open</span>
-									<span class="rux-icon icon-on">left_panel_close</span>
+									<span class="rux-icon icon-off"
+										>left_panel_open</span
+									>
+									<span class="rux-icon icon-on"
+										>left_panel_close</span
+									>
 								</button>
 							</div>
 							<div class="rux-workspace__nav">
-								<h1 class="rux-workspace__title" id="driver-workspace-title">
+								<h1
+									class="rux-workspace__title"
+									id="driver-workspace-title"
+								>
 									Driver Roster
 								</h1>
 							</div>
@@ -4259,10 +4361,14 @@
 									aria-pressed="false"
 									data-driver-tools-toggle
 								>
-									<span class="rux-icon icon-off" aria-hidden="true"
+									<span
+										class="rux-icon icon-off"
+										aria-hidden="true"
 										>right_panel_open</span
 									>
-									<span class="rux-icon icon-on" aria-hidden="true"
+									<span
+										class="rux-icon icon-on"
+										aria-hidden="true"
 										>right_panel_close</span
 									>
 								</button>
@@ -4275,11 +4381,25 @@
 								aria-label="Driver roster"
 							>
 								<div class="driver-app__table-wrap">
-									<table class="rux-table driver-app__table" id="driver-roster-table" aria-label="Driver roster">
+									<table
+										class="rux-table driver-app__table"
+										id="driver-roster-table"
+										aria-label="Driver roster"
+									>
 										<thead>
 											<tr>
-												<th scope="col" data-col="driver">Driver</th>
-												<th scope="col" data-col="employment-type">Employment</th>
+												<th
+													scope="col"
+													data-col="driver"
+												>
+													Driver
+												</th>
+												<th
+													scope="col"
+													data-col="employment-type"
+												>
+													Employment
+												</th>
 											</tr>
 										</thead>
 										<tbody id="driver-roster-body"></tbody>
@@ -4292,8 +4412,15 @@
 									aria-live="polite"
 									hidden
 								>
-									<span class="rux-icon rux-alert__icon" aria-hidden="true">warning</span>
-									<div class="rux-alert__body" id="driver-workload-alert-text"></div>
+									<span
+										class="rux-icon rux-alert__icon"
+										aria-hidden="true"
+										>warning</span
+									>
+									<div
+										class="rux-alert__body"
+										id="driver-workload-alert-text"
+									></div>
 								</div>
 							</section>
 						</div>
@@ -4334,7 +4461,12 @@
 							<header
 								class="rux-panel__header rux-right-panel__header"
 							>
-								<h2 class="rux-panel__title" id="driver-tools-title">Table Options</h2>
+								<h2
+									class="rux-panel__title"
+									id="driver-tools-title"
+								>
+									Table Options
+								</h2>
 								<button
 									class="rux-button rux-button--ghost rux-button--icon scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
 									type="button"
@@ -4376,25 +4508,63 @@
 										hidden
 									>
 										<header class="rux-card__header">
-											<p class="rux-card__title">Date Range</p>
+											<p class="rux-card__title">
+												Date Range
+											</p>
 										</header>
-										<div class="rux-card__body rux-card__body--stack">
+										<div
+											class="rux-card__body rux-card__body--stack"
+										>
 											<div
 												class="rux-segmented-track driver-app__workload-presets"
 												role="group"
 												aria-label="Workload date presets"
 											>
-												<button class="rux-button rux-button--segment" type="button" data-workload-preset="30" aria-pressed="false">30 Days</button>
-												<button class="rux-button rux-button--segment" type="button" data-workload-preset="90" aria-pressed="false">90 Days</button>
-												<button class="rux-button rux-button--segment is-active" type="button" data-workload-preset="ytd" aria-pressed="true">YTD</button>
+												<button
+													class="rux-button rux-button--segment"
+													type="button"
+													data-workload-preset="30"
+													aria-pressed="false"
+												>
+													30 Days
+												</button>
+												<button
+													class="rux-button rux-button--segment"
+													type="button"
+													data-workload-preset="90"
+													aria-pressed="false"
+												>
+													90 Days
+												</button>
+												<button
+													class="rux-button rux-button--segment is-active"
+													type="button"
+													data-workload-preset="ytd"
+													aria-pressed="true"
+												>
+													YTD
+												</button>
 											</div>
 											<div class="rux-field">
-												<label class="rux-field__label" for="driver-workload-start">Starting</label>
-												<input class="rux-input" id="driver-workload-start" type="date" />
+												<label
+													class="rux-field__label"
+													for="driver-workload-start"
+													>Starting</label
+												>
+												<input
+													class="rux-input"
+													id="driver-workload-start"
+													type="date"
+												/>
 											</div>
-											<p class="driver-app__workload-through">
+											<p
+												class="driver-app__workload-through"
+											>
 												<span>Through</span>
-												<strong id="driver-workload-end-label">Today</strong>
+												<strong
+													id="driver-workload-end-label"
+													>Today</strong
+												>
 											</p>
 										</div>
 									</article>
@@ -4586,7 +4756,9 @@
 									data-panel-close
 									aria-label="Close customer editor"
 								>
-									<span class="rux-icon" aria-hidden="true">close</span>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
 									<span class="rux-btn-label">Close</span>
 								</button>
 							</footer>
@@ -5021,7 +5193,9 @@
 											aria-label="Add"
 											title="Add"
 										>
-											<span class="rux-icon" aria-hidden="true"
+											<span
+												class="rux-icon"
+												aria-hidden="true"
 												>add</span
 											>
 										</button>
@@ -5031,7 +5205,9 @@
 											aria-label="Edit"
 											title="Edit"
 										>
-											<span class="rux-icon" aria-hidden="true"
+											<span
+												class="rux-icon"
+												aria-hidden="true"
 												>edit</span
 											>
 										</button>
@@ -5041,7 +5217,9 @@
 											aria-label="More options"
 											title="More options"
 										>
-											<span class="rux-icon" aria-hidden="true"
+											<span
+												class="rux-icon"
+												aria-hidden="true"
 												>more_vert</span
 											>
 										</button>
@@ -5051,7 +5229,9 @@
 											aria-label="Delete"
 											title="Delete"
 										>
-											<span class="rux-icon" aria-hidden="true"
+											<span
+												class="rux-icon"
+												aria-hidden="true"
 												>delete</span
 											>
 										</button>
@@ -5062,7 +5242,9 @@
 											title="Unavailable"
 											disabled
 										>
-											<span class="rux-icon" aria-hidden="true"
+											<span
+												class="rux-icon"
+												aria-hidden="true"
 												>block</span
 											>
 										</button>
@@ -6532,7 +6714,9 @@
 											Locations
 										</h2>
 										<p class="settings-app__panel-copy">
-											Saved destinations appear before Mapbox results when building an itinerary.
+											Saved destinations appear before
+											Mapbox results when building an
+											itinerary.
 										</p>
 									</div>
 								</header>
@@ -6548,39 +6732,116 @@
 										hidden
 									>
 										<div class="rux-field">
-											<label class="rux-field__label" for="settings-location-name">Location name</label>
-											<input class="rux-input" id="settings-location-name" type="text" placeholder="e.g. Paragon Casino" />
+											<label
+												class="rux-field__label"
+												for="settings-location-name"
+												>Location name</label
+											>
+											<input
+												class="rux-input"
+												id="settings-location-name"
+												type="text"
+												placeholder="e.g. Paragon Casino"
+											/>
 										</div>
 										<div class="rux-field">
-											<label class="rux-field__label" for="settings-location-address">Address</label>
-											<input class="rux-input" id="settings-location-address" type="text" autocomplete="off" placeholder="Street address" />
-											<span class="rux-field__help">Verify with Mapbox before saving.</span>
+											<label
+												class="rux-field__label"
+												for="settings-location-address"
+												>Address</label
+											>
+											<input
+												class="rux-input"
+												id="settings-location-address"
+												type="text"
+												autocomplete="off"
+												placeholder="Street address"
+											/>
+											<span class="rux-field__help"
+												>Verify with Mapbox before
+												saving.</span
+											>
 										</div>
 										<div class="settings-app__grid-2">
 											<div class="rux-field">
-												<label class="rux-field__label" for="settings-location-lat">Latitude</label>
-												<input class="rux-input" id="settings-location-lat" type="number" step="any" readonly />
+												<label
+													class="rux-field__label"
+													for="settings-location-lat"
+													>Latitude</label
+												>
+												<input
+													class="rux-input"
+													id="settings-location-lat"
+													type="number"
+													step="any"
+													readonly
+												/>
 											</div>
 											<div class="rux-field">
-												<label class="rux-field__label" for="settings-location-lng">Longitude</label>
-												<input class="rux-input" id="settings-location-lng" type="number" step="any" readonly />
+												<label
+													class="rux-field__label"
+													for="settings-location-lng"
+													>Longitude</label
+												>
+												<input
+													class="rux-input"
+													id="settings-location-lng"
+													type="number"
+													step="any"
+													readonly
+												/>
 											</div>
 										</div>
 									</div>
 								</div>
 
 								<footer class="settings-app__footer">
-									<p class="settings-app__message" id="settings-locations-message" aria-live="polite"></p>
+									<p
+										class="settings-app__message"
+										id="settings-locations-message"
+										aria-live="polite"
+									></p>
 									<div class="settings-app__actions">
-										<button class="rux-button rux-button--default" id="settings-location-add-btn" type="button">
-											<span class="rux-icon">add</span><span class="rux-btn-label">Add location</span>
+										<button
+											class="rux-button rux-button--default"
+											id="settings-location-add-btn"
+											type="button"
+										>
+											<span class="rux-icon">add</span
+											><span class="rux-btn-label"
+												>Add location</span
+											>
 										</button>
-										<button class="rux-button rux-button--default" id="settings-location-verify-btn" type="button" hidden>
-											<span class="rux-icon">where_to_vote</span><span class="rux-btn-label">Verify</span>
+										<button
+											class="rux-button rux-button--default"
+											id="settings-location-verify-btn"
+											type="button"
+											hidden
+										>
+											<span class="rux-icon"
+												>where_to_vote</span
+											><span class="rux-btn-label"
+												>Verify</span
+											>
 										</button>
-										<button class="rux-button rux-button--default" id="settings-location-cancel-btn" type="button" hidden>Cancel</button>
-										<button class="rux-button rux-button--accent" id="settings-location-save-btn" type="button" hidden>
-											<span class="rux-icon">save</span><span class="rux-btn-label">Save location</span>
+										<button
+											class="rux-button rux-button--default"
+											id="settings-location-cancel-btn"
+											type="button"
+											hidden
+										>
+											Cancel
+										</button>
+										<button
+											class="rux-button rux-button--accent"
+											id="settings-location-save-btn"
+											type="button"
+											hidden
+										>
+											<span class="rux-icon">save</span
+											><span class="rux-btn-label"
+												>Save location</span
+											>
 										</button>
 									</div>
 								</footer>
@@ -6766,13 +7027,14 @@
 		<script src="./js/panels/customers-panel.js?v=5" defer></script>
 		<script src="./js/panels/settings-panel.js?v=4" defer></script>
 		<script src="./js/panels/trip-finder.js?v=5" defer></script>
+		<script src="./js/panels/request-inbox.js?v=1" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=6" defer></script>
 		<script src="./js/panels/print-schedule.js?v=31" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=15" defer></script>
 		<script type="module" src="./js/core/app-reload.js?v=1"></script>
 		<script
 			type="module"
-				src="./js/panels/driver-week-info.js?v=12"
+			src="./js/panels/driver-week-info.js?v=12"
 		></script>
 		<script
 			type="module"
@@ -6784,8 +7046,8 @@
 		></script>
 		<script
 			type="module"
-				src="./js/panels/notifications-panel.js?v=4"
-			></script>
+			src="./js/panels/notifications-panel.js?v=4"
+		></script>
 		<script type="module" src="./js/panels/team-chat.js?v=4"></script>
 		<script
 			type="module"
@@ -10883,8 +11145,10 @@
 			// or outside the three-day lookahead window.
 			async function runNotificationChecks() {
 				try {
-					const { generateDriverExpiryAlerts, syncTripReadinessAlerts } =
-						await import("./js/data/notification-db.js?v=3");
+					const {
+						generateDriverExpiryAlerts,
+						syncTripReadinessAlerts,
+					} = await import("./js/data/notification-db.js?v=3");
 					await Promise.all([
 						generateDriverExpiryAlerts(),
 						syncTripReadinessAlerts(window.RuxTrips?.list() || []),
@@ -11011,7 +11275,10 @@
 					if (!document.hidden) loadTripsFromDB();
 				});
 				window.addEventListener("focus", loadTripsFromDB);
-				window.addEventListener("rux:driver-status-changed", loadTripsFromDB);
+				window.addEventListener(
+					"rux:driver-status-changed",
+					loadTripsFromDB,
+				);
 			}
 
 			initSchedulerData().then(() => {
@@ -11803,6 +12070,257 @@
 			</div>
 		</div>
 
+		<!-- Trip requests window — floating/draggable/resizable, same shell as the
+		     trip finder. The dispatcher-facing inbox for customer trip
+		     requests: links sent to customers land here for triage into the
+		     trip editor. See js/panels/request-inbox.js and
+		     css/features/request-inbox.css. -->
+		<div
+			class="rux-floating-window rux-request-window rux-card rux-card--elevated"
+			id="request-inbox-window"
+			hidden
+		>
+			<header
+				class="rux-floating-window__header rux-request-window__header rux-card__header"
+			>
+				<p class="rux-card__title">Requests</p>
+				<span
+					class="rux-request-window__count"
+					id="request-inbox-footer"
+					aria-live="polite"
+				></span>
+				<button
+					type="button"
+					class="rux-button rux-button--ghost rux-button--icon"
+					id="request-inbox-close-btn"
+					aria-label="Close requests"
+				>
+					<span class="rux-icon" aria-hidden="true">close</span>
+				</button>
+			</header>
+			<div class="rux-request-window__content">
+				<div class="rux-request-window__toolbar">
+					<div class="rux-field">
+						<label class="rux-field__label">Status</label>
+						<div
+							class="rux-segmented-track"
+							id="request-inbox-filters"
+							role="group"
+							aria-label="Filter requests"
+						>
+							<button
+								type="button"
+								class="rux-button rux-button--segment is-active"
+								data-request-filter="all"
+								aria-pressed="true"
+							>
+								All
+							</button>
+							<button
+								type="button"
+								class="rux-button rux-button--segment"
+								data-request-filter="new"
+								aria-pressed="false"
+							>
+								New
+							</button>
+							<button
+								type="button"
+								class="rux-button rux-button--segment"
+								data-request-filter="invited"
+								aria-pressed="false"
+							>
+								Invited
+							</button>
+							<button
+								type="button"
+								class="rux-button rux-button--segment"
+								data-request-filter="reviewed"
+								aria-pressed="false"
+							>
+								Reviewed
+							</button>
+							<button
+								type="button"
+								class="rux-button rux-button--segment"
+								data-request-filter="linked"
+								aria-pressed="false"
+							>
+								Linked
+							</button>
+							<button
+								type="button"
+								class="rux-button rux-button--segment"
+								data-request-filter="closed"
+								aria-pressed="false"
+							>
+								Closed
+							</button>
+						</div>
+					</div>
+				</div>
+				<ul
+					class="rux-floating-window__body rux-request-window__list"
+					id="request-inbox-list"
+				></ul>
+			</div>
+			<footer
+				class="rux-floating-window__footer rux-request-window__footer"
+			>
+				<button
+					type="button"
+					class="rux-button rux-button--accent"
+					id="request-inbox-new-btn"
+				>
+					<span class="rux-icon" aria-hidden="true">add</span>
+					<span class="rux-btn-label">New request</span>
+				</button>
+			</footer>
+		</div>
+
+		<dialog
+			class="rux-request-window__dialog"
+			id="request-inbox-dialog"
+			aria-labelledby="request-inbox-dialog-title"
+		>
+			<form class="rux-request-window__dialog-form">
+				<header class="rux-request-window__dialog-header">
+					<h2
+						class="rux-request-window__dialog-title"
+						id="request-inbox-dialog-title"
+					>
+						New request
+					</h2>
+					<button
+						type="button"
+						class="rux-button rux-button--ghost rux-button--icon"
+						id="request-inbox-cancel-btn"
+						aria-label="Close"
+					>
+						<span class="rux-icon" aria-hidden="true">close</span>
+					</button>
+				</header>
+				<div class="rux-request-window__dialog-body">
+					<p class="rux-request-window__dialog-intro">
+						We'll create a request link you can send to the
+						customer. Their submission lands back here.
+					</p>
+					<label class="rux-field">
+						<span class="rux-field__label">Client / group</span>
+						<input
+							class="rux-input"
+							name="client"
+							type="text"
+							placeholder="Raymondville ISD"
+							autocomplete="organization"
+						/>
+					</label>
+					<label class="rux-field">
+						<span class="rux-field__label">Contact name</span>
+						<input
+							class="rux-input"
+							name="name"
+							type="text"
+							autocomplete="name"
+						/>
+						<p
+							class="rux-field__error"
+							data-error-for="name"
+							hidden
+						></p>
+					</label>
+					<label class="rux-field">
+						<span class="rux-field__label">Email</span>
+						<input
+							class="rux-input"
+							name="email"
+							type="email"
+							autocomplete="email"
+						/>
+						<p
+							class="rux-field__error"
+							data-error-for="email"
+							hidden
+						></p>
+					</label>
+					<label class="rux-field">
+						<span class="rux-field__label">Phone</span>
+						<input
+							class="rux-input"
+							name="phone"
+							type="tel"
+							autocomplete="tel"
+							placeholder="Optional"
+						/>
+					</label>
+					<label class="rux-field">
+						<span class="rux-field__label">Passengers</span>
+						<input
+							class="rux-input"
+							name="passengers"
+							type="number"
+							min="1"
+							max="200"
+							placeholder="Optional"
+						/>
+					</label>
+					<label class="rux-field">
+						<span class="rux-field__label">Note</span>
+						<textarea
+							class="rux-textarea"
+							name="note"
+							rows="2"
+							placeholder="Anything to know before they fill the form…"
+						></textarea>
+					</label>
+				</div>
+				<footer class="rux-request-window__dialog-footer">
+					<div class="rux-request-window__dialog-actions">
+						<button
+							type="button"
+							class="rux-button rux-button--accent"
+							id="request-inbox-create-btn"
+						>
+							<span class="rux-btn-label">Create link</span>
+						</button>
+					</div>
+					<div
+						class="rux-request-window__invite"
+						id="request-inbox-invite"
+						hidden
+					>
+						<p class="rux-request-window__invite-label">
+							Request link
+						</p>
+						<input
+							class="rux-input"
+							id="request-inbox-invite-url"
+							type="text"
+							readonly
+							aria-label="Request link"
+						/>
+						<div class="rux-request-window__invite-actions">
+							<button
+								type="button"
+								class="rux-button rux-button--ghost"
+								id="request-inbox-copy-btn"
+							>
+								<span class="rux-btn-label">Copy link</span>
+							</button>
+							<a
+								class="rux-button rux-button--ghost"
+								id="request-inbox-mail-btn"
+								target="_blank"
+								rel="noopener"
+								href="#"
+							>
+								<span class="rux-btn-label">Compose email</span>
+							</a>
+						</div>
+					</div>
+				</footer>
+			</form>
+		</dialog>
 		<!-- Trip finder window — floating/draggable/resizable, same shell as the
 		     document viewer and trip manifest. Combines the old full-page Trips
 		     list with the old ⌘K search modal. See js/panels/trip-finder.js for

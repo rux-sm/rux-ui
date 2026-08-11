@@ -144,6 +144,20 @@
 	display: none;
 }
 
+/* Nav-item variant: sits inline after the label instead of corner-anchored on
+   an icon-only button (the action-rail default above). The nav button is an
+   inline-flex with a content gap, so a static badge flows right beside the
+   label; smaller footprint and no ring since it's not floating over the
+   header background. */
+.rux-app-header__badge-count--nav {
+	position: static;
+	min-width: 16px;
+	height: 16px;
+	padding: 0 var(--rux-space-1);
+	border: none;
+	font-size: 10px;
+}
+
 /* Both anchor to header buttons and need to float above the scheduler's
    sticky day-header row (--rux-z-sticky, 200) — the shared .rux-popover
    z-index (--rux-z-dropdown, 100) sits below that, so without this

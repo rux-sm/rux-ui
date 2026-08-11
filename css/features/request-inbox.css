@@ -1,0 +1,306 @@
+/* ==========================================================================
+   REQUEST INBOX  ·  .rux-request-window
+   --------------------------------------------------------------------------
+   Floating window chrome only — mirrors the Trip Finder's anatomy exactly:
+   the shared .rux-floating-window component (css/base/floating-window.css)
+   owns drag/resize/mobile-breakpoint mechanics, and every inner surface
+   (header, __content, __toolbar, __body, footer) follows the same layout and
+   padding rules as css/features/trip-finder.css. Filters reuse the shared
+   .rux-segmented-track + .rux-button--segment component; status chips reuse
+   .rux-badge variants.
+   ========================================================================== */
+
+/* Same position and footprint as the Trip Finder, except the min/max-height
+   are tied to top:10% so the frame always fits the viewport — see the
+   min()/calc() below. Mobile (< 580px) is handled by the shared base
+   floating-window.css frame, exactly like every other floating window. */
+.rux-request-window {
+	container-name: request-window;
+	container-type: inline-size;
+	top: 10%;
+	left: 50%;
+	transform: translateX(-50%);
+	width: clamp(600px, 70vw, 1100px);
+	height: clamp(400px, 70vh, 800px);
+	min-width: 480px;
+	/* Tied to top:10% so the window never extends past the viewport bottom
+	   when the viewport shrinks. position:fixed content below the fold is
+	   unreachable (the page can't scroll it), so this cap is what keeps the
+	   footer reachable — the internal list scrolls instead. min-height uses
+	   min() so a very short viewport can pull the frame up to fit. */
+	min-height: min(320px, calc(100vh - 10% - var(--rux-space-4)));
+	min-height: min(320px, calc(100dvh - 10% - var(--rux-space-4)));
+	max-width: calc(100vw - var(--rux-space-4));
+	max-height: calc(100vh - 10% - var(--rux-space-4));
+	max-height: calc(100dvh - 10% - var(--rux-space-4));
+	/* The window acts as a scroll container too: it contains wheel chaining
+	   and scroll-into-view on tab focus (so the browser scrolls the window,
+	   not the calendar behind it) without showing its own scrollbar in the
+	   normal case — the list absorbs the overflow. */
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+/* Same content column as .rux-trip-finder-window__content. */
+.rux-request-window__content {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+	flex: 1;
+}
+
+.rux-request-window__header {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+}
+
+.rux-request-window__header .rux-card__title {
+	flex: 1;
+	min-width: 0;
+}
+
+/* New-request count next to the title — muted, complementing the nav badge */
+.rux-request-window__count {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+}
+
+/* Toolbar band like .rux-trip-finder-window__toolbar: flex none, hairline
+   bottom border, and a field padded like the search row. Status filter uses
+   the shared segmented control. */
+.rux-request-window__toolbar {
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-request-window__toolbar .rux-field {
+	min-width: 0;
+	padding: var(--rux-space-3) var(--rux-space-4);
+	background: var(--rux-floating-window-header-bg);
+}
+
+.rux-request-window__toolbar .rux-segmented-track {
+	width: 100%;
+}
+
+.rux-request-window__toolbar .rux-segmented-track > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
+/* ── Request list ─────────────────────────────────────────────────────── */
+
+.rux-request-window__list {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-4);
+	overflow-y: auto;
+	/* Keep the wheel over the list from chaining into the page/calendar
+	   underneath when the list hits its top or bottom boundary. */
+	overscroll-behavior: contain;
+	background: var(--rux-floating-window-background);
+	list-style: none;
+}
+
+.rux-request-window__item {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	background: var(--rux-surface-3);
+	border: var(--rux-border-width) solid transparent;
+	border-radius: var(--rux-radius-md);
+	color: var(--rux-fg);
+}
+
+.rux-request-window__item:hover {
+	border-color: var(--rux-border);
+}
+
+.rux-request-window__item-main {
+	flex: 1;
+	min-width: 0;
+}
+
+.rux-request-window__item-title-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	min-width: 0;
+}
+
+.rux-request-window__item-title {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-request-window__item-meta {
+	margin-top: var(--rux-space-1);
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-request-window__item-note {
+	margin-top: var(--rux-space-1);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-request-window__item-actions {
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-1);
+}
+
+.rux-request-window__empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	min-height: 120px;
+	padding: var(--rux-space-4);
+	color: var(--rux-fg-subtle);
+	text-align: center;
+}
+
+/* Closed requests lose their tone — a quiet neutral instead of a status
+   color. Nothing else about the badge changes. */
+.rux-request-window__chip {
+	flex: none;
+}
+
+.rux-request-window__chip--closed {
+	--_badge-color: var(--rux-fg-subtle);
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────── */
+
+.rux-request-window__footer {
+	display: flex;
+	justify-content: flex-end;
+}
+
+/* ── Invite dialog ────────────────────────────────────────────────────── */
+
+.rux-request-window__dialog {
+	display: flex;
+	flex-direction: column;
+	width: min(var(--rux-container-xs), calc(100% - (var(--rux-space-4) * 2)));
+	max-width: 460px;
+	max-height: min(560px, calc(100vh - (var(--rux-space-5) * 2)));
+	max-height: min(560px, calc(100dvh - (var(--rux-space-5) * 2)));
+	padding: 0;
+	overflow: hidden;
+	background: var(--rux-surface-5);
+	color: var(--rux-fg);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-xl);
+}
+
+.rux-request-window__dialog-form {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-height: 0;
+}
+
+.rux-request-window__dialog::backdrop {
+	background: var(--rux-overlay-scrim);
+	backdrop-filter: blur(var(--rux-overlay-blur));
+}
+
+.rux-request-window__dialog-header,
+.rux-request-window__dialog-body,
+.rux-request-window__dialog-footer {
+	padding: var(--rux-space-5);
+}
+
+.rux-request-window__dialog-header {
+	flex: none;
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-request-window__dialog-title {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--rux-text-xl);
+}
+
+.rux-request-window__dialog-body {
+	flex: 1;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}
+
+.rux-request-window__dialog-intro {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+}
+
+.rux-request-window__dialog-footer {
+	flex: none;
+	display: flex;
+	justify-content: flex-end;
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-request-window__dialog-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--rux-space-2);
+}
+
+.rux-request-window__invite {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.rux-request-window__invite-label {
+	color: var(--rux-fg-subtle);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-request-window__invite-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: var(--rux-space-2);
+}
+
+/* Responsive to the resized window, not the viewport — same approach as the
+   Trip Finder's container query. Keeps the six status segments readable by
+   letting the toolbar band scroll horizontally instead of clipping text. */
+@container request-window (max-width: 700px) {
+	.rux-request-window__toolbar .rux-field {
+		overflow-x: auto;
+	}
+
+	.rux-request-window__toolbar .rux-segmented-track {
+		flex: none;
+		width: max-content;
+		min-width: 0;
+	}
+}
