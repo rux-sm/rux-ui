@@ -7,7 +7,7 @@
    Statuses (derived from payment state):
 	 pending            — no contract, no payment
 	 contract_signed    — contract signed
-	 po_partial         — PO received for less than the quoted price
+	 po_partial         — PO plus recorded payments do not cover the quote
 	 po_received        — PO received
      deposit_received   — partial payment received
      paid_full          — fully paid
@@ -88,7 +88,7 @@
 
 	/**
 	 * Derive billing status from a normalized state object.
-	 * @param {Object} state - { contractSigned, poReceived, price, paid, balance }
+	 * @param {Object} state - { contractSigned, poReceived, poAmount, price, paid, balance }
 	 * @returns {string} status key
 	 */
 	function deriveStatus(state = {}) {
@@ -98,12 +98,13 @@
 		const price = paymentNumber(state.price);
 		const paid = paymentNumber(state.paid);
 		const balance = Number.isFinite(Number(state.balance)) ? Number(state.balance) : price - paid;
+		const remainingBalance = Math.max(0, balance);
 
 		if (price > 0 && balance < 0) return "overpaid";
 		if (price > 0 && paid > 0 && balance <= 0) return "paid_full";
-		if (poReceived && price > 0 && poAmount < price) return "po_partial";
-		if (paid > 0 && (balance > 0 || price <= 0)) return "deposit_received";
+		if (poReceived && price > 0 && poAmount < remainingBalance) return "po_partial";
 		if (poReceived) return "po_received";
+		if (paid > 0 && (balance > 0 || price <= 0)) return "deposit_received";
 		if (contractSigned) return "contract_signed";
 		return "pending";
 	}

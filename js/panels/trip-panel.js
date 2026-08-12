@@ -508,9 +508,11 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 		if (poCoverageEl) {
 			const poEnabled = !!root.querySelector("#tp-po-received")?.checked;
 			let state = "";
-			const shortfall = Math.max(0, price - poAmount);
+			const remainingBalance = Math.max(0, balance);
+			const shortfall = Math.max(0, remainingBalance - poAmount);
 			if (poEnabled && price > 0) {
-				if (poAmount <= 0) state = "empty";
+				if (remainingBalance <= 0 || shortfall <= 0) state = "complete";
+				else if (poAmount <= 0) state = "empty";
 				else if (shortfall > 0) state = "partial";
 				else state = "complete";
 			}
@@ -526,7 +528,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 				poCoverageEl.textContent = `-${formatCoverageAmount(shortfall)}`;
 			}
 			const coverageLabel = state === "complete"
-				? "PO fully covers the quoted price"
+				? "PO fully covers the remaining balance"
 				: state ? `${formatMoney(shortfall)} not authorized` : "";
 			poCoverageEl.setAttribute("aria-label", coverageLabel);
 			poCoverageEl.title = coverageLabel;

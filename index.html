@@ -7071,11 +7071,11 @@
 		<script src="./js/core/popover.js?v=3"></script>
 		<script src="./js/core/menu.js?v=3"></script>
 		<script src="./js/core/controls.js?v=5" defer></script>
-		<script src="./js/core/billing-config.js?v=4"></script>
+		<script src="./js/core/billing-config.js?v=5"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=9"></script>
 		<script src="./js/core/suggestions.js?v=1"></script>
-		<script src="./js/panels/trip-panel.js?v=37"></script>
+		<script src="./js/panels/trip-panel.js?v=38"></script>
 		<script src="./js/components/itinerary.js?v=27"></script>
 		<script src="./js/panels/driver-panel.js?v=21" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=7" defer></script>
@@ -7101,7 +7101,7 @@
 		></script>
 		<script
 			type="module"
-			src="./js/panels/notifications-panel.js?v=7"
+			src="./js/panels/notifications-panel.js?v=8"
 		></script>
 		<script type="module" src="./js/panels/team-chat.js?v=15"></script>
 		<script
@@ -11071,7 +11071,7 @@
 					const {
 						generateDriverExpiryAlerts,
 						syncTripReadinessAlerts,
-					} = await import("./js/data/notification-db.js?v=4");
+					} = await import("./js/data/notification-db.js?v=5");
 					await Promise.all([
 						generateDriverExpiryAlerts(),
 						syncTripReadinessAlerts(window.RuxTrips?.list() || []),

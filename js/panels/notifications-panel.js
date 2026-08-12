@@ -4,7 +4,7 @@ import {
 	markAllRead,
 	dismiss,
 	subscribeToNotifications,
-} from "../data/notification-db.js?v=4";
+} from "../data/notification-db.js?v=5";
 import { getCurrentProfile } from "../core/profile.js";
 
 const btn = document.getElementById("notifications-menu-btn");

@@ -146,10 +146,17 @@ function tripReadinessIssues(trip, leg) {
 		|| Number(trip.deposit_amount || 0) > 0
 		|| trip.date_paid;
 
-	if (!trip.confirmed) {
+	const billingConfirmed = window.RuxBilling?.isRecordConfirmed?.(trip) ?? !!trip.confirmed;
+	if (!billingConfirmed) {
 		const price = Number(trip.quoted_price || 0);
 		const poAmount = Number(trip.po_amount || 0);
-		if (trip.po_received && price > 0 && poAmount < price) issues.push("full PO authorization");
+		const paid = Number(trip.deposit_amount || 0);
+		const remainingBalance = Math.max(0, price - paid);
+		const billingStatus = window.RuxBilling?.deriveRecordStatus?.(trip);
+		const hasPartialPo = billingStatus
+			? billingStatus === "po_partial"
+			: trip.po_received && price > 0 && poAmount < remainingBalance;
+		if (hasPartialPo) issues.push("full PO authorization");
 		else issues.push(hasPoOrEquivalent ? "payment confirmation" : "PO/payment confirmation");
 	}
 	if (!hasItinerary) issues.push("itinerary");
