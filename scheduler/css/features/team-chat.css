@@ -1,30 +1,50 @@
 /* ==========================================================================
-   TEAM CHAT WINDOW
-   Single shared channel all dispatchers can see. Floating/draggable/
-   resizable shell from css/base/floating-window.css (same recipe as the
-   document viewer and trip manifest) — this file only styles content
-   that's unique to chat: the message list, rows, and the input row.
+   TEAM CHAT POPOVER
+   Single shared channel all dispatchers can see. The header trigger and
+   .rux-popover--tab-tip shell form one attached surface; this file owns the
+   chat-specific size, message list, rows, and composer.
    ========================================================================== */
 
-.rux-team-chat-window {
-	top: 15%;
-	right: var(--rux-space-5);
+.rux-team-chat-popover {
+	--rux-team-chat-message-max-width: 70%;
+	--rux-team-chat-message-bg: var(--rux-surface-4);
+	--rux-team-chat-own-message-bg: var(--rux-surface-5);
+	--rux-team-chat-message-radius: var(--rux-radius-0);
+	--rux-team-chat-avatar-track-width: var(--rux-avatar-md);
+
+	display: flex;
+	flex-direction: column;
 	width: min(23rem, calc(100vw - var(--rux-space-4) * 2));
-	height: min(32rem, calc(100vh - var(--rux-space-4) * 2));
-	min-width: 280px;
-	min-height: 320px;
+	height: min(32rem, calc(100dvh - var(--rux-ui-header-height) - var(--rux-popover-viewport-padding)));
+	min-width: min(280px, calc(100vw - (var(--rux-popover-viewport-padding) * 2)));
+	min-height: min(320px, calc(100dvh - var(--rux-ui-header-height) - var(--rux-popover-viewport-padding)));
 	max-width: calc(100vw - var(--rux-space-4));
-	max-height: calc(100vh - var(--rux-space-4));
+	max-height: calc(100dvh - var(--rux-ui-header-height) - var(--rux-popover-viewport-padding));
+}
+
+.rux-team-chat-popover[hidden] {
+	display: none;
+}
+
+.rux-team-chat__body {
+	display: flex;
+	flex: 1 1 auto;
+	min-width: 0;
+	min-height: 0;
+	padding: 0;
+	overflow: hidden;
 }
 
 .rux-team-chat__messages {
-	flex: 1;
-	overflow-y: auto;
+	flex: 1 1 auto;
+	min-width: 0;
 	min-height: 0;
-	padding: var(--rux-space-4) var(--rux-space-5);
+	overflow-y: auto;
+	background: var(--rux-surface-3);
+	padding: var(--rux-space-4) var(--rux-space-4);
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-3);
+	gap: 0;
 }
 
 .rux-team-chat__empty {
@@ -35,33 +55,85 @@
 }
 
 .rux-team-chat__message {
+	position: relative;
 	display: flex;
 	align-items: flex-start;
-	gap: var(--rux-space-2);
+	gap: var(--rux-space-4);
 }
 
-.rux-team-chat__message .rux-avatar {
+.rux-team-chat__message + .rux-team-chat__message {
+	margin-block-start: var(--rux-space-5);
+}
+
+.rux-team-chat__message + .rux-team-chat__message--grouped {
+	margin-block-start: var(--rux-space-1);
+}
+
+.rux-team-chat__avatar-slot {
+	display: flex;
+	flex: 0 0 var(--rux-team-chat-avatar-track-width);
+	width: var(--rux-team-chat-avatar-track-width);
+	min-height: 1px;
+}
+
+.rux-team-chat__avatar-slot .rux-avatar {
 	flex: none;
+	border-radius: var(--rux-radius-full);
+}
+
+.rux-team-chat__message:not(.rux-team-chat__message--own):not(.rux-team-chat__message--grouped)
+	.rux-team-chat__avatar-slot {
+	margin-block-start: var(--rux-space-4);
 }
 
 .rux-team-chat__message-body {
-	flex: 1;
+	display: flex;
+	flex: 0 1 var(--rux-team-chat-message-max-width);
+	flex-direction: column;
+	align-items: flex-start;
+	max-width: var(--rux-team-chat-message-max-width);
 	min-width: 0;
+}
+
+.rux-team-chat__message--own {
+	justify-content: flex-end;
+}
+
+.rux-team-chat__message--own .rux-team-chat__message-body {
+	align-items: flex-end;
+}
+
+.rux-team-chat__message--own .rux-team-chat__avatar-slot {
+	order: 3;
 }
 
 /* Muted until hovered/focused — a permanently-visible row of react/delete
    icons on every message would be a lot of visual noise in a fast-moving
    chat list. */
 .rux-team-chat__message-actions {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+	z-index: 1;
 	display: flex;
 	align-items: center;
-	flex: none;
+	background: var(--rux-surface-3);
+	border-radius: var(--rux-radius-control);
 	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--rux-motion-duration-fast-01)
+		var(--rux-motion-easing-standard-productive);
+}
+
+.rux-team-chat__message--own .rux-team-chat__message-actions {
+	inset-inline-start: 0;
+	inset-inline-end: auto;
 }
 
 .rux-team-chat__message:hover .rux-team-chat__message-actions,
 .rux-team-chat__message-actions:focus-within {
 	opacity: 1;
+	pointer-events: auto;
 }
 
 .rux-team-chat__reactions {
@@ -71,14 +143,18 @@
 	margin-top: var(--rux-space-1);
 }
 
+.rux-team-chat__message--own .rux-team-chat__reactions {
+	justify-content: flex-end;
+}
+
 .rux-team-chat__reaction-pill {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	height: var(--rux-control-height);
+	height: auto;
 	padding: 0 var(--rux-space-2);
-	background: var(--rux-surface-3);
-	border: var(--rux-border-width) solid var(--rux-border);
+	background: none;
+	border: none;
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-text-secondary);
 	font-size: var(--rux-text-100);
@@ -90,38 +166,64 @@
 }
 
 /* Emoji glyph reads bigger than the count next to it, not scaled together
-   with the pill's own font-size. Same 20px as the picker grid and a jumbo
-   emoji-only message — one consistent emoji size across the chat. */
+   with the pill's own font-size. Same 20px as message emoji and the picker
+   grid — one consistent emoji size across the chat. */
 .rux-team-chat__reaction-emoji {
 	font-size: var(--rux-text-400);
 	line-height: 1;
 }
 
 .rux-team-chat__reaction-pill.is-active {
-	background: color-mix(in oklab, var(--rux-accent) 16%, var(--rux-surface-3));
+	background: none;
 	border-color: var(--rux-accent);
-	color: var(--rux-accent);
+	color: var(--rux-info-vivid);
 }
 
-.rux-team-chat__message-meta {
+.rux-team-chat__message-line {
 	display: flex;
-	align-items: baseline;
+	max-width: 100%;
+	min-width: 0;
+	align-items: flex-end;
 	gap: var(--rux-space-2);
 }
 
+.rux-team-chat__message--own .rux-team-chat__message-line {
+	flex-direction: row-reverse;
+}
+
 .rux-team-chat__message-name {
+	margin-bottom: var(--rux-space-1);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	color: var(--rux-text-primary);
 }
 
 .rux-team-chat__message-time {
+	flex: none;
 	color: var(--rux-text-tertiary);
 	font-size: var(--rux-text-100);
+	font-weight: var(--rux-weight-regular);
+	line-height: var(--rux-leading-snug);
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity var(--rux-motion-duration-fast-01)
+		var(--rux-motion-easing-standard-productive);
+}
+
+.rux-team-chat__message:hover .rux-team-chat__message-time,
+.rux-team-chat__message:focus-within .rux-team-chat__message-time {
+	opacity: 1;
+	visibility: visible;
 }
 
 .rux-team-chat__message-text {
-	margin: var(--rux-space-0-5) 0 0;
+	flex: 0 1 auto;
+	min-width: 0;
+	max-width: 100%;
+	margin: 0;
+	padding: var(--rux-space-2) var(--rux-space-3);
+	background: var(--rux-team-chat-message-bg);
+	border-radius: var(--rux-team-chat-message-radius);
 	color: var(--rux-text-primary);
 	font-size: var(--rux-text-200);
 	line-height: 1.4;
@@ -129,12 +231,31 @@
 	overflow-wrap: anywhere;
 }
 
-/* A message that's nothing but emoji (see isEmojiOnlyMessage in
-   team-chat.js) reads as a reaction-in-message-form — same 20px as the
-   reaction pills and picker grid, one consistent emoji size everywhere. */
-.rux-team-chat__message-text--jumbo {
+.rux-team-chat__message--own .rux-team-chat__message-text {
+	background: var(--rux-team-chat-own-message-bg);
+	text-align: start;
+}
+
+.rux-team-chat__mention {
+	display: inline;
+	color: var(--rux-info-vivid);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-team-chat__mention--current-user {
+	padding-inline: var(--rux-space-px);
+	background: var(--rux-info-subtle);
+	border-radius: var(--rux-radius-sm);
+}
+
+/* Emoji stay inside the standard message surface, whether the message is
+   mixed copy or emoji-only. The span changes only glyph size, preserving the
+   surrounding 14px text and normal bubble geometry. */
+.rux-team-chat__message-emoji {
+	display: inline-block;
 	font-size: var(--rux-text-400);
-	line-height: 1.2;
+	line-height: 1;
+	vertical-align: -0.15em;
 }
 
 /* Full emoji picker popover — same .rux-menu/.rux-popover shell as the
@@ -150,6 +271,30 @@
 	   also floats out of the chat window itself (--rux-z-modal, 400), so it
 	   needs to clear that too, not just the calendar. */
 	z-index: calc(var(--rux-z-modal) + 1);
+}
+
+.rux-team-chat__mention-menu {
+	z-index: calc(var(--rux-z-modal) + 1);
+	width: min(18rem, calc(100vw - var(--rux-space-4)));
+}
+
+.rux-team-chat__mention-option {
+	flex-direction: row;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.rux-team-chat__mention-option:is(:hover, .is-active) {
+	background: var(--rux-button-hover-overlay);
+}
+
+.rux-team-chat__mention-option .rux-avatar {
+	flex: none;
+	border-radius: var(--rux-radius-full);
+}
+
+.rux-ui-header__chat-btn.has-mention .rux-ui-header__badge-count {
+	background: var(--rux-info-vivid);
 }
 
 .rux-team-chat__emoji-grid {
@@ -177,6 +322,7 @@
 	background: var(--rux-menu-item-hover-bg);
 }
 
+.rux-team-chat__status,
 .rux-team-chat__typing {
 	flex: none;
 	margin: 0;
@@ -186,6 +332,7 @@
 	font-style: italic;
 }
 
+.rux-team-chat__status[hidden],
 .rux-team-chat__typing[hidden] {
 	display: none;
 }
@@ -194,10 +341,27 @@
    border — this just makes the form itself a flex row filling that footer. */
 .rux-team-chat__form {
 	display: flex;
+	align-items: center;
 	width: 100%;
 	gap: var(--rux-space-2);
 }
 
 .rux-team-chat__input {
 	flex: 1;
+}
+
+@media (max-width: 480px) {
+	.rux-team-chat-popover {
+		--rux-team-chat-message-max-width: 82%;
+
+		width: calc(100vw - (var(--rux-popover-viewport-padding) * 2));
+		max-width: calc(100vw - (var(--rux-popover-viewport-padding) * 2));
+	}
+}
+
+@media (hover: none) {
+	.rux-team-chat__message-time {
+		opacity: 1;
+		visibility: visible;
+	}
 }

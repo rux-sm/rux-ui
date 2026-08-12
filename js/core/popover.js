@@ -1,5 +1,6 @@
 (() => {
 	"use strict";
+	let activeDisclosure = null;
 
 	const clamp = (value, min, max) => Math.min(Math.max(value, min), Math.max(min, max));
 	const tokenPx = (element, token, fallback) => {
@@ -80,5 +81,117 @@
 		finish(popover, left, top, "point");
 	}
 
-	window.RuxPopover = { position, positionAtPoint };
+	/* Interactive non-modal popover controller. Menus keep using RuxMenu for
+	   menu-specific focus movement; this controller is for richer content such
+	   as Notifications and Messages, where fields and buttons retain their
+	   native keyboard behavior. */
+	function createDisclosure(trigger, popover, options = {}) {
+		if (!trigger || !popover) return null;
+		if (!popover.id) popover.id = `rux-popover-${Math.random().toString(36).slice(2, 9)}`;
+		trigger.setAttribute("aria-controls", popover.id);
+		trigger.setAttribute("aria-expanded", String(!popover.hidden));
+
+		let previousFocus = null;
+		const ownedPopovers = new Set();
+		const record = {
+			api: null,
+			popover,
+			ownedPopovers,
+			contains: (target) => popover.contains(target)
+				|| trigger.contains(target)
+				|| [...ownedPopovers].some((owned) => owned.contains(target)),
+		};
+		const api = { open, close, toggle, isOpen, reposition };
+		record.api = api;
+
+		function isOpen() {
+			return !popover.hidden;
+		}
+
+		function reposition() {
+			if (!isOpen()) return;
+			position(trigger, popover, {
+				placement: options.placement || "bottom-end",
+				offset: options.offset,
+				viewportPadding: options.viewportPadding,
+			});
+		}
+
+		function open() {
+			if (isOpen() || options.beforeOpen?.() === false) return;
+			activeDisclosure?.api.close({ restoreFocus: false });
+			previousFocus = document.activeElement;
+			trigger.setAttribute("aria-expanded", "true");
+			activeDisclosure = record;
+			document.dispatchEvent(new CustomEvent("rux:popover-open", {
+				detail: { popover, trigger },
+			}));
+			position(trigger, popover, {
+				placement: options.placement || "bottom-end",
+				offset: options.offset,
+				viewportPadding: options.viewportPadding,
+			});
+			options.onOpen?.();
+			const focusTarget = typeof options.initialFocus === "function"
+				? options.initialFocus()
+				: options.initialFocus
+					? popover.querySelector(options.initialFocus)
+					: null;
+			focusTarget?.focus?.();
+		}
+
+		function close(closeOptions = {}) {
+			if (!isOpen()) return;
+			popover.hidden = true;
+			popover.style.visibility = "";
+			trigger.setAttribute("aria-expanded", "false");
+			if (activeDisclosure === record) activeDisclosure = null;
+			options.onClose?.();
+			if (closeOptions.restoreFocus !== false) {
+				previousFocus?.focus?.({ preventScroll: true });
+			}
+			previousFocus = null;
+			ownedPopovers.clear();
+		}
+
+		function toggle() {
+			if (isOpen()) close();
+			else open();
+		}
+
+		trigger.addEventListener("click", toggle);
+		return api;
+	}
+
+	document.addEventListener("pointerdown", (event) => {
+		if (!activeDisclosure) return;
+		if (activeDisclosure.contains(event.target)) return;
+		activeDisclosure.api.close({ restoreFocus: false });
+	}, true);
+
+	document.addEventListener("keydown", (event) => {
+		if (event.key !== "Escape" || !activeDisclosure) return;
+		const disclosure = activeDisclosure;
+		// Menu.js may own a nested menu (for example Chat's emoji picker).
+		// Let the later menu listener consume Escape first; otherwise close the
+		// parent interactive popover after event dispatch completes.
+		queueMicrotask(() => {
+			if (!event.defaultPrevented && activeDisclosure === disclosure) {
+				disclosure.api.close();
+			}
+		});
+	});
+
+	document.addEventListener("rux:popover-open", (event) => {
+		if (!activeDisclosure || event.detail?.popover === activeDisclosure.popover) return;
+		if (activeDisclosure.contains(event.detail?.trigger)) {
+			activeDisclosure.ownedPopovers.add(event.detail.popover);
+			return;
+		}
+		activeDisclosure.api.close({ restoreFocus: false });
+	});
+
+	window.addEventListener("resize", () => activeDisclosure?.api.reposition());
+
+	window.RuxPopover = { position, positionAtPoint, createDisclosure };
 })();

@@ -11,7 +11,7 @@
 	function createSideNav({ toggle, nav, scrim = null }) {
 		if (!toggle || !nav) return null;
 
-		// Stacked Menu/Close glyphs respond to aria-expanded in CSS. Retain the
+		// Stacked default/Close glyphs respond to aria-expanded in CSS. Retain the
 		// original direct-child icon swap for existing consumers that have not
 		// adopted the animated stack yet.
 		const legacyIcon = toggle.querySelector(":scope > .rux-icon");

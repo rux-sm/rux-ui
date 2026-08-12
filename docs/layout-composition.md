@@ -185,6 +185,23 @@ Card
   levels: panel/workspace, card, and card section.
 - Cards MUST NOT be nested merely to obtain padding or spacing.
 
+## Modal Headers
+
+Modal headers use a compact Carbon-like title/action composition. The header
+frame and its trailing icon action are both `--rux-modal-header-height` high.
+The title begins at the standard `--rux-space-4` inset, while the icon action
+is anchored independently to the top-right corner so title typography cannot
+move or resize it.
+
+- Use `.rux-modal__title` for the modal's accessible heading.
+- Place one `.rux-button--icon` directly inside `.rux-modal__header` when the
+  dialog has a close action.
+- Keep the standard header fixed to `--rux-modal-header-height`.
+- A header containing secondary copy MAY expand to `height: auto`, but MUST
+  preserve the header minimum height and the independently anchored action.
+- Do not reproduce the modal's absolute action placement in ordinary card
+  headers. Card headers may contain several actions and retain flexible layout.
+
 ## Spacing
 
 Rux uses a `16px` visual content rhythm through `--rux-space-4`. This describes

@@ -97,7 +97,6 @@
 	opacity: 1;
 	transform: none;
 	will-change: clip-path;
-	box-shadow: var(--rux-shadow-3);
 	transition:
 		clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
 		visibility 0s linear var(--rux-side-nav-motion-duration);
@@ -905,7 +904,7 @@
 }
 
 .rux-mini-cal__date--today {
-	background-color: var(--rux-accent);
+	background-color: var(--rux-button-accent-background);
 	color: var(--rux-fg-on-accent);
 	font-weight: var(--rux-weight-bold);
 }
@@ -918,7 +917,7 @@
 }
 
 .rux-mini-cal__date--active-week.rux-mini-cal__date--today {
-	background: var(--rux-accent);
+	background: var(--rux-button-accent-background);
 }
 
 .rux-mini-cal__date--has-trips::after {

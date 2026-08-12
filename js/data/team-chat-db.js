@@ -66,10 +66,10 @@ export async function markChatRead(profileId) {
 	if (error) console.warn("Could not mark chat read:", error);
 }
 
-export function subscribeToTeamChat(onChange) {
+export function subscribeToTeamChat(onChange, onStatus) {
 	return supabase
 		.channel("team-chat")
 		.on("postgres_changes", { event: "*", schema: "public", table: "team_messages" }, onChange)
 		.on("postgres_changes", { event: "*", schema: "public", table: "team_message_reactions" }, onChange)
-		.subscribe();
+		.subscribe(onStatus);
 }

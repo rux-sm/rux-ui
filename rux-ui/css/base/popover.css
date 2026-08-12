@@ -1,8 +1,8 @@
 /* ==========================================================================
    POPOVER
    --------------------------------------------------------------------------
-   Shared floating-layer positioning shell. Visual appearance belongs to the
-   composed component, such as .rux-menu; geometry is set by popover.js.
+   Shared floating-layer positioning shell. Geometry is set by popover.js;
+   .rux-popover--surface provides the optional standard outer container.
    ========================================================================== */
 
 .rux-popover {
@@ -12,4 +12,58 @@
 
 .rux-popover[hidden] {
 	display: none;
+}
+
+/* Optional shared visual container. The doubled selector intentionally wins
+   over composed shells such as .rux-menu and .rux-card, leaving those
+   components responsible only for their internal content anatomy. */
+.rux-popover.rux-popover--surface {
+	box-sizing: border-box;
+	overflow: hidden;
+	background: var(--rux-popover-surface-bg);
+	color: var(--rux-popover-surface-fg);
+	border: var(--rux-popover-surface-border);
+	border-radius: var(--rux-popover-surface-radius);
+	box-shadow: var(--rux-popover-surface-shadow);
+}
+
+/* Header tab-tip variant. The trigger itself supplies the raised 48px tab;
+   this surface attaches directly below it and removes the corner beneath the
+   tab so both elements read as one connected silhouette. Ordinary context
+   menus retain the default popover offset and radius. */
+.rux-popover--tab-tip {
+	--rux-popover-offset: var(--rux-popover-tab-tip-offset);
+}
+
+/* A header tab-tip is visually continuous with its open trigger, so a shadow
+   at the attachment edge would split one surface into two. Ordinary floating
+   popovers retain --rux-popover-surface-shadow. */
+.rux-popover.rux-popover--surface.rux-popover--tab-tip {
+	box-shadow: var(--rux-popover-tab-tip-shadow);
+}
+
+.rux-popover--surface.rux-popover--tab-tip[data-placement="bottom-end"] {
+	border-start-end-radius: 0;
+}
+
+.rux-popover--surface.rux-popover--tab-tip[data-placement="bottom-start"] {
+	border-start-start-radius: 0;
+}
+
+.rux-popover--tab-tip[data-placement^="bottom"]::before {
+	position: absolute;
+	inset-block-start: 0;
+	width: var(--rux-popover-tab-tip-size);
+	height: var(--rux-border-width);
+	content: "";
+	background: var(--rux-popover-surface-bg);
+	pointer-events: none;
+}
+
+.rux-popover--tab-tip[data-placement="bottom-end"]::before {
+	inset-inline-end: 0;
+}
+
+.rux-popover--tab-tip[data-placement="bottom-start"]::before {
+	inset-inline-start: 0;
 }

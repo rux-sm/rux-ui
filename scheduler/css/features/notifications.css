@@ -7,7 +7,7 @@
    ========================================================================== */
 
 .rux-notifications-menu {
-	width: 340px;
+	width: min(340px, calc(100vw - (var(--rux-popover-viewport-padding) * 2)));
 	max-height: 70vh;
 	overflow-y: auto;
 }

@@ -1,9 +1,10 @@
 import {
 	fetchNotifications,
 	markRead,
+	markAllRead,
 	dismiss,
 	subscribeToNotifications,
-} from "../data/notification-db.js?v=3";
+} from "../data/notification-db.js?v=4";
 import { getCurrentProfile } from "../core/profile.js";
 
 const btn = document.getElementById("notifications-menu-btn");
@@ -13,6 +14,10 @@ const list = menu?.querySelector("[data-notifications-list]");
 
 if (btn && menu && list) {
 	let notifications = [];
+	const disclosure = window.RuxPopover.createDisclosure(btn, menu, {
+		placement: "bottom-end",
+		onOpen: openNotifications,
+	});
 
 	function severityBadgeClass(severity) {
 		if (severity === "critical") return "rux-badge--danger";
@@ -95,29 +100,41 @@ if (btn && menu && list) {
 
 	async function refresh() {
 		const profileId = getCurrentProfile()?.id;
-		if (!profileId) return;
+		if (!profileId) return false;
 		try {
 			notifications = await fetchNotifications(profileId);
 		} catch (err) {
 			console.warn("Could not load notifications:", err);
-			return;
+			return false;
 		}
 		renderRows();
+		return true;
 	}
 
-	btn.addEventListener("click", () => {
-		const isOpen = menu.hidden === false;
-		if (isOpen) {
-			window.RuxMenu?.close(menu);
-		} else {
-			window.RuxMenu?.open(btn, menu, { placement: "bottom-end" });
-			refresh();
+	async function openNotifications() {
+		if (!await refresh()) return;
+		const profileId = getCurrentProfile()?.id;
+		const unreadIds = notifications.filter((row) => !row.read).map((row) => row.id);
+		if (!profileId || !unreadIds.length) return;
+
+		// Opening the inbox counts as seeing the visible notifications. Update
+		// immediately so the badge responds without waiting for the round trip;
+		// refresh from persisted state if the write fails.
+		notifications.forEach((row) => {
+			if (unreadIds.includes(row.id)) row.read = true;
+		});
+		renderRows();
+		try {
+			await markAllRead(unreadIds, profileId);
+		} catch (err) {
+			console.warn("Could not mark notifications read:", err);
+			await refresh();
 		}
-	});
+	}
 
 	window.addEventListener("rux:profile-changed", refresh);
 	subscribeToNotifications(refresh);
 	refresh();
 
-	window.NotificationsPanel = { refresh };
+	window.NotificationsPanel = { refresh, open: disclosure.open, close: disclosure.close };
 }

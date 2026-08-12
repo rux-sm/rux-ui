@@ -28,6 +28,9 @@
 
 .rux-driver-week-info .rux-modal__header {
 	flex: none;
+	height: auto;
+	min-height: var(--rux-modal-header-height);
+	padding-block-end: var(--rux-space-4);
 }
 
 .rux-driver-week-info__heading {

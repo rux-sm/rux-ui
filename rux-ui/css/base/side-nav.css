@@ -18,6 +18,7 @@
 	background: var(--rux-side-nav-bg);
 	color: var(--rux-side-nav-fg);
 	border-inline-end: var(--rux-side-nav-border);
+	box-shadow: none;
 }
 
 .rux-side-nav__list {
@@ -49,7 +50,7 @@
 	border-radius: var(--rux-side-nav-item-radius);
 	font: inherit;
 	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-regular);
 	line-height: var(--rux-leading-snug);
 	text-align: start;
 	cursor: pointer;

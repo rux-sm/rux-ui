@@ -231,17 +231,14 @@ export async function fetchNotifications(profileId) {
 			const reads = (row.notification_reads || []).filter(
 				(r) => String(r.profile_id) === String(profileId),
 			);
-			// read/dismissed only count if they happened *today* — driver
-			// expiry rows are long-lived (one stable row per credential, see
-			// generateDriverExpiryAlerts), so treating either as permanent
-			// would mean reading or dismissing it once silences it forever
-			// instead of it acting as a standing daily reminder until the
-			// credential is actually renewed.
+			// Read state is durable across sessions and calendar days. Standing
+			// alerts may reappear after a one-day dismissal, but viewing them once
+			// must not make the same stable row look new again on the next login.
 			const isToday = (iso) => !!iso && localIsoDate(new Date(iso)) === today;
 			return {
 				...row,
 				notification_reads: undefined,
-				read: reads.some((r) => isToday(r.read_at)),
+				read: reads.some((r) => Boolean(r.read_at)),
 				dismissed: reads.some((r) => isToday(r.dismissed_at)),
 			};
 		})
@@ -262,8 +259,28 @@ export function markRead(notificationId, profileId) {
 	return upsertRead(notificationId, profileId, { read_at: new Date().toISOString() });
 }
 
+export async function markAllRead(notificationIds, profileId) {
+	if (!notificationIds.length) return;
+	const readAt = new Date().toISOString();
+	const { error } = await supabase
+		.from("notification_reads")
+		.upsert(
+			notificationIds.map((notificationId) => ({
+				notification_id: notificationId,
+				profile_id: profileId,
+				read_at: readAt,
+			})),
+			{ onConflict: "notification_id,profile_id" },
+		);
+	if (error) throw error;
+}
+
 export function dismiss(notificationId, profileId) {
-	return upsertRead(notificationId, profileId, { dismissed_at: new Date().toISOString() });
+	const now = new Date().toISOString();
+	return upsertRead(notificationId, profileId, {
+		read_at: now,
+		dismissed_at: now,
+	});
 }
 
 export function subscribeToNotifications(onChange) {

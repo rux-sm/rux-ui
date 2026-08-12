@@ -45,20 +45,20 @@
 
 @import "../../rux-ui/css/base/icons.css";
 @import "../../rux-ui/css/base/controls.css?v=15";
-@import "../../rux-ui/css/base/ui-header.css?v=5";
-@import "../../rux-ui/css/base/side-nav.css?v=1";
+@import "../../rux-ui/css/base/ui-header.css?v=8";
+@import "../../rux-ui/css/base/side-nav.css?v=2";
 @import "../../rux-ui/css/base/app-shell.css?v=1";
 @import "../../rux-ui/css/base/badges.css?v=2";
 @import "../../rux-ui/css/base/form.css?v=2";
 @import "../../rux-ui/css/base/workspace.css?v=3";
 @import "../../rux-ui/css/base/panel.css?v=2";
 @import "../../rux-ui/css/base/menu.css?v=1";
-@import "../../rux-ui/css/base/popover.css";
+@import "../../rux-ui/css/base/popover.css?v=4";
 @import "../../rux-ui/css/base/suggestions.css?v=1";
 @import "../../rux-ui/css/base/card.css";
 @import "../../rux-ui/css/base/floating-window.css?v=6";
 @import "../../rux-ui/css/base/content.css?v=2";
-@import "../../rux-ui/css/base/feedback.css?v=3";
+@import "../../rux-ui/css/base/feedback.css?v=4";
 @import "../../rux-ui/css/base/navigation.css?v=16";
 @import "../../rux-ui/css/base/utils.css?v=2";
 @import "./features/trip-bar.css?v=31";
@@ -67,4 +67,4 @@
 @import "./features/trip-dialog.css";
 @import "./features/itinerary.css?v=4";
 @import "./layout/scheduler.css?v=15";
-@import "./layout/scheduler-app.css?v=69";
+@import "./layout/scheduler-app.css?v=70";

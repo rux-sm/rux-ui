@@ -19,6 +19,9 @@
 	function open(trigger, menu, options = {}) {
 		if (!trigger || !menu) return;
 		if (active?.menu && active.menu !== menu) close(active.menu, { restoreFocus: false });
+		document.dispatchEvent(new CustomEvent("rux:popover-open", {
+			detail: { popover: menu, trigger },
+		}));
 		if (!menu.id) menu.id = `rux-menu-${Math.random().toString(36).slice(2, 9)}`;
 		trigger.setAttribute("aria-haspopup", "menu");
 		trigger.setAttribute("aria-controls", menu.id);
@@ -69,6 +72,11 @@
 		if (menuItem && active?.menu.contains(menuItem)) {
 			close(active.menu, { restoreFocus: true });
 		}
+	});
+
+	document.addEventListener("rux:popover-open", (event) => {
+		if (!active || event.detail?.popover === active.menu) return;
+		close(active.menu, { restoreFocus: false });
 	});
 
 	window.RuxMenu = { open, openAtPoint, close };

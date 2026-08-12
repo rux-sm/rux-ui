@@ -64,19 +64,41 @@
   width: 100%;
   max-width: var(--rux-container-xs);
   background: var(--rux-surface-5);
-  border: var(--rux-border-width) solid var(--rux-border);
-  border-radius: var(--rux-radius-xl);
+  border: none;
+  border-radius: var(--rux-radius-0);
   overflow: hidden;
   animation: rux-modal-in var(--rux-duration-base) var(--rux-ease-out);
 }
 .rux-modal__header {
+	position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--rux-space-4);
-  border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+	flex: none;
+	align-items: center;
+	justify-content: flex-start;
+	min-width: 0;
+	height: var(--rux-modal-header-height);
+	padding: var(--rux-modal-header-padding);
+  border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
-.rux-modal__title { font-size: var(--rux-heading-panel-size); font-weight: var(--rux-heading-panel-weight); }
+.rux-modal__header > .rux-button--icon {
+	--_h: var(--rux-modal-header-action-size);
+
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+	border-radius: var(--rux-radius-0);
+}
+.rux-modal__title {
+	min-width: 0;
+	margin: 0;
+	overflow: hidden;
+	color: var(--rux-heading);
+	font-size: var(--rux-modal-title-size);
+	font-weight: var(--rux-modal-title-weight);
+	line-height: var(--rux-modal-title-line-height);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
 .rux-modal__body { padding: var(--rux-space-5); color: var(--rux-fg-muted); }
 .rux-modal__footer {
   display: flex;

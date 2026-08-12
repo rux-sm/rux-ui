@@ -127,32 +127,37 @@
 	--_icon-size: var(--rux-ui-header-button-icon-size);
 }
 
-/* Material Symbols do not expose Carbon's three-line SVG morph. The standard
-   button stacks Menu and Close glyphs and swaps them immediately from the
-   aria-expanded state, matching the captured preview behavior. UI-shell.js
-   still supports the legacy single direct-child .rux-icon contract. */
-.rux-ui-header__menu-icons {
+/* Disclosure buttons stack their default content and Close glyph at the same
+   coordinates. aria-expanded swaps them immediately, giving side navigation,
+   menus, and interactive popovers one predictable close affordance. */
+.rux-ui-header__disclosure-icons {
 	display: grid;
 	width: var(--rux-ui-header-button-icon-size);
 	height: var(--rux-ui-header-button-icon-size);
 	place-items: center;
 }
 
-.rux-ui-header__menu-icon {
+.rux-ui-header__disclosure-icon {
 	--_icon-size: var(--rux-ui-header-button-icon-size);
 
 	grid-area: 1 / 1;
+	display: grid;
+	place-items: center;
 	transition:
-		opacity var(--rux-ui-header-menu-icon-motion-duration)
-			var(--rux-ui-header-menu-icon-motion-easing);
+		opacity var(--rux-ui-header-disclosure-icon-motion-duration)
+			var(--rux-ui-header-disclosure-icon-motion-easing);
 }
 
-.rux-ui-header__menu-icon--close,
-	.rux-ui-header__menu[aria-expanded="true"] .rux-ui-header__menu-icon--open {
+.rux-ui-header__disclosure-icon > .rux-icon {
+	--_icon-size: var(--rux-ui-header-button-icon-size);
+}
+
+.rux-ui-header__disclosure-icon--close,
+	.rux-ui-header__button[aria-expanded="true"] .rux-ui-header__disclosure-icon--default {
 	opacity: 0;
 }
 
-.rux-ui-header__menu[aria-expanded="true"] .rux-ui-header__menu-icon--close {
+.rux-ui-header__button[aria-expanded="true"] .rux-ui-header__disclosure-icon--close {
 	opacity: 1;
 }
 
@@ -173,8 +178,39 @@
 	box-shadow: var(--rux-ui-header-button-focus-ring);
 }
 
+/* Surface disclosures share one connected-trigger contract. Each trigger
+   supplies the background of the surface it owns: popover or side nav. Keep
+   the open trigger above the body layer so the icon/avatar and focus ring stay
+   visible while the two elements read as one silhouette. */
+.rux-ui-header__button--popover {
+	--_rux-header-disclosure-bg: var(--rux-popover-surface-bg);
+}
+
+.rux-ui-header__menu {
+	--_rux-header-disclosure-bg: var(--rux-side-nav-bg);
+}
+
+:is(.rux-ui-header__button--popover, .rux-ui-header__menu)[aria-expanded="true"] {
+	position: relative;
+	z-index: calc(var(--rux-z-overlay) + 1);
+	background: var(--_rux-header-disclosure-bg);
+}
+
 .rux-ui-header__profile {
 	overflow: visible;
+}
+
+/* The profile's default content is a 32px avatar rather than a 20px glyph.
+   Give its stack the avatar's real geometry so both the avatar and the 20px
+   Close glyph resolve against the same center of the 48px button. */
+.rux-ui-header__profile .rux-ui-header__disclosure-icons {
+	width: var(--rux-ui-header-profile-avatar-size);
+	height: var(--rux-ui-header-profile-avatar-size);
+}
+
+.rux-ui-header__profile-identity {
+	width: 100%;
+	height: 100%;
 }
 
 .rux-ui-header__notif-btn,
@@ -206,6 +242,10 @@
 	display: none;
 }
 
+.rux-ui-header__button[aria-expanded="true"] > .rux-ui-header__badge-count {
+	visibility: hidden;
+}
+
 /* Nav-item variant: sits inline after the label instead of corner-anchored on
    an icon-only button (the action-rail default above). The nav button is an
    inline-flex with a content gap, so a static badge flows right beside the
@@ -226,17 +266,21 @@
    override the sticky calendar header renders on top of these menus
    instead of the other way around. */
 #notifications-menu,
-#profile-menu {
+#profile-menu,
+#team-chat-popover {
 	z-index: var(--rux-z-overlay);
 }
 
-.rux-ui-header__profile > :is(img, .rux-ui-header__profile-initials) {
+.rux-ui-header__profile-identity > :is(img, .rux-ui-header__profile-initials) {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: var(--rux-ui-header-profile-avatar-size);
 	height: var(--rux-ui-header-profile-avatar-size);
 	border-radius: var(--rux-radius-full);
 }
 
-.rux-ui-header__profile > img {
+.rux-ui-header__profile-identity > img {
 	display: block;
 	object-fit: cover;
 }

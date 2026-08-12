@@ -8,6 +8,7 @@ import {
 	subscribeToTeamChat,
 } from "../data/team-chat-db.js";
 import { supabase } from "../data/supabase.js";
+import { fetchProfiles } from "../data/profile-db.js";
 import { getCurrentProfile } from "../core/profile.js";
 import { profileAvatarEl } from "../core/avatar.js";
 
@@ -22,33 +23,34 @@ const EMOJI_CATEGORIES = [
 	{ label: "Other", emoji: ["🎉", "🎈", "🚀", "💯", "✅", "❌", "⚠️", "💤", "🔔", "📌", "💡", "⏰", "🚌", "👀"] },
 ];
 
-// A message that's only emoji (optionally with whitespace between them) reads
-// as a reaction-in-message-form — render it larger, same "jumbomoji" idea as
-// Slack/Discord. Capped at 6 glyphs so a long run of emoji doesn't turn into
-// a wall of giant characters.
-const EMOJI_ONLY_RE = /^[\p{Extended_Pictographic}\u200D\uFE0F\s]+$/u;
-function isEmojiOnlyMessage(text) {
-	const trimmed = String(text || "").trim();
-	if (!trimmed || !EMOJI_ONLY_RE.test(trimmed)) return false;
-	const count = trimmed.match(/\p{Extended_Pictographic}/gu)?.length || 0;
-	return count > 0 && count <= 6;
-}
+const EMOJI_GRAPHEME_RE = /\p{Extended_Pictographic}|\p{Emoji_Presentation}/u;
+const GRAPHEME_SEGMENTER = typeof Intl.Segmenter === "function"
+	? new Intl.Segmenter(undefined, { granularity: "grapheme" })
+	: null;
+const MESSAGE_GROUP_WINDOW_MS = 5 * 60 * 1000;
+const MENTION_TOKEN_SOURCE = String.raw`@\[([^\]]+)\]\(profile:([^\)]+)\)`;
 
 const btn = document.getElementById("team-chat-btn");
 const badge = document.getElementById("team-chat-badge");
 
 if (btn && badge) {
 	let panelEl = null;
+	let disclosure = null;
 	let emojiMenuEl = null;
+	let mentionMenuEl = null;
+	let mentionProfiles = [];
+	let activeMentionQuery = null;
+	let activeMentionIndex = 0;
+	const selectedMentions = new Map();
 	// { type: "react", messageId } when opened from a message's add-reaction
 	// button, or { type: "compose" } when opened from the input's own emoji
 	// button — same shared picker, different action on pick.
 	let emojiMenuMode = null;
 	let messages = [];
 	let lastReadAt = null;
-	let previousFocus = null;
 	let typingChannel = null;
 	let typingTimeout = null;
+	let isSending = false;
 
 	function isPanelOpen() {
 		return !!panelEl && !panelEl.hidden;
@@ -63,68 +65,331 @@ if (btn && badge) {
 		return node.innerHTML;
 	}
 
+	// Keep message copy at the standard body size while giving every emoji
+	// grapheme the shared 20px treatment. Segmenting by grapheme preserves
+	// joined emoji and variation selectors as one visible glyph.
+	function renderPlainMessageContent(value) {
+		const text = String(value || "");
+		const segments = GRAPHEME_SEGMENTER
+			? [...GRAPHEME_SEGMENTER.segment(text)].map(({ segment }) => segment)
+			: Array.from(text);
+		return segments
+			.map((segment) => EMOJI_GRAPHEME_RE.test(segment)
+				? `<span class="rux-team-chat__message-emoji">${escapeHtml(segment)}</span>`
+				: escapeHtml(segment))
+			.join("");
+	}
+
+	function decodeMentionPart(value) {
+		try {
+			return decodeURIComponent(value);
+		} catch {
+			return value;
+		}
+	}
+
+	// Mentions are stored inline with a stable profile ID while rendering as
+	// ordinary @Name copy. This keeps existing team_messages rows compatible
+	// and avoids treating a changeable display name as the recipient identity.
+	function renderMessageContent(value, currentProfileId = "") {
+		const text = String(value || "");
+		const mentionPattern = new RegExp(MENTION_TOKEN_SOURCE, "g");
+		let cursor = 0;
+		let html = "";
+		for (const match of text.matchAll(mentionPattern)) {
+			html += renderPlainMessageContent(text.slice(cursor, match.index));
+			const name = decodeMentionPart(match[1]);
+			const profileId = decodeMentionPart(match[2]);
+			const isCurrentUser = currentProfileId && String(profileId) === String(currentProfileId);
+			html += `<span class="rux-team-chat__mention${isCurrentUser ? " rux-team-chat__mention--current-user" : ""}" data-mentioned-profile-id="${escapeHtml(profileId)}">@${renderPlainMessageContent(name)}</span>`;
+			cursor = match.index + match[0].length;
+		}
+		return html + renderPlainMessageContent(text.slice(cursor));
+	}
+
+	function messageMentionsProfile(message, profileId) {
+		if (!profileId) return false;
+		const mentionPattern = new RegExp(MENTION_TOKEN_SOURCE, "g");
+		return [...String(message?.body || "").matchAll(mentionPattern)]
+			.some((match) => decodeMentionPart(match[2]) === String(profileId));
+	}
+
+	function encodeSelectedMentions(value) {
+		let body = String(value || "");
+		const profiles = [...selectedMentions.values()]
+			.sort((a, b) => b.display_name.length - a.display_name.length);
+		profiles.forEach((profile) => {
+			const escapedName = profile.display_name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			const visibleMention = new RegExp(`@${escapedName}(?![\\p{L}\\p{N}_])`, "gu");
+			const token = `@[${encodeURIComponent(profile.display_name)}](profile:${encodeURIComponent(profile.id)})`;
+			body = body.replace(visibleMention, token);
+		});
+		return body;
+	}
+
 	function timeLabel(iso) {
 		const date = new Date(iso);
 		return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 	}
 
-	// Floating/draggable/resizable, same shell as the document viewer and
-	// trip manifest (js/core/floating-window.js) — a plain position:fixed
-	// panel, not a dimmed rux-modal-backdrop, so it can float over the
-	// calendar while a dispatcher keeps working instead of blocking input.
+	function continuesMessageGroup(message, previousMessage) {
+		if (
+			!previousMessage
+			|| !message.profile_id
+			|| !previousMessage.profile_id
+			|| String(message.profile_id) !== String(previousMessage.profile_id)
+		) {
+			return false;
+		}
+		const elapsed = new Date(message.created_at).getTime()
+			- new Date(previousMessage.created_at).getTime();
+		return Number.isFinite(elapsed) && elapsed >= 0 && elapsed <= MESSAGE_GROUP_WINDOW_MS;
+	}
+
+	function syncComposerState() {
+		if (!panelEl) return;
+		const input = panelEl.querySelector("[data-team-chat-input]");
+		const sendButton = panelEl.querySelector("[data-team-chat-send]");
+		if (!input || !sendButton) return;
+		sendButton.disabled = isSending || !input.value.trim();
+		sendButton.setAttribute("aria-label", isSending ? "Sending" : "Send");
+	}
+
+	async function refreshMentionProfiles() {
+		try {
+			const currentProfileId = String(getCurrentProfile()?.id || "");
+			mentionProfiles = (await fetchProfiles()).filter(
+				(profile) => String(profile.id) !== currentProfileId,
+			);
+			const input = panelEl?.querySelector("[data-team-chat-input]");
+			if (input && isPanelOpen()) updateMentionSuggestions(input);
+		} catch (err) {
+			console.warn("Could not load mention suggestions:", err);
+			mentionProfiles = [];
+		}
+	}
+
+	function ensureMentionMenu() {
+		if (mentionMenuEl) return mentionMenuEl;
+		mentionMenuEl = document.createElement("div");
+		mentionMenuEl.id = "team-chat-mention-suggestions";
+		mentionMenuEl.className = "rux-suggestions rux-team-chat__mention-menu";
+		mentionMenuEl.setAttribute("role", "listbox");
+		mentionMenuEl.setAttribute("aria-label", "Mention a teammate");
+		mentionMenuEl.hidden = true;
+		document.body.appendChild(mentionMenuEl);
+		mentionMenuEl.addEventListener("pointerdown", (event) => event.preventDefault());
+		mentionMenuEl.addEventListener("click", (event) => {
+			const option = event.target.closest("[data-mention-profile-id]");
+			if (!option) return;
+			const profile = mentionProfiles.find(
+				(candidate) => String(candidate.id) === option.dataset.mentionProfileId,
+			);
+			if (profile) selectMention(profile);
+		});
+		return mentionMenuEl;
+	}
+
+	function closeMentionMenu() {
+		activeMentionQuery = null;
+		activeMentionIndex = 0;
+		if (mentionMenuEl) mentionMenuEl.hidden = true;
+		const input = panelEl?.querySelector("[data-team-chat-input]");
+		input?.setAttribute("aria-expanded", "false");
+		input?.removeAttribute("aria-activedescendant");
+	}
+
+	function mentionQueryAtCursor(input) {
+		const cursor = input.selectionStart ?? input.value.length;
+		const prefix = input.value.slice(0, cursor);
+		const at = prefix.lastIndexOf("@");
+		if (at < 0 || (at > 0 && !/\s/.test(prefix[at - 1]))) return null;
+		const query = prefix.slice(at + 1);
+		if (query.length > 80 || !/^[\p{L}\p{N} .'-]*$/u.test(query)) return null;
+		if (query.endsWith(" ") && selectedMentions.has(query.trim().toLocaleLowerCase())) return null;
+		return { start: at, end: cursor, query };
+	}
+
+	function setActiveMentionOption(index) {
+		if (!mentionMenuEl || mentionMenuEl.hidden) return;
+		const options = [...mentionMenuEl.querySelectorAll("[data-mention-profile-id]")];
+		if (!options.length) return;
+		activeMentionIndex = (index + options.length) % options.length;
+		options.forEach((option, optionIndex) => {
+			const active = optionIndex === activeMentionIndex;
+			option.classList.toggle("is-active", active);
+			option.setAttribute("aria-selected", String(active));
+		});
+		const activeOption = options[activeMentionIndex];
+		panelEl?.querySelector("[data-team-chat-input]")
+			?.setAttribute("aria-activedescendant", activeOption.id);
+	}
+
+	function positionMentionMenu() {
+		const input = panelEl?.querySelector("[data-team-chat-input]");
+		if (!input || !mentionMenuEl || mentionMenuEl.hidden) return;
+		window.RuxPopover?.position(input, mentionMenuEl, { placement: "top-start" });
+	}
+
+	function updateMentionSuggestions(input) {
+		const query = mentionQueryAtCursor(input);
+		if (!query) {
+			closeMentionMenu();
+			return;
+		}
+		const needle = query.query.trim().toLocaleLowerCase();
+		const matches = mentionProfiles
+			.filter((profile) => profile.display_name.toLocaleLowerCase().includes(needle))
+			.slice(0, 6);
+		if (!matches.length) {
+			closeMentionMenu();
+			return;
+		}
+		activeMentionQuery = query;
+		const menu = ensureMentionMenu();
+		menu.replaceChildren(...matches.map((profile, index) => {
+			const option = document.createElement("button");
+			option.type = "button";
+			option.id = `team-chat-mention-option-${index}`;
+			option.className = "rux-suggestions__item rux-team-chat__mention-option";
+			option.dataset.mentionProfileId = profile.id;
+			option.setAttribute("role", "option");
+			option.append(
+				profileAvatarEl(profile, "rux-avatar--sm"),
+				Object.assign(document.createElement("span"), {
+					className: "rux-suggestions__label",
+					textContent: profile.display_name,
+				}),
+			);
+			return option;
+		}));
+		menu.hidden = false;
+		input.setAttribute("aria-expanded", "true");
+		document.dispatchEvent(new CustomEvent("rux:popover-open", {
+			detail: { popover: menu, trigger: input },
+		}));
+		positionMentionMenu();
+		setActiveMentionOption(0);
+	}
+
+	function selectMention(profile) {
+		const input = panelEl?.querySelector("[data-team-chat-input]");
+		if (!input || !activeMentionQuery) return;
+		const visibleMention = `@${profile.display_name}`;
+		input.value = input.value.slice(0, activeMentionQuery.start)
+			+ visibleMention
+			+ " "
+			+ input.value.slice(activeMentionQuery.end);
+		const cursor = activeMentionQuery.start + visibleMention.length + 1;
+		selectedMentions.set(profile.display_name.toLocaleLowerCase(), profile);
+		closeMentionMenu();
+		input.setSelectionRange(cursor, cursor);
+		input.focus();
+		syncComposerState();
+	}
+
+	function renderConnectionStatus(status) {
+		const statusEl = panelEl?.querySelector("[data-team-chat-status]");
+		if (!statusEl) return;
+		const reconnecting = ["CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status);
+		statusEl.hidden = !reconnecting;
+		statusEl.textContent = reconnecting ? "Reconnecting…" : "";
+	}
+
+	// Interactive header popover. Unlike Profile and Notifications, chat is
+	// not a menu: it contains a message log, reactions, and a composer, so it
+	// uses a non-modal dialog role inside the shared tab-tip visual shell.
 	function ensurePanel() {
 		if (panelEl) return panelEl;
 		panelEl = document.createElement("div");
-		panelEl.id = "team-chat-window";
+		panelEl.id = "team-chat-popover";
 		panelEl.className =
-			"rux-floating-window rux-team-chat-window rux-card rux-card--elevated";
+			"rux-popover rux-popover--surface rux-popover--tab-tip rux-team-chat-popover";
+		panelEl.setAttribute("role", "dialog");
+		panelEl.setAttribute("aria-modal", "false");
+		panelEl.setAttribute("aria-label", "Team Chat");
 		panelEl.hidden = true;
 		panelEl.innerHTML = `
-			<header class="rux-floating-window__header rux-team-chat__header rux-card__header">
+			<header class="rux-team-chat__header rux-card__header">
 				<p class="rux-card__title">Team Chat</p>
-				<button type="button" class="rux-button rux-button--default rux-button--icon" data-team-chat-close aria-label="Close team chat">
-					<span class="rux-icon" aria-hidden="true">close</span>
-				</button>
 			</header>
-			<div class="rux-floating-window__body rux-team-chat__body rux-card__body">
-				<div class="rux-team-chat__messages" data-team-chat-messages></div>
+			<div class="rux-team-chat__body rux-card__body">
+				<div class="rux-team-chat__messages" role="log" aria-label="Team Chat Messages" aria-live="polite" aria-relevant="additions text" aria-atomic="false" data-team-chat-messages>
+					<p class="rux-team-chat__empty" role="status">Loading Messages…</p>
+				</div>
 			</div>
+			<p class="rux-team-chat__status" role="status" data-team-chat-status hidden></p>
 			<p class="rux-team-chat__typing" data-team-chat-typing hidden></p>
-			<footer class="rux-floating-window__footer rux-team-chat__footer rux-card__footer">
+			<footer class="rux-team-chat__footer rux-card__footer">
 				<form class="rux-team-chat__form" data-team-chat-form>
 					<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-team-chat-compose-emoji aria-label="Insert emoji">
 						<span class="rux-icon" aria-hidden="true">mood</span>
 					</button>
-					<input class="rux-input rux-team-chat__input" type="text" maxlength="2000" placeholder="Message the team…" aria-label="Message" data-team-chat-input autocomplete="off" />
-					<button type="submit" class="rux-button rux-button--accent rux-button--icon" aria-label="Send">
+					<input class="rux-input rux-team-chat__input" type="text" maxlength="2000" placeholder="Message the team…" aria-label="Message" aria-autocomplete="list" aria-controls="team-chat-mention-suggestions" aria-expanded="false" data-team-chat-input autocomplete="off" />
+					<button type="submit" class="rux-button rux-button--accent rux-button--icon" aria-label="Send" data-team-chat-send disabled>
 						<span class="rux-icon" aria-hidden="true">send</span>
 					</button>
 				</form>
 			</footer>`;
 		document.body.appendChild(panelEl);
 
-		panelEl.querySelector("[data-team-chat-close]").addEventListener("click", close);
 		panelEl.querySelector("[data-team-chat-form]").addEventListener("submit", async (event) => {
 			event.preventDefault();
 			const profile = getCurrentProfile();
-			if (!profile) return;
+			if (!profile || isSending) return;
 			const input = panelEl.querySelector("[data-team-chat-input]");
 			const body = input.value;
 			if (!body.trim()) return;
-			input.value = "";
+			isSending = true;
+			syncComposerState();
 			clearTimeout(typingTimeout);
 			trackTyping(false);
 			try {
-				await sendMessage(body, profile);
+				await sendMessage(encodeSelectedMentions(body), profile);
+				input.value = "";
+				selectedMentions.clear();
+				closeMentionMenu();
 			} catch (err) {
 				console.warn("Could not send message:", err);
+				window.Rux?.toast?.("Couldn't Send Message");
+			} finally {
+				isSending = false;
+				syncComposerState();
+				input.focus();
 			}
 		});
 
-		panelEl.querySelector("[data-team-chat-input]").addEventListener("input", () => {
-			trackTyping(true);
+		panelEl.querySelector("[data-team-chat-input]").addEventListener("input", (event) => {
+			const hasDraft = Boolean(event.currentTarget.value.trim());
+			syncComposerState();
+			trackTyping(hasDraft);
 			clearTimeout(typingTimeout);
-			typingTimeout = setTimeout(() => trackTyping(false), 3000);
+			if (hasDraft) typingTimeout = setTimeout(() => trackTyping(false), 3000);
+			updateMentionSuggestions(event.currentTarget);
+		});
+
+		panelEl.querySelector("[data-team-chat-input]").addEventListener("keydown", (event) => {
+			if (!mentionMenuEl || mentionMenuEl.hidden) return;
+			const options = mentionMenuEl.querySelectorAll("[data-mention-profile-id]");
+			if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+				event.preventDefault();
+				setActiveMentionOption(activeMentionIndex + (event.key === "ArrowDown" ? 1 : -1));
+				return;
+			}
+			if (event.key === "Enter" || event.key === "Tab") {
+				event.preventDefault();
+				const option = options[activeMentionIndex];
+				const profile = mentionProfiles.find(
+					(candidate) => String(candidate.id) === option?.dataset.mentionProfileId,
+				);
+				if (profile) selectMention(profile);
+				return;
+			}
+			if (event.key === "Escape") {
+				event.preventDefault();
+				event.stopPropagation();
+				closeMentionMenu();
+			}
 		});
 
 		panelEl.querySelector("[data-team-chat-compose-emoji]").addEventListener("click", (event) => {
@@ -155,11 +420,17 @@ if (btn && badge) {
 			}
 		});
 
-		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-floating-window__header"));
-
-		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape" && isPanelOpen()) close();
+		disclosure = window.RuxPopover.createDisclosure(btn, panelEl, {
+			placement: "bottom-end",
+			beforeOpen: () => Boolean(getCurrentProfile()),
+			onOpen: onChatOpen,
+			onClose: () => {
+				closeMentionMenu();
+				updateBadge();
+			},
+			initialFocus: () => panelEl.querySelector("[data-team-chat-input]"),
 		});
+		syncComposerState();
 
 		return panelEl;
 	}
@@ -221,6 +492,7 @@ if (btn && badge) {
 		const cursor = start + emoji.length;
 		input.setSelectionRange(cursor, cursor);
 		input.focus();
+		syncComposerState();
 		trackTyping(true);
 		clearTimeout(typingTimeout);
 		typingTimeout = setTimeout(() => trackTyping(false), 3000);
@@ -240,29 +512,17 @@ if (btn && badge) {
 		}
 	}
 
-	function close() {
-		if (!isPanelOpen()) return;
-		panelEl.hidden = true;
-		btn.setAttribute("aria-expanded", "false");
-		// Drag/resize leave inline left/top/width/height on this singleton
-		// panel — clear them so the next open() starts from the CSS defaults
-		// again, same cleanup doc-viewer.js/trip-envelope.js do for the same
-		// reason.
-		window.RuxFloatingWindow.resetGeometry(panelEl);
-		previousFocus?.focus?.({ preventScroll: true });
-		previousFocus = null;
-	}
-
 	function renderMessages() {
 		const container = ensurePanel().querySelector("[data-team-chat-messages]");
 		const wasNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 40;
 		if (!messages.length) {
-			container.innerHTML = `<p class="rux-team-chat__empty">No messages yet</p>`;
+			container.innerHTML = `<p class="rux-team-chat__empty">No Messages Yet</p>`;
 			return;
 		}
 		const myProfileId = String(getCurrentProfile()?.id || "");
 		container.innerHTML = messages
-			.map((message) => {
+			.map((message, index) => {
+				const isGrouped = continuesMessageGroup(message, messages[index - 1]);
 				const avatar = profileAvatarEl({
 					photo_path: message.sender_photo_path,
 					avatar_color: message.sender_avatar_color,
@@ -272,7 +532,10 @@ if (btn && badge) {
 				// real logged-in accounts (no auth.uid() for RLS to check
 				// against), so this is the same honor-system trust level the
 				// rest of the app already runs on, not a security boundary.
-				const canDelete = myProfileId && String(message.profile_id) === myProfileId;
+				const isOwnMessage = Boolean(
+					myProfileId && String(message.profile_id) === myProfileId,
+				);
+				const canDelete = isOwnMessage;
 
 				// Group this message's reactions by emoji into count pills,
 				// e.g. two 👍 + one 🎉 becomes ["👍", ["a","b"]], ["🎉", ["c"]].
@@ -287,15 +550,16 @@ if (btn && badge) {
 						return `<button type="button" class="rux-team-chat__reaction-pill${mine ? " is-active" : ""}" data-react-emoji="${emoji}" data-message-id="${message.id}"><span class="rux-team-chat__reaction-emoji">${emoji}</span> ${profileIds.length}</button>`;
 					})
 					.join("");
+				const mentionsCurrentUser = messageMentionsProfile(message, myProfileId);
 				return `
-					<div class="rux-team-chat__message">
-						${avatar.outerHTML}
+					<div class="rux-team-chat__message${isOwnMessage ? " rux-team-chat__message--own" : ""}${isGrouped ? " rux-team-chat__message--grouped" : ""}${mentionsCurrentUser ? " rux-team-chat__message--mentions-current-user" : ""}" data-message-id="${escapeHtml(message.id)}" data-created-at="${escapeHtml(message.created_at)}">
+						<span class="rux-team-chat__avatar-slot">${isGrouped ? "" : avatar.outerHTML}</span>
 						<div class="rux-team-chat__message-body">
-							<div class="rux-team-chat__message-meta">
-								<span class="rux-team-chat__message-name">${escapeHtml(message.sender_name)}</span>
+							${!isOwnMessage && !isGrouped ? `<span class="rux-team-chat__message-name">${escapeHtml(message.sender_name)}</span>` : ""}
+							<div class="rux-team-chat__message-line">
+								<p class="rux-team-chat__message-text">${renderMessageContent(message.body, myProfileId)}</p>
 								<span class="rux-team-chat__message-time">${timeLabel(message.created_at)}</span>
 							</div>
-							<p class="rux-team-chat__message-text${isEmojiOnlyMessage(message.body) ? " rux-team-chat__message-text--jumbo" : ""}">${escapeHtml(message.body)}</p>
 							${pillsHtml ? `<div class="rux-team-chat__reactions">${pillsHtml}</div>` : ""}
 						</div>
 						<div class="rux-team-chat__message-actions">
@@ -318,7 +582,7 @@ if (btn && badge) {
 	function updateBadge() {
 		if (isPanelOpen()) {
 			badge.hidden = true;
-			btn.classList.remove("has-unread");
+			btn.classList.remove("has-unread", "has-mention");
 			btn.setAttribute("aria-label", "Team chat");
 			return;
 		}
@@ -330,13 +594,17 @@ if (btn && badge) {
 		const unread = messages.filter(
 			(m) => String(m.profile_id) !== myProfileId && (!lastReadAt || m.created_at > lastReadAt),
 		);
+		const unreadMentions = unread.filter((message) => messageMentionsProfile(message, myProfileId));
 		const hasUnread = unread.length > 0;
 		badge.hidden = !hasUnread;
-		badge.textContent = unread.length > 99 ? "99+" : String(unread.length);
+		badge.textContent = unreadMentions.length ? "@" : unread.length > 99 ? "99+" : String(unread.length);
 		btn.classList.toggle("has-unread", hasUnread);
+		btn.classList.toggle("has-mention", unreadMentions.length > 0);
 		btn.setAttribute(
 			"aria-label",
-			hasUnread ? `Team chat, ${unread.length} unread` : "Team chat",
+			hasUnread
+				? `Team chat, ${unread.length} unread${unreadMentions.length ? `, ${unreadMentions.length} mention${unreadMentions.length === 1 ? "" : "s"}` : ""}`
+				: "Team chat",
 		);
 	}
 
@@ -396,38 +664,41 @@ if (btn && badge) {
 			messages = await fetchMessages();
 		} catch (err) {
 			console.warn("Could not load team chat:", err);
+			const container = ensurePanel().querySelector("[data-team-chat-messages]");
+			container.innerHTML = `<p class="rux-team-chat__empty" role="status">Couldn't Load Messages</p>`;
 			return;
 		}
 		renderMessages();
 		updateBadge();
 	}
 
-	async function open() {
+	function onChatOpen() {
 		const profile = getCurrentProfile();
 		if (!profile) return;
-		const panel = ensurePanel();
-		previousFocus = document.activeElement;
-		panel.hidden = false;
-		btn.setAttribute("aria-expanded", "true");
+		const previousLastReadAt = lastReadAt;
 		renderMessages();
+		const unreadMention = [...panelEl.querySelectorAll(".rux-team-chat__message--mentions-current-user")]
+			.filter((messageEl) => !previousLastReadAt || messageEl.dataset.createdAt > previousLastReadAt)
+			.at(-1);
+		if (unreadMention) {
+			requestAnimationFrame(() => unreadMention.scrollIntoView({ block: "center" }));
+		}
 		updateBadge();
-		panel.querySelector("[data-team-chat-input]")?.focus();
 		lastReadAt = new Date().toISOString();
 		markChatRead(profile.id).catch((err) => console.warn("Could not mark chat read:", err));
+		refreshMentionProfiles();
 	}
 
-	btn.addEventListener("click", () => {
-		if (isPanelOpen()) close();
-		else open();
-	});
-
 	window.addEventListener("rux:profile-changed", async () => {
+		selectedMentions.clear();
+		closeMentionMenu();
 		const profile = getCurrentProfile();
 		if (!profile) {
 			leaveTypingChannel();
 			return;
 		}
 		joinTypingChannel(profile);
+		refreshMentionProfiles();
 		try {
 			lastReadAt = await fetchLastRead(profile.id);
 		} catch (err) {
@@ -436,12 +707,17 @@ if (btn && badge) {
 		refresh();
 	});
 
-	subscribeToTeamChat(refresh);
+	// Create the controlled popover and bind its trigger even when the initial
+	// database request fails; disclosure behavior must not depend on data load.
+	ensurePanel();
+	window.addEventListener("resize", positionMentionMenu);
+	subscribeToTeamChat(refresh, renderConnectionStatus);
 
 	(async () => {
 		const profile = getCurrentProfile();
 		if (profile) {
 			joinTypingChannel(profile);
+			refreshMentionProfiles();
 			try {
 				lastReadAt = await fetchLastRead(profile.id);
 			} catch (err) {

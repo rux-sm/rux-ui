@@ -65,8 +65,8 @@ splitter in the visual layout or keyboard sequence.
 
 The UI-header menu trigger uses:
 
-- `--rux-ui-header-menu-icon-motion-duration`
-- `--rux-ui-header-menu-icon-motion-easing`
+- `--rux-ui-header-disclosure-icon-motion-duration`
+- `--rux-ui-header-disclosure-icon-motion-easing`
 
 Its Menu and Close glyphs switch immediately, matching the measured preview.
 The stacked glyphs preserve the existing Material Symbols icon system, and

@@ -88,27 +88,27 @@ test("panel splitters resize directly without inherited motion", () => {
 	assert.match(motionDocs, /separator is present only while its panel is open/);
 });
 
-test("the hamburger uses an immediate state-driven icon swap", () => {
+test("header disclosures use an immediate state-driven close icon swap", () => {
 	const headerStyles = read("rux-ui/css/base/ui-header.css");
 	const shellController = read("js/core/ui-shell.js");
 	const page = read("index.html");
 
 	assert.match(
 		tokens,
-		/--rux-ui-header-menu-icon-motion-duration:\s+0ms;/,
+		/--rux-ui-header-disclosure-icon-motion-duration:\s+0ms;/,
 	);
 	assert.match(
 		tokens,
-		/--rux-ui-header-menu-icon-motion-easing:\s+var\(--rux-motion-easing-standard-productive\);/,
+		/--rux-ui-header-disclosure-icon-motion-easing:\s+var\(--rux-motion-easing-standard-productive\);/,
 	);
-	assert.match(headerStyles, /\.rux-ui-header__menu-icon\s*\{[\s\S]*?opacity var\(--rux-ui-header-menu-icon-motion-duration\)/);
+	assert.match(headerStyles, /\.rux-ui-header__disclosure-icon\s*\{[\s\S]*?opacity var\(--rux-ui-header-disclosure-icon-motion-duration\)/);
 	assert.match(
 		headerStyles,
-		/\.rux-ui-header__menu\[aria-expanded="true"\] \.rux-ui-header__menu-icon--close/,
+		/\.rux-ui-header__button\[aria-expanded="true"\] \.rux-ui-header__disclosure-icon--close/,
 	);
-	assert.match(page, /class="rux-ui-header__menu-icons"/);
-	assert.match(page, /rux-ui-header__menu-icon--open/);
-	assert.match(page, /rux-ui-header__menu-icon--close/);
+	assert.match(page, /class="rux-ui-header__disclosure-icons"/);
+	assert.match(page, /rux-ui-header__disclosure-icon--default/);
+	assert.match(page, /rux-ui-header__disclosure-icon--close/);
 	assert.match(shellController, /const legacyIcon = toggle\.querySelector\(":scope > \.rux-icon"\)/);
 });
 

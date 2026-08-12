@@ -73,7 +73,9 @@ structural siblings.
 See [Application Layout](docs/layout-composition.md) for the complete UI-header,
 workspace, panel, card, spacing, scrolling, responsive, and accessibility
 contract. See [UI Header](docs/ui-header.md) for the lightweight component
-standard and [the reference layout](examples/app-layout.html) for copyable markup.
+standard, [Rux Popovers](docs/popovers.md) for header tab-tip and interactive
+popover rules, and [the reference layout](examples/app-layout.html) for copyable
+markup.
 
 ---
 
@@ -201,12 +203,12 @@ A 4px grid: `4, 8, 12, 16, 24, 32, 48, 64`. Pick from `--rux-space-1` through `-
 
 ### Buttons
 
-Buttons are compact, solid controls. Rux uses one button size: 32px high.
+Buttons are compact, solid controls. Rux uses one application button size: 44px high.
 
 | Control | Height | Font | Horizontal padding | Icon/text gap |
 |---|---:|---:|---:|---:|
-| `.rux-button` | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
-| `.rux-button--icon` | `--rux-control-height` `32px` | icon only | `0` | n/a |
+| `.rux-button` | `--rux-control-height` `44px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
+| `.rux-button--icon` | `--rux-control-height` `44px` | icon only | `0` | n/a |
 | `.rux-ui-header__button` | `--rux-ui-header-button-size` `48px` | `20px` icon | `0` | n/a |
 | `.rux-segmented-track` | `--rux-input-height` outer track | track | `--rux-segmented-track-padding` | `--rux-segmented-track-radius` |
 | `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-text-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
@@ -237,7 +239,7 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 | help text | `--rux-text-xs`, `--rux-fg-subtle` | One short sentence when useful |
 | error text | `--rux-text-xs`, `--rux-danger` | Direct recovery instruction |
 
-- Field height is intentionally `36px`, while buttons are `32px`. Text-entry controls need a little more vertical room for the caret, placeholder, and typed values. Do not force inputs down to button height for visual matching.
+- Field height remains a dense `36px`, while action buttons use a larger `44px` target. Do not enlarge fields merely to match adjacent actions.
 - Labels sit above fields. Do not use placeholder text as the only label.
 - Labels use Title Case and no trailing punctuation: `Driver Name`, not `Driver name`.
 - Placeholder text describes format or an example value. Keep it short: `Ada Lovelace`, `name@example.com`, `Anything to remember…`.

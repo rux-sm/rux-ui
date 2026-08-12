@@ -37,9 +37,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=121" />
+		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=126" />
 		<link rel="stylesheet" href="./rux-ui/css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=231" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=238" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-panel.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/fleet-panel.css?v=4" />
@@ -64,8 +64,8 @@
 		<link rel="stylesheet" href="./scheduler/css/features/trip-envelope.css?v=14" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-week-info.css?v=6" />
 		<link rel="stylesheet" href="./scheduler/css/features/contact-info.css?v=3" />
-		<link rel="stylesheet" href="./scheduler/css/features/notifications.css?v=1" />
-		<link rel="stylesheet" href="./scheduler/css/features/team-chat.css?v=5" />
+		<link rel="stylesheet" href="./scheduler/css/features/notifications.css?v=2" />
+		<link rel="stylesheet" href="./scheduler/css/features/team-chat.css?v=14" />
 		<link rel="stylesheet" href="./scheduler/css/features/tasks-panel.css?v=41" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-share.css?v=77" />
 		<link rel="stylesheet" href="./scheduler/css/features/doc-viewer.css?v=6" />
@@ -115,13 +115,13 @@
 					title="Navigation"
 					data-rux-side-nav-toggle
 				>
-					<span class="rux-ui-header__menu-icons" aria-hidden="true">
+					<span class="rux-ui-header__disclosure-icons" aria-hidden="true">
 						<span
-							class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--open"
+							class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--default"
 							>menu</span
 						>
 						<span
-							class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--close"
+							class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--close"
 							>close</span
 						>
 					</span>
@@ -148,17 +148,25 @@
 							<span class="rux-icon" aria-hidden="true">search</span>
 						</button>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__chat-btn rux-ui-header__utility--optional"
+							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__button--popover rux-ui-header__chat-btn rux-ui-header__utility--optional"
 							type="button"
 							id="team-chat-btn"
 							aria-label="Team chat"
-							aria-controls="team-chat-window"
+							aria-haspopup="dialog"
+							aria-controls="team-chat-popover"
 							aria-expanded="false"
 							title="Team chat"
 						>
-							<span class="rux-icon" aria-hidden="true"
-								>chat</span
-							>
+							<span class="rux-ui-header__disclosure-icons" aria-hidden="true">
+								<span
+									class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--default"
+									>chat</span
+								>
+								<span
+									class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--close"
+									>close</span
+								>
+							</span>
 							<span
 								class="rux-ui-header__badge-count"
 								id="team-chat-badge"
@@ -166,17 +174,25 @@
 							></span>
 						</button>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__notif-btn"
+							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__button--popover rux-ui-header__notif-btn"
 							type="button"
 							id="notifications-menu-btn"
 							aria-label="Notifications"
-							aria-haspopup="menu"
+							aria-haspopup="dialog"
+							aria-controls="notifications-menu"
 							aria-expanded="false"
 							title="Notifications"
 						>
-							<span class="rux-icon" aria-hidden="true"
-								>notifications</span
-							>
+							<span class="rux-ui-header__disclosure-icons" aria-hidden="true">
+								<span
+									class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--default"
+									>notifications</span
+								>
+								<span
+									class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--close"
+									>close</span
+								>
+							</span>
 							<span
 								class="rux-ui-header__badge-count"
 								id="notifications-badge"
@@ -198,23 +214,33 @@
 							hidden
 						></div>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__profile"
+							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__button--popover rux-ui-header__profile"
 							type="button"
 							id="profile-menu-btn"
 							aria-label="Profile menu"
 							aria-haspopup="menu"
+							aria-controls="profile-menu"
 							aria-expanded="false"
 							title="Profile menu"
 						>
-							<span class="rux-icon" aria-hidden="true"
-								>person</span
-							>
+							<span class="rux-ui-header__disclosure-icons" aria-hidden="true">
+								<span
+									class="rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--default rux-ui-header__profile-identity"
+									id="profile-menu-identity"
+								>
+									<span class="rux-icon">person</span>
+								</span>
+								<span
+									class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--close"
+									>close</span
+								>
+							</span>
 						</button>
 					</div>
 				</div>
 			</header>
 			<div
-				class="rux-menu rux-popover"
+				class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip"
 				id="profile-menu"
 				role="menu"
 				hidden
@@ -341,9 +367,10 @@
 			</div>
 
 			<div
-				class="rux-menu rux-popover rux-notifications-menu"
+				class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-notifications-menu"
 				id="notifications-menu"
-				role="menu"
+				role="dialog"
+				aria-label="Notifications"
 				hidden
 			>
 				<div class="rux-menu__header">Notifications</div>
@@ -7041,8 +7068,8 @@
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./js/core/ui-shell.js?v=2"></script>
 		<script src="./js/core/drawer.js?v=9"></script>
-		<script src="./js/core/popover.js?v=1"></script>
-		<script src="./js/core/menu.js?v=2"></script>
+		<script src="./js/core/popover.js?v=2"></script>
+		<script src="./js/core/menu.js?v=3"></script>
 		<script src="./js/core/controls.js?v=5" defer></script>
 		<script src="./js/core/billing-config.js?v=4"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
@@ -7074,9 +7101,9 @@
 		></script>
 		<script
 			type="module"
-			src="./js/panels/notifications-panel.js?v=5"
+			src="./js/panels/notifications-panel.js?v=7"
 		></script>
-		<script type="module" src="./js/panels/team-chat.js?v=5"></script>
+		<script type="module" src="./js/panels/team-chat.js?v=15"></script>
 		<script
 			type="module"
 			src="./js/panels/components-panel.js?v=47"
@@ -7163,6 +7190,9 @@
 			// lives in the primary side navigation and reuses the generic
 			// module-button wiring above.
 			const profileMenuBtn = document.getElementById("profile-menu-btn");
+			const profileMenuIdentity = document.getElementById(
+				"profile-menu-identity",
+			);
 			const profileMenu = document.getElementById("profile-menu");
 			function setProfileMenuExpanded(expanded) {
 				profileMenuBtn?.setAttribute("aria-expanded", String(expanded));
@@ -7244,7 +7274,8 @@
 			}
 
 			function renderHeaderAvatar(profile) {
-				profileMenuBtn.replaceChildren();
+				if (!profileMenuIdentity) return;
+				profileMenuIdentity.replaceChildren();
 				if (profile) {
 					const url = profile.photo_path
 						? getProfilePhotoUrl(profile.photo_path)
@@ -7253,7 +7284,7 @@
 						const img = document.createElement("img");
 						img.src = url;
 						img.alt = "";
-						profileMenuBtn.appendChild(img);
+						profileMenuIdentity.appendChild(img);
 					} else {
 						const initials = document.createElement("span");
 						initials.className = "rux-ui-header__profile-initials";
@@ -7263,7 +7294,7 @@
 						initials.textContent = driverInitials(
 							profile.display_name,
 						);
-						profileMenuBtn.appendChild(initials);
+						profileMenuIdentity.appendChild(initials);
 					}
 					profileMenuBtn.setAttribute(
 						"aria-label",
@@ -7273,7 +7304,7 @@
 					// Shouldn't happen post-boot — a profile is required to use the
 					// app — but covers the brief window before initProfilePicker()
 					// resolves.
-					profileMenuBtn.appendChild(iconSpan("person"));
+					profileMenuIdentity.appendChild(iconSpan("person"));
 					profileMenuBtn.setAttribute("aria-label", "Profile menu");
 				}
 			}
@@ -11040,7 +11071,7 @@
 					const {
 						generateDriverExpiryAlerts,
 						syncTripReadinessAlerts,
-					} = await import("./js/data/notification-db.js?v=3");
+					} = await import("./js/data/notification-db.js?v=4");
 					await Promise.all([
 						generateDriverExpiryAlerts(),
 						syncTripReadinessAlerts(window.RuxTrips?.list() || []),

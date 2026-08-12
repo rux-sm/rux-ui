@@ -66,13 +66,13 @@ visible.
     aria-controls="primary-navigation"
     data-rux-side-nav-toggle
   >
-	<span class="rux-ui-header__menu-icons" aria-hidden="true">
+	<span class="rux-ui-header__disclosure-icons" aria-hidden="true">
 		<span
-			class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--open"
+			class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--default"
 			>menu</span
 		>
 		<span
-			class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--close"
+			class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--close"
 			>close</span
 		>
 	</span>
@@ -109,10 +109,10 @@ configuration and does not use the hamburger disclosure pattern.
 
 - `.rux-ui-header__menu` controls the left panel through `aria-controls` and
   `aria-expanded`.
-- `.rux-ui-header__menu-icons` stacks the standard Menu and Close glyphs.
-  `.rux-ui-header__menu-icon--open` and
-  `.rux-ui-header__menu-icon--close` respond to the trigger's `aria-expanded`
-  state; applications should not toggle them independently.
+- `.rux-ui-header__disclosure-icons` stacks the trigger's default content and
+  standard Close glyph. `.rux-ui-header__disclosure-icon--default` and
+  `.rux-ui-header__disclosure-icon--close` respond to the trigger's
+  `aria-expanded` state; applications should not toggle them independently.
 - `.rux-ui-header__brand` contains the product name, wordmark, or home link.
 - `.rux-ui-header__nav` contains optional top-level links or menus. Use
   `.rux-ui-header__nav-item` for its destinations.
@@ -170,6 +170,22 @@ The profile trigger follows the same interaction contract. Use `RuxMenu` for its
 menu so a second click, an outside click, Escape, or menu-item activation closes
 the menu and keeps `aria-expanded` synchronized.
 
+Profile, Messages, and Notifications use the shared header tab-tip popover
+composition. Add `.rux-ui-header__button--popover` to the trigger and
+compose `.rux-popover--surface` with `.rux-popover--tab-tip` on its popover.
+Compose the trigger's original icon or avatar and the Close glyph through the
+same disclosure-icon stack used by the Hamburger. The original content is
+visible while collapsed; Close is visible while expanded. Unread badges are
+hidden in the expanded state so they do not compete with the close action.
+See [Rux Popovers](popovers.md) for surface tokens, placement, semantics, and
+interaction rules.
+
+The Hamburger follows the same connected-surface rule without becoming a
+popover. While expanded, its background resolves to `--rux-side-nav-bg` and it
+sits above the navigation surface. The side nav owns its elevation through
+`--rux-side-nav-shadow`, which defaults to `none`; do not add an
+application-specific shadow that visually detaches it from the trigger.
+
 ## Productive Motion
 
 Side-navigation motion is quick and functional:
@@ -215,8 +231,8 @@ Common header tokens:
 - `--rux-ui-header-button-size`
 - `--rux-ui-header-button-icon-size`
 - `--rux-ui-header-profile-avatar-size`
-- `--rux-ui-header-menu-icon-motion-duration`
-- `--rux-ui-header-menu-icon-motion-easing`
+- `--rux-ui-header-disclosure-icon-motion-duration`
+- `--rux-ui-header-disclosure-icon-motion-easing`
 - `--rux-ui-header-button-hover-bg`
 - `--rux-ui-header-button-active-bg`
 - `--rux-ui-header-actions-gap`
@@ -225,6 +241,7 @@ Common side-navigation tokens:
 
 - `--rux-side-nav-width`
 - `--rux-side-nav-bg`
+- `--rux-side-nav-shadow`
 - `--rux-side-nav-item-min-height`
 - `--rux-side-nav-item-hover-bg`
 - `--rux-side-nav-item-active-bg`

@@ -113,7 +113,7 @@
 .rux-card__title {
 	margin: 0;
 	color: var(--rux-heading);
-	font-size: var(--rux-card-header-size);
+	font-size: var(--rux-text-300);
 	font-weight: var(--rux-card-header-weight);
 	letter-spacing: 0;
 	line-height: var(--rux-leading-snug);
