@@ -66,7 +66,7 @@ test("side navigation remains a reusable product-navigation primitive", () => {
 	assert.doesNotMatch(rootRule, /position:\s*(?:fixed|absolute)/);
 });
 
-test("side navigation uses productive overlay and push motion", () => {
+test("side navigation uses productive non-persistent overlay motion", () => {
 	const sideNavMotionRules = schedulerLayoutCss.match(
 		/\/\* — Product side navigation — \*\/[\s\S]*?@media \(max-width: 500px\)/,
 	)?.[0] ?? "";
@@ -115,13 +115,38 @@ test("side navigation uses productive overlay and push motion", () => {
 		sideNavMotionRules,
 		/opacity var\(--rux-side-nav-scrim-enter-duration\)[\s\S]*?var\(--rux-side-nav-scrim-enter-delay\)/,
 	);
+	assert.doesNotMatch(sideNavMotionRules, /margin-inline-end|flex:\s*0 0 var\(--rux-side-nav-width\)/);
+	assert.doesNotMatch(sideNavMotionRules, /\.scheduler-app__side-nav-scrim\s*\{[^}]*display:\s*none;/s);
 	assert.match(
-		schedulerLayoutCss,
-		/@media \(min-width: 761px\)[\s\S]*?margin-inline-end:\s*calc\(-1 \* var\(--rux-side-nav-width\)\);[\s\S]*?\.scheduler-app__side-nav\.is-open\s*\{[\s\S]*?margin-inline-end:\s*0;/,
+		layoutDocs,
+		/Header-triggered navigation SHOULD overlay the application body without\s+resizing the active workspace/,
 	);
 	assert.match(
 		schedulerLayoutCss,
 		/@media \(prefers-reduced-motion: reduce\)[\s\S]*?transition-duration:\s*1ms;/,
+	);
+});
+
+test("Calendar tools and workspace share one attached frame", () => {
+	assert.match(
+		schedulerLayoutCss,
+		/--calendar-workspace-frame-inset:\s+var\(--rux-space-3\);/,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/\.scheduler-app__module\[data-module="calendar"\]\s*\{[^}]*overflow:\s*hidden;[^}]*border:\s*var\(--calendar-workspace-frame-border\);[^}]*padding:\s*var\(--calendar-workspace-padding\);/s,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/\.scheduler-app__module\[data-module="calendar"\] \.rux-right-panel\s*\{[^}]*border-inline-start:\s*var\(--rux-border-width\) solid var\(--rux-border\);/s,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/@media \(max-width: 500px\)[\s\S]*?\.scheduler-app__module\[data-module="calendar"\]\s*\{[^}]*margin:\s*0;[^}]*border:\s*0;/,
+	);
+	assert.match(
+		layoutDocs,
+		/apply spacing around the combined assembly—not\s+between the panel and workspace/,
 	);
 });
 
@@ -136,6 +161,7 @@ test("the canonical example contains the required accessible composition", () =>
 	assert.match(exampleHtml, /aria-label="Primary Navigation"/);
 	assert.match(exampleHtml, /data-rux-side-nav-toggle/);
 	assert.match(exampleHtml, /data-rux-side-nav-scrim/);
+	assert.doesNotMatch(exampleHtml, /margin-inline-end:\s*calc\(-1 \* var\(--rux-side-nav-width\)\)/);
 	assert.match(exampleHtml, /aria-label="Calendar Tools"/);
 	assert.doesNotMatch(exampleHtml, /role="dialog"/);
 });

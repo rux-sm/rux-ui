@@ -39,7 +39,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=121" />
 		<link rel="stylesheet" href="./rux-ui/css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=225" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=229" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-panel.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/fleet-panel.css?v=4" />
@@ -2235,9 +2235,9 @@
 							class="rux-panel rux-panel--right rux-right-panel"
 							aria-label="Calendar Tools"
 						>
-							<!-- Same tabs-as-header treatment as the trip panel — desktop
-							     closes via its resize gutter, mobile gets a ghost Close
-							     button inline in the footer instead (see scheduler-app.css). -->
+							<!-- Same tabs-as-header treatment as the trip panel. The workspace
+							     Tools button owns disclosure; this panel's boundary only resizes
+							     while the panel is open. -->
 							<div
 								class="rux-panel__nav rux-panel__nav--attached"
 							>
@@ -7040,7 +7040,7 @@
 		<script src="./js/core/theme.js?v=1"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./js/core/ui-shell.js?v=2"></script>
-		<script src="./js/core/drawer.js?v=7"></script>
+		<script src="./js/core/drawer.js?v=9"></script>
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
 		<script src="./js/core/controls.js?v=5" defer></script>
@@ -10916,6 +10916,10 @@
 
 			function checkPanelFit() {
 				if (mobilePanelQuery.matches) return;
+				// The shared drawer clamp already preserves SCHEDULE_MIN during a
+				// deliberate drag. Do not let this responsive safety observer close
+				// the panel between pointer frames and create a visible edge bounce.
+				if (rightDrawer.classList.contains("is-resizing")) return;
 				const scheduleEl = document.querySelector(
 					"[data-module='calendar'] .rux-workspace",
 				);

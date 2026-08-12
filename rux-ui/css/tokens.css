@@ -43,7 +43,7 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 40% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 35% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-warning) 28% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -521,7 +521,8 @@
 	   edited, per the role's own stated purpose above. */
 	--rux-workspace-radius: var(--rux-radius-container);
 	/* --rux-workspace-shadow: var(--rux-shadow-inset); */
-	--rux-workspace-gutter: var(--rux-space-6);
+	--rux-workspace-gutter: var(--rux-space-0);
+	--calendar-workspace-padding: var(--rux-space-0) var(--rux-space-5) var(--rux-space-5) var(--rux-space-5);
 
 	/* — header — */
 	/* Keep header and view content on the same inline grid. */
@@ -535,8 +536,8 @@
 
 	/* — shell — */
 	--rux-calendar-bg:         var(--rux-surface-1);
-	--rux-calendar-border:     var(--rux-border-width) solid var(--rux-surface-4);
-	--rux-calendar-top-border: var(--rux-border-width) solid var(--rux-surface-4);
+	--rux-calendar-border:     var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-top-border: var(--rux-border-width) solid var(--rux-border);
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
 	--rux-calendar-radius: var(--rux-radius-container);
@@ -546,20 +547,21 @@
 	--rux-calendar-now-line-label-fg: var(--rux-fg-on-accent);
 	--rux-calendar-today-fg:          var(--rux-accent-fill);
 
+
 	/* — header — */
 	/* Header cells share one flat plane; borders provide separation without
 	   repeating elevation or rim lighting across every grid cell. */
 	--rux-calendar-header-bg:     var(--rux-surface-1);
-	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-surface-4);
+	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-border);
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
 	   of the same container shape, not its own control. */
 	--rux-calendar-header-radius: var(--rux-radius-container);
 	--rux-calendar-header-height: 31px;
 	--rux-calendar-header-shadow:        none;
-	--rux-calendar-header-divider:       1px solid var(--rux-surface-4);
+	--rux-calendar-header-divider:       1px solid var(--rux-border);
 
 	/* — grid — */
-	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-surface-4);
+	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-border);
 
 	/* — row header (sticky bus-number rail) — */
 	/* These stack vertically, so repeated elevation would make every row read
@@ -639,8 +641,8 @@
 	--rux-card-fg:           var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
 	--rux-card-border:       none;
-	--rux-card-radius:       var(--rux-radius-md);
-	--rux-card-shadow:       var(--rux-shadow-1);
+	--rux-card-radius:       var(--rux-radius-0);
+	/* --rux-card-shadow:       var(--rux-shadow-1); */
 
 	/* — header — */
 	/* Transparent so the card shell's inset top highlight remains visible
@@ -678,7 +680,7 @@
 	--rux-card-elevated-shadow: var(--rux-shadow-2);
 
 	/* — shared across header/body/footer/section, not any one part's own — */
-	--rux-card-padding-block:  0 var(--rux-space-4);
+	--rux-card-padding-block: var(--rux-space-4);
 	--rux-card-padding-inline: var(--rux-space-4);
 	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
 	--rux-card-content-gap: var(--rux-space-4);
@@ -1308,7 +1310,7 @@
 	--rux-tab-radius: var(--rux-radius-0);
 	/* --rux-tab-border: not set at rest — only the selected state below has one */
 	--rux-tabs-gap:           var(--rux-space-2);
-	--rux-tab-height:         36px;
+	--rux-tab-height:         48px;
 	--rux-tab-padding-inline: var(--rux-space-3);
 	--rux-tab-content-gap:    var(--rux-control-content-gap);
 	--rux-tab-hover-bg:            transparent;

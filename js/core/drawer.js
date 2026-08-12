@@ -42,7 +42,6 @@
 	const mobilePanelQuery = window.matchMedia("(max-width: 500px)");
 
 	const DRAWER_MAX = 640;
-	const HANDLE_DRAG_THRESHOLD = 5; // px of cursor movement before a click counts as a drag
 	const DRAWER_KEYBOARD_STEP = 16;
 
 	function schedulerAppDefaultWidth(drawerEl) {
@@ -263,10 +262,22 @@
 		// leaves room for both the workspace and any open sibling drawer.
 		function maxDrawerWidth() {
 			if (!scheduleMin) return DRAWER_MAX;
-			const bodyW = document.querySelector(".scheduler-app__body").offsetWidth;
+			/* Measure the drawer's owning module rather than the full app body.
+			   A module may live inside an inset frame (Calendar does), so body width
+			   overstates the usable split-workspace width and lets the drawer push
+			   its opposite edge past the workspace minimum before snapping back. */
+			const moduleEl = drawer.closest(".scheduler-app__module");
+			const availableW = moduleEl?.clientWidth
+				?? document.querySelector(".scheduler-app__body").clientWidth;
 			const otherDrawerEl = getOtherDrawer();
 			const otherW = otherDrawerEl?.classList.contains("is-open") ? otherDrawerEl.offsetWidth : 0;
-			return Math.max(0, Math.min(DRAWER_MAX, bodyW - otherW - moduleGutterWidth(drawer) - scheduleMin));
+			return Math.max(
+				0,
+				Math.min(
+					DRAWER_MAX,
+					availableW - otherW - moduleGutterWidth(drawer) - scheduleMin,
+				),
+			);
 		}
 
 		function setDrawerWidth(width) {
@@ -288,105 +299,80 @@
 		}
 		syncHandle();
 
+		function beginResize() {
+			drawer.classList.add("is-resizing");
+			handle.classList.add("is-resizing");
+		}
+
+		function endResize() {
+			drawer.classList.remove("is-resizing");
+			handle.classList.remove("is-resizing");
+			syncHandle();
+		}
+
 		handle.addEventListener("keydown", (e) => {
 			const growKey = direction === "left" ? "ArrowRight" : "ArrowLeft";
 			const shrinkKey = direction === "left" ? "ArrowLeft" : "ArrowRight";
 
-			if (e.key === "Enter" || e.key === " ") {
-				e.preventDefault();
-				isOpen() ? close() : open();
-				requestAnimationFrame(syncHandle);
-				return;
-			}
 			if (![growKey, shrinkKey, "Home", "End"].includes(e.key)) return;
 
 			e.preventDefault();
-			// Open first, before reading drawerMin() below — for a railable
-			// drawer its min-width floor is only the "open" value once
-			// .is-open is present (relaxed to the rail width while closed);
-			// computing Home's target width before this would read the
-			// relaxed floor instead of the intended resize-clamp one.
-			if (!isOpen()) open();
+			// The splitter resizes an open panel; disclosure belongs to the
+			// panel's toggle button rather than Enter/Space or a separator click.
+			if (!isOpen()) return;
+			beginResize();
 
 			let nextW = null;
-			if (e.key === growKey) nextW = drawerWidth() + DRAWER_KEYBOARD_STEP;
-			if (e.key === shrinkKey) nextW = drawerWidth() - DRAWER_KEYBOARD_STEP;
+			const renderedWidth = drawer.getBoundingClientRect().width;
+			if (e.key === growKey) nextW = renderedWidth + DRAWER_KEYBOARD_STEP;
+			if (e.key === shrinkKey) nextW = renderedWidth - DRAWER_KEYBOARD_STEP;
 			if (e.key === "Home") nextW = drawerMin();
 			if (e.key === "End") nextW = maxDrawerWidth();
 
 			setDrawerWidth(nextW);
-			syncHandle();
+			// Force this keyboard step to resolve while the zero-duration state is
+			// active, then restore the normal discrete open/close transition.
+			drawer.getBoundingClientRect();
+			endResize();
 		});
 
-		handle.addEventListener("mousedown", (e) => {
+		handle.addEventListener("pointerdown", (e) => {
+			if (e.button !== 0 || !isOpen()) return;
 			e.preventDefault();
-			const wasOpen = isOpen();
+			// Capture the currently rendered edge before cancelling a possibly
+			// unfinished open transition, then make that exact width the direct-
+			// manipulation starting point.
+			const startW = drawer.getBoundingClientRect().width;
+			beginResize();
+			setDrawerWidth(startW);
+			handle.setPointerCapture(e.pointerId);
+
 			const startX = e.clientX;
-			// Drag can start from a railed (32px) drawer, not just a fully
-			// closed (0) one — closedTargetWidth() is the same helper close()
-			// itself uses, so this always starts measuring from wherever the
-			// drawer actually is, not a hardcoded assumption.
-			const startW = wasOpen ? drawerWidth() : closedTargetWidth();
-			let lastW = startW;
-			let moved = false;
 
 			document.body.style.cursor = "col-resize";
 			document.body.style.userSelect = "none";
 
 			const onMove = (ev) => {
-				if (!moved) {
-					if (Math.abs(ev.clientX - startX) < HANDLE_DRAG_THRESHOLD) return;
-					moved = true;
-					drawer.classList.add("is-resizing");
-					handle.classList.add("is-resizing");
-					if (!wasOpen) {
-						drawer.classList.add("is-open");
-						panel.inert = false;
-						drawer.setAttribute("aria-hidden", "false");
-						const w = closedTargetWidth() + "px";
-						drawer.style.setProperty("--drawer-width", w);
-						drawer.style.setProperty("--drawer-open-width", w);
-						syncToggleButton(true);
-					}
-				}
+				if (ev.pointerId !== e.pointerId) return;
 				const delta = direction === "left" ? ev.clientX - startX : startX - ev.clientX;
-				lastW = startW + delta;
-				setDrawerWidth(lastW);
+				setDrawerWidth(startW + delta);
 				syncHandle();
 			};
-			const onUp = () => {
-				drawer.classList.remove("is-resizing");
-				handle.classList.remove("is-resizing");
+			const onEnd = (ev) => {
+				if (ev.pointerId !== e.pointerId) return;
+				if (handle.hasPointerCapture(e.pointerId)) {
+					handle.releasePointerCapture(e.pointerId);
+				}
+				endResize();
 				document.body.style.cursor = "";
 				document.body.style.userSelect = "";
-				if (!moved) {
-					wasOpen ? close() : open();
-				} else if (maxDrawerWidth() < drawerMin()) {
-					close();
-				} else if (lastW < drawerMin()) {
-					/* The rendered panel stops at its minimum width during the
-					   drag, so content never compresses past its responsive
-					   floor. The pointer's unclamped width still decides the
-					   release: crossing more than half of the remaining distance
-					   from min-width to the closed rail commits the collapse;
-					   otherwise the panel settles back against the min wall. */
-					const minW = drawerMin();
-					const closedW = closedTargetWidth();
-					const closeThreshold = closedW + (minW - closedW) / 2;
-					if (lastW < closeThreshold) {
-						close();
-					} else {
-						const w = minW + "px";
-						drawer.style.setProperty("--drawer-width", w);
-						drawer.style.setProperty("--drawer-open-width", w);
-					}
-				}
-				syncHandle();
-				document.removeEventListener("mousemove", onMove);
-				document.removeEventListener("mouseup", onUp);
+				handle.removeEventListener("pointermove", onMove);
+				handle.removeEventListener("pointerup", onEnd);
+				handle.removeEventListener("pointercancel", onEnd);
 			};
-			document.addEventListener("mousemove", onMove);
-			document.addEventListener("mouseup", onUp);
+			handle.addEventListener("pointermove", onMove);
+			handle.addEventListener("pointerup", onEnd);
+			handle.addEventListener("pointercancel", onEnd);
 		});
 
 		return { open, close, isOpen, syncHandle };

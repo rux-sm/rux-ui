@@ -39,6 +39,14 @@ moves continuously with an already-visible panel uses the standard curve.
 Panel content may fade or reflow with the faster content-duration token, but it
 must not finish after the panel itself.
 
+A resize separator is direct manipulation rather than panel motion. Pointer
+movement updates the panel width one-to-one with no transition, threshold,
+snap, spring, or overshoot. Keyboard Arrow, Home, and End changes are also
+immediate. The separator does not open, close, or collapse the panel; the
+panel's disclosure control owns those discrete animated state changes. The
+separator is present only while its panel is open, so a closed panel leaves no
+splitter in the visual layout or keyboard sequence.
+
 ```css
 .app-drawer {
 	transform: translateX(-100%);
@@ -80,10 +88,10 @@ The product side navigation is a specialized, faster structural transition:
 The navigation remains at its final coordinates and full opacity. A
 `clip-path` edge travels from the left across the fixed-width panel, revealing
 all navigation items through one mask with no translation, scale, or item
-stagger. On desktop, the workspace's layout space expands alongside the same
-clipping edge so the attached navigation still pushes content.
+stagger. The header-triggered panel remains an overlay at every viewport, so
+its reveal never moves or compresses the application workspace beneath it.
 
-On compact layouts, the pure-black scrim's inline edge follows the panel edge.
+The pure-black scrim's inline edge follows the panel edge at every viewport.
 Its opacity begins after `70ms`, reaches `0.65` over `200ms`, and disappears
 immediately when closing begins. The delayed fade is intentionally not aligned
 to the panel's completion time.

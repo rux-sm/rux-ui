@@ -31,13 +31,18 @@
 }
 
 .scheduler-app {
-	--scheduler-app-gap: var(--rux-space-0);
+	--scheduler-app-gap: var(--rux-space-4);
 	/* Outer frame around the main schedule/workspace card — same asymmetric
 	   shape as --rux-panel-footer-padding (top 2, inline+bottom 3), kept as
 	   its own token rather than reusing --scheduler-app-gap since that token
 	   also drives the (still-uniform) inter-panel gutter and inner content
 	   insets below, which aren't part of this ask. */
 	--scheduler-app-module-padding: 0;
+	/* Calendar is a view-specific split workspace, not a global shell panel.
+	   Its canvas and tools panel share one inset frame and remain attached. */
+	--calendar-workspace-frame-inset: var(--rux-space-3);
+	--calendar-workspace-frame-border: none;
+	--calendar-workspace-frame-radius: var(--rux-radius-container);
 	--scheduler-app-resize-hit-width: 20px;
 	--scheduler-app-resize-handle-width: 3px;
 	--scheduler-app-resize-handle-height: 32px;
@@ -133,37 +138,9 @@
 			var(--rux-side-nav-scrim-enter-delay);
 }
 
-/* Compact layouts use a clipped overlay plus the moving-edge scrim. Desktop
-   turns the same fixed-coordinate element into an attached flex item: its
-   negative margin collapses the closed layout space, then animates to zero so
-   the workspace is pushed in sync with the clipping edge. */
-@media (min-width: 761px) {
-	.scheduler-app__side-nav {
-		position: relative;
-		inset: auto;
-		z-index: 2;
-		flex: 0 0 var(--rux-side-nav-width);
-		height: 100%;
-		margin-inline-end: calc(-1 * var(--rux-side-nav-width));
-		box-shadow: none;
-		transition:
-			clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
-			margin-inline-end var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
-			visibility 0s linear var(--rux-side-nav-motion-duration);
-	}
-
-	.scheduler-app__side-nav.is-open {
-		margin-inline-end: 0;
-		transition:
-			clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
-			margin-inline-end var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
-			visibility 0s linear 0s;
-	}
-
-	.scheduler-app__side-nav-scrim {
-		display: none;
-	}
-}
+/* Header-triggered product navigation is non-persistent at every viewport.
+   It overlays the application body and never participates in flex sizing, so
+   opening it cannot move or compress the active workspace and tools panel. */
 
 @media (prefers-reduced-motion: reduce) {
 	.scheduler-app__side-nav,
@@ -194,6 +171,26 @@
 	min-height: 0;
 	padding: var(--scheduler-app-module-padding);
 }
+
+/* Calendar composes its workspace and tools drawer as one inset application
+   surface. The outer margin belongs around the combined frame; the two regions
+   stay flush at their shared resize boundary. Other modules keep their own
+   established layout contracts. */
+.scheduler-app__module[data-module="calendar"] {
+	margin: 0;
+	overflow: hidden;
+	background: var(--rux-workspace-bg);
+	border: var(--calendar-workspace-frame-border);
+	border-radius: var(--calendar-workspace-frame-radius);
+
+	padding: var(--calendar-workspace-padding);
+}
+
+.scheduler-app__module[data-module="calendar"] > .rux-workspace {
+	padding-block-end: 0;
+	border-radius: 0;
+}
+
 
 /* UI-header menus must float above the mobile drawer, which sits at --rux-z-modal
    while open (see "Drawer fills full viewport" below) */
@@ -452,6 +449,10 @@
 		width var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 }
 
+/* Interactive resizing is a direct manipulation, not a state transition.
+   Match the open rule's specificity so its entrance easing cannot win the
+   cascade and make the opposite edge trail or rebound behind the pointer. */
+.scheduler-app__drawer.is-open.is-resizing,
 .scheduler-app__drawer.is-resizing {
 	transition: none;
 }
@@ -619,9 +620,19 @@
 }
 
 .scheduler-app__resize-gutter {
+	display: none;
 	cursor: col-resize;
 	z-index: 10;
 	touch-action: none;
+}
+
+/* A splitter belongs to an open panel. Remove it from layout, hit testing,
+   and keyboard navigation while closed; disclosure stays with the panel's
+   explicit Tools/toggle button. Keep it visible throughout normal use, but
+   remove it as soon as a discrete close transition begins. */
+.scheduler-app__drawer.is-open:not(.is-collapsing) + .scheduler-app__resize-gutter,
+.scheduler-app__resize-gutter:has(+ .scheduler-app__drawer.is-open:not(.is-collapsing)) {
+	display: block;
 }
 
 /* Large transparent hit target centered on the zero-width flex boundary. */
@@ -1782,6 +1793,12 @@
 	/* Keep the schedule flush within the narrow shell. */
 	.scheduler-app__module {
 		padding: 0;
+	}
+
+	.scheduler-app__module[data-module="calendar"] {
+		margin: 0;
+		border: 0;
+		border-radius: 0;
 	}
 
 	.scheduler-app__module > .rux-workspace {

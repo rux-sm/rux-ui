@@ -74,8 +74,11 @@ header menu button.
   visual state.
 - Non-persistent navigation MUST support Escape and scrim dismissal, focus
   restoration, and close-on-destination behavior.
-- Application layout CSS owns whether the navigation overlays content or stays
-  attached. The reusable component MUST NOT define product breakpoints.
+- Header-triggered navigation SHOULD overlay the application body without
+  resizing the active workspace. Persistently visible navigation is a separate
+  shell configuration and SHOULD NOT use the hamburger disclosure pattern.
+- Application layout CSS owns navigation placement. The reusable component
+  MUST NOT define product breakpoints or force a persistent configuration.
 - See `docs/ui-header.md` for the component contract and examples.
 
 ## Right Panel
@@ -86,6 +89,10 @@ Right panels expose secondary content without replacing the center workspace.
   be controlled by a global header action.
 - A view-specific panel, such as Calendar Tools, SHOULD be controlled from that
   view's workspace header.
+- A persistent view-specific panel MAY share one inset outer frame with its
+  workspace. In that pattern, apply spacing around the combined assembly—not
+  between the panel and workspace—and use only a separator or resize handle at
+  their attached boundary.
 - The trigger MUST expose `aria-controls` and `aria-expanded`.
 - Persistent attached panels MUST NOT use `role="dialog"`. A panel that becomes
   modal at a narrow breakpoint must implement complete modal focus and
@@ -223,6 +230,8 @@ A specialized component MAY own scrolling when documented. Avoid assigning
   SHOULD remain complementary `<aside>` regions.
 - Resize separators MUST be keyboard operable and expose orientation, current
   value, minimum, maximum, and the controlled panel.
+- A resize separator MUST be visible and operable only while its controlled
+  panel is open. It MUST NOT double as the panel disclosure control.
 - Collapsed rails and drawer widths are application variants, not base-shell
   defaults. Interactive rail controls SHOULD provide conventional touch target
   sizes.

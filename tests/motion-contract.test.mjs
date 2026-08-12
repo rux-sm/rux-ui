@@ -63,6 +63,31 @@ test("structural panels use 150ms entrance and exit contracts", () => {
 	);
 });
 
+test("panel splitters resize directly without inherited motion", () => {
+	assert.match(
+		schedulerStyles,
+		/\.scheduler-app__drawer\.is-open\.is-resizing,[\s\S]*?transition:\s*none;/,
+	);
+	assert.match(drawerController, /addEventListener\("pointerdown"/);
+	assert.match(drawerController, /setPointerCapture\(e\.pointerId\)/);
+	assert.match(drawerController, /getBoundingClientRect\(\)\.width/);
+	assert.doesNotMatch(drawerController, /HANDLE_DRAG_THRESHOLD|addEventListener\("mousedown"/);
+	assert.doesNotMatch(drawerController, /closeThreshold/);
+	assert.match(
+		schedulerStyles,
+		/\.scheduler-app__resize-gutter\s*\{[^}]*display:\s*none;/s,
+	);
+	assert.match(
+		schedulerStyles,
+		/\.scheduler-app__drawer\.is-open:not\(\.is-collapsing\) \+ \.scheduler-app__resize-gutter,[\s\S]*?display:\s*block;/,
+	);
+	assert.match(
+		motionDocs,
+		/Pointer\s+movement updates the panel width one-to-one with no transition/,
+	);
+	assert.match(motionDocs, /separator is present only while its panel is open/);
+});
+
 test("the hamburger uses an immediate state-driven icon swap", () => {
 	const headerStyles = read("rux-ui/css/base/ui-header.css");
 	const shellController = read("js/core/ui-shell.js");
@@ -99,6 +124,8 @@ test("the UI-shell side navigation uses a fixed-coordinate 110ms reveal", () => 
 	assert.match(schedulerStyles, /clip-path:\s*inset\(0 100% 0 0\);/);
 	assert.match(schedulerStyles, /\.scheduler-app__side-nav\.is-open\s*\{[^}]*clip-path:\s*inset\(0\);/s);
 	assert.match(schedulerStyles, /inset-inline-start:\s*min\(var\(--rux-side-nav-width\), 100%\);/);
+	assert.doesNotMatch(schedulerStyles, /margin-inline-end:\s*calc\(-1 \* var\(--rux-side-nav-width\)\)/);
+	assert.match(motionDocs, /panel remains an overlay at every viewport/);
 	assert.match(
 		schedulerStyles,
 		/opacity var\(--rux-side-nav-scrim-enter-duration\)[\s\S]*?var\(--rux-side-nav-scrim-enter-delay\)/,

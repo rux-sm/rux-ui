@@ -132,3 +132,22 @@ test("drawer toggles prefer disclosure semantics without breaking legacy toggles
 	assert.match(drawerController, /hasAttribute\("aria-expanded"\)/);
 	assert.match(drawerController, /\? "aria-expanded"\s*:\s*"aria-pressed"/);
 });
+
+test("Calendar resize uses its inset module and does not fight auto-collapse", () => {
+	assert.match(
+		drawerController,
+		/const moduleEl = drawer\.closest\("\.scheduler-app__module"\);[\s\S]*?const availableW = moduleEl\?\.clientWidth/,
+	);
+	assert.match(
+		page,
+		/function checkPanelFit\(\)\s*\{[\s\S]*?rightDrawer\.classList\.contains\("is-resizing"\)/,
+	);
+	assert.doesNotMatch(
+		drawerController,
+		/e\.key === "Enter"|e\.key === " "/,
+	);
+	assert.match(
+		page,
+		/Tools button owns disclosure; this panel's boundary only resizes/,
+	);
+});

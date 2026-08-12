@@ -100,9 +100,10 @@ visible.
 </nav>
 ```
 
-Application layout CSS owns whether the navigation overlays content, remains
-attached, or becomes persistent. `js/core/ui-shell.js` provides the standard
-non-persistent disclosure behavior.
+Application layout CSS owns placement. Header-triggered navigation should use
+the standard non-persistent overlay behavior provided by
+`js/core/ui-shell.js`; persistently visible navigation is a separate layout
+configuration and does not use the hamburger disclosure pattern.
 
 ## Component API
 
@@ -178,17 +179,16 @@ Side-navigation motion is quick and functional:
   not translate, scale, stretch, or stagger.
 - Opening and closing both use the productive exit curve, producing the
   measured accelerating edge movement.
-- Compact viewports use an overlay. A pure-black scrim follows the moving
+- At every viewport, the panel overlays the application body without moving
+  or compressing the active workspace. A pure-black scrim follows the moving
   panel edge, waits `70ms`, then fades to 65% over `200ms` with the productive
   standard curve. It disappears immediately when closing begins.
-- Desktop viewports use the same clipping reveal while the attached layout
-  space opens beside it, preserving the workspace push behavior.
 - `prefers-reduced-motion` reduces both panel and scrim transitions to an
   effectively immediate state change.
 
-The reference application switches from overlay to push behavior at `761px`.
-That breakpoint belongs to the application layout; the reusable
-`.rux-side-nav` component does not impose one.
+The reference application keeps the header-triggered navigation non-persistent
+at every width. The reusable `.rux-side-nav` component still does not impose
+positioning or a product breakpoint.
 
 See [Productive Motion](motion.md) for the shared foundation tokens and the
 related panel and menu contracts.
