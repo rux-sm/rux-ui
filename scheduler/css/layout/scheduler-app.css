@@ -31,16 +31,18 @@
 }
 
 .scheduler-app {
-	--scheduler-app-gap: var(--rux-space-4);
+	--scheduler-app-gap: var(--rux-space-5);
 	/* Outer frame around the main schedule/workspace card — same asymmetric
 	   shape as --rux-panel-footer-padding (top 2, inline+bottom 3), kept as
 	   its own token rather than reusing --scheduler-app-gap since that token
 	   also drives the (still-uniform) inter-panel gutter and inner content
 	   insets below, which aren't part of this ask. */
-	--scheduler-app-module-padding: 0;
+	--scheduler-app-module-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
 	/* Calendar is a view-specific split workspace, not a global shell panel.
-	   Its canvas and tools panel share one inset frame and remain attached. */
-	--calendar-workspace-frame-inset: var(--rux-space-3);
+	   The canvas is inset while the tools panel remains full-bleed. The open
+	   resize channel owns the single token-controlled seam between them. */
+	--calendar-workspace-frame-inset-block: 0 var(--rux-space-5);
+	--calendar-workspace-frame-inset-inline: var(--rux-space-5);
 	--calendar-workspace-frame-border: none;
 	--calendar-workspace-frame-radius: var(--rux-radius-container);
 	--scheduler-app-resize-hit-width: 20px;
@@ -172,10 +174,10 @@
 	padding: var(--scheduler-app-module-padding);
 }
 
-/* Calendar composes its workspace and tools drawer as one inset application
-   surface. The outer margin belongs around the combined frame; the two regions
-   stay flush at their shared resize boundary. Other modules keep their own
-   established layout contracts. */
+/* Calendar keeps its canvas inset while the Tools inspector reaches the top,
+   right, and bottom module edges. The resize gutter supplies the inline-end
+   inset while Tools is open; when closed, the workspace restores that inset
+   itself so the calendar never jumps flush to the outer edge. */
 .scheduler-app__module[data-module="calendar"] {
 	margin: 0;
 	overflow: hidden;
@@ -187,8 +189,24 @@
 }
 
 .scheduler-app__module[data-module="calendar"] > .rux-workspace {
+	margin-block: var(--calendar-workspace-frame-inset-block);
+	margin-inline-start: var(--calendar-workspace-frame-inset-inline);
+	margin-inline-end: 0;
 	padding-block-end: 0;
 	border-radius: 0;
+	transition:
+		margin-inline-end var(--rux-panel-motion-duration)
+			var(--rux-panel-standard-easing);
+}
+
+.scheduler-app__module[data-module="calendar"]:not(
+	:has(> #right-panel-drawer.is-open:not(.is-collapsing))
+) > .rux-workspace {
+	margin-inline-end: var(--calendar-workspace-frame-inset-inline);
+}
+
+.scheduler-app__module[data-module="calendar"] .rux-right-panel {
+	border-inline-start: 0;
 }
 
 
@@ -613,8 +631,8 @@
 		min-width var(--rux-panel-motion-duration) var(--rux-panel-standard-easing);
 }
 
-.scheduler-app__drawer.is-open + .scheduler-app__gutter,
-.scheduler-app__gutter:has(+ .scheduler-app__drawer.is-open) {
+.scheduler-app__drawer.is-open:not(.is-collapsing) + .scheduler-app__gutter,
+.scheduler-app__gutter:has(+ .scheduler-app__drawer.is-open:not(.is-collapsing)) {
 	flex-basis: var(--scheduler-app-gap);
 	min-width: var(--scheduler-app-gap);
 }
@@ -1799,6 +1817,10 @@
 		margin: 0;
 		border: 0;
 		border-radius: 0;
+	}
+
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace {
+		margin: 0;
 	}
 
 	.scheduler-app__module > .rux-workspace {

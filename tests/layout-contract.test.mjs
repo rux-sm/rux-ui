@@ -127,10 +127,14 @@ test("side navigation uses productive non-persistent overlay motion", () => {
 	);
 });
 
-test("Calendar tools and workspace share one attached frame", () => {
+test("Calendar workspace is inset while tools remain full-bleed", () => {
 	assert.match(
 		schedulerLayoutCss,
-		/--calendar-workspace-frame-inset:\s+var\(--rux-space-3\);/,
+		/--calendar-workspace-frame-inset-block:\s+0 var\(--rux-space-5\);/,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/--calendar-workspace-frame-inset-inline:\s+var\(--rux-space-5\);/,
 	);
 	assert.match(
 		schedulerLayoutCss,
@@ -138,15 +142,23 @@ test("Calendar tools and workspace share one attached frame", () => {
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] \.rux-right-panel\s*\{[^}]*border-inline-start:\s*var\(--rux-border-width\) solid var\(--rux-border\);/s,
+		/\.scheduler-app__module\[data-module="calendar"\] > \.rux-workspace\s*\{[^}]*margin-block:\s*var\(--calendar-workspace-frame-inset-block\);[^}]*margin-inline-start:\s*var\(--calendar-workspace-frame-inset-inline\);[^}]*margin-inline-end:\s*0;/s,
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/@media \(max-width: 500px\)[\s\S]*?\.scheduler-app__module\[data-module="calendar"\]\s*\{[^}]*margin:\s*0;[^}]*border:\s*0;/,
+		/:not\(\s*:has\(> #right-panel-drawer\.is-open:not\(\.is-collapsing\)\)\s*\) > \.rux-workspace\s*\{[^}]*margin-inline-end:\s*var\(--calendar-workspace-frame-inset-inline\);/s,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/\.scheduler-app__module\[data-module="calendar"\] \.rux-right-panel\s*\{[^}]*border-inline-start:\s*0;/s,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/@media \(max-width: 500px\)[\s\S]*?\.scheduler-app__module\[data-module="calendar"\] > \.rux-workspace\s*\{[^}]*margin:\s*0;/,
 	);
 	assert.match(
 		layoutDocs,
-		/apply spacing around the combined assembly—not\s+between the panel and workspace/,
+		/resize channel owns the single visual gutter\s+between them/,
 	);
 });
 

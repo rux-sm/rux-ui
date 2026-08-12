@@ -93,6 +93,9 @@ Right panels expose secondary content without replacing the center workspace.
   workspace. In that pattern, apply spacing around the combined assembly—not
   between the panel and workspace—and use only a separator or resize handle at
   their attached boundary.
+- A specialized canvas MAY instead be inset while its view-specific panel stays
+  full-bleed. In that pattern, the resize channel owns the single visual gutter
+  between them; do not duplicate it with workspace end padding or panel margin.
 - The trigger MUST expose `aria-controls` and `aria-expanded`.
 - Persistent attached panels MUST NOT use `role="dialog"`. A panel that becomes
   modal at a narrow breakpoint must implement complete modal focus and

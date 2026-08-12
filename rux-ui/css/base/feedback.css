@@ -73,7 +73,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--rux-space-5);
+  padding: var(--rux-space-4);
   border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 .rux-modal__title { font-size: var(--rux-heading-panel-size); font-weight: var(--rux-heading-panel-weight); }

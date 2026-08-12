@@ -48,7 +48,7 @@
 
 .rux-workspace__title {
 	overflow: hidden;
-	font-size: var(--rux-text-xl);
+	font-size: var(--rux-text-md);
 	font-weight: var(--rux-weight-semibold);
 	letter-spacing: 0;
 	line-height: var(--rux-leading-tight);

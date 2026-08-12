@@ -43,8 +43,8 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 35% c h / 100%);
-	--rux-divider:       oklch(from var(--rux-warning) 28% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
@@ -200,7 +200,7 @@
 
 
     --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* Deepest background / canvas */
-    --rux-surface-1:        oklch(from var(--rux-neutral) 18% c h); /* 16px Base cards / containers */
+    --rux-surface-1:        oklch(from var(--rux-neutral) 18% c h); /* UI Header */
     --rux-surface-2:        oklch(from var(--rux-neutral) 22% c h); /* Raised elements */
     --rux-surface-3:        oklch(from var(--rux-neutral) 26% c h); /* Hover states */
     --rux-surface-4:        oklch(from var(--rux-neutral) 30% c h); /* Active / Selected states */
@@ -442,7 +442,7 @@
 	/* ─── COMPONENT · UI header ───────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-ui-header-bg:     	var(--rux-surface-2);
+	--rux-ui-header-bg:     	var(--rux-surface-0);
 	--rux-ui-header-border: 	var(--rux-border-width) solid var(--rux-border);
 	/* --rux-ui-header-radius: not set — spans full width, no corners */
 	/* --rux-ui-header-shadow: not set */
@@ -522,7 +522,7 @@
 	--rux-workspace-radius: var(--rux-radius-container);
 	/* --rux-workspace-shadow: var(--rux-shadow-inset); */
 	--rux-workspace-gutter: var(--rux-space-0);
-	--calendar-workspace-padding: var(--rux-space-0) var(--rux-space-5) var(--rux-space-5) var(--rux-space-5);
+	--calendar-workspace-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
 
 	/* — header — */
 	/* Keep header and view content on the same inline grid. */
@@ -535,9 +535,9 @@
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
 	/* — shell — */
-	--rux-calendar-bg:         var(--rux-surface-1);
-	--rux-calendar-border:     var(--rux-border-width) solid var(--rux-border);
-	--rux-calendar-top-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-bg:         var(--rux-surface-2);
+	--rux-calendar-border:     none;
+	--rux-calendar-top-border: none;
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
 	--rux-calendar-radius: var(--rux-radius-container);
@@ -551,14 +551,14 @@
 	/* — header — */
 	/* Header cells share one flat plane; borders provide separation without
 	   repeating elevation or rim lighting across every grid cell. */
-	--rux-calendar-header-bg:     var(--rux-surface-1);
-	--rux-calendar-header-border: var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-header-bg:     var(--rux-surface-3);
+	--rux-calendar-header-border: none;
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
 	   of the same container shape, not its own control. */
 	--rux-calendar-header-radius: var(--rux-radius-container);
 	--rux-calendar-header-height: 31px;
 	--rux-calendar-header-shadow:        none;
-	--rux-calendar-header-divider:       1px solid var(--rux-border);
+	--rux-calendar-header-divider:       none;
 
 	/* — grid — */
 	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-border);
@@ -573,7 +573,7 @@
 	/* The body is intentionally a bare scrolling region. */
 
 	/* — shell — */
-	--rux-panel-bg:            var(--rux-surface-3);
+	--rux-panel-bg:            var(--rux-surface-2);
 	--rux-panel-fg:            var(--rux-fg);
 	--rux-panel-border-inline: none;
 	--rux-panel-border-block:  none;
@@ -764,7 +764,7 @@
 	/* --rux-trip-bar-fg: not set */
 	--rux-trip-bar-border-width: 0px;
 	/* --rux-trip-bar-border: computed alongside bg */
-	--rux-trip-bar-radius: var(--rux-button-radius);
+	--rux-trip-bar-radius: var(--rux-radius-0);
 	--rux-trip-bar-actions-radius:   var(--rux-radius-control);
 	--rux-trip-bar-bus-label-radius: var(--rux-radius-xs);
 	--rux-trip-bar-meta-radius:      var(--rux-radius-sm);
@@ -1327,7 +1327,7 @@
 	--rux-tab-focus-ring: 0 0 0 3px var(--rux-accent-ring);
 
 	/* — tabs, contained variant — */
-	--rux-tabs-contained-bg:      var(--rux-surface-2);
+	--rux-tabs-contained-bg:      var(--rux-surface-1);
 	--rux-tabs-contained-padding: var(--rux-space-2);
 	--rux-tabs-contained-gap:     var(--rux-space-0);
 	--rux-tabs-contained-tab-fg:          var(--rux-fg-muted);
@@ -1342,7 +1342,7 @@
 	--rux-tabs-attached-gap:    var(--rux-space-0);
 
 	/* — attached tab, inactive — */
-	--rux-tabs-attached-tab-bg:     var(--rux-well-bg);
+	--rux-tabs-attached-tab-bg:     var(--rux-surface-1);
 	--rux-tabs-attached-tab-fg:     var(--rux-fg-muted);
 	--rux-tabs-attached-tab-border: none;
 	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-0);
