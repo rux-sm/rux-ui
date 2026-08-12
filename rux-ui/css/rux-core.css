@@ -14,7 +14,8 @@
 
 @import "./base/icons.css";
 @import "./base/controls.css";
-@import "./base/app-header.css";
+@import "./base/ui-header.css";
+@import "./base/side-nav.css";
 @import "./base/app-shell.css";
 @import "./base/badges.css";
 @import "./base/form.css";

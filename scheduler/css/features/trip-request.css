@@ -17,16 +17,16 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
-	height: var(--rux-app-header-height);
-	min-height: var(--rux-app-header-min-height);
-	padding: var(--rux-app-header-padding);
-	border-bottom: var(--rux-app-header-border);
-	background: var(--rux-app-header-bg);
+	height: var(--rux-ui-header-height);
+	min-height: var(--rux-ui-header-min-height);
+	padding: var(--rux-ui-header-padding);
+	border-bottom: var(--rux-ui-header-border);
+	background: var(--rux-ui-header-bg);
 }
 
 .trip-request-header__logo {
 	display: block;
-	height: var(--rux-app-header-logo-height);
+	height: var(--rux-ui-header-logo-height);
 }
 
 .trip-request-header__label {

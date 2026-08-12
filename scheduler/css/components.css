@@ -18,7 +18,8 @@
    -----------------------
    icons.css        .rux-icon and custom pictogram variants
    controls.css     .rux-button, .rux-segmented-track, .rux-number-stepper
-   app-header.css   .rux-app-header and its brand, navigation, and actions
+   ui-header.css    .rux-ui-header and its brand, navigation, and actions
+   side-nav.css     .rux-side-nav product navigation
    app-shell.css    .rux-app and attached panel/workspace composition
    badges.css       .rux-badge, .rux-trip-itinerary__badge  ← single source of truth for all badge rules
    form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
@@ -44,13 +45,14 @@
 
 @import "../../rux-ui/css/base/icons.css";
 @import "../../rux-ui/css/base/controls.css?v=15";
-@import "../../rux-ui/css/base/app-header.css?v=5";
+@import "../../rux-ui/css/base/ui-header.css?v=5";
+@import "../../rux-ui/css/base/side-nav.css?v=1";
 @import "../../rux-ui/css/base/app-shell.css?v=1";
 @import "../../rux-ui/css/base/badges.css?v=2";
 @import "../../rux-ui/css/base/form.css?v=2";
 @import "../../rux-ui/css/base/workspace.css?v=3";
 @import "../../rux-ui/css/base/panel.css?v=2";
-@import "../../rux-ui/css/base/menu.css";
+@import "../../rux-ui/css/base/menu.css?v=1";
 @import "../../rux-ui/css/base/popover.css";
 @import "../../rux-ui/css/base/suggestions.css?v=1";
 @import "../../rux-ui/css/base/card.css";
@@ -65,4 +67,4 @@
 @import "./features/trip-dialog.css";
 @import "./features/itinerary.css?v=4";
 @import "./layout/scheduler.css?v=15";
-@import "./layout/scheduler-app.css?v=59";
+@import "./layout/scheduler-app.css?v=63";

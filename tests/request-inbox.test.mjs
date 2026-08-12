@@ -23,7 +23,7 @@ test("the Requests nav item is wired and badge-aware", () => {
 	assert.match(page, /id="request-inbox-btn"/);
 	assert.match(page, /data-module/); // nav still uses the module bus
 	assert.match(page, /id="requests-badge"/);
-	assert.match(page, /rux-app-header__badge-count--nav/);
+	assert.match(page, /rux-side-nav__badge/);
 });
 
 test("the floating window + dialog + script/css are present", () => {

@@ -37,9 +37,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=113" />
+		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=121" />
 		<link rel="stylesheet" href="./rux-ui/css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=217" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=225" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-panel.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/fleet-panel.css?v=4" />
@@ -58,7 +58,8 @@
 		/>
 		<link rel="stylesheet" href="./scheduler/css/features/flip-seven.css?v=18" />
 		<link rel="stylesheet" href="./scheduler/css/features/bus-picker.css?v=4" />
-		<link rel="stylesheet" href="./scheduler/css/features/profile-picker.css?v=3" />
+		<link rel="stylesheet" href="./scheduler/css/features/profile-picker.css?v=6" />
+		<link rel="stylesheet" href="./scheduler/css/features/preferences.css?v=1" />
 		<link rel="stylesheet" href="./scheduler/css/features/print-schedule.css?v=35" />
 		<link rel="stylesheet" href="./scheduler/css/features/trip-envelope.css?v=14" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-week-info.css?v=6" />
@@ -68,7 +69,7 @@
 		<link rel="stylesheet" href="./scheduler/css/features/tasks-panel.css?v=41" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-share.css?v=77" />
 		<link rel="stylesheet" href="./scheduler/css/features/doc-viewer.css?v=6" />
-		<link rel="stylesheet" href="./scheduler/css/features/trip-manifest.css?v=5" />
+		<link rel="stylesheet" href="./scheduler/css/features/trip-manifest.css?v=6" />
 		<link
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
@@ -101,183 +102,109 @@
 			<img class="rux-splash__logo" src="assets/rux-splash.gif" alt="" />
 		</div>
 		<main class="scheduler-app">
-			<!-- ── App header ───────────────────────────────────────────────────── -->
-			<header class="rux-app-header" aria-label="App header">
-				<div class="rux-app-header__brand">
+			<a class="rux-skip-link" href="#app-content">Skip To Main Content</a>
+			<!-- ── UI header ────────────────────────────────────────────────────── -->
+			<header class="rux-ui-header" aria-label="Application Header">
+				<button
+					class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__menu"
+					type="button"
+					id="app-navigation-toggle"
+					aria-label="Open Navigation"
+					aria-expanded="false"
+					aria-controls="app-side-navigation"
+					title="Navigation"
+					data-rux-side-nav-toggle
+				>
+					<span class="rux-ui-header__menu-icons" aria-hidden="true">
+						<span
+							class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--open"
+							>menu</span
+						>
+						<span
+							class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--close"
+							>close</span
+						>
+					</span>
+				</button>
+				<div class="rux-ui-header__brand">
 					<img
-						class="rux-app-header__logo"
+						class="rux-ui-header__logo"
 						src="./assets/logo.png"
 						alt="Escamilla Tour Buses"
 					/>
 				</div>
-
-				<nav
-					class="rux-app-header__nav"
-					aria-label="Primary navigation"
-				>
-					<button
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						type="button"
-						data-module="calendar"
-					>
-						<span class="rux-icon" aria-hidden="true">map</span>
-						Trips
-					</button>
-
-					<button
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						type="button"
-						data-module="drivers"
-					>
-						<span class="rux-icon">person</span>
-						Drivers
-					</button>
-
-					<button
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						type="button"
-						data-module="fleet"
-					>
-						<span class="rux-icon" aria-hidden="true"
-							>directions_bus</span
-						>
-						Fleet
-					</button>
-
-					<button
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						type="button"
-						data-module="customers"
-					>
-						<span class="rux-icon" aria-hidden="true">groups</span>
-						Customers
-					</button>
-
-					<button
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						type="button"
-						id="request-inbox-btn"
-						title="Customer trip requests"
-					>
-						<span class="rux-icon" aria-hidden="true">inbox</span>
-						Requests
-						<span
-							class="rux-app-header__badge-count rux-app-header__badge-count--nav"
-							id="requests-badge"
-							hidden
-						></span>
-					</button>
-					<button
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						type="button"
-						id="workspace-search-btn"
-						title="Search trips (⌘K)"
-					>
-						<span class="rux-icon" aria-hidden="true">search</span>
-						Search
-					</button>
-				</nav>
-
 				<div
-					class="rux-app-header__actions"
-					aria-label="Account actions"
+					class="rux-ui-header__actions"
+					aria-label="Application Actions"
 				>
-					<div class="rux-app-header__action-group">
-						<a
-							class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg"
-							href="https://cloud.samsara.com/o/5005667/fleet/list?bounds=25.531218%2C-101.984582%2C30.594115%2C-93.569055&amp;z=8"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Open Samsara GPS"
-							title="Open Samsara GPS"
-						>
-							<span class="rux-icon" aria-hidden="true"
-								>location_on</span
-							>
-						</a>
+					<div class="rux-ui-header__action-group">
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__chat-btn"
+							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button"
+							type="button"
+							id="workspace-search-btn"
+							aria-label="Search Trips"
+							title="Search Trips (⌘K)"
+						>
+							<span class="rux-icon" aria-hidden="true">search</span>
+						</button>
+						<button
+							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__chat-btn rux-ui-header__utility--optional"
 							type="button"
 							id="team-chat-btn"
 							aria-label="Team chat"
+							aria-controls="team-chat-window"
+							aria-expanded="false"
+							title="Team chat"
 						>
 							<span class="rux-icon" aria-hidden="true"
 								>chat</span
 							>
 							<span
-								class="rux-app-header__badge-count"
+								class="rux-ui-header__badge-count"
 								id="team-chat-badge"
 								hidden
 							></span>
 						</button>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--icon-lg rux-app-header__notif-btn"
+							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__notif-btn"
 							type="button"
 							id="notifications-menu-btn"
 							aria-label="Notifications"
 							aria-haspopup="menu"
 							aria-expanded="false"
+							title="Notifications"
 						>
 							<span class="rux-icon" aria-hidden="true"
 								>notifications</span
 							>
 							<span
-								class="rux-app-header__badge-count"
+								class="rux-ui-header__badge-count"
 								id="notifications-badge"
 								hidden
 							></span>
 						</button>
 					</div>
 					<div
-						class="rux-app-header__action-group rux-app-header__action-group--identity"
+						class="rux-ui-header__action-group rux-ui-header__action-group--identity"
 					>
-						<label
-							class="rux-switch rux-switch--theme"
-							id="theme-toggle"
-							title="Toggle light/dark theme"
-						>
-							<input
-								type="checkbox"
-								aria-label="Toggle light/dark theme"
-							/><span class="rux-switch__track"
-								><span
-									class="rux-icon rux-switch__track-icon rux-switch__track-icon--sun"
-									aria-hidden="true"
-									>light_mode</span
-								><span
-									class="rux-icon rux-switch__track-icon rux-switch__track-icon--moon"
-									aria-hidden="true"
-									>dark_mode</span
-								></span
-							><span class="rux-switch__thumb"
-								><span
-									class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--sun"
-									aria-hidden="true"
-									>light_mode</span
-								><span
-									class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--moon"
-									aria-hidden="true"
-									>dark_mode</span
-								></span
-							>
-						</label>
 						<!-- Who else currently has a profile active (excludes yourself —
 						     that's the button right next to it) — Supabase Realtime
 						     Presence, keyed by profile id so multiple tabs/devices of the
 						     same profile collapse into one entry. See the presence wiring
 						     further down for the join/track logic. -->
 						<div
-							class="rux-app-header__active-profiles"
+							class="rux-ui-header__active-profiles"
 							id="header-active-profiles"
 							hidden
 						></div>
 						<button
-							class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
+							class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__profile"
 							type="button"
 							id="profile-menu-btn"
 							aria-label="Profile menu"
 							aria-haspopup="menu"
 							aria-expanded="false"
+							title="Profile menu"
 						>
 							<span class="rux-icon" aria-hidden="true"
 								>person</span
@@ -303,6 +230,15 @@
 					>
 					<span>Switch profile</span>
 				</button>
+				<button
+					class="rux-menu__item"
+					type="button"
+					role="menuitem"
+					id="preferences-menu-btn"
+				>
+					<span class="rux-icon" aria-hidden="true">tune</span>
+					<span>Preferences…</span>
+				</button>
 				<div class="rux-menu__divider" role="separator"></div>
 				<button
 					class="rux-menu__item"
@@ -323,27 +259,85 @@
 					<span class="rux-icon" aria-hidden="true">widgets</span>
 					<span>Components</span>
 				</button>
-				<button
-					class="rux-menu__item"
-					type="button"
-					role="menuitem"
-					data-module="game"
+			</div>
+
+			<!-- Personal application settings live behind the profile menu rather
+			     than occupying permanent UI-header space or becoming coupled to
+			     the Calendar workspace's view-specific tools. -->
+			<div class="rux-modal-backdrop" id="preferences-modal" hidden>
+				<div
+					class="rux-modal rux-preferences"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="preferences-title"
 				>
-					<span class="rux-icon" aria-hidden="true"
-						>playing_cards</span
-					>
-					<span>Flip 7</span>
-				</button>
-				<div class="rux-menu__divider" role="separator"></div>
-				<button
-					class="rux-menu__item"
-					type="button"
-					role="menuitem"
-					data-module="settings"
-				>
-					<span class="rux-icon" aria-hidden="true">settings</span>
-					<span>Configuration</span>
-				</button>
+					<div class="rux-modal__header">
+						<div class="rux-modal__title" id="preferences-title">
+							Preferences
+						</div>
+						<button
+							class="rux-button rux-button--ghost rux-button--icon"
+							type="button"
+							data-rux-dismiss
+							aria-label="Close Preferences"
+							title="Close Preferences"
+						>
+							<span class="rux-icon" aria-hidden="true">close</span>
+						</button>
+					</div>
+					<div class="rux-modal__body">
+						<section
+							class="rux-preferences__section"
+							aria-labelledby="preferences-appearance-title"
+						>
+							<h2
+								class="rux-preferences__heading"
+								id="preferences-appearance-title"
+							>
+								Appearance
+							</h2>
+							<div class="rux-preferences__row">
+								<div class="rux-preferences__copy">
+									<span class="rux-preferences__label">Theme</span>
+									<span class="rux-preferences__description"
+										>Choose the light or dark application
+										theme.</span
+									>
+								</div>
+								<label
+									class="rux-switch rux-switch--theme"
+									id="theme-toggle"
+									title="Toggle Light/Dark Theme"
+								>
+									<input
+										type="checkbox"
+										aria-label="Toggle Light/Dark Theme"
+									/><span class="rux-switch__track"
+										><span
+											class="rux-icon rux-switch__track-icon rux-switch__track-icon--sun"
+											aria-hidden="true"
+											>light_mode</span
+										><span
+											class="rux-icon rux-switch__track-icon rux-switch__track-icon--moon"
+											aria-hidden="true"
+											>dark_mode</span
+										></span
+									><span class="rux-switch__thumb"
+										><span
+											class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--sun"
+											aria-hidden="true"
+											>light_mode</span
+										><span
+											class="rux-icon rux-switch__thumb-icon rux-switch__thumb-icon--moon"
+											aria-hidden="true"
+											>dark_mode</span
+										></span
+									>
+								</label>
+							</div>
+						</section>
+					</div>
+				</div>
 			</div>
 
 			<div
@@ -599,7 +593,101 @@
 				</button>
 			</div>
 
-			<div class="scheduler-app__body">
+			<div class="scheduler-app__body" id="app-content" tabindex="-1">
+				<div
+					class="scheduler-app__side-nav-scrim"
+					data-rux-side-nav-scrim
+					aria-hidden="true"
+				></div>
+				<nav
+					class="rux-side-nav scheduler-app__side-nav"
+					id="app-side-navigation"
+					aria-label="Primary Navigation"
+					aria-hidden="true"
+					inert
+					data-rux-side-nav
+				>
+					<ul class="rux-side-nav__list">
+						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								data-module="calendar"
+							>
+								<span class="rux-icon" aria-hidden="true">map</span>
+								<span class="rux-side-nav__label">Trips</span>
+							</button>
+						</li>
+						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								data-module="drivers"
+							>
+								<span class="rux-icon" aria-hidden="true">person</span>
+								<span class="rux-side-nav__label">Drivers</span>
+							</button>
+						</li>
+						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								data-module="fleet"
+							>
+								<span class="rux-icon" aria-hidden="true">directions_bus</span>
+								<span class="rux-side-nav__label">Fleet</span>
+							</button>
+						</li>
+						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								data-module="customers"
+							>
+								<span class="rux-icon" aria-hidden="true">groups</span>
+								<span class="rux-side-nav__label">Customers</span>
+							</button>
+						</li>
+						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								id="request-inbox-btn"
+								title="Customer Trip Requests"
+							>
+								<span class="rux-icon" aria-hidden="true">inbox</span>
+								<span class="rux-side-nav__label">Requests</span>
+								<span
+									class="rux-side-nav__badge"
+									id="requests-badge"
+									hidden
+								></span>
+							</button>
+						</li>
+						<li class="rux-side-nav__item">
+							<a
+								class="rux-side-nav__link"
+								href="https://cloud.samsara.com/o/5005667/fleet/list?bounds=25.531218%2C-101.984582%2C30.594115%2C-93.569055&amp;z=8"
+								target="_blank"
+								rel="noopener noreferrer"
+								title="Open Samsara GPS"
+							>
+								<span class="rux-icon" aria-hidden="true">location_on</span>
+								<span class="rux-side-nav__label">Samsara</span>
+							</a>
+						</li>
+						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								data-module="settings"
+							>
+								<span class="rux-icon" aria-hidden="true">settings</span>
+								<span class="rux-side-nav__label">Options</span>
+							</button>
+						</li>
+					</ul>
+				</nav>
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: CALENDAR
              ════════════════════════════════════════════════════════════════ -->
@@ -2082,16 +2170,18 @@
 									</button>
 								</div>
 								<button
-									class="rux-button rux-button--ghost scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
+									class="rux-button rux-button--ghost calendar-app__panel-toggle"
 									type="button"
-									aria-label="Open right panel"
-									aria-pressed="false"
+									aria-label="Hide Calendar Panel"
+									aria-expanded="true"
+									aria-controls="right-panel-drawer"
 									data-opens="right-panel-drawer"
 								>
-									<span class="rux-btn-label">Options</span>
-									<span class="rux-icon" aria-hidden="true"
-										>right_panel_open</span
-									>
+									<span class="rux-btn-label">Tools</span>
+									<span
+										class="rux-icon calendar-app__panel-toggle-icon"
+										aria-hidden="true"
+										>right_panel_close</span>
 								</button>
 							</div>
 						</header>
@@ -2138,35 +2228,12 @@
 
 					<!-- Right panel drawer -->
 					<div
-						class="scheduler-app__drawer scheduler-app__drawer--right scheduler-app__drawer--railable"
+						class="scheduler-app__drawer scheduler-app__drawer--right"
 						id="right-panel-drawer"
 					>
-						<!-- Open button: outside the inert <aside> so it stays clickable
-						     when the panel is collapsed. Only visible at <=44px rail width. -->
-						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-right-panel__drawer-open scheduler-app__mobile-panel-btn"
-							type="button"
-							aria-label="Toggle tools panel"
-							data-opens="right-panel-drawer"
-						>
-							<span
-								class="scheduler-app__drawer-icon-stack"
-								aria-hidden="true"
-							>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-open"
-									>right_panel_open</span
-								>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-close"
-									>right_panel_close</span
-								>
-							</span>
-						</button>
 						<aside
 							class="rux-panel rux-panel--right rux-right-panel"
-							role="dialog"
-							aria-label="Tools panel"
+							aria-label="Calendar Tools"
 						>
 							<!-- Same tabs-as-header treatment as the trip panel — desktop
 							     closes via its resize gutter, mobile gets a ghost Close
@@ -2425,28 +2492,6 @@
 													<label class="rux-switch">
 														<input
 															id="opt-sunday-start"
-															type="checkbox"
-															role="switch"
-														/>
-														<span
-															class="rux-switch__track"
-														></span>
-														<span
-															class="rux-switch__thumb"
-														></span>
-													</label>
-												</div>
-												<div
-													class="rux-view-options__row"
-												>
-													<span
-														class="rux-view-options__label"
-														>Hide navigation
-														bar</span
-													>
-													<label class="rux-switch">
-														<input
-															id="opt-hide-nav"
 															type="checkbox"
 															role="switch"
 														/>
@@ -6994,7 +7039,8 @@
 		<script src="./js/core/utilities.js"></script>
 		<script src="./js/core/theme.js?v=1"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
-		<script src="./js/core/drawer.js?v=5"></script>
+		<script src="./js/core/ui-shell.js?v=2"></script>
+		<script src="./js/core/drawer.js?v=7"></script>
 		<script src="./js/core/popover.js?v=1"></script>
 		<script src="./js/core/menu.js?v=2"></script>
 		<script src="./js/core/controls.js?v=5" defer></script>
@@ -7028,16 +7074,16 @@
 		></script>
 		<script
 			type="module"
-			src="./js/panels/notifications-panel.js?v=4"
+			src="./js/panels/notifications-panel.js?v=5"
 		></script>
-		<script type="module" src="./js/panels/team-chat.js?v=4"></script>
+		<script type="module" src="./js/panels/team-chat.js?v=5"></script>
 		<script
 			type="module"
-			src="./js/panels/components-panel.js?v=46"
+			src="./js/panels/components-panel.js?v=47"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/tasks-panel.js?v=58"></script>
-		<script type="module" src="./js/panels/flip-seven.js?v=19"></script>
+		<script type="module" src="./js/panels/flip-seven.js?v=20"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
 		<script type="module">
@@ -7112,11 +7158,10 @@
 				});
 			});
 
-			// Print schedule / Components / Flip 7 / Configuration all live under
-			// the profile button's menu now (the ⋮ "More" button that used to
-			// hold them is gone). Configuration reuses the generic module-button
-			// wiring above (data-module="settings"), same as Components/Flip 7 —
-			// it doesn't need its own click handler.
+			// Profile switching, Preferences, Print schedule, and the internal
+			// Components destination live under the profile menu. Product Options
+			// lives in the primary side navigation and reuses the generic
+			// module-button wiring above.
 			const profileMenuBtn = document.getElementById("profile-menu-btn");
 			const profileMenu = document.getElementById("profile-menu");
 			function setProfileMenuExpanded(expanded) {
@@ -7134,6 +7179,17 @@
 				}
 			}
 			profileMenuBtn?.addEventListener("click", toggleProfileMenu);
+
+			const preferencesMenuBtn = document.getElementById(
+				"preferences-menu-btn",
+			);
+			const preferencesModal = document.getElementById("preferences-modal");
+			preferencesMenuBtn?.addEventListener("click", () => {
+				// RuxMenu closes activated items at the document level. Open after
+				// that event finishes so the menu's focus restoration cannot steal
+				// focus from the Preferences dialog.
+				queueMicrotask(() => window.Rux?.openModal(preferencesModal));
+			});
 
 			// ── Profile picker — password-less "who's using this" selector ──────
 			// No auth: just a shared list of names (+ optional photo) so trip
@@ -7200,7 +7256,7 @@
 						profileMenuBtn.appendChild(img);
 					} else {
 						const initials = document.createElement("span");
-						initials.className = "rux-app-header__profile-initials";
+						initials.className = "rux-ui-header__profile-initials";
 						initials.style.backgroundColor = avatarColorValue(
 							profile.avatar_color,
 						);
@@ -7249,7 +7305,7 @@
 					const meta = state[id][0];
 					const avatar = profileAvatarEl(
 						meta,
-						"rux-avatar--sm rux-app-header__active-avatar",
+						"rux-avatar--sm rux-ui-header__active-avatar",
 					);
 					avatar.title = meta.display_name;
 					headerActiveProfiles.appendChild(avatar);
@@ -7638,104 +7694,7 @@
 
 			// ── Trip editor dialog ─────────────────────────────────────────────
 
-			// ── App-header visibility ──────────────────────────────────────────
-			// Always starts expanded on load — deliberately not persisted, unlike
-			// the panels' open/closed state.
-			const appHeader = document.querySelector(".rux-app-header");
 			const appEl = document.querySelector(".scheduler-app");
-			let appHeaderCollapsed = false;
-
-			// The app header's open height is implicit (auto), so it can't transition
-			// smoothly on its own — `height` jumps to its target instantly while
-			// only `padding` animates. Pin an explicit px height before toggling so
-			// the transition has two real numbers to interpolate between, then
-			// release back to auto once it settles so it stays responsive to
-			// content/viewport changes at rest.
-			function collapseAppHeaderSmooth() {
-				const h = appHeader.getBoundingClientRect().height;
-				appHeader.style.overflow = "hidden";
-				appHeader.style.height = h + "px";
-				appHeader.getBoundingClientRect();
-				appHeader.classList.add("is-collapsed");
-				appHeader.style.height = "0px";
-				appHeader.addEventListener(
-					"transitionend",
-					function handler(e) {
-						if (
-							e.target !== appHeader ||
-							e.propertyName !== "height"
-						)
-							return;
-						appHeader.style.height = "";
-						appHeader.style.overflow = "";
-						appHeader.removeEventListener("transitionend", handler);
-					},
-				);
-			}
-			function expandAppHeaderSmooth() {
-				appHeader.style.overflow = "hidden";
-				// Pin height AND padding to the collapsed (0) state explicitly. With
-				// box-sizing: border-box, height alone can't reach 0 once padding is
-				// restored — padding always reserves its own space — so both must be
-				// pinned together to get a true 0 "from" snapshot.
-				appHeader.style.height = "0px";
-				appHeader.style.paddingTop = "0px";
-				appHeader.style.paddingBottom = "0px";
-				appHeader.getBoundingClientRect();
-				// Briefly disable transitions so removing is-collapsed settles
-				// instantly, letting us measure the true natural size.
-				const prevTransition = appHeader.style.transition;
-				appHeader.style.transition = "none";
-				appHeader.classList.remove("is-collapsed");
-				appHeader.style.height = "";
-				appHeader.style.paddingTop = "";
-				appHeader.style.paddingBottom = "";
-				const naturalH = appHeader.getBoundingClientRect().height;
-				const naturalPadTop = getComputedStyle(appHeader).paddingTop;
-				const naturalPadBottom =
-					getComputedStyle(appHeader).paddingBottom;
-				appHeader.style.height = "0px";
-				appHeader.style.paddingTop = "0px";
-				appHeader.style.paddingBottom = "0px";
-				appHeader.getBoundingClientRect();
-				appHeader.style.transition = prevTransition;
-				appHeader.getBoundingClientRect();
-				appHeader.style.height = naturalH + "px";
-				appHeader.style.paddingTop = naturalPadTop;
-				appHeader.style.paddingBottom = naturalPadBottom;
-				appHeader.addEventListener(
-					"transitionend",
-					function handler(e) {
-						if (
-							e.target !== appHeader ||
-							e.propertyName !== "height"
-						)
-							return;
-						appHeader.style.height = "";
-						appHeader.style.paddingTop = "";
-						appHeader.style.paddingBottom = "";
-						appHeader.style.overflow = "";
-						appHeader.removeEventListener("transitionend", handler);
-					},
-				);
-			}
-
-			function setAppHeaderCollapsed(collapsed) {
-				if (appHeaderCollapsed === collapsed) return;
-				appHeaderCollapsed = collapsed;
-				appHeaderCollapsed
-					? collapseAppHeaderSmooth()
-					: expandAppHeaderSmooth();
-			}
-
-			// Lives in the right panel's View Options card now, not the ⋮ menu —
-			// "on" reads as "nav is hidden" (matching the "Hide navigation bar"
-			// label), the same direction as appHeaderCollapsed, so this is a direct
-			// pass-through rather than an inversion.
-			initToggle("opt-hide-nav", appHeaderCollapsed, (on) => {
-				setAppHeaderCollapsed(on);
-				patchProfileSettings({ hideNav: on });
-			});
 
 			const rightDrawer = document.getElementById("right-panel-drawer");
 			const tripPanel = document.querySelector(".rux-trip-panel");
@@ -7746,7 +7705,7 @@
 				".scheduler-app__mobile-panel-btn--left",
 			);
 			const rightPanelToggleBtn = document.querySelector(
-				".scheduler-app__mobile-panel-btn--right",
+				".calendar-app__panel-toggle",
 			);
 			const schedulerEl = document.getElementById("scheduler");
 			const schedulerContextMenu = document.getElementById(
@@ -7775,7 +7734,7 @@
 				if (!mobilePanelQuery.matches) return;
 				document
 					.querySelector(
-						`.scheduler-app__mobile-panel-btn[data-opens="${panelId}"]`,
+						`[data-opens="${panelId}"]`,
 					)
 					?.focus();
 			}
@@ -8040,9 +7999,8 @@
 
 			// ── Right-side resizable drawer ─────────────────────────────────────
 			// Open/close/drag-resize behavior lives in RuxDrawer (js/core/drawer.js),
-			// shared with the Fleet/Driver panel drawers. Trips is the one place
-			// with two coordinating drawers (left+right), so these two pass
-			// getOtherDrawer + scheduleMin — Fleet/Driver's single drawer omits both.
+			// shared with the Fleet/Driver panel drawers. The Calendar tools panel
+			// passes scheduleMin so resizing always leaves its workspace usable.
 
 			// Read the right-side default so initial state and later drawer opens
 			// use the same tokenized width.
@@ -8054,18 +8012,32 @@
 			);
 			const SCHEDULE_MIN = 471;
 
+			function syncRightPanelToggle(open) {
+				if (!rightPanelToggleBtn) return;
+				rightPanelToggleBtn.setAttribute("aria-expanded", String(open));
+				rightPanelToggleBtn.setAttribute(
+					"aria-label",
+					open ? "Hide Calendar Panel" : "Show Calendar Panel",
+				);
+				const icon = rightPanelToggleBtn.querySelector(
+					".calendar-app__panel-toggle-icon",
+				);
+				if (icon) icon.textContent = open ? "right_panel_close" : "right_panel_open";
+			}
+
 			const rightDrawerHandle = RuxDrawer.create({
 				drawer: rightDrawer,
 				panel: rightPanel,
 				toggleBtn: rightPanelToggleBtn,
 				handle: document.getElementById("right-panel-resize-gutter"),
 				direction: "right",
-				railWidth: true,
 				getOtherDrawer: () => null,
 				scheduleMin: SCHEDULE_MIN,
 				onOpen: () => {
 					rightAutoCollapsed = false;
+					syncRightPanelToggle(true);
 				},
+				onClose: () => syncRightPanelToggle(false),
 			});
 
 			// ── Scheduler context menu ──────────────────────────────────────────
@@ -9863,12 +9835,6 @@
 					if (input) input.checked = settings.twoWeeks;
 				}
 
-				if ("hideNav" in settings) {
-					const input = document.getElementById("opt-hide-nav");
-					if (input) input.checked = !!settings.hideNav;
-					setAppHeaderCollapsed(!!settings.hideNav);
-				}
-
 				if ("sundayStart" in settings) {
 					sundayStart = !!settings.sundayStart;
 					if (optSundayStart) optSundayStart.checked = sundayStart;
@@ -9903,9 +9869,11 @@
 				renderScheduler();
 			});
 
-			// ── Mobile panel open buttons ─────────────────────────────────────
+			// ── Workspace panel controls ──────────────────────────────────────
 			document
-				.querySelectorAll(".scheduler-app__mobile-panel-btn")
+				.querySelectorAll(
+					".scheduler-app__mobile-panel-btn, .calendar-app__panel-toggle",
+				)
 				.forEach((btn) => {
 					btn.addEventListener("click", () => {
 						const targetId = btn.dataset.opens;
@@ -10892,10 +10860,23 @@
 					"--drawer-open-width",
 					RIGHT_DRAWER_DEFAULT + "px",
 				);
+				if (mobilePanelQuery.matches) {
+					rightDrawer.classList.remove("is-open", "is-closing");
+					rightPanel.inert = true;
+					rightDrawer.setAttribute("aria-hidden", "true");
+					syncRightPanelToggle(false);
+					rightDrawerHandle.syncHandle();
+					return;
+				}
+				rightDrawer.classList.remove(
+					"is-closing",
+					"is-collapsing",
+					"is-expanding",
+				);
 				rightDrawer.classList.add("is-open");
 				rightPanel.inert = false;
 				rightDrawer.setAttribute("aria-hidden", "false");
-				rightPanelToggleBtn?.setAttribute("aria-pressed", "true");
+				syncRightPanelToggle(true);
 				rightDrawerHandle.syncHandle();
 			}
 
@@ -10925,7 +10906,9 @@
 
 			function getDrawerWidth(el) {
 				const width = parseInt(
-					getComputedStyle(el).getPropertyValue("--drawer-width"),
+					getComputedStyle(el).getPropertyValue(
+						"--drawer-open-width",
+					),
 					10,
 				);
 				return Number.isFinite(width) ? width : 380;

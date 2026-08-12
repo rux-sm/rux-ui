@@ -1,7 +1,7 @@
 /* ==========================================================================
    NOTIFICATIONS  ·  header bell + dropdown
    --------------------------------------------------------------------------
-   Bell button badge lives in app-header.css alongside the rest of the
+   Bell button badge lives in ui-header.css alongside the rest of the
    header chrome; this file is just the dropdown panel's contents (list,
    rows) opened via #notifications-menu / RuxMenu.
    ========================================================================== */

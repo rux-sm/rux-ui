@@ -28,7 +28,7 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 │       ├── tokens.css         ← all design tokens: color, type, space, radius, motion
 │       ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
 │       ├── rux-core.css       ← framework-agnostic entrypoint for new applications
-│       └── base/              ← 17 reusable BEM components
+│       └── base/              ← 18 reusable BEM components
 ├── scheduler/
 │   └── css/
 │       ├── components.css     ← scheduler bundle (base + features + layout)
@@ -64,14 +64,16 @@ For a new application, use the framework-agnostic core entrypoint instead:
 
 ### Application composition
 
-Rux applications place a full-width app header directly above an attached
-application shell. The shell contains one required center workspace and may
-include side panels with no decorative gaps between structural siblings.
+Rux applications place a full-width UI header above the application body. The
+header may control product side navigation, while view-specific controls remain
+in the workspace header. Attached application shells contain one required
+center workspace and may include side panels with no decorative gaps between
+structural siblings.
 
-See [Application Layout](docs/layout-composition.md) for the complete app-header,
+See [Application Layout](docs/layout-composition.md) for the complete UI-header,
 workspace, panel, card, spacing, scrolling, responsive, and accessibility
-contract. See [the reference layout](examples/app-layout.html) for copyable
-markup.
+contract. See [UI Header](docs/ui-header.md) for the lightweight component
+standard and [the reference layout](examples/app-layout.html) for copyable markup.
 
 ---
 
@@ -205,11 +207,16 @@ Buttons are compact, solid controls. Rux uses one button size: 32px high.
 |---|---:|---:|---:|---:|
 | `.rux-button` | `--rux-control-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
 | `.rux-button--icon` | `--rux-control-height` `32px` | icon only | `0` | n/a |
+| `.rux-ui-header__button` | `--rux-ui-header-button-size` `48px` | `20px` icon | `0` | n/a |
 | `.rux-segmented-track` | `--rux-input-height` outer track | track | `--rux-segmented-track-padding` | `--rux-segmented-track-radius` |
 | `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-text-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
 
 - Use `--rux-weight-medium` for all button labels.
 - Icon-only buttons are square: width equals the resolved button height.
+- Header action buttons are the intentional shell exception: use
+  `.rux-ui-header__button` for the 48px menu, search, messages, notifications,
+  and profile targets. The UI header owns the same fixed 48px height; its
+  children do not size it. Do not use that size for ordinary application actions.
 - Do not add compact or large button variants. Use layout density, icon-only buttons, or progressive disclosure instead of changing button height.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
@@ -302,16 +309,21 @@ Cards may group distinct content inside a panel, but do not wrap every field or 
 
 ### Motion
 
-| Duration | Use for |
-|---|---|
-| `--rux-duration-instant` `80ms` | Hover, opacity changes |
-| `--rux-duration-fast` `140ms` | Button press, color shifts |
-| `--rux-duration-base` `220ms` | Menu open, modal in |
-| `--rux-duration-slow` `360ms` | Sheet slide, large layout |
+Repeated shell interactions use productive motion rather than hardcoded values.
+The hamburger icon switches immediately, menus use `110ms` fast-02, the UI-shell
+side navigation uses a `110ms` fixed-position clipping reveal, and other
+frequently used structural panels use `150ms` moderate-01. Side-navigation
+scrims begin after `70ms`, fade to 65% black over `200ms`, and disappear
+immediately on close.
 
-Default easing is `--rux-ease-out` (`cubic-bezier(0.22, 1, 0.36, 1)`) — fast start, gentle settle. Use `--rux-ease-in-out` only for symmetric motion (loops, indeterminate progress). `--rux-ease-spring` exists for playful affordances but should appear *almost never* — overshoot is a feature, not a vibe.
+Component CSS consumes semantic `--rux-menu-*`, `--rux-panel-*`, and
+`--rux-side-nav-*` motion tokens. Existing general-purpose `--rux-duration-*`
+and `--rux-ease-*` tokens remain available for established non-structural
+interactions.
 
 `prefers-reduced-motion` is respected globally through `scheduler/css/components.css`.
+See [Productive Motion](docs/motion.md) for the token table, component contracts,
+implementation examples, and verification checklist.
 
 ### Transparency & blur
 

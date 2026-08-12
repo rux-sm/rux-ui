@@ -85,12 +85,15 @@
 	background: var(--rux-overlay-scrim);
 	opacity: 0;
 	pointer-events: none;
-	transition: opacity var(--rux-duration-base) var(--rux-ease-out);
+	transition:
+		opacity var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 }
 
 .rux-manifest-window__scrim.is-open {
 	opacity: 1;
 	pointer-events: auto;
+	transition:
+		opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
 }
 
 /* Passenger editor — docks to the left edge of .rux-manifest-window__content
@@ -115,11 +118,14 @@
 	container-type: inline-size;
 	background: var(--rux-card-bg);
 	transform: translateX(-100%);
-	transition: transform var(--rux-duration-base) var(--rux-ease-out);
+	transition:
+		transform var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 }
 
 .rux-manifest-window__passenger-panel.is-open {
 	transform: translateX(0);
+	transition:
+		transform var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
 }
 
 /* Direct child only (not .rux-card__header generally) — the Passenger

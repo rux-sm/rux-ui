@@ -320,7 +320,7 @@ els.leave.addEventListener("click", async () => {
 			busy = false;
 		}
 	}
-	document.querySelector('.rux-app-header__nav-item[data-module="calendar"]')?.click();
+	document.querySelector('.rux-side-nav__link[data-module="calendar"]')?.click();
 });
 els.start.addEventListener("click", () => call("start_flip_seven", { acting_player: playerId }, {}));
 els.hit.addEventListener("click", () => call("hit_flip_seven_v2", { acting_player: playerId }));

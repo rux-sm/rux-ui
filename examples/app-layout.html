@@ -11,39 +11,118 @@
 		<link rel="stylesheet" href="../rux-ui/css/rux-core.css" />
 		<style>
 			/* Example-only sizing. Drawer and responsive behavior belong to the app. */
+			.rux-app-shell { position: relative; }
 			.example-panel { flex-basis: 18rem; }
+			.example-navigation {
+				position: absolute;
+				inset-block: 0;
+				inset-inline-start: 0;
+				z-index: var(--rux-z-overlay);
+				visibility: hidden;
+				pointer-events: none;
+				clip-path: inset(0 100% 0 0);
+				opacity: 1;
+				will-change: clip-path;
+				transition:
+					clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
+					visibility 0s linear var(--rux-side-nav-motion-duration);
+			}
+			.example-navigation.is-open {
+				visibility: visible;
+				pointer-events: auto;
+				clip-path: inset(0);
+				transition:
+					clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
+					visibility 0s linear 0s;
+			}
+			.example-navigation-scrim {
+				position: absolute;
+				inset-block: 0;
+				inset-inline-start: 0;
+				inset-inline-end: 0;
+				z-index: calc(var(--rux-z-overlay) - 1);
+				visibility: hidden;
+				pointer-events: none;
+				background: var(--rux-side-nav-scrim-bg);
+				opacity: 0;
+				transition:
+					opacity var(--rux-side-nav-scrim-exit-duration),
+					inset-inline-start var(--rux-side-nav-scrim-exit-duration);
+			}
+			.example-navigation-scrim.is-visible {
+				visibility: visible;
+				pointer-events: auto;
+				inset-inline-start: min(var(--rux-side-nav-width), 100%);
+				opacity: var(--rux-side-nav-scrim-opacity);
+				transition:
+					inset-inline-start var(--rux-side-nav-motion-duration)
+						var(--rux-side-nav-enter-easing),
+					opacity var(--rux-side-nav-scrim-enter-duration)
+						var(--rux-side-nav-scrim-enter-easing)
+						var(--rux-side-nav-scrim-enter-delay);
+			}
 			.example-workspace-content { padding: var(--rux-workspace-gutter); }
 			.example-workspace-content > * + * { margin-top: var(--rux-space-4); }
+			@media (min-width: 761px) {
+				.example-navigation {
+					position: relative;
+					inset: auto;
+					z-index: 2;
+					flex: 0 0 var(--rux-side-nav-width);
+					margin-inline-end: calc(-1 * var(--rux-side-nav-width));
+					transition:
+						clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
+						margin-inline-end var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
+						visibility 0s linear var(--rux-side-nav-motion-duration);
+				}
+				.example-navigation.is-open {
+					margin-inline-end: 0;
+					transition:
+						clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
+						margin-inline-end var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
+						visibility 0s linear 0s;
+				}
+				.example-navigation-scrim { display: none; }
+			}
 			@media (max-width: 760px) {
-				.example-panel { display: none; }
+				.rux-panel.example-panel { display: none; }
+			}
+			@media (prefers-reduced-motion: reduce) {
+				.example-navigation,
+				.example-navigation-scrim {
+					transition-duration: 1ms;
+					transition-delay: 0s;
+				}
 			}
 		</style>
 	</head>
 	<body>
 		<div class="rux-app">
-			<header class="rux-app-header">
-				<div class="rux-app-header__brand">
+			<header class="rux-ui-header">
+				<button
+					class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__menu"
+					type="button"
+					aria-label="Open Navigation"
+					aria-expanded="false"
+					aria-controls="example-navigation"
+					data-rux-side-nav-toggle
+				>
+					<span class="rux-ui-header__menu-icons" aria-hidden="true">
+						<span
+							class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--open"
+							>menu</span
+						>
+						<span
+							class="rux-icon rux-ui-header__menu-icon rux-ui-header__menu-icon--close"
+							>close</span
+						>
+					</span>
+				</button>
+				<div class="rux-ui-header__brand">
 					<strong>Rux</strong>
 				</div>
-				<nav class="rux-app-header__nav" aria-label="Primary Navigation">
-					<a
-						class="rux-button rux-button--ghost rux-app-header__nav-item is-active"
-						href="#workspace"
-						aria-current="page"
-					>
-						<span class="rux-icon" aria-hidden="true">calendar_month</span>
-						Calendar
-					</a>
-					<a
-						class="rux-button rux-button--ghost rux-app-header__nav-item"
-						href="#trips"
-					>
-						<span class="rux-icon" aria-hidden="true">route</span>
-						Trips
-					</a>
-				</nav>
-				<div class="rux-app-header__actions">
-					<div class="rux-app-header__action-group">
+				<div class="rux-ui-header__actions">
+					<div class="rux-ui-header__action-group">
 						<button
 							class="rux-button rux-button--ghost rux-button--icon"
 							type="button"
@@ -53,9 +132,9 @@
 							<span class="rux-icon" aria-hidden="true">search</span>
 						</button>
 					</div>
-					<div class="rux-app-header__action-group rux-app-header__action-group--identity">
+					<div class="rux-ui-header__action-group rux-ui-header__action-group--identity">
 						<button
-							class="rux-button rux-button--default rux-button--icon rux-app-header__profile"
+							class="rux-button rux-button--default rux-button--icon rux-ui-header__profile"
 							type="button"
 							aria-label="Profile Menu"
 						>
@@ -66,55 +145,34 @@
 			</header>
 
 			<main class="rux-app-shell">
-				<aside
-					class="rux-panel rux-app-shell__panel example-panel"
-					aria-labelledby="editor-title"
+				<div
+					class="example-navigation-scrim"
+					aria-hidden="true"
+					data-rux-side-nav-scrim
+				></div>
+				<nav
+					class="rux-side-nav example-navigation"
+					id="example-navigation"
+					aria-label="Primary Navigation"
+					aria-hidden="true"
+					inert
+					data-rux-side-nav
 				>
-					<header class="rux-panel__header">
-						<h2 class="rux-panel__title" id="editor-title">Trip Editor</h2>
-					</header>
-					<div class="rux-panel__nav">
-						<div
-							class="rux-tabs rux-tabs--attached"
-							role="tablist"
-							aria-label="Trip Editor Sections"
-						>
-							<button class="rux-tab" type="button" role="tab" aria-selected="true" aria-controls="example-trip-details">
-								Details
-							</button>
-							<button class="rux-tab" type="button" role="tab" aria-selected="false" aria-controls="example-trip-billing" tabindex="-1">
-								Billing
-							</button>
-						</div>
-					</div>
-					<div class="rux-panel__body">
-						<div class="rux-panel__pane" id="example-trip-details" role="tabpanel">
-							<article class="rux-card">
-								<header class="rux-card__header">
-									<h3 class="rux-card__title">Trip Details</h3>
-								</header>
-								<div class="rux-card__body rux-card__body--stack">
-									<label class="rux-field">
-										<span class="rux-field__label">Trip Name</span>
-										<input class="rux-input" type="text" />
-									</label>
-									<section class="rux-card-section" aria-labelledby="requirements-title">
-										<header class="rux-card-section__header">
-											<h4 class="rux-card__title" id="requirements-title">Requirements</h4>
-										</header>
-										<div class="rux-card-section__body">Nested content group</div>
-									</section>
-								</div>
-							</article>
-						</div>
-						<div class="rux-panel__pane" id="example-trip-billing" role="tabpanel" hidden>
-							<p>Billing content</p>
-						</div>
-					</div>
-					<footer class="rux-panel__footer">
-						<button class="rux-button rux-button--accent" type="button">Save</button>
-					</footer>
-				</aside>
+					<ul class="rux-side-nav__list">
+						<li class="rux-side-nav__item">
+							<a class="rux-side-nav__link is-active" href="#workspace" aria-current="page">
+								<span class="rux-icon" aria-hidden="true">map</span>
+								<span class="rux-side-nav__label">Trips</span>
+							</a>
+						</li>
+						<li class="rux-side-nav__item">
+							<a class="rux-side-nav__link" href="#drivers">
+								<span class="rux-icon" aria-hidden="true">person</span>
+								<span class="rux-side-nav__label">Drivers</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
 
 				<section
 					class="rux-workspace rux-app-shell__workspace"
@@ -169,5 +227,6 @@
 				</aside>
 			</main>
 		</div>
+		<script src="../js/core/ui-shell.js"></script>
 	</body>
 </html>

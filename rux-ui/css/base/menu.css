@@ -7,6 +7,9 @@
    ========================================================================== */
 
 .rux-menu {
+	--_rux-menu-motion-x: 0;
+	--_rux-menu-motion-y: calc(-1 * var(--rux-menu-motion-distance));
+
 	display: flex;
 	flex-direction: column;
 	min-width: var(--rux-menu-min-width);
@@ -16,10 +19,46 @@
 	border: var(--rux-menu-border);
 	border-radius: var(--rux-menu-radius);
 	box-shadow: var(--rux-menu-shadow);
+	opacity: 1;
+	translate: 0 0;
+	transition:
+		opacity var(--rux-menu-motion-duration) var(--rux-menu-exit-easing),
+		translate var(--rux-menu-motion-duration) var(--rux-menu-exit-easing),
+		display var(--rux-menu-motion-duration) allow-discrete;
+}
+
+.rux-menu[data-placement^="top"] {
+	--_rux-menu-motion-y: var(--rux-menu-motion-distance);
+}
+
+.rux-menu[data-placement^="left"] {
+	--_rux-menu-motion-x: var(--rux-menu-motion-distance);
+	--_rux-menu-motion-y: 0;
+}
+
+.rux-menu[data-placement^="right"] {
+	--_rux-menu-motion-x: calc(-1 * var(--rux-menu-motion-distance));
+	--_rux-menu-motion-y: 0;
+}
+
+.rux-menu:not([hidden]) {
+	transition:
+		opacity var(--rux-menu-motion-duration) var(--rux-menu-enter-easing),
+		translate var(--rux-menu-motion-duration) var(--rux-menu-enter-easing),
+		display var(--rux-menu-motion-duration) allow-discrete;
 }
 
 .rux-menu[hidden] {
 	display: none;
+	opacity: 0;
+	translate: var(--_rux-menu-motion-x) var(--_rux-menu-motion-y);
+}
+
+@starting-style {
+	.rux-menu:not([hidden]) {
+		opacity: 0;
+		translate: var(--_rux-menu-motion-x) var(--_rux-menu-motion-y);
+	}
 }
 
 .rux-menu__item {

@@ -23,8 +23,9 @@ needed for the task after that:
 - `scheduler/css/components.css` — reference-application bundle; includes base, scheduler, and trip features
 - `scheduler/css/features/` — product-specific component and panel styles
 - `scheduler/css/layout/` — scheduler and application-shell layout styles
-- `docs/layout-composition.md` — canonical app-header, shell, workspace, panel,
+- `docs/layout-composition.md` — canonical UI-header, shell, workspace, panel,
   card, spacing, scrolling, and responsive composition contract
+- `docs/motion.md` — productive-motion tokens and panel/menu animation contracts
 - `js/core/utilities.js` — shared toast, modal, clipboard, and accent helpers
 - `js/core/theme.js` — light, dark, and system-theme behavior
 - `index.html` — current full application and the best composition reference
@@ -102,9 +103,11 @@ existing files merely to make the new-app structure cleaner.
 ## Application layout
 
 Before creating or modifying an application shell, read
-`docs/layout-composition.md`. Use `.rux-app-header` directly above
-`.rux-app-shell`, one required center `.rux-workspace`, and optional attached
-side `.rux-panel` elements. Structural siblings have no decorative gap.
+`docs/layout-composition.md`. Use `.rux-ui-header` above the application body,
+`.rux-side-nav` for product destinations, one required center `.rux-workspace`,
+and optional attached side `.rux-panel` elements. Structural siblings have no
+decorative gap. Read `docs/ui-header.md` when changing global navigation.
+Read `docs/motion.md` when changing panel, drawer, menu, or shell animation.
 
 A panel must have an identifiable purpose, but its dedicated header is
 optional. It may begin with a header, attached tabs, or a header followed by
@@ -113,7 +116,7 @@ composition solves the task.
 
 Before completing layout work, verify:
 
-- The app header attaches directly to the shell.
+- The UI header attaches directly to the shell.
 - The workspace occupies the flexible center and panels are attached.
 - Every panel has a header, attached tabs, or both, plus an accessible name.
 - Panel and workspace bodies own scrolling.

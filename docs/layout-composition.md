@@ -12,14 +12,17 @@ preferred, optional, and prohibited behavior.
 
 ```text
 App
-├── App Header
-└── App Shell                         structural gap: 0
-    ├── Left Panel                    optional
+├── UI Header
+└── App Body                          structural gap: 0
+    ├── Left Panel / Side Navigation  optional, header-controlled
     ├── Center Workspace              required
-    └── Right Panel                   optional
+    └── Right Panel                   optional, header- or workspace-controlled
 ```
 
-- `.rux-app-header` MUST sit directly above `.rux-app-shell`.
+- `.rux-ui-header` MUST sit directly above the application body or
+  `.rux-app-shell`.
+- `.rux-side-nav` MAY be attached inside the shell or positioned by the
+  consuming application as a header-controlled overlay.
 - `.rux-app-shell` MUST contain one center `.rux-workspace`.
 - Side `.rux-panel` elements MAY appear before or after the workspace.
 - Panels and the workspace MUST be attached with no decorative gutter between
@@ -28,32 +31,65 @@ App
 - The shared shell MUST NOT define product drawer widths, collapsed rails,
   feature breakpoints, or a workspace content minimum width.
 
-## App Header
+## UI Header
 
-The app header owns global product navigation, global utilities, and identity.
-It does not own view-specific controls.
+The UI header owns global product identity and utilities. Product destinations
+belong in its associated side navigation. It does not own view-specific
+controls.
 
 ```text
-App Header
-├── Brand                 optional, leading
-├── Primary Navigation    optional, flexible
-└── Actions               optional, trailing
+UI Header
+├── Menu                  optional, controls left panel
+├── Brand / Name          optional
+├── Header Navigation     optional
+└── Global Actions        optional, trailing
     ├── Utilities
-    └── Identity
+    ├── Identity
+    └── Switcher          optional, controls product-level right panel
 ```
 
-- The desktop header SHOULD have a `52px` minimum height and MUST be allowed to
-  grow for text zoom, localization, or larger controls.
-- The brand, navigation, and actions MUST remain in that order when present.
-- The active navigation destination MUST expose `aria-current="page"` in
-  addition to its visual state.
-- Search belongs in primary navigation only when it is an application
-  destination. A command-palette trigger belongs in utilities.
+- The header MUST use the fixed `48px` shell contract. Header action buttons
+  consume that same height token; individual children MUST NOT determine or
+  enlarge the shell height.
+- At text zoom or narrow widths, optional navigation and utilities SHOULD
+  collapse before they crowd the fixed shell.
+- The menu, brand, navigation, and actions MUST remain in that order when
+  present.
+- A menu button MUST expose `aria-expanded` and `aria-controls` for its side
+  navigation.
+- Search belongs in utilities unless it is an application destination.
 - The header MUST span the application width, MUST NOT have outer corner
   radii, and MUST attach directly to the shell below it.
-- A compact top header and a mobile bottom-navigation treatment are both valid
-  responsive variants. Moving navigation to the bottom MUST reserve content
-  space for it and MUST retain accessible control sizes.
+- The canonical header remains visible at narrow widths. Optional utilities
+  MAY collapse, but the menu, product identity, and essential actions MUST
+  remain available.
+
+## Side Navigation
+
+Side navigation owns primary product destinations and is controlled by the UI
+header menu button.
+
+- Use a semantic `<nav>` with a descriptive `aria-label` and list markup.
+- The active destination MUST expose `aria-current="page"` in addition to its
+  visual state.
+- Non-persistent navigation MUST support Escape and scrim dismissal, focus
+  restoration, and close-on-destination behavior.
+- Application layout CSS owns whether the navigation overlays content or stays
+  attached. The reusable component MUST NOT define product breakpoints.
+- See `docs/ui-header.md` for the component contract and examples.
+
+## Right Panel
+
+Right panels expose secondary content without replacing the center workspace.
+
+- A product-level panel, such as notifications or a workspace switcher, SHOULD
+  be controlled by a global header action.
+- A view-specific panel, such as Calendar Tools, SHOULD be controlled from that
+  view's workspace header.
+- The trigger MUST expose `aria-controls` and `aria-expanded`.
+- Persistent attached panels MUST NOT use `role="dialog"`. A panel that becomes
+  modal at a narrow breakpoint must implement complete modal focus and
+  dismissal behavior.
 
 ## Workspace
 
@@ -146,7 +182,7 @@ relationships, not unconditional padding on every edge.
 
 | Relationship | Contract |
 | --- | --- |
-| App header to app shell | `0` |
+| UI header to app shell | `0` |
 | Panel to workspace | `0` |
 | Panel pane content inset | `16px`, adjusted when attached navigation owns the top seam |
 | Sibling cards in a pane | `16px` |
@@ -191,11 +227,17 @@ A specialized component MAY own scrolling when documented. Avoid assigning
   defaults. Interactive rail controls SHOULD provide conventional touch target
   sizes.
 
+Panel and drawer transitions follow the shared [Productive Motion](motion.md)
+contract. Layout implementations should consume the `--rux-panel-*` motion
+tokens rather than defining their own duration or easing values.
+
 ## Action Placement
 
 | Action scope | Location |
 | --- | --- |
-| Global destination, utility, or identity | App header |
+| Global destination | Side navigation |
+| Global utility or identity | UI header |
+| Personal application preference | Profile menu → Preferences |
 | Current view navigation, filter, or action | Workspace header |
 | Panel identity or panel-wide action | Panel header/top region or footer |
 | Tab selection | Panel navigation |
@@ -205,7 +247,7 @@ A specialized component MAY own scrolling when documented. Avoid assigning
 ## Invalid Compositions
 
 - A centered floating workspace with decorative gaps to side panels.
-- An app header nested inside a workspace.
+- A UI header nested inside a workspace.
 - Cards placed directly inside `.rux-panel__body` without a pane.
 - An empty panel header added only because another panel has one.
 - Panel-wide actions hidden inside one tab's card.

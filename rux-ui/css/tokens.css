@@ -43,8 +43,8 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 30% c h / 100%);
-	--rux-divider:       oklch(from var(--rux-neutral) 28% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 40% c h / 100%);
+	--rux-divider:       oklch(from var(--rux-warning) 28% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
@@ -145,6 +145,7 @@
 	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 0% c h / 34%);
 	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 0% c h / 86%);
 	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 16%);
+	--rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 0%);
 
 	--rux-shadow-inset:
 		inset 0 1px 2px var(--rux-shadow-inset-color),
@@ -163,14 +164,32 @@
 		0 14px 32px var(--rux-shadow-overlay-color);
 	--rux-shadow-pressed: inset 0 1px 3px var(--rux-shadow-inset-color);
 	/* ─── MOTION ─────────────────────────────────────────────────────────── */
+	/* Productive motion foundation. Names mirror the role of Carbon's motion
+	   scale while remaining part of the public --rux-* token namespace. Use
+	   semantic component tokens below instead of these primitives directly. */
+	--rux-motion-duration-fast-01:     70ms;
+	--rux-motion-duration-fast-02:     110ms;
+	--rux-motion-duration-moderate-01: 150ms;
+	--rux-motion-duration-moderate-02: 240ms;
+
+	--rux-motion-easing-standard-productive: cubic-bezier(0.2, 0, 0.38, 0.9);
+	--rux-motion-easing-entrance-productive: cubic-bezier(0, 0, 0.38, 0.9);
+	--rux-motion-easing-exit-productive:     cubic-bezier(0.2, 0, 1, 0.9);
+
+	/* General-purpose compatibility tokens remain public for existing
+	   components. Structural panels and menus use their component tokens. */
 
 	--rux-duration-instant: 80ms;
 	--rux-duration-fast:    140ms;
 	--rux-duration-base:    220ms;
+	--rux-duration-productive: var(--rux-motion-duration-moderate-01);
 	--rux-duration-slow:    720ms;
 
-	--rux-ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
-	--rux-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+	--rux-ease-out:             cubic-bezier(0.22, 1, 0.36, 1);
+	--rux-ease-in-out:          cubic-bezier(0.4, 0, 0.2, 1);
+	--rux-ease-productive-standard: var(--rux-motion-easing-standard-productive);
+	--rux-ease-productive-enter:    var(--rux-motion-easing-entrance-productive);
+	--rux-ease-productive-exit:     var(--rux-motion-easing-exit-productive);
 
 	/* ======================================================================
 	   SEMANTIC TOKENS
@@ -355,9 +374,9 @@
 	--rux-icon-font-family:         "Material Symbols Sharp";
 	--rux-icon-fill-default:        0;
 	--rux-icon-fill-selected:       1;
-	--rux-icon-weight-default:      400;
+	--rux-icon-weight-default:      300;
 	--rux-icon-grade-default:       0;
-	--rux-icon-optical-size-sm:     20;
+	--rux-icon-optical-size-sm:     24;
 	--rux-icon-transition-duration: var(--rux-duration-fast);
 	--rux-icon-transition-easing:   var(--rux-ease-out);
 
@@ -415,50 +434,80 @@
 	/* Outermost full-bleed page canvas — no border/radius/shadow of its own,
 	   nothing else sits "above" it to cast one. */
 
-	--rux-shell-bg:             var(--rux-surface-0);
-	--rux-shell-margin-inline:  var(--rux-space-0);
-	--rux-shell-margin-bottom:  var(--rux-space-0);
-	--rux-shell-app-header-gap: var(--rux-space-0);
+	--rux-shell-bg:                var(--rux-surface-0);
+	--rux-shell-margin-inline:     var(--rux-space-0);
+	--rux-shell-margin-bottom:     var(--rux-space-0);
+	--rux-shell-ui-header-gap:     var(--rux-space-0);
 
-	/* ─── COMPONENT · app header ──────────────────────────────────────────── */
+	/* ─── COMPONENT · UI header ───────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-app-header-bg:     var(--rux-shell-bg);
-	--rux-app-header-border: var(--rux-border-width) solid var(--rux-border);
-	/* --rux-app-header-radius: not set — spans full width, no corners */
-	/* --rux-app-header-shadow: not set */
-	--rux-app-header-padding: var(--rux-space-2) var(--rux-space-4);
-	--rux-app-header-height:  auto;
-	--rux-app-header-min-height: 52px;
-	--rux-app-header-gap:     var(--rux-space-2);
+	--rux-ui-header-bg:     	var(--rux-surface-2);
+	--rux-ui-header-border: 	var(--rux-border-width) solid var(--rux-border);
+	/* --rux-ui-header-radius: not set — spans full width, no corners */
+	/* --rux-ui-header-shadow: not set */
+	--rux-ui-header-padding: 	var(--rux-space-0) var(--rux-space-0);
+	--rux-ui-header-height:  	var(--rux-space-7);
+	--rux-ui-header-min-height: var(--rux-ui-header-height);
+	--rux-ui-header-gap:     	var(--rux-space-0);
 
 	/* — brand — */
-	--rux-app-header-brand-padding-inline-end: var(--rux-space-4);
-	--rux-app-header-brand-border:             var(--rux-border-width) solid
-		var(--rux-border);
-	--rux-app-header-logo-height:              24px;
+	--rux-ui-header-brand-padding-inline: var(--rux-space-4);
+	--rux-ui-header-brand-border:         none;
+	--rux-ui-header-logo-height:          24px;
 
-	/* — nav — */
-	--rux-app-header-nav-gap:            var(--rux-space-2);
-	--rux-app-header-nav-item-fg:        var(--rux-fg-muted);
-	--rux-app-header-nav-item-active-fg: var(--rux-fg);
+	/* — optional inline navigation — */
+	--rux-ui-header-nav-gap:            var(--rux-space-2);
+	--rux-ui-header-nav-item-fg:        var(--rux-fg-muted);
+	--rux-ui-header-nav-item-active-fg: var(--rux-fg);
 
 	/* — actions — */
-	--rux-app-header-actions-gap: var(--rux-button-group-gap);
+	--rux-ui-header-button-size:         var(--rux-ui-header-height);
+	--rux-ui-header-button-icon-size:    var(--rux-icon-sm);
+	--rux-ui-header-profile-avatar-size: var(--rux-space-6);
+	--rux-ui-header-button-bg:           transparent;
+	--rux-ui-header-button-fg:           var(--rux-fg);
+	--rux-ui-header-button-hover-bg:     var(--rux-state-hover-overlay);
+	--rux-ui-header-button-active-bg:    var(--rux-state-active-overlay);
+	--rux-ui-header-button-focus-ring:   inset 0 0 0 2px var(--rux-accent-ring);
+	--rux-ui-header-menu-icon-motion-duration: 0ms;
+	--rux-ui-header-menu-icon-motion-easing:   var(--rux-motion-easing-standard-productive);
+	--rux-ui-header-actions-gap: 		 var(--rux-space-0);
 	/* Two zones: actions (external links, chat, notifications) and identity
-	   (theme toggle, presence avatars, your own profile) — a wider gap plus
+	   (presence avatars and your own profile) — a wider gap plus
 	   a divider between them, a tighter gap within the identity cluster so
 	   presence avatars and your own profile read as one related group. */
-	--rux-app-header-actions-group-gap: var(--rux-space-4);
-	--rux-app-header-actions-divider:   var(--rux-app-header-brand-border);
-	--rux-app-header-identity-gap:      var(--rux-space-2);
+	--rux-ui-header-actions-group-gap: var(--rux-space-0);
+	--rux-ui-header-actions-divider:   none;
+	--rux-ui-header-identity-gap:      var(--rux-space-0);
 
-	/* — mobile nav — */
-	--rux-app-header-mobile-nav-padding-block-start: var(--rux-space-2);
-	--rux-app-header-mobile-nav-padding-inline:      var(--rux-space-3);
-	--rux-app-header-mobile-nav-padding-block-end:   calc(
-		var(--rux-space-2) + env(safe-area-inset-bottom, 0px)
-	);
+	/* ─── COMPONENT · side navigation ─────────────────────────────────────── */
+	--rux-side-nav-width:           256px;
+	--rux-side-nav-bg:              var(--rux-surface-2);
+	--rux-side-nav-fg:              var(--rux-fg-muted);
+	--rux-side-nav-border:          var(--rux-border-width) solid var(--rux-border);
+	--rux-side-nav-padding:         var(--rux-space-2) var(--rux-space-0);
+	--rux-side-nav-item-min-height: 40px;
+	--rux-side-nav-item-gap:        var(--rux-space-3);
+	--rux-side-nav-item-padding:    0 var(--rux-space-3);
+	--rux-side-nav-item-radius:     var(--rux-radius-control);
+	--rux-side-nav-item-hover-bg:   var(--rux-bg-hover);
+	--rux-side-nav-item-active-bg:  var(--rux-accent-subtle);
+	--rux-side-nav-item-active-fg:  var(--rux-fg);
+	--rux-side-nav-selected-width:  4px;
+	--rux-side-nav-focus-ring:      var(--rux-button-focus-ring);
+	/* UI-shell reveal: the panel stays at its final coordinates and its clipping
+	   edge travels across the fixed 256px surface. Opening and closing use the
+	   same accelerating curve to match the measured Carbon preview motion. */
+	--rux-side-nav-motion-duration: var(--rux-motion-duration-fast-02);
+	--rux-side-nav-enter-easing:    var(--rux-motion-easing-exit-productive);
+	--rux-side-nav-exit-easing:     var(--rux-motion-easing-exit-productive);
+	--rux-side-nav-scrim-bg:             var(--rux-black);
+	--rux-side-nav-scrim-opacity:        0.65;
+	--rux-side-nav-scrim-enter-delay:    var(--rux-motion-duration-fast-01);
+	--rux-side-nav-scrim-enter-duration: 200ms;
+	--rux-side-nav-scrim-enter-easing:   var(--rux-motion-easing-standard-productive);
+	--rux-side-nav-scrim-exit-duration:  0ms;
 
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
@@ -471,8 +520,8 @@
 	   hardcoded, so a future radius change only needs the two role tokens
 	   edited, per the role's own stated purpose above. */
 	--rux-workspace-radius: var(--rux-radius-container);
-	--rux-workspace-shadow: var(--rux-shadow-inset);
-	--rux-workspace-gutter: var(--rux-space-4);
+	/* --rux-workspace-shadow: var(--rux-shadow-inset); */
+	--rux-workspace-gutter: var(--rux-space-6);
 
 	/* — header — */
 	/* Keep header and view content on the same inline grid. */
@@ -528,6 +577,11 @@
 	--rux-panel-border-block:  none;
 	--rux-panel-radius:        var(--rux-radius-container);
 	--rux-panel-shadow:        none;
+	--rux-panel-motion-duration:         var(--rux-motion-duration-moderate-01);
+	--rux-panel-enter-easing:            var(--rux-motion-easing-entrance-productive);
+	--rux-panel-exit-easing:             var(--rux-motion-easing-exit-productive);
+	--rux-panel-standard-easing:         var(--rux-motion-easing-standard-productive);
+	--rux-panel-content-motion-duration: var(--rux-motion-duration-fast-02);
 
 	/* — header — control height + space-3 top/bottom = 56px, matching workspace header */
 	--rux-panel-header-bg:         var(--rux-surface-3);
@@ -1215,6 +1269,10 @@
 	--rux-menu-shadow: var(--rux-shadow-2);
 	--rux-menu-min-width: 200px;
 	--rux-menu-padding:   var(--rux-space-1);
+	--rux-menu-motion-duration: var(--rux-motion-duration-fast-02);
+	--rux-menu-enter-easing:    var(--rux-motion-easing-entrance-productive);
+	--rux-menu-exit-easing:     var(--rux-motion-easing-exit-productive);
+	--rux-menu-motion-distance: var(--rux-space-1);
 
 	/* — item — */
 	--rux-menu-item-height:         var(--rux-button-height);

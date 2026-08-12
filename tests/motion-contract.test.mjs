@@ -1,0 +1,137 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+
+const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+
+const tokens = read("rux-ui/css/tokens.css");
+const menuStyles = read("rux-ui/css/base/menu.css");
+const schedulerStyles = read("scheduler/css/layout/scheduler-app.css");
+const manifestStyles = read("scheduler/css/features/trip-manifest.css");
+const drawerController = read("js/core/drawer.js");
+const reducedMotionStyles = read("rux-ui/css/base/utils.css");
+const motionDocs = read("docs/motion.md");
+
+test("productive motion foundations use the Rux token namespace", () => {
+	assert.match(tokens, /--rux-motion-duration-fast-01:\s+70ms;/);
+	assert.match(tokens, /--rux-motion-duration-fast-02:\s+110ms;/);
+	assert.match(tokens, /--rux-motion-duration-moderate-01:\s+150ms;/);
+	assert.match(tokens, /--rux-motion-duration-moderate-02:\s+240ms;/);
+	assert.match(
+		tokens,
+		/--rux-motion-easing-standard-productive:\s+cubic-bezier\(0\.2, 0, 0\.38, 0\.9\);/,
+	);
+	assert.match(
+		tokens,
+		/--rux-motion-easing-entrance-productive:\s+cubic-bezier\(0, 0, 0\.38, 0\.9\);/,
+	);
+	assert.match(
+		tokens,
+		/--rux-motion-easing-exit-productive:\s+cubic-bezier\(0\.2, 0, 1, 0\.9\);/,
+	);
+	assert.doesNotMatch(tokens, /--cds-/);
+});
+
+test("structural panels use 150ms entrance and exit contracts", () => {
+	assert.match(
+		tokens,
+		/--rux-panel-motion-duration:\s+var\(--rux-motion-duration-moderate-01\);/,
+	);
+	assert.match(
+		schedulerStyles,
+		/width var\(--rux-panel-motion-duration\) var\(--rux-panel-enter-easing\)/,
+	);
+	assert.match(
+		schedulerStyles,
+		/width var\(--rux-panel-motion-duration\) var\(--rux-panel-exit-easing\)/,
+	);
+	assert.match(
+		schedulerStyles,
+		/scheduler-mobile-drawer-in[\s\S]*?var\(--rux-panel-enter-easing\)/,
+	);
+	assert.match(
+		schedulerStyles,
+		/scheduler-mobile-drawer-out[\s\S]*?var\(--rux-panel-exit-easing\)/,
+	);
+	assert.match(
+		manifestStyles,
+		/\.rux-manifest-window__passenger-panel\.is-open[\s\S]*?var\(--rux-panel-enter-easing\)/,
+	);
+	assert.match(
+		drawerController,
+		/if \(!isMobile\) \{\s*drawer\.classList\.add\("is-collapsing"\);/,
+	);
+});
+
+test("the hamburger uses an immediate state-driven icon swap", () => {
+	const headerStyles = read("rux-ui/css/base/ui-header.css");
+	const shellController = read("js/core/ui-shell.js");
+	const page = read("index.html");
+
+	assert.match(
+		tokens,
+		/--rux-ui-header-menu-icon-motion-duration:\s+0ms;/,
+	);
+	assert.match(
+		tokens,
+		/--rux-ui-header-menu-icon-motion-easing:\s+var\(--rux-motion-easing-standard-productive\);/,
+	);
+	assert.match(headerStyles, /\.rux-ui-header__menu-icon\s*\{[\s\S]*?opacity var\(--rux-ui-header-menu-icon-motion-duration\)/);
+	assert.match(
+		headerStyles,
+		/\.rux-ui-header__menu\[aria-expanded="true"\] \.rux-ui-header__menu-icon--close/,
+	);
+	assert.match(page, /class="rux-ui-header__menu-icons"/);
+	assert.match(page, /rux-ui-header__menu-icon--open/);
+	assert.match(page, /rux-ui-header__menu-icon--close/);
+	assert.match(shellController, /const legacyIcon = toggle\.querySelector\(":scope > \.rux-icon"\)/);
+});
+
+test("the UI-shell side navigation uses a fixed-coordinate 110ms reveal", () => {
+	assert.match(
+		tokens,
+		/--rux-side-nav-motion-duration:\s+var\(--rux-motion-duration-fast-02\);/,
+	);
+	assert.match(
+		tokens,
+		/--rux-side-nav-enter-easing:\s+var\(--rux-motion-easing-exit-productive\);/,
+	);
+	assert.match(schedulerStyles, /clip-path:\s*inset\(0 100% 0 0\);/);
+	assert.match(schedulerStyles, /\.scheduler-app__side-nav\.is-open\s*\{[^}]*clip-path:\s*inset\(0\);/s);
+	assert.match(schedulerStyles, /inset-inline-start:\s*min\(var\(--rux-side-nav-width\), 100%\);/);
+	assert.match(
+		schedulerStyles,
+		/opacity var\(--rux-side-nav-scrim-enter-duration\)[\s\S]*?var\(--rux-side-nav-scrim-enter-delay\)/,
+	);
+	assert.match(motionDocs, /remains at its final coordinates and full opacity/);
+	assert.match(motionDocs, /disappears\s+immediately when closing begins/);
+});
+
+test("menus use the fast productive contract with directional placement", () => {
+	assert.match(
+		tokens,
+		/--rux-menu-motion-duration:\s+var\(--rux-motion-duration-fast-02\);/,
+	);
+	assert.match(
+		menuStyles,
+		/opacity var\(--rux-menu-motion-duration\) var\(--rux-menu-enter-easing\)/,
+	);
+	assert.match(
+		menuStyles,
+		/opacity var\(--rux-menu-motion-duration\) var\(--rux-menu-exit-easing\)/,
+	);
+	assert.match(menuStyles, /display var\(--rux-menu-motion-duration\) allow-discrete/);
+	assert.match(menuStyles, /@starting-style/);
+	for (const placement of ["top", "left", "right"]) {
+		assert.match(menuStyles, new RegExp(`data-placement\\^="${placement}"`));
+	}
+});
+
+test("motion remains optional for accessibility and documented centrally", () => {
+	assert.match(reducedMotionStyles, /@media \(prefers-reduced-motion: reduce\)/);
+	assert.match(reducedMotionStyles, /animation-duration:\s*0\.001ms !important;/);
+	assert.match(reducedMotionStyles, /transition-duration:\s*0\.001ms !important;/);
+	assert.match(motionDocs, /# Productive Motion/);
+	assert.match(motionDocs, /Opening uses the entrance curve/);
+	assert.match(motionDocs, /Repeated toggling cannot leave stale open/);
+});

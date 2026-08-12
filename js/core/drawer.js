@@ -2,8 +2,8 @@
    RUX UI — DRAWER
    --------------------------------------------------------------------------
    Shared open/close/resize behavior for a .scheduler-app__drawer, used by
-   the Trips panel's left+right drawers (index.html) and the standalone
-   Fleet/Driver panel drawers. Previously each of those three call sites
+   the Calendar tools panel and the standalone Fleet/Driver panel drawers.
+   Previously those call sites
    hand-rolled its own near-identical copy of this logic; this factory is
    the single implementation they all now share, so an animation/behavior
    fix (like the mobile scrim below) only needs to be made once.
@@ -21,12 +21,13 @@
    -------
    drawer        .scheduler-app__drawer element                (required)
    panel         the .rux-*-panel element inside it             (required)
-   toggleBtn     mobile/desktop toggle button, gets aria-pressed synced (optional)
+   toggleBtn     toggle button; syncs aria-expanded when present, otherwise
+                 preserves the legacy aria-pressed contract (optional)
    handle        resize gutter element — omit to skip drag wiring (optional)
    direction     "left" | "right" — which way dragging grows the drawer (default "left")
    getOtherDrawer  () => drawerEl|null — a sibling drawer whose width should
-                 be subtracted from this one's max (only Trips' left+right
-                 drawers have a sibling; omit otherwise)
+                 be subtracted from this one's max; omit when no sibling
+                 drawer shares the workspace
    scheduleMin   px of workspace to always leave uncovered — enables the
                  dynamic max-width calc; omit (0) to just clamp to a fixed
                  640px ceiling, which is what a standalone panel wants
@@ -123,6 +124,8 @@
 		} = options;
 
 		const DRAWER_DEFAULT = schedulerAppDefaultWidth(drawer);
+		let pendingCloseHandler = null;
+		let pendingCloseTarget = null;
 
 		// Railable panels use computed min-width: 0 so closing can reach the
 		// rail. Resize clamping must read the inherited panel token instead.
@@ -138,6 +141,14 @@
 			return drawer.classList.contains("is-open");
 		}
 
+		function syncToggleButton(open) {
+			if (!toggleBtn) return;
+			const stateAttribute = toggleBtn.hasAttribute("aria-expanded")
+				? "aria-expanded"
+				: "aria-pressed";
+			toggleBtn.setAttribute(stateAttribute, String(open));
+		}
+
 		// Where a railable drawer rests when not open: the rail width, on
 		// desktop. Non-railable drawers (Fleet/Driver/Customer) and mobile
 		// (rail never applies there) both fall through to fully closed (0).
@@ -148,16 +159,26 @@
 		}
 
 		function open() {
+			const reopening = drawer.classList.contains("is-collapsing");
+			if (pendingCloseHandler && pendingCloseTarget) {
+				pendingCloseTarget.removeEventListener("transitionend", pendingCloseHandler);
+				pendingCloseTarget.removeEventListener("animationend", pendingCloseHandler);
+				pendingCloseHandler = null;
+				pendingCloseTarget = null;
+			}
 			// Only force the default width when actually opening from closed —
 			// open() also runs every time a different trip/record is loaded into
 			// an already-open panel, and that shouldn't clobber a manual resize.
-			if (!isOpen()) {
-				const w = DRAWER_DEFAULT + "px";
+			if (!isOpen() || reopening) {
+				const rememberedWidth = drawer.style.getPropertyValue("--drawer-open-width");
+				const w = reopening && rememberedWidth
+					? rememberedWidth
+					: DRAWER_DEFAULT + "px";
 				drawer.style.setProperty("--drawer-width", w);
 				drawer.style.setProperty("--drawer-open-width", w);
 			}
 			drawer.classList.remove("is-closing", "is-collapsing");
-			if (railWidth && !mobilePanelQuery.matches && !isOpen()) {
+			if (railWidth && !mobilePanelQuery.matches && (!isOpen() || reopening)) {
 				drawer.classList.add("is-expanding");
 				requestAnimationFrame(() =>
 					requestAnimationFrame(() => drawer.classList.remove("is-expanding")),
@@ -166,7 +187,7 @@
 			drawer.classList.add("is-open");
 			panel.inert = false;
 			drawer.setAttribute("aria-hidden", "false");
-			toggleBtn?.setAttribute("aria-pressed", "true");
+			syncToggleButton(true);
 			showScrim(close);
 			onOpen?.();
 		}
@@ -176,6 +197,8 @@
 		// transition — scheduler-app.css forces transition:none on them, so the
 		// desktop close path's transitionend listener never fires there.
 		function close() {
+			if (!isOpen()) return;
+			const isMobile = mobilePanelQuery.matches;
 			// A railable drawer's own panel keeps rendering at rail width
 			// instead of display:none (see the --railable override in
 			// scheduler-app.css) — its container-query reflow (icon-only,
@@ -186,34 +209,44 @@
 			// its pre-close size and only gets clipped by the shrinking
 			// drawer, instead of snapping to its min-width before the drawer
 			// animates.
-			drawer.style.setProperty("--drawer-width", closedTargetWidth() + "px");
-			if (railWidth && !mobilePanelQuery.matches) {
+			// Desktop drawers keep .is-open until their width transition finishes.
+			// The extra state selects the productive exit curve during that period;
+			// mobile uses its separate .is-closing keyframe state below.
+			if (!isMobile) {
 				drawer.classList.add("is-collapsing");
 			}
+			drawer.style.setProperty("--drawer-width", closedTargetWidth() + "px");
 			panel.inert = true;
 			drawer.setAttribute("aria-hidden", "true");
-			toggleBtn?.setAttribute("aria-pressed", "false");
+			syncToggleButton(false);
 			hideScrim(close);
 			onClose?.();
-			if (mobilePanelQuery.matches) {
+			if (isMobile) {
 				drawer.classList.replace("is-open", "is-closing");
-				const finishClose = (event) => {
+				pendingCloseHandler = (event) => {
 					if (event.target !== panel || event.animationName !== "scheduler-mobile-drawer-out") return;
 					drawer.classList.remove("is-closing");
-					panel.removeEventListener("animationend", finishClose);
+					panel.removeEventListener("animationend", pendingCloseHandler);
+					pendingCloseHandler = null;
+					pendingCloseTarget = null;
 				};
-				panel.addEventListener("animationend", finishClose);
+				pendingCloseTarget = panel;
+				panel.addEventListener("animationend", pendingCloseHandler);
 				return;
 			}
 			// Removing .is-open triggers display:none on the panel content (see
 			// scheduler-app.css), which is instant and unanimatable — do it only
 			// once the width transition actually finishes, so the panel visibly
 			// slides shut instead of vanishing the moment the class comes off.
-			drawer.addEventListener("transitionend", function handler(e) {
+			pendingCloseHandler = function handler(e) {
 				if (e.target !== drawer || e.propertyName !== "width") return;
 				drawer.classList.remove("is-open", "is-collapsing");
 				drawer.removeEventListener("transitionend", handler);
-			});
+				pendingCloseHandler = null;
+				pendingCloseTarget = null;
+			};
+			pendingCloseTarget = drawer;
+			drawer.addEventListener("transitionend", pendingCloseHandler);
 		}
 
 		/* — Resize handle (optional) — */
@@ -226,7 +259,7 @@
 		}
 
 		// A standalone panel (Fleet/Driver) just clamps to a fixed ceiling. The
-		// Trips panel's left+right drawers pass scheduleMin so this instead
+		// Drawers with a shared workspace pass scheduleMin so this instead
 		// leaves room for both the workspace and any open sibling drawer.
 		function maxDrawerWidth() {
 			if (!scheduleMin) return DRAWER_MAX;
@@ -313,7 +346,7 @@
 						const w = closedTargetWidth() + "px";
 						drawer.style.setProperty("--drawer-width", w);
 						drawer.style.setProperty("--drawer-open-width", w);
-						toggleBtn?.setAttribute("aria-pressed", "true");
+						syncToggleButton(true);
 					}
 				}
 				const delta = direction === "left" ? ev.clientX - startX : startX - ev.clientX;

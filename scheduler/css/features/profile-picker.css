@@ -112,16 +112,13 @@
 }
 
 /* — Header avatar (top-right) — */
-/* Sizing/clipping to a circle is already handled by base/app-header.css's
-   .rux-app-header__profile (overflow: hidden + radius-full) and its own
-   img rule — only the initials fallback (new) needs styling here. */
+/* The base header owns the avatar's 32px size within its 48px action button.
+   This feature supplies only the initials fallback's visual treatment. */
 
-.rux-app-header__profile-initials {
+.rux-ui-header__profile-initials {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
-	height: 100%;
 	border-radius: 50%;
 	background: var(--rux-bg-active);
 	color: var(--rux-fg);
@@ -134,12 +131,12 @@
    title tooltip rather than inline text, since this sits in the header nav
    rather than a dropdown with room for labels. */
 
-.rux-app-header__active-profiles {
+.rux-ui-header__active-profiles {
 	display: flex;
 	align-items: center;
 }
 
-.rux-app-header__active-avatar {
+.rux-ui-header__active-avatar {
 	flex: none;
 	width: 28px;
 	height: 28px;
@@ -148,6 +145,6 @@
 	margin-inline-start: calc(-1 * var(--rux-space-2));
 }
 
-.rux-app-header__active-avatar:first-child {
+.rux-ui-header__active-avatar:first-child {
 	margin-inline-start: 0;
 }

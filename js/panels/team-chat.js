@@ -75,6 +75,7 @@ if (btn && badge) {
 	function ensurePanel() {
 		if (panelEl) return panelEl;
 		panelEl = document.createElement("div");
+		panelEl.id = "team-chat-window";
 		panelEl.className =
 			"rux-floating-window rux-team-chat-window rux-card rux-card--elevated";
 		panelEl.hidden = true;
@@ -242,6 +243,7 @@ if (btn && badge) {
 	function close() {
 		if (!isPanelOpen()) return;
 		panelEl.hidden = true;
+		btn.setAttribute("aria-expanded", "false");
 		// Drag/resize leave inline left/top/width/height on this singleton
 		// panel — clear them so the next open() starts from the CSS defaults
 		// again, same cleanup doc-viewer.js/trip-envelope.js do for the same
@@ -316,8 +318,7 @@ if (btn && badge) {
 	function updateBadge() {
 		if (isPanelOpen()) {
 			badge.hidden = true;
-			btn.classList.add("rux-button--ghost");
-			btn.classList.remove("rux-button--default");
+			btn.classList.remove("has-unread");
 			btn.setAttribute("aria-label", "Team chat");
 			return;
 		}
@@ -332,8 +333,7 @@ if (btn && badge) {
 		const hasUnread = unread.length > 0;
 		badge.hidden = !hasUnread;
 		badge.textContent = unread.length > 99 ? "99+" : String(unread.length);
-		btn.classList.toggle("rux-button--default", hasUnread);
-		btn.classList.toggle("rux-button--ghost", !hasUnread);
+		btn.classList.toggle("has-unread", hasUnread);
 		btn.setAttribute(
 			"aria-label",
 			hasUnread ? `Team chat, ${unread.length} unread` : "Team chat",
@@ -408,6 +408,7 @@ if (btn && badge) {
 		const panel = ensurePanel();
 		previousFocus = document.activeElement;
 		panel.hidden = false;
+		btn.setAttribute("aria-expanded", "true");
 		renderMessages();
 		updateBadge();
 		panel.querySelector("[data-team-chat-input]")?.focus();

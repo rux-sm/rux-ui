@@ -1,0 +1,52 @@
+/* ==========================================================================
+   PREFERENCES  ·  .rux-preferences
+   --------------------------------------------------------------------------
+   Personal, application-wide settings opened from the profile menu.
+   ========================================================================== */
+
+.rux-preferences__section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+
+.rux-preferences__heading {
+	margin: 0;
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.rux-preferences__row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-4);
+	padding: var(--rux-space-4);
+	background: var(--rux-surface-4);
+	border: var(--rux-border-width) solid var(--rux-border);
+	border-radius: var(--rux-radius-md);
+}
+
+.rux-preferences__copy {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	min-width: 0;
+}
+
+.rux-preferences__label {
+	color: var(--rux-fg);
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-medium);
+}
+
+.rux-preferences__description {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+	line-height: var(--rux-leading-snug);
+}
+
+.rux-preferences__row .rux-switch {
+	flex: none;
+}

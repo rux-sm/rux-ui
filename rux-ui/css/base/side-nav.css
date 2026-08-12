@@ -1,0 +1,110 @@
+/* ==========================================================================
+   SIDE NAVIGATION  ·  .rux-side-nav
+   --------------------------------------------------------------------------
+   Product-level navigation paired with a .rux-ui-header menu button. The
+   consuming application owns placement, overlay behavior, and open/close
+   state; this component owns only navigation anatomy and interaction states.
+   ========================================================================== */
+
+.rux-side-nav {
+	display: flex;
+	flex-direction: column;
+	width: min(var(--rux-side-nav-width), 100%);
+	min-width: 0;
+	min-height: 0;
+	padding: var(--rux-side-nav-padding);
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	background: var(--rux-side-nav-bg);
+	color: var(--rux-side-nav-fg);
+	border-inline-end: var(--rux-side-nav-border);
+}
+
+.rux-side-nav__list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-0);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.rux-side-nav__item {
+	min-width: 0;
+}
+
+.rux-side-nav__link {
+	position: relative;
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	min-height: var(--rux-side-nav-item-min-height);
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--rux-side-nav-item-gap);
+	padding: var(--rux-side-nav-item-padding);
+	background: transparent;
+	color: var(--rux-side-nav-fg);
+	border: 0;
+	border-radius: var(--rux-side-nav-item-radius);
+	font: inherit;
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	line-height: var(--rux-leading-snug);
+	text-align: start;
+	cursor: pointer;
+}
+
+.rux-side-nav__link:hover {
+	background: var(--rux-side-nav-item-hover-bg);
+	color: var(--rux-side-nav-item-active-fg);
+}
+
+.rux-side-nav__link:focus-visible {
+	outline: none;
+	box-shadow: var(--rux-side-nav-focus-ring);
+}
+
+.rux-side-nav__link.is-active,
+.rux-side-nav__link[aria-current="page"] {
+	background: var(--rux-side-nav-item-active-bg);
+	color: var(--rux-side-nav-item-active-fg);
+}
+
+.rux-side-nav__link.is-active::before,
+.rux-side-nav__link[aria-current="page"]::before {
+	content: "";
+	position: absolute;
+	inset-block: var(--rux-space-0);
+	inset-inline-start: 0;
+	width: var(--rux-side-nav-selected-width);
+	background: var(--rux-accent);
+	border-radius: var(--rux-radius-0);
+}
+
+.rux-side-nav__label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rux-side-nav__badge {
+	display: inline-flex;
+	min-width: 18px;
+	height: 18px;
+	align-items: center;
+	justify-content: center;
+	margin-inline-start: auto;
+	padding: 0 var(--rux-space-1);
+	background: var(--rux-danger);
+	color: var(--rux-fg-on-accent);
+	border-radius: var(--rux-radius-full);
+	font-size: 10px;
+	font-weight: var(--rux-weight-semibold);
+	line-height: 1;
+}
+
+.rux-side-nav__badge[hidden] {
+	display: none;
+}

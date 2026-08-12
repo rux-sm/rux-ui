@@ -42,8 +42,7 @@ if (btn && menu && list) {
 		const hasUnread = unreadCount > 0;
 		badge.hidden = !hasUnread;
 		badge.textContent = unreadCount > 99 ? "99+" : String(unreadCount);
-		btn.classList.toggle("rux-button--default", hasUnread);
-		btn.classList.toggle("rux-button--ghost", !hasUnread);
+		btn.classList.toggle("has-unread", hasUnread);
 		btn.setAttribute(
 			"aria-label",
 			hasUnread ? `Notifications, ${unreadCount} unread` : "Notifications",

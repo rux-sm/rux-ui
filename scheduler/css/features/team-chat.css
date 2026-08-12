@@ -146,7 +146,7 @@
 	overflow-y: auto;
 	/* .rux-popover's own z-index (--rux-z-dropdown, 100) loses to the
 	   scheduler's sticky day-header row (--rux-z-sticky, 200) — same bug as
-	   the notifications/profile menus (see app-header.css). This popover
+	   the notifications/profile menus (see ui-header.css). This popover
 	   also floats out of the chat window itself (--rux-z-modal, 400), so it
 	   needs to clear that too, not just the calendar. */
 	z-index: calc(var(--rux-z-modal) + 1);

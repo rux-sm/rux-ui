@@ -1,0 +1,300 @@
+/* ==========================================================================
+   UI HEADER  ·  .rux-ui-header
+   --------------------------------------------------------------------------
+   Reusable global application chrome with a menu trigger, brand, and trailing
+   actions. Product destinations may use the optional inline navigation or
+   pair the header with .rux-side-nav for a disclosure-based left panel.
+   ========================================================================== */
+
+.rux-ui-header {
+	position: relative;
+	display: flex;
+	flex: 0 0 var(--rux-ui-header-height);
+	align-items: center;
+	height: var(--rux-ui-header-height);
+	min-height: var(--rux-ui-header-min-height);
+	min-width: 0;
+	gap: var(--rux-ui-header-gap);
+	padding: var(--rux-ui-header-padding);
+	background: var(--rux-ui-header-bg);
+}
+
+/* Paint the divider inside the fixed shell instead of adding it to the box
+   model. The header and its action buttons therefore both resolve to 48px. */
+.rux-ui-header::after {
+	position: absolute;
+	inset-inline: 0;
+	inset-block-end: 0;
+	content: "";
+	border-bottom: var(--rux-ui-header-border);
+	pointer-events: none;
+}
+
+.rux-ui-header__brand,
+.rux-ui-header__actions {
+	display: flex;
+	align-items: center;
+}
+
+.rux-ui-header__brand {
+	flex: none;
+	block-size: 100%;
+	padding-inline: var(--rux-ui-header-brand-padding-inline);
+	border-inline-end: var(--rux-ui-header-brand-border);
+}
+
+.rux-ui-header__logo {
+	display: block;
+	inline-size: auto;
+	block-size: var(--rux-ui-header-logo-height);
+}
+
+.rux-ui-header__nav {
+	display: flex;
+	align-items: center;
+	flex: 1 1 auto;
+	min-width: 0;
+	gap: var(--rux-ui-header-nav-gap);
+	overflow: visible;
+	scrollbar-width: none;
+}
+
+.rux-ui-header__nav::-webkit-scrollbar {
+	display: none;
+}
+
+/* .rux-button--ghost sets `color` directly rather than through --_fg, so
+   both rest and active states below have to match that directly too (a
+   --_fg override alone is a no-op here) — same reasoning as the ghost
+   :hover rule in controls.css. Muted at rest, full fg when current; the
+   icon glyph's own fill is a second, independent cue for selection. */
+.rux-ui-header__nav-item {
+	flex: none;
+	color: var(--rux-ui-header-nav-item-fg);
+}
+
+.rux-ui-header__nav-item.is-active,
+.rux-ui-header__nav-item[aria-current="page"] {
+	color: var(--rux-ui-header-nav-item-active-fg);
+}
+
+.rux-ui-header__actions {
+	flex: none;
+	margin-inline-start: auto;
+	gap: var(--rux-ui-header-actions-group-gap);
+}
+
+/* Two zones: actions (external links, chat, notifications) and identity
+	(presence avatars and your own profile) — grouped separately
+	so related controls read as one cluster instead of one undifferentiated
+	row of icons. */
+.rux-ui-header__action-group {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-ui-header-actions-gap);
+}
+
+.rux-ui-header__action-group:not(:last-child) {
+	padding-inline-end: var(--rux-ui-header-actions-group-gap);
+	border-inline-end: var(--rux-ui-header-actions-divider);
+}
+
+/* Tighter gap so presence avatars sit close to your own profile button
+   instead of spacing out like the action icons do. */
+.rux-ui-header__action-group--identity {
+	gap: var(--rux-ui-header-identity-gap);
+}
+
+/* Header actions are intentionally larger than ordinary application buttons:
+   the 48px square is the persistent shell hit target, while the glyph remains
+   20px. A dedicated class keeps this exception from changing generic controls. */
+.rux-ui-header__button {
+	--_h: var(--rux-ui-header-button-size);
+
+	flex: 0 0 var(--rux-ui-header-button-size);
+	width: var(--rux-ui-header-button-size);
+	min-width: var(--rux-ui-header-button-size);
+	height: var(--rux-ui-header-button-size);
+	padding: 0;
+	background: var(--rux-ui-header-button-bg);
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	color: var(--rux-ui-header-button-fg);
+}
+
+.rux-ui-header__button > .rux-icon {
+	--_icon-size: var(--rux-ui-header-button-icon-size);
+}
+
+/* Material Symbols do not expose Carbon's three-line SVG morph. The standard
+   button stacks Menu and Close glyphs and swaps them immediately from the
+   aria-expanded state, matching the captured preview behavior. UI-shell.js
+   still supports the legacy single direct-child .rux-icon contract. */
+.rux-ui-header__menu-icons {
+	display: grid;
+	width: var(--rux-ui-header-button-icon-size);
+	height: var(--rux-ui-header-button-icon-size);
+	place-items: center;
+}
+
+.rux-ui-header__menu-icon {
+	--_icon-size: var(--rux-ui-header-button-icon-size);
+
+	grid-area: 1 / 1;
+	transition:
+		opacity var(--rux-ui-header-menu-icon-motion-duration)
+			var(--rux-ui-header-menu-icon-motion-easing);
+}
+
+.rux-ui-header__menu-icon--close,
+	.rux-ui-header__menu[aria-expanded="true"] .rux-ui-header__menu-icon--open {
+	opacity: 0;
+}
+
+.rux-ui-header__menu[aria-expanded="true"] .rux-ui-header__menu-icon--close {
+	opacity: 1;
+}
+
+.rux-ui-header__button:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-ui-header-button-hover-bg);
+	border: none;
+	color: var(--rux-ui-header-button-fg);
+}
+
+.rux-ui-header__button:active:not(:disabled):not([aria-disabled="true"]),
+.rux-ui-header__button[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
+	background: var(--rux-ui-header-button-active-bg);
+	border: none;
+	color: var(--rux-ui-header-button-fg);
+}
+
+.rux-ui-header__button:focus-visible {
+	box-shadow: var(--rux-ui-header-button-focus-ring);
+}
+
+.rux-ui-header__profile {
+	overflow: visible;
+}
+
+.rux-ui-header__notif-btn,
+.rux-ui-header__chat-btn {
+	position: relative;
+}
+
+/* Numeric unread count shared by notifications and team chat. */
+.rux-ui-header__badge-count {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	min-width: 18px;
+	height: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 var(--rux-space-1);
+	background: var(--rux-danger);
+	border: 2px solid var(--rux-ui-header-bg);
+	border-radius: var(--rux-radius-full);
+	color: var(--rux-fg-on-accent);
+	font-size: 11px;
+	font-weight: var(--rux-weight-semibold);
+	line-height: 1;
+}
+
+.rux-ui-header__badge-count[hidden] {
+	display: none;
+}
+
+/* Nav-item variant: sits inline after the label instead of corner-anchored on
+   an icon-only button (the action-rail default above). The nav button is an
+   inline-flex with a content gap, so a static badge flows right beside the
+   label; smaller footprint and no ring since it's not floating over the
+   header background. */
+.rux-ui-header__badge-count--nav {
+	position: static;
+	min-width: 16px;
+	height: 16px;
+	padding: 0 var(--rux-space-1);
+	border: none;
+	font-size: 10px;
+}
+
+/* Both anchor to header buttons and need to float above the scheduler's
+   sticky day-header row (--rux-z-sticky, 200) — the shared .rux-popover
+   z-index (--rux-z-dropdown, 100) sits below that, so without this
+   override the sticky calendar header renders on top of these menus
+   instead of the other way around. */
+#notifications-menu,
+#profile-menu {
+	z-index: var(--rux-z-overlay);
+}
+
+.rux-ui-header__profile > :is(img, .rux-ui-header__profile-initials) {
+	width: var(--rux-ui-header-profile-avatar-size);
+	height: var(--rux-ui-header-profile-avatar-size);
+	border-radius: var(--rux-radius-full);
+}
+
+.rux-ui-header__profile > img {
+	display: block;
+	object-fit: cover;
+}
+
+@media (max-width: 760px) {
+	.rux-ui-header__nav,
+	.rux-ui-header__utility--optional,
+	.rux-ui-header__active-profiles {
+		display: none;
+	}
+}
+
+@media (max-width: 620px) {
+	.rux-ui-header {
+		padding-inline: var(--rux-space-3);
+	}
+
+	.rux-ui-header__brand {
+		min-width: 0;
+		padding-inline-end: 0;
+		border-inline-end: 0;
+	}
+
+	.rux-ui-header__logo {
+		max-width: 132px;
+		object-fit: contain;
+	}
+
+	.rux-ui-header__actions,
+	.rux-ui-header__action-group {
+		gap: var(--rux-space-1);
+	}
+
+	.rux-ui-header__action-group:not(:last-child) {
+		padding-inline-end: 0;
+		border-inline-end: 0;
+	}
+}
+
+@media (max-width: 500px) {
+	.rux-ui-header {
+		padding-top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
+	}
+}
+
+.rux-skip-link {
+	position: fixed;
+	top: var(--rux-space-2);
+	left: var(--rux-space-2);
+	z-index: calc(var(--rux-z-modal) + 2);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	background: var(--rux-surface-5);
+	color: var(--rux-fg);
+	border-radius: var(--rux-radius-control);
+	box-shadow: var(--rux-button-focus-ring);
+	transform: translateY(calc(-100% - var(--rux-space-4)));
+}
+
+.rux-skip-link:focus {
+	transform: translateY(0);
+}

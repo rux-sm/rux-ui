@@ -5,7 +5,7 @@
 .maintenance-share__status :is(h1, p) { margin: 0; }
 .maintenance-share__status { display: grid; place-items: center; gap: var(--rux-space-3); min-height: 50vh; text-align: center; }
 .maintenance-share__status .rux-icon { color: var(--rux-fg-muted); font-size: 40px; }
-.maintenance-schedule__scroll { max-height: calc(100dvh - var(--rux-app-header-height) - var(--rux-space-4) - var(--rux-space-4)); overflow: auto; border-block: var(--rux-border-width) solid var(--rux-divider); border-inline-start: var(--rux-border-width) solid var(--rux-divider); }
+.maintenance-schedule__scroll { max-height: calc(100dvh - var(--rux-ui-header-height) - var(--rux-space-4) - var(--rux-space-4)); overflow: auto; border-block: var(--rux-border-width) solid var(--rux-divider); border-inline-start: var(--rux-border-width) solid var(--rux-divider); }
 .maintenance-schedule { min-width: calc(var(--maintenance-bus-column-width) + 2240px); background: var(--rux-surface-4); }
 .maintenance-schedule__days { position: sticky; z-index: 5; top: 0; display: grid; grid-template-columns: var(--maintenance-bus-column-width) repeat(14, minmax(var(--maintenance-day-column-min-width), 1fr)); background: var(--rux-surface-4); border-bottom: var(--rux-border-width) solid var(--rux-divider); }
 .maintenance-schedule__days span { display: grid; place-items: center; height: 36px; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); font-weight: var(--rux-weight-semibold); }
@@ -45,11 +45,11 @@
 .maintenance-changes__line, .maintenance-changes__empty { width: max-content; margin: 0; padding: var(--rux-space-1) 0; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); white-space: nowrap; }
 @media (max-width: 640px) { .maintenance-share { padding: var(--rux-space-3); } }
 @media (max-width: 500px) {
-	.maintenance-share-header.rux-app-header {
+	.maintenance-share-header.rux-ui-header {
 		visibility: visible;
-		height: var(--rux-app-header-height);
+		height: var(--rux-ui-header-height);
 		overflow: visible;
-		padding: var(--rux-app-header-padding);
-		border-bottom: var(--rux-app-header-border);
+		padding: var(--rux-ui-header-padding);
+		border-bottom: var(--rux-ui-header-border);
 	}
 }

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SCHEDULER APP SHELL  ·  scheduler-app, app header, toolbar, nav
+   SCHEDULER APP SHELL  ·  scheduler-app, UI header, toolbar, nav
    --------------------------------------------------------------------------
    Full-page application shell that hosts .rux-scheduler. These layout
    classes are app-specific scaffolding; .rux-scheduler itself is the
@@ -53,7 +53,7 @@
 	position: relative;
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
-	row-gap: var(--rux-shell-app-header-gap);
+	row-gap: var(--rux-shell-ui-header-gap);
 	width: auto;
 	margin: 0 var(--rux-shell-margin-inline) var(--rux-shell-margin-bottom);
 	block-size: calc(100dvh - var(--rux-shell-margin-bottom));
@@ -64,9 +64,119 @@
 }
 
 .scheduler-app__body {
+	position: relative;
 	display: flex;
 	min-height: 0;
 	overflow: hidden;
+}
+
+/* — Product side navigation — */
+
+.scheduler-app__side-nav,
+.scheduler-app__side-nav-scrim {
+	position: absolute;
+	inset-block: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.scheduler-app__side-nav {
+	inset-inline-start: 0;
+	z-index: var(--rux-z-overlay);
+	/* The panel stays at its final coordinates and full opacity. Moving the
+	   right clipping edge reveals its contents without translating, scaling,
+	   stretching, or staggering individual navigation items. */
+	clip-path: inset(0 100% 0 0);
+	opacity: 1;
+	transform: none;
+	will-change: clip-path;
+	box-shadow: var(--rux-shadow-3);
+	transition:
+		clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
+		visibility 0s linear var(--rux-side-nav-motion-duration);
+}
+
+.scheduler-app__side-nav-scrim {
+	inset-inline-start: 0;
+	inset-inline-end: 0;
+	z-index: calc(var(--rux-z-overlay) - 1);
+	background: var(--rux-side-nav-scrim-bg);
+	opacity: 0;
+	/* Closing is intentionally immediate: removing .is-visible drops the
+	   scrim on the first closing frame while the panel clips shut. */
+	transition:
+		opacity var(--rux-side-nav-scrim-exit-duration),
+		inset-inline-start var(--rux-side-nav-scrim-exit-duration);
+}
+
+.scheduler-app__side-nav.is-open,
+.scheduler-app__side-nav-scrim.is-visible {
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.scheduler-app__side-nav.is-open {
+	clip-path: inset(0);
+	transition:
+		clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
+		visibility 0s linear 0s;
+}
+
+.scheduler-app__side-nav-scrim.is-visible {
+	inset-inline-start: min(var(--rux-side-nav-width), 100%);
+	opacity: var(--rux-side-nav-scrim-opacity);
+	transition:
+		inset-inline-start var(--rux-side-nav-motion-duration)
+			var(--rux-side-nav-enter-easing),
+		opacity var(--rux-side-nav-scrim-enter-duration)
+			var(--rux-side-nav-scrim-enter-easing)
+			var(--rux-side-nav-scrim-enter-delay);
+}
+
+/* Compact layouts use a clipped overlay plus the moving-edge scrim. Desktop
+   turns the same fixed-coordinate element into an attached flex item: its
+   negative margin collapses the closed layout space, then animates to zero so
+   the workspace is pushed in sync with the clipping edge. */
+@media (min-width: 761px) {
+	.scheduler-app__side-nav {
+		position: relative;
+		inset: auto;
+		z-index: 2;
+		flex: 0 0 var(--rux-side-nav-width);
+		height: 100%;
+		margin-inline-end: calc(-1 * var(--rux-side-nav-width));
+		box-shadow: none;
+		transition:
+			clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
+			margin-inline-end var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
+			visibility 0s linear var(--rux-side-nav-motion-duration);
+	}
+
+	.scheduler-app__side-nav.is-open {
+		margin-inline-end: 0;
+		transition:
+			clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
+			margin-inline-end var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
+			visibility 0s linear 0s;
+	}
+
+	.scheduler-app__side-nav-scrim {
+		display: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.scheduler-app__side-nav,
+	.scheduler-app__side-nav-scrim {
+		transition-duration: 1ms;
+		transition-delay: 0s;
+	}
+}
+
+@media (max-width: 500px) {
+	.scheduler-app__side-nav {
+		width: min(var(--rux-side-nav-width), calc(100% - var(--rux-space-12)));
+	}
 }
 
 /* Sides + bottom + top always keep a consistent inset (matching the panel
@@ -85,7 +195,7 @@
 	padding: var(--scheduler-app-module-padding);
 }
 
-/* App-header menus must float above the mobile drawer, which sits at --rux-z-modal
+/* UI-header menus must float above the mobile drawer, which sits at --rux-z-modal
    while open (see "Drawer fills full viewport" below) */
 #profile-menu {
 	z-index: calc(var(--rux-z-modal) + 1);
@@ -112,6 +222,10 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
+}
+
+.calendar-app__panel-toggle {
+	flex: none;
 }
 
 /* #today-btn shows text-only by default (no icon) — its icon is hidden at
@@ -317,7 +431,7 @@
 	box-sizing: border-box;
 	padding: 0;
 	transition:
-		width var(--rux-duration-slow) var(--rux-ease-in-out);
+		width var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 
 	display: flex;
 	flex-direction: column;
@@ -326,6 +440,16 @@
 .scheduler-app__drawer.is-open {
 	width: var(--drawer-width, var(--scheduler-app-left-drawer-default-width));
 	overflow: hidden;
+}
+
+.scheduler-app__drawer.is-open:not(.is-collapsing) {
+	transition:
+		width var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
+}
+
+.scheduler-app__drawer.is-collapsing {
+	transition:
+		width var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 }
 
 .scheduler-app__drawer.is-resizing {
@@ -484,8 +608,8 @@
 	min-height: 0;
 	z-index: 1;
 	transition:
-		flex-basis var(--rux-duration-slow) var(--rux-ease-in-out),
-		min-width var(--rux-duration-slow) var(--rux-ease-in-out);
+		flex-basis var(--rux-panel-motion-duration) var(--rux-panel-standard-easing),
+		min-width var(--rux-panel-motion-duration) var(--rux-panel-standard-easing);
 }
 
 .scheduler-app__drawer.is-open + .scheduler-app__gutter,
@@ -637,9 +761,9 @@
 	}
 }
 
-/* — Right panel rail — */
-/* No header anymore — see .rux-panel__footer-close further down for
-   what replaced it. */
+/* — Legacy right-panel rail compatibility — */
+/* The Calendar tools panel now reopens from its workspace-header control.
+   These rules remain for older railable right-panel consumers. */
 
 .rux-right-panel__drawer-open {
 	display: none;
@@ -1322,7 +1446,6 @@
 	   own header close buttons and icon-rail open buttons take over.
 	   Scoped to calendar module so Fleet/Driver/Customer toggles are unaffected. */
 	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--left,
-	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--right,
 	.scheduler-app__module[data-module="drivers"] .scheduler-app__mobile-panel-btn--left {
 		display: none;
 	}
@@ -1347,9 +1470,9 @@
 		transform: none;
 		z-index: 10;
 		transition:
-			left var(--rux-duration-slow) var(--rux-ease-in-out),
-			transform var(--rux-duration-slow) var(--rux-ease-in-out),
-			opacity var(--rux-duration-fast) var(--rux-ease-out);
+			left var(--rux-panel-motion-duration) var(--rux-panel-standard-easing),
+			transform var(--rux-panel-motion-duration) var(--rux-panel-standard-easing),
+			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing);
 	}
 
 	.scheduler-app__drawer--railable.is-open .rux-driver-panel__drawer-open {
@@ -1377,7 +1500,8 @@
 		.scheduler-app__drawer-icon-stack
 		> :is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
 		grid-area: 1 / 1;
-		transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
+		transition:
+			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing);
 	}
 
 	.scheduler-app__drawer--railable .scheduler-app__drawer-toggle-close,
@@ -1399,8 +1523,8 @@
 		> :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		transition:
-			opacity var(--rux-duration-fast) var(--rux-ease-out),
-			transform var(--rux-duration-fast) var(--rux-ease-out);
+			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing),
+			transform var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing);
 	}
 
 	.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
@@ -1421,8 +1545,7 @@
 @media (max-width: 500px) {
 	/* Desktop collapsed-rail reopeners live inside the drawer itself. A closed
 	   mobile drawer is also <=44px wide, which can trigger their container
-	   query accidentally; mobile uses the workspace Trip Editor/Options
-	   buttons instead. */
+	   query accidentally; mobile uses workspace panel controls instead. */
 	.scheduler-app__drawer > :is(
 		.rux-trip-panel__drawer-open,
 		.rux-right-panel__drawer-open,
@@ -1431,9 +1554,7 @@
 		display: none;
 	}
 
-	/* On mobile the app header is always collapsed (there's no toggle for it),
-	   so it never needs the row-gap every other viewport gets between the
-	   app header and body. */
+	/* Keep the narrow shell attached beneath the persistent UI header. */
 	.scheduler-app {
 		row-gap: 0;
 	}
@@ -1442,7 +1563,7 @@
 	   44px matches the same touch-target size already used for
 	   --rux-badge-module-height. Redefining the shared --rux-tab-height
 	   here, rather than overriding .rux-tab's own height rule, keeps every
-	   other .rux-tab consumer (app-header module tabs, etc.) untouched. */
+	   other .rux-tab consumer untouched. */
 	.rux-panel__nav {
 		--rux-tab-height: 44px;
 	}
@@ -1512,7 +1633,7 @@
 		margin-inline-start: var(--rux-space-2);
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .scheduler-app__mobile-panel-btn--right {
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .calendar-app__panel-toggle {
 		grid-column: 9;
 		grid-row: 2;
 	}
@@ -1584,12 +1705,15 @@
 		background: var(--rux-overlay-scrim);
 		opacity: 0;
 		pointer-events: none;
-		transition: opacity var(--rux-duration-slow) var(--rux-ease-in-out);
+		transition:
+			opacity var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 	}
 
 	.scheduler-app__drawer-scrim.is-visible {
 		opacity: 1;
 		pointer-events: auto;
+		transition:
+			opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
 	}
 
 	.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel, .rux-right-panel) {
@@ -1620,11 +1744,17 @@
 	}
 
 	.scheduler-app__drawer.is-open > .rux-panel {
-		animation: scheduler-mobile-drawer-in var(--rux-duration-slow) var(--rux-ease-out);
+		animation:
+			scheduler-mobile-drawer-in
+			var(--rux-panel-motion-duration)
+			var(--rux-panel-enter-easing);
 	}
 
 	.scheduler-app__drawer.is-closing > .rux-panel {
-		animation: scheduler-mobile-drawer-out var(--rux-duration-slow) var(--rux-ease-in-out);
+		animation:
+			scheduler-mobile-drawer-out
+			var(--rux-panel-motion-duration)
+			var(--rux-panel-exit-easing);
 	}
 
 	.scheduler-app__drawer .rux-panel > .rux-panel__header {
@@ -1649,19 +1779,7 @@
 		padding-bottom: 0;
 	}
 
-	.scheduler-app:has(.scheduler-app__drawer.is-open) .rux-app-header__nav {
-		display: none;
-	}
-
-	.scheduler-app:has(.scheduler-app__drawer.is-closing) .rux-app-header__nav {
-		display: none;
-	}
-
-	body[data-active-module="game"] .rux-app-header__nav {
-		display: none;
-	}
-
-	/* Keep the schedule flush beneath the overlaid navigation. */
+	/* Keep the schedule flush within the narrow shell. */
 	.scheduler-app__module {
 		padding: 0;
 	}
