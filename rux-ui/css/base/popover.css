@@ -10,6 +10,10 @@
 	z-index: var(--rux-z-dropdown);
 }
 
+.rux-popover[data-rux-modal-layer] {
+	z-index: calc(var(--rux-z-modal) + 1);
+}
+
 .rux-popover[hidden] {
 	display: none;
 }

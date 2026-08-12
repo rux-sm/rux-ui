@@ -23,6 +23,14 @@
 
 	function position(anchor, popover, options = {}) {
 		if (!anchor || !popover) return;
+		// Popovers are portaled to <body>, so they do not inherit the stacking
+		// context of the modal that launched them. Promote anchored popovers
+		// above their owning modal; otherwise menus such as Add Payment open
+		// successfully but remain hidden behind the Trip Editor surface.
+		popover.toggleAttribute(
+			"data-rux-modal-layer",
+			Boolean(anchor.closest(".rux-modal-backdrop")),
+		);
 		const placement = options.placement || "bottom-end";
 		const offset = options.offset ?? tokenPx(popover, "--rux-popover-offset", 4);
 		const padding = options.viewportPadding ?? tokenPx(popover, "--rux-popover-viewport-padding", 8);

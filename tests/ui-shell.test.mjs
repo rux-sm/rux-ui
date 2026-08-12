@@ -217,11 +217,23 @@ test("Team Chat mentions use stable profile IDs and accessible suggestions", () 
 test("modal headers keep Carbon-like title spacing independent from the close action", () => {
 	assert.match(tokens, /--rux-control-height:\s*44px;/);
 	assert.match(tokens, /--rux-modal-header-height:\s*var\(--rux-control-height\);/);
-	assert.match(tokens, /--rux-modal-header-padding:\s*var\(--rux-space-4\) var\(--rux-space-7\) 0 var\(--rux-space-4\);/);
+	assert.match(tokens, /--rux-modal-header-padding:\s*0 var\(--rux-space-7\) 0 var\(--rux-space-4\);/);
 	assert.match(tokens, /--rux-modal-header-action-size:\s*var\(--rux-control-height\);/);
 	assert.match(feedbackStyles, /\.rux-modal__header\s*\{[^}]*position:\s*relative;[^}]*height:\s*var\(--rux-modal-header-height\);[^}]*padding:\s*var\(--rux-modal-header-padding\);/s);
 	assert.match(feedbackStyles, /\.rux-modal__header > \.rux-button--icon\s*\{[^}]*--_h:\s*var\(--rux-modal-header-action-size\);[^}]*position:\s*absolute;[^}]*inset-block-start:\s*0;[^}]*inset-inline-end:\s*0;/s);
 	assert.match(feedbackStyles, /\.rux-modal__title\s*\{[^}]*font-size:\s*var\(--rux-modal-title-size\);[^}]*line-height:\s*var\(--rux-modal-title-line-height\);/s);
+});
+
+test("menus opened inside modals are promoted above the modal layer", () => {
+	assert.match(page, /id="tp-payment-add-btn"[^>]*aria-haspopup="menu"/s);
+	assert.match(
+		popoverController,
+		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop"\)\)/,
+	);
+	assert.match(
+		popoverStyles,
+		/\.rux-popover\[data-rux-modal-layer\]\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s,
+	);
 });
 
 test("the profile menu does not expose the internal Flip 7 destination", () => {

@@ -82,3 +82,10 @@ Use `RuxPopover.createDisclosure(trigger, popover, options)` for interactive
 non-menu surfaces. It provides trigger toggling, outside-click and Escape
 dismissal, focus restoration, viewport repositioning, and coordination with
 other Rux popovers. Continue using `RuxMenu.open()` for action menus.
+
+## Popovers in Modals
+
+Anchored popovers are portaled to `document.body`. `RuxPopover.position()`
+automatically marks a popover whose trigger is inside `.rux-modal-backdrop`
+and promotes it above the modal layer. Feature code should not add its own
+z-index override for modal menus; use the shared positioning API instead.
