@@ -203,23 +203,27 @@ A 4px grid: `4, 8, 12, 16, 24, 32, 48, 64`. Pick from `--rux-space-1` through `-
 
 ### Buttons
 
-Buttons are compact, solid controls. Rux uses one application button size: 44px high.
+Buttons use explicit size roles instead of inheriting the height of form controls.
+See [Button Components](docs/buttons.md) for composition examples and usage rules.
 
 | Control | Height | Font | Horizontal padding | Icon/text gap |
 |---|---:|---:|---:|---:|
-| `.rux-button` | `--rux-control-height` `44px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
-| `.rux-button--icon` | `--rux-control-height` `44px` | icon only | `0` | n/a |
-| `.rux-ui-header__button` | `--rux-ui-header-button-size` `48px` | `20px` icon | `0` | n/a |
+| `.rux-button` | `--rux-button-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
+| `.rux-button--icon` | `--rux-button-height` `32px` | `20px` icon | `0` | n/a |
+| `.rux-button--header` | `--rux-button-header-size` `44px` | `24px` icon | standard padding or square with `--icon` | n/a |
+| `.rux-button--compact` | `--rux-button-compact-size` `28px` | `18px` icon | compact padding or square with `--icon` | n/a |
+| `.rux-ui-header__button` | `--rux-ui-header-button-size` `44px` | `24px` icon | `0` | n/a |
 | `.rux-segmented-track` | `--rux-input-height` outer track | track | `--rux-segmented-track-padding` | `--rux-segmented-track-radius` |
 | `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-text-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
 
 - Use `--rux-weight-medium` for all button labels.
 - Icon-only buttons are square: width equals the resolved button height.
 - Header action buttons are the intentional shell exception: use
-  `.rux-ui-header__button` for the 48px menu, search, messages, notifications,
-  and profile targets. The UI header owns the same fixed 48px height; its
-  children do not size it. Do not use that size for ordinary application actions.
-- Do not add compact or large button variants. Use layout density, icon-only buttons, or progressive disclosure instead of changing button height.
+  `.rux-ui-header__button` for the 44px menu, search, messages, notifications,
+  and profile targets. The UI header remains 48px high and centers those
+  controls; its children do not size it.
+- Use `.rux-button--header` for persistent workspace and card-header controls.
+- Use `.rux-button--compact` only for dense embedded actions such as trip bars.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
 - Segmented controls use a shallow recessed `.rux-segmented-track` around `.rux-button--segment` items. The selected indicator uses `--rux-segment-active-background` and is the strip's only raised layer.
@@ -239,7 +243,7 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 | help text | `--rux-text-xs`, `--rux-fg-subtle` | One short sentence when useful |
 | error text | `--rux-text-xs`, `--rux-danger` | Direct recovery instruction |
 
-- Field height remains a dense `36px`, while action buttons use a larger `44px` target. Do not enlarge fields merely to match adjacent actions.
+- Field height remains `36px`, standard action buttons are `32px`, and persistent header actions are `44px`. Choose the semantic size role instead of forcing adjacent controls to match.
 - Labels sit above fields. Do not use placeholder text as the only label.
 - Labels use Title Case and no trailing punctuation: `Driver Name`, not `Driver name`.
 - Placeholder text describes format or an example value. Keep it short: `Ada Lovelace`, `name@example.com`, `Anything to remember…`.

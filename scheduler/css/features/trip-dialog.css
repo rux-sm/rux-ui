@@ -1,14 +1,20 @@
 /* ==========================================================================
    TRIP DIALOG
    --------------------------------------------------------------------------
-   Application dialog hosting the .rux-trip-panel form.
+   Movable, resizable application window hosting the .rux-trip-panel form.
    ========================================================================== */
 
 .rux-trip-dialog {
-	display: flex;
-	max-width: var(--rux-modal-max-width-wide);
-	max-height: calc(100dvh - var(--rux-space-8) * 2);
-	flex-direction: column;
+	top: 50%;
+	left: 50%;
+	width: min(640px, calc(100vw - (var(--rux-space-4) * 2)));
+	height: min(840px, calc(100dvh - (var(--rux-space-4) * 2)));
+	min-width: 480px;
+	min-height: 520px;
+	max-width: calc(100vw - (var(--rux-space-4) * 2));
+	max-height: calc(100dvh - (var(--rux-space-4) * 2));
+	transform: translate(-50%, -50%);
+	overflow: hidden;
 }
 
 .rux-trip-dialog__header {
@@ -28,10 +34,7 @@
 
 @media (max-width: 580px) {
 	.rux-trip-dialog.rux-trip-dialog {
-		width: calc(100vw - var(--rux-space-8));
-		height: calc(100dvh - (var(--rux-space-5) * 2));
-		max-width: none;
-		max-height: none;
-		margin: 0;
+		min-width: 0;
+		min-height: 0;
 	}
 }

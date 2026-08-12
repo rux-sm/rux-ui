@@ -7,6 +7,7 @@ const source = await readFile(new URL("../js/core/billing-config.js", import.met
 const notificationSource = await readFile(new URL("../js/data/notification-db.js", import.meta.url), "utf8");
 const tripBarSource = await readFile(new URL("../js/components/trip-bar.js", import.meta.url), "utf8");
 const tripBarCss = await readFile(new URL("../scheduler/css/features/trip-bar.css", import.meta.url), "utf8");
+const tokenSource = await readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8");
 const context = {
 	window: {},
 	console,
@@ -79,4 +80,10 @@ test("partial PO warns through the outline without replacing the trip color", ()
 	assert.match(rule, /--_outline:\s*var\(--rux-trip-bar-warning-border\)/);
 	assert.match(rule, /--rux-trip-bar-border-width:\s*1px/);
 	assert.doesNotMatch(rule, /--_tone|background/);
+});
+
+test("trip bar action buttons use the compact 28px component contract", () => {
+	assert.match(tokenSource, /--rux-trip-bar-action-button-size:\s*28px/);
+	assert.match(tripBarSource, /rux-button--compact rux-button--block rux-trip-bar__action/);
+	assert.match(tripBarCss, /\.rux-trip-bar__action\s*\{[^}]*--_h:\s*var\(--rux-trip-bar-action-button-size\)/s);
 });

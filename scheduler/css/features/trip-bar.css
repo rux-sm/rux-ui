@@ -52,7 +52,6 @@
 .rux-trip-bar {
 	--rux-trip-bar-collapsed-height: 138px;
 	--rux-trip-bar-action-padding-block: 0;
-	--rux-trip-bar-action-button-size: var(--rux-control-height-sm);
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
 	--rux-trip-bar-tight-gap: var(--rux-space-px);

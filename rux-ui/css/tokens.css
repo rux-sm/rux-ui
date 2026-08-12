@@ -454,7 +454,7 @@
 	/* --rux-ui-header-radius: not set — spans full width, no corners */
 	/* --rux-ui-header-shadow: not set */
 	--rux-ui-header-padding: 	var(--rux-space-0) var(--rux-space-0);
-	--rux-ui-header-height:  	var(--rux-space-7);
+	--rux-ui-header-height:  	44px;
 	--rux-ui-header-min-height: var(--rux-ui-header-height);
 	--rux-ui-header-gap:     	var(--rux-space-0);
 
@@ -469,8 +469,8 @@
 	--rux-ui-header-nav-item-active-fg: var(--rux-fg);
 
 	/* — actions — */
-	--rux-ui-header-button-size:         var(--rux-ui-header-height);
-	--rux-ui-header-button-icon-size:    var(--rux-icon-sm);
+	--rux-ui-header-button-size:         var(--rux-button-header-size);
+	--rux-ui-header-button-icon-size:    var(--rux-button-header-icon-size);
 	--rux-ui-header-profile-avatar-size: var(--rux-space-6);
 	--rux-ui-header-button-bg:           transparent;
 	--rux-ui-header-button-fg:           var(--rux-fg);
@@ -534,10 +534,10 @@
 
 	/* — header — */
 	/* Keep header and view content on the same inline grid. */
-	--rux-workspace-header-padding: var(--rux-space-2)
-		var(--rux-workspace-gutter);
+	--rux-workspace-header-padding: 0 ;
 	/* control height + space-3 top/bottom = 56px, matching panel header */
-	--rux-workspace-header-min-height: calc(var(--rux-control-height) + (var(--rux-space-2) * 2));
+	--rux-workspace-header-min-height: 44px;
+	--rux-workspace-header-gap: 0;
 
 	/* ─── COMPONENT · calendar ───────────────────────────────────────────── */
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
@@ -564,7 +564,7 @@
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
 	   of the same container shape, not its own control. */
 	--rux-calendar-header-radius: var(--rux-radius-container);
-	--rux-calendar-header-height: 31px;
+	--rux-calendar-header-height: 28px;
 	--rux-calendar-header-shadow:        none;
 	--rux-calendar-header-divider:       none;
 
@@ -603,11 +603,11 @@
 	--rux-panel-nav-background: var(--rux-surface-3);
 	--rux-panel-nav-border:     none;
 	--rux-panel-nav-padding:    var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
-	--rux-panel-tabs-padding:   var(--rux-space-6);
+	--rux-panel-tabs-padding:   var(--rux-space-4);
 	/* Only cast while .rux-panel__body has scrolled under it (.is-scrolled,
 	   toggled by initPanelScrollEdges in js/core/controls.js) — flat/solid
 	   at rest, elevated once there's content underneath to separate from. */
-	--rux-panel-nav-shadow:     var(--rux-shadow-1);
+	--rux-panel-nav-shadow:     var(--rux-shadow-3);
 
 	/* — footer — */
 	--rux-panel-footer-bg:      var(--rux-surface-3);
@@ -772,6 +772,7 @@
 	--rux-trip-bar-border-width: 0px;
 	/* --rux-trip-bar-border: computed alongside bg */
 	--rux-trip-bar-radius: var(--rux-radius-0);
+	--rux-trip-bar-action-button-size: 28px;
 	--rux-trip-bar-actions-radius:   var(--rux-radius-control);
 	--rux-trip-bar-bus-label-radius: var(--rux-radius-xs);
 	--rux-trip-bar-meta-radius:      var(--rux-radius-sm);
@@ -779,7 +780,7 @@
 	--rux-trip-bar-shadow: var(--rux-shadow-3);
 	/* Same recessed rim used on input fields — gives the time/driver meta
 	   rows a subtle "readout" feel instead of a flat tonal wash. */
-	--rux-trip-bar-meta-shadow: var(--rux-shadow-inset);
+	--rux-trip-bar-meta-shadow: none
 
 	/* One-way/split-trip SVG stripe overlay. */
 	--rux-trip-bar-stripe-color:   var(--rux-white);
@@ -870,7 +871,7 @@
 	--rux-button-shadow-raised:  none;
 	--rux-button-shadow-pressed: none;
 	--rux-button-padding-inline: var(--rux-space-3);
-	--rux-button-height:         var(--rux-control-height);
+	--rux-button-height:         32px;
 	--rux-button-mobile-height:  44px;
 	--rux-button-content-gap:    var(--rux-space-2);
 	--rux-button-group-gap:      var(--rux-space-2);
@@ -1026,9 +1027,13 @@
 	--rux-button-icon-selected-bg:  var(--rux-button-quiet-selected-bg);
 
 	/* ─── COMPONENT · button sizes ────────────────────────────────────────── */
-	/* Small is the nested-control tier; extra small is reserved for micro controls. */
+	/* Explicit size roles keep button geometry separate from 44px form controls. */
+	--rux-button-header-size:       44px;
+	--rux-button-header-icon-size:  var(--rux-icon-md);
+	--rux-button-compact-size:      28px;
+	--rux-button-compact-icon-size: 18px;
 
-	--rux-button-sm-height:         var(--rux-control-height-sm);
+	--rux-button-sm-height:         var(--rux-button-compact-size);
 	--rux-button-sm-font-size:      var(--rux-text-xs);
 	--rux-button-sm-padding-inline: var(--rux-space-2);
 	--rux-button-sm-content-gap:    var(--rux-space-1);
@@ -1325,7 +1330,7 @@
 	--rux-tab-radius: var(--rux-radius-0);
 	/* --rux-tab-border: not set at rest — only the selected state below has one */
 	--rux-tabs-gap:           var(--rux-space-2);
-	--rux-tab-height:         48px;
+	--rux-tab-height:         44px;
 	--rux-tab-padding-inline: var(--rux-space-3);
 	--rux-tab-content-gap:    var(--rux-control-content-gap);
 	--rux-tab-hover-bg:            transparent;

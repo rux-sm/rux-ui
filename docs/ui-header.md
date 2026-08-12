@@ -148,8 +148,8 @@ shells. They do not change the compact application-button standard.
 | Part | Contract |
 |---|---:|
 | Header | `48px` high |
-| Hit target | `48px × 48px` |
-| Icon | `20px × 20px` |
+| Hit target | `44px × 44px` |
+| Icon | `24px × 24px` |
 | Profile avatar | `32px × 32px` |
 | Corner radius | `0` |
 
@@ -215,10 +215,10 @@ Header tokens use the `--rux-ui-header-*` namespace. Side-navigation tokens use
 `--rux-side-nav-*`. Component consumers should override these tokens instead of
 reaching into element selectors.
 
-The header owns its height. `--rux-ui-header-button-size` aliases
-`--rux-ui-header-height`, so action buttons consume the shell contract rather
-than sizing the header indirectly. The bottom divider is painted inside that
-box and does not add another pixel to the rendered height.
+The header owns its 48px height. `--rux-ui-header-button-size` aliases the
+shared 44px header-button role, so actions sit centered inside the shell rather
+than sizing it indirectly. The bottom divider is painted inside the header box
+and does not add another pixel to the rendered height.
 
 Common header tokens:
 
@@ -281,7 +281,7 @@ namespace.
 - Any right-panel trigger exposes accurate `aria-controls` and `aria-expanded`
   state.
 - Header actions remain usable in light and dark themes.
-- Header action hit targets resolve to 48px and glyphs resolve to 20px.
+- Header action hit targets resolve to 44px and glyphs resolve to 24px.
 - The complete header box resolves to 48px, including its visual divider.
 - Expanded menu and panel triggers retain a visible active state.
 - Header and navigation remain usable at desktop, tablet, mobile, and 200% zoom.

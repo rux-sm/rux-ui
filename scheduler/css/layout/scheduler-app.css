@@ -235,7 +235,7 @@
 .calendar-app__date-controls {
 	display: flex;
 	align-items: center;
-	gap: var(--rux-space-2);
+	gap: 0;
 }
 
 .calendar-app__panel-toggle {

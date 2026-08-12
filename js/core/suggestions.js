@@ -100,6 +100,10 @@
 			hide();
 			return;
 		}
+		panelEl.toggleAttribute(
+			"data-rux-modal-layer",
+			Boolean(input.closest(".rux-modal-backdrop, .rux-floating-window")),
+		);
 		position(input);
 		panelEl.innerHTML = items
 			.map(

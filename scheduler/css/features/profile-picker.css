@@ -134,12 +134,14 @@
 .rux-ui-header__active-profiles {
 	display: flex;
 	align-items: center;
+		width: auto;
+	height: 28px;
 }
 
 .rux-ui-header__active-avatar {
 	flex: none;
-	width: 28px;
-	height: 28px;
+	width: 32px;
+	height: 32px;
 	border-radius: 50%;
 	border: none;
 	margin-inline-start: calc(-1 * var(--rux-space-2));

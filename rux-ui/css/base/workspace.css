@@ -26,7 +26,7 @@
 	justify-content: flex-start;
 	min-width: 0;
 	min-height: var(--rux-workspace-header-min-height);
-	gap: var(--rux-space-2);
+	gap: var(--rux-workspace-header-gap);
 	padding: var(--rux-workspace-header-padding);
 	container-type: inline-size;
 	container-name: workspace-header;
@@ -68,7 +68,7 @@
 	align-items: center;
 	justify-content: flex-end;
 	flex-wrap: nowrap;
-	gap: var(--rux-button-group-gap);
+	gap: 0;
 	container-type: inline-size;
 }
 

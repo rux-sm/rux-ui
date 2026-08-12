@@ -105,9 +105,8 @@
 	gap: var(--rux-ui-header-identity-gap);
 }
 
-/* Header actions are intentionally larger than ordinary application buttons:
-   the 48px square is the persistent shell hit target, while the glyph remains
-   20px. A dedicated class keeps this exception from changing generic controls. */
+/* Header actions use the shared 44px header-control target with a 24px glyph,
+   centered inside the fixed 48px UI shell. */
 .rux-ui-header__button {
 	--_h: var(--rux-ui-header-button-size);
 
@@ -121,6 +120,7 @@
 	border-radius: 0;
 	box-shadow: none;
 	color: var(--rux-ui-header-button-fg);
+	font-size: var(--rux-ui-header-button-icon-size);
 }
 
 .rux-ui-header__button > .rux-icon {
@@ -200,9 +200,9 @@
 	overflow: visible;
 }
 
-/* The profile's default content is a 32px avatar rather than a 20px glyph.
-   Give its stack the avatar's real geometry so both the avatar and the 20px
-   Close glyph resolve against the same center of the 48px button. */
+/* The profile's default content is a 32px avatar rather than a 24px glyph.
+   Give its stack the avatar's real geometry so both states share the center
+   of the 44px button. */
 .rux-ui-header__profile .rux-ui-header__disclosure-icons {
 	width: var(--rux-ui-header-profile-avatar-size);
 	height: var(--rux-ui-header-profile-avatar-size);

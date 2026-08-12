@@ -37,9 +37,9 @@
 		/>
 		<title>Rux UI</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=126" />
+		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=128" />
 		<link rel="stylesheet" href="./rux-ui/css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=239" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=246" />
 		<link rel="stylesheet" href="./scheduler/css/features/driver-panel.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/comp-driver-app.css?v=8" />
 		<link rel="stylesheet" href="./scheduler/css/features/fleet-panel.css?v=4" />
@@ -719,20 +719,16 @@
              MODULE: CALENDAR
              ════════════════════════════════════════════════════════════════ -->
 				<div class="scheduler-app__module" data-module="calendar">
-					<!-- Trip editor dialog -->
+					<!-- Movable, resizable trip editor workspace window -->
 					<div
-						class="rux-modal-backdrop"
+						class="rux-floating-window rux-trip-dialog"
 						id="trip-editor-dialog"
+						role="dialog"
+						aria-labelledby="trip-editor-dialog-title"
 						hidden
 					>
-						<div
-							class="rux-modal rux-modal--wide rux-trip-dialog"
-							role="dialog"
-							aria-modal="true"
-							aria-labelledby="trip-editor-dialog-title"
-						>
 							<header
-								class="rux-modal__header rux-trip-dialog__header"
+								class="rux-floating-window__header rux-modal__header rux-trip-dialog__header"
 							>
 								<h2
 									class="rux-modal__title rux-trip-dialog__title"
@@ -2129,7 +2125,6 @@
 								</button>
 							</footer>
 						</aside>
-						</div>
 					</div>
 					<section
 						class="rux-workspace"
@@ -2138,7 +2133,7 @@
 						<header class="rux-workspace__header">
 							<div class="rux-workspace__heading">
 								<button
-									class="rux-button rux-button--ghost scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
 									type="button"
 									aria-label="Open trip editor"
 									aria-pressed="false"
@@ -2146,9 +2141,6 @@
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>left_panel_open</span
-									>
-									<span class="rux-btn-label"
-										>Trip Editor</span
 									>
 								</button>
 							</div>
@@ -2165,7 +2157,7 @@
 							>
 								<div class="calendar-app__date-controls">
 									<button
-										class="rux-button rux-button--ghost rux-button--icon calendar-app__nav"
+										class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__nav"
 										id="prev-week"
 										aria-label="Previous week"
 									>
@@ -2174,7 +2166,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost"
+										class="rux-button rux-button--ghost rux-button--header"
 										id="today-btn"
 										type="button"
 										aria-label="Jump to current week"
@@ -2187,7 +2179,7 @@
 										<span class="rux-btn-label">Today</span>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-button--icon calendar-app__nav"
+										class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__nav"
 										id="next-week"
 										aria-label="Next week"
 									>
@@ -2197,14 +2189,13 @@
 									</button>
 								</div>
 								<button
-									class="rux-button rux-button--ghost calendar-app__panel-toggle"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__panel-toggle"
 									type="button"
 									aria-label="Hide Calendar Panel"
 									aria-expanded="true"
 									aria-controls="right-panel-drawer"
 									data-opens="right-panel-drawer"
 								>
-									<span class="rux-btn-label">Tools</span>
 									<span
 										class="rux-icon calendar-app__panel-toggle-icon"
 										aria-hidden="true"
@@ -7068,13 +7059,13 @@
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./js/core/ui-shell.js?v=2"></script>
 		<script src="./js/core/drawer.js?v=9"></script>
-		<script src="./js/core/popover.js?v=3"></script>
+		<script src="./js/core/popover.js?v=4"></script>
 		<script src="./js/core/menu.js?v=3"></script>
 		<script src="./js/core/controls.js?v=5" defer></script>
 		<script src="./js/core/billing-config.js?v=5"></script>
 		<script src="./js/core/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=9"></script>
-		<script src="./js/core/suggestions.js?v=1"></script>
+		<script src="./js/core/suggestions.js?v=2"></script>
 		<script src="./js/panels/trip-panel.js?v=38"></script>
 		<script src="./js/components/itinerary.js?v=27"></script>
 		<script src="./js/panels/driver-panel.js?v=21" defer></script>
@@ -7119,7 +7110,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=18";
+			} from "./js/components/trip-bar.js?v=19";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=3";
@@ -7731,6 +7722,9 @@
 			const tripPanel = document.querySelector(".rux-trip-panel");
 			const tripEditorDialogEl =
 				document.getElementById("trip-editor-dialog");
+			const tripEditorHeaderEl = tripEditorDialogEl?.querySelector(
+				".rux-trip-dialog__header",
+			);
 			const rightPanel = rightDrawer.querySelector(".rux-right-panel");
 			const leftPanelToggleBtn = document.querySelector(
 				".scheduler-app__mobile-panel-btn--left",
@@ -7773,23 +7767,21 @@
 			document
 				.getElementById("trip-dialog-close-btn")
 				?.addEventListener("click", closeTripDialog);
+			if (tripEditorDialogEl && tripEditorHeaderEl) {
+				window.RuxFloatingWindow?.attachDrag(
+					tripEditorDialogEl,
+					tripEditorHeaderEl,
+					{ minViewportWidth: 580 },
+				);
+			}
 
 			function openTripDialog() {
-				if (!tripEditorDialogEl || !window.Rux) return;
+				if (!tripEditorDialogEl) return;
 				closeOtherMobilePanel(tripEditorDialogEl);
-				window.Rux.openModal(tripEditorDialogEl);
-
-				// The generic modal Escape handler closes immediately. The trip
-				// editor needs to route every close through its dirty-form check.
-				if (tripEditorDialogEl.__ruxOnEscape) {
-					document.removeEventListener(
-						"keydown",
-						tripEditorDialogEl.__ruxOnEscape,
-					);
-					delete tripEditorDialogEl.__ruxOnEscape;
+				if (mobilePanelQuery.matches) {
+					window.RuxFloatingWindow?.resetGeometry(tripEditorDialogEl);
 				}
-				// Backdrop clicks must not bypass closeTripDialog() either.
-				delete tripEditorDialogEl.dataset.ruxOpen;
+				tripEditorDialogEl.hidden = false;
 				leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
 				const scrollBody = tripPanel?.querySelector(
 					".rux-trip-panel__body",
@@ -7811,7 +7803,7 @@
 					!confirm("Discard unsaved changes?")
 				)
 					return false;
-				window.Rux?.closeModal(tripEditorDialogEl);
+				tripEditorDialogEl.hidden = true;
 				leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
 				leftPanelToggleBtn?.focus();
 				return true;
@@ -8048,7 +8040,7 @@
 				rightPanelToggleBtn.setAttribute("aria-expanded", String(open));
 				rightPanelToggleBtn.setAttribute(
 					"aria-label",
-					open ? "Hide Calendar Panel" : "Show Calendar Panel",
+					open ? "Hide Calendar Tools" : "Show Calendar Tools",
 				);
 				const icon = rightPanelToggleBtn.querySelector(
 					".calendar-app__panel-toggle-icon",

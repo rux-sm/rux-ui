@@ -8,11 +8,14 @@ const page = read("index.html");
 const shellController = read("js/core/ui-shell.js");
 const drawerController = read("js/core/drawer.js");
 const headerStyles = read("rux-ui/css/base/ui-header.css");
+const controlStyles = read("rux-ui/css/base/controls.css");
 const popoverStyles = read("rux-ui/css/base/popover.css");
+const suggestionStyles = read("rux-ui/css/base/suggestions.css");
 const feedbackStyles = read("rux-ui/css/base/feedback.css");
 const tokens = read("rux-ui/css/tokens.css");
 const menuController = read("js/core/menu.js");
 const popoverController = read("js/core/popover.js");
+const suggestionsController = read("js/core/suggestions.js");
 const notificationsController = read("js/panels/notifications-panel.js");
 const notificationDataController = read("js/data/notification-db.js");
 const chatController = read("js/panels/team-chat.js");
@@ -44,7 +47,7 @@ test("the UI header routes product navigation through a side nav", () => {
 	);
 });
 
-test("global header actions share the 48px button and 20px icon contract", () => {
+test("global header actions use 44px buttons and 24px icons inside the 48px shell", () => {
 	for (const id of [
 		"app-navigation-toggle",
 		"workspace-search-btn",
@@ -55,11 +58,12 @@ test("global header actions share the 48px button and 20px icon contract", () =>
 		assert.match(openingTag(id), /rux-ui-header__button/);
 	}
 	assert.match(tokens, /--rux-space-7:\s+3rem;\s+\/\* 48px \*\//);
-	assert.match(tokens, /--rux-icon-sm:\s+20px;/);
+	assert.match(tokens, /--rux-icon-md:\s+24px;/);
 	assert.match(tokens, /--rux-ui-header-height:\s+var\(--rux-space-7\);/);
-	assert.match(tokens, /--rux-ui-header-button-size:\s+var\(--rux-ui-header-height\);/);
-	assert.match(tokens, /--rux-ui-header-button-icon-size:\s+var\(--rux-icon-sm\);/);
+	assert.match(tokens, /--rux-ui-header-button-size:\s+var\(--rux-button-header-size\);/);
+	assert.match(tokens, /--rux-ui-header-button-icon-size:\s+var\(--rux-button-header-icon-size\);/);
 	assert.match(headerStyles, /\.rux-ui-header__button\s*\{[^}]*--_h:\s*var\(--rux-ui-header-button-size\)/s);
+	assert.match(headerStyles, /\.rux-ui-header__button\s*\{[^}]*font-size:\s*var\(--rux-ui-header-button-icon-size\);/s);
 	assert.match(headerStyles, /\.rux-ui-header__button > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-ui-header-button-icon-size\)/s);
 	assert.match(page, /id="app-navigation-toggle"[\s\S]*?rux-ui-header__disclosure-icon--default[\s\S]*?rux-ui-header__disclosure-icon--close/);
 });
@@ -228,11 +232,22 @@ test("menus opened inside modals are promoted above the modal layer", () => {
 	assert.match(page, /id="tp-payment-add-btn"[^>]*aria-haspopup="menu"/s);
 	assert.match(
 		popoverController,
-		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop"\)\)/,
+		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop, \.rux-floating-window"\)\)/,
 	);
 	assert.match(
 		popoverStyles,
 		/\.rux-popover\[data-rux-modal-layer\]\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s,
+	);
+});
+
+test("autofill suggestions opened from windows are promoted above their surface", () => {
+	assert.match(
+		suggestionsController,
+		/panelEl\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?input\.closest\("\.rux-modal-backdrop, \.rux-floating-window"\)/,
+	);
+	assert.match(
+		suggestionStyles,
+		/\.rux-suggestions\[data-rux-modal-layer\]\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s,
 	);
 });
 
@@ -280,7 +295,15 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	const drawerMarkup = page.match(
 		/<div\s+class="[^"]*scheduler-app__drawer--right[^"]*"\s+id="right-panel-drawer"/,
 	)?.[0] ?? "";
-	assert.match(page, /class="rux-button rux-button--ghost calendar-app__panel-toggle"/);
+	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__panel-toggle"/);
+	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-btn-label">Tools<\/span>/);
+	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"/);
+	assert.match(tokens, /--rux-button-height:\s+32px;/);
+	assert.match(tokens, /--rux-button-header-size:\s+44px;/);
+	assert.match(tokens, /--rux-button-header-icon-size:\s+var\(--rux-icon-md\);/);
+	assert.match(controlStyles, /\.rux-button--header\s*\{[^}]*--_h:\s*var\(--rux-button-header-size\);/s);
+	assert.match(controlStyles, /\.rux-button--header\.rux-button--icon\s*\{[^}]*font-size:\s*var\(--rux-button-header-icon-size\);/s);
+	assert.match(controlStyles, /\.rux-button--header > \.rux-icon,[\s\S]*?\.rux-button--icon-lg > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-button-header-icon-size\);/s);
 	assert.match(page, /aria-expanded="true"[\s\S]*?aria-controls="right-panel-drawer"/);
 	assert.match(drawerMarkup, /class="scheduler-app__drawer scheduler-app__drawer--right"/);
 	assert.doesNotMatch(drawerMarkup, /scheduler-app__drawer--railable/);

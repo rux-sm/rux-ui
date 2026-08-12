@@ -475,6 +475,17 @@
 	gap: var(--rux-button-sm-content-gap);
 }
 
+.rux-button--compact {
+	--_h: var(--rux-button-compact-size);
+	font-size: var(--rux-button-sm-font-size);
+	padding: 0 var(--rux-button-sm-padding-inline);
+	gap: var(--rux-button-sm-content-gap);
+}
+
+.rux-button--compact > .rux-icon {
+	--_icon-size: var(--rux-button-compact-icon-size);
+}
+
 /* — icon-only — */
 
 .rux-button--icon {
@@ -489,13 +500,19 @@
 	--_bg: var(--rux-button-icon-selected-bg);
 }
 
-/* Bumps just the glyph to --rux-icon-md — the button footprint (--_h)
-   doesn't change, only .rux-icon's own --_icon-size, since .rux-icon sets
-   that on itself and a parent-level override alone is a no-op. For
-   standalone icon-only actions (header bell, etc.) where the default
-   --rux-icon-sm glyph reads too small against a full 28px button box. */
+/* Header actions share one 44px square/24px icon contract. `--icon-lg` is a
+   compatibility alias for older markup and can be removed after migration. */
+.rux-button--header {
+	--_h: var(--rux-button-header-size);
+}
+
+.rux-button--header.rux-button--icon {
+	font-size: var(--rux-button-header-icon-size);
+}
+
+.rux-button--header > .rux-icon,
 .rux-button--icon-lg > .rux-icon {
-	--_icon-size: var(--rux-icon-md);
+	--_icon-size: var(--rux-button-header-icon-size);
 }
 
 /* toggle wins over icon active — three-class specificity beats two */

@@ -22,6 +22,12 @@
 	border-radius: var(--rux-radius-md);
 }
 
+/* The singleton is portaled to body. Promote it when its input belongs to a
+   modal or floating window so the list remains visible above that surface. */
+.rux-suggestions[data-rux-modal-layer] {
+	z-index: calc(var(--rux-z-modal) + 1);
+}
+
 .rux-suggestions[hidden] {
 	display: none;
 }
