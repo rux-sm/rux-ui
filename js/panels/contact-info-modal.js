@@ -15,9 +15,9 @@
 		modal.dataset.ruxKeepTripSelection = "";
 		modal.innerHTML = `
 			<section class="rux-modal rux-contact-info-modal" role="dialog" aria-modal="true" aria-labelledby="contact-info-modal-title">
-				<header class="rux-modal__header">
-					<h2 class="rux-modal__title" id="contact-info-modal-title">Contact Info</h2>
-					<button type="button" class="rux-button rux-button--default rux-button--icon" data-rux-dismiss aria-label="Close">
+				<header class="rux-card__header">
+					<h2 class="rux-card__title" id="contact-info-modal-title">Contact Info</h2>
+					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>

@@ -252,11 +252,9 @@
 .rux-trip-itinerary__day-group > .rux-card-section {
 	margin-inline: var(--rux-space-4);
 	margin-bottom: var(--rux-space-4);
+	
 }
 
-.rux-trip-itinerary__day-group > .rux-card__header + .rux-card-section {
-	margin-top: 0;
-}
 
 .rux-trip-itinerary__stop-body > * + * {
 	margin-top: var(--rux-stack-gap);

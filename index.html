@@ -366,12 +366,12 @@
 					aria-modal="true"
 					aria-labelledby="preferences-title"
 				>
-					<div class="rux-modal__header">
-						<div class="rux-modal__title" id="preferences-title">
+					<div class="rux-card__header">
+						<div class="rux-card__title" id="preferences-title">
 							Preferences
 						</div>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--header"
 							type="button"
 							data-rux-dismiss
 							aria-label="Close Preferences"
@@ -468,8 +468,8 @@
 					aria-labelledby="profile-picker-title"
 					style="width: min(380px, calc(100vw - var(--rux-space-8)))"
 				>
-					<div class="rux-modal__header">
-						<div class="rux-modal__title" id="profile-picker-title">
+					<div class="rux-card__header">
+						<div class="rux-card__title" id="profile-picker-title">
 							Who's this?
 						</div>
 					</div>
@@ -812,24 +812,24 @@
 				<div class="scheduler-app__module" data-module="calendar">
 					<!-- Movable, resizable trip editor workspace window -->
 					<div
-						class="rux-floating-window rux-trip-dialog"
+						class="rux-floating-window rux-trip-dialog rux-card rux-card--elevated"
 						id="trip-editor-dialog"
 						role="dialog"
 						aria-labelledby="trip-editor-dialog-title"
 						hidden
 					>
 						<header
-							class="rux-floating-window__header rux-modal__header rux-trip-dialog__header"
+							class="rux-floating-window__header rux-card__header rux-trip-dialog__header"
 						>
 							<h2
-								class="rux-modal__title rux-trip-dialog__title"
+								class="rux-card__title rux-trip-dialog__title"
 								id="trip-editor-dialog-title"
 							>
 								New Trip
 							</h2>
 							<button
 								type="button"
-								class="rux-button rux-button--ghost rux-button--icon"
+								class="rux-button rux-button--ghost rux-button--icon rux-button--header"
 								id="trip-dialog-close-btn"
 								aria-label="Close trip editor"
 							>
@@ -5094,7 +5094,7 @@
 									<div class="rux-card__body components-app__button-list">
 										<div class="components-app__button-example"><div><strong>Header</strong><span>44px · 24px icon</span></div><button class="rux-button rux-button--ghost rux-button--icon rux-button--header" type="button" aria-label="Search"><span class="rux-icon" aria-hidden="true">search</span></button><code>.rux-button--header</code></div>
 										<div class="components-app__button-example"><div><strong>Standard</strong><span>32px · 20px icon</span></div><button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">edit</span><span class="rux-button__label">Edit</span></button><code>.rux-button</code></div>
-										<div class="components-app__button-example"><div><strong>Compact</strong><span>28px · 18px icon</span></div><button class="rux-button rux-button--ghost rux-button--icon rux-button--compact" type="button" aria-label="Open trip"><span class="rux-icon" aria-hidden="true">open_in_new</span></button><code>.rux-button--compact</code></div>
+										<div class="components-app__button-example"><div><strong>Compact</strong><span>24px · 16px icon</span></div><button class="rux-button rux-button--ghost rux-button--icon rux-button--compact" type="button" aria-label="Open trip"><span class="rux-icon" aria-hidden="true">open_in_new</span></button><code>.rux-button--compact</code></div>
 									</div>
 								</div>
 
@@ -9721,7 +9721,7 @@
 				driverGridPopover.innerHTML = `
 					<header class="rux-card__header">
 						<p class="rux-card__title" data-driver-grid-popover-title></p>
-						<button type="button" class="rux-button rux-button--default rux-button--icon" data-driver-grid-popover-close aria-label="Close assignment details">
+						<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-driver-grid-popover-close aria-label="Close assignment details">
 							<span class="rux-icon" aria-hidden="true">close</span>
 						</button>
 					</header>
@@ -10819,8 +10819,8 @@
 				aria-labelledby="tp-import-modal-title"
 				style="width: min(520px, calc(100vw - var(--rux-space-8)))"
 			>
-				<div class="rux-modal__header">
-					<div class="rux-modal__title" id="tp-import-modal-title">
+				<div class="rux-card__header">
+					<div class="rux-card__title" id="tp-import-modal-title">
 						Import trip from JSON
 					</div>
 				</div>
@@ -10901,9 +10901,9 @@
 				aria-labelledby="print-schedule-modal-title"
 				style="width: min(420px, calc(100vw - var(--rux-space-8)))"
 			>
-				<div class="rux-modal__header">
+				<div class="rux-card__header">
 					<div
-						class="rux-modal__title"
+						class="rux-card__title"
 						id="print-schedule-modal-title"
 					>
 						Print schedule
@@ -11044,7 +11044,7 @@
 				</p>
 				<button
 					type="button"
-					class="rux-button rux-button--ghost rux-button--icon"
+					class="rux-button rux-button--ghost rux-button--icon rux-button--header"
 					id="manifest-window-close"
 					aria-label="Close manifest"
 				>
@@ -11491,7 +11491,7 @@
 				></span>
 				<button
 					type="button"
-					class="rux-button rux-button--ghost rux-button--icon"
+					class="rux-button rux-button--ghost rux-button--icon rux-button--header"
 					id="request-inbox-close-btn"
 					aria-label="Close requests"
 				>
@@ -11736,7 +11736,7 @@
 				<p class="rux-card__title">Trip Finder</p>
 				<button
 					type="button"
-					class="rux-button rux-button--ghost rux-button--icon"
+					class="rux-button rux-button--ghost rux-button--icon rux-button--header"
 					id="trip-finder-close-btn"
 					aria-label="Close trip finder"
 				>

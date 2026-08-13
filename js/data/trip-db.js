@@ -1524,9 +1524,9 @@ import {
 		cancelTripModal.hidden = true;
 		cancelTripModal.innerHTML = `
 			<section class="rux-modal rux-cancel-trip-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-trip-modal-title">
-				<header class="rux-modal__header">
-					<h2 class="rux-modal__title" id="cancel-trip-modal-title">Cancel Trip</h2>
-					<button type="button" class="rux-button rux-button--default rux-button--icon" data-rux-dismiss aria-label="Close">
+				<header class="rux-card__header">
+					<h2 class="rux-card__title" id="cancel-trip-modal-title">Cancel Trip</h2>
+					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>

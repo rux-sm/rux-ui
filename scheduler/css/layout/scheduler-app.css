@@ -385,6 +385,7 @@
 	flex-direction: column;
 }
 
+
 .scheduler-app__drawer.is-open {
 	width: var(--drawer-width, var(--scheduler-app-left-drawer-default-width));
 	overflow: hidden;

@@ -657,7 +657,7 @@
 		panelEl.innerHTML = `
 			<header class="rux-floating-window__header rux-trip-envelope-window__header rux-card__header">
 				<span class="rux-card__title" data-envelope-title>Trip Envelope</span>
-				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-envelope-close aria-label="Close trip envelope">
+				<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--header" data-envelope-close aria-label="Close trip envelope">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>

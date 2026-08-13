@@ -69,36 +69,9 @@
   overflow: hidden;
   animation: rux-modal-in var(--rux-duration-base) var(--rux-ease-out);
 }
-.rux-modal__header {
-	position: relative;
-  display: flex;
-	flex: none;
-	align-items: center;
-	justify-content: flex-start;
-	min-width: 0;
-	height: var(--rux-modal-header-height);
-	padding: var(--rux-modal-header-padding);
-  border-bottom: none;
-}
-.rux-modal__header > .rux-button--icon {
-	--_h: var(--rux-modal-header-action-size);
-
-	position: absolute;
-	inset-block-start: 0;
-	inset-inline-end: 0;
-	border-radius: var(--rux-radius-0);
-}
-.rux-modal__title {
-	min-width: 0;
-	margin: 0;
-	overflow: hidden;
-	color: var(--rux-heading);
-	font-size: var(--rux-modal-title-size);
-	font-weight: var(--rux-modal-title-weight);
-	line-height: var(--rux-modal-title-line-height);
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
+/* Header/title are shared with .rux-card__header / .rux-card__title (see
+   card.css) — a modal header is the same title-bar shape as a card or
+   floating-window header, just inside a backdrop-centered surface. */
 .rux-modal__body { padding: var(--rux-space-5); color: var(--rux-fg-muted); }
 .rux-modal__footer {
   display: flex;

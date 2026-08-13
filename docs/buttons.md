@@ -18,16 +18,16 @@ a new monolithic button class for a combination the shared modifiers express.
 | Role | Class | Control height | Icon | Text padding | Content gap | Use |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | Standard | `.rux-button` | 32px | 20px | 12px | 8px | Forms, cards, toolbars, and ordinary actions |
-| Header | `.rux-button--header` | 44px | 24px | 12px | 8px | Persistent header navigation and icon actions |
-| Compact | `.rux-button--compact` | 28px | 18px | 8px | 4px | Dense embedded desktop controls such as trip bars |
+| Header | `.rux-button--header` | 40px | 24px | 12px | 8px | Persistent header navigation and icon actions |
+| Compact | `.rux-button--compact` | 24px | 16px | 6px | 4px | Dense embedded desktop controls such as trip bars |
 
 Icon-only buttons also use `.rux-button--icon`, which makes the control square
 at its resolved height:
 
 ```text
 Standard + Icon Only = 32 × 32px with a 20px icon
-Header + Icon Only   = 44 × 44px with a 24px icon
-Compact + Icon Only  = 28 × 28px with an 18px icon
+Header + Icon Only   = 40 × 40px with a 24px icon
+Compact + Icon Only  = 24 × 24px with a 16px icon
 ```
 
 Canonical size tokens use role-last naming (`-standard`, `-header`,

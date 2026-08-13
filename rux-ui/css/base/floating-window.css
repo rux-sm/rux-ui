@@ -94,9 +94,9 @@
 .rux-floating-window__header {
 	cursor: move;
 	flex: none;
-	padding: var(--rux-floating-window-header-padding);
+	
 	background: var(--rux-floating-window-header-bg);
-	border-bottom: var(--rux-floating-window-header-border);
+
 }
 
 .rux-floating-window__body {
@@ -107,7 +107,6 @@
 
 .rux-floating-window__footer {
 	flex: none;
-	padding: var(--rux-floating-window-footer-padding);
 	background: var(--rux-floating-window-footer-bg);
 	box-shadow: var(--rux-floating-window-footer-shadow);
 }

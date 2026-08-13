@@ -780,12 +780,12 @@ import {
 		modal.hidden = true;
 		modal.innerHTML = `
 			<section class="rux-modal rux-driver-week-info" role="dialog" aria-modal="true" aria-labelledby="driver-week-info-title">
-				<header class="rux-modal__header">
+				<header class="rux-card__header">
 					<div class="rux-driver-week-info__heading">
-						<h2 class="rux-modal__title" id="driver-week-info-title" data-driver-info-title>Driver Info</h2>
+						<h2 class="rux-card__title" id="driver-week-info-title" data-driver-info-title>Driver Info</h2>
 						<p class="rux-driver-week-info__range" data-driver-info-range></p>
 					</div>
-					<button type="button" class="rux-button rux-button--default rux-button--icon" data-rux-dismiss aria-label="Close driver info">
+					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close driver info">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>
