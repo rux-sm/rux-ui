@@ -1105,7 +1105,7 @@
    like the same problem. */
 .rux-driver-grid__cell--unavailable {
 	background: var(--rux-button-danger-background);
-	border-color: var(--rux-button-danger-border-color);
+	border-color: transparent;
 }
 
 .rux-driver-grid__cell--unavailable::after,

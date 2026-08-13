@@ -11,7 +11,7 @@
 		4. Border is transparent by default so ghost buttons can inherit the strip bg
 		5. State overlay is transparent by default so ghost buttons can inherit the strip bg */
 
-	--_h: var(--rux-button-height);
+	--_h: var(--rux-button-height-standard);
 	--_icon-size: var(--rux-button-icon-size-standard);
 	--_bg: transparent;
 	--_fg: var(--rux-button-default-text);
@@ -21,9 +21,9 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: var(--rux-button-content-gap);
+	gap: var(--rux-button-content-gap-standard);
 	height: var(--_h);
-	padding: 0 var(--rux-button-padding-inline);
+	padding: 0 var(--rux-button-padding-inline-standard);
 	background-color: var(--_bg);
 	color: var(--_fg);
 	border: var(--rux-button-border);
@@ -96,11 +96,12 @@
 /* — variants — */
 
 .rux-button--default {
-	background: 		var(--rux-button-default-background);
-	color: 		var(--rux-button-default-text);
-	border: 	var(--rux-button-default-border);
+	--_bg: var(--rux-button-default-background);
+	--_fg: var(--rux-button-default-text);
+	background: var(--rux-button-default-background);
+	color: var(--rux-button-default-text);
+	border: var(--rux-button-default-border);
 	box-shadow: var(--rux-button-shadow-raised);
-
 }
 
 /* Hover raises only the gray fill's OKLCH lightness. border: none (not
@@ -115,7 +116,7 @@
 .rux-button--default:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-default-hover-background);
 	border: none;
-	color: var(--rux-button-default-hover-text);
+	color: var(--rux-button-default-text);
 }
 
 /* Pressed mirrors hover's direction, same as accent/danger's fill: -10%
@@ -124,12 +125,14 @@
    and the darker pressed shade shows instead of the lighter hover one. */
 .rux-button--default:active:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-default-active-background);
-	border-color: var(--rux-button-default-active-border);
-	color: var(--rux-button-default-active-text);
+	border-color: var(--rux-button-default-active-background);
+	color: var(--rux-button-default-text);
 	box-shadow: var(--rux-button-shadow-pressed);
 }
 
 .rux-button--accent {
+	--_bg: var(--rux-button-accent-background);
+	--_fg: var(--rux-button-accent-text);
 	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
 	border: var(--rux-button-accent-border);
@@ -164,6 +167,8 @@
 
 /* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
 .rux-button--ghost {
+	--_bg: var(--rux-button-ghost-background);
+	--_fg: var(--rux-button-ghost-text);
 	background: var(--rux-button-ghost-background);
 	color: var(--rux-button-ghost-text);
 	border: var(--rux-button-ghost-border);
@@ -177,7 +182,7 @@
    leak. Matches Accent/Danger's convention: only the background moves. */
 .rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-ghost-hover-background);
-	border-color: transparent;
+	border: none;
 	color: var(--rux-button-ghost-text);
 }
 
@@ -196,8 +201,8 @@
 }
 
 .rux-button--toggle[aria-pressed="true"] {
-	--_bg: var(--rux-button-selected-bg);
-	--_fg: var(--rux-button-selected-fg);
+	--_bg: var(--rux-button-selected-background);
+	--_fg: var(--rux-button-selected-text);
 }
 
 /* Explicit compound, same reasoning as --default.rux-button--danger below —
@@ -214,20 +219,20 @@
    specificity. */
 .rux-button--default.rux-button--toggle[aria-pressed="true"]:not(:disabled):not([aria-disabled="true"]),
 .rux-button--ghost.rux-button--toggle[aria-pressed="true"]:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-selected-bg);
-	border-color: var(--rux-button-selected-border);
-	color: var(--rux-button-selected-fg);
+	background: var(--rux-button-selected-background);
+	border-color: var(--rux-button-selected-border-color);
+	color: var(--rux-button-selected-text);
 	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
 /* danger is an intent modifier; combine it with an emphasis modifier */
 .rux-button--danger {
+	--_bg: var(--rux-button-danger-background);
+	--_fg: var(--rux-button-danger-text);
 	background: var(--rux-button-danger-background);
 	border: var(--rux-button-danger-border);
 	color: var(--rux-button-danger-text);
-	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
-	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
 /* Solid fill only — plain .rux-button--danger would also match the
@@ -253,7 +258,6 @@
 	   variant needs this: --ghost.rux-button--danger has a real border at rest
 	   (untouched by --rux-button-danger-border's change to none), so their
 	   own :hover rules were never affected. */
-	border: none;
 	color: var(--rux-button-danger-text);
 }
 
@@ -268,6 +272,8 @@
 }
 
 .rux-button--ghost.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
+	--_bg: var(--rux-button-danger-ghost-background);
+	--_fg: var(--rux-button-danger-ghost-text);
 	border: var(--rux-button-danger-ghost-border);
 	color: var(--rux-button-danger-ghost-text);
 	background: var(--rux-button-danger-ghost-background);
@@ -281,7 +287,6 @@
    beats both. */
 .rux-button--ghost.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-danger-ghost-hover-background);
-	border-color: var(--rux-button-danger-ghost-border);
 	color: var(--rux-button-danger-ghost-text);
 }
 
@@ -309,8 +314,8 @@
 
 .rux-button__spinner {
 	display: none;
-	width: var(--rux-button-icon-size);
-	height: var(--rux-button-icon-size);
+	width: var(--_icon-size);
+	height: var(--_icon-size);
 	flex: none;
 	border: calc(var(--rux-button-border-width) * 2) solid currentColor;
 	border-right-color: transparent;
@@ -392,7 +397,7 @@
 }
 
 .rux-button--icon[aria-pressed="true"] {
-	--_bg: var(--rux-button-icon-selected-bg);
+	--_bg: var(--rux-button-icon-selected-background);
 }
 
 /* Header actions share one 44px square/24px icon contract. */
@@ -439,8 +444,8 @@
 
 /* toggle wins over icon active — three-class specificity beats two */
 .rux-button--icon.rux-button--toggle[aria-pressed="true"] {
-	--_bg: var(--rux-button-selected-bg);
-	--_fg: var(--rux-button-selected-fg);
+	--_bg: var(--rux-button-selected-background);
+	--_fg: var(--rux-button-selected-text);
 }
 
 .rux-button--icon.rux-button--block {
@@ -475,7 +480,7 @@
 	z-index: 0;
 	width: var(--_rux-segment-indicator-width, 0);
 	height: var(--_rux-segment-indicator-height, 0);
-	background: var(--rux-button-selected-bg);
+	background: var(--rux-button-selected-background);
 	border-radius: var(--rux-segment-radius);
 	box-shadow: var(--rux-button-shadow-raised);
 	pointer-events: none;

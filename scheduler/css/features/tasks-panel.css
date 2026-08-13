@@ -293,11 +293,11 @@
    (.fleet-app__equip-icon) — shows the assigned bus's full equipment at a
    glance, not just whichever single requirement this row is checking.
    --_icon-size (not width/height directly) is what .rux-icon actually
-   drives its glyph's font-size from. Sized to --rux-button-icon-size, the
+   drives its glyph's font-size from. Sized to --rux-button-icon-size-standard, the
    same glyph size buttons use everywhere else, rather than a one-off value
    for this context. */
 .rux-tasks__equip-icon {
-	--_icon-size: var(--rux-button-icon-size);
+	--_icon-size: var(--rux-button-icon-size-standard);
 	flex-shrink: 0;
 }
 

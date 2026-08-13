@@ -861,25 +861,13 @@
 	/* Tactile shadows apply only to solid-fill variants. */
 	--rux-button-shadow-raised:  none;
 	--rux-button-shadow-pressed: none;
-	--rux-button-height-standard:         32px;
-	--rux-button-icon-size-standard:      var(--rux-icon-sm);
-	--rux-button-padding-inline-standard: var(--rux-space-3);
-	--rux-button-content-gap-standard:    var(--rux-space-2);
-	--rux-button-padding-inline: var(--rux-button-padding-inline-standard);
-	--rux-button-height:         var(--rux-button-height-standard);
 	--rux-button-mobile-height:  44px;
-	--rux-button-content-gap:    var(--rux-button-content-gap-standard);
 	--rux-button-group-gap:      var(--rux-space-2);
 
 	/* — typography — */
 	--rux-button-font-family: var(--rux-font-sans);
 	--rux-button-font-size:   var(--rux-text-sm);
 	--rux-button-font-weight: var(--rux-weight-medium);
-
-	/* — icon — */
-	/* The loading spinner matches the button's idle icon size. */
-	--rux-button-icon-size:        var(--rux-button-icon-size-standard);
-	--rux-button-mobile-icon-size: 24px;
 
 	/* — states — */
 	--rux-button-hover-text:          var(--rux-accent);
@@ -889,6 +877,10 @@
 	--rux-button-transition-easing:   var(--rux-ease-out);
 	/* Shared focus ring replaces inconsistent browser outlines. */
 	--rux-button-focus-ring: 0 0 0 3px var(--rux-accent-ring);
+
+	/* — icon swap — */
+	--rux-button-icon-swap-duration: 0ms;
+	--rux-button-icon-swap-easing:   var(--rux-motion-easing-standard-productive);
 
 	/* ─── COMPONENT · driver document card ────────────────────────────────── */
 	/* Tone-tinted background pair for .driver-assignment-card__document's
@@ -909,19 +901,14 @@
 
 	--rux-button-default-background: 		var(--rux-gray);
 	--rux-button-default-text:       		var(--rux-fg);
-/*  --rux-button-defeult-border-color:		none; add and wire in? */
 	--rux-button-default-border:     		none;
 	--rux-button-default-hover-background: 	oklch(from var(--rux-button-default-background) calc(l + 0.05) c h);
-	--rux-button-default-hover-text: 		var(--rux-fg);   /* remove ?*/
 	--rux-button-default-active-background:	oklch(from var(--rux-button-default-background) calc(l - 0.05) c h);
-	--rux-button-default-active-border: 	oklch(from var(--rux-border-button) calc(l - 0.1) c h);  /* remove ?*/
-	--rux-button-default-active-text:   	oklch(from var(--rux-fg) calc(l - 0.1) c h);  /* remove ?*/
 
 	/* ─── COMPONENT · button accent ─────────────────────────────────────────────── */
 
 	--rux-button-accent-background:   		var(--rux-accent);
 	--rux-button-accent-text:         		var(--rux-fg-on-accent);
-	--rux-button-accent-border-color:		none;
 	--rux-button-accent-border:       		none;
 	--rux-button-accent-hover-background: 	oklch(from var(--rux-button-accent-background) calc(l + 0.05) c h);
 	--rux-button-accent-active-background:	oklch(from var(--rux-button-accent-background) calc(l - 0.05) c h);
@@ -930,7 +917,6 @@
 
 	--rux-button-ghost-background: 			transparent;
 	--rux-button-ghost-text:       			var(--rux-fg);
-/*  --rux-button-ghost-border-color:		none; add and wire in? */
 	--rux-button-ghost-border:     			none;
 	--rux-button-ghost-hover-background:  	var(--rux-state-hover-overlay);
 	--rux-button-ghost-active-background:	var(--rux-state-active-overlay);
@@ -939,7 +925,6 @@
 
 	--rux-button-danger-background:       	var(--rux-danger-fill);
 	--rux-button-danger-text:             	var(--rux-danger-on-fill);
-	--rux-button-danger-border-color:     	none;
 	--rux-button-danger-border:           	none;
 	--rux-button-danger-hover-background: 	oklch(from var(--rux-button-danger-background) calc(l + 0.05) c h);
 	--rux-button-danger-active-background:	oklch(from var(--rux-button-danger-background) calc(l - 0.05) c h);
@@ -961,25 +946,27 @@
 
 	/* ─── COMPONENT · button selected / toggle ────────────────────────────── */
 
-	--rux-button-selected-bg:       var(--rux-button-accent-background);
-	--rux-button-selected-fg:       var(--rux-button-accent-text);
-	--rux-button-selected-border:   var(--rux-button-accent-border-color);
-	--rux-button-quiet-selected-bg: var(--rux-state-selected-overlay);
-	--rux-button-icon-selected-bg:  var(--rux-button-quiet-selected-bg);
+	--rux-button-selected-background:       var(--rux-button-accent-background);
+	--rux-button-selected-text:             var(--rux-button-accent-text);
+	--rux-button-selected-border-color:     transparent;
+	--rux-button-icon-selected-background:  var(--rux-state-selected-overlay);
 
 	/* ─── COMPONENT · button sizes ────────────────────────────────────────── */
 	/* Explicit size roles keep button geometry separate from 44px form controls. */
-	--rux-button-height-header:         44px;
-	--rux-button-icon-size-header:      var(--rux-icon-md);
 
-	--rux-button-height-compact:        28px;
-	--rux-button-icon-size-compact:     18px;
-	--rux-button-font-size-compact:     var(--rux-text-xs);
-	--rux-button-padding-inline-compact: var(--rux-space-2);
-	--rux-button-content-gap-compact:   var(--rux-space-1);
-	
-	--rux-button-icon-swap-duration:    0ms;
-	--rux-button-icon-swap-easing:      var(--rux-motion-easing-standard-productive);
+	--rux-button-height-header:         	44px;
+	--rux-button-icon-size-header:      	var(--rux-icon-md);
+
+	--rux-button-height-standard:         	32px;
+	--rux-button-icon-size-standard:      	var(--rux-icon-sm);
+	--rux-button-padding-inline-standard:	var(--rux-space-3);
+	--rux-button-content-gap-standard:    	var(--rux-space-2);
+
+	--rux-button-height-compact:        	28px;
+	--rux-button-icon-size-compact:     	18px;
+	--rux-button-font-size-compact:     	var(--rux-text-xs);
+	--rux-button-padding-inline-compact: 	var(--rux-space-2);
+	--rux-button-content-gap-compact:   	var(--rux-space-1);
 
 	/* ─── COMPONENT · button loading ──────────────────────────────────────── */
 
@@ -1140,7 +1127,7 @@
 	   inline --color custom property, not a shared token */
 	--rux-color-swatch-border: var(--rux-border-width) solid transparent;
 	--rux-color-swatch-radius: var(--rux-radius-control);
-	--rux-color-swatch-size:   var(--rux-button-height);
+	--rux-color-swatch-size:   var(--rux-button-height-standard);
 	--rux-color-swatch-ring-bg:      var(--rux-surface-1);
 	--rux-color-swatch-hover-ring:   0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 3px var(--color, var(--rux-accent));
 	--rux-color-swatch-checked-ring: 0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 4px var(--color, var(--rux-accent));
@@ -1232,7 +1219,7 @@
 	--rux-menu-motion-distance: var(--rux-space-1);
 
 	/* — item — */
-	--rux-menu-item-height:         var(--rux-button-height);
+	--rux-menu-item-height:         var(--rux-button-height-standard);
 	--rux-menu-item-padding-block:  var(--rux-space-2);
 	--rux-menu-item-padding-inline: var(--rux-space-3);
 	--rux-menu-item-gap:            var(--rux-space-2);

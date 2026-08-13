@@ -711,12 +711,12 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__response-control\s*\{[^}]*width:\s*100%[^}]*height:\s*var\(--rux-button-height\)[^}]*min-height:\s*var\(--rux-button-height\)[^}]*border-radius:\s*var\(--rux-button-radius\)[^}]*font-size:\s*var\(--rux-button-font-size\)/s,
+		/\.driver-assignment-card__response-control\s*\{[^}]*width:\s*100%[^}]*height:\s*var\(--rux-button-height-standard\)[^}]*min-height:\s*var\(--rux-button-height-standard\)[^}]*border-radius:\s*var\(--rux-button-radius\)[^}]*font-size:\s*var\(--rux-button-font-size\)/s,
 	);
 	assert.doesNotMatch(css, /driver-assignment-card__decline--availability/);
 	assert.match(
 		css,
-		/\.driver-assignment-card__response-state\s*\{[^}]*min-width:\s*10rem[^}]*min-height:\s*var\(--rux-button-height\)[^}]*margin-inline:\s*auto[^}]*border:\s*var\(--rux-border-width\) solid var\(--_state-color\)/s,
+		/\.driver-assignment-card__response-state\s*\{[^}]*min-width:\s*10rem[^}]*min-height:\s*var\(--rux-button-height-standard\)[^}]*margin-inline:\s*auto[^}]*border:\s*var\(--rux-border-width\) solid var\(--_state-color\)/s,
 	);
 	assert.match(
 		css,

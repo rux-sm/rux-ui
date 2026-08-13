@@ -30,19 +30,26 @@ Header + Icon Only   = 44 × 44px with a 24px icon
 Compact + Icon Only  = 28 × 28px with an 18px icon
 ```
 
-Canonical size tokens use `height` and `icon-size` consistently:
+Canonical size tokens use role-last naming (`-standard`, `-header`,
+`-compact`) consistently:
 
 ```css
 --rux-button-height-standard
 --rux-button-icon-size-standard
+--rux-button-padding-inline-standard
+--rux-button-content-gap-standard
 --rux-button-height-header
 --rux-button-icon-size-header
 --rux-button-height-compact
 --rux-button-icon-size-compact
+--rux-button-font-size-compact
+--rux-button-padding-inline-compact
+--rux-button-content-gap-compact
 ```
 
-Padding and content-gap tokens follow the same role-last convention. Rux does
-not maintain parallel aliases for these canonical size roles.
+Padding and content-gap follow the same role-last convention; `compact` is
+the only role with its own `font-size`. Rux does not maintain parallel
+unsuffixed aliases for these canonical size roles.
 
 ## Emphasis
 

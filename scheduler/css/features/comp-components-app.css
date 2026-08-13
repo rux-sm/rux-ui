@@ -146,13 +146,13 @@
 .components-app__button-state-grid [data-demo-button-state="hover"] {
 	background: var(--rux-button-default-hover-background);
 	border: none;
-	color: var(--rux-button-default-hover-text);
+	color: var(--rux-button-default-text);
 }
 
 .components-app__button-state-grid [data-demo-button-state="pressed"] {
 	background: var(--rux-button-default-active-background);
-	border-color: var(--rux-button-default-active-border);
-	color: var(--rux-button-default-active-text);
+	border-color: var(--rux-button-default-active-background);
+	color: var(--rux-button-default-text);
 	box-shadow: var(--rux-button-shadow-pressed);
 }
 
