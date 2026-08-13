@@ -542,6 +542,24 @@
 	min-width: 0;
 }
 
+/* Trip-bar actions use the shared ghost emphasis. The owning saturated
+   surface supplies the contrasting foreground and state wash locally. */
+.rux-trip-bar__action.rux-button--ghost {
+	color: var(--rux-fg-on-accent);
+	border-color: transparent;
+}
+
+.rux-trip-bar__action.rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: oklch(from var(--rux-white) l c h / var(--rux-trip-bar-hover-bg-opacity));
+	color: var(--rux-fg-on-accent);
+	border-color: transparent;
+}
+
+.rux-trip-bar__action.rux-button--ghost:active:not(:disabled):not([aria-disabled="true"]) {
+	background: oklch(from var(--rux-white) l c h / var(--rux-trip-bar-pressed-bg-opacity));
+	color: var(--rux-fg-on-accent);
+}
+
 .rux-trip-bar.is-active .rux-trip-bar__actions {
 	max-height: calc(var(--rux-trip-bar-action-height) + 4px);
 	margin: var(--rux-space-2);

@@ -226,7 +226,7 @@ function hasPartTimeDriver(trip, leg) {
 }
 
 function taskActionButton(action, label, extra = "") {
-	return `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-tasks__shortcut" data-task-action="${action}" ${extra} aria-label="${label}" title="${label}">
+	return `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact rux-tasks__shortcut" data-task-action="${action}" ${extra} aria-label="${label}" title="${label}">
 		<span class="rux-icon" aria-hidden="true">open_in_new</span>
 	</button>`;
 }

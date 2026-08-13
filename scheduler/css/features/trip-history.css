@@ -47,7 +47,7 @@
 	max-width: 55%;
 }
 
-.rux-trip-history__filter .rux-btn-label {
+.rux-trip-history__filter .rux-button__label {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;

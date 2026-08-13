@@ -851,7 +851,7 @@ export function createTripBar(trip, callbacks = {}) {
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--on-accent rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action";
+  openBtn.className = "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("add"));
@@ -875,7 +875,7 @@ export function createTripBar(trip, callbacks = {}) {
     : () => uploadItineraryDoc(trip.id);
 
   const pdfBtn = button(
-    "rux-button rux-button--on-accent rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+    "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
     pdfLabel,
     pdfIcon,
     () => onPdf(),
@@ -889,7 +889,7 @@ export function createTripBar(trip, callbacks = {}) {
     trip.booking_contact_missive_url || trip.bookingContact?.missiveUrl || "",
   ).trim();
   const emailThreadBtn = button(
-    "rux-button rux-button--on-accent rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+    "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
     emailThreadUrl ? "Open email thread" : "No email thread saved",
     "alternate-email",
     () => window.open(emailThreadUrl, "missive", "noopener,noreferrer"),
@@ -901,13 +901,13 @@ export function createTripBar(trip, callbacks = {}) {
     openBtn,
     pdfBtn,
     button(
-      "rux-button rux-button--on-accent rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+      "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
       "Move bus",
       "swap_vert",
       () => callbacks.onChangeBus?.(trip),
     ),
     button(
-      "rux-button rux-button--on-accent rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+      "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
       "Print trip envelope",
       "drafts",
       () => callbacks.onPrintEnvelope?.(trip),

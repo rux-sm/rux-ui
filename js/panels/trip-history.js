@@ -149,7 +149,7 @@ function renderCard(record) {
 	if (changes.length > 3) {
 		const more = element(
 			"button",
-			"rux-button rux-button--default rux-button--sm rux-trip-history__more",
+			"rux-button rux-button--default rux-button--compact rux-trip-history__more",
 			expanded ? "Show less" : `Show ${changes.length - 3} more`,
 		);
 		more.type = "button";
@@ -175,7 +175,7 @@ function renderFilter() {
 		selectedTrip.destination,
 	].filter(Boolean).join(" · ") || `Trip ${String(selectedTrip.id).slice(0, 8)}`;
 	filterButton.append(
-		element("span", "rux-btn-label", label),
+		element("span", "rux-button__label", label),
 		element("span", "rux-icon", "close"),
 	);
 }

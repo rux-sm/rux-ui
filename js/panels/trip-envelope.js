@@ -663,11 +663,11 @@
 			</header>
 			<div class="rux-trip-envelope-window__toolbar">
 				<div class="rux-segmented-track" data-rux-toggle-group data-envelope-template>
-					<button type="button" class="rux-button rux-button--segment is-active" aria-pressed="true" data-value="standard">Standard</button>
+					<button type="button" class="rux-button rux-button--segment" aria-pressed="true" data-value="standard">Standard</button>
 					<button type="button" class="rux-button rux-button--segment" aria-pressed="false" data-value="mvm">MVM</button>
 				</div>
 				<div class="rux-segmented-track" data-rux-toggle-group data-envelope-tint>
-					<button type="button" class="rux-button rux-button--segment is-active" aria-pressed="true" data-value="yellow">Yellow</button>
+					<button type="button" class="rux-button rux-button--segment" aria-pressed="true" data-value="yellow">Yellow</button>
 					<button type="button" class="rux-button rux-button--segment" aria-pressed="false" data-value="white">White</button>
 				</div>
 			</div>

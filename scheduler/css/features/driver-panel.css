@@ -26,24 +26,6 @@
 	container-type: inline-size;
 }
 
-.rux-driver-panel__tab-label {
-	white-space: nowrap;
-}
-
-@container (max-width: 400px) {
-	.rux-driver-panel__tab-label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-}
-
 /* — Body / panes — */
 
 .rux-driver-panel__pane {
@@ -320,42 +302,13 @@
 
 /* — Narrow panel — */
 
-/* Two-step tab collapse as the panel narrows: icon+text → text only → icon
-   only — see the matching comment in trip-panel.css for the rationale. */
-@container (max-width: 450px) {
-	[data-driver-tabs] .rux-tab > .rux-icon {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-}
-
 @container (max-width: 360px) {
 	.rux-driver-panel__cols-2 {
 		grid-template-columns: 1fr;
 		gap: var(--rux-space-4);
 	}
 
-	[data-driver-tabs] .rux-tab > .rux-icon {
-		position: static;
-		width: var(--_icon-size);
-		height: var(--_icon-size);
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		clip: auto;
-		white-space: normal;
-		border: 0;
-	}
-
-	.rux-driver-panel__tab-label,
-	.rux-driver-panel .rux-panel__footer .rux-button:not(.rux-panel__footer-close) .rux-btn-label {
+	.rux-driver-panel .rux-panel__footer .rux-button:not(.rux-panel__footer-close) .rux-button__label {
 		position: absolute;
 		width: 1px;
 		height: 1px;

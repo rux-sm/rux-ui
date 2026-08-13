@@ -225,7 +225,6 @@ import {
 		const btn = root.querySelector(`[data-req="${key}"]`);
 		if (!btn) return;
 		btn.setAttribute("aria-pressed", String(!!value));
-		btn.classList.toggle("is-active", !!value);
 	}
 
 	function resetPaymentRows(root) {
@@ -797,7 +796,6 @@ import {
 		root.querySelectorAll("[data-req]").forEach(btn => {
 			const val = !!tripReqs[btn.dataset.req];
 			btn.setAttribute("aria-pressed", String(val));
-			btn.classList.toggle("is-active", val);
 		});
 	}
 
@@ -936,7 +934,6 @@ import {
 					const toggleBtn = busGroup.querySelector(`[data-role="${roleKey}"]`);
 					if (toggleBtn) {
 						toggleBtn.setAttribute("aria-pressed", "true");
-						toggleBtn.classList.add("is-active");
 					}
 					const row = busGroup.querySelector(`[data-role-row="${roleKey}"]`);
 					if (row) {
@@ -1011,7 +1008,6 @@ import {
 				});
 				group.querySelectorAll("[data-role]").forEach((button) => {
 					button.setAttribute("aria-pressed", "false");
-					button.classList.remove("is-active");
 				});
 				group.querySelectorAll("[data-role-row]").forEach((row) => {
 					row.hidden = true;
@@ -1111,7 +1107,6 @@ import {
 		root.querySelectorAll("[data-role-row]").forEach(row => { row.hidden = true; });
 		root.querySelectorAll("[data-role]").forEach(btn => {
 			btn.setAttribute("aria-pressed", "false");
-			btn.classList.remove("is-active");
 		});
 		["#tp-contract-signed", "#tp-po-received", "#tp-invoiced", "#tp-balance-paid"].forEach(sel => {
 			const el = root.querySelector(sel);
@@ -1128,7 +1123,6 @@ import {
 		resetTicketOptionRows(root);
 		root.querySelectorAll("[data-req]").forEach((btn) => {
 			btn.setAttribute("aria-pressed", "false");
-			btn.classList.remove("is-active");
 		});
 		const delBtn = root.querySelector("#tp-btn-delete");
 		if (delBtn) delBtn.disabled = true;
@@ -1156,7 +1150,7 @@ import {
 
 	function setSaveButtonState(saveBtn, { busy = false, label = defaultSaveLabel(), icon = "save", disabled } = {}) {
 		const iconEl = saveBtn.querySelector(".rux-button__idle-icon");
-		const labelEl = saveBtn.querySelector(".rux-btn-label");
+		const labelEl = saveBtn.querySelector(".rux-button__label");
 
 		saveBtn.classList.toggle("rux-button--loading", busy);
 		if (busy) {

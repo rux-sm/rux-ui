@@ -12,10 +12,10 @@
 		5. State overlay is transparent by default so ghost buttons can inherit the strip bg */
 
 	--_h: var(--rux-button-height);
+	--_icon-size: var(--rux-button-icon-size-standard);
 	--_bg: transparent;
 	--_fg: var(--rux-button-default-text);
 	--_border: transparent;
-	--_state-overlay: transparent;
 
 	position: relative;
 	display: inline-flex;
@@ -52,10 +52,6 @@
 	border: var(--rux-button-hover-border);
 	color: var(--rux-button-hover-text);
 }
-.rux-button:active:not(:disabled):not([aria-disabled="true"]) {
-	--_state-overlay: var(--rux-button-active-overlay);
-}
-
 /* Unconditional, not just :focus-visible — a mouse click still triggers
    plain :focus (and with it the browser's own default outline from its UA
    stylesheet), even in browsers whose :focus-visible heuristics decide the
@@ -133,30 +129,6 @@
 	box-shadow: var(--rux-button-shadow-pressed);
 }
 
-/* Outline — transparent surface with a visible neutral border. */
-.rux-button--outline {
-	background: var(--rux-button-outline-background);
-	color: var(--rux-button-outline-text);
-	border: var(--rux-button-outline-border);
-}
-
-.rux-button--outline:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-outline-hover-background);
-	border-color: var(--rux-button-outline-hover-border);
-	color: var(--rux-button-outline-text);
-}
-
-.rux-button--outline:active:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-outline-active-background);
-	border-color: var(--rux-button-outline-active-border);
-	color: var(--rux-button-outline-text);
-}
-
-.rux-button--outline:disabled,
-.rux-button--outline[aria-disabled="true"] {
-	background: transparent;
-}
-
 .rux-button--accent {
 	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
@@ -188,34 +160,6 @@
 	border-color: var(--rux-button-accent-active-background);
 	color: var(--rux-button-accent-text);
 	box-shadow: var(--rux-button-shadow-pressed);
-}
-
-/* on-accent — translucent control for saturated/colored surfaces */
-.rux-button--on-accent {
-	background: var(--rux-button-on-accent-background);
-	color: var(--rux-button-on-accent-text);
-	border: var(--rux-button-on-accent-border);
-	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
-	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
-}
-
-.rux-button--on-accent:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-on-accent-hover-background);
-	color: var(--rux-button-on-accent-text);
-	border: var(--rux-button-on-accent-hover-border);
-}
-
-.rux-button--on-accent:active:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-on-accent-active-background);
-	color: var(--rux-button-on-accent-text);
-	border: var(--rux-button-on-accent-active-border);
-}
-
-.rux-button--on-accent:disabled,
-.rux-button--on-accent[aria-disabled="true"] {
-	background: var(--rux-button-on-accent-disabled-background);
-	color: var(--rux-button-on-accent-disabled-text);
-	border: var(--rux-button-on-accent-disabled-border);
 }
 
 /* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
@@ -251,7 +195,6 @@
 	border: var(--rux-button-ghost-border);
 }
 
-.rux-button--toggle.is-active,
 .rux-button--toggle[aria-pressed="true"] {
 	--_bg: var(--rux-button-selected-bg);
 	--_fg: var(--rux-button-selected-fg);
@@ -269,8 +212,8 @@
    own. :not(:disabled) guards for the same tie-breaking reason as the danger
    compounds — a two-class compound ties with .rux-button:disabled's
    specificity. */
-.rux-button--default.rux-button--toggle:is(.is-active, [aria-pressed="true"]):not(:disabled):not([aria-disabled="true"]),
-.rux-button--ghost.rux-button--toggle:is(.is-active, [aria-pressed="true"]):not(:disabled):not([aria-disabled="true"]) {
+.rux-button--default.rux-button--toggle[aria-pressed="true"]:not(:disabled):not([aria-disabled="true"]),
+.rux-button--ghost.rux-button--toggle[aria-pressed="true"]:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-selected-bg);
 	border-color: var(--rux-button-selected-border);
 	color: var(--rux-button-selected-fg);
@@ -288,65 +231,26 @@
 }
 
 /* Solid fill only — plain .rux-button--danger would also match the
-   .rux-button--outline.rux-button--danger / .rux-button--ghost.rux-button--
-   danger compounds below (an element with both classes matches either
-   single-class selector), and neither of those has a background to bevel;
+   .rux-button--ghost.rux-button--danger compound below, and that compound
+   has no background to bevel;
    a raised-edge shadow over a transparent fill would just look like a
    stray outline. :not(:disabled) too, and at the same two-:not() count as
    .rux-button:disabled itself — this compound is otherwise more specific
    than the plain disabled rule (three :not()s vs. one pseudo-class) and
    would win the box-shadow over it by specificity regardless of source
    order, leaving a disabled danger button still looking raised. */
-.rux-button--danger:not(.rux-button--outline):not(.rux-button--ghost):not(:disabled):not([aria-disabled="true"]) {
-	box-shadow: var(--rux-button-shadow-raised);
-}
-
-/* Explicit compound so this doesn't depend on rule order — .rux-button--outline
-   and bare .rux-button--danger set the exact same three properties, so without
-   this, whichever rule sits later in the file wins by source order alone.
-   :not(:disabled) guards matter here too: a two-class compound is exactly as
-   specific as .rux-button:disabled (both are one element + two selectors), so
-   without the guard this would tie with — and, by sitting later, beat — the
-   disabled rule instead of losing to it. */
-.rux-button--outline.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-danger-outline-background);
-	border: var(--rux-button-danger-outline-border);
-	color: var(--rux-button-danger-outline-text);
-}
-
-/* No background change, ever — border/text lightness is the whole hover cue,
-   same as plain default. background: transparent is still declared (not
-   omitted) because bare .rux-button--danger:hover sets a solid lightness-
-   shifted red background at tying specificity — omitting this would let
-   that leak through instead of falling back to "no background." */
-.rux-button--outline.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: transparent;
-	border-color: var(--rux-button-danger-outline-hover-text);
-	color: var(--rux-button-danger-outline-hover-text);
-}
-
-/* background pinned to transparent to block the bare .rux-button--danger:active
-   solid-fill leak. border-color/color darken -10% off rest, same direction
-   as plain default's pressed state — not the flat rest-state red, and not
-   bare danger's own lightness-shifted red either. */
-.rux-button--outline.rux-button--danger:active:not(:disabled):not([aria-disabled="true"]) {
-	background: transparent;
-	border-color: var(--rux-button-danger-outline-active-text);
-	color: var(--rux-button-danger-outline-active-text);
-}
-
-.rux-button--accent.rux-button--danger:not(:disabled):not([aria-disabled="true"]) {
+.rux-button--danger:not(.rux-button--ghost):not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-danger-background);
 	border: var(--rux-button-danger-border);
 	color: var(--rux-button-danger-text);
+	box-shadow: var(--rux-button-shadow-raised);
 }
 
 .rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
 	background: var(--rux-button-danger-hover-background);
 	/* border: none, not border-color — same shorthand-vs-longhand gap as
 	   .rux-button--default:hover/--accent:hover. Only the bare (solid-fill)
-	   variant needs this: --outline.rux-button--danger and
-	   --ghost.rux-button--danger both have a real border at rest already
+	   variant needs this: --ghost.rux-button--danger has a real border at rest
 	   (untouched by --rux-button-danger-border's change to none), so their
 	   own :hover rules were never affected. */
 	border: none;
@@ -359,7 +263,7 @@
 	color: var(--rux-button-danger-text);
 }
 
-.rux-button--danger:not(.rux-button--outline):not(.rux-button--ghost):active:not(:disabled):not([aria-disabled="true"]) {
+.rux-button--danger:not(.rux-button--ghost):active:not(:disabled):not([aria-disabled="true"]) {
 	box-shadow: var(--rux-button-shadow-pressed);
 }
 
@@ -448,7 +352,7 @@
 	pointer-events: none;
 }
 
-.rux-button:is(.is-active, [aria-pressed="true"]) > .rux-icon {
+.rux-button[aria-pressed="true"] > .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
 }
 
@@ -457,33 +361,25 @@
 .rux-button--toggle > .icon-on {
 	display: none;
 }
-.rux-button--toggle.is-active > .icon-on,
 .rux-button--toggle[aria-pressed="true"] > .icon-on {
 	display: block;
 }
-.rux-button--toggle.is-active > .icon-off,
 .rux-button--toggle[aria-pressed="true"] > .icon-off {
 	display: none;
 }
 
-/* — sm / compact (28px) — */
-
-.rux-button--sm {
-	--_h: var(--rux-button-sm-height);
-	font-size: var(--rux-button-sm-font-size);
-	padding: 0 var(--rux-button-sm-padding-inline);
-	gap: var(--rux-button-sm-content-gap);
-}
+/* — compact (28px) — */
 
 .rux-button--compact {
-	--_h: var(--rux-button-compact-size);
-	font-size: var(--rux-button-sm-font-size);
-	padding: 0 var(--rux-button-sm-padding-inline);
-	gap: var(--rux-button-sm-content-gap);
+	--_h: var(--rux-button-height-compact);
+	--_icon-size: var(--rux-button-icon-size-compact);
+	font-size: var(--rux-button-font-size-compact);
+	padding: 0 var(--rux-button-padding-inline-compact);
+	gap: var(--rux-button-content-gap-compact);
 }
 
 .rux-button--compact > .rux-icon {
-	--_icon-size: var(--rux-button-compact-icon-size);
+	--_icon-size: var(--rux-button-icon-size-compact);
 }
 
 /* — icon-only — */
@@ -495,28 +391,53 @@
 	padding: 0;
 }
 
-.rux-button--icon.is-active,
 .rux-button--icon[aria-pressed="true"] {
 	--_bg: var(--rux-button-icon-selected-bg);
 }
 
-/* Header actions share one 44px square/24px icon contract. `--icon-lg` is a
-   compatibility alias for older markup and can be removed after migration. */
+/* Header actions share one 44px square/24px icon contract. */
 .rux-button--header {
-	--_h: var(--rux-button-header-size);
+	--_h: var(--rux-button-height-header);
+	--_icon-size: var(--rux-button-icon-size-header);
 }
 
 .rux-button--header.rux-button--icon {
-	font-size: var(--rux-button-header-icon-size);
+	font-size: var(--rux-button-icon-size-header);
 }
 
-.rux-button--header > .rux-icon,
-.rux-button--icon-lg > .rux-icon {
-	--_icon-size: var(--rux-button-header-icon-size);
+.rux-button--header > .rux-icon {
+	--_icon-size: var(--rux-button-icon-size-header);
+}
+
+/* Reusable disclosure icon swap. The first child is the collapsed-state
+   content; the marked child is shown when the owning button is expanded. */
+.rux-button__icon-swap {
+	display: grid;
+	width: var(--_icon-size);
+	height: var(--_icon-size);
+	place-items: center;
+}
+
+.rux-button__icon-swap > * {
+	grid-area: 1 / 1;
+	transition: opacity var(--rux-button-icon-swap-duration)
+		var(--rux-button-icon-swap-easing);
+}
+
+.rux-button__icon-swap > .rux-icon {
+	--_icon-size: inherit;
+}
+
+.rux-button__icon--expanded,
+.rux-button[aria-expanded="true"] .rux-button__icon-swap > :first-child {
+	opacity: 0;
+}
+
+.rux-button[aria-expanded="true"] .rux-button__icon--expanded {
+	opacity: 1;
 }
 
 /* toggle wins over icon active — three-class specificity beats two */
-.rux-button--icon.rux-button--toggle.is-active,
 .rux-button--icon.rux-button--toggle[aria-pressed="true"] {
 	--_bg: var(--rux-button-selected-bg);
 	--_fg: var(--rux-button-selected-fg);
@@ -582,7 +503,7 @@
 	z-index: 1;
 }
 
-.rux-segmented-track[data-rux-indicator-ready="true"] > .rux-button:is(.is-active, [aria-pressed="true"], [aria-selected="true"]) {
+.rux-segmented-track[data-rux-indicator-ready="true"] > .rux-button:is([aria-pressed="true"], [aria-selected="true"]) {
 	--_bg: transparent;
 	background: transparent;
 }
@@ -619,12 +540,11 @@
    also blocks that rule's accent-blue color from leaking in — an inactive
    segment isn't "selected," so it shouldn't borrow the active segment's
    own border just from being hovered. */
-.rux-button--segment:hover:not(.is-active):not([aria-pressed="true"]) {
+.rux-button--segment:hover:not([aria-pressed="true"]) {
 	border: none;
 	color: var(--rux-segment-fg-hover);
 }
 
-.rux-button--segment.is-active,
 .rux-button--segment[aria-pressed="true"] {
 	background: var(--rux-segment-active-background);
 	color: var(--rux-segment-active-text);
@@ -640,7 +560,7 @@
    and border. Reassert the selected segment's own foreground at matching
    state specificity, and keep border at none, so hovering an already-
    active segment doesn't turn its text accent-blue or grow a border. */
-.rux-button--segment:is(.is-active, [aria-pressed="true"]):hover:not(:disabled):not([aria-disabled="true"]) {
+.rux-button--segment[aria-pressed="true"]:hover:not(:disabled):not([aria-disabled="true"]) {
 	color: var(--rux-segment-active-text);
 	border: none;
 }

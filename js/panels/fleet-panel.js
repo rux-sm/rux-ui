@@ -381,7 +381,6 @@
     group?.querySelectorAll(".rux-button").forEach((btn) => {
       const on = btn.dataset.value === value;
       btn.setAttribute("aria-pressed", on ? "true" : "false");
-      btn.classList.toggle("is-active", on);
     });
   }
 
@@ -413,12 +412,10 @@
     if (adaBtn) {
       const on = !!b.ada_lift;
       adaBtn.setAttribute("aria-pressed", on ? "true" : "false");
-      adaBtn.classList.toggle("is-active", on);
     }
     if (sleeperBtn) {
       const on = !!b.sleeper;
       sleeperBtn.setAttribute("aria-pressed", on ? "true" : "false");
-      sleeperBtn.classList.toggle("is-active", on);
     }
 
     switchTab(tabBtns[0]);
@@ -513,14 +510,12 @@
       group.querySelectorAll(".rux-button").forEach((btn, i) => {
         const on = i === 0;
         btn.setAttribute("aria-pressed", on ? "true" : "false");
-        btn.classList.toggle("is-active", on);
       });
     });
 
     // Reset equipment toggles
     ["fp-ada-lift", "fp-sleeper"].forEach(id => {
       const btn = document.getElementById(id);
-      if (btn) { btn.setAttribute("aria-pressed", "false"); btn.classList.remove("is-active"); }
     });
 
     tripList.innerHTML = "";

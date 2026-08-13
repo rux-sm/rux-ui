@@ -26,20 +26,18 @@ directly below it with no gap.
 ```html
 <button
   class="rux-button rux-button--ghost rux-button--icon
-    rux-ui-header__button rux-ui-header__button--popover"
+    rux-button--header rux-ui-header__disclosure"
   aria-haspopup="menu"
   aria-controls="account-menu"
   aria-expanded="false"
 >
-  <span class="rux-ui-header__disclosure-icons" aria-hidden="true">
-    <span
-      class="rux-icon rux-ui-header__disclosure-icon
-        rux-ui-header__disclosure-icon--default"
-    >person</span>
-    <span
-      class="rux-icon rux-ui-header__disclosure-icon
-        rux-ui-header__disclosure-icon--close"
-    >close</span>
+  <span class="rux-button__icon-swap" aria-hidden="true">
+	<span
+	  class="rux-icon"
+	>person</span>
+	<span
+	  class="rux-icon rux-button__icon--expanded"
+	>close</span>
   </span>
 </button>
 

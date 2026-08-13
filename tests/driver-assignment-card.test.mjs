@@ -88,7 +88,7 @@ test("pending assignment exposes dominant accept and quieter decline controls", 
 	const accept = buttonByLabel(card, "Accept");
 	const decline = buttonByLabel(card, "Decline");
 	assert.ok(accept.classList.contains("rux-button--accent"));
-	assert.ok(decline.classList.contains("rux-button--default"));
+	assert.ok(decline.classList.contains("rux-button--ghost"));
 	assert.ok(decline.classList.contains("rux-button--danger"));
 	assert.ok(accept.classList.contains("driver-assignment-card__response-control"));
 	assert.ok(decline.classList.contains("driver-assignment-card__response-control"));
@@ -713,10 +713,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/\.driver-assignment-card__response-control\s*\{[^}]*width:\s*100%[^}]*height:\s*var\(--rux-button-height\)[^}]*min-height:\s*var\(--rux-button-height\)[^}]*border-radius:\s*var\(--rux-button-radius\)[^}]*font-size:\s*var\(--rux-button-font-size\)/s,
 	);
-	assert.match(
-		css,
-		/\.driver-assignment-card__decline--availability\.rux-button--default\.rux-button--danger[^}]*\{[^}]*border-color:\s*var\(--rux-border\)[^}]*color:\s*var\(--rux-danger\)/s,
-	);
+	assert.doesNotMatch(css, /driver-assignment-card__decline--availability/);
 	assert.match(
 		css,
 		/\.driver-assignment-card__response-state\s*\{[^}]*min-width:\s*10rem[^}]*min-height:\s*var\(--rux-button-height\)[^}]*margin-inline:\s*auto[^}]*border:\s*var\(--rux-border-width\) solid var\(--_state-color\)/s,

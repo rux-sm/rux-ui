@@ -189,7 +189,7 @@
 			linkBlock = `
 				<div class="rux-request-window__item-link">
 					<input class="rux-input" type="text" readonly value="${url}" data-request-url aria-label="Invite link for ${title}" />
-					<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm" data-copy-url aria-label="Copy link">
+					<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact" data-copy-url aria-label="Copy link">
 						<span class="rux-icon" aria-hidden="true">content_copy</span>
 					</button>
 				</div>`;
@@ -198,11 +198,11 @@
 		let actions = "";
 		if (row.status !== "closed") {
 			if (row.status !== "reviewed" && row.status !== "linked") {
-				actions += `<button type="button" class="rux-button rux-button--ghost rux-button--sm" data-request-action="reviewed" aria-label="Mark ${escapeAttr(row.reference)} reviewed">Reviewed</button>`;
+				actions += `<button type="button" class="rux-button rux-button--ghost rux-button--compact" data-request-action="reviewed" aria-label="Mark ${escapeAttr(row.reference)} reviewed">Reviewed</button>`;
 			}
-			actions += `<button type="button" class="rux-button rux-button--ghost rux-button--sm" data-request-action="closed" aria-label="Close ${escapeAttr(row.reference)}">Close</button>`;
+			actions += `<button type="button" class="rux-button rux-button--ghost rux-button--compact" data-request-action="closed" aria-label="Close ${escapeAttr(row.reference)}">Close</button>`;
 		}
-		actions += `<button type="button" class="rux-button rux-button--outline rux-button--danger rux-button--sm" data-request-action="delete" aria-label="Delete ${escapeAttr(row.reference)}">Delete</button>`;
+		actions += `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--compact" data-request-action="delete" aria-label="Delete ${escapeAttr(row.reference)}">Delete</button>`;
 
 		li.innerHTML = `
 			<div class="rux-request-window__item-main">
@@ -388,7 +388,7 @@
 		copyBtn?.addEventListener("click", async () => {
 			try {
 				await navigator.clipboard.writeText(url);
-				const label = copyBtn.querySelector(".rux-btn-label");
+				const label = copyBtn.querySelector(".rux-button__label");
 				if (label) {
 					label.textContent = "Copied";
 					setTimeout(() => {

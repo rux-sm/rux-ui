@@ -7,7 +7,7 @@
    API
    ---
    data-rux-toggle="#target"   → click toggles .is-open on target element
-   data-rux-toggle-button      → standalone press toggle (.is-active / aria-pressed)
+   data-rux-toggle-button      → standalone press toggle (aria-pressed)
    data-rux-toggle-group       → generic single-select pressed button group
    .rux-segmented-track        → robust single-select segmented control
                                   (any button count; text, icon, or mixed)
@@ -22,7 +22,6 @@
 	function setActiveItem(group, active, selector, attr) {
 		group.querySelectorAll(selector).forEach((item) => {
 			const isActive = item === active;
-			item.classList.toggle("is-active", isActive);
 			item.setAttribute(attr, isActive ? "true" : "false");
 			if (attr === "aria-selected") item.tabIndex = isActive ? 0 : -1;
 		});
@@ -42,10 +41,9 @@
 		const buttons = segmentedButtons(group);
 		if (!buttons.includes(active) || active.disabled) return false;
 
-		const previous = buttons.find((button) => button.getAttribute("aria-pressed") === "true" || button.classList.contains("is-active"));
+		const previous = buttons.find((button) => button.getAttribute("aria-pressed") === "true");
 		buttons.forEach((button) => {
 			const isActive = button === active;
-			button.classList.toggle("is-active", isActive);
 			button.setAttribute("aria-pressed", isActive ? "true" : "false");
 			button.tabIndex = isActive ? 0 : -1;
 		});
@@ -73,7 +71,6 @@
 	function normalizeSegmentedControl(group) {
 		const buttons = segmentedButtons(group);
 		const active = buttons.find((button) => !button.disabled && button.getAttribute("aria-pressed") === "true")
-			|| buttons.find((button) => !button.disabled && button.classList.contains("is-active"))
 			|| buttons.find((button) => !button.disabled);
 		if (active) setActiveSegment(group, active, { emit: false });
 		else buttons.forEach((button) => { button.tabIndex = -1; });
@@ -83,7 +80,7 @@
 		const items = Array.from(group.querySelectorAll(selector)).filter((item) => !item.disabled);
 		if (!items.length) return;
 
-		const current = group.querySelector(selector + ".is-active") || items[0];
+		const current = group.querySelector(`${selector}[${attr}="true"]`) || items[0];
 		const currentIndex = items.indexOf(current);
 		const nextIndex = (currentIndex + dir + items.length) % items.length;
 		const next = items[nextIndex];
@@ -125,7 +122,7 @@
 			cancelAnimationFrame(frame);
 			frame = requestAnimationFrame(() => {
 				const active = group.querySelector(
-					'.rux-button.is-active, .rux-button[aria-pressed="true"], .rux-button[aria-selected="true"]'
+					'.rux-button[aria-pressed="true"], .rux-button[aria-selected="true"]'
 				);
 				if (!active) {
 					group.dataset.ruxIndicatorReady = "false";

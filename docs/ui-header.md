@@ -59,20 +59,20 @@ visible.
 ```html
 <header class="rux-ui-header" aria-label="Application Header">
   <button
-    class="rux-button rux-button--ghost rux-button--icon rux-ui-header__button rux-ui-header__menu"
+    class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__menu"
     type="button"
     aria-label="Open Navigation"
     aria-expanded="false"
     aria-controls="primary-navigation"
     data-rux-side-nav-toggle
   >
-	<span class="rux-ui-header__disclosure-icons" aria-hidden="true">
+	<span class="rux-button__icon-swap" aria-hidden="true">
 		<span
-			class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--default"
+			class="rux-icon"
 			>menu</span
 		>
 		<span
-			class="rux-icon rux-ui-header__disclosure-icon rux-ui-header__disclosure-icon--close"
+			class="rux-icon rux-button__icon--expanded"
 			>close</span
 		>
 	</span>
@@ -109,16 +109,15 @@ configuration and does not use the hamburger disclosure pattern.
 
 - `.rux-ui-header__menu` controls the left panel through `aria-controls` and
   `aria-expanded`.
-- `.rux-ui-header__disclosure-icons` stacks the trigger's default content and
-  standard Close glyph. `.rux-ui-header__disclosure-icon--default` and
-  `.rux-ui-header__disclosure-icon--close` respond to the trigger's
-  `aria-expanded` state; applications should not toggle them independently.
+- `.rux-button__icon-swap` stacks collapsed and expanded button content.
+  Mark the expanded content with `.rux-button__icon--expanded`; the shared
+  button component responds to `aria-expanded` automatically.
 - `.rux-ui-header__brand` contains the product name, wordmark, or home link.
 - `.rux-ui-header__nav` contains optional top-level links or menus. Use
   `.rux-ui-header__nav-item` for its destinations.
 - `.rux-ui-header__actions` is the global-action bar.
-- `.rux-ui-header__button` is the standard global-action control. Compose it
-  with `.rux-button`, `.rux-button--ghost`, and `.rux-button--icon`.
+- Global actions use `.rux-button`, `.rux-button--ghost`,
+  `.rux-button--icon`, and `.rux-button--header` directly.
 - `.rux-ui-header__profile` identifies the profile-menu trigger. Its avatar is
   centered inside the same standard header-button target.
 - A right-panel trigger uses the same disclosure contract: `aria-controls`
@@ -147,7 +146,7 @@ shells. They do not change the compact application-button standard.
 
 | Part | Contract |
 |---|---:|
-| Header | `48px` high |
+| Header | `44px` high |
 | Hit target | `44px × 44px` |
 | Icon | `24px × 24px` |
 | Profile avatar | `32px × 32px` |
@@ -171,7 +170,7 @@ menu so a second click, an outside click, Escape, or menu-item activation closes
 the menu and keeps `aria-expanded` synchronized.
 
 Profile, Messages, and Notifications use the shared header tab-tip popover
-composition. Add `.rux-ui-header__button--popover` to the trigger and
+composition. Add `.rux-ui-header__disclosure` to the trigger and
 compose `.rux-popover--surface` with `.rux-popover--tab-tip` on its popover.
 Compose the trigger's original icon or avatar and the Close glyph through the
 same disclosure-icon stack used by the Hamburger. The original content is
@@ -215,10 +214,9 @@ Header tokens use the `--rux-ui-header-*` namespace. Side-navigation tokens use
 `--rux-side-nav-*`. Component consumers should override these tokens instead of
 reaching into element selectors.
 
-The header owns its 48px height. `--rux-ui-header-button-size` aliases the
-shared 44px header-button role, so actions sit centered inside the shell rather
-than sizing it indirectly. The bottom divider is painted inside the header box
-and does not add another pixel to the rendered height.
+The header and its actions share the 44px header-button role. The bottom
+divider is painted inside that box and does not add another pixel to the
+rendered height.
 
 Common header tokens:
 
@@ -228,13 +226,11 @@ Common header tokens:
 - `--rux-ui-header-height`
 - `--rux-ui-header-min-height`
 - `--rux-ui-header-logo-height`
-- `--rux-ui-header-button-size`
-- `--rux-ui-header-button-icon-size`
+- `--rux-button-height-header`
+- `--rux-button-icon-size-header`
 - `--rux-ui-header-profile-avatar-size`
-- `--rux-ui-header-disclosure-icon-motion-duration`
-- `--rux-ui-header-disclosure-icon-motion-easing`
-- `--rux-ui-header-button-hover-bg`
-- `--rux-ui-header-button-active-bg`
+- `--rux-button-icon-swap-duration`
+- `--rux-button-icon-swap-easing`
 - `--rux-ui-header-actions-gap`
 
 Common side-navigation tokens:
@@ -282,7 +278,7 @@ namespace.
   state.
 - Header actions remain usable in light and dark themes.
 - Header action hit targets resolve to 44px and glyphs resolve to 24px.
-- The complete header box resolves to 48px, including its visual divider.
+- The complete header box resolves to 44px, including its visual divider.
 - Expanded menu and panel triggers retain a visible active state.
 - Header and navigation remain usable at desktop, tablet, mobile, and 200% zoom.
 - Workspace controls remain outside the global header.

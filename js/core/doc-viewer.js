@@ -46,7 +46,7 @@
 				<iframe class="rux-doc-viewer__frame" title="Document preview"></iframe>
 			</div>
 			<footer class="rux-floating-window__footer rux-doc-viewer__footer rux-card__footer">
-				<button type="button" class="rux-button rux-button--outline rux-button--danger" data-doc-viewer-delete>
+				<button type="button" class="rux-button rux-button--ghost rux-button--danger" data-doc-viewer-delete>
 					<span class="rux-icon" aria-hidden="true">delete</span> Delete
 				</button>
 				<button type="button" class="rux-button rux-button--default" data-doc-viewer-update>

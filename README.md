@@ -208,22 +208,21 @@ See [Button Components](docs/buttons.md) for composition examples and usage rule
 
 | Control | Height | Font | Horizontal padding | Icon/text gap |
 |---|---:|---:|---:|---:|
-| `.rux-button` | `--rux-button-height` `32px` | `--rux-text-sm` `14px` | `--rux-space-3` `12px` | `--rux-space-2` `8px` |
-| `.rux-button--icon` | `--rux-button-height` `32px` | `20px` icon | `0` | n/a |
-| `.rux-button--header` | `--rux-button-header-size` `44px` | `24px` icon | standard padding or square with `--icon` | n/a |
-| `.rux-button--compact` | `--rux-button-compact-size` `28px` | `18px` icon | compact padding or square with `--icon` | n/a |
-| `.rux-ui-header__button` | `--rux-ui-header-button-size` `44px` | `24px` icon | `0` | n/a |
+| `.rux-button` | `--rux-button-height-standard` `32px` | `--rux-text-sm` `14px` | `--rux-button-padding-inline-standard` `12px` | `--rux-button-content-gap-standard` `8px` |
+| `.rux-button--icon` | resolved button height | role-specific icon | `0` | n/a |
+| `.rux-button--header` | `--rux-button-height-header` `44px` | `--rux-button-icon-size-header` `24px` | standard padding or square with `--icon` | `8px` |
+| `.rux-button--compact` | `--rux-button-height-compact` `28px` | `--rux-button-icon-size-compact` `18px` | `8px` or square with `--icon` | `4px` |
 | `.rux-segmented-track` | `--rux-input-height` outer track | track | `--rux-segmented-track-padding` | `--rux-segmented-track-radius` |
 | `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-text-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
 
 - Use `--rux-weight-medium` for all button labels.
 - Icon-only buttons are square: width equals the resolved button height.
-- Header action buttons are the intentional shell exception: use
-  `.rux-ui-header__button` for the 44px menu, search, messages, notifications,
-  and profile targets. The UI header remains 48px high and centers those
-  controls; its children do not size it.
+- UI-header actions use the same `.rux-button--header.rux-button--icon`
+  composition as other 44px header controls.
 - Use `.rux-button--header` for persistent workspace and card-header controls.
 - Use `.rux-button--compact` only for dense embedded actions such as trip bars.
+- Destructive actions use solid `.rux-button--danger` or quiet
+  `.rux-button--ghost.rux-button--danger`. Rux does not use danger outline.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
 - Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
 - Segmented controls use a shallow recessed `.rux-segmented-track` around `.rux-button--segment` items. The selected indicator uses `--rux-segment-active-background` and is the strip's only raised layer.
@@ -308,7 +307,7 @@ Cards may group distinct content inside a panel, but do not wrap every field or 
 
 - **Surface hover** raises background brightness one step (`--rux-bg` → `--rux-bg-hover`) or shifts border up one intensity. Never opacity (looks washed out on dark).
 - **Default controls** are solid neutral fills, not outlined buttons. The fill does the affordance work; borders stay transparent unless the control is a container like tabs or an icon group.
-- **Button hover and active states** use composited state fills (`--rux-button-hover-overlay`, `--rux-button-active-overlay`) so the same interaction treatment works across button backgrounds.
+- **Button hover and pressed states** are defined per emphasis: solid buttons shift their fill lightness, while ghost buttons use shared 10%/20% state washes.
 - **Ghost buttons** keep a transparent base and reveal those state overlays on interaction.
 - **Press / active** drops to the active color (`-10L` for filled controls) and translates `1px` down for buttons. Subtle, but visible.
 - **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.

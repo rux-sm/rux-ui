@@ -140,7 +140,7 @@
 	min-width: 0;
 }
 
-.rux-panel__footer > .rux-button .rux-btn-label {
+.rux-panel__footer > .rux-button .rux-button__label {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;

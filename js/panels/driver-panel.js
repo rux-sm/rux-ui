@@ -446,7 +446,6 @@
 						button.dataset.workloadPreset,
 						today,
 					);
-				button.classList.toggle("is-active", on);
 				button.setAttribute("aria-pressed", String(on));
 			});
 	}
@@ -480,7 +479,6 @@
 			?.querySelectorAll("[data-driver-view]")
 			.forEach((button) => {
 				const on = button.dataset.driverView === activeDriverView;
-				button.classList.toggle("is-active", on);
 				button.setAttribute("aria-pressed", String(on));
 			});
 		driverModule?.classList.toggle("driver-app--workload", showWorkload);
@@ -870,7 +868,6 @@
 		cdlGroup?.querySelectorAll(".rux-button").forEach((btn) => {
 			const on = btn.textContent.trim() === `Class ${cdl}`;
 			btn.setAttribute("aria-pressed", on ? "true" : "false");
-			btn.classList.toggle("is-active", on);
 		});
 
 		// Employment status
@@ -888,7 +885,6 @@
 						.querySelector("span:not(.rux-icon)")
 						?.textContent.trim() === target;
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
-				btn.classList.toggle("is-active", on);
 			});
 
 		// Employment type
@@ -905,7 +901,6 @@
 			.forEach((btn) => {
 				const on = btn.textContent.trim() === empTarget;
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
-				btn.classList.toggle("is-active", on);
 			});
 
 		// Priority
@@ -917,7 +912,6 @@
 					btn.querySelector(".rux-priority-dot")?.dataset.priority ===
 					priorityTarget;
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
-				btn.classList.toggle("is-active", on);
 			});
 
 		// Endorsements
@@ -927,7 +921,6 @@
 			.forEach((btn) => {
 				const on = ends.includes(btn.textContent.trim());
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
-				btn.classList.toggle("is-active", on);
 			});
 
 		switchTab(tabBtns[0]);
@@ -1275,7 +1268,6 @@
 			group.querySelectorAll(".rux-button").forEach((btn, i) => {
 				const on = i === 0;
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
-				btn.classList.toggle("is-active", on);
 			});
 		});
 		// Priority defaults to the middle tier (3), not the first button (1) —
@@ -1288,13 +1280,11 @@
 					btn.querySelector(".rux-priority-dot")?.dataset.priority ===
 					"3";
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
-				btn.classList.toggle("is-active", on);
 			});
 		panelEl
 			.querySelectorAll(".rux-driver-panel__endorsements .rux-button")
 			.forEach((btn) => {
 				btn.setAttribute("aria-pressed", "false");
-				btn.classList.remove("is-active");
 			});
 
 		tripList.innerHTML = "";

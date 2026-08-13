@@ -51,8 +51,8 @@
 	--scheduler-app-resize-line-width: 1px;
 	/* Left/editor and right/tools drawers intentionally have independent
 	   defaults. Resize limits remain shared. */
-	--scheduler-app-left-drawer-default-width: 360px;
-	--scheduler-app-right-drawer-default-width: 360px;
+	--scheduler-app-left-drawer-default-width: 320px;
+	--scheduler-app-right-drawer-default-width: 320px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -219,16 +219,6 @@
 	display: flex;
 }
 
-.calendar-app__nav {
-	display: flex;
-	flex: none;
-	gap: var(--rux-space-2);
-}
-
-.calendar-app__nav[hidden] {
-	display: none;
-}
-
 /* Prev/Today/Next read as one cluster, flush against each other — the gap
    belongs between this group and its neighbors (panel toggle, etc.), not
    inside it. */
@@ -240,62 +230,6 @@
 
 .calendar-app__panel-toggle {
 	flex: none;
-}
-
-/* #today-btn shows text-only by default (no icon) — its icon is hidden at
-   rest and only revealed at the narrower 560px breakpoint below. */
-#today-btn > .rux-icon {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	margin: -1px;
-	padding: 0;
-	overflow: hidden;
-	clip: rect(0 0 0 0);
-	white-space: nowrap;
-	border: 0;
-}
-
-/* Narrow step: Today shows text-only by default (above), then swaps to an
-   icon (the calendar_today-style "today" icon in place of its text) once
-   the header itself gets this tight. Week/List moved out to the right
-   panel (above the mini calendar) and no longer collapses with it — see
-   #trip-view-group's own styling there instead. */
-@container (max-width: 560px) {
-	#today-btn > .rux-icon {
-		position: static;
-		width: var(--_icon-size);
-		height: var(--_icon-size);
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		clip: auto;
-		white-space: normal;
-		border: 0;
-	}
-
-	#today-btn .rux-btn-label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-
-	/* Same square-button treatment .rux-button--icon uses elsewhere — width
-	   matches --_h (the button's own height var, 28px by default) instead
-	   of a hardcoded number, and padding-inline collapses to 0 now that
-	   there's no label left to pad around. */
-	#today-btn {
-		flex: 0 0 var(--_h);
-		width: var(--_h);
-		min-width: var(--_h);
-		padding: 0;
-	}
 }
 
 .scheduler-app__module[data-module="calendar"] .rux-workspace__heading {
@@ -371,7 +305,7 @@
 @media (max-width: 520px) {
 	/* #today-btn is text-only now (no icon), so it's excluded here — hiding
 	   its label at narrow widths would leave nothing to show at all. */
-	#new-trip-btn .rux-btn-label {
+	#new-trip-btn .rux-button__label {
 		display: none;
 	}
 	#new-trip-btn {
@@ -381,11 +315,11 @@
 }
 
 @container (max-width: 640px) {
-	#fleet-save-order-btn .rux-btn-label,
-	#fleet-cols-btn .rux-btn-label,
-	#trips-btn-add .rux-btn-label,
-	#fp-btn-add .rux-btn-label,
-	#dp-btn-add .rux-btn-label {
+	#fleet-save-order-btn .rux-button__label,
+	#fleet-cols-btn .rux-button__label,
+	#trips-btn-add .rux-button__label,
+	#fp-btn-add .rux-button__label,
+	#dp-btn-add .rux-button__label {
 		display: none;
 	}
 
@@ -740,55 +674,6 @@
 	container-type: inline-size;
 }
 
-/* Main panel navigation uses the same shared .rux-tabs/.rux-tab component as
-   the trip panel. Only the responsive icon/label collapse is panel-specific. */
-
-.rux-right-panel__tab-label {
-	white-space: nowrap;
-}
-
-/* Two-step tab collapse as the panel narrows: icon+text → text only → icon
-   only — same convention as the trip panel's tab collapse (trip-panel.css). */
-@container (max-width: 400px) {
-	[data-right-tabs] .rux-right-panel__tab > .rux-icon:first-child {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-}
-
-@container (max-width: 340px) {
-	[data-right-tabs] .rux-right-panel__tab > .rux-icon:first-child {
-		position: static;
-		width: var(--_icon-size);
-		height: var(--_icon-size);
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		clip: auto;
-		white-space: normal;
-		border: 0;
-	}
-
-	.rux-right-panel__tab-label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-}
-
 /* — Legacy right-panel rail compatibility — */
 /* The Calendar tools panel now reopens from its workspace-header control.
    These rules remain for older railable right-panel consumers. */
@@ -823,6 +708,7 @@
 .rux-mini-cal {
 	display: flex;
 	flex-direction: column;
+	gap: var(--rux-space-2);
 }
 
 .rux-mini-cal[hidden] {
@@ -832,32 +718,47 @@
 .rux-mini-cal__body {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-card-content-gap);
 }
 
-/* .rux-card__header already supplies the flex/align/justify layout — this
-   just tightens its default 16px gap to match the compact prev/title/next row. */
+/* The mini calendar is primary panel content, so its compact navigation row
+   owns its alignment without borrowing a second card surface. */
 .rux-mini-cal__header {
-	gap: var(--rux-space-2);
+	display: flex;
+	height: var(--rux-button-height-header);
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-0);
 }
 
-/* .rux-card__title supplies the standard heading type/color — this just
-   positions it centered between the prev/next chevrons. */
 .rux-mini-cal__title {
-	text-align: center;
 	flex: 1;
+	margin: 0;
+	color: var(--rux-heading);
+	font-size: var(--rux-text-300);
+	font-weight: var(--rux-card-header-weight);
+	line-height: var(--rux-leading-snug);
+	text-align: center;
 }
 
 .rux-mini-cal__grid {
+	--rux-mini-cal-cell-size: 32px;
+	--rux-mini-cal-cell-gap: var(--rux-space-2);
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
 }
 
-.rux-mini-cal__day-names {
+.rux-mini-cal__day-names,
+.rux-mini-cal__dates {
 	display: grid;
-	grid-template-columns: repeat(7, minmax(28px, 1fr));
-	gap: var(--rux-space-1);
+	grid-template-columns: repeat(7, var(--rux-mini-cal-cell-size));
+	grid-auto-rows: var(--rux-mini-cal-cell-size);
+	justify-content: center;
+	gap: var(--rux-mini-cal-cell-gap);
+}
+
+.rux-mini-cal__day-names {
+	align-items: center;
 	text-align: center;
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-medium);
@@ -868,17 +769,15 @@
 }
 
 .rux-mini-cal__dates {
-	display: grid;
-	grid-template-columns: repeat(7, minmax(28px, 1fr));
-	gap: var(--rux-space-1);
+	align-items: center;
 }
 
 .rux-mini-cal__date {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
-	height: 28px;
+	width: var(--rux-mini-cal-cell-size);
+	height: var(--rux-mini-cal-cell-size);
 	border: none;
 	border-radius: var(--rux-button-radius);
 	background: transparent;
@@ -940,9 +839,19 @@
    renderDriverGrid() in index.html, which reads currentWeekStart/viewDays/
    sundayStart live on every render instead of tracking its own copy. */
 
+.rux-driver-availability__title,
+.rux-view-options__title {
+	margin: 0;
+	color: var(--rux-heading);
+	font-size: var(--rux-text-300);
+	font-weight: var(--rux-card-header-weight);
+	line-height: var(--rux-leading-snug);
+}
+
 .rux-driver-grid {
-	--rux-driver-grid-cell-size: 1.75rem;
-	--rux-driver-grid-name-width: 100px;
+	--rux-driver-grid-surface: var(--rux-surface-1);
+	--rux-driver-grid-cell-size: 24px;
+	--rux-driver-grid-name-width: 80px;
 	/* Matches the row/gutter gap below — cell-to-cell and row-to-row are the
 	   same rhythm now, not a deliberately tighter cell gap. */
 	--rux-driver-grid-cell-gap: var(--rux-space-1);
@@ -951,10 +860,14 @@
 	gap: var(--rux-space-1);
 	width: 100%;
 	min-width: calc(
-		var(--rux-driver-grid-name-width) + var(--rux-space-1) +
+		var(--rux-driver-grid-name-width) + var(--rux-space-0) +
 			(var(--rux-driver-grid-days, 7) * var(--rux-driver-grid-cell-size)) +
 			((var(--rux-driver-grid-days, 7) - 1) * var(--rux-driver-grid-cell-gap))
 	);
+}
+
+.rux-driver-availability .rux-driver-grid {
+	--rux-driver-grid-surface: var(--rux-surface-3);
 }
 
 .rux-driver-grid__scroller {
@@ -966,6 +879,7 @@
 
 .rux-driver-grid__row {
 	display: grid;
+	background: var(--rux-surface-3);
 	grid-template-columns:
 		minmax(var(--rux-driver-grid-name-width), 1fr)
 		calc(
@@ -974,7 +888,7 @@
 		);
 	align-items: center;
 	min-height: var(--rux-driver-grid-cell-size);
-	gap: var(--rux-space-1);
+	gap: var(--rux-space-2);
 	min-width: 100%;
 	border-radius: var(--rux-radius-sm);
 }
@@ -987,11 +901,12 @@
 	width: 100%;
 	height: var(--rux-driver-grid-cell-size);
 	align-items: center;
-	background: var(--rux-card-bg);
-	box-shadow: var(--rux-space-1) 0 0 var(--rux-card-bg);
+	background: var(--rux-driver-grid-surface);
+	box-shadow: var(--rux-space-1) 0 0 var(--rux-driver-grid-surface);
 }
 
 .rux-driver-grid__name {
+	--rux-driver-priority-color: var(--rux-info);
 	position: relative;
 	display: flex;
 	width: 100%;
@@ -1001,18 +916,37 @@
 	min-width: 0;
 	padding: 0 var(--rux-space-2);
 	overflow: hidden;
-	background: var(--rux-card-bg);
+	background: var(--rux-surface-3);
 	color: var(--rux-text-secondary);
-	/* Transparent, not 0 — reserves the width .is-selected's border-color
-	   below needs, so gaining a real border doesn't shift the row's content
-	   by a pixel. */
-	border: var(--rux-border-width) solid transparent;
+	border: none;
+	border-left: var(--rux-side-nav-selected-width) solid
+		var(--rux-driver-priority-color);
 	border-radius: var(--rux-radius-control);
 	font: inherit;
 	font-size: var(--rux-text-sm);
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.rux-driver-grid__row[data-priority="1"] .rux-driver-grid__name {
+	--rux-driver-priority-color: var(--rux-warning);
+}
+
+.rux-driver-grid__row[data-priority="2"] .rux-driver-grid__name {
+	--rux-driver-priority-color: var(--rux-purple);
+}
+
+.rux-driver-grid__row[data-priority="3"] .rux-driver-grid__name {
+	--rux-driver-priority-color: var(--rux-info);
+}
+
+.rux-driver-grid__row[data-priority="4"] .rux-driver-grid__name {
+	--rux-driver-priority-color: var(--rux-success);
+}
+
+.rux-driver-grid__row[data-priority="5"] .rux-driver-grid__name {
+	--rux-driver-priority-color: var(--rux-white);
 }
 
 .rux-driver-grid__name-label {
@@ -1043,6 +977,7 @@
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 	text-transform: uppercase;
+	border-left-color: transparent;
 }
 
 .rux-driver-grid__row--head .rux-driver-grid__name-cell {
@@ -1056,26 +991,19 @@
 	z-index: 3;
 	min-height: 2.5rem;
 	align-items: stretch;
-	background: var(--rux-card-bg);
 }
 
 .rux-driver-grid__row[data-driver-id] {
 	cursor: pointer;
 }
 
-/* Hover and selection both live entirely on .rux-driver-grid__name now, not
-   the row — a row-wide outline/tint always ended up either clipped by the
-   opaque day cells sitting on top of it, or (once that was fixed) sitting
-   right next to and competing with .rux-driver-grid__cell--busy's accent
-   fill, the legend's color for "Assigned". Keeping both states off the row
-   entirely, confined to the name button, sidesteps all of that — hover gets
-   the same ghost-overlay tint every .rux-button uses, and selection gets the
-   same bg + border pairing as the accent button (and, by extension,
-   .rux-mini-cal__date--active-week and the driver-grid's own "Assigned"
-   cells, which all share this same token). */
+/* Priority is encoded by the persistent leading indicator. Selection adds
+   the same 14% color-derived wash used by selected side-navigation items,
+   while keeping the status color and selection state visually connected. */
 .rux-driver-grid__row.is-selected .rux-driver-grid__name {
-	background: var(--rux-button-accent-background);
-	border-color: var(--rux-button-accent-border-color);
+	background: oklch(
+		from var(--rux-driver-priority-color) l c h / 0.14
+	);
 	color: var(--rux-fg);
 	font-weight: var(--rux-weight-semibold);
 }
@@ -1119,9 +1047,6 @@
 	opacity: 0.72;
 }
 
-.rux-driver-grid__day-label.is-today {
-	box-shadow: inset 0 -2px 0 var(--rux-accent);
-}
 
 .rux-driver-grid__day-label.is-today .rux-driver-grid__day-label-weekday,
 .rux-driver-grid__day-label.is-today .rux-driver-grid__day-label-date {
@@ -1134,8 +1059,8 @@
    under .is-today's own inset box-shadow instead of fighting over the same
    property. */
 .rux-driver-grid__day-label.is-trip-range {
-	background: color-mix(in oklab, var(--rux-accent) 16%, transparent);
-	border-radius: var(--rux-radius-sm) var(--rux-radius-sm) 0 0;
+	background: var(--rux-accent);
+	color: var(--rux-fg-on-accent);
 }
 
 .rux-driver-grid__cell {
@@ -1152,7 +1077,7 @@
 	   nothing shifts size when a cell's state changes. */
 	border: var(--rux-border-width) solid transparent;
 	cursor: pointer;
-	box-shadow: var(--rux-input-shadow);
+	box-shadow: none;
 
 }
 
@@ -1165,8 +1090,7 @@
    no button-family token to borrow (no .rux-button--warning exists), so its
    pair is built inline off the same shared trip-bar primitives. */
 .rux-driver-grid__cell--busy {
-	background: var(--rux-button-accent-background);
-	border-color: var(--rux-button-accent-border-color);
+	background: var(--rux-button-accent-background);;
 }
 
 /* Same driver, two overlapping trips the same day — flagged distinctly from
@@ -1227,8 +1151,8 @@
    the inset box-shadow rings the busy/conflict/unavailable combos already
    use for their own signal. */
 .rux-driver-grid__cell.is-trip-range {
-	outline: 1px solid var(--rux-gray);
-	outline-offset: -1px;
+	background: var(--rux-gray);
+
 }
 
 .rux-driver-grid__cell:hover {
@@ -1362,15 +1286,21 @@
 .rux-view-options {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-3);
+	gap: var(--rux-space-2);
+}
+
+.rux-view-options__list {
+	display: flex;
+	flex-direction: column;
 }
 
 .rux-view-options__row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: var(--rux-space-3);
+	gap: var(--rux-space-0);
 	cursor: pointer;
+	height: 44px;
 }
 
 .rux-view-options__row[hidden] {
@@ -1490,11 +1420,11 @@
 		position: absolute;
 		/* The persistent toggle is a sibling of the panel header, so it does not
 		   participate in the header's flex centering. Match the header's actual
-		   block padding directly: 8px + 28px control + 8px = its 44px row. */
+		   block padding directly around the shared 44px header control. */
 		top: var(--rux-space-2);
 		/* Center the button's physical box, not its transform origin. Rail and
 		   control widths are tokenized, so this remains pixel-aligned. */
-		left: calc((100% - var(--rux-control-height)) / 2);
+		left: calc((100% - var(--rux-button-height-header)) / 2);
 		transform: none;
 		z-index: 10;
 		transition:
@@ -1504,12 +1434,12 @@
 	}
 
 	.scheduler-app__drawer--railable.is-open .rux-driver-panel__drawer-open {
-		left: calc(100% - var(--rux-space-3) - var(--rux-control-height));
+		left: calc(100% - var(--rux-space-3) - var(--rux-button-height-header));
 		transform: none;
 	}
 
 	.scheduler-app__drawer--railable.is-collapsing .rux-driver-panel__drawer-open {
-		left: calc((100% - var(--rux-control-height)) / 2);
+		left: calc((100% - var(--rux-button-height-header)) / 2);
 		transform: none;
 	}
 
@@ -1628,8 +1558,7 @@
 	/* .heading, .nav, and .toolbar all collapse to display:contents above, so
 	   everything below is a direct item of this grid regardless of markup
 	   nesting. The title takes its own full-width row; every calendar action
-	   stays on the second row. Today uses an icon at this width so the
-	   complete toolbar still fits without wrapping. */
+	   stays on the second row. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__title {
 		grid-column: 1 / -1;
 		grid-row: 1;
@@ -1669,36 +1598,6 @@
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #trips-filter-badges:not([hidden]) {
 		grid-column: 1 / -1;
 		grid-row: 3;
-	}
-
-	/* Text-only on mobile — the icon is redundant next to the word "Today"
-	   and the prev/next chevrons already flanking it. Full reset of all
-	   three @container(560px) rules above (icon reveal, label hide, square
-	   sizing), not just the icon: that's a container query on the toolbar's
-	   own width, not the viewport, so it fires here too by coincidence once
-	   the toolbar is this narrow — left alone, the icon-hide alone would
-	   leave the label still sr-only-hidden underneath it, an empty button. */
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn > .rux-icon {
-		display: none;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn .rux-btn-label {
-		position: static;
-		width: auto;
-		height: auto;
-		margin: 0;
-		padding: 0;
-		overflow: visible;
-		clip: auto;
-		white-space: nowrap;
-		border: 0;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn {
-		flex: none;
-		width: auto;
-		min-width: 0;
-		padding: 0 var(--rux-button-padding-inline);
 	}
 
 	/* Drawer overlays the full viewport width — mobile screens are too narrow

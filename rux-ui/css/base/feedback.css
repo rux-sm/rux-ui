@@ -78,7 +78,7 @@
 	min-width: 0;
 	height: var(--rux-modal-header-height);
 	padding: var(--rux-modal-header-padding);
-  border-bottom: var(--rux-border-width) solid var(--rux-border);
+  border-bottom: none;
 }
 .rux-modal__header > .rux-button--icon {
 	--_h: var(--rux-modal-header-action-size);

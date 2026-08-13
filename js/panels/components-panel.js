@@ -185,7 +185,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 			const host = demoPage("surfaces-content", "Surfaces & Content", "components-app__anatomy-stage--column");
 			host.innerHTML = `
 				<div class="components-app__catalog-block"><span class="rux-avatar rux-avatar--sm">JG</span><span class="rux-avatar">ML</span><span class="rux-avatar rux-avatar--lg">DH</span><span class="rux-tag">Bus 763</span></div>
-				<div class="components-app__surface-grid"><article class="rux-card"><header class="rux-card__header"><p class="rux-card__title">Standard card</p></header><div class="rux-card__body">Card body</div><footer class="rux-card__footer"><button class="rux-button rux-button--default rux-button--sm">Action</button></footer></article><article class="rux-card rux-card--elevated"><header class="rux-card__header"><p class="rux-card__title">Elevated card</p></header><div class="rux-card__body">Elevated surface</div></article><article class="rux-card rux-card--borderless"><div class="rux-card__body">Borderless card</div></article></div>
+				<div class="components-app__surface-grid"><article class="rux-card"><header class="rux-card__header"><p class="rux-card__title">Standard card</p></header><div class="rux-card__body">Card body</div><footer class="rux-card__footer"><button class="rux-button rux-button--default rux-button--compact">Action</button></footer></article><article class="rux-card rux-card--elevated"><header class="rux-card__header"><p class="rux-card__title">Elevated card</p></header><div class="rux-card__body">Elevated surface</div></article><article class="rux-card rux-card--borderless"><div class="rux-card__body">Borderless card</div></article></div>
 				<section class="rux-panel components-app__panel-demo"><header class="rux-panel__header"><h2 class="rux-panel__title">Panel</h2></header><div class="rux-panel__body"><div class="rux-panel__pane">Panel body and pane</div></div><footer class="rux-panel__footer"><button class="rux-button rux-button--accent">Save</button></footer></section>
 				<div class="rux-suggestions components-app__suggestions-demo" role="listbox"><button class="rux-suggestions__item" type="button" role="option"><span class="rux-suggestions__label">McAllen Convention Center</span><span class="rux-suggestions__sublabel">700 Convention Center Blvd</span></button><button class="rux-suggestions__item" type="button" role="option"><span class="rux-suggestions__label">Escamilla Yard</span><span class="rux-suggestions__sublabel">Saved location</span></button></div>`;
 		}
@@ -288,7 +288,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 	function launchButton(label, icon) {
 		const button = el("button", "rux-button rux-button--accent");
 		button.type = "button";
-		button.append(el("span", "rux-icon", icon), el("span", "rux-btn-label", label));
+		button.append(el("span", "rux-icon", icon), el("span", "rux-button__label", label));
 		return button;
 	}
 

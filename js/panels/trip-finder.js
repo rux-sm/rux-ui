@@ -157,7 +157,6 @@
     group.querySelectorAll(".rux-button").forEach((btn) => {
       const on = btn.dataset.value === value;
       btn.setAttribute("aria-pressed", String(on));
-      btn.classList.toggle("is-active", on);
     });
   }
 

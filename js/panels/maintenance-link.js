@@ -25,7 +25,7 @@ async function copyText(value) {
 }
 
 button?.addEventListener("click", async () => {
-	const label = button.querySelector(".rux-btn-label");
+	const label = button.querySelector(".rux-button__label");
 	const original = label?.textContent;
 	const maintenanceWindow = window.open("", "_blank");
 	button.disabled = true;

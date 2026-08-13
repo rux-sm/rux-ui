@@ -131,7 +131,7 @@ function renderRequirements(container, items, { block = true } = {}) {
 		.map(
 			(req) =>
 				`<button class="rux-button rux-button--default rux-button--toggle${block ? " rux-button--block" : ""}" data-rux-toggle-button aria-pressed="false" data-req="${escHtml(req.id ?? req.key)}" title="${escHtml(req.label)}">
-					<span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(req.icon))}</span><span class="rux-btn-label"> ${escHtml(req.label)}</span>
+					<span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(req.icon))}</span><span class="rux-button__label"> ${escHtml(req.label)}</span>
 				</button>`,
 		)
 		.join("");
@@ -186,7 +186,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <div class="rux-trip-panel__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
         <span class="rux-input-group__prefix">
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
             <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
           </button>
         </span>
@@ -230,7 +230,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
       <div class="rux-trip-panel__driver-row">
         <div class="rux-input-group rux-input-group--prefix rux-input-group--action rux-trip-panel__driver-select">
           <span class="rux-input-group__prefix">
-            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact rux-trip-panel__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
               <span class="rux-icon" aria-hidden="true">person</span>
             </button>
           </span>
@@ -736,7 +736,6 @@ function setTripType(root, value) {
 	group.querySelectorAll(".rux-button").forEach((btn) => {
 		const active = btn.dataset.value === value;
 		btn.setAttribute("aria-pressed", String(active));
-		btn.classList.toggle("is-active", active);
 	});
 	syncReturnLegVisibility(root);
 }
@@ -781,7 +780,6 @@ function setBillingType(root, value) {
 	group.querySelectorAll(".rux-button").forEach((btn) => {
 		const active = btn.dataset.value === value;
 		btn.setAttribute("aria-pressed", String(active));
-		btn.classList.toggle("is-active", active);
 	});
 	syncTicketPricingVisibility(root);
 }
@@ -812,7 +810,6 @@ function setContactNotNeeded(root, value) {
 	const btn = root.querySelector("#tp-contact-toggle-btn");
 	if (!btn) return;
 	btn.setAttribute("aria-pressed", String(value));
-	btn.classList.toggle("is-active", value);
 	btn.setAttribute("aria-label", value ? "Mark contact as needed" : "Mark contact as not needed");
 	root.querySelector("#tp-contacts-list")?.querySelectorAll("input").forEach((input) => { input.disabled = value; });
 	const addBtn = root.querySelector("#tp-contact-add-btn");
@@ -827,7 +824,6 @@ function setItineraryNotNeeded(root, value) {
 	const btn = root.querySelector("#tp-doc-toggle-btn");
 	if (btn) {
 		btn.setAttribute("aria-pressed", String(value));
-		btn.classList.toggle("is-active", value);
 		btn.setAttribute("aria-label", value ? "Mark itinerary as needed" : "Mark itinerary as not needed");
 	}
 	const newBtn = root.querySelector("#tp-doc-new-btn");
@@ -842,7 +838,7 @@ function initTripTabs(root) {
 	if (tabs) tabs.dataset.ruxTripTabsInit = "true";
 
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
-	const allTabBtns = tabs?.querySelectorAll(".rux-trip-panel__tab[aria-controls]") || [];
+	const allTabBtns = tabs?.querySelectorAll(".rux-tab[aria-controls]") || [];
 	const scrollBody = root.querySelector(".rux-panel__body");
 	const drawer = root.closest(".scheduler-app__drawer");
 	allTabBtns.forEach((btn) => {
@@ -853,7 +849,6 @@ function initTripTabs(root) {
 				b.classList.remove("is-active");
 				b.setAttribute("aria-selected", "false");
 			});
-			btn.classList.add("is-active");
 			btn.setAttribute("aria-selected", "true");
 			allPanes.forEach((p) => {
 				p.hidden = p.id !== panelId;
@@ -873,13 +868,12 @@ function initTripTabs(root) {
 	});
 
 	const activeTab =
-		tabs?.querySelector(".rux-trip-panel__tab[aria-controls][aria-selected='true']") ||
+		tabs?.querySelector(".rux-tab[aria-controls][aria-selected='true']") ||
 		allTabBtns[0];
 
 	if (activeTab) {
 		allTabBtns.forEach((btn) => {
 			const isActive = btn === activeTab;
-			btn.classList.toggle("is-active", isActive);
 			btn.setAttribute("aria-selected", String(isActive));
 		});
 
@@ -958,7 +952,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 				b.classList.remove("is-active");
 			});
 			btn.setAttribute("aria-pressed", "true");
-			btn.classList.add("is-active");
 			if (group.id === "tp-billing-type-group") syncTicketPricingVisibility(root);
 			if (group.id === "tp-trip-type-group") {
 				syncReturnLegVisibility(root);
@@ -1421,7 +1414,6 @@ function initBusGroupSection(root, busGroupsEl, busesInput, fieldPrefix) {
 		const role = btn.dataset.role;
 		const nowActive = btn.getAttribute("aria-pressed") !== "true";
 		btn.setAttribute("aria-pressed", String(nowActive));
-		btn.classList.toggle("is-active", nowActive);
 		const row = group.querySelector(`[data-role-row="${role}"]`);
 		if (row) {
 			row.hidden = !nowActive;

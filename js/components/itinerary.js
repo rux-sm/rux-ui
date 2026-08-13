@@ -831,7 +831,7 @@
 		const pickup = stops.find((stop) => stop.type === "pickup");
 		const mode = pickup?.originMode === "yard" ? "yard" : "pickup";
 		const startMarkerType = mode === "yard" ? "pickup" : "depart-yard";
-		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? " is-active" : ""}" data-value="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-btn-label">${label}</span></button>`;
+		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? "" : ""}" data-value="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-button__label">${label}</span></button>`;
 		return `
 		<section class="rux-card-section rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
 			<header class="rux-card-section__header rux-trip-itinerary__stop-header">
@@ -1080,9 +1080,9 @@
 		const dwellControl = showDwellStatus ? `
 		  <div class="rux-trip-itinerary__dwell-status">
 			<div class="rux-segmented-track" data-rux-segmented data-itinerary-segment="dwell-status" aria-label="Duty status until next departure">
-			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "on" ? " is-active" : ""}" data-value="on" aria-label="On duty until next departure" title="On duty" aria-pressed="${dwellStatus === "on"}"><span class="rux-icon" aria-hidden="true">search_hands_free</span></button>
-			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "sleeper" ? " is-active" : ""}" data-value="sleeper" aria-label="Sleeper berth until next departure" title="Sleeper berth" aria-pressed="${dwellStatus === "sleeper"}"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span></button>
-			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "off" ? " is-active" : ""}" data-value="off" aria-label="Off duty until next departure" title="Off duty" aria-pressed="${dwellStatus === "off"}"><span class="rux-icon" aria-hidden="true">logout</span></button>
+			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "on" ? "" : ""}" data-value="on" aria-label="On duty until next departure" title="On duty" aria-pressed="${dwellStatus === "on"}"><span class="rux-icon" aria-hidden="true">search_hands_free</span></button>
+			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "sleeper" ? "" : ""}" data-value="sleeper" aria-label="Sleeper berth until next departure" title="Sleeper berth" aria-pressed="${dwellStatus === "sleeper"}"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span></button>
+			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "off" ? "" : ""}" data-value="off" aria-label="Off duty until next departure" title="Off duty" aria-pressed="${dwellStatus === "off"}"><span class="rux-icon" aria-hidden="true">logout</span></button>
 			</div>
 		  </div>` : "";
 
@@ -1209,7 +1209,6 @@
 		function syncConfirmBtn() {
 			if (!confirmBtn) return;
 			confirmBtn.setAttribute("aria-pressed", String(confirmed));
-			confirmBtn.classList.toggle("is-active", confirmed);
 			confirmBtn.title = confirmed
 				? "Itinerary confirmed — click to unconfirm"
 				: "Confirm itinerary";
@@ -1229,7 +1228,6 @@
 			legToggleEl?.querySelectorAll(".rux-button").forEach((btn) => {
 				const on = btn.dataset.value === leg;
 				btn.setAttribute("aria-pressed", String(on));
-				btn.classList.toggle("is-active", on);
 			});
 			if (resetLegBtn) {
 				const legLabel = leg === "return" ? "Inbound" : "Outbound";
@@ -1432,7 +1430,7 @@
 						<div class="rux-trip-itinerary__add-row">
 							<button type="button" class="rux-button rux-button--accent" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}" title="Add to Day ${dayNumber}">
 								<span class="rux-icon" aria-hidden="true">add</span>
-								<span class="rux-btn-label">Add stop</span>
+								<span class="rux-button__label">Add stop</span>
 							</button>
 						</div>`;
 				dayCards.push(`

@@ -23,6 +23,7 @@ const chatDataController = read("js/data/team-chat-db.js");
 const chatStyles = read("scheduler/css/features/team-chat.css");
 const themeController = read("js/core/theme.js");
 const preferencesStyles = read("scheduler/css/features/preferences.css");
+const layoutStyles = read("scheduler/css/layout/scheduler-app.css");
 
 function openingTag(id) {
 	return page.match(new RegExp(`<button[^>]*id="${id}"[^>]*>`))?.[0] ?? "";
@@ -35,11 +36,11 @@ test("the UI header routes product navigation through a side nav", () => {
 	assert.match(page, /class="rux-side-nav scheduler-app__side-nav"/);
 	assert.match(page, /<nav[\s\S]*?aria-label="Primary Navigation"[\s\S]*?<ul class="rux-side-nav__list">/);
 	for (const label of ["Trips", "Drivers", "Fleet", "Customers", "Requests", "Samsara", "Options"]) {
-		assert.match(page, new RegExp(`<span class="rux-side-nav__label">${label}</span>`));
+		assert.match(page, new RegExp(`<span class="rux-side-nav__label"[^>]*>\\s*${label}\\s*</span`));
 	}
 	assert.match(
 		page,
-		/<span class="rux-side-nav__label">Requests<\/span>[\s\S]*?<span class="rux-side-nav__label">Samsara<\/span>[\s\S]*?<span class="rux-side-nav__label">Options<\/span>/,
+		/<span class="rux-side-nav__label"[^>]*>\s*Requests\s*<\/span[\s\S]*?<span class="rux-side-nav__label"[^>]*>\s*Samsara\s*<\/span[\s\S]*?<span class="rux-side-nav__label"[^>]*>\s*Options\s*<\/span/,
 	);
 	assert.match(
 		page,
@@ -47,7 +48,7 @@ test("the UI header routes product navigation through a side nav", () => {
 	);
 });
 
-test("global header actions use 44px buttons and 24px icons inside the 48px shell", () => {
+test("global header actions use the shared 44px button and 24px icon contract", () => {
 	for (const id of [
 		"app-navigation-toggle",
 		"workspace-search-btn",
@@ -55,17 +56,14 @@ test("global header actions use 44px buttons and 24px icons inside the 48px shel
 		"notifications-menu-btn",
 		"profile-menu-btn",
 	]) {
-		assert.match(openingTag(id), /rux-ui-header__button/);
+		assert.match(openingTag(id), /rux-button--icon rux-button--header/);
 	}
-	assert.match(tokens, /--rux-space-7:\s+3rem;\s+\/\* 48px \*\//);
 	assert.match(tokens, /--rux-icon-md:\s+24px;/);
-	assert.match(tokens, /--rux-ui-header-height:\s+var\(--rux-space-7\);/);
-	assert.match(tokens, /--rux-ui-header-button-size:\s+var\(--rux-button-header-size\);/);
-	assert.match(tokens, /--rux-ui-header-button-icon-size:\s+var\(--rux-button-header-icon-size\);/);
-	assert.match(headerStyles, /\.rux-ui-header__button\s*\{[^}]*--_h:\s*var\(--rux-ui-header-button-size\)/s);
-	assert.match(headerStyles, /\.rux-ui-header__button\s*\{[^}]*font-size:\s*var\(--rux-ui-header-button-icon-size\);/s);
-	assert.match(headerStyles, /\.rux-ui-header__button > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-ui-header-button-icon-size\)/s);
-	assert.match(page, /id="app-navigation-toggle"[\s\S]*?rux-ui-header__disclosure-icon--default[\s\S]*?rux-ui-header__disclosure-icon--close/);
+	assert.match(tokens, /--rux-ui-header-height:\s+44px;/);
+	assert.match(tokens, /--rux-button-height-header:\s+44px;/);
+	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-md\);/);
+	assert.doesNotMatch(page, /rux-ui-header__button/);
+	assert.match(page, /id="app-navigation-toggle"[\s\S]*?rux-button__icon-swap[\s\S]*?rux-button__icon--expanded/);
 });
 
 test("header tab-tip popovers preserve the correct disclosure semantics", () => {
@@ -73,34 +71,34 @@ test("header tab-tip popovers preserve the correct disclosure semantics", () => 
 	const chatButton = openingTag("team-chat-btn");
 	const notificationsButton = openingTag("notifications-menu-btn");
 	assert.match(profileButton, /rux-ui-header__profile/);
-	assert.match(profileButton, /rux-ui-header__button--popover/);
+	assert.match(profileButton, /rux-ui-header__disclosure/);
 	assert.match(profileButton, /aria-haspopup="menu"/);
 	assert.match(profileButton, /aria-controls="profile-menu"/);
 	assert.match(profileButton, /aria-expanded="false"/);
-	assert.match(headerStyles, /\.rux-ui-header__button\[aria-expanded="true"\]/);
+	assert.match(headerStyles, /\.rux-ui-header \.rux-button--header\[aria-expanded="true"\]/);
 	assert.match(
 		headerStyles,
-		/:is\(\.rux-ui-header__button--popover, \.rux-ui-header__menu\)\[aria-expanded="true"\][^}]*background:\s*var\(--_rux-header-disclosure-bg\)/s,
+		/:is\(\.rux-ui-header__disclosure, \.rux-ui-header__menu\)\[aria-expanded="true"\][^}]*background:\s*var\(--_rux-header-disclosure-bg\)/s,
 	);
 	assert.match(headerStyles, /\.rux-ui-header__menu\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-side-nav-bg\)/s);
 	assert.match(tokens, /--rux-side-nav-shadow:\s+none;/);
 	assert.match(menuController, /active\.trigger\?\.contains\(event\.target\)/);
 	assert.match(menuController, /event\.key === "Escape"/);
-	assert.match(chatButton, /rux-ui-header__button--popover/);
+	assert.match(chatButton, /rux-ui-header__disclosure/);
 	assert.match(chatButton, /aria-haspopup="dialog"/);
 	assert.match(chatButton, /aria-controls="team-chat-popover"/);
 	assert.match(chatButton, /aria-expanded="false"/);
-	assert.match(notificationsButton, /rux-ui-header__button--popover/);
+	assert.match(notificationsButton, /rux-ui-header__disclosure/);
 	assert.match(notificationsButton, /aria-haspopup="dialog"/);
 	for (const id of ["team-chat-btn", "notifications-menu-btn", "profile-menu-btn"]) {
 		const buttonMarkup = page.slice(page.indexOf(`id="${id}"`), page.indexOf("</button>", page.indexOf(`id="${id}"`)));
-		assert.match(buttonMarkup, /rux-ui-header__disclosure-icon--default/);
-		assert.match(buttonMarkup, /rux-ui-header__disclosure-icon--close/);
+		assert.match(buttonMarkup, /rux-button__icon-swap/);
+		assert.match(buttonMarkup, /rux-button__icon--expanded/);
 	}
-	assert.match(headerStyles, /\.rux-ui-header__button\[aria-expanded="true"\] > \.rux-ui-header__badge-count\s*\{[^}]*visibility:\s*hidden;/s);
+	assert.match(headerStyles, /\.rux-ui-header \[aria-expanded="true"\] > \.rux-ui-header__badge-count\s*\{[^}]*visibility:\s*hidden;/s);
 	assert.match(
 		headerStyles,
-		/\.rux-ui-header__profile \.rux-ui-header__disclosure-icons\s*\{[^}]*width:\s*var\(--rux-ui-header-profile-avatar-size\);[^}]*height:\s*var\(--rux-ui-header-profile-avatar-size\);/s,
+		/\.rux-ui-header__profile \.rux-button__icon-swap\s*\{[^}]*width:\s*var\(--rux-ui-header-profile-avatar-size\);[^}]*height:\s*var\(--rux-ui-header-profile-avatar-size\);/s,
 	);
 	assert.match(headerStyles, /\.rux-ui-header__profile-identity\s*\{[^}]*width:\s*100%;[^}]*height:\s*100%;/s);
 	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip"\s+id="profile-menu"/);
@@ -296,19 +294,130 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 		/<div\s+class="[^"]*scheduler-app__drawer--right[^"]*"\s+id="right-panel-drawer"/,
 	)?.[0] ?? "";
 	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__panel-toggle"/);
-	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-btn-label">Tools<\/span>/);
+	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-button__label">Tools<\/span>/);
 	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"/);
-	assert.match(tokens, /--rux-button-height:\s+32px;/);
-	assert.match(tokens, /--rux-button-header-size:\s+44px;/);
-	assert.match(tokens, /--rux-button-header-icon-size:\s+var\(--rux-icon-md\);/);
-	assert.match(controlStyles, /\.rux-button--header\s*\{[^}]*--_h:\s*var\(--rux-button-header-size\);/s);
-	assert.match(controlStyles, /\.rux-button--header\.rux-button--icon\s*\{[^}]*font-size:\s*var\(--rux-button-header-icon-size\);/s);
-	assert.match(controlStyles, /\.rux-button--header > \.rux-icon,[\s\S]*?\.rux-button--icon-lg > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-button-header-icon-size\);/s);
+	assert.match(tokens, /--rux-button-height-standard:\s+32px;/);
+	assert.match(tokens, /--rux-button-height-header:\s+44px;/);
+	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-md\);/);
+	assert.match(controlStyles, /\.rux-button--header\s*\{[^}]*--_h:\s*var\(--rux-button-height-header\);/s);
+	assert.match(controlStyles, /\.rux-button--header\.rux-button--icon\s*\{[^}]*font-size:\s*var\(--rux-button-icon-size-header\);/s);
+	assert.match(controlStyles, /\.rux-button--header > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-button-icon-size-header\);/s);
 	assert.match(page, /aria-expanded="true"[\s\S]*?aria-controls="right-panel-drawer"/);
 	assert.match(drawerMarkup, /class="scheduler-app__drawer scheduler-app__drawer--right"/);
 	assert.doesNotMatch(drawerMarkup, /scheduler-app__drawer--railable/);
 	assert.match(page, /<aside[\s\S]*?class="rux-panel rux-panel--right rux-right-panel"[\s\S]*?aria-label="Calendar Tools"/);
 	assert.doesNotMatch(page, /id="opt-hide-nav"/);
+});
+
+test("button emphasis is limited to the approved variants and size roles", () => {
+	assert.doesNotMatch(page, /rux-button--outline|rux-button--on-accent/);
+	assert.doesNotMatch(controlStyles, /\.rux-button--outline|\.rux-button--on-accent/);
+	assert.doesNotMatch(tokens, /--rux-button-(?:outline|on-accent)-/);
+	assert.doesNotMatch(page, /rux-button--(?:accent|default)[^"\n]*rux-button--danger/);
+	assert.doesNotMatch(page, /Danger Outline/);
+	assert.doesNotMatch(page, /rux-button--sm/);
+	assert.doesNotMatch(controlStyles, /\.rux-button--sm/);
+	assert.doesNotMatch(controlStyles, /\.rux-button--icon-lg/);
+	assert.doesNotMatch(tokens, /--rux-button-danger-outline-/);
+	assert.match(tokens, /--rux-button-height-compact:\s+28px;/);
+	assert.match(tokens, /--rux-button-icon-size-compact:\s+18px;/);
+});
+
+test("button labels use the shared BEM anatomy", () => {
+	assert.match(page, /rux-button__label/);
+	assert.doesNotMatch(page, /rux-btn-label/);
+	assert.doesNotMatch(controlStyles, /rux-btn-label/);
+});
+
+test("the Components button page documents only the finalized contract", () => {
+	const buttonPage = page.match(
+		/<div\s+data-component-page="button"[\s\S]*?(?=<div\s+data-component-page="toggle-button")/,
+	)?.[0] ?? "";
+	assert.match(buttonPage, /href="\.\/docs\/buttons\.md"/);
+	assert.match(buttonPage, />Emphasis</);
+	assert.match(buttonPage, />Size Roles</);
+	assert.match(buttonPage, />Content and States</);
+	assert.match(buttonPage, />Interaction States</);
+	assert.match(buttonPage, />Composition</);
+	assert.match(buttonPage, /rux-button--accent/);
+	assert.match(buttonPage, /rux-button--default/);
+	assert.match(buttonPage, /rux-button--ghost/);
+	assert.match(buttonPage, /rux-button--danger/);
+	assert.doesNotMatch(buttonPage, /Button Anatomy|Button Variants|Button on Accent/);
+});
+
+test("toggle buttons use aria-pressed as their selection source of truth", () => {
+	assert.doesNotMatch(page, /class="[^"]*rux-button[^"]*is-active/);
+	assert.doesNotMatch(controlStyles, /rux-button[^\n{]*is-active/);
+	assert.doesNotMatch(tokens, /--rux-button-active-overlay/);
+	assert.match(page, /rux-button--toggle"[^>]*aria-pressed="true"/);
+});
+
+test("Today remains a text-only header action at every breakpoint", () => {
+	const today = page.match(/<button[^>]*id="today-btn"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? "";
+	assert.match(today, /<span class="rux-button__label">Today<\/span>/);
+	assert.doesNotMatch(today, /class="rux-icon"/);
+	assert.doesNotMatch(layoutStyles, /#today-btn\s*>\s*\.rux-icon/);
+});
+
+test("mini calendar navigation uses shared 44px header icon buttons", () => {
+	for (const id of ["mini-cal-prev", "mini-cal-next"]) {
+		assert.match(openingTag(id), /rux-button--icon rux-button--header/);
+	}
+});
+
+test("the mini calendar uses the Calendar panel body as its primary surface", () => {
+	const calendar = page.match(
+		/<section\s+class="rux-mini-cal"[\s\S]*?<\/section>/,
+	)?.[0];
+	assert.ok(calendar);
+	assert.match(calendar, /class="rux-mini-cal__header"/);
+	assert.match(calendar, /class="rux-mini-cal__body"/);
+	assert.doesNotMatch(calendar, /rux-card/);
+});
+
+test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
+	assert.match(layoutStyles, /--rux-mini-cal-cell-size:\s*\d+px;/);
+	assert.match(layoutStyles, /--rux-mini-cal-cell-gap:\s*var\(--rux-space-2\);/);
+	assert.match(
+		layoutStyles,
+		/\.rux-mini-cal__day-names,\s*\.rux-mini-cal__dates\s*\{[^}]*grid-template-columns:\s*repeat\(7, var\(--rux-mini-cal-cell-size\)\);[^}]*justify-content:\s*center;/s,
+	);
+	assert.doesNotMatch(layoutStyles, /padding-inline:\s*auto/);
+});
+
+test("View Options uses the Calendar panel body as its primary surface", () => {
+	const options = page.match(
+		/<section\s+class="rux-view-options"[\s\S]*?<\/section>/,
+	)?.[0];
+	assert.ok(options);
+	assert.match(options, /class="rux-view-options__title"/);
+	assert.match(options, /class="rux-view-options__list"/);
+	assert.doesNotMatch(options, /rux-card/);
+});
+
+test("Driver Availability uses the panel body as its primary surface", () => {
+	const driversPane = page.match(
+		/id="rp-pane-drivers"[\s\S]*?(?=<div\s+id="rp-pane-tasks")/,
+	)?.[0];
+	assert.ok(driversPane);
+	assert.match(driversPane, /class="rux-panel__pane rux-driver-availability"/);
+	assert.match(driversPane, /class="rux-driver-availability__title"/);
+	assert.match(driversPane, /id="rp-driver-grid"/);
+	assert.doesNotMatch(driversPane, /class="rux-card(?:\s|\")/);
+});
+
+test("driver priority uses a persistent row indicator and matching selected wash", () => {
+	assert.match(page, /row\.dataset\.priority = String\(driver\.priority \|\| 3\)/);
+	assert.doesNotMatch(page, /function driverNameIcon/);
+	assert.match(
+		layoutStyles,
+		/border-left:\s*var\(--rux-side-nav-selected-width\) solid\s*var\(--rux-driver-priority-color\)/s,
+	);
+	assert.match(
+		layoutStyles,
+		/\.rux-driver-grid__row\.is-selected \.rux-driver-grid__name\s*\{[^}]*background:\s*oklch\(\s*from var\(--rux-driver-priority-color\) l c h \/ 0\.14\s*\)/s,
+	);
 });
 
 test("drawer toggles prefer disclosure semantics without breaking legacy toggles", () => {

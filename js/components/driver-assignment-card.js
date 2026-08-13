@@ -86,7 +86,7 @@ function setButtonLoading(button, loading, label) {
 	button.disabled = loading;
 	button.classList.toggle("rux-button--loading", loading);
 	button.setAttribute("aria-busy", String(loading));
-	const labelNode = button.querySelector(".rux-btn-label");
+	const labelNode = button.querySelector(".rux-button__label");
 	if (labelNode) labelNode.textContent = loading ? label : button.dataset.idleLabel;
 }
 
@@ -105,7 +105,7 @@ function createButton(label, {
 	if (iconName) button.appendChild(icon(iconName, "rux-button__idle-icon"));
 	button.append(
 		el("span", "rux-button__spinner"),
-		el("span", "rux-btn-label", label),
+		el("span", "rux-button__label", label),
 	);
 	if (onClick) button.addEventListener("click", onClick);
 	return button;
@@ -119,8 +119,8 @@ const ACTION_LINK_TONE_CLASS = {
 	neutral: "rux-button--default",
 	info:    "rux-button--default",
 	success: "rux-button--accent",
-	warning: "rux-button--outline",
-	danger:  "rux-button--outline rux-button--danger",
+	warning: "rux-button--default",
+	danger:  "rux-button--ghost rux-button--danger",
 };
 
 // Icon-only, same as .rux-module-button was (its __label was visually
@@ -245,9 +245,9 @@ function createStatus(entry, view, options, card) {
 	const addDecline = () => {
 		if (typeof options.onDecline !== "function") return;
 		const decline = createButton("Decline", {
-			variant: "default",
+			variant: "ghost",
 			className:
-				"rux-button--danger driver-assignment-card__response-control driver-assignment-card__decline driver-assignment-card__decline--availability",
+				"rux-button--danger driver-assignment-card__response-control driver-assignment-card__decline",
 		});
 		decline.addEventListener("click", async () => {
 			if (typeof options.confirmDecline === "function") {
@@ -640,7 +640,7 @@ function crewFleetModule(view) {
 			busSections.forEach((busSection, index) => {
 				if (index > 1) busSection.hidden = !expanded;
 			});
-			disclosure.querySelector(".rux-btn-label").textContent = expanded
+			disclosure.querySelector(".rux-button__label").textContent = expanded
 				? "Show Less Crew"
 				: `View All Crew (${totalCrew})`;
 		});
@@ -730,7 +730,7 @@ function notesModule(view) {
 			const expanded = disclosure.getAttribute("aria-expanded") !== "true";
 			disclosure.setAttribute("aria-expanded", String(expanded));
 			notes.classList.toggle("is-collapsed", !expanded);
-			disclosure.querySelector(".rux-btn-label").textContent = expanded
+			disclosure.querySelector(".rux-button__label").textContent = expanded
 				? "Show Less"
 				: "View Full Notes";
 		});

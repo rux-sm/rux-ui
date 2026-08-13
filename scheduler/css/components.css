@@ -44,8 +44,8 @@
    ========================================================================== */
 
 @import "../../rux-ui/css/base/icons.css";
-@import "../../rux-ui/css/base/controls.css?v=17";
-@import "../../rux-ui/css/base/ui-header.css?v=9";
+@import "../../rux-ui/css/base/controls.css?v=22";
+@import "../../rux-ui/css/base/ui-header.css?v=11";
 @import "../../rux-ui/css/base/side-nav.css?v=2";
 @import "../../rux-ui/css/base/app-shell.css?v=1";
 @import "../../rux-ui/css/base/badges.css?v=2";
@@ -59,12 +59,12 @@
 @import "../../rux-ui/css/base/floating-window.css?v=6";
 @import "../../rux-ui/css/base/content.css?v=2";
 @import "../../rux-ui/css/base/feedback.css?v=4";
-@import "../../rux-ui/css/base/navigation.css?v=16";
+@import "../../rux-ui/css/base/navigation.css?v=17";
 @import "../../rux-ui/css/base/utils.css?v=2";
-@import "./features/trip-bar.css?v=31";
-@import "./features/trip-panel.css?v=31";
+@import "./features/trip-bar.css?v=32";
+@import "./features/trip-panel.css?v=32";
 @import "./features/trip-history.css?v=2";
 @import "./features/trip-dialog.css?v=2";
 @import "./features/itinerary.css?v=4";
 @import "./layout/scheduler.css?v=15";
-@import "./layout/scheduler-app.css?v=72";
+@import "./layout/scheduler-app.css?v=78";

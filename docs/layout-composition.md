@@ -48,9 +48,8 @@ UI Header
     └── Switcher          optional, controls product-level right panel
 ```
 
-- The header MUST use the fixed `48px` shell contract. Its centered action
-  buttons use the shared `44px` header-control contract; individual children
-  MUST NOT determine or enlarge the shell height.
+- The header and its actions MUST use the shared fixed `44px` header-control
+  contract. Individual children MUST NOT determine or enlarge the shell height.
 - At text zoom or narrow widths, optional navigation and utilities SHOULD
   collapse before they crowd the fixed shell.
 - The menu, brand, navigation, and actions MUST remain in that order when

@@ -133,7 +133,7 @@
         <span class="rux-switch__track"></span>
         <span class="rux-switch__thumb"></span>
       </label>
-      <button class="rux-button rux-button--default rux-button--icon rux-button--sm" type="button"
+      <button class="rux-button rux-button--default rux-button--icon rux-button--compact" type="button"
               data-req-delete="${escHtml(req.id)}" aria-label="Delete ${escHtml(req.label)}">
         <span class="rux-icon">delete</span>
       </button>

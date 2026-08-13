@@ -110,6 +110,180 @@
 	justify-self: center;
 }
 
+.components-app__button-intro,
+.components-app__button-composition,
+.components-app__button-states {
+	grid-column: 1 / -1;
+	max-width: none !important;
+}
+
+.components-app__button-state-grid {
+	display: grid;
+	grid-template-columns: repeat(6, minmax(7rem, 1fr));
+	gap: var(--rux-space-3);
+}
+
+.components-app__button-state-grid > div {
+	display: grid;
+	justify-items: start;
+	align-content: start;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-3);
+	background: var(--rux-surface-1);
+}
+
+.components-app__button-state-grid span {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+}
+
+.components-app__button-state-grid small {
+	color: var(--rux-fg-muted);
+}
+
+/* Static specimens mirror the real pseudo-class recipes so every state can
+   be compared at once without requiring six simultaneous pointer states. */
+.components-app__button-state-grid [data-demo-button-state="hover"] {
+	background: var(--rux-button-default-hover-background);
+	border: none;
+	color: var(--rux-button-default-hover-text);
+}
+
+.components-app__button-state-grid [data-demo-button-state="pressed"] {
+	background: var(--rux-button-default-active-background);
+	border-color: var(--rux-button-default-active-border);
+	color: var(--rux-button-default-active-text);
+	box-shadow: var(--rux-button-shadow-pressed);
+}
+
+.components-app__button-state-grid [data-demo-button-state="focus"] {
+	box-shadow: var(--rux-button-focus-ring);
+}
+
+.components-app__button-intro .rux-card__header {
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-space-4);
+}
+
+.components-app__button-guidance,
+.components-app__button-sections {
+	display: grid;
+	gap: var(--rux-space-4);
+}
+
+.components-app__button-guidance > p,
+.components-app__button-note {
+	margin: 0;
+	color: var(--rux-fg-muted);
+}
+
+.components-app__button-rules {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--rux-space-3);
+	margin: 0;
+}
+
+.components-app__button-rules > div {
+	display: grid;
+	gap: var(--rux-space-1);
+	padding: var(--rux-space-3);
+	background: var(--rux-surface-1);
+}
+
+.components-app__button-rules dt,
+.components-app__button-example strong,
+.components-app__button-sections h3 {
+	font-size: var(--rux-text-sm);
+	font-weight: var(--rux-weight-semibold);
+	color: var(--rux-fg);
+}
+
+.components-app__button-rules dd {
+	margin: 0;
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-sm);
+}
+
+.components-app__button-list {
+	display: grid;
+	gap: var(--rux-space-2);
+}
+
+.components-app__button-example {
+	display: grid;
+	grid-template-columns: minmax(8rem, 1fr) minmax(8rem, auto) minmax(12rem, 1fr);
+	align-items: center;
+	gap: var(--rux-space-3);
+	min-height: 3.5rem;
+	padding-block: var(--rux-space-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+}
+
+.components-app__button-example:last-child {
+	border-bottom: 0;
+}
+
+.components-app__button-example > div {
+	display: grid;
+	gap: var(--rux-space-1);
+}
+
+.components-app__button-example span,
+.components-app__button-example code {
+	color: var(--rux-fg-muted);
+	font-size: var(--rux-text-xs);
+}
+
+.components-app__button-example code {
+	justify-self: end;
+	text-align: end;
+}
+
+.components-app__button-sections {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.components-app__button-sections section {
+	display: grid;
+	align-content: start;
+	gap: var(--rux-space-3);
+}
+
+.components-app__button-sections h3 {
+	margin: 0;
+}
+
+.components-app__button-composition pre {
+	margin: 0 0 var(--rux-space-3);
+	padding: var(--rux-space-4);
+	overflow-x: auto;
+	background: var(--rux-surface-0);
+	color: var(--rux-fg);
+}
+
+@media (max-width: 700px) {
+	.components-app__button-rules,
+	.components-app__button-sections {
+		grid-template-columns: 1fr;
+	}
+
+	.components-app__button-example {
+		grid-template-columns: 1fr auto;
+	}
+
+	.components-app__button-example code {
+		grid-column: 1 / -1;
+		justify-self: start;
+		text-align: start;
+	}
+
+	.components-app__button-state-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
 .components-app__anatomy {
 	display: flex;
 	flex-wrap: wrap;
