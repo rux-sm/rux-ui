@@ -202,9 +202,9 @@
 
     --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* canvas */
     --rux-surface-1:        oklch(from var(--rux-neutral) 20% c h); /* UI Header */
-    --rux-surface-2:        oklch(from var(--rux-neutral) 26% c h); /* card layer */
-    --rux-surface-3:        oklch(from var(--rux-neutral) 34% c h); /* input fields/card layer accent? */
-    --rux-surface-4:        oklch(from var(--rux-neutral) 43% c h); /* layer */
+    --rux-surface-2:        oklch(from var(--rux-neutral) 20% c h); /* card layer */
+    --rux-surface-3:        oklch(from var(--rux-neutral) 30% c h); /* input fields/card layer accent? */
+    --rux-surface-4:        oklch(from var(--rux-neutral) 40% c h); /* layer */
     --rux-surface-5:        oklch(from var(--rux-neutral) 50% c h); /* selected menu item */
     --rux-surface-6:        oklch(from var(--rux-neutral) 0% c h); 
     --rux-surface-contrast: oklch(from var(--rux-neutral) 0% c h); 
