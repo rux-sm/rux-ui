@@ -37,7 +37,7 @@
    ========================================================================== */
 
 .rux-scheduler {
-	--rux-scheduler-col-head-width: 32px;
+	--rux-scheduler-col-head-width: var(--rux-calendar-header-row-width);
 	--rux-scheduler-head-height: var(--rux-calendar-header-height);
 	--rux-scheduler-days: 7;
 	--rux-scheduler-day-min-width: 14rem;

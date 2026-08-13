@@ -174,8 +174,13 @@
 	height: var(--rux-tab-height);
 	background-color: var(--rux-tabs-attached-tab-bg);
 	color: var(--rux-tabs-attached-tab-fg);
-	border: 0;
-	border-inline: var(--rux-tabs-attached-tab-inline-border);
+	/* No border-top: the strip always sits directly under a header that
+	   already draws that boundary (ui-header's own border-bottom, or the
+	   panel's own edge) — an inactive tab's own top border would draw a
+	   second line right beside it instead of sharing the same one. */
+	border-top: none;
+	border-left: none;
+	border-right: var(--rux-tabs-attached-tab-inline-border);
 	border-bottom: var(--rux-tabs-attached-tab-border);
 	border-radius:
 		var(--rux-tabs-attached-tab-top-left-radius)
@@ -215,7 +220,12 @@
 	   what was rendering as a bright white border instead of the intended
 	   one. */
 	border: var(--rux-tabs-attached-tab-selected-border);
-	border-inline: var(--rux-tabs-attached-tab-selected-inline-border);
+	border-left: var(--rux-tabs-attached-tab-selected-inline-border);
+	/* Right edge matches an inactive tab's own — it still separates the
+	   active tab from its next neighbor. The :last-child rule below (higher
+	   specificity) zeroes this back out when the active tab is also last,
+	   so it never doubles against the panel's own right edge. */
+	border-right: var(--rux-tabs-attached-tab-inline-border);
 	/* Transparent, not `none` — `none` drops the bottom border's width along
 	   with its color, leaving 1px less border reserved at the bottom than
 	   at the top. .rux-tab centers its content vertically, so that 1px

@@ -43,7 +43,7 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 40% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 36% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -200,14 +200,14 @@
 	/* Higher numbers are lighter and visually closer. */
 
 
-    --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* Deepest background / canvas */
-    --rux-surface-1:        oklch(from var(--rux-neutral) 16% c h); /* UI Header */
-    --rux-surface-2:        oklch(from var(--rux-neutral) 20% c h); /* Raised elements */
-    --rux-surface-3:        oklch(from var(--rux-neutral) 24% c h); /* Hover states */
-    --rux-surface-4:        oklch(from var(--rux-neutral) 28% c h); /* Active / Selected states */
-    --rux-surface-5:        oklch(from var(--rux-neutral) 32% c h); /* Borders / Dividers (prominent) */
-    --rux-surface-6:        oklch(from var(--rux-neutral) 36% c h); /* Disabled inputs */
-    --rux-surface-contrast: oklch(from var(--rux-neutral) 40% c h); /* Primary text / High emphasis */
+    --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* canvas */
+    --rux-surface-1:        oklch(from var(--rux-neutral) 20% c h); /* UI Header */
+    --rux-surface-2:        oklch(from var(--rux-neutral) 26% c h); /* card layer */
+    --rux-surface-3:        oklch(from var(--rux-neutral) 34% c h); /* input fields/card layer accent? */
+    --rux-surface-4:        oklch(from var(--rux-neutral) 43% c h); /* layer */
+    --rux-surface-5:        oklch(from var(--rux-neutral) 50% c h); /* selected menu item */
+    --rux-surface-6:        oklch(from var(--rux-neutral) 0% c h); 
+    --rux-surface-contrast: oklch(from var(--rux-neutral) 0% c h); 
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
@@ -229,7 +229,7 @@
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg: oklch(from var(--rux-neutral) 20% c h); /* Raised elements */
+	--rux-well-bg: var(--rux-surface-3); /* Raised elements */
 	--rux-thumb-bg: oklch(from var(--rux-neutral) 90% c h); /* Raised elements */
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
@@ -443,7 +443,7 @@
 	/* ─── COMPONENT · UI header ───────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-ui-header-bg:     	var(--rux-surface-0);
+	--rux-ui-header-bg:     	var(--rux-surface-1);
 	--rux-ui-header-border: 	var(--rux-border-width) solid var(--rux-border);
 	/* --rux-ui-header-radius: not set — spans full width, no corners */
 	/* --rux-ui-header-shadow: not set */
@@ -477,7 +477,7 @@
 	--rux-side-nav-width:           256px;
 	--rux-side-nav-bg:              var(--rux-surface-3);
 	--rux-side-nav-fg:              var(--rux-fg-secondary);
-	--rux-side-nav-border:          none;
+	--rux-side-nav-border:          1px solid var(--rux-border);
 	--rux-side-nav-shadow:          none;
 	--rux-side-nav-padding:         var(--rux-space-2) var(--rux-space-0);
 	--rux-side-nav-item-min-height: 40px;
@@ -529,8 +529,7 @@
 
 	/* — shell — */
 	--rux-calendar-bg:         var(--rux-surface-2);
-	--rux-calendar-border:     none;
-	--rux-calendar-top-border: none;
+	--rux-calendar-border:     1px solid var(--rux-border); /* calender outline border*/
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
 	--rux-calendar-radius: var(--rux-radius-container);
@@ -545,13 +544,14 @@
 	/* Header cells share one flat plane; borders provide separation without
 	   repeating elevation or rim lighting across every grid cell. */
 	--rux-calendar-header-bg:     var(--rux-surface-3);
-	--rux-calendar-header-border: none;
+	--rux-calendar-header-border: 1px solid var(--rux-border); /* row header dividers*/
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
 	   of the same container shape, not its own control. */
 	--rux-calendar-header-radius: var(--rux-radius-container);
-	--rux-calendar-header-height: 28px;
+	--rux-calendar-header-height: 32px;
+	--rux-calendar-header-row-width: 32px;
 	--rux-calendar-header-shadow:        none;
-	--rux-calendar-header-divider:       none;
+	--rux-calendar-header-divider:      1px solid var(--rux-border); /* column header dividers*/
 
 	/* — grid — */
 	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-border);
@@ -606,7 +606,7 @@
 	--rux-panel-content-gap: var(--rux-space-5);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
-	--rux-right-panel-border: 1px solid var(--rux-border);
+	--rux-panel-right-border: 1px solid var(--rux-border);
 	--rux-left-panel-border: 0px solid var(--rux-border);
 
 	/* — minimum sizing shared by panel-shaped feature layouts — */
@@ -1272,7 +1272,7 @@
 	--rux-tab-focus-ring: 0 0 0 3px var(--rux-accent-ring);
 
 	/* — tabs, contained variant — */
-	--rux-tabs-contained-bg:      var(--rux-surface-1);
+	--rux-tabs-contained-bg:      var(--rux-surface-3);
 	--rux-tabs-contained-padding: var(--rux-space-2);
 	--rux-tabs-contained-gap:     var(--rux-space-0);
 	--rux-tabs-contained-tab-fg:          var(--rux-fg-muted);
@@ -1289,12 +1289,12 @@
 	/* — attached tab, inactive — */
 	--rux-tabs-attached-tab-bg:     var(--rux-surface-2);
 	--rux-tabs-attached-tab-fg:     var(--rux-fg-muted);
-	--rux-tabs-attached-tab-border: none;
+	--rux-tabs-attached-tab-border: 1px solid var(--rux-border);
 	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-0);
 	--rux-tabs-attached-tab-top-right-radius: var(--rux-radius-0);
 	--rux-tabs-attached-tab-shadow:	none;
 	--rux-tabs-attached-tab-hover-fg:      var(--rux-fg);
-	--rux-tabs-attached-tab-inline-border: none;
+	--rux-tabs-attached-tab-inline-border: 1px solid var(--rux-border);
 
 	/* — attached tab, selected — */
 	/* Active attached tabs and their pane share one surface. */
@@ -1409,7 +1409,6 @@
 	/* ─── Component overrides ─────────────────────────────────────────────── */
 	--rux-calendar-grid:           var(--rux-border-width) solid var(--rux-surface-5);
 	--rux-calendar-border:         var(--rux-calendar-grid);
-	--rux-calendar-top-border:     var(--rux-calendar-grid);
 	--rux-calendar-header-border:  var(--rux-calendar-grid);
 	--rux-calendar-header-divider: var(--rux-calendar-grid);
 	--rux-calendar-header-bg: var(--rux-surface-2);
