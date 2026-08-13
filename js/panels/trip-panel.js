@@ -924,6 +924,34 @@ function attachContactAutofill(nameInput, { phoneInput, emailInput, clientInput 
 	});
 }
 
+/* Which .rux-card__section-header currently owns the "stuck" shadow is
+   scroll state, not something CSS position: sticky exposes on its own —
+   there's no shipped :stuck selector to key a box-shadow off. Each section
+   gets a zero-height sentinel as its first child, right at the section's
+   own top edge (the same point its header docks to once stuck). Watching
+   the sentinel's own visibility, not the header's, sidesteps needing to
+   read the header's changing intersection ratio as it slides in: the
+   sentinel leaves the scroll root at exactly the instant its header
+   reaches top:0 and sticks, and returns at exactly the instant it
+   unsticks — a clean boundary in and out. */
+function initStickySectionHeaders(root) {
+	const scrollRoot = root.querySelector(".rux-panel__body");
+	const sentinels = root.querySelectorAll(".rux-card__section-sentinel");
+	if (!scrollRoot || !sentinels.length) return;
+	const observer = new IntersectionObserver(
+		(entries) => {
+			for (const entry of entries) {
+				entry.target.nextElementSibling?.classList.toggle(
+					"is-stuck",
+					!entry.isIntersecting,
+				);
+			}
+		},
+		{ root: scrollRoot, threshold: 0, rootMargin: "-1px 0px 0px 0px" },
+	);
+	sentinels.forEach((sentinel) => observer.observe(sentinel));
+}
+
 /* ── Init ───────────────────────────────────────────────────────────────── */
 
 function initTripPanel(root, { buses = [], drivers = [] } = {}) {
@@ -934,6 +962,8 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		return;
 	}
 	root.dataset.ruxTripPanelInit = "true";
+
+	initStickySectionHeaders(root);
 
 	/* ── Segmented toggle groups (Billing) ─────────────────────────────── */
 

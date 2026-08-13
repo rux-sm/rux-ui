@@ -55,11 +55,76 @@
 }
 
 .rux-card__section {
-	padding: var(--rux-card-padding);
+	padding: 0;
 }
 
 .rux-card__section + .rux-card__section {
 	border-top: var(--rux-card-section-border);
+}
+
+/* Title row for a section that needs one — trailing content (an icon
+   button, a .rux-cluster of several) is optional; omit it and the header
+   still renders with just the title. The border-bottom is the only edge
+   decoration, keeping the section flat rather than reintroducing the
+   boxed look .rux-card-section (the separate, tinted component) has. */
+.rux-card__section-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-card-content-gap);
+	min-height: var(--rux-card-header-height);
+	/* Full inline padding on both sides, unlike .rux-card__header's
+	   left-only --rux-card-header-padding — that token relies on a card
+	   that's already inset from the viewport by its parent's own padding,
+	   with the trailing button's own hit-area supplying the right edge.
+	   A section is meant to run edge-to-edge inside a pane with no inline
+	   padding of its own (see #pane-trip in trip-panel.css), so it has to
+	   own its right inset explicitly or the trailing action sits flush
+	   against the window edge. */
+	padding: 0 var(--rux-card-padding-inline);
+	border-bottom: var(--rux-card-section-border);
+	/* Standard stacking-header behavior: this header sticks to the top of
+	   its scroll container (the panel body, not the page) once its section
+	   scrolls under it, and stays there until the *next* section's own
+	   sticky header reaches the same position and takes over — plain
+	   position: sticky on every section header does this for free, no JS,
+	   as long as each header is a direct child of its own section rather
+	   than sharing one ancestor with the others. An opaque background is
+	   required for this to read correctly: without one, the section
+	   content scrolling underneath would show through the "stuck" header.
+	   --rux-card-bg (not transparent) is that background — sections
+	   themselves stay transparent; only the sticky header needs to paint
+	   over what scrolls beneath it. */
+	position: sticky;
+	top: 0;
+	/* Not z-index: 1 — .rux-button--segment (controls.css) also sets
+	   z-index: 1 on itself, and neither the segmented track nor this
+	   section establishes its own stacking context, so a tied z-index
+	   falls back to DOM order: the segmented control, coming after the
+	   header in markup, would win and paint over it once scrolled underneath
+	   (exactly what happened before this). --rux-z-sticky is the same token
+	   the scheduler's own sticky row/column headers use, so this reliably
+	   outranks ordinary in-flow content without guessing a number high
+	   enough to beat whatever else might also claim z-index: 1. */
+	z-index: var(--rux-z-sticky);
+	background: var(--rux-card-bg);
+	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+}
+
+/* Shadow belongs to whichever header is actually docked at the moment, not
+   to a fixed one — .is-stuck is JS-driven (initStickySectionHeaders in
+   trip-panel.js), toggled by watching each section's own sentinel rather
+   than guessed from scroll math. Every header is eligible; only the one
+   currently pinned over content ever carries it. */
+.rux-card__section-header.is-stuck {
+	box-shadow: var(--rux-shadow-1);
+}
+
+/* Zero-height marker at the section's own top edge — see
+   initStickySectionHeaders in trip-panel.js. Not visual; purely an
+   IntersectionObserver target. */
+.rux-card__section-sentinel {
+	height: 0;
 }
 
 /* Bordered content group nested inside a card. Its regions deliberately reuse

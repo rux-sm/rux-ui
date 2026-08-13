@@ -819,10 +819,11 @@
 						hidden
 					>
 						<header
-							class="rux-floating-window__header rux-card__header rux-trip-dialog__header"
+							class="rux-floating-window__header rux-card__header"
+							data-trip-dialog-header
 						>
 							<h2
-								class="rux-card__title rux-trip-dialog__title"
+								class="rux-card__title"
 								id="trip-editor-dialog-title"
 							>
 								New Trip
@@ -929,12 +930,16 @@
 									class="rux-panel__pane rux-trip-panel__pane"
 									role="tabpanel"
 								>
-									<div class="rux-card">
-										<header class="rux-card__header">
+									<div class="rux-card__section">
+										<div
+											class="rux-card__section-sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__section-header">
 											<p class="rux-card__title">
 												Trip Details
 											</p>
-										</header>
+										</div>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1087,12 +1092,16 @@
 											</div>
 										</div>
 									</div>
-									<div class="rux-card">
-										<header class="rux-card__header">
+									<div class="rux-card__section">
+										<div
+											class="rux-card__section-sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__section-header">
 											<p class="rux-card__title">
 												Customer Details
 											</p>
-										</header>
+										</div>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1180,8 +1189,12 @@
 											</div>
 										</div>
 									</div>
-									<div class="rux-card">
-										<header class="rux-card__header">
+									<div class="rux-card__section">
+										<div
+											class="rux-card__section-sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__section-header">
 											<p class="rux-card__title">
 												Trip Contact
 											</p>
@@ -1197,7 +1210,7 @@
 													>add</span
 												>
 											</button>
-										</header>
+										</div>
 										<div class="rux-card__body">
 											<div
 												id="tp-contacts-list"
@@ -1205,12 +1218,16 @@
 											></div>
 										</div>
 									</div>
-									<div class="rux-card">
-										<header class="rux-card__header">
+									<div class="rux-card__section">
+										<div
+											class="rux-card__section-sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__section-header">
 											<p class="rux-card__title">
 												Requirements
 											</p>
-										</header>
+										</div>
 										<div class="rux-card__body">
 											<div class="rux-field">
 												<div
@@ -1228,8 +1245,12 @@
 											</div>
 										</div>
 									</div>
-									<div class="rux-card">
-										<header class="rux-card__header">
+									<div class="rux-card__section">
+										<div
+											class="rux-card__section-sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__section-header">
 											<p class="rux-card__title">Files</p>
 											<div class="rux-cluster">
 												<button
@@ -1261,7 +1282,7 @@
 													>
 												</button>
 											</div>
-										</header>
+										</div>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1300,15 +1321,19 @@
 											/>
 										</div>
 									</div>
-									<div class="rux-card">
-										<header class="rux-card__header">
+									<div class="rux-card__section">
+										<div
+											class="rux-card__section-sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__section-header">
 											<p
 												class="rux-card__title"
 												id="tp-trip-bar-color-label"
 											>
 												Trip Bar Color
 											</p>
-										</header>
+										</div>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -7200,7 +7225,7 @@
 			const tripEditorDialogEl =
 				document.getElementById("trip-editor-dialog");
 			const tripEditorHeaderEl = tripEditorDialogEl?.querySelector(
-				".rux-trip-dialog__header",
+				"[data-trip-dialog-header]",
 			);
 			const rightPanel = rightDrawer.querySelector(".rux-right-panel");
 			const leftPanelToggleBtn = document.querySelector(

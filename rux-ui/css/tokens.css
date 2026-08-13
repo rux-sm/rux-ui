@@ -43,7 +43,7 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 36% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 42% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -200,14 +200,14 @@
 	/* Higher numbers are lighter and visually closer. */
 
 
-    --rux-surface-0:        oklch(from var(--rux-neutral) 0% c h); /* canvas */
-    --rux-surface-1:        oklch(from var(--rux-neutral) 20% c h); /* UI Header */
-    --rux-surface-2:        oklch(from var(--rux-neutral) 20% c h); /* card layer */
-    --rux-surface-3:        oklch(from var(--rux-neutral) 30% c h); /* input fields/card layer accent? */
-    --rux-surface-4:        oklch(from var(--rux-neutral) 40% c h); /* layer */
-    --rux-surface-5:        oklch(from var(--rux-neutral) 50% c h); /* selected menu item */
-    --rux-surface-6:        oklch(from var(--rux-neutral) 0% c h); 
-    --rux-surface-contrast: oklch(from var(--rux-neutral) 0% c h); 
+    --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 				/* 0,  0,  0  */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 20% c h); /* UI Header */ 			/* 22, 22 ,22 */
+    --rux-surface-2:    oklch(from var(--rux-neutral) 26% c h); /* card layer */ 			/* 38, 38, 38 */
+    --rux-surface-3:    oklch(from var(--rux-neutral) 34% c h); /* input fields */ 			/* 57, 57, 57 */
+    --rux-surface-4:    oklch(from var(--rux-neutral) 43% c h); /* layer */					/* 81, 81, 81 */
+    --rux-surface-5:    oklch(from var(--rux-neutral) 50% c h); /* selected menu item */	/* 99, 99, 99 */
+    --rux-surface-6:   	oklch(from var(--rux-neutral) 0% c h); 
+    --rux-surface-7:	oklch(from var(--rux-neutral) 0% c h); 
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
@@ -528,7 +528,7 @@
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
 	/* — shell — */
-	--rux-calendar-bg:         var(--rux-surface-2);
+	--rux-calendar-bg:         var(--rux-surface-1);
 	--rux-calendar-border:     1px solid var(--rux-border); /* calender outline border*/
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
@@ -543,7 +543,7 @@
 	/* — header — */
 	/* Header cells share one flat plane; borders provide separation without
 	   repeating elevation or rim lighting across every grid cell. */
-	--rux-calendar-header-bg:     var(--rux-surface-3);
+	--rux-calendar-header-bg:     var(--rux-surface-1);
 	--rux-calendar-header-border: 1px solid var(--rux-border); /* row header dividers*/
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
 	   of the same container shape, not its own control. */
@@ -566,7 +566,7 @@
 	/* The body is intentionally a bare scrolling region. */
 
 	/* — shell — */
-	--rux-panel-bg:            var(--rux-surface-3);
+	--rux-panel-bg:            var(--rux-surface-2);
 	--rux-panel-fg:            var(--rux-fg);
 	--rux-panel-border-inline: none;
 	--rux-panel-border-block:  none;
@@ -595,7 +595,7 @@
 	--rux-panel-nav-shadow:     var(--rux-shadow-3);
 
 	/* — footer — */
-	--rux-panel-footer-bg:      var(--rux-surface-3);
+	--rux-panel-footer-bg:      var(--rux-surface-2);
 	--rux-panel-footer-border:  1px solid var(--rux-border);
 	--rux-panel-footer-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-footer-shadow:  var(--rux-shadow-1);
@@ -630,7 +630,7 @@
 	/* The body is intentionally a bare content region. */
 
 	/* — shell — */
-	--rux-card-bg:           var(--rux-surface-4);
+	--rux-card-bg:           var(--rux-surface-2);
 	--rux-card-fg:           var(--rux-fg);
 	--rux-card-border-width: var(--rux-border-width);
 	--rux-card-border:       1px solid var(--rux-border);
@@ -640,7 +640,7 @@
 	/* — header — */
 	/* Transparent so the card shell's inset top highlight remains visible
 	   through headers instead of being covered by a duplicate surface layer. */
-	--rux-card-header-bg:      transparent;
+	--rux-card-header-bg:      var(--rux-surface-3);
 	--rux-card-header-border:  1px solid var(--rux-border);
 	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-4);
 	--rux-card-header-height:  40px;
@@ -656,8 +656,8 @@
 	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-border);
 
 	/* — section (divider between stacked .rux-card__section siblings) — */
-	--rux-card-section-bg:      var(--rux-surface-3);
-	--rux-card-section-border:  none;
+	--rux-card-section-bg:      var(--rux-surface-2);
+	--rux-card-section-border:  var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-section-outline: none;
 	/* Sections are recessed within their parent card rather than independently
 	   elevated above it. */
@@ -678,22 +678,24 @@
 	--rux-card-content-gap: var(--rux-space-4);
 
 	/* ─── COMPONENT · floating window ─────────────────────────────────────── */
-	/* Floating windows extend .rux-card, which still owns their surface and
-	   radius. Header/footer padding is owned here, not by .rux-card-header/
-	   footer-padding — those are tuned for a card body's spacing (notably a
-	   0 top value on --rux-card-padding-block, correct for a body that sits
-	   right under a header, wrong for a footer, which wants the same 16px
-	   on every side). Body/content spacing remains .rux-card's job. */
+	/* Floating windows extend .rux-card (bg, border, radius, shadow, header/
+	   footer padding, header height are all .rux-card's job — every
+	   consumer pairs .rux-floating-window with .rux-card.rux-card--elevated
+	   on the same element). Only the two tokens below remain: the header
+	   and footer's own bg tint is a deliberate exception to .rux-card's
+	   transparent default, giving a draggable header a visible
+	   grab-affordance an ordinary card doesn't need. This block used to
+	   also carry --rux-floating-window-background/-shadow, which duplicated
+	   .rux-card-elevated-bg/-shadow under different names and different
+	   values — floating-window.css loading after card.css meant they always
+	   won the cascade, silently making .rux-card--elevated's own values
+	   dead on every floating window. It also carried -header-height,
+	   -header-border, -header-padding, and -footer-padding, none of which
+	   any CSS rule ever consumed — .rux-card__header/__footer (present in
+	   every consumer's class list) supplied those already. */
 
-	--rux-floating-window-header-height:	40px;
-	--rux-floating-window-shadow:        	var(--rux-shadow-3);
-	--rux-floating-window-header-bg:     	var(--rux-surface-4);
-	--rux-floating-window-header-border: 	none;
-	--rux-floating-window-header-padding: 	var(--rux-space-4);
-	--rux-floating-window-footer-bg:     	var(--rux-surface-4);
-	--rux-floating-window-footer-padding:	var(--rux-space-4);
-	--rux-floating-window-footer-shadow:  	var(--rux-shadow-1);
-	--rux-floating-window-background: 		var(--rux-surface-4);
+	--rux-floating-window-header-bg: var(--rux-surface-2);
+	--rux-floating-window-footer-bg: var(--rux-surface-2);
 
 	/* ─── COMPONENT · itinerary marker ────────────────────────────────────── */
 	/* Was filed under "card" (its markers sit inside .rux-card-section rows)
@@ -1250,7 +1252,7 @@
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
 	/* — tab (plain) — */
-	--rux-tab-bg: var(--rux-surface-2); /* ghost at rest — never a milky white fill */
+	--rux-tab-bg: var(--rux-surface-3); /* ghost at rest — never a milky white fill */
 	--rux-tab-fg: var(--rux-fg-muted);
 	--rux-tab-radius: var(--rux-radius-0);
 	/* --rux-tab-border: not set at rest — only the selected state below has one */
@@ -1287,7 +1289,7 @@
 	--rux-tabs-attached-gap:    var(--rux-space-0);
 
 	/* — attached tab, inactive — */
-	--rux-tabs-attached-tab-bg:     var(--rux-surface-2);
+	--rux-tabs-attached-tab-bg:     var(--rux-surface-3);
 	--rux-tabs-attached-tab-fg:     var(--rux-fg-muted);
 	--rux-tabs-attached-tab-border: 1px solid var(--rux-border);
 	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-0);

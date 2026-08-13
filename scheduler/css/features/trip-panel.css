@@ -39,6 +39,16 @@
 	container-type: inline-size;
 }
 
+/* initPanelScrollEdges (js/core/controls.js) still toggles .is-scrolled
+   here like it does on every .rux-panel — that JS is shared and stays as
+   is. Only the resulting shadow is suppressed: #pane-trip's section
+   headers (card.css's .rux-card__section-header.is-stuck) now own that
+   shadow duty per section as the user scrolls, so the nav showing its own
+   at the same time doubled it up right above the section header's. */
+.rux-trip-panel > .rux-panel__nav.is-scrolled {
+	box-shadow: none;
+}
+
 
 .rux-trip-panel__status-group .rux-button {
 	min-width: 0;
@@ -115,6 +125,18 @@
 /* The card shell owns the outline; headers do not add a second top edge. */
 .rux-trip-panel__pane .rux-card > .rux-card__header {
 	border-top: 0;
+}
+
+/* Prototype: #pane-trip uses flat, edge-to-edge .rux-card__section groups
+   (docs/cards.md) instead of a nested .rux-card per group. Scoped to this
+   one pane's id, not .rux-trip-panel__pane generally — the other tabs
+   (Billing, Itinerary, Fleet) still use the inset, individually-boxed
+   .rux-card layout and would lose their own inline padding if this
+   applied to the shared class. Remove this id scoping once every pane in
+   the trip editor has been converted the same way. */
+#pane-trip {
+	padding-inline: 0;
+	gap: 0;
 }
 
 

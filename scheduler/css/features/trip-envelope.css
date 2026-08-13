@@ -34,7 +34,7 @@
     flex-grow: 1;
     min-height: 0; /* lets this actually shrink to the window's real size instead of refusing to go below the card's natural (pre-scale) content size */
     padding: var(--rux-space-4);
-    background: var(--rux-floating-window-background);
+    background: var(--rux-card-bg);
     /* Fallback only, not the primary mechanism — fitToHeight() computes an
        exact scale to fit this space, so overflow shouldn't normally trigger. */
     overflow: auto;

@@ -93,7 +93,7 @@
 	/* Keep the wheel over the list from chaining into the page/calendar
 	   underneath when the list hits its top or bottom boundary. */
 	overscroll-behavior: contain;
-	background: var(--rux-floating-window-background);
+	background: var(--rux-card-bg);
 	list-style: none;
 }
 

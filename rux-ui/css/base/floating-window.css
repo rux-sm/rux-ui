@@ -12,14 +12,20 @@
    roomier than a document preview; see .rux-manifest-window).
    ========================================================================== */
 
+/* Every consumer pairs this with .rux-card.rux-card--elevated on the same
+   element for outer chrome (bg, border, radius, shadow) — this rule owns
+   position/drag/resize mechanics only. It used to also set its own
+   background and box-shadow here, which (floating-window.css loads after
+   card.css) silently won the cascade over .rux-card--elevated's values at
+   equal specificity: the elevated shadow/bg were dead on every floating
+   window, always replaced by these instead. Let card own its own chrome
+   once, instead of two components racing to paint the same properties. */
 .rux-floating-window {
 	position: fixed;
 	display: flex;
 	flex-direction: column;
 	resize: both;
 	z-index: var(--rux-z-modal);
-	background: var(--rux-floating-window-background);
-	box-shadow: var(--rux-floating-window-shadow);
 }
 
 .rux-floating-window[hidden] {
@@ -91,12 +97,13 @@
 	cursor: default;
 }
 
+/* Header keeps its own bg tint (deliberately, unlike the transparent
+   .rux-card__header) — a draggable header benefits from a visible
+   grab-affordance an ordinary card header doesn't need. */
 .rux-floating-window__header {
 	cursor: move;
 	flex: none;
-	
 	background: var(--rux-floating-window-header-bg);
-
 }
 
 .rux-floating-window__body {
@@ -105,10 +112,15 @@
 	padding: 0;
 }
 
+/* Same seam .rux-card__footer draws (border-top, not a shadow) — this used
+   to use its own --rux-floating-window-footer-shadow token, a different
+   technique for the identical job of separating a footer from the body
+   above it. Reusing --rux-card-footer-border keeps floating windows and
+   plain cards visually identical here instead of two divergent recipes. */
 .rux-floating-window__footer {
 	flex: none;
 	background: var(--rux-floating-window-footer-bg);
-	box-shadow: var(--rux-floating-window-footer-shadow);
+	border-top: var(--rux-card-footer-border);
 }
 
 .rux-floating-window__spacer {
