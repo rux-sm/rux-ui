@@ -152,8 +152,11 @@
 }
 
 @media (max-width: 500px) {
-	.scheduler-app__side-nav {
-		width: min(var(--rux-side-nav-width), calc(100% - var(--rux-space-12)));
+	/* Leave one header-control width exposed as a tap-to-dismiss strip. Override
+	   the shared width token on the common containing block so the navigation
+	   and its scrim resolve to the exact same mobile edge. */
+	.scheduler-app__body {
+		--rux-side-nav-width: calc(100% - 150px);
 	}
 }
 
@@ -211,7 +214,9 @@
 
 /* UI-header menus must float above the mobile drawer, which sits at --rux-z-modal
    while open (see "Drawer fills full viewport" below) */
-#profile-menu {
+#notifications-menu,
+#profile-menu,
+#team-chat-popover {
 	z-index: calc(var(--rux-z-modal) + 1);
 }
 
@@ -232,19 +237,11 @@
 	flex: none;
 }
 
-.scheduler-app__module[data-module="calendar"] .rux-workspace__heading {
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-start;
-	gap: var(--rux-space-2);
-}
-
-/* Desktop: left/right zones stay their natural (auto) width; the nav column
-   takes whatever's left and left-aligns the title right after the panel
-   toggle, instead of the title floating at the true center of the header. */
+/* The date occupies the flexible column and the Calendar Tools control keeps
+   its natural width. The Trip Editor has no calendar-header trigger. */
 .scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
 	display: grid;
-	grid-template-columns: auto 1fr auto;
+	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
 }
 
@@ -301,39 +298,6 @@
 	pointer-events: auto;
 }
 
-
-@media (max-width: 520px) {
-	/* #today-btn is text-only now (no icon), so it's excluded here — hiding
-	   its label at narrow widths would leave nothing to show at all. */
-	#new-trip-btn .rux-button__label {
-		display: none;
-	}
-	#new-trip-btn {
-		width: var(--rux-control-height);
-		padding: 0;
-	}
-}
-
-@container (max-width: 640px) {
-	#fleet-save-order-btn .rux-button__label,
-	#fleet-cols-btn .rux-button__label,
-	#trips-btn-add .rux-button__label,
-	#fp-btn-add .rux-button__label,
-	#dp-btn-add .rux-button__label {
-		display: none;
-	}
-
-	#fleet-save-order-btn,
-	#fleet-cols-btn,
-	#trips-btn-add,
-	#fp-btn-add,
-	#dp-btn-add {
-		flex: 0 0 var(--rux-control-height);
-		width: var(--rux-control-height);
-		min-width: var(--rux-control-height);
-		padding: 0;
-	}
-}
 
 .scheduler-app__nav {
 	align-items: center;
@@ -498,7 +462,7 @@
 
 	.scheduler-app__drawer--railable.is-open .rux-right-panel {
 		border: 0;
-		border-left: var(--rux-right-panel-border);
+		border-left: var(--rux-panel-right-border);
 	}
 
 	/* The base .scheduler-app__drawer rule hardcodes width:0 for the not-
@@ -596,8 +560,8 @@
 	inline-size: var(--scheduler-app-resize-hit-width);
 	background:
 		linear-gradient(
-			color-mix(in oklch, var(--rux-fg) 55%, transparent),
-			color-mix(in oklch, var(--rux-fg) 55%, transparent)
+			color-mix(in oklch, var(--rux-text-default) 55%, transparent),
+			color-mix(in oklch, var(--rux-text-default) 55%, transparent)
 		)
 		center / var(--scheduler-app-resize-line-width) 100% no-repeat;
 	opacity: 0;
@@ -613,7 +577,7 @@
 	inset-inline-start: 50%;
 	inline-size: var(--scheduler-app-resize-handle-width);
 	block-size: var(--scheduler-app-resize-handle-height);
-	background: color-mix(in oklch, var(--rux-fg) 75%, transparent);
+	background: color-mix(in oklch, var(--rux-text-default) 75%, transparent);
 	border-radius: var(--rux-radius-full);
 	opacity: 0;
 	pointer-events: none;
@@ -716,25 +680,11 @@
 	box-shadow: none;
 }
 
-/* Content sits inset within the pane's own padding here, not edge-to-edge —
-   raw content (no card) reads directly against the panel's own surface;
-   a card's own inline padding would double up with this, so it's zeroed
-   below and the card aligns flush within the pane's inset instead. Scoped
-   to this one pane; every other .rux-panel__pane in the app stays
-   edge-to-edge (each card supplying its own inline padding) as before. */
-#rp-pane-navigate {
-	padding: var(--rux-card-padding-block) var(--rux-card-padding-inline);
-}
-
 /* Same inset-within-the-pane pattern as #rp-pane-navigate above — the
    Assignments card aligns flush within this padding instead of adding its
    own inline padding on top (zeroed below), so it reads as one consistent
    16px inset from the panel wall rather than a card floating inside
    another layer of padding. */
-#rp-pane-drivers {
-	padding: var(--rux-card-padding-block) var(--rux-card-padding-inline);
-}
-
 
 /* — Mini calendar — */
 
@@ -766,7 +716,7 @@
 .rux-mini-cal__title {
 	flex: 1;
 	margin: 0;
-	color: var(--rux-heading);
+	color: var(--rux-text-heading);
 	font-size: var(--rux-text-300);
 	font-weight: var(--rux-card-header-weight);
 	line-height: var(--rux-leading-snug);
@@ -794,7 +744,7 @@
 	text-align: center;
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-medium);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	letter-spacing: var(--rux-tracking-wide);
 	text-transform: uppercase;
 }
@@ -812,7 +762,7 @@
 	border: none;
 	border-radius: var(--rux-button-radius);
 	background: transparent;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font: inherit;
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-regular);
@@ -830,7 +780,7 @@
 }
 
 .rux-mini-cal__date--outside {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 }
 
 .rux-mini-cal__date--today {
@@ -940,7 +890,7 @@
 	padding: 0 var(--rux-space-2);
 	overflow: hidden;
 	background: var(--rux-surface-2);
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	border: none;
 	border-left: var(--rux-side-nav-selected-width) solid
 		var(--rux-driver-priority-color);
@@ -996,7 +946,7 @@
 	height: 2.5rem;
 	align-items: flex-end;
 	padding-bottom: var(--rux-space-2);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 	text-transform: uppercase;
@@ -1027,7 +977,7 @@
 	background: oklch(
 		from var(--rux-driver-priority-color) l c h / 0.14
 	);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-semibold);
 }
 
@@ -1046,7 +996,7 @@
 	justify-content: flex-end;
 	gap: 0.125rem;
 	padding-bottom: var(--rux-space-1);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-weight: var(--rux-weight-medium);
 	line-height: 1;
 	text-align: center;
@@ -1059,14 +1009,14 @@
 }
 
 .rux-driver-grid__day-label-date {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	font-variant-numeric: tabular-nums;
 }
 
 .rux-driver-grid__day-label.is-weekend {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	opacity: 0.72;
 }
 
@@ -1246,7 +1196,7 @@
 
 .rux-driver-grid__popover-info dt {
 	flex: none;
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-xs);
 }
 
@@ -1278,14 +1228,14 @@
 }
 
 .rux-driver-grid__popover-title {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 }
 
 .rux-driver-grid__popover-meta {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-normal);
 }
@@ -1307,13 +1257,13 @@
 .rux-driver-grid__popover-notes {
 	margin: 0 0 var(--rux-space-3);
 	padding-left: calc(var(--rux-icon-sm) + var(--rux-space-1));
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-normal);
 }
 
 .rux-driver-grid__empty {
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
@@ -1340,7 +1290,7 @@
 .rux-view-options__label {
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 /* On desktop the left-panel toggle in the workspace heading acts as the
@@ -1362,10 +1312,7 @@
    the drawer is actually open, on any viewport: mobile needs its own
    title/close affordance every bit as much as desktop does — it was never
    meant to depend on a workspace-heading toggle button that a full-screen
-   drawer overlay can end up covering. (The mobile safe-area padding for
-   this exact header, a bit further down in the mobile media query, has
-   been here the whole time waiting for the header it's padding to actually
-   be visible.)
+   drawer overlay can end up covering.
    Trip and right panel no longer have a header at all — their tabs are the
    top-most element now (desktop closes via each one's own resize gutter),
    and their own mobile-only close buttons below handle what this used to. */
@@ -1395,28 +1342,12 @@
 @media (max-width: 500px) {
 	.rux-panel__footer > .rux-panel__footer-close {
 		display: inline-flex;
-		/* Its own full-width row below the panel's other footer buttons,
-		   rather than squeezing in as a cramped 4th equal-width flex item
-		   alongside Delete/Clear/Save (or the right panel's per-tab action
-		   group, which is already width:100% itself — see driver-week-info.css). */
-		flex: 0 0 100%;
-		width: 100%;
 	}
 
 	.rux-panel__footer {
 		flex-wrap: wrap;
 		column-gap: var(--rux-button-group-gap);
 		row-gap: var(--rux-space-1);
-	}
-
-	.rux-panel__footer .rux-button {
-		--_h: var(--rux-panel-footer-mobile-button-height);
-	}
-
-	/* Close is a secondary escape action: retain its full-width touch area
-	   without giving it the same visual weight as the primary action row. */
-	.rux-panel__footer > .rux-panel__footer-close {
-		--_h: var(--rux-button-mobile-height);
 	}
 
 	/* The right/Tools panel's footer normally hides itself entirely when the
@@ -1430,10 +1361,8 @@
 }
 
 @media (min-width: 501px) {
-	/* Hide workspace-heading panel toggles on desktop — the railed panels'
-	   own header close buttons and icon-rail open buttons take over.
-	   Scoped to calendar module so Fleet/Driver/Customer toggles are unaffected. */
-	.scheduler-app__module[data-module="calendar"] .scheduler-app__mobile-panel-btn--left,
+	/* The Drivers workspace toggle is mobile-only; its desktop rail has its own
+	   persistent open/close control. Fleet and Customer toggles are unaffected. */
 	.scheduler-app__module[data-module="drivers"] .scheduler-app__mobile-panel-btn--left {
 		display: none;
 	}
@@ -1547,89 +1476,6 @@
 		row-gap: 0;
 	}
 
-	/* Taller tap target for panel section tabs (Trip/Fleet/Driver/Tools) —
-	   44px matches the same touch-target size already used for
-	   --rux-badge-module-height. Redefining the shared --rux-tab-height
-	   here, rather than overriding .rux-tab's own height rule, keeps every
-	   other .rux-tab consumer untouched. */
-	.rux-panel__nav {
-		--rux-tab-height: 44px;
-	}
-
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
-		display: grid;
-		grid-template-columns:
-			auto minmax(0, 1fr)
-			auto auto auto auto auto
-			minmax(0, 1fr) auto;
-		grid-template-rows: auto auto;
-		column-gap: 0;
-		row-gap: var(--rux-space-2);
-		container-type: normal;
-	}
-
-	.scheduler-app__module[data-module="calendar"] .rux-workspace__heading {
-		display: contents;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__nav {
-		display: contents;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__toolbar {
-		display: contents;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .calendar-app__date-controls {
-		display: contents;
-	}
-
-	/* .heading, .nav, and .toolbar all collapse to display:contents above, so
-	   everything below is a direct item of this grid regardless of markup
-	   nesting. The title takes its own full-width row; every calendar action
-	   stays on the second row. */
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .rux-workspace__title {
-		grid-column: 1 / -1;
-		grid-row: 1;
-		justify-self: center;
-		max-width: 100%;
-		text-align: center;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .scheduler-app__mobile-panel-btn--left {
-		grid-column: 1;
-		grid-row: 2;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #prev-week {
-		grid-column: 4;
-		grid-row: 2;
-		margin-inline-start: var(--rux-space-2);
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #today-btn {
-		grid-column: 5;
-		grid-row: 2;
-		margin-inline-start: var(--rux-space-2);
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #next-week {
-		grid-column: 6;
-		grid-row: 2;
-		margin-inline-start: var(--rux-space-2);
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header .calendar-app__panel-toggle {
-		grid-column: 9;
-		grid-row: 2;
-	}
-
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header #trips-filter-badges:not([hidden]) {
-		grid-column: 1 / -1;
-		grid-row: 3;
-	}
-
 	/* Drawer overlays the full viewport width — mobile screens are too narrow
 	   to spare room for a workspace sliver behind it, so open panels get the
 	   whole width instead of the Gmail-nav-drawer partial treatment desktop
@@ -1644,6 +1490,13 @@
 		margin-left: 0;
 		margin-right: 0;
 		transition: none;
+	}
+
+	/* Closing is a visual-only state. Release the workspace as soon as close()
+	   updates inert/ARIA state so this full-viewport wrapper cannot intercept
+	   calendar input while its panel slides out or if motion is interrupted. */
+	.scheduler-app__drawer.is-closing {
+		pointer-events: none;
 	}
 
 	.scheduler-app__drawer--right:is(.is-open, .is-closing) {
@@ -1714,10 +1567,6 @@
 			var(--rux-panel-exit-easing);
 	}
 
-	.scheduler-app__drawer .rux-panel > .rux-panel__header {
-		padding-top: calc(var(--rux-panel-padding-block) + env(safe-area-inset-top, 0px));
-	}
-
 	.scheduler-app__drawer .rux-panel > .rux-panel__footer {
 		padding-bottom: calc(var(--rux-panel-padding-block) + env(safe-area-inset-bottom, 0px));
 	}
@@ -1727,7 +1576,7 @@
 	}
 
 	.scheduler-app__gutter {
-		display: none;
+		display: none !important;
 	}
 
 
@@ -1742,6 +1591,7 @@
 	}
 
 	.scheduler-app__module[data-module="calendar"] {
+		--calendar-workspace-frame-inset-inline: 0;
 		margin: 0;
 		border: 0;
 		border-radius: 0;
@@ -1762,17 +1612,6 @@
 		block-size: var(--scheduler-app-gap);
 	}
 
-	/* Push bar below notch/Dynamic Island */
-	.rux-workspace__header {
-		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
-	}
-
-}
-
-@media (max-width: 360px) {
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
-		padding-inline: var(--rux-space-2);
-	}
 }
 
 @keyframes scheduler-mobile-drawer-in {

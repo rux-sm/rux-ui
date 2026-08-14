@@ -43,7 +43,7 @@
 
 .rux-driver-week-info__range {
 	margin: var(--rux-space-1) 0 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
@@ -64,7 +64,7 @@
 
 .rux-driver-week-info__section-title {
 	margin: 0 0 var(--rux-space-2);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 }
@@ -82,7 +82,7 @@
 	z-index: 1;
 	margin: 0;
 	padding: var(--rux-space-1) 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	text-transform: uppercase;
@@ -119,7 +119,7 @@
 }
 
 .rux-driver-week-info__trip-title {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 }
@@ -157,13 +157,13 @@
 }
 
 .rux-driver-week-info__share-state {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	text-align: right;
 }
 
 .rux-driver-week-info__list-scope {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	white-space: nowrap;
 }

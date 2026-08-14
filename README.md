@@ -238,8 +238,8 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 | `.rux-textarea` | `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed |
 | `.rux-field` | `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
 | `.rux-field__label` | `--rux-text-xs` `12px`, `--rux-weight-medium` | Muted, Title Case, no trailing period |
-| placeholder | `--rux-fg-subtle` | Hint only; never required information |
-| help text | `--rux-text-xs`, `--rux-fg-subtle` | One short sentence when useful |
+| placeholder | `--rux-text-disabled` | Hint only; never required information |
+| help text | `--rux-text-xs`, `--rux-text-disabled` | One short sentence when useful |
 | error text | `--rux-text-xs`, `--rux-danger` | Direct recovery instruction |
 
 - Field height remains `36px`, standard action buttons are `32px`, and persistent header actions are `44px`. Choose the semantic size role instead of forcing adjacent controls to match.
@@ -310,7 +310,7 @@ Cards may group distinct content inside a panel, but do not wrap every field or 
 - **Button hover and pressed states** are defined per emphasis: solid buttons shift their fill lightness, while ghost buttons use shared 10%/20% state washes.
 - **Ghost buttons** keep a transparent base and reveal those state overlays on interaction.
 - **Press / active** drops to the active color (`-10L` for filled controls) and translates `1px` down for buttons. Subtle, but visible.
-- **Disabled** uses `--rux-fg-disabled` for text and removes border emphasis. Cursor `not-allowed`.
+- **Disabled** uses `--rux-text-disabled` for text and removes border emphasis. Cursor `not-allowed`.
 
 ### Motion
 
@@ -401,13 +401,13 @@ When in doubt, edit a token before adding a new component override.
 - **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is a typographic wordmark** generated in this project — no pre-existing Rux logo was found in the source materials. If a real logo exists, swap `assets/rux-logo.svg`.
-- The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-fg`) are intentionally divergent. To migrate from the old codebase, the mapping is:
+- The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:
   ```
   --rux-bg-1   → --rux-bg
   --rux-bg-2/3/4 → --rux-bg-elevated
   --rux-bg-5   → --rux-bg-elevated  (or its own token if modal needs lift)
-  --rux-text-1 → --rux-fg
-  --rux-text-2 → --rux-fg-muted
-  --rux-text-3 → --rux-fg-subtle
+  --rux-text-1 → --rux-text-default
+  --rux-text-2 → --rux-text-muted
+  --rux-text-3 → --rux-text-disabled
   --rux-border-1/2/3 → --rux-border-subtle / --rux-border / --rux-border-strong
   ```

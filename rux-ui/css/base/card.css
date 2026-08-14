@@ -23,31 +23,82 @@
 	color: var(--rux-card-fg);
 }
 
-/* Per-part, not a whole-card modifier — apply to whichever of header/body/
-   footer you actually want elevated; any combination is valid, none of
-   them require the others. Fixed values, not a relative computation. */
-.rux-card__header--elevated,
-.rux-card__body--elevated,
-.rux-card__footer--elevated {
-	background: var(--rux-card-elevated-bg);
+/* — Card levels — ordinal nesting depth (docs/cards.md, tokens.css), a
+   numbered scale instead of a separate semantic name for every possible
+   depth. Whole-card modifiers, not per-part: each just feeds
+   --rux-card-body-bg/-border/-shadow, which .rux-card__body already
+   reads directly for its own background/border/box-shadow below — no
+   background/border/shadow declared here at all, only the custom
+   properties that drive them. Header goes transparent at levels 2-4,
+   matching the "nested card" look --recessed used to have on its own —
+   level 1 keeps the plain header's own tint untouched, since level 1 is
+   the outermost tier, not something nested. */
+.rux-card--level-1 {
+	--rux-card-body-bg:     var(--rux-card-level-1-bg);
+	--rux-card-body-border: var(--rux-card-level-1-border);
+	--rux-card-body-shadow: var(--rux-card-level-1-shadow);
 }
 
-.rux-card__body--elevated {
-	box-shadow: var(--rux-card-elevated-shadow);
+.rux-card--level-2 {
+	--rux-card-body-bg:     var(--rux-card-level-2-bg);
+	--rux-card-body-border: var(--rux-card-level-2-border);
+	--rux-card-body-shadow: var(--rux-card-level-2-shadow);
 }
 
-/* Same mechanism as --elevated above, applied automatically (not an
-   opt-in modifier) to every plain card nested inside a floating surface
-   (rux-ui/css/base/surface.css) — a card dropped into the trip editor,
+.rux-card--level-3 {
+	--rux-card-body-bg:     var(--rux-card-level-3-bg);
+	--rux-card-body-border: var(--rux-card-level-3-border);
+	--rux-card-body-shadow: var(--rux-card-level-3-shadow);
+}
+
+.rux-card--level-4 {
+	--rux-card-body-bg:     var(--rux-card-level-4-bg);
+	--rux-card-body-border: var(--rux-card-level-4-border);
+	--rux-card-body-shadow: var(--rux-card-level-4-shadow);
+}
+
+.rux-card--level-2 > .rux-card__header,
+.rux-card--level-3 > .rux-card__header,
+.rux-card--level-4 > .rux-card__header {
+	background: transparent;
+}
+
+/* — Elevated / recessed — dynamic adjustments layered on top of
+   whichever level is already applied (or the plain default, if none
+   is), one relative step lighter or darker. Declared AFTER the level
+   rules above on purpose: --rux-card-body-bg is self-referencing here,
+   and CSS resolves that self-reference against whatever lower-priority
+   declaration set the same property on the same element — since these
+   have equal specificity to --level-N (all single classes) and come
+   later in the file, that lower-priority declaration is whichever level
+   class is also present, so .rux-card--level-3.rux-card--elevated
+   correctly reads as "level 3, one step lighter," not an arbitrary fixed
+   color. Background only — border/shadow stay purely level-driven, this
+   is just a brightness nudge. */
+.rux-card--elevated {
+	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l + 6%) c h);
+}
+
+.rux-card--recessed {
+	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l - 6%) c h);
+}
+
+.rux-card--borderless {
+	--rux-card-body-border: 1px solid transparent;
+}
+
+/* Applied automatically (not an opt-in modifier) to every plain card —
+   no level, no --elevated/--recessed — nested inside a floating surface
+   (rux-ui/css/base/surface.css). A card dropped into the trip editor,
    for instance, should read as a distinct box against the floating
-   window's own background without needing --elevated added by hand
-   everywhere. --:not(--recessed) and --:not(--*-elevated) both stay
-   excluded so an explicit modifier or the recessed variant's own darker
-   background always wins over this ambient default — this only ever
-   fills in for a card that isn't opting into either. */
-.rux-surface--floating .rux-card:not(.rux-card--recessed) > .rux-card__header:not(.rux-card__header--elevated),
-.rux-surface--floating .rux-card:not(.rux-card--recessed) > .rux-card__body:not(.rux-card__body--elevated),
-.rux-surface--floating .rux-card:not(.rux-card--recessed) > .rux-card__footer:not(.rux-card__footer--elevated) {
+   window's own background without needing a level added by hand
+   everywhere. The exclusion list covers all four levels plus both
+   dynamic modifiers — an explicit choice on the card always wins over
+   this ambient default; this only ever fills in when nothing else was
+   set. */
+.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__header,
+.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__body,
+.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__footer {
 	background: var(--rux-card-floating-bg);
 }
 
@@ -64,12 +115,8 @@
    radius are both --rux-radius-0) — .rux-card itself has no radius of its
    own to match rounded corners with, so if either ever gains real
    rounding this would need a matching radius here too. */
-.rux-surface--floating .rux-card:not(.rux-card--recessed):has(> .rux-card__body:not(.rux-card__body--elevated)) {
+.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)):has(> .rux-card__body) {
 	box-shadow: var(--rux-card-floating-shadow);
-}
-
-.rux-card--borderless {
-	--rux-card-body-border: 1px solid transparent;
 }
 
 .rux-card--stack {
@@ -242,36 +289,25 @@
    into one gap the normal CSS way, including the first embed's own top
    margin against nothing above it to collapse with.
 
-   .rux-card--recessed is a whole-card convenience shorthand for the
-   common "recessed header + recessed body" pair, applied here via child
-   combinator — .rux-card__header--recessed / .rux-card__body--recessed
-   below are the actual per-part primitives, usable independently or in
-   any other combination (e.g. a recessed body under a plain header). */
-.rux-card--recessed {
+   What used to be .rux-card--recessed (a fixed, one-step-darker
+   background) is .rux-card--level-2 now — see the levels block near the
+   top of this file and docs/cards.md. Every former --recessed consumer
+   (Fleet's bus-groups, Billing's payment rows, History's cards, Trip
+   Finder's results wrapper) reads identically today, just under the new
+   name — --level-2's own tokens (tokens.css) alias the exact values
+   --recessed used to compute directly. */
+.rux-card--level-1,
+.rux-card--level-2,
+.rux-card--level-3,
+.rux-card--level-4 {
 	min-width: 0;
-}
-
-.rux-card__header--recessed,
-.rux-card--recessed > .rux-card__header {
-	background: transparent;
-}
-
-.rux-card__body--recessed,
-.rux-card--recessed > .rux-card__body {
-	background: var(--rux-card-recessed-bg);
-	border: var(--rux-card-recessed-border);
-	box-shadow: var(--rux-card-recessed-shadow);
-}
-
-.rux-card__footer--recessed {
-	background: var(--rux-card-recessed-bg);
 }
 
 .rux-card__title {
 	min-width: 0;
 	margin: 0;
 	overflow: hidden;
-	color: var(--rux-heading);
+	color: var(--rux-text-heading);
 	font-size: var(--rux-text-300);
 	font-weight: var(--rux-card-header-weight);
 	letter-spacing: 0;
@@ -283,6 +319,6 @@
 
 .rux-card__subtitle {
 	margin: var(--rux-space-1) 0 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }

@@ -14,7 +14,7 @@
   font-size: var(--rux-text-sm);
   line-height: var(--rux-leading-snug);
 }
-.rux-alert__icon  { color: var(--rux-fg-muted); flex: none; }
+.rux-alert__icon  { color: var(--rux-text-muted); flex: none; }
 .rux-alert__body  { flex: 1; min-width: 0; }
 .rux-alert__title { font-weight: var(--rux-weight-semibold); margin-bottom: calc(var(--rux-space-1) / 2); }
 
@@ -73,7 +73,7 @@
 /* Header/title are shared with .rux-card__header / .rux-card__title (see
    card.css) — a modal header is the same title-bar shape as a card or
    floating-window header, just inside a backdrop-centered surface. */
-.rux-modal__body { padding: var(--rux-space-5); color: var(--rux-fg-muted); }
+.rux-modal__body { padding: var(--rux-space-5); color: var(--rux-text-muted); }
 .rux-modal__footer {
   display: flex;
   justify-content: flex-end;
@@ -126,7 +126,7 @@
   background: var(--rux-bg-active);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-sm);
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
   font-size: var(--rux-text-xs);
   white-space: nowrap;
   pointer-events: none;
@@ -144,7 +144,7 @@
   background: var(--rux-bg-active);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-sm);
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
   font-size: var(--rux-text-xs);
   line-height: var(--rux-leading-snug);
   overflow-wrap: anywhere;

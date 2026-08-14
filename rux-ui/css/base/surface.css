@@ -190,7 +190,7 @@
 .rux-surface--floating > .rux-surface__header {
 	cursor: move;
 	background: var(--rux-surface-floating-header-bg);
-	padding: 0 0 0 var(--rux-surface-padding-inline);
+	
 }
 
 /* Independent bg token, not just "whatever the outer surface shows
@@ -221,7 +221,7 @@
 
 .rux-surface--floating > .rux-surface__footer {
 	background: var(--rux-surface-floating-footer-bg);
-	border-top: var(--rux-surface-floating-footer-border, var(--rux-card-footer-border));
+	border-top: var(--rux-surface-floating-footer-border);
 }
 
 .rux-surface--floating > .rux-surface__spacer {
@@ -326,7 +326,7 @@
 }
 
 .rux-surface--modal > .rux-surface__body {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 /* ── Position: anchored (was .rux-popover--surface / .rux-menu box) ──────── */

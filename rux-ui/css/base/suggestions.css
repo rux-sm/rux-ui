@@ -42,7 +42,7 @@
 	background: transparent;
 	border: 0;
 	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -59,7 +59,7 @@
 }
 
 .rux-suggestions__sublabel {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
 }

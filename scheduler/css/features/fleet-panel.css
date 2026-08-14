@@ -68,7 +68,7 @@
 .fleet-app__equip-icon {
 	width: 1rem;
 	height: 1rem;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	flex-shrink: 0;
 }
 
@@ -111,7 +111,7 @@
 .rux-fleet-panel__trip-meta {
 	flex: 1;
 	font-size: var(--rux-text-sm);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -121,7 +121,7 @@
 .rux-fleet-panel__trip-empty {
 	padding: var(--rux-space-5);
 	text-align: center;
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 }
 
@@ -148,31 +148,6 @@
 		grid-template-columns: 1fr;
 		gap: var(--rux-space-4);
 	}
-
-	[data-fleet-tabs] .rux-tab > .rux-icon {
-		position: static;
-		width: var(--_icon-size);
-		height: var(--_icon-size);
-		margin: 0;
-		padding: 0;
-		overflow: hidden;
-		clip: auto;
-		white-space: normal;
-		border: 0;
-	}
-
-	.rux-fleet-panel__tab-label,
-	.rux-fleet-panel .rux-panel__footer .rux-button:not(.rux-panel__footer-close) .rux-button__label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
 }
 
 /* — Mobile — */
@@ -181,10 +156,6 @@
 	.scheduler-app__drawer .rux-fleet-panel {
 		width: 100dvw;
 		max-width: 100dvw;
-	}
-
-	.scheduler-app__drawer .rux-fleet-panel > .rux-panel__header {
-		padding-top: calc(var(--rux-space-3) + env(safe-area-inset-top, 0px));
 	}
 }
 
@@ -201,7 +172,7 @@
 	left: var(--rux-space-3);
 	display: flex;
 	align-items: center;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	pointer-events: none;
 	z-index: 1;
 }
@@ -252,6 +223,6 @@
 .fleet-app__order {
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-text-sm);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	text-align: center;
 }

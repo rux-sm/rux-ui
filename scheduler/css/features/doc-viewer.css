@@ -15,12 +15,13 @@
 	display: flex;
 	flex: 1;
 	align-items: center;
-	gap: var(--rux-space-2);
+	gap: var(--rux-space-0);
 	min-width: 0;
+	padding-left: var(--rux-space-4);
 }
 
 .rux-doc-viewer__title-group .rux-icon {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	flex: none;
 }
 

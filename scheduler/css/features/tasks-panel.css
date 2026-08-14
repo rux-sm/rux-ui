@@ -66,11 +66,11 @@
 }
 
 /* Only between multiple trip entries sharing one day-group's .rux-card__body
-   (renderTrip) — .rux-tasks__trip here means the .rux-card--recessed inside a
-   day-group specifically. Post Trip's own cards (renderPostTripCard) are
-   .rux-card siblings of #rp-tasks-departures-body instead (also
-   named .rux-tasks__trip, different component), sharing a border the same
-   way day-groups do — no margin needed between those. */
+   (renderTrip) — .rux-tasks__trip here is the .rux-card--level-2 nested
+   inside a day-group specifically. Post Trip's own cards
+   (renderPostTripCard) use the same .rux-card--level-2 treatment but sit
+   as flat siblings of #rp-tasks-departures-body instead, sharing a border
+   the same way day-groups do — no margin needed between those. */
 .rux-card__body > .rux-tasks__trip + .rux-tasks__trip {
 	margin-top: var(--rux-space-4);
 }
@@ -100,7 +100,7 @@
 
 .rux-tasks__trip-title {
 	margin: 0;
-	color: var(--rux-text-primary);
+	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-semibold);
 	font-size: var(--rux-text-200);
 	line-height: 1.4;
@@ -109,7 +109,7 @@
 
 .rux-tasks__trip-customer {
 	margin: var(--rux-space-0-5) 0 0;
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-100);
 	line-height: 1.4;
 	overflow-wrap: anywhere;
@@ -182,11 +182,11 @@
    driver's own name is secondary, same weight as the row's other muted
    detail text elsewhere in this panel. */
 .rux-tasks__driver-name {
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 }
 
 .rux-tasks__driver-empty {
-	color: var(--rux-text-tertiary);
+	color: var(--rux-text-faint);
 	font-size: var(--rux-text-100);
 }
 
@@ -214,7 +214,7 @@
 /* Automated checks remain disabled, but successful results use the same
    accent checkbox and readable text treatment as completed manual tasks. */
 .rux-tasks__automatic-check--complete:has(input:disabled) {
-	color: var(--rux-text-primary);
+	color: var(--rux-text-default);
 }
 
 .rux-tasks__automatic-check--complete input:checked:disabled {
@@ -225,7 +225,7 @@
 .rux-tasks__empty {
 	margin: 0;
 	padding: var(--rux-space-1) 0;
-	color: var(--rux-text-tertiary);
+	color: var(--rux-text-faint);
 	font-size: var(--rux-text-200);
 }
 
@@ -237,7 +237,7 @@
 
 .rux-tasks__requirements-title {
 	margin: 0 0 var(--rux-space-1);
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	text-transform: uppercase;

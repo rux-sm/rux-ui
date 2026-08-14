@@ -1148,7 +1148,6 @@ export function createTripBar(trip, callbacks = {}) {
   }));
 
   const restFields = [
-    ...(trip.notes ? [["Notes", trip.notes, { wide: true, wrap: true }]] : []),
     ["Mi", formatMiles(trip.estimatedMiles ?? itineraryMiles(trip))],
     ["Act Mi", trip.actualMiles ? String(trip.actualMiles) : ""],
     ["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""],

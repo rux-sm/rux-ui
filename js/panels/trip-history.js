@@ -116,7 +116,7 @@ function renderChange(change) {
 }
 
 function renderCard(record) {
-	const card = element("article", "rux-card--recessed rux-trip-history__card");
+	const card = element("article", "rux-card--level-2 rux-trip-history__card");
 	const header = element("header", "rux-trip-history__card-header");
 	const identity = element("div");
 	identity.append(

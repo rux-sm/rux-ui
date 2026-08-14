@@ -43,6 +43,53 @@
 
 	const DRAWER_MAX = 640;
 	const DRAWER_KEYBOARD_STEP = 16;
+	const MOTION_COMPLETION_BUFFER_MS = 50;
+
+	function cssList(value) {
+		return value.split(",").map((item) => item.trim());
+	}
+
+	function cssTimeMs(value) {
+		const amount = parseFloat(value);
+		if (!Number.isFinite(amount)) return 0;
+		return value.trim().endsWith("ms") ? amount : amount * 1000;
+	}
+
+	function listValue(values, index) {
+		return values[index % values.length];
+	}
+
+	// Read the browser's resolved timeline instead of duplicating the motion
+	// token in JavaScript. This fallback guarantees state cleanup when an
+	// end/cancel event is dropped (for example, after a viewport or tab-state
+	// interruption), while still allowing the event to finish the close early.
+	function motionCompletionMs(target, type, expectedName) {
+		const style = getComputedStyle(target);
+		const isAnimation = type === "animation";
+		const names = cssList(
+			isAnimation ? style.animationName : style.transitionProperty,
+		);
+		const durations = cssList(
+			isAnimation ? style.animationDuration : style.transitionDuration,
+		).map(cssTimeMs);
+		const delays = cssList(
+			isAnimation ? style.animationDelay : style.transitionDelay,
+		).map(cssTimeMs);
+		const iterations = isAnimation
+			? cssList(style.animationIterationCount).map((value) => {
+				const count = parseFloat(value);
+				return Number.isFinite(count) ? count : 1;
+			})
+			: [1];
+
+		return names.reduce((longest, name, index) => {
+			if (name !== expectedName && name !== "all") return longest;
+			const duration = listValue(durations, index) ?? 0;
+			const delay = listValue(delays, index) ?? 0;
+			const iterationCount = listValue(iterations, index) ?? 1;
+			return Math.max(longest, Math.max(0, delay + duration * iterationCount));
+		}, 0);
+	}
 
 	function schedulerAppDefaultWidth(drawerEl) {
 		const property = drawerEl.classList.contains("scheduler-app__drawer--right")
@@ -123,8 +170,54 @@
 		} = options;
 
 		const DRAWER_DEFAULT = schedulerAppDefaultWidth(drawer);
-		let pendingCloseHandler = null;
-		let pendingCloseTarget = null;
+		let cancelPendingClose = null;
+
+		function completeAfterMotion(target, type, expectedName, complete) {
+			cancelPendingClose?.();
+
+			const endEvent = type + "end";
+			const cancelEvent = type + "cancel";
+			let active = true;
+			let timeoutId = null;
+
+			function release() {
+				if (!active) return;
+				active = false;
+				target.removeEventListener(endEvent, handleCompletionEvent);
+				target.removeEventListener(cancelEvent, handleCompletionEvent);
+				if (timeoutId !== null) window.clearTimeout(timeoutId);
+				if (cancelPendingClose === release) cancelPendingClose = null;
+			}
+
+			function finish() {
+				if (!active) return;
+				release();
+				complete();
+			}
+
+			function handleCompletionEvent(event) {
+				if (event.target !== target) return;
+				const completedName = type === "animation"
+					? event.animationName
+					: event.propertyName;
+				if (completedName !== expectedName) return;
+				finish();
+			}
+
+			target.addEventListener(endEvent, handleCompletionEvent);
+			target.addEventListener(cancelEvent, handleCompletionEvent);
+			cancelPendingClose = release;
+
+			const completionMs = motionCompletionMs(target, type, expectedName);
+			if (completionMs > 0) {
+				timeoutId = window.setTimeout(
+					finish,
+					Math.ceil(completionMs) + MOTION_COMPLETION_BUFFER_MS,
+				);
+			} else {
+				queueMicrotask(finish);
+			}
+		}
 
 		// Railable panels use computed min-width: 0 so closing can reach the
 		// rail. Resize clamping must read the inherited panel token instead.
@@ -159,12 +252,7 @@
 
 		function open() {
 			const reopening = drawer.classList.contains("is-collapsing");
-			if (pendingCloseHandler && pendingCloseTarget) {
-				pendingCloseTarget.removeEventListener("transitionend", pendingCloseHandler);
-				pendingCloseTarget.removeEventListener("animationend", pendingCloseHandler);
-				pendingCloseHandler = null;
-				pendingCloseTarget = null;
-			}
+			cancelPendingClose?.();
 			// Only force the default width when actually opening from closed —
 			// open() also runs every time a different trip/record is loaded into
 			// an already-open panel, and that shouldn't clobber a manual resize.
@@ -222,30 +310,24 @@
 			onClose?.();
 			if (isMobile) {
 				drawer.classList.replace("is-open", "is-closing");
-				pendingCloseHandler = (event) => {
-					if (event.target !== panel || event.animationName !== "scheduler-mobile-drawer-out") return;
-					drawer.classList.remove("is-closing");
-					panel.removeEventListener("animationend", pendingCloseHandler);
-					pendingCloseHandler = null;
-					pendingCloseTarget = null;
-				};
-				pendingCloseTarget = panel;
-				panel.addEventListener("animationend", pendingCloseHandler);
+				completeAfterMotion(
+					panel,
+					"animation",
+					"scheduler-mobile-drawer-out",
+					() => drawer.classList.remove("is-closing"),
+				);
 				return;
 			}
 			// Removing .is-open triggers display:none on the panel content (see
 			// scheduler-app.css), which is instant and unanimatable — do it only
 			// once the width transition actually finishes, so the panel visibly
 			// slides shut instead of vanishing the moment the class comes off.
-			pendingCloseHandler = function handler(e) {
-				if (e.target !== drawer || e.propertyName !== "width") return;
-				drawer.classList.remove("is-open", "is-collapsing");
-				drawer.removeEventListener("transitionend", handler);
-				pendingCloseHandler = null;
-				pendingCloseTarget = null;
-			};
-			pendingCloseTarget = drawer;
-			drawer.addEventListener("transitionend", pendingCloseHandler);
+			completeAfterMotion(
+				drawer,
+				"transition",
+				"width",
+				() => drawer.classList.remove("is-open", "is-collapsing"),
+			);
 		}
 
 		/* — Resize handle (optional) — */

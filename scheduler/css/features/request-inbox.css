@@ -50,7 +50,7 @@
 
 /* New-request count next to the title — muted, complementing the nav badge */
 .rux-request-window__count {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 }
@@ -105,7 +105,7 @@
 	background: var(--rux-surface-3);
 	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-md);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 
 .rux-request-window__item:hover {
@@ -135,7 +135,7 @@
 
 .rux-request-window__item-meta {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 }
 
@@ -144,7 +144,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
@@ -166,7 +166,7 @@
 	flex: 1;
 	min-width: 0;
 	font-size: var(--rux-text-xs);
-	height: var(--rux-control-sm);
+	height: var(--rux-control-height-sm);
 	/* Read-only invite URL — selectable, not editable */
 	cursor: text;
 }
@@ -178,7 +178,7 @@
 	flex: 1;
 	min-height: 120px;
 	padding: var(--rux-space-4);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	text-align: center;
 }
 
@@ -189,7 +189,7 @@
 }
 
 .rux-request-window__chip--closed {
-	--_badge-color: var(--rux-fg-subtle);
+	--_badge-color: var(--rux-text-disabled);
 }
 
 /* ── Footer ───────────────────────────────────────────────────────────── */
@@ -211,7 +211,7 @@
 	padding: 0;
 	overflow: hidden;
 	background: var(--rux-surface-5);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	border: var(--rux-border-width) solid var(--rux-border);
 	border-radius: var(--rux-radius-xl);
 }
@@ -259,7 +259,7 @@
 }
 
 .rux-request-window__dialog-intro {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 }
 
@@ -283,7 +283,7 @@
 }
 
 .rux-request-window__invite-label {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 }

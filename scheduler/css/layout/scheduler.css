@@ -41,8 +41,8 @@
 	--rux-scheduler-head-height: var(--rux-calendar-header-height);
 	--rux-scheduler-days: 7;
 	--rux-scheduler-day-min-width: 14rem;
-	--rux-scheduler-header-color: var(--rux-text-secondary);
-	--rux-scheduler-row-head-color: var(--rux-text-secondary);
+	--rux-scheduler-header-color: var(--rux-text-muted);
+	--rux-scheduler-row-head-color: var(--rux-text-muted);
 	--rux-scheduler-max-block-size: none;
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
 	--rux-scheduler-now-line-z-index: 1;
@@ -159,13 +159,13 @@
 	font-weight: var(--rux-weight-regular);
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 }
 
 .rux-scheduler__day-number {
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-bold);
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	line-height: 1;
 }
 
@@ -226,7 +226,7 @@
 	transform: translate(-50%, calc(-100% - 4px));
 	font-size: 9px;
 	font-weight: var(--rux-weight-medium);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
 	background: var(--rux-calendar-header-bg);
@@ -360,7 +360,7 @@
 	background-image: repeating-linear-gradient(
 		-45deg,
 		transparent 0px 6px,
-		color-mix(in srgb, var(--rux-fg-subtle) 8%, transparent) 6px 12px
+		color-mix(in srgb, var(--rux-text-disabled) 8%, transparent) 6px 12px
 	);
 }
 

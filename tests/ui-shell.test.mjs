@@ -66,6 +66,45 @@ test("global header actions use the shared 44px button and 24px icon contract", 
 	assert.match(page, /id="app-navigation-toggle"[\s\S]*?rux-button__icon-swap[\s\S]*?rux-button__icon--expanded/);
 });
 
+test("mobile keeps every app-header action available above drawer content", () => {
+	assert.doesNotMatch(openingTag("team-chat-btn"), /rux-ui-header__utility--optional/);
+	assert.match(
+		layoutStyles,
+		/#notifications-menu,\s*#profile-menu,\s*#team-chat-popover\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s,
+	);
+});
+
+test("mobile side navigation fills the viewport except for its dismiss strip", () => {
+	assert.match(
+		layoutStyles,
+		/@media \(max-width: 500px\)\s*\{\s*\/\*[\s\S]*?\.scheduler-app__body\s*\{\s*--rux-side-nav-width:\s*calc\(100% - var\(--rux-space-12\)\);/,
+	);
+	assert.doesNotMatch(
+		layoutStyles,
+		/\.scheduler-app__side-nav\s*\{\s*width:\s*min\(var\(--rux-side-nav-width\),\s*calc\(100% - var\(--rux-space-12\)\)\);/,
+	);
+});
+
+test("the calendar header contains no Trip Editor panel opener", () => {
+	assert.doesNotMatch(page, /data-opens="trip-editor-dialog"|aria-label="Open trip editor"/);
+	assert.doesNotMatch(layoutStyles, /data-module="calendar"[^\n{]*\.scheduler-app__mobile-panel-btn--left/);
+	assert.match(
+		layoutStyles,
+		/data-module="calendar"[^\n{]*> \.rux-workspace > \.rux-workspace__header\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto;/s,
+	);
+});
+
+test("mobile removes the Calendar right gutter and frame inset", () => {
+	assert.match(
+		layoutStyles,
+		/\.scheduler-app__gutter\s*\{\s*display:\s*none !important;/,
+	);
+	assert.match(
+		layoutStyles,
+		/\.scheduler-app__module\[data-module="calendar"\]\s*\{\s*--calendar-workspace-frame-inset-inline:\s*0;\s*margin:\s*0;/,
+	);
+});
+
 test("header tab-tip popovers preserve the correct disclosure semantics", () => {
 	const profileButton = openingTag("profile-menu-btn");
 	const chatButton = openingTag("team-chat-btn");
@@ -295,7 +334,6 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	)?.[0] ?? "";
 	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__panel-toggle"/);
 	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-button__label">Tools<\/span>/);
-	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"/);
 	assert.match(tokens, /--rux-button-height-standard:\s+32px;/);
 	assert.match(tokens, /--rux-button-height-header:\s+44px;/);
 	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-md\);/);

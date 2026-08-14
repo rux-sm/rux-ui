@@ -92,7 +92,7 @@
 
 .rux-trip-finder-window__search-icon {
 	flex: none;
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 }
 
 .rux-trip-finder-window__search-input {

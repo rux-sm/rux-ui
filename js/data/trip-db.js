@@ -808,7 +808,7 @@ import {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-card--recessed rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+			<div class="rux-card--level-2 rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
 				<div class="rux-card__header rux-trip-panel__payment-header">
 					<div class="rux-trip-panel__payment-method">
 						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>

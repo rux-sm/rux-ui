@@ -328,7 +328,7 @@
 	line-height: 1;
 }
 .rux-trip-panel__section-label--minor {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	border-bottom-color: transparent;
 	padding-bottom: 0;
 }
@@ -396,7 +396,7 @@
 	flex: none;
 }
 .rux-trip-panel__billing-step-help {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-tight);
 }
@@ -414,7 +414,7 @@
 	height: var(--rux-field-height);
 	align-items: center;
 	justify-content: center;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	font-variant-numeric: tabular-nums;
 	font-weight: var(--rux-weight-regular);
@@ -495,12 +495,12 @@
 }
 .rux-trip-panel__payment-icon {
 	flex: none;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 .rux-trip-panel__payment-method-label {
 	min-width: 0;
 	overflow: hidden;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 	text-overflow: ellipsis;
@@ -540,7 +540,7 @@
 	align-items: center;
 	justify-content: center;
 	padding-inline: var(--rux-space-2);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	pointer-events: none;
 }
@@ -645,7 +645,7 @@
 }
 .rux-trip-panel__bus-hint {
 	font-size: var(--rux-text-xs);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 }
 
 /* — Driver rows — */
@@ -670,7 +670,7 @@
 .rux-trip-panel__driver-row--head span {
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
 }
@@ -864,8 +864,6 @@
    Logistics controls:     320px
    Payment entries:        520px / 320px
    Tab labels:             430px
-   Footer action labels:   300px
-   Trip type labels:        420px
    Requirement buttons:    400px
    ========================================================================== */
 
@@ -887,10 +885,6 @@
 	.rux-trip-panel__contact-fields,
 	.rux-trip-panel__logistics-grid {
 		grid-template-columns: 1fr;
-	}
-
-	.rux-number-stepper__btn {
-		width: 32px;
 	}
 
 	.rux-trip-panel__doc-date {
@@ -964,52 +958,6 @@
 	min-width: 0;
 }
 
-@container (min-width: 301px) and (max-width: 420px) {
-	.rux-trip-panel__trip-type > .rux-button > .rux-icon {
-		display: none;
-	}
-}
-
-@container (max-width: 300px) {
-	.rux-trip-panel__trip-type .rux-button__label,
-	.rux-trip-panel__requirements-grid .rux-button__label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-
-	.rux-trip-panel__trip-type > .rux-button,
-	.rux-trip-panel__requirements-grid .rux-button {
-		padding-inline: 0;
-	}
-}
-
-@container (max-width: 300px) {
-	.rux-trip-panel .rux-surface__footer .rux-button:not(.rux-panel__footer-close) .rux-button__label {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		margin: -1px;
-		padding: 0;
-		overflow: hidden;
-		clip: rect(0 0 0 0);
-		white-space: nowrap;
-		border: 0;
-	}
-}
-
-@container (min-width: 301px) and (max-width: 400px) {
-	.rux-trip-panel .rux-surface__footer .rux-icon {
-		display: none;
-	}
-}
-
 @container (max-width: 400px) {
 	.rux-trip-panel__requirements-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1021,7 +969,7 @@
 .rux-trip-panel .rux-field__label {
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
 }

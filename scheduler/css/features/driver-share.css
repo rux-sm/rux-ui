@@ -63,7 +63,7 @@ html {
 	margin: 0;
 	overflow-x: hidden;
 	background: var(--rux-surface-1);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 
 .driver-share-header {
@@ -83,7 +83,7 @@ html {
 }
 
 .driver-share-header__label {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-driver-secondary-size);
 	font-weight: var(--rux-weight-medium);
 	white-space: nowrap;
@@ -109,7 +109,7 @@ html {
 
 .driver-share__subtitle,
 .driver-share__range {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-lg);
 	line-height: var(--rux-leading-normal);
 }
@@ -128,7 +128,7 @@ html {
 	align-items: center;
 	gap: var(--rux-space-2);
 	margin-top: var(--rux-space-4);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 	font-variant-numeric: tabular-nums;
 }
@@ -177,7 +177,7 @@ html {
 .driver-assignment-card__date-range {
 	grid-area: date;
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-driver-date-primary-size);
 	font-weight: var(--rux-driver-date-primary-weight);
 	line-height: 1.2;
@@ -211,7 +211,7 @@ html {
 	overflow: hidden;
 	min-width: 0;
 	margin: 0;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-500);
 	font-weight: 650;
 	line-height: var(--rux-leading-snug);
@@ -223,7 +223,7 @@ html {
 	overflow: hidden;
 	min-width: 0;
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-md);
 	font-weight: var(--rux-weight-medium);
 	line-height: var(--rux-leading-snug);
@@ -275,7 +275,7 @@ html {
 }
 
 .driver-assignment-card__response-state {
-	--_state-color: var(--rux-fg-muted);
+	--_state-color: var(--rux-text-muted);
 	--_state-background: color-mix(
 		in oklch,
 		var(--_state-color) var(--rux-badge-background-opacity),
@@ -313,7 +313,7 @@ html {
 }
 
 .driver-assignment-card__response-state--neutral {
-	--_state-color: var(--rux-fg-subtle);
+	--_state-color: var(--rux-text-disabled);
 }
 
 .driver-share-dialog .rux-button {
@@ -377,7 +377,7 @@ html {
 	height: var(--rux-driver-module-icon-size);
 	border-radius: var(--rux-driver-control-radius);
 	background: var(--rux-driver-control-bg);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .assignment-module__icon .rux-icon {
@@ -401,7 +401,7 @@ html {
 
 .assignment-module__label {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-driver-label-size);
 	font-weight: var(--rux-weight-semibold);
 	letter-spacing: var(--rux-tracking-wide);
@@ -423,7 +423,7 @@ html {
 
 .assignment-module__primary {
 	margin: 0;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-driver-primary-size);
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-snug);
@@ -446,14 +446,14 @@ html {
 .driver-assignment-card__role-location,
 .driver-assignment-card__role-relieves {
 	margin-top: var(--rux-space-2);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-md);
 	line-height: var(--rux-leading-normal);
 }
 
 .driver-assignment-card__role-location {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-medium);
 }
 
@@ -464,7 +464,7 @@ html {
 
 .driver-assignment-card__role-instructions {
 	margin-top: var(--rux-space-4);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-md);
 	line-height: var(--rux-leading-normal);
 	white-space: pre-wrap;
@@ -473,7 +473,7 @@ html {
 .driver-assignment-card__time {
 	display: block;
 	margin: 0;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-driver-time-size);
 	font-weight: var(--rux-weight-bold);
 	line-height: 1;
@@ -524,7 +524,7 @@ html {
 
 .assignment-compact-module__primary {
 	margin: 0;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-driver-primary-size);
 	font-weight: var(--rux-weight-semibold);
 	line-height: var(--rux-leading-snug);
@@ -545,7 +545,7 @@ html {
 }
 
 .driver-assignment-card__contact-phone {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-regular);
 	font-variant-numeric: tabular-nums;
@@ -559,7 +559,7 @@ html {
 
 .assignment-compact-module__secondary {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	font-style: normal;
 	line-height: var(--rux-leading-normal);
@@ -640,7 +640,7 @@ html {
 }
 
 .driver-assignment-card__crew-role {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	line-height: var(--rux-leading-snug);
 }
@@ -710,7 +710,7 @@ html {
 
 .driver-assignment-card__document.is-unavailable {
 	background: transparent;
-	color: var(--rux-fg-disabled);
+	color: var(--rux-text-disabled);
 	border-color: var(--rux-border-subtle);
 	cursor: default;
 }
@@ -724,7 +724,7 @@ html {
 	margin: var(--rux-space-3) 0 0;
 	padding: 0;
 	background: transparent;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-md);
 	font-weight: var(--rux-weight-regular);
 	line-height: var(--rux-leading-normal);
@@ -747,7 +747,7 @@ html {
 	place-items: center;
 	min-height: var(--rux-driver-status-min-height);
 	padding: var(--rux-space-6);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	text-align: center;
 }
 
@@ -760,12 +760,12 @@ html {
 	margin-inline: auto;
 	border-radius: var(--rux-driver-control-radius);
 	background: var(--rux-driver-control-bg);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .driver-share-status__title {
 	margin: var(--rux-space-4) 0 var(--rux-space-2);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-xl);
 }
 
@@ -834,7 +834,7 @@ html {
 	padding: 0;
 	overflow: hidden;
 	background: var(--rux-surface-5);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	border: none;
 	border-radius: var(--rux-radius-xl);
 }
@@ -859,7 +859,7 @@ html {
 }
 
 .driver-share-dialog__body {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .driver-share-dialog__footer {

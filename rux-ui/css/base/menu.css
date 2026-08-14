@@ -112,7 +112,7 @@
 
 .rux-menu__header {
 	padding: var(--rux-menu-item-padding-block) var(--rux-menu-item-padding-inline);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	letter-spacing: var(--rux-tracking-wide);

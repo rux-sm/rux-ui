@@ -17,7 +17,7 @@
 }
 .flip-seven__status,
 .flip-seven__copy,
-.flip-seven__turn p { margin: 0; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
+.flip-seven__turn p { margin: 0; color: var(--rux-text-muted); font-size: var(--rux-text-sm); }
 
 .flip-seven__shell {
 	display: grid;
@@ -49,7 +49,7 @@
 .flip-seven__roster,
 .flip-seven__scores { display: grid; gap: var(--rux-space-2); margin: 0; padding: 0; list-style: none; }
 .flip-seven__roster li { padding: var(--rux-space-3); border: var(--rux-border-width) solid var(--rux-border); border-radius: var(--rux-radius-sm); }
-.flip-seven__empty { color: var(--rux-fg-subtle); font-size: var(--rux-text-sm); text-align: center; }
+.flip-seven__empty { color: var(--rux-text-disabled); font-size: var(--rux-text-sm); text-align: center; }
 
 .flip-seven__panel {
 	align-self: stretch;
@@ -110,17 +110,17 @@
 	place-items: center;
 	border-radius: var(--rux-radius-full);
 	background: var(--rux-bg-active);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font: var(--rux-weight-semibold) var(--rux-text-xs)/1 var(--rux-font-mono);
 }
-.flip-seven__score .rux-avatar { background: var(--rux-bg-active); color: var(--rux-fg-muted); }
+.flip-seven__score .rux-avatar { background: var(--rux-bg-active); color: var(--rux-text-muted); }
 .flip-seven__score.is-active .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent); }
 .flip-seven__score-name { overflow: hidden; font-weight: var(--rux-weight-medium); text-overflow: ellipsis; white-space: nowrap; }
 .flip-seven__score-name .rux-badge { margin-left: var(--rux-space-2); vertical-align: middle; }
 .flip-seven__score-total { font: var(--rux-weight-semibold) var(--rux-text-md)/1 var(--rux-font-mono); text-align: right; }
 .flip-seven__score-history {
 	overflow: hidden;
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font: var(--rux-weight-medium) var(--rux-text-sm)/1 var(--rux-font-mono);
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -197,14 +197,14 @@
 }
 .flip-seven__messages p {
 	margin: 0 0 var(--rux-space-2);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	line-height: var(--rux-leading-snug);
 	overflow-wrap: anywhere;
 }
 .flip-seven__messages p:last-child { margin-bottom: 0; }
 .flip-seven__messages strong { color: var(--rux-accent); }
-.flip-seven__messages-empty { color: var(--rux-fg-subtle) !important; font-style: italic; }
+.flip-seven__messages-empty { color: var(--rux-text-disabled) !important; font-style: italic; }
 .flip-seven__message-form {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
@@ -261,7 +261,7 @@
 	white-space: nowrap;
 }
 .flip-seven__player-hand-name .rux-badge { margin-left: var(--rux-space-1); vertical-align: middle; }
-.flip-seven__player-hand-score { color: var(--rux-fg-muted); font: var(--rux-weight-medium) var(--rux-text-xs)/1 var(--rux-font-mono); }
+.flip-seven__player-hand-score { color: var(--rux-text-muted); font: var(--rux-weight-medium) var(--rux-text-xs)/1 var(--rux-font-mono); }
 .flip-seven__player-hand.is-active .flip-seven__player-hand-score { color: var(--rux-accent); }
 .flip-seven__player-hand.is-bust .flip-seven__player-hand-score { color: var(--rux-danger); }
 .flip-seven__player-cards {
@@ -273,7 +273,7 @@
 	flex-wrap: wrap;
 	gap: var(--rux-space-1);
 }
-.flip-seven__hand-empty { color: var(--rux-fg-subtle); font-size: var(--rux-text-xs); }
+.flip-seven__hand-empty { color: var(--rux-text-disabled); font-size: var(--rux-text-xs); }
 .flip-seven__card {
 	display: grid;
 	flex: 0 0 2.25rem;
@@ -282,7 +282,7 @@
 	border: var(--rux-border-width) solid var(--rux-border-strong);
 	border-radius: var(--rux-radius-sm);
 	background: var(--rux-surface-5);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font: var(--rux-weight-bold) var(--rux-text-md)/1 var(--rux-font-mono);
 }
 .flip-seven__card.is-latest { border-color: var(--rux-accent); }
@@ -291,8 +291,8 @@
 	color: var(--rux-danger);
 	box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-danger);
 }
-.flip-seven__round-total { justify-self: center; color: var(--rux-fg-muted); font-size: var(--rux-text-sm); }
-.flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-fg); font: var(--rux-weight-bold) var(--rux-text-xl)/1 var(--rux-font-mono); }
+.flip-seven__round-total { justify-self: center; color: var(--rux-text-muted); font-size: var(--rux-text-sm); }
+.flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-text-default); font: var(--rux-weight-bold) var(--rux-text-xl)/1 var(--rux-font-mono); }
 /* Box styling (padding/gap/background/border-top) comes from .rux-panel__footer;
    this only adds what's specific to this footer. */
 .flip-seven__actions { justify-content: center; }
@@ -343,7 +343,6 @@
 	.flip-seven__actions {
 		padding-bottom: calc(var(--rux-panel-padding-block) + env(safe-area-inset-bottom, 0px));
 	}
-	.flip-seven__actions > .rux-button:not([hidden]) { flex: 1; min-width: 0; }
 }
 
 @media (max-width: 420px) {

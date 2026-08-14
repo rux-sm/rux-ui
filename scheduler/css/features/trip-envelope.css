@@ -64,7 +64,7 @@
 }
 
 .rux-trip-envelope-window[data-tint="yellow"] .rux-trip-envelope-window__body {
-    --env-paper: oklch(87% 0.04 95);
+    --env-paper: oklch(84% 0.16 80);
 }
 
 .rux-trip-envelope-window__toolbar {
@@ -123,7 +123,7 @@
 	align-items: center;
 	gap: var(--rux-space-2);
 	min-width: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 	white-space: nowrap;

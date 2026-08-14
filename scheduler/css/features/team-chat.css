@@ -49,7 +49,7 @@
 
 .rux-team-chat__empty {
 	margin: auto 0;
-	color: var(--rux-text-tertiary);
+	color: var(--rux-text-faint);
 	font-size: var(--rux-text-200);
 	text-align: center;
 }
@@ -156,7 +156,7 @@
 	background: none;
 	border: none;
 	border-radius: var(--rux-radius-full);
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-100);
 	cursor: pointer;
 }
@@ -195,12 +195,12 @@
 	margin-bottom: var(--rux-space-1);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
-	color: var(--rux-text-primary);
+	color: var(--rux-text-default);
 }
 
 .rux-team-chat__message-time {
 	flex: none;
-	color: var(--rux-text-tertiary);
+	color: var(--rux-text-faint);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-regular);
 	line-height: var(--rux-leading-snug);
@@ -224,7 +224,7 @@
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--rux-team-chat-message-bg);
 	border-radius: var(--rux-team-chat-message-radius);
-	color: var(--rux-text-primary);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-200);
 	line-height: 1.4;
 	white-space: pre-wrap;
@@ -327,7 +327,7 @@
 	flex: none;
 	margin: 0;
 	padding: var(--rux-space-1) var(--rux-space-5);
-	color: var(--rux-text-tertiary);
+	color: var(--rux-text-faint);
 	font-size: var(--rux-text-100);
 	font-style: italic;
 }

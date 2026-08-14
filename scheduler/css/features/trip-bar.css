@@ -989,7 +989,7 @@
 }
 
 .rux-trip-bar__detail-field-label {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-weight: var(--rux-weight-medium);
 	letter-spacing: var(--rux-tracking-wide);
 }
@@ -1003,7 +1003,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-medium);
 }
 

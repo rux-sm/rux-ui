@@ -15,7 +15,7 @@
 
 .rux-profile-picker__empty {
 	padding: var(--rux-space-3) 0;
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 	text-align: center;
 }
@@ -40,7 +40,7 @@
 	padding: var(--rux-space-2);
 	background: none;
 	border: none;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -94,7 +94,7 @@
 	border-radius: 50%;
 	width: var(--rux-avatar-md);
 	height: var(--rux-avatar-md);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 }
 
 .rux-profile-picker__add-name {
@@ -121,7 +121,7 @@
 	justify-content: center;
 	border-radius: 50%;
 	background: var(--rux-bg-active);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	border: var(--rux-ui-header-avatar-border);

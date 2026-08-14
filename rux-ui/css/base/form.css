@@ -86,11 +86,11 @@
 }
 
 .rux-select option {
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
 }
 
 .rux-select option[value=""] {
-  color: var(--rux-fg-subtle);
+  color: var(--rux-text-disabled);
 }
 
 
@@ -316,7 +316,7 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
-  color: var(--rux-fg-subtle);
+  color: var(--rux-text-disabled);
   font-size: var(--rux-text-sm);
   line-height: 1;
 }
@@ -359,12 +359,12 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--rux-fg-subtle);
+  color: var(--rux-text-disabled);
   transition: color var(--rux-duration-fast) var(--rux-ease-out);
 }
 
 .rux-input-group--action .rux-input-group__suffix:is(button, a):hover:not(:disabled) {
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
 }
 
 /* — number — hide native spin buttons — */
@@ -392,7 +392,7 @@
   max-width: 100%;
   max-inline-size: 100%;
   text-align: left;
-  color: var(--rux-fg-placeholder);
+  color: var(--rux-text-disabled);
 
   /* Follow the active app theme so native calendar/clock affordances keep
      the right contrast in both light and dark mode. */
@@ -428,7 +428,7 @@
 .rux-input[type="date"].has-value,
 .rux-input[type="time"].has-value,
 .rux-input[type="datetime-local"].has-value {
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
 }
 
 /* Pull the icons out of the flex flow so they don't offset the text centering */
@@ -445,7 +445,7 @@
 
 .rux-input:read-only,
 .rux-textarea:read-only {
-  color: var(--rux-fg-muted);
+  color: var(--rux-text-muted);
   cursor: default;
 }
 
@@ -543,7 +543,7 @@
 
 .rux-color-picker__chevron {
   flex: none;
-  color: var(--rux-fg-subtle);
+  color: var(--rux-text-disabled);
   pointer-events: none;
 }
 
@@ -664,7 +664,7 @@
   background: transparent;
   border: var(--rux-color-input-text-border);
   box-shadow: none;
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
   font: inherit;
   font-size: var(--rux-text-md);
 }
@@ -714,7 +714,7 @@
 	   status right. */
 	justify-content: space-between;
 	/* Same dim token its empty/placeholder-text neighbors use (--rux-input-
-	   placeholder-fg, not --rux-fg-muted — muted is a full step brighter and
+	   placeholder-fg, not --rux-text-muted — muted is a full step brighter and
 	   was still visibly heavier than the placeholders next to it). The four
 	   status classes in trip-panel.css (higher specificity: .rux-trip-panel
 	   .rux-output.is-balance-*) still override this the moment there's an

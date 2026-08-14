@@ -24,7 +24,7 @@
 
 .settings-app__subtitle {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	line-height: var(--rux-leading-snug);
 }
@@ -60,7 +60,7 @@
 
 .settings-app__panel-title {
 	margin: 0;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-heading-panel-weight);
 	letter-spacing: 0;
@@ -69,7 +69,7 @@
 
 .settings-app__panel-copy {
 	margin: var(--rux-space-1) 0 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	line-height: var(--rux-leading-snug);
 }
@@ -100,7 +100,7 @@
 
 .settings-app__message {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	line-height: var(--rux-leading-snug);
 }
@@ -148,7 +148,7 @@
 	background: transparent;
 	border: 0;
 	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -165,7 +165,7 @@
 }
 
 .settings-app__suggestion-address {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
 }
@@ -208,19 +208,19 @@
 }
 
 .settings-location-row__name {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 }
 
 .settings-location-row__address {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 }
 
 .settings-locations-empty {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
@@ -282,7 +282,7 @@
 
 .settings-req-empty {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
@@ -316,7 +316,7 @@
 }
 
 .settings-billing-row__label {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-label-eyebrow-size);
 	font-weight: var(--rux-label-eyebrow-weight);
 	text-transform: uppercase;
@@ -355,7 +355,7 @@
 
 .settings-billing-confirm input:not(:checked) + .rux-badge {
 	background: var(--rux-surface-5);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 }
 
 /* — Icon picker popover ——————————————————————————————————————————————————— */
@@ -384,7 +384,6 @@
 		padding: var(--rux-space-3);
 	}
 
-	.settings-app__panel-header,
 	.settings-app__footer {
 		flex-direction: column;
 		align-items: stretch;
@@ -399,11 +398,4 @@
 		grid-template-columns: 1fr;
 	}
 
-	.settings-app__actions {
-		width: 100%;
-	}
-
-	.settings-app__actions .rux-button {
-		flex: 1 1 9rem;
-	}
 }

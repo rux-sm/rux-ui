@@ -22,7 +22,7 @@
 
 .rux-notifications__empty {
 	padding: var(--rux-space-3) var(--rux-space-2);
-	color: var(--rux-text-tertiary);
+	color: var(--rux-text-faint);
 	font-size: var(--rux-text-200);
 	text-align: center;
 }
@@ -61,20 +61,20 @@
 
 .rux-notifications__item-title {
 	margin: 0;
-	color: var(--rux-text-primary);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-200);
 	line-height: 1.35;
 }
 
 .rux-notifications__item-detail {
 	margin: var(--rux-space-0-5) 0 0;
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-100);
 }
 
 .rux-notifications__item-time {
 	margin: var(--rux-space-1) 0 0;
-	color: var(--rux-text-tertiary);
+	color: var(--rux-text-faint);
 	font-size: var(--rux-text-100);
 }
 

@@ -61,7 +61,7 @@
 
 .trips-app__customer {
 	font-weight: var(--rux-weight-medium);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -77,7 +77,7 @@
 
 .trips-app__unassigned {
 	font-size: var(--rux-text-xs);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-style: italic;
 }
 
@@ -108,7 +108,7 @@
 .trips-app__empty {
 	text-align: center;
 	padding: var(--rux-space-8);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 }
 

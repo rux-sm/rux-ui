@@ -580,7 +580,7 @@ function renderTrip(trip, leg) {
 	const overallDone = ready && manualDone && envelopesDone && remindersDone && requirementsDone;
 	const overdue = !overallDone && isRecoverablePreviousEntry(trip, leg);
 	return `
-		<div class="rux-card--recessed rux-tasks__trip">
+		<div class="rux-card rux-card--level-2 rux-tasks__trip">
 			<header class="rux-card__header rux-tasks__trip-header">
 				<div>
 					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
@@ -686,7 +686,7 @@ function templateFromEditedMessage(message, trip) {
 	return template;
 }
 
-// Same .rux-card--recessed treatment renderTrip's own trip card uses above
+// Same .rux-card--level-2 treatment renderTrip's own trip card uses above
 // — one concept ("a trip card"), one look, whether it's grouped under a day
 // (Trips view) or standing alone in a flat list (this view). Reuses the
 // same data-task-trip/data-task-field convention renderTrip's checklist
@@ -695,7 +695,7 @@ function templateFromEditedMessage(message, trip) {
 function renderPostTripCard(trip) {
 	const endDate = tripEndDate(trip);
 	return `
-		<div class="rux-card--recessed rux-tasks__trip">
+		<div class="rux-card rux-card--level-2 rux-tasks__trip">
 			<header class="rux-card__header rux-tasks__trip-header">
 				<div>
 					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")}</p>
@@ -737,8 +737,8 @@ function renderPostTripCard(trip) {
 // single-day view's whole-panel empty state below.
 function emptyTripCard(text = "No Trips") {
 	return `
-		<div class="rux-card--recessed rux-tasks__trip rux-tasks__trip--empty">
-			<div class="rux-card__body">
+		<div class="rux-card rux-card--level-2 rux-tasks__trip rux-tasks__trip--empty">
+			<div class="rux-card__body rux-tasks__trip-body">
 				<p class="rux-tasks__empty">${escapeHtml(text)}</p>
 			</div>
 		</div>

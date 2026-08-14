@@ -63,6 +63,22 @@ test("structural panels use 150ms entrance and exit contracts", () => {
 	);
 });
 
+test("drawer closing always releases interaction and settles its state", () => {
+	assert.match(
+		schedulerStyles,
+		/\.scheduler-app__drawer\.is-closing\s*\{[^}]*pointer-events:\s*none;/s,
+	);
+	assert.match(drawerController, /function completeAfterMotion\(/);
+	assert.match(drawerController, /const cancelEvent = type \+ "cancel";/);
+	assert.match(drawerController, /motionCompletionMs\(target, type, expectedName\)/);
+	assert.match(drawerController, /Math\.ceil\(completionMs\) \+ MOTION_COMPLETION_BUFFER_MS/);
+	assert.match(drawerController, /cancelPendingClose\?\.\(\);/);
+	assert.match(
+		drawerController,
+		/"scheduler-mobile-drawer-out",\s*\(\) => drawer\.classList\.remove\("is-closing"\)/,
+	);
+});
+
 test("panel splitters resize directly without inherited motion", () => {
 	assert.match(
 		schedulerStyles,

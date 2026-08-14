@@ -138,7 +138,7 @@
 }
 
 .components-app__button-state-grid small {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 /* Static specimens mirror the real pseudo-class recipes so every state can
@@ -175,7 +175,7 @@
 .components-app__button-guidance > p,
 .components-app__button-note {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .components-app__button-rules {
@@ -197,12 +197,12 @@
 .components-app__button-sections h3 {
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 
 .components-app__button-rules dd {
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
@@ -232,7 +232,7 @@
 
 .components-app__button-example span,
 .components-app__button-example code {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 }
 
@@ -260,7 +260,7 @@
 	padding: var(--rux-space-4);
 	overflow-x: auto;
 	background: var(--rux-surface-0);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 
 @media (max-width: 700px) {
@@ -385,13 +385,13 @@
 }
 
 .components-app__specs dt {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
 .components-app__specs dd {
 	margin: 0;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-text-sm);
 }

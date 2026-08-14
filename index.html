@@ -39,7 +39,7 @@
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 		<link rel="stylesheet" href="./rux-ui/css/tokens.css?v=133" />
 		<link rel="stylesheet" href="./rux-ui/css/colors_and_type.css?v=1" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=256" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=260" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=9"
@@ -158,7 +158,7 @@
 				flex: 1;
 				align-items: center;
 				justify-content: center;
-				color: var(--rux-fg-subtle);
+				color: var(--rux-text-disabled);
 				font-size: var(--rux-text-sm);
 			}
 		</style>
@@ -214,7 +214,7 @@
 							>
 						</button>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure rux-ui-header__utility--optional"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure"
 							type="button"
 							id="team-chat-btn"
 							aria-label="Team chat"
@@ -2256,19 +2256,6 @@
 					</div>
 					<section class="rux-workspace" aria-label="Weekly schedule">
 						<header class="rux-workspace__header">
-							<div class="rux-workspace__heading">
-								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
-									type="button"
-									aria-label="Open trip editor"
-									aria-pressed="false"
-									data-opens="trip-editor-dialog"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>left_panel_open</span
-									>
-								</button>
-							</div>
 							<div class="rux-workspace__nav">
 								<h1
 									class="rux-workspace__title"
@@ -6593,7 +6580,7 @@
 		<script src="./js/core/theme.js?v=1"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./js/core/ui-shell.js?v=2"></script>
-		<script src="./js/core/drawer.js?v=9"></script>
+		<script src="./js/core/drawer.js?v=10"></script>
 		<script src="./js/core/popover.js?v=4"></script>
 		<script src="./js/core/menu.js?v=3"></script>
 		<script src="./js/core/controls.js?v=6" defer></script>
@@ -7262,9 +7249,6 @@
 				"[data-trip-dialog-header]",
 			);
 			const rightPanel = rightDrawer.querySelector(".rux-right-panel");
-			const leftPanelToggleBtn = document.querySelector(
-				".scheduler-app__mobile-panel-btn--left",
-			);
 			const rightPanelToggleBtn = document.querySelector(
 				".calendar-app__panel-toggle",
 			);
@@ -7314,7 +7298,6 @@
 					window.RuxFloatingWindow?.resetGeometry(tripEditorDialogEl);
 				}
 				tripEditorDialogEl.hidden = false;
-				leftPanelToggleBtn?.setAttribute("aria-pressed", "true");
 				const scrollBody = tripPanel?.querySelector(
 					".rux-trip-panel__body",
 				);
@@ -7337,8 +7320,6 @@
 				)
 					return false;
 				tripEditorDialogEl.hidden = true;
-				leftPanelToggleBtn?.setAttribute("aria-pressed", "false");
-				leftPanelToggleBtn?.focus();
 				return true;
 			}
 
@@ -9428,27 +9409,12 @@
 				renderScheduler();
 			});
 
-			// ── Workspace panel controls ──────────────────────────────────────
-			document
-				.querySelectorAll(
-					".scheduler-app__mobile-panel-btn, .calendar-app__panel-toggle",
-				)
-				.forEach((btn) => {
-					btn.addEventListener("click", () => {
-						const targetId = btn.dataset.opens;
-						if (targetId === "trip-editor-dialog") {
-							tripEditorDialogEl?.hidden
-								? openTripDialog()
-								: closeTripDialog();
-						} else if (targetId === "right-panel-drawer") {
-							document
-								.getElementById("right-panel-drawer")
-								?.classList.contains("is-open")
-								? closeRightDrawer()
-								: openRightDrawer();
-						}
-					});
-				});
+			// ── Workspace panel control ───────────────────────────────────────
+			rightPanelToggleBtn?.addEventListener("click", () => {
+				rightDrawer.classList.contains("is-open")
+					? closeRightDrawer()
+					: openRightDrawer();
+			});
 
 			// ── Right panel drawer ──────────────────────────────────────────────
 			// Wrappers over rightDrawerHandle (created above) — see the comment by
@@ -9773,7 +9739,7 @@
 				driverGridPopover = document.createElement("section");
 				driverGridPopover.id = "rux-driver-grid-popover";
 				driverGridPopover.className =
-					"rux-driver-grid__popover rux-card rux-popover";
+					"rux-driver-grid__popover rux-card rux-card--elevated rux-popover";
 				driverGridPopover.setAttribute("role", "dialog");
 				driverGridPopover.setAttribute("aria-modal", "false");
 				driverGridPopover.hidden = true;
@@ -9784,7 +9750,7 @@
 							<span class="rux-icon" aria-hidden="true">close</span>
 						</button>
 					</header>
-					<div class="rux-card__body rux-card__body--elevated" data-driver-grid-popover-body></div>
+					<div class="rux-card__body" data-driver-grid-popover-body></div>
 				`;
 				document.body.appendChild(driverGridPopover);
 				driverGridPopover
@@ -12060,7 +12026,7 @@
 					class="rux-surface__body rux-trip-finder-window__body"
 				>
 					<div
-						class="rux-card--recessed rux-trip-finder-window__results trips-app__table-wrap"
+						class="rux-card--level-2 rux-trip-finder-window__results trips-app__table-wrap"
 					>
 						<table
 							class="rux-table trips-app__table rux-trip-finder-window__table"

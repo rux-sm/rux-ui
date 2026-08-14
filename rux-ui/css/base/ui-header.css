@@ -222,10 +222,6 @@
 }
 
 @media (max-width: 620px) {
-	.rux-ui-header {
-		padding-inline: var(--rux-space-3);
-	}
-
 	.rux-ui-header__brand {
 		min-width: 0;
 		padding-inline-end: 0;
@@ -248,12 +244,6 @@
 	}
 }
 
-@media (max-width: 500px) {
-	.rux-ui-header {
-		padding-top: calc(var(--rux-space-2) + env(safe-area-inset-top, 0px));
-	}
-}
-
 .rux-skip-link {
 	position: fixed;
 	top: var(--rux-space-2);
@@ -261,7 +251,7 @@
 	z-index: calc(var(--rux-z-modal) + 2);
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--rux-surface-5);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	border-radius: var(--rux-radius-control);
 	box-shadow: var(--rux-button-focus-ring);
 	transform: translateY(calc(-100% - var(--rux-space-4)));

@@ -10,7 +10,7 @@
 .trip-request-page {
 	min-height: 100dvh;
 	background: var(--rux-surface-1);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 
 .trip-request-header {
@@ -30,7 +30,7 @@
 }
 
 .trip-request-header__label {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 	letter-spacing: 0.04em;
@@ -51,7 +51,7 @@
 }
 
 .trip-request__intro {
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 }
 
 /* ── Sections ─────────────────────────────────────────────────────────── */
@@ -74,7 +74,7 @@
 .trip-request__section-title {
 	font-size: var(--rux-text-md);
 	font-weight: var(--rux-weight-semibold);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
@@ -125,7 +125,7 @@
 }
 
 .trip-request-option__hint {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-xs);
 }
 
@@ -196,7 +196,7 @@
 
 .rux-card__footer .trip-request__footer-note {
 	max-width: 22rem;
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 }
 
@@ -224,5 +224,5 @@
 
 .trip-request__success-text {
 	max-width: 26rem;
-	color: var(--rux-text-secondary);
+	color: var(--rux-text-muted);
 }

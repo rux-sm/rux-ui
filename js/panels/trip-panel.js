@@ -203,11 +203,10 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 		.join("");
 
 	const el = document.createElement("div");
-	// .rux-card--recessed, not .rux-card: this is a repeating list item (one
-	// per bus), same category as the itinerary's own per-stop cards — a
-	// nested bordered group, not a standalone top-level card. See
-	// docs/cards.md.
-	el.className = "rux-card--recessed rux-trip-panel__bus-group";
+	// .rux-card--level-2, not plain .rux-card: this is a repeating list item
+	// (one per bus), nested one level inside the Fleet Assignments card —
+	// same category as the itinerary's own per-stop cards. See docs/cards.md.
+	el.className = "rux-card--level-2 rux-trip-panel__bus-group";
 	el.innerHTML = `
     <header class="rux-card__header">
       <p class="rux-card__title">Bus ${idx + 1}</p>
@@ -374,7 +373,7 @@ function initBillingWorkflow(root) {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-card--recessed rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+			<div class="rux-card--level-2 rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
 				<div class="rux-card__header rux-trip-panel__payment-header">
 					<div class="rux-trip-panel__payment-method">
 						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>

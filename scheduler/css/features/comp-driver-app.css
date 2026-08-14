@@ -94,12 +94,12 @@
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
 .driver-app__workload-through strong {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-medium);
 }
 
@@ -108,7 +108,7 @@
 	max-height: 8rem;
 	margin: var(--rux-space-4);
 	overflow: auto;
-	box-shadow: var(--rux-card-elevated-shadow);
+	box-shadow: var(--rux-shadow-2);
 }
 
 .driver-app__workload-alert[hidden] {
@@ -218,7 +218,7 @@
 }
 
 .rux-table th[data-col-filter]:hover {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 
 .rux-table th[data-col-filter].is-filtered {
@@ -280,7 +280,7 @@
 	height: var(--rux-avatar-md);
 	background: var(--rux-surface-4);
 	border-radius: var(--rux-radius-control);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	font-family: var(--rux-font-mono);
@@ -316,11 +316,11 @@
 /* — Table cell variants — */
 
 .driver-app__phone {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .driver-app__expiry {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .driver-app__expiry--warn {
@@ -340,7 +340,7 @@
 	justify-content: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-8);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-sm);
 	text-align: center;
 }
@@ -353,7 +353,7 @@
 }
 
 .rux-table th[data-sort]:hover {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 }
 
 .rux-table th[data-sort].is-sort-asc::after {

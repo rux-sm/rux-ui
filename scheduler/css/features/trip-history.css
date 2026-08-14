@@ -31,14 +31,14 @@
 }
 
 .rux-trip-history__title {
-	color: var(--rux-heading);
+	color: var(--rux-text-heading);
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-weight-semibold);
 }
 
 .rux-trip-history__subtitle {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
@@ -73,7 +73,7 @@
 }
 
 .rux-trip-history__group-title {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-semibold);
 	letter-spacing: var(--rux-tracking-wide);
@@ -102,14 +102,14 @@
 }
 
 .rux-trip-history__timestamp {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 }
 
 .rux-trip-history__actor {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 }
@@ -138,7 +138,7 @@
 
 .rux-trip-history__route {
 	overflow: hidden;
-	color: var(--rux-heading);
+	color: var(--rux-text-heading);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 	text-overflow: ellipsis;
@@ -147,7 +147,7 @@
 
 .rux-trip-history__meta {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 }
 
@@ -177,24 +177,24 @@
 }
 
 .rux-trip-history__change dt {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
 }
 
 .rux-trip-history__change dd {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-xs);
 	overflow-wrap: anywhere;
 }
 
 .rux-trip-history__old {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .rux-trip-history__arrow {
 	padding-inline: var(--rux-space-1);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 }
 
 .rux-trip-history__new {

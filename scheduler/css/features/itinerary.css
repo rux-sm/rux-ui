@@ -115,7 +115,7 @@
 
 .rux-trip-itinerary__day-date {
 	margin-left: var(--rux-space-2);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-regular);
 }
@@ -175,7 +175,7 @@
 	align-items: center;
 	gap: var(--rux-space-1);
 	margin: 0;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 }
 
@@ -192,19 +192,19 @@
 	display: grid;
 	gap: var(--rux-space-1);
 	padding: var(--rux-card-padding);
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-sm);
 }
 
 .rux-trip-itinerary__idle-day strong {
 	/* --rux-fg-default doesn't exist as a token — was silently falling back
 	   to the parent's muted color instead of actually standing out. */
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-medium);
 }
 
 .rux-trip-itinerary__boundary-note.is-stationary .rux-icon {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 }
 
 .rux-trip-itinerary__day > .rux-trip-itinerary__content > * + * {
@@ -366,16 +366,16 @@
 }
 
 /* One pin silhouette identifies every location row; color carries its
-   type. Background stays --rux-card-recessed-bg on purpose even though
-   the row itself isn't recessed anymore — it's still a subtle badge chip
-   behind the icon, computed relative to the day-group's own body so it
-   reads correctly regardless of ambient context. */
+   type. Background stays --rux-card-level-2-bg on purpose even though
+   the row itself isn't nested/leveled anymore — it's still a subtle
+   badge chip behind the icon, computed relative to the day-group's own
+   body so it reads correctly regardless of ambient context. */
 .rux-trip-itinerary__marker-pin {
 	--_icon-fill: 1;
 	position: relative;
 	z-index: 1;
-	background: var(--rux-card-recessed-bg);
-	color: var(--rux-fg-muted);
+	background: var(--rux-card-level-2-bg);
+	color: var(--rux-text-muted);
 	font-size: 20px;
 	line-height: 1;
 }
@@ -574,7 +574,7 @@
 	padding: 0;
 	background: none;
 	border: none;
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	cursor: pointer;
 	opacity: 0;
 	pointer-events: none;
@@ -655,12 +655,12 @@
    with the value is the only cue for what it is. */
 .rux-trip-itinerary__unit {
 	margin-left: var(--rux-space-1);
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-xs);
 }
 
 .rux-trip-itinerary__source {
-	color: var(--rux-fg-subtle);
+	color: var(--rux-text-disabled);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
 	line-height: 1;
@@ -713,7 +713,7 @@
 /* Disabled always wins over stale/error tinting — same specificity (ID + one
    selector), so source order is what makes this the final word. */
 #tp-itin-recalc:disabled {
-	color: var(--rux-fg-disabled);
+	color: var(--rux-text-disabled);
 }
 
 .rux-trip-itinerary__address-wrap {
@@ -793,7 +793,7 @@
 	background: transparent;
 	border: 0;
 	border-radius: var(--rux-radius-sm);
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -819,7 +819,7 @@
 }
 
 .rux-trip-itinerary__suggestion-address {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
 }

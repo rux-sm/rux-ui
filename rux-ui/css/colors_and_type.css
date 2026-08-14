@@ -53,7 +53,7 @@ html {
 body {
   display: flow-root; /* new BFC so .scheduler-app's margin-bottom paints as body's own background instead of collapsing through to html's */
   background: var(--rux-surface-1);
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
   font-family: var(--rux-font-sans);
   font-size: var(--rux-text-md);
   line-height: var(--rux-leading-normal);
@@ -69,7 +69,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: var(--rux-weight-semibold);
   line-height: var(--rux-leading-tight);
   letter-spacing: var(--rux-tracking-tight);
-  color: var(--rux-heading);
+  color: var(--rux-text-heading);
 }
 
 h1 { font-size: var(--rux-text-3xl); font-weight: var(--rux-weight-bold); }
@@ -81,7 +81,7 @@ h6 {
   font-size: var(--rux-text-xs);
   letter-spacing: var(--rux-tracking-wide);
   text-transform: uppercase;
-  color: var(--rux-fg-muted);
+  color: var(--rux-text-muted);
   font-weight: var(--rux-weight-semibold);
 }
 
@@ -97,10 +97,10 @@ p + p { margin-top: var(--rux-space-3); }
 
 small {
   font-size: var(--rux-text-xs);
-  color: var(--rux-fg-muted);
+  color: var(--rux-text-muted);
 }
 
-strong, b { font-weight: var(--rux-weight-semibold); color: var(--rux-fg); }
+strong, b { font-weight: var(--rux-weight-semibold); color: var(--rux-text-default); }
 em, i    { font-style: italic; }
 
 /* ─── Links ─────────────────────────────────────────────────────────────── */
@@ -127,7 +127,7 @@ code {
   background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-xs);
-  color: var(--rux-fg);
+  color: var(--rux-text-default);
 }
 
 pre {
@@ -155,7 +155,7 @@ kbd {
   border-radius: var(--rux-radius-xs);
   font-size: 0.8em;
   font-weight: var(--rux-weight-medium);
-  color: var(--rux-fg-muted);
+  color: var(--rux-text-muted);
 }
 
 /* ─── Lists ─────────────────────────────────────────────────────────────── */
@@ -188,5 +188,5 @@ hr {
 /* Use these when an element is the wrong tag but needs a specific scale.    */
 
 .rux-mono      { font-family: var(--rux-font-mono); }
-.rux-muted     { color: var(--rux-fg-muted); }
-.rux-subtle    { color: var(--rux-fg-subtle); }
+.rux-muted     { color: var(--rux-text-muted); }
+.rux-subtle    { color: var(--rux-text-disabled); }

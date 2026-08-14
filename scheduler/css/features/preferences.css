@@ -12,7 +12,7 @@
 
 .rux-preferences__heading {
 	margin: 0;
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-semibold);
 }
@@ -36,13 +36,13 @@
 }
 
 .rux-preferences__label {
-	color: var(--rux-fg);
+	color: var(--rux-text-default);
 	font-size: var(--rux-text-sm);
 	font-weight: var(--rux-weight-medium);
 }
 
 .rux-preferences__description {
-	color: var(--rux-fg-muted);
+	color: var(--rux-text-muted);
 	font-size: var(--rux-text-xs);
 	line-height: var(--rux-leading-snug);
 }

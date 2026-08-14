@@ -37,10 +37,13 @@ test("the calendar retains its workspace after the trip dialog", () => {
 	);
 });
 
-test("trip dialog controls no longer reference the removed left drawer", () => {
+test("trip dialog controls no longer include a calendar-header opener", () => {
 	assert.match(indexHtml, /const tripEditorDialogEl\s*=/);
 	assert.match(indexHtml, /RuxFloatingWindow\?\.attachDrag\([\s\S]*?tripEditorDialogEl[\s\S]*?tripEditorHeaderEl/);
-	assert.match(indexHtml, /targetId === "trip-editor-dialog"/);
+	assert.doesNotMatch(indexHtml, /data-opens="trip-editor-dialog"/);
+	assert.doesNotMatch(indexHtml, /aria-label="Open trip editor"/);
+	assert.doesNotMatch(indexHtml, /\bleftPanelToggleBtn\b/);
+	assert.doesNotMatch(indexHtml, /targetId === "trip-editor-dialog"/);
 	assert.doesNotMatch(indexHtml, /targetId === "trip-panel-drawer"/);
 	assert.doesNotMatch(indexHtml, /\bdrawer\.classList/);
 });
