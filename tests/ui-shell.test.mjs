@@ -396,7 +396,7 @@ test("View Options is a sentinel-gated card in the Calendar panel body", () => {
 	assert.match(options, /class="rux-card__body rux-view-options__list"/);
 });
 
-test("Driver Availability is a sentinel-gated card in the panel body", () => {
+test("Driver Availability is an Assignments card in the panel body", () => {
 	const driversPane = page.match(
 		/id="rp-pane-drivers"[\s\S]*?(?=<div\s+id="rp-pane-tasks")/,
 	)?.[0];
@@ -404,7 +404,7 @@ test("Driver Availability is a sentinel-gated card in the panel body", () => {
 	assert.match(driversPane, /class="rux-panel__pane rux-driver-availability"/);
 	assert.match(driversPane, /class="rux-card"/);
 	assert.match(driversPane, /class="rux-card__sentinel"/);
-	assert.match(driversPane, />\s*Driver Availability\s*</);
+	assert.match(driversPane, />\s*Assignments\s*</);
 	assert.match(driversPane, /id="rp-driver-grid"/);
 });
 

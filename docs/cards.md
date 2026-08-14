@@ -14,11 +14,24 @@ its own content to `overflow: hidden`.
   .rux-card__header      — title + trailing actions, floats above the body
   .rux-card__body         — content area (add --stack for gapped children)
   .rux-card__footer      — actions row, shares a seam with the body
-.rux-card--recessed        — repeating list item nested in a card: own
-                              border/bg/shadow, darker than its ambient card
-.rux-card--elevated         — lighter body (one elevation tier up), used by
-                              floating surfaces
+.rux-card--recessed        — whole-card shorthand for a repeating list item:
+                              recessed header + recessed body together
 ```
+
+`--elevated` and `--recessed` are **per-part modifiers**, not whole-card
+ones — `.rux-card__header--elevated`, `.rux-card__body--elevated`,
+`.rux-card__footer--elevated` (and the `--recessed` equivalents) apply
+independently to whichever part you actually want changed; any combination
+is valid, none of them require the others. `.rux-card--recessed` above is
+just a convenience shorthand for the common "recessed header + recessed
+body" pair, implemented via child combinator onto the same per-part rules —
+there's no separate `.rux-card--elevated` whole-card shorthand since every
+real consumer only ever wanted the body elevated.
+
+Both are fixed values now, not a relative computation — `.rux-card` itself
+carries no background logic at all beyond `color`; `--rux-card-body-bg`,
+`--rux-card-elevated-bg`, and `--rux-card-recessed-bg` are each just direct
+token references (see Tokens below).
 
 `rux-ui/css/base/card.css` is the single source of truth; this doc explains
 the *why*, not the mechanics — read the file's own comments for those.
@@ -32,9 +45,10 @@ background (`--rux-card-header-bg`).
 `.rux-card__sentinel + .rux-card__header` — a header immediately preceded by
 a zero-height sentinel `<div>` — gets the "was section" treatment instead:
 full inline padding (it now runs edge-to-edge with no ambient padding to
-lean on), an opaque background matching the body (`--rux-card-body-bg`), and
-`position: sticky` so it docks to the top of its scroll container until the
-next card's header reaches the same spot.
+lean on), its own background/border (`--rux-card-header-sticky-bg/-border`,
+defaulting to an opaque fill matching the body with no border, but
+independently overridable), and `position: sticky` so it docks to the top of
+its scroll container until the next card's header reaches the same spot.
 
 This is a **structural signal, not a class modifier**, deliberately: every
 card built or converted as part of the Card/Surface restructure already has
@@ -70,15 +84,17 @@ individual item sticking inside a long list would be noise — and its header
 background stays transparent so the body's own inset shadow reads through
 instead of being covered by a duplicate paint layer.
 
-**Background is relative, not a fixed surface index.** `--rux-card-recessed-bg`
-computes as `oklch(from var(--rux-card-body-bg) calc(l - 6%) c h)` — six
-percent darker than whatever `--rux-card-body-bg` is actually in scope,
-because the same `.rux-card--recessed` sits inside an ordinary card in some
-places and an elevated floating-surface card in others, and a fixed value
-can only be "one step darker" correctly in one of those two contexts. The
-same relative technique, inverted (`calc(l + 6%)`), is how a plain
-`.rux-card` lightens relative to its own ambient body background — see
-`.rux-card`'s own rule in `card.css`.
+**Background is computed relative to the body token, evaluated once.**
+`--rux-card-recessed-bg` is `oklch(from var(--rux-card-body-bg) calc(l - 6%)
+c h)` — six percent darker than whatever `--rux-card-body-bg` currently
+resolves to. `.rux-card` itself no longer relights that token locally (it
+used to; see git history), so this is six percent darker than the flat root
+value in `tokens.css`, not relative to whatever ambient surface the card
+happens to be nested in. If a future need reintroduces per-surface-position
+ambient values (see the Surface migration note below), this computation
+would automatically start tracking that again with no changes needed here —
+it was written relative on purpose, even though nothing currently varies
+what it's relative to.
 
 **No margin of its own** — deliberately. Consumers fall into two layout
 systems and one fixed margin can't serve both:
@@ -127,30 +143,35 @@ background claims elevation-3 directly, the tier a panel-nested card would
 have had to pass through, rather than sitting at elevation-2 alongside cards
 that *do* have that structural context.
 
-A plain nested `.rux-card` is not its own tier — it has no background of its
-own beyond lightening relative to whatever ambient `--rux-card-body-bg` it
-inherits. `.rux-card--recessed` goes the opposite direction from
-Panel→Card→Elevated (which get lighter): it's computed *darker* than its own
-ambient card, because it reads as a sunken well rather than something
-raised.
+A plain nested `.rux-card` is not its own tier — `.rux-card__body` just
+reads `--rux-card-body-bg` directly, a flat value, the same everywhere.
+`--recessed` goes the opposite direction from Panel→Card→Elevated (which get
+lighter): six percent darker than that flat value, because it reads as a
+sunken well rather than something raised — see Recessed above for exactly
+how that computation works.
 
 ## Tokens
 
 ```
 --rux-card-header-bg/-border/-radius/-shadow/-padding
                               plain (non-sentinel-gated) header's own look
+--rux-card-header-sticky-bg/-border
+                              sentinel-gated header's own look — independent
+                              of the plain header tokens above; defaults to
+                              matching --rux-card-body-bg with no border
 --rux-card-body-bg/-border/-radius/-shadow
                               the box every card actually owns
 --rux-card-footer-bg/-border/-radius/-shadow
                               footer's own look, shares a seam with body
 --rux-card-elevated-bg/-shadow
-                              what .rux-card--elevated feeds into
-                              --rux-card-body-bg/-shadow
+                              what .rux-card__header/__body/__footer
+                              --elevated each read directly
 --rux-card-recessed-bg/-border/-shadow
-                              .rux-card--recessed's own body look —
-                              -bg is computed relative to --rux-card-body-bg,
-                              not a fixed surface index; no separate -radius,
-                              inherits --rux-card-body-radius
+                              what .rux-card__header/__body/__footer
+                              --recessed each read directly — -bg is
+                              computed relative to --rux-card-body-bg (see
+                              Recessed above); no separate -radius, inherits
+                              --rux-card-body-radius
 --rux-card-section-border    generic divider border-top, still used directly
                               by a few flat-divider layouts outside the Card
                               component itself (scheduler-app.css,

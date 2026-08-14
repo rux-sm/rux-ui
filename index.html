@@ -2654,7 +2654,7 @@
 										></div>
 										<div class="rux-card__header">
 											<p class="rux-card__title">
-												Driver Availability
+												Assignments
 											</p>
 										</div>
 										<div class="rux-card__body">
@@ -2926,7 +2926,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--accent"
+										class="rux-button rux-button--default"
 										type="button"
 										id="rp-driver-info-btn"
 										disabled
@@ -9778,7 +9778,7 @@
 				driverGridPopover = document.createElement("section");
 				driverGridPopover.id = "rux-driver-grid-popover";
 				driverGridPopover.className =
-					"rux-driver-grid__popover rux-card rux-card--elevated rux-popover";
+					"rux-driver-grid__popover rux-card rux-popover";
 				driverGridPopover.setAttribute("role", "dialog");
 				driverGridPopover.setAttribute("aria-modal", "false");
 				driverGridPopover.hidden = true;
@@ -9789,7 +9789,7 @@
 							<span class="rux-icon" aria-hidden="true">close</span>
 						</button>
 					</header>
-					<div class="rux-card__body" data-driver-grid-popover-body></div>
+					<div class="rux-card__body rux-card__body--elevated" data-driver-grid-popover-body></div>
 				`;
 				document.body.appendChild(driverGridPopover);
 				driverGridPopover

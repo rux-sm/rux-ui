@@ -704,13 +704,39 @@
 	min-width: 0;
 }
 
-/* — Mini calendar — */
-
-.rux-mini-cal {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
+/* initPanelScrollEdges (js/core/controls.js) still toggles .is-scrolled
+   here like it does on every .rux-panel — that JS is shared and stays as
+   is. Only the resulting shadow is suppressed: every tab's own sentinel-
+   gated card header (card.css's .rux-card__header.is-stuck) now owns that
+   shadow duty as the user scrolls past it, so the nav showing its own at
+   the same time doubled it up right above the card header's — same fix,
+   same reasoning, as .rux-trip-panel's own suppression in
+   trip-panel.css. */
+.rux-right-panel > .rux-panel__nav.is-scrolled {
+	box-shadow: none;
 }
+
+/* Content sits inset within the pane's own padding here, not edge-to-edge —
+   raw content (no card) reads directly against the panel's own surface;
+   a card's own inline padding would double up with this, so it's zeroed
+   below and the card aligns flush within the pane's inset instead. Scoped
+   to this one pane; every other .rux-panel__pane in the app stays
+   edge-to-edge (each card supplying its own inline padding) as before. */
+#rp-pane-navigate {
+	padding: var(--rux-card-padding-block) var(--rux-card-padding-inline);
+}
+
+/* Same inset-within-the-pane pattern as #rp-pane-navigate above — the
+   Assignments card aligns flush within this padding instead of adding its
+   own inline padding on top (zeroed below), so it reads as one consistent
+   16px inset from the panel wall rather than a card floating inside
+   another layer of padding. */
+#rp-pane-drivers {
+	padding: var(--rux-card-padding-block) var(--rux-card-padding-inline);
+}
+
+
+/* — Mini calendar — */
 
 .rux-mini-cal[hidden] {
 	display: none;
@@ -748,11 +774,10 @@
 }
 
 .rux-mini-cal__grid {
-	--rux-mini-cal-cell-size: 32px;
+	--rux-mini-cal-cell-size: 28px;
 	--rux-mini-cal-cell-gap: var(--rux-space-2);
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-1);
 }
 
 .rux-mini-cal__day-names,
@@ -772,7 +797,6 @@
 	color: var(--rux-fg-subtle);
 	letter-spacing: var(--rux-tracking-wide);
 	text-transform: uppercase;
-	padding-bottom: var(--rux-space-1);
 }
 
 .rux-mini-cal__dates {
@@ -832,7 +856,7 @@
 	bottom: var(--rux-space-0-5);
 	width: 4px;
 	height: 4px;
-	border-radius: var(--rux-radius-full);
+	border-radius: var(--rux-radius-0);
 	background: var(--rux-accent);
 }
 
@@ -868,9 +892,7 @@
 	);
 }
 
-.rux-driver-availability .rux-driver-grid {
-	--rux-driver-grid-surface: var(--rux-surface-3);
-}
+
 
 .rux-driver-grid__scroller {
 	max-width: 100%;
@@ -881,7 +903,7 @@
 
 .rux-driver-grid__row {
 	display: grid;
-	background: var(--rux-surface-3);
+	background: transparent;
 	grid-template-columns:
 		minmax(var(--rux-driver-grid-name-width), 1fr)
 		calc(
@@ -892,7 +914,7 @@
 	min-height: var(--rux-driver-grid-cell-size);
 	gap: var(--rux-space-2);
 	min-width: 100%;
-	border-radius: var(--rux-radius-sm);
+	border-radius: var(--rux-radius-0);
 }
 
 .rux-driver-grid__name-cell {
@@ -903,8 +925,7 @@
 	width: 100%;
 	height: var(--rux-driver-grid-cell-size);
 	align-items: center;
-	background: var(--rux-driver-grid-surface);
-	box-shadow: var(--rux-space-1) 0 0 var(--rux-driver-grid-surface);
+	background: transparent;
 }
 
 .rux-driver-grid__name {
@@ -914,11 +935,11 @@
 	width: 100%;
 	height: 100%;
 	align-items: center;
-	gap: var(--rux-space-1);
+	gap: var(--rux-space-0);
 	min-width: 0;
 	padding: 0 var(--rux-space-2);
 	overflow: hidden;
-	background: var(--rux-surface-3);
+	background: var(--rux-surface-2);
 	color: var(--rux-text-secondary);
 	border: none;
 	border-left: var(--rux-side-nav-selected-width) solid
@@ -974,7 +995,7 @@
 .rux-driver-grid__row--head .rux-driver-grid__name {
 	height: 2.5rem;
 	align-items: flex-end;
-	padding-bottom: var(--rux-space-1);
+	padding-bottom: var(--rux-space-2);
 	color: var(--rux-fg-subtle);
 	font-size: var(--rux-text-xs);
 	font-weight: var(--rux-weight-medium);
@@ -1071,7 +1092,7 @@
 	height: var(--rux-driver-grid-cell-size);
 	padding: 0;
 	border-radius: var(--rux-radius-0);
-	background: var(--rux-well-bg);
+	background: var(--rux-surface-3);
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
 	   quietly as a plain .rux-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
@@ -1285,12 +1306,6 @@
 
 /* — View options — */
 
-.rux-view-options {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
-}
-
 .rux-view-options__list {
 	display: flex;
 	flex-direction: column;
@@ -1302,7 +1317,7 @@
 	justify-content: space-between;
 	gap: var(--rux-space-0);
 	cursor: pointer;
-	height: 44px;
+	height: 40px;
 }
 
 .rux-view-options__row[hidden] {

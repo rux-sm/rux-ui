@@ -201,13 +201,13 @@
 
 
     --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 				/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 18% c h); /* UI Header */ 			/* 22, 22 ,22 */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 20% c h); /* UI Header */ 			/* 22, 22 ,22 */
     --rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* card layer */ 			/* 38, 38, 38 */
-    --rux-surface-3:    oklch(from var(--rux-neutral) 34% c h); /* input fields */ 			/* 57, 57, 57 */
-    --rux-surface-4:    oklch(from var(--rux-neutral) 43% c h); /* layer */					/* 81, 81, 81 */
-    --rux-surface-5:    oklch(from var(--rux-neutral) 50% c h); /* selected menu item */	/* 99, 99, 99 */
-    --rux-surface-6:   	oklch(from var(--rux-neutral) 0% c h);
-    --rux-surface-7:	oklch(from var(--rux-neutral) 0% c h);
+    --rux-surface-3:    oklch(from var(--rux-neutral) 28% c h); /* input fields */ 			/* 57, 57, 57 */
+    --rux-surface-4:    oklch(from var(--rux-neutral) 32% c h); /* layer */					/* 81, 81, 81 */
+    --rux-surface-5:    oklch(from var(--rux-neutral) 36% c h); /* selected menu item */	/* 99, 99, 99 */
+    --rux-surface-6:   	oklch(from var(--rux-neutral) 65% c h);
+    --rux-surface-7:	oklch(from var(--rux-neutral) 75% c h);
 
 	/* ─── ELEVATION ──────────────────────────────────────────────────────── */
 	/* One named tier per "how far this container sits above the canvas,"
@@ -638,8 +638,8 @@
 	--rux-panel-footer-mobile-button-height: 44px;
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
-	--rux-panel-padding:   0 var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
-	--rux-panel-content-gap: var(--rux-space-5);
+	--rux-panel-padding:   0 var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
+	--rux-panel-content-gap: var(--rux-space-0);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
 	--rux-panel-right-border: 1px solid var(--rux-border);
@@ -688,7 +688,7 @@
 	   supplying the right edge. The sentinel-gated header (edge-to-edge,
 	   no ambient padding to lean on) uses full inline padding instead of
 	   this token — see card.css. */
-	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-4);
+	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
 	--rux-card-padding-block:  var(--rux-space-4);
 	--rux-card-padding-inline: var(--rux-space-4);
 	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
@@ -696,12 +696,22 @@
 
 	/* — card: header — floats above the body, no box of its own — */
 	--rux-card-header-bg:     var(--rux-surface-3);
-	--rux-card-header-border: none;
+	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-header-radius: var(--rux-radius-0);
 	--rux-card-header-shadow: none;
 
+	/* — card: sticky header — the sentinel-gated variant (card.css's
+	   .rux-card__sentinel + .rux-card__header), used by every repeating-
+	   group header (View Options, Driver Availability, the mini calendar,
+	   itinerary day-groups, tasks/history date groups). Defaults preserve
+	   the "blends into its own body, no separate tint" look, but this is a
+	   real, independent token pair now, not a hardcoded value — the plain
+	   header tokens above have no effect on this variant. */
+	--rux-card-header-sticky-bg:     var(--rux-card-body-bg);
+	--rux-card-header-sticky-border: var(--rux-card-border-width) solid var(--rux-border);
+
 	/* — card: body — the box — */
-	--rux-card-body-bg:     var(--rux-elevation-2-bg);
+	--rux-card-body-bg:     var(--rux-surface-2);
 	--rux-card-body-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-body-radius: var(--rux-radius-0);
 	/* A plain card is flat by design — .rux-card--elevated below is the
@@ -777,6 +787,7 @@
 	/* — shared structural, every position — */
 	--rux-surface-header-height:  40px;
 	--rux-surface-header-weight:  var(--rux-weight-semibold);
+	--rux-surface-header-border: 1px solid var(--rux-border);
 	--rux-surface-padding-block:  var(--rux-space-4);
 	--rux-surface-padding-inline: var(--rux-space-4);
 	--rux-surface-content-gap:    var(--rux-space-4);

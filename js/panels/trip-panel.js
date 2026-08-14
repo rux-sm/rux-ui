@@ -171,7 +171,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 		.map(
 			(r) => {
 				const reliefDetails = r.role.startsWith("relief")
-					? `<div class="rux-card--recessed rux-trip-panel__relief-details">
+					? `<div class="rux-trip-panel__relief-details">
 						<div class="rux-field">
 							<label class="rux-field__label" for="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time">Meet / swap time</label>
 							<input class="rux-input" id="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.reportTime" type="time" aria-label="${escHtml(r.title)} meet or swap time" />

@@ -799,8 +799,8 @@
 
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
-      <section class="rux-card--recessed rux-trip-itinerary__dwell-card rux-trip-itinerary__trip-complete" data-itinerary-final-summary>
-		<header class="rux-card__header rux-trip-itinerary__stop-header">
+      <section class="rux-trip-itinerary__dwell-card rux-trip-itinerary__trip-complete" data-itinerary-final-summary>
+		<header class="rux-trip-itinerary__stop-header">
 		  <div class="rux-trip-itinerary__stop-heading">
 			<span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--off" aria-hidden="true">location_on</span></span>
 			<h4 class="rux-card__title">Trip Complete</h4>
@@ -809,7 +809,7 @@
 			<span class="rux-icon" aria-hidden="true">add</span>
 		  </button>
 		</header>
-		<div class="rux-card__body rux-trip-itinerary__stop-body">
+		<div class="rux-trip-itinerary__stop-body">
 		  ${renderDutySummaryStats({
 			onDutyMins: stats.netMins,
 			driveMins: stats.totalDrive,
@@ -834,11 +834,11 @@
 		const startMarkerType = mode === "yard" ? "pickup" : "depart-yard";
 		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? "" : ""}" data-value="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-button__label">${label}</span></button>`;
 		return `
-		<section class="rux-card--recessed rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
-			<header class="rux-card__header rux-trip-itinerary__stop-header">
+		<section class="rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
+			<header class="rux-trip-itinerary__stop-header">
 				<div class="rux-trip-itinerary__stop-heading"><span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${startMarkerType}" aria-hidden="true">location_on</span></span><h4 class="rux-card__title">Trip Start</h4></div>
 			</header>
-			<div class="rux-card__body rux-trip-itinerary__stop-body">
+			<div class="rux-trip-itinerary__stop-body">
 			<div class="rux-field">
 				<label class="rux-field__label">Passengers Board At</label>
 				<div class="rux-segmented-track rux-trip-itinerary__origin-mode" data-rux-segmented data-itinerary-segment="origin-mode" aria-label="Passengers board at">
@@ -928,7 +928,7 @@
 			const status = statusAtBoundary(stops, idx);
 			const statusLabel = status === "sleeper" ? "Sleeper berth" : status === "on" ? "On duty" : "Off duty";
 			return `
-			  <div class="rux-card__body rux-trip-itinerary__idle-day" data-itinerary-day-summary data-stop-idx="${idx}">
+			  <div class="rux-trip-itinerary__idle-day" data-itinerary-day-summary data-stop-idx="${idx}">
 				<strong>No activity</strong>
 				<span>${escHtml(statusLabel)} at ${escHtml(activity.location)}</span>
 			  </div>`;
@@ -1088,8 +1088,8 @@
 		  </div>` : "";
 
 		return `
-	  <section class="rux-card--recessed rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isPickup && stop.originMode === "yard" ? " hidden" : ""}${isDraggable ? ' draggable="true"' : ""}>
-		  <header class="rux-card__header rux-trip-itinerary__stop-header">
+	  <section class="rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isPickup && stop.originMode === "yard" ? " hidden" : ""}${isDraggable ? ' draggable="true"' : ""}>
+		  <header class="rux-trip-itinerary__stop-header">
 			<div class="rux-trip-itinerary__stop-heading">
 			  <span class="rux-trip-itinerary__marker">${markerIcon}</span>
 			  <h4 class="rux-card__title">${escHtml(sectionLabel)}</h4>
@@ -1099,7 +1099,7 @@
 			  ${moveControl}
 			</div>
 		  </header>
-		  <div class="rux-card__body rux-trip-itinerary__stop-body">
+		  <div class="rux-trip-itinerary__stop-body">
 		  <div class="rux-trip-itinerary__fields">
 			${addrEl}
           </div>
@@ -1170,15 +1170,15 @@
 		}
 
 		return `
-	  <section class="rux-card--recessed rux-trip-itinerary__dwell-card" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
-		  <header class="rux-card__header rux-trip-itinerary__stop-header">
+	  <section class="rux-trip-itinerary__dwell-card" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
+		  <header class="rux-trip-itinerary__stop-header">
 			<div class="rux-trip-itinerary__stop-heading">
 			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${status === "sleeper" ? "sleeper" : "off"}" aria-hidden="true">${icon}</span></span>
 			  <h4 class="rux-card__title">${escHtml(label)}</h4>
 			</div>
 			<output class="rux-output rux-output--boxed rux-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time"><span>${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span></span><span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
 		  </header>
-		  <div class="rux-card__body rux-trip-itinerary__stop-body">
+		  <div class="rux-trip-itinerary__stop-body">
 		  ${sessionBlock}
 		  </div>
 	  </section>`;
@@ -1443,8 +1443,10 @@
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 							</div>` : ""}
 						</div>
-						${daySections}
-						${addRow}
+						<div class="rux-card__body rux-trip-itinerary__day-group-body">
+							${daySections}
+							${addRow}
+						</div>
 					</article>`);
 				daySections = "";
 				dayExpandableCount = 0;

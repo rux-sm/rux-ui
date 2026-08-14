@@ -20,20 +20,27 @@
    ---------
    .rux-trip-itinerary                   Itinerary feature container
    .rux-trip-itinerary__summary          3-stat strip at top
-   .rux-trip-itinerary__day-group        One card containing a complete day
-   .rux-trip-itinerary__day              End-day section: stat grid and actions
-   .rux-trip-itinerary__day--final       Trailing (not-yet-closed) day — same card, no
-                                menu since it isn't a real list item
-   .rux-trip-itinerary__stop             Card section for one stop: label row,
-                                address row, time-
-                                fields row · Miles/Drive row (not Sleeper).
-                                Day-header modes expose add, delete, and
-                                reorder controls.
+   .rux-trip-itinerary__day-group        The one real box for a complete day
+                                (.rux-card, sentinel-gated sticky header)
+   .rux-trip-itinerary__day-group-body   Its .rux-card__body — flat, no
+                                padding of its own; every row inside
+                                supplies its own and shares one border-top
+                                divider with the row before it
+   .rux-trip-itinerary__day              End-day row: stat grid and actions
+   .rux-trip-itinerary__day--final       Trailing (not-yet-closed) day — same
+                                row, no menu since it isn't a real list item
+   .rux-trip-itinerary__stop             One stop: label row, address row,
+                                time-fields row, Miles/Drive row (not
+                                Sleeper). Day-header modes expose add,
+                                delete, and reorder controls.
 
-   A day's stops + its closing Day-N card sit flush (0 gap) and read as one
-   grouped block: square corners in the middle, rounded only at the very top
-   (first stop of the day) and very bottom (the Day-N card, or the last stop
-   if that day is still open). Separation only ever appears *between* days.
+   A stop is not its own box — it's a flat, divided row inside the day-
+   group's one shared box (Carbon-style: depth comes from a thin border,
+   not from stacking a separately-boxed, separately-shadowed card inside
+   another card). Every direct child of .rux-trip-itinerary__day-group-body
+   gets a border-top shared with whatever's above it; the first child has
+   none, so a day reads as one continuous surface with dividers between
+   its rows, not a stack of individually-boxed cards.
    ========================================================================== */
 
 /* — Outer container — */
@@ -42,9 +49,8 @@
    (docs/cards.md) and expect to sit flush against each other, sharing one
    border instead of floating with space between two separately-boxed
    cards. .rux-trip-itinerary__stops below restores its own margin-top —
-   the dynamic stop list is a different kind of region (repeating,
-   individually-boxed .rux-card--recessed items) and still wants normal
-   breathing room before it starts. */
+   the dynamic day-group list is a different kind of region and still wants
+   normal breathing room before it starts. */
 .rux-trip-itinerary {
 	display: flex;
 	flex-direction: column;
@@ -116,7 +122,10 @@
 
 /* Same label + primary-row anatomy as .rux-trip-itinerary__stop. End of Day
    is a summary rather than a location, so it has no rail or waypoint marker;
-   its left lane holds the day-scoped Add action instead. */
+   its left lane holds the day-scoped Add action instead. Own padding now —
+   previously implicit (no box of its own, sat flush in the day-group's
+   unboxed <article>); the day-group's body is a real box now, so this row
+   needs the same inset every other row supplies for itself. */
 .rux-trip-itinerary__day {
 	position: relative;
 	display: grid;
@@ -124,6 +133,7 @@
 	grid-template-rows: auto auto auto auto;
 	column-gap: var(--rux-space-2);
 	row-gap: var(--rux-stack-gap);
+	padding: var(--rux-card-padding);
 }
 
 /* Let the section grid own both content rows. This makes the Add button and
@@ -175,10 +185,13 @@
 
 /* No icon anymore — just the two stacked lines (headline + status/location
    detail), standard 14px body text instead of inheriting the ambient card
-   size, which is what read as oversized against everything around it. */
+   size, which is what read as oversized against everything around it. Own
+   padding now — previously inherited from the .rux-card__body class this
+   row no longer wears (see file header comment). */
 .rux-trip-itinerary__idle-day {
 	display: grid;
 	gap: var(--rux-space-1);
+	padding: var(--rux-card-padding);
 	color: var(--rux-fg-muted);
 	font-size: var(--rux-text-sm);
 }
@@ -243,14 +256,46 @@
 
 /* — Stop row — */
 
+/* The day-group's own .rux-card__body carries no padding of its own —
+   every row inside supplies its own inset, and a flush edge-to-edge body
+   is what lets each row's border-top run the full width as a real divider
+   instead of stopping short at an outer padding gutter. */
+.rux-trip-itinerary__day-group-body {
+	padding: 0;
+}
+
+/* Depth comes from one thin divider between rows, not a second, separately
+   boxed/shadowed surface per row (see the file header comment) — every
+   direct child of the day-group's body shares this border with whatever
+   precedes it; the first child has none, so a day reads as one continuous
+   surface. Covers every row type that can appear in the list: stops,
+   dwell/off-duty summaries, and the Day-boundary row. */
+.rux-trip-itinerary__day-group-body > .rux-trip-itinerary__stop,
+.rux-trip-itinerary__day-group-body > .rux-trip-itinerary__dwell-card,
+.rux-trip-itinerary__day-group-body > .rux-trip-itinerary__day {
+	border-top: var(--rux-border-width) solid var(--rux-border);
+}
+
+.rux-trip-itinerary__day-group-body > :first-child {
+	border-top: none;
+}
+
 /* Three-column stop anatomy: an intrinsic marker lane, flexible address,
    and transient delete lane. Labels, times, and stats align to the address. */
 .rux-trip-itinerary__stop {
 	position: relative;
 }
 
+/* Own padding/height now — previously inherited from the shared
+   .rux-card__header this row no longer wears (see file header comment). */
 .rux-trip-itinerary__stop-header {
 	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--rux-card-content-gap);
+	padding: var(--rux-card-padding-block) var(--rux-card-padding-inline);
+	height: var(--rux-card-header-height);
 }
 
 .rux-trip-itinerary__stop-heading {
@@ -260,21 +305,11 @@
 	gap: var(--rux-space-2);
 }
 
-/* Stops use the dedicated nested-card embed surface. Insets keep the outer
-   Day card readable as the parent while the border clearly groups each
-   waypoint's address, timing, duty state, and statistics.
-
-   margin-block, not margin-bottom alone: .rux-trip-itinerary__day-group is
-   plain block flow (an <article>, no flex/grid, no gap of its own), so
-   adjacent embeds' margins collapse into one gap the normal CSS way instead
-   of needing their own :first-child/adjacent-sibling case — the first
-   embed's own top margin applies against nothing (.rux-card__header
-   above it has no margin of its own to collapse with), giving it the same
-   16px every later embed gets between itself and the one before it. */
-.rux-trip-itinerary__day-group > .rux-card--recessed {
-	margin: var(--rux-space-4);
+/* Own padding now — previously inherited from the shared .rux-card__body
+   this row no longer wears (see file header comment). */
+.rux-trip-itinerary__stop-body {
+	padding: var(--rux-card-padding);
 }
-
 
 .rux-trip-itinerary__stop-body > * + * {
 	margin-top: var(--rux-stack-gap);
@@ -330,7 +365,11 @@
 	min-width: 0;
 }
 
-/* One pin silhouette identifies every location card; color carries its type. */
+/* One pin silhouette identifies every location row; color carries its
+   type. Background stays --rux-card-recessed-bg on purpose even though
+   the row itself isn't recessed anymore — it's still a subtle badge chip
+   behind the icon, computed relative to the day-group's own body so it
+   reads correctly regardless of ambient context. */
 .rux-trip-itinerary__marker-pin {
 	--_icon-fill: 1;
 	position: relative;
@@ -367,11 +406,12 @@
 /* Fallback for a day that has no End-of-Day summary. Summarized days place
    this same action directly in the summary's left action lane. */
 
-/* No longer a .rux-card--recessed (no divider/background of its own to
-   fight) — just the day-group's own inset around one full-width button,
-   same horizontal margin the idle-day body above uses. */
+/* margin-top, not the shared border-top divider every other row gets — an
+   action, not another data row, so it reads as trailing the list rather
+   than continuing it. */
 .rux-trip-itinerary__add-row {
-	padding: 0 var(--rux-card-padding-inline) var(--rux-card-padding-inline);
+	margin-top: var(--rux-card-content-gap);
+	padding: 0 var(--rux-card-padding-inline) var(--rux-card-padding-block);
 }
 
 .rux-trip-itinerary__add-row > .rux-button {

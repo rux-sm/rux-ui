@@ -30,6 +30,7 @@
 	gap: var(--rux-surface-content-gap);
 	height: var(--rux-surface-header-height);
 	font-weight: var(--rux-surface-header-weight);
+	border-bottom: var(--rux-surface-header-border);
 }
 
 /* Tabs-as-header slot — optional, stacks below __header or stands alone as

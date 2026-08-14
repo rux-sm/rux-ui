@@ -686,21 +686,23 @@ function templateFromEditedMessage(message, trip) {
 	return template;
 }
 
-// Reuses the same data-task-trip/data-task-field convention renderTrip's
-// checklist rows use — the delegated `change` handler below already reads
-// checkbox vs. text/textarea generically, so no new wiring is needed here.
+// Same .rux-card--recessed treatment renderTrip's own trip card uses above
+// — one concept ("a trip card"), one look, whether it's grouped under a day
+// (Trips view) or standing alone in a flat list (this view). Reuses the
+// same data-task-trip/data-task-field convention renderTrip's checklist
+// rows use — the delegated `change` handler below already reads checkbox
+// vs. text/textarea generically, so no new wiring is needed here.
 function renderPostTripCard(trip) {
 	const endDate = tripEndDate(trip);
 	return `
-		<article class="rux-card rux-tasks__trip">
-			<div class="rux-card__sentinel" aria-hidden="true"></div>
-			<div class="rux-card__header rux-tasks__trip-header">
+		<div class="rux-card--recessed rux-tasks__trip">
+			<header class="rux-card__header rux-tasks__trip-header">
 				<div>
 					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")}</p>
 					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")} · Returned ${endDate ? formatDayLabel(endDate) : "—"}</p>
 				</div>
 				${statusIndicator(!!trip.post_trip_survey_sent, "Survey sent", "Survey not sent")}
-			</div>
+			</header>
 			<div class="rux-card__body rux-tasks__trip-body">
 				<div class="rux-tasks__section rux-tasks__section--readiness">
 					<p class="rux-tasks__requirements-title">Reference</p>
@@ -725,7 +727,7 @@ function renderPostTripCard(trip) {
 					</div>
 				</div>
 			</div>
-		</article>
+		</div>
 	`;
 }
 

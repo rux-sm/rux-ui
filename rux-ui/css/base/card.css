@@ -20,18 +20,20 @@
    ========================================================================== */
 
 .rux-card {
-	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l + 6%) c h);
 	color: var(--rux-card-fg);
 }
 
-/* Locally overrides the custom properties, not background/box-shadow
-   directly — .rux-card__body reads var(--rux-card-body-bg) /
-   var(--rux-card-body-shadow) itself, so redefining those properties here
-   is what an elevated card's body actually picks up, the same way
-   --rux-card-body-border below works for --borderless. */
-.rux-card--elevated {
-	--rux-card-body-bg: var(--rux-card-elevated-bg);
-	--rux-card-body-shadow: var(--rux-card-elevated-shadow);
+/* Per-part, not a whole-card modifier — apply to whichever of header/body/
+   footer you actually want elevated; any combination is valid, none of
+   them require the others. Fixed values, not a relative computation. */
+.rux-card__header--elevated,
+.rux-card__body--elevated,
+.rux-card__footer--elevated {
+	background: var(--rux-card-elevated-bg);
+}
+
+.rux-card__body--elevated {
+	box-shadow: var(--rux-card-elevated-shadow);
 }
 
 .rux-card--borderless {
@@ -49,13 +51,7 @@
 	margin-top: var(--rux-card-content-gap);
 }
 
-.rux-card--stack > .rux-card__header {
-	width: auto;
-	margin:
-		calc(0px - var(--rux-card-padding-block))
-		calc(0px - var(--rux-card-padding-inline))
-		0;
-}
+
 
 /* Plain default: no border-bottom, no boxed background — a label row
    sitting in normal flow above .rux-card__body, not framing it. Still
@@ -89,16 +85,20 @@
 /* The repeating-group-header case — full inline padding (a card used this
    way runs edge-to-edge inside a pane with no ambient padding to lean on,
    unlike the plain default above, which relies on its parent's own
-   padding), an opaque fill that matches its own body instead of a tint
-   (so it reads as "docked over scrolled content", not "a boxed title bar"),
-   and position: sticky so it stays pinned to the top of its scroll
-   container until the next card's own header reaches the same position —
-   plain CSS, no JS, as long as each header is a direct child of its own
-   card rather than sharing one ancestor with the others. */
+   padding), and position: sticky so it stays pinned to the top of its
+   scroll container until the next card's own header reaches the same
+   position — plain CSS, no JS, as long as each header is a direct child of
+   its own card rather than sharing one ancestor with the others.
+   --rux-card-header-sticky-bg/-border (tokens.css), not the plain header's
+   own --rux-card-header-bg/-border — this variant's default is an opaque
+   fill that matches its own body instead of a tint (so it reads as "docked
+   over scrolled content", not "a boxed title bar"), but it's a real,
+   independently overridable token pair, not a hardcoded value. */
 .rux-card__sentinel + .rux-card__header {
-	padding: 0 var(--rux-card-padding-inline);
-	background: var(--rux-card-body-bg);
-	border: none;
+	padding: 0 var(--rux-card-header-padding);
+	background: var(--rux-card-header-sticky-bg);
+	border: var(--rux-card-header-sticky-border);
+	border-bottom: none;
 	/* Not z-index: 1 — .rux-button--segment (controls.css) also sets
 	   z-index: 1 on itself, and neither the segmented track nor this card
 	   establishes its own stacking context, so a tied z-index falls back
@@ -112,13 +112,18 @@
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
 }
 
-/* Shadow belongs to whichever header is actually docked at the moment, not
-   to a fixed one — .is-stuck is JS-driven (initStickySectionHeaders in
-   js/core/controls.js, shared by every .rux-panel), toggled by watching
-   the sentinel above rather than guessed from scroll math. Every sentinel-
-   gated header is eligible; only the one currently pinned over content
-   ever carries it. */
+/* Shadow and bottom border both belong to whichever header is actually
+   docked at the moment, not a fixed one — .is-stuck is JS-driven
+   (initStickySectionHeaders in js/core/controls.js, shared by every
+   .rux-panel), toggled by watching the sentinel above rather than guessed
+   from scroll math. Every sentinel-gated header is eligible; only the one
+   currently pinned over content ever carries either. The border stays
+   suppressed the rest of the time (the base rule above) so header and
+   body still read as flush, touching, zero-gap in the default state — it
+   only appears once there's actually scrolled content underneath to mark
+   the edge of. */
 .rux-card__sentinel + .rux-card__header.is-stuck {
+	border-bottom: var(--rux-card-header-sticky-border);
 	box-shadow: var(--rux-shadow-1);
 }
 
@@ -203,19 +208,31 @@
    no gap of their own — those consumers set margin-block directly on their
    embeds (not margin-bottom alone) so adjacent siblings' margins collapse
    into one gap the normal CSS way, including the first embed's own top
-   margin against nothing above it to collapse with. */
+   margin against nothing above it to collapse with.
+
+   .rux-card--recessed is a whole-card convenience shorthand for the
+   common "recessed header + recessed body" pair, applied here via child
+   combinator — .rux-card__header--recessed / .rux-card__body--recessed
+   below are the actual per-part primitives, usable independently or in
+   any other combination (e.g. a recessed body under a plain header). */
 .rux-card--recessed {
 	min-width: 0;
 }
 
+.rux-card__header--recessed,
 .rux-card--recessed > .rux-card__header {
 	background: transparent;
 }
 
+.rux-card__body--recessed,
 .rux-card--recessed > .rux-card__body {
 	background: var(--rux-card-recessed-bg);
 	border: var(--rux-card-recessed-border);
 	box-shadow: var(--rux-card-recessed-shadow);
+}
+
+.rux-card__footer--recessed {
+	background: var(--rux-card-recessed-bg);
 }
 
 .rux-card__title {
@@ -229,6 +246,7 @@
 	line-height: var(--rux-leading-snug);
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	padding-left: var(--rux-space-4);
 }
 
 .rux-card__subtitle {
