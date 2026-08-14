@@ -15,7 +15,7 @@
 	transform: translateX(-50%);
 	/* clamp (not min()) so it actually grows on roomy screens instead of
 	   hard-capping at a fixed pixel size regardless of viewport. */
-	width: clamp(480px, 65vw, 1200px);
+	width: var(--rux-manifest-window-width);
 	height: clamp(280px, 65vh, 900px);
 	min-width: 480px;
 	min-height: 280px;

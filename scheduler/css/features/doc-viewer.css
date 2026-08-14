@@ -52,6 +52,7 @@
 }
 
 .rux-doc-viewer {
+	--rux-surface-floating-width: var(--rux-doc-viewer-width);
 	--rux-surface-floating-safe-max-width: 64rem;
 }
 

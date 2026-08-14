@@ -141,7 +141,17 @@
 					);
 				}
 			},
-			{ root: scrollRoot, threshold: 0, rootMargin: "-1px 0px 0px 0px" },
+			// Positive, not negative — a negative top margin shrinks the
+		// observed region, moving its effective top edge to y:1. The very
+		// first sentinel in a scroll root sits at y:0 (nothing above it,
+		// panes/bodies are zero-padded), so at rest — before any scroll —
+		// a zero-height point at y:0 already falls outside a region that
+		// only starts at y:1, marking it .is-stuck immediately instead of
+		// only once actually scrolled. A positive margin expands the
+		// region upward (to y:-1) instead, giving the resting sentinel
+		// room to register as visible, while scrolling it past y:-1 still
+		// correctly flips it to stuck.
+		{ root: scrollRoot, threshold: 0, rootMargin: "1px 0px 0px 0px" },
 		);
 		// Some sections (the itinerary's day groups, Tasks/History's own
 		// date groups) are rebuilt wholesale via innerHTML well after this

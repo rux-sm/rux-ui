@@ -20,7 +20,7 @@
 	top: 10%;
 	left: 50%;
 	transform: translateX(-50%);
-	width: clamp(600px, 70vw, 1100px);
+	width: var(--rux-request-window-width);
 	height: clamp(400px, 70vh, 800px);
 	min-width: 480px;
 	min-height: 320px;

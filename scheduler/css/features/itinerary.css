@@ -755,6 +755,15 @@
 	border-radius: var(--rux-radius-md);
 }
 
+/* Opened from inside the trip editor's own .rux-surface--floating
+   (--rux-z-modal, 400) — the flat --rux-z-dropdown (100) above would
+   render this panel behind the dialog it's popping out of. Same
+   promotion js/core/suggestions.js's own dropdown already gets, toggled
+   in itinerary.js's renderSuggestions. */
+.rux-trip-itinerary__suggestions[data-rux-modal-layer] {
+	z-index: calc(var(--rux-z-modal) + 1);
+}
+
 .rux-trip-itinerary__suggestions[hidden] {
 	display: none;
 }

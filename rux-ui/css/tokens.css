@@ -31,7 +31,7 @@
 	--rux-blue:   oklch(60.0% 0.28 255.0); /*  Mana  */
 	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
 	--rux-pink:   oklch(70.0% 0.28 350.0); /*  Neon  */
-	--rux-gray: 	oklch(from var(--rux-neutral) 42.0% c h);
+	--rux-gray: 	oklch(from var(--rux-neutral) 50.0% c h);
 
 	/* ─── COLOR · legacy roles ─────────────────────────────────────────────── */
 	/* Retained for existing consumers; new components should use semantic roles. */
@@ -42,9 +42,13 @@
 	--rux-text-tertiary:    oklch(from var(--rux-neutral) 100% c h / 40%);
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
-	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 40% c h / 100%);
-	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-border-button: 	oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-border:        	oklch(from var(--rux-neutral) 0% c h / 100%);
+	--rux-border:        	transparent;
+
+	--rux-divider:       	oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-grid:				oklch(from var(--rux-neutral) 28% c h / 100%);
+	--rux-border-subtle:    oklch(from var(--rux-neutral) 28% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
 
@@ -238,7 +242,6 @@
 
 	--rux-bg-hover:      var(--rux-surface-5);
 	--rux-bg-active:     var(--rux-surface-6);
-	--rux-border-subtle: var(--rux-divider);
 	--rux-border-strong: var(--rux-border-button);
 
 	/* One interaction recipe for every neutral control. Selected aliases hover
@@ -252,7 +255,7 @@
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg: var(--rux-surface-3); /* Raised elements */
+	--rux-well-bg: var(--rux-surface-2); /* Raised elements */
 	--rux-thumb-bg: oklch(from var(--rux-neutral) 90% c h); /* Raised elements */
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
@@ -476,7 +479,7 @@
 
 	/* — shell — */
 	--rux-ui-header-bg:     	var(--rux-surface-0);
-	--rux-ui-header-border: 	var(--rux-border-width) solid var(--rux-border);
+	--rux-ui-header-border: 	1px solid var(--rux-border-subtle);
 	/* --rux-ui-header-radius: not set — spans full width, no corners */
 	/* --rux-ui-header-shadow: not set */
 	--rux-ui-header-padding: 	var(--rux-space-0) var(--rux-space-0);
@@ -510,7 +513,7 @@
 	--rux-side-nav-width:           256px;
 	--rux-side-nav-bg:              var(--rux-surface-3);
 	--rux-side-nav-fg:              var(--rux-fg-secondary);
-	--rux-side-nav-border:          1px solid var(--rux-border);
+	--rux-side-nav-border:          1px solid var(--rux-border-subtle);
 	--rux-side-nav-shadow:          none;
 	--rux-side-nav-padding:         var(--rux-space-2) var(--rux-space-0);
 	--rux-side-nav-item-min-height: 40px;
@@ -562,7 +565,7 @@
 
 	/* — shell — */
 	--rux-calendar-bg:         var(--rux-surface-1);
-	--rux-calendar-border:     1px solid var(--rux-border); /* calender outline border*/
+	--rux-calendar-border:     1px solid var(--rux-grid); /* calender outline border*/
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
 	--rux-calendar-radius: var(--rux-radius-container);
@@ -577,17 +580,17 @@
 	/* Header cells share one flat plane; borders provide separation without
 	   repeating elevation or rim lighting across every grid cell. */
 	--rux-calendar-header-bg:     var(--rux-surface-1);
-	--rux-calendar-header-border: 1px solid var(--rux-border); /* row header dividers*/
+	--rux-calendar-header-border: 1px solid var(--rux-grid); /* row header dividers*/
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
 	   of the same container shape, not its own control. */
 	--rux-calendar-header-radius: var(--rux-radius-container);
 	--rux-calendar-header-height: 32px;
 	--rux-calendar-header-row-width: 32px;
 	--rux-calendar-header-shadow:        none;
-	--rux-calendar-header-divider:      1px solid var(--rux-border); /* column header dividers*/
+	--rux-calendar-header-divider:      1px solid var(--rux-grid); /* column header dividers*/
 
 	/* — grid — */
-	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-border);
+	--rux-calendar-grid: var(--rux-border-width) solid var(--rux-grid);
 
 	/* — row header (sticky bus-number rail) — */
 	/* These stack vertically, so repeated elevation would make every row read
@@ -644,8 +647,8 @@
 	--rux-panel-content-gap: var(--rux-space-0);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
-	--rux-panel-right-border: 1px solid var(--rux-border);
-	--rux-left-panel-border: 0px solid var(--rux-border);
+	--rux-panel-right-border: 1px solid var(--rux-border-subtle);
+	--rux-left-panel-border: 0px solid var(--rux-border-subtle);
 
 	/* — minimum sizing shared by panel-shaped feature layouts — */
 	--rux-panel-min-width: 224px;
@@ -851,10 +854,30 @@
 	--rux-surface-floating-border:        var(--rux-card-body-border);
 	--rux-surface-floating-radius:        var(--rux-card-body-radius);
 	--rux-surface-floating-shadow:        var(--rux-shadow-2);
-	--rux-surface-floating-header-bg:     var(--rux-surface-3);
+	--rux-surface-floating-header-bg:     var(--rux-surface-2);
 	--rux-surface-floating-nav-bg:        var(--rux-surface-0);
 	--rux-surface-floating-body-bg:       var(--rux-surface-floating-bg);
-	--rux-surface-floating-footer-bg:     var(--rux-surface-4);
+	--rux-surface-floating-footer-bg:     var(--rux-surface-2);
+
+	/* — floating window widths — one token per window, all in one place so
+	   each is easy to find and tune independently instead of hunting
+	   through six different feature files for a bare width: declaration.
+	   --rux-surface-floating-width is the shared default (what
+	   .rux-surface--default-size, surface.css, actually reads) — doc
+	   viewer and trip envelope don't have their own width: rule at all,
+	   they use --default-size and then locally override this same
+	   property with their own token below (doc-viewer.css/trip-envelope.css),
+	   the same pattern those two files already use for
+	   --rux-surface-floating-safe-max-width. The other four each have
+	   their own dedicated CSS rule already, so their tokens substitute
+	   directly into that rule's own width: property. */
+	--rux-surface-floating-width:      min(750px, calc(100vw - var(--rux-space-4) * 2));
+	--rux-trip-dialog-width:           min(640px, calc(100vw - (var(--rux-space-4) * 2)));
+	--rux-manifest-window-width:       clamp(480px, 65vw, 1200px);
+	--rux-request-window-width:        clamp(600px, 70vw, 1100px);
+	--rux-trip-finder-window-width:    clamp(600px, 70vw, 1100px);
+	--rux-doc-viewer-width:            var(--rux-surface-floating-width);
+	--rux-trip-envelope-window-width:  var(--rux-surface-floating-width);
 
 	/* — modal — */
 	--rux-surface-modal-bg:     var(--rux-elevation-4-bg);
@@ -981,7 +1004,7 @@
 	   ever defining it. Harmless by accident (an undefined custom property
 	   used as a var() with no fallback resolves to the same "none" this was
 	   already meant to be), but fixed rather than left relying on that. */
-	--rux-input-border:         none;
+	--rux-input-border:         1px solid var(--rux-border);
 	--rux-input-border-image:   none;
 	--rux-input-border-radius:  var(--rux-radius-0);
 	--rux-input-shadow:         none;
@@ -1033,7 +1056,7 @@
 	--rux-button-border:       none;
 	--rux-button-radius:       var(--rux-radius-0);
 	/* Tactile shadows apply only to solid-fill variants. */
-	--rux-button-shadow-raised:  none;
+	--rux-button-shadow-raised:  var(--rux-shadow-1);
 	--rux-button-shadow-pressed: none;
 	--rux-button-mobile-height:  40px;
 	--rux-button-group-gap:      var(--rux-space-2);
@@ -1044,8 +1067,8 @@
 	--rux-button-font-weight: var(--rux-weight-medium);
 
 	/* — states — */
-	--rux-button-hover-text:          var(--rux-accent);
-	--rux-button-hover-border:        1px solid var(--rux-accent);
+	--rux-button-hover-text:          var(--rux-fg);
+	--rux-button-hover-border:        none;
 	--rux-button-hover-overlay:       var(--rux-state-hover-overlay);
 	--rux-button-transition-duration: var(--rux-duration-instant);
 	--rux-button-transition-easing:   var(--rux-ease-out);
@@ -1477,12 +1500,12 @@
 	/* — attached tab, inactive — */
 	--rux-tabs-attached-tab-bg:     var(--rux-surface-2); /* correct one for nav inactive tabs */
 	--rux-tabs-attached-tab-fg:     var(--rux-fg-muted);
-	--rux-tabs-attached-tab-border: 1px solid var(--rux-border);
+	--rux-tabs-attached-tab-border: 1px solid var(--rux-border-subtle);
 	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-0);
 	--rux-tabs-attached-tab-top-right-radius: var(--rux-radius-0);
 	--rux-tabs-attached-tab-shadow:	none;
 	--rux-tabs-attached-tab-hover-fg:      var(--rux-fg);
-	--rux-tabs-attached-tab-inline-border: 1px solid var(--rux-border);
+	--rux-tabs-attached-tab-inline-border: 1px solid var(--rux-border-subtle);
 
 	/* — attached tab, selected — */
 	/* Active attached tabs and their pane share one surface. */
@@ -1498,7 +1521,7 @@
 	   merged with the floating body actually behind it. Independent
 	   tokens, not shared with the driver/fleet/tool panels' own attached
 	   tabs — scoped via .rux-surface--floating in navigation.css. */
-	--rux-tabs-floating-tab-bg:          var(--rux-surface-2);
+	--rux-tabs-floating-tab-bg:          var(--rux-surface-1);
 	--rux-tabs-floating-tab-fg:          var(--rux-fg-muted);
 	--rux-tabs-floating-tab-selected-bg: var(--rux-surface-3);
 	--rux-tabs-floating-tab-selected-fg: var(--rux-fg);

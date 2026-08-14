@@ -25,6 +25,7 @@
    system, not two. */
 
 .rux-trip-envelope-window {
+	--rux-surface-floating-width: var(--rux-trip-envelope-window-width);
 	--rux-surface-floating-safe-max-width: 40rem;
 }
 

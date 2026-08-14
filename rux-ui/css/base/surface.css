@@ -92,6 +92,23 @@
 	padding: var(--rux-surface-padding-block) var(--rux-surface-padding-inline);
 }
 
+/* Even-fill default — only when the footer is *purely* two or more
+   buttons and nothing else. :not(:has(> :not(.rux-button))) excludes any
+   footer with a non-button child (doc viewer's .rux-surface__spacer,
+   trip envelope's driver <select>) — those already have their own
+   intentional layout (buttons compact, a spacer eating the remaining
+   space) that stretching would break. :has(> .rux-button ~ .rux-button)
+   excludes a single-button footer (request inbox's "New request") — one
+   button stretched to the full footer width isn't "evenly filled," it's
+   just stretched, and loses its natural right-aligned look for no
+   reason. The trip editor's Cancel/Clear/Save row is the only footer
+   today that's purely 2+ buttons with nothing else, so it's the only one
+   this actually changes. */
+.rux-surface__footer:not(:has(> :not(.rux-button))):has(> .rux-button ~ .rux-button) > .rux-button {
+	flex: 1;
+	min-width: 0;
+}
+
 /* ── Position: attached (was .rux-panel) ─────────────────────────────────── */
 
 .rux-surface--attached {
@@ -222,7 +239,7 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: min(750px, calc(100vw - var(--rux-space-4) * 2));
+	width: var(--rux-surface-floating-width);
 	height: min(1000px, calc(100vh - var(--rux-space-4) * 2));
 	/* 460px ≈ 360px × letter's own 8.5:11 ratio — keeps the floor roughly
 	   portrait-shaped (not a short landscape strip) at the smallest size
