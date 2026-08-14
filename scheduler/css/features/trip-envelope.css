@@ -2,12 +2,12 @@
    TRIP ENVELOPE — floating preview window + printable page
    --------------------------------------------------------------------------
    Built by js/panels/trip-envelope.js as a draggable/resizable
-   .rux-floating-window — same recipe and default size as
+   .rux-surface--floating — same recipe and default size as
    css/features/doc-viewer.css's .rux-doc-viewer (RuxDocViewer), so it
    behaves and sits on screen just like the itinerary PDF viewer instead of
    blocking the whole page like a modal. Positioning/drag/resize mechanics
-   live in the shared base (css/base/floating-window.css) — this file is
-   just this window's own size/position defaults and content styling.
+   live in the shared base (css/base/surface.css) — this file is just this
+   window's own size/position defaults and content styling.
    The envelope card itself is a deliberate light-on-paper world with its
    own scoped palette, same idea as print-schedule.css's --print-* tokens
    but scoped to .rux-trip-envelope instead.
@@ -15,7 +15,7 @@
 
 /* ── Floating window chrome (screen only — none of this prints) ────────── */
 
-/* Size/position: .rux-floating-window--default-size (css/base/floating-window.css)
+/* Size/position: .rux-surface--default-size (css/base/surface.css)
    — same footprint as the doc viewer, on purpose. Fixed size otherwise:
    trip-envelope.js's fitToHeight() is the one and only thing that scales the
    card (both up and down) to fit whatever space this box provides — a second
@@ -25,7 +25,7 @@
    system, not two. */
 
 .rux-trip-envelope-window {
-	--rux-floating-window-safe-max-width: 40rem;
+	--rux-surface-floating-safe-max-width: 40rem;
 }
 
 .rux-trip-envelope-window__body {
@@ -34,7 +34,7 @@
     flex-grow: 1;
     min-height: 0; /* lets this actually shrink to the window's real size instead of refusing to go below the card's natural (pre-scale) content size */
     padding: var(--rux-space-4);
-    background: var(--rux-card-bg);
+    background: var(--rux-card-body-bg);
     /* Fallback only, not the primary mechanism — fitToHeight() computes an
        exact scale to fit this space, so overflow shouldn't normally trigger. */
     overflow: auto;
@@ -73,7 +73,7 @@
 	flex-wrap: wrap;
 	gap: var(--rux-button-group-gap);
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-floating-window-header-bg);
+	background: var(--rux-surface-floating-header-bg);
 	border-bottom: var(--rux-card-section-border);
 }
 
@@ -91,7 +91,7 @@
 }
 
 /* flex:none and the modal surface background come from the shared
-   .rux-floating-window__footer; the shared button-group token keeps this
+   .rux-surface__footer; the shared button-group token keeps this
    wrapping toolbar consistent with card and panel action rows. */
 .rux-trip-envelope-window__footer {
 	display: flex;

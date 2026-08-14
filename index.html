@@ -812,14 +812,14 @@
 				<div class="scheduler-app__module" data-module="calendar">
 					<!-- Movable, resizable trip editor workspace window -->
 					<div
-						class="rux-floating-window rux-trip-dialog rux-card rux-card--elevated"
+						class="rux-surface rux-surface--floating rux-trip-dialog"
 						id="trip-editor-dialog"
 						role="dialog"
 						aria-labelledby="trip-editor-dialog-title"
 						hidden
 					>
 						<header
-							class="rux-floating-window__header rux-card__header"
+							class="rux-surface__header"
 							data-trip-dialog-header
 						>
 							<h2
@@ -930,12 +930,12 @@
 									class="rux-panel__pane rux-trip-panel__pane"
 									role="tabpanel"
 								>
-									<div class="rux-card__section">
+									<div class="rux-card">
 										<div
-											class="rux-card__section-sentinel"
+											class="rux-card__sentinel"
 											aria-hidden="true"
 										></div>
-										<div class="rux-card__section-header">
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Trip Details
 											</p>
@@ -1092,12 +1092,12 @@
 											</div>
 										</div>
 									</div>
-									<div class="rux-card__section">
+									<div class="rux-card">
 										<div
-											class="rux-card__section-sentinel"
+											class="rux-card__sentinel"
 											aria-hidden="true"
 										></div>
-										<div class="rux-card__section-header">
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Customer Details
 											</p>
@@ -1189,12 +1189,12 @@
 											</div>
 										</div>
 									</div>
-									<div class="rux-card__section">
+									<div class="rux-card">
 										<div
-											class="rux-card__section-sentinel"
+											class="rux-card__sentinel"
 											aria-hidden="true"
 										></div>
-										<div class="rux-card__section-header">
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Trip Contact
 											</p>
@@ -1218,12 +1218,12 @@
 											></div>
 										</div>
 									</div>
-									<div class="rux-card__section">
+									<div class="rux-card">
 										<div
-											class="rux-card__section-sentinel"
+											class="rux-card__sentinel"
 											aria-hidden="true"
 										></div>
-										<div class="rux-card__section-header">
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Requirements
 											</p>
@@ -1245,12 +1245,12 @@
 											</div>
 										</div>
 									</div>
-									<div class="rux-card__section">
+									<div class="rux-card">
 										<div
-											class="rux-card__section-sentinel"
+											class="rux-card__sentinel"
 											aria-hidden="true"
 										></div>
-										<div class="rux-card__section-header">
+										<div class="rux-card__header">
 											<p class="rux-card__title">Files</p>
 											<div class="rux-cluster">
 												<button
@@ -1321,12 +1321,12 @@
 											/>
 										</div>
 									</div>
-									<div class="rux-card__section">
+									<div class="rux-card">
 										<div
-											class="rux-card__section-sentinel"
+											class="rux-card__sentinel"
 											aria-hidden="true"
 										></div>
-										<div class="rux-card__section-header">
+										<div class="rux-card__header">
 											<p
 												class="rux-card__title"
 												id="tp-trip-bar-color-label"
@@ -1493,11 +1493,15 @@
 									hidden
 								>
 									<div class="rux-card">
-										<header class="rux-card__header">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Billing Details
 											</p>
-										</header>
+										</div>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1584,7 +1588,11 @@
 										id="tp-ticket-pricing-card"
 										hidden
 									>
-										<header class="rux-card__header">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Ticket Pricing
 											</p>
@@ -1602,7 +1610,7 @@
 													>
 												</button>
 											</div>
-										</header>
+										</div>
 										<div class="rux-card__body">
 											<div
 												class="rux-trip-panel__payment-rows"
@@ -1627,11 +1635,15 @@
 										</div>
 									</div>
 									<div class="rux-card">
-										<header class="rux-card__header">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Pricing
 											</p>
-										</header>
+										</div>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1723,11 +1735,15 @@
 									<div
 										class="rux-card rux-trip-panel__billing-workflow"
 									>
-										<header class="rux-card__header">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Billing Status
 											</p>
-										</header>
+										</div>
 										<div
 											class="rux-card__body rux-card__body--stack"
 										>
@@ -1892,8 +1908,15 @@
 											</div>
 										</div>
 									</div>
-									<div class="rux-card" data-payment-card>
-										<header class="rux-card__header">
+									<div
+										class="rux-card"
+										data-payment-card
+									>
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Payments
 											</p>
@@ -1913,7 +1936,7 @@
 													>
 												</button>
 											</div>
-										</header>
+										</div>
 										<div class="rux-card__body">
 											<div
 												class="rux-trip-panel__payment-rows"
@@ -1949,7 +1972,11 @@
 											class="rux-card rux-trip-itinerary__summary"
 											id="tp-itin-summary"
 										>
-											<header class="rux-card__header">
+											<div
+												class="rux-card__sentinel"
+												aria-hidden="true"
+											></div>
+											<div class="rux-card__header">
 												<p class="rux-card__title">
 													Trip Summary
 												</p>
@@ -2008,7 +2035,7 @@
 														>
 													</button>
 												</div>
-											</header>
+											</div>
 											<div class="rux-card__body"></div>
 										</div>
 										<div
@@ -2016,7 +2043,11 @@
 											id="tp-itin-leg-card"
 											hidden
 										>
-											<header class="rux-card__header">
+											<div
+												class="rux-card__sentinel"
+												aria-hidden="true"
+											></div>
+											<div class="rux-card__header">
 												<p class="rux-card__title">
 													Split Trip
 												</p>
@@ -2036,7 +2067,7 @@
 														>Reset Outbound</span
 													>
 												</button>
-											</header>
+											</div>
 											<div class="rux-card__body">
 												<div class="rux-field">
 													<label
@@ -2082,130 +2113,116 @@
 									hidden
 								>
 									<div class="rux-card">
-										<header class="rux-card__header">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Fleet Assignments
 											</p>
-										</header>
-										<div class="rux-card__body">
 											<div
-												class="rux-trip-panel__fleet-count-card"
+												class="rux-number-stepper rux-number-stepper--ghost"
+												role="group"
+												aria-label="Buses needed"
 											>
-												<span
-													class="rux-trip-panel__fleet-count-label"
-													id="tp-buses-label"
-													>Buses Needed</span
+												<button
+													class="rux-number-stepper__btn"
+													type="button"
+													data-bus-count-dec
+													aria-label="Fewer buses"
 												>
-												<div
-													class="rux-number-stepper"
-													role="group"
-													aria-labelledby="tp-buses-label"
+													<span class="rux-icon"
+														>remove</span
+													>
+												</button>
+												<input
+													class="rux-number-stepper__input"
+													id="tp-buses"
+													name="busesNeeded"
+													type="number"
+													min="1"
+													max="20"
+													step="1"
+													value="1"
+													inputmode="numeric"
+													aria-label="Buses needed"
+												/>
+												<button
+													class="rux-number-stepper__btn"
+													type="button"
+													data-bus-count-inc
+													aria-label="More buses"
 												>
-													<button
-														class="rux-number-stepper__btn"
-														type="button"
-														data-bus-count-dec
-														aria-label="Fewer buses"
+													<span class="rux-icon"
+														>add</span
 													>
-														<span class="rux-icon"
-															>remove</span
-														>
-													</button>
-													<input
-														class="rux-number-stepper__input"
-														id="tp-buses"
-														name="busesNeeded"
-														type="number"
-														min="1"
-														max="20"
-														step="1"
-														value="1"
-														inputmode="numeric"
-														aria-labelledby="tp-buses-label"
-													/>
-													<button
-														class="rux-number-stepper__btn"
-														type="button"
-														data-bus-count-inc
-														aria-label="More buses"
-													>
-														<span class="rux-icon"
-															>add</span
-														>
-													</button>
-												</div>
+												</button>
 											</div>
 										</div>
+										<div
+											class="rux-trip-panel__bus-groups"
+											id="tp-bus-groups"
+										></div>
 									</div>
-									<div
-										class="rux-trip-panel__bus-groups"
-										id="tp-bus-groups"
-									></div>
 									<div
 										class="rux-card"
 										id="tp-return-fleet-card"
 										hidden
 									>
-										<header class="rux-card__header">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
 											<p class="rux-card__title">
 												Return Fleet Assignments
 											</p>
-										</header>
-										<div class="rux-card__body">
 											<div
-												class="rux-trip-panel__fleet-count-card"
+												class="rux-number-stepper rux-number-stepper--ghost"
+												role="group"
+												aria-label="Buses needed (return)"
 											>
-												<span
-													class="rux-trip-panel__fleet-count-label"
-													id="tp-return-buses-label"
-													>Buses Needed (Return)</span
+												<button
+													class="rux-number-stepper__btn"
+													type="button"
+													data-bus-count-dec="return"
+													aria-label="Fewer return buses"
 												>
-												<div
-													class="rux-number-stepper"
-													role="group"
-													aria-labelledby="tp-return-buses-label"
+													<span class="rux-icon"
+														>remove</span
+													>
+												</button>
+												<input
+													class="rux-number-stepper__input"
+													id="tp-return-buses"
+													name="returnBusesNeeded"
+													type="number"
+													min="1"
+													max="20"
+													step="1"
+													value="1"
+													inputmode="numeric"
+													aria-label="Buses needed (return)"
+												/>
+												<button
+													class="rux-number-stepper__btn"
+													type="button"
+													data-bus-count-inc="return"
+													aria-label="More return buses"
 												>
-													<button
-														class="rux-number-stepper__btn"
-														type="button"
-														data-bus-count-dec="return"
-														aria-label="Fewer return buses"
+													<span class="rux-icon"
+														>add</span
 													>
-														<span class="rux-icon"
-															>remove</span
-														>
-													</button>
-													<input
-														class="rux-number-stepper__input"
-														id="tp-return-buses"
-														name="returnBusesNeeded"
-														type="number"
-														min="1"
-														max="20"
-														step="1"
-														value="1"
-														inputmode="numeric"
-														aria-labelledby="tp-return-buses-label"
-													/>
-													<button
-														class="rux-number-stepper__btn"
-														type="button"
-														data-bus-count-inc="return"
-														aria-label="More return buses"
-													>
-														<span class="rux-icon"
-															>add</span
-														>
-													</button>
-												</div>
+												</button>
 											</div>
 										</div>
+										<div
+											class="rux-trip-panel__bus-groups"
+											id="tp-return-bus-groups"
+											hidden
+										></div>
 									</div>
-									<div
-										class="rux-trip-panel__bus-groups"
-										id="tp-return-bus-groups"
-										hidden
-									></div>
 								</div>
 							</div>
 							<footer class="rux-panel__footer">
@@ -2457,10 +2474,16 @@
 									role="tabpanel"
 								>
 									<section
-										class="rux-mini-cal"
+										class="rux-card rux-mini-cal"
 										id="rp-minical-card"
 									>
-										<header class="rux-mini-cal__header">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div
+											class="rux-card__header rux-mini-cal__header"
+										>
 											<button
 												class="rux-button rux-button--ghost rux-button--icon rux-button--header"
 												id="mini-cal-prev"
@@ -2485,8 +2508,8 @@
 													>chevron_right</span
 												>
 											</button>
-										</header>
-										<div class="rux-mini-cal__body">
+										</div>
+										<div class="rux-card__body rux-mini-cal__body">
 											<div
 												class="rux-mini-cal__grid"
 												role="grid"
@@ -2507,13 +2530,19 @@
 										</div>
 									</section>
 									<section
-										class="rux-view-options"
+										class="rux-card rux-view-options"
 										id="rp-view-options"
 									>
-										<h3 class="rux-view-options__title">
-											View Options
-										</h3>
-										<div class="rux-view-options__list">
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
+											<p class="rux-card__title">
+												View Options
+											</p>
+										</div>
+										<div class="rux-card__body rux-view-options__list">
 											<div class="rux-view-options__row">
 												<span
 													class="rux-view-options__label"
@@ -2618,19 +2647,29 @@
 									role="tabpanel"
 									hidden
 								>
-									<h3 class="rux-driver-availability__title">
-										Driver Availability
-									</h3>
-									<div class="rux-driver-grid__scroller">
+									<div class="rux-card">
 										<div
-											class="rux-driver-grid"
-											id="rp-driver-grid"
-											role="grid"
-											aria-label="Driver assignments by day"
-										>
-											<p class="rux-subtle">
-												Loading drivers…
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
+											<p class="rux-card__title">
+												Driver Availability
 											</p>
+										</div>
+										<div class="rux-card__body">
+											<div class="rux-driver-grid__scroller">
+												<div
+													class="rux-driver-grid"
+													id="rp-driver-grid"
+													role="grid"
+													aria-label="Driver assignments by day"
+												>
+													<p class="rux-subtle">
+														Loading drivers…
+													</p>
+												</div>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -11057,12 +11096,12 @@
        document viewer, so it floats over the calendar instead of replacing
        it. See js/panels/trip-manifest.js for open/close/drag wiring. -->
 		<div
-			class="rux-floating-window rux-manifest-window rux-card rux-card--elevated"
+			class="rux-surface rux-surface--floating rux-manifest-window"
 			id="calendar-manifest-view"
 			hidden
 		>
 			<header
-				class="rux-floating-window__header rux-manifest-window__header rux-card__header"
+				class="rux-surface__header rux-manifest-window__header"
 			>
 				<p class="rux-card__title" id="manifest-window-title">
 					Manifest
@@ -11152,7 +11191,7 @@
 					</div>
 				</div>
 				<div
-					class="rux-floating-window__body rux-manifest-window__body rux-card__body"
+					class="rux-surface__body rux-manifest-window__body"
 				>
 					<table
 						class="rux-table trips-app__table"
@@ -11501,12 +11540,12 @@
 		     trip editor. See js/panels/request-inbox.js and
 		     css/features/request-inbox.css. -->
 		<div
-			class="rux-floating-window rux-request-window rux-card rux-card--elevated"
+			class="rux-surface rux-surface--floating rux-request-window"
 			id="request-inbox-window"
 			hidden
 		>
 			<header
-				class="rux-floating-window__header rux-request-window__header rux-card__header"
+				class="rux-surface__header rux-request-window__header"
 			>
 				<p class="rux-card__title">Requests</p>
 				<span
@@ -11585,12 +11624,12 @@
 					</div>
 				</div>
 				<ul
-					class="rux-floating-window__body rux-request-window__list"
+					class="rux-surface__body rux-request-window__list"
 					id="request-inbox-list"
 				></ul>
 			</div>
 			<footer
-				class="rux-floating-window__footer rux-request-window__footer"
+				class="rux-surface__footer rux-request-window__footer"
 			>
 				<button
 					type="button"
@@ -11751,12 +11790,12 @@
 		     list with the old ⌘K search modal. See js/panels/trip-finder.js for
 		     open/close/filter/drag wiring. -->
 		<div
-			class="rux-floating-window rux-trip-finder-window rux-card rux-card--elevated"
+			class="rux-surface rux-surface--floating rux-trip-finder-window"
 			id="trip-finder-window"
 			hidden
 		>
 			<header
-				class="rux-floating-window__header rux-trip-finder-window__header rux-card__header"
+				class="rux-surface__header rux-trip-finder-window__header"
 			>
 				<p class="rux-card__title">Trip Finder</p>
 				<button
@@ -12023,10 +12062,10 @@
 					</div>
 				</div>
 				<div
-					class="rux-floating-window__body rux-trip-finder-window__body"
+					class="rux-surface__body rux-trip-finder-window__body"
 				>
 					<div
-						class="rux-card-section rux-trip-finder-window__results trips-app__table-wrap"
+						class="rux-card--recessed rux-trip-finder-window__results trips-app__table-wrap"
 					>
 						<table
 							class="rux-table trips-app__table rux-trip-finder-window__table"

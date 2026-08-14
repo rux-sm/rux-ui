@@ -340,11 +340,11 @@ html {
 
 /* Shared assignment module ------------------------------------------------ */
 
-.driver-assignment-card > .rux-card__section {
+.driver-assignment-card > .rux-card {
 	padding: var(--rux-driver-module-padding);
 }
 
-.driver-assignment-card > .rux-card__section + .rux-card__section {
+.driver-assignment-card > .rux-card + .rux-card {
 	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
 }
 
@@ -650,7 +650,7 @@ html {
 	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
 }
 
-.driver-assignment-card__crew-fleet-group + .rux-card__section {
+.driver-assignment-card__crew-fleet-group + .rux-card {
 	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
 }
 
@@ -925,7 +925,7 @@ html {
 
 @container driver-assignment-card (max-width: 359px) {
 	.driver-assignment-card__header,
-	.driver-assignment-card > .rux-card__section,
+	.driver-assignment-card > .rux-card,
 	.driver-assignment-card__crew-bus-section {
 		padding-inline: var(--rux-driver-page-gutter);
 	}

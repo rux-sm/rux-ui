@@ -108,6 +108,62 @@
 		sync();
 	}
 
+	/* Which .rux-card__header currently owns the "stuck" shadow is
+	   scroll state, not something CSS position: sticky exposes on its own —
+	   there's no shipped :stuck selector to key a box-shadow off. Each
+	   section gets a zero-height sentinel as its first child, right at the
+	   section's own top edge (the same point its header docks to once
+	   stuck). Watching the sentinel's own visibility, not the header's,
+	   sidesteps needing to read the header's changing intersection ratio as
+	   it slides in: the sentinel leaves the scroll root at exactly the
+	   instant its header reaches top:0 and sticks, and returns at exactly
+	   the instant it unsticks.
+
+	   Shared across every .rux-panel (auto-wired below, same as
+	   initPanelScrollEdges) rather than living in trip-panel.js — the tool
+	   panel's Tasks and History tabs need the identical behavior for their
+	   own date-grouped lists, and a floating window's own .rux-trip-panel
+	   is itself a .rux-panel, so one generic implementation covers both
+	   instead of two copies drifting apart. */
+	function initStickySectionHeaders(panel) {
+		const scrollRoot = panel.querySelector(".rux-panel__body");
+		if (!scrollRoot || scrollRoot.dataset.ruxStickyHeadersInit === "true") return;
+		scrollRoot.dataset.ruxStickyHeadersInit = "true";
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					entry.target.nextElementSibling?.classList.toggle(
+						"is-stuck",
+						!entry.isIntersecting,
+					);
+				}
+			},
+			{ root: scrollRoot, threshold: 0, rootMargin: "-1px 0px 0px 0px" },
+		);
+		// Some sections (the itinerary's day groups, Tasks/History's own
+		// date groups) are rebuilt wholesale via innerHTML well after this
+		// init runs — a plain querySelectorAll here would only ever see the
+		// sentinels present at first render. Re-scanning on every DOM
+		// mutation picks up new sections as they're rendered; the WeakSet
+		// keeps re-observing an already-tracked sentinel a no-op. Sentinels
+		// removed with their old section just stop reporting — nothing to
+		// clean up on that side.
+		const observed = new WeakSet();
+		const observeNew = () => {
+			panel.querySelectorAll(".rux-card__sentinel").forEach((sentinel) => {
+				if (observed.has(sentinel)) return;
+				observed.add(sentinel);
+				observer.observe(sentinel);
+			});
+		};
+		observeNew();
+		new MutationObserver(observeNew).observe(scrollRoot, {
+			childList: true,
+			subtree: true,
+		});
+	}
+
 	function initSegmentedIndicator(group) {
 		if (group.dataset.ruxIndicatorInit === "true") return;
 		group.dataset.ruxIndicatorInit = "true";

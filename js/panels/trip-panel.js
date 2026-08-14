@@ -171,7 +171,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 		.map(
 			(r) => {
 				const reliefDetails = r.role.startsWith("relief")
-					? `<div class="rux-card-section rux-trip-panel__relief-details">
+					? `<div class="rux-card--recessed rux-trip-panel__relief-details">
 						<div class="rux-field">
 							<label class="rux-field__label" for="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time">Meet / swap time</label>
 							<input class="rux-input" id="${escHtml(fieldPrefix)}-${idx}-${escHtml(r.role)}-report-time" name="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.reportTime" type="time" aria-label="${escHtml(r.title)} meet or swap time" />
@@ -203,7 +203,11 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 		.join("");
 
 	const el = document.createElement("div");
-	el.className = "rux-card rux-trip-panel__bus-group";
+	// .rux-card--recessed, not .rux-card: this is a repeating list item (one
+	// per bus), same category as the itinerary's own per-stop cards — a
+	// nested bordered group, not a standalone top-level card. See
+	// docs/cards.md.
+	el.className = "rux-card--recessed rux-trip-panel__bus-group";
 	el.innerHTML = `
     <header class="rux-card__header">
       <p class="rux-card__title">Bus ${idx + 1}</p>
@@ -370,8 +374,8 @@ function initBillingWorkflow(root) {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-card-section rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
-				<div class="rux-card-section__header rux-trip-panel__payment-header">
+			<div class="rux-card--recessed rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+				<div class="rux-card__header rux-trip-panel__payment-header">
 					<div class="rux-trip-panel__payment-method">
 						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
 						<span class="rux-trip-panel__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
@@ -381,7 +385,7 @@ function initBillingWorkflow(root) {
 						<span class="rux-icon" aria-hidden="true">delete</span>
 					</button>
 				</div>
-				<div class="rux-card-section__body rux-trip-panel__payment-fields">
+				<div class="rux-card__body rux-trip-panel__payment-fields">
 					<label class="rux-field rux-trip-panel__payment-date-field">
 						<span class="rux-field__label">Date</span>
 						<span class="rux-input rux-trip-panel__payment-date-control">
@@ -924,34 +928,6 @@ function attachContactAutofill(nameInput, { phoneInput, emailInput, clientInput 
 	});
 }
 
-/* Which .rux-card__section-header currently owns the "stuck" shadow is
-   scroll state, not something CSS position: sticky exposes on its own —
-   there's no shipped :stuck selector to key a box-shadow off. Each section
-   gets a zero-height sentinel as its first child, right at the section's
-   own top edge (the same point its header docks to once stuck). Watching
-   the sentinel's own visibility, not the header's, sidesteps needing to
-   read the header's changing intersection ratio as it slides in: the
-   sentinel leaves the scroll root at exactly the instant its header
-   reaches top:0 and sticks, and returns at exactly the instant it
-   unsticks — a clean boundary in and out. */
-function initStickySectionHeaders(root) {
-	const scrollRoot = root.querySelector(".rux-panel__body");
-	const sentinels = root.querySelectorAll(".rux-card__section-sentinel");
-	if (!scrollRoot || !sentinels.length) return;
-	const observer = new IntersectionObserver(
-		(entries) => {
-			for (const entry of entries) {
-				entry.target.nextElementSibling?.classList.toggle(
-					"is-stuck",
-					!entry.isIntersecting,
-				);
-			}
-		},
-		{ root: scrollRoot, threshold: 0, rootMargin: "-1px 0px 0px 0px" },
-	);
-	sentinels.forEach((sentinel) => observer.observe(sentinel));
-}
-
 /* ── Init ───────────────────────────────────────────────────────────────── */
 
 function initTripPanel(root, { buses = [], drivers = [] } = {}) {
@@ -963,7 +939,11 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	}
 	root.dataset.ruxTripPanelInit = "true";
 
-	initStickySectionHeaders(root);
+	// Sticky section-header behavior (.rux-card__header, the
+	// .is-stuck shadow) is wired generically for every .rux-panel —
+	// initStickySectionHeaders in js/core/controls.js, auto-run at
+	// DOMContentLoaded the same way initPanelScrollEdges is. .rux-trip-panel
+	// is itself a .rux-panel, so it's already covered; nothing to call here.
 
 	/* ── Segmented toggle groups (Billing) ─────────────────────────────── */
 

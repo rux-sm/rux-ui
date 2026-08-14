@@ -672,3 +672,32 @@
 	margin: 0;
 	-webkit-appearance: none;
 }
+
+/* Ghost variant: quiet trailing content for a section or card header —
+   .rux-card__header, .rux-card__header — instead of the default's
+   full input-box treatment (border, bg, shadow all lifted straight from
+   .rux-input). Every other header trailing action in the system (Trip
+   Contact's +, Files' toggle/add, a bus row's icon cluster) is transparent
+   until hovered; a boxed stepper stood out against that pattern. Buttons
+   go back to reading as buttons via a real hover background instead of
+   the default's transparent-on-hover (which relies on the track's own
+   hover bg/border for feedback — there isn't one here to fall back on). */
+.rux-number-stepper--ghost {
+	height: var(--rux-number-stepper-ghost-height);
+	background: transparent;
+	border: none;
+	box-shadow: none;
+}
+
+.rux-number-stepper--ghost:hover {
+	background: transparent;
+	border-color: transparent;
+}
+
+.rux-number-stepper--ghost .rux-number-stepper__btn {
+	width: var(--rux-number-stepper-ghost-btn-width);
+}
+
+.rux-number-stepper--ghost .rux-number-stepper__btn:hover:not(:disabled) {
+	background: var(--rux-number-stepper-ghost-btn-hover-bg);
+}

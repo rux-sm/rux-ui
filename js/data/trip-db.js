@@ -808,8 +808,8 @@ import {
 		row.className = "rux-trip-panel__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-card-section rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
-				<div class="rux-card-section__header rux-trip-panel__payment-header">
+			<div class="rux-card--recessed rux-trip-panel__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+				<div class="rux-card__header rux-trip-panel__payment-header">
 					<div class="rux-trip-panel__payment-method">
 						<span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
 						<span class="rux-trip-panel__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
@@ -817,7 +817,7 @@ import {
 					</div>
 					<button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
 				</div>
-				<div class="rux-card-section__body rux-trip-panel__payment-fields">
+				<div class="rux-card__body rux-trip-panel__payment-fields">
 					<label class="rux-field rux-trip-panel__payment-date-field"><span class="rux-field__label">Date</span><span class="rux-input rux-trip-panel__payment-date-control"><span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span><input class="rux-trip-panel__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" /></span></label>
 					<label class="rux-field rux-trip-panel__payment-amount"><span class="rux-field__label">Amount</span><span class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix" aria-hidden="true">$</span><input class="rux-input rux-trip-panel__payment-amount-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" /></span></label>
 					<label class="rux-field rux-trip-panel__payment-reference"><span class="rux-field__label">Reference</span><input class="rux-input rux-trip-panel__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" /></label>

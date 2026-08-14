@@ -31,6 +31,8 @@
    menu.css         .rux-menu, items, headers, dividers, and states
    popover.css      .rux-popover — shared floating-layer positioning shell
    card.css         .rux-card and its header, body, section, footer, and variants
+   surface.css      .rux-surface — shared outer-container primitive for panel,
+                    floating window, modal, and popover/menu positions
    content.css      .rux-tag, .rux-avatar
    feedback.css     .rux-alert, .rux-toast, .rux-modal, .rux-progress,
                     [data-tooltip], .rux-tooltip
@@ -56,7 +58,7 @@
 @import "../../rux-ui/css/base/popover.css?v=6";
 @import "../../rux-ui/css/base/suggestions.css?v=2";
 @import "../../rux-ui/css/base/card.css";
-@import "../../rux-ui/css/base/floating-window.css?v=6";
+@import "../../rux-ui/css/base/surface.css?v=1";
 @import "../../rux-ui/css/base/content.css?v=2";
 @import "../../rux-ui/css/base/feedback.css?v=4";
 @import "../../rux-ui/css/base/navigation.css?v=17";

@@ -2,7 +2,7 @@
    REQUEST INBOX  ·  .rux-request-window
    --------------------------------------------------------------------------
    Floating window chrome only — mirrors the Trip Finder's anatomy exactly:
-   the shared .rux-floating-window component (css/base/floating-window.css)
+   the shared .rux-surface--floating component (css/base/surface.css)
    owns drag/resize/mobile-breakpoint mechanics, and every inner surface
    (header, __content, __toolbar, __body, footer) follows the same layout and
    padding rules as css/features/trip-finder.css. Filters reuse the shared
@@ -13,7 +13,7 @@
 /* Same position and footprint as the Trip Finder, except the min/max-height
    are tied to top:10% so the frame always fits the viewport — see the
    min()/calc() below. Mobile (< 580px) is handled by the shared base
-   floating-window.css frame, exactly like every other floating window. */
+   surface.css frame, exactly like every other floating window. */
 .rux-request-window {
 	container-name: request-window;
 	container-type: inline-size;
@@ -68,7 +68,7 @@
 .rux-request-window__toolbar .rux-field {
 	min-width: 0;
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-floating-window-header-bg);
+	background: var(--rux-surface-floating-header-bg);
 }
 
 .rux-request-window__toolbar .rux-segmented-track {
@@ -93,7 +93,7 @@
 	/* Keep the wheel over the list from chaining into the page/calendar
 	   underneath when the list hits its top or bottom boundary. */
 	overscroll-behavior: contain;
-	background: var(--rux-card-bg);
+	background: var(--rux-card-body-bg);
 	list-style: none;
 }
 

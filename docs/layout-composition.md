@@ -163,7 +163,7 @@ needed. Do not add a redundant header merely to satisfy visual symmetry.
   use `role="dialog"` unless they actually provide dialog focus and dismissal
   behavior in the state where that role is exposed.
 
-## Cards and Card Sections
+## Cards, Sections, and Embeds
 
 Cards are the second visual layer inside a panel or workspace. Use a card for a
 distinct, titled unit of content rather than as a generic spacing wrapper.
@@ -172,17 +172,32 @@ distinct, titled unit of content rather than as a generic spacing wrapper.
 Card
 ├── Card Header               optional
 ├── Card Body
-│   └── Card Section          only when another bordered layer is needed
+│   └── Card Section          titled group belonging to this card; flat,
+│                              border-top only, shared with the next one
 └── Card Footer               optional
+
+Card Section
+└── Card Embed                repeating list item — border, background,
+    (0 or more)                and radius of its own, not shared with siblings
 ```
 
-- Use `.rux-card__section` for divided regions belonging to one card.
-- Use `.rux-card-section` for a nested bordered group with optional header and
-  body anatomy.
-- Use a stack or grid when only spacing is needed.
+- Use `.rux-card__section` for a titled group of one card's own content — a
+  flat divider, not a box. Sections stack with no gap; `.rux-card__section +
+  .rux-card__section` supplies one shared `border-top` at each seam, and
+  `.rux-card__section-header` sticks to the top of its scroll container while
+  its own section is in view, handing off to the next section's header in
+  turn.
+- Use `.rux-card__embed` for a repeating item nested inside a section or card
+  body — an itinerary stop, a bus assignment, a payment row. Unlike a
+  section, an embed has a real border, background, and radius of its own; use
+  it when individual items in a list need their own visible boundary, not
+  just a divider between named groups.
+- Use a stack or grid when only spacing is needed, with no border or
+  background implied by either component.
 - Applications SHOULD avoid more than three simultaneously visible surface
-  levels: panel/workspace, card, and card section.
+  levels: panel/workspace, card, and card section or embed.
 - Cards MUST NOT be nested merely to obtain padding or spacing.
+- See `docs/cards.md` for the full component contract, tokens, and rationale.
 
 ## Modal Headers
 

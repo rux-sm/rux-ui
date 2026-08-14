@@ -63,9 +63,10 @@
 .rux-modal {
   width: 100%;
   max-width: var(--rux-container-xs);
-  background: var(--rux-surface-5);
+  background: var(--rux-modal-bg);
   border: none;
   border-radius: var(--rux-radius-0);
+  box-shadow: var(--rux-modal-shadow);
   overflow: hidden;
   animation: rux-modal-in var(--rux-duration-base) var(--rux-ease-out);
 }

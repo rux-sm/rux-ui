@@ -4,8 +4,8 @@
    Floating, draggable, resizable window for the passenger roster table —
    floats over the calendar (which stays visible/navigable underneath)
    instead of replacing it. Positioning/drag/resize mechanics live in the
-   shared .rux-floating-window base (css/base/floating-window.css); this
-   file is just this window's size/position defaults and table styling.
+   shared .rux-surface--floating base (css/base/surface.css); this file is
+   just this window's size/position defaults and table styling.
    See js/panels/trip-manifest.js for open/close/refresh wiring.
    ========================================================================== */
 
@@ -116,7 +116,7 @@
 	display: flex;
 	flex-direction: column;
 	container-type: inline-size;
-	background: var(--rux-card-bg);
+	background: var(--rux-card-body-bg);
 	transform: translateX(-100%);
 	transition:
 		transform var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);

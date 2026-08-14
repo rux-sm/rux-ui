@@ -721,13 +721,19 @@
 	flex-direction: column;
 }
 
-/* The mini calendar is primary panel content, so its compact navigation row
-   owns its alignment without borrowing a second card surface. */
-.rux-mini-cal__header {
-	display: flex;
+/* Sentinel-gated .rux-card__header now (View Options right below it got the
+   same treatment, and the mini calendar floating without a matching
+   bordered header next to one that has it read as inconsistent rather
+   than intentional). This rule keeps the 3-part prev/title/next layout;
+   the sentinel-gated header supplies the sticky/padding/border/background.
+   gap:0 (not the header's own --rux-card-content-gap) — the title
+   is flex:1 and already pushes the buttons to either edge on its own, and
+   16px between title and buttons that are already flush against the edges
+   would just be dead space. Combined selector, not a bare class, so this
+   reliably wins over .rux-card__sentinel + .rux-card__header's own gap
+   regardless of which stylesheet happens to load second. */
+.rux-card__sentinel + .rux-card__header.rux-mini-cal__header {
 	height: var(--rux-button-height-header);
-	align-items: center;
-	justify-content: space-between;
 	gap: var(--rux-space-0);
 }
 
@@ -840,14 +846,9 @@
    renderDriverGrid() in index.html, which reads currentWeekStart/viewDays/
    sundayStart live on every render instead of tracking its own copy. */
 
-.rux-driver-availability__title,
-.rux-view-options__title {
-	margin: 0;
-	color: var(--rux-heading);
-	font-size: var(--rux-text-300);
-	font-weight: var(--rux-card-header-weight);
-	line-height: var(--rux-leading-snug);
-}
+/* Driver Availability and View Options titles reuse .rux-card__title
+   (card.css) directly now, inside .rux-card__header — this rule
+   used to duplicate that exact styling under its own name for both. */
 
 .rux-driver-grid {
 	--rux-driver-grid-surface: var(--rux-surface-1);

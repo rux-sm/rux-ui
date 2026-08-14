@@ -116,7 +116,7 @@ function renderChange(change) {
 }
 
 function renderCard(record) {
-	const card = element("article", "rux-card rux-trip-history__card");
+	const card = element("article", "rux-card--recessed rux-trip-history__card");
 	const header = element("header", "rux-trip-history__card-header");
 	const identity = element("div");
 	identity.append(
@@ -202,8 +202,12 @@ function render() {
 		const label = groupLabel(record.created_at);
 		if (label !== currentGroup) {
 			currentGroup = label;
-			group = element("section", "rux-trip-history__group");
-			group.appendChild(element("h4", "rux-trip-history__group-title", label));
+			group = element("section", "rux-card rux-trip-history__group");
+			const sentinel = element("div", "rux-card__sentinel");
+			sentinel.setAttribute("aria-hidden", "true");
+			const header = element("div", "rux-card__header");
+			header.appendChild(element("h4", "rux-trip-history__group-title", label));
+			group.append(sentinel, header);
 			list.appendChild(group);
 		}
 		group.appendChild(renderCard(record));

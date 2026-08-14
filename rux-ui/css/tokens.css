@@ -43,7 +43,7 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 42% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -201,13 +201,35 @@
 
 
     --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 				/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 20% c h); /* UI Header */ 			/* 22, 22 ,22 */
-    --rux-surface-2:    oklch(from var(--rux-neutral) 26% c h); /* card layer */ 			/* 38, 38, 38 */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 18% c h); /* UI Header */ 			/* 22, 22 ,22 */
+    --rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* card layer */ 			/* 38, 38, 38 */
     --rux-surface-3:    oklch(from var(--rux-neutral) 34% c h); /* input fields */ 			/* 57, 57, 57 */
     --rux-surface-4:    oklch(from var(--rux-neutral) 43% c h); /* layer */					/* 81, 81, 81 */
     --rux-surface-5:    oklch(from var(--rux-neutral) 50% c h); /* selected menu item */	/* 99, 99, 99 */
-    --rux-surface-6:   	oklch(from var(--rux-neutral) 0% c h); 
-    --rux-surface-7:	oklch(from var(--rux-neutral) 0% c h); 
+    --rux-surface-6:   	oklch(from var(--rux-neutral) 0% c h);
+    --rux-surface-7:	oklch(from var(--rux-neutral) 0% c h);
+
+	/* ─── ELEVATION ──────────────────────────────────────────────────────── */
+	/* One named tier per "how far this container sits above the canvas,"
+	   paired 1:1 with --rux-shadow-N below by index. Components alias these
+	   instead of reaching into --rux-surface-N directly, so the
+	   relationship ("floating window = one tier above an ordinary card")
+	   is a readable name, not a coincidence of two components happening to
+	   reference the same raw index.
+
+	   Card (2) is the anchor: a plain card sitting inside a panel (1) takes
+	   the next tier up, same as anything else nested one level deeper. An
+	   elevated card (3) is for a card with no panel wall around it — every
+	   floating window composes .rux-card--elevated for exactly this reason
+	   — so it claims the tier a panel-nested card would have needed to skip
+	   past, rather than sitting at the same tier as a card that DOES have
+	   structural context. Modal (4) stays topmost, above everything else
+	   that can be on screen at once. */
+	--rux-elevation-0-bg: var(--rux-surface-0); /* Canvas */
+	--rux-elevation-1-bg: var(--rux-surface-1); /* Panel */
+	--rux-elevation-2-bg: var(--rux-surface-2); /* Card */
+	--rux-elevation-3-bg: var(--rux-surface-4); /* Elevated card / floating window */
+	--rux-elevation-4-bg: var(--rux-surface-5); /* Modal */
 
 	/* ─── COLOR · interaction states ─────────────────────────────────────── */
 	/* Hover/active list states and the modal scrim — a different axis than
@@ -418,6 +440,15 @@
 	--rux-overlay-blur:    4px;
 	--rux-modal-enter-y:   12px;
 	--rux-modal-max-width-wide: 560px;
+	/* Topmost surface in the app — above floating windows, menus, and
+	   popovers (all shadow-2) — since a modal sits on a dimming backdrop
+	   that blocks everything else. Was unset entirely; the backdrop's own
+	   scrim was the only separation from the page behind it. */
+	--rux-modal-shadow: var(--rux-shadow-3);
+	/* Top of the elevation ladder (see ELEVATION, primitives section) —
+	   feedback.css used to reference var(--rux-surface-5) inline instead of
+	   a named component token, the same gap --rux-modal-shadow had. */
+	--rux-modal-bg: var(--rux-elevation-4-bg);
 
 	/* ─── STACKING ROLES ─────────────────────────────────────────────────── */
 
@@ -443,7 +474,7 @@
 	/* ─── COMPONENT · UI header ───────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-ui-header-bg:     	var(--rux-surface-1);
+	--rux-ui-header-bg:     	var(--rux-surface-0);
 	--rux-ui-header-border: 	var(--rux-border-width) solid var(--rux-border);
 	/* --rux-ui-header-radius: not set — spans full width, no corners */
 	/* --rux-ui-header-shadow: not set */
@@ -566,7 +597,7 @@
 	/* The body is intentionally a bare scrolling region. */
 
 	/* — shell — */
-	--rux-panel-bg:            var(--rux-surface-2);
+	--rux-panel-bg:            var(--rux-elevation-1-bg);
 	--rux-panel-fg:            var(--rux-fg);
 	--rux-panel-border-inline: none;
 	--rux-panel-border-block:  none;
@@ -591,8 +622,13 @@
 	--rux-panel-tabs-padding:   var(--rux-space-4);
 	/* Only cast while .rux-panel__body has scrolled under it (.is-scrolled,
 	   toggled by initPanelScrollEdges in js/core/controls.js) — flat/solid
-	   at rest, elevated once there's content underneath to separate from. */
-	--rux-panel-nav-shadow:     var(--rux-shadow-3);
+	   at rest, elevated once there's content underneath to separate from.
+	   shadow-1, not shadow-3: this is the same scroll-edge effect as
+	   --rux-panel-footer-shadow below and .rux-card__header's own
+	   .is-stuck shadow (card.css) — a subtle edge lift, not a top-tier
+	   overlay. It previously sat three tiers above its own footer for an
+	   identical effect on the opposite edge of the same panel. */
+	--rux-panel-nav-shadow:     var(--rux-shadow-1);
 
 	/* — footer — */
 	--rux-panel-footer-bg:      var(--rux-surface-2);
@@ -627,78 +663,188 @@
 	--rux-panel-rail-shadow:       var(--rux-shadow-1);
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
-	/* The body is intentionally a bare content region. */
+	/* One class, .rux-card — what used to be three families (card, section,
+	   embed) merged once the floating-window migration to .rux-surface
+	   removed the last thing .rux-card's own top-level usage collided
+	   with. The former "section" header behavior (sticky, full padding,
+	   opaque matching background) is now the sentinel-gated case of
+	   .rux-card__header itself (see .rux-card__sentinel + .rux-card__header
+	   in card.css) rather than a separate token family — nothing here
+	   duplicates a header/body region under a second name anymore. The
+	   former "embed" is .rux-card--recessed below: same header/body
+	   anatomy, a darker/inset-shadowed body and a transparent header being
+	   its only two differences, both handled as scoped overrides in
+	   card.css, not a duplicate token set. .rux-card doesn't have a real
+	   footer variant for --recessed — defining tokens nothing consumes is
+	   the same dead-token problem --rux-card-header-size used to be. */
 
-	/* — shell — */
-	--rux-card-bg:           var(--rux-surface-2);
-	--rux-card-fg:           var(--rux-fg);
-	--rux-card-border-width: var(--rux-border-width);
-	--rux-card-border:       1px solid var(--rux-border);
-	--rux-card-radius:       var(--rux-radius-0);
-	/* --rux-card-shadow:       var(--rux-shadow-1); */
-
-	/* — header — */
-	/* Transparent so the card shell's inset top highlight remains visible
-	   through headers instead of being covered by a duplicate surface layer. */
-	--rux-card-header-bg:      var(--rux-surface-3);
-	--rux-card-header-border:  1px solid var(--rux-border);
-	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-4);
-	--rux-card-header-height:  40px;
-	--rux-card-header-size: var(--rux-text-sm);
+	/* — shared primitives, reused across every region below — */
+	--rux-card-fg:            var(--rux-fg);
+	--rux-card-border-width:  var(--rux-border-width);
+	--rux-card-header-height: 40px;
 	--rux-card-header-weight: var(--rux-weight-semibold);
-
-	/* — body — */
-	/* No dedicated --rux-card-body-* tokens — see the shared padding/gap
-	   group below instead. */
-
-	/* — footer — */
-	--rux-card-footer-bg:     transparent;
-	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-border);
-
-	/* — section (divider between stacked .rux-card__section siblings) — */
-	--rux-card-section-bg:      var(--rux-surface-2);
-	--rux-card-section-border:  var(--rux-card-border-width) solid var(--rux-border);
-	--rux-card-section-outline: none;
-	/* Sections are recessed within their parent card rather than independently
-	   elevated above it. */
-	--rux-card-section-shadow: none;
-	/* Transparent so the section's continuous inset shadow remains visible
-	   through the header instead of being covered by a duplicate paint layer. */
-	--rux-card-section-header-bg:     transparent;
-
-	/* — elevated variant — */
-	/* Elevated cards use their own depth between the card and modal tiers. */
-	--rux-card-elevated-bg: oklch(from var(--rux-neutral) 14% c h);
-	--rux-card-elevated-shadow: var(--rux-shadow-2);
-
-	/* — shared across header/body/footer/section, not any one part's own — */
-	--rux-card-padding-block: var(--rux-space-4);
+	/* Left-only — relies on a card that's already inset from the viewport
+	   by its own parent's padding, with the trailing button's own hit-area
+	   supplying the right edge. The sentinel-gated header (edge-to-edge,
+	   no ambient padding to lean on) uses full inline padding instead of
+	   this token — see card.css. */
+	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-4);
+	--rux-card-padding-block:  var(--rux-space-4);
 	--rux-card-padding-inline: var(--rux-space-4);
 	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
-	--rux-card-content-gap: var(--rux-space-4);
+	--rux-card-content-gap:    var(--rux-space-4);
 
-	/* ─── COMPONENT · floating window ─────────────────────────────────────── */
-	/* Floating windows extend .rux-card (bg, border, radius, shadow, header/
-	   footer padding, header height are all .rux-card's job — every
-	   consumer pairs .rux-floating-window with .rux-card.rux-card--elevated
-	   on the same element). Only the two tokens below remain: the header
-	   and footer's own bg tint is a deliberate exception to .rux-card's
-	   transparent default, giving a draggable header a visible
-	   grab-affordance an ordinary card doesn't need. This block used to
-	   also carry --rux-floating-window-background/-shadow, which duplicated
-	   .rux-card-elevated-bg/-shadow under different names and different
-	   values — floating-window.css loading after card.css meant they always
-	   won the cascade, silently making .rux-card--elevated's own values
-	   dead on every floating window. It also carried -header-height,
-	   -header-border, -header-padding, and -footer-padding, none of which
-	   any CSS rule ever consumed — .rux-card__header/__footer (present in
-	   every consumer's class list) supplied those already. */
+	/* — card: header — floats above the body, no box of its own — */
+	--rux-card-header-bg:     var(--rux-surface-3);
+	--rux-card-header-border: none;
+	--rux-card-header-radius: var(--rux-radius-0);
+	--rux-card-header-shadow: none;
 
-	--rux-floating-window-header-bg: var(--rux-surface-2);
-	--rux-floating-window-footer-bg: var(--rux-surface-2);
+	/* — card: body — the box — */
+	--rux-card-body-bg:     var(--rux-elevation-2-bg);
+	--rux-card-body-border: var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-body-radius: var(--rux-radius-0);
+	/* A plain card is flat by design — .rux-card--elevated below is the
+	   only thing that ever overrides this locally. */
+	--rux-card-body-shadow: none;
+
+	/* — card: footer — attached to the body's bottom edge, not floating
+	   above it the way header does; see card.css. */
+	--rux-card-footer-bg:     transparent;
+	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-footer-radius: var(--rux-radius-0);
+	--rux-card-footer-shadow: none;
+
+	/* — card: elevated variant — .rux-card--elevated (card.css) locally
+	   redefines --rux-card-body-bg/-shadow to these two, which is what
+	   actually lifts an elevated card's body; there's no separate rule
+	   setting background/box-shadow directly anymore. One tier above an
+	   ordinary card (see ELEVATION, primitives section): every floating
+	   window composes .rux-card--elevated on the same element, which is
+	   what "skips a layer" for them — they never sit inside a .rux-panel
+	   the way an ordinary nested card does, so they claim the tier a
+	   panel-nested card would have had to pass through. Used to be an
+	   off-ladder custom color darker than the panel and the card it was
+	   meant to sit above — the elevated tier was visually the least
+	   prominent surface in the entire card family. */
+	--rux-card-elevated-bg:     var(--rux-elevation-3-bg);
+	--rux-card-elevated-shadow: var(--rux-shadow-2);
+
+	/* — hairline divider — general-purpose, used by a few feature files
+	   (scheduler-app.css, trip-history.css, trip-envelope.css) as a plain
+	   border color; not tied to any one card region. */
+	--rux-card-section-border: var(--rux-card-border-width) solid var(--rux-border);
+
+	/* — recessed variant (.rux-card--recessed, card.css) — a repeating list
+	   item (itinerary stops, bus rows, payment rows; see docs/cards.md).
+	   Header needs no tokens of its own here — it reuses the base
+	   .rux-card__header's border/radius/shadow (all already none) and only
+	   overrides background directly to transparent in card.css, so the
+	   body's own continuous inset shadow below reads through it instead of
+	   being covered by a duplicate paint layer.
+
+	   Body background is relative to whatever card it's actually inside
+	   (not a fixed value — see docs/cards.md for why: the same
+	   .rux-card--recessed sits inside an ordinary card in some places and
+	   an elevated floating-window card in others, and only a value
+	   computed from the ambient --rux-card-body-bg reads as "one step
+	   darker" correctly in both). --rux-shadow-inset (the same recessed-
+	   well shadow inputs use) is what actually sells the recessed read — a
+	   flat darker fill alone doesn't communicate depth, just a color
+	   difference. Radius isn't overridden either — it inherits the same
+	   --rux-card-body-radius every other card body uses. */
+	--rux-card-recessed-bg:     oklch(from var(--rux-card-body-bg) calc(l - 6%) c h);
+	--rux-card-recessed-border: var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-recessed-shadow: var(--rux-shadow-inset);
+
+	/* ─── COMPONENT · surface (new — not consumed by any CSS rule yet) ─────── */
+	/* The outer-container primitive Panel, Floating Window, Modal, and
+	   Popover-surface/Menu are migrating into — see docs/cards.md and the
+	   plan discussed for this migration. Unlike .rux-card (header floats
+	   above the body, unboxed), .rux-surface keeps the traditional "header
+	   attached to the box" shape: one bordered unit, header/nav/body/footer
+	   all inside it, which is what every one of these five components
+	   already looks like today — a window/panel/dialog title bar reads as
+	   part of the window chrome, not a separate floating label the way a
+	   .rux-card title does.
+
+	   Values below are carried over unchanged from each component's real
+	   current tokens (panel/floating-window/modal/popover-surface), not
+	   invented — this block is purely additive today; nothing reads these
+	   yet, so the app's appearance is unaffected until migration actually
+	   happens per-consumer. */
+
+	/* — shared structural, every position — */
+	--rux-surface-header-height:  40px;
+	--rux-surface-header-weight:  var(--rux-weight-semibold);
+	--rux-surface-padding-block:  var(--rux-space-4);
+	--rux-surface-padding-inline: var(--rux-space-4);
+	--rux-surface-content-gap:    var(--rux-space-4);
+	--rux-surface-border-width:   var(--rux-border-width);
+	--rux-surface-motion-duration:  var(--rux-motion-duration-moderate-01);
+	--rux-surface-enter-easing:     var(--rux-motion-easing-entrance-productive);
+	--rux-surface-exit-easing:      var(--rux-motion-easing-exit-productive);
+	--rux-surface-standard-easing:  var(--rux-motion-easing-standard-productive);
+
+	/* — attached (was Panel) — */
+	--rux-surface-attached-bg:            var(--rux-elevation-1-bg);
+	--rux-surface-attached-border:        none;
+	--rux-surface-attached-radius:        var(--rux-radius-container);
+	--rux-surface-attached-shadow:        none;
+	--rux-surface-attached-header-bg:     var(--rux-surface-3);
+	--rux-surface-attached-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
+	--rux-surface-attached-footer-bg:     var(--rux-surface-2);
+	--rux-surface-attached-footer-border: var(--rux-surface-border-width) solid var(--rux-border);
+	--rux-surface-attached-footer-shadow: var(--rux-shadow-1); /* while scrolled — see .is-scrolled, js/core/controls.js */
+	--rux-surface-attached-footer-mobile-button-height: 44px;
+	/* Attached-only extensions — nothing else needs a tabs slot or a
+	   collapsed rail state; kept named under attached specifically rather
+	   than promoted to the shared block above, same principle as Floating
+	   keeping its own drag-cursor rule that nothing else needs. */
+	--rux-surface-nav-bg:       var(--rux-surface-3);
+	--rux-surface-nav-border:   none;
+	--rux-surface-nav-padding:  var(--rux-space-4);
+	--rux-surface-nav-shadow:   var(--rux-shadow-1); /* while scrolled */
+	--rux-surface-tabs-padding: var(--rux-space-4);
+	--rux-surface-content-gap-loose: var(--rux-space-5); /* was --rux-panel-content-gap */
+	--rux-surface-min-width:    224px;
+	--rux-surface-rail-width:   16px;
+	--rux-surface-rail-bg:      var(--rux-surface-attached-bg);
+	--rux-surface-rail-border:  none;
+	--rux-surface-rail-radius:  var(--rux-radius-0);
+	--rux-surface-rail-shadow:  var(--rux-shadow-1);
+
+	/* — floating (was Floating Window, always paired with elevated card
+	   tokens today — border/radius/shadow below match --rux-card-elevated-*
+	   / --rux-card-body-* exactly, since that's what a floating window
+	   currently renders as) — */
+	--rux-surface-floating-bg:            var(--rux-elevation-3-bg);
+	--rux-surface-floating-border:        var(--rux-card-body-border);
+	--rux-surface-floating-radius:        var(--rux-card-body-radius);
+	--rux-surface-floating-shadow:        var(--rux-shadow-2);
+	--rux-surface-floating-header-bg:     var(--rux-surface-2);
+	--rux-surface-floating-footer-bg:     var(--rux-surface-2);
+
+	/* — modal — */
+	--rux-surface-modal-bg:     var(--rux-elevation-4-bg);
+	--rux-surface-modal-border: none;
+	--rux-surface-modal-radius: var(--rux-radius-0);
+	--rux-surface-modal-shadow: var(--rux-shadow-3);
+
+	/* — anchored (was Popover-surface + Menu) — Popover-surface's values
+	   used as canonical; Menu currently uses --rux-menu-bg: surface-5, a
+	   real divergence from Popover-surface's surface-3 for what's meant to
+	   be the same role. Not resolved here — flagging it, not silently
+	   picking one and hiding the conflict. Reconcile when Menu actually
+	   migrates onto --anchored. */
+	--rux-surface-anchored-bg:     var(--rux-surface-3);
+	--rux-surface-anchored-border: none;
+	--rux-surface-anchored-radius: var(--rux-radius-container);
+	--rux-surface-anchored-shadow: var(--rux-shadow-2);
+
 
 	/* ─── COMPONENT · itinerary marker ────────────────────────────────────── */
-	/* Was filed under "card" (its markers sit inside .rux-card-section rows)
+	/* Was filed under "card" (its markers sit inside .rux-card--recessed rows)
 	   — split out since these are itinerary-specific, not shared card
 	   tokens. */
 
@@ -730,7 +876,7 @@
 
 	/* — wrap (scrollable container around the table) — */
 	--rux-table-wrap-bg:     var(--rux-surface-1);
-	--rux-table-wrap-border: var(--rux-card-border);
+	--rux-table-wrap-border: var(--rux-card-body-border);
 	--rux-table-wrap-radius: var(--rux-radius-md);
 	/* --rux-table-wrap-shadow: not set */
 
@@ -1029,6 +1175,15 @@
 	--rux-number-stepper-value-fg:        var(--rux-fg);
 	--rux-number-stepper-value-font-size: var(--rux-text-sm);
 
+	/* — ghost variant (quiet trailing content in a section/card header,
+	   e.g. Fleet Assignments' bus count) — */
+	/* --rux-button-height-header, not a new 40px literal: this is the same
+	   header-control height every .rux-button--header already uses, so a
+	   stepper sitting next to header icon buttons lines up with them. */
+	--rux-number-stepper-ghost-height:        var(--rux-button-height-header);
+	--rux-number-stepper-ghost-btn-width:     var(--rux-button-height-header);
+	--rux-number-stepper-ghost-btn-hover-bg:  var(--rux-state-hover-overlay);
+
 	/* ─── COMPONENT · switch ─────────────────────────────────────────────── */
 
 	/* — shell — */
@@ -1252,7 +1407,7 @@
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */
 
 	/* — tab (plain) — */
-	--rux-tab-bg: var(--rux-surface-3); /* ghost at rest — never a milky white fill */
+	--rux-tab-bg: var(--rux-surface-2); /* ghost at rest — never a milky white fill */
 	--rux-tab-fg: var(--rux-fg-muted);
 	--rux-tab-radius: var(--rux-radius-0);
 	/* --rux-tab-border: not set at rest — only the selected state below has one */
@@ -1274,7 +1429,7 @@
 	--rux-tab-focus-ring: 0 0 0 3px var(--rux-accent-ring);
 
 	/* — tabs, contained variant — */
-	--rux-tabs-contained-bg:      var(--rux-surface-3);
+	--rux-tabs-contained-bg:      var(--rux-surface-2);
 	--rux-tabs-contained-padding: var(--rux-space-2);
 	--rux-tabs-contained-gap:     var(--rux-space-0);
 	--rux-tabs-contained-tab-fg:          var(--rux-fg-muted);
@@ -1289,7 +1444,7 @@
 	--rux-tabs-attached-gap:    var(--rux-space-0);
 
 	/* — attached tab, inactive — */
-	--rux-tabs-attached-tab-bg:     var(--rux-surface-3);
+	--rux-tabs-attached-tab-bg:     var(--rux-surface-2); /* correct one for nav inactive tabs */
 	--rux-tabs-attached-tab-fg:     var(--rux-fg-muted);
 	--rux-tabs-attached-tab-border: 1px solid var(--rux-border);
 	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-0);

@@ -326,7 +326,7 @@ function showStatus(iconName, title, message, options = {}) {
 
 function assignmentErrorCard(message, onRetry) {
 	const card = el("article", "rux-card driver-assignment-card driver-assignment-card--error");
-	const section = el("section", "rux-card__section driver-share-status");
+	const section = el("section", "rux-card driver-share-status");
 	const wrap = el("div");
 	const iconWrap = el("span", "driver-share-status__icon");
 	const statusIcon = el("span", "rux-icon", "error");

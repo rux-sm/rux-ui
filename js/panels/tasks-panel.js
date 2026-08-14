@@ -580,15 +580,15 @@ function renderTrip(trip, leg) {
 	const overallDone = ready && manualDone && envelopesDone && remindersDone && requirementsDone;
 	const overdue = !overallDone && isRecoverablePreviousEntry(trip, leg);
 	return `
-		<div class="rux-card-section rux-tasks__trip">
-			<header class="rux-card-section__header rux-tasks__trip-header">
+		<div class="rux-card--recessed rux-tasks__trip">
+			<header class="rux-card__header rux-tasks__trip-header">
 				<div>
 					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
 					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")}</p>
 				</div>
 				${statusIndicator(overallDone, "All done", overdue ? "Overdue tasks before departure" : "Still needs attention", overdue)}
 			</header>
-			<div class="rux-card-section__body rux-tasks__trip-body">
+			<div class="rux-card__body rux-tasks__trip-body">
 				<div class="rux-tasks__section rux-tasks__section--readiness">
 					<div class="rux-tasks__checklist">
 						<p class="rux-tasks__requirements-title">Trip Status</p>
@@ -693,13 +693,14 @@ function renderPostTripCard(trip) {
 	const endDate = tripEndDate(trip);
 	return `
 		<article class="rux-card rux-tasks__trip">
-			<header class="rux-card__header rux-tasks__trip-header">
+			<div class="rux-card__sentinel" aria-hidden="true"></div>
+			<div class="rux-card__header rux-tasks__trip-header">
 				<div>
 					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")}</p>
 					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")} · Returned ${endDate ? formatDayLabel(endDate) : "—"}</p>
 				</div>
 				${statusIndicator(!!trip.post_trip_survey_sent, "Survey sent", "Survey not sent")}
-			</header>
+			</div>
 			<div class="rux-card__body rux-tasks__trip-body">
 				<div class="rux-tasks__section rux-tasks__section--readiness">
 					<p class="rux-tasks__requirements-title">Reference</p>
@@ -734,24 +735,25 @@ function renderPostTripCard(trip) {
 // single-day view's whole-panel empty state below.
 function emptyTripCard(text = "No Trips") {
 	return `
-		<div class="rux-card-section rux-tasks__trip rux-tasks__trip--empty">
-			<div class="rux-card-section__body">
+		<div class="rux-card--recessed rux-tasks__trip rux-tasks__trip--empty">
+			<div class="rux-card__body">
 				<p class="rux-tasks__empty">${escapeHtml(text)}</p>
 			</div>
 		</div>
 	`;
 }
 
-// Each day gets its own full card (header + body) — the same
-// .rux-card__header/__title the old single top-level header used, just
-// repeated once per day instead of describing only the first of however
-// many days are showing.
+// Each day gets its own .rux-card — the same sticky, flat-divider
+// group the itinerary's day-groups and the trip editor's own tabs use
+// (docs/cards.md), repeated once per day instead of describing only the
+// first of however many days are showing.
 function renderDayGroup(iso, entries) {
 	return `
 		<article class="rux-card rux-tasks__day-group">
-			<header class="rux-card__header">
+			<div class="rux-card__sentinel" aria-hidden="true"></div>
+			<div class="rux-card__header">
 				<h4 class="rux-card__title">${formatDepartingTitle(iso)}</h4>
-			</header>
+			</div>
 			<div class="rux-card__body">
 				${entries.length
 					? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")

@@ -17,7 +17,7 @@
 	align-items: center;
 	padding: var(--rux-tabs-contained-padding);
 	background: var(--rux-tabs-contained-bg);
-	border: var(--rux-card-border);
+	border: var(--rux-card-body-border);
 	border-radius: var(--rux-radius-container);
 	overflow-x: auto;
 	overflow-y: hidden;

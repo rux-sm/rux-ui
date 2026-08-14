@@ -53,18 +53,23 @@
 	white-space: nowrap;
 }
 
+/* gap: 0 — .rux-trip-history__group is a .rux-card now (card.css)
+   and date groups sit flush against each other, sharing one border at each
+   seam instead of floating apart, matching the itinerary's day-groups and
+   the Tasks tab's own date groups. */
 .rux-trip-history__list {
 	display: flex;
 	min-width: 0;
 	flex-direction: column;
-	gap: var(--rux-space-4);
+	gap: 0;
 }
 
+/* No flex/gap of its own — plain block flow, like every other
+   .rux-card. .rux-card--recessed children below space themselves via
+   margin-block + normal margin collapsing (see .rux-trip-history__card),
+   the same recipe the itinerary's day-groups use for their own stops. */
 .rux-trip-history__group {
-	display: flex;
 	min-width: 0;
-	flex-direction: column;
-	gap: var(--rux-space-4);
 }
 
 .rux-trip-history__group-title {
@@ -75,8 +80,14 @@
 	text-transform: uppercase;
 }
 
+/* margin-block, not margin-bottom alone: .rux-trip-history__group is plain
+   block flow (no gap of its own — see above), so adjacent cards' margins
+   collapse into one gap the normal CSS way, and the first card's own top
+   margin applies against .rux-card__header (no margin of its own
+   to collapse with) — same recipe as the itinerary's day-groups. */
 .rux-trip-history__card {
 	min-width: 0;
+	margin: var(--rux-space-4);
 }
 
 .rux-trip-history__card-header {

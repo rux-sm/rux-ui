@@ -102,7 +102,7 @@
 		}
 		panelEl.toggleAttribute(
 			"data-rux-modal-layer",
-			Boolean(input.closest(".rux-modal-backdrop, .rux-floating-window")),
+			Boolean(input.closest(".rux-modal-backdrop, .rux-surface--floating")),
 		);
 		position(input);
 		panelEl.innerHTML = items

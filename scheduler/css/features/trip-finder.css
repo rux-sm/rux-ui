@@ -1,12 +1,12 @@
 /* ==========================================================================
    TRIP FINDER  ·  .rux-trip-finder-window
    --------------------------------------------------------------------------
-   Floating window chrome only — the shared .rux-floating-window component
-   (css/base/floating-window.css) owns drag/resize/mobile-breakpoint
-   mechanics, and the table itself reuses comp-trip-list.css's .trips-app__*
-   classes verbatim (also shared with the trip manifest's passenger table).
-   This file is just: window sizing, the search row, and the collapsible
-   filter panel.
+   Floating window chrome only — the shared .rux-surface--floating component
+   (css/base/surface.css) owns drag/resize/mobile-breakpoint mechanics, and
+   the table itself reuses comp-trip-list.css's .trips-app__* classes
+   verbatim (also shared with the trip manifest's passenger table). This
+   file is just: window sizing, the search row, and the collapsible filter
+   panel.
    ========================================================================== */
 
 /* Roomier than the default doc-preview size — needs to comfortably fit an
@@ -37,7 +37,7 @@
 	min-height: 0;
 	padding: var(--rux-space-4);
 	overflow: hidden;
-	background: var(--rux-card-bg);
+	background: var(--rux-card-body-bg);
 }
 
 .rux-trip-finder-window__results {
@@ -87,7 +87,7 @@
 	align-items: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-floating-window-header-bg);
+	background: var(--rux-surface-floating-header-bg);
 }
 
 .rux-trip-finder-window__search-icon {
@@ -112,7 +112,7 @@
 	align-items: end;
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-4);
-	background: var(--rux-card-bg);
+	background: var(--rux-card-body-bg);
 }
 
 .rux-trip-finder-window__filters[hidden] {

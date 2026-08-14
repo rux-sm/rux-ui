@@ -1,25 +1,41 @@
 /* ==========================================================================
    CARD
-   The card owns the outer radius and clips its internal regions to it.
-   Header and footer never duplicate the card radius.
+   Headers float above their content, unboxed — .rux-card is a plain layout
+   wrapper with no border/bg/radius of its own. The box (border, background,
+   radius, shadow) lives on .rux-card__body, the element that follows the
+   header — since that's the only way the header can visually sit outside
+   the box: it isn't a descendant of the element that owns overflow:hidden,
+   it's a sibling in front of it.
+
+   One class, two header behaviors, chosen by structure not a modifier:
+   .rux-card__sentinel + .rux-card__header (a zero-height marker immediately
+   before the header) is the signal a card wants the sticky, full-padding
+   treatment — every consumer built this session (former "section" and
+   "embed" usage) already has one. Plain .rux-card usage elsewhere in the
+   app (Driver panel's View Options/Filters cards, the passenger editor,
+   the components catalog — none reviewed or converted this session) has no
+   sentinel, so it keeps its original non-sticky, asymmetric-padding header
+   exactly as before, with zero risk of an unverified regression. See
+   docs/cards.md.
    ========================================================================== */
 
 .rux-card {
-	background: var(--rux-card-bg);
+	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l + 6%) c h);
 	color: var(--rux-card-fg);
-	border: var(--rux-card-border);
-	border-radius: var(--rux-card-radius);
-	box-shadow: var(--rux-card-shadow);
-	overflow: hidden;
+}
+
+/* Locally overrides the custom properties, not background/box-shadow
+   directly — .rux-card__body reads var(--rux-card-body-bg) /
+   var(--rux-card-body-shadow) itself, so redefining those properties here
+   is what an elevated card's body actually picks up, the same way
+   --rux-card-body-border below works for --borderless. */
+.rux-card--elevated {
+	--rux-card-body-bg: var(--rux-card-elevated-bg);
+	--rux-card-body-shadow: var(--rux-card-elevated-shadow);
 }
 
 .rux-card--borderless {
-	border: 1px solid transparent;
-}
-
-.rux-card--elevated {
-	background: var(--rux-card-elevated-bg);
-	box-shadow: var(--rux-card-elevated-shadow);
+	--rux-card-body-border: 1px solid transparent;
 }
 
 .rux-card--stack {
@@ -41,117 +57,12 @@
 		0;
 }
 
-.rux-card__header,
-.rux-card__body,
-.rux-card__footer {
-	padding: var(--rux-card-padding);
-	border-radius: 0;
-}
-
-.rux-card__body--stack {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-card-content-gap);
-}
-
-.rux-card__section {
-	padding: 0;
-}
-
-.rux-card__section + .rux-card__section {
-	border-top: var(--rux-card-section-border);
-}
-
-/* Title row for a section that needs one — trailing content (an icon
-   button, a .rux-cluster of several) is optional; omit it and the header
-   still renders with just the title. The border-bottom is the only edge
-   decoration, keeping the section flat rather than reintroducing the
-   boxed look .rux-card-section (the separate, tinted component) has. */
-.rux-card__section-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-card-content-gap);
-	min-height: var(--rux-card-header-height);
-	/* Full inline padding on both sides, unlike .rux-card__header's
-	   left-only --rux-card-header-padding — that token relies on a card
-	   that's already inset from the viewport by its parent's own padding,
-	   with the trailing button's own hit-area supplying the right edge.
-	   A section is meant to run edge-to-edge inside a pane with no inline
-	   padding of its own (see #pane-trip in trip-panel.css), so it has to
-	   own its right inset explicitly or the trailing action sits flush
-	   against the window edge. */
-	padding: 0 var(--rux-card-padding-inline);
-	border-bottom: var(--rux-card-section-border);
-	/* Standard stacking-header behavior: this header sticks to the top of
-	   its scroll container (the panel body, not the page) once its section
-	   scrolls under it, and stays there until the *next* section's own
-	   sticky header reaches the same position and takes over — plain
-	   position: sticky on every section header does this for free, no JS,
-	   as long as each header is a direct child of its own section rather
-	   than sharing one ancestor with the others. An opaque background is
-	   required for this to read correctly: without one, the section
-	   content scrolling underneath would show through the "stuck" header.
-	   --rux-card-bg (not transparent) is that background — sections
-	   themselves stay transparent; only the sticky header needs to paint
-	   over what scrolls beneath it. */
-	position: sticky;
-	top: 0;
-	/* Not z-index: 1 — .rux-button--segment (controls.css) also sets
-	   z-index: 1 on itself, and neither the segmented track nor this
-	   section establishes its own stacking context, so a tied z-index
-	   falls back to DOM order: the segmented control, coming after the
-	   header in markup, would win and paint over it once scrolled underneath
-	   (exactly what happened before this). --rux-z-sticky is the same token
-	   the scheduler's own sticky row/column headers use, so this reliably
-	   outranks ordinary in-flow content without guessing a number high
-	   enough to beat whatever else might also claim z-index: 1. */
-	z-index: var(--rux-z-sticky);
-	background: var(--rux-card-bg);
-	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-}
-
-/* Shadow belongs to whichever header is actually docked at the moment, not
-   to a fixed one — .is-stuck is JS-driven (initStickySectionHeaders in
-   trip-panel.js), toggled by watching each section's own sentinel rather
-   than guessed from scroll math. Every header is eligible; only the one
-   currently pinned over content ever carries it. */
-.rux-card__section-header.is-stuck {
-	box-shadow: var(--rux-shadow-1);
-}
-
-/* Zero-height marker at the section's own top edge — see
-   initStickySectionHeaders in trip-panel.js. Not visual; purely an
-   IntersectionObserver target. */
-.rux-card__section-sentinel {
-	height: 0;
-}
-
-/* Bordered content group nested inside a card. Its regions deliberately reuse
-   the parent card's spacing and its outer surface uses the standard card lift. */
-.rux-card-section {
-	min-width: 0;
-	overflow: hidden;
-	background: var(--rux-card-section-bg);
-	border: var(--rux-card-section-outline);
-	border-radius: var(--rux-card-radius);
-	box-shadow: var(--rux-card-section-shadow);
-}
-
-.rux-card-section__header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: var(--rux-card-content-gap);
-	min-height: var(--rux-card-header-height);
-	padding: var(--rux-card-header-padding);
-	background: var(--rux-card-section-header-bg);
-}
-
-.rux-card-section__body {
-	padding: var(--rux-card-padding);
-}
-
+/* Plain default: no border-bottom, no boxed background — a label row
+   sitting in normal flow above .rux-card__body, not framing it. Still
+   needs its own opaque fill (not "boxed," just not see-through) so the
+   surface behind it — a floating window's drag bar, a panel's own
+   background — doesn't show through where the header sits. Not sticky:
+   see the sentinel-gated rule below for the repeating-group-header case. */
 .rux-card__header {
 	display: flex;
 	flex: none;
@@ -161,18 +72,150 @@
 	justify-content: space-between;
 	gap: var(--rux-card-content-gap);
 	background: var(--rux-card-header-bg);
-	border-bottom: var(--rux-card-header-border);
+	border: var(--rux-card-header-border);
+	border-radius: var(--rux-card-header-radius);
+	box-shadow: var(--rux-card-header-shadow);
 	height: var(--rux-card-header-height);
 }
 
+/* Zero-height marker at a section's own top edge — see
+   initStickySectionHeaders in js/core/controls.js. Not visual on its own;
+   its real job is the adjacent-sibling selector below, which is what makes
+   the header immediately after it sticky. */
+.rux-card__sentinel {
+	height: 0;
+}
+
+/* The repeating-group-header case — full inline padding (a card used this
+   way runs edge-to-edge inside a pane with no ambient padding to lean on,
+   unlike the plain default above, which relies on its parent's own
+   padding), an opaque fill that matches its own body instead of a tint
+   (so it reads as "docked over scrolled content", not "a boxed title bar"),
+   and position: sticky so it stays pinned to the top of its scroll
+   container until the next card's own header reaches the same position —
+   plain CSS, no JS, as long as each header is a direct child of its own
+   card rather than sharing one ancestor with the others. */
+.rux-card__sentinel + .rux-card__header {
+	padding: 0 var(--rux-card-padding-inline);
+	background: var(--rux-card-body-bg);
+	border: none;
+	/* Not z-index: 1 — .rux-button--segment (controls.css) also sets
+	   z-index: 1 on itself, and neither the segmented track nor this card
+	   establishes its own stacking context, so a tied z-index falls back
+	   to DOM order: content coming after the header in markup would win
+	   and paint over it once scrolled underneath. --rux-z-sticky is the
+	   same token the scheduler's own sticky row/column headers use, so
+	   this reliably outranks ordinary in-flow content. */
+	position: sticky;
+	top: 0;
+	z-index: var(--rux-z-sticky);
+	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
+}
+
+/* Shadow belongs to whichever header is actually docked at the moment, not
+   to a fixed one — .is-stuck is JS-driven (initStickySectionHeaders in
+   js/core/controls.js, shared by every .rux-panel), toggled by watching
+   the sentinel above rather than guessed from scroll math. Every sentinel-
+   gated header is eligible; only the one currently pinned over content
+   ever carries it. */
+.rux-card__sentinel + .rux-card__header.is-stuck {
+	box-shadow: var(--rux-shadow-1);
+}
+
+/* The box — a fully independent rounded rectangle on every side, even when
+   a header precedes it. A header floating above no longer shares a seam
+   with body the way it used to when they were one bordered unit, so body
+   doesn't square off its top corners for a header the way it does for a
+   footer below (see :has() below) — there's a real gap there now, not an
+   attachment. Full radius is the only default; :has() below is the one
+   exception, for a footer that's meant to stay visually attached as the
+   same box's bottom edge.
+
+   No margin-top — header and body sit flush, touching, with zero space
+   between them. Header stays unboxed (no border/radius/shadow of its own)
+   so it still reads as a separate label sitting above the box rather than
+   framing it; removing the gap doesn't reintroduce the old "one bordered
+   unit" look, it just closes the distance between two still-distinct
+   elements. Rhythm between *sibling* cards still comes from
+   .rux-card + .rux-card below — this is only about the header-to-its-
+   own-body relationship. */
+.rux-card__body {
+	padding: var(--rux-card-padding);
+	background: var(--rux-card-body-bg);
+	border: var(--rux-card-body-border);
+	border-radius: var(--rux-card-body-radius);
+	box-shadow: var(--rux-card-body-shadow);
+	overflow: hidden;
+}
+
+.rux-card__body:has(+ .rux-card__footer) {
+	border-bottom: 0;
+	border-radius: var(--rux-card-body-radius) var(--rux-card-body-radius) 0 0;
+}
+
+.rux-card__body--stack {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-card-content-gap);
+}
+
+/* Shares the seam with .rux-card__body above it (border-top only, not a
+   second full border) and picks up whichever bottom corners the body gave
+   up when a footer follows it. */
 .rux-card__footer {
 	display: flex;
 	flex: none;
 	align-items: center;
 	justify-content: flex-end;
 	gap: var(--rux-button-group-gap);
+	padding: var(--rux-card-padding);
 	background: var(--rux-card-footer-bg);
+	border-inline: var(--rux-card-body-border);
+	border-bottom: var(--rux-card-body-border);
 	border-top: var(--rux-card-footer-border);
+	border-radius: 0 0 var(--rux-card-footer-radius) var(--rux-card-footer-radius);
+}
+
+/* Vertical rhythm between sibling cards — no longer a shared border (each
+   card's own .rux-card__body is independently boxed now, so there's
+   nothing for two of them to share a seam on). */
+.rux-card + .rux-card {
+	margin-top: var(--rux-card-content-gap);
+}
+
+/* Repeating list item nested in a card — an itinerary stop, a bus
+   assignment, a payment row — as opposed to plain .rux-card, which is a
+   titled group of one card's own content. Reuses the exact same header/
+   body anatomy; the only difference is the header never gets the sentinel-
+   gated sticky treatment (a repeating item's own header sticking
+   individually inside a long list would be noise, not the "Day N stays
+   pinned over its stops" effect that's actually useful) and the header's
+   background stays transparent instead of matching the body, so the
+   body's own continuous inset shadow reads through it instead of being
+   covered by a duplicate paint layer.
+
+   No margin of its own — consumers fall into two different layout systems
+   and one fixed margin can't serve both correctly. Some (payment rows, bus
+   groups) are flex columns that already space their embeds via their own
+   gap; margins never collapse between flex children, so adding margin here
+   too would stack on top of that gap instead of replacing it. Others (the
+   itinerary's day groups, tasks-panel trip list) are plain block flow with
+   no gap of their own — those consumers set margin-block directly on their
+   embeds (not margin-bottom alone) so adjacent siblings' margins collapse
+   into one gap the normal CSS way, including the first embed's own top
+   margin against nothing above it to collapse with. */
+.rux-card--recessed {
+	min-width: 0;
+}
+
+.rux-card--recessed > .rux-card__header {
+	background: transparent;
+}
+
+.rux-card--recessed > .rux-card__body {
+	background: var(--rux-card-recessed-bg);
+	border: var(--rux-card-recessed-border);
+	box-shadow: var(--rux-card-recessed-shadow);
 }
 
 .rux-card__title {

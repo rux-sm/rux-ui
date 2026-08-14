@@ -27,10 +27,10 @@
 
 		panelEl = document.createElement("div");
 		panelEl.className =
-			"rux-floating-window rux-floating-window--default-size rux-doc-viewer rux-card rux-card--elevated";
+			"rux-surface rux-surface--floating rux-surface--default-size rux-doc-viewer";
 		panelEl.hidden = true;
 		panelEl.innerHTML = `
-			<header class="rux-floating-window__header rux-doc-viewer__header rux-card__header">
+			<header class="rux-surface__header rux-doc-viewer__header">
 				<div class="rux-doc-viewer__title-group">
 					<span class="rux-icon" aria-hidden="true" data-doc-viewer-icon>description</span>
 					<p class="rux-card__title rux-doc-viewer__title" data-doc-viewer-title></p>
@@ -42,17 +42,17 @@
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
-			<div class="rux-floating-window__body rux-doc-viewer__body rux-card__body">
+			<div class="rux-surface__body rux-doc-viewer__body">
 				<iframe class="rux-doc-viewer__frame" title="Document preview"></iframe>
 			</div>
-			<footer class="rux-floating-window__footer rux-doc-viewer__footer rux-card__footer">
+			<footer class="rux-surface__footer rux-doc-viewer__footer">
 				<button type="button" class="rux-button rux-button--ghost rux-button--danger" data-doc-viewer-delete>
 					<span class="rux-icon" aria-hidden="true">delete</span> Delete
 				</button>
 				<button type="button" class="rux-button rux-button--default" data-doc-viewer-update>
 					<span class="rux-icon" aria-hidden="true">upload_file</span> Replace
 				</button>
-				<span class="rux-floating-window__spacer"></span>
+				<span class="rux-surface__spacer"></span>
 			</footer>
 		`;
 		document.body.appendChild(panelEl);
@@ -61,7 +61,7 @@
 		panelEl.querySelector("[data-doc-viewer-external]").addEventListener("pointerdown", (event) => event.stopPropagation());
 		panelEl.querySelector("[data-doc-viewer-delete]").addEventListener("click", () => current?.onDelete?.());
 		panelEl.querySelector("[data-doc-viewer-update]").addEventListener("click", () => current?.onUpdate?.());
-		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-floating-window__header"));
+		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-surface__header"));
 
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape" && panelEl && !panelEl.hidden) close();
@@ -90,7 +90,7 @@
 		previousFocus = document.activeElement;
 		current = options;
 		panel.classList.toggle("rux-doc-viewer--presentation", Boolean(options.presentationOnly));
-		panel.classList.toggle("rux-floating-window--safe-viewport", Boolean(options.presentationOnly));
+		panel.classList.toggle("rux-surface--safe-viewport", Boolean(options.presentationOnly));
 		panel.querySelector("[data-doc-viewer-title]").textContent = options.title || options.fileName || "Document";
 		panel.querySelector("[data-doc-viewer-icon]").textContent = options.icon || "description";
 		// Native PDF viewers do not all recognize the same open parameter.

@@ -230,7 +230,7 @@ test("menus opened inside modals are promoted above the modal layer", () => {
 	assert.match(page, /id="tp-payment-add-btn"[^>]*aria-haspopup="menu"/s);
 	assert.match(
 		popoverController,
-		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop, \.rux-floating-window"\)\)/,
+		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop, \.rux-surface--floating"\)\)/,
 	);
 	assert.match(
 		popoverStyles,
@@ -241,7 +241,7 @@ test("menus opened inside modals are promoted above the modal layer", () => {
 test("autofill suggestions opened from windows are promoted above their surface", () => {
 	assert.match(
 		suggestionsController,
-		/panelEl\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?input\.closest\("\.rux-modal-backdrop, \.rux-floating-window"\)/,
+		/panelEl\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?input\.closest\("\.rux-modal-backdrop, \.rux-surface--floating"\)/,
 	);
 	assert.match(
 		suggestionStyles,
@@ -366,14 +366,14 @@ test("mini calendar navigation uses shared 44px header icon buttons", () => {
 	}
 });
 
-test("the mini calendar uses the Calendar panel body as its primary surface", () => {
+test("the mini calendar is a sentinel-gated card with a floating header", () => {
 	const calendar = page.match(
-		/<section\s+class="rux-mini-cal"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-mini-cal"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(calendar);
-	assert.match(calendar, /class="rux-mini-cal__header"/);
-	assert.match(calendar, /class="rux-mini-cal__body"/);
-	assert.doesNotMatch(calendar, /rux-card/);
+	assert.match(calendar, /class="rux-card__sentinel"/);
+	assert.match(calendar, /class="rux-card__header rux-mini-cal__header"/);
+	assert.match(calendar, /class="rux-card__body rux-mini-cal__body"/);
 });
 
 test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
@@ -386,25 +386,26 @@ test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
 	assert.doesNotMatch(layoutStyles, /padding-inline:\s*auto/);
 });
 
-test("View Options uses the Calendar panel body as its primary surface", () => {
+test("View Options is a sentinel-gated card in the Calendar panel body", () => {
 	const options = page.match(
-		/<section\s+class="rux-view-options"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-view-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
-	assert.match(options, /class="rux-view-options__title"/);
-	assert.match(options, /class="rux-view-options__list"/);
-	assert.doesNotMatch(options, /rux-card/);
+	assert.match(options, /class="rux-card__sentinel"/);
+	assert.match(options, />\s*View Options\s*</);
+	assert.match(options, /class="rux-card__body rux-view-options__list"/);
 });
 
-test("Driver Availability uses the panel body as its primary surface", () => {
+test("Driver Availability is a sentinel-gated card in the panel body", () => {
 	const driversPane = page.match(
 		/id="rp-pane-drivers"[\s\S]*?(?=<div\s+id="rp-pane-tasks")/,
 	)?.[0];
 	assert.ok(driversPane);
 	assert.match(driversPane, /class="rux-panel__pane rux-driver-availability"/);
-	assert.match(driversPane, /class="rux-driver-availability__title"/);
+	assert.match(driversPane, /class="rux-card"/);
+	assert.match(driversPane, /class="rux-card__sentinel"/);
+	assert.match(driversPane, />\s*Driver Availability\s*</);
 	assert.match(driversPane, /id="rp-driver-grid"/);
-	assert.doesNotMatch(driversPane, /class="rux-card(?:\s|\")/);
 });
 
 test("driver priority uses a persistent row indicator and matching selected wash", () => {

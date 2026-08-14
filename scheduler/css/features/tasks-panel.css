@@ -3,17 +3,11 @@
    Trip-departure readiness + prep checklist — see js/panels/tasks-panel.js.
    ========================================================================== */
 
-/* Day groups are separate cards, so use the standard component gap between
-   them while retaining the pane's existing outer inset. */
-#rp-tasks-departures-body > .rux-tasks__day-group + .rux-tasks__day-group {
-	margin-top: var(--rux-space-4);
-}
+/* Day groups are .rux-card now — flush against each other,
+   sharing one border at each seam (.rux-card + .rux-card
+   in card.css) instead of floating apart with their own margin. */
 
-#rp-tasks-departures-body > .rux-card > .rux-card__header {
-	border-top: 0;
-}
-
-/* Trips / Post Trip toggle above the day-group card stack. */
+/* Trips / Post Trip toggle above the day-group section stack. */
 .rux-tasks__header {
 	padding-bottom: var(--rux-space-2);
 }
@@ -72,15 +66,16 @@
 }
 
 /* Only between multiple trip entries sharing one day-group's .rux-card__body
-   (renderTrip) — Post Trip's own cards (renderPostTripCard) are top-level
-   .rux-card siblings of #rp-tasks-departures-body instead, stacking flush
-   the same seamless way day-groups themselves do (see the note up top),
-   not spaced apart like items nested inside one shared card. */
+   (renderTrip) — .rux-tasks__trip here means the .rux-card--recessed inside a
+   day-group specifically. Post Trip's own cards (renderPostTripCard) are
+   .rux-card siblings of #rp-tasks-departures-body instead (also
+   named .rux-tasks__trip, different component), sharing a border the same
+   way day-groups do — no margin needed between those. */
 .rux-card__body > .rux-tasks__trip + .rux-tasks__trip {
 	margin-top: var(--rux-space-4);
 }
 
-.rux-tasks__trip--empty > .rux-card-section__body {
+.rux-tasks__trip--empty > .rux-card__body {
 	display: flex;
 	align-items: center;
 	justify-content: center;

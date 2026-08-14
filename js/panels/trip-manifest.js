@@ -21,7 +21,7 @@
     manifestWindow.querySelector("#manifest-window-close")?.addEventListener("click", () => {
       window.TripView?.set("calendar");
     });
-    const header = manifestWindow.querySelector(".rux-floating-window__header");
+    const header = manifestWindow.querySelector(".rux-surface__header");
     // 580px matches the shared floating-window mobile breakpoint, where all
     // windows receive the same fixed safe-area inset — nothing to drag there.
     if (header) window.RuxFloatingWindow?.attachDrag(manifestWindow, header, { minViewportWidth: 580 });
@@ -175,8 +175,8 @@
     row.className = "rux-trip-panel__payment-row";
     row.dataset.paymentRow = "";
     row.innerHTML = `
-      <div class="rux-card-section rux-trip-panel__payment-content" role="group" aria-labelledby="rpm-payment-label-${index + 1}">
-        <div class="rux-card-section__header rux-trip-panel__payment-header">
+      <div class="rux-card--recessed rux-trip-panel__payment-content" role="group" aria-labelledby="rpm-payment-label-${index + 1}">
+        <div class="rux-card__header rux-trip-panel__payment-header">
           <div class="rux-trip-panel__payment-method">
             <span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
             <span class="rux-trip-panel__payment-method-label" id="rpm-payment-label-${index + 1}" data-payment-method-label>Payment</span>
@@ -186,7 +186,7 @@
             <span class="rux-icon" aria-hidden="true">delete</span>
           </button>
         </div>
-        <div class="rux-card-section__body rux-trip-panel__payment-fields">
+        <div class="rux-card__body rux-trip-panel__payment-fields">
           <label class="rux-field rux-trip-panel__payment-date-field">
             <span class="rux-field__label">Date</span>
             <span class="rux-input rux-trip-panel__payment-date-control">

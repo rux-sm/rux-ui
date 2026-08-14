@@ -154,7 +154,7 @@ function createAssignmentModule({
 }) {
 	const section = el(
 		"section",
-		`rux-card__section assignment-module assignment-module--${tone}`,
+		`rux-card assignment-module assignment-module--${tone}`,
 	);
 	section.dataset.module = key;
 	moduleId += 1;
@@ -365,7 +365,7 @@ function spotLocationModule(entry, view) {
 		|| view.customerName;
 	const section = el(
 		"section",
-		"rux-card__section driver-assignment-card__reporting-section",
+		"rux-card driver-assignment-card__reporting-section",
 	);
 	section.dataset.module = "spot-location";
 	section.setAttribute(
@@ -583,7 +583,7 @@ function crewBusSection(fleet, fleetIndex, assignmentId) {
 	const isCurrentBus = Boolean(fleet.isCurrentBus || fleetIndex === 0);
 	const section = el(
 		"section",
-		"rux-card__section driver-assignment-card__crew-bus-section",
+		"rux-card driver-assignment-card__crew-bus-section",
 	);
 	const headingId = `crew-${safeId(assignmentId)}-${safeId(fleet.busNumber || fleetIndex)}`;
 	const heading = el(
@@ -646,7 +646,7 @@ function crewFleetModule(view) {
 		});
 		const disclosureSection = el(
 			"div",
-			"rux-card__section driver-assignment-card__crew-disclosure-section",
+			"rux-card driver-assignment-card__crew-disclosure-section",
 		);
 		disclosureSection.appendChild(disclosure);
 		group.appendChild(disclosureSection);
@@ -692,7 +692,7 @@ function documentAction(document, entry, options) {
 function documentsModule(entry, view, options) {
 	const section = el(
 		"section",
-		"rux-card__section driver-assignment-card__documents-section",
+		"rux-card driver-assignment-card__documents-section",
 	);
 	section.dataset.module = "documents";
 	section.setAttribute("aria-label", "Documents");
@@ -707,7 +707,7 @@ function documentsModule(entry, view, options) {
 function notesModule(view) {
 	const section = el(
 		"section",
-		"rux-card__section driver-assignment-card__notes-section",
+		"rux-card driver-assignment-card__notes-section",
 	);
 	section.dataset.module = "notes";
 	section.setAttribute("aria-label", "Notes");

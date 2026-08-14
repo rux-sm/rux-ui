@@ -38,10 +38,17 @@
 
 /* — Outer container — */
 
+/* No gap: #tp-itin-summary and #tp-itin-leg-card are .rux-card now
+   (docs/cards.md) and expect to sit flush against each other, sharing one
+   border instead of floating with space between two separately-boxed
+   cards. .rux-trip-itinerary__stops below restores its own margin-top —
+   the dynamic stop list is a different kind of region (repeating,
+   individually-boxed .rux-card--recessed items) and still wants normal
+   breathing room before it starts. */
 .rux-trip-itinerary {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-panel-content-gap);
+	gap: 0;
 }
 
 /* Fixed and calculated itinerary values remain selectable/readable, but use
@@ -57,10 +64,17 @@
 	color: var(--rux-input-disabled-fg);
 }
 
+/* gap: 0, not --rux-panel-content-gap — .rux-trip-itinerary__day-group is a
+   .rux-card now, and day groups sit flush against each other
+   sharing one border between them, the same as every other converted
+   section (docs/cards.md). margin-top keeps the usual gap before this list
+   starts, since it still follows Trip Summary / Split Trip as a distinct
+   region. */
 .rux-trip-itinerary__stops {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-panel-content-gap);
+	gap: 0;
+	margin-top: var(--rux-panel-content-gap);
 }
 
 /* — Summary strip — */
@@ -246,13 +260,19 @@
 	gap: var(--rux-space-2);
 }
 
-/* Stops use the dedicated nested-card section surface. Insets keep the outer
-   Day card readable as the parent while the outline clearly groups each
-   waypoint's address, timing, duty state, and statistics. */
-.rux-trip-itinerary__day-group > .rux-card-section {
-	margin-inline: var(--rux-space-4);
-	margin-bottom: var(--rux-space-4);
-	
+/* Stops use the dedicated nested-card embed surface. Insets keep the outer
+   Day card readable as the parent while the border clearly groups each
+   waypoint's address, timing, duty state, and statistics.
+
+   margin-block, not margin-bottom alone: .rux-trip-itinerary__day-group is
+   plain block flow (an <article>, no flex/grid, no gap of its own), so
+   adjacent embeds' margins collapse into one gap the normal CSS way instead
+   of needing their own :first-child/adjacent-sibling case — the first
+   embed's own top margin applies against nothing (.rux-card__header
+   above it has no margin of its own to collapse with), giving it the same
+   16px every later embed gets between itself and the one before it. */
+.rux-trip-itinerary__day-group > .rux-card--recessed {
+	margin: var(--rux-space-4);
 }
 
 
@@ -294,8 +314,8 @@
 	font-weight: inherit;
 }
 
-/* Sits inline with the card title in the header row (.rux-card-section__
-   header is already flex) instead of its own row in the body below. Both
+/* Sits inline with the card title in the header row (.rux-card__header
+   is already flex) instead of its own row in the body below. Both
    sides get an equal, explicit 50% share (flex: 1 1 0% + min-width: 0 on
    both) rather than one fixed width and the other shrink-to-content —
    scoped to this card only, so the regular stop header (heading + fixed-
@@ -315,7 +335,7 @@
 	--_icon-fill: 1;
 	position: relative;
 	z-index: 1;
-	background: var(--rux-card-section-bg);
+	background: var(--rux-card-recessed-bg);
 	color: var(--rux-fg-muted);
 	font-size: 20px;
 	line-height: 1;
@@ -347,7 +367,7 @@
 /* Fallback for a day that has no End-of-Day summary. Summarized days place
    this same action directly in the summary's left action lane. */
 
-/* No longer a .rux-card-section (no divider/background of its own to
+/* No longer a .rux-card--recessed (no divider/background of its own to
    fight) — just the day-group's own inset around one full-width button,
    same horizontal margin the idle-day body above uses. */
 .rux-trip-itinerary__add-row {
