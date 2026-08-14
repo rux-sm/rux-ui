@@ -638,7 +638,7 @@
 	--rux-panel-footer-mobile-button-height: 44px;
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
-	--rux-panel-padding:   0 var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
+	--rux-panel-padding:   var(--rux-space-4);
 	--rux-panel-content-gap: var(--rux-space-0);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
@@ -791,6 +791,7 @@
 	--rux-surface-header-border: 1px solid var(--rux-border);
 	--rux-surface-padding-block:  var(--rux-space-4);
 	--rux-surface-padding-inline: var(--rux-space-4);
+	--rux-surface-padding: var(--rux-space-0);
 	--rux-surface-content-gap:    var(--rux-space-4);
 	--rux-surface-border-width:   var(--rux-border-width);
 	--rux-surface-motion-duration:  var(--rux-motion-duration-moderate-01);

@@ -1086,6 +1086,19 @@
 	color: var(--rux-fg-on-accent);
 }
 
+/* Today AND inside the selected trip's range at once: .is-today's own rule
+   above sets accent-colored text directly on these same two spans, which
+   otherwise wins over .is-trip-range's inherited --rux-fg-on-accent — a
+   direct declaration on the child always beats an inherited one, no matter
+   which parent rule has higher specificity. Left alone, that's accent text
+   on the accent background .is-trip-range just painted: invisible. This
+   selector outranks .is-today's (four class steps vs three) so the
+   on-accent color wins whenever both states are true. */
+.rux-driver-grid__day-label.is-today.is-trip-range .rux-driver-grid__day-label-weekday,
+.rux-driver-grid__day-label.is-today.is-trip-range .rux-driver-grid__day-label-date {
+	color: var(--rux-fg-on-accent);
+}
+
 .rux-driver-grid__cell {
 	display: block;
 	width: 100%;

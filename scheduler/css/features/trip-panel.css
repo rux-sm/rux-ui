@@ -122,33 +122,6 @@
 	display: none;
 }
 
-/* #pane-trip, #pane-billing, and #pane-itinerary use flat, edge-to-edge
-   .rux-card groups (docs/cards.md) instead of a nested .rux-card
-   per group — including #pane-itinerary's own repeating day groups
-   (.rux-trip-itinerary__day-group), whose individual stops keep their own
-   inset via margin-inline on .rux-card--recessed (itinerary.css), the same
-   way ordinary section content insets itself via .rux-card__body's padding.
-   Scoped to these panes' ids, not .rux-trip-panel__pane generally. gap: 0
-   is safe here because every direct child of these three panes is a
-   .rux-card — they're meant to sit flush, sharing one border.
-   #pane-dispatch below needs its own separate rule instead: its bus-group
-   lists between Fleet Assignments and Return Fleet Assignments aren't
-   .rux-card siblings, so zeroing the pane's gap would collapse
-   them together with no breathing room. */
-#pane-trip,
-#pane-billing,
-#pane-itinerary {
-	padding-inline: 0;
-	gap: 0;
-}
-
-/* Fleet Assignments / Return Fleet Assignments reach the pane's true edges
-   like every other converted section, but #pane-dispatch keeps its normal
-   gap between children — see the comment above for why gap: 0 doesn't
-   apply here the way it does for the other three panes. */
-#pane-dispatch {
-	padding-inline: 0;
-}
 
 /* .rux-trip-panel__bus-groups used to inherit its horizontal inset for free
    from #pane-dispatch's own padding — now that the pane runs edge-to-edge,

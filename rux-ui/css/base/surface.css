@@ -127,6 +127,7 @@
 	border: var(--rux-surface-floating-border);
 	border-radius: var(--rux-surface-floating-radius);
 	box-shadow: var(--rux-surface-floating-shadow);
+	padding: var(--rux-surface-padding);
 }
 
 .rux-surface--floating.is-dragging {
