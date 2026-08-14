@@ -696,7 +696,8 @@
 
 	/* — card: header — floats above the body, no box of its own — */
 	--rux-card-header-bg:     var(--rux-surface-3);
-	--rux-card-header-border: var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-header-border: 			var(--rux-card-border-width) solid var(--rux-border);
+	--rux-card-header-sticky-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-header-radius: var(--rux-radius-0);
 	--rux-card-header-shadow: none;
 

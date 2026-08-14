@@ -98,7 +98,6 @@
 	padding: 0 var(--rux-card-header-padding);
 	background: var(--rux-card-header-sticky-bg);
 	border: var(--rux-card-header-sticky-border);
-	border-bottom: none;
 	/* Not z-index: 1 — .rux-button--segment (controls.css) also sets
 	   z-index: 1 on itself, and neither the segmented track nor this card
 	   establishes its own stacking context, so a tied z-index falls back
@@ -151,6 +150,7 @@
 	border-radius: var(--rux-card-body-radius);
 	box-shadow: var(--rux-card-body-shadow);
 	overflow: hidden;
+	border-top: none;
 }
 
 .rux-card__body:has(+ .rux-card__footer) {
