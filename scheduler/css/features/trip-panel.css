@@ -1,19 +1,27 @@
 /* ==========================================================================
    RUX UI — TRIP PANEL
    --------------------------------------------------------------------------
-   Side-panel form editor for trip details, contacts, billing, and dispatch.
-   Each trip gets its own panel instance. The panel is split into four
-   tabbed sections (Details, Contacts, Billing, Dispatch) using a segmented
-   nav. Tab switching is handled by trip-panel.js.
+   Form editor for a trip's Details, Billing, Itinerary, and Fleet — the
+   trip editor dialog's own tabbed content. Lives directly on
+   .rux-surface--floating now (index.html's #trip-editor-dialog carries
+   both .rux-trip-dialog and .rux-trip-panel) — no separate nested .rux-panel
+   wrapper; .rux-surface__nav/__body/__footer are the real anatomy, with
+   .rux-trip-panel supplying the container-query root plus its own
+   feature-specific classes on top of the shared Surface slots. Tab
+   switching is handled generically in js/core/controls.js
+   ([data-rux-tabs]), with additional trip-editor-specific behavior
+   (scroll-reset on switch, drawer-reopen bridge) layered on in
+   trip-panel.js's initTripTabs.
 
    Structure
    ---------
-   .rux-trip-panel              Flex column, 440px wide (set by parent grid).
-   .rux-panel__header           Shared title + trip ID + close row.
-   .rux-panel__nav              Shared panel navigation slot.
-   .rux-trip-panel__body        Scrollable body holding tab panes.
+   .rux-trip-panel              Container-query root; same element as
+                            .rux-surface--floating.rux-trip-dialog.
+   .rux-surface__header         Shared title + close row.
+   .rux-surface__nav--attached  Tabs slot (Details/Billing/Itinerary/Fleet).
+   .rux-trip-panel__body        .rux-surface__body — scrollable, holds tab panes.
    .rux-trip-panel__pane        One per section, hidden via [hidden] when inactive.
-   .rux-panel__footer           Shared Delete + Cancel / Save action row.
+   .rux-surface__footer         Delete + Clear / Save action row.
 
    Dispatch sub-components
    -----------------------
@@ -33,19 +41,23 @@
 	display: none;
 }
 
+/* Just the container-query root now — .rux-trip-panel lives on the same
+   element as .rux-trip-dialog (index.html), which already supplies
+   position: fixed (.rux-surface--floating) and its own min-width (480px,
+   trip-dialog.css), both stronger than what this class used to declare on
+   its own separate <aside> wrapper. */
 .rux-trip-panel {
-	position: relative;
-	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
 }
 
 /* initPanelScrollEdges (js/core/controls.js) still toggles .is-scrolled
-   here like it does on every .rux-panel — that JS is shared and stays as
-   is. Only the resulting shadow is suppressed: #pane-trip's section
-   headers (card.css's .rux-card__header.is-stuck) now own that
-   shadow duty per section as the user scrolls, so the nav showing its own
-   at the same time doubled it up right above the section header's. */
-.rux-trip-panel > .rux-panel__nav.is-scrolled {
+   here like it does on every .rux-panel/.rux-surface--floating — that JS
+   is shared and stays as is. Only the resulting shadow is suppressed:
+   #pane-trip's section headers (card.css's .rux-card__header.is-stuck)
+   now own that shadow duty per section as the user scrolls, so the nav
+   showing its own at the same time doubled it up right above the section
+   header's. */
+.rux-trip-panel > .rux-surface__nav.is-scrolled {
 	box-shadow: none;
 }
 
@@ -904,7 +916,7 @@
    same nav reflowing as the panel narrows past --rux-panel-rail-width
    (see the --railable override in css/layout/scheduler-app.css). */
 @container (max-width: 64px) {
-	.rux-panel__nav {
+	.rux-surface__nav {
 		padding-inline: 0;
 	}
 
@@ -933,9 +945,9 @@
    the tabs themselves (hidden below, along with body/footer) were the only
    thing left to hide at this width. */
 @container (max-width: 44px) {
-	.rux-panel__nav,
-	.rux-panel__body,
-	.rux-panel__footer {
+	.rux-surface__nav,
+	.rux-surface__body,
+	.rux-surface__footer {
 		display: none !important;
 	}
 }
@@ -979,7 +991,7 @@
 }
 
 @container (max-width: 300px) {
-	.rux-trip-panel .rux-panel__footer .rux-button:not(.rux-panel__footer-close) .rux-button__label {
+	.rux-trip-panel .rux-surface__footer .rux-button:not(.rux-panel__footer-close) .rux-button__label {
 		position: absolute;
 		width: 1px;
 		height: 1px;
@@ -993,7 +1005,7 @@
 }
 
 @container (min-width: 301px) and (max-width: 400px) {
-	.rux-trip-panel .rux-panel__footer .rux-icon {
+	.rux-trip-panel .rux-surface__footer .rux-icon {
 		display: none;
 	}
 }

@@ -843,7 +843,7 @@ function initTripTabs(root) {
 
 	const allPanes = root.querySelectorAll(".rux-trip-panel__pane");
 	const allTabBtns = tabs?.querySelectorAll(".rux-tab[aria-controls]") || [];
-	const scrollBody = root.querySelector(".rux-panel__body");
+	const scrollBody = root.querySelector(".rux-panel__body, .rux-surface__body");
 	const drawer = root.closest(".scheduler-app__drawer");
 	allTabBtns.forEach((btn) => {
 		btn.addEventListener("click", () => {

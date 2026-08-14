@@ -44,10 +44,10 @@
 	padding: 0;
 	/* Keep an internal runway for the tabs' upward shadows. The matching
 	   negative margin preserves the strip's original outer block size. */
-	padding-block-start: var(--rux-space-1);
-	margin-block-start: calc(var(--rux-space-1) * -1);
+
+
 	background: var(--rux-tabs-attached-bg);
-	border: var(--rux-tabs-attached-border);
+	border-top: var(--rux-tabs-attached-border);
 	border-bottom: 0;
 	border-radius: 0;
 	overflow-x: auto;
@@ -276,6 +276,22 @@
 .rux-tabs--attached > .rux-tab.is-active:last-child,
 .rux-tabs--attached > .rux-tab[aria-selected="true"]:last-child {
 	border-right: 0;
+}
+
+/* Independent colors for attached tabs specifically inside a floating
+   surface (rux-ui/css/base/surface.css) — the driver/fleet/tool panels'
+   own attached tabs are untouched, still reading --rux-tabs-attached-tab-*
+   above. Each selector here is one class more specific than its shared
+   counterpart, so it wins regardless of which file loads second. */
+.rux-surface--floating .rux-tabs--attached > .rux-tab {
+	background-color: var(--rux-tabs-floating-tab-bg);
+	color: var(--rux-tabs-floating-tab-fg);
+}
+
+.rux-surface--floating .rux-tabs--attached > .rux-tab.is-active,
+.rux-surface--floating .rux-tabs--attached > .rux-tab[aria-selected="true"] {
+	background-color: var(--rux-tabs-floating-tab-selected-bg);
+	color: var(--rux-tabs-floating-tab-selected-fg);
 }
 
 /* .rux-panel__nav's own border-top/border-bottom (panel.css) would each

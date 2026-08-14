@@ -212,7 +212,19 @@ part of the chrome. Position is a modifier (`--attached`, `--floating`,
 trip finder, doc viewer, trip envelope) are `.rux-surface--floating` now —
 `floating-window.css` is gone, its rules folded into `surface.css`. The Card
 family rename (Section → plain `.rux-card`, Embed → `.rux-card--recessed`)
-described above is also done.
+described above is also done. The trip editor also no longer nests a whole
+second `.rux-panel` just to get tabs + scrollable body + footer inside its
+floating surface — it uses `.rux-surface__nav--attached` (a style modifier
+on `.rux-surface__nav`, sharing `.rux-panel__nav--attached`'s own tokens so
+both stay visually identical), `.rux-surface__body`, and `.rux-surface__footer`
+directly. `initPanelScrollEdges`/`initStickySectionHeaders` and the generic
+`[data-rux-tabs]` switcher in `js/core/controls.js` all recognize
+`.rux-surface--floating` now, not just `.rux-panel`, so this same pattern is
+available to any future floating window with tabs — doc viewer and trip
+envelope already used `.rux-surface__body`/`__footer` directly (no tabs, so
+no nested panel to begin with); the trip editor was the one holdout.
 
-**Not yet migrated**: Panel, Modal, Popover-surface, Menu — those still use
-their original classes/tokens today.
+**Not yet migrated**: Panel (the tool panel, driver/fleet/customer panels —
+still `.rux-panel`/`.rux-panel--attached` in name, though `.rux-surface--attached`
+already exists in `surface.css` ready to receive them), Modal,
+Popover-surface, Menu — those still use their original classes/tokens today.

@@ -124,6 +124,7 @@
 	color: var(--rux-fg);
 	font-size: var(--rux-text-100);
 	font-weight: var(--rux-weight-semibold);
+	border: var(--rux-ui-header-avatar-border);
 }
 
 /* — Active profiles (header, left of the profile button) — */
@@ -134,16 +135,16 @@
 .rux-ui-header__active-profiles {
 	display: flex;
 	align-items: center;
-		width: auto;
+	width: auto;
 	height: 28px;
 }
 
 .rux-ui-header__active-avatar {
 	flex: none;
-	width: 28px;
-	height: 28px;
+	width: var(--rux-ui-header-profile-avatar-size);
+	height: var(--rux-ui-header-profile-avatar-size);
 	border-radius: 50%;
-	border: none;
+	border: var(--rux-ui-header-avatar-border);
 	margin-inline-start: calc(-1 * var(--rux-space-2));
 }
 

@@ -91,9 +91,9 @@
 	}
 
 	function initPanelScrollEdges(panel) {
-		const body = panel.querySelector(".rux-panel__body");
-		const nav = panel.querySelector(".rux-panel__nav, .rux-panel__tabs");
-		const footer = panel.querySelector(".rux-panel__footer");
+		const body = panel.querySelector(".rux-panel__body, .rux-surface__body");
+		const nav = panel.querySelector(".rux-panel__nav, .rux-panel__tabs, .rux-surface__nav");
+		const footer = panel.querySelector(".rux-panel__footer, .rux-surface__footer");
 		if (!body || (!nav && !footer) || body.dataset.ruxScrollEdgesInit === "true") return;
 
 		body.dataset.ruxScrollEdgesInit = "true";
@@ -119,14 +119,16 @@
 	   instant its header reaches top:0 and sticks, and returns at exactly
 	   the instant it unsticks.
 
-	   Shared across every .rux-panel (auto-wired below, same as
-	   initPanelScrollEdges) rather than living in trip-panel.js — the tool
-	   panel's Tasks and History tabs need the identical behavior for their
-	   own date-grouped lists, and a floating window's own .rux-trip-panel
-	   is itself a .rux-panel, so one generic implementation covers both
-	   instead of two copies drifting apart. */
+	   Shared across every .rux-panel AND every .rux-surface--floating
+	   (auto-wired below, same as initPanelScrollEdges) rather than living
+	   in trip-panel.js — the tool panel's Tasks and History tabs need the
+	   identical behavior for their own date-grouped lists, and every
+	   floating window (trip editor included, now that it uses
+	   .rux-surface__body directly instead of nesting a second .rux-panel)
+	   needs it for its own sentinel-gated cards, so one generic
+	   implementation covers all of it instead of copies drifting apart. */
 	function initStickySectionHeaders(panel) {
-		const scrollRoot = panel.querySelector(".rux-panel__body");
+		const scrollRoot = panel.querySelector(".rux-panel__body, .rux-surface__body");
 		if (!scrollRoot || scrollRoot.dataset.ruxStickyHeadersInit === "true") return;
 		scrollRoot.dataset.ruxStickyHeadersInit = "true";
 
@@ -298,10 +300,10 @@
 		if (tab && !tab.disabled) {
 			const group = tab.closest("[data-rux-tabs]");
 			setActiveItem(group, tab, ".rux-tab", "aria-selected");
-			const panel = group.closest(".rux-panel");
+			const panel = group.closest(".rux-panel, .rux-surface--floating");
 			const targetId = tab.getAttribute("aria-controls");
 			if (panel && targetId) {
-				panel.querySelectorAll(".rux-panel__body > .rux-panel__pane").forEach((pane) => {
+				panel.querySelectorAll(".rux-panel__body > .rux-panel__pane, .rux-surface__body > .rux-panel__pane").forEach((pane) => {
 					pane.hidden = pane.id !== targetId;
 				});
 			}
@@ -360,7 +362,16 @@
 			const active = group.querySelector('.rux-tab[aria-selected="true"]') || group.querySelector(".rux-tab");
 			if (active) setActiveItem(group, active, ".rux-tab", "aria-selected");
 		});
-		document.querySelectorAll(".rux-panel").forEach(initPanelScrollEdges);
+		// .rux-surface--floating alongside .rux-panel: every static floating
+		// window (trip editor, manifest, request inbox, trip finder) needs
+		// the same nav/footer scroll-shadow and sentinel-gated sticky-header
+		// behavior a .rux-panel gets. Windows built dynamically after this
+		// fires (doc viewer, trip envelope) don't need either today — no
+		// sentinel-gated cards inside them — so they're not wired here.
+		document.querySelectorAll(".rux-panel, .rux-surface--floating").forEach((panel) => {
+			initPanelScrollEdges(panel);
+			initStickySectionHeaders(panel);
+		});
 		window.Rux.syncSelectPlaceholders(document);
 
 		new MutationObserver((records) => {

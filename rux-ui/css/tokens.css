@@ -43,7 +43,7 @@
 	--rux-text-disabled:    oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	--rux-border-button: oklch(from var(--rux-neutral) 32% c h / 100%);
-	--rux-border:        oklch(from var(--rux-neutral) 32% c h / 100%);
+	--rux-border:        oklch(from var(--rux-neutral) 40% c h / 100%);
 	--rux-divider:       oklch(from var(--rux-neutral) 32% c h / 100%);
 
 	/* ─── COLOR · accent ───────────────────────────────────────────────────── */
@@ -124,8 +124,9 @@
 
 	--rux-border-width: 1px;
 
-	--rux-icon-sm: 20px;
-	--rux-icon-md: 24px;
+	--rux-icon-lg: 22px; /* 40px buttons */
+	--rux-icon-md: 20px; /* 32px buttons */
+	--rux-icon-sm: 18px; /* 28px buttons */
 
 	/* ─── RADIUS · 4px-grid scale ────────────────────────────────────────── */
 
@@ -486,7 +487,7 @@
 	/* — brand — */
 	--rux-ui-header-brand-padding-inline: var(--rux-space-4);
 	--rux-ui-header-brand-border:         none;
-	--rux-ui-header-logo-height:          24px;
+	--rux-ui-header-logo-height:          20px;
 
 	/* — optional inline navigation — */
 	--rux-ui-header-nav-gap:            var(--rux-space-2);
@@ -494,15 +495,16 @@
 	--rux-ui-header-nav-item-active-fg: var(--rux-fg);
 
 	/* — actions — */
-	--rux-ui-header-profile-avatar-size: 28px;
+	--rux-ui-header-profile-avatar-size: 32px;
 	--rux-ui-header-actions-gap: 		 var(--rux-space-0);
 	/* Two zones: actions (external links, chat, notifications) and identity
 	   (presence avatars and your own profile) — a wider gap plus
 	   a divider between them, a tighter gap within the identity cluster so
 	   presence avatars and your own profile read as one related group. */
-	--rux-ui-header-actions-group-gap: var(--rux-space-0);
-	--rux-ui-header-actions-divider:   none;
-	--rux-ui-header-identity-gap:      var(--rux-space-0);
+	--rux-ui-header-actions-group-gap: 	var(--rux-space-0);
+	--rux-ui-header-actions-divider:   	none;
+	--rux-ui-header-identity-gap:      	var(--rux-space-0);
+	--rux-ui-header-avatar-border: 		2px solid var(--rux-surface-0);
 
 	/* ─── COMPONENT · side navigation ─────────────────────────────────────── */
 	--rux-side-nav-width:           256px;
@@ -638,7 +640,7 @@
 	--rux-panel-footer-mobile-button-height: 44px;
 
 	/* — shared across header/nav/pane/footer, not any one part's own — */
-	--rux-panel-padding:   var(--rux-space-4);
+	--rux-panel-padding:   0 var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
 	--rux-panel-content-gap: var(--rux-space-0);
 	/* Also consumed by feature layouts and safe-area calculations. */
 	--rux-panel-padding-block: var(--rux-space-4);
@@ -741,6 +743,20 @@
 	--rux-card-elevated-bg:     var(--rux-elevation-3-bg);
 	--rux-card-elevated-shadow: var(--rux-shadow-2);
 
+	/* — floating variant — same idea as elevated above (one shared bg
+	   across header/body/footer, body also gets a shadow), only the bg
+	   itself is different: --rux-card-elevated-bg is elevation-3, the same
+	   value --rux-surface-floating-bg already uses, so a card marked
+	   --elevated instead of --floating would blend into a floating
+	   window's own background with no contrast at all. This stays at
+	   --rux-surface-2 — the same tone a plain card's body already
+	   defaults to everywhere else — so a card keeps reading as a distinct
+	   box against the floating surface behind it. Applied automatically to
+	   every plain (not --recessed, not explicitly --elevated) card inside
+	   a .rux-surface--floating — see card.css. */
+	--rux-card-floating-bg:     var(--rux-surface-4);
+	--rux-card-floating-shadow: var(--rux-card-elevated-shadow);
+
 	/* — hairline divider — general-purpose, used by a few feature files
 	   (scheduler-app.css, trip-history.css, trip-envelope.css) as a plain
 	   border color; not tied to any one card region. */
@@ -831,12 +847,14 @@
 	   tokens today — border/radius/shadow below match --rux-card-elevated-*
 	   / --rux-card-body-* exactly, since that's what a floating window
 	   currently renders as) — */
-	--rux-surface-floating-bg:            var(--rux-elevation-3-bg);
+	--rux-surface-floating-bg:            var(--rux-surface-3);
 	--rux-surface-floating-border:        var(--rux-card-body-border);
 	--rux-surface-floating-radius:        var(--rux-card-body-radius);
 	--rux-surface-floating-shadow:        var(--rux-shadow-2);
-	--rux-surface-floating-header-bg:     var(--rux-surface-2);
-	--rux-surface-floating-footer-bg:     var(--rux-surface-2);
+	--rux-surface-floating-header-bg:     var(--rux-surface-3);
+	--rux-surface-floating-nav-bg:        var(--rux-surface-0);
+	--rux-surface-floating-body-bg:       var(--rux-surface-floating-bg);
+	--rux-surface-floating-footer-bg:     var(--rux-surface-4);
 
 	/* — modal — */
 	--rux-surface-modal-bg:     var(--rux-elevation-4-bg);
@@ -1017,7 +1035,7 @@
 	/* Tactile shadows apply only to solid-fill variants. */
 	--rux-button-shadow-raised:  none;
 	--rux-button-shadow-pressed: none;
-	--rux-button-mobile-height:  44px;
+	--rux-button-mobile-height:  40px;
 	--rux-button-group-gap:      var(--rux-space-2);
 
 	/* — typography — */
@@ -1111,15 +1129,15 @@
 	/* Explicit size roles keep button geometry separate from 44px form controls. */
 
 	--rux-button-height-header:         	40px;
-	--rux-button-icon-size-header:      	var(--rux-icon-md);
+	--rux-button-icon-size-header:      	var(--rux-icon-lg);
 
 	--rux-button-height-standard:         	32px;
-	--rux-button-icon-size-standard:      	var(--rux-icon-sm);
+	--rux-button-icon-size-standard:      	var(--rux-icon-md);
 	--rux-button-padding-inline-standard:	var(--rux-space-3);
 	--rux-button-content-gap-standard:    	var(--rux-space-2);
 
 	--rux-button-height-compact:        	24px;
-	--rux-button-icon-size-compact:     	16px;
+	--rux-button-icon-size-compact:     	var(--rux-icon-sm);
 	--rux-button-font-size-compact:     	var(--rux-text-xs);
 	--rux-button-padding-inline-compact: 	var(--rux-space-1-5);
 	--rux-button-content-gap-compact:   	var(--rux-space-1);
@@ -1453,7 +1471,7 @@
 	/* — tabs, attached variant — */
 	/* A real gap separates the tab surfaces without overlapping their rims. */
 	--rux-tabs-attached-bg:     var(--rux-surface-0);
-	--rux-tabs-attached-border: none;
+	--rux-tabs-attached-border: 1px solid var(--rux-biorder);
 	--rux-tabs-attached-gap:    var(--rux-space-0);
 
 	/* — attached tab, inactive — */
@@ -1470,6 +1488,20 @@
 	/* Active attached tabs and their pane share one surface. */
 	--rux-tabs-attached-tab-selected-bg: var(--rux-panel-bg);
 	--rux-tabs-attached-tab-selected-fg: var(--rux-fg);
+
+	/* — attached tab, inside a floating surface — */
+	/* Same "active tab and its pane share one surface" intent as above, but
+	   --rux-panel-bg (elevation-1) has nothing nearby to match inside a
+	   floating window (elevation-3 ambient) — it renders as a much
+	   brighter, more isolated white than intended. These mirror
+	   --rux-surface-floating-body-bg instead, so the active tab stays
+	   merged with the floating body actually behind it. Independent
+	   tokens, not shared with the driver/fleet/tool panels' own attached
+	   tabs — scoped via .rux-surface--floating in navigation.css. */
+	--rux-tabs-floating-tab-bg:          var(--rux-surface-2);
+	--rux-tabs-floating-tab-fg:          var(--rux-fg-muted);
+	--rux-tabs-floating-tab-selected-bg: var(--rux-surface-3);
+	--rux-tabs-floating-tab-selected-fg: var(--rux-fg);
 	/* Attached tab states share one border; navigation.css hides the active
 	   tab's bottom edge to merge it with the pane. */
 	--rux-tabs-attached-tab-selected-border:        none;

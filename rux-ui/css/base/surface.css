@@ -36,13 +36,44 @@
 /* Tabs-as-header slot — optional, stacks below __header or stands alone as
    the top region (both patterns are valid; see docs/layout-composition.md).
    Not attached-specific despite living in the "attached" token group below
-   — the trip editor floating window already stacks header + nav today (a
-   title bar, then Details/Billing/Itinerary/Fleet tabs), achieved currently
-   only by nesting a whole second component inside the first just to borrow
-   its nav slot. That duplication is exactly what this shared anatomy
-   removes. */
+   — the trip editor floating window stacks header + nav this way (a title
+   bar, then Details/Billing/Itinerary/Fleet tabs via .rux-surface__nav--
+   attached below) instead of nesting a whole second .rux-panel just to
+   borrow its nav slot, which is what it used to do. */
 .rux-surface__nav {
 	flex: none;
+}
+
+/* Attached-tabs look for .rux-surface__nav — the same "flush, edge-to-edge,
+   tabs own their own borders" treatment .rux-panel__nav--attached
+   (navigation.css) gives a .rux-panel, sharing the exact same tokens so
+   both stay visually identical if those tokens ever carry real values
+   instead of today's `none`. A style modifier on the nav itself,
+   independent of the surface's own position modifier
+   (--floating/--attached/etc.) — not to be confused with
+   .rux-surface--attached below, which is about POSITION, not tab styling.
+   First user: the trip editor's own Details/Billing/Itinerary/Fleet tabs,
+   now a direct .rux-surface__nav instead of nesting a second .rux-panel
+   just to borrow its attached-tabs treatment. */
+.rux-surface__nav--attached {
+	padding: 0;
+	border-top: 0;
+	border-bottom: var(--rux-panel-nav-border);
+	padding-bottom: var(--rux-panel-tabs-padding);
+	border-radius: 0;
+	background: transparent;
+}
+
+.rux-surface__nav--attached + .rux-surface__body {
+	background: transparent;
+	border: var(--rux-tabs-attached-pane-border);
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+}
+
+.rux-surface__nav--attached + .rux-surface__body:has(+ .rux-surface__footer) {
+	border-bottom: 0;
 }
 
 .rux-surface__body {
@@ -143,6 +174,32 @@
 	cursor: move;
 	background: var(--rux-surface-floating-header-bg);
 	padding: 0 0 0 var(--rux-surface-padding-inline);
+}
+
+/* Independent bg token, not just "whatever the outer surface shows
+   through" — but .rux-surface__nav--attached (the trip editor's own tabs)
+   wants to stay transparent regardless, same reason .rux-panel__nav--
+   attached does: the active tab owns the color, a boxed nav bar behind it
+   would fight that. Same specificity as the rule above, placed after it,
+   so the exception wins only when --attached is actually present. */
+.rux-surface--floating > .rux-surface__nav {
+	background: var(--rux-surface-floating-nav-bg);
+}
+
+.rux-surface--floating > .rux-surface__nav--attached {
+	background: transparent;
+}
+
+/* Also just an independent token now, not implicit transparency — the
+   attached-tabs pairing still wants a transparent body specifically (see
+   the shared .rux-surface__nav--attached + .rux-surface__body rule above),
+   restated here at higher specificity so it keeps winning. */
+.rux-surface--floating > .rux-surface__body {
+	background: var(--rux-surface-floating-body-bg);
+}
+
+.rux-surface--floating > .rux-surface__nav--attached + .rux-surface__body {
+	background: transparent;
 }
 
 .rux-surface--floating > .rux-surface__footer {

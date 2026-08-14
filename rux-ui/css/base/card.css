@@ -36,6 +36,38 @@
 	box-shadow: var(--rux-card-elevated-shadow);
 }
 
+/* Same mechanism as --elevated above, applied automatically (not an
+   opt-in modifier) to every plain card nested inside a floating surface
+   (rux-ui/css/base/surface.css) — a card dropped into the trip editor,
+   for instance, should read as a distinct box against the floating
+   window's own background without needing --elevated added by hand
+   everywhere. --:not(--recessed) and --:not(--*-elevated) both stay
+   excluded so an explicit modifier or the recessed variant's own darker
+   background always wins over this ambient default — this only ever
+   fills in for a card that isn't opting into either. */
+.rux-surface--floating .rux-card:not(.rux-card--recessed) > .rux-card__header:not(.rux-card__header--elevated),
+.rux-surface--floating .rux-card:not(.rux-card--recessed) > .rux-card__body:not(.rux-card__body--elevated),
+.rux-surface--floating .rux-card:not(.rux-card--recessed) > .rux-card__footer:not(.rux-card__footer--elevated) {
+	background: var(--rux-card-floating-bg);
+}
+
+/* On .rux-card itself, not header or body individually — putting it on
+   either one bleeds onto the other at their zero-gap seam (header and
+   body sit flush with no border between them), since --rux-card-floating-
+   shadow has real downward-projecting layers (--rux-shadow-2's own
+   0 6px 14px ambient layer) that land squarely on whatever's immediately
+   below. .rux-card wraps both, so its own border-box spans the combined
+   header+body shape — one shadow drawn around that outer edge reads as
+   both pieces genuinely being one lifted unit, with no internal seam for
+   it to bleed across. Only looks right because header/body both render
+   with square corners today (--rux-card-header-radius/--rux-card-body-
+   radius are both --rux-radius-0) — .rux-card itself has no radius of its
+   own to match rounded corners with, so if either ever gains real
+   rounding this would need a matching radius here too. */
+.rux-surface--floating .rux-card:not(.rux-card--recessed):has(> .rux-card__body:not(.rux-card__body--elevated)) {
+	box-shadow: var(--rux-card-floating-shadow);
+}
+
 .rux-card--borderless {
 	--rux-card-body-border: 1px solid transparent;
 }

@@ -812,7 +812,7 @@
 				<div class="scheduler-app__module" data-module="calendar">
 					<!-- Movable, resizable trip editor workspace window -->
 					<div
-						class="rux-surface rux-surface--floating rux-trip-dialog"
+						class="rux-surface rux-surface--floating rux-trip-dialog rux-trip-panel"
 						id="trip-editor-dialog"
 						role="dialog"
 						aria-labelledby="trip-editor-dialog-title"
@@ -839,20 +839,16 @@
 								>
 							</button>
 						</header>
-						<aside
-							class="rux-panel rux-panel--left rux-trip-panel"
-							aria-label="Trip editor"
+						<div
+							class="rux-surface__nav rux-surface__nav--attached"
 						>
-							<div
-								class="rux-panel__nav rux-panel__nav--attached"
+							<nav
+								class="rux-tabs rux-tabs--attached rux-tabs--responsive"
+								role="tablist"
+								aria-label="Trip editor sections"
+								data-rux-tabs
+								data-trip-tabs
 							>
-								<nav
-									class="rux-tabs rux-tabs--attached rux-tabs--responsive"
-									role="tablist"
-									aria-label="Trip editor sections"
-									data-rux-tabs
-									data-trip-tabs
-								>
 									<button
 										class="rux-tab"
 										type="button"
@@ -923,7 +919,7 @@
 									</button>
 								</nav>
 							</div>
-							<div class="rux-panel__body rux-trip-panel__body">
+							<div class="rux-surface__body rux-trip-panel__body">
 								<!-- Trip -->
 								<div
 									id="pane-trip"
@@ -2225,7 +2221,7 @@
 									</div>
 								</div>
 							</div>
-							<footer class="rux-panel__footer">
+							<footer class="rux-surface__footer">
 								<button
 									class="rux-button rux-button--danger"
 									id="tp-btn-delete"
@@ -2257,7 +2253,6 @@
 									<span class="rux-button__label">Save</span>
 								</button>
 							</footer>
-						</aside>
 					</div>
 					<section class="rux-workspace" aria-label="Weekly schedule">
 						<header class="rux-workspace__header">
