@@ -1287,6 +1287,60 @@
 	display: none;
 }
 
+/* For rows whose control is wider than a switch (segmented tracks, the
+   slider) — inline label+control at a fixed 40px row height was cramming
+   "Fine-tune width" and its slider into the same space a switch fits into,
+   wrapping the label to two lines and clipping against the row's own fixed
+   height. Label on its own line, control on the line below stretched to
+   the row's full width (align-items: stretch, not flex-start — this is a
+   dedicated field, not a compact inline control anymore) avoids both.
+   cursor: default, not the inherited pointer — unlike a switch, there's no
+   single "click anywhere in the row" action for a segmented control or
+   slider. */
+.rux-view-options__row--stacked {
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+	height: auto;
+	min-height: 40px;
+	gap: var(--rux-space-1);
+	cursor: default;
+	padding-block: var(--rux-space-2);
+}
+
+/* A stacked row's own label line, when there's a live value to show next
+   to it (the slider) — label left, value right, same visual language every
+   other row already uses for "current state sits on the right." Rows with
+   no separate value (the segmented track — its own pressed button already
+   shows state) skip this and use a bare label. */
+.rux-view-options__row-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.rux-view-options__value {
+	min-width: var(--rux-slider-value-width);
+	font-size: var(--rux-slider-value-size);
+	color: var(--rux-slider-value-color);
+	font-variant-numeric: tabular-nums;
+	text-align: right;
+}
+
+/* Scoped to stacked rows specifically, not the shared .rux-segmented-track/
+   .rux-button--segment base rules (controls.css) — those are shrink-to-
+   content everywhere else in the app (trip type, tasks-panel filters, ...)
+   and should stay that way; only a field taking up a full dedicated row of
+   its own wants the track and its segments stretched edge to edge. */
+.rux-view-options__row--stacked .rux-segmented-track {
+	display: flex;
+	width: 100%;
+}
+
+.rux-view-options__row--stacked .rux-segmented-track > .rux-button--segment {
+	flex: 1;
+}
+
 .rux-view-options__label {
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);

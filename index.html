@@ -2579,6 +2579,80 @@
 													></span>
 												</label>
 											</div>
+											<div class="rux-view-options__row rux-view-options__row--stacked">
+												<span
+													class="rux-view-options__label"
+													>Day column width</span
+												>
+												<div
+													class="rux-segmented-track"
+													id="opt-day-width-preset"
+													role="group"
+													aria-label="Day column width"
+												>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="false"
+														data-value="sm"
+														aria-label="Small"
+														title="Small"
+													>
+														<span
+															class="rux-button__label"
+															>S</span
+														>
+													</button>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="true"
+														data-value="md"
+														aria-label="Medium"
+														title="Medium"
+													>
+														<span
+															class="rux-button__label"
+															>M</span
+														>
+													</button>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="false"
+														data-value="lg"
+														aria-label="Large"
+														title="Large"
+													>
+														<span
+															class="rux-button__label"
+															>L</span
+														>
+													</button>
+												</div>
+											</div>
+											<div class="rux-view-options__row rux-view-options__row--stacked">
+												<div class="rux-view-options__row-header">
+													<span
+														class="rux-view-options__label"
+														>Fine-tune width</span
+													>
+													<span
+														class="rux-view-options__value"
+														id="opt-day-width-value"
+													>14.0rem</span>
+												</div>
+												<input
+													type="range"
+													class="rux-slider"
+													id="opt-day-width-slider"
+													min="8"
+													max="24"
+													step="0.5"
+													value="14"
+													aria-label="Day column width, fine adjustment"
+												/>
+											</div>
 										</div>
 									</section>
 									<section
@@ -9910,12 +9984,111 @@
 				});
 			}
 
+			// ── Day column width ─────────────────────────────────────────────
+			// Trip bars have no width of their own — placeInline() sizes them
+			// as a % of their day column (see index.html above), so the day
+			// column's own min-width (--rux-scheduler-day-min-width,
+			// scheduler.css) is the only lever that needs to move. S/M/L are
+			// just three preset values for the same slider to jump to, not a
+			// separate mechanism — both write the same custom property on
+			// schedulerEl directly, no CSS override classes involved (unlike
+			// trip bar size/rows, which fan out into many dependent rules,
+			// this one feeds exactly one grid-template-columns).
+			const DAY_WIDTH_PRESETS = { sm: 10, md: 14, lg: 20 };
+			const DAY_WIDTH_MIN = 8;
+			const DAY_WIDTH_MAX = 24;
+			const DAY_WIDTH_DEFAULT = 14;
+
+			const dayWidthPresetTrack = document.getElementById(
+				"opt-day-width-preset",
+			);
+			const dayWidthSlider = document.getElementById(
+				"opt-day-width-slider",
+			);
+			const dayWidthValueEl = document.getElementById(
+				"opt-day-width-value",
+			);
+
+			let dayColumnWidth = DAY_WIDTH_DEFAULT;
+			try {
+				const stored = parseFloat(
+					localStorage.getItem("rux:day-column-width"),
+				);
+				if (
+					Number.isFinite(stored) &&
+					stored >= DAY_WIDTH_MIN &&
+					stored <= DAY_WIDTH_MAX
+				) {
+					dayColumnWidth = stored;
+				}
+			} catch (_) {}
+
+			function applyDayColumnWidth(rem) {
+				dayColumnWidth = rem;
+				schedulerEl?.style.setProperty(
+					"--rux-scheduler-day-min-width",
+					`${rem}rem`,
+				);
+				if (dayWidthSlider) dayWidthSlider.value = String(rem);
+				if (dayWidthValueEl)
+					dayWidthValueEl.textContent = `${rem.toFixed(1)}rem`;
+				dayWidthSlider?.style.setProperty(
+					"--_fill",
+					`${((rem - DAY_WIDTH_MIN) / (DAY_WIDTH_MAX - DAY_WIDTH_MIN)) * 100}%`,
+				);
+				const matchedPreset = Object.entries(DAY_WIDTH_PRESETS).find(
+					([, value]) => value === rem,
+				)?.[0];
+				dayWidthPresetTrack
+					?.querySelectorAll(".rux-button--segment")
+					.forEach((button) => {
+						button.setAttribute(
+							"aria-pressed",
+							button.dataset.value === matchedPreset
+								? "true"
+								: "false",
+						);
+					});
+			}
+			applyDayColumnWidth(dayColumnWidth);
+
+			dayWidthPresetTrack?.addEventListener("rux:segment-change", (e) => {
+				const rem = DAY_WIDTH_PRESETS[e.detail.value];
+				if (!rem) return;
+				applyDayColumnWidth(rem);
+				try {
+					localStorage.setItem("rux:day-column-width", rem);
+				} catch (_) {}
+				layoutScheduler();
+				patchProfileSettings({ dayColumnWidth: rem });
+			});
+
+			dayWidthSlider?.addEventListener("input", () => {
+				// Live-update on every drag tick, not just on release — visual
+				// feedback while dragging is the whole point of a slider.
+				// layoutScheduler() is internally rAF-debounced (cancels its
+				// own pending call each time), so calling it on every input
+				// event here doesn't thrash layout during a fast drag.
+				applyDayColumnWidth(parseFloat(dayWidthSlider.value));
+				layoutScheduler();
+			});
+			dayWidthSlider?.addEventListener("change", () => {
+				// Persist once, on release, not on every drag tick.
+				try {
+					localStorage.setItem(
+						"rux:day-column-width",
+						dayColumnWidth,
+					);
+				} catch (_) {}
+				patchProfileSettings({ dayColumnWidth });
+			});
+
 			// ── Per-profile view settings ───────────────────────────────────────
 			// patchProfileSettings persists one setting into the active profile's
 			// `settings` jsonb (no-op if no profile is selected — the plain
 			// localStorage writes above already cover that anonymous case).
 			// applyProfileSettings does the reverse: pushes a profile's saved
-			// settings into the eleven toggles above (and their side effects)
+			// settings into the twelve toggles above (and their side effects)
 			// when switching profiles, same code paths each toggle's own
 			// onChange uses.
 			function patchProfileSettings(patch) {
@@ -9983,6 +10156,17 @@
 					sundayStart = !!settings.sundayStart;
 					if (optSundayStart) optSundayStart.checked = sundayStart;
 					currentWeekStart = startOfWeek(currentWeekStart);
+				}
+
+				if ("dayColumnWidth" in settings) {
+					const rem = parseFloat(settings.dayColumnWidth);
+					if (
+						Number.isFinite(rem) &&
+						rem >= DAY_WIDTH_MIN &&
+						rem <= DAY_WIDTH_MAX
+					) {
+						applyDayColumnWidth(rem);
+					}
 				}
 
 				renderScheduler();

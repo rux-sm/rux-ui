@@ -235,6 +235,78 @@
 }
 
 
+/* — slider — */
+/* -webkit-appearance/-moz-appearance: none strips the browser's own chrome
+   so track/thumb can be drawn from tokens instead; the two vendor pseudo-
+   elements have to be declared as separate rules (a selector list mixing
+   them is invalid and drops the whole rule in every browser). Full width
+   by default — the live value reads next to its label instead of beside
+   the slider (see .rux-view-options__row-header/__value), so nothing else
+   needs to share this row. */
+
+.rux-slider {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: var(--rux-slider-thumb-size);
+  background: transparent;
+  cursor: pointer;
+}
+
+/* --_fill: how far along the track the thumb sits, 0%-100% — set by JS on
+   every input event (index.html). Neither vendor's track pseudo-element
+   fills itself automatically the way a switch's checked state does, and
+   the two engines don't share one API for it (Firefox has ::-moz-range-
+   progress, WebKit has nothing), so one JS-driven gradient covers both
+   consistently instead of two different partial implementations. Custom
+   properties set on the host element inherit into its own pseudo-elements,
+   so --_fill set on .rux-slider itself reaches both tracks below. */
+.rux-slider::-webkit-slider-runnable-track {
+  height: var(--rux-slider-track-height);
+  background: linear-gradient(
+    to right,
+    var(--rux-slider-fill-bg) var(--_fill, 0%),
+    var(--rux-slider-track-bg) var(--_fill, 0%)
+  );
+  border-radius: var(--rux-slider-track-radius);
+}
+
+.rux-slider::-moz-range-track {
+  height: var(--rux-slider-track-height);
+  background: linear-gradient(
+    to right,
+    var(--rux-slider-fill-bg) var(--_fill, 0%),
+    var(--rux-slider-track-bg) var(--_fill, 0%)
+  );
+  border-radius: var(--rux-slider-track-radius);
+}
+
+.rux-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--rux-slider-thumb-size);
+  height: var(--rux-slider-thumb-size);
+  margin-top: calc((var(--rux-slider-track-height) - var(--rux-slider-thumb-size)) / 2);
+  background: var(--rux-slider-thumb-bg);
+  border-radius: var(--rux-slider-thumb-radius);
+  box-shadow: var(--rux-slider-thumb-shadow);
+}
+
+.rux-slider::-moz-range-thumb {
+  width: var(--rux-slider-thumb-size);
+  height: var(--rux-slider-thumb-size);
+  background: var(--rux-slider-thumb-bg);
+  border: none;
+  border-radius: var(--rux-slider-thumb-radius);
+  box-shadow: var(--rux-slider-thumb-shadow);
+}
+
+.rux-slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+
 /* — checkbox — */
 
 .rux-checkbox {

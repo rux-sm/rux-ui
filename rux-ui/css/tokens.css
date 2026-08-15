@@ -1252,6 +1252,25 @@
 			- var(--rux-switch-theme-icon-size) / 2
 	);
 
+	/* ─── COMPONENT · slider ─────────────────────────────────────────────── */
+	/* Styled <input type="range"> — same recessed-track/raised-thumb
+	   language as the switch above, same underlying primitives, so the two
+	   read as siblings rather than two different design systems. */
+
+	--rux-slider-track-height: 4px;
+	--rux-slider-track-bg:     var(--rux-input-background);
+	--rux-slider-track-radius: var(--rux-radius-full);
+	--rux-slider-fill-bg:      var(--rux-accent-fill);
+
+	--rux-slider-thumb-size:   16px;
+	--rux-slider-thumb-bg:     var(--rux-thumb-bg);
+	--rux-slider-thumb-radius: var(--rux-radius-full);
+	--rux-slider-thumb-shadow: var(--rux-button-shadow-raised);
+
+	--rux-slider-value-size:  var(--rux-size-xs);
+	--rux-slider-value-color: var(--rux-text-muted);
+	--rux-slider-value-width: 3.5rem;
+
 	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */
 
 	/* — shell — */
