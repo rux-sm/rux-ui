@@ -916,6 +916,23 @@
 	   .rux-trip-bar itself — the same fix --rux-trip-bar-collapsed-height
 	   already relies on — resolves it below that override instead. */
 
+	/* The remaining Material Symbols variable-font axes for trip-bar icons.
+	   Safe to declare here, unlike icon-size above — these are plain
+	   numbers, not var() references to another custom property, so a size
+	   tier overriding one directly (trip-bar.css) is a normal cascade
+	   override with no freezing risk. Values below match what every trip-bar
+	   icon has always rendered at (solid fill, regular weight, no grade,
+	   opsz 20) — same "no visual change yet" starting point as icon-size.
+	   opsz in particular is meant to track the icon's actual rendered size
+	   (Material Symbols' own guidance), so it's the one most worth tuning
+	   per tier once XXS/XS/SM are visible side by side; no --rux-trip-bar-
+	   size-xxs/-sm override for any of these four yet — add one per tier in
+	   trip-bar.css once you've seen them rendered. */
+	--rux-trip-bar-icon-fill:         1;
+	--rux-trip-bar-icon-weight:       400;
+	--rux-trip-bar-icon-grade:        0;
+	--rux-trip-bar-icon-optical-size: 20;
+
 	/* ─── COMPONENT · trip panel ──────────────────────────────────────────── */
 	/* Motion only — the trip panel is a reveal animation for the Trip Editor,
 	   not a boxed component of its own; no bg/border/radius/shadow apply. */

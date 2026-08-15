@@ -47,8 +47,8 @@
    override elsewhere, since those are more specific still. */
 .rux-trip-bar .rux-icon {
 	--_icon-size: var(--rux-trip-bar-icon-size);
-	--_icon-fill: 1;
-	--_icon-weight: 400;
-	--_icon-grade: 0;
-	--_icon-optical-size: 20;
+	--_icon-fill: var(--rux-trip-bar-icon-fill);
+	--_icon-weight: var(--rux-trip-bar-icon-weight);
+	--_icon-grade: var(--rux-trip-bar-icon-grade);
+	--_icon-optical-size: var(--rux-trip-bar-icon-optical-size);
 }
