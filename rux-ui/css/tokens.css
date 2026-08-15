@@ -1016,7 +1016,6 @@
 	/* Tactile shadows apply only to solid-fill variants. */
 	--rux-button-shadow-raised:  var(--rux-shadow-1);
 	--rux-button-shadow-pressed: none;
-	--rux-button-mobile-height:  40px;
 	--rux-button-group-gap:      var(--rux-space-2);
 
 	/* — typography — */
@@ -1621,4 +1620,37 @@
 	--rux-button-disabled-text:       var(--rux-text-disabled);
 	--rux-button-disabled-border:     none;
 	--rux-thumb-bg:                   var(--rux-surface-contrast);
+}
+
+/* ==========================================================================
+   TOUCH TARGETS · mobile minimum (max-width: 500px, matching the app's own
+   mobile breakpoint — see scheduler-app.css)
+   --------------------------------------------------------------------------
+   iOS's 44pt minimum tap target, applied to the header button role (the
+   most-tapped controls in the app: hamburger, calendar prev/Today/next,
+   panel toggles) and every header that hosts one — a 44px button inside an
+   unchanged 40px header just clips or crowds, so the two move together.
+   Re-declares at :root, same technique the light-theme section above
+   already uses to override a set of tokens wholesale, rather than
+   scattering an override per consuming component file (the norm for
+   feature-specific mobile fixes elsewhere in this app) — this one affects
+   enough shared, cross-cutting roles that one central place beats a dozen+
+   scattered edits.
+
+   Deliberately narrow for now: form fields, segmented control buttons, and
+   checkboxes are NOT included here — each is a separate call with its own
+   tradeoffs (segment height in particular would jump from 28 to 44, a much
+   bigger visual change than the header role's 40->44).
+   ========================================================================== */
+
+@media (max-width: 500px) {
+	:root {
+		--rux-button-height-header:        44px;
+		--rux-ui-header-height:            44px;
+		--rux-workspace-header-min-height: 44px;
+		--rux-panel-header-min-height:     44px;
+		--rux-card-header-height:          44px;
+		--rux-surface-header-height:       44px;
+		--rux-tab-height:                  44px;
+	}
 }

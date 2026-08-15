@@ -1412,6 +1412,37 @@
 	#rp-panel-footer[hidden] {
 		display: flex;
 	}
+
+	/* Was its own full-width row below the action group (width:100% on the
+	   group left nothing for Close to share), pushing the footer to two
+	   rows' worth of height. flex:1 instead lets the group and Close split
+	   one row — Close drops its text label and goes icon-only (an unlabeled
+	   X reads fine pinned to a footer corner, same pattern as a dismiss
+	   button on a bottom sheet) so the action buttons keep most of the
+	   width. flex-wrap above stays as a fallback for a tab with more than
+	   two action buttons in its group, or a locale with longer labels.
+
+	   #rp-panel-footer, not the bare class — driver-week-info.css's own
+	   unconditional .rux-right-panel__footer-group { width:100% } rule
+	   loads later in the cascade (components.css imports this file before
+	   the <link> for driver-week-info.css in index.html), so at equal
+	   class-only specificity that rule silently won regardless of this
+	   media query the first time this shipped. The footer's own ID lifts
+	   this above that rule for good, rather than depending on file order
+	   staying the way it happens to be today. */
+	#rp-panel-footer .rux-right-panel__footer-group {
+		width: auto;
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	.rux-panel__footer-close {
+		flex: none;
+	}
+
+	.rux-panel__footer-close .rux-button__label {
+		display: none;
+	}
 }
 
 @media (min-width: 501px) {
@@ -1827,8 +1858,70 @@
 		padding-block-end: 0;
 	}
 
-	.rux-workspace__toolbar {
-		justify-content: flex-start;
+	/* Prev/Today/Next + the Calendar Tools toggle are the most-tapped
+	   controls on this screen — pinned to the bottom instead of sitting at
+	   the top of a tall phone puts them in easy thumb reach instead of a
+	   two-handed stretch. Scoped to the calendar module specifically
+	   (matching the existing [data-module="calendar"] pattern above) —
+	   .rux-workspace__toolbar isn't unique to Calendar, Fleet/Drivers/
+	   Customers each have their own for unrelated view controls, and an
+	   unscoped rule here would just as easily turn theirs into a fixed
+	   bottom bar too. --_mobile-toolbar-height is declared once, on the
+	   shared ancestor of .rux-workspace__toolbar and .calendar-app__viewport
+	   below (cousins, not descendants of the toolbar, so neither can just
+	   read a property declared directly on it) — read by both, so the
+	   viewport's reserved space and the toolbar's actual height can't drift
+	   out of sync the way a hand-copied number in two places eventually
+	   does. */
+	.scheduler-app__module[data-module="calendar"] > .rux-workspace {
+		--_mobile-toolbar-height: 44px;
+	}
+
+	/* display:grid, not the desktop's flex justify-content:flex-end — a
+	   fixed 1fr/auto/1fr layout is what actually centers Prev/Today/Next
+	   against the *whole* toolbar width while still pinning the Calendar
+	   Tools toggle to the right; flex alone can't do "one child truly
+	   centered, another child right-aligned" without an equal-weight
+	   spacer on the opposite side to fake it. Column 1 is empty on purpose
+	   — it's what makes column 2 sit at the true center instead of just
+	   left of column 3. */
+	.scheduler-app__module[data-module="calendar"] .rux-workspace__toolbar {
+		position: fixed;
+		inset-inline: 0;
+		bottom: 0;
+		z-index: var(--rux-z-sticky);
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		min-height: var(--_mobile-toolbar-height);
+		padding-inline: var(--rux-space-4);
+		padding-block: var(--rux-space-4);
+		padding-bottom: calc(var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
+		background: var(--rux-workspace-bg);
+		border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+	}
+
+	.scheduler-app__module[data-module="calendar"] .calendar-app__date-controls {
+		grid-column: 2;
+		justify-self: center;
+	}
+
+	.scheduler-app__module[data-module="calendar"] .calendar-app__panel-toggle {
+		grid-column: 3;
+		justify-self: end;
+	}
+
+	/* The fixed toolbar above doesn't participate in .rux-workspace's flex
+	   layout at all (position:fixed removes it from flow entirely), so
+	   without this the viewport still renders at its old full height and
+	   the toolbar just overlaps whatever's already sitting at the bottom
+	   of it — which is exactly what was clipping into the bus-number
+	   header column. padding-bottom on the viewport itself (not
+	   .rux-scheduler inside it) actually shrinks the space available to
+	   its content, opening up real screen space for the fixed bar to
+	   occupy instead of overlap. */
+	.scheduler-app__module[data-module="calendar"] .calendar-app__viewport {
+		padding-bottom: calc(var(--_mobile-toolbar-height) + env(safe-area-inset-bottom, 0px));
 	}
 
 }
