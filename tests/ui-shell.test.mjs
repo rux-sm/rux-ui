@@ -372,11 +372,11 @@ test("the Components button page documents only the finalized contract", () => {
 		/<div\s+data-component-page="button"[\s\S]*?(?=<div\s+data-component-page="toggle-button")/,
 	)?.[0] ?? "";
 	assert.match(buttonPage, /href="\.\/docs\/buttons\.md"/);
-	assert.match(buttonPage, />Emphasis</);
-	assert.match(buttonPage, />Size Roles</);
-	assert.match(buttonPage, />Content and States</);
-	assert.match(buttonPage, />Interaction States</);
-	assert.match(buttonPage, />Composition</);
+	assert.match(buttonPage, />\s*Emphasis\s*</);
+	assert.match(buttonPage, />\s*Size Roles\s*</);
+	assert.match(buttonPage, />\s*Content and States\s*</);
+	assert.match(buttonPage, />\s*Interaction States\s*</);
+	assert.match(buttonPage, />\s*Composition\s*</);
 	assert.match(buttonPage, /rux-button--accent/);
 	assert.match(buttonPage, /rux-button--default/);
 	assert.match(buttonPage, /rux-button--ghost/);
@@ -393,7 +393,7 @@ test("toggle buttons use aria-pressed as their selection source of truth", () =>
 
 test("Today remains a text-only header action at every breakpoint", () => {
 	const today = page.match(/<button[^>]*id="today-btn"[^>]*>[\s\S]*?<\/button>/)?.[0] ?? "";
-	assert.match(today, /<span class="rux-button__label">Today<\/span>/);
+	assert.match(today, /<span class="rux-button__label"\s*>\s*Today\s*<\/span\s*>/);
 	assert.doesNotMatch(today, /class="rux-icon"/);
 	assert.doesNotMatch(layoutStyles, /#today-btn\s*>\s*\.rux-icon/);
 });
@@ -424,13 +424,23 @@ test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
 	assert.doesNotMatch(layoutStyles, /padding-inline:\s*auto/);
 });
 
-test("View Options is a sentinel-gated card in the Calendar panel body", () => {
+test("Calendar Options is a sentinel-gated card in the Calendar panel body", () => {
 	const options = page.match(
-		/<section\s+class="rux-card rux-view-options"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-view-options"\s+id="rp-view-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
 	assert.match(options, /class="rux-card__sentinel"/);
-	assert.match(options, />\s*View Options\s*</);
+	assert.match(options, />\s*Calendar Options\s*</);
+	assert.match(options, /class="rux-card__body rux-view-options__list"/);
+});
+
+test("Trip Bar Options is a sentinel-gated card in the Calendar panel body", () => {
+	const options = page.match(
+		/<section\s+class="rux-card rux-view-options"\s+id="rp-trip-bar-options"[\s\S]*?<\/section>/,
+	)?.[0];
+	assert.ok(options);
+	assert.match(options, /class="rux-card__sentinel"/);
+	assert.match(options, />\s*Trip Bar Options\s*</);
 	assert.match(options, /class="rux-card__body rux-view-options__list"/);
 });
 

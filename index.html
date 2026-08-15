@@ -78,7 +78,7 @@
 		/>
 		<link
 			rel="stylesheet"
-				href="./scheduler/css/features/comp-components-app.css?v=14"
+			href="./scheduler/css/features/comp-components-app.css?v=14"
 		/>
 		<link
 			rel="stylesheet"
@@ -849,356 +849,412 @@
 								data-rux-tabs
 								data-trip-tabs
 							>
-									<button
-										class="rux-tab"
-										type="button"
-										role="tab"
-										aria-selected="true"
-										aria-controls="pane-trip"
-										aria-label="Details"
-										title="Details"
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>assignment</span
-										><span class="rux-tab__label"
-											>Details</span
-										>
-									</button>
-									<button
-										class="rux-tab"
-										type="button"
-										role="tab"
-										aria-selected="false"
-										aria-controls="pane-billing"
-										aria-label="Bill"
-										title="Bill"
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>payments</span
-										><span class="rux-tab__label"
-											>Billing</span
-										>
-									</button>
-									<button
-										class="rux-tab"
-										type="button"
-										role="tab"
-										aria-selected="false"
-										aria-controls="pane-itinerary"
-										aria-label="Itinerary"
-										title="Itinerary"
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>location_on</span
-										><span class="rux-tab__label"
-											>Itinerary</span
-										>
-									</button>
-									<button
-										class="rux-tab"
-										type="button"
-										role="tab"
-										aria-selected="false"
-										aria-controls="pane-dispatch"
-										aria-label="Fleet"
-										title="Fleet"
-									>
-										<span
-											class="rux-icon"
-											aria-hidden="true"
-											>group_add</span
-										><span class="rux-tab__label"
-											>Fleet</span
-										>
-									</button>
-								</nav>
-							</div>
-							<div class="rux-surface__body rux-trip-panel__body">
-								<!-- Trip -->
-								<div
-									id="pane-trip"
-									class="rux-panel__pane rux-trip-panel__pane"
-									role="tabpanel"
+								<button
+									class="rux-tab"
+									type="button"
+									role="tab"
+									aria-selected="true"
+									aria-controls="pane-trip"
+									aria-label="Details"
+									title="Details"
 								>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Trip Details
-											</p>
+									<span class="rux-icon" aria-hidden="true"
+										>assignment</span
+									><span class="rux-tab__label">Details</span>
+								</button>
+								<button
+									class="rux-tab"
+									type="button"
+									role="tab"
+									aria-selected="false"
+									aria-controls="pane-billing"
+									aria-label="Bill"
+									title="Bill"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>payments</span
+									><span class="rux-tab__label">Billing</span>
+								</button>
+								<button
+									class="rux-tab"
+									type="button"
+									role="tab"
+									aria-selected="false"
+									aria-controls="pane-itinerary"
+									aria-label="Itinerary"
+									title="Itinerary"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>location_on</span
+									><span class="rux-tab__label"
+										>Itinerary</span
+									>
+								</button>
+								<button
+									class="rux-tab"
+									type="button"
+									role="tab"
+									aria-selected="false"
+									aria-controls="pane-dispatch"
+									aria-label="Fleet"
+									title="Fleet"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>group_add</span
+									><span class="rux-tab__label">Fleet</span>
+								</button>
+							</nav>
+						</div>
+						<div class="rux-surface__body rux-trip-panel__body">
+							<!-- Trip -->
+							<div
+								id="pane-trip"
+								class="rux-panel__pane rux-trip-panel__pane"
+								role="tabpanel"
+							>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Trip Details
+										</p>
+									</div>
+									<div
+										class="rux-card__body rux-card__body--stack"
+									>
+										<div class="rux-field">
+											<span class="rux-field__label"
+												>Trip Type</span
+											>
+											<div
+												class="rux-segmented-track rux-trip-panel__trip-type"
+												id="tp-trip-type-group"
+												data-rux-toggle-group
+												role="group"
+												aria-label="Trip Type"
+											>
+												<button
+													class="rux-button rux-button--segment"
+													type="button"
+													aria-pressed="true"
+													data-value="round_trip"
+													aria-label="Round trip"
+													title="Round trip"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>autorenew</span
+													><span
+														class="rux-button__label"
+														>Round</span
+													>
+												</button>
+												<button
+													class="rux-button rux-button--segment"
+													type="button"
+													aria-pressed="false"
+													data-value="one_way"
+													aria-label="One-way trip"
+													title="One-way trip"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>arrow_forward</span
+													><span
+														class="rux-button__label"
+														>One-way</span
+													>
+												</button>
+												<button
+													class="rux-button rux-button--segment"
+													type="button"
+													aria-pressed="false"
+													data-value="dropoff_pickup"
+													aria-label="Split trip"
+													title="Split trip"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>mobiledata_arrows</span
+													><span
+														class="rux-button__label"
+														>Split</span
+													>
+												</button>
+											</div>
 										</div>
 										<div
-											class="rux-card__body rux-card__body--stack"
+											class="rux-trip-panel__logistics-grid"
 										>
 											<div class="rux-field">
-												<span class="rux-field__label"
-													>Trip Type</span
-												>
-												<div
-													class="rux-segmented-track rux-trip-panel__trip-type"
-													id="tp-trip-type-group"
-													data-rux-toggle-group
-													role="group"
-													aria-label="Trip Type"
-												>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="true"
-														data-value="round_trip"
-														aria-label="Round trip"
-														title="Round trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>autorenew</span
-														><span
-															class="rux-button__label"
-															>Round</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="false"
-														data-value="one_way"
-														aria-label="One-way trip"
-														title="One-way trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>arrow_forward</span
-														><span
-															class="rux-button__label"
-															>One-way</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="false"
-														data-value="dropoff_pickup"
-														aria-label="Split trip"
-														title="Split trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>mobiledata_arrows</span
-														><span
-															class="rux-button__label"
-															>Split</span
-														>
-													</button>
-												</div>
-											</div>
-											<div
-												class="rux-trip-panel__logistics-grid"
-											>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-start"
-														>Start date</label
-													><input
-														class="rux-input"
-														id="tp-start"
-														name="startDate"
-														type="date"
-													/>
-												</div>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-end"
-														>End date</label
-													><input
-														class="rux-input"
-														id="tp-end"
-														name="endDate"
-														type="date"
-													/>
-												</div>
-											</div>
-											<div
-												class="rux-trip-panel__logistics-grid"
-												id="tp-return-dates-grid"
-												hidden
-											>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-return-start"
-														>Return start
-														date</label
-													><input
-														class="rux-input"
-														id="tp-return-start"
-														name="returnStartDate"
-														type="date"
-													/>
-												</div>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-return-end"
-														>Return end date</label
-													><input
-														class="rux-input"
-														id="tp-return-end"
-														name="returnEndDate"
-														type="date"
-													/>
-												</div>
+												<label
+													class="rux-field__label"
+													for="tp-start"
+													>Start date</label
+												><input
+													class="rux-input"
+													id="tp-start"
+													name="startDate"
+													type="date"
+												/>
 											</div>
 											<div class="rux-field">
 												<label
 													class="rux-field__label"
-													for="tp-destination"
-													>Destination</label
+													for="tp-end"
+													>End date</label
 												><input
 													class="rux-input"
-													id="tp-destination"
-													name="destination"
+													id="tp-end"
+													name="endDate"
+													type="date"
+												/>
+											</div>
+										</div>
+										<div
+											class="rux-trip-panel__logistics-grid"
+											id="tp-return-dates-grid"
+											hidden
+										>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-return-start"
+													>Return start date</label
+												><input
+													class="rux-input"
+													id="tp-return-start"
+													name="returnStartDate"
+													type="date"
+												/>
+											</div>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-return-end"
+													>Return end date</label
+												><input
+													class="rux-input"
+													id="tp-return-end"
+													name="returnEndDate"
+													type="date"
+												/>
+											</div>
+										</div>
+										<div class="rux-field">
+											<label
+												class="rux-field__label"
+												for="tp-destination"
+												>Destination</label
+											><input
+												class="rux-input"
+												id="tp-destination"
+												name="destination"
+												type="text"
+											/>
+										</div>
+										<div class="rux-field">
+											<label
+												class="rux-field__label"
+												for="tp-notes"
+												>Notes</label
+											><input
+												class="rux-input"
+												id="tp-notes"
+												name="notes"
+												type="text"
+											/>
+										</div>
+									</div>
+								</div>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Customer Details
+										</p>
+									</div>
+									<div
+										class="rux-card__body rux-card__body--stack"
+									>
+										<div class="rux-trip-panel__cols-2">
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-book-name"
+													>Customer Name</label
+												><input
+													class="rux-input"
+													id="tp-book-name"
+													name="bookingContact.name"
 													type="text"
 												/>
 											</div>
 											<div class="rux-field">
 												<label
 													class="rux-field__label"
-													for="tp-notes"
-													>Notes</label
+													for="tp-book-phone"
+													>Customer Phone</label
 												><input
 													class="rux-input"
-													id="tp-notes"
-													name="notes"
-													type="text"
+													id="tp-book-phone"
+													name="bookingContact.phone"
+													type="tel"
 												/>
+											</div>
+										</div>
+										<div class="rux-field">
+											<label
+												class="rux-field__label"
+												for="tp-customer"
+												>Business/School</label
+											><input
+												class="rux-input"
+												id="tp-customer"
+												name="customer"
+												type="text"
+											/>
+										</div>
+										<div class="rux-field">
+											<label
+												class="rux-field__label"
+												for="tp-book-email"
+												>Email</label
+											><input
+												class="rux-input"
+												id="tp-book-email"
+												name="bookingContact.email"
+												type="email"
+											/>
+										</div>
+										<div class="rux-field">
+											<label
+												class="rux-field__label"
+												for="tp-book-missive-url"
+												>Email Thread</label
+											>
+											<div
+												class="rux-input-group rux-input-group--suffix rux-input-group--action"
+											>
+												<input
+													class="rux-input"
+													id="tp-book-missive-url"
+													name="bookingContact.missiveUrl"
+													type="url"
+													placeholder="https://mail.missiveapp.com/..."
+												/>
+												<button
+													class="rux-input-group__suffix"
+													type="button"
+													id="tp-missive-btn"
+													title="Open in Missive"
+													aria-label="Open in Missive"
+													disabled
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>open_in_new</span
+													>
+												</button>
 											</div>
 										</div>
 									</div>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Customer Details
-											</p>
-										</div>
-										<div
-											class="rux-card__body rux-card__body--stack"
+								</div>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Trip Contact
+										</p>
+										<button
+											class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+											type="button"
+											id="tp-contact-add-btn"
+											aria-label="Add trip contact"
 										>
-											<div class="rux-trip-panel__cols-2">
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-book-name"
-														>Customer Name</label
-													><input
-														class="rux-input"
-														id="tp-book-name"
-														name="bookingContact.name"
-														type="text"
-													/>
-												</div>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-book-phone"
-														>Customer Phone</label
-													><input
-														class="rux-input"
-														id="tp-book-phone"
-														name="bookingContact.phone"
-														type="tel"
-													/>
-												</div>
-											</div>
-											<div class="rux-field">
-												<label
-													class="rux-field__label"
-													for="tp-customer"
-													>Business/School</label
-												><input
-													class="rux-input"
-													id="tp-customer"
-													name="customer"
-													type="text"
-												/>
-											</div>
-											<div class="rux-field">
-												<label
-													class="rux-field__label"
-													for="tp-book-email"
-													>Email</label
-												><input
-													class="rux-input"
-													id="tp-book-email"
-													name="bookingContact.email"
-													type="email"
-												/>
-											</div>
-											<div class="rux-field">
-												<label
-													class="rux-field__label"
-													for="tp-book-missive-url"
-													>Email Thread</label
-												>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+												>add</span
+											>
+										</button>
+									</div>
+									<div class="rux-card__body">
+										<div
+											id="tp-contacts-list"
+											class="rux-trip-panel__contacts-list"
+										></div>
+									</div>
+								</div>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Requirements
+										</p>
+									</div>
+									<div class="rux-card__body">
+										<div class="rux-field">
+											<div
+												class="rux-trip-panel__requirements-grid"
+											>
 												<div
-													class="rux-input-group rux-input-group--suffix rux-input-group--action"
-												>
-													<input
-														class="rux-input"
-														id="tp-book-missive-url"
-														name="bookingContact.missiveUrl"
-														type="url"
-														placeholder="https://mail.missiveapp.com/..."
-													/>
-													<button
-														class="rux-input-group__suffix"
-														type="button"
-														id="tp-missive-btn"
-														title="Open in Missive"
-														aria-label="Open in Missive"
-														disabled
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>open_in_new</span
-														>
-													</button>
-												</div>
+													class="rux-trip-panel__reqs"
+													id="tp-vehicle-reqs"
+												></div>
+												<div
+													class="rux-cluster"
+													id="tp-driver-needs"
+												></div>
 											</div>
 										</div>
 									</div>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Trip Contact
-											</p>
+								</div>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">Files</p>
+										<div class="rux-cluster">
 											<button
-												class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+												class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
 												type="button"
-												id="tp-contact-add-btn"
-												aria-label="Add trip contact"
+												id="tp-doc-toggle-btn"
+												aria-pressed="false"
+												aria-label="Mark itinerary as not needed"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>block</span
+												>
+											</button>
+											<button
+												class="rux-button rux-button--ghost rux-button--icon"
+												type="button"
+												id="tp-doc-new-btn"
+												data-doc-menu
+												aria-haspopup="menu"
+												aria-expanded="false"
+												aria-label="Add document"
 											>
 												<span
 													class="rux-icon"
@@ -1207,529 +1263,683 @@
 												>
 											</button>
 										</div>
-										<div class="rux-card__body">
-											<div
-												id="tp-contacts-list"
-												class="rux-trip-panel__contacts-list"
-											></div>
-										</div>
-									</div>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Requirements
-											</p>
-										</div>
-										<div class="rux-card__body">
-											<div class="rux-field">
-												<div
-													class="rux-trip-panel__requirements-grid"
-												>
-													<div
-														class="rux-trip-panel__reqs"
-														id="tp-vehicle-reqs"
-													></div>
-													<div
-														class="rux-cluster"
-														id="tp-driver-needs"
-													></div>
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">Files</p>
-											<div class="rux-cluster">
-												<button
-													class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
-													type="button"
-													id="tp-doc-toggle-btn"
-													aria-pressed="false"
-													aria-label="Mark itinerary as not needed"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>block</span
-													>
-												</button>
-												<button
-													class="rux-button rux-button--ghost rux-button--icon"
-													type="button"
-													id="tp-doc-new-btn"
-													data-doc-menu
-													aria-haspopup="menu"
-													aria-expanded="false"
-													aria-label="Add document"
-												>
-													<span
-														class="rux-icon"
-														aria-hidden="true"
-														>add</span
-													>
-												</button>
-											</div>
-										</div>
-										<div
-											class="rux-card__body rux-card__body--stack"
-										>
-											<div class="rux-field">
-												<p
-													class="rux-field__label"
-													id="tp-doc-list-label"
-												>
-													Uploaded Files
-												</p>
-												<ul
-													class="rux-trip-panel__doc-list"
-													id="tp-doc-list"
-												>
-													<li
-														class="rux-trip-panel__doc-empty"
-														role="status"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>description</span
-														>
-														<span
-															>No files
-															uploaded</span
-														>
-													</li>
-												</ul>
-											</div>
-											<input
-												type="file"
-												id="tp-doc-file-input"
-												hidden
-												accept=".pdf,application/pdf"
-											/>
-										</div>
-									</div>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p
-												class="rux-card__title"
-												id="tp-trip-bar-color-label"
-											>
-												Trip Bar Color
-											</p>
-										</div>
-										<div
-											class="rux-card__body rux-card__body--stack"
-										>
-											<div
-												class="rux-color-swatches"
-												role="radiogroup"
-												aria-labelledby="tp-trip-bar-color-label"
-											>
-												<label
-													class="rux-color-swatch"
-													title="Standard blue"
-												>
-													<input
-														type="radio"
-														name="tripBarColor"
-														value=""
-														checked
-														aria-label="Standard blue"
-													/>
-													<span
-														class="rux-color-swatch__dot"
-														style="
-															--color: var(
-																--rux-accent
-															);
-														"
-													></span>
-												</label>
-												<label
-													class="rux-color-swatch"
-													title="Cyan"
-												>
-													<input
-														type="radio"
-														name="tripBarColor"
-														value="cyan"
-														aria-label="Cyan"
-													/>
-													<span
-														class="rux-color-swatch__dot"
-														style="
-															--color: var(
-																--rux-trip-color-cyan
-															);
-														"
-													></span>
-												</label>
-												<label
-													class="rux-color-swatch"
-													title="Green"
-												>
-													<input
-														type="radio"
-														name="tripBarColor"
-														value="green"
-														aria-label="Green"
-													/>
-													<span
-														class="rux-color-swatch__dot"
-														style="
-															--color: var(
-																--rux-trip-color-green
-															);
-														"
-													></span>
-												</label>
-												<label
-													class="rux-color-swatch"
-													title="Purple"
-												>
-													<input
-														type="radio"
-														name="tripBarColor"
-														value="purple"
-														aria-label="Purple"
-													/>
-													<span
-														class="rux-color-swatch__dot"
-														style="
-															--color: var(
-																--rux-trip-color-purple
-															);
-														"
-													></span>
-												</label>
-												<label
-													class="rux-color-swatch"
-													title="Yellow"
-												>
-													<input
-														type="radio"
-														name="tripBarColor"
-														value="yellow"
-														aria-label="Yellow"
-													/>
-													<span
-														class="rux-color-swatch__dot"
-														style="
-															--color: var(
-																--rux-trip-color-yellow
-															);
-														"
-													></span>
-												</label>
-												<label
-													class="rux-color-swatch"
-													title="Orange"
-												>
-													<input
-														type="radio"
-														name="tripBarColor"
-														value="orange"
-														aria-label="Orange"
-													/>
-													<span
-														class="rux-color-swatch__dot"
-														style="
-															--color: var(
-																--rux-trip-color-orange
-															);
-														"
-													></span>
-												</label>
-												<label
-													class="rux-color-swatch"
-													title="Pink"
-												>
-													<input
-														type="radio"
-														name="tripBarColor"
-														value="pink"
-														aria-label="Pink"
-													/>
-													<span
-														class="rux-color-swatch__dot"
-														style="
-															--color: var(
-																--rux-trip-color-pink
-															);
-														"
-													></span>
-												</label>
-											</div>
-											<p class="rux-field__help">
-												Overrides the standard color on
-												confirmed trips. Unconfirmed
-												trips remain red.
-											</p>
-										</div>
-									</div>
-								</div>
-								<!-- Billing -->
-								<div
-									id="pane-billing"
-									class="rux-panel__pane rux-trip-panel__pane"
-									role="tabpanel"
-									hidden
-								>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Billing Details
-											</p>
-										</div>
-										<div
-											class="rux-card__body rux-card__body--stack"
-										>
-											<div class="rux-field">
-												<span
-													class="rux-field__label"
-													id="tp-billing-type-label"
-													>Service Type</span
-												>
-												<div
-													class="rux-segmented-track rux-trip-panel__trip-type"
-													id="tp-billing-type-group"
-													data-rux-toggle-group
-													role="group"
-													aria-labelledby="tp-billing-type-label"
-												>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="true"
-														data-value="charter"
-														aria-label="Charter trip"
-														title="Charter trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>directions_bus</span
-														><span
-															class="rux-button__label"
-															>Charter</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="false"
-														data-value="ticketed"
-														aria-label="Ticketed trip"
-														title="Ticketed trip"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>confirmation_number</span
-														><span
-															class="rux-button__label"
-															>Ticketed</span
-														>
-													</button>
-												</div>
-											</div>
-											<div
-												class="rux-trip-panel__manifest-action"
-												id="tp-manifest-action"
-												aria-hidden="true"
-											>
-												<div
-													class="rux-trip-panel__manifest-action-inner"
-												>
-													<button
-														class="rux-button rux-button--accent"
-														type="button"
-														id="tp-view-manifest-btn"
-														disabled
-														title="Toggle Ticketed to enable"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>groups</span
-														>
-														<span
-															class="rux-button__label"
-															>View manifest</span
-														>
-													</button>
-												</div>
-											</div>
-										</div>
 									</div>
 									<div
-										class="rux-card"
-										id="tp-ticket-pricing-card"
-										hidden
+										class="rux-card__body rux-card__body--stack"
 									>
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Ticket Pricing
+										<div class="rux-field">
+											<p
+												class="rux-field__label"
+												id="tp-doc-list-label"
+											>
+												Uploaded Files
 											</p>
-											<div class="rux-cluster">
-												<button
-													class="rux-button rux-button--ghost rux-button--icon"
-													type="button"
-													id="tp-ticket-add-btn"
-													aria-label="Add option"
+											<ul
+												class="rux-trip-panel__doc-list"
+												id="tp-doc-list"
+											>
+												<li
+													class="rux-trip-panel__doc-empty"
+													role="status"
 												>
 													<span
 														class="rux-icon"
 														aria-hidden="true"
-														>add</span
+														>description</span
+													>
+													<span
+														>No files uploaded</span
+													>
+												</li>
+											</ul>
+										</div>
+										<input
+											type="file"
+											id="tp-doc-file-input"
+											hidden
+											accept=".pdf,application/pdf"
+										/>
+									</div>
+								</div>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p
+											class="rux-card__title"
+											id="tp-trip-bar-color-label"
+										>
+											Trip Bar Color
+										</p>
+									</div>
+									<div
+										class="rux-card__body rux-card__body--stack"
+									>
+										<div
+											class="rux-color-swatches"
+											role="radiogroup"
+											aria-labelledby="tp-trip-bar-color-label"
+										>
+											<label
+												class="rux-color-swatch"
+												title="Standard blue"
+											>
+												<input
+													type="radio"
+													name="tripBarColor"
+													value=""
+													checked
+													aria-label="Standard blue"
+												/>
+												<span
+													class="rux-color-swatch__dot"
+													style="
+														--color: var(
+															--rux-accent
+														);
+													"
+												></span>
+											</label>
+											<label
+												class="rux-color-swatch"
+												title="Cyan"
+											>
+												<input
+													type="radio"
+													name="tripBarColor"
+													value="cyan"
+													aria-label="Cyan"
+												/>
+												<span
+													class="rux-color-swatch__dot"
+													style="
+														--color: var(
+															--rux-trip-color-cyan
+														);
+													"
+												></span>
+											</label>
+											<label
+												class="rux-color-swatch"
+												title="Green"
+											>
+												<input
+													type="radio"
+													name="tripBarColor"
+													value="green"
+													aria-label="Green"
+												/>
+												<span
+													class="rux-color-swatch__dot"
+													style="
+														--color: var(
+															--rux-trip-color-green
+														);
+													"
+												></span>
+											</label>
+											<label
+												class="rux-color-swatch"
+												title="Purple"
+											>
+												<input
+													type="radio"
+													name="tripBarColor"
+													value="purple"
+													aria-label="Purple"
+												/>
+												<span
+													class="rux-color-swatch__dot"
+													style="
+														--color: var(
+															--rux-trip-color-purple
+														);
+													"
+												></span>
+											</label>
+											<label
+												class="rux-color-swatch"
+												title="Yellow"
+											>
+												<input
+													type="radio"
+													name="tripBarColor"
+													value="yellow"
+													aria-label="Yellow"
+												/>
+												<span
+													class="rux-color-swatch__dot"
+													style="
+														--color: var(
+															--rux-trip-color-yellow
+														);
+													"
+												></span>
+											</label>
+											<label
+												class="rux-color-swatch"
+												title="Orange"
+											>
+												<input
+													type="radio"
+													name="tripBarColor"
+													value="orange"
+													aria-label="Orange"
+												/>
+												<span
+													class="rux-color-swatch__dot"
+													style="
+														--color: var(
+															--rux-trip-color-orange
+														);
+													"
+												></span>
+											</label>
+											<label
+												class="rux-color-swatch"
+												title="Pink"
+											>
+												<input
+													type="radio"
+													name="tripBarColor"
+													value="pink"
+													aria-label="Pink"
+												/>
+												<span
+													class="rux-color-swatch__dot"
+													style="
+														--color: var(
+															--rux-trip-color-pink
+														);
+													"
+												></span>
+											</label>
+										</div>
+										<p class="rux-field__help">
+											Overrides the standard color on
+											confirmed trips. Unconfirmed trips
+											remain red.
+										</p>
+									</div>
+								</div>
+							</div>
+							<!-- Billing -->
+							<div
+								id="pane-billing"
+								class="rux-panel__pane rux-trip-panel__pane"
+								role="tabpanel"
+								hidden
+							>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Billing Details
+										</p>
+									</div>
+									<div
+										class="rux-card__body rux-card__body--stack"
+									>
+										<div class="rux-field">
+											<span
+												class="rux-field__label"
+												id="tp-billing-type-label"
+												>Service Type</span
+											>
+											<div
+												class="rux-segmented-track rux-trip-panel__trip-type"
+												id="tp-billing-type-group"
+												data-rux-toggle-group
+												role="group"
+												aria-labelledby="tp-billing-type-label"
+											>
+												<button
+													class="rux-button rux-button--segment"
+													type="button"
+													aria-pressed="true"
+													data-value="charter"
+													aria-label="Charter trip"
+													title="Charter trip"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>directions_bus</span
+													><span
+														class="rux-button__label"
+														>Charter</span
 													>
 												</button>
-											</div>
-										</div>
-										<div class="rux-card__body">
-											<div
-												class="rux-trip-panel__payment-rows"
-												id="tp-ticket-options-list"
-											>
-												<div
-													class="rux-trip-panel__payment-empty"
-													role="status"
+												<button
+													class="rux-button rux-button--segment"
+													type="button"
+													aria-pressed="false"
+													data-value="ticketed"
+													aria-label="Ticketed trip"
+													title="Ticketed trip"
 												>
 													<span
 														class="rux-icon"
 														aria-hidden="true"
 														>confirmation_number</span
+													><span
+														class="rux-button__label"
+														>Ticketed</span
+													>
+												</button>
+											</div>
+										</div>
+										<div
+											class="rux-trip-panel__manifest-action"
+											id="tp-manifest-action"
+											aria-hidden="true"
+										>
+											<div
+												class="rux-trip-panel__manifest-action-inner"
+											>
+												<button
+													class="rux-button rux-button--accent"
+													type="button"
+													id="tp-view-manifest-btn"
+													disabled
+													title="Toggle Ticketed to enable"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>groups</span
 													>
 													<span
-														>No priced options —
-														passengers use a manual
-														Owed amount</span
+														class="rux-button__label"
+														>View manifest</span
 													>
-												</div>
+												</button>
 											</div>
 										</div>
 									</div>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Pricing
-											</p>
+								</div>
+								<div
+									class="rux-card"
+									id="tp-ticket-pricing-card"
+									hidden
+								>
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Ticket Pricing
+										</p>
+										<div class="rux-cluster">
+											<button
+												class="rux-button rux-button--ghost rux-button--icon"
+												type="button"
+												id="tp-ticket-add-btn"
+												aria-label="Add option"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>add</span
+												>
+											</button>
 										</div>
+									</div>
+									<div class="rux-card__body">
 										<div
-											class="rux-card__body rux-card__body--stack"
+											class="rux-trip-panel__payment-rows"
+											id="tp-ticket-options-list"
 										>
-											<div class="rux-trip-panel__cols-2">
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-price"
-														>Quoted Price</label
-													>
-													<div
-														class="rux-input-group rux-input-group--prefix"
-													>
-														<span
-															class="rux-input-group__prefix"
-															>$</span
-														><input
-															class="rux-input"
-															id="tp-price"
-															name="quotedPrice"
-															type="number"
-															min="0"
-															step="0.01"
-															placeholder="0.00"
-															aria-label="Quoted price"
-														/>
-													</div>
-												</div>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-balance-due"
-														>Balance</label
-													><output
-														class="rux-output rux-output--boxed"
-														id="tp-balance-due"
-														for="tp-price tp-payment-rows"
-														>$0.00</output
-													>
-												</div>
+											<div
+												class="rux-trip-panel__payment-empty"
+												role="status"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>confirmation_number</span
+												>
+												<span
+													>No priced options —
+													passengers use a manual Owed
+													amount</span
+												>
 											</div>
-											<div class="rux-trip-panel__cols-2">
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-est-mi"
-														>Est. Miles</label
-													><input
-														class="rux-input"
-														id="tp-est-mi"
-														name="estMiles"
-														type="number"
-														min="0"
-														step="0.1"
-														placeholder="0"
-														aria-label="Estimated miles"
-													/>
-												</div>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-act-mi"
-														>Actual Miles</label
-													><input
-														class="rux-input"
-														id="tp-act-mi"
-														name="actualMiles"
-														type="number"
-														min="0"
-														step="1"
-														placeholder="0"
-														aria-label="Actual miles"
-													/>
-												</div>
-											</div>
-											<input
-												type="checkbox"
-												id="tp-balance-paid"
-												name="balancePaid"
-												hidden
-											/>
-											<input
-												id="tp-date-paid"
-												name="datePaid"
-												type="hidden"
-											/>
 										</div>
+									</div>
+								</div>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">Pricing</p>
 									</div>
 									<div
-										class="rux-card rux-trip-panel__billing-workflow"
+										class="rux-card__body rux-card__body--stack"
+									>
+										<div class="rux-trip-panel__cols-2">
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-price"
+													>Quoted Price</label
+												>
+												<div
+													class="rux-input-group rux-input-group--prefix"
+												>
+													<span
+														class="rux-input-group__prefix"
+														>$</span
+													><input
+														class="rux-input"
+														id="tp-price"
+														name="quotedPrice"
+														type="number"
+														min="0"
+														step="0.01"
+														placeholder="0.00"
+														aria-label="Quoted price"
+													/>
+												</div>
+											</div>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-balance-due"
+													>Balance</label
+												><output
+													class="rux-output rux-output--boxed"
+													id="tp-balance-due"
+													for="tp-price tp-payment-rows"
+													>$0.00</output
+												>
+											</div>
+										</div>
+										<div class="rux-trip-panel__cols-2">
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-est-mi"
+													>Est. Miles</label
+												><input
+													class="rux-input"
+													id="tp-est-mi"
+													name="estMiles"
+													type="number"
+													min="0"
+													step="0.1"
+													placeholder="0"
+													aria-label="Estimated miles"
+												/>
+											</div>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-act-mi"
+													>Actual Miles</label
+												><input
+													class="rux-input"
+													id="tp-act-mi"
+													name="actualMiles"
+													type="number"
+													min="0"
+													step="1"
+													placeholder="0"
+													aria-label="Actual miles"
+												/>
+											</div>
+										</div>
+										<input
+											type="checkbox"
+											id="tp-balance-paid"
+											name="balancePaid"
+											hidden
+										/>
+										<input
+											id="tp-date-paid"
+											name="datePaid"
+											type="hidden"
+										/>
+									</div>
+								</div>
+								<div
+									class="rux-card rux-trip-panel__billing-workflow"
+								>
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Billing Status
+										</p>
+									</div>
+									<div
+										class="rux-card__body rux-card__body--stack"
+									>
+										<div
+											class="rux-trip-panel__billing-step"
+											data-billing-step
+											data-billing-key="contractSigned"
+										>
+											<p
+												class="rux-field__label"
+												data-billing-label
+											>
+												Contract
+											</p>
+											<div
+												class="rux-trip-panel__billing-step-row"
+											>
+												<input
+													class="rux-input"
+													id="tp-contract-note"
+													name="contractNote"
+													type="text"
+													placeholder="Pending"
+													data-off-placeholder="Pending"
+													data-on-placeholder="Optional notes"
+													aria-label="Contract note"
+													disabled
+												/>
+												<label class="rux-switch"
+													><input
+														type="checkbox"
+														id="tp-contract-signed"
+														name="contractSigned"
+														data-billing-toggle
+														data-billing-controls="tp-contract-note" /><span
+														class="rux-switch__track"
+													></span
+													><span
+														class="rux-switch__thumb"
+													></span
+												></label>
+											</div>
+										</div>
+										<div
+											class="rux-trip-panel__billing-step"
+											data-billing-step
+											data-billing-key="poReceived"
+										>
+											<p
+												class="rux-field__label"
+												data-billing-label
+											>
+												Purchase Order
+											</p>
+											<div
+												class="rux-trip-panel__billing-step-row"
+											>
+												<input
+													class="rux-input"
+													id="tp-po"
+													name="paymentRef"
+													type="text"
+													placeholder="Not received"
+													data-off-placeholder="Not received"
+													data-on-placeholder="Enter PO number"
+													aria-label="PO Number"
+													disabled
+												/>
+												<label class="rux-switch"
+													><input
+														type="checkbox"
+														id="tp-po-received"
+														name="poReceived"
+														data-billing-toggle
+														data-billing-controls="tp-po tp-po-amount" /><span
+														class="rux-switch__track"
+													></span
+													><span
+														class="rux-switch__thumb"
+													></span
+												></label>
+											</div>
+										</div>
+										<div
+											class="rux-trip-panel__billing-step"
+											data-billing-step
+											data-billing-key="invoiced"
+										>
+											<p
+												class="rux-field__label"
+												data-billing-label
+											>
+												Invoice
+											</p>
+											<div
+												class="rux-trip-panel__billing-step-row"
+											>
+												<input
+													class="rux-input"
+													id="tp-inv-num"
+													name="invoiceNumber"
+													type="text"
+													placeholder="Pending"
+													data-off-placeholder="Pending"
+													data-on-placeholder="Enter Invoice Number"
+													aria-label="Invoice Number"
+													disabled
+												/>
+												<label class="rux-switch"
+													><input
+														type="checkbox"
+														id="tp-invoiced"
+														name="invoiced"
+														data-billing-toggle
+														data-billing-controls="tp-inv-num" /><span
+														class="rux-switch__track"
+													></span
+													><span
+														class="rux-switch__thumb"
+													></span
+												></label>
+											</div>
+										</div>
+										<div
+											class="rux-trip-panel__po-details"
+											data-billing-details
+											hidden
+										>
+											<div class="rux-field">
+												<label
+													class="rux-field__label"
+													for="tp-po-amount"
+													>Authorized Amount</label
+												>
+												<div
+													class="rux-input-group rux-input-group--prefix"
+												>
+													<span
+														class="rux-input-group__prefix"
+														aria-hidden="true"
+														>$</span
+													>
+													<input
+														class="rux-input"
+														id="tp-po-amount"
+														name="poAmount"
+														type="number"
+														min="0"
+														step="0.01"
+														placeholder="0.00"
+														aria-label="PO authorized amount"
+														disabled
+													/>
+												</div>
+											</div>
+											<output
+												class="rux-trip-panel__po-coverage"
+												id="tp-po-coverage"
+												aria-live="polite"
+											></output>
+										</div>
+									</div>
+								</div>
+								<div class="rux-card" data-payment-card>
+									<div
+										class="rux-card__sentinel"
+										aria-hidden="true"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">Payments</p>
+										<div class="rux-cluster">
+											<button
+												class="rux-button rux-button--ghost rux-button--icon"
+												type="button"
+												id="tp-payment-add-btn"
+												aria-haspopup="menu"
+												aria-expanded="false"
+												aria-label="Add payment"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>add</span
+												>
+											</button>
+										</div>
+									</div>
+									<div class="rux-card__body">
+										<div
+											class="rux-trip-panel__payment-rows"
+											id="tp-payment-rows"
+										>
+											<div
+												class="rux-trip-panel__payment-empty"
+												role="status"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>payments</span
+												>
+												<span>No payments yet</span>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- Itinerary -->
+							<div
+								id="pane-itinerary"
+								class="rux-panel__pane rux-trip-panel__pane"
+								role="tabpanel"
+								hidden
+							>
+								<div class="rux-trip-itinerary" id="tp-itin">
+									<div
+										class="rux-card rux-trip-itinerary__summary"
+										id="tp-itin-summary"
 									>
 										<div
 											class="rux-card__sentinel"
@@ -1737,433 +1947,69 @@
 										></div>
 										<div class="rux-card__header">
 											<p class="rux-card__title">
-												Billing Status
+												Trip Summary
 											</p>
-										</div>
-										<div
-											class="rux-card__body rux-card__body--stack"
-										>
 											<div
-												class="rux-trip-panel__billing-step"
-												data-billing-step
-												data-billing-key="contractSigned"
+												class="rux-trip-itinerary__summary-actions"
 											>
-												<p
-													class="rux-field__label"
-													data-billing-label
-												>
-													Contract
-												</p>
-												<div
-													class="rux-trip-panel__billing-step-row"
-												>
-													<input
-														class="rux-input"
-														id="tp-contract-note"
-														name="contractNote"
-														type="text"
-														placeholder="Pending"
-														data-off-placeholder="Pending"
-														data-on-placeholder="Optional notes"
-														aria-label="Contract note"
-														disabled
-													/>
-													<label class="rux-switch"
-														><input
-															type="checkbox"
-															id="tp-contract-signed"
-															name="contractSigned"
-															data-billing-toggle
-															data-billing-controls="tp-contract-note" /><span
-															class="rux-switch__track"
-														></span
-														><span
-															class="rux-switch__thumb"
-														></span
-													></label>
-												</div>
-											</div>
-											<div
-												class="rux-trip-panel__billing-step"
-												data-billing-step
-												data-billing-key="poReceived"
-											>
-												<p
-													class="rux-field__label"
-													data-billing-label
-												>
-													Purchase Order
-												</p>
-												<div
-													class="rux-trip-panel__billing-step-row"
-												>
-													<input
-														class="rux-input"
-														id="tp-po"
-														name="paymentRef"
-														type="text"
-														placeholder="Not received"
-														data-off-placeholder="Not received"
-														data-on-placeholder="Enter PO number"
-														aria-label="PO Number"
-														disabled
-													/>
-													<label class="rux-switch"
-														><input
-															type="checkbox"
-															id="tp-po-received"
-															name="poReceived"
-															data-billing-toggle
-															data-billing-controls="tp-po tp-po-amount" /><span
-															class="rux-switch__track"
-														></span
-														><span
-															class="rux-switch__thumb"
-														></span
-													></label>
-												</div>
-											</div>
-											<div
-												class="rux-trip-panel__billing-step"
-												data-billing-step
-												data-billing-key="invoiced"
-											>
-												<p
-													class="rux-field__label"
-													data-billing-label
-												>
-													Invoice
-												</p>
-												<div
-													class="rux-trip-panel__billing-step-row"
-												>
-													<input
-														class="rux-input"
-														id="tp-inv-num"
-														name="invoiceNumber"
-														type="text"
-														placeholder="Pending"
-														data-off-placeholder="Pending"
-														data-on-placeholder="Enter Invoice Number"
-														aria-label="Invoice Number"
-														disabled
-													/>
-													<label class="rux-switch"
-														><input
-															type="checkbox"
-															id="tp-invoiced"
-															name="invoiced"
-															data-billing-toggle
-															data-billing-controls="tp-inv-num" /><span
-															class="rux-switch__track"
-														></span
-														><span
-															class="rux-switch__thumb"
-														></span
-													></label>
-												</div>
-											</div>
-											<div
-												class="rux-trip-panel__po-details"
-												data-billing-details
-												hidden
-											>
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														for="tp-po-amount"
-														>Authorized
-														Amount</label
-													>
-													<div
-														class="rux-input-group rux-input-group--prefix"
-													>
-														<span
-															class="rux-input-group__prefix"
-															aria-hidden="true"
-															>$</span
-														>
-														<input
-															class="rux-input"
-															id="tp-po-amount"
-															name="poAmount"
-															type="number"
-															min="0"
-															step="0.01"
-															placeholder="0.00"
-															aria-label="PO authorized amount"
-															disabled
-														/>
-													</div>
-												</div>
-												<output
-													class="rux-trip-panel__po-coverage"
-													id="tp-po-coverage"
-													aria-live="polite"
-												></output>
-											</div>
-										</div>
-									</div>
-									<div
-										class="rux-card"
-										data-payment-card
-									>
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Payments
-											</p>
-											<div class="rux-cluster">
 												<button
 													class="rux-button rux-button--ghost rux-button--icon"
 													type="button"
-													id="tp-payment-add-btn"
-													aria-haspopup="menu"
-													aria-expanded="false"
-													aria-label="Add payment"
+													id="tp-import-btn"
+													title="Upload JSON"
+													aria-label="Upload JSON"
 												>
 													<span
 														class="rux-icon"
 														aria-hidden="true"
-														>add</span
+														>upload</span
+													><span
+														class="rux-button__label"
+														>Upload JSON</span
 													>
 												</button>
-											</div>
-										</div>
-										<div class="rux-card__body">
-											<div
-												class="rux-trip-panel__payment-rows"
-												id="tp-payment-rows"
-											>
-												<div
-													class="rux-trip-panel__payment-empty"
-													role="status"
+												<button
+													class="rux-button rux-button--ghost rux-button--icon"
+													type="button"
+													id="tp-itin-recalc"
+													title="Recalculate route"
+													aria-label="Calculate route"
 												>
 													<span
 														class="rux-icon"
 														aria-hidden="true"
-														>payments</span
+														>route</span
+													><span
+														class="rux-button__label"
+														data-recalc-label
+														>Calculate</span
 													>
-													<span>No payments yet</span>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-								<!-- Itinerary -->
-								<div
-									id="pane-itinerary"
-									class="rux-panel__pane rux-trip-panel__pane"
-									role="tabpanel"
-									hidden
-								>
-									<div
-										class="rux-trip-itinerary"
-										id="tp-itin"
-									>
-										<div
-											class="rux-card rux-trip-itinerary__summary"
-											id="tp-itin-summary"
-										>
-											<div
-												class="rux-card__sentinel"
-												aria-hidden="true"
-											></div>
-											<div class="rux-card__header">
-												<p class="rux-card__title">
-													Trip Summary
-												</p>
-												<div
-													class="rux-trip-itinerary__summary-actions"
-												>
-													<button
-														class="rux-button rux-button--ghost rux-button--icon"
-														type="button"
-														id="tp-import-btn"
-														title="Upload JSON"
-														aria-label="Upload JSON"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>upload</span
-														><span
-															class="rux-button__label"
-															>Upload JSON</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--ghost rux-button--icon"
-														type="button"
-														id="tp-itin-recalc"
-														title="Recalculate route"
-														aria-label="Calculate route"
-													>
-														<span
-															class="rux-icon"
-															aria-hidden="true"
-															>route</span
-														><span
-															class="rux-button__label"
-															data-recalc-label
-															>Calculate</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
-														type="button"
-														id="tp-itin-confirm"
-														title="Confirm itinerary"
-														aria-label="Confirm itinerary"
-														aria-pressed="false"
-													>
-														<span
-															class="rux-icon icon-off"
-															aria-hidden="true"
-															>radio_button_unchecked</span
-														><span
-															class="rux-icon icon-on"
-															aria-hidden="true"
-															>check_circle</span
-														>
-													</button>
-												</div>
-											</div>
-											<div class="rux-card__body"></div>
-										</div>
-										<div
-											class="rux-card"
-											id="tp-itin-leg-card"
-											hidden
-										>
-											<div
-												class="rux-card__sentinel"
-												aria-hidden="true"
-											></div>
-											<div class="rux-card__header">
-												<p class="rux-card__title">
-													Split Trip
-												</p>
+												</button>
 												<button
-													class="rux-button rux-button--ghost rux-button--danger"
-													id="tp-itin-reset-leg"
+													class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
 													type="button"
-													title="Reset Outbound itinerary"
-													aria-label="Reset Outbound itinerary"
+													id="tp-itin-confirm"
+													title="Confirm itinerary"
+													aria-label="Confirm itinerary"
+													aria-pressed="false"
 												>
 													<span
-														class="rux-icon"
+														class="rux-icon icon-off"
 														aria-hidden="true"
-														>restart_alt</span
-													>
-													<span data-reset-leg-label
-														>Reset Outbound</span
-													>
-												</button>
-											</div>
-											<div class="rux-card__body">
-												<div class="rux-field">
-													<label
-														class="rux-field__label"
-														>Viewing</label
-													>
-													<div
-														class="rux-segmented-track rux-trip-panel__trip-type"
-														id="tp-itin-leg-toggle"
-														data-rux-toggle-group
-													>
-														<button
-															class="rux-button rux-button--segment"
-															type="button"
-															aria-pressed="true"
-															data-value="outbound"
-														>
-															Outbound
-														</button>
-														<button
-															class="rux-button rux-button--segment"
-															type="button"
-															aria-pressed="false"
-															data-value="return"
-														>
-															Inbound
-														</button>
-													</div>
-												</div>
-											</div>
-										</div>
-										<div
-											class="rux-trip-itinerary__stops"
-											id="tp-itin-stops"
-										></div>
-									</div>
-								</div>
-								<!-- Dispatch -->
-								<div
-									id="pane-dispatch"
-									class="rux-panel__pane rux-trip-panel__pane"
-									role="tabpanel"
-									hidden
-								>
-									<div class="rux-card">
-										<div
-											class="rux-card__sentinel"
-											aria-hidden="true"
-										></div>
-										<div class="rux-card__header">
-											<p class="rux-card__title">
-												Fleet Assignments
-											</p>
-											<div
-												class="rux-number-stepper rux-number-stepper--ghost"
-												role="group"
-												aria-label="Buses needed"
-											>
-												<button
-													class="rux-number-stepper__btn"
-													type="button"
-													data-bus-count-dec
-													aria-label="Fewer buses"
-												>
-													<span class="rux-icon"
-														>remove</span
-													>
-												</button>
-												<input
-													class="rux-number-stepper__input"
-													id="tp-buses"
-													name="busesNeeded"
-													type="number"
-													min="1"
-													max="20"
-													step="1"
-													value="1"
-													inputmode="numeric"
-													aria-label="Buses needed"
-												/>
-												<button
-													class="rux-number-stepper__btn"
-													type="button"
-													data-bus-count-inc
-													aria-label="More buses"
-												>
-													<span class="rux-icon"
-														>add</span
+														>radio_button_unchecked</span
+													><span
+														class="rux-icon icon-on"
+														aria-hidden="true"
+														>check_circle</span
 													>
 												</button>
 											</div>
 										</div>
-										<div
-											class="rux-trip-panel__bus-groups"
-											id="tp-bus-groups"
-										></div>
+										<div class="rux-card__body"></div>
 									</div>
 									<div
 										class="rux-card"
-										id="tp-return-fleet-card"
+										id="tp-itin-leg-card"
 										hidden
 									>
 										<div
@@ -2172,87 +2018,213 @@
 										></div>
 										<div class="rux-card__header">
 											<p class="rux-card__title">
-												Return Fleet Assignments
+												Split Trip
 											</p>
-											<div
-												class="rux-number-stepper rux-number-stepper--ghost"
-												role="group"
-												aria-label="Buses needed (return)"
+											<button
+												class="rux-button rux-button--ghost rux-button--danger"
+												id="tp-itin-reset-leg"
+												type="button"
+												title="Reset Outbound itinerary"
+												aria-label="Reset Outbound itinerary"
 											>
-												<button
-													class="rux-number-stepper__btn"
-													type="button"
-													data-bus-count-dec="return"
-													aria-label="Fewer return buses"
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>restart_alt</span
 												>
-													<span class="rux-icon"
-														>remove</span
-													>
-												</button>
-												<input
-													class="rux-number-stepper__input"
-													id="tp-return-buses"
-													name="returnBusesNeeded"
-													type="number"
-													min="1"
-													max="20"
-													step="1"
-													value="1"
-													inputmode="numeric"
-													aria-label="Buses needed (return)"
-												/>
-												<button
-													class="rux-number-stepper__btn"
-													type="button"
-													data-bus-count-inc="return"
-													aria-label="More return buses"
+												<span data-reset-leg-label
+													>Reset Outbound</span
 												>
-													<span class="rux-icon"
-														>add</span
+											</button>
+										</div>
+										<div class="rux-card__body">
+											<div class="rux-field">
+												<label class="rux-field__label"
+													>Viewing</label
+												>
+												<div
+													class="rux-segmented-track rux-trip-panel__trip-type"
+													id="tp-itin-leg-toggle"
+													data-rux-toggle-group
+												>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="true"
+														data-value="outbound"
 													>
-												</button>
+														Outbound
+													</button>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="false"
+														data-value="return"
+													>
+														Inbound
+													</button>
+												</div>
 											</div>
 										</div>
-										<div
-											class="rux-trip-panel__bus-groups"
-											id="tp-return-bus-groups"
-											hidden
-										></div>
 									</div>
+									<div
+										class="rux-trip-itinerary__stops"
+										id="tp-itin-stops"
+									></div>
 								</div>
 							</div>
-							<footer class="rux-surface__footer">
-								<button
-									class="rux-button rux-button--danger"
-									id="tp-btn-delete"
-									disabled
-								>
-									<span class="rux-icon">event_busy</span
-									><span class="rux-button__label">Cancel</span>
-								</button>
-								<button
-									class="rux-button rux-button--default"
-									id="tp-btn-clear"
-								>
-									<span class="rux-icon">backspace</span
-									><span class="rux-button__label"> Clear</span>
-								</button>
-								<button
-									class="rux-button rux-button--accent"
-									id="tp-btn-save"
-								>
-									<span
-										class="rux-icon rux-button__idle-icon"
+							<!-- Dispatch -->
+							<div
+								id="pane-dispatch"
+								class="rux-panel__pane rux-trip-panel__pane"
+								role="tabpanel"
+								hidden
+							>
+								<div class="rux-card">
+									<div
+										class="rux-card__sentinel"
 										aria-hidden="true"
-										>save</span
-									>
-									<span
-										class="rux-button__spinner"
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Fleet Assignments
+										</p>
+										<div
+											class="rux-number-stepper rux-number-stepper--ghost"
+											role="group"
+											aria-label="Buses needed"
+										>
+											<button
+												class="rux-number-stepper__btn"
+												type="button"
+												data-bus-count-dec
+												aria-label="Fewer buses"
+											>
+												<span class="rux-icon"
+													>remove</span
+												>
+											</button>
+											<input
+												class="rux-number-stepper__input"
+												id="tp-buses"
+												name="busesNeeded"
+												type="number"
+												min="1"
+												max="20"
+												step="1"
+												value="1"
+												inputmode="numeric"
+												aria-label="Buses needed"
+											/>
+											<button
+												class="rux-number-stepper__btn"
+												type="button"
+												data-bus-count-inc
+												aria-label="More buses"
+											>
+												<span class="rux-icon"
+													>add</span
+												>
+											</button>
+										</div>
+									</div>
+									<div
+										class="rux-trip-panel__bus-groups"
+										id="tp-bus-groups"
+									></div>
+								</div>
+								<div
+									class="rux-card"
+									id="tp-return-fleet-card"
+									hidden
+								>
+									<div
+										class="rux-card__sentinel"
 										aria-hidden="true"
-									></span>
-									<span class="rux-button__label">Save</span>
-								</button>
-							</footer>
+									></div>
+									<div class="rux-card__header">
+										<p class="rux-card__title">
+											Return Fleet Assignments
+										</p>
+										<div
+											class="rux-number-stepper rux-number-stepper--ghost"
+											role="group"
+											aria-label="Buses needed (return)"
+										>
+											<button
+												class="rux-number-stepper__btn"
+												type="button"
+												data-bus-count-dec="return"
+												aria-label="Fewer return buses"
+											>
+												<span class="rux-icon"
+													>remove</span
+												>
+											</button>
+											<input
+												class="rux-number-stepper__input"
+												id="tp-return-buses"
+												name="returnBusesNeeded"
+												type="number"
+												min="1"
+												max="20"
+												step="1"
+												value="1"
+												inputmode="numeric"
+												aria-label="Buses needed (return)"
+											/>
+											<button
+												class="rux-number-stepper__btn"
+												type="button"
+												data-bus-count-inc="return"
+												aria-label="More return buses"
+											>
+												<span class="rux-icon"
+													>add</span
+												>
+											</button>
+										</div>
+									</div>
+									<div
+										class="rux-trip-panel__bus-groups"
+										id="tp-return-bus-groups"
+										hidden
+									></div>
+								</div>
+							</div>
+						</div>
+						<footer class="rux-surface__footer">
+							<button
+								class="rux-button rux-button--danger"
+								id="tp-btn-delete"
+								disabled
+							>
+								<span class="rux-icon">event_busy</span
+								><span class="rux-button__label">Cancel</span>
+							</button>
+							<button
+								class="rux-button rux-button--default"
+								id="tp-btn-clear"
+							>
+								<span class="rux-icon">backspace</span
+								><span class="rux-button__label"> Clear</span>
+							</button>
+							<button
+								class="rux-button rux-button--accent"
+								id="tp-btn-save"
+							>
+								<span
+									class="rux-icon rux-button__idle-icon"
+									aria-hidden="true"
+									>save</span
+								>
+								<span
+									class="rux-button__spinner"
+									aria-hidden="true"
+								></span>
+								<span class="rux-button__label">Save</span>
+							</button>
+						</footer>
 					</div>
 					<section class="rux-workspace" aria-label="Weekly schedule">
 						<header class="rux-workspace__header">
@@ -2283,7 +2255,9 @@
 										type="button"
 										aria-label="Jump to current week"
 									>
-										<span class="rux-button__label">Today</span>
+										<span class="rux-button__label"
+											>Today</span
+										>
 									</button>
 									<button
 										class="rux-button rux-button--ghost rux-button--icon rux-button--header"
@@ -2491,7 +2465,9 @@
 												>
 											</button>
 										</div>
-										<div class="rux-card__body rux-mini-cal__body">
+										<div
+											class="rux-card__body rux-mini-cal__body"
+										>
 											<div
 												class="rux-mini-cal__grid"
 												role="grid"
@@ -2521,10 +2497,12 @@
 										></div>
 										<div class="rux-card__header">
 											<p class="rux-card__title">
-												View Options
+												Calendar Options
 											</p>
 										</div>
-										<div class="rux-card__body rux-view-options__list">
+										<div
+											class="rux-card__body rux-view-options__list"
+										>
 											<div class="rux-view-options__row">
 												<span
 													class="rux-view-options__label"
@@ -2547,11 +2525,11 @@
 											<div class="rux-view-options__row">
 												<span
 													class="rux-view-options__label"
-													>Compact rows</span
+													>Center trip details</span
 												>
 												<label class="rux-switch">
 													<input
-														id="opt-compact"
+														id="opt-centered-trip-heads"
 														type="checkbox"
 														role="switch"
 													/>
@@ -2566,7 +2544,63 @@
 											<div class="rux-view-options__row">
 												<span
 													class="rux-view-options__label"
-													>Trip bar size</span
+													>Two-week view</span
+												>
+												<label class="rux-switch">
+													<input
+														id="opt-two-weeks"
+														type="checkbox"
+														role="switch"
+													/>
+													<span
+														class="rux-switch__track"
+													></span>
+													<span
+														class="rux-switch__thumb"
+													></span>
+												</label>
+											</div>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Start on Sunday</span
+												>
+												<label class="rux-switch">
+													<input
+														id="opt-sunday-start"
+														type="checkbox"
+														role="switch"
+													/>
+													<span
+														class="rux-switch__track"
+													></span>
+													<span
+														class="rux-switch__thumb"
+													></span>
+												</label>
+											</div>
+										</div>
+									</section>
+									<section
+										class="rux-card rux-view-options"
+										id="rp-trip-bar-options"
+									>
+										<div
+											class="rux-card__sentinel"
+											aria-hidden="true"
+										></div>
+										<div class="rux-card__header">
+											<p class="rux-card__title">
+												Trip Bar Options
+											</p>
+										</div>
+										<div
+											class="rux-card__body rux-view-options__list"
+										>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Size</span
 												>
 												<div
 													class="rux-segmented-track"
@@ -2584,7 +2618,7 @@
 													>
 														<span
 															class="rux-button__label"
-															>XXS</span
+															>S</span
 														>
 													</button>
 													<button
@@ -2597,7 +2631,7 @@
 													>
 														<span
 															class="rux-button__label"
-															>XS</span
+															>M</span
 														>
 													</button>
 													<button
@@ -2610,7 +2644,7 @@
 													>
 														<span
 															class="rux-button__label"
-															>SM</span
+															>L</span
 														>
 													</button>
 												</div>
@@ -2710,63 +2744,6 @@
 													></span>
 												</label>
 											</div>
-											<div class="rux-view-options__row">
-												<span
-													class="rux-view-options__label"
-													>Center trip details</span
-												>
-												<label class="rux-switch">
-													<input
-														id="opt-centered-trip-heads"
-														type="checkbox"
-														role="switch"
-													/>
-													<span
-														class="rux-switch__track"
-													></span>
-													<span
-														class="rux-switch__thumb"
-													></span>
-												</label>
-											</div>
-											<div class="rux-view-options__row">
-												<span
-													class="rux-view-options__label"
-													>Two-week view</span
-												>
-												<label class="rux-switch">
-													<input
-														id="opt-two-weeks"
-														type="checkbox"
-														role="switch"
-													/>
-													<span
-														class="rux-switch__track"
-													></span>
-													<span
-														class="rux-switch__thumb"
-													></span>
-												</label>
-											</div>
-											<div class="rux-view-options__row">
-												<span
-													class="rux-view-options__label"
-													>Start on Sunday</span
-												>
-												<label class="rux-switch">
-													<input
-														id="opt-sunday-start"
-														type="checkbox"
-														role="switch"
-													/>
-													<span
-														class="rux-switch__track"
-													></span>
-													<span
-														class="rux-switch__thumb"
-													></span>
-												</label>
-											</div>
 										</div>
 									</section>
 								</div>
@@ -2787,7 +2764,9 @@
 											</p>
 										</div>
 										<div class="rux-card__body">
-											<div class="rux-driver-grid__scroller">
+											<div
+												class="rux-driver-grid__scroller"
+											>
 												<div
 													class="rux-driver-grid"
 													id="rp-driver-grid"
@@ -3557,7 +3536,9 @@
 									type="button"
 								>
 									<span class="rux-icon">delete</span
-									><span class="rux-button__label"> Delete</span>
+									><span class="rux-button__label">
+										Delete</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--default"
@@ -3565,7 +3546,9 @@
 									type="button"
 								>
 									<span class="rux-icon">backspace</span
-									><span class="rux-button__label"> Clear</span>
+									><span class="rux-button__label">
+										Clear</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--accent"
@@ -3573,7 +3556,9 @@
 									type="button"
 								>
 									<span class="rux-icon">save</span
-									><span class="rux-button__label"> Save</span>
+									><span class="rux-button__label">
+										Save</span
+									>
 								</button>
 								<button
 									type="button"
@@ -3644,7 +3629,9 @@
 									title="Show / hide columns"
 								>
 									<span class="rux-icon">view_column</span>
-									<span class="rux-button__label">Columns</span>
+									<span class="rux-button__label"
+										>Columns</span
+									>
 								</button>
 							</div>
 						</header>
@@ -4564,7 +4551,9 @@
 									type="button"
 								>
 									<span class="rux-icon">delete</span
-									><span class="rux-button__label"> Delete</span>
+									><span class="rux-button__label">
+										Delete</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--default"
@@ -4572,7 +4561,9 @@
 									type="button"
 								>
 									<span class="rux-icon">backspace</span
-									><span class="rux-button__label"> Clear</span>
+									><span class="rux-button__label">
+										Clear</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--accent"
@@ -4580,7 +4571,9 @@
 									type="button"
 								>
 									<span class="rux-icon">save</span
-									><span class="rux-button__label"> Save</span>
+									><span class="rux-button__label">
+										Save</span
+									>
 								</button>
 								<button
 									type="button"
@@ -5019,7 +5012,9 @@
 									type="button"
 								>
 									<span class="rux-icon">delete</span
-									><span class="rux-button__label"> Delete</span>
+									><span class="rux-button__label">
+										Delete</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--default"
@@ -5027,7 +5022,9 @@
 									type="button"
 								>
 									<span class="rux-icon">backspace</span
-									><span class="rux-button__label"> Clear</span>
+									><span class="rux-button__label">
+										Clear</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--accent"
@@ -5035,7 +5032,9 @@
 									type="button"
 								>
 									<span class="rux-icon">save</span
-									><span class="rux-button__label"> Save</span>
+									><span class="rux-button__label">
+										Save</span
+									>
 								</button>
 								<button
 									type="button"
@@ -5237,83 +5236,442 @@
 								data-component-title="Buttons"
 								class="components-app__page components-app__button-page"
 							>
-								<div class="rux-card components-app__button-intro">
+								<div
+									class="rux-card components-app__button-intro"
+								>
 									<header class="rux-card__header">
 										<div>
-											<p class="rux-card__title">Rux Button</p>
-											<p class="rux-card__subtitle">One composable component for application actions.</p>
+											<p class="rux-card__title">
+												Rux Button
+											</p>
+											<p class="rux-card__subtitle">
+												One composable component for
+												application actions.
+											</p>
 										</div>
-										<a class="rux-button rux-button--ghost" href="./docs/buttons.md" target="_blank" rel="noopener">
-											<span class="rux-icon" aria-hidden="true">description</span>
-											<span class="rux-button__label">Documentation</span>
+										<a
+											class="rux-button rux-button--ghost"
+											href="./docs/buttons.md"
+											target="_blank"
+											rel="noopener"
+										>
+											<span
+												class="rux-icon"
+												aria-hidden="true"
+												>description</span
+											>
+											<span class="rux-button__label"
+												>Documentation</span
+											>
 										</a>
 									</header>
-									<div class="rux-card__body components-app__button-guidance">
-										<p>Start with <code>.rux-button</code>, add one emphasis, then add size, content, or behavior modifiers only when needed.</p>
-										<dl class="components-app__button-rules">
-											<div><dt>Primary</dt><dd>One accent action per decision region.</dd></div>
-											<div><dt>Secondary</dt><dd>Default for ordinary supporting actions.</dd></div>
-											<div><dt>Low emphasis</dt><dd>Ghost for toolbars, headers, and quiet actions.</dd></div>
-											<div><dt>Destructive</dt><dd>Danger or danger ghost only.</dd></div>
+									<div
+										class="rux-card__body components-app__button-guidance"
+									>
+										<p>
+											Start with <code>.rux-button</code>,
+											add one emphasis, then add size,
+											content, or behavior modifiers only
+											when needed.
+										</p>
+										<dl
+											class="components-app__button-rules"
+										>
+											<div>
+												<dt>Primary</dt>
+												<dd>
+													One accent action per
+													decision region.
+												</dd>
+											</div>
+											<div>
+												<dt>Secondary</dt>
+												<dd>
+													Default for ordinary
+													supporting actions.
+												</dd>
+											</div>
+											<div>
+												<dt>Low emphasis</dt>
+												<dd>
+													Ghost for toolbars, headers,
+													and quiet actions.
+												</dd>
+											</div>
+											<div>
+												<dt>Destructive</dt>
+												<dd>
+													Danger or danger ghost only.
+												</dd>
+											</div>
 										</dl>
 									</div>
 								</div>
 
-								<div class="rux-card components-app__button-states">
-									<header class="rux-card__header"><div><p class="rux-card__title">Interaction States</p><p class="rux-card__subtitle">Transient interaction and persistent selection are separate states.</p></div></header>
-									<div class="rux-card__body components-app__button-state-grid">
-										<div><span>Rest</span><button class="rux-button rux-button--default" type="button">Action</button><small>Available</small></div>
-										<div><span>Hover</span><button class="rux-button rux-button--default" data-demo-button-state="hover" type="button">Action</button><small>Lighter fill</small></div>
-										<div><span>Pressed</span><button class="rux-button rux-button--default" data-demo-button-state="pressed" type="button">Action</button><small>Darker inset fill</small></div>
-										<div><span>Focus</span><button class="rux-button rux-button--default" data-demo-button-state="focus" type="button">Action</button><small>Keyboard ring</small></div>
-										<div><span>Selected</span><button class="rux-button rux-button--default rux-button--toggle" type="button" aria-pressed="true" data-rux-toggle-button>Option</button><small>Persistent toggle</small></div>
-										<div><span>Disabled</span><button class="rux-button rux-button--default" type="button" disabled>Action</button><small>Unavailable</small></div>
+								<div
+									class="rux-card components-app__button-states"
+								>
+									<header class="rux-card__header">
+										<div>
+											<p class="rux-card__title">
+												Interaction States
+											</p>
+											<p class="rux-card__subtitle">
+												Transient interaction and
+												persistent selection are
+												separate states.
+											</p>
+										</div>
+									</header>
+									<div
+										class="rux-card__body components-app__button-state-grid"
+									>
+										<div>
+											<span>Rest</span
+											><button
+												class="rux-button rux-button--default"
+												type="button"
+											>
+												Action</button
+											><small>Available</small>
+										</div>
+										<div>
+											<span>Hover</span
+											><button
+												class="rux-button rux-button--default"
+												data-demo-button-state="hover"
+												type="button"
+											>
+												Action</button
+											><small>Lighter fill</small>
+										</div>
+										<div>
+											<span>Pressed</span
+											><button
+												class="rux-button rux-button--default"
+												data-demo-button-state="pressed"
+												type="button"
+											>
+												Action</button
+											><small>Darker inset fill</small>
+										</div>
+										<div>
+											<span>Focus</span
+											><button
+												class="rux-button rux-button--default"
+												data-demo-button-state="focus"
+												type="button"
+											>
+												Action</button
+											><small>Keyboard ring</small>
+										</div>
+										<div>
+											<span>Selected</span
+											><button
+												class="rux-button rux-button--default rux-button--toggle"
+												type="button"
+												aria-pressed="true"
+												data-rux-toggle-button
+											>
+												Option</button
+											><small>Persistent toggle</small>
+										</div>
+										<div>
+											<span>Disabled</span
+											><button
+												class="rux-button rux-button--default"
+												type="button"
+												disabled
+											>
+												Action</button
+											><small>Unavailable</small>
+										</div>
 									</div>
 								</div>
 
 								<div class="rux-card">
-									<header class="rux-card__header"><div><p class="rux-card__title">Emphasis</p><p class="rux-card__subtitle">The complete supported emphasis set.</p></div></header>
-									<div class="rux-card__body components-app__button-list">
-										<div class="components-app__button-example"><div><strong>Accent</strong><span>Main action</span></div><button class="rux-button rux-button--accent" type="button">Save</button><code>.rux-button--accent</code></div>
-										<div class="components-app__button-example"><div><strong>Default</strong><span>Supporting action</span></div><button class="rux-button rux-button--default" type="button">Cancel</button><code>.rux-button--default</code></div>
-										<div class="components-app__button-example"><div><strong>Ghost</strong><span>Low-emphasis action</span></div><button class="rux-button rux-button--ghost" type="button">Options</button><code>.rux-button--ghost</code></div>
-										<div class="components-app__button-example"><div><strong>Danger</strong><span>Primary destructive action</span></div><button class="rux-button rux-button--danger" type="button">Delete</button><code>.rux-button--danger</code></div>
-										<div class="components-app__button-example"><div><strong>Danger ghost</strong><span>Quiet destructive action</span></div><button class="rux-button rux-button--ghost rux-button--danger" type="button">Remove</button><code>.rux-button--ghost.rux-button--danger</code></div>
+									<header class="rux-card__header">
+										<div>
+											<p class="rux-card__title">
+												Emphasis
+											</p>
+											<p class="rux-card__subtitle">
+												The complete supported emphasis
+												set.
+											</p>
+										</div>
+									</header>
+									<div
+										class="rux-card__body components-app__button-list"
+									>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Accent</strong
+												><span>Main action</span>
+											</div>
+											<button
+												class="rux-button rux-button--accent"
+												type="button"
+											>
+												Save</button
+											><code>.rux-button--accent</code>
+										</div>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Default</strong
+												><span>Supporting action</span>
+											</div>
+											<button
+												class="rux-button rux-button--default"
+												type="button"
+											>
+												Cancel</button
+											><code>.rux-button--default</code>
+										</div>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Ghost</strong
+												><span
+													>Low-emphasis action</span
+												>
+											</div>
+											<button
+												class="rux-button rux-button--ghost"
+												type="button"
+											>
+												Options</button
+											><code>.rux-button--ghost</code>
+										</div>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Danger</strong
+												><span
+													>Primary destructive
+													action</span
+												>
+											</div>
+											<button
+												class="rux-button rux-button--danger"
+												type="button"
+											>
+												Delete</button
+											><code>.rux-button--danger</code>
+										</div>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Danger ghost</strong
+												><span
+													>Quiet destructive
+													action</span
+												>
+											</div>
+											<button
+												class="rux-button rux-button--ghost rux-button--danger"
+												type="button"
+											>
+												Remove</button
+											><code
+												>.rux-button--ghost.rux-button--danger</code
+											>
+										</div>
 									</div>
 								</div>
 
 								<div class="rux-card">
-									<header class="rux-card__header"><div><p class="rux-card__title">Size Roles</p><p class="rux-card__subtitle">Choose size from placement, not importance.</p></div></header>
-									<div class="rux-card__body components-app__button-list">
-										<div class="components-app__button-example"><div><strong>Header</strong><span>44px · 24px icon</span></div><button class="rux-button rux-button--ghost rux-button--icon rux-button--header" type="button" aria-label="Search"><span class="rux-icon" aria-hidden="true">search</span></button><code>.rux-button--header</code></div>
-										<div class="components-app__button-example"><div><strong>Standard</strong><span>32px · 20px icon</span></div><button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">edit</span><span class="rux-button__label">Edit</span></button><code>.rux-button</code></div>
-										<div class="components-app__button-example"><div><strong>Compact</strong><span>24px · 16px icon</span></div><button class="rux-button rux-button--ghost rux-button--icon rux-button--compact" type="button" aria-label="Open trip"><span class="rux-icon" aria-hidden="true">open_in_new</span></button><code>.rux-button--compact</code></div>
+									<header class="rux-card__header">
+										<div>
+											<p class="rux-card__title">
+												Size Roles
+											</p>
+											<p class="rux-card__subtitle">
+												Choose size from placement, not
+												importance.
+											</p>
+										</div>
+									</header>
+									<div
+										class="rux-card__body components-app__button-list"
+									>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Header</strong
+												><span>44px · 24px icon</span>
+											</div>
+											<button
+												class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+												type="button"
+												aria-label="Search"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>search</span
+												></button
+											><code>.rux-button--header</code>
+										</div>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Standard</strong
+												><span>32px · 20px icon</span>
+											</div>
+											<button
+												class="rux-button rux-button--default"
+												type="button"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>edit</span
+												><span class="rux-button__label"
+													>Edit</span
+												></button
+											><code>.rux-button</code>
+										</div>
+										<div
+											class="components-app__button-example"
+										>
+											<div>
+												<strong>Compact</strong
+												><span>24px · 16px icon</span>
+											</div>
+											<button
+												class="rux-button rux-button--ghost rux-button--icon rux-button--compact"
+												type="button"
+												aria-label="Open trip"
+											>
+												<span
+													class="rux-icon"
+													aria-hidden="true"
+													>open_in_new</span
+												></button
+											><code>.rux-button--compact</code>
+										</div>
 									</div>
 								</div>
 
 								<div class="rux-card">
-									<header class="rux-card__header"><div><p class="rux-card__title">Content and States</p><p class="rux-card__subtitle">Text, icon + text, icon-only, disabled, and loading.</p></div></header>
-									<div class="rux-card__body components-app__button-sections">
-										<section><h3>Content</h3><div class="components-app__specimens">
-											<button class="rux-button rux-button--accent" type="button">Text only</button>
-											<button class="rux-button rux-button--default" type="button"><span class="rux-icon" aria-hidden="true">download</span><span class="rux-button__label">Icon + text</span></button>
-											<button class="rux-button rux-button--ghost rux-button--icon" type="button" aria-label="More options" title="More options"><span class="rux-icon" aria-hidden="true">more_vert</span></button>
-										</div></section>
-										<section><h3>States</h3><div class="components-app__specimens">
-											<button class="rux-button rux-button--default" type="button" disabled>Disabled</button>
-											<button class="rux-button rux-button--accent rux-button--loading" type="button" disabled><span class="rux-button__spinner" aria-hidden="true"></span><span class="rux-button__label">Saving</span></button>
-										</div></section>
+									<header class="rux-card__header">
+										<div>
+											<p class="rux-card__title">
+												Content and States
+											</p>
+											<p class="rux-card__subtitle">
+												Text, icon + text, icon-only,
+												disabled, and loading.
+											</p>
+										</div>
+									</header>
+									<div
+										class="rux-card__body components-app__button-sections"
+									>
+										<section>
+											<h3>Content</h3>
+											<div
+												class="components-app__specimens"
+											>
+												<button
+													class="rux-button rux-button--accent"
+													type="button"
+												>
+													Text only
+												</button>
+												<button
+													class="rux-button rux-button--default"
+													type="button"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>download</span
+													><span
+														class="rux-button__label"
+														>Icon + text</span
+													>
+												</button>
+												<button
+													class="rux-button rux-button--ghost rux-button--icon"
+													type="button"
+													aria-label="More options"
+													title="More options"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>more_vert</span
+													>
+												</button>
+											</div>
+										</section>
+										<section>
+											<h3>States</h3>
+											<div
+												class="components-app__specimens"
+											>
+												<button
+													class="rux-button rux-button--default"
+													type="button"
+													disabled
+												>
+													Disabled
+												</button>
+												<button
+													class="rux-button rux-button--accent rux-button--loading"
+													type="button"
+													disabled
+												>
+													<span
+														class="rux-button__spinner"
+														aria-hidden="true"
+													></span
+													><span
+														class="rux-button__label"
+														>Saving</span
+													>
+												</button>
+											</div>
+										</section>
 									</div>
 								</div>
 
-								<div class="rux-card components-app__button-composition">
-									<header class="rux-card__header"><div><p class="rux-card__title">Composition</p><p class="rux-card__subtitle">Modifiers stay independent and reusable.</p></div></header>
+								<div
+									class="rux-card components-app__button-composition"
+								>
+									<header class="rux-card__header">
+										<div>
+											<p class="rux-card__title">
+												Composition
+											</p>
+											<p class="rux-card__subtitle">
+												Modifiers stay independent and
+												reusable.
+											</p>
+										</div>
+									</header>
 									<div class="rux-card__body">
 										<pre><code>&lt;button class=&quot;rux-button rux-button--ghost rux-button--icon rux-button--header&quot;
   type=&quot;button&quot; aria-label=&quot;Search&quot;&gt;
   &lt;span class=&quot;rux-icon&quot; aria-hidden=&quot;true&quot;&gt;search&lt;/span&gt;
 &lt;/button&gt;</code></pre>
-										<p class="components-app__button-note">Icon-only buttons require an accessible name. Do not create feature-specific size or emphasis classes.</p>
+										<p class="components-app__button-note">
+											Icon-only buttons require an
+											accessible name. Do not create
+											feature-specific size or emphasis
+											classes.
+										</p>
 									</div>
 								</div>
 							</div>
@@ -9328,32 +9686,15 @@
 				patchProfileSettings({ timeAlign: on });
 			});
 
-			let compactEnabled = false;
-			try {
-				compactEnabled =
-					localStorage.getItem("rux:compact-trips") === "true";
-			} catch (_) {}
-			if (compactEnabled)
-				schedulerEl?.classList.add("rux-scheduler--compact");
-			initToggle("opt-compact", compactEnabled, (on) => {
-				compactEnabled = on;
-				schedulerEl?.classList.toggle("rux-scheduler--compact", on);
-				try {
-					localStorage.setItem("rux:compact-trips", on);
-				} catch (_) {}
-				recomputeTripBarRowCount();
-				layoutScheduler();
-				patchProfileSettings({ compactTrips: on });
-			});
-
 			// ── Trip bar row visibility ──────────────────────────────────────
 			// Five independent user preferences (client/contact/notes/reqs/
 			// drivers — destination and time are never optional, they're the
-			// trip's identity). Unlike Compact rows above, unchecking one of
-			// these is a hard "never show" — it stays hidden even once a bar
-			// is selected/expanded, not just decluttered while collapsed.
-			// Default true (shown) — localStorage only ever stores "false" for
-			// a row a user actively turned off, absence means "on".
+			// trip's identity). Collapsed-only declutter — unchecking one
+			// hides that row while a bar is collapsed, but selecting the bar
+			// always shows every row regardless (see .rux-trip-bar.is-active,
+			// trip-bar.css). Default true (shown) — localStorage only ever
+			// stores "false" for a row a user actively turned off, absence
+			// means "on".
 			const tripBarRowKeys = [
 				["client", "opt-row-client", "rux-scheduler--hide-client"],
 				["contact", "opt-row-contact", "rux-scheduler--hide-contact"],
@@ -9379,9 +9720,7 @@
 					recomputeTripBarRowCount();
 					layoutScheduler();
 					const patch = {};
-					patch[
-						`show${key[0].toUpperCase()}${key.slice(1)}`
-					] = on;
+					patch[`show${key[0].toUpperCase()}${key.slice(1)}`] = on;
 					patchProfileSettings(patch);
 				});
 			});
@@ -9390,21 +9729,14 @@
 			// — with client/contact/notes/reqs/drivers each independently
 			// toggleable, the visible count ranges from 2 (destination + time
 			// only) to 7. --rux-trip-bar-collapsed-height (trip-bar.css) reads
-			// this instead of a literal. Contact/notes follow Compact rows'
-			// existing declutter-while-collapsed behavior on top of their own
-			// preference; client/reqs/drivers only ever follow their own
-			// preference while collapsed. Selecting a bar always shows all 7
+			// this instead of a literal. Selecting a bar always shows all 7
 			// regardless of any of this — trip-bar.css's .rux-trip-bar.is-active
 			// rule hardcodes that itself (via its var(..., 7) fallback), so
 			// there's no separate "active count" to compute here.
 			function recomputeTripBarRowCount() {
 				let count = 2; // destination + time
-				const contactCollapsed =
-					tripBarRowVisible.contact && !compactEnabled;
-				const notesCollapsed =
-					tripBarRowVisible.notes && !compactEnabled;
-				if (contactCollapsed) count++;
-				if (notesCollapsed) count++;
+				if (tripBarRowVisible.contact) count++;
+				if (tripBarRowVisible.notes) count++;
 				if (tripBarRowVisible.client) count++;
 				if (tripBarRowVisible.reqs) count++;
 				if (tripBarRowVisible.drivers) count++;
@@ -9422,9 +9754,8 @@
 			// the existing .rux-segmented-track component (js/core/controls.js)
 			// rather than hand-rolling toggle logic: it manages its own
 			// aria-pressed state and fires "rux:segment-change" on click.
-			const tripBarSizeTrack = document.getElementById(
-				"opt-trip-bar-size",
-			);
+			const tripBarSizeTrack =
+				document.getElementById("opt-trip-bar-size");
 			let tripBarSize = "xs";
 			try {
 				const stored = localStorage.getItem("rux:trip-bar-size");
@@ -9584,7 +9915,7 @@
 			// `settings` jsonb (no-op if no profile is selected — the plain
 			// localStorage writes above already cover that anonymous case).
 			// applyProfileSettings does the reverse: pushes a profile's saved
-			// settings into the twelve toggles above (and their side effects)
+			// settings into the eleven toggles above (and their side effects)
 			// when switching profiles, same code paths each toggle's own
 			// onChange uses.
 			function patchProfileSettings(patch) {
@@ -9611,16 +9942,6 @@
 					);
 				}
 
-				if ("compactTrips" in settings) {
-					compactEnabled = !!settings.compactTrips;
-					const input = document.getElementById("opt-compact");
-					if (input) input.checked = compactEnabled;
-					schedulerEl?.classList.toggle(
-						"rux-scheduler--compact",
-						compactEnabled,
-					);
-				}
-
 				tripBarRowKeys.forEach(([key, id, hideClass]) => {
 					const settingKey = `show${key[0].toUpperCase()}${key.slice(1)}`;
 					if (settingKey in settings) {
@@ -9635,7 +9956,9 @@
 
 				if ("tripBarSize" in settings) {
 					const size = settings.tripBarSize;
-					applyTripBarSize(size === "xxs" || size === "sm" ? size : "xs");
+					applyTripBarSize(
+						size === "xxs" || size === "sm" ? size : "xs",
+					);
 				}
 
 				if ("centeredTripHeads" in settings) {
@@ -11163,7 +11486,9 @@
 								style="cursor: pointer"
 							>
 								<span class="rux-icon">upload_file</span>
-								<span class="rux-button__label">Upload .json</span>
+								<span class="rux-button__label"
+									>Upload .json</span
+								>
 								<input
 									type="file"
 									accept=".json,application/json"
@@ -11248,7 +11573,9 @@
 									aria-pressed="false"
 									data-value="portrait"
 								>
-									<span class="rux-button__label">Portrait</span>
+									<span class="rux-button__label"
+										>Portrait</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--segment"
@@ -11256,7 +11583,9 @@
 									aria-pressed="true"
 									data-value="landscape"
 								>
-									<span class="rux-button__label">Landscape</span>
+									<span class="rux-button__label"
+										>Landscape</span
+									>
 								</button>
 							</div>
 						</div>
@@ -11342,9 +11671,7 @@
 			id="calendar-manifest-view"
 			hidden
 		>
-			<header
-				class="rux-surface__header rux-manifest-window__header"
-			>
+			<header class="rux-surface__header rux-manifest-window__header">
 				<p class="rux-card__title" id="manifest-window-title">
 					Manifest
 				</p>
@@ -11432,9 +11759,7 @@
 						</button>
 					</div>
 				</div>
-				<div
-					class="rux-surface__body rux-manifest-window__body"
-				>
+				<div class="rux-surface__body rux-manifest-window__body">
 					<table
 						class="rux-table trips-app__table"
 						aria-label="Passenger manifest"
@@ -11786,9 +12111,7 @@
 			id="request-inbox-window"
 			hidden
 		>
-			<header
-				class="rux-surface__header rux-request-window__header"
-			>
+			<header class="rux-surface__header rux-request-window__header">
 				<p class="rux-card__title">Requests</p>
 				<span
 					class="rux-request-window__count"
@@ -11870,9 +12193,7 @@
 					id="request-inbox-list"
 				></ul>
 			</div>
-			<footer
-				class="rux-surface__footer rux-request-window__footer"
-			>
+			<footer class="rux-surface__footer rux-request-window__footer">
 				<button
 					type="button"
 					class="rux-button rux-button--accent"
@@ -12020,7 +12341,9 @@
 								rel="noopener"
 								href="#"
 							>
-								<span class="rux-button__label">Compose email</span>
+								<span class="rux-button__label"
+									>Compose email</span
+								>
 							</a>
 						</div>
 					</div>
@@ -12036,9 +12359,7 @@
 			id="trip-finder-window"
 			hidden
 		>
-			<header
-				class="rux-surface__header rux-trip-finder-window__header"
-			>
+			<header class="rux-surface__header rux-trip-finder-window__header">
 				<p class="rux-card__title">Trip Finder</p>
 				<button
 					type="button"
@@ -12118,7 +12439,9 @@
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>directions_bus</span
-									><span class="rux-button__label">Charter</span>
+									><span class="rux-button__label"
+										>Charter</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--segment"
@@ -12130,7 +12453,9 @@
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>confirmation_number</span
-									><span class="rux-button__label">Ticketed</span>
+									><span class="rux-button__label"
+										>Ticketed</span
+									>
 								</button>
 							</div>
 						</div>
@@ -12233,7 +12558,9 @@
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>autorenew</span
-									><span class="rux-button__label">Round</span>
+									><span class="rux-button__label"
+										>Round</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--segment"
@@ -12245,7 +12572,9 @@
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>arrow_forward</span
-									><span class="rux-button__label">One-way</span>
+									><span class="rux-button__label"
+										>One-way</span
+									>
 								</button>
 								<button
 									class="rux-button rux-button--segment"
@@ -12257,7 +12586,9 @@
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>mobiledata_arrows</span
-									><span class="rux-button__label">Split</span>
+									><span class="rux-button__label"
+										>Split</span
+									>
 								</button>
 							</div>
 						</div>
@@ -12303,9 +12634,7 @@
 						</button>
 					</div>
 				</div>
-				<div
-					class="rux-surface__body rux-trip-finder-window__body"
-				>
+				<div class="rux-surface__body rux-trip-finder-window__body">
 					<div
 						class="rux-card--level-2 rux-trip-finder-window__results trips-app__table-wrap"
 					>

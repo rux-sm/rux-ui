@@ -27,18 +27,14 @@
    .rux-scheduler--centered-trip-heads
                                 Makes the full multi-day span the primary head
                                 surface and centers a one-day-width content column.
-   .rux-scheduler--compact      Hides contact/notes while a bar is collapsed;
-                                reappear on selection. Set by the "Compact
-                                rows" View Option (index.html).
    .rux-scheduler--hide-client
    .rux-scheduler--hide-contact
    .rux-scheduler--hide-notes
    .rux-scheduler--hide-reqs
    .rux-scheduler--hide-drivers Per-row user preferences (index.html's View
-                                Options, five independent switches). Same
-                                collapsed-only declutter as --compact above —
-                                selecting a bar always shows every row
-                                regardless of any of this.
+                                Options, five independent switches). Hides
+                                that row while a bar is collapsed — selecting
+                                the bar always shows every row regardless.
    .rux-scheduler--trip-bar-size-xxs
    .rux-scheduler--trip-bar-size-sm
                                 Swaps --rux-trip-bar-row-font-size/-line-height
@@ -73,8 +69,8 @@
    recomputeTripBarRowCount() counts however many are actually on and
    writes it to --rux-trip-bar-visible-row-count, which the collapsed
    height calc() below reads. Selecting a bar (.is-active) always shows
-   all 7 regardless — both Compact rows and every row preference are
-   collapsed-only declutter, not a permanent hide.
+   all 7 regardless — every row preference is collapsed-only declutter,
+   not a permanent hide.
    ------------------------------------------------
    Row          Element            Size      Notes
    ──────────── ────────────────── ───────── ──────────
@@ -83,7 +79,8 @@
    Client       __client           xs
    Contact      __contact          xs
    Notes        __notes            xs        (italic)
-   Reqs/bus pill __bus-label       10px      Fixed pill inside the 16px reqs row, not a row of its own
+   Reqs/bus pill __bus-label       10-13px   Clamped to the reqs row, not a row of its own — floors at
+                                              today's 10px/12px (XXS/XS), grows only for SM
    Time         __time             xs        (Dep left, Spt centered, Arr right)
    Time value   __time-value       xs
    Drivers      __driver           xs
@@ -96,8 +93,8 @@
 	   fixed 7 anymore either: client/contact/notes/reqs/drivers are each an
 	   independent user preference (index.html's View Options), so the
 	   scheduler sets --rux-trip-bar-visible-row-count (2-7, destination +
-	   time are never optional) whenever a preference or Compact rows
-	   changes — see recomputeTripBarRowCount() in index.html. The 7
+	   time are never optional) whenever a preference changes — see
+	   recomputeTripBarRowCount() in index.html. The 7
 	   fallback only matters if that JS hasn't run yet (e.g. no-JS). Padding
 	   top + bottom, 0 gap between rows. */
 	--rux-trip-bar-collapsed-height: calc(
@@ -122,6 +119,27 @@
 	   or below .rux-scheduler--trip-bar-size-xxs/-sm to actually see their
 	   override; :root sits above that and would freeze on the xs default. */
 	--rux-trip-bar-icon-size: var(--rux-trip-bar-row-line-height);
+
+	/* Same freezing reasoning as icon-size above — both chain through
+	   --rux-trip-bar-row-line-height, so both have to live here, not
+	   tokens.css. The bus-label pill was a deliberate flat exception to the
+	   row-typography contract (still is — it's a badge, not a text row),
+	   but "flat" doesn't have to mean "frozen at one size forever now that
+	   rows themselves span 12-20px." clamp() floors both at today's already-
+	   shipped 12px/10px (so XXS/XS render pixel-identical to before — an
+	   8px pill at XXS risked reading as illegible, better to hold the floor
+	   than guess), and only lets SM's genuinely larger 20px row grow the
+	   pill past that, capped so it never overpowers the row's own text. */
+	--rux-trip-bar-bus-label-height: clamp(
+		12px,
+		calc(var(--rux-trip-bar-row-line-height) - 4px),
+		16px
+	);
+	--rux-trip-bar-bus-label-font-size: clamp(
+		10px,
+		calc(var(--rux-trip-bar-row-line-height) * 0.625),
+		13px
+	);
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;
@@ -256,9 +274,9 @@
 }
 
 .rux-trip-bar.is-active {
-	/* Selecting a bar always shows every row, full stop — both Compact rows
-	   and every row-visibility preference are collapsed-only declutter now;
-	   .is-active means all 7. --rux-trip-bar-active-row-count is never
+	/* Selecting a bar always shows every row, full stop — every row-
+	   visibility preference is collapsed-only declutter; .is-active means
+	   all 7. --rux-trip-bar-active-row-count is never
 	   actually set by index.html anymore (nothing needs it to be anything
 	   but 7), so the ", 7" fallback here is what's really doing the work —
 	   kept as a token read rather than a bare 7 in case that ever changes.
@@ -724,13 +742,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	height: 12px;
-	padding: 0 var(--rux-space-0-5);
+	height: var(--rux-trip-bar-bus-label-height);
+	padding: var(--rux-space-px);
 	background: var(--rux-trip-bar-bus-label-bg);
 	border-radius: var(--rux-trip-bar-bus-label-radius);
 	color: var(--rux-black);
-	font-size: 10px;
-	font-weight: 900;
+	font-size: var(--rux-trip-bar-bus-label-font-size);
+	font-weight: var(--rux-trip-bar-bus-label-weight);
 	line-height: 1;
 }
 
@@ -975,10 +993,15 @@
 	flex: 1;
 	min-width: 0;
 	align-items: center;
-	justify-content: center;
+	/* flex-start, not center — every other row (destination, client,
+	   contact, notes, even Dep in the time row) starts flush at the row's
+	   left padding. With one driver, centering left it floating alone in
+	   the middle instead of matching that rhythm; with several, it reads
+	   as a left-to-right list instead of separate centered columns. */
+	justify-content: flex-start;
 	gap: var(--rux-space-1);
 	background: transparent;
-	padding: 0 var(--rux-space-1);
+	padding: 0;
 	height: var(--rux-trip-bar-row-line-height);
 	border-radius: 0;
 	overflow: hidden;
@@ -1204,29 +1227,11 @@
 	}
 }
 
-/* ---------- Compact mode ---------- */
-/* Collapsed-only declutter — the height math itself lives entirely in the
-   base .rux-trip-bar / .rux-trip-bar.is-active rules above now
-   (--rux-trip-bar-visible-row-count, computed by recomputeTripBarRowCount()
-   in index.html, already accounts for whether Compact rows is on; .is-active
-   always resolves to all 7 regardless). This is just the visual
-   hide/reveal. */
-
-.rux-scheduler--compact .rux-trip-bar__contact,
-.rux-scheduler--compact .rux-trip-bar__notes {
-	display: none;
-}
-
-.rux-scheduler--compact .rux-trip-bar.is-active .rux-trip-bar__contact,
-.rux-scheduler--compact .rux-trip-bar.is-active .rux-trip-bar__notes {
-	display: flex;
-}
-
 /* ---------- Row visibility preferences ---------- */
-/* Collapsed-only declutter too, same as Compact rows above — selecting a
-   bar always shows every row regardless of preference. (Was a hard "never
-   show" earlier; changed so .is-active means full detail, full stop, no
-   exceptions.) */
+/* Collapsed-only declutter — unchecking a row hides it while a bar is
+   collapsed, but selecting the bar always shows every row regardless of
+   preference. (Was a hard "never show" earlier; changed so .is-active
+   means full detail, full stop, no exceptions.) */
 
 .rux-scheduler--hide-client .rux-trip-bar__client {
 	display: none;

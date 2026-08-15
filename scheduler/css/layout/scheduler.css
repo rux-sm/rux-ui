@@ -268,10 +268,7 @@
 	   --rux-trip-bar-visible-row-count from that same ancestor either way);
 	   restated here only because a descendant's own --_row-height always
 	   wins over one merely inherited from further up, and other rules key
-	   off this element specifically. No separate .rux-scheduler--compact
-	   override needed anymore — recomputeTripBarRowCount() (index.html)
-	   already folds Compact rows into --rux-trip-bar-visible-row-count
-	   itself, so this one formula is correct in both states. */
+	   off this element specifically. */
 	--_row-height: calc(
 		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
 		+ (var(--rux-space-2) * 2)

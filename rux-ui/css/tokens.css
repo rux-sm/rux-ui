@@ -220,7 +220,7 @@
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg: var(--rux-surface-2); /* Raised elements */
+	--rux-well-bg: var(--rux-surface-4); /* Raised elements */
 	--rux-thumb-bg: oklch(from var(--rux-neutral) 90% c h); /* Raised elements */
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
@@ -880,10 +880,12 @@
 	--rux-trip-bar-radius: var(--rux-radius-0);
 	--rux-trip-bar-action-button-size: 28px;
 	--rux-trip-bar-actions-radius:   var(--rux-radius-control);
-	--rux-trip-bar-bus-label-radius: var(--rux-radius-xs);
+	--rux-trip-bar-bus-label-radius: var(--rux-radius-full);
+	--rux-trip-bar-bus-label-weight: var(var(--rux-weight-600));
 	--rux-trip-bar-meta-radius:      var(--rux-radius-sm);
 	--rux-trip-bar-meta-fg: var(--rux-fg-on-accent);
 	--rux-trip-bar-shadow: var(--rux-shadow-3);
+
 	/* Same recessed rim used on input fields — gives the time/driver meta
 	   rows a subtle "readout" feel instead of a flat tonal wash. Was missing
 	   its trailing ";" — silently swallowed the two stripe declarations
@@ -963,7 +965,7 @@
 	--rux-input-border:         1px solid var(--rux-border);
 	--rux-input-border-image:   none;
 	--rux-input-border-radius:  var(--rux-radius-0);
-	--rux-input-shadow:         none;
+	--rux-input-shadow:         var(--rux-shadow-inset);
 	--rux-input-height:         var(--rux-field-height);
 	--rux-input-padding-inline: var(--rux-control-padding-inline);
 	--rux-input-font-size:      var(--rux-size-sm);

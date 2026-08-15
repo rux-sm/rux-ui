@@ -37,19 +37,47 @@ function deactivateTripBars(except = null) {
   });
 }
 
+// Same tolerance installBusDrag (index.html) uses to tell a genuine drag
+// from jitter. Dismissal here used to fire on pointerdown alone, with zero
+// movement or duration check — an accidental trackpad brush (the start of
+// a scroll, a light unintentional tap while reaching for something else)
+// closed the active bar exactly as readily as a deliberate click. Requiring
+// the pointer to come back up close to where it went down filters those
+// out without changing when dismissal fires relative to other elements'
+// own click handlers — pointerup still runs in capture phase, still before
+// any click event does.
+const DISMISS_MOVE_THRESHOLD = 6;
+
 function installOutsideDismiss() {
   if (outsideDismissInstalled) return;
   outsideDismissInstalled = true;
 
+  let downX = 0;
+  let downY = 0;
+  let downTarget = null;
+
   document.addEventListener(
     "pointerdown",
     (event) => {
+      downX = event.clientX;
+      downY = event.clientY;
+      downTarget = event.target;
+    },
+    true,
+  );
+
+  document.addEventListener(
+    "pointerup",
+    (event) => {
       // Anything reading the active bar's selection (Contact Info, its
       // modal) opts out of dismissal with this attribute — otherwise this
-      // capture-phase pointerdown deactivates the bar (and disables the
+      // capture-phase listener deactivates the bar (and disables the
       // button reading it) before the button's own click handler runs.
-      if (event.target?.closest?.("[data-rux-keep-trip-selection]")) return;
-      const currentBar = event.target?.closest?.(".rux-trip-bar") || null;
+      if (downTarget?.closest?.("[data-rux-keep-trip-selection]")) return;
+      const dx = event.clientX - downX;
+      const dy = event.clientY - downY;
+      if (Math.hypot(dx, dy) > DISMISS_MOVE_THRESHOLD) return;
+      const currentBar = downTarget?.closest?.(".rux-trip-bar") || null;
       deactivateTripBars(currentBar);
     },
     true,
