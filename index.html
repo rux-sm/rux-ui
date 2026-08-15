@@ -2674,58 +2674,6 @@
 											<div class="rux-view-options__row">
 												<span
 													class="rux-view-options__label"
-													>Size</span
-												>
-												<div
-													class="rux-segmented-track"
-													id="opt-trip-bar-size"
-													role="group"
-													aria-label="Trip bar size"
-												>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="false"
-														data-value="xxs"
-														aria-label="Extra extra small"
-														title="Extra extra small"
-													>
-														<span
-															class="rux-button__label"
-															>S</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="true"
-														data-value="xs"
-														aria-label="Extra small"
-														title="Extra small"
-													>
-														<span
-															class="rux-button__label"
-															>M</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="false"
-														data-value="sm"
-														aria-label="Small"
-														title="Small"
-													>
-														<span
-															class="rux-button__label"
-															>L</span
-														>
-													</button>
-												</div>
-											</div>
-											<div class="rux-view-options__row">
-												<span
-													class="rux-view-options__label"
 													>Show client</span
 												>
 												<label class="rux-switch">
@@ -2817,6 +2765,58 @@
 														class="rux-switch__thumb"
 													></span>
 												</label>
+											</div>
+											<div class="rux-view-options__row rux-view-options__row--stacked">
+												<span
+													class="rux-view-options__label"
+													>Size</span
+												>
+												<div
+													class="rux-segmented-track"
+													id="opt-trip-bar-size"
+													role="group"
+													aria-label="Trip bar size"
+												>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="false"
+														data-value="xxs"
+														aria-label="Extra extra small"
+														title="Extra extra small"
+													>
+														<span
+															class="rux-button__label"
+															>S</span
+														>
+													</button>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="true"
+														data-value="xs"
+														aria-label="Extra small"
+														title="Extra small"
+													>
+														<span
+															class="rux-button__label"
+															>M</span
+														>
+													</button>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="false"
+														data-value="sm"
+														aria-label="Small"
+														title="Small"
+													>
+														<span
+															class="rux-button__label"
+															>L</span
+														>
+													</button>
+												</div>
 											</div>
 										</div>
 									</section>
@@ -9733,11 +9733,40 @@
 				.getElementById("next-week")
 				.addEventListener("click", () => navigateWeek(1));
 
+			// Horizontal-only — aligns today's column to the scheduler's left
+			// edge, so today reads as the first visible day rather than
+			// somewhere in the middle. Not called from renderScheduler()
+			// itself (that fires on every settings toggle and week
+			// navigation too, which would scroll-jack the user away from
+			// whatever they're looking at); only from the two places landing
+			// on today is actually the point: initial load, and the Today
+			// button below. Manual getBoundingClientRect() math, not
+			// element.scrollIntoView() — that walks every scrollable
+			// ancestor looking for one to move, risking an unrelated
+			// vertical scroll elsewhere on the page; this only ever touches
+			// schedulerEl's own horizontal scroll. Unconditional (no "already
+			// visible" guard) — setting scrollLeft to a value it already has
+			// is a no-op, and the point here is "today is always the first
+			// column," not just "today is visible somewhere."
+			function scrollTodayIntoView() {
+				if (!schedulerEl) return;
+				const todayCol = schedulerEl.querySelector(
+					".rux-scheduler__day-head--today",
+				);
+				if (!todayCol) return;
+				const schedulerRect = schedulerEl.getBoundingClientRect();
+				const todayRect = todayCol.getBoundingClientRect();
+				const todayLeft =
+					todayRect.left - schedulerRect.left + schedulerEl.scrollLeft;
+				schedulerEl.scrollLeft = Math.max(0, todayLeft);
+			}
+
 			function jumpToToday() {
 				currentWeekStart = startOfWeek(new Date());
 				miniCalMonth = new Date();
 				miniCalMonth.setDate(1);
 				renderScheduler();
+				scrollTodayIntoView();
 			}
 			document
 				.getElementById("today-btn")
@@ -11249,6 +11278,11 @@
 			);
 
 			renderScheduler();
+			// rAF, not called synchronously — waits for the browser to
+			// actually paint the just-rendered grid first, so the column
+			// positions getBoundingClientRect() reads in scrollTodayIntoView
+			// are real, not whatever was there before this render.
+			requestAnimationFrame(scrollTodayIntoView);
 
 			async function initSchedulerData() {
 				try {
