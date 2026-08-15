@@ -46,7 +46,7 @@
    still loses to any :is(.is-active, [aria-pressed="true"]) selected-state
    override elsewhere, since those are more specific still. */
 .rux-trip-bar .rux-icon {
-	--_icon-size: 18px;
+	--_icon-size: var(--rux-trip-bar-icon-size);
 	--_icon-fill: 1;
 	--_icon-weight: 400;
 	--_icon-grade: 0;

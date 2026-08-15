@@ -906,6 +906,16 @@
 	--rux-trip-bar-row-font-size:   var(--rux-size-xs);
 	--rux-trip-bar-row-line-height: var(--rux-line-height-xs);
 
+	/* --rux-trip-bar-icon-size: declared in trip-bar.css's .rux-trip-bar rule,
+	   not here — it chains through --rux-trip-bar-row-line-height above, and
+	   a custom property that references another one freezes at whatever
+	   that other one resolves to AT THE ELEMENT WHERE IT'S DECLARED, not
+	   live per-descendant. Declared here at :root, it would freeze on the
+	   xs default before .rux-scheduler--trip-bar-size-xxs/-sm (trip-bar.css)
+	   ever got a chance to override --row-line-height. Declaring it inside
+	   .rux-trip-bar itself — the same fix --rux-trip-bar-collapsed-height
+	   already relies on — resolves it below that override instead. */
+
 	/* ─── COMPONENT · trip panel ──────────────────────────────────────────── */
 	/* Motion only — the trip panel is a reveal animation for the Trip Editor,
 	   not a boxed component of its own; no bg/border/radius/shadow apply. */

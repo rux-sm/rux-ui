@@ -117,6 +117,12 @@
 	--rux-trip-bar-action-height: calc(var(--rux-trip-bar-action-button-size) + (var(--rux-space-2) * 2));
 	--rux-trip-bar-active-height: calc(var(--rux-trip-bar-collapsed-height) + var(--rux-trip-bar-action-height));
 
+	/* Declared here, not in tokens.css — see the comment there. Chains
+	   through --rux-trip-bar-row-line-height, so it has to be declared at
+	   or below .rux-scheduler--trip-bar-size-xxs/-sm to actually see their
+	   override; :root sits above that and would freeze on the xs default. */
+	--rux-trip-bar-icon-size: var(--rux-trip-bar-row-line-height);
+
 	--_details-height: 0px;
 	--_conflict-height: 0px;
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
@@ -1141,14 +1147,10 @@
 	gap: var(--rux-space-1);
 }
 
-/* No size override — this icon uses the same 18px trip-bar default as
-   every other icon in the bar (only two sizes exist app-wide: the 20px
-   standard and this 18px trip-bar default). That's 2px taller than the
-   row's own locked 16px height (tokens.css's line-height rework shrank xs
-   rows from 18px to 16px, icon sizing is a separate --rux-icon-* system
-   and didn't move) — .rux-trip-bar__payment-value centers and clips it,
-   and Material Symbols glyphs carry enough internal padding that the crop
-   doesn't touch the ink. */
+/* No size override needed — --rux-trip-bar-icon-size (tokens.css) now
+   tracks --rux-trip-bar-row-line-height directly, so this icon is always
+   exactly the row's own height, at every size tier, with no drift to
+   account for. */
 .rux-trip-bar__payment-entry .rux-trip-bar__payment-icon {
 	flex: none;
 }
