@@ -11,12 +11,12 @@
   background: var(--rux-surface-5);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
-  font-size: var(--rux-text-sm);
-  line-height: var(--rux-leading-snug);
+  font-size: var(--rux-size-sm);
+  line-height: var(--rux-line-height-sm);
 }
 .rux-alert__icon  { color: var(--rux-text-muted); flex: none; }
 .rux-alert__body  { flex: 1; min-width: 0; }
-.rux-alert__title { font-weight: var(--rux-weight-semibold); margin-bottom: calc(var(--rux-space-1) / 2); }
+.rux-alert__title { font-weight: var(--rux-weight-400); margin-bottom: calc(var(--rux-space-1) / 2); }
 
 .rux-alert--info    { background: var(--rux-info-subtle);    border-color: transparent; }
 .rux-alert--info    .rux-alert__icon { color: var(--rux-info); }
@@ -38,7 +38,7 @@
   background: var(--rux-surface-5);
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-md);
-  font-size: var(--rux-text-sm);
+  font-size: var(--rux-size-sm);
   min-width: var(--rux-toast-min-width);
 }
 
@@ -127,7 +127,7 @@
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-sm);
   color: var(--rux-text-default);
-  font-size: var(--rux-text-xs);
+  font-size: var(--rux-size-xs);
   white-space: nowrap;
   pointer-events: none;
   z-index: var(--rux-z-overlay);
@@ -145,8 +145,8 @@
   border: var(--rux-border-width) solid var(--rux-border);
   border-radius: var(--rux-radius-sm);
   color: var(--rux-text-default);
-  font-size: var(--rux-text-xs);
-  line-height: var(--rux-leading-snug);
+  font-size: var(--rux-size-xs);
+  line-height: var(--rux-line-height-xs);
   overflow-wrap: anywhere;
   pointer-events: none;
   white-space: normal;

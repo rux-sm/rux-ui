@@ -68,7 +68,7 @@
 	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-border-subtle);
 	border-radius: var(--rux-radius-md);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-customer-panel__trip-date {
@@ -105,7 +105,7 @@
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-8);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	text-align: center;
 }
 

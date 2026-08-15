@@ -25,8 +25,8 @@
 .settings-app__subtitle {
 	margin: 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-sm);
+	line-height: var(--rux-line-height-sm);
 }
 
 .settings-app__body {
@@ -64,14 +64,14 @@
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-heading-panel-weight);
 	letter-spacing: 0;
-	line-height: var(--rux-leading-tight);
+	line-height: var(--rux-line-height-md);
 }
 
 .settings-app__panel-copy {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-sm);
+	line-height: var(--rux-line-height-sm);
 }
 
 .settings-app__form {
@@ -101,8 +101,8 @@
 .settings-app__message {
 	margin: 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-sm);
+	line-height: var(--rux-line-height-sm);
 }
 
 .settings-app__message.is-error {
@@ -159,15 +159,15 @@
 }
 
 .settings-app__suggestion-name {
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-line-height-sm);
 }
 
 .settings-app__suggestion-address {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-xs);
+	line-height: var(--rux-line-height-xs);
 }
 
 /* — Saved locations ————————————————————————————————————————————————————— */
@@ -209,19 +209,19 @@
 
 .settings-location-row__name {
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 .settings-location-row__address {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .settings-locations-empty {
 	margin: 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 /* — Requirements panel ————————————————————————————————————————————————— */
@@ -268,7 +268,7 @@
 	padding-block: 0;
 	background: transparent;
 	border-color: transparent;
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .settings-req-label-input:hover {
@@ -283,7 +283,7 @@
 .settings-req-empty {
 	margin: 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .settings-req-add-area {

@@ -55,22 +55,22 @@
 }
 
 .fleet-app__vehicle-name {
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-default);
 }
 
 .fleet-app__vehicle-ref {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-100);
+	font-size: var(--rux-size-xs);
 	color: var(--rux-accent);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 }
 
 /* — Order column — */
 
 .fleet-app__order {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	color: var(--rux-text-disabled);
 	width: 2rem;
 	text-align: center;
@@ -100,7 +100,7 @@
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-8);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	text-align: center;
 }
 

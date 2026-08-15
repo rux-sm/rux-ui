@@ -16,7 +16,7 @@
 	min-height: 14rem;
 	resize: none;
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	line-height: 1.5;
 	white-space: pre-wrap;
 }

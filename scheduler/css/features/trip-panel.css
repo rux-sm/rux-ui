@@ -397,8 +397,8 @@
 }
 .rux-trip-panel__billing-step-help {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-xs);
-	line-height: var(--rux-leading-tight);
+	font-size: var(--rux-size-xs);
+	line-height: var(--rux-line-height-xs);
 }
 .rux-trip-panel__po-details {
 	display: grid;
@@ -415,9 +415,9 @@
 	align-items: center;
 	justify-content: center;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	font-variant-numeric: tabular-nums;
-	font-weight: var(--rux-weight-regular);
+	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	white-space: nowrap;
 }
@@ -455,7 +455,7 @@
 	border: var(--rux-input-border);
 	border-color: var(--rux-input-disabled-border);
 	border-radius: var(--rux-input-border-radius);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	cursor: not-allowed;
 }
 .rux-trip-panel__payment-empty > .rux-icon,
@@ -501,8 +501,8 @@
 	min-width: 0;
 	overflow: hidden;
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -541,7 +541,7 @@
 	justify-content: center;
 	padding-inline: var(--rux-space-2);
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	pointer-events: none;
 }
 .rux-trip-panel__payment-date {
@@ -644,7 +644,7 @@
 	flex: 1;
 }
 .rux-trip-panel__bus-hint {
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 	color: var(--rux-text-disabled);
 }
 
@@ -668,8 +668,8 @@
 	background: var(--rux-surface-1);
 }
 .rux-trip-panel__driver-row--head span {
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-disabled);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
@@ -778,8 +778,8 @@
 }
 .rux-trip-panel__doc-name {
 	flex: 1;
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	color: currentColor;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -789,7 +789,7 @@
 }
 .rux-trip-panel__doc-date {
 	flex: none;
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 	font-variant-numeric: tabular-nums;
 	color: var(--rux-fg-on-accent-muted);
 }
@@ -967,8 +967,8 @@
 /* — Scoped type overrides ————————————————————————————————————————————————— */
 
 .rux-trip-panel .rux-field__label {
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;

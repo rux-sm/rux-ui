@@ -44,7 +44,7 @@
 .rux-driver-week-info__range {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-driver-week-info__body {
@@ -65,8 +65,8 @@
 .rux-driver-week-info__section-title {
 	margin: 0 0 var(--rux-space-2);
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-driver-week-info__trips {
@@ -83,8 +83,8 @@
 	margin: 0;
 	padding: var(--rux-space-1) 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
 	background: var(--rux-surface-5);
@@ -120,13 +120,13 @@
 
 .rux-driver-week-info__trip-title {
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-driver-week-info__trip-meta {
 	margin-top: var(--rux-space-1);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-driver-week-info__trip-actions {
@@ -158,20 +158,20 @@
 
 .rux-driver-week-info__share-state {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 	text-align: right;
 }
 
 .rux-driver-week-info__list-scope {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 	white-space: nowrap;
 }
 
 .rux-driver-week-info__share-copy {
 	margin: 0 0 var(--rux-space-2);
-	font-size: var(--rux-text-xs);
-	line-height: var(--rux-leading-normal);
+	font-size: var(--rux-size-xs);
+	line-height: var(--rux-line-height-xs);
 }
 
 .rux-driver-week-info__share-url-row,
@@ -184,7 +184,7 @@
 	flex: 1;
 	min-width: 0;
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-driver-week-info__share-actions {
@@ -202,7 +202,7 @@
 	min-height: 17rem;
 	resize: none;
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	line-height: 1.5;
 	white-space: pre-wrap;
 }

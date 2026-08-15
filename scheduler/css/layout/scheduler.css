@@ -48,13 +48,24 @@
 	--rux-scheduler-now-line-z-index: 1;
 	--rux-scheduler-trip-bar-z-index: 2;
 	--rux-scheduler-row-block-inset: var(--rux-space-2);
-	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
-	   is the empty-row fallback, so an empty row sits at the same height a
-	   row with one collapsed trip bar would lay out to. Can't reference that
-	   token directly: it's scoped to .rux-trip-bar, a descendant of this
-	   element, and custom properties don't cascade upward. Keep the two in
-	   sync by hand if either one changes. */
-	--_row-height: calc(138px + (var(--rux-scheduler-row-block-inset) * 2));
+	/* Empty-row fallback — so an empty row sits at the same height a row
+	   with one collapsed trip bar would lay out to. Mirrors
+	   --rux-trip-bar-collapsed-height's own formula (trip-bar.css) rather
+	   than a hand-synced pixel literal: that token itself is scoped to
+	   .rux-trip-bar (a descendant) and can't cascade upward, but the two
+	   pieces it's built from — --rux-trip-bar-row-line-height (tokens.css,
+	   truly global) and --rux-trip-bar-visible-row-count (set by
+	   recomputeTripBarRowCount() in index.html on this same .rux-scheduler
+	   element) — both are available here directly, so this stays correct
+	   automatically instead of drifting stale (it already had, twice,
+	   before this rewrite). --rux-space-2 mirrors
+	   --rux-trip-bar-compact-padding's own value — also component-scoped,
+	   not reachable from here. */
+	--_row-height: calc(
+		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
+		+ (var(--rux-space-2) * 2)
+		+ (var(--rux-scheduler-row-block-inset) * 2)
+	);
 	--rux-scheduler-cols: var(--rux-scheduler-col-head-width)
 		repeat(var(--rux-scheduler-days), minmax(var(--rux-scheduler-day-min-width), 1fr));
 
@@ -155,16 +166,16 @@
 }
 
 .rux-scheduler__day-name {
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-regular);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
 	color: var(--rux-text-muted);
 }
 
 .rux-scheduler__day-number {
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-bold);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);
 	line-height: 1;
 }
@@ -225,7 +236,7 @@
 	top: 0;
 	transform: translate(-50%, calc(-100% - 4px));
 	font-size: 9px;
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-disabled);
 	letter-spacing: var(--rux-tracking-wide);
 	line-height: 1;
@@ -253,13 +264,19 @@
    set here cascade independently to each row's row-head and track. */
 .rux-scheduler__row {
 	display: contents;
-	/* 138px must match --rux-trip-bar-collapsed-height (trip-bar.css) — this
-	   is the empty-row fallback, so an empty row sits at the same height a
-	   row with one collapsed trip bar would lay out to. Can't reference that
-	   token directly: it's scoped to .rux-trip-bar, a descendant of this
-	   element, and custom properties don't cascade upward. Keep the two in
-	   sync by hand if either one changes. */
-	--_row-height: calc(138px + (var(--rux-scheduler-row-block-inset) * 2));
+	/* Same formula as the base .rux-scheduler rule above (both inherit
+	   --rux-trip-bar-visible-row-count from that same ancestor either way);
+	   restated here only because a descendant's own --_row-height always
+	   wins over one merely inherited from further up, and other rules key
+	   off this element specifically. No separate .rux-scheduler--compact
+	   override needed anymore — recomputeTripBarRowCount() (index.html)
+	   already folds Compact rows into --rux-trip-bar-visible-row-count
+	   itself, so this one formula is correct in both states. */
+	--_row-height: calc(
+		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
+		+ (var(--rux-space-2) * 2)
+		+ (var(--rux-scheduler-row-block-inset) * 2)
+	);
 }
 
 /* display: contents above is an author style, which beats the browser's
@@ -268,20 +285,6 @@
    attribute on the unassigned row would have no visual effect. */
 .rux-scheduler__row[hidden] {
 	display: none;
-}
-
-.rux-scheduler--compact {
-	/* 110px must match .rux-scheduler--compact .rux-trip-bar's
-	   --rux-trip-bar-collapsed-height (trip-bar.css) — see the non-compact
-	   row above for why this can't just reference that token directly. */
-	--_row-height: calc(110px + (var(--rux-scheduler-row-block-inset) * 2));
-}
-
-.rux-scheduler--compact .rux-scheduler__row {
-	/* 110px must match .rux-scheduler--compact .rux-trip-bar's
-	   --rux-trip-bar-collapsed-height (trip-bar.css) — see the non-compact
-	   row above for why this can't just reference that token directly. */
-	--_row-height: calc(110px + (var(--rux-scheduler-row-block-inset) * 2));
 }
 
 /* ---------- Bus row ---------- */
@@ -317,8 +320,8 @@
 	border-block-end: var(--rux-calendar-header-border);
 	border-inline-start: none;
 	color: var(--rux-scheduler-row-head-color);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	box-shadow: var(--rux-calendar-row-header-shadow);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
@@ -460,8 +463,8 @@
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-bold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	white-space: nowrap;
 	color: var(--rux-calendar-now-line-label-fg);

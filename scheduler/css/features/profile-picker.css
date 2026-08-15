@@ -16,7 +16,7 @@
 .rux-profile-picker__empty {
 	padding: var(--rux-space-3) 0;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	text-align: center;
 }
 
@@ -122,8 +122,8 @@
 	border-radius: 50%;
 	background: var(--rux-bg-active);
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	border: var(--rux-ui-header-avatar-border);
 }
 

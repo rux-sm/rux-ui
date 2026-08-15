@@ -48,7 +48,7 @@
 	overflow: hidden;
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-heading-panel-weight);
-	line-height: var(--rux-leading-tight);
+	line-height: var(--rux-line-height-md);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	flex: 1;

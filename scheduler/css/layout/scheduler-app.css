@@ -717,9 +717,9 @@
 	flex: 1;
 	margin: 0;
 	color: var(--rux-text-heading);
-	font-size: var(--rux-text-300);
+	font-size: var(--rux-size-md);
 	font-weight: var(--rux-card-header-weight);
-	line-height: var(--rux-leading-snug);
+	line-height: var(--rux-line-height-md);
 	text-align: center;
 }
 
@@ -743,7 +743,7 @@
 	align-items: center;
 	text-align: center;
 	font-size: var(--rux-button-font-size);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-disabled);
 	letter-spacing: var(--rux-tracking-wide);
 	text-transform: uppercase;
@@ -765,7 +765,7 @@
 	color: var(--rux-text-default);
 	font: inherit;
 	font-size: var(--rux-button-font-size);
-	font-weight: var(--rux-weight-regular);
+	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	cursor: pointer;
 	padding: 0;
@@ -786,7 +786,7 @@
 .rux-mini-cal__date--today {
 	background-color: var(--rux-button-accent-background);
 	color: var(--rux-fg-on-accent);
-	font-weight: var(--rux-weight-bold);
+	font-weight: var(--rux-weight-400);
 }
 
 /* Same glass formula as accent buttons/trip bars now — transparent tinted
@@ -896,7 +896,7 @@
 		var(--rux-driver-priority-color);
 	border-radius: var(--rux-radius-control);
 	font: inherit;
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -947,8 +947,8 @@
 	align-items: flex-end;
 	padding-bottom: var(--rux-space-2);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	border-left-color: transparent;
 }
@@ -978,7 +978,7 @@
 		from var(--rux-driver-priority-color) l c h / 0.14
 	);
 	color: var(--rux-text-default);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-driver-grid__days {
@@ -997,21 +997,21 @@
 	gap: 0.125rem;
 	padding-bottom: var(--rux-space-1);
 	color: var(--rux-text-disabled);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	text-align: center;
 }
 
 .rux-driver-grid__day-label-weekday {
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 }
 
 .rux-driver-grid__day-label-date {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -1097,8 +1097,8 @@
 .rux-driver-grid__cell--unavailable::after,
 .rux-driver-grid__cell--conflict::after {
 	display: block;
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	line-height: 1;
 }
 
@@ -1197,13 +1197,13 @@
 .rux-driver-grid__popover-info dt {
 	flex: none;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-driver-grid__popover-info dd {
 	margin: 0;
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-driver-grid__popover-info dd a {
@@ -1229,15 +1229,15 @@
 
 .rux-driver-grid__popover-title {
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-driver-grid__popover-meta {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	line-height: var(--rux-leading-normal);
+	font-size: var(--rux-size-xs);
+	line-height: var(--rux-line-height-xs);
 }
 
 .rux-driver-grid__popover-timeoff {
@@ -1246,8 +1246,8 @@
 	gap: var(--rux-space-1);
 	margin: 0 0 var(--rux-space-3);
 	color: var(--rux-danger-bright);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-driver-grid__popover-timeoff:has(+ .rux-driver-grid__popover-notes) {
@@ -1258,13 +1258,13 @@
 	margin: 0 0 var(--rux-space-3);
 	padding-left: calc(var(--rux-icon-sm) + var(--rux-space-1));
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	line-height: var(--rux-leading-normal);
+	font-size: var(--rux-size-xs);
+	line-height: var(--rux-line-height-xs);
 }
 
 .rux-driver-grid__empty {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 /* — View options — */
@@ -1288,8 +1288,8 @@
 }
 
 .rux-view-options__label {
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);
 }
 

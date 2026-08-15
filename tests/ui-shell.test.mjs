@@ -203,7 +203,7 @@ test("Team Chat distinguishes the current user's messages with a trailing avatar
 	assert.doesNotMatch(chatController, /isEmojiOnlyMessage|message-text--jumbo/);
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__message-emoji\s*\{[^}]*font-size:\s*var\(--rux-text-400\);[^}]*line-height:\s*1;/s,
+		/\.rux-team-chat__message-emoji\s*\{[^}]*font-size:\s*var\(--rux-size-xl\);[^}]*line-height:\s*1;/s,
 	);
 	assert.doesNotMatch(chatStyles, /message-text--jumbo/);
 });

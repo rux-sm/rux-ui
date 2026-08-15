@@ -23,8 +23,8 @@
 .rux-bus-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
 	margin-bottom: var(--rux-space-1);
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
@@ -68,8 +68,8 @@
 	background-color: var(--_bg);
 	color: var(--_fg);
 	border-radius: var(--rux-radius-sm);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 /* ==========================================================================
@@ -90,8 +90,8 @@
 
 .rux-col-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
@@ -106,7 +106,7 @@
 	padding: var(--rux-space-2) var(--rux-space-3);
 	border-radius: var(--rux-radius-xs);
 	cursor: pointer;
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	color: var(--rux-text-default);
 	user-select: none;
 }

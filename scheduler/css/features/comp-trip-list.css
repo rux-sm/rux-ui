@@ -60,7 +60,7 @@
 }
 
 .trips-app__customer {
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-default);
 	white-space: nowrap;
 	overflow: hidden;
@@ -76,7 +76,7 @@
 /* — Unassigned indicator — */
 
 .trips-app__unassigned {
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 	color: var(--rux-text-muted);
 	font-style: italic;
 }
@@ -109,7 +109,7 @@
 	text-align: center;
 	padding: var(--rux-space-8);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 /* — Mobile — */

@@ -92,8 +92,8 @@
 	border: 0;
 	border-radius: var(--rux-radius-container);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	font-family: var(--rux-font-mono);
 	letter-spacing: 0;
 	user-select: none;
@@ -195,8 +195,8 @@
 .rux-driver-panel__schedule-summary {
 	margin: 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
-	line-height: var(--rux-leading-normal);
+	font-size: var(--rux-size-sm);
+	line-height: var(--rux-line-height-sm);
 }
 
 .rux-driver-panel__schedule-actions {
@@ -235,15 +235,15 @@
 
 .rux-driver-panel__trip-id {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	color: var(--rux-accent);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 	min-width: 5rem;
 }
 
 .rux-driver-panel__trip-meta {
 	flex: 1;
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	color: var(--rux-text-muted);
 	min-width: 0;
 	overflow: hidden;
@@ -255,7 +255,7 @@
 	padding: var(--rux-space-5);
 	text-align: center;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 /* — Time off: repeating date-range rows, same add/remove recipe as Trip
@@ -275,7 +275,7 @@
 	gap: var(--rux-control-content-gap);
 	padding-inline: var(--rux-control-padding-inline);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-driver-panel__timeoff-rows:has([data-timeoff-row]) > .rux-driver-panel__timeoff-empty {

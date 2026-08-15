@@ -67,7 +67,7 @@
   height: auto;
   min-height: var(--rux-textarea-min-height);
   padding: var(--rux-space-2) var(--rux-control-padding-inline);
-  line-height: var(--rux-leading-snug);
+  line-height: var(--rux-line-height-sm);
   resize: vertical;
 }
 
@@ -317,7 +317,7 @@
   justify-content: center;
   pointer-events: none;
   color: var(--rux-text-disabled);
-  font-size: var(--rux-text-sm);
+  font-size: var(--rux-size-sm);
   line-height: 1;
 }
 
@@ -514,7 +514,7 @@
   border-radius: var(--rux-color-picker-radius);
   box-shadow: var(--rux-color-picker-shadow);
   font: inherit;
-  font-size: var(--rux-text-sm);
+  font-size: var(--rux-size-sm);
   cursor: pointer;
   transition:
     border-color var(--rux-color-picker-transition),
@@ -666,7 +666,7 @@
   box-shadow: none;
   color: var(--rux-text-default);
   font: inherit;
-  font-size: var(--rux-text-md);
+  font-size: var(--rux-size-md);
 }
 
 /* Read-only computed value — same height as a field so it still lines up in
@@ -706,7 +706,7 @@
 	box-shadow: var(--rux-input-shadow);
 	border-radius: var(--rux-input-border-radius);
 	font-size: var(--rux-input-font-size);
-	font-weight: var(--rux-weight-regular);
+	font-weight: var(--rux-weight-400);
 	/* space-between, not the base .rux-output's flex-start — with a single
 	   child (Balance's plain "$0.00") it's equivalent to flex-start, no
 	   visual change there. With two (the itinerary dwell card's value span +

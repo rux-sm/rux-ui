@@ -51,8 +51,8 @@
 /* New-request count next to the title — muted, complementing the nav badge */
 .rux-request-window__count {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 /* Toolbar band like .rux-trip-finder-window__toolbar: flex none, hairline
@@ -130,13 +130,13 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-request-window__item-meta {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-request-window__item-note {
@@ -145,7 +145,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-request-window__item-actions {
@@ -165,7 +165,7 @@
 .rux-request-window__item-link .rux-input {
 	flex: 1;
 	min-width: 0;
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 	height: var(--rux-control-height-sm);
 	/* Read-only invite URL — selectable, not editable */
 	cursor: text;
@@ -245,7 +245,7 @@
 .rux-request-window__dialog-title {
 	flex: 1;
 	min-width: 0;
-	font-size: var(--rux-text-xl);
+	font-size: var(--rux-size-2xl);
 }
 
 .rux-request-window__dialog-body {
@@ -260,7 +260,7 @@
 
 .rux-request-window__dialog-intro {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-request-window__dialog-footer {
@@ -284,8 +284,8 @@
 
 .rux-request-window__invite-label {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-request-window__invite-actions {

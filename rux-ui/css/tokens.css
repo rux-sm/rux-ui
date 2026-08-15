@@ -17,21 +17,21 @@
 
 	/* ─── COLOR · base ─────────────────────────────────────────────────────── */
 
-	--rux-neutral: oklch(50% 0.004 255); /* neutral */
-	--rux-white:   oklch(from var(--rux-neutral) 100% c h);
-	--rux-black:   oklch(from var(--rux-neutral) 000% c h);
+	--rux-black:	oklch(from var(--rux-neutral)   0% c h);
+	--rux-gray:		oklch(from var(--rux-neutral)  50% c h);
+	--rux-white:	oklch(from var(--rux-neutral) 100% c h);
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
 
-	--rux-red:    oklch(60.0% 0.28 024.0); /*  Gore  */
-	--rux-orange: oklch(70.0% 0.28 050.0); /*  Pyro  */
-	--rux-yellow: oklch(80.0% 0.28 085.0); /*  Gold  */
-	--rux-green:  oklch(60.0% 0.28 140.0); /*  Moss  */
-	--rux-cyan:   oklch(70.0% 0.28 195.0); /*  Wind  */
-	--rux-blue:   oklch(60.0% 0.28 255.0); /*  Mana  */
-	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
-	--rux-pink:   oklch(70.0% 0.28 350.0); /*  Neon  */
-	--rux-gray: 	oklch(from var(--rux-neutral) 50.0% c h);
+	--rux-neutral:	oklch(50% 0.004 255); /* Base */
+	--rux-red:   	oklch(60% 0.280 024); /* Gore */
+	--rux-orange: 	oklch(70% 0.280 050); /* Pyro */
+	--rux-yellow: 	oklch(80% 0.280 085); /* Gold */
+	--rux-green:	oklch(60% 0.280 140); /* Moss */
+	--rux-cyan:		oklch(70% 0.280 195); /* Wind */
+	--rux-blue:		oklch(60% 0.280 255); /* Mana */
+	--rux-purple:	oklch(60% 0.280 290); /* Void */
+	--rux-pink:		oklch(70% 0.280 350); /* Neon */
 
 	--rux-border-button: 	oklch(from var(--rux-neutral) 32% c h / 100%);
 	--rux-border:        	transparent;
@@ -50,45 +50,49 @@
 	--rux-selection-bg:  var(--rux-accent);
 	--rux-selection-fg:  var(--rux-fg-on-accent);
 
-	/* ─── TYPOGRAPHY · family ────────────────────────────────────────────── */
+	/* ─── TYPOGRAPHY · font family ─────────────────────────────────────────── */
 
-	--rux-font-sans:
-		"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-		"Helvetica Neue", Arial, sans-serif;
-	--rux-font-mono:
-		"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
-		monospace;
+	--rux-font-sans:	"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+	--rux-font-mono:	"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-	/* ─── TYPOGRAPHY · named size scale ───────────────────────────────────── */
+	/* ─── TYPOGRAPHY · font size ───────────────────────────────────────────── */
+	--rux-size-xxs:		0.625rem;	/* 10px */
+	--rux-size-xs:		0.75rem;	/* 12px */
+	--rux-size-sm:		0.875rem;	/* 14px */
+	--rux-size-md:		1rem;		/* 16px */
+	--rux-size-lg:		1.125rem;	/* 18px */
+	--rux-size-xl:		1.25rem;	/* 20px */
+	--rux-size-2xl:		1.5rem;		/* 24px */
+	--rux-size-3xl:		1.875rem;	/* 30px */
+	--rux-size-4xl:		2.25rem;	/* 36px */
 
-	--rux-text-xs:  0.75rem;    /* 12px */
-	--rux-text-sm:  0.875rem;   /* 14px */
-	--rux-text-md:  1rem;       /* 16px */
-	--rux-text-lg:  1.125rem;   /* 20px */
-	--rux-text-xl:  1.5rem;     /* 24px */
-	--rux-text-2xl: 2rem;       /* 30px */
-	--rux-text-3xl: 2.75rem;    /* 38px */
+	/* ─── TYPOGRAPHY · line-height (4px-grid aligned) ─────────────────────── */
+	/* Defined in rem, not a unitless ratio — every paired size/line-height box
+	   snaps to the 4px grid (e.g. md text + space-4 padding top/bottom lands
+	   on exactly 56px), and every consumer reads a real length instead of
+	   multiplying font-size by a ratio itself. */
 
-	/* ─── TYPOGRAPHY · numeric size scale ─────────────────────────────────── */
-
-	--rux-text-100: 0.75rem;    /* 12px */
-	--rux-text-200: 0.875rem;   /* 14px */
-	--rux-text-300: 1rem;       /* 16px */
-	--rux-text-400: 1.25rem;    /* 20px */
-	--rux-text-500: 1.5rem;     /* 24px */
-
-	/* ─── TYPOGRAPHY · line-height ───────────────────────────────────────── */
-
-	--rux-leading-tight:  1.15;
-	--rux-leading-snug:   1.3;
-	--rux-leading-normal: 1.5;
+	--rux-line-height-xxs:	0.75rem;	/* 12px — pairs with size-xxs (10px) */
+	--rux-line-height-xs:	1rem;		/* 16px — pairs with size-xs (12px) */
+	--rux-line-height-sm:	1.25rem;	/* 20px — pairs with size-sm (14px) */
+	--rux-line-height-md:	1.5rem;		/* 24px — pairs with size-md (16px) */
+	--rux-line-height-lg:	1.75rem;	/* 28px — pairs with size-lg (18px) */
+	--rux-line-height-xl:	1.75rem;	/* 28px — pairs with size-xl (20px) */
+	--rux-line-height-2xl:	2rem;		/* 32px — pairs with size-2xl (24px) */
+	--rux-line-height-3xl:	2.5rem;		/* 40px — pairs with size-3xl (30px) */
+	--rux-line-height-4xl:	2.5rem;		/* 40px — pairs with size-4xl (36px) */
 
 	/* ─── TYPOGRAPHY · font weight ────────────────────────────────────────────── */
 
-	--rux-weight-regular:  400;
-	--rux-weight-medium:   500;
-	--rux-weight-semibold: 600;
-	--rux-weight-bold:     700;
+	--rux-weight-100:	100;
+	--rux-weight-200:	200;
+	--rux-weight-300:	300;
+	--rux-weight-400:	400;	/* default */
+	--rux-weight-500:	500;
+	--rux-weight-600:	600;
+	--rux-weight-700:	700;
+	--rux-weight-800:	800;
+	--rux-weight-900:	900;
 
 	/* ─── TYPOGRAPHY · tracking ──────────────────────────────────────────── */
 
@@ -98,21 +102,18 @@
 	--rux-tracking-widest: 0.1em;
 
 	/* ─── SPACING · 4px base grid ────────────────────────────────────────── */
-	/* -0-5 and -1-5 are the only sanctioned half-steps, for sub-control
-	   optics (track insets, xs button padding). Everything else is ×4. */
 
-	--rux-space-0:   0px;
-	--rux-space-px:  1px;
-	--rux-space-0-5: 0.125rem;  /*  2px */
-	--rux-space-1:   0.25rem;   /*  4px */
-	--rux-space-1-5: 0.375rem;  /*  6px */
-	--rux-space-2:   0.5rem;    /*  8px */
-	--rux-space-3:   0.75rem;   /* 12px */
-	--rux-space-4:   1rem;      /* 16px */
-	--rux-space-5:   1.5rem;    /* 24px */
-	--rux-space-6:   2rem;      /* 32px */
-	--rux-space-7:   3rem;      /* 48px */
-	--rux-space-8:   4rem;      /* 64px */
+	--rux-space-0:	0px;		/*  0px */
+	--rux-space-px:	1px;		/*  1px */
+	--rux-space-1:	0.25rem;	/*  4px */
+	--rux-space-2:	0.5rem;		/*  8px */
+	--rux-space-3:	0.75rem;	/* 12px */
+	--rux-space-4:	1rem;		/* 16px */
+	--rux-space-5:	1.25rem;	/* 20px */
+	--rux-space-6:	1.5rem;		/* 24px */
+	--rux-space-8:	2rem;		/* 32px */
+	--rux-space-12:	3rem;		/* 48px */
+	--rux-space-16:	4rem;		/* 64px */
 
 	/* ─── SIZE · shared foundations ──────────────────────────────────────── */
 
@@ -376,10 +377,10 @@
 
 	/* ─── TYPOGRAPHY · shared roles ───────────────────────────────────────── */
 
-	--rux-heading-panel-size:     var(--rux-text-md);
-	--rux-heading-panel-weight:   var(--rux-weight-bold);
-	--rux-label-eyebrow-size:     var(--rux-text-100);
-	--rux-label-eyebrow-weight:   var(--rux-weight-regular);
+	--rux-heading-panel-size:     var(--rux-size-md);
+	--rux-heading-panel-weight:   var(--rux-weight-400);
+	--rux-label-eyebrow-size:     var(--rux-size-xs);
+	--rux-label-eyebrow-weight:   var(--rux-weight-400);
 	--rux-label-eyebrow-tracking: var(--rux-tracking-wide);
 	--rux-label-eyebrow-color:    var(--rux-text-muted);
 
@@ -642,7 +643,7 @@
 	--rux-card-fg:            var(--rux-text-default);
 	--rux-card-border-width:  var(--rux-border-width);
 	--rux-card-header-height: 40px;
-	--rux-card-header-weight: var(--rux-weight-semibold);
+	--rux-card-header-weight: var(--rux-weight-400);
 	/* Left-only — relies on a card that's already inset from the viewport
 	   by its own parent's padding, with the trailing button's own hit-area
 	   supplying the right edge. The sentinel-gated header (edge-to-edge,
@@ -731,7 +732,7 @@
 
 	/* — shared structural, every position — */
 	--rux-surface-header-height:  40px;
-	--rux-surface-header-weight:  var(--rux-weight-semibold);
+	--rux-surface-header-weight:  var(--rux-weight-400);
 	--rux-surface-header-border: 1px solid var(--rux-border-subtle);
 	--rux-surface-padding-block:  var(--rux-space-4);
 	--rux-surface-padding-inline: var(--rux-space-4);
@@ -851,22 +852,25 @@
 	/* — header — */
 	--rux-table-header-bg:       var(--rux-surface-3);
 	--rux-table-header-fg:       var(--rux-text-default);
-	--rux-table-header-weight:   var(--rux-weight-semibold);
+	--rux-table-header-weight:   var(--rux-weight-400);
 	--rux-table-header-tracking: var(--rux-tracking-wide);
 
 	/* — row / cell — */
 	--rux-table-row-height:           36px;
 	--rux-table-cell-padding-inline:  var(--rux-space-2);
 	--rux-table-edge-padding-inline:  var(--rux-space-4);
-	--rux-table-cell-font-size:       var(--rux-text-200);
-	--rux-table-cell-weight:          var(--rux-weight-regular);
+	--rux-table-cell-font-size:       var(--rux-size-sm);
+	--rux-table-cell-weight:          var(--rux-weight-400);
 	--rux-table-row-hover-bg:         var(--rux-bg-hover);
 	--rux-table-row-selected-bg:      var(--rux-accent-subtle);
 
 	/* ─── COMPONENT · trip bar ─────────────────────────────────────────────── */
 	/* No flat --rux-trip-bar-bg/-border/-fg — color is computed per category
 	   (see COLOR · trip bar) via the state lightness/opacity steps there, not
-	   one static token. This section is shape/shadow/motion only. */
+	   one static token. Shape/shadow/motion, plus the one shared row
+	   typography contract (every scan row in trip-bar.css reads these two
+	   instead of the raw --rux-size-xs/--rux-line-height-xs primitives, so
+	   the whole row height budget has one public override point). */
 
 	/* — shell — */
 	/* --rux-trip-bar-bg: computed — see COLOR · trip bar */
@@ -881,8 +885,11 @@
 	--rux-trip-bar-meta-fg: var(--rux-fg-on-accent);
 	--rux-trip-bar-shadow: var(--rux-shadow-3);
 	/* Same recessed rim used on input fields — gives the time/driver meta
-	   rows a subtle "readout" feel instead of a flat tonal wash. */
-	--rux-trip-bar-meta-shadow: none
+	   rows a subtle "readout" feel instead of a flat tonal wash. Was missing
+	   its trailing ";" — silently swallowed the two stripe declarations
+	   below into this value instead of ever defining them as their own
+	   properties. Fixed. */
+	--rux-trip-bar-meta-shadow: none;
 
 	/* One-way/split-trip SVG stripe overlay. */
 	--rux-trip-bar-stripe-color:   var(--rux-white);
@@ -890,6 +897,14 @@
 
 	/* — head — */
 	--rux-trip-bar-head-backdrop-blur: 4px;
+
+	/* — row typography — every scan row (destination, client, contact,
+	   notes, reqs, time, drivers), plus the conflict banner and details
+	   drawer, share this one size/line-height pair. The bus-label pill is
+	   the one deliberate exception (10px, fixed, not a text row) and stays
+	   off this contract on purpose — see trip-bar.css. */
+	--rux-trip-bar-row-font-size:   var(--rux-size-xs);
+	--rux-trip-bar-row-line-height: var(--rux-line-height-xs);
 
 	/* ─── COMPONENT · trip panel ──────────────────────────────────────────── */
 	/* Motion only — the trip panel is a reveal animation for the Trip Editor,
@@ -904,8 +919,8 @@
 
 	/* — label — */
 	--rux-field-gap:          var(--rux-stack-gap);
-	--rux-field-label-size:   var(--rux-text-xs);
-	--rux-field-label-weight: var(--rux-weight-regular);
+	--rux-field-label-size:   var(--rux-size-xs);
+	--rux-field-label-weight: var(--rux-weight-400);
 	--rux-field-label-fg:     var(--rux-text-muted);
 	--rux-field-help-fg:      var(--rux-text-disabled);
 	--rux-field-error-fg:     var(--rux-danger);
@@ -924,7 +939,7 @@
 	--rux-input-shadow:         none;
 	--rux-input-height:         var(--rux-field-height);
 	--rux-input-padding-inline: var(--rux-control-padding-inline);
-	--rux-input-font-size:      var(--rux-text-sm);
+	--rux-input-font-size:      var(--rux-size-sm);
 	--rux-input-placeholder-fg: var(--rux-text-disabled);
 	--rux-input-transition:     var(--rux-duration-fast) var(--rux-ease-out);
 
@@ -949,8 +964,8 @@
 	/* --rux-badge-shadow: not set */
 	--rux-badge-padding-inline: var(--rux-space-2);
 	--rux-badge-height:         var(--rux-control-height);
-	--rux-badge-font-size:      var(--rux-text-sm);
-	--rux-badge-font-weight:    var(--rux-weight-medium);
+	--rux-badge-font-size:      var(--rux-size-sm);
+	--rux-badge-font-weight:    var(--rux-weight-400);
 	--rux-badge-background-opacity: 12%;
 
 	/* — module badge variant — */
@@ -977,8 +992,8 @@
 
 	/* — typography — */
 	--rux-button-font-family: var(--rux-font-sans);
-	--rux-button-font-size:   var(--rux-text-sm);
-	--rux-button-font-weight: var(--rux-weight-medium);
+	--rux-button-font-size:   var(--rux-size-sm);
+	--rux-button-font-weight: var(--rux-weight-400);
 
 	/* — states — */
 	--rux-button-hover-text:          var(--rux-text-default);
@@ -1075,7 +1090,7 @@
 
 	--rux-button-height-compact:        	24px;
 	--rux-button-icon-size-compact:     	var(--rux-icon-sm);
-	--rux-button-font-size-compact:     	var(--rux-text-xs);
+	--rux-button-font-size-compact:     	var(--rux-size-xs);
 	--rux-button-padding-inline-compact: 	var(--rux-space-1-5);
 	--rux-button-content-gap-compact:   	var(--rux-space-1);
 
@@ -1141,7 +1156,7 @@
 	--rux-number-stepper-value-width:     3rem;
 	--rux-number-stepper-value-bg:        transparent;
 	--rux-number-stepper-value-fg:        var(--rux-text-default);
-	--rux-number-stepper-value-font-size: var(--rux-text-sm);
+	--rux-number-stepper-value-font-size: var(--rux-size-sm);
 
 	/* — ghost variant (quiet trailing content in a section/card header,
 	   e.g. Fleet Assignments' bus count) — */
@@ -1217,7 +1232,7 @@
 	--rux-checkbox-size:             18px;
 	--rux-checkbox-target-height:    32px;
 	--rux-checkbox-content-gap:      var(--rux-control-content-gap);
-	--rux-checkbox-font-size:        var(--rux-text-sm);
+	--rux-checkbox-font-size:        var(--rux-size-sm);
 	--rux-checkbox-transition-speed: var(--rux-duration-instant);
 
 	/* — states — */
@@ -1319,8 +1334,8 @@
 	/* --rux-output-shadow: not set — deliberately flat, see note above */
 	--rux-output-padding:     var(--rux-space-0);
 	--rux-output-height:      var(--rux-field-height);
-	--rux-output-font-size:   var(--rux-text-md);
-	--rux-output-font-weight: var(--rux-weight-semibold);
+	--rux-output-font-size:   var(--rux-size-md);
+	--rux-output-font-weight: var(--rux-weight-400);
 
 	/* ─── COMPONENT · menu ───────────────────────────────────────────────── */
 	/* Concentric math: 8px menu − 4px padding = 4px items. */
@@ -1344,7 +1359,7 @@
 	--rux-menu-item-padding-inline: var(--rux-space-3);
 	--rux-menu-item-gap:            var(--rux-space-2);
 	--rux-menu-item-radius:         var(--rux-radius-control);
-	--rux-menu-item-font-size:      var(--rux-text-sm);
+	--rux-menu-item-font-size:      var(--rux-size-sm);
 	--rux-menu-item-fg:             var(--rux-menu-fg);
 	--rux-menu-item-hover-bg:       var(--rux-button-hover-overlay);
 	--rux-menu-item-hover-fg:       var(--rux-text-default);

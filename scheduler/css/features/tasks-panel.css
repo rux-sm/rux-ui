@@ -101,8 +101,8 @@
 .rux-tasks__trip-title {
 	margin: 0;
 	color: var(--rux-text-default);
-	font-weight: var(--rux-weight-semibold);
-	font-size: var(--rux-text-200);
+	font-weight: var(--rux-weight-400);
+	font-size: var(--rux-size-sm);
 	line-height: 1.4;
 	overflow-wrap: anywhere;
 }
@@ -110,7 +110,7 @@
 .rux-tasks__trip-customer {
 	margin: var(--rux-space-0-5) 0 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-100);
+	font-size: var(--rux-size-xs);
 	line-height: 1.4;
 	overflow-wrap: anywhere;
 }
@@ -187,7 +187,7 @@
 
 .rux-tasks__driver-empty {
 	color: var(--rux-text-faint);
-	font-size: var(--rux-text-100);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-tasks__driver-empty {
@@ -202,7 +202,7 @@
 	flex-wrap: wrap;
 	gap: var(--rux-space-1) var(--rux-space-3);
 	margin-top: var(--rux-space-1);
-	font-size: var(--rux-text-200);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-tasks__note-input {
@@ -226,7 +226,7 @@
 	margin: 0;
 	padding: var(--rux-space-1) 0;
 	color: var(--rux-text-faint);
-	font-size: var(--rux-text-200);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-tasks__requirements {
@@ -238,8 +238,8 @@
 .rux-tasks__requirements-title {
 	margin: 0 0 var(--rux-space-1);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
 }
@@ -299,7 +299,7 @@
 .rux-tasks__equip-badge {
 	flex-shrink: 0;
 	color: inherit;
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-tasks__requirement-input--warning {

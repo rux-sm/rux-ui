@@ -661,11 +661,11 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__destination\s*\{[^}]*overflow:\s*hidden[^}]*min-width:\s*0[^}]*font-size:\s*var\(--rux-text-500\)[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s,
+		/\.driver-assignment-card__destination\s*\{[^}]*overflow:\s*hidden[^}]*min-width:\s*0[^}]*font-size:\s*var\(--rux-size-2xl\)[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s,
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__customer\s*\{[^}]*color:\s*var\(--rux-text-muted\)[^}]*font-size:\s*var\(--rux-text-md\)[^}]*text-overflow:\s*ellipsis/s,
+		/\.driver-assignment-card__customer\s*\{[^}]*color:\s*var\(--rux-text-muted\)[^}]*font-size:\s*var\(--rux-size-md\)[^}]*text-overflow:\s*ellipsis/s,
 	);
 	assert.match(
 		css,
@@ -749,7 +749,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__crew-role\s*\{[^}]*font-size:\s*var\(--rux-text-sm\)/s,
+		/\.driver-assignment-card__crew-role\s*\{[^}]*font-size:\s*var\(--rux-size-sm\)/s,
 	);
 	assert.match(
 		css,

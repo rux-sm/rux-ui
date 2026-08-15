@@ -31,8 +31,8 @@
 
 .trip-request-header__label {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	letter-spacing: 0.04em;
 	text-transform: uppercase;
 }
@@ -72,8 +72,8 @@
 }
 
 .trip-request__section-title {
-	font-size: var(--rux-text-md);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-md);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-default);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
@@ -121,12 +121,12 @@
 }
 
 .trip-request-option__label {
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 }
 
 .trip-request-option__hint {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .trip-request-option:has(input:checked) {
@@ -147,7 +147,7 @@
 }
 
 .trip-request__switch-label {
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 /* ── Requirement checks ───────────────────────────────────────────────── */
@@ -174,7 +174,7 @@
 }
 
 .trip-request-check__label {
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .trip-request-check:has(input:checked) {
@@ -197,7 +197,7 @@
 .rux-card__footer .trip-request__footer-note {
 	max-width: 22rem;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .trip-request__submit {
@@ -219,7 +219,7 @@
 }
 
 .trip-request__success-title {
-	font-size: var(--rux-text-xl);
+	font-size: var(--rux-size-2xl);
 }
 
 .trip-request__success-text {

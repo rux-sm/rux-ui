@@ -49,9 +49,9 @@
 	border: 0;
 	border-radius: var(--rux-side-nav-item-radius);
 	font: inherit;
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-regular);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-line-height-sm);
 	text-align: start;
 	cursor: pointer;
 }
@@ -102,7 +102,7 @@
 	color: var(--rux-fg-on-accent);
 	border-radius: var(--rux-radius-full);
 	font-size: 10px;
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 	line-height: 1;
 }
 

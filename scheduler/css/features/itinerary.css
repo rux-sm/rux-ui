@@ -116,8 +116,8 @@
 .rux-trip-itinerary__day-date {
 	margin-left: var(--rux-space-2);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-regular);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 /* Same label + primary-row anatomy as .rux-trip-itinerary__stop. End of Day
@@ -176,7 +176,7 @@
 	gap: var(--rux-space-1);
 	margin: 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-trip-itinerary__boundary-note .rux-icon {
@@ -193,14 +193,14 @@
 	gap: var(--rux-space-1);
 	padding: var(--rux-card-padding);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-trip-itinerary__idle-day strong {
 	/* --rux-fg-default doesn't exist as a token — was silently falling back
 	   to the parent's muted color instead of actually standing out. */
 	color: var(--rux-text-default);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-itinerary__boundary-note.is-stationary .rux-icon {
@@ -246,12 +246,12 @@
 /* Shared warn/ok tint — also used by renderDayStatsGrid's over-limit outputs */
 .rux-trip-itinerary__seg-stat--warn {
 	color: var(--rux-danger);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-itinerary__seg-stat--ok {
 	color: var(--rux-success-bright);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 /* — Stop row — */
@@ -656,13 +656,13 @@
 .rux-trip-itinerary__unit {
 	margin-left: var(--rux-space-1);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-trip-itinerary__source {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-100);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	text-transform: uppercase;
 }
@@ -813,15 +813,15 @@
 }
 
 .rux-trip-itinerary__suggestion-name {
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-medium);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-line-height-sm);
 }
 
 .rux-trip-itinerary__suggestion-address {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-size-xs);
+	line-height: var(--rux-line-height-xs);
 }
 
 @container (max-width: 460px) {

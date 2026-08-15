@@ -33,13 +33,13 @@
 .rux-trip-history__title {
 	color: var(--rux-text-heading);
 	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-history__subtitle {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 .rux-trip-history__filter {
@@ -74,8 +74,8 @@
 
 .rux-trip-history__group-title {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-wide);
 	text-transform: uppercase;
 }
@@ -103,22 +103,22 @@
 
 .rux-trip-history__timestamp {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-history__actor {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-history__action {
 	flex: none;
 	color: var(--rux-accent);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 	text-transform: capitalize;
 }
 
@@ -139,8 +139,8 @@
 .rux-trip-history__route {
 	overflow: hidden;
 	color: var(--rux-text-heading);
-	font-size: var(--rux-text-sm);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -148,7 +148,7 @@
 .rux-trip-history__meta {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-trip-history__changes {
@@ -178,13 +178,13 @@
 
 .rux-trip-history__change dt {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-history__change dd {
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-size-xs);
 	overflow-wrap: anywhere;
 }
 
@@ -198,7 +198,7 @@
 }
 
 .rux-trip-history__new {
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-history__more {

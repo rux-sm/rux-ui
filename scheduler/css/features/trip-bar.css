@@ -27,30 +27,83 @@
    .rux-scheduler--centered-trip-heads
                                 Makes the full multi-day span the primary head
                                 surface and centers a one-day-width content column.
+   .rux-scheduler--compact      Hides contact/notes while a bar is collapsed;
+                                reappear on selection. Set by the "Compact
+                                rows" View Option (index.html).
+   .rux-scheduler--hide-client
+   .rux-scheduler--hide-contact
+   .rux-scheduler--hide-notes
+   .rux-scheduler--hide-reqs
+   .rux-scheduler--hide-drivers Per-row user preferences (index.html's View
+                                Options, five independent switches). Same
+                                collapsed-only declutter as --compact above —
+                                selecting a bar always shows every row
+                                regardless of any of this.
+   .rux-scheduler--trip-bar-size-xxs
+   .rux-scheduler--trip-bar-size-sm
+                                Swaps --rux-trip-bar-row-font-size/-line-height
+                                (tokens.css, COMPONENT · trip bar) from their
+                                xs default to xxs/sm — every row's text and the
+                                whole height budget follow automatically, no
+                                other CSS to touch. Set by the "Trip bar size"
+                                segmented control (index.html). No -xs class:
+                                that's just the unmodified default.
 
    State classes (JS-toggled, no rux- prefix)
    ------------------------------------------
    .is-active    Bar is selected; reveals the action toolbar and details.
    .is-expanded  Details drawer is open. Kept in sync with .is-active.
 
-   Row typography — scan rows (body, top to bottom). Line-height is 1
-   throughout (destination's row min-height is derived from this).
+   Row typography — scan rows (body, top to bottom). Every row shares one
+   size/line-height pair, read from the trip bar's own component tokens
+   (tokens.css, COMPONENT · trip bar) rather than the raw --rux-size-xs/
+   --rux-line-height-xs primitives directly: --rux-trip-bar-row-font-size
+   (12px) / --rux-trip-bar-row-line-height (16px — tokens.css defines
+   line-height as an absolute, 4px-grid-aligned length, not a unitless
+   ratio). Every row is locked to that same 16px height with zero gap and
+   zero margin between rows — the line-height *is* the row height, no
+   exceptions, no per-row padding. Weight is uniformly --rux-weight-400
+   app-wide (see tokens.css).
+
+   Destination and Time are the only two rows that always show while
+   collapsed — every other row (client, contact, notes, reqs, drivers) is
+   independently togglable per user preference (see the scheduler view
+   modifiers above), so --rux-trip-bar-collapsed-height can't assume a
+   fixed row count while collapsed anymore. index.html's
+   recomputeTripBarRowCount() counts however many are actually on and
+   writes it to --rux-trip-bar-visible-row-count, which the collapsed
+   height calc() below reads. Selecting a bar (.is-active) always shows
+   all 7 regardless — both Compact rows and every row preference are
+   collapsed-only declutter, not a permanent hide.
    ------------------------------------------------
-   Row          Element            Size      Weight
+   Row          Element            Size      Notes
    ──────────── ────────────────── ───────── ──────────
-   Destination  __destination      text-sm   bold
-   Paid badge   __status(-date)    text-xs   bold          (on the destination row)
-   Client       __client           text-xs   medium
-   Contact      __contact          text-xs   regular
-   Notes        __notes            text-xs   medium        (italic)
-   Reqs/bus pill __bus-label       10px      bold          (pill, fixed 18px height; lives on the reqs row)
-   Time         __time             text-xs   —             (Dep · Spt · Arr, Arr right-aligned)
-   Time value   __time-value       text-xs   bold
-   Drivers      __driver           text-xs   semibold
+   Destination  __destination      xs
+   Paid badge   __status(-date)    xs        (on the destination row)
+   Client       __client           xs
+   Contact      __contact          xs
+   Notes        __notes            xs        (italic)
+   Reqs/bus pill __bus-label       10px      Fixed pill inside the 16px reqs row, not a row of its own
+   Time         __time             xs        (Dep left, Spt centered, Arr right)
+   Time value   __time-value       xs
+   Drivers      __driver           xs
    ========================================================================== */
 
 .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 138px;
+	/* Every scan row is locked directly to --rux-trip-bar-row-line-height
+	   (tokens.css) — a real length, not a ratio, so the row height doesn't
+	   need to multiply it by font-size, just read it. Row COUNT isn't a
+	   fixed 7 anymore either: client/contact/notes/reqs/drivers are each an
+	   independent user preference (index.html's View Options), so the
+	   scheduler sets --rux-trip-bar-visible-row-count (2-7, destination +
+	   time are never optional) whenever a preference or Compact rows
+	   changes — see recomputeTripBarRowCount() in index.html. The 7
+	   fallback only matters if that JS hasn't run yet (e.g. no-JS). Padding
+	   top + bottom, 0 gap between rows. */
+	--rux-trip-bar-collapsed-height: calc(
+		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
+		+ (var(--rux-trip-bar-compact-padding) * 2)
+	);
 	--rux-trip-bar-action-padding-block: 0;
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
@@ -102,6 +155,23 @@
 		background-color var(--rux-duration-fast) var(--rux-ease-out),
 		box-shadow var(--rux-duration-fast) var(--rux-ease-out),
 		transform var(--rux-duration-fast) var(--rux-ease-out);
+}
+
+/* ---------- Row size ---------- */
+/* Swapping these two is the whole feature — every row's font-size/
+   line-height reads them (see the row-typography table above), and
+   --rux-trip-bar-collapsed-height's calc() reads --row-line-height, so
+   both the text and the whole height budget follow with no other CSS
+   touched. scheduler.css's empty-row fallback reads the same token too. */
+
+.rux-scheduler--trip-bar-size-xxs {
+	--rux-trip-bar-row-font-size:   var(--rux-size-xxs);
+	--rux-trip-bar-row-line-height: var(--rux-line-height-xxs);
+}
+
+.rux-scheduler--trip-bar-size-sm {
+	--rux-trip-bar-row-font-size:   var(--rux-size-sm);
+	--rux-trip-bar-row-line-height: var(--rux-line-height-sm);
 }
 
 /* Partial POs keep the confirmed trip surface (including color overrides),
@@ -170,6 +240,19 @@
 }
 
 .rux-trip-bar.is-active {
+	/* Selecting a bar always shows every row, full stop — both Compact rows
+	   and every row-visibility preference are collapsed-only declutter now;
+	   .is-active means all 7. --rux-trip-bar-active-row-count is never
+	   actually set by index.html anymore (nothing needs it to be anything
+	   but 7), so the ", 7" fallback here is what's really doing the work —
+	   kept as a token read rather than a bare 7 in case that ever changes.
+	   Overriding --rux-trip-bar-collapsed-height itself (not a separate
+	   token) means --rux-trip-bar-active-height below, which derives from
+	   it, picks this up for free. */
+	--rux-trip-bar-collapsed-height: calc(
+		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-active-row-count, 7))
+		+ (var(--rux-trip-bar-compact-padding) * 2)
+	);
 	height: calc(var(--rux-trip-bar-active-height) + var(--_conflict-height));
 	min-width: var(--rux-trip-bar-day-inline-size, 100%);
 }
@@ -587,8 +670,12 @@
 	flex: 1 1 auto;
 	min-height: 0;
 	padding: var(--rux-trip-bar-compact-padding);
-	padding-bottom: calc(var(--rux-trip-bar-compact-padding) + var(--rux-trip-bar-tight-gap));
-	gap: var(--rux-trip-bar-tight-gap);
+	/* No row gap — every row is locked to the same
+	   --rux-trip-bar-row-line-height (see the row-typography table above),
+	   so rows sit flush with nothing between them and no per-row exceptions
+	   (Time/Drivers used to carry their own extra margin-top on top of this
+	   gap; both are gone now). */
+	gap: 0;
 }
 .rux-trip-bar__spacer {
 	display: none;
@@ -597,7 +684,7 @@
 .rux-trip-bar__footer {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-trip-bar-tight-gap);
+	gap: 0;
 	flex: 0 0 auto;
 }
 
@@ -636,22 +723,22 @@
 	flex: 1 1 auto;
 	align-items: center;
 	min-width: 0;
-	min-height: 16px;
+	min-height: var(--rux-trip-bar-row-line-height);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
 	letter-spacing: 0;
-	line-height: 1;
+	line-height: var(--rux-trip-bar-row-line-height);
 }
 
 .rux-trip-bar__status {
 	color: var(--rux-fg-on-accent-muted);
 	flex: none;
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
-	line-height: 1;
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-trip-bar-row-line-height);
 	letter-spacing: var(--rux-tracking-wide);
 	white-space: nowrap;
 }
@@ -662,9 +749,9 @@
 
 .rux-trip-bar__status-date {
 	color: var(--rux-success-on-vivid);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
-	line-height: 1;
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-trip-bar-row-line-height);
 }
 
 .rux-trip-bar__pending {
@@ -694,7 +781,7 @@
 .rux-trip-bar__contact,
 .rux-trip-bar__notes {
 	min-width: 0;
-	line-height: 1;
+	line-height: var(--rux-trip-bar-row-line-height);
 }
 
 .rux-trip-bar__client {
@@ -703,19 +790,19 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	min-height: 13px;
+	min-height: var(--rux-trip-bar-row-line-height);
 	color: var(--rux-fg-on-accent-muted);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-bar__contact {
 	display: flex;
 	min-width: 0;
-	min-height: 13px;
+	min-height: var(--rux-trip-bar-row-line-height);
 	align-items: center;
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
 	color: var(--rux-fg-on-accent-muted);
 }
 
@@ -737,10 +824,10 @@
 .rux-trip-bar__notes {
 	display: flex;
 	align-items: center;
-	min-height: 13px;
+	min-height: var(--rux-trip-bar-row-line-height);
 	color: var(--rux-warning-on-vivid);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-medium);
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
 }
 
 /* Truncation lives here, not on .rux-trip-bar__notes itself — text-overflow
@@ -766,7 +853,7 @@
 .rux-trip-bar__reqs {
 	display: flex;
 	align-items: center;
-	min-height: 18px;
+	min-height: var(--rux-trip-bar-row-line-height);
 	gap: var(--rux-space-1);
 	overflow: hidden;
 }
@@ -790,17 +877,16 @@
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	min-width: 0;
-	min-height: 20px;
+	min-height: var(--rux-trip-bar-row-line-height);
 	align-items: center;
-	margin-top: var(--rux-trip-bar-tight-gap);
 	gap: var(--rux-space-0-5);
 	background: var(--rux-trip-bar-meta-bg);
 	border-radius: var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius) 0 0;
 	box-shadow: var(--rux-trip-bar-meta-shadow);
 	color: var(--rux-trip-bar-meta-fg);
-	font-size: var(--rux-text-xs);
+	font-size: var(--rux-trip-bar-row-font-size);
 	letter-spacing: -0.02em;
-	line-height: 1;
+	line-height: var(--rux-trip-bar-row-line-height);
 	white-space: nowrap;
 }
 
@@ -809,14 +895,26 @@
 	min-width: 0;
 	width: 100%;
 	align-items: center;
+	/* Spot (the middle of the 3 DOM children — Dep/Spt/Arr) stays centered
+	   in its own column; Dep and Arr below pull to the row's outer edges
+	   instead, so the row reads left-to-right as depart -> spot -> arrive
+	   rather than three independently-centered values. */
 	justify-content: center;
 	align-self: stretch;
 	gap: var(--rux-trip-bar-tight-gap);
 	background: transparent;
-	height: 20px;
+	height: var(--rux-trip-bar-row-line-height);
 	padding: 0;
 	border-radius: 0;
 	box-sizing: border-box;
+}
+
+.rux-trip-bar__time-item:first-child {
+	justify-content: flex-start;
+}
+
+.rux-trip-bar__time-item:last-child {
+	justify-content: flex-end;
 }
 
 .rux-trip-bar__time-label {
@@ -831,7 +929,7 @@
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-trip-bar__time-value--late {
@@ -847,11 +945,10 @@
 .rux-trip-bar__drivers {
 	display: flex;
 	min-width: 0;
-	min-height: 20px;
+	min-height: var(--rux-trip-bar-row-line-height);
 	flex-wrap: nowrap;
 	align-items: center;
 	gap: var(--rux-space-0-5);
-	margin-top: var(--rux-trip-bar-tight-gap);
 	background: var(--rux-trip-bar-meta-bg);
 	border-radius: 0 0 var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius);
 	box-shadow: var(--rux-trip-bar-meta-shadow);
@@ -866,13 +963,13 @@
 	gap: var(--rux-space-1);
 	background: transparent;
 	padding: 0 var(--rux-space-1);
-	height: 20px;
+	height: var(--rux-trip-bar-row-line-height);
 	border-radius: 0;
 	overflow: hidden;
 	color: var(--rux-fg-on-accent);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
-	line-height: 1;
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-trip-bar-row-line-height);
 }
 
 /* Matches .rux-trip-bar__driver-name's own overflow:visible below — without
@@ -927,9 +1024,9 @@
 	background: var(--rux-trip-bar-conflict-bg);
 	border-top: var(--rux-border-width) solid var(--rux-trip-bar-conflict-border-color);
 	color: var(--rux-danger-on-vivid);
-	font-size: var(--rux-text-xs);
-	font-weight: var(--rux-weight-semibold);
-	line-height: var(--rux-leading-snug);
+	font-size: var(--rux-trip-bar-row-font-size);
+	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-trip-bar-row-line-height);
 }
 
 /* ---------- Details drawer ---------- */
@@ -948,7 +1045,13 @@
 	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: var(--rux-space-1);
+	/* Row-gap 0, not the shared --rux-space-1 — each row is already locked to
+	   its own --rux-trip-bar-row-line-height (see .rux-trip-bar__detail-field
+	   below), so row height should be the whole story with no added air
+	   between rows. Column-gap keeps the label/value pairs from the two
+	   side-by-side fields (D1/R1, Mi/Act Mi, ...) touching. */
+	column-gap: var(--rux-space-1);
+	row-gap: 0;
 	padding: var(--rux-trip-bar-compact-padding);
 	background: oklch(from var(--rux-black) l c h / 0.24);
 	border-top: none;
@@ -960,14 +1063,16 @@
 	align-items: baseline;
 	gap: var(--rux-space-1);
 	min-width: 0;
-	/* Explicit, not left to font-size × line-height rounding — text-xs
-	   (12px) × leading-snug (1.3) ≈ 15.6px, which most rows round to 16px,
-	   but the payment row's inline-flex icon+text value doesn't round the
-	   same way and ends up 17px, breaking row-height symmetry. Locking this
-	   removes the ambiguity for every row, not just that one. */
-	height: var(--rux-space-4);
-	font-size: var(--rux-text-xs);
-	line-height: var(--rux-leading-snug);
+	/* Explicit, not left to natural content sizing — --rux-trip-bar-row-
+	   line-height is a direct length (tokens.css), so there's no font-size
+	   x ratio math to round here, but the payment row's inline-flex
+	   icon+text value still contributes its own atomic-box metrics to the
+	   line and can land a pixel off natural text-line sizing. Locking every
+	   row to the same token removes that ambiguity across the board, not
+	   just for that one row. */
+	height: var(--rux-trip-bar-row-line-height);
+	font-size: var(--rux-trip-bar-row-font-size);
+	line-height: var(--rux-trip-bar-row-line-height);
 }
 
 .rux-trip-bar__detail-field--wide {
@@ -989,8 +1094,12 @@
 }
 
 .rux-trip-bar__detail-field-label {
-	color: var(--rux-text-muted);
-	font-weight: var(--rux-weight-medium);
+	/* --rux-fg-on-accent-muted, not --rux-text-muted — this row sits on the
+	   bar's own saturated per-category color, same as every other muted
+	   label here (__client, __contact, __time-label); --rux-text-muted is
+	   an opaque neutral gray tuned for cards/panels, not this surface. */
+	color: var(--rux-fg-on-accent-muted);
+	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-wide);
 }
 
@@ -1003,8 +1112,13 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: var(--rux-text-default);
-	font-weight: var(--rux-weight-medium);
+	/* --rux-fg-on-accent, not --rux-text-default — same reasoning as the
+	   label above: --rux-text-default flips to near-black under the light
+	   theme (tokens.css), which would go unreadable on this always-colored
+	   surface. --rux-fg-on-accent stays white in both themes, matching
+	   __driver/__req-icon elsewhere in this file. */
+	color: var(--rux-fg-on-accent);
+	font-weight: var(--rux-weight-400);
 }
 
 /* Making the value itself the flex container (not an inline span with a
@@ -1017,7 +1131,7 @@
 .rux-trip-bar__payment-value {
 	display: flex;
 	align-items: center;
-	height: var(--rux-space-4);
+	height: var(--rux-trip-bar-row-line-height);
 	overflow: hidden;
 }
 
@@ -1029,10 +1143,12 @@
 
 /* No size override — this icon uses the same 18px trip-bar default as
    every other icon in the bar (only two sizes exist app-wide: the 20px
-   standard and this 18px trip-bar default). It's taller than the row's
-   locked 16px height, but .rux-trip-bar__payment-value centers and clips
-   it, and Material Symbols glyphs carry enough internal padding that the
-   1px top/bottom crop doesn't touch the ink. */
+   standard and this 18px trip-bar default). That's 2px taller than the
+   row's own locked 16px height (tokens.css's line-height rework shrank xs
+   rows from 18px to 16px, icon sizing is a separate --rux-icon-* system
+   and didn't move) — .rux-trip-bar__payment-value centers and clips it,
+   and Material Symbols glyphs carry enough internal padding that the crop
+   doesn't touch the ink. */
 .rux-trip-bar__payment-entry .rux-trip-bar__payment-icon {
 	flex: none;
 }
@@ -1077,22 +1193,66 @@
 }
 
 /* ---------- Compact mode ---------- */
-
-.rux-scheduler--compact .rux-trip-bar {
-	--rux-trip-bar-collapsed-height: 110px;
-}
+/* Collapsed-only declutter — the height math itself lives entirely in the
+   base .rux-trip-bar / .rux-trip-bar.is-active rules above now
+   (--rux-trip-bar-visible-row-count, computed by recomputeTripBarRowCount()
+   in index.html, already accounts for whether Compact rows is on; .is-active
+   always resolves to all 7 regardless). This is just the visual
+   hide/reveal. */
 
 .rux-scheduler--compact .rux-trip-bar__contact,
 .rux-scheduler--compact .rux-trip-bar__notes {
 	display: none;
 }
 
-.rux-scheduler--compact .rux-trip-bar.is-active {
-	--rux-trip-bar-collapsed-height: 138px;
-}
-
 .rux-scheduler--compact .rux-trip-bar.is-active .rux-trip-bar__contact,
 .rux-scheduler--compact .rux-trip-bar.is-active .rux-trip-bar__notes {
+	display: flex;
+}
+
+/* ---------- Row visibility preferences ---------- */
+/* Collapsed-only declutter too, same as Compact rows above — selecting a
+   bar always shows every row regardless of preference. (Was a hard "never
+   show" earlier; changed so .is-active means full detail, full stop, no
+   exceptions.) */
+
+.rux-scheduler--hide-client .rux-trip-bar__client {
+	display: none;
+}
+
+.rux-scheduler--hide-client .rux-trip-bar.is-active .rux-trip-bar__client {
+	display: flex;
+}
+
+.rux-scheduler--hide-contact .rux-trip-bar__contact {
+	display: none;
+}
+
+.rux-scheduler--hide-contact .rux-trip-bar.is-active .rux-trip-bar__contact {
+	display: flex;
+}
+
+.rux-scheduler--hide-notes .rux-trip-bar__notes {
+	display: none;
+}
+
+.rux-scheduler--hide-notes .rux-trip-bar.is-active .rux-trip-bar__notes {
+	display: flex;
+}
+
+.rux-scheduler--hide-reqs .rux-trip-bar__reqs {
+	display: none;
+}
+
+.rux-scheduler--hide-reqs .rux-trip-bar.is-active .rux-trip-bar__reqs {
+	display: flex;
+}
+
+.rux-scheduler--hide-drivers .rux-trip-bar__drivers {
+	display: none;
+}
+
+.rux-scheduler--hide-drivers .rux-trip-bar.is-active .rux-trip-bar__drivers {
 	display: flex;
 }
 

@@ -23,7 +23,7 @@
 .rux-notifications__empty {
 	padding: var(--rux-space-3) var(--rux-space-2);
 	color: var(--rux-text-faint);
-	font-size: var(--rux-text-200);
+	font-size: var(--rux-size-sm);
 	text-align: center;
 }
 
@@ -38,7 +38,7 @@
 }
 
 .rux-notifications__item.is-unread .rux-notifications__item-title {
-	font-weight: var(--rux-weight-semibold);
+	font-weight: var(--rux-weight-400);
 }
 
 .rux-notifications__item-main {
@@ -62,20 +62,20 @@
 .rux-notifications__item-title {
 	margin: 0;
 	color: var(--rux-text-default);
-	font-size: var(--rux-text-200);
+	font-size: var(--rux-size-sm);
 	line-height: 1.35;
 }
 
 .rux-notifications__item-detail {
 	margin: var(--rux-space-0-5) 0 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-text-100);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-notifications__item-time {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-text-faint);
-	font-size: var(--rux-text-100);
+	font-size: var(--rux-size-xs);
 }
 
 .rux-notifications__item-main > button[data-dismiss] {

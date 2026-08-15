@@ -159,7 +159,7 @@
 				align-items: center;
 				justify-content: center;
 				color: var(--rux-text-disabled);
-				font-size: var(--rux-text-sm);
+				font-size: var(--rux-size-sm);
 			}
 		</style>
 	</head>
@@ -2552,6 +2552,153 @@
 												<label class="rux-switch">
 													<input
 														id="opt-compact"
+														type="checkbox"
+														role="switch"
+													/>
+													<span
+														class="rux-switch__track"
+													></span>
+													<span
+														class="rux-switch__thumb"
+													></span>
+												</label>
+											</div>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Trip bar size</span
+												>
+												<div
+													class="rux-segmented-track"
+													id="opt-trip-bar-size"
+													role="group"
+													aria-label="Trip bar size"
+												>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="false"
+														data-value="xxs"
+														aria-label="Extra extra small"
+														title="Extra extra small"
+													>
+														<span
+															class="rux-button__label"
+															>XXS</span
+														>
+													</button>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="true"
+														data-value="xs"
+														aria-label="Extra small"
+														title="Extra small"
+													>
+														<span
+															class="rux-button__label"
+															>XS</span
+														>
+													</button>
+													<button
+														class="rux-button rux-button--segment"
+														type="button"
+														aria-pressed="false"
+														data-value="sm"
+														aria-label="Small"
+														title="Small"
+													>
+														<span
+															class="rux-button__label"
+															>SM</span
+														>
+													</button>
+												</div>
+											</div>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Show client</span
+												>
+												<label class="rux-switch">
+													<input
+														id="opt-row-client"
+														type="checkbox"
+														role="switch"
+													/>
+													<span
+														class="rux-switch__track"
+													></span>
+													<span
+														class="rux-switch__thumb"
+													></span>
+												</label>
+											</div>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Show contact</span
+												>
+												<label class="rux-switch">
+													<input
+														id="opt-row-contact"
+														type="checkbox"
+														role="switch"
+													/>
+													<span
+														class="rux-switch__track"
+													></span>
+													<span
+														class="rux-switch__thumb"
+													></span>
+												</label>
+											</div>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Show notes</span
+												>
+												<label class="rux-switch">
+													<input
+														id="opt-row-notes"
+														type="checkbox"
+														role="switch"
+													/>
+													<span
+														class="rux-switch__track"
+													></span>
+													<span
+														class="rux-switch__thumb"
+													></span>
+												</label>
+											</div>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Show reqs</span
+												>
+												<label class="rux-switch">
+													<input
+														id="opt-row-reqs"
+														type="checkbox"
+														role="switch"
+													/>
+													<span
+														class="rux-switch__track"
+													></span>
+													<span
+														class="rux-switch__thumb"
+													></span>
+												</label>
+											</div>
+											<div class="rux-view-options__row">
+												<span
+													class="rux-view-options__label"
+													>Show drivers</span
+												>
+												<label class="rux-switch">
+													<input
+														id="opt-row-drivers"
 														type="checkbox"
 														role="switch"
 													/>
@@ -9194,8 +9341,124 @@
 				try {
 					localStorage.setItem("rux:compact-trips", on);
 				} catch (_) {}
+				recomputeTripBarRowCount();
 				layoutScheduler();
 				patchProfileSettings({ compactTrips: on });
+			});
+
+			// ── Trip bar row visibility ──────────────────────────────────────
+			// Five independent user preferences (client/contact/notes/reqs/
+			// drivers — destination and time are never optional, they're the
+			// trip's identity). Unlike Compact rows above, unchecking one of
+			// these is a hard "never show" — it stays hidden even once a bar
+			// is selected/expanded, not just decluttered while collapsed.
+			// Default true (shown) — localStorage only ever stores "false" for
+			// a row a user actively turned off, absence means "on".
+			const tripBarRowKeys = [
+				["client", "opt-row-client", "rux-scheduler--hide-client"],
+				["contact", "opt-row-contact", "rux-scheduler--hide-contact"],
+				["notes", "opt-row-notes", "rux-scheduler--hide-notes"],
+				["reqs", "opt-row-reqs", "rux-scheduler--hide-reqs"],
+				["drivers", "opt-row-drivers", "rux-scheduler--hide-drivers"],
+			];
+			const tripBarRowVisible = {};
+			tripBarRowKeys.forEach(([key, id, hideClass]) => {
+				let visible = true;
+				try {
+					visible =
+						localStorage.getItem(`rux:show-${key}`) !== "false";
+				} catch (_) {}
+				tripBarRowVisible[key] = visible;
+				schedulerEl?.classList.toggle(hideClass, !visible);
+				initToggle(id, visible, (on) => {
+					tripBarRowVisible[key] = on;
+					schedulerEl?.classList.toggle(hideClass, !on);
+					try {
+						localStorage.setItem(`rux:show-${key}`, on);
+					} catch (_) {}
+					recomputeTripBarRowCount();
+					layoutScheduler();
+					const patch = {};
+					patch[
+						`show${key[0].toUpperCase()}${key.slice(1)}`
+					] = on;
+					patchProfileSettings(patch);
+				});
+			});
+
+			// Collapsed bars can't be sized from a hardcoded row count anymore
+			// — with client/contact/notes/reqs/drivers each independently
+			// toggleable, the visible count ranges from 2 (destination + time
+			// only) to 7. --rux-trip-bar-collapsed-height (trip-bar.css) reads
+			// this instead of a literal. Contact/notes follow Compact rows'
+			// existing declutter-while-collapsed behavior on top of their own
+			// preference; client/reqs/drivers only ever follow their own
+			// preference while collapsed. Selecting a bar always shows all 7
+			// regardless of any of this — trip-bar.css's .rux-trip-bar.is-active
+			// rule hardcodes that itself (via its var(..., 7) fallback), so
+			// there's no separate "active count" to compute here.
+			function recomputeTripBarRowCount() {
+				let count = 2; // destination + time
+				const contactCollapsed =
+					tripBarRowVisible.contact && !compactEnabled;
+				const notesCollapsed =
+					tripBarRowVisible.notes && !compactEnabled;
+				if (contactCollapsed) count++;
+				if (notesCollapsed) count++;
+				if (tripBarRowVisible.client) count++;
+				if (tripBarRowVisible.reqs) count++;
+				if (tripBarRowVisible.drivers) count++;
+				schedulerEl?.style.setProperty(
+					"--rux-trip-bar-visible-row-count",
+					count,
+				);
+			}
+			recomputeTripBarRowCount();
+
+			// ── Trip bar size ─────────────────────────────────────────────────
+			// Swaps --rux-trip-bar-row-font-size/-line-height (tokens.css) from
+			// xs to xxs/sm via one class on schedulerEl — see trip-bar.css's
+			// "Row size" section for why nothing else needs to change. Reuses
+			// the existing .rux-segmented-track component (js/core/controls.js)
+			// rather than hand-rolling toggle logic: it manages its own
+			// aria-pressed state and fires "rux:segment-change" on click.
+			const tripBarSizeTrack = document.getElementById(
+				"opt-trip-bar-size",
+			);
+			let tripBarSize = "xs";
+			try {
+				const stored = localStorage.getItem("rux:trip-bar-size");
+				if (stored === "xxs" || stored === "sm") tripBarSize = stored;
+			} catch (_) {}
+
+			function applyTripBarSize(size) {
+				tripBarSize = size;
+				schedulerEl?.classList.toggle(
+					"rux-scheduler--trip-bar-size-xxs",
+					size === "xxs",
+				);
+				schedulerEl?.classList.toggle(
+					"rux-scheduler--trip-bar-size-sm",
+					size === "sm",
+				);
+				tripBarSizeTrack
+					?.querySelectorAll(".rux-button--segment")
+					.forEach((button) => {
+						button.setAttribute(
+							"aria-pressed",
+							button.dataset.value === size ? "true" : "false",
+						);
+					});
+			}
+			applyTripBarSize(tripBarSize);
+
+			tripBarSizeTrack?.addEventListener("rux:segment-change", (e) => {
+				applyTripBarSize(e.detail.value);
+				try {
+					localStorage.setItem("rux:trip-bar-size", e.detail.value);
+				} catch (_) {}
+				layoutScheduler();
+				patchProfileSettings({ tripBarSize: e.detail.value });
 			});
 
 			let centeredTripHeadsEnabled = false;
@@ -9321,8 +9584,9 @@
 			// `settings` jsonb (no-op if no profile is selected — the plain
 			// localStorage writes above already cover that anonymous case).
 			// applyProfileSettings does the reverse: pushes a profile's saved
-			// settings into the six toggles above (and their side effects) when
-			// switching profiles, same code paths each toggle's own onChange uses.
+			// settings into the twelve toggles above (and their side effects)
+			// when switching profiles, same code paths each toggle's own
+			// onChange uses.
 			function patchProfileSettings(patch) {
 				const profile = getCurrentProfile();
 				if (!profile) return;
@@ -9355,6 +9619,23 @@
 						"rux-scheduler--compact",
 						compactEnabled,
 					);
+				}
+
+				tripBarRowKeys.forEach(([key, id, hideClass]) => {
+					const settingKey = `show${key[0].toUpperCase()}${key.slice(1)}`;
+					if (settingKey in settings) {
+						const visible = !!settings[settingKey];
+						tripBarRowVisible[key] = visible;
+						const input = document.getElementById(id);
+						if (input) input.checked = visible;
+						schedulerEl?.classList.toggle(hideClass, !visible);
+					}
+				});
+				recomputeTripBarRowCount();
+
+				if ("tripBarSize" in settings) {
+					const size = settings.tripBarSize;
+					applyTripBarSize(size === "xxs" || size === "sm" ? size : "xs");
 				}
 
 				if ("centeredTripHeads" in settings) {
@@ -10864,7 +11145,7 @@
 							placeholder="Paste JSON here — or use the file button below…"
 							style="
 								font-family: var(--rux-font-mono);
-								font-size: var(--rux-text-xs);
+								font-size: var(--rux-size-xs);
 								resize: vertical;
 								min-height: 14rem;
 								height: 14rem;
@@ -10894,7 +11175,7 @@
 								id="tp-import-error"
 								style="
 									color: var(--rux-danger);
-									font-size: var(--rux-text-xs);
+									font-size: var(--rux-size-xs);
 									flex: 1;
 								"
 							></span>

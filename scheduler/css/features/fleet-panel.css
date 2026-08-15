@@ -102,15 +102,15 @@
 
 .rux-fleet-panel__trip-id {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	color: var(--rux-accent);
-	font-weight: var(--rux-weight-medium);
+	font-weight: var(--rux-weight-400);
 	min-width: 5rem;
 }
 
 .rux-fleet-panel__trip-meta {
 	flex: 1;
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	color: var(--rux-text-muted);
 	min-width: 0;
 	overflow: hidden;
@@ -122,7 +122,7 @@
 	padding: var(--rux-space-5);
 	text-align: center;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 }
 
 /* — Narrow panel — */
@@ -222,7 +222,7 @@
 
 .fleet-app__order {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-text-sm);
+	font-size: var(--rux-size-sm);
 	color: var(--rux-text-disabled);
 	text-align: center;
 }
