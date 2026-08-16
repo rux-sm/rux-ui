@@ -889,7 +889,7 @@
 	min-width: 0;
 	padding: 0 var(--rux-space-2);
 	overflow: hidden;
-	background: var(--rux-surface-2);
+	background: var(--rux-surface-1);
 	color: var(--rux-text-muted);
 	border: none;
 	border-left: var(--rux-side-nav-selected-width) solid
@@ -1055,7 +1055,7 @@
 	height: var(--rux-driver-grid-cell-size);
 	padding: 0;
 	border-radius: var(--rux-radius-0);
-	background: var(--rux-surface-3);
+	background: var(--rux-surface-1);
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
 	   quietly as a plain .rux-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
@@ -1082,7 +1082,7 @@
 /* Same driver, two overlapping trips the same day — flagged distinctly from
    a normal single-trip day rather than just looking "extra busy". */
 .rux-driver-grid__cell--conflict {
-	background: color-mix(in oklab, oklch(from var(--rux-warning) var(--rux-trip-bar-bg-lightness) c h) var(--rux-trip-bar-bg-opacity), var(--rux-surface-3));
+	background: color-mix(in oklab, oklch(from var(--rux-warning) var(--rux-trip-bar-bg-lightness) c h) var(--rux-trip-bar-bg-opacity), var(--rux-surface-1));
 	border-color: oklch(from var(--rux-warning) var(--rux-trip-bar-bg-lightness) c h / 100%);
 }
 

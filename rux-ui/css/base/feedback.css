@@ -8,7 +8,7 @@
   display: flex;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-surface-5);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-md);
   font-size: var(--rux-size-sm);
@@ -35,7 +35,7 @@
   align-items: center;
   gap: var(--rux-space-3);
   padding: var(--rux-space-3) var(--rux-space-4);
-  background: var(--rux-surface-5);
+  background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-md);
   font-size: var(--rux-size-sm);
@@ -58,7 +58,6 @@
   animation: rux-fade-in var(--rux-duration-base) var(--rux-ease-out);
 }
 .rux-modal-backdrop[hidden] { display: none; }
-.rux-modal.rux-modal--wide { max-width: var(--rux-modal-max-width-wide); }
 
 .rux-modal {
   width: 100%;

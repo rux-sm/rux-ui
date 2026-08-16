@@ -16,7 +16,6 @@
                              Request inbox, Trip Finder)
      .rux-panel--modal      screen-blocking dialog
      .rux-panel--anchored   popover / menu surface
-     .rux-panel--elevated   standalone lift, no position context
 
    Everything below this line that ISN'T gated behind a position modifier —
    .rux-panel__title, .rux-panel__pane, .rux-panel__tabs — is shared across
@@ -204,22 +203,15 @@
 	padding: var(--rux-panel-nav-padding);
 }
 
-/* The backdrop a titled-region card sits on. An attached panel with no
-   nested .rux-card at all already reads as "level 1" just from this — its
-   content sits directly against the same --rux-card-level-1-bg a plain
-   .rux-card--level-1 would use, no wrapper needed. A panel that DOES
-   subdivide its body into titled cards (the tool panel's mini calendar /
-   Calendar Options / Trip Bar Options, each their own single-titled-region
-   card — see docs/cards.md) needs each of those to be --level-2, one step
-   deeper than this backdrop, or they'd blend into it. Equal specificity to
-   .rux-panel__nav--attached + .rux-panel__body's own transparent
-   background above, declared later in this file so it wins — floating
-   windows want that transparent rule instead (their own shell already sits
-   at the elevation a card would have had to pass through; see "Floating
-   surfaces skip a layer on purpose" in tokens.css), so this only overrides
-   it for --attached, not --floating. */
-.rux-panel--attached > .rux-panel__body {
-	background: var(--rux-card-level-1-bg);
+/* The backdrop content and cards sit on — same token the nav-attached
+   sibling rule above uses, so a panel's body reads consistently whether
+   or not it has tabs. Attached and floating want the exact same
+   treatment (see the --floating rule below, in the floating section) —
+   a floating shell is surface-0 too, same as attached, so there's
+   nothing left for position to change here. */
+.rux-panel--attached > .rux-panel__body,
+.rux-panel--floating > .rux-panel__body {
+	background: var(--rux-panel-pane-bg);
 }
 
 /* Only cast while __body has scrolled under it (.is-scrolled, toggled by
@@ -295,18 +287,7 @@
 	background: transparent;
 }
 
-/* A floating window's own shell already reads as one elevated layer (its
-   own border + shadow) — its content area starts at --level-2, the same
-   step a nested card would need to avoid sitting flush against it. Reuses
-   the card level scale directly rather than a separate floating-body
-   token, same as --rux-card-floating-bg already does for plain cards. */
-.rux-panel--floating > .rux-panel__body {
-	background: var(--rux-card-level-2-bg);
-	border:     var(--rux-card-level-2-border);
-	box-shadow: var(--rux-card-level-2-shadow);
-}
-
-/* Attached tabs pair with a pane that owns this same level-2 box itself
+/* Attached tabs pair with a pane that owns its own surface-1 box itself
    (below) — the body underneath stays bare so its box doesn't nest inside
    another identical one. */
 .rux-panel--floating > .rux-panel__nav--attached + .rux-panel__body {
@@ -315,11 +296,10 @@
 	box-shadow: none;
 }
 
-.rux-panel--floating > .rux-panel__body > .rux-panel__pane {
-	background: var(--rux-card-level-2-bg);
-	border:     var(--rux-card-level-2-border);
-	box-shadow: var(--rux-card-level-2-shadow);
-}
+/* No override needed — .rux-panel__pane's own base rule (above) already
+   reads --rux-panel-pane-bg (surface-0), same backdrop an attached panel's
+   pane gets. Every floating-window pane wraps its content in .rux-card
+   (surface-1), so the contrast comes from the card, not the pane. */
 
 .rux-panel--floating > .rux-panel__footer {
 	background: var(--rux-panel-floating-footer-bg);
@@ -440,13 +420,3 @@
 	box-shadow: var(--rux-panel-anchored-shadow);
 }
 
-/* ── Appearance: elevated ─────────────────────────────────────────────── */
-/* For a standalone .rux-panel with no position modifier — sitting inline
-   in normal flow but still wanting lift off the surface beneath it. The
-   position modifiers above each already bake in the correct elevation for
-   their own context; this is only for the plain, no-modifier case. */
-
-.rux-panel--elevated {
-	background: var(--rux-elevation-3-bg);
-	box-shadow: var(--rux-shadow-2);
-}

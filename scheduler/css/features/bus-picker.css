@@ -9,7 +9,7 @@
 	z-index: var(--rux-z-dropdown);
 	min-width: 12rem;
 	padding: var(--rux-space-1);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-sm);
 }
@@ -80,7 +80,7 @@
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
 	min-width: 10rem;
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-sm);
 	padding: var(--rux-space-1);

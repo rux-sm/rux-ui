@@ -98,7 +98,7 @@
 	min-height: 28px;
 	padding: var(--rux-space-px) var(--rux-space-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 }
 .flip-seven__score:last-child { border-bottom: 0; }
 .flip-seven__score.is-active { background: var(--rux-bg-active); box-shadow: inset 3px 0 var(--rux-accent); }
@@ -168,7 +168,7 @@
 	padding: var(--rux-space-3);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	text-align: left;
 }
 .flip-seven__turn-status {
@@ -224,7 +224,7 @@
 	padding: var(--rux-space-2);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	pointer-events: auto;
 }
 .flip-seven__player-hand--top { grid-area: top; }
@@ -281,7 +281,7 @@
 	place-items: center;
 	border: var(--rux-border-width) solid var(--rux-card-border-hover);
 	border-radius: var(--rux-radius-sm);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	color: var(--rux-text-default);
 	font: var(--rux-weight-400) var(--rux-size-md)/1 var(--rux-font-mono);
 }

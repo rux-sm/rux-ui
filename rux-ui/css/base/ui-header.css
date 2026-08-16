@@ -250,7 +250,7 @@
 	left: var(--rux-space-2);
 	z-index: calc(var(--rux-z-modal) + 2);
 	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	color: var(--rux-text-default);
 	border-radius: var(--rux-radius-control);
 	box-shadow: var(--rux-button-focus-ring);

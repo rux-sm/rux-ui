@@ -107,7 +107,7 @@
 	flex-direction: column;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-3);
-	background: var(--rux-surface-3);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 	cursor: pointer;
@@ -163,7 +163,7 @@
 	align-items: center;
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-surface-3);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-full);
 	cursor: pointer;

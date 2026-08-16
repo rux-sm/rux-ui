@@ -102,7 +102,7 @@
 	align-items: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-surface-3);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-md);
 	color: var(--rux-text-default);
@@ -208,7 +208,7 @@
 	max-height: min(560px, calc(100dvh - (var(--rux-space-5) * 2)));
 	padding: 0;
 	overflow: hidden;
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	color: var(--rux-text-default);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-xl);

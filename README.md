@@ -147,17 +147,20 @@ markup.
 
 ### Backgrounds
 
-The system has an 8-step depth scale, `--rux-surface-0` through `--rux-surface-7`, canvas to most-elevated. Higher numbers are lighter and read as visually closer:
+Two surfaces only, following the Vercel Geist model (see "Reference: Vercel
+Geist colors" below):
 
 | Token | Use for |
 |---|---|
-| `--rux-surface-0` | App canvas — the lowest plane |
-| `--rux-surface-1` | UI header, panel shells |
-| `--rux-surface-2` | Card layer |
-| `--rux-surface-3` | Input fields, card headers |
-| `--rux-surface-4`–`-7` | Progressively more elevated surfaces (menus, selected states, strong active states) |
+| `--rux-surface-0` | Chrome — app canvas, panel/floating-window shells, headers, tabs, controls |
+| `--rux-surface-1` | Content — cards, tables, menus, popovers, dialogs, anything holding content |
 
-`--rux-bg-hover` / `--rux-bg-active` alias `--rux-surface-5` / `--rux-surface-6` specifically for interactive states — a different axis from depth, layered onto any surface tier rather than replacing it.
+The rule of thumb: if it's a container that *holds* content, it's
+`--rux-surface-1`; if it's UI furniture around that content, it's
+`--rux-surface-0`. `--rux-bg-hover` / `--rux-bg-active` are direct values
+(not aliased to a surface step) for interactive list-item states — a
+different axis from the two-surface scale, layered onto whichever surface
+the interactive element sits on rather than replacing it.
 
 **No gradients** except `--rux-overlay-scrim` (a flat 60% black scrim for modals). No full-bleed imagery as background. No textures, patterns, grain. Surfaces are flat color separated by hairlines.
 
@@ -200,14 +203,22 @@ directly. Current rux-ui alignment with this shape:
 - `--rux-grid-guide` / `--rux-card-border` / `--rux-card-border-hover` /
   `--rux-card-border-active` mirrors the border/border-hover/border-active
   triad (steps 400/500/600).
-- `--rux-surface-N` plus `--rux-bg-hover` / `--rux-bg-active` mirrors
-  background/background-hover/background-active (100/200/300).
+- `--rux-surface-0` / `--rux-surface-1` mirrors Geist's own dedicated
+  `background-100`/`-200` pair more directly than the 10-step gray scale
+  does — Rux UI collapsed its former 8-step surface ladder (and the whole
+  card-level/elevation-tier system built on it) down to exactly two
+  surfaces for this reason: chrome, and everything raised off it. See
+  Backgrounds above and [Cards](docs/cards.md) for what that collapse
+  actually changed.
+- `--rux-bg-hover` / `--rux-bg-active` are a separate axis (interactive
+  list-item states, not depth) — no direct Geist background-hover/-active
+  equivalent has been mapped yet.
 - `--rux-text-heading` / `-default` / `-muted` / `-faint` / `-disabled` is a
   finer-grained analog of the secondary-text/primary-text pair (900/1000).
 
 This mapping is a reference point for future token work, not a completed
 audit — no full pass has been made to verify every rux-ui color role has a
-Geist-shaped equivalent, or that step counts line up everywhere.
+Geist-shaped equivalent.
 
 #### Swappable accent — JS wiring exists, CSS side does not yet
 
@@ -329,7 +340,7 @@ behavior, not a new panel variant.
 
 ### Surface depth
 
-`--rux-surface-0` through `--rux-surface-7` form the canonical dark-to-light depth scale (0 is canvas). Higher numbers appear visually closer, so adjusting a component's depth is a one-number change. `--rux-surface-contrast` is reserved for light elements such as switch thumbs; it is not another normal depth tier.
+`--rux-surface-0` and `--rux-surface-1` are the whole depth scale (0 is canvas, 1 is everything raised off it) — see Backgrounds above. There is no deeper nesting tier: a card inside a card inside a panel is the same color at every depth. `--rux-surface-contrast` is reserved for light elements such as switch thumbs; it is not another surface step.
 
 ### Borders & shadows
 
@@ -360,10 +371,11 @@ border-radius: var(--rux-card-body-radius);
 padding: var(--rux-card-padding);
 ```
 
-A plain card is one visual step (level 1); nesting another titled card
-inside it steps to `--rux-card-level-2-*`, then `-3`, `-4` — see
-[Cards](docs/cards.md) for the full level system and when a floating
-window's first nested card should start at level 2 instead of level 1.
+One card color regardless of nesting depth — no level system (see
+"Reference: Vercel Geist colors" above). `--rux-card--elevated` /
+`--rux-card--recessed` still nudge a specific card one relative step
+lighter or darker when it needs to stand out from an identical sibling —
+see [Cards](docs/cards.md).
 
 Interactive cards can add a `border-color` shift on hover (`--rux-card-border-hover`) and a slight background lift to `--rux-bg-hover`. Never use a colored left border to denote category — use a `.rux-badge` instead.
 
@@ -478,8 +490,7 @@ When in doubt, edit a token before adding a new component override.
 - The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-surface-N`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:
   ```
   --rux-bg-1   → --rux-surface-0
-  --rux-bg-2/3/4 → --rux-surface-2 / -3 / -4
-  --rux-bg-5   → --rux-surface-5  (or its own token if modal needs lift)
+  --rux-bg-2/3/4/5 → --rux-surface-1  (two surfaces total now — see Backgrounds above)
   --rux-text-1 → --rux-text-default
   --rux-text-2 → --rux-text-muted
   --rux-text-3 → --rux-text-disabled

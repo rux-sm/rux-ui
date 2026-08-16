@@ -7,8 +7,8 @@
 
 .rux-team-chat-popover {
 	--rux-team-chat-message-max-width: 70%;
-	--rux-team-chat-message-bg: var(--rux-surface-4);
-	--rux-team-chat-own-message-bg: var(--rux-surface-5);
+	--rux-team-chat-message-bg: var(--rux-surface-1);
+	--rux-team-chat-own-message-bg: oklch(from var(--rux-surface-1) calc(l + 6%) c h);
 	--rux-team-chat-message-radius: var(--rux-radius-0);
 	--rux-team-chat-avatar-track-width: var(--rux-avatar-md);
 
@@ -40,7 +40,7 @@
 	min-width: 0;
 	min-height: 0;
 	overflow-y: auto;
-	background: var(--rux-surface-3);
+	background: var(--rux-surface-0);
 	padding: var(--rux-space-4) var(--rux-space-4);
 	display: flex;
 	flex-direction: column;
@@ -117,7 +117,7 @@
 	z-index: 1;
 	display: flex;
 	align-items: center;
-	background: var(--rux-surface-3);
+	background: var(--rux-surface-0);
 	border-radius: var(--rux-radius-control);
 	opacity: 0;
 	pointer-events: none;

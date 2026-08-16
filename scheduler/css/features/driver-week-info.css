@@ -87,7 +87,7 @@
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-0);
 }
 
 .rux-driver-week-info__trip {

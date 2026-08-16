@@ -18,7 +18,7 @@
 	--rux-driver-logo-width:              160px;
 	--rux-driver-logo-width-compact:      136px;
 	--rux-driver-logo-max-width:          52vw;
-	--rux-driver-card-bg:                 var(--rux-surface-4);
+	--rux-driver-card-bg:                 var(--rux-surface-1);
 	--rux-driver-card-border:             var(--rux-border-width) solid var(--rux-card-border);
 	--rux-driver-card-radius:             var(--rux-radius-container);
 	--rux-driver-card-header-padding:     28px var(--rux-space-5);
@@ -41,7 +41,7 @@
 	--rux-driver-primary-size:            var(--rux-size-lg);
 	--rux-driver-secondary-size:          var(--rux-size-lg);
 	--rux-driver-label-size:              var(--rux-size-xs);
-	--rux-driver-control-bg:              var(--rux-surface-3);
+	--rux-driver-control-bg:              var(--rux-surface-0);
 	--rux-driver-control-radius:          var(--rux-radius-lg);
 	--rux-driver-accent-soft:             color-mix(in oklch, var(--rux-accent) 16%, transparent);
 	--rux-driver-warning-soft:            color-mix(in oklch, var(--rux-warning) 12%, transparent);
@@ -833,7 +833,7 @@ html {
 	width: min(var(--rux-container-xs), calc(100% - (var(--rux-space-4) * 2)));
 	padding: 0;
 	overflow: hidden;
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	color: var(--rux-text-default);
 	border: none;
 	border-radius: var(--rux-radius-xl);

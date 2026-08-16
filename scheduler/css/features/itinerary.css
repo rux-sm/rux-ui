@@ -366,15 +366,14 @@
 }
 
 /* One pin silhouette identifies every location row; color carries its
-   type. Background stays --rux-card-level-2-bg on purpose even though
-   the row itself isn't nested/leveled anymore — it's still a subtle
-   badge chip behind the icon, computed relative to the day-group's own
-   body so it reads correctly regardless of ambient context. */
+   type. A relative lighten (not a flat surface value) so this still
+   reads as a distinct chip against its own day-group card, which is the
+   same surface-1 color as everything else now. */
 .rux-trip-itinerary__marker-pin {
 	--_icon-fill: 1;
 	position: relative;
 	z-index: 1;
-	background: var(--rux-card-level-2-bg);
+	background: oklch(from var(--rux-surface-1) calc(l + 6%) c h);
 	color: var(--rux-text-muted);
 	font-size: 20px;
 	line-height: 1;
@@ -750,7 +749,7 @@
 	max-height: 16rem;
 	overflow: auto;
 	padding: var(--rux-space-1);
-	background: var(--rux-surface-5);
+	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 }

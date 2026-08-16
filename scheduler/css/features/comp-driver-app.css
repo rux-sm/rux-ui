@@ -278,7 +278,7 @@
 	overflow: hidden;
 	width: var(--rux-avatar-md);
 	height: var(--rux-avatar-md);
-	background: var(--rux-surface-4);
+	background: var(--rux-surface-1);
 	border-radius: var(--rux-radius-control);
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);

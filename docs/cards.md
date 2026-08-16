@@ -14,39 +14,32 @@ its own content to `overflow: hidden`.
   .rux-card__header      — title + trailing actions, floats above the body
   .rux-card__body         — content area (add --stack for gapped children)
   .rux-card__footer      — actions row, shares a seam with the body
-.rux-card--level-1..4      — ordinal nesting depth, whole-card modifiers
-.rux-card--elevated        — one relative step lighter than whatever's there
-.rux-card--recessed        — one relative step darker than whatever's there
+.rux-card--elevated        — one relative step lighter than the plain default
+.rux-card--recessed        — one relative step darker than the plain default
+.rux-card--borderless      — drops the body's border
 ```
 
-`--level-1` through `--level-4` are **whole-card modifiers**, not per-part —
-each just feeds `--rux-card-body-bg`/`-border`/`-shadow`, the same three
-custom properties `.rux-card__body` already reads directly for its own
-background/border/box-shadow, so a level is nothing more than three token
-values, no separate rule needed per level. Level 1 aliases the plain
-default exactly (a visual no-op) — it exists so a card's own depth is
-always explicit in markup instead of "no class" silently meaning level 1.
-Each level after 1 computes one step darker than the level before it via
-relative `oklch`, so nesting deeper always reads as sinking further rather
-than picking arbitrary colors by hand. Header goes transparent at levels
-2–4 (the "nested card" look); level 1 keeps the plain header's own tint,
-since it's the outermost tier, not something nested.
+**One card color, regardless of nesting depth** — see "Reference: Vercel
+Geist colors" in `README.md`. Rux UI used to have a numbered
+`.rux-card--level-1` through `-4` nesting scale, each level computing one
+step darker via relative `oklch`; that system is gone. There are now just
+two surfaces app-wide: `--rux-surface-0` (canvas, chrome — shells, panels,
+headers, tabs) and `--rux-surface-1` (everything raised off it — cards,
+content areas, modals). A card nested inside a card inside a panel reads the
+same color at every depth.
 
 `--elevated` and `--recessed` are **dynamic, not token-backed** — each
-nudges whatever `--rux-card-body-bg` is already in scope (from a level, or
-the plain default if none is set) by one relative step, lighter or darker:
+nudges whatever `--rux-card-body-bg` is already in scope by one relative
+step, lighter or darker, for the rare case a specific card needs to stand
+out from an identical sibling:
 
 ```css
 .rux-card--elevated { --rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l + 6%) c h); }
 .rux-card--recessed { --rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l - 6%) c h); }
 ```
 
-Because they're self-referencing and declared *after* the level rules in
-`card.css`, they compose with any level: `.rux-card--level-3.rux-card--elevated`
-reads as "level 3, one step lighter," not a fixed color — CSS resolves a
-self-reference against whatever lower-priority declaration set that same
-property on the same element, which is exactly whichever level class is
-also present. Background only; border/shadow stay purely level-driven.
+Background only; border/shadow stay untouched — this is just a brightness
+nudge, not a new elevation tier.
 
 `rux-ui/css/base/card.css` is the single source of truth; this doc explains
 the *why*, not the mechanics — read the file's own comments for those.
@@ -89,106 +82,43 @@ without establishing its own stacking context, and a tied z-index falls back
 to DOM order. The shared sticky token — the same one the scheduler's own
 sticky row/column headers use — reliably outranks that instead of guessing.
 
-## Levels — ordinal nesting depth
+## Repeating list items — plain `.rux-card`, no modifier
 
-A numbered scale instead of a separate semantic name for every possible
-nesting depth. `.rux-card--level-2` is a fully boxed, individually-bordered
-item for content that repeats (itinerary's day-group children, Fleet's
-bus-groups, Billing's payment rows, Tasks' trip cards, History's cards, Trip
-Finder's results wrapper) — what used to be the fixed, standalone
-`.rux-card--recessed`. Its header never gets the sentinel-gated sticky
-treatment — an individual item sticking inside a long list would be noise —
-and stays transparent so the body's own inset shadow reads through instead
-of being covered by a duplicate paint layer.
+Content that repeats (itinerary's day-group children, Fleet's bus-groups,
+Billing's payment rows, Tasks' trip cards, History's cards, Trip Finder's
+results wrapper) is just a plain `.rux-card` now — the same class, same
+color, as a titled top-level card. There used to be a dedicated
+`.rux-card--level-2` modifier for this pattern (a fully boxed,
+individually-bordered nested item); it's gone along with the rest of the
+level system, since there's no longer a darker "nested" tier to step down
+to. `.rux-card`'s own base rule carries `min-width: 0` specifically for
+this — every one of these consumers is a flex child that needs to
+shrink/truncate properly rather than forcing its container wide.
 
-**Each level's background is computed relative to the level before it**,
-`oklch(from var(--rux-card-level-N-1-bg) calc(l - 6%) c h)` — level 2 is six
-percent darker than level 1, level 3 six percent darker than level 2, and so
-on, rather than every level picking an arbitrary color by hand. Level 1
-itself aliases the plain `--rux-card-body-*` defaults exactly. `--rux-shadow-inset`
-(levels 2+) is what actually sells the sunken read — a flat darker fill
-alone communicates a color difference, not depth — and it's inset-only
-(contained within the element's own box), so applying it directly to
-`.rux-card__body` carries no shadow-bleed risk the way a real drop-shadow
-would (see the floating-card shadow note below for what that risk actually
-looks like).
+Header still stays transparent on a nested card so the body's own
+background reads through unbroken — that part of the old level-2 treatment
+carried over; only the color-stepping is gone.
 
 **No margin of its own** — deliberately. Consumers fall into two layout
 systems and one fixed margin can't serve both:
 
 - **Flex-column consumers** (`.rux-trip-panel__payment-rows`,
-  `.rux-trip-panel__bus-groups`) already space their level-2 cards via their
+  `.rux-trip-panel__bus-groups`) already space their nested cards via their
   own `gap`. Margins never collapse between flex children, so adding margin
   here too would stack on top of that gap instead of replacing it.
 - **Plain block-flow consumers** (`.rux-trip-itinerary__day-group`,
   `.rux-trip-history__group`) set `margin: var(--rux-space-4)` directly on
-  their level-2 children — not `margin-bottom` alone. Adjacent siblings are
+  their nested children — not `margin-bottom` alone. Adjacent siblings are
   normal block elements, so their margins collapse into one gap the standard
   CSS way, and the *first* item in the list gets its own top margin for free
   against whatever precedes it (typically a sentinel-gated header, which has
   no margin of its own to collapse with).
 
-Current consumers, all `--level-2`: Fleet's bus-groups, Billing's payment
-rows (trip panel + trip manifest + trip-db.js), Tasks' trip cards and
-post-trip cards, History's cards, Trip Finder's results wrapper.
-`--level-3`/`--level-4` and `--elevated`/`--recessed` composed with any
-level are available but have no consumer yet — reach for them when a
-genuinely deeper nesting shows up instead of inventing a new name for it.
-Itinerary's own stops are flat divided rows now, not a level at all (see
+Itinerary's own stops are flat divided rows, not a card at all (see
 `itinerary.css`'s own file-header comment) — a deliberate exception, not an
 oversight. Driver-share's per-assignment sections use a locally-scoped
-`.driver-assignment-card > .rux-card` divider pattern, not a level either —
-that component owns its own box chrome separately and only reuses the bare
-`.rux-card` class as a structural marker for its own CSS combinator.
-
-## Elevation
-
-One numbered tier per "how far this container sits above the canvas,"
-defined once in the primitives section of `tokens.css` and paired 1:1 with
-`--rux-shadow-1/2/3` by index:
-
-```
---rux-elevation-0-bg   Canvas
---rux-elevation-1-bg   Panel — structural, attached
---rux-elevation-2-bg   Card — default, sits inside a panel
---rux-elevation-3-bg   Elevated card / floating panel — no panel wall
---rux-elevation-4-bg   Modal — topmost, screen-blocking
-```
-
-Component tokens (`--rux-panel-bg`, `--rux-card-body-bg`, `--rux-panel-modal-bg`)
-alias these instead of reaching into `--rux-surface-N` directly, so "a
-floating window is one tier above an ordinary card" is a readable
-relationship, not a coincidence of two components happening to reference the
-same raw surface index.
-
-Floating windows skip a layer on purpose: `.rux-panel--floating`'s
-background (`--rux-panel-floating-bg`) claims elevation-3's own raw value
-directly, the tier a panel-nested card would have had to pass through,
-rather than sitting at elevation-2 alongside cards that *do* have that
-structural context.
-
-This ladder is a separate axis from the card level scale above — elevation
-is about which *component* (Panel/Card/floating window/Modal) sits at which
-tier; levels are about how many cards deep *within* the card system a given
-card is nested. Level 1 (`--rux-card-level-1-bg: var(--rux-surface-2)`)
-aliases the same raw primitive `--rux-elevation-2-bg` does — level 1 and the
-plain default (`--rux-card-body-bg`) both land on elevation-2's own value,
-which is the "visual no-op" property levels are built around — but it's a
-flat value, not a `var(--rux-elevation-2-bg)` reference; levels 2–4 compute
-relative to level 1 from there, independent of whatever elevation tier the
-card's ambient panel happens to be at.
-
-**A floating window's first nested card starts at level 2, not level 1** —
-this follows directly from the layer-skip above. A `.rux-panel--attached`'s
-own background sits at elevation-1; a level-1 card inside it (elevation-2)
-reads as one clear step up, real contrast. A `.rux-panel--floating`'s own
-background already sits at elevation-3 — the tier a level-1 card would
-occupy — so a level-1 card dropped straight into a floating window would sit
-at the *same or a lower* tier than its own shell and read as recessed, not
-elevated. Start floating-window content at level 2 instead, which computes
-one step past the floating shell's own elevation-3 value, preserving the
-same "genuinely elevated above its container" contrast a level-1 card gets
-inside an attached panel.
+`.driver-assignment-card > .rux-card` divider pattern, which only reuses the
+bare `.rux-card` class as a structural marker for its own CSS combinator.
 
 ## Tokens
 
@@ -200,31 +130,22 @@ inside an attached panel.
                               of the plain header tokens above; defaults to
                               matching --rux-card-body-bg with no border
 --rux-card-body-bg/-border/-radius/-shadow
-                              the box every card actually owns — also what
-                              .rux-card--level-N feeds via these same three
-                              custom properties
+                              the box every card owns — one value app-wide
+                              (--rux-card-body-bg is --rux-surface-1),
+                              nesting depth no longer changes it
 --rux-card-footer-bg/-border/-radius/-shadow
                               footer's own look, shares a seam with body
---rux-card-level-1..4-bg/-border/-shadow
-                              what .rux-card--level-N each read — level 1
-                              aliases --rux-card-body-* directly; each level
-                              after computes one step darker than the level
-                              before it (see Levels above); no separate
-                              -radius, inherits --rux-card-body-radius.
-                              --elevated/--recessed have no tokens of their
-                              own — they're a dynamic oklch adjustment on
-                              whichever level's --rux-card-body-bg is
-                              already in scope, see card.css
---rux-card-floating-bg/-shadow
-                              the ambient default applied automatically to a
-                              plain card (no level, no --elevated/--recessed)
-                              dropped into a .rux-panel--floating — see
-                              card.css
 --rux-card-section-border    generic divider border-top, still used directly
                               by a few flat-divider layouts outside the Card
                               component itself (scheduler-app.css,
                               trip-history.css, trip-envelope.css)
 ```
+
+`--elevated`/`--recessed` have no tokens of their own — they're a dynamic
+`oklch` adjustment on whatever `--rux-card-body-bg` is already in scope, see
+card.css. `--rux-card-level-1..4-*` and `--rux-card-floating-bg/-shadow`
+no longer exist — deleted along with the level system and the "floating
+windows skip a layer" mechanism they backed (see Panel section below).
 
 ## Why this replaced panel-inside-card nesting
 
@@ -234,22 +155,17 @@ own chrome: a floating window (border/shadow/radius), `.rux-panel` (tab nav
 header/body/border/shadow again) — three overlapping header/body/footer
 contracts for one window. All four trip editor tabs (Details, Billing,
 Itinerary, Fleet) now use plain `.rux-card` groups (sentinel-gated, sticky
-headers) instead, with `.rux-card--level-2` for Fleet's own repeating bus
-assignments (Itinerary's own stops are flat divided rows, not a level — see
-Levels above) — no separately-boxed nested card remains anywhere inside the
-trip editor.
+headers) instead — no separately-boxed nested card remains anywhere inside
+the trip editor.
 
 The tool panel's four tabs (Calendar, Drivers, Tasks, History) use the same
 two components for the same reasons: Tasks' and History's own date groups
 are sentinel-gated `.rux-card` with their repeating trip/history cards as
-`.rux-card--level-2`, and Driver Availability / Calendar Options / Trip Bar
-Options / the mini calendar each get a sentinel-gated `.rux-card--level-1`
-for their single titled region — explicit, not the bare `.rux-card` these
-used to be, now that a plain `.rux-panel--attached` body already reads as
-level 1 on its own (see Panel below) and an explicit level 1 on top of that
-would collide with it. These two panels (the trip editor and the tool
-panel) are the reference implementation for any future addition in the same
-family.
+plain nested `.rux-card`s, and Driver Availability / Calendar Options / Trip
+Bar Options / the mini calendar each get their own sentinel-gated `.rux-card`
+for their single titled region. These two panels (the trip editor and the
+tool panel) are the reference implementation for any future addition in the
+same family.
 
 ## Panel — the outer-container primitive
 
@@ -260,8 +176,7 @@ unified the old Section/Embed split. Unlike Card, Panel keeps the
 floating label above a separate box — since a window/panel/dialog title bar
 is supposed to read as part of the chrome. Position is a modifier
 (`--attached`, `--floating`, `--modal`, `--anchored`), not a separate
-component; `--elevated` is a standalone-lift appearance modifier for a
-`.rux-panel` with no position context.
+component.
 
 ```
 .rux-panel
@@ -279,18 +194,23 @@ component; `--elevated` is a standalone-lift appearance modifier for a
                            inbox, Trip Finder, Doc viewer, Trip envelope)
 .rux-panel--modal         screen-blocking dialog
 .rux-panel--anchored      popover / menu surface
-.rux-panel--elevated      standalone lift, no position context
 ```
 
-An attached panel's body reads as level 1 on its own, no wrapper needed —
-`.rux-panel--attached > .rux-panel__body`'s own background is
-`--rux-card-level-1-bg` directly. A panel that subdivides its body into
-titled cards (the tool panel's mini calendar / Calendar Options / Trip Bar
-Options, each their own single-titled-region card) needs each of those to
-be `--level-2`, one step deeper than that backdrop, or they'd blend into it
-— see the "Levels" section above and the Elevation section's floating-window
-note for the equivalent floating-window rule (start nested cards at level 2
-there too, for the same "already-elevated shell" reason).
+**Panel shells and panes are surface-0; cards inside them are surface-1** —
+uniformly, for every position. `.rux-panel--attached`'s own shell
+(`--rux-panel-attached-bg`) and `.rux-panel--floating`'s own shell
+(`--rux-panel-floating-bg`) are both `--rux-surface-0` now; a floating
+window is chrome, not content, the same as an attached panel.
+`--rux-panel-pane-bg` (the content area following an attached tab strip,
+and any panel's body with no tabs at all) is also `--rux-surface-0` — the
+panel's own backdrop, not a card, whether the panel is attached or
+floating. Every panel's actual content — a titled card, or a repeating
+list item — reads `--rux-surface-1`/`--rux-card-body-bg` and contrasts
+against that shell correctly. There is no floating-specific pane override
+of any kind: every floating-window pane (the trip editor's four tabs
+included) wraps its content in `.rux-card`, exactly the way an attached
+panel's does, so no separate "floating windows skip a layer" mechanism is
+needed — floating and attached panels behave identically.
 
 **Done**: all consumers listed above are on `.rux-panel` — `surface.css` is
 gone, its rules folded into `panel.css`, which now also absorbed the
@@ -312,6 +232,12 @@ original classes/tokens today, though `--rux-panel-modal-*`/
 `--rux-panel-anchored-*` already exist in `tokens.css`, ready to receive
 them (currently referenced only by `panel.css`'s own unused `--modal`/
 `--anchored` position-modifier rules).
+
+**Not yet migrated to the two-surface model**: no full pass has verified
+every panel-adjacent surface (menus, popovers, tables, tabs) picked the
+right side of the chrome/content split — see README.md's "Reference: Vercel
+Geist colors" for the split as it was applied and where it's still
+provisional.
 
 **Known dead code, not yet removed**: `.rux-panel--attached.is-rail` (the
 collapsed desktop rail state) reads real, live tokens

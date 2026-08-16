@@ -78,7 +78,7 @@
 	aspect-ratio: 1;
 	margin: 0;
 	padding: 0;
-	background: var(--rux-surface-4);
+	background: var(--rux-surface-1);
 	border: 0;
 	border-radius: var(--rux-radius-container);
 	color: var(--rux-text-muted);

@@ -66,11 +66,11 @@
 }
 
 /* Only between multiple trip entries sharing one day-group's .rux-card__body
-   (renderTrip) — .rux-tasks__trip here is the .rux-card--level-2 nested
-   inside a day-group specifically. Post Trip's own cards
-   (renderPostTripCard) use the same .rux-card--level-2 treatment but sit
-   as flat siblings of #rp-tasks-departures-body instead, sharing a border
-   the same way day-groups do — no margin needed between those. */
+   (renderTrip) — .rux-tasks__trip here is a plain .rux-card nested inside
+   a day-group specifically. Post Trip's own cards (renderPostTripCard) use
+   the same treatment but sit as flat siblings of #rp-tasks-departures-body
+   instead, sharing a border the same way day-groups do — no margin needed
+   between those. */
 .rux-card__body > .rux-tasks__trip + .rux-tasks__trip {
 	margin-top: var(--rux-space-4);
 }

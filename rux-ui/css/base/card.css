@@ -21,60 +21,20 @@
 
 .rux-card {
 	color: var(--rux-card-fg);
+	/* Every card is a potential flex child (repeating embeds — itinerary
+	   stops, payment rows, history/trip-finder results) that needs to
+	   shrink/truncate properly rather than forcing its container wide. */
+	min-width: 0;
 }
 
-/* — Card levels — ordinal nesting depth (docs/cards.md, tokens.css), a
-   numbered scale instead of a separate semantic name for every possible
-   depth. Whole-card modifiers, not per-part: each just feeds
-   --rux-card-body-bg/-border/-shadow, which .rux-card__body already
-   reads directly for its own background/border/box-shadow below — no
-   background/border/shadow declared here at all, only the custom
-   properties that drive them. Header goes transparent at levels 2-4,
-   matching the "nested card" look --recessed used to have on its own —
-   level 1 keeps the plain header's own tint untouched, since level 1 is
-   the outermost tier, not something nested. */
-.rux-card--level-1 {
-	--rux-card-body-bg:     var(--rux-card-level-1-bg);
-	--rux-card-body-border: var(--rux-card-level-1-border);
-	--rux-card-body-shadow: var(--rux-card-level-1-shadow);
-}
-
-.rux-card--level-2 {
-	--rux-card-body-bg:     var(--rux-card-level-2-bg);
-	--rux-card-body-border: var(--rux-card-level-2-border);
-	--rux-card-body-shadow: var(--rux-card-level-2-shadow);
-}
-
-.rux-card--level-3 {
-	--rux-card-body-bg:     var(--rux-card-level-3-bg);
-	--rux-card-body-border: var(--rux-card-level-3-border);
-	--rux-card-body-shadow: var(--rux-card-level-3-shadow);
-}
-
-.rux-card--level-4 {
-	--rux-card-body-bg:     var(--rux-card-level-4-bg);
-	--rux-card-body-border: var(--rux-card-level-4-border);
-	--rux-card-body-shadow: var(--rux-card-level-4-shadow);
-}
-
-.rux-card--level-2 > .rux-card__header,
-.rux-card--level-3 > .rux-card__header,
-.rux-card--level-4 > .rux-card__header {
-	background: transparent;
-}
-
-/* — Elevated / recessed — dynamic adjustments layered on top of
-   whichever level is already applied (or the plain default, if none
-   is), one relative step lighter or darker. Declared AFTER the level
-   rules above on purpose: --rux-card-body-bg is self-referencing here,
-   and CSS resolves that self-reference against whatever lower-priority
-   declaration set the same property on the same element — since these
-   have equal specificity to --level-N (all single classes) and come
-   later in the file, that lower-priority declaration is whichever level
-   class is also present, so .rux-card--level-3.rux-card--elevated
-   correctly reads as "level 3, one step lighter," not an arbitrary fixed
-   color. Background only — border/shadow stay purely level-driven, this
-   is just a brightness nudge. */
+/* — Elevated / recessed — dynamic adjustments layered on top of the
+   plain default, one relative step lighter or darker. Background only —
+   border/shadow stay untouched, this is just a brightness nudge. No
+   level system anymore (see README.md's "Reference: Vercel Geist
+   colors") — one card color regardless of nesting depth, so a floating
+   window's own cards need no separate auto-elevate mechanism either:
+   they already read as a distinct box against the floating shell's
+   surface-0, same as an attached panel's cards do. */
 .rux-card--elevated {
 	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l + 6%) c h);
 }
@@ -85,38 +45,6 @@
 
 .rux-card--borderless {
 	--rux-card-body-border: 1px solid transparent;
-}
-
-/* Applied automatically (not an opt-in modifier) to every plain card —
-   no level, no --elevated/--recessed — nested inside a floating panel
-   (rux-ui/css/base/panel.css). A card dropped into the trip editor,
-   for instance, should read as a distinct box against the floating
-   window's own background without needing a level added by hand
-   everywhere. The exclusion list covers all four levels plus both
-   dynamic modifiers — an explicit choice on the card always wins over
-   this ambient default; this only ever fills in when nothing else was
-   set. */
-.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__header,
-.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__body,
-.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__footer {
-	background: var(--rux-card-floating-bg);
-}
-
-/* On .rux-card itself, not header or body individually — putting it on
-   either one bleeds onto the other at their zero-gap seam (header and
-   body sit flush with no border between them), since --rux-card-floating-
-   shadow has real downward-projecting layers (--rux-shadow-2's own
-   0 6px 14px ambient layer) that land squarely on whatever's immediately
-   below. .rux-card wraps both, so its own border-box spans the combined
-   header+body shape — one shadow drawn around that outer edge reads as
-   both pieces genuinely being one lifted unit, with no internal seam for
-   it to bleed across. Only looks right because header/body both render
-   with square corners today (--rux-card-header-radius/--rux-card-body-
-   radius are both --rux-radius-0) — .rux-card itself has no radius of its
-   own to match rounded corners with, so if either ever gains real
-   rounding this would need a matching radius here too. */
-.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)):has(> .rux-card__body) {
-	box-shadow: var(--rux-card-floating-shadow);
 }
 
 .rux-card--stack {
@@ -289,19 +217,9 @@
    into one gap the normal CSS way, including the first embed's own top
    margin against nothing above it to collapse with.
 
-   What used to be .rux-card--recessed (a fixed, one-step-darker
-   background) is .rux-card--level-2 now — see the levels block near the
-   top of this file and docs/cards.md. Every former --recessed consumer
-   (Fleet's bus-groups, Billing's payment rows, History's cards, Trip
-   Finder's results wrapper) reads identically today, just under the new
-   name — --level-2's own tokens (tokens.css) alias the exact values
-   --recessed used to compute directly. */
-.rux-card--level-1,
-.rux-card--level-2,
-.rux-card--level-3,
-.rux-card--level-4 {
-	min-width: 0;
-}
+   min-width: 0 for this pattern lives on the base .rux-card rule above,
+   since these repeating embeds are plain .rux-card — no level modifier
+   exists anymore (see README.md's "Reference: Vercel Geist colors"). */
 
 .rux-card__title {
 	min-width: 0;

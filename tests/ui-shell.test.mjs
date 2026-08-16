@@ -190,7 +190,7 @@ test("Team Chat distinguishes the current user's messages with a trailing avatar
 	assert.match(chatController, /rux-team-chat__avatar-slot[^`]*\$\{isGrouped \? "" : avatar\.outerHTML\}/);
 	assert.match(
 		chatStyles,
-		/--rux-team-chat-message-max-width:\s*70%;[\s\S]*?--rux-team-chat-message-bg:\s*var\(--rux-surface-4\);[\s\S]*?--rux-team-chat-own-message-bg:\s*var\(--rux-surface-5\);/,
+		/--rux-team-chat-message-max-width:\s*70%;[\s\S]*?--rux-team-chat-message-bg:\s*var\(--rux-surface-1\);[\s\S]*?--rux-team-chat-own-message-bg:\s*oklch\(from var\(--rux-surface-1\) calc\(l \+ 6%\) c h\);/,
 	);
 	assert.match(chatStyles, /\.rux-team-chat__message--own\s*\{[^}]*justify-content:\s*flex-end;/s);
 	assert.match(chatStyles, /\.rux-team-chat__message--own \.rux-team-chat__avatar-slot\s*\{[^}]*order:\s*3;/s);
@@ -406,7 +406,7 @@ test("mini calendar navigation uses shared 44px header icon buttons", () => {
 
 test("the mini calendar is a sentinel-gated card with a floating header", () => {
 	const calendar = page.match(
-		/<section\s+class="rux-card rux-card--level-2 rux-mini-cal"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-mini-cal"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(calendar);
 	assert.match(calendar, /class="rux-card__sentinel"/);
@@ -426,7 +426,7 @@ test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
 
 test("Calendar Options is a sentinel-gated card in the Calendar panel body", () => {
 	const options = page.match(
-		/<section\s+class="rux-card rux-card--level-2 rux-view-options"\s+id="rp-view-options"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-view-options"\s+id="rp-view-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
 	assert.match(options, /class="rux-card__sentinel"/);
@@ -436,7 +436,7 @@ test("Calendar Options is a sentinel-gated card in the Calendar panel body", () 
 
 test("Trip Bar Options is a sentinel-gated card in the Calendar panel body", () => {
 	const options = page.match(
-		/<section\s+class="rux-card rux-card--level-2 rux-view-options"\s+id="rp-trip-bar-options"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-view-options"\s+id="rp-trip-bar-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
 	assert.match(options, /class="rux-card__sentinel"/);
@@ -450,7 +450,7 @@ test("Driver Availability is an Assignments card in the panel body", () => {
 	)?.[0];
 	assert.ok(driversPane);
 	assert.match(driversPane, /class="rux-panel__pane rux-driver-availability"/);
-	assert.match(driversPane, /class="rux-card rux-card--level-2"/);
+	assert.match(driversPane, /class="rux-card"/);
 	assert.match(driversPane, /class="rux-card__sentinel"/);
 	assert.match(driversPane, />\s*Assignments\s*</);
 	assert.match(driversPane, /id="rp-driver-grid"/);
