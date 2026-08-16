@@ -702,6 +702,9 @@
    bordered header next to one that has it read as inconsistent rather
    than intentional). This rule keeps the 3-part prev/title/next layout;
    the sentinel-gated header supplies the sticky/padding/border/background.
+   The corner-notch clipping this used to cause while scrolling is now
+   fixed at the source — .rux-card itself clips to a matching radius for
+   any sentinel-gated card (see card.css) — so sticky is safe here again.
    gap:0 (not the header's own --rux-card-content-gap) — the title
    is flex:1 and already pushes the buttons to either edge on its own, and
    16px between title and buttons that are already flush against the edges

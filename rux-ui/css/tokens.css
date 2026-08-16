@@ -190,8 +190,9 @@
     /* Two surfaces only, following the Vercel Geist model (README.md's
        "Reference: Vercel Geist colors"): canvas, and everything raised
        off it — panels, cards, content areas. */
-    --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 				/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 16% c h); /* everything else */ 			/* 22, 22 ,22 */
+    --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 	/* 0,  0,  0  */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 16% c h); /* cards  */	/* 22, 22 ,22 */
+	--rux-surface-2:    oklch(from var(--rux-neutral) 21% c h); /* button */ 	/* 25, 25 ,25 */
 
 	/* One border family for the whole app — grid lines, then three
 	   increasing intensities for hairline borders (default, hover,
@@ -621,7 +622,7 @@
 	/* — attached — */
 	--rux-panel-attached-bg:            var(--rux-surface-0); /* owned directly, not aliased through the widely-shared --rux-surface-1 */
 	--rux-panel-attached-border:        none;
-	--rux-panel-attached-radius:        var(--rux-radius-container);
+	--rux-panel-attached-radius:        var(--rux-radius-0);
 	--rux-panel-attached-shadow:        none;
 	--rux-panel-attached-header-bg:     var(--rux-surface-0);
 	--rux-panel-attached-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
@@ -829,7 +830,7 @@
 
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
-	--rux-button-default-background: 		var(--rux-gray);
+	--rux-button-default-background: 		var(--rux-surface-2);
 	--rux-button-default-text:       		var(--rux-text-default);
 	--rux-button-default-border:     		none;
 	--rux-button-default-hover-background: 	oklch(from var(--rux-button-default-background) calc(l + 0.05) c h);

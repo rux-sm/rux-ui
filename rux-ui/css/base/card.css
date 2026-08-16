@@ -17,6 +17,18 @@
    sentinel, so it keeps its original non-sticky, asymmetric-padding header
    exactly as before, with zero risk of an unverified regression. See
    docs/cards.md.
+
+   The one exception to "unboxed": a sentinel-gated card's header is
+   position:sticky, pinned above its own scrolling body while the panel
+   scrolls. The header's rounded top corners are just gaps in its own paint
+   — body content stacked behind it would otherwise show through those
+   gaps as it scrolls underneath, reading as a clipped/broken corner rather
+   than a smooth curve. Giving .rux-card a matching rounded clip (see the
+   :has() rule below) fixes this for every sentinel-gated consumer at once:
+   nothing can render outside the card's own rounded boundary regardless of
+   scroll position, sticky header or not. Plain (non-sentinel) cards are
+   untouched by that rule and keep the fully unboxed wrapper described
+   above.
    ========================================================================== */
 
 .rux-card {
@@ -25,6 +37,23 @@
 	   stops, payment rows, history/trip-finder results) that needs to
 	   shrink/truncate properly rather than forcing its container wide. */
 	min-width: 0;
+}
+
+/* Scoped to sentinel-gated cards only — see the file header comment above.
+   clip-path, not overflow:hidden — overflow:hidden establishes a new
+   scroll container, and position:sticky pins relative to the *nearest*
+   scroll-container ancestor. .rux-card would become that ancestor instead
+   of .rux-panel__body (the one the sticky header actually needs), and
+   since .rux-card never itself scrolls, the header would have nowhere to
+   stick — sticky would silently stop working. clip-path clips the same
+   rounded shape visually without establishing a scroll container, so it's
+   invisible to that calculation. Radius matches the header/body's own
+   (--rux-card-body-radius and --rux-card-header-radius both alias
+   --rux-radius-container, so either token is the same value here) so this
+   clip never disagrees with what the header/body already paint at their
+   own corners. */
+.rux-card:has(> .rux-card__sentinel) {
+	clip-path: inset(0 round var(--rux-card-body-radius));
 }
 
 /* — Elevated / recessed — dynamic adjustments layered on top of the

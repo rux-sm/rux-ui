@@ -259,6 +259,20 @@
 	color: var(--rux-tabs-floating-tab-selected-fg);
 }
 
+/* A docked panel's tabs-alone top region (no .rux-panel__header before it —
+   right panel, fleet editor) sits flush beneath .rux-ui-header, whose own
+   border-bottom already draws this exact seam (0 gap header-to-shell, 0 gap
+   panel-to-workspace — see docs/layout-composition.md). The strip's own
+   border-top exists for every other case, where nothing above it owns that
+   edge; here it doubles into a visibly thicker line right under the header.
+   :first-child scopes this to the tabs-alone pattern specifically — panels
+   that stack .rux-panel__header above their tabs (Driver editor, floating
+   Trip editor) push .rux-panel__nav--attached to second-child and keep their
+   own border, since the header itself never draws one (see panel.css). */
+.rux-panel--attached > .rux-panel__nav--attached:first-child .rux-tabs--attached {
+	border-top: 0;
+}
+
 /* .rux-panel__nav's own border-top/border-bottom (panel.css) would each
    double up against a line the tabs/pane already own: border-top against
    every tab's own top border (--rux-tabs-attached-tab-border), border-
