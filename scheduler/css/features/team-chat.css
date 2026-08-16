@@ -162,7 +162,7 @@
 }
 
 .rux-team-chat__reaction-pill:hover {
-	border-color: var(--rux-border-strong);
+	border-color: var(--rux-card-border-hover);
 }
 
 /* Emoji glyph reads bigger than the count next to it, not scaled together

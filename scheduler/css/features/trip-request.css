@@ -76,7 +76,7 @@
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-default);
 	padding-bottom: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .trip-request__grid {
@@ -108,7 +108,7 @@
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-3);
 	background: var(--rux-surface-3);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 	cursor: pointer;
 	transition: border-color var(--rux-duration-base) var(--rux-ease-out);
@@ -164,7 +164,7 @@
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--rux-surface-3);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-full);
 	cursor: pointer;
 }

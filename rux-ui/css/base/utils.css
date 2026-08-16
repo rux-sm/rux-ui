@@ -60,7 +60,7 @@
 	text-transform: uppercase;
 	letter-spacing: var(--rux-label-eyebrow-tracking);
 	padding-bottom: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	line-height: 1;
 }
 

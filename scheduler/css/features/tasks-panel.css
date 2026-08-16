@@ -122,12 +122,12 @@
 .rux-tasks__section--prep {
 	margin-top: var(--rux-space-2);
 	padding-top: var(--rux-space-2);
-	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .rux-tasks__section--readiness {
 	padding-top: var(--rux-space-2);
-	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 /* One overall status per trip (see statusIndicator in tasks-panel.js) —
@@ -232,7 +232,7 @@
 .rux-tasks__requirements {
 	margin-top: var(--rux-space-2);
 	padding-top: var(--rux-space-2);
-	border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .rux-tasks__requirements-title {

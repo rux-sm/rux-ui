@@ -96,7 +96,7 @@
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-3);
 	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-lg);
 }
 
@@ -139,7 +139,7 @@
 .rux-driver-week-info__share {
 	padding: var(--rux-space-3);
 	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-lg);
 }
 
@@ -212,7 +212,7 @@
 	padding: var(--rux-space-4);
 	text-align: center;
 	background: var(--rux-surface-1);
-	border: var(--rux-border-width) dashed var(--rux-border);
+	border: var(--rux-border-width) dashed var(--rux-card-border);
 	border-radius: var(--rux-radius-lg);
 }
 

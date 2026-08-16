@@ -48,7 +48,7 @@
 .flip-seven__players { display: grid; gap: var(--rux-space-3); }
 .flip-seven__roster,
 .flip-seven__scores { display: grid; gap: var(--rux-space-2); margin: 0; padding: 0; list-style: none; }
-.flip-seven__roster li { padding: var(--rux-space-3); border: var(--rux-border-width) solid var(--rux-border); border-radius: var(--rux-radius-sm); }
+.flip-seven__roster li { padding: var(--rux-space-3); border: var(--rux-border-width) solid var(--rux-card-border); border-radius: var(--rux-radius-sm); }
 .flip-seven__empty { color: var(--rux-text-disabled); font-size: var(--rux-size-sm); text-align: center; }
 
 .flip-seven__panel {
@@ -85,7 +85,7 @@
 .flip-seven__scores {
 	gap: 0;
 	margin-top: 0;
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 	overflow: hidden;
 }
@@ -97,7 +97,7 @@
 	height: 28px;
 	min-height: 28px;
 	padding: var(--rux-space-px) var(--rux-space-1);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	background: var(--rux-surface-5);
 }
 .flip-seven__score:last-child { border-bottom: 0; }
@@ -153,7 +153,7 @@
 	   shrinking past them pushes the bottom seat (your hand) outside the box */
 	min-height: auto;
 	padding: var(--rux-space-3);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-xl);
 	background: var(--rux-surface-1);
 }
@@ -166,7 +166,7 @@
 	min-height: 0;
 	justify-self: center;
 	padding: var(--rux-space-3);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-surface-5);
 	text-align: left;
@@ -177,7 +177,7 @@
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 	padding-bottom: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	font-size: var(--rux-size-xs);
 }
 .flip-seven__turn-status .flip-seven__eyebrow { margin: 0; }
@@ -210,7 +210,7 @@
 	grid-template-columns: minmax(0, 1fr) auto;
 	gap: var(--rux-space-2);
 	padding-top: var(--rux-space-2);
-	border-top: var(--rux-border-width) solid var(--rux-border);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 .flip-seven__message-form .rux-input {
 	min-width: 0;
@@ -222,7 +222,7 @@
 	min-width: 0;
 	gap: var(--rux-space-1);
 	padding: var(--rux-space-2);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 	background: var(--rux-surface-5);
 	pointer-events: auto;
@@ -279,7 +279,7 @@
 	flex: 0 0 2.25rem;
 	width: 2.25rem;
 	place-items: center;
-	border: var(--rux-border-width) solid var(--rux-border-strong);
+	border: var(--rux-border-width) solid var(--rux-card-border-hover);
 	border-radius: var(--rux-radius-sm);
 	background: var(--rux-surface-5);
 	color: var(--rux-text-default);

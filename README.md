@@ -84,9 +84,12 @@ markup.
 ### Voice & tone
 
 - **Direct.** Short sentences. Verb-first when you can.
+- **Active voice.** "Save the trip" over "The trip will be saved." A control says exactly what happens when it's used.
 - **Calm.** No exclamation marks, no urgency unless it's truly urgent (a destructive action, an error).
 - **Plain.** Plain words over technical ones. "Delete trip" over "Remove record". "Couldn't connect" over "Connection failure occurred".
 - **Trustworthy.** Tell the user what happened and what they can do. Never blame them.
+- **Consistent through a flow.** An action keeps the same name end to end — a
+  "Publish" button produces a "Published" toast, not "Success" or "Done."
 
 ### Person & pronouns
 
@@ -107,7 +110,8 @@ markup.
 
 - No trailing periods on **button labels**, **menu items**, **field labels**, **table headers**, **toasts**, or **single-line tooltips**.
 - Periods **are** used in full sentences inside body copy, modal descriptions, and multi-sentence help text.
-- Ellipsis (`…`, the actual character, not three dots) for actions that open a follow-up step: `Export…`, `Delete trip…`.
+- Ellipsis (`…`, the actual character, not three dots) for actions that open a follow-up step (`Export…`, `Delete trip…`) and for in-progress states (`Saving…`, `Loading…`).
+- Curly quotes (“Delete”) rather than straight quotes ("Delete") in copy.
 
 ### Numbers, dates, units
 
@@ -115,6 +119,13 @@ markup.
 - Times: lowercase `am`/`pm`, no space. `9:00am`, `3:30pm`.
 - Dates in UI lists: `Tue, Mar 12`. Full dates: `March 12, 2026`.
 - Money: `$1,240` not `$1240.00` unless cents matter.
+- Use numerals for counts: `8 trips`, not `eight trips`.
+- Use a non-breaking space between a number and its unit, or inside a
+  keyboard shortcut, so they never wrap apart: `10&nbsp;mi`, `⌘&nbsp;K`.
+- Use `Intl.DateTimeFormat` / `Intl.NumberFormat` for date, time, and number
+  formatting — never hand-rolled string formatting.
+- Use `font-variant-numeric: tabular-nums` wherever numbers sit in a column
+  or get compared side by side (schedule times, counts).
 
 ### Emoji
 
@@ -136,70 +147,108 @@ markup.
 
 ### Backgrounds
 
-The system has **four background planes**, all near-black with subtle separation:
+The system has an 8-step depth scale, `--rux-surface-0` through `--rux-surface-7`, canvas to most-elevated. Higher numbers are lighter and read as visually closer:
 
-| Token | Value | Use for |
-|---|---|---|
-| `--rux-bg` | `oklch(0% 0.004 260)` | App canvas — the lowest plane |
-| `--rux-bg-sunken` | `oklch(20% 0.004 260)` | Inputs, code blocks, recessed footers |
-| `--rux-bg-elevated` | `oklch(24% 0.004 260)` | Cards, panels, menus, modals |
-| `--rux-bg-hover` / `--rux-bg-active` | `#292929` / `#303030` | Interactive states |
+| Token | Use for |
+|---|---|
+| `--rux-surface-0` | App canvas — the lowest plane |
+| `--rux-surface-1` | UI header, panel shells |
+| `--rux-surface-2` | Card layer |
+| `--rux-surface-3` | Input fields, card headers |
+| `--rux-surface-4`–`-7` | Progressively more elevated surfaces (menus, selected states, strong active states) |
+
+`--rux-bg-hover` / `--rux-bg-active` alias `--rux-surface-5` / `--rux-surface-6` specifically for interactive states — a different axis from depth, layered onto any surface tier rather than replacing it.
 
 **No gradients** except `--rux-overlay-scrim` (a flat 60% black scrim for modals). No full-bleed imagery as background. No textures, patterns, grain. Surfaces are flat color separated by hairlines.
 
 ### Color
 
-One accent (`--rux-accent`, `oklch(60% 0.18 260)` by default) used sparingly — primary actions, active states, links, focus rings. Status colors (`--rux-success`, `--rux-warning`, `--rux-danger`, `--rux-info`) for semantic feedback only — never decorative.
+One accent (`--rux-accent`, `var(--rux-blue)` — `oklch(60% 0.28 255)` — by default) used sparingly — primary actions, active states, links, focus rings. Status colors (`--rux-success`, `--rux-warning`, `--rux-danger`, `--rux-info`) for semantic feedback only — never decorative.
 
 All colors are `oklch()` so chroma stays perceptually balanced if you retheme.
 
-#### Swappable accent
+#### Reference: Vercel Geist colors
 
-Blue is the default, but the accent is **one variable**: change it once, the whole product retones. The system ships four pre-tuned themes that share the same lightness and near-matching chroma — only the hue rotates — so they read as the same family.
+As of 2026-08-16, Rux UI follows [Vercel Geist's color system](https://vercel.com/geist/colors)
+as a **structural** model where it fits — not a literal palette to copy.
+That page doesn't publish raw hex/oklch values; what it documents is a
+10-step neutral scale (`--ds-gray-100` through `--ds-gray-1000`) with a
+fixed semantic role per step:
 
-| Theme | Hue |
+| Step | Role |
 |---|---|
-| `blue` | `250` |
-| `violet` | `295` |
-| `green` | `155` |
-| `amber` | `70`, chroma `0.16` |
+| 100 | Default background |
+| 200 | Hover background |
+| 300 | Active background |
+| 400 | Default border |
+| 500 | Hover border |
+| 600 | Active border |
+| 700 | High-contrast background |
+| 800 | Hover high-contrast background |
+| 900 | Secondary text/icons |
+| 1000 | Primary text/icons |
 
-**Three ways to apply:**
+Geist repeats this same 10-step shape for every other scale (blue, red,
+green, amber, teal, purple, pink), plus two dedicated `background-100`/
+`-200` tokens for the page canvas.
 
-```html
-<!-- 1. HTML attribute (set at server-render time) -->
-<html data-rux-accent="violet">
-```
+Follow the **progression** (subtle → strong, one role per step), not the
+token names or exact numbers — per the Design rules in SKILL.md, external
+guidance always gets expressed through `--rux-*` tokens, never imported
+directly. Current rux-ui alignment with this shape:
+
+- `--rux-grid-guide` / `--rux-card-border` / `--rux-card-border-hover` /
+  `--rux-card-border-active` mirrors the border/border-hover/border-active
+  triad (steps 400/500/600).
+- `--rux-surface-N` plus `--rux-bg-hover` / `--rux-bg-active` mirrors
+  background/background-hover/background-active (100/200/300).
+- `--rux-text-heading` / `-default` / `-muted` / `-faint` / `-disabled` is a
+  finer-grained analog of the secondary-text/primary-text pair (900/1000).
+
+This mapping is a reference point for future token work, not a completed
+audit — no full pass has been made to verify every rux-ui color role has a
+Geist-shaped equivalent, or that step counts line up everywhere.
+
+#### Swappable accent — JS wiring exists, CSS side does not yet
+
+`js/core/utilities.js` fully implements the *switching* mechanism:
 
 ```js
-// 2. Runtime swap — also persists to localStorage
-Rux.setAccent("green");
+Rux.setAccent("green");           // sets <html data-rux-accent="green">, persists to localStorage
+Rux.getAccent();                  // reads it back
 ```
 
 ```html
-<!-- 3. Declarative: click a swatch -->
+<!-- click a swatch -->
 <button data-rux-set-accent="amber" aria-label="Amber">…</button>
 ```
 
-To add a brand-new accent, override `--rux-accent-h` (and optionally `--rux-accent-c`) on any selector — no other tokens need to change.
-
-```css
-[data-rux-accent="brand"] {
-  --rux-accent-h: 312;     /* magenta */
-  --rux-accent-c: 0.20;
-}
-```
+`Rux.ACCENTS` lists four names (`blue`, `violet`, `green`, `amber`), and the
+attribute gets set and restored correctly on load. **But no CSS anywhere
+reads `[data-rux-accent="…"]`** — `--rux-accent` is a single flat value
+(`var(--rux-blue)`) with no per-theme override block, so switching accent
+today changes the attribute with no visible effect. Treat this as a real
+gap, not documentation drift: wiring it up means adding a
+`[data-rux-accent="violet"] { --rux-accent: var(--rux-violet); }`-shaped
+rule (and equivalents) somewhere the theme tokens live, plus deciding
+whether `--rux-violet`/`--rux-green`/`--rux-amber` primitives should be
+added alongside the existing `--rux-blue`.
 
 ### Typography
 
-- **Inter** for UI text (loaded as Google Font). System sans fallback (`-apple-system`, `Segoe UI`) is acceptable when offline — Inter and SF have near-identical metrics.
-- **JetBrains Mono** for code and monospaced data.
-- **No third family.** No display serif, no script. Hierarchy comes from size and weight, not font choice.
+- **IBM Plex Sans** for UI text (loaded as Google Font). System sans fallback (`-apple-system`, `Segoe UI`) is acceptable when offline.
+- **IBM Plex Sans Condensed** for the trip bar specifically, where horizontal density matters most.
+- **IBM Plex Mono** for code and monospaced data.
+- **No fourth family.** No display serif, no script. Hierarchy comes from size and weight, not font choice.
 - Tight tracking on display sizes (`-0.02em`), normal at body, wide on overlines (`0.04em`).
 
 ### Spacing
 
-A 4px grid: `4, 8, 12, 16, 24, 32, 48, 64`. Pick from `--rux-space-1` through `--rux-space-8`. **Do not invent new values.** Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use `--rux-space-5` or `--rux-space-6`.
+A 4px grid: `--rux-space-1` (4px) through `--rux-space-6` (24px) step by their
+own index, then `--rux-space-8` (32px), `-12` (48px), `-16` (64px) — plus
+`--rux-space-1-5` (6px), the one half-step in the scale. **Do not invent new
+values.** Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use
+`--rux-space-5` or `--rux-space-6`.
 
 ### Buttons
 
@@ -208,14 +257,15 @@ See [Button Components](docs/buttons.md) for composition examples and usage rule
 
 | Control | Height | Font | Horizontal padding | Icon/text gap |
 |---|---:|---:|---:|---:|
-| `.rux-button` | `--rux-button-height-standard` `32px` | `--rux-text-sm` `14px` | `--rux-button-padding-inline-standard` `12px` | `--rux-button-content-gap-standard` `8px` |
+| `.rux-button` | `--rux-button-height-standard` `32px` | `--rux-size-sm` `14px` | `--rux-button-padding-inline-standard` `12px` | `--rux-button-content-gap-standard` `8px` |
 | `.rux-button--icon` | resolved button height | role-specific icon | `0` | n/a |
 | `.rux-button--header` | `--rux-button-height-header` `44px` | `--rux-button-icon-size-header` `24px` | standard padding or square with `--icon` | `8px` |
 | `.rux-button--compact` | `--rux-button-height-compact` `28px` | `--rux-button-icon-size-compact` `18px` | `8px` or square with `--icon` | `4px` |
 | `.rux-segmented-track` | `--rux-input-height` outer track | track | `--rux-segmented-track-padding` | `--rux-segmented-track-radius` |
-| `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-text-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
+| `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-size-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
 
-- Use `--rux-weight-medium` for all button labels.
+- Use `--rux-weight-400` (the default weight) for button labels — Rux buttons
+  get their emphasis from fill and color, not bold text.
 - Icon-only buttons are square: width equals the resolved button height.
 - UI-header actions use the same `.rux-button--header.rux-button--icon`
   composition as other 44px header controls.
@@ -237,19 +287,19 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 | `.rux-input`, `.rux-select` | `--rux-field-height` `36px` | Standard text-entry height |
 | `.rux-textarea` | `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed |
 | `.rux-field` | `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
-| `.rux-field__label` | `--rux-text-xs` `12px`, `--rux-weight-medium` | Muted, Title Case, no trailing period |
+| `.rux-field__label` | `--rux-field-label-size` (`--rux-size-xs` `12px`), `--rux-field-label-weight` (`--rux-weight-400`) | Muted, Title Case, no trailing period |
 | placeholder | `--rux-text-disabled` | Hint only; never required information |
-| help text | `--rux-text-xs`, `--rux-text-disabled` | One short sentence when useful |
-| error text | `--rux-text-xs`, `--rux-danger` | Direct recovery instruction |
+| help text | `--rux-size-xs`, `--rux-field-help-fg` | One short sentence when useful |
+| error text | `--rux-size-xs`, `--rux-field-error-fg` | Direct recovery instruction |
 
 - Field height remains `36px`, standard action buttons are `32px`, and persistent header actions are `44px`. Choose the semantic size role instead of forcing adjacent controls to match.
 - Labels sit above fields. Do not use placeholder text as the only label.
 - Labels use Title Case and no trailing punctuation: `Driver Name`, not `Driver name`.
 - Placeholder text describes format or an example value. Keep it short: `Ada Lovelace`, `name@example.com`, `Anything to remember…`.
 - Help text appears below the control and should explain how the value is used, not repeat the label.
-- Invalid fields use `aria-invalid="true"`, a danger border, and `--rux-ring-danger` on focus. The error message belongs directly under the field.
+- Invalid fields use `aria-invalid="true"`, which switches the border to `--rux-input-invalid-border`. The error message belongs directly under the field.
 - Focus rings compose with the inset field shadow. A focused field should still read as recessed, not lifted.
-- Inputs and selects use `--rux-bg-sunken`, `--rux-border`, `--rux-radius-sm`, and `--rux-text-sm`.
+- Inputs and selects use `--rux-well-bg`, `--rux-input-border` (`--rux-card-border`), `--rux-input-border-radius`, and `--rux-size-sm`.
 - Checkboxes and switches are 32px target-height controls so they align with button rows and repeated settings lists.
 
 ### Optical radius
@@ -258,7 +308,7 @@ Use component semantic tokens in component CSS; use the primitive scale only whe
 
 ```
 --rux-radius-0       0px
---rux-radius-xs      4px
+--rux-radius-xs      2px
 --rux-radius-sm      6px
 --rux-radius-md      8px
 --rux-radius-lg     12px
@@ -266,21 +316,36 @@ Use component semantic tokens in component CSS; use the primitive scale only whe
 --rux-radius-full 9999px
 ```
 
-Panels use `--rux-panel-radius`, cards use `--rux-card-radius`, buttons use `--rux-button-radius`, and fields use `--rux-radius-field`. A drawer shell may override the outer panel radius at a viewport edge; that is layout behavior, not a new panel variant.
+Panels, cards, buttons, and fields each route their own radius through one of
+two shared roles — `--rux-radius-container` (panels, cards, calendar) or
+`--rux-radius-control` (buttons, badges, swatches) — rather than a single
+`--rux-panel-radius`/`--rux-card-radius`/`--rux-button-radius` token apiece.
+Both roles currently resolve to `--rux-radius-0`: the product renders with
+square corners everywhere except elements that need full rounding by
+definition, such as the switch thumb/track (`--rux-radius-full`). A future
+radius change is a two-token edit, not a per-component hunt. A drawer shell
+may override the outer panel radius at a viewport edge; that is layout
+behavior, not a new panel variant.
 
 ### Surface depth
 
-`--rux-surface-1` through `--rux-surface-7` form the canonical dark-to-light depth scale. Higher numbers appear visually closer, so adjusting a component's depth is a one-number change. `--rux-surface-contrast` is reserved for light elements such as switch thumbs; it is not another normal depth tier.
+`--rux-surface-0` through `--rux-surface-7` form the canonical dark-to-light depth scale (0 is canvas). Higher numbers appear visually closer, so adjusting a component's depth is a one-number change. `--rux-surface-contrast` is reserved for light elements such as switch thumbs; it is not another normal depth tier.
 
 ### Borders & shadows
 
-Borders are **hairlines** (always 1px) at one of three intensities (`--rux-border-subtle`, `--rux-border`, `--rux-border-strong`). Solid buttons, segmented controls, and base cards keep a transparent border slot so hover, focus, and active states never shift layout. Shadows are reserved for floating surfaces and subtle tactile lift on buttons.
+Borders are **hairlines** (always 1px) from one family: `--rux-grid-guide`
+for grid/table lines, then `--rux-card-border` → `--rux-card-border-hover` →
+`--rux-card-border-active` as increasing intensities for everything else.
+Solid buttons, segmented controls, and base cards keep a transparent border
+slot so hover, focus, and active states never shift layout. Shadows are
+reserved for floating surfaces and subtle tactile lift on buttons.
 
 The active shadow recipes are intentionally small:
 
-- `--rux-shadow-recessed` — recessed inputs and segmented tracks
-- `--rux-shadow-raised` — tactile control rest state
-- `--rux-shadow-pressed` — tactile control pressed state
+- `--rux-shadow-1` / `-2` / `-3` — elevation-indexed rim + contact + ambient
+  recipes for floating surfaces (panels, menus, modals), by index rather than
+  by role
+- `--rux-shadow-pressed` — tactile control pressed state (an inset shadow)
 
 Floating surfaces remain flat. Add a new elevation token only when a rendered component actually needs it.
 
@@ -289,13 +354,18 @@ Use inset shadows only when they describe state or material: form fields are per
 ### Cards
 
 ```css
-background: var(--rux-card-bg);
-border: var(--rux-card-border);
-border-radius: var(--rux-card-radius);
+background: var(--rux-card-body-bg);
+border: var(--rux-card-body-border);
+border-radius: var(--rux-card-body-radius);
 padding: var(--rux-card-padding);
 ```
 
-Interactive cards can add a `border-color` shift on hover (`--rux-border-strong`) and a slight background lift to `--rux-bg-hover`. Never use a colored left border to denote category — use a `.rux-badge` instead.
+A plain card is one visual step (level 1); nesting another titled card
+inside it steps to `--rux-card-level-2-*`, then `-3`, `-4` — see
+[Cards](docs/cards.md) for the full level system and when a floating
+window's first nested card should start at level 2 instead of level 1.
+
+Interactive cards can add a `border-color` shift on hover (`--rux-card-border-hover`) and a slight background lift to `--rux-bg-hover`. Never use a colored left border to denote category — use a `.rux-badge` instead.
 
 ### Panels
 
@@ -305,7 +375,9 @@ Cards may group distinct content inside a panel, but do not wrap every field or 
 
 ### Hover & press
 
-- **Surface hover** raises background brightness one step (`--rux-bg` → `--rux-bg-hover`) or shifts border up one intensity. Never opacity (looks washed out on dark).
+- **Surface hover** raises background brightness one step (a surface's own
+  background → `--rux-bg-hover`) or shifts border up one intensity. Never
+  opacity (looks washed out on dark).
 - **Default controls** are solid neutral fills, not outlined buttons. The fill does the affordance work; borders stay transparent unless the control is a container like tabs or an icon group.
 - **Button hover and pressed states** are defined per emphasis: solid buttons shift their fill lightness, while ghost buttons use shared 10%/20% state washes.
 - **Ghost buttons** keep a transparent base and reveal those state overlays on interaction.
@@ -326,7 +398,7 @@ Component CSS consumes semantic `--rux-menu-*`, `--rux-panel-*`, and
 and `--rux-ease-*` tokens remain available for established non-structural
 interactions.
 
-`prefers-reduced-motion` is respected globally through `scheduler/css/components.css`.
+`prefers-reduced-motion` is respected globally through `rux-ui/css/base/utils.css`, part of the shared base bundle every entry point loads.
 See [Productive Motion](docs/motion.md) for the token table, component contracts,
 implementation examples, and verification checklist.
 
@@ -341,8 +413,10 @@ When imagery appears (avatars, logos, attachments), it sits inside hairline-bord
 ### Layout
 
 - App shell uses fixed positioning for the top bar (`--rux-z-sticky`) and side rail.
-- Content max-width: `--rux-container-xl` (1280px) for marketing, no max for app shells.
-- Section gutters: `--rux-space-6` (32px) desktop, `--rux-space-4` (16px) mobile.
+- No content max-width for app shells — the workspace fills available width.
+  `--rux-container-xs` (480px) exists for narrow dialogs/forms; there is no
+  larger container scale today, since Rux UI has no marketing-page surfaces.
+- Section gutters: `--rux-space-6` (24px) desktop, `--rux-space-4` (16px) mobile.
 - Vertical rhythm is enforced by `.rux-stack` flex containers with `gap`, never margins.
 
 ---
@@ -376,7 +450,7 @@ Both are **not** used as icons in Rux UI. Status is shown by color + Material Sy
 
 ### Logo
 
-`assets/rux-logo.svg` — the Rux wordmark, set in Inter Bold with a single accent dot. Use on `--rux-bg` or `--rux-bg-elevated`. Don't recolor it. Don't lock it up with other marks.
+`assets/logo.png` — the Rux wordmark. Use on `--rux-surface-0` or `--rux-surface-1`. Don't recolor it. Don't lock it up with other marks.
 
 ---
 
@@ -398,16 +472,16 @@ When in doubt, edit a token before adding a new component override.
 
 ## CAVEATS & SUBSTITUTIONS
 
-- **Fonts are CDN-loaded** (Inter + JetBrains Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability.
+- **Fonts are CDN-loaded** (IBM Plex Sans, IBM Plex Sans Condensed, and IBM Plex Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
-- **Logo is a typographic wordmark** generated in this project — no pre-existing Rux logo was found in the source materials. If a real logo exists, swap `assets/rux-logo.svg`.
-- The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-bg`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:
+- **Logo is `assets/logo.png`**, a raster asset, not a generated SVG wordmark.
+- The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-surface-N`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:
   ```
-  --rux-bg-1   → --rux-bg
-  --rux-bg-2/3/4 → --rux-bg-elevated
-  --rux-bg-5   → --rux-bg-elevated  (or its own token if modal needs lift)
+  --rux-bg-1   → --rux-surface-0
+  --rux-bg-2/3/4 → --rux-surface-2 / -3 / -4
+  --rux-bg-5   → --rux-surface-5  (or its own token if modal needs lift)
   --rux-text-1 → --rux-text-default
   --rux-text-2 → --rux-text-muted
   --rux-text-3 → --rux-text-disabled
-  --rux-border-1/2/3 → --rux-border-subtle / --rux-border / --rux-border-strong
+  --rux-border-1/2/3 → --rux-card-border / --rux-card-border / --rux-card-border-hover
   ```

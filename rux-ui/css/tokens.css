@@ -196,12 +196,10 @@
     --rux-surface-6:   	oklch(from var(--rux-neutral) 36% c h);
     --rux-surface-7:	oklch(from var(--rux-neutral) 40% c h);
 
-	--rux-border-button: 	oklch(from var(--rux-danger) 32% c h / 100%);
-	--rux-border:        	oklch(from var(--rux-danger) 26% c h / 100%);
-	--rux-divider:       	oklch(from var(--rux-danger) 32% c h / 100%);
-	--rux-grid:				oklch(from var(--rux-danger) 28% c h / 100%);
-	--rux-border-subtle:    oklch(from var(--rux-danger) 30% c h / 100%);
-
+	/* One border family for the whole app — grid lines, then three
+	   increasing intensities for hairline borders (default, hover,
+	   active). Replaces the old --rux-border/-subtle/-strong/-button and
+	   --rux-divider/-grid tokens, which this consolidates. */
 	--rux-grid-guide:			oklch(from var(--rux-neutral) 24% c h / 100%);	/* ( 31, 31, 31) */
 	--rux-card-border:			oklch(from var(--rux-neutral) 30% c h / 100%);	/* ( 46, 46, 46) */
 	--rux-card-border-hover:	oklch(from var(--rux-neutral) 39% c h / 100%);	/* ( 69, 69, 69) */
@@ -213,7 +211,6 @@
 
 	--rux-bg-hover:      var(--rux-surface-5);
 	--rux-bg-active:     var(--rux-surface-6);
-	--rux-border-strong: var(--rux-border-button);
 
 	/* One interaction recipe for every neutral control. Selected aliases hover
 	   so components can express intent without introducing another color. */
@@ -1478,9 +1475,9 @@
 	--rux-panel-attached-bg: oklch(from var(--rux-neutral) 94% c h);
 
 	/* ─── Borders and interaction ─────────────────────────────────────────── */
-	--rux-border:               oklch(from var(--rux-neutral) 90% c h);
-	--rux-border-button:        oklch(from var(--rux-neutral) 70% c h);
-	--rux-divider:              oklch(from var(--rux-neutral) 70% c h);
+	/* --rux-grid-guide/--rux-card-border/-hover/-active (COMPONENT · color ·
+	   surfaces, above) have no light-theme override yet — still tuned only
+	   for the dark values there, needs a pass before light theme ships. */
 	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
 	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
 

@@ -62,7 +62,7 @@
 	flex: none;
 	display: flex;
 	flex-direction: column;
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .rux-scope-request__toolbar .rux-field {
@@ -109,7 +109,7 @@
 }
 
 .rux-scope-request__item:hover {
-	border-color: var(--rux-border);
+	border-color: var(--rux-card-border);
 }
 
 .rux-scope-request__item-main {
@@ -210,7 +210,7 @@
 	overflow: hidden;
 	background: var(--rux-surface-5);
 	color: var(--rux-text-default);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-xl);
 }
 
@@ -237,7 +237,7 @@
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .rux-scope-request__dialog-title {
@@ -265,7 +265,7 @@
 	flex: none;
 	display: flex;
 	justify-content: flex-end;
-	border-top: var(--rux-border-width) solid var(--rux-border);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .rux-scope-request__dialog-actions {

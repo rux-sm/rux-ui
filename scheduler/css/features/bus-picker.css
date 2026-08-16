@@ -10,7 +10,7 @@
 	min-width: 12rem;
 	padding: var(--rux-space-1);
 	background: var(--rux-surface-5);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-sm);
 }
 
@@ -28,7 +28,7 @@
 	color: var(--rux-text-muted);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 /* — Scrollable list — */
@@ -81,7 +81,7 @@
 	z-index: var(--rux-z-dropdown);
 	min-width: 10rem;
 	background: var(--rux-surface-5);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-sm);
 	padding: var(--rux-space-1);
 }
@@ -95,7 +95,7 @@
 	color: var(--rux-text-muted);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	margin-bottom: var(--rux-space-1);
 }
 

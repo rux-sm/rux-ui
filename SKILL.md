@@ -86,6 +86,12 @@ existing files merely to make the new-app structure cleaner.
    clusters.
 2. Use `--rux-*` tokens for color, type, spacing, size, radius, shadow, motion,
    and stacking. Do not hardcode a design value when a suitable token exists.
+   This includes third-party guidance: translate any external design
+   review or standard into `--rux-*` tokens and existing `.rux-*` components —
+   never adopt a foreign token, class, or value wholesale. For color
+   specifically, Rux UI follows Vercel Geist's color system as a structural
+   reference where it fits — see README.md's "Reference: Vercel Geist
+   colors" for the semantic-step model and current alignment.
 3. If a reusable value is missing, add a meaningful semantic or component token
    in `tokens.css`. Keep truly feature-only values beside that feature.
 4. Follow the BEM contract: `.rux-{block}`, `.rux-{block}__{element}`, and
@@ -95,10 +101,98 @@ existing files merely to make the new-app structure cleaner.
 6. Use the current `.rux-icon` contract, which is backed by Material Symbols
    Sharp. Follow existing markup and load the font when the host page does not
    already provide it. Do not use emoji as interface icons.
-7. Preserve semantic HTML, accessible names, keyboard interaction, visible
-   focus, reduced-motion behavior, and ARIA state for custom controls.
-8. Verify responsive layouts at narrow and wide widths and inspect both light
+7. Verify responsive layouts at narrow and wide widths and inspect both light
    and dark themes when changing shared styles.
+
+## Interaction and accessibility rules
+
+Focus and keyboard:
+
+- Every interactive element needs a visible focus state, using `:focus-visible`
+  (not bare `:focus`, which also fires on mouse click). Group focus for a
+  compound control with `:focus-within`.
+- Never remove the default outline without supplying a `:focus-visible`
+  replacement.
+- A custom interactive element (anything that isn't a native `<button>`,
+  `<a>`, or form control) needs an explicit keyboard handler
+  (`addEventListener("keydown", …)` for Enter/Space) alongside its click
+  handler.
+
+Semantics:
+
+- Use `<button>` for actions and `<a>` for navigation — never a `<div>` or
+  `<span>` with a click handler standing in for either.
+- Icon-only buttons need `aria-label`. Decorative icons need
+  `aria-hidden="true"`.
+- Every form control needs a `<label for>` (or `aria-label`); clicking the
+  label must activate the control.
+- Async UI updates (toasts, inline validation, live status text) need
+  `aria-live="polite"` so assistive tech announces them.
+
+Forms:
+
+- Set `autocomplete` and a meaningful `name`/`id` on every input.
+- Use the correct `type` (`email`, `tel`, `date`, `number`, …) and
+  `inputmode`.
+- Never block paste on an input.
+- A checkbox/radio and its label share one hit target — no dead zone between
+  them.
+- Keep submit enabled until the request actually starts, then show a
+  pending/spinner state — don't disable pre-emptively.
+- Show errors inline next to the field that caused them, and move focus to
+  the first error on a failed submit.
+- A form with pending edits must warn before the user discards them —
+  closing the panel/dialog, pressing Escape, or navigating away with unsaved
+  changes needs a confirmation. Apply this to new or touched editor work
+  going forward; existing editors (Trip, Driver, Fleet) are not yet
+  retrofitted.
+
+Motion:
+
+- Respect `prefers-reduced-motion` — a nontrivial animation needs a
+  reduced-motion fallback or must be skippable.
+- Animate only `transform`/`opacity` (compositor-friendly). Never
+  `transition: all` — list the exact properties.
+- Animations must be interruptible; don't block input while one runs.
+
+Touch and scroll:
+
+- `overscroll-behavior: contain` on any modal, drawer, or scrollable panel
+  body, so its own scroll never chains into the page or calendar underneath.
+- `touch-action: manipulation` on tappable controls to remove the
+  double-tap-zoom delay on mobile.
+- Respect safe-area insets (`env(safe-area-inset-*)`) on any full-bleed or
+  fixed-position mobile surface.
+
+Content overflow:
+
+- Any text container that might overflow needs an explicit strategy:
+  truncate with ellipsis, `line-clamp`, or wrap.
+- A flex child that needs to truncate its own text needs `min-width: 0` —
+  flex items don't shrink below their content size by default.
+- Design empty states explicitly; don't let an empty array or string render
+  as broken UI.
+
+Numbers and dates:
+
+- Use `Intl.DateTimeFormat` / `Intl.NumberFormat` for date, time, or number
+  formatting — never hand-rolled string formatting.
+- Use `font-variant-numeric: tabular-nums` wherever numbers sit in a column
+  or get compared side by side (schedule times, counts).
+
+Deep-linking (apply to new work; not retrofitted):
+
+- Stateful UI worth bookmarking or sharing — an open panel, active tab,
+  active filter — should reflect in the URL via `URLSearchParams`, the way
+  the public share-link pages (`js/pages/driver-share.js`,
+  `js/pages/trip-request.js`) already do. The main scheduler app's own
+  panels, tabs, and filters don't do this yet.
+
+Large lists (apply to new work; not retrofitted):
+
+- A list that can realistically grow past ~50 rows should use
+  `content-visibility: auto` or virtualize. Not currently needed or used
+  anywhere in the app — revisit if a dataset grows large enough to matter.
 
 ## Application layout
 
@@ -126,15 +220,10 @@ Before completing layout work, verify:
 
 ## Content rules
 
-- Use direct, calm, plain language.
-- Use Title Case for buttons, headings, menu items, labels, and short toasts,
-  matching the current product convention.
-- Use verb-first action labels where possible.
-- Do not add exclamation marks or emoji.
-- Do not put periods on button labels, menu items, field labels, table headers,
-  short toasts, or single-line tooltips.
-- Use `…` for actions that open a follow-up step, such as `Export…`.
-- Error copy should say what happened and what the user can do next.
+Read README.md's Content Fundamentals section for the full voice, tone,
+casing, punctuation, and numbers/dates/units rules — it is the canonical
+source. Do not duplicate that list here; if you find a content rule missing
+from README.md, add it there.
 
 ## Agent workflow
 
@@ -152,6 +241,8 @@ After editing:
 3. Run the relevant tests.
 4. Render or open the affected interface when visual layout changed, then check
    narrow and wide layouts plus both supported themes.
+5. New or changed interactive markup: check it against the Interaction and
+   accessibility rules above (focus, keyboard, labels, motion, overflow).
 
 Prefer additive changes to shared styles. Removing or renaming a public token or
 `.rux-*` class can break every consuming application and requires an explicit

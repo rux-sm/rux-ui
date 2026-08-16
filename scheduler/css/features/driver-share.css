@@ -19,7 +19,7 @@
 	--rux-driver-logo-width-compact:      136px;
 	--rux-driver-logo-max-width:          52vw;
 	--rux-driver-card-bg:                 var(--rux-surface-4);
-	--rux-driver-card-border:             var(--rux-border-width) solid var(--rux-border);
+	--rux-driver-card-border:             var(--rux-border-width) solid var(--rux-card-border);
 	--rux-driver-card-radius:             var(--rux-radius-container);
 	--rux-driver-card-header-padding:     28px var(--rux-space-5);
 	--rux-driver-card-header-min-size:    112px;
@@ -73,7 +73,7 @@ html {
 	gap: var(--rux-space-4);
 	padding: var(--rux-space-5) max(var(--rux-driver-page-gutter), env(safe-area-inset-left));
 	background: var(--rux-surface-1);
-	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .driver-share-header__logo {
@@ -691,7 +691,7 @@ html {
 
 .driver-assignment-card__document:hover:not(.is-unavailable) {
 	background: var(--rux-driver-doc-neutral-hover-bg);
-	border-color: var(--rux-border-strong);
+	border-color: var(--rux-card-border-hover);
 	color: var(--rux-driver-doc-neutral-fg);
 	text-decoration: none;
 }
@@ -711,7 +711,7 @@ html {
 .driver-assignment-card__document.is-unavailable {
 	background: transparent;
 	color: var(--rux-text-disabled);
-	border-color: var(--rux-border-subtle);
+	border-color: var(--rux-card-border);
 	cursor: default;
 }
 
@@ -809,7 +809,7 @@ html {
 }
 
 .driver-share-skeleton__module {
-	border-top: var(--rux-border-width) solid var(--rux-border);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .driver-share-skeleton__line {
@@ -901,7 +901,7 @@ html {
 		align-self: auto;
 		padding: 0 0 var(--rux-space-3);
 		border-inline-end: 0;
-		border-bottom: var(--rux-border-width) solid var(--rux-border);
+		border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	}
 
 	.assignment-module__icon {

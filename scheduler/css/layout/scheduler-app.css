@@ -1918,7 +1918,7 @@
 		padding-block: var(--rux-space-4);
 		padding-bottom: calc(var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
 		background: var(--rux-workspace-bg);
-		border-top: var(--rux-border-width) solid var(--rux-border-subtle);
+		border-top: var(--rux-border-width) solid var(--rux-card-border);
 	}
 
 	.scheduler-app__module[data-module="calendar"] .calendar-app__date-controls {

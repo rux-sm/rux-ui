@@ -20,7 +20,7 @@
 	justify-content: space-between;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) 0;
-	border-bottom: var(--rux-border-width) solid var(--rux-border);
+	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .rux-trip-history__title,

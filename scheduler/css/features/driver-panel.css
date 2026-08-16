@@ -211,7 +211,7 @@
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) var(--rux-space-3);
 	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 }
 
@@ -270,7 +270,7 @@
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-3);
 	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-border-subtle);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 }
 

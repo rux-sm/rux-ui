@@ -273,7 +273,7 @@
 .rux-trip-itinerary__day-group-body > .rux-trip-itinerary__stop,
 .rux-trip-itinerary__day-group-body > .rux-trip-itinerary__dwell-card,
 .rux-trip-itinerary__day-group-body > .rux-trip-itinerary__day {
-	border-top: var(--rux-border-width) solid var(--rux-border);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .rux-trip-itinerary__day-group-body > :first-child {
@@ -751,7 +751,7 @@
 	overflow: auto;
 	padding: var(--rux-space-1);
 	background: var(--rux-surface-5);
-	border: var(--rux-border-width) solid var(--rux-border);
+	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-md);
 }
 
