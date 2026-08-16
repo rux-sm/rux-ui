@@ -191,7 +191,7 @@
        "Reference: Vercel Geist colors"): canvas, and everything raised
        off it — panels, cards, content areas. */
     --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 				/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 14.5% c h); /* everything else */ 			/* 22, 22 ,22 */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 16% c h); /* everything else */ 			/* 22, 22 ,22 */
 
 	/* One border family for the whole app — grid lines, then three
 	   increasing intensities for hairline borders (default, hover,
@@ -1439,15 +1439,25 @@
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 96% c h); /* Raised control and thumb fill */
 	--rux-well-bg:          oklch(from var(--rux-neutral) 90% c h); /* Recessed input and track fill */
 
-	/* --rux-panel-attached-bg (COMPONENT · panel, above) is a direct value
-	   now, not aliased through --rux-surface-1 — needs its own light-theme
-	   override here for the same reason --rux-surface-1 itself does. */
-	--rux-panel-attached-bg: oklch(from var(--rux-neutral) 94% c h);
+	/* --rux-panel-attached-bg (COMPONENT · panel, above) is a direct value,
+	   not aliased through --rux-surface-0 — needs its own light-theme
+	   override here for the same reason --rux-surface-0 itself does. Same
+	   value as --rux-surface-0's own light override above (both are the
+	   chrome tier now — see README.md's "Reference: Vercel Geist colors"). */
+	--rux-panel-attached-bg: oklch(from var(--rux-neutral) 84% c h);
 
 	/* ─── Borders and interaction ─────────────────────────────────────────── */
-	/* --rux-grid-guide/--rux-card-border/-hover/-active (COMPONENT · color ·
-	   surfaces, above) have no light-theme override yet — still tuned only
-	   for the dark values there, needs a pass before light theme ships. */
+	/* Same three-step intensity ladder as dark theme, inverted: light
+	   surfaces (84%/94%) need a *darker* border to read, not a lighter
+	   one. --card-border/--grid-guide anchor to the last-tuned values the
+	   old --rux-border/-button/--rux-divider tokens had before today's
+	   border-family consolidation folded them into this one; --active is
+	   a new third tier with no prior value, picked to keep the same
+	   step-size relationship dark theme has between hover and active. */
+	--rux-grid-guide:         oklch(from var(--rux-neutral) 70% c h);
+	--rux-card-border:        oklch(from var(--rux-neutral) 90% c h);
+	--rux-card-border-hover:  oklch(from var(--rux-neutral) 70% c h);
+	--rux-card-border-active: oklch(from var(--rux-neutral) 50% c h);
 	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
 	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
 
