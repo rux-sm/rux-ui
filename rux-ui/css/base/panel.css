@@ -67,24 +67,40 @@
    their own borders. A style modifier on the nav itself, independent of
    the panel's own position modifier (--floating/--attached/etc.) — not to
    be confused with .rux-panel--attached below, which is about POSITION,
-   not tab styling. */
+   not tab styling. Padding is zeroed on every side, not just the bottom:
+   --rux-panel-nav-padding insets .rux-panel__nav on all sides, which would
+   float the tab strip in from the panel's own edges instead of flush
+   against them — the entire point of "attached" is spanning edge-to-edge.
+   padding-bottom is the one exception, kept as the gap between the tab
+   strip and the pane below. */
 .rux-panel__nav--attached {
 	padding: 0;
 	border-top: 0;
 	border-bottom: var(--rux-panel-nav-border);
 	padding-bottom: var(--rux-panel-tabs-padding);
 	border-radius: 0;
-	background: transparent;
+	background: var(--rux-panel-nav-bg);
 }
 
+/* No top border — the active tab sits directly above with a matching
+   background and no border of its own (--rux-tabs-attached-tab-selected-
+   border in tokens.css), so a top border here would draw a line right
+   through that seam and undo the "attached" look. No left/right border
+   either — this pane always lives inside a .rux-panel, which already draws
+   its own border-inline down both sides. Only the bottom is this pane's
+   own to own, since .rux-panel itself has no border-block. */
 .rux-panel__nav--attached + .rux-panel__body {
-	background: transparent;
+	background: var(--rux-panel-pane-bg);
 	border: var(--rux-tabs-attached-pane-border);
 	border-top: 0;
 	border-left: 0;
 	border-right: 0;
 }
 
+/* When a .rux-panel__footer follows (Trip Editor's Delete/Clear/Save row),
+   its own border-top owns this same seam — the pane's border-bottom above
+   would double up against it. No footer means nothing else draws that
+   edge, so the pane keeps its own border-bottom in that case. */
 .rux-panel__nav--attached + .rux-panel__body:has(+ .rux-panel__footer) {
 	border-bottom: 0;
 }
@@ -107,6 +123,7 @@
 	flex-direction: column;
 	gap: var(--rux-panel-content-gap);
 	padding: var(--rux-panel-padding);
+	background: var(--rux-panel-pane-bg);
 }
 
 .rux-panel__pane[hidden] {
@@ -278,16 +295,30 @@
 	background: transparent;
 }
 
-/* Also just an independent token now, not implicit transparency — the
-   attached-tabs pairing still wants a transparent body specifically (see
-   the shared .rux-panel__nav--attached + .rux-panel__body rule above),
-   restated here at higher specificity so it keeps winning. */
+/* A floating window's own shell already reads as one elevated layer (its
+   own border + shadow) — its content area starts at --level-2, the same
+   step a nested card would need to avoid sitting flush against it. Reuses
+   the card level scale directly rather than a separate floating-body
+   token, same as --rux-card-floating-bg already does for plain cards. */
 .rux-panel--floating > .rux-panel__body {
-	background: var(--rux-panel-floating-body-bg);
+	background: var(--rux-card-level-2-bg);
+	border:     var(--rux-card-level-2-border);
+	box-shadow: var(--rux-card-level-2-shadow);
 }
 
+/* Attached tabs pair with a pane that owns this same level-2 box itself
+   (below) — the body underneath stays bare so its box doesn't nest inside
+   another identical one. */
 .rux-panel--floating > .rux-panel__nav--attached + .rux-panel__body {
 	background: transparent;
+	border: none;
+	box-shadow: none;
+}
+
+.rux-panel--floating > .rux-panel__body > .rux-panel__pane {
+	background: var(--rux-card-level-2-bg);
+	border:     var(--rux-card-level-2-border);
+	box-shadow: var(--rux-card-level-2-shadow);
 }
 
 .rux-panel--floating > .rux-panel__footer {

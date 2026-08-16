@@ -161,20 +161,20 @@ import BusPicker from "../components/bus-picker.js?v=2";
 			const host = demoPage("navigation", "Navigation", "components-app__anatomy-stage--column");
 			host.innerHTML = `
 				<nav class="rux-side-nav" aria-label="Primary Navigation Demo"><ul class="rux-side-nav__list"><li class="rux-side-nav__item"><button class="rux-side-nav__link is-active" type="button" aria-current="page"><span class="rux-icon" aria-hidden="true">map</span><span class="rux-side-nav__label">Trips</span></button></li><li class="rux-side-nav__item"><button class="rux-side-nav__link" type="button"><span class="rux-icon" aria-hidden="true">person</span><span class="rux-side-nav__label">Drivers</span></button></li><li class="rux-side-nav__item"><button class="rux-side-nav__link" type="button"><span class="rux-icon" aria-hidden="true">directions_bus</span><span class="rux-side-nav__label">Fleet</span></button></li></ul></nav>
-				<nav class="rux-tabs rux-tabs--fill" role="tablist" aria-label="Fill tabs" data-rux-tabs><button class="rux-tab" role="tab" type="button" aria-selected="true">Details</button><button class="rux-tab" role="tab" type="button" aria-selected="false">Billing</button><button class="rux-tab" role="tab" type="button" aria-selected="false">Fleet</button></nav>
-				<nav class="rux-tabs rux-tabs--contained rux-tabs--fill" role="tablist" aria-label="Contained tabs" data-rux-tabs><button class="rux-tab" role="tab" type="button" aria-selected="true">Schedule</button><button class="rux-tab" role="tab" type="button" aria-selected="false">Drivers</button></nav>
 				<section class="rux-panel components-app__panel-demo" aria-label="Attached tabs demo">
-					<nav class="rux-tabs rux-tabs--attached" role="tablist" aria-label="Attached tabs" data-rux-tabs>
-						<button class="rux-tab" role="tab" type="button" aria-selected="true" aria-controls="demo-attached-pane-1">Tab one</button>
-						<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-2">Tab two</button>
-						<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-3">Tab three</button>
-						<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-4">Tab four</button>
-					</nav>
+					<div class="rux-panel__nav rux-panel__nav--attached">
+						<nav class="rux-tabs rux-tabs--attached" role="tablist" aria-label="Attached tabs" data-rux-tabs>
+							<button class="rux-tab" role="tab" type="button" aria-selected="true" aria-controls="demo-attached-pane-1">Tab one</button>
+							<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-2">Tab two</button>
+							<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-3">Tab three</button>
+							<button class="rux-tab" role="tab" type="button" aria-selected="false" aria-controls="demo-attached-pane-4">Tab four</button>
+						</nav>
+					</div>
 					<div class="rux-panel__body">
 						<div class="rux-panel__pane" id="demo-attached-pane-1"><p class="rux-card__subtitle">TAB ONE</p><p>Content for the first tab sits right here, flush against the active tab above it.</p></div>
 						<div class="rux-panel__pane" id="demo-attached-pane-2" hidden><p class="rux-card__subtitle">TAB TWO</p><p>Switching tabs swaps this pane — the same [data-rux-tabs] runtime every other tab group in the app already uses.</p></div>
 						<div class="rux-panel__pane" id="demo-attached-pane-3" hidden><p class="rux-card__subtitle">TAB THREE</p><p>No custom JS needed here — aria-controls on each tab is all this demo adds.</p></div>
-						<div class="rux-panel__pane" id="demo-attached-pane-4" hidden><p class="rux-card__subtitle">TAB FOUR</p><p>.rux-tabs--attached is already in navigation.css, just not used in any panel yet.</p></div>
+						<div class="rux-panel__pane" id="demo-attached-pane-4" hidden><p class="rux-card__subtitle">TAB FOUR</p><p>The only tab-strip style used across the app — Trip Editor, Calendar Tools, and the Fleet vehicle editor all share this look.</p></div>
 					</div>
 				</section>
 				<nav class="rux-menu components-app__menu-demo" aria-label="Menu demo"><span class="rux-menu__header">Actions</span><button class="rux-menu__item" type="button">Open trip</button><button class="rux-menu__item" type="button">Duplicate</button><span class="rux-menu__divider"></span><button class="rux-menu__item rux-menu__item--danger" type="button">Delete</button></nav>
