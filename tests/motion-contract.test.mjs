@@ -8,7 +8,7 @@ const tokens = read("rux-ui/css/tokens.css");
 const menuStyles = read("rux-ui/css/base/menu.css");
 const schedulerStyles = read("scheduler/css/layout/scheduler-app.css");
 const manifestStyles = read("scheduler/css/features/trip-manifest.css");
-const drawerController = read("js/core/drawer.js");
+const drawerController = read("rux-ui/js/drawer.js");
 const reducedMotionStyles = read("rux-ui/css/base/utils.css");
 const motionDocs = read("docs/motion.md");
 
@@ -106,7 +106,7 @@ test("panel splitters resize directly without inherited motion", () => {
 
 test("button disclosures use an immediate state-driven close icon swap", () => {
 	const controlStyles = read("rux-ui/css/base/controls.css");
-	const shellController = read("js/core/ui-shell.js");
+	const shellController = read("rux-ui/js/ui-shell.js");
 	const page = read("index.html");
 
 	assert.match(

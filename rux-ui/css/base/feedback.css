@@ -64,7 +64,7 @@
   max-width: var(--rux-container-xs);
   background: var(--rux-modal-bg);
   border: none;
-  border-radius: var(--rux-radius-0);
+  border-radius: var(--rux-modal-radius);
   box-shadow: var(--rux-modal-shadow);
   overflow: hidden;
   animation: rux-modal-in var(--rux-duration-base) var(--rux-ease-out);

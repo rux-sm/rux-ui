@@ -467,7 +467,7 @@ import {
 			console.error("Could not save driver schedule link:", error);
 			window.Rux?.toast?.(
 				error?.code === "PGRST202" || error?.code === "42883"
-					? "Run driver-schedule-shares-patch.sql in Supabase first"
+					? "Driver schedule sharing requires a database update"
 					: "Could not create the driver link",
 				{ duration: 4200 },
 			);

@@ -1713,7 +1713,7 @@
 				hideSuggestions();
 				return;
 			}
-			// Same promotion js/core/suggestions.js's own dropdown uses — this
+			// Same promotion rux-ui/js/suggestions.js's own dropdown uses — this
 			// one predates that shared component and has its own copy of the
 			// same positioning mechanics (see the file header comment), so it
 			// needs the same fix independently: .rux-trip-itinerary__suggestions

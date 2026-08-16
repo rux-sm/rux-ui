@@ -21,7 +21,7 @@ const postTripStatus = document.getElementById("rp-post-trip-status");
 
 // "trips" (departure readiness/prep, the panel's original content) or
 // "post_trip" (trips whose end date has already passed — see tripEndDate —
-// tracked for sending the post-trip survey, per supabase/post-trip-survey-patch.sql).
+// tracked for sending the post-trip survey).
 let activeList = "trips";
 let postTripFilter = "needs_follow_up";
 listToggle?.addEventListener("rux:segment-change", (e) => {
@@ -168,9 +168,8 @@ const COMPUTED_ITEMS = [
 // Interactive — manual prep steps a dispatcher does, not data completeness,
 // so they don't factor into the Ready/Pending badge the way COMPUTED_ITEMS
 // does. Persisted directly on trips as `${suffix}_outbound`/`${suffix}_return`
-// (see supabase/trip-task-flags-patch.sql, supabase/trip-itinerary-printed-
-// patch.sql, supabase/trip-hos-form-patch.sql) — a split trip's return leg
-// is often a different driver/bus dispatched much later, so it gets its own
+// — a split trip's return leg is often a different driver/bus dispatched
+// much later, so it gets its own
 // set rather than sharing the outbound leg's checkboxes. `visible` hides an
 // item entirely rather than just leaving it unchecked — hos_form_printed
 // only means anything once a part-time driver is actually assigned.

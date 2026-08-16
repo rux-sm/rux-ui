@@ -38,7 +38,7 @@ function warnMissingPatch(error) {
 	if (warnedMissingPatch) return;
 	warnedMissingPatch = true;
 	console.warn(
-		"Canonical driver statuses are unavailable; using assignment metadata until trip-driver-confirmation-patch.sql is rerun.",
+		"Canonical driver statuses are unavailable; using assignment metadata until the driver-confirmation database function is available.",
 		error,
 	);
 }

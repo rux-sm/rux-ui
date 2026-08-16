@@ -885,7 +885,7 @@ function initTripTabs(root) {
 }
 
 /* ── Contact autofill ───────────────────────────────────────────────────── */
-// Search-as-you-type against the saved contacts roster (js/core/suggestions.js
+// Search-as-you-type against the saved contacts roster (rux-ui/js/suggestions.js
 // + window.RuxContacts, wired in index.html). Picking a suggestion fills the
 // paired phone/email input(s) and stamps nameInput.dataset.contactId so
 // trip-db.js's save() links this trip to that contact instead of re-matching
@@ -937,7 +937,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 
 	// Sticky section-header behavior (.rux-card__header, the
 	// .is-stuck shadow) is wired generically for every .rux-panel —
-	// initStickySectionHeaders in js/core/controls.js, auto-run at
+	// initStickySectionHeaders in rux-ui/js/controls.js, auto-run at
 	// DOMContentLoaded the same way initPanelScrollEdges is. .rux-scope-trip
 	// is itself a .rux-panel, so it's already covered; nothing to call here.
 

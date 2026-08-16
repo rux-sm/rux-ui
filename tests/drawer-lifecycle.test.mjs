@@ -4,7 +4,7 @@ import test from "node:test";
 import vm from "node:vm";
 
 const drawerSource = readFileSync(
-	new URL("../js/core/drawer.js", import.meta.url),
+	new URL("../rux-ui/js/drawer.js", import.meta.url),
 	"utf8",
 );
 

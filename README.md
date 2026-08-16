@@ -23,21 +23,25 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 ├── .cline/rules/          ← concise Cline project policy
 ├── docs/ai/               ← human-facing AI workflow and model routing
 ├── rux-ui/
-│   └── css/
-│       ├── rux.css            ← single entry point for the full design system
-│       ├── tokens.css         ← all design tokens: color, type, space, radius, motion
-│       ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
-│       ├── rux-core.css       ← framework-agnostic entrypoint for new applications
-│       └── base/              ← 18 reusable BEM components
+│   ├── css/
+│   │   ├── rux.css            ← single entry point for the full design system
+│   │   ├── tokens.css         ← all design tokens: color, type, space, radius, motion
+│   │   ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
+│   │   ├── rux-core.css       ← framework-agnostic entrypoint for new applications
+│   │   └── base/              ← 18 reusable BEM components
+│   └── js/                    ← the JS engine behind rux-ui/css/base/* components:
+│                                 utilities.js (toast/modal/copy/accent), theme.js,
+│                                 menu.js, popover.js, drawer.js, floating-window.js,
+│                                 suggestions.js, controls.js, ui-shell.js
 ├── scheduler/
 │   └── css/
 │       ├── components.css     ← scheduler bundle (base + features + layout)
 │       ├── features/          ← 29 scheduler-specific panels and components
 │       └── layout/            ← scheduler grid and application shell
 ├── js/
-│   └── core/
-│       ├── utilities.js   ← toast, modal, copy, and accent helpers
-│       └── theme.js       ← light, dark, and system-theme behavior
+│   └── core/               ← scheduler business logic (billing, trip requests,
+│                              driver workload, contacts) — not part of the
+│                              portable design system, stays with this app
 ├── index.html             ← current full application and composition reference
 ├── assets/                ← logos, favicons
 └── tests/                 ← component and application contract tests
@@ -51,8 +55,22 @@ To use the complete reference-application bundle in an existing page:
 <link rel="stylesheet" href="rux-ui/css/tokens.css" />
 <link rel="stylesheet" href="rux-ui/css/colors_and_type.css" />
 <link rel="stylesheet" href="scheduler/css/components.css" />
-<script src="js/core/utilities.js" defer></script>
+<script src="rux-ui/js/utilities.js" defer></script>
+<script src="rux-ui/js/theme.js" defer></script>
+<script src="rux-ui/js/menu.js" defer></script>
+<script src="rux-ui/js/popover.js" defer></script>
+<script src="rux-ui/js/drawer.js" defer></script>
+<script src="rux-ui/js/floating-window.js" defer></script>
+<script src="rux-ui/js/suggestions.js" defer></script>
+<script src="rux-ui/js/controls.js" defer></script>
+<script src="rux-ui/js/ui-shell.js" defer></script>
 ```
+
+Only `utilities.js` is strictly required for the reference-app bundle to run
+without errors; the rest wire up specific components (menus, popovers,
+drawers, floating panels, the search dropdown, tab/toggle declarative
+controls, the header disclosure button) — include whichever ones the page
+actually uses.
 
 For a new application, use the framework-agnostic core entrypoint instead:
 
@@ -222,7 +240,7 @@ Geist-shaped equivalent.
 
 #### Swappable accent — JS wiring exists, CSS side does not yet
 
-`js/core/utilities.js` fully implements the *switching* mechanism:
+`rux-ui/js/utilities.js` fully implements the *switching* mechanism:
 
 ```js
 Rux.setAccent("green");           // sets <html data-rux-accent="green">, persists to localStorage
@@ -329,14 +347,22 @@ Use component semantic tokens in component CSS; use the primitive scale only whe
 
 Panels, cards, buttons, and fields each route their own radius through one of
 two shared roles — `--rux-radius-container` (panels, cards, calendar) or
-`--rux-radius-control` (buttons, badges, swatches) — rather than a single
-`--rux-panel-radius`/`--rux-card-radius`/`--rux-button-radius` token apiece.
-Both roles currently resolve to `--rux-radius-0`: the product renders with
-square corners everywhere except elements that need full rounding by
-definition, such as the switch thumb/track (`--rux-radius-full`). A future
-radius change is a two-token edit, not a per-component hunt. A drawer shell
-may override the outer panel radius at a viewport edge; that is layout
-behavior, not a new panel variant.
+`--rux-radius-control` (buttons, badges, swatches, fields) — rather than a
+single `--rux-panel-radius`/`--rux-card-radius`/`--rux-button-radius` token
+apiece. Following Vercel Geist's Materials page (its "everyday surface"
+tier — see "Reference: Vercel Geist colors" above for the general approach
+of following Vercel's structure, not literal values): `--rux-radius-container`
+is `--rux-radius-md` (8px, the roomier step for bigger boxes), `--rux-radius-control`
+is `--rux-radius-sm` (6px, the tighter step for smaller controls). Floating
+and overlay surfaces (menus, popovers, modals, floating windows) use a
+separate, more elevated step, `--rux-radius-lg` (12px), matching Materials'
+own floating-element tier — see each component's own token
+(`--rux-menu-radius`, `--rux-popover-surface-radius`, `--rux-modal-radius`,
+`--rux-panel-floating-radius`). `--rux-radius-full` remains reserved for
+elements that need full rounding by definition, such as the switch
+thumb/track. A future radius change to either shared role is a two-token
+edit, not a per-component hunt. A drawer shell may override the outer panel
+radius at a viewport edge; that is layout behavior, not a new panel variant.
 
 ### Surface depth
 

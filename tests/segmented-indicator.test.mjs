@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 
 const controlsSource = await readFile(
-	new URL("../js/core/controls.js", import.meta.url),
+	new URL("../rux-ui/js/controls.js", import.meta.url),
 	"utf8",
 );
 

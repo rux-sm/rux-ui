@@ -102,7 +102,7 @@ visible.
 
 Application layout CSS owns placement. Header-triggered navigation should use
 the standard non-persistent overlay behavior provided by
-`js/core/ui-shell.js`; persistently visible navigation is a separate layout
+`rux-ui/js/ui-shell.js`; persistently visible navigation is a separate layout
 configuration and does not use the hamburger disclosure pattern.
 
 ## Component API

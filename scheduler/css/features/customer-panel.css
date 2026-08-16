@@ -34,7 +34,7 @@
 }
 
 /* — Trips: read-only trip history, the payoff of linking contacts to
-   trips instead of only ever copying freetext (see contacts-patch.sql) — */
+   trips instead of only ever copying freetext — */
 
 .rux-scope-customer__trip-item {
 	display: flex;

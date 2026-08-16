@@ -12,7 +12,7 @@
   const backBtn = document.getElementById("rpm-back-btn");
 
   // Floating/draggable/resizable window shell (css/base/floating-window.css,
-  // js/core/floating-window.js) — same recipe as the document viewer, so the
+  // rux-ui/js/floating-window.js) — same recipe as the document viewer, so the
   // manifest floats over the calendar instead of replacing it. Open/close
   // state itself lives in index.html's window.TripView. The passenger editor
   // (below) is a second, independent slide-in layer nested inside this

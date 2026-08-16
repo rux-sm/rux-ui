@@ -58,7 +58,7 @@
 	const DRIVER_WORKLOAD_START_KEY = "rux:driver-workload-start";
 
 	// ── Drawer ────────────────────────────────────────────────────────────────
-	// Open/close/resize behavior lives in RuxDrawer (js/core/drawer.js), shared
+	// Open/close/resize behavior lives in RuxDrawer (rux-ui/js/drawer.js), shared
 	// with the Fleet panel and the Trips panel's left+right drawers.
 
 	const panelToggleBtn = document.getElementById("driver-panel-toggle-btn");

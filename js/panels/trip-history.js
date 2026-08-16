@@ -218,7 +218,7 @@ function render() {
 function historyUnavailableMessage(error) {
 	const detail = [error?.message, error?.details, error?.hint].filter(Boolean).join(" ");
 	if (/get_trip_history|schema cache|function/i.test(detail)) {
-		return "Run supabase/trip-history-patch.sql to enable global trip history.";
+		return "Global trip history requires a database update. Contact an administrator.";
 	}
 	return "History could not be loaded. Check the connection and try again.";
 }

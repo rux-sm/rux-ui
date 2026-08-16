@@ -23,7 +23,7 @@
   let colConfig  = [];
 
   // ── Drawer ────────────────────────────────────────────────────────────────
-  // Open/close/resize behavior lives in RuxDrawer (js/core/drawer.js), shared
+  // Open/close/resize behavior lives in RuxDrawer (rux-ui/js/drawer.js), shared
   // with the Driver panel and the Trips panel's left+right drawers.
 
   const panelToggleBtn = document.getElementById("fleet-panel-toggle-btn");

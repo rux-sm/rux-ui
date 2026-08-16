@@ -426,7 +426,7 @@
    closed (width: 0, see the mobile media query below), never a
    collapsed-but-visible sliver. Scoping the whole thing here, rather than
    excluding .is-closing selector-by-selector, is deliberate: .is-closing is
-   itself mobile-only (RuxDrawer's close(), js/core/drawer.js, only ever
+   itself mobile-only (RuxDrawer's close(), rux-ui/js/drawer.js, only ever
    adds it inside its mobilePanelQuery branch), so it can't occur inside a
    min-width media query at all — one guard here is equivalent to, and less
    fragile than, chasing every mobile-reachable state one at a time in each
@@ -668,7 +668,7 @@
 	min-width: 0;
 }
 
-/* initPanelScrollEdges (js/core/controls.js) still toggles .is-scrolled
+/* initPanelScrollEdges (rux-ui/js/controls.js) still toggles .is-scrolled
    here like it does on every .rux-panel — that JS is shared and stays as
    is. Only the resulting shadow is suppressed: every tab's own sentinel-
    gated card header (card.css's .rux-card__header.is-stuck) now owns that
@@ -1590,7 +1590,7 @@
 	}
 
 	/* Tap-to-dismiss scrim behind the drawer, above the workspace and the
-	   fixed bottom nav — created/shown by RuxDrawer (js/core/drawer.js),
+	   fixed bottom nav — created/shown by RuxDrawer (rux-ui/js/drawer.js),
 	   shared by every drawer instance since only one is ever open at a time
 	   on mobile. */
 	.scheduler-app__drawer-scrim {

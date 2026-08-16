@@ -2,9 +2,8 @@
    RUX UI — TRIP REQUEST DB
    --------------------------------------------------------------------------
    Supabase persistence for the customer request inbox. Every access goes
-   through a security definer function (see supabase/trip-requests-patch.sql)
-   so the public form can insert submissions without ever reading other
-   customers' rows.
+   through a security definer function so the public form can insert
+   submissions without ever reading other customers' rows.
 
    API
    ---

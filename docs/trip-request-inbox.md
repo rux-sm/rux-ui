@@ -23,7 +23,7 @@ badge on the Requests nav button (count of `new`), and creates invites:
 `invited` row and hands back `request.html?r=REQ-XXXXXX` (copy link / compose
 email).
 
-## Data model — `supabase/trip-requests-patch.sql`
+## Data model — `trip_requests` table
 
 | Column | Notes |
 |---|---|
@@ -63,7 +63,6 @@ other customers' rows, and the inbox is readable only from the app.
 - `js/core/trip-request-model.js` (pure; tested)
 - `js/data/trip-request-db.js`
 - `js/panels/request-inbox.js`, `css/features/request-inbox.css`
-- `supabase/trip-requests-patch.sql` (run in the Supabase SQL editor)
 - `tests/trip-request-model.test.mjs`, `tests/request-inbox.test.mjs`
 
 ## Notes on scope

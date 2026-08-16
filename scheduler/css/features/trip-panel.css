@@ -8,7 +8,7 @@
    wrapper; .rux-panel__nav/__body/__footer are the real anatomy, with
    .rux-scope-trip supplying the container-query root plus its own
    feature-specific classes on top of the shared Panel slots. Tab
-   switching is handled generically in js/core/controls.js
+   switching is handled generically in rux-ui/js/controls.js
    ([data-rux-tabs]), with additional trip-editor-specific behavior
    (scroll-reset on switch, drawer-reopen bridge) layered on in
    trip-panel.js's initTripTabs.
@@ -56,7 +56,7 @@
 	container-type: inline-size;
 }
 
-/* initPanelScrollEdges (js/core/controls.js) still toggles .is-scrolled
+/* initPanelScrollEdges (rux-ui/js/controls.js) still toggles .is-scrolled
    here like it does on every .rux-panel/.rux-panel--floating — that JS
    is shared and stays as is. Only the resulting shadow is suppressed:
    #pane-trip's section headers (card.css's .rux-card__header.is-stuck)

@@ -441,7 +441,7 @@ if (btn && badge) {
 	// I'm composing" (opened from the input's own emoji button), switching
 	// behavior on emojiMenuMode rather than building two separate pickers.
 	// role="menuitem" on each emoji gets Escape/outside-click dismissal and
-	// arrow-key navigation for free from js/core/menu.js, and clicking a
+	// arrow-key navigation for free from rux-ui/js/menu.js, and clicking a
 	// menuitem auto-closes the menu the same way any other RuxMenu item
 	// does — no manual close() call needed.
 	function ensureEmojiMenu() {

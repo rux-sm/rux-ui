@@ -67,7 +67,7 @@ sentinel, so it keeps its original non-sticky, tinted-header look with zero
 markup changes and zero risk of a silent regression.
 
 The sticky mechanism itself: `initStickySectionHeaders` in
-`js/core/controls.js`, auto-run for every `.rux-panel` at `DOMContentLoaded`.
+`rux-ui/js/controls.js`, auto-run for every `.rux-panel` at `DOMContentLoaded`.
 An `IntersectionObserver` watches each `.rux-card__sentinel`, toggling
 `.is-stuck` (which adds `--rux-shadow-1`) on `entry.target.nextElementSibling`
 the instant it docks — the standard workaround for "which sticky element is
@@ -223,7 +223,7 @@ same information under a different name for tokens whose class is
 just to get tabs + scrollable body + footer inside its floating window — it
 uses `.rux-panel__nav--attached` (a style modifier on `.rux-panel__nav`)
 directly. `initPanelScrollEdges`/`initStickySectionHeaders` and the generic
-`[data-rux-tabs]` switcher in `js/core/controls.js` all key off `.rux-panel`
+`[data-rux-tabs]` switcher in `rux-ui/js/controls.js` all key off `.rux-panel`
 alone now (not two separate class families), so this same pattern is
 available to any future panel with tabs.
 
@@ -286,7 +286,7 @@ domain-prefixed class is safe to fold into a scope or utility.
 Data attributes follow the same idea. A domain-specific tab-strip hook like
 `data-fleet-tabs` is now the generic `data-rux-tabs` (already shared,
 already read by the generic `[data-rux-tabs]` switcher in
-`js/core/controls.js`) plus `data-scope="fleet"` for the domain's own JS to
+`rux-ui/js/controls.js`) plus `data-scope="fleet"` for the domain's own JS to
 find *its* tab strip specifically. The same pattern applies to
 domain-owned toggle buttons — `data-rux-domain-toggle` plus `data-scope`,
 **not** the pre-existing `data-rux-toggle="#target"` attribute already used

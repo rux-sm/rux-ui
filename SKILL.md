@@ -26,8 +26,9 @@ needed for the task after that:
 - `docs/layout-composition.md` — canonical UI-header, shell, workspace, panel,
   card, spacing, scrolling, and responsive composition contract
 - `docs/motion.md` — productive-motion tokens and panel/menu animation contracts
-- `js/core/utilities.js` — shared toast, modal, clipboard, and accent helpers
-- `js/core/theme.js` — light, dark, and system-theme behavior
+- `rux-ui/js/` — the JS engine behind `rux-ui/css/base/*` components: toasts,
+  modals, theme switching, menus, popovers, drawers, floating windows,
+  the search-as-you-type dropdown, and the UI-header disclosure controller
 - `index.html` — current full application and the best composition reference
 - `assets/` — current logos, favicon, profile image, and splash asset
 
@@ -44,29 +45,46 @@ usable in both unless the user explicitly scopes the task to one theme.
 
 ## Building a new application
 
-Copy the complete shared style tree so relative imports continue to resolve:
+Copy the complete `rux-ui/` folder as a unit — both `css/` and `js/` — so
+relative imports continue to resolve and shared components stay interactive,
+not just styled:
 
 ```text
 rux-ui/
-└── css/
-    ├── rux.css
-    ├── rux-core.css
-    ├── tokens.css
-    ├── colors_and_type.css
-    └── base/
+├── css/
+│   ├── rux.css
+│   ├── rux-core.css
+│   ├── tokens.css
+│   ├── colors_and_type.css
+│   └── base/
+└── js/
+    ├── utilities.js
+    ├── theme.js
+    ├── controls.js
+    ├── menu.js
+    ├── popover.js
+    ├── drawer.js
+    ├── floating-window.js
+    ├── suggestions.js
+    └── ui-shell.js
 ```
 
-Load the shared system before app-specific styles:
+Load the shared system before app-specific styles, and the shared scripts
+before app-specific scripts:
 
 ```html
 <link rel="stylesheet" href="rux-ui/css/rux.css" />
 <link rel="stylesheet" href="css/app.css" />
+<script src="rux-ui/js/utilities.js" defer></script>
+<script src="rux-ui/js/controls.js" defer></script>
+<!-- plus theme.js, menu.js, popover.js, drawer.js, floating-window.js,
+     suggestions.js, ui-shell.js — whichever components the app uses -->
 ```
 
 Treat `rux-ui/` as read-only in the consuming app. Make shared changes
 in the Rux UI source repository, then replace the copied directory as a unit.
 Keep layouts, features, and overrides unique to the consuming product in its
-own `app.css` or feature stylesheets.
+own `app.css`/`app.js` or feature files.
 
 Do not use `scheduler/css/components.css` for an unrelated app unless it genuinely needs
 the reference-application scheduler, trip bar, itinerary, and trip-panel

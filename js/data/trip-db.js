@@ -301,7 +301,7 @@ import {
 		} catch (error) {
 			// History is additive and must never turn an otherwise successful
 			// operational save into a failed trip save. This also lets the app
-			// remain usable before trip-history-patch.sql has been installed.
+			// remain usable if the trip-history database function is missing.
 			console.warn("Trip history could not be recorded:", error);
 			return null;
 		}
@@ -1229,7 +1229,7 @@ import {
 			);
 			if (!driverShareFieldsAvailable && hasReliefDetails) {
 				throw new Error(
-					"Run driver-schedule-shares-patch.sql before saving relief meet times or notes.",
+					"Relief meet times and notes require a database update. Contact an administrator.",
 				);
 			}
 
@@ -1253,7 +1253,7 @@ import {
 					.join(" ");
 				if (/po_amount|schema cache/i.test(detail)) {
 					throw new Error(
-						"PO Amount requires the trip-po-coverage-patch.sql database update.",
+						"PO Amount requires a database update. Contact an administrator.",
 					);
 				}
 				throw tripErr;
@@ -2212,8 +2212,7 @@ export async function deleteContact(contactId) {
 
 // Trips linked to a contact via any of the three slots — backs the
 // Customers module's "past trips" list, the actual payoff of linking
-// contacts to trips instead of only ever copying freetext (see
-// contacts-patch.sql's header comment).
+// contacts to trips instead of only ever copying freetext.
 export async function fetchContactTrips(contactId) {
 	const { data, error } = await supabase
 		.from("trips")

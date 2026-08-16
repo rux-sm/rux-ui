@@ -1,9 +1,9 @@
 /* ==========================================================================
    RUX UI — CUSTOMERS PANEL
    --------------------------------------------------------------------------
-   Roster + editor drawer for the saved contacts table (see
-   supabase/contacts-patch.sql). Same shell/recipe as the Fleet and Driver
-   panels — a .scheduler-app__drawer with a RuxDrawer-managed left panel,
+   Roster + editor drawer for the saved contacts table. Same shell/recipe
+   as the Fleet and Driver panels — a .scheduler-app__drawer with a
+   RuxDrawer-managed left panel,
    a roster table on the right — trimmed down since a contact is only
    name/phone/email plus its linked trip history, not a multi-tab record.
    Imports the contact persistence API directly from js/data/trip-db.js.

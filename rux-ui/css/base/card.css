@@ -82,7 +82,7 @@
 }
 
 /* Zero-height marker at a section's own top edge — see
-   initStickySectionHeaders in js/core/controls.js. Not visual on its own;
+   initStickySectionHeaders in rux-ui/js/controls.js. Not visual on its own;
    its real job is the adjacent-sibling selector below, which is what makes
    the header immediately after it sticky. */
 .rux-card__sentinel {
@@ -120,7 +120,7 @@
 
 /* Shadow and bottom border both belong to whichever header is actually
    docked at the moment, not a fixed one — .is-stuck is JS-driven
-   (initStickySectionHeaders in js/core/controls.js, shared by every
+   (initStickySectionHeaders in rux-ui/js/controls.js, shared by every
    .rux-panel), toggled by watching the sentinel above rather than guessed
    from scroll math. Every sentinel-gated header is eligible; only the one
    currently pinned over content ever carries either. The border stays

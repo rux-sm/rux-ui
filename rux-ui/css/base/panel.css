@@ -215,7 +215,7 @@
 }
 
 /* Only cast while __body has scrolled under it (.is-scrolled, toggled by
-   initPanelScrollEdges, js/core/controls.js) — flat/solid at rest, elevated
+   initPanelScrollEdges, rux-ui/js/controls.js) — flat/solid at rest, elevated
    once there's content underneath to separate from. */
 .rux-panel--attached > .rux-panel__nav.is-scrolled {
 	box-shadow: var(--rux-panel-nav-shadow);

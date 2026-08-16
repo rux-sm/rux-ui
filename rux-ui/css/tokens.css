@@ -348,8 +348,14 @@
 	/* Components route through these roles even while both are square. This
 	   keeps a future radius change to two intentional edits. */
 
-	--rux-radius-container: var(--rux-radius-0);
-	--rux-radius-control:   var(--rux-radius-0);
+	/* Real values, matching Vercel Geist Materials' "everyday surface" tier
+	   (base/small = 6px, medium/large = 12px) — containers (bigger boxes:
+	   panels, cards, calendar) get the roomier step, controls (buttons,
+	   badges, fields) the tighter one, same relative scaling Materials
+	   uses. Phase 1 already gave the floating/overlay tier (menu, popover,
+	   modal, floating windows) their own direct --rux-radius-lg (12px). */
+	--rux-radius-container: var(--rux-radius-md);
+	--rux-radius-control:   var(--rux-radius-sm);
 
 	/* ─── ICON ───────────────────────────────────────────────────────────── */
 
@@ -403,6 +409,9 @@
 	   that blocks everything else. */
 	--rux-modal-shadow: var(--rux-shadow-3);
 	--rux-modal-bg: var(--rux-elevation-1-bg);
+	/* Real radius, matching Vercel Geist Materials' modal tier (12px) —
+	   same reasoning as --rux-panel-floating-radius/--rux-menu-radius. */
+	--rux-modal-radius: var(--rux-radius-lg);
 
 	/* ─── STACKING ROLES ─────────────────────────────────────────────────── */
 
@@ -628,7 +637,10 @@
 	   with the canvas behind it and has no scrim — its own border is the
 	   only thing left to draw where the window actually starts. */
 	--rux-panel-floating-border:        1px solid var(--rux-card-border);
-	--rux-panel-floating-radius:        var(--rux-card-body-radius);
+	/* Direct value, not aliased through --rux-card-body-radius (square) —
+	   a floating window is exactly the kind of elevated surface Vercel
+	   Geist's Materials page gives real radius to (modal tier, 12px). */
+	--rux-panel-floating-radius:        var(--rux-radius-lg);
 	--rux-panel-floating-shadow:        var(--rux-shadow-3);
 	--rux-panel-floating-header-bg:     var(--rux-surface-0);
 	--rux-panel-floating-nav-bg:        var(--rux-surface-0);
@@ -684,7 +696,7 @@
 	/* — card: header — floats above the body, no box of its own — */
 	--rux-card-header-bg:     var(--rux-surface-0);
 	--rux-card-header-border: 1px solid var(--rux-card-border);
-	--rux-card-header-radius: var(--rux-radius-0);
+	--rux-card-header-radius: var(--rux-radius-container);
 	--rux-card-header-shadow: none;
 
 	/* — card: sticky header — used by every repeating-group header (View
@@ -697,7 +709,7 @@
 	/* — card: body — the box — */
 	--rux-card-body-bg:     var(--rux-surface-1);
 	--rux-card-body-border: var(--rux-card-border-width) solid var(--rux-card-border);
-	--rux-card-body-radius: var(--rux-radius-0);
+	--rux-card-body-radius: var(--rux-radius-container);
 	/* A plain card is flat by design — .rux-card--elevated below is the
 	   only thing that ever overrides this locally. */
 	--rux-card-body-shadow: none;
@@ -706,7 +718,7 @@
 	   above it the way header does; see card.css. */
 	--rux-card-footer-bg:     transparent;
 	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-card-border);
-	--rux-card-footer-radius: var(--rux-radius-0);
+	--rux-card-footer-radius: var(--rux-radius-container);
 
 	/* No level system anymore — one card color for every nesting depth,
 	   following the Vercel Geist model (README.md's "Reference: Vercel
@@ -743,7 +755,7 @@
 	   already meant to be), but fixed rather than left relying on that. */
 	--rux-input-border:         1px solid var(--rux-card-border);
 	--rux-input-border-image:   none;
-	--rux-input-border-radius:  var(--rux-radius-0);
+	--rux-input-border-radius:  var(--rux-radius-control);
 	--rux-input-shadow:         var(--rux-shadow-inset);
 	--rux-input-height:         var(--rux-field-height);
 	--rux-input-padding-inline: var(--rux-control-padding-inline);
@@ -791,7 +803,7 @@
 	/* --rux-button-fg: not set, same reason */
 	--rux-button-border-width: var(--rux-border-width);
 	--rux-button-border:       none;
-	--rux-button-radius:       var(--rux-radius-0);
+	--rux-button-radius:       var(--rux-radius-control);
 	/* Tactile shadows apply only to solid-fill variants. */
 	--rux-button-shadow-raised:  var(--rux-shadow-1);
 	--rux-button-shadow-pressed: none;
@@ -1262,7 +1274,10 @@
 	--rux-menu-bg:     var(--rux-surface-1);
 	--rux-menu-fg:     var(--rux-text-default);
 	--rux-menu-border: 1px solid var(--rux-card-border);
-	--rux-menu-radius: var(--rux-radius-container);
+	/* Direct value, not the shared --rux-radius-container role — floating
+	   overlay surfaces get real radius (Vercel Geist Materials: menus at
+	   12px), everyday chrome (cards, attached panels) stays square. */
+	--rux-menu-radius: var(--rux-radius-lg);
 	--rux-menu-shadow: var(--rux-shadow-2);
 	--rux-menu-min-width: 200px;
 	--rux-menu-padding:   var(--rux-space-1);
@@ -1299,7 +1314,8 @@
 	--rux-popover-surface-bg:       var(--rux-surface-1);
 	--rux-popover-surface-fg:       var(--rux-text-default);
 	--rux-popover-surface-border:   none;
-	--rux-popover-surface-radius:   var(--rux-radius-container);
+	/* Direct value, same reasoning as --rux-menu-radius above. */
+	--rux-popover-surface-radius:   var(--rux-radius-lg);
 	--rux-popover-surface-shadow:   var(--rux-shadow-2);
 	--rux-popover-tab-tip-offset:   var(--rux-space-0);
 	--rux-popover-tab-tip-size:     var(--rux-button-height-header);

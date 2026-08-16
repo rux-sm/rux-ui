@@ -7155,18 +7155,18 @@
 		<div id="req-icon-picker" class="req-icon-picker" hidden></div>
 
 		<!-- ── Scripts ─────────────────────────────────────────────────────────── -->
-		<script src="./js/core/utilities.js"></script>
-		<script src="./js/core/theme.js?v=1"></script>
+		<script src="./rux-ui/js/utilities.js"></script>
+		<script src="./rux-ui/js/theme.js?v=1"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
-		<script src="./js/core/ui-shell.js?v=2"></script>
-		<script src="./js/core/drawer.js?v=10"></script>
-		<script src="./js/core/popover.js?v=4"></script>
-		<script src="./js/core/menu.js?v=3"></script>
-		<script src="./js/core/controls.js?v=6" defer></script>
+		<script src="./rux-ui/js/ui-shell.js?v=2"></script>
+		<script src="./rux-ui/js/drawer.js?v=10"></script>
+		<script src="./rux-ui/js/popover.js?v=4"></script>
+		<script src="./rux-ui/js/menu.js?v=3"></script>
+		<script src="./rux-ui/js/controls.js?v=6" defer></script>
 		<script src="./js/core/billing-config.js?v=5"></script>
-		<script src="./js/core/floating-window.js?v=3"></script>
+		<script src="./rux-ui/js/floating-window.js?v=3"></script>
 		<script src="./js/core/doc-viewer.js?v=9"></script>
-		<script src="./js/core/suggestions.js?v=2"></script>
+		<script src="./rux-ui/js/suggestions.js?v=2"></script>
 		<script src="./js/panels/trip-panel.js?v=38"></script>
 		<script src="./js/components/itinerary.js?v=27"></script>
 		<script src="./js/panels/driver-panel.js?v=21" defer></script>
@@ -8112,7 +8112,7 @@
 			const itinerary = Itinerary.init(tripPanel);
 
 			// ── Right-side resizable drawer ─────────────────────────────────────
-			// Open/close/drag-resize behavior lives in RuxDrawer (js/core/drawer.js),
+			// Open/close/drag-resize behavior lives in RuxDrawer (rux-ui/js/drawer.js),
 			// shared with the Fleet/Driver panel drawers. The Calendar tools panel
 			// passes scheduleMin so resizing always leaves its workspace usable.
 
@@ -9870,7 +9870,7 @@
 			// Swaps --rux-trip-bar-row-font-size/-line-height (tokens.css) from
 			// xs to xxs/sm via one class on schedulerEl — see trip-bar.css's
 			// "Row size" section for why nothing else needs to change. Reuses
-			// the existing .rux-segmented-track component (js/core/controls.js)
+			// the existing .rux-segmented-track component (rux-ui/js/controls.js)
 			// rather than hand-rolling toggle logic: it manages its own
 			// aria-pressed state and fires "rux:segment-change" on click.
 			const tripBarSizeTrack =
@@ -11452,8 +11452,7 @@
 					// pushed instantly; everything else silently waited for the
 					// 30s poll below. Same debounced trigger, just more tables
 					// watched — requires each of these also being added to the
-					// supabase_realtime publication (see
-					// supabase/scheduler-realtime-patch.sql).
+					// supabase_realtime publication.
 					.on(
 						"postgres_changes",
 						{

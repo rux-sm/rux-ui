@@ -1,7 +1,7 @@
 /* ==========================================================================
    SUGGESTIONS DROPDOWN
    --------------------------------------------------------------------------
-   Shared search-as-you-type dropdown (js/core/suggestions.js) — a single
+   Shared search-as-you-type dropdown (rux-ui/js/suggestions.js) — a single
    floating panel positioned under whichever input is currently attached.
    Visually mirrors itinerary.css's .rux-trip-itinerary__suggestions (that
    one's a separate, un-shared copy — see suggestions.js's header comment
