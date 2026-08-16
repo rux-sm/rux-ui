@@ -218,8 +218,10 @@ move or resize it.
 
 ## Spacing
 
-Rux uses a `16px` visual content rhythm through `--rux-space-4`. This describes
-relationships, not unconditional padding on every edge.
+Rux uses a `16px` visual content rhythm through `--rux-space-4` for card- and
+panel-level relationships. This describes relationships, not unconditional
+padding on every edge, and it is not the only rhythm in the app — dense,
+repeating-row contexts intentionally use a tighter one (below).
 
 | Relationship | Contract |
 | --- | --- |
@@ -236,6 +238,21 @@ relationships, not unconditional padding on every edge.
 Agents MUST use the component tokens instead of hardcoded `16px` values. A
 header's bottom padding and a following body's top padding must not accidentally
 combine into a `32px` seam.
+
+### Dense, repeating-row exceptions
+
+A few contexts deliberately use a tighter rhythm than `16px`, since a list of
+many short, similar rows (a settings toggle list, a scheduler grid) reads
+better dense than at card-level spacing:
+
+| Context | Contract |
+| --- | --- |
+| Repeating settings-toggle rows (`.rux-view-options__row`) | `0` gap, fixed `40px` row height — rhythm comes from the row height, not a gap |
+| Scheduler grid row inset (`--rux-scheduler-row-block-inset`) | `8px` (`--rux-space-2`) |
+
+Use the `16px` card rhythm as the default for any new titled group or content
+block. Reach for a tighter rhythm only for a genuinely dense, repeating list
+of short rows — not as a general "make it more compact" adjustment.
 
 ## Scrolling
 

@@ -591,7 +591,7 @@
 	--rux-panel-header-gap:    var(--rux-space-4); /* header's own internal gap, distinct from --content-gap below */
 
 	/* — nav / tabs — tab strip itself reads --rux-tabs-attached-* (below) */
-	--rux-panel-nav-bg:        var(--rux-surface-1);
+	--rux-panel-nav-bg:        var(--rux-surface-0);
 	--rux-panel-nav-border:    none;
 	--rux-panel-nav-padding:   0 0 var(--rux-space-4) 0;
 	--rux-panel-nav-shadow:    var(--rux-shadow-1); /* while scrolled */
@@ -625,7 +625,7 @@
 	--rux-panel-attached-shadow:        none;
 	--rux-panel-attached-header-bg:     var(--rux-surface-0);
 	--rux-panel-attached-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
-	--rux-panel-attached-footer-bg:     var(--rux-surface-1);
+	--rux-panel-attached-footer-bg:     var(--rux-surface-0);
 	--rux-panel-attached-footer-border: 1px solid var(--rux-card-border);
 	--rux-panel-attached-footer-shadow: var(--rux-shadow-1); /* while scrolled */
 
@@ -703,7 +703,7 @@
 	   Options, Driver Availability, mini calendar, itinerary day-groups,
 	   tasks/history date groups). Independent of the plain header tokens
 	   above; defaults preserve the "blends into its own body" look. */
-	--rux-card-header-sticky-bg:     var(--rux-card-body-bg);
+	--rux-card-header-sticky-bg:     var(--rux-surface-0);
 	--rux-card-header-sticky-border: 1px solid var(--rux-card-border);
 
 	/* — card: body — the box — */
@@ -1353,7 +1353,7 @@
 	--rux-tabs-attached-gap:    var(--rux-space-0);
 
 	/* — attached tab, inactive — */
-	--rux-tabs-attached-tab-bg:     var(--rux-surface-0); /* correct one for nav inactive tabs */
+	--rux-tabs-attached-tab-bg:     var(--rux-surface-1); /* correct one for nav inactive tabs */
 	--rux-tabs-attached-tab-fg:     var(--rux-text-muted);
 	--rux-tabs-attached-tab-border: 1px solid var(--rux-card-border);
 	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-0);
@@ -1376,9 +1376,9 @@
 	/* — attached tab, inside a floating panel — mirrors the pane's own
 	   surface-1 instead of --rux-panel-bg. Independent tokens, scoped via
 	   .rux-panel--floating in navigation.css. */
-	--rux-tabs-floating-tab-bg:          var(--rux-surface-0);
+	--rux-tabs-floating-tab-bg:          var(--rux-surface-1);
 	--rux-tabs-floating-tab-fg:          var(--rux-text-muted);
-	--rux-tabs-floating-tab-selected-bg: var(--rux-surface-1);
+	--rux-tabs-floating-tab-selected-bg: var(--rux-surface-0);
 	--rux-tabs-floating-tab-selected-fg: var(--rux-text-default);
 
 	/* — attached pane (content area beneath the tabs) — */
