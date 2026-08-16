@@ -25,8 +25,8 @@
    system, not two. */
 
 .rux-trip-envelope-window {
-	--rux-surface-floating-width: var(--rux-trip-envelope-window-width);
-	--rux-surface-floating-safe-max-width: 40rem;
+	--rux-panel-floating-width: var(--rux-trip-envelope-window-width);
+	--rux-panel-floating-safe-max-width: 40rem;
 }
 
 .rux-trip-envelope-window__body {
@@ -74,7 +74,7 @@
 	flex-wrap: wrap;
 	gap: var(--rux-button-group-gap);
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-surface-floating-header-bg);
+	background: var(--rux-panel-floating-header-bg);
 	border-bottom: var(--rux-card-section-border);
 }
 

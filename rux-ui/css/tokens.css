@@ -107,6 +107,7 @@
 	--rux-space-0:	0px;		/*  0px */
 	--rux-space-px:	1px;		/*  1px */
 	--rux-space-1:	0.25rem;	/*  4px */
+	--rux-space-1-5: 0.375rem;	/*  6px — the one half-step in the scale */
 	--rux-space-2:	0.5rem;		/*  8px */
 	--rux-space-3:	0.75rem;	/* 12px */
 	--rux-space-4:	1rem;		/* 16px */
@@ -552,73 +553,20 @@
 	--rux-calendar-row-header-shadow:      none;
 	--rux-calendar-row-header-end-shadow:  none;
 
-	/* ── Elevation, Panel, Card, Surface — grouped together; most of their
-	   own tokens ultimately alias one of these. ── */
+	/* ── Elevation, Panel, Card — grouped together; most of their own
+	   tokens ultimately alias one of these. ── */
 
 	/* ─── ELEVATION ──────────────────────────────────────────────────────── */
 	/* Named tiers for "how far above the canvas," paired 1:1 with
 	   --rux-shadow-N by index. Only tiers 1 and 4 are aliased by name today
-	   (--rux-panel-bg/--rux-surface-attached-bg → 1; --rux-modal-bg/
-	   --rux-surface-modal-bg → 4). Floating windows don't use this ladder
-	   at all — see --rux-surface-floating-bg below. */
+	   (--rux-panel-bg/--rux-panel-attached-bg → 1; --rux-panel-modal-bg → 4).
+	   Floating windows don't use this ladder at all — see
+	   --rux-panel-floating-bg below. */
 	--rux-elevation-0-bg: var(--rux-surface-0); /* Canvas */
 	--rux-elevation-1-bg: var(--rux-surface-1); /* Panel */
 	--rux-elevation-2-bg: var(--rux-surface-2); /* Card */
 	--rux-elevation-3-bg: var(--rux-surface-4); /* Elevated card */
 	--rux-elevation-4-bg: var(--rux-surface-5); /* Modal */
-
-	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
-	/* The body is intentionally a bare scrolling region. */
-
-	/* — shell — */
-	--rux-panel-bg:            var(--rux-elevation-1-bg);
-	--rux-panel-fg:            var(--rux-text-default);
-	--rux-panel-shadow:        none;
-	--rux-panel-motion-duration:         var(--rux-motion-duration-moderate-01);
-	--rux-panel-enter-easing:            var(--rux-motion-easing-entrance-productive);
-	--rux-panel-exit-easing:             var(--rux-motion-easing-exit-productive);
-	--rux-panel-standard-easing:         var(--rux-motion-easing-standard-productive);
-	--rux-panel-content-motion-duration: var(--rux-motion-duration-fast-02);
-
-	/* — nav / tabs — the tab strip itself reads --rux-tabs-attached-*
-	   (COMPONENT · tabs, below) — this is only the slot around it. Header/
-	   footer's own background/padding/shadow tokens (once here too) are
-	   gone — dead since the Panel/Surface merge moved that chrome onto
-	   --rux-surface-attached-header-bg, --rux-surface-attached-footer-bg,
-	   and friends instead; nothing referenced the old --rux-panel-header
-	   and --rux-panel-footer token families anymore. */
-	--rux-panel-nav-border:     none;
-	--rux-panel-tabs-padding:   var(--rux-space-4);
-	/* Only cast while .rux-panel__body has scrolled under it (.is-scrolled,
-	   toggled by initPanelScrollEdges in js/core/controls.js) — a subtle
-	   edge lift, same shadow-1 effect as .rux-card__header's own .is-stuck
-	   shadow (card.css). */
-	--rux-panel-nav-shadow:     var(--rux-shadow-1);
-
-	/* — shared across header/nav/pane/footer, not any one part's own — */
-	--rux-panel-padding:   0 var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
-	--rux-panel-content-gap: var(--rux-space-0);
-	/* Also consumed by feature layouts and safe-area calculations. */
-	--rux-panel-padding-block: var(--rux-space-4);
-	--rux-panel-right-border: 1px solid var(--rux-border-subtle);
-	--rux-left-panel-border: 0px solid var(--rux-border-subtle);
-
-	/* — minimum sizing shared by panel-shaped feature layouts — */
-	--rux-panel-min-width: 224px;
-
-	/* — rail (collapsed state) — the narrow icon strip a railable panel
-	   (trip / right / driver) settles into instead of fully closing.
-	   Desktop-only, see .scheduler-app__drawer--railable in
-	   layout/scheduler-app.css. Only ever one edge — the side facing the
-	   workspace — so a single shared border value covers left- and
-	   right-hand panels alike; which physical side it lands on is a
-	   selector concern (border-left vs border-right), not a token one. */
-	--rux-panel-rail-width:        16px;
-	--rux-panel-rail-bg:           var(--rux-panel-bg);
-	--rux-panel-rail-fg:           var(--rux-panel-fg);
-	--rux-panel-rail-border:       none;
-	--rux-panel-rail-radius:       var(--rux-radius-0);
-	--rux-panel-rail-shadow:       var(--rux-shadow-1);
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
 	/* One class, .rux-card. Sticky group headers are the sentinel-gated
@@ -670,29 +618,19 @@
 	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-footer-radius: var(--rux-radius-0);
 
-	/* — card levels — ordinal nesting depth (docs/cards.md). Each level is
-	   just three custom-property values (--rux-card-body-bg/-border/
-	   -shadow) — no separate CSS rule per level. Level 1 is a visual no-op
-	   (matches the plain defaults, --rux-surface-2 — the "Card, default,
-	   sits inside a panel" elevation tier) so depth is always explicit in
-	   markup instead of "no class" silently meaning level 1. Each level
-	   after 1 steps one --rux-surface-N further; --rux-shadow-inset (not a
-	   real drop-shadow, so no bleed risk) sells the depth read at levels 2+.
-	   Level 3 (--rux-surface-4) lands on the same value a floating surface's
-	   own shell uses (--rux-surface-floating-bg) — nothing nests that deep
-	   inside a floating window today (level-2 is as deep as any consumer
-	   goes), but a level-3 card there would blend into its own background
-	   rather than read as boxed; worth a level-4 bump if that ever comes up. */
-	--rux-card-level-1-bg:     var(--rux-surface-1);
+	/* — card levels — ordinal nesting depth, see docs/cards.md. Level 1
+	   matches the plain defaults (visual no-op); each level after steps
+	   one --rux-surface-N further. */
+	--rux-card-level-1-bg:     var(--rux-surface-2);
 	--rux-card-level-1-border: var(--rux-card-body-border);
 	--rux-card-level-1-shadow: var(--rux-card-body-shadow);
-	--rux-card-level-2-bg:     var(--rux-surface-2);
+	--rux-card-level-2-bg:     var(--rux-surface-3);
 	--rux-card-level-2-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-level-2-shadow: var(--rux-shadow-inset);
-	--rux-card-level-3-bg:     var(--rux-surface-3);
+	--rux-card-level-3-bg:     var(--rux-surface-4);
 	--rux-card-level-3-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-level-3-shadow: var(--rux-shadow-inset);
-	--rux-card-level-4-bg:     var(--rux-surface-4);
+	--rux-card-level-4-bg:     var(--rux-surface-5);
 	--rux-card-level-4-border: var(--rux-card-border-width) solid var(--rux-border);
 	--rux-card-level-4-shadow: var(--rux-shadow-inset);
 
@@ -715,101 +653,99 @@
 	--rux-card-section-border: var(--rux-card-border-width) solid var(--rux-border);
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
-	/* The outer-container primitive for any window/panel/dialog-shaped
-	   thing — see docs/cards.md. Unlike .rux-card (header floats above the
-	   body, unboxed), .rux-panel is one bordered unit with header/nav/body/
-	   footer inside it. These tokens still carry their original "surface"
-	   name (--rux-surface-*) even though the class itself is .rux-panel now
-	   — renaming the token family is a separate, not-yet-done step.
+	/* Outer-container primitive for any window/panel/dialog — see
+	   docs/cards.md. Position is a modifier (--attached/--floating/
+	   --modal/--anchored). --floating/--attached are live; --modal/
+	   --anchored are additive only, not yet read by any CSS rule. */
 
-	   Status: --floating and --attached are both fully live (every floating
-	   window and every attached/docked panel in the app renders on one or
-	   the other, see panel.css). --modal/--anchored are additive only — not
-	   yet read by any CSS rule. */
+	/* — shell — */
+	--rux-panel-bg:     var(--rux-elevation-1-bg);
+	--rux-panel-fg:     var(--rux-text-default);
+	--rux-panel-shadow: none;
+	--rux-panel-motion-duration:         var(--rux-motion-duration-moderate-01);
+	--rux-panel-enter-easing:            var(--rux-motion-easing-entrance-productive);
+	--rux-panel-exit-easing:             var(--rux-motion-easing-exit-productive);
+	--rux-panel-standard-easing:         var(--rux-motion-easing-standard-productive);
+	--rux-panel-content-motion-duration: var(--rux-motion-duration-fast-02);
 
-	/* — shared structural, every position — */
-	--rux-surface-header-height:  40px;
-	--rux-surface-header-weight:  var(--rux-weight-400);
-	--rux-surface-header-border: 1px solid var(--rux-border-subtle);
-	--rux-surface-padding-block:  var(--rux-space-4);
-	--rux-surface-padding-inline: var(--rux-space-4);
-	--rux-surface-padding: var(--rux-space-0);
-	--rux-surface-content-gap:    var(--rux-space-4);
-	--rux-surface-motion-duration:  var(--rux-motion-duration-moderate-01);
-	--rux-surface-standard-easing:  var(--rux-motion-easing-standard-productive);
+	/* — header — */
+	--rux-panel-header-height: 40px;
+	--rux-panel-header-weight: var(--rux-weight-400);
+	--rux-panel-header-border: 1px solid var(--rux-border-subtle);
+	--rux-panel-header-gap:    var(--rux-space-4); /* header's own internal gap, distinct from --content-gap below */
 
-	/* — attached (was Panel) — */
-	/* A direct value, not var(--rux-elevation-1-bg) → var(--rux-surface-1) —
-	   that primitive is shared by 30+ unrelated consumers (the UI Header,
-	   this same panel's own nav slot two lines below, Card level-1, tables,
-	   checkboxes...), so retuning it for any one of them would silently
-	   move every other one too. Same computed color as before (a visible
-	   panel surface is real chrome, worth owning outright), just no longer
-	   aliased through primitives nothing else here needs to share. */
-	--rux-surface-attached-bg:            oklch(from var(--rux-neutral) 20% c h);
-	--rux-surface-attached-border:        none;
-	--rux-surface-attached-radius:        var(--rux-radius-container);
-	--rux-surface-attached-shadow:        none;
-	--rux-surface-attached-header-bg:     var(--rux-surface-3);
-	--rux-surface-attached-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
-	--rux-surface-attached-footer-bg:     var(--rux-surface-2);
-	--rux-surface-attached-footer-border: 1px solid var(--rux-border-subtle);
-	--rux-surface-attached-footer-shadow: var(--rux-shadow-1); /* while scrolled — see .is-scrolled, js/core/controls.js */
-	/* Attached-only — nothing else needs a tabs slot or rail state. The tab
-	   strip itself reads --rux-tabs-attached-* and --rux-tabs-floating-
-	   tab-* (COMPONENT · tabs, below); --rux-surface-nav-* here is only the
-	   slot around it. */
-	--rux-surface-nav-bg:       var(--rux-surface-1);
-	--rux-surface-nav-border:   none;
-	--rux-surface-nav-padding:  0 0 var(--rux-space-4) 0 ;
-	--rux-surface-nav-shadow:   var(--rux-shadow-1); /* while scrolled */
-	--rux-surface-min-width:    224px;
-	--rux-surface-rail-bg:      var(--rux-surface-attached-bg);
-	--rux-surface-rail-radius:  var(--rux-radius-0);
-	--rux-surface-rail-shadow:  var(--rux-shadow-1);
+	/* — nav / tabs — tab strip itself reads --rux-tabs-attached-* (below) */
+	--rux-panel-nav-bg:        var(--rux-surface-1);
+	--rux-panel-nav-border:    none;
+	--rux-panel-nav-padding:   0 0 var(--rux-space-4) 0;
+	--rux-panel-nav-shadow:    var(--rux-shadow-1); /* while scrolled */
+	--rux-panel-tabs-padding:  var(--rux-space-4);
 
-	/* — floating (was Floating Window) — */
-	--rux-surface-floating-bg:            var(--rux-surface-3);
-	--rux-surface-floating-border:        none;
-	--rux-surface-floating-radius:        var(--rux-card-body-radius);
-	--rux-surface-floating-shadow:        var(--rux-shadow-3);
-	--rux-surface-floating-header-bg:     var(--rux-surface-3);
-	--rux-surface-floating-nav-bg:        var(--rux-surface-0);
-	--rux-surface-floating-body-bg:       var(--rux-surface-floating-bg);
-	--rux-surface-floating-footer-bg:     var(--rux-surface-3);
-	--rux-surface-floating-footer-border: 1px solid var(--rux-border-subtle);
+	/* — pane / shared across header, nav, pane, footer — */
+	--rux-panel-padding:       0 var(--rux-space-4) var(--rux-space-4) var(--rux-space-4);
+	--rux-panel-content-gap:   var(--rux-space-0);
+	--rux-panel-padding-block:  var(--rux-space-4);
+	--rux-panel-padding-inline: var(--rux-space-4);
+	--rux-panel-right-border:  1px solid var(--rux-border-subtle);
+	--rux-left-panel-border:   0px solid var(--rux-border-subtle);
 
-	/* — floating window widths — one token per window, so each is easy to
-	   tune independently. --rux-surface-floating-width is the shared
-	   default (.rux-panel--default-size, panel.css) — doc viewer and
-	   trip envelope use it as their base and override locally; the other
-	   four have their own dedicated width: rule instead. */
+	/* — minimum sizing — */
+	--rux-panel-min-width: 224px;
 
-	--rux-surface-floating-width:      min(600px, calc(100vw - var(--rux-space-4) * 2));
+	/* — rail (collapsed state) — live via .scheduler-app__drawer--railable
+	   in scheduler-app.css, not panel.css's own unused .is-rail rule. */
+	--rux-panel-rail-width:  16px;
+	--rux-panel-rail-bg:     var(--rux-panel-bg);
+	--rux-panel-rail-fg:     var(--rux-panel-fg);
+	--rux-panel-rail-border: none;
+	--rux-panel-rail-radius: var(--rux-radius-0);
+	--rux-panel-rail-shadow: var(--rux-shadow-1);
+
+	/* — attached — */
+	--rux-panel-attached-bg:            oklch(from var(--rux-neutral) 20% c h); /* owned directly, not aliased through the widely-shared --rux-surface-1 */
+	--rux-panel-attached-border:        none;
+	--rux-panel-attached-radius:        var(--rux-radius-container);
+	--rux-panel-attached-shadow:        none;
+	--rux-panel-attached-header-bg:     var(--rux-surface-3);
+	--rux-panel-attached-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
+	--rux-panel-attached-footer-bg:     var(--rux-surface-2);
+	--rux-panel-attached-footer-border: 1px solid var(--rux-border-subtle);
+	--rux-panel-attached-footer-shadow: var(--rux-shadow-1); /* while scrolled */
+
+	/* — floating — */
+	--rux-panel-floating-bg:            var(--rux-surface-3);
+	--rux-panel-floating-border:        none;
+	--rux-panel-floating-radius:        var(--rux-card-body-radius);
+	--rux-panel-floating-shadow:        var(--rux-shadow-3);
+	--rux-panel-floating-header-bg:     var(--rux-surface-3);
+	--rux-panel-floating-nav-bg:        var(--rux-surface-0);
+	--rux-panel-floating-body-bg:       var(--rux-panel-floating-bg);
+	--rux-panel-floating-footer-bg:     var(--rux-surface-3);
+	--rux-panel-floating-footer-border: 1px solid var(--rux-border-subtle);
+	--rux-panel-floating-padding:       var(--rux-space-0);
+
+	/* — floating window widths — one per window; --floating-width is the
+	   shared default, doc viewer/trip envelope use it as their base. */
+	--rux-panel-floating-width:        min(600px, calc(100vw - var(--rux-space-4) * 2));
 	--rux-trip-dialog-width:           min(400px, calc(100vw - (var(--rux-space-4) * 2)));
 	--rux-manifest-window-width:       clamp(480px, 65vw, 1200px);
 	--rux-request-window-width:        clamp(600px, 70vw, 1100px);
 	--rux-trip-finder-window-width:    clamp(600px, 70vw, 1100px);
-	--rux-doc-viewer-width:            var(--rux-surface-floating-width);
-	--rux-trip-envelope-window-width:  var(--rux-surface-floating-width);
+	--rux-doc-viewer-width:            var(--rux-panel-floating-width);
+	--rux-trip-envelope-window-width:  var(--rux-panel-floating-width);
 
 	/* — modal — */
-	--rux-surface-modal-bg:     var(--rux-elevation-4-bg);
-	--rux-surface-modal-border: none;
-	--rux-surface-modal-radius: var(--rux-radius-0);
-	--rux-surface-modal-shadow: var(--rux-shadow-3);
+	--rux-panel-modal-bg:     var(--rux-elevation-4-bg);
+	--rux-panel-modal-border: none;
+	--rux-panel-modal-radius: var(--rux-radius-0);
+	--rux-panel-modal-shadow: var(--rux-shadow-3);
 
-	/* — anchored (was Popover-surface + Menu) — Popover-surface's values
-	   used as canonical; Menu currently uses --rux-menu-bg: surface-5, a
-	   real divergence from Popover-surface's surface-3 for what's meant to
-	   be the same role. Not resolved here — flagging it, not silently
-	   picking one and hiding the conflict. Reconcile when Menu actually
-	   migrates onto --anchored. */
-	--rux-surface-anchored-bg:     var(--rux-surface-3);
-	--rux-surface-anchored-border: none;
-	--rux-surface-anchored-radius: var(--rux-radius-container);
-	--rux-surface-anchored-shadow: var(--rux-shadow-2);
-
+	/* — anchored — Menu currently diverges (--rux-menu-bg: surface-5 vs
+	   this surface-3); not reconciled yet. */
+	--rux-panel-anchored-bg:     var(--rux-surface-3);
+	--rux-panel-anchored-border: none;
+	--rux-panel-anchored-radius: var(--rux-radius-container);
+	--rux-panel-anchored-shadow: var(--rux-shadow-2);
 
 	/* ─── COMPONENT · itinerary marker ────────────────────────────────────── */
 
@@ -1466,7 +1402,7 @@
 	/* — tabs, attached variant — */
 	/* A real gap separates the tab surfaces without overlapping their rims. */
 	--rux-tabs-attached-bg:     var(--rux-surface-0);
-	--rux-tabs-attached-border: 1px solid var(--rux-biorder);
+	--rux-tabs-attached-border: 1px solid var(--rux-border);
 	--rux-tabs-attached-gap:    var(--rux-space-0);
 
 	/* — attached tab, inactive — */
@@ -1492,7 +1428,7 @@
 
 	/* — attached tab, inside a floating panel — same "active tab and its
 	   pane share one surface" intent as above, but mirroring
-	   --rux-surface-floating-body-bg (PANEL, above) instead of
+	   --rux-panel-floating-body-bg (PANEL, above) instead of
 	   --rux-panel-bg, which has nothing nearby to match inside a floating
 	   window. Independent tokens, scoped via .rux-panel--floating in
 	   navigation.css. */
@@ -1580,10 +1516,10 @@
 	--rux-surface-contrast: oklch(from var(--rux-neutral) 96% c h); /* Raised control and thumb fill */
 	--rux-well-bg:          oklch(from var(--rux-neutral) 90% c h); /* Recessed input and track fill */
 
-	/* --rux-surface-attached-bg (COMPONENT · panel, above) is a direct value
+	/* --rux-panel-attached-bg (COMPONENT · panel, above) is a direct value
 	   now, not aliased through --rux-surface-1 — needs its own light-theme
 	   override here for the same reason --rux-surface-1 itself does. */
-	--rux-surface-attached-bg: oklch(from var(--rux-neutral) 94% c h);
+	--rux-panel-attached-bg: oklch(from var(--rux-neutral) 94% c h);
 
 	/* ─── Borders and interaction ─────────────────────────────────────────── */
 	--rux-border:               oklch(from var(--rux-neutral) 90% c h);
@@ -1624,27 +1560,11 @@
 }
 
 /* ==========================================================================
-   TOUCH TARGETS · mobile minimum (max-width: 500px, matching the app's own
-   mobile breakpoint — see scheduler-app.css)
+   TOUCH TARGETS · mobile minimum (max-width: 500px, matches scheduler-app.css)
    --------------------------------------------------------------------------
-   iOS's 44pt minimum tap target, applied to the header button role (the
-   most-tapped controls in the app: hamburger, calendar prev/Today/next,
-   panel toggles) and every header that hosts one — a 44px button inside an
-   unchanged 40px header just clips or crowds, so the two move together.
-   --rux-button-icon-size-header rides along too (22px -> 24px, controls.css's
-   .rux-button--header) — otherwise the tap target grows but the icon inside
-   it doesn't, reading as undersized/off-center inside the bigger square.
-   Re-declares at :root, same technique the light-theme section above
-   already uses to override a set of tokens wholesale, rather than
-   scattering an override per consuming component file (the norm for
-   feature-specific mobile fixes elsewhere in this app) — this one affects
-   enough shared, cross-cutting roles that one central place beats a dozen+
-   scattered edits.
-
-   Deliberately narrow for now: form fields, segmented control buttons, and
-   checkboxes are NOT included here — each is a separate call with its own
-   tradeoffs (segment height in particular would jump from 28 to 44, a much
-   bigger visual change than the header role's 40->44).
+   iOS's 44pt minimum tap target, applied to the header button role and
+   every header that hosts one. Deliberately narrow: form fields, segmented
+   controls, and checkboxes are NOT included — each is a separate call.
    ========================================================================== */
 
 @media (max-width: 500px) {
@@ -1654,7 +1574,7 @@
 		--rux-ui-header-height:            44px;
 		--rux-workspace-header-min-height: 44px;
 		--rux-card-header-height:          44px;
-		--rux-surface-header-height:       44px;
+		--rux-panel-header-height:         44px;
 		--rux-tab-height:                  44px;
 	}
 }

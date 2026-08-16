@@ -87,7 +87,7 @@
 	align-items: center;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-surface-floating-header-bg);
+	background: var(--rux-panel-floating-header-bg);
 }
 
 .rux-scope-trip-finder__search-icon {

@@ -68,7 +68,7 @@
 .rux-scope-request__toolbar .rux-field {
 	min-width: 0;
 	padding: var(--rux-space-3) var(--rux-space-4);
-	background: var(--rux-surface-floating-header-bg);
+	background: var(--rux-panel-floating-header-bg);
 }
 
 .rux-scope-request__toolbar .rux-segmented-track {

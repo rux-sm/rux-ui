@@ -66,7 +66,7 @@ independently overridable), and `position: sticky` so it docks to the top of
 its scroll container until the next card's header reaches the same spot.
 
 This is a **structural signal, not a class modifier**, deliberately: every
-card built or converted as part of the Card/Surface restructure already has
+card built or converted as part of the Card/Panel restructure already has
 a sentinel as its header's preceding sibling, so it opts in automatically.
 Plain `.rux-card` usage that predates the restructure (Driver panel's View
 Options/Filters cards, the passenger editor, the components catalog) has no
@@ -151,29 +151,44 @@ defined once in the primitives section of `tokens.css` and paired 1:1 with
 --rux-elevation-0-bg   Canvas
 --rux-elevation-1-bg   Panel — structural, attached
 --rux-elevation-2-bg   Card — default, sits inside a panel
---rux-elevation-3-bg   Elevated card / floating surface — no panel wall
+--rux-elevation-3-bg   Elevated card / floating panel — no panel wall
 --rux-elevation-4-bg   Modal — topmost, screen-blocking
 ```
 
-Component tokens (`--rux-panel-bg`, `--rux-card-body-bg`, `--rux-modal-bg`)
+Component tokens (`--rux-panel-bg`, `--rux-card-body-bg`, `--rux-panel-modal-bg`)
 alias these instead of reaching into `--rux-surface-N` directly, so "a
-floating surface is one tier above an ordinary card" is a readable
+floating window is one tier above an ordinary card" is a readable
 relationship, not a coincidence of two components happening to reference the
 same raw surface index.
 
-Floating surfaces skip a layer on purpose: `.rux-surface--floating`'s
-background claims elevation-3 directly, the tier a panel-nested card would
-have had to pass through, rather than sitting at elevation-2 alongside cards
-that *do* have that structural context.
+Floating windows skip a layer on purpose: `.rux-panel--floating`'s
+background (`--rux-panel-floating-bg`) claims elevation-3's own raw value
+directly, the tier a panel-nested card would have had to pass through,
+rather than sitting at elevation-2 alongside cards that *do* have that
+structural context.
 
 This ladder is a separate axis from the card level scale above — elevation
-is about which *component* (Panel/Card/floating surface/Modal) sits at which
+is about which *component* (Panel/Card/floating window/Modal) sits at which
 tier; levels are about how many cards deep *within* the card system a given
-card is nested. `--rux-card-level-1-bg` is the one bridge between them,
-aliasing `--rux-card-body-bg` directly (itself the flat root value, not tied
-to the elevation ladder); levels 2–4 compute relative to level 1 from there,
-independent of whatever elevation tier the card's ambient surface happens to
-be at.
+card is nested. Level 1 (`--rux-card-level-1-bg: var(--rux-surface-2)`)
+aliases the same raw primitive `--rux-elevation-2-bg` does — level 1 and the
+plain default (`--rux-card-body-bg`) both land on elevation-2's own value,
+which is the "visual no-op" property levels are built around — but it's a
+flat value, not a `var(--rux-elevation-2-bg)` reference; levels 2–4 compute
+relative to level 1 from there, independent of whatever elevation tier the
+card's ambient panel happens to be at.
+
+**A floating window's first nested card starts at level 2, not level 1** —
+this follows directly from the layer-skip above. A `.rux-panel--attached`'s
+own background sits at elevation-1; a level-1 card inside it (elevation-2)
+reads as one clear step up, real contrast. A `.rux-panel--floating`'s own
+background already sits at elevation-3 — the tier a level-1 card would
+occupy — so a level-1 card dropped straight into a floating window would sit
+at the *same or a lower* tier than its own shell and read as recessed, not
+elevated. Start floating-window content at level 2 instead, which computes
+one step past the floating shell's own elevation-3 value, preserving the
+same "genuinely elevated above its container" contrast a level-1 card gets
+inside an attached panel.
 
 ## Tokens
 
@@ -203,7 +218,7 @@ be at.
 --rux-card-floating-bg/-shadow
                               the ambient default applied automatically to a
                               plain card (no level, no --elevated/--recessed)
-                              dropped into a .rux-surface--floating — see
+                              dropped into a .rux-panel--floating — see
                               card.css
 --rux-card-section-border    generic divider border-top, still used directly
                               by a few flat-divider layouts outside the Card
@@ -227,38 +242,134 @@ trip editor.
 The tool panel's four tabs (Calendar, Drivers, Tasks, History) use the same
 two components for the same reasons: Tasks' and History's own date groups
 are sentinel-gated `.rux-card` with their repeating trip/history cards as
-`.rux-card--level-2`, and Driver Availability / View Options / the mini
-calendar each get a sentinel-gated `.rux-card` for their single titled
-region. These two surfaces (the floating surface and the tool panel) are the
-reference implementation for any future addition in the same family.
+`.rux-card--level-2`, and Driver Availability / Calendar Options / Trip Bar
+Options / the mini calendar each get a sentinel-gated `.rux-card--level-1`
+for their single titled region — explicit, not the bare `.rux-card` these
+used to be, now that a plain `.rux-panel--attached` body already reads as
+level 1 on its own (see Panel below) and an explicit level 1 on top of that
+would collide with it. These two panels (the trip editor and the tool
+panel) are the reference implementation for any future addition in the same
+family.
 
-## Surface — the outer-container primitive
+## Panel — the outer-container primitive
 
-Floating Window, Modal, and Popover-surface/Menu share one primitive,
-`.rux-surface` (`css/base/surface.css`), the same way Card unified the old
-Section/Embed split. Unlike Card, Surface keeps the *traditional* "header
-attached to the box" shape — one bordered unit, not a floating label above a
-separate box — since a window/panel/dialog title bar is supposed to read as
-part of the chrome. Position is a modifier (`--attached`, `--floating`,
-`--modal`, `--anchored`), not a separate component.
+Floating Window, attached (docked) panel, Modal, and Popover-surface/Menu
+share one primitive, `.rux-panel` (`css/base/panel.css`), the same way Card
+unified the old Section/Embed split. Unlike Card, Panel keeps the
+*traditional* "header attached to the box" shape — one bordered unit, not a
+floating label above a separate box — since a window/panel/dialog title bar
+is supposed to read as part of the chrome. Position is a modifier
+(`--attached`, `--floating`, `--modal`, `--anchored`), not a separate
+component; `--elevated` is a standalone-lift appearance modifier for a
+`.rux-panel` with no position context.
 
-**Done**: all six floating windows (trip editor, manifest, request inbox,
-trip finder, doc viewer, trip envelope) are `.rux-surface--floating` now —
-`floating-window.css` is gone, its rules folded into `surface.css`. The Card
-family rename (Section → plain `.rux-card`, Embed → `.rux-card--level-2`)
-described above is also done. The trip editor also no longer nests a whole
-second `.rux-panel` just to get tabs + scrollable body + footer inside its
-floating surface — it uses `.rux-surface__nav--attached` (a style modifier
-on `.rux-surface__nav`, sharing `.rux-panel__nav--attached`'s own tokens so
-both stay visually identical), `.rux-surface__body`, and `.rux-surface__footer`
+```
+.rux-panel
+  .rux-panel__header    — title + trailing actions, attached to the box
+  .rux-panel__nav       — tabs-as-header slot (optional; --attached style
+                           modifier for the flush, edge-to-edge look)
+  .rux-panel__body      — scrollable content
+  .rux-panel__pane       — one per tab, hidden via [hidden] when inactive
+  .rux-panel__footer    — actions row, shares a seam with the body
+  .rux-panel__tabs      — tab-strip-specific chrome; no consumer yet, every
+                           panel today puts its tabs directly in __nav
+.rux-panel--attached      docked/sidebar panel (Calendar Tools, Fleet,
+                           Driver, Customer editors)
+.rux-panel--floating      draggable window (Trip editor, Manifest, Request
+                           inbox, Trip Finder, Doc viewer, Trip envelope)
+.rux-panel--modal         screen-blocking dialog
+.rux-panel--anchored      popover / menu surface
+.rux-panel--elevated      standalone lift, no position context
+```
+
+An attached panel's body reads as level 1 on its own, no wrapper needed —
+`.rux-panel--attached > .rux-panel__body`'s own background is
+`--rux-card-level-1-bg` directly. A panel that subdivides its body into
+titled cards (the tool panel's mini calendar / Calendar Options / Trip Bar
+Options, each their own single-titled-region card) needs each of those to
+be `--level-2`, one step deeper than that backdrop, or they'd blend into it
+— see the "Levels" section above and the Elevation section's floating-window
+note for the equivalent floating-window rule (start nested cards at level 2
+there too, for the same "already-elevated shell" reason).
+
+**Done**: all consumers listed above are on `.rux-panel` — `surface.css` is
+gone, its rules folded into `panel.css`, which now also absorbed the
+handful of tokens (`--rux-panel-bg`, `--rux-panel-fg`, the rail-state
+tokens) that predated the merge and used to sit in a second, disconnected
+"COMPONENT · panel" section of their own. Every token in that section is
+`--rux-panel-*` now — no more parallel `--rux-surface-*` family carrying the
+same information under a different name for tokens whose class is
+`.rux-panel`. The trip editor no longer nests a whole second `.rux-panel`
+just to get tabs + scrollable body + footer inside its floating window — it
+uses `.rux-panel__nav--attached` (a style modifier on `.rux-panel__nav`)
 directly. `initPanelScrollEdges`/`initStickySectionHeaders` and the generic
-`[data-rux-tabs]` switcher in `js/core/controls.js` all recognize
-`.rux-surface--floating` now, not just `.rux-panel`, so this same pattern is
-available to any future floating window with tabs — doc viewer and trip
-envelope already used `.rux-surface__body`/`__footer` directly (no tabs, so
-no nested panel to begin with); the trip editor was the one holdout.
+`[data-rux-tabs]` switcher in `js/core/controls.js` all key off `.rux-panel`
+alone now (not two separate class families), so this same pattern is
+available to any future panel with tabs.
 
-**Not yet migrated**: Panel (the tool panel, driver/fleet/customer panels —
-still `.rux-panel`/`.rux-panel--attached` in name, though `.rux-surface--attached`
-already exists in `surface.css` ready to receive them), Modal,
-Popover-surface, Menu — those still use their original classes/tokens today.
+**Not yet migrated**: Modal, Popover-surface, Menu — those still use their
+original classes/tokens today, though `--rux-panel-modal-*`/
+`--rux-panel-anchored-*` already exist in `tokens.css`, ready to receive
+them (currently referenced only by `panel.css`'s own unused `--modal`/
+`--anchored` position-modifier rules).
+
+**Known dead code, not yet removed**: `.rux-panel--attached.is-rail` (the
+collapsed desktop rail state) reads real, live tokens
+(`--rux-panel-rail-bg/-border/-radius/-shadow`), but nothing in the app ever
+adds the `.is-rail` class to an element — the actual, live rail-collapse
+mechanism is `.scheduler-app__drawer--railable` in `scheduler-app.css`,
+which reads the same four tokens independently. Left in place rather than
+deleted since the tokens themselves are genuinely used elsewhere, just not
+by this particular rule.
+
+## Naming system
+
+Three prefixes, chosen by what a class or attribute actually is:
+
+```
+rux-<name>        component — reusable, owns visual style, never
+                   domain-specific (rux-panel, rux-card, rux-button, ...)
+rux-u-<name>       utility — a single reusable layout/spacing rule with no
+                   domain owner (rux-u-cols-2, rux-u-section-label,
+                   rux-u-trip-list — utils.css)
+rux-scope-<name>   scope — a hook for one domain's own overrides only;
+                   never re-declares a component's own elements (__body,
+                   __pane, __header, __footer stay on the component)
+```
+
+`rux-scope-<name>` replaced the old pattern of a domain baking its own name
+into a BEM block prefix (`rux-driver-panel__body`, `rux-trip-panel__pane`,
+...) — every element still needing domain-specific styling now carries the
+shared component's own part class (`rux-panel__body`) plus a scope class
+(`rux-scope-driver`) for the *domain's own* additions, instead of a
+completely separate, parallel class family that happened to duplicate most
+of the shared component's own rules. Current scopes: `rux-scope-driver`,
+`rux-scope-fleet`, `rux-scope-customer`, `rux-scope-trip`,
+`rux-scope-right-panel`, `rux-scope-manifest`, `rux-scope-request`,
+`rux-scope-trip-finder`.
+
+Not every domain-prefixed class from before this system existed was safe to
+delete outright, even when its own CSS turned out to be a pure duplicate of
+the shared component's rule — several are still queried directly by that
+domain's own JS (pane-switching, form resets, drag-handle attachment,
+scroll-to-top-on-tab-switch) and have to keep their own class as a query
+hook regardless of whether their CSS carries anything unique. Check both
+the CSS *and* a repo-wide grep for the class in `js/` before assuming a
+domain-prefixed class is safe to fold into a scope or utility.
+
+Data attributes follow the same idea. A domain-specific tab-strip hook like
+`data-fleet-tabs` is now the generic `data-rux-tabs` (already shared,
+already read by the generic `[data-rux-tabs]` switcher in
+`js/core/controls.js`) plus `data-scope="fleet"` for the domain's own JS to
+find *its* tab strip specifically. The same pattern applies to
+domain-owned toggle buttons — `data-rux-domain-toggle` plus `data-scope`,
+**not** the pre-existing `data-rux-toggle="#target"` attribute already used
+by `controls.js` for a different, unrelated click-to-open/close-a-target
+pattern (same word, different mechanism — collapsing them would make a
+domain's plain presence-marker toggle also match the generic target-toggle
+click handler). When one domain owns *multiple* distinct toggle buttons for
+different purposes (Driver's own editor-drawer toggle vs. its separate
+Table-Options-drawer toggle), the scope value has to be specific enough to
+tell them apart — `data-scope="driver-editor"` and
+`data-scope="driver-tools"`, not both just `"driver"`, or one domain's two
+buttons become indistinguishable and both click handlers fire on both.

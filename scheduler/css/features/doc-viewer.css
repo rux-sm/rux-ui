@@ -53,8 +53,8 @@
 }
 
 .rux-doc-viewer {
-	--rux-surface-floating-width: var(--rux-doc-viewer-width);
-	--rux-surface-floating-safe-max-width: 64rem;
+	--rux-panel-floating-width: var(--rux-doc-viewer-width);
+	--rux-panel-floating-safe-max-width: 64rem;
 }
 
 /* Layout: .rux-panel__footer / __spacer (css/base/panel.css) */
