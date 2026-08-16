@@ -150,7 +150,7 @@ test("Calendar workspace is inset while tools remain full-bleed", () => {
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] \.rux-right-panel\s*\{[^}]*border-inline-start:\s*0;/s,
+		/\.scheduler-app__module\[data-module="calendar"\] \.rux-scope-right-panel\s*\{[^}]*border-inline-start:\s*0;/s,
 	);
 	assert.match(
 		schedulerLayoutCss,
@@ -159,6 +159,21 @@ test("Calendar workspace is inset while tools remain full-bleed", () => {
 	assert.match(
 		layoutDocs,
 		/resize channel owns the single visual gutter\s+between them/,
+	);
+});
+
+test("mobile Calendar reserves the fixed toolbar's full rendered height", () => {
+	assert.match(
+		schedulerLayoutCss,
+		/--_mobile-toolbar-height:\s*calc\([\s\S]*?var\(--rux-button-height-header\)[\s\S]*?var\(--rux-space-4\)[\s\S]*?var\(--rux-space-2\)[\s\S]*?var\(--rux-border-width\)[\s\S]*?env\(safe-area-inset-bottom, 0px\)[\s\S]*?\);/,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/\.scheduler-app__module\[data-module="calendar"\] \.rux-workspace__toolbar\s*\{[^}]*min-height:\s*var\(--_mobile-toolbar-height\);/s,
+	);
+	assert.match(
+		schedulerLayoutCss,
+		/\.scheduler-app__module\[data-module="calendar"\] \.calendar-app__viewport\s*\{[^}]*padding-bottom:\s*var\(--_mobile-toolbar-height\);/s,
 	);
 });
 

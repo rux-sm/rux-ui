@@ -27,10 +27,10 @@
 
 		panelEl = document.createElement("div");
 		panelEl.className =
-			"rux-surface rux-surface--floating rux-surface--default-size rux-doc-viewer";
+			"rux-panel rux-panel--floating rux-panel--default-size rux-doc-viewer";
 		panelEl.hidden = true;
 		panelEl.innerHTML = `
-			<header class="rux-surface__header rux-doc-viewer__header">
+			<header class="rux-panel__header rux-doc-viewer__header">
 				<div class="rux-doc-viewer__title-group">
 					<span class="rux-icon" aria-hidden="true" data-doc-viewer-icon>description</span>
 					<p class="rux-card__title rux-doc-viewer__title" data-doc-viewer-title></p>
@@ -42,17 +42,17 @@
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
-			<div class="rux-surface__body rux-doc-viewer__body">
+			<div class="rux-panel__body rux-doc-viewer__body">
 				<iframe class="rux-doc-viewer__frame" title="Document preview"></iframe>
 			</div>
-			<footer class="rux-surface__footer rux-doc-viewer__footer">
+			<footer class="rux-panel__footer rux-doc-viewer__footer">
 				<button type="button" class="rux-button rux-button--ghost rux-button--danger" data-doc-viewer-delete>
 					<span class="rux-icon" aria-hidden="true">delete</span> Delete
 				</button>
 				<button type="button" class="rux-button rux-button--default" data-doc-viewer-update>
 					<span class="rux-icon" aria-hidden="true">upload_file</span> Replace
 				</button>
-				<span class="rux-surface__spacer"></span>
+				<span class="rux-panel__spacer"></span>
 			</footer>
 		`;
 		document.body.appendChild(panelEl);
@@ -61,7 +61,7 @@
 		panelEl.querySelector("[data-doc-viewer-external]").addEventListener("pointerdown", (event) => event.stopPropagation());
 		panelEl.querySelector("[data-doc-viewer-delete]").addEventListener("click", () => current?.onDelete?.());
 		panelEl.querySelector("[data-doc-viewer-update]").addEventListener("click", () => current?.onUpdate?.());
-		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-surface__header"));
+		window.RuxFloatingWindow.attachDrag(panelEl, panelEl.querySelector(".rux-panel__header"));
 
 		document.addEventListener("keydown", (event) => {
 			if (event.key === "Escape" && panelEl && !panelEl.hidden) close();
@@ -90,7 +90,7 @@
 		previousFocus = document.activeElement;
 		current = options;
 		panel.classList.toggle("rux-doc-viewer--presentation", Boolean(options.presentationOnly));
-		panel.classList.toggle("rux-surface--safe-viewport", Boolean(options.presentationOnly));
+		panel.classList.toggle("rux-panel--safe-viewport", Boolean(options.presentationOnly));
 		panel.querySelector("[data-doc-viewer-title]").textContent = options.title || options.fileName || "Document";
 		panel.querySelector("[data-doc-viewer-icon]").textContent = options.icon || "description";
 		// Native PDF viewers do not all recognize the same open parameter.

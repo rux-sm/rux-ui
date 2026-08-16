@@ -1,8 +1,8 @@
 /* ==========================================================================
-   TRIP FINDER  ·  .rux-trip-finder-window
+   TRIP FINDER  ·  .rux-scope-trip-finder
    --------------------------------------------------------------------------
-   Floating window chrome only — the shared .rux-surface--floating component
-   (css/base/surface.css) owns drag/resize/mobile-breakpoint mechanics, and
+   Floating window chrome only — the shared .rux-panel--floating component
+   (css/base/panel.css) owns drag/resize/mobile-breakpoint mechanics, and
    the table itself reuses comp-trip-list.css's .trips-app__* classes
    verbatim (also shared with the trip manifest's passenger table). This
    file is just: window sizing, the search row, and the collapsible filter
@@ -11,7 +11,7 @@
 
 /* Roomier than the default doc-preview size — needs to comfortably fit an
    8-column table, not a single document page. */
-.rux-trip-finder-window {
+.rux-scope-trip-finder {
 	container-name: trip-finder-window;
 	container-type: inline-size;
 	top: 10%;
@@ -25,14 +25,14 @@
 	max-height: calc(100vh - var(--rux-space-4));
 }
 
-.rux-trip-finder-window__content {
+.rux-scope-trip-finder__content {
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
 	flex: 1;
 }
 
-.rux-trip-finder-window__body {
+.rux-scope-trip-finder__body {
 	display: flex;
 	min-height: 0;
 	padding: var(--rux-space-4);
@@ -40,7 +40,7 @@
 	background: var(--rux-card-body-bg);
 }
 
-.rux-trip-finder-window__results {
+.rux-scope-trip-finder__results {
 	flex: 1;
 	min-width: 0;
 	min-height: 0;
@@ -49,31 +49,31 @@
 }
 
 /* Adjacent 8px cell insets create exactly 16px between column content. */
-.rux-trip-finder-window__table {
+.rux-scope-trip-finder__table {
 	width: 100%;
 }
 
-.rux-trip-finder-window__table th {
+.rux-scope-trip-finder__table th {
 	width: 25%;
 }
 
-.rux-trip-finder-window__table :is(th, td) {
+.rux-scope-trip-finder__table :is(th, td) {
 	padding-inline: var(--rux-space-2);
 }
 
-.rux-trip-finder-window__table td {
+.rux-scope-trip-finder__table td {
 	vertical-align: middle;
 }
 
-.rux-trip-finder-window__table :is(th, td):first-child {
+.rux-scope-trip-finder__table :is(th, td):first-child {
 	padding-left: var(--rux-space-4);
 }
 
-.rux-trip-finder-window__table :is(th, td):last-child {
+.rux-scope-trip-finder__table :is(th, td):last-child {
 	padding-right: var(--rux-space-4);
 }
 
-.rux-trip-finder-window__toolbar {
+.rux-scope-trip-finder__toolbar {
 	flex: none;
 	display: flex;
 	flex-direction: column;
@@ -82,7 +82,7 @@
 
 /* — Search row — */
 
-.rux-trip-finder-window__search-row {
+.rux-scope-trip-finder__search-row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
@@ -90,23 +90,23 @@
 	background: var(--rux-surface-floating-header-bg);
 }
 
-.rux-trip-finder-window__search-icon {
+.rux-scope-trip-finder__search-icon {
 	flex: none;
 	color: var(--rux-text-disabled);
 }
 
-.rux-trip-finder-window__search-input {
+.rux-scope-trip-finder__search-input {
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-trip-finder-window__search-input::-webkit-search-cancel-button {
+.rux-scope-trip-finder__search-input::-webkit-search-cancel-button {
 	display: none;
 }
 
 /* — Filter panel — responsive to the resized window, not the viewport. */
 
-.rux-trip-finder-window__filters {
+.rux-scope-trip-finder__filters {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: end;
@@ -115,19 +115,19 @@
 	background: var(--rux-card-body-bg);
 }
 
-.rux-trip-finder-window__filters[hidden] {
+.rux-scope-trip-finder__filters[hidden] {
 	display: none;
 }
 
-.rux-trip-finder-window__filters .rux-field {
+.rux-scope-trip-finder__filters .rux-field {
 	min-width: 0;
 }
 
-.rux-trip-finder-window__filters .rux-segmented-track {
+.rux-scope-trip-finder__filters .rux-segmented-track {
 	width: 100%;
 }
 
-.rux-trip-finder-window__filters .rux-segmented-track > .rux-button {
+.rux-scope-trip-finder__filters .rux-segmented-track > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
@@ -146,7 +146,7 @@
 }
 
 @container trip-finder-window (max-width: 800px) {
-	.rux-trip-finder-window__filters {
+	.rux-scope-trip-finder__filters {
 		grid-template-columns: minmax(0, 1fr);
 	}
 }

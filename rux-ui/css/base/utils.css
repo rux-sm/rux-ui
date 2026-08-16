@@ -21,3 +21,56 @@
     transition-duration: 0.001ms !important;
   }
 }
+
+/* — layout utilities — */
+/* Single reusable layout/spacing rules with no domain owner. Each of these
+   three was duplicated near-identically across driver-panel.css,
+   fleet-panel.css, and customer-panel.css; promoted here so a change to
+   one changes all three instead of drifting apart. trip-panel.css keeps
+   its own versions of the first two rather than adopting these — see each
+   rule's own note below for why. */
+
+/* Two-column form grid, collapsing to one column in a narrow container.
+   trip-panel.css's own .rux-scope-trip__cols-2/__cols-3 stay separate: a
+   different, --_cols-driven system supporting a third column count at a
+   different breakpoint (320px, not 360px) with a different column gap
+   token — not a pure duplicate of this one. */
+.rux-u-cols-2 {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	column-gap: var(--rux-space-2);
+	row-gap: var(--rux-space-3);
+	align-items: start;
+}
+
+@container (max-width: 360px) {
+	.rux-u-cols-2 {
+		grid-template-columns: 1fr;
+		gap: var(--rux-space-4);
+	}
+}
+
+/* Eyebrow-style section heading. trip-panel.css keeps its own
+   .rux-scope-trip__section-label: an identical base look, but with
+   --minor/--requirements modifiers no other domain needs. */
+.rux-u-section-label {
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
+	color: var(--rux-label-eyebrow-color);
+	text-transform: uppercase;
+	letter-spacing: var(--rux-label-eyebrow-tracking);
+	padding-bottom: var(--rux-space-2);
+	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
+	line-height: 1;
+}
+
+/* Flex column of trip-summary rows (Driver/Fleet/Customer editors' own
+   "linked trips" list). */
+.rux-u-trip-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+	margin-top: var(--rux-space-2);
+	padding: 0;
+	list-style: none;
+}

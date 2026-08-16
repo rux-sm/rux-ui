@@ -41,7 +41,7 @@
    inline in the scrolling body, since it's reached for infrequently. The
    footer itself already supplies the border/padding around it, so this is
    just the row for the three buttons within that slot — each one stretches
-   to fill an equal share, same as .rux-right-panel__footer-group's own
+   to fill an equal share, same as .rux-scope-right-panel__footer-group's own
    direct-child buttons (driver-week-info.css), just one level deeper here
    since this row nests inside that group instead of being it. */
 .rux-tasks__nav {

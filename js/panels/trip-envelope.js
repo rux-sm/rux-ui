@@ -11,7 +11,7 @@
    Content is built the same way as print-schedule.js (a plain-paper DOM
    tree from trip data, then window.print()), but presented the way
    core/doc-viewer.js presents a document: a draggable/resizable
-   .rux-surface--floating singleton (see ensurePanel()) instead of printing
+   .rux-panel--floating singleton (see ensurePanel()) instead of printing
    immediately or blocking the page behind a modal backdrop.
 
    API
@@ -489,7 +489,7 @@
 
 	/* ── Floating window (singleton, lazily created) ────────────────────── */
 	// Same recipe as core/doc-viewer.js's RuxDocViewer — a draggable,
-	// resizable .rux-surface--floating panel instead of a full-viewport modal,
+	// resizable .rux-panel--floating panel instead of a full-viewport modal,
 	// so the envelope can sit alongside the calendar instead of blocking it.
 
 	let panelEl = null;
@@ -651,11 +651,11 @@
 
 		panelEl = document.createElement("div");
 		panelEl.className =
-			"rux-surface rux-surface--floating rux-surface--default-size rux-trip-envelope-window";
+			"rux-panel rux-panel--floating rux-panel--default-size rux-trip-envelope-window";
 		panelEl.hidden = true;
 		panelEl.dataset.tint = "yellow";
 		panelEl.innerHTML = `
-			<header class="rux-surface__header rux-trip-envelope-window__header">
+			<header class="rux-panel__header rux-trip-envelope-window__header">
 				<span class="rux-card__title" data-envelope-title>Trip Envelope</span>
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--header" data-envelope-close aria-label="Close trip envelope">
 					<span class="rux-icon" aria-hidden="true">close</span>
@@ -671,10 +671,10 @@
 					<button type="button" class="rux-button rux-button--segment" aria-pressed="false" data-value="white">White</button>
 				</div>
 			</div>
-			<div class="rux-surface__body rux-trip-envelope-window__body">
+			<div class="rux-panel__body rux-trip-envelope-window__body">
 				<div data-envelope-content></div>
 			</div>
-			<footer class="rux-surface__footer rux-trip-envelope-window__footer">
+			<footer class="rux-panel__footer rux-trip-envelope-window__footer">
 				<label class="rux-trip-envelope-window__recipient">
 					<select class="rux-select" data-envelope-driver aria-label="Envelope copy for driver"></select>
 				</label>
@@ -719,7 +719,7 @@
 			});
 		window.RuxFloatingWindow.attachDrag(
 			panelEl,
-			panelEl.querySelector(".rux-surface__header"),
+			panelEl.querySelector(".rux-panel__header"),
 		);
 
 		// Covers native resize:both dragging and the window's own height
@@ -745,7 +745,7 @@
 			Boolean(options.presentationOnly),
 		);
 		panelEl.classList.toggle(
-			"rux-surface--safe-viewport",
+			"rux-panel--safe-viewport",
 			Boolean(options.presentationOnly),
 		);
 		const allRecipients = envelopeRecipients(trip);

@@ -22,7 +22,7 @@
 	"use strict";
 
 	const windowEl = document.getElementById("request-inbox-window");
-	const headerEl = windowEl?.querySelector(".rux-request-window__header");
+	const headerEl = windowEl?.querySelector(".rux-scope-request__header");
 	const closeBtn = document.getElementById("request-inbox-close-btn");
 	const openBtn = document.getElementById("request-inbox-btn");
 	const badge = document.getElementById("requests-badge");
@@ -104,7 +104,7 @@
 
 	function renderFailure() {
 		if (!listEl) return;
-		listEl.innerHTML = `<li class="rux-request-window__empty">Requests could not be loaded.</li>`;
+		listEl.innerHTML = `<li class="rux-scope-request__empty">Requests could not be loaded.</li>`;
 		if (footerEl) footerEl.textContent = "Couldn't connect";
 	}
 
@@ -147,7 +147,7 @@
 		listEl.innerHTML = "";
 		const visible = visibleRows();
 		if (!visible.length) {
-			listEl.innerHTML = `<li class="rux-request-window__empty">${
+			listEl.innerHTML = `<li class="rux-scope-request__empty">${
 				requests.length
 					? "Nothing in this view"
 					: "No trip requests yet"
@@ -164,14 +164,14 @@
 				new: " rux-badge--danger",
 				reviewed: " rux-badge--info",
 				linked: " rux-badge--success",
-				closed: " rux-request-window__chip--closed",
+				closed: " rux-scope-request__chip--closed",
 			}[status] ?? " rux-badge--info";
-		return `rux-badge${tone} rux-request-window__chip`;
+		return `rux-badge${tone} rux-scope-request__chip`;
 	}
 
 	function rowItem(row) {
 		const li = document.createElement("li");
-		li.className = "rux-request-window__item";
+		li.className = "rux-scope-request__item";
 		li.dataset.status = row.status || "";
 
 		const title = escapeAttr(
@@ -179,7 +179,7 @@
 		);
 		const sample = escapeAttr(sampleOf(row) || "No details yet");
 		const note = row.note
-			? `<p class="rux-request-window__item-note">${escapeAttr(row.note)}</p>`
+			? `<p class="rux-scope-request__item-note">${escapeAttr(row.note)}</p>`
 			: "";
 
 		// Invite link — shown only for "invited" rows where we have a URL.
@@ -187,7 +187,7 @@
 		if (row.status === "invited" && row._url) {
 			const url = escapeAttr(row._url);
 			linkBlock = `
-				<div class="rux-request-window__item-link">
+				<div class="rux-scope-request__item-link">
 					<input class="rux-input" type="text" readonly value="${url}" data-request-url aria-label="Invite link for ${title}" />
 					<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact" data-copy-url aria-label="Copy link">
 						<span class="rux-icon" aria-hidden="true">content_copy</span>
@@ -205,16 +205,16 @@
 		actions += `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--compact" data-request-action="delete" aria-label="Delete ${escapeAttr(row.reference)}">Delete</button>`;
 
 		li.innerHTML = `
-			<div class="rux-request-window__item-main">
-				<div class="rux-request-window__item-title-row">
-					<span class="rux-request-window__item-title">${title}</span>
+			<div class="rux-scope-request__item-main">
+				<div class="rux-scope-request__item-title-row">
+					<span class="rux-scope-request__item-title">${title}</span>
 					<span class="${chipClass(row.status)}">${escapeAttr(row.reference)}</span>
 				</div>
-				<p class="rux-request-window__item-meta">${sample}</p>
+				<p class="rux-scope-request__item-meta">${sample}</p>
 				${note}
 				${linkBlock}
 			</div>
-			${actions ? `<div class="rux-request-window__item-actions">${actions}</div>` : ""}
+			${actions ? `<div class="rux-scope-request__item-actions">${actions}</div>` : ""}
 		`;
 
 		// Status transitions (reviewed / closed).

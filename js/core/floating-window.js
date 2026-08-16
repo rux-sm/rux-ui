@@ -1,8 +1,8 @@
 /* ==========================================================================
    RUX UI — FLOATING WINDOW
    --------------------------------------------------------------------------
-   Shared drag mechanics for a .rux-surface--floating panel (see
-   css/base/surface.css). Resizing is native CSS (resize: both), so this is
+   Shared drag mechanics for a .rux-panel--floating panel (see
+   css/base/panel.css). Resizing is native CSS (resize: both), so this is
    just the pointer-drag half — used by every floating window (trip editor,
    manifest, request inbox, trip finder, doc viewer, trip envelope).
 
@@ -27,7 +27,7 @@
 		function startDrag(event) {
 			if (window.innerWidth <= minViewportWidth) return;
 			if (window.matchMedia("(max-width: 580px)").matches) return;
-			if (panelEl.classList.contains("rux-surface--safe-viewport")) return;
+			if (panelEl.classList.contains("rux-panel--safe-viewport")) return;
 			// Header may contain its own controls (close button, etc.) —
 			// any of those should act normally, not start a drag.
 			if (event.target.closest("button")) return;

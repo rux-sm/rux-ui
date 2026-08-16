@@ -21,11 +21,12 @@
    ========================================================================== */
 
 /* ─── Webfonts ──────────────────────────────────────────────────────────── */
-/* Inter for UI text and JetBrains Mono for code.
+/* IBM Plex Sans for UI text, IBM Plex Sans Condensed for trip bar text,
+   and IBM Plex Mono for code.
    FLAGGED: these are CDN-loaded Google Fonts. If working offline or
    self-hosting, add local .woff2 files and replace this import.             */
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
 /* ─── Reset ─────────────────────────────────────────────────────────────── */
 

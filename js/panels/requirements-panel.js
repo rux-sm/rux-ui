@@ -59,7 +59,7 @@
   async function persist(next) {
     window.appRequirements = next;
     await saveRequirements(next);
-    const tripPanelRoot = document.querySelector(".rux-trip-panel");
+    const tripPanelRoot = document.querySelector(".rux-scope-trip");
     if (tripPanelRoot) window.TripPanel?.refreshRequirements(tripPanelRoot);
   }
 

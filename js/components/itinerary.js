@@ -1719,12 +1719,12 @@
 			// needs the same fix independently: .rux-trip-itinerary__suggestions
 			// is a fixed-position, document.body-appended panel with a flat
 			// --rux-z-dropdown (100) z-index, while the trip editor's own
-			// .rux-surface--floating sits at --rux-z-modal (400) — without
+			// .rux-panel--floating sits at --rux-z-modal (400) — without
 			// this, the address suggestions list renders behind the dialog
 			// it's popping out of instead of on top of it.
 			suggestionsEl.toggleAttribute(
 				"data-rux-modal-layer",
-				Boolean(input.closest(".rux-modal-backdrop, .rux-surface--floating")),
+				Boolean(input.closest(".rux-modal-backdrop, .rux-panel--floating")),
 			);
 			positionSuggestions(input);
 			suggestionsEl.innerHTML = suggestions.map((suggestion, i) => {

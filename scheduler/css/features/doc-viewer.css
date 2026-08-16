@@ -4,12 +4,12 @@
    Floating, draggable, resizable window for previewing an uploaded trip
    document (PDF/image/etc.) without leaving the app or losing the trip
    panel's own form state. Singleton — one instance, reused across opens.
-   Positioning/drag/resize mechanics live in the shared .rux-surface--floating
-   base (css/base/surface.css) — this file is just this window's own
+   Positioning/drag/resize mechanics live in the shared .rux-panel--floating
+   base (css/base/panel.css) — this file is just this window's own
    size/position defaults and content styling.
    ========================================================================== */
 
-/* Size/position: .rux-surface--default-size (css/base/surface.css) */
+/* Size/position: .rux-panel--default-size (css/base/panel.css) */
 
 .rux-doc-viewer__title-group {
 	display: flex;
@@ -57,4 +57,4 @@
 	--rux-surface-floating-safe-max-width: 64rem;
 }
 
-/* Layout: .rux-surface__footer / __spacer (css/base/surface.css) */
+/* Layout: .rux-panel__footer / __spacer (css/base/panel.css) */

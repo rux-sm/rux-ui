@@ -3,11 +3,11 @@
    --------------------------------------------------------------------------
    Form editor for a trip's Details, Billing, Itinerary, and Fleet — the
    trip editor dialog's own tabbed content. Lives directly on
-   .rux-surface--floating now (index.html's #trip-editor-dialog carries
-   both .rux-trip-dialog and .rux-trip-panel) — no separate nested .rux-panel
-   wrapper; .rux-surface__nav/__body/__footer are the real anatomy, with
-   .rux-trip-panel supplying the container-query root plus its own
-   feature-specific classes on top of the shared Surface slots. Tab
+   .rux-panel--floating now (index.html's #trip-editor-dialog carries
+   both .rux-trip-dialog and .rux-scope-trip) — no separate nested panel
+   wrapper; .rux-panel__nav/__body/__footer are the real anatomy, with
+   .rux-scope-trip supplying the container-query root plus its own
+   feature-specific classes on top of the shared Panel slots. Tab
    switching is handled generically in js/core/controls.js
    ([data-rux-tabs]), with additional trip-editor-specific behavior
    (scroll-reset on switch, drawer-reopen bridge) layered on in
@@ -15,18 +15,24 @@
 
    Structure
    ---------
-   .rux-trip-panel              Container-query root; same element as
-                            .rux-surface--floating.rux-trip-dialog.
-   .rux-surface__header         Shared title + close row.
-   .rux-surface__nav--attached  Tabs slot (Details/Billing/Itinerary/Fleet).
-   .rux-trip-panel__body        .rux-surface__body — scrollable, holds tab panes.
-   .rux-trip-panel__pane        One per section, hidden via [hidden] when inactive.
-   .rux-surface__footer         Delete + Clear / Save action row.
+   .rux-scope-trip              Container-query root; same element as
+                            .rux-panel--floating.rux-trip-dialog.
+   .rux-panel__header           Shared title + close row.
+   .rux-panel__nav--attached    Tabs slot (Details/Billing/Itinerary/Fleet).
+   .rux-scope-trip__body        .rux-panel__body plus its own loading-state
+                            opacity fade (below) — a real override, not a
+                            duplicate, so it keeps its own class.
+   .rux-scope-trip__pane        One per section, hidden via [hidden] when
+                            inactive. CSS is a pure .rux-panel__pane[hidden]
+                            duplicate — kept as its own class only because
+                            trip-panel.js and trip-db.js query it directly
+                            (pane switching + form field collection).
+   .rux-panel__footer           Delete + Clear / Save action row.
 
    Dispatch sub-components
    -----------------------
-   .rux-trip-panel__bus-groups  Vertical stack of bus assignment cards.
-   .rux-trip-panel__bus-group   Single bus card: titled "Bus N", head row
+   .rux-scope-trip__bus-groups  Vertical stack of bus assignment cards.
+   .rux-scope-trip__bus-group   Single bus card: titled "Bus N", head row
                             (bus select, full width) + role-toggle row
                             (3 equal-width buttons) + driver rows
                             (icon | driver select | pay input).
@@ -37,39 +43,39 @@
 /* Open button: lives outside the inert <aside> as a direct child of the
    drawer div, so it stays clickable when the panel is collapsed. Hidden
    by default — only shown at <=44px via the container query below. */
-.rux-trip-panel__drawer-open {
+.rux-scope-trip__drawer-open {
 	display: none;
 }
 
-/* Just the container-query root now — .rux-trip-panel lives on the same
+/* Just the container-query root now — .rux-scope-trip lives on the same
    element as .rux-trip-dialog (index.html), which already supplies
-   position: fixed (.rux-surface--floating) and its own min-width (480px,
+   position: fixed (.rux-panel--floating) and its own min-width (480px,
    trip-dialog.css), both stronger than what this class used to declare on
    its own separate <aside> wrapper. */
-.rux-trip-panel {
+.rux-scope-trip {
 	container-type: inline-size;
 }
 
 /* initPanelScrollEdges (js/core/controls.js) still toggles .is-scrolled
-   here like it does on every .rux-panel/.rux-surface--floating — that JS
+   here like it does on every .rux-panel/.rux-panel--floating — that JS
    is shared and stays as is. Only the resulting shadow is suppressed:
    #pane-trip's section headers (card.css's .rux-card__header.is-stuck)
    now own that shadow duty per section as the user scrolls, so the nav
    showing its own at the same time doubled it up right above the section
    header's. */
-.rux-trip-panel > .rux-surface__nav.is-scrolled {
+.rux-scope-trip > .rux-panel__nav.is-scrolled {
 	box-shadow: none;
 }
 
 
-.rux-trip-panel__status-group .rux-button {
+.rux-scope-trip__status-group .rux-button {
 	min-width: 0;
 }
-.rux-trip-panel__status-label {
+.rux-scope-trip__status-label {
 	white-space: nowrap;
 }
 
-.rux-trip-panel__manifest-action {
+.rux-scope-trip__manifest-action {
 	display: grid;
 	grid-template-rows: 0fr;
 	margin-block-start: calc(0px - var(--rux-card-content-gap));
@@ -83,7 +89,7 @@
 		transform var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing);
 }
 
-.rux-trip-panel__manifest-action.is-visible {
+.rux-scope-trip__manifest-action.is-visible {
 	grid-template-rows: 1fr;
 	margin-block-start: 0;
 	opacity: 1;
@@ -91,23 +97,23 @@
 	transform: translateY(0);
 }
 
-.rux-trip-panel__manifest-action-inner {
+.rux-scope-trip__manifest-action-inner {
 	min-height: 0;
 	overflow: hidden;
 }
 
 /* Clip content only while the grid row collapses. Once revealed, allow the
    standard button elevation to paint outside the inner row's exact height. */
-.rux-trip-panel__manifest-action.is-visible .rux-trip-panel__manifest-action-inner {
+.rux-scope-trip__manifest-action.is-visible .rux-scope-trip__manifest-action-inner {
 	overflow: visible;
 }
 
-.rux-trip-panel__manifest-action .rux-button {
+.rux-scope-trip__manifest-action .rux-button {
 	width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.rux-trip-panel__manifest-action {
+	.rux-scope-trip__manifest-action {
 		transition: none;
 	}
 }
@@ -117,12 +123,12 @@
 
 /* — Body / panes — */
 
-.rux-trip-panel__body {
+.rux-scope-trip__body {
 	opacity: 1;
 	transition: opacity 0.2s ease-in;
 }
 
-.rux-trip-panel--loading .rux-trip-panel__body {
+.rux-scope-trip--loading .rux-scope-trip__body {
 	opacity: 0;
 	transition: none;
 }
@@ -130,12 +136,12 @@
    (every --attached panel's pane gets it, not just this one) — this used
    to carry its own padding-block override for the same value, which is
    what the Tools panel's own panes were missing until that rule existed. */
-.rux-trip-panel__pane[hidden] {
+.rux-scope-trip__pane[hidden] {
 	display: none;
 }
 
 
-/* .rux-trip-panel__bus-groups used to inherit its horizontal inset for free
+/* .rux-scope-trip__bus-groups used to inherit its horizontal inset for free
    from #pane-dispatch's own padding — now that the pane runs edge-to-edge,
    each bus-group embed needs that same 16px inset supplied directly, the
    same way itinerary stops get theirs from .rux-trip-itinerary__day-group
@@ -155,7 +161,7 @@
    own bottom border. padding-bottom gives the same breathing room before
    the shared border-top of the next .rux-card (Return Fleet
    Assignments). */
-.rux-trip-panel__bus-groups {
+.rux-scope-trip__bus-groups {
 	padding-inline: var(--rux-card-padding-inline);
 	padding-block: var(--rux-card-padding-block);
 }
@@ -164,7 +170,7 @@
 /* The footer owns the pane's final seam. Base cards have a bottom border by
    default, so explicitly remove it from the last card to avoid doubling. */
 /*
-   .rux-trip-panel__pane > .rux-card:last-child {
+   .rux-scope-trip__pane > .rux-card:last-child {
 	border-bottom: 0;
 } 
 */
@@ -196,36 +202,36 @@
    throughout means a specific row (like the section label below) can get
    its own spacing without fighting a shared gap value. */
 /* Standalone labels outside the standard card anatomy retain a compact gap. */
-.rux-card--stack > .rux-trip-panel__section-label + * {
+.rux-card--stack > .rux-scope-trip__section-label + * {
 	margin-top: var(--rux-section-label-gap);
 }
 
 /* — Form layout helpers — */
 
-.rux-trip-panel__cols-2,
-.rux-trip-panel__cols-3 {
+.rux-scope-trip__cols-2,
+.rux-scope-trip__cols-3 {
 	display: grid;
 	grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
 	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-space-3);
 	align-items: start;
 }
-.rux-trip-panel__cols-2 {
+.rux-scope-trip__cols-2 {
 	--_cols: 2;
 }
-.rux-trip-panel__cols-3 {
+.rux-scope-trip__cols-3 {
 	--_cols: 3;
 }
 
-/* Fields live in their own inner grid (.rux-trip-panel__contact-fields) so
+/* Fields live in their own inner grid (.rux-scope-trip__contact-fields) so
    the row's own gap is 0 — the trash icon's width AND margin-left both
    animate from 0 together, instead of a grid/flex `gap` leaving a stray
    reserved space next to it while it's hidden. */
-.rux-trip-panel__contact-row {
+.rux-scope-trip__contact-row {
 	display: flex;
 	align-items: end;
 }
-.rux-trip-panel__contact-fields {
+.rux-scope-trip__contact-fields {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	column-gap: var(--rux-control-content-gap);
@@ -234,7 +240,7 @@
 	min-width: 0;
 }
 
-.rux-trip-panel__contacts-list {
+.rux-scope-trip__contacts-list {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-4);
@@ -245,7 +251,7 @@
    every row. Clicking it deletes that specific contact immediately and
    disarms the mode — danger red by default (not just on hover) since the
    click is a one-shot delete, not a select-then-confirm step. */
-.rux-trip-panel__contact-select {
+.rux-scope-trip__contact-select {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -266,18 +272,18 @@
 		margin-left var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-trip-panel__contact-select:hover {
+.rux-scope-trip__contact-select:hover {
 	color: var(--rux-danger-bright);
 }
-#tp-contacts-list .rux-trip-panel__contact-row:focus-within .rux-trip-panel__contact-select,
-#tp-contacts-list .rux-trip-panel__contact-select:focus-visible {
+#tp-contacts-list .rux-scope-trip__contact-row:focus-within .rux-scope-trip__contact-select,
+#tp-contacts-list .rux-scope-trip__contact-select:focus-visible {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
 }
 @media (hover: hover) {
-	#tp-contacts-list .rux-trip-panel__contact-row:hover .rux-trip-panel__contact-select {
+	#tp-contacts-list .rux-scope-trip__contact-row:hover .rux-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -285,22 +291,22 @@
 	}
 }
 @media (hover: none) {
-	#tp-contacts-list .rux-trip-panel__contact-select {
+	#tp-contacts-list .rux-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
 		pointer-events: auto;
 	}
 }
-#tp-contacts-list.is-selecting .rux-trip-panel__contact-select,
-#dp-timeoff-rows.is-selecting .rux-trip-panel__contact-select {
+#tp-contacts-list.is-selecting .rux-scope-trip__contact-select,
+#dp-timeoff-rows.is-selecting .rux-scope-trip__contact-select {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
 }
 
-.rux-trip-panel__logistics-grid {
+.rux-scope-trip__logistics-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: start;
@@ -308,16 +314,16 @@
 	row-gap: var(--rux-space-3);
 }
 
-/* [hidden] and .rux-trip-panel__logistics-grid have equal specificity, and
+/* [hidden] and .rux-scope-trip__logistics-grid have equal specificity, and
    author CSS beats the browser's own [hidden]{display:none} UA default at
    equal specificity — without this, the return-date grid's `display: grid`
    above silently wins and the hidden attribute (toggled by
    syncReturnLegVisibility() in trip-panel.js) has no visible effect. */
-.rux-trip-panel__logistics-grid[hidden] {
+.rux-scope-trip__logistics-grid[hidden] {
 	display: none;
 }
 
-.rux-trip-panel__section-label {
+.rux-scope-trip__section-label {
 	font-size: var(--rux-label-eyebrow-size);
 	font-weight: var(--rux-label-eyebrow-weight);
 	color: var(--rux-label-eyebrow-color);
@@ -327,12 +333,12 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 	line-height: 1;
 }
-.rux-trip-panel__section-label--minor {
+.rux-scope-trip__section-label--minor {
 	color: var(--rux-text-muted);
 	border-bottom-color: transparent;
 	padding-bottom: 0;
 }
-.rux-trip-panel__section-label--requirements {
+.rux-scope-trip__section-label--requirements {
 	margin-top: var(--rux-space-2);
 }
 
@@ -342,19 +348,19 @@
    (yellow — still owed, but not the whole thing), paid off exactly (green),
    overpaid (blue). */
 
-.rux-trip-panel .rux-output.is-balance-full {
+.rux-scope-trip .rux-output.is-balance-full {
 	color: var(--rux-danger);
 }
 
-.rux-trip-panel .rux-output.is-balance-partial {
+.rux-scope-trip .rux-output.is-balance-partial {
 	color: var(--rux-warning);
 }
 
-.rux-trip-panel .rux-output.is-balance-paid {
+.rux-scope-trip .rux-output.is-balance-paid {
 	color: var(--rux-success);
 }
 
-.rux-trip-panel .rux-output.is-balance-overpaid {
+.rux-scope-trip .rux-output.is-balance-overpaid {
 	color: var(--rux-info);
 }
 
@@ -373,7 +379,7 @@
 }
 /* One card body holds all three workflow steps; its shared stack anatomy
    supplies the spacing while these rules handle only billing behavior. */
-.rux-trip-panel__billing-step {
+.rux-scope-trip__billing-step {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
@@ -383,33 +389,33 @@
    swaps its placeholder ("Pending" ↔ "Enter PO number") with the toggle, so
    .rux-input:disabled (form.css) + the placeholder text communicate state
    instead of a separate status label. */
-.rux-trip-panel__billing-step-row {
+.rux-scope-trip__billing-step-row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__billing-step-row .rux-input {
+.rux-scope-trip__billing-step-row .rux-input {
 	flex: 1;
 	min-width: 0;
 }
-.rux-trip-panel__billing-step-row .rux-switch {
+.rux-scope-trip__billing-step-row .rux-switch {
 	flex: none;
 }
-.rux-trip-panel__billing-step-help {
+.rux-scope-trip__billing-step-help {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
-.rux-trip-panel__po-details {
+.rux-scope-trip__po-details {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
 	align-items: end;
 	gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__po-details[hidden] {
+.rux-scope-trip__po-details[hidden] {
 	display: none;
 }
-.rux-trip-panel__po-coverage {
+.rux-scope-trip__po-coverage {
 	display: flex;
 	height: var(--rux-field-height);
 	align-items: center;
@@ -421,28 +427,28 @@
 	line-height: 1;
 	white-space: nowrap;
 }
-.rux-trip-panel__po-coverage > .rux-icon {
+.rux-scope-trip__po-coverage > .rux-icon {
 	--_icon-size: var(--rux-icon-sm);
 }
-.rux-trip-panel__po-coverage.is-empty {
+.rux-scope-trip__po-coverage.is-empty {
 	color: var(--rux-danger);
 }
-.rux-trip-panel__po-coverage.is-partial {
+.rux-scope-trip__po-coverage.is-partial {
 	color: var(--rux-warning);
 }
-.rux-trip-panel__po-coverage.is-complete {
+.rux-scope-trip__po-coverage.is-complete {
 	color: var(--rux-success);
 }
-.rux-trip-panel__billing-step--payments {
+.rux-scope-trip__billing-step--payments {
 	grid-template-columns: minmax(0, 1fr);
 }
-.rux-trip-panel__payment-rows {
+.rux-scope-trip__payment-rows {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__payment-empty,
-.rux-trip-panel__doc-empty {
+.rux-scope-trip__payment-empty,
+.rux-scope-trip__doc-empty {
 	box-sizing: border-box;
 	display: flex;
 	width: 100%;
@@ -458,46 +464,46 @@
 	font-size: var(--rux-size-sm);
 	cursor: not-allowed;
 }
-.rux-trip-panel__payment-empty > .rux-icon,
-.rux-trip-panel__doc-empty > .rux-icon {
+.rux-scope-trip__payment-empty > .rux-icon,
+.rux-scope-trip__doc-empty > .rux-icon {
 	flex: none;
 }
-.rux-trip-panel__payment-empty > :last-child,
-.rux-trip-panel__doc-empty > :last-child {
+.rux-scope-trip__payment-empty > :last-child,
+.rux-scope-trip__doc-empty > :last-child {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.rux-trip-panel__payment-rows:has([data-payment-row]) > .rux-trip-panel__payment-empty,
-.rux-trip-panel__payment-rows:has([data-ticket-option-row]) > .rux-trip-panel__payment-empty {
+.rux-scope-trip__payment-rows:has([data-payment-row]) > .rux-scope-trip__payment-empty,
+.rux-scope-trip__payment-rows:has([data-ticket-option-row]) > .rux-scope-trip__payment-empty {
 	display: none;
 }
 /* Payment method becomes the group header; the remaining values are labeled fields. */
-.rux-trip-panel__payment-row {
+.rux-scope-trip__payment-row {
 	min-width: 0;
 }
-.rux-trip-panel__payment-content {
+.rux-scope-trip__payment-content {
 	transition: border-color var(--rux-input-transition);
 }
-.rux-trip-panel__payment-content:hover,
-.rux-trip-panel__payment-content:focus-within {
+.rux-scope-trip__payment-content:hover,
+.rux-scope-trip__payment-content:focus-within {
 	border-color: var(--rux-input-hover);
 }
 
-.rux-trip-panel__payment-method {
+.rux-scope-trip__payment-method {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 	flex: 1;
 	min-width: 0;
 }
-.rux-trip-panel__payment-icon {
+.rux-scope-trip__payment-icon {
 	flex: none;
 	color: var(--rux-text-default);
 }
-.rux-trip-panel__payment-method-label {
+.rux-scope-trip__payment-method-label {
 	min-width: 0;
 	overflow: hidden;
 	color: var(--rux-text-default);
@@ -507,7 +513,7 @@
 	white-space: nowrap;
 }
 
-.rux-trip-panel__payment-fields {
+.rux-scope-trip__payment-fields {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	grid-template-areas:
@@ -516,16 +522,16 @@
 	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-card-content-gap);
 }
-.rux-trip-panel__payment-reference {
+.rux-scope-trip__payment-reference {
 	grid-area: reference;
 }
-.rux-trip-panel__payment-date-field {
+.rux-scope-trip__payment-date-field {
 	grid-area: date;
 }
-.rux-trip-panel__payment-amount {
+.rux-scope-trip__payment-amount {
 	grid-area: amount;
 }
-.rux-trip-panel__payment-date-control {
+.rux-scope-trip__payment-date-control {
 	position: relative;
 	display: block;
 	width: 100%;
@@ -533,7 +539,7 @@
 	height: var(--rux-field-height);
 	font-variant-numeric: tabular-nums;
 }
-.rux-trip-panel__payment-date-label {
+.rux-scope-trip__payment-date-label {
 	position: absolute;
 	inset: 0;
 	display: flex;
@@ -544,7 +550,7 @@
 	font-size: var(--rux-size-sm);
 	pointer-events: none;
 }
-.rux-trip-panel__payment-date {
+.rux-scope-trip__payment-date {
 	position: absolute;
 	inset: 0;
 	width: 100%;
@@ -553,12 +559,12 @@
 	cursor: pointer;
 }
 
-.rux-trip-panel__payment-amount-input {
+.rux-scope-trip__payment-amount-input {
 	text-align: right;
 	font-variant-numeric: tabular-nums;
 }
 /* Each payment reveals its own delete action on hover or focus. */
-.rux-trip-panel__payment-select {
+.rux-scope-trip__payment-select {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -579,7 +585,7 @@
 		margin-left var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-trip-panel__payment-select:hover {
+.rux-scope-trip__payment-select:hover {
 	color: var(--rux-danger-bright);
 }
 #dp-timeoff-delete-btn:disabled {
@@ -588,18 +594,18 @@
 
 /* — Requirements chips — */
 
-.rux-trip-panel__requirements-grid {
+.rux-scope-trip__requirements-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__reqs {
+.rux-scope-trip__reqs {
 	display: contents;
 }
-.rux-trip-panel__requirements-grid #tp-driver-needs {
+.rux-scope-trip__requirements-grid #tp-driver-needs {
 	display: contents;
 }
-.rux-trip-panel__requirements-grid .rux-button {
+.rux-scope-trip__requirements-grid .rux-button {
 	width: 100%;
 	min-width: 0;
 	justify-content: center;
@@ -607,7 +613,7 @@
 
 /* — Payment refs row — */
 
-.rux-trip-panel__refs {
+.rux-scope-trip__refs {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: var(--rux-control-content-gap);
@@ -617,57 +623,57 @@
 
 /* Buses-needed stepper moved into .rux-card__header (Fleet
    Assignments / Return Fleet Assignments own trailing content), matching
-   every other section's single-control header slot — .rux-trip-panel__
+   every other section's single-control header slot — .rux-scope-trip__
    fleet-count-card/-label no longer have any markup to style. Stepper
    itself is .rux-number-stepper (base/controls.css) — a reusable
    component, not trip-panel-specific. */
 
-.rux-trip-panel__bus-groups {
+.rux-scope-trip__bus-groups {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
 }
 
-/* Same [hidden]-vs-equal-specificity issue as .rux-trip-panel__logistics-grid
+/* Same [hidden]-vs-equal-specificity issue as .rux-scope-trip__logistics-grid
    above — without this, #tp-return-bus-groups's hidden attribute would be
    silently overridden by the display: flex rule above. */
-.rux-trip-panel__bus-groups[hidden] {
+.rux-scope-trip__bus-groups[hidden] {
 	display: none;
 }
-.rux-trip-panel__bus-group {
+.rux-scope-trip__bus-group {
 	--rux-card-content-gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__bus-head {
+.rux-scope-trip__bus-head {
 	display: flex;
 }
-.rux-trip-panel__bus-head .rux-select {
+.rux-scope-trip__bus-head .rux-select {
 	flex: 1;
 }
-.rux-trip-panel__bus-hint {
+.rux-scope-trip__bus-hint {
 	font-size: var(--rux-size-xs);
 	color: var(--rux-text-disabled);
 }
 
 /* — Driver rows — */
 
-.rux-trip-panel__driver-rows {
+.rux-scope-trip__driver-rows {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__driver-row {
+.rux-scope-trip__driver-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) 96px;
 	gap: var(--rux-control-content-gap);
 	align-items: start;
 }
-.rux-trip-panel__driver-row[hidden] {
+.rux-scope-trip__driver-row[hidden] {
 	display: none;
 }
-.rux-trip-panel__driver-row--head {
+.rux-scope-trip__driver-row--head {
 	background: var(--rux-surface-1);
 }
-.rux-trip-panel__driver-row--head span {
+.rux-scope-trip__driver-row--head span {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-disabled);
@@ -679,7 +685,7 @@
    box of its own — a thin top divider is enough to separate it from the
    driver-select/pay row above (Carbon-style: sub-sections inside a boxed
    group read through typography and a divider, not a card inside a card). */
-.rux-trip-panel__relief-details {
+.rux-scope-trip__relief-details {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	grid-column: 1 / -1;
@@ -692,18 +698,18 @@
 /* 32px select shell + 28px nested status action. This composite gets its own
    class so the tighter inset and matching text offset do not affect ordinary
    actionable input groups. */
-.rux-trip-panel__driver-select > .rux-input-group__prefix {
+.rux-scope-trip__driver-select > .rux-input-group__prefix {
 	left: calc(2 * var(--rux-border-width));
 }
 
-.rux-trip-panel__driver-select .rux-trip-panel__role-label {
+.rux-scope-trip__driver-select .rux-scope-trip__role-label {
 	border-radius: calc(
 		var(--rux-radius-control)
 		- (2 * var(--rux-border-width))
 	);
 }
 
-.rux-trip-panel__driver-select.rux-input-group--prefix > .rux-select {
+.rux-scope-trip__driver-select.rux-input-group--prefix > .rux-select {
 	padding-left: calc(
 		(2 * var(--rux-border-width))
 		+ var(--rux-control-height-sm)
@@ -712,22 +718,22 @@
 }
 
 /* The button keeps standard RUX chrome; only its status glyph changes color. */
-.rux-trip-panel__role-label .rux-icon {
+.rux-scope-trip__role-label .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
 }
 
-.rux-trip-panel__role-label.rux-role--pending-assignment .rux-icon { color: var(--rux-danger); }
-.rux-trip-panel__role-label.rux-role--pending-response .rux-icon   { color: var(--rux-warning); }
-.rux-trip-panel__role-label.rux-role--confirmed .rux-icon          { color: var(--rux-success); }
-.rux-trip-panel__role-label.rux-role--declined .rux-icon           { color: var(--rux-danger); }
-.rux-trip-panel__role-col {
+.rux-scope-trip__role-label.rux-role--pending-assignment .rux-icon { color: var(--rux-danger); }
+.rux-scope-trip__role-label.rux-role--pending-response .rux-icon   { color: var(--rux-warning); }
+.rux-scope-trip__role-label.rux-role--confirmed .rux-icon          { color: var(--rux-success); }
+.rux-scope-trip__role-label.rux-role--declined .rux-icon           { color: var(--rux-danger); }
+.rux-scope-trip__role-col {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
 }
 /* — Documents — */
 
-.rux-trip-panel__doc-list {
+.rux-scope-trip__doc-list {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -735,22 +741,22 @@
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
-.rux-trip-panel__doc-list:has(.rux-trip-panel__doc-row) > .rux-trip-panel__doc-empty {
+.rux-scope-trip__doc-list:has(.rux-scope-trip__doc-row) > .rux-scope-trip__doc-empty {
 	display: none;
 }
 /* Click opens the file (Enter for keyboard). The row's own background lives
-   on .rux-trip-panel__doc-content (not the row) so it reads as a visible
+   on .rux-scope-trip__doc-content (not the row) so it reads as a visible
    pill that actually narrows as the trash icon reveals — same "push"
    effect as the input boxes on Trip Contacts, not just an invisible flex
    reflow. Icon+label share this box so the trash icon's width/margin-left
    can animate from 0 without a row-level `gap` leaving a stray space. */
-.rux-trip-panel__doc-row {
+.rux-scope-trip__doc-row {
 	display: flex;
 	align-items: center;
 	min-height: var(--rux-control-height);
 	user-select: none;
 }
-.rux-trip-panel__doc-content {
+.rux-scope-trip__doc-content {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-control-content-gap);
@@ -767,16 +773,16 @@
 	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
 }
-.rux-trip-panel__doc-row:hover .rux-trip-panel__doc-content {
+.rux-scope-trip__doc-row:hover .rux-scope-trip__doc-content {
 	background-image: linear-gradient(
 		var(--rux-button-hover-overlay),
 		var(--rux-button-hover-overlay)
 	);
 }
-.rux-trip-panel__doc-content > .rux-icon {
+.rux-scope-trip__doc-content > .rux-icon {
 	color: currentColor;
 }
-.rux-trip-panel__doc-name {
+.rux-scope-trip__doc-name {
 	flex: 1;
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
@@ -787,7 +793,7 @@
 	min-width: 0;
 	text-align: left;
 }
-.rux-trip-panel__doc-date {
+.rux-scope-trip__doc-date {
 	flex: none;
 	font-size: var(--rux-size-xs);
 	font-variant-numeric: tabular-nums;
@@ -796,7 +802,7 @@
 /* Each document owns its delete action. It stays collapsed until its row is
    hovered or the action receives keyboard focus; width and margin animate
    together so the file button shrinks to make room without leaving a gap. */
-.rux-trip-panel__doc-select {
+.rux-scope-trip__doc-select {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -817,14 +823,14 @@
 		margin-left var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-trip-panel__doc-select:hover {
+.rux-scope-trip__doc-select:hover {
 	color: var(--rux-danger-bright);
 }
 
-.rux-trip-panel__doc-select:focus-visible,
-.rux-trip-panel__payment-select:focus-visible,
-#tp-ticket-options-list .rux-trip-panel__contact-row:focus-within .rux-trip-panel__contact-select,
-#tp-ticket-options-list .rux-trip-panel__contact-select:focus-visible {
+.rux-scope-trip__doc-select:focus-visible,
+.rux-scope-trip__payment-select:focus-visible,
+#tp-ticket-options-list .rux-scope-trip__contact-row:focus-within .rux-scope-trip__contact-select,
+#tp-ticket-options-list .rux-scope-trip__contact-select:focus-visible {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
@@ -832,9 +838,9 @@
 }
 
 @media (hover: hover) {
-	.rux-trip-panel__doc-row:hover .rux-trip-panel__doc-select,
-	.rux-trip-panel__payment-row:hover .rux-trip-panel__payment-select,
-	#tp-ticket-options-list .rux-trip-panel__contact-row:hover .rux-trip-panel__contact-select {
+	.rux-scope-trip__doc-row:hover .rux-scope-trip__doc-select,
+	.rux-scope-trip__payment-row:hover .rux-scope-trip__payment-select,
+	#tp-ticket-options-list .rux-scope-trip__contact-row:hover .rux-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -843,9 +849,9 @@
 }
 
 @media (hover: none) {
-	.rux-trip-panel__doc-select,
-	.rux-trip-panel__payment-select,
-	#tp-ticket-options-list .rux-trip-panel__contact-select {
+	.rux-scope-trip__doc-select,
+	.rux-scope-trip__payment-select,
+	#tp-ticket-options-list .rux-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -856,7 +862,7 @@
 /* ==========================================================================
    Trip Editor Responsive Tuning
    --------------------------------------------------------------------------
-   Container queries read the .rux-trip-panel inline size, not viewport width.
+   Container queries read the .rux-scope-trip inline size, not viewport width.
    Native CSS custom properties are not reliable in query conditions, so keep
    these literal values grouped here as the local tuning map.
 
@@ -868,7 +874,7 @@
    ========================================================================== */
 
 @container (max-width: 520px) {
-	.rux-trip-panel__payment-fields {
+	.rux-scope-trip__payment-fields {
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		grid-template-areas:
 			"date amount"
@@ -877,21 +883,21 @@
 }
 
 @container (max-width: 320px) {
-	.rux-trip-panel__cols-2,
-	.rux-trip-panel__cols-3 {
+	.rux-scope-trip__cols-2,
+	.rux-scope-trip__cols-3 {
 		--_cols: 1;
 	}
 
-	.rux-trip-panel__contact-fields,
-	.rux-trip-panel__logistics-grid {
+	.rux-scope-trip__contact-fields,
+	.rux-scope-trip__logistics-grid {
 		grid-template-columns: 1fr;
 	}
 
-	.rux-trip-panel__doc-date {
+	.rux-scope-trip__doc-date {
 		display: none;
 	}
 
-	.rux-trip-panel__payment-fields {
+	.rux-scope-trip__payment-fields {
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-areas:
 			"date"
@@ -899,7 +905,7 @@
 			"reference";
 	}
 
-	.rux-trip-panel__payment-method {
+	.rux-scope-trip__payment-method {
 		gap: var(--rux-space-1);
 	}
 }
@@ -910,7 +916,7 @@
    same nav reflowing as the panel narrows past --rux-panel-rail-width
    (see the --railable override in css/layout/scheduler-app.css). */
 @container (max-width: 64px) {
-	.rux-surface__nav {
+	.rux-panel__nav {
 		padding-inline: 0;
 	}
 
@@ -939,9 +945,9 @@
    the tabs themselves (hidden below, along with body/footer) were the only
    thing left to hide at this width. */
 @container (max-width: 44px) {
-	.rux-surface__nav,
-	.rux-surface__body,
-	.rux-surface__footer {
+	.rux-panel__nav,
+	.rux-panel__body,
+	.rux-panel__footer {
 		display: none !important;
 	}
 }
@@ -953,20 +959,20 @@
    label like One-way, since both take the same equal share regardless of
    content — an accepted tradeoff for every button staying the same
    width). Shared by Trip Type and Billing Type. */
-.rux-trip-panel__trip-type > .rux-button {
+.rux-scope-trip__trip-type > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
 @container (max-width: 400px) {
-	.rux-trip-panel__requirements-grid {
+	.rux-scope-trip__requirements-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
 
 /* — Scoped type overrides ————————————————————————————————————————————————— */
 
-.rux-trip-panel .rux-field__label {
+.rux-scope-trip .rux-field__label {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);

@@ -4,10 +4,10 @@
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
   const drawer      = document.getElementById("fleet-panel-drawer");
-  const panelEl     = drawer.querySelector(".rux-fleet-panel");
+  const panelEl     = drawer.querySelector(".rux-scope-fleet");
   const tbody       = document.getElementById("fleet-roster-body");
-  const tabBtns     = document.querySelectorAll("[data-fleet-tabs] .rux-tab");
-  const panes       = document.querySelectorAll(".rux-fleet-panel__pane");
+  const tabBtns     = document.querySelectorAll('[data-rux-tabs][data-scope="fleet"] .rux-tab');
+  const panes       = document.querySelectorAll(".rux-scope-fleet__pane");
   const tripList     = document.getElementById("fp-trip-list");
   const saveOrderBtn = document.getElementById("fleet-save-order-btn");
   const colorSwatch   = document.getElementById("fp-color-swatch");
@@ -46,7 +46,7 @@
   function resetPanel() {
     closeDrawer();
     switchTab(tabBtns[0]);
-    panelEl.querySelector(".rux-fleet-panel__body")?.scrollTo({ top: 0, behavior: "instant" });
+    panelEl.querySelector(".rux-scope-fleet__body")?.scrollTo({ top: 0, behavior: "instant" });
   }
 
   panelToggleBtn?.addEventListener("click", () => {
@@ -174,7 +174,7 @@
   function renderTripList(trips) {
     if (!trips.length) {
       tripList.innerHTML =
-        `<li class="rux-fleet-panel__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
+        `<li class="rux-scope-fleet__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
       return;
     }
     tripList.innerHTML = trips.map((t) => {
@@ -185,9 +185,9 @@
       const badgeCls  = status === "paid" ? "rux-badge--success" : "";
       const badgeLabel = status.charAt(0).toUpperCase() + status.slice(1);
       return `
-        <li class="rux-fleet-panel__trip-item">
-          <span class="rux-fleet-panel__trip-id">${t.tripRef}</span>
-          <span class="rux-fleet-panel__trip-meta">${meta}</span>
+        <li class="rux-scope-fleet__trip-item">
+          <span class="rux-scope-fleet__trip-id">${t.tripRef}</span>
+          <span class="rux-scope-fleet__trip-meta">${meta}</span>
           <span class="rux-badge rux-badge--dot ${badgeCls}">${badgeLabel}</span>
         </li>
       `;
@@ -498,7 +498,7 @@
     tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
 
-    panelEl.querySelectorAll(".rux-fleet-panel__pane input, .rux-fleet-panel__pane textarea")
+    panelEl.querySelectorAll(".rux-scope-fleet__pane input, .rux-scope-fleet__pane textarea")
       .forEach(f => { f.value = ""; });
     colorSwatch.style.background = "";
 
@@ -850,14 +850,14 @@
 
   async function loadBusTrips(busId) {
     tripList.innerHTML =
-      `<li class="rux-fleet-panel__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+      `<li class="rux-scope-fleet__trip-item"><span class="rux-subtle">Loading…</span></li>`;
     try {
       const trips = await db.fetchBusTrips(busId);
       renderTripList(trips);
     } catch (err) {
       console.warn("Could not load bus trips:", err);
       tripList.innerHTML =
-        `<li class="rux-fleet-panel__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+        `<li class="rux-scope-fleet__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
     }
   }
 

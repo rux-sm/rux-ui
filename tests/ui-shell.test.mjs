@@ -269,7 +269,7 @@ test("menus opened inside modals are promoted above the modal layer", () => {
 	assert.match(page, /id="tp-payment-add-btn"[^>]*aria-haspopup="menu"/s);
 	assert.match(
 		popoverController,
-		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop, \.rux-surface--floating"\)\)/,
+		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop, \.rux-panel--floating"\)\)/,
 	);
 	assert.match(
 		popoverStyles,
@@ -280,7 +280,7 @@ test("menus opened inside modals are promoted above the modal layer", () => {
 test("autofill suggestions opened from windows are promoted above their surface", () => {
 	assert.match(
 		suggestionsController,
-		/panelEl\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?input\.closest\("\.rux-modal-backdrop, \.rux-surface--floating"\)/,
+		/panelEl\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?input\.closest\("\.rux-modal-backdrop, \.rux-panel--floating"\)/,
 	);
 	assert.match(
 		suggestionStyles,
@@ -343,7 +343,7 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	assert.match(page, /aria-expanded="true"[\s\S]*?aria-controls="right-panel-drawer"/);
 	assert.match(drawerMarkup, /class="scheduler-app__drawer scheduler-app__drawer--right"/);
 	assert.doesNotMatch(drawerMarkup, /scheduler-app__drawer--railable/);
-	assert.match(page, /<aside[\s\S]*?class="rux-panel rux-panel--right rux-right-panel"[\s\S]*?aria-label="Calendar Tools"/);
+	assert.match(page, /<aside[\s\S]*?class="rux-panel rux-panel--attached rux-scope-right-panel"[\s\S]*?aria-label="Calendar Tools"/);
 	assert.doesNotMatch(page, /id="opt-hide-nav"/);
 });
 
@@ -406,7 +406,7 @@ test("mini calendar navigation uses shared 44px header icon buttons", () => {
 
 test("the mini calendar is a sentinel-gated card with a floating header", () => {
 	const calendar = page.match(
-		/<section\s+class="rux-card rux-mini-cal"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-card--level-2 rux-mini-cal"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(calendar);
 	assert.match(calendar, /class="rux-card__sentinel"/);
@@ -426,7 +426,7 @@ test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
 
 test("Calendar Options is a sentinel-gated card in the Calendar panel body", () => {
 	const options = page.match(
-		/<section\s+class="rux-card rux-view-options"\s+id="rp-view-options"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-card--level-2 rux-view-options"\s+id="rp-view-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
 	assert.match(options, /class="rux-card__sentinel"/);
@@ -436,7 +436,7 @@ test("Calendar Options is a sentinel-gated card in the Calendar panel body", () 
 
 test("Trip Bar Options is a sentinel-gated card in the Calendar panel body", () => {
 	const options = page.match(
-		/<section\s+class="rux-card rux-view-options"\s+id="rp-trip-bar-options"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card rux-card--level-2 rux-view-options"\s+id="rp-trip-bar-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
 	assert.match(options, /class="rux-card__sentinel"/);
@@ -450,7 +450,7 @@ test("Driver Availability is an Assignments card in the panel body", () => {
 	)?.[0];
 	assert.ok(driversPane);
 	assert.match(driversPane, /class="rux-panel__pane rux-driver-availability"/);
-	assert.match(driversPane, /class="rux-card"/);
+	assert.match(driversPane, /class="rux-card rux-card--level-2"/);
 	assert.match(driversPane, /class="rux-card__sentinel"/);
 	assert.match(driversPane, />\s*Assignments\s*</);
 	assert.match(driversPane, /id="rp-driver-grid"/);

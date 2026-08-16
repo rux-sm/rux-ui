@@ -29,7 +29,7 @@
 		// successfully but remain hidden behind the Trip Editor surface.
 		popover.toggleAttribute(
 			"data-rux-modal-layer",
-			Boolean(anchor.closest(".rux-modal-backdrop, .rux-surface--floating")),
+			Boolean(anchor.closest(".rux-modal-backdrop, .rux-panel--floating")),
 		);
 		const placement = options.placement || "bottom-end";
 		const offset = options.offset ?? tokenPx(popover, "--rux-popover-offset", 4);

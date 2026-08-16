@@ -6,78 +6,68 @@
 
    Structure
    ---------
-   .rux-driver-panel              Flex column; width comes from the shared
+   .rux-scope-driver              Flex column; width comes from the shared
                                    drawer rule in scheduler-app.css.
-   .rux-panel__header             Shared driver name + ID + close row.
+   .rux-scope-driver__header      Mobile-only show/hide (scheduler-app.css)
+                                   layered on top of the shared .rux-panel__
+                                   header — not a pure duplicate, keeps its
+                                   own class for that reason.
    .rux-panel__nav                Shared panel navigation slot.
-   .rux-driver-panel__body        Scrollable body holding tab panes.
-   .rux-driver-panel__pane        One per section, hidden via [hidden].
+   .rux-panel__body               Scrollable body — plain .rux-panel__body
+                                   now, no unique styling of its own.
+   .rux-scope-driver__pane        One per section, hidden via [hidden].
+                                   Keeps its own class for two reasons:
+                                   driver-panel.js queries it directly (pane
+                                   switching + form field collection), and
+                                   it carries a real override
+                                   (padding-block-start: 0) beyond what
+                                   .rux-panel__pane already sets.
    .rux-panel__footer             Shared Delete + Save action row.
    ========================================================================== */
 
 /* — Panel shell — */
 
-.rux-driver-panel__drawer-open {
+.rux-scope-driver__drawer-open {
 	display: none;
 }
 
-.rux-driver-panel {
+.rux-scope-driver {
 	height: 100%;
 	container-type: inline-size;
 }
 
 /* — Body / panes — */
 
-.rux-driver-panel__pane {
+.rux-scope-driver__pane {
 	gap: var(--rux-panel-content-gap);
 	padding-block-start: 0;
 }
 
-.rux-driver-panel__pane[hidden] {
+.rux-scope-driver__pane[hidden] {
 	display: none;
-}
-
-/* — Form layout helpers — */
-
-.rux-driver-panel__cols-2 {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	column-gap: var(--rux-space-2);
-	row-gap: var(--rux-space-3);
-	align-items: start;
-}
-
-.rux-driver-panel__section-label {
-	font-size: var(--rux-label-eyebrow-size);
-	font-weight: var(--rux-label-eyebrow-weight);
-	color: var(--rux-label-eyebrow-color);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-label-eyebrow-tracking);
-	padding-bottom: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
 }
 
 /* — Profile: avatar row — */
 
-.rux-driver-panel__avatar-row {
+.rux-scope-driver__avatar-row {
 	display: flex;
 	align-items: stretch;
 	gap: var(--rux-space-4);
 }
 
-.rux-driver-panel__name-block {
+.rux-scope-driver__name-block {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
 }
 
-.rux-driver-panel__avatar-wrap {
+.rux-scope-driver__avatar-wrap {
 	position: relative;
 	flex-shrink: 0;
 }
 
-.rux-driver-panel__avatar {
+.rux-scope-driver__avatar {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -100,7 +90,7 @@
 	cursor: pointer;
 }
 
-.rux-driver-panel__avatar-main {
+.rux-scope-driver__avatar-main {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -108,14 +98,14 @@
 	height: 100%;
 }
 
-.rux-driver-panel__avatar img {
+.rux-scope-driver__avatar img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 	border-radius: inherit;
 }
 
-.rux-driver-panel__avatar-overlay {
+.rux-scope-driver__avatar-overlay {
 	position: absolute;
 	inset: 0;
 	display: flex;
@@ -127,42 +117,42 @@
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.rux-driver-panel__avatar:hover .rux-driver-panel__avatar-overlay,
-.rux-driver-panel__avatar.is-uploading .rux-driver-panel__avatar-overlay {
+.rux-scope-driver__avatar:hover .rux-scope-driver__avatar-overlay,
+.rux-scope-driver__avatar.is-uploading .rux-scope-driver__avatar-overlay {
 	opacity: 1;
 }
 
-.rux-driver-panel__avatar.is-uploading .rux-driver-panel__avatar-overlay .rux-icon {
+.rux-scope-driver__avatar.is-uploading .rux-scope-driver__avatar-overlay .rux-icon {
 	animation: rux-spin 700ms linear infinite; /* shared keyframe, utils.css */
 }
 
 /* — License: endorsement toggles — */
 
-.rux-driver-panel__endorsements {
+.rux-scope-driver__endorsements {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rux-space-2);
 }
 
-.rux-driver-panel__endorsements .rux-button {
+.rux-scope-driver__endorsements .rux-button {
 	min-width: var(--rux-control-height);
 }
 
 
 /* — Status: employment status segmented — */
 
-.rux-driver-panel__status-group {
+.rux-scope-driver__status-group {
 	width: 100%;
 }
 
-.rux-driver-panel__status-group .rux-button {
+.rux-scope-driver__status-group .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
 /* — Status: priority segmented (RPG-rarity-style tiers, 1 highest) — */
 
-.rux-driver-panel__priority-group .rux-button {
+.rux-scope-driver__priority-group .rux-button {
 	flex: 1;
 	min-width: 0;
 	gap: var(--rux-space-1);
@@ -183,47 +173,39 @@
 
 /* — Trips: read-only trip list — */
 
-.rux-driver-panel__schedule-card {
+.rux-scope-driver__schedule-card {
 	margin-bottom: var(--rux-space-4);
 	overflow: hidden;
 }
 
-.rux-driver-panel__schedule-card .rux-card__header {
+.rux-scope-driver__schedule-card .rux-card__header {
 	align-items: center;
 }
 
-.rux-driver-panel__schedule-summary {
+.rux-scope-driver__schedule-summary {
 	margin: 0;
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-sm);
 	line-height: var(--rux-line-height-sm);
 }
 
-.rux-driver-panel__schedule-actions {
+.rux-scope-driver__schedule-actions {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-2);
 	margin-top: var(--rux-space-3);
 }
 
-.rux-driver-panel__schedule-actions .rux-button {
+.rux-scope-driver__schedule-actions .rux-button {
 	width: 100%;
 	min-width: 0;
 }
 
-.rux-driver-panel__schedule-actions #dp-schedule-manage {
+.rux-scope-driver__schedule-actions #dp-schedule-manage {
 	grid-column: 1 / -1;
 }
 
-.rux-driver-panel__trip-list {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
-	padding: 0;
-	list-style: none;
-}
-
-.rux-driver-panel__trip-item {
+.rux-scope-driver__trip-item {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
@@ -233,7 +215,7 @@
 	border-radius: var(--rux-radius-md);
 }
 
-.rux-driver-panel__trip-id {
+.rux-scope-driver__trip-id {
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-size-sm);
 	color: var(--rux-accent);
@@ -241,7 +223,7 @@
 	min-width: 5rem;
 }
 
-.rux-driver-panel__trip-meta {
+.rux-scope-driver__trip-meta {
 	flex: 1;
 	font-size: var(--rux-size-sm);
 	color: var(--rux-text-muted);
@@ -251,7 +233,7 @@
 	white-space: nowrap;
 }
 
-.rux-driver-panel__trip-empty {
+.rux-scope-driver__trip-empty {
 	padding: var(--rux-space-5);
 	text-align: center;
 	color: var(--rux-text-disabled);
@@ -262,13 +244,13 @@
    Contacts/Payments elsewhere in the app — header Add + Delete-mode-toggle,
    rows below, replace-whole-set-on-save persistence. */
 
-.rux-driver-panel__timeoff-rows {
+.rux-scope-driver__timeoff-rows {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
 }
 
-.rux-driver-panel__timeoff-empty {
+.rux-scope-driver__timeoff-empty {
 	display: flex;
 	min-height: var(--rux-field-height);
 	align-items: center;
@@ -278,11 +260,11 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-driver-panel__timeoff-rows:has([data-timeoff-row]) > .rux-driver-panel__timeoff-empty {
+.rux-scope-driver__timeoff-rows:has([data-timeoff-row]) > .rux-scope-driver__timeoff-empty {
 	display: none;
 }
 
-.rux-driver-panel__timeoff-row {
+.rux-scope-driver__timeoff-row {
 	display: flex;
 	align-items: flex-end;
 	gap: var(--rux-space-2);
@@ -292,7 +274,7 @@
 	border-radius: var(--rux-radius-md);
 }
 
-.rux-driver-panel__timeoff-fields {
+.rux-scope-driver__timeoff-fields {
 	flex: 1;
 	min-width: 0;
 	display: flex;
@@ -300,19 +282,10 @@
 	gap: var(--rux-space-2);
 }
 
-/* — Narrow panel — */
-
-@container (max-width: 360px) {
-	.rux-driver-panel__cols-2 {
-		grid-template-columns: 1fr;
-		gap: var(--rux-space-4);
-	}
-}
-
 /* — Mobile — */
 
 @media (max-width: 480px) {
-	.scheduler-app__drawer .rux-driver-panel {
+	.scheduler-app__drawer .rux-scope-driver {
 		width: 100dvw;
 		max-width: 100dvw;
 	}

@@ -20,7 +20,7 @@
 	"use strict";
 
 	const drawer = document.getElementById("customer-panel-drawer");
-	const panelEl = drawer?.querySelector(".rux-customer-panel");
+	const panelEl = drawer?.querySelector(".rux-scope-customer");
 	const tbody = document.getElementById("customer-roster-body");
 	const tripList = document.getElementById("cp-trip-list");
 	const searchInput = document.getElementById("customer-search");
@@ -191,20 +191,20 @@
 
 	async function loadContactTrips(contactId) {
 		if (!tripList) return;
-		tripList.innerHTML = `<li class="rux-customer-panel__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+		tripList.innerHTML = `<li class="rux-scope-customer__trip-item"><span class="rux-subtle">Loading…</span></li>`;
 		try {
 			const db = await getContactsDb();
 			const trips = await db.fetchContactTrips(contactId);
 			if (selectedId !== contactId) return;
 			if (!trips.length) {
-				tripList.innerHTML = `<li class="rux-customer-panel__trip-item"><span class="rux-subtle">No trips yet.</span></li>`;
+				tripList.innerHTML = `<li class="rux-scope-customer__trip-item"><span class="rux-subtle">No trips yet.</span></li>`;
 				return;
 			}
 			tripList.innerHTML = trips
 				.map((t) => {
 					const label = [t.trip_ref, t.customer, t.destination].filter(Boolean).join(" — ") || "Trip";
-					return `<li class="rux-customer-panel__trip-item">
-						<span class="rux-customer-panel__trip-date">${escHtml(t.start_date || "")}</span>
+					return `<li class="rux-scope-customer__trip-item">
+						<span class="rux-scope-customer__trip-date">${escHtml(t.start_date || "")}</span>
 						<span>${escHtml(label)}</span>
 					</li>`;
 				})
@@ -212,7 +212,7 @@
 		} catch (err) {
 			if (selectedId !== contactId) return;
 			console.warn("Could not load customer trips:", err);
-			tripList.innerHTML = `<li class="rux-customer-panel__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+			tripList.innerHTML = `<li class="rux-scope-customer__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
 		}
 	}
 
@@ -221,7 +221,7 @@
 	function clearPanel() {
 		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
 		selectedId = null;
-		panelEl.querySelectorAll(".rux-customer-panel__pane input").forEach((f) => { f.value = ""; });
+		panelEl.querySelectorAll(".rux-scope-customer__pane input").forEach((f) => { f.value = ""; });
 		if (tripList) tripList.innerHTML = "";
 	}
 

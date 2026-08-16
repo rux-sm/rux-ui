@@ -166,6 +166,7 @@
 	flex-direction: column;
 	box-sizing: border-box;
 	container-type: inline-size;
+	font-family: var(--rux-font-sans-condensed);
 	background-color: var(--_surface);
 	border-radius: var(--rux-trip-bar-radius);
 	border: var(--rux-trip-bar-border-width) solid var(--_outline);

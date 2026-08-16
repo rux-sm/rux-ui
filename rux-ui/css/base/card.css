@@ -88,17 +88,17 @@
 }
 
 /* Applied automatically (not an opt-in modifier) to every plain card —
-   no level, no --elevated/--recessed — nested inside a floating surface
-   (rux-ui/css/base/surface.css). A card dropped into the trip editor,
+   no level, no --elevated/--recessed — nested inside a floating panel
+   (rux-ui/css/base/panel.css). A card dropped into the trip editor,
    for instance, should read as a distinct box against the floating
    window's own background without needing a level added by hand
    everywhere. The exclusion list covers all four levels plus both
    dynamic modifiers — an explicit choice on the card always wins over
    this ambient default; this only ever fills in when nothing else was
    set. */
-.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__header,
-.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__body,
-.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__footer {
+.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__header,
+.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__body,
+.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)) > .rux-card__footer {
 	background: var(--rux-card-floating-bg);
 }
 
@@ -115,7 +115,7 @@
    radius are both --rux-radius-0) — .rux-card itself has no radius of its
    own to match rounded corners with, so if either ever gains real
    rounding this would need a matching radius here too. */
-.rux-surface--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)):has(> .rux-card__body) {
+.rux-panel--floating .rux-card:not(:is(.rux-card--level-1, .rux-card--level-2, .rux-card--level-3, .rux-card--level-4, .rux-card--elevated, .rux-card--recessed)):has(> .rux-card__body) {
 	box-shadow: var(--rux-card-floating-shadow);
 }
 

@@ -167,7 +167,7 @@
 		const badgeClass = confirmed
 			? (statusKey === "paid_full" ? "rux-badge--success" : "rux-badge--info")
 			: "rux-badge--danger";
-		el.className = `rux-badge ${badgeClass} rux-trip-panel__billing-status`;
+		el.className = `rux-badge ${badgeClass} rux-scope-trip__billing-status`;
 		el.innerHTML = meta.icon
 			? `<span class="rux-icon">${meta.icon}</span>${meta.label}`
 			: meta.label;

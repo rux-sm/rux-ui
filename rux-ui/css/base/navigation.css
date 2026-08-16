@@ -279,17 +279,17 @@
 }
 
 /* Independent colors for attached tabs specifically inside a floating
-   surface (rux-ui/css/base/surface.css) — the driver/fleet/tool panels'
+   panel (rux-ui/css/base/panel.css) — the driver/fleet/tool panels'
    own attached tabs are untouched, still reading --rux-tabs-attached-tab-*
    above. Each selector here is one class more specific than its shared
    counterpart, so it wins regardless of which file loads second. */
-.rux-surface--floating .rux-tabs--attached > .rux-tab {
+.rux-panel--floating .rux-tabs--attached > .rux-tab {
 	background-color: var(--rux-tabs-floating-tab-bg);
 	color: var(--rux-tabs-floating-tab-fg);
 }
 
-.rux-surface--floating .rux-tabs--attached > .rux-tab.is-active,
-.rux-surface--floating .rux-tabs--attached > .rux-tab[aria-selected="true"] {
+.rux-panel--floating .rux-tabs--attached > .rux-tab.is-active,
+.rux-panel--floating .rux-tabs--attached > .rux-tab[aria-selected="true"] {
 	background-color: var(--rux-tabs-floating-tab-selected-bg);
 	color: var(--rux-tabs-floating-tab-selected-fg);
 }

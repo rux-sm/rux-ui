@@ -1,7 +1,7 @@
 /* ==========================================================================
    TRIP DIALOG
    --------------------------------------------------------------------------
-   Movable, resizable application window hosting the .rux-trip-panel form.
+   Movable, resizable application window hosting the .rux-scope-trip form.
    ========================================================================== */
 
 .rux-trip-dialog {
@@ -17,7 +17,7 @@
 	overflow: hidden;
 }
 
-.rux-trip-dialog .rux-trip-panel {
+.rux-trip-dialog .rux-scope-trip {
 	flex: 1 1 auto;
 	width: 100%;
 	height: auto;

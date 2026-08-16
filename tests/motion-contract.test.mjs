@@ -55,7 +55,7 @@ test("structural panels use 150ms entrance and exit contracts", () => {
 	);
 	assert.match(
 		manifestStyles,
-		/\.rux-manifest-window__passenger-panel\.is-open[\s\S]*?var\(--rux-panel-enter-easing\)/,
+		/\.rux-scope-manifest__passenger-panel\.is-open[\s\S]*?var\(--rux-panel-enter-easing\)/,
 	);
 	assert.match(
 		drawerController,

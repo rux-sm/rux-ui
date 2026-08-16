@@ -3,17 +3,17 @@
    Copy-ready, driver-specific assignment summaries for the loaded schedule.
    ========================================================================== */
 
-.rux-right-panel__footer-group {
+.rux-scope-right-panel__footer-group {
 	display: flex;
 	width: 100%;
 	gap: var(--rux-button-group-gap);
 }
 
-.rux-right-panel__footer-group[hidden] {
+.rux-scope-right-panel__footer-group[hidden] {
 	display: none;
 }
 
-.rux-right-panel__footer-group > .rux-button {
+.rux-scope-right-panel__footer-group > .rux-button {
 	flex: 1;
 	min-width: 0;
 }

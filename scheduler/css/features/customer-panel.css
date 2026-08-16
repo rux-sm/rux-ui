@@ -10,57 +10,33 @@
 
    Structure
    ---------
-   .rux-customer-panel           Flex column; width from the shared drawer
+   .rux-scope-customer           Flex column; width from the shared drawer
                                   rule in scheduler-app.css.
-   .rux-customer-panel__body     Scrollable body.
-   .rux-customer-panel__pane     Form fields.
+   .rux-panel__body              Scrollable body — plain .rux-panel__body
+                                  now, no unique styling of its own.
+   .rux-scope-customer__pane     Form fields. Kept as its own class only
+                                  because customers-panel.js queries it
+                                  directly (form reset) — its CSS is a pure
+                                  .rux-panel__pane duplicate otherwise.
    .rux-panel__footer            Shared Delete + Clear + Save action row.
    ========================================================================== */
 
 /* — Panel shell — */
 
-.rux-customer-panel {
+.rux-scope-customer {
 	height: 100%;
 }
 
-.rux-customer-panel__pane {
+.rux-scope-customer__pane {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-panel-content-gap);
 }
 
-.rux-customer-panel__cols-2 {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	column-gap: var(--rux-space-2);
-	row-gap: var(--rux-space-3);
-	align-items: start;
-}
-
 /* — Trips: read-only trip history, the payoff of linking contacts to
    trips instead of only ever copying freetext (see contacts-patch.sql) — */
 
-.rux-customer-panel__section-label {
-	font-size: var(--rux-label-eyebrow-size);
-	font-weight: var(--rux-label-eyebrow-weight);
-	color: var(--rux-label-eyebrow-color);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-label-eyebrow-tracking);
-	padding-bottom: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-border-subtle);
-	line-height: 1;
-}
-
-.rux-customer-panel__trip-list {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-2);
-	margin-top: var(--rux-space-2);
-	padding: 0;
-	list-style: none;
-}
-
-.rux-customer-panel__trip-item {
+.rux-scope-customer__trip-item {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
@@ -71,7 +47,7 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-customer-panel__trip-date {
+.rux-scope-customer__trip-date {
 	font-family: var(--rux-font-mono);
 	color: var(--rux-text-muted);
 	min-width: 5.5rem;

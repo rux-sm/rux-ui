@@ -32,11 +32,11 @@
 
 .scheduler-app {
 	--scheduler-app-gap: var(--rux-space-5);
-	/* Outer frame around the main schedule/workspace card — same asymmetric
-	   shape as --rux-panel-footer-padding (top 2, inline+bottom 3), kept as
-	   its own token rather than reusing --scheduler-app-gap since that token
-	   also drives the (still-uniform) inter-panel gutter and inner content
-	   insets below, which aren't part of this ask. */
+	/* Outer frame around the main schedule/workspace card — an asymmetric
+	   shape (top 2, inline+bottom 3), kept as its own token rather than
+	   reusing --scheduler-app-gap since that token also drives the
+	   (still-uniform) inter-panel gutter and inner content insets below,
+	   which aren't part of this ask. */
 	--scheduler-app-module-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
 	/* Calendar is a view-specific split workspace, not a global shell panel.
 	   The canvas is inset while the tools panel remains full-bleed. The open
@@ -207,7 +207,7 @@
 	margin-inline-end: var(--calendar-workspace-frame-inset-inline);
 }
 
-.scheduler-app__module[data-module="calendar"] .rux-right-panel {
+.scheduler-app__module[data-module="calendar"] .rux-scope-right-panel {
 	border-inline-start: var(--rux-panel-right-border);
 }
 
@@ -373,7 +373,7 @@
 	transition: none;
 }
 
-.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
+.scheduler-app__drawer :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel) {
 	position: absolute;
 	inset-block: 0;
 	right: 0;
@@ -387,7 +387,7 @@
 
 }
 
-.scheduler-app__drawer:not(.is-open) :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel) {
+.scheduler-app__drawer:not(.is-open) :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel) {
 	display: none;
 }
 
@@ -415,7 +415,7 @@
    whatever the drawer's outer box currently is, whether animating or settled.
    Not rail-specific — a plain sizing rule, so it's not scoped to desktop
    below like the rest of this block. */
-.scheduler-app__drawer--railable :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel) {
+.scheduler-app__drawer--railable :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver) {
 	width: 100%;
 	min-width: 0;
 }
@@ -450,17 +450,17 @@
 	/* Open panels also avoid borders against the window. Keep only the
 	   workspace-facing divider: right edge on the left panel, left edge on
 	   the right panel. */
-	.scheduler-app__drawer--railable.is-open .rux-trip-panel {
+	.scheduler-app__drawer--railable.is-open .rux-scope-trip {
 		border: 0;
 		border-right: var(--rux-left-panel-border);
 	}
 
-	.scheduler-app__drawer--railable.is-open .rux-driver-panel {
+	.scheduler-app__drawer--railable.is-open .rux-scope-driver {
 		border: 0;
 		border-right: var(--rux-left-panel-border);
 	}
 
-	.scheduler-app__drawer--railable.is-open .rux-right-panel {
+	.scheduler-app__drawer--railable.is-open .rux-scope-right-panel {
 		border: 0;
 		border-left: var(--rux-panel-right-border);
 	}
@@ -485,7 +485,7 @@
 
 	/* Keep only the edge facing the workspace so the collapsed rail reads
 	   as a divider without boxing in its top, bottom, or outside edge. */
-	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel) {
+	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver) {
 		display: flex;
 		background: var(--rux-panel-rail-bg);
 		color: var(--rux-panel-rail-fg);
@@ -494,15 +494,15 @@
 		pointer-events: none;
 	}
 
-	.scheduler-app__drawer--railable:not(.is-open) .rux-trip-panel {
+	.scheduler-app__drawer--railable:not(.is-open) .rux-scope-trip {
 		border-right: var(--rux-panel-rail-border);
 	}
 
-	.scheduler-app__drawer--railable:not(.is-open) .rux-driver-panel {
+	.scheduler-app__drawer--railable:not(.is-open) .rux-scope-driver {
 		border-right: var(--rux-panel-rail-border);
 	}
 
-	.scheduler-app__drawer--railable:not(.is-open) .rux-right-panel {
+	.scheduler-app__drawer--railable:not(.is-open) .rux-scope-right-panel {
 		border-left: var(--rux-panel-rail-border);
 	}
 
@@ -512,7 +512,7 @@
 	   also prevents descendants with their own positioning/paint
 	   containment from leaking through the narrow panel clip. */
 	.scheduler-app__drawer--railable:not(.is-open)
-		> :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel)
+		> :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		display: none !important;
 	}
@@ -613,7 +613,7 @@
 	width: var(--drawer-width, var(--scheduler-app-right-drawer-default-width));
 }
 
-.scheduler-app__drawer--right :is(.rux-right-panel) {
+.scheduler-app__drawer--right :is(.rux-scope-right-panel) {
 	position: absolute;
 	inset-block: 0;
 	left: 0;
@@ -625,13 +625,13 @@
 
 /* With --railable the panel fills live drawer width and stays rendered;
    without it the base display:none-when-closed rule above still applies. */
-.scheduler-app__drawer--right:not(.is-open):not(.scheduler-app__drawer--railable) :is(.rux-right-panel) {
+.scheduler-app__drawer--right:not(.is-open):not(.scheduler-app__drawer--railable) :is(.rux-scope-right-panel) {
 	display: none;
 }
 
 /* — Right panel shell — */
 
-.rux-right-panel {
+.rux-scope-right-panel {
 	position: relative;
 	box-sizing: border-box;
 	height: 100%;
@@ -643,7 +643,7 @@
 /* The Calendar tools panel now reopens from its workspace-header control.
    These rules remain for older railable right-panel consumers. */
 
-.rux-right-panel__drawer-open {
+.rux-scope-right-panel__drawer-open {
 	display: none;
 }
 
@@ -662,7 +662,7 @@
    (base/panel.css's .rux-panel__pane), so the track already stretches to
    the pane's full width by default flex-item behavior; flex: 1 on the
    buttons is what actually splits that width evenly, same recipe as
-   .rux-trip-panel__trip-type's Round/One-way/Split. */
+   .rux-scope-trip__trip-type's Round/One-way/Split. */
 #trip-view-group > .rux-button {
 	flex: 1;
 	min-width: 0;
@@ -674,9 +674,9 @@
    gated card header (card.css's .rux-card__header.is-stuck) now owns that
    shadow duty as the user scrolls past it, so the nav showing its own at
    the same time doubled it up right above the card header's — same fix,
-   same reasoning, as .rux-trip-panel's own suppression in
+   same reasoning, as .rux-scope-trip's own suppression in
    trip-panel.css. */
-.rux-right-panel > .rux-panel__nav.is-scrolled {
+.rux-scope-right-panel > .rux-panel__nav.is-scrolled {
 	box-shadow: none;
 }
 
@@ -1370,14 +1370,14 @@
    Trip and right panel no longer have a header at all — their tabs are the
    top-most element now (desktop closes via each one's own resize gutter),
    and their own mobile-only close buttons below handle what this used to. */
-.rux-driver-panel__header {
+.rux-scope-driver__header {
 	display: none;
 }
 
 /* :is(.is-open, .is-closing), not just .is-open — matches the mobile close
    animation too, so the header doesn't vanish a frame before the panel
    itself finishes sliding away. */
-.scheduler-app__drawer:is(.is-open, .is-closing) .rux-driver-panel__header {
+.scheduler-app__drawer:is(.is-open, .is-closing) .rux-scope-driver__header {
 	display: flex;
 }
 
@@ -1423,14 +1423,14 @@
 	   two action buttons in its group, or a locale with longer labels.
 
 	   #rp-panel-footer, not the bare class — driver-week-info.css's own
-	   unconditional .rux-right-panel__footer-group { width:100% } rule
+	   unconditional .rux-scope-right-panel__footer-group { width:100% } rule
 	   loads later in the cascade (components.css imports this file before
 	   the <link> for driver-week-info.css in index.html), so at equal
 	   class-only specificity that rule silently won regardless of this
 	   media query the first time this shipped. The footer's own ID lifts
 	   this above that rule for good, rather than depending on file order
 	   staying the way it happens to be today. */
-	#rp-panel-footer .rux-right-panel__footer-group {
+	#rp-panel-footer .rux-scope-right-panel__footer-group {
 		width: auto;
 		flex: 1 1 auto;
 		min-width: 0;
@@ -1459,7 +1459,7 @@
 	   for this to travel into/out of (their own resize gutters handle
 	   open/close instead), so floating this button over their tabs would
 	   just overlap them with no header to visually "land" in. */
-	.scheduler-app__drawer--railable .rux-driver-panel__drawer-open {
+	.scheduler-app__drawer--railable .rux-scope-driver__drawer-open {
 		display: inline-flex;
 		position: absolute;
 		/* The persistent toggle is a sibling of the panel header, so it does not
@@ -1477,12 +1477,12 @@
 			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing);
 	}
 
-	.scheduler-app__drawer--railable.is-open .rux-driver-panel__drawer-open {
+	.scheduler-app__drawer--railable.is-open .rux-scope-driver__drawer-open {
 		left: calc(100% - var(--rux-space-3) - var(--rux-button-height-header));
 		transform: none;
 	}
 
-	.scheduler-app__drawer--railable.is-collapsing .rux-driver-panel__drawer-open {
+	.scheduler-app__drawer--railable.is-collapsing .rux-scope-driver__drawer-open {
 		left: calc((100% - var(--rux-button-height-header)) / 2);
 		transform: none;
 	}
@@ -1522,7 +1522,7 @@
 	}
 
 	.scheduler-app__drawer--railable
-		> :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel)
+		> :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		transition:
 			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing),
@@ -1530,7 +1530,7 @@
 	}
 
 	.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> :is(.rux-trip-panel, .rux-right-panel, .rux-driver-panel)
+		> :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		opacity: 0;
 		transform: translateX(-4px);
@@ -1538,7 +1538,7 @@
 	}
 
 	.scheduler-app__drawer--right.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> .rux-right-panel
+		> .rux-scope-right-panel
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		transform: translateX(4px);
 	}
@@ -1549,9 +1549,9 @@
 	   mobile drawer is also <=44px wide, which can trigger their container
 	   query accidentally; mobile uses workspace panel controls instead. */
 	.scheduler-app__drawer > :is(
-		.rux-trip-panel__drawer-open,
-		.rux-right-panel__drawer-open,
-		.rux-driver-panel__drawer-open
+		.rux-scope-trip__drawer-open,
+		.rux-scope-right-panel__drawer-open,
+		.rux-scope-driver__drawer-open
 	) {
 		display: none;
 	}
@@ -1611,7 +1611,7 @@
 			opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
 	}
 
-	.scheduler-app__drawer :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel, .rux-right-panel) {
+	.scheduler-app__drawer :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel, .rux-scope-right-panel) {
 		inset-block: 0;
 		right: 0;
 		left: 0;
@@ -1621,7 +1621,7 @@
 		border-radius: 0;
 	}
 
-	.scheduler-app__drawer.is-closing :is(.rux-trip-panel, .rux-fleet-panel, .rux-driver-panel, .rux-passenger-panel, .rux-right-panel) {
+	.scheduler-app__drawer.is-closing :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel, .rux-scope-right-panel) {
 		display: flex;
 	}
 
@@ -1874,7 +1874,27 @@
 	   out of sync the way a hand-copied number in two places eventually
 	   does. */
 	.scheduler-app__module[data-module="calendar"] > .rux-workspace {
-		--_mobile-toolbar-height: 44px;
+		--_mobile-toolbar-height: calc(
+			var(--rux-button-height-header)
+			+ var(--rux-space-4)
+			+ var(--rux-space-2)
+			+ var(--rux-border-width)
+			+ env(safe-area-inset-bottom, 0px)
+		);
+	}
+
+	/* Prev/Today/Next + the panel toggle move into the fixed bottom bar
+	   below, so the top header is left with just the week label — center
+	   it now that it isn't sharing the row with anything else. The grid's
+	   second column (the toolbar's track) sizes to 0 once the toolbar is
+	   taken out of flow by position:fixed, so .rux-workspace__nav already
+	   spans the header's full width; centering the title inside it is
+	   enough; no change needed to the grid itself. Un-setting the title's
+	   desktop left padding keeps the centering visually true instead of
+	   skewed toward the right. */
+	.scheduler-app__module[data-module="calendar"] .rux-workspace__title {
+		padding-left: 0;
+		text-align: center;
 	}
 
 	/* display:grid, not the desktop's flex justify-content:flex-end — a
@@ -1921,7 +1941,7 @@
 	   its content, opening up real screen space for the fixed bar to
 	   occupy instead of overlap. */
 	.scheduler-app__module[data-module="calendar"] .calendar-app__viewport {
-		padding-bottom: calc(var(--_mobile-toolbar-height) + env(safe-area-inset-bottom, 0px));
+		padding-bottom: var(--_mobile-toolbar-height);
 	}
 
 }

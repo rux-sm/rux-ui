@@ -614,7 +614,7 @@
 
   function publishBilling(config) {
     billingConfig = window.RuxBilling?.normalizeConfig?.(config) || config;
-    window.RuxBilling?.applyToTripPanel?.(document.querySelector(".rux-trip-panel"));
+    window.RuxBilling?.applyToTripPanel?.(document.querySelector(".rux-scope-trip"));
     renderBillingSettings(billingConfig);
   }
 

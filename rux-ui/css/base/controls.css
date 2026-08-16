@@ -579,7 +579,7 @@
 /* Print schedule modal — Orientation and Report type are always exactly two
    options, so split the track evenly instead of sizing each segment to its
    own label (same recipe as #trip-view-group in scheduler-app.css and
-   .rux-trip-panel__trip-type). */
+   .rux-scope-trip__trip-type). */
 #ps-orientation-group > .rux-button,
 #ps-report-type-group > .rux-button {
 	flex: 1;

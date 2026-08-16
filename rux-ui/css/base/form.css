@@ -788,7 +788,7 @@
 	/* Same dim token its empty/placeholder-text neighbors use (--rux-input-
 	   placeholder-fg, not --rux-text-muted — muted is a full step brighter and
 	   was still visibly heavier than the placeholders next to it). The four
-	   status classes in trip-panel.css (higher specificity: .rux-trip-panel
+	   status classes in trip-panel.css (higher specificity: .rux-scope-trip
 	   .rux-output.is-balance-*) still override this the moment there's an
 	   actual balance worth calling out. */
 	color: var(--rux-input-placeholder-fg);

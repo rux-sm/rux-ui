@@ -755,7 +755,7 @@
 	border-radius: var(--rux-radius-md);
 }
 
-/* Opened from inside the trip editor's own .rux-surface--floating
+/* Opened from inside the trip editor's own .rux-panel--floating
    (--rux-z-modal, 400) — the flat --rux-z-dropdown (100) above would
    render this panel behind the dialog it's popping out of. Same
    promotion js/core/suggestions.js's own dropdown already gets, toggled

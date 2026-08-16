@@ -1,46 +1,46 @@
 /* ==========================================================================
    PANEL
    --------------------------------------------------------------------------
-   Structural panel shell and its optional anatomy: header, navigation, body,
-   panes, and footer. Placement and drawer behavior belong to layout CSS.
+   The outer-container primitive for any window/panel/dialog-shaped thing:
+   Floating Window, attached (docked) panel, Modal, and Popover-surface/Menu
+   all share this one shell. Header/nav/body/footer all live inside one
+   bordered, clipped unit — a title bar reads as part of the chrome here,
+   unlike .rux-card (see card.css), whose header floats above an unboxed
+   body instead. The two components solve different problems and should
+   keep looking different.
+
+   Position is a modifier, not a separate component:
+     .rux-panel--attached   docked/sidebar panel (Calendar Tools, Fleet,
+                             Driver, Customer editors)
+     .rux-panel--floating   draggable window (Trip editor, Manifest,
+                             Request inbox, Trip Finder)
+     .rux-panel--modal      screen-blocking dialog
+     .rux-panel--anchored   popover / menu surface
+     .rux-panel--elevated   standalone lift, no position context
+
+   Everything below this line that ISN'T gated behind a position modifier —
+   .rux-panel__title, .rux-panel__pane, .rux-panel__tabs — is shared across
+   every position and every consumer regardless of which modifier it uses.
    ========================================================================== */
 
 .rux-panel {
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
-	overflow: clip;
-	background: var(--rux-panel-bg);
-	color: var(--rux-panel-fg);
-	border-inline: var(--rux-panel-border-inline);
-	border-block: var(--rux-panel-border-block);
-	border-radius: var(--rux-panel-radius);
-	box-shadow: var(--rux-panel-shadow);
+	overflow: hidden;
 	isolation: isolate;
-}
-
-.rux-panel__header,
-.rux-panel__nav,
-.rux-panel__tabs,
-.rux-panel__footer {
-	flex: none;
+	color: var(--rux-panel-fg);
 }
 
 .rux-panel__header {
+	flex: none;
 	display: flex;
-	min-height: var(--rux-panel-header-min-height);
 	align-items: center;
 	justify-content: space-between;
-	gap: var(--rux-panel-content-gap);
-	padding: var(--rux-panel-header-padding);
-	/* Vertical padding matches .rux-workspace__header's space-3 (not the
-	   shared --rux-panel-padding's space-4) so both headers land on the
-	   same 56px height: control-height + space-3 top/bottom. */
-	padding-block: var(--rux-space-2);
-	position: relative;
-	z-index: 2;
-	background: var(--rux-panel-header-bg);
-	box-shadow: var(--rux-panel-header-shadow);
+	gap: var(--rux-surface-content-gap);
+	height: var(--rux-surface-header-height);
+	font-weight: var(--rux-surface-header-weight);
+	border-bottom: var(--rux-surface-header-border);
 }
 
 .rux-panel__title {
@@ -55,13 +55,51 @@
 	padding-inline: var(--rux-space-0);
 }
 
+/* Tabs-as-header slot — optional, stacks below __header or stands alone as
+   the top region. Not attached-specific despite living near the "attached"
+   token group below — a floating window can stack header + nav this way
+   (a title bar, then tabs via .rux-panel__nav--attached) too. */
+.rux-panel__nav {
+	flex: none;
+}
+
+/* Attached-tabs look for .rux-panel__nav — flush, edge-to-edge, tabs own
+   their own borders. A style modifier on the nav itself, independent of
+   the panel's own position modifier (--floating/--attached/etc.) — not to
+   be confused with .rux-panel--attached below, which is about POSITION,
+   not tab styling. */
+.rux-panel__nav--attached {
+	padding: 0;
+	border-top: 0;
+	border-bottom: var(--rux-panel-nav-border);
+	padding-bottom: var(--rux-panel-tabs-padding);
+	border-radius: 0;
+	background: transparent;
+}
+
+.rux-panel__nav--attached + .rux-panel__body {
+	background: transparent;
+	border: var(--rux-tabs-attached-pane-border);
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+}
+
+.rux-panel__nav--attached + .rux-panel__body:has(+ .rux-panel__footer) {
+	border-bottom: 0;
+}
+
+/* Structural only — tabs inside a nav read full width regardless of which
+   modifier owns that nav's own background/border/padding below. */
+.rux-panel__nav > .rux-tabs {
+	width: 100%;
+}
+
 .rux-panel__body {
 	flex: 1 1 auto;
 	min-height: 0;
 	overflow-y: auto;
 	overscroll-behavior: contain;
-	position: relative;
-	z-index: 0;
 }
 
 .rux-panel__pane {
@@ -75,73 +113,309 @@
 	display: none;
 }
 
-.rux-panel__nav,
+/* Tab-strip-specific chrome — currently unused by any consumer (every one
+   today puts its tabs directly in .rux-panel__nav) but kept as a
+   documented, ready-to-use part. */
 .rux-panel__tabs {
+	flex: none;
 	min-height: auto;
 	scrollbar-width: none;
 	position: relative;
 	z-index: 1;
 	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
 	border-top: var(--rux-panel-nav-border);
-
-}
-
-.rux-panel__nav {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-panel-content-gap);
-	padding: var(--rux-panel-nav-padding);
-	overflow: visible;
-	background: var(--rux-panel-nav-background);
-	border-bottom: var(--rux-panel-nav-border);
-}
-
-.rux-panel__tabs {
 	padding: var(--rux-panel-tabs-padding);
 	overflow-x: auto;
 }
 
-.rux-panel__nav > .rux-tabs {
-	width: 100%;
-}
-
-/* Solid at the very top; elevated once .rux-panel__body has scrolled
-   underneath it (.is-scrolled toggled by initPanelScrollEdges,
-   js/core/controls.js). */
-.rux-panel__nav.is-scrolled,
 .rux-panel__tabs.is-scrolled {
 	box-shadow: var(--rux-panel-nav-shadow);
 }
 
-.rux-panel__nav::-webkit-scrollbar,
 .rux-panel__tabs::-webkit-scrollbar {
 	display: none;
 }
 
 .rux-panel__footer {
+	flex: none;
 	display: flex;
-	min-height: auto;
+	align-items: center;
+	justify-content: flex-end;
 	gap: var(--rux-button-group-gap);
-	padding: var(--rux-panel-footer-padding);
-	background: var(--rux-panel-footer-bg);
-	border-top: var(--rux-panel-footer-border);
-	position: relative;
-	z-index: 2;
-	transition: box-shadow var(--rux-duration-base) var(--rux-ease-out);
-	box-shadow: var(--rux-panel-footer-shadow);
+	padding: var(--rux-surface-padding-block) var(--rux-surface-padding-inline);
 }
 
 .rux-panel__footer[hidden] {
 	display: none;
 }
 
-.rux-panel__footer > .rux-button {
+/* Even-fill default — only when the footer is *purely* two or more
+   buttons and nothing else. :not(:has(> :not(.rux-button))) excludes any
+   footer with a non-button child (doc viewer's .rux-panel__spacer, trip
+   envelope's driver <select>) — those already have their own intentional
+   layout (buttons compact, a spacer eating the remaining space) that
+   stretching would break. :has(> .rux-button ~ .rux-button) excludes a
+   single-button footer (request inbox's "New request") — one button
+   stretched to the full footer width isn't "evenly filled," it's just
+   stretched, and loses its natural right-aligned look for no reason. */
+.rux-panel__footer:not(:has(> :not(.rux-button))):has(> .rux-button ~ .rux-button) > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-panel__footer > .rux-button .rux-button__label {
+/* ── Position: attached ───────────────────────────────────────────────── */
+
+.rux-panel--attached {
+	background: var(--rux-surface-attached-bg);
+	border: var(--rux-surface-attached-border);
+	border-radius: var(--rux-surface-attached-radius);
+	box-shadow: var(--rux-surface-attached-shadow);
+	min-width: var(--rux-surface-min-width);
+	transition:
+		background-color var(--rux-surface-motion-duration) var(--rux-surface-standard-easing),
+		box-shadow var(--rux-surface-motion-duration) var(--rux-surface-standard-easing);
+}
+
+.rux-panel--attached > .rux-panel__header {
+	background: var(--rux-surface-attached-header-bg);
+	padding: var(--rux-surface-attached-header-padding);
+}
+
+.rux-panel--attached > .rux-panel__nav {
+	background: var(--rux-surface-nav-bg);
+	border: var(--rux-surface-nav-border);
+	padding: var(--rux-surface-nav-padding);
+}
+
+/* The backdrop a titled-region card sits on. An attached panel with no
+   nested .rux-card at all already reads as "level 1" just from this — its
+   content sits directly against the same --rux-card-level-1-bg a plain
+   .rux-card--level-1 would use, no wrapper needed. A panel that DOES
+   subdivide its body into titled cards (the tool panel's mini calendar /
+   Calendar Options / Trip Bar Options, each their own single-titled-region
+   card — see docs/cards.md) needs each of those to be --level-2, one step
+   deeper than this backdrop, or they'd blend into it. Equal specificity to
+   .rux-panel__nav--attached + .rux-panel__body's own transparent
+   background above, declared later in this file so it wins — floating
+   windows want that transparent rule instead (their own shell already sits
+   at the elevation a card would have had to pass through; see "Floating
+   surfaces skip a layer on purpose" in tokens.css), so this only overrides
+   it for --attached, not --floating. */
+.rux-panel--attached > .rux-panel__body {
+	background: var(--rux-card-level-1-bg);
+}
+
+/* Only cast while __body has scrolled under it (.is-scrolled, toggled by
+   initPanelScrollEdges, js/core/controls.js) — flat/solid at rest, elevated
+   once there's content underneath to separate from. */
+.rux-panel--attached > .rux-panel__nav.is-scrolled {
+	box-shadow: var(--rux-surface-nav-shadow);
+}
+
+.rux-panel--attached > .rux-panel__footer {
+	background: var(--rux-surface-attached-footer-bg);
+	border-top: var(--rux-surface-attached-footer-border);
+}
+
+.rux-panel--attached > .rux-panel__footer.is-scrolled {
+	box-shadow: var(--rux-surface-attached-footer-shadow);
+}
+
+/* Collapsed rail state — desktop-only narrow icon strip a railable panel
+   settles into instead of fully closing. See .scheduler-app__drawer--railable,
+   layout/scheduler-app.css, for the surrounding drawer mechanics this state
+   plugs into. */
+.rux-panel--attached.is-rail {
+	background: var(--rux-surface-rail-bg);
+	border: none;
+	border-radius: var(--rux-surface-rail-radius);
+	box-shadow: var(--rux-surface-rail-shadow);
+	pointer-events: none;
+}
+
+.rux-panel--attached.is-rail > :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
+	display: none !important;
+}
+
+/* ── Position: floating ───────────────────────────────────────────────── */
+
+.rux-panel--floating {
+	position: fixed;
+	resize: both;
+	z-index: var(--rux-z-modal);
+	background: var(--rux-surface-floating-bg);
+	border: var(--rux-surface-floating-border);
+	border-radius: var(--rux-surface-floating-radius);
+	box-shadow: var(--rux-surface-floating-shadow);
+	padding: var(--rux-surface-padding);
+}
+
+.rux-panel--floating.is-dragging {
+	transition: none;
+	user-select: none;
+}
+
+.rux-panel--floating[hidden] {
+	display: none;
+}
+
+.rux-panel--floating > .rux-panel__header {
+	cursor: move;
+	background: var(--rux-surface-floating-header-bg);
+}
+
+/* Independent bg token, not just "whatever the outer panel shows
+   through" — but .rux-panel__nav--attached (the trip editor's own tabs)
+   wants to stay transparent regardless: the active tab owns the color, a
+   boxed nav bar behind it would fight that. Same specificity as the rule
+   above, placed after it, so the exception wins only when --attached is
+   actually present. */
+.rux-panel--floating > .rux-panel__nav {
+	background: var(--rux-surface-floating-nav-bg);
+}
+
+.rux-panel--floating > .rux-panel__nav--attached {
+	background: transparent;
+}
+
+/* Also just an independent token now, not implicit transparency — the
+   attached-tabs pairing still wants a transparent body specifically (see
+   the shared .rux-panel__nav--attached + .rux-panel__body rule above),
+   restated here at higher specificity so it keeps winning. */
+.rux-panel--floating > .rux-panel__body {
+	background: var(--rux-surface-floating-body-bg);
+}
+
+.rux-panel--floating > .rux-panel__nav--attached + .rux-panel__body {
+	background: transparent;
+}
+
+.rux-panel--floating > .rux-panel__footer {
+	background: var(--rux-surface-floating-footer-bg);
+	border-top: var(--rux-surface-floating-footer-border);
+}
+
+.rux-panel--floating > .rux-panel__spacer {
+	flex: 1;
+}
+
+/* Centered in the viewport, sized to fit a document-shaped preview. Shared
+   by the doc viewer and trip envelope windows, which want the exact same
+   footprint. Windows that need a different size (e.g. the trip manifest)
+   just set their own top/left/width/height and skip this modifier.
+   top:50%/left:50% place this box's top-left corner at the viewport
+   center — translate(-50%, -50%) is what actually pulls it back by half
+   its own size on both axes so the center of the box lands there instead. */
+.rux-panel--floating.rux-panel--default-size {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: var(--rux-surface-floating-width);
+	height: min(1000px, calc(100vh - var(--rux-space-4) * 2));
+	/* 460px ≈ 360px × letter's own 8.5:11 ratio — keeps the floor roughly
+	   portrait-shaped (not a short landscape strip) at the smallest size
+	   either a letter PDF or the 6x9 envelope gets dragged down to. */
+	min-width: 360px;
+	min-height: 460px;
+	max-width: calc(100vw - var(--rux-space-4));
+	max-height: calc(100vh - var(--rux-space-4));
+}
+
+/* Read-only mobile presentations (driver itinerary/envelope) stay inside the
+   device's usable rectangle, including notches, rounded corners, and the
+   home indicator. `100dvh` follows browser chrome as it expands/collapses;
+   the safe-area env values become non-zero on supporting devices because
+   both app entry points opt into viewport-fit=cover. Components narrow the
+   shared desktop ceiling with --rux-surface-floating-safe-max-width. */
+.rux-panel--floating.rux-panel--safe-viewport {
+	--rux-surface-safe-margin: var(--rux-space-2);
+	top: calc(var(--rux-surface-safe-margin) + env(safe-area-inset-top, 0px));
+	right: calc(var(--rux-surface-safe-margin) + env(safe-area-inset-right, 0px));
+	bottom: calc(var(--rux-surface-safe-margin) + env(safe-area-inset-bottom, 0px));
+	left: calc(var(--rux-surface-safe-margin) + env(safe-area-inset-left, 0px));
+	width: min(
+		var(--rux-surface-floating-safe-max-width, 64rem),
+		calc(
+			100vw - 2 * var(--rux-surface-safe-margin) - env(safe-area-inset-left, 0px) -
+				env(safe-area-inset-right, 0px)
+		)
+	);
+	height: auto;
+	margin-inline: auto;
 	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	min-height: 0;
+	max-width: none;
+	max-height: none;
+	transform: none;
+	resize: none;
+}
+
+.rux-panel--floating.rux-panel--safe-viewport > .rux-panel__header {
+	cursor: default;
+}
+
+/* Phones use one window frame contract regardless of which component is
+   inside it. A 16px inline / 24px block visual inset sits inside the
+   hardware safe area, so every floating window clears browser chrome,
+   notches, rounded corners, and the home indicator consistently without
+   feeling too tall. Component-specific desktop width/height rules are
+   overridden here. */
+@media (max-width: 580px) {
+	/* Doubled class specificity deliberately outranks later feature-level
+	   desktop sizing such as .rux-scope-manifest. */
+	.rux-panel--floating.rux-panel--floating {
+		--rux-surface-mobile-inset-inline: var(--rux-space-4);
+		--rux-surface-mobile-inset-block: var(--rux-space-5);
+		top: calc(var(--rux-surface-mobile-inset-block) + env(safe-area-inset-top, 0px));
+		right: calc(var(--rux-surface-mobile-inset-inline) + env(safe-area-inset-right, 0px));
+		bottom: calc(var(--rux-surface-mobile-inset-block) + env(safe-area-inset-bottom, 0px));
+		left: calc(var(--rux-surface-mobile-inset-inline) + env(safe-area-inset-left, 0px));
+		width: auto;
+		height: auto;
+		margin: 0;
+		min-width: 0;
+		min-height: 0;
+		max-width: none;
+		max-height: none;
+		transform: none;
+		resize: none;
+	}
+
+	.rux-panel--floating.rux-panel--floating > .rux-panel__header {
+		cursor: default;
+	}
+}
+
+/* ── Position: modal ──────────────────────────────────────────────────── */
+
+.rux-panel--modal {
+	background: var(--rux-surface-modal-bg);
+	border: var(--rux-surface-modal-border);
+	border-radius: var(--rux-surface-modal-radius);
+	box-shadow: var(--rux-surface-modal-shadow);
+	animation: rux-modal-in var(--rux-surface-motion-duration) var(--rux-surface-standard-easing);
+}
+
+.rux-panel--modal > .rux-panel__body {
+	color: var(--rux-text-muted);
+}
+
+/* ── Position: anchored (popover / menu surface) ─────────────────────── */
+
+.rux-panel--anchored {
+	background: var(--rux-surface-anchored-bg);
+	border: var(--rux-surface-anchored-border);
+	border-radius: var(--rux-surface-anchored-radius);
+	box-shadow: var(--rux-surface-anchored-shadow);
+}
+
+/* ── Appearance: elevated ─────────────────────────────────────────────── */
+/* For a standalone .rux-panel with no position modifier — sitting inline
+   in normal flow but still wanting lift off the surface beneath it. The
+   position modifiers above each already bake in the correct elevation for
+   their own context; this is only for the plain, no-modifier case. */
+
+.rux-panel--elevated {
+	background: var(--rux-elevation-3-bg);
+	box-shadow: var(--rux-shadow-2);
 }

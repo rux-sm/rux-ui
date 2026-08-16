@@ -2,11 +2,11 @@
    TRIP ENVELOPE — floating preview window + printable page
    --------------------------------------------------------------------------
    Built by js/panels/trip-envelope.js as a draggable/resizable
-   .rux-surface--floating — same recipe and default size as
+   .rux-panel--floating — same recipe and default size as
    css/features/doc-viewer.css's .rux-doc-viewer (RuxDocViewer), so it
    behaves and sits on screen just like the itinerary PDF viewer instead of
    blocking the whole page like a modal. Positioning/drag/resize mechanics
-   live in the shared base (css/base/surface.css) — this file is just this
+   live in the shared base (css/base/panel.css) — this file is just this
    window's own size/position defaults and content styling.
    The envelope card itself is a deliberate light-on-paper world with its
    own scoped palette, same idea as print-schedule.css's --print-* tokens
@@ -15,7 +15,7 @@
 
 /* ── Floating window chrome (screen only — none of this prints) ────────── */
 
-/* Size/position: .rux-surface--default-size (css/base/surface.css)
+/* Size/position: .rux-panel--default-size (css/base/panel.css)
    — same footprint as the doc viewer, on purpose. Fixed size otherwise:
    trip-envelope.js's fitToHeight() is the one and only thing that scales the
    card (both up and down) to fit whatever space this box provides — a second
@@ -92,7 +92,7 @@
 }
 
 /* flex:none and the modal surface background come from the shared
-   .rux-surface__footer; the shared button-group token keeps this
+   .rux-panel__footer; the shared button-group token keeps this
    wrapping toolbar consistent with card and panel action rows. */
 .rux-trip-envelope-window__footer {
 	display: flex;

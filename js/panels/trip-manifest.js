@@ -3,7 +3,7 @@
 
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
-  const tripPanelRoot = document.querySelector(".rux-trip-panel");
+  const tripPanelRoot = document.querySelector(".rux-scope-trip");
   const manifestWindow = document.getElementById("calendar-manifest-view");
   const manifestBody = document.getElementById("tp-manifest-body");
   const passengerCard = document.getElementById("rp-passenger-card");
@@ -21,7 +21,7 @@
     manifestWindow.querySelector("#manifest-window-close")?.addEventListener("click", () => {
       window.TripView?.set("calendar");
     });
-    const header = manifestWindow.querySelector(".rux-surface__header");
+    const header = manifestWindow.querySelector(".rux-panel__header");
     // 580px matches the shared floating-window mobile breakpoint, where all
     // windows receive the same fixed safe-area inset — nothing to drag there.
     if (header) window.RuxFloatingWindow?.attachDrag(manifestWindow, header, { minViewportWidth: 580 });
@@ -172,38 +172,38 @@
 
   function createPaymentRow(index) {
     const row = document.createElement("div");
-    row.className = "rux-trip-panel__payment-row";
+    row.className = "rux-scope-trip__payment-row";
     row.dataset.paymentRow = "";
     row.innerHTML = `
-      <div class="rux-card--level-2 rux-trip-panel__payment-content" role="group" aria-labelledby="rpm-payment-label-${index + 1}">
-        <div class="rux-card__header rux-trip-panel__payment-header">
-          <div class="rux-trip-panel__payment-method">
-            <span class="rux-icon rux-trip-panel__payment-icon" data-payment-method-icon aria-hidden="true"></span>
-            <span class="rux-trip-panel__payment-method-label" id="rpm-payment-label-${index + 1}" data-payment-method-label>Payment</span>
+      <div class="rux-card--level-2 rux-scope-trip__payment-content" role="group" aria-labelledby="rpm-payment-label-${index + 1}">
+        <div class="rux-card__header rux-scope-trip__payment-header">
+          <div class="rux-scope-trip__payment-method">
+            <span class="rux-icon rux-scope-trip__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+            <span class="rux-scope-trip__payment-method-label" id="rpm-payment-label-${index + 1}" data-payment-method-label>Payment</span>
             <input type="hidden" data-payment-method id="rpm-payment-method-${index + 1}" />
           </div>
-          <button type="button" class="rux-trip-panel__payment-select" data-payment-select aria-label="Delete payment">
+          <button type="button" class="rux-scope-trip__payment-select" data-payment-select aria-label="Delete payment">
             <span class="rux-icon" aria-hidden="true">delete</span>
           </button>
         </div>
-        <div class="rux-card__body rux-trip-panel__payment-fields">
-          <label class="rux-field rux-trip-panel__payment-date-field">
+        <div class="rux-card__body rux-scope-trip__payment-fields">
+          <label class="rux-field rux-scope-trip__payment-date-field">
             <span class="rux-field__label">Date</span>
-            <span class="rux-input rux-trip-panel__payment-date-control">
-              <span class="rux-trip-panel__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
-              <input class="rux-trip-panel__payment-date" id="rpm-payment-date-${index + 1}" data-payment-date type="date" aria-label="Payment date" />
+            <span class="rux-input rux-scope-trip__payment-date-control">
+              <span class="rux-scope-trip__payment-date-label" data-payment-date-label aria-hidden="true">Date</span>
+              <input class="rux-scope-trip__payment-date" id="rpm-payment-date-${index + 1}" data-payment-date type="date" aria-label="Payment date" />
             </span>
           </label>
-          <label class="rux-field rux-trip-panel__payment-amount">
+          <label class="rux-field rux-scope-trip__payment-amount">
             <span class="rux-field__label">Amount</span>
             <span class="rux-input-group rux-input-group--prefix">
               <span class="rux-input-group__prefix" aria-hidden="true">$</span>
-              <input class="rux-input rux-trip-panel__payment-amount-input" id="rpm-payment-amount-${index + 1}" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
+              <input class="rux-input rux-scope-trip__payment-amount-input" id="rpm-payment-amount-${index + 1}" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" />
             </span>
           </label>
-          <label class="rux-field rux-trip-panel__payment-reference">
+          <label class="rux-field rux-scope-trip__payment-reference">
             <span class="rux-field__label">Reference</span>
-            <input class="rux-input rux-trip-panel__payment-ref" id="rpm-payment-ref-${index + 1}" data-payment-ref type="text" placeholder="Optional" />
+            <input class="rux-input rux-scope-trip__payment-ref" id="rpm-payment-ref-${index + 1}" data-payment-ref type="text" placeholder="Optional" />
           </label>
         </div>
       </div>`;
@@ -212,7 +212,7 @@
 
   function setPaymentRowMethod(row, method) {
     const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
-    const content = row.querySelector(".rux-trip-panel__payment-content");
+    const content = row.querySelector(".rux-scope-trip__payment-content");
     row.querySelectorAll("[data-payment-method-icon]").forEach((icon) => {
       icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
       icon.title = safeMethod;
@@ -239,7 +239,7 @@
     return `${match[2]}/${match[3]}/${match[1].slice(-2)}`;
   }
   function syncPaymentDateLabel(input) {
-    const label = input?.closest(".rux-trip-panel__payment-date-control")?.querySelector("[data-payment-date-label]");
+    const label = input?.closest(".rux-scope-trip__payment-date-control")?.querySelector("[data-payment-date-label]");
     if (label) label.textContent = formatCompactPaymentDate(input.value);
   }
 
@@ -265,7 +265,7 @@
   function renumberPaymentRows() {
     paymentRows?.querySelectorAll("[data-payment-row]").forEach((row, index) => {
       const suffix = index + 1;
-      const content = row.querySelector(".rux-trip-panel__payment-content");
+      const content = row.querySelector(".rux-scope-trip__payment-content");
       const methodLabel = row.querySelector("[data-payment-method-label]");
       if (methodLabel) methodLabel.id = `rpm-payment-label-${suffix}`;
       if (content) content.setAttribute("aria-labelledby", `rpm-payment-label-${suffix}`);

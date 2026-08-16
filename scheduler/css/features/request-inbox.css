@@ -1,8 +1,8 @@
 /* ==========================================================================
-   REQUEST INBOX  ·  .rux-request-window
+   REQUEST INBOX  ·  .rux-scope-request
    --------------------------------------------------------------------------
    Floating window chrome only — mirrors the Trip Finder's anatomy exactly:
-   the shared .rux-surface--floating component (css/base/surface.css)
+   the shared .rux-panel--floating component (css/base/panel.css)
    owns drag/resize/mobile-breakpoint mechanics, and every inner surface
    (header, __content, __toolbar, __body, footer) follows the same layout and
    padding rules as css/features/trip-finder.css. Filters reuse the shared
@@ -13,8 +13,8 @@
 /* Same position and footprint as the Trip Finder, except the min/max-height
    are tied to top:10% so the frame always fits the viewport — see the
    min()/calc() below. Mobile (< 580px) is handled by the shared base
-   surface.css frame, exactly like every other floating window. */
-.rux-request-window {
+   panel.css frame, exactly like every other floating window. */
+.rux-scope-request {
 	container-name: request-window;
 	container-type: inline-size;
 	top: 10%;
@@ -29,60 +29,60 @@
 	max-height: calc(100dvh - var(--rux-space-4));
 }
 
-/* Same content column as .rux-trip-finder-window__content. */
-.rux-request-window__content {
+/* Same content column as .rux-scope-trip-finder__content. */
+.rux-scope-request__content {
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
 	flex: 1;
 }
 
-.rux-request-window__header {
+.rux-scope-request__header {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 }
 
-.rux-request-window__header .rux-card__title {
+.rux-scope-request__header .rux-card__title {
 	flex: 1;
 	min-width: 0;
 }
 
 /* New-request count next to the title — muted, complementing the nav badge */
-.rux-request-window__count {
+.rux-scope-request__count {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-/* Toolbar band like .rux-trip-finder-window__toolbar: flex none, hairline
+/* Toolbar band like .rux-scope-trip-finder__toolbar: flex none, hairline
    bottom border, and a field padded like the search row. Status filter uses
    the shared segmented control. */
-.rux-request-window__toolbar {
+.rux-scope-request__toolbar {
 	flex: none;
 	display: flex;
 	flex-direction: column;
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 
-.rux-request-window__toolbar .rux-field {
+.rux-scope-request__toolbar .rux-field {
 	min-width: 0;
 	padding: var(--rux-space-3) var(--rux-space-4);
 	background: var(--rux-surface-floating-header-bg);
 }
 
-.rux-request-window__toolbar .rux-segmented-track {
+.rux-scope-request__toolbar .rux-segmented-track {
 	width: 100%;
 }
 
-.rux-request-window__toolbar .rux-segmented-track > .rux-button {
+.rux-scope-request__toolbar .rux-segmented-track > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
 /* ── Request list ─────────────────────────────────────────────────────── */
 
-.rux-request-window__list {
+.rux-scope-request__list {
 	flex: 1;
 	min-height: 0;
 	display: flex;
@@ -97,7 +97,7 @@
 	list-style: none;
 }
 
-.rux-request-window__item {
+.rux-scope-request__item {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
@@ -108,23 +108,23 @@
 	color: var(--rux-text-default);
 }
 
-.rux-request-window__item:hover {
+.rux-scope-request__item:hover {
 	border-color: var(--rux-border);
 }
 
-.rux-request-window__item-main {
+.rux-scope-request__item-main {
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-request-window__item-title-row {
+.rux-scope-request__item-title-row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 	min-width: 0;
 }
 
-.rux-request-window__item-title {
+.rux-scope-request__item-title {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
@@ -133,13 +133,13 @@
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-request-window__item-meta {
+.rux-scope-request__item-meta {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 }
 
-.rux-request-window__item-note {
+.rux-scope-request__item-note {
 	margin-top: var(--rux-space-1);
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -148,21 +148,21 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-request-window__item-actions {
+.rux-scope-request__item-actions {
 	flex: none;
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
 }
 
-.rux-request-window__item-link {
+.rux-scope-request__item-link {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
 	margin-top: var(--rux-space-1);
 }
 
-.rux-request-window__item-link .rux-input {
+.rux-scope-request__item-link .rux-input {
 	flex: 1;
 	min-width: 0;
 	font-size: var(--rux-size-xs);
@@ -171,7 +171,7 @@
 	cursor: text;
 }
 
-.rux-request-window__empty {
+.rux-scope-request__empty {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -184,24 +184,22 @@
 
 /* Closed requests lose their tone — a quiet neutral instead of a status
    color. Nothing else about the badge changes. */
-.rux-request-window__chip {
+.rux-scope-request__chip {
 	flex: none;
 }
 
-.rux-request-window__chip--closed {
+.rux-scope-request__chip--closed {
 	--_badge-color: var(--rux-text-disabled);
 }
 
 /* ── Footer ───────────────────────────────────────────────────────────── */
-
-.rux-request-window__footer {
-	display: flex;
-	justify-content: flex-end;
-}
+/* Was .rux-scope-request__footer here — pure .rux-panel__footer duplicate
+   (display:flex + justify-content:flex-end, both already set on the base
+   rule), deleted along with the class per docs/cards.md's Panel migration. */
 
 /* ── Invite dialog ────────────────────────────────────────────────────── */
 
-.rux-request-window__dialog[open] {
+.rux-scope-request__dialog[open] {
 	display: flex;
 	flex-direction: column;
 	width: min(var(--rux-container-xs), calc(100% - (var(--rux-space-4) * 2)));
@@ -216,25 +214,25 @@
 	border-radius: var(--rux-radius-xl);
 }
 
-.rux-request-window__dialog-form {
+.rux-scope-request__dialog-form {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
 	min-height: 0;
 }
 
-.rux-request-window__dialog::backdrop {
+.rux-scope-request__dialog::backdrop {
 	background: var(--rux-overlay-scrim);
 	backdrop-filter: blur(var(--rux-overlay-blur));
 }
 
-.rux-request-window__dialog-header,
-.rux-request-window__dialog-body,
-.rux-request-window__dialog-footer {
+.rux-scope-request__dialog-header,
+.rux-scope-request__dialog-body,
+.rux-scope-request__dialog-footer {
 	padding: var(--rux-space-5);
 }
 
-.rux-request-window__dialog-header {
+.rux-scope-request__dialog-header {
 	flex: none;
 	display: flex;
 	align-items: center;
@@ -242,13 +240,13 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-border);
 }
 
-.rux-request-window__dialog-title {
+.rux-scope-request__dialog-title {
 	flex: 1;
 	min-width: 0;
 	font-size: var(--rux-size-2xl);
 }
 
-.rux-request-window__dialog-body {
+.rux-scope-request__dialog-body {
 	flex: 1;
 	min-height: 0;
 	display: flex;
@@ -258,37 +256,37 @@
 	overscroll-behavior: contain;
 }
 
-.rux-request-window__dialog-intro {
+.rux-scope-request__dialog-intro {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 }
 
-.rux-request-window__dialog-footer {
+.rux-scope-request__dialog-footer {
 	flex: none;
 	display: flex;
 	justify-content: flex-end;
 	border-top: var(--rux-border-width) solid var(--rux-border);
 }
 
-.rux-request-window__dialog-actions {
+.rux-scope-request__dialog-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: var(--rux-space-2);
 }
 
-.rux-request-window__invite {
+.rux-scope-request__invite {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
 }
 
-.rux-request-window__invite-label {
+.rux-scope-request__invite-label {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-request-window__invite-actions {
+.rux-scope-request__invite-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: var(--rux-space-2);
@@ -298,11 +296,11 @@
    Trip Finder's container query. Keeps the six status segments readable by
    letting the toolbar band scroll horizontally instead of clipping text. */
 @container request-window (max-width: 700px) {
-	.rux-request-window__toolbar .rux-field {
+	.rux-scope-request__toolbar .rux-field {
 		overflow-x: auto;
 	}
 
-	.rux-request-window__toolbar .rux-segmented-track {
+	.rux-scope-request__toolbar .rux-segmented-track {
 		flex: none;
 		width: max-content;
 		min-width: 0;

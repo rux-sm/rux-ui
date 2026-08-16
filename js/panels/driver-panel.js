@@ -4,10 +4,10 @@
 	// ── DOM refs ──────────────────────────────────────────────────────────────
 
 	const drawer = document.getElementById("driver-panel-drawer");
-	const panelEl = drawer.querySelector(".rux-driver-panel");
+	const panelEl = drawer.querySelector(".rux-scope-driver");
 	const tbody = document.getElementById("driver-roster-body");
-	const tabBtns = document.querySelectorAll("[data-driver-tabs] .rux-tab");
-	const panes = document.querySelectorAll(".rux-driver-panel__pane");
+	const tabBtns = document.querySelectorAll('[data-rux-tabs][data-scope="driver"] .rux-tab');
+	const panes = document.querySelectorAll(".rux-scope-driver__pane");
 	const cdlGroup = document.getElementById("dp-cdl-group");
 	const tripList = document.getElementById("dp-trip-list");
 	const scheduleStatus = document.getElementById("dp-schedule-status");
@@ -84,7 +84,7 @@
 	});
 
 	document
-		.querySelectorAll("[data-driver-drawer-toggle]")
+		.querySelectorAll('[data-rux-domain-toggle][data-scope="driver-editor"]')
 		.forEach((button) => {
 			button.addEventListener("click", () => {
 				drawer.classList.contains("is-open")
@@ -96,7 +96,7 @@
 	// Right-side "Table Options" drawer (View Options + Filters) — same
 	// RuxDrawer machinery as above, no resize handle (fixed width).
 	const toolsDrawer = document.getElementById("driver-tools-drawer");
-	const toolsPanelEl = toolsDrawer.querySelector(".rux-right-panel");
+	const toolsPanelEl = toolsDrawer.querySelector(".rux-scope-right-panel");
 
 	const toolsDrawerHandle = RuxDrawer.create({
 		drawer: toolsDrawer,
@@ -109,7 +109,7 @@
 	const closeToolsDrawer = toolsDrawerHandle.close;
 
 	document
-		.querySelectorAll("[data-driver-tools-toggle]")
+		.querySelectorAll('[data-rux-domain-toggle][data-scope="driver-tools"]')
 		.forEach((button) => {
 			button.addEventListener("click", () => {
 				toolsDrawer.classList.contains("is-open")
@@ -587,7 +587,7 @@
 
 	function renderTripList(trips) {
 		if (!trips.length) {
-			tripList.innerHTML = `<li class="rux-driver-panel__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
+			tripList.innerHTML = `<li class="rux-scope-driver__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
 			return;
 		}
 		tripList.innerHTML = trips
@@ -602,9 +602,9 @@
 				const badgeLabel =
 					status.charAt(0).toUpperCase() + status.slice(1);
 				return `
-        <li class="rux-driver-panel__trip-item">
-          <span class="rux-driver-panel__trip-id">${t.tripRef}</span>
-          <span class="rux-driver-panel__trip-meta">${meta}</span>
+        <li class="rux-scope-driver__trip-item">
+          <span class="rux-scope-driver__trip-id">${t.tripRef}</span>
+          <span class="rux-scope-driver__trip-meta">${meta}</span>
           <span class="rux-badge rux-badge--dot ${badgeCls}">${badgeLabel}</span>
         </li>
       `;
@@ -878,7 +878,7 @@
 		};
 		const target = statusLabels[d.status] || "Active";
 		panelEl
-			.querySelectorAll(".rux-driver-panel__status-group .rux-button")
+			.querySelectorAll(".rux-scope-driver__status-group .rux-button")
 			.forEach((btn) => {
 				const on =
 					btn
@@ -917,7 +917,7 @@
 		// Endorsements
 		const ends = Array.isArray(d.endorsements) ? d.endorsements : [];
 		panelEl
-			.querySelectorAll(".rux-driver-panel__endorsements .rux-button")
+			.querySelectorAll(".rux-scope-driver__endorsements .rux-button")
 			.forEach((btn) => {
 				const on = ends.includes(btn.textContent.trim());
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -934,7 +934,7 @@
 		const last = document.getElementById("dp-last-name").value.trim();
 
 		const statusBtn = panelEl.querySelector(
-			".rux-driver-panel__status-group .rux-button[aria-pressed='true']",
+			".rux-scope-driver__status-group .rux-button[aria-pressed='true']",
 		);
 		const statusRevMap = {
 			Active: "active",
@@ -977,7 +977,7 @@
 
 		const endorsements = [
 			...panelEl.querySelectorAll(
-				".rux-driver-panel__endorsements .rux-button[aria-pressed='true']",
+				".rux-scope-driver__endorsements .rux-button[aria-pressed='true']",
 			),
 		].map((btn) => btn.textContent.trim());
 
@@ -1043,11 +1043,11 @@
 
 	function createTimeOffRow(index) {
 		const row = document.createElement("div");
-		row.className = "rux-driver-panel__timeoff-row";
+		row.className = "rux-scope-driver__timeoff-row";
 		row.dataset.timeoffRow = "";
 		row.innerHTML = `
-      <div class="rux-driver-panel__timeoff-fields">
-        <div class="rux-trip-panel__contact-fields">
+      <div class="rux-scope-driver__timeoff-fields">
+        <div class="rux-scope-trip__contact-fields">
           <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-start-${index + 1}">Start</label><input class="rux-input" id="dp-timeoff-start-${index + 1}" type="date" data-timeoff-start /></div>
           <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-end-${index + 1}">End</label><input class="rux-input" id="dp-timeoff-end-${index + 1}" type="date" data-timeoff-end /></div>
         </div>
@@ -1064,7 +1064,7 @@
           <input class="rux-input" id="dp-timeoff-notes-${index + 1}" type="text" placeholder="Optional" data-timeoff-notes />
         </div>
       </div>
-      <button type="button" class="rux-trip-panel__contact-select" data-timeoff-select aria-label="Delete time off">
+      <button type="button" class="rux-scope-trip__contact-select" data-timeoff-select aria-label="Delete time off">
         <span class="rux-icon" aria-hidden="true">delete</span>
       </button>`;
 		return row;
@@ -1258,7 +1258,7 @@
 
 		panelEl
 			.querySelectorAll(
-				".rux-driver-panel__pane input, .rux-driver-panel__pane textarea",
+				".rux-scope-driver__pane input, .rux-scope-driver__pane textarea",
 			)
 			.forEach((f) => {
 				f.value = "";
@@ -1282,7 +1282,7 @@
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
 			});
 		panelEl
-			.querySelectorAll(".rux-driver-panel__endorsements .rux-button")
+			.querySelectorAll(".rux-scope-driver__endorsements .rux-button")
 			.forEach((btn) => {
 				btn.setAttribute("aria-pressed", "false");
 			});
@@ -1684,13 +1684,13 @@
 	// ── Data loading ──────────────────────────────────────────────────────────
 
 	async function loadDriverTrips(driverId) {
-		tripList.innerHTML = `<li class="rux-driver-panel__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+		tripList.innerHTML = `<li class="rux-scope-driver__trip-item"><span class="rux-subtle">Loading…</span></li>`;
 		try {
 			const trips = await db.fetchDriverTrips(driverId);
 			renderTripList(trips);
 		} catch (err) {
 			console.warn("Could not load driver trips:", err);
-			tripList.innerHTML = `<li class="rux-driver-panel__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+			tripList.innerHTML = `<li class="rux-scope-driver__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
 		}
 	}
 
@@ -1754,7 +1754,7 @@
 		selectRow(tr, driver);
 		document
 			.querySelector(
-				'[data-driver-tabs] .rux-tab[aria-controls="pane-timeoff"]',
+				'[data-rux-tabs][data-scope="driver"] .rux-tab[aria-controls="pane-timeoff"]',
 			)
 			?.click();
 	}
