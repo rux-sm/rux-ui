@@ -135,6 +135,7 @@ html {
 
 .driver-share__notice .rux-icon {
 	--_icon-size: var(--rux-icon-md);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 }
 
 .driver-share__list {
@@ -382,6 +383,7 @@ html {
 
 .assignment-module__icon .rux-icon {
 	--_icon-size: var(--rux-icon-md);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 }
 
 .assignment-module--accent .assignment-module__icon {

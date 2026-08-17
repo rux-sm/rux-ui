@@ -47,12 +47,12 @@
    ========================================================================== */
 
 @import "../../rux-ui/css/base/icons.css";
-@import "../../rux-ui/css/base/controls.css?v=22";
+@import "../../rux-ui/css/base/controls.css?v=23";
 @import "../../rux-ui/css/base/ui-header.css?v=11";
 @import "../../rux-ui/css/base/side-nav.css?v=2";
 @import "../../rux-ui/css/base/app-shell.css?v=1";
-@import "../../rux-ui/css/base/badges.css?v=2";
-@import "../../rux-ui/css/base/form.css?v=2";
+@import "../../rux-ui/css/base/badges.css?v=3";
+@import "../../rux-ui/css/base/form.css?v=3";
 @import "../../rux-ui/css/base/workspace.css?v=3";
 @import "../../rux-ui/css/base/panel.css?v=3";
 @import "../../rux-ui/css/base/menu.css?v=1";
@@ -60,11 +60,11 @@
 @import "../../rux-ui/css/base/suggestions.css?v=2";
 @import "../../rux-ui/css/base/card.css";
 @import "../../rux-ui/css/base/content.css?v=2";
-@import "../../rux-ui/css/base/feedback.css?v=4";
+@import "../../rux-ui/css/base/feedback.css?v=5";
 @import "../../rux-ui/css/base/navigation.css?v=18";
 @import "../../rux-ui/css/base/utils.css?v=2";
 @import "./features/trip-bar.css?v=34";
-@import "./features/trip-panel.css?v=32";
+@import "./features/trip-panel.css?v=33";
 @import "./features/trip-history.css?v=2";
 @import "./features/trip-dialog.css?v=2";
 @import "./features/itinerary.css?v=4";

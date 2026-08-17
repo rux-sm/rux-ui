@@ -63,7 +63,7 @@
   width: 100%;
   max-width: var(--rux-container-xs);
   background: var(--rux-modal-bg);
-  border: none;
+  border: var(--rux-modal-border);
   border-radius: var(--rux-modal-radius);
   box-shadow: var(--rux-modal-shadow);
   overflow: hidden;
@@ -80,6 +80,8 @@
   padding: var(--rux-space-4) var(--rux-space-5);
   background: var(--rux-surface-1);
   border-top: var(--rux-border-width) solid var(--rux-card-border);
+
+
 }
 
 @keyframes rux-fade-in {

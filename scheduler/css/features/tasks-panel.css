@@ -293,6 +293,7 @@
    for this context. */
 .rux-tasks__equip-icon {
 	--_icon-size: var(--rux-button-icon-size-standard);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	flex-shrink: 0;
 }
 

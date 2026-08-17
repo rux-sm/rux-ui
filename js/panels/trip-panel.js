@@ -142,7 +142,7 @@ function busOptsHtml(buses) {
 }
 
 function driverOptsHtml(drivers) {
-	return `<option value="" disabled selected>Assign driver…</option>` +
+	return `<option value="" selected>Assign driver…</option>` +
 		drivers.map((d) => `<option value="${escHtml(d.id)}">${escHtml(d.name)}</option>`).join("");
 }
 
@@ -152,7 +152,7 @@ function refreshGroupOptions(group, buses, drivers) {
 	group.querySelectorAll("select[name]").forEach(select => {
 		const prev = select.value;
 		select.innerHTML = select.name.endsWith(".busId")
-			? `<option value="" disabled selected>Select bus…</option>${busOpts}`
+			? `<option value="" selected>Select bus…</option>${busOpts}`
 			: driverOpts;
 		select.value = prev;
 	});
@@ -222,7 +222,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <div class="rux-card__body rux-card__body--stack">
     <div class="rux-scope-trip__bus-head">
       <select class="rux-select is-placeholder" name="${escHtml(fieldPrefix)}[${idx}].busId" aria-label="Bus ${idx + 1}">
-        <option value="" disabled selected>Select bus…</option>
+        <option value="" selected>Select bus…</option>
         ${busOpts}
       </select>
     </div>

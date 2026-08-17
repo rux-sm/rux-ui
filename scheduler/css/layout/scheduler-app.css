@@ -51,8 +51,8 @@
 	--scheduler-app-resize-line-width: 1px;
 	/* Left/editor and right/tools drawers intentionally have independent
 	   defaults. Resize limits remain shared. */
-	--scheduler-app-left-drawer-default-width: 320px;
-	--scheduler-app-right-drawer-default-width: 320px;
+	--scheduler-app-left-drawer-default-width: 360px;
+	--scheduler-app-right-drawer-default-width: 360px;
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
@@ -1038,7 +1038,7 @@
 	height: var(--rux-driver-grid-cell-size);
 	padding: 0;
 	border-radius: var(--rux-radius-0);
-	background: var(--rux-surface-1);
+	background: var(--rux-surface-0);
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
 	   quietly as a plain .rux-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers

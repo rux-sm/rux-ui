@@ -200,6 +200,7 @@
 .rux-switch--theme .rux-switch__thumb-icon,
 .rux-switch--theme .rux-switch__track-icon {
   --_icon-size: var(--rux-switch-theme-icon-size);
+  --_icon-optical-size: var(--rux-icon-optical-size-sm);
   --_icon-fill: var(--rux-icon-fill-selected);
 }
 .rux-switch--theme .rux-switch__thumb-icon {

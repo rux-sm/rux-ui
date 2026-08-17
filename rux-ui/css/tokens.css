@@ -367,7 +367,13 @@
 	--rux-icon-fill-selected:       1;
 	--rux-icon-weight-default:      300;
 	--rux-icon-grade-default:       0;
-	--rux-icon-optical-size-sm:     24;
+	/* Matches each rendered icon size (--rux-icon-sm/md/lg, tokens.css
+	   TYPOGRAPHY · icon sizing) instead of one fixed value for every size —
+	   Material Symbols' opsz axis is designed to sharpen the glyph at the
+	   size it's actually drawn at, not just scale a fixed 24 design. */
+	--rux-icon-optical-size-sm:     18;
+	--rux-icon-optical-size-md:     20;
+	--rux-icon-optical-size-lg:     22;
 	--rux-icon-transition-duration: var(--rux-duration-fast);
 	--rux-icon-transition-easing:   var(--rux-ease-out);
 
@@ -411,10 +417,11 @@
 	   popovers (all shadow-2), since a modal sits on a dimming backdrop
 	   that blocks everything else. */
 	--rux-modal-shadow: var(--rux-shadow-3);
-	--rux-modal-bg: var(--rux-elevation-1-bg);
+	--rux-modal-bg: var(--rux-surface-1);
 	/* Real radius, matching Vercel Geist Materials' modal tier (12px) —
 	   same reasoning as --rux-panel-floating-radius/--rux-menu-radius. */
 	--rux-modal-radius: var(--rux-radius-lg);
+	--rux-modal-border: 1px solid var(--rux-card-border);
 
 	/* ─── STACKING ROLES ─────────────────────────────────────────────────── */
 
@@ -1207,7 +1214,7 @@
 	/* — shell — */
 	--rux-trip-bar-border-width: 0px;
 	--rux-trip-bar-radius: var(--rux-radius-0);
-	--rux-trip-bar-action-button-size: 28px;
+	--rux-trip-bar-action-button-size: 32px;
 	--rux-trip-bar-actions-radius:   var(--rux-radius-control);
 	--rux-trip-bar-bus-label-radius: var(--rux-radius-full);
 	--rux-trip-bar-bus-label-weight: var(var(--rux-weight-600));

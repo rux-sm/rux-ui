@@ -62,6 +62,7 @@
 
 .rux-badge__icon {
   --_icon-size: var(--rux-badge-module-icon-size);
+  --_icon-optical-size: var(--rux-icon-optical-size-sm);
   flex: 0 0 auto;
 }
 

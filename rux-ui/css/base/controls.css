@@ -13,6 +13,7 @@
 
 	--_h: var(--rux-button-height-standard);
 	--_icon-size: var(--rux-button-icon-size-standard);
+	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	--_bg: transparent;
 	--_fg: var(--rux-button-default-text);
 	--_border: transparent;
@@ -380,6 +381,7 @@
 .rux-button--compact {
 	--_h: var(--rux-button-height-compact);
 	--_icon-size: var(--rux-button-icon-size-compact);
+	--_icon-optical-size: var(--rux-icon-optical-size-sm);
 	font-size: var(--rux-button-font-size-compact);
 	padding: 0 var(--rux-button-padding-inline-compact);
 	gap: var(--rux-button-content-gap-compact);
@@ -387,6 +389,7 @@
 
 .rux-button--compact > .rux-icon {
 	--_icon-size: var(--rux-button-icon-size-compact);
+	--_icon-optical-size: var(--rux-icon-optical-size-sm);
 }
 
 /* — icon-only — */
@@ -406,6 +409,7 @@
 .rux-button--header {
 	--_h: var(--rux-button-height-header);
 	--_icon-size: var(--rux-button-icon-size-header);
+	--_icon-optical-size: var(--rux-icon-optical-size-lg);
 }
 
 .rux-button--header.rux-button--icon {
@@ -414,6 +418,7 @@
 
 .rux-button--header > .rux-icon {
 	--_icon-size: var(--rux-button-icon-size-header);
+	--_icon-optical-size: var(--rux-icon-optical-size-lg);
 }
 
 /* Reusable disclosure icon swap. The first child is the collapsed-state

@@ -101,7 +101,7 @@
 		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
 		+ (var(--rux-trip-bar-compact-padding) * 2)
 	);
-	--rux-trip-bar-action-padding-block: 0;
+	--rux-trip-bar-action-padding-block: var(--rux-space-2) 0;
 	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
 	--rux-trip-bar-conflict-height: var(--rux-control-height);
 	--rux-trip-bar-tight-gap: var(--rux-space-px);
@@ -634,7 +634,6 @@
 	flex: 0 0 auto;
 	gap: 0;
 	max-height: 0;
-	padding-inline: 0;
 	margin: 0;
 	background: var(--rux-trip-bar-actions-bg);
 	border-radius: var(--rux-trip-bar-actions-radius);

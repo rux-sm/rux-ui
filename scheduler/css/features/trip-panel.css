@@ -417,6 +417,7 @@
 }
 .rux-scope-trip__po-coverage > .rux-icon {
 	--_icon-size: var(--rux-icon-sm);
+	--_icon-optical-size: var(--rux-icon-optical-size-sm);
 }
 .rux-scope-trip__po-coverage.is-empty {
 	color: var(--rux-danger);
