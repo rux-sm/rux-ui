@@ -935,12 +935,6 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 	}
 	root.dataset.ruxTripPanelInit = "true";
 
-	// Sticky section-header behavior (.rux-card__header, the
-	// .is-stuck shadow) is wired generically for every .rux-panel —
-	// initStickySectionHeaders in rux-ui/js/controls.js, auto-run at
-	// DOMContentLoaded the same way initPanelScrollEdges is. .rux-scope-trip
-	// is itself a .rux-panel, so it's already covered; nothing to call here.
-
 	/* ── Segmented toggle groups (Billing) ─────────────────────────────── */
 
 	root.querySelectorAll("[data-rux-toggle-group]").forEach((group) => {

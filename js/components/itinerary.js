@@ -766,8 +766,7 @@
 			.join("");
 
 		return `
-      <div class="rux-card__sentinel" aria-hidden="true"></div>
-      <div class="rux-card__header">
+	  <div class="rux-card__header">
         <span class="rux-card__title">Trip Summary</span>
         <div class="rux-trip-itinerary__summary-actions"></div>
       </div>
@@ -1436,7 +1435,6 @@
 						</div>`;
 				dayCards.push(`
 					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">
-						<div class="rux-card__sentinel" aria-hidden="true"></div>
 						<div class="rux-card__header">
 							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="rux-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}</span>` : ""}</h3>
 							${dayExpandableCount > 0 ? `<div class="rux-cluster">

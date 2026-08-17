@@ -9,9 +9,11 @@ const shellController = read("rux-ui/js/ui-shell.js");
 const drawerController = read("rux-ui/js/drawer.js");
 const headerStyles = read("rux-ui/css/base/ui-header.css");
 const controlStyles = read("rux-ui/css/base/controls.css");
+const controlsController = read("rux-ui/js/controls.js");
 const popoverStyles = read("rux-ui/css/base/popover.css");
 const suggestionStyles = read("rux-ui/css/base/suggestions.css");
 const feedbackStyles = read("rux-ui/css/base/feedback.css");
+const cardStyles = read("rux-ui/css/base/card.css");
 const tokens = read("rux-ui/css/tokens.css");
 const menuController = read("rux-ui/js/menu.js");
 const popoverController = read("rux-ui/js/popover.js");
@@ -404,12 +406,12 @@ test("mini calendar navigation uses shared 44px header icon buttons", () => {
 	}
 });
 
-test("the mini calendar is a sentinel-gated card with a floating header", () => {
+test("the mini calendar uses the card shell, header, and body", () => {
 	const calendar = page.match(
 		/<section\s+class="rux-card rux-mini-cal"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(calendar);
-	assert.match(calendar, /class="rux-card__sentinel"/);
+	assert.doesNotMatch(calendar, /rux-card__sentinel/);
 	assert.match(calendar, /class="rux-card__header rux-mini-cal__header"/);
 	assert.match(calendar, /class="rux-card__body rux-mini-cal__body"/);
 });
@@ -424,22 +426,53 @@ test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
 	assert.doesNotMatch(layoutStyles, /padding-inline:\s*auto/);
 });
 
-test("Calendar Options is a sentinel-gated card in the Calendar panel body", () => {
+test("Calendar Options is a card in the Calendar panel body", () => {
 	const options = page.match(
 		/<section\s+class="rux-card rux-view-options"\s+id="rp-view-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
-	assert.match(options, /class="rux-card__sentinel"/);
+	assert.doesNotMatch(options, /rux-card__sentinel/);
 	assert.match(options, />\s*Calendar Options\s*</);
 	assert.match(options, /class="rux-card__body rux-view-options__list"/);
 });
 
-test("Trip Bar Options is a sentinel-gated card in the Calendar panel body", () => {
+test("cards use one clipped outer frame with shell-owned region geometry", () => {
+	const cardTokens = tokens.match(
+		/COMPONENT · card[\s\S]*?COMPONENT · field/,
+	)?.[0] ?? "";
+	assert.match(
+		cardTokens,
+		/card shell[\s\S]*card header[\s\S]*card body[\s\S]*card footer/,
+	);
+	for (const token of ["fg", "bg", "border", "radius", "shadow"]) {
+		assert.match(cardTokens, new RegExp(`--rux-card-shell-${token}:`));
+	}
+	assert.match(
+		cardStyles,
+		/\.rux-card:has\(> \.rux-card__body\)\s*\{[^}]*background:\s*var\(--rux-card-shell-bg\);[^}]*border:\s*var\(--rux-card-shell-border\);[^}]*border-radius:\s*var\(--rux-card-shell-radius\);[^}]*overflow:\s*clip;/s,
+	);
+	assert.match(
+		cardStyles,
+		/\.rux-card__header\s*\{[^}]*border:\s*0;[^}]*border-bottom:\s*var\(--rux-card-header-border\);[^}]*border-radius:\s*0;/s,
+	);
+	assert.match(
+		cardStyles,
+		/\.rux-card__body\s*\{[^}]*border:\s*0;[^}]*border-radius:\s*0;/s,
+	);
+	assert.match(
+		cardStyles,
+		/\.rux-card__footer\s*\{[^}]*border:\s*0;[^}]*border-top:\s*var\(--rux-card-footer-border\);[^}]*border-radius:\s*0;/s,
+	);
+	assert.doesNotMatch(cardStyles, /rux-card__sentinel|\.is-stuck|position:\s*sticky/);
+	assert.doesNotMatch(controlsController, /initStickySectionHeaders|rux-card__sentinel/);
+});
+
+test("Trip Bar Options is a card in the Calendar panel body", () => {
 	const options = page.match(
 		/<section\s+class="rux-card rux-view-options"\s+id="rp-trip-bar-options"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(options);
-	assert.match(options, /class="rux-card__sentinel"/);
+	assert.doesNotMatch(options, /rux-card__sentinel/);
 	assert.match(options, />\s*Trip Bar Options\s*</);
 	assert.match(options, /class="rux-card__body rux-view-options__list"/);
 });
@@ -451,7 +484,7 @@ test("Driver Availability is an Assignments card in the panel body", () => {
 	assert.ok(driversPane);
 	assert.match(driversPane, /class="rux-panel__pane rux-driver-availability"/);
 	assert.match(driversPane, /class="rux-card"/);
-	assert.match(driversPane, /class="rux-card__sentinel"/);
+	assert.doesNotMatch(driversPane, /rux-card__sentinel/);
 	assert.match(driversPane, />\s*Assignments\s*</);
 	assert.match(driversPane, /id="rp-driver-grid"/);
 });

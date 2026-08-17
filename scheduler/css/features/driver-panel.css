@@ -16,12 +16,9 @@
    .rux-panel__body               Scrollable body — plain .rux-panel__body
                                    now, no unique styling of its own.
    .rux-scope-driver__pane        One per section, hidden via [hidden].
-                                   Keeps its own class for two reasons:
+                                   Keeps its own class because
                                    driver-panel.js queries it directly (pane
-                                   switching + form field collection), and
-                                   it carries a real override
-                                   (padding-block-start: 0) beyond what
-                                   .rux-panel__pane already sets.
+                                   switching + form field collection).
    .rux-panel__footer             Shared Delete + Save action row.
    ========================================================================== */
 
@@ -40,7 +37,6 @@
 
 .rux-scope-driver__pane {
 	gap: var(--rux-panel-content-gap);
-	padding-block-start: 0;
 }
 
 .rux-scope-driver__pane[hidden] {

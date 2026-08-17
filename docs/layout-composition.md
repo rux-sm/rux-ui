@@ -183,10 +183,9 @@ Card Section
 
 - Use `.rux-card__section` for a titled group of one card's own content — a
   flat divider, not a box. Sections stack with no gap; `.rux-card__section +
-  .rux-card__section` supplies one shared `border-top` at each seam, and
-  `.rux-card__section-header` sticks to the top of its scroll container while
-  its own section is in view, handing off to the next section's header in
-  turn.
+  .rux-card__section` supplies one shared `border-top` at each seam. Section
+  headers remain in normal flow so the card shell scrolls and clips as one
+  unit.
 - Use `.rux-card__embed` for a repeating item nested inside a section or card
   body — an itinerary stop, a bus assignment, a payment row. Unlike a
   section, an embed has a real border, background, and radius of its own; use

@@ -744,14 +744,11 @@ function emptyTripCard(text = "No Trips") {
 	`;
 }
 
-// Each day gets its own .rux-card — the same sticky, flat-divider
-// group the itinerary's day-groups and the trip editor's own tabs use
-// (docs/cards.md), repeated once per day instead of describing only the
-// first of however many days are showing.
+// Each day gets its own .rux-card, repeated once per day instead of
+// describing only the first of however many days are showing.
 function renderDayGroup(iso, entries) {
 	return `
 		<article class="rux-card rux-tasks__day-group">
-			<div class="rux-card__sentinel" aria-hidden="true"></div>
 			<div class="rux-card__header">
 				<h4 class="rux-card__title">${formatDepartingTitle(iso)}</h4>
 			</div>

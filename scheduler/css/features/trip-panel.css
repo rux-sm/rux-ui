@@ -56,18 +56,6 @@
 	container-type: inline-size;
 }
 
-/* initPanelScrollEdges (rux-ui/js/controls.js) still toggles .is-scrolled
-   here like it does on every .rux-panel/.rux-panel--floating — that JS
-   is shared and stays as is. Only the resulting shadow is suppressed:
-   #pane-trip's section headers (card.css's .rux-card__header.is-stuck)
-   now own that shadow duty per section as the user scrolls, so the nav
-   showing its own at the same time doubled it up right above the section
-   header's. */
-.rux-scope-trip > .rux-panel__nav.is-scrolled {
-	box-shadow: none;
-}
-
-
 .rux-scope-trip__status-group .rux-button {
 	min-width: 0;
 }

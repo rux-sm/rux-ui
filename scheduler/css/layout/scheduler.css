@@ -89,6 +89,13 @@
 	   corner paints square past the viewport's rounded corner. Verified by
 	   toggling this rule in-browser. Must match the viewport's radius. */
 	border-radius: var(--rux-calendar-header-radius);
+	/* Trip bars are GPU-composited (their base rule lists "transform" in its
+	   transition), which puts them on their own layer that escapes the
+	   border-radius + overflow clip above — they paint square over the rounded
+	   corner as they scroll. clip-path clips the scroller's own rendering
+	   (composited child layers included) to the rounded shape, which
+	   border-radius alone cannot reach. */
+	clip-path: inset(0 round var(--rux-calendar-header-radius));
 }
 
 .rux-scheduler::-webkit-scrollbar {
@@ -297,6 +304,10 @@
 .rux-scheduler__col-head {
 	justify-content: center;
 	z-index: calc(var(--rux-z-sticky) + 1);
+	/* Sticky cells paint on a composited layer that escapes the scroller's
+	   rounded clip (see the .rux-scheduler border-radius note above), so the
+	   corner cell carries its own top-left radius to match the viewport. */
+	border-start-start-radius: var(--rux-calendar-header-radius);
 }
 
 .rux-scheduler__corner-label {

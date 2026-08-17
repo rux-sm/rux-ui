@@ -122,7 +122,7 @@
 
 	--rux-radius-0:    0;
 	--rux-radius-xs:   2px;
-	--rux-radius-sm:   6px;
+	--rux-radius-sm:   4px;
 	--rux-radius-md:   8px;
 	--rux-radius-lg:   12px;
 	--rux-radius-xl:   16px;
@@ -192,7 +192,8 @@
        off it — panels, cards, content areas. */
     --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 	/* 0,  0,  0  */
     --rux-surface-1:    oklch(from var(--rux-neutral) 16% c h); /* cards  */	/* 22, 22 ,22 */
-	--rux-surface-2:    oklch(from var(--rux-neutral) 21% c h); /* button */ 	/* 25, 25 ,25 */
+	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
+	--rux-input-bg-disabled:  oklch(from var(--rux-neutral) 21.5% c h); /* ( 24, 24, 24) */
 
 	/* One border family for the whole app — grid lines, then three
 	   increasing intensities for hairline borders (default, hover,
@@ -357,6 +358,7 @@
 	   modal, floating windows) their own direct --rux-radius-lg (12px). */
 	--rux-radius-container: var(--rux-radius-md);
 	--rux-radius-control:   var(--rux-radius-sm);
+	--rux-radius-input:  var(--rux-radius-md);
 
 	/* ─── ICON ───────────────────────────────────────────────────────────── */
 
@@ -525,7 +527,7 @@
 	/* The viewport owns the chrome; the inner scheduler remains a scrolling grid. */
 
 	/* — shell — */
-	--rux-calendar-bg:         var(--rux-surface-1);
+	--rux-calendar-bg:         var(--rux-surface-0);
 	--rux-calendar-border:     1px solid var(--rux-card-border); /* calender outline border*/
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
@@ -540,15 +542,15 @@
 	/* — header — */
 	/* Header cells share one flat plane; borders provide separation without
 	   repeating elevation or rim lighting across every grid cell. */
-	--rux-calendar-header-bg:     var(--rux-surface-1);
-	--rux-calendar-header-border: 1px solid var(--rux-card-border); /* row header dividers*/
+	--rux-calendar-header-bg:     var(--rux-surface-0);
+	--rux-calendar-header-border: 1px solid var(--rux-grid-guide); /* row header dividers*/
 	/* Same reasoning/role as --rux-calendar-radius just above — a sub-region
 	   of the same container shape, not its own control. */
 	--rux-calendar-header-radius: var(--rux-radius-container);
 	--rux-calendar-header-height: 32px;
 	--rux-calendar-header-row-width: 32px;
 	--rux-calendar-header-shadow:        none;
-	--rux-calendar-header-divider:      1px solid var(--rux-card-border); /* column header dividers*/
+	--rux-calendar-header-divider:      1px solid var(--rux-grid-guide); /* column header dividers*/
 
 	/* — grid — */
 	--rux-calendar-grid: 1px solid var(--rux-grid-guide);
@@ -594,7 +596,7 @@
 	/* — nav / tabs — tab strip itself reads --rux-tabs-attached-* (below) */
 	--rux-panel-nav-bg:        var(--rux-surface-0);
 	--rux-panel-nav-border:    none;
-	--rux-panel-nav-padding:   0 0 var(--rux-space-4) 0;
+	--rux-panel-nav-padding:   0 0 var(--rux-space-5) 0;
 	--rux-panel-nav-shadow:    var(--rux-shadow-1); /* while scrolled */
 	--rux-panel-tabs-padding:  var(--rux-space-4);
 
@@ -672,53 +674,52 @@
 	--rux-panel-anchored-shadow: var(--rux-shadow-2);
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
-	/* One class, .rux-card, one color regardless of nesting depth. Sticky
-	   group headers are the sentinel-gated case of .rux-card__header
-	   (.rux-card__sentinel, card.css), not a separate token family.
+	/* One class, .rux-card, one color regardless of nesting depth.
 	   --elevated/--recessed (card.css) compose on top as dynamic
 	   modifiers with no tokens of their own — see that note below. */
 
-	/* — shared primitives, reused across every region below — */
-	--rux-card-fg:            var(--rux-text-default);
-	--rux-card-border-width:  var(--rux-border-width);
+	/* — card shell — owns the outer surface, border, radius, and shadow.
+	   The established --body-* edge tokens remain the compatibility sources
+	   so existing application-level overrides continue to affect the shell. */
+	--rux-card-shell-fg:     var(--rux-card-fg);
+	--rux-card-shell-bg:     var(--rux-card-body-bg);
+	--rux-card-shell-border: 1px solid var(--rux-card-border);
+	--rux-card-shell-radius: var(--rux-card-body-radius);
+	--rux-card-shell-shadow: var(--rux-card-body-shadow);
+
+	/* Compatibility inputs retained for existing consumers. */
+	--rux-card-fg:           var(--rux-text-default);
+	--rux-card-border-width: var(--rux-border-width);
+	--rux-card-body-border:  var(--rux-card-border-width) solid var(--rux-card-border);
+	--rux-card-body-radius:  var(--rux-radius-container);
+	--rux-card-body-shadow:  none;
+
+	/* — card header — owns title layout, fill, and the body divider. */
 	--rux-card-header-height: 40px;
 	--rux-card-header-weight: var(--rux-weight-400);
 	/* Left-only — relies on a card that's already inset from the viewport
 	   by its own parent's padding, with the trailing button's own hit-area
-	   supplying the right edge. The sentinel-gated header (edge-to-edge,
-	   no ambient padding to lean on) uses full inline padding instead of
-	   this token — see card.css. */
+	   supplying the right edge. */
 	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
-	--rux-card-padding-block:  var(--rux-space-4);
-	--rux-card-padding-inline: var(--rux-space-4);
-	--rux-card-padding:        var(--rux-card-padding-block) var(--rux-card-padding-inline);
-	--rux-card-content-gap:    var(--rux-space-4);
-
-	/* — card: header — floats above the body, no box of its own — */
 	--rux-card-header-bg:     var(--rux-surface-0);
 	--rux-card-header-border: 1px solid var(--rux-card-border);
+	/* Compatibility token: the shell is now the card's only radius owner. */
 	--rux-card-header-radius: var(--rux-radius-container);
 	--rux-card-header-shadow: none;
 
-	/* — card: sticky header — used by every repeating-group header (View
-	   Options, Driver Availability, mini calendar, itinerary day-groups,
-	   tasks/history date groups). Independent of the plain header tokens
-	   above; defaults preserve the "blends into its own body" look. */
-	--rux-card-header-sticky-bg:     var(--rux-surface-0);
-	--rux-card-header-sticky-border: 1px solid var(--rux-card-border);
+	/* — card body — owns content fill, padding, and internal rhythm. */
+	--rux-card-body-bg:       var(--rux-surface-1);
+	--rux-card-padding-block: var(--rux-space-4);
+	--rux-card-padding-inline: var(--rux-space-4);
+	--rux-card-padding:       var(--rux-card-padding-block) var(--rux-card-padding-inline);
+	--rux-card-content-gap:   var(--rux-space-4);
+	/* Divider for flat sections composed inside a card body. */
+	--rux-card-section-border: 1px solid var(--rux-card-border);
 
-	/* — card: body — the box — */
-	--rux-card-body-bg:     var(--rux-surface-1);
-	--rux-card-body-border: var(--rux-card-border-width) solid var(--rux-card-border);
-	--rux-card-body-radius: var(--rux-radius-container);
-	/* A plain card is flat by design — .rux-card--elevated below is the
-	   only thing that ever overrides this locally. */
-	--rux-card-body-shadow: none;
-
-	/* — card: footer — attached to the body's bottom edge, not floating
-	   above it the way header does; see card.css. */
+	/* — card footer — owns action-row fill and the body divider. */
 	--rux-card-footer-bg:     transparent;
 	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-card-border);
+	/* Compatibility token: the shell is now the card's only radius owner. */
 	--rux-card-footer-radius: var(--rux-radius-container);
 
 	/* No level system anymore — one card color for every nesting depth,
@@ -729,11 +730,6 @@
 	   own shell is surface-0 now, same as an attached panel, so a plain
 	   card inside one already contrasts correctly with no auto-elevate
 	   mechanism needed (see panel.css and docs/cards.md). */
-
-	/* — hairline divider — general-purpose, used by a few feature files
-	   (scheduler-app.css, trip-history.css, trip-envelope.css) as a plain
-	   border color; not tied to any one card region. */
-	--rux-card-section-border: 1px solid var(--rux-card-border);
 
 	/* ─── COMPONENT · field ───────────────────────────────────────────────── */
 	/* Inputs, selects, and textareas share the recessed-well treatment. */
@@ -756,7 +752,7 @@
 	   already meant to be), but fixed rather than left relying on that. */
 	--rux-input-border:         1px solid var(--rux-card-border);
 	--rux-input-border-image:   none;
-	--rux-input-border-radius:  var(--rux-radius-control);
+	--rux-input-border-radius:  var(--rux-radius-input);
 	--rux-input-shadow:         var(--rux-shadow-inset);
 	--rux-input-height:         var(--rux-field-height);
 	--rux-input-padding-inline: var(--rux-control-padding-inline);
@@ -1451,9 +1447,9 @@
 	--rux-success-on-vivid: oklch(from var(--rux-success) 90% 0.20 h);
 
 	/* ─── Surfaces ────────────────────────────────────────────────────────── */
-	--rux-surface-0:        oklch(from var(--rux-neutral) 84% c h); /* App canvas and top header */
-	--rux-surface-1:        oklch(from var(--rux-neutral) 94% c h); /* Everything else: panels, cards, content areas */
-	--rux-surface-contrast: oklch(from var(--rux-neutral) 96% c h); /* Raised control and thumb fill */
+    --rux-surface-0:	oklch(from var(--rux-neutral) 98% c h);	/* canvas */ 	/* 0,  0,  0  */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 100% c h); /* cards  */	/* 22, 22 ,22 */
+	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
 	--rux-well-bg:          oklch(from var(--rux-neutral) 90% c h); /* Recessed input and track fill */
 
 	/* --rux-panel-attached-bg (COMPONENT · panel, above) is a direct value,

@@ -19,9 +19,9 @@
    Structure
    ---------
    .rux-trip-itinerary                   Itinerary feature container
-   .rux-trip-itinerary__summary          3-stat strip at top
-   .rux-trip-itinerary__day-group        The one real box for a complete day
-                                (.rux-card, sentinel-gated sticky header)
+	.rux-trip-itinerary__summary          3-stat strip at top
+	.rux-trip-itinerary__day-group        The one real box for a complete day
+	                            (.rux-card with header and body)
    .rux-trip-itinerary__day-group-body   Its .rux-card__body — flat, no
                                 padding of its own; every row inside
                                 supplies its own and shares one border-top

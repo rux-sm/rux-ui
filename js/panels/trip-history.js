@@ -203,11 +203,9 @@ function render() {
 		if (label !== currentGroup) {
 			currentGroup = label;
 			group = element("section", "rux-card rux-trip-history__group");
-			const sentinel = element("div", "rux-card__sentinel");
-			sentinel.setAttribute("aria-hidden", "true");
 			const header = element("div", "rux-card__header");
 			header.appendChild(element("h4", "rux-trip-history__group-title", label));
-			group.append(sentinel, header);
+			group.append(header);
 			list.appendChild(group);
 		}
 		group.appendChild(renderCard(record));

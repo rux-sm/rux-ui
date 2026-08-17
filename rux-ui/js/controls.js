@@ -108,73 +108,6 @@
 		sync();
 	}
 
-	/* Which .rux-card__header currently owns the "stuck" shadow is
-	   scroll state, not something CSS position: sticky exposes on its own —
-	   there's no shipped :stuck selector to key a box-shadow off. Each
-	   section gets a zero-height sentinel as its first child, right at the
-	   section's own top edge (the same point its header docks to once
-	   stuck). Watching the sentinel's own visibility, not the header's,
-	   sidesteps needing to read the header's changing intersection ratio as
-	   it slides in: the sentinel leaves the scroll root at exactly the
-	   instant its header reaches top:0 and sticks, and returns at exactly
-	   the instant it unsticks.
-
-	   Shared across every .rux-panel, regardless of position modifier
-	   (--attached/--floating/etc., auto-wired below, same as
-	   initPanelScrollEdges) rather than living in trip-panel.js — the tool
-	   panel's Tasks and History tabs need the identical behavior for their
-	   own date-grouped lists, and every floating window (trip editor
-	   included) needs it for its own sentinel-gated cards, so one generic
-	   implementation covers all of it instead of copies drifting apart. */
-	function initStickySectionHeaders(panel) {
-		const scrollRoot = panel.querySelector(".rux-panel__body");
-		if (!scrollRoot || scrollRoot.dataset.ruxStickyHeadersInit === "true") return;
-		scrollRoot.dataset.ruxStickyHeadersInit = "true";
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				for (const entry of entries) {
-					entry.target.nextElementSibling?.classList.toggle(
-						"is-stuck",
-						!entry.isIntersecting,
-					);
-				}
-			},
-			// Positive, not negative — a negative top margin shrinks the
-		// observed region, moving its effective top edge to y:1. The very
-		// first sentinel in a scroll root sits at y:0 (nothing above it,
-		// panes/bodies are zero-padded), so at rest — before any scroll —
-		// a zero-height point at y:0 already falls outside a region that
-		// only starts at y:1, marking it .is-stuck immediately instead of
-		// only once actually scrolled. A positive margin expands the
-		// region upward (to y:-1) instead, giving the resting sentinel
-		// room to register as visible, while scrolling it past y:-1 still
-		// correctly flips it to stuck.
-		{ root: scrollRoot, threshold: 0, rootMargin: "1px 0px 0px 0px" },
-		);
-		// Some sections (the itinerary's day groups, Tasks/History's own
-		// date groups) are rebuilt wholesale via innerHTML well after this
-		// init runs — a plain querySelectorAll here would only ever see the
-		// sentinels present at first render. Re-scanning on every DOM
-		// mutation picks up new sections as they're rendered; the WeakSet
-		// keeps re-observing an already-tracked sentinel a no-op. Sentinels
-		// removed with their old section just stop reporting — nothing to
-		// clean up on that side.
-		const observed = new WeakSet();
-		const observeNew = () => {
-			panel.querySelectorAll(".rux-card__sentinel").forEach((sentinel) => {
-				if (observed.has(sentinel)) return;
-				observed.add(sentinel);
-				observer.observe(sentinel);
-			});
-		};
-		observeNew();
-		new MutationObserver(observeNew).observe(scrollRoot, {
-			childList: true,
-			subtree: true,
-		});
-	}
-
 	function initSegmentedIndicator(group) {
 		if (group.dataset.ruxIndicatorInit === "true") return;
 		group.dataset.ruxIndicatorInit = "true";
@@ -373,14 +306,10 @@
 		});
 		// Every .rux-panel, regardless of position modifier — floating
 		// windows (trip editor, manifest, request inbox, trip finder) and
-		// attached panels (Calendar tools, Fleet, Driver, Customer, etc.)
-		// alike need the same nav/footer scroll-shadow and sentinel-gated
-		// sticky-header behavior. Panels built dynamically after this fires
-		// (doc viewer, trip envelope) don't need either today — no
-		// sentinel-gated cards inside them — so they're not wired here.
+		// attached panels (Calendar tools, Fleet, Driver, Customer, etc.) —
+		// gets the same nav/footer scroll-shadow behavior.
 		document.querySelectorAll(".rux-panel").forEach((panel) => {
 			initPanelScrollEdges(panel);
-			initStickySectionHeaders(panel);
 		});
 		window.Rux.syncSelectPlaceholders(document);
 

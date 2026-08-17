@@ -1,22 +1,20 @@
 # Card Components
 
-A card is a header that floats above its own content, unboxed, plus a body
-that owns the actual chrome: `background`, `border`, `border-radius`,
-`box-shadow`. The header sits flush against the body (zero gap) but is never
-a descendant of the boxed element — it's a sibling in front of it, which is
-the only way it can visually sit outside the box while the box still clips
-its own content to `overflow: hidden`.
+A card has three parts, or four when it has a footer: outer shell, header,
+body, and optional footer. `.rux-card` owns the outer `background`, `border`,
+`border-radius`, `box-shadow`, and rounded clip. Its regions remain square and
+own only their fill, padding, and shared dividers. That single edge owner
+prevents scrolling body content or borders from showing through a rounded
+header corner.
 
 ```
-.rux-card
-  .rux-card__sentinel (optional) — zero-height marker, opts the header
-                                    below into sticky/full-padding treatment
-  .rux-card__header      — title + trailing actions, floats above the body
+.rux-card                  — outer frame and rounded clip
+  .rux-card__header       — title + trailing actions; bottom divider
   .rux-card__body         — content area (add --stack for gapped children)
-  .rux-card__footer      — actions row, shares a seam with the body
+  .rux-card__footer       — optional actions row; top divider
 .rux-card--elevated        — one relative step lighter than the plain default
 .rux-card--recessed        — one relative step darker than the plain default
-.rux-card--borderless      — drops the body's border
+.rux-card--borderless      — makes the outer frame transparent
 ```
 
 **One card color, regardless of nesting depth** — see "Reference: Vercel
@@ -44,43 +42,13 @@ nudge, not a new elevation tier.
 `rux-ui/css/base/card.css` is the single source of truth; this doc explains
 the *why*, not the mechanics — read the file's own comments for those.
 
-## One header, two behaviors, chosen by structure not a modifier
+## Header behavior
 
-`.rux-card__header` on its own is the plain default: not sticky, asymmetric
-left-only padding (leans on an ambient pane/card padding), a tinted
-background (`--rux-card-header-bg`).
-
-`.rux-card__sentinel + .rux-card__header` — a header immediately preceded by
-a zero-height sentinel `<div>` — gets the "was section" treatment instead:
-full inline padding (it now runs edge-to-edge with no ambient padding to
-lean on), its own background/border (`--rux-card-header-sticky-bg/-border`,
-defaulting to an opaque fill matching the body with no border, but
-independently overridable), and `position: sticky` so it docks to the top of
-its scroll container until the next card's header reaches the same spot.
-
-This is a **structural signal, not a class modifier**, deliberately: every
-card built or converted as part of the Card/Panel restructure already has
-a sentinel as its header's preceding sibling, so it opts in automatically.
-Plain `.rux-card` usage that predates the restructure (Driver panel's View
-Options/Filters cards, the passenger editor, the components catalog) has no
-sentinel, so it keeps its original non-sticky, tinted-header look with zero
-markup changes and zero risk of a silent regression.
-
-The sticky mechanism itself: `initStickySectionHeaders` in
-`rux-ui/js/controls.js`, auto-run for every `.rux-panel` at `DOMContentLoaded`.
-An `IntersectionObserver` watches each `.rux-card__sentinel`, toggling
-`.is-stuck` (which adds `--rux-shadow-1`) on `entry.target.nextElementSibling`
-the instant it docks — the standard workaround for "which sticky element is
-actually pinned right now" since there's no shipped `:stuck` pseudo-class. A
-`MutationObserver` re-scans for new sentinels as dynamically-rendered content
-(itinerary day groups, Tasks/History date groups, all rebuilt via
-`innerHTML`) appears, so nothing needs its own wiring per consumer.
-
-`z-index: var(--rux-z-sticky)`, not a bare `1` — ordinary in-flow content
-(e.g. `.rux-button--segment` in `controls.css`) can also claim `z-index: 1`
-without establishing its own stacking context, and a tied z-index falls back
-to DOM order. The shared sticky token — the same one the scheduler's own
-sticky row/column headers use — reliably outranks that instead of guessing.
+`.rux-card__header` remains in normal document flow. It owns its fill,
+padding, title layout, and the divider shared with the body. It owns no outer
+border or radius: `.rux-card` clips the header and every other region to the
+single shell boundary. The header scrolls with its card rather than sticking
+independently inside a panel.
 
 ## Repeating list items — plain `.rux-card`, no modifier
 
@@ -95,9 +63,8 @@ to. `.rux-card`'s own base rule carries `min-width: 0` specifically for
 this — every one of these consumers is a flex child that needs to
 shrink/truncate properly rather than forcing its container wide.
 
-Header still stays transparent on a nested card so the body's own
-background reads through unbroken — that part of the old level-2 treatment
-carried over; only the color-stepping is gone.
+The outer card frame remains the only border and radius at every nesting
+depth; nested headers and bodies do not create competing boxes.
 
 **No margin of its own** — deliberately. Consumers fall into two layout
 systems and one fixed margin can't serve both:
@@ -111,8 +78,8 @@ systems and one fixed margin can't serve both:
   their nested children — not `margin-bottom` alone. Adjacent siblings are
   normal block elements, so their margins collapse into one gap the standard
   CSS way, and the *first* item in the list gets its own top margin for free
-  against whatever precedes it (typically a sentinel-gated header, which has
-  no margin of its own to collapse with).
+  against whatever precedes it (typically its card header, which has no
+  margin of its own to collapse with).
 
 Itinerary's own stops are flat divided rows, not a card at all (see
 `itinerary.css`'s own file-header comment) — a deliberate exception, not an
@@ -123,23 +90,28 @@ bare `.rux-card` class as a structural marker for its own CSS combinator.
 ## Tokens
 
 ```
---rux-card-header-bg/-border/-radius/-shadow/-padding
-                              plain (non-sentinel-gated) header's own look
---rux-card-header-sticky-bg/-border
-                              sentinel-gated header's own look — independent
-                              of the plain header tokens above; defaults to
-                              matching --rux-card-body-bg with no border
---rux-card-body-bg/-border/-radius/-shadow
-                              the box every card owns — one value app-wide
-                              (--rux-card-body-bg is --rux-surface-1),
-                              nesting depth no longer changes it
---rux-card-footer-bg/-border/-radius/-shadow
-                              footer's own look, shares a seam with body
+--rux-card-shell-fg/-bg/-border/-radius/-shadow
+                              outer card surface and edge geometry
+--rux-card-header-bg/-border/-shadow/-padding/-height/-weight
+                              plain header fill, divider, shadow, and inset
+--rux-card-body-bg
+--rux-card-padding-block/-inline, --rux-card-padding
+--rux-card-content-gap
+                              content fill, padding, and internal rhythm
+--rux-card-footer-bg/-border
+                              footer fill and divider shared with body
 --rux-card-section-border    generic divider border-top, still used directly
                               by a few flat-divider layouts outside the Card
                               component itself (scheduler-app.css,
                               trip-history.css, trip-envelope.css)
 ```
+
+The established `--rux-card-fg`, `--rux-card-border-width`, and
+`--rux-card-body-border/-radius/-shadow` tokens remain compatibility sources
+for the shell aliases, so existing overrides continue to work.
+`--rux-card-header-radius` and `--rux-card-footer-radius` also remain defined
+for compatibility but the shared regions no longer consume them; the outer
+shell is the sole radius owner.
 
 `--elevated`/`--recessed` have no tokens of their own — they're a dynamic
 `oklch` adjustment on whatever `--rux-card-body-bg` is already in scope, see
@@ -154,18 +126,16 @@ own chrome: a floating window (border/shadow/radius), `.rux-panel` (tab nav
 + scrollable body), and a `.rux-card` **per tab pane** (its own
 header/body/border/shadow again) — three overlapping header/body/footer
 contracts for one window. All four trip editor tabs (Details, Billing,
-Itinerary, Fleet) now use plain `.rux-card` groups (sentinel-gated, sticky
-headers) instead — no separately-boxed nested card remains anywhere inside
-the trip editor.
+Itinerary, Fleet) now use plain `.rux-card` groups instead — no
+separately-boxed nested card remains anywhere inside the trip editor.
 
 The tool panel's four tabs (Calendar, Drivers, Tasks, History) use the same
-two components for the same reasons: Tasks' and History's own date groups
-are sentinel-gated `.rux-card` with their repeating trip/history cards as
-plain nested `.rux-card`s, and Driver Availability / Calendar Options / Trip
-Bar Options / the mini calendar each get their own sentinel-gated `.rux-card`
-for their single titled region. These two panels (the trip editor and the
-tool panel) are the reference implementation for any future addition in the
-same family.
+two components for the same reasons: Tasks' and History's date groups are
+`.rux-card` components with repeating trip/history cards nested inside, and
+Driver Availability / Calendar Options / Trip Bar Options / the mini calendar
+each get their own `.rux-card` for their single titled region. These two panels
+(the trip editor and the tool panel) are the reference implementation for any
+future addition in the same family.
 
 ## Panel — the outer-container primitive
 
@@ -222,8 +192,8 @@ same information under a different name for tokens whose class is
 `.rux-panel`. The trip editor no longer nests a whole second `.rux-panel`
 just to get tabs + scrollable body + footer inside its floating window — it
 uses `.rux-panel__nav--attached` (a style modifier on `.rux-panel__nav`)
-directly. `initPanelScrollEdges`/`initStickySectionHeaders` and the generic
-`[data-rux-tabs]` switcher in `rux-ui/js/controls.js` all key off `.rux-panel`
+directly. `initPanelScrollEdges` and the generic `[data-rux-tabs]` switcher in
+`rux-ui/js/controls.js` both key off `.rux-panel`
 alone now (not two separate class families), so this same pattern is
 available to any future panel with tabs.
 

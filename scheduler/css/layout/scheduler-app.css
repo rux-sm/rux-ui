@@ -668,18 +668,6 @@
 	min-width: 0;
 }
 
-/* initPanelScrollEdges (rux-ui/js/controls.js) still toggles .is-scrolled
-   here like it does on every .rux-panel — that JS is shared and stays as
-   is. Only the resulting shadow is suppressed: every tab's own sentinel-
-   gated card header (card.css's .rux-card__header.is-stuck) now owns that
-   shadow duty as the user scrolls past it, so the nav showing its own at
-   the same time doubled it up right above the card header's — same fix,
-   same reasoning, as .rux-scope-trip's own suppression in
-   trip-panel.css. */
-.rux-scope-right-panel > .rux-panel__nav.is-scrolled {
-	box-shadow: none;
-}
-
 /* Same inset-within-the-pane pattern as #rp-pane-navigate above — the
    Assignments card aligns flush within this padding instead of adding its
    own inline padding on top (zeroed below), so it reads as one consistent
@@ -697,21 +685,12 @@
 	flex-direction: column;
 }
 
-/* Sentinel-gated .rux-card__header now (View Options right below it got the
-   same treatment, and the mini calendar floating without a matching
-   bordered header next to one that has it read as inconsistent rather
-   than intentional). This rule keeps the 3-part prev/title/next layout;
-   the sentinel-gated header supplies the sticky/padding/border/background.
-   The corner-notch clipping this used to cause while scrolling is now
-   fixed at the source — .rux-card itself clips to a matching radius for
-   any sentinel-gated card (see card.css) — so sticky is safe here again.
-   gap:0 (not the header's own --rux-card-content-gap) — the title
+/* Keeps the 3-part previous/title/next layout. gap:0 (not the header's own
+   --rux-card-content-gap) — the title
    is flex:1 and already pushes the buttons to either edge on its own, and
    16px between title and buttons that are already flush against the edges
-   would just be dead space. Combined selector, not a bare class, so this
-   reliably wins over .rux-card__sentinel + .rux-card__header's own gap
-   regardless of which stylesheet happens to load second. */
-.rux-card__sentinel + .rux-card__header.rux-mini-cal__header {
+   would just be dead space. */
+.rux-mini-cal__header {
 	height: var(--rux-button-height-header);
 	gap: var(--rux-space-0);
 }
