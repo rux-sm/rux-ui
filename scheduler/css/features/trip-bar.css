@@ -190,7 +190,7 @@
    both the text and the whole height budget follow with no other CSS
    touched. scheduler.css's empty-row fallback reads the same token too.
 
-   Icons (icons.css's .rux-trip-bar .rux-icon) are the same story for size
+   Icons (.rux-trip-bar .rux-icon, just below) are the same story for size
    — --rux-trip-bar-icon-size (declared on .rux-trip-bar above) already
    scales with these two. Icons also expose their other three Material
    Symbols axes per tier if it turns out XXS/SM need their own tuning
@@ -199,6 +199,23 @@
    --rux-trip-bar-icon-optical-size (all defined once, tokens.css). None
    are overridden per tier yet — add one here, same shape as the two below,
    once XXS/XS/SM are visible side by side and it's clear which need it. */
+
+/* Trip bar icons are tuned independently of every other .rux-icon in the app.
+   This rule lives here, not in rux-ui/css/base/icons.css, because .rux-trip-bar
+   is an application block and the portable layer must not name it (see
+   docs/portability-audit.md §4.4). It sets icons.css's --_icon-* contract on a
+   compound selector, so it outranks the base .rux-icon rule regardless of load
+   order, and still loses to any :is(.is-active, [aria-pressed="true"])
+   selected-state override, which is more specific still.
+   --rux-trip-bar-icon-size is declared on .rux-trip-bar above; the other four
+   axes come from tokens.css. */
+.rux-trip-bar .rux-icon {
+	--_icon-size: var(--rux-trip-bar-icon-size);
+	--_icon-fill: var(--rux-trip-bar-icon-fill);
+	--_icon-weight: var(--rux-trip-bar-icon-weight);
+	--_icon-grade: var(--rux-trip-bar-icon-grade);
+	--_icon-optical-size: var(--rux-trip-bar-icon-optical-size);
+}
 
 .rux-scheduler--trip-bar-size-xxs {
 	--rux-trip-bar-row-font-size:   var(--rux-size-xxs);

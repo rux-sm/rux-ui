@@ -15,7 +15,7 @@
 - Reuse existing `--rux-*` tokens and `.rux-*` components before creating new primitives.
 - Avoid inline styles and hardcoded colors when an existing token or stylesheet applies.
 - Make the smallest coherent change that fulfills the request; do not refactor unrelated code.
-- Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested.
+- Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested, or unless the change is a step recorded in `docs/portability-audit.md`. That document authorizes its own renames; renames outside it remain prohibited.
 - Planning is read-only. For architecture or migration planning, do not modify application, configuration, or SQL files.
 
 ## Data and Risk

@@ -40,15 +40,8 @@
 		var(--rux-icon-transition-easing);
 }
 
-/* Trip bar icons are tuned independently of every other .rux-icon in the
-   app — override the tokens in tokens.css (--rux-trip-bar-icon-*), not this
-   rule, to adjust them. Higher specificity than the base rule above, but
-   still loses to any :is(.is-active, [aria-pressed="true"]) selected-state
-   override elsewhere, since those are more specific still. */
-.rux-trip-bar .rux-icon {
-	--_icon-size: var(--rux-trip-bar-icon-size);
-	--_icon-fill: var(--rux-trip-bar-icon-fill);
-	--_icon-weight: var(--rux-trip-bar-icon-weight);
-	--_icon-grade: var(--rux-trip-bar-icon-grade);
-	--_icon-optical-size: var(--rux-trip-bar-icon-optical-size);
-}
+/* Applications retune .rux-icon by setting the --_icon-* custom properties on
+   a more specific selector of their own; see .rux-trip-bar .rux-icon in
+   scheduler/css/features/trip-bar.css for the reference example. Those
+   properties are this file's private contract — read here, set by the caller —
+   so no application selector needs to appear in this file. */

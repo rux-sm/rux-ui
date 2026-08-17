@@ -19,7 +19,7 @@
 ## Scope and Planning
 
 - Make the smallest coherent change that satisfies the task; do not refactor unrelated code.
-- Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested.
+- Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested, or unless the change is a step recorded in `docs/portability-audit.md`. That document authorizes its own renames; renames outside it remain prohibited.
 - Architecture and migration planning is read-only. During a planning task, do not modify application, configuration, or SQL files.
 
 ## Data and High-Risk Work
