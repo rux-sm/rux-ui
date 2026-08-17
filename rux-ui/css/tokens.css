@@ -473,7 +473,7 @@
 
 	/* ─── COMPONENT · side navigation ─────────────────────────────────────── */
 	--rux-side-nav-width:           256px;
-	--rux-side-nav-bg:              var(--rux-surface-1);
+	--rux-side-nav-bg:              var(--rux-surface-2);
 	--rux-side-nav-fg:              var(--rux-text-muted);
 	--rux-side-nav-border:          1px solid var(--rux-card-border);
 	--rux-side-nav-shadow:          none;
@@ -846,7 +846,7 @@
 	--rux-button-ghost-text:       			var(--rux-text-default);
 	--rux-button-ghost-border:     			none;
 	--rux-button-ghost-hover-background:  	var(--rux-state-hover-overlay);
-	--rux-button-ghost-active-background:	var(--rux-state-active-overlay);
+	--rux-button-ghost-active-background:	var(--rux-surface-2);
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
