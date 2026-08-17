@@ -225,7 +225,7 @@
 	min-width: 0;
 }
 
-.rux-workspace__nav {
+.sched-workspace-nav {
 	display: flex;
 	align-items: center;
 	justify-content: flex-start;
@@ -233,7 +233,7 @@
 	min-width: 0;
 }
 
-.rux-workspace__nav > .rux-workspace__title {
+.sched-workspace-nav > .rux-workspace__title {
 	flex: 1 1 auto;
 	min-width: 0;
 }
@@ -288,7 +288,8 @@
 	pointer-events: none;
 }
 
-.rux-workspace,
+/* .rux-workspace already sets both in rux-ui/css/base/workspace.css; only the
+   app's own viewport needs them here. */
 .calendar-app__viewport {
 	min-width: 0;
 	min-height: 0;
@@ -1268,12 +1269,12 @@
    Close button below its other footer actions — one
    consistent mobile close pattern shared by every panel that uses
    .rux-panel__footer. */
-.rux-panel__footer-close {
+.sched-panel-footer-close {
 	display: none;
 }
 
 @media (max-width: 500px) {
-	.rux-panel__footer > .rux-panel__footer-close {
+	.rux-panel__footer > .sched-panel-footer-close {
 		display: inline-flex;
 	}
 
@@ -1315,11 +1316,11 @@
 		min-width: 0;
 	}
 
-	.rux-panel__footer-close {
+	.sched-panel-footer-close {
 		flex: none;
 	}
 
-	.rux-panel__footer-close .rux-button__label {
+	.sched-panel-footer-close .rux-button__label {
 		display: none;
 	}
 }
@@ -1766,7 +1767,7 @@
 	   below, so the top header is left with just the week label — center
 	   it now that it isn't sharing the row with anything else. The grid's
 	   second column (the toolbar's track) sizes to 0 once the toolbar is
-	   taken out of flow by position:fixed, so .rux-workspace__nav already
+	   taken out of flow by position:fixed, so .sched-workspace-nav already
 	   spans the header's full width; centering the title inside it is
 	   enough; no change needed to the grid itself. Un-setting the title's
 	   desktop left padding keeps the centering visually true instead of

@@ -259,9 +259,23 @@ portable blocks.
 | `.rux-panel`, `.rux-workspace` | `layout/scheduler-app.css` |
 | `.rux-ui-header` | `features/profile-picker.css` |
 
-This is permitted, but it MUST be done through documented hooks (tokens or modifiers), not
-by restyling the block's internals. Each row MUST be resolved during execution into either
-a Tier 0 token the app sets, or a Tier 1 modifier the app applies.
+> **Status: resolved (step 6).** Resolving these showed the category above was too
+> coarse. There are three distinct cases, and only two are defects:
+
+| Case | Example | Verdict |
+|---|---|---|
+| **Scoped descendant** — app content styled inside a portable block, or the block configured from the app's own scope | `.scheduler-app__module > .rux-workspace { min-width: 471px }`, `.rux-table td[data-col="…"] .sched-priority-dot` | **Not a violation.** This is how an application is supposed to configure a portable block, and `docs/layout-composition.md` explicitly assigns the workspace minimum width to the app. |
+| **App-invented element in the portable namespace** — the app defines `.rux-block__thing` that the portable layer does not | `.rux-panel__footer-close`, `.rux-workspace__nav`, `.rux-ui-header__chat-btn` | **Defect.** Claims a namespace the app does not own. Renamed to `.sched-panel-footer-close`, `.sched-workspace-nav`, `.sched-ui-header-chat-btn`. |
+| **Unscoped global override** — the app restyles a portable element for every instance on the page | `trip-request.css` set `.rux-card__footer { justify-content: space-between }` | **Defect.** Publish a modifier instead: `.rux-card__footer--between` now lives in `card.css` and the page opts in. |
+
+One override turned out to be simply redundant: `scheduler-app.css` re-declared
+`min-width: 0; min-height: 0` on `.rux-workspace`, which `workspace.css` already sets.
+Removed; the higher-specificity `.scheduler-app__module > .rux-workspace` rule was winning
+either way, so nothing changed.
+
+The rule going forward: an application MAY style a portable block from its own scope, and
+MAY apply portable modifiers, but MUST NOT define new elements in the `.rux-*` namespace or
+restyle a portable element globally.
 
 ### 4.6 JS
 
@@ -398,7 +412,7 @@ re-deriving anything above.
 | 3 | ~~Invert the §4.4 shared typography recipes into Tier 1 utilities~~ **done** | The bulk of the boundary debt. Five recipes across `utils.css`, `card.css`, `form.css`; 20 markup sites in `index.html`, `m.html`, `request.html`, and four JS modules. |
 | 4 | ~~Extract §4.2 Portable rows~~ **done** | `.rux-table`, `.rux-status-text`, `.rux-notifications`, `.rux-preferences`, `.rux-view-options`, `.rux-profile-picker`, `.rux-splash`, `.rux-priority-dot` all moved. Two needed splitting first: `preferences.css` shared a label recipe with `.settings-location-row__name` (now `.rux-u-label`), and `profile-picker.css` defined `.rux-ui-header__*` elements, which went to `ui-header.css`. `.rux-col-picker` / `.rux-mini-cal` stay Hybrid, unmoved. |
 | 5 | ~~Namespace migration `.rux-*` → `.sched-*` (§3)~~ **classes done** | 585 occurrences across 46 files. Two follow-ups deliberately deferred, each its own decision: the 51 domain-named `--rux-*` **tokens** (§4.7) still carry the old prefix, and the redundant `scope` marker (`.sched-scope-trip` → `.sched-trip`) was left in place rather than combining two transformations in one wide rename. |
-| 6 | Resolve §4.5 re-opened blocks into tokens/modifiers | Needs step 5's names to be final. |
+| 6 | ~~Resolve §4.5 re-opened blocks into tokens/modifiers~~ **done** | Auditing this showed §4.5 conflated two different things. Renaming an app-invented element out of the portable namespace is one fix; publishing a modifier for a genuine override is another; and a *scoped descendant* rule (`.scheduler-app__module > .rux-workspace`) is not a violation at all — it is the correct way for an app to configure a portable block. See §4.5 below. |
 | 7 | Extract the view container (§5.2) | Additive; the app keeps its router until the portable one is proven. |
 | 8 | Decouple `drawer.js` (§5.3) | Touches both tiers; safer once the drawer CSS split is decided. |
 | 9 | Shell reconciliation (§5.1) | Highest regression risk. Last. |

@@ -183,11 +183,6 @@
 	gap: var(--rux-card-content-gap);
 }
 
-.rux-card__footer {
-	justify-content: space-between;
-	flex-wrap: wrap;
-}
-
 .rux-card__footer .trip-request__footer-note {
 	max-width: 22rem;
 	color: var(--rux-text-disabled);

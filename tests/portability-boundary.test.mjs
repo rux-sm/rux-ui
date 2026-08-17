@@ -12,7 +12,7 @@
  */
 
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
@@ -150,6 +150,34 @@ test("every page using .rux-* classes loads a design-system entrypoint", () => {
 		broken,
 		[],
 		`These pages use .rux-* classes but link no entrypoint, so the base layer never loads.`,
+	);
+});
+
+test("every stylesheet and script a page links actually exists", () => {
+	// Moving a file into rux-ui/ without removing the application's own <link>
+	// leaves a 404 that is invisible in the UI, because rux.css supplies the
+	// styles anyway. That slipped through twice during the audit migration.
+	const pages = ["index.html", "request.html", "m.html", "d.html", "doc.html"];
+	const dangling = [];
+
+	for (const page of pages) {
+		const html = read(page);
+		// The query string is not optional in practice — this repo cache-busts
+		// nearly every link with ?v=N, so a pattern anchored at `.css"` matches
+		// almost nothing.
+		for (const [, href] of html.matchAll(
+			/(?:href|src)="(\.\/[^"]+?\.(?:css|js)(?:\?[^"]*)?)"/g,
+		)) {
+			const rel = href.replace(/^\.\//, "").split("?")[0];
+			if (!existsSync(new URL(rel, root))) dangling.push(`${page} → ${rel}`);
+		}
+	}
+
+	assert.deepEqual(
+		dangling,
+		[],
+		`These pages link files that do not exist. The page still renders if another ` +
+			`stylesheet covers it, so this only shows up as a 404 in the network log.`,
 	);
 });
 

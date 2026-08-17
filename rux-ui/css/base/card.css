@@ -116,6 +116,14 @@
 	border-radius: 0;
 }
 
+/* Footer with content on both edges — explanatory text leading, actions
+   trailing — instead of the default trailing-only action row. Wraps, since
+   the leading text is the part that runs out of room first. */
+.rux-card__footer--between {
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
 /* Vertical rhythm between independently framed sibling cards. */
 .rux-card + .rux-card {
 	margin-top: var(--rux-card-content-gap);
