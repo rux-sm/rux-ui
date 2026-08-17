@@ -32,6 +32,17 @@
 	overflow: clip;
 }
 
+/* Single-region cards with no dedicated __body opt into the same shell
+   chrome explicitly. The modifier carries no padding — the content region
+   owns its own inset, exactly as __body does. */
+.rux-card--boxed {
+	background: var(--rux-card-shell-bg);
+	border: var(--rux-card-shell-border);
+	border-radius: var(--rux-card-shell-radius);
+	box-shadow: var(--rux-card-shell-shadow);
+	overflow: clip;
+}
+
 /* — Elevated / recessed — dynamic adjustments layered on top of the
    plain default, one relative step lighter or darker. Background only —
    border/shadow stay untouched, this is just a brightness nudge. No
