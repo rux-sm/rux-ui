@@ -350,11 +350,24 @@ The portable helper MUST accept the allowlist as configuration and expose an
 
 ### 5.3 drawer.js
 
-To become honestly portable it MUST: accept its drawer element by reference or a
-configurable selector rather than hardcoding `.scheduler-app__drawer`; read its width from
-a `--rux-*` token with the app overriding it, not from
-`--scheduler-app-right-drawer-default-width`; and have its docblock rewritten against the
-Tier 1 contract. Its CSS moves per the §4.1 drawer row.
+> **Status: JS resolved (step 8).** The coupling was deeper than first recorded — about
+> **20** references, not the 4 found by inspection: the bounding container
+> (`.scheduler-app__module`), its inner gutters, the scrim class it creates, the mobile
+> close animation name, the width host and its two default-width custom properties, the
+> right-drawer modifier class, and a body-width fallback.
+>
+> Rather than thread all of that through the per-instance options (5 call sites), it is now
+> one seam: `RuxDrawer.configure()` holds portable `.rux-*` defaults, and the application
+> declares its own names once at startup. The five `create()` call sites were untouched.
+>
+> This also gave the tests a better shape. Two of them asserted `drawer.js`'s literal
+> source text including the hardcoded application names; they now assert the portable
+> mechanism *and* that the application configures it — both halves of the seam instead of
+> one hardcoded string.
+>
+> **Still open:** the drawer's CSS is unchanged and stays in the application layer. Splitting
+> it (§4.1) belongs with the shell reconciliation, since both depend on the same decision
+> about which parts of the shell geometry are portable.
 
 ### 5.4 Reverse leakage
 
@@ -414,7 +427,7 @@ re-deriving anything above.
 | 5 | ~~Namespace migration `.rux-*` → `.sched-*` (§3)~~ **classes done** | 585 occurrences across 46 files. Two follow-ups deliberately deferred, each its own decision: the 51 domain-named `--rux-*` **tokens** (§4.7) still carry the old prefix, and the redundant `scope` marker (`.sched-scope-trip` → `.sched-trip`) was left in place rather than combining two transformations in one wide rename. |
 | 6 | ~~Resolve §4.5 re-opened blocks into tokens/modifiers~~ **done** | Auditing this showed §4.5 conflated two different things. Renaming an app-invented element out of the portable namespace is one fix; publishing a modifier for a genuine override is another; and a *scoped descendant* rule (`.scheduler-app__module > .rux-workspace`) is not a violation at all — it is the correct way for an app to configure a portable block. See §4.5 below. |
 | 7 | ~~Extract the view container (§5.2)~~ **done** | `rux-ui/js/view-router.js` — `RuxViewRouter.create()`. The app supplies the allowlist, the retired `#schedule`/`#trips` aliases, and the lazy panel boots via `onChange`; the router owns container toggling, `aria-current`, and hash sync. `showModule()` is now a one-line delegate. |
-| 8 | Decouple `drawer.js` (§5.3) | Touches both tiers; safer once the drawer CSS split is decided. |
+| 8 | ~~Decouple `drawer.js` (§5.3)~~ **JS done** | The coupling was far deeper than §5.3 recorded — ~20 references, not 4. Resolved with a single configuration seam, `RuxDrawer.configure()`, holding portable `.rux-*` defaults that the application overrides once at startup. The drawer **CSS** split (§4.1) is still open and belongs with the shell work. |
 | 9 | Shell reconciliation (§5.1) | Highest regression risk. Last. |
 
 **Enforcement.** Step 2 adds a test asserting that no file under `rux-ui/` references a

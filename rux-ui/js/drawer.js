@@ -1,17 +1,35 @@
 /* ==========================================================================
    RUX UI — DRAWER
    --------------------------------------------------------------------------
-   Shared open/close/resize behavior for a .scheduler-app__drawer, used by
-   the Calendar tools panel and the standalone Fleet/Driver panel drawers.
-   Previously those call sites
-   hand-rolled its own near-identical copy of this logic; this factory is
-   the single implementation they all now share, so an animation/behavior
-   fix (like the mobile scrim below) only needs to be made once.
+   Shared open/close/resize behavior for a docked, resizable drawer beside a
+   workspace. Call sites used to hand-roll near-identical copies of this
+   logic; this factory is the single implementation, so an animation or
+   behavior fix only needs to be made once.
 
    On mobile, open() shows a shared tap-to-dismiss scrim behind the drawer
-   (see .scheduler-app__drawer-scrim in scheduler-app.css) instead of the
-   drawer covering the full viewport — the workspace stays visible (dimmed)
-   behind it, and tapping it closes whichever drawer is open.
+   instead of the drawer covering the full viewport — the workspace stays
+   visible (dimmed) behind it, and tapping it closes whichever drawer is open.
+
+   Application layout seam
+   -----------------------
+   A drawer's usable width depends on the application's own layout: which
+   ancestor bounds it, which gutters sit inside that ancestor, and which
+   custom properties hold the default widths. Rather than hardcode one
+   application's class names, this module reads them from a single
+   configuration object with portable .rux-* defaults:
+
+   RuxDrawer.configure({ … })   — call once at startup to declare the names
+
+     container        selector for the element bounding available width
+     gutter           selector for inner gutters within that container
+     scrimClass       class applied to the shared mobile scrim
+     closeAnimation   animation-name awaited when closing on mobile
+     widthHost        element carrying the default-width custom properties
+     leftWidthVar     custom property holding the left drawer's default width
+     rightWidthVar    …and the right drawer's
+     rightModifier    class marking a drawer as the right-hand one
+     railWidthVar     custom property holding the collapsed rail width
+     fallbackWidth    selector used when `container` is absent
 
    API
    ---
@@ -19,7 +37,7 @@
 
    options
    -------
-   drawer        .scheduler-app__drawer element                (required)
+   drawer        the drawer element                             (required)
    panel         the .rux-*-panel element inside it             (required)
    toggleBtn     toggle button; syncs aria-expanded when present, otherwise
                  preserves the legacy aria-pressed contract (optional)
@@ -40,6 +58,27 @@
 	"use strict";
 
 	const mobilePanelQuery = window.matchMedia("(max-width: 500px)");
+
+	/* Portable defaults. An application with different layout class names
+	   overrides these once via RuxDrawer.configure() instead of this file
+	   naming the application. */
+	const env = {
+		container: ".rux-app-view",
+		gutter: ":scope > .rux-drawer-gutter",
+		scrimClass: "rux-drawer-scrim",
+		closeAnimation: "rux-drawer-out",
+		widthHost: ".rux-app-shell",
+		leftWidthVar: "--rux-drawer-left-default-width",
+		rightWidthVar: "--rux-drawer-right-default-width",
+		rightModifier: "rux-drawer--right",
+		railWidthVar: "--rux-panel-rail-width",
+		fallbackWidth: ".rux-app-shell",
+	};
+
+	function configure(overrides = {}) {
+		Object.assign(env, overrides);
+		return { ...env };
+	}
 
 	const DRAWER_MAX = 640;
 	const DRAWER_KEYBOARD_STEP = 16;
@@ -91,31 +130,33 @@
 		}, 0);
 	}
 
-	function schedulerAppDefaultWidth(drawerEl) {
-		const property = drawerEl.classList.contains("scheduler-app__drawer--right")
-			? "--scheduler-app-right-drawer-default-width"
-			: "--scheduler-app-left-drawer-default-width";
-		return parseFloat(
-			getComputedStyle(document.querySelector(".scheduler-app")).getPropertyValue(property),
+	function hostValue(property) {
+		const host = document.querySelector(env.widthHost);
+		if (!host) return NaN;
+		return parseFloat(getComputedStyle(host).getPropertyValue(property));
+	}
+
+	function configuredDefaultWidth(drawerEl) {
+		return hostValue(
+			drawerEl.classList.contains(env.rightModifier)
+				? env.rightWidthVar
+				: env.leftWidthVar,
 		);
 	}
 
-	// Shared with the --railable panel-width override in
-	// css/layout/scheduler-app.css so a railable drawer's close animation
-	// targets the exact width its own container-query reflow (icon-only
-	// tabs, css/features/trip-panel.css) is tuned for.
-	function schedulerAppRailWidth() {
-		return parseFloat(
-			getComputedStyle(document.querySelector(".scheduler-app")).getPropertyValue("--rux-panel-rail-width"),
-		);
+	// Shared with the --railable panel-width override in the application's
+	// layout CSS so a railable drawer's close animation targets the exact
+	// width its own container-query reflow is tuned for.
+	function configuredRailWidth() {
+		return hostValue(env.railWidthVar);
 	}
 
-	function moduleGutterWidth(drawerEl) {
-		const moduleEl = drawerEl.closest(".scheduler-app__module");
-		if (!moduleEl) return 0;
-		const moduleStyle = getComputedStyle(moduleEl);
-		const outerGutters = parseFloat(moduleStyle.paddingInlineStart) + parseFloat(moduleStyle.paddingInlineEnd);
-		const innerGutters = [...moduleEl.querySelectorAll(":scope > .scheduler-app__gutter")]
+	function containerGutterWidth(drawerEl) {
+		const containerEl = drawerEl.closest(env.container);
+		if (!containerEl) return 0;
+		const containerStyle = getComputedStyle(containerEl);
+		const outerGutters = parseFloat(containerStyle.paddingInlineStart) + parseFloat(containerStyle.paddingInlineEnd);
+		const innerGutters = [...containerEl.querySelectorAll(env.gutter)]
 			.reduce((total, gutter) => total + gutter.offsetWidth, 0);
 		return outerGutters + innerGutters;
 	}
@@ -130,7 +171,7 @@
 	function ensureScrim() {
 		if (scrimEl) return scrimEl;
 		scrimEl = document.createElement("div");
-		scrimEl.className = "scheduler-app__drawer-scrim";
+		scrimEl.className = env.scrimClass;
 		scrimEl.addEventListener("click", () => scrimCloseFn?.());
 		document.body.appendChild(scrimEl);
 		return scrimEl;
@@ -169,7 +210,7 @@
 			railWidth = false,
 		} = options;
 
-		const DRAWER_DEFAULT = schedulerAppDefaultWidth(drawer);
+		const DRAWER_DEFAULT = configuredDefaultWidth(drawer);
 		let cancelPendingClose = null;
 
 		function completeAfterMotion(target, type, expectedName, complete) {
@@ -247,7 +288,7 @@
 		// Shared by close() and the drag-from-closed paths below so all
 		// three agree on where "closed" starts from.
 		function closedTargetWidth() {
-			return railWidth && !mobilePanelQuery.matches ? schedulerAppRailWidth() : 0;
+			return railWidth && !mobilePanelQuery.matches ? configuredRailWidth() : 0;
 		}
 
 		function open() {
@@ -280,15 +321,16 @@
 		}
 
 		// Mobile drawers are full-screen overlays driven by a CSS @keyframes
-		// animation (.is-closing → scheduler-mobile-drawer-out), not the width
-		// transition — scheduler-app.css forces transition:none on them, so the
+		// animation (.is-closing → env.closeAnimation), not the width
+		// transition — the application's layout CSS forces transition:none on
+		// them, so the
 		// desktop close path's transitionend listener never fires there.
 		function close() {
 			if (!isOpen()) return;
 			const isMobile = mobilePanelQuery.matches;
 			// A railable drawer's own panel keeps rendering at rail width
 			// instead of display:none (see the --railable override in
-			// scheduler-app.css) — its container-query reflow (icon-only,
+			// the application's layout CSS) — its container-query reflow (icon-only,
 			// then stacked tabs) animates continuously as --drawer-width
 			// shrinks toward that target, so there's no separate element to
 			// hand off to. --drawer-open-width is left untouched regardless,
@@ -313,13 +355,13 @@
 				completeAfterMotion(
 					panel,
 					"animation",
-					"scheduler-mobile-drawer-out",
+					env.closeAnimation,
 					() => drawer.classList.remove("is-closing"),
 				);
 				return;
 			}
 			// Removing .is-open triggers display:none on the panel content (see
-			// scheduler-app.css), which is instant and unanimatable — do it only
+			// the application's layout CSS), which is instant and unanimatable — do it only
 			// once the width transition actually finishes, so the panel visibly
 			// slides shut instead of vanishing the moment the class comes off.
 			completeAfterMotion(
@@ -348,16 +390,17 @@
 			   A module may live inside an inset frame (Calendar does), so body width
 			   overstates the usable split-workspace width and lets the drawer push
 			   its opposite edge past the workspace minimum before snapping back. */
-			const moduleEl = drawer.closest(".scheduler-app__module");
-			const availableW = moduleEl?.clientWidth
-				?? document.querySelector(".scheduler-app__body").clientWidth;
+			const containerEl = drawer.closest(env.container);
+			const availableW = containerEl?.clientWidth
+				?? document.querySelector(env.fallbackWidth)?.clientWidth
+				?? 0;
 			const otherDrawerEl = getOtherDrawer();
 			const otherW = otherDrawerEl?.classList.contains("is-open") ? otherDrawerEl.offsetWidth : 0;
 			return Math.max(
 				0,
 				Math.min(
 					DRAWER_MAX,
-					availableW - otherW - moduleGutterWidth(drawer) - scheduleMin,
+					availableW - otherW - containerGutterWidth(drawer) - scheduleMin,
 				),
 			);
 		}
@@ -460,5 +503,5 @@
 		return { open, close, isOpen, syncHandle };
 	}
 
-	window.RuxDrawer = { create };
+	window.RuxDrawer = { create, configure };
 })();

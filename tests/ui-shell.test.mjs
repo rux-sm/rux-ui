@@ -508,10 +508,14 @@ test("drawer toggles prefer disclosure semantics without breaking legacy toggles
 });
 
 test("Calendar resize uses its inset module and does not fight auto-collapse", () => {
+	// The drawer measures against its bounding container rather than the body.
+	// That container is now configured by the application rather than named in
+	// the portable module, so assert both halves of the seam.
 	assert.match(
 		drawerController,
-		/const moduleEl = drawer\.closest\("\.scheduler-app__module"\);[\s\S]*?const availableW = moduleEl\?\.clientWidth/,
+		/const containerEl = drawer\.closest\(env\.container\);[\s\S]*?const availableW = containerEl\?\.clientWidth/,
 	);
+	assert.match(page, /container:\s*"\.scheduler-app__module"/);
 	assert.match(
 		page,
 		/function checkPanelFit\(\)\s*\{[\s\S]*?rightDrawer\.classList\.contains\("is-resizing"\)/,

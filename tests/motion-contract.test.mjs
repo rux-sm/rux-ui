@@ -64,6 +64,7 @@ test("structural panels use 150ms entrance and exit contracts", () => {
 });
 
 test("drawer closing always releases interaction and settles its state", () => {
+	const page = read("index.html");
 	assert.match(
 		schedulerStyles,
 		/\.scheduler-app__drawer\.is-closing\s*\{[^}]*pointer-events:\s*none;/s,
@@ -73,10 +74,13 @@ test("drawer closing always releases interaction and settles its state", () => {
 	assert.match(drawerController, /motionCompletionMs\(target, type, expectedName\)/);
 	assert.match(drawerController, /Math\.ceil\(completionMs\) \+ MOTION_COMPLETION_BUFFER_MS/);
 	assert.match(drawerController, /cancelPendingClose\?\.\(\);/);
+	// The awaited animation name is configured by the application now; the
+	// portable module only guarantees it waits for whichever name it is given.
 	assert.match(
 		drawerController,
-		/"scheduler-mobile-drawer-out",\s*\(\) => drawer\.classList\.remove\("is-closing"\)/,
+		/env\.closeAnimation,\s*\(\) => drawer\.classList\.remove\("is-closing"\)/,
 	);
+	assert.match(page, /closeAnimation:\s*"scheduler-mobile-drawer-out"/);
 });
 
 test("panel splitters resize directly without inherited motion", () => {

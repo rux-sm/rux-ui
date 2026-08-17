@@ -7256,7 +7256,24 @@
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./rux-ui/js/ui-shell.js?v=2"></script>
 		<script src="./rux-ui/js/view-router.js?v=1"></script>
-		<script src="./rux-ui/js/drawer.js?v=10"></script>
+		<script src="./rux-ui/js/drawer.js?v=11"></script>
+		<script>
+			// RuxDrawer ships portable .rux-* defaults; this app's shell uses its
+			// own layout class names, so declare them once here rather than
+			// having the portable module know about .scheduler-app.
+			window.RuxDrawer.configure({
+				container: ".scheduler-app__module",
+				gutter: ":scope > .scheduler-app__gutter",
+				scrimClass: "scheduler-app__drawer-scrim",
+				closeAnimation: "scheduler-mobile-drawer-out",
+				widthHost: ".scheduler-app",
+				leftWidthVar: "--scheduler-app-left-drawer-default-width",
+				rightWidthVar: "--scheduler-app-right-drawer-default-width",
+				rightModifier: "scheduler-app__drawer--right",
+				railWidthVar: "--rux-panel-rail-width",
+				fallbackWidth: ".scheduler-app__body",
+			});
+		</script>
 		<script src="./rux-ui/js/popover.js?v=4"></script>
 		<script src="./rux-ui/js/menu.js?v=3"></script>
 		<script src="./rux-ui/js/controls.js?v=6" defer></script>

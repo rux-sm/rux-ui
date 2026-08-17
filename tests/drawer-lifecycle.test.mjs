@@ -134,8 +134,10 @@ test("mobile close settles when its animation is cancelled", () => {
 	assert.equal(drawer.getAttribute("aria-hidden"), "true");
 	assert.equal(panel.inert, true);
 
+	// The harness exercises the portable module on its own defaults; an
+	// application overrides this name through RuxDrawer.configure().
 	panel.dispatch("animationcancel", {
-		animationName: "scheduler-mobile-drawer-out",
+		animationName: "rux-drawer-out",
 	});
 	assert.equal(drawer.classList.contains("is-closing"), false);
 });
