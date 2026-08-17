@@ -76,6 +76,22 @@
 	line-height: 1;
 }
 
+/* Layout utilities from README's Visual Foundations contract: a control row
+   that spaces adjacent controls and wraps on small screens, and a vertical
+   rhythm stack whose gap replaces margins. */
+.rux-cluster {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+.rux-stack {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-stack-gap);
+}
+
 /* Flex column of trip-summary rows (Driver/Fleet/Customer editors' own
    "linked trips" list). */
 .rux-u-trip-list {
