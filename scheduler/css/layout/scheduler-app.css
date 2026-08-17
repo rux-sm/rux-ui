@@ -33,24 +33,22 @@
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
 	--scheduler-app-mobile-nav-padding-top: 20px;
+
+	/* The frame itself — grid rows, row-gap, margin, block-size, min-width,
+	   and background — comes from .rux-app (rux-ui/css/base/app-shell.css),
+	   which this element also carries. What stays here is only what the
+	   portable shell does not own: a positioning context for the absolutely
+	   positioned splash and drawers, and `clip` rather than `hidden` so the
+	   resize gutters cannot start a scroll container. */
 	position: relative;
-	display: grid;
-	grid-template-rows: auto minmax(0, 1fr);
-	row-gap: var(--rux-shell-ui-header-gap);
-	width: auto;
-	margin: 0 var(--rux-shell-margin-inline) var(--rux-shell-margin-bottom);
-	block-size: calc(100dvh - var(--rux-shell-margin-bottom));
-	min-width: 0;
-	min-height: 0;
 	overflow: clip;
-	background: var(--rux-surface-1);
 }
 
+/* display:flex, min-width/min-height:0, gap:0, and overflow:hidden come from
+   .rux-app-shell, which this element also carries. Only the positioning
+   context for the drawers and their scrim is app-specific. */
 .scheduler-app__body {
 	position: relative;
-	display: flex;
-	min-height: 0;
-	overflow: hidden;
 }
 
 /* — Product side navigation — */

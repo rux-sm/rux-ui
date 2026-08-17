@@ -439,7 +439,12 @@
 	/* Outermost full-bleed page canvas — no border/radius/shadow of its own,
 	   nothing else sits "above" it to cast one. */
 
-	--rux-shell-bg:                var(--rux-danger);
+	/* Was var(--rux-danger) — a debug value that shipped unnoticed because
+	   nothing loaded .rux-app; the reference application used its own
+	   .scheduler-app shell instead. Any consumer adopting the portable shell
+	   got a red page. Set to the surface the reference application actually
+	   renders here. */
+	--rux-shell-bg:                var(--rux-surface-1);
 	--rux-shell-margin-inline:     var(--rux-space-0);
 	--rux-shell-margin-bottom:     var(--rux-space-0);
 	--rux-shell-ui-header-gap:     var(--rux-space-0);

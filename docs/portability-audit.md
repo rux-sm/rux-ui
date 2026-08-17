@@ -322,14 +322,29 @@ during step 5, when names are being changed anyway.
 `index.html` uses `.scheduler-app` / `.scheduler-app__body` instead. Two implementations
 of one concept.
 
-Execution MUST diff the two rule sets and classify each scheduler addition:
+> **Status: resolved (step 9).** The diff turned out to be far smaller than the two
+> separate implementations suggested. Every scheduler "addition" was already written
+> against a `--rux-shell-*` token, and **every one of those tokens defaults to 0**, so the
+> two shells were geometrically identical in practice — the duplication was in the source,
+> not the rendering.
 
-| Addition | Likely resolution |
+| Addition | Resolution |
 |---|---|
-| `row-gap: var(--rux-shell-ui-header-gap)` | Tier 0 token; already named like one |
-| `margin` (outer) | app-level — the shell MUST NOT assume page insets |
-| `block-size: calc(100dvh - …)` | Tier 1 modifier (`--fullheight`) or app-level |
-| `background` | Tier 0 token |
+| `row-gap: var(--rux-shell-ui-header-gap)` | Moved onto `.rux-app`; token already existed and defaults to 0 |
+| `margin` (outer) | Moved onto `.rux-app`, driven by `--rux-shell-margin-*`, both defaulting to 0 — the shell is full-bleed unless configured |
+| `block-size: calc(100dvh - …)` | Moved onto `.rux-app`, replacing `min-height: 100dvh`. A definite height is what descendants need to cap against and scroll internally; identical to `100dvh` until an app sets a bottom margin |
+| `background` | Already a token (`--rux-shell-bg`) — see the bug below |
+| `position: relative`, `overflow: clip` | Genuinely app-level; stayed |
+
+The shell now **composes** rather than duplicates: `class="rux-app scheduler-app"` and
+`class="rux-app-shell scheduler-app__body"`. `.scheduler-app` dropped from 12 structural
+declarations to 2, and `.scheduler-app__body` from 4 to 1.
+
+**A bug this surfaced.** `--rux-shell-bg` was `var(--rux-danger)` — a debug value that had
+shipped, giving any consumer of the portable shell a **red page**. It went unnoticed for
+exactly the reason this audit exists: `index.html` used its own shell, so the portable one
+was never rendered. `examples/app-layout.html` — the only page that did use it — had been
+displaying it. Now `var(--rux-surface-1)`.
 
 ### 5.2 View container
 
@@ -428,7 +443,7 @@ re-deriving anything above.
 | 6 | ~~Resolve §4.5 re-opened blocks into tokens/modifiers~~ **done** | Auditing this showed §4.5 conflated two different things. Renaming an app-invented element out of the portable namespace is one fix; publishing a modifier for a genuine override is another; and a *scoped descendant* rule (`.scheduler-app__module > .rux-workspace`) is not a violation at all — it is the correct way for an app to configure a portable block. See §4.5 below. |
 | 7 | ~~Extract the view container (§5.2)~~ **done** | `rux-ui/js/view-router.js` — `RuxViewRouter.create()`. The app supplies the allowlist, the retired `#schedule`/`#trips` aliases, and the lazy panel boots via `onChange`; the router owns container toggling, `aria-current`, and hash sync. `showModule()` is now a one-line delegate. |
 | 8 | ~~Decouple `drawer.js` (§5.3)~~ **JS done** | The coupling was far deeper than §5.3 recorded — ~20 references, not 4. Resolved with a single configuration seam, `RuxDrawer.configure()`, holding portable `.rux-*` defaults that the application overrides once at startup. The drawer **CSS** split (§4.1) is still open and belongs with the shell work. |
-| 9 | Shell reconciliation (§5.1) | Highest regression risk. Last. |
+| 9 | ~~Shell reconciliation (§5.1)~~ **done** | Lower risk than expected: every shell token already defaulted to 0, so the two implementations were geometrically identical in practice. The shell now composes — `class="rux-app scheduler-app"` — with `.scheduler-app` reduced from 12 declarations to 2. Fixed a shipped bug in passing: `--rux-shell-bg` was `var(--rux-danger)`. |
 
 **Enforcement.** Step 2 adds a test asserting that no file under `rux-ui/` references a
 domain noun in a selector, and that every `var(--rux-*)` used in `rux-ui/` resolves within

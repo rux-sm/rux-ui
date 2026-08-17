@@ -6,11 +6,19 @@
    feature minimum widths belong to application layout CSS.
    ========================================================================== */
 
+/* Geometry is token-driven so an application can inset the shell, or open a
+   gap under the header, without redeclaring the frame. All three tokens
+   default to 0, so an unconfigured shell is full-bleed and full-height. */
 .rux-app {
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
+	row-gap: var(--rux-shell-ui-header-gap);
+	margin: 0 var(--rux-shell-margin-inline) var(--rux-shell-margin-bottom);
 	min-width: 0;
-	min-height: 100dvh;
+	/* A definite height, not a minimum: descendants cap against it and scroll
+	   internally, which `min-height` cannot give them. Identical to 100dvh
+	   until an application sets a bottom margin. */
+	block-size: calc(100dvh - var(--rux-shell-margin-bottom));
 	overflow: hidden;
 	background: var(--rux-shell-bg);
 }
