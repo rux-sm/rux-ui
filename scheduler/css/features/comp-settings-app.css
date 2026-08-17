@@ -22,11 +22,10 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
+/* Typography shared with every other muted subtitle — see
+   rux-ui/css/base/card.css. */
 .settings-app__subtitle {
 	margin: 0;
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
 }
 
 .settings-app__body {
@@ -58,13 +57,11 @@
 	background: var(--rux-surface-1);
 }
 
+/* Typography shared with every other panel/card title — see card.css.
+   This previously used --rux-text-default; now --rux-text-heading like
+   the rest of the group. */
 .settings-app__panel-title {
 	margin: 0;
-	color: var(--rux-text-default);
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-heading-panel-weight);
-	letter-spacing: 0;
-	line-height: var(--rux-line-height-md);
 }
 
 .settings-app__panel-copy {
@@ -207,16 +204,11 @@
 	white-space: nowrap;
 }
 
-.settings-location-row__name {
-	color: var(--rux-text-default);
-	font-size: var(--rux-size-sm);
-	font-weight: var(--rux-weight-400);
-}
+/* .settings-location-row__name's typography is shared with
+   preferences.css's .rux-preferences__heading/__label group. */
 
-.settings-location-row__address {
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-xs);
-}
+/* .settings-location-row__address's typography is shared with every
+   other small muted caption — see rux-ui/css/base/form.css. */
 
 .settings-locations-empty {
 	margin: 0;

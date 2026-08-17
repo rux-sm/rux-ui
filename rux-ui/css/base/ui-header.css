@@ -148,8 +148,8 @@
 /* Numeric unread count shared by notifications and team chat. */
 .rux-ui-header__badge-count {
 	position: absolute;
-	top: -4px;
-	right: -4px;
+	top: 4px;
+	right: 4px;
 	min-width: 18px;
 	height: 18px;
 	display: flex;
@@ -159,9 +159,9 @@
 	background: var(--rux-danger);
 	border: 2px solid var(--rux-ui-header-bg);
 	border-radius: var(--rux-radius-full);
-	color: var(--rux-fg-on-accent);
-	font-size: 11px;
-	font-weight: var(--rux-weight-400);
+	color: var(--rux-surface-1);
+	font-size: var(--rux-size-xxs);
+	font-weight: var(--rux-weight-600);
 	line-height: 1;
 }
 
@@ -184,7 +184,7 @@
 	height: 16px;
 	padding: 0 var(--rux-space-1);
 	border: none;
-	font-size: 10px;
+	font-size: var(--rux-size-xxs);
 }
 
 /* Both anchor to header buttons and need to float above the scheduler's

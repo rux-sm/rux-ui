@@ -24,7 +24,7 @@
 	display: inline-flex;
 	flex: none;
 	color: var(--rux-warning);
-	font-size: 20px;
+	font-size: var(--rux-icon-md);
 	line-height: 1;
 }
 
@@ -330,10 +330,10 @@
 	flex: none;
 	align-items: center;
 	justify-content: center;
-	width: 20px;
-	height: 20px;
+	width: var(--rux-icon-md);
+	height: var(--rux-icon-md);
 	color: var(--rux-warning);
-	font-size: 20px;
+	font-size: var(--rux-icon-md);
 	line-height: 1;
 }
 
@@ -345,7 +345,7 @@
 .rux-tasks__nav-alert {
 	display: inline-flex;
 	flex: none;
-	font-size: 20px;
+	font-size: var(--rux-icon-md);
 	line-height: 1;
 }
 

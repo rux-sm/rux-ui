@@ -1,6 +1,7 @@
 .maintenance-share-page { --maintenance-bus-column-width: calc(5ch + (var(--rux-space-2) * 2)); --maintenance-day-column-min-width: 160px; margin: 0; background: var(--rux-surface-1); color: var(--rux-text-default); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .maintenance-share-header { position: sticky; z-index: 10; top: 0; }
-.maintenance-share-header__title { color: var(--rux-text-heading); font-size: var(--rux-heading-panel-size); font-weight: var(--rux-heading-panel-weight); line-height: var(--rux-line-height-md); }
+/* .maintenance-share-header__title's typography is shared with every
+   other panel/card title — see rux-ui/css/base/card.css. */
 .maintenance-share { padding: var(--rux-space-4); }
 .maintenance-share__status :is(h1, p) { margin: 0; }
 .maintenance-share__status { display: grid; place-items: center; gap: var(--rux-space-3); min-height: 50vh; text-align: center; }
@@ -41,7 +42,10 @@
 .maintenance-trip[data-trip-bar-color="orange"] { --rux-accent: var(--rux-trip-color-orange); }
 .maintenance-trip[data-trip-bar-color="pink"] { --rux-accent: var(--rux-trip-color-pink); }
 .maintenance-changes { max-width: 100%; margin-top: var(--rux-space-4); overflow-x: auto; }
-.maintenance-changes__title { margin: 0 0 var(--rux-space-2); color: var(--rux-text-muted); font-size: var(--rux-size-sm); font-weight: var(--rux-weight-400); text-transform: uppercase; letter-spacing: 0.02em; }
+/* Typography shared with every other eyebrow/section-label — see
+   rux-ui/css/base/utils.css. (Was 14px/0.02em tracking here; now 12px/
+   wide tracking like the rest of the group.) */
+.maintenance-changes__title { margin: 0 0 var(--rux-space-2); }
 .maintenance-changes__line, .maintenance-changes__empty { width: max-content; margin: 0; padding: var(--rux-space-1) 0; color: var(--rux-text-muted); font-size: var(--rux-size-sm); white-space: nowrap; }
 @media (max-width: 640px) { .maintenance-share { padding: var(--rux-space-3); } }
 @media (max-width: 500px) {

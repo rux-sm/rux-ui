@@ -1,0 +1,54 @@
+/* ==========================================================================
+   DOCUMENTS APP  ·  shell
+   --------------------------------------------------------------------------
+   Library of printable/reference documents. Layout mirrors the Components
+   module (a fixed .rux-panel list beside a .rux-workspace preview stage),
+   built from shared classes only (.rux-panel, .rux-menu, .rux-workspace).
+   The selected document renders in an iframe rather than inline markup,
+   since each document is its own self-contained, print-ready HTML file.
+   ========================================================================== */
+
+.scheduler-app__module[data-module="documents"] {
+	gap: var(--scheduler-app-gap);
+	background: var(--rux-surface-1);
+}
+
+.documents-app__list {
+	flex: none;
+	width: var(--rux-panel-width-sm);
+	min-width: var(--rux-panel-width-sm);
+}
+
+.documents-app__nav {
+	padding: 0;
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+}
+
+.documents-app__preview {
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	padding: var(--rux-space-6);
+	background: var(--rux-surface-0);
+	overflow: auto;
+}
+
+.documents-app__frame-wrap {
+	width: 100%;
+	max-width: 50rem;
+	aspect-ratio: 8.5 / 11;
+	flex: none;
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-container);
+	overflow: hidden;
+}
+
+.documents-app__frame {
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+	background: var(--rux-white);
+}

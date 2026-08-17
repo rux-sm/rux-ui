@@ -45,22 +45,19 @@
 	gap: var(--rux-space-2);
 }
 
+/* Typography shared with every other panel/card title — see card.css.
+   This class previously set no color of its own (inherited); it now
+   explicitly resolves to --rux-text-heading like the rest of the group. */
 .rux-workspace__title {
 	overflow: hidden;
-	font-size: var(--rux-size-md);
-	font-weight: var(--rux-weight-400);
-	letter-spacing: 0;
-	line-height: var(--rux-line-height-md);
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	padding-left:var(--rux-space-4);
+	padding-left: var(--rux-space-4);
 }
 
+/* Typography shared with every other muted subtitle — see card.css. */
 .rux-workspace__subtitle {
 	margin: 0;
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
 }
 
 .rux-workspace__toolbar {

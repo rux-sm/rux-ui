@@ -101,7 +101,7 @@
 	background: var(--rux-danger);
 	color: var(--rux-fg-on-accent);
 	border-radius: var(--rux-radius-full);
-	font-size: 10px;
+	font-size: var(--rux-size-xxs);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 }

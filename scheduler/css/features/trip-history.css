@@ -30,16 +30,13 @@
 	margin: 0;
 }
 
-.rux-trip-history__title {
-	color: var(--rux-text-heading);
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-weight-400);
-}
+/* .rux-trip-history__title's typography is shared with every other
+   panel/card title — see rux-ui/css/base/card.css. */
 
+/* .rux-trip-history__subtitle's typography is shared with every other
+   muted subtitle — see rux-ui/css/base/card.css. */
 .rux-trip-history__subtitle {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-sm);
 }
 
 .rux-trip-history__filter {
@@ -145,10 +142,10 @@
 	white-space: nowrap;
 }
 
+/* Typography shared with every other small muted caption — see
+   rux-ui/css/base/form.css. */
 .rux-trip-history__meta {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-xs);
 }
 
 .rux-trip-history__changes {

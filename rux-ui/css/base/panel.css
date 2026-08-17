@@ -42,12 +42,11 @@
 	border-bottom: var(--rux-panel-header-border);
 }
 
+/* Typography (color/size/weight/letter-spacing/line-height) shared with
+   every other panel/card title — see card.css. */
 .rux-panel__title {
 	min-width: 0;
 	overflow: hidden;
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-heading-panel-weight);
-	line-height: var(--rux-line-height-md);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	flex: 1;

@@ -1,0 +1,78 @@
+/* ==========================================================================
+   DEV NOTES  ·  header checklist icon + dropdown
+   --------------------------------------------------------------------------
+   A running bug/to-do list for the Rux UI design system's own development —
+   not an end-user scheduling feature. Structurally mirrors notifications.css
+   (list width/max-height/overflow, item layout, empty state); adds an
+   add-item form at the bottom since this list is user-authored rather than
+   system-generated.
+   ========================================================================== */
+
+.rux-dev-notes-menu {
+	display: flex;
+	flex-direction: column;
+	width: min(340px, calc(100vw - (var(--rux-popover-viewport-padding) * 2)));
+	max-height: 70vh;
+}
+
+.rux-dev-notes__list {
+	display: flex;
+	flex-direction: column;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	overflow-y: auto;
+}
+
+.rux-dev-notes__empty {
+	padding: var(--rux-space-3) var(--rux-space-2);
+	color: var(--rux-text-faint);
+	font-size: var(--rux-size-sm);
+	text-align: center;
+}
+
+.rux-dev-notes__item {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2);
+	border-radius: var(--rux-menu-item-radius);
+}
+
+.rux-dev-notes__item:hover {
+	background: var(--rux-menu-item-hover-bg);
+}
+
+.rux-dev-notes__item-main {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.rux-dev-notes__item-text {
+	color: var(--rux-text-default);
+	font-size: var(--rux-size-sm);
+	line-height: 1.35;
+	overflow-wrap: anywhere;
+}
+
+.rux-dev-notes__item.is-done .rux-dev-notes__item-text {
+	color: var(--rux-text-faint);
+	text-decoration: line-through;
+}
+
+.rux-dev-notes__item > button[data-delete] {
+	flex: none;
+}
+
+.rux-dev-notes__form {
+	display: flex;
+	flex: none;
+	gap: var(--rux-space-2);
+	padding: var(--rux-space-2);
+	border-top: var(--rux-border-width) solid var(--rux-card-border);
+}
+
+.rux-dev-notes__input {
+	flex: 1 1 auto;
+	min-width: 0;
+}

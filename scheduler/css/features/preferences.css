@@ -10,11 +10,19 @@
 	gap: var(--rux-space-3);
 }
 
-.rux-preferences__heading {
-	margin: 0;
+/* .rux-preferences__heading and .rux-preferences__label were byte-for-byte
+   duplicate declarations; also shared with comp-settings-app.css's
+   .settings-location-row__name (same 14px/default/400 caption). */
+.rux-preferences__heading,
+.rux-preferences__label,
+.settings-location-row__name {
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
+}
+
+.rux-preferences__heading {
+	margin: 0;
 }
 
 .rux-preferences__row {
@@ -35,17 +43,11 @@
 	min-width: 0;
 }
 
-.rux-preferences__label {
-	color: var(--rux-text-default);
-	font-size: var(--rux-size-sm);
-	font-weight: var(--rux-weight-400);
-}
+/* .rux-preferences__label's typography is declared above, grouped with
+   .rux-preferences__heading. */
 
-.rux-preferences__description {
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
-}
+/* .rux-preferences__description's typography is shared with every other
+   small muted caption — see rux-ui/css/base/form.css. */
 
 .rux-preferences__row .rux-switch {
 	flex: none;

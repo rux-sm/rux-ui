@@ -118,6 +118,10 @@
 		/>
 		<link
 			rel="stylesheet"
+			href="./scheduler/css/features/dev-notes.css?v=1"
+		/>
+		<link
+			rel="stylesheet"
 			href="./scheduler/css/features/team-chat.css?v=14"
 		/>
 		<link
@@ -131,6 +135,10 @@
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/doc-viewer.css?v=6"
+		/>
+		<link
+			rel="stylesheet"
+			href="./scheduler/css/features/documents-app.css?v=1"
 		/>
 		<link
 			rel="stylesheet"
@@ -262,6 +270,32 @@
 							<span
 								class="rux-ui-header__badge-count"
 								id="notifications-badge"
+								hidden
+							></span>
+						</button>
+						<button
+							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure"
+							type="button"
+							id="dev-notes-btn"
+							aria-label="Dev Notes"
+							aria-haspopup="dialog"
+							aria-controls="dev-notes-menu"
+							aria-expanded="false"
+							title="Dev Notes"
+						>
+							<span
+								class="rux-button__icon-swap"
+								aria-hidden="true"
+							>
+								<span class="rux-icon">bug_report</span>
+								<span
+									class="rux-icon rux-button__icon--expanded"
+									>close</span
+								>
+							</span>
+							<span
+								class="rux-ui-header__badge-count"
+								id="dev-notes-badge"
 								hidden
 							></span>
 						</button>
@@ -451,6 +485,36 @@
 					class="rux-notifications__list"
 					data-notifications-list
 				></ul>
+			</div>
+
+			<div
+				class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-dev-notes-menu"
+				id="dev-notes-menu"
+				role="dialog"
+				aria-label="Dev Notes"
+				hidden
+			>
+				<div class="rux-menu__header">Notes</div>
+				<ul class="rux-dev-notes__list" data-dev-notes-list></ul>
+				<form class="rux-dev-notes__form" data-dev-notes-form>
+					<input
+						class="rux-input rux-dev-notes__input"
+						type="text"
+						name="text"
+						placeholder="Add a bug or to-do…"
+						aria-label="New dev note"
+						maxlength="280"
+						autocomplete="off"
+						data-dev-notes-input
+					/>
+					<button
+						class="rux-button rux-button--default rux-button--icon"
+						type="submit"
+						aria-label="Add note"
+					>
+						<span class="rux-icon" aria-hidden="true">add</span>
+					</button>
+				</form>
 			</div>
 
 			<!-- Profile picker — password-less "who's using this" selector.
@@ -779,6 +843,20 @@
 							</button>
 						</li>
 						<li class="rux-side-nav__item">
+							<button
+								class="rux-side-nav__link"
+								type="button"
+								data-module="documents"
+							>
+								<span class="rux-icon" aria-hidden="true"
+									>description</span
+								>
+								<span class="rux-side-nav__label"
+									>Documents</span
+								>
+							</button>
+						</li>
+						<li class="rux-side-nav__item">
 							<a
 								class="rux-side-nav__link"
 								href="https://cloud.samsara.com/o/5005667/fleet/list?bounds=25.531218%2C-101.984582%2C30.594115%2C-93.569055&amp;z=8"
@@ -839,9 +917,7 @@
 								>
 							</button>
 						</header>
-						<div
-							class="rux-panel__nav rux-panel__nav--attached"
-						>
+						<div class="rux-panel__nav rux-panel__nav--attached">
 							<nav
 								class="rux-tabs rux-tabs--attached rux-tabs--responsive"
 								role="tablist"
@@ -1715,7 +1791,8 @@
 														type="checkbox"
 														id="tp-contract-signed"
 														name="contractSigned"
-														data-rux-domain-toggle data-scope="trip"
+														data-rux-domain-toggle
+														data-scope="trip"
 														data-billing-controls="tp-contract-note" /><span
 														class="rux-switch__track"
 													></span
@@ -1755,7 +1832,8 @@
 														type="checkbox"
 														id="tp-po-received"
 														name="poReceived"
-														data-rux-domain-toggle data-scope="trip"
+														data-rux-domain-toggle
+														data-scope="trip"
 														data-billing-controls="tp-po tp-po-amount" /><span
 														class="rux-switch__track"
 													></span
@@ -1795,7 +1873,8 @@
 														type="checkbox"
 														id="tp-invoiced"
 														name="invoiced"
-														data-rux-domain-toggle data-scope="trip"
+														data-rux-domain-toggle
+														data-scope="trip"
 														data-billing-controls="tp-inv-num" /><span
 														class="rux-switch__track"
 													></span
@@ -2511,7 +2590,9 @@
 													></span>
 												</label>
 											</div>
-											<div class="rux-view-options__row rux-view-options__row--stacked">
+											<div
+												class="rux-view-options__row rux-view-options__row--stacked"
+											>
 												<span
 													class="rux-view-options__label"
 													>Day column width</span
@@ -2563,8 +2644,12 @@
 													</button>
 												</div>
 											</div>
-											<div class="rux-view-options__row rux-view-options__row--stacked">
-												<div class="rux-view-options__row-header">
+											<div
+												class="rux-view-options__row rux-view-options__row--stacked"
+											>
+												<div
+													class="rux-view-options__row-header"
+												>
 													<span
 														class="rux-view-options__label"
 														>Fine-tune width</span
@@ -2572,7 +2657,8 @@
 													<span
 														class="rux-view-options__value"
 														id="opt-day-width-value"
-													>14.0rem</span>
+														>14.0rem</span
+													>
 												</div>
 												<input
 													type="range"
@@ -2694,7 +2780,9 @@
 													></span>
 												</label>
 											</div>
-											<div class="rux-view-options__row rux-view-options__row--stacked">
+											<div
+												class="rux-view-options__row rux-view-options__row--stacked"
+											>
 												<span
 													class="rux-view-options__label"
 													>Size</span
@@ -3076,7 +3164,9 @@
 							role="dialog"
 							aria-label="Vehicle editor"
 						>
-							<div class="rux-panel__nav rux-panel__nav--attached">
+							<div
+								class="rux-panel__nav rux-panel__nav--attached"
+							>
 								<nav
 									class="rux-tabs rux-tabs--attached rux-tabs--fill"
 									role="tablist"
@@ -3096,8 +3186,7 @@
 											class="rux-icon"
 											aria-hidden="true"
 											>directions_bus</span
-										><span
-											class="rux-tab__label"
+										><span class="rux-tab__label"
 											>Info</span
 										>
 									</button>
@@ -3110,8 +3199,7 @@
 										title="Service"
 									>
 										<span class="rux-icon">build</span
-										><span
-											class="rux-tab__label"
+										><span class="rux-tab__label"
 											>Service</span
 										>
 									</button>
@@ -3124,8 +3212,7 @@
 										title="Trips"
 									>
 										<span class="rux-icon">map</span
-										><span
-											class="rux-tab__label"
+										><span class="rux-tab__label"
 											>Trips</span
 										>
 									</button>
@@ -3689,7 +3776,8 @@
 							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-scope-driver__drawer-open scheduler-app__mobile-panel-btn"
 							type="button"
 							aria-label="Toggle driver editor"
-							data-rux-domain-toggle data-scope="driver-editor"
+							data-rux-domain-toggle
+							data-scope="driver-editor"
 						>
 							<span
 								class="scheduler-app__drawer-icon-stack"
@@ -3718,7 +3806,8 @@
 									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
 									type="button"
 									aria-label="Close driver editor"
-									data-rux-domain-toggle data-scope="driver-editor"
+									data-rux-domain-toggle
+									data-scope="driver-editor"
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>left_panel_close</span
@@ -4389,9 +4478,7 @@
 									hidden
 								>
 									<div class="rux-row">
-										<p
-											class="rux-u-section-label"
-										>
+										<p class="rux-u-section-label">
 											Time Off
 										</p>
 										<span class="rux-spacer"></span>
@@ -4637,7 +4724,8 @@
 									id="driver-tools-toggle-btn"
 									aria-label="Open table options"
 									aria-pressed="false"
-									data-rux-domain-toggle data-scope="driver-tools"
+									data-rux-domain-toggle
+									data-scope="driver-tools"
 								>
 									<span
 										class="rux-icon icon-off"
@@ -4715,7 +4803,8 @@
 							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-scope-right-panel__drawer-open scheduler-app__mobile-panel-btn"
 							type="button"
 							aria-label="Toggle table options"
-							data-rux-domain-toggle data-scope="driver-tools"
+							data-rux-domain-toggle
+							data-scope="driver-tools"
 						>
 							<span
 								class="scheduler-app__drawer-icon-stack"
@@ -4736,9 +4825,7 @@
 							role="dialog"
 							aria-label="Table options"
 						>
-							<header
-								class="rux-panel__header"
-							>
+							<header class="rux-panel__header">
 								<h2
 									class="rux-panel__title"
 									id="driver-tools-title"
@@ -4749,7 +4836,8 @@
 									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
 									type="button"
 									aria-label="Close table options"
-									data-rux-domain-toggle data-scope="driver-tools"
+									data-rux-domain-toggle
+									data-scope="driver-tools"
 								>
 									<span class="rux-icon" aria-hidden="true"
 										>right_panel_close</span
@@ -4928,9 +5016,7 @@
 							role="dialog"
 							aria-label="Customer editor"
 						>
-							<div
-								class="rux-panel__body"
-							>
+							<div class="rux-panel__body">
 								<div
 									class="rux-panel__pane rux-scope-customer__pane"
 								>
@@ -4991,11 +5077,7 @@
 										</div>
 									</div>
 									<div class="rux-scope-customer__trips">
-										<p
-											class="rux-u-section-label"
-										>
-											Trips
-										</p>
+										<p class="rux-u-section-label">Trips</p>
 										<ul
 											class="rux-u-trip-list"
 											id="cp-trip-list"
@@ -5130,6 +5212,106 @@
 					</section>
 				</div>
 				<!-- /module:customers -->
+
+				<!-- ════════════════════════════════════════════════════════════════
+             MODULE: DOCUMENTS
+             ════════════════════════════════════════════════════════════════ -->
+				<div
+					class="scheduler-app__module"
+					data-module="documents"
+					hidden
+				>
+					<aside
+						class="rux-panel rux-panel--attached documents-app__list"
+						aria-label="Document list"
+					>
+						<header class="rux-panel__header">
+							<h2 class="rux-panel__title">Documents</h2>
+						</header>
+						<div class="rux-panel__body">
+							<div class="rux-panel__pane">
+								<div class="rux-card">
+									<header class="rux-card__header">
+										<p class="rux-card__title">Forms</p>
+									</header>
+									<div class="rux-card__body">
+										<nav
+											class="rux-menu documents-app__nav"
+											aria-label="Forms"
+											data-document-nav
+										>
+											<button
+												class="rux-menu__item is-active"
+												type="button"
+												aria-current="page"
+												data-document-target="cca-form"
+												data-document-src="documents/form_cca.html"
+												data-document-title="Credit Card Authorization"
+											>
+												Credit Card Authorization
+											</button>
+										</nav>
+									</div>
+								</div>
+							</div>
+						</div>
+					</aside>
+
+					<section
+						class="rux-workspace documents-app__stage"
+						aria-labelledby="documents-title"
+					>
+						<header class="rux-workspace__header">
+							<div class="rux-workspace__heading">
+								<h1
+									class="rux-workspace__title"
+									id="documents-title"
+								>
+									Credit Card Authorization
+								</h1>
+							</div>
+							<div class="rux-workspace__toolbar">
+								<button
+									class="rux-button rux-button--default"
+									type="button"
+									data-document-print
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>print</span
+									>
+									<span class="rux-button__label"
+										>Print</span
+									>
+								</button>
+								<a
+									class="rux-button rux-button--default"
+									data-document-open-external
+									href="documents/form_cca.html"
+									target="_blank"
+									rel="noopener"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>open_in_new</span
+									>
+									<span class="rux-button__label"
+										>Open in New Tab</span
+									>
+								</a>
+							</div>
+						</header>
+						<div class="rux-workspace__body documents-app__preview">
+							<div class="documents-app__frame-wrap">
+								<iframe
+									class="documents-app__frame"
+									title="Document preview"
+									data-document-frame
+									src="documents/form_cca.html"
+								></iframe>
+							</div>
+						</div>
+					</section>
+				</div>
+				<!-- /module:documents -->
 
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: COMPONENTS
@@ -7119,10 +7301,15 @@
 			type="module"
 			src="./js/panels/notifications-panel.js?v=8"
 		></script>
+		<script type="module" src="./js/panels/dev-notes-panel.js?v=1"></script>
 		<script type="module" src="./js/panels/team-chat.js?v=15"></script>
 		<script
 			type="module"
 			src="./js/panels/components-panel.js?v=47"
+		></script>
+		<script
+			type="module"
+			src="./js/panels/documents-panel.js?v=1"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/tasks-panel.js?v=58"></script>
@@ -7751,7 +7938,9 @@
 			const tripEditorHeaderEl = tripEditorDialogEl?.querySelector(
 				"[data-trip-dialog-header]",
 			);
-			const rightPanel = rightDrawer.querySelector(".rux-scope-right-panel");
+			const rightPanel = rightDrawer.querySelector(
+				".rux-scope-right-panel",
+			);
 			const rightPanelToggleBtn = document.querySelector(
 				".calendar-app__panel-toggle",
 			);
@@ -9681,7 +9870,9 @@
 				const schedulerRect = schedulerEl.getBoundingClientRect();
 				const todayRect = todayCol.getBoundingClientRect();
 				const todayLeft =
-					todayRect.left - schedulerRect.left + schedulerEl.scrollLeft;
+					todayRect.left -
+					schedulerRect.left +
+					schedulerEl.scrollLeft;
 				// The row-label column (bus numbers) is sticky on the inline
 				// axis (scheduler.css, inset-inline-start: 0) — it stays
 				// pinned over whatever's scrolled underneath it, so scrolling

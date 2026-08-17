@@ -35,9 +35,9 @@
 	--rux-driver-copy-max-width:          28rem;
 	--rux-driver-status-min-height:       60dvh;
 	--rux-driver-page-title-size:         clamp(2.25rem, 7vw, 2.5rem);
-	--rux-driver-date-primary-size:       1rem;
+	--rux-driver-date-primary-size:       var(--rux-size-md);
 	--rux-driver-date-primary-weight:     var(--rux-weight-400);
-	--rux-driver-time-size:               1.5rem;
+	--rux-driver-time-size:               var(--rux-size-2xl);
 	--rux-driver-primary-size:            var(--rux-size-lg);
 	--rux-driver-secondary-size:          var(--rux-size-lg);
 	--rux-driver-label-size:              var(--rux-size-xs);
@@ -214,7 +214,7 @@ html {
 	margin: 0;
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-2xl);
-	font-weight: 650;
+	font-weight: var(--rux-weight-600);
 	line-height: var(--rux-line-height-2xl);
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -401,14 +401,11 @@ html {
 	color: var(--rux-danger);
 }
 
+/* Typography shared with every other eyebrow/section-label — see
+   rux-ui/css/base/utils.css. */
 .assignment-module__label {
 	margin: 0;
-	color: var(--rux-text-muted);
-	font-size: var(--rux-driver-label-size);
-	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-wide);
 	line-height: var(--rux-line-height-xs);
-	text-transform: uppercase;
 }
 
 .assignment-module__content {
@@ -765,10 +762,15 @@ html {
 	color: var(--rux-text-muted);
 }
 
+/* Shared with .driver-share-dialog__title below — same 24px size. */
+.driver-share-status__title,
+.driver-share-dialog__title {
+	font-size: var(--rux-size-2xl);
+}
+
 .driver-share-status__title {
 	margin: var(--rux-space-4) 0 var(--rux-space-2);
 	color: var(--rux-text-default);
-	font-size: var(--rux-size-2xl);
 }
 
 .driver-share-status p {
@@ -854,10 +856,6 @@ html {
 
 .driver-share-dialog__header {
 	border-bottom: none;
-}
-
-.driver-share-dialog__title {
-	font-size: var(--rux-size-2xl);
 }
 
 .driver-share-dialog__body {

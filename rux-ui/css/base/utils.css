@@ -50,15 +50,31 @@
 	}
 }
 
-/* Eyebrow-style section heading. trip-panel.css keeps its own
-   .rux-scope-trip__section-label: an identical base look, but with
-   --minor/--requirements modifiers no other domain needs. */
-.rux-u-section-label {
+/* Eyebrow-style section heading typography — shared across every
+   "section label" class in the app (menu.css's .rux-menu__header,
+   bus-picker.css's .rux-bus-picker__heading/.rux-col-picker__heading,
+   driver-share.css's .assignment-module__label, trip-request.css's
+   .trip-request-header__label, maintenance-share.css's
+   .maintenance-changes__title — all used to hardcode their own
+   near-identical copy of this look instead of the tokens that already
+   exist for it). trip-panel.css's own .rux-scope-trip__section-label
+   already reads these tokens directly and isn't grouped here since it
+   needs its own --minor/--requirements modifiers. */
+.rux-u-section-label,
+.rux-menu__header,
+.rux-bus-picker__heading,
+.rux-col-picker__heading,
+.assignment-module__label,
+.trip-request-header__label,
+.maintenance-changes__title {
 	font-size: var(--rux-label-eyebrow-size);
 	font-weight: var(--rux-label-eyebrow-weight);
 	color: var(--rux-label-eyebrow-color);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-label-eyebrow-tracking);
+}
+
+.rux-u-section-label {
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	line-height: 1;

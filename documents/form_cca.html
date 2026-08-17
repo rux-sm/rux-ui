@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Card Authorization Form</title>
+    <style>
+        /* Modern, minimalist CSS reset and variables */
+        :root {
+            --text-dark: #111111;
+            --text-gray: #555555;
+            --border-light: #cccccc;
+            --border-dark: #333333;
+            --brand-blue: #0056b3;
+
+            /* Local 4px spacing rhythm — keeps this printable document
+               internally consistent without depending on the app's own
+               --rux-* tokens, since it has to render standalone on paper. */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.4;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: var(--space-5) auto;
+            padding: var(--space-8);
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Minimalist Header */
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-5);
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--brand-blue);
+            letter-spacing: 1px;
+            margin-bottom: var(--space-1);
+        }
+
+        .contact-info {
+            font-size: 12px;
+            color: var(--text-gray);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin: 0 0 var(--space-5) 0;
+            border-bottom: 2px solid var(--border-dark);
+            padding-bottom: var(--space-2);
+        }
+
+        /* Typography-driven Sections */
+        .section {
+            margin-bottom: var(--space-5);
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-gray);
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: var(--space-1);
+            margin-bottom: var(--space-3);
+        }
+
+        /* Clean Grid Layout */
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-3);
+            gap: var(--space-4);
+        }
+
+        .field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .field label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: var(--text-gray);
+            margin-bottom: 2px;
+        }
+
+        .field-line {
+            border-bottom: 1px solid var(--border-dark);
+            height: 20px;
+        }
+
+        /* Minimalist Payment Box */
+        .payment-box {
+            width: 50%;
+            margin-left: auto;
+            border: 1px solid var(--border-light);
+            padding: var(--space-3) var(--space-4);
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+            font-size: 13px;
+        }
+
+        .payment-total {
+            font-weight: 700;
+            border-top: 1px solid var(--border-dark);
+            padding-top: var(--space-2);
+            margin-top: var(--space-1);
+        }
+
+        /* Checkboxes */
+        .checkbox-group {
+            display: flex;
+            gap: var(--space-4);
+            align-items: center;
+            height: 20px;
+            margin-top: var(--space-1);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-1);
+            font-size: 12px;
+        }
+
+        input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+            margin: 0;
+        }
+
+        /* Authorization Text */
+        .auth-text {
+            font-size: 11.5px;
+            text-align: justify;
+            color: var(--text-gray);
+            margin-bottom: var(--space-5);
+            line-height: 1.5;
+        }
+
+        /* Office Use Section */
+        .office-use {
+            margin-top: var(--space-6);
+            padding-top: var(--space-4);
+            border-top: 1px dashed var(--border-light);
+        }
+
+        .office-use .section-title {
+            border: none;
+            text-align: center;
+            margin-bottom: var(--space-4);
+        }
+
+        /* =========================================
+           HARD ENFORCEMENT FOR SINGLE PAGE PRINTING
+           ========================================= */
+        @media print {
+            @page {
+                size: letter portrait;
+                margin: 0.5in; /* Strict half-inch margins */
+            }
+
+            body, html {
+                background-color: #ffffff;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            .container {
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                max-width: 100%;
+                /* Force it to not break */
+                page-break-after: avoid;
+                page-break-before: avoid;
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+
+            /* Ensure text renders perfectly in PDF */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">ESCAMILLA TOUR BUSES</div>
+        <div class="contact-info">
+            2801 Zinnia Ave, McAllen, TX 78504 &nbsp;|&nbsp;
+            Ph: (956) 994-1169 &nbsp;|&nbsp;
+            Fax: (956) 618-2763 &nbsp;|&nbsp;
+            Email: e-escamilla@sbcglobal.net
+        </div>
+    </div>
+
+    <h1>Credit Card Authorization & Payment Form</h1>
+
+    <!-- 1. Trip Information -->
+    <div class="section">
+        <div class="section-title">1. Trip / Reservation Details</div>
+        <div class="row">
+            <div class="field" style="flex: 2;">
+                <label>Customer Name</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Reservation / Invoice #</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label>Trip Date</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Number of Passengers</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Contact Phone</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Payment Authorization -->
+    <div class="section">
+        <div class="section-title">2. Payment Authorization</div>
+        <div class="payment-box">
+            <div class="payment-row">
+                <span>Service / Trip Amount:</span>
+                <span>$ ________________</span>
+            </div>
+            <div class="payment-row">
+                <span>CC Processing Fee (4%):</span>
+                <span>$ ________________</span>
+            </div>
+            <div class="payment-row payment-total">
+                <span>TOTAL AUTHORIZED:</span>
+                <span>$ ________________</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Billing Information -->
+    <div class="section">
+        <div class="section-title">3. Billing Information</div>
+        <div class="row">
+            <div class="field" style="flex: 2;">
+                <label>Cardholder Name (as it appears on card)</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Phone Number</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="field">
+                <label>Billing Address</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="field" style="flex: 2;">
+                <label>City</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>State</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>ZIP Code</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Credit Card Information -->
+    <div class="section">
+        <div class="section-title">4. Credit Card Information</div>
+        <div class="row">
+            <div class="field">
+                <label>Card Type</label>
+                <div class="checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox"> Visa</label>
+                    <label class="checkbox-item"><input type="checkbox"> MasterCard</label>
+                    <label class="checkbox-item"><input type="checkbox"> Discover</label>
+                    <label class="checkbox-item"><input type="checkbox"> AMEX</label>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: var(--space-4);">
+            <div class="field" style="flex: 2;">
+                <label>Card Number</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Expiration Date (MM/YY)</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Authorization & Signature -->
+    <div class="section">
+        <div class="section-title">5. Authorization</div>
+        <div class="auth-text">
+            I certify that I am the authorized cardholder and authorize Escamilla Tour Buses to charge the credit card provided on this form for the <strong>Total Authorized</strong> amount shown above. I agree to pay the total amount according to my card issuer agreement. I understand that the 4% credit card processing fee is non-refundable.
+        </div>
+
+        <div class="row">
+            <div class="field" style="flex: 2;">
+                <label>Cardholder Signature</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Printed Name</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Date</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- For Office Use Only -->
+    <div class="office-use">
+        <div class="section-title">FOR OFFICE USE ONLY</div>
+        <div class="row">
+            <div class="field">
+                <label>Reservation #</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Processed By</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Date Processed</label>
+                <div class="field-line"></div>
+            </div>
+            <div class="field">
+                <label>Transaction / Auth #</label>
+                <div class="field-line"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

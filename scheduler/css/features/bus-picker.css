@@ -20,14 +20,11 @@
 
 /* — Heading — */
 
+/* Typography shared with every other eyebrow/section-label — see
+   rux-ui/css/base/utils.css. */
 .rux-bus-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
 	margin-bottom: var(--rux-space-1);
-	font-size: var(--rux-size-xs);
-	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-muted);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
@@ -88,13 +85,10 @@
 
 .rux-col-picker[hidden] { display: none; }
 
+/* Typography shared with every other eyebrow/section-label — see
+   rux-ui/css/base/utils.css. */
 .rux-col-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
-	font-size: var(--rux-size-xs);
-	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-muted);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	margin-bottom: var(--rux-space-1);
 }

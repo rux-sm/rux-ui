@@ -29,13 +29,9 @@
 	height: var(--rux-ui-header-logo-height);
 }
 
-.trip-request-header__label {
-	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
-	font-weight: var(--rux-weight-400);
-	letter-spacing: 0.04em;
-	text-transform: uppercase;
-}
+/* Typography shared with every other eyebrow/section-label — see
+   rux-ui/css/base/utils.css. (Was --rux-text-disabled and 14px here;
+   now --rux-text-muted and 12px like the rest of the group.) */
 
 .trip-request {
 	width: 100%;
@@ -124,10 +120,8 @@
 	font-weight: var(--rux-weight-400);
 }
 
-.trip-request-option__hint {
-	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-xs);
-}
+/* .trip-request-option__hint's typography is shared with every other
+   small disabled caption — see rux-ui/css/base/form.css. */
 
 .trip-request-option:has(input:checked) {
 	border-color: var(--rux-accent);
