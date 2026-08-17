@@ -32,17 +32,9 @@ const tokensCss = read("rux-ui/css/tokens.css");
  * the corresponding step lands is part of that step. */
 
 // §4.4 — application classes defined inside the portable layer, as shared
-// typography recipes. Resolution: invert the dedup (audit step 3).
-const ACCEPTED_APP_SELECTORS = new Set([
-	".assignment-module__label",
-	".maintenance-changes__title",
-	".maintenance-share-header__title",
-	".settings-app__panel-title",
-	".settings-app__subtitle",
-	".settings-location-row__address",
-	".trip-request-header__label",
-	".trip-request-option__hint",
-]);
+// typography recipes. CLEARED by audit step 3: every recipe now publishes a
+// .rux-u-* utility the application opts into. Keep this empty.
+const ACCEPTED_APP_SELECTORS = new Set([]);
 
 // §4.7 — domain-named Tier 0 tokens still read by Tier 1. Resolution: rename to
 // a domain-free token (audit step 5).
@@ -51,13 +43,7 @@ const ACCEPTED_DOMAIN_TOKENS = new Set(["--rux-trip-bar-head-backdrop-blur"]);
 // §4.4 — .rux-* selectors in the portable layer that name a Tier 3 block, plus
 // one portable utility that merely carries a domain name.
 // Resolution: steps 3 (recipes) and 5 (rename .rux-u-trip-list).
-const ACCEPTED_DOMAIN_SELECTORS = new Set([
-	".rux-bus-picker__heading",
-	".rux-trip-history__meta",
-	".rux-trip-history__subtitle",
-	".rux-trip-history__title",
-	".rux-u-trip-list",
-]);
+const ACCEPTED_DOMAIN_SELECTORS = new Set([".rux-u-trip-list"]);
 
 const DOMAIN_NOUNS = /trip|bus|driver|schedul|customer|fleet|manifest|itinerar/i;
 

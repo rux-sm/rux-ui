@@ -135,7 +135,7 @@ function renderCard(record) {
 		.join(" · ");
 	context.append(
 		element("div", "rux-trip-history__route", route),
-		element("div", "rux-trip-history__meta", meta),
+		element("div", "rux-trip-history__meta rux-u-caption", meta),
 	);
 
 	const changes = Array.isArray(record.changes) ? record.changes : [];

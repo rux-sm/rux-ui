@@ -56,7 +56,7 @@ function changeLine(row) {
 
 function renderChanges(rows) {
 	const section = el("section", "maintenance-changes");
-	section.append(el("h2", "maintenance-changes__title", "Recent Changes"));
+	section.append(el("h2", "maintenance-changes__title rux-u-eyebrow", "Recent Changes"));
 	if (!rows.length) {
 		section.append(el("p", "maintenance-changes__empty", "No changes for the displayed schedule."));
 		return section;

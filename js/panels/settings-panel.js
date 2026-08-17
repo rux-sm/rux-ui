@@ -401,7 +401,7 @@
       <div class="settings-location-row" data-location-id="${escHtml(location.id)}">
         <div class="settings-location-row__details">
           <span class="settings-location-row__name">${escHtml(location.name)}</span>
-          <span class="settings-location-row__address" title="${escHtml(location.address)}">${escHtml(location.address)}</span>
+          <span class="settings-location-row__address rux-u-caption" title="${escHtml(location.address)}">${escHtml(location.address)}</span>
         </div>
         <button class="rux-button rux-button--ghost rux-button--icon" type="button" data-location-edit aria-label="Edit ${escHtml(location.name)}" title="Edit location">
           <span class="rux-icon" aria-hidden="true">edit</span>

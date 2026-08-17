@@ -568,7 +568,7 @@
     fleetColPicker.setAttribute("aria-label", "Column visibility");
 
     const heading = document.createElement("p");
-    heading.className = "rux-col-picker__heading";
+    heading.className = "rux-col-picker__heading rux-u-eyebrow";
     heading.textContent = "Columns";
     fleetColPicker.appendChild(heading);
 

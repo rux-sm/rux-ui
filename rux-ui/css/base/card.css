@@ -151,12 +151,10 @@
    comp-settings-app.css); grouped here so there's one place to change the
    role instead of six. Each class below keeps its own rule for structural
    properties only (margin, padding, flex, overflow handling). */
+.rux-u-panel-title,
 .rux-card__title,
 .rux-panel__title,
-.rux-workspace__title,
-.maintenance-share-header__title,
-.rux-trip-history__title,
-.settings-app__panel-title {
+.rux-workspace__title {
 	color: var(--rux-text-heading);
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-heading-panel-weight);
@@ -176,10 +174,9 @@
 /* Shared "muted subtitle" typography — see rux-ui/css/base/workspace.css,
    scheduler/css/features/comp-settings-app.css, trip-history.css, all of
    which used to hardcode the same (size, color, line-height) themselves. */
+.rux-u-subtitle,
 .rux-card__subtitle,
-.rux-workspace__subtitle,
-.settings-app__subtitle,
-.rux-trip-history__subtitle {
+.rux-workspace__subtitle {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-sm);
 	line-height: var(--rux-line-height-sm);

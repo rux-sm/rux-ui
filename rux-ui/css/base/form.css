@@ -98,24 +98,19 @@
 
 .rux-field          { display: flex; flex-direction: column; gap: var(--rux-field-gap); min-width: 0; }
 
-/* Shared "small muted caption" typography — also used by
-   scheduler/css/features/trip-history.css's .rux-trip-history__meta,
-   preferences.css's .rux-preferences__description, and
-   comp-settings-app.css's .settings-location-row__address, all of which
-   used to hardcode the same 12px/muted look themselves. */
-.rux-field__label,
-.rux-trip-history__meta,
-.rux-preferences__description,
-.settings-location-row__address {
+/* Shared "small muted caption" typography. Applications opt in with
+   .rux-u-caption rather than being named here. */
+.rux-u-caption,
+.rux-field__label {
   font-size: var(--rux-field-label-size);
   font-weight: var(--rux-field-label-weight);
   line-height: var(--rux-line-height-xs);
   color: var(--rux-field-label-fg);
 }
-/* Shared "small disabled caption" typography — also used by
-   scheduler/css/features/trip-request.css's .trip-request-option__hint. */
-.rux-field__help,
-.trip-request-option__hint {
+/* Shared "small disabled caption" typography. Applications opt in with
+   .rux-u-hint. */
+.rux-u-hint,
+.rux-field__help {
   font-size: var(--rux-field-label-size);
   color: var(--rux-field-help-fg);
 }

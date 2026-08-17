@@ -213,7 +213,15 @@ names into Tier 1 instead of publishing a Tier 1 class the app applies.
 utility (or a Tier 0 token pair) and have the application apply it — inverting the
 dedup rather than duplicating the block into each app file.
 
-**The inversion is already half-done.** `base/utils.css:63` shows the target state and the
+> **Status: resolved (step 3).** Every recipe below now publishes a `.rux-u-*` utility that
+> the application opts into, and no application selector remains in the portable layer.
+> The utilities are `.rux-u-eyebrow`, `.rux-u-section-label`, `.rux-u-panel-title`,
+> `.rux-u-subtitle`, `.rux-u-caption`, and `.rux-u-hint`. The section-label recipe had to be
+> split in two — `.rux-u-section-label` carries a divider rule the borrowing classes never
+> had, so `.rux-u-eyebrow` exposes the typography alone. The record below is kept because
+> the pattern will recur.
+
+**The inversion was already half-done.** `base/utils.css` showed the target state and the
 defect in the same rule:
 
 ```css
@@ -387,7 +395,7 @@ re-deriving anything above.
 |---|---|---|
 | 1 | Fix `base/icons.css:48` — the one clean move in §4.4 | Genuinely small and additive, and the only *functional* break a consumer hits today. Do it alone so it is trivially reviewable. |
 | 2 | Land the enforcement test (below), seeded with the current §4.4 inventory as an accepted-violations list | Locks in step 1 and stops new leaks immediately, without blocking on the recipe inversions. Shrink the list as steps 3 and 8 land. |
-| 3 | Invert the §4.4 shared typography recipes into Tier 1 utilities | The bulk of the boundary debt. Touches 4 portable files and every app file that borrowed a recipe; needs its own review pass. |
+| 3 | ~~Invert the §4.4 shared typography recipes into Tier 1 utilities~~ **done** | The bulk of the boundary debt. Five recipes across `utils.css`, `card.css`, `form.css`; 20 markup sites in `index.html`, `m.html`, `request.html`, and four JS modules. |
 | 4 | Extract §4.2 Portable rows, starting with `.rux-table` | Pure moves, no renames, little to no test coverage. Immediate payoff for a second app. |
 | 5 | Namespace migration `.rux-*` → `.sched-*` (§3) | Mechanical but wide. Must precede shell work so that work happens once, under final names. |
 | 6 | Resolve §4.5 re-opened blocks into tokens/modifiers | Needs step 5's names to be final. |
