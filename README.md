@@ -265,9 +265,9 @@ added alongside the existing `--rux-blue`.
 
 ### Typography
 
-- **IBM Plex Sans** for UI text (loaded as Google Font). System sans fallback (`-apple-system`, `Segoe UI`) is acceptable when offline.
-- **IBM Plex Sans Condensed** for the trip bar specifically, where horizontal density matters most.
-- **IBM Plex Mono** for code and monospaced data.
+- **Geist Sans** (Vercel's typeface) for UI text (loaded as Google Font). System sans fallback (`-apple-system`, `Segoe UI`) is acceptable when offline.
+- **Geist Sans** for the trip bar too — Geist has no condensed cut, so `--rux-font-sans-condensed` aliases `--rux-font-sans` rather than loading a second family.
+- **Geist Mono** for code and monospaced data.
 - **No fourth family.** No display serif, no script. Hierarchy comes from size and weight, not font choice.
 - Tight tracking on display sizes (`-0.02em`), normal at body, wide on overlines (`0.04em`).
 
@@ -510,7 +510,7 @@ When in doubt, edit a token before adding a new component override.
 
 ## CAVEATS & SUBSTITUTIONS
 
-- **Fonts are CDN-loaded** (IBM Plex Sans, IBM Plex Sans Condensed, and IBM Plex Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability.
+- **Fonts are CDN-loaded** (Geist and Geist Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is `assets/logo.png`**, a raster asset, not a generated SVG wordmark.
 - The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-surface-N`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:

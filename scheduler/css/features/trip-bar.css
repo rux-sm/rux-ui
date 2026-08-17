@@ -632,7 +632,7 @@
 	grid-template-columns: repeat(5, minmax(0, 1fr));
 	align-items: center;
 	flex: 0 0 auto;
-	gap: var(--rux-button-group-gap);
+	gap: 0;
 	max-height: 0;
 	padding-inline: 0;
 	margin: 0;
@@ -680,7 +680,7 @@
 
 .rux-trip-bar.is-active .rux-trip-bar__actions {
 	max-height: calc(var(--rux-trip-bar-action-height) + 4px);
-	margin: var(--rux-space-2);
+	margin: 0;
 	padding-block: var(--rux-trip-bar-action-padding-block);
 	padding-inline: 0;
 	opacity: 1;

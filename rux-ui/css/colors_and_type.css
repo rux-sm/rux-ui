@@ -21,12 +21,13 @@
    ========================================================================== */
 
 /* ─── Webfonts ──────────────────────────────────────────────────────────── */
-/* IBM Plex Sans for UI text, IBM Plex Sans Condensed for trip bar text,
-   and IBM Plex Mono for code.
+/* Vercel Geist Sans for UI text (including trip bar text — Geist has no
+   condensed cut, so --rux-font-sans-condensed aliases the same family) and
+   Geist Mono for code.
    FLAGGED: these are CDN-loaded Google Fonts. If working offline or
    self-hosting, add local .woff2 files and replace this import.             */
 
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap");
 
 /* ─── Reset ─────────────────────────────────────────────────────────────── */
 

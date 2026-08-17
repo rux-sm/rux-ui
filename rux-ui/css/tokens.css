@@ -45,9 +45,9 @@
 
 	/* ─── TYPOGRAPHY · font family ─────────────────────────────────────────── */
 
-	--rux-font-sans:			"IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-	--rux-font-sans-condensed:	"IBM Plex Sans Condensed", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-	--rux-font-mono:			"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+	--rux-font-sans:			"Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+	--rux-font-sans-condensed:	var(--rux-font-sans); /* Geist has no condensed cut */
+	--rux-font-mono:			"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* ─── TYPOGRAPHY · font size ───────────────────────────────────────────── */
 	--rux-size-xxs:		0.625rem;	/* 10px */
@@ -190,9 +190,9 @@
     /* Two surfaces only, following the Vercel Geist model (README.md's
        "Reference: Vercel Geist colors"): canvas, and everything raised
        off it — panels, cards, content areas. */
-    --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 	/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 16% c h); /* cards  */	/* 22, 22 ,22 */
-	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
+    --rux-surface-0:	oklch(from var(--rux-neutral) 16% c h);	/* canvas */ 	/* 0,  0,  0  */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 20% c h); /* cards  */	/* 22, 22 ,22 */
+	--rux-surface-2:    oklch(from var(--rux-neutral) 28% c h); /* button */ 	/* 25, 25 ,25 */
 	--rux-input-bg-disabled:  oklch(from var(--rux-neutral) 21.5% c h); /* ( 24, 24, 24) */
 
 	/* One border family for the whole app — grid lines, then three
