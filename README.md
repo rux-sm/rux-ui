@@ -104,6 +104,10 @@ keeping two copies in sync:
 npm install github:<owner>/rux-ui#v1.0.0
 ```
 
+See [Portability Audit](docs/portability-audit.md) for the tier boundary — which
+units are portable, which stay with the application, and the sequence for moving
+the rest. `tests/portability-boundary.test.mjs` enforces it.
+
 ### Application composition
 
 Rux applications place a full-width UI header above the application body. The

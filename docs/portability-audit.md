@@ -137,8 +137,8 @@ They are the highest-value, lowest-risk extractions in the repository.
 
 | Class | Currently in | Domain coupling | Tests | Verdict |
 |---|---|---|---|---|
-| `.rux-table` | `features/comp-driver-app.css:150` | **none** — 21 `--rux-table-*` tokens **already live in Tier 0** | none | **Portable — do first** |
-| `.rux-status-text` | `features/comp-driver-app.css:248` | none — 5 lines mapping semantic color | none | **Portable** |
+| ~~`.rux-table`~~ | → `rux-ui/css/base/table.css` | **none** — 21 `--rux-table-*` tokens **already lived in Tier 0** | none | **done (step 4)** |
+| ~~`.rux-status-text`~~ | → `rux-ui/css/base/content.css` | none — 5 lines mapping semantic color | none | **done (step 4)** |
 | `.rux-notifications`, `-menu` | `features/notifications.css` | none (0 domain hits, 83 lines) | `ui-shell.test.mjs` | Portable |
 | `.rux-preferences` | `features/preferences.css` | none (0 domain hits, 54 lines) | `ui-shell.test.mjs` | Portable |
 | `.rux-profile-picker` | `features/profile-picker.css` | none (0 domain hits, 153 lines) | none | Portable |
@@ -396,7 +396,7 @@ re-deriving anything above.
 | 1 | Fix `base/icons.css:48` — the one clean move in §4.4 | Genuinely small and additive, and the only *functional* break a consumer hits today. Do it alone so it is trivially reviewable. |
 | 2 | Land the enforcement test (below), seeded with the current §4.4 inventory as an accepted-violations list | Locks in step 1 and stops new leaks immediately, without blocking on the recipe inversions. Shrink the list as steps 3 and 8 land. |
 | 3 | ~~Invert the §4.4 shared typography recipes into Tier 1 utilities~~ **done** | The bulk of the boundary debt. Five recipes across `utils.css`, `card.css`, `form.css`; 20 markup sites in `index.html`, `m.html`, `request.html`, and four JS modules. |
-| 4 | Extract §4.2 Portable rows, starting with `.rux-table` | Pure moves, no renames, little to no test coverage. Immediate payoff for a second app. |
+| 4 | Extract §4.2 Portable rows — **`.rux-table` and `.rux-status-text` done**; `.rux-notifications`, `.rux-preferences`, `.rux-profile-picker`, `.rux-splash`, `.rux-view-options`, `.rux-priority-dot` remain | Pure moves, no renames, little to no test coverage. Immediate payoff for a second app. |
 | 5 | Namespace migration `.rux-*` → `.sched-*` (§3) | Mechanical but wide. Must precede shell work so that work happens once, under final names. |
 | 6 | Resolve §4.5 re-opened blocks into tokens/modifiers | Needs step 5's names to be final. |
 | 7 | Extract the view container (§5.2) | Additive; the app keeps its router until the portable one is proven. |

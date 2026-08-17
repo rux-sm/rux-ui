@@ -38,3 +38,19 @@
 .rux-avatar--sm { width: var(--rux-avatar-sm); height: var(--rux-avatar-sm); font-size: var(--rux-size-xs); }
 .rux-avatar--lg { width: var(--rux-avatar-lg); height: var(--rux-avatar-lg); font-size: var(--rux-size-sm); }
 .rux-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+
+/* — status text — */
+/* Plain semantic-colored label, not .rux-badge (badges.css) — no pill
+   background, border, or dot, just the color carried on the text itself.
+   Use where a status reads as part of the surrounding copy, such as a table
+   cell, rather than as a discrete chip. */
+
+.rux-status-text {
+  color: var(--rux-info);
+  font-weight: var(--rux-weight-400);
+}
+
+.rux-status-text--success { color: var(--rux-success); }
+.rux-status-text--warning { color: var(--rux-warning); }
+.rux-status-text--danger  { color: var(--rux-danger); }

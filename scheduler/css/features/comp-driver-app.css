@@ -1,9 +1,13 @@
 /* ==========================================================================
-   DRIVER APP — PAGE SHELL & TABLE
+   DRIVER APP — PAGE SHELL
    --------------------------------------------------------------------------
-   App-specific layout for the driver manager module. Also defines
-   .rux-table — a first-class design system component to be extracted to
-   components.css once it stabilises.
+   App-specific layout for the driver manager module.
+
+   .rux-table used to live here, with a note that it should be extracted
+   "once it stabilises". It has been: the component is now
+   rux-ui/css/base/table.css, along with .rux-col-filter-icon and the
+   filterable/sortable header states. What remains here is only this app's
+   own column styling, keyed by [data-col].
    ========================================================================== */
 
 /* — Page body — */
@@ -137,122 +141,6 @@
 	text-align: right;
 }
 
-/* ==========================================================================
-   RUX TABLE COMPONENT
-   --------------------------------------------------------------------------
-   Content-width data table — auto layout, no width:100%, so columns hug
-   their content instead of stretching to fill the wrap (matches Radix's
-   table). The wrap's own overflow-x:auto handles the rare case where
-   content is wider than the available space. Sticky header, hover +
-   selection states.
-   ========================================================================== */
-
-.rux-table {
-	border-collapse: collapse;
-	font-size: var(--rux-size-sm);
-	background: var(--rux-table-bg);
-}
-
-.rux-table thead {
-	position: sticky;
-	top: 0;
-	z-index: var(--rux-z-base);
-	background: var(--rux-table-header-bg);
-	border-bottom: var(--rux-table-border-width) solid var(--rux-table-border-color);
-}
-
-.rux-table th {
-	padding: 0 var(--rux-table-cell-padding-inline);
-	text-align: left;
-	font-size: var(--rux-table-cell-font-size);
-	font-weight: var(--rux-table-header-weight);
-	color: var(--rux-table-header-fg);
-	letter-spacing: var(--rux-table-header-tracking);
-	height: var(--rux-table-row-height);
-	white-space: nowrap;
-}
-
-.rux-table td {
-	padding: 0 var(--rux-table-cell-padding-inline);
-	border-bottom: var(--rux-table-border-width) solid var(--rux-table-border-color);
-	vertical-align: middle;
-	font-size: var(--rux-table-cell-font-size);
-	color: var(--rux-table-fg);
-	white-space: nowrap;
-	font-weight: var(--rux-table-cell-weight);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	height: var(--rux-table-row-height);
-}
-
-/* Outer edges get the wider gutter inset instead of the tighter
-   inter-column padding, so the first/last column's content doesn't sit
-   flush against the table's own edge. */
-.rux-table th:first-child,
-.rux-table td:first-child {
-	padding-left: var(--rux-table-edge-padding-inline);
-}
-
-.rux-table th:last-child,
-.rux-table td:last-child {
-	padding-right: var(--rux-table-edge-padding-inline);
-}
-
-.rux-table tbody tr {
-	cursor: pointer;
-	transition: background-color var(--rux-duration-instant) var(--rux-ease-out);
-}
-
-.rux-table tbody tr:hover {
-	background: var(--rux-table-row-hover-bg);
-}
-
-.rux-table tbody tr.is-selected {
-	background: var(--rux-table-row-selected-bg);
-}
-
-/* — Filterable column headers (shared by all .rux-table instances) — */
-
-.rux-table th[data-col-filter] {
-	cursor: pointer;
-	user-select: none;
-}
-
-.rux-table th[data-col-filter]:hover {
-	color: var(--rux-text-default);
-}
-
-.rux-table th[data-col-filter].is-filtered {
-	color: var(--rux-accent);
-}
-
-.rux-col-filter-icon {
-	vertical-align: middle;
-	opacity: 0.35;
-	margin-left: var(--rux-space-1);
-}
-
-.rux-table th[data-col-filter]:hover .rux-col-filter-icon {
-	opacity: 0.7;
-}
-
-.rux-table th[data-col-filter].is-filtered .rux-col-filter-icon {
-	opacity: 1;
-}
-
-/* — Status text — */
-/* Driver table's Status column: plain colored text, not .rux-badge
-   (badges.css) — no pill background, border, or dot, just the semantic
-   color carried on the label itself. */
-
-.rux-status-text {
-	color: var(--rux-info);
-	font-weight: var(--rux-weight-400);
-}
-
-.rux-status-text--success { color: var(--rux-success); }
-.rux-status-text--warning { color: var(--rux-warning); }
-.rux-status-text--danger  { color: var(--rux-danger); }
 
 /* Employment column also carries the priority dot (merged from the old
    standalone Priority column) — it no longer sits inside .rux-badge, which
@@ -344,29 +232,6 @@
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 	text-align: center;
-}
-
-/* — Sortable column headers — */
-
-.rux-table th[data-sort] {
-	cursor: pointer;
-	user-select: none;
-}
-
-.rux-table th[data-sort]:hover {
-	color: var(--rux-text-default);
-}
-
-.rux-table th[data-sort].is-sort-asc::after {
-	content: " ↑";
-	color: var(--rux-accent);
-	font-style: normal;
-}
-
-.rux-table th[data-sort].is-sort-desc::after {
-	content: " ↓";
-	color: var(--rux-accent);
-	font-style: normal;
 }
 
 /* — Mobile — */

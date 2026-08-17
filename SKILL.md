@@ -20,11 +20,15 @@ needed for the task after that:
 - `rux-ui/css/tokens.css` — primitives, semantic tokens, component contracts, and themes
 - `rux-ui/css/colors_and_type.css` — webfonts, reset, global element styles, and type utilities
 - `rux-ui/css/base/` — reusable BEM-style `.rux-*` components
-- `scheduler/css/components.css` — reference-application bundle; includes base, scheduler, and trip features
+- `rux-ui/css/rux.css` — the single entrypoint; load this to get tokens, webfonts, and every base component
+- `scheduler/css/components.css` — scheduler features and layout only; requires `rux.css` to be loaded first
 - `scheduler/css/features/` — product-specific component and panel styles
 - `scheduler/css/layout/` — scheduler and application-shell layout styles
 - `docs/layout-composition.md` — canonical UI-header, shell, workspace, panel,
   card, spacing, scrolling, and responsive composition contract
+- `docs/portability-audit.md` — the tier boundary between `rux-ui/` and the
+  application layer: what is portable, what stays, and the migration sequence.
+  Read before moving anything between the two.
 - `docs/motion.md` — productive-motion tokens and panel/menu animation contracts
 - `rux-ui/js/` — the JS engine behind `rux-ui/css/base/*` components: toasts,
   modals, theme switching, menus, popovers, drawers, floating windows,
