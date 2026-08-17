@@ -172,6 +172,8 @@
 	background: var(--rux-button-ghost-background);
 	color: var(--rux-button-ghost-text);
 	border: var(--rux-button-ghost-border);
+	/* Ghost buttons are square — overrides the base control radius. */
+	border-radius: var(--rux-radius-0);
 }
 
 /* The generic .rux-button:hover rule above sets border/color directly (not

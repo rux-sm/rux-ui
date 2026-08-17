@@ -416,12 +416,12 @@ test("the mini calendar uses the card shell, header, and body", () => {
 	assert.match(calendar, /class="rux-card__body rux-mini-cal__body"/);
 });
 
-test("the mini calendar centers a fixed-size grid with tokenized gaps", () => {
+test("the mini calendar grows columns to fill the panel with fixed row height", () => {
 	assert.match(layoutStyles, /--rux-mini-cal-cell-size:\s*\d+px;/);
 	assert.match(layoutStyles, /--rux-mini-cal-cell-gap:\s*var\(--rux-space-2\);/);
 	assert.match(
 		layoutStyles,
-		/\.rux-mini-cal__day-names,\s*\.rux-mini-cal__dates\s*\{[^}]*grid-template-columns:\s*repeat\(7, var\(--rux-mini-cal-cell-size\)\);[^}]*justify-content:\s*center;/s,
+		/\.rux-mini-cal__day-names,\s*\.rux-mini-cal__dates\s*\{[^}]*grid-template-columns:\s*repeat\(7, 1fr\);[^}]*grid-auto-rows:\s*var\(--rux-mini-cal-cell-size\);/s,
 	);
 	assert.doesNotMatch(layoutStyles, /padding-inline:\s*auto/);
 });

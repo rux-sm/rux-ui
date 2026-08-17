@@ -225,7 +225,7 @@
 	/* Inputs and segmented tracks share one opaque punched-in base. Their
 	   translucent interaction colors adapt to the surface beneath them. */
 
-	--rux-well-bg: var(--rux-surface-1); /* Raised elements */
+	--rux-well-bg: transparent;
 	--rux-thumb-bg: oklch(from var(--rux-neutral) 90% c h); /* Raised elements */
 
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
@@ -802,7 +802,7 @@
 	--rux-button-border:       none;
 	--rux-button-radius:       var(--rux-radius-control);
 	/* Tactile shadows apply only to solid-fill variants. */
-	--rux-button-shadow-raised:  var(--rux-shadow-1);
+	--rux-button-shadow-raised:  none;
 	--rux-button-shadow-pressed: none;
 	--rux-button-group-gap:      var(--rux-space-2);
 
@@ -866,7 +866,7 @@
 
 	/* ─── COMPONENT · button disabled ─────────────────────────────────────────────── */
 
-	--rux-button-disabled-background: transparent;
+	--rux-button-disabled-background: var(--rux-surface-2);
 	--rux-button-disabled-text:       var(--rux-text-disabled);
 	--rux-button-disabled-border:     none;
 	--rux-button-disabled-shadow:     none;
@@ -1449,8 +1449,7 @@
 	/* ─── Surfaces ────────────────────────────────────────────────────────── */
     --rux-surface-0:	oklch(from var(--rux-neutral) 98% c h);	/* canvas */ 	/* 0,  0,  0  */
     --rux-surface-1:    oklch(from var(--rux-neutral) 100% c h); /* cards  */	/* 22, 22 ,22 */
-	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
-	--rux-well-bg:          oklch(from var(--rux-neutral) 90% c h); /* Recessed input and track fill */
+	--rux-surface-2:    oklch(from var(--rux-neutral) 94% c h); /* button */ 	/* 25, 25 ,25 */
 
 	/* --rux-panel-attached-bg (COMPONENT · panel, above) is a direct value,
 	   not aliased through --rux-surface-0 — needs its own light-theme
@@ -1467,8 +1466,8 @@
 	   border-family consolidation folded them into this one; --active is
 	   a new third tier with no prior value, picked to keep the same
 	   step-size relationship dark theme has between hover and active. */
-	--rux-grid-guide:         oklch(from var(--rux-neutral) 70% c h);
-	--rux-card-border:        oklch(from var(--rux-neutral) 90% c h);
+	--rux-grid-guide:         oklch(from var(--rux-neutral) 88% c h);
+	--rux-card-border:        oklch(from var(--rux-neutral) 88% c h);
 	--rux-card-border-hover:  oklch(from var(--rux-neutral) 70% c h);
 	--rux-card-border-active: oklch(from var(--rux-neutral) 50% c h);
 	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
@@ -1498,11 +1497,8 @@
 	--rux-trip-bar-tail-selected-opacity:  64%;
 	--rux-trip-bar-meta-bg: oklch(from var(--rux-white) l c h / 0%);
 
-	--rux-button-default-background:  var(--rux-surface-contrast);
-	--rux-button-disabled-background: transparent;
 	--rux-button-disabled-text:       var(--rux-text-disabled);
 	--rux-button-disabled-border:     none;
-	--rux-thumb-bg:                   var(--rux-surface-contrast);
 }
 
 /* ==========================================================================
