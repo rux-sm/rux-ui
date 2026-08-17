@@ -1480,6 +1480,15 @@
 	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
 	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
 
+	/* Inverted like every other pair here: the dark values step *up* from the
+	   content tier (surface-1 20% → 32%/36%), so light steps *down* from its
+	   own content tier (surface-1 100% → 88%/84%), preserving the same 12/16
+	   lightness deltas. Without these overrides the dark 32%/36% leak into
+	   light theme and any fill using them — .rux-tag, .rux-avatar, the
+	   .rux-progress track — renders as a near-black block on a light card. */
+	--rux-bg-hover:   oklch(from var(--rux-neutral) 88% c h);
+	--rux-bg-active:  oklch(from var(--rux-neutral) 84% c h);
+
 	/* ─── Elevation colors ────────────────────────────────────────────────── */
 	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 16% c h / 70%);
 	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 16% c h / 10%);

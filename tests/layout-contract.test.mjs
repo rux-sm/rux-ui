@@ -8,6 +8,7 @@ const shellCss = read("rux-ui/css/base/app-shell.css");
 const headerCss = read("rux-ui/css/base/ui-header.css");
 const sideNavCss = read("rux-ui/css/base/side-nav.css");
 const tokensCss = read("rux-ui/css/tokens.css");
+const ruxCss = read("rux-ui/css/rux.css");
 const coreCss = read("rux-ui/css/rux-core.css");
 const componentsCss = read("scheduler/css/components.css");
 const schedulerLayoutCss = read("scheduler/css/layout/scheduler-app.css");
@@ -23,9 +24,14 @@ test("the reusable app shell keeps structural siblings attached", () => {
 	assert.doesNotMatch(rulesOnly, /scheduler|drawer|rail|471px/);
 });
 
-test("both shared CSS entrypoints include the app shell", () => {
-	assert.match(coreCss, /@import "\.\/base\/app-shell\.css";/);
-	assert.match(componentsCss, /@import "\.\.\/\.\.\/rux-ui\/css\/base\/app-shell\.css\?v=\d+";/);
+test("the design-system entrypoint owns the app shell for every consumer", () => {
+	// rux.css is the single entrypoint: it, and only it, imports the base
+	// layer. rux-core.css stays a working name by forwarding to it, and the
+	// scheduler bundle must not re-import the base files on top (that
+	// duplicate list is what this consolidation removed).
+	assert.match(ruxCss, /@import "\.\/base\/app-shell\.css";/);
+	assert.match(coreCss, /@import "\.\/rux\.css";/);
+	assert.doesNotMatch(componentsCss, /@import "\.\.\/\.\.\/rux-ui\/css\/base\//);
 });
 
 test("the UI header owns the canonical fixed 48px contract", () => {
@@ -53,9 +59,9 @@ test("the UI header owns the canonical fixed 48px contract", () => {
 	);
 });
 
-test("shared CSS entrypoints use the canonical UI-header stylesheet", () => {
-	assert.match(coreCss, /@import "\.\/base\/ui-header\.css";/);
-	assert.match(componentsCss, /@import "\.\.\/\.\.\/rux-ui\/css\/base\/ui-header\.css\?v=\d+";/);
+test("the design-system entrypoint uses the canonical UI-header stylesheet", () => {
+	assert.match(ruxCss, /@import "\.\/base\/ui-header\.css";/);
+	assert.match(coreCss, /@import "\.\/rux\.css";/);
 });
 
 test("side navigation remains a reusable product-navigation primitive", () => {

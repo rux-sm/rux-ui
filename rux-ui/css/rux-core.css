@@ -1,31 +1,16 @@
 /* ==========================================================================
-   RUX UI — CORE ENTRYPOINT
+   RUX UI — CORE ENTRYPOINT  (compatibility alias)
    --------------------------------------------------------------------------
-   Framework-agnostic foundations and reusable components for applications
-   that do not need the reference-application feature and scheduler styles.
+   Kept as a stable name for pages that already link rux-core.css. It used to
+   carry its own copy of the import list, which was byte-identical to rux.css's
+   — two lists to keep in sync, and only one of them ever loaded. It now
+   forwards to rux.css, which is the single public entrypoint.
 
-   Existing pages that rely on the full component bundle should continue
-   loading components.css. Keeping
-   this as a separate, additive entrypoint avoids changing current consumers.
+   New pages should link rux.css directly:
+     <link rel="stylesheet" href="rux-ui/css/rux.css" />
+
+   Applications that also need the scheduler and trip features load
+   scheduler/css/components.css on top of this.
    ========================================================================== */
 
-@import "./tokens.css";
-@import "./colors_and_type.css";
-
-@import "./base/icons.css";
-@import "./base/controls.css";
-@import "./base/ui-header.css";
-@import "./base/side-nav.css";
-@import "./base/app-shell.css";
-@import "./base/badges.css";
-@import "./base/form.css";
-@import "./base/workspace.css";
-@import "./base/panel.css";
-@import "./base/menu.css";
-@import "./base/popover.css";
-@import "./base/suggestions.css";
-@import "./base/card.css";
-@import "./base/content.css";
-@import "./base/feedback.css";
-@import "./base/navigation.css";
-@import "./base/utils.css";
+@import "./rux.css";

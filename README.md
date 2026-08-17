@@ -26,8 +26,8 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 │   ├── css/
 │   │   ├── rux.css            ← single entry point for the full design system
 │   │   ├── tokens.css         ← all design tokens: color, type, space, radius, motion
-│   │   ├── colors_and_type.css ← webfonts + global element styles (h1, p, code, etc)
-│   │   ├── rux-core.css       ← framework-agnostic entrypoint for new applications
+│   │   ├── colors_and_type.css ← webfonts (text + icon faces) + global element styles
+│   │   ├── rux-core.css       ← compatibility alias, forwards to rux.css
 │   │   └── base/              ← 18 reusable BEM components
 │   └── js/                    ← the JS engine behind rux-ui/css/base/* components:
 │                                 utilities.js (toast/modal/copy/accent), theme.js,
@@ -35,7 +35,7 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 │                                 suggestions.js, controls.js, ui-shell.js
 ├── scheduler/
 │   └── css/
-│       ├── components.css     ← scheduler bundle (base + features + layout)
+│       ├── components.css     ← scheduler bundle (features + layout; needs rux.css)
 │       ├── features/          ← 29 scheduler-specific panels and components
 │       └── layout/            ← scheduler grid and application shell
 ├── js/
@@ -52,8 +52,7 @@ Human-facing AI references: start with the [AI Coding Quick Reference](docs/ai/A
 To use the complete reference-application bundle in an existing page:
 
 ```html
-<link rel="stylesheet" href="rux-ui/css/tokens.css" />
-<link rel="stylesheet" href="rux-ui/css/colors_and_type.css" />
+<link rel="stylesheet" href="rux-ui/css/rux.css" />
 <link rel="stylesheet" href="scheduler/css/components.css" />
 <script src="rux-ui/js/utilities.js" defer></script>
 <script src="rux-ui/js/theme.js" defer></script>
@@ -72,13 +71,38 @@ drawers, floating panels, the search dropdown, tab/toggle declarative
 controls, the header disclosure button) — include whichever ones the page
 actually uses.
 
-For a new application, use the framework-agnostic core entrypoint instead:
+For a new application, drop the second line — `rux.css` alone is the whole
+design system:
 
 ```html
 <link rel="stylesheet" href="rux-ui/css/rux.css" />
 ```
 
-`rux.css` is the single entry point for the complete Rux visual system. It includes the tokens, global type styles, and all reusable base components. It deliberately excludes the scheduler and reference-application feature styles imported by `components.css`. Existing pages can keep loading the original three stylesheets without any migration.
+`rux.css` is the single entry point for the complete Rux visual system: tokens,
+webfonts (including the Material Symbols face behind every `.rux-icon`), global
+type styles, and all reusable base components. It deliberately excludes the
+scheduler and reference-application feature styles, which `components.css`
+adds on top — that bundle now contains *only* those features and requires
+`rux.css` to be loaded first.
+
+`rux-core.css` remains as a compatibility alias that forwards to `rux.css`; it
+used to carry a second, byte-identical copy of the import list. New pages
+should link `rux.css` directly.
+
+### Using Rux UI in another project
+
+The `rux-ui/` folder is self-contained — no relative path inside it escapes the
+folder, and the webfonts load from the Google Fonts CDN. Copying `rux-ui/` into
+another project and linking `rux-ui/css/rux.css` is enough to get the full
+system. `utilities.js` is the only script needed for toasts and modals; add the
+others as the page uses those components.
+
+Once a second project depends on it, prefer installing from a git tag over
+keeping two copies in sync:
+
+```bash
+npm install github:<owner>/rux-ui#v1.0.0
+```
 
 ### Application composition
 
@@ -510,7 +534,7 @@ When in doubt, edit a token before adding a new component override.
 
 ## CAVEATS & SUBSTITUTIONS
 
-- **Fonts are CDN-loaded** (Geist and Geist Mono from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the `@import` at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability.
+- **Fonts are CDN-loaded** (Geist, Geist Mono, and Material Symbols Sharp from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the two `@import` rules at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability. Dropping the Material Symbols import without replacing it makes every `.rux-icon` render its ligature name as text.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is `assets/logo.png`**, a raster asset, not a generated SVG wordmark.
 - The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-surface-N`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:

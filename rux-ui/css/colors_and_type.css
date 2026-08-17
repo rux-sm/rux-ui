@@ -6,7 +6,8 @@
 
    Contents
    --------
-   Webfonts          Inter (UI) + JetBrains Mono (code) via Google Fonts CDN
+   Webfonts          Geist (UI) + Geist Mono (code) + Material Symbols Sharp
+                     (icons) via Google Fonts CDN
    Reset             box-sizing, margin/padding, font-smoothing, font features
    Headings          h1–h6 — sizes, weights, tracking
    Body copy         p, small, strong, em
@@ -28,6 +29,16 @@
    self-hosting, add local .woff2 files and replace this import.             */
 
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap");
+
+/* Material Symbols Sharp backs every .rux-icon (see --rux-icon-font-family in
+   tokens.css). It is imported here, beside the text faces, so that loading the
+   stylesheet is enough to make icons render — without it, .rux-icon shows its
+   raw ligature name as text. Pages that want the faster preconnect + <link>
+   form may load the same family in <head>; the duplicate request is deduped by
+   the browser cache. Keep the axis ranges in sync with tokens.css's
+   --rux-icon-* tokens (opsz 20–48, wght 100–700, FILL 0–1, GRAD -50–200). */
+
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap");
 
 /* ─── Reset ─────────────────────────────────────────────────────────────── */
 

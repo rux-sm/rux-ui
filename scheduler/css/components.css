@@ -1,7 +1,15 @@
 /* ==========================================================================
-   RUX UI — COMPONENTS
+   RUX UI — SCHEDULER COMPONENTS
    --------------------------------------------------------------------------
-   All design-system components, BEM-style, --rux- prefixed.
+   Scheduler-specific features and layout, BEM-style, --rux- prefixed.
+
+   Requires the design system to be loaded first. This bundle no longer
+   imports rux-ui/css/base/* — those are the portable layer and now come from
+   rux-ui/css/rux.css, which index.html links ahead of this file. Loading this
+   bundle alone will leave every .rux-* base component unstyled.
+
+     <link rel="stylesheet" href="rux-ui/css/rux.css" />      ← tokens + base
+     <link rel="stylesheet" href="scheduler/css/components.css" />  ← this file
 
    Convention
    ----------
@@ -16,29 +24,6 @@
 
    Modules (in load order)
    -----------------------
-   icons.css        .rux-icon and custom pictogram variants
-   controls.css     .rux-button, .rux-segmented-track, .rux-number-stepper
-   ui-header.css    .rux-ui-header and its brand, navigation, and actions
-   side-nav.css     .rux-side-nav product navigation
-   app-shell.css    .rux-app and attached panel/workspace composition
-   badges.css       .rux-badge, .rux-trip-itinerary__badge  ← single source of truth for all badge rules
-   form.css         .rux-input, .rux-select, .rux-textarea, .rux-field,
-	                   .rux-switch, .rux-checkbox, .rux-input-group,
-	                   .rux-color-swatches, .rux-color-picker,
-	                   .rux-color-input, .rux-output
-   workspace.css    .rux-workspace — primary application view shell
-   panel.css        .rux-panel — shared outer-container primitive (header,
-                    navigation, body, pane, footer) for attached/docked
-                    panels, floating windows, modals, and popover/menu
-                    positions alike
-   menu.css         .rux-menu, items, headers, dividers, and states
-   popover.css      .rux-popover — shared floating-layer positioning shell
-   card.css         .rux-card and its header, body, section, footer, and variants
-   content.css      .rux-tag, .rux-avatar
-   feedback.css     .rux-alert, .rux-toast, .rux-modal, .rux-progress,
-                    [data-tooltip], .rux-tooltip
-   navigation.css   .rux-tabs, .rux-tab
-	utils.css        shared animation and reduced-motion rules
    trip-bar.css     .rux-trip-bar — Gantt bar for trip display
    trip-panel.css   .rux-scope-trip — side-panel form editor for trip details
    itinerary.css    .rux-trip-itinerary — timeline stop editor for the Itinerary tab
@@ -46,23 +31,6 @@
    scheduler-app.css  .scheduler-app shell and app-header coordination
    ========================================================================== */
 
-@import "../../rux-ui/css/base/icons.css";
-@import "../../rux-ui/css/base/controls.css?v=23";
-@import "../../rux-ui/css/base/ui-header.css?v=11";
-@import "../../rux-ui/css/base/side-nav.css?v=2";
-@import "../../rux-ui/css/base/app-shell.css?v=1";
-@import "../../rux-ui/css/base/badges.css?v=3";
-@import "../../rux-ui/css/base/form.css?v=3";
-@import "../../rux-ui/css/base/workspace.css?v=3";
-@import "../../rux-ui/css/base/panel.css?v=3";
-@import "../../rux-ui/css/base/menu.css?v=1";
-@import "../../rux-ui/css/base/popover.css?v=6";
-@import "../../rux-ui/css/base/suggestions.css?v=2";
-@import "../../rux-ui/css/base/card.css";
-@import "../../rux-ui/css/base/content.css?v=2";
-@import "../../rux-ui/css/base/feedback.css?v=5";
-@import "../../rux-ui/css/base/navigation.css?v=18";
-@import "../../rux-ui/css/base/utils.css?v=2";
 @import "./features/trip-bar.css?v=34";
 @import "./features/trip-panel.css?v=33";
 @import "./features/trip-history.css?v=2";
