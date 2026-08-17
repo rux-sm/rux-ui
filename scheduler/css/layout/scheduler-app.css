@@ -1,8 +1,8 @@
 /* ==========================================================================
    SCHEDULER APP SHELL  ·  scheduler-app, UI header, toolbar, nav
    --------------------------------------------------------------------------
-   Full-page application shell that hosts .rux-scheduler. These layout
-   classes are app-specific scaffolding; .rux-scheduler itself is the
+   Full-page application shell that hosts .sched-scheduler. These layout
+   classes are app-specific scaffolding; .sched-scheduler itself is the
    reusable component.
    ========================================================================== */
 
@@ -183,7 +183,7 @@
 	margin-inline-end: var(--calendar-workspace-frame-inset-inline);
 }
 
-.scheduler-app__module[data-module="calendar"] .rux-scope-right-panel {
+.scheduler-app__module[data-module="calendar"] .sched-scope-right-panel {
 	border-inline-start: var(--rux-panel-right-border);
 }
 
@@ -295,7 +295,7 @@
 }
 
 /* Stretches full-height by default (align-items:stretch, inherited from
-   .scheduler-app__module) so .rux-scheduler's max-block-size:100% has a
+   .scheduler-app__module) so .sched-scheduler's max-block-size:100% has a
    real definite ancestor height to cap against and scroll internally via
    its own overflow:auto. A schedule shorter than that (e.g. one vehicle)
    gets pinned down to its actual content height by fitSchedulerHeight()
@@ -349,7 +349,7 @@
 	transition: none;
 }
 
-.scheduler-app__drawer :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel) {
+.scheduler-app__drawer :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel) {
 	position: absolute;
 	inset-block: 0;
 	right: 0;
@@ -363,7 +363,7 @@
 
 }
 
-.scheduler-app__drawer:not(.is-open) :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel) {
+.scheduler-app__drawer:not(.is-open) :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel) {
 	display: none;
 }
 
@@ -391,7 +391,7 @@
    whatever the drawer's outer box currently is, whether animating or settled.
    Not rail-specific — a plain sizing rule, so it's not scoped to desktop
    below like the rest of this block. */
-.scheduler-app__drawer--railable :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver) {
+.scheduler-app__drawer--railable :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver) {
 	width: 100%;
 	min-width: 0;
 }
@@ -426,17 +426,17 @@
 	/* Open panels also avoid borders against the window. Keep only the
 	   workspace-facing divider: right edge on the left panel, left edge on
 	   the right panel. */
-	.scheduler-app__drawer--railable.is-open .rux-scope-trip {
+	.scheduler-app__drawer--railable.is-open .sched-scope-trip {
 		border: 0;
 		border-right: var(--rux-left-panel-border);
 	}
 
-	.scheduler-app__drawer--railable.is-open .rux-scope-driver {
+	.scheduler-app__drawer--railable.is-open .sched-scope-driver {
 		border: 0;
 		border-right: var(--rux-left-panel-border);
 	}
 
-	.scheduler-app__drawer--railable.is-open .rux-scope-right-panel {
+	.scheduler-app__drawer--railable.is-open .sched-scope-right-panel {
 		border: 0;
 		border-left: var(--rux-panel-right-border);
 	}
@@ -461,7 +461,7 @@
 
 	/* Keep only the edge facing the workspace so the collapsed rail reads
 	   as a divider without boxing in its top, bottom, or outside edge. */
-	.scheduler-app__drawer--railable:not(.is-open) :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver) {
+	.scheduler-app__drawer--railable:not(.is-open) :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver) {
 		display: flex;
 		background: var(--rux-panel-rail-bg);
 		color: var(--rux-panel-rail-fg);
@@ -470,15 +470,15 @@
 		pointer-events: none;
 	}
 
-	.scheduler-app__drawer--railable:not(.is-open) .rux-scope-trip {
+	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-trip {
 		border-right: var(--rux-panel-rail-border);
 	}
 
-	.scheduler-app__drawer--railable:not(.is-open) .rux-scope-driver {
+	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-driver {
 		border-right: var(--rux-panel-rail-border);
 	}
 
-	.scheduler-app__drawer--railable:not(.is-open) .rux-scope-right-panel {
+	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-right-panel {
 		border-left: var(--rux-panel-rail-border);
 	}
 
@@ -488,7 +488,7 @@
 	   also prevents descendants with their own positioning/paint
 	   containment from leaking through the narrow panel clip. */
 	.scheduler-app__drawer--railable:not(.is-open)
-		> :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver)
+		> :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		display: none !important;
 	}
@@ -589,7 +589,7 @@
 	width: var(--drawer-width, var(--scheduler-app-right-drawer-default-width));
 }
 
-.scheduler-app__drawer--right :is(.rux-scope-right-panel) {
+.scheduler-app__drawer--right :is(.sched-scope-right-panel) {
 	position: absolute;
 	inset-block: 0;
 	left: 0;
@@ -601,13 +601,13 @@
 
 /* With --railable the panel fills live drawer width and stays rendered;
    without it the base display:none-when-closed rule above still applies. */
-.scheduler-app__drawer--right:not(.is-open):not(.scheduler-app__drawer--railable) :is(.rux-scope-right-panel) {
+.scheduler-app__drawer--right:not(.is-open):not(.scheduler-app__drawer--railable) :is(.sched-scope-right-panel) {
 	display: none;
 }
 
 /* — Right panel shell — */
 
-.rux-scope-right-panel {
+.sched-scope-right-panel {
 	position: relative;
 	box-sizing: border-box;
 	height: 100%;
@@ -652,7 +652,7 @@
 
 /* — Mini calendar — */
 
-.rux-mini-cal[hidden] {
+.sched-mini-cal[hidden] {
 	display: none;
 }
 
@@ -783,7 +783,7 @@
    (card.css) directly now, inside .rux-card__header — this rule
    used to duplicate that exact styling under its own name for both. */
 
-.rux-driver-grid {
+.sched-driver-grid {
 	--rux-driver-grid-surface: var(--rux-surface-1);
 	--rux-driver-grid-cell-size: 24px;
 	--rux-driver-grid-name-width: 80px;
@@ -1401,7 +1401,7 @@
 	}
 
 	.scheduler-app__drawer--railable
-		> :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver)
+		> :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		transition:
 			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing),
@@ -1409,7 +1409,7 @@
 	}
 
 	.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> :is(.rux-scope-trip, .rux-scope-right-panel, .rux-scope-driver)
+		> :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver)
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		opacity: 0;
 		transform: translateX(-4px);
@@ -1417,7 +1417,7 @@
 	}
 
 	.scheduler-app__drawer--right.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> .rux-scope-right-panel
+		> .sched-scope-right-panel
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		transform: translateX(4px);
 	}
@@ -1490,7 +1490,7 @@
 			opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
 	}
 
-	.scheduler-app__drawer :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel, .rux-scope-right-panel) {
+	.scheduler-app__drawer :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel, .sched-scope-right-panel) {
 		inset-block: 0;
 		right: 0;
 		left: 0;
@@ -1500,7 +1500,7 @@
 		border-radius: 0;
 	}
 
-	.scheduler-app__drawer.is-closing :is(.rux-scope-trip, .rux-scope-fleet, .rux-scope-driver, .rux-passenger-panel, .rux-scope-right-panel) {
+	.scheduler-app__drawer.is-closing :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel, .sched-scope-right-panel) {
 		display: flex;
 	}
 
@@ -1716,11 +1716,11 @@
 	--rux-scheduler-scroll-padding-block-end: var(--rux-space-4);
 }
 
-.scheduler-app__grid .rux-trip-bar {
+.scheduler-app__grid .sched-trip-bar {
 	position: absolute;
 }
 
-.scheduler-app__grid .rux-scheduler__track:has(.rux-trip-bar.is-active) {
+.scheduler-app__grid .rux-scheduler__track:has(.sched-trip-bar.is-active) {
 	z-index: var(--rux-z-dropdown);
 }
 
@@ -1816,7 +1816,7 @@
 	   the toolbar just overlaps whatever's already sitting at the bottom
 	   of it — which is exactly what was clipping into the bus-number
 	   header column. padding-bottom on the viewport itself (not
-	   .rux-scheduler inside it) actually shrinks the space available to
+	   .sched-scheduler inside it) actually shrinks the space available to
 	   its content, opening up real screen space for the fixed bar to
 	   occupy instead of overlap. */
 	.scheduler-app__module[data-module="calendar"] .calendar-app__viewport {

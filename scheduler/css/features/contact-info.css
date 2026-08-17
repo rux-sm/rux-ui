@@ -3,7 +3,7 @@
    Copy-ready driver/bus message for the currently loaded trip.
    ========================================================================== */
 
-.rux-contact-info-modal {
+.sched-contact-info-modal {
 	display: flex;
 	flex-direction: column;
 	width: min(32rem, 100%);
@@ -24,11 +24,11 @@
 /* Footer buttons split the row evenly instead of sizing to their own label —
    scoped here rather than on the shared .rux-modal__footer, which other
    modals also use with layouts that don't want this. */
-.rux-contact-info-modal .rux-modal__footer > * {
+.sched-contact-info-modal .rux-modal__footer > * {
 	flex: 1;
 	min-width: 9rem;
 }
 
-.rux-contact-info-modal .rux-modal__footer {
+.sched-contact-info-modal .rux-modal__footer {
 	flex-wrap: wrap;
 }

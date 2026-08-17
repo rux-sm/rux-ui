@@ -27,7 +27,7 @@
 
 		panelEl = document.createElement("div");
 		panelEl.className =
-			"rux-panel rux-panel--floating rux-panel--default-size rux-doc-viewer";
+			"rux-panel rux-panel--floating rux-panel--default-size sched-doc-viewer";
 		panelEl.hidden = true;
 		panelEl.innerHTML = `
 			<header class="rux-panel__header rux-doc-viewer__header">
@@ -89,7 +89,7 @@
 		const panel = ensurePanel();
 		previousFocus = document.activeElement;
 		current = options;
-		panel.classList.toggle("rux-doc-viewer--presentation", Boolean(options.presentationOnly));
+		panel.classList.toggle("sched-doc-viewer--presentation", Boolean(options.presentationOnly));
 		panel.classList.toggle("rux-panel--safe-viewport", Boolean(options.presentationOnly));
 		panel.querySelector("[data-doc-viewer-title]").textContent = options.title || options.fileName || "Document";
 		panel.querySelector("[data-doc-viewer-icon]").textContent = options.icon || "description";

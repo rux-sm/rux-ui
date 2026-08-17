@@ -75,8 +75,8 @@ test("trip bars render partial PO with a strong warning indicator", () => {
 });
 
 test("partial PO warns through the outline without replacing the trip color", () => {
-	assert.match(tripBarSource, /paymentStatus === "po_partial"\s*\?\s*"rux-trip-bar--partial-po"/);
-	const rule = tripBarCss.match(/\.rux-trip-bar--partial-po\s*\{([^}]*)\}/s)?.[1] ?? "";
+	assert.match(tripBarSource, /paymentStatus === "po_partial"\s*\?\s*"sched-trip-bar--partial-po"/);
+	const rule = tripBarCss.match(/\.sched-trip-bar--partial-po\s*\{([^}]*)\}/s)?.[1] ?? "";
 	assert.match(rule, /--_outline:\s*var\(--rux-trip-bar-warning-border\)/);
 	assert.match(rule, /--rux-trip-bar-border-width:\s*1px/);
 	assert.doesNotMatch(rule, /--_tone|background/);

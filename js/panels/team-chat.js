@@ -304,7 +304,7 @@ if (btn && badge) {
 		panelEl = document.createElement("div");
 		panelEl.id = "team-chat-popover";
 		panelEl.className =
-			"rux-popover rux-popover--surface rux-popover--tab-tip rux-team-chat-popover";
+			"rux-popover rux-popover--surface rux-popover--tab-tip sched-team-chat-popover";
 		panelEl.setAttribute("role", "dialog");
 		panelEl.setAttribute("aria-modal", "false");
 		panelEl.setAttribute("aria-label", "Team Chat");

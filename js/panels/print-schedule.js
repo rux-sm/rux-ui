@@ -72,7 +72,7 @@
     return node;
   }
 
-  function icon(name, className = "rux-icon rux-print-trip__icon") {
+  function icon(name, className = "rux-icon sched-print-trip__icon") {
     return el("span", className, ICON_MAP[name] || name);
   }
 
@@ -81,8 +81,8 @@
 
   function createPrintStripeLayer() {
     const svg = document.createElementNS(SVG_NS, "svg");
-    const patternId = `rux-print-stripes-${++printStripePatternId}`;
-    svg.setAttribute("class", "rux-print-trip__stripe-layer");
+    const patternId = `sched-print-stripes-${++printStripePatternId}`;
+    svg.setAttribute("class", "sched-print-trip__stripe-layer");
     svg.setAttribute("width", "100%");
     svg.setAttribute("height", "100%");
     svg.setAttribute("aria-hidden", "true");
@@ -103,7 +103,7 @@
     defs.appendChild(pattern);
 
     const base = document.createElementNS(SVG_NS, "rect");
-    base.setAttribute("class", "rux-print-trip__stripe-base");
+    base.setAttribute("class", "sched-print-trip__stripe-base");
     base.setAttribute("width", "100%");
     base.setAttribute("height", "100%");
     const stripes = document.createElementNS(SVG_NS, "rect");
@@ -199,19 +199,19 @@
   // a DOM element (icon + ref + amount per payment, "·"-separated) rather
   // than a string, same reason as trip-bar.js's buildPaymentValueEl.
   function buildPaymentValueEl(trip) {
-    const valueEl = el("span", "rux-print-trip__detail-value rux-print-trip__payment-value");
+    const valueEl = el("span", "sched-print-trip__detail-value sched-print-trip__payment-value");
     const payments = Array.isArray(trip.trip_payments) ? trip.trip_payments : [];
     const sorted = [...payments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
     sorted.forEach((p) => {
       if (!p.ref && !p.amount) return;
       if (valueEl.childElementCount) valueEl.appendChild(document.createTextNode(" · "));
-      const entry = el("span", "rux-print-trip__payment-entry");
-      entry.appendChild(icon(PAYMENT_METHOD_ICONS[p.method] || PAYMENT_METHOD_ICONS.Other, "rux-icon rux-print-trip__payment-icon"));
+      const entry = el("span", "sched-print-trip__payment-entry");
+      entry.appendChild(icon(PAYMENT_METHOD_ICONS[p.method] || PAYMENT_METHOD_ICONS.Other, "rux-icon sched-print-trip__payment-icon"));
       const text = [p.ref || "", p.amount ? `$${Number(p.amount).toLocaleString()}` : ""].filter(Boolean).join(" ");
       entry.appendChild(document.createTextNode(text));
       valueEl.appendChild(entry);
     });
-    if (!valueEl.childElementCount) valueEl.classList.add("rux-print-trip__detail-value--empty");
+    if (!valueEl.childElementCount) valueEl.classList.add("sched-print-trip__detail-value--empty");
     return valueEl;
   }
 
@@ -219,22 +219,22 @@
   // for the rare field (just payments, so far) that needs real child
   // elements — an icon per entry — which a textContent string can't hold.
   function detailField(label, value, builtValueEl) {
-    const field = el("span", "rux-print-trip__detail");
+    const field = el("span", "sched-print-trip__detail");
     const valueEl = builtValueEl || (() => {
       const normalized = detailValue(value);
-      const v = el("span", "rux-print-trip__detail-value", normalized || "");
-      if (!normalized) v.classList.add("rux-print-trip__detail-value--empty");
+      const v = el("span", "sched-print-trip__detail-value", normalized || "");
+      if (!normalized) v.classList.add("sched-print-trip__detail-value--empty");
       return v;
     })();
     field.append(
-      el("span", "rux-print-trip__detail-label", `${label}:`),
+      el("span", "sched-print-trip__detail-label", `${label}:`),
       valueEl,
     );
     return field;
   }
 
   function appendDetailRow(card, fields, className = "") {
-    const row = el("div", `rux-print-trip__row rux-print-trip__detail-row${className ? " " + className : ""}`);
+    const row = el("div", `sched-print-trip__row sched-print-trip__detail-row${className ? " " + className : ""}`);
     row.style.gridTemplateColumns = `repeat(${fields.length}, minmax(0, 1fr))`;
     fields.forEach(([label, value, builtValueEl]) => row.appendChild(detailField(label, value, builtValueEl)));
     card.appendChild(row);
@@ -269,9 +269,9 @@
     const matched = activeIds.map((id) => allReqs.find((r) => r.id === id)).filter(Boolean);
     if (!matched.length) return null;
 
-    const wrap = el("span", "rux-print-trip__reqs");
+    const wrap = el("span", "sched-print-trip__reqs");
     matched.forEach((req) => {
-      const i = icon(req.icon, "rux-icon rux-print-trip__req-icon");
+      const i = icon(req.icon, "rux-icon sched-print-trip__req-icon");
       i.title = req.label;
       wrap.appendChild(i);
     });
@@ -280,20 +280,20 @@
 
   function createPrintTripCard(entry, reportType = "report") {
     const trip = entry.trip || {};
-    const card = el("article", "rux-print-trip");
-    if (!trip.driverStatus || trip.driverStatus !== "confirmed") card.classList.add("rux-print-trip--unconfirmed");
+    const card = el("article", "sched-print-trip");
+    if (!trip.driverStatus || trip.driverStatus !== "confirmed") card.classList.add("sched-print-trip--unconfirmed");
     const tripBarColor = trip.trip_bar_color || trip.tripBarColor;
     if (["cyan", "green", "purple", "yellow", "orange", "pink"].includes(tripBarColor)) {
       card.dataset.tripBarColor = tripBarColor;
     }
     const tripTypeVal = trip.trip_type || trip.tripType;
     const isPatternedTrip = tripTypeVal === "one_way" || tripTypeVal === "dropoff_pickup";
-    if (tripTypeVal === "one_way") card.classList.add("rux-print-trip--one-way");
-    if (tripTypeVal === "dropoff_pickup" && trip.leg === "outbound") card.classList.add("rux-print-trip--dropoff-leg");
-    if (tripTypeVal === "dropoff_pickup" && trip.leg === "return") card.classList.add("rux-print-trip--pickup-leg");
-    if (entry.span > 1 || entry.fromPrev || entry.toNext) card.classList.add("rux-print-trip--multi-day");
-    if (entry.fromPrev) card.classList.add("rux-print-trip--from-prev");
-    if (entry.toNext) card.classList.add("rux-print-trip--to-next");
+    if (tripTypeVal === "one_way") card.classList.add("sched-print-trip--one-way");
+    if (tripTypeVal === "dropoff_pickup" && trip.leg === "outbound") card.classList.add("sched-print-trip--dropoff-leg");
+    if (tripTypeVal === "dropoff_pickup" && trip.leg === "return") card.classList.add("sched-print-trip--pickup-leg");
+    if (entry.span > 1 || entry.fromPrev || entry.toNext) card.classList.add("sched-print-trip--multi-day");
+    if (entry.fromPrev) card.classList.add("sched-print-trip--from-prev");
+    if (entry.toNext) card.classList.add("sched-print-trip--to-next");
     card.style.gridColumn = `${entry.start + 1} / span ${entry.span}`;
     card.style.gridRow = String((entry.printLane || 0) + 1);
     card.style.setProperty(
@@ -310,15 +310,15 @@
     // makes the printout look as though the trip starts again this week.
     if (entry.fromPrev) return card;
 
-    const content = el("div", "rux-print-trip__content");
+    const content = el("div", "sched-print-trip__content");
 
-    const destinationRow = el("div", "rux-print-trip__row rux-print-trip__destination-row");
-    destinationRow.appendChild(el("span", "rux-print-trip__destination", trip.destination || "Trip"));
+    const destinationRow = el("div", "sched-print-trip__row sched-print-trip__destination-row");
+    destinationRow.appendChild(el("span", "sched-print-trip__destination", trip.destination || "Trip"));
     if (reportType !== "overview" && ["paid_full", "overpaid"].includes(trip.paymentStatus)) {
-      const paidBadge = el("span", "rux-print-trip__paid-badge");
-      paidBadge.appendChild(el("span", "rux-print-trip__paid-label", trip.paymentStatus === "overpaid" ? "OVERPAID" : "PAID"));
+      const paidBadge = el("span", "sched-print-trip__paid-badge");
+      paidBadge.appendChild(el("span", "sched-print-trip__paid-label", trip.paymentStatus === "overpaid" ? "OVERPAID" : "PAID"));
       const datePaid = compactDate(trip.datePaid);
-      if (datePaid) paidBadge.appendChild(el("span", "rux-print-trip__paid-date", datePaid));
+      if (datePaid) paidBadge.appendChild(el("span", "sched-print-trip__paid-date", datePaid));
       destinationRow.appendChild(paidBadge);
     }
     if (tripTypeVal === "dropoff_pickup") {
@@ -328,12 +328,12 @@
       const isOutbound = trip.leg === "outbound";
       destinationRow.appendChild(icon(
         isOutbound ? "start" : "keyboard-tab",
-        "rux-icon rux-print-trip__leg-icon",
+        "rux-icon sched-print-trip__leg-icon",
       ));
     } else if (tripTypeVal === "one_way") {
-      destinationRow.appendChild(icon("arrow-right", "rux-icon rux-print-trip__leg-icon"));
+      destinationRow.appendChild(icon("arrow-right", "rux-icon sched-print-trip__leg-icon"));
     }
-    destinationRow.appendChild(el("span", "rux-print-trip__group", trip.groupLabel || "\u00a0"));
+    destinationRow.appendChild(el("span", "sched-print-trip__group", trip.groupLabel || "\u00a0"));
     const reqIcons = buildPrintReqIcons(trip);
     if (reqIcons) destinationRow.appendChild(reqIcons);
     content.appendChild(destinationRow);
@@ -342,7 +342,7 @@
     const customer = trip.is_self_organized
       ? `${passengerCount} passenger${passengerCount === 1 ? "" : "s"}`
       : trip.customer;
-    content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", customer || "\u00a0"));
+    content.appendChild(el("div", "sched-print-trip__row sched-print-trip__line", customer || "\u00a0"));
 
     // Maintenance Report drops everything below the time row: contact line,
     // drivers, driver pay, and the billing/logistics detail rows, down to
@@ -351,11 +351,11 @@
     if (reportType !== "overview") {
       const contact = trip.bookingContact || trip.tripContact || {};
       const contactText = [contact.name, contact.phone].filter(Boolean).join("  ");
-      content.appendChild(el("div", "rux-print-trip__row rux-print-trip__line", contactText || "\u00a0"));
+      content.appendChild(el("div", "sched-print-trip__row sched-print-trip__line", contactText || "\u00a0"));
     }
 
     const times = tripTimes(trip);
-    const timeRow = el("div", "rux-print-trip__row rux-print-trip__times");
+    const timeRow = el("div", "sched-print-trip__row sched-print-trip__times");
     if (reportType === "overview") {
       // Spot time is the tightest-fitting of the three on this shorter card,
       // and less essential than departure/return — drop it and go from 3
@@ -368,7 +368,7 @@
     content.appendChild(timeRow);
 
     if (reportType !== "overview") {
-      const drivers = el("div", "rux-print-trip__row rux-print-trip__drivers");
+      const drivers = el("div", "sched-print-trip__row sched-print-trip__drivers");
       const roleIcons = {
         "driver": "person",
         "co-driver": "group",
@@ -376,11 +376,11 @@
         "relief-end": "person_remove",
       };
       (trip.drivers || []).forEach((driver) => {
-        const item = el("span", "rux-print-trip__driver");
-        item.append(icon(roleIcons[driver.role] || "person", "rux-icon rux-print-trip__driver-icon"), el("span", "rux-print-trip__driver-name", driver.shortName || driver.name || ""));
+        const item = el("span", "sched-print-trip__driver");
+        item.append(icon(roleIcons[driver.role] || "person", "rux-icon sched-print-trip__driver-icon"), el("span", "sched-print-trip__driver-name", driver.shortName || driver.name || ""));
         drivers.appendChild(item);
       });
-      if (!drivers.children.length) drivers.appendChild(el("span", "rux-print-trip__driver", "\u00a0"));
+      if (!drivers.children.length) drivers.appendChild(el("span", "sched-print-trip__driver", "\u00a0"));
       content.appendChild(drivers);
 
       // First driver is always "D1"; every driver beyond that is a relief
@@ -391,11 +391,11 @@
       const driverPayFields = (trip.drivers || []).length
         ? trip.drivers.map((driver, i) => [i === 0 ? "D1" : `R${i}`, driver.pay || ""])
         : [["D1", ""]];
-      appendDetailRow(content, driverPayFields, "rux-print-trip__detail-row--after-drivers");
+      appendDetailRow(content, driverPayFields, "sched-print-trip__detail-row--after-drivers");
       appendDetailRow(content, [["Mi", formatMiles(trip.estimatedMiles ?? itineraryMiles(trip))], ["Act", trip.actualMiles ? String(trip.actualMiles) : ""]]);
       appendDetailRow(content, [["Qt", trip.quotedPrice ? `$${Number(trip.quotedPrice).toLocaleString()}` : ""], ["PO", trip.paymentRef || ""]]);
-      appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "rux-print-trip__detail-row--single");
-      appendDetailRow(content, [["Pmt", "", buildPaymentValueEl(trip)]], "rux-print-trip__detail-row--single");
+      appendDetailRow(content, [["Inv", trip.invoiceNumber || ""]], "sched-print-trip__detail-row--single");
+      appendDetailRow(content, [["Pmt", "", buildPaymentValueEl(trip)]], "sched-print-trip__detail-row--single");
     }
     card.appendChild(content);
     return card;
@@ -447,10 +447,10 @@
   }
 
   function ensurePageStyleEl() {
-    let el = document.getElementById("rux-print-page-style");
+    let el = document.getElementById("sched-print-page-style");
     if (!el) {
       el = document.createElement("style");
-      el.id = "rux-print-page-style";
+      el.id = "sched-print-page-style";
       document.head.appendChild(el);
     }
     return el;
@@ -490,7 +490,7 @@
     const dayLabels = Array.from({ length: 7 }, (_, i) => fmtDayHead(addDays(weekStart, i)));
 
     const root = document.createElement("div");
-    root.className = "rux-print-root";
+    root.className = "sched-print-root";
 
     const busChunks = [];
     for (let i = 0; i < buses.length; i += rowsPerPage) {
@@ -500,7 +500,7 @@
 
     busChunks.forEach((chunk, pageIndex) => {
       const page = document.createElement("div");
-      page.className = "rux-print-page";
+      page.className = "sched-print-page";
       page.style.width = contentWidth;
       page.style.height = contentHeight;
 
@@ -639,7 +639,7 @@
   }
 
   function printSchedule(options) {
-    const existing = document.querySelector(".rux-print-root");
+    const existing = document.querySelector(".sched-print-root");
     if (existing) existing.remove();
 
     const root = buildPrintDom(options);

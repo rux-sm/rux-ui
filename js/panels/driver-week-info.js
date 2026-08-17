@@ -779,7 +779,7 @@ import {
 		modal.className = "rux-modal-backdrop";
 		modal.hidden = true;
 		modal.innerHTML = `
-			<section class="rux-modal rux-driver-week-info" role="dialog" aria-modal="true" aria-labelledby="driver-week-info-title">
+			<section class="rux-modal sched-driver-week-info" role="dialog" aria-modal="true" aria-labelledby="driver-week-info-title">
 				<header class="rux-card__header">
 					<div class="rux-driver-week-info__heading">
 						<h2 class="rux-card__title" id="driver-week-info-title" data-driver-info-title>Driver Info</h2>

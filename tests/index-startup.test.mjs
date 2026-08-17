@@ -33,7 +33,7 @@ test("the inline application module parses before splash removal", () => {
 test("the calendar retains its workspace after the trip dialog", () => {
 	assert.match(
 		indexHtml,
-		/class="rux-floating-window rux-trip-dialog"[\s\S]*?id="trip-editor-dialog"[\s\S]*?<\/aside>[\s\S]*?class="rux-workspace"[\s\S]*?aria-label="Weekly schedule"/,
+		/class="rux-floating-window sched-trip-dialog"[\s\S]*?id="trip-editor-dialog"[\s\S]*?<\/aside>[\s\S]*?class="rux-workspace"[\s\S]*?aria-label="Weekly schedule"/,
 	);
 });
 
@@ -50,11 +50,11 @@ test("trip dialog controls no longer include a calendar-header opener", () => {
 
 test("the trip editor is a draggable and resizable nonmodal workspace window", () => {
 	const editorMarkup = indexHtml.match(
-		/<div\s+class="rux-floating-window rux-trip-dialog"[\s\S]*?<\/aside>\s*<\/div>/,
+		/<div\s+class="rux-floating-window sched-trip-dialog"[\s\S]*?<\/aside>\s*<\/div>/,
 	)?.[0] ?? "";
 	assert.match(editorMarkup, /role="dialog"/);
 	assert.doesNotMatch(editorMarkup, /aria-modal="true"|rux-modal-backdrop/);
-	assert.match(tripDialogCss, /\.rux-trip-dialog\s*\{[^}]*width:\s*min\(640px[^}]*height:\s*min\(840px[^}]*min-width:\s*480px[^}]*min-height:\s*520px/s);
+	assert.match(tripDialogCss, /\.sched-trip-dialog\s*\{[^}]*width:\s*min\(640px[^}]*height:\s*min\(840px[^}]*min-width:\s*480px[^}]*min-height:\s*520px/s);
 	assert.match(indexHtml, /tripEditorDialogEl\.hidden = false/);
 	assert.match(indexHtml, /tripEditorDialogEl\.hidden = true/);
 });

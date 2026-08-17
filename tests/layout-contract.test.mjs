@@ -156,7 +156,7 @@ test("Calendar workspace is inset while tools remain full-bleed", () => {
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] \.rux-scope-right-panel\s*\{[^}]*border-inline-start:\s*0;/s,
+		/\.scheduler-app__module\[data-module="calendar"\] \.sched-scope-right-panel\s*\{[^}]*border-inline-start:\s*0;/s,
 	);
 	assert.match(
 		schedulerLayoutCss,

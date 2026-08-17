@@ -48,7 +48,7 @@ test("standard envelope field rows share one equal-height track size", () => {
 	);
 	assert.match(
 		envelopeStyles,
-		/\.rux-trip-envelope--standard \.rux-trip-envelope__grid\s*\{[^}]*display:\s*grid;[^}]*grid-auto-rows:\s*minmax\(\s*var\(--rux-trip-envelope-field-row-min-height\),\s*1fr\s*\);[^}]*align-items:\s*stretch;/s,
+		/\.sched-trip-envelope--standard \.rux-trip-envelope__grid\s*\{[^}]*display:\s*grid;[^}]*grid-auto-rows:\s*minmax\(\s*var\(--rux-trip-envelope-field-row-min-height\),\s*1fr\s*\);[^}]*align-items:\s*stretch;/s,
 	);
 });
 

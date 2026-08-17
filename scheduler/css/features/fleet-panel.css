@@ -6,7 +6,7 @@
 
    Structure
    ---------
-   .rux-scope-fleet              Flex column; width comes from the shared
+   .sched-scope-fleet              Flex column; width comes from the shared
                                   drawer rule in scheduler-app.css.
    .rux-panel__header            Shared vehicle unit + ID + close row.
    .rux-panel__nav               Shared panel navigation slot.
@@ -25,7 +25,7 @@
 
 /* — Panel shell — */
 
-.rux-scope-fleet {
+.sched-scope-fleet {
 	height: 100%;
 	container-type: inline-size;
 }
@@ -122,7 +122,7 @@
 /* — Mobile — */
 
 @media (max-width: 480px) {
-	.scheduler-app__drawer .rux-scope-fleet {
+	.scheduler-app__drawer .sched-scope-fleet {
 		width: 100dvw;
 		max-width: 100dvw;
 	}

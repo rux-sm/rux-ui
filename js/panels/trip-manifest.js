@@ -3,7 +3,7 @@
 
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
-  const tripPanelRoot = document.querySelector(".rux-scope-trip");
+  const tripPanelRoot = document.querySelector(".sched-scope-trip");
   const manifestWindow = document.getElementById("calendar-manifest-view");
   const manifestBody = document.getElementById("tp-manifest-body");
   const passengerCard = document.getElementById("rp-passenger-card");

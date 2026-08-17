@@ -12,7 +12,7 @@
    palette instead of the dark --rux- surface tokens. This block is the
    single source of truth for every color below — rules never hold raw
    values. Grays are OKLCH like the rest of the system. */
-.rux-print-root {
+.sched-print-root {
 	--print-paper: oklch(100% 0 0);
 	--print-ink: oklch(18% 0 0);          /* headings, primary text */
 	--print-ink-muted: oklch(45% 0 0);    /* secondary text, times */
@@ -47,7 +47,7 @@
 	color: var(--print-ink);
 }
 
-.rux-print-page {
+.sched-print-page {
 	--rux-print-label-width: 32px;
 	display: flex;
 	flex-direction: column;
@@ -56,7 +56,7 @@
 	padding-block-end: 0;
 }
 
-.rux-print-page:not(:last-child) {
+.sched-print-page:not(:last-child) {
 	break-after: page;
 }
 
@@ -86,7 +86,7 @@
 
 /* Frames the header + every row as one visual table — a border around
    the title alone wouldn't read as "the schedule." flex:1 makes this fill
-   whatever vertical space is left in .rux-print-page after the title, so
+   whatever vertical space is left in .sched-print-page after the title, so
    there's no gap between the table and the page's bottom edge regardless
    of how tall the title happens to render. */
 .rux-print__table {
@@ -242,7 +242,7 @@
 	border-bottom: none;
 }
 
-.rux-print-trip {
+.sched-print-trip {
 	--_print-trip-tint: var(--_print-trip-override-tint, var(--print-accent-tint));
 	--_print-trip-line: var(--_print-trip-override-line, var(--print-accent-line));
 	box-sizing: border-box;
@@ -263,49 +263,49 @@
 	-webkit-print-color-adjust: exact;
 }
 
-.rux-print-trip[data-trip-bar-color="cyan"] {
+.sched-print-trip[data-trip-bar-color="cyan"] {
 	--_print-trip-override-line: var(--print-cyan-line);
 	--_print-trip-override-tint: var(--print-cyan-tint);
 }
-.rux-print-trip[data-trip-bar-color="green"] {
+.sched-print-trip[data-trip-bar-color="green"] {
 	--_print-trip-override-line: var(--print-green-line);
 	--_print-trip-override-tint: var(--print-green-tint);
 }
-.rux-print-trip[data-trip-bar-color="purple"] {
+.sched-print-trip[data-trip-bar-color="purple"] {
 	--_print-trip-override-line: var(--print-purple-line);
 	--_print-trip-override-tint: var(--print-purple-tint);
 }
-.rux-print-trip[data-trip-bar-color="yellow"] {
+.sched-print-trip[data-trip-bar-color="yellow"] {
 	--_print-trip-override-line: var(--print-yellow-line);
 	--_print-trip-override-tint: var(--print-yellow-tint);
 }
-.rux-print-trip[data-trip-bar-color="orange"] {
+.sched-print-trip[data-trip-bar-color="orange"] {
 	--_print-trip-override-line: var(--print-orange-line);
 	--_print-trip-override-tint: var(--print-orange-tint);
 }
-.rux-print-trip[data-trip-bar-color="pink"] {
+.sched-print-trip[data-trip-bar-color="pink"] {
 	--_print-trip-override-line: var(--print-pink-line);
 	--_print-trip-override-tint: var(--print-pink-tint);
 }
 
-.rux-print-trip--unconfirmed:not([data-trip-bar-color]) {
+.sched-print-trip--unconfirmed:not([data-trip-bar-color]) {
 	--_print-trip-tint: var(--print-danger-tint);
 	--_print-trip-line: var(--print-danger-line);
 }
 
-.rux-print-trip--one-way,
-.rux-print-trip--dropoff-leg,
-.rux-print-trip--pickup-leg,
-.rux-print-trip--one-way.rux-print-trip--multi-day .rux-print-trip__content,
-.rux-print-trip--dropoff-leg.rux-print-trip--multi-day .rux-print-trip__content,
-.rux-print-trip--pickup-leg.rux-print-trip--multi-day .rux-print-trip__content {
+.sched-print-trip--one-way,
+.sched-print-trip--dropoff-leg,
+.sched-print-trip--pickup-leg,
+.sched-print-trip--one-way.sched-print-trip--multi-day .sched-print-trip__content,
+.sched-print-trip--dropoff-leg.sched-print-trip--multi-day .sched-print-trip__content,
+.sched-print-trip--pickup-leg.sched-print-trip--multi-day .sched-print-trip__content {
 	background-color: transparent;
 }
 
 /* Print-only SVG pattern: a vector color field plus simple white 45°
    stripes. It is foreground artwork rather than a CSS background image,
    so print engines preserve it more reliably. */
-.rux-print-trip__stripe-layer {
+.sched-print-trip__stripe-layer {
 	position: absolute;
 	inset: 0;
 	z-index: 0;
@@ -315,12 +315,12 @@
 	pointer-events: none;
 }
 
-.rux-print-trip__stripe-base {
+.sched-print-trip__stripe-base {
 	fill: var(--_print-trip-line);
 	fill-opacity: 0.28;
 }
 
-.rux-print-trip__content {
+.sched-print-trip__content {
 	box-sizing: border-box;
 	position: relative;
 	z-index: 1;
@@ -335,7 +335,7 @@
 	overflow: hidden;
 }
 
-.rux-print-trip--multi-day .rux-print-trip__content {
+.sched-print-trip--multi-day .sched-print-trip__content {
 	border-right: 1px solid var(--print-rule-soft);
 	border-radius: 8px 0 0 8px;
 	background-color: var(--_print-trip-tint);
@@ -344,26 +344,26 @@
 /* A trip clipped by the printed week is open on that side: no outer inset,
    border, or radius. The flush edge communicates that the trip continues
    beyond the page rather than ending as a one-day card. */
-.rux-print-trip--from-prev {
+.sched-print-trip--from-prev {
 	margin-inline-start: 0;
 	border-inline-start: 0;
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
 }
 
-.rux-print-trip--from-prev.rux-print-trip--multi-day .rux-print-trip__content {
+.sched-print-trip--from-prev.sched-print-trip--multi-day .sched-print-trip__content {
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
 }
 
-.rux-print-trip--to-next {
+.sched-print-trip--to-next {
 	margin-inline-end: 0;
 	border-inline-end: 0;
 	border-start-end-radius: 0;
 	border-end-end-radius: 0;
 }
 
-.rux-print-trip__row {
+.sched-print-trip__row {
 	box-sizing: border-box;
 	min-width: 0;
 	min-height: 0;
@@ -379,21 +379,21 @@
    dropped by one when the icon/meta row was removed, so this now stops
    one row earlier than before (drivers is row 5 and should keep its
    visible border, separating it from the detail fields below). */
-.rux-print-trip__row:nth-child(-n+4) {
+.sched-print-trip__row:nth-child(-n+4) {
 	border-bottom-color: transparent;
 }
 
-.rux-print-trip__row:last-child {
+.sched-print-trip__row:last-child {
 	border-bottom: 0;
 }
 
-.rux-print-trip__destination-row {
+.sched-print-trip__destination-row {
 	display: flex;
 	gap: 4px;
 	align-items: center;
 }
 
-.rux-print-trip__destination {
+.sched-print-trip__destination {
 	flex: 1 1 auto;
 	min-width: 0;
 	overflow: hidden;
@@ -404,17 +404,17 @@
 	color: var(--print-ink);
 }
 
-/* Sits left of .rux-print-trip__group — the group/bus badge is a fixed
+/* Sits left of .sched-print-trip__group — the group/bus badge is a fixed
    identity marker anchored at the far right edge, so the paid status
    (a secondary indicator) reads better just inside it, not past it. */
-.rux-print-trip__paid-badge {
+.sched-print-trip__paid-badge {
 	display: inline-flex;
 	align-items: center;
 	gap: 2px;
 	white-space: nowrap;
 }
 
-.rux-print-trip__group {
+.sched-print-trip__group {
 	flex: none;
 	font-size: 10px;
 	font-weight: 700;
@@ -422,11 +422,11 @@
 	white-space: nowrap;
 }
 
-/* Drop-off/pick-up leg or one-way marker — sits just inside .rux-print-trip__group,
+/* Drop-off/pick-up leg or one-way marker — sits just inside .sched-print-trip__group,
    same placement precedent as the paid badge above. Matches
-   .rux-print-trip__driver-icon's sizing (1em square, 10px, no descender gap)
+   .sched-print-trip__driver-icon's sizing (1em square, 10px, no descender gap)
    but neutral-toned like the group label, not a status color. */
-.rux-print-trip__leg-icon {
+.sched-print-trip__leg-icon {
 	--_icon-fill: 1;
 	display: inline-flex;
 	width: 1em;
@@ -442,15 +442,15 @@
 /* Requirement icons (ADA lift, sleeper, etc.) — sits at the end of the
    destination row, same row/placement precedent as the live trip-bar's
    .rux-trip-bar__reqs (trip-bar.js/trip-bar.css), sized to match the other
-   destination-row icons (.rux-print-trip__leg-icon/.rux-print-trip__driver-icon). */
-.rux-print-trip__reqs {
+   destination-row icons (.sched-print-trip__leg-icon/.sched-print-trip__driver-icon). */
+.sched-print-trip__reqs {
 	display: inline-flex;
 	flex: none;
 	align-items: center;
 	gap: 3px;
 }
 
-.rux-print-trip__req-icon {
+.sched-print-trip__req-icon {
 	--_icon-fill: 1;
 	display: inline-flex;
 	width: 1em;
@@ -463,8 +463,8 @@
 	color: var(--print-ink-faint);
 }
 
-.rux-print-trip__line,
-.rux-print-trip__notes {
+.sched-print-trip__line,
+.sched-print-trip__notes {
 	min-width: 0;
 	min-height: 0;
 	overflow: hidden;
@@ -474,28 +474,28 @@
 	line-height: 1;
 }
 
-.rux-print-trip__notes {
+.sched-print-trip__notes {
 	color: var(--print-warning);
 	font-style: italic;
 	font-weight: 700;
 }
 
-.rux-print-trip__paid-label,
-.rux-print-trip__paid-date {
+.sched-print-trip__paid-label,
+.sched-print-trip__paid-date {
 	color: var(--print-success);
 	font-size: 10px;
 	font-weight: 700;
 }
 
-.rux-print-trip__times,
-.rux-print-trip__drivers {
+.sched-print-trip__times,
+.sched-print-trip__drivers {
 	display: grid;
 	gap: 2px;
 	min-width: 0;
 	min-height: 0;
 }
 
-.rux-print-trip__times {
+.sched-print-trip__times {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	align-items: center;
 	font-size: 10px;
@@ -503,7 +503,7 @@
 	color: var(--print-ink-muted);
 }
 
-.rux-print-trip__times > span {
+.sched-print-trip__times > span {
 	min-width: 0;
 	overflow: hidden;
 	display: flex;
@@ -517,7 +517,7 @@
 	padding: 0;
 }
 
-.rux-print-trip__drivers {
+.sched-print-trip__drivers {
 	grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 	align-items: center;
 	position: relative;
@@ -528,7 +528,7 @@
 	overflow: visible;
 }
 
-.rux-print-trip__driver {
+.sched-print-trip__driver {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -540,7 +540,7 @@
 	line-height: 1;
 }
 
-.rux-print-trip__driver-icon {
+.sched-print-trip__driver-icon {
 	--_icon-fill: 1;
 	display: inline-flex;
 	width: 1em;
@@ -554,7 +554,7 @@
 	transform: translateY(0.04em);
 }
 
-.rux-print-trip__driver-name {
+.sched-print-trip__driver-name {
 	min-width: 0;
 	overflow: visible;
 	text-overflow: clip;
@@ -562,7 +562,7 @@
 	line-height: 1;
 }
 
-.rux-print-trip__detail-row {
+.sched-print-trip__detail-row {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: center;
@@ -572,11 +572,11 @@
 	line-height: 1;
 }
 
-.rux-print-trip__detail-row--single {
+.sched-print-trip__detail-row--single {
 	grid-template-columns: minmax(0, 1fr);
 }
 
-.rux-print-trip__detail {
+.sched-print-trip__detail {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -590,14 +590,14 @@
 	line-height: 1;
 }
 
-.rux-print-trip__detail-label {
+.sched-print-trip__detail-label {
 	flex: none;
 	color: var(--print-ink-faint);
 	font-weight: 500;
 	line-height: 1;
 }
 
-.rux-print-trip__detail-value {
+.sched-print-trip__detail-value {
 	display: block;
 	flex: 1 1 auto;
 	min-width: 1.25rem;
@@ -607,16 +607,16 @@
 	line-height: 1;
 }
 
-.rux-print-trip__payment-entry {
+.sched-print-trip__payment-entry {
 	display: inline-flex;
 	align-items: center;
 	gap: 2px;
 }
 
-/* Matches .rux-print-trip__driver-icon/.rux-print-trip__leg-icon's sizing
+/* Matches .sched-print-trip__driver-icon/.sched-print-trip__leg-icon's sizing
    (1em square, 10px, no descender gap) but neutral-toned like this row's
    own ink, not a status color. */
-.rux-print-trip__payment-icon {
+.sched-print-trip__payment-icon {
 	--_icon-fill: 1;
 	display: inline-flex;
 	width: 1em;
@@ -630,16 +630,16 @@
 }
 
 @media print {
-	/* Also exempts .rux-trip-envelope-window (js/panels/trip-envelope.js) —
-	   a blanket ":not(.rux-print-root)" would hide that feature's own print
+	/* Also exempts .sched-trip-envelope-window (js/panels/trip-envelope.js) —
+	   a blanket ":not(.sched-print-root)" would hide that feature's own print
 	   root too, since both stylesheets are loaded on the page at once and
 	   this rule doesn't know which feature actually triggered window.print().
 	   Any future printable feature needs the same treatment here. */
-	body > *:not(.rux-print-root):not(.rux-trip-envelope-window) {
+	body > *:not(.sched-print-root):not(.sched-trip-envelope-window) {
 		display: none !important;
 	}
 
-	.rux-print-root {
+	.sched-print-root {
 		position: static;
 		left: auto;
 	}

@@ -14,7 +14,7 @@ let _onSelect = null;
 
 function build() {
   el = document.createElement("div");
-  el.className = "rux-bus-picker";
+  el.className = "sched-bus-picker";
   el.setAttribute("hidden", "");
   el.setAttribute("role", "dialog");
   el.setAttribute("aria-label", "Move to bus");
@@ -155,8 +155,8 @@ export function show(trip, buses, currentTrips, onSelect, anchor = null) {
   el.removeAttribute("hidden");
 
   const resolvedAnchor = anchor
-    || document.querySelector(".rux-trip-bar.is-active .rux-trip-bar__actions")
-    || document.querySelector(".rux-trip-bar.is-active")
+    || document.querySelector(".sched-trip-bar.is-active .rux-trip-bar__actions")
+    || document.querySelector(".sched-trip-bar.is-active")
     || document.body;
   position(resolvedAnchor);
 

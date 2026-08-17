@@ -1235,7 +1235,7 @@
 	--rux-trip-bar-row-font-size:   var(--rux-size-xs);
 	--rux-trip-bar-row-line-height: var(--rux-line-height-xs);
 
-	/* --rux-trip-bar-icon-size lives in trip-bar.css's .rux-trip-bar rule,
+	/* --rux-trip-bar-icon-size lives in trip-bar.css's .sched-trip-bar rule,
 	   not here — a custom property that references another one freezes at
 	   the element where it's declared, not live per-descendant, so at :root
 	   it would lock to the xs default before a size-tier override ever ran. */

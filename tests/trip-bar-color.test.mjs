@@ -26,18 +26,18 @@ const appSource = await readFile(
 test("trip bar override colors remain visible for unconfirmed trips", () => {
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--rux-danger\)/s,
+		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--rux-danger\)/s,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
-		/\.rux-trip-bar--unconfirmed\s*\{[^}]*--_tone:\s*var\(--rux-danger\)/s,
+		/\.sched-trip-bar--unconfirmed\s*\{[^}]*--_tone:\s*var\(--rux-danger\)/s,
 	);
 });
 
 test("printed trip override colors remain visible for unconfirmed trips", () => {
 	assert.match(
 		printScheduleCss,
-		/\.rux-print-trip--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_print-trip-tint:\s*var\(--print-danger-tint\)[^}]*--_print-trip-line:\s*var\(--print-danger-line\)/s,
+		/\.sched-print-trip--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_print-trip-tint:\s*var\(--print-danger-tint\)[^}]*--_print-trip-line:\s*var\(--print-danger-line\)/s,
 	);
 });
 
@@ -70,7 +70,7 @@ test("base, head, and tail outlines share a fully opaque color channel", () => {
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
+		/\.sched-trip-bar\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
 	);
 	assert.match(
 		tripBarCss,
@@ -93,15 +93,15 @@ test("multi-day details can be centered in a full-span head", () => {
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar--multi-day\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar--multi-day \.rux-trip-bar__head-content\s*\{[^}]*width:\s*min\(var\(--rux-trip-bar-day-inline-size,\s*100%\),\s*100%\)[^}]*margin-inline:\s*auto/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.rux-trip-bar__head-content\s*\{[^}]*width:\s*min\(var\(--rux-trip-bar-day-inline-size,\s*100%\),\s*100%\)[^}]*margin-inline:\s*auto/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar--multi-day \.rux-trip-bar__tail\s*\{[^}]*display:\s*none/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.rux-trip-bar__tail\s*\{[^}]*display:\s*none/s,
 	);
 });
 
@@ -110,7 +110,7 @@ test("centered multi-day details are exposed as a persistent view option", () =>
 		appSource,
 		/id="opt-centered-trip-heads"[\s\S]*?type="checkbox"[\s\S]*?role="switch"/,
 	);
-	assert.match(appSource, /rux-scheduler--centered-trip-heads/);
+	assert.match(appSource, /sched-scheduler--centered-trip-heads/);
 	assert.match(appSource, /localStorage\.getItem\("rux:centered-trip-heads"\)/);
 	assert.match(appSource, /localStorage\.setItem\("rux:centered-trip-heads", on\)/);
 });
@@ -118,19 +118,19 @@ test("centered multi-day details are exposed as a persistent view option", () =>
 test("centered identity text applies to single and multi-day bars without moving status rails", () => {
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar \.rux-trip-bar__summary\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) auto minmax\(0,\s*1fr\)/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__summary\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) auto minmax\(0,\s*1fr\)/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar \.rux-trip-bar__destination\s*\{[^}]*grid-column:\s*2[^}]*justify-content:\s*center[^}]*text-align:\s*center/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__destination\s*\{[^}]*grid-column:\s*2[^}]*justify-content:\s*center[^}]*text-align:\s*center/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar \.rux-trip-bar__paid-badge\s*\{[^}]*grid-column:\s*3[^}]*justify-self:\s*end/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__paid-badge\s*\{[^}]*grid-column:\s*3[^}]*justify-self:\s*end/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar \.rux-trip-bar__reqs \.rux-trip-bar__pending\s*\{[^}]*margin-inline-start:\s*auto/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__reqs \.rux-trip-bar__pending\s*\{[^}]*margin-inline-start:\s*auto/s,
 	);
 	assert.match(appSource, />Center trip details<\/span/);
 });
@@ -164,7 +164,7 @@ test("trip tails use direct state surfaces instead of compounding transparency",
 	assert.match(tripBarCss, /--_tail-surface-active:\s*oklch\([^;]*var\(--rux-trip-bar-tail-selected-opacity\)\)/);
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar--multi-day\.is-active \.rux-trip-bar__tail\s*\{[^}]*background-color:\s*var\(--_tail-surface-active\)/s,
+		/\.sched-trip-bar--multi-day\.is-active \.rux-trip-bar__tail\s*\{[^}]*background-color:\s*var\(--_tail-surface-active\)/s,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
@@ -179,7 +179,7 @@ test("connected trip surfaces share one backdrop blur", () => {
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar:not\(\.rux-trip-bar--multi-day\),\s*\.rux-trip-bar__head,\s*\.rux-trip-bar__tail\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)[^}]*backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)/s,
+		/\.sched-trip-bar:not\(\.sched-trip-bar--multi-day\),\s*\.rux-trip-bar__head,\s*\.rux-trip-bar__tail\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)[^}]*backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)/s,
 	);
 });
 
@@ -194,7 +194,7 @@ test("default multi-day heads and tails meet at one shared edge", () => {
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-scheduler--centered-trip-heads \.rux-trip-bar--multi-day \.rux-trip-bar__head\s*\{[^}]*border-inline-end:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)[^}]*border-radius:\s*var\(--rux-trip-bar-radius\)/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.rux-trip-bar__head\s*\{[^}]*border-inline-end:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)[^}]*border-radius:\s*var\(--rux-trip-bar-radius\)/s,
 	);
 });
 

@@ -4,7 +4,7 @@
    Buttons match .rux-button sizing and shape exactly.
    ========================================================================== */
 
-.rux-bus-picker {
+.sched-bus-picker {
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
 	min-width: 12rem;
@@ -14,7 +14,7 @@
 	border-radius: var(--rux-radius-sm);
 }
 
-.rux-bus-picker[hidden] {
+.sched-bus-picker[hidden] {
 	display: none;
 }
 
@@ -73,7 +73,7 @@
    COLUMN PICKER — shared by Fleet and Driver table toolbars
    ========================================================================== */
 
-.rux-col-picker {
+.sched-col-picker {
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
 	min-width: 10rem;
@@ -83,7 +83,7 @@
 	padding: var(--rux-space-1);
 }
 
-.rux-col-picker[hidden] { display: none; }
+.sched-col-picker[hidden] { display: none; }
 
 /* Typography shared with every other eyebrow/section-label — see
    rux-ui/css/base/utils.css. */

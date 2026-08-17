@@ -4,9 +4,9 @@
    Form editor for a trip's Details, Billing, Itinerary, and Fleet — the
    trip editor dialog's own tabbed content. Lives directly on
    .rux-panel--floating now (index.html's #trip-editor-dialog carries
-   both .rux-trip-dialog and .rux-scope-trip) — no separate nested panel
+   both .sched-trip-dialog and .sched-scope-trip) — no separate nested panel
    wrapper; .rux-panel__nav/__body/__footer are the real anatomy, with
-   .rux-scope-trip supplying the container-query root plus its own
+   .sched-scope-trip supplying the container-query root plus its own
    feature-specific classes on top of the shared Panel slots. Tab
    switching is handled generically in rux-ui/js/controls.js
    ([data-rux-tabs]), with additional trip-editor-specific behavior
@@ -15,8 +15,8 @@
 
    Structure
    ---------
-   .rux-scope-trip              Container-query root; same element as
-                            .rux-panel--floating.rux-trip-dialog.
+   .sched-scope-trip              Container-query root; same element as
+                            .rux-panel--floating.sched-trip-dialog.
    .rux-panel__header           Shared title + close row.
    .rux-panel__nav--attached    Tabs slot (Details/Billing/Itinerary/Fleet).
    .rux-scope-trip__body        .rux-panel__body plus its own loading-state
@@ -47,12 +47,12 @@
 	display: none;
 }
 
-/* Just the container-query root now — .rux-scope-trip lives on the same
-   element as .rux-trip-dialog (index.html), which already supplies
+/* Just the container-query root now — .sched-scope-trip lives on the same
+   element as .sched-trip-dialog (index.html), which already supplies
    position: fixed (.rux-panel--floating) and its own min-width (480px,
    trip-dialog.css), both stronger than what this class used to declare on
    its own separate <aside> wrapper. */
-.rux-scope-trip {
+.sched-scope-trip {
 	container-type: inline-size;
 }
 
@@ -116,7 +116,7 @@
 	transition: opacity 0.2s ease-in;
 }
 
-.rux-scope-trip--loading .rux-scope-trip__body {
+.sched-scope-trip--loading .rux-scope-trip__body {
 	opacity: 0;
 	transition: none;
 }
@@ -336,19 +336,19 @@
    (yellow — still owed, but not the whole thing), paid off exactly (green),
    overpaid (blue). */
 
-.rux-scope-trip .rux-output.is-balance-full {
+.sched-scope-trip .rux-output.is-balance-full {
 	color: var(--rux-danger);
 }
 
-.rux-scope-trip .rux-output.is-balance-partial {
+.sched-scope-trip .rux-output.is-balance-partial {
 	color: var(--rux-warning);
 }
 
-.rux-scope-trip .rux-output.is-balance-paid {
+.sched-scope-trip .rux-output.is-balance-paid {
 	color: var(--rux-success);
 }
 
-.rux-scope-trip .rux-output.is-balance-overpaid {
+.sched-scope-trip .rux-output.is-balance-overpaid {
 	color: var(--rux-info);
 }
 
@@ -851,7 +851,7 @@
 /* ==========================================================================
    Trip Editor Responsive Tuning
    --------------------------------------------------------------------------
-   Container queries read the .rux-scope-trip inline size, not viewport width.
+   Container queries read the .sched-scope-trip inline size, not viewport width.
    Native CSS custom properties are not reliable in query conditions, so keep
    these literal values grouped here as the local tuning map.
 
@@ -961,7 +961,7 @@
 
 /* — Scoped type overrides ————————————————————————————————————————————————— */
 
-.rux-scope-trip .rux-field__label {
+.sched-scope-trip .rux-field__label {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);

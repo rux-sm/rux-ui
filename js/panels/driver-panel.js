@@ -4,7 +4,7 @@
 	// ── DOM refs ──────────────────────────────────────────────────────────────
 
 	const drawer = document.getElementById("driver-panel-drawer");
-	const panelEl = drawer.querySelector(".rux-scope-driver");
+	const panelEl = drawer.querySelector(".sched-scope-driver");
 	const tbody = document.getElementById("driver-roster-body");
 	const tabBtns = document.querySelectorAll('[data-rux-tabs][data-scope="driver"] .rux-tab');
 	const panes = document.querySelectorAll(".rux-scope-driver__pane");
@@ -96,7 +96,7 @@
 	// Right-side "Table Options" drawer (View Options + Filters) — same
 	// RuxDrawer machinery as above, no resize handle (fixed width).
 	const toolsDrawer = document.getElementById("driver-tools-drawer");
-	const toolsPanelEl = toolsDrawer.querySelector(".rux-scope-right-panel");
+	const toolsPanelEl = toolsDrawer.querySelector(".sched-scope-right-panel");
 
 	const toolsDrawerHandle = RuxDrawer.create({
 		drawer: toolsDrawer,

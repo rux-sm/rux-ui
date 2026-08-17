@@ -3,7 +3,7 @@
    Global newest-first audit feed in the scheduler's right panel.
    ========================================================================== */
 
-.rux-trip-history {
+.sched-trip-history {
 	--rux-trip-history-change-grid: minmax(6.5rem, 0.42fr) minmax(0, 1fr);
 
 	display: flex;

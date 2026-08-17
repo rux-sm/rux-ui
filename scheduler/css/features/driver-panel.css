@@ -6,7 +6,7 @@
 
    Structure
    ---------
-   .rux-scope-driver              Flex column; width comes from the shared
+   .sched-scope-driver              Flex column; width comes from the shared
                                    drawer rule in scheduler-app.css.
    .rux-scope-driver__header      Mobile-only show/hide (scheduler-app.css)
                                    layered on top of the shared .rux-panel__
@@ -28,7 +28,7 @@
 	display: none;
 }
 
-.rux-scope-driver {
+.sched-scope-driver {
 	height: 100%;
 	container-type: inline-size;
 }
@@ -269,7 +269,7 @@
 /* — Mobile — */
 
 @media (max-width: 480px) {
-	.scheduler-app__drawer .rux-scope-driver {
+	.scheduler-app__drawer .sched-scope-driver {
 		width: 100dvw;
 		max-width: 100dvw;
 	}

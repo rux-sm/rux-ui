@@ -24,10 +24,10 @@
 
    Modules (in load order)
    -----------------------
-   trip-bar.css     .rux-trip-bar — Gantt bar for trip display
-   trip-panel.css   .rux-scope-trip — side-panel form editor for trip details
-   itinerary.css    .rux-trip-itinerary — timeline stop editor for the Itinerary tab
-   scheduler.css    .rux-scheduler — week-grid component
+   trip-bar.css     .sched-trip-bar — Gantt bar for trip display
+   trip-panel.css   .sched-scope-trip — side-panel form editor for trip details
+   itinerary.css    .sched-trip-itinerary — timeline stop editor for the Itinerary tab
+   scheduler.css    .sched-scheduler — week-grid component
    scheduler-app.css  .scheduler-app shell and app-header coordination
    ========================================================================== */
 

@@ -10,7 +10,7 @@
 
    Structure
    ---------
-   .rux-scope-customer           Flex column; width from the shared drawer
+   .sched-scope-customer           Flex column; width from the shared drawer
                                   rule in scheduler-app.css.
    .rux-panel__body              Scrollable body — plain .rux-panel__body
                                   now, no unique styling of its own.
@@ -23,7 +23,7 @@
 
 /* — Panel shell — */
 
-.rux-scope-customer {
+.sched-scope-customer {
 	height: 100%;
 }
 

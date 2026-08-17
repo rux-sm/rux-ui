@@ -9,7 +9,7 @@
    See js/panels/trip-manifest.js for open/close/refresh wiring.
    ========================================================================== */
 
-.rux-scope-manifest {
+.sched-scope-manifest {
 	top: 10%;
 	left: 50%;
 	transform: translateX(-50%);

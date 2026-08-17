@@ -36,7 +36,7 @@
    row-head and track stay in sync with the tallest visible lane stack.
    ========================================================================== */
 
-.rux-scheduler {
+.sched-scheduler {
 	--rux-scheduler-col-head-width: var(--rux-calendar-header-row-width);
 	--rux-scheduler-head-height: var(--rux-calendar-header-height);
 	--rux-scheduler-days: 7;
@@ -52,10 +52,10 @@
 	   with one collapsed trip bar would lay out to. Mirrors
 	   --rux-trip-bar-collapsed-height's own formula (trip-bar.css) rather
 	   than a hand-synced pixel literal: that token itself is scoped to
-	   .rux-trip-bar (a descendant) and can't cascade upward, but the two
+	   .sched-trip-bar (a descendant) and can't cascade upward, but the two
 	   pieces it's built from — --rux-trip-bar-row-line-height (tokens.css,
 	   truly global) and --rux-trip-bar-visible-row-count (set by
-	   recomputeTripBarRowCount() in index.html on this same .rux-scheduler
+	   recomputeTripBarRowCount() in index.html on this same .sched-scheduler
 	   element) — both are available here directly, so this stays correct
 	   automatically instead of drifting stale (it already had, twice,
 	   before this rewrite). --rux-space-2 mirrors
@@ -98,7 +98,7 @@
 	clip-path: inset(0 round var(--rux-calendar-header-radius));
 }
 
-.rux-scheduler::-webkit-scrollbar {
+.sched-scheduler::-webkit-scrollbar {
 	display: none;
 }
 
@@ -111,14 +111,14 @@
    from right. Today and mini-cal jumps skip this entirely (renderScheduler()
    directly) since an arbitrary jump has no meaningful direction to slide. */
 
-@keyframes rux-scheduler-slide-out {
+@keyframes sched-scheduler-slide-out {
 	to {
 		transform: translateX(var(--_slide-offset, -24px));
 		opacity: 0;
 	}
 }
 
-@keyframes rux-scheduler-slide-in {
+@keyframes sched-scheduler-slide-in {
 	from {
 		transform: translateX(var(--_slide-offset, 24px));
 		opacity: 0;
@@ -129,17 +129,17 @@
 	}
 }
 
-.rux-scheduler--slide-out {
-	animation: rux-scheduler-slide-out var(--rux-duration-fast) var(--rux-ease-out) forwards;
+.sched-scheduler--slide-out {
+	animation: sched-scheduler-slide-out var(--rux-duration-fast) var(--rux-ease-out) forwards;
 }
 
-.rux-scheduler--slide-in {
-	animation: rux-scheduler-slide-in var(--rux-duration-base) var(--rux-ease-out) forwards;
+.sched-scheduler--slide-in {
+	animation: sched-scheduler-slide-in var(--rux-duration-base) var(--rux-ease-out) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.rux-scheduler--slide-out,
-	.rux-scheduler--slide-in {
+	.sched-scheduler--slide-out,
+	.sched-scheduler--slide-in {
 		animation: none;
 	}
 }
@@ -261,7 +261,7 @@
 	display: none;
 }
 
-.rux-scheduler--time-aligned .rux-scheduler__time-ticks {
+.sched-scheduler--time-aligned .rux-scheduler__time-ticks {
 	display: none;
 }
 
@@ -271,7 +271,7 @@
    set here cascade independently to each row's row-head and track. */
 .rux-scheduler__row {
 	display: contents;
-	/* Same formula as the base .rux-scheduler rule above (both inherit
+	/* Same formula as the base .sched-scheduler rule above (both inherit
 	   --rux-trip-bar-visible-row-count from that same ancestor either way);
 	   restated here only because a descendant's own --_row-height always
 	   wins over one merely inherited from further up, and other rules key
@@ -305,7 +305,7 @@
 	justify-content: center;
 	z-index: calc(var(--rux-z-sticky) + 1);
 	/* Sticky cells paint on a composited layer that escapes the scroller's
-	   rounded clip (see the .rux-scheduler border-radius note above), so the
+	   rounded clip (see the .sched-scheduler border-radius note above), so the
 	   corner cell carries its own top-left radius to match the viewport. */
 	border-start-start-radius: var(--rux-calendar-header-radius);
 }
@@ -432,7 +432,7 @@
 	pointer-events: none;
 }
 
-.rux-scheduler__track > .rux-trip-bar {
+.rux-scheduler__track > .sched-trip-bar {
 	z-index: var(--rux-scheduler-trip-bar-z-index);
 }
 
@@ -489,7 +489,7 @@
 }
 
 
-.rux-scheduler--time-aligned .rux-scheduler__track-day {
+.sched-scheduler--time-aligned .rux-scheduler__track-day {
 	/* quarter-hour tick hairlines — deliberately below the 4% border tier so
 	   they read as texture, not structure */
 	background-image: linear-gradient(

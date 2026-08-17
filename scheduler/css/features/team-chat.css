@@ -5,7 +5,7 @@
    chat-specific size, message list, rows, and composer.
    ========================================================================== */
 
-.rux-team-chat-popover {
+.sched-team-chat-popover {
 	--rux-team-chat-message-max-width: 70%;
 	--rux-team-chat-message-bg: var(--rux-surface-1);
 	--rux-team-chat-own-message-bg: oklch(from var(--rux-surface-1) calc(l + 6%) c h);
@@ -22,7 +22,7 @@
 	max-height: calc(100dvh - var(--rux-ui-header-height) - var(--rux-popover-viewport-padding));
 }
 
-.rux-team-chat-popover[hidden] {
+.sched-team-chat-popover[hidden] {
 	display: none;
 }
 
@@ -351,7 +351,7 @@
 }
 
 @media (max-width: 480px) {
-	.rux-team-chat-popover {
+	.sched-team-chat-popover {
 		--rux-team-chat-message-max-width: 82%;
 
 		width: calc(100vw - (var(--rux-popover-viewport-padding) * 2));

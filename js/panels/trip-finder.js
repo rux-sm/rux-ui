@@ -4,7 +4,7 @@
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
   const windowEl      = document.getElementById("trip-finder-window");
-  const headerEl       = windowEl?.querySelector(".rux-scope-trip-finder__header");
+  const headerEl       = windowEl?.querySelector(".sched-scope-trip-finder__header");
   const closeBtn       = document.getElementById("trip-finder-close-btn");
   const tbody          = document.getElementById("trip-finder-body");
   const searchInput    = document.getElementById("trip-finder-search");

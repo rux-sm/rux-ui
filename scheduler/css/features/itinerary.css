@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ITINERARY  ·  .rux-trip-itinerary
+   ITINERARY  ·  .sched-trip-itinerary
    --------------------------------------------------------------------------
    Timeline stop editor for the Itinerary tab. Each card represents a leg
    arriving at that location — travel info (miles, drive time) always answers
@@ -18,7 +18,7 @@
 
    Structure
    ---------
-   .rux-trip-itinerary                   Itinerary feature container
+   .sched-trip-itinerary                   Itinerary feature container
 	.rux-trip-itinerary__summary          3-stat strip at top
 	.rux-trip-itinerary__day-group        The one real box for a complete day
 	                            (.rux-card with header and body)
@@ -51,7 +51,7 @@
    cards. .rux-trip-itinerary__stops below restores its own margin-top —
    the dynamic day-group list is a different kind of region and still wants
    normal breathing room before it starts. */
-.rux-trip-itinerary {
+.sched-trip-itinerary {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
@@ -59,14 +59,14 @@
 
 /* Fixed and calculated itinerary values remain selectable/readable, but use
    the same visual tokens as disabled fields so editable inputs are obvious. */
-.rux-trip-itinerary .rux-input[readonly] {
+.sched-trip-itinerary .rux-input[readonly] {
 	background-color: var(--rux-input-disabled-bg);
 	border: var(--rux-input-disabled-border);
 	color: var(--rux-input-disabled-fg);
 	cursor: not-allowed;
 }
 
-.rux-trip-itinerary .rux-input[readonly]::placeholder {
+.sched-trip-itinerary .rux-input[readonly]::placeholder {
 	color: var(--rux-input-disabled-fg);
 }
 

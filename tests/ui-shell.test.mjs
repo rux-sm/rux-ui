@@ -144,7 +144,7 @@ test("header tab-tip popovers preserve the correct disclosure semantics", () => 
 	assert.match(headerStyles, /\.rux-ui-header__profile-identity\s*\{[^}]*width:\s*100%;[^}]*height:\s*100%;/s);
 	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip"\s+id="profile-menu"/);
 	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-notifications-menu"/);
-	assert.match(chatController, /rux-popover rux-popover--surface rux-popover--tab-tip rux-team-chat-popover/);
+	assert.match(chatController, /rux-popover rux-popover--surface rux-popover--tab-tip sched-team-chat-popover/);
 	assert.match(popoverStyles, /\.rux-popover\.rux-popover--surface\s*\{[^}]*background:\s*var\(--rux-popover-surface-bg\);[^}]*border:\s*var\(--rux-popover-surface-border\);[^}]*border-radius:\s*var\(--rux-popover-surface-radius\);[^}]*box-shadow:\s*var\(--rux-popover-surface-shadow\);/s);
 	assert.match(tokens, /--rux-popover-surface-bg:\s+var\(--rux-surface-\d+\);/);
 	assert.match(popoverStyles, /\.rux-popover--tab-tip\s*\{[^}]*--rux-popover-offset:\s*var\(--rux-popover-tab-tip-offset\)/s);
@@ -345,7 +345,7 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	assert.match(page, /aria-expanded="true"[\s\S]*?aria-controls="right-panel-drawer"/);
 	assert.match(drawerMarkup, /class="scheduler-app__drawer scheduler-app__drawer--right"/);
 	assert.doesNotMatch(drawerMarkup, /scheduler-app__drawer--railable/);
-	assert.match(page, /<aside[\s\S]*?class="rux-panel rux-panel--attached rux-scope-right-panel"[\s\S]*?aria-label="Calendar Tools"/);
+	assert.match(page, /<aside[\s\S]*?class="rux-panel rux-panel--attached sched-scope-right-panel"[\s\S]*?aria-label="Calendar Tools"/);
 	assert.doesNotMatch(page, /id="opt-hide-nav"/);
 });
 
@@ -408,7 +408,7 @@ test("mini calendar navigation uses shared 44px header icon buttons", () => {
 
 test("the mini calendar uses the card shell, header, and body", () => {
 	const calendar = page.match(
-		/<section\s+class="rux-card rux-mini-cal"[\s\S]*?<\/section>/,
+		/<section\s+class="rux-card sched-mini-cal"[\s\S]*?<\/section>/,
 	)?.[0];
 	assert.ok(calendar);
 	assert.doesNotMatch(calendar, /rux-card__sentinel/);

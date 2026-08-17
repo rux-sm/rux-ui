@@ -6,37 +6,37 @@
 
    Base
    ----
-   .rux-trip-bar   Single-day trip (most common shape). Fixed collapsed height,
+   .sched-trip-bar   Single-day trip (most common shape). Fixed collapsed height,
                    grows when selected to reveal action toolbar.
 
    Modifiers (additive — no modifier fights another)
    --------------------------------------------------
-   .rux-trip-bar--multi-day     Spans several scheduler columns; adjusts height
+   .sched-trip-bar--multi-day     Spans several scheduler columns; adjusts height
                                 when a conflict row is present.
-   .rux-trip-bar--unconfirmed   Danger-toned variant (red accent) for trips not
+   .sched-trip-bar--unconfirmed   Danger-toned variant (red accent) for trips not
                                 yet confirmed by dispatch.
-   .rux-trip-bar--has-conflict  Adds a conflict banner row. Height effect applies
+   .sched-trip-bar--has-conflict  Adds a conflict banner row. Height effect applies
                                 only on multi-day bars (single-day absorbs it).
-   .rux-trip-bar--from-prev     Trip started before the current week window; removes
+   .sched-trip-bar--from-prev     Trip started before the current week window; removes
                                 the thick left accent stripe and left border radius.
-   .rux-trip-bar--to-next       Trip ends after the current week window; removes
+   .sched-trip-bar--to-next       Trip ends after the current week window; removes
                                 the right border radius.
 
    Scheduler view modifiers
    ------------------------
-   .rux-scheduler--centered-trip-heads
+   .sched-scheduler--centered-trip-heads
                                 Makes the full multi-day span the primary head
                                 surface and centers a one-day-width content column.
-   .rux-scheduler--hide-client
-   .rux-scheduler--hide-contact
-   .rux-scheduler--hide-notes
-   .rux-scheduler--hide-reqs
-   .rux-scheduler--hide-drivers Per-row user preferences (index.html's View
+   .sched-scheduler--hide-client
+   .sched-scheduler--hide-contact
+   .sched-scheduler--hide-notes
+   .sched-scheduler--hide-reqs
+   .sched-scheduler--hide-drivers Per-row user preferences (index.html's View
                                 Options, five independent switches). Hides
                                 that row while a bar is collapsed — selecting
                                 the bar always shows every row regardless.
-   .rux-scheduler--trip-bar-size-xxs
-   .rux-scheduler--trip-bar-size-sm
+   .sched-scheduler--trip-bar-size-xxs
+   .sched-scheduler--trip-bar-size-sm
                                 Swaps --rux-trip-bar-row-font-size/-line-height
                                 (tokens.css, COMPONENT · trip bar) from their
                                 xs default to xxs/sm — every row's text and the
@@ -86,7 +86,7 @@
    Drivers      __driver           xs
    ========================================================================== */
 
-.rux-trip-bar {
+.sched-trip-bar {
 	/* Every scan row is locked directly to --rux-trip-bar-row-line-height
 	   (tokens.css) — a real length, not a ratio, so the row height doesn't
 	   need to multiply it by font-size, just read it. Row COUNT isn't a
@@ -117,7 +117,7 @@
 
 	/* Declared here, not in tokens.css — see the comment there. Chains
 	   through --rux-trip-bar-row-line-height, so it has to be declared at
-	   or below .rux-scheduler--trip-bar-size-xxs/-sm to actually see their
+	   or below .sched-scheduler--trip-bar-size-xxs/-sm to actually see their
 	   override; :root sits above that and would freeze on the xs default. */
 	--rux-trip-bar-icon-size: var(--rux-trip-bar-row-line-height);
 
@@ -190,8 +190,8 @@
    both the text and the whole height budget follow with no other CSS
    touched. scheduler.css's empty-row fallback reads the same token too.
 
-   Icons (.rux-trip-bar .rux-icon, just below) are the same story for size
-   — --rux-trip-bar-icon-size (declared on .rux-trip-bar above) already
+   Icons (.sched-trip-bar .rux-icon, just below) are the same story for size
+   — --rux-trip-bar-icon-size (declared on .sched-trip-bar above) already
    scales with these two. Icons also expose their other three Material
    Symbols axes per tier if it turns out XXS/SM need their own tuning
    beyond just shrinking/growing: --rux-trip-bar-icon-fill,
@@ -201,15 +201,15 @@
    once XXS/XS/SM are visible side by side and it's clear which need it. */
 
 /* Trip bar icons are tuned independently of every other .rux-icon in the app.
-   This rule lives here, not in rux-ui/css/base/icons.css, because .rux-trip-bar
+   This rule lives here, not in rux-ui/css/base/icons.css, because .sched-trip-bar
    is an application block and the portable layer must not name it (see
    docs/portability-audit.md §4.4). It sets icons.css's --_icon-* contract on a
    compound selector, so it outranks the base .rux-icon rule regardless of load
    order, and still loses to any :is(.is-active, [aria-pressed="true"])
    selected-state override, which is more specific still.
-   --rux-trip-bar-icon-size is declared on .rux-trip-bar above; the other four
+   --rux-trip-bar-icon-size is declared on .sched-trip-bar above; the other four
    axes come from tokens.css. */
-.rux-trip-bar .rux-icon {
+.sched-trip-bar .rux-icon {
 	--_icon-size: var(--rux-trip-bar-icon-size);
 	--_icon-fill: var(--rux-trip-bar-icon-fill);
 	--_icon-weight: var(--rux-trip-bar-icon-weight);
@@ -217,19 +217,19 @@
 	--_icon-optical-size: var(--rux-trip-bar-icon-optical-size);
 }
 
-.rux-scheduler--trip-bar-size-xxs {
+.sched-scheduler--trip-bar-size-xxs {
 	--rux-trip-bar-row-font-size:   var(--rux-size-xxs);
 	--rux-trip-bar-row-line-height: var(--rux-line-height-xxs);
 }
 
-.rux-scheduler--trip-bar-size-sm {
+.sched-scheduler--trip-bar-size-sm {
 	--rux-trip-bar-row-font-size:   var(--rux-size-sm);
 	--rux-trip-bar-row-line-height: var(--rux-line-height-sm);
 }
 
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */
-.rux-trip-bar--partial-po {
+.sched-trip-bar--partial-po {
 	--_outline: var(--rux-trip-bar-warning-border);
 	--rux-trip-bar-border-width: 1px;
 }
@@ -237,7 +237,7 @@
 /* Contract's signed but no PO has been requested/received yet — a step
    further along than "pending contract," so it gets the stronger (danger)
    outline instead of partial-po's warning one. */
-.rux-trip-bar--pending-po {
+.sched-trip-bar--pending-po {
 	--_outline: var(--rux-trip-bar-danger-border);
 	--rux-trip-bar-border-width: 1px;
 }
@@ -247,7 +247,7 @@
    is what actually follows the cursor. Keeps the real bar's slot visible
    ("this is what's moving and where it currently is") without two
    full-strength copies competing for attention. */
-.rux-trip-bar--drag-source {
+.sched-trip-bar--drag-source {
 	opacity: 0.3;
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
@@ -262,7 +262,7 @@
    getBoundingClientRect() at drag-start) so translateY-per-frame is the only
    thing moving it — transition is off so the per-frame transform doesn't lag
    behind the cursor. --_ghost-tone is set inline from the source bar's --_tone. */
-.rux-trip-bar-ghost {
+.sched-trip-bar-ghost {
 	position: fixed;
 	box-sizing: border-box;
 	margin: 0;
@@ -281,18 +281,18 @@
 
 /* ---------- Height contract ---------- */
 
-.rux-trip-bar {
+.sched-trip-bar {
 	height: calc(var(--rux-trip-bar-collapsed-height) + var(--_conflict-height));
 }
 
-.rux-trip-bar:not(.rux-trip-bar--multi-day),
+.sched-trip-bar:not(.sched-trip-bar--multi-day),
 .rux-trip-bar__head,
 .rux-trip-bar__tail {
 	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
 }
 
-.rux-trip-bar.is-active {
+.sched-trip-bar.is-active {
 	/* Selecting a bar always shows every row, full stop — every row-
 	   visibility preference is collapsed-only declutter; .is-active means
 	   all 7. --rux-trip-bar-active-row-count is never
@@ -310,52 +310,52 @@
 	min-width: var(--rux-trip-bar-day-inline-size, 100%);
 }
 
-.rux-trip-bar.is-expanded {
+.sched-trip-bar.is-expanded {
 	height: calc(var(--rux-trip-bar-active-height) + var(--_details-height) + var(--_conflict-height));
 }
 
 /* ---------- Interaction states ---------- */
 
-.rux-trip-bar:hover {
+.sched-trip-bar:hover {
 	background-color: var(--_surface-hover);
 }
 
-.rux-trip-bar:active:not(.is-active) {
+.sched-trip-bar:active:not(.is-active) {
 	background-color: var(--_surface-pressed);
 }
 
-.rux-trip-bar[aria-disabled="true"] {
+.sched-trip-bar[aria-disabled="true"] {
 	opacity: var(--rux-trip-bar-disabled-opacity);
 	cursor: not-allowed;
 	pointer-events: none;
 }
 
-.rux-trip-bar.is-active {
+.sched-trip-bar.is-active {
 	background-color: var(--_surface-active);
 	z-index: var(--rux-trip-bar-active-z-index);
 }
 
-.rux-trip-bar--multi-day:hover,
-.rux-trip-bar--multi-day.is-active {
+.sched-trip-bar--multi-day:hover,
+.sched-trip-bar--multi-day.is-active {
 	background-color: transparent;
 }
 
-.rux-trip-bar--multi-day.is-active {
+.sched-trip-bar--multi-day.is-active {
 	z-index: var(--rux-trip-bar-active-z-index);
 }
 
 /* Keep bar sections, actions, text, and conflict content in one predictable
    stacking layer across single- and multi-day layouts. */
-.rux-trip-bar > * {
+.sched-trip-bar > * {
 	position: relative;
 	z-index: 1;
 }
 
 /* ---------- Modifier: unconfirmed ---------- */
 
-.rux-trip-bar[data-trip-bar-color="cyan"] { --_trip-bar-color: var(--rux-trip-color-cyan); }
-.rux-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--rux-trip-color-green); }
-.rux-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--rux-trip-color-purple); }
+.sched-trip-bar[data-trip-bar-color="cyan"] { --_trip-bar-color: var(--rux-trip-color-cyan); }
+.sched-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--rux-trip-color-green); }
+.sched-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--rux-trip-color-purple); }
 /* Yellow and orange alone read muddy at the shared --rux-trip-bar-bg-
    lightness (70%) — noticeably darker than their own native 80% lightness
    (--rux-yellow/--rux-orange), unlike the other trip colors which sit
@@ -364,17 +364,17 @@
    (accent/danger button glass, see tokens.css) are untouched;
    --hover/--pressed/--selected are calc()'d off this token at :root, so
    they pick up the lighter base automatically. */
-.rux-trip-bar[data-trip-bar-color="yellow"] {
+.sched-trip-bar[data-trip-bar-color="yellow"] {
 	--_trip-bar-color: var(--rux-trip-color-yellow);
 	--rux-trip-bar-bg-lightness: 80%;
 }
-.rux-trip-bar[data-trip-bar-color="orange"] {
+.sched-trip-bar[data-trip-bar-color="orange"] {
 	--_trip-bar-color: var(--rux-trip-color-orange);
 	--rux-trip-bar-bg-lightness: 80%;
 }
-.rux-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
+.sched-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
 
-.rux-trip-bar--unconfirmed:not([data-trip-bar-color]) {
+.sched-trip-bar--unconfirmed:not([data-trip-bar-color]) {
 	--_tone: var(--rux-trip-bar-danger-border);
 }
 
@@ -393,7 +393,7 @@
 	pointer-events: none;
 }
 
-.rux-trip-bar > .rux-trip-bar__stripe-layer {
+.sched-trip-bar > .rux-trip-bar__stripe-layer {
 	position: absolute;
 	z-index: 0;
 }
@@ -410,15 +410,15 @@
 
 /* ---------- Modifier: from-prev ---------- */
 
-.rux-trip-bar--from-prev {
+.sched-trip-bar--from-prev {
 	grid-template-columns: 1fr;
 }
 
-.rux-trip-bar--from-prev .rux-trip-bar__head {
+.sched-trip-bar--from-prev .rux-trip-bar__head {
 	display: none;
 }
 
-.rux-trip-bar--from-prev .rux-trip-bar__tail {
+.sched-trip-bar--from-prev .rux-trip-bar__tail {
 	grid-column: 1 / -1;
 	margin-left: 0;
 	border-inline-start: 0;
@@ -426,19 +426,19 @@
 }
 
 
-.rux-trip-bar--from-prev.is-active {
+.sched-trip-bar--from-prev.is-active {
 	height: calc(var(--rux-trip-bar-active-height) + var(--_conflict-height));
 	grid-template-columns: var(--rux-trip-bar-day-inline-size, 50%) 1fr;
 }
 
-.rux-trip-bar--from-prev.is-active .rux-trip-bar__head {
+.sched-trip-bar--from-prev.is-active .rux-trip-bar__head {
 	display: flex;
 	border-inline-start: 0;
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
 }
 
-.rux-trip-bar--from-prev.is-active .rux-trip-bar__tail {
+.sched-trip-bar--from-prev.is-active .rux-trip-bar__tail {
 	grid-column: 2 / -1;
 	margin-left: 0;
 	border-inline-start: 0;
@@ -448,13 +448,13 @@
 
 /* ---------- Modifier: to-next ---------- */
 
-.rux-trip-bar--to-next .rux-trip-bar__tail {
+.sched-trip-bar--to-next .rux-trip-bar__tail {
 	border-inline-end: 0;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 }
 
-.rux-trip-bar--from-prev.rux-trip-bar--to-next .rux-trip-bar__tail {
+.sched-trip-bar--from-prev.sched-trip-bar--to-next .rux-trip-bar__tail {
 	border-radius: 0;
 }
 
@@ -462,7 +462,7 @@
 
 /* ---------- Modifier: multi-day ---------- */
 
-.rux-trip-bar--multi-day {
+.sched-trip-bar--multi-day {
 	display: grid;
 	grid-template-columns: var(--rux-trip-bar-day-inline-size, 50%) 1fr;
 	grid-template-rows: 1fr auto;
@@ -474,21 +474,21 @@
 	border-radius: var(--rux-trip-bar-radius);
 }
 
-.rux-trip-bar--multi-day.rux-trip-bar--from-prev {
+.sched-trip-bar--multi-day.sched-trip-bar--from-prev {
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
 }
 
-.rux-trip-bar--multi-day.rux-trip-bar--to-next {
+.sched-trip-bar--multi-day.sched-trip-bar--to-next {
 	border-start-end-radius: 0;
 	border-end-end-radius: 0;
 }
 
-.rux-trip-bar--multi-day.rux-trip-bar--has-conflict {
+.sched-trip-bar--multi-day.sched-trip-bar--has-conflict {
 	--_conflict-height: var(--rux-trip-bar-conflict-height);
 }
 
-.rux-trip-bar--multi-day .rux-trip-bar__conflict {
+.sched-trip-bar--multi-day .rux-trip-bar__conflict {
 	grid-column: 1 / -1;
 	grid-row: 2;
 }
@@ -509,7 +509,7 @@
 	border-start-end-radius: 0;
 	border-end-end-radius: 0;
 	overflow: hidden;
-	/* The base .rux-trip-bar rule (single-day) declares "transform" in its
+	/* The base .sched-trip-bar rule (single-day) declares "transform" in its
 	   own transition list, which incidentally keeps it GPU-composited at all
 	   times — without that, overflow:hidden + border-radius here fails to
 	   clip .rux-trip-bar__actions (a child with its own animating
@@ -523,15 +523,15 @@
 	display: contents;
 }
 
-.rux-trip-bar--multi-day:hover .rux-trip-bar__head {
+.sched-trip-bar--multi-day:hover .rux-trip-bar__head {
 	background-color: var(--_surface-hover);
 }
 
-.rux-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__head {
+.sched-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__head {
 	background-color: var(--_surface-pressed);
 }
 
-.rux-trip-bar--multi-day.is-active .rux-trip-bar__head {
+.sched-trip-bar--multi-day.is-active .rux-trip-bar__head {
 	background-color: var(--_surface-active);
 }
 
@@ -561,33 +561,33 @@
    noticeable; now that it's flat like every other surface, __tail needs the
    same hover/active response __head already has or the two halves of a
    multi-day bar visibly desync on interaction. */
-.rux-trip-bar--multi-day:hover .rux-trip-bar__tail {
+.sched-trip-bar--multi-day:hover .rux-trip-bar__tail {
 	background-color: var(--_tail-surface-hover);
 }
 
-.rux-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__tail {
+.sched-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__tail {
 	background-color: var(--_tail-surface-pressed);
 }
 
-.rux-trip-bar--multi-day.is-active .rux-trip-bar__tail {
+.sched-trip-bar--multi-day.is-active .rux-trip-bar__tail {
 	background-color: var(--_tail-surface-active);
 }
 
 /* Alternate multi-day presentation. The full trip span becomes one connected
    head surface, while its readable content stays the same width as an ordinary
    single-day head and is centered within that span. */
-.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day {
 	grid-template-columns: minmax(0, 1fr);
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__head {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .rux-trip-bar__head {
 	display: flex;
 	grid-column: 1 / -1;
 	border-inline-end: var(--rux-trip-bar-border-width) solid var(--_outline);
 	border-radius: var(--rux-trip-bar-radius);
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__head-content {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .rux-trip-bar__head-content {
 	display: flex;
 	flex: 1 1 auto;
 	flex-direction: column;
@@ -597,23 +597,23 @@
 	margin-inline: auto;
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__summary {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__summary {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__destination {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__destination {
 	grid-column: 2;
 	justify-content: center;
 	text-align: center;
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__paid-badge {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__paid-badge {
 	grid-column: 3;
 	justify-self: end;
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar :is(
+.sched-scheduler--centered-trip-heads .sched-trip-bar :is(
 	.rux-trip-bar__client,
 	.rux-trip-bar__contact
 ) {
@@ -621,21 +621,21 @@
 	text-align: center;
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar .rux-trip-bar__reqs .rux-trip-bar__pending {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__reqs .rux-trip-bar__pending {
 	margin-inline-start: auto;
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day .rux-trip-bar__tail {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .rux-trip-bar__tail {
 	display: none;
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day.rux-trip-bar--from-prev .rux-trip-bar__head {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day.sched-trip-bar--from-prev .rux-trip-bar__head {
 	border-inline-start: 0;
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
 }
 
-.rux-scheduler--centered-trip-heads .rux-trip-bar--multi-day.rux-trip-bar--to-next .rux-trip-bar__head {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day.sched-trip-bar--to-next .rux-trip-bar__head {
 	border-inline-end: 0;
 	border-start-end-radius: 0;
 	border-end-end-radius: 0;
@@ -695,7 +695,7 @@
 	color: var(--rux-fg-on-accent);
 }
 
-.rux-trip-bar.is-active .rux-trip-bar__actions {
+.sched-trip-bar.is-active .rux-trip-bar__actions {
 	max-height: calc(var(--rux-trip-bar-action-height) + 4px);
 	margin: 0;
 	padding-block: var(--rux-trip-bar-action-padding-block);
@@ -1094,7 +1094,7 @@
 	transition: max-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
-.rux-trip-bar.is-expanded .rux-trip-bar__details {
+.sched-trip-bar.is-expanded .rux-trip-bar__details {
 	max-height: var(--_details-height);
 }
 
@@ -1251,50 +1251,50 @@
    preference. (Was a hard "never show" earlier; changed so .is-active
    means full detail, full stop, no exceptions.) */
 
-.rux-scheduler--hide-client .rux-trip-bar__client {
+.sched-scheduler--hide-client .rux-trip-bar__client {
 	display: none;
 }
 
-.rux-scheduler--hide-client .rux-trip-bar.is-active .rux-trip-bar__client {
+.sched-scheduler--hide-client .sched-trip-bar.is-active .rux-trip-bar__client {
 	display: flex;
 }
 
-.rux-scheduler--hide-contact .rux-trip-bar__contact {
+.sched-scheduler--hide-contact .rux-trip-bar__contact {
 	display: none;
 }
 
-.rux-scheduler--hide-contact .rux-trip-bar.is-active .rux-trip-bar__contact {
+.sched-scheduler--hide-contact .sched-trip-bar.is-active .rux-trip-bar__contact {
 	display: flex;
 }
 
-.rux-scheduler--hide-notes .rux-trip-bar__notes {
+.sched-scheduler--hide-notes .rux-trip-bar__notes {
 	display: none;
 }
 
-.rux-scheduler--hide-notes .rux-trip-bar.is-active .rux-trip-bar__notes {
+.sched-scheduler--hide-notes .sched-trip-bar.is-active .rux-trip-bar__notes {
 	display: flex;
 }
 
-.rux-scheduler--hide-reqs .rux-trip-bar__reqs {
+.sched-scheduler--hide-reqs .rux-trip-bar__reqs {
 	display: none;
 }
 
-.rux-scheduler--hide-reqs .rux-trip-bar.is-active .rux-trip-bar__reqs {
+.sched-scheduler--hide-reqs .sched-trip-bar.is-active .rux-trip-bar__reqs {
 	display: flex;
 }
 
-.rux-scheduler--hide-drivers .rux-trip-bar__drivers {
+.sched-scheduler--hide-drivers .rux-trip-bar__drivers {
 	display: none;
 }
 
-.rux-scheduler--hide-drivers .rux-trip-bar.is-active .rux-trip-bar__drivers {
+.sched-scheduler--hide-drivers .sched-trip-bar.is-active .rux-trip-bar__drivers {
 	display: flex;
 }
 
 /* ---------- Reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-	.rux-trip-bar,
+	.sched-trip-bar,
 	.rux-trip-bar__actions,
 	.rux-trip-bar__details {
 		transition-duration: 0.001ms !important;

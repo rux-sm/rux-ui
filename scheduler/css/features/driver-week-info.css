@@ -18,7 +18,7 @@
 	min-width: 0;
 }
 
-.rux-driver-week-info {
+.sched-driver-week-info {
 	display: flex;
 	flex-direction: column;
 	width: min(56rem, 100%);
@@ -26,7 +26,7 @@
 	max-height: min(52rem, calc(100dvh - 2 * var(--rux-space-5)));
 }
 
-.rux-driver-week-info .rux-card__header {
+.sched-driver-week-info .rux-card__header {
 	flex: none;
 	height: auto;
 	min-height: var(--rux-card-header-height);
@@ -216,7 +216,7 @@
 	border-radius: var(--rux-radius-lg);
 }
 
-.rux-driver-week-info .rux-modal__footer {
+.sched-driver-week-info .rux-modal__footer {
 	flex: none;
 }
 

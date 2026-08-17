@@ -20,7 +20,7 @@
 	"use strict";
 
 	const drawer = document.getElementById("customer-panel-drawer");
-	const panelEl = drawer?.querySelector(".rux-scope-customer");
+	const panelEl = drawer?.querySelector(".sched-scope-customer");
 	const tbody = document.getElementById("customer-roster-body");
 	const tripList = document.getElementById("cp-trip-list");
 	const searchInput = document.getElementById("customer-search");

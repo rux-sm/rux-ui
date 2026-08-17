@@ -237,12 +237,12 @@ rux-scope-<name>   scope — a hook for one domain's own overrides only;
 into a BEM block prefix (`rux-driver-panel__body`, `rux-trip-panel__pane`,
 ...) — every element still needing domain-specific styling now carries the
 shared component's own part class (`rux-panel__body`) plus a scope class
-(`rux-scope-driver`) for the *domain's own* additions, instead of a
+(`sched-scope-driver`) for the *domain's own* additions, instead of a
 completely separate, parallel class family that happened to duplicate most
-of the shared component's own rules. Current scopes: `rux-scope-driver`,
-`rux-scope-fleet`, `rux-scope-customer`, `rux-scope-trip`,
-`rux-scope-right-panel`, `rux-scope-manifest`, `rux-scope-request`,
-`rux-scope-trip-finder`.
+of the shared component's own rules. Current scopes: `sched-scope-driver`,
+`sched-scope-fleet`, `sched-scope-customer`, `sched-scope-trip`,
+`sched-scope-right-panel`, `sched-scope-manifest`, `sched-scope-request`,
+`sched-scope-trip-finder`.
 
 Not every domain-prefixed class from before this system existed was safe to
 delete outright, even when its own CSS turned out to be a pure duplicate of

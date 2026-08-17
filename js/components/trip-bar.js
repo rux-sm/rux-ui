@@ -6,7 +6,7 @@
 
    API
    ---
-   createTripBar(trip, callbacks)   → create and return a .rux-trip-bar element
+   createTripBar(trip, callbacks)   → create and return a .sched-trip-bar element
    el.setActive(bool)               → toggle selected + expanded state
    el.setExpanded(bool)             → legacy alias for setActive
    el.tripData                      → read the trip data object for this bar
@@ -77,7 +77,7 @@ function installOutsideDismiss() {
       const dx = event.clientX - downX;
       const dy = event.clientY - downY;
       if (Math.hypot(dx, dy) > DISMISS_MOVE_THRESHOLD) return;
-      const currentBar = downTarget?.closest?.(".rux-trip-bar") || null;
+      const currentBar = downTarget?.closest?.(".sched-trip-bar") || null;
       deactivateTripBars(currentBar);
     },
     true,
@@ -131,7 +131,7 @@ function icon(name, className = "rux-icon") {
 
 function createStripeLayer() {
   const svg = document.createElementNS(SVG_NS, "svg");
-  const patternId = `rux-trip-bar-stripes-${++tripBarStripePatternId}`;
+  const patternId = `sched-trip-bar-stripes-${++tripBarStripePatternId}`;
   svg.setAttribute("class", "rux-trip-bar__stripe-layer");
   svg.setAttribute("width", "100%");
   svg.setAttribute("height", "100%");
@@ -849,17 +849,17 @@ export function createTripBar(trip, callbacks = {}) {
   const patterned = trip.trip_type === "one_way" || trip.trip_type === "dropoff_pickup";
   const bar = document.createElement("article");
   bar.className = [
-    "rux-trip-bar",
-    confirmed ? "" : "rux-trip-bar--unconfirmed",
-    trip.paymentStatus === "po_partial" ? "rux-trip-bar--partial-po" : "",
-    trip.paymentStatus === "contract_signed" ? "rux-trip-bar--pending-po" : "",
-    singleDay ? "" : "rux-trip-bar--multi-day",
-    trip.conflict ? "rux-trip-bar--has-conflict" : "",
-    trip.fromPrev ? "rux-trip-bar--from-prev" : "",
-    trip.toNext ? "rux-trip-bar--to-next" : "",
-    trip.trip_type === "one_way" ? "rux-trip-bar--one-way" : "",
-    trip.trip_type === "dropoff_pickup" && trip.leg === "outbound" ? "rux-trip-bar--dropoff-leg" : "",
-    trip.trip_type === "dropoff_pickup" && trip.leg === "return" ? "rux-trip-bar--pickup-leg" : "",
+    "sched-trip-bar",
+    confirmed ? "" : "sched-trip-bar--unconfirmed",
+    trip.paymentStatus === "po_partial" ? "sched-trip-bar--partial-po" : "",
+    trip.paymentStatus === "contract_signed" ? "sched-trip-bar--pending-po" : "",
+    singleDay ? "" : "sched-trip-bar--multi-day",
+    trip.conflict ? "sched-trip-bar--has-conflict" : "",
+    trip.fromPrev ? "sched-trip-bar--from-prev" : "",
+    trip.toNext ? "sched-trip-bar--to-next" : "",
+    trip.trip_type === "one_way" ? "sched-trip-bar--one-way" : "",
+    trip.trip_type === "dropoff_pickup" && trip.leg === "outbound" ? "sched-trip-bar--dropoff-leg" : "",
+    trip.trip_type === "dropoff_pickup" && trip.leg === "return" ? "sched-trip-bar--pickup-leg" : "",
   ]
     .filter(Boolean)
     .join(" ");

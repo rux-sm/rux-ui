@@ -44,7 +44,7 @@
 	background: var(--rux-white);
 }
 
-.rux-doc-viewer [data-doc-viewer-external] {
+.sched-doc-viewer [data-doc-viewer-external] {
 	text-decoration: none;
 }
 
@@ -52,7 +52,7 @@
 	display: none;
 }
 
-.rux-doc-viewer {
+.sched-doc-viewer {
 	--rux-panel-floating-width: var(--rux-doc-viewer-width);
 	--rux-panel-floating-safe-max-width: 64rem;
 }

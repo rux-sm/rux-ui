@@ -8,7 +8,7 @@
    system-generated.
    ========================================================================== */
 
-.rux-dev-notes-menu {
+.sched-dev-notes-menu {
 	display: flex;
 	flex-direction: column;
 	width: min(340px, calc(100vw - (var(--rux-popover-viewport-padding) * 2)));

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REQUEST INBOX  ·  .rux-scope-request
+   REQUEST INBOX  ·  .sched-scope-request
    --------------------------------------------------------------------------
    Floating window chrome only — mirrors the Trip Finder's anatomy exactly:
    the shared .rux-panel--floating component (css/base/panel.css)
@@ -14,7 +14,7 @@
    are tied to top:10% so the frame always fits the viewport — see the
    min()/calc() below. Mobile (< 580px) is handled by the shared base
    panel.css frame, exactly like every other floating window. */
-.rux-scope-request {
+.sched-scope-request {
 	container-name: request-window;
 	container-type: inline-size;
 	top: 10%;
@@ -29,7 +29,7 @@
 	max-height: calc(100dvh - var(--rux-space-4));
 }
 
-/* Same content column as .rux-scope-trip-finder__content. */
+/* Same content column as .sched-scope-trip-finder__content. */
 .rux-scope-request__content {
 	display: flex;
 	flex-direction: column;
@@ -55,7 +55,7 @@
 	font-weight: var(--rux-weight-400);
 }
 
-/* Toolbar band like .rux-scope-trip-finder__toolbar: flex none, hairline
+/* Toolbar band like .sched-scope-trip-finder__toolbar: flex none, hairline
    bottom border, and a field padded like the search row. Status filter uses
    the shared segmented control. */
 .rux-scope-request__toolbar {

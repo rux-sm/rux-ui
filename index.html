@@ -92,10 +92,6 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/profile-picker.css?v=6"
-		/>
-		<link
-			rel="stylesheet"
 			href="./scheduler/css/features/print-schedule.css?v=35"
 		/>
 		<link
@@ -482,7 +478,7 @@
 			</div>
 
 			<div
-				class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-dev-notes-menu"
+				class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip sched-dev-notes-menu"
 				id="dev-notes-menu"
 				role="dialog"
 				aria-label="Dev Notes"
@@ -884,7 +880,7 @@
 				<div class="scheduler-app__module" data-module="calendar">
 					<!-- Movable, resizable trip editor workspace window -->
 					<div
-						class="rux-panel rux-panel--floating rux-trip-dialog rux-scope-trip"
+						class="rux-panel rux-panel--floating sched-trip-dialog sched-scope-trip"
 						id="trip-editor-dialog"
 						role="dialog"
 						aria-labelledby="trip-editor-dialog-title"
@@ -1965,7 +1961,7 @@
 								role="tabpanel"
 								hidden
 							>
-								<div class="rux-trip-itinerary" id="tp-itin">
+								<div class="sched-trip-itinerary" id="tp-itin">
 									<div
 										class="rux-card rux-trip-itinerary__summary"
 										id="tp-itin-summary"
@@ -2301,7 +2297,7 @@
 						</header>
 						<div class="rux-workspace__body calendar-app__viewport">
 							<div
-								class="rux-scheduler scheduler-app__grid"
+								class="sched-scheduler scheduler-app__grid"
 								id="scheduler"
 							>
 								<div class="rux-scheduler__col-head">
@@ -2346,7 +2342,7 @@
 						id="right-panel-drawer"
 					>
 						<aside
-							class="rux-panel rux-panel--attached rux-scope-right-panel"
+							class="rux-panel rux-panel--attached sched-scope-right-panel"
 							aria-label="Calendar Tools"
 						>
 							<!-- Same tabs-as-header treatment as the trip panel. The workspace
@@ -2443,7 +2439,7 @@
 									role="tabpanel"
 								>
 									<section
-										class="rux-card rux-mini-cal"
+										class="rux-card sched-mini-cal"
 										id="rp-minical-card"
 									>
 										<div
@@ -2848,7 +2844,7 @@
 												class="rux-driver-grid__scroller"
 											>
 												<div
-													class="rux-driver-grid"
+													class="sched-driver-grid"
 													id="rp-driver-grid"
 													role="grid"
 													aria-label="Driver assignments by day"
@@ -2922,7 +2918,7 @@
 									hidden
 								>
 									<section
-										class="rux-trip-history"
+										class="sched-trip-history"
 										id="rp-trip-history"
 										aria-label="Trip change history"
 									>
@@ -3154,7 +3150,7 @@
 					<!-- Fleet panel drawer -->
 					<div class="scheduler-app__drawer" id="fleet-panel-drawer">
 						<aside
-							class="rux-panel rux-panel--attached rux-scope-fleet"
+							class="rux-panel rux-panel--attached sched-scope-fleet"
 							role="dialog"
 							aria-label="Vehicle editor"
 						>
@@ -3788,7 +3784,7 @@
 							</span>
 						</button>
 						<aside
-							class="rux-panel rux-panel--attached rux-scope-driver"
+							class="rux-panel rux-panel--attached sched-scope-driver"
 							role="dialog"
 							aria-label="Driver editor"
 						>
@@ -4815,7 +4811,7 @@
 							</span>
 						</button>
 						<aside
-							class="rux-panel rux-panel--attached rux-scope-right-panel"
+							class="rux-panel rux-panel--attached sched-scope-right-panel"
 							role="dialog"
 							aria-label="Table options"
 						>
@@ -5006,7 +5002,7 @@
 						id="customer-panel-drawer"
 					>
 						<aside
-							class="rux-panel rux-panel--attached rux-scope-customer"
+							class="rux-panel rux-panel--attached sched-scope-customer"
 							role="dialog"
 							aria-label="Customer editor"
 						>
@@ -7926,14 +7922,14 @@
 			const appEl = document.querySelector(".scheduler-app");
 
 			const rightDrawer = document.getElementById("right-panel-drawer");
-			const tripPanel = document.querySelector(".rux-scope-trip");
+			const tripPanel = document.querySelector(".sched-scope-trip");
 			const tripEditorDialogEl =
 				document.getElementById("trip-editor-dialog");
 			const tripEditorHeaderEl = tripEditorDialogEl?.querySelector(
 				"[data-trip-dialog-header]",
 			);
 			const rightPanel = rightDrawer.querySelector(
-				".rux-scope-right-panel",
+				".sched-scope-right-panel",
 			);
 			const rightPanelToggleBtn = document.querySelector(
 				".calendar-app__panel-toggle",
@@ -8268,7 +8264,7 @@
 
 			schedulerEl.addEventListener("contextmenu", (event) => {
 				const track = event.target.closest(".rux-scheduler__track");
-				if (!track || event.target.closest(".rux-trip-bar")) {
+				if (!track || event.target.closest(".sched-trip-bar")) {
 					closeSchedulerContextMenu();
 					return;
 				}
@@ -8322,7 +8318,7 @@
 
 			// Shrinks an element down to nothing at its own center while fading it
 			// out, then removes it. transition:none + a forced reflow before
-			// enabling the real transition matters here too — .rux-trip-bar's base
+			// enabling the real transition matters here too — .sched-trip-bar's base
 			// rule already declares its own short transition (including
 			// transform), so without killing that first, the "from" state
 			// (scale(1)) would itself animate in over the wrong duration before
@@ -8484,7 +8480,7 @@
 								.getPropertyValue("--_tone")
 								.trim();
 							ghost = document.createElement("div");
-							ghost.className = "rux-trip-bar-ghost";
+							ghost.className = "sched-trip-bar-ghost";
 							ghost.style.left = `${barRect.left}px`;
 							ghost.style.top = `${barRect.top}px`;
 							ghost.style.width = `${barRect.width}px`;
@@ -8493,7 +8489,7 @@
 								ghost.style.setProperty("--_ghost-tone", tone);
 							document.body.appendChild(ghost);
 
-							bar.classList.add("rux-trip-bar--drag-source");
+							bar.classList.add("sched-trip-bar--drag-source");
 							document.body.style.cursor = "grabbing";
 							document.body.style.userSelect = "none";
 						}
@@ -8622,7 +8618,7 @@
 							// the element entirely.
 							bar.style.opacity = "0";
 						} else {
-							bar.classList.remove("rux-trip-bar--drag-source");
+							bar.classList.remove("sched-trip-bar--drag-source");
 						}
 					};
 
@@ -9099,7 +9095,7 @@
 			}
 
 			function schedulerDayCount(track) {
-				const scheduler = track.closest(".rux-scheduler");
+				const scheduler = track.closest(".sched-scheduler");
 				return (
 					Number.parseFloat(
 						getComputedStyle(scheduler).getPropertyValue(
@@ -9238,11 +9234,11 @@
 			let activeObservers = [];
 			let layoutFrame = 0;
 
-			// .rux-scheduler already sizes to its own content (grid, no forced
+			// .sched-scheduler already sizes to its own content (grid, no forced
 			// stretch) — the empty space dispatchers see below a short row list
 			// is .calendar-app__viewport's own background, pinned to full height
 			// by block-size:100% (see css/layout/scheduler-app.css's comment on
-			// .scheduler-app__module > .rux-workspace) so .rux-scheduler has a
+			// .scheduler-app__module > .rux-workspace) so .sched-scheduler has a
 			// definite ancestor height to cap its own max-block-size:100% against
 			// and scroll internally once content actually exceeds it. Pin the
 			// viewport down to the shorter of the two instead of always 100%.
@@ -9293,7 +9289,7 @@
 				activeObservers = [];
 				clearTripBars();
 				document
-					.querySelectorAll(".rux-scheduler__track .rux-trip-bar")
+					.querySelectorAll(".rux-scheduler__track .sched-trip-bar")
 					.forEach((bar) => bar.remove());
 				Object.keys(trips).forEach((key) => {
 					trips[key].groupLabel = computeBusLabel(key);
@@ -9374,33 +9370,33 @@
 					"--_slide-offset",
 					`${direction * -24}px`,
 				);
-				schedulerEl.classList.remove("rux-scheduler--slide-in");
-				schedulerEl.classList.add("rux-scheduler--slide-out");
+				schedulerEl.classList.remove("sched-scheduler--slide-in");
+				schedulerEl.classList.add("sched-scheduler--slide-out");
 				const onExitEnd = (e) => {
 					if (
 						e.target !== schedulerEl ||
-						e.animationName !== "rux-scheduler-slide-out"
+						e.animationName !== "sched-scheduler-slide-out"
 					)
 						return;
 					schedulerEl.removeEventListener("animationend", onExitEnd);
-					schedulerEl.classList.remove("rux-scheduler--slide-out");
+					schedulerEl.classList.remove("sched-scheduler--slide-out");
 					renderScheduler();
 					schedulerEl.style.setProperty(
 						"--_slide-offset",
 						`${direction * 24}px`,
 					);
-					schedulerEl.classList.add("rux-scheduler--slide-in");
+					schedulerEl.classList.add("sched-scheduler--slide-in");
 					const onEnterEnd = (e2) => {
 						if (
 							e2.target !== schedulerEl ||
-							e2.animationName !== "rux-scheduler-slide-in"
+							e2.animationName !== "sched-scheduler-slide-in"
 						)
 							return;
 						schedulerEl.removeEventListener(
 							"animationend",
 							onEnterEnd,
 						);
-						schedulerEl.classList.remove("rux-scheduler--slide-in");
+						schedulerEl.classList.remove("sched-scheduler--slide-in");
 					};
 					schedulerEl.addEventListener("animationend", onEnterEnd);
 				};
@@ -9408,7 +9404,7 @@
 			}
 
 			// Trackpad/wheel horizontal scroll is left entirely alone here — it
-			// only ever scrolls .rux-scheduler's own content (each day column has
+			// only ever scrolls .sched-scheduler's own content (each day column has
 			// a 14rem minimum, so narrower viewports need it). Changing weeks is a
 			// separate, deliberate gesture instead: click-drag horizontally on
 			// empty scheduler background, past a distance threshold, then
@@ -9451,7 +9447,7 @@
 					if (e.button !== 0) return;
 					if (
 						e.target.closest(
-							".rux-trip-bar, .rux-scheduler__row-head, .rux-scheduler__col-head, button, a, input, select, textarea",
+							".sched-trip-bar, .rux-scheduler__row-head, .rux-scheduler__col-head, button, a, input, select, textarea",
 						)
 					)
 						return;
@@ -9907,7 +9903,7 @@
 			initToggle("opt-time-align", timeAlignEnabled, (on) => {
 				timeAlignEnabled = on;
 				schedulerEl?.classList.toggle(
-					"rux-scheduler--time-aligned",
+					"sched-scheduler--time-aligned",
 					on,
 				);
 				renderScheduler();
@@ -9919,16 +9915,16 @@
 			// drivers — destination and time are never optional, they're the
 			// trip's identity). Collapsed-only declutter — unchecking one
 			// hides that row while a bar is collapsed, but selecting the bar
-			// always shows every row regardless (see .rux-trip-bar.is-active,
+			// always shows every row regardless (see .sched-trip-bar.is-active,
 			// trip-bar.css). Default true (shown) — localStorage only ever
 			// stores "false" for a row a user actively turned off, absence
 			// means "on".
 			const tripBarRowKeys = [
-				["client", "opt-row-client", "rux-scheduler--hide-client"],
-				["contact", "opt-row-contact", "rux-scheduler--hide-contact"],
-				["notes", "opt-row-notes", "rux-scheduler--hide-notes"],
-				["reqs", "opt-row-reqs", "rux-scheduler--hide-reqs"],
-				["drivers", "opt-row-drivers", "rux-scheduler--hide-drivers"],
+				["client", "opt-row-client", "sched-scheduler--hide-client"],
+				["contact", "opt-row-contact", "sched-scheduler--hide-contact"],
+				["notes", "opt-row-notes", "sched-scheduler--hide-notes"],
+				["reqs", "opt-row-reqs", "sched-scheduler--hide-reqs"],
+				["drivers", "opt-row-drivers", "sched-scheduler--hide-drivers"],
 			];
 			const tripBarRowVisible = {};
 			tripBarRowKeys.forEach(([key, id, hideClass]) => {
@@ -9958,7 +9954,7 @@
 			// toggleable, the visible count ranges from 2 (destination + time
 			// only) to 7. --rux-trip-bar-collapsed-height (trip-bar.css) reads
 			// this instead of a literal. Selecting a bar always shows all 7
-			// regardless of any of this — trip-bar.css's .rux-trip-bar.is-active
+			// regardless of any of this — trip-bar.css's .sched-trip-bar.is-active
 			// rule hardcodes that itself (via its var(..., 7) fallback), so
 			// there's no separate "active count" to compute here.
 			function recomputeTripBarRowCount() {
@@ -9993,11 +9989,11 @@
 			function applyTripBarSize(size) {
 				tripBarSize = size;
 				schedulerEl?.classList.toggle(
-					"rux-scheduler--trip-bar-size-xxs",
+					"sched-scheduler--trip-bar-size-xxs",
 					size === "xxs",
 				);
 				schedulerEl?.classList.toggle(
-					"rux-scheduler--trip-bar-size-sm",
+					"sched-scheduler--trip-bar-size-sm",
 					size === "sm",
 				);
 				tripBarSizeTrack
@@ -10026,7 +10022,7 @@
 					localStorage.getItem("rux:centered-trip-heads") === "true";
 			} catch (_) {}
 			schedulerEl?.classList.toggle(
-				"rux-scheduler--centered-trip-heads",
+				"sched-scheduler--centered-trip-heads",
 				centeredTripHeadsEnabled,
 			);
 			initToggle(
@@ -10035,7 +10031,7 @@
 				(on) => {
 					centeredTripHeadsEnabled = on;
 					schedulerEl?.classList.toggle(
-						"rux-scheduler--centered-trip-heads",
+						"sched-scheduler--centered-trip-heads",
 						on,
 					);
 					try {
@@ -10264,7 +10260,7 @@
 					const input = document.getElementById("opt-time-align");
 					if (input) input.checked = timeAlignEnabled;
 					schedulerEl?.classList.toggle(
-						"rux-scheduler--time-aligned",
+						"sched-scheduler--time-aligned",
 						timeAlignEnabled,
 					);
 				}
@@ -10295,7 +10291,7 @@
 					);
 					if (input) input.checked = centeredTripHeadsEnabled;
 					schedulerEl?.classList.toggle(
-						"rux-scheduler--centered-trip-heads",
+						"sched-scheduler--centered-trip-heads",
 						centeredTripHeadsEnabled,
 					);
 				}
@@ -10679,7 +10675,7 @@
 			function ensureDriverGridPopover() {
 				if (driverGridPopover) return driverGridPopover;
 				driverGridPopover = document.createElement("section");
-				driverGridPopover.id = "rux-driver-grid-popover";
+				driverGridPopover.id = "sched-driver-grid-popover";
 				driverGridPopover.className =
 					"rux-driver-grid__popover rux-card rux-card--elevated rux-popover";
 				driverGridPopover.setAttribute("role", "dialog");
@@ -11045,7 +11041,7 @@
 							cell.setAttribute("aria-expanded", "false");
 							cell.setAttribute(
 								"aria-controls",
-								"rux-driver-grid-popover",
+								"sched-driver-grid-popover",
 							);
 						}
 						daysEl.appendChild(cell);
@@ -12009,7 +12005,7 @@
        document viewer, so it floats over the calendar instead of replacing
        it. See js/panels/trip-manifest.js for open/close/drag wiring. -->
 		<div
-			class="rux-panel rux-panel--floating rux-scope-manifest"
+			class="rux-panel rux-panel--floating sched-scope-manifest"
 			id="calendar-manifest-view"
 			hidden
 		>
@@ -12449,7 +12445,7 @@
 		     trip editor. See js/panels/request-inbox.js and
 		     css/features/request-inbox.css. -->
 		<div
-			class="rux-panel rux-panel--floating rux-scope-request"
+			class="rux-panel rux-panel--floating sched-scope-request"
 			id="request-inbox-window"
 			hidden
 		>
@@ -12697,11 +12693,11 @@
 		     list with the old ⌘K search modal. See js/panels/trip-finder.js for
 		     open/close/filter/drag wiring. -->
 		<div
-			class="rux-panel rux-panel--floating rux-scope-trip-finder"
+			class="rux-panel rux-panel--floating sched-scope-trip-finder"
 			id="trip-finder-window"
 			hidden
 		>
-			<header class="rux-panel__header rux-scope-trip-finder__header">
+			<header class="rux-panel__header sched-scope-trip-finder__header">
 				<p class="rux-card__title">Trip Finder</p>
 				<button
 					type="button"
@@ -12712,16 +12708,16 @@
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
-			<div class="rux-scope-trip-finder__content">
-				<div class="rux-scope-trip-finder__toolbar">
-					<div class="rux-scope-trip-finder__search-row">
+			<div class="sched-scope-trip-finder__content">
+				<div class="sched-scope-trip-finder__toolbar">
+					<div class="sched-scope-trip-finder__search-row">
 						<span
-							class="rux-icon rux-scope-trip-finder__search-icon"
+							class="rux-icon sched-scope-trip-finder__search-icon"
 							aria-hidden="true"
 							>search</span
 						>
 						<input
-							class="rux-input rux-scope-trip-finder__search-input"
+							class="rux-input sched-scope-trip-finder__search-input"
 							id="trip-finder-search"
 							type="search"
 							placeholder="Search trips, contacts, phone…"
@@ -12752,7 +12748,7 @@
 						hidden
 					></div>
 					<div
-						class="rux-scope-trip-finder__filters"
+						class="sched-scope-trip-finder__filters"
 						id="trip-finder-filters"
 						hidden
 					>
@@ -12976,12 +12972,12 @@
 						</button>
 					</div>
 				</div>
-				<div class="rux-panel__body rux-scope-trip-finder__body">
+				<div class="rux-panel__body sched-scope-trip-finder__body">
 					<div
-						class="rux-scope-trip-finder__results trips-app__table-wrap"
+						class="sched-scope-trip-finder__results trips-app__table-wrap"
 					>
 						<table
-							class="rux-table trips-app__table rux-scope-trip-finder__table"
+							class="rux-table trips-app__table sched-scope-trip-finder__table"
 							aria-label="Trip search results"
 						>
 							<thead>

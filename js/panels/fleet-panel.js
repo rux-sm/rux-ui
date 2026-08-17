@@ -4,7 +4,7 @@
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
   const drawer      = document.getElementById("fleet-panel-drawer");
-  const panelEl     = drawer.querySelector(".rux-scope-fleet");
+  const panelEl     = drawer.querySelector(".sched-scope-fleet");
   const tbody       = document.getElementById("fleet-roster-body");
   const tabBtns     = document.querySelectorAll('[data-rux-tabs][data-scope="fleet"] .rux-tab');
   const panes       = document.querySelectorAll(".rux-scope-fleet__pane");
@@ -562,7 +562,7 @@
 
   function buildFleetColPicker() {
     fleetColPicker = document.createElement("div");
-    fleetColPicker.className = "rux-col-picker";
+    fleetColPicker.className = "sched-col-picker";
     fleetColPicker.setAttribute("hidden", "");
     fleetColPicker.setAttribute("role", "dialog");
     fleetColPicker.setAttribute("aria-label", "Column visibility");

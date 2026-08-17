@@ -372,7 +372,7 @@
    overridden here. */
 @media (max-width: 580px) {
 	/* Doubled class specificity deliberately outranks later feature-level
-	   desktop sizing such as .rux-scope-manifest. */
+	   desktop sizing such as .sched-scope-manifest. */
 	.rux-panel--floating.rux-panel--floating {
 		--rux-panel-mobile-inset-inline: var(--rux-space-4);
 		--rux-panel-mobile-inset-block: var(--rux-space-5);

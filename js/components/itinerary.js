@@ -19,7 +19,7 @@
 
    API
    ---
-   Itinerary.init(root)   → wire up a .rux-trip-itinerary element
+   Itinerary.init(root)   → wire up a .sched-trip-itinerary element
    ========================================================================== */
 
 (function () {

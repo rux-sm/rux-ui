@@ -398,7 +398,7 @@
 	function buildStandardEnvelope(trip, busNumber, recipient) {
 		const card = el(
 			"article",
-			"rux-trip-envelope rux-trip-envelope--standard",
+			"sched-trip-envelope sched-trip-envelope--standard",
 		);
 		card.appendChild(buildHeader(trip));
 
@@ -438,7 +438,7 @@
 	function buildMvmEnvelope(trip, busNumber, recipient) {
 		const card = el(
 			"article",
-			"rux-trip-envelope rux-trip-envelope--mvm",
+			"sched-trip-envelope sched-trip-envelope--mvm",
 		);
 		card.appendChild(buildHeader(trip));
 
@@ -524,8 +524,8 @@
 	function fitToHeight() {
 		if (!panelEl || panelEl.hidden) return;
 		const container = panelEl.querySelector("[data-envelope-content]");
-		const body = panelEl.querySelector(".rux-trip-envelope-window__body");
-		const card = container?.querySelector(".rux-trip-envelope");
+		const body = panelEl.querySelector(".sched-trip-envelope-window__body");
+		const card = container?.querySelector(".sched-trip-envelope");
 		if (!container || !body || !card) return;
 
 		card.style.transform = "";
@@ -651,17 +651,17 @@
 
 		panelEl = document.createElement("div");
 		panelEl.className =
-			"rux-panel rux-panel--floating rux-panel--default-size rux-trip-envelope-window";
+			"rux-panel rux-panel--floating rux-panel--default-size sched-trip-envelope-window";
 		panelEl.hidden = true;
 		panelEl.dataset.tint = "yellow";
 		panelEl.innerHTML = `
-			<header class="rux-panel__header rux-trip-envelope-window__header">
+			<header class="rux-panel__header sched-trip-envelope-window__header">
 				<span class="rux-card__title" data-envelope-title>Trip Envelope</span>
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--header" data-envelope-close aria-label="Close trip envelope">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
-			<div class="rux-trip-envelope-window__toolbar">
+			<div class="sched-trip-envelope-window__toolbar">
 				<div class="rux-segmented-track" data-rux-toggle-group data-envelope-template>
 					<button type="button" class="rux-button rux-button--segment" aria-pressed="true" data-value="standard">Standard</button>
 					<button type="button" class="rux-button rux-button--segment" aria-pressed="false" data-value="mvm">MVM</button>
@@ -671,11 +671,11 @@
 					<button type="button" class="rux-button rux-button--segment" aria-pressed="false" data-value="white">White</button>
 				</div>
 			</div>
-			<div class="rux-panel__body rux-trip-envelope-window__body">
+			<div class="rux-panel__body sched-trip-envelope-window__body">
 				<div data-envelope-content></div>
 			</div>
-			<footer class="rux-panel__footer rux-trip-envelope-window__footer">
-				<label class="rux-trip-envelope-window__recipient">
+			<footer class="rux-panel__footer sched-trip-envelope-window__footer">
+				<label class="sched-trip-envelope-window__recipient">
 					<select class="rux-select" data-envelope-driver aria-label="Envelope copy for driver"></select>
 				</label>
 				<button type="button" class="rux-button rux-button--default" data-envelope-print>
@@ -726,7 +726,7 @@
 		// changing with the viewport (max-height is a calc(100vh - ...)),
 		// so the shrink fallback stays correct either way.
 		new ResizeObserver(fitToHeight).observe(
-			panelEl.querySelector(".rux-trip-envelope-window__body"),
+			panelEl.querySelector(".sched-trip-envelope-window__body"),
 		);
 
 		document.addEventListener("keydown", (e) => {
@@ -741,7 +741,7 @@
 		if (!trip) return;
 		ensurePanel();
 		panelEl.classList.toggle(
-			"rux-trip-envelope-window--presentation",
+			"sched-trip-envelope-window--presentation",
 			Boolean(options.presentationOnly),
 		);
 		panelEl.classList.toggle(

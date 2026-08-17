@@ -3,14 +3,14 @@
    --------------------------------------------------------------------------
    Built by js/panels/trip-envelope.js as a draggable/resizable
    .rux-panel--floating — same recipe and default size as
-   css/features/doc-viewer.css's .rux-doc-viewer (RuxDocViewer), so it
+   css/features/doc-viewer.css's .sched-doc-viewer (RuxDocViewer), so it
    behaves and sits on screen just like the itinerary PDF viewer instead of
    blocking the whole page like a modal. Positioning/drag/resize mechanics
    live in the shared base (css/base/panel.css) — this file is just this
    window's own size/position defaults and content styling.
    The envelope card itself is a deliberate light-on-paper world with its
    own scoped palette, same idea as print-schedule.css's --print-* tokens
-   but scoped to .rux-trip-envelope instead.
+   but scoped to .sched-trip-envelope instead.
    ========================================================================== */
 
 /* ── Floating window chrome (screen only — none of this prints) ────────── */
@@ -24,12 +24,12 @@
    caused the last few rounds of clipping/positioning bugs. One sizing
    system, not two. */
 
-.rux-trip-envelope-window {
+.sched-trip-envelope-window {
 	--rux-panel-floating-width: var(--rux-trip-envelope-window-width);
 	--rux-panel-floating-safe-max-width: 40rem;
 }
 
-.rux-trip-envelope-window__body {
+.sched-trip-envelope-window__body {
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -52,22 +52,22 @@
    body's scrollable area either. justify-content:center is fine as-is,
    horizontally, since transform-origin's horizontal component is center —
    same anchor assumption both places, no mismatch there. */
-.rux-trip-envelope-window__body [data-envelope-content] {
+.sched-trip-envelope-window__body [data-envelope-content] {
     display: flex;
     align-items: flex-start;
     justify-content: center;
     overflow: hidden;
 }
 
-.rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope-window__body {
+.sched-trip-envelope-window[data-tint="white"] .sched-trip-envelope-window__body {
     --env-paper: oklch(100% 0.0 0);
 }
 
-.rux-trip-envelope-window[data-tint="yellow"] .rux-trip-envelope-window__body {
+.sched-trip-envelope-window[data-tint="yellow"] .sched-trip-envelope-window__body {
     --env-paper: oklch(84% 0.16 80);
 }
 
-.rux-trip-envelope-window__toolbar {
+.sched-trip-envelope-window__toolbar {
 	display: flex;
 	align-items: center;
 	flex: none;
@@ -81,12 +81,12 @@
 /* Both option groups (format, tint) split the toolbar row evenly, and each
    group's own options split evenly within it — no leftover empty space to
    the row's right the way content-sized segmented tracks would leave. */
-.rux-trip-envelope-window__toolbar > .rux-segmented-track {
+.sched-trip-envelope-window__toolbar > .rux-segmented-track {
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-trip-envelope-window__toolbar > .rux-segmented-track > .rux-button {
+.sched-trip-envelope-window__toolbar > .rux-segmented-track > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
@@ -94,7 +94,7 @@
 /* flex:none and the modal surface background come from the shared
    .rux-panel__footer; the shared button-group token keeps this
    wrapping toolbar consistent with card and panel action rows. */
-.rux-trip-envelope-window__footer {
+.sched-trip-envelope-window__footer {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
@@ -104,8 +104,8 @@
 /* Print Driver / Print All split whatever space the recipient select
    (fixed via clamp() below) doesn't take, instead of hugging the right
    edge — same "no leftover empty space" intent as the toolbar above. */
-.rux-trip-envelope-window__footer > [data-envelope-print],
-.rux-trip-envelope-window__footer > [data-envelope-print-all] {
+.sched-trip-envelope-window__footer > [data-envelope-print],
+.sched-trip-envelope-window__footer > [data-envelope-print-all] {
 	flex: 1;
 	min-width: 0;
 }
@@ -113,12 +113,12 @@
 /* Public driver links use the exact same envelope and responsive fitting,
    but are intentionally read-only: the driver sees their assigned copy,
    without dispatch-only format, stock, recipient, or print controls. */
-.rux-trip-envelope-window--presentation .rux-trip-envelope-window__toolbar,
-.rux-trip-envelope-window--presentation .rux-trip-envelope-window__footer {
+.sched-trip-envelope-window--presentation .sched-trip-envelope-window__toolbar,
+.sched-trip-envelope-window--presentation .sched-trip-envelope-window__footer {
 	display: none;
 }
 
-.rux-trip-envelope-window__recipient {
+.sched-trip-envelope-window__recipient {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-2);
@@ -129,14 +129,14 @@
 	white-space: nowrap;
 }
 
-.rux-trip-envelope-window__recipient .rux-select {
+.sched-trip-envelope-window__recipient .rux-select {
 	width: clamp(10rem, 18vw, 14rem);
 }
 
 /* ── The envelope card itself — a deliberate light-on-paper world ───────── */
 
 
-.rux-trip-envelope {
+.sched-trip-envelope {
 	--env-paper: oklch(100% 0 0);
 	--env-ink: oklch(18% 0 0);
 	--env-ink-muted: oklch(45% 0 0);
@@ -162,11 +162,11 @@
 	font-family: var(--rux-font-sans);
 }
 
-.rux-trip-envelope-window[data-tint="white"] .rux-trip-envelope {
+.sched-trip-envelope-window[data-tint="white"] .sched-trip-envelope {
 	--env-paper: oklch(100% 0 0);
 }
 
-.rux-trip-envelope-window[data-tint="yellow"] .rux-trip-envelope {
+.sched-trip-envelope-window[data-tint="yellow"] .sched-trip-envelope {
 	--env-paper: oklch(88% 0.05 95);
 }
 
@@ -222,7 +222,7 @@
    height as populated fields. The shared minimum matches one label/value
    stack with the standard gap and vertical padding; if long operational
    text needs more room, all rows grow together instead of clipping it. */
-.rux-trip-envelope--standard .rux-trip-envelope__grid {
+.sched-trip-envelope--standard .rux-trip-envelope__grid {
 	display: grid;
 	grid-auto-rows: minmax(
 		var(--rux-trip-envelope-field-row-min-height),
@@ -358,7 +358,7 @@
 	color: var(--env-ink-muted);
 }
 
-.rux-trip-envelope--mvm .rux-trip-envelope__notes {
+.sched-trip-envelope--mvm .rux-trip-envelope__notes {
 	flex: none;
 	min-height: 0;
 	margin-block-start: var(--rux-space-2);
@@ -417,7 +417,7 @@
 	border: 1px solid var(--env-rule);
 }
 
-.rux-trip-envelope--mvm .rux-trip-envelope__log {
+.sched-trip-envelope--mvm .rux-trip-envelope__log {
 	flex: 1;
 	min-height: 0;
 	table-layout: fixed;
@@ -442,29 +442,29 @@
 	height: 2em;
 }
 
-.rux-trip-envelope--mvm .rux-trip-envelope__log th {
+.sched-trip-envelope--mvm .rux-trip-envelope__log th {
 	line-height: 1;
 }
 
-.rux-trip-envelope--mvm .rux-trip-envelope__log th,
-.rux-trip-envelope--mvm .rux-trip-envelope__log td {
+.sched-trip-envelope--mvm .rux-trip-envelope__log th,
+.sched-trip-envelope--mvm .rux-trip-envelope__log td {
 	padding: var(--rux-space-1) var(--rux-space-2);
 }
 
-.rux-trip-envelope--mvm .rux-trip-envelope__log th:first-child {
+.sched-trip-envelope--mvm .rux-trip-envelope__log th:first-child {
 	width: 46%;
 }
 
-.rux-trip-envelope--mvm .rux-trip-envelope__log th:not(:first-child) {
+.sched-trip-envelope--mvm .rux-trip-envelope__log th:not(:first-child) {
 	width: 18%;
 }
 
 /* ── Print output — plain paper regardless of the on-screen tint ────── */
 
 @media print {
-	/* Also exempts .rux-print-root (print-schedule.css) for the same reason
+	/* Also exempts .sched-print-root (print-schedule.css) for the same reason
 	   its own rule now exempts this window — see that file's comment. */
-	body > *:not(.rux-trip-envelope-window):not(.rux-print-root) {
+	body > *:not(.sched-trip-envelope-window):not(.sched-print-root) {
 		display: none !important;
 	}
 
@@ -478,7 +478,7 @@
 		width: 100%;
 	}
 
-	.rux-trip-envelope-window {
+	.sched-trip-envelope-window {
 		display: block !important;
 		position: static !important;
 		inset: auto !important;
@@ -505,13 +505,13 @@
 		background: none !important;
 	}
 
-	.rux-trip-envelope-window__header,
-	.rux-trip-envelope-window__toolbar,
-	.rux-trip-envelope-window__footer {
+	.sched-trip-envelope-window__header,
+	.sched-trip-envelope-window__toolbar,
+	.sched-trip-envelope-window__footer {
 		display: none !important;
 	}
 
-	.rux-trip-envelope-window__body {
+	.sched-trip-envelope-window__body {
 		display: block !important;
 		width: 100%;
 		overflow: visible !important;
@@ -519,7 +519,7 @@
 		background: none !important;
 	}
 
-	.rux-trip-envelope-window__body [data-envelope-content] {
+	.sched-trip-envelope-window__body [data-envelope-content] {
 		/* Screen-only rule above makes this a centering flex container, and
 		   fitToHeight() (trip-envelope.js) sets an inline height on it to
 		   match the scaled-down card when shrinking is needed — print needs
@@ -530,14 +530,14 @@
 		height: auto !important;
 	}
 
-	.rux-trip-envelope-window__body [data-envelope-content].is-batch-print > .rux-trip-envelope {
+	.sched-trip-envelope-window__body [data-envelope-content].is-batch-print > .sched-trip-envelope {
 		break-inside: avoid;
 		page-break-inside: avoid;
 		break-after: page;
 		page-break-after: always;
 	}
 
-	.rux-trip-envelope-window__body [data-envelope-content].is-batch-print > .rux-trip-envelope:last-child {
+	.sched-trip-envelope-window__body [data-envelope-content].is-batch-print > .sched-trip-envelope:last-child {
 		break-after: auto;
 		page-break-after: auto;
 	}
@@ -548,7 +548,7 @@
 	   screen, not a 5.7in-wide printable area, so print gets its own
 	   deliberately compact sizing below rather than shrinking via transform
 	   (which would also blur/misalign the ruled borders). */
-	.rux-trip-envelope {
+	.sched-trip-envelope {
 		--env-paper: oklch(100% 0 0);
 		width: 100%;
 		max-width: 100%;
@@ -655,7 +655,7 @@
 	@page {
 		size: 6.5in 9in;
 		/* Not reliably respected by the print driver here (see the comment
-		   on .rux-trip-envelope above) — left at 0 so it can't fight the
+		   on .sched-trip-envelope above) — left at 0 so it can't fight the
 		   card's own padding, which is what actually controls spacing now. */
 		margin: 0;
 	}

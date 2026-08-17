@@ -1844,7 +1844,7 @@ export function loadTrip(root, itinerary, trip) {
 	currentTripSnapshot = { ...normalized };
 	currentAssignments = snapshotAssignments(loadedAssignments);
 
-	root.classList.add("rux-scope-trip--loading");
+	root.classList.add("sched-scope-trip--loading");
 
 	populateTrip(root, normalized);
 	window.Rux?.syncDateInputs(root);
@@ -1896,7 +1896,7 @@ export function loadTrip(root, itinerary, trip) {
 	root.querySelector('[data-rux-tabs][data-scope="trip"] .rux-tab[aria-controls]')?.click();
 
 	requestAnimationFrame(() => {
-		root.classList.remove("rux-scope-trip--loading");
+		root.classList.remove("sched-scope-trip--loading");
 		root.dispatchEvent(new CustomEvent("rux:trip-loaded", { bubbles: true }));
 	});
 }
