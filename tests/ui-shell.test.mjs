@@ -24,7 +24,7 @@ const chatController = read("js/panels/team-chat.js");
 const chatDataController = read("js/data/team-chat-db.js");
 const chatStyles = read("scheduler/css/features/team-chat.css");
 const themeController = read("rux-ui/js/theme.js");
-const preferencesStyles = read("scheduler/css/features/preferences.css");
+const preferencesStyles = read("rux-ui/css/base/preferences.css");
 const layoutStyles = read("scheduler/css/layout/scheduler-app.css");
 
 function openingTag(id) {

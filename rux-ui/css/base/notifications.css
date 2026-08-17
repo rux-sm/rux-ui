@@ -67,7 +67,13 @@
 }
 
 .rux-notifications__item-detail {
-	margin: var(--rux-space-0-5) 0 0;
+	/* Was `var(--rux-space-0-5)`, a token that has never existed — the scale
+	   goes --rux-space-px, -1, -1-5. An undefined custom property makes the
+	   whole declaration invalid at computed-value time, so this has rendered
+	   as margin:0 since it was written. Kept at 0 to preserve the shipped
+	   appearance; if a gap was intended here, --rux-space-px (1px) or
+	   --rux-space-1 (4px) is the likely intent. */
+	margin: 0;
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 }

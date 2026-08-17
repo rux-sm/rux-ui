@@ -54,3 +54,47 @@
 .rux-status-text--success { color: var(--rux-success); }
 .rux-status-text--warning { color: var(--rux-warning); }
 .rux-status-text--danger  { color: var(--rux-danger); }
+
+
+/* — splash — */
+/* Full-viewport brand screen shown while an application boots; add
+   .rux-splash--hidden to fade it out. */
+.rux-splash {
+	position: fixed;
+	inset: 0;
+	z-index: 9999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--rux-surface-1);
+	transition: opacity var(--rux-duration-slow) var(--rux-ease-out);
+}
+
+.rux-splash__logo {
+	height: 128px;
+	width: auto;
+	image-rendering: pixelated;
+}
+
+.rux-splash--hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+
+/* — priority dot — */
+/* Small status dot keyed by [data-priority] 1-5, mapped onto the semantic
+   color ramp. Generic indicator: the meaning of each level is the
+   application's to define. */
+.rux-priority-dot {
+	width: var(--rux-space-2);
+	height: var(--rux-space-2);
+	flex: none;
+	border-radius: var(--rux-radius-full);
+}
+
+.rux-priority-dot[data-priority="1"] { background: var(--rux-warning); }
+.rux-priority-dot[data-priority="2"] { background: var(--rux-purple); }
+.rux-priority-dot[data-priority="3"] { background: var(--rux-info); }
+.rux-priority-dot[data-priority="4"] { background: var(--rux-success); }
+.rux-priority-dot[data-priority="5"] { background: var(--rux-white); }

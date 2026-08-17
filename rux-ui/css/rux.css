@@ -34,6 +34,9 @@
 @import "./base/card.css";
 @import "./base/table.css";
 @import "./base/content.css";
+@import "./base/notifications.css";
+@import "./base/preferences.css";
+@import "./base/profile-picker.css";
 @import "./base/feedback.css";
 @import "./base/navigation.css";
 @import "./base/utils.css";

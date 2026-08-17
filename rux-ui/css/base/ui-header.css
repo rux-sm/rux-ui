@@ -260,3 +260,44 @@
 .rux-skip-link:focus {
 	transform: translateY(0);
 }
+
+/* — Header avatar (top-right) — */
+/* The base header owns the avatar's 32px size within its 48px action button.
+   This feature supplies only the initials fallback's visual treatment. */
+
+.rux-ui-header__profile-initials {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: var(--rux-bg-active);
+	color: var(--rux-text-default);
+	font-size: var(--rux-size-xs);
+	font-weight: var(--rux-weight-400);
+	border: var(--rux-ui-header-avatar-border);
+}
+
+/* — Active profiles (header, left of the profile button) — */
+/* Overlapping avatar stack, Slack/Docs-presence style — name is a native
+   title tooltip rather than inline text, since this sits in the header nav
+   rather than a dropdown with room for labels. */
+
+.rux-ui-header__active-profiles {
+	display: flex;
+	align-items: center;
+	width: auto;
+	height: 28px;
+}
+
+.rux-ui-header__active-avatar {
+	flex: none;
+	width: var(--rux-ui-header-profile-avatar-size);
+	height: var(--rux-ui-header-profile-avatar-size);
+	border-radius: 50%;
+	border: var(--rux-ui-header-avatar-border);
+	margin-inline-start: calc(-1 * var(--rux-space-2));
+}
+
+.rux-ui-header__active-avatar:first-child {
+	margin-inline-start: 0;
+}
