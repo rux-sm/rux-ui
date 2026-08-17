@@ -2,7 +2,8 @@
    RUX UI — UI SHELL
    --------------------------------------------------------------------------
    Small disclosure controller for a .rux-ui-header menu button paired with
-   .rux-side-nav. Module routing remains the consuming application's job.
+   .rux-side-nav. View routing lives in rux-ui/js/view-router.js; the set of
+   views and what happens when one opens remain the application's job.
    ========================================================================== */
 
 (() => {

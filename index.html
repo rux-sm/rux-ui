@@ -7255,6 +7255,7 @@
 		<script src="./rux-ui/js/theme.js?v=1"></script>
 		<script src="./js/core/address-format.js?v=1"></script>
 		<script src="./rux-ui/js/ui-shell.js?v=2"></script>
+		<script src="./rux-ui/js/view-router.js?v=1"></script>
 		<script src="./rux-ui/js/drawer.js?v=10"></script>
 		<script src="./rux-ui/js/popover.js?v=4"></script>
 		<script src="./rux-ui/js/menu.js?v=3"></script>
@@ -7347,36 +7348,36 @@
 
 			// ── Module navigation ───────────────────────────────────────────────
 
-			const moduleSections = document.querySelectorAll(
-				".scheduler-app__module[data-module]",
-			);
-			const moduleButtons = document.querySelectorAll(
-				"button[data-module]",
-			);
-
-			function showModule(name) {
-				document.body.dataset.activeModule = name;
-				moduleSections.forEach((section) => {
-					section.hidden = section.dataset.module !== name;
-				});
-				moduleButtons.forEach((btn) => {
-					const on = btn.dataset.module === name;
-					btn.classList.toggle("is-active", on);
-					if (on) btn.setAttribute("aria-current", "page");
-					else btn.removeAttribute("aria-current");
-				});
-				history.replaceState(null, "", "#" + name);
-				if (name === "drivers") window.DriverPanel?.init();
-				if (name === "fleet") window.FleetPanel?.init();
-				if (name === "customers") window.CustomersPanel?.init();
-				if (name === "settings") window.SettingsPanel?.init();
-			}
-
-			moduleButtons.forEach((btn) => {
-				btn.addEventListener("click", () => {
-					showModule(btn.dataset.module);
-				});
+			// Container toggling, active-control marking, and hash sync are
+			// generic — RuxViewRouter (rux-ui/js/view-router.js) owns those. What
+			// stays here is the part only this app knows: which modules exist,
+			// the retired #schedule/#trips names, and the panels that boot lazily
+			// the first time their module is opened.
+			const moduleRouter = window.RuxViewRouter.create({
+				views: ".scheduler-app__module[data-module]",
+				controls: "button[data-module]",
+				attribute: "module",
+				allow: [
+					"calendar",
+					"fleet",
+					"drivers",
+					"customers",
+					"components",
+					"game",
+					"settings",
+				],
+				aliases: { schedule: "calendar", trips: "calendar" },
+				fallback: "calendar",
+				stateKey: "activeModule",
+				onChange(name) {
+					if (name === "drivers") window.DriverPanel?.init();
+					if (name === "fleet") window.FleetPanel?.init();
+					if (name === "customers") window.CustomersPanel?.init();
+					if (name === "settings") window.SettingsPanel?.init();
+				},
 			});
+
+			const showModule = (name) => moduleRouter.show(name);
 
 			// Profile switching, Preferences, Print schedule, and the internal
 			// Components destination live under the profile menu. Product Options
@@ -7897,25 +7898,9 @@
 			document.addEventListener("keydown", handleProfileActivity);
 
 			// Respect hash on load; fall back to calendar. Legacy #schedule/#trips maps to #calendar.
-			const initialModule =
-				location.hash.slice(1).split("/")[0] || "calendar";
-			const normalizedModule =
-				initialModule === "schedule" || initialModule === "trips"
-					? "calendar"
-					: initialModule;
-			showModule(
-				[
-					"calendar",
-					"fleet",
-					"drivers",
-					"customers",
-					"components",
-					"game",
-					"settings",
-				].includes(normalizedModule)
-					? normalizedModule
-					: "calendar",
-			);
+			// The router resolves aliases and the allowlist itself, so an unknown
+			// or absent hash lands on the fallback without a check here.
+			showModule(moduleRouter.fromHash());
 
 			// ── Trip editor dialog ─────────────────────────────────────────────
 
