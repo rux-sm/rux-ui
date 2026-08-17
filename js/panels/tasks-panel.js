@@ -279,7 +279,7 @@ async function driverAssignmentsUrl(driverId) {
 		p_driver_id: driverId,
 	});
 	if (error || !data?.token) return "";
-	const url = new URL("d.html", "https://rux-sm.github.io/rux-ui/");
+	const url = new URL("driver.html", "https://rux-sm.github.io/rux-ui/");
 	url.searchParams.set("s", data.token);
 	return url.href;
 }

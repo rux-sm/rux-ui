@@ -223,7 +223,7 @@
 	}
 
 	function driverScheduleUrl(token) {
-		const url = new URL("d.html", DRIVER_SHARE_ORIGIN);
+		const url = new URL("driver.html", DRIVER_SHARE_ORIGIN);
 		url.searchParams.set("s", token);
 		return url.href;
 	}

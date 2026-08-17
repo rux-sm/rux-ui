@@ -130,13 +130,13 @@ test("every page using .rux-* classes loads a design-system entrypoint", () => {
 	// scheduler/css/components.css carries only scheduler features now; the base
 	// layer comes from rux.css. A page that links components.css without an
 	// entrypoint renders every .rux-* component unstyled — the exact regression
-	// that reached d.html, m.html, and request.html when the entrypoints were
-	// consolidated and only index.html was updated.
+	// that reached driver.html, maintenance.html, and request.html when the
+	// entrypoints were consolidated and only index.html was updated.
 	const pages = [
 		"index.html",
 		"request.html",
-		"m.html",
-		"d.html",
+		"maintenance.html",
+		"driver.html",
 		"examples/app-layout.html",
 	];
 
@@ -157,7 +157,13 @@ test("every stylesheet and script a page links actually exists", () => {
 	// Moving a file into rux-ui/ without removing the application's own <link>
 	// leaves a 404 that is invisible in the UI, because rux.css supplies the
 	// styles anyway. That slipped through twice during the audit migration.
-	const pages = ["index.html", "request.html", "m.html", "d.html", "doc.html"];
+	const pages = [
+		"index.html",
+		"request.html",
+		"maintenance.html",
+		"driver.html",
+		"doc.html",
+	];
 	const dangling = [];
 
 	for (const page of pages) {

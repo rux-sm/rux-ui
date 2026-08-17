@@ -33,7 +33,7 @@ button?.addEventListener("click", async () => {
 		let result = await supabase.rpc("get_maintenance_schedule_share");
 		if (!result.data && !result.error) result = await supabase.rpc("create_maintenance_schedule_share");
 		if (result.error || !result.data?.token) throw result.error || new Error("No maintenance token");
-		const url = new URL("./m.html", location.href);
+		const url = new URL("./maintenance.html", location.href);
 		url.searchParams.set("s", result.data.token);
 		if (maintenanceWindow) maintenanceWindow.location.replace(url.href);
 		const copied = await copyText(url.href).catch(() => false);

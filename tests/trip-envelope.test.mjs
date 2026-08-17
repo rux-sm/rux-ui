@@ -15,7 +15,7 @@ const pageSource = await readFile(
 	"utf8",
 );
 const driverPageSource = await readFile(
-	new URL("../d.html", import.meta.url),
+	new URL("../driver.html", import.meta.url),
 	"utf8",
 );
 const envelopeStyles = await readFile(

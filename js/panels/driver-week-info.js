@@ -306,7 +306,7 @@ import {
 	const SITE_ORIGIN = "https://rux-sm.github.io/rux-ui/";
 
 	function shareUrl(token) {
-		const url = new URL("d.html", SITE_ORIGIN);
+		const url = new URL("driver.html", SITE_ORIGIN);
 		url.searchParams.set("s", token);
 		return url.href;
 	}
