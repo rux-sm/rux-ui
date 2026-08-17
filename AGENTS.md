@@ -5,7 +5,7 @@
 - Read `README.md` for project orientation.
 - Inspect only the files relevant to the requested task; do not scan the entire repository for a narrow change.
 - Follow this routing order:
-  - UI or CSS: `SKILL.md`, then the target markup/style file; inspect `css/tokens.css` when styling or tokens are involved.
+  - UI or CSS: `SKILL.md`, then the target markup/style file; inspect `rux-ui/css/tokens.css` when styling or tokens are involved.
   - Application behavior: the relevant file under `js/` or `index.html`, then directly connected dependencies only.
   - Reference-application data layer: the relevant module under `js/data/`, then related SQL under `supabase/`.
   - Hard debugging: the failing path first, expanding through callers and callees only as evidence requires.

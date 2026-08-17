@@ -4,7 +4,7 @@
 
 - Read `README.md` for project orientation, then inspect only task-relevant files.
 - Do not scan the repository broadly for a narrow change.
-- UI or CSS: read `SKILL.md`, then the target markup/style file; inspect `css/tokens.css` when styling or tokens are involved.
+- UI or CSS: read `SKILL.md`, then the target markup/style file; inspect `rux-ui/css/tokens.css` when styling or tokens are involved.
 - Application behavior: start with the relevant file under `js/` or `index.html` and follow only directly connected dependencies.
 - Reference-application data layer: start with the relevant module under `js/data/`, then inspect related SQL under `supabase/`.
 - Hard debugging: trace the failing path and expand through callers/callees only as needed.

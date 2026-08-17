@@ -3,7 +3,7 @@
 ## Load Context Narrowly
 
 - Read `README.md` for orientation, then inspect only files relevant to the task.
-- UI or CSS: read `SKILL.md`, then the target markup/style file; inspect `css/tokens.css` when styling or tokens are involved.
+- UI or CSS: read `SKILL.md`, then the target markup/style file; inspect `rux-ui/css/tokens.css` when styling or tokens are involved.
 - Application behavior: begin with the relevant file under `js/` or `index.html`, following only directly connected dependencies.
 - Reference-application data layer: begin with the relevant module under `js/data/`, then related SQL under `supabase/`.
 - Hard debugging: trace the failing path and expand through callers/callees only when evidence requires it.
@@ -14,7 +14,7 @@
 - Reuse existing `--rux-*` tokens and `.rux-*` components before creating new primitives.
 - Avoid inline styles and hardcoded colors when an existing token or stylesheet applies.
 - Make the smallest coherent change that satisfies the request; do not refactor unrelated code.
-- Preserve public tokens, classes, and JavaScript APIs unless a breaking change is explicitly requested.
+- Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested, or unless the change is a step recorded in `docs/portability-audit.md`. That document authorizes its own renames; renames outside it remain prohibited.
 - Plan mode is read-only: architecture and migration planning must not modify application, configuration, or SQL files.
 
 ## Data and Risk

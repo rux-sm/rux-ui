@@ -59,10 +59,10 @@ other customers' rows, and the inbox is readable only from the app.
 6. Dispatch marks it **Reviewed**, applies it to a trip, or **Closes** it.
 
 ## Files
-- `request.html`, `js/pages/trip-request.js`, `css/features/trip-request.css`
+- `request.html`, `js/pages/trip-request.js`, `scheduler/css/features/trip-request.css`
 - `js/core/trip-request-model.js` (pure; tested)
 - `js/data/trip-request-db.js`
-- `js/panels/request-inbox.js`, `css/features/request-inbox.css`
+- `js/panels/request-inbox.js`, `scheduler/css/features/request-inbox.css`
 - `tests/trip-request-model.test.mjs`, `tests/request-inbox.test.mjs`
 
 ## Notes on scope

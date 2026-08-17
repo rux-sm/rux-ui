@@ -19,13 +19,14 @@ Two things live side by side in this repo:
    - `rux-ui/css/tokens.css` — all `--rux-*` design tokens (color, type, space,
      radius, motion, component contracts)
    - `rux-ui/css/colors_and_type.css` — webfonts + global element styles
-   - `rux-ui/css/rux-core.css` — framework-agnostic entrypoint for new applications
-   - `rux-ui/css/base/` — 17 reusable BEM components
-   - `js/core/` — shared toast, modal, theme, and accent helpers
+   - `rux-ui/css/rux-core.css` — compatibility alias that forwards to `rux.css`
+   - `rux-ui/css/base/` — 21 reusable BEM components
+   - `rux-ui/js/` — shared toast, modal, theme, accent, menu, popover, drawer,
+     floating-window, suggestions, controls, ui-shell, and view-router helpers
 
 2. **The reference application** (`scheduler/`)
    - `scheduler/css/components.css` — full reference-application bundle (base + scheduler + trips)
-   - `scheduler/css/features/` — 29 scheduler-specific panels and components
+   - `scheduler/css/features/` — 30 scheduler-specific panels and components
    - `scheduler/css/layout/` — scheduler grid and application shell
    - `index.html` — the full app (scheduler, trip panel, fleet, dispatch) and
      the canonical composition reference

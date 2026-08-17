@@ -28,15 +28,16 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 │   │   ├── tokens.css         ← all design tokens: color, type, space, radius, motion
 │   │   ├── colors_and_type.css ← webfonts (text + icon faces) + global element styles
 │   │   ├── rux-core.css       ← compatibility alias, forwards to rux.css
-│   │   └── base/              ← 18 reusable BEM components
+│   │   └── base/              ← 21 reusable BEM components
 │   └── js/                    ← the JS engine behind rux-ui/css/base/* components:
 │                                 utilities.js (toast/modal/copy/accent), theme.js,
 │                                 menu.js, popover.js, drawer.js, floating-window.js,
-│                                 suggestions.js, controls.js, ui-shell.js
+│                                 suggestions.js, controls.js, ui-shell.js,
+│                                 view-router.js
 ├── scheduler/
 │   └── css/
 │       ├── components.css     ← scheduler bundle (features + layout; needs rux.css)
-│       ├── features/          ← 29 scheduler-specific panels and components
+│       ├── features/          ← 30 scheduler-specific panels and components
 │       └── layout/            ← scheduler grid and application shell
 ├── js/
 │   └── core/               ← scheduler business logic (billing, trip requests,
@@ -63,13 +64,14 @@ To use the complete reference-application bundle in an existing page:
 <script src="rux-ui/js/suggestions.js" defer></script>
 <script src="rux-ui/js/controls.js" defer></script>
 <script src="rux-ui/js/ui-shell.js" defer></script>
+<script src="rux-ui/js/view-router.js" defer></script>
 ```
 
 Only `utilities.js` is strictly required for the reference-app bundle to run
 without errors; the rest wire up specific components (menus, popovers,
 drawers, floating panels, the search dropdown, tab/toggle declarative
-controls, the header disclosure button) — include whichever ones the page
-actually uses.
+controls, the header disclosure button, the show-one-view router) — include
+whichever ones the page actually uses.
 
 For a new application, drop the second line — `rux.css` alone is the whole
 design system:

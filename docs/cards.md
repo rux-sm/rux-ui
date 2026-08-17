@@ -69,8 +69,8 @@ depth; nested headers and bodies do not create competing boxes.
 **No margin of its own** — deliberately. Consumers fall into two layout
 systems and one fixed margin can't serve both:
 
-- **Flex-column consumers** (`.rux-trip-panel__payment-rows`,
-  `.rux-trip-panel__bus-groups`) already space their nested cards via their
+- **Flex-column consumers** (`.rux-scope-trip__payment-rows`,
+  `.rux-scope-trip__bus-groups`) already space their nested cards via their
   own `gap`. Margins never collapse between flex children, so adding margin
   here too would stack on top of that gap instead of replacing it.
 - **Plain block-flow consumers** (`.rux-trip-itinerary__day-group`,
@@ -140,7 +140,7 @@ future addition in the same family.
 ## Panel — the outer-container primitive
 
 Floating Window, attached (docked) panel, Modal, and Popover-surface/Menu
-share one primitive, `.rux-panel` (`css/base/panel.css`), the same way Card
+share one primitive, `.rux-panel` (`rux-ui/css/base/panel.css`), the same way Card
 unified the old Section/Embed split. Unlike Card, Panel keeps the
 *traditional* "header attached to the box" shape — one bordered unit, not a
 floating label above a separate box — since a window/panel/dialog title bar

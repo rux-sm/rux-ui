@@ -418,13 +418,18 @@ breaking by definition and is the reason for the policy amendment recorded in
 `CLAUDE.md` / `AGENTS.md`.
 
 **Every page is a consumer.** Consolidating the entrypoint moved the base layer out of
-`scheduler/css/components.css` and into `rux.css`. `index.html` was updated; `d.html`,
-`m.html`, and `request.html` were not, and rendered every `.rux-*` component unstyled until
+`scheduler/css/components.css` and into `rux.css`. `index.html` was updated; `driver.html`,
+`maintenance.html`, and `request.html` were not, and rendered every `.rux-*` component unstyled until
 it was caught. The repository has **five** pages that use `.rux-*` classes — `index.html`,
-`request.html`, `m.html`, `d.html`, `examples/app-layout.html` — and `doc.html` plus
+`request.html`, `maintenance.html`, `driver.html`, `examples/app-layout.html` — and `doc.html` plus
 `documents/form_cca.html`, which are self-contained and use none. Any change to the
 entrypoint contract MUST be applied to all five. `tests/portability-boundary.test.mjs`
 now enforces this.
+
+> **Rename note (2026-08-17).** The share pages formerly named `d.html` and `m.html` are
+> now `driver.html` and `maintenance.html`. Root-level `d.html` / `m.html` remain as
+> self-contained redirect stubs so links shared before the rename keep resolving; they use
+> no `.rux-*` classes and are outside the entrypoint contract.
 
 ---
 
@@ -437,9 +442,9 @@ re-deriving anything above.
 |---|---|---|
 | 1 | Fix `base/icons.css:48` — the one clean move in §4.4 | Genuinely small and additive, and the only *functional* break a consumer hits today. Do it alone so it is trivially reviewable. |
 | 2 | Land the enforcement test (below), seeded with the current §4.4 inventory as an accepted-violations list | Locks in step 1 and stops new leaks immediately, without blocking on the recipe inversions. Shrink the list as steps 3 and 8 land. |
-| 3 | ~~Invert the §4.4 shared typography recipes into Tier 1 utilities~~ **done** | The bulk of the boundary debt. Five recipes across `utils.css`, `card.css`, `form.css`; 20 markup sites in `index.html`, `m.html`, `request.html`, and four JS modules. |
+| 3 | ~~Invert the §4.4 shared typography recipes into Tier 1 utilities~~ **done** | The bulk of the boundary debt. Five recipes across `utils.css`, `card.css`, `form.css`; 20 markup sites in `index.html`, `maintenance.html` (then `m.html`), `request.html`, and four JS modules. |
 | 4 | ~~Extract §4.2 Portable rows~~ **done** | `.rux-table`, `.rux-status-text`, `.rux-notifications`, `.rux-preferences`, `.rux-view-options`, `.rux-profile-picker`, `.rux-splash`, `.rux-priority-dot` all moved. Two needed splitting first: `preferences.css` shared a label recipe with `.settings-location-row__name` (now `.rux-u-label`), and `profile-picker.css` defined `.rux-ui-header__*` elements, which went to `ui-header.css`. `.rux-col-picker` / `.rux-mini-cal` stay Hybrid, unmoved. |
-| 5 | ~~Namespace migration `.rux-*` → `.sched-*` (§3)~~ **classes done** | 585 occurrences across 46 files. Two follow-ups deliberately deferred, each its own decision: the 51 domain-named `--rux-*` **tokens** (§4.7) still carry the old prefix, and the redundant `scope` marker (`.sched-scope-trip` → `.sched-trip`) was left in place rather than combining two transformations in one wide rename. |
+| 5 | ~~Namespace migration `.rux-*` → `.sched-*` (§3)~~ **blocks done; elements remain** | 585 occurrences across 46 files. Two follow-ups deliberately deferred, each its own decision: the 51 domain-named `--rux-*` **tokens** (§4.7) still carry the old prefix, and the redundant `scope` marker (`.sched-scope-trip` → `.sched-trip`) was left in place rather than combining two transformations in one wide rename. **Status correction (2026-08-17):** the migration renamed *block* classes, but ~28 families of **element** classes still carry the old prefix in the app layer — `.rux-bus-picker__*`, `.rux-trip-bar__head/__tail`, `.rux-tasks__*`, `.rux-team-chat__*`, `.rux-scope-*__*`, and peers — consistently in both CSS and markup, so nothing renders wrong, but the §3 "prefix is truth" rule is not yet fully realized. Completing the element rename is an open follow-up of this step. |
 | 6 | ~~Resolve §4.5 re-opened blocks into tokens/modifiers~~ **done** | Auditing this showed §4.5 conflated two different things. Renaming an app-invented element out of the portable namespace is one fix; publishing a modifier for a genuine override is another; and a *scoped descendant* rule (`.scheduler-app__module > .rux-workspace`) is not a violation at all — it is the correct way for an app to configure a portable block. See §4.5 below. |
 | 7 | ~~Extract the view container (§5.2)~~ **done** | `rux-ui/js/view-router.js` — `RuxViewRouter.create()`. The app supplies the allowlist, the retired `#schedule`/`#trips` aliases, and the lazy panel boots via `onChange`; the router owns container toggling, `aria-current`, and hash sync. `showModule()` is now a one-line delegate. |
 | 8 | ~~Decouple `drawer.js` (§5.3)~~ **JS done** | The coupling was far deeper than §5.3 recorded — ~20 references, not 4. Resolved with a single configuration seam, `RuxDrawer.configure()`, holding portable `.rux-*` defaults that the application overrides once at startup. The drawer **CSS** split (§4.1) is still open and belongs with the shell work. |

@@ -15,12 +15,11 @@ look and behave like the existing product.
 Read `README.md` for the full visual and content rules. Inspect only the files
 needed for the task after that:
 
-- `rux-ui/css/rux.css` — single entry point for the full design system
-- `rux-ui/css/rux-core.css` — framework-agnostic entrypoint for new applications
+- `rux-ui/css/rux.css` — the single entrypoint; load this to get tokens, webfonts, and every base component
+- `rux-ui/css/rux-core.css` — compatibility alias that forwards to `rux.css`; new pages link `rux.css` directly
 - `rux-ui/css/tokens.css` — primitives, semantic tokens, component contracts, and themes
 - `rux-ui/css/colors_and_type.css` — webfonts, reset, global element styles, and type utilities
 - `rux-ui/css/base/` — reusable BEM-style `.rux-*` components
-- `rux-ui/css/rux.css` — the single entrypoint; load this to get tokens, webfonts, and every base component
 - `scheduler/css/components.css` — scheduler features and layout only; requires `rux.css` to be loaded first
 - `scheduler/css/features/` — product-specific component and panel styles
 - `scheduler/css/layout/` — scheduler and application-shell layout styles
@@ -32,7 +31,8 @@ needed for the task after that:
 - `docs/motion.md` — productive-motion tokens and panel/menu animation contracts
 - `rux-ui/js/` — the JS engine behind `rux-ui/css/base/*` components: toasts,
   modals, theme switching, menus, popovers, drawers, floating windows,
-  the search-as-you-type dropdown, and the UI-header disclosure controller
+  the search-as-you-type dropdown, the view router, and the UI-header
+  disclosure controller
 - `index.html` — current full application and the best composition reference
 - `assets/` — current logos, favicon, profile image, and splash asset
 
@@ -70,7 +70,8 @@ rux-ui/
     ├── drawer.js
     ├── floating-window.js
     ├── suggestions.js
-    └── ui-shell.js
+    ├── ui-shell.js
+    └── view-router.js
 ```
 
 Load the shared system before app-specific styles, and the shared scripts
@@ -82,7 +83,8 @@ before app-specific scripts:
 <script src="rux-ui/js/utilities.js" defer></script>
 <script src="rux-ui/js/controls.js" defer></script>
 <!-- plus theme.js, menu.js, popover.js, drawer.js, floating-window.js,
-     suggestions.js, ui-shell.js — whichever components the app uses -->
+     suggestions.js, ui-shell.js, view-router.js — whichever components
+     the app uses -->
 ```
 
 Treat `rux-ui/` as read-only in the consuming app. Make shared changes

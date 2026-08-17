@@ -178,8 +178,8 @@ Detailed UI rules belong in `SKILL.md`; model-selection strategy belongs here. T
 
 - For UI, CSS, design tokens, component, content, or responsive work, read `SKILL.md` before editing.
 - Reuse existing `.rux-*` components and `--rux-*` tokens before creating new primitives.
-- Inspect `css/tokens.css` when token or styling contracts are involved.
-- Put reusable component styling under `css/base/`, product-specific styling under `css/features/`, and layout behavior under `css/layout/`, following existing imports.
+- Inspect `rux-ui/css/tokens.css` when token or styling contracts are involved.
+- Put reusable component styling under `rux-ui/css/base/`, product-specific styling under `scheduler/css/features/`, and layout behavior under `scheduler/css/layout/`, following existing imports.
 - Do not add inline styles, hardcoded colors, emoji icons, or incompatible class conventions when the established system applies.
 - Preserve light/dark support, responsiveness, semantic markup, keyboard behavior, focus visibility, and reduced-motion behavior.
 - Public tokens and `.rux-*` classes are compatibility surfaces; removal or renaming requires an explicit migration plan.

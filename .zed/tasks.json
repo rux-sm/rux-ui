@@ -1,14 +1,3 @@
-/*/[
-  {
-    "label": "Live Server (Wi-Fi)",
-    "command": "npx",
-    "args": ["live-server", "--host=0.0.0.0", "--port=5500"],
-    "use_new_terminal": true,
-    "allow_concurrent_runs": false,
-    "reveal": "always"
-  }
-]*/
-
 [
   {
     "label": "Live Server (Wi-Fi)",

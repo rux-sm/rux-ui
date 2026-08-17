@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-file_path = ARGV.fetch(0, "css/tokens.css")
+file_path = ARGV.fetch(0, "rux-ui/css/tokens.css")
 source = File.read(file_path)
 lines = source.split("\n", -1)
 declaration = /^(\s*)(--[\w-]+):[ \t]*(\S.*)$/

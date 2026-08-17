@@ -5,7 +5,7 @@
 			"label": "Align CSS token values",
 			"type": "process",
 			"command": "ruby",
-			"args": ["scripts/align-css-tokens.rb", "css/tokens.css"],
+			"args": ["scripts/align-css-tokens.rb", "rux-ui/css/tokens.css"],
 			"problemMatcher": [],
 			"group": {
 				"kind": "build",

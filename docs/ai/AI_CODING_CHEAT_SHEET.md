@@ -38,7 +38,7 @@ Model names and availability change. Use the current equivalent tier offered by 
 
 | Modifier | Add to the normal posture |
 |---|---|
-| `V` Visual | Read `SKILL.md`; inspect `css/tokens.css` when relevant; reuse Rux primitives; render narrow/wide and light/dark states |
+| `V` Visual | Read `SKILL.md`; inspect `rux-ui/css/tokens.css` when relevant; reuse Rux primitives; render narrow/wide and light/dark states |
 | `R` Risk | Inspect first; use Manual/Guarded mode; state blast radius and rollback; require approval before destructive/production execution |
 
 Hard task does not mean high autonomy. Often the right configuration is **strong model + high reasoning + low autonomy**.
@@ -47,7 +47,7 @@ Hard task does not mean high autonomy. Often the right configuration is **strong
 
 | Task | Read in this order |
 |---|---|
-| UI/CSS | `SKILL.md` → `css/tokens.css` when relevant → target markup/style |
+| UI/CSS | `SKILL.md` → `rux-ui/css/tokens.css` when relevant → target markup/style |
 | Application behavior | Target `js/` module or `index.html` section → direct callers/dependencies |
 | Data/Supabase | Relevant `js/data/` module → related `supabase/` SQL → affected consumers |
 | Hard debugging | Failure evidence → failing module → caller/callee chain as needed |
@@ -91,7 +91,7 @@ Example:
 ```text
 TYPE: 2V
 GOAL: Add a status badge to .rux-card headers in the reference application.
-CONTEXT: Read SKILL.md, the assignment-card implementation, and css/tokens.css.
+CONTEXT: Read SKILL.md, the assignment-card implementation, and rux-ui/css/tokens.css.
 CONSTRAINTS: Reuse Rux primitives; preserve cards without a location.
 SCOPE: Modify only required assignment-card files.
 VERIFICATION: Run focused tests and inspect narrow/wide layouts in both themes.
