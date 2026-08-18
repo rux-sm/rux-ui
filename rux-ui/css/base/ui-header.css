@@ -293,7 +293,6 @@
 	flex: none;
 	width: var(--rux-ui-header-profile-avatar-size);
 	height: var(--rux-ui-header-profile-avatar-size);
-	border-radius: 50%;
 	border: var(--rux-ui-header-avatar-border);
 	margin-inline-start: calc(-1 * var(--rux-space-2));
 }

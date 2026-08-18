@@ -26,7 +26,7 @@
   justify-content: center;
   width: var(--rux-avatar-md);
   height: var(--rux-avatar-md);
-  border-radius: var(--rux-radius-control);
+  border-radius: var(--rux-radius-full);
   background: var(--rux-bg-active);
   color: var(--rux-text-default);
   font-size: var(--rux-size-xs);
