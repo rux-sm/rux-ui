@@ -135,12 +135,9 @@ When escalating, carry forward the failure evidence, relevant files, attempted f
 
 De-escalate once the hard question is resolved. A high-tier debugging pass can hand a precise one-file edit back to a faster configuration.
 
-## 8. Platform-Specific Recommendations
-
-### Claude Code
+## 8. Claude Code Configuration
 
 - `CLAUDE.md` supplies the always-on repository policy.
-- Use Sonnet for classes 1–2 and Fable for classes 3–5 when those tiers are available.
 - Use Plan mode for architecture and migration design.
 - Use manual approval/checkpoints for hard debugging and `R` work; reserve autonomous mode for bounded class 5 work.
 - Use the on-demand `verify` skill for repository-specific launch and verification guidance when relevant.
@@ -152,6 +149,7 @@ De-escalate once the hard question is resolved. A high-tier debugging pass can h
 | `README.md` | Humans and agents | Project, design-system, content, and usage orientation | Read at task start |
 | `.claude/skills/rux-design/SKILL.md` | Claude Code | Detailed Rux UI implementation, tokens, components, layout, content, and visual verification | Read only for UI/frontend work |
 | `CLAUDE.md` | Claude Code | Concise repository behavior and routing | Always on |
+| `.claude/skills/vendor-rux-ui/SKILL.md` | Claude Code | Copying the design system into a consuming app and syncing it | Load only when vendoring |
 | `.claude/skills/verify/SKILL.md` | Claude Code | On-demand local launch and verification procedure | Load only when verification needs it |
 | `docs/ai/AI_CODING_CHEAT_SHEET.md` | Human developer | Personal day-to-day classification and configuration card | Read when starting or escalating a task |
 | `docs/ai/AI_AGENT_WORKFLOW.md` | Human developer | Task classification, model/mode selection, escalation, and prompt templates | Read when choosing or adjusting a workflow |

@@ -6,13 +6,13 @@ The billing system manages trip financial status through a configurable workflow
 
 The system spans these files:
 
-| File                   | Purpose                                                |
-| ---------------------- | ------------------------------------------------------ |
-| `js/billing-config.js` | Core status derivation, configuration, badge rendering |
-| `js/trip-panel.js`     | Trip editor billing tab UI and real-time sync          |
-| `js/trip-db.js`        | Persists billing data to Supabase                      |
-| `js/settings-panel.js` | Settings UI for configuring the workflow               |
-| `js/trip-bar.js`       | Trip bar uses billing status for confirmation display  |
+| File                          | Purpose                                                |
+| ----------------------------- | ------------------------------------------------------ |
+| `js/core/billing-config.js`   | Core status derivation, configuration, badge rendering |
+| `js/panels/trip-panel.js`     | Trip editor billing tab UI and real-time sync          |
+| `js/data/trip-db.js`          | Persists billing data to Supabase                      |
+| `js/panels/settings-panel.js` | Settings UI for configuring the workflow               |
+| `js/components/trip-bar.js`   | Trip bar uses billing status for confirmation display  |
 
 ---
 

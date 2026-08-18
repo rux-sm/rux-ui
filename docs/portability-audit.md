@@ -139,9 +139,9 @@ They are the highest-value, lowest-risk extractions in the repository.
 |---|---|---|---|---|
 | ~~`.rux-table`~~ | → `rux-ui/css/base/table.css` | **none** — 21 `--rux-table-*` tokens **already lived in Tier 0** | none | **done (step 4)** |
 | ~~`.rux-status-text`~~ | → `rux-ui/css/base/content.css` | none — 5 lines mapping semantic color | none | **done (step 4)** |
-| `.rux-notifications`, `-menu` | `features/notifications.css` | none (0 domain hits, 83 lines) | `ui-shell.test.mjs` | Portable |
-| `.rux-preferences` | `features/preferences.css` | none (0 domain hits, 54 lines) | `ui-shell.test.mjs` | Portable |
-| `.rux-profile-picker` | `features/profile-picker.css` | none (0 domain hits, 153 lines) | none | Portable |
+| ~~`.rux-notifications`, `-menu`~~ | → `rux-ui/css/base/notifications.css` | none (0 domain hits, 83 lines) | `ui-shell.test.mjs` | **done** |
+| ~~`.rux-preferences`~~ | → `rux-ui/css/base/preferences.css` | none (0 domain hits, 54 lines) | `ui-shell.test.mjs` | **done** |
+| ~~`.rux-profile-picker`~~ | → `rux-ui/css/base/profile-picker.css` | none (0 domain hits, 153 lines) | none | **done** |
 | `.rux-col-picker`, `.rux-col-filter-icon` | `features/bus-picker.css`, `comp-driver-app.css` | column-picker mechanism is generic; its contents are not | none | Hybrid |
 | `.rux-splash` | `layout/scheduler-app.css:11` | none in its own rules | none | Portable |
 | `.rux-view-options` | `layout/scheduler-app.css:1255` | none in its own rules | none | Portable |
