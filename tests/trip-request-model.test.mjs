@@ -4,6 +4,11 @@ import {
 	buildDraft,
 	validateDraft,
 	normalizePassengerCount,
+	recommendedBusCount,
+	SEATS_PER_BUS,
+	documentError,
+	formatFileSize,
+	MAX_DOCUMENT_BYTES,
 } from "../js/core/trip-request-model.js";
 
 const baseValues = {
@@ -72,6 +77,66 @@ test("buildDraft emits one-way outbound only", () => {
 	assert.equal(draft.trip.type, "one_way");
 	assert.equal(draft.trip.legs.outbound.end_date, "2026-07-26");
 	assert.equal(draft.trip.legs.return, undefined);
+});
+
+test("recommendedBusCount fills coaches at the advertised seat count", () => {
+	// 52 is the advertised capacity, deliberately below the 56-seat coaches
+	// dispatch assigns itself. Changing this to 56 would quote customers
+	// fewer buses than a trip needs — see SEATS_PER_BUS.
+	assert.equal(SEATS_PER_BUS, 52);
+	assert.equal(recommendedBusCount(""), 1, "no count yet still means one bus");
+	assert.equal(recommendedBusCount("1"), 1);
+	assert.equal(recommendedBusCount("52"), 1, "a full coach is still one bus");
+	assert.equal(recommendedBusCount("53"), 2, "one over rolls to a second");
+	assert.equal(recommendedBusCount("104"), 2);
+	// normalizePassengerCount caps at 200, so this can never reach the
+	// schema's bus_count maximum of 20 — but the clamp is there regardless.
+	assert.equal(recommendedBusCount("999"), 4);
+});
+
+test("buildDraft carries the recommended bus count onto every leg", () => {
+	const draft = buildDraft({ ...baseValues, passengerCount: "104" });
+	assert.equal(draft.trip.legs.outbound.bus_count, 2);
+
+	const split = buildDraft({
+		...baseValues,
+		type: "dropoff_pickup",
+		passengerCount: "104",
+		split: { date: "2026-07-29" },
+	});
+	assert.equal(split.trip.legs.outbound.bus_count, 2);
+	assert.equal(split.trip.legs.return.bus_count, 2);
+});
+
+test("documentError accepts the formats customers actually send", () => {
+	// The three the request form exists to receive.
+	assert.equal(documentError({ name: "itinerary.pdf", size: 2048 }), "");
+	assert.equal(documentError({ name: "Trip Plan.docx", size: 2048 }), "");
+	assert.equal(documentError({ name: "roster.xlsx", size: 2048 }), "");
+	// A phone photo of a printed itinerary is the same request.
+	assert.equal(documentError({ name: "IMG_0042.HEIC", size: 2048 }), "");
+	assert.equal(documentError({ name: "scan.JPG", size: 2048 }), "");
+});
+
+test("documentError rejects what storage would reject anyway", () => {
+	assert.match(documentError({ name: "payload.zip", size: 10 }), /PDF, Word/);
+	assert.match(documentError({ name: "run.exe", size: 10 }), /PDF, Word/);
+	assert.match(documentError({ name: "noextension", size: 10 }), /PDF, Word/);
+	assert.equal(documentError({ name: "", size: 10 }), "That file could not be read");
+	// The bucket's own file_size_limit is the same 10 MB — see
+	// supabase/trip_request_documents.sql. This just says so in English first.
+	assert.match(
+		documentError({ name: "big.pdf", size: MAX_DOCUMENT_BYTES + 1 }),
+		/under 10 MB/,
+	);
+	assert.equal(documentError({ name: "edge.pdf", size: MAX_DOCUMENT_BYTES }), "");
+});
+
+test("formatFileSize stays readable at each magnitude", () => {
+	assert.equal(formatFileSize(0), "");
+	assert.equal(formatFileSize(512), "512 B");
+	assert.equal(formatFileSize(2048), "2 KB");
+	assert.equal(formatFileSize(5 * 1024 * 1024), "5.0 MB");
 });
 
 test("normalizers clamp passenger counts", () => {

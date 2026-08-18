@@ -1,14 +1,16 @@
 /* ==========================================================================
    TABLE  ·  .rux-table — content-width data table
    --------------------------------------------------------------------------
-   Auto layout, no width:100%, so columns hug their content instead of
-   stretching to fill the wrap (matches Radix's table). The wrap's own
-   overflow-x:auto handles the rare case where content is wider than the
-   available space. Sticky header, hover and selection states, and opt-in
-   filterable/sortable column headers.
+   Auto layout and no intrinsic width, so a bare .rux-table's columns hug
+   their content instead of stretching (matches Radix's table). Wrapping it in
+   .rux-table-wrap opts into the full-width roster stance and adds the frame,
+   surface, and scrolling. Sticky header, hover and selection states, and
+   opt-in filterable/sortable column headers.
 
    Anatomy
    -------
+   .rux-table-wrap                     scroll container; owns the surface, the
+                                       hairline frame, and the rounded corners
    .rux-table                          the table element
    .rux-table tbody tr.is-selected     selected row
    th[data-col-filter]                 filterable header; .is-filtered when active
@@ -19,6 +21,32 @@
    style their own columns by attribute (td[data-col="…"]) from their own
    stylesheet; this file never names one.
    ========================================================================== */
+
+/* — Scroll container — */
+
+/* The table has no frame of its own; this wrap draws it, so a roster reads as
+   one bordered surface with a sticky header scrolling inside it. Grows to fill
+   a flex parent and contains its own overscroll so a bounce at the end of the
+   list does not chain out to the page. */
+.rux-table-wrap {
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	overflow: auto;
+	overscroll-behavior: contain;
+	padding-bottom: var(--rux-space-4);
+	background: var(--rux-table-wrap-bg);
+	border: var(--rux-table-wrap-border);
+	border-radius: var(--rux-table-wrap-radius);
+}
+
+/* Inside a wrap the table distributes across the available width instead of
+   hugging its content — the wrap, not the table, decides how wide a roster is.
+   Auto layout still lets columns push past 100% when the content demands it,
+   which is what the wrap's overflow is for. */
+.rux-table-wrap > .rux-table {
+	width: 100%;
+}
 
 .rux-table {
 	border-collapse: collapse;

@@ -624,15 +624,18 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/--sched-driver-card-header-padding:\s+28px var\(--rux-space-5\)/,
 	);
-	assert.match(tokens, /--rux-badge-background-opacity:\s+12%/);
+	assert.match(tokens, /--rux-badge-background-opacity:\s+16%/);
 	assert.match(tokens, /--rux-badge-module-height:\s+44px/);
+	// The card's bus/role chips are --module, which keeps body-size type after
+	// the base badge stepped down to --rux-size-xs.
+	assert.match(tokens, /--rux-badge-module-font-size:\s+var\(--rux-size-sm\)/);
 	assert.match(
 		css,
 		/--sched-driver-module-padding:\s+20px var\(--rux-space-5\)/,
 	);
 	assert.match(
 		badges,
-		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info-strong\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid var\(--_badge-color\)[^}]*color:\s*var\(--_badge-color\)/s,
+		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info-strong\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid\s*color-mix\([^}]*var\(--rux-badge-border-opacity\)[^}]*color:\s*var\(--_badge-color\)/s,
 	);
 	for (const [tone, color] of [
 		["info", "info"],

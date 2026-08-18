@@ -82,10 +82,15 @@ html {
 	height: auto;
 }
 
+/* The page's <h1>. line-height is declared because the element would
+   otherwise inherit the 4xl heading rhythm from colors_and_type.css and
+   stretch the header — this page keeps its own phone-first header rather
+   than .rux-ui-header, so it styles its own title. */
 .driver-share-header__label {
 	color: var(--rux-text-muted);
 	font-size: var(--sched-driver-secondary-size);
 	font-weight: var(--rux-weight-400);
+	line-height: var(--rux-line-height-sm);
 	white-space: nowrap;
 }
 

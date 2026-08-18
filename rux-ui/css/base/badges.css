@@ -5,16 +5,22 @@
    colors, or sizes — reference this file only.
 
    .rux-badge                    Info status by default
-   .rux-badge--accent            Alias of Info for legacy consumers
    .rux-badge--success           Success palette
    .rux-badge--warning           Warning palette
    .rux-badge--danger            Danger palette
    .rux-badge--info              Info palette
+   .rux-badge--solid             High-emphasis fill (combine with a color modifier)
    .rux-badge--module            Larger metadata/module treatment
    .rux-badge--dot               ::before dot in currentColor (combine with a color modifier)
 
-   Every status badge uses the same background-opacity token and a solid
-   semantic border. Shape and color rules remain centralized here.
+   Two emphasis levels, one axis. The default is subtle — a tinted fill, a
+   hairline border, and the semantic color as text — for labels that annotate
+   a row without competing with it. --solid fills with the semantic color for
+   the few states that have to be seen before the row is read. Pick the color
+   modifier for meaning and the emphasis modifier for weight; they compose.
+
+   Shape and color rules remain centralized here. Every value is a
+   --rux-badge-* token in tokens.css.
    ========================================================================== */
 
 /* — base — */
@@ -43,14 +49,35 @@
     var(--_badge-color) var(--rux-badge-background-opacity),
     var(--rux-surface-1)
   );
-  border: var(--rux-border-width) solid var(--_badge-color);
+  /* Mixed toward the surface for the same reason as the fill above, and so
+     the outline stays a hairline instead of out-shouting what it encloses. */
+  border: var(--rux-border-width) solid
+    color-mix(
+      in oklab,
+      var(--_badge-color) var(--rux-badge-border-opacity),
+      var(--rux-surface-1)
+    );
   border-radius: var(--rux-badge-radius);
   color: var(--_badge-color);
   font-size: var(--rux-badge-font-size);
   font-weight: var(--rux-badge-font-weight);
+  line-height: 1;
   white-space: nowrap;
-  -webkit-backdrop-filter: blur(var(--rux-backdrop-blur));
-  backdrop-filter: blur(var(--rux-backdrop-blur));
+}
+
+/* — solid emphasis — */
+
+/* Derived from whatever --_badge-color the color modifier set, so every
+   semantic gets a solid form for free and a new semantic needs no rule here.
+   The border matches the fill rather than vanishing: a transparent border
+   would collapse the 1px the subtle badge occupies and make the two emphases
+   different sizes. */
+.rux-badge--solid {
+  background: oklch(from var(--_badge-color) var(--rux-badge-solid-lightness) c h);
+  border-color: oklch(from var(--_badge-color) var(--rux-badge-solid-lightness) c h);
+  color: oklch(
+    from var(--_badge-color) var(--rux-badge-solid-fg-lightness) calc(c * 0.25) h
+  );
 }
 
 .rux-badge--module {
@@ -58,6 +85,7 @@
   height: var(--rux-badge-module-height);
   padding-inline: var(--rux-badge-module-padding);
   border-radius: var(--rux-badge-module-radius);
+  font-size: var(--rux-badge-module-font-size);
 }
 
 .rux-badge__icon {
@@ -74,7 +102,6 @@
 
 /* — color variants — */
 
-.rux-badge--accent,
 .rux-badge--info    { --_badge-color: var(--rux-info-strong); }
 .rux-badge--success { --_badge-color: var(--rux-success-strong); }
 .rux-badge--warning { --_badge-color: var(--rux-warning-strong); }

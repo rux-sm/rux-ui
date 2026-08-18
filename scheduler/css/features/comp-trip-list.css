@@ -35,17 +35,6 @@
 	font-size: 14px;
 }
 
-/* — Table wrap — */
-
-.trips-app__table-wrap {
-	flex: 1;
-	overflow-y: auto;
-	overflow-x: auto;
-	overscroll-behavior: contain;
-	padding-bottom: var(--rux-space-4);
-	border: var(--rux-table-wrap-border);
-}
-
 /* — Trip identity cell — */
 
 .trips-app__trip-cell {

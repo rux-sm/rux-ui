@@ -1,62 +1,69 @@
 <!doctype html>
-<html lang="en">
+<!-- Pinned to the light palette rather than following the visitor's system
+     preference: this is a public, no-login page with no theme toggle to
+     correct a guess with, so it presents one predictable face to every
+     customer. data-theme is read by rux-ui/css/tokens.css, and its light
+     block also sets color-scheme: light, which is what makes the native date
+     and time pickers in this form render light too. -->
+<html lang="en" data-theme="light">
 	<head>
 		<meta charset="utf-8" />
 		<meta
 			name="viewport"
 			content="width=device-width, initial-scale=1, viewport-fit=cover"
 		/>
-		<meta name="theme-color" content="#101112" />
+		<!-- Matches index.html's own light-theme chrome color. A meta tag can't
+		     read a CSS custom property, so this is the one place the value is
+		     written out rather than tokenized. -->
+		<meta name="theme-color" content="#f0f1f3" />
 		<title>Trip Request · Escamilla Tour Buses</title>
 		<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=4" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=12" />
 		<link rel="stylesheet" href="./scheduler/css/components.css?v=175" />
-		<link rel="stylesheet" href="./scheduler/css/features/trip-request.css?v=3" />
+		<link rel="stylesheet" href="./scheduler/css/features/trip-request.css?v=12" />
 		<link
 			rel="stylesheet"
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&amp;display=swap"
 		/>
 	</head>
 	<body class="trip-request-page">
-		<header class="trip-request-header">
-			<img
-				class="trip-request-header__logo"
-				src="./assets/logo.png"
-				alt="Escamilla Tour Buses"
-			/>
-			<span class="trip-request-header__label rux-u-eyebrow">Trip Request</span>
+		<header class="rux-ui-header" aria-label="Application Header">
+			<div class="rux-ui-header__brand">
+				<img
+					class="rux-ui-header__logo"
+					src="./assets/logo.png"
+					alt="Escamilla Tour Buses"
+				/>
+			</div>
+			<span class="rux-ui-header__title">Trip Request</span>
 		</header>
 
 		<main class="trip-request" id="trip-request-root">
-			<article class="rux-card">
-				<header class="rux-card__header">
-					<h1 class="rux-card__title">Tell us about your trip</h1>
-				</header>
-			<div class="rux-card__body">
-				<p class="trip-request__intro">
-					A few details are enough to get us started. We'll review
-					your request and follow up with details and pricing.
+			<div class="trip-request__intro" id="trip-request-intro">
+				<h1 class="trip-request__page-title">
+					Tell us about your trip
+				</h1>
+				<p class="trip-request__intro-text">
+					A few details are enough to get us started.
 				</p>
+			</div>
 
-				<form
-					class="trip-request__form"
-					id="trip-request-form"
-					novalidate
-				>
-					<fieldset class="trip-request__section">
-						<legend class="trip-request__section-title">
-							Your contact
-						</legend>
+			<form class="trip-request__form" id="trip-request-form" novalidate>
+				<section class="rux-card">
+					<header class="rux-card__header">
+						<h2 class="rux-card__title">Your contact</h2>
+					</header>
+					<div class="rux-card__body">
 						<div class="trip-request__grid">
 							<label class="rux-field trip-request__span-2">
 								<span class="rux-field__label"
-									>Client / group</span
+									>Business or school</span
 								>
 								<input
 									class="rux-input"
 									type="text"
 									data-field="client"
-									placeholder="Raymondville ISD"
+									placeholder="School, church, team, or company"
 									autocomplete="organization"
 								/>
 							</label>
@@ -102,12 +109,14 @@
 								></p>
 							</label>
 						</div>
-					</fieldset>
-					<fieldset class="trip-request__section">
-						<legend class="trip-request__section-title">
-							The trip
-						</legend>
+					</div>
+				</section>
 
+				<section class="rux-card">
+					<header class="rux-card__header">
+						<h2 class="rux-card__title">The trip</h2>
+					</header>
+					<div class="rux-card__body">
 						<div class="rux-field">
 							<span class="rux-field__label">Trip type</span>
 							<div
@@ -130,11 +139,7 @@
 									>
 								</label>
 								<label class="trip-request-option">
-									<input
-										type="radio"
-										name="type"
-										value="one_way"
-									/>
+									<input type="radio" name="type" value="one_way" />
 									<span class="trip-request-option__label"
 										>One way</span
 									>
@@ -160,9 +165,7 @@
 
 						<div class="trip-request__grid">
 							<label class="rux-field trip-request__span-2">
-								<span class="rux-field__label"
-									>Destination</span
-								>
+								<span class="rux-field__label">Destination</span>
 								<input
 									class="rux-input"
 									type="text"
@@ -185,7 +188,7 @@
 									type="text"
 									data-field="pickup.address"
 									data-validate="pickup.address"
-									placeholder="101 E Hackberry Ave, McAllen, TX"
+									placeholder="Street address or venue name"
 									autocomplete="street-address"
 								/>
 								<p
@@ -195,9 +198,7 @@
 								></p>
 							</label>
 							<label class="rux-field">
-								<span class="rux-field__label"
-									>Pickup date</span
-								>
+								<span class="rux-field__label">Pickup date</span>
 								<input
 									class="rux-input"
 									type="date"
@@ -211,20 +212,15 @@
 								></p>
 							</label>
 							<label class="rux-field">
-								<span class="rux-field__label"
-									>Pickup time</span
-								>
+								<span class="rux-field__label">Pickup time</span>
 								<input
 									class="rux-input"
 									type="time"
 									data-field="pickup.time"
-									placeholder="When should the bus be there?"
 								/>
 							</label>
 							<label class="rux-field" data-section="round">
-								<span class="rux-field__label"
-									>Return date</span
-								>
+								<span class="rux-field__label">Return date</span>
 								<input
 									class="rux-input"
 									type="date"
@@ -261,65 +257,54 @@
 									class="rux-input"
 									type="text"
 									data-field="split.name"
-									placeholder="Where should we pick you up on the way back?"
+									placeholder="Hotel, venue, or address"
 								/>
 							</label>
+							<label class="rux-field">
+								<span class="rux-field__label">Passengers</span>
+								<input
+									class="rux-input"
+									type="number"
+									inputmode="numeric"
+									min="1"
+									max="200"
+									data-field="passengerCount"
+									placeholder="45"
+								/>
+								<p
+									class="rux-field__help"
+									data-bus-hint
+									aria-live="polite"
+									hidden
+								></p>
+							</label>
 						</div>
-					</fieldset>
-					<fieldset class="trip-request__section">
-						<legend class="trip-request__section-title">
-							Passengers
-						</legend>
-						<label class="rux-field" style="max-width:12rem">
-							<span class="rux-field__label">Passengers</span>
-							<input
-								class="rux-input"
-								type="number"
-								min="1"
-								max="200"
-								data-field="passengerCount"
-								placeholder="About how many?"
-							/>
-						</label>
-						<div class="rux-field">
-							<span class="rux-field__label"
-								>Anything the bus should have?</span
+					</div>
+				</section>
+
+				<section class="rux-card">
+					<header class="rux-card__header">
+						<h2 class="rux-card__title">Day of the trip</h2>
+					</header>
+					<div class="rux-card__body">
+						<div class="trip-request__switch-row">
+							<label
+								class="trip-request__switch-label"
+								for="trip-request-same-contact"
+								>I am the day-of contact</label
 							>
-							<div class="trip-request__requirements">
-								<label class="trip-request-check">
-									<input type="checkbox" data-req="sleeper" />
-									<span class="trip-request-check__label"
-										>Sleeper coach</span
-									>
-								</label>
-								<label class="trip-request-check">
-									<input type="checkbox" data-req="adaLift" />
-									<span class="trip-request-check__label"
-										>ADA / wheelchair lift</span
-									>
-								</label>
-							</div>
+							<label class="rux-switch">
+								<input
+									type="checkbox"
+									id="trip-request-same-contact"
+									data-switch="contact.sameAsBooker"
+									checked
+								/>
+								<span class="rux-switch__track"></span>
+								<span class="rux-switch__thumb"></span>
+							</label>
 						</div>
-					</fieldset>
-					<fieldset class="trip-request__section">
-						<legend class="trip-request__section-title">
-							Day of the trip
-						</legend>
-						<label class="rux-switch trip-request__switch">
-							<input
-								type="checkbox"
-								data-switch="contact.sameAsBooker"
-								checked
-							/>
-							<span class="rux-switch__track"></span>
-							<span class="trip-request__switch-label"
-								>I am the day-of contact</span
-							>
-						</label>
-						<div
-							class="trip-request__grid"
-							data-section="no-contact"
-						>
+						<div class="trip-request__grid" data-section="no-contact">
 							<label class="rux-field">
 								<span class="rux-field__label"
 									>Day-of contact name</span
@@ -328,7 +313,6 @@
 									class="rux-input"
 									type="text"
 									data-field="tripContact.name"
-									placeholder="Who should the driver call?"
 								/>
 							</label>
 							<label class="rux-field">
@@ -343,12 +327,14 @@
 								/>
 							</label>
 						</div>
-					</fieldset>
+					</div>
+				</section>
 
-					<fieldset class="trip-request__section">
-						<legend class="trip-request__section-title">
-							Anything else
-						</legend>
+				<section class="rux-card">
+					<header class="rux-card__header">
+						<h2 class="rux-card__title">Anything else</h2>
+					</header>
+					<div class="rux-card__body">
 						<label class="rux-field">
 							<span class="rux-field__label">Notes</span>
 							<textarea
@@ -358,34 +344,42 @@
 								placeholder="Anything we should know…"
 							></textarea>
 						</label>
-					</fieldset>
+						<div class="rux-field">
+							<span class="rux-field__label" id="trip-request-files-label"
+								>Itinerary or passenger list</span
+							>
+							<p class="rux-field__help">
+								Already have it written down? Attach a PDF, Word,
+								Excel, or photo — up to 5 files, 10 MB each.
+							</p>
+							<input
+								class="trip-request__file-input"
+								type="file"
+								id="trip-request-files"
+								data-field-files
+								multiple
+								accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.png,.jpg,.jpeg,.heic"
+								aria-labelledby="trip-request-files-label"
+							/>
+							<ul
+								class="trip-request__file-list"
+								data-file-list
+								aria-live="polite"
+							></ul>
+							<p
+								class="rux-field__error"
+								data-error-for="documents"
+								hidden
+							></p>
+						</div>
+					</div>
+				</section>
+			</form>
 
-				</form>
-
-				<div
-					class="trip-request__success"
-					id="trip-request-success"
-					hidden
-				>
-					<span
-						class="rux-icon trip-request__success-icon"
-						aria-hidden="true"
-						>check_circle</span
-					>
-					<h2 class="trip-request__success-title">Request sent</h2>
-					<p
-						class="trip-request__success-text"
-						id="trip-request-success-text"
-					>
-						We got it. We'll review your request and be in touch
-						shortly.
-					</p>
-				</div>
-			</div>
-			<footer class="rux-card__footer rux-card__footer--between">
+			<footer class="trip-request__actions" id="trip-request-footer">
 				<p class="trip-request__footer-note">
-					We'll review your request and get back to you with
-					details and pricing.
+					We'll review your request and get back to you with details
+					and pricing.
 				</p>
 				<button
 					type="submit"
@@ -393,15 +387,33 @@
 					class="rux-button rux-button--accent trip-request__submit"
 					id="trip-request-submit"
 				>
-					<span class="rux-icon" aria-hidden="true"
-						>send</span
-					>
-					<span class="rux-button__label">Send trip request</span>
+					<span class="rux-icon" aria-hidden="true">send</span>
+					<span class="rux-button__label">Send Trip Request</span>
 				</button>
 			</footer>
-		</article>
+
+			<section
+				class="rux-card rux-card--boxed trip-request__success"
+				id="trip-request-success"
+				hidden
+			>
+				<span class="rux-icon trip-request__success-icon" aria-hidden="true"
+					>check_circle</span
+				>
+				<h2 class="trip-request__success-title">Request sent</h2>
+				<p
+					class="trip-request__success-text"
+					id="trip-request-success-text"
+				>
+					We got it. We'll review your request and be in touch shortly.
+				</p>
+				<p class="trip-request__success-note">
+					Have an itinerary or passenger list? Send it to us when we
+					follow up and we'll add it to your request.
+				</p>
+			</section>
 		</main>
 
-		<script type="module" src="./js/pages/trip-request.js?v=2"></script>
+		<script type="module" src="./js/pages/trip-request.js?v=7"></script>
 	</body>
 </html>

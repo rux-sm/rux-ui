@@ -13,8 +13,8 @@
 	   token also drives the inter-panel gutter and inner content insets
 	   below. Set here, on the app shell, so no view can drift from the
 	   others: .rux-app-view (rux-ui/css/base/app-shell.css) reads both. */
-	--rux-app-view-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
-	--rux-app-view-radius: var(--rux-radius-container);
+	--rux-app-view-padding: var(--rux-space-0) var(--rux-space-5);
+	--rux-app-view-radius: var(--rux-radius-0);
 	/* Drawer measurements. The mechanism is portable
 	   (rux-ui/css/base/drawer.css); these three values are this app's.
 	   Left/editor and right/tools drawers intentionally have independent
@@ -71,6 +71,14 @@
 
 .rux-app-view[data-view="calendar"] .sched-scope-right-panel {
 	border-inline-start: var(--rux-panel-right-border);
+}
+
+/* An open right drawer already reaches the view's own boundary — the outer
+   gutter on that side would just double as empty canvas between the drawer
+   and the screen edge, so collapse it while the drawer is open. The left
+   gutter (side-nav edge) is untouched; only a right drawer exists today. */
+.rux-app-view:has(> .rux-drawer--right.is-open) {
+	padding-right: 0;
 }
 
 
@@ -954,22 +962,12 @@
 	flex: 1;
 }
 
-/* Roster tables span the full workspace width, aligned with the header's
-   control edges — same stance as the calendar viewport. Columns distribute
-   across the available width; narrow viewports scroll inside the wrap. */
-.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) {
-	flex: 1;
-	background: var(--rux-table-wrap-bg);
-	border-radius: var(--rux-table-wrap-radius);
-	overflow: auto;
-}
-
-.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) .rux-table {
-	width: 100%;
-}
-
+/* A roster fills its workspace top to bottom, aligned with the header's
+   control edges — same stance as the calendar viewport. Everything else about
+   the wrap (frame, surface, scrolling, full-width columns) is .rux-table-wrap
+   in rux-ui/css/base/table.css; only this workspace-specific height is ours. */
 .calendar-app__viewport,
-.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) {
+.rux-workspace .rux-table-wrap {
 	block-size: 100%;
 }
 

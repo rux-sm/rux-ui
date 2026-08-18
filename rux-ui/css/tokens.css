@@ -193,9 +193,9 @@
     /* Two surfaces only, following the Vercel Geist model (README.md's
        "Reference: Vercel Geist colors"): canvas, and everything raised
        off it — panels, cards, content areas. */
-    --rux-surface-0:	oklch(from var(--rux-neutral) 16% c h);	/* canvas */ 	/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 20% c h); /* cards  */	/* 22, 22 ,22 */
-	--rux-surface-2:    oklch(from var(--rux-neutral) 26% c h); /* button */ 	/* 25, 25 ,25 */
+    --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 	/* 0,  0,  0  */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 18% c h); /* cards  */	/* 22, 22 ,22 */
+	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
 	--rux-input-bg-disabled:  oklch(from var(--rux-neutral) 21.5% c h); /* ( 24, 24, 24) */
 
 	/* One border family for the whole app — grid lines, then three
@@ -218,7 +218,15 @@
 	--rux-bg-active:     oklch(from var(--rux-neutral) 36% c h);
 
 	/* One interaction recipe for every neutral control. Selected aliases hover
-	   so components can express intent without introducing another color. */
+	   so components can express intent without introducing another color.
+
+	   A fixed alpha, deliberately — not a fixed OKLCH lightness delta. Measured
+	   in what actually reaches the screen, 10% white is the most uniform option
+	   available: +26/+24/+22 8-bit code values on surface-0/1/2. A constant
+	   lightness step is not, because sRGB compresses hard near black — from
+	   --rux-surface-0, which is pure black, calc(l + 0.06) renders rgb(1,1,1),
+	   a one-value change nobody can see. The overlay's larger *lightness* delta
+	   down there is what buys an equal *visible* one. */
 	--rux-state-hover-overlay:    oklch(from var(--rux-white) l c h / 10%);
 	--rux-state-active-overlay:   oklch(from var(--rux-white) l c h / 20%);
 	--rux-state-selected-overlay: var(--rux-state-hover-overlay);
@@ -344,7 +352,7 @@
 	/* ─── TYPOGRAPHY · shared roles ───────────────────────────────────────── */
 
 	--rux-heading-panel-size:     var(--rux-size-md);
-	--rux-heading-panel-weight:   var(--rux-weight-400);
+	--rux-heading-panel-weight:   var(--rux-weight-600);
 	--rux-label-eyebrow-size:     var(--rux-size-xs);
 	--rux-label-eyebrow-weight:   var(--rux-weight-400);
 	--rux-label-eyebrow-tracking: var(--rux-tracking-wide);
@@ -412,6 +420,12 @@
 	--rux-ui-header-height:  	40px;
 	--rux-ui-header-min-height: var(--rux-ui-header-height);
 	--rux-ui-header-gap:     	var(--rux-space-0);
+	/* An open disclosure trigger paints the background of the surface it owns,
+	   so the two read as one silhouette. It borrowed
+	   --rux-button-ghost-active-background for this, which coupled a
+	   persistent open state to a momentary press state — they parted ways when
+	   ghost hover became a text-lightness step. Same value as before. */
+	--rux-ui-header-trigger-open-bg: var(--rux-surface-0);
 
 	/* — brand — */
 	--rux-ui-header-brand-padding-inline: var(--rux-space-4);
@@ -447,7 +461,7 @@
 	--rux-side-nav-item-gap:        var(--rux-space-3);
 	--rux-side-nav-item-padding:    0 var(--rux-space-3);
 	--rux-side-nav-item-radius:     var(--rux-radius-control);
-	--rux-side-nav-item-hover-bg:   var(--rux-bg-hover);
+	--rux-side-nav-item-hover-bg: var(--rux-bg-hover);
 	--rux-side-nav-item-active-bg:  var(--rux-accent-subtle);
 	--rux-side-nav-item-active-fg:  var(--rux-text-default);
 	--rux-side-nav-selected-width:  4px;
@@ -489,7 +503,7 @@
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded, so a future radius change only needs the two role tokens
 	   edited, per the role's own stated purpose above. */
-	--rux-workspace-radius: var(--rux-radius-container);
+	--rux-workspace-radius: var(--rux-radius-0);
 	/* --rux-workspace-shadow: not set — flattened alongside the header/
 	   side-nav redesign, no inset shadow on the primary view shell */
 
@@ -508,7 +522,7 @@
 	--rux-calendar-border:     1px solid var(--rux-card-border); /* calender outline border*/
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
-	--rux-calendar-radius: var(--rux-radius-container);
+	--rux-calendar-radius: var(--rux-radius-0);
 	--rux-calendar-now-line-color:    var(--rux-accent-fill);
 	--rux-calendar-now-line-label-bg: var(--rux-calendar-now-line-color);
 	--rux-calendar-now-line-label-fg: var(--rux-fg-on-accent);
@@ -750,13 +764,31 @@
 	   badges.css via color-mix, not a flat token */
 	/* --rux-badge-fg: not set, same reason */
 	/* --rux-badge-border: not set */
-	--rux-badge-radius: var(--rux-radius-control);
+	/* A badge labels a row; it is not something you press. It previously took
+	   --rux-control-height (44px) and --rux-radius-control, which made it a
+	   button-shaped object taller than the 36px --rux-table-row-height it sat
+	   in — every status cell was setting the row rhythm for its whole table.
+	   It is now sized and shaped as a label: pill, own height, one type step
+	   below body so it recedes from the content it annotates. */
+	--rux-badge-radius: var(--rux-radius-full);
 	/* --rux-badge-shadow: not set */
 	--rux-badge-padding-inline: var(--rux-space-2);
-	--rux-badge-height:         var(--rux-control-height);
-	--rux-badge-font-size:      var(--rux-size-sm);
-	--rux-badge-font-weight:    var(--rux-weight-400);
-	--rux-badge-background-opacity: 12%;
+	--rux-badge-height:         20px;
+	--rux-badge-font-size:      var(--rux-size-xs);
+	--rux-badge-font-weight:    var(--rux-weight-500);
+	--rux-badge-background-opacity: 16%;
+	/* The border used to be the variant color at full strength against a 12%
+	   fill, so the outline shouted while the fill whispered. Mixed back toward
+	   the surface it reads as a hairline and lets the fill carry the color. */
+	--rux-badge-border-opacity:     32%;
+
+	/* — solid emphasis variant — */
+	/* Two lightness stops rather than flat colors, because the fill is derived
+	   from whichever semantic the variant set. Dark theme puts near-black text
+	   on a bright pill; light theme darkens the fill and goes to near-white,
+	   which is the only way one recipe clears contrast in both. */
+	--rux-badge-solid-lightness:    78%;
+	--rux-badge-solid-fg-lightness: 18%;
 
 	/* — module badge variant — */
 	--rux-badge-module-gap:       var(--rux-space-2);
@@ -764,6 +796,9 @@
 	--rux-badge-module-padding:   var(--rux-space-3);
 	--rux-badge-module-radius:    var(--rux-radius-control);
 	--rux-badge-module-icon-size: var(--rux-icon-sm);
+	/* Module chips are a metadata treatment at button scale, not row labels —
+	   they keep the body type step the base badge just stepped down from. */
+	--rux-badge-module-font-size: var(--rux-size-sm);
 
 	/* ─── COMPONENT · button base ─────────────────────────────────────────────── */
 
@@ -815,11 +850,17 @@
 
 	/* ─── COMPONENT · button ghost ─────────────────────────────────────────────── */
 
+	/* Ghost is transparent, so it has no fill of its own to lighten — it takes
+	   the shared neutral overlay instead, which composites over whatever is
+	   behind it. See the state tokens above for why that beats a lightness
+	   step here. A container may override either background for a surface the
+	   neutral overlay does not suit. */
 	--rux-button-ghost-background: 			transparent;
 	--rux-button-ghost-text:       			var(--rux-text-default);
+	--rux-button-ghost-hover-text: 			var(--rux-text-default);
 	--rux-button-ghost-border:     			none;
 	--rux-button-ghost-hover-background:  	var(--rux-state-hover-overlay);
-	--rux-button-ghost-active-background:	var(--rux-surface-0);
+	--rux-button-ghost-active-background:	var(--rux-state-active-overlay);
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
 
@@ -831,8 +872,13 @@
 
 	/* ─── COMPONENT · button ghost danger ─────────────────────────────────────────────── */
 
+	/* Same hover contract as plain ghost above: a tinted fill appears, in the
+	   intent's own hue rather than the neutral overlay, so a destructive
+	   button reads as destructive before it is clicked. The label also steps
+	   to the --strong stop to stay legible once that fill is behind it. */
 	--rux-button-danger-ghost-background: 			transparent;
 	--rux-button-danger-ghost-text:       			var(--rux-danger);
+	--rux-button-danger-ghost-hover-text:       	var(--rux-danger-strong);
 	--rux-button-danger-ghost-border:     			none;
 	--rux-button-danger-ghost-hover-background:  	oklch(from var(--rux-danger) l c h / 10%);
 	--rux-button-danger-ghost-active-background:	oklch(from var(--rux-danger) l c h / 20%);
@@ -1025,7 +1071,7 @@
 	--rux-checkbox-transition-speed: var(--rux-duration-instant);
 
 	/* — states — */
-	--rux-checkbox-hover-bg:     var(--rux-state-hover-overlay);
+	--rux-checkbox-hover-bg: var(--rux-state-hover-overlay);
 	--rux-checkbox-hover-border: var(--rux-accent);
 	--rux-checkbox-active-bg:    var(--rux-bg-active);
 
@@ -1156,7 +1202,7 @@
 	--rux-table-edge-padding-inline:  var(--rux-space-4);
 	--rux-table-cell-font-size:       var(--rux-size-sm);
 	--rux-table-cell-weight:          var(--rux-weight-400);
-	--rux-table-row-hover-bg:         var(--rux-bg-hover);
+	--rux-table-row-hover-bg: var(--rux-bg-hover);
 	--rux-table-row-selected-bg:      var(--rux-accent-subtle);
 
 	/* ─── COMPONENT · backdrop blur ──────────────────────────────────────── */
@@ -1191,7 +1237,7 @@
 	--rux-menu-item-radius:         var(--rux-radius-control);
 	--rux-menu-item-font-size:      var(--rux-size-sm);
 	--rux-menu-item-fg:             var(--rux-menu-fg);
-	--rux-menu-item-hover-bg:       var(--rux-button-hover-overlay);
+	--rux-menu-item-hover-bg: var(--rux-button-hover-overlay);
 	--rux-menu-item-hover-fg:       var(--rux-text-default);
 	--rux-menu-item-pressed-bg:     var(--rux-bg-active);
 	--rux-menu-item-active-bg:      var(--rux-bg-active);
@@ -1334,6 +1380,12 @@
 	--rux-success-strong: oklch(from var(--rux-success) 60% 0.20 h);
 	--rux-info-strong:    oklch(from var(--rux-info)    60% 0.20 h);
 
+	/* A solid badge inverts here: the dark-theme recipe (bright fill, dark
+	   text) has no contrast to give on a pale canvas, so the fill darkens
+	   past the strong stop and the label goes near-white. */
+	--rux-badge-solid-lightness:    52%;
+	--rux-badge-solid-fg-lightness: 99%;
+
 	/* Vivid: maximum-chroma data surfaces such as trip bars. */
 	--rux-danger-vivid:  oklch(from var(--rux-red)    60% 0.28 h);
 	--rux-warning-vivid: oklch(from var(--rux-yellow) 90% 0.28 h);
@@ -1366,8 +1418,12 @@
 	--rux-card-border:        oklch(from var(--rux-neutral) 88% c h);
 	--rux-card-border-hover:  oklch(from var(--rux-neutral) 70% c h);
 	--rux-card-border-active: oklch(from var(--rux-neutral) 50% c h);
-	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 5%);
-	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 9%);
+	/* Raised from 5%/9% to match dark theme's strength. Measured the same way:
+	   5% black moved a light surface 13 code values where dark theme's 10%
+	   white moves 26, so hover read about half as strongly here. 9%/16% lands
+	   at 23/38. This was the one real defect behind the mechanism detour. */
+	--rux-state-hover-overlay:  oklch(from var(--rux-black) l c h / 9%);
+	--rux-state-active-overlay: oklch(from var(--rux-black) l c h / 16%);
 
 	/* Inverted like every other pair here: the dark values step *up* from the
 	   content tier (surface-1 20% → 32%/36%), so light steps *down* from its

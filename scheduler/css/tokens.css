@@ -43,6 +43,12 @@
 	--sched-trip-bar-pressed-bg-lightness:      calc(var(--sched-trip-bar-bg-lightness) - var(--sched-trip-bar-state-lightness-step));
 	--sched-trip-bar-selected-bg-lightness:     calc(var(--sched-trip-bar-bg-lightness) + var(--sched-trip-bar-state-lightness-step));
 	--sched-trip-bar-bg-opacity:                80%;
+	/* Tone-on-tone: these pair with the -lightness tokens above to tint the
+	   bar's own fill with its own hue, where a high alpha is a small visible
+	   change. They are NOT general-purpose overlay strengths — composited as
+	   plain white over the bar, 70% lands 26 lightness points up, where the
+	   bar's own hover step is 4. Controls on the bar use the shared
+	   --rux-state-hover-overlay instead; see .sched-trip-bar in features/. */
 	--sched-trip-bar-hover-bg-opacity:          70%;
 	--sched-trip-bar-pressed-bg-opacity:        50%;
 	--sched-trip-bar-selected-bg-opacity:       80%;

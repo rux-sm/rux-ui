@@ -70,7 +70,10 @@ test("the UI header owns the canonical fixed 40px contract", () => {
 });
 
 test("the design-system entrypoint uses the canonical UI-header stylesheet", () => {
-	assert.match(ruxCss, /@import "\.\/base\/ui-header\.css";/);
+	/* The cache-busting ?v= suffix is optional here: the point is that the
+	   entrypoint pulls the canonical header stylesheet, not a rival one, and
+	   several sibling imports in the same file already carry a version. */
+	assert.match(ruxCss, /@import "\.\/base\/ui-header\.css(?:\?v=\d+)?";/);
 	assert.match(coreCss, /@import "\.\/rux\.css";/);
 });
 
@@ -156,11 +159,19 @@ test("every view shares one frame, configured on the application shell", () => {
 	assert.match(tokensCss, /--rux-app-view-radius:\s*var\(--rux-radius-0\);/);
 	assert.match(
 		schedulerLayoutCss,
-		/\.sched-app\s*\{[\s\S]*?--rux-app-view-padding:\s*var\(--rux-space-2\) var\(--rux-space-3\) var\(--rux-space-3\) var\(--rux-space-3\);/,
+		/\.sched-app\s*\{[\s\S]*?--rux-app-view-padding:\s*var\(--rux-space-0\) var\(--rux-space-5\);/,
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.sched-app\s*\{[\s\S]*?--rux-app-view-radius:\s*var\(--rux-radius-container\);/,
+		/\.sched-app\s*\{[\s\S]*?--rux-app-view-radius:\s*var\(--rux-radius-0\);/,
+	);
+	// An open right drawer already reaches the view boundary; the outer
+	// gutter on that side collapses so it doesn't double as empty canvas
+	// between the drawer and the screen edge. The left gutter (side-nav
+	// edge) is unaffected — only right drawers exist today.
+	assert.match(
+		schedulerLayoutCss,
+		/\.rux-app-view:has\(> \.rux-drawer--right\.is-open\)\s*\{\s*padding-right:\s*0;\s*\}/,
 	);
 	// No per-view frame overrides, and none of the retired calendar-specific
 	// frame tokens survive anywhere.

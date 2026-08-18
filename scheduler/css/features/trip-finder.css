@@ -40,11 +40,9 @@
 	background: var(--rux-card-body-bg);
 }
 
+/* A .rux-table-wrap, minus the bottom padding: results end at the window's
+   edge here rather than floating above a workspace gutter. */
 .sched-scope-trip-finder__results {
-	flex: 1;
-	min-width: 0;
-	min-height: 0;
-	overflow: auto;
 	padding-bottom: 0;
 }
 
@@ -53,8 +51,65 @@
 	width: 100%;
 }
 
-.sched-scope-trip-finder__table th {
-	width: 25%;
+/* Weighted by what actually varies: customer, contact, and destination run
+   long and get the room; a date and a status badge have a known short width.
+   Sums to 100% so the five columns fill the wrap at any window size. */
+.sched-scope-trip-finder__table th[data-col="date"] {
+	width: 15%;
+}
+
+.sched-scope-trip-finder__table th[data-col="customer"] {
+	width: 24%;
+}
+
+.sched-scope-trip-finder__table th[data-col="contact"] {
+	width: 22%;
+}
+
+.sched-scope-trip-finder__table th[data-col="destination"] {
+	width: 22%;
+}
+
+.sched-scope-trip-finder__table th[data-col="status"] {
+	width: 17%;
+}
+
+/* Who booked the trip, not what the trip is — quieter than the customer it
+   belongs to, so a column of names reads as supporting detail. Needs the
+   table in the selector to outweigh base/table.css's own `.rux-table td`
+   color. */
+.sched-scope-trip-finder__table td[data-col="contact"] {
+	color: var(--rux-text-muted);
+}
+
+/* — Customer results — */
+
+/* Divider between the trip results and the customer results below them. Reuses
+   the eyebrow recipe so it reads as a section label, not as another result. */
+.sched-scope-trip-finder__group td {
+	padding-top: var(--rux-space-4);
+	color: var(--rux-label-eyebrow-color);
+	font-size: var(--rux-label-eyebrow-size);
+	font-weight: var(--rux-label-eyebrow-weight);
+	letter-spacing: var(--rux-label-eyebrow-tracking);
+	text-transform: uppercase;
+}
+
+/* It is a label, not a row you can pick. base/table.css makes every tbody row
+   look clickable, and those selectors carry the type names that outweigh a
+   bare class — so opting out has to match their shape. */
+.sched-scope-trip-finder__table tbody tr.sched-scope-trip-finder__group {
+	cursor: default;
+}
+
+.sched-scope-trip-finder__table tbody tr.sched-scope-trip-finder__group:hover {
+	background: transparent;
+}
+
+/* A customer has no date, so that cell holds a placeholder rather than a
+   value — quiet it down so the column does not read as a column of misses. */
+.sched-scope-trip-finder__contact-row .trips-app__dates {
+	color: var(--rux-text-disabled);
 }
 
 .sched-scope-trip-finder__table :is(th, td) {
@@ -148,5 +203,14 @@
 @container trip-finder-window (max-width: 800px) {
 	.sched-scope-trip-finder__filters {
 		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+/* The window resizes down to 480px, where five columns would ellipsize each
+   other into uselessness. Contact is the supporting column, so it is the one
+   that goes — same call comp-trip-list.css makes for its money columns. */
+@container trip-finder-window (max-width: 640px) {
+	.sched-scope-trip-finder__table :is(th, td)[data-col="contact"] {
+		display: none;
 	}
 }

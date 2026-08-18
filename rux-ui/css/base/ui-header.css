@@ -49,6 +49,32 @@
 	block-size: var(--rux-ui-header-logo-height);
 }
 
+/* The page name beside the brand, for single-view pages that pair the header
+   with one destination instead of the module navigation.
+
+   Set in the 16/24 semibold heading recipe rather than as muted eyebrow
+   chrome, so the page name reads as the page's title. It reads the same
+   --rux-heading-panel-* role as .rux-card__title and .rux-panel__title, so a
+   page name beside the brand and a card title inside the page stay one
+   typographic voice.
+
+   Deliberately element-agnostic: whether this text is the page's <h1> or just
+   chrome depends on the page — it is the heading on the share pages, but not
+   in the application shell, where the workspace owns the <h1>. So it declares
+   the sizes a heading would otherwise inherit rather than assuming a tag. */
+.rux-ui-header__title {
+	flex: 0 1 auto;
+	min-inline-size: 0;
+	overflow: hidden;
+	font-size: var(--rux-heading-panel-size);
+	font-weight: var(--rux-heading-panel-weight);
+	line-height: var(--rux-line-height-md);
+	letter-spacing: var(--rux-tracking-tight);
+	color: var(--rux-text-heading);
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .rux-ui-header__nav {
 	display: flex;
 	align-items: center;
@@ -106,8 +132,12 @@
 }
 
 .rux-ui-header .rux-button--header[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-button-ghost-active-background);
+	background: var(--rux-ui-header-trigger-open-bg);
 	border: none;
+	/* Open is a state, not a hover — hold the trigger at full strength rather
+	   than letting it drop back to the ghost rest color when the pointer
+	   leaves. */
+	color: var(--rux-button-ghost-hover-text);
 }
 
 /* Surface disclosures share one connected-trigger contract. Each trigger

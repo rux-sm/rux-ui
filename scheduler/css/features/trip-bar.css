@@ -79,8 +79,9 @@
    Client       __client           xs
    Contact      __contact          xs
    Notes        __notes            xs        (italic)
-   Reqs/bus pill __bus-label       10-13px   Clamped to the reqs row, not a row of its own — floors at
-                                              today's 10px/12px (XXS/XS), grows only for SM
+   Reqs/bus pill __bus-label       9-13px    Clamped to the reqs row, not a row of its own — tracks
+                                              __row-font-size at 0.85 so it steps with every tier
+                                              (9/10.2/11.9px at XXS/XS/SM), always under its row
    Time         __time             xs        (Dep left, Spt centered, Arr right)
    Time value   __time-value       xs
    Drivers      __driver           xs
@@ -121,26 +122,49 @@
 	   override; :root sits above that and would freeze on the xs default. */
 	--sched-trip-bar-icon-size: var(--sched-trip-bar-row-line-height);
 
-	/* Same freezing reasoning as icon-size above — both chain through
-	   --sched-trip-bar-row-line-height, so both have to live here, not
-	   tokens.css. The bus-label pill was a deliberate flat exception to the
-	   row-typography contract (still is — it's a badge, not a text row),
-	   but "flat" doesn't have to mean "frozen at one size forever now that
-	   rows themselves span 12-20px." clamp() floors both at today's already-
-	   shipped 12px/10px (so XXS/XS render pixel-identical to before — an
-	   8px pill at XXS risked reading as illegible, better to hold the floor
-	   than guess), and only lets SM's genuinely larger 20px row grow the
-	   pill past that, capped so it never overpowers the row's own text. */
+	/* Same freezing reasoning as icon-size above — both chain through the row
+	   typography, so both have to live here, not tokens.css. The bus-label
+	   pill is a badge, not a text row, but it still has to move when the rest
+	   of the bar does.
+
+	   It previously didn't. The font tracked *line-height* x 0.625 with a 10px
+	   floor, and the height tracked line-height - 4px with a 12px floor, which
+	   worked out to:
+
+	     XXS (12px row)  height 8 -> floored 12px   font 7.5 -> floored 10px
+	     XS  (16px row)  height      12px           font       10px
+	     SM  (20px row)  height      16px           font       12.5px
+
+	   — XXS and XS resolving pixel-identical, so two of the three settings
+	   produced the same pill and the control looked broken at the first step.
+
+	   The font now tracks --sched-trip-bar-row-font-size, which is the thing
+	   the user actually sees change (10/12/14px), at 0.85 so the pill stays a
+	   step under the row text it sits beside. Both floors drop below the XS
+	   value so XXS has somewhere to go: 9px of 600-weight text on white is
+	   still legible at the density XXS exists to provide, and every tier stays
+	   shorter than its own row line-height, so the pill never grows the row. */
 	--sched-trip-bar-bus-label-height: clamp(
-		12px,
+		10px,
 		calc(var(--sched-trip-bar-row-line-height) - 4px),
 		16px
 	);
 	--sched-trip-bar-bus-label-font-size: clamp(
-		10px,
-		calc(var(--sched-trip-bar-row-line-height) * 0.625),
+		9px,
+		calc(var(--sched-trip-bar-row-font-size) * 0.85),
 		13px
 	);
+
+	/* Only the foreground is configured. The state wash is the shared neutral
+	   overlay, same as every other ghost button — 10% white composites over
+	   this blue as readily as it does over a grey surface, which is the point
+	   of an overlay rather than a lightness step.
+
+	   The foreground does have to be pinned: --rux-text-default is a neutral
+	   grey that computes to 1.10:1 against this fill where --rux-fg-on-accent
+	   gets 4.34:1. */
+	--rux-button-ghost-text:       var(--rux-fg-on-accent);
+	--rux-button-ghost-hover-text: var(--rux-fg-on-accent);
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;
@@ -671,28 +695,13 @@
 		visibility 0s linear var(--rux-duration-base);
 }
 
+/* Sizing only. The colors and state washes these buttons need on a saturated
+   bar come from the --rux-button-ghost-* overrides on .sched-trip-bar above,
+   not from re-declaring the component's rules here. */
 .sched-trip-bar__action {
 	--_h: var(--sched-trip-bar-action-button-size);
 
 	min-width: 0;
-}
-
-/* Trip-bar actions use the shared ghost emphasis. The owning saturated
-   surface supplies the contrasting foreground and state wash locally. */
-.sched-trip-bar__action.rux-button--ghost {
-	color: var(--rux-fg-on-accent);
-	border-color: transparent;
-}
-
-.sched-trip-bar__action.rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: oklch(from var(--rux-white) l c h / var(--sched-trip-bar-hover-bg-opacity));
-	color: var(--rux-fg-on-accent);
-	border-color: transparent;
-}
-
-.sched-trip-bar__action.rux-button--ghost:active:not(:disabled):not([aria-disabled="true"]) {
-	background: oklch(from var(--rux-white) l c h / var(--sched-trip-bar-pressed-bg-opacity));
-	color: var(--rux-fg-on-accent);
 }
 
 .sched-trip-bar.is-active .sched-trip-bar__actions {

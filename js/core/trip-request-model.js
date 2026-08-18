@@ -15,9 +15,14 @@ export const SERVICE_TYPES = ["charter", "ticketed"]
 
 export const REQUEST_STATUSES = ["invited", "new", "reviewed", "linked", "closed"]
 
+/* Named from the dispatcher's side of the exchange, because that is the
+   question the inbox answers at a glance: did we send this, or did the
+   customer send something back? "Invited"/"New" described the row's
+   lifecycle; "Sent"/"Received" describe who is waiting on whom. The status
+   values themselves are unchanged — this is only what a human reads. */
 export const STATUS_LABELS = {
-	invited: "Invited",
-	new: "New",
+	invited: "Sent",
+	new: "Received",
 	reviewed: "Reviewed",
 	linked: "Linked",
 	closed: "Closed",
@@ -90,6 +95,82 @@ export function statusLabel(status) {
 	return STATUS_LABELS[status] ?? String(status ?? "")
 }
 
+/* The advertised seat count, which is deliberately not the largest coach in
+   the fleet. Some buses seat 56 — see the pax56 requirement above — but those
+   are assigned by dispatch rather than offered to customers, so a public
+   estimate must never plan around one. Quoting 52 rounds the bus count up
+   where the two differ, which is the safe direction for an estimate: the
+   customer is never told a trip needs fewer buses than it does.
+
+   Do not "reconcile" this with pax56. They are different numbers on purpose.
+
+   Everything downstream stays an estimate — the form shows the result as a
+   hint and the draft carries it as bus_count, and dispatch sets the real
+   number when it assigns actual buses, exactly like every other value this
+   form contributes. */
+export const SEATS_PER_BUS = 52
+
+/* Capped at the schema's own bus_count maximum (20) so a draft can never be
+   built that the import sanitizer would reject. */
+export function recommendedBusCount(passengerCount) {
+	const passengers = normalizePassengerCount(passengerCount)
+	if (!passengers) return 1
+	return Math.min(Math.ceil(passengers / SEATS_PER_BUS), 20)
+}
+
+/* ── Attachments ─────────────────────────────────────────────────────────── */
+
+/* Customers usually already have their itinerary written down — a Word doc, a
+   PDF, a spreadsheet of passengers. These limits mirror the bucket's own
+   file_size_limit and allowed_mime_types in supabase/trip_request_documents.sql
+   so the browser refuses a file for the same reasons storage would, with a
+   sentence the customer can act on instead of a failed request. Changing one
+   side means changing the other. */
+export const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024
+export const MAX_DOCUMENTS = 5
+
+export const DOCUMENT_EXTENSIONS = [
+	".pdf",
+	".doc",
+	".docx",
+	".xls",
+	".xlsx",
+	".csv",
+	".txt",
+	".png",
+	".jpg",
+	".jpeg",
+	".heic",
+]
+
+function extensionOf(fileName) {
+	const name = text(fileName).toLowerCase()
+	const dot = name.lastIndexOf(".")
+	return dot === -1 ? "" : name.slice(dot)
+}
+
+/* Takes { name, size } rather than a File so it stays pure and testable.
+   Returns a customer-facing message, or "" when the file is fine. */
+export function documentError(file = {}) {
+	const name = text(file.name)
+	if (!name) return "That file could not be read"
+	if (!DOCUMENT_EXTENSIONS.includes(extensionOf(name))) {
+		return "Attach a PDF, Word, Excel, text, or image file"
+	}
+	if (Number(file.size) > MAX_DOCUMENT_BYTES) {
+		return `Files need to be under ${MAX_DOCUMENT_BYTES / 1024 / 1024} MB`
+	}
+	return ""
+}
+
+export function formatFileSize(bytes) {
+	const size = Number(bytes)
+	if (!Number.isFinite(size) || size <= 0) return ""
+	if (size < 1024) return `${size} B`
+	if (size < 1024 * 1024) return `${Math.round(size / 1024)} KB`
+	return `${(size / 1024 / 1024).toFixed(1)} MB`
+}
+
 /* ── Draft builder ───────────────────────────────────────────────────────── */
 
 /* values shape (collected by trip-request.js):
@@ -137,6 +218,8 @@ export function buildDraft(values) {
 	const notes = text(values.notes)
 	if (notes) trip.notes = notes
 
+	const busCount = recommendedBusCount(values.passengerCount)
+
 	const legs = {
 		outbound: {
 			start_date: pickupDate,
@@ -144,7 +227,7 @@ export function buildDraft(values) {
 				type === "round_trip" && text(values.returnDate)
 					? text(values.returnDate)
 					: pickupDate,
-			bus_count: 1,
+			bus_count: busCount,
 			stops: [pickupStop(values.pickup)],
 		},
 	}
@@ -157,7 +240,7 @@ export function buildDraft(values) {
 		legs.return = {
 			start_date: splitDate,
 			end_date: splitDate,
-			bus_count: 1,
+			bus_count: busCount,
 			stops: [pickupStop(values.split)],
 		}
 	}

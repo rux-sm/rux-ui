@@ -4,10 +4,9 @@
    Roster + editor window for the saved contacts table. Same recipe as
    Fleet: a floating editor window (.sched-customer-dialog, the trip
    editor's pattern) over a roster table, trimmed for a 3-field record.
-   The roster table itself needs no styling here — .rux-table
-   (comp-driver-app.css) is already a generic, shared component;
-   .customer-app__table-wrap only needed adding to the shared
-   .rux-workspace :is(...) rule in scheduler-app.css, not its own copy.
+   The roster table itself needs no styling here — it is .rux-table inside
+   .rux-table-wrap (rux-ui/css/base/table.css), the same pair Fleet, Drivers,
+   Requests, and the trip finder use.
 
    Structure
    ---------
@@ -88,15 +87,6 @@
 	min-width: 0;
 	min-height: 0;
 	overflow: hidden;
-}
-
-.customer-app__table-wrap {
-	flex: 1;
-	overflow-y: auto;
-	overflow-x: auto;
-	overscroll-behavior: contain;
-	padding-bottom: var(--rux-space-4);
-	border: var(--rux-table-wrap-border);
 }
 
 .customer-app__empty {

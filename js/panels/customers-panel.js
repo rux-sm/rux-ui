@@ -13,7 +13,14 @@
    API
    ---
    window.CustomersPanel.init()      → lazy-load the roster on first visit
+   window.CustomersPanel.openContact(id)
+                                     → select one customer and open its editor;
+                                       the global search's entry point here
    window.CustomersPanel.reload()    → re-fetch and re-render the roster
+
+   This module has no search field of its own. Finding a customer is ⌘K's job
+   (js/panels/trip-finder.js), which matches name/client/phone/email and calls
+   openContact() through the "customers:open" event.
    ========================================================================== */
 
 (function () {
@@ -23,13 +30,11 @@
 	const panelEl = dialog;
 	const tbody = document.getElementById("customer-roster-body");
 	const tripList = document.getElementById("cp-trip-list");
-	const searchInput = document.getElementById("customer-search");
 
 	if (!dialog || !tbody) return;
 
 	let allContacts = [];
 	let selectedId = null;
-	let filterQuery = "";
 	let contactsDbPromise = null;
 	let loadPromise = null;
 	let loaded = false;
@@ -86,12 +91,6 @@
 
 	/* ── Roster ─────────────────────────────────────────────────────────── */
 
-	function matchesSearch(contact, query) {
-		if (!query) return true;
-		const haystack = `${contact.name ?? ""} ${contact.client ?? ""} ${contact.phone ?? ""} ${contact.email ?? ""}`.toLowerCase();
-		return haystack.includes(query);
-	}
-
 	function renderRows(contacts, emptyMessage = "No customers yet.") {
 		tbody.innerHTML = "";
 		if (!contacts.length) {
@@ -146,33 +145,17 @@
 		tbody.replaceChildren(row);
 	}
 
-	function applyFilter() {
-		renderRows(
-			allContacts.filter((contact) => matchesSearch(contact, filterQuery)),
-			filterQuery ? "No matching customers." : "No customers yet.",
-		);
+	// The roster shows every customer. Finding one is the global search's job
+	// (⌘K matches name, client, phone, and email and calls openContact below),
+	// which is why this module no longer carries a search field of its own.
+	function renderRoster() {
+		renderRows(allContacts);
 	}
 
 	function escHtml(value) {
 		return String(value ?? "").replace(/[&<>"']/g, (c) => ({
 			"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
 		}[c]));
-	}
-
-	if (searchInput) {
-		// Browser form restoration and password managers have populated this
-		// search field with account email addresses. Keep the filter state
-		// explicit so restored values cannot hide a successfully loaded roster.
-		searchInput.value = "";
-		searchInput.addEventListener("input", () => {
-			filterQuery = searchInput.value.trim().toLowerCase();
-			applyFilter();
-		});
-		window.addEventListener("pageshow", () => {
-			filterQuery = "";
-			searchInput.value = "";
-			if (loaded) applyFilter();
-		});
 	}
 
 	function selectRow(tr, contact) {
@@ -310,14 +293,13 @@
 		if (loaded && !force) return Promise.resolve(true);
 
 		renderRosterState("Loading customers…");
-		if (searchInput) searchInput.disabled = true;
 
 		loadPromise = (async () => {
 			try {
 				const db = await getContactsDb();
 				allContacts = await db.fetchContacts();
 				loaded = true;
-				applyFilter();
+				renderRoster();
 				return true;
 			} catch (err) {
 				loaded = false;
@@ -327,8 +309,6 @@
 					retry: true,
 				});
 				return false;
-			} finally {
-				if (searchInput) searchInput.disabled = false;
 			}
 		})().finally(() => {
 			loadPromise = null;
@@ -343,8 +323,35 @@
 		return loadCustomers();
 	}
 
+	// How the global search opens a customer. It matches against its own copy
+	// of the roster and hands back an id rather than reaching into this
+	// module's DOM, so the roster may not even be loaded yet when this runs —
+	// loadCustomers() deduplicates against an in-flight or finished load.
+	// Returns false when the roster fails to load, the id is stale, or the
+	// open editor has unsaved changes the user chose to keep.
+	async function openContact(contactId) {
+		if (!(await loadCustomers())) return false;
+
+		const contact = allContacts.find((c) => c.id === contactId);
+		if (!contact) return false;
+
+		// Ask before discarding an in-progress edit, before touching state.
+		if (!closeDialog()) return false;
+
+		selectedId = contact.id;
+		renderRoster();
+		populatePanel(contact);
+		loadContactTrips(contact.id);
+		openDialog(contact.name || "Edit Customer");
+		tbody
+			.querySelector(".customer-app__row.is-selected")
+			?.scrollIntoView({ block: "nearest" });
+		return true;
+	}
+
 	window.CustomersPanel = {
 		init,
+		openContact,
 		reload: () => loadCustomers({ force: true }),
 	};
 

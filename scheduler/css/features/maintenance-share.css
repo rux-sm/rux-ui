@@ -1,7 +1,7 @@
 .maintenance-share-page { --maintenance-bus-column-width: calc(5ch + (var(--rux-space-2) * 2)); --maintenance-day-column-min-width: 160px; margin: 0; background: var(--rux-surface-1); color: var(--rux-text-default); -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 .maintenance-share-header { position: sticky; z-index: 10; top: 0; }
-/* .maintenance-share-header__title's typography is shared with every
-   other panel/card title — see rux-ui/css/base/card.css. */
+/* The page name is .rux-ui-header__title now, shared with request.html —
+   see rux-ui/css/base/ui-header.css. */
 .maintenance-share { padding: var(--rux-space-4); }
 .maintenance-share__status :is(h1, p) { margin: 0; }
 .maintenance-share__status { display: grid; place-items: center; gap: var(--rux-space-3); min-height: 50vh; text-align: center; }

@@ -40,15 +40,15 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=10" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=272" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=20" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=279" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=12"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-driver-app.css?v=13"
+			href="./scheduler/css/features/comp-driver-app.css?v=14"
 		/>
 		<link
 			rel="stylesheet"
@@ -56,27 +56,27 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/customer-panel.css?v=4"
+			href="./scheduler/css/features/customer-panel.css?v=5"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-fleet-app.css?v=3"
+			href="./scheduler/css/features/comp-fleet-app.css?v=4"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-settings-app.css?v=6"
+			href="./scheduler/css/features/comp-settings-app.css?v=7"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-trip-list.css?v=4"
+			href="./scheduler/css/features/comp-trip-list.css?v=5"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/trip-finder.css?v=9"
+			href="./scheduler/css/features/trip-finder.css?v=12"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/request-inbox.css?v=2"
+			href="./scheduler/css/features/request-inbox.css?v=8"
 		/>
 		<link
 			rel="stylesheet"
@@ -108,11 +108,11 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/dev-notes.css?v=2"
+			href="./scheduler/css/features/dev-notes.css?v=4"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/team-chat.css?v=15"
+			href="./scheduler/css/features/team-chat.css?v=17"
 		/>
 		<link
 			rel="stylesheet"
@@ -810,6 +810,7 @@
 								class="rux-side-nav__link"
 								type="button"
 								id="request-inbox-btn"
+								data-view="requests"
 								title="Customer Trip Requests"
 							>
 								<span class="rux-icon" aria-hidden="true"
@@ -2232,7 +2233,7 @@
 						<header class="rux-workspace__header">
 							<div class="sched-workspace-nav">
 								<button
-									class="rux-button rux-button--default rux-button--header"
+									class="rux-button rux-button--ghost rux-button--header"
 									type="button"
 									id="calendar-new-trip-btn"
 									aria-haspopup="dialog"
@@ -2585,60 +2586,6 @@
 														class="rux-switch__thumb"
 													></span>
 												</label>
-											</div>
-											<div
-												class="rux-view-options__row rux-view-options__row--stacked"
-											>
-												<span
-													class="rux-view-options__label"
-													>Day column width</span
-												>
-												<div
-													class="rux-segmented-track"
-													id="opt-day-width-preset"
-													role="group"
-													aria-label="Day column width"
-												>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="false"
-														data-value="sm"
-														aria-label="Small"
-														title="Small"
-													>
-														<span
-															class="rux-button__label"
-															>S</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="true"
-														data-value="md"
-														aria-label="Medium"
-														title="Medium"
-													>
-														<span
-															class="rux-button__label"
-															>M</span
-														>
-													</button>
-													<button
-														class="rux-button rux-button--segment"
-														type="button"
-														aria-pressed="false"
-														data-value="lg"
-														aria-label="Large"
-														title="Large"
-													>
-														<span
-															class="rux-button__label"
-															>L</span
-														>
-													</button>
-												</div>
 											</div>
 											<div
 												class="rux-view-options__row rux-view-options__row--stacked"
@@ -3675,7 +3622,7 @@
 							class="rux-workspace__header rux-workspace__header--table"
 						>
 							<button
-								class="rux-button rux-button--default rux-button--header"
+								class="rux-button rux-button--ghost rux-button--header"
 								type="button"
 								id="fleet-new-vehicle-btn"
 								aria-haspopup="dialog"
@@ -3724,7 +3671,7 @@
 								</button>
 							</div>
 						</header>
-						<div class="rux-workspace__body fleet-app__table-wrap">
+						<div class="rux-workspace__body rux-table-wrap">
 							<table
 								class="rux-table fleet-app__table"
 								aria-label="Fleet roster"
@@ -4716,7 +4663,7 @@
 						>
 							<div class="rux-workspace__heading">
 								<button
-									class="rux-button rux-button--default rux-button--header"
+									class="rux-button rux-button--ghost rux-button--header"
 									type="button"
 									id="driver-new-btn"
 									aria-haspopup="dialog"
@@ -4766,7 +4713,7 @@
 								id="driver-roster-view"
 								aria-label="Driver roster"
 							>
-								<div class="driver-app__table-wrap">
+								<div class="rux-table-wrap">
 									<table
 										class="rux-table driver-app__table"
 										id="driver-roster-table"
@@ -5154,7 +5101,7 @@
 							class="rux-workspace__header rux-workspace__header--table"
 						>
 							<button
-								class="rux-button rux-button--default rux-button--header"
+								class="rux-button rux-button--ghost rux-button--header"
 								type="button"
 								id="customer-new-btn"
 								aria-haspopup="dialog"
@@ -5166,25 +5113,8 @@
 									>New Customer</span
 								>
 							</button>
-							<div class="rux-workspace__toolbar">
-								<input
-									class="rux-input"
-									id="customer-search"
-									name="customer-roster-filter"
-									type="search"
-									autocomplete="off"
-									autocapitalize="none"
-									spellcheck="false"
-									data-1p-ignore="true"
-									data-lpignore="true"
-									placeholder="Search customers…"
-									aria-label="Search customers"
-								/>
-							</div>
 						</header>
-						<div
-							class="rux-workspace__body customer-app__table-wrap"
-						>
+						<div class="rux-workspace__body rux-table-wrap">
 							<table
 								class="rux-table customer-app__table"
 								aria-label="Customer roster"
@@ -5203,6 +5133,185 @@
 					</section>
 				</div>
 				<!-- /module:customers -->
+
+				<!-- ═════════════════════════════════════════════════════════════
+             MODULE: REQUESTS
+             ════════════════════════════════════════════════════════════════ -->
+				<!-- The dispatcher-facing inbox for customer trip requests. A
+				     full module rather than a floating window: it is a list
+				     surface, and in this app a floating window hosts the editor
+				     of one record while the module view hosts the list. The
+				     invite dialog stays a sibling of every view, below, so
+				     showModal() is never called on a hidden subtree. See
+				     js/panels/request-inbox.js and
+				     scheduler/css/features/request-inbox.css. -->
+				<div
+					class="rux-app-view"
+					data-view="requests"
+					hidden
+				>
+					<section
+						class="rux-workspace sched-scope-request"
+						id="request-inbox-view"
+						aria-labelledby="requests-title"
+					>
+						<!-- --table is the modifier Fleet, Drivers, and Customers
+						     use for a list view: it lets the toolbar grow and
+						     shrink with the header instead of sizing to its
+						     content, which is what the status filter needs. -->
+						<header
+							class="rux-workspace__header rux-workspace__header--table"
+						>
+							<div class="rux-workspace__heading">
+								<h1
+									class="rux-workspace__title"
+									id="requests-title"
+								>
+									Requests
+								</h1>
+								<span
+									class="sched-scope-request__count"
+									id="request-inbox-footer"
+									aria-live="polite"
+								></span>
+							</div>
+							<div class="rux-workspace__toolbar">
+								<div
+									class="rux-segmented-track"
+									id="request-inbox-filters"
+									role="group"
+									aria-label="Filter requests"
+								>
+									<button
+										type="button"
+										class="rux-button rux-button--segment"
+										data-request-filter="all"
+										aria-pressed="true"
+									>
+										All
+									</button>
+									<button
+										type="button"
+										class="rux-button rux-button--segment"
+										data-request-filter="new"
+										aria-pressed="false"
+									>
+										Received
+									</button>
+									<button
+										type="button"
+										class="rux-button rux-button--segment"
+										data-request-filter="invited"
+										aria-pressed="false"
+									>
+										Sent
+									</button>
+									<button
+										type="button"
+										class="rux-button rux-button--segment"
+										data-request-filter="reviewed"
+										aria-pressed="false"
+									>
+										Reviewed
+									</button>
+									<button
+										type="button"
+										class="rux-button rux-button--segment"
+										data-request-filter="linked"
+										aria-pressed="false"
+									>
+										Linked
+									</button>
+									<button
+										type="button"
+										class="rux-button rux-button--segment"
+										data-request-filter="closed"
+										aria-pressed="false"
+									>
+										Closed
+									</button>
+								</div>
+								<button
+									type="button"
+									class="rux-button rux-button--accent"
+									id="request-inbox-new-btn"
+								>
+									<span class="rux-icon" aria-hidden="true">add</span>
+									<span class="rux-button__label">New Request</span>
+								</button>
+							</div>
+						</header>
+						<div class="rux-workspace__body rux-table-wrap">
+							<table class="rux-table sched-scope-request__table">
+								<thead>
+									<tr>
+										<th scope="col">Status</th>
+										<th scope="col">Client</th>
+										<th scope="col">Trip</th>
+										<th scope="col">Pax</th>
+										<th scope="col">Received</th>
+										<th scope="col" aria-label="Actions"></th>
+									</tr>
+								</thead>
+								<tbody id="request-inbox-list"></tbody>
+							</table>
+						</div>
+					</section>
+
+					<!-- One request in full. A floating window because it is the
+					     editor of a single record, which is what this app puts in
+					     floating windows — the list stays in the module behind
+					     it. See js/panels/request-inbox.js. -->
+					<aside
+						class="rux-panel rux-panel--floating sched-scope-request__detail"
+						id="request-detail-window"
+						role="dialog"
+						aria-labelledby="request-detail-title"
+						hidden
+					>
+						<header
+							class="rux-panel__header"
+							id="request-detail-header"
+						>
+							<h2
+								class="rux-card__title"
+								id="request-detail-title"
+							>
+								Request
+							</h2>
+							<span
+								class="sched-scope-request__count"
+								id="request-detail-status"
+							></span>
+							<button
+								type="button"
+								class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+								id="request-detail-close-btn"
+								aria-label="Close request"
+							>
+								<span class="rux-icon" aria-hidden="true">close</span>
+							</button>
+						</header>
+						<div class="rux-panel__body">
+							<div
+								class="rux-panel__pane sched-scope-request__detail-pane"
+								id="request-detail-body"
+							></div>
+						</div>
+						<footer class="rux-panel__footer">
+							<button
+								type="button"
+								class="rux-button rux-button--accent"
+								id="request-detail-draft-btn"
+								hidden
+							>
+								<span class="rux-icon" aria-hidden="true">note_add</span>
+								<span class="rux-button__label">Create Draft Trip</span>
+							</button>
+						</footer>
+					</aside>
+				</div>
+				<!-- /module:requests -->
 
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: DOCUMENTS
@@ -7273,10 +7382,10 @@
 		<script src="./js/components/itinerary.js?v=30"></script>
 		<script src="./js/panels/driver-panel.js?v=27" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=12" defer></script>
-		<script src="./js/panels/customers-panel.js?v=9" defer></script>
+		<script src="./js/panels/customers-panel.js?v=10" defer></script>
 		<script src="./js/panels/settings-panel.js?v=8" defer></script>
-		<script src="./js/panels/trip-finder.js?v=8" defer></script>
-		<script src="./js/panels/request-inbox.js?v=4" defer></script>
+		<script src="./js/panels/trip-finder.js?v=10" defer></script>
+		<script src="./js/panels/request-inbox.js?v=9" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=9" defer></script>
 		<script src="./js/panels/print-schedule.js?v=34" defer></script>
 		<script src="./js/panels/trip-envelope.js?v=18" defer></script>
@@ -7301,7 +7410,7 @@
 		<script type="module" src="./js/panels/team-chat.js?v=18"></script>
 		<script
 			type="module"
-			src="./js/panels/components-panel.js?v=50"
+			src="./js/panels/components-panel.js?v=51"
 		></script>
 		<script
 			type="module"
@@ -7367,6 +7476,7 @@
 					"fleet",
 					"drivers",
 					"customers",
+					"requests",
 					"documents",
 					"components",
 					"game",
@@ -7379,6 +7489,7 @@
 					if (name === "drivers") window.DriverPanel?.init();
 					if (name === "fleet") window.FleetPanel?.init();
 					if (name === "customers") window.CustomersPanel?.init();
+					if (name === "requests") window.RequestInbox?.init();
 					if (name === "settings") window.SettingsPanel?.init();
 				},
 			});
@@ -7991,6 +8102,42 @@
 				if (titleEl) titleEl.textContent = title;
 			}
 
+			/* The one thing the Requests module needs from the trip editor:
+			   hydrate it from a Trip Draft v2 payload and open it. Everything
+			   the editor is made of lives in this module's closure, so this
+			   narrow global is the bridge — the same three calls the Import
+			   JSON flow below already makes, in the same order.
+
+			   It switches to Calendar first because the editor lives inside
+			   that view; unhiding it while its ancestor view is hidden would
+			   do nothing. Nothing is saved here — the draft opens for review
+			   and dispatch saves it, so a request is never silently turned
+			   into a trip. */
+			window.TripEditor = {
+				openFromDraft(draft, title) {
+					if (!loadTrip || !draft) return { ok: false, warnings: [] };
+					let imported;
+					try {
+						imported = normalizeTripImport(
+							draft,
+							window.appRequirements ?? [],
+						);
+					} catch (error) {
+						console.error("draft could not be normalized:", error);
+						return {
+							ok: false,
+							warnings: [error?.message || "Unsupported draft"],
+						};
+					}
+					showModule("calendar");
+					loadTrip(tripPanel, itinerary, imported.trip);
+					setActiveTripPane("pane-itinerary");
+					setTripDialogTitle(title || "Draft Trip");
+					openTripDialog();
+					return { ok: true, warnings: imported.warnings ?? [] };
+				},
+			};
+
 			function closeTripDialog() {
 				if (!tripEditorDialogEl || tripEditorDialogEl.hidden)
 					return true;
@@ -8002,6 +8149,19 @@
 				tripEditorDialogEl.hidden = true;
 				return true;
 			}
+
+			// ── Global search → customers bridge ───────────────────────────────
+			// Same shape as the trips bridge below: the Trip Finder knows which
+			// record was picked but not how to navigate, so it fires an event
+			// and this scope — which owns showModule — does the routing.
+			// showModule() calls CustomersPanel.init(); openContact() awaits the
+			// same deduplicated load before opening the editor.
+
+			document.addEventListener("customers:open", (e) => {
+				const { contactId } = e.detail;
+				showModule("customers");
+				void window.CustomersPanel?.openContact(contactId);
+			});
 
 			// ── Trips module → scheduler bridge ────────────────────────────────
 
@@ -10136,20 +10296,11 @@
 			// Trip bars have no width of their own — placeInline() sizes them
 			// as a % of their day column (see index.html above), so the day
 			// column's own min-width (--sched-scheduler-day-min-width,
-			// scheduler.css) is the only lever that needs to move. S/M/L are
-			// just three preset values for the same slider to jump to, not a
-			// separate mechanism — both write the same custom property on
-			// schedulerEl directly, no CSS override classes involved (unlike
-			// trip bar size/rows, which fan out into many dependent rules,
-			// this one feeds exactly one grid-template-columns).
-			const DAY_WIDTH_PRESETS = { sm: 10, md: 14, lg: 20 };
+			// scheduler.css) is the only lever the slider needs to move.
 			const DAY_WIDTH_MIN = 8;
 			const DAY_WIDTH_MAX = 24;
 			const DAY_WIDTH_DEFAULT = 14;
 
-			const dayWidthPresetTrack = document.getElementById(
-				"opt-day-width-preset",
-			);
 			const dayWidthSlider = document.getElementById(
 				"opt-day-width-slider",
 			);
@@ -10184,32 +10335,8 @@
 					"--_fill",
 					`${((rem - DAY_WIDTH_MIN) / (DAY_WIDTH_MAX - DAY_WIDTH_MIN)) * 100}%`,
 				);
-				const matchedPreset = Object.entries(DAY_WIDTH_PRESETS).find(
-					([, value]) => value === rem,
-				)?.[0];
-				dayWidthPresetTrack
-					?.querySelectorAll(".rux-button--segment")
-					.forEach((button) => {
-						button.setAttribute(
-							"aria-pressed",
-							button.dataset.value === matchedPreset
-								? "true"
-								: "false",
-						);
-					});
 			}
 			applyDayColumnWidth(dayColumnWidth);
-
-			dayWidthPresetTrack?.addEventListener("rux:segment-change", (e) => {
-				const rem = DAY_WIDTH_PRESETS[e.detail.value];
-				if (!rem) return;
-				applyDayColumnWidth(rem);
-				try {
-					localStorage.setItem("rux:day-column-width", rem);
-				} catch (_) {}
-				layoutScheduler();
-				patchProfileSettings({ dayColumnWidth: rem });
-			});
 
 			dayWidthSlider?.addEventListener("input", () => {
 				// Live-update on every drag tick, not just on release — visual
@@ -12433,110 +12560,6 @@
 			</div>
 		</div>
 
-		<!-- Trip requests window — floating/draggable/resizable, same shell as the
-		     trip finder. The dispatcher-facing inbox for customer trip
-		     requests: links sent to customers land here for triage into the
-		     trip editor. See js/panels/request-inbox.js and
-		     css/features/request-inbox.css. -->
-		<div
-			class="rux-panel rux-panel--floating sched-scope-request"
-			id="request-inbox-window"
-			hidden
-		>
-			<header class="rux-panel__header sched-scope-request__header">
-				<p class="rux-card__title">Requests</p>
-				<span
-					class="sched-scope-request__count"
-					id="request-inbox-footer"
-					aria-live="polite"
-				></span>
-				<button
-					type="button"
-					class="rux-button rux-button--ghost rux-button--icon rux-button--header"
-					id="request-inbox-close-btn"
-					aria-label="Close requests"
-				>
-					<span class="rux-icon" aria-hidden="true">close</span>
-				</button>
-			</header>
-			<div class="sched-scope-request__content">
-				<div class="sched-scope-request__toolbar">
-					<div class="rux-field">
-						<label class="rux-field__label">Status</label>
-						<div
-							class="rux-segmented-track"
-							id="request-inbox-filters"
-							role="group"
-							aria-label="Filter requests"
-						>
-							<button
-								type="button"
-								class="rux-button rux-button--segment"
-								data-request-filter="all"
-								aria-pressed="true"
-							>
-								All
-							</button>
-							<button
-								type="button"
-								class="rux-button rux-button--segment"
-								data-request-filter="new"
-								aria-pressed="false"
-							>
-								New
-							</button>
-							<button
-								type="button"
-								class="rux-button rux-button--segment"
-								data-request-filter="invited"
-								aria-pressed="false"
-							>
-								Invited
-							</button>
-							<button
-								type="button"
-								class="rux-button rux-button--segment"
-								data-request-filter="reviewed"
-								aria-pressed="false"
-							>
-								Reviewed
-							</button>
-							<button
-								type="button"
-								class="rux-button rux-button--segment"
-								data-request-filter="linked"
-								aria-pressed="false"
-							>
-								Linked
-							</button>
-							<button
-								type="button"
-								class="rux-button rux-button--segment"
-								data-request-filter="closed"
-								aria-pressed="false"
-							>
-								Closed
-							</button>
-						</div>
-					</div>
-				</div>
-				<ul
-					class="rux-panel__body sched-scope-request__list"
-					id="request-inbox-list"
-				></ul>
-			</div>
-			<footer class="rux-panel__footer">
-				<button
-					type="button"
-					class="rux-button rux-button--accent"
-					id="request-inbox-new-btn"
-				>
-					<span class="rux-icon" aria-hidden="true">add</span>
-					<span class="rux-button__label">New request</span>
-				</button>
-			</footer>
-		</div>
-
 		<dialog
 			class="sched-scope-request__dialog"
 			id="request-inbox-dialog"
@@ -12968,7 +12991,7 @@
 				</div>
 				<div class="rux-panel__body sched-scope-trip-finder__body">
 					<div
-						class="sched-scope-trip-finder__results trips-app__table-wrap"
+						class="rux-table-wrap sched-scope-trip-finder__results"
 					>
 						<table
 							class="rux-table trips-app__table sched-scope-trip-finder__table"
@@ -12976,10 +12999,11 @@
 						>
 							<thead>
 								<tr>
-									<th scope="col">Date</th>
-									<th scope="col">Customer</th>
-									<th scope="col">Destination</th>
-									<th scope="col">Status</th>
+									<th scope="col" data-col="date">Date</th>
+									<th scope="col" data-col="customer">Customer</th>
+									<th scope="col" data-col="contact">Contact</th>
+									<th scope="col" data-col="destination">Destination</th>
+									<th scope="col" data-col="status">Status</th>
 								</tr>
 							</thead>
 							<tbody id="trip-finder-body"></tbody>

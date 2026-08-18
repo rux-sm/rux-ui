@@ -12,9 +12,10 @@
   const filtersToggleBtn = document.getElementById("trip-finder-filters-toggle");
   const filtersPanel   = document.getElementById("trip-finder-filters");
 
-  let db       = null;
-  let allTrips = [];
-  let isOpen   = false;
+  let db          = null;
+  let allTrips    = [];
+  let allContacts = [];
+  let isOpen      = false;
 
   // ── Helpers ───────────────────────────────────────────────────────────────
   // Same field set/logic as trips-list.js — see that file's history for
@@ -81,20 +82,33 @@
       t.booking_contact_name,
       t.booking_contact_phone,
       t.trip_contact_1_name,
+      t.trip_contact_1_phone,
     ]
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
   }
 
+  // The person behind the booking. Searching a contact's name or phone is a
+  // first-class way into this window, so a result has to say which person it
+  // matched — "Donna High School" alone does not. The booking contact is who
+  // arranged the trip and is what the editor treats as primary; trip contact 1
+  // is the day-of rider fallback for the trips booked without one.
+  function contactNameOf(t) {
+    return t.booking_contact_name || t.trip_contact_1_name || "";
+  }
+
   // ── Row rendering ─────────────────────────────────────────────────────────
 
   function renderRows(list) {
     tbody.innerHTML = "";
+
+    // No trips is not the same as no results — customers are still searchable,
+    // so this reports the empty trip list and falls through rather than
+    // returning and leaving the customer rows unrendered.
     if (!list.length) {
       tbody.innerHTML =
-        `<tr><td colspan="4" class="trips-app__empty">No trips found.</td></tr>`;
-      return;
+        `<tr><td colspan="5" class="trips-app__empty">No trips found.</td></tr>`;
     }
 
     const today = localIsoDate();
@@ -120,9 +134,12 @@
           ? `<span class="rux-badge rux-badge--success">Confirmed</span>`
           : `<span class="rux-badge rux-badge--danger">Unconfirmed</span>`;
 
+      const contact = contactNameOf(t);
+
       tr.innerHTML = `
         <td class="trips-app__dates">${fmtDates(t.start_date, t.end_date)}${t.trip_type === "dropoff_pickup" && t.return_start_date ? ` → ${fmtDates(t.return_start_date, t.return_end_date)}` : ""}</td>
 		<td class="trips-app__customer">${t.customer || "—"}</td>
+		<td data-col="contact">${contact ? escapeAttr(contact) : "—"}</td>
 		<td>${t.destination || "—"}</td>
 		<td>${statusBadge}</td>
       `;
@@ -134,6 +151,65 @@
 
       tbody.appendChild(tr);
     });
+
+    renderContactRows();
+  }
+
+  // ── Customer results ──────────────────────────────────────────────────────
+  // Appended after every trip row so trips always rank first — the window is
+  // primarily a trip finder, and a customer is the fallback answer when the
+  // name you typed has no trip attached (or no trip yet at all). They only
+  // appear once something is typed; an unfiltered dump of the whole roster
+  // under the whole schedule would bury both.
+
+  function contactSearchTextOf(c) {
+    return [c.name, c.client, c.phone, c.email]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+  }
+
+  function renderContactRows() {
+    if (!allContacts.length) return;
+
+    const header = document.createElement("tr");
+    header.className = "sched-scope-trip-finder__group";
+    header.id        = "trip-finder-customers-group";
+    header.hidden    = true;
+    header.innerHTML = `<td colspan="5">Customers</td>`;
+    tbody.appendChild(header);
+
+    allContacts.forEach((c) => {
+      const tr = document.createElement("tr");
+      tr.className          = "trips-app__row sched-scope-trip-finder__contact-row";
+      tr.tabIndex           = 0;
+      tr.dataset.kind       = "contact";
+      tr.dataset.contactId  = c.id;
+      tr.dataset.search     = contactSearchTextOf(c);
+      tr.hidden             = true;
+
+      tr.innerHTML = `
+        <td class="trips-app__dates">—</td>
+		<td class="trips-app__customer">${escapeAttr(c.client || "—")}</td>
+		<td data-col="contact">${escapeAttr(c.name || "—")}</td>
+		<td>${escapeAttr(c.phone || c.email || "—")}</td>
+		<td><span class="rux-badge">Customer</span></td>
+      `;
+
+      tr.addEventListener("click", () => openCustomer(c));
+      tr.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tr.click(); }
+      });
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function openCustomer(contact) {
+    document.dispatchEvent(
+      new CustomEvent("customers:open", { detail: { contactId: contact.id } }),
+    );
+    close();
   }
 
   // ── Open in scheduler ─────────────────────────────────────────────────────
@@ -187,10 +263,24 @@
     applyFilter();
   });
 
+  // Every filter below the search box describes a trip — a date range, a bus
+  // assignment, a billing type. None of them mean anything for a customer, so
+  // any active one is taken as "I am looking for trips" and drops the customer
+  // results rather than showing rows the filter never actually applied to.
+  function tripOnlyFilterActive() {
+    return dateFilter !== "all" || busFilter !== "all" || statusFilter !== "all"
+        || typeFilter !== "all" || billingFilter !== "all";
+  }
+
   function applyFilter() {
     const q = searchInput?.value.trim().toLowerCase() ?? "";
 
     tbody.querySelectorAll(".trips-app__row").forEach((row) => {
+      if (row.dataset.kind === "contact") {
+        row.hidden = !q || tripOnlyFilterActive() || !row.dataset.search.includes(q);
+        return;
+      }
+
       const matchQ = !q || row.dataset.search.includes(q);
 
       const matchDate =
@@ -215,6 +305,14 @@
 
       row.hidden = !(matchQ && matchDate && matchBus && matchStatus && matchType && matchBilling);
     });
+
+    // The "Customers" divider earns its row only when something sits under it.
+    const group = document.getElementById("trip-finder-customers-group");
+    if (group) {
+      group.hidden = !tbody.querySelector(
+        ".sched-scope-trip-finder__contact-row:not([hidden])",
+      );
+    }
 
     renderFilterBadges();
   }
@@ -277,12 +375,22 @@
 
   async function loadTrips() {
     try {
-      allTrips = await db.fetchTrips();
+      // Trips are what this window is for, so a failing contacts read degrades
+      // to "no customer results" instead of taking the whole search down.
+      const [trips, contacts] = await Promise.all([
+        db.fetchTrips(),
+        db.fetchContacts().catch((err) => {
+          console.warn("fetchContacts failed; customer results disabled:", err);
+          return [];
+        }),
+      ]);
+      allTrips    = trips;
+      allContacts = contacts;
       renderRows(allTrips);
       applyFilter();
     } catch (err) {
       console.error("fetchTrips failed:", err);
-      tbody.innerHTML = `<tr><td colspan="4" class="trips-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5" class="trips-app__empty" style="color:var(--rux-danger)">Load error: ${err?.message ?? err}</td></tr>`;
     }
   }
 

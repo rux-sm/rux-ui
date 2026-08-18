@@ -171,13 +171,16 @@
    role instead of six. Each class below keeps its own rule for structural
    properties only (margin, padding, flex, overflow handling). */
 .rux-u-panel-title,
+/* The 16/24 semibold heading recipe, shared with .rux-ui-header__title.
+   Tracking is negative rather than zeroed: at this size the tighter setting
+   is what keeps a title reading as a heading instead of as body copy. */
 .rux-card__title,
 .rux-panel__title,
 .rux-workspace__title {
 	color: var(--rux-text-heading);
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-heading-panel-weight);
-	letter-spacing: 0;
+	letter-spacing: var(--rux-tracking-tight);
 	line-height: var(--rux-line-height-md);
 }
 

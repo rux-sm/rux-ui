@@ -166,7 +166,8 @@
 	box-shadow: var(--rux-button-shadow-pressed);
 }
 
-/* ghost — transparent base uses a white-alpha state fill instead of OKLCH lightness steps */
+/* ghost — transparent, so its state fill steps from the surface underneath
+   rather than from a fill of its own (see :hover below) */
 .rux-button--ghost {
 	--_bg: var(--rux-button-ghost-background);
 	--_fg: var(--rux-button-ghost-text);
@@ -182,15 +183,26 @@
    it wins outright regardless of what --_fg is set to here. Setting --_fg
    alone (the previous approach) was a no-op for color; border-color and
    color need to be declared directly to actually block the accent-blue
-   leak. Matches Accent/Danger's convention: only the background moves. */
+   leak.
+
+   The background is computed here rather than read from a token: a ghost
+   button is transparent, so its state fill has to step from the surface it
+   sits on, and a derived custom property would freeze against :root's surface
+   instead of resolving per-descendant (see tokens.css's state section). The
+   var() fallback is the whole default — the token is left undeclared so a
+   container can set it to override the step where the step cannot serve, as
+   a saturated colored fill does. */
 .rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+	--_fg: var(--rux-button-ghost-hover-text);
 	background: var(--rux-button-ghost-hover-background);
 	border: none;
-	color: var(--rux-button-ghost-text);
+	color: var(--rux-button-ghost-hover-text);
 }
 
 .rux-button--ghost:active:not(:disabled):not([aria-disabled="true"]) {
+	--_fg: var(--rux-button-ghost-hover-text);
 	background: var(--rux-button-ghost-active-background);
+	color: var(--rux-button-ghost-hover-text);
 }
 
 /* ghost has no background or border in any other state, so disabled shouldn't
@@ -289,8 +301,9 @@
    instead of staying a transparent "quiet" button. Two extra classes here
    beats both. */
 .rux-button--ghost.rux-button--danger:hover:not(:disabled):not([aria-disabled="true"]) {
+	--_fg: var(--rux-button-danger-ghost-hover-text);
 	background: var(--rux-button-danger-ghost-hover-background);
-	color: var(--rux-button-danger-ghost-text);
+	color: var(--rux-button-danger-ghost-hover-text);
 }
 
 /* Same restatement, and for the same reason — this currently wins the tie

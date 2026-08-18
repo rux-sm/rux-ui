@@ -77,19 +77,6 @@
 	display: none;
 }
 
-/* — Table wrap — */
-
-.driver-app__table-wrap {
-	flex: 1;
-	min-width: 0;
-	min-height: 0;
-	overflow-y: auto;
-	overflow-x: auto;
-	overscroll-behavior: contain;
-	padding-bottom: var(--rux-space-4);
-	border: var(--rux-table-wrap-border);
-}
-
 /* — Shared roster / workload results — */
 
 .driver-app__results {

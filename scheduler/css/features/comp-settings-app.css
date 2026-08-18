@@ -336,12 +336,16 @@
 	pointer-events: none;
 }
 
+/* This one is a full-size selectable control, not a row label — it overrides
+   the badge's own box entirely, so it also keeps the body type step the base
+   badge stepped down from. */
 .settings-billing-confirm .rux-badge {
 	width: 100%;
 	height: 100%;
 	justify-content: center;
 	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-md);
+	font-size: var(--rux-size-sm);
 }
 
 .settings-billing-confirm input:not(:checked) + .rux-badge {

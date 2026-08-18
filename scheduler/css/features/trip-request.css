@@ -9,35 +9,56 @@
 
 .trip-request-page {
 	min-height: 100dvh;
-	background: var(--rux-surface-1);
+	background: var(--rux-surface-0);
 	color: var(--rux-text-default);
 }
 
-.trip-request-header {
-	display: flex;
-	align-items: center;
-	gap: var(--rux-space-3);
-	height: var(--rux-ui-header-height);
-	min-height: var(--rux-ui-header-min-height);
-	padding: var(--rux-ui-header-padding);
-	border-bottom: var(--rux-ui-header-border);
-	background: var(--rux-ui-header-bg);
-}
+/* The page header is .rux-ui-header composed straight from the component —
+   chrome, the brand container's inline padding, the logo height, and the
+   page name in .rux-ui-header__title. Nothing about it is specific to this
+   page any more, so no rules for it live here. */
 
-.trip-request-header__logo {
-	display: block;
-	height: var(--rux-ui-header-logo-height);
-}
-
-/* Typography shared with every other eyebrow/section-label — see
-   rux-ui/css/base/utils.css. (Was --rux-text-disabled and 14px here;
-   now --rux-text-muted and 12px like the rest of the group.) */
-
+/* One card per section, stacked as siblings — not nested inside an outer
+   card, which docs/cards.md records this system deliberately migrating away
+   from ("Why this replaced panel-inside-card nesting"). The page title and
+   the submit row sit outside the stack so no card owns the whole form. */
 .trip-request {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-6);
 	width: 100%;
 	max-width: 720px;
 	margin: 0 auto;
 	padding: var(--rux-space-6);
+}
+
+.trip-request__page-title {
+	font-size: var(--rux-size-2xl);
+	font-weight: var(--rux-weight-600);
+	line-height: var(--rux-line-height-2xl);
+	letter-spacing: var(--rux-tracking-tight);
+	color: var(--rux-text-heading);
+}
+
+.trip-request__intro {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-2);
+}
+
+.trip-request__intro-text {
+	color: var(--rux-text-muted);
+}
+
+/* Author declarations beat the UA `[hidden]` rule regardless of specificity,
+   so every element this page lays out with display (.rux-field, the grids,
+   the form, the card header/footer, the success block) stayed on screen when
+   the script set `hidden`. One page-scoped guard covers the type-dependent
+   sections, the day-of contact grid, and the success swap. The shared
+   primitives carry their own guards where they need them — see
+   .rux-color-picker__popover[hidden] in rux-ui/css/base/form.css. */
+.trip-request [hidden] {
+	display: none;
 }
 
 @media (max-width: 580px) {
@@ -46,33 +67,21 @@
 	}
 }
 
-.trip-request__intro {
-	color: var(--rux-text-muted);
-}
-
 /* ── Sections ─────────────────────────────────────────────────────────── */
 
+/* Spacing hierarchy, largest break to smallest:
+
+     section -> section   card-content-gap  .rux-card + .rux-card
+     block   -> block      card-content-gap  .rux-card__body
+     field   -> field      space-3  (12px)   .trip-request__grid
+     label   -> input      space-2  (8px)    --rux-field-gap
+
+   The card shell now carries the section boundary, so the form itself needs
+   no gap of its own — .rux-card + .rux-card in rux-ui/css/base/card.css owns
+   the rhythm between framed siblings. Adding a flex gap here as well would
+   stack on top of that margin and double the spacing. */
 .trip-request__form {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-5);
-}
-
-.trip-request__section {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-4);
-	margin: 0;
-	padding: 0;
-	border: none;
-}
-
-.trip-request__section-title {
-	font-size: var(--rux-size-md);
-	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-default);
-	padding-bottom: var(--rux-space-2);
-	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
+	display: block;
 }
 
 .trip-request__grid {
@@ -134,48 +143,74 @@
 	}
 }
 
-/* ── Switches with a text label on the right ──────────────────────────── */
+/* ── Labelled switch row ──────────────────────────────────────────────── */
 
-.trip-request__switch {
-	gap: var(--rux-space-2);
-}
-
-.trip-request__switch-label {
-	font-size: var(--rux-size-sm);
-}
-
-/* ── Requirement checks ───────────────────────────────────────────────── */
-
-.trip-request__requirements {
-	display: flex;
-	flex-wrap: wrap;
-	gap: var(--rux-space-2);
-}
-
-.trip-request-check {
-	display: inline-flex;
+/* .rux-switch is a fixed-size inline-block whose track and thumb are both
+   absolutely positioned, so it can never wrap its own caption — text placed
+   inside it lands on top of the control. The question sits beside it in a
+   grid instead, the same composition as .rux-preferences__row and
+   .sched-scope-trip__po-details. */
+.trip-request__switch-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
 	align-items: center;
-	gap: var(--rux-space-2);
-	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-card-border);
-	border-radius: var(--rux-radius-full);
+}
+
+/* The label carries the separation as padding rather than the grid carrying
+   it as a gap, so its hit target runs all the way to the control — no dead
+   strip between the question and the switch that answers it. */
+.trip-request__switch-label {
+	padding-inline-end: var(--rux-space-3);
+	font-size: var(--rux-size-sm);
 	cursor: pointer;
 }
 
-.trip-request-check input {
-	accent-color: var(--rux-accent);
-}
+/* ── Attachments ──────────────────────────────────────────────────────── */
 
-.trip-request-check__label {
+/* The native control is left native on purpose: a custom drop zone would
+   need its own keyboard, focus, and drag handling to match what the browser
+   already gives a customer for free on both desktop and phone. Only the
+   button half is restyled to sit with .rux-input. */
+.trip-request__file-input {
 	font-size: var(--rux-size-sm);
+	color: var(--rux-text-muted);
 }
 
-.trip-request-check:has(input:checked) {
+.trip-request__file-input::file-selector-button {
+	margin-inline-end: var(--rux-space-3);
+	padding: var(--rux-space-2) var(--rux-space-3);
+	background: var(--rux-surface-1);
+	color: var(--rux-text-default);
+	border: var(--rux-border-width) solid var(--rux-card-border);
+	border-radius: var(--rux-radius-control);
+	font: inherit;
+	cursor: pointer;
+}
+
+.trip-request__file-input::file-selector-button:hover {
 	border-color: var(--rux-accent);
 }
 
-/* ── Footer + success ─────────────────────────────────────────────────── */
+.trip-request__file-list {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.trip-request__file-list:empty {
+	display: none;
+}
+
+.trip-request__file {
+	color: var(--rux-text-muted);
+	font-size: var(--rux-size-sm);
+	overflow-wrap: anywhere;
+}
+
+/* ── Submit row + success ─────────────────────────────────────────────── */
 
 .trip-request .rux-card__body {
 	display: flex;
@@ -183,7 +218,17 @@
 	gap: var(--rux-card-content-gap);
 }
 
-.rux-card__footer .trip-request__footer-note {
+/* The submit row sits outside the cards: no single section owns the act of
+   sending, so framing it inside the last one would misread. */
+.trip-request__actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: var(--rux-space-4);
+}
+
+.trip-request__footer-note {
 	max-width: 22rem;
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
@@ -214,4 +259,13 @@
 .trip-request__success-text {
 	max-width: 26rem;
 	color: var(--rux-text-muted);
+}
+
+/* Itineraries reach dispatch by email today — the import pipeline is built
+   around emailed requests — so the confirmation points at that channel rather
+   than the page carrying an anonymous upload path of its own. */
+.trip-request__success-note {
+	max-width: 26rem;
+	color: var(--rux-text-disabled);
+	font-size: var(--rux-size-sm);
 }

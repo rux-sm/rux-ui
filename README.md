@@ -146,12 +146,31 @@ markup.
 
 ### Casing
 
-- **Title Case** for everything: buttons, headings, menu items, labels, toast messages.
-    - ✅ `New Trip`, `Save Changes`, `Driver Assignments`
-    - ❌ `New trip`, `Save changes`, `Driver assignments`
+Casing follows what an element *is*, not where it sits. A control is a thing
+you act on and reads as a label; a heading, a field label, and body copy are
+read as language.
+
+- **Title Case** for **controls**: buttons, menu items, navigation destinations, tabs, toasts.
+    - ✅ `New Trip`, `Save Changes`, `Send Trip Request`
+    - ❌ `New trip`, `Save changes`, `Send trip request`
+- **Sentence case** for **headings, form field labels, radio/checkbox/switch option labels, and body copy**.
+    - ✅ `Day of the trip`, `Pickup address or venue`, `Round trip`, `I am the day-of contact`
+    - ❌ `Day Of The Trip`, `Pickup Address Or Venue`, `Round Trip`
 - **UPPERCASE** only for overlines and badges that need to read as a category, not a sentence. Track them out (`letter-spacing: 0.04em`).
     - ✅ `DRAFT`, `INCOMPLETE`, `NEW`
-- **Sentence case** is forbidden in UI controls. Use Title Case instead.
+
+The split is deliberate. Title Case makes a control read as one named thing,
+which is why it earns its place on buttons and menu items. Field labels are
+often phrases rather than names — `Pickup address or venue`, `Day-of contact
+phone` — and Title Case fights their legibility, which matters most on
+customer-facing pages such as `request.html`.
+
+This rule was Title Case for everything until 2026-08-18. Vercel Geist, the
+structural reference elsewhere in this document, publishes **no** casing rule
+and its own docs are inconsistent — `Upload` and `Sign Up` on buttons, but
+`Prefix and suffix` and `All Types and Sizes in comparison` as headings. So
+this is our own position rather than one inherited, and the "follow Geist"
+heuristic does not settle it.
 
 ### Punctuation
 
@@ -383,9 +402,17 @@ Use component semantic tokens in component CSS; use the primitive scale only whe
 
 Panels, cards, buttons, and fields each route their own radius through one of
 two shared roles — `--rux-radius-container` (panels, cards, calendar) or
-`--rux-radius-control` (buttons, badges, swatches, fields) — rather than a
+`--rux-radius-control` (buttons, swatches, fields) — rather than a
 single `--rux-panel-radius`/`--rux-card-radius`/`--rux-button-radius` token
-apiece. Following Vercel Geist's Materials page (its "everyday surface"
+apiece.
+
+**Badges are the exception, and deliberately so.** `.rux-badge` takes
+`--rux-radius-full`, not `--rux-radius-control`. A badge is a label applied to
+something else, not a control you can press, and the pill shape is what says so
+at a glance — the same split Vercel Geist draws between its Badge and its
+Button. Sizing follows: `--rux-badge-height` is its own 20px value rather than
+`--rux-control-height`, so a badge fits inside a `--rux-table-row-height` row
+instead of setting it. Following Vercel Geist's Materials page (its "everyday surface"
 tier — see "Reference: Vercel Geist colors" above for the general approach
 of following Vercel's structure, not literal values): `--rux-radius-container`
 is `--rux-radius-md` (8px, the roomier step for bigger boxes), `--rux-radius-control`

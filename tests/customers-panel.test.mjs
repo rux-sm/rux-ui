@@ -42,22 +42,32 @@ test("direct customer routes initialize without waiting for scheduler startup", 
 	assert.match(source, /void init\(\)/);
 });
 
-test("browser-restored search values cannot hide a loaded roster", () => {
-	assert.match(source, /let filterQuery\s*=\s*""/);
-	assert.match(source, /searchInput\.value\s*=\s*""/);
-	assert.match(
-		source,
-		/filterQuery\s*=\s*searchInput\.value\.trim\(\)\.toLowerCase\(\)/,
-	);
-	assert.match(source, /filterQuery \? "No matching customers\." : "No customers yet\."/);
-	assert.doesNotMatch(
-		source,
-		/function applyFilter\(\)[^{]*\{[^}]*searchInput\?\.value/s,
-	);
-	assert.match(
-		page,
-		/id="customer-search"[^>]*name="customer-roster-filter"[^>]*autocomplete="off"[^>]*data-1p-ignore="true"[^>]*data-lpignore="true"/s,
-	);
+// Replaces "browser-restored search values cannot hide a loaded roster". That
+// test guarded a module-local search field against password managers
+// autofilling it and filtering the roster down to nothing. The field is gone —
+// finding a customer is the global search's job — so the invariant it was
+// protecting now holds structurally: there is no filter left to hide behind.
+test("the roster renders every customer, with no filter to hide behind", () => {
+	assert.doesNotMatch(page, /id="customer-search"/);
+	assert.doesNotMatch(page, /name="customer-roster-filter"/);
+	assert.doesNotMatch(source, /searchInput/);
+	assert.doesNotMatch(source, /filterQuery/);
+	assert.match(source, /function renderRoster\(\)\s*\{\s*renderRows\(allContacts\);\s*\}/s);
+});
+
+test("the global search can open one customer record", () => {
+	// The finder knows which record was picked but not how to navigate, so it
+	// fires an event that index.html — which owns showModule — routes.
+	assert.match(source, /async function openContact\(contactId\)/);
+	assert.match(source, /window\.CustomersPanel\s*=\s*\{[^}]*\bopenContact\b/s);
+	// A stale id, a failed roster load, or a declined unsaved-changes prompt
+	// must all back out rather than open a half-populated editor.
+	assert.match(source, /if \(!\(await loadCustomers\(\)\)\) return false/);
+	assert.match(source, /if \(!contact\) return false/);
+	assert.match(source, /if \(!closeDialog\(\)\) return false/);
+	assert.match(page, /document\.addEventListener\("customers:open"/);
+	assert.match(page, /showModule\("customers"\)/);
+	assert.match(page, /window\.CustomersPanel\?\.openContact\(contactId\)/);
 });
 
 test("save and delete distinguish persistence from list refresh", () => {

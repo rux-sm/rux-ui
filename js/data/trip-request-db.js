@@ -10,6 +10,9 @@
    requestUrl(reference)      → public form URL, ?r= set when given
    createInvite(fields)       → dispatcher invite; returns { id, reference, url }
    submitRequest(fields)      → public submission; attaches to invite when ref matches
+   uploadRequestDocument(ref, file)
+                              → customer attachment; upload + record, post-submit
+   listRequestDocuments(id)   → dispatcher: attachments + short-lived signed URLs
    listRequests()             → inbox rows for the Requests window
    setStatus(id, status)      → dispatcher triage transition
    linkTrip(id, tripId)       → "apply to existing trip"
@@ -83,6 +86,77 @@ export async function submitRequest({
 		reference: data?.reference ?? "",
 		status: data?.status ?? "new",
 	};
+}
+
+/* Attachments live in their own bucket, never trip-documents: the public page
+   is anonymous, and that bucket holds every trip's real paperwork. Anon holds
+   INSERT here and nothing else — see supabase/trip_request_documents.sql. */
+const UPLOAD_BUCKET = "trip-request-uploads";
+
+/* Storage object keys are ASCII-safe: the customer's own file name is kept on
+   the trip_request_documents row for display, while the key itself is
+   sanitized so an accented or emoji-bearing name can't fail the upload. */
+function storageKey(reference, fileName) {
+	const safe = String(fileName ?? "")
+		.normalize("NFKD")
+		.replace(/[^\w.-]+/g, "-")
+		.replace(/^-+|-+$/g, "")
+		.slice(-120) || "document";
+	const slot = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+	return `${String(reference ?? "unfiled").trim()}/${slot}-${safe}`;
+}
+
+/* Uploads one file and records it against the request. Called only after the
+   submission itself succeeded, so a storage failure costs an attachment and
+   never the request — the caller reports it without discarding anything.
+   `upsert` stays off so an existing object can never be replaced. */
+export async function uploadRequestDocument(reference, file) {
+	if (!reference || !file) return null;
+	const path = storageKey(reference, file.name);
+
+	const { error: uploadErr } = await supabase.storage
+		.from(UPLOAD_BUCKET)
+		.upload(path, file, { upsert: false, contentType: file.type || undefined });
+	if (uploadErr) throw rpcError(uploadErr);
+
+	const { data, error } = await supabase.rpc("attach_trip_request_document", {
+		p_reference: String(reference).trim(),
+		p_file_path: path,
+		p_file_name: String(file.name ?? "document"),
+		p_file_size: Number(file.size) || null,
+		p_content_type: file.type || null,
+	});
+	if (error) throw rpcError(error);
+	return { id: data ?? null, path, name: file.name };
+}
+
+/* Dispatch-side: the files attached to one request, plus a short-lived signed
+   URL each. The bucket is private, so there is no public URL to hand out. */
+export async function listRequestDocuments(requestId) {
+	if (!requestId) return [];
+	const { data, error } = await supabase.rpc("list_trip_request_documents", {
+		p_request_id: requestId,
+	});
+	if (error) throw rpcError(error);
+	const rows = Array.isArray(data) ? data : [];
+
+	return Promise.all(
+		rows.map(async (row) => {
+			const { data: signed } = await supabase.storage
+				.from(UPLOAD_BUCKET)
+				.createSignedUrl(row.file_path, 300);
+			return { ...row, url: signed?.signedUrl ?? "" };
+		}),
+	);
+}
+
+/* One request in full, payload included — what list_trip_requests() flattens
+   away. Backs the detail window; see supabase/trip_request_detail.sql. */
+export async function getRequest(id) {
+	if (!id) return null;
+	const { data, error } = await supabase.rpc("get_trip_request", { p_id: id });
+	if (error) throw rpcError(error);
+	return Array.isArray(data) ? (data[0] ?? null) : (data ?? null);
 }
 
 export async function listRequests() {

@@ -36,11 +36,11 @@
    scheduler-app.css  .sched-app shell and app-header coordination
    ========================================================================== */
 
-@import "./tokens.css?v=3";
-@import "./features/trip-bar.css?v=36";
+@import "./tokens.css?v=6";
+@import "./features/trip-bar.css?v=41";
 @import "./features/trip-panel.css?v=35";
 @import "./features/trip-history.css?v=3";
 @import "./features/trip-dialog.css?v=3";
 @import "./features/itinerary.css?v=5";
 @import "./layout/scheduler.css?v=16";
-@import "./layout/scheduler-app.css?v=91";
+@import "./layout/scheduler-app.css?v=93";
