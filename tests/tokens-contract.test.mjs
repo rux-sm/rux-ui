@@ -72,3 +72,35 @@ test("the space scale exposes no half-step below --rux-space-1-5", () => {
 	const used = [...allCss.matchAll(/var\(\s*(--rux-space-0-5)[\s,)]/g)];
 	assert.equal(used.length, 0, "--rux-space-0-5 is not part of the scale — use --rux-space-px or --rux-space-1");
 });
+
+test("the spacing scale holds its 4px grid contract", () => {
+	/* Every --rux-space-<N> is N × 4px expressed in rem, including the half
+	   step (1-5 → 1.5 × 4px = 6px). --rux-space-px is the one documented
+	   exception. Asserting the rule rather than a value table means new steps
+	   are covered automatically, a step cannot drift off the grid, and a
+	   deletion fails here instead of silently invalidating every declaration
+	   that reads it. */
+	const tokens = stripComments(readFileSync("rux-ui/css/tokens.css", "utf8"));
+	const found = new Map(
+		[...tokens.matchAll(/^\s*--rux-space-([a-z0-9-]+):\s*([^;]+);/gm)].map((m) => [m[1], m[2].trim()]),
+	);
+
+	assert.ok(found.size > 0, "no --rux-space-* tokens found");
+	assert.equal(found.get("px"), "1px", "--rux-space-px is the hairline step and must stay 1px");
+	assert.equal(found.get("0"), "0px", "--rux-space-0 must be 0px");
+
+	const offGrid = [];
+	for (const [name, value] of found) {
+		if (name === "px" || name === "0") continue;
+		const step = Number(name.replace("-", "."));
+		assert.ok(Number.isFinite(step), `--rux-space-${name} is not a numeric step`);
+		const expected = `${step * 0.25}rem`;
+		if (value !== expected) offGrid.push(`--rux-space-${name}: ${value} (expected ${expected} = ${step * 4}px)`);
+	}
+	assert.deepEqual(offGrid, [], `spacing steps off the 4px grid:\n${offGrid.join("\n")}`);
+
+	/* The scale must stay contiguous at the low end, where dense UI lives. */
+	for (const step of ["1", "2", "3", "4", "5", "6"]) {
+		assert.ok(found.has(step), `--rux-space-${step} is missing from the scale`);
+	}
+});
