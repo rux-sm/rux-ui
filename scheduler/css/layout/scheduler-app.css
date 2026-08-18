@@ -340,34 +340,19 @@
 	transition: none;
 }
 
-.scheduler-app__drawer :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel) {
-	position: absolute;
-	inset-block: 0;
-	right: 0;
-	left: auto;
-	height: auto;
-	width: var(--drawer-open-width, var(--scheduler-app-left-drawer-default-width));
-	min-width: var(--rux-panel-min-width);
-	overflow: hidden;
-	/* Only the edge facing the workspace gets a border — top/bottom/outer
-	   side stay borderless. (top right bottom left) */
+/* Every editor that used to live in a left drawer (trip, fleet, driver,
+   customer) is a floating window now — see the .sched-*-dialog rules in
+   their feature files. The drawer machinery below serves the two remaining
+   RIGHT drawers: the Calendar Tools panel and the Drivers tools panel. */
 
-}
-
-.scheduler-app__drawer:not(.is-open) :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel) {
-	display: none;
-}
-
-/* Railable drawer (currently just the trip panel): the panel keeps
-   rendering — narrow, not display:none — whenever it's not fully open, so
-   its own @container queries (css/features/trip-panel.css) can reflow the
-   tabs to icon-only / stacked as it narrows, instead of a separate rail
-   element popping in once the panel vanishes. Width tracks the *live*
-   --drawer-width (not the frozen --drawer-open-width the base rule above
-   uses) so the container query re-evaluates continuously as the drawer
-   animates, and min-width is fully relaxed so it can actually reach
-   --rux-panel-rail-width — both only for this modifier, so Fleet/
-   Driver/Customer's drawers (no --railable class) keep the original
+/* Railable drawer (the Drivers tools panel): the panel keeps rendering —
+   narrow, not display:none — whenever it's not fully open, so its own
+   @container queries can reflow content as it narrows, instead of a
+   separate rail element popping in once the panel vanishes. Width tracks
+   the *live* --drawer-width so the container query re-evaluates
+   continuously as the drawer animates, and min-width is fully relaxed so
+   it can actually reach --rux-panel-rail-width — both only for this
+   modifier, so a non-railable drawer (Calendar Tools) keeps the original
    frozen-width clip-then-vanish behavior unchanged. */
 .scheduler-app__drawer--railable {
 	overflow: hidden;
@@ -382,7 +367,7 @@
    whatever the drawer's outer box currently is, whether animating or settled.
    Not rail-specific — a plain sizing rule, so it's not scoped to desktop
    below like the rest of this block. */
-.scheduler-app__drawer--railable :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver) {
+.scheduler-app__drawer--railable .sched-scope-right-panel {
 	width: 100%;
 	min-width: 0;
 }
@@ -415,18 +400,7 @@
 	}
 
 	/* Open panels also avoid borders against the window. Keep only the
-	   workspace-facing divider: right edge on the left panel, left edge on
-	   the right panel. */
-	.scheduler-app__drawer--railable.is-open .sched-scope-trip {
-		border: 0;
-		border-right: var(--rux-left-panel-border);
-	}
-
-	.scheduler-app__drawer--railable.is-open .sched-scope-driver {
-		border: 0;
-		border-right: var(--rux-left-panel-border);
-	}
-
+	   workspace-facing divider: the left edge on the right panel. */
 	.scheduler-app__drawer--railable.is-open .sched-scope-right-panel {
 		border: 0;
 		border-left: var(--rux-panel-right-border);
@@ -452,25 +426,14 @@
 
 	/* Keep only the edge facing the workspace so the collapsed rail reads
 	   as a divider without boxing in its top, bottom, or outside edge. */
-	.scheduler-app__drawer--railable:not(.is-open) :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver) {
+	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-right-panel {
 		display: flex;
 		background: var(--rux-panel-rail-bg);
 		color: var(--rux-panel-rail-fg);
 		border: 0;
+		border-left: var(--rux-panel-rail-border);
 		border-radius: var(--rux-panel-rail-radius);
 		pointer-events: none;
-	}
-
-	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-trip {
-		border-right: var(--rux-panel-rail-border);
-	}
-
-	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-driver {
-		border-right: var(--rux-panel-rail-border);
-	}
-
-	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-right-panel {
-		border-left: var(--rux-panel-rail-border);
 	}
 
 	/* Do not rely on the panel container query for the settled state.
@@ -479,7 +442,7 @@
 	   also prevents descendants with their own positioning/paint
 	   containment from leaking through the narrow panel clip. */
 	.scheduler-app__drawer--railable:not(.is-open)
-		> :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver)
+		> .sched-scope-right-panel
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		display: none !important;
 	}
@@ -1226,30 +1189,6 @@
 	flex: none;
 }
 
-/* ── Panel header (driver panel only) ─────────────────────────────────── */
-
-/* Panel header (title + close button) is hidden by default — a railed
-   panel (desktop-only concept, see the rail-collapse media query above)
-   has no title/close button, just its icon-only tabs, since the panel no
-   longer disappears entirely when collapsed there. Shown below whenever
-   the drawer is actually open, on any viewport: mobile needs its own
-   title/close affordance every bit as much as desktop does — it was never
-   meant to depend on a workspace-heading toggle button that a full-screen
-   drawer overlay can end up covering.
-   Trip and right panel no longer have a header at all — their tabs are the
-   top-most element now (desktop closes via each one's own resize gutter),
-   and their own mobile-only close buttons below handle what this used to. */
-.rux-scope-driver__header {
-	display: none;
-}
-
-/* :is(.is-open, .is-closing), not just .is-open — matches the mobile close
-   animation too, so the header doesn't vanish a frame before the panel
-   itself finishes sliding away. */
-.scheduler-app__drawer:is(.is-open, .is-closing) .rux-scope-driver__header {
-	display: flex;
-}
-
 /* ── Panel footer mobile close ────────────────────────────────────────── */
 /* Desktop never shows these — the resize gutter handles open/close there.
    Mobile has no resize-gutter interaction, and the full-screen drawer
@@ -1315,50 +1254,10 @@
 }
 
 @media (min-width: 501px) {
-	/* The Drivers workspace toggle is mobile-only; its desktop rail has its own
-	   persistent open/close control. Fleet and Customer toggles are unaffected. */
-	.rux-app-view[data-view="drivers"] .scheduler-app__mobile-panel-btn--left {
-		display: none;
-	}
-
-	/* One persistent desktop toggle travels from the open panel header into
-	   the center of the collapsed rail. Keeping the same element mounted
-	   avoids a visible handoff between separate open and close buttons.
-	   Driver panel only now — trip and right panel no longer have a header
-	   for this to travel into/out of (their own resize gutters handle
-	   open/close instead), so floating this button over their tabs would
-	   just overlap them with no header to visually "land" in. */
-	.scheduler-app__drawer--railable .rux-scope-driver__drawer-open {
-		display: inline-flex;
-		position: absolute;
-		/* The persistent toggle is a sibling of the panel header, so it does not
-		   participate in the header's flex centering. Match the header's actual
-		   block padding directly around the shared 44px header control. */
-		top: var(--rux-space-2);
-		/* Center the button's physical box, not its transform origin. Rail and
-		   control widths are tokenized, so this remains pixel-aligned. */
-		left: calc((100% - var(--rux-button-height-header)) / 2);
-		transform: none;
-		z-index: 10;
-		transition:
-			left var(--rux-panel-motion-duration) var(--rux-panel-standard-easing),
-			transform var(--rux-panel-motion-duration) var(--rux-panel-standard-easing),
-			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing);
-	}
-
-	.scheduler-app__drawer--railable.is-open .rux-scope-driver__drawer-open {
-		left: calc(100% - var(--rux-space-3) - var(--rux-button-height-header));
-		transform: none;
-	}
-
-	.scheduler-app__drawer--railable.is-collapsing .rux-scope-driver__drawer-open {
-		left: calc((100% - var(--rux-button-height-header)) / 2);
-		transform: none;
-	}
-
 	/* The stack participates in the icon button's normal flex centering. Only
 	   its two glyphs overlap, so switching states cannot move the button or
-	   change its layout footprint. */
+	   change its layout footprint. Used by the railable right/tools drawer's
+	   persistent toggle. */
 	.scheduler-app__drawer--railable .scheduler-app__drawer-icon-stack {
 		display: grid;
 		flex: none;
@@ -1384,14 +1283,14 @@
 		opacity: 1;
 	}
 
-	/* The persistent desktop toggle replaces the duplicate button in the
-	   panel header. Mobile retains the header button for its overlay drawer. */
+	/* The persistent rail toggle replaces the duplicate button in the panel
+	   header. Mobile retains the header button for its overlay drawer. */
 	.scheduler-app__drawer--railable .scheduler-app__panel-header-toggle {
 		display: none;
 	}
 
 	.scheduler-app__drawer--railable
-		> :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver)
+		> .sched-scope-right-panel
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		transition:
 			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing),
@@ -1399,7 +1298,7 @@
 	}
 
 	.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> :is(.sched-scope-trip, .sched-scope-right-panel, .sched-scope-driver)
+		> .sched-scope-right-panel
 		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
 		opacity: 0;
 		transform: translateX(-4px);
@@ -1417,11 +1316,7 @@
 	/* Desktop collapsed-rail reopeners live inside the drawer itself. A closed
 	   mobile drawer is also <=44px wide, which can trigger their container
 	   query accidentally; mobile uses workspace panel controls instead. */
-	.scheduler-app__drawer > :is(
-		.rux-scope-trip__drawer-open,
-		.rux-scope-right-panel__drawer-open,
-		.rux-scope-driver__drawer-open
-	) {
+	.scheduler-app__drawer > .rux-scope-right-panel__drawer-open {
 		display: none;
 	}
 
@@ -1480,7 +1375,7 @@
 			opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
 	}
 
-	.scheduler-app__drawer :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel, .sched-scope-right-panel) {
+	.scheduler-app__drawer .sched-scope-right-panel {
 		inset-block: 0;
 		right: 0;
 		left: 0;
@@ -1490,7 +1385,7 @@
 		border-radius: 0;
 	}
 
-	.scheduler-app__drawer.is-closing :is(.sched-scope-trip, .sched-scope-fleet, .sched-scope-driver, .rux-passenger-panel, .sched-scope-right-panel) {
+	.scheduler-app__drawer.is-closing .sched-scope-right-panel {
 		display: flex;
 	}
 
@@ -1733,6 +1628,12 @@
 	.rux-app-view[data-view="calendar"] .rux-workspace__title {
 		padding-left: 0;
 		text-align: center;
+	}
+
+	/* Icon-only beside the centered week label — the text label would crowd
+	   a narrow header row. */
+	#calendar-new-trip-btn .rux-button__label {
+		display: none;
 	}
 
 	/* display:grid, not the desktop's flex justify-content:flex-end — a

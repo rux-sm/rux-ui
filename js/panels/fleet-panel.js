@@ -3,8 +3,8 @@
 
   // ── DOM refs ──────────────────────────────────────────────────────────────
 
-  const drawer      = document.getElementById("fleet-panel-drawer");
-  const panelEl     = drawer.querySelector(".sched-scope-fleet");
+  const dialog      = document.getElementById("fleet-editor-dialog");
+  const panelEl     = dialog;
   const tbody       = document.getElementById("fleet-roster-body");
   const tabBtns     = document.querySelectorAll('[data-rux-tabs][data-scope="fleet"] .rux-tab');
   const panes       = document.querySelectorAll(".rux-scope-fleet__pane");
@@ -22,40 +22,56 @@
   let allBuses   = [];
   let colConfig  = [];
 
-  // ── Drawer ────────────────────────────────────────────────────────────────
-  // Open/close/resize behavior lives in RuxDrawer (rux-ui/js/drawer.js), shared
-  // with the Driver panel and the Trips panel's left+right drawers.
+  // ── Floating editor window ────────────────────────────────────────────────
+  // Same composition as the trip editor dialog (index.html): a
+  // .rux-panel--floating window dragged by its header via RuxFloatingWindow;
+  // the shared ≤580px breakpoint in rux-ui/css/base/panel.css pins it
+  // near-full-screen on phones.
 
-  const panelToggleBtn = document.getElementById("fleet-panel-toggle-btn");
+  const newVehicleBtn  = document.getElementById("fleet-new-vehicle-btn");
+  const dialogTitleEl  = document.getElementById("fleet-editor-dialog-title");
+  const mobileWindowQuery = window.matchMedia("(max-width: 580px)");
 
-  const drawerHandle = RuxDrawer.create({
-    drawer,
-    panel: panelEl,
-    toggleBtn: panelToggleBtn,
-    handle: document.getElementById("fleet-panel-resize-gutter"),
-    onClose: () => {
-      tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
-      selectedId = null;
-    },
-  });
-  const openDrawer  = drawerHandle.open;
-  const closeDrawer = drawerHandle.close;
+  window.RuxFloatingWindow?.attachDrag(
+    dialog,
+    dialog.querySelector("[data-fleet-dialog-header]"),
+    { minViewportWidth: 580 },
+  );
 
-  panelEl.querySelector("[data-panel-close]")?.addEventListener("click", closeDrawer);
+  // Snapshot of the form as last populated/cleared — closing (or switching
+  // vehicles) with edits on top of it asks before discarding.
+  let cleanForm = null;
+  function markFormClean() { cleanForm = JSON.stringify(readForm()); }
+  function formIsDirty()   { return cleanForm !== null && JSON.stringify(readForm()) !== cleanForm; }
 
-  function resetPanel() {
-    closeDrawer();
-    switchTab(tabBtns[0]);
+  function openDialog(title) {
+    if (dialogTitleEl && title) dialogTitleEl.textContent = title;
+    if (mobileWindowQuery.matches) window.RuxFloatingWindow?.resetGeometry(dialog);
+    dialog.hidden = false;
     panelEl.querySelector(".rux-scope-fleet__body")?.scrollTo({ top: 0, behavior: "instant" });
   }
 
-  panelToggleBtn?.addEventListener("click", () => {
-    if (drawer.classList.contains("is-open")) {
-      closeDrawer();
-    } else {
-      clearPanel();
-      openDrawer();
-    }
+  // Returns false when the user keeps their unsaved edits instead.
+  function closeDialog({ discard = false } = {}) {
+    if (dialog.hidden) return true;
+    if (!discard && formIsDirty() && !confirm("Discard unsaved changes to this vehicle?")) return false;
+    dialog.hidden = true;
+    tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
+    selectedId = null;
+    return true;
+  }
+
+  document.getElementById("fleet-dialog-close-btn")?.addEventListener("click", () => closeDialog());
+
+  function resetPanel() {
+    closeDialog({ discard: true });
+    switchTab(tabBtns[0]);
+  }
+
+  newVehicleBtn?.addEventListener("click", () => {
+    if (!closeDialog()) return;
+    clearPanel();
+    openDialog("New Vehicle");
   });
 
   // ── Tabs ──────────────────────────────────────────────────────────────────
@@ -367,12 +383,12 @@
   }
 
   function selectRow(tr, b) {
-    tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
+    if (!closeDialog()) return;
     tr.classList.add("is-selected");
     selectedId = b.id;
     populatePanel(b);
     loadBusTrips(b.id);
-    openDrawer();
+    openDialog(b.number ? `Vehicle ${b.number}` : "Edit Vehicle");
   }
 
   // ── Panel population ──────────────────────────────────────────────────────
@@ -420,6 +436,7 @@
 
     switchTab(tabBtns[0]);
     window.Rux?.syncDateInputs(panelEl);
+    markFormClean();
   }
 
   // ── Form read ─────────────────────────────────────────────────────────────
@@ -521,6 +538,7 @@
     tripList.innerHTML = "";
     switchTab(tabBtns[0]);
     window.Rux?.syncDateInputs(panelEl);
+    markFormClean();
   }
 
   document.getElementById("fp-btn-clear").addEventListener("click", clearPanel);

@@ -1,14 +1,15 @@
 /* ==========================================================================
    RUX UI — FLEET PANEL
    --------------------------------------------------------------------------
-   Side-panel form editor for vehicle profile, service records, and trip
-   assignments. Shares the same drawer shell as the trip and driver panels.
+   Form editor for vehicle profile, service records, and trip assignments.
+   Hosted in a floating window (.sched-fleet-dialog, comp-fleet-app.css) on
+   the trip editor's pattern.
 
    Structure
    ---------
-   .sched-scope-fleet              Flex column; width comes from the shared
-                                  drawer rule in scheduler-app.css.
-   .rux-panel__header            Shared vehicle unit + ID + close row.
+   .sched-scope-fleet              Flex column; sizing comes from the
+                                  .sched-fleet-dialog window rule.
+   .rux-panel__header            Shared title + close row (drag handle).
    .rux-panel__nav               Shared panel navigation slot.
    .rux-scope-fleet__body        Scrollable body holding tab panes. CSS is a
                                   pure .rux-panel__body duplicate — kept as
@@ -118,15 +119,6 @@
 	}
 }
 
-
-/* — Mobile — */
-
-@media (max-width: 480px) {
-	.scheduler-app__drawer .sched-scope-fleet {
-		width: 100dvw;
-		max-width: 100dvw;
-	}
-}
 
 /* — Type select with icon — */
 

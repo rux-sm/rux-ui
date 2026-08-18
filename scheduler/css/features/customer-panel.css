@@ -1,17 +1,18 @@
 /* ==========================================================================
    RUX UI — CUSTOMER PANEL
    --------------------------------------------------------------------------
-   Roster + editor drawer for the saved contacts table. Same shell as
-   Fleet/Driver (.rux-panel--left drawer + .rux-workspace roster), trimmed
-   for a 3-field record. The roster table itself needs no styling here —
-   .rux-table (comp-driver-app.css) is already a generic, shared component;
+   Roster + editor window for the saved contacts table. Same recipe as
+   Fleet: a floating editor window (.sched-customer-dialog, the trip
+   editor's pattern) over a roster table, trimmed for a 3-field record.
+   The roster table itself needs no styling here — .rux-table
+   (comp-driver-app.css) is already a generic, shared component;
    .customer-app__table-wrap only needed adding to the shared
    .rux-workspace :is(...) rule in scheduler-app.css, not its own copy.
 
    Structure
    ---------
-   .sched-scope-customer           Flex column; width from the shared drawer
-                                  rule in scheduler-app.css.
+   .sched-scope-customer           Flex column; sizing from the
+                                  .sched-customer-dialog window rule below.
    .rux-panel__body              Scrollable body — plain .rux-panel__body
                                   now, no unique styling of its own.
    .rux-scope-customer__pane     Form fields. Kept as its own class only
@@ -25,6 +26,31 @@
 
 .sched-scope-customer {
 	height: 100%;
+}
+
+/* — Editor window — */
+
+/* Movable, resizable window hosting the customer form — same composition
+   as the trip and fleet editors. Later in the file than the height: 100%
+   above, so the window's own height wins. */
+.sched-customer-dialog {
+	top: 50%;
+	left: 50%;
+	width: min(440px, calc(100vw - (var(--rux-space-4) * 2)));
+	height: min(600px, calc(100dvh - (var(--rux-space-4) * 2)));
+	min-width: 360px;
+	min-height: 400px;
+	max-width: calc(100vw - (var(--rux-space-4) * 2));
+	max-height: calc(100dvh - (var(--rux-space-4) * 2));
+	transform: translate(-50%, -50%);
+	overflow: hidden;
+}
+
+@media (max-width: 580px) {
+	.sched-customer-dialog.sched-customer-dialog {
+		min-width: 0;
+		min-height: 0;
+	}
 }
 
 .rux-scope-customer__pane {

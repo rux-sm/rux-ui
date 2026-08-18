@@ -19,13 +19,13 @@
 (function () {
 	"use strict";
 
-	const drawer = document.getElementById("customer-panel-drawer");
-	const panelEl = drawer?.querySelector(".sched-scope-customer");
+	const dialog = document.getElementById("customer-editor-dialog");
+	const panelEl = dialog;
 	const tbody = document.getElementById("customer-roster-body");
 	const tripList = document.getElementById("cp-trip-list");
 	const searchInput = document.getElementById("customer-search");
 
-	if (!drawer || !panelEl || !tbody) return;
+	if (!dialog || !tbody) return;
 
 	let allContacts = [];
 	let selectedId = null;
@@ -45,31 +45,44 @@
 		return contactsDbPromise;
 	}
 
-	/* ── Drawer ─────────────────────────────────────────────────────────── */
+	/* ── Floating editor window ─────────────────────────────────────────── */
+	// Same composition as the trip and fleet editor dialogs: a
+	// .rux-panel--floating window dragged by its header via RuxFloatingWindow;
+	// the shared ≤580px breakpoint in rux-ui/css/base/panel.css pins it
+	// near-full-screen on phones.
 
-	const drawerHandle = RuxDrawer.create({
-		drawer,
-		panel: panelEl,
-		toggleBtn: document.getElementById("customer-panel-toggle-btn"),
-		handle: document.getElementById("customer-panel-resize-gutter"),
-		onClose: () => {
-			tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
-			selectedId = null;
-		},
-	});
-	const openDrawer = drawerHandle.open;
-	const closeDrawer = drawerHandle.close;
+	const dialogTitleEl = document.getElementById("customer-editor-dialog-title");
+	const mobileWindowQuery = window.matchMedia("(max-width: 580px)");
 
-	panelEl.querySelector("[data-panel-close]")?.addEventListener("click", closeDrawer);
+	window.RuxFloatingWindow?.attachDrag(
+		dialog,
+		dialog.querySelector("[data-customer-dialog-header]"),
+		{ minViewportWidth: 580 },
+	);
 
-	document.getElementById("customer-panel-toggle-btn")?.addEventListener("click", () => {
-		if (drawer.classList.contains("is-open")) {
-			closeDrawer();
-		} else {
-			clearPanel();
-			openDrawer();
-		}
-	});
+	// Snapshot of the form as last populated/cleared — closing (or switching
+	// customers) with edits on top of it asks before discarding.
+	let cleanForm = null;
+	function markFormClean() { cleanForm = JSON.stringify(readForm()); }
+	function formIsDirty()   { return cleanForm !== null && JSON.stringify(readForm()) !== cleanForm; }
+
+	function openDialog(title) {
+		if (dialogTitleEl && title) dialogTitleEl.textContent = title;
+		if (mobileWindowQuery.matches) window.RuxFloatingWindow?.resetGeometry(dialog);
+		dialog.hidden = false;
+	}
+
+	// Returns false when the user keeps their unsaved edits instead.
+	function closeDialog({ discard = false } = {}) {
+		if (dialog.hidden) return true;
+		if (!discard && formIsDirty() && !confirm("Discard unsaved changes to this customer?")) return false;
+		dialog.hidden = true;
+		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
+		selectedId = null;
+		return true;
+	}
+
+	document.getElementById("customer-dialog-close-btn")?.addEventListener("click", () => closeDialog());
 
 	/* ── Roster ─────────────────────────────────────────────────────────── */
 
@@ -163,12 +176,12 @@
 	}
 
 	function selectRow(tr, contact) {
-		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
+		if (!closeDialog()) return;
 		tr.classList.add("is-selected");
 		selectedId = contact.id;
 		populatePanel(contact);
 		loadContactTrips(contact.id);
-		openDrawer();
+		openDialog(contact.name || "Edit Customer");
 	}
 
 	/* ── Panel population / read ───────────────────────────────────────── */
@@ -178,6 +191,7 @@
 		document.getElementById("cp-client").value = contact.client || "";
 		document.getElementById("cp-phone").value = contact.phone || "";
 		document.getElementById("cp-email").value = contact.email || "";
+		markFormClean();
 	}
 
 	function readForm() {
@@ -223,10 +237,11 @@
 		selectedId = null;
 		panelEl.querySelectorAll(".rux-scope-customer__pane input").forEach((f) => { f.value = ""; });
 		if (tripList) tripList.innerHTML = "";
+		markFormClean();
 	}
 
 	function resetPanel() {
-		closeDrawer();
+		closeDialog({ discard: true });
 		clearPanel();
 	}
 
@@ -282,8 +297,9 @@
 
 	document.getElementById("cp-btn-clear")?.addEventListener("click", clearPanel);
 	document.getElementById("customer-new-btn")?.addEventListener("click", () => {
+		if (!closeDialog()) return;
 		clearPanel();
-		openDrawer();
+		openDialog("New Customer");
 		document.getElementById("cp-name")?.focus();
 	});
 

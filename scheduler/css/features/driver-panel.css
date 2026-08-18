@@ -1,17 +1,15 @@
 /* ==========================================================================
    RUX UI — DRIVER PANEL
    --------------------------------------------------------------------------
-   Side-panel form editor for driver profile, license, status, and trip
-   assignments. Shares the same drawer shell as the trip panel.
+   Form editor for driver profile, license, status, and trip assignments.
+   Hosted in a floating window (.sched-driver-dialog, comp-driver-app.css)
+   on the trip editor's pattern.
 
    Structure
    ---------
-   .sched-scope-driver              Flex column; width comes from the shared
-                                   drawer rule in scheduler-app.css.
-   .rux-scope-driver__header      Mobile-only show/hide (scheduler-app.css)
-                                   layered on top of the shared .rux-panel__
-                                   header — not a pure duplicate, keeps its
-                                   own class for that reason.
+   .sched-scope-driver              Flex column; sizing comes from the
+                                   .sched-driver-dialog window rule.
+   .rux-panel__header             Shared title + close row (drag handle).
    .rux-panel__nav                Shared panel navigation slot.
    .rux-panel__body               Scrollable body — plain .rux-panel__body
                                    now, no unique styling of its own.
@@ -23,10 +21,6 @@
    ========================================================================== */
 
 /* — Panel shell — */
-
-.rux-scope-driver__drawer-open {
-	display: none;
-}
 
 .sched-scope-driver {
 	height: 100%;
@@ -264,13 +258,4 @@
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
-}
-
-/* — Mobile — */
-
-@media (max-width: 480px) {
-	.scheduler-app__drawer .sched-scope-driver {
-		width: 100dvw;
-		max-width: 100dvw;
-	}
 }

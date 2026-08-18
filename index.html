@@ -41,26 +41,26 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=5" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=264" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=266" />
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/driver-panel.css?v=10"
+			href="./scheduler/css/features/driver-panel.css?v=11"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-driver-app.css?v=10"
+			href="./scheduler/css/features/comp-driver-app.css?v=11"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/fleet-panel.css?v=4"
+			href="./scheduler/css/features/fleet-panel.css?v=5"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/customer-panel.css?v=2"
+			href="./scheduler/css/features/customer-panel.css?v=3"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-fleet-app.css"
+			href="./scheduler/css/features/comp-fleet-app.css?v=2"
 		/>
 		<link
 			rel="stylesheet"
@@ -2231,6 +2231,19 @@
 					<section class="rux-workspace" aria-label="Weekly schedule">
 						<header class="rux-workspace__header">
 							<div class="sched-workspace-nav">
+								<button
+									class="rux-button rux-button--default rux-button--header"
+									type="button"
+									id="calendar-new-trip-btn"
+									aria-haspopup="dialog"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>add</span
+									>
+									<span class="rux-button__label"
+										>New Trip</span
+									>
+								</button>
 								<h1
 									class="rux-workspace__title"
 									id="week-label"
@@ -3140,13 +3153,35 @@
              MODULE: FLEET
              ════════════════════════════════════════════════════════════════ -->
 				<div class="rux-app-view" data-view="fleet" hidden>
-					<!-- Fleet panel drawer -->
-					<div class="scheduler-app__drawer" id="fleet-panel-drawer">
+					<!-- Movable, resizable vehicle editor window -->
 						<aside
-							class="rux-panel rux-panel--attached sched-scope-fleet"
+							class="rux-panel rux-panel--floating sched-fleet-dialog sched-scope-fleet"
+							id="fleet-editor-dialog"
 							role="dialog"
-							aria-label="Vehicle editor"
+							aria-labelledby="fleet-editor-dialog-title"
+							hidden
 						>
+							<header
+								class="rux-panel__header"
+								data-fleet-dialog-header
+							>
+								<h2
+									class="rux-card__title"
+									id="fleet-editor-dialog-title"
+								>
+									Vehicle
+								</h2>
+								<button
+									type="button"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+									id="fleet-dialog-close-btn"
+									aria-label="Close vehicle editor"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
+								</button>
+							</header>
 							<div
 								class="rux-panel__nav rux-panel__nav--attached"
 							>
@@ -3628,30 +3663,9 @@
 										Save</span
 									>
 								</button>
-								<button
-									type="button"
-									class="rux-button rux-button--ghost sched-panel-footer-close"
-									data-panel-close
-									aria-label="Close vehicle editor"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>close</span
-									>
-									<span class="rux-button__label">Close</span>
-								</button>
 							</footer>
 						</aside>
-					</div>
-					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter"
-						id="fleet-panel-resize-gutter"
-						role="separator"
-						aria-orientation="vertical"
-						aria-label="Resize vehicle panel"
-						aria-controls="fleet-panel-drawer"
-						tabindex="0"
-					></div>
-					<!-- /fleet-panel-drawer -->
+					<!-- /fleet-editor-dialog -->
 
 					<section
 						class="rux-workspace fleet-app__main"
@@ -3661,18 +3675,16 @@
 							class="rux-workspace__header rux-workspace__header--table"
 						>
 							<button
-								class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
+								class="rux-button rux-button--default rux-button--header"
 								type="button"
-								id="fleet-panel-toggle-btn"
-								aria-label="Open vehicle panel"
-								aria-pressed="false"
-								data-opens="fleet-panel-drawer"
+								id="fleet-new-vehicle-btn"
+								aria-haspopup="dialog"
 							>
-								<span class="rux-icon icon-off"
-									>left_panel_open</span
+								<span class="rux-icon" aria-hidden="true"
+									>add</span
 								>
-								<span class="rux-icon icon-on"
-									>left_panel_close</span
+								<span class="rux-button__label"
+									>New Vehicle</span
 								>
 							</button>
 							<div class="rux-workspace__toolbar">
@@ -3750,50 +3762,32 @@
              MODULE: DRIVERS
              ════════════════════════════════════════════════════════════════ -->
 				<div class="rux-app-view" data-view="drivers" hidden>
-					<!-- Driver panel drawer -->
-					<div
-						class="scheduler-app__drawer scheduler-app__drawer--railable"
-						id="driver-panel-drawer"
-					>
-						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-scope-driver__drawer-open scheduler-app__mobile-panel-btn"
-							type="button"
-							aria-label="Toggle driver editor"
-							data-rux-domain-toggle
-							data-scope="driver-editor"
-						>
-							<span
-								class="scheduler-app__drawer-icon-stack"
-								aria-hidden="true"
-							>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-open"
-									>left_panel_open</span
-								>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-close"
-									>left_panel_close</span
-								>
-							</span>
-						</button>
+					<!-- Movable, resizable driver editor window -->
 						<aside
-							class="rux-panel rux-panel--attached sched-scope-driver"
+							class="rux-panel rux-panel--floating sched-driver-dialog sched-scope-driver"
+							id="driver-editor-dialog"
 							role="dialog"
-							aria-label="Driver editor"
+							aria-labelledby="driver-editor-dialog-title"
+							hidden
 						>
 							<header
-								class="rux-panel__header rux-scope-driver__header"
+								class="rux-panel__header"
+								data-driver-dialog-header
 							>
-								<h2 class="rux-panel__title">Driver Editor</h2>
+								<h2
+									class="rux-card__title"
+									id="driver-editor-dialog-title"
+								>
+									Driver
+								</h2>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
 									type="button"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+									id="driver-dialog-close-btn"
 									aria-label="Close driver editor"
-									data-rux-domain-toggle
-									data-scope="driver-editor"
 								>
 									<span class="rux-icon" aria-hidden="true"
-										>left_panel_close</span
+										>close</span
 									>
 								</button>
 							</header>
@@ -4643,30 +4637,9 @@
 										Save</span
 									>
 								</button>
-								<button
-									type="button"
-									class="rux-button rux-button--ghost sched-panel-footer-close"
-									data-panel-close
-									aria-label="Close driver editor"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>close</span
-									>
-									<span class="rux-button__label">Close</span>
-								</button>
 							</footer>
 						</aside>
-					</div>
-					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter"
-						id="driver-panel-resize-gutter"
-						role="separator"
-						aria-orientation="vertical"
-						aria-label="Resize driver panel"
-						aria-controls="driver-panel-drawer"
-						tabindex="0"
-					></div>
-					<!-- /driver-panel-drawer -->
+					<!-- /driver-editor-dialog -->
 
 					<section
 						class="rux-workspace driver-app__main"
@@ -4677,18 +4650,16 @@
 						>
 							<div class="rux-workspace__heading">
 								<button
-									class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
+									class="rux-button rux-button--default rux-button--header"
 									type="button"
-									id="driver-panel-toggle-btn"
-									aria-label="Open driver panel"
-									aria-pressed="false"
-									data-opens="driver-panel-drawer"
+									id="driver-new-btn"
+									aria-haspopup="dialog"
 								>
-									<span class="rux-icon icon-off"
-										>left_panel_open</span
+									<span class="rux-icon" aria-hidden="true"
+										>add</span
 									>
-									<span class="rux-icon icon-on"
-										>left_panel_close</span
+									<span class="rux-button__label"
+										>New Driver</span
 									>
 								</button>
 							</div>
@@ -4989,16 +4960,35 @@
 					data-view="customers"
 					hidden
 				>
-					<!-- Customer panel drawer -->
-					<div
-						class="scheduler-app__drawer"
-						id="customer-panel-drawer"
-					>
+					<!-- Movable, resizable customer editor window -->
 						<aside
-							class="rux-panel rux-panel--attached sched-scope-customer"
+							class="rux-panel rux-panel--floating sched-customer-dialog sched-scope-customer"
+							id="customer-editor-dialog"
 							role="dialog"
-							aria-label="Customer editor"
+							aria-labelledby="customer-editor-dialog-title"
+							hidden
 						>
+							<header
+								class="rux-panel__header"
+								data-customer-dialog-header
+							>
+								<h2
+									class="rux-card__title"
+									id="customer-editor-dialog-title"
+								>
+									Customer
+								</h2>
+								<button
+									type="button"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+									id="customer-dialog-close-btn"
+									aria-label="Close customer editor"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>close</span
+									>
+								</button>
+							</header>
 							<div class="rux-panel__body">
 								<div
 									class="rux-panel__pane rux-scope-customer__pane"
@@ -5099,30 +5089,9 @@
 										Save</span
 									>
 								</button>
-								<button
-									type="button"
-									class="rux-button rux-button--ghost sched-panel-footer-close"
-									data-panel-close
-									aria-label="Close customer editor"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>close</span
-									>
-									<span class="rux-button__label">Close</span>
-								</button>
 							</footer>
 						</aside>
-					</div>
-					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter"
-						id="customer-panel-resize-gutter"
-						role="separator"
-						aria-orientation="vertical"
-						aria-label="Resize customer panel"
-						aria-controls="customer-panel-drawer"
-						tabindex="0"
-					></div>
-					<!-- /customer-panel-drawer -->
+					<!-- /customer-editor-dialog -->
 
 					<section
 						class="rux-workspace customer-app__main"
@@ -5132,18 +5101,16 @@
 							class="rux-workspace__header rux-workspace__header--table"
 						>
 							<button
-								class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--left"
+								class="rux-button rux-button--default rux-button--header"
 								type="button"
-								id="customer-panel-toggle-btn"
-								aria-label="Open customer panel"
-								aria-pressed="false"
-								data-opens="customer-panel-drawer"
+								id="customer-new-btn"
+								aria-haspopup="dialog"
 							>
-								<span class="rux-icon icon-off"
-									>left_panel_open</span
+								<span class="rux-icon" aria-hidden="true"
+									>add</span
 								>
-								<span class="rux-icon icon-on"
-									>left_panel_close</span
+								<span class="rux-button__label"
+									>New Customer</span
 								>
 							</button>
 							<div class="rux-workspace__toolbar">
@@ -5160,18 +5127,6 @@
 									placeholder="Search customers…"
 									aria-label="Search customers"
 								/>
-								<button
-									class="rux-button rux-button--default"
-									id="customer-new-btn"
-									type="button"
-								>
-									<span class="rux-icon" aria-hidden="true"
-										>add</span
-									>
-									<span class="rux-button__label"
-										>New customer</span
-									>
-								</button>
 							</div>
 						</header>
 						<div
@@ -7276,9 +7231,9 @@
 		<script src="./rux-ui/js/suggestions.js?v=2"></script>
 		<script src="./js/panels/trip-panel.js?v=39"></script>
 		<script src="./js/components/itinerary.js?v=27"></script>
-		<script src="./js/panels/driver-panel.js?v=22" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=7" defer></script>
-		<script src="./js/panels/customers-panel.js?v=5" defer></script>
+		<script src="./js/panels/driver-panel.js?v=23" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=8" defer></script>
+		<script src="./js/panels/customers-panel.js?v=6" defer></script>
 		<script src="./js/panels/settings-panel.js?v=5" defer></script>
 		<script src="./js/panels/trip-finder.js?v=5" defer></script>
 		<script src="./js/panels/request-inbox.js?v=1" defer></script>
@@ -7961,6 +7916,13 @@
 			document
 				.getElementById("trip-dialog-close-btn")
 				?.addEventListener("click", closeTripDialog);
+			// Manual opener for the floating trip editor — same blank-form path
+			// as every other trips:new producer (global search, nav).
+			document
+				.getElementById("calendar-new-trip-btn")
+				?.addEventListener("click", () =>
+					document.dispatchEvent(new CustomEvent("trips:new")),
+				);
 			if (tripEditorDialogEl && tripEditorHeaderEl) {
 				window.RuxFloatingWindow?.attachDrag(
 					tripEditorDialogEl,

@@ -10,6 +10,31 @@
    own column styling, keyed by [data-col].
    ========================================================================== */
 
+/* — Driver editor window — */
+
+/* Movable, resizable window hosting the .sched-scope-driver form — same
+   composition as the trip, fleet, and customer editors. Loads after
+   driver-panel.css, so this height wins over the panel's own height: 100%. */
+.sched-driver-dialog {
+	top: 50%;
+	left: 50%;
+	width: min(560px, calc(100vw - (var(--rux-space-4) * 2)));
+	height: min(840px, calc(100dvh - (var(--rux-space-4) * 2)));
+	min-width: 420px;
+	min-height: 520px;
+	max-width: calc(100vw - (var(--rux-space-4) * 2));
+	max-height: calc(100dvh - (var(--rux-space-4) * 2));
+	transform: translate(-50%, -50%);
+	overflow: hidden;
+}
+
+@media (max-width: 580px) {
+	.sched-driver-dialog.sched-driver-dialog {
+		min-width: 0;
+		min-height: 0;
+	}
+}
+
 /* — Page body — */
 
 .driver-app__main {

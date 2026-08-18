@@ -3,8 +3,8 @@
 
 	// ── DOM refs ──────────────────────────────────────────────────────────────
 
-	const drawer = document.getElementById("driver-panel-drawer");
-	const panelEl = drawer.querySelector(".sched-scope-driver");
+	const dialog = document.getElementById("driver-editor-dialog");
+	const panelEl = dialog;
 	const tbody = document.getElementById("driver-roster-body");
 	const tabBtns = document.querySelectorAll('[data-rux-tabs][data-scope="driver"] .rux-tab');
 	const panes = document.querySelectorAll(".rux-scope-driver__pane");
@@ -57,41 +57,55 @@
 	const DRIVER_SHARE_ORIGIN = "https://rux-sm.github.io/rux-ui/";
 	const DRIVER_WORKLOAD_START_KEY = "rux:driver-workload-start";
 
-	// ── Drawer ────────────────────────────────────────────────────────────────
-	// Open/close/resize behavior lives in RuxDrawer (rux-ui/js/drawer.js), shared
-	// with the Fleet panel and the Trips panel's left+right drawers.
+	// ── Floating editor window ────────────────────────────────────────────────
+	// Same composition as the trip, fleet, and customer editor dialogs: a
+	// .rux-panel--floating window dragged by its header via RuxFloatingWindow;
+	// the shared ≤580px breakpoint in rux-ui/css/base/panel.css pins it
+	// near-full-screen on phones.
 
-	const panelToggleBtn = document.getElementById("driver-panel-toggle-btn");
+	const dialogTitleEl = document.getElementById("driver-editor-dialog-title");
+	const mobileWindowQuery = window.matchMedia("(max-width: 580px)");
 
-	const drawerHandle = RuxDrawer.create({
-		drawer,
-		panel: panelEl,
-		toggleBtn: panelToggleBtn,
-		handle: document.getElementById("driver-panel-resize-gutter"),
-		railWidth: true,
-	});
-	const openDrawer = drawerHandle.open;
-	const closeDrawer = drawerHandle.close;
+	window.RuxFloatingWindow?.attachDrag(
+		dialog,
+		dialog.querySelector("[data-driver-dialog-header]"),
+		{ minViewportWidth: 580 },
+	);
 
-	panelEl.querySelector("[data-panel-close]")?.addEventListener("click", closeDrawer);
+	// Snapshot of the form as last populated/cleared — closing (or switching
+	// drivers) with edits on top of it asks before discarding.
+	let cleanForm = null;
+	function markFormClean() { cleanForm = JSON.stringify(readForm()); }
+	function formIsDirty()   { return cleanForm !== null && JSON.stringify(readForm()) !== cleanForm; }
 
-	panelToggleBtn?.addEventListener("click", () => {
-		if (drawer.classList.contains("is-open")) {
-			closeDrawer();
-		} else {
-			openDrawer();
-		}
-	});
+	function openDialog(title) {
+		if (dialogTitleEl && title) dialogTitleEl.textContent = title;
+		if (mobileWindowQuery.matches) window.RuxFloatingWindow?.resetGeometry(dialog);
+		dialog.hidden = false;
+		panelEl.querySelector(".rux-scope-driver__body")?.scrollTo({ top: 0, behavior: "instant" });
+	}
+
+	// Returns false when the user keeps their unsaved edits instead.
+	function closeDialog({ discard = false } = {}) {
+		if (dialog.hidden) return true;
+		if (!discard && formIsDirty() && !confirm("Discard unsaved changes to this driver?")) return false;
+		dialog.hidden = true;
+		tbody
+			.querySelectorAll(".driver-app__row")
+			.forEach((r) => r.classList.remove("is-selected"));
+		selectedId = null;
+		return true;
+	}
 
 	document
-		.querySelectorAll('[data-rux-domain-toggle][data-scope="driver-editor"]')
-		.forEach((button) => {
-			button.addEventListener("click", () => {
-				drawer.classList.contains("is-open")
-					? closeDrawer()
-					: openDrawer();
-			});
-		});
+		.getElementById("driver-dialog-close-btn")
+		?.addEventListener("click", () => closeDialog());
+
+	document.getElementById("driver-new-btn")?.addEventListener("click", () => {
+		if (!closeDialog()) return;
+		clearPanel();
+		openDialog("New Driver");
+	});
 
 	// Right-side "Table Options" drawer (View Options + Filters) — same
 	// RuxDrawer machinery as above, no resize handle (fixed width).
@@ -134,10 +148,7 @@
 	}
 
 	tabBtns.forEach((btn) =>
-		btn.addEventListener("click", () => {
-			switchTab(btn);
-			if (!drawer.classList.contains("is-open")) openDrawer();
-		}),
+		btn.addEventListener("click", () => switchTab(btn)),
 	);
 
 	// ── Toggle groups inside panel (single-select) ────────────────────────────
@@ -819,16 +830,14 @@
 	}
 
 	function selectRow(tr, d) {
-		tbody
-			.querySelectorAll(".driver-app__row")
-			.forEach((r) => r.classList.remove("is-selected"));
+		if (!closeDialog()) return;
 		tr.classList.add("is-selected");
 		selectedId = d.id;
 		populatePanel(d);
 		loadDriverTrips(d.id);
 		loadDriverScheduleShare(d.id);
 		loadTimeOff(d.id);
-		openDrawer();
+		openDialog(d.name || "Edit Driver");
 	}
 
 	// ── Panel population ──────────────────────────────────────────────────────
@@ -925,6 +934,7 @@
 
 		switchTab(tabBtns[0]);
 		window.Rux?.syncDateInputs(panelEl);
+		markFormClean();
 	}
 
 	// ── Form read ─────────────────────────────────────────────────────────────
@@ -1215,7 +1225,7 @@
 					selectedId ? { id: selectedId, ...payload } : payload,
 				);
 				await loadDrivers();
-				closeDrawer();
+				closeDialog({ discard: true });
 			} catch (err) {
 				console.error("Could not save driver:", err);
 			} finally {
@@ -1236,7 +1246,7 @@
 				await db.deleteDriver(selectedId);
 				selectedId = null;
 				await loadDrivers();
-				closeDrawer();
+				closeDialog({ discard: true });
 			} catch (err) {
 				console.error("Could not delete driver:", err);
 			} finally {
@@ -1291,6 +1301,7 @@
 		resetTimeOffRows();
 		switchTab(tabBtns[0]);
 		window.Rux?.syncDateInputs(panelEl);
+		markFormClean();
 	}
 
 	document
@@ -1733,12 +1744,11 @@
 		renderFilterGroup("driver-filter-employment-list", "employment-type");
 		await loadDrivers();
 
-		// Both side panels open by default on desktop, same as the Calendar
-		// module's trip/tools drawers — mobile stays closed (panels are
-		// full-screen overlays there, and there's no trip/driver selected
-		// yet to show anyway).
+		// The tools drawer opens by default on desktop, same as the Calendar
+		// module's tools drawer — mobile stays closed (panels are full-screen
+		// overlays there). The editor is a floating window now and only opens
+		// on row click or New Driver, like every other editor dialog.
 		if (!window.matchMedia("(max-width: 500px)").matches) {
-			openDrawer();
 			openToolsDrawer();
 		}
 	}
