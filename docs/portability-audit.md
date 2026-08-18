@@ -415,7 +415,7 @@ escapes it. The one known exception is the `--rux-trip-bar-icon-size` row in §4
 
 **Breaking change** = removing or renaming a public token or class. §3's rename program is
 breaking by definition and is the reason for the policy amendment recorded in
-`CLAUDE.md` / `AGENTS.md`.
+`CLAUDE.md`.
 
 **Every page is a consumer.** Consolidating the entrypoint moved the base layer out of
 `scheduler/css/components.css` and into `rux.css`. `index.html` was updated; `driver.html`,

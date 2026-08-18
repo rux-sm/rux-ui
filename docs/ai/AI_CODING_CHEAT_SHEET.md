@@ -20,13 +20,13 @@ Use this card for day-to-day decisions. See the [full operating guide](AI_AGENT_
 
 ## 2. Pick the Configuration
 
-| Type | Codex | Claude Code | Cline | Mode |
-|---|---|---|---|---|
-| `1` | Luna · low | Sonnet · low | ClinePass Flash · low | Act/edit |
-| `2` | Terra · medium | Sonnet · medium | ClinePass Pro · medium | Act/edit |
-| `3` | Sol · high | Fable · high | ClinePass Pro · high | Manual/checkpoints |
-| `4` | Sol · high | Fable · high | ClinePass Pro · high | Plan/read-only |
-| `5` | Sol · max | Fable · high–max | ClinePass Pro · max | Staged autonomy |
+| Type | Claude Code | Mode |
+|---|---|---|
+| `1` | Sonnet · low | Act/edit |
+| `2` | Sonnet · medium | Act/edit |
+| `3` | Fable · high | Manual/checkpoints |
+| `4` | Fable · high | Plan/read-only |
+| `5` | Fable · high–max | Staged autonomy |
 
 Everyday default: **Type 2**. Move down for trivial work. Move up only when the task or evidence justifies it.
 
@@ -99,4 +99,4 @@ VERIFICATION: Run focused tests and inspect narrow/wide layouts in both themes.
 
 ---
 
-Personal reference last reviewed: 2026-08-11. Keep platform defaults here synchronized with the [full operating guide](AI_AGENT_WORKFLOW.md); repository behavior remains in `AGENTS.md`, `CLAUDE.md`, and `.cline/rules/project.md`.
+Personal reference last reviewed: 2026-08-11. Keep platform defaults here synchronized with the [full operating guide](AI_AGENT_WORKFLOW.md); repository behavior remains in `CLAUDE.md`.

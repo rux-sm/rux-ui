@@ -19,9 +19,7 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 ├── README.md              ← you are here
 ├── gallery.html           ← every component, both themes, no app boot required
 ├── .claude/skills/        ← Claude Code skills: rux-design, vendor-rux-ui, verify
-├── AGENTS.md              ← concise Codex repository policy
 ├── CLAUDE.md              ← concise Claude Code repository policy
-├── .cline/rules/          ← concise Cline project policy
 ├── docs/ai/               ← human-facing AI workflow and model routing
 ├── rux-ui/
 │   ├── css/

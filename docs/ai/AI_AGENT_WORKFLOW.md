@@ -1,6 +1,6 @@
 # AI Agent Operating Guide — Rux UI
 
-This is a human-facing guide for choosing an agent, model tier, mode, and verification posture. It is not required reading for every agent task; repository behavior is routed through `AGENTS.md`, `CLAUDE.md`, and `.cline/rules/project.md`.
+This is a human-facing guide for choosing an agent, model tier, mode, and verification posture. It is not required reading for every agent task; repository behavior is routed through `CLAUDE.md`.
 
 For day-to-day decisions, use the shorter [AI Coding Quick Reference](AI_CODING_CHEAT_SHEET.md).
 
@@ -89,17 +89,17 @@ Append `R` when the task touches production data, destructive SQL, bulk deletion
 - Require explicit authorization before destructive or production execution.
 - Use manual approval/checkpoint mode even when a high-capability model is selected.
 
-## 5. Master Cline / Codex / Claude Code Decision Matrix
+## 5. Claude Code Decision Matrix
 
 Model availability and names can change. Treat the names below as tier examples and select the current equivalent offered in the tool.
 
-| Class | Typical work | Cline | Codex | Claude Code | Mode |
-|---|---|---|---|---|---|
-| `1` | Fast edit | ClinePass Flash, low | Luna, low | Sonnet, low | Act/edit |
-| `2` | Routine feature | ClinePass Flash or Pro, medium | Terra, medium | Sonnet, medium | Act/edit |
-| `3` | Hard debug/review | ClinePass Pro, high | Sol, high | Fable, high | Manual/checkpoints |
-| `4` | Architecture/planning | ClinePass Pro, high | Sol, high | Fable, high | Plan/read-only |
-| `5` | Large/autonomous | ClinePass Pro, max | Sol, max; multi-agent only when decomposable | Fable, high–max | Act with staged checkpoints |
+| Class | Typical work | Claude Code | Mode |
+|---|---|---|---|
+| `1` | Fast edit | Sonnet, low | Act/edit |
+| `2` | Routine feature | Sonnet, medium | Act/edit |
+| `3` | Hard debug/review | Fable, high | Manual/checkpoints |
+| `4` | Architecture/planning | Fable, high | Plan/read-only |
+| `5` | Large/autonomous | Fable, high–max | Act with staged checkpoints |
 
 Apply modifiers after choosing the row:
 
@@ -137,20 +137,6 @@ De-escalate once the hard question is resolved. A high-tier debugging pass can h
 
 ## 8. Platform-Specific Recommendations
 
-### Cline
-
-- Keep `.cline/rules/project.md` always active and concise.
-- Use Plan mode for class 4 and for the proposal phase of `R` work.
-- Use Act mode for bounded implementation after scope and approvals are clear.
-- Prefer ClinePass Flash for classes 1–2 and Pro for classes 3–5 or failed lower-tier attempts.
-
-### Codex
-
-- `AGENTS.md` supplies the always-on repository policy.
-- Use Luna for small, obvious edits, Terra for routine implementation, and Sol for hard debugging, architecture, or large work when those tiers are available.
-- Use Plan mode for class 4; planning remains read-only.
-- Use multi-agent work only for class 5 tasks with independent, clearly owned workstreams.
-
 ### Claude Code
 
 - `CLAUDE.md` supplies the always-on repository policy.
@@ -165,9 +151,7 @@ De-escalate once the hard question is resolved. A high-tier debugging pass can h
 |---|---|---|---|
 | `README.md` | Humans and agents | Project, design-system, content, and usage orientation | Read at task start |
 | `.claude/skills/rux-design/SKILL.md` | Claude Code | Detailed Rux UI implementation, tokens, components, layout, content, and visual verification | Read only for UI/frontend work |
-| `AGENTS.md` | Codex | Concise repository behavior and routing | Always on |
 | `CLAUDE.md` | Claude Code | Concise repository behavior and routing | Always on |
-| `.cline/rules/project.md` | Cline | Concise repository behavior and routing | Always on |
 | `.claude/skills/verify/SKILL.md` | Claude Code | On-demand local launch and verification procedure | Load only when verification needs it |
 | `docs/ai/AI_CODING_CHEAT_SHEET.md` | Human developer | Personal day-to-day classification and configuration card | Read when starting or escalating a task |
 | `docs/ai/AI_AGENT_WORKFLOW.md` | Human developer | Task classification, model/mode selection, escalation, and prompt templates | Read when choosing or adjusting a workflow |

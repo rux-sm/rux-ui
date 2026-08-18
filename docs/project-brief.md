@@ -41,7 +41,7 @@ themes via `data-theme`.
 
 ## The typical workflow
 
-Agents (Cline, Claude Code, Codex — or a human) drive most of the work here:
+Agents (Claude Code — or a human) drive most of the work here:
 
 1. **Route to the source of truth.** Read `README.md` for project orientation.
    Load the `rux-design` skill only for UI/frontend work, then inspect only the files the
