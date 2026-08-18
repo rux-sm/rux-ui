@@ -16,6 +16,7 @@
 - Avoid inline styles and hardcoded colors when an existing token or stylesheet applies.
 - Make the smallest coherent change that fulfills the request; do not refactor unrelated code.
 - Do not rename or remove public tokens, classes, or JavaScript APIs unless explicitly requested, or unless the change is a step recorded in `docs/portability-audit.md`. That document authorizes its own renames; renames outside it remain prohibited.
+- Before an approved rename, grep the old name across `index.html`, `js/`, `tests/`, `docs/`, and all CSS. Report the hit count per location and list every occurrence outside CSS. Grep again after editing and report the result. The test suite does not cover HTML class attributes or JS selectors, so a class with no CSS left can still be a live query hook.
 - Planning is read-only. For architecture or migration planning, do not modify application, configuration, or SQL files.
 
 ## Data and Risk

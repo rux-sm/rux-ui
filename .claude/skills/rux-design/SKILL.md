@@ -77,8 +77,13 @@ existing files merely to make the new-app structure cleaner.
    specifically, Rux UI follows Vercel Geist's color system as a structural
    reference where it fits — see README.md's "Reference: Vercel Geist
    colors" for the semantic-step model and current alignment.
-3. If a reusable value is missing, add a meaningful semantic or component token
-   in `tokens.css`. Keep truly feature-only values beside that feature.
+3. If a reusable value is missing, check the tier before adding. A new
+   **primitive or semantic** token is shared vocabulary: stop and propose the
+   name and its intended value, and do not add it unprompted. A new
+   **component** token may be added to `tokens.css` when no semantic token
+   fits. Keep truly feature-only values beside that feature. Never invent a
+   `.rux-*` class name to fit a design — propose it the same way. List every
+   token and class you add in your final report.
 4. Follow the BEM contract: `.rux-{block}`, `.rux-{block}__{element}`, and
    `.rux-{block}--{modifier}`. Use `.is-*` or `.has-*` for JavaScript state.
 5. Preserve optical radius nesting: nested controls normally step down one
