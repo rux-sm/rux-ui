@@ -13,7 +13,7 @@
    .rux-panel__nav                Shared panel navigation slot.
    .rux-panel__body               Scrollable body — plain .rux-panel__body
                                    now, no unique styling of its own.
-   .rux-scope-driver__pane        One per section, hidden via [hidden].
+   .sched-scope-driver__pane        One per section, hidden via [hidden].
                                    Keeps its own class because
                                    driver-panel.js queries it directly (pane
                                    switching + form field collection).
@@ -29,35 +29,35 @@
 
 /* — Body / panes — */
 
-.rux-scope-driver__pane {
+.sched-scope-driver__pane {
 	gap: var(--rux-panel-content-gap);
 }
 
-.rux-scope-driver__pane[hidden] {
+.sched-scope-driver__pane[hidden] {
 	display: none;
 }
 
 /* — Profile: avatar row — */
 
-.rux-scope-driver__avatar-row {
+.sched-scope-driver__avatar-row {
 	display: flex;
 	align-items: stretch;
 	gap: var(--rux-space-4);
 }
 
-.rux-scope-driver__name-block {
+.sched-scope-driver__name-block {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
 }
 
-.rux-scope-driver__avatar-wrap {
+.sched-scope-driver__avatar-wrap {
 	position: relative;
 	flex-shrink: 0;
 }
 
-.rux-scope-driver__avatar {
+.sched-scope-driver__avatar {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -80,7 +80,7 @@
 	cursor: pointer;
 }
 
-.rux-scope-driver__avatar-main {
+.sched-scope-driver__avatar-main {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -88,14 +88,14 @@
 	height: 100%;
 }
 
-.rux-scope-driver__avatar img {
+.sched-scope-driver__avatar img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 	border-radius: inherit;
 }
 
-.rux-scope-driver__avatar-overlay {
+.sched-scope-driver__avatar-overlay {
 	position: absolute;
 	inset: 0;
 	display: flex;
@@ -107,42 +107,42 @@
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.rux-scope-driver__avatar:hover .rux-scope-driver__avatar-overlay,
-.rux-scope-driver__avatar.is-uploading .rux-scope-driver__avatar-overlay {
+.sched-scope-driver__avatar:hover .sched-scope-driver__avatar-overlay,
+.sched-scope-driver__avatar.is-uploading .sched-scope-driver__avatar-overlay {
 	opacity: 1;
 }
 
-.rux-scope-driver__avatar.is-uploading .rux-scope-driver__avatar-overlay .rux-icon {
+.sched-scope-driver__avatar.is-uploading .sched-scope-driver__avatar-overlay .rux-icon {
 	animation: rux-spin 700ms linear infinite; /* shared keyframe, utils.css */
 }
 
 /* — License: endorsement toggles — */
 
-.rux-scope-driver__endorsements {
+.sched-scope-driver__endorsements {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rux-space-2);
 }
 
-.rux-scope-driver__endorsements .rux-button {
+.sched-scope-driver__endorsements .rux-button {
 	min-width: var(--rux-control-height);
 }
 
 
 /* — Status: employment status segmented — */
 
-.rux-scope-driver__status-group {
+.sched-scope-driver__status-group {
 	width: 100%;
 }
 
-.rux-scope-driver__status-group .rux-button {
+.sched-scope-driver__status-group .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
 /* — Status: priority segmented (RPG-rarity-style tiers, 1 highest) — */
 
-.rux-scope-driver__priority-group .rux-button {
+.sched-scope-driver__priority-group .rux-button {
 	flex: 1;
 	min-width: 0;
 	gap: var(--rux-space-1);
@@ -151,39 +151,39 @@
 
 /* — Trips: read-only trip list — */
 
-.rux-scope-driver__schedule-card {
+.sched-scope-driver__schedule-card {
 	margin-bottom: var(--rux-space-4);
 	overflow: hidden;
 }
 
-.rux-scope-driver__schedule-card .rux-card__header {
+.sched-scope-driver__schedule-card .rux-card__header {
 	align-items: center;
 }
 
-.rux-scope-driver__schedule-summary {
+.sched-scope-driver__schedule-summary {
 	margin: 0;
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-sm);
 	line-height: var(--rux-line-height-sm);
 }
 
-.rux-scope-driver__schedule-actions {
+.sched-scope-driver__schedule-actions {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-2);
 	margin-top: var(--rux-space-3);
 }
 
-.rux-scope-driver__schedule-actions .rux-button {
+.sched-scope-driver__schedule-actions .rux-button {
 	width: 100%;
 	min-width: 0;
 }
 
-.rux-scope-driver__schedule-actions #dp-schedule-manage {
+.sched-scope-driver__schedule-actions #dp-schedule-manage {
 	grid-column: 1 / -1;
 }
 
-.rux-scope-driver__trip-item {
+.sched-scope-driver__trip-item {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
@@ -193,7 +193,7 @@
 	border-radius: var(--rux-radius-md);
 }
 
-.rux-scope-driver__trip-id {
+.sched-scope-driver__trip-id {
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-size-sm);
 	color: var(--rux-accent);
@@ -201,7 +201,7 @@
 	min-width: 5rem;
 }
 
-.rux-scope-driver__trip-meta {
+.sched-scope-driver__trip-meta {
 	flex: 1;
 	font-size: var(--rux-size-sm);
 	color: var(--rux-text-muted);
@@ -211,7 +211,7 @@
 	white-space: nowrap;
 }
 
-.rux-scope-driver__trip-empty {
+.sched-scope-driver__trip-empty {
 	padding: var(--rux-space-5);
 	text-align: center;
 	color: var(--rux-text-disabled);
@@ -222,13 +222,13 @@
    Contacts/Payments elsewhere in the app — header Add + Delete-mode-toggle,
    rows below, replace-whole-set-on-save persistence. */
 
-.rux-scope-driver__timeoff-rows {
+.sched-scope-driver__timeoff-rows {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
 }
 
-.rux-scope-driver__timeoff-empty {
+.sched-scope-driver__timeoff-empty {
 	display: flex;
 	min-height: var(--rux-field-height);
 	align-items: center;
@@ -238,11 +238,11 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-scope-driver__timeoff-rows:has([data-timeoff-row]) > .rux-scope-driver__timeoff-empty {
+.sched-scope-driver__timeoff-rows:has([data-timeoff-row]) > .sched-scope-driver__timeoff-empty {
 	display: none;
 }
 
-.rux-scope-driver__timeoff-row {
+.sched-scope-driver__timeoff-row {
 	display: flex;
 	align-items: flex-end;
 	gap: var(--rux-space-2);
@@ -252,7 +252,7 @@
 	border-radius: var(--rux-radius-md);
 }
 
-.rux-scope-driver__timeoff-fields {
+.sched-scope-driver__timeoff-fields {
 	flex: 1;
 	min-width: 0;
 	display: flex;

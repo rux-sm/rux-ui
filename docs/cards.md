@@ -69,12 +69,12 @@ depth; nested headers and bodies do not create competing boxes.
 **No margin of its own** — deliberately. Consumers fall into two layout
 systems and one fixed margin can't serve both:
 
-- **Flex-column consumers** (`.rux-scope-trip__payment-rows`,
-  `.rux-scope-trip__bus-groups`) already space their nested cards via their
+- **Flex-column consumers** (`.sched-scope-trip__payment-rows`,
+  `.sched-scope-trip__bus-groups`) already space their nested cards via their
   own `gap`. Margins never collapse between flex children, so adding margin
   here too would stack on top of that gap instead of replacing it.
-- **Plain block-flow consumers** (`.rux-trip-itinerary__day-group`,
-  `.rux-trip-history__group`) set `margin: var(--rux-space-4)` directly on
+- **Plain block-flow consumers** (`.sched-trip-itinerary__day-group`,
+  `.sched-trip-history__group`) set `margin: var(--rux-space-4)` directly on
   their nested children — not `margin-bottom` alone. Adjacent siblings are
   normal block elements, so their margins collapse into one gap the standard
   CSS way, and the *first* item in the list gets its own top margin for free
@@ -109,9 +109,9 @@ bare `.rux-card` class as a structural marker for its own CSS combinator.
 The established `--rux-card-fg`, `--rux-card-border-width`, and
 `--rux-card-body-border/-radius/-shadow` tokens remain compatibility sources
 for the shell aliases, so existing overrides continue to work.
-`--rux-card-header-radius` and `--rux-card-footer-radius` also remain defined
-for compatibility but the shared regions no longer consume them; the outer
-shell is the sole radius owner.
+`--rux-card-header-radius` and `--rux-card-footer-radius` were removed
+(2026-08-18): no rule consumed them and the outer shell is the sole radius
+owner.
 
 `--elevated`/`--recessed` have no tokens of their own — they're a dynamic
 `oklch` adjustment on whatever `--rux-card-body-bg` is already in scope, see
@@ -209,14 +209,12 @@ right side of the chrome/content split — see README.md's "Reference: Vercel
 Geist colors" for the split as it was applied and where it's still
 provisional.
 
-**Known dead code, not yet removed**: `.rux-panel--attached.is-rail` (the
-collapsed desktop rail state) reads real, live tokens
-(`--rux-panel-rail-bg/-border/-radius/-shadow`), but nothing in the app ever
-adds the `.is-rail` class to an element — the actual, live rail-collapse
-mechanism is `.scheduler-app__drawer--railable` in `scheduler-app.css`,
-which reads the same four tokens independently. Left in place rather than
-deleted since the tokens themselves are genuinely used elsewhere, just not
-by this particular rule.
+**Removed (2026-08-18)**: the collapsed rail state is gone. The rail-collapse
+mechanism retired with the floating-window convergence, leaving
+`.rux-panel--attached.is-rail`, the six `--rux-panel-rail-*` tokens,
+`RuxDrawer`'s `railWidth` option, and two sub-224px `@container` steps in
+`trip-panel.css` with no reachable caller. All were deleted; a panel now either
+closes fully or stays open.
 
 ## Naming system
 
@@ -227,13 +225,13 @@ rux-<name>        component — reusable, owns visual style, never
                    domain-specific (rux-panel, rux-card, rux-button, ...)
 rux-u-<name>       utility — a single reusable layout/spacing rule with no
                    domain owner (rux-u-cols-2, rux-u-section-label,
-                   rux-u-trip-list — utils.css)
-rux-scope-<name>   scope — a hook for one domain's own overrides only;
+                   rux-u-record-list — utils.css)
+sched-scope-<name>   scope — a hook for one domain's own overrides only;
                    never re-declares a component's own elements (__body,
                    __pane, __header, __footer stay on the component)
 ```
 
-`rux-scope-<name>` replaced the old pattern of a domain baking its own name
+`sched-scope-<name>` replaced the old pattern of a domain baking its own name
 into a BEM block prefix (`rux-driver-panel__body`, `rux-trip-panel__pane`,
 ...) — every element still needing domain-specific styling now carries the
 shared component's own part class (`rux-panel__body`) plus a scope class

@@ -297,7 +297,7 @@
     card.style.gridColumn = `${entry.start + 1} / span ${entry.span}`;
     card.style.gridRow = String((entry.printLane || 0) + 1);
     card.style.setProperty(
-      "--rux-print-trip-content-width",
+      "--sched-print-trip-content-width",
       entry.span > 1
         ? `calc((100% - ${Math.max(0, entry.span - 1) * 4}px) / ${entry.span})`
         : "100%",
@@ -505,34 +505,34 @@
       page.style.height = contentHeight;
 
       const title = document.createElement("div");
-      title.className = "rux-print__page-title";
+      title.className = "sched-print__page-title";
       const logo = document.createElement("img");
-      logo.className = "rux-print__page-logo";
+      logo.className = "sched-print__page-logo";
       logo.src = "assets/logo.png";
       logo.alt = "";
       title.appendChild(logo);
-      const titleText = el("span", "rux-print__page-title-text",
+      const titleText = el("span", "sched-print__page-title-text",
         fmtWeekRange(weekStart) +
         (busChunks.length > 1 ? ` — Page ${pageIndex + 1} of ${busChunks.length}` : ""));
       title.appendChild(titleText);
       page.appendChild(title);
 
-      // Header + rows share one bordered frame (.rux-print__table) — a
+      // Header + rows share one bordered frame (.sched-print__table) — a
       // border around the title alone wouldn't read as "the schedule."
       const table = document.createElement("div");
-      table.className = "rux-print__table";
+      table.className = "sched-print__table";
       page.appendChild(table);
 
       const header = document.createElement("div");
-      header.className = "rux-print__header";
+      header.className = "sched-print__header";
       const cornerCell = document.createElement("div");
-      cornerCell.className = "rux-print__corner";
+      cornerCell.className = "sched-print__corner";
       header.appendChild(cornerCell);
       dayLabels.forEach((label) => {
         const cell = document.createElement("div");
-        cell.className = "rux-print__day-head";
-        cell.appendChild(el("span", "rux-print__day-head-name", label.name));
-        cell.appendChild(el("span", "rux-print__day-head-number", label.day));
+        cell.className = "sched-print__day-head";
+        cell.appendChild(el("span", "sched-print__day-head-name", label.name));
+        cell.appendChild(el("span", "sched-print__day-head-number", label.day));
         header.appendChild(cell);
       });
       table.appendChild(header);
@@ -545,26 +545,26 @@
       for (let i = 0; i < rowsPerPage; i++) {
         const bus = chunk[i];
         const row = document.createElement("div");
-        row.className = "rux-print__row";
+        row.className = "sched-print__row";
 
         // Background day-column divider lines — a plain overlay behind the
         // row's content (same idea as the live scheduler's track-grid),
         // present on every row (including blank filler slots) so the day
         // columns read as a consistent grid down the whole page. Includes
         // a leading label-column placeholder so this grid's columns land
-        // in the exact same place as .rux-print__row-inner's (same
+        // in the exact same place as .sched-print__row-inner's (same
         // template + gap), not just an approximation of it.
         const dayGrid = document.createElement("div");
-        dayGrid.className = "rux-print__row-daygrid";
+        dayGrid.className = "sched-print__row-daygrid";
         dayGrid.setAttribute("aria-hidden", "true");
-        dayGrid.appendChild(el("span", "rux-print__row-daygrid-label"));
+        dayGrid.appendChild(el("span", "sched-print__row-daygrid-label"));
         for (let d = 0; d < 7; d++) {
-          dayGrid.appendChild(el("span", "rux-print__row-dayline"));
+          dayGrid.appendChild(el("span", "sched-print__row-dayline"));
         }
         row.appendChild(dayGrid);
 
         const inner = document.createElement("div");
-        inner.className = "rux-print__row-inner";
+        inner.className = "sched-print__row-inner";
         row.appendChild(inner);
 
         if (!bus) {
@@ -573,7 +573,7 @@
         }
 
         const rowHead = document.createElement("div");
-        rowHead.className = "rux-print__row-head";
+        rowHead.className = "sched-print__row-head";
         rowHead.textContent = String(bus.number ?? "").trim();
         inner.appendChild(rowHead);
 
@@ -596,7 +596,7 @@
   // blank filler on a partial last page — must be the same height. Rather
   // than pre-compute a pixel height in JS (page budget − title − header,
   // divided by rowsPerPage) and hope it sums to exactly what the page
-  // actually renders, .rux-print__table/.rux-print__row are laid out with
+  // actually renders, .sched-print__table/.sched-print__row are laid out with
   // CSS flex (flex: 1 1 0 on every row) so the browser itself divides
   // whatever vertical space is actually left after the title/header evenly
   // among all rows — that's correct by construction, with no gap or
@@ -608,12 +608,12 @@
   // content vertically without moving the day columns horizontally. Transforms
   // never change how much space an element reserves in normal flow, so the
   // row's flex-allocated height + `overflow: hidden` on the outer
-  // .rux-print__row (not the transformed .rux-print__row-inner) is what the
+  // .sched-print__row (not the transformed .sched-print__row-inner) is what the
   // print pagination engine actually measures against.
   function layoutRowHeights(root) {
-    root.querySelectorAll(".rux-print__row").forEach((row) => {
+    root.querySelectorAll(".sched-print__row").forEach((row) => {
       const rowSlotHeight = row.getBoundingClientRect().height;
-      const inner = row.querySelector(".rux-print__row-inner");
+      const inner = row.querySelector(".sched-print__row-inner");
       if (!inner) return;
       const naturalHeight = inner.scrollHeight;
       if (naturalHeight > rowSlotHeight) {

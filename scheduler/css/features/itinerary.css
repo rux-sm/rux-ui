@@ -19,17 +19,17 @@
    Structure
    ---------
    .sched-trip-itinerary                   Itinerary feature container
-	.rux-trip-itinerary__summary          3-stat strip at top
-	.rux-trip-itinerary__day-group        The one real box for a complete day
+	.sched-trip-itinerary__summary          3-stat strip at top
+	.sched-trip-itinerary__day-group        The one real box for a complete day
 	                            (.rux-card with header and body)
-   .rux-trip-itinerary__day-group-body   Its .rux-card__body — flat, no
+   .sched-trip-itinerary__day-group-body   Its .rux-card__body — flat, no
                                 padding of its own; every row inside
                                 supplies its own and shares one border-top
                                 divider with the row before it
-   .rux-trip-itinerary__day              End-day row: stat grid and actions
-   .rux-trip-itinerary__day--final       Trailing (not-yet-closed) day — same
+   .sched-trip-itinerary__day              End-day row: stat grid and actions
+   .sched-trip-itinerary__day--final       Trailing (not-yet-closed) day — same
                                 row, no menu since it isn't a real list item
-   .rux-trip-itinerary__stop             One stop: label row, address row,
+   .sched-trip-itinerary__stop             One stop: label row, address row,
                                 time-fields row, Miles/Drive row (not
                                 Sleeper). Day-header modes expose add,
                                 delete, and reorder controls.
@@ -37,7 +37,7 @@
    A stop is not its own box — it's a flat, divided row inside the day-
    group's one shared box (Carbon-style: depth comes from a thin border,
    not from stacking a separately-boxed, separately-shadowed card inside
-   another card). Every direct child of .rux-trip-itinerary__day-group-body
+   another card). Every direct child of .sched-trip-itinerary__day-group-body
    gets a border-top shared with whatever's above it; the first child has
    none, so a day reads as one continuous surface with dividers between
    its rows, not a stack of individually-boxed cards.
@@ -48,7 +48,7 @@
 /* No gap: #tp-itin-summary and #tp-itin-leg-card are .rux-card now
    (docs/cards.md) and expect to sit flush against each other, sharing one
    border instead of floating with space between two separately-boxed
-   cards. .rux-trip-itinerary__stops below restores its own margin-top —
+   cards. .sched-trip-itinerary__stops below restores its own margin-top —
    the dynamic day-group list is a different kind of region and still wants
    normal breathing room before it starts. */
 .sched-trip-itinerary {
@@ -70,13 +70,13 @@
 	color: var(--rux-input-disabled-fg);
 }
 
-/* gap: 0, not --rux-panel-content-gap — .rux-trip-itinerary__day-group is a
+/* gap: 0, not --rux-panel-content-gap — .sched-trip-itinerary__day-group is a
    .rux-card now, and day groups sit flush against each other
    sharing one border between them, the same as every other converted
    section (docs/cards.md). margin-top keeps the usual gap before this list
    starts, since it still follows Trip Summary / Split Trip as a distinct
    region. */
-.rux-trip-itinerary__stops {
+.sched-trip-itinerary__stops {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
@@ -87,46 +87,46 @@
 
 /* The pane supplies the outer inset; the card owns its internal anatomy. */
 
-.rux-trip-itinerary__summary {
+.sched-trip-itinerary__summary {
 	container-type: inline-size;
 }
 
-.rux-trip-itinerary__summary-grid {
+.sched-trip-itinerary__summary-grid {
 	display: grid;
 	grid-template-columns: repeat(4, minmax(0, 1fr));
 	column-gap: var(--rux-space-2);
 }
 
-.rux-trip-itinerary__summary-actions {
+.sched-trip-itinerary__summary-actions {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-button-group-gap);
 }
 
-.rux-trip-itinerary__summary-actions > .rux-button {
+.sched-trip-itinerary__summary-actions > .rux-button {
 	flex: none;
 }
 
-.rux-trip-itinerary__summary-actions .rux-button__label {
+.sched-trip-itinerary__summary-actions .rux-button__label {
 	display: none;
 }
 
 /* — Day card — */
 
-.rux-trip-itinerary__day-date {
+.sched-trip-itinerary__day-date {
 	margin-left: var(--rux-space-2);
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-/* Same label + primary-row anatomy as .rux-trip-itinerary__stop. End of Day
+/* Same label + primary-row anatomy as .sched-trip-itinerary__stop. End of Day
    is a summary rather than a location, so it has no rail or waypoint marker;
    its left lane holds the day-scoped Add action instead. Own padding now —
    previously implicit (no box of its own, sat flush in the day-group's
    unboxed <article>); the day-group's body is a real box now, so this row
    needs the same inset every other row supplies for itself. */
-.rux-trip-itinerary__day {
+.sched-trip-itinerary__day {
 	position: relative;
 	display: grid;
 	grid-template-columns: var(--rux-field-height) minmax(0, 1fr);
@@ -139,38 +139,38 @@
 /* Let the section grid own both content rows. This makes the Add button and
    statistics share the exact same second-row box instead of estimating the
    label height with a margin calculation. */
-.rux-trip-itinerary__day > .rux-trip-itinerary__content {
+.sched-trip-itinerary__day > .sched-trip-itinerary__content {
 	display: contents;
 }
 
-.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__label-row {
+.sched-trip-itinerary__day > .sched-trip-itinerary__content > .sched-trip-itinerary__label-row {
 	grid-column: 2;
 	grid-row: 1;
 }
 
-.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__day-header {
+.sched-trip-itinerary__day > .sched-trip-itinerary__content > .sched-trip-itinerary__day-header {
 	grid-column: 2;
 	grid-row: 4;
 	min-width: 0;
 }
 
-.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__boundary-fields {
+.sched-trip-itinerary__day > .sched-trip-itinerary__content > .sched-trip-itinerary__boundary-fields {
 	grid-column: 2;
 	grid-row: 2;
 }
 
-.rux-trip-itinerary__day > .rux-trip-itinerary__content > .rux-trip-itinerary__boundary-note {
+.sched-trip-itinerary__day > .sched-trip-itinerary__content > .sched-trip-itinerary__boundary-note {
 	grid-column: 2;
 	grid-row: 3;
 }
 
-.rux-trip-itinerary__boundary-fields {
+.sched-trip-itinerary__boundary-fields {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-2);
 }
 
-.rux-trip-itinerary__boundary-note {
+.sched-trip-itinerary__boundary-note {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
@@ -179,7 +179,7 @@
 	font-size: var(--rux-size-xs);
 }
 
-.rux-trip-itinerary__boundary-note .rux-icon {
+.sched-trip-itinerary__boundary-note .rux-icon {
 	color: var(--rux-info);
 }
 
@@ -188,7 +188,7 @@
    size, which is what read as oversized against everything around it. Own
    padding now — previously inherited from the .rux-card__body class this
    row no longer wears (see file header comment). */
-.rux-trip-itinerary__idle-day {
+.sched-trip-itinerary__idle-day {
 	display: grid;
 	gap: var(--rux-space-1);
 	padding: var(--rux-card-padding);
@@ -196,27 +196,27 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-trip-itinerary__idle-day strong {
+.sched-trip-itinerary__idle-day strong {
 	/* --rux-fg-default doesn't exist as a token — was silently falling back
 	   to the parent's muted color instead of actually standing out. */
 	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-itinerary__boundary-note.is-stationary .rux-icon {
+.sched-trip-itinerary__boundary-note.is-stationary .rux-icon {
 	color: var(--rux-text-muted);
 }
 
-.rux-trip-itinerary__day > .rux-trip-itinerary__content > * + * {
+.sched-trip-itinerary__day > .sched-trip-itinerary__content > * + * {
 	margin-top: 0;
 }
-/* position: relative anchors this row's own .rux-trip-itinerary__inline-action
+/* position: relative anchors this row's own .sched-trip-itinerary__inline-action
    --delete (the End-of-Day section action, shared with stop rows below) —
    without it, that button's absolute positioning
    would anchor to the nearest positioned ancestor instead of this row.
    The action gutter is added only while the hidden action is being revealed;
    the trailing summary has no delete action and always uses the full width. */
-.rux-trip-itinerary__day-header {
+.sched-trip-itinerary__day-header {
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -224,32 +224,32 @@
 	transition: padding-right var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.rux-trip-itinerary__day:has(.rux-trip-itinerary__inline-action--delete:focus-visible) .rux-trip-itinerary__day-header {
+.sched-trip-itinerary__day:has(.sched-trip-itinerary__inline-action--delete:focus-visible) .sched-trip-itinerary__day-header {
 	padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
 }
 
-.rux-trip-itinerary__day-header .rux-trip-itinerary__day-stats {
+.sched-trip-itinerary__day-header .sched-trip-itinerary__day-stats {
 	flex: 1;
 	min-width: 0;
 }
 
 /* 2x2 boxed stat grid: Miles/Drive on top, On-Duty/Off-Duty below. Was a
-   single 3-col row (Miles/Drive/On-Duty, matching .rux-trip-itinerary__
+   single 3-col row (Miles/Drive/On-Duty, matching .sched-trip-itinerary__
    summary-grid) — adding Off-Duty as a 4th stat moved it to 2x2 instead of
    squeezing a 4th column into the same row. */
-.rux-trip-itinerary__day-stats {
+.sched-trip-itinerary__day-stats {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-2);
 }
 
 /* Shared warn/ok tint — also used by renderDayStatsGrid's over-limit outputs */
-.rux-trip-itinerary__seg-stat--warn {
+.sched-trip-itinerary__seg-stat--warn {
 	color: var(--rux-danger);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-itinerary__seg-stat--ok {
+.sched-trip-itinerary__seg-stat--ok {
 	color: var(--rux-success-bright);
 	font-weight: var(--rux-weight-400);
 }
@@ -260,7 +260,7 @@
    every row inside supplies its own inset, and a flush edge-to-edge body
    is what lets each row's border-top run the full width as a real divider
    instead of stopping short at an outer padding gutter. */
-.rux-trip-itinerary__day-group-body {
+.sched-trip-itinerary__day-group-body {
 	padding: 0;
 }
 
@@ -270,25 +270,25 @@
    precedes it; the first child has none, so a day reads as one continuous
    surface. Covers every row type that can appear in the list: stops,
    dwell/off-duty summaries, and the Day-boundary row. */
-.rux-trip-itinerary__day-group-body > .rux-trip-itinerary__stop,
-.rux-trip-itinerary__day-group-body > .rux-trip-itinerary__dwell-card,
-.rux-trip-itinerary__day-group-body > .rux-trip-itinerary__day {
+.sched-trip-itinerary__day-group-body > .sched-trip-itinerary__stop,
+.sched-trip-itinerary__day-group-body > .sched-trip-itinerary__dwell-card,
+.sched-trip-itinerary__day-group-body > .sched-trip-itinerary__day {
 	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-trip-itinerary__day-group-body > :first-child {
+.sched-trip-itinerary__day-group-body > :first-child {
 	border-top: none;
 }
 
 /* Three-column stop anatomy: an intrinsic marker lane, flexible address,
    and transient delete lane. Labels, times, and stats align to the address. */
-.rux-trip-itinerary__stop {
+.sched-trip-itinerary__stop {
 	position: relative;
 }
 
 /* Own padding/height now — previously inherited from the shared
    .rux-card__header this row no longer wears (see file header comment). */
-.rux-trip-itinerary__stop-header {
+.sched-trip-itinerary__stop-header {
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -298,7 +298,7 @@
 	height: var(--rux-card-header-height);
 }
 
-.rux-trip-itinerary__stop-heading {
+.sched-trip-itinerary__stop-heading {
 	display: flex;
 	align-items: center;
 	min-width: 0;
@@ -307,32 +307,32 @@
 
 /* Own padding now — previously inherited from the shared .rux-card__body
    this row no longer wears (see file header comment). */
-.rux-trip-itinerary__stop-body {
+.sched-trip-itinerary__stop-body {
 	padding: var(--rux-card-padding);
 }
 
-.rux-trip-itinerary__stop-body > * + * {
+.sched-trip-itinerary__stop-body > * + * {
 	margin-top: var(--rux-stack-gap);
 }
 
 /* Trip Start uses the tighter 8px field gap throughout — address, meet, and
    depart are all part of the same origin field group. */
-.rux-trip-itinerary__stop--yard .rux-trip-itinerary__stop-body {
+.sched-trip-itinerary__stop--yard .sched-trip-itinerary__stop-body {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
 }
 
-.rux-trip-itinerary__stop--yard .rux-trip-itinerary__stop-body > * + * {
+.sched-trip-itinerary__stop--yard .sched-trip-itinerary__stop-body > * + * {
 	margin-top: var(--rux-space-2);
 }
 
 /* — Rail marker — */
-.rux-trip-itinerary__marker {
+.sched-trip-itinerary__marker {
 	position: relative;
 	flex: none;
 	align-self: stretch;
-	width: var(--rux-itinerary-marker-size);
+	width: var(--sched-itinerary-marker-size);
 	padding-top: 3px;
 	display: flex;
 	justify-content: center;
@@ -344,7 +344,7 @@
    and should read as part of that same input-sized line, not stand out at
    its own weight. Only size/weight change; --success/--warning still carry
    the actual reset-vs-not color. */
-.rux-trip-itinerary__dwell-card .rux-output--boxed .rux-status-text {
+.sched-trip-itinerary__dwell-card .rux-output--boxed .rux-status-text {
 	font-size: inherit;
 	font-weight: inherit;
 }
@@ -355,11 +355,11 @@
    both) rather than one fixed width and the other shrink-to-content —
    scoped to this card only, so the regular stop header (heading + fixed-
    width actions) elsewhere in the itinerary is untouched. */
-.rux-trip-itinerary__dwell-card .rux-trip-itinerary__stop-heading {
+.sched-trip-itinerary__dwell-card .sched-trip-itinerary__stop-heading {
 	flex: 1 1 0%;
 }
 
-.rux-trip-itinerary__dwell-total {
+.sched-trip-itinerary__dwell-total {
 	flex: 1 1 0%;
 	width: auto;
 	min-width: 0;
@@ -369,7 +369,7 @@
    type. A relative lighten (not a flat surface value) so this still
    reads as a distinct chip against its own day-group card, which is the
    same surface-1 color as everything else now. */
-.rux-trip-itinerary__marker-pin {
+.sched-trip-itinerary__marker-pin {
 	--_icon-fill: 1;
 	position: relative;
 	z-index: 1;
@@ -379,21 +379,21 @@
 	line-height: 1;
 }
 
-.rux-trip-itinerary__marker-pin--depart-yard { color: var(--rux-itinerary-status-depart-yard); }
-.rux-trip-itinerary__marker-pin--pickup      { color: var(--rux-itinerary-status-pickup); }
-.rux-trip-itinerary__marker-pin--stop        { color: var(--rux-itinerary-status-stop); }
-.rux-trip-itinerary__marker-pin--sleeper     { color: var(--rux-itinerary-status-sleeper); }
-.rux-trip-itinerary__marker-pin--return      { color: var(--rux-itinerary-status-return-yard); }
+.sched-trip-itinerary__marker-pin--depart-yard { color: var(--sched-itinerary-status-depart-yard); }
+.sched-trip-itinerary__marker-pin--pickup      { color: var(--sched-itinerary-status-pickup); }
+.sched-trip-itinerary__marker-pin--stop        { color: var(--sched-itinerary-status-stop); }
+.sched-trip-itinerary__marker-pin--sleeper     { color: var(--sched-itinerary-status-sleeper); }
+.sched-trip-itinerary__marker-pin--return      { color: var(--sched-itinerary-status-return-yard); }
 /* Off Duty dwell card — same pin, no matching stop type of its own. */
-.rux-trip-itinerary__marker-pin--off         { color: var(--rux-itinerary-status-off-duty); }
+.sched-trip-itinerary__marker-pin--off         { color: var(--sched-itinerary-status-off-duty); }
 
 /* Dwell cards (Sleeper/Off Duty) need the same treatment — they use their
-   own .rux-trip-itinerary__dwell-card wrapper, not .rux-trip-itinerary__
+   own .sched-trip-itinerary__dwell-card wrapper, not .sched-trip-itinerary__
    stop, so this selector has to name both or their marker falls back to
    the bare 12px rail-strip sizing above (stretched to the row's full
    height instead of a fixed, centered 28×28 badge). */
-.rux-trip-itinerary__stop .rux-trip-itinerary__marker,
-.rux-trip-itinerary__dwell-card .rux-trip-itinerary__marker {
+.sched-trip-itinerary__stop .sched-trip-itinerary__marker,
+.sched-trip-itinerary__dwell-card .sched-trip-itinerary__marker {
 	align-self: center;
 	align-items: center;
 	width: var(--rux-control-height);
@@ -408,20 +408,20 @@
 /* margin-top, not the shared border-top divider every other row gets — an
    action, not another data row, so it reads as trailing the list rather
    than continuing it. */
-.rux-trip-itinerary__add-row {
+.sched-trip-itinerary__add-row {
 	margin-top: var(--rux-card-content-gap);
 	padding: 0 var(--rux-card-padding-inline) var(--rux-card-padding-block);
 }
 
-.rux-trip-itinerary__add-row > .rux-button {
+.sched-trip-itinerary__add-row > .rux-button {
 	width: 100%;
 }
 
-.rux-trip-itinerary__marker--add {
+.sched-trip-itinerary__marker--add {
 	align-self: center;
 }
 
-.rux-trip-itinerary__day > .rux-trip-itinerary__marker--add {
+.sched-trip-itinerary__day > .sched-trip-itinerary__marker--add {
 	grid-column: 1;
 	grid-row: 4;
 	align-self: stretch;
@@ -431,57 +431,57 @@
 	align-items: center;
 }
 
-.rux-trip-itinerary__origin-mode {
+.sched-trip-itinerary__origin-mode {
 	width: 100%;
 }
 
-.rux-trip-itinerary__origin-mode > .rux-button {
+.sched-trip-itinerary__origin-mode > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-trip-itinerary__yard-times {
+.sched-trip-itinerary__yard-times {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	column-gap: var(--rux-space-2);
 	row-gap: var(--rux-space-2);
 }
 
-.rux-trip-itinerary__yard-times--meet {
+.sched-trip-itinerary__yard-times--meet {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* — Content column — */
 
-.rux-trip-itinerary__content {
+.sched-trip-itinerary__content {
 	flex: 1;
 	min-width: 0;
 	padding-right: 0;
 	transition: padding-right var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):focus-within .rux-trip-itinerary__content {
+.sched-trip-itinerary__stop:has(.sched-trip-itinerary__inline-action--delete):focus-within .sched-trip-itinerary__content {
 	padding-right: calc(var(--rux-field-height) + var(--rux-space-1));
 }
 
 @media (hover: hover) {
-	.rux-trip-itinerary__stop:has(.rux-trip-itinerary__inline-action--delete):hover .rux-trip-itinerary__content {
+	.sched-trip-itinerary__stop:has(.sched-trip-itinerary__inline-action--delete):hover .sched-trip-itinerary__content {
 		padding-right: calc(var(--rux-field-height) + var(--rux-space-1));
 	}
 }
 
-.rux-trip-itinerary__content > * + * {
+.sched-trip-itinerary__content > * + * {
 	margin-top: var(--rux-stack-gap);
 }
 
-.rux-trip-itinerary__label-row {
+.sched-trip-itinerary__label-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 }
 
-.rux-trip-itinerary__fields {
+.sched-trip-itinerary__fields {
 	box-sizing: border-box;
 	display: grid;
 	width: 100%;
@@ -490,17 +490,17 @@
 	column-gap: var(--rux-space-2);
 }
 
-.rux-trip-itinerary__fields--pair {
+.sched-trip-itinerary__fields--pair {
 	display: block;
 }
 
 /* Collapsed stats are 0-height but still a sibling, so the stacking rule's
    margin-top above still applies — kill it so a collapsed row takes no space. */
-.rux-trip-itinerary__fields--pair:not(.is-expanded) {
+.sched-trip-itinerary__fields--pair:not(.is-expanded) {
 	margin-top: 0;
 }
 
-.rux-trip-itinerary__stats-values {
+.sched-trip-itinerary__stats-values {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	column-gap: var(--rux-space-2);
@@ -508,7 +508,7 @@
 	overflow: hidden;
 	transition: max-height var(--rux-duration-base) var(--rux-ease-out);
 }
-.rux-trip-itinerary__stats-values.is-expanded {
+.sched-trip-itinerary__stats-values.is-expanded {
 	max-height: calc(var(--rux-field-height) * 1.5);
 }
 
@@ -517,27 +517,27 @@
    is its own labeled .rux-field (label + output stacked) rather than a bare
    suffix-labeled output, so it needs more than the base 1.5x allowance —
    .rux-field's own label + gap + output runs taller than a lone output row. */
-.rux-trip-itinerary__stats-values--3col {
+.sched-trip-itinerary__stats-values--3col {
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 }
-.rux-trip-itinerary__stats-values--3col.is-expanded {
+.sched-trip-itinerary__stats-values--3col.is-expanded {
 	max-height: calc(var(--rux-field-height) * 2.5);
 }
 
-.rux-trip-itinerary__time-row {
+.sched-trip-itinerary__time-row {
 	display: flex;
 	align-items: center;
 }
 
-.rux-trip-itinerary__dwell-status {
+.sched-trip-itinerary__dwell-status {
 	display: block;
 }
 
-.rux-trip-itinerary__dwell-status > .rux-segmented-track {
+.sched-trip-itinerary__dwell-status > .rux-segmented-track {
 	width: 100%;
 }
 
-.rux-trip-itinerary__dwell-status .rux-button--segment-icon {
+.sched-trip-itinerary__dwell-status .rux-button--segment-icon {
 	flex: 1;
 	width: auto;
 	min-width: 0;
@@ -545,13 +545,13 @@
 
 /* These rows stay mounted so changing a segmented value never rebuilds the
    control (and therefore never restarts every indicator in the itinerary). */
-.rux-trip-itinerary__stop[hidden],
-.rux-trip-itinerary__dwell-card[hidden],
-.rux-trip-itinerary__yard-times > .rux-field[hidden] {
+.sched-trip-itinerary__stop[hidden],
+.sched-trip-itinerary__dwell-card[hidden],
+.sched-trip-itinerary__yard-times > .rux-field[hidden] {
 	display: none;
 }
 
-.rux-trip-itinerary__datetime {
+.sched-trip-itinerary__datetime {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: var(--rux-space-2);
@@ -559,11 +559,11 @@
 	min-width: 0;
 }
 
-.rux-trip-itinerary__time-row > .rux-trip-itinerary__datetime + .rux-trip-itinerary__datetime {
+.sched-trip-itinerary__time-row > .sched-trip-itinerary__datetime + .sched-trip-itinerary__datetime {
 	margin-left: var(--rux-space-2);
 }
 
-.rux-trip-itinerary__inline-action {
+.sched-trip-itinerary__inline-action {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -581,7 +581,7 @@
 }
 
 /* Positioned in the owning row's animated action gutter. */
-.rux-trip-itinerary__inline-action--delete {
+.sched-trip-itinerary__inline-action--delete {
 	position: absolute;
 	top: 50%;
 	right: 0;
@@ -592,25 +592,25 @@
 /* Move + delete sit together as normal flex children of the header instead
    of each individually anchored — overrides the absolute owning-row gutter
    positioning above for this context. */
-.rux-trip-itinerary__stop-actions {
+.sched-trip-itinerary__stop-actions {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
 	flex: none;
 }
 
-.rux-trip-itinerary__stop-actions .rux-trip-itinerary__inline-action {
+.sched-trip-itinerary__stop-actions .sched-trip-itinerary__inline-action {
 	position: static;
 	transform: none;
 }
 
-.rux-trip-itinerary__inline-action--move {
+.sched-trip-itinerary__inline-action--move {
 	cursor: grab;
 }
 
 /* Keep hidden row actions keyboard-accessible without revealing them merely
    because an address or time input elsewhere in the stop has focus. */
-.rux-trip-itinerary__inline-action:focus-visible {
+.sched-trip-itinerary__inline-action:focus-visible {
 	opacity: 1;
 	pointer-events: auto;
 }
@@ -618,16 +618,16 @@
 /* Mouse-hover reveal — focusing an address or time field alone does not show
    the row actions. */
 @media (hover: hover) {
-	.rux-trip-itinerary__day:has(.rux-trip-itinerary__inline-action--delete):hover .rux-trip-itinerary__day-header {
+	.sched-trip-itinerary__day:has(.sched-trip-itinerary__inline-action--delete):hover .sched-trip-itinerary__day-header {
 		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
 	}
 
-	.rux-trip-itinerary__day:hover .rux-trip-itinerary__inline-action {
+	.sched-trip-itinerary__day:hover .sched-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
 	}
 
-	.rux-trip-itinerary__stop:hover .rux-trip-itinerary__inline-action {
+	.sched-trip-itinerary__stop:hover .sched-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
 	}
@@ -635,16 +635,16 @@
 
 /* Touch has no hover state, so keep the actions directly available there. */
 @media (hover: none) {
-	.rux-trip-itinerary__day:has(.rux-trip-itinerary__inline-action--delete) .rux-trip-itinerary__day-header {
+	.sched-trip-itinerary__day:has(.sched-trip-itinerary__inline-action--delete) .sched-trip-itinerary__day-header {
 		padding-right: calc(var(--rux-field-height) + var(--rux-space-2));
 	}
 
-	.rux-trip-itinerary__day .rux-trip-itinerary__inline-action {
+	.sched-trip-itinerary__day .sched-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
 	}
 
-	.rux-trip-itinerary__stop .rux-trip-itinerary__inline-action {
+	.sched-trip-itinerary__stop .sched-trip-itinerary__inline-action {
 		opacity: 1;
 		pointer-events: auto;
 	}
@@ -652,13 +652,13 @@
 
 /* Miles/Drive unit suffix — no field label above these, the unit inline
    with the value is the only cue for what it is. */
-.rux-trip-itinerary__unit {
+.sched-trip-itinerary__unit {
 	margin-left: var(--rux-space-1);
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-xs);
 }
 
-.rux-trip-itinerary__source {
+.sched-trip-itinerary__source {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
@@ -666,11 +666,11 @@
 	text-transform: uppercase;
 }
 
-.rux-trip-itinerary__source--manual {
+.sched-trip-itinerary__source--manual {
 	color: var(--rux-warning);
 }
 
-.rux-trip-itinerary__source--stale {
+.sched-trip-itinerary__source--stale {
 	color: var(--rux-warning-bright);
 }
 
@@ -684,13 +684,13 @@
 	cursor: grabbing;
 }
 
-.rux-trip-itinerary__stop.is-dragging,
-.rux-trip-itinerary__day.is-dragging {
+.sched-trip-itinerary__stop.is-dragging,
+.sched-trip-itinerary__day.is-dragging {
 	opacity: 0.4;
 }
 
-.rux-trip-itinerary__stop.is-drag-target,
-.rux-trip-itinerary__day.is-drag-target {
+.sched-trip-itinerary__stop.is-drag-target,
+.sched-trip-itinerary__day.is-drag-target {
 	box-shadow: inset 0 2px var(--rux-accent);
 }
 
@@ -715,17 +715,17 @@
 	color: var(--rux-text-disabled);
 }
 
-.rux-trip-itinerary__address-wrap {
+.sched-trip-itinerary__address-wrap {
 	position: relative;
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-trip-itinerary__address-wrap .rux-input {
+.sched-trip-itinerary__address-wrap .rux-input {
 	text-overflow: ellipsis;
 }
 
-.rux-trip-itinerary__addr-check {
+.sched-trip-itinerary__addr-check {
 	position: absolute;
 	right: var(--rux-space-2);
 	top: 50%;
@@ -733,15 +733,15 @@
 	color: var(--rux-success);
 	pointer-events: none;
 }
-.rux-trip-itinerary__addr-check--stale {
+.sched-trip-itinerary__addr-check--stale {
 	color: var(--rux-warning-bright);
 }
 
-.rux-trip-itinerary__address-wrap.is-verified .rux-input {
+.sched-trip-itinerary__address-wrap.is-verified .rux-input {
 	padding-right: calc(var(--rux-icon-sm, 14px) + var(--rux-space-2) * 2);
 }
 
-.rux-trip-itinerary__suggestions {
+.sched-trip-itinerary__suggestions {
 	position: fixed;
 	z-index: var(--rux-z-dropdown);
 	min-width: 12rem;
@@ -759,30 +759,30 @@
    render this panel behind the dialog it's popping out of. Same
    promotion rux-ui/js/suggestions.js's own dropdown already gets, toggled
    in itinerary.js's renderSuggestions. */
-.rux-trip-itinerary__suggestions[data-rux-modal-layer] {
+.sched-trip-itinerary__suggestions[data-rux-modal-layer] {
 	z-index: calc(var(--rux-z-modal) + 1);
 }
 
-.rux-trip-itinerary__suggestions[hidden] {
+.sched-trip-itinerary__suggestions[hidden] {
 	display: none;
 }
 
-.rux-trip-itinerary__suggestion-row {
+.sched-trip-itinerary__suggestion-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
 	border-radius: var(--rux-radius-sm);
 }
 
-.rux-trip-itinerary__suggestion-row.is-saved {
+.sched-trip-itinerary__suggestion-row.is-saved {
 	grid-template-columns: minmax(0, 1fr);
 }
 
-.rux-trip-itinerary__suggestion-row:hover {
+.sched-trip-itinerary__suggestion-row:hover {
 	background: var(--rux-button-hover-overlay);
 }
 
-.rux-trip-itinerary__suggestion {
+.sched-trip-itinerary__suggestion {
 	display: flex;
 	flex-direction: column;
 	align-items: stretch;
@@ -798,50 +798,50 @@
 	cursor: pointer;
 }
 
-.rux-trip-itinerary__suggestion:hover {
+.sched-trip-itinerary__suggestion:hover {
 	background: transparent;
 }
 
-.rux-trip-itinerary__suggestion-save {
+.sched-trip-itinerary__suggestion-save {
 	flex: none;
 	margin-right: var(--rux-space-1);
 }
 
-.rux-trip-itinerary__suggestion-row.is-saved .rux-trip-itinerary__suggestion-name {
+.sched-trip-itinerary__suggestion-row.is-saved .sched-trip-itinerary__suggestion-name {
 	color: var(--rux-accent);
 }
 
-.rux-trip-itinerary__suggestion-name {
+.sched-trip-itinerary__suggestion-name {
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-sm);
 }
 
-.rux-trip-itinerary__suggestion-address {
+.sched-trip-itinerary__suggestion-address {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
 
 @container (max-width: 460px) {
-	.rux-trip-itinerary__yard-times--meet {
+	.sched-trip-itinerary__yard-times--meet {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.rux-trip-itinerary__time-row {
+	.sched-trip-itinerary__time-row {
 		flex-direction: column;
 		align-items: stretch;
 		gap: var(--rux-space-2);
 	}
 
-	.rux-trip-itinerary__time-row > .rux-trip-itinerary__datetime,
-	.rux-trip-itinerary__time-row--single > .rux-trip-itinerary__datetime {
+	.sched-trip-itinerary__time-row > .sched-trip-itinerary__datetime,
+	.sched-trip-itinerary__time-row--single > .sched-trip-itinerary__datetime {
 		flex-basis: auto;
 		width: 100%;
 		margin-left: 0;
 	}
 
-	.rux-trip-itinerary__time-row > .rux-trip-itinerary__datetime + .rux-trip-itinerary__datetime {
+	.sched-trip-itinerary__time-row > .sched-trip-itinerary__datetime + .sched-trip-itinerary__datetime {
 		margin-left: 0;
 	}
 }

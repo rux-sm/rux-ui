@@ -4,12 +4,12 @@ import { getProfilePhotoUrl } from "../data/profile-db.js";
 // same palette/tokens as the Trip Bar Color swatches, so avatars stay
 // visually consistent with the rest of the app.
 const AVATAR_COLOR_TOKENS = {
-	cyan: "--rux-trip-color-cyan",
-	green: "--rux-trip-color-green",
-	purple: "--rux-trip-color-purple",
-	yellow: "--rux-trip-color-yellow",
-	orange: "--rux-trip-color-orange",
-	pink: "--rux-trip-color-pink",
+	cyan: "--sched-trip-color-cyan",
+	green: "--sched-trip-color-green",
+	purple: "--sched-trip-color-purple",
+	yellow: "--sched-trip-color-yellow",
+	orange: "--sched-trip-color-orange",
+	pink: "--sched-trip-color-pink",
 };
 
 export function avatarColorValue(key) {

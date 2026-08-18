@@ -138,8 +138,8 @@
 	color: var(--rux-button-accent-text);
 	border: var(--rux-button-accent-border);
 	box-shadow: var(--rux-button-shadow-raised);
-	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
-	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	-webkit-backdrop-filter: blur(var(--rux-backdrop-blur));
+	backdrop-filter: blur(var(--rux-backdrop-blur));
 }
 
 /* Solid fill — the generic .rux-button:hover rule above turns border/text
@@ -225,8 +225,8 @@
 	background: var(--rux-button-selected-background);
 	border-color: var(--rux-button-selected-border-color);
 	color: var(--rux-button-selected-text);
-	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
-	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	-webkit-backdrop-filter: blur(var(--rux-backdrop-blur));
+	backdrop-filter: blur(var(--rux-backdrop-blur));
 }
 
 /* danger is an intent modifier; combine it with an emphasis modifier */
@@ -585,8 +585,7 @@
 
 /* Print schedule modal — Orientation and Report type are always exactly two
    options, so split the track evenly instead of sizing each segment to its
-   own label (same recipe as #trip-view-group in scheduler-app.css and
-   .rux-scope-trip__trip-type). */
+   own label. */
 #ps-orientation-group > .rux-button,
 #ps-report-type-group > .rux-button {
 	flex: 1;

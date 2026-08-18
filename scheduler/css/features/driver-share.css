@@ -9,48 +9,48 @@
    the global token system. :where() keeps the defaults easy to override. */
 
 :where(.driver-share-page, .components-app__driver-assignment-demo) {
-	--rux-driver-page-max-width:          520px;
-	--rux-driver-phone-preview-max-width: 430px;
-	--rux-driver-page-gutter:             var(--rux-space-4);
-	--rux-driver-page-gutter-compact:     var(--rux-space-3);
-	--rux-driver-page-bottom-padding:     var(--rux-space-6);
-	--rux-driver-card-gap:                var(--rux-space-5);
-	--rux-driver-logo-width:              160px;
-	--rux-driver-logo-width-compact:      136px;
-	--rux-driver-logo-max-width:          52vw;
-	--rux-driver-card-bg:                 var(--rux-surface-1);
-	--rux-driver-card-border:             var(--rux-border-width) solid var(--rux-card-border);
-	--rux-driver-card-radius:             var(--rux-radius-container);
-	--rux-driver-card-header-padding:     28px var(--rux-space-5);
-	--rux-driver-card-header-min-size:    112px;
-	--rux-driver-module-padding:          20px var(--rux-space-5);
-	--rux-driver-module-label-min:        112px;
-	--rux-driver-module-label-width:      124px;
-	--rux-driver-module-icon-size:        48px;
-	--rux-driver-module-grid-gap:         var(--rux-space-4);
-	--rux-driver-action-rail-width:       96px;
-	--rux-driver-module-divider:          oklch(from var(--rux-neutral) 100% c h / 12%);
-	--rux-driver-internal-divider:        oklch(from var(--rux-neutral) 100% c h / 9%);
-	--rux-driver-touch-target:            48px;
-	--rux-driver-copy-max-width:          28rem;
-	--rux-driver-status-min-height:       60dvh;
-	--rux-driver-page-title-size:         clamp(2.25rem, 7vw, 2.5rem);
-	--rux-driver-date-primary-size:       var(--rux-size-md);
-	--rux-driver-date-primary-weight:     var(--rux-weight-400);
-	--rux-driver-time-size:               var(--rux-size-2xl);
-	--rux-driver-primary-size:            var(--rux-size-lg);
-	--rux-driver-secondary-size:          var(--rux-size-lg);
-	--rux-driver-label-size:              var(--rux-size-xs);
-	--rux-driver-control-bg:              var(--rux-surface-0);
-	--rux-driver-control-radius:          var(--rux-radius-lg);
-	--rux-driver-accent-soft:             color-mix(in oklch, var(--rux-accent) 16%, transparent);
-	--rux-driver-warning-soft:            color-mix(in oklch, var(--rux-warning) 12%, transparent);
-	--rux-driver-danger-soft:             color-mix(in oklch, var(--rux-danger) 12%, transparent);
-	--rux-driver-notes-clamp:             6lh;
-	--rux-driver-notes-lines:             4;
-	--rux-driver-skeleton-line-width:     62%;
-	--rux-driver-skeleton-opacity:        0.48;
-	--rux-driver-focus-ring:              0 0 0 3px var(--rux-accent-ring);
+	--sched-driver-page-max-width:          520px;
+	--sched-driver-phone-preview-max-width: 430px;
+	--sched-driver-page-gutter:             var(--rux-space-4);
+	--sched-driver-page-gutter-compact:     var(--rux-space-3);
+	--sched-driver-page-bottom-padding:     var(--rux-space-6);
+	--sched-driver-card-gap:                var(--rux-space-5);
+	--sched-driver-logo-width:              160px;
+	--sched-driver-logo-width-compact:      136px;
+	--sched-driver-logo-max-width:          52vw;
+	--sched-driver-card-bg:                 var(--rux-surface-1);
+	--sched-driver-card-border:             var(--rux-border-width) solid var(--rux-card-border);
+	--sched-driver-card-radius:             var(--rux-radius-container);
+	--sched-driver-card-header-padding:     28px var(--rux-space-5);
+	--sched-driver-card-header-min-size:    112px;
+	--sched-driver-module-padding:          20px var(--rux-space-5);
+	--sched-driver-module-label-min:        112px;
+	--sched-driver-module-label-width:      124px;
+	--sched-driver-module-icon-size:        48px;
+	--sched-driver-module-grid-gap:         var(--rux-space-4);
+	--sched-driver-action-rail-width:       96px;
+	--sched-driver-module-divider:          oklch(from var(--rux-neutral) 100% c h / 12%);
+	--sched-driver-internal-divider:        oklch(from var(--rux-neutral) 100% c h / 9%);
+	--sched-driver-touch-target:            48px;
+	--sched-driver-copy-max-width:          28rem;
+	--sched-driver-status-min-height:       60dvh;
+	--sched-driver-page-title-size:         clamp(2.25rem, 7vw, 2.5rem);
+	--sched-driver-date-primary-size:       var(--rux-size-md);
+	--sched-driver-date-primary-weight:     var(--rux-weight-400);
+	--sched-driver-time-size:               var(--rux-size-2xl);
+	--sched-driver-primary-size:            var(--rux-size-lg);
+	--sched-driver-secondary-size:          var(--rux-size-lg);
+	--sched-driver-label-size:              var(--rux-size-xs);
+	--sched-driver-control-bg:              var(--rux-surface-0);
+	--sched-driver-control-radius:          var(--rux-radius-lg);
+	--sched-driver-accent-soft:             color-mix(in oklch, var(--rux-accent) 16%, transparent);
+	--sched-driver-warning-soft:            color-mix(in oklch, var(--rux-warning) 12%, transparent);
+	--sched-driver-danger-soft:             color-mix(in oklch, var(--rux-danger) 12%, transparent);
+	--sched-driver-notes-clamp:             6lh;
+	--sched-driver-notes-lines:             4;
+	--sched-driver-skeleton-line-width:     62%;
+	--sched-driver-skeleton-opacity:        0.48;
+	--sched-driver-focus-ring:              0 0 0 3px var(--rux-accent-ring);
 }
 
 html {
@@ -71,29 +71,29 @@ html {
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-4);
-	padding: var(--rux-space-5) max(var(--rux-driver-page-gutter), env(safe-area-inset-left));
+	padding: var(--rux-space-5) max(var(--sched-driver-page-gutter), env(safe-area-inset-left));
 	background: var(--rux-surface-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
 .driver-share-header__logo {
-	width: var(--rux-driver-logo-width);
-	max-width: var(--rux-driver-logo-max-width);
+	width: var(--sched-driver-logo-width);
+	max-width: var(--sched-driver-logo-max-width);
 	height: auto;
 }
 
 .driver-share-header__label {
 	color: var(--rux-text-muted);
-	font-size: var(--rux-driver-secondary-size);
+	font-size: var(--sched-driver-secondary-size);
 	font-weight: var(--rux-weight-400);
 	white-space: nowrap;
 }
 
 .driver-share {
-	width: min(var(--rux-driver-page-max-width), 100%);
+	width: min(var(--sched-driver-page-max-width), 100%);
 	margin-inline: auto;
-	padding: var(--rux-space-6) var(--rux-driver-page-gutter)
-		calc(var(--rux-driver-page-bottom-padding) + env(safe-area-inset-bottom));
+	padding: var(--rux-space-6) var(--sched-driver-page-gutter)
+		calc(var(--sched-driver-page-bottom-padding) + env(safe-area-inset-bottom));
 }
 
 .driver-share__intro {
@@ -102,7 +102,7 @@ html {
 
 .driver-share__title {
 	margin: 0;
-	font-size: var(--rux-driver-page-title-size);
+	font-size: var(--sched-driver-page-title-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-4xl);
 }
@@ -141,22 +141,22 @@ html {
 .driver-share__list {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-driver-card-gap);
+	gap: var(--sched-driver-card-gap);
 }
 
 /* Card shell and header --------------------------------------------------- */
 
 .driver-assignment-card {
 	container: driver-assignment-card / inline-size;
-	background: var(--rux-driver-card-bg);
-	border: var(--rux-driver-card-border);
-	border-radius: var(--rux-driver-card-radius);
+	background: var(--sched-driver-card-bg);
+	border: var(--sched-driver-card-border);
+	border-radius: var(--sched-driver-card-radius);
 }
 
 .driver-assignment-card__header {
-	min-height: var(--rux-driver-card-header-min-size);
-	background: var(--rux-driver-card-bg);
-	border-bottom: var(--rux-border-width) solid var(--rux-driver-module-divider);
+	min-height: var(--sched-driver-card-header-min-size);
+	background: var(--sched-driver-card-bg);
+	border-bottom: var(--rux-border-width) solid var(--sched-driver-module-divider);
 }
 
 .driver-assignment-card__header-summary {
@@ -168,7 +168,7 @@ html {
 	align-items: center;
 	column-gap: var(--rux-space-4);
 	row-gap: var(--rux-space-2);
-	padding: var(--rux-driver-card-header-padding);
+	padding: var(--sched-driver-card-header-padding);
 }
 
 .driver-assignment-card__header-primary {
@@ -179,8 +179,8 @@ html {
 	grid-area: date;
 	margin: 0;
 	color: var(--rux-text-muted);
-	font-size: var(--rux-driver-date-primary-size);
-	font-weight: var(--rux-driver-date-primary-weight);
+	font-size: var(--sched-driver-date-primary-size);
+	font-weight: var(--sched-driver-date-primary-weight);
 	line-height: 1.2;
 	font-variant-numeric: tabular-nums;
 }
@@ -246,7 +246,7 @@ html {
 	width: 100%;
 	max-width: 100%;
 	padding: var(--rux-space-4) var(--rux-space-5);
-	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
+	border-top: var(--rux-border-width) solid var(--sched-driver-module-divider);
 }
 
 .driver-assignment-card__response-actions {
@@ -318,7 +318,7 @@ html {
 }
 
 .driver-share-dialog .rux-button {
-	--_h: var(--rux-driver-touch-target);
+	--_h: var(--sched-driver-touch-target);
 }
 
 .driver-assignment-card__accept {
@@ -327,7 +327,7 @@ html {
 
 .driver-assignment-card__action-error {
 	flex: 1 0 100%;
-	max-width: var(--rux-driver-copy-max-width);
+	max-width: var(--sched-driver-copy-max-width);
 	margin: 0;
 	color: var(--rux-danger-bright);
 	font-size: var(--rux-size-sm);
@@ -342,21 +342,21 @@ html {
 /* Shared assignment module ------------------------------------------------ */
 
 .driver-assignment-card > .rux-card {
-	padding: var(--rux-driver-module-padding);
+	padding: var(--sched-driver-module-padding);
 }
 
 .driver-assignment-card > .rux-card + .rux-card {
-	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
+	border-top: var(--rux-border-width) solid var(--sched-driver-module-divider);
 }
 
 .assignment-module {
 	display: grid;
 	grid-template-columns:
-		minmax(var(--rux-driver-module-label-min), var(--rux-driver-module-label-width))
+		minmax(var(--sched-driver-module-label-min), var(--sched-driver-module-label-width))
 		minmax(0, 1fr)
 		auto;
 	align-items: center;
-	gap: var(--rux-driver-module-grid-gap);
+	gap: var(--sched-driver-module-grid-gap);
 }
 
 .assignment-module__label-wrap {
@@ -367,17 +367,17 @@ html {
 	min-width: 0;
 	align-self: stretch;
 	padding-inline-end: var(--rux-space-4);
-	border-inline-end: var(--rux-border-width) solid var(--rux-driver-internal-divider);
+	border-inline-end: var(--rux-border-width) solid var(--sched-driver-internal-divider);
 }
 
 .assignment-module__icon {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: var(--rux-driver-module-icon-size);
-	height: var(--rux-driver-module-icon-size);
-	border-radius: var(--rux-driver-control-radius);
-	background: var(--rux-driver-control-bg);
+	width: var(--sched-driver-module-icon-size);
+	height: var(--sched-driver-module-icon-size);
+	border-radius: var(--sched-driver-control-radius);
+	background: var(--sched-driver-control-bg);
 	color: var(--rux-text-muted);
 }
 
@@ -387,17 +387,17 @@ html {
 }
 
 .assignment-module--accent .assignment-module__icon {
-	background: var(--rux-driver-accent-soft);
+	background: var(--sched-driver-accent-soft);
 	color: var(--rux-accent);
 }
 
 .assignment-module--warning .assignment-module__icon {
-	background: var(--rux-driver-warning-soft);
+	background: var(--sched-driver-warning-soft);
 	color: var(--rux-warning);
 }
 
 .assignment-module--danger .assignment-module__icon {
-	background: var(--rux-driver-danger-soft);
+	background: var(--sched-driver-danger-soft);
 	color: var(--rux-danger);
 }
 
@@ -423,7 +423,7 @@ html {
 .assignment-module__primary {
 	margin: 0;
 	color: var(--rux-text-default);
-	font-size: var(--rux-driver-primary-size);
+	font-size: var(--sched-driver-primary-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-lg);
 }
@@ -473,7 +473,7 @@ html {
 	display: block;
 	margin: 0;
 	color: var(--rux-text-default);
-	font-size: var(--rux-driver-time-size);
+	font-size: var(--sched-driver-time-size);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	letter-spacing: var(--rux-tracking-tight);
@@ -486,13 +486,13 @@ html {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	align-items: center;
-	gap: var(--rux-driver-module-grid-gap);
+	gap: var(--sched-driver-module-grid-gap);
 }
 
 .assignment-compact-module--actions {
 	grid-template-columns:
 		minmax(0, 1fr)
-		var(--rux-driver-action-rail-width, 96px);
+		var(--sched-driver-action-rail-width, 96px);
 }
 
 .driver-assignment-card__reporting-section {
@@ -524,7 +524,7 @@ html {
 .assignment-compact-module__primary {
 	margin: 0;
 	color: var(--rux-text-default);
-	font-size: var(--rux-driver-primary-size);
+	font-size: var(--sched-driver-primary-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-lg);
 }
@@ -570,7 +570,7 @@ html {
 	align-items: center;
 	justify-content: flex-end;
 	gap: var(--rux-space-2);
-	width: var(--rux-driver-action-rail-width, 96px);
+	width: var(--sched-driver-action-rail-width, 96px);
 	align-self: center;
 	justify-self: end;
 }
@@ -595,8 +595,8 @@ html {
 .driver-assignment-card__crew-bus-section {
 	display: grid;
 	gap: var(--rux-space-3);
-	padding: var(--rux-driver-module-padding);
-	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
+	padding: var(--sched-driver-module-padding);
+	border-top: var(--rux-border-width) solid var(--sched-driver-module-divider);
 }
 
 .driver-assignment-card__crew-bus-heading {
@@ -609,13 +609,13 @@ html {
 	align-items: center;
 	gap: var(--rux-space-3);
 	margin: 0;
-	min-height: var(--rux-driver-touch-target);
+	min-height: var(--sched-driver-touch-target);
 }
 
 .driver-assignment-card__crew-member.assignment-compact-module--actions {
 	grid-template-columns:
 		minmax(0, 1fr)
-		var(--rux-driver-action-rail-width, 96px);
+		var(--sched-driver-action-rail-width, 96px);
 }
 
 .driver-assignment-card__crew-actions {
@@ -645,16 +645,16 @@ html {
 }
 
 .driver-assignment-card__crew-disclosure-section {
-	padding: var(--rux-space-3) var(--rux-driver-module-padding);
-	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
+	padding: var(--rux-space-3) var(--sched-driver-module-padding);
+	border-top: var(--rux-border-width) solid var(--sched-driver-module-divider);
 }
 
 .driver-assignment-card__crew-fleet-group + .rux-card {
-	border-top: var(--rux-border-width) solid var(--rux-driver-module-divider);
+	border-top: var(--rux-border-width) solid var(--sched-driver-module-divider);
 }
 
 .driver-assignment-card__disclosure {
-	--_h: var(--rux-driver-touch-target);
+	--_h: var(--sched-driver-touch-target);
 	margin-top: 0;
 	padding-inline: 0;
 	color: var(--rux-accent);
@@ -674,11 +674,11 @@ html {
 	justify-content: center;
 	gap: var(--rux-space-2);
 	min-width: 0;
-	min-height: var(--rux-driver-touch-target);
+	min-height: var(--sched-driver-touch-target);
 	padding-inline: var(--rux-space-3);
-	background: var(--rux-driver-doc-neutral-bg);
-	color: var(--rux-driver-doc-neutral-fg);
-	border: var(--rux-border-width) solid var(--rux-driver-doc-neutral-border);
+	background: var(--sched-driver-doc-neutral-bg);
+	color: var(--sched-driver-doc-neutral-fg);
+	border: var(--rux-border-width) solid var(--sched-driver-doc-neutral-border);
 	border-radius: var(--rux-radius-md);
 	font: inherit;
 	font-size: var(--rux-size-sm);
@@ -689,22 +689,22 @@ html {
 }
 
 .driver-assignment-card__document:hover:not(.is-unavailable) {
-	background: var(--rux-driver-doc-neutral-hover-bg);
+	background: var(--sched-driver-doc-neutral-hover-bg);
 	border-color: var(--rux-card-border-hover);
-	color: var(--rux-driver-doc-neutral-fg);
+	color: var(--sched-driver-doc-neutral-fg);
 	text-decoration: none;
 }
 
 .driver-assignment-card__document.is-attention-needed {
-	background: var(--rux-driver-doc-warning-bg);
-	color: var(--rux-driver-doc-warning-fg);
-	border-color: var(--rux-driver-doc-warning-border);
+	background: var(--sched-driver-doc-warning-bg);
+	color: var(--sched-driver-doc-warning-fg);
+	border-color: var(--sched-driver-doc-warning-border);
 }
 
 .driver-assignment-card__document.is-attention-needed:hover {
-	background: var(--rux-driver-doc-warning-hover-bg);
+	background: var(--sched-driver-doc-warning-hover-bg);
 	border-color: var(--rux-warning);
-	color: var(--rux-driver-doc-warning-fg);
+	color: var(--sched-driver-doc-warning-fg);
 }
 
 .driver-assignment-card__document.is-unavailable {
@@ -733,10 +733,10 @@ html {
 
 .driver-assignment-card__notes.is-collapsed {
 	display: -webkit-box;
-	max-height: var(--rux-driver-notes-clamp);
+	max-height: var(--sched-driver-notes-clamp);
 	overflow: hidden;
 	-webkit-box-orient: vertical;
-	-webkit-line-clamp: var(--rux-driver-notes-lines);
+	-webkit-line-clamp: var(--sched-driver-notes-lines);
 }
 
 /* Loading, empty, errors, and dialog ------------------------------------- */
@@ -744,7 +744,7 @@ html {
 .driver-share-status {
 	display: grid;
 	place-items: center;
-	min-height: var(--rux-driver-status-min-height);
+	min-height: var(--sched-driver-status-min-height);
 	padding: var(--rux-space-6);
 	color: var(--rux-text-muted);
 	text-align: center;
@@ -754,11 +754,11 @@ html {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: var(--rux-driver-module-icon-size);
-	height: var(--rux-driver-module-icon-size);
+	width: var(--sched-driver-module-icon-size);
+	height: var(--sched-driver-module-icon-size);
 	margin-inline: auto;
-	border-radius: var(--rux-driver-control-radius);
-	background: var(--rux-driver-control-bg);
+	border-radius: var(--sched-driver-control-radius);
+	background: var(--sched-driver-control-bg);
 	color: var(--rux-text-muted);
 }
 
@@ -774,19 +774,19 @@ html {
 }
 
 .driver-share-status p {
-	max-width: var(--rux-driver-copy-max-width);
+	max-width: var(--sched-driver-copy-max-width);
 	margin: 0;
 }
 
 .driver-share-status .rux-button {
-	--_h: var(--rux-driver-touch-target);
+	--_h: var(--sched-driver-touch-target);
 	margin-top: var(--rux-space-4);
 }
 
 .driver-share-skeleton {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-driver-card-gap);
+	gap: var(--sched-driver-card-gap);
 }
 
 .driver-share-announcer {
@@ -802,14 +802,14 @@ html {
 
 .driver-share-skeleton__card {
 	overflow: hidden;
-	border: var(--rux-driver-card-border);
-	border-radius: var(--rux-driver-card-radius);
-	background: var(--rux-driver-card-bg);
+	border: var(--sched-driver-card-border);
+	border-radius: var(--sched-driver-card-radius);
+	background: var(--sched-driver-card-bg);
 }
 
 .driver-share-skeleton__header,
 .driver-share-skeleton__module {
-	padding: var(--rux-driver-module-padding);
+	padding: var(--sched-driver-module-padding);
 }
 
 .driver-share-skeleton__module {
@@ -824,12 +824,12 @@ html {
 }
 
 .driver-share-skeleton__line + .driver-share-skeleton__line {
-	width: var(--rux-driver-skeleton-line-width);
+	width: var(--sched-driver-skeleton-line-width);
 	margin-top: var(--rux-space-3);
 }
 
 @keyframes driver-share-skeleton-pulse {
-	from { opacity: var(--rux-driver-skeleton-opacity); }
+	from { opacity: var(--sched-driver-skeleton-opacity); }
 	to { opacity: 1; }
 }
 
@@ -877,7 +877,7 @@ html {
 	.driver-share-dialog .rux-button
 ):focus-visible {
 	outline: none;
-	box-shadow: var(--rux-driver-focus-ring);
+	box-shadow: var(--sched-driver-focus-ring);
 }
 
 @container driver-assignment-card (max-width: 479px) {
@@ -905,8 +905,8 @@ html {
 	}
 
 	.assignment-module__icon {
-		width: var(--rux-driver-touch-target);
-		height: var(--rux-driver-touch-target);
+		width: var(--sched-driver-touch-target);
+		height: var(--sched-driver-touch-target);
 	}
 
 	.assignment-module__content {
@@ -927,7 +927,7 @@ html {
 	.driver-assignment-card__header,
 	.driver-assignment-card > .rux-card,
 	.driver-assignment-card__crew-bus-section {
-		padding-inline: var(--rux-driver-page-gutter);
+		padding-inline: var(--sched-driver-page-gutter);
 	}
 
 	.driver-assignment-card__header {
@@ -936,7 +936,7 @@ html {
 
 	.driver-assignment-card__header-summary,
 	.driver-assignment-card__response {
-		padding-inline: var(--rux-driver-page-gutter);
+		padding-inline: var(--sched-driver-page-gutter);
 	}
 
 	.assignment-module__action-wrap {
@@ -957,7 +957,7 @@ html {
 
 @media (max-width: 479px) {
 	.driver-share-header {
-		padding-inline: var(--rux-driver-page-gutter);
+		padding-inline: var(--sched-driver-page-gutter);
 	}
 
 	.driver-share {
@@ -967,11 +967,11 @@ html {
 
 @media (max-width: 359px) {
 	.driver-share-header__logo {
-		width: var(--rux-driver-logo-width-compact);
+		width: var(--sched-driver-logo-width-compact);
 	}
 
 	.driver-share {
-		padding-inline: var(--rux-driver-page-gutter-compact);
+		padding-inline: var(--sched-driver-page-gutter-compact);
 	}
 
 	.driver-share-dialog__footer {

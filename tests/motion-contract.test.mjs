@@ -7,6 +7,8 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf
 const tokens = read("rux-ui/css/tokens.css");
 const menuStyles = read("rux-ui/css/base/menu.css");
 const schedulerStyles = read("scheduler/css/layout/scheduler-app.css");
+const drawerStyles = read("rux-ui/css/base/drawer.css");
+const sideNavStyles = read("rux-ui/css/base/side-nav.css");
 const manifestStyles = read("scheduler/css/features/trip-manifest.css");
 const drawerController = read("rux-ui/js/drawer.js");
 const reducedMotionStyles = read("rux-ui/css/base/utils.css");
@@ -38,24 +40,24 @@ test("structural panels use 150ms entrance and exit contracts", () => {
 		/--rux-panel-motion-duration:\s+var\(--rux-motion-duration-moderate-01\);/,
 	);
 	assert.match(
-		schedulerStyles,
+		drawerStyles,
 		/width var\(--rux-panel-motion-duration\) var\(--rux-panel-enter-easing\)/,
 	);
 	assert.match(
-		schedulerStyles,
+		drawerStyles,
 		/width var\(--rux-panel-motion-duration\) var\(--rux-panel-exit-easing\)/,
 	);
 	assert.match(
-		schedulerStyles,
-		/scheduler-mobile-drawer-in[\s\S]*?var\(--rux-panel-enter-easing\)/,
+		drawerStyles,
+		/rux-drawer-in[\s\S]*?var\(--rux-panel-enter-easing\)/,
 	);
 	assert.match(
-		schedulerStyles,
-		/scheduler-mobile-drawer-out[\s\S]*?var\(--rux-panel-exit-easing\)/,
+		drawerStyles,
+		/rux-drawer-out[\s\S]*?var\(--rux-panel-exit-easing\)/,
 	);
 	assert.match(
 		manifestStyles,
-		/\.rux-scope-manifest__passenger-panel\.is-open[\s\S]*?var\(--rux-panel-enter-easing\)/,
+		/\.sched-scope-manifest__passenger-panel\.is-open[\s\S]*?var\(--rux-panel-enter-easing\)/,
 	);
 	assert.match(
 		drawerController,
@@ -66,8 +68,8 @@ test("structural panels use 150ms entrance and exit contracts", () => {
 test("drawer closing always releases interaction and settles its state", () => {
 	const page = read("index.html");
 	assert.match(
-		schedulerStyles,
-		/\.scheduler-app__drawer\.is-closing\s*\{[^}]*pointer-events:\s*none;/s,
+		drawerStyles,
+		/\.rux-drawer\.is-closing\s*\{[^}]*pointer-events:\s*none;/s,
 	);
 	assert.match(drawerController, /function completeAfterMotion\(/);
 	assert.match(drawerController, /const cancelEvent = type \+ "cancel";/);
@@ -80,13 +82,15 @@ test("drawer closing always releases interaction and settles its state", () => {
 		drawerController,
 		/env\.closeAnimation,\s*\(\) => drawer\.classList\.remove\("is-closing"\)/,
 	);
-	assert.match(page, /closeAnimation:\s*"scheduler-mobile-drawer-out"/);
+	// The name is RuxDrawer's own default now — the app no longer configures it.
+	assert.match(drawerController, /closeAnimation:\s*"rux-drawer-out"/);
+	assert.doesNotMatch(page, /window\.RuxDrawer\.configure\(/);
 });
 
 test("panel splitters resize directly without inherited motion", () => {
 	assert.match(
-		schedulerStyles,
-		/\.scheduler-app__drawer\.is-open\.is-resizing,[\s\S]*?transition:\s*none;/,
+		drawerStyles,
+		/\.rux-drawer\.is-open\.is-resizing,[\s\S]*?transition:\s*none;/,
 	);
 	assert.match(drawerController, /addEventListener\("pointerdown"/);
 	assert.match(drawerController, /setPointerCapture\(e\.pointerId\)/);
@@ -94,12 +98,12 @@ test("panel splitters resize directly without inherited motion", () => {
 	assert.doesNotMatch(drawerController, /HANDLE_DRAG_THRESHOLD|addEventListener\("mousedown"/);
 	assert.doesNotMatch(drawerController, /closeThreshold/);
 	assert.match(
-		schedulerStyles,
-		/\.scheduler-app__resize-gutter\s*\{[^}]*display:\s*none;/s,
+		drawerStyles,
+		/\.rux-resize-gutter\s*\{[^}]*display:\s*none;/s,
 	);
 	assert.match(
-		schedulerStyles,
-		/\.scheduler-app__drawer\.is-open:not\(\.is-collapsing\) \+ \.scheduler-app__resize-gutter,[\s\S]*?display:\s*block;/,
+		drawerStyles,
+		/\.rux-drawer\.is-open:not\(\.is-collapsing\) \+ \.rux-resize-gutter,[\s\S]*?display:\s*block;/,
 	);
 	assert.match(
 		motionDocs,
@@ -141,13 +145,13 @@ test("the UI-shell side navigation uses a fixed-coordinate 110ms reveal", () => 
 		tokens,
 		/--rux-side-nav-enter-easing:\s+var\(--rux-motion-easing-exit-productive\);/,
 	);
-	assert.match(schedulerStyles, /clip-path:\s*inset\(0 100% 0 0\);/);
-	assert.match(schedulerStyles, /\.scheduler-app__side-nav\.is-open\s*\{[^}]*clip-path:\s*inset\(0\);/s);
-	assert.match(schedulerStyles, /inset-inline-start:\s*min\(var\(--rux-side-nav-width\), 100%\);/);
-	assert.doesNotMatch(schedulerStyles, /margin-inline-end:\s*calc\(-1 \* var\(--rux-side-nav-width\)\)/);
+	assert.match(sideNavStyles, /clip-path:\s*inset\(0 100% 0 0\);/);
+	assert.match(sideNavStyles, /\.rux-side-nav--overlay\.is-open\s*\{[^}]*clip-path:\s*inset\(0\);/s);
+	assert.match(sideNavStyles, /inset-inline-start:\s*min\(var\(--rux-side-nav-width\), 100%\);/);
+	assert.doesNotMatch(sideNavStyles, /margin-inline-end:\s*calc\(-1 \* var\(--rux-side-nav-width\)\)/);
 	assert.match(motionDocs, /panel remains an overlay at every viewport/);
 	assert.match(
-		schedulerStyles,
+		sideNavStyles,
 		/opacity var\(--rux-side-nav-scrim-enter-duration\)[\s\S]*?var\(--rux-side-nav-scrim-enter-delay\)/,
 	);
 	assert.match(motionDocs, /remains at its final coordinates and full opacity/);

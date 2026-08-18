@@ -15,7 +15,7 @@
 	max-height: 70vh;
 }
 
-.rux-dev-notes__list {
+.sched-dev-notes__list {
 	display: flex;
 	flex-direction: column;
 	list-style: none;
@@ -24,14 +24,14 @@
 	overflow-y: auto;
 }
 
-.rux-dev-notes__empty {
+.sched-dev-notes__empty {
 	padding: var(--rux-space-3) var(--rux-space-2);
 	color: var(--rux-text-faint);
 	font-size: var(--rux-size-sm);
 	text-align: center;
 }
 
-.rux-dev-notes__item {
+.sched-dev-notes__item {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
@@ -39,32 +39,32 @@
 	border-radius: var(--rux-menu-item-radius);
 }
 
-.rux-dev-notes__item:hover {
+.sched-dev-notes__item:hover {
 	background: var(--rux-menu-item-hover-bg);
 }
 
-.rux-dev-notes__item-main {
+.sched-dev-notes__item-main {
 	flex: 1 1 auto;
 	min-width: 0;
 }
 
-.rux-dev-notes__item-text {
+.sched-dev-notes__item-text {
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-sm);
 	line-height: 1.35;
 	overflow-wrap: anywhere;
 }
 
-.rux-dev-notes__item.is-done .rux-dev-notes__item-text {
+.sched-dev-notes__item.is-done .sched-dev-notes__item-text {
 	color: var(--rux-text-faint);
 	text-decoration: line-through;
 }
 
-.rux-dev-notes__item > button[data-delete] {
+.sched-dev-notes__item > button[data-delete] {
 	flex: none;
 }
 
-.rux-dev-notes__form {
+.sched-dev-notes__form {
 	display: flex;
 	flex: none;
 	gap: var(--rux-space-2);
@@ -72,7 +72,7 @@
 	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-dev-notes__input {
+.sched-dev-notes__input {
 	flex: 1 1 auto;
 	min-width: 0;
 }

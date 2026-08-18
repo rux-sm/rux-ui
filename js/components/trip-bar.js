@@ -73,7 +73,7 @@ function installOutsideDismiss() {
       // modal) opts out of dismissal with this attribute — otherwise this
       // capture-phase listener deactivates the bar (and disables the
       // button reading it) before the button's own click handler runs.
-      if (downTarget?.closest?.("[data-rux-keep-trip-selection]")) return;
+      if (downTarget?.closest?.("[data-sched-keep-trip-selection]")) return;
       const dx = event.clientX - downX;
       const dy = event.clientY - downY;
       if (Math.hypot(dx, dy) > DISMISS_MOVE_THRESHOLD) return;
@@ -132,7 +132,7 @@ function icon(name, className = "rux-icon") {
 function createStripeLayer() {
   const svg = document.createElementNS(SVG_NS, "svg");
   const patternId = `sched-trip-bar-stripes-${++tripBarStripePatternId}`;
-  svg.setAttribute("class", "rux-trip-bar__stripe-layer");
+  svg.setAttribute("class", "sched-trip-bar__stripe-layer");
   svg.setAttribute("width", "100%");
   svg.setAttribute("height", "100%");
   svg.setAttribute("aria-hidden", "true");
@@ -146,7 +146,7 @@ function createStripeLayer() {
   pattern.setAttribute("patternUnits", "userSpaceOnUse");
   pattern.setAttribute("patternTransform", "rotate(45)");
   const stripe = document.createElementNS(SVG_NS, "rect");
-  stripe.setAttribute("class", "rux-trip-bar__stripe-mark");
+  stripe.setAttribute("class", "sched-trip-bar__stripe-mark");
   stripe.setAttribute("width", "7");
   stripe.setAttribute("height", "14");
   pattern.appendChild(stripe);
@@ -432,7 +432,7 @@ function fmtTime(str) {
     const clean = str.trim();
     suffix = /am$/i.test(clean) ? "am" : "pm";
     const core = clean.replace(/\s*[ap]m$/i, "");
-    return `${core}<span class="rux-trip-bar__time-suffix"> ${suffix}</span>`;
+    return `${core}<span class="sched-trip-bar__time-suffix"> ${suffix}</span>`;
   }
   const m = str.match(/^(\d{1,2}):(\d{2})$/);
   if (!m) return str.replace(/[<>&"]/g, c => `&#${c.charCodeAt(0)};`);
@@ -441,15 +441,15 @@ function fmtTime(str) {
   suffix = h < 12 ? "am" : "pm";
   if (h === 0) h = 12;
   else if (h > 12) h -= 12;
-  return `${h}:${min}<span class="rux-trip-bar__time-suffix"> ${suffix}</span>`;
+  return `${h}:${min}<span class="sched-trip-bar__time-suffix"> ${suffix}</span>`;
 }
 
 function timeItem(label, value, className = "") {
   const item = document.createElement("span");
-  item.className = "rux-trip-bar__time-item";
-  if (label) item.append(textEl("span", "rux-trip-bar__time-label", label));
+  item.className = "sched-trip-bar__time-item";
+  if (label) item.append(textEl("span", "sched-trip-bar__time-label", label));
   const val = document.createElement("span");
-  val.className = `rux-trip-bar__time-value${className ? " " + className : ""}`;
+  val.className = `sched-trip-bar__time-value${className ? " " + className : ""}`;
   val.innerHTML = value ?? "";
   item.append(val);
   return item;
@@ -457,9 +457,9 @@ function timeItem(label, value, className = "") {
 
 function driverStateClass(state) {
   if (state === "conf" || state === "confirmed")
-    return "rux-trip-bar__driver-dot--confirmed";
+    return "sched-trip-bar__driver-dot--confirmed";
   if (state === "unconf" || state === "unconfirmed")
-    return "rux-trip-bar__driver-dot--unconfirmed";
+    return "sched-trip-bar__driver-dot--unconfirmed";
   return "";
 }
 
@@ -492,9 +492,9 @@ function buildRequirementIcons(trip) {
   if (!matched.length) return null;
 
   const el = document.createElement("div");
-  el.className = "rux-trip-bar__reqs";
+  el.className = "sched-trip-bar__reqs";
   matched.forEach(req => {
-    const i = icon(req.icon, "rux-icon rux-trip-bar__req-icon");
+    const i = icon(req.icon, "rux-icon sched-trip-bar__req-icon");
     setFloatingTooltip(i, req.label);
     el.appendChild(i);
   });
@@ -694,15 +694,15 @@ const PAYMENT_METHOD_ICONS = { Cash: "universal_currency_alt", Check: "checkbook
 // plain textContent value.
 function buildPaymentValueEl(trip) {
   const valueEl = document.createElement("span");
-  valueEl.className = "rux-trip-bar__detail-field-value rux-trip-bar__payment-value";
+  valueEl.className = "sched-trip-bar__detail-field-value sched-trip-bar__payment-value";
   const payments = Array.isArray(trip.trip_payments) ? trip.trip_payments : [];
   const sorted = [...payments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
   sorted.forEach((p) => {
     if (!p.ref && !p.amount) return;
     if (valueEl.childElementCount) valueEl.appendChild(document.createTextNode(" · "));
     const entry = document.createElement("span");
-    entry.className = "rux-trip-bar__payment-entry";
-    entry.appendChild(icon(PAYMENT_METHOD_ICONS[p.method] || PAYMENT_METHOD_ICONS.Other, "rux-icon rux-trip-bar__payment-icon"));
+    entry.className = "sched-trip-bar__payment-entry";
+    entry.appendChild(icon(PAYMENT_METHOD_ICONS[p.method] || PAYMENT_METHOD_ICONS.Other, "rux-icon sched-trip-bar__payment-icon"));
     const text = [p.ref || "", p.amount ? `$${Number(p.amount).toLocaleString()}` : ""].filter(Boolean).join(" ");
     entry.appendChild(document.createTextNode(text));
     valueEl.appendChild(entry);
@@ -748,16 +748,16 @@ function layoutDetailFields(fields) {
 // visibly mismatches every other (plain-text) row's alignment.
 function detailFieldEl({ label, value, valueEl, alignItems, wide, wrap, gridRow, gridColumn }) {
   const field = document.createElement("div");
-  field.className = `rux-trip-bar__detail-field${
-    wide ? " rux-trip-bar__detail-field--wide" : ""
-  }${wrap ? " rux-trip-bar__detail-field--wrap" : ""}`;
+  field.className = `sched-trip-bar__detail-field${
+    wide ? " sched-trip-bar__detail-field--wide" : ""
+  }${wrap ? " sched-trip-bar__detail-field--wrap" : ""}`;
   field.style.gridRow = String(gridRow);
   field.style.gridColumn = String(gridColumn);
   if (alignItems) field.style.alignItems = alignItems;
-  const labelEl = textEl("span", "rux-trip-bar__detail-field-label", label);
+  const labelEl = textEl("span", "sched-trip-bar__detail-field-label", label);
   const resolvedValueEl = valueEl || textEl(
     "span",
-    "rux-trip-bar__detail-field-value",
+    "sched-trip-bar__detail-field-value",
     detailValue(value),
   );
   field.append(labelEl, resolvedValueEl);
@@ -807,7 +807,7 @@ export function applyItineraryUploaded(bar, doc, trip) {
     });
     pdfBtn.replaceWith(newBtn);
   }
-  bar.querySelector('.rux-trip-bar__pending-icon[data-tooltip="Pending itinerary"]')?.remove();
+  bar.querySelector('.sched-trip-bar__pending-icon[data-tooltip="Pending itinerary"]')?.remove();
 }
 
 // Inverse of applyItineraryUploaded — patches a bar back to "no itinerary"
@@ -830,11 +830,11 @@ export function applyItineraryDeleted(bar, trip) {
     pdfBtn.replaceWith(newBtn);
   }
   const pendingItem = PENDING_INDICATORS.find((item) => item.key === "itinerary");
-  const alreadyShown = bar.querySelector('.rux-trip-bar__pending-icon[data-tooltip="Pending itinerary"]');
+  const alreadyShown = bar.querySelector('.sched-trip-bar__pending-icon[data-tooltip="Pending itinerary"]');
   if (pendingItem && !alreadyShown && pendingItem.check(trip)) {
-    const marker = icon(pendingItem.icon, "rux-icon rux-trip-bar__pending-icon");
+    const marker = icon(pendingItem.icon, "rux-icon sched-trip-bar__pending-icon");
     setFloatingTooltip(marker, pendingItem.label);
-    bar.querySelector(".rux-trip-bar__pending")?.prepend(marker);
+    bar.querySelector(".sched-trip-bar__pending")?.prepend(marker);
   }
 }
 
@@ -875,11 +875,11 @@ export function createTripBar(trip, callbacks = {}) {
   );
 
   const actions = document.createElement("div");
-  actions.className = "rux-trip-bar__actions";
+  actions.className = "sched-trip-bar__actions";
 
   const openBtn = document.createElement("button");
   openBtn.type = "button";
-  openBtn.className = "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action";
+  openBtn.className = "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block sched-trip-bar__action";
   openBtn.setAttribute("aria-label", "Open trip");
   setFloatingTooltip(openBtn, "Open trip");
   openBtn.appendChild(icon("add"));
@@ -903,7 +903,7 @@ export function createTripBar(trip, callbacks = {}) {
     : () => uploadItineraryDoc(trip.id);
 
   const pdfBtn = button(
-    "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+    "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block sched-trip-bar__action",
     pdfLabel,
     pdfIcon,
     () => onPdf(),
@@ -917,7 +917,7 @@ export function createTripBar(trip, callbacks = {}) {
     trip.booking_contact_missive_url || trip.bookingContact?.missiveUrl || "",
   ).trim();
   const emailThreadBtn = button(
-    "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+    "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block sched-trip-bar__action",
     emailThreadUrl ? "Open email thread" : "No email thread saved",
     "alternate-email",
     () => window.open(emailThreadUrl, "missive", "noopener,noreferrer"),
@@ -929,13 +929,13 @@ export function createTripBar(trip, callbacks = {}) {
     openBtn,
     pdfBtn,
     button(
-      "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+      "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block sched-trip-bar__action",
       "Move bus",
       "swap_vert",
       () => callbacks.onChangeBus?.(trip),
     ),
     button(
-      "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block rux-trip-bar__action",
+      "rux-button rux-button--ghost rux-button--icon rux-button--compact rux-button--block sched-trip-bar__action",
       "Print trip envelope",
       "drafts",
       () => callbacks.onPrintEnvelope?.(trip),
@@ -944,22 +944,22 @@ export function createTripBar(trip, callbacks = {}) {
   );
 
   const body = document.createElement("div");
-  body.className = "rux-trip-bar__body";
+  body.className = "sched-trip-bar__body";
 
   const summary = document.createElement("div");
-  summary.className = "rux-trip-bar__summary";
+  summary.className = "sched-trip-bar__summary";
   const pendingItems = getPendingIndicators(trip);
   const summaryMarkers = trip.itinerary_confirmed
     ? [...pendingItems, { icon: "checklist", label: "Itinerary confirmed", tone: "success" }]
     : pendingItems;
   const paid = isPaidTrip(trip);
   const pending = document.createElement("span");
-  pending.className = "rux-trip-bar__pending";
+  pending.className = "sched-trip-bar__pending";
   const summaryMarkerLabels = summaryMarkers.map((item) => item.label);
   summaryMarkers.forEach((item) => {
     const marker = icon(
       item.icon,
-      `rux-icon rux-trip-bar__pending-icon${item.tone ? ` rux-trip-bar__pending-icon--${item.tone}` : ""}`,
+      `rux-icon sched-trip-bar__pending-icon${item.tone ? ` sched-trip-bar__pending-icon--${item.tone}` : ""}`,
     );
     setFloatingTooltip(marker, item.label);
     pending.appendChild(marker);
@@ -974,16 +974,16 @@ export function createTripBar(trip, callbacks = {}) {
     const isOverpaid = trip.paymentStatus === "overpaid";
     const statusLabel = textEl(
       "span",
-      "rux-trip-bar__status rux-trip-bar__status--paid",
+      "sched-trip-bar__status sched-trip-bar__status--paid",
       isOverpaid ? "Overpaid" : "Paid",
     );
     const paidLabel = isOverpaid ? "Overpaid" : (datePaid ? `Paid in full ${datePaid}` : "Paid in full");
     setFloatingTooltip(statusLabel, paidLabel);
     paidBadge = document.createElement("span");
-    paidBadge.className = "rux-trip-bar__paid-badge";
+    paidBadge.className = "sched-trip-bar__paid-badge";
     paidBadge.appendChild(statusLabel);
     if (datePaid) {
-      paidBadge.appendChild(textEl("span", "rux-trip-bar__status-date", datePaid));
+      paidBadge.appendChild(textEl("span", "sched-trip-bar__status-date", datePaid));
     }
   }
   pending.setAttribute("aria-label", summaryMarkerLabels.join(", "));
@@ -992,26 +992,26 @@ export function createTripBar(trip, callbacks = {}) {
   // for pending-only items, which would swallow this pill's aria-label if
   // it were a descendant instead of a sibling.
   const busPill = groupLabel ? (() => {
-    const el = textEl("span", "rux-trip-bar__bus-label", groupLabel);
+    const el = textEl("span", "sched-trip-bar__bus-label", groupLabel);
     el.setAttribute("aria-label", `${groupLabel} buses in this customer trip`);
     return el;
   })() : null;
   summary.append(
-    textEl("div", "rux-trip-bar__destination", trip.destination),
+    textEl("div", "sched-trip-bar__destination", trip.destination),
     ...(paidBadge ? [paidBadge] : []),
   );
 
   const time = document.createElement("div");
-  time.className = "rux-trip-bar__time";
+  time.className = "sched-trip-bar__time";
   const displayTimes = tripBarTimes(trip);
   const middleTime = displayTimes.spotTime;
   time.append(
-    timeItem("", fmtTime(displayTimes.departureTime), displayTimes.departureTime ? "" : "rux-trip-bar__time-value--empty"),
-    timeItem("", fmtTime(middleTime), middleTime ? "" : "rux-trip-bar__time-value--empty"),
+    timeItem("", fmtTime(displayTimes.departureTime), displayTimes.departureTime ? "" : "sched-trip-bar__time-value--empty"),
+    timeItem("", fmtTime(middleTime), middleTime ? "" : "sched-trip-bar__time-value--empty"),
     timeItem(
       "",
       fmtTime(displayTimes.returnTime),
-      isLateReturn(displayTimes.returnTime) ? "rux-trip-bar__time-value--late" : (displayTimes.returnTime ? "" : "rux-trip-bar__time-value--empty"),
+      isLateReturn(displayTimes.returnTime) ? "sched-trip-bar__time-value--late" : (displayTimes.returnTime ? "" : "sched-trip-bar__time-value--empty"),
     ),
   );
 
@@ -1023,7 +1023,7 @@ export function createTripBar(trip, callbacks = {}) {
   };
 
   const drivers = document.createElement("div");
-  drivers.className = "rux-trip-bar__drivers";
+  drivers.className = "sched-trip-bar__drivers";
   const assignedRoles = new Set((trip.drivers || []).map(d => d.role));
 
   const roleStateMap = {};
@@ -1053,12 +1053,12 @@ export function createTripBar(trip, callbacks = {}) {
 
   (trip.drivers || []).forEach((driver) => {
     const item = document.createElement("span");
-    item.className = "rux-trip-bar__driver";
-    const roleIcon = icon(ROLE_ICONS[driver.role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
+    item.className = "sched-trip-bar__driver";
+    const roleIcon = icon(ROLE_ICONS[driver.role] || "person", "rux-icon sched-trip-bar__driver-role-icon");
     const state = roleStateMap[driver.role];
     applyDriverStatus(roleIcon, state);
     const nameEl = document.createElement("span");
-    nameEl.className = "rux-trip-bar__driver-name";
+    nameEl.className = "sched-trip-bar__driver-name";
     nameEl.textContent = driver.shortName || driver.name;
     item.append(roleIcon, nameEl);
     drivers.appendChild(item);
@@ -1070,15 +1070,15 @@ export function createTripBar(trip, callbacks = {}) {
     const state = roleStateMap[role] || "off";
     if (!assignedRoles.has(role)) {
       const item = document.createElement("span");
-      item.className = "rux-trip-bar__driver rux-trip-bar__driver--unassigned";
-      const roleIcon = icon(ROLE_ICONS[role] || "person", "rux-icon rux-trip-bar__driver-role-icon");
+      item.className = "sched-trip-bar__driver sched-trip-bar__driver--unassigned";
+      const roleIcon = icon(ROLE_ICONS[role] || "person", "rux-icon sched-trip-bar__driver-role-icon");
       applyDriverStatus(roleIcon, state);
       item.appendChild(roleIcon);
       drivers.appendChild(item);
     }
   });
   const spacer = document.createElement("div");
-  spacer.className = "rux-trip-bar__spacer";
+  spacer.className = "sched-trip-bar__spacer";
 
   const passengerCount = (trip.trip_passengers ?? []).length;
   const clientLabel = trip.is_self_organized
@@ -1087,18 +1087,18 @@ export function createTripBar(trip, callbacks = {}) {
 
   body.append(
     summary,
-    textEl("div", "rux-trip-bar__client", clientLabel),
+    textEl("div", "sched-trip-bar__client", clientLabel),
     (() => {
       const el = document.createElement("div");
-      el.className = "rux-trip-bar__contact";
+      el.className = "sched-trip-bar__contact";
       el.append(
-        textEl("span", "rux-trip-bar__contact-name", trip.bookingContact?.name || trip.tripContact?.name),
+        textEl("span", "sched-trip-bar__contact-name", trip.bookingContact?.name || trip.tripContact?.name),
       );
       if (trip.bookingContact?.phone)
         el.append(
           textEl(
             "span",
-            "rux-trip-bar__contact-phone",
+            "sched-trip-bar__contact-phone",
             trip.bookingContact.phone,
           ),
         );
@@ -1106,11 +1106,11 @@ export function createTripBar(trip, callbacks = {}) {
     })(),
     (() => {
       const el = document.createElement("div");
-      el.className = "rux-trip-bar__notes";
+      el.className = "sched-trip-bar__notes";
       // text-overflow:ellipsis must land on this inner span, not the flex
       // container itself — a flex container's own (anonymous) text content
       // hard-clips on overflow:hidden but never renders the "…" glyph.
-      el.append(textEl("span", "rux-trip-bar__notes-text", trip.notes));
+      el.append(textEl("span", "sched-trip-bar__notes-text", trip.notes));
       // Notes are the field most likely to get truncated (free text, no
       // length limit) — a hover tooltip surfaces the full text without
       // needing to expand the whole bar. Only worth wiring up when there's
@@ -1120,7 +1120,7 @@ export function createTripBar(trip, callbacks = {}) {
     })(),
     (() => {
       const row = document.createElement("div");
-      row.className = "rux-trip-bar__reqs";
+      row.className = "sched-trip-bar__reqs";
       if (busPill) row.appendChild(busPill);
       // Drop-off/Pick-up trips get a leg marker alongside the requirement
       // icons — same class/tooltip convention as those, so it inherits the
@@ -1135,7 +1135,7 @@ export function createTripBar(trip, callbacks = {}) {
         const isOutbound = trip.leg === "outbound";
         const legIcon = icon(
           isOutbound ? "start" : "keyboard-tab",
-          "rux-icon rux-trip-bar__req-icon",
+          "rux-icon sched-trip-bar__req-icon",
         );
         setFloatingTooltip(legIcon, isOutbound ? "Drop-off leg" : "Pick-up leg");
         row.appendChild(legIcon);
@@ -1143,7 +1143,7 @@ export function createTripBar(trip, callbacks = {}) {
         // Same icon as the Trip Type picker's own "One-way" segment
         // (arrow_forward) — reusing it here keeps one icon meaning "one-way"
         // everywhere in the app instead of introducing a second one.
-        const oneWayIcon = icon("arrow-right", "rux-icon rux-trip-bar__req-icon");
+        const oneWayIcon = icon("arrow-right", "rux-icon sched-trip-bar__req-icon");
         setFloatingTooltip(oneWayIcon, "One-way trip");
         row.appendChild(oneWayIcon);
       }
@@ -1157,9 +1157,9 @@ export function createTripBar(trip, callbacks = {}) {
   );
 
   const details = document.createElement("div");
-  details.className = "rux-trip-bar__details";
+  details.className = "sched-trip-bar__details";
   const detailsInner = document.createElement("div");
-  detailsInner.className = "rux-trip-bar__details-inner";
+  detailsInner.className = "sched-trip-bar__details-inner";
 
   // Driver-pay fields are laid out on their own (rows 1..driverRows,
   // packed 2-per-row — a lone last driver leaves column 2 blank on
@@ -1216,22 +1216,22 @@ export function createTripBar(trip, callbacks = {}) {
 
   if (!singleDay) {
     const head = document.createElement("div");
-    head.className = "rux-trip-bar__head";
+    head.className = "sched-trip-bar__head";
     if (patterned) head.appendChild(createStripeLayer());
     const headContent = document.createElement("div");
-    headContent.className = "rux-trip-bar__head-content";
+    headContent.className = "sched-trip-bar__head-content";
     headContent.append(actions, body, details);
     head.appendChild(headContent);
 
     const tail = document.createElement("div");
-    tail.className = "rux-trip-bar__tail";
+    tail.className = "sched-trip-bar__tail";
     if (patterned) tail.appendChild(createStripeLayer());
 
     bar.append(head, tail);
 
     if (trip.conflict) {
       const conflict = document.createElement("div");
-      conflict.className = "rux-trip-bar__conflict";
+      conflict.className = "sched-trip-bar__conflict";
       conflict.append(
         icon("alert-triangle", "rux-icon"),
         document.createTextNode(`Conflict: ${trip.conflict}`),
@@ -1244,7 +1244,7 @@ export function createTripBar(trip, callbacks = {}) {
 
     if (trip.conflict) {
       const conflict = document.createElement("div");
-      conflict.className = "rux-trip-bar__conflict";
+      conflict.className = "sched-trip-bar__conflict";
       conflict.append(
         icon("alert-triangle", "rux-icon"),
         document.createTextNode(`Conflict: ${trip.conflict}`),

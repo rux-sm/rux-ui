@@ -15,72 +15,72 @@
 
    Custom properties
    -----------------
-   --rux-scheduler-col-head-width   Width of the row-label column  (default 2.5rem)
-   --rux-scheduler-days             Number of day columns, used for the track
+   --sched-scheduler-col-head-width   Width of the row-label column  (default 2.5rem)
+   --sched-scheduler-days             Number of day columns, used for the track
                                     column span and grid tracks  (default 7)
-   --rux-scheduler-day-min-width    Minimum width per day column. Keep wide
+   --sched-scheduler-day-min-width    Minimum width per day column. Keep wide
                                     enough for one-day trip bars  (default 14rem)
-   --rux-scheduler-max-block-size   Optional vertical cap; set this to make the
+   --sched-scheduler-max-block-size   Optional vertical cap; set this to make the
                                     scheduler scroll internally  (default none)
-   --rux-scheduler-cols             Full grid-template-columns value. Override this
+   --sched-scheduler-cols             Full grid-template-columns value. Override this
                                     to change column count without touching CSS.
 
    Modifiers
    ---------
-   .rux-scheduler__day-head--today  Accent highlight on the current day column.
+   .sched-scheduler__day-head--today  Accent highlight on the current day column.
 
    JS contract
    -----------
    After any selection or expansion change, observe visible trip bars with a
-   ResizeObserver and set --_row-height on each .rux-scheduler__row so the
+   ResizeObserver and set --_row-height on each .sched-scheduler__row so the
    row-head and track stay in sync with the tallest visible lane stack.
    ========================================================================== */
 
 .sched-scheduler {
-	--rux-scheduler-col-head-width: var(--rux-calendar-header-row-width);
-	--rux-scheduler-head-height: var(--rux-calendar-header-height);
-	--rux-scheduler-days: 7;
-	--rux-scheduler-day-min-width: 14rem;
-	--rux-scheduler-header-color: var(--rux-text-muted);
-	--rux-scheduler-row-head-color: var(--rux-text-muted);
-	--rux-scheduler-max-block-size: none;
-	--rux-scheduler-scroll-padding-block-end: var(--rux-space-3);
-	--rux-scheduler-now-line-z-index: 1;
-	--rux-scheduler-trip-bar-z-index: 2;
-	--rux-scheduler-row-block-inset: var(--rux-space-2);
+	--sched-scheduler-col-head-width: var(--rux-calendar-header-row-width);
+	--sched-scheduler-head-height: var(--rux-calendar-header-height);
+	--sched-scheduler-days: 7;
+	--sched-scheduler-day-min-width: 14rem;
+	--sched-scheduler-header-color: var(--rux-text-muted);
+	--sched-scheduler-row-head-color: var(--rux-text-muted);
+	--sched-scheduler-max-block-size: none;
+	--sched-scheduler-scroll-padding-block-end: var(--rux-space-3);
+	--sched-scheduler-now-line-z-index: 1;
+	--sched-scheduler-trip-bar-z-index: 2;
+	--sched-scheduler-row-block-inset: var(--rux-space-2);
 	/* Empty-row fallback — so an empty row sits at the same height a row
 	   with one collapsed trip bar would lay out to. Mirrors
-	   --rux-trip-bar-collapsed-height's own formula (trip-bar.css) rather
+	   --sched-trip-bar-collapsed-height's own formula (trip-bar.css) rather
 	   than a hand-synced pixel literal: that token itself is scoped to
 	   .sched-trip-bar (a descendant) and can't cascade upward, but the two
-	   pieces it's built from — --rux-trip-bar-row-line-height (tokens.css,
-	   truly global) and --rux-trip-bar-visible-row-count (set by
+	   pieces it's built from — --sched-trip-bar-row-line-height (tokens.css,
+	   truly global) and --sched-trip-bar-visible-row-count (set by
 	   recomputeTripBarRowCount() in index.html on this same .sched-scheduler
 	   element) — both are available here directly, so this stays correct
 	   automatically instead of drifting stale (it already had, twice,
 	   before this rewrite). --rux-space-2 mirrors
-	   --rux-trip-bar-compact-padding's own value — also component-scoped,
+	   --sched-trip-bar-compact-padding's own value — also component-scoped,
 	   not reachable from here. */
 	--_row-height: calc(
-		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
+		(var(--sched-trip-bar-row-line-height) * var(--sched-trip-bar-visible-row-count, 7))
 		+ (var(--rux-space-2) * 2)
-		+ (var(--rux-scheduler-row-block-inset) * 2)
+		+ (var(--sched-scheduler-row-block-inset) * 2)
 	);
-	--rux-scheduler-cols: var(--rux-scheduler-col-head-width)
-		repeat(var(--rux-scheduler-days), minmax(var(--rux-scheduler-day-min-width), 1fr));
+	--sched-scheduler-cols: var(--sched-scheduler-col-head-width)
+		repeat(var(--sched-scheduler-days), minmax(var(--sched-scheduler-day-min-width), 1fr));
 
 	display: grid;
-	grid-template-columns: var(--rux-scheduler-cols);
+	grid-template-columns: var(--sched-scheduler-cols);
 	align-content: start;
 	width: 100%;
 	max-width: 100%;
-	max-block-size: var(--rux-scheduler-max-block-size);
+	max-block-size: var(--sched-scheduler-max-block-size);
 	min-width: 0;
 	overflow: auto;
 	overscroll-behavior-x: none;
 	overscroll-behavior-y: contain;
 	scrollbar-width: none;
-	scroll-padding-block-end: var(--rux-scheduler-scroll-padding-block-end);
+	scroll-padding-block-end: var(--sched-scheduler-scroll-padding-block-end);
 	/* LOAD-BEARING, not cosmetic: this scroller's contents (sticky headers
 	   included) paint on a composited scroll layer, and the browser only
 	   rounds that layer's corners from THIS element's own border-radius.
@@ -146,8 +146,8 @@
 
 /* ---------- Header row ---------- */
 
-.rux-scheduler__col-head,
-.rux-scheduler__day-head {
+.sched-scheduler__col-head,
+.sched-scheduler__day-head {
 	position: sticky;
 	inset-block-start: 0;
 	z-index: var(--rux-z-sticky);
@@ -156,23 +156,23 @@
 	align-items: center;
 	justify-content: center;
 	gap: 0;
-	min-height: var(--rux-scheduler-head-height);
+	min-height: var(--sched-scheduler-head-height);
 	padding: 0 var(--rux-space-3);
 	background: var(--rux-calendar-header-bg);
 	border-inline-end: var(--rux-calendar-header-divider);
 	border-block-end: var(--rux-calendar-header-border);
-	color: var(--rux-scheduler-header-color);
+	color: var(--sched-scheduler-header-color);
 }
 
-.rux-scheduler__day-head:has(+ .rux-scheduler__row) {
+.sched-scheduler__day-head:has(+ .sched-scheduler__row) {
 	border-inline-end: none;
 }
 
-.rux-scheduler__col-head {
+.sched-scheduler__col-head {
 	border-inline-start: none;
 }
 
-.rux-scheduler__day-name {
+.sched-scheduler__day-name {
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-wide);
@@ -180,14 +180,14 @@
 	color: var(--rux-text-muted);
 }
 
-.rux-scheduler__day-number {
+.sched-scheduler__day-number {
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-muted);
 	line-height: 1;
 }
 
-.rux-scheduler__day-number--today {
+.sched-scheduler__day-number--today {
 	background: none;
 	color: inherit;
 }
@@ -198,17 +198,17 @@
    apart — match on the day-head immediately followed by the first row. */
 
 /*
-   .rux-scheduler__day-head:has(+ .rux-scheduler__row) {
+   .sched-scheduler__day-head:has(+ .sched-scheduler__row) {
 	border-inline-end: none;
 }*/
 
 /* Header cells remain on one flat plane; their grid borders provide the
    separation instead of repeating elevation on every cell. */
-.rux-scheduler__day-head {
+.sched-scheduler__day-head {
 	box-shadow: var(--rux-calendar-header-shadow);
 }
 
-.rux-scheduler__day-label {
+.sched-scheduler__day-label {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -220,14 +220,14 @@
 	white-space: nowrap;
 }
 
-.rux-scheduler__day-head--today .rux-scheduler__day-name,
-.rux-scheduler__day-head--today .rux-scheduler__day-number {
+.sched-scheduler__day-head--today .sched-scheduler__day-name,
+.sched-scheduler__day-head--today .sched-scheduler__day-number {
 	color: var(--rux-calendar-today-fg);
 }
 
 /* ---------- Time-aligned mode ---------- */
 
-.rux-scheduler__time-ticks {
+.sched-scheduler__time-ticks {
 	display: none;
 	position: absolute;
 	bottom: 0;
@@ -238,7 +238,7 @@
 	pointer-events: none;
 }
 
-.rux-scheduler__time-ticks > span {
+.sched-scheduler__time-ticks > span {
 	position: absolute;
 	top: 0;
 	transform: translate(-50%, calc(-100% - 4px));
@@ -252,15 +252,15 @@
 	text-align: center;
 }
 
-.rux-scheduler__time-ticks > span:nth-child(1) { left: 0%; }
-.rux-scheduler__time-ticks > span:nth-child(2) { left: 25%; }
-.rux-scheduler__time-ticks > span:nth-child(3) { left: 75%; }
+.sched-scheduler__time-ticks > span:nth-child(1) { left: 0%; }
+.sched-scheduler__time-ticks > span:nth-child(2) { left: 25%; }
+.sched-scheduler__time-ticks > span:nth-child(3) { left: 75%; }
 
-.rux-scheduler__col-head + .rux-scheduler__day-head .rux-scheduler__time-ticks > span:nth-child(1) {
+.sched-scheduler__col-head + .sched-scheduler__day-head .sched-scheduler__time-ticks > span:nth-child(1) {
 	display: none;
 }
 
-.sched-scheduler--time-aligned .rux-scheduler__time-ticks {
+.sched-scheduler--time-aligned .sched-scheduler__time-ticks {
 	display: none;
 }
 
@@ -268,17 +268,17 @@
 
 /* display: contents keeps children in the grid while letting CSS variables
    set here cascade independently to each row's row-head and track. */
-.rux-scheduler__row {
+.sched-scheduler__row {
 	display: contents;
 	/* Same formula as the base .sched-scheduler rule above (both inherit
-	   --rux-trip-bar-visible-row-count from that same ancestor either way);
+	   --sched-trip-bar-visible-row-count from that same ancestor either way);
 	   restated here only because a descendant's own --_row-height always
 	   wins over one merely inherited from further up, and other rules key
 	   off this element specifically. */
 	--_row-height: calc(
-		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
+		(var(--sched-trip-bar-row-line-height) * var(--sched-trip-bar-visible-row-count, 7))
 		+ (var(--rux-space-2) * 2)
-		+ (var(--rux-scheduler-row-block-inset) * 2)
+		+ (var(--sched-scheduler-row-block-inset) * 2)
 	);
 }
 
@@ -286,21 +286,21 @@
    default [hidden] { display: none } UA rule at equal specificity (author
    origin always wins) — without this override, toggling the hidden
    attribute on the unassigned row would have no visual effect. */
-.rux-scheduler__row[hidden] {
+.sched-scheduler__row[hidden] {
 	display: none;
 }
 
 /* ---------- Bus row ---------- */
 
-.rux-scheduler__col-head,
-.rux-scheduler__row-head {
+.sched-scheduler__col-head,
+.sched-scheduler__row-head {
 	position: sticky;
 	inset-inline-start: 0;
 	z-index: var(--rux-z-sticky);
 }
 
 /* Corner cell: above both sticky axes */
-.rux-scheduler__col-head {
+.sched-scheduler__col-head {
 	justify-content: center;
 	z-index: calc(var(--rux-z-sticky) + 1);
 	/* Sticky cells paint on a composited layer that escapes the scroller's
@@ -309,24 +309,24 @@
 	border-start-start-radius: var(--rux-calendar-header-radius);
 }
 
-.rux-scheduler__corner-label {
+.sched-scheduler__corner-label {
 	display: block;
 	line-height: 1;
 	text-align: center;
 }
 
-.rux-scheduler__row-head {
+.sched-scheduler__row-head {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	min-height: var(--_row-height);
-	padding: var(--rux-scheduler-row-block-inset) 0;
+	padding: var(--sched-scheduler-row-block-inset) 0;
 	background: var(--rux-calendar-header-bg);
 	border-inline-end: var(--rux-calendar-header-border);
 	border-block-end: var(--rux-calendar-header-border);
 	border-inline-start: none;
-	color: var(--rux-scheduler-row-head-color);
+	color: var(--sched-scheduler-row-head-color);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	box-shadow: var(--rux-calendar-row-header-shadow);
@@ -335,22 +335,22 @@
 
 
 
-.rux-scheduler__bus-number {
+.sched-scheduler__bus-number {
 	display: flex;
 	letter-spacing: var(--rux-tracking-wide);
 }
 
-.rux-scheduler__bus-pax {
+.sched-scheduler__bus-pax {
 	display: none;
 }
 
 /* — Out of service row — */
 
-.rux-scheduler__bus-oos {
+.sched-scheduler__bus-oos {
 	color: var(--rux-warning);
 }
 
-.rux-scheduler__row.is-out-of-service .rux-scheduler__track {
+.sched-scheduler__row.is-out-of-service .sched-scheduler__track {
 	background-image: repeating-linear-gradient(
 		-45deg,
 		transparent 0px 6px,
@@ -358,7 +358,7 @@
 	);
 }
 
-.rux-scheduler__row.is-out-of-service .rux-scheduler__row-head {
+.sched-scheduler__row.is-out-of-service .sched-scheduler__row-head {
 	opacity: 0.7;
 }
 
@@ -366,7 +366,7 @@
 /* Same diagonal-stripe technique as out-of-service above, neutral-tinted
    instead of warning-tinted — reads as "not a real bus lane" rather than
    "problem with this bus". */
-.rux-scheduler__row--unassigned .rux-scheduler__track {
+.sched-scheduler__row--unassigned .sched-scheduler__track {
 	background-image: repeating-linear-gradient(
 		-45deg,
 		transparent 0px 6px,
@@ -383,14 +383,14 @@
    once, after every real bus row) but starts out hidden — so the
    :has() alternative covers "last *visible* row" once it's hidden, same
    effect :last-child already gives when the unassigned row is shown. */
-.rux-scheduler__row:last-child .rux-scheduler__row-head,
-.rux-scheduler__row:has(+ .rux-scheduler__row--unassigned[hidden]) .rux-scheduler__row-head {
+.sched-scheduler__row:last-child .sched-scheduler__row-head,
+.sched-scheduler__row:has(+ .sched-scheduler__row--unassigned[hidden]) .sched-scheduler__row-head {
 	border-block-end: none;
 	box-shadow: var(--rux-calendar-row-header-end-shadow);
 }
 
-.rux-scheduler__row:last-child .rux-scheduler__track,
-.rux-scheduler__row:has(+ .rux-scheduler__row--unassigned[hidden]) .rux-scheduler__track {
+.sched-scheduler__row:last-child .sched-scheduler__track,
+.sched-scheduler__row:has(+ .sched-scheduler__row--unassigned[hidden]) .sched-scheduler__track {
 	border: none;
 }
 
@@ -398,59 +398,59 @@
 
 /* ---------- Track ---------- */
 
-.rux-scheduler__track {
+.sched-scheduler__track {
 	position: relative;
-	grid-column: span var(--rux-scheduler-days, 7);
+	grid-column: span var(--sched-scheduler-days, 7);
 	min-height: var(--_row-height);
 	border-block-end: var(--rux-calendar-grid);
 	transition: min-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
-.rux-scheduler__track:has(.is-active) {
+.sched-scheduler__track:has(.is-active) {
 	z-index: var(--rux-z-sticky);
 }
 
 /* Drag-to-reassign drop feedback (see installBusDrag() in index.html) — the
    row currently under the dragged bar's center highlights live, amber
    instead of accent if that bus already has a conflicting trip that day. */
-.rux-scheduler__track--drop-target {
+.sched-scheduler__track--drop-target {
 	background-color: var(--rux-accent-subtle);
 	box-shadow: inset 0 0 0 2px var(--rux-accent);
 }
 
-.rux-scheduler__track--drop-conflict {
+.sched-scheduler__track--drop-conflict {
 	background-color: color-mix(in oklch, var(--rux-warning) 14%, transparent);
 	box-shadow: inset 0 0 0 2px var(--rux-warning);
 }
 
-.rux-scheduler__track-grid {
+.sched-scheduler__track-grid {
 	position: absolute;
 	inset: 0;
 	display: grid;
-	grid-template-columns: repeat(var(--rux-scheduler-days, 7), minmax(0, 1fr));
+	grid-template-columns: repeat(var(--sched-scheduler-days, 7), minmax(0, 1fr));
 	pointer-events: none;
 }
 
-.rux-scheduler__track > .sched-trip-bar {
-	z-index: var(--rux-scheduler-trip-bar-z-index);
+.sched-scheduler__track > .sched-trip-bar {
+	z-index: var(--sched-scheduler-trip-bar-z-index);
 }
 
-.rux-scheduler__track-day {
+.sched-scheduler__track-day {
 	border-inline-end: var(--rux-calendar-grid);
 }
 
-.rux-scheduler__track-day:last-child {
+.sched-scheduler__track-day:last-child {
 	border-inline-end: none;
 }
 
-.rux-scheduler__now-line {
+.sched-scheduler__now-line {
 	display: block;
 	position: absolute;
 	top: 0;
 	bottom: 0;
 	width: 2px;
 	background: var(--rux-calendar-now-line-color);
-	z-index: var(--rux-scheduler-now-line-z-index);
+	z-index: var(--sched-scheduler-now-line-z-index);
 	pointer-events: auto;
 	opacity: 0.8;
 	cursor: default;
@@ -459,12 +459,12 @@
 	transform: translateX(-50%);
 }
 
-.rux-scheduler__now-line:hover {
+.sched-scheduler__now-line:hover {
 	width: 4px;
 	opacity: 1;
 }
 
-.rux-scheduler__now-line::after {
+.sched-scheduler__now-line::after {
 	content: attr(data-time);
 	position: absolute;
 	top: 50%;
@@ -483,12 +483,12 @@
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.rux-scheduler__now-line:hover::after {
+.sched-scheduler__now-line:hover::after {
 	opacity: 1;
 }
 
 
-.sched-scheduler--time-aligned .rux-scheduler__track-day {
+.sched-scheduler--time-aligned .sched-scheduler__track-day {
 	/* quarter-hour tick hairlines — deliberately below the 4% border tier so
 	   they read as texture, not structure */
 	background-image: linear-gradient(

@@ -15,7 +15,7 @@
 import { supabase } from "../data/supabase.js";
 import { isCurrentOrUpcomingLeg } from "../core/trip-visibility.js";
 import { latestDocument } from "../core/trip-documents.js";
-import { operationalTripContact } from "../components/driver-assignment-model.js?v=19";
+import { operationalTripContact } from "../components/driver-assignment-model.js?v=20";
 import {
 	driverStatusKey,
 	syncTripDriverStatuses,
@@ -714,7 +714,7 @@ import {
 		host.innerHTML = "";
 		if (!state.entries.length) {
 			const empty = document.createElement("p");
-			empty.className = "rux-driver-week-info__empty";
+			empty.className = "sched-driver-week-info__empty";
 			empty.textContent = "No current or upcoming assignments for this driver.";
 			host.appendChild(empty);
 			return;
@@ -729,7 +729,7 @@ import {
 				: "";
 			if (showMonthGroups && monthKey && monthKey !== previousMonth) {
 				const monthHeading = document.createElement("h4");
-				monthHeading.className = "rux-driver-week-info__month";
+				monthHeading.className = "sched-driver-week-info__month";
 				monthHeading.textContent = entryDate.toLocaleDateString("en-US", {
 					month: "long",
 					year: "numeric",
@@ -738,10 +738,10 @@ import {
 				previousMonth = monthKey;
 			}
 			const card = document.createElement("article");
-			card.className = "rux-driver-week-info__trip";
+			card.className = "sched-driver-week-info__trip";
 
 			const checkLabel = document.createElement("label");
-			checkLabel.className = "rux-checkbox rux-driver-week-info__trip-check";
+			checkLabel.className = "rux-checkbox sched-driver-week-info__trip-check";
 			const check = document.createElement("input");
 			check.type = "checkbox";
 			check.checked = state.selected.has(entry.key);
@@ -751,17 +751,17 @@ import {
 			card.appendChild(checkLabel);
 
 			const content = document.createElement("div");
-			content.className = "rux-driver-week-info__trip-content";
+			content.className = "sched-driver-week-info__trip-content";
 			const title = document.createElement("p");
-			title.className = "rux-driver-week-info__trip-title";
+			title.className = "sched-driver-week-info__trip-title";
 			title.textContent = `${fmtDate(entry.startDate)} · ${entry.trip.destination || "Trip"}`;
 			const meta = document.createElement("p");
-			meta.className = "rux-driver-week-info__trip-meta";
+			meta.className = "sched-driver-week-info__trip-meta";
 			meta.textContent = `Bus ${entry.busNumber} · ${roleLabel(entry.driverAssignment.role)}`;
 			content.append(title, meta);
 
 			const actions = document.createElement("div");
-			actions.className = "rux-driver-week-info__trip-actions";
+			actions.className = "sched-driver-week-info__trip-actions";
 			actions.appendChild(createButton("Copy trip", "content_copy", "ghost", "copy-trip", entry.key));
 			if (entry.itineraryUrl) {
 				actions.appendChild(createButton("Itinerary", "description", "ghost", "itinerary", entry.key));
@@ -781,48 +781,48 @@ import {
 		modal.innerHTML = `
 			<section class="rux-modal sched-driver-week-info" role="dialog" aria-modal="true" aria-labelledby="driver-week-info-title">
 				<header class="rux-card__header">
-					<div class="rux-driver-week-info__heading">
+					<div class="sched-driver-week-info__heading">
 						<h2 class="rux-card__title" id="driver-week-info-title" data-driver-info-title>Driver Info</h2>
-						<p class="rux-driver-week-info__range" data-driver-info-range></p>
+						<p class="sched-driver-week-info__range" data-driver-info-range></p>
 					</div>
 					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close driver info">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>
-				<div class="rux-modal__body rux-driver-week-info__body">
-					<section class="rux-driver-week-info__section">
-						<div class="rux-driver-week-info__list-heading">
-							<h3 class="rux-driver-week-info__section-title">Assignments to include</h3>
-							<span class="rux-driver-week-info__list-scope">Current &amp; upcoming</span>
+				<div class="rux-modal__body sched-driver-week-info__body">
+					<section class="sched-driver-week-info__section">
+						<div class="sched-driver-week-info__list-heading">
+							<h3 class="sched-driver-week-info__section-title">Assignments to include</h3>
+							<span class="sched-driver-week-info__list-scope">Current &amp; upcoming</span>
 						</div>
-						<div class="rux-driver-week-info__trips" data-driver-info-trips></div>
+						<div class="sched-driver-week-info__trips" data-driver-info-trips></div>
 					</section>
-					<section class="rux-driver-week-info__section">
-						<div class="rux-driver-week-info__share">
-							<div class="rux-driver-week-info__share-heading">
-								<h3 class="rux-driver-week-info__section-title">Driver link</h3>
-								<span class="rux-driver-week-info__share-state" data-driver-share-state></span>
+					<section class="sched-driver-week-info__section">
+						<div class="sched-driver-week-info__share">
+							<div class="sched-driver-week-info__share-heading">
+								<h3 class="sched-driver-week-info__section-title">Driver link</h3>
+								<span class="sched-driver-week-info__share-state" data-driver-share-state></span>
 							</div>
 							<div data-driver-share-empty>
-								<p class="rux-driver-week-info__share-copy">Activate this driver’s permanent mobile link for the checked assignments, itineraries, directions, and envelopes.</p>
+								<p class="sched-driver-week-info__share-copy">Activate this driver’s permanent mobile link for the checked assignments, itineraries, directions, and envelopes.</p>
 								<button type="button" class="rux-button rux-button--accent rux-button--compact" data-driver-share-action="create" data-driver-share-create>
 									<span class="rux-icon" aria-hidden="true">link</span><span>Activate driver link</span>
 								</button>
 							</div>
 							<div data-driver-share-active hidden>
-								<div class="rux-driver-week-info__share-url-row">
+								<div class="sched-driver-week-info__share-url-row">
 									<input class="rux-input" type="text" readonly data-driver-share-url aria-label="Driver schedule link" />
 									<button type="button" class="rux-button rux-button--accent rux-button--compact" data-driver-share-action="update" data-driver-share-update hidden>Update link</button>
 								</div>
-								<div class="rux-driver-week-info__share-actions">
+								<div class="sched-driver-week-info__share-actions">
 									<button type="button" class="rux-button rux-button--default rux-button--compact" data-driver-share-action="copy"><span class="rux-icon" aria-hidden="true">content_copy</span>Copy link</button>
 									<button type="button" class="rux-button rux-button--default rux-button--compact" data-driver-share-action="preview"><span class="rux-icon" aria-hidden="true">open_in_new</span>Preview</button>
 									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--compact" data-driver-share-action="revoke">Deactivate</button>
 								</div>
 							</div>
 						</div>
-						<h3 class="rux-driver-week-info__section-title rux-driver-week-info__preview-title">Message preview</h3>
-						<textarea class="rux-textarea rux-driver-week-info__preview" readonly data-driver-info-preview aria-label="Driver message preview"></textarea>
+						<h3 class="sched-driver-week-info__section-title sched-driver-week-info__preview-title">Message preview</h3>
+						<textarea class="rux-textarea sched-driver-week-info__preview" readonly data-driver-info-preview aria-label="Driver message preview"></textarea>
 					</section>
 				</div>
 				<footer class="rux-modal__footer">

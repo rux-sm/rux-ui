@@ -9,8 +9,8 @@
    New pages should link rux.css directly:
      <link rel="stylesheet" href="rux-ui/css/rux.css" />
 
-   Applications that also need the scheduler and trip features load
-   scheduler/css/components.css on top of this.
+   An application layers its own feature CSS on top; in this repository the
+   reference scheduler does that through scheduler/css/components.css.
    ========================================================================== */
 
 @import "./rux.css";

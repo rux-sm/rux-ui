@@ -35,12 +35,12 @@
 .maintenance-trip__time-value { color: var(--rux-warning); }
 .maintenance-trip.is-clipped-start { border-left-style: dashed; }
 .maintenance-trip.is-clipped-end { border-right-style: dashed; }
-.maintenance-trip[data-trip-bar-color="cyan"] { --rux-accent: var(--rux-trip-color-cyan); }
-.maintenance-trip[data-trip-bar-color="green"] { --rux-accent: var(--rux-trip-color-green); }
-.maintenance-trip[data-trip-bar-color="purple"] { --rux-accent: var(--rux-trip-color-purple); }
-.maintenance-trip[data-trip-bar-color="yellow"] { --rux-accent: var(--rux-trip-color-yellow); }
-.maintenance-trip[data-trip-bar-color="orange"] { --rux-accent: var(--rux-trip-color-orange); }
-.maintenance-trip[data-trip-bar-color="pink"] { --rux-accent: var(--rux-trip-color-pink); }
+.maintenance-trip[data-trip-bar-color="cyan"] { --rux-accent: var(--sched-trip-color-cyan); }
+.maintenance-trip[data-trip-bar-color="green"] { --rux-accent: var(--sched-trip-color-green); }
+.maintenance-trip[data-trip-bar-color="purple"] { --rux-accent: var(--sched-trip-color-purple); }
+.maintenance-trip[data-trip-bar-color="yellow"] { --rux-accent: var(--sched-trip-color-yellow); }
+.maintenance-trip[data-trip-bar-color="orange"] { --rux-accent: var(--sched-trip-color-orange); }
+.maintenance-trip[data-trip-bar-color="pink"] { --rux-accent: var(--sched-trip-color-pink); }
 .maintenance-changes { max-width: 100%; margin-top: var(--rux-space-4); overflow-x: auto; }
 /* Typography shared with every other eyebrow/section-label — see
    rux-ui/css/base/utils.css. (Was 14px/0.02em tracking here; now 12px/

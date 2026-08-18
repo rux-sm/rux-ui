@@ -255,7 +255,7 @@ better dense than at card-level spacing:
 | Context | Contract |
 | --- | --- |
 | Repeating settings-toggle rows (`.rux-view-options__row`) | `0` gap, fixed `40px` row height — rhythm comes from the row height, not a gap |
-| Scheduler grid row inset (`--rux-scheduler-row-block-inset`) | `8px` (`--rux-space-2`) |
+| Scheduler grid row inset (`--sched-scheduler-row-block-inset`) | `8px` (`--rux-space-2`) |
 
 Use the `16px` card rhythm as the default for any new titled group or content
 block. Reach for a tighter rhythm only for a genuinely dense, repeating list

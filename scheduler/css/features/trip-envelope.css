@@ -25,7 +25,7 @@
    system, not two. */
 
 .sched-trip-envelope-window {
-	--rux-panel-floating-width: var(--rux-trip-envelope-window-width);
+	--rux-panel-floating-width: var(--sched-trip-envelope-window-width);
 	--rux-panel-floating-safe-max-width: 40rem;
 }
 
@@ -141,7 +141,7 @@
 	--env-ink: oklch(18% 0 0);
 	--env-ink-muted: oklch(45% 0 0);
 	--env-rule: oklch(25% 0 0);
-	--rux-trip-envelope-field-row-min-height: 46px;
+	--sched-trip-envelope-field-row-min-height: 46px;
 	/* Match the physical 6in x 9in stock. trip-envelope.js scales this fixed
 	   shape as one unit so Standard and MVM retain the same proportions at
 	   every floating-window size. */
@@ -172,13 +172,13 @@
 
 /* ── Header — day, logo, company info (shared by Standard and MVM) ─────── */
 
-.rux-trip-envelope__header {
+.sched-trip-envelope__header {
 	text-align: center;
 	margin-block-start: var(--rux-space-6);
 	margin-block-end: var(--rux-space-4);
 }
 
-.rux-trip-envelope__day {
+.sched-trip-envelope__day {
 	margin: 0;
 	font-size: var(--rux-size-4xl);
 	font-weight: var(--rux-weight-400);
@@ -187,21 +187,21 @@
 	color: var(--env-ink);
 }
 
-.rux-trip-envelope__logo {
+.sched-trip-envelope__logo {
 	display: block;
 	height: 48px;
 	width: auto;
 	margin: var(--rux-space-2) auto 0;
 }
 
-.rux-trip-envelope__company-line {
+.sched-trip-envelope__company-line {
 	margin: 0;
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	color: var(--env-ink-muted);
 }
 
-.rux-trip-envelope__section-title {
+.sched-trip-envelope__section-title {
 	margin: var(--rux-space-4) 0 0;
 	font-size: var(--rux-size-md);
 	font-weight: var(--rux-weight-400);
@@ -212,7 +212,7 @@
 
 /* ── Field grid — Bus/Driver/Trip Date/etc rows (shared by Standard and MVM) ── */
 
-.rux-trip-envelope__grid {
+.sched-trip-envelope__grid {
 	border: 1px solid var(--env-rule);
 	border-top: 0;
 }
@@ -222,25 +222,25 @@
    height as populated fields. The shared minimum matches one label/value
    stack with the standard gap and vertical padding; if long operational
    text needs more room, all rows grow together instead of clipping it. */
-.sched-trip-envelope--standard .rux-trip-envelope__grid {
+.sched-trip-envelope--standard .sched-trip-envelope__grid {
 	display: grid;
 	grid-auto-rows: minmax(
-		var(--rux-trip-envelope-field-row-min-height),
+		var(--sched-trip-envelope-field-row-min-height),
 		1fr
 	);
 	align-items: stretch;
 }
 
-.rux-trip-envelope__row {
+.sched-trip-envelope__row {
 	display: grid;
 	border-top: 1px solid var(--env-rule);
 }
 
-.rux-trip-envelope__row--1 { grid-template-columns: 1fr; }
-.rux-trip-envelope__row--2 { grid-template-columns: repeat(2, 1fr); }
-.rux-trip-envelope__row--3 { grid-template-columns: repeat(3, 1fr); }
+.sched-trip-envelope__row--1 { grid-template-columns: 1fr; }
+.sched-trip-envelope__row--2 { grid-template-columns: repeat(2, 1fr); }
+.sched-trip-envelope__row--3 { grid-template-columns: repeat(3, 1fr); }
 
-.rux-trip-envelope__cell {
+.sched-trip-envelope__cell {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
@@ -248,11 +248,11 @@
 	border-left: 1px solid var(--env-rule);
 }
 
-.rux-trip-envelope__cell:first-child {
+.sched-trip-envelope__cell:first-child {
 	border-left: 0;
 }
 
-.rux-trip-envelope__label {
+.sched-trip-envelope__label {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
@@ -261,7 +261,7 @@
 	color: var(--env-ink-muted);
 }
 
-.rux-trip-envelope__value {
+.sched-trip-envelope__value {
 	font-size: var(--rux-size-sm);
 	line-height: 1;
 	text-transform: uppercase;
@@ -275,29 +275,29 @@
    the right) — a plain 2-col grid over the flat child list lines them up in
    pairs automatically, since buildFooterGrid() always appends a checks/blank
    line immediately followed by an amount line. */
-.rux-trip-envelope__footer-grid {
+.sched-trip-envelope__footer-grid {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	margin-block-start: var(--rux-space-4);
 	border: 1px solid var(--env-rule);
 }
 
-.rux-trip-envelope__footer-line {
+.sched-trip-envelope__footer-line {
 	display: grid;
 	grid-template-columns: 1.4fr 1fr;
 	align-items: center;
 	border-top: 1px solid var(--env-rule);
 }
 
-.rux-trip-envelope__footer-grid > .rux-trip-envelope__footer-line:nth-child(-n+2) {
+.sched-trip-envelope__footer-grid > .sched-trip-envelope__footer-line:nth-child(-n+2) {
 	border-top: 0;
 }
 
-.rux-trip-envelope__footer-grid > .rux-trip-envelope__footer-line:nth-child(even) {
+.sched-trip-envelope__footer-grid > .sched-trip-envelope__footer-line:nth-child(even) {
 	border-left: 1px solid var(--env-rule);
 }
 
-.rux-trip-envelope__footer-label {
+.sched-trip-envelope__footer-label {
 	padding: var(--rux-space-2) var(--rux-space-3);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
@@ -305,13 +305,13 @@
 	color: var(--env-ink);
 }
 
-.rux-trip-envelope__footer-checks {
+.sched-trip-envelope__footer-checks {
 	display: flex;
 	gap: var(--rux-space-4);
 	padding-inline-end: var(--rux-space-3);
 }
 
-.rux-trip-envelope__check {
+.sched-trip-envelope__check {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
@@ -321,7 +321,7 @@
 	color: var(--env-ink);
 }
 
-.rux-trip-envelope__box {
+.sched-trip-envelope__box {
 	display: inline-block;
 	width: 14px;
 	height: 14px;
@@ -329,27 +329,27 @@
 	flex: none;
 }
 
-.rux-trip-envelope__footer-amount {
+.sched-trip-envelope__footer-amount {
 	padding: var(--rux-space-2) var(--rux-space-3);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	color: var(--env-ink);
 }
 
-.rux-trip-envelope__footer-fill {
+.sched-trip-envelope__footer-fill {
 	display: block;
 	height: 1em;
 }
 
 /* ── Notes (Standard-only) ──────────────────────────────────────────── */
 
-.rux-trip-envelope__notes {
+.sched-trip-envelope__notes {
 	flex: 1;
 	min-height: 120px;
 	margin-block-start: var(--rux-space-4);
 }
 
-.rux-trip-envelope__notes-label {
+.sched-trip-envelope__notes-label {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
@@ -358,19 +358,19 @@
 	color: var(--env-ink-muted);
 }
 
-.sched-trip-envelope--mvm .rux-trip-envelope__notes {
+.sched-trip-envelope--mvm .sched-trip-envelope__notes {
 	flex: none;
 	min-height: 0;
 	margin-block-start: var(--rux-space-2);
 }
 
-.rux-trip-envelope__requirements {
+.sched-trip-envelope__requirements {
 	display: grid;
 	gap: var(--rux-space-1);
 	margin-block-start: var(--rux-space-2);
 }
 
-.rux-trip-envelope__requirement {
+.sched-trip-envelope__requirement {
 	display: grid;
 	grid-template-columns: 1.25rem max-content minmax(0, 1fr);
 	align-items: center;
@@ -379,7 +379,7 @@
 	color: var(--env-ink);
 }
 
-.rux-trip-envelope__requirement-icon {
+.sched-trip-envelope__requirement-icon {
 	--_icon-fill: 1;
 	display: inline-flex;
 	width: 1.25rem;
@@ -390,7 +390,7 @@
 	line-height: 1;
 }
 
-.rux-trip-envelope__requirement-label {
+.sched-trip-envelope__requirement-label {
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-sm);
@@ -398,11 +398,11 @@
 	white-space: nowrap;
 }
 
-.rux-trip-envelope__driver-note .rux-trip-envelope__requirement-label {
+.sched-trip-envelope__driver-note .sched-trip-envelope__requirement-label {
 	white-space: normal;
 }
 
-.rux-trip-envelope__requirement-write-in {
+.sched-trip-envelope__requirement-write-in {
 	width: 1.5in;
 	min-width: 0.75in;
 	border-bottom: 1px solid var(--env-ink);
@@ -410,27 +410,27 @@
 
 /* ── Stop log table (MVM-only) ───────────────────────────────────────── */
 
-.rux-trip-envelope__log {
+.sched-trip-envelope__log {
 	width: 100%;
 	margin-block-start: var(--rux-space-4);
 	border-collapse: collapse;
 	border: 1px solid var(--env-rule);
 }
 
-.sched-trip-envelope--mvm .rux-trip-envelope__log {
+.sched-trip-envelope--mvm .sched-trip-envelope__log {
 	flex: 1;
 	min-height: 0;
 	table-layout: fixed;
 }
 
-.rux-trip-envelope__log th,
-.rux-trip-envelope__log td {
+.sched-trip-envelope__log th,
+.sched-trip-envelope__log td {
 	border: 1px solid var(--env-rule);
 	padding: var(--rux-space-2) var(--rux-space-3);
 	text-align: left;
 }
 
-.rux-trip-envelope__log th {
+.sched-trip-envelope__log th {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-wide);
@@ -438,24 +438,24 @@
 	color: var(--env-ink-muted);
 }
 
-.rux-trip-envelope__log td {
+.sched-trip-envelope__log td {
 	height: 2em;
 }
 
-.sched-trip-envelope--mvm .rux-trip-envelope__log th {
+.sched-trip-envelope--mvm .sched-trip-envelope__log th {
 	line-height: 1;
 }
 
-.sched-trip-envelope--mvm .rux-trip-envelope__log th,
-.sched-trip-envelope--mvm .rux-trip-envelope__log td {
+.sched-trip-envelope--mvm .sched-trip-envelope__log th,
+.sched-trip-envelope--mvm .sched-trip-envelope__log td {
 	padding: var(--rux-space-1) var(--rux-space-2);
 }
 
-.sched-trip-envelope--mvm .rux-trip-envelope__log th:first-child {
+.sched-trip-envelope--mvm .sched-trip-envelope__log th:first-child {
 	width: 46%;
 }
 
-.sched-trip-envelope--mvm .rux-trip-envelope__log th:not(:first-child) {
+.sched-trip-envelope--mvm .sched-trip-envelope__log th:not(:first-child) {
 	width: 18%;
 }
 
@@ -568,87 +568,87 @@
 	/* ── Print sizing overrides — shared by Standard and MVM, same as the
 	   screen-only rules above they're overriding ────────────────────────── */
 
-	.rux-trip-envelope__day {
+	.sched-trip-envelope__day {
 		font-size: 32pt;
 	}
 
-	.rux-trip-envelope__logo {
+	.sched-trip-envelope__logo {
 		height: 32px;
 		margin-bottom: 0.1in;
 	}
 
-	.rux-trip-envelope__company-line {
+	.sched-trip-envelope__company-line {
 
 	font-size: 8pt;
 	}
 
-	.rux-trip-envelope__section-title {
+	.sched-trip-envelope__section-title {
 		margin-block-start: 0.1in;
 		font-size: 9pt;
 	}
 
-	.rux-trip-envelope__cell {
+	.sched-trip-envelope__cell {
 		padding: 0.06in 0.06in;
 	}
 
-	.rux-trip-envelope__label {
+	.sched-trip-envelope__label {
 		font-size: 9pt;
 	}
 
-	.rux-trip-envelope__value {
+	.sched-trip-envelope__value {
 		font-size: 10pt;
 	}
 
-	.rux-trip-envelope__footer-line {
+	.sched-trip-envelope__footer-line {
 		padding-block: 0.02in;
 	}
 
-	.rux-trip-envelope__footer-label,
-	.rux-trip-envelope__footer-amount {
+	.sched-trip-envelope__footer-label,
+	.sched-trip-envelope__footer-amount {
 		padding: 0.05in 0.07in;
 		font-size: 9pt;
 	}
 
-	.rux-trip-envelope__check {
+	.sched-trip-envelope__check {
 		font-size: 9pt;
 	}
 
-	.rux-trip-envelope__requirements {
+	.sched-trip-envelope__requirements {
 		gap: 0.04in;
 		margin-block-start: 0.06in;
 	}
 
-	.rux-trip-envelope__notes-label {
+	.sched-trip-envelope__notes-label {
 		font-size: 9pt;
 	}
 
-	.rux-trip-envelope__requirement {
+	.sched-trip-envelope__requirement {
 		grid-template-columns: 0.22in max-content minmax(0, 1fr);
 		column-gap: 0.06in;
 	}
 
-	.rux-trip-envelope__requirement-icon {
+	.sched-trip-envelope__requirement-icon {
 		width: 0.22in;
 		height: 0.22in;
 		font-size: 16pt;
 	}
 
-	.rux-trip-envelope__requirement-label {
+	.sched-trip-envelope__requirement-label {
 		font-size: 9pt;
 	}
 
-	.rux-trip-envelope__box {
+	.sched-trip-envelope__box {
 		width: 9px;
 		height: 9px;
 	}
 
-	.rux-trip-envelope__log th,
-	.rux-trip-envelope__log td {
+	.sched-trip-envelope__log th,
+	.sched-trip-envelope__log td {
 		padding: 0.05in 0.07in;
 		font-size: 7pt;
 	}
 
-	.rux-trip-envelope__log td {
+	.sched-trip-envelope__log td {
 		height: 0.25in;
 	}
 

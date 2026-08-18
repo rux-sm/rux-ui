@@ -22,7 +22,7 @@
 					</button>
 				</header>
 				<div class="rux-modal__body">
-					<textarea class="rux-textarea rux-contact-info-modal__preview" readonly data-contact-info-preview aria-label="Contact info message preview"></textarea>
+					<textarea class="rux-textarea sched-contact-info-modal__preview" readonly data-contact-info-preview aria-label="Contact info message preview"></textarea>
 				</div>
 				<footer class="rux-modal__footer">
 					<button type="button" class="rux-button rux-button--default" data-contact-info-save hidden>

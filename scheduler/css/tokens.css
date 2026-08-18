@@ -1,0 +1,135 @@
+/* ==========================================================================
+   SCHEDULER TOKENS  ·  Tier 3
+   --------------------------------------------------------------------------
+   Domain vocabulary for the reference scheduler: trips, buses, drivers,
+   itineraries, manifests. These describe things the design system has no
+   opinion about, so they carry the application prefix and live here rather
+   than in rux-ui/css/tokens.css — an application adopting Rux UI inherits
+   the system's tokens without inheriting this vocabulary.
+
+   Loaded first by scheduler/css/components.css, after rux-ui/css/rux.css,
+   so these may reference any --rux-* value.
+   ========================================================================== */
+
+:root {
+	--sched-trip-bar-danger-icon:    var(--rux-danger-base);
+	--sched-trip-bar-warning-icon:   var(--rux-warning-base);
+	--sched-trip-bar-success-icon:   var(--rux-success-base);
+	--sched-trip-bar-warning-border: var(--rux-warning-vivid);
+	--sched-trip-bar-danger-border:  var(--rux-danger-vivid);
+	/* — category colors —
+	   The hue palette feeding the Gantt bar's background (--_tone in
+	   trip-bar.css), with the lightness/opacity steps below computing each
+	   state's surface from that hue. */
+	--sched-trip-color-cyan:   var(--rux-cyan);
+	--sched-trip-color-green:  var(--rux-green);
+	--sched-trip-color-purple: var(--rux-purple);
+	--sched-trip-color-yellow: var(--rux-yellow);
+	--sched-trip-color-orange: var(--rux-orange);
+	--sched-trip-color-pink:   var(--rux-pink);
+	/* — chroma —
+	   Multiplier on each category color's own source chroma (relative-color
+	   `c`), not a fixed replacement value — keeps every hue's native chroma
+	   proportionally intact instead of clamping every category to one static
+	   number, which risks gamut clipping on hues that can't support it at
+	   these lightness levels. 1 = source chroma unchanged. */
+	--sched-trip-bar-chroma-scale: 1;
+	/* — state lightness/opacity steps —
+	   Trip states shift lightness predictably while preserving each
+	   category's native chroma to avoid hue-dependent gamut clipping. */
+	--sched-trip-bar-bg-lightness:              60%;
+	--sched-trip-bar-state-lightness-step:      4%;
+	--sched-trip-bar-hover-bg-lightness:        calc(var(--sched-trip-bar-bg-lightness) + var(--sched-trip-bar-state-lightness-step));
+	--sched-trip-bar-pressed-bg-lightness:      calc(var(--sched-trip-bar-bg-lightness) - var(--sched-trip-bar-state-lightness-step));
+	--sched-trip-bar-selected-bg-lightness:     calc(var(--sched-trip-bar-bg-lightness) + var(--sched-trip-bar-state-lightness-step));
+	--sched-trip-bar-bg-opacity:                80%;
+	--sched-trip-bar-hover-bg-opacity:          70%;
+	--sched-trip-bar-pressed-bg-opacity:        50%;
+	--sched-trip-bar-selected-bg-opacity:       80%;
+	--sched-trip-bar-tail-opacity:              20%;
+	--sched-trip-bar-tail-hover-opacity:        20%;
+	--sched-trip-bar-tail-pressed-opacity:      20%;
+	--sched-trip-bar-tail-selected-opacity:     20%;
+	--sched-trip-bar-disabled-opacity:          0.45;
+	--sched-trip-bar-ghost-bg-opacity:          16%;
+	--sched-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 0%);
+	--sched-trip-dialog-width:           min(480px, calc(100vw - (var(--rux-space-4) * 2)));
+	--sched-request-window-width:        clamp(600px, 70vw, 1100px);
+	--sched-manifest-window-width:       clamp(480px, 65vw, 1200px);
+	--sched-trip-finder-window-width:    clamp(600px, 70vw, 1100px);
+	--sched-trip-envelope-window-width:  var(--rux-panel-floating-width);
+	/* — itinerary marker —
+	   Severity roles only where the meaning genuinely matches (pickup is
+	   schedule-critical); tag colors for the rest, plain waypoint types. */
+	--sched-itinerary-marker-size: 12px;
+	--sched-itinerary-status-depart-yard: var(--rux-info);
+	--sched-itinerary-status-pickup:      var(--rux-success);
+	--sched-itinerary-status-stop:        var(--rux-tag-default);
+	--sched-itinerary-status-sleeper:     var(--rux-tag-purple);
+	--sched-itinerary-status-off-duty:    var(--rux-danger);
+	--sched-itinerary-status-return-yard: var(--rux-info);
+	--sched-trip-bar-border-width: 0px;
+	--sched-trip-bar-radius: var(--rux-radius-0);
+	--sched-trip-bar-action-button-size: 32px;
+	--sched-trip-bar-actions-radius:   var(--rux-radius-control);
+	--sched-trip-bar-bus-label-radius: var(--rux-radius-full);
+	--sched-trip-bar-bus-label-weight: var(--rux-weight-600);
+	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
+	--sched-trip-bar-meta-fg: var(--rux-fg-on-accent);
+	--sched-trip-bar-shadow: var(--rux-shadow-3);
+	--sched-trip-bar-meta-shadow: none; /* recessed rim, same as input fields */
+	--sched-trip-bar-stripe-color:   var(--rux-white);
+	--sched-trip-bar-stripe-opacity: 0.04;
+	--sched-trip-bar-row-font-size:   var(--rux-size-xs);
+	--sched-trip-bar-row-line-height: var(--rux-line-height-xs);
+	--sched-trip-bar-icon-fill:         1;
+	--sched-trip-bar-icon-weight:       400;
+	--sched-trip-bar-icon-grade:        0;
+	--sched-trip-bar-icon-optical-size: 20;
+	/* — trip panel —
+	   Motion only: the trip panel is a reveal animation for the Trip Editor,
+	   not a boxed component of its own; no bg/border/radius/shadow apply. */
+	--sched-trip-panel-reveal-duration: var(--rux-duration-base);
+	--sched-trip-panel-reveal-easing:   var(--rux-ease-out);
+	--sched-trip-panel-reveal-distance: var(--rux-space-2);
+	/* — driver document card —
+	   Tone-tinted background pair for .driver-assignment-card__document's
+	   attention state (features/driver-share.css). */
+	--sched-driver-doc-neutral-bg:       var(--rux-state-hover-overlay);
+	--sched-driver-doc-neutral-fg:       var(--rux-text-default);
+	--sched-driver-doc-neutral-border:   var(--rux-state-hover-overlay);
+	--sched-driver-doc-neutral-hover-bg: var(--rux-state-active-overlay);
+	--sched-driver-doc-warning-bg:       color-mix(in oklch, var(--rux-warning) 14%, transparent);
+	--sched-driver-doc-warning-fg:       var(--rux-warning);
+	--sched-driver-doc-warning-border:   color-mix(in oklch, var(--rux-warning) 32%, transparent);
+	--sched-driver-doc-warning-hover-bg: color-mix(in oklch, var(--rux-warning) 21%, transparent);
+
+	/* — document viewer —
+	   Feeds --rux-panel-floating-width on the doc viewer's own panel
+	   (features/doc-viewer.css); the portable panel keeps its own default. */
+	--sched-doc-viewer-width: var(--rux-panel-floating-width);
+
+	/* — fleet / bus chip —
+	   color-mix partner for bus chips; not a surface-depth role. */
+	--sched-bg-bus: var(--rux-neutral);
+
+	/* --sched-trip-bar-icon-size is deliberately NOT here: it lives on the
+	   .sched-trip-bar rule in features/trip-bar.css. A custom property that
+	   references another freezes at the element where it's declared rather
+	   than resolving live per-descendant, so at :root it would lock to the
+	   xs default before any size-tier override could run. */
+}
+
+/* Light theme deepens the bar beneath dark metadata text; dark mode is the
+   :root default above. */
+:root[data-theme="light"] {
+	--sched-trip-bar-bg-opacity:             68%;
+	--sched-trip-bar-hover-bg-opacity:       76%;
+	--sched-trip-bar-pressed-bg-opacity:     82%;
+	--sched-trip-bar-selected-bg-opacity:    82%;
+	--sched-trip-bar-tail-opacity:           48%;
+	--sched-trip-bar-tail-hover-opacity:     58%;
+	--sched-trip-bar-tail-pressed-opacity:   64%;
+	--sched-trip-bar-tail-selected-opacity:  64%;
+	--sched-trip-bar-meta-bg: oklch(from var(--rux-white) l c h / 0%);
+}

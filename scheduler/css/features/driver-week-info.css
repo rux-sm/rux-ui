@@ -3,17 +3,17 @@
    Copy-ready, driver-specific assignment summaries for the loaded schedule.
    ========================================================================== */
 
-.rux-scope-right-panel__footer-group {
+.sched-scope-right-panel__footer-group {
 	display: flex;
 	width: 100%;
 	gap: var(--rux-button-group-gap);
 }
 
-.rux-scope-right-panel__footer-group[hidden] {
+.sched-scope-right-panel__footer-group[hidden] {
 	display: none;
 }
 
-.rux-scope-right-panel__footer-group > .rux-button {
+.sched-scope-right-panel__footer-group > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
@@ -33,21 +33,21 @@
 	padding-block-end: var(--rux-space-4);
 }
 
-.rux-driver-week-info__heading {
+.sched-driver-week-info__heading {
 	min-width: 0;
 }
 
-.rux-driver-week-info__heading .rux-card__title {
+.sched-driver-week-info__heading .rux-card__title {
 	margin: 0;
 }
 
-.rux-driver-week-info__range {
+.sched-driver-week-info__range {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-sm);
 }
 
-.rux-driver-week-info__body {
+.sched-driver-week-info__body {
 	display: grid;
 	grid-template-columns: minmax(17rem, 0.9fr) minmax(22rem, 1.35fr);
 	gap: var(--rux-space-4);
@@ -55,28 +55,28 @@
 	overflow: hidden;
 }
 
-.rux-driver-week-info__section {
+.sched-driver-week-info__section {
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
 	min-height: 0;
 }
 
-.rux-driver-week-info__section-title {
+.sched-driver-week-info__section-title {
 	margin: 0 0 var(--rux-space-2);
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-driver-week-info__trips {
+.sched-driver-week-info__trips {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
 	overflow: auto;
 }
 
-.rux-driver-week-info__month {
+.sched-driver-week-info__month {
 	position: sticky;
 	top: 0;
 	z-index: 1;
@@ -90,7 +90,7 @@
 	background: var(--rux-surface-0);
 }
 
-.rux-driver-week-info__trip {
+.sched-driver-week-info__trip {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	gap: var(--rux-space-2);
@@ -100,103 +100,103 @@
 	border-radius: var(--rux-radius-lg);
 }
 
-.rux-driver-week-info__trip-check {
+.sched-driver-week-info__trip-check {
 	align-self: start;
 	min-height: var(--rux-checkbox-size);
 	margin-top: 0.15rem;
 }
 
-.rux-driver-week-info__trip-content {
+.sched-driver-week-info__trip-content {
 	min-width: 0;
 }
 
-.rux-driver-week-info__trip-title,
-.rux-driver-week-info__trip-meta {
+.sched-driver-week-info__trip-title,
+.sched-driver-week-info__trip-meta {
 	margin: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.rux-driver-week-info__trip-title {
+.sched-driver-week-info__trip-title {
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-driver-week-info__trip-meta {
+.sched-driver-week-info__trip-meta {
 	margin-top: var(--rux-space-1);
 	font-size: var(--rux-size-xs);
 }
 
-.rux-driver-week-info__trip-actions {
+.sched-driver-week-info__trip-actions {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rux-button-group-gap);
 	margin-top: var(--rux-space-2);
 }
 
-.rux-driver-week-info__share {
+.sched-driver-week-info__share {
 	padding: var(--rux-space-3);
 	background: var(--rux-surface-1);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-lg);
 }
 
-.rux-driver-week-info__list-heading,
-.rux-driver-week-info__share-heading {
+.sched-driver-week-info__list-heading,
+.sched-driver-week-info__share-heading {
 	display: flex;
 	align-items: baseline;
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 }
 
-.rux-driver-week-info__list-heading .rux-driver-week-info__section-title,
-.rux-driver-week-info__share-heading .rux-driver-week-info__section-title {
+.sched-driver-week-info__list-heading .sched-driver-week-info__section-title,
+.sched-driver-week-info__share-heading .sched-driver-week-info__section-title {
 	margin-bottom: var(--rux-space-1);
 }
 
-.rux-driver-week-info__share-state {
+.sched-driver-week-info__share-state {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	text-align: right;
 }
 
-.rux-driver-week-info__list-scope {
+.sched-driver-week-info__list-scope {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	white-space: nowrap;
 }
 
-.rux-driver-week-info__share-copy {
+.sched-driver-week-info__share-copy {
 	margin: 0 0 var(--rux-space-2);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
 
-.rux-driver-week-info__share-url-row,
-.rux-driver-week-info__share-actions {
+.sched-driver-week-info__share-url-row,
+.sched-driver-week-info__share-actions {
 	display: flex;
 	gap: var(--rux-space-2);
 }
 
-.rux-driver-week-info__share-url-row .rux-input {
+.sched-driver-week-info__share-url-row .rux-input {
 	flex: 1;
 	min-width: 0;
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-size-xs);
 }
 
-.rux-driver-week-info__share-actions {
+.sched-driver-week-info__share-actions {
 	flex-wrap: wrap;
 	margin-top: var(--rux-space-2);
 }
 
-.rux-driver-week-info__preview-title {
+.sched-driver-week-info__preview-title {
 	margin-top: var(--rux-space-3);
 }
 
-.rux-driver-week-info__preview {
+.sched-driver-week-info__preview {
 	flex: 1;
 	width: 100%;
 	min-height: 17rem;
@@ -207,7 +207,7 @@
 	white-space: pre-wrap;
 }
 
-.rux-driver-week-info__empty {
+.sched-driver-week-info__empty {
 	margin: 0;
 	padding: var(--rux-space-4);
 	text-align: center;
@@ -221,16 +221,16 @@
 }
 
 @media (max-width: 720px) {
-	.rux-driver-week-info__body {
+	.sched-driver-week-info__body {
 		grid-template-columns: 1fr;
 		overflow: auto;
 	}
 
-	.rux-driver-week-info__trips {
+	.sched-driver-week-info__trips {
 		max-height: 15rem;
 	}
 
-	.rux-driver-week-info__preview {
+	.sched-driver-week-info__preview {
 		min-height: 16rem;
 	}
 }

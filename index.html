@@ -40,99 +40,99 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=6" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=268" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=10" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=272" />
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/driver-panel.css?v=11"
+			href="./scheduler/css/features/driver-panel.css?v=12"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-driver-app.css?v=12"
+			href="./scheduler/css/features/comp-driver-app.css?v=13"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/fleet-panel.css?v=5"
+			href="./scheduler/css/features/fleet-panel.css?v=6"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/customer-panel.css?v=3"
+			href="./scheduler/css/features/customer-panel.css?v=4"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-fleet-app.css?v=2"
+			href="./scheduler/css/features/comp-fleet-app.css?v=3"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-settings-app.css?v=5"
+			href="./scheduler/css/features/comp-settings-app.css?v=6"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-trip-list.css?v=3"
+			href="./scheduler/css/features/comp-trip-list.css?v=4"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/trip-finder.css?v=8"
+			href="./scheduler/css/features/trip-finder.css?v=9"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/request-inbox.css?v=1"
+			href="./scheduler/css/features/request-inbox.css?v=2"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-components-app.css?v=15"
+			href="./scheduler/css/features/comp-components-app.css?v=16"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/flip-seven.css?v=19"
+			href="./scheduler/css/features/flip-seven.css?v=20"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/bus-picker.css?v=4"
+			href="./scheduler/css/features/bus-picker.css?v=5"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/print-schedule.css?v=35"
+			href="./scheduler/css/features/print-schedule.css?v=36"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/trip-envelope.css?v=14"
+			href="./scheduler/css/features/trip-envelope.css?v=15"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/driver-week-info.css?v=6"
+			href="./scheduler/css/features/driver-week-info.css?v=7"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/contact-info.css?v=3"
+			href="./scheduler/css/features/contact-info.css?v=4"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/dev-notes.css?v=1"
+			href="./scheduler/css/features/dev-notes.css?v=2"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/team-chat.css?v=14"
+			href="./scheduler/css/features/team-chat.css?v=15"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/tasks-panel.css?v=42"
+			href="./scheduler/css/features/tasks-panel.css?v=43"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/driver-share.css?v=79"
+			href="./scheduler/css/features/driver-share.css?v=80"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/doc-viewer.css?v=6"
+			href="./scheduler/css/features/doc-viewer.css?v=7"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/documents-app.css?v=2"
+			href="./scheduler/css/features/documents-app.css?v=3"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/trip-manifest.css?v=6"
+			href="./scheduler/css/features/trip-manifest.css?v=7"
 		/>
 		<link
 			rel="stylesheet"
@@ -154,11 +154,11 @@
 			}
 		</style>
 	</head>
-	<body class="scheduler-app-page">
+	<body class="sched-app-page">
 		<div class="rux-splash" id="splash" aria-hidden="true">
 			<img class="rux-splash__logo" src="assets/rux-splash.gif" alt="" />
 		</div>
-		<main class="rux-app scheduler-app">
+		<main class="rux-app sched-app">
 			<a class="rux-skip-link" href="#app-content"
 				>Skip To Main Content</a
 			>
@@ -478,10 +478,10 @@
 				hidden
 			>
 				<div class="rux-menu__header">Notes</div>
-				<ul class="rux-dev-notes__list" data-dev-notes-list></ul>
-				<form class="rux-dev-notes__form" data-dev-notes-form>
+				<ul class="sched-dev-notes__list" data-dev-notes-list></ul>
+				<form class="sched-dev-notes__form" data-dev-notes-form>
 					<input
-						class="rux-input rux-dev-notes__input"
+						class="rux-input sched-dev-notes__input"
 						type="text"
 						name="text"
 						placeholder="Add a bug or to-do…"
@@ -585,7 +585,7 @@
 									<span
 										class="rux-color-swatch__dot"
 										style="
-											--color: var(--rux-trip-color-cyan);
+											--color: var(--sched-trip-color-cyan);
 										"
 									></span>
 								</label>
@@ -600,7 +600,7 @@
 										class="rux-color-swatch__dot"
 										style="
 											--color: var(
-												--rux-trip-color-green
+												--sched-trip-color-green
 											);
 										"
 									></span>
@@ -616,7 +616,7 @@
 										class="rux-color-swatch__dot"
 										style="
 											--color: var(
-												--rux-trip-color-purple
+												--sched-trip-color-purple
 											);
 										"
 									></span>
@@ -632,7 +632,7 @@
 										class="rux-color-swatch__dot"
 										style="
 											--color: var(
-												--rux-trip-color-yellow
+												--sched-trip-color-yellow
 											);
 										"
 									></span>
@@ -648,7 +648,7 @@
 										class="rux-color-swatch__dot"
 										style="
 											--color: var(
-												--rux-trip-color-orange
+												--sched-trip-color-orange
 											);
 										"
 									></span>
@@ -663,7 +663,7 @@
 									<span
 										class="rux-color-swatch__dot"
 										style="
-											--color: var(--rux-trip-color-pink);
+											--color: var(--sched-trip-color-pink);
 										"
 									></span>
 								</label>
@@ -742,12 +742,12 @@
 
 			<div class="rux-app__body" id="app-content" tabindex="-1">
 				<div
-					class="scheduler-app__side-nav-scrim"
+					class="rux-side-nav-scrim"
 					data-rux-side-nav-scrim
 					aria-hidden="true"
 				></div>
 				<nav
-					class="rux-side-nav scheduler-app__side-nav"
+					class="rux-side-nav rux-side-nav--overlay"
 					id="app-side-navigation"
 					aria-label="Primary Navigation"
 					aria-hidden="true"
@@ -964,11 +964,11 @@
 								</button>
 							</nav>
 						</div>
-						<div class="rux-panel__body rux-scope-trip__body">
+						<div class="rux-panel__body sched-scope-trip__body">
 							<!-- Trip -->
 							<div
 								id="pane-trip"
-								class="rux-panel__pane rux-scope-trip__pane"
+								class="rux-panel__pane sched-scope-trip__pane"
 								role="tabpanel"
 							>
 								<div class="rux-card">
@@ -985,7 +985,7 @@
 												>Trip Type</span
 											>
 											<div
-												class="rux-segmented-track rux-scope-trip__trip-type"
+												class="rux-segmented-track sched-scope-trip__trip-type"
 												id="tp-trip-type-group"
 												data-rux-toggle-group
 												role="group"
@@ -1045,7 +1045,7 @@
 											</div>
 										</div>
 										<div
-											class="rux-scope-trip__logistics-grid"
+											class="sched-scope-trip__logistics-grid"
 										>
 											<div class="rux-field">
 												<label
@@ -1073,7 +1073,7 @@
 											</div>
 										</div>
 										<div
-											class="rux-scope-trip__logistics-grid"
+											class="sched-scope-trip__logistics-grid"
 											id="tp-return-dates-grid"
 											hidden
 										>
@@ -1137,7 +1137,7 @@
 									<div
 										class="rux-card__body rux-card__body--stack"
 									>
-										<div class="rux-scope-trip__cols-2">
+										<div class="sched-scope-trip__cols-2">
 											<div class="rux-field">
 												<label
 													class="rux-field__label"
@@ -1242,7 +1242,7 @@
 									<div class="rux-card__body">
 										<div
 											id="tp-contacts-list"
-											class="rux-scope-trip__contacts-list"
+											class="sched-scope-trip__contacts-list"
 										></div>
 									</div>
 								</div>
@@ -1255,10 +1255,10 @@
 									<div class="rux-card__body">
 										<div class="rux-field">
 											<div
-												class="rux-scope-trip__requirements-grid"
+												class="sched-scope-trip__requirements-grid"
 											>
 												<div
-													class="rux-scope-trip__reqs"
+													class="sched-scope-trip__reqs"
 													id="tp-vehicle-reqs"
 												></div>
 												<div
@@ -1314,11 +1314,11 @@
 												Uploaded Files
 											</p>
 											<ul
-												class="rux-scope-trip__doc-list"
+												class="sched-scope-trip__doc-list"
 												id="tp-doc-list"
 											>
 												<li
-													class="rux-scope-trip__doc-empty"
+													class="sched-scope-trip__doc-empty"
 													role="status"
 												>
 													<span
@@ -1391,7 +1391,7 @@
 													class="rux-color-swatch__dot"
 													style="
 														--color: var(
-															--rux-trip-color-cyan
+															--sched-trip-color-cyan
 														);
 													"
 												></span>
@@ -1410,7 +1410,7 @@
 													class="rux-color-swatch__dot"
 													style="
 														--color: var(
-															--rux-trip-color-green
+															--sched-trip-color-green
 														);
 													"
 												></span>
@@ -1429,7 +1429,7 @@
 													class="rux-color-swatch__dot"
 													style="
 														--color: var(
-															--rux-trip-color-purple
+															--sched-trip-color-purple
 														);
 													"
 												></span>
@@ -1448,7 +1448,7 @@
 													class="rux-color-swatch__dot"
 													style="
 														--color: var(
-															--rux-trip-color-yellow
+															--sched-trip-color-yellow
 														);
 													"
 												></span>
@@ -1467,7 +1467,7 @@
 													class="rux-color-swatch__dot"
 													style="
 														--color: var(
-															--rux-trip-color-orange
+															--sched-trip-color-orange
 														);
 													"
 												></span>
@@ -1486,7 +1486,7 @@
 													class="rux-color-swatch__dot"
 													style="
 														--color: var(
-															--rux-trip-color-pink
+															--sched-trip-color-pink
 														);
 													"
 												></span>
@@ -1503,7 +1503,7 @@
 							<!-- Billing -->
 							<div
 								id="pane-billing"
-								class="rux-panel__pane rux-scope-trip__pane"
+								class="rux-panel__pane sched-scope-trip__pane"
 								role="tabpanel"
 								hidden
 							>
@@ -1523,7 +1523,7 @@
 												>Service Type</span
 											>
 											<div
-												class="rux-segmented-track rux-scope-trip__trip-type"
+												class="rux-segmented-track sched-scope-trip__trip-type"
 												id="tp-billing-type-group"
 												data-rux-toggle-group
 												role="group"
@@ -1566,12 +1566,12 @@
 											</div>
 										</div>
 										<div
-											class="rux-scope-trip__manifest-action"
+											class="sched-scope-trip__manifest-action"
 											id="tp-manifest-action"
 											aria-hidden="true"
 										>
 											<div
-												class="rux-scope-trip__manifest-action-inner"
+												class="sched-scope-trip__manifest-action-inner"
 											>
 												<button
 													class="rux-button rux-button--accent"
@@ -1620,11 +1620,11 @@
 									</div>
 									<div class="rux-card__body">
 										<div
-											class="rux-scope-trip__payment-rows"
+											class="sched-scope-trip__payment-rows"
 											id="tp-ticket-options-list"
 										>
 											<div
-												class="rux-scope-trip__payment-empty"
+												class="sched-scope-trip__payment-empty"
 												role="status"
 											>
 												<span
@@ -1648,7 +1648,7 @@
 									<div
 										class="rux-card__body rux-card__body--stack"
 									>
-										<div class="rux-scope-trip__cols-2">
+										<div class="sched-scope-trip__cols-2">
 											<div class="rux-field">
 												<label
 													class="rux-field__label"
@@ -1686,7 +1686,7 @@
 												>
 											</div>
 										</div>
-										<div class="rux-scope-trip__cols-2">
+										<div class="sched-scope-trip__cols-2">
 											<div class="rux-field">
 												<label
 													class="rux-field__label"
@@ -1734,7 +1734,7 @@
 									</div>
 								</div>
 								<div
-									class="rux-card rux-scope-trip__billing-workflow"
+									class="rux-card sched-scope-trip__billing-workflow"
 								>
 									<div class="rux-card__header">
 										<p class="rux-card__title">
@@ -1745,7 +1745,7 @@
 										class="rux-card__body rux-card__body--stack"
 									>
 										<div
-											class="rux-scope-trip__billing-step"
+											class="sched-scope-trip__billing-step"
 											data-billing-step
 											data-billing-key="contractSigned"
 										>
@@ -1756,7 +1756,7 @@
 												Contract
 											</p>
 											<div
-												class="rux-scope-trip__billing-step-row"
+												class="sched-scope-trip__billing-step-row"
 											>
 												<input
 													class="rux-input"
@@ -1786,7 +1786,7 @@
 											</div>
 										</div>
 										<div
-											class="rux-scope-trip__billing-step"
+											class="sched-scope-trip__billing-step"
 											data-billing-step
 											data-billing-key="poReceived"
 										>
@@ -1797,7 +1797,7 @@
 												Purchase Order
 											</p>
 											<div
-												class="rux-scope-trip__billing-step-row"
+												class="sched-scope-trip__billing-step-row"
 											>
 												<input
 													class="rux-input"
@@ -1827,7 +1827,7 @@
 											</div>
 										</div>
 										<div
-											class="rux-scope-trip__billing-step"
+											class="sched-scope-trip__billing-step"
 											data-billing-step
 											data-billing-key="invoiced"
 										>
@@ -1838,7 +1838,7 @@
 												Invoice
 											</p>
 											<div
-												class="rux-scope-trip__billing-step-row"
+												class="sched-scope-trip__billing-step-row"
 											>
 												<input
 													class="rux-input"
@@ -1868,7 +1868,7 @@
 											</div>
 										</div>
 										<div
-											class="rux-scope-trip__po-details"
+											class="sched-scope-trip__po-details"
 											data-billing-details
 											hidden
 										>
@@ -1900,7 +1900,7 @@
 												</div>
 											</div>
 											<output
-												class="rux-scope-trip__po-coverage"
+												class="sched-scope-trip__po-coverage"
 												id="tp-po-coverage"
 												aria-live="polite"
 											></output>
@@ -1929,11 +1929,11 @@
 									</div>
 									<div class="rux-card__body">
 										<div
-											class="rux-scope-trip__payment-rows"
+											class="sched-scope-trip__payment-rows"
 											id="tp-payment-rows"
 										>
 											<div
-												class="rux-scope-trip__payment-empty"
+												class="sched-scope-trip__payment-empty"
 												role="status"
 											>
 												<span
@@ -1950,13 +1950,13 @@
 							<!-- Itinerary -->
 							<div
 								id="pane-itinerary"
-								class="rux-panel__pane rux-scope-trip__pane"
+								class="rux-panel__pane sched-scope-trip__pane"
 								role="tabpanel"
 								hidden
 							>
 								<div class="sched-trip-itinerary" id="tp-itin">
 									<div
-										class="rux-card rux-trip-itinerary__summary"
+										class="rux-card sched-trip-itinerary__summary"
 										id="tp-itin-summary"
 									>
 										<div class="rux-card__header">
@@ -1964,7 +1964,7 @@
 												Trip Summary
 											</p>
 											<div
-												class="rux-trip-itinerary__summary-actions"
+												class="sched-trip-itinerary__summary-actions"
 											>
 												<button
 													class="rux-button rux-button--ghost rux-button--icon"
@@ -2053,7 +2053,7 @@
 													>Viewing</label
 												>
 												<div
-													class="rux-segmented-track rux-scope-trip__trip-type"
+													class="rux-segmented-track sched-scope-trip__trip-type"
 													id="tp-itin-leg-toggle"
 													data-rux-toggle-group
 												>
@@ -2078,7 +2078,7 @@
 										</div>
 									</div>
 									<div
-										class="rux-trip-itinerary__stops"
+										class="sched-trip-itinerary__stops"
 										id="tp-itin-stops"
 									></div>
 								</div>
@@ -2086,7 +2086,7 @@
 							<!-- Dispatch -->
 							<div
 								id="pane-dispatch"
-								class="rux-panel__pane rux-scope-trip__pane"
+								class="rux-panel__pane sched-scope-trip__pane"
 								role="tabpanel"
 								hidden
 							>
@@ -2135,7 +2135,7 @@
 										</div>
 									</div>
 									<div
-										class="rux-scope-trip__bus-groups"
+										class="sched-scope-trip__bus-groups"
 										id="tp-bus-groups"
 									></div>
 								</div>
@@ -2188,7 +2188,7 @@
 										</div>
 									</div>
 									<div
-										class="rux-scope-trip__bus-groups"
+										class="sched-scope-trip__bus-groups"
 										id="tp-return-bus-groups"
 										hidden
 									></div>
@@ -2303,17 +2303,17 @@
 						</header>
 						<div class="rux-workspace__body calendar-app__viewport">
 							<div
-								class="sched-scheduler scheduler-app__grid"
+								class="sched-scheduler sched-app__grid"
 								id="scheduler"
 							>
-								<div class="rux-scheduler__col-head">
+								<div class="sched-scheduler__col-head">
 									<span
-										class="rux-scheduler__corner-label"
+										class="sched-scheduler__corner-label"
 									></span>
 								</div>
 							</div>
 							<div
-								class="rux-scheduler__pull-hint rux-scheduler__pull-hint--prev"
+								class="sched-scheduler__pull-hint sched-scheduler__pull-hint--prev"
 								id="scheduler-pull-prev"
 								aria-hidden="true"
 							>
@@ -2322,7 +2322,7 @@
 								>
 							</div>
 							<div
-								class="rux-scheduler__pull-hint rux-scheduler__pull-hint--next"
+								class="sched-scheduler__pull-hint sched-scheduler__pull-hint--next"
 								id="scheduler-pull-next"
 								aria-hidden="true"
 							>
@@ -2333,7 +2333,7 @@
 						</div>
 					</section>
 					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right"
+						class="rux-drawer-gutter rux-resize-gutter rux-resize-gutter--right"
 						id="right-panel-resize-gutter"
 						role="separator"
 						aria-orientation="vertical"
@@ -2344,7 +2344,7 @@
 
 					<!-- Right panel drawer -->
 					<div
-						class="scheduler-app__drawer scheduler-app__drawer--right"
+						class="rux-drawer rux-drawer--right"
 						id="right-panel-drawer"
 					>
 						<aside
@@ -2412,7 +2412,7 @@
 										><span class="rux-tab__label"
 											>Tasks</span
 										><span
-											class="rux-icon rux-tasks__tab-badge"
+											class="rux-icon sched-tasks__tab-badge"
 											id="rp-tasks-tab-badge"
 											role="img"
 											aria-label="Pending tasks"
@@ -2449,7 +2449,7 @@
 										id="rp-minical-card"
 									>
 										<div
-											class="rux-card__header rux-mini-cal__header"
+											class="rux-card__header sched-mini-cal__header"
 										>
 											<button
 												class="rux-button rux-button--ghost rux-button--icon rux-button--header"
@@ -2462,7 +2462,7 @@
 												>
 											</button>
 											<span
-												class="rux-mini-cal__title"
+												class="sched-mini-cal__title"
 												id="mini-cal-title"
 											></span>
 											<button
@@ -2477,14 +2477,14 @@
 											</button>
 										</div>
 										<div
-											class="rux-card__body rux-mini-cal__body"
+											class="rux-card__body sched-mini-cal__body"
 										>
 											<div
-												class="rux-mini-cal__grid"
+												class="sched-mini-cal__grid"
 												role="grid"
 											>
 												<div
-													class="rux-mini-cal__day-names"
+													class="sched-mini-cal__day-names"
 												>
 													<span>S</span><span>M</span
 													><span>T</span><span>W</span
@@ -2492,7 +2492,7 @@
 													><span>S</span>
 												</div>
 												<div
-													class="rux-mini-cal__dates"
+													class="sched-mini-cal__dates"
 													id="mini-cal-dates"
 												></div>
 											</div>
@@ -2835,7 +2835,7 @@
 								</div>
 								<div
 									id="rp-pane-drivers"
-									class="rux-panel__pane rux-driver-availability"
+									class="rux-panel__pane sched-driver-availability"
 									role="tabpanel"
 									hidden
 								>
@@ -2847,7 +2847,7 @@
 										</div>
 										<div class="rux-card__body">
 											<div
-												class="rux-driver-grid__scroller"
+												class="sched-driver-grid__scroller"
 											>
 												<div
 													class="sched-driver-grid"
@@ -2869,9 +2869,9 @@
 									role="tabpanel"
 									hidden
 								>
-									<div class="rux-tasks__header">
+									<div class="sched-tasks__header">
 										<div
-											class="rux-segmented-track rux-tasks__list-toggle"
+											class="rux-segmented-track sched-tasks__list-toggle"
 											id="rp-tasks-list-toggle"
 											data-rux-toggle-group
 											role="group"
@@ -2887,7 +2887,7 @@
 													>Trips</span
 												>
 												<span
-													class="rux-icon rux-tasks__segment-status"
+													class="rux-icon sched-tasks__segment-status"
 													id="rp-trips-status"
 													role="img"
 													aria-label="Pending trip tasks"
@@ -2905,7 +2905,7 @@
 													>Post Trip</span
 												>
 												<span
-													class="rux-icon rux-tasks__segment-status"
+													class="rux-icon sched-tasks__segment-status"
 													id="rp-post-trip-status"
 													role="img"
 													aria-label="Pending post-trip tasks"
@@ -2929,22 +2929,22 @@
 										aria-label="Trip change history"
 									>
 										<header
-											class="rux-trip-history__toolbar"
+											class="sched-trip-history__toolbar"
 										>
 											<div>
 												<h3
-													class="rux-trip-history__title rux-u-panel-title"
+													class="sched-trip-history__title rux-u-panel-title"
 												>
 													All trip history
 												</h3>
 												<p
-													class="rux-trip-history__subtitle rux-u-subtitle"
+													class="sched-trip-history__subtitle rux-u-subtitle"
 												>
 													Newest changes first
 												</p>
 											</div>
 											<button
-												class="rux-button rux-button--default rux-button--compact rux-trip-history__filter"
+												class="rux-button rux-button--default rux-button--compact sched-trip-history__filter"
 												id="rp-history-trip-filter"
 												type="button"
 												hidden
@@ -2952,14 +2952,14 @@
 											></button>
 										</header>
 										<p
-											class="rux-trip-history__status rux-subtle"
+											class="sched-trip-history__status rux-subtle"
 											id="rp-history-status"
 											aria-live="polite"
 										>
 											Open History to load changes.
 										</p>
 										<div
-											class="rux-trip-history__list"
+											class="sched-trip-history__list"
 											id="rp-history-list"
 										></div>
 										<button
@@ -2984,9 +2984,9 @@
 								id="rp-panel-footer"
 							>
 								<div
-									class="rux-scope-right-panel__footer-group"
+									class="sched-scope-right-panel__footer-group"
 									data-rp-footer-for="rp-pane-navigate"
-									data-rux-keep-trip-selection
+									data-sched-keep-trip-selection
 								>
 									<button
 										class="rux-button rux-button--default rux-button--block"
@@ -3022,12 +3022,12 @@
 									</button>
 								</div>
 								<div
-									class="rux-scope-right-panel__footer-group"
+									class="sched-scope-right-panel__footer-group"
 									data-rp-footer-for="rp-pane-tasks"
 									hidden
 								>
 									<div
-										class="rux-tasks__nav"
+										class="sched-tasks__nav"
 										id="rp-tasks-nav"
 									>
 										<button
@@ -3042,7 +3042,7 @@
 											><span class="rux-button__label"
 												>Prev</span
 											><span
-												class="rux-icon rux-tasks__nav-alert"
+												class="rux-icon sched-tasks__nav-alert"
 												id="rp-tasks-nav-prev-alert"
 												role="img"
 												aria-label="Pending trip tasks before departure"
@@ -3095,7 +3095,7 @@
 									</button>
 								</div>
 								<div
-									class="rux-scope-right-panel__footer-group"
+									class="sched-scope-right-panel__footer-group"
 									data-rp-footer-for="rp-pane-drivers"
 									hidden
 								>
@@ -3134,7 +3134,7 @@
 								</div>
 								<button
 									type="button"
-									class="rux-button rux-button--ghost sched-panel-footer-close rux-scope-right-panel__footer-close"
+									class="rux-button rux-button--ghost sched-panel-footer-close sched-scope-right-panel__footer-close"
 									data-panel-close
 									aria-label="Close tools panel"
 								>
@@ -3236,11 +3236,11 @@
 									</button>
 								</nav>
 							</div>
-							<div class="rux-panel__body rux-scope-fleet__body">
+							<div class="rux-panel__body sched-scope-fleet__body">
 								<!-- Info -->
 								<div
 									id="pane-info"
-									class="rux-panel__pane rux-scope-fleet__pane"
+									class="rux-panel__pane sched-scope-fleet__pane"
 									role="tabpanel"
 								>
 									<input
@@ -3372,7 +3372,7 @@
 										<label class="rux-field__label"
 											>Equipment</label
 										>
-										<div class="rux-scope-fleet__equipment">
+										<div class="sched-scope-fleet__equipment">
 											<button
 												class="rux-button rux-button--default rux-button--toggle"
 												id="fp-ada-lift"
@@ -3516,7 +3516,7 @@
 								<!-- Service -->
 								<div
 									id="pane-service"
-									class="rux-panel__pane rux-scope-fleet__pane"
+									class="rux-panel__pane sched-scope-fleet__pane"
 									role="tabpanel"
 									hidden
 								>
@@ -3619,7 +3619,7 @@
 								<!-- Trips -->
 								<div
 									id="pane-fleet-trips"
-									class="rux-panel__pane rux-scope-fleet__pane"
+									class="rux-panel__pane sched-scope-fleet__pane"
 									role="tabpanel"
 									hidden
 								>
@@ -3627,7 +3627,7 @@
 										Assigned trips
 									</p>
 									<ul
-										class="rux-u-trip-list"
+										class="rux-u-record-list"
 										id="fp-trip-list"
 									></ul>
 								</div>
@@ -3768,7 +3768,7 @@
 					<!-- Fleet tools drawer (View Options) — calendar Tools
 					     pattern: resize channel + workspace-header toggle -->
 					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right"
+						class="rux-drawer-gutter rux-resize-gutter rux-resize-gutter--right"
 						id="fleet-tools-resize-gutter"
 						role="separator"
 						aria-orientation="vertical"
@@ -3777,7 +3777,7 @@
 						tabindex="0"
 					></div>
 					<div
-						class="scheduler-app__drawer scheduler-app__drawer--right"
+						class="rux-drawer rux-drawer--right"
 						id="fleet-tools-drawer"
 					>
 						<aside
@@ -3790,7 +3790,7 @@
 									Table Options
 								</h2>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header sched-app__mobile-panel-btn sched-app__panel-header-toggle"
 									type="button"
 									aria-label="Close table options"
 									data-rux-domain-toggle
@@ -3811,7 +3811,7 @@
 										</header>
 										<div class="rux-card__body">
 											<div
-												class="rux-col-picker__list"
+												class="sched-col-picker__list"
 												id="fleet-view-options-list"
 											></div>
 										</div>
@@ -3938,29 +3938,29 @@
 								<!-- Profile -->
 								<div
 									id="pane-profile"
-									class="rux-panel__pane rux-scope-driver__pane"
+									class="rux-panel__pane sched-scope-driver__pane"
 									role="tabpanel"
 								>
-									<div class="rux-scope-driver__avatar-row">
+									<div class="sched-scope-driver__avatar-row">
 										<div
-											class="rux-scope-driver__avatar-wrap"
+											class="sched-scope-driver__avatar-wrap"
 										>
 											<button
 												type="button"
-												class="rux-scope-driver__avatar"
+												class="sched-scope-driver__avatar"
 												id="dp-avatar"
 												aria-label="Photo options"
 												aria-haspopup="menu"
 											>
 												<span
-													class="rux-scope-driver__avatar-main"
+													class="sched-scope-driver__avatar-main"
 													id="dp-avatar-main"
 													><span class="rux-icon"
 														>person</span
 													></span
 												>
 												<span
-													class="rux-scope-driver__avatar-overlay"
+													class="sched-scope-driver__avatar-overlay"
 													aria-hidden="true"
 													><span class="rux-icon"
 														>photo_camera</span
@@ -3975,7 +3975,7 @@
 											/>
 										</div>
 										<div
-											class="rux-scope-driver__name-block"
+											class="sched-scope-driver__name-block"
 										>
 											<div class="rux-field">
 												<label
@@ -4171,7 +4171,7 @@
 								<!-- License -->
 								<div
 									id="pane-license"
-									class="rux-panel__pane rux-scope-driver__pane"
+									class="rux-panel__pane sched-scope-driver__pane"
 									role="tabpanel"
 									hidden
 								>
@@ -4214,7 +4214,7 @@
 											>Endorsements</label
 										>
 										<div
-											class="rux-scope-driver__endorsements"
+											class="sched-scope-driver__endorsements"
 											role="group"
 											aria-labelledby="dp-endorsements-label"
 										>
@@ -4333,7 +4333,7 @@
 								<!-- Status -->
 								<div
 									id="pane-status"
-									class="rux-panel__pane rux-scope-driver__pane"
+									class="rux-panel__pane sched-scope-driver__pane"
 									role="tabpanel"
 									hidden
 								>
@@ -4342,7 +4342,7 @@
 											>Employment status</label
 										>
 										<div
-											class="rux-segmented-track rux-scope-driver__status-group"
+											class="rux-segmented-track sched-scope-driver__status-group"
 											data-rux-toggle-group
 										>
 											<button
@@ -4421,7 +4421,7 @@
 											>Priority</label
 										>
 										<div
-											class="rux-segmented-track rux-scope-driver__priority-group"
+											class="rux-segmented-track sched-scope-driver__priority-group"
 											data-rux-toggle-group
 											data-priority-group
 										>
@@ -4516,7 +4516,7 @@
 								<!-- Time Off -->
 								<div
 									id="pane-timeoff"
-									class="rux-panel__pane rux-scope-driver__pane"
+									class="rux-panel__pane sched-scope-driver__pane"
 									role="tabpanel"
 									hidden
 								>
@@ -4554,11 +4554,11 @@
 										</div>
 									</div>
 									<div
-										class="rux-scope-driver__timeoff-rows"
+										class="sched-scope-driver__timeoff-rows"
 										id="dp-timeoff-rows"
 									>
 										<div
-											class="rux-scope-driver__timeoff-empty"
+											class="sched-scope-driver__timeoff-empty"
 											role="status"
 										>
 											<span
@@ -4573,12 +4573,12 @@
 								<!-- Trips -->
 								<div
 									id="pane-assignments"
-									class="rux-panel__pane rux-scope-driver__pane"
+									class="rux-panel__pane sched-scope-driver__pane"
 									role="tabpanel"
 									hidden
 								>
 									<section
-										class="rux-card rux-scope-driver__schedule-card"
+										class="rux-card sched-scope-driver__schedule-card"
 										aria-labelledby="dp-schedule-title"
 									>
 										<header class="rux-card__header">
@@ -4596,14 +4596,14 @@
 										</header>
 										<div class="rux-card__body">
 											<p
-												class="rux-scope-driver__schedule-summary"
+												class="sched-scope-driver__schedule-summary"
 												id="dp-schedule-summary"
 											>
 												Select a driver to view their
 												shared schedule.
 											</p>
 											<div
-												class="rux-scope-driver__schedule-actions"
+												class="sched-scope-driver__schedule-actions"
 											>
 												<button
 													class="rux-button rux-button--accent"
@@ -4667,7 +4667,7 @@
 										Assigned trips
 									</p>
 									<ul
-										class="rux-u-trip-list"
+										class="rux-u-record-list"
 										id="dp-trip-list"
 									></ul>
 								</div>
@@ -4739,7 +4739,7 @@
 							</div>
 							<div class="rux-workspace__toolbar">
 								<button
-									class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle scheduler-app__mobile-panel-btn scheduler-app__mobile-panel-btn--right"
+									class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle sched-app__mobile-panel-btn sched-app__mobile-panel-btn--right"
 									type="button"
 									id="driver-tools-toggle-btn"
 									aria-label="Open table options"
@@ -4815,7 +4815,7 @@
 					<!-- Driver tools drawer (View Options + Filters) — calendar
 					     Tools pattern: resize channel + workspace-header toggle -->
 					<div
-						class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right"
+						class="rux-drawer-gutter rux-resize-gutter rux-resize-gutter--right"
 						id="driver-tools-resize-gutter"
 						role="separator"
 						aria-orientation="vertical"
@@ -4824,7 +4824,7 @@
 						tabindex="0"
 					></div>
 					<div
-						class="scheduler-app__drawer scheduler-app__drawer--right"
+						class="rux-drawer rux-drawer--right"
 						id="driver-tools-drawer"
 					>
 						<aside
@@ -4840,7 +4840,7 @@
 									Table Options
 								</h2>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header sched-app__mobile-panel-btn sched-app__panel-header-toggle"
 									type="button"
 									aria-label="Close table options"
 									data-rux-domain-toggle
@@ -4952,7 +4952,7 @@
 										</header>
 										<div class="rux-card__body">
 											<div
-												class="rux-col-picker__list"
+												class="sched-col-picker__list"
 												id="driver-view-options-list"
 											></div>
 										</div>
@@ -5044,7 +5044,7 @@
 							</header>
 							<div class="rux-panel__body">
 								<div
-									class="rux-panel__pane rux-scope-customer__pane"
+									class="rux-panel__pane sched-scope-customer__pane"
 								>
 									<div class="rux-field">
 										<label
@@ -5102,10 +5102,10 @@
 											/>
 										</div>
 									</div>
-									<div class="rux-scope-customer__trips">
+									<div class="sched-scope-customer__trips">
 										<p class="rux-u-section-label">Trips</p>
 										<ul
-											class="rux-u-trip-list"
+											class="rux-u-record-list"
 											id="cp-trip-list"
 										></ul>
 									</div>
@@ -7253,76 +7253,63 @@
 
 		<!-- ── Scripts ─────────────────────────────────────────────────────────── -->
 		<script src="./rux-ui/js/utilities.js"></script>
-		<script src="./rux-ui/js/theme.js?v=1"></script>
-		<script src="./js/core/address-format.js?v=1"></script>
-		<script src="./rux-ui/js/ui-shell.js?v=2"></script>
-		<script src="./rux-ui/js/view-router.js?v=1"></script>
-		<script src="./rux-ui/js/drawer.js?v=11"></script>
-		<script>
-			// RuxDrawer ships portable .rux-* defaults; this app's shell uses its
-			// own layout class names, so declare them once here rather than
-			// having the portable module know about .scheduler-app.
-			window.RuxDrawer.configure({
-				container: ".rux-app-view",
-				gutter: ":scope > .scheduler-app__gutter",
-				scrimClass: "scheduler-app__drawer-scrim",
-				closeAnimation: "scheduler-mobile-drawer-out",
-				widthHost: ".scheduler-app",
-				leftWidthVar: "--scheduler-app-left-drawer-default-width",
-				rightWidthVar: "--scheduler-app-right-drawer-default-width",
-				rightModifier: "scheduler-app__drawer--right",
-				railWidthVar: "--rux-panel-rail-width",
-				fallbackWidth: ".rux-app__body",
-			});
-		</script>
-		<script src="./rux-ui/js/popover.js?v=4"></script>
-		<script src="./rux-ui/js/menu.js?v=3"></script>
-		<script src="./rux-ui/js/controls.js?v=6" defer></script>
-		<script src="./js/core/billing-config.js?v=5"></script>
-		<script src="./rux-ui/js/floating-window.js?v=3"></script>
-		<script src="./js/core/doc-viewer.js?v=9"></script>
-		<script src="./rux-ui/js/suggestions.js?v=2"></script>
-		<script src="./js/panels/trip-panel.js?v=39"></script>
-		<script src="./js/components/itinerary.js?v=27"></script>
-		<script src="./js/panels/driver-panel.js?v=24" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=9" defer></script>
-		<script src="./js/panels/customers-panel.js?v=6" defer></script>
-		<script src="./js/panels/settings-panel.js?v=5" defer></script>
-		<script src="./js/panels/trip-finder.js?v=5" defer></script>
-		<script src="./js/panels/request-inbox.js?v=1" defer></script>
-		<script src="./js/panels/trip-manifest.js?v=6" defer></script>
-		<script src="./js/panels/print-schedule.js?v=31" defer></script>
-		<script src="./js/panels/trip-envelope.js?v=15" defer></script>
-		<script type="module" src="./js/core/app-reload.js?v=1"></script>
+		<script src="./rux-ui/js/theme.js?v=4"></script>
+		<script src="./js/core/address-format.js?v=4"></script>
+		<script src="./rux-ui/js/ui-shell.js?v=5"></script>
+		<script src="./rux-ui/js/view-router.js?v=4"></script>
+		<script src="./rux-ui/js/drawer.js?v=15"></script>
+		<!-- No RuxDrawer.configure() call: this app's drawer markup uses the
+		     portable .rux-drawer names, so every field would restate the
+		     module's own default. An application with different layout class
+		     names configures the seam here instead. -->
+		<script src="./rux-ui/js/popover.js?v=7"></script>
+		<script src="./rux-ui/js/menu.js?v=6"></script>
+		<script src="./rux-ui/js/controls.js?v=9" defer></script>
+		<script src="./js/core/billing-config.js?v=8"></script>
+		<script src="./rux-ui/js/floating-window.js?v=6"></script>
+		<script src="./js/core/doc-viewer.js?v=12"></script>
+		<script src="./rux-ui/js/suggestions.js?v=5"></script>
+		<script src="./js/panels/trip-panel.js?v=42"></script>
+		<script src="./js/components/itinerary.js?v=30"></script>
+		<script src="./js/panels/driver-panel.js?v=27" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=12" defer></script>
+		<script src="./js/panels/customers-panel.js?v=9" defer></script>
+		<script src="./js/panels/settings-panel.js?v=8" defer></script>
+		<script src="./js/panels/trip-finder.js?v=8" defer></script>
+		<script src="./js/panels/request-inbox.js?v=4" defer></script>
+		<script src="./js/panels/trip-manifest.js?v=9" defer></script>
+		<script src="./js/panels/print-schedule.js?v=34" defer></script>
+		<script src="./js/panels/trip-envelope.js?v=18" defer></script>
+		<script type="module" src="./js/core/app-reload.js?v=4"></script>
 		<script
 			type="module"
-			src="./js/panels/driver-week-info.js?v=12"
+			src="./js/panels/driver-week-info.js?v=15"
 		></script>
 		<script
 			type="module"
-			src="./js/panels/maintenance-link.js?v=3"
+			src="./js/panels/maintenance-link.js?v=6"
 		></script>
 		<script
 			type="module"
-			src="./js/panels/contact-info-modal.js?v=7"
+			src="./js/panels/contact-info-modal.js?v=10"
 		></script>
 		<script
 			type="module"
-			src="./js/panels/notifications-panel.js?v=8"
+			src="./js/panels/notifications-panel.js?v=11"
 		></script>
-		<script type="module" src="./js/panels/dev-notes-panel.js?v=1"></script>
-		<script type="module" src="./js/panels/team-chat.js?v=15"></script>
+		<script type="module" src="./js/panels/dev-notes-panel.js?v=4"></script>
+		<script type="module" src="./js/panels/team-chat.js?v=18"></script>
 		<script
 			type="module"
-			src="./js/panels/components-panel.js?v=47"
+			src="./js/panels/components-panel.js?v=50"
 		></script>
 		<script
 			type="module"
-			src="./js/panels/documents-panel.js?v=1"
+			src="./js/panels/documents-panel.js?v=4"
 		></script>
-		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=58"></script>
-		<script type="module" src="./js/panels/flip-seven.js?v=21"></script>
+		<script type="module" src="./js/panels/trip-history.js?v=4"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=61"></script>
+		<script type="module" src="./js/panels/flip-seven.js?v=24"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
 		<script type="module">
@@ -7331,12 +7318,12 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=19";
+			} from "./js/components/trip-bar.js?v=22";
 			import BusPicker, {
 				findConflict as findBusConflict,
-			} from "./js/components/bus-picker.js?v=3";
+			} from "./js/components/bus-picker.js?v=6";
 			import { loadRequirements } from "./js/data/requirements-db.js";
-			import { normalizeTripImport } from "./js/data/trip-import.js?v=1";
+			import { normalizeTripImport } from "./js/data/trip-import.js?v=5";
 			import { supabase } from "./js/data/supabase.js";
 			import {
 				fetchProfiles,
@@ -7923,7 +7910,7 @@
 
 			// ── Trip editor dialog ─────────────────────────────────────────────
 
-			const appEl = document.querySelector(".scheduler-app");
+			const appEl = document.querySelector(".sched-app");
 
 			const rightDrawer = document.getElementById("right-panel-drawer");
 			const tripPanel = document.querySelector(".sched-scope-trip");
@@ -7992,7 +7979,7 @@
 				}
 				tripEditorDialogEl.hidden = false;
 				const scrollBody = tripPanel?.querySelector(
-					".rux-scope-trip__body",
+					".sched-scope-trip__body",
 				);
 				if (scrollBody) scrollBody.scrollTop = 0;
 			}
@@ -8235,7 +8222,7 @@
 			const appStyles = getComputedStyle(appEl);
 			const RIGHT_DRAWER_DEFAULT = parseFloat(
 				appStyles.getPropertyValue(
-					"--scheduler-app-right-drawer-default-width",
+					"--rux-drawer-right-default-width",
 				),
 			);
 			const SCHEDULE_MIN = 471;
@@ -8274,7 +8261,7 @@
 			// ── Scheduler context menu ──────────────────────────────────────────
 
 			schedulerEl.addEventListener("contextmenu", (event) => {
-				const track = event.target.closest(".rux-scheduler__track");
+				const track = event.target.closest(".sched-scheduler__track");
 				if (!track || event.target.closest(".sched-trip-bar")) {
 					closeSchedulerContextMenu();
 					return;
@@ -8396,7 +8383,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=28");
+					const db = await import("./js/data/trip-db.js?v=32");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -8437,7 +8424,7 @@
 					if (e.button !== 0) return;
 					if (
 						e.target.closest(
-							".rux-trip-bar__actions, .rux-trip-bar__expand",
+							".sched-trip-bar__actions, .sched-trip-bar__expand",
 						)
 					)
 						return;
@@ -8464,13 +8451,13 @@
 							if (unassignedRowEl) unassignedRowEl.hidden = false;
 							rowRects = [
 								...schedulerEl.querySelectorAll(
-									".rux-scheduler__track",
+									".sched-scheduler__track",
 								),
 							]
 								.filter(
 									(t) =>
 										!t
-											.closest(".rux-scheduler__row")
+											.closest(".sched-scheduler__row")
 											?.classList.contains(
 												"is-out-of-service",
 											),
@@ -8519,8 +8506,8 @@
 						if (hitTrack !== targetTrack) {
 							rowRects.forEach(({ track }) =>
 								track.classList.remove(
-									"rux-scheduler__track--drop-target",
-									"rux-scheduler__track--drop-conflict",
+									"sched-scheduler__track--drop-target",
+									"sched-scheduler__track--drop-conflict",
 								),
 							);
 							targetTrack = hitTrack;
@@ -8530,7 +8517,7 @@
 								// when the trip is already sitting there.
 								if (trip.busId) {
 									targetTrack.classList.add(
-										"rux-scheduler__track--drop-target",
+										"sched-scheduler__track--drop-target",
 									);
 								}
 							} else if (
@@ -8544,8 +8531,8 @@
 								);
 								targetTrack.classList.add(
 									conflict
-										? "rux-scheduler__track--drop-conflict"
-										: "rux-scheduler__track--drop-target",
+										? "sched-scheduler__track--drop-conflict"
+										: "sched-scheduler__track--drop-target",
 								);
 							}
 						}
@@ -8560,8 +8547,8 @@
 						document.body.style.userSelect = "";
 						rowRects.forEach(({ track }) =>
 							track.classList.remove(
-								"rux-scheduler__track--drop-target",
-								"rux-scheduler__track--drop-conflict",
+								"sched-scheduler__track--drop-target",
+								"sched-scheduler__track--drop-conflict",
 							),
 						);
 						// The browser fires a synthetic "click" right after this mouseup
@@ -8844,12 +8831,12 @@
 
 			function renderDayHeaders(weekStart) {
 				renderWeekLabel(weekStart);
-				schedulerEl.style.setProperty("--rux-scheduler-days", viewDays);
+				schedulerEl.style.setProperty("--sched-scheduler-days", viewDays);
 				const colHead = schedulerEl.querySelector(
-					".rux-scheduler__col-head",
+					".sched-scheduler__col-head",
 				);
 				schedulerEl
-					.querySelectorAll(".rux-scheduler__day-head")
+					.querySelectorAll(".sched-scheduler__day-head")
 					.forEach((el) => el.remove());
 				const names = getDayNames();
 				let insertAfter = colHead;
@@ -8858,9 +8845,9 @@
 					const isToday = isoDate(date) === todayIso;
 					const el = document.createElement("div");
 					el.className =
-						"rux-scheduler__day-head" +
-						(isToday ? " rux-scheduler__day-head--today" : "");
-					el.innerHTML = `<span class="rux-scheduler__day-label"><span class="rux-scheduler__day-name">${names[index % 7]}</span><span class="rux-scheduler__day-number${isToday ? " rux-scheduler__day-number--today" : ""}">${date.getDate()}</span></span><div class="rux-scheduler__time-ticks"><span>12</span><span>6</span><span>6</span></div>`;
+						"sched-scheduler__day-head" +
+						(isToday ? " sched-scheduler__day-head--today" : "");
+					el.innerHTML = `<span class="sched-scheduler__day-label"><span class="sched-scheduler__day-name">${names[index % 7]}</span><span class="sched-scheduler__day-number${isToday ? " sched-scheduler__day-number--today" : ""}">${date.getDate()}</span></span><div class="sched-scheduler__time-ticks"><span>12</span><span>6</span><span>6</span></div>`;
 					insertAfter.insertAdjacentElement("afterend", el);
 					insertAfter = el;
 				}
@@ -8986,15 +8973,15 @@
 
 			function buildTrackGrid(track) {
 				const days = schedulerDayCount(track);
-				let grid = track.querySelector(".rux-scheduler__track-grid");
+				let grid = track.querySelector(".sched-scheduler__track-grid");
 				if (!grid || grid.children.length !== days) {
 					if (grid) grid.remove();
 					grid = document.createElement("div");
-					grid.className = "rux-scheduler__track-grid";
+					grid.className = "sched-scheduler__track-grid";
 					grid.setAttribute("aria-hidden", "true");
 					for (let day = 0; day < days; day++) {
 						const cell = document.createElement("span");
-						cell.className = "rux-scheduler__track-day";
+						cell.className = "sched-scheduler__track-day";
 						grid.appendChild(cell);
 					}
 					track.appendChild(grid);
@@ -9008,7 +8995,7 @@
 
 			function renderBusRows(buses = []) {
 				schedulerEl
-					.querySelectorAll(".rux-scheduler__row")
+					.querySelectorAll(".sched-scheduler__row")
 					.forEach((row) => row.remove());
 				buses.forEach((bus) => {
 					const number = String(bus.number ?? "").trim();
@@ -9016,10 +9003,10 @@
 					const row = document.createElement("div");
 					const isOos = bus.status === "out-of-service";
 					row.className =
-						"rux-scheduler__row" +
+						"sched-scheduler__row" +
 						(isOos ? " is-out-of-service" : "");
 					const head = document.createElement("div");
-					head.className = "rux-scheduler__row-head";
+					head.className = "sched-scheduler__row-head";
 					head.setAttribute(
 						"aria-label",
 						bus.capacity
@@ -9028,7 +9015,7 @@
 					);
 					if (isOos) head.title = `Bus ${number} — Out of service`;
 					const numberEl = document.createElement("span");
-					numberEl.className = "rux-scheduler__bus-number";
+					numberEl.className = "sched-scheduler__bus-number";
 					numberEl.setAttribute("aria-hidden", "true");
 					[...number].forEach((char) => {
 						const charEl = document.createElement("span");
@@ -9038,19 +9025,19 @@
 					head.appendChild(numberEl);
 					if (bus.capacity) {
 						const paxEl = document.createElement("span");
-						paxEl.className = "rux-scheduler__bus-pax";
+						paxEl.className = "sched-scheduler__bus-pax";
 						paxEl.textContent = `${bus.capacity} pax`;
 						head.appendChild(paxEl);
 					}
 					if (isOos) {
 						const oosEl = document.createElement("span");
-						oosEl.className = "rux-icon rux-scheduler__bus-oos";
+						oosEl.className = "rux-icon sched-scheduler__bus-oos";
 						oosEl.textContent = "block";
 						oosEl.setAttribute("aria-hidden", "true");
 						head.appendChild(oosEl);
 					}
 					const track = document.createElement("div");
-					track.className = "rux-scheduler__track";
+					track.className = "sched-scheduler__track";
 					track.id = trackIdForBusNumber(number);
 					track.dataset.busId = bus.id;
 					track.dataset.busNumber = number;
@@ -9066,19 +9053,19 @@
 				// findConflict tell this apart from a real bus track.
 				const unassignedRow = document.createElement("div");
 				unassignedRow.className =
-					"rux-scheduler__row rux-scheduler__row--unassigned";
+					"sched-scheduler__row sched-scheduler__row--unassigned";
 				unassignedRow.hidden = true;
 				const unassignedHead = document.createElement("div");
-				unassignedHead.className = "rux-scheduler__row-head";
+				unassignedHead.className = "sched-scheduler__row-head";
 				unassignedHead.setAttribute("aria-label", "Unassigned trips");
 				unassignedHead.title = "Trips this week without a bus assigned";
 				const unassignedIcon = document.createElement("span");
-				unassignedIcon.className = "rux-icon rux-scheduler__bus-oos";
+				unassignedIcon.className = "rux-icon sched-scheduler__bus-oos";
 				unassignedIcon.textContent = "warning";
 				unassignedIcon.setAttribute("aria-hidden", "true");
 				unassignedHead.appendChild(unassignedIcon);
 				const unassignedTrack = document.createElement("div");
-				unassignedTrack.className = "rux-scheduler__track";
+				unassignedTrack.className = "sched-scheduler__track";
 				unassignedTrack.id = UNASSIGNED_TRACK_ID;
 				unassignedTrack.dataset.unassigned = "true";
 				unassignedRow.append(unassignedHead, unassignedTrack);
@@ -9110,7 +9097,7 @@
 				return (
 					Number.parseFloat(
 						getComputedStyle(scheduler).getPropertyValue(
-							"--rux-scheduler-days",
+							"--sched-scheduler-days",
 						),
 					) || 7
 				);
@@ -9159,7 +9146,7 @@
 							const articleWidth = (widthPct / 100) * trackWidth;
 							const headWidth = Math.min(dayWidth, articleWidth);
 							bar.style.setProperty(
-								"--rux-trip-bar-day-inline-size",
+								"--sched-trip-bar-day-inline-size",
 								`${headWidth}px`,
 							);
 						}
@@ -9172,7 +9159,7 @@
 				// departures at/after 4 PM to the midpoint instead of implying that
 				// the bus is occupied for that entire day. Only the bar's own left
 				// edge/width shift to convey that — the head keeps the full-day width
-				// layoutTrack already set on --rux-trip-bar-day-inline-size before
+				// layoutTrack already set on --sched-trip-bar-day-inline-size before
 				// calling this, same as any regular head, just starting half a day
 				// later. The tail's own end position is untouched either way (left +
 				// width both move by the same offset), so it still lands on the
@@ -9210,7 +9197,7 @@
 				const entries = activePlacements
 					.filter((p) => p.trackId === track.id)
 					.sort((a, b) => a.lane - b.lane || a.start - b.start);
-				const row = track.closest(".rux-scheduler__row");
+				const row = track.closest(".sched-scheduler__row");
 				if (!entries.length) {
 					row.style.removeProperty("--_row-height");
 					return;
@@ -9227,7 +9214,7 @@
 					const laneEntries = entries.filter((e) => e.lane === lane);
 					laneEntries.forEach((entry) => {
 						entry.bar.style.setProperty(
-							"--rux-trip-bar-day-inline-size",
+							"--sched-trip-bar-day-inline-size",
 							`${dayInlineSize}px`,
 						);
 						placeInline(entry.bar, entry);
@@ -9289,7 +9276,7 @@
 					// catches every "not actually visible" case, not just this one.
 					if (schedulerEl.offsetParent === null) return;
 					document
-						.querySelectorAll(".rux-scheduler__track")
+						.querySelectorAll(".sched-scheduler__track")
 						.forEach((track) => layoutTrack(track));
 					fitSchedulerHeight();
 				});
@@ -9300,7 +9287,7 @@
 				activeObservers = [];
 				clearTripBars();
 				document
-					.querySelectorAll(".rux-scheduler__track .sched-trip-bar")
+					.querySelectorAll(".sched-scheduler__track .sched-trip-bar")
 					.forEach((bar) => bar.remove());
 				Object.keys(trips).forEach((key) => {
 					trips[key].groupLabel = computeBusLabel(key);
@@ -9322,7 +9309,7 @@
 				activePlacements = activePlacements.filter((p) => p.bar);
 				renderDayHeaders(currentWeekStart);
 				document
-					.querySelectorAll(".rux-scheduler__track")
+					.querySelectorAll(".sched-scheduler__track")
 					.forEach(buildTrackGrid);
 				if (typeof renderMiniCal === "function") renderMiniCal();
 				if (
@@ -9458,7 +9445,7 @@
 					if (e.button !== 0) return;
 					if (
 						e.target.closest(
-							".sched-trip-bar, .rux-scheduler__row-head, .rux-scheduler__col-head, button, a, input, select, textarea",
+							".sched-trip-bar, .sched-scheduler__row-head, .sched-scheduler__col-head, button, a, input, select, textarea",
 						)
 					)
 						return;
@@ -9533,7 +9520,7 @@
 					}
 				}
 				const existing = document.querySelectorAll(
-					".rux-scheduler__now-line",
+					".sched-scheduler__now-line",
 				);
 				if (todayIndex < 0) {
 					existing.forEach((el) => el.remove());
@@ -9555,10 +9542,10 @@
 					return;
 				}
 				document
-					.querySelectorAll(".rux-scheduler__track")
+					.querySelectorAll(".sched-scheduler__track")
 					.forEach((track) => {
 						const line = document.createElement("div");
-						line.className = "rux-scheduler__now-line";
+						line.className = "sched-scheduler__now-line";
 						line.style.left = `${leftPct}%`;
 						line.dataset.time = markerLabel;
 						track.appendChild(line);
@@ -9757,7 +9744,7 @@
 			function resetTripPanelView() {
 				setActiveTripPane("pane-trip");
 				tripPanel
-					.querySelector(".rux-scope-trip__body")
+					.querySelector(".sched-scope-trip__body")
 					?.scrollTo({ top: 0, behavior: "instant" });
 			}
 			function resetTripPanel() {
@@ -9865,7 +9852,7 @@
 			function scrollTodayIntoView() {
 				if (!schedulerEl) return;
 				const todayCol = schedulerEl.querySelector(
-					".rux-scheduler__day-head--today",
+					".sched-scheduler__day-head--today",
 				);
 				if (!todayCol) return;
 				const schedulerRect = schedulerEl.getBoundingClientRect();
@@ -9881,11 +9868,11 @@
 				// border behind that sticky column, not at the actual visible
 				// start of the day-columns area. Measuring the static corner
 				// cell's rendered width (rather than reading the
-				// --rux-scheduler-col-head-width token directly) also
+				// --sched-scheduler-col-head-width token directly) also
 				// automatically includes its border-inline-end, which is
 				// part of the visible occlusion too.
 				const cornerEl = schedulerEl.querySelector(
-					".rux-scheduler__col-head",
+					".sched-scheduler__col-head",
 				);
 				const rowHeadWidth = cornerEl
 					? cornerEl.getBoundingClientRect().width
@@ -9963,7 +9950,7 @@
 			// Collapsed bars can't be sized from a hardcoded row count anymore
 			// — with client/contact/notes/reqs/drivers each independently
 			// toggleable, the visible count ranges from 2 (destination + time
-			// only) to 7. --rux-trip-bar-collapsed-height (trip-bar.css) reads
+			// only) to 7. --sched-trip-bar-collapsed-height (trip-bar.css) reads
 			// this instead of a literal. Selecting a bar always shows all 7
 			// regardless of any of this — trip-bar.css's .sched-trip-bar.is-active
 			// rule hardcodes that itself (via its var(..., 7) fallback), so
@@ -9976,14 +9963,14 @@
 				if (tripBarRowVisible.reqs) count++;
 				if (tripBarRowVisible.drivers) count++;
 				schedulerEl?.style.setProperty(
-					"--rux-trip-bar-visible-row-count",
+					"--sched-trip-bar-visible-row-count",
 					count,
 				);
 			}
 			recomputeTripBarRowCount();
 
 			// ── Trip bar size ─────────────────────────────────────────────────
-			// Swaps --rux-trip-bar-row-font-size/-line-height (tokens.css) from
+			// Swaps --sched-trip-bar-row-font-size/-line-height (tokens.css) from
 			// xs to xxs/sm via one class on schedulerEl — see trip-bar.css's
 			// "Row size" section for why nothing else needs to change. Reuses
 			// the existing .rux-segmented-track component (rux-ui/js/controls.js)
@@ -10148,7 +10135,7 @@
 			// ── Day column width ─────────────────────────────────────────────
 			// Trip bars have no width of their own — placeInline() sizes them
 			// as a % of their day column (see index.html above), so the day
-			// column's own min-width (--rux-scheduler-day-min-width,
+			// column's own min-width (--sched-scheduler-day-min-width,
 			// scheduler.css) is the only lever that needs to move. S/M/L are
 			// just three preset values for the same slider to jump to, not a
 			// separate mechanism — both write the same custom property on
@@ -10187,7 +10174,7 @@
 			function applyDayColumnWidth(rem) {
 				dayColumnWidth = rem;
 				schedulerEl?.style.setProperty(
-					"--rux-scheduler-day-min-width",
+					"--sched-scheduler-day-min-width",
 					`${rem}rem`,
 				);
 				if (dayWidthSlider) dayWidthSlider.value = String(rem);
@@ -10457,7 +10444,7 @@
 			async function ensureDriverGridData() {
 				if (driverGridDataLoaded) return;
 				try {
-					const driverDb = await import("./js/data/driver-db.js?v=3");
+					const driverDb = await import("./js/data/driver-db.js?v=7");
 					getDriverPhotoUrl = driverDb.getDriverPhotoUrl;
 					const [drivers, timeOff] = await Promise.all([
 						driverDb.fetchDrivers(),
@@ -10480,7 +10467,7 @@
 					if (grid) {
 						grid.innerHTML = "";
 						const p = document.createElement("p");
-						p.className = "rux-driver-grid__empty";
+						p.className = "sched-driver-grid__empty";
 						p.textContent = "Could not load drivers.";
 						grid.appendChild(p);
 					}
@@ -10688,7 +10675,7 @@
 				driverGridPopover = document.createElement("section");
 				driverGridPopover.id = "sched-driver-grid-popover";
 				driverGridPopover.className =
-					"rux-driver-grid__popover rux-card rux-card--elevated rux-popover";
+					"sched-driver-grid__popover rux-card rux-card--elevated rux-popover";
 				driverGridPopover.setAttribute("role", "dialog");
 				driverGridPopover.setAttribute("aria-modal", "false");
 				driverGridPopover.hidden = true;
@@ -10708,7 +10695,7 @@
 				document.addEventListener("click", (event) => {
 					if (driverGridPopover.hidden) return;
 					if (driverGridPopover.contains(event.target)) return;
-					if (event.target.closest(".rux-driver-grid__cell")) return;
+					if (event.target.closest(".sched-driver-grid__cell")) return;
 					closeDriverGridPopover();
 				});
 				document.addEventListener("keydown", (event) => {
@@ -10735,11 +10722,11 @@
 				body.replaceChildren();
 
 				const profile = document.createElement("div");
-				profile.className = "rux-driver-grid__popover-profile";
+				profile.className = "sched-driver-grid__popover-profile";
 
 				const avatar = document.createElement("span");
 				avatar.className =
-					"rux-avatar rux-avatar--lg rux-driver-grid__popover-avatar";
+					"rux-avatar rux-avatar--lg sched-driver-grid__popover-avatar";
 				if (driver.photo_path && getDriverPhotoUrl) {
 					const img = document.createElement("img");
 					img.src = getDriverPhotoUrl(driver.photo_path);
@@ -10753,11 +10740,11 @@
 				profile.appendChild(avatar);
 
 				const info = document.createElement("dl");
-				info.className = "rux-driver-grid__popover-info";
+				info.className = "sched-driver-grid__popover-info";
 				const addRow = (label, value, opts = {}) => {
 					if (!value) return;
 					const row = document.createElement("div");
-					row.className = "rux-driver-grid__popover-info-row";
+					row.className = "sched-driver-grid__popover-info-row";
 					row.appendChild(
 						Object.assign(document.createElement("dt"), {
 							textContent: label,
@@ -10838,7 +10825,7 @@
 				body.replaceChildren();
 				if (timeOffTooltip) {
 					const timeOff = document.createElement("p");
-					timeOff.className = "rux-driver-grid__popover-timeoff";
+					timeOff.className = "sched-driver-grid__popover-timeoff";
 					const icon = document.createElement("span");
 					icon.className = "rux-icon";
 					icon.setAttribute("aria-hidden", "true");
@@ -10850,22 +10837,22 @@
 					body.appendChild(timeOff);
 					if (timeOffNotes) {
 						const notes = document.createElement("p");
-						notes.className = "rux-driver-grid__popover-notes";
+						notes.className = "sched-driver-grid__popover-notes";
 						notes.textContent = timeOffNotes;
 						body.appendChild(notes);
 					}
 				}
 				if (entries.length) {
 					const list = document.createElement("div");
-					list.className = "rux-driver-grid__popover-list";
+					list.className = "sched-driver-grid__popover-list";
 					entries.forEach((entry) => {
 						const item = document.createElement("div");
-						item.className = "rux-driver-grid__popover-assignment";
+						item.className = "sched-driver-grid__popover-assignment";
 						const itemTitle = document.createElement("p");
-						itemTitle.className = "rux-driver-grid__popover-title";
+						itemTitle.className = "sched-driver-grid__popover-title";
 						itemTitle.textContent = entry.destination;
 						const meta = document.createElement("p");
-						meta.className = "rux-driver-grid__popover-meta";
+						meta.className = "sched-driver-grid__popover-meta";
 						meta.textContent = [
 							`Bus ${entry.busNumber}`,
 							entry.role,
@@ -10895,11 +10882,11 @@
 				if (!grid || !driverGridDataLoaded) return;
 				closeDriverGridPopover();
 				grid.innerHTML = "";
-				grid.style.setProperty("--rux-driver-grid-days", viewDays);
+				grid.style.setProperty("--sched-driver-grid-days", viewDays);
 
 				if (!allDrivers.length) {
 					const p = document.createElement("p");
-					p.className = "rux-driver-grid__empty";
+					p.className = "sched-driver-grid__empty";
 					p.textContent = "No active drivers.";
 					grid.appendChild(p);
 					return;
@@ -10919,26 +10906,26 @@
 
 				const headRow = document.createElement("div");
 				headRow.className =
-					"rux-driver-grid__row rux-driver-grid__row--head";
+					"sched-driver-grid__row sched-driver-grid__row--head";
 				headRow.setAttribute("role", "row");
 				const headNameCell = document.createElement("span");
-				headNameCell.className = "rux-driver-grid__name-cell";
+				headNameCell.className = "sched-driver-grid__name-cell";
 				headNameCell.setAttribute("role", "columnheader");
 				const headName = document.createElement("span");
-				headName.className = "rux-driver-grid__name";
+				headName.className = "sched-driver-grid__name";
 				const headNameLabel = document.createElement("span");
-				headNameLabel.className = "rux-driver-grid__name-label";
+				headNameLabel.className = "sched-driver-grid__name-label";
 				headNameLabel.textContent = "Driver";
 				headName.appendChild(headNameLabel);
 				headNameCell.appendChild(headName);
 				headRow.appendChild(headNameCell);
 				const headDays = document.createElement("div");
-				headDays.className = "rux-driver-grid__days";
+				headDays.className = "sched-driver-grid__days";
 				headDays.setAttribute("role", "presentation");
 				const todayIso = isoDate(new Date());
 				days.forEach((date) => {
 					const label = document.createElement("span");
-					label.className = "rux-driver-grid__day-label";
+					label.className = "sched-driver-grid__day-label";
 					label.dataset.date = isoDate(date);
 					label.setAttribute("role", "columnheader");
 					label.title = date.toLocaleDateString("en-US", {
@@ -10953,12 +10940,12 @@
 					if (isoDate(date) === todayIso)
 						label.classList.add("is-today");
 					const weekday = document.createElement("span");
-					weekday.className = "rux-driver-grid__day-label-weekday";
+					weekday.className = "sched-driver-grid__day-label-weekday";
 					weekday.textContent = date.toLocaleDateString("en-US", {
 						weekday: "narrow",
 					});
 					const dayNumber = document.createElement("span");
-					dayNumber.className = "rux-driver-grid__day-label-date";
+					dayNumber.className = "sched-driver-grid__day-label-date";
 					dayNumber.textContent = String(date.getDate());
 					label.append(weekday, dayNumber);
 					headDays.appendChild(label);
@@ -10968,7 +10955,7 @@
 
 				allDrivers.forEach((driver) => {
 					const row = document.createElement("div");
-					row.className = "rux-driver-grid__row";
+					row.className = "sched-driver-grid__row";
 					row.dataset.driverId = driver.id;
 					row.dataset.priority = String(driver.priority || 3);
 					row.setAttribute("role", "row");
@@ -10980,11 +10967,11 @@
 					);
 
 					const nameCell = document.createElement("div");
-					nameCell.className = "rux-driver-grid__name-cell";
+					nameCell.className = "sched-driver-grid__name-cell";
 					nameCell.setAttribute("role", "rowheader");
 					const nameEl = document.createElement("button");
 					nameEl.type = "button";
-					nameEl.className = "rux-driver-grid__name";
+					nameEl.className = "sched-driver-grid__name";
 					nameEl.title = driver.name || "";
 					nameEl.setAttribute(
 						"aria-label",
@@ -10992,7 +10979,7 @@
 					);
 					nameEl.append(
 						Object.assign(document.createElement("span"), {
-							className: "rux-driver-grid__name-label",
+							className: "sched-driver-grid__name-label",
 							textContent: driver.short_name || driver.name,
 						}),
 					);
@@ -11000,7 +10987,7 @@
 					row.appendChild(nameCell);
 
 					const daysEl = document.createElement("div");
-					daysEl.className = "rux-driver-grid__days";
+					daysEl.className = "sched-driver-grid__days";
 					daysEl.setAttribute("role", "presentation");
 					const driverDates = dayMap.get(driver.id);
 					const driverTimeOff = timeOffMap.get(driver.id);
@@ -11011,24 +10998,24 @@
 						const timeOffTooltip = timeOff?.tooltip;
 						const cell = document.createElement("button");
 						cell.type = "button";
-						cell.className = "rux-driver-grid__cell";
+						cell.className = "sched-driver-grid__cell";
 						cell.dataset.date = iso;
 						cell.setAttribute("role", "gridcell");
 						const titleParts = [];
 						if (entries.length >= 2) {
 							cell.classList.add(
-								"rux-driver-grid__cell--conflict",
+								"sched-driver-grid__cell--conflict",
 							);
 							titleParts.push(
 								`Double-booked — ${entries.map((entry) => entry.destination).join(", ")}`,
 							);
 						} else if (entries.length === 1) {
-							cell.classList.add("rux-driver-grid__cell--busy");
+							cell.classList.add("sched-driver-grid__cell--busy");
 							titleParts.push(entries[0].destination);
 						}
 						if (timeOffTooltip) {
 							cell.classList.add(
-								"rux-driver-grid__cell--unavailable",
+								"sched-driver-grid__cell--unavailable",
 							);
 							titleParts.push(
 								entries.length
@@ -11111,13 +11098,13 @@
 			);
 			const driverInfoBtn = document.getElementById("rp-driver-info-btn");
 			const driverGridScroller = document.querySelector(
-				".rux-driver-grid__scroller",
+				".sched-driver-grid__scroller",
 			);
 
 			function selectGridDriver(driverId) {
 				selectedGridDriverId = driverId;
 				driverGridEl
-					?.querySelectorAll(".rux-driver-grid__row[data-driver-id]")
+					?.querySelectorAll(".sched-driver-grid__row[data-driver-id]")
 					.forEach((row) => {
 						const selected =
 							String(row.dataset.driverId) === String(driverId);
@@ -11142,9 +11129,9 @@
 			}
 
 			driverGridEl?.addEventListener("dblclick", (e) => {
-				if (e.target.closest(".rux-driver-grid__cell")) return;
+				if (e.target.closest(".sched-driver-grid__cell")) return;
 				const row = e.target.closest(
-					".rux-driver-grid__row[data-driver-id]",
+					".sched-driver-grid__row[data-driver-id]",
 				);
 				if (!row) return;
 				const driver = allDrivers.find(
@@ -11155,11 +11142,11 @@
 
 			driverGridEl?.addEventListener("click", (e) => {
 				const row = e.target.closest(
-					".rux-driver-grid__row[data-driver-id]",
+					".sched-driver-grid__row[data-driver-id]",
 				);
 				if (!row) return;
 				selectGridDriver(row.dataset.driverId);
-				const cell = e.target.closest(".rux-driver-grid__cell");
+				const cell = e.target.closest(".sched-driver-grid__cell");
 				if (!cell || !driverGridRenderState) {
 					closeDriverGridPopover();
 					return;
@@ -11266,16 +11253,16 @@
 					const day = prevMonthDays - firstDay + 1 + i;
 					const d = new Date(year, month - 1, day);
 					const iso = isoDate(d);
-					html += `<button class="rux-mini-cal__date rux-mini-cal__date--outside${iso >= weekStartIso && iso <= weekEndIso ? " rux-mini-cal__date--active-week" : ""}" type="button" data-date="${iso}">${day}</button>`;
+					html += `<button class="sched-mini-cal__date sched-mini-cal__date--outside${iso >= weekStartIso && iso <= weekEndIso ? " sched-mini-cal__date--active-week" : ""}" type="button" data-date="${iso}">${day}</button>`;
 				}
 				for (let day = 1; day <= daysInMonth; day++) {
 					const d = new Date(year, month, day);
 					const iso = isoDate(d);
 					const isToday = iso === today;
 					const inWeek = iso >= weekStartIso && iso <= weekEndIso;
-					let cls = "rux-mini-cal__date";
-					if (isToday) cls += " rux-mini-cal__date--today";
-					if (inWeek) cls += " rux-mini-cal__date--active-week";
+					let cls = "sched-mini-cal__date";
+					if (isToday) cls += " sched-mini-cal__date--today";
+					if (inWeek) cls += " sched-mini-cal__date--active-week";
 					html += `<button class="${cls}" type="button" data-date="${iso}">${day}</button>`;
 				}
 				const totalCells = firstDay + daysInMonth;
@@ -11283,7 +11270,7 @@
 				for (let i = 1; i <= remaining; i++) {
 					const d = new Date(year, month + 1, i);
 					const iso = isoDate(d);
-					html += `<button class="rux-mini-cal__date rux-mini-cal__date--outside${iso >= weekStartIso && iso <= weekEndIso ? " rux-mini-cal__date--active-week" : ""}" type="button" data-date="${iso}">${i}</button>`;
+					html += `<button class="sched-mini-cal__date sched-mini-cal__date--outside${iso >= weekStartIso && iso <= weekEndIso ? " sched-mini-cal__date--active-week" : ""}" type="button" data-date="${iso}">${i}</button>`;
 				}
 				miniCalDates.innerHTML = html;
 			}
@@ -11334,11 +11321,7 @@
 					rightDrawerHandle.syncHandle();
 					return;
 				}
-				rightDrawer.classList.remove(
-					"is-closing",
-					"is-collapsing",
-					"is-expanding",
-				);
+				rightDrawer.classList.remove("is-closing", "is-collapsing");
 				rightDrawer.classList.add("is-open");
 				rightPanel.inert = false;
 				rightDrawer.setAttribute("aria-hidden", "false");
@@ -11418,7 +11401,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=28");
+					const db = await import("./js/data/trip-db.js?v=32");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
@@ -11511,7 +11494,7 @@
 					const {
 						generateDriverExpiryAlerts,
 						syncTripReadinessAlerts,
-					} = await import("./js/data/notification-db.js?v=5");
+					} = await import("./js/data/notification-db.js?v=9");
 					await Promise.all([
 						generateDriverExpiryAlerts(),
 						syncTripReadinessAlerts(window.RuxTrips?.list() || []),
@@ -12033,9 +12016,9 @@
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
-			<div class="rux-scope-manifest__content">
-				<div class="rux-scope-manifest__toolbar">
-					<div class="rux-scope-trip__cols-2">
+			<div class="sched-scope-manifest__content">
+				<div class="sched-scope-manifest__toolbar">
+					<div class="sched-scope-trip__cols-2">
 						<div class="rux-field">
 							<span class="rux-field__label">Paid</span
 							><output class="rux-output" id="rpm-summary-paid"
@@ -12108,7 +12091,7 @@
 						</button>
 					</div>
 				</div>
-				<div class="rux-panel__body rux-scope-manifest__body">
+				<div class="rux-panel__body sched-scope-manifest__body">
 					<table
 						class="rux-table trips-app__table"
 						aria-label="Passenger manifest"
@@ -12131,12 +12114,12 @@
 				<!-- Dims the table and catches the "click outside to close" while the
            passenger panel is open. Sits above the table but below the panel
            (z-index), so it can't swallow clicks meant for the panel itself. -->
-				<div class="rux-scope-manifest__scrim" id="rpm-scrim"></div>
+				<div class="sched-scope-manifest__scrim" id="rpm-scrim"></div>
 				<!-- Slides in from the left over the table/toolbar (not the outer
            header — title/close/drag stay reachable while editing). See
            js/panels/trip-manifest.js for open/close wiring. -->
 				<div
-					class="rux-scope-manifest__passenger-panel"
+					class="sched-scope-manifest__passenger-panel"
 					id="rp-passenger-card"
 				>
 					<header class="rux-card__header">
@@ -12154,7 +12137,7 @@
 							New passenger
 						</h3>
 					</header>
-					<div class="rux-scope-manifest__passenger-body">
+					<div class="sched-scope-manifest__passenger-body">
 						<div class="rux-panel__pane">
 							<div class="rux-card">
 								<header class="rux-card__header">
@@ -12165,7 +12148,7 @@
 								<div
 									class="rux-card__body rux-card__body--stack"
 								>
-									<div class="rux-scope-trip__cols-2">
+									<div class="sched-scope-trip__cols-2">
 										<div class="rux-field">
 											<label
 												class="rux-field__label"
@@ -12189,7 +12172,7 @@
 											/>
 										</div>
 									</div>
-									<div class="rux-scope-trip__cols-2">
+									<div class="sched-scope-trip__cols-2">
 										<div class="rux-field">
 											<label
 												class="rux-field__label"
@@ -12214,7 +12197,7 @@
 											/>
 										</div>
 									</div>
-									<div class="rux-scope-trip__cols-2">
+									<div class="sched-scope-trip__cols-2">
 										<div class="rux-field">
 											<label
 												class="rux-field__label"
@@ -12242,7 +12225,7 @@
 											></label>
 										</div>
 									</div>
-									<div class="rux-scope-trip__cols-2">
+									<div class="sched-scope-trip__cols-2">
 										<div class="rux-field">
 											<label
 												class="rux-field__label"
@@ -12352,7 +12335,7 @@
 											</option>
 										</select>
 									</div>
-									<div class="rux-scope-trip__cols-2">
+									<div class="sched-scope-trip__cols-2">
 										<div class="rux-field">
 											<label
 												class="rux-field__label"
@@ -12388,11 +12371,11 @@
 										</div>
 									</div>
 									<div
-										class="rux-scope-trip__payment-rows"
+										class="sched-scope-trip__payment-rows"
 										id="rpm-payment-rows"
 									>
 										<div
-											class="rux-scope-trip__payment-empty"
+											class="sched-scope-trip__payment-empty"
 											role="status"
 										>
 											<span
@@ -12460,10 +12443,10 @@
 			id="request-inbox-window"
 			hidden
 		>
-			<header class="rux-panel__header rux-scope-request__header">
+			<header class="rux-panel__header sched-scope-request__header">
 				<p class="rux-card__title">Requests</p>
 				<span
-					class="rux-scope-request__count"
+					class="sched-scope-request__count"
 					id="request-inbox-footer"
 					aria-live="polite"
 				></span>
@@ -12476,8 +12459,8 @@
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
-			<div class="rux-scope-request__content">
-				<div class="rux-scope-request__toolbar">
+			<div class="sched-scope-request__content">
+				<div class="sched-scope-request__toolbar">
 					<div class="rux-field">
 						<label class="rux-field__label">Status</label>
 						<div
@@ -12538,7 +12521,7 @@
 					</div>
 				</div>
 				<ul
-					class="rux-panel__body rux-scope-request__list"
+					class="rux-panel__body sched-scope-request__list"
 					id="request-inbox-list"
 				></ul>
 			</div>
@@ -12555,14 +12538,14 @@
 		</div>
 
 		<dialog
-			class="rux-scope-request__dialog"
+			class="sched-scope-request__dialog"
 			id="request-inbox-dialog"
 			aria-labelledby="request-inbox-dialog-title"
 		>
-			<form class="rux-scope-request__dialog-form">
-				<header class="rux-scope-request__dialog-header">
+			<form class="sched-scope-request__dialog-form">
+				<header class="sched-scope-request__dialog-header">
 					<h2
-						class="rux-scope-request__dialog-title"
+						class="sched-scope-request__dialog-title"
 						id="request-inbox-dialog-title"
 					>
 						New request
@@ -12576,8 +12559,8 @@
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>
-				<div class="rux-scope-request__dialog-body">
-					<p class="rux-scope-request__dialog-intro">
+				<div class="sched-scope-request__dialog-body">
+					<p class="sched-scope-request__dialog-intro">
 						We'll create a request link you can send to the
 						customer. Their submission lands back here.
 					</p>
@@ -12650,8 +12633,8 @@
 						></textarea>
 					</label>
 				</div>
-				<footer class="rux-scope-request__dialog-footer">
-					<div class="rux-scope-request__dialog-actions">
+				<footer class="sched-scope-request__dialog-footer">
+					<div class="sched-scope-request__dialog-actions">
 						<button
 							type="button"
 							class="rux-button rux-button--accent"
@@ -12661,11 +12644,11 @@
 						</button>
 					</div>
 					<div
-						class="rux-scope-request__invite"
+						class="sched-scope-request__invite"
 						id="request-inbox-invite"
 						hidden
 					>
-						<p class="rux-scope-request__invite-label">
+						<p class="sched-scope-request__invite-label">
 							Request link
 						</p>
 						<input
@@ -12675,7 +12658,7 @@
 							readonly
 							aria-label="Request link"
 						/>
-						<div class="rux-scope-request__invite-actions">
+						<div class="sched-scope-request__invite-actions">
 							<button
 								type="button"
 								class="rux-button rux-button--ghost"

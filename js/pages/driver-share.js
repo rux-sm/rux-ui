@@ -8,8 +8,8 @@ import {
 	normalizeFleetAssignments,
 	normalizeSpotLocation,
 	operationalTripContact,
-} from "../components/driver-assignment-model.js?v=19";
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=57";
+} from "../components/driver-assignment-model.js?v=20";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=58";
 
 const root = document.getElementById("driver-share-root");
 const token = new URLSearchParams(window.location.search).get("s")?.trim().toLowerCase();

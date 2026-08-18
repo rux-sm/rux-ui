@@ -20,7 +20,7 @@
 	top: 10%;
 	left: 50%;
 	transform: translateX(-50%);
-	width: var(--rux-request-window-width);
+	width: var(--sched-request-window-width);
 	height: clamp(400px, 70vh, 800px);
 	min-width: 480px;
 	min-height: 320px;
@@ -30,26 +30,26 @@
 }
 
 /* Same content column as .sched-scope-trip-finder__content. */
-.rux-scope-request__content {
+.sched-scope-request__content {
 	display: flex;
 	flex-direction: column;
 	min-height: 0;
 	flex: 1;
 }
 
-.rux-scope-request__header {
+.sched-scope-request__header {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 }
 
-.rux-scope-request__header .rux-card__title {
+.sched-scope-request__header .rux-card__title {
 	flex: 1;
 	min-width: 0;
 }
 
 /* New-request count next to the title — muted, complementing the nav badge */
-.rux-scope-request__count {
+.sched-scope-request__count {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
@@ -58,31 +58,31 @@
 /* Toolbar band like .sched-scope-trip-finder__toolbar: flex none, hairline
    bottom border, and a field padded like the search row. Status filter uses
    the shared segmented control. */
-.rux-scope-request__toolbar {
+.sched-scope-request__toolbar {
 	flex: none;
 	display: flex;
 	flex-direction: column;
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-scope-request__toolbar .rux-field {
+.sched-scope-request__toolbar .rux-field {
 	min-width: 0;
 	padding: var(--rux-space-3) var(--rux-space-4);
 	background: var(--rux-panel-floating-header-bg);
 }
 
-.rux-scope-request__toolbar .rux-segmented-track {
+.sched-scope-request__toolbar .rux-segmented-track {
 	width: 100%;
 }
 
-.rux-scope-request__toolbar .rux-segmented-track > .rux-button {
+.sched-scope-request__toolbar .rux-segmented-track > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
 /* ── Request list ─────────────────────────────────────────────────────── */
 
-.rux-scope-request__list {
+.sched-scope-request__list {
 	flex: 1;
 	min-height: 0;
 	display: flex;
@@ -97,7 +97,7 @@
 	list-style: none;
 }
 
-.rux-scope-request__item {
+.sched-scope-request__item {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
@@ -108,23 +108,23 @@
 	color: var(--rux-text-default);
 }
 
-.rux-scope-request__item:hover {
+.sched-scope-request__item:hover {
 	border-color: var(--rux-card-border);
 }
 
-.rux-scope-request__item-main {
+.sched-scope-request__item-main {
 	flex: 1;
 	min-width: 0;
 }
 
-.rux-scope-request__item-title-row {
+.sched-scope-request__item-title-row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 	min-width: 0;
 }
 
-.rux-scope-request__item-title {
+.sched-scope-request__item-title {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
@@ -133,13 +133,13 @@
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-scope-request__item-meta {
+.sched-scope-request__item-meta {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 }
 
-.rux-scope-request__item-note {
+.sched-scope-request__item-note {
 	margin-top: var(--rux-space-1);
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -148,21 +148,21 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-scope-request__item-actions {
+.sched-scope-request__item-actions {
 	flex: none;
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
 }
 
-.rux-scope-request__item-link {
+.sched-scope-request__item-link {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
 	margin-top: var(--rux-space-1);
 }
 
-.rux-scope-request__item-link .rux-input {
+.sched-scope-request__item-link .rux-input {
 	flex: 1;
 	min-width: 0;
 	font-size: var(--rux-size-xs);
@@ -171,7 +171,7 @@
 	cursor: text;
 }
 
-.rux-scope-request__empty {
+.sched-scope-request__empty {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -184,22 +184,22 @@
 
 /* Closed requests lose their tone — a quiet neutral instead of a status
    color. Nothing else about the badge changes. */
-.rux-scope-request__chip {
+.sched-scope-request__chip {
 	flex: none;
 }
 
-.rux-scope-request__chip--closed {
+.sched-scope-request__chip--closed {
 	--_badge-color: var(--rux-text-disabled);
 }
 
 /* ── Footer ───────────────────────────────────────────────────────────── */
-/* Was .rux-scope-request__footer here — pure .rux-panel__footer duplicate
+/* Was .sched-scope-request__footer here — pure .rux-panel__footer duplicate
    (display:flex + justify-content:flex-end, both already set on the base
    rule), deleted along with the class per docs/cards.md's Panel migration. */
 
 /* ── Invite dialog ────────────────────────────────────────────────────── */
 
-.rux-scope-request__dialog[open] {
+.sched-scope-request__dialog[open] {
 	display: flex;
 	flex-direction: column;
 	width: min(var(--rux-container-xs), calc(100% - (var(--rux-space-4) * 2)));
@@ -214,25 +214,25 @@
 	border-radius: var(--rux-radius-xl);
 }
 
-.rux-scope-request__dialog-form {
+.sched-scope-request__dialog-form {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
 	min-height: 0;
 }
 
-.rux-scope-request__dialog::backdrop {
+.sched-scope-request__dialog::backdrop {
 	background: var(--rux-overlay-scrim);
 	backdrop-filter: blur(var(--rux-overlay-blur));
 }
 
-.rux-scope-request__dialog-header,
-.rux-scope-request__dialog-body,
-.rux-scope-request__dialog-footer {
+.sched-scope-request__dialog-header,
+.sched-scope-request__dialog-body,
+.sched-scope-request__dialog-footer {
 	padding: var(--rux-space-5);
 }
 
-.rux-scope-request__dialog-header {
+.sched-scope-request__dialog-header {
 	flex: none;
 	display: flex;
 	align-items: center;
@@ -240,13 +240,13 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-scope-request__dialog-title {
+.sched-scope-request__dialog-title {
 	flex: 1;
 	min-width: 0;
 	font-size: var(--rux-size-2xl);
 }
 
-.rux-scope-request__dialog-body {
+.sched-scope-request__dialog-body {
 	flex: 1;
 	min-height: 0;
 	display: flex;
@@ -256,37 +256,37 @@
 	overscroll-behavior: contain;
 }
 
-.rux-scope-request__dialog-intro {
+.sched-scope-request__dialog-intro {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 }
 
-.rux-scope-request__dialog-footer {
+.sched-scope-request__dialog-footer {
 	flex: none;
 	display: flex;
 	justify-content: flex-end;
 	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-scope-request__dialog-actions {
+.sched-scope-request__dialog-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: var(--rux-space-2);
 }
 
-.rux-scope-request__invite {
+.sched-scope-request__invite {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
 }
 
-.rux-scope-request__invite-label {
+.sched-scope-request__invite-label {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-scope-request__invite-actions {
+.sched-scope-request__invite-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: var(--rux-space-2);
@@ -296,11 +296,11 @@
    Trip Finder's container query. Keeps the six status segments readable by
    letting the toolbar band scroll horizontally instead of clipping text. */
 @container request-window (max-width: 700px) {
-	.rux-scope-request__toolbar .rux-field {
+	.sched-scope-request__toolbar .rux-field {
 		overflow-x: auto;
 	}
 
-	.rux-scope-request__toolbar .rux-segmented-track {
+	.sched-scope-request__toolbar .rux-segmented-track {
 		flex: none;
 		width: max-content;
 		min-width: 0;

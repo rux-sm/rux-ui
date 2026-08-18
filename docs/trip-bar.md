@@ -10,9 +10,9 @@ The trip bar is a compact Gantt-style card on the scheduler grid. Each bar repre
 |---|---|---|
 | Collapsed height | **135px** | Exact fit for 7 rows + gaps + padding |
 | Body padding | **4px all sides** | `space-1` uniform |
-| Row gap | **1px** | `--rux-trip-bar-tight-gap` |
+| Row gap | **1px** | `--sched-trip-bar-tight-gap` |
 | Icon size (all icons) | **18px** | Scoped `--rux-icon-md: 18px` on `.sched-trip-bar` |
-| Day minimum width | **13rem (208px)** | Set on `.scheduler-app__grid` |
+| Day minimum width | **13rem (208px)** | Set on `.sched-app__grid` |
 
 ---
 
@@ -221,7 +221,7 @@ Values truncate with ellipsis — no wrapping.
 
 ## Grid Placement
 
-Trip bars are `position: absolute` inside `.rux-scheduler__track`. Placement is calculated in JS (`placeInline` and `layoutTrack`).
+Trip bars are `position: absolute` inside `.sched-scheduler__track`. Placement is calculated in JS (`placeInline` and `layoutTrack`).
 
 ### Insets
 
@@ -256,7 +256,7 @@ lane-gap:   var(--rux-space-2) (8px) between stacked bars
 Changing any of these requires updating the placement math:
 - `--rux-space-2` — base inset value
 - `--rux-border-width` — grid line thickness
-- `--rux-trip-bar-collapsed-height` — affects row height calculation
+- `--sched-trip-bar-collapsed-height` — affects row height calculation
 
 ---
 

@@ -48,7 +48,7 @@
 }
 
 .sched-print-page {
-	--rux-print-label-width: 32px;
+	--sched-print-label-width: 32px;
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
@@ -60,7 +60,7 @@
 	break-after: page;
 }
 
-.rux-print__page-title {
+.sched-print__page-title {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -70,13 +70,13 @@
 	margin-block-end: 6px;
 }
 
-.rux-print__page-logo {
+.sched-print__page-logo {
 	height: 24px;
 	width: auto;
 	flex: none;
 }
 
-.rux-print__page-title-text {
+.sched-print__page-title-text {
 	font-family: var(--rux-font-sans, sans-serif);
 	font-size: 14px;
 	font-weight: 700;
@@ -89,7 +89,7 @@
    whatever vertical space is left in .sched-print-page after the title, so
    there's no gap between the table and the page's bottom edge regardless
    of how tall the title happens to render. */
-.rux-print__table {
+.sched-print__table {
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 0;
@@ -100,15 +100,15 @@
 }
 
 /* Matching corner radii on the header (top) and last row (bottom, below)
-   so nothing has a sharp corner poking past where .rux-print__table's own
+   so nothing has a sharp corner poking past where .sched-print__table's own
    rounded overflow:hidden clip already curves away — without this, the
    header/last-row's straight corner gets a sliver clipped off right at
    the curve, making its border look thin/broken there instead of just
    smoothly rounding with the table. */
-.rux-print__header {
+.sched-print__header {
 	flex: none;
 	display: grid;
-	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
+	grid-template-columns: var(--sched-print-label-width, 3.5rem) repeat(7, 1fr);
 	row-gap: 0;
 	background-color: var(--print-fill);
 	border-start-start-radius: 4px;
@@ -118,16 +118,16 @@
 	-webkit-print-color-adjust: exact;
 }
 
-/* Padding lives on the cells (not the .rux-print__header container) so
+/* Padding lives on the cells (not the .sched-print__header container) so
    each cell's box — and its vertical border-inline-end — extends all the
    way down to meet the header's border-block-end, instead of stopping
    short at the cell's own short text content and leaving a gap. */
-.rux-print__corner {
+.sched-print__corner {
 	padding-block: 4px;
 	border-inline-end: 1px solid var(--print-frame);
 }
 
-.rux-print__day-head {
+.sched-print__day-head {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -142,12 +142,12 @@
 	border-bottom: none;
 }
 
-.rux-print__day-head-name,
-.rux-print__day-head-number {
+.sched-print__day-head-name,
+.sched-print__day-head-number {
 	white-space: nowrap;
 }
 
-.rux-print__day-head:last-child {
+.sched-print__day-head:last-child {
 	border-inline-end: none;
 }
 
@@ -155,7 +155,7 @@
    gets the same fixed height (set inline by layoutRowHeights, JS) and
    clips its own content, so rows are always uniform regardless of how
    many print trip cards they hold. */
-.rux-print__row {
+.sched-print__row {
 	position: relative;
 	flex: 1 1 0;
 	min-height: 0;
@@ -165,7 +165,7 @@
 	break-inside: avoid;
 }
 
-.rux-print__row:last-child {
+.sched-print__row:last-child {
 	border-end-start-radius: 4px;
 	border-end-end-radius: 4px;
 	border-block-end: none;
@@ -174,7 +174,7 @@
 /* Background day-column divider lines, behind the row's content (same
    idea as the live scheduler's track-grid) — present even on blank filler
    rows so the day columns read as one consistent grid down the page.
-   Shares the exact grid-template-columns of .rux-print__row-inner (not
+   Shares the exact grid-template-columns of .sched-print__row-inner (not
    just the same label-width offset) — two independently computed grids
    over the same space will drift apart otherwise, and that drift
    compounds day-by-day across the week. No column-gap here (or on
@@ -182,43 +182,43 @@
    each cell, so a nonzero gap would put empty space on one side of that
    line and not the other, making trip cards (inset via their own
    margin-inline) look closer to their right neighbor than their left. */
-.rux-print__row-daygrid {
+.sched-print__row-daygrid {
 	position: absolute;
 	inset: 0;
 	display: grid;
-	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
+	grid-template-columns: var(--sched-print-label-width, 3.5rem) repeat(7, 1fr);
 	pointer-events: none;
 	z-index: 0;
 }
 
-.rux-print__row-daygrid-label {
+.sched-print__row-daygrid-label {
 	background-color: var(--print-fill);
 	print-color-adjust: exact;
 	-webkit-print-color-adjust: exact;
 	border-inline-end: 1px solid var(--print-frame);
 }
 
-.rux-print__row-dayline {
+.sched-print__row-dayline {
 	border-inline-end: 1px solid var(--print-rule-soft);
 }
 
-.rux-print__row-dayline:last-child {
+.sched-print__row-dayline:last-child {
 	border-inline-end: none;
 }
 
 /* The actual grid (label column + 7 day columns) and everything scaled
    to fit the row's fixed height (transform:scaleY, set inline by
    layoutRowHeights when a row's natural content is too tall) live here,
-   one level inside .rux-print__row — transform never changes how much
+   one level inside .sched-print__row — transform never changes how much
    space an element reserves in normal flow, so the *outer* row's fixed
    height + overflow:hidden (not this element) is what print pagination
    actually measures against. */
-.rux-print__row-inner {
+.sched-print__row-inner {
 	position: relative;
 	z-index: 1;
 	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: var(--rux-print-label-width, 3.5rem) repeat(7, 1fr);
+	grid-template-columns: var(--sched-print-label-width, 3.5rem) repeat(7, 1fr);
 	grid-auto-rows: minmax(0, 1fr);
 	row-gap: 4px;
 	align-items: stretch;
@@ -227,7 +227,7 @@
 	transform-origin: top left;
 }
 
-.rux-print__row-head {
+.sched-print__row-head {
 	grid-column: 1;
 	grid-row: 1 / -1;
 	min-height: 28px;
@@ -328,7 +328,7 @@
 	display: grid;
 	grid-auto-rows: minmax(0, 1fr);
 	gap: 0;
-	width: var(--rux-print-trip-content-width, 100%);
+	width: var(--sched-print-trip-content-width, 100%);
 	height: 100%;
 	min-width: 0;
 	padding: 4px;
@@ -441,7 +441,7 @@
 
 /* Requirement icons (ADA lift, sleeper, etc.) — sits at the end of the
    destination row, same row/placement precedent as the live trip-bar's
-   .rux-trip-bar__reqs (trip-bar.js/trip-bar.css), sized to match the other
+   .sched-trip-bar__reqs (trip-bar.js/trip-bar.css), sized to match the other
    destination-row icons (.sched-print-trip__leg-icon/.sched-print-trip__driver-icon). */
 .sched-print-trip__reqs {
 	display: inline-flex;

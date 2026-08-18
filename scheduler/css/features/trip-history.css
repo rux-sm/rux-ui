@@ -4,7 +4,7 @@
    ========================================================================== */
 
 .sched-trip-history {
-	--rux-trip-history-change-grid: minmax(6.5rem, 0.42fr) minmax(0, 1fr);
+	--sched-trip-history-change-grid: minmax(6.5rem, 0.42fr) minmax(0, 1fr);
 
 	display: flex;
 	min-width: 0;
@@ -13,7 +13,7 @@
 	padding-block-end: var(--rux-panel-padding-block);
 }
 
-.rux-trip-history__toolbar {
+.sched-trip-history__toolbar {
 	display: flex;
 	min-width: 0;
 	align-items: center;
@@ -23,38 +23,38 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-trip-history__title,
-.rux-trip-history__subtitle,
-.rux-trip-history__status,
-.rux-trip-history__group-title {
+.sched-trip-history__title,
+.sched-trip-history__subtitle,
+.sched-trip-history__status,
+.sched-trip-history__group-title {
 	margin: 0;
 }
 
-/* .rux-trip-history__title's typography is shared with every other
+/* .sched-trip-history__title's typography is shared with every other
    panel/card title — see rux-ui/css/base/card.css. */
 
-/* .rux-trip-history__subtitle's typography is shared with every other
+/* .sched-trip-history__subtitle's typography is shared with every other
    muted subtitle — see rux-ui/css/base/card.css. */
-.rux-trip-history__subtitle {
+.sched-trip-history__subtitle {
 	margin-top: var(--rux-space-1);
 }
 
-.rux-trip-history__filter {
+.sched-trip-history__filter {
 	flex: 0 1 auto;
 	max-width: 55%;
 }
 
-.rux-trip-history__filter .rux-button__label {
+.sched-trip-history__filter .rux-button__label {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-/* gap: 0 — .rux-trip-history__group is a .rux-card now (card.css)
+/* gap: 0 — .sched-trip-history__group is a .rux-card now (card.css)
    and date groups sit flush against each other, sharing one border at each
    seam instead of floating apart, matching the itinerary's day-groups and
    the Tasks tab's own date groups. */
-.rux-trip-history__list {
+.sched-trip-history__list {
 	display: flex;
 	min-width: 0;
 	flex-direction: column;
@@ -63,13 +63,13 @@
 
 /* No flex/gap of its own — plain block flow, like every other
    .rux-card. .rux-card--recessed children below space themselves via
-   margin-block + normal margin collapsing (see .rux-trip-history__card),
+   margin-block + normal margin collapsing (see .sched-trip-history__card),
    the same recipe the itinerary's day-groups use for their own stops. */
-.rux-trip-history__group {
+.sched-trip-history__group {
 	min-width: 0;
 }
 
-.rux-trip-history__group-title {
+.sched-trip-history__group-title {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
@@ -77,17 +77,17 @@
 	text-transform: uppercase;
 }
 
-/* margin-block, not margin-bottom alone: .rux-trip-history__group is plain
+/* margin-block, not margin-bottom alone: .sched-trip-history__group is plain
    block flow (no gap of its own — see above), so adjacent cards' margins
    collapse into one gap the normal CSS way, and the first card's own top
    margin applies against .rux-card__header (no margin of its own
    to collapse with) — same recipe as the itinerary's day-groups. */
-.rux-trip-history__card {
+.sched-trip-history__card {
 	min-width: 0;
 	margin: var(--rux-space-4);
 }
 
-.rux-trip-history__card-header {
+.sched-trip-history__card-header {
 	display: flex;
 	min-width: 0;
 	align-items: flex-start;
@@ -98,20 +98,20 @@
 	border-bottom: var(--rux-card-header-border);
 }
 
-.rux-trip-history__timestamp {
+.sched-trip-history__timestamp {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-history__actor {
+.sched-trip-history__actor {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-history__action {
+.sched-trip-history__action {
 	flex: none;
 	color: var(--rux-accent);
 	font-size: var(--rux-size-xs);
@@ -119,21 +119,21 @@
 	text-transform: capitalize;
 }
 
-.rux-trip-history__action[data-action="deleted"],
-.rux-trip-history__action[data-action="document_deleted"] {
+.sched-trip-history__action[data-action="deleted"],
+.sched-trip-history__action[data-action="document_deleted"] {
 	color: var(--rux-danger);
 }
 
-.rux-trip-history__action[data-action="created"],
-.rux-trip-history__action[data-action="document_uploaded"] {
+.sched-trip-history__action[data-action="created"],
+.sched-trip-history__action[data-action="document_uploaded"] {
 	color: var(--rux-success);
 }
 
-.rux-trip-history__context {
+.sched-trip-history__context {
 	padding: var(--rux-space-3);
 }
 
-.rux-trip-history__route {
+.sched-trip-history__route {
 	overflow: hidden;
 	color: var(--rux-text-heading);
 	font-size: var(--rux-size-sm);
@@ -144,83 +144,83 @@
 
 /* Typography shared with every other small muted caption — see
    rux-ui/css/base/form.css. */
-.rux-trip-history__meta {
+.sched-trip-history__meta {
 	margin-top: var(--rux-space-1);
 }
 
-.rux-trip-history__changes {
+.sched-trip-history__changes {
 	display: grid;
 	min-width: 0;
 	margin: 0;
 	border-top: var(--rux-card-section-border);
 }
 
-.rux-trip-history__change {
+.sched-trip-history__change {
 	display: grid;
-	grid-template-columns: var(--rux-trip-history-change-grid);
+	grid-template-columns: var(--sched-trip-history-change-grid);
 	min-width: 0;
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-2) var(--rux-space-3);
 }
 
-.rux-trip-history__change + .rux-trip-history__change {
+.sched-trip-history__change + .sched-trip-history__change {
 	border-top: var(--rux-card-section-border);
 }
 
-.rux-trip-history__change dt,
-.rux-trip-history__change dd {
+.sched-trip-history__change dt,
+.sched-trip-history__change dd {
 	min-width: 0;
 	margin: 0;
 }
 
-.rux-trip-history__change dt {
+.sched-trip-history__change dt {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-history__change dd {
+.sched-trip-history__change dd {
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-xs);
 	overflow-wrap: anywhere;
 }
 
-.rux-trip-history__old {
+.sched-trip-history__old {
 	color: var(--rux-text-muted);
 }
 
-.rux-trip-history__arrow {
+.sched-trip-history__arrow {
 	padding-inline: var(--rux-space-1);
 	color: var(--rux-text-disabled);
 }
 
-.rux-trip-history__new {
+.sched-trip-history__new {
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-history__more {
+.sched-trip-history__more {
 	width: 100%;
 	border: 0;
 	border-top: var(--rux-card-section-border);
 	border-radius: 0;
 }
 
-.rux-trip-history__empty {
+.sched-trip-history__empty {
 	padding: var(--rux-space-6) var(--rux-space-3);
 	text-align: center;
 }
 
 @container (max-width: 340px) {
-	.rux-trip-history__toolbar {
+	.sched-trip-history__toolbar {
 		align-items: stretch;
 		flex-direction: column;
 	}
 
-	.rux-trip-history__filter {
+	.sched-trip-history__filter {
 		max-width: none;
 	}
 
-	.rux-trip-history__change {
+	.sched-trip-history__change {
 		grid-template-columns: minmax(0, 1fr);
 		gap: var(--rux-space-1);
 	}

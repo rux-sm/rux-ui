@@ -294,60 +294,9 @@
 	   without touching the shared base/vivid tiers every other consumer reads
 	   from. Two tiers, matching the bar's existing intensity split — icon
 	   markers stay muted (-base), border overrides stay punchy (-vivid). */
-	--rux-trip-bar-danger-icon:    var(--rux-danger-base);
-	--rux-trip-bar-warning-icon:   var(--rux-warning-base);
-	--rux-trip-bar-success-icon:   var(--rux-success-base);
-	--rux-trip-bar-warning-border: var(--rux-warning-vivid);
-	--rux-trip-bar-danger-border:  var(--rux-danger-vivid);
 
 	--rux-tag-purple:	oklch(from var(--rux-purple)   	90% .28 h);
 	--rux-tag-default:	oklch(from var(--rux-gray)   	90% .00 h);
-
-	/* ─── COLOR · trip bar ─────────────────────────────────────────────────── */
-	/* Every color input that feeds the Gantt bar's background: the category
-	   hue palette (--_tone in trip-bar.css), and the lightness/opacity steps
-	   that compute each state's surface from that hue. Shape/shadow/motion
-	   trip-bar tokens stay in COMPONENT · trip bar — this section is colors
-	   only. */
-
-	/* — category colors — */
-	--rux-trip-color-cyan:   var(--rux-cyan);
-	--rux-trip-color-green:  var(--rux-green);
-	--rux-trip-color-purple: var(--rux-purple);
-	--rux-trip-color-yellow: var(--rux-yellow);
-	--rux-trip-color-orange: var(--rux-orange);
-	--rux-trip-color-pink:   var(--rux-pink);
-
-	/* — chroma — */
-	/* Multiplier on each category color's own source chroma (relative-color
-	   `c`), not a fixed replacement value — keeps every hue's native chroma
-	   proportionally intact instead of clamping every category to one static
-	   number, which risks gamut clipping on hues that can't support it at
-	   these lightness levels. 1 = source chroma unchanged. */
-	--rux-trip-bar-chroma-scale: 1;
-
-	/* — state lightness/opacity steps — */
-	/* Trip states shift lightness predictably while preserving each category's
-	   native chroma to avoid hue-dependent gamut clipping. */
-	--rux-trip-bar-bg-lightness:              60%;
-	--rux-trip-bar-state-lightness-step:      4%;
-	--rux-trip-bar-hover-bg-lightness:        calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
-	--rux-trip-bar-pressed-bg-lightness:      calc(var(--rux-trip-bar-bg-lightness) - var(--rux-trip-bar-state-lightness-step));
-	--rux-trip-bar-selected-bg-lightness:     calc(var(--rux-trip-bar-bg-lightness) + var(--rux-trip-bar-state-lightness-step));
-	--rux-trip-bar-bg-opacity:                80%;
-	--rux-trip-bar-hover-bg-opacity:          70%;
-	--rux-trip-bar-pressed-bg-opacity:        50%;
-	--rux-trip-bar-selected-bg-opacity:       80%;
-	--rux-trip-bar-tail-opacity:              20%;
-	--rux-trip-bar-tail-hover-opacity:        20%;
-	--rux-trip-bar-tail-pressed-opacity:      20%;
-	--rux-trip-bar-tail-selected-opacity:     20%;
-	--rux-trip-bar-disabled-opacity:          0.45;
-	--rux-trip-bar-ghost-bg-opacity:          16%;
-
-	/* A translucent tonal wash preserves the trip category hue. Dark mode
-	   deepens the bar beneath light metadata text; light mode reverses this. */
-	--rux-trip-bar-meta-bg: oklch(from var(--rux-black) l c h / 0%);
 
 	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
 	/* Components route through these roles even while both are square. This
@@ -595,8 +544,6 @@
 	/* Two tiers only, following the Vercel Geist model (README.md's
 	   "Reference: Vercel Geist colors"): canvas, and everything raised off
 	   it. No intermediate "how far above the canvas" ladder anymore. */
-	--rux-elevation-0-bg: var(--rux-surface-0); /* Canvas */
-	--rux-elevation-1-bg: var(--rux-surface-1); /* Everything raised: panel content, cards, modal */
 
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 	/* Outer-container primitive for any window/panel/dialog — see
@@ -612,7 +559,6 @@
 	--rux-panel-enter-easing:            var(--rux-motion-easing-entrance-productive);
 	--rux-panel-exit-easing:             var(--rux-motion-easing-exit-productive);
 	--rux-panel-standard-easing:         var(--rux-motion-easing-standard-productive);
-	--rux-panel-content-motion-duration: var(--rux-motion-duration-fast-02);
 
 	/* — header — */
 	--rux-panel-header-height: 40px;
@@ -634,19 +580,10 @@
 	--rux-panel-padding-block:  var(--rux-space-4);
 	--rux-panel-padding-inline: var(--rux-space-4);
 	--rux-panel-right-border:  1px solid var(--rux-card-border);
-	--rux-left-panel-border:   1px solid var(--rux-card-border);
+	--rux-panel-left-border:   1px solid var(--rux-card-border);
 
 	/* — minimum sizing — */
 	--rux-panel-min-width: 224px;
-
-	/* — rail (collapsed state) — live via .scheduler-app__drawer--railable
-	   in scheduler-app.css, not panel.css's own unused .is-rail rule. */
-	--rux-panel-rail-width:  16px;
-	--rux-panel-rail-bg:     var(--rux-panel-bg);
-	--rux-panel-rail-fg:     var(--rux-panel-fg);
-	--rux-panel-rail-border: none;
-	--rux-panel-rail-radius: var(--rux-radius-0);
-	--rux-panel-rail-shadow: var(--rux-shadow-1);
 
 	/* — attached — */
 	--rux-panel-attached-bg:            var(--rux-surface-0); /* owned directly, not aliased through the widely-shared --rux-surface-1 */
@@ -681,15 +618,9 @@
 	/* — floating window widths — one per window; --floating-width is the
 	   shared default, doc viewer/trip envelope use it as their base. */
 	--rux-panel-floating-width:        min(600px, calc(100vw - var(--rux-space-4) * 2));
-	--rux-trip-dialog-width:           min(480px, calc(100vw - (var(--rux-space-4) * 2)));
-	--rux-manifest-window-width:       clamp(480px, 65vw, 1200px);
-	--rux-request-window-width:        clamp(600px, 70vw, 1100px);
-	--rux-trip-finder-window-width:    clamp(600px, 70vw, 1100px);
-	--rux-doc-viewer-width:            var(--rux-panel-floating-width);
-	--rux-trip-envelope-window-width:  var(--rux-panel-floating-width);
 
 	/* — modal — */
-	--rux-panel-modal-bg:     var(--rux-elevation-1-bg);
+	--rux-panel-modal-bg:     var(--rux-surface-1);
 	--rux-panel-modal-border: none;
 	--rux-panel-modal-radius: var(--rux-radius-0);
 	--rux-panel-modal-shadow: var(--rux-shadow-3);
@@ -699,6 +630,25 @@
 	--rux-panel-anchored-border: none;
 	--rux-panel-anchored-radius: var(--rux-radius-container);
 	--rux-panel-anchored-shadow: var(--rux-shadow-2);
+
+	/* ─── COMPONENT · drawer ─────────────────────────────────────────────── */
+	/* Docked resizable drawer beside a workspace (base/drawer.css), paired
+	   with rux-ui/js/drawer.js. Widths are deliberately `auto`: per
+	   docs/layout-composition.md the shared layer MUST NOT define product
+	   drawer widths, so an application sets these two on its own shell the
+	   same way it sets --rux-app-view-padding. */
+	--rux-drawer-left-default-width:  auto;
+	--rux-drawer-right-default-width: auto;
+	/* Gap the spacing gutter opens to alongside the drawer. */
+	--rux-drawer-gap: var(--rux-space-5);
+
+	/* — resize gutter (splitter) — */
+	/* Hit area is far wider than the 1px line it paints, so the pointer
+	   target clears the minimum without a visibly thick divider. */
+	--rux-resize-hit-width:      20px;
+	--rux-resize-line-width:      1px;
+	--rux-resize-handle-width:    3px;
+	--rux-resize-handle-height:  32px;
 
 	/* ─── COMPONENT · card ───────────────────────────────────────────────── */
 	/* One class, .rux-card, one color regardless of nesting depth.
@@ -730,8 +680,6 @@
 	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
 	--rux-card-header-bg:     var(--rux-surface-0);
 	--rux-card-header-border: 1px solid var(--rux-card-border);
-	/* Compatibility token: the shell is now the card's only radius owner. */
-	--rux-card-header-radius: var(--rux-radius-container);
 	--rux-card-header-shadow: none;
 
 	/* — card body — owns content fill, padding, and internal rhythm. */
@@ -746,8 +694,6 @@
 	/* — card footer — owns action-row fill and the body divider. */
 	--rux-card-footer-bg:     transparent;
 	--rux-card-footer-border: var(--rux-card-border-width) solid var(--rux-card-border);
-	/* Compatibility token: the shell is now the card's only radius owner. */
-	--rux-card-footer-radius: var(--rux-radius-container);
 
 	/* No level system anymore — one card color for every nesting depth,
 	   following the Vercel Geist model (README.md's "Reference: Vercel
@@ -1180,18 +1126,6 @@
 	--rux-output-font-size:   var(--rux-size-md);
 	--rux-output-font-weight: var(--rux-weight-400);
 
-	/* ─── COMPONENT · itinerary marker ────────────────────────────────────── */
-
-	--rux-itinerary-marker-size: 12px;
-	/* Severity roles only where the meaning genuinely matches (pickup is
-	   schedule-critical); tag colors for the rest, plain waypoint types. */
-	--rux-itinerary-status-depart-yard: var(--rux-info);
-	--rux-itinerary-status-pickup:      var(--rux-success);
-	--rux-itinerary-status-stop:        var(--rux-tag-default);
-	--rux-itinerary-status-sleeper:     var(--rux-tag-purple);
-	--rux-itinerary-status-off-duty:    var(--rux-danger);
-	--rux-itinerary-status-return-yard: var(--rux-info);
-
 	/* ─── COMPONENT · table ──────────────────────────────────────────────── */
 	/* Content-width data table (.rux-table) — auto layout, columns size to
 	   their own content. Shared by the driver/trips/fleet/customer tables. */
@@ -1225,71 +1159,10 @@
 	--rux-table-row-hover-bg:         var(--rux-bg-hover);
 	--rux-table-row-selected-bg:      var(--rux-accent-subtle);
 
-	/* ─── COMPONENT · trip bar ─────────────────────────────────────────────── */
-	/* No flat --rux-trip-bar-bg/-border/-fg — color is computed per category,
-	   see COLOR · trip bar. Every scan row in trip-bar.css reads the shared
-	   row-font-size/-line-height pair below instead of the raw
-	   --rux-size-xs/--rux-line-height-xs primitives directly. */
-
-	/* — shell — */
-	--rux-trip-bar-border-width: 0px;
-	--rux-trip-bar-radius: var(--rux-radius-0);
-	--rux-trip-bar-action-button-size: 32px;
-	--rux-trip-bar-actions-radius:   var(--rux-radius-control);
-	--rux-trip-bar-bus-label-radius: var(--rux-radius-full);
-	--rux-trip-bar-bus-label-weight: var(--rux-weight-600);
-	--rux-trip-bar-meta-radius:      var(--rux-radius-sm);
-	--rux-trip-bar-meta-fg: var(--rux-fg-on-accent);
-	--rux-trip-bar-shadow: var(--rux-shadow-3);
-	--rux-trip-bar-meta-shadow: none; /* recessed rim, same as input fields */
-
-	/* One-way/split-trip SVG stripe overlay. */
-	--rux-trip-bar-stripe-color:   var(--rux-white);
-	--rux-trip-bar-stripe-opacity: 0.04;
-
-	/* — head — */
-	--rux-trip-bar-head-backdrop-blur: 4px;
-
-	/* — row typography — shared by every scan row; bus-label pill is a
-	   fixed-10px exception, off this contract (trip-bar.css). */
-	--rux-trip-bar-row-font-size:   var(--rux-size-xs);
-	--rux-trip-bar-row-line-height: var(--rux-line-height-xs);
-
-	/* --rux-trip-bar-icon-size lives in trip-bar.css's .sched-trip-bar rule,
-	   not here — a custom property that references another one freezes at
-	   the element where it's declared, not live per-descendant, so at :root
-	   it would lock to the xs default before a size-tier override ever ran. */
-
-	/* Icon axes below are plain numbers (not var() chains), so no freezing
-	   risk declaring them here. Match current rendering (solid fill,
-	   regular weight, no grade, opsz 20); no per-tier override yet. */
-	--rux-trip-bar-icon-fill:         1;
-	--rux-trip-bar-icon-weight:       400;
-	--rux-trip-bar-icon-grade:        0;
-	--rux-trip-bar-icon-optical-size: 20;
-
-	/* ─── COMPONENT · trip panel ──────────────────────────────────────────── */
-	/* Motion only — the trip panel is a reveal animation for the Trip Editor,
-	   not a boxed component of its own; no bg/border/radius/shadow apply. */
-
-	--rux-trip-panel-reveal-duration: var(--rux-duration-base);
-	--rux-trip-panel-reveal-easing:   var(--rux-ease-out);
-	--rux-trip-panel-reveal-distance: var(--rux-space-2);
-
-	/* ─── COMPONENT · driver document card ────────────────────────────────── */
-	/* Tone-tinted background pair for .driver-assignment-card__document's
-	   attention state (css/features/driver-share.css) — the only surviving
-	   consumer of what used to be the wider .rux-module-button tone system,
-	   which was retired in favor of the shared .rux-button variants. */
-	--rux-driver-doc-neutral-bg:       var(--rux-state-hover-overlay);
-	--rux-driver-doc-neutral-fg:       var(--rux-text-default);
-	--rux-driver-doc-neutral-border:   var(--rux-state-hover-overlay);
-	--rux-driver-doc-neutral-hover-bg: var(--rux-state-active-overlay);
-
-	--rux-driver-doc-warning-bg:       color-mix(in oklch, var(--rux-warning) 14%, transparent);
-	--rux-driver-doc-warning-fg:       var(--rux-warning);
-	--rux-driver-doc-warning-border:   color-mix(in oklch, var(--rux-warning) 32%, transparent);
-	--rux-driver-doc-warning-hover-bg: color-mix(in oklch, var(--rux-warning) 21%, transparent);
+	/* ─── COMPONENT · backdrop blur ──────────────────────────────────────── */
+	/* Blur radius for translucent surfaces layered over content — used by the
+	   header treatment in base/controls.css and base/badges.css. */
+	--rux-backdrop-blur: 4px;
 
 	/* ─── COMPONENT · menu ───────────────────────────────────────────────── */
 	/* Concentric math: 8px menu − 4px padding = 4px items. */
@@ -1414,10 +1287,6 @@
 
 	--rux-progress-height: 6px;
 
-	/* ─── COMPONENT · fleet / bus chip ───────────────────────────────────── */
-
-	/* color-mix partner for bus chips; not a surface-depth role */
-	--rux-bg-bus: var(--rux-neutral);
 }
 
 /* ==========================================================================
@@ -1523,22 +1392,13 @@
 	--rux-calendar-header-divider: var(--rux-calendar-grid);
 	--rux-calendar-header-bg: var(--rux-surface-0);
 
-	--rux-trip-bar-bg-opacity:             68%;
-	--rux-trip-bar-hover-bg-opacity:       76%;
-	--rux-trip-bar-pressed-bg-opacity:     82%;
-	--rux-trip-bar-selected-bg-opacity:    82%;
-	--rux-trip-bar-tail-opacity:           48%;
-	--rux-trip-bar-tail-hover-opacity:     58%;
-	--rux-trip-bar-tail-pressed-opacity:   64%;
-	--rux-trip-bar-tail-selected-opacity:  64%;
-	--rux-trip-bar-meta-bg: oklch(from var(--rux-white) l c h / 0%);
 
 	--rux-button-disabled-text:       var(--rux-text-disabled);
 	--rux-button-disabled-border:     none;
 }
 
 /* ==========================================================================
-   TOUCH TARGETS · mobile minimum (max-width: 500px, matches scheduler-app.css)
+   TOUCH TARGETS · mobile minimum (max-width: 500px, the shared mobile breakpoint)
    --------------------------------------------------------------------------
    iOS's 44pt minimum tap target, applied to the header button role and
    every header that hosts one. Deliberately narrow: form fields, segmented

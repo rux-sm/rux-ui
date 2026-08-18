@@ -1,32 +1,32 @@
 /* ==========================================================================
-   SCHEDULER APP SHELL  ·  scheduler-app, UI header, toolbar, nav
+   SCHEDULER APP SHELL  ·  sched-app, UI header, toolbar, nav
    --------------------------------------------------------------------------
    Full-page application shell that hosts .sched-scheduler. These layout
    classes are app-specific scaffolding; .sched-scheduler itself is the
    reusable component.
    ========================================================================== */
 
-.scheduler-app {
-	--scheduler-app-gap: var(--rux-space-5);
+.sched-app {
+	--sched-app-gap: var(--rux-space-5);
 	/* The one frame every view shares — an asymmetric shape (top 2,
-	   inline+bottom 3), kept distinct from --scheduler-app-gap since that
+	   inline+bottom 3), kept distinct from --sched-app-gap since that
 	   token also drives the inter-panel gutter and inner content insets
 	   below. Set here, on the app shell, so no view can drift from the
 	   others: .rux-app-view (rux-ui/css/base/app-shell.css) reads both. */
 	--rux-app-view-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
 	--rux-app-view-radius: var(--rux-radius-container);
-	--scheduler-app-resize-hit-width: 20px;
-	--scheduler-app-resize-handle-width: 3px;
-	--scheduler-app-resize-handle-height: 32px;
-	--scheduler-app-resize-line-width: 1px;
-	/* Left/editor and right/tools drawers intentionally have independent
-	   defaults. Resize limits remain shared. */
-	--scheduler-app-left-drawer-default-width: 360px;
-	--scheduler-app-right-drawer-default-width: 360px;
+	/* Drawer measurements. The mechanism is portable
+	   (rux-ui/css/base/drawer.css); these three values are this app's.
+	   Left/editor and right/tools drawers intentionally have independent
+	   defaults. The resize-gutter geometry tokens are left at their Tier 0
+	   values. */
+	--rux-drawer-left-default-width: 360px;
+	--rux-drawer-right-default-width: 360px;
+	--rux-drawer-gap: var(--sched-app-gap);
 	/* Mobile fixed tab bar needs extra top clearance beyond the space
 	   scale to clear the gradient scrim above its icons — doesn't map to
 	   any --rux-space-* step. */
-	--scheduler-app-mobile-nav-padding-top: 20px;
+	--sched-app-mobile-nav-padding-top: 20px;
 
 	/* The frame itself — grid rows, row-gap, margin, block-size, min-width,
 	   and background — comes from .rux-app (rux-ui/css/base/app-shell.css),
@@ -41,89 +41,22 @@
 /* display:flex, min-width/min-height:0, gap:0, and overflow:hidden come from
    .rux-app__body (rux-ui/css/base/app-shell.css). Only the positioning
    context for the drawers and their scrim is app-specific. */
-.scheduler-app .rux-app__body {
+.sched-app .rux-app__body {
 	position: relative;
 }
 
-/* — Product side navigation — */
+/* — Product side navigation —
+   Placement, overlay choreography, and the scrim are portable now:
+   .rux-side-nav--overlay + .rux-side-nav-scrim in
+   rux-ui/css/base/side-nav.css. This app opts in via the modifier in its
+   markup and overrides only the mobile width below. */
 
-.scheduler-app__side-nav,
-.scheduler-app__side-nav-scrim {
-	position: absolute;
-	inset-block: 0;
-	visibility: hidden;
-	pointer-events: none;
-}
-
-.scheduler-app__side-nav {
-	inset-inline-start: 0;
-	z-index: var(--rux-z-overlay);
-	/* The panel stays at its final coordinates and full opacity. Moving the
-	   right clipping edge reveals its contents without translating, scaling,
-	   stretching, or staggering individual navigation items. */
-	clip-path: inset(0 100% 0 0);
-	opacity: 1;
-	transform: none;
-	will-change: clip-path;
-	transition:
-		clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
-		visibility 0s linear var(--rux-side-nav-motion-duration);
-}
-
-.scheduler-app__side-nav-scrim {
-	inset-inline-start: 0;
-	inset-inline-end: 0;
-	z-index: calc(var(--rux-z-overlay) - 1);
-	background: var(--rux-side-nav-scrim-bg);
-	opacity: 0;
-	/* Closing is intentionally immediate: removing .is-visible drops the
-	   scrim on the first closing frame while the panel clips shut. */
-	transition:
-		opacity var(--rux-side-nav-scrim-exit-duration),
-		inset-inline-start var(--rux-side-nav-scrim-exit-duration);
-}
-
-.scheduler-app__side-nav.is-open,
-.scheduler-app__side-nav-scrim.is-visible {
-	visibility: visible;
-	pointer-events: auto;
-}
-
-.scheduler-app__side-nav.is-open {
-	clip-path: inset(0);
-	transition:
-		clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
-		visibility 0s linear 0s;
-}
-
-.scheduler-app__side-nav-scrim.is-visible {
-	inset-inline-start: min(var(--rux-side-nav-width), 100%);
-	opacity: var(--rux-side-nav-scrim-opacity);
-	transition:
-		inset-inline-start var(--rux-side-nav-motion-duration)
-			var(--rux-side-nav-enter-easing),
-		opacity var(--rux-side-nav-scrim-enter-duration)
-			var(--rux-side-nav-scrim-enter-easing)
-			var(--rux-side-nav-scrim-enter-delay);
-}
-
-/* Header-triggered product navigation is non-persistent at every viewport.
-   It overlays the application body and never participates in flex sizing, so
-   opening it cannot move or compress the active workspace and tools panel. */
-
-@media (prefers-reduced-motion: reduce) {
-	.scheduler-app__side-nav,
-	.scheduler-app__side-nav-scrim {
-		transition-duration: 1ms;
-		transition-delay: 0s;
-	}
-}
 
 @media (max-width: 500px) {
 	/* Leave one header-control width exposed as a tap-to-dismiss strip. Override
 	   the shared width token on the common containing block so the navigation
 	   and its scrim resolve to the exact same mobile edge. */
-	.scheduler-app .rux-app__body {
+	.sched-app .rux-app__body {
 		--rux-side-nav-width: calc(100% - 150px);
 	}
 }
@@ -131,7 +64,7 @@
 /* The gutter between a view's contents and the app edge, and the rounding of
    the clipped box, both come from .rux-app-view's own shared rule
    (rux-ui/css/base/app-shell.css) reading the two --rux-app-view-* tokens
-   configured on .scheduler-app above. Every view — calendar included — uses
+   configured on .sched-app above. Every view — calendar included — uses
    that one frame, so no view can drift from the others; the flex row inside
    it (workspace | resize channel | tools panel) supplies the seam between
    panes, which is why no view re-creates the inset as child margins. */
@@ -149,7 +82,7 @@
 	z-index: calc(var(--rux-z-modal) + 1);
 }
 
-.scheduler-app__nav {
+.sched-app__nav {
 	display: flex;
 }
 
@@ -191,14 +124,14 @@
 	min-width: 0;
 }
 
-.scheduler-app__view-menu {
+.sched-app__view-menu {
 	flex: none;
 	width: var(--rux-control-height);
 	height: var(--rux-control-height);
 	padding: 0;
 }
 
-.scheduler-app__search-control {
+.sched-app__search-control {
 	display: flex;
 	align-items: center;
 	flex: 1 1 auto;
@@ -206,7 +139,7 @@
 	gap: var(--rux-space-2);
 }
 
-.scheduler-app__search {
+.sched-app__search {
 	flex: 0 1 0;
 	width: 0;
 	min-width: 0;
@@ -220,7 +153,7 @@
 		padding-inline var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.scheduler-app__search-control.is-open .scheduler-app__search {
+.sched-app__search-control.is-open .sched-app__search {
 	flex-basis: 18rem;
 	padding-inline: var(--rux-space-3);
 	opacity: 1;
@@ -228,12 +161,12 @@
 }
 
 
-.scheduler-app__nav {
+.sched-app__nav {
 	align-items: center;
 	gap: var(--rux-space-2);
 }
 
-.scheduler-app__day-picker {
+.sched-app__day-picker {
 	position: absolute;
 	width: 1px;
 	height: 1px;
@@ -260,163 +193,30 @@
 	min-width: 471px;
 }
 
-/* — Trip panel drawer — */
+/* — Drawers —
+   The drawer, its spacing gutter, and the resize gutter are portable now:
+   .rux-drawer / .rux-drawer-gutter / .rux-resize-gutter in
+   rux-ui/css/base/drawer.css, paired with rux-ui/js/drawer.js. This app
+   supplies only the measurements (the two default-width tokens and the gap
+   at the top of this file) and the right-panel content rules below.
 
-.scheduler-app__drawer {
-	position: relative;
-	flex: none;
-	width: 0;
-	margin-left: 0;
-	min-height: 0;
-	overflow: visible;
-	box-sizing: border-box;
-	padding: 0;
-	transition:
-		width var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
-
-	display: flex;
-	flex-direction: column;
-}
-
-
-.scheduler-app__drawer.is-open {
-	width: var(--drawer-width, var(--scheduler-app-left-drawer-default-width));
-	overflow: hidden;
-}
-
-.scheduler-app__drawer.is-open:not(.is-collapsing) {
-	transition:
-		width var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
-}
-
-.scheduler-app__drawer.is-collapsing {
-	transition:
-		width var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
-}
-
-/* Interactive resizing is a direct manipulation, not a state transition.
-   Match the open rule's specificity so its entrance easing cannot win the
-   cascade and make the opposite edge trail or rebound behind the pointer. */
-.scheduler-app__drawer.is-open.is-resizing,
-.scheduler-app__drawer.is-resizing {
-	transition: none;
-}
-
-/* Every editor that used to live in a left drawer (trip, fleet, driver,
+   Every editor that used to live in a left drawer (trip, fleet, driver,
    customer) is a floating window now — see the .sched-*-dialog rules in
-   their feature files. The drawer machinery below serves the two remaining
-   RIGHT drawers: the Calendar Tools panel and the Drivers tools panel. */
+   their feature files. The remaining drawers are all right drawers: the
+   Calendar Tools panel, the Drivers tools panel, and Fleet tools. The
+   rail-collapse concept retired with that convergence. */
 
-/* The rail-collapse concept retired with the drawer convergence: every
-   remaining drawer (Calendar Tools, Drivers tools, Fleet tools) is a plain
-   right drawer that opens and closes fully, resized via its channel. */
-
-.scheduler-app__gutter {
-	position: relative;
-	flex: 0 0 0;
-	min-width: 0;
-	min-height: 0;
-	z-index: 1;
-	transition:
-		flex-basis var(--rux-panel-motion-duration) var(--rux-panel-standard-easing),
-		min-width var(--rux-panel-motion-duration) var(--rux-panel-standard-easing);
-}
-
-.scheduler-app__drawer.is-open:not(.is-collapsing) + .scheduler-app__gutter,
-.scheduler-app__gutter:has(+ .scheduler-app__drawer.is-open:not(.is-collapsing)) {
-	flex-basis: var(--scheduler-app-gap);
-	min-width: var(--scheduler-app-gap);
-}
-
-.scheduler-app__resize-gutter {
-	display: none;
-	cursor: col-resize;
-	z-index: 10;
-	touch-action: none;
-}
-
-/* A splitter belongs to an open panel. Remove it from layout, hit testing,
-   and keyboard navigation while closed; disclosure stays with the panel's
-   explicit Tools/toggle button. Keep it visible throughout normal use, but
-   remove it as soon as a discrete close transition begins. */
-.scheduler-app__drawer.is-open:not(.is-collapsing) + .scheduler-app__resize-gutter,
-.scheduler-app__resize-gutter:has(+ .scheduler-app__drawer.is-open:not(.is-collapsing)) {
-	display: block;
-}
-
-/* Large transparent hit target centered on the zero-width flex boundary. */
-.scheduler-app__resize-gutter::before {
-	content: "";
-	position: absolute;
-	inset-block: 0;
-	inset-inline-start: 50%;
-	inline-size: var(--scheduler-app-resize-hit-width);
-	background:
-		linear-gradient(
-			color-mix(in oklch, var(--rux-text-default) 55%, transparent),
-			color-mix(in oklch, var(--rux-text-default) 55%, transparent)
-		)
-		center / var(--scheduler-app-resize-line-width) 100% no-repeat;
-	opacity: 0;
-	transform: translateX(-50%);
-	transition: opacity var(--rux-duration-fast);
-}
-
-/* Short centered grip remains independent of the draggable hit target. */
-.scheduler-app__resize-gutter::after {
-	content: "";
-	position: absolute;
-	inset-block-start: 50%;
-	inset-inline-start: 50%;
-	inline-size: var(--scheduler-app-resize-handle-width);
-	block-size: var(--scheduler-app-resize-handle-height);
-	background: color-mix(in oklch, var(--rux-text-default) 75%, transparent);
-	border-radius: var(--rux-radius-full);
-	opacity: 0;
-	pointer-events: none;
-	transform: translate(-50%, -50%);
-	transition: opacity var(--rux-duration-fast);
-}
-
-.scheduler-app__resize-gutter:hover::before,
-.scheduler-app__resize-gutter:hover::after,
-.scheduler-app__resize-gutter.is-resizing::before,
-.scheduler-app__resize-gutter.is-resizing::after {
-	opacity: 1;
-}
-
-.scheduler-app__resize-gutter.is-resizing::before {
-	background:
-		linear-gradient(var(--rux-accent), var(--rux-accent))
-		center / var(--scheduler-app-resize-line-width) 100% no-repeat;
-}
-
-.scheduler-app__resize-gutter.is-resizing::after {
-	background: var(--rux-accent);
-}
-
-/* — Right drawer (mirrored) — */
-
-.scheduler-app__drawer--right {
-	margin-left: 0;
-}
-
-.scheduler-app__drawer--right.is-open {
-	margin-right: 0;
-	width: var(--drawer-width, var(--scheduler-app-right-drawer-default-width));
-}
-
-.scheduler-app__drawer--right :is(.sched-scope-right-panel) {
+.rux-drawer--right :is(.sched-scope-right-panel) {
 	position: absolute;
 	inset-block: 0;
 	left: 0;
 	right: auto;
 	height: auto;
-	width: var(--drawer-open-width, var(--scheduler-app-right-drawer-default-width));
+	width: var(--drawer-open-width, var(--rux-drawer-right-default-width));
 	overflow: hidden;
 }
 
-.scheduler-app__drawer--right:not(.is-open) .sched-scope-right-panel {
+.rux-drawer--right:not(.is-open) .sched-scope-right-panel {
 	display: none;
 }
 
@@ -435,7 +235,7 @@
    (base/panel.css's .rux-panel__pane), so the track already stretches to
    the pane's full width by default flex-item behavior; flex: 1 on the
    buttons is what actually splits that width evenly, same recipe as
-   .rux-scope-trip__trip-type's Round/One-way/Split. */
+   .sched-scope-trip__trip-type's Round/One-way/Split. */
 #trip-view-group > .rux-button {
 	flex: 1;
 	min-width: 0;
@@ -453,7 +253,7 @@
 	display: none;
 }
 
-.rux-mini-cal__body {
+.sched-mini-cal__body {
 	display: flex;
 	flex-direction: column;
 }
@@ -463,12 +263,12 @@
    is flex:1 and already pushes the buttons to either edge on its own, and
    16px between title and buttons that are already flush against the edges
    would just be dead space. */
-.rux-mini-cal__header {
+.sched-mini-cal__header {
 	height: var(--rux-button-height-header);
 	gap: var(--rux-space-0);
 }
 
-.rux-mini-cal__title {
+.sched-mini-cal__title {
 	flex: 1;
 	margin: 0;
 	color: var(--rux-text-heading);
@@ -478,24 +278,24 @@
 	text-align: center;
 }
 
-.rux-mini-cal__grid {
-	--rux-mini-cal-cell-size: 28px;
-	--rux-mini-cal-cell-gap: var(--rux-space-2);
+.sched-mini-cal__grid {
+	--sched-mini-cal-cell-size: 28px;
+	--sched-mini-cal-cell-gap: var(--rux-space-2);
 	display: flex;
 	flex-direction: column;
 }
 
-.rux-mini-cal__day-names,
-.rux-mini-cal__dates {
+.sched-mini-cal__day-names,
+.sched-mini-cal__dates {
 	display: grid;
 	/* Columns grow to fill the panel width; rows stay fixed at the cell size
 	   (square cells become wide, short pills). */
 	grid-template-columns: repeat(7, 1fr);
-	grid-auto-rows: var(--rux-mini-cal-cell-size);
-	gap: var(--rux-mini-cal-cell-gap);
+	grid-auto-rows: var(--sched-mini-cal-cell-size);
+	gap: var(--sched-mini-cal-cell-gap);
 }
 
-.rux-mini-cal__day-names {
+.sched-mini-cal__day-names {
 	align-items: center;
 	text-align: center;
 	font-size: var(--rux-button-font-size);
@@ -505,16 +305,16 @@
 	text-transform: uppercase;
 }
 
-.rux-mini-cal__dates {
+.sched-mini-cal__dates {
 	align-items: center;
 }
 
-.rux-mini-cal__date {
+.sched-mini-cal__date {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	height: var(--rux-mini-cal-cell-size);
+	height: var(--sched-mini-cal-cell-size);
 	border: none;
 	border-radius: var(--rux-button-radius);
 	background: transparent;
@@ -528,18 +328,18 @@
 	transition: background var(--rux-duration-instant) var(--rux-ease-out);
 }
 
-.rux-mini-cal__date:hover {
+.sched-mini-cal__date:hover {
 	background-image: linear-gradient(
 		var(--rux-button-hover-overlay),
 		var(--rux-button-hover-overlay)
 	);
 }
 
-.rux-mini-cal__date--outside {
+.sched-mini-cal__date--outside {
 	color: var(--rux-text-disabled);
 }
 
-.rux-mini-cal__date--today {
+.sched-mini-cal__date--today {
 	background-color: var(--rux-button-accent-background);
 	color: var(--rux-fg-on-accent);
 	font-weight: var(--rux-weight-400);
@@ -547,16 +347,16 @@
 
 /* Same glass formula as accent buttons/trip bars now — transparent tinted
    fill, solid (100% opacity) border — instead of its own bespoke color-mix. */
-.rux-mini-cal__date--active-week {
+.sched-mini-cal__date--active-week {
 	background-color: var(--rux-button-accent-background);
 	border: var(--rux-button-accent-border);
 }
 
-.rux-mini-cal__date--active-week.rux-mini-cal__date--today {
+.sched-mini-cal__date--active-week.sched-mini-cal__date--today {
 	background: var(--rux-button-accent-background);
 }
 
-.rux-mini-cal__date--has-trips::after {
+.sched-mini-cal__date--has-trips::after {
 	content: "";
 	position: absolute;
 	width: 4px;
@@ -565,7 +365,7 @@
 	background: var(--rux-accent);
 }
 
-.rux-mini-cal__date--has-trips {
+.sched-mini-cal__date--has-trips {
 	position: relative;
 }
 
@@ -580,61 +380,61 @@
    used to duplicate that exact styling under its own name for both. */
 
 .sched-driver-grid {
-	--rux-driver-grid-surface: var(--rux-surface-1);
-	--rux-driver-grid-cell-size: 24px;
-	--rux-driver-grid-name-width: 80px;
+	--sched-driver-grid-surface: var(--rux-surface-1);
+	--sched-driver-grid-cell-size: 24px;
+	--sched-driver-grid-name-width: 80px;
 	/* Matches the row/gutter gap below — cell-to-cell and row-to-row are the
 	   same rhythm now, not a deliberately tighter cell gap. */
-	--rux-driver-grid-cell-gap: var(--rux-space-1);
+	--sched-driver-grid-cell-gap: var(--rux-space-1);
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
 	width: 100%;
 	min-width: calc(
-		var(--rux-driver-grid-name-width) + var(--rux-space-0) +
-			(var(--rux-driver-grid-days, 7) * var(--rux-driver-grid-cell-size)) +
-			((var(--rux-driver-grid-days, 7) - 1) * var(--rux-driver-grid-cell-gap))
+		var(--sched-driver-grid-name-width) + var(--rux-space-0) +
+			(var(--sched-driver-grid-days, 7) * var(--sched-driver-grid-cell-size)) +
+			((var(--sched-driver-grid-days, 7) - 1) * var(--sched-driver-grid-cell-gap))
 	);
 }
 
 
 
-.rux-driver-grid__scroller {
+.sched-driver-grid__scroller {
 	max-width: 100%;
 	overflow: auto hidden;
 	overscroll-behavior-inline: contain;
 	scrollbar-gutter: stable;
 }
 
-.rux-driver-grid__row {
+.sched-driver-grid__row {
 	display: grid;
 	background: transparent;
 	grid-template-columns:
-		minmax(var(--rux-driver-grid-name-width), 1fr)
+		minmax(var(--sched-driver-grid-name-width), 1fr)
 		calc(
-			(var(--rux-driver-grid-days, 7) * var(--rux-driver-grid-cell-size)) +
-				((var(--rux-driver-grid-days, 7) - 1) * var(--rux-driver-grid-cell-gap))
+			(var(--sched-driver-grid-days, 7) * var(--sched-driver-grid-cell-size)) +
+				((var(--sched-driver-grid-days, 7) - 1) * var(--sched-driver-grid-cell-gap))
 		);
 	align-items: center;
-	min-height: var(--rux-driver-grid-cell-size);
+	min-height: var(--sched-driver-grid-cell-size);
 	gap: var(--rux-space-2);
 	min-width: 100%;
 	border-radius: var(--rux-radius-0);
 }
 
-.rux-driver-grid__name-cell {
+.sched-driver-grid__name-cell {
 	position: sticky;
 	left: 0;
 	z-index: 2;
 	display: flex;
 	width: 100%;
-	height: var(--rux-driver-grid-cell-size);
+	height: var(--sched-driver-grid-cell-size);
 	align-items: center;
 	background: transparent;
 }
 
-.rux-driver-grid__name {
-	--rux-driver-priority-color: var(--rux-info);
+.sched-driver-grid__name {
+	--sched-driver-priority-color: var(--rux-info);
 	position: relative;
 	display: flex;
 	width: 100%;
@@ -648,7 +448,7 @@
 	color: var(--rux-text-muted);
 	border: none;
 	border-left: var(--rux-side-nav-selected-width) solid
-		var(--rux-driver-priority-color);
+		var(--sched-driver-priority-color);
 	border-radius: var(--rux-radius-control);
 	font: inherit;
 	font-size: var(--rux-size-sm);
@@ -657,47 +457,47 @@
 	white-space: nowrap;
 }
 
-.rux-driver-grid__row[data-priority="1"] .rux-driver-grid__name {
-	--rux-driver-priority-color: var(--rux-warning);
+.sched-driver-grid__row[data-priority="1"] .sched-driver-grid__name {
+	--sched-driver-priority-color: var(--rux-warning);
 }
 
-.rux-driver-grid__row[data-priority="2"] .rux-driver-grid__name {
-	--rux-driver-priority-color: var(--rux-purple);
+.sched-driver-grid__row[data-priority="2"] .sched-driver-grid__name {
+	--sched-driver-priority-color: var(--rux-purple);
 }
 
-.rux-driver-grid__row[data-priority="3"] .rux-driver-grid__name {
-	--rux-driver-priority-color: var(--rux-info);
+.sched-driver-grid__row[data-priority="3"] .sched-driver-grid__name {
+	--sched-driver-priority-color: var(--rux-info);
 }
 
-.rux-driver-grid__row[data-priority="4"] .rux-driver-grid__name {
-	--rux-driver-priority-color: var(--rux-success);
+.sched-driver-grid__row[data-priority="4"] .sched-driver-grid__name {
+	--sched-driver-priority-color: var(--rux-success);
 }
 
-.rux-driver-grid__row[data-priority="5"] .rux-driver-grid__name {
-	--rux-driver-priority-color: var(--rux-white);
+.sched-driver-grid__row[data-priority="5"] .sched-driver-grid__name {
+	--sched-driver-priority-color: var(--rux-white);
 }
 
-.rux-driver-grid__name-label {
+.sched-driver-grid__name-label {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-/* Ghost-button-style hover, same overlay token .rux-mini-cal__date and every
+/* Ghost-button-style hover, same overlay token .sched-mini-cal__date and every
    ghost .rux-button use — this is a real <button>, so it should feel like
    one. Independent of the row's own :hover outline below (that one signals
    "hovering somewhere in this row", this one signals "hovering this
    specific button"). Scoped to driver rows only — the head row reuses this
    class on a plain, non-interactive <span> label. */
-.rux-driver-grid__row[data-driver-id] .rux-driver-grid__name:hover {
+.sched-driver-grid__row[data-driver-id] .sched-driver-grid__name:hover {
 	background-image: linear-gradient(
 		var(--rux-button-hover-overlay),
 		var(--rux-button-hover-overlay)
 	);
 }
 
-.rux-driver-grid__row--head .rux-driver-grid__name {
+.sched-driver-grid__row--head .sched-driver-grid__name {
 	height: 2.5rem;
 	align-items: flex-end;
 	padding-bottom: var(--rux-space-2);
@@ -708,12 +508,12 @@
 	border-left-color: transparent;
 }
 
-.rux-driver-grid__row--head .rux-driver-grid__name-cell {
+.sched-driver-grid__row--head .sched-driver-grid__name-cell {
 	z-index: 4;
 	height: 2.5rem;
 }
 
-.rux-driver-grid__row--head {
+.sched-driver-grid__row--head {
 	position: sticky;
 	top: 0;
 	z-index: 3;
@@ -721,29 +521,29 @@
 	align-items: stretch;
 }
 
-.rux-driver-grid__row[data-driver-id] {
+.sched-driver-grid__row[data-driver-id] {
 	cursor: pointer;
 }
 
 /* Priority is encoded by the persistent leading indicator. Selection adds
    the same 14% color-derived wash used by selected side-navigation items,
    while keeping the status color and selection state visually connected. */
-.rux-driver-grid__row.is-selected .rux-driver-grid__name {
+.sched-driver-grid__row.is-selected .sched-driver-grid__name {
 	background: oklch(
-		from var(--rux-driver-priority-color) l c h / 0.14
+		from var(--sched-driver-priority-color) l c h / 0.14
 	);
 	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-driver-grid__days {
+.sched-driver-grid__days {
 	display: grid;
-	grid-template-columns: repeat(var(--rux-driver-grid-days, 7), var(--rux-driver-grid-cell-size));
-	gap: var(--rux-driver-grid-cell-gap);
+	grid-template-columns: repeat(var(--sched-driver-grid-days, 7), var(--sched-driver-grid-cell-size));
+	gap: var(--sched-driver-grid-cell-gap);
 	min-width: 0;
 }
 
-.rux-driver-grid__day-label {
+.sched-driver-grid__day-label {
 	display: flex;
 	height: 2.5rem;
 	flex-direction: column;
@@ -757,27 +557,27 @@
 	text-align: center;
 }
 
-.rux-driver-grid__day-label-weekday {
+.sched-driver-grid__day-label-weekday {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 }
 
-.rux-driver-grid__day-label-date {
+.sched-driver-grid__day-label-date {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	font-variant-numeric: tabular-nums;
 }
 
-.rux-driver-grid__day-label.is-weekend {
+.sched-driver-grid__day-label.is-weekend {
 	color: var(--rux-text-disabled);
 	opacity: 0.72;
 }
 
 
-.rux-driver-grid__day-label.is-today .rux-driver-grid__day-label-weekday,
-.rux-driver-grid__day-label.is-today .rux-driver-grid__day-label-date {
+.sched-driver-grid__day-label.is-today .sched-driver-grid__day-label-weekday,
+.sched-driver-grid__day-label.is-today .sched-driver-grid__day-label-date {
 	color: var(--rux-accent);
 }
 
@@ -786,7 +586,7 @@
    window. Background (not box-shadow) on the header so it layers cleanly
    under .is-today's own inset box-shadow instead of fighting over the same
    property. */
-.rux-driver-grid__day-label.is-trip-range {
+.sched-driver-grid__day-label.is-trip-range {
 	background: var(--rux-accent);
 	color: var(--rux-fg-on-accent);
 }
@@ -799,20 +599,20 @@
    on the accent background .is-trip-range just painted: invisible. This
    selector outranks .is-today's (four class steps vs three) so the
    on-accent color wins whenever both states are true. */
-.rux-driver-grid__day-label.is-today.is-trip-range .rux-driver-grid__day-label-weekday,
-.rux-driver-grid__day-label.is-today.is-trip-range .rux-driver-grid__day-label-date {
+.sched-driver-grid__day-label.is-today.is-trip-range .sched-driver-grid__day-label-weekday,
+.sched-driver-grid__day-label.is-today.is-trip-range .sched-driver-grid__day-label-date {
 	color: var(--rux-fg-on-accent);
 }
 
-.rux-driver-grid__cell {
+.sched-driver-grid__cell {
 	display: block;
 	width: 100%;
-	height: var(--rux-driver-grid-cell-size);
+	height: var(--sched-driver-grid-cell-size);
 	padding: 0;
 	border-radius: var(--rux-radius-0);
 	background: var(--rux-surface-0);
 	/* Transparent, not --rux-border-subtle: an idle cell should read as
-	   quietly as a plain .rux-mini-cal__date, which has no border at all
+	   quietly as a plain .sched-mini-cal__date, which has no border at all
 	   until it means something (today/active-week). The status modifiers
 	   below still set a real border-color, same border-width throughout so
 	   nothing shifts size when a cell's state changes. */
@@ -830,34 +630,34 @@
    fill above depending on what's actually behind a given cell. Conflict has
    no button-family token to borrow (no .rux-button--warning exists), so its
    pair is built inline off the same shared trip-bar primitives. */
-.rux-driver-grid__cell--busy {
+.sched-driver-grid__cell--busy {
 	background: var(--rux-button-accent-background);;
 }
 
 /* Same driver, two overlapping trips the same day — flagged distinctly from
    a normal single-trip day rather than just looking "extra busy". */
-.rux-driver-grid__cell--conflict {
-	background: color-mix(in oklab, oklch(from var(--rux-warning) var(--rux-trip-bar-bg-lightness) c h) var(--rux-trip-bar-bg-opacity), var(--rux-surface-1));
-	border-color: oklch(from var(--rux-warning) var(--rux-trip-bar-bg-lightness) c h / 100%);
+.sched-driver-grid__cell--conflict {
+	background: color-mix(in oklab, oklch(from var(--rux-warning) var(--sched-trip-bar-bg-lightness) c h) var(--sched-trip-bar-bg-opacity), var(--rux-surface-1));
+	border-color: oklch(from var(--rux-warning) var(--sched-trip-bar-bg-lightness) c h / 100%);
 }
 
 /* Marked time off (Driver panel → Time Off tab) — its own color, distinct
    from a trip-conflict, so "unavailable" and "double-booked" never look
    like the same problem. */
-.rux-driver-grid__cell--unavailable {
+.sched-driver-grid__cell--unavailable {
 	background: var(--rux-button-danger-background);
 	border-color: transparent;
 }
 
-.rux-driver-grid__cell--unavailable::after,
-.rux-driver-grid__cell--conflict::after {
+.sched-driver-grid__cell--unavailable::after,
+.sched-driver-grid__cell--conflict::after {
 	display: block;
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 }
 
-.rux-driver-grid__cell--unavailable::after {
+.sched-driver-grid__cell--unavailable::after {
 	content: "—";
 	color: var(--rux-fg-on-accent);
 }
@@ -865,8 +665,8 @@
 /* Both glyphs now sit on a mostly-dark tinted-glass fill instead of a solid
    saturated one, so this needs to be light text like the "—" above, not the
    dark canvas color the old fully-opaque warning background could carry. */
-.rux-driver-grid__cell--conflict::after,
-.rux-driver-grid__cell--busy.rux-driver-grid__cell--unavailable::after {
+.sched-driver-grid__cell--conflict::after,
+.sched-driver-grid__cell--busy.sched-driver-grid__cell--unavailable::after {
 	content: "!";
 	color: var(--rux-fg-on-accent);
 }
@@ -875,14 +675,14 @@
    Keeps the "busy" fill (the trip is real and still needs covering) but
    rings it in the time-off color so the conflict reads at a glance instead
    of looking like an ordinary assigned day. */
-.rux-driver-grid__cell--busy.rux-driver-grid__cell--unavailable {
+.sched-driver-grid__cell--busy.sched-driver-grid__cell--unavailable {
 	background: var(--rux-accent);
 	box-shadow: 0 0 0 2px var(--rux-danger);
 }
 
 /* Double-booked trips on a day the driver is also marked unavailable —
    the trip conflict fill still wins visually, ringed the same way. */
-.rux-driver-grid__cell--conflict.rux-driver-grid__cell--unavailable {
+.sched-driver-grid__cell--conflict.sched-driver-grid__cell--unavailable {
 	background: var(--rux-warning);
 	box-shadow: 0 0 0 2px var(--rux-danger);
 }
@@ -891,51 +691,51 @@
    column regardless of driver. outline (not box-shadow) so it never fights
    the inset box-shadow rings the busy/conflict/unavailable combos already
    use for their own signal. */
-.rux-driver-grid__cell.is-trip-range {
+.sched-driver-grid__cell.is-trip-range {
 	background: var(--rux-gray);
 
 }
 
-.rux-driver-grid__cell:hover {
+.sched-driver-grid__cell:hover {
 	filter: brightness(1.12);
 }
 
 /* revisit */
-.rux-driver-grid__cell:focus-visible,
-.rux-driver-grid__name:focus-visible {
+.sched-driver-grid__cell:focus-visible,
+.sched-driver-grid__name:focus-visible {
 	outline: 1px solid var(--rux-white);
 	outline-offset: 0;
 }
 
-.rux-driver-grid__popover {
+.sched-driver-grid__popover {
 	z-index: calc(var(--rux-z-modal) + 1);
 	width: min(19rem, calc(100vw - 2 * var(--rux-space-4)));
 	max-height: min(26rem, calc(100dvh - 2 * var(--rux-space-4)));
 	overflow: auto;
 }
 
-.rux-driver-grid__popover .rux-card__header {
+.sched-driver-grid__popover .rux-card__header {
 	position: sticky;
 	top: 0;
 	z-index: 1;
 }
 
-.rux-driver-grid__popover-profile {
+.sched-driver-grid__popover-profile {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
 }
 
 /* Overrides the generic .rux-avatar's circular radius (see index.html,
-   built as "rux-avatar rux-avatar--lg rux-driver-grid__popover-avatar") —
+   built as "rux-avatar rux-avatar--lg sched-driver-grid__popover-avatar") —
    driver photos/initials are square everywhere in this app, not just in
    the driver panel/roster. */
-.rux-driver-grid__popover-avatar {
+.sched-driver-grid__popover-avatar {
 	flex: none;
 	border-radius: var(--rux-radius-control);
 }
 
-.rux-driver-grid__popover-info {
+.sched-driver-grid__popover-info {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
@@ -943,59 +743,59 @@
 	min-width: 0;
 }
 
-.rux-driver-grid__popover-info-row {
+.sched-driver-grid__popover-info-row {
 	display: flex;
 	align-items: baseline;
 	gap: var(--rux-space-1);
 }
 
-.rux-driver-grid__popover-info dt {
+.sched-driver-grid__popover-info dt {
 	flex: none;
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-xs);
 }
 
-.rux-driver-grid__popover-info dd {
+.sched-driver-grid__popover-info dd {
 	margin: 0;
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-driver-grid__popover-info dd a {
+.sched-driver-grid__popover-info dd a {
 	color: inherit;
 	text-decoration: none;
 }
 
-.rux-driver-grid__popover-list {
+.sched-driver-grid__popover-list {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-3);
 }
 
-.rux-driver-grid__popover-assignment + .rux-driver-grid__popover-assignment {
+.sched-driver-grid__popover-assignment + .sched-driver-grid__popover-assignment {
 	padding-top: var(--rux-space-3);
 	border-top: var(--rux-card-section-border);
 }
 
-.rux-driver-grid__popover-title,
-.rux-driver-grid__popover-meta {
+.sched-driver-grid__popover-title,
+.sched-driver-grid__popover-meta {
 	margin: 0;
 }
 
-.rux-driver-grid__popover-title {
+.sched-driver-grid__popover-title {
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-driver-grid__popover-meta {
+.sched-driver-grid__popover-meta {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
 
-.rux-driver-grid__popover-timeoff {
+.sched-driver-grid__popover-timeoff {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
@@ -1005,11 +805,11 @@
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-driver-grid__popover-timeoff:has(+ .rux-driver-grid__popover-notes) {
+.sched-driver-grid__popover-timeoff:has(+ .sched-driver-grid__popover-notes) {
 	margin-bottom: var(--rux-space-1);
 }
 
-.rux-driver-grid__popover-notes {
+.sched-driver-grid__popover-notes {
 	margin: 0 0 var(--rux-space-3);
 	padding-left: calc(var(--rux-icon-sm) + var(--rux-space-1));
 	color: var(--rux-text-muted);
@@ -1017,7 +817,7 @@
 	line-height: var(--rux-line-height-xs);
 }
 
-.rux-driver-grid__empty {
+.sched-driver-grid__empty {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-sm);
 }
@@ -1027,7 +827,7 @@
    open the header's own [<] close button takes over, so the heading button
    hides itself to avoid duplication. On mobile both states are always
    handled by the heading button (no panel header close button is shown). */
-.scheduler-app__mobile-panel-btn {
+.sched-app__mobile-panel-btn {
 	display: inline-flex;
 	flex: none;
 }
@@ -1074,14 +874,14 @@
 	   two action buttons in its group, or a locale with longer labels.
 
 	   #rp-panel-footer, not the bare class — driver-week-info.css's own
-	   unconditional .rux-scope-right-panel__footer-group { width:100% } rule
+	   unconditional .sched-scope-right-panel__footer-group { width:100% } rule
 	   loads later in the cascade (components.css imports this file before
 	   the <link> for driver-week-info.css in index.html), so at equal
 	   class-only specificity that rule silently won regardless of this
 	   media query the first time this shipped. The footer's own ID lifts
 	   this above that rule for good, rather than depending on file order
 	   staying the way it happens to be today. */
-	#rp-panel-footer .rux-scope-right-panel__footer-group {
+	#rp-panel-footer .sched-scope-right-panel__footer-group {
 		width: auto;
 		flex: 1 1 auto;
 		min-width: 0;
@@ -1099,68 +899,18 @@
 @media (min-width: 501px) {
 	/* The workspace-header toggle owns desktop open/close; the in-panel
 	   header button is the mobile overlay's close affordance. */
-	.scheduler-app__drawer .scheduler-app__panel-header-toggle {
+	.rux-drawer .sched-app__panel-header-toggle {
 		display: none;
 	}
 }
 
 @media (max-width: 500px) {
 	/* Keep the narrow shell attached beneath the persistent UI header. */
-	.scheduler-app {
+	.sched-app {
 		row-gap: 0;
 	}
 
-	/* Drawer overlays the full viewport width — mobile screens are too narrow
-	   to spare room for a workspace sliver behind it, so open panels get the
-	   whole width instead of the Gmail-nav-drawer partial treatment desktop
-	   uses. The scrim (below) still backs it for tap-to-dismiss. */
-	.scheduler-app__drawer:is(.is-open, .is-closing) {
-		position: fixed;
-		inset-block: 0;
-		left: 0;
-		z-index: var(--rux-z-modal);
-		width: 100%;
-		height: 100dvh;
-		margin-left: 0;
-		margin-right: 0;
-		transition: none;
-	}
-
-	/* Closing is a visual-only state. Release the workspace as soon as close()
-	   updates inert/ARIA state so this full-viewport wrapper cannot intercept
-	   calendar input while its panel slides out or if motion is interrupted. */
-	.scheduler-app__drawer.is-closing {
-		pointer-events: none;
-	}
-
-	.scheduler-app__drawer--right:is(.is-open, .is-closing) {
-		left: auto;
-		right: 0;
-	}
-
-	/* Tap-to-dismiss scrim behind the drawer, above the workspace and the
-	   fixed bottom nav — created/shown by RuxDrawer (rux-ui/js/drawer.js),
-	   shared by every drawer instance since only one is ever open at a time
-	   on mobile. */
-	.scheduler-app__drawer-scrim {
-		position: fixed;
-		inset: 0;
-		z-index: calc(var(--rux-z-modal) - 1);
-		background: var(--rux-overlay-scrim);
-		opacity: 0;
-		pointer-events: none;
-		transition:
-			opacity var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
-	}
-
-	.scheduler-app__drawer-scrim.is-visible {
-		opacity: 1;
-		pointer-events: auto;
-		transition:
-			opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
-	}
-
-	.scheduler-app__drawer .sched-scope-right-panel {
+	.rux-drawer .sched-scope-right-panel {
 		inset-block: 0;
 		right: 0;
 		left: 0;
@@ -1170,52 +920,12 @@
 		border-radius: 0;
 	}
 
-	.scheduler-app__drawer.is-closing .sched-scope-right-panel {
+	.rux-drawer.is-closing .sched-scope-right-panel {
 		display: flex;
 	}
 
-	.scheduler-app__drawer {
-		--mobile-drawer-translate-x: -100%;
-		transition: none;
-	}
-
-	.scheduler-app__drawer:not(.is-open):not(.is-closing) {
-		width: 0;
-	}
-
-	.scheduler-app__drawer--right {
-		--mobile-drawer-translate-x: 100%;
-	}
-
-	.scheduler-app__drawer.is-open > .rux-panel {
-		animation:
-			scheduler-mobile-drawer-in
-			var(--rux-panel-motion-duration)
-			var(--rux-panel-enter-easing);
-	}
-
-	.scheduler-app__drawer.is-closing > .rux-panel {
-		animation:
-			scheduler-mobile-drawer-out
-			var(--rux-panel-motion-duration)
-			var(--rux-panel-exit-easing);
-	}
-
-	.scheduler-app__drawer .rux-panel > .rux-panel__footer {
-		padding-bottom: calc(var(--rux-panel-padding-block) + env(safe-area-inset-bottom, 0px));
-	}
-
-	.scheduler-app__drawer .rux-panel:not(:has(> .rux-panel__footer)) > .rux-panel__body {
-		padding-bottom: env(safe-area-inset-bottom, 0px);
-	}
-
-	.scheduler-app__gutter {
-		display: none !important;
-	}
-
-
 	/* The fixed mobile nav overlays the schedule instead of reserving space. */
-	.scheduler-app {
+	.sched-app {
 		padding-bottom: 0;
 	}
 
@@ -1233,25 +943,9 @@
 	.rux-app-view > .rux-workspace::after {
 		content: "";
 		flex: none;
-		block-size: var(--scheduler-app-gap);
+		block-size: var(--sched-app-gap);
 	}
 
-}
-
-@keyframes scheduler-mobile-drawer-in {
-	from { transform: translateX(var(--mobile-drawer-translate-x)); }
-	to { transform: translateX(0); }
-}
-
-@keyframes scheduler-mobile-drawer-out {
-	from { transform: translateX(0); }
-	to { transform: translateX(var(--mobile-drawer-translate-x)); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.scheduler-app__drawer:is(.is-open, .is-closing) > .rux-panel {
-		animation-duration: 1ms;
-	}
 }
 
 /* — Schedule grid wrap — */
@@ -1294,7 +988,7 @@
    regular scrolling. --_progress (0–1, set inline by JS) tracks how far the
    drag is toward the trigger threshold; .is-ready marks the moment it's far
    enough that releasing will actually page the week. */
-.rux-scheduler__pull-hint {
+.sched-scheduler__pull-hint {
 	--_progress: 0;
 	position: absolute;
 	top: 50%;
@@ -1313,19 +1007,19 @@
 	transition: opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 
-.rux-scheduler__pull-hint--prev {
+.sched-scheduler__pull-hint--prev {
 	left: var(--rux-space-3);
 }
 
-.rux-scheduler__pull-hint--next {
+.sched-scheduler__pull-hint--next {
 	right: var(--rux-space-3);
 }
 
-.rux-scheduler__pull-hint.is-active {
+.sched-scheduler__pull-hint.is-active {
 	opacity: var(--_progress);
 }
 
-.rux-scheduler__pull-hint.is-ready {
+.sched-scheduler__pull-hint.is-ready {
 	opacity: 1;
 	background: var(--rux-accent);
 	animation: rux-pull-hint-pulse 700ms var(--rux-ease-in-out) infinite;
@@ -1337,27 +1031,27 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.rux-scheduler__pull-hint.is-ready {
+	.sched-scheduler__pull-hint.is-ready {
 		animation: none;
 	}
 }
 
-.scheduler-app__grid {
-	--rux-scheduler-day-min-width: 13rem;
-	--rux-scheduler-max-block-size: 100%;
-	--rux-scheduler-scroll-padding-block-end: var(--rux-space-4);
+.sched-app__grid {
+	--sched-scheduler-day-min-width: 13rem;
+	--sched-scheduler-max-block-size: 100%;
+	--sched-scheduler-scroll-padding-block-end: var(--rux-space-4);
 }
 
-.scheduler-app__grid .sched-trip-bar {
+.sched-app__grid .sched-trip-bar {
 	position: absolute;
 }
 
-.scheduler-app__grid .rux-scheduler__track:has(.sched-trip-bar.is-active) {
+.sched-app__grid .sched-scheduler__track:has(.sched-trip-bar.is-active) {
 	z-index: var(--rux-z-dropdown);
 }
 
 @media (max-width: 500px) {
-	.scheduler-app {
+	.sched-app {
 		width: 100%;
 		max-width: none;
 		margin: 0;

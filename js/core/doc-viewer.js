@@ -30,10 +30,10 @@
 			"rux-panel rux-panel--floating rux-panel--default-size sched-doc-viewer";
 		panelEl.hidden = true;
 		panelEl.innerHTML = `
-			<header class="rux-panel__header rux-doc-viewer__header">
-				<div class="rux-doc-viewer__title-group">
+			<header class="rux-panel__header sched-doc-viewer__header">
+				<div class="sched-doc-viewer__title-group">
 					<span class="rux-icon" aria-hidden="true" data-doc-viewer-icon>description</span>
-					<p class="rux-card__title rux-doc-viewer__title" data-doc-viewer-title></p>
+					<p class="rux-card__title sched-doc-viewer__title" data-doc-viewer-title></p>
 				</div>
 				<a class="rux-button rux-button--default rux-button--icon" data-doc-viewer-external target="_blank" rel="noopener" aria-label="Open document externally" title="Open externally">
 					<span class="rux-icon" aria-hidden="true">open_in_new</span>
@@ -42,10 +42,10 @@
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>
-			<div class="rux-panel__body rux-doc-viewer__body">
-				<iframe class="rux-doc-viewer__frame" title="Document preview"></iframe>
+			<div class="rux-panel__body sched-doc-viewer__body">
+				<iframe class="sched-doc-viewer__frame" title="Document preview"></iframe>
 			</div>
-			<footer class="rux-panel__footer rux-doc-viewer__footer">
+			<footer class="rux-panel__footer sched-doc-viewer__footer">
 				<button type="button" class="rux-button rux-button--ghost rux-button--danger" data-doc-viewer-delete>
 					<span class="rux-icon" aria-hidden="true">delete</span> Delete
 				</button>
@@ -73,7 +73,7 @@
 	function close() {
 		if (!panelEl || panelEl.hidden) return;
 		panelEl.hidden = true;
-		panelEl.querySelector(".rux-doc-viewer__frame").src = "about:blank";
+		panelEl.querySelector(".sched-doc-viewer__frame").src = "about:blank";
 		current = null;
 		// Drag/resize set inline left/top/width/height that would otherwise
 		// persist on this singleton panel across documents — clear them here
@@ -100,10 +100,10 @@
 		const url = options.url
 			? `${options.url}${options.url.includes("#") ? "&" : "#"}page=1&view=Fit&zoom=page-fit`
 			: "about:blank";
-		panel.querySelector(".rux-doc-viewer__frame").src = url;
+		panel.querySelector(".sched-doc-viewer__frame").src = url;
 		panel.querySelector("[data-doc-viewer-delete]").hidden = !options.onDelete;
 		panel.querySelector("[data-doc-viewer-update]").hidden = !options.onUpdate;
-		panel.querySelector(".rux-doc-viewer__footer").hidden = !options.onDelete && !options.onUpdate;
+		panel.querySelector(".sched-doc-viewer__footer").hidden = !options.onDelete && !options.onUpdate;
 		const externalLink = panel.querySelector("[data-doc-viewer-external]");
 		externalLink.hidden = !options.externalUrl;
 		externalLink.href = options.externalUrl || "#";

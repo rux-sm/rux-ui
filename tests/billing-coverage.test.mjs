@@ -7,7 +7,7 @@ const source = await readFile(new URL("../js/core/billing-config.js", import.met
 const notificationSource = await readFile(new URL("../js/data/notification-db.js", import.meta.url), "utf8");
 const tripBarSource = await readFile(new URL("../js/components/trip-bar.js", import.meta.url), "utf8");
 const tripBarCss = await readFile(new URL("../scheduler/css/features/trip-bar.css", import.meta.url), "utf8");
-const tokenSource = await readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8");
+const tokenSource = await readFile(new URL("../scheduler/css/tokens.css", import.meta.url), "utf8");
 const context = {
 	window: {},
 	console,
@@ -71,19 +71,19 @@ test("new records with an explicit empty PO amount remain partial", () => {
 
 test("trip bars render partial PO with a strong warning indicator", () => {
 	assert.match(tripBarSource, /key:\s*"partial_po"[\s\S]*?icon:\s*"request_quote"[\s\S]*?tone:\s*"warning"[\s\S]*?paymentStatus === "po_partial"/);
-	assert.match(tripBarCss, /\.rux-trip-bar__pending-icon--warning\s*\{[^}]*color:\s*var\(--rux-trip-bar-warning-icon\)/s);
+	assert.match(tripBarCss, /\.sched-trip-bar__pending-icon--warning\s*\{[^}]*color:\s*var\(--sched-trip-bar-warning-icon\)/s);
 });
 
 test("partial PO warns through the outline without replacing the trip color", () => {
 	assert.match(tripBarSource, /paymentStatus === "po_partial"\s*\?\s*"sched-trip-bar--partial-po"/);
 	const rule = tripBarCss.match(/\.sched-trip-bar--partial-po\s*\{([^}]*)\}/s)?.[1] ?? "";
-	assert.match(rule, /--_outline:\s*var\(--rux-trip-bar-warning-border\)/);
-	assert.match(rule, /--rux-trip-bar-border-width:\s*1px/);
+	assert.match(rule, /--_outline:\s*var\(--sched-trip-bar-warning-border\)/);
+	assert.match(rule, /--sched-trip-bar-border-width:\s*1px/);
 	assert.doesNotMatch(rule, /--_tone|background/);
 });
 
 test("trip bar action buttons use the compact 32px component contract", () => {
-	assert.match(tokenSource, /--rux-trip-bar-action-button-size:\s*32px/);
-	assert.match(tripBarSource, /rux-button--compact rux-button--block rux-trip-bar__action/);
-	assert.match(tripBarCss, /\.rux-trip-bar__action\s*\{[^}]*--_h:\s*var\(--rux-trip-bar-action-button-size\)/s);
+	assert.match(tokenSource, /--sched-trip-bar-action-button-size:\s*32px/);
+	assert.match(tripBarSource, /rux-button--compact rux-button--block sched-trip-bar__action/);
+	assert.match(tripBarCss, /\.sched-trip-bar__action\s*\{[^}]*--_h:\s*var\(--sched-trip-bar-action-button-size\)/s);
 });

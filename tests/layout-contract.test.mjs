@@ -12,6 +12,7 @@ const ruxCss = read("rux-ui/css/rux.css");
 const coreCss = read("rux-ui/css/rux-core.css");
 const componentsCss = read("scheduler/css/components.css");
 const schedulerLayoutCss = read("scheduler/css/layout/scheduler-app.css");
+const drawerCss = read("rux-ui/css/base/drawer.css");
 const exampleHtml = read("examples/app-layout.html");
 const layoutDocs = read("docs/layout-composition.md");
 const skillDocs = read(".claude/skills/rux-design/SKILL.md");
@@ -82,8 +83,10 @@ test("side navigation remains a reusable product-navigation primitive", () => {
 });
 
 test("side navigation uses productive non-persistent overlay motion", () => {
-	const sideNavMotionRules = schedulerLayoutCss.match(
-		/\/\* — Product side navigation — \*\/[\s\S]*?@media \(max-width: 500px\)/,
+	// The overlay placement recipe is portable now — .rux-side-nav--overlay
+	// in rux-ui/css/base/side-nav.css. The app keeps only the mobile width.
+	const sideNavMotionRules = sideNavCss.match(
+		/\/\* ── Overlay placement \(opt-in\)[\s\S]*$/,
 	)?.[0] ?? "";
 
 	assert.match(tokensCss, /--rux-motion-duration-moderate-02:\s+240ms;/);
@@ -117,7 +120,7 @@ test("side navigation uses productive non-persistent overlay motion", () => {
 		/clip-path var\(--rux-side-nav-motion-duration\) var\(--rux-side-nav-exit-easing\)/,
 	);
 	assert.match(sideNavMotionRules, /clip-path:\s*inset\(0 100% 0 0\);/);
-	assert.match(sideNavMotionRules, /\.scheduler-app__side-nav\.is-open\s*\{[^}]*clip-path:\s*inset\(0\);/s);
+	assert.match(sideNavMotionRules, /\.rux-side-nav--overlay\.is-open\s*\{[^}]*clip-path:\s*inset\(0\);/s);
 	assert.doesNotMatch(sideNavMotionRules, /translateX/);
 	assert.match(tokensCss, /--rux-side-nav-scrim-opacity:\s+0\.65;/);
 	assert.match(tokensCss, /--rux-side-nav-scrim-enter-duration:\s+200ms;/);
@@ -131,13 +134,13 @@ test("side navigation uses productive non-persistent overlay motion", () => {
 		/opacity var\(--rux-side-nav-scrim-enter-duration\)[\s\S]*?var\(--rux-side-nav-scrim-enter-delay\)/,
 	);
 	assert.doesNotMatch(sideNavMotionRules, /margin-inline-end|flex:\s*0 0 var\(--rux-side-nav-width\)/);
-	assert.doesNotMatch(sideNavMotionRules, /\.scheduler-app__side-nav-scrim\s*\{[^}]*display:\s*none;/s);
+	assert.doesNotMatch(sideNavMotionRules, /\.rux-side-nav-scrim\s*\{[^}]*display:\s*none;/s);
 	assert.match(
 		layoutDocs,
 		/Header-triggered navigation SHOULD overlay the application body without\s+resizing the active workspace/,
 	);
 	assert.match(
-		schedulerLayoutCss,
+		sideNavCss,
 		/@media \(prefers-reduced-motion: reduce\)[\s\S]*?transition-duration:\s*1ms;/,
 	);
 });
@@ -153,11 +156,11 @@ test("every view shares one frame, configured on the application shell", () => {
 	assert.match(tokensCss, /--rux-app-view-radius:\s*var\(--rux-radius-0\);/);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app\s*\{[\s\S]*?--rux-app-view-padding:\s*var\(--rux-space-2\) var\(--rux-space-3\) var\(--rux-space-3\) var\(--rux-space-3\);/,
+		/\.sched-app\s*\{[\s\S]*?--rux-app-view-padding:\s*var\(--rux-space-2\) var\(--rux-space-3\) var\(--rux-space-3\) var\(--rux-space-3\);/,
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app\s*\{[\s\S]*?--rux-app-view-radius:\s*var\(--rux-radius-container\);/,
+		/\.sched-app\s*\{[\s\S]*?--rux-app-view-radius:\s*var\(--rux-radius-container\);/,
 	);
 	// No per-view frame overrides, and none of the retired calendar-specific
 	// frame tokens survive anywhere.
@@ -205,7 +208,7 @@ test("the canonical example contains the required accessible composition", () =>
 	assert.equal((exampleHtml.match(/class="rux-panel example-panel"/g) ?? []).length, 1);
 	assert.match(exampleHtml, /aria-current="page"/);
 	assert.match(exampleHtml, /class="rux-ui-header"/);
-	assert.match(exampleHtml, /class="rux-side-nav example-navigation"/);
+	assert.match(exampleHtml, /class="rux-side-nav rux-side-nav--overlay"/);
 	assert.match(exampleHtml, /aria-label="Primary Navigation"/);
 	assert.match(exampleHtml, /data-rux-side-nav-toggle/);
 	assert.match(exampleHtml, /data-rux-side-nav-scrim/);

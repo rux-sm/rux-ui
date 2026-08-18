@@ -37,7 +37,7 @@
                                 the bar always shows every row regardless.
    .sched-scheduler--trip-bar-size-xxs
    .sched-scheduler--trip-bar-size-sm
-                                Swaps --rux-trip-bar-row-font-size/-line-height
+                                Swaps --sched-trip-bar-row-font-size/-line-height
                                 (tokens.css, COMPONENT · trip bar) from their
                                 xs default to xxs/sm — every row's text and the
                                 whole height budget follow automatically, no
@@ -53,8 +53,8 @@
    Row typography — scan rows (body, top to bottom). Every row shares one
    size/line-height pair, read from the trip bar's own component tokens
    (tokens.css, COMPONENT · trip bar) rather than the raw --rux-size-xs/
-   --rux-line-height-xs primitives directly: --rux-trip-bar-row-font-size
-   (12px) / --rux-trip-bar-row-line-height (16px — tokens.css defines
+   --rux-line-height-xs primitives directly: --sched-trip-bar-row-font-size
+   (12px) / --sched-trip-bar-row-line-height (16px — tokens.css defines
    line-height as an absolute, 4px-grid-aligned length, not a unitless
    ratio). Every row is locked to that same 16px height with zero gap and
    zero margin between rows — the line-height *is* the row height, no
@@ -64,10 +64,10 @@
    Destination and Time are the only two rows that always show while
    collapsed — every other row (client, contact, notes, reqs, drivers) is
    independently togglable per user preference (see the scheduler view
-   modifiers above), so --rux-trip-bar-collapsed-height can't assume a
+   modifiers above), so --sched-trip-bar-collapsed-height can't assume a
    fixed row count while collapsed anymore. index.html's
    recomputeTripBarRowCount() counts however many are actually on and
-   writes it to --rux-trip-bar-visible-row-count, which the collapsed
+   writes it to --sched-trip-bar-visible-row-count, which the collapsed
    height calc() below reads. Selecting a bar (.is-active) always shows
    all 7 regardless — every row preference is collapsed-only declutter,
    not a permanent hide.
@@ -87,42 +87,42 @@
    ========================================================================== */
 
 .sched-trip-bar {
-	/* Every scan row is locked directly to --rux-trip-bar-row-line-height
+	/* Every scan row is locked directly to --sched-trip-bar-row-line-height
 	   (tokens.css) — a real length, not a ratio, so the row height doesn't
 	   need to multiply it by font-size, just read it. Row COUNT isn't a
 	   fixed 7 anymore either: client/contact/notes/reqs/drivers are each an
 	   independent user preference (index.html's View Options), so the
-	   scheduler sets --rux-trip-bar-visible-row-count (2-7, destination +
+	   scheduler sets --sched-trip-bar-visible-row-count (2-7, destination +
 	   time are never optional) whenever a preference changes — see
 	   recomputeTripBarRowCount() in index.html. The 7
 	   fallback only matters if that JS hasn't run yet (e.g. no-JS). Padding
 	   top + bottom, 0 gap between rows. */
-	--rux-trip-bar-collapsed-height: calc(
-		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-visible-row-count, 7))
-		+ (var(--rux-trip-bar-compact-padding) * 2)
+	--sched-trip-bar-collapsed-height: calc(
+		(var(--sched-trip-bar-row-line-height) * var(--sched-trip-bar-visible-row-count, 7))
+		+ (var(--sched-trip-bar-compact-padding) * 2)
 	);
-	--rux-trip-bar-action-padding-block: var(--rux-space-2) 0;
-	--rux-trip-bar-action-padding-inline: var(--rux-space-2);
-	--rux-trip-bar-bus-label-min-width-compact: 1.875rem;
-	--rux-trip-bar-conflict-height: var(--rux-control-height);
-	--rux-trip-bar-tight-gap: var(--rux-space-px);
-	--rux-trip-bar-compact-padding: var(--rux-space-2);
-	--rux-trip-bar-actions-bg: transparent;
-	--rux-trip-bar-bus-label-bg: var(--rux-white);
-	--rux-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
-	--rux-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
-	--rux-trip-bar-active-z-index: var(--rux-z-dropdown);
-	--rux-trip-bar-action-height: calc(var(--rux-trip-bar-action-button-size) + (var(--rux-space-2) * 2));
-	--rux-trip-bar-active-height: calc(var(--rux-trip-bar-collapsed-height) + var(--rux-trip-bar-action-height));
+	--sched-trip-bar-action-padding-block: var(--rux-space-2) 0;
+	--sched-trip-bar-action-padding-inline: var(--rux-space-2);
+	--sched-trip-bar-bus-label-min-width-compact: 1.875rem;
+	--sched-trip-bar-conflict-height: var(--rux-control-height);
+	--sched-trip-bar-tight-gap: var(--rux-space-px);
+	--sched-trip-bar-compact-padding: var(--rux-space-2);
+	--sched-trip-bar-actions-bg: transparent;
+	--sched-trip-bar-bus-label-bg: var(--rux-white);
+	--sched-trip-bar-conflict-bg: color-mix(in oklch, var(--rux-danger) 18%, transparent);
+	--sched-trip-bar-conflict-border-color: color-mix(in oklch, var(--rux-danger) 38%, transparent);
+	--sched-trip-bar-active-z-index: var(--rux-z-dropdown);
+	--sched-trip-bar-action-height: calc(var(--sched-trip-bar-action-button-size) + (var(--rux-space-2) * 2));
+	--sched-trip-bar-active-height: calc(var(--sched-trip-bar-collapsed-height) + var(--sched-trip-bar-action-height));
 
 	/* Declared here, not in tokens.css — see the comment there. Chains
-	   through --rux-trip-bar-row-line-height, so it has to be declared at
+	   through --sched-trip-bar-row-line-height, so it has to be declared at
 	   or below .sched-scheduler--trip-bar-size-xxs/-sm to actually see their
 	   override; :root sits above that and would freeze on the xs default. */
-	--rux-trip-bar-icon-size: var(--rux-trip-bar-row-line-height);
+	--sched-trip-bar-icon-size: var(--sched-trip-bar-row-line-height);
 
 	/* Same freezing reasoning as icon-size above — both chain through
-	   --rux-trip-bar-row-line-height, so both have to live here, not
+	   --sched-trip-bar-row-line-height, so both have to live here, not
 	   tokens.css. The bus-label pill was a deliberate flat exception to the
 	   row-typography contract (still is — it's a badge, not a text row),
 	   but "flat" doesn't have to mean "frozen at one size forever now that
@@ -131,35 +131,35 @@
 	   8px pill at XXS risked reading as illegible, better to hold the floor
 	   than guess), and only lets SM's genuinely larger 20px row grow the
 	   pill past that, capped so it never overpowers the row's own text. */
-	--rux-trip-bar-bus-label-height: clamp(
+	--sched-trip-bar-bus-label-height: clamp(
 		12px,
-		calc(var(--rux-trip-bar-row-line-height) - 4px),
+		calc(var(--sched-trip-bar-row-line-height) - 4px),
 		16px
 	);
-	--rux-trip-bar-bus-label-font-size: clamp(
+	--sched-trip-bar-bus-label-font-size: clamp(
 		10px,
-		calc(var(--rux-trip-bar-row-line-height) * 0.625),
+		calc(var(--sched-trip-bar-row-line-height) * 0.625),
 		13px
 	);
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;
 	--_tone: var(--_trip-bar-color, var(--rux-accent));
-	--_chroma: calc(c * var(--rux-trip-bar-chroma-scale));
+	--_chroma: calc(c * var(--sched-trip-bar-chroma-scale));
 	--_outline: oklch(
 		from var(--_tone)
-		var(--rux-trip-bar-bg-lightness)
+		var(--sched-trip-bar-bg-lightness)
 		var(--_chroma)
 		h / 100%
 	);
-	--_surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-bg-opacity));
-	--_surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-hover-bg-opacity));
-	--_surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-pressed-bg-opacity));
-	--_surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-selected-bg-opacity));
-	--_tail-surface: oklch(from var(--_tone) var(--rux-trip-bar-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-opacity));
-	--_tail-surface-hover: oklch(from var(--_tone) var(--rux-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-hover-opacity));
-	--_tail-surface-pressed: oklch(from var(--_tone) var(--rux-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-pressed-opacity));
-	--_tail-surface-active: oklch(from var(--_tone) var(--rux-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--rux-trip-bar-tail-selected-opacity));
+	--_surface: oklch(from var(--_tone) var(--sched-trip-bar-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-bg-opacity));
+	--_surface-hover: oklch(from var(--_tone) var(--sched-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-hover-bg-opacity));
+	--_surface-pressed: oklch(from var(--_tone) var(--sched-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-pressed-bg-opacity));
+	--_surface-active: oklch(from var(--_tone) var(--sched-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-selected-bg-opacity));
+	--_tail-surface: oklch(from var(--_tone) var(--sched-trip-bar-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-opacity));
+	--_tail-surface-hover: oklch(from var(--_tone) var(--sched-trip-bar-hover-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-hover-opacity));
+	--_tail-surface-pressed: oklch(from var(--_tone) var(--sched-trip-bar-pressed-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-pressed-opacity));
+	--_tail-surface-active: oklch(from var(--_tone) var(--sched-trip-bar-selected-bg-lightness) var(--_chroma) h / var(--sched-trip-bar-tail-selected-opacity));
 
 	position: relative;
 	display: flex;
@@ -169,9 +169,9 @@
 	container-type: inline-size;
 	font-family: var(--rux-font-sans-condensed);
 	background-color: var(--_surface);
-	border-radius: var(--rux-trip-bar-radius);
-	border: var(--rux-trip-bar-border-width) solid var(--_outline);
-	box-shadow: var(--rux-trip-bar-shadow);
+	border-radius: var(--sched-trip-bar-radius);
+	border: var(--sched-trip-bar-border-width) solid var(--_outline);
+	box-shadow: var(--sched-trip-bar-shadow);
 	overflow: hidden;
 	color: var(--rux-fg-on-accent);
 	cursor: pointer;
@@ -186,17 +186,17 @@
 /* ---------- Row size ---------- */
 /* Swapping these two is the whole feature — every row's font-size/
    line-height reads them (see the row-typography table above), and
-   --rux-trip-bar-collapsed-height's calc() reads --row-line-height, so
+   --sched-trip-bar-collapsed-height's calc() reads --row-line-height, so
    both the text and the whole height budget follow with no other CSS
    touched. scheduler.css's empty-row fallback reads the same token too.
 
    Icons (.sched-trip-bar .rux-icon, just below) are the same story for size
-   — --rux-trip-bar-icon-size (declared on .sched-trip-bar above) already
+   — --sched-trip-bar-icon-size (declared on .sched-trip-bar above) already
    scales with these two. Icons also expose their other three Material
    Symbols axes per tier if it turns out XXS/SM need their own tuning
-   beyond just shrinking/growing: --rux-trip-bar-icon-fill,
-   --rux-trip-bar-icon-weight, --rux-trip-bar-icon-grade,
-   --rux-trip-bar-icon-optical-size (all defined once, tokens.css). None
+   beyond just shrinking/growing: --sched-trip-bar-icon-fill,
+   --sched-trip-bar-icon-weight, --sched-trip-bar-icon-grade,
+   --sched-trip-bar-icon-optical-size (all defined once, tokens.css). None
    are overridden per tier yet — add one here, same shape as the two below,
    once XXS/XS/SM are visible side by side and it's clear which need it. */
 
@@ -207,39 +207,39 @@
    compound selector, so it outranks the base .rux-icon rule regardless of load
    order, and still loses to any :is(.is-active, [aria-pressed="true"])
    selected-state override, which is more specific still.
-   --rux-trip-bar-icon-size is declared on .sched-trip-bar above; the other four
+   --sched-trip-bar-icon-size is declared on .sched-trip-bar above; the other four
    axes come from tokens.css. */
 .sched-trip-bar .rux-icon {
-	--_icon-size: var(--rux-trip-bar-icon-size);
-	--_icon-fill: var(--rux-trip-bar-icon-fill);
-	--_icon-weight: var(--rux-trip-bar-icon-weight);
-	--_icon-grade: var(--rux-trip-bar-icon-grade);
-	--_icon-optical-size: var(--rux-trip-bar-icon-optical-size);
+	--_icon-size: var(--sched-trip-bar-icon-size);
+	--_icon-fill: var(--sched-trip-bar-icon-fill);
+	--_icon-weight: var(--sched-trip-bar-icon-weight);
+	--_icon-grade: var(--sched-trip-bar-icon-grade);
+	--_icon-optical-size: var(--sched-trip-bar-icon-optical-size);
 }
 
 .sched-scheduler--trip-bar-size-xxs {
-	--rux-trip-bar-row-font-size:   var(--rux-size-xxs);
-	--rux-trip-bar-row-line-height: var(--rux-line-height-xxs);
+	--sched-trip-bar-row-font-size:   var(--rux-size-xxs);
+	--sched-trip-bar-row-line-height: var(--rux-line-height-xxs);
 }
 
 .sched-scheduler--trip-bar-size-sm {
-	--rux-trip-bar-row-font-size:   var(--rux-size-sm);
-	--rux-trip-bar-row-line-height: var(--rux-line-height-sm);
+	--sched-trip-bar-row-font-size:   var(--rux-size-sm);
+	--sched-trip-bar-row-line-height: var(--rux-line-height-sm);
 }
 
 /* Partial POs keep the confirmed trip surface (including color overrides),
    while the shared outline warns that authorization is incomplete. */
 .sched-trip-bar--partial-po {
-	--_outline: var(--rux-trip-bar-warning-border);
-	--rux-trip-bar-border-width: 1px;
+	--_outline: var(--sched-trip-bar-warning-border);
+	--sched-trip-bar-border-width: 1px;
 }
 
 /* Contract's signed but no PO has been requested/received yet — a step
    further along than "pending contract," so it gets the stronger (danger)
    outline instead of partial-po's warning one. */
 .sched-trip-bar--pending-po {
-	--_outline: var(--rux-trip-bar-danger-border);
-	--rux-trip-bar-border-width: 1px;
+	--_outline: var(--sched-trip-bar-danger-border);
+	--sched-trip-bar-border-width: 1px;
 }
 
 /* Drag-to-reassign (see installBusDrag() in index.html) — the original bar
@@ -266,9 +266,9 @@
 	position: fixed;
 	box-sizing: border-box;
 	margin: 0;
-	border-radius: var(--rux-trip-bar-radius);
+	border-radius: var(--sched-trip-bar-radius);
 	border: 2px solid var(--_ghost-tone, var(--rux-accent));
-	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) var(--rux-trip-bar-ghost-bg-opacity), transparent);
+	background-color: color-mix(in oklch, var(--_ghost-tone, var(--rux-accent)) var(--sched-trip-bar-ghost-bg-opacity), transparent);
 	transition: none;
 	cursor: grabbing;
 	/* Above --rux-z-sticky (200 — the row-head label column, and any track
@@ -282,36 +282,36 @@
 /* ---------- Height contract ---------- */
 
 .sched-trip-bar {
-	height: calc(var(--rux-trip-bar-collapsed-height) + var(--_conflict-height));
+	height: calc(var(--sched-trip-bar-collapsed-height) + var(--_conflict-height));
 }
 
 .sched-trip-bar:not(.sched-trip-bar--multi-day),
-.rux-trip-bar__head,
-.rux-trip-bar__tail {
-	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
-	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+.sched-trip-bar__head,
+.sched-trip-bar__tail {
+	-webkit-backdrop-filter: blur(var(--rux-backdrop-blur));
+	backdrop-filter: blur(var(--rux-backdrop-blur));
 }
 
 .sched-trip-bar.is-active {
 	/* Selecting a bar always shows every row, full stop — every row-
 	   visibility preference is collapsed-only declutter; .is-active means
-	   all 7. --rux-trip-bar-active-row-count is never
+	   all 7. --sched-trip-bar-active-row-count is never
 	   actually set by index.html anymore (nothing needs it to be anything
 	   but 7), so the ", 7" fallback here is what's really doing the work —
 	   kept as a token read rather than a bare 7 in case that ever changes.
-	   Overriding --rux-trip-bar-collapsed-height itself (not a separate
-	   token) means --rux-trip-bar-active-height below, which derives from
+	   Overriding --sched-trip-bar-collapsed-height itself (not a separate
+	   token) means --sched-trip-bar-active-height below, which derives from
 	   it, picks this up for free. */
-	--rux-trip-bar-collapsed-height: calc(
-		(var(--rux-trip-bar-row-line-height) * var(--rux-trip-bar-active-row-count, 7))
-		+ (var(--rux-trip-bar-compact-padding) * 2)
+	--sched-trip-bar-collapsed-height: calc(
+		(var(--sched-trip-bar-row-line-height) * var(--sched-trip-bar-active-row-count, 7))
+		+ (var(--sched-trip-bar-compact-padding) * 2)
 	);
-	height: calc(var(--rux-trip-bar-active-height) + var(--_conflict-height));
-	min-width: var(--rux-trip-bar-day-inline-size, 100%);
+	height: calc(var(--sched-trip-bar-active-height) + var(--_conflict-height));
+	min-width: var(--sched-trip-bar-day-inline-size, 100%);
 }
 
 .sched-trip-bar.is-expanded {
-	height: calc(var(--rux-trip-bar-active-height) + var(--_details-height) + var(--_conflict-height));
+	height: calc(var(--sched-trip-bar-active-height) + var(--_details-height) + var(--_conflict-height));
 }
 
 /* ---------- Interaction states ---------- */
@@ -325,14 +325,14 @@
 }
 
 .sched-trip-bar[aria-disabled="true"] {
-	opacity: var(--rux-trip-bar-disabled-opacity);
+	opacity: var(--sched-trip-bar-disabled-opacity);
 	cursor: not-allowed;
 	pointer-events: none;
 }
 
 .sched-trip-bar.is-active {
 	background-color: var(--_surface-active);
-	z-index: var(--rux-trip-bar-active-z-index);
+	z-index: var(--sched-trip-bar-active-z-index);
 }
 
 .sched-trip-bar--multi-day:hover,
@@ -341,7 +341,7 @@
 }
 
 .sched-trip-bar--multi-day.is-active {
-	z-index: var(--rux-trip-bar-active-z-index);
+	z-index: var(--sched-trip-bar-active-z-index);
 }
 
 /* Keep bar sections, actions, text, and conflict content in one predictable
@@ -353,29 +353,29 @@
 
 /* ---------- Modifier: unconfirmed ---------- */
 
-.sched-trip-bar[data-trip-bar-color="cyan"] { --_trip-bar-color: var(--rux-trip-color-cyan); }
-.sched-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--rux-trip-color-green); }
-.sched-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--rux-trip-color-purple); }
-/* Yellow and orange alone read muddy at the shared --rux-trip-bar-bg-
+.sched-trip-bar[data-trip-bar-color="cyan"] { --_trip-bar-color: var(--sched-trip-color-cyan); }
+.sched-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--sched-trip-color-green); }
+.sched-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--sched-trip-color-purple); }
+/* Yellow and orange alone read muddy at the shared --sched-trip-bar-bg-
    lightness (70%) — noticeably darker than their own native 80% lightness
    (--rux-yellow/--rux-orange), unlike the other trip colors which sit
    closer to their native value already. Scoped to just these two so the
-   other colors and every other consumer of --rux-trip-bar-bg-lightness
+   other colors and every other consumer of --sched-trip-bar-bg-lightness
    (accent/danger button glass, see tokens.css) are untouched;
    --hover/--pressed/--selected are calc()'d off this token at :root, so
    they pick up the lighter base automatically. */
 .sched-trip-bar[data-trip-bar-color="yellow"] {
-	--_trip-bar-color: var(--rux-trip-color-yellow);
-	--rux-trip-bar-bg-lightness: 80%;
+	--_trip-bar-color: var(--sched-trip-color-yellow);
+	--sched-trip-bar-bg-lightness: 80%;
 }
 .sched-trip-bar[data-trip-bar-color="orange"] {
-	--_trip-bar-color: var(--rux-trip-color-orange);
-	--rux-trip-bar-bg-lightness: 80%;
+	--_trip-bar-color: var(--sched-trip-color-orange);
+	--sched-trip-bar-bg-lightness: 80%;
 }
-.sched-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--rux-trip-color-pink); }
+.sched-trip-bar[data-trip-bar-color="pink"] { --_trip-bar-color: var(--sched-trip-color-pink); }
 
 .sched-trip-bar--unconfirmed:not([data-trip-bar-color]) {
-	--_tone: var(--rux-trip-bar-danger-border);
+	--_tone: var(--sched-trip-bar-danger-border);
 }
 
 /* ---------- Modifier: trip-type pattern overlay ---------- */
@@ -383,7 +383,7 @@
    existing icon communicates direction; the pattern only communicates that
    this is a special trip type. It inherits the bar's blue/red/override
    surface and stays beneath every interactive/content layer. */
-.rux-trip-bar__stripe-layer {
+.sched-trip-bar__stripe-layer {
 	position: absolute;
 	inset: 0;
 	display: block;
@@ -393,17 +393,17 @@
 	pointer-events: none;
 }
 
-.sched-trip-bar > .rux-trip-bar__stripe-layer {
+.sched-trip-bar > .sched-trip-bar__stripe-layer {
 	position: absolute;
 	z-index: 0;
 }
 
-.rux-trip-bar__stripe-mark {
-	fill: var(--rux-trip-bar-stripe-color);
-	fill-opacity: var(--rux-trip-bar-stripe-opacity);
+.sched-trip-bar__stripe-mark {
+	fill: var(--sched-trip-bar-stripe-color);
+	fill-opacity: var(--sched-trip-bar-stripe-opacity);
 }
 
-.rux-trip-bar__head > :not(.rux-trip-bar__stripe-layer) {
+.sched-trip-bar__head > :not(.sched-trip-bar__stripe-layer) {
 	position: relative;
 	z-index: 1;
 }
@@ -414,31 +414,31 @@
 	grid-template-columns: 1fr;
 }
 
-.sched-trip-bar--from-prev .rux-trip-bar__head {
+.sched-trip-bar--from-prev .sched-trip-bar__head {
 	display: none;
 }
 
-.sched-trip-bar--from-prev .rux-trip-bar__tail {
+.sched-trip-bar--from-prev .sched-trip-bar__tail {
 	grid-column: 1 / -1;
 	margin-left: 0;
 	border-inline-start: 0;
-	border-radius: 0 var(--rux-trip-bar-radius) var(--rux-trip-bar-radius) 0;  /* flat left edge — trip enters from offscreen */
+	border-radius: 0 var(--sched-trip-bar-radius) var(--sched-trip-bar-radius) 0;  /* flat left edge — trip enters from offscreen */
 }
 
 
 .sched-trip-bar--from-prev.is-active {
-	height: calc(var(--rux-trip-bar-active-height) + var(--_conflict-height));
-	grid-template-columns: var(--rux-trip-bar-day-inline-size, 50%) 1fr;
+	height: calc(var(--sched-trip-bar-active-height) + var(--_conflict-height));
+	grid-template-columns: var(--sched-trip-bar-day-inline-size, 50%) 1fr;
 }
 
-.sched-trip-bar--from-prev.is-active .rux-trip-bar__head {
+.sched-trip-bar--from-prev.is-active .sched-trip-bar__head {
 	display: flex;
 	border-inline-start: 0;
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
 }
 
-.sched-trip-bar--from-prev.is-active .rux-trip-bar__tail {
+.sched-trip-bar--from-prev.is-active .sched-trip-bar__tail {
 	grid-column: 2 / -1;
 	margin-left: 0;
 	border-inline-start: 0;
@@ -448,13 +448,13 @@
 
 /* ---------- Modifier: to-next ---------- */
 
-.sched-trip-bar--to-next .rux-trip-bar__tail {
+.sched-trip-bar--to-next .sched-trip-bar__tail {
 	border-inline-end: 0;
 	border-top-right-radius: 0;
 	border-bottom-right-radius: 0;
 }
 
-.sched-trip-bar--from-prev.sched-trip-bar--to-next .rux-trip-bar__tail {
+.sched-trip-bar--from-prev.sched-trip-bar--to-next .sched-trip-bar__tail {
 	border-radius: 0;
 }
 
@@ -464,14 +464,14 @@
 
 .sched-trip-bar--multi-day {
 	display: grid;
-	grid-template-columns: var(--rux-trip-bar-day-inline-size, 50%) 1fr;
+	grid-template-columns: var(--sched-trip-bar-day-inline-size, 50%) 1fr;
 	grid-template-rows: 1fr auto;
 	background-color: transparent;
 	overflow: visible;
 	border: none;
 	/* The outer wrapper owns the shared shadow, so it must carry the same
 	   silhouette as its rounded head/tail surfaces. */
-	border-radius: var(--rux-trip-bar-radius);
+	border-radius: var(--sched-trip-bar-radius);
 }
 
 .sched-trip-bar--multi-day.sched-trip-bar--from-prev {
@@ -485,17 +485,17 @@
 }
 
 .sched-trip-bar--multi-day.sched-trip-bar--has-conflict {
-	--_conflict-height: var(--rux-trip-bar-conflict-height);
+	--_conflict-height: var(--sched-trip-bar-conflict-height);
 }
 
-.sched-trip-bar--multi-day .rux-trip-bar__conflict {
+.sched-trip-bar--multi-day .sched-trip-bar__conflict {
 	grid-column: 1 / -1;
 	grid-row: 2;
 }
 
 /* ---------- Head (day-1 card for multi-day) ---------- */
 
-.rux-trip-bar__head {
+.sched-trip-bar__head {
 	grid-column: 1;
 	grid-row: 1;
 	position: relative;
@@ -503,8 +503,8 @@
 	display: flex;
 	flex-direction: column;
 	background-color: var(--_surface);
-	border-radius: var(--rux-trip-bar-radius);
-	border: var(--rux-trip-bar-border-width) solid var(--_outline);
+	border-radius: var(--sched-trip-bar-radius);
+	border: var(--sched-trip-bar-border-width) solid var(--_outline);
 	border-inline-end: 0;
 	border-start-end-radius: 0;
 	border-end-end-radius: 0;
@@ -512,32 +512,32 @@
 	/* The base .sched-trip-bar rule (single-day) declares "transform" in its
 	   own transition list, which incidentally keeps it GPU-composited at all
 	   times — without that, overflow:hidden + border-radius here fails to
-	   clip .rux-trip-bar__actions (a child with its own animating
+	   clip .sched-trip-bar__actions (a child with its own animating
 	   translateY transform) to this rounded corner when it expands, and its
 	   square bounds poke through instead. translateZ(0) forces the same
 	   compositing here without needing an always-on transition. */
 	transform: translateZ(0);
 }
 
-.rux-trip-bar__head-content {
+.sched-trip-bar__head-content {
 	display: contents;
 }
 
-.sched-trip-bar--multi-day:hover .rux-trip-bar__head {
+.sched-trip-bar--multi-day:hover .sched-trip-bar__head {
 	background-color: var(--_surface-hover);
 }
 
-.sched-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__head {
+.sched-trip-bar--multi-day:active:not(.is-active) .sched-trip-bar__head {
 	background-color: var(--_surface-pressed);
 }
 
-.sched-trip-bar--multi-day.is-active .rux-trip-bar__head {
+.sched-trip-bar--multi-day.is-active .sched-trip-bar__head {
 	background-color: var(--_surface-active);
 }
 
 /* ---------- Tail (continuation rail for multi-day) ---------- */
 
-.rux-trip-bar__tail {
+.sched-trip-bar__tail {
 	grid-column: 2 / -1;
 	grid-row: 1;
 	position: relative;
@@ -547,8 +547,8 @@
 	align-self: stretch;
 	z-index: 1;
 	background-color: var(--_tail-surface);
-	border-radius: var(--rux-trip-bar-radius);
-	border: var(--rux-trip-bar-border-width) solid var(--_outline);
+	border-radius: var(--sched-trip-bar-radius);
+	border: var(--sched-trip-bar-border-width) solid var(--_outline);
 	border-inline-start: 0;
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
@@ -561,15 +561,15 @@
    noticeable; now that it's flat like every other surface, __tail needs the
    same hover/active response __head already has or the two halves of a
    multi-day bar visibly desync on interaction. */
-.sched-trip-bar--multi-day:hover .rux-trip-bar__tail {
+.sched-trip-bar--multi-day:hover .sched-trip-bar__tail {
 	background-color: var(--_tail-surface-hover);
 }
 
-.sched-trip-bar--multi-day:active:not(.is-active) .rux-trip-bar__tail {
+.sched-trip-bar--multi-day:active:not(.is-active) .sched-trip-bar__tail {
 	background-color: var(--_tail-surface-pressed);
 }
 
-.sched-trip-bar--multi-day.is-active .rux-trip-bar__tail {
+.sched-trip-bar--multi-day.is-active .sched-trip-bar__tail {
 	background-color: var(--_tail-surface-active);
 }
 
@@ -580,62 +580,62 @@
 	grid-template-columns: minmax(0, 1fr);
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .rux-trip-bar__head {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .sched-trip-bar__head {
 	display: flex;
 	grid-column: 1 / -1;
-	border-inline-end: var(--rux-trip-bar-border-width) solid var(--_outline);
-	border-radius: var(--rux-trip-bar-radius);
+	border-inline-end: var(--sched-trip-bar-border-width) solid var(--_outline);
+	border-radius: var(--sched-trip-bar-radius);
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .rux-trip-bar__head-content {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .sched-trip-bar__head-content {
 	display: flex;
 	flex: 1 1 auto;
 	flex-direction: column;
-	width: min(var(--rux-trip-bar-day-inline-size, 100%), 100%);
+	width: min(var(--sched-trip-bar-day-inline-size, 100%), 100%);
 	max-width: 100%;
 	min-width: 0;
 	margin-inline: auto;
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__summary {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .sched-trip-bar__summary {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__destination {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .sched-trip-bar__destination {
 	grid-column: 2;
 	justify-content: center;
 	text-align: center;
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__paid-badge {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .sched-trip-bar__paid-badge {
 	grid-column: 3;
 	justify-self: end;
 }
 
 .sched-scheduler--centered-trip-heads .sched-trip-bar :is(
-	.rux-trip-bar__client,
-	.rux-trip-bar__contact
+	.sched-trip-bar__client,
+	.sched-trip-bar__contact
 ) {
 	justify-content: center;
 	text-align: center;
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar .rux-trip-bar__reqs .rux-trip-bar__pending {
+.sched-scheduler--centered-trip-heads .sched-trip-bar .sched-trip-bar__reqs .sched-trip-bar__pending {
 	margin-inline-start: auto;
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .rux-trip-bar__tail {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day .sched-trip-bar__tail {
 	display: none;
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day.sched-trip-bar--from-prev .rux-trip-bar__head {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day.sched-trip-bar--from-prev .sched-trip-bar__head {
 	border-inline-start: 0;
 	border-start-start-radius: 0;
 	border-end-start-radius: 0;
 }
 
-.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day.sched-trip-bar--to-next .rux-trip-bar__head {
+.sched-scheduler--centered-trip-heads .sched-trip-bar--multi-day.sched-trip-bar--to-next .sched-trip-bar__head {
 	border-inline-end: 0;
 	border-start-end-radius: 0;
 	border-end-end-radius: 0;
@@ -644,7 +644,7 @@
 
 /* ---------- Action toolbar ---------- */
 
-.rux-trip-bar__actions {
+.sched-trip-bar__actions {
 	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -653,11 +653,11 @@
 	gap: 0;
 	max-height: 0;
 	margin: 0;
-	background: var(--rux-trip-bar-actions-bg);
-	border-radius: var(--rux-trip-bar-actions-radius);
+	background: var(--sched-trip-bar-actions-bg);
+	border-radius: var(--sched-trip-bar-actions-radius);
 }
 
-.rux-trip-bar__actions {
+.sched-trip-bar__actions {
 	opacity: 0;
 	pointer-events: none;
 	transform: translateY(calc(var(--rux-space-1) * -1));
@@ -671,35 +671,35 @@
 		visibility 0s linear var(--rux-duration-base);
 }
 
-.rux-trip-bar__action {
-	--_h: var(--rux-trip-bar-action-button-size);
+.sched-trip-bar__action {
+	--_h: var(--sched-trip-bar-action-button-size);
 
 	min-width: 0;
 }
 
 /* Trip-bar actions use the shared ghost emphasis. The owning saturated
    surface supplies the contrasting foreground and state wash locally. */
-.rux-trip-bar__action.rux-button--ghost {
+.sched-trip-bar__action.rux-button--ghost {
 	color: var(--rux-fg-on-accent);
 	border-color: transparent;
 }
 
-.rux-trip-bar__action.rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
-	background: oklch(from var(--rux-white) l c h / var(--rux-trip-bar-hover-bg-opacity));
+.sched-trip-bar__action.rux-button--ghost:hover:not(:disabled):not([aria-disabled="true"]) {
+	background: oklch(from var(--rux-white) l c h / var(--sched-trip-bar-hover-bg-opacity));
 	color: var(--rux-fg-on-accent);
 	border-color: transparent;
 }
 
-.rux-trip-bar__action.rux-button--ghost:active:not(:disabled):not([aria-disabled="true"]) {
-	background: oklch(from var(--rux-white) l c h / var(--rux-trip-bar-pressed-bg-opacity));
+.sched-trip-bar__action.rux-button--ghost:active:not(:disabled):not([aria-disabled="true"]) {
+	background: oklch(from var(--rux-white) l c h / var(--sched-trip-bar-pressed-bg-opacity));
 	color: var(--rux-fg-on-accent);
 }
 
-.sched-trip-bar.is-active .rux-trip-bar__actions {
-	max-height: calc(var(--rux-trip-bar-action-height) + 4px);
+.sched-trip-bar.is-active .sched-trip-bar__actions {
+	max-height: calc(var(--sched-trip-bar-action-height) + 4px);
 	margin: 0;
-	padding-block: var(--rux-trip-bar-action-padding-block);
-	padding-inline: var(--rux-trip-bar-action-padding-inline);
+	padding-block: var(--sched-trip-bar-action-padding-block);
+	padding-inline: var(--sched-trip-bar-action-padding-inline);
 	opacity: 1;
 	pointer-events: auto;
 	transform: translateY(0);
@@ -716,24 +716,24 @@
 
 /* ---------- Body ---------- */
 
-.rux-trip-bar__body {
+.sched-trip-bar__body {
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 auto;
 	min-height: 0;
-	padding: var(--rux-trip-bar-compact-padding);
+	padding: var(--sched-trip-bar-compact-padding);
 	/* No row gap — every row is locked to the same
-	   --rux-trip-bar-row-line-height (see the row-typography table above),
+	   --sched-trip-bar-row-line-height (see the row-typography table above),
 	   so rows sit flush with nothing between them and no per-row exceptions
 	   (Time/Drivers used to carry their own extra margin-top on top of this
 	   gap; both are gone now). */
 	gap: 0;
 }
-.rux-trip-bar__spacer {
+.sched-trip-bar__spacer {
 	display: none;
 }
 
-.rux-trip-bar__footer {
+.sched-trip-bar__footer {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
@@ -742,13 +742,13 @@
 
 /* ---------- Summary row ---------- */
 
-.rux-trip-bar__summary {
+.sched-trip-bar__summary {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-1);
 }
 
-.rux-trip-bar__paid-badge {
+.sched-trip-bar__paid-badge {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
@@ -756,109 +756,109 @@
 	white-space: nowrap;
 }
 
-.rux-trip-bar__bus-label {
+.sched-trip-bar__bus-label {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	height: var(--rux-trip-bar-bus-label-height);
+	height: var(--sched-trip-bar-bus-label-height);
 	padding: var(--rux-space-px);
-	background: var(--rux-trip-bar-bus-label-bg);
-	border-radius: var(--rux-trip-bar-bus-label-radius);
+	background: var(--sched-trip-bar-bus-label-bg);
+	border-radius: var(--sched-trip-bar-bus-label-radius);
 	color: var(--rux-black);
-	font-size: var(--rux-trip-bar-bus-label-font-size);
-	font-weight: var(--rux-trip-bar-bus-label-weight);
+	font-size: var(--sched-trip-bar-bus-label-font-size);
+	font-weight: var(--sched-trip-bar-bus-label-weight);
 	line-height: 1;
 }
 
-.rux-trip-bar__destination {
+.sched-trip-bar__destination {
 	display: flex;
 	flex: 1 1 auto;
 	align-items: center;
 	min-width: 0;
-	min-height: var(--rux-trip-bar-row-line-height);
+	min-height: var(--sched-trip-bar-row-line-height);
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: 0;
-	line-height: var(--rux-trip-bar-row-line-height);
+	line-height: var(--sched-trip-bar-row-line-height);
 }
 
-.rux-trip-bar__status {
+.sched-trip-bar__status {
 	color: var(--rux-fg-on-accent-muted);
 	flex: none;
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-trip-bar-row-line-height);
+	line-height: var(--sched-trip-bar-row-line-height);
 	letter-spacing: var(--rux-tracking-wide);
 	white-space: nowrap;
 }
 
-.rux-trip-bar__status--paid {
+.sched-trip-bar__status--paid {
 	color: var(--rux-success-on-vivid);
 }
 
-.rux-trip-bar__status-date {
+.sched-trip-bar__status-date {
 	color: var(--rux-success-on-vivid);
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-trip-bar-row-line-height);
+	line-height: var(--sched-trip-bar-row-line-height);
 }
 
-.rux-trip-bar__pending {
+.sched-trip-bar__pending {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	color: var(--rux-trip-bar-danger-icon);
+	color: var(--sched-trip-bar-danger-icon);
 }
 
-.rux-trip-bar__pending-icon {
+.sched-trip-bar__pending-icon {
 	flex: none;
 	stroke-width: 2;
 	padding-right: var(--rux-space-2);
 }
 
-.rux-trip-bar__pending-icon--warning {
-	color: var(--rux-trip-bar-warning-icon);
+.sched-trip-bar__pending-icon--warning {
+	color: var(--sched-trip-bar-warning-icon);
 }
 
-.rux-trip-bar__pending-icon--success {
-	color: var(--rux-trip-bar-success-icon);
+.sched-trip-bar__pending-icon--success {
+	color: var(--sched-trip-bar-success-icon);
 }
 
 /* ---------- Text rows ---------- */
 
-.rux-trip-bar__client,
-.rux-trip-bar__contact,
-.rux-trip-bar__notes {
+.sched-trip-bar__client,
+.sched-trip-bar__contact,
+.sched-trip-bar__notes {
 	min-width: 0;
-	line-height: var(--rux-trip-bar-row-line-height);
+	line-height: var(--sched-trip-bar-row-line-height);
 }
 
-.rux-trip-bar__client {
+.sched-trip-bar__client {
 	display: flex;
 	align-items: center;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	min-height: var(--rux-trip-bar-row-line-height);
+	min-height: var(--sched-trip-bar-row-line-height);
 	color: var(--rux-fg-on-accent-muted);
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-bar__contact {
+.sched-trip-bar__contact {
 	display: flex;
 	min-width: 0;
-	min-height: var(--rux-trip-bar-row-line-height);
+	min-height: var(--sched-trip-bar-row-line-height);
 	align-items: center;
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-fg-on-accent-muted);
 }
 
-.rux-trip-bar__contact-name {
+.sched-trip-bar__contact-name {
 	flex: 0 1 auto;
 	min-width: 0;
 	overflow: hidden;
@@ -866,26 +866,26 @@
 	white-space: nowrap;
 }
 
-.rux-trip-bar__contact-phone {
+.sched-trip-bar__contact-phone {
 	flex: none;
 	white-space: nowrap;
 	margin-left: var(--rux-space-1);
 	letter-spacing: -0.02em;
 }
 
-.rux-trip-bar__notes {
+.sched-trip-bar__notes {
 	display: flex;
 	align-items: center;
-	min-height: var(--rux-trip-bar-row-line-height);
+	min-height: var(--sched-trip-bar-row-line-height);
 	color: var(--rux-warning-on-vivid);
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
 }
 
-/* Truncation lives here, not on .rux-trip-bar__notes itself — text-overflow
+/* Truncation lives here, not on .sched-trip-bar__notes itself — text-overflow
    doesn't render the "…" glyph on a flex container's own text content, only
    on a plain inline/block descendant. */
-.rux-trip-bar__notes-text {
+.sched-trip-bar__notes-text {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -896,21 +896,21 @@
    setFloatingTooltip call in trip-bar.js) — the help cursor pairs with the
    row's own text-overflow ellipsis to read as "truncated, hover for more"
    instead of a dead-end clip. */
-.rux-trip-bar__notes[data-tooltip] {
+.sched-trip-bar__notes[data-tooltip] {
 	cursor: help;
 }
 
 /* ---------- Requirements row ---------- */
 
-.rux-trip-bar__reqs {
+.sched-trip-bar__reqs {
 	display: flex;
 	align-items: center;
-	min-height: var(--rux-trip-bar-row-line-height);
+	min-height: var(--sched-trip-bar-row-line-height);
 	gap: var(--rux-space-1);
 	overflow: hidden;
 }
 
-.rux-trip-bar__reqs .rux-trip-bar__pending {
+.sched-trip-bar__reqs .sched-trip-bar__pending {
 	position: sticky;
 	right: 0;
 	flex: none;
@@ -919,29 +919,29 @@
 	padding-left: var(--rux-space-1);
 }
 
-.rux-trip-bar__req-icon {
+.sched-trip-bar__req-icon {
 	color: var(--rux-fg-on-accent);
 }
 
 /* ---------- Time row ---------- */
 
-.rux-trip-bar__time {
+.sched-trip-bar__time {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	min-width: 0;
-	min-height: var(--rux-trip-bar-row-line-height);
+	min-height: var(--sched-trip-bar-row-line-height);
 	align-items: center;
-	background: var(--rux-trip-bar-meta-bg);
-	border-radius: var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius) 0 0;
-	box-shadow: var(--rux-trip-bar-meta-shadow);
-	color: var(--rux-trip-bar-meta-fg);
-	font-size: var(--rux-trip-bar-row-font-size);
+	background: var(--sched-trip-bar-meta-bg);
+	border-radius: var(--sched-trip-bar-meta-radius) var(--sched-trip-bar-meta-radius) 0 0;
+	box-shadow: var(--sched-trip-bar-meta-shadow);
+	color: var(--sched-trip-bar-meta-fg);
+	font-size: var(--sched-trip-bar-row-font-size);
 	letter-spacing: -0.02em;
-	line-height: var(--rux-trip-bar-row-line-height);
+	line-height: var(--sched-trip-bar-row-line-height);
 	white-space: nowrap;
 }
 
-.rux-trip-bar__time-item {
+.sched-trip-bar__time-item {
 	display: flex;
 	min-width: 0;
 	width: 100%;
@@ -952,59 +952,59 @@
 	   rather than three independently-centered values. */
 	justify-content: center;
 	align-self: stretch;
-	gap: var(--rux-trip-bar-tight-gap);
+	gap: var(--sched-trip-bar-tight-gap);
 	background: transparent;
-	height: var(--rux-trip-bar-row-line-height);
+	height: var(--sched-trip-bar-row-line-height);
 	padding: 0;
 	border-radius: 0;
 	box-sizing: border-box;
 }
 
-.rux-trip-bar__time-item:first-child {
+.sched-trip-bar__time-item:first-child {
 	justify-content: flex-start;
 }
 
-.rux-trip-bar__time-item:last-child {
+.sched-trip-bar__time-item:last-child {
 	justify-content: flex-end;
 }
 
-.rux-trip-bar__time-label {
+.sched-trip-bar__time-label {
 	color: var(--rux-fg-on-accent-subtle);
 }
 
-.rux-trip-bar__time-sep {
+.sched-trip-bar__time-sep {
 	color: var(--rux-fg-on-accent-subtle);
 }
 
-.rux-trip-bar__time-value {
+.sched-trip-bar__time-value {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-trip-bar__time-value--late {
+.sched-trip-bar__time-value--late {
 	color: var(--rux-fg-on-accent-muted);
 }
 
-.rux-trip-bar__time-value--empty {
+.sched-trip-bar__time-value--empty {
 	color: var(--rux-fg-on-accent-subtle);
 }
 
 /* ---------- Drivers row ---------- */
 
-.rux-trip-bar__drivers {
+.sched-trip-bar__drivers {
 	display: flex;
 	min-width: 0;
-	min-height: var(--rux-trip-bar-row-line-height);
+	min-height: var(--sched-trip-bar-row-line-height);
 	flex-wrap: nowrap;
 	align-items: center;
-	background: var(--rux-trip-bar-meta-bg);
-	border-radius: 0 0 var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius);
-	box-shadow: var(--rux-trip-bar-meta-shadow);
+	background: var(--sched-trip-bar-meta-bg);
+	border-radius: 0 0 var(--sched-trip-bar-meta-radius) var(--sched-trip-bar-meta-radius);
+	box-shadow: var(--sched-trip-bar-meta-shadow);
 }
 
-.rux-trip-bar__driver {
+.sched-trip-bar__driver {
 	display: inline-flex;
 	flex: 1;
 	min-width: 0;
@@ -1018,43 +1018,43 @@
 	gap: var(--rux-space-1);
 	background: transparent;
 	padding: 0;
-	height: var(--rux-trip-bar-row-line-height);
+	height: var(--sched-trip-bar-row-line-height);
 	border-radius: 0;
 	overflow: hidden;
 	color: var(--rux-fg-on-accent);
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-trip-bar-row-line-height);
+	line-height: var(--sched-trip-bar-row-line-height);
 }
 
-/* Matches .rux-trip-bar__driver-name's own overflow:visible below — without
+/* Matches .sched-trip-bar__driver-name's own overflow:visible below — without
    this, the name's hover reveal would still get clipped by this rounded
    corner's own overflow:hidden above. */
-.rux-trip-bar__driver:hover {
+.sched-trip-bar__driver:hover {
 	overflow: visible;
 }
 
-.rux-trip-bar__driver-name {
+.sched-trip-bar__driver-name {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	min-width: 0;
 }
 
-.rux-trip-bar__driver:hover .rux-trip-bar__driver-name {
+.sched-trip-bar__driver:hover .sched-trip-bar__driver-name {
 	overflow: visible;
 	text-overflow: clip;
 }
 
-.rux-trip-bar__driver-role-icon {
+.sched-trip-bar__driver-role-icon {
 	flex-shrink: 0;
 }
 
-.rux-trip-bar__driver--unassigned {
+.sched-trip-bar__driver--unassigned {
 	color: var(--rux-fg-on-accent-subtle);
 }
 
-.rux-trip-bar__driver-dot {
+.sched-trip-bar__driver-dot {
 	width: var(--rux-status-dot-size);
 	height: var(--rux-status-dot-size);
 	flex: none;
@@ -1062,93 +1062,93 @@
 	background: var(--rux-warning-on-vivid);
 }
 
-.rux-trip-bar__driver-dot--confirmed {
+.sched-trip-bar__driver-dot--confirmed {
 	background: var(--rux-success-on-vivid);
 }
-.rux-trip-bar__driver-dot--unconfirmed {
+.sched-trip-bar__driver-dot--unconfirmed {
 	background: var(--rux-danger-on-vivid);
 }
 
 /* ---------- Conflict row ---------- */
 
-.rux-trip-bar__conflict {
+.sched-trip-bar__conflict {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-trip-bar-conflict-bg);
-	border-top: var(--rux-border-width) solid var(--rux-trip-bar-conflict-border-color);
+	background: var(--sched-trip-bar-conflict-bg);
+	border-top: var(--rux-border-width) solid var(--sched-trip-bar-conflict-border-color);
 	color: var(--rux-danger-on-vivid);
-	font-size: var(--rux-trip-bar-row-font-size);
+	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-trip-bar-row-line-height);
+	line-height: var(--sched-trip-bar-row-line-height);
 }
 
 /* ---------- Details drawer ---------- */
 
-.rux-trip-bar__details {
+.sched-trip-bar__details {
 	max-height: 0;
 	overflow: hidden;
 	transition: max-height var(--rux-duration-base) var(--rux-ease-out);
 }
 
-.sched-trip-bar.is-expanded .rux-trip-bar__details {
+.sched-trip-bar.is-expanded .sched-trip-bar__details {
 	max-height: var(--_details-height);
 }
 
-.rux-trip-bar__details-inner {
+.sched-trip-bar__details-inner {
 	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	/* Row-gap 0, not the shared --rux-space-1 — each row is already locked to
-	   its own --rux-trip-bar-row-line-height (see .rux-trip-bar__detail-field
+	   its own --sched-trip-bar-row-line-height (see .sched-trip-bar__detail-field
 	   below), so row height should be the whole story with no added air
 	   between rows. Column-gap keeps the label/value pairs from the two
 	   side-by-side fields (D1/R1, Mi/Act Mi, ...) touching. */
 	column-gap: var(--rux-space-1);
 	row-gap: 0;
-	padding: var(--rux-trip-bar-compact-padding);
+	padding: var(--sched-trip-bar-compact-padding);
 	background: oklch(from var(--rux-black) l c h / 0.24);
 	border-top: none;
 }
 
-.rux-trip-bar__detail-field {
+.sched-trip-bar__detail-field {
 	display: grid;
 	grid-template-columns: auto minmax(0, 1fr);
 	align-items: baseline;
 	gap: var(--rux-space-1);
 	min-width: 0;
-	/* Explicit, not left to natural content sizing — --rux-trip-bar-row-
+	/* Explicit, not left to natural content sizing — --sched-trip-bar-row-
 	   line-height is a direct length (tokens.css), so there's no font-size
 	   x ratio math to round here, but the payment row's inline-flex
 	   icon+text value still contributes its own atomic-box metrics to the
 	   line and can land a pixel off natural text-line sizing. Locking every
 	   row to the same token removes that ambiguity across the board, not
 	   just for that one row. */
-	height: var(--rux-trip-bar-row-line-height);
-	font-size: var(--rux-trip-bar-row-font-size);
-	line-height: var(--rux-trip-bar-row-line-height);
+	height: var(--sched-trip-bar-row-line-height);
+	font-size: var(--sched-trip-bar-row-font-size);
+	line-height: var(--sched-trip-bar-row-line-height);
 }
 
-.rux-trip-bar__detail-field--wide {
+.sched-trip-bar__detail-field--wide {
 	grid-column: 1 / -1;
 }
 
 /* Notes is free text with no length cap — the fixed single-line row height
    every other field relies on doesn't work here, so this field opts out of
    it and lets its value wrap across as many lines as the text needs. */
-.rux-trip-bar__detail-field--wrap {
+.sched-trip-bar__detail-field--wrap {
 	height: auto;
 }
 
-.rux-trip-bar__detail-field--wrap .rux-trip-bar__detail-field-value {
+.sched-trip-bar__detail-field--wrap .sched-trip-bar__detail-field-value {
 	overflow: visible;
 	text-overflow: clip;
 	white-space: normal;
 	overflow-wrap: anywhere;
 }
 
-.rux-trip-bar__detail-field-label {
+.sched-trip-bar__detail-field-label {
 	/* --rux-fg-on-accent-muted, not --rux-text-muted — this row sits on the
 	   bar's own saturated per-category color, same as every other muted
 	   label here (__client, __contact, __time-label); --rux-text-muted is
@@ -1158,11 +1158,11 @@
 	letter-spacing: var(--rux-tracking-wide);
 }
 
-.rux-trip-bar__detail-field-label::after {
+.sched-trip-bar__detail-field-label::after {
 	content: ":";
 }
 
-.rux-trip-bar__detail-field-value {
+.sched-trip-bar__detail-field-value {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -1183,61 +1183,61 @@
    doesn't match plain text's metrics, so the surrounding line box still
    grows to fit it regardless of any height set on an ancestor. As a real
    flex container, this element's height is fully its own to control. */
-.rux-trip-bar__payment-value {
+.sched-trip-bar__payment-value {
 	display: flex;
 	align-items: center;
-	height: var(--rux-trip-bar-row-line-height);
+	height: var(--sched-trip-bar-row-line-height);
 	overflow: hidden;
 }
 
-.rux-trip-bar__payment-entry {
+.sched-trip-bar__payment-entry {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
 }
 
-/* No size override needed — --rux-trip-bar-icon-size (tokens.css) now
-   tracks --rux-trip-bar-row-line-height directly, so this icon is always
+/* No size override needed — --sched-trip-bar-icon-size (tokens.css) now
+   tracks --sched-trip-bar-row-line-height directly, so this icon is always
    exactly the row's own height, at every size tier, with no drift to
    account for. */
-.rux-trip-bar__payment-entry .rux-trip-bar__payment-icon {
+.sched-trip-bar__payment-entry .sched-trip-bar__payment-icon {
 	flex: none;
 }
 
 /* ---------- Responsive container queries ---------- */
 
 @container (max-width: 24rem) {
-	.rux-trip-bar__time {
+	.sched-trip-bar__time {
 	}
 
-	.rux-trip-bar__pending {
-		gap: var(--rux-trip-bar-tight-gap);
+	.sched-trip-bar__pending {
+		gap: var(--sched-trip-bar-tight-gap);
 	}
 }
 
 @container (max-width: 16rem) {
-	.rux-trip-bar__actions {
+	.sched-trip-bar__actions {
 		padding-inline: var(--rux-space-2);
 	}
 }
 
 @container (max-width: 14rem) {
-	.rux-trip-bar__bus-label {
-		min-width: var(--rux-trip-bar-bus-label-min-width-compact);
+	.sched-trip-bar__bus-label {
+		min-width: var(--sched-trip-bar-bus-label-min-width-compact);
 		padding: 0 var(--rux-space-1);
 	}
 }
 
 @container (max-width: 7rem) {
-	.rux-trip-bar__time {
+	.sched-trip-bar__time {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
-	.rux-trip-bar__time-item:nth-child(2) {
+	.sched-trip-bar__time-item:nth-child(2) {
 		display: none;
 	}
 
-	.rux-trip-bar__contact-phone {
+	.sched-trip-bar__contact-phone {
 		display: none;
 	}
 }
@@ -1248,43 +1248,43 @@
    preference. (Was a hard "never show" earlier; changed so .is-active
    means full detail, full stop, no exceptions.) */
 
-.sched-scheduler--hide-client .rux-trip-bar__client {
+.sched-scheduler--hide-client .sched-trip-bar__client {
 	display: none;
 }
 
-.sched-scheduler--hide-client .sched-trip-bar.is-active .rux-trip-bar__client {
+.sched-scheduler--hide-client .sched-trip-bar.is-active .sched-trip-bar__client {
 	display: flex;
 }
 
-.sched-scheduler--hide-contact .rux-trip-bar__contact {
+.sched-scheduler--hide-contact .sched-trip-bar__contact {
 	display: none;
 }
 
-.sched-scheduler--hide-contact .sched-trip-bar.is-active .rux-trip-bar__contact {
+.sched-scheduler--hide-contact .sched-trip-bar.is-active .sched-trip-bar__contact {
 	display: flex;
 }
 
-.sched-scheduler--hide-notes .rux-trip-bar__notes {
+.sched-scheduler--hide-notes .sched-trip-bar__notes {
 	display: none;
 }
 
-.sched-scheduler--hide-notes .sched-trip-bar.is-active .rux-trip-bar__notes {
+.sched-scheduler--hide-notes .sched-trip-bar.is-active .sched-trip-bar__notes {
 	display: flex;
 }
 
-.sched-scheduler--hide-reqs .rux-trip-bar__reqs {
+.sched-scheduler--hide-reqs .sched-trip-bar__reqs {
 	display: none;
 }
 
-.sched-scheduler--hide-reqs .sched-trip-bar.is-active .rux-trip-bar__reqs {
+.sched-scheduler--hide-reqs .sched-trip-bar.is-active .sched-trip-bar__reqs {
 	display: flex;
 }
 
-.sched-scheduler--hide-drivers .rux-trip-bar__drivers {
+.sched-scheduler--hide-drivers .sched-trip-bar__drivers {
 	display: none;
 }
 
-.sched-scheduler--hide-drivers .sched-trip-bar.is-active .rux-trip-bar__drivers {
+.sched-scheduler--hide-drivers .sched-trip-bar.is-active .sched-trip-bar__drivers {
 	display: flex;
 }
 
@@ -1292,8 +1292,8 @@
 
 @media (prefers-reduced-motion: reduce) {
 	.sched-trip-bar,
-	.rux-trip-bar__actions,
-	.rux-trip-bar__details {
+	.sched-trip-bar__actions,
+	.sched-trip-bar__details {
 		transition-duration: 0.001ms !important;
 	}
 }

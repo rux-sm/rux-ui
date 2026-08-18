@@ -11,7 +11,7 @@
 
 /* Size/position: .rux-panel--default-size (css/base/panel.css) */
 
-.rux-doc-viewer__title-group {
+.sched-doc-viewer__title-group {
 	display: flex;
 	flex: 1;
 	align-items: center;
@@ -20,23 +20,23 @@
 	padding-left: var(--rux-space-4);
 }
 
-.rux-doc-viewer__title-group .rux-icon {
+.sched-doc-viewer__title-group .rux-icon {
 	color: var(--rux-text-muted);
 	flex: none;
 }
 
-.rux-doc-viewer__title {
+.sched-doc-viewer__title {
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.rux-doc-viewer__body {
+.sched-doc-viewer__body {
 	background: var(--rux-surface-1);
 }
 
-.rux-doc-viewer__frame {
+.sched-doc-viewer__frame {
 	display: block;
 	width: 100%;
 	height: 100%;
@@ -48,12 +48,12 @@
 	text-decoration: none;
 }
 
-.rux-doc-viewer__footer[hidden] {
+.sched-doc-viewer__footer[hidden] {
 	display: none;
 }
 
 .sched-doc-viewer {
-	--rux-panel-floating-width: var(--rux-doc-viewer-width);
+	--rux-panel-floating-width: var(--sched-doc-viewer-width);
 	--rux-panel-floating-safe-max-width: 64rem;
 }
 

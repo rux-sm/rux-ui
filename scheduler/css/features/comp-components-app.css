@@ -13,7 +13,7 @@
    (.rux-app, --rux-shell-bg) already paints the surface the old
    surface-1 fill duplicated. */
 .rux-app-view[data-view="components"] {
-	gap: var(--scheduler-app-gap);
+	gap: var(--sched-app-gap);
 }
 
 .components-app__list {
@@ -359,7 +359,7 @@
 }
 
 .components-app__driver-assignment-demo {
-	width: min(100%, var(--rux-driver-phone-preview-max-width));
+	width: min(100%, var(--sched-driver-phone-preview-max-width));
 }
 
 .components-app__anatomy-stage--trip-bar {

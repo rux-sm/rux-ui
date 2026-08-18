@@ -7,7 +7,7 @@
   const panelEl     = dialog;
   const tbody       = document.getElementById("fleet-roster-body");
   const tabBtns     = document.querySelectorAll('[data-rux-tabs][data-scope="fleet"] .rux-tab');
-  const panes       = document.querySelectorAll(".rux-scope-fleet__pane");
+  const panes       = document.querySelectorAll(".sched-scope-fleet__pane");
   const tripList     = document.getElementById("fp-trip-list");
   const saveOrderBtn = document.getElementById("fleet-save-order-btn");
   const colorSwatch   = document.getElementById("fp-color-swatch");
@@ -48,7 +48,7 @@
     if (dialogTitleEl && title) dialogTitleEl.textContent = title;
     if (mobileWindowQuery.matches) window.RuxFloatingWindow?.resetGeometry(dialog);
     dialog.hidden = false;
-    panelEl.querySelector(".rux-scope-fleet__body")?.scrollTo({ top: 0, behavior: "instant" });
+    panelEl.querySelector(".sched-scope-fleet__body")?.scrollTo({ top: 0, behavior: "instant" });
   }
 
   // Returns false when the user keeps their unsaved edits instead.
@@ -190,7 +190,7 @@
   function renderTripList(trips) {
     if (!trips.length) {
       tripList.innerHTML =
-        `<li class="rux-scope-fleet__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
+        `<li class="sched-scope-fleet__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
       return;
     }
     tripList.innerHTML = trips.map((t) => {
@@ -201,9 +201,9 @@
       const badgeCls  = status === "paid" ? "rux-badge--success" : "";
       const badgeLabel = status.charAt(0).toUpperCase() + status.slice(1);
       return `
-        <li class="rux-scope-fleet__trip-item">
-          <span class="rux-scope-fleet__trip-id">${t.tripRef}</span>
-          <span class="rux-scope-fleet__trip-meta">${meta}</span>
+        <li class="sched-scope-fleet__trip-item">
+          <span class="sched-scope-fleet__trip-id">${t.tripRef}</span>
+          <span class="sched-scope-fleet__trip-meta">${meta}</span>
           <span class="rux-badge rux-badge--dot ${badgeCls}">${badgeLabel}</span>
         </li>
       `;
@@ -349,7 +349,7 @@
       const typeTitle   = b.type || "Motorcoach";
       const hexColor    = b.color && /^#[0-9a-fA-F]{6}$/.test(b.color) ? b.color : null;
       const avatarStyle = hexColor
-        ? `style="background:color-mix(in srgb,${hexColor} 50%,var(--rux-bg-bus));"`
+        ? `style="background:color-mix(in srgb,${hexColor} 50%,var(--sched-bg-bus));"`
         : "";
 
       tr.innerHTML = `
@@ -515,7 +515,7 @@
     tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
     selectedId = null;
 
-    panelEl.querySelectorAll(".rux-scope-fleet__pane input, .rux-scope-fleet__pane textarea")
+    panelEl.querySelectorAll(".sched-scope-fleet__pane input, .sched-scope-fleet__pane textarea")
       .forEach(f => { f.value = ""; });
     colorSwatch.style.background = "";
 
@@ -587,12 +587,12 @@
       if (!def) return;
 
       const row = document.createElement("div");
-      row.className = "rux-col-picker__row";
+      row.className = "sched-col-picker__row";
       row.draggable = true;
       row.dataset.key = c.key;
 
       const handle = document.createElement("span");
-      handle.className = "rux-col-picker__handle";
+      handle.className = "sched-col-picker__handle";
       handle.innerHTML = `<span class="rux-icon">drag_indicator</span>`;
 
       const cb = document.createElement("input");
@@ -607,7 +607,7 @@
 
       const lbl = document.createElement("label");
       lbl.htmlFor   = cb.id;
-      lbl.className = "rux-col-picker__label";
+      lbl.className = "sched-col-picker__label";
       lbl.textContent = def.label;
 
       row.append(handle, cb, lbl);
@@ -852,14 +852,14 @@
 
   async function loadBusTrips(busId) {
     tripList.innerHTML =
-      `<li class="rux-scope-fleet__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+      `<li class="sched-scope-fleet__trip-item"><span class="rux-subtle">Loading…</span></li>`;
     try {
       const trips = await db.fetchBusTrips(busId);
       renderTripList(trips);
     } catch (err) {
       console.warn("Could not load bus trips:", err);
       tripList.innerHTML =
-        `<li class="rux-scope-fleet__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+        `<li class="sched-scope-fleet__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
     }
   }
 

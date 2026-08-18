@@ -104,6 +104,20 @@ prefix rather than kept as a second parallel mechanism.
 Application prefix: **`.sched-*`** for this repository's scheduler. Other applications
 built on Rux UI choose their own.
 
+> **Status (2026-08-18): realized.** Steps 11–14 completed the migration in both
+> directions. `rux-ui/` contains no application name in any selector, token, or
+> comment, and the application layer defines no `.rux-*` block it does not
+> legitimately re-open. Both halves are enforced by
+> `tests/portability-boundary.test.mjs`, so the prefix is now load-bearing:
+> `.rux-*` means it ships.
+>
+> One sub-decision was deliberately **not** taken. §3 notes the scope marker is
+> redundant and suggests folding `.sched-scope-trip` → `.sched-trip`. It was left
+> in place: `.sched-trip` would sit one character from the unrelated
+> `.sched-trip-bar` block, so `.sched-trip__body` and `.sched-trip-bar__body`
+> would read as siblings of one family when they are not. Folding the marker is
+> still open, but it needs a better target name than `.sched-trip`.
+
 ---
 
 ## 4. Classification
@@ -288,6 +302,9 @@ restyle a portable element globally.
 
 ### 4.7 Domain-named tokens in Tier 0
 
+> **Resolved by step 12 (2026-08-18).** All 69 now live in `scheduler/css/tokens.css`
+> as `--sched-*`. The section below is the original finding.
+
 `rux-ui/css/tokens.css` defines **69** tokens named after scheduler concepts —
 `--rux-driver-doc-*`, `--rux-trip-bar-*`, and similar.
 
@@ -414,7 +431,9 @@ compatibility alias forwarding to it. Public API is every `--rux-*` token in
 **Verified portable.** `rux-ui/` has been tested standalone: copied into an empty project
 and loaded through `rux.css` alone, it produces the full component set, both themes, and
 the `window.Rux` JS API with no other dependency. No relative path inside the folder
-escapes it. The one known exception is the `--rux-trip-bar-icon-size` row in §4.4.
+escapes it. The `--rux-trip-bar-icon-size` exception recorded here is **resolved**:
+`base/icons.css` no longer reads it (step 1), and the token is now
+`--sched-trip-bar-icon-size`, declared on `.sched-trip-bar` in the application layer.
 
 **Distribution model.**
 
@@ -460,6 +479,21 @@ re-deriving anything above.
 | 8 | ~~Decouple `drawer.js` (§5.3)~~ **JS done** | The coupling was far deeper than §5.3 recorded — ~20 references, not 4. Resolved with a single configuration seam, `RuxDrawer.configure()`, holding portable `.rux-*` defaults that the application overrides once at startup. The drawer **CSS** split (§4.1) is still open and belongs with the shell work. |
 | 9 | ~~Shell reconciliation (§5.1)~~ **done** | Lower risk than expected: every shell token already defaulted to 0, so the two implementations were geometrically identical in practice. The shell now composes — `class="rux-app scheduler-app"` — with `.scheduler-app` reduced from 12 declarations to 2. Fixed a shipped bug in passing: `--rux-shell-bg` was `var(--rux-danger)`. |
 | 10 | ~~View container class + body row rename (§5.2 CSS half)~~ **done (2026-08-17)** | `.scheduler-app__module` → `.rux-app-view` (base box model, `[hidden]` toggling, and overflow now live in `app-shell.css` beside the frame; the app keeps only its gutter padding), `class="rux-app-shell scheduler-app__body"` → `class="rux-app__body"`, and the routing attribute `data-module` → `data-view`, which is `view-router.js`'s portable default. `.rux-app-shell`/`__workspace`/`__panel` stay published as deprecated aliases until the vendored consumers sync their `rux-ui/` copy; removing them is a separate verified step. In passing, two provably invisible view backgrounds (documents/components painted the shell's own `--rux-surface-1` over itself) and three no-op declarations on the calendar view (`margin: 0` ×2, duplicate `overflow: hidden`) were removed per the 2026-08-17 layering audit — resolved-value identical in both themes. |
+| 11 | ~~Promote the generic shell mechanisms into Tier 1 (§4.1)~~ **done (2026-08-18)** | The drawer, its spacing gutter, and the resize gutter moved to `rux-ui/css/base/drawer.css` as `.rux-drawer` / `.rux-drawer-gutter` / `.rux-resize-gutter`, and the side-nav overlay recipe became the opt-in `.rux-side-nav--overlay` + `.rux-side-nav-scrim` in `base/side-nav.css`. **The names were already specified**: `rux-ui/js/drawer.js` had shipped them as `RuxDrawer.configure()`'s portable defaults since step 8 and the CSS simply never followed, so matching them let `index.html` delete its entire `configure()` call — the app now runs on the module's own defaults. `examples/app-layout.html` had hand-rolled the side-nav recipe inline; its `<style>` block went from 62 lines to 8. Two `drawer.js` defaults still pointed at the deprecated `.rux-app-shell` and were corrected to `.rux-app` / `.rux-app__body`. |
+| 12 | ~~Domain tokens out of Tier 0 (§4.7)~~ **done (2026-08-18)** | All 69 moved to a new `scheduler/css/tokens.css` under `--sched-*`, imported first by `components.css`. The one Tier 1 actually read, `--rux-trip-bar-head-backdrop-blur`, became `--rux-backdrop-blur` and stayed — it describes the value, not the feature that first needed it. Six section headers in `tokens.css` were left with no declarations and were removed; their explanatory comments moved with the tokens. `--rux-doc-viewer-width` and `--rux-bg-bus` were caught the same way and relocated. |
+| 13 | ~~Complete the §3 namespace migration~~ **done (2026-08-18)** | The element half of step 5, finally paid: ~2,400 occurrences across 61 files. 16 component families (`.rux-trip-bar__*`, `.rux-trip-itinerary__*`, `.rux-team-chat__*`, `.rux-tasks__*`, …) and all 8 `.rux-scope-*` markers took the `.sched-` prefix, along with three markup-only stragglers (`.rux-driver-availability`, `.rux-cancel-trip-modal`, `data-rux-keep-trip-selection`). `.rux-col-filter-icon` was **not** renamed — it is defined in `base/table.css` and is genuinely portable; §4.2's listing of it alongside `.rux-col-picker` is misleading. The redundant `scope` marker was deliberately left in place (see below). |
+| 14 | ~~Enforce both directions (§7 Enforcement)~~ **done (2026-08-18)** | `tests/portability-boundary.test.mjs` gains *the application layer invents no `.rux-*` blocks of its own* and *the portable layer names no application prefix anywhere*. The first derives its allowlist from what `rux-ui/` actually defines rather than hardcoding re-opens, so it cannot rot. Both accepted-violation lists are now empty. |
+| 15 | ~~Delete the retired rail mechanism~~ **done (2026-08-18)** | The rail-collapse concept retired with the floating-window convergence but its scaffolding survived across both tiers. Removed after tracing every consumer: `.rux-panel--attached.is-rail` (2 rules, nothing ever added the class), the six `--rux-panel-rail-*` tokens, `RuxDrawer`'s `railWidth` option with `configuredRailWidth()` / `closedTargetWidth()` / `railWidthVar` and the `is-expanding` rAF dance (no call site passed `railWidth`, so every branch was unreachable), the `@container (max-width: 64px)` and `(max-width: 44px)` steps in `trip-panel.css`, and `trip-panel.js`'s tab-reopen bridge — which dispatched `rux:trip-tab-expand-request` from a branch guarded by `root.closest(".rux-drawer")`, always null since the trip editor became a floating window, to a listener that no longer existed. The two `@container` steps were verified unreachable by measurement, not inference: the query root is the floating dialog, and at a 320px viewport its container is 288px, so 520/400/320 still fire and only the sub-224px steps are dead. |
+| 16 | ~~Prune orphaned Tier 0 tokens~~ **done (2026-08-18)** | Checked against the real consumers rather than deleted blind: `infor_ln_docs/portal` and `guide_runner` vendor `rux-ui/` at commit `157b427` and use **73** `--rux-*` tokens and **38** `.rux-*` classes — including `.rux-app-shell`, `__panel`, and `__workspace`, so the step-10 deprecated aliases **must stay**. Of the tokens unread here and unread there: the 12 unused rungs of a complete scale or palette were kept (a design system ships whole ladders), as were four that complete a published contract family whose siblings are live (`--rux-panel-bg`/`-shadow`, `--rux-side-nav-shadow`, `--rux-card-border-active`). Removed six genuine orphans: `--rux-card-header-radius` and `--rux-card-footer-radius` (self-documented as superseded — the shell owns radius), `--rux-elevation-0-bg` and `--rux-elevation-1-bg` (last rungs of the retired elevation ladder; `--rux-panel-modal-bg` now reads `--rux-surface-1` directly), and `--rux-panel-content-motion-duration`. Renamed `--rux-left-panel-border` → `--rux-panel-left-border` for symmetry with its live sibling `--rux-panel-right-border`. Moved `--rux-request-window-width` → `--sched-request-window-width`: it is the Request Inbox's window width, parallel to the three `--sched-*-window-width` tokens, and §4.7's noun list never contained "request". |
+
+> **A rejected enforcement idea, recorded so it is not retried.** A test asserting
+> that Tier 0 defines no token read only by the application layer sounds like the
+> general form of §4.7, but it is invalid: a *component contract* token exists to be
+> read by the consumer, not by `rux-ui/`'s own CSS. `--rux-table-wrap-bg`,
+> `--rux-panel-right-border`, the palette, and the type/space scales all trip it —
+> 45 false positives. The `--rux-request-window-width` leak was found by naming
+> analysis instead (a single-member token group sitting parallel to three
+> `--sched-*-window-width` siblings), which is the technique worth repeating.
 
 **Enforcement.** Step 2 adds a test asserting that no file under `rux-ui/` references a
 domain noun in a selector, and that every `var(--rux-*)` used in `rux-ui/` resolves within
@@ -472,10 +506,9 @@ commands are the implementation.
 
 Recorded here so execution does not mistake it for regression.
 
-- **18 tests fail on `main`** before any of this work, 7 of them in the three files this
-  program touches most (`layout-contract`, `motion-contract`, `ui-shell`). Capture a
-  baseline and compare against it, not against green.
-- `Calendar workspace is inset while tools remain full-bleed` expects
-  `.scheduler-app__module[data-module="calendar"] .rux-scope-right-panel { border-inline-start: 0; }`
-  while the CSS has `var(--rux-panel-right-border)`. Resolve during step 8.
+- ~~**18 tests fail on `main`**~~ **stale.** The suite is green: 197/197 as of 2026-08-18
+  (195 before steps 11–14 added two). Compare against green, and treat any failure in
+  `layout-contract`, `motion-contract`, or `ui-shell` as a real regression.
+- ~~`Calendar workspace is inset while tools remain full-bleed`~~ **resolved.** The rule is
+  now `.rux-app-view[data-view="calendar"] .sched-scope-right-panel` and the test matches it.
 - Line numbers in this document drift. Cite by symbol and confirm before acting.

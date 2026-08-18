@@ -595,10 +595,10 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		/\.driver-assignment-card__bus-badge,\s*\.driver-assignment-card__role-badge\s*\{/s,
 	);
 	assert.match(css, /\.driver-assignment-card__date-range\s*\{[^}]*color:\s*var\(--rux-text-muted\)/s);
-	assert.match(css, /--rux-driver-date-primary-size:\s+var\(--rux-size-md\)/);
+	assert.match(css, /--sched-driver-date-primary-size:\s+var\(--rux-size-md\)/);
 	assert.match(
 		css,
-		/\.driver-assignment-card__header-summary\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) clamp\(104px,\s*24cqi,\s*128px\)[^}]*grid-template-areas:[^}]*"date bus"[^}]*"destination role"[^}]*row-gap:\s*var\(--rux-space-2\)[^}]*padding:\s*var\(--rux-driver-card-header-padding\)/s,
+		/\.driver-assignment-card__header-summary\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) clamp\(104px,\s*24cqi,\s*128px\)[^}]*grid-template-areas:[^}]*"date bus"[^}]*"destination role"[^}]*row-gap:\s*var\(--rux-space-2\)[^}]*padding:\s*var\(--sched-driver-card-header-padding\)/s,
 	);
 	assert.match(
 		css,
@@ -622,13 +622,13 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/--rux-driver-card-header-padding:\s+28px var\(--rux-space-5\)/,
+		/--sched-driver-card-header-padding:\s+28px var\(--rux-space-5\)/,
 	);
 	assert.match(tokens, /--rux-badge-background-opacity:\s+12%/);
 	assert.match(tokens, /--rux-badge-module-height:\s+44px/);
 	assert.match(
 		css,
-		/--rux-driver-module-padding:\s+20px var\(--rux-space-5\)/,
+		/--sched-driver-module-padding:\s+20px var\(--rux-space-5\)/,
 	);
 	assert.match(
 		badges,
@@ -669,30 +669,30 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	/* The emphasised driver type size is tokenised now (--rux-size-2xl is
 	   1.5rem); the -bus- and -route- variants no longer exist. */
-	assert.match(css, /--rux-driver-time-size:\s+var\(--rux-size-2xl\)/);
+	assert.match(css, /--sched-driver-time-size:\s+var\(--rux-size-2xl\)/);
 	assert.doesNotMatch(
 		css,
 		/@container driver-assignment-card \(max-width: 479px\)[\s\S]*?\.driver-assignment-card__response-actions\s*\{[\s\S]*?display:\s*flex/,
 	);
 	assert.match(css, /overflow-x: hidden/);
-	assert.match(css, /--rux-driver-touch-target/);
+	assert.match(css, /--sched-driver-touch-target/);
 	assert.match(css, /grid-template-columns: minmax\(0, 1fr\)/);
 	assert.match(css, /:focus-visible/);
 	assert.match(css, /\.assignment-module__content:last-child\s*\{\s*grid-column:\s*2\s*\/\s*-1/);
 	assert.match(css, /\.assignment-module__action-wrap\s*\{[^}]*justify-self:\s*end/s);
 	assert.match(css, /\.driver-assignment-card__crew-actions\s*\{[^}]*margin-inline-start:\s*auto/s);
-	assert.match(css, /--rux-driver-action-rail-width:\s*96px/);
+	assert.match(css, /--sched-driver-action-rail-width:\s*96px/);
 	assert.match(
 		css,
-		/\.assignment-compact-module--actions\s*\{[^}]*var\(--rux-driver-action-rail-width,\s*96px\)/s,
+		/\.assignment-compact-module--actions\s*\{[^}]*var\(--sched-driver-action-rail-width,\s*96px\)/s,
 	);
 	assert.match(
 		css,
-		/\.assignment-compact-module__actions\s*\{[^}]*width:\s*var\(--rux-driver-action-rail-width,\s*96px\)/s,
+		/\.assignment-compact-module__actions\s*\{[^}]*width:\s*var\(--sched-driver-action-rail-width,\s*96px\)/s,
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__crew-member\.assignment-compact-module--actions\s*\{[^}]*var\(--rux-driver-action-rail-width,\s*96px\)/s,
+		/\.driver-assignment-card__crew-member\.assignment-compact-module--actions\s*\{[^}]*var\(--sched-driver-action-rail-width,\s*96px\)/s,
 	);
 	assert.match(
 		css,
@@ -700,11 +700,11 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__document\s*\{[^}]*background:\s*var\(--rux-driver-doc-neutral-bg\)[^}]*color:\s*var\(--rux-driver-doc-neutral-fg\)/s,
+		/\.driver-assignment-card__document\s*\{[^}]*background:\s*var\(--sched-driver-doc-neutral-bg\)[^}]*color:\s*var\(--sched-driver-doc-neutral-fg\)/s,
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__document\.is-attention-needed\s*\{[^}]*background:\s*var\(--rux-driver-doc-warning-bg\)/s,
+		/\.driver-assignment-card__document\.is-attention-needed\s*\{[^}]*background:\s*var\(--sched-driver-doc-warning-bg\)/s,
 	);
 	assert.match(
 		css,
@@ -712,12 +712,12 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__crew-bus-section\s*\{[^}]*display:\s*grid[^}]*gap:\s*var\(--rux-space-3\)[^}]*padding:\s*var\(--rux-driver-module-padding\)[^}]*border-top:/s,
+		/\.driver-assignment-card__crew-bus-section\s*\{[^}]*display:\s*grid[^}]*gap:\s*var\(--rux-space-3\)[^}]*padding:\s*var\(--sched-driver-module-padding\)[^}]*border-top:/s,
 	);
-	assert.match(css, /--rux-driver-page-max-width:\s*520px/);
-	assert.match(css, /--rux-driver-phone-preview-max-width:\s*430px/);
+	assert.match(css, /--sched-driver-page-max-width:\s*520px/);
+	assert.match(css, /--sched-driver-phone-preview-max-width:\s*430px/);
 	assert.match(
 		componentDemoCss,
-		/width:\s*min\(100%, var\(--rux-driver-phone-preview-max-width\)\)/,
+		/width:\s*min\(100%, var\(--sched-driver-phone-preview-max-width\)\)/,
 	);
 });

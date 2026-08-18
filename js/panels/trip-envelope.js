@@ -208,9 +208,9 @@
 	/* ── Field grid pieces (shared by both templates) ───────────────────── */
 
 	function cell(label, value) {
-		const node = el("div", "rux-trip-envelope__cell");
-		node.appendChild(el("span", "rux-trip-envelope__label", label));
-		node.appendChild(el("span", "rux-trip-envelope__value", value || ""));
+		const node = el("div", "sched-trip-envelope__cell");
+		node.appendChild(el("span", "sched-trip-envelope__label", label));
+		node.appendChild(el("span", "sched-trip-envelope__value", value || ""));
 		return node;
 	}
 
@@ -219,19 +219,19 @@
 	}
 
 	function row(className, ...cells) {
-		const node = el("div", `rux-trip-envelope__row ${className}`);
+		const node = el("div", `sched-trip-envelope__row ${className}`);
 		cells.forEach((c) => node.appendChild(c));
 		return node;
 	}
 
 	function buildHeader(trip) {
-		const header = el("header", "rux-trip-envelope__header");
+		const header = el("header", "sched-trip-envelope__header");
 		header.appendChild(
-			el("h1", "rux-trip-envelope__day", fmtWeekday(trip.startDate)),
+			el("h1", "sched-trip-envelope__day", fmtWeekday(trip.startDate)),
 		);
 
 		const logo = document.createElement("img");
-		logo.className = "rux-trip-envelope__logo";
+		logo.className = "sched-trip-envelope__logo";
 		logo.src = "./assets/logo.png";
 		logo.alt = "";
 		header.appendChild(logo);
@@ -241,20 +241,20 @@
 			|| "2801 Zinnia Avenue, McAllen, Texas 78504, United States";
 		if (yardAddress)
 			header.appendChild(
-				el("p", "rux-trip-envelope__company-line", displayAddress(yardAddress)),
+				el("p", "sched-trip-envelope__company-line", displayAddress(yardAddress)),
 			);
 		// Settings only stores yard name/address today — these numbers are
 		// static company info, not per-trip data.
 		header.appendChild(
 			el(
 				"p",
-				"rux-trip-envelope__company-line",
+				"sched-trip-envelope__company-line",
 				"(956) 994-1169 / Fax 994-9491 / Cell 648-9691",
 			),
 		);
 
 		header.appendChild(
-			el("h2", "rux-trip-envelope__section-title", "Trip Information"),
+			el("h2", "sched-trip-envelope__section-title", "Trip Information"),
 		);
 		return header;
 	}
@@ -267,7 +267,7 @@
 
 		frag.appendChild(
 			row(
-				"rux-trip-envelope__row--3",
+				"sched-trip-envelope__row--3",
 				cell("Bus:", busNumber),
 				cell(driverFields.middle.label, driverFields.middle.name),
 				cell(driverFields.right.label, driverFields.right.name),
@@ -285,8 +285,8 @@
 		frag.appendChild(
 			row(
 				isMultiDay
-					? "rux-trip-envelope__row--3"
-					: "rux-trip-envelope__row--2",
+					? "sched-trip-envelope__row--3"
+					: "sched-trip-envelope__row--2",
 				cell("Trip Date:", fmtDate(trip.startDate)),
 				...(isMultiDay ? [cell("Return:", fmtDate(trip.endDate))] : []),
 				cell(isRelief ? "Swap Time:" : "Spot Time:", scheduleTime),
@@ -295,7 +295,7 @@
 
 		frag.appendChild(
 			row(
-				"rux-trip-envelope__row--1",
+				"sched-trip-envelope__row--1",
 				cell("Pick Up Address:", displayAddress(stop?.address)),
 			),
 		);
@@ -306,16 +306,16 @@
 	// The five ELD/CC/cost lines every copy ends on — always blank, filled
 	// out by hand once the trip actually happens.
 	function buildFooterGrid() {
-		const grid = el("div", "rux-trip-envelope__footer-grid");
+		const grid = el("div", "sched-trip-envelope__footer-grid");
 		const checks = (labelText, options) => {
-			const line = el("div", "rux-trip-envelope__footer-line");
+			const line = el("div", "sched-trip-envelope__footer-line");
 			line.appendChild(
-				el("span", "rux-trip-envelope__footer-label", labelText),
+				el("span", "sched-trip-envelope__footer-label", labelText),
 			);
-			const boxes = el("span", "rux-trip-envelope__footer-checks");
+			const boxes = el("span", "sched-trip-envelope__footer-checks");
 			options.forEach((optionLabel) => {
-				const opt = el("label", "rux-trip-envelope__check");
-				opt.appendChild(el("span", "rux-trip-envelope__box"));
+				const opt = el("label", "sched-trip-envelope__check");
+				opt.appendChild(el("span", "sched-trip-envelope__box"));
 				opt.appendChild(document.createTextNode(optionLabel));
 				boxes.appendChild(opt);
 			});
@@ -323,21 +323,21 @@
 			return line;
 		};
 		const amount = (labelText) => {
-			const line = el("div", "rux-trip-envelope__footer-line");
+			const line = el("div", "sched-trip-envelope__footer-line");
 			line.appendChild(
-				el("span", "rux-trip-envelope__footer-label", labelText),
+				el("span", "sched-trip-envelope__footer-label", labelText),
 			);
 			line.appendChild(
-				el("span", "rux-trip-envelope__footer-amount", "$"),
+				el("span", "sched-trip-envelope__footer-amount", "$"),
 			);
 			return line;
 		};
 		const blankLine = (labelText) => {
-			const line = el("div", "rux-trip-envelope__footer-line");
+			const line = el("div", "sched-trip-envelope__footer-line");
 			line.appendChild(
-				el("span", "rux-trip-envelope__footer-label", labelText),
+				el("span", "sched-trip-envelope__footer-label", labelText),
 			);
-			line.appendChild(el("span", "rux-trip-envelope__footer-fill"));
+			line.appendChild(el("span", "sched-trip-envelope__footer-fill"));
 			return line;
 		};
 
@@ -356,38 +356,38 @@
 	}
 
 	function buildNotes(trip, recipient) {
-		const notes = el("div", "rux-trip-envelope__notes");
+		const notes = el("div", "sched-trip-envelope__notes");
 		notes.appendChild(
-			el("span", "rux-trip-envelope__notes-label", "Notes:"),
+			el("span", "sched-trip-envelope__notes-label", "Notes:"),
 		);
 		const requirements = envelopeRequirements(trip);
 		const driverNote = String(recipient?.instructions || "").trim();
 		if (!requirements.length && !driverNote) return notes;
 
-		const list = el("div", "rux-trip-envelope__requirements");
+		const list = el("div", "sched-trip-envelope__requirements");
 		requirements.forEach((requirement) => {
-			const item = el("div", "rux-trip-envelope__requirement");
+			const item = el("div", "sched-trip-envelope__requirement");
 			item.appendChild(
-				el("span", "rux-icon rux-trip-envelope__requirement-icon", requirement.icon),
+				el("span", "rux-icon sched-trip-envelope__requirement-icon", requirement.icon),
 			);
 			item.appendChild(
-				el("span", "rux-trip-envelope__requirement-label", requirement.label),
+				el("span", "sched-trip-envelope__requirement-label", requirement.label),
 			);
 			if (requirement.writeIn) {
-				item.appendChild(el("span", "rux-trip-envelope__requirement-write-in"));
+				item.appendChild(el("span", "sched-trip-envelope__requirement-write-in"));
 			}
 			list.appendChild(item);
 		});
 		if (driverNote) {
 			const item = el(
 				"div",
-				"rux-trip-envelope__requirement rux-trip-envelope__driver-note",
+				"sched-trip-envelope__requirement sched-trip-envelope__driver-note",
 			);
 			item.appendChild(
-				el("span", "rux-icon rux-trip-envelope__requirement-icon", "info"),
+				el("span", "rux-icon sched-trip-envelope__requirement-icon", "info"),
 			);
 			item.appendChild(
-				el("span", "rux-trip-envelope__requirement-label", driverNote),
+				el("span", "sched-trip-envelope__requirement-label", driverNote),
 			);
 			list.appendChild(item);
 		}
@@ -402,26 +402,26 @@
 		);
 		card.appendChild(buildHeader(trip));
 
-		const grid = el("div", "rux-trip-envelope__grid");
+		const grid = el("div", "sched-trip-envelope__grid");
 		const scheduleFrag = buildScheduleRows(trip, busNumber, recipient);
 		grid.appendChild(scheduleFrag);
 		grid.appendChild(
 			row(
-				"rux-trip-envelope__row--1",
+				"sched-trip-envelope__row--1",
 				cell("Destination:", trip.destination),
 			),
 		);
 		const contact = contactFor(trip);
 		grid.appendChild(
 			row(
-				"rux-trip-envelope__row--2",
+				"sched-trip-envelope__row--2",
 				cell("Contact:", contact.name),
 				cell("Phone:", contact.phone),
 			),
 		);
 		grid.appendChild(
 			row(
-				"rux-trip-envelope__row--2",
+				"sched-trip-envelope__row--2",
 				blankCell("Starting Odometer:"),
 				blankCell("Ending Odometer:"),
 			),
@@ -442,18 +442,18 @@
 		);
 		card.appendChild(buildHeader(trip));
 
-		const grid = el("div", "rux-trip-envelope__grid");
+		const grid = el("div", "sched-trip-envelope__grid");
 		grid.appendChild(buildScheduleRows(trip, busNumber, recipient));
 		grid.appendChild(
 			row(
-				"rux-trip-envelope__row--1",
+				"sched-trip-envelope__row--1",
 				cell("Destination:", trip.destination),
 			),
 		);
 		const contact = contactFor(trip);
 		grid.appendChild(
 			row(
-				"rux-trip-envelope__row--2",
+				"sched-trip-envelope__row--2",
 				cell("Contact Person:", contact.name),
 				cell("Phone:", contact.phone),
 			),
@@ -461,7 +461,7 @@
 		card.appendChild(grid);
 
 		const table = document.createElement("table");
-		table.className = "rux-trip-envelope__log";
+		table.className = "sched-trip-envelope__log";
 		const thead = document.createElement("thead");
 		const headRow = document.createElement("tr");
 		["Location", "Time In", "Time Out", "Odometer"].forEach((label) => {
@@ -479,7 +479,7 @@
 		card.appendChild(table);
 
 		const notes = buildNotes(trip, recipient);
-		if (notes.querySelector(".rux-trip-envelope__requirements")) {
+		if (notes.querySelector(".sched-trip-envelope__requirements")) {
 			card.appendChild(notes);
 		}
 		card.appendChild(buildFooterGrid());

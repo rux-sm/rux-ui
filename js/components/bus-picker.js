@@ -20,8 +20,8 @@ function build() {
   el.setAttribute("aria-label", "Move to bus");
 
   el.innerHTML = `
-    <p class="rux-bus-picker__heading rux-u-eyebrow">Move to Bus</p>
-    <div class="rux-bus-picker__list" id="bus-picker-list"></div>
+    <p class="sched-bus-picker__heading rux-u-eyebrow">Move to Bus</p>
+    <div class="sched-bus-picker__list" id="bus-picker-list"></div>
   `;
   document.body.appendChild(el);
   listEl = el.querySelector("#bus-picker-list");
@@ -61,12 +61,12 @@ function renderList(trip, buses, currentTrips) {
     const conflict   = !isCurrent ? findConflict(bus.id, trip, currentTrips) : null;
 
     const row = document.createElement("div");
-    row.className = "rux-bus-picker__row" + (isCurrent ? " is-current" : "");
+    row.className = "sched-bus-picker__row" + (isCurrent ? " is-current" : "");
 
     if (isCurrent) {
       // Non-interactive — just shows which bus the trip is currently on
       const numEl = document.createElement("span");
-      numEl.className = "rux-bus-picker__number";
+      numEl.className = "sched-bus-picker__number";
       numEl.textContent = bus.number;
       row.appendChild(numEl);
       currentRow = row;
@@ -74,11 +74,11 @@ function renderList(trip, buses, currentTrips) {
       // Move button — full-width, always clickable (force-moves even if conflict)
       const moveBtn = document.createElement("button");
       moveBtn.type = "button";
-      moveBtn.className = "rux-button rux-button--default rux-button--block rux-bus-picker__move";
+      moveBtn.className = "rux-button rux-button--default rux-button--block sched-bus-picker__move";
       moveBtn.setAttribute("aria-label", `Move to bus ${bus.number}`);
 
       const numEl = document.createElement("span");
-      numEl.className = "rux-bus-picker__number";
+      numEl.className = "sched-bus-picker__number";
       numEl.textContent = bus.number;
       moveBtn.appendChild(numEl);
 
@@ -92,7 +92,7 @@ function renderList(trip, buses, currentTrips) {
       if (conflict) {
         const swapBtn = document.createElement("button");
         swapBtn.type = "button";
-        swapBtn.className = "rux-button rux-button--default rux-button--icon rux-bus-picker__swap";
+        swapBtn.className = "rux-button rux-button--default rux-button--icon sched-bus-picker__swap";
         swapBtn.setAttribute("aria-label", `Swap with bus ${bus.number}`);
         swapBtn.innerHTML = `<span class="rux-icon" aria-hidden="true">swap_horiz</span>`;
         swapBtn.addEventListener("click", (e) => {
@@ -155,7 +155,7 @@ export function show(trip, buses, currentTrips, onSelect, anchor = null) {
   el.removeAttribute("hidden");
 
   const resolvedAnchor = anchor
-    || document.querySelector(".sched-trip-bar.is-active .rux-trip-bar__actions")
+    || document.querySelector(".sched-trip-bar.is-active .sched-trip-bar__actions")
     || document.querySelector(".sched-trip-bar.is-active")
     || document.body;
   position(resolvedAnchor);

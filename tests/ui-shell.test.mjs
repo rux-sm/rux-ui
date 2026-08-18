@@ -7,6 +7,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf
 const page = read("index.html");
 const shellController = read("rux-ui/js/ui-shell.js");
 const drawerController = read("rux-ui/js/drawer.js");
+const drawerStyles = read("rux-ui/css/base/drawer.css");
 const headerStyles = read("rux-ui/css/base/ui-header.css");
 const controlStyles = read("rux-ui/css/base/controls.css");
 const controlsController = read("rux-ui/js/controls.js");
@@ -35,7 +36,7 @@ test("the UI header routes product navigation through a side nav", () => {
 	assert.match(page, /class="rux-ui-header"/);
 	assert.match(page, /id="app-navigation-toggle"/);
 	assert.match(page, /aria-controls="app-side-navigation"/);
-	assert.match(page, /class="rux-side-nav scheduler-app__side-nav"/);
+	assert.match(page, /class="rux-side-nav rux-side-nav--overlay"/);
 	assert.match(page, /<nav[\s\S]*?aria-label="Primary Navigation"[\s\S]*?<ul class="rux-side-nav__list">/);
 	for (const label of ["Trips", "Drivers", "Fleet", "Customers", "Requests", "Samsara", "Options"]) {
 		assert.match(page, new RegExp(`<span class="rux-side-nav__label"[^>]*>\\s*${label}\\s*</span`));
@@ -79,17 +80,17 @@ test("mobile keeps every app-header action available above drawer content", () =
 test("mobile side navigation fills the viewport except for its dismiss strip", () => {
 	assert.match(
 		layoutStyles,
-		/@media \(max-width: 500px\)\s*\{\s*\/\*[\s\S]*?\.scheduler-app \.rux-app__body\s*\{\s*--rux-side-nav-width:\s*calc\(100% - 150px\);/,
+		/@media \(max-width: 500px\)\s*\{\s*\/\*[\s\S]*?\.sched-app \.rux-app__body\s*\{\s*--rux-side-nav-width:\s*calc\(100% - 150px\);/,
 	);
 	assert.doesNotMatch(
 		layoutStyles,
-		/\.scheduler-app__side-nav\s*\{\s*width:\s*min\(var\(--rux-side-nav-width\),\s*calc\(100% - var\(--rux-space-12\)\)\);/,
+		/\.rux-side-nav--overlay\s*\{\s*width:\s*min\(var\(--rux-side-nav-width\),\s*calc\(100% - var\(--rux-space-12\)\)\);/,
 	);
 });
 
 test("the calendar header contains no Trip Editor panel opener", () => {
 	assert.doesNotMatch(page, /data-opens="trip-editor-dialog"|aria-label="Open trip editor"/);
-	assert.doesNotMatch(layoutStyles, /data-view="calendar"[^\n{]*\.scheduler-app__mobile-panel-btn--left/);
+	assert.doesNotMatch(layoutStyles, /data-view="calendar"[^\n{]*\.sched-app__mobile-panel-btn--left/);
 	assert.match(
 		layoutStyles,
 		/data-view="calendar"[^\n{]*> \.rux-workspace > \.rux-workspace__header\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto;/s,
@@ -98,8 +99,8 @@ test("the calendar header contains no Trip Editor panel opener", () => {
 
 test("mobile removes the drawer gutter and releases the shared view frame", () => {
 	assert.match(
-		layoutStyles,
-		/\.scheduler-app__gutter\s*\{\s*display:\s*none !important;/,
+		drawerStyles,
+		/\.rux-drawer-gutter\s*\{\s*display:\s*none !important;/,
 	);
 	// One release for every view, through the same tokens the desktop frame
 	// uses — not a per-view override.
@@ -175,39 +176,39 @@ test("header tab-tip popovers preserve the correct disclosure semantics", () => 
 test("Team Chat keeps a flexible scrolling body above a fixed card footer", () => {
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__body\s*\{[^}]*display:\s*flex;[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow:\s*hidden;/s,
+		/\.sched-team-chat__body\s*\{[^}]*display:\s*flex;[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow:\s*hidden;/s,
 	);
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__messages\s*\{[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow-y:\s*auto;/s,
+		/\.sched-team-chat__messages\s*\{[^}]*flex:\s*1 1 auto;[^}]*min-height:\s*0;[^}]*overflow-y:\s*auto;/s,
 	);
 	assert.match(
 		chatController,
-		/<div class="rux-team-chat__body rux-card__body">[\s\S]*?<footer class="rux-team-chat__footer rux-card__footer">/,
+		/<div class="sched-team-chat__body rux-card__body">[\s\S]*?<footer class="sched-team-chat__footer rux-card__footer">/,
 	);
 	assert.doesNotMatch(chatController, /data-team-chat-close/);
 });
 
 test("Team Chat distinguishes the current user's messages with a trailing avatar", () => {
 	assert.match(chatController, /const isOwnMessage = Boolean\(/);
-	assert.match(chatController, /rux-team-chat__message--own/);
-	assert.match(chatController, /rux-team-chat__avatar-slot[^`]*\$\{isGrouped \? "" : avatar\.outerHTML\}/);
+	assert.match(chatController, /sched-team-chat__message--own/);
+	assert.match(chatController, /sched-team-chat__avatar-slot[^`]*\$\{isGrouped \? "" : avatar\.outerHTML\}/);
 	assert.match(
 		chatStyles,
-		/--rux-team-chat-message-max-width:\s*70%;[\s\S]*?--rux-team-chat-message-bg:\s*var\(--rux-surface-1\);[\s\S]*?--rux-team-chat-own-message-bg:\s*oklch\(from var\(--rux-surface-1\) calc\(l \+ 6%\) c h\);/,
+		/--sched-team-chat-message-max-width:\s*70%;[\s\S]*?--sched-team-chat-message-bg:\s*var\(--rux-surface-1\);[\s\S]*?--sched-team-chat-own-message-bg:\s*oklch\(from var\(--rux-surface-1\) calc\(l \+ 6%\) c h\);/,
 	);
-	assert.match(chatStyles, /\.rux-team-chat__message--own\s*\{[^}]*justify-content:\s*flex-end;/s);
-	assert.match(chatStyles, /\.rux-team-chat__message--own \.rux-team-chat__avatar-slot\s*\{[^}]*order:\s*3;/s);
+	assert.match(chatStyles, /\.sched-team-chat__message--own\s*\{[^}]*justify-content:\s*flex-end;/s);
+	assert.match(chatStyles, /\.sched-team-chat__message--own \.sched-team-chat__avatar-slot\s*\{[^}]*order:\s*3;/s);
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__message-text\s*\{[^}]*padding:\s*var\(--rux-space-2\) var\(--rux-space-3\);[^}]*background:\s*var\(--rux-team-chat-message-bg\);[^}]*border-radius:\s*var\(--rux-team-chat-message-radius\);/s,
+		/\.sched-team-chat__message-text\s*\{[^}]*padding:\s*var\(--rux-space-2\) var\(--rux-space-3\);[^}]*background:\s*var\(--sched-team-chat-message-bg\);[^}]*border-radius:\s*var\(--sched-team-chat-message-radius\);/s,
 	);
 	assert.match(chatController, /function renderMessageContent\(value, currentProfileId = ""\)/);
-	assert.match(chatController, /rux-team-chat__message-emoji/);
+	assert.match(chatController, /sched-team-chat__message-emoji/);
 	assert.doesNotMatch(chatController, /isEmojiOnlyMessage|message-text--jumbo/);
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__message-emoji\s*\{[^}]*font-size:\s*var\(--rux-size-xl\);[^}]*line-height:\s*1;/s,
+		/\.sched-team-chat__message-emoji\s*\{[^}]*font-size:\s*var\(--rux-size-xl\);[^}]*line-height:\s*1;/s,
 	);
 	assert.doesNotMatch(chatStyles, /message-text--jumbo/);
 });
@@ -215,26 +216,26 @@ test("Team Chat distinguishes the current user's messages with a trailing avatar
 test("Team Chat groups conversations without sacrificing actions or status", () => {
 	assert.match(chatController, /const MESSAGE_GROUP_WINDOW_MS = 5 \* 60 \* 1000;/);
 	assert.match(chatController, /function continuesMessageGroup\(message, previousMessage\)/);
-	assert.match(chatController, /rux-team-chat__message--grouped/);
+	assert.match(chatController, /sched-team-chat__message--grouped/);
 	assert.match(chatController, /\$\{isGrouped \? "" : avatar\.outerHTML\}/);
-	assert.match(chatController, /\$\{!isOwnMessage && !isGrouped \? `<span class="rux-team-chat__message-name/);
-	assert.match(chatController, /rux-team-chat__message-line[\s\S]*?rux-team-chat__message-text[\s\S]*?rux-team-chat__message-time/);
+	assert.match(chatController, /\$\{!isOwnMessage && !isGrouped \? `<span class="sched-team-chat__message-name/);
+	assert.match(chatController, /sched-team-chat__message-line[\s\S]*?sched-team-chat__message-text[\s\S]*?sched-team-chat__message-time/);
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__message \+ \.rux-team-chat__message--grouped\s*\{[^}]*margin-block-start:\s*var\(--rux-space-1\);/s,
+		/\.sched-team-chat__message \+ \.sched-team-chat__message--grouped\s*\{[^}]*margin-block-start:\s*var\(--rux-space-1\);/s,
 	);
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__message-actions\s*\{[^}]*position:\s*absolute;[^}]*opacity:\s*0;[^}]*pointer-events:\s*none;/s,
+		/\.sched-team-chat__message-actions\s*\{[^}]*position:\s*absolute;[^}]*opacity:\s*0;[^}]*pointer-events:\s*none;/s,
 	);
 	assert.match(
 		chatStyles,
-		/\.rux-team-chat__message-line\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*flex-end;[^}]*gap:\s*var\(--rux-space-2\);/s,
+		/\.sched-team-chat__message-line\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*flex-end;[^}]*gap:\s*var\(--rux-space-2\);/s,
 	);
-	assert.match(chatStyles, /\.rux-team-chat__message--own \.rux-team-chat__message-line\s*\{[^}]*flex-direction:\s*row-reverse;/s);
-	assert.match(chatStyles, /\.rux-team-chat__message-time\s*\{[^}]*opacity:\s*0;[^}]*visibility:\s*hidden;/s);
-	assert.match(chatStyles, /\.rux-team-chat__message:hover \.rux-team-chat__message-time,[\s\S]*?opacity:\s*1;[^}]*visibility:\s*visible;/s);
-	assert.match(chatStyles, /@media \(hover: none\)[\s\S]*?\.rux-team-chat__message-time\s*\{[^}]*opacity:\s*1;[^}]*visibility:\s*visible;/s);
+	assert.match(chatStyles, /\.sched-team-chat__message--own \.sched-team-chat__message-line\s*\{[^}]*flex-direction:\s*row-reverse;/s);
+	assert.match(chatStyles, /\.sched-team-chat__message-time\s*\{[^}]*opacity:\s*0;[^}]*visibility:\s*hidden;/s);
+	assert.match(chatStyles, /\.sched-team-chat__message:hover \.sched-team-chat__message-time,[\s\S]*?opacity:\s*1;[^}]*visibility:\s*visible;/s);
+	assert.match(chatStyles, /@media \(hover: none\)[\s\S]*?\.sched-team-chat__message-time\s*\{[^}]*opacity:\s*1;[^}]*visibility:\s*visible;/s);
 	assert.match(chatController, /role="log"[^>]*aria-live="polite"/);
 	assert.match(chatController, /data-team-chat-send disabled/);
 	assert.match(chatController, /function syncComposerState\(\)/);
@@ -252,11 +253,11 @@ test("Team Chat mentions use stable profile IDs and accessible suggestions", () 
 	assert.match(chatController, /aria-autocomplete="list"/);
 	assert.match(chatController, /role", "listbox"/);
 	assert.match(chatController, /data-mention-profile-id/);
-	assert.match(chatController, /rux-team-chat__mention--current-user/);
+	assert.match(chatController, /sched-team-chat__mention--current-user/);
 	assert.match(chatController, /badge\.textContent = unreadMentions\.length \? "@"/);
 	assert.match(chatController, /scrollIntoView\(\{ block: "center" \}\)/);
-	assert.match(chatStyles, /\.rux-team-chat__mention-menu\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s);
-	assert.match(chatStyles, /\.rux-team-chat__mention--current-user\s*\{[^}]*background:\s*var\(--rux-info-subtle\);/s);
+	assert.match(chatStyles, /\.sched-team-chat__mention-menu\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s);
+	assert.match(chatStyles, /\.sched-team-chat__mention--current-user\s*\{[^}]*background:\s*var\(--rux-info-subtle\);/s);
 });
 
 test("menus opened inside modals are promoted above the modal layer", () => {
@@ -324,7 +325,7 @@ test("side-nav disclosure behavior keeps accessibility state synchronized", () =
 
 test("the Calendar tools panel is workspace-controlled and fully hideable", () => {
 	const drawerMarkup = page.match(
-		/<div\s+class="[^"]*scheduler-app__drawer--right[^"]*"\s+id="right-panel-drawer"/,
+		/<div\s+class="[^"]*rux-drawer--right[^"]*"\s+id="right-panel-drawer"/,
 	)?.[0] ?? "";
 	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__panel-toggle"/);
 	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-button__label">Tools<\/span>/);
@@ -335,8 +336,7 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	assert.match(controlStyles, /\.rux-button--header\.rux-button--icon\s*\{[^}]*font-size:\s*var\(--rux-button-icon-size-header\);/s);
 	assert.match(controlStyles, /\.rux-button--header > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-button-icon-size-header\);/s);
 	assert.match(page, /aria-expanded="true"[\s\S]*?aria-controls="right-panel-drawer"/);
-	assert.match(drawerMarkup, /class="scheduler-app__drawer scheduler-app__drawer--right"/);
-	assert.doesNotMatch(drawerMarkup, /scheduler-app__drawer--railable/);
+	assert.match(drawerMarkup, /class="rux-drawer rux-drawer--right"/);
 	assert.match(page, /<aside[\s\S]*?class="rux-panel rux-panel--attached sched-scope-right-panel"[\s\S]*?aria-label="Calendar Tools"/);
 	assert.doesNotMatch(page, /id="opt-hide-nav"/);
 });
@@ -404,16 +404,16 @@ test("the mini calendar uses the card shell, header, and body", () => {
 	)?.[0];
 	assert.ok(calendar);
 	assert.doesNotMatch(calendar, /rux-card__sentinel/);
-	assert.match(calendar, /class="rux-card__header rux-mini-cal__header"/);
-	assert.match(calendar, /class="rux-card__body rux-mini-cal__body"/);
+	assert.match(calendar, /class="rux-card__header sched-mini-cal__header"/);
+	assert.match(calendar, /class="rux-card__body sched-mini-cal__body"/);
 });
 
 test("the mini calendar grows columns to fill the panel with fixed row height", () => {
-	assert.match(layoutStyles, /--rux-mini-cal-cell-size:\s*\d+px;/);
-	assert.match(layoutStyles, /--rux-mini-cal-cell-gap:\s*var\(--rux-space-2\);/);
+	assert.match(layoutStyles, /--sched-mini-cal-cell-size:\s*\d+px;/);
+	assert.match(layoutStyles, /--sched-mini-cal-cell-gap:\s*var\(--rux-space-2\);/);
 	assert.match(
 		layoutStyles,
-		/\.rux-mini-cal__day-names,\s*\.rux-mini-cal__dates\s*\{[^}]*grid-template-columns:\s*repeat\(7, 1fr\);[^}]*grid-auto-rows:\s*var\(--rux-mini-cal-cell-size\);/s,
+		/\.sched-mini-cal__day-names,\s*\.sched-mini-cal__dates\s*\{[^}]*grid-template-columns:\s*repeat\(7, 1fr\);[^}]*grid-auto-rows:\s*var\(--sched-mini-cal-cell-size\);/s,
 	);
 	assert.doesNotMatch(layoutStyles, /padding-inline:\s*auto/);
 });
@@ -474,7 +474,7 @@ test("Driver Availability is an Assignments card in the panel body", () => {
 		/id="rp-pane-drivers"[\s\S]*?(?=<div\s+id="rp-pane-tasks")/,
 	)?.[0];
 	assert.ok(driversPane);
-	assert.match(driversPane, /class="rux-panel__pane rux-driver-availability"/);
+	assert.match(driversPane, /class="rux-panel__pane sched-driver-availability"/);
 	assert.match(driversPane, /class="rux-card"/);
 	assert.doesNotMatch(driversPane, /rux-card__sentinel/);
 	assert.match(driversPane, />\s*Assignments\s*</);
@@ -486,11 +486,11 @@ test("driver priority uses a persistent row indicator and matching selected wash
 	assert.doesNotMatch(page, /function driverNameIcon/);
 	assert.match(
 		layoutStyles,
-		/border-left:\s*var\(--rux-side-nav-selected-width\) solid\s*var\(--rux-driver-priority-color\)/s,
+		/border-left:\s*var\(--rux-side-nav-selected-width\) solid\s*var\(--sched-driver-priority-color\)/s,
 	);
 	assert.match(
 		layoutStyles,
-		/\.rux-driver-grid__row\.is-selected \.rux-driver-grid__name\s*\{[^}]*background:\s*oklch\(\s*from var\(--rux-driver-priority-color\) l c h \/ 0\.14\s*\)/s,
+		/\.sched-driver-grid__row\.is-selected \.sched-driver-grid__name\s*\{[^}]*background:\s*oklch\(\s*from var\(--sched-driver-priority-color\) l c h \/ 0\.14\s*\)/s,
 	);
 });
 
@@ -507,7 +507,8 @@ test("Calendar resize uses its inset module and does not fight auto-collapse", (
 		drawerController,
 		/const containerEl = drawer\.closest\(env\.container\);[\s\S]*?const availableW = containerEl\?\.clientWidth/,
 	);
-	assert.match(page, /container:\s*"\.rux-app-view"/);
+	// The container is the portable default now; the app names nothing.
+	assert.match(drawerController, /container:\s*"\.rux-app-view"/);
 	assert.match(
 		page,
 		/function checkPanelFit\(\)\s*\{[\s\S]*?rightDrawer\.classList\.contains\("is-resizing"\)/,

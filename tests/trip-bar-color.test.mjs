@@ -6,8 +6,12 @@ const tripBarCss = await readFile(
 	new URL("../scheduler/css/features/trip-bar.css", import.meta.url),
 	"utf8",
 );
-const tokensCss = await readFile(
+const ruxTokensCss = await readFile(
 	new URL("../rux-ui/css/tokens.css", import.meta.url),
+	"utf8",
+);
+const tokensCss = await readFile(
+	new URL("../scheduler/css/tokens.css", import.meta.url),
 	"utf8",
 );
 const printScheduleCss = await readFile(
@@ -26,11 +30,11 @@ const appSource = await readFile(
 test("trip bar override colors remain visible for unconfirmed trips", () => {
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--rux-trip-bar-danger-border\)/s,
+		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--sched-trip-bar-danger-border\)/s,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
-		/\.sched-trip-bar--unconfirmed\s*\{[^}]*--_tone:\s*var\(--rux-trip-bar-danger-border\)/s,
+		/\.sched-trip-bar--unconfirmed\s*\{[^}]*--_tone:\s*var\(--sched-trip-bar-danger-border\)/s,
 	);
 });
 
@@ -70,26 +74,26 @@ test("base, head, and tail outlines share a fully opaque color channel", () => {
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
+		/\.sched-trip-bar\s*\{[\s\S]*?border:\s*var\(--sched-trip-bar-border-width\) solid var\(--_outline\)/,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar__head\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
+		/\.sched-trip-bar__head\s*\{[\s\S]*?border:\s*var\(--sched-trip-bar-border-width\) solid var\(--_outline\)/,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar__tail\s*\{[\s\S]*?border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)/,
+		/\.sched-trip-bar__tail\s*\{[\s\S]*?border:\s*var\(--sched-trip-bar-border-width\) solid var\(--_outline\)/,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
-		/border:\s*var\(--rux-trip-bar-border-width\) solid var\(--_surface\)/,
+		/border:\s*var\(--sched-trip-bar-border-width\) solid var\(--_surface\)/,
 	);
 });
 
 test("multi-day details can be centered in a full-span head", () => {
 	assert.match(
 		tripBarSource,
-		/headContent\.className = "rux-trip-bar__head-content"/,
+		/headContent\.className = "sched-trip-bar__head-content"/,
 	);
 	assert.match(
 		tripBarCss,
@@ -97,11 +101,11 @@ test("multi-day details can be centered in a full-span head", () => {
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.rux-trip-bar__head-content\s*\{[^}]*width:\s*min\(var\(--rux-trip-bar-day-inline-size,\s*100%\),\s*100%\)[^}]*margin-inline:\s*auto/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.sched-trip-bar__head-content\s*\{[^}]*width:\s*min\(var\(--sched-trip-bar-day-inline-size,\s*100%\),\s*100%\)[^}]*margin-inline:\s*auto/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.rux-trip-bar__tail\s*\{[^}]*display:\s*none/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.sched-trip-bar__tail\s*\{[^}]*display:\s*none/s,
 	);
 });
 
@@ -118,19 +122,19 @@ test("centered multi-day details are exposed as a persistent view option", () =>
 test("centered identity text applies to single and multi-day bars without moving status rails", () => {
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__summary\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) auto minmax\(0,\s*1fr\)/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.sched-trip-bar__summary\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) auto minmax\(0,\s*1fr\)/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__destination\s*\{[^}]*grid-column:\s*2[^}]*justify-content:\s*center[^}]*text-align:\s*center/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.sched-trip-bar__destination\s*\{[^}]*grid-column:\s*2[^}]*justify-content:\s*center[^}]*text-align:\s*center/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__paid-badge\s*\{[^}]*grid-column:\s*3[^}]*justify-self:\s*end/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.sched-trip-bar__paid-badge\s*\{[^}]*grid-column:\s*3[^}]*justify-self:\s*end/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.rux-trip-bar__reqs \.rux-trip-bar__pending\s*\{[^}]*margin-inline-start:\s*auto/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar \.sched-trip-bar__reqs \.sched-trip-bar__pending\s*\{[^}]*margin-inline-start:\s*auto/s,
 	);
 	assert.match(appSource, />Center trip details<\/span/);
 });
@@ -138,63 +142,64 @@ test("centered identity text applies to single and multi-day bars without moving
 test("bus-count pills use black text on their white surface", () => {
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar__bus-label\s*\{[^}]*background:\s*var\(--rux-trip-bar-bus-label-bg\)[^}]*color:\s*var\(--rux-black\)/s,
+		/\.sched-trip-bar__bus-label\s*\{[^}]*background:\s*var\(--sched-trip-bar-bus-label-bg\)[^}]*color:\s*var\(--rux-black\)/s,
 	);
 });
 
 test("trip interaction surfaces derive modest state changes from one base brightness", () => {
-	assert.match(tokensCss, /--rux-trip-bar-bg-lightness:\s*60%/);
-	assert.match(tokensCss, /--rux-trip-bar-state-lightness-step:\s*4%/);
+	assert.match(tokensCss, /--sched-trip-bar-bg-lightness:\s*60%/);
+	assert.match(tokensCss, /--sched-trip-bar-state-lightness-step:\s*4%/);
 	assert.match(
 		tokensCss,
-		/--rux-trip-bar-hover-bg-lightness:\s*calc\(var\(--rux-trip-bar-bg-lightness\) \+ var\(--rux-trip-bar-state-lightness-step\)\)/,
+		/--sched-trip-bar-hover-bg-lightness:\s*calc\(var\(--sched-trip-bar-bg-lightness\) \+ var\(--sched-trip-bar-state-lightness-step\)\)/,
 	);
 	assert.match(
 		tokensCss,
-		/--rux-trip-bar-pressed-bg-lightness:\s*calc\(var\(--rux-trip-bar-bg-lightness\) - var\(--rux-trip-bar-state-lightness-step\)\)/,
+		/--sched-trip-bar-pressed-bg-lightness:\s*calc\(var\(--sched-trip-bar-bg-lightness\) - var\(--sched-trip-bar-state-lightness-step\)\)/,
 	);
-	assert.match(tokensCss, /--rux-trip-bar-bg-opacity:\s*80%/);
-	assert.match(tokensCss, /--rux-trip-bar-hover-bg-opacity:\s*70%/);
-	assert.match(tokensCss, /--rux-trip-bar-pressed-bg-opacity:\s*50%/);
-	assert.match(tokensCss, /--rux-trip-bar-selected-bg-opacity:\s*80%/);
+	assert.match(tokensCss, /--sched-trip-bar-bg-opacity:\s*80%/);
+	assert.match(tokensCss, /--sched-trip-bar-hover-bg-opacity:\s*70%/);
+	assert.match(tokensCss, /--sched-trip-bar-pressed-bg-opacity:\s*50%/);
+	assert.match(tokensCss, /--sched-trip-bar-selected-bg-opacity:\s*80%/);
 });
 
 test("trip tails use direct state surfaces instead of compounding transparency", () => {
-	assert.match(tripBarCss, /--_tail-surface:\s*oklch\([^;]*var\(--rux-trip-bar-tail-opacity\)\)/);
-	assert.match(tripBarCss, /--_tail-surface-active:\s*oklch\([^;]*var\(--rux-trip-bar-tail-selected-opacity\)\)/);
+	assert.match(tripBarCss, /--_tail-surface:\s*oklch\([^;]*var\(--sched-trip-bar-tail-opacity\)\)/);
+	assert.match(tripBarCss, /--_tail-surface-active:\s*oklch\([^;]*var\(--sched-trip-bar-tail-selected-opacity\)\)/);
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar--multi-day\.is-active \.rux-trip-bar__tail\s*\{[^}]*background-color:\s*var\(--_tail-surface-active\)/s,
+		/\.sched-trip-bar--multi-day\.is-active \.sched-trip-bar__tail\s*\{[^}]*background-color:\s*var\(--_tail-surface-active\)/s,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
-		/\.rux-trip-bar__tail\s*\{[^}]*background-color:\s*color-mix\(/s,
+		/\.sched-trip-bar__tail\s*\{[^}]*background-color:\s*color-mix\(/s,
 	);
 });
 
 test("connected trip surfaces share one backdrop blur", () => {
+	// Domain-free and portable: base/controls.css and base/badges.css read it.
 	assert.match(
-		tokensCss,
-		/--rux-trip-bar-head-backdrop-blur:\s*[1-9]\d*px/,
+		ruxTokensCss,
+		/--rux-backdrop-blur:\s*[1-9]\d*px/,
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar:not\(\.sched-trip-bar--multi-day\),\s*\.rux-trip-bar__head,\s*\.rux-trip-bar__tail\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)[^}]*backdrop-filter:\s*blur\(var\(--rux-trip-bar-head-backdrop-blur\)\)/s,
+		/\.sched-trip-bar:not\(\.sched-trip-bar--multi-day\),\s*\.sched-trip-bar__head,\s*\.sched-trip-bar__tail\s*\{[^}]*-webkit-backdrop-filter:\s*blur\(var\(--rux-backdrop-blur\)\)[^}]*backdrop-filter:\s*blur\(var\(--rux-backdrop-blur\)\)/s,
 	);
 });
 
 test("default multi-day heads and tails meet at one shared edge", () => {
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar__head\s*\{[^}]*border-inline-end:\s*0[^}]*border-start-end-radius:\s*0[^}]*border-end-end-radius:\s*0/s,
+		/\.sched-trip-bar__head\s*\{[^}]*border-inline-end:\s*0[^}]*border-start-end-radius:\s*0[^}]*border-end-end-radius:\s*0/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.rux-trip-bar__tail\s*\{[^}]*grid-column:\s*2\s*\/\s*-1[^}]*border-inline-start:\s*0[^}]*border-start-start-radius:\s*0[^}]*border-end-start-radius:\s*0/s,
+		/\.sched-trip-bar__tail\s*\{[^}]*grid-column:\s*2\s*\/\s*-1[^}]*border-inline-start:\s*0[^}]*border-start-start-radius:\s*0[^}]*border-end-start-radius:\s*0/s,
 	);
 	assert.match(
 		tripBarCss,
-		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.rux-trip-bar__head\s*\{[^}]*border-inline-end:\s*var\(--rux-trip-bar-border-width\) solid var\(--_outline\)[^}]*border-radius:\s*var\(--rux-trip-bar-radius\)/s,
+		/\.sched-scheduler--centered-trip-heads \.sched-trip-bar--multi-day \.sched-trip-bar__head\s*\{[^}]*border-inline-end:\s*var\(--sched-trip-bar-border-width\) solid var\(--_outline\)[^}]*border-radius:\s*var\(--sched-trip-bar-radius\)/s,
 	);
 });
 

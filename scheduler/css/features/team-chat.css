@@ -6,11 +6,11 @@
    ========================================================================== */
 
 .sched-team-chat-popover {
-	--rux-team-chat-message-max-width: 70%;
-	--rux-team-chat-message-bg: var(--rux-surface-1);
-	--rux-team-chat-own-message-bg: oklch(from var(--rux-surface-1) calc(l + 6%) c h);
-	--rux-team-chat-message-radius: var(--rux-radius-0);
-	--rux-team-chat-avatar-track-width: var(--rux-avatar-md);
+	--sched-team-chat-message-max-width: 70%;
+	--sched-team-chat-message-bg: var(--rux-surface-1);
+	--sched-team-chat-own-message-bg: oklch(from var(--rux-surface-1) calc(l + 6%) c h);
+	--sched-team-chat-message-radius: var(--rux-radius-0);
+	--sched-team-chat-avatar-track-width: var(--rux-avatar-md);
 
 	display: flex;
 	flex-direction: column;
@@ -26,7 +26,7 @@
 	display: none;
 }
 
-.rux-team-chat__body {
+.sched-team-chat__body {
 	display: flex;
 	flex: 1 1 auto;
 	min-width: 0;
@@ -35,7 +35,7 @@
 	overflow: hidden;
 }
 
-.rux-team-chat__messages {
+.sched-team-chat__messages {
 	flex: 1 1 auto;
 	min-width: 0;
 	min-height: 0;
@@ -47,70 +47,70 @@
 	gap: 0;
 }
 
-.rux-team-chat__empty {
+.sched-team-chat__empty {
 	margin: auto 0;
 	color: var(--rux-text-faint);
 	font-size: var(--rux-size-sm);
 	text-align: center;
 }
 
-.rux-team-chat__message {
+.sched-team-chat__message {
 	position: relative;
 	display: flex;
 	align-items: flex-start;
 	gap: var(--rux-space-4);
 }
 
-.rux-team-chat__message + .rux-team-chat__message {
+.sched-team-chat__message + .sched-team-chat__message {
 	margin-block-start: var(--rux-space-5);
 }
 
-.rux-team-chat__message + .rux-team-chat__message--grouped {
+.sched-team-chat__message + .sched-team-chat__message--grouped {
 	margin-block-start: var(--rux-space-1);
 }
 
-.rux-team-chat__avatar-slot {
+.sched-team-chat__avatar-slot {
 	display: flex;
-	flex: 0 0 var(--rux-team-chat-avatar-track-width);
-	width: var(--rux-team-chat-avatar-track-width);
+	flex: 0 0 var(--sched-team-chat-avatar-track-width);
+	width: var(--sched-team-chat-avatar-track-width);
 	min-height: 1px;
 }
 
-.rux-team-chat__avatar-slot .rux-avatar {
+.sched-team-chat__avatar-slot .rux-avatar {
 	flex: none;
 	border-radius: var(--rux-radius-full);
 }
 
-.rux-team-chat__message:not(.rux-team-chat__message--own):not(.rux-team-chat__message--grouped)
-	.rux-team-chat__avatar-slot {
+.sched-team-chat__message:not(.sched-team-chat__message--own):not(.sched-team-chat__message--grouped)
+	.sched-team-chat__avatar-slot {
 	margin-block-start: var(--rux-space-4);
 }
 
-.rux-team-chat__message-body {
+.sched-team-chat__message-body {
 	display: flex;
-	flex: 0 1 var(--rux-team-chat-message-max-width);
+	flex: 0 1 var(--sched-team-chat-message-max-width);
 	flex-direction: column;
 	align-items: flex-start;
-	max-width: var(--rux-team-chat-message-max-width);
+	max-width: var(--sched-team-chat-message-max-width);
 	min-width: 0;
 }
 
-.rux-team-chat__message--own {
+.sched-team-chat__message--own {
 	justify-content: flex-end;
 }
 
-.rux-team-chat__message--own .rux-team-chat__message-body {
+.sched-team-chat__message--own .sched-team-chat__message-body {
 	align-items: flex-end;
 }
 
-.rux-team-chat__message--own .rux-team-chat__avatar-slot {
+.sched-team-chat__message--own .sched-team-chat__avatar-slot {
 	order: 3;
 }
 
 /* Muted until hovered/focused — a permanently-visible row of react/delete
    icons on every message would be a lot of visual noise in a fast-moving
    chat list. */
-.rux-team-chat__message-actions {
+.sched-team-chat__message-actions {
 	position: absolute;
 	inset-block-start: 0;
 	inset-inline-end: 0;
@@ -125,29 +125,29 @@
 		var(--rux-motion-easing-standard-productive);
 }
 
-.rux-team-chat__message--own .rux-team-chat__message-actions {
+.sched-team-chat__message--own .sched-team-chat__message-actions {
 	inset-inline-start: 0;
 	inset-inline-end: auto;
 }
 
-.rux-team-chat__message:hover .rux-team-chat__message-actions,
-.rux-team-chat__message-actions:focus-within {
+.sched-team-chat__message:hover .sched-team-chat__message-actions,
+.sched-team-chat__message-actions:focus-within {
 	opacity: 1;
 	pointer-events: auto;
 }
 
-.rux-team-chat__reactions {
+.sched-team-chat__reactions {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rux-space-1);
 	margin-top: var(--rux-space-1);
 }
 
-.rux-team-chat__message--own .rux-team-chat__reactions {
+.sched-team-chat__message--own .sched-team-chat__reactions {
 	justify-content: flex-end;
 }
 
-.rux-team-chat__reaction-pill {
+.sched-team-chat__reaction-pill {
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
@@ -161,25 +161,25 @@
 	cursor: pointer;
 }
 
-.rux-team-chat__reaction-pill:hover {
+.sched-team-chat__reaction-pill:hover {
 	border-color: var(--rux-card-border-hover);
 }
 
 /* Emoji glyph reads bigger than the count next to it, not scaled together
    with the pill's own font-size. Same 20px as message emoji and the picker
    grid — one consistent emoji size across the chat. */
-.rux-team-chat__reaction-emoji {
+.sched-team-chat__reaction-emoji {
 	font-size: var(--rux-size-xl);
 	line-height: 1;
 }
 
-.rux-team-chat__reaction-pill.is-active {
+.sched-team-chat__reaction-pill.is-active {
 	background: none;
 	border-color: var(--rux-accent);
 	color: var(--rux-info-vivid);
 }
 
-.rux-team-chat__message-line {
+.sched-team-chat__message-line {
 	display: flex;
 	max-width: 100%;
 	min-width: 0;
@@ -187,18 +187,18 @@
 	gap: var(--rux-space-2);
 }
 
-.rux-team-chat__message--own .rux-team-chat__message-line {
+.sched-team-chat__message--own .sched-team-chat__message-line {
 	flex-direction: row-reverse;
 }
 
-.rux-team-chat__message-name {
+.sched-team-chat__message-name {
 	margin-bottom: var(--rux-space-1);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-default);
 }
 
-.rux-team-chat__message-time {
+.sched-team-chat__message-time {
 	flex: none;
 	color: var(--rux-text-faint);
 	font-size: var(--rux-size-xs);
@@ -210,20 +210,20 @@
 		var(--rux-motion-easing-standard-productive);
 }
 
-.rux-team-chat__message:hover .rux-team-chat__message-time,
-.rux-team-chat__message:focus-within .rux-team-chat__message-time {
+.sched-team-chat__message:hover .sched-team-chat__message-time,
+.sched-team-chat__message:focus-within .sched-team-chat__message-time {
 	opacity: 1;
 	visibility: visible;
 }
 
-.rux-team-chat__message-text {
+.sched-team-chat__message-text {
 	flex: 0 1 auto;
 	min-width: 0;
 	max-width: 100%;
 	margin: 0;
 	padding: var(--rux-space-2) var(--rux-space-3);
-	background: var(--rux-team-chat-message-bg);
-	border-radius: var(--rux-team-chat-message-radius);
+	background: var(--sched-team-chat-message-bg);
+	border-radius: var(--sched-team-chat-message-radius);
 	color: var(--rux-text-default);
 	font-size: var(--rux-size-sm);
 	line-height: 1.4;
@@ -231,18 +231,18 @@
 	overflow-wrap: anywhere;
 }
 
-.rux-team-chat__message--own .rux-team-chat__message-text {
-	background: var(--rux-team-chat-own-message-bg);
+.sched-team-chat__message--own .sched-team-chat__message-text {
+	background: var(--sched-team-chat-own-message-bg);
 	text-align: start;
 }
 
-.rux-team-chat__mention {
+.sched-team-chat__mention {
 	display: inline;
 	color: var(--rux-info-vivid);
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-team-chat__mention--current-user {
+.sched-team-chat__mention--current-user {
 	padding-inline: var(--rux-space-px);
 	background: var(--rux-info-subtle);
 	border-radius: var(--rux-radius-sm);
@@ -251,7 +251,7 @@
 /* Emoji stay inside the standard message surface, whether the message is
    mixed copy or emoji-only. The span changes only glyph size, preserving the
    surrounding 14px text and normal bubble geometry. */
-.rux-team-chat__message-emoji {
+.sched-team-chat__message-emoji {
 	display: inline-block;
 	font-size: var(--rux-size-xl);
 	line-height: 1;
@@ -261,7 +261,7 @@
 /* Full emoji picker popover — same .rux-menu/.rux-popover shell as the
    notifications/profile dropdowns, sized to fit a scrollable grid instead
    of a list of menu rows. */
-.rux-team-chat__emoji-menu {
+.sched-team-chat__emoji-menu {
 	width: 15rem;
 	max-height: 18rem;
 	overflow-y: auto;
@@ -273,22 +273,22 @@
 	z-index: calc(var(--rux-z-modal) + 1);
 }
 
-.rux-team-chat__mention-menu {
+.sched-team-chat__mention-menu {
 	z-index: calc(var(--rux-z-modal) + 1);
 	width: min(18rem, calc(100vw - var(--rux-space-4)));
 }
 
-.rux-team-chat__mention-option {
+.sched-team-chat__mention-option {
 	flex-direction: row;
 	align-items: center;
 	gap: var(--rux-space-3);
 }
 
-.rux-team-chat__mention-option:is(:hover, .is-active) {
+.sched-team-chat__mention-option:is(:hover, .is-active) {
 	background: var(--rux-button-hover-overlay);
 }
 
-.rux-team-chat__mention-option .rux-avatar {
+.sched-team-chat__mention-option .rux-avatar {
 	flex: none;
 	border-radius: var(--rux-radius-full);
 }
@@ -297,14 +297,14 @@
 	background: var(--rux-info-vivid);
 }
 
-.rux-team-chat__emoji-grid {
+.sched-team-chat__emoji-grid {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rux-space-1);
 	padding: 0 var(--rux-menu-padding) var(--rux-space-2);
 }
 
-.rux-team-chat__emoji-option {
+.sched-team-chat__emoji-option {
 	flex: none;
 	width: 32px;
 	height: 32px;
@@ -317,13 +317,13 @@
 	cursor: pointer;
 }
 
-.rux-team-chat__emoji-option:hover,
-.rux-team-chat__emoji-option:focus-visible {
+.sched-team-chat__emoji-option:hover,
+.sched-team-chat__emoji-option:focus-visible {
 	background: var(--rux-menu-item-hover-bg);
 }
 
-.rux-team-chat__status,
-.rux-team-chat__typing {
+.sched-team-chat__status,
+.sched-team-chat__typing {
 	flex: none;
 	margin: 0;
 	padding: var(--rux-space-1) var(--rux-space-5);
@@ -332,27 +332,27 @@
 	font-style: italic;
 }
 
-.rux-team-chat__status[hidden],
-.rux-team-chat__typing[hidden] {
+.sched-team-chat__status[hidden],
+.sched-team-chat__typing[hidden] {
 	display: none;
 }
 
 /* .rux-card__footer (already on the <footer>) supplies padding/background/
    border — this just makes the form itself a flex row filling that footer. */
-.rux-team-chat__form {
+.sched-team-chat__form {
 	display: flex;
 	align-items: center;
 	width: 100%;
 	gap: var(--rux-space-2);
 }
 
-.rux-team-chat__input {
+.sched-team-chat__input {
 	flex: 1;
 }
 
 @media (max-width: 480px) {
 	.sched-team-chat-popover {
-		--rux-team-chat-message-max-width: 82%;
+		--sched-team-chat-message-max-width: 82%;
 
 		width: calc(100vw - (var(--rux-popover-viewport-padding) * 2));
 		max-width: calc(100vw - (var(--rux-popover-viewport-padding) * 2));
@@ -360,7 +360,7 @@
 }
 
 @media (hover: none) {
-	.rux-team-chat__message-time {
+	.sched-team-chat__message-time {
 		opacity: 1;
 		visibility: visible;
 	}

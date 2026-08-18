@@ -19,10 +19,10 @@
                             .rux-panel--floating.sched-trip-dialog.
    .rux-panel__header           Shared title + close row.
    .rux-panel__nav--attached    Tabs slot (Details/Billing/Itinerary/Fleet).
-   .rux-scope-trip__body        .rux-panel__body plus its own loading-state
+   .sched-scope-trip__body        .rux-panel__body plus its own loading-state
                             opacity fade (below) — a real override, not a
                             duplicate, so it keeps its own class.
-   .rux-scope-trip__pane        One per section, hidden via [hidden] when
+   .sched-scope-trip__pane        One per section, hidden via [hidden] when
                             inactive. CSS is a pure .rux-panel__pane[hidden]
                             duplicate — kept as its own class only because
                             trip-panel.js and trip-db.js query it directly
@@ -31,8 +31,8 @@
 
    Dispatch sub-components
    -----------------------
-   .rux-scope-trip__bus-groups  Vertical stack of bus assignment cards.
-   .rux-scope-trip__bus-group   Single bus card: titled "Bus N", head row
+   .sched-scope-trip__bus-groups  Vertical stack of bus assignment cards.
+   .sched-scope-trip__bus-group   Single bus card: titled "Bus N", head row
                             (bus select, full width) + role-toggle row
                             (3 equal-width buttons) + driver rows
                             (icon | driver select | pay input).
@@ -43,7 +43,7 @@
 /* Open button: lives outside the inert <aside> as a direct child of the
    drawer div, so it stays clickable when the panel is collapsed. Hidden
    by default — only shown at <=44px via the container query below. */
-.rux-scope-trip__drawer-open {
+.sched-scope-trip__drawer-open {
 	display: none;
 }
 
@@ -56,28 +56,28 @@
 	container-type: inline-size;
 }
 
-.rux-scope-trip__status-group .rux-button {
+.sched-scope-trip__status-group .rux-button {
 	min-width: 0;
 }
-.rux-scope-trip__status-label {
+.sched-scope-trip__status-label {
 	white-space: nowrap;
 }
 
-.rux-scope-trip__manifest-action {
+.sched-scope-trip__manifest-action {
 	display: grid;
 	grid-template-rows: 0fr;
 	margin-block-start: calc(0px - var(--rux-card-content-gap));
 	opacity: 0;
 	pointer-events: none;
-	transform: translateY(calc(0px - var(--rux-trip-panel-reveal-distance)));
+	transform: translateY(calc(0px - var(--sched-trip-panel-reveal-distance)));
 	transition:
-		grid-template-rows var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing),
-		margin-block-start var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing),
-		opacity var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing),
-		transform var(--rux-trip-panel-reveal-duration) var(--rux-trip-panel-reveal-easing);
+		grid-template-rows var(--sched-trip-panel-reveal-duration) var(--sched-trip-panel-reveal-easing),
+		margin-block-start var(--sched-trip-panel-reveal-duration) var(--sched-trip-panel-reveal-easing),
+		opacity var(--sched-trip-panel-reveal-duration) var(--sched-trip-panel-reveal-easing),
+		transform var(--sched-trip-panel-reveal-duration) var(--sched-trip-panel-reveal-easing);
 }
 
-.rux-scope-trip__manifest-action.is-visible {
+.sched-scope-trip__manifest-action.is-visible {
 	grid-template-rows: 1fr;
 	margin-block-start: 0;
 	opacity: 1;
@@ -85,23 +85,23 @@
 	transform: translateY(0);
 }
 
-.rux-scope-trip__manifest-action-inner {
+.sched-scope-trip__manifest-action-inner {
 	min-height: 0;
 	overflow: hidden;
 }
 
 /* Clip content only while the grid row collapses. Once revealed, allow the
    standard button elevation to paint outside the inner row's exact height. */
-.rux-scope-trip__manifest-action.is-visible .rux-scope-trip__manifest-action-inner {
+.sched-scope-trip__manifest-action.is-visible .sched-scope-trip__manifest-action-inner {
 	overflow: visible;
 }
 
-.rux-scope-trip__manifest-action .rux-button {
+.sched-scope-trip__manifest-action .rux-button {
 	width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.rux-scope-trip__manifest-action {
+	.sched-scope-trip__manifest-action {
 		transition: none;
 	}
 }
@@ -111,12 +111,12 @@
 
 /* — Body / panes — */
 
-.rux-scope-trip__body {
+.sched-scope-trip__body {
 	opacity: 1;
 	transition: opacity 0.2s ease-in;
 }
 
-.sched-scope-trip--loading .rux-scope-trip__body {
+.sched-scope-trip--loading .sched-scope-trip__body {
 	opacity: 0;
 	transition: none;
 }
@@ -124,15 +124,15 @@
    (every --attached panel's pane gets it, not just this one) — this used
    to carry its own padding-block override for the same value, which is
    what the Tools panel's own panes were missing until that rule existed. */
-.rux-scope-trip__pane[hidden] {
+.sched-scope-trip__pane[hidden] {
 	display: none;
 }
 
 
-/* .rux-scope-trip__bus-groups used to inherit its horizontal inset for free
+/* .sched-scope-trip__bus-groups used to inherit its horizontal inset for free
    from #pane-dispatch's own padding — now that the pane runs edge-to-edge,
    each bus-group embed needs that same 16px inset supplied directly, the
-   same way itinerary stops get theirs from .rux-trip-itinerary__day-group
+   same way itinerary stops get theirs from .sched-trip-itinerary__day-group
    (itinerary.css) rather than from .rux-card--recessed itself (deliberately
    unset there — see docs/cards.md). Padding on the wrapper, not margin on
    each .rux-card--recessed: this list is a flex column with its own gap
@@ -149,7 +149,7 @@
    own bottom border. padding-bottom gives the same breathing room before
    the shared border-top of the next .rux-card (Return Fleet
    Assignments). */
-.rux-scope-trip__bus-groups {
+.sched-scope-trip__bus-groups {
 	padding-inline: var(--rux-card-padding-inline);
 	padding-block: var(--rux-card-padding-block);
 }
@@ -158,7 +158,7 @@
 /* The footer owns the pane's final seam. Base cards have a bottom border by
    default, so explicitly remove it from the last card to avoid doubling. */
 /*
-   .rux-scope-trip__pane > .rux-card:last-child {
+   .sched-scope-trip__pane > .rux-card:last-child {
 	border-bottom: 0;
 } 
 */
@@ -185,41 +185,41 @@
 
 /* Row spacing uses margin-top on every row but the first (via `> * + *`)
    instead of a flex `gap` — a `gap` applies uniformly to every child with
-   no way to single one row out. This is what let .rux-trip-itinerary__day-title get
+   no way to single one row out. This is what let .sched-trip-itinerary__day-title get
    double-spaced by its own margin stacking on the card's gap; using margin
    throughout means a specific row (like the section label below) can get
    its own spacing without fighting a shared gap value. */
 /* Standalone labels outside the standard card anatomy retain a compact gap. */
-.rux-card--stack > .rux-scope-trip__section-label + * {
+.rux-card--stack > .sched-scope-trip__section-label + * {
 	margin-top: var(--rux-section-label-gap);
 }
 
 /* — Form layout helpers — */
 
-.rux-scope-trip__cols-2,
-.rux-scope-trip__cols-3 {
+.sched-scope-trip__cols-2,
+.sched-scope-trip__cols-3 {
 	display: grid;
 	grid-template-columns: repeat(var(--_cols), minmax(0, 1fr));
 	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-space-3);
 	align-items: start;
 }
-.rux-scope-trip__cols-2 {
+.sched-scope-trip__cols-2 {
 	--_cols: 2;
 }
-.rux-scope-trip__cols-3 {
+.sched-scope-trip__cols-3 {
 	--_cols: 3;
 }
 
-/* Fields live in their own inner grid (.rux-scope-trip__contact-fields) so
+/* Fields live in their own inner grid (.sched-scope-trip__contact-fields) so
    the row's own gap is 0 — the trash icon's width AND margin-left both
    animate from 0 together, instead of a grid/flex `gap` leaving a stray
    reserved space next to it while it's hidden. */
-.rux-scope-trip__contact-row {
+.sched-scope-trip__contact-row {
 	display: flex;
 	align-items: end;
 }
-.rux-scope-trip__contact-fields {
+.sched-scope-trip__contact-fields {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	column-gap: var(--rux-control-content-gap);
@@ -228,7 +228,7 @@
 	min-width: 0;
 }
 
-.rux-scope-trip__contacts-list {
+.sched-scope-trip__contacts-list {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-4);
@@ -239,7 +239,7 @@
    every row. Clicking it deletes that specific contact immediately and
    disarms the mode — danger red by default (not just on hover) since the
    click is a one-shot delete, not a select-then-confirm step. */
-.rux-scope-trip__contact-select {
+.sched-scope-trip__contact-select {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -260,18 +260,18 @@
 		margin-left var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-scope-trip__contact-select:hover {
+.sched-scope-trip__contact-select:hover {
 	color: var(--rux-danger-bright);
 }
-#tp-contacts-list .rux-scope-trip__contact-row:focus-within .rux-scope-trip__contact-select,
-#tp-contacts-list .rux-scope-trip__contact-select:focus-visible {
+#tp-contacts-list .sched-scope-trip__contact-row:focus-within .sched-scope-trip__contact-select,
+#tp-contacts-list .sched-scope-trip__contact-select:focus-visible {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
 }
 @media (hover: hover) {
-	#tp-contacts-list .rux-scope-trip__contact-row:hover .rux-scope-trip__contact-select {
+	#tp-contacts-list .sched-scope-trip__contact-row:hover .sched-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -279,22 +279,22 @@
 	}
 }
 @media (hover: none) {
-	#tp-contacts-list .rux-scope-trip__contact-select {
+	#tp-contacts-list .sched-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
 		pointer-events: auto;
 	}
 }
-#tp-contacts-list.is-selecting .rux-scope-trip__contact-select,
-#dp-timeoff-rows.is-selecting .rux-scope-trip__contact-select {
+#tp-contacts-list.is-selecting .sched-scope-trip__contact-select,
+#dp-timeoff-rows.is-selecting .sched-scope-trip__contact-select {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
 	pointer-events: auto;
 }
 
-.rux-scope-trip__logistics-grid {
+.sched-scope-trip__logistics-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	align-items: start;
@@ -302,16 +302,16 @@
 	row-gap: var(--rux-space-3);
 }
 
-/* [hidden] and .rux-scope-trip__logistics-grid have equal specificity, and
+/* [hidden] and .sched-scope-trip__logistics-grid have equal specificity, and
    author CSS beats the browser's own [hidden]{display:none} UA default at
    equal specificity — without this, the return-date grid's `display: grid`
    above silently wins and the hidden attribute (toggled by
    syncReturnLegVisibility() in trip-panel.js) has no visible effect. */
-.rux-scope-trip__logistics-grid[hidden] {
+.sched-scope-trip__logistics-grid[hidden] {
 	display: none;
 }
 
-.rux-scope-trip__section-label {
+.sched-scope-trip__section-label {
 	font-size: var(--rux-label-eyebrow-size);
 	font-weight: var(--rux-label-eyebrow-weight);
 	color: var(--rux-label-eyebrow-color);
@@ -321,12 +321,12 @@
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	line-height: 1;
 }
-.rux-scope-trip__section-label--minor {
+.sched-scope-trip__section-label--minor {
 	color: var(--rux-text-muted);
 	border-bottom-color: transparent;
 	padding-bottom: 0;
 }
-.rux-scope-trip__section-label--requirements {
+.sched-scope-trip__section-label--requirements {
 	margin-top: var(--rux-space-2);
 }
 
@@ -367,7 +367,7 @@
 }
 /* One card body holds all three workflow steps; its shared stack anatomy
    supplies the spacing while these rules handle only billing behavior. */
-.rux-scope-trip__billing-step {
+.sched-scope-trip__billing-step {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
@@ -377,33 +377,33 @@
    swaps its placeholder ("Pending" ↔ "Enter PO number") with the toggle, so
    .rux-input:disabled (form.css) + the placeholder text communicate state
    instead of a separate status label. */
-.rux-scope-trip__billing-step-row {
+.sched-scope-trip__billing-step-row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-control-content-gap);
 }
-.rux-scope-trip__billing-step-row .rux-input {
+.sched-scope-trip__billing-step-row .rux-input {
 	flex: 1;
 	min-width: 0;
 }
-.rux-scope-trip__billing-step-row .rux-switch {
+.sched-scope-trip__billing-step-row .rux-switch {
 	flex: none;
 }
-.rux-scope-trip__billing-step-help {
+.sched-scope-trip__billing-step-help {
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
-.rux-scope-trip__po-details {
+.sched-scope-trip__po-details {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) var(--rux-switch-width);
 	align-items: end;
 	gap: var(--rux-control-content-gap);
 }
-.rux-scope-trip__po-details[hidden] {
+.sched-scope-trip__po-details[hidden] {
 	display: none;
 }
-.rux-scope-trip__po-coverage {
+.sched-scope-trip__po-coverage {
 	display: flex;
 	height: var(--rux-field-height);
 	align-items: center;
@@ -415,29 +415,29 @@
 	line-height: 1;
 	white-space: nowrap;
 }
-.rux-scope-trip__po-coverage > .rux-icon {
+.sched-scope-trip__po-coverage > .rux-icon {
 	--_icon-size: var(--rux-icon-sm);
 	--_icon-optical-size: var(--rux-icon-optical-size-sm);
 }
-.rux-scope-trip__po-coverage.is-empty {
+.sched-scope-trip__po-coverage.is-empty {
 	color: var(--rux-danger);
 }
-.rux-scope-trip__po-coverage.is-partial {
+.sched-scope-trip__po-coverage.is-partial {
 	color: var(--rux-warning);
 }
-.rux-scope-trip__po-coverage.is-complete {
+.sched-scope-trip__po-coverage.is-complete {
 	color: var(--rux-success);
 }
-.rux-scope-trip__billing-step--payments {
+.sched-scope-trip__billing-step--payments {
 	grid-template-columns: minmax(0, 1fr);
 }
-.rux-scope-trip__payment-rows {
+.sched-scope-trip__payment-rows {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
-.rux-scope-trip__payment-empty,
-.rux-scope-trip__doc-empty {
+.sched-scope-trip__payment-empty,
+.sched-scope-trip__doc-empty {
 	box-sizing: border-box;
 	display: flex;
 	width: 100%;
@@ -453,46 +453,46 @@
 	font-size: var(--rux-size-sm);
 	cursor: not-allowed;
 }
-.rux-scope-trip__payment-empty > .rux-icon,
-.rux-scope-trip__doc-empty > .rux-icon {
+.sched-scope-trip__payment-empty > .rux-icon,
+.sched-scope-trip__doc-empty > .rux-icon {
 	flex: none;
 }
-.rux-scope-trip__payment-empty > :last-child,
-.rux-scope-trip__doc-empty > :last-child {
+.sched-scope-trip__payment-empty > :last-child,
+.sched-scope-trip__doc-empty > :last-child {
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.rux-scope-trip__payment-rows:has([data-payment-row]) > .rux-scope-trip__payment-empty,
-.rux-scope-trip__payment-rows:has([data-ticket-option-row]) > .rux-scope-trip__payment-empty {
+.sched-scope-trip__payment-rows:has([data-payment-row]) > .sched-scope-trip__payment-empty,
+.sched-scope-trip__payment-rows:has([data-ticket-option-row]) > .sched-scope-trip__payment-empty {
 	display: none;
 }
 /* Payment method becomes the group header; the remaining values are labeled fields. */
-.rux-scope-trip__payment-row {
+.sched-scope-trip__payment-row {
 	min-width: 0;
 }
-.rux-scope-trip__payment-content {
+.sched-scope-trip__payment-content {
 	transition: border-color var(--rux-input-transition);
 }
-.rux-scope-trip__payment-content:hover,
-.rux-scope-trip__payment-content:focus-within {
+.sched-scope-trip__payment-content:hover,
+.sched-scope-trip__payment-content:focus-within {
 	border-color: var(--rux-input-hover);
 }
 
-.rux-scope-trip__payment-method {
+.sched-scope-trip__payment-method {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
 	flex: 1;
 	min-width: 0;
 }
-.rux-scope-trip__payment-icon {
+.sched-scope-trip__payment-icon {
 	flex: none;
 	color: var(--rux-text-default);
 }
-.rux-scope-trip__payment-method-label {
+.sched-scope-trip__payment-method-label {
 	min-width: 0;
 	overflow: hidden;
 	color: var(--rux-text-default);
@@ -502,7 +502,7 @@
 	white-space: nowrap;
 }
 
-.rux-scope-trip__payment-fields {
+.sched-scope-trip__payment-fields {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	grid-template-areas:
@@ -511,16 +511,16 @@
 	column-gap: var(--rux-control-content-gap);
 	row-gap: var(--rux-card-content-gap);
 }
-.rux-scope-trip__payment-reference {
+.sched-scope-trip__payment-reference {
 	grid-area: reference;
 }
-.rux-scope-trip__payment-date-field {
+.sched-scope-trip__payment-date-field {
 	grid-area: date;
 }
-.rux-scope-trip__payment-amount {
+.sched-scope-trip__payment-amount {
 	grid-area: amount;
 }
-.rux-scope-trip__payment-date-control {
+.sched-scope-trip__payment-date-control {
 	position: relative;
 	display: block;
 	width: 100%;
@@ -528,7 +528,7 @@
 	height: var(--rux-field-height);
 	font-variant-numeric: tabular-nums;
 }
-.rux-scope-trip__payment-date-label {
+.sched-scope-trip__payment-date-label {
 	position: absolute;
 	inset: 0;
 	display: flex;
@@ -539,7 +539,7 @@
 	font-size: var(--rux-size-sm);
 	pointer-events: none;
 }
-.rux-scope-trip__payment-date {
+.sched-scope-trip__payment-date {
 	position: absolute;
 	inset: 0;
 	width: 100%;
@@ -548,12 +548,12 @@
 	cursor: pointer;
 }
 
-.rux-scope-trip__payment-amount-input {
+.sched-scope-trip__payment-amount-input {
 	text-align: right;
 	font-variant-numeric: tabular-nums;
 }
 /* Each payment reveals its own delete action on hover or focus. */
-.rux-scope-trip__payment-select {
+.sched-scope-trip__payment-select {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -574,7 +574,7 @@
 		margin-left var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-scope-trip__payment-select:hover {
+.sched-scope-trip__payment-select:hover {
 	color: var(--rux-danger-bright);
 }
 #dp-timeoff-delete-btn:disabled {
@@ -583,18 +583,18 @@
 
 /* — Requirements chips — */
 
-.rux-scope-trip__requirements-grid {
+.sched-scope-trip__requirements-grid {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
 	gap: var(--rux-control-content-gap);
 }
-.rux-scope-trip__reqs {
+.sched-scope-trip__reqs {
 	display: contents;
 }
-.rux-scope-trip__requirements-grid #tp-driver-needs {
+.sched-scope-trip__requirements-grid #tp-driver-needs {
 	display: contents;
 }
-.rux-scope-trip__requirements-grid .rux-button {
+.sched-scope-trip__requirements-grid .rux-button {
 	width: 100%;
 	min-width: 0;
 	justify-content: center;
@@ -602,7 +602,7 @@
 
 /* — Payment refs row — */
 
-.rux-scope-trip__refs {
+.sched-scope-trip__refs {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
 	gap: var(--rux-control-content-gap);
@@ -612,57 +612,57 @@
 
 /* Buses-needed stepper moved into .rux-card__header (Fleet
    Assignments / Return Fleet Assignments own trailing content), matching
-   every other section's single-control header slot — .rux-scope-trip__
+   every other section's single-control header slot — .sched-scope-trip__
    fleet-count-card/-label no longer have any markup to style. Stepper
    itself is .rux-number-stepper (base/controls.css) — a reusable
    component, not trip-panel-specific. */
 
-.rux-scope-trip__bus-groups {
+.sched-scope-trip__bus-groups {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);
 }
 
-/* Same [hidden]-vs-equal-specificity issue as .rux-scope-trip__logistics-grid
+/* Same [hidden]-vs-equal-specificity issue as .sched-scope-trip__logistics-grid
    above — without this, #tp-return-bus-groups's hidden attribute would be
    silently overridden by the display: flex rule above. */
-.rux-scope-trip__bus-groups[hidden] {
+.sched-scope-trip__bus-groups[hidden] {
 	display: none;
 }
-.rux-scope-trip__bus-group {
+.sched-scope-trip__bus-group {
 	--rux-card-content-gap: var(--rux-control-content-gap);
 }
-.rux-scope-trip__bus-head {
+.sched-scope-trip__bus-head {
 	display: flex;
 }
-.rux-scope-trip__bus-head .rux-select {
+.sched-scope-trip__bus-head .rux-select {
 	flex: 1;
 }
-.rux-scope-trip__bus-hint {
+.sched-scope-trip__bus-hint {
 	font-size: var(--rux-size-xs);
 	color: var(--rux-text-disabled);
 }
 
 /* — Driver rows — */
 
-.rux-scope-trip__driver-rows {
+.sched-scope-trip__driver-rows {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
-.rux-scope-trip__driver-row {
+.sched-scope-trip__driver-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) 96px;
 	gap: var(--rux-control-content-gap);
 	align-items: start;
 }
-.rux-scope-trip__driver-row[hidden] {
+.sched-scope-trip__driver-row[hidden] {
 	display: none;
 }
-.rux-scope-trip__driver-row--head {
+.sched-scope-trip__driver-row--head {
 	background: var(--rux-surface-1);
 }
-.rux-scope-trip__driver-row--head span {
+.sched-scope-trip__driver-row--head span {
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-disabled);
@@ -674,7 +674,7 @@
    box of its own — a thin top divider is enough to separate it from the
    driver-select/pay row above (Carbon-style: sub-sections inside a boxed
    group read through typography and a divider, not a card inside a card). */
-.rux-scope-trip__relief-details {
+.sched-scope-trip__relief-details {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr);
 	grid-column: 1 / -1;
@@ -687,18 +687,18 @@
 /* 32px select shell + 28px nested status action. This composite gets its own
    class so the tighter inset and matching text offset do not affect ordinary
    actionable input groups. */
-.rux-scope-trip__driver-select > .rux-input-group__prefix {
+.sched-scope-trip__driver-select > .rux-input-group__prefix {
 	left: calc(2 * var(--rux-border-width));
 }
 
-.rux-scope-trip__driver-select .rux-scope-trip__role-label {
+.sched-scope-trip__driver-select .sched-scope-trip__role-label {
 	border-radius: calc(
 		var(--rux-radius-control)
 		- (2 * var(--rux-border-width))
 	);
 }
 
-.rux-scope-trip__driver-select.rux-input-group--prefix > .rux-select {
+.sched-scope-trip__driver-select.rux-input-group--prefix > .rux-select {
 	padding-left: calc(
 		(2 * var(--rux-border-width))
 		+ var(--rux-control-height-sm)
@@ -707,22 +707,22 @@
 }
 
 /* The button keeps standard RUX chrome; only its status glyph changes color. */
-.rux-scope-trip__role-label .rux-icon {
+.sched-scope-trip__role-label .rux-icon {
 	--_icon-fill: var(--rux-icon-fill-selected);
 }
 
-.rux-scope-trip__role-label.rux-role--pending-assignment .rux-icon { color: var(--rux-danger); }
-.rux-scope-trip__role-label.rux-role--pending-response .rux-icon   { color: var(--rux-warning); }
-.rux-scope-trip__role-label.rux-role--confirmed .rux-icon          { color: var(--rux-success); }
-.rux-scope-trip__role-label.rux-role--declined .rux-icon           { color: var(--rux-danger); }
-.rux-scope-trip__role-col {
+.sched-scope-trip__role-label.rux-role--pending-assignment .rux-icon { color: var(--rux-danger); }
+.sched-scope-trip__role-label.rux-role--pending-response .rux-icon   { color: var(--rux-warning); }
+.sched-scope-trip__role-label.rux-role--confirmed .rux-icon          { color: var(--rux-success); }
+.sched-scope-trip__role-label.rux-role--declined .rux-icon           { color: var(--rux-danger); }
+.sched-scope-trip__role-col {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-1);
 }
 /* — Documents — */
 
-.rux-scope-trip__doc-list {
+.sched-scope-trip__doc-list {
 	list-style: none;
 	margin: 0;
 	padding: 0;
@@ -730,22 +730,22 @@
 	flex-direction: column;
 	gap: var(--rux-control-content-gap);
 }
-.rux-scope-trip__doc-list:has(.rux-scope-trip__doc-row) > .rux-scope-trip__doc-empty {
+.sched-scope-trip__doc-list:has(.sched-scope-trip__doc-row) > .sched-scope-trip__doc-empty {
 	display: none;
 }
 /* Click opens the file (Enter for keyboard). The row's own background lives
-   on .rux-scope-trip__doc-content (not the row) so it reads as a visible
+   on .sched-scope-trip__doc-content (not the row) so it reads as a visible
    pill that actually narrows as the trash icon reveals — same "push"
    effect as the input boxes on Trip Contacts, not just an invisible flex
    reflow. Icon+label share this box so the trash icon's width/margin-left
    can animate from 0 without a row-level `gap` leaving a stray space. */
-.rux-scope-trip__doc-row {
+.sched-scope-trip__doc-row {
 	display: flex;
 	align-items: center;
 	min-height: var(--rux-control-height);
 	user-select: none;
 }
-.rux-scope-trip__doc-content {
+.sched-scope-trip__doc-content {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-control-content-gap);
@@ -758,20 +758,20 @@
 	background: var(--rux-button-accent-background);
 	color: var(--rux-button-accent-text);
 	cursor: pointer;
-	-webkit-backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
-	backdrop-filter: blur(var(--rux-trip-bar-head-backdrop-blur));
+	-webkit-backdrop-filter: blur(var(--rux-backdrop-blur));
+	backdrop-filter: blur(var(--rux-backdrop-blur));
 	transition: background-color var(--rux-duration-fast) var(--rux-ease-out), width var(--rux-duration-base) var(--rux-ease-out);
 }
-.rux-scope-trip__doc-row:hover .rux-scope-trip__doc-content {
+.sched-scope-trip__doc-row:hover .sched-scope-trip__doc-content {
 	background-image: linear-gradient(
 		var(--rux-button-hover-overlay),
 		var(--rux-button-hover-overlay)
 	);
 }
-.rux-scope-trip__doc-content > .rux-icon {
+.sched-scope-trip__doc-content > .rux-icon {
 	color: currentColor;
 }
-.rux-scope-trip__doc-name {
+.sched-scope-trip__doc-name {
 	flex: 1;
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
@@ -782,7 +782,7 @@
 	min-width: 0;
 	text-align: left;
 }
-.rux-scope-trip__doc-date {
+.sched-scope-trip__doc-date {
 	flex: none;
 	font-size: var(--rux-size-xs);
 	font-variant-numeric: tabular-nums;
@@ -791,7 +791,7 @@
 /* Each document owns its delete action. It stays collapsed until its row is
    hovered or the action receives keyboard focus; width and margin animate
    together so the file button shrinks to make room without leaving a gap. */
-.rux-scope-trip__doc-select {
+.sched-scope-trip__doc-select {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -812,14 +812,14 @@
 		margin-left var(--rux-duration-base) var(--rux-ease-out),
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
-.rux-scope-trip__doc-select:hover {
+.sched-scope-trip__doc-select:hover {
 	color: var(--rux-danger-bright);
 }
 
-.rux-scope-trip__doc-select:focus-visible,
-.rux-scope-trip__payment-select:focus-visible,
-#tp-ticket-options-list .rux-scope-trip__contact-row:focus-within .rux-scope-trip__contact-select,
-#tp-ticket-options-list .rux-scope-trip__contact-select:focus-visible {
+.sched-scope-trip__doc-select:focus-visible,
+.sched-scope-trip__payment-select:focus-visible,
+#tp-ticket-options-list .sched-scope-trip__contact-row:focus-within .sched-scope-trip__contact-select,
+#tp-ticket-options-list .sched-scope-trip__contact-select:focus-visible {
 	width: var(--rux-field-height);
 	margin-left: var(--rux-space-2);
 	opacity: 1;
@@ -827,9 +827,9 @@
 }
 
 @media (hover: hover) {
-	.rux-scope-trip__doc-row:hover .rux-scope-trip__doc-select,
-	.rux-scope-trip__payment-row:hover .rux-scope-trip__payment-select,
-	#tp-ticket-options-list .rux-scope-trip__contact-row:hover .rux-scope-trip__contact-select {
+	.sched-scope-trip__doc-row:hover .sched-scope-trip__doc-select,
+	.sched-scope-trip__payment-row:hover .sched-scope-trip__payment-select,
+	#tp-ticket-options-list .sched-scope-trip__contact-row:hover .sched-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -838,9 +838,9 @@
 }
 
 @media (hover: none) {
-	.rux-scope-trip__doc-select,
-	.rux-scope-trip__payment-select,
-	#tp-ticket-options-list .rux-scope-trip__contact-select {
+	.sched-scope-trip__doc-select,
+	.sched-scope-trip__payment-select,
+	#tp-ticket-options-list .sched-scope-trip__contact-select {
 		width: var(--rux-field-height);
 		margin-left: var(--rux-space-2);
 		opacity: 1;
@@ -863,7 +863,7 @@
    ========================================================================== */
 
 @container (max-width: 520px) {
-	.rux-scope-trip__payment-fields {
+	.sched-scope-trip__payment-fields {
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 		grid-template-areas:
 			"date amount"
@@ -872,21 +872,21 @@
 }
 
 @container (max-width: 320px) {
-	.rux-scope-trip__cols-2,
-	.rux-scope-trip__cols-3 {
+	.sched-scope-trip__cols-2,
+	.sched-scope-trip__cols-3 {
 		--_cols: 1;
 	}
 
-	.rux-scope-trip__contact-fields,
-	.rux-scope-trip__logistics-grid {
+	.sched-scope-trip__contact-fields,
+	.sched-scope-trip__logistics-grid {
 		grid-template-columns: 1fr;
 	}
 
-	.rux-scope-trip__doc-date {
+	.sched-scope-trip__doc-date {
 		display: none;
 	}
 
-	.rux-scope-trip__payment-fields {
+	.sched-scope-trip__payment-fields {
 		grid-template-columns: minmax(0, 1fr);
 		grid-template-areas:
 			"date"
@@ -894,50 +894,8 @@
 			"reference";
 	}
 
-	.rux-scope-trip__payment-method {
+	.sched-scope-trip__payment-method {
 		gap: var(--rux-space-1);
-	}
-}
-
-/* Third step, once even a row of icon-only tabs no longer fits: stack them
-   into a vertical rail instead. This is what a collapsed (railed) trip
-   panel drawer actually looks like — no separate rail element, just this
-   same nav reflowing as the panel narrows past --rux-panel-rail-width
-   (see the --railable override in css/layout/scheduler-app.css). */
-@container (max-width: 64px) {
-	.rux-panel__nav {
-		padding-inline: 0;
-	}
-
-	[data-trip-tabs] {
-		flex-direction: column;
-		height: auto;
-	}
-
-	[data-trip-tabs] .rux-tab {
-		flex: none;
-		width: 100%;
-	}
-
-	/* At rail width these become small stacked icon squares. */
-	[data-trip-tabs] .rux-tab {
-		border-radius: 0;
-	}
-	[data-trip-tabs] .rux-tab::before {
-		display: none;
-	}
-}
-
-/* Fourth step: at true rail width (<=44px) the stacked icon tabs no longer
-   fit. Hide them and flip the toggle to its open-panel state so there's
-   always one clear affordance to expand. No header to hide here anymore —
-   the tabs themselves (hidden below, along with body/footer) were the only
-   thing left to hide at this width. */
-@container (max-width: 44px) {
-	.rux-panel__nav,
-	.rux-panel__body,
-	.rux-panel__footer {
-		display: none !important;
 	}
 }
 
@@ -948,13 +906,13 @@
    label like One-way, since both take the same equal share regardless of
    content — an accepted tradeoff for every button staying the same
    width). Shared by Trip Type and Billing Type. */
-.rux-scope-trip__trip-type > .rux-button {
+.sched-scope-trip__trip-type > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
 
 @container (max-width: 400px) {
-	.rux-scope-trip__requirements-grid {
+	.sched-scope-trip__requirements-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }

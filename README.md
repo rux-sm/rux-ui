@@ -531,12 +531,21 @@ Both are **not** used as icons in Rux UI. Status is shown by color + Material Sy
 ## Conventions
 
 ```
-Use --rux-* for every design token. No other prefix exists.
+The prefix tells you what ships.
+
+  --rux-* / .rux-*     the design system in rux-ui/. Portable, domain-free,
+                       and safe to copy into any application.
+  --sched-* / .sched-* this repository's reference scheduler. Never copied.
+
+Anything naming a trip, bus, driver, fleet, customer, manifest, or itinerary
+belongs to the application, whatever it does. Both directions are enforced by
+tests/portability-boundary.test.mjs; see docs/portability-audit.md §3.
+
 Use oklch() for all color values.
 Use full readable words.  Exception: `bg` for background.
 Use Title Case for UI controls and headings, following the content rules above.
 
-State classes (.is-*, .has-*) are JS-toggled, no rux- prefix.
+State classes (.is-*, .has-*) are JS-toggled, no prefix.
 BEM for components: `.rux-card`, `.rux-card__body`, `.rux-card--elevated`.
 
 When in doubt, edit a token before adding a new component override.

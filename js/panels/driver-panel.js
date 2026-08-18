@@ -7,7 +7,7 @@
 	const panelEl = dialog;
 	const tbody = document.getElementById("driver-roster-body");
 	const tabBtns = document.querySelectorAll('[data-rux-tabs][data-scope="driver"] .rux-tab');
-	const panes = document.querySelectorAll(".rux-scope-driver__pane");
+	const panes = document.querySelectorAll(".sched-scope-driver__pane");
 	const cdlGroup = document.getElementById("dp-cdl-group");
 	const tripList = document.getElementById("dp-trip-list");
 	const scheduleStatus = document.getElementById("dp-schedule-status");
@@ -82,7 +82,7 @@
 		if (dialogTitleEl && title) dialogTitleEl.textContent = title;
 		if (mobileWindowQuery.matches) window.RuxFloatingWindow?.resetGeometry(dialog);
 		dialog.hidden = false;
-		panelEl.querySelector(".rux-scope-driver__body")?.scrollTo({ top: 0, behavior: "instant" });
+		panelEl.querySelector(".sched-scope-driver__body")?.scrollTo({ top: 0, behavior: "instant" });
 	}
 
 	// Returns false when the user keeps their unsaved edits instead.
@@ -598,7 +598,7 @@
 
 	function renderTripList(trips) {
 		if (!trips.length) {
-			tripList.innerHTML = `<li class="rux-scope-driver__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
+			tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
 			return;
 		}
 		tripList.innerHTML = trips
@@ -613,9 +613,9 @@
 				const badgeLabel =
 					status.charAt(0).toUpperCase() + status.slice(1);
 				return `
-        <li class="rux-scope-driver__trip-item">
-          <span class="rux-scope-driver__trip-id">${t.tripRef}</span>
-          <span class="rux-scope-driver__trip-meta">${meta}</span>
+        <li class="sched-scope-driver__trip-item">
+          <span class="sched-scope-driver__trip-id">${t.tripRef}</span>
+          <span class="sched-scope-driver__trip-meta">${meta}</span>
           <span class="rux-badge rux-badge--dot ${badgeCls}">${badgeLabel}</span>
         </li>
       `;
@@ -887,7 +887,7 @@
 		};
 		const target = statusLabels[d.status] || "Active";
 		panelEl
-			.querySelectorAll(".rux-scope-driver__status-group .rux-button")
+			.querySelectorAll(".sched-scope-driver__status-group .rux-button")
 			.forEach((btn) => {
 				const on =
 					btn
@@ -926,7 +926,7 @@
 		// Endorsements
 		const ends = Array.isArray(d.endorsements) ? d.endorsements : [];
 		panelEl
-			.querySelectorAll(".rux-scope-driver__endorsements .rux-button")
+			.querySelectorAll(".sched-scope-driver__endorsements .rux-button")
 			.forEach((btn) => {
 				const on = ends.includes(btn.textContent.trim());
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
@@ -944,7 +944,7 @@
 		const last = document.getElementById("dp-last-name").value.trim();
 
 		const statusBtn = panelEl.querySelector(
-			".rux-scope-driver__status-group .rux-button[aria-pressed='true']",
+			".sched-scope-driver__status-group .rux-button[aria-pressed='true']",
 		);
 		const statusRevMap = {
 			Active: "active",
@@ -987,7 +987,7 @@
 
 		const endorsements = [
 			...panelEl.querySelectorAll(
-				".rux-scope-driver__endorsements .rux-button[aria-pressed='true']",
+				".sched-scope-driver__endorsements .rux-button[aria-pressed='true']",
 			),
 		].map((btn) => btn.textContent.trim());
 
@@ -1053,11 +1053,11 @@
 
 	function createTimeOffRow(index) {
 		const row = document.createElement("div");
-		row.className = "rux-scope-driver__timeoff-row";
+		row.className = "sched-scope-driver__timeoff-row";
 		row.dataset.timeoffRow = "";
 		row.innerHTML = `
-      <div class="rux-scope-driver__timeoff-fields">
-        <div class="rux-scope-trip__contact-fields">
+      <div class="sched-scope-driver__timeoff-fields">
+        <div class="sched-scope-trip__contact-fields">
           <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-start-${index + 1}">Start</label><input class="rux-input" id="dp-timeoff-start-${index + 1}" type="date" data-timeoff-start /></div>
           <div class="rux-field"><label class="rux-field__label" for="dp-timeoff-end-${index + 1}">End</label><input class="rux-input" id="dp-timeoff-end-${index + 1}" type="date" data-timeoff-end /></div>
         </div>
@@ -1074,7 +1074,7 @@
           <input class="rux-input" id="dp-timeoff-notes-${index + 1}" type="text" placeholder="Optional" data-timeoff-notes />
         </div>
       </div>
-      <button type="button" class="rux-scope-trip__contact-select" data-timeoff-select aria-label="Delete time off">
+      <button type="button" class="sched-scope-trip__contact-select" data-timeoff-select aria-label="Delete time off">
         <span class="rux-icon" aria-hidden="true">delete</span>
       </button>`;
 		return row;
@@ -1268,7 +1268,7 @@
 
 		panelEl
 			.querySelectorAll(
-				".rux-scope-driver__pane input, .rux-scope-driver__pane textarea",
+				".sched-scope-driver__pane input, .sched-scope-driver__pane textarea",
 			)
 			.forEach((f) => {
 				f.value = "";
@@ -1292,7 +1292,7 @@
 				btn.setAttribute("aria-pressed", on ? "true" : "false");
 			});
 		panelEl
-			.querySelectorAll(".rux-scope-driver__endorsements .rux-button")
+			.querySelectorAll(".sched-scope-driver__endorsements .rux-button")
 			.forEach((btn) => {
 				btn.setAttribute("aria-pressed", "false");
 			});
@@ -1536,12 +1536,12 @@
 			if (!def) return;
 
 			const row = document.createElement("div");
-			row.className = "rux-col-picker__row";
+			row.className = "sched-col-picker__row";
 			row.draggable = true;
 			row.dataset.key = c.key;
 
 			const handle = document.createElement("span");
-			handle.className = "rux-col-picker__handle";
+			handle.className = "sched-col-picker__handle";
 			handle.innerHTML = `<span class="rux-icon">drag_indicator</span>`;
 
 			const cb = document.createElement("input");
@@ -1556,7 +1556,7 @@
 
 			const lbl = document.createElement("label");
 			lbl.htmlFor = cb.id;
-			lbl.className = "rux-col-picker__label";
+			lbl.className = "sched-col-picker__label";
 			lbl.textContent = def.label;
 
 			row.append(handle, cb, lbl);
@@ -1695,13 +1695,13 @@
 	// ── Data loading ──────────────────────────────────────────────────────────
 
 	async function loadDriverTrips(driverId) {
-		tripList.innerHTML = `<li class="rux-scope-driver__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+		tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-subtle">Loading…</span></li>`;
 		try {
 			const trips = await db.fetchDriverTrips(driverId);
 			renderTripList(trips);
 		} catch (err) {
 			console.warn("Could not load driver trips:", err);
-			tripList.innerHTML = `<li class="rux-scope-driver__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+			tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
 		}
 	}
 
@@ -1724,7 +1724,7 @@
 	async function init() {
 		if (!db) {
 			try {
-				db = await import("../data/driver-db.js?v=3");
+				db = await import("../data/driver-db.js?v=4");
 			} catch (err) {
 				console.warn("Could not load driver-db:", err);
 				return;
@@ -1732,7 +1732,7 @@
 		}
 		if (!workloadUtils) {
 			try {
-				workloadUtils = await import("../core/driver-workload.js?v=1");
+				workloadUtils = await import("../core/driver-workload.js?v=2");
 			} catch (err) {
 				console.warn("Could not load driver workload helpers:", err);
 			}

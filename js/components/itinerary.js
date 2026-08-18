@@ -224,7 +224,7 @@
 	}
 
 	function sourceClass(source) {
-		return source === "manual" ? " rux-trip-itinerary__source--manual" : "";
+		return source === "manual" ? " sched-trip-itinerary__source--manual" : "";
 	}
 
 	function routeSourceLabel(stop, field) {
@@ -237,15 +237,15 @@
 	function fieldLabelHtml(text, stop, field) {
 		const label = routeSourceLabel(stop, field);
 		const badge = label
-			? `<span class="rux-trip-itinerary__source${routeSourceClass(stop, field)}">${label}</span>`
+			? `<span class="sched-trip-itinerary__source${routeSourceClass(stop, field)}">${label}</span>`
 			: "";
-		const cls = label ? " rux-trip-itinerary__field-label--with-source" : "";
-		return `<span class="rux-trip-itinerary__field-label${cls}">${text}${badge}</span>`;
+		const cls = label ? " sched-trip-itinerary__field-label--with-source" : "";
+		return `<span class="sched-trip-itinerary__field-label${cls}">${text}${badge}</span>`;
 	}
 
 	function routeSourceClass(stop, field) {
 		const source = field === "miles" ? stop.milesSource : stop.driveSource;
-		if (stop.routeStatus === "stale") return " rux-trip-itinerary__source--stale";
+		if (stop.routeStatus === "stale") return " sched-trip-itinerary__source--stale";
 		return sourceClass(source);
 	}
 
@@ -560,8 +560,8 @@
 		const drWarn = driveForWarn > 10 * 60;
 		const dutyWarn = dutyForWarn !== null && dutyForWarn > 15 * 60;
 		const field = (val, unit, warn) => `
-        <output class="rux-output${warn ? " rux-trip-itinerary__seg-stat--warn" : ""}">${escHtml(val)} <span class="rux-trip-itinerary__unit">${unit}</span></output>`;
-		return `<div class="rux-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}${field(offVal, "hr", false)}</div>`;
+        <output class="rux-output${warn ? " sched-trip-itinerary__seg-stat--warn" : ""}">${escHtml(val)} <span class="sched-trip-itinerary__unit">${unit}</span></output>`;
+		return `<div class="sched-trip-itinerary__day-stats">${field(miVal, "mi", false)}${field(drVal, "hr", drWarn)}${field(dutyVal, "hr", dutyWarn)}${field(offVal, "hr", false)}</div>`;
 	}
 
 	// Shared three-stat anatomy for cards that close a duty period. Off Duty
@@ -575,25 +575,25 @@
 			: "—";
 		return `
 		  <div class="rux-field">
-			<div class="rux-trip-itinerary__stats-values rux-trip-itinerary__stats-values--3col is-expanded">
+			<div class="sched-trip-itinerary__stats-values sched-trip-itinerary__stats-values--3col is-expanded">
 			  <div class="rux-field">
 				<label class="rux-field__label">On-Duty</label>
-				<output class="rux-output">${escHtml(dutyVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+				<output class="rux-output">${escHtml(dutyVal)} <span class="sched-trip-itinerary__unit">hr</span></output>
 			  </div>
 			  <div class="rux-field">
 				<label class="rux-field__label">Drive</label>
-				<output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>
+				<output class="rux-output">${escHtml(driveVal)} <span class="sched-trip-itinerary__unit">hr</span></output>
 			  </div>
 			  <div class="rux-field">
 				<label class="rux-field__label">Miles</label>
-				<output class="rux-output">${escHtml(milesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
+				<output class="rux-output">${escHtml(milesVal)} <span class="sched-trip-itinerary__unit">mi</span></output>
 			  </div>
 			</div>
 		  </div>`;
 	}
 
 	// Returns just the two boxed outputs (status + duration) — the caller
-	// wraps them in the same collapsible .rux-trip-itinerary__stats-values/--pair
+	// wraps them in the same collapsible .sched-trip-itinerary__stats-values/--pair
 	// shell every other type's Miles/Drive row uses, so Sleeper's reset
 	// status hides behind the same toggle instead of always showing.
 	function renderSleeperStats(stop, stops) {
@@ -623,13 +623,13 @@
 			// Same read-only-field look as Miles/Drive: status where Miles would
 			// go (this card has no distance of its own), duration formatted like
 			// every other "hr" field instead of the old "8h"/"1h 30m" shorthand.
-			statusClass = resetOk ? " rux-trip-itinerary__seg-stat--ok" : (thisMins < SPLIT_MIN ? " rux-trip-itinerary__seg-stat--warn" : "");
+			statusClass = resetOk ? " sched-trip-itinerary__seg-stat--ok" : (thisMins < SPLIT_MIN ? " sched-trip-itinerary__seg-stat--warn" : "");
 			statusVal = resetOk ? "Reset" : "Not reset";
 			restVal = formatDriveValue(thisMins);
 		}
 
 		return `<output class="rux-output${statusClass}">${statusVal}</output>
-      <output class="rux-output">${escHtml(restVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
+      <output class="rux-output">${escHtml(restVal)} <span class="sched-trip-itinerary__unit">hr</span></output>`;
 	}
 
 	/* ── Render ──────────────────────────────────────────────────────────── */
@@ -768,10 +768,10 @@
 		return `
 	  <div class="rux-card__header">
         <span class="rux-card__title">Trip Summary</span>
-        <div class="rux-trip-itinerary__summary-actions"></div>
+        <div class="sched-trip-itinerary__summary-actions"></div>
       </div>
       <div class="rux-card__body">
-        <div class="rux-trip-itinerary__summary-grid">${statsHtml}</div>
+        <div class="sched-trip-itinerary__summary-grid">${statsHtml}</div>
       </div>`;
 	}
 
@@ -798,17 +798,17 @@
 
 		const stats = computeSegmentStats(stops, stops.length);
 		return `
-      <section class="rux-trip-itinerary__dwell-card rux-trip-itinerary__trip-complete" data-itinerary-final-summary>
-		<header class="rux-trip-itinerary__stop-header">
-		  <div class="rux-trip-itinerary__stop-heading">
-			<span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--off" aria-hidden="true">location_on</span></span>
+      <section class="sched-trip-itinerary__dwell-card sched-trip-itinerary__trip-complete" data-itinerary-final-summary>
+		<header class="sched-trip-itinerary__stop-header">
+		  <div class="sched-trip-itinerary__stop-heading">
+			<span class="sched-trip-itinerary__marker"><span class="rux-icon sched-trip-itinerary__marker-pin sched-trip-itinerary__marker-pin--off" aria-hidden="true">location_on</span></span>
 			<h4 class="rux-card__title">Trip Complete</h4>
 		  </div>
 		  <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to final day" title="Add to final day">
 			<span class="rux-icon" aria-hidden="true">add</span>
 		  </button>
 		</header>
-		<div class="rux-trip-itinerary__stop-body">
+		<div class="sched-trip-itinerary__stop-body">
 		  ${renderDutySummaryStats({
 			onDutyMins: stats.netMins,
 			driveMins: stats.totalDrive,
@@ -833,24 +833,24 @@
 		const startMarkerType = mode === "yard" ? "pickup" : "depart-yard";
 		const modeButton = (value, label, icon) => `<button type="button" class="rux-button rux-button--segment${mode === value ? "" : ""}" data-value="${value}" aria-pressed="${mode === value}"><span class="rux-icon" aria-hidden="true">${icon}</span><span class="rux-button__label">${label}</span></button>`;
 		return `
-		<section class="rux-trip-itinerary__stop rux-trip-itinerary__stop--yard">
-			<header class="rux-trip-itinerary__stop-header">
-				<div class="rux-trip-itinerary__stop-heading"><span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${startMarkerType}" aria-hidden="true">location_on</span></span><h4 class="rux-card__title">Trip Start</h4></div>
+		<section class="sched-trip-itinerary__stop sched-trip-itinerary__stop--yard">
+			<header class="sched-trip-itinerary__stop-header">
+				<div class="sched-trip-itinerary__stop-heading"><span class="sched-trip-itinerary__marker"><span class="rux-icon sched-trip-itinerary__marker-pin sched-trip-itinerary__marker-pin--${startMarkerType}" aria-hidden="true">location_on</span></span><h4 class="rux-card__title">Trip Start</h4></div>
 			</header>
-			<div class="rux-trip-itinerary__stop-body">
+			<div class="sched-trip-itinerary__stop-body">
 			<div class="rux-field">
 				<label class="rux-field__label">Passengers Board At</label>
-				<div class="rux-segmented-track rux-trip-itinerary__origin-mode" data-rux-segmented data-itinerary-segment="origin-mode" aria-label="Passengers board at">
+				<div class="rux-segmented-track sched-trip-itinerary__origin-mode" data-rux-segmented data-itinerary-segment="origin-mode" aria-label="Passengers board at">
 					${modeButton("pickup", "Pickup", "location_on")}
 					${modeButton("yard", "Yard", "garage")}
 				</div>
-				<div class="rux-trip-itinerary__fields">
+				<div class="sched-trip-itinerary__fields">
 					<input class="rux-input" type="text" value="${escHtml(displayAddress(yard.address))}" readonly aria-label="Departure yard" />
 				</div>
 			</div>
-			<div class="rux-trip-itinerary__yard-times${mode === "yard" ? " rux-trip-itinerary__yard-times--meet" : ""}">
-				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><div class="rux-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
-				<div class="rux-field"><div class="rux-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
+			<div class="sched-trip-itinerary__yard-times${mode === "yard" ? " sched-trip-itinerary__yard-times--meet" : ""}">
+				<div class="rux-field" data-yard-meet-row${mode === "yard" ? "" : " hidden"}><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-meet-date value="${escHtml(pickup?.spotDate || startDate || "")}" aria-label="Calculated customer meet date" readonly /><input class="rux-input" type="time" data-yard-meet-time value="${escHtml(pickup?.spot || "")}" aria-label="Calculated customer meet time" readonly /></div></div>
+				<div class="rux-field"><div class="sched-trip-itinerary__datetime"><input class="rux-input" type="date" data-yard-depart-date value="${escHtml(pickup?.departPrevDate || startDate || "")}" aria-label="Yard departure date" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /><input class="rux-input" type="time" data-yard-depart-time value="${escHtml(pickup?.departPrev || "")}" aria-label="Yard departure time" ${mode === "pickup" ? 'readonly title="Calculated from pickup timing and route duration"' : ""} /></div></div>
 			</div>
 			</div>
 		</section>`;
@@ -927,7 +927,7 @@
 			const status = statusAtBoundary(stops, idx);
 			const statusLabel = status === "sleeper" ? "Sleeper berth" : status === "on" ? "On duty" : "Off duty";
 			return `
-			  <div class="rux-trip-itinerary__idle-day" data-itinerary-day-summary data-stop-idx="${idx}">
+			  <div class="sched-trip-itinerary__idle-day" data-itinerary-day-summary data-stop-idx="${idx}">
 				<strong>No activity</strong>
 				<span>${escHtml(statusLabel)} at ${escHtml(activity.location)}</span>
 			  </div>`;
@@ -937,24 +937,24 @@
 			? '<span class="rux-icon" aria-hidden="true">route</span> Continued driving · not a stop'
 			: `<span class="rux-icon" aria-hidden="true">pause_circle</span> No bus movement · remains at ${escHtml(activity.location)}`;
 		return `
-      <section class="rux-card rux-trip-itinerary__day rux-trip-itinerary__day--boundary" data-itinerary-day-summary data-stop-idx="${idx}" title="${activity.moving ? "Continued driving" : "No bus movement"} into ${escHtml(label)}">
-        <div class="rux-trip-itinerary__marker rux-trip-itinerary__marker--add">
+      <section class="rux-card sched-trip-itinerary__day sched-trip-itinerary__day--boundary" data-itinerary-day-summary data-stop-idx="${idx}" title="${activity.moving ? "Continued driving" : "No bus movement"} into ${escHtml(label)}">
+        <div class="sched-trip-itinerary__marker sched-trip-itinerary__marker--add">
           <button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNum}" title="Add to Day ${dayNum}">
             <span class="rux-icon" aria-hidden="true">add</span>
           </button>
         </div>
-        <div class="rux-trip-itinerary__content">
-          <div class="rux-trip-itinerary__label-row">
+        <div class="sched-trip-itinerary__content">
+          <div class="sched-trip-itinerary__label-row">
             <label class="rux-field__label">Day ${dayNum} → Day ${dayNum + 1}</label>
           </div>
-		  <div class="rux-trip-itinerary__boundary-fields">
+		  <div class="sched-trip-itinerary__boundary-fields">
 			<input class="rux-input" type="date" value="${isIsoDate(item.label) ? escHtml(item.label) : ""}" aria-label="Calendar day boundary date" readonly />
 			<input class="rux-input" type="time" value="${escHtml(item.departPrev || "00:00")}" aria-label="Calendar day boundary time" readonly />
 		  </div>
-		  <p class="rux-trip-itinerary__boundary-note${activity.moving ? " is-moving" : " is-stationary"}">${activityNote}</p>
-          <div class="rux-trip-itinerary__day-header">
+		  <p class="sched-trip-itinerary__boundary-note${activity.moving ? " is-moving" : " is-stationary"}">${activityNote}</p>
+          <div class="sched-trip-itinerary__day-header">
 			${hasStats ? renderDayStatsGrid(stats) : ""}
-			${rangeGenerated ? "" : `<button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete Day ${dayNum} boundary">
+			${rangeGenerated ? "" : `<button type="button" class="sched-trip-itinerary__inline-action sched-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete Day ${dayNum} boundary">
 					<span class="rux-icon" aria-hidden="true">delete</span>
 				</button>`}
           </div>
@@ -1030,35 +1030,35 @@
 		const visibleSleeperAddr = displayAddress(sleeperAddr);
 		const addrFieldId = `itin-addr-${idx}`;
 		const addrEl = type === "sleeper"
-			? `<div class="rux-trip-itinerary__address-wrap">
+			? `<div class="sched-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleSleeperAddr)}" readonly
                       placeholder="Inherits previous stop's address"
                       aria-label="${visibleSleeperAddr ? `Resting at ${escHtml(visibleSleeperAddr)}` : "Resting location — inherits previous stop's address"}" />
              </div>`
 			: isReturn
-				? `<div class="rux-trip-itinerary__address-wrap">
+				? `<div class="sched-trip-itinerary__address-wrap">
                <input id="${addrFieldId}" class="rux-input" type="text" value="${escHtml(visibleAddress)}" readonly
                       aria-label="${escHtml(stop.name)} — ${escHtml(visibleAddress)}" />
              </div>`
-				: `<div class="rux-trip-itinerary__address-wrap${showAddrIcon ? " is-verified" : ""}">
+				: `<div class="sched-trip-itinerary__address-wrap${showAddrIcon ? " is-verified" : ""}">
 			   <input id="${addrFieldId}" class="rux-input" type="text" data-field="address" autocomplete="street-address"
 					  value="${escHtml(visibleAddress)}" placeholder="${addressPlaceholder}" aria-label="${escHtml(fieldLabelFor(stops, idx, type))} address" />
                ${isStale
-				? '<span class="rux-icon rux-trip-itinerary__addr-check rux-trip-itinerary__addr-check--stale">priority_high</span>'
+				? '<span class="rux-icon sched-trip-itinerary__addr-check sched-trip-itinerary__addr-check--stale">priority_high</span>'
 				: isVerified
-					? '<span class="rux-icon rux-trip-itinerary__addr-check">check</span>'
+					? '<span class="rux-icon sched-trip-itinerary__addr-check">check</span>'
 					: ""}
              </div>`;
 
 		const isDraggable = type !== "pickup" && type !== "return";
 		const deleteControl = isDraggable
-			? `<button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete ${TYPE_LABEL[type]}">
+			? `<button type="button" class="sched-trip-itinerary__inline-action sched-trip-itinerary__inline-action--delete" data-inline-delete aria-label="Delete ${TYPE_LABEL[type]}">
 				<span class="rux-icon" aria-hidden="true">delete</span>
 			</button>`
 			: "";
 		const sectionLabel = fieldLabelFor(stops, idx, type);
 		const moveControl = isDraggable
-			? `<button type="button" class="rux-trip-itinerary__inline-action rux-trip-itinerary__inline-action--move" data-drag-handle aria-label="Drag to reorder ${TYPE_LABEL[type]}">
+			? `<button type="button" class="sched-trip-itinerary__inline-action sched-trip-itinerary__inline-action--move" data-drag-handle aria-label="Drag to reorder ${TYPE_LABEL[type]}">
               <span class="rux-icon" aria-hidden="true">drag_indicator</span>
             </button>`
 			: "";
@@ -1069,16 +1069,16 @@
 		// Every waypoint type shares the same pin glyph — only the color (via
 		// the --marker-pin--${type} modifier) tells them apart. A different
 		// icon shape per type read as more inconsistent than helpful.
-		const markerIcon = `<span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${type}" aria-hidden="true">location_on</span>`;
+		const markerIcon = `<span class="rux-icon sched-trip-itinerary__marker-pin sched-trip-itinerary__marker-pin--${type}" aria-hidden="true">location_on</span>`;
 
 		const milesVal = parseFloat(stop.miles) > 0 ? stop.miles : "—";
 		const driveVal = stop.drive && stop.drive !== "0:00" ? stop.drive : "—";
 		const statsInner = type === "sleeper"
 			? renderSleeperStats(stop, stops)
-			: `<output class="rux-output">${escHtml(milesVal)} <span class="rux-trip-itinerary__unit">mi</span></output>
-      <output class="rux-output">${escHtml(driveVal)} <span class="rux-trip-itinerary__unit">hr</span></output>`;
+			: `<output class="rux-output">${escHtml(milesVal)} <span class="sched-trip-itinerary__unit">mi</span></output>
+      <output class="rux-output">${escHtml(driveVal)} <span class="sched-trip-itinerary__unit">hr</span></output>`;
 		const dwellControl = showDwellStatus ? `
-		  <div class="rux-trip-itinerary__dwell-status">
+		  <div class="sched-trip-itinerary__dwell-status">
 			<div class="rux-segmented-track" data-rux-segmented data-itinerary-segment="dwell-status" aria-label="Duty status until next departure">
 			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "on" ? "" : ""}" data-value="on" aria-label="On duty until next departure" title="On duty" aria-pressed="${dwellStatus === "on"}"><span class="rux-icon" aria-hidden="true">search_hands_free</span></button>
 			  <button type="button" class="rux-button rux-button--segment rux-button--segment-icon${dwellStatus === "sleeper" ? "" : ""}" data-value="sleeper" aria-label="Sleeper berth until next departure" title="Sleeper berth" aria-pressed="${dwellStatus === "sleeper"}"><span class="rux-icon" aria-hidden="true">airline_seat_flat</span></button>
@@ -1087,33 +1087,33 @@
 		  </div>` : "";
 
 		return `
-	  <section class="rux-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " rux-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isPickup && stop.originMode === "yard" ? " hidden" : ""}${isDraggable ? ' draggable="true"' : ""}>
-		  <header class="rux-trip-itinerary__stop-header">
-			<div class="rux-trip-itinerary__stop-heading">
-			  <span class="rux-trip-itinerary__marker">${markerIcon}</span>
+	  <section class="sched-trip-itinerary__stop${isStale ? " is-stale" : ""}${isReturn ? " sched-trip-itinerary__stop--terminal" : ""}" data-stop-idx="${idx}"${isPickup && stop.originMode === "yard" ? " hidden" : ""}${isDraggable ? ' draggable="true"' : ""}>
+		  <header class="sched-trip-itinerary__stop-header">
+			<div class="sched-trip-itinerary__stop-heading">
+			  <span class="sched-trip-itinerary__marker">${markerIcon}</span>
 			  <h4 class="rux-card__title">${escHtml(sectionLabel)}</h4>
 			</div>
-			<div class="rux-trip-itinerary__stop-actions">
+			<div class="sched-trip-itinerary__stop-actions">
 			  ${deleteControl}
 			  ${moveControl}
 			</div>
 		  </header>
-		  <div class="rux-trip-itinerary__stop-body">
-		  <div class="rux-trip-itinerary__fields">
+		  <div class="sched-trip-itinerary__stop-body">
+		  <div class="sched-trip-itinerary__fields">
 			${addrEl}
           </div>
-		  <div class="rux-trip-itinerary__time-row${isPickup ? " rux-trip-itinerary__time-row--single" : ""}">
-			${isPickup ? "" : `<div class="rux-trip-itinerary__datetime">
+		  <div class="sched-trip-itinerary__time-row${isPickup ? " sched-trip-itinerary__time-row--single" : ""}">
+			${isPickup ? "" : `<div class="sched-trip-itinerary__datetime">
 				<input class="rux-input" type="date" data-field="departPrevDate" value="${escHtml(stop.departPrevDate)}" aria-label="${time1Label} date" />
 				<input class="rux-input" type="time" data-field="departPrev" value="${escHtml(stop.departPrev)}" aria-label="${time1Label} time" />
 			</div>`}
-			<div class="rux-trip-itinerary__datetime">
+			<div class="sched-trip-itinerary__datetime">
 				<input class="rux-input" type="date" data-field="${time2.dateField}" value="${escHtml(stop[time2.dateField])}" aria-label="${time2.label} date" ${isPickup ? "readonly" : ""} />
 				<input class="rux-input" type="time" data-field="${time2.field}" value="${escHtml(stop[time2.field])}" aria-label="${isPickup ? "Spot time — calculated from Stop 1" : `${time2.label} time`}" ${isPickup ? "readonly" : ""} />
 			</div>
 		  </div>
-		  <div class="rux-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
-            <div class="rux-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
+		  <div class="sched-trip-itinerary__fields--pair${stop.statsExpanded ? " is-expanded" : ""}">
+            <div class="sched-trip-itinerary__stats-values${stop.statsExpanded ? " is-expanded" : ""}">
               ${statsInner}
             </div>
 		  </div>
@@ -1169,15 +1169,15 @@
 		}
 
 		return `
-	  <section class="rux-trip-itinerary__dwell-card" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
-		  <header class="rux-trip-itinerary__stop-header">
-			<div class="rux-trip-itinerary__stop-heading">
-			  <span class="rux-trip-itinerary__marker"><span class="rux-icon rux-trip-itinerary__marker-pin rux-trip-itinerary__marker-pin--${status === "sleeper" ? "sleeper" : "off"}" aria-hidden="true">${icon}</span></span>
+	  <section class="sched-trip-itinerary__dwell-card" data-stop-idx="${idx}"${stop.type === "pickup" && stop.originMode === "yard" ? " hidden" : ""}>
+		  <header class="sched-trip-itinerary__stop-header">
+			<div class="sched-trip-itinerary__stop-heading">
+			  <span class="sched-trip-itinerary__marker"><span class="rux-icon sched-trip-itinerary__marker-pin sched-trip-itinerary__marker-pin--${status === "sleeper" ? "sleeper" : "off"}" aria-hidden="true">${icon}</span></span>
 			  <h4 class="rux-card__title">${escHtml(label)}</h4>
 			</div>
-			<output class="rux-output rux-output--boxed rux-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time"><span>${escHtml(totalVal)} <span class="rux-trip-itinerary__unit">hr</span></span><span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
+			<output class="rux-output rux-output--boxed sched-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time"><span>${escHtml(totalVal)} <span class="sched-trip-itinerary__unit">hr</span></span><span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
 		  </header>
-		  <div class="rux-trip-itinerary__stop-body">
+		  <div class="sched-trip-itinerary__stop-body">
 		  ${sessionBlock}
 		  </div>
 	  </section>`;
@@ -1427,21 +1427,21 @@
 				if (!daySections) return;
 				const dayDate = addIsoDays(tripStartDate(), dayNumber - 1);
 				const addRow = dayHasSummary ? "" : `
-						<div class="rux-trip-itinerary__add-row">
+						<div class="sched-trip-itinerary__add-row">
 							<button type="button" class="rux-button rux-button--accent" data-day-add aria-haspopup="menu" aria-expanded="false" aria-label="Add to Day ${dayNumber}" title="Add to Day ${dayNumber}">
 								<span class="rux-icon" aria-hidden="true">add</span>
 								<span class="rux-button__label">Add stop</span>
 							</button>
 						</div>`;
 				dayCards.push(`
-					<article class="rux-card rux-trip-itinerary__day-group" data-day-number="${dayNumber}">
+					<article class="rux-card sched-trip-itinerary__day-group" data-day-number="${dayNumber}">
 						<div class="rux-card__header">
-							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="rux-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}</span>` : ""}</h3>
+							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="sched-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}</span>` : ""}</h3>
 							${dayExpandableCount > 0 ? `<div class="rux-cluster">
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 							</div>` : ""}
 						</div>
-						<div class="rux-card__body rux-trip-itinerary__day-group-body">
+						<div class="rux-card__body sched-trip-itinerary__day-group-body">
 							${daySections}
 							${addRow}
 						</div>
@@ -1491,9 +1491,9 @@
 		}
 
 		function syncDwellSummaryCard(stop, idx) {
-			const stopSection = stopsEl.querySelector(`.rux-trip-itinerary__stop[data-stop-idx="${idx}"]`);
+			const stopSection = stopsEl.querySelector(`.sched-trip-itinerary__stop[data-stop-idx="${idx}"]`);
 			if (!stopSection) return;
-			const existing = stopsEl.querySelector(`.rux-trip-itinerary__dwell-card[data-stop-idx="${idx}"]`);
+			const existing = stopsEl.querySelector(`.sched-trip-itinerary__dwell-card[data-stop-idx="${idx}"]`);
 			const replacement = elementFromMarkup(renderDwellSummaryCard(stop, idx, stops));
 			if (!replacement) {
 				existing?.remove();
@@ -1524,15 +1524,15 @@
 
 		function syncOriginModeUi(pickup) {
 			const mode = pickup.originMode === "yard" ? "yard" : "pickup";
-			const section = stopsEl.querySelector(".rux-trip-itinerary__stop--yard");
-			const startMarker = section?.querySelector(".rux-trip-itinerary__marker-pin");
+			const section = stopsEl.querySelector(".sched-trip-itinerary__stop--yard");
+			const startMarker = section?.querySelector(".sched-trip-itinerary__marker-pin");
 			if (startMarker) {
-				startMarker.classList.toggle("rux-trip-itinerary__marker-pin--pickup", mode === "yard");
-				startMarker.classList.toggle("rux-trip-itinerary__marker-pin--depart-yard", mode !== "yard");
+				startMarker.classList.toggle("sched-trip-itinerary__marker-pin--pickup", mode === "yard");
+				startMarker.classList.toggle("sched-trip-itinerary__marker-pin--depart-yard", mode !== "yard");
 			}
-			const times = section?.querySelector(".rux-trip-itinerary__yard-times");
+			const times = section?.querySelector(".sched-trip-itinerary__yard-times");
 			const meetRow = section?.querySelector("[data-yard-meet-row]");
-			if (times) times.classList.toggle("rux-trip-itinerary__yard-times--meet", mode === "yard");
+			if (times) times.classList.toggle("sched-trip-itinerary__yard-times--meet", mode === "yard");
 			if (meetRow) meetRow.hidden = mode !== "yard";
 			const meetDate = section?.querySelector("[data-yard-meet-date]");
 			const meetTime = section?.querySelector("[data-yard-meet-time]");
@@ -1555,7 +1555,7 @@
 				hideSuggestions();
 				activeAddressIdx = null;
 			}
-			const currentPickup = stopsEl.querySelector(`.rux-trip-itinerary__stop[data-stop-idx="${pickupIdx}"]`);
+			const currentPickup = stopsEl.querySelector(`.sched-trip-itinerary__stop[data-stop-idx="${pickupIdx}"]`);
 			const replacementPickup = elementFromMarkup(renderStop(pickup, pickupIdx, stops));
 			if (currentPickup && replacementPickup) currentPickup.replaceWith(replacementPickup);
 			syncDwellSummaryCard(pickup, pickupIdx);
@@ -1577,7 +1577,7 @@
 				bubbles: true,
 				detail: { miles: roundedMiles > 0 ? roundedMiles : null },
 			}));
-			const actions = summaryEl.querySelector(".rux-trip-itinerary__summary-actions");
+			const actions = summaryEl.querySelector(".sched-trip-itinerary__summary-actions");
 			if (!actions) return;
 			if (importBtn) actions.appendChild(importBtn);
 			if (recalcBtn) actions.appendChild(recalcBtn);
@@ -1592,7 +1592,7 @@
 				const idx = parseInt(el.dataset.stopIdx, 10);
 				const stop = stops[idx];
 				if (!stop || stop.type === "day") return;
-				const fromEl = el.querySelector(".rux-trip-itinerary__from");
+				const fromEl = el.querySelector(".sched-trip-itinerary__from");
 				if (!fromEl) return;
 				const prev = prevStopName(stops, idx);
 				fromEl.textContent = prev ? `From ${prev}` : fromYardText();
@@ -1671,7 +1671,7 @@
 		let locationsDbPromise = null;
 
 		const suggestionsEl = document.createElement("div");
-		suggestionsEl.className = "rux-trip-itinerary__suggestions";
+		suggestionsEl.className = "sched-trip-itinerary__suggestions";
 		suggestionsEl.hidden = true;
 		suggestionsEl.setAttribute("role", "listbox");
 		suggestionsEl.setAttribute("aria-label", "Address suggestions");
@@ -1685,7 +1685,7 @@
 
 		function selectedAddressInput() {
 			if (activeAddressIdx === null) return null;
-			return stopsEl.querySelector(`.rux-trip-itinerary__stop[data-stop-idx="${activeAddressIdx}"]:not([hidden]) [data-field="address"]`);
+			return stopsEl.querySelector(`.sched-trip-itinerary__stop[data-stop-idx="${activeAddressIdx}"]:not([hidden]) [data-field="address"]`);
 		}
 
 		function positionSuggestions(input) {
@@ -1714,7 +1714,7 @@
 			// Same promotion rux-ui/js/suggestions.js's own dropdown uses — this
 			// one predates that shared component and has its own copy of the
 			// same positioning mechanics (see the file header comment), so it
-			// needs the same fix independently: .rux-trip-itinerary__suggestions
+			// needs the same fix independently: .sched-trip-itinerary__suggestions
 			// is a fixed-position, document.body-appended panel with a flat
 			// --rux-z-dropdown (100) z-index, while the trip editor's own
 			// .rux-panel--floating sits at --rux-z-modal (400) — without
@@ -1734,12 +1734,12 @@
 					? suggestion.location.address
 					: suggestion.place_formatted || suggestion.full_address || "";
 				return `
-					<div class="rux-trip-itinerary__suggestion-row${isSaved ? " is-saved" : ""}">
-						<button class="rux-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
-							<span class="rux-trip-itinerary__suggestion-name">${escHtml(name)}</span>
-							<span class="rux-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
+					<div class="sched-trip-itinerary__suggestion-row${isSaved ? " is-saved" : ""}">
+						<button class="sched-trip-itinerary__suggestion" type="button" role="option" data-suggestion-idx="${i}">
+							<span class="sched-trip-itinerary__suggestion-name">${escHtml(name)}</span>
+							<span class="sched-trip-itinerary__suggestion-address">${isSaved ? "Saved · " : ""}${escHtml(address)}</span>
 						</button>
-						${isSaved ? "" : `<button class="rux-button rux-button--ghost rux-button--icon rux-trip-itinerary__suggestion-save" type="button" data-save-suggestion-idx="${i}" aria-label="Use and save ${escHtml(name)}" title="Use and save location"><span class="rux-icon" aria-hidden="true">bookmark_add</span></button>`}
+						${isSaved ? "" : `<button class="rux-button rux-button--ghost rux-button--icon sched-trip-itinerary__suggestion-save" type="button" data-save-suggestion-idx="${i}" aria-label="Use and save ${escHtml(name)}" title="Use and save location"><span class="rux-icon" aria-hidden="true">bookmark_add</span></button>`}
 					</div>`;
 			}).join("");
 			suggestionsEl.hidden = false;
@@ -1747,7 +1747,7 @@
 
 		async function getLocationsDb() {
 			if (!locationsDbPromise) {
-				locationsDbPromise = import("../data/locations-db.js?v=1").catch((err) => {
+				locationsDbPromise = import("../data/locations-db.js?v=2").catch((err) => {
 					locationsDbPromise = null;
 					throw err;
 				});
@@ -2157,10 +2157,10 @@
 				stops[idx].lat = null;
 				stops[idx].lng = null;
 				stops[idx].mapboxId = null;
-				const wrap = e.target.closest(".rux-trip-itinerary__address-wrap");
+				const wrap = e.target.closest(".sched-trip-itinerary__address-wrap");
 				if (wrap) {
 					wrap.classList.remove("is-verified");
-					wrap.querySelector(".rux-trip-itinerary__addr-check")?.remove();
+					wrap.querySelector(".sched-trip-itinerary__addr-check")?.remove();
 				}
 				markAffectedLegsStale(idx);
 				if (stops[idx].milesSource !== "manual") stops[idx].miles = "";
@@ -2311,7 +2311,7 @@
 			const expandButton = e.target.closest("[data-day-expand]");
 			if (expandButton) {
 				const group = expandButton.closest("[data-day-number]");
-				const indices = Array.from(group?.querySelectorAll(".rux-trip-itinerary__stop[data-stop-idx]:not([hidden])") || [])
+				const indices = Array.from(group?.querySelectorAll(".sched-trip-itinerary__stop[data-stop-idx]:not([hidden])") || [])
 					.map((section) => Number(section.dataset.stopIdx))
 					.filter((idx) => stops[idx] && stops[idx].type !== "day");
 				const expand = !indices.every((idx) => stops[idx].statsExpanded);

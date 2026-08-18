@@ -41,7 +41,7 @@
 }
 
 /* Applications retune .rux-icon by setting the --_icon-* custom properties on
-   a more specific selector of their own; see .sched-trip-bar .rux-icon in
+   a more specific selector of their own; see the trip-bar icon rules in
    scheduler/css/features/trip-bar.css for the reference example. Those
    properties are this file's private contract — read here, set by the caller —
    so no application selector needs to appear in this file. */

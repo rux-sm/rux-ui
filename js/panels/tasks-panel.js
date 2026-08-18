@@ -2,7 +2,7 @@ import {
 	openTripContactInfo,
 	updateTripDriverTaskFlag,
 	updateTripTaskFlags,
-} from "../data/trip-db.js?v=22";
+} from "../data/trip-db.js?v=23";
 import { latestDocument } from "../core/trip-documents.js";
 import { supabase } from "../data/supabase.js";
 import { getSetting, setSetting } from "../data/settings-db.js";
@@ -225,7 +225,7 @@ function hasPartTimeDriver(trip, leg) {
 }
 
 function taskActionButton(action, label, extra = "") {
-	return `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact rux-tasks__shortcut" data-task-action="${action}" ${extra} aria-label="${label}" title="${label}">
+	return `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact sched-tasks__shortcut" data-task-action="${action}" ${extra} aria-label="${label}" title="${label}">
 		<span class="rux-icon" aria-hidden="true">open_in_new</span>
 	</button>`;
 }
@@ -239,7 +239,7 @@ function statusIndicator(done, doneLabel = "Complete", pendingLabel = "Pending",
 	const icon = done ? "check_circle" : "schedule";
 	const modifier = done ? "complete" : overdue ? "overdue" : "pending";
 	const label = done ? doneLabel : pendingLabel;
-	return `<span class="rux-tasks__status rux-tasks__status--${modifier}" role="img" aria-label="${escapeAttr(label)}"><span class="rux-icon" aria-hidden="true">${icon}</span></span>`;
+	return `<span class="sched-tasks__status sched-tasks__status--${modifier}" role="img" aria-label="${escapeAttr(label)}"><span class="rux-icon" aria-hidden="true">${icon}</span></span>`;
 }
 
 // Same floating doc viewer trip-bar.js's own itinerary shortcut opens
@@ -320,11 +320,11 @@ function envelopeTrip(trip, leg) {
 function busEquipmentBadges(bus) {
 	if (!bus) return "";
 	const badges = [];
-	if (bus.sleeper) badges.push('<span class="rux-icon rux-tasks__equip-icon" title="Sleeper">airline_seat_flat</span>');
+	if (bus.sleeper) badges.push('<span class="rux-icon sched-tasks__equip-icon" title="Sleeper">airline_seat_flat</span>');
 	if (Number(bus.capacity || 0) >= 56) {
-		badges.push(`<span class="rux-tasks__equip-badge" title="${escapeAttr(bus.capacity)} passengers">${escapeHtml(bus.capacity)}</span>`);
+		badges.push(`<span class="sched-tasks__equip-badge" title="${escapeAttr(bus.capacity)} passengers">${escapeHtml(bus.capacity)}</span>`);
 	}
-	if (bus.ada_lift) badges.push('<span class="rux-icon rux-tasks__equip-icon" title="ADA lift">accessible</span>');
+	if (bus.ada_lift) badges.push('<span class="rux-icon sched-tasks__equip-icon" title="ADA lift">accessible</span>');
 	return badges.join("");
 }
 
@@ -496,12 +496,12 @@ function renderTrip(trip, leg) {
 			const detail = item.detail?.(trip) || "";
 			const checked = item.checked(trip);
 			return `
-				<div class="rux-tasks__requirement-row">
-					<label class="rux-checkbox rux-tasks__automatic-check ${checked ? "rux-tasks__automatic-check--complete" : ""}">
+				<div class="sched-tasks__requirement-row">
+					<label class="rux-checkbox sched-tasks__automatic-check ${checked ? "sched-tasks__automatic-check--complete" : ""}">
 						<input type="checkbox" disabled ${checked ? "checked" : ""} />
 						${item.label}
 					</label>
-					<input class="rux-input rux-tasks__requirement-input" type="text" disabled value="${escapeAttr(detail)}" aria-label="${escapeAttr(item.label)} status" />
+					<input class="rux-input sched-tasks__requirement-input" type="text" disabled value="${escapeAttr(detail)}" aria-label="${escapeAttr(item.label)} status" />
 				</div>
 			`;
 		})
@@ -511,7 +511,7 @@ function renderTrip(trip, leg) {
 	const manualDone = manualItems.every((item) => trip[`${item.suffix}_${leg}`]);
 	const manualRows = manualItems
 		.map((item, i) => `
-			<div class="rux-tasks__task-row">
+			<div class="sched-tasks__task-row">
 				<label class="rux-checkbox">
 					<input type="checkbox" data-task-trip="${trip.id}" data-task-field="${manualFields[i]}" ${trip[manualFields[i]] ? "checked" : ""} />
 					${item.label}
@@ -525,52 +525,52 @@ function renderTrip(trip, leg) {
 	const remindersDone = drivers.length > 0 && drivers.every((driver) => driver.trip_reminder_sent);
 	const reminderRows = drivers.length
 		? drivers.map((driver) => `
-			<div class="rux-tasks__task-row">
-				<label class="rux-checkbox rux-tasks__driver-reminder">
+			<div class="sched-tasks__task-row">
+				<label class="rux-checkbox sched-tasks__driver-reminder">
 					<input type="checkbox" data-driver-reminder-id="${driver.id}" data-task-trip="${trip.id}" ${driver.trip_reminder_sent ? "checked" : ""} />
-					Trip Reminder <span class="rux-tasks__driver-name">${escapeHtml(driver.shortName)} · ${escapeHtml(driver.busNumber)}</span>
+					Trip Reminder <span class="sched-tasks__driver-name">${escapeHtml(driver.shortName)} · ${escapeHtml(driver.busNumber)}</span>
 				</label>
 				${taskActionButton("driver-reminder", `Open reminder for ${escapeAttr(driver.name)}`, `data-task-trip="${trip.id}" data-task-leg="${leg}" data-trip-driver-id="${driver.id}"`)}
 			</div>
 		`).join("")
-		: `<span class="rux-tasks__driver-empty">No drivers assigned</span>`;
+		: `<span class="sched-tasks__driver-empty">No drivers assigned</span>`;
 	const envelopesDone = drivers.length > 0 && drivers.every((driver) => driver.envelope_printed);
 	const envelopeRows = drivers.length
 		? drivers.map((driver) => `
-			<div class="rux-tasks__task-row">
-				<label class="rux-checkbox rux-tasks__driver-reminder">
+			<div class="sched-tasks__task-row">
+				<label class="rux-checkbox sched-tasks__driver-reminder">
 					<input type="checkbox" data-driver-envelope-id="${driver.id}" data-task-trip="${trip.id}" ${driver.envelope_printed ? "checked" : ""} />
-					Print Envelope <span class="rux-tasks__driver-name">${escapeHtml(driver.shortName)} · ${escapeHtml(driver.busNumber)}</span>
+					Print Envelope <span class="sched-tasks__driver-name">${escapeHtml(driver.shortName)} · ${escapeHtml(driver.busNumber)}</span>
 				</label>
 				${taskActionButton("print-envelope", `Print envelope for ${escapeAttr(driver.name)}`, `data-task-trip="${trip.id}" data-task-leg="${leg}" data-trip-driver-id="${driver.id}"`)}
 			</div>
 		`).join("")
-		: `<span class="rux-tasks__driver-empty">No drivers assigned</span>`;
+		: `<span class="sched-tasks__driver-empty">No drivers assigned</span>`;
 	const requirementRows = requirementState(trip, leg);
 	const requirementsDone = requirementRows.every((row) =>
 		row.kind === "manual" ? !!trip[row.field] : row.checked,
 	);
 	const requirementsHtml = requirementRows.length ? `
-		<div class="rux-tasks__section rux-tasks__section--prep">
-			<div class="rux-tasks__checklist">
-				<p class="rux-tasks__requirements-title">Requirements</p>
+		<div class="sched-tasks__section sched-tasks__section--prep">
+			<div class="sched-tasks__checklist">
+				<p class="sched-tasks__requirements-title">Requirements</p>
 				${requirementRows.map((row) => row.kind === "manual" ? `
-					<div class="rux-tasks__requirement-row">
-						<label class="rux-checkbox rux-tasks__automatic-check ${row.checked ? "rux-tasks__automatic-check--complete" : ""}">
+					<div class="sched-tasks__requirement-row">
+						<label class="rux-checkbox sched-tasks__automatic-check ${row.checked ? "sched-tasks__automatic-check--complete" : ""}">
 							<input type="checkbox" data-task-trip="${trip.id}" data-task-field="${row.field}" ${trip[row.field] ? "checked" : ""} />
 							${row.label}
 						</label>
-						<input class="rux-input rux-tasks__requirement-input" type="text" maxlength="80"
+						<input class="rux-input sched-tasks__requirement-input" type="text" maxlength="80"
 							data-task-trip="${trip.id}" data-task-field="${row.detailField}"
 							value="${escapeAttr(trip[row.detailField])}" placeholder="${row.placeholder}" aria-label="${row.placeholder}" />
 					</div>
 				` : `
-					<div class="rux-tasks__requirement-row rux-tasks__requirement-row--automatic">
-						<label class="rux-checkbox rux-tasks__automatic-check ${row.checked ? "rux-tasks__automatic-check--complete" : ""}">
+					<div class="sched-tasks__requirement-row sched-tasks__requirement-row--automatic">
+						<label class="rux-checkbox sched-tasks__automatic-check ${row.checked ? "sched-tasks__automatic-check--complete" : ""}">
 							<input type="checkbox" disabled ${row.checked ? "checked" : ""} />
 							${row.label}
 						</label>
-						<div class="rux-input rux-tasks__requirement-input rux-tasks__requirement-input--readonly ${row.severity === "conflict" ? "rux-tasks__requirement-input--danger" : row.checked ? "" : "rux-tasks__requirement-input--warning"}" role="status">${row.detail}</div>
+						<div class="rux-input sched-tasks__requirement-input sched-tasks__requirement-input--readonly ${row.severity === "conflict" ? "sched-tasks__requirement-input--danger" : row.checked ? "" : "sched-tasks__requirement-input--warning"}" role="status">${row.detail}</div>
 					</div>
 				`).join("")}
 			</div>
@@ -579,25 +579,25 @@ function renderTrip(trip, leg) {
 	const overallDone = ready && manualDone && envelopesDone && remindersDone && requirementsDone;
 	const overdue = !overallDone && isRecoverablePreviousEntry(trip, leg);
 	return `
-		<div class="rux-card rux-tasks__trip">
-			<header class="rux-card__header rux-tasks__trip-header">
+		<div class="rux-card sched-tasks__trip">
+			<header class="rux-card__header sched-tasks__trip-header">
 				<div>
-					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
-					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")}</p>
+					<p class="sched-tasks__trip-title">${escapeHtml(trip.destination || "—")} · ${escapeHtml(legLabel(trip, leg))}</p>
+					<p class="sched-tasks__trip-customer">${escapeHtml(trip.customer || "—")}</p>
 				</div>
 				${statusIndicator(overallDone, "All done", overdue ? "Overdue tasks before departure" : "Still needs attention", overdue)}
 			</header>
-			<div class="rux-card__body rux-tasks__trip-body">
-				<div class="rux-tasks__section rux-tasks__section--readiness">
-					<div class="rux-tasks__checklist">
-						<p class="rux-tasks__requirements-title">Trip Status</p>
+			<div class="rux-card__body sched-tasks__trip-body">
+				<div class="sched-tasks__section sched-tasks__section--readiness">
+					<div class="sched-tasks__checklist">
+						<p class="sched-tasks__requirements-title">Trip Status</p>
 						${computedRows}
 					</div>
 				</div>
 				${requirementsHtml}
-				<div class="rux-tasks__section rux-tasks__section--prep">
-					<div class="rux-tasks__checklist">
-						<p class="rux-tasks__requirements-title">To Do</p>
+				<div class="sched-tasks__section sched-tasks__section--prep">
+					<div class="sched-tasks__checklist">
+						<p class="sched-tasks__requirements-title">To Do</p>
 						${manualRows}
 						${envelopeRows}
 						${reminderRows}
@@ -633,8 +633,8 @@ function postTripReference(trip) {
 		return true;
 	});
 	return unique.length
-		? unique.map(({ busNumber, shortName }) => `<span class="rux-tasks__driver-name">Bus ${escapeHtml(busNumber)} · ${escapeHtml(shortName)}</span>`).join("")
-		: `<span class="rux-tasks__driver-empty">No drivers assigned</span>`;
+		? unique.map(({ busNumber, shortName }) => `<span class="sched-tasks__driver-name">Bus ${escapeHtml(busNumber)} · ${escapeHtml(shortName)}</span>`).join("")
+		: `<span class="sched-tasks__driver-empty">No drivers assigned</span>`;
 }
 
 // No survey link/tool is wired up yet — this is a plain, editable note the
@@ -694,35 +694,35 @@ function templateFromEditedMessage(message, trip) {
 function renderPostTripCard(trip) {
 	const endDate = tripEndDate(trip);
 	return `
-		<div class="rux-card rux-tasks__trip">
-			<header class="rux-card__header rux-tasks__trip-header">
+		<div class="rux-card sched-tasks__trip">
+			<header class="rux-card__header sched-tasks__trip-header">
 				<div>
-					<p class="rux-tasks__trip-title">${escapeHtml(trip.destination || "—")}</p>
-					<p class="rux-tasks__trip-customer">${escapeHtml(trip.customer || "—")} · Returned ${endDate ? formatDayLabel(endDate) : "—"}</p>
+					<p class="sched-tasks__trip-title">${escapeHtml(trip.destination || "—")}</p>
+					<p class="sched-tasks__trip-customer">${escapeHtml(trip.customer || "—")} · Returned ${endDate ? formatDayLabel(endDate) : "—"}</p>
 				</div>
 				${statusIndicator(!!trip.post_trip_survey_sent, "Survey sent", "Survey not sent")}
 			</header>
-			<div class="rux-card__body rux-tasks__trip-body">
-				<div class="rux-tasks__section rux-tasks__section--readiness">
-					<p class="rux-tasks__requirements-title">Reference</p>
-					<div class="rux-tasks__post-trip-reference">${postTripReference(trip)}</div>
+			<div class="rux-card__body sched-tasks__trip-body">
+				<div class="sched-tasks__section sched-tasks__section--readiness">
+					<p class="sched-tasks__requirements-title">Reference</p>
+					<div class="sched-tasks__post-trip-reference">${postTripReference(trip)}</div>
 				</div>
-				<div class="rux-tasks__section rux-tasks__section--prep">
-					<div class="rux-tasks__checklist">
-						<div class="rux-tasks__task-row">
+				<div class="sched-tasks__section sched-tasks__section--prep">
+					<div class="sched-tasks__checklist">
+						<div class="sched-tasks__task-row">
 							<label class="rux-checkbox">
 								<input type="checkbox" data-task-trip="${trip.id}" data-task-field="post_trip_survey_sent" ${trip.post_trip_survey_sent ? "checked" : ""} />
 								Survey sent
 							</label>
 							${taskActionButton("post-trip-survey", "Send post-trip survey", `data-task-trip="${trip.id}"`)}
 						</div>
-						<div class="rux-tasks__task-row">
+						<div class="sched-tasks__task-row">
 							<label class="rux-checkbox">
 								<input type="checkbox" data-task-trip="${trip.id}" data-task-field="post_trip_incident" ${trip.post_trip_incident ? "checked" : ""} />
 								Incident occurred
 							</label>
 						</div>
-						<textarea class="rux-textarea rux-tasks__note-input" rows="2" placeholder="Add a note…" data-task-trip="${trip.id}" data-task-field="post_trip_note" aria-label="Post-trip note">${escapeHtml(trip.post_trip_note || "")}</textarea>
+						<textarea class="rux-textarea sched-tasks__note-input" rows="2" placeholder="Add a note…" data-task-trip="${trip.id}" data-task-field="post_trip_note" aria-label="Post-trip note">${escapeHtml(trip.post_trip_note || "")}</textarea>
 					</div>
 				</div>
 			</div>
@@ -736,9 +736,9 @@ function renderPostTripCard(trip) {
 // single-day view's whole-panel empty state below.
 function emptyTripCard(text = "No Trips") {
 	return `
-		<div class="rux-card rux-tasks__trip rux-tasks__trip--empty">
-			<div class="rux-card__body rux-tasks__trip-body">
-				<p class="rux-tasks__empty">${escapeHtml(text)}</p>
+		<div class="rux-card sched-tasks__trip sched-tasks__trip--empty">
+			<div class="rux-card__body sched-tasks__trip-body">
+				<p class="sched-tasks__empty">${escapeHtml(text)}</p>
 			</div>
 		</div>
 	`;
@@ -748,7 +748,7 @@ function emptyTripCard(text = "No Trips") {
 // describing only the first of however many days are showing.
 function renderDayGroup(iso, entries) {
 	return `
-		<article class="rux-card rux-tasks__day-group">
+		<article class="rux-card sched-tasks__day-group">
 			<div class="rux-card__header">
 				<h4 class="rux-card__title">${formatDepartingTitle(iso)}</h4>
 			</div>
@@ -784,7 +784,7 @@ function updateTabBadge(byDate) {
 		tabBadge.hidden = true;
 	} else {
 		tabBadge.hidden = false;
-		tabBadge.classList.toggle("rux-tasks__tab-badge--danger", previous.hasRecoverableTrip);
+		tabBadge.classList.toggle("sched-tasks__tab-badge--danger", previous.hasRecoverableTrip);
 	}
 	if (navPrevAlert) {
 		const previousNavDate = addDays(targetDates()[0], -1);
@@ -792,7 +792,7 @@ function updateTabBadge(byDate) {
 	}
 	if (tripsStatus) {
 		tripsStatus.hidden = !hasPending;
-		tripsStatus.classList.toggle("rux-tasks__segment-status--danger", previous.hasRecoverableTrip);
+		tripsStatus.classList.toggle("sched-tasks__segment-status--danger", previous.hasRecoverableTrip);
 		tripsStatus.setAttribute(
 			"aria-label",
 			previous.hasRecoverableTrip ? "Overdue trip tasks" : "Pending trip tasks",
@@ -825,7 +825,7 @@ function updatePostTripStatus() {
 	});
 	postTripStatus.hidden = pending.length === 0;
 	const overdue = pending.some((trip) => tripEndDate(trip) < yesterday);
-	postTripStatus.classList.toggle("rux-tasks__segment-status--danger", overdue);
+	postTripStatus.classList.toggle("sched-tasks__segment-status--danger", overdue);
 	postTripStatus.setAttribute(
 		"aria-label",
 		overdue ? "Overdue post-trip tasks" : "Pending post-trip tasks",

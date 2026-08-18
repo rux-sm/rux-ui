@@ -36,14 +36,16 @@ const tokensCss = read("rux-ui/css/tokens.css");
 // .rux-u-* utility the application opts into. Keep this empty.
 const ACCEPTED_APP_SELECTORS = new Set([]);
 
-// §4.7 — domain-named Tier 0 tokens still read by Tier 1. Resolution: rename to
-// a domain-free token (audit step 5).
-const ACCEPTED_DOMAIN_TOKENS = new Set(["--rux-trip-bar-head-backdrop-blur"]);
+// §4.7 — domain-named Tier 0 tokens still read by Tier 1. CLEARED by audit
+// step 11: the 69 domain tokens moved to scheduler/css/tokens.css as --sched-*,
+// and the one Tier 1 actually read became --rux-backdrop-blur, which describes
+// the value rather than the feature that first needed it. Keep this empty.
+const ACCEPTED_DOMAIN_TOKENS = new Set([]);
 
-// §4.4 — .rux-* selectors in the portable layer that name a Tier 3 block, plus
-// one portable utility that merely carries a domain name.
-// Resolution: steps 3 (recipes) and 5 (rename .rux-u-trip-list).
-const ACCEPTED_DOMAIN_SELECTORS = new Set([".rux-u-trip-list"]);
+// §4.4 — .rux-* selectors in the portable layer that name a Tier 3 block.
+// CLEARED by audit step 11: the last one, .rux-u-trip-list, is now
+// .rux-u-record-list. Keep this empty.
+const ACCEPTED_DOMAIN_SELECTORS = new Set([]);
 
 const DOMAIN_NOUNS = /trip|bus|driver|schedul|customer|fleet|manifest|itinerar/i;
 
@@ -123,6 +125,68 @@ test("domain-named Tier 0 tokens are not read by the portable layer", () => {
 		[],
 		`The portable layer reads a domain-named token. Rename it to describe the value, ` +
 			`not the feature that first needed it.`,
+	);
+});
+
+test("the application layer invents no .rux-* blocks of its own", () => {
+	// The other half of §3's "prefix is truth" rule. Without this, .rux-* stops
+	// meaning "ships and is reusable" and the folder becomes the only authority
+	// again — which is the state the audit set out to end.
+	//
+	// A block rux-ui/ defines is one the app may re-open to configure: per audit
+	// §4.5 a scoped descendant rule is not a violation. So the allowlist is
+	// derived, not hand-maintained — whatever the portable layer actually
+	// defines is fair game, and everything else is an invented name.
+	const portableBlocks = new Set();
+	for (const { css } of baseFiles) {
+		for (const [, selector] of css.matchAll(/(\.rux-[a-z0-9-]+)/gim)) {
+			portableBlocks.add(selector.split("--")[0]);
+		}
+	}
+
+	const appFiles = [];
+	const walk = (dir, prefix) => {
+		for (const entry of readdirSync(fileURLToPath(dir), { withFileTypes: true })) {
+			if (entry.isDirectory()) walk(new URL(`${entry.name}/`, dir), `${prefix}${entry.name}/`);
+			else if (entry.name.endsWith(".css")) appFiles.push(`${prefix}${entry.name}`);
+		}
+	};
+	walk(new URL("scheduler/css/", root), "");
+
+	const offenders = [];
+	for (const name of appFiles) {
+		const css = stripComments(read(`scheduler/css/${name}`));
+		for (const [, selector] of css.matchAll(/^\s*(\.rux-[a-z0-9-]+)/gim)) {
+			if (portableBlocks.has(selector.split("--")[0])) continue;
+			offenders.push(`${name} → ${selector}`);
+		}
+	}
+
+	assert.deepEqual(
+		[...new Set(offenders)].sort(),
+		[],
+		`The application layer defines blocks under the .rux-* prefix, which is reserved ` +
+			`for rux-ui/. Rename them to .sched-*. (Re-opening a block rux-ui/ actually ` +
+			`defines is allowed and detected automatically.)`,
+	);
+});
+
+test("the portable layer names no application prefix anywhere", () => {
+	// Comments count. A Tier 1 file that cites .sched-* in prose still teaches
+	// the next reader that the dependency is acceptable.
+	const offenders = [];
+	const scan = (label, css) => {
+		if (/\.sched-|--sched-/.test(css)) offenders.push(label);
+	};
+	for (const { name } of baseFiles) scan(`base/${name}`, read(`rux-ui/css/base/${name}`));
+	scan("tokens.css", tokensCss);
+	scan("rux.css", read("rux-ui/css/rux.css"));
+	scan("colors_and_type.css", read("rux-ui/css/colors_and_type.css"));
+
+	assert.deepEqual(
+		offenders.sort(),
+		[],
+		`These portable files reference the .sched-* / --sched-* application prefix.`,
 	);
 });
 

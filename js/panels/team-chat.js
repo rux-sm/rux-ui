@@ -75,7 +75,7 @@ if (btn && badge) {
 			: Array.from(text);
 		return segments
 			.map((segment) => EMOJI_GRAPHEME_RE.test(segment)
-				? `<span class="rux-team-chat__message-emoji">${escapeHtml(segment)}</span>`
+				? `<span class="sched-team-chat__message-emoji">${escapeHtml(segment)}</span>`
 				: escapeHtml(segment))
 			.join("");
 	}
@@ -101,7 +101,7 @@ if (btn && badge) {
 			const name = decodeMentionPart(match[1]);
 			const profileId = decodeMentionPart(match[2]);
 			const isCurrentUser = currentProfileId && String(profileId) === String(currentProfileId);
-			html += `<span class="rux-team-chat__mention${isCurrentUser ? " rux-team-chat__mention--current-user" : ""}" data-mentioned-profile-id="${escapeHtml(profileId)}">@${renderPlainMessageContent(name)}</span>`;
+			html += `<span class="sched-team-chat__mention${isCurrentUser ? " sched-team-chat__mention--current-user" : ""}" data-mentioned-profile-id="${escapeHtml(profileId)}">@${renderPlainMessageContent(name)}</span>`;
 			cursor = match.index + match[0].length;
 		}
 		return html + renderPlainMessageContent(text.slice(cursor));
@@ -173,7 +173,7 @@ if (btn && badge) {
 		if (mentionMenuEl) return mentionMenuEl;
 		mentionMenuEl = document.createElement("div");
 		mentionMenuEl.id = "team-chat-mention-suggestions";
-		mentionMenuEl.className = "rux-suggestions rux-team-chat__mention-menu";
+		mentionMenuEl.className = "rux-suggestions sched-team-chat__mention-menu";
 		mentionMenuEl.setAttribute("role", "listbox");
 		mentionMenuEl.setAttribute("aria-label", "Mention a teammate");
 		mentionMenuEl.hidden = true;
@@ -251,7 +251,7 @@ if (btn && badge) {
 			const option = document.createElement("button");
 			option.type = "button";
 			option.id = `team-chat-mention-option-${index}`;
-			option.className = "rux-suggestions__item rux-team-chat__mention-option";
+			option.className = "rux-suggestions__item sched-team-chat__mention-option";
 			option.dataset.mentionProfileId = profile.id;
 			option.setAttribute("role", "option");
 			option.append(
@@ -310,22 +310,22 @@ if (btn && badge) {
 		panelEl.setAttribute("aria-label", "Team Chat");
 		panelEl.hidden = true;
 		panelEl.innerHTML = `
-			<header class="rux-team-chat__header rux-card__header">
+			<header class="sched-team-chat__header rux-card__header">
 				<p class="rux-card__title">Team Chat</p>
 			</header>
-			<div class="rux-team-chat__body rux-card__body">
-				<div class="rux-team-chat__messages" role="log" aria-label="Team Chat Messages" aria-live="polite" aria-relevant="additions text" aria-atomic="false" data-team-chat-messages>
-					<p class="rux-team-chat__empty" role="status">Loading Messages…</p>
+			<div class="sched-team-chat__body rux-card__body">
+				<div class="sched-team-chat__messages" role="log" aria-label="Team Chat Messages" aria-live="polite" aria-relevant="additions text" aria-atomic="false" data-team-chat-messages>
+					<p class="sched-team-chat__empty" role="status">Loading Messages…</p>
 				</div>
 			</div>
-			<p class="rux-team-chat__status" role="status" data-team-chat-status hidden></p>
-			<p class="rux-team-chat__typing" data-team-chat-typing hidden></p>
-			<footer class="rux-team-chat__footer rux-card__footer">
-				<form class="rux-team-chat__form" data-team-chat-form>
+			<p class="sched-team-chat__status" role="status" data-team-chat-status hidden></p>
+			<p class="sched-team-chat__typing" data-team-chat-typing hidden></p>
+			<footer class="sched-team-chat__footer rux-card__footer">
+				<form class="sched-team-chat__form" data-team-chat-form>
 					<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-team-chat-compose-emoji aria-label="Insert emoji">
 						<span class="rux-icon" aria-hidden="true">mood</span>
 					</button>
-					<input class="rux-input rux-team-chat__input" type="text" maxlength="2000" placeholder="Message the team…" aria-label="Message" aria-autocomplete="list" aria-controls="team-chat-mention-suggestions" aria-expanded="false" data-team-chat-input autocomplete="off" />
+					<input class="rux-input sched-team-chat__input" type="text" maxlength="2000" placeholder="Message the team…" aria-label="Message" aria-autocomplete="list" aria-controls="team-chat-mention-suggestions" aria-expanded="false" data-team-chat-input autocomplete="off" />
 					<button type="submit" class="rux-button rux-button--accent rux-button--icon" aria-label="Send" data-team-chat-send disabled>
 						<span class="rux-icon" aria-hidden="true">send</span>
 					</button>
@@ -447,7 +447,7 @@ if (btn && badge) {
 	function ensureEmojiMenu() {
 		if (emojiMenuEl) return emojiMenuEl;
 		emojiMenuEl = document.createElement("div");
-		emojiMenuEl.className = "rux-menu rux-popover rux-team-chat__emoji-menu";
+		emojiMenuEl.className = "rux-menu rux-popover sched-team-chat__emoji-menu";
 		emojiMenuEl.id = "team-chat-emoji-menu";
 		emojiMenuEl.role = "menu";
 		emojiMenuEl.hidden = true;
@@ -455,10 +455,10 @@ if (btn && badge) {
 			.map(
 				(category) => `
 					<div class="rux-menu__header">${category.label}</div>
-					<div class="rux-team-chat__emoji-grid">
+					<div class="sched-team-chat__emoji-grid">
 						${category.emoji
 							.map(
-								(emoji) => `<button type="button" class="rux-team-chat__emoji-option" role="menuitem" data-react-emoji="${emoji}">${emoji}</button>`,
+								(emoji) => `<button type="button" class="sched-team-chat__emoji-option" role="menuitem" data-react-emoji="${emoji}">${emoji}</button>`,
 							)
 							.join("")}
 					</div>
@@ -516,7 +516,7 @@ if (btn && badge) {
 		const container = ensurePanel().querySelector("[data-team-chat-messages]");
 		const wasNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 40;
 		if (!messages.length) {
-			container.innerHTML = `<p class="rux-team-chat__empty">No Messages Yet</p>`;
+			container.innerHTML = `<p class="sched-team-chat__empty">No Messages Yet</p>`;
 			return;
 		}
 		const myProfileId = String(getCurrentProfile()?.id || "");
@@ -547,27 +547,27 @@ if (btn && badge) {
 				const pillsHtml = [...groups.entries()]
 					.map(([emoji, profileIds]) => {
 						const mine = myProfileId && profileIds.includes(myProfileId);
-						return `<button type="button" class="rux-team-chat__reaction-pill${mine ? " is-active" : ""}" data-react-emoji="${emoji}" data-message-id="${message.id}"><span class="rux-team-chat__reaction-emoji">${emoji}</span> ${profileIds.length}</button>`;
+						return `<button type="button" class="sched-team-chat__reaction-pill${mine ? " is-active" : ""}" data-react-emoji="${emoji}" data-message-id="${message.id}"><span class="sched-team-chat__reaction-emoji">${emoji}</span> ${profileIds.length}</button>`;
 					})
 					.join("");
 				const mentionsCurrentUser = messageMentionsProfile(message, myProfileId);
 				return `
-					<div class="rux-team-chat__message${isOwnMessage ? " rux-team-chat__message--own" : ""}${isGrouped ? " rux-team-chat__message--grouped" : ""}${mentionsCurrentUser ? " rux-team-chat__message--mentions-current-user" : ""}" data-message-id="${escapeHtml(message.id)}" data-created-at="${escapeHtml(message.created_at)}">
-						<span class="rux-team-chat__avatar-slot">${isGrouped ? "" : avatar.outerHTML}</span>
-						<div class="rux-team-chat__message-body">
-							${!isOwnMessage && !isGrouped ? `<span class="rux-team-chat__message-name">${escapeHtml(message.sender_name)}</span>` : ""}
-							<div class="rux-team-chat__message-line">
-								<p class="rux-team-chat__message-text">${renderMessageContent(message.body, myProfileId)}</p>
-								<span class="rux-team-chat__message-time">${timeLabel(message.created_at)}</span>
+					<div class="sched-team-chat__message${isOwnMessage ? " sched-team-chat__message--own" : ""}${isGrouped ? " sched-team-chat__message--grouped" : ""}${mentionsCurrentUser ? " sched-team-chat__message--mentions-current-user" : ""}" data-message-id="${escapeHtml(message.id)}" data-created-at="${escapeHtml(message.created_at)}">
+						<span class="sched-team-chat__avatar-slot">${isGrouped ? "" : avatar.outerHTML}</span>
+						<div class="sched-team-chat__message-body">
+							${!isOwnMessage && !isGrouped ? `<span class="sched-team-chat__message-name">${escapeHtml(message.sender_name)}</span>` : ""}
+							<div class="sched-team-chat__message-line">
+								<p class="sched-team-chat__message-text">${renderMessageContent(message.body, myProfileId)}</p>
+								<span class="sched-team-chat__message-time">${timeLabel(message.created_at)}</span>
 							</div>
-							${pillsHtml ? `<div class="rux-team-chat__reactions">${pillsHtml}</div>` : ""}
+							${pillsHtml ? `<div class="sched-team-chat__reactions">${pillsHtml}</div>` : ""}
 						</div>
-						<div class="rux-team-chat__message-actions">
+						<div class="sched-team-chat__message-actions">
 							<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-open-emoji-menu="${message.id}" aria-label="Add reaction">
 								<span class="rux-icon" aria-hidden="true">add_reaction</span>
 							</button>
 							${canDelete ? `
-								<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-team-chat__message-delete" data-delete-message="${message.id}" aria-label="Delete message">
+								<button type="button" class="rux-button rux-button--ghost rux-button--icon sched-team-chat__message-delete" data-delete-message="${message.id}" aria-label="Delete message">
 									<span class="rux-icon" aria-hidden="true">delete</span>
 								</button>
 							` : ""}
@@ -665,7 +665,7 @@ if (btn && badge) {
 		} catch (err) {
 			console.warn("Could not load team chat:", err);
 			const container = ensurePanel().querySelector("[data-team-chat-messages]");
-			container.innerHTML = `<p class="rux-team-chat__empty" role="status">Couldn't Load Messages</p>`;
+			container.innerHTML = `<p class="sched-team-chat__empty" role="status">Couldn't Load Messages</p>`;
 			return;
 		}
 		renderMessages();
@@ -677,7 +677,7 @@ if (btn && badge) {
 		if (!profile) return;
 		const previousLastReadAt = lastReadAt;
 		renderMessages();
-		const unreadMention = [...panelEl.querySelectorAll(".rux-team-chat__message--mentions-current-user")]
+		const unreadMention = [...panelEl.querySelectorAll(".sched-team-chat__message--mentions-current-user")]
 			.filter((messageEl) => !previousLastReadAt || messageEl.dataset.createdAt > previousLastReadAt)
 			.at(-1);
 		if (unreadMention) {

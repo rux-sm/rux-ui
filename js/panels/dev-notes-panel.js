@@ -36,22 +36,22 @@ if (btn && menu && list && form && input) {
 		list.innerHTML = "";
 		updateBadge();
 		if (!notes.length) {
-			list.innerHTML = `<li class="rux-dev-notes__empty">No notes yet</li>`;
+			list.innerHTML = `<li class="sched-dev-notes__empty">No notes yet</li>`;
 			return;
 		}
 		notes.forEach((row) => {
 			const li = document.createElement("li");
-			li.className = `rux-dev-notes__item${row.done ? " is-done" : ""}`;
+			li.className = `sched-dev-notes__item${row.done ? " is-done" : ""}`;
 			li.innerHTML = `
-				<label class="rux-dev-notes__item-main rux-checkbox">
+				<label class="sched-dev-notes__item-main rux-checkbox">
 					<input type="checkbox" data-toggle-done ${row.done ? "checked" : ""} aria-label="Mark done" />
-					<span class="rux-dev-notes__item-text"></span>
+					<span class="sched-dev-notes__item-text"></span>
 				</label>
 				<button type="button" class="rux-button rux-button--default rux-button--icon" data-delete aria-label="Delete note">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			`;
-			li.querySelector(".rux-dev-notes__item-text").textContent = row.text;
+			li.querySelector(".sched-dev-notes__item-text").textContent = row.text;
 
 			li.querySelector("[data-toggle-done]").addEventListener("change", async (event) => {
 				const done = event.target.checked;

@@ -75,14 +75,14 @@ class MockElement {
 }
 
 function createHarness({ mobile = true } = {}) {
-	const app = new MockElement("scheduler-app");
+	const app = new MockElement("sched-app");
 	const body = new MockElement();
 	body.appendChild = () => {};
 
 	const document = {
 		body,
 		createElement: () => new MockElement(),
-		querySelector: (selector) => selector === ".scheduler-app" ? app : null,
+		querySelector: (selector) => selector === ".sched-app" ? app : null,
 	};
 	const window = {
 		clearTimeout,
@@ -93,11 +93,10 @@ function createHarness({ mobile = true } = {}) {
 		animationDelay: "0s",
 		animationDuration: element.animationDuration,
 		animationIterationCount: "1",
-		animationName: "scheduler-mobile-drawer-out",
+		animationName: "rux-drawer-out",
 		getPropertyValue: (name) => {
-			if (name === "--scheduler-app-left-drawer-default-width") return "320px";
-			if (name === "--scheduler-app-right-drawer-default-width") return "320px";
-			if (name === "--rux-panel-rail-width") return "44px";
+			if (name === "--rux-drawer-left-default-width") return "320px";
+			if (name === "--rux-drawer-right-default-width") return "320px";
 			return "";
 		},
 		minWidth: "0px",
@@ -116,7 +115,7 @@ function createHarness({ mobile = true } = {}) {
 	vm.runInContext(drawerSource, context);
 
 	function createDrawer() {
-		const drawer = new MockElement("scheduler-app__drawer", "is-open");
+		const drawer = new MockElement("rux-drawer", "is-open");
 		const panel = new MockElement("rux-panel");
 		const controller = window.RuxDrawer.create({ drawer, panel });
 		return { controller, drawer, panel };
@@ -170,7 +169,7 @@ test("reopening cancels stale close completion", async () => {
 	controller.close();
 	controller.open();
 	panel.dispatch("animationend", {
-		animationName: "scheduler-mobile-drawer-out",
+		animationName: "rux-drawer-out",
 	});
 	await new Promise((resolve) => setTimeout(resolve, 70));
 

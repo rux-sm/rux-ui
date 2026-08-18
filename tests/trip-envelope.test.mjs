@@ -44,11 +44,11 @@ test("the scheduler loads the updated envelope implementation", () => {
 test("standard envelope field rows share one equal-height track size", () => {
 	assert.match(
 		envelopeStyles,
-		/--rux-trip-envelope-field-row-min-height:\s*46px/,
+		/--sched-trip-envelope-field-row-min-height:\s*46px/,
 	);
 	assert.match(
 		envelopeStyles,
-		/\.sched-trip-envelope--standard \.rux-trip-envelope__grid\s*\{[^}]*display:\s*grid;[^}]*grid-auto-rows:\s*minmax\(\s*var\(--rux-trip-envelope-field-row-min-height\),\s*1fr\s*\);[^}]*align-items:\s*stretch;/s,
+		/\.sched-trip-envelope--standard \.sched-trip-envelope__grid\s*\{[^}]*display:\s*grid;[^}]*grid-auto-rows:\s*minmax\(\s*var\(--sched-trip-envelope-field-row-min-height\),\s*1fr\s*\);[^}]*align-items:\s*stretch;/s,
 	);
 });
 

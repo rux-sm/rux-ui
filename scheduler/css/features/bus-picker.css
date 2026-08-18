@@ -22,7 +22,7 @@
 
 /* Typography shared with every other eyebrow/section-label — see
    rux-ui/css/base/utils.css. */
-.rux-bus-picker__heading {
+.sched-bus-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
 	margin-bottom: var(--rux-space-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
@@ -30,14 +30,14 @@
 
 /* — Scrollable list — */
 
-.rux-bus-picker__list {
+.sched-bus-picker__list {
 	max-height: 280px;
 	overflow-y: auto;
 }
 
 /* — Row — outer flex wrapper — */
 
-.rux-bus-picker__row {
+.sched-bus-picker__row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
@@ -46,14 +46,14 @@
 
 /* — Move button — ghost variant (transparent base, white-alpha states) — */
 
-.rux-bus-picker__move {
+.sched-bus-picker__move {
 	flex: 1;
 	justify-content: flex-start;
 }
 
 /* — Current bus row — primary button style, non-interactive — */
 
-.rux-bus-picker__row.is-current .rux-bus-picker__number {
+.sched-bus-picker__row.is-current .sched-bus-picker__number {
 	--_bg:     var(--rux-accent);
 	--_fg:     var(--rux-fg-on-accent);
 
@@ -87,13 +87,13 @@
 
 /* Typography shared with every other eyebrow/section-label — see
    rux-ui/css/base/utils.css. */
-.rux-col-picker__heading {
+.sched-col-picker__heading {
 	padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-1);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	margin-bottom: var(--rux-space-1);
 }
 
-.rux-col-picker__row {
+.sched-col-picker__row {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-2);
@@ -105,26 +105,26 @@
 	user-select: none;
 }
 
-.rux-col-picker__row:hover {
+.sched-col-picker__row:hover {
 	background: var(--rux-button-hover-overlay);
 }
 
-.rux-col-picker__row.is-over {
+.sched-col-picker__row.is-over {
 	background: var(--rux-bg-hover);
 	outline: 1px solid var(--rux-accent);
 	outline-offset: -1px;
 }
 
-.rux-col-picker__row.is-dragging {
+.sched-col-picker__row.is-dragging {
 	opacity: 0.4;
 }
 
-.rux-col-picker__list {
+.sched-col-picker__list {
 	max-height: 20rem;
 	overflow-y: auto;
 }
 
-.rux-col-picker__handle {
+.sched-col-picker__handle {
 	display: flex;
 	align-items: center;
 	flex-shrink: 0;
@@ -132,11 +132,11 @@
 	cursor: grab;
 }
 
-.rux-col-picker__handle:active {
+.sched-col-picker__handle:active {
 	cursor: grabbing;
 }
 
-.rux-col-picker__label {
+.sched-col-picker__label {
 	flex: 1;
 	cursor: pointer;
 }

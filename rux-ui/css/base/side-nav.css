@@ -1,9 +1,16 @@
 /* ==========================================================================
    SIDE NAVIGATION  ·  .rux-side-nav
    --------------------------------------------------------------------------
-   Product-level navigation paired with a .rux-ui-header menu button. The
-   consuming application owns placement, overlay behavior, and open/close
-   state; this component owns only navigation anatomy and interaction states.
+   Product-level navigation paired with a .rux-ui-header menu button. This
+   component owns navigation anatomy and interaction states, plus one
+   optional placement recipe — the header-triggered overlay — behind the
+   .rux-side-nav--overlay modifier.
+
+   Placement stays the application's decision: without the modifier this
+   block is an unpositioned column the app may place however it likes, which
+   is what docs/layout-composition.md requires ("the reusable component MUST
+   NOT ... force a persistent configuration"). What the modifier removes is
+   the need for every app to re-derive the same clip-path/scrim choreography.
    ========================================================================== */
 
 .rux-side-nav {
@@ -108,4 +115,80 @@
 
 .rux-side-nav__badge[hidden] {
 	display: none;
+}
+
+/* ── Overlay placement (opt-in) ───────────────────────────────────────────
+   Header-triggered product navigation that overlays the application body
+   and never participates in flex sizing, so opening it cannot move or
+   compress the workspace behind it. Apply .rux-side-nav--overlay to the nav
+   and .rux-side-nav-scrim to its sibling scrim; both need a positioned
+   ancestor (typically .rux-app__body). Open/close state is driven by
+   rux-ui/js/ui-shell.js through the data-rux-side-nav* attributes. */
+
+.rux-side-nav--overlay,
+.rux-side-nav-scrim {
+	position: absolute;
+	inset-block: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.rux-side-nav--overlay {
+	inset-inline-start: 0;
+	z-index: var(--rux-z-overlay);
+	/* The panel stays at its final coordinates and full opacity. Moving the
+	   right clipping edge reveals its contents without translating, scaling,
+	   stretching, or staggering individual navigation items. */
+	clip-path: inset(0 100% 0 0);
+	opacity: 1;
+	transform: none;
+	will-change: clip-path;
+	transition:
+		clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-exit-easing),
+		visibility 0s linear var(--rux-side-nav-motion-duration);
+}
+
+.rux-side-nav-scrim {
+	inset-inline-start: 0;
+	inset-inline-end: 0;
+	z-index: calc(var(--rux-z-overlay) - 1);
+	background: var(--rux-side-nav-scrim-bg);
+	opacity: 0;
+	/* Closing is intentionally immediate: removing .is-visible drops the
+	   scrim on the first closing frame while the panel clips shut. */
+	transition:
+		opacity var(--rux-side-nav-scrim-exit-duration),
+		inset-inline-start var(--rux-side-nav-scrim-exit-duration);
+}
+
+.rux-side-nav--overlay.is-open,
+.rux-side-nav-scrim.is-visible {
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.rux-side-nav--overlay.is-open {
+	clip-path: inset(0);
+	transition:
+		clip-path var(--rux-side-nav-motion-duration) var(--rux-side-nav-enter-easing),
+		visibility 0s linear 0s;
+}
+
+.rux-side-nav-scrim.is-visible {
+	inset-inline-start: min(var(--rux-side-nav-width), 100%);
+	opacity: var(--rux-side-nav-scrim-opacity);
+	transition:
+		inset-inline-start var(--rux-side-nav-motion-duration)
+			var(--rux-side-nav-enter-easing),
+		opacity var(--rux-side-nav-scrim-enter-duration)
+			var(--rux-side-nav-scrim-enter-easing)
+			var(--rux-side-nav-scrim-enter-delay);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rux-side-nav--overlay,
+	.rux-side-nav-scrim {
+		transition-duration: 1ms;
+		transition-delay: 0s;
+	}
 }

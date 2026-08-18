@@ -7,7 +7,7 @@
 .sched-trip-dialog {
 	top: 50%;
 	left: 50%;
-	width: var(--rux-trip-dialog-width);
+	width: var(--sched-trip-dialog-width);
 	height: min(840px, calc(100dvh - (var(--rux-space-4) * 2)));
 	min-width: 480px;
 	min-height: 520px;

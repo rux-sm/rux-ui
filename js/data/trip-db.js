@@ -16,11 +16,11 @@
 
 import { supabase } from "./supabase.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
-import { contactsShareIdentity } from "../core/contact-identity.js?v=1";
+import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
 	buildTripHistoryChanges,
 	recordTripHistory,
-} from "./trip-history-db.js?v=2";
+} from "./trip-history-db.js?v=3";
 import {
 	fetchTripDriverStatuses,
 	indexTripDriverStatuses,
@@ -127,13 +127,13 @@ import {
 
 		for (const section of sections) {
 			root.querySelectorAll(
-				`${section.selector} .rux-scope-trip__driver-row`,
+				`${section.selector} .sched-scope-trip__driver-row`,
 			).forEach((row) => {
 				const role = row.dataset.roleRow
 					? roleByKey[row.dataset.roleRow]
 					: "driver";
 				const select = row.querySelector("select[name$='.name']");
-				const label = row.querySelector(".rux-scope-trip__role-label");
+				const label = row.querySelector(".sched-scope-trip__role-label");
 				if (!role || !label) return;
 				const status = select?.value
 					? statusByIdentity.get(
@@ -439,7 +439,7 @@ import {
 
 	// containerSelector must scope the bus-group lookup to this leg's own
 	// section — a root-wide query would misalign indices once a second
-	// (return-leg) section exists using the same .rux-scope-trip__bus-group
+	// (return-leg) section exists using the same .sched-scope-trip__bus-group
 	// class. positionOffset keeps `position` unique across both legs (they
 	// share one trip_assignments set), since legs are numbered continuously
 	// rather than each restarting at 0.
@@ -451,7 +451,7 @@ import {
 			const busId = root.querySelector(`[name="${fieldPrefix}[${i}].busId"]`)?.value || null;
 			if (!busId) continue;
 
-			const busGroup = container?.querySelectorAll(".rux-scope-trip__bus-group")[i];
+			const busGroup = container?.querySelectorAll(".sched-scope-trip__bus-group")[i];
 			const driverRoles = [
 				{ role: "driver",       roleKey: "driver",   nameField: `${fieldPrefix}[${i}].driver.name`,  payField: `${fieldPrefix}[${i}].driver.pay`  },
 				{ role: "co-driver",    roleKey: "coDriver", nameField: `${fieldPrefix}[${i}].coDriver.name`, payField: `${fieldPrefix}[${i}].coDriver.pay` },
@@ -489,10 +489,10 @@ import {
 				if (!roleKey || !busGroup) return null;
 				return role === "driver"
 					? busGroup.querySelector(
-						".rux-scope-trip__driver-row:not([data-role-row]) .rux-scope-trip__role-label",
+						".sched-scope-trip__driver-row:not([data-role-row]) .sched-scope-trip__role-label",
 					)
 					: busGroup.querySelector(
-						`[data-role-row="${roleKey}"] .rux-scope-trip__role-label`,
+						`[data-role-row="${roleKey}"] .sched-scope-trip__role-label`,
 					);
 			};
 			const driverStatuses = drivers.map((driver) => {
@@ -510,7 +510,7 @@ import {
 			if (busGroup) {
 				const roleMap = { coDriver: "co-driver", relief1: "relief-start", relief2: "relief-end" };
 				// Driver role label state
-				const driverLabel = busGroup.querySelector(".rux-scope-trip__driver-row:not([data-role-row]) .rux-scope-trip__role-label");
+				const driverLabel = busGroup.querySelector(".sched-scope-trip__driver-row:not([data-role-row]) .sched-scope-trip__role-label");
 				const driverState = normalizeDriverStatus(driverLabel?.dataset.roleState);
 				activeRoles.push(driverState !== "off" ? `driver:${driverState}` : "driver");
 				// Other role states (only if toggled active)
@@ -519,7 +519,7 @@ import {
 					if (!mapped) return;
 					const roleKey = btn.dataset.role;
 					const row = busGroup.querySelector(`[data-role-row="${roleKey}"]`);
-					const label = row?.querySelector(".rux-scope-trip__role-label");
+					const label = row?.querySelector(".sched-scope-trip__role-label");
 					const state = normalizeDriverStatus(label?.dataset.roleState);
 					activeRoles.push(state !== "off" ? `${mapped}:${state}` : mapped);
 				});
@@ -805,26 +805,26 @@ import {
 	// is applied through DOM properties after the trusted template is created.
 	function createPaymentRow(index, method) {
 		const row = document.createElement("div");
-		row.className = "rux-scope-trip__payment-row";
+		row.className = "sched-scope-trip__payment-row";
 		row.dataset.paymentRow = "";
 		row.innerHTML = `
-			<div class="rux-scope-trip__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
-				<div class="rux-card__header rux-scope-trip__payment-header">
-					<div class="rux-scope-trip__payment-method">
-						<span class="rux-icon rux-scope-trip__payment-icon" data-payment-method-icon aria-hidden="true"></span>
-						<span class="rux-scope-trip__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
+			<div class="sched-scope-trip__payment-content" role="group" aria-labelledby="tp-payment-label-${index + 1}">
+				<div class="rux-card__header sched-scope-trip__payment-header">
+					<div class="sched-scope-trip__payment-method">
+						<span class="rux-icon sched-scope-trip__payment-icon" data-payment-method-icon aria-hidden="true"></span>
+						<span class="sched-scope-trip__payment-method-label" id="tp-payment-label-${index + 1}" data-payment-method-label>Payment</span>
 						<input type="hidden" data-payment-method id="tp-payment-method-${index + 1}" name="payments[${index}].method" />
 					</div>
-					<button type="button" class="rux-scope-trip__payment-select" data-payment-select aria-label="Delete payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
+					<button type="button" class="sched-scope-trip__payment-select" data-payment-select aria-label="Delete payment"><span class="rux-icon" aria-hidden="true">delete</span></button>
 				</div>
-				<div class="rux-card__body rux-scope-trip__payment-fields">
-					<label class="rux-field rux-scope-trip__payment-date-field"><span class="rux-field__label">Date</span><span class="rux-input rux-scope-trip__payment-date-control"><span class="rux-scope-trip__payment-date-label" data-payment-date-label aria-hidden="true">Date</span><input class="rux-scope-trip__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" /></span></label>
-					<label class="rux-field rux-scope-trip__payment-amount"><span class="rux-field__label">Amount</span><span class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix" aria-hidden="true">$</span><input class="rux-input rux-scope-trip__payment-amount-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" /></span></label>
-					<label class="rux-field rux-scope-trip__payment-reference"><span class="rux-field__label">Reference</span><input class="rux-input rux-scope-trip__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" /></label>
+				<div class="rux-card__body sched-scope-trip__payment-fields">
+					<label class="rux-field sched-scope-trip__payment-date-field"><span class="rux-field__label">Date</span><span class="rux-input sched-scope-trip__payment-date-control"><span class="sched-scope-trip__payment-date-label" data-payment-date-label aria-hidden="true">Date</span><input class="sched-scope-trip__payment-date" id="tp-payment-date-${index + 1}" name="payments[${index}].date" data-payment-date type="date" aria-label="Payment date" /></span></label>
+					<label class="rux-field sched-scope-trip__payment-amount"><span class="rux-field__label">Amount</span><span class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix" aria-hidden="true">$</span><input class="rux-input sched-scope-trip__payment-amount-input" id="tp-payment-amount-${index + 1}" name="payments[${index}].amount" data-payment-amount type="number" min="0" step="0.01" placeholder="0.00" /></span></label>
+					<label class="rux-field sched-scope-trip__payment-reference"><span class="rux-field__label">Reference</span><input class="rux-input sched-scope-trip__payment-ref" id="tp-payment-ref-${index + 1}" name="payments[${index}].ref" data-payment-ref type="text" placeholder="Optional" /></label>
 				</div>
 			</div>`;
 		const safeMethod = PAYMENT_METHOD_ICONS[method] ? method : "Other";
-		const content = row.querySelector(".rux-scope-trip__payment-content");
+		const content = row.querySelector(".sched-scope-trip__payment-content");
 		row.querySelectorAll("[data-payment-method-icon]").forEach((icon) => {
 			icon.textContent = PAYMENT_METHOD_ICONS[safeMethod];
 			icon.title = safeMethod;
@@ -863,14 +863,14 @@ import {
 	// Mirrors createTicketOptionRow's add-button counterpart in trip-panel.js.
 	function createTicketOptionRow(index) {
 		const row = document.createElement("div");
-		row.className = "rux-scope-trip__contact-row";
+		row.className = "sched-scope-trip__contact-row";
 		row.dataset.ticketOptionRow = "";
 		row.innerHTML =
-			`<div class="rux-scope-trip__contact-fields">
+			`<div class="sched-scope-trip__contact-fields">
 				<div class="rux-field"><label class="rux-field__label" for="tp-ticket-label-${index + 1}">Option</label><input class="rux-input" id="tp-ticket-label-${index + 1}" data-ticket-label type="text" placeholder="e.g. Single" /></div>
 				<div class="rux-field"><label class="rux-field__label" for="tp-ticket-price-${index + 1}">Price</label><div class="rux-input-group rux-input-group--prefix"><span class="rux-input-group__prefix">$</span><input class="rux-input" id="tp-ticket-price-${index + 1}" data-ticket-price type="number" min="0" step="0.01" placeholder="0.00" /></div></div>
 			</div>
-			<button type="button" class="rux-scope-trip__contact-select" data-ticket-option-select aria-label="Delete option">
+			<button type="button" class="sched-scope-trip__contact-select" data-ticket-option-select aria-label="Delete option">
 				<span class="rux-icon" aria-hidden="true">delete</span>
 			</button>`;
 		return row;
@@ -898,7 +898,7 @@ import {
 		const sorted = [...assignments].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
 
 		sorted.forEach((assignment, slot) => {
-			const busGroup = container?.querySelectorAll(".rux-scope-trip__bus-group")[slot];
+			const busGroup = container?.querySelectorAll(".sched-scope-trip__bus-group")[slot];
 			const busSelect = root.querySelector(`[name="${fieldPrefix}[${slot}].busId"]`);
 			if (busSelect && assignment.bus_id) busSelect.value = assignment.bus_id;
 
@@ -928,7 +928,7 @@ import {
 				if (!busGroup) return;
 
 				if (roleKey === "driver") {
-					const label = busGroup.querySelector(".rux-scope-trip__driver-row:not([data-role-row]) .rux-scope-trip__role-label");
+					const label = busGroup.querySelector(".sched-scope-trip__driver-row:not([data-role-row]) .sched-scope-trip__role-label");
 					if (label) restoreDriverStatus(label, state);
 				} else {
 					const toggleBtn = busGroup.querySelector(`[data-role="${roleKey}"]`);
@@ -938,7 +938,7 @@ import {
 					const row = busGroup.querySelector(`[data-role-row="${roleKey}"]`);
 					if (row) {
 						row.hidden = false;
-						const label = row.querySelector(".rux-scope-trip__role-label");
+						const label = row.querySelector(".sched-scope-trip__role-label");
 						if (label) restoreDriverStatus(label, state);
 					}
 				}
@@ -967,10 +967,10 @@ import {
 				if (driverSelect && driver_id) driverSelect.value = driver_id;
 				const label = role === "driver"
 					? busGroup?.querySelector(
-						".rux-scope-trip__driver-row:not([data-role-row]) .rux-scope-trip__role-label",
+						".sched-scope-trip__driver-row:not([data-role-row]) .sched-scope-trip__role-label",
 					)
 					: busGroup?.querySelector(
-						`[data-role-row="${roleKey}"] .rux-scope-trip__role-label`,
+						`[data-role-row="${roleKey}"] .sched-scope-trip__role-label`,
 					);
 				if (label) {
 					restoreDriverStatus(
@@ -1001,7 +1001,7 @@ import {
 	}
 
 	function resetAssignmentGroups(root) {
-		root.querySelectorAll("#tp-bus-groups .rux-scope-trip__bus-group, #tp-return-bus-groups .rux-scope-trip__bus-group")
+		root.querySelectorAll("#tp-bus-groups .sched-scope-trip__bus-group, #tp-return-bus-groups .sched-scope-trip__bus-group")
 			.forEach((group) => {
 				group.querySelectorAll("select[name], input[name]").forEach((control) => {
 					control.value = "";
@@ -1012,7 +1012,7 @@ import {
 				group.querySelectorAll("[data-role-row]").forEach((row) => {
 					row.hidden = true;
 				});
-				group.querySelectorAll(".rux-scope-trip__role-label").forEach((label) => {
+				group.querySelectorAll(".sched-scope-trip__role-label").forEach((label) => {
 					restoreDriverStatus(label, "off");
 				});
 			});
@@ -1101,8 +1101,8 @@ import {
 			el.value = "";
 		});
 		// Reset all bus group selects and pay inputs
-		root.querySelectorAll(".rux-scope-trip__bus-group select").forEach(el => { el.value = ""; });
-		root.querySelectorAll(".rux-scope-trip__bus-group input[type='number']").forEach(el => { el.value = ""; });
+		root.querySelectorAll(".sched-scope-trip__bus-group select").forEach(el => { el.value = ""; });
+		root.querySelectorAll(".sched-scope-trip__bus-group input[type='number']").forEach(el => { el.value = ""; });
 		// Hide non-primary driver role rows
 		root.querySelectorAll("[data-role-row]").forEach(row => { row.hidden = true; });
 		root.querySelectorAll("[data-role]").forEach(btn => {
@@ -1128,7 +1128,7 @@ import {
 		if (delBtn) delBtn.disabled = true;
 		syncBusCount(root, 1);
 		syncReturnBusCount(root, 1);
-		root.querySelectorAll(".rux-scope-trip__role-label").forEach((button) => {
+		root.querySelectorAll(".sched-scope-trip__role-label").forEach((button) => {
 			restoreDriverStatus(button, "off");
 		});
 		itinerary.clearStops();
@@ -1523,7 +1523,7 @@ import {
 		cancelTripModal.className = "rux-modal-backdrop";
 		cancelTripModal.hidden = true;
 		cancelTripModal.innerHTML = `
-			<section class="rux-modal rux-cancel-trip-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-trip-modal-title">
+			<section class="rux-modal sched-cancel-trip-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-trip-modal-title">
 				<header class="rux-card__header">
 					<h2 class="rux-card__title" id="cancel-trip-modal-title">Cancel Trip</h2>
 					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close">
@@ -1531,7 +1531,7 @@ import {
 					</button>
 				</header>
 				<div class="rux-modal__body">
-					<p class="rux-cancel-trip-modal__note">The trip stays on record, marked Cancelled, and comes off the schedule — it isn't deleted.</p>
+					<p class="sched-cancel-trip-modal__note">The trip stays on record, marked Cancelled, and comes off the schedule — it isn't deleted.</p>
 					<div class="rux-field">
 						<label class="rux-field__label" for="cancel-trip-reason">Reason</label>
 						<textarea class="rux-textarea" id="cancel-trip-reason" data-cancel-trip-reason rows="3" placeholder="Why is this trip being cancelled?"></textarea>
@@ -2544,8 +2544,8 @@ export function initTripDB(root, itinerary) {
 	let cleanSnapshot = null;
 
 	function snapshotForm() {
-		const inputs = root.querySelectorAll(".rux-scope-trip__pane input, .rux-scope-trip__pane textarea, .rux-scope-trip__pane select");
-		const toggles = root.querySelectorAll("[data-req], [data-rux-toggle-button], [data-role], .rux-scope-trip__role-label");
+		const inputs = root.querySelectorAll(".sched-scope-trip__pane input, .sched-scope-trip__pane textarea, .sched-scope-trip__pane select");
+		const toggles = root.querySelectorAll("[data-req], [data-rux-toggle-button], [data-role], .sched-scope-trip__role-label");
 		const inputVals = Array.from(inputs).map(el => {
 			const key = el.id || el.name || "";
 			const val = el.type === "checkbox" ? String(el.checked) : el.value;

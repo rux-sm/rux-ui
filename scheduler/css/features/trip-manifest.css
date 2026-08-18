@@ -15,7 +15,7 @@
 	transform: translateX(-50%);
 	/* clamp (not min()) so it actually grows on roomy screens instead of
 	   hard-capping at a fixed pixel size regardless of viewport. */
-	width: var(--rux-manifest-window-width);
+	width: var(--sched-manifest-window-width);
 	height: clamp(280px, 65vh, 900px);
 	min-width: 480px;
 	min-height: 280px;
@@ -27,7 +27,7 @@
    so the manifest uses the same safe-area-aware inset as every other window.
    This breakpoint now only owns manifest-specific content behavior. */
 @media (max-width: 580px) {
-	.rux-scope-manifest__passenger-panel {
+	.sched-scope-manifest__passenger-panel {
 		width: 100%;
 		min-width: 0;
 	}
@@ -37,7 +37,7 @@
    the outer window header. Its own position:relative is what the panel's
    inset:0 anchors to, so the outer header (title/close/drag) stays outside
    the slide and always reachable while the panel is open. */
-.rux-scope-manifest__content {
+.sched-scope-manifest__content {
 	position: relative;
 	flex: 1;
 	min-height: 0;
@@ -46,7 +46,7 @@
 	overflow: hidden;
 }
 
-.rux-scope-manifest__toolbar {
+.sched-scope-manifest__toolbar {
 	display: flex;
 	flex: none;
 	align-items: center;
@@ -57,15 +57,15 @@
 	border-bottom: var(--rux-card-header-border);
 }
 
-.rux-scope-manifest__toolbar .rux-scope-trip__cols-2 {
+.sched-scope-manifest__toolbar .sched-scope-trip__cols-2 {
 	gap: var(--rux-space-5);
 }
 
-.rux-scope-manifest__toolbar .rux-field__label {
+.sched-scope-manifest__toolbar .rux-field__label {
 	white-space: nowrap;
 }
 
-.rux-scope-manifest__body {
+.sched-scope-manifest__body {
 	flex: 1;
 	min-height: 0;
 	overflow: auto;
@@ -76,9 +76,9 @@
    invisible/inert while closed (opacity:0 + pointer-events:none, not
    [hidden], so both can transition together). z-index sits between the
    table (auto) and the panel (2), so it can catch clicks anywhere in
-   .rux-scope-manifest__content *except* on the panel itself, which is
+   .sched-scope-manifest__content *except* on the panel itself, which is
    stacked above it. */
-.rux-scope-manifest__scrim {
+.sched-scope-manifest__scrim {
 	position: absolute;
 	inset: 0;
 	z-index: 1;
@@ -89,14 +89,14 @@
 		opacity var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 }
 
-.rux-scope-manifest__scrim.is-open {
+.sched-scope-manifest__scrim.is-open {
 	opacity: 1;
 	pointer-events: auto;
 	transition:
 		opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
 }
 
-/* Passenger editor — docks to the left edge of .rux-scope-manifest__content
+/* Passenger editor — docks to the left edge of .sched-scope-manifest__content
    (toolbar + table), sliding in over it rather than covering the outer
    window header. Fixed-ish width (min 400px "for now" — revisit once we
    know how this reads against the table) rather than full-bleed, so part of
@@ -104,7 +104,7 @@
    so the transform transition actually has something to animate;
    translateX(-100%) puts it fully outside the window's own overflow:hidden
    clip, so it can't intercept clicks while closed. */
-.rux-scope-manifest__passenger-panel {
+.sched-scope-manifest__passenger-panel {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -122,7 +122,7 @@
 		transform var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
 }
 
-.rux-scope-manifest__passenger-panel.is-open {
+.sched-scope-manifest__passenger-panel.is-open {
 	transform: translateX(0);
 	transition:
 		transform var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
@@ -132,7 +132,7 @@
    Info/Payments cards below have their own headers and need the base
    .rux-card__header space-between (title left, Add/Delete cluster right),
    not this one's back-button left-alignment. */
-.rux-scope-manifest__passenger-panel > .rux-card__header {
+.sched-scope-manifest__passenger-panel > .rux-card__header {
 	flex: none;
 	gap: var(--rux-space-2);
 	justify-content: flex-start;
@@ -147,7 +147,7 @@
    flex container for the cards) on one element was the original bug: the
    cards, as flex items of a height-constrained column, could get squeezed
    instead of the body actually scrolling around them. */
-.rux-scope-manifest__passenger-body {
+.sched-scope-manifest__passenger-body {
 	flex: 1;
 	min-height: 0;
 	overflow: auto;
@@ -158,7 +158,7 @@
    the bottom of it, so they're reachable without scrolling through the
    whole form. Left-aligned (not .rux-card__footer's default flex-end),
    matching the same three-button row on the main Trip panel. */
-.rux-scope-manifest__passenger-panel > .rux-card__footer {
+.sched-scope-manifest__passenger-panel > .rux-card__footer {
 	flex: none;
 	justify-content: flex-start;
 }

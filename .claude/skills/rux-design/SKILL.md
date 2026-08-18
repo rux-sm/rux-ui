@@ -30,6 +30,8 @@ needed for the task after that:
 - `rux-ui/css/tokens.css` — primitives, semantic tokens, component contracts, and themes
 - `rux-ui/css/colors_and_type.css` — webfonts, reset, global element styles, and type utilities
 - `rux-ui/css/base/` — reusable BEM-style `.rux-*` components
+- `scheduler/css/tokens.css` — the app's own `--sched-*` domain vocabulary
+  (trips, buses, drivers); never add these to `rux-ui/css/tokens.css`
 - `scheduler/css/components.css` — scheduler features and layout only; requires `rux.css` to be loaded first
 - `scheduler/css/features/` — product-specific component and panel styles
 - `scheduler/css/layout/` — scheduler and application-shell layout styles
@@ -66,6 +68,11 @@ existing files merely to make the new-app structure cleaner.
 
 ## Design rules
 
+0. **Pick the right prefix.** `.rux-*` / `--rux-*` is reserved for `rux-ui/` and
+   means "portable and domain-free". Anything naming a trip, bus, driver, fleet,
+   customer, manifest, or itinerary is `.sched-*` / `--sched-*` and lives in
+   `scheduler/`. `tests/portability-boundary.test.mjs` enforces both directions,
+   so a misplaced name fails the suite rather than drifting.
 1. Compose with existing `.rux-*` components before inventing a new component.
    Typical screens combine cards, panels, fields, buttons, menus, stacks, and
    clusters.

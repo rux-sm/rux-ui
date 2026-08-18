@@ -37,7 +37,8 @@ test("the floating window + dialog + script/css are present", () => {
 
 test("the panel exposes a RequestInbox API and lazy-loads", () => {
 	assert.match(panel, /window\.RequestInbox\s*=\s*\{\s*open,\s*close,\s*refresh/);
-	assert.match(panel, /import\("\.\.\/data\/trip-request-db\.js\?v=1"\)/);
+	// Version-agnostic: the ?v= suffix is a cache-buster and moves on its own.
+	assert.match(panel, /import\("\.\.\/data\/trip-request-db\.js(\?v=\d+)?"\)/);
 	assert.match(panel, /loadPromise\s*=\s*null/);
 });
 

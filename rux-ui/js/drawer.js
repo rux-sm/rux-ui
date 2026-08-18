@@ -28,7 +28,6 @@
      leftWidthVar     custom property holding the left drawer's default width
      rightWidthVar    …and the right drawer's
      rightModifier    class marking a drawer as the right-hand one
-     railWidthVar     custom property holding the collapsed rail width
      fallbackWidth    selector used when `container` is absent
 
    API
@@ -67,12 +66,11 @@
 		gutter: ":scope > .rux-drawer-gutter",
 		scrimClass: "rux-drawer-scrim",
 		closeAnimation: "rux-drawer-out",
-		widthHost: ".rux-app-shell",
+		widthHost: ".rux-app",
 		leftWidthVar: "--rux-drawer-left-default-width",
 		rightWidthVar: "--rux-drawer-right-default-width",
 		rightModifier: "rux-drawer--right",
-		railWidthVar: "--rux-panel-rail-width",
-		fallbackWidth: ".rux-app-shell",
+		fallbackWidth: ".rux-app__body",
 	};
 
 	function configure(overrides = {}) {
@@ -144,13 +142,6 @@
 		);
 	}
 
-	// Shared with the --railable panel-width override in the application's
-	// layout CSS so a railable drawer's close animation targets the exact
-	// width its own container-query reflow is tuned for.
-	function configuredRailWidth() {
-		return hostValue(env.railWidthVar);
-	}
-
 	function containerGutterWidth(drawerEl) {
 		const containerEl = drawerEl.closest(env.container);
 		if (!containerEl) return 0;
@@ -203,11 +194,6 @@
 			scheduleMin = 0,
 			onOpen = null,
 			onClose = null,
-			// True for a drawer whose own panel collapses to an icon-only rail
-			// on desktop (see the --railable CSS override) instead of
-			// disappearing entirely — close() shrinks to that rail width
-			// instead of 0.
-			railWidth = false,
 		} = options;
 
 		const DRAWER_DEFAULT = configuredDefaultWidth(drawer);
@@ -260,8 +246,8 @@
 			}
 		}
 
-		// Railable panels use computed min-width: 0 so closing can reach the
-		// rail. Resize clamping must read the inherited panel token instead.
+		// A panel may compute min-width: 0 so the drawer can close all the way,
+		// so resize clamping reads the inherited panel token instead.
 		function drawerMin() {
 			const panelStyle = getComputedStyle(panel);
 			const tokenMin = parseFloat(panelStyle.getPropertyValue("--rux-panel-min-width"));
@@ -282,15 +268,6 @@
 			toggleBtn.setAttribute(stateAttribute, String(open));
 		}
 
-		// Where a railable drawer rests when not open: the rail width, on
-		// desktop. Non-railable drawers (Fleet/Driver/Customer) and mobile
-		// (rail never applies there) both fall through to fully closed (0).
-		// Shared by close() and the drag-from-closed paths below so all
-		// three agree on where "closed" starts from.
-		function closedTargetWidth() {
-			return railWidth && !mobilePanelQuery.matches ? configuredRailWidth() : 0;
-		}
-
 		function open() {
 			const reopening = drawer.classList.contains("is-collapsing");
 			cancelPendingClose?.();
@@ -306,12 +283,6 @@
 				drawer.style.setProperty("--drawer-open-width", w);
 			}
 			drawer.classList.remove("is-closing", "is-collapsing");
-			if (railWidth && !mobilePanelQuery.matches && (!isOpen() || reopening)) {
-				drawer.classList.add("is-expanding");
-				requestAnimationFrame(() =>
-					requestAnimationFrame(() => drawer.classList.remove("is-expanding")),
-				);
-			}
 			drawer.classList.add("is-open");
 			panel.inert = false;
 			drawer.setAttribute("aria-hidden", "false");
@@ -328,23 +299,17 @@
 		function close() {
 			if (!isOpen()) return;
 			const isMobile = mobilePanelQuery.matches;
-			// A railable drawer's own panel keeps rendering at rail width
-			// instead of display:none (see the --railable override in
-			// the application's layout CSS) — its container-query reflow (icon-only,
-			// then stacked tabs) animates continuously as --drawer-width
-			// shrinks toward that target, so there's no separate element to
-			// hand off to. --drawer-open-width is left untouched regardless,
-			// same as always, so a non-railable panel's content freezes at
-			// its pre-close size and only gets clipped by the shrinking
-			// drawer, instead of snapping to its min-width before the drawer
-			// animates.
+			// --drawer-open-width is left untouched, so the panel's content
+			// freezes at its pre-close size and only gets clipped by the
+			// shrinking drawer, instead of snapping to its min-width before
+			// the drawer animates.
 			// Desktop drawers keep .is-open until their width transition finishes.
 			// The extra state selects the productive exit curve during that period;
 			// mobile uses its separate .is-closing keyframe state below.
 			if (!isMobile) {
 				drawer.classList.add("is-collapsing");
 			}
-			drawer.style.setProperty("--drawer-width", closedTargetWidth() + "px");
+			drawer.style.setProperty("--drawer-width", "0px");
 			panel.inert = true;
 			drawer.setAttribute("aria-hidden", "true");
 			syncToggleButton(false);
@@ -417,7 +382,7 @@
 		function syncHandle() {
 			handle.setAttribute(
 				"aria-valuemin",
-				String(Math.round(isOpen() ? drawerMin() : closedTargetWidth())),
+				String(isOpen() ? Math.round(drawerMin()) : 0),
 			);
 			handle.setAttribute("aria-valuemax", String(Math.round(maxDrawerWidth())));
 			handle.setAttribute("aria-valuenow", String(Math.round(drawerWidth())));

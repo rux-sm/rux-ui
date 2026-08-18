@@ -2,7 +2,7 @@
    RUX UI — CUSTOMERS PANEL
    --------------------------------------------------------------------------
    Roster + editor drawer for the saved contacts table. Same shell/recipe
-   as the Fleet and Driver panels — a .scheduler-app__drawer with a
+   as the Fleet and Driver panels — a .rux-drawer with a
    RuxDrawer-managed left panel,
    a roster table on the right — trimmed down since a contact is only
    name/phone/email plus its linked trip history, not a multi-tab record.
@@ -36,7 +36,7 @@
 
 	function getContactsDb() {
 		if (!contactsDbPromise) {
-			contactsDbPromise = import("../data/trip-db.js?v=10").catch((error) => {
+			contactsDbPromise = import("../data/trip-db.js?v=11").catch((error) => {
 				// A failed dynamic import may be retried on the next panel load.
 				contactsDbPromise = null;
 				throw error;
@@ -205,20 +205,20 @@
 
 	async function loadContactTrips(contactId) {
 		if (!tripList) return;
-		tripList.innerHTML = `<li class="rux-scope-customer__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+		tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-subtle">Loading…</span></li>`;
 		try {
 			const db = await getContactsDb();
 			const trips = await db.fetchContactTrips(contactId);
 			if (selectedId !== contactId) return;
 			if (!trips.length) {
-				tripList.innerHTML = `<li class="rux-scope-customer__trip-item"><span class="rux-subtle">No trips yet.</span></li>`;
+				tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-subtle">No trips yet.</span></li>`;
 				return;
 			}
 			tripList.innerHTML = trips
 				.map((t) => {
 					const label = [t.trip_ref, t.customer, t.destination].filter(Boolean).join(" — ") || "Trip";
-					return `<li class="rux-scope-customer__trip-item">
-						<span class="rux-scope-customer__trip-date">${escHtml(t.start_date || "")}</span>
+					return `<li class="sched-scope-customer__trip-item">
+						<span class="sched-scope-customer__trip-date">${escHtml(t.start_date || "")}</span>
 						<span>${escHtml(label)}</span>
 					</li>`;
 				})
@@ -226,7 +226,7 @@
 		} catch (err) {
 			if (selectedId !== contactId) return;
 			console.warn("Could not load customer trips:", err);
-			tripList.innerHTML = `<li class="rux-scope-customer__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+			tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
 		}
 	}
 
@@ -235,7 +235,7 @@
 	function clearPanel() {
 		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
 		selectedId = null;
-		panelEl.querySelectorAll(".rux-scope-customer__pane input").forEach((f) => { f.value = ""; });
+		panelEl.querySelectorAll(".sched-scope-customer__pane input").forEach((f) => { f.value = ""; });
 		if (tripList) tripList.innerHTML = "";
 		markFormClean();
 	}

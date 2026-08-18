@@ -9,24 +9,26 @@
    Usage:
      <link rel="stylesheet" href="rux-ui/css/rux.css" />
 
-   For applications that need the scheduler and trip features on top of the
-   base system, load scheduler/css/components.css separately.
+   This is the whole system. An application layers its own feature CSS on
+   top; in this repository the reference scheduler does that through
+   scheduler/css/components.css.
 
    This file is the public API. The internal CSS remains modular under
    tokens.css, colors_and_type.css, and base/ for maintainability.
    ========================================================================== */
 
-@import "./tokens.css?v=4";
+@import "./tokens.css?v=7";
 @import "./colors_and_type.css?v=2";
 @import "./base/icons.css";
 @import "./base/controls.css";
 @import "./base/ui-header.css";
-@import "./base/side-nav.css";
+@import "./base/side-nav.css?v=2";
 @import "./base/app-shell.css?v=3";
 @import "./base/badges.css";
 @import "./base/form.css";
 @import "./base/workspace.css";
-@import "./base/panel.css";
+@import "./base/panel.css?v=2";
+@import "./base/drawer.css";
 @import "./base/menu.css";
 @import "./base/popover.css";
 @import "./base/suggestions.css";

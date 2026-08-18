@@ -10,7 +10,7 @@
 	max-height: min(32rem, calc(100dvh - 2 * var(--rux-space-5)));
 }
 
-.rux-contact-info-modal__preview {
+.sched-contact-info-modal__preview {
 	flex: 1;
 	width: 100%;
 	min-height: 14rem;

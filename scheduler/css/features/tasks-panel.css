@@ -8,19 +8,19 @@
    in card.css) instead of floating apart with their own margin. */
 
 /* Trips / Post Trip toggle above the day-group section stack. */
-.rux-tasks__header {
+.sched-tasks__header {
 	padding-bottom: var(--rux-space-2);
 }
 
-.rux-tasks__list-toggle {
+.sched-tasks__list-toggle {
 	width: 100%;
 }
 
-.rux-tasks__list-toggle > .rux-button {
+.sched-tasks__list-toggle > .rux-button {
 	flex: 1;
 }
 
-.rux-tasks__segment-status {
+.sched-tasks__segment-status {
 	display: inline-flex;
 	flex: none;
 	color: var(--rux-warning);
@@ -28,11 +28,11 @@
 	line-height: 1;
 }
 
-.rux-tasks__segment-status--danger {
+.sched-tasks__segment-status--danger {
 	color: var(--rux-danger);
 }
 
-.rux-tasks__segment-status[hidden] {
+.sched-tasks__segment-status[hidden] {
 	display: none;
 }
 
@@ -41,22 +41,22 @@
    inline in the scrolling body, since it's reached for infrequently. The
    footer itself already supplies the border/padding around it, so this is
    just the row for the three buttons within that slot — each one stretches
-   to fill an equal share, same as .rux-scope-right-panel__footer-group's own
+   to fill an equal share, same as .sched-scope-right-panel__footer-group's own
    direct-child buttons (driver-week-info.css), just one level deeper here
    since this row nests inside that group instead of being it. */
-.rux-tasks__nav {
+.sched-tasks__nav {
 	display: flex;
 	width: 100%;
 	align-items: center;
 	gap: var(--rux-space-2);
 }
 
-.rux-tasks__nav[hidden],
+.sched-tasks__nav[hidden],
 #rp-post-trip-filter-btn[hidden] {
 	display: none;
 }
 
-.rux-tasks__nav > .rux-button {
+.sched-tasks__nav > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
@@ -66,16 +66,16 @@
 }
 
 /* Only between multiple trip entries sharing one day-group's .rux-card__body
-   (renderTrip) — .rux-tasks__trip here is a plain .rux-card nested inside
+   (renderTrip) — .sched-tasks__trip here is a plain .rux-card nested inside
    a day-group specifically. Post Trip's own cards (renderPostTripCard) use
    the same treatment but sit as flat siblings of #rp-tasks-departures-body
    instead, sharing a border the same way day-groups do — no margin needed
    between those. */
-.rux-card__body > .rux-tasks__trip + .rux-tasks__trip {
+.rux-card__body > .sched-tasks__trip + .sched-tasks__trip {
 	margin-top: var(--rux-space-4);
 }
 
-.rux-tasks__trip--empty > .rux-card__body {
+.sched-tasks__trip--empty > .rux-card__body {
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -83,7 +83,7 @@
 	padding: var(--rux-space-4);
 }
 
-.rux-tasks__trip--empty .rux-tasks__empty {
+.sched-tasks__trip--empty .sched-tasks__empty {
 	padding: 0;
 }
 
@@ -91,14 +91,14 @@
    tasks-panel.js), not one per section — right-aligned against the
    destination/trip-type + customer stack rather than repeated down the
    card. */
-.rux-tasks__trip-header {
+.sched-tasks__trip-header {
 	display: flex;
 	align-items: flex-start;
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 }
 
-.rux-tasks__trip-title {
+.sched-tasks__trip-title {
 	margin: 0;
 	color: var(--rux-text-default);
 	font-weight: var(--rux-weight-400);
@@ -107,24 +107,24 @@
 	overflow-wrap: anywhere;
 }
 
-.rux-tasks__trip-customer {
+.sched-tasks__trip-customer {
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	line-height: 1.4;
 	overflow-wrap: anywhere;
 }
 
-.rux-tasks__section {
+.sched-tasks__section {
 	margin-top: var(--rux-space-3);
 }
 
-.rux-tasks__section--prep {
+.sched-tasks__section--prep {
 	margin-top: var(--rux-space-2);
 	padding-top: var(--rux-space-2);
 	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-tasks__section--readiness {
+.sched-tasks__section--readiness {
 	padding-top: var(--rux-space-2);
 	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
@@ -133,70 +133,70 @@
    complete is a checkmark, incomplete is the same "schedule" clock icon
    billing-config.js's own pending status uses, so "still pending" reads
    the same way everywhere in the app. */
-.rux-tasks__status {
+.sched-tasks__status {
 	display: inline-flex;
 	flex: none;
 	align-items: center;
 	justify-content: center;
 }
 
-.rux-tasks__status--complete {
+.sched-tasks__status--complete {
 	color: var(--rux-success);
 }
 
-.rux-tasks__status--pending {
+.sched-tasks__status--pending {
 	color: var(--rux-warning);
 }
 
-.rux-tasks__status--overdue {
+.sched-tasks__status--overdue {
 	color: var(--rux-danger);
 }
 
 /* .rux-checkbox (css/base/form.css) already handles the row layout, the
    checkbox's own appearance, and disabled-state muting — this just tightens
    its gap for a dense checklist context. */
-.rux-tasks__checklist {
+.sched-tasks__checklist {
 	display: flex;
 	flex-direction: column;
 	gap: 0;
 	min-width: 0;
 }
 
-.rux-tasks__task-row {
+.sched-tasks__task-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 }
 
-.rux-tasks__task-row .rux-checkbox {
+.sched-tasks__task-row .rux-checkbox {
 	min-width: 0;
 }
 
-.rux-tasks__shortcut {
+.sched-tasks__shortcut {
 	flex: none;
 }
 
 /* The action word (Reminder/Print Envelope) stays primary/bright — the
    driver's own name is secondary, same weight as the row's other muted
    detail text elsewhere in this panel. */
-.rux-tasks__driver-name {
+.sched-tasks__driver-name {
 	color: var(--rux-text-muted);
 }
 
-.rux-tasks__driver-empty {
+.sched-tasks__driver-empty {
 	color: var(--rux-text-faint);
 	font-size: var(--rux-size-xs);
 }
 
-.rux-tasks__driver-empty {
+.sched-tasks__driver-empty {
 	display: block;
 }
 
-/* Bus/driver reference row on a Post Trip card — reuses .rux-tasks__driver-
+/* Bus/driver reference row on a Post Trip card — reuses .sched-tasks__driver-
    name/--empty above, just wrapped to flow across multiple bus/driver pairs
    instead of the one-per-row list the Trips checklist uses. */
-.rux-tasks__post-trip-reference {
+.sched-tasks__post-trip-reference {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rux-space-1) var(--rux-space-3);
@@ -204,7 +204,7 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-tasks__note-input {
+.sched-tasks__note-input {
 	width: 100%;
 	margin-top: var(--rux-space-2);
 	resize: vertical;
@@ -212,29 +212,29 @@
 
 /* Automated checks remain disabled, but successful results use the same
    accent checkbox and readable text treatment as completed manual tasks. */
-.rux-tasks__automatic-check--complete:has(input:disabled) {
+.sched-tasks__automatic-check--complete:has(input:disabled) {
 	color: var(--rux-text-default);
 }
 
-.rux-tasks__automatic-check--complete input:checked:disabled {
+.sched-tasks__automatic-check--complete input:checked:disabled {
 	background-color: var(--rux-checkbox-checked-bg);
 	border-color: var(--rux-checkbox-checked-border);
 }
 
-.rux-tasks__empty {
+.sched-tasks__empty {
 	margin: 0;
 	padding: var(--rux-space-1) 0;
 	color: var(--rux-text-faint);
 	font-size: var(--rux-size-sm);
 }
 
-.rux-tasks__requirements {
+.sched-tasks__requirements {
 	margin-top: var(--rux-space-2);
 	padding-top: var(--rux-space-2);
 	border-top: var(--rux-border-width) solid var(--rux-card-border);
 }
 
-.rux-tasks__requirements-title {
+.sched-tasks__requirements-title {
 	margin: 0 0 var(--rux-space-1);
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
@@ -243,7 +243,7 @@
 	letter-spacing: var(--rux-tracking-wide);
 }
 
-.rux-tasks__requirement-row {
+.sched-tasks__requirement-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) minmax(9rem, 0.7fr);
 	align-items: center;
@@ -260,7 +260,7 @@
    Same width whether it's Fuel Card/Hotel's editable reference number or
    one of the read-only fields below — one consistent field size down the
    whole Requirements list rather than each row picking its own. */
-.rux-tasks__requirement-input {
+.sched-tasks__requirement-input {
 	min-width: 0;
 	justify-self: end;
 	text-align: right;
@@ -269,10 +269,10 @@
 /* A plain div styled to match .rux-input:disabled — real <input disabled>
    works fine for Payment/Confirmed/Contact (plain text), but the
    Sleeper/56 Passenger/Lift rows need actual icon markup (equipment
-   glyphs, see .rux-tasks__equip-icon below), which a native input can't
+   glyphs, see .sched-tasks__equip-icon below), which a native input can't
    render inside itself. Same box, same width, same disabled look either
    way, just a div where icons are involved. */
-.rux-tasks__requirement-input--readonly {
+.sched-tasks__requirement-input--readonly {
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
@@ -290,31 +290,31 @@
    drives its glyph's font-size from. Sized to --rux-button-icon-size-standard, the
    same glyph size buttons use everywhere else, rather than a one-off value
    for this context. */
-.rux-tasks__equip-icon {
+.sched-tasks__equip-icon {
 	--_icon-size: var(--rux-button-icon-size-standard);
 	--_icon-optical-size: var(--rux-icon-optical-size-md);
 	flex-shrink: 0;
 }
 
-.rux-tasks__equip-badge {
+.sched-tasks__equip-badge {
 	flex-shrink: 0;
 	color: inherit;
 	font-weight: var(--rux-weight-400);
 }
 
-.rux-tasks__requirement-input--warning {
+.sched-tasks__requirement-input--warning {
 	color: var(--rux-warning);
 }
 
 /* An assigned bus that fails the requirement (wrong capacity, no lift, no
    sleeper) is an active conflict to fix, not just an outstanding task —
    distinct from --warning, which is "no bus assigned yet" (still normal). */
-.rux-tasks__requirement-input--danger {
+.sched-tasks__requirement-input--danger {
 	color: var(--rux-danger);
 }
 
 @media (max-width: 420px) {
-	.rux-tasks__requirement-row {
+	.sched-tasks__requirement-row {
 		grid-template-columns: 1fr;
 		gap: var(--rux-space-1);
 		padding-block: var(--rux-space-1);
@@ -324,7 +324,7 @@
 /* Inline pending badge — an ongoing unresolved condition, not an unseen
 	 notification. It stays visible after the Tasks tab has been opened and
 	 uses the same schedule glyph as pending task-card statuses. */
-.rux-tasks__tab-badge {
+.sched-tasks__tab-badge {
 	display: inline-flex;
 	flex: none;
 	align-items: center;
@@ -336,19 +336,19 @@
 	line-height: 1;
 }
 
-.rux-tasks__tab-badge--danger,
-.rux-tasks__nav-alert {
+.sched-tasks__tab-badge--danger,
+.sched-tasks__nav-alert {
 	color: var(--rux-danger);
 }
 
-.rux-tasks__nav-alert {
+.sched-tasks__nav-alert {
 	display: inline-flex;
 	flex: none;
 	font-size: var(--rux-icon-md);
 	line-height: 1;
 }
 
-.rux-tasks__tab-badge[hidden],
-.rux-tasks__nav-alert[hidden] {
+.sched-tasks__tab-badge[hidden],
+.sched-tasks__nav-alert[hidden] {
 	display: none;
 }

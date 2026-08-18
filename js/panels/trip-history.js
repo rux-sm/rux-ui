@@ -9,7 +9,7 @@ const list = document.getElementById("rp-history-list");
 const status = document.getElementById("rp-history-status");
 const loadMoreButton = document.getElementById("rp-history-load-more");
 const filterButton = document.getElementById("rp-history-trip-filter");
-const title = root?.querySelector(".rux-trip-history__title");
+const title = root?.querySelector(".sched-trip-history__title");
 
 let records = [];
 let selectedTrip = null;
@@ -89,25 +89,25 @@ function displayValue(value, emptyLabel = "None") {
 }
 
 function renderChange(change) {
-	const row = element("div", "rux-trip-history__change");
+	const row = element("div", "sched-trip-history__change");
 	const label = element("dt", "", change.label || change.field || "Change");
 	const value = element("dd");
 	const before = change.before;
 	const after = change.after;
 
 	if (before === null || before === undefined || before === "") {
-		value.appendChild(element("span", "rux-trip-history__new", displayValue(after, "Added")));
+		value.appendChild(element("span", "sched-trip-history__new", displayValue(after, "Added")));
 	} else if (after === null || after === undefined || after === "") {
 		value.append(
-			element("span", "rux-trip-history__old", displayValue(before)),
-			element("span", "rux-trip-history__arrow", "→"),
-			element("span", "rux-trip-history__new", "Removed"),
+			element("span", "sched-trip-history__old", displayValue(before)),
+			element("span", "sched-trip-history__arrow", "→"),
+			element("span", "sched-trip-history__new", "Removed"),
 		);
 	} else {
 		value.append(
-			element("span", "rux-trip-history__old", displayValue(before)),
-			element("span", "rux-trip-history__arrow", "→"),
-			element("span", "rux-trip-history__new", displayValue(after)),
+			element("span", "sched-trip-history__old", displayValue(before)),
+			element("span", "sched-trip-history__arrow", "→"),
+			element("span", "sched-trip-history__new", displayValue(after)),
 		);
 	}
 
@@ -116,30 +116,30 @@ function renderChange(change) {
 }
 
 function renderCard(record) {
-	const card = element("article", "rux-trip-history__card");
-	const header = element("header", "rux-trip-history__card-header");
+	const card = element("article", "sched-trip-history__card");
+	const header = element("header", "sched-trip-history__card-header");
 	const identity = element("div");
 	identity.append(
-		element("div", "rux-trip-history__timestamp", formatTimestamp(record.created_at)),
-		element("div", "rux-trip-history__actor", record.actor_name || "Dispatcher"),
+		element("div", "sched-trip-history__timestamp", formatTimestamp(record.created_at)),
+		element("div", "sched-trip-history__actor", record.actor_name || "Dispatcher"),
 	);
-	const action = element("span", "rux-trip-history__action", actionLabel(record.action));
+	const action = element("span", "sched-trip-history__action", actionLabel(record.action));
 	action.dataset.action = record.action || "updated";
 	header.append(identity, action);
 
-	const context = element("div", "rux-trip-history__context");
+	const context = element("div", "sched-trip-history__context");
 	const route = [record.customer_name, record.destination].filter(Boolean).join(" · ") || "Trip";
 	const tripDate = formatTripDate(record);
 	const meta = [tripDate, record.trip_ref || (record.trip_id ? `Trip ${String(record.trip_id).slice(0, 8)}` : null)]
 		.filter(Boolean)
 		.join(" · ");
 	context.append(
-		element("div", "rux-trip-history__route", route),
-		element("div", "rux-trip-history__meta rux-u-caption", meta),
+		element("div", "sched-trip-history__route", route),
+		element("div", "sched-trip-history__meta rux-u-caption", meta),
 	);
 
 	const changes = Array.isArray(record.changes) ? record.changes : [];
-	const changeList = element("dl", "rux-trip-history__changes");
+	const changeList = element("dl", "sched-trip-history__changes");
 	const expanded = expandedCards.has(String(record.id));
 	const visible = expanded ? changes : changes.slice(0, 3);
 	visible.forEach((change) => changeList.appendChild(renderChange(change)));
@@ -149,7 +149,7 @@ function renderCard(record) {
 	if (changes.length > 3) {
 		const more = element(
 			"button",
-			"rux-button rux-button--default rux-button--compact rux-trip-history__more",
+			"rux-button rux-button--default rux-button--compact sched-trip-history__more",
 			expanded ? "Show less" : `Show ${changes.length - 3} more`,
 		);
 		more.type = "button";
@@ -202,9 +202,9 @@ function render() {
 		const label = groupLabel(record.created_at);
 		if (label !== currentGroup) {
 			currentGroup = label;
-			group = element("section", "rux-card rux-trip-history__group");
+			group = element("section", "rux-card sched-trip-history__group");
 			const header = element("div", "rux-card__header");
-			header.appendChild(element("h4", "rux-trip-history__group-title", label));
+			header.appendChild(element("h4", "sched-trip-history__group-title", label));
 			group.append(header);
 			list.appendChild(group);
 		}

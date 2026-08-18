@@ -1,7 +1,7 @@
 /* ==========================================================================
    RUX UI — SCHEDULER COMPONENTS
    --------------------------------------------------------------------------
-   Scheduler-specific features and layout, BEM-style, --rux- prefixed.
+   Scheduler-specific features and layout, BEM-style, .sched-* prefixed.
 
    Requires the design system to be loaded first. This bundle no longer
    imports rux-ui/css/base/* — those are the portable layer and now come from
@@ -13,10 +13,14 @@
 
    Convention
    ----------
-   .rux-{block}                 Block
-   .rux-{block}__{element}      Element (named sub-part)
-   .rux-{block}--{modifier}     Variant / size
-   .is-*  /  .has-*             JS-toggled state (no rux- prefix)
+   .sched-{block}                 Block
+   .sched-{block}__{element}      Element (named sub-part)
+   .sched-{block}--{modifier}     Variant / size
+   .is-*  /  .has-*               JS-toggled state (no prefix)
+
+   The .rux-* prefix is reserved for rux-ui/ — see docs/portability-audit.md
+   §3. A .rux-* name in this bundle is a portable component being configured
+   or composed, never one this application defines.
 
    Components reference global tokens for shared design decisions. Reusable
    component contracts stay in tokens.css; feature-only custom properties live
@@ -24,17 +28,19 @@
 
    Modules (in load order)
    -----------------------
+   tokens.css       --sched-* domain vocabulary (trips, buses, drivers)
    trip-bar.css     .sched-trip-bar — Gantt bar for trip display
    trip-panel.css   .sched-scope-trip — side-panel form editor for trip details
    itinerary.css    .sched-trip-itinerary — timeline stop editor for the Itinerary tab
    scheduler.css    .sched-scheduler — week-grid component
-   scheduler-app.css  .scheduler-app shell and app-header coordination
+   scheduler-app.css  .sched-app shell and app-header coordination
    ========================================================================== */
 
-@import "./features/trip-bar.css?v=34";
-@import "./features/trip-panel.css?v=33";
-@import "./features/trip-history.css?v=2";
-@import "./features/trip-dialog.css?v=2";
-@import "./features/itinerary.css?v=4";
-@import "./layout/scheduler.css?v=15";
-@import "./layout/scheduler-app.css?v=90";
+@import "./tokens.css?v=3";
+@import "./features/trip-bar.css?v=36";
+@import "./features/trip-panel.css?v=35";
+@import "./features/trip-history.css?v=3";
+@import "./features/trip-dialog.css?v=3";
+@import "./features/itinerary.css?v=5";
+@import "./layout/scheduler.css?v=16";
+@import "./layout/scheduler-app.css?v=91";

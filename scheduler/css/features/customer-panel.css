@@ -15,7 +15,7 @@
                                   .sched-customer-dialog window rule below.
    .rux-panel__body              Scrollable body — plain .rux-panel__body
                                   now, no unique styling of its own.
-   .rux-scope-customer__pane     Form fields. Kept as its own class only
+   .sched-scope-customer__pane     Form fields. Kept as its own class only
                                   because customers-panel.js queries it
                                   directly (form reset) — its CSS is a pure
                                   .rux-panel__pane duplicate otherwise.
@@ -53,7 +53,7 @@
 	}
 }
 
-.rux-scope-customer__pane {
+.sched-scope-customer__pane {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-panel-content-gap);
@@ -62,7 +62,7 @@
 /* — Trips: read-only trip history, the payoff of linking contacts to
    trips instead of only ever copying freetext — */
 
-.rux-scope-customer__trip-item {
+.sched-scope-customer__trip-item {
 	display: flex;
 	align-items: center;
 	gap: var(--rux-space-3);
@@ -73,7 +73,7 @@
 	font-size: var(--rux-size-sm);
 }
 
-.rux-scope-customer__trip-date {
+.sched-scope-customer__trip-date {
 	font-family: var(--rux-font-mono);
 	color: var(--rux-text-muted);
 	min-width: 5.5rem;

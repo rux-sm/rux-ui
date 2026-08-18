@@ -1,0 +1,271 @@
+/* ==========================================================================
+   DRAWER
+   --------------------------------------------------------------------------
+   A docked, resizable drawer beside a workspace, plus the two gutters that
+   sit between them: a spacing gutter that opens with the drawer, and a
+   resize gutter that acts as the splitter.
+
+   This is the CSS half of the contract rux-ui/js/drawer.js already declares
+   in its portable defaults — the class names, the scrim, the close
+   animation, and the two default-width custom properties below are the
+   names RuxDrawer.configure() falls back to when an application declares
+   nothing.
+
+   The mechanism is here; the measurements are not. Per docs/layout-
+   composition.md, the shared layer MUST NOT define product drawer widths or
+   feature breakpoints, so both width tokens default to `auto` and an
+   application sets them on its own shell.
+   ========================================================================== */
+
+.rux-drawer {
+	position: relative;
+	flex: none;
+	width: 0;
+	margin-left: 0;
+	min-height: 0;
+	overflow: visible;
+	box-sizing: border-box;
+	padding: 0;
+	transition:
+		width var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
+
+	display: flex;
+	flex-direction: column;
+}
+
+.rux-drawer.is-open {
+	width: var(--drawer-width, var(--rux-drawer-left-default-width));
+	overflow: hidden;
+}
+
+.rux-drawer.is-open:not(.is-collapsing) {
+	transition:
+		width var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
+}
+
+.rux-drawer.is-collapsing {
+	transition:
+		width var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
+}
+
+/* Interactive resizing is a direct manipulation, not a state transition.
+   Match the open rule's specificity so its entrance easing cannot win the
+   cascade and make the opposite edge trail or rebound behind the pointer. */
+.rux-drawer.is-open.is-resizing,
+.rux-drawer.is-resizing {
+	transition: none;
+}
+
+/* — Right drawer (mirrored) — */
+
+.rux-drawer--right {
+	margin-left: 0;
+}
+
+.rux-drawer--right.is-open {
+	margin-right: 0;
+	width: var(--drawer-width, var(--rux-drawer-right-default-width));
+}
+
+/* — Spacing gutter — */
+
+/* Collapsed to nothing while the drawer is closed; opens to the app's gap
+   alongside it. Sits between the workspace and the drawer, so it animates
+   on the same timeline. */
+.rux-drawer-gutter {
+	position: relative;
+	flex: 0 0 0;
+	min-width: 0;
+	min-height: 0;
+	z-index: 1;
+	transition:
+		flex-basis var(--rux-panel-motion-duration) var(--rux-panel-standard-easing),
+		min-width var(--rux-panel-motion-duration) var(--rux-panel-standard-easing);
+}
+
+.rux-drawer.is-open:not(.is-collapsing) + .rux-drawer-gutter,
+.rux-drawer-gutter:has(+ .rux-drawer.is-open:not(.is-collapsing)) {
+	flex-basis: var(--rux-drawer-gap);
+	min-width: var(--rux-drawer-gap);
+}
+
+/* — Resize gutter (splitter) — */
+
+.rux-resize-gutter {
+	display: none;
+	cursor: col-resize;
+	z-index: 10;
+	touch-action: none;
+}
+
+/* A splitter belongs to an open panel. Remove it from layout, hit testing,
+   and keyboard navigation while closed; disclosure stays with the panel's
+   explicit toggle button. Keep it visible throughout normal use, but
+   remove it as soon as a discrete close transition begins. */
+.rux-drawer.is-open:not(.is-collapsing) + .rux-resize-gutter,
+.rux-resize-gutter:has(+ .rux-drawer.is-open:not(.is-collapsing)) {
+	display: block;
+}
+
+/* Large transparent hit target centered on the zero-width flex boundary. */
+.rux-resize-gutter::before {
+	content: "";
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: 50%;
+	inline-size: var(--rux-resize-hit-width);
+	background:
+		linear-gradient(
+			color-mix(in oklch, var(--rux-text-default) 55%, transparent),
+			color-mix(in oklch, var(--rux-text-default) 55%, transparent)
+		)
+		center / var(--rux-resize-line-width) 100% no-repeat;
+	opacity: 0;
+	transform: translateX(-50%);
+	transition: opacity var(--rux-duration-fast);
+}
+
+/* Short centered grip remains independent of the draggable hit target. */
+.rux-resize-gutter::after {
+	content: "";
+	position: absolute;
+	inset-block-start: 50%;
+	inset-inline-start: 50%;
+	inline-size: var(--rux-resize-handle-width);
+	block-size: var(--rux-resize-handle-height);
+	background: color-mix(in oklch, var(--rux-text-default) 75%, transparent);
+	border-radius: var(--rux-radius-full);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -50%);
+	transition: opacity var(--rux-duration-fast);
+}
+
+.rux-resize-gutter:hover::before,
+.rux-resize-gutter:hover::after,
+.rux-resize-gutter.is-resizing::before,
+.rux-resize-gutter.is-resizing::after {
+	opacity: 1;
+}
+
+.rux-resize-gutter.is-resizing::before {
+	background:
+		linear-gradient(var(--rux-accent), var(--rux-accent))
+		center / var(--rux-resize-line-width) 100% no-repeat;
+}
+
+.rux-resize-gutter.is-resizing::after {
+	background: var(--rux-accent);
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────────
+   Below the shared mobile breakpoint the drawer stops being a docked
+   column and becomes a full-viewport overlay backed by a tap-to-dismiss
+   scrim. Same breakpoint the touch-target minimums in tokens.css use. */
+
+@media (max-width: 500px) {
+	/* Drawer overlays the full viewport width — mobile screens are too narrow
+	   to spare room for a workspace sliver behind it, so open panels get the
+	   whole width instead of the partial nav-drawer treatment desktop uses.
+	   The scrim (below) still backs it for tap-to-dismiss. */
+	.rux-drawer:is(.is-open, .is-closing) {
+		position: fixed;
+		inset-block: 0;
+		left: 0;
+		z-index: var(--rux-z-modal);
+		width: 100%;
+		height: 100dvh;
+		margin-left: 0;
+		margin-right: 0;
+		transition: none;
+	}
+
+	/* Closing is a visual-only state. Release the workspace as soon as close()
+	   updates inert/ARIA state so this full-viewport wrapper cannot intercept
+	   input while its panel slides out or if motion is interrupted. */
+	.rux-drawer.is-closing {
+		pointer-events: none;
+	}
+
+	.rux-drawer--right:is(.is-open, .is-closing) {
+		left: auto;
+		right: 0;
+	}
+
+	/* Tap-to-dismiss scrim behind the drawer, above the workspace and any
+	   fixed bottom nav — created/shown by RuxDrawer (rux-ui/js/drawer.js),
+	   shared by every drawer instance since only one is ever open at a time
+	   on mobile. */
+	.rux-drawer-scrim {
+		position: fixed;
+		inset: 0;
+		z-index: calc(var(--rux-z-modal) - 1);
+		background: var(--rux-overlay-scrim);
+		opacity: 0;
+		pointer-events: none;
+		transition:
+			opacity var(--rux-panel-motion-duration) var(--rux-panel-exit-easing);
+	}
+
+	.rux-drawer-scrim.is-visible {
+		opacity: 1;
+		pointer-events: auto;
+		transition:
+			opacity var(--rux-panel-motion-duration) var(--rux-panel-enter-easing);
+	}
+
+	.rux-drawer {
+		--mobile-drawer-translate-x: -100%;
+		transition: none;
+	}
+
+	.rux-drawer:not(.is-open):not(.is-closing) {
+		width: 0;
+	}
+
+	.rux-drawer--right {
+		--mobile-drawer-translate-x: 100%;
+	}
+
+	.rux-drawer.is-open > .rux-panel {
+		animation:
+			rux-drawer-in
+			var(--rux-panel-motion-duration)
+			var(--rux-panel-enter-easing);
+	}
+
+	.rux-drawer.is-closing > .rux-panel {
+		animation:
+			rux-drawer-out
+			var(--rux-panel-motion-duration)
+			var(--rux-panel-exit-easing);
+	}
+
+	.rux-drawer .rux-panel > .rux-panel__footer {
+		padding-bottom: calc(var(--rux-panel-padding-block) + env(safe-area-inset-bottom, 0px));
+	}
+
+	.rux-drawer .rux-panel:not(:has(> .rux-panel__footer)) > .rux-panel__body {
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	.rux-drawer-gutter {
+		display: none !important;
+	}
+}
+
+@keyframes rux-drawer-in {
+	from { transform: translateX(var(--mobile-drawer-translate-x)); }
+	to { transform: translateX(0); }
+}
+
+@keyframes rux-drawer-out {
+	from { transform: translateX(0); }
+	to { transform: translateX(var(--mobile-drawer-translate-x)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rux-drawer:is(.is-open, .is-closing) > .rux-panel {
+		animation-duration: 1ms;
+	}
+}

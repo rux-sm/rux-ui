@@ -64,7 +64,7 @@ html {
 }
 
 body {
-  display: flow-root; /* new BFC so .scheduler-app's margin-bottom paints as body's own background instead of collapsing through to html's */
+  display: flow-root; /* new BFC so .rux-app's margin-bottom paints as body's own background instead of collapsing through to html's */
   background: var(--rux-surface-0);
   color: var(--rux-text-default);
   font-family: var(--rux-font-sans);

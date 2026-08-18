@@ -31,10 +31,10 @@
    rule's own note below for why. */
 
 /* Two-column form grid, collapsing to one column in a narrow container.
-   trip-panel.css's own .rux-scope-trip__cols-2/__cols-3 stay separate: a
-   different, --_cols-driven system supporting a third column count at a
-   different breakpoint (320px, not 360px) with a different column gap
-   token — not a pure duplicate of this one. */
+   An application may keep its own column system alongside this one — this
+   repository's trip editor does, driving a third column count off --_cols at
+   a different breakpoint with a different gap token, which is a different
+   system rather than a duplicate of this one. */
 .rux-u-cols-2 {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -57,9 +57,8 @@
      .rux-u-section-label  the same typography plus a divider rule beneath it
 
    Applications add one of these to the element rather than being named in
-   this file. trip-panel.css's .rux-scope-trip__section-label reads the same
-   tokens directly instead, since it needs its own --minor/--requirements
-   modifiers. */
+   this file. A component needing its own modifiers may read the same tokens
+   directly instead. */
 .rux-u-eyebrow,
 .rux-u-section-label,
 .rux-menu__header {
@@ -92,9 +91,9 @@
 	gap: var(--rux-stack-gap);
 }
 
-/* Flex column of trip-summary rows (Driver/Fleet/Customer editors' own
-   "linked trips" list). */
-.rux-u-trip-list {
+/* Flex column of summary rows — a compact list of related records shown
+   inside an editor, such as this repository's "linked trips" lists. */
+.rux-u-record-list {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-space-2);

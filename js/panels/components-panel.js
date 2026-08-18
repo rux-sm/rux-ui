@@ -1,6 +1,6 @@
-import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=57";
-import { createTripBar } from "../components/trip-bar.js?v=14";
-import BusPicker from "../components/bus-picker.js?v=2";
+import { renderDriverAssignmentCard } from "../components/driver-assignment-card.js?v=58";
+import { createTripBar } from "../components/trip-bar.js?v=15";
+import BusPicker from "../components/bus-picker.js?v=3";
 
 /* ==========================================================================
    COMPONENTS PANEL
@@ -304,7 +304,7 @@ import BusPicker from "../components/bus-picker.js?v=2";
 				onPrintEnvelope: () => window.Rux?.toast?.("Envelope action"),
 			});
 			bar.classList.add("components-app__trip-bar-demo");
-			bar.style.setProperty("--rux-trip-bar-day-inline-size", "58%");
+			bar.style.setProperty("--sched-trip-bar-day-inline-size", "58%");
 			host.appendChild(bar);
 		}
 

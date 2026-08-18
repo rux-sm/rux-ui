@@ -32,12 +32,10 @@ Structural panels, attached drawers, and their scrims use:
 - `--rux-panel-enter-easing`
 - `--rux-panel-exit-easing`
 - `--rux-panel-standard-easing`
-- `--rux-panel-content-motion-duration`
 
 Opening uses the entrance curve. Closing uses the exit curve. A control that
 moves continuously with an already-visible panel uses the standard curve.
-Panel content may fade or reflow with the faster content-duration token, but it
-must not finish after the panel itself.
+Panel content that fades or reflows must not finish after the panel itself.
 
 A resize separator is direct manipulation rather than panel motion. Pointer
 movement updates the panel width one-to-one with no transition, threshold,
