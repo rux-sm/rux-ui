@@ -666,7 +666,7 @@
 	/* — floating window widths — one per window; --floating-width is the
 	   shared default, doc viewer/trip envelope use it as their base. */
 	--rux-panel-floating-width:        min(600px, calc(100vw - var(--rux-space-4) * 2));
-	--rux-trip-dialog-width:           min(400px, calc(100vw - (var(--rux-space-4) * 2)));
+	--rux-trip-dialog-width:           min(480px, calc(100vw - (var(--rux-space-4) * 2)));
 	--rux-manifest-window-width:       clamp(480px, 65vw, 1200px);
 	--rux-request-window-width:        clamp(600px, 70vw, 1100px);
 	--rux-trip-finder-window-width:    clamp(600px, 70vw, 1100px);

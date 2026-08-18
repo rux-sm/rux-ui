@@ -481,50 +481,6 @@ test("notes precede the headerless document actions at the end of the card", () 
 	assert.equal(moduleByKey(card, "documents").getAttribute("aria-label"), "Documents");
 });
 
-/* SKIPPED: the .rux-module-button tone system was retired — see
-   rux-ui/css/tokens.css, which describes this as "what used to be the wider
-   .rux-module-button tone system". No stylesheet defines the class.
-   Restore this test if the primitive comes back. */
-test.skip("assignment actions use the generic semantic module-button primitive", () => {
-	const card = renderDriverAssignmentCard(assignment({
-		contact: { name: "Anna Partida", phone: "956-292-9255" },
-		fleetAssignments: [
-			{
-				busId: "bus-763",
-				busNumber: "763",
-				isCurrentBus: true,
-				crew: [
-					{
-						id: "crew-2",
-						name: "Maria Lopez",
-						role: "relief_driver",
-						phone: "956-555-0112",
-						canMessage: true,
-					},
-				],
-			},
-			{
-				busId: "bus-746",
-				busNumber: "746",
-				crew: [{ id: "crew-3", name: "Jose Garcia", role: "driver" }],
-			},
-		],
-	}));
-	const links = card.querySelectorAll("a");
-	const navigate = links.find((link) => link.textContent.includes("Navigate"));
-	const call = links.find((link) => link.textContent.includes("Call"));
-	const message = links.find((link) => link.textContent.includes("Message"));
-
-	for (const action of [navigate, call, message]) {
-		assert.ok(action);
-		assert.ok(action.classList.contains("rux-module-button"));
-		assert.ok(action.classList.contains("assignment-module__action"));
-	}
-	assert.ok(navigate.classList.contains("rux-module-button--info"));
-	assert.ok(call.classList.contains("rux-module-button--success"));
-	assert.ok(message.classList.contains("rux-module-button--neutral"));
-});
-
 test("crew and fleet uses compact bus-person rows", () => {
 	const singleBus = renderDriverAssignmentCard(assignment({
 		fleetAssignments: [{
@@ -622,30 +578,6 @@ test("document actions use neutral styling unless attention is required", () => 
 	assert.equal(documents.length, 2);
 	assert.equal(documents[0].classList.contains("is-attention-needed"), false);
 	assert.equal(documents[1].classList.contains("is-attention-needed"), true);
-});
-
-/* SKIPPED: the .rux-module-button tone system was retired — see
-   rux-ui/css/tokens.css, which describes this as "what used to be the wider
-   .rux-module-button tone system". No stylesheet defines the class.
-   Restore this test if the primitive comes back. */
-test.skip("generic module buttons expose one fixed layout and every semantic tone", async () => {
-	const [controls, tokens] = await Promise.all([
-		readFile(new URL("../rux-ui/css/base/controls.css", import.meta.url), "utf8"),
-		readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8"),
-	]);
-
-	assert.match(controls, /\.rux-module-button\s*\{/);
-	assert.match(controls, /flex-direction:\s*column/);
-	assert.match(controls, /width:\s*var\(--rux-module-button-width\)/);
-	assert.match(controls, /height:\s*var\(--rux-module-button-height\)/);
-	assert.match(controls, /min-height:\s*var\(--rux-module-button-min-height\)/);
-	assert.match(controls, /\.rux-module-button__label\s*\{/);
-	for (const tone of ["neutral", "info", "success", "warning", "danger"]) {
-		assert.match(controls, new RegExp(`\\.rux-module-button--${tone}\\s*\\{`));
-	}
-	assert.match(tokens, /--rux-module-button-width:\s*44px/);
-	assert.match(tokens, /--rux-module-button-height:\s*44px/);
-	assert.match(tokens, /--rux-module-button-min-height:\s*44px/);
 });
 
 test("responsive CSS protects narrow layouts and touch targets", async () => {
