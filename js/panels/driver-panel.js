@@ -107,8 +107,8 @@
 		openDialog("New Driver");
 	});
 
-	// Right-side "Table Options" drawer (View Options + Filters) — same
-	// RuxDrawer machinery as above, no resize handle (fixed width).
+	// Right-side "Table Options" drawer (View Options + Filters) — the
+	// calendar Tools pattern: resizable right drawer, workspace-header toggle.
 	const toolsDrawer = document.getElementById("driver-tools-drawer");
 	const toolsPanelEl = toolsDrawer.querySelector(".sched-scope-right-panel");
 
@@ -116,8 +116,8 @@
 		drawer: toolsDrawer,
 		panel: toolsPanelEl,
 		toggleBtn: document.getElementById("driver-tools-toggle-btn"),
+		handle: document.getElementById("driver-tools-resize-gutter"),
 		direction: "right",
-		railWidth: true,
 	});
 	const openToolsDrawer = toolsDrawerHandle.open;
 	const closeToolsDrawer = toolsDrawerHandle.close;

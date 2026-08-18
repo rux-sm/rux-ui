@@ -345,108 +345,9 @@
    their feature files. The drawer machinery below serves the two remaining
    RIGHT drawers: the Calendar Tools panel and the Drivers tools panel. */
 
-/* Railable drawer (the Drivers tools panel): the panel keeps rendering —
-   narrow, not display:none — whenever it's not fully open, so its own
-   @container queries can reflow content as it narrows, instead of a
-   separate rail element popping in once the panel vanishes. Width tracks
-   the *live* --drawer-width so the container query re-evaluates
-   continuously as the drawer animates, and min-width is fully relaxed so
-   it can actually reach --rux-panel-rail-width — both only for this
-   modifier, so a non-railable drawer (Calendar Tools) keeps the original
-   frozen-width clip-then-vanish behavior unchanged. */
-.scheduler-app__drawer--railable {
-	overflow: hidden;
-}
-
-/* The panel fills the drawer's live rendered width (100%) rather than
-   tracking --drawer-width directly. --drawer-width is the *target* value
-   set immediately by close() — not the animated value — so using it
-   directly would snap the panel to rail-width while the outer drawer box
-   still shows its full open width, leaving a canvas-coloured gap at the
-   right edge throughout the entire closing animation. 100% always matches
-   whatever the drawer's outer box currently is, whether animating or settled.
-   Not rail-specific — a plain sizing rule, so it's not scoped to desktop
-   below like the rest of this block. */
-.scheduler-app__drawer--railable .sched-scope-right-panel {
-	width: 100%;
-	min-width: 0;
-}
-
-/* Rail-collapse is a desktop-only concept — a narrow icon strip a panel
-   settles into instead of fully closing. Mobile has no equivalent: drawers
-   there are full-screen overlays that are simply open, closing, or fully
-   closed (width: 0, see the mobile media query below), never a
-   collapsed-but-visible sliver. Scoping the whole thing here, rather than
-   excluding .is-closing selector-by-selector, is deliberate: .is-closing is
-   itself mobile-only (RuxDrawer's close(), rux-ui/js/drawer.js, only ever
-   adds it inside its mobilePanelQuery branch), so it can't occur inside a
-   min-width media query at all — one guard here is equivalent to, and less
-   fragile than, chasing every mobile-reachable state one at a time in each
-   rail rule. Previously this leaked onto mobile because these rules only
-   checked :not(.is-open), which is also true for the entire mobile close
-   animation (mobile swaps .is-open for .is-closing, never has both) — the
-   rail's flat background/border/hidden-content state was replacing the
-   actual sliding panel for that whole animation instead of never applying
-   there at all. */
-@media (min-width: 501px) {
-	/* .rux-panel's own box-shadow (--rux-panel-shadow) is a descendant of
-	   this always-overflow:hidden wrapper (see .scheduler-app__drawer
-	   --railable above), so it gets clipped at the wrapper's edge same as
-	   the rail's shadow did. Re-declare it here, on the wrapper itself,
-	   so the open panel's shadow can actually bleed onto the gutter and
-	   workspace instead of vanishing. */
-	.scheduler-app__drawer--railable.is-open {
-		box-shadow: var(--rux-panel-shadow);
-	}
-
-	/* Open panels also avoid borders against the window. Keep only the
-	   workspace-facing divider: the left edge on the right panel. */
-	.scheduler-app__drawer--railable.is-open .sched-scope-right-panel {
-		border: 0;
-		border-left: var(--rux-panel-right-border);
-	}
-
-	/* The base .scheduler-app__drawer rule hardcodes width:0 for the not-
-	   open case, ignoring --drawer-width entirely (only .is-open reads it)
-	   — a railable drawer needs its own outer box to actually be rail-width
-	   once settled, not 0, or the panel below (however wide it thinks it
-	   is) has nothing but a 0-width, overflow:hidden box to render inside. */
-	.scheduler-app__drawer--railable:not(.is-open) {
-		width: var(--rux-panel-rail-width);
-		/* Match the minimized panel's fill so any sub-pixel gap at the
-		   wrapper boundary cannot reveal scheduler row/day borders. */
-		background: var(--rux-panel-rail-bg);
-		/* Shadow lives on this wrapper, not the panel inside it — the
-		   wrapper's own overflow:hidden (see .scheduler-app__drawer--railable
-		   above) only clips a *descendant's* box-shadow, never its own, so
-		   this is the one place it can actually bleed onto the gutter and
-		   workspace instead of being clipped at the panel's edge. */
-		box-shadow: var(--rux-panel-rail-shadow);
-	}
-
-	/* Keep only the edge facing the workspace so the collapsed rail reads
-	   as a divider without boxing in its top, bottom, or outside edge. */
-	.scheduler-app__drawer--railable:not(.is-open) .sched-scope-right-panel {
-		display: flex;
-		background: var(--rux-panel-rail-bg);
-		color: var(--rux-panel-rail-fg);
-		border: 0;
-		border-left: var(--rux-panel-rail-border);
-		border-radius: var(--rux-panel-rail-radius);
-		pointer-events: none;
-	}
-
-	/* Do not rely on the panel container query for the settled state.
-	   Explicitly remove every content region once the drawer is closed,
-	   leaving only the panel shell and its sibling opener visible. This
-	   also prevents descendants with their own positioning/paint
-	   containment from leaking through the narrow panel clip. */
-	.scheduler-app__drawer--railable:not(.is-open)
-		> .sched-scope-right-panel
-		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
-		display: none !important;
-	}
-}
+/* The rail-collapse concept retired with the drawer convergence: every
+   remaining drawer (Calendar Tools, Drivers tools, Fleet tools) is a plain
+   right drawer that opens and closes fully, resized via its channel. */
 
 .scheduler-app__gutter {
 	position: relative;
@@ -553,9 +454,7 @@
 	overflow: hidden;
 }
 
-/* With --railable the panel fills live drawer width and stays rendered;
-   without it the base display:none-when-closed rule above still applies. */
-.scheduler-app__drawer--right:not(.is-open):not(.scheduler-app__drawer--railable) :is(.sched-scope-right-panel) {
+.scheduler-app__drawer--right:not(.is-open) .sched-scope-right-panel {
 	display: none;
 }
 
@@ -567,24 +466,6 @@
 	height: 100%;
 	min-width: var(--rux-panel-min-width);
 	container-type: inline-size;
-}
-
-/* — Legacy right-panel rail compatibility — */
-/* The Calendar tools panel now reopens from its workspace-header control.
-   These rules remain for older railable right-panel consumers. */
-
-.rux-scope-right-panel__drawer-open {
-	display: none;
-}
-
-/* At true rail width hide tabs, body, and footer; only the open button
-   (outside the inert aside) remains as the sole affordance to expand. */
-@container (max-width: 44px) {
-	.rux-panel__nav,
-	.rux-panel__body,
-	.rux-panel__footer {
-		display: none !important;
-	}
 }
 
 /* Week/List — lives above the mini calendar in the right panel now
@@ -1254,72 +1135,14 @@
 }
 
 @media (min-width: 501px) {
-	/* The stack participates in the icon button's normal flex centering. Only
-	   its two glyphs overlap, so switching states cannot move the button or
-	   change its layout footprint. Used by the railable right/tools drawer's
-	   persistent toggle. */
-	.scheduler-app__drawer--railable .scheduler-app__drawer-icon-stack {
-		display: grid;
-		flex: none;
-		width: var(--rux-icon-sm);
-		height: var(--rux-icon-sm);
-		place-items: center;
-	}
-
-	.scheduler-app__drawer--railable
-		.scheduler-app__drawer-icon-stack
-		> :is(.scheduler-app__drawer-toggle-open, .scheduler-app__drawer-toggle-close) {
-		grid-area: 1 / 1;
-		transition:
-			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing);
-	}
-
-	.scheduler-app__drawer--railable .scheduler-app__drawer-toggle-close,
-	.scheduler-app__drawer--railable.is-open .scheduler-app__drawer-toggle-open {
-		opacity: 0;
-	}
-
-	.scheduler-app__drawer--railable.is-open .scheduler-app__drawer-toggle-close {
-		opacity: 1;
-	}
-
-	/* The persistent rail toggle replaces the duplicate button in the panel
-	   header. Mobile retains the header button for its overlay drawer. */
-	.scheduler-app__drawer--railable .scheduler-app__panel-header-toggle {
+	/* The workspace-header toggle owns desktop open/close; the in-panel
+	   header button is the mobile overlay's close affordance. */
+	.scheduler-app__drawer .scheduler-app__panel-header-toggle {
 		display: none;
-	}
-
-	.scheduler-app__drawer--railable
-		> .sched-scope-right-panel
-		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
-		transition:
-			opacity var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing),
-			transform var(--rux-panel-content-motion-duration) var(--rux-panel-standard-easing);
-	}
-
-	.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> .sched-scope-right-panel
-		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
-		opacity: 0;
-		transform: translateX(-4px);
-		pointer-events: none;
-	}
-
-	.scheduler-app__drawer--right.scheduler-app__drawer--railable:is(.is-collapsing, .is-expanding)
-		> .sched-scope-right-panel
-		> :is(.rux-panel__header, .rux-panel__nav, .rux-panel__body, .rux-panel__footer) {
-		transform: translateX(4px);
 	}
 }
 
 @media (max-width: 500px) {
-	/* Desktop collapsed-rail reopeners live inside the drawer itself. A closed
-	   mobile drawer is also <=44px wide, which can trigger their container
-	   query accidentally; mobile uses workspace panel controls instead. */
-	.scheduler-app__drawer > .rux-scope-right-panel__drawer-open {
-		display: none;
-	}
-
 	/* Keep the narrow shell attached beneath the persistent UI header. */
 	.scheduler-app {
 		row-gap: 0;
@@ -1482,19 +1305,18 @@
 	flex: 1;
 }
 
-/* align-self:center overrides .rux-workspace's default align-items:stretch,
-   which would otherwise force these full cross-axis (horizontal) width
-   regardless of the .rux-table inside — same reason .rux-table itself
-   dropped width:100%. width:fit-content then sizes the wrap to that
-   table's actual content width instead of the old full-bleed box. */
+/* Roster tables span the full workspace width, aligned with the header's
+   control edges — same stance as the calendar viewport. Columns distribute
+   across the available width; narrow viewports scroll inside the wrap. */
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) {
 	flex: 1;
-	align-self: center;
-	width: fit-content;
-	max-width: 100%;
 	background: var(--rux-table-wrap-bg);
 	border-radius: var(--rux-table-wrap-radius);
 	overflow: auto;
+}
+
+.rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) .rux-table {
+	width: 100%;
 }
 
 .calendar-app__viewport,

@@ -41,14 +41,14 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=5" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=266" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=267" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=11"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-driver-app.css?v=11"
+			href="./scheduler/css/features/comp-driver-app.css?v=12"
 		/>
 		<link
 			rel="stylesheet"
@@ -3703,14 +3703,23 @@
 									>
 								</button>
 								<button
-									class="rux-button rux-button--default"
-									id="fleet-cols-btn"
+									class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle"
 									type="button"
-									title="Show / hide columns"
+									id="fleet-tools-toggle-btn"
+									aria-label="Open table options"
+									aria-pressed="false"
+									data-rux-domain-toggle
+									data-scope="fleet-tools"
 								>
-									<span class="rux-icon">view_column</span>
-									<span class="rux-button__label"
-										>Columns</span
+									<span
+										class="rux-icon icon-off"
+										aria-hidden="true"
+										>right_panel_open</span
+									>
+									<span
+										class="rux-icon icon-on"
+										aria-hidden="true"
+										>right_panel_close</span
 									>
 								</button>
 							</div>
@@ -3755,6 +3764,63 @@
 							</table>
 						</div>
 					</section>
+
+					<!-- Fleet tools drawer (View Options) — calendar Tools
+					     pattern: resize channel + workspace-header toggle -->
+					<div
+						class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right"
+						id="fleet-tools-resize-gutter"
+						role="separator"
+						aria-orientation="vertical"
+						aria-label="Resize table options"
+						aria-controls="fleet-tools-drawer"
+						tabindex="0"
+					></div>
+					<div
+						class="scheduler-app__drawer scheduler-app__drawer--right"
+						id="fleet-tools-drawer"
+					>
+						<aside
+							class="rux-panel rux-panel--attached sched-scope-right-panel"
+							role="dialog"
+							aria-label="Table options"
+						>
+							<header class="rux-panel__header">
+								<h2 class="rux-panel__title">
+									Table Options
+								</h2>
+								<button
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header scheduler-app__mobile-panel-btn scheduler-app__panel-header-toggle"
+									type="button"
+									aria-label="Close table options"
+									data-rux-domain-toggle
+									data-scope="fleet-tools"
+								>
+									<span class="rux-icon" aria-hidden="true"
+										>right_panel_close</span
+									>
+								</button>
+							</header>
+							<div class="rux-panel__body">
+								<div class="rux-panel__pane" role="tabpanel">
+									<div class="rux-card">
+										<header class="rux-card__header">
+											<p class="rux-card__title">
+												View Options
+											</p>
+										</header>
+										<div class="rux-card__body">
+											<div
+												class="rux-col-picker__list"
+												id="fleet-view-options-list"
+											></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</aside>
+					</div>
+					<!-- /fleet-tools-drawer -->
 				</div>
 				<!-- /module:fleet -->
 
@@ -4746,34 +4812,21 @@
 						</div>
 					</section>
 
-					<!-- Driver tools drawer (View Options + Filters) -->
+					<!-- Driver tools drawer (View Options + Filters) — calendar
+					     Tools pattern: resize channel + workspace-header toggle -->
 					<div
-						class="scheduler-app__drawer scheduler-app__drawer--right scheduler-app__drawer--railable"
+						class="scheduler-app__gutter scheduler-app__resize-gutter scheduler-app__resize-gutter--right"
+						id="driver-tools-resize-gutter"
+						role="separator"
+						aria-orientation="vertical"
+						aria-label="Resize table options"
+						aria-controls="driver-tools-drawer"
+						tabindex="0"
+					></div>
+					<div
+						class="scheduler-app__drawer scheduler-app__drawer--right"
 						id="driver-tools-drawer"
 					>
-						<!-- Open button: outside the inert <aside> so it stays clickable
-						     when the panel is collapsed. Only visible at <=44px rail width. -->
-						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-scope-right-panel__drawer-open scheduler-app__mobile-panel-btn"
-							type="button"
-							aria-label="Toggle table options"
-							data-rux-domain-toggle
-							data-scope="driver-tools"
-						>
-							<span
-								class="scheduler-app__drawer-icon-stack"
-								aria-hidden="true"
-							>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-open"
-									>right_panel_open</span
-								>
-								<span
-									class="rux-icon scheduler-app__drawer-toggle-close"
-									>right_panel_close</span
-								>
-							</span>
-						</button>
 						<aside
 							class="rux-panel rux-panel--attached sched-scope-right-panel"
 							role="dialog"
@@ -7231,8 +7284,8 @@
 		<script src="./rux-ui/js/suggestions.js?v=2"></script>
 		<script src="./js/panels/trip-panel.js?v=39"></script>
 		<script src="./js/components/itinerary.js?v=27"></script>
-		<script src="./js/panels/driver-panel.js?v=23" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=8" defer></script>
+		<script src="./js/panels/driver-panel.js?v=24" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=9" defer></script>
 		<script src="./js/panels/customers-panel.js?v=6" defer></script>
 		<script src="./js/panels/settings-panel.js?v=5" defer></script>
 		<script src="./js/panels/trip-finder.js?v=5" defer></script>

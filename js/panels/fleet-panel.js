@@ -546,8 +546,7 @@
   // ── Column picker v2 — Supabase-persisted, drag-to-reorder ───────────────
 
   const FLEET_COLS_KEY = "fleet-cols-v2";
-  const fleetColsBtn   = document.getElementById("fleet-cols-btn");
-  let   fleetColPicker = null;
+  const fleetViewOptionsList = document.getElementById("fleet-view-options-list");
   let   dragKey        = null;
 
   function defaultConfig() {
@@ -578,114 +577,99 @@
     try { await settingsDb.setSetting(FLEET_COLS_KEY, colConfig); } catch (err) { console.warn("saveColConfig:", err); }
   }
 
-  function buildFleetColPicker() {
-    fleetColPicker = document.createElement("div");
-    fleetColPicker.className = "sched-col-picker";
-    fleetColPicker.setAttribute("hidden", "");
-    fleetColPicker.setAttribute("role", "dialog");
-    fleetColPicker.setAttribute("aria-label", "Column visibility");
+  // Rows render into the Table Options drawer's View Options card — same
+  // recipe as the Drivers module's renderColPicker.
+  function renderColPicker() {
+    if (!fleetViewOptionsList) return;
+    fleetViewOptionsList.innerHTML = "";
+    colConfig.forEach(c => {
+      const def = ALL_FLEET_COLS.find(d => d.key === c.key);
+      if (!def) return;
 
-    const heading = document.createElement("p");
-    heading.className = "rux-col-picker__heading rux-u-eyebrow";
-    heading.textContent = "Columns";
-    fleetColPicker.appendChild(heading);
+      const row = document.createElement("div");
+      row.className = "rux-col-picker__row";
+      row.draggable = true;
+      row.dataset.key = c.key;
 
-    const list = document.createElement("div");
-    list.className = "rux-col-picker__list";
-    fleetColPicker.appendChild(list);
+      const handle = document.createElement("span");
+      handle.className = "rux-col-picker__handle";
+      handle.innerHTML = `<span class="rux-icon">drag_indicator</span>`;
 
-    function renderPickerRows() {
-      list.innerHTML = "";
-      colConfig.forEach(c => {
-        const def = ALL_FLEET_COLS.find(d => d.key === c.key);
-        if (!def) return;
-
-        const row = document.createElement("div");
-        row.className = "rux-col-picker__row";
-        row.draggable = true;
-        row.dataset.key = c.key;
-
-        const handle = document.createElement("span");
-        handle.className = "rux-col-picker__handle";
-        handle.innerHTML = `<span class="rux-icon">drag_indicator</span>`;
-
-        const cb = document.createElement("input");
-        cb.type    = "checkbox";
-        cb.checked = c.visible;
-        cb.id      = `fcol-${c.key}`;
-        cb.addEventListener("change", async () => {
-          c.visible = cb.checked;
-          renderRows(getSortedBuses());
-          await saveColConfig();
-        });
-
-        const lbl = document.createElement("label");
-        lbl.htmlFor   = cb.id;
-        lbl.className = "rux-col-picker__label";
-        lbl.textContent = def.label;
-
-        row.append(handle, cb, lbl);
-
-        row.addEventListener("dragstart", e => {
-          dragKey = c.key;
-          row.classList.add("is-dragging");
-          e.dataTransfer.effectAllowed = "move";
-        });
-        row.addEventListener("dragend", () => {
-          dragKey = null;
-          row.classList.remove("is-dragging");
-          list.querySelectorAll(".is-over").forEach(el => el.classList.remove("is-over"));
-        });
-        row.addEventListener("dragover", e => {
-          if (dragKey && dragKey !== c.key) {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = "move";
-            list.querySelectorAll(".is-over").forEach(el => el.classList.remove("is-over"));
-            row.classList.add("is-over");
-          }
-        });
-        row.addEventListener("drop", async e => {
-          e.preventDefault();
-          if (!dragKey || dragKey === c.key) return;
-          const fromIdx = colConfig.findIndex(x => x.key === dragKey);
-          const toIdx   = colConfig.findIndex(x => x.key === c.key);
-          const [item]  = colConfig.splice(fromIdx, 1);
-          colConfig.splice(toIdx, 0, item);
-          renderPickerRows();
-          
-          renderRows(getSortedBuses());
-          await saveColConfig();
-        });
-
-        list.appendChild(row);
+      const cb = document.createElement("input");
+      cb.type    = "checkbox";
+      cb.checked = c.visible;
+      cb.id      = `fcol-${c.key}`;
+      cb.addEventListener("change", async () => {
+        c.visible = cb.checked;
+        renderRows(getSortedBuses());
+        await saveColConfig();
       });
-      
-    }
 
-    renderPickerRows();
-    document.body.appendChild(fleetColPicker);
+      const lbl = document.createElement("label");
+      lbl.htmlFor   = cb.id;
+      lbl.className = "rux-col-picker__label";
+      lbl.textContent = def.label;
 
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape" && !fleetColPicker.hidden) fleetColPicker.setAttribute("hidden", "");
-    });
-    document.addEventListener("mousedown", e => {
-      if (!fleetColPicker.hidden && !fleetColPicker.contains(e.target) && e.target !== fleetColsBtn)
-        fleetColPicker.setAttribute("hidden", "");
+      row.append(handle, cb, lbl);
+
+      row.addEventListener("dragstart", e => {
+        dragKey = c.key;
+        row.classList.add("is-dragging");
+        e.dataTransfer.effectAllowed = "move";
+      });
+      row.addEventListener("dragend", () => {
+        dragKey = null;
+        row.classList.remove("is-dragging");
+        fleetViewOptionsList.querySelectorAll(".is-over").forEach(el => el.classList.remove("is-over"));
+      });
+      row.addEventListener("dragover", e => {
+        if (dragKey && dragKey !== c.key) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "move";
+          fleetViewOptionsList.querySelectorAll(".is-over").forEach(el => el.classList.remove("is-over"));
+          row.classList.add("is-over");
+        }
+      });
+      row.addEventListener("drop", async e => {
+        e.preventDefault();
+        if (!dragKey || dragKey === c.key) return;
+        const fromIdx = colConfig.findIndex(x => x.key === dragKey);
+        const toIdx   = colConfig.findIndex(x => x.key === c.key);
+        const [item]  = colConfig.splice(fromIdx, 1);
+        colConfig.splice(toIdx, 0, item);
+        renderColPicker();
+
+        renderRows(getSortedBuses());
+        await saveColConfig();
+      });
+
+      fleetViewOptionsList.appendChild(row);
     });
   }
 
-  fleetColsBtn.addEventListener("click", () => {
-    if (!fleetColPicker) buildFleetColPicker();
-    if (!fleetColPicker.hidden) { fleetColPicker.setAttribute("hidden", ""); return; }
-    fleetColPicker.style.visibility = "hidden";
-    fleetColPicker.removeAttribute("hidden");
-    const ar = fleetColsBtn.getBoundingClientRect();
-    const pr = fleetColPicker.getBoundingClientRect();
-    const m  = 8;
-    fleetColPicker.style.left = `${Math.max(m, Math.min(ar.right - pr.width, window.innerWidth - pr.width - m))}px`;
-    fleetColPicker.style.top  = `${ar.bottom + 6}px`;
-    fleetColPicker.style.visibility = "";
+  // ── Table options drawer ──────────────────────────────────────────────────
+  // Same calendar-Tools pattern as the Drivers module: right drawer with a
+  // resize channel, toggled from the workspace header.
+  const toolsDrawer = document.getElementById("fleet-tools-drawer");
+  const toolsDrawerHandle = RuxDrawer.create({
+    drawer: toolsDrawer,
+    panel: toolsDrawer.querySelector(".sched-scope-right-panel"),
+    toggleBtn: document.getElementById("fleet-tools-toggle-btn"),
+    handle: document.getElementById("fleet-tools-resize-gutter"),
+    direction: "right",
   });
+  const openToolsDrawer = toolsDrawerHandle.open;
+  const closeToolsDrawer = toolsDrawerHandle.close;
+
+  document
+    .querySelectorAll('[data-rux-domain-toggle][data-scope="fleet-tools"]')
+    .forEach((button) => {
+      button.addEventListener("click", () => {
+        toolsDrawer.classList.contains("is-open")
+          ? closeToolsDrawer()
+          : openToolsDrawer();
+      });
+    });
 
   // ── Search & filter ───────────────────────────────────────────────────────
 
@@ -902,7 +886,14 @@
       }
     }
     await loadColConfig();
+    renderColPicker();
     await loadBuses();
+
+    // The tools drawer opens by default on desktop, same as the Calendar and
+    // Drivers modules — mobile stays closed (full-screen overlay there).
+    if (!window.matchMedia("(max-width: 500px)").matches) {
+      openToolsDrawer();
+    }
   }
 
   window.FleetPanel = { init, reload: loadBuses };
