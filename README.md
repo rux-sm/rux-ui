@@ -204,7 +204,12 @@ Geist colors" below):
 
 The rule of thumb: if it's a container that _holds_ content, it's
 `--rux-surface-1`; if it's UI furniture around that content, it's
-`--rux-surface-0`. `--rux-bg-hover` / `--rux-bg-active` are direct values
+`--rux-surface-0`. Since the 2026-08 flatten this is literal: `html`/`body`,
+the app shell (`--rux-shell-bg`), the UI header, and the splash all paint
+`--rux-surface-0` — one continuous canvas — and `.rux-workspace` paints
+nothing (`--rux-workspace-bg: transparent`), so the only raised layers are
+the surface‑1 content containers themselves, exactly Geist's
+`background-100`/`-200` model. `--rux-bg-hover` / `--rux-bg-active` are direct values
 (not aliased to a surface step) for interactive list-item states — a
 different axis from the two-surface scale, layered onto whichever surface
 the interactive element sits on rather than replacing it.

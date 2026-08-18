@@ -19,7 +19,6 @@
 	   resize channel owns the single token-controlled seam between them. */
 	--calendar-workspace-frame-inset-block: 0 var(--rux-space-5);
 	--calendar-workspace-frame-inset-inline: var(--rux-space-5);
-	--calendar-workspace-frame-border: none;
 	--calendar-workspace-frame-radius: var(--rux-radius-container);
 	--scheduler-app-resize-hit-width: 20px;
 	--scheduler-app-resize-handle-width: 3px;
@@ -154,8 +153,6 @@
    inset while Tools is open; when closed, the workspace restores that inset
    itself so the calendar never jumps flush to the outer edge. */
 .rux-app-view[data-view="calendar"] {
-	background: var(--rux-workspace-bg);
-	border: var(--calendar-workspace-frame-border);
 	border-radius: var(--calendar-workspace-frame-radius);
 
 	padding: var(--calendar-workspace-padding);
@@ -165,7 +162,6 @@
 	margin-block: var(--calendar-workspace-frame-inset-block);
 	margin-inline-start: var(--calendar-workspace-frame-inset-inline);
 	margin-inline-end: 0;
-	padding-block-end: 0;
 	border-radius: 0;
 	transition:
 		margin-inline-end var(--rux-panel-motion-duration)
@@ -300,7 +296,6 @@
    explicit `height`, not a `max-height` clamp. */
 .rux-app-view > .rux-workspace {
 	min-width: 471px;
-	padding-block-end: var(--rux-workspace-gutter);
 }
 
 /* — Trip panel drawer — */
@@ -1551,7 +1546,6 @@
 
 	.rux-app-view[data-view="calendar"] {
 		--calendar-workspace-frame-inset-inline: 0;
-		border: 0;
 		border-radius: 0;
 	}
 
@@ -1561,7 +1555,6 @@
 
 	.rux-app-view > .rux-workspace {
 		min-width: 0;
-		padding-block-end: 0;
 	}
 
 	.rux-app-view > .rux-workspace::after {
@@ -1590,35 +1583,20 @@
 
 /* — Schedule grid wrap — */
 
-/* margin-inline here is the *inner* inset between the workspace card and its
-   own scrollable content — a different gap than .rux-app-view's
-   padding-inline (the *outer* gutter between the workspace and the app
-   edge/drawer). Both intentionally reuse --scheduler-app-gap for rhythm;
-   per workspace.css, the shell never owns this inset, each feature module
-   does. */
 .calendar-app__viewport {
 	flex: 1;
-	margin-inline: var(--rux-workspace-gutter);
 }
 
 /* align-self:center overrides .rux-workspace's default align-items:stretch,
    which would otherwise force these full cross-axis (horizontal) width
    regardless of the .rux-table inside — same reason .rux-table itself
    dropped width:100%. width:fit-content then sizes the wrap to that
-   table's actual content width instead of the old full-bleed box.
-   max-width subtracts the gutter margin explicitly — unlike
-   align-items:stretch (how .calendar-app__viewport keeps its own margin
-   safe below), a plain percentage max-width caps the border-box only,
-   and margin-inline sits outside that box. Left at a flat 100%, the
-   margin would push the wrap past the workspace edge (and past an open
-   drawer) the moment content actually needs the full cap, instead of the
-   gutter holding as a true minimum gap on both sides. */
+   table's actual content width instead of the old full-bleed box. */
 .rux-workspace :is(.trips-app__table-wrap, .fleet-app__table-wrap, .driver-app__table-wrap, .customer-app__table-wrap) {
 	flex: 1;
 	align-self: center;
 	width: fit-content;
-	max-width: calc(100% - (var(--rux-workspace-gutter) * 2));
-	margin-inline: var(--rux-workspace-gutter);
+	max-width: 100%;
 	background: var(--rux-table-wrap-bg);
 	border-radius: var(--rux-table-wrap-radius);
 	overflow: auto;
@@ -1636,18 +1614,6 @@
 	border: var(--rux-calendar-border);
 	border-bottom: var(--rux-calendar-border);
 	border-radius: var(--rux-calendar-radius);
-}
-
-/* The viewport owns the one continuous raised top rim because it also owns
-   the outer radius. Header cells beneath it only draw internal separators. */
-.calendar-app__viewport::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	z-index: calc(var(--rux-z-sticky) + 2);
-	pointer-events: none;
-	border-radius: inherit;
-	box-shadow: var(--rux-calendar-viewport-rim-shadow);
 }
 
 /* — Pull-to-change-week hint — */
@@ -1728,7 +1694,6 @@
 	.rux-app-view > .rux-workspace {
 		margin: 0;
 		border-radius: 0;
-		padding-block-end: 0;
 	}
 
 	/* Prev/Today/Next + the Calendar Tools toggle are the most-tapped
@@ -1790,7 +1755,7 @@
 		padding-inline: var(--rux-space-4);
 		padding-block: var(--rux-space-4);
 		padding-bottom: calc(var(--rux-space-2) + env(safe-area-inset-bottom, 0px));
-		background: var(--rux-workspace-bg);
+		background: var(--rux-surface-0);
 		border-top: var(--rux-border-width) solid var(--rux-card-border);
 	}
 

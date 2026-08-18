@@ -153,7 +153,7 @@ test("Calendar workspace is inset while tools remain full-bleed", () => {
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.rux-app-view\[data-view="calendar"\]\s*\{[^}]*border:\s*var\(--calendar-workspace-frame-border\);[^}]*padding:\s*var\(--calendar-workspace-padding\);/s,
+		/\.rux-app-view\[data-view="calendar"\]\s*\{[^}]*border-radius:\s*var\(--calendar-workspace-frame-radius\);[^}]*padding:\s*var\(--calendar-workspace-padding\);/s,
 	);
 	assert.match(
 		schedulerLayoutCss,

@@ -16,8 +16,8 @@
    tokens.css, colors_and_type.css, and base/ for maintainability.
    ========================================================================== */
 
-@import "./tokens.css";
-@import "./colors_and_type.css";
+@import "./tokens.css?v=3";
+@import "./colors_and_type.css?v=2";
 @import "./base/icons.css";
 @import "./base/controls.css";
 @import "./base/ui-header.css";
@@ -32,7 +32,7 @@
 @import "./base/suggestions.css";
 @import "./base/card.css";
 @import "./base/table.css";
-@import "./base/content.css";
+@import "./base/content.css?v=2";
 @import "./base/notifications.css";
 @import "./base/preferences.css";
 @import "./base/profile-picker.css";

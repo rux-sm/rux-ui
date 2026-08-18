@@ -3,7 +3,6 @@
 	flex: 1;
 	min-width: 0;
 	flex-direction: column;
-	background: var(--rux-surface-1);
 }
 
 .flip-seven [hidden] { display: none !important; }

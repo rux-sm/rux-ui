@@ -442,12 +442,12 @@
 	/* Outermost full-bleed page canvas — no border/radius/shadow of its own,
 	   nothing else sits "above" it to cast one. */
 
-	/* Was var(--rux-danger) — a debug value that shipped unnoticed because
-	   nothing loaded .rux-app; the reference application used its own
-	   .scheduler-app shell instead. Any consumer adopting the portable shell
-	   got a red page. Set to the surface the reference application actually
-	   renders here. */
-	--rux-shell-bg:                var(--rux-surface-1);
+	/* The one page canvas, per the Vercel Geist model (README.md's
+	   "Backgrounds"): the shell, UI header, and splash all paint this
+	   surface, and content raises off it at --rux-surface-1. Was
+	   var(--rux-surface-1) before the 2026-08 flatten, which made the
+	   workspace a second painted layer; see --rux-workspace-bg below. */
+	--rux-shell-bg:                var(--rux-surface-0);
 	--rux-shell-margin-inline:     var(--rux-space-0);
 	--rux-shell-margin-bottom:     var(--rux-space-0);
 	--rux-shell-ui-header-gap:     var(--rux-space-0);
@@ -455,7 +455,7 @@
 	/* ─── COMPONENT · UI header ───────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-ui-header-bg:     	var(--rux-surface-1);
+	--rux-ui-header-bg:     	var(--rux-surface-0);
 	--rux-ui-header-border: 	1px solid var(--rux-card-border);
 	/* --rux-ui-header-radius: not set — spans full width, no corners */
 	/* --rux-ui-header-shadow: not set */
@@ -484,7 +484,8 @@
 	--rux-ui-header-actions-group-gap: 	var(--rux-space-0);
 	--rux-ui-header-actions-divider:   	none;
 	--rux-ui-header-identity-gap:      	var(--rux-space-0);
-	--rux-ui-header-avatar-border: 		2px solid var(--rux-surface-1);
+	/* Tracks the header's own surface so the ring reads as a cutout. */
+	--rux-ui-header-avatar-border: 		2px solid var(--rux-ui-header-bg);
 
 	/* ─── COMPONENT · side navigation ─────────────────────────────────────── */
 	--rux-side-nav-width:           256px;
@@ -518,7 +519,11 @@
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-workspace-bg:            var(--rux-surface-0);
+	/* Transparent since the 2026-08 flatten: the shell's canvas
+	   (--rux-shell-bg, --rux-surface-0) shows through, and content on the
+	   workspace raises off it at --rux-surface-1 — one canvas, no second
+	   painted pane. */
+	--rux-workspace-bg:            transparent;
 	--rux-workspace-fg:            var(--rux-text-default);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block:  none;
@@ -528,7 +533,6 @@
 	--rux-workspace-radius: var(--rux-radius-container);
 	/* --rux-workspace-shadow: not set — flattened alongside the header/
 	   side-nav redesign, no inset shadow on the primary view shell */
-	--rux-workspace-gutter: var(--rux-space-0);
 	--calendar-workspace-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
 
 	/* — header — */
@@ -547,7 +551,6 @@
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
 	--rux-calendar-radius: var(--rux-radius-container);
-	--rux-calendar-viewport-rim-shadow: none;
 	--rux-calendar-now-line-color:    var(--rux-accent-fill);
 	--rux-calendar-now-line-label-bg: var(--rux-calendar-now-line-color);
 	--rux-calendar-now-line-label-fg: var(--rux-fg-on-accent);

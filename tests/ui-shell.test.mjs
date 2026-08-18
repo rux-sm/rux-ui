@@ -103,7 +103,7 @@ test("mobile removes the Calendar right gutter and frame inset", () => {
 	);
 	assert.match(
 		layoutStyles,
-		/\.rux-app-view\[data-view="calendar"\]\s*\{\s*--calendar-workspace-frame-inset-inline:\s*0;\s*border:\s*0;/,
+		/\.rux-app-view\[data-view="calendar"\]\s*\{\s*--calendar-workspace-frame-inset-inline:\s*0;\s*border-radius:\s*0;/,
 	);
 });
 
