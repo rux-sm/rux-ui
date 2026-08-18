@@ -303,8 +303,11 @@ added alongside the existing `--rux-blue`.
 ### Spacing
 
 A 4px grid: `--rux-space-1` (4px) through `--rux-space-6` (24px) step by their
-own index, then `--rux-space-8` (32px), `-12` (48px), `-16` (64px) **Do not invent new
-values.** Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use
+own index, then `--rux-space-8` (32px), `-10` (40px), `-12` (48px), `-16` (64px),
+`-20` (80px), and `-24` (96px). Two steps sit off the grid on purpose:
+`--rux-space-px` (1px) for hairlines and `--rux-space-1-5` (6px), the single
+half-step. **Do not invent new values** — propose the name and value instead.
+Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use
 `--rux-space-5` or `--rux-space-6`.
 
 ### Buttons

@@ -97,18 +97,21 @@
 
 	/* ─── SPACING · 4px base grid ────────────────────────────────────────── */
 
-	--rux-space-0:	0px;		/*  0px */
-	--rux-space-px:	1px;		/*  1px */
-	--rux-space-1:	0.25rem;	/*  4px */
-	--rux-space-1-5: 0.375rem;	/*  6px — the one half-step in the scale */
-	--rux-space-2:	0.5rem;		/*  8px */
-	--rux-space-3:	0.75rem;	/* 12px */
-	--rux-space-4:	1rem;		/* 16px */
-	--rux-space-5:	1.25rem;	/* 20px */
-	--rux-space-6:	1.5rem;		/* 24px */
-	--rux-space-8:	2rem;		/* 32px */
-	--rux-space-12:	3rem;		/* 48px */
-	--rux-space-16:	4rem;		/* 64px */
+	--rux-space-0:   0px;      /*   0px */
+	--rux-space-px:  1px;      /*   1px — hairline; deliberately off the 4px grid */
+	--rux-space-1:   0.25rem;  /*   4px */
+	--rux-space-1-5: 0.375rem; /*   6px — the one half-step in the scale */
+	--rux-space-2:   0.5rem;   /*   8px */
+	--rux-space-3:   0.75rem;  /*  12px */
+	--rux-space-4:   1rem;     /*  16px */
+	--rux-space-5:   1.25rem;  /*  20px */
+	--rux-space-6:   1.5rem;   /*  24px */
+	--rux-space-8:   2rem;     /*  32px */
+	--rux-space-10:  2.5rem;   /*  40px */
+	--rux-space-12:  3rem;     /*  48px */
+	--rux-space-16:  4rem;     /*  64px */
+	--rux-space-20:  5rem;     /*  80px */
+	--rux-space-24:  6rem;     /*  96px */
 
 	/* ─── SIZE · shared foundations ──────────────────────────────────────── */
 
@@ -904,7 +907,7 @@
 	--rux-button-height-compact:        	24px;
 	--rux-button-icon-size-compact:     	var(--rux-icon-sm);
 	--rux-button-font-size-compact:     	var(--rux-size-xs);
-	--rux-button-padding-inline-compact: 	var(--rux-space-1-5);
+	--rux-button-padding-inline-compact: 	var(--rux-space-1);
 	--rux-button-content-gap-compact:   	var(--rux-space-1);
 
 	/* ─── COMPONENT · button loading ──────────────────────────────────────── */
