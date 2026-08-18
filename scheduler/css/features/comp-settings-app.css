@@ -221,7 +221,6 @@
 .settings-req-list {
 	display: flex;
 	flex-direction: column;
-	gap: var(--rux-space-0-5);
 }
 
 .settings-req-section {
@@ -357,7 +356,6 @@
 	z-index: var(--rux-z-dropdown);
 	display: grid;
 	grid-template-columns: repeat(6, 1fr);
-	gap: var(--rux-space-0-5);
 	width: 248px;
 	padding: var(--rux-space-2);
 	background: var(--rux-surface-1);

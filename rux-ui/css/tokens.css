@@ -765,7 +765,7 @@
 	--rux-input-border:         1px solid var(--rux-card-border);
 	--rux-input-border-image:   none;
 	--rux-input-border-radius:  var(--rux-radius-input);
-	--rux-input-shadow:         var(--rux-shadow-inset);
+	--rux-input-shadow:         none;
 	--rux-input-height:         var(--rux-field-height);
 	--rux-input-padding-inline: var(--rux-control-padding-inline);
 	--rux-input-font-size:      var(--rux-size-sm);

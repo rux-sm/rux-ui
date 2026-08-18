@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Rux UI · Component Gallery</title>
+<link rel="stylesheet" href="rux-ui/css/rux.css" />
+<style>
+	/* Gallery chrome only. Prefixed `gallery-` so it can never be mistaken for
+	   a design-system primitive, and built entirely from --rux-* tokens so it
+	   re-themes with everything else. Nothing here belongs in rux-ui/. */
+	.gallery-page {
+		max-width: 1100px;
+		margin-inline: auto;
+		padding: var(--rux-space-6) var(--rux-space-4) var(--rux-space-12);
+	}
+	.gallery-bar {
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--rux-space-3);
+		align-items: center;
+		justify-content: space-between;
+		padding: var(--rux-space-3) var(--rux-space-4);
+		background: var(--rux-surface-0);
+		border-block-end: var(--rux-border-width) solid var(--rux-card-border);
+	}
+	.gallery-title { font-size: var(--rux-size-md); font-weight: var(--rux-weight-600); }
+	.gallery-meta  { font-size: var(--rux-size-xs); color: var(--rux-text-muted); font-variant-numeric: tabular-nums; }
+	.gallery-section { margin-block-start: var(--rux-space-8); }
+	.gallery-section > h2 {
+		font-size: var(--rux-size-xs);
+		font-weight: var(--rux-weight-600);
+		letter-spacing: var(--rux-tracking-wide);
+		text-transform: uppercase;
+		color: var(--rux-text-muted);
+		padding-block-end: var(--rux-space-2);
+		border-block-end: var(--rux-border-width) solid var(--rux-card-border);
+		margin-block-end: var(--rux-space-4);
+	}
+	.gallery-row {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--rux-space-3);
+		margin-block-end: var(--rux-space-4);
+	}
+	.gallery-specimen { display: flex; flex-direction: column; gap: var(--rux-space-1); min-width: 0; }
+	.gallery-label { font-size: var(--rux-size-xxs); color: var(--rux-text-muted); font-family: var(--rux-font-mono); }
+	.gallery-grid { display: grid; gap: var(--rux-space-4); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+</style>
+</head>
+<body>
+<header class="gallery-bar">
+	<span class="gallery-title">Rux UI · Component Gallery</span>
+	<div class="rux-cluster">
+		<span class="gallery-meta" id="viewport-readout">—</span>
+		<button type="button" class="rux-button rux-button--default rux-button--compact" id="theme-toggle" aria-pressed="false">
+			<span class="rux-icon" aria-hidden="true">dark_mode</span>
+			<span id="theme-toggle-label">Dark</span>
+		</button>
+	</div>
+</header>
+
+<main class="gallery-page">
+
+<section class="gallery-section">
+	<h2>Button · variants</h2>
+	<div class="gallery-row">
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--default">Default</button><span class="gallery-label">--default</span></span>
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--accent">Accent</button><span class="gallery-label">--accent</span></span>
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--danger">Danger</button><span class="gallery-label">--danger</span></span>
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--ghost">Ghost</button><span class="gallery-label">--ghost</span></span>
+	</div>
+	<h2>Button · sizes, states</h2>
+	<div class="gallery-row">
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--default rux-button--compact">Compact</button><span class="gallery-label">--compact</span></span>
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--default rux-button--icon" aria-label="Add"><span class="rux-icon" aria-hidden="true">add</span></button><span class="gallery-label">--icon</span></span>
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--default rux-button--icon rux-button--compact" aria-label="Edit"><span class="rux-icon" aria-hidden="true">edit</span></button><span class="gallery-label">--icon --compact</span></span>
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--default rux-button--toggle" aria-pressed="true">Toggle</button><span class="gallery-label">--toggle</span></span>
+		<span class="gallery-specimen"><button type="button" class="rux-button rux-button--default" disabled>Disabled</button><span class="gallery-label">:disabled</span></span>
+	</div>
+	<div class="gallery-row">
+		<span class="gallery-specimen" style="flex:1"><button type="button" class="rux-button rux-button--accent rux-button--block">Block</button><span class="gallery-label">--block</span></span>
+	</div>
+</section>
+
+<section class="gallery-section">
+	<h2>Badge</h2>
+	<div class="gallery-row">
+		<span class="rux-badge">Neutral</span>
+		<span class="rux-badge rux-badge--accent">Accent</span>
+		<span class="rux-badge rux-badge--info">Info</span>
+		<span class="rux-badge rux-badge--success">Success</span>
+		<span class="rux-badge rux-badge--warning">Warning</span>
+		<span class="rux-badge rux-badge--danger">Danger</span>
+		<span class="rux-badge rux-badge--dot" aria-label="Unread"></span>
+	</div>
+</section>
+
+<section class="gallery-section">
+	<h2>Alert</h2>
+	<div class="gallery-grid">
+		<div class="rux-alert rux-alert--info" role="status"><span class="rux-icon rux-alert__icon" aria-hidden="true">info</span><div class="rux-alert__body"><p class="rux-alert__title">Informational</p><p>Schedule published to three drivers.</p></div></div>
+		<div class="rux-alert rux-alert--success" role="status"><span class="rux-icon rux-alert__icon" aria-hidden="true">check_circle</span><div class="rux-alert__body"><p class="rux-alert__title">Saved</p><p>Trip details updated.</p></div></div>
+		<div class="rux-alert rux-alert--warning" role="status"><span class="rux-icon rux-alert__icon" aria-hidden="true">warning</span><div class="rux-alert__body"><p class="rux-alert__title">Check assignment</p><p>Driver is near the weekly hour limit.</p></div></div>
+		<div class="rux-alert rux-alert--danger" role="alert"><span class="rux-icon rux-alert__icon" aria-hidden="true">error</span><div class="rux-alert__body"><p class="rux-alert__title">Conflict</p><p>Bus 14 is already booked for this window.</p></div></div>
+	</div>
+</section>
+
+<section class="gallery-section">
+	<h2>Card</h2>
+	<div class="gallery-grid">
+		<article class="rux-card"><header class="rux-card__header"><h3 class="rux-card__title">Default</h3><p class="rux-card__subtitle">Header, body, footer</p></header><div class="rux-card__body"><p>Standard surface with a hairline border.</p></div><footer class="rux-card__footer rux-card__footer--between"><span class="rux-badge">Draft</span><button type="button" class="rux-button rux-button--default rux-button--compact">Open</button></footer></article>
+		<article class="rux-card rux-card--elevated"><header class="rux-card__header"><h3 class="rux-card__title">Elevated</h3></header><div class="rux-card__body"><p>Raised off the canvas.</p></div></article>
+		<article class="rux-card rux-card--recessed"><header class="rux-card__header"><h3 class="rux-card__title">Recessed</h3></header><div class="rux-card__body"><p>Sunk into the canvas.</p></div></article>
+		<article class="rux-card rux-card--boxed"><div class="rux-card__body"><p>Boxed — single region, no header.</p></div></article>
+	</div>
+</section>
+
+<section class="gallery-section">
+	<h2>Form controls</h2>
+	<div class="gallery-grid">
+		<label class="rux-field"><span class="rux-field__label">Client / group</span><input class="rux-input" name="client" type="text" autocomplete="organization" placeholder="Escamilla Tours" /></label>
+		<label class="rux-field"><span class="rux-field__label">Departure</span><input class="rux-input" name="departure" type="date" autocomplete="off" /></label>
+		<label class="rux-field"><span class="rux-field__label">Vehicle</span><select class="rux-select" name="vehicle"><option>Bus 14</option><option>Bus 22</option></select></label>
+		<label class="rux-field"><span class="rux-field__label">Notes</span><textarea class="rux-textarea" name="notes" rows="3" placeholder="Anything the driver should know"></textarea></label>
+		<label class="rux-field"><span class="rux-field__label">Disabled</span><input class="rux-input" name="disabled-demo" type="text" value="Read only" disabled /></label>
+	</div>
+	<div class="gallery-row">
+		<label class="rux-cluster"><input class="rux-checkbox" type="checkbox" name="confirmed" checked /> <span>Confirmed</span></label>
+		<label class="rux-cluster"><input class="rux-checkbox" type="checkbox" name="recurring" /> <span>Recurring</span></label>
+	</div>
+</section>
+
+<section class="gallery-section">
+	<h2>Tabs</h2>
+	<div class="rux-tabs" role="tablist" aria-label="Gallery tab specimen">
+		<button type="button" class="rux-tab" role="tab" aria-selected="true"><span class="rux-tab__label">Itinerary</span></button>
+		<button type="button" class="rux-tab" role="tab" aria-selected="false"><span class="rux-tab__label">Drivers</span></button>
+		<button type="button" class="rux-tab" role="tab" aria-selected="false"><span class="rux-tab__label">Billing</span></button>
+	</div>
+</section>
+
+<section class="gallery-section">
+	<h2>Avatar · Tag · Status · Progress</h2>
+	<div class="gallery-row">
+		<span class="gallery-specimen"><span class="rux-avatar rux-avatar--sm" aria-hidden="true">RS</span><span class="gallery-label">--sm</span></span>
+		<span class="gallery-specimen"><span class="rux-avatar" aria-hidden="true">RS</span><span class="gallery-label">base</span></span>
+		<span class="gallery-specimen"><span class="rux-avatar rux-avatar--lg" aria-hidden="true">RS</span><span class="gallery-label">--lg</span></span>
+		<span class="gallery-specimen"><span class="rux-tag">charter</span><span class="gallery-label">.rux-tag</span></span>
+		<span class="gallery-specimen"><span class="rux-status-text rux-status-text--success">On time</span><span class="gallery-label">--success</span></span>
+		<span class="gallery-specimen"><span class="rux-status-text rux-status-text--warning">Delayed</span><span class="gallery-label">--warning</span></span>
+		<span class="gallery-specimen"><span class="rux-status-text rux-status-text--danger">Cancelled</span><span class="gallery-label">--danger</span></span>
+	</div>
+	<div class="rux-progress"><div class="rux-progress__bar" style="inline-size: 62%"></div></div>
+</section>
+
+<section class="gallery-section">
+	<h2>Icons · .rux-icon (Material Symbols Sharp)</h2>
+	<div class="gallery-row">
+		<span class="rux-icon" aria-hidden="true">directions_bus</span>
+		<span class="rux-icon" aria-hidden="true">calendar_month</span>
+		<span class="rux-icon" aria-hidden="true">person</span>
+		<span class="rux-icon" aria-hidden="true">edit</span>
+		<span class="rux-icon" aria-hidden="true">delete</span>
+		<span class="rux-icon" aria-hidden="true">close</span>
+		<span class="rux-icon" aria-hidden="true">add</span>
+	</div>
+</section>
+
+</main>
+
+<script>
+	/* Gallery chrome only — the app itself uses rux-ui/js/theme.js. */
+	const root = document.documentElement;
+	const toggle = document.getElementById("theme-toggle");
+	const label = document.getElementById("theme-toggle-label");
+	const icon = toggle.querySelector(".rux-icon");
+	const readout = document.getElementById("viewport-readout");
+
+	function paint() {
+		const light = root.dataset.theme === "light";
+		toggle.setAttribute("aria-pressed", String(light));
+		label.textContent = light ? "Light" : "Dark";
+		icon.textContent = light ? "light_mode" : "dark_mode";
+	}
+	toggle.addEventListener("click", () => {
+		root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light";
+		paint();
+	});
+
+	const showWidth = () => { readout.textContent = `${window.innerWidth}px`; };
+	window.addEventListener("resize", showWidth);
+	showWidth();
+	paint();
+</script>
+</body>
+</html>

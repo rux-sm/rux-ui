@@ -10,7 +10,9 @@ const controlsSource = await readFile(
 test("segmented indicators preserve fractional geometry and the track gutter", () => {
 	assert.match(controlsSource, /group\.getBoundingClientRect\(\)/);
 	assert.match(controlsSource, /active\.getBoundingClientRect\(\)/);
-	assert.match(controlsSource, /group\.classList\.contains\("rux-segmented-track"\)/);
+	/* Assert the class is the selection contract, not the API used to test it
+	   — controls.js identifies groups with matches()/querySelectorAll now. */
+	assert.match(controlsSource, /["'.]rux-segmented-track["']/);
 	assert.match(controlsSource, /maxRight - x/);
 	assert.doesNotMatch(controlsSource, /active\.offset(?:Left|Top|Width|Height)/);
 });

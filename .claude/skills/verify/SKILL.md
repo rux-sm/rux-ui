@@ -1,48 +1,51 @@
 ---
 name: verify
-description: Launch and drive rux-ui to observe a change working in the real app.
+description: >-
+  Use this skill when the user asks to run, start, serve, open, or screenshot
+  this app, or to confirm a change actually works in the browser rather than
+  only in tests. Triggers on "run the app", "start the server", "does it
+  work", "check it in the browser", "verify this", "localhost", "8642".
+  ALWAYS use this instead of the generic run skill: it carries this
+  repository's live-Supabase safety rules and its honest limits on what can
+  and cannot be verified from this environment.
 ---
 
 # Verifying changes in rux-ui
 
-This is a static HTML/CSS/JS app with no build step, backed by a live Supabase
-project. The scheduler lives in `index.html` + `js/`. The repository has a
-small Node test suite configured in `package.json`.
+Static HTML/CSS/JS with no build step, backed by a live Supabase project. The
+scheduler lives in `index.html` + `js/`. A small Node test suite is configured
+in `package.json`.
 
 ## Launch
 
 ```bash
 python3 -m http.server 8642
 ```
-(matches `.claude/launch.json`'s `rux-ui-static` config). Then open
+
+Matches `.claude/launch.json`'s `rux-ui-static` config. Then open
 `http://localhost:8642/index.html`.
 
-## Gotchas
+## Hard constraints
 
-- **Use the available Node checks** — run `node --check <changed-file.js>` for
-  syntax and `node --test tests/<file>.test.mjs` for focused coverage. Run
-  `npm test` when the change has broader impact. If a future environment lacks
-  Node, report that limitation instead of substituting bracket counts for a
-  real parser.
-- **If browser automation is unavailable**, GUI changes cannot be
-  screenshotted or clicked through. In that case, confirming a change reaches
-  the browser is limited to starting the server, `curl`-ing the served files,
-  and reading the code paths by hand. That is not equivalent to observing the
-  rendered or interactive result; report the pixel/interaction check as
-  unverified rather than implying it passed.
-- **Supabase is live, not a local/test instance.** Trip/bus/driver data comes
-  from a real Supabase project (`js/data/trip-db.js`'s `supabase` client).
-  There is no seeded local DB and no sandbox — do not write speculative test
-  data (new trips, uploads, deletes) against it without the user's explicit
-  go-ahead, since it's their real data. Schema changes ship as
-  `supabase/*-patch.sql` files (see existing ones for the idempotent
-  `add column if not exists` + constraint style) that the **user** runs
-  themselves in the Supabase SQL editor — there's no migration runner here.
-- If a change depends on a not-yet-applied `supabase/*-patch.sql`, the DB
-  round-trip literally cannot be exercised until the user runs it — call
-  that out rather than assuming success.
+- **NEVER write to Supabase without explicit user authorization.** Trip, bus,
+  and driver data comes from a real Supabase project (`js/data/trip-db.js`'s
+  `supabase` client). There is no seeded local DB and no sandbox — it is the
+  user's real data. No speculative trips, uploads, or deletes.
+- **NEVER run `supabase/*-patch.sql` yourself.** There is no migration runner
+  here. Schema changes ship as patch files (see existing ones for the
+  idempotent `add column if not exists` + constraint style) that the **user**
+  runs in the Supabase SQL editor. If a change depends on a not-yet-applied
+  patch, the DB round-trip literally cannot be exercised — say so rather than
+  assuming success.
+- **ALWAYS use a real parser, never heuristics.** `node --check <file>.js` for
+  syntax; `node --test tests/<file>.test.mjs` for focused coverage; `npm test`
+  when the change has broader impact. If a future environment lacks Node,
+  report that limitation — do NOT substitute bracket counts for a parser.
+- **NEVER report a visual or interaction check as passing without browser
+  automation.** `curl` proves a file was served, not that it rendered. Report
+  the pixel/interaction check as unverified rather than implying it passed.
 
-## What's actually checkable from this environment
+## What is actually checkable from this environment
 
 - JavaScript syntax: `node --check <changed-file.js>`.
 - Automated contracts: `node --test tests/<file>.test.mjs` or `npm test`.

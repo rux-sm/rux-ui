@@ -761,7 +761,6 @@
 .rux-mini-cal__date--has-trips::after {
 	content: "";
 	position: absolute;
-	bottom: var(--rux-space-0-5);
 	width: 4px;
 	height: 4px;
 	border-radius: var(--rux-radius-0);

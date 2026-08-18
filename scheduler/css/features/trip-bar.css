@@ -931,7 +931,6 @@
 	min-width: 0;
 	min-height: var(--rux-trip-bar-row-line-height);
 	align-items: center;
-	gap: var(--rux-space-0-5);
 	background: var(--rux-trip-bar-meta-bg);
 	border-radius: var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius) 0 0;
 	box-shadow: var(--rux-trip-bar-meta-shadow);
@@ -1000,7 +999,6 @@
 	min-height: var(--rux-trip-bar-row-line-height);
 	flex-wrap: nowrap;
 	align-items: center;
-	gap: var(--rux-space-0-5);
 	background: var(--rux-trip-bar-meta-bg);
 	border-radius: 0 0 var(--rux-trip-bar-meta-radius) var(--rux-trip-bar-meta-radius);
 	box-shadow: var(--rux-trip-bar-meta-shadow);
@@ -1210,7 +1208,6 @@
 
 @container (max-width: 24rem) {
 	.rux-trip-bar__time {
-		gap: var(--rux-space-0-5);
 	}
 
 	.rux-trip-bar__pending {

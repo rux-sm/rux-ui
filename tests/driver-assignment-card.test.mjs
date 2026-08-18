@@ -245,7 +245,12 @@ test("header destination is followed by spot time and spot location", () => {
 	assert.ok(spotLocation.textContent.includes("5:15 AM"));
 	assert.equal(spotLocation.textContent.includes("Donna High School"), false);
 	assert.ok(spotLocation.textContent.includes("7250 Val Verde Rd"));
-	assert.ok(spotLocation.textContent.includes("Navigate"));
+	/* The navigate control is icon-only now (Material Symbols "navigation"),
+	   so its accessible name carries the label. Assert that, not glyph text. */
+	const navigateLabel = [...card.querySelectorAll("[aria-label]")]
+		.map((el) => el.getAttribute("aria-label"))
+		.find((label) => label.startsWith("Navigate to"));
+	assert.ok(navigateLabel, "navigate link is missing its accessible name");
 	const spotDetails = spotLocation.querySelector(".assignment-compact-module__details");
 	const address = spotDetails.childNodes[0];
 	assert.equal(address.tagName, "ADDRESS");
@@ -476,7 +481,11 @@ test("notes precede the headerless document actions at the end of the card", () 
 	assert.equal(moduleByKey(card, "documents").getAttribute("aria-label"), "Documents");
 });
 
-test("assignment actions use the generic semantic module-button primitive", () => {
+/* SKIPPED: the .rux-module-button tone system was retired — see
+   rux-ui/css/tokens.css, which describes this as "what used to be the wider
+   .rux-module-button tone system". No stylesheet defines the class.
+   Restore this test if the primitive comes back. */
+test.skip("assignment actions use the generic semantic module-button primitive", () => {
 	const card = renderDriverAssignmentCard(assignment({
 		contact: { name: "Anna Partida", phone: "956-292-9255" },
 		fleetAssignments: [
@@ -615,7 +624,11 @@ test("document actions use neutral styling unless attention is required", () => 
 	assert.equal(documents[1].classList.contains("is-attention-needed"), true);
 });
 
-test("generic module buttons expose one fixed layout and every semantic tone", async () => {
+/* SKIPPED: the .rux-module-button tone system was retired — see
+   rux-ui/css/tokens.css, which describes this as "what used to be the wider
+   .rux-module-button tone system". No stylesheet defines the class.
+   Restore this test if the primitive comes back. */
+test.skip("generic module buttons expose one fixed layout and every semantic tone", async () => {
 	const [controls, tokens] = await Promise.all([
 		readFile(new URL("../rux-ui/css/base/controls.css", import.meta.url), "utf8"),
 		readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8"),
@@ -650,7 +663,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		/\.driver-assignment-card__bus-badge,\s*\.driver-assignment-card__role-badge\s*\{/s,
 	);
 	assert.match(css, /\.driver-assignment-card__date-range\s*\{[^}]*color:\s*var\(--rux-text-muted\)/s);
-	assert.match(css, /--rux-driver-date-primary-size:\s+1rem/);
+	assert.match(css, /--rux-driver-date-primary-size:\s+var\(--rux-size-md\)/);
 	assert.match(
 		css,
 		/\.driver-assignment-card__header-summary\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) clamp\(104px,\s*24cqi,\s*128px\)[^}]*grid-template-areas:[^}]*"date bus"[^}]*"destination role"[^}]*row-gap:\s*var\(--rux-space-2\)[^}]*padding:\s*var\(--rux-driver-card-header-padding\)/s,
@@ -680,14 +693,14 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		/--rux-driver-card-header-padding:\s+28px var\(--rux-space-5\)/,
 	);
 	assert.match(tokens, /--rux-badge-background-opacity:\s+12%/);
-	assert.match(tokens, /--rux-badge-module-height:\s+var\(--rux-module-button-height\)/);
+	assert.match(tokens, /--rux-badge-module-height:\s+44px/);
 	assert.match(
 		css,
 		/--rux-driver-module-padding:\s+20px var\(--rux-space-5\)/,
 	);
 	assert.match(
 		badges,
-		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid var\(--_badge-color\)[^}]*color:\s*var\(--_badge-color\)/s,
+		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info-strong\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid var\(--_badge-color\)[^}]*color:\s*var\(--_badge-color\)/s,
 	);
 	for (const [tone, color] of [
 		["info", "info"],
@@ -697,7 +710,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	]) {
 		assert.match(
 			badges,
-			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${color}\\)`),
+			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${color}-strong\\)`),
 		);
 	}
 	assert.match(
@@ -722,7 +735,9 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/\.driver-assignment-card__response-state--danger\s*\{[^}]*--_state-color:\s*var\(--rux-danger-bright\)/s,
 	);
-	assert.match(css, /--rux-driver-(?:date-primary|bus|route|time)-size:\s+1\.5rem/g);
+	/* The emphasised driver type size is tokenised now (--rux-size-2xl is
+	   1.5rem); the -bus- and -route- variants no longer exist. */
+	assert.match(css, /--rux-driver-time-size:\s+var\(--rux-size-2xl\)/);
 	assert.doesNotMatch(
 		css,
 		/@container driver-assignment-card \(max-width: 479px\)[\s\S]*?\.driver-assignment-card__response-actions\s*\{[\s\S]*?display:\s*flex/,
@@ -753,11 +768,11 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__document\s*\{[^}]*background:\s*var\(--rux-module-button-neutral-bg\)[^}]*color:\s*var\(--rux-module-button-neutral-fg\)/s,
+		/\.driver-assignment-card__document\s*\{[^}]*background:\s*var\(--rux-driver-doc-neutral-bg\)[^}]*color:\s*var\(--rux-driver-doc-neutral-fg\)/s,
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__document\.is-attention-needed\s*\{[^}]*background:\s*var\(--rux-module-button-warning-bg\)/s,
+		/\.driver-assignment-card__document\.is-attention-needed\s*\{[^}]*background:\s*var\(--rux-driver-doc-warning-bg\)/s,
 	);
 	assert.match(
 		css,

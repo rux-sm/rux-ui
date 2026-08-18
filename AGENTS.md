@@ -5,14 +5,14 @@
 - Read `README.md` for project orientation.
 - Inspect only the files relevant to the requested task; do not scan the entire repository for a narrow change.
 - Follow this routing order:
-  - UI or CSS: `SKILL.md`, then the target markup/style file; inspect `rux-ui/css/tokens.css` when styling or tokens are involved.
+  - UI or CSS: `.claude/skills/rux-design/SKILL.md`, then the target markup/style file; inspect `rux-ui/css/tokens.css` when styling or tokens are involved.
   - Application behavior: the relevant file under `js/` or `index.html`, then directly connected dependencies only.
   - Reference-application data layer: the relevant module under `js/data/`, then related SQL under `supabase/`.
   - Hard debugging: the failing path first, expanding through callers and callees only as evidence requires.
 
 ## UI Tasks
 
-- Read `SKILL.md` before editing UI, CSS, components, design tokens, content, or responsive layout. Do not load it for unrelated work.
+- Read `.claude/skills/rux-design/SKILL.md` before editing UI, CSS, components, design tokens, content, or responsive layout. Do not load it for unrelated work. Its interaction/accessibility rules live in that skill's `references/interaction-a11y.md`.
 - Reuse existing `--rux-*` tokens and `.rux-*` components before creating new primitives.
 - Do not introduce inline styles or hardcoded colors when an existing token or stylesheet applies.
 

@@ -9,7 +9,7 @@ small vanilla-JS helpers with no framework dependency — plus the **reference
 application** that consumes it. It was distilled from the **TripBoard**
 codebase (a fleet/dispatch scheduling app) into a reusable system with one
 flat namespace of `--rux-*` design tokens, a BEM-style component library
-(`.rux-card`, `.rux-button`, …), and a shared `SKILL.md` that tells AI coding
+(`.rux-card`, `.rux-button`, …), and a shared `rux-design` skill that tells AI coding
 agents how to build with it.
 
 Two things live side by side in this repo:
@@ -44,7 +44,7 @@ themes via `data-theme`.
 Agents (Cline, Claude Code, Codex — or a human) drive most of the work here:
 
 1. **Route to the source of truth.** Read `README.md` for project orientation.
-   Read `SKILL.md` only for UI/frontend work, then inspect only the files the
+   Load the `rux-design` skill only for UI/frontend work, then inspect only the files the
    task needs. Don't assume a demo, UI-kit, or root `utilities.js` exists — the
    listed structure is authoritative.
 
@@ -68,4 +68,4 @@ Agents (Cline, Claude Code, Codex — or a human) drive most of the work here:
 **Day-to-day work** is design-system + dispatch-app feature work: tweaking
 tokens and component styles, building scheduler/trip/fleet UI in `index.html`,
 wiring Supabase queries via `js/data/*`, adding SQL patches under `supabase/`,
-and keeping the docs (`README.md`, `SKILL.md`, `docs/`) in sync with the code.
+and keeping the docs (`README.md`, `.claude/skills/`, `docs/`) in sync with the code.

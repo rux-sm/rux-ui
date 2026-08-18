@@ -17,7 +17,8 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 ```
 .
 ├── README.md              ← you are here
-├── SKILL.md               ← current build instructions for coding agents
+├── gallery.html           ← every component, both themes, no app boot required
+├── .claude/skills/        ← Claude Code skills: rux-design, vendor-rux-ui, verify
 ├── AGENTS.md              ← concise Codex repository policy
 ├── CLAUDE.md              ← concise Claude Code repository policy
 ├── .cline/rules/          ← concise Cline project policy
@@ -84,7 +85,7 @@ design system:
 webfonts (including the Material Symbols face behind every `.rux-icon`), global
 type styles, and all reusable base components. It deliberately excludes the
 scheduler and reference-application feature styles, which `components.css`
-adds on top — that bundle now contains *only* those features and requires
+adds on top — that bundle now contains _only_ those features and requires
 `rux.css` to be loaded first.
 
 `rux-core.css` remains as a compatibility alias that forwards to `rux.css`; it
@@ -148,10 +149,10 @@ markup.
 ### Casing
 
 - **Title Case** for everything: buttons, headings, menu items, labels, toast messages.
-  - ✅ `New Trip`, `Save Changes`, `Driver Assignments`
-  - ❌ `New trip`, `Save changes`, `Driver assignments`
+    - ✅ `New Trip`, `Save Changes`, `Driver Assignments`
+    - ❌ `New trip`, `Save changes`, `Driver assignments`
 - **UPPERCASE** only for overlines and badges that need to read as a category, not a sentence. Track them out (`letter-spacing: 0.04em`).
-  - ✅ `DRAFT`, `INCOMPLETE`, `NEW`
+    - ✅ `DRAFT`, `INCOMPLETE`, `NEW`
 - **Sentence case** is forbidden in UI controls. Use Title Case instead.
 
 ### Punctuation
@@ -181,13 +182,13 @@ markup.
 
 ### Example copy
 
-| Context | Good | Bad |
-|---|---|---|
-| Empty state | `No trips this week` | `Looks like you don't have any trips yet! 🚌` |
-| Error | `Couldn't save. Check your connection and try again.` | `Oops! Something went wrong saving your trip!` |
-| Confirm | `Delete this trip?` `This can't be undone.` | `Are you sure you want to permanently delete this?` |
-| Toast | `Trip Saved` | `Trip successfully saved.` |
-| Button | `Save` `Delete Trip…` | `save trip` `DELETE` |
+| Context     | Good                                                  | Bad                                                 |
+| ----------- | ----------------------------------------------------- | --------------------------------------------------- |
+| Empty state | `No trips this week`                                  | `Looks like you don't have any trips yet! 🚌`       |
+| Error       | `Couldn't save. Check your connection and try again.` | `Oops! Something went wrong saving your trip!`      |
+| Confirm     | `Delete this trip?` `This can't be undone.`           | `Are you sure you want to permanently delete this?` |
+| Toast       | `Trip Saved`                                          | `Trip successfully saved.`                          |
+| Button      | `Save` `Delete Trip…`                                 | `save trip` `DELETE`                                |
 
 ---
 
@@ -198,12 +199,12 @@ markup.
 Two surfaces only, following the Vercel Geist model (see "Reference: Vercel
 Geist colors" below):
 
-| Token | Use for |
-|---|---|
-| `--rux-surface-0` | Chrome — app canvas, panel/floating-window shells, headers, tabs, controls |
+| Token             | Use for                                                                     |
+| ----------------- | --------------------------------------------------------------------------- |
+| `--rux-surface-0` | Chrome — app canvas, panel/floating-window shells, headers, tabs, controls  |
 | `--rux-surface-1` | Content — cards, tables, menus, popovers, dialogs, anything holding content |
 
-The rule of thumb: if it's a container that *holds* content, it's
+The rule of thumb: if it's a container that _holds_ content, it's
 `--rux-surface-1`; if it's UI furniture around that content, it's
 `--rux-surface-0`. `--rux-bg-hover` / `--rux-bg-active` are direct values
 (not aliased to a surface step) for interactive list-item states — a
@@ -226,25 +227,25 @@ That page doesn't publish raw hex/oklch values; what it documents is a
 10-step neutral scale (`--ds-gray-100` through `--ds-gray-1000`) with a
 fixed semantic role per step:
 
-| Step | Role |
-|---|---|
-| 100 | Default background |
-| 200 | Hover background |
-| 300 | Active background |
-| 400 | Default border |
-| 500 | Hover border |
-| 600 | Active border |
-| 700 | High-contrast background |
-| 800 | Hover high-contrast background |
-| 900 | Secondary text/icons |
-| 1000 | Primary text/icons |
+| Step | Role                           |
+| ---- | ------------------------------ |
+| 100  | Default background             |
+| 200  | Hover background               |
+| 300  | Active background              |
+| 400  | Default border                 |
+| 500  | Hover border                   |
+| 600  | Active border                  |
+| 700  | High-contrast background       |
+| 800  | Hover high-contrast background |
+| 900  | Secondary text/icons           |
+| 1000 | Primary text/icons             |
 
 Geist repeats this same 10-step shape for every other scale (blue, red,
 green, amber, teal, purple, pink), plus two dedicated `background-100`/
 `-200` tokens for the page canvas.
 
 Follow the **progression** (subtle → strong, one role per step), not the
-token names or exact numbers — per the Design rules in SKILL.md, external
+token names or exact numbers — per the Design rules in the `rux-design` skill, external
 guidance always gets expressed through `--rux-*` tokens, never imported
 directly. Current rux-ui alignment with this shape:
 
@@ -270,11 +271,11 @@ Geist-shaped equivalent.
 
 #### Swappable accent — JS wiring exists, CSS side does not yet
 
-`rux-ui/js/utilities.js` fully implements the *switching* mechanism:
+`rux-ui/js/utilities.js` fully implements the _switching_ mechanism:
 
 ```js
-Rux.setAccent("green");           // sets <html data-rux-accent="green">, persists to localStorage
-Rux.getAccent();                  // reads it back
+Rux.setAccent("green"); // sets <html data-rux-accent="green">, persists to localStorage
+Rux.getAccent(); // reads it back
 ```
 
 ```html
@@ -304,8 +305,7 @@ added alongside the existing `--rux-blue`.
 ### Spacing
 
 A 4px grid: `--rux-space-1` (4px) through `--rux-space-6` (24px) step by their
-own index, then `--rux-space-8` (32px), `-12` (48px), `-16` (64px) — plus
-`--rux-space-1-5` (6px), the one half-step in the scale. **Do not invent new
+own index, then `--rux-space-8` (32px), `-12` (48px), `-16` (64px) **Do not invent new
 values.** Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use
 `--rux-space-5` or `--rux-space-6`.
 
@@ -314,14 +314,14 @@ values.** Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use
 Buttons use explicit size roles instead of inheriting the height of form controls.
 See [Button Components](docs/buttons.md) for composition examples and usage rules.
 
-| Control | Height | Font | Horizontal padding | Icon/text gap |
-|---|---:|---:|---:|---:|
-| `.rux-button` | `--rux-button-height-standard` `32px` | `--rux-size-sm` `14px` | `--rux-button-padding-inline-standard` `12px` | `--rux-button-content-gap-standard` `8px` |
-| `.rux-button--icon` | resolved button height | role-specific icon | `0` | n/a |
-| `.rux-button--header` | `--rux-button-height-header` `44px` | `--rux-button-icon-size-header` `24px` | standard padding or square with `--icon` | `8px` |
-| `.rux-button--compact` | `--rux-button-height-compact` `28px` | `--rux-button-icon-size-compact` `18px` | `8px` or square with `--icon` | `4px` |
-| `.rux-segmented-track` | `--rux-input-height` outer track | track | `--rux-segmented-track-padding` | `--rux-segmented-track-radius` |
-| `.rux-button--segment` | `--rux-segment-height` `28px` | `--rux-size-sm` `14px` | `--rux-segment-padding-inline` | `--rux-segment-radius` |
+| Control                |                                Height |                                    Font |                            Horizontal padding |                             Icon/text gap |
+| ---------------------- | ------------------------------------: | --------------------------------------: | --------------------------------------------: | ----------------------------------------: |
+| `.rux-button`          | `--rux-button-height-standard` `32px` |                  `--rux-size-sm` `14px` | `--rux-button-padding-inline-standard` `12px` | `--rux-button-content-gap-standard` `8px` |
+| `.rux-button--icon`    |                resolved button height |                      role-specific icon |                                           `0` |                                       n/a |
+| `.rux-button--header`  |   `--rux-button-height-header` `44px` |  `--rux-button-icon-size-header` `24px` |      standard padding or square with `--icon` |                                     `8px` |
+| `.rux-button--compact` |  `--rux-button-height-compact` `28px` | `--rux-button-icon-size-compact` `18px` |                 `8px` or square with `--icon` |                                     `4px` |
+| `.rux-segmented-track` |      `--rux-input-height` outer track |                                   track |               `--rux-segmented-track-padding` |            `--rux-segmented-track-radius` |
+| `.rux-button--segment` |         `--rux-segment-height` `28px` |                  `--rux-size-sm` `14px` |                `--rux-segment-padding-inline` |                    `--rux-segment-radius` |
 
 - Use `--rux-weight-400` (the default weight) for button labels — Rux buttons
   get their emphasis from fill and color, not bold text.
@@ -341,15 +341,15 @@ See [Button Components](docs/buttons.md) for composition examples and usage rule
 
 Forms are data-entry surfaces, not action controls. They use the same type scale and radius family as buttons, but they sit slightly lower in the interface: sunken background, visible hairline edge, and an inset field shadow.
 
-| Element | Token / value | Rule |
-|---|---:|---|
-| `.rux-input`, `.rux-select` | `--rux-field-height` `36px` | Standard text-entry height |
-| `.rux-textarea` | `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed |
-| `.rux-field` | `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
-| `.rux-field__label` | `--rux-field-label-size` (`--rux-size-xs` `12px`), `--rux-field-label-weight` (`--rux-weight-400`) | Muted, Title Case, no trailing period |
-| placeholder | `--rux-text-disabled` | Hint only; never required information |
-| help text | `--rux-size-xs`, `--rux-field-help-fg` | One short sentence when useful |
-| error text | `--rux-size-xs`, `--rux-field-error-fg` | Direct recovery instruction |
+| Element                     |                                                                                      Token / value | Rule                                              |
+| --------------------------- | -------------------------------------------------------------------------------------------------: | ------------------------------------------------- |
+| `.rux-input`, `.rux-select` |                                                                        `--rux-field-height` `36px` | Standard text-entry height                        |
+| `.rux-textarea`             |                                                                 `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed           |
+| `.rux-field`                |                                                                         `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
+| `.rux-field__label`         | `--rux-field-label-size` (`--rux-size-xs` `12px`), `--rux-field-label-weight` (`--rux-weight-400`) | Muted, Title Case, no trailing period             |
+| placeholder                 |                                                                              `--rux-text-disabled` | Hint only; never required information             |
+| help text                   |                                                             `--rux-size-xs`, `--rux-field-help-fg` | One short sentence when useful                    |
+| error text                  |                                                            `--rux-size-xs`, `--rux-field-error-fg` | Direct recovery instruction                       |
 
 - Field height remains `36px`, standard action buttons are `32px`, and persistent header actions are `44px`. Choose the semantic size role instead of forcing adjacent controls to match.
 - Labels sit above fields. Do not use placeholder text as the only label.
@@ -503,8 +503,8 @@ Load the font once in the host page, then use a ligature name inside
 
 ```html
 <link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
 />
 <span class="rux-icon" aria-hidden="true">check</span>
 ```
@@ -544,11 +544,11 @@ When in doubt, edit a token before adding a new component override.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is `assets/logo.png`**, a raster asset, not a generated SVG wordmark.
 - The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-surface-N`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:
-  ```
-  --rux-bg-1   → --rux-surface-0
-  --rux-bg-2/3/4/5 → --rux-surface-1  (two surfaces total now — see Backgrounds above)
-  --rux-text-1 → --rux-text-default
-  --rux-text-2 → --rux-text-muted
-  --rux-text-3 → --rux-text-disabled
-  --rux-border-1/2/3 → --rux-card-border / --rux-card-border / --rux-card-border-hover
-  ```
+    ```
+    --rux-bg-1   → --rux-surface-0
+    --rux-bg-2/3/4/5 → --rux-surface-1  (two surfaces total now — see Backgrounds above)
+    --rux-text-1 → --rux-text-default
+    --rux-text-2 → --rux-text-muted
+    --rux-text-3 → --rux-text-disabled
+    --rux-border-1/2/3 → --rux-card-border / --rux-card-border / --rux-card-border-hover
+    ```

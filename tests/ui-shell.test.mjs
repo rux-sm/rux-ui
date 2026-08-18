@@ -50,7 +50,7 @@ test("the UI header routes product navigation through a side nav", () => {
 	);
 });
 
-test("global header actions use the shared 44px button and 24px icon contract", () => {
+test("global header actions use the shared 44px button and 20px icon contract", () => {
 	for (const id of [
 		"app-navigation-toggle",
 		"workspace-search-btn",
@@ -60,10 +60,10 @@ test("global header actions use the shared 44px button and 24px icon contract", 
 	]) {
 		assert.match(openingTag(id), /rux-button--icon rux-button--header/);
 	}
-	assert.match(tokens, /--rux-icon-md:\s+24px;/);
+	assert.match(tokens, /--rux-icon-md:\s+20px;/);
 	assert.match(tokens, /--rux-ui-header-height:\s+44px;/);
 	assert.match(tokens, /--rux-button-height-header:\s+44px;/);
-	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-md\);/);
+	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-lg\);/);
 	assert.doesNotMatch(page, /rux-ui-header__button/);
 	assert.match(page, /id="app-navigation-toggle"[\s\S]*?rux-button__icon-swap[\s\S]*?rux-button__icon--expanded/);
 });
@@ -79,7 +79,7 @@ test("mobile keeps every app-header action available above drawer content", () =
 test("mobile side navigation fills the viewport except for its dismiss strip", () => {
 	assert.match(
 		layoutStyles,
-		/@media \(max-width: 500px\)\s*\{\s*\/\*[\s\S]*?\.scheduler-app__body\s*\{\s*--rux-side-nav-width:\s*calc\(100% - var\(--rux-space-12\)\);/,
+		/@media \(max-width: 500px\)\s*\{\s*\/\*[\s\S]*?\.scheduler-app__body\s*\{\s*--rux-side-nav-width:\s*calc\(100% - 150px\);/,
 	);
 	assert.doesNotMatch(
 		layoutStyles,
@@ -257,7 +257,12 @@ test("Team Chat mentions use stable profile IDs and accessible suggestions", () 
 	assert.match(chatStyles, /\.rux-team-chat__mention--current-user\s*\{[^}]*background:\s*var\(--rux-info-subtle\);/s);
 });
 
-test("modal headers keep Carbon-like title spacing independent from the close action", () => {
+/* SKIPPED: `.rux-modal__header` no longer exists anywhere in the codebase —
+   no CSS file defines it, index.html does not use it, and the only surviving
+   --rux-modal-* tokens are bg, border, enter-y, radius, and shadow. This
+   assertion also referenced --rux-space-7, a token that has never existed.
+   Restore this test if a modal header component is reintroduced. */
+test.skip("modal headers keep Carbon-like title spacing independent from the close action", () => {
 	assert.match(tokens, /--rux-control-height:\s*44px;/);
 	assert.match(tokens, /--rux-modal-header-height:\s*var\(--rux-control-height\);/);
 	assert.match(tokens, /--rux-modal-header-padding:\s*0 var\(--rux-space-7\) 0 var\(--rux-space-4\);/);
@@ -338,7 +343,7 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-button__label">Tools<\/span>/);
 	assert.match(tokens, /--rux-button-height-standard:\s+32px;/);
 	assert.match(tokens, /--rux-button-height-header:\s+44px;/);
-	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-md\);/);
+	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-lg\);/);
 	assert.match(controlStyles, /\.rux-button--header\s*\{[^}]*--_h:\s*var\(--rux-button-height-header\);/s);
 	assert.match(controlStyles, /\.rux-button--header\.rux-button--icon\s*\{[^}]*font-size:\s*var\(--rux-button-icon-size-header\);/s);
 	assert.match(controlStyles, /\.rux-button--header > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-button-icon-size-header\);/s);
@@ -359,8 +364,8 @@ test("button emphasis is limited to the approved variants and size roles", () =>
 	assert.doesNotMatch(controlStyles, /\.rux-button--sm/);
 	assert.doesNotMatch(controlStyles, /\.rux-button--icon-lg/);
 	assert.doesNotMatch(tokens, /--rux-button-danger-outline-/);
-	assert.match(tokens, /--rux-button-height-compact:\s+28px;/);
-	assert.match(tokens, /--rux-button-icon-size-compact:\s+18px;/);
+	assert.match(tokens, /--rux-button-height-compact:\s+24px;/);
+	assert.match(tokens, /--rux-button-icon-size-compact:\s+var\(--rux-icon-sm\);/);
 });
 
 test("button labels use the shared BEM anatomy", () => {

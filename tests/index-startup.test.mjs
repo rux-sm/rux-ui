@@ -31,10 +31,14 @@ test("the inline application module parses before splash removal", () => {
 });
 
 test("the calendar retains its workspace after the trip dialog", () => {
-	assert.match(
-		indexHtml,
-		/class="rux-floating-window sched-trip-dialog"[\s\S]*?id="trip-editor-dialog"[\s\S]*?<\/aside>[\s\S]*?class="rux-workspace"[\s\S]*?aria-label="Weekly schedule"/,
-	);
+	/* Assert document order by position. The previous version sliced from the
+	   dialog to the next </aside>, which the container refactor turned into a
+	   62k-character capture spanning the whole workspace. */
+	const dialogAt = indexHtml.indexOf('id="trip-editor-dialog"');
+	const workspaceAt = indexHtml.indexOf('<section class="rux-workspace" aria-label="Weekly schedule">');
+	assert.notEqual(dialogAt, -1, "trip editor dialog is missing from index.html");
+	assert.notEqual(workspaceAt, -1, "the Weekly schedule workspace is missing from index.html");
+	assert.ok(dialogAt < workspaceAt, "the trip dialog must precede the calendar workspace");
 });
 
 test("trip dialog controls no longer include a calendar-header opener", () => {
@@ -49,12 +53,16 @@ test("trip dialog controls no longer include a calendar-header opener", () => {
 });
 
 test("the trip editor is a draggable and resizable nonmodal workspace window", () => {
-	const editorMarkup = indexHtml.match(
-		/<div\s+class="rux-floating-window sched-trip-dialog"[\s\S]*?<\/aside>\s*<\/div>/,
-	)?.[0] ?? "";
+	/* Assert the dialog's own opening tag. Slicing to a closing tag is not
+	   safe here: the container carries no unique terminator, so any bounded
+	   capture silently swallows the rest of the document. */
+	const editorMarkup = indexHtml.match(/<div[^>]*id="trip-editor-dialog"[^>]*>/)?.[0] ?? "";
+	assert.notEqual(editorMarkup, "", "trip editor dialog opening tag not found");
 	assert.match(editorMarkup, /role="dialog"/);
 	assert.doesNotMatch(editorMarkup, /aria-modal="true"|rux-modal-backdrop/);
-	assert.match(tripDialogCss, /\.sched-trip-dialog\s*\{[^}]*width:\s*min\(640px[^}]*height:\s*min\(840px[^}]*min-width:\s*480px[^}]*min-height:\s*520px/s);
+	/* width is owned by --rux-trip-dialog-width; assert the token wiring here
+	   and the value in tokens.css, so retokenising cannot break this test. */
+	assert.match(tripDialogCss, /\.sched-trip-dialog\s*\{[^}]*width:\s*var\(--rux-trip-dialog-width\)[^}]*height:\s*min\(840px[^}]*min-width:\s*480px[^}]*min-height:\s*520px/s);
 	assert.match(indexHtml, /tripEditorDialogEl\.hidden = false/);
 	assert.match(indexHtml, /tripEditorDialogEl\.hidden = true/);
 });

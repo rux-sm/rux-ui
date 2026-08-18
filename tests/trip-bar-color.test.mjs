@@ -26,11 +26,11 @@ const appSource = await readFile(
 test("trip bar override colors remain visible for unconfirmed trips", () => {
 	assert.match(
 		tripBarCss,
-		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--rux-danger\)/s,
+		/\.sched-trip-bar--unconfirmed:not\(\[data-trip-bar-color\]\)\s*\{[^}]*--_tone:\s*var\(--rux-trip-bar-danger-border\)/s,
 	);
 	assert.doesNotMatch(
 		tripBarCss,
-		/\.sched-trip-bar--unconfirmed\s*\{[^}]*--_tone:\s*var\(--rux-danger\)/s,
+		/\.sched-trip-bar--unconfirmed\s*\{[^}]*--_tone:\s*var\(--rux-trip-bar-danger-border\)/s,
 	);
 });
 
@@ -153,10 +153,10 @@ test("trip interaction surfaces derive modest state changes from one base bright
 		tokensCss,
 		/--rux-trip-bar-pressed-bg-lightness:\s*calc\(var\(--rux-trip-bar-bg-lightness\) - var\(--rux-trip-bar-state-lightness-step\)\)/,
 	);
-	assert.match(tokensCss, /--rux-trip-bar-bg-opacity:\s*24%/);
-	assert.match(tokensCss, /--rux-trip-bar-hover-bg-opacity:\s*40%/);
-	assert.match(tokensCss, /--rux-trip-bar-pressed-bg-opacity:\s*44%/);
-	assert.match(tokensCss, /--rux-trip-bar-selected-bg-opacity:\s*48%/);
+	assert.match(tokensCss, /--rux-trip-bar-bg-opacity:\s*80%/);
+	assert.match(tokensCss, /--rux-trip-bar-hover-bg-opacity:\s*70%/);
+	assert.match(tokensCss, /--rux-trip-bar-pressed-bg-opacity:\s*50%/);
+	assert.match(tokensCss, /--rux-trip-bar-selected-bg-opacity:\s*80%/);
 });
 
 test("trip tails use direct state surfaces instead of compounding transparency", () => {
@@ -209,7 +209,7 @@ test("standard mode gives late-starting multi-day trips a half-day cue", () => {
 	);
 	assert.match(
 		appSource,
-		/trackWidth \/ days \/ 2 - inset/,
+		/standardStartOffset = lateMultiDayStart \? dayPct \/ 2 : 0/,
 	);
 	assert.match(
 		appSource,

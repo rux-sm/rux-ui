@@ -4,11 +4,11 @@
 
 - Read `README.md` for project orientation, then inspect only task-relevant files.
 - Do not scan the repository broadly for a narrow change.
-- UI or CSS: read `SKILL.md`, then the target markup/style file; inspect `rux-ui/css/tokens.css` when styling or tokens are involved.
+- UI or CSS: the `rux-design` skill covers this and triggers on its own; inspect `rux-ui/css/tokens.css` when styling or tokens are involved. Vendoring the design system into a separate app is the `vendor-rux-ui` skill.
 - Application behavior: start with the relevant file under `js/` or `index.html` and follow only directly connected dependencies.
 - Reference-application data layer: start with the relevant module under `js/data/`, then inspect related SQL under `supabase/`.
 - Hard debugging: trace the failing path and expand through callers/callees only as needed.
-- Do not read `SKILL.md` for tasks unrelated to UI or frontend work.
+- Do not invoke the UI skills for tasks unrelated to UI or frontend work.
 
 ## Project Policy
 

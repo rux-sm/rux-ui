@@ -12,7 +12,7 @@ const page = await readFile(
 );
 
 test("customers panel owns a retryable database import", () => {
-	assert.match(source, /import\("\.\.\/data\/trip-db\.js\?v=9"\)/);
+	assert.match(source, /import\("\.\.\/data\/trip-db\.js\?v=\d+"\)/);
 	assert.match(source, /contactsDbPromise\s*=\s*null/);
 	assert.match(source, /contactsDbPromise\s*=\s*import\([^)]*\)\.catch/);
 	assert.doesNotMatch(source, /for\s*\(let i = 0; i < 20/);

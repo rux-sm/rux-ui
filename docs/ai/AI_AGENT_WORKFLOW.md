@@ -164,7 +164,7 @@ De-escalate once the hard question is resolved. A high-tier debugging pass can h
 | File | Audience | Responsibility | Loading posture |
 |---|---|---|---|
 | `README.md` | Humans and agents | Project, design-system, content, and usage orientation | Read at task start |
-| `SKILL.md` | UI-capable agents | Detailed Rux UI implementation, tokens, components, layout, content, and visual verification | Read only for UI/frontend work |
+| `.claude/skills/rux-design/SKILL.md` | Claude Code | Detailed Rux UI implementation, tokens, components, layout, content, and visual verification | Read only for UI/frontend work |
 | `AGENTS.md` | Codex | Concise repository behavior and routing | Always on |
 | `CLAUDE.md` | Claude Code | Concise repository behavior and routing | Always on |
 | `.cline/rules/project.md` | Cline | Concise repository behavior and routing | Always on |
@@ -172,11 +172,11 @@ De-escalate once the hard question is resolved. A high-tier debugging pass can h
 | `docs/ai/AI_CODING_CHEAT_SHEET.md` | Human developer | Personal day-to-day classification and configuration card | Read when starting or escalating a task |
 | `docs/ai/AI_AGENT_WORKFLOW.md` | Human developer | Task classification, model/mode selection, escalation, and prompt templates | Read when choosing or adjusting a workflow |
 
-Detailed UI rules belong in `SKILL.md`; model-selection strategy belongs here. The always-on files should route to those sources instead of duplicating them.
+Detailed UI rules belong in the `rux-design` skill; model-selection strategy belongs here. The always-on files should route to those sources instead of duplicating them.
 
 ## 10. Rux UI Guardrails
 
-- For UI, CSS, design tokens, component, content, or responsive work, read `SKILL.md` before editing.
+- For UI, CSS, design tokens, component, content, or responsive work, the `rux-design` skill triggers before editing.
 - Reuse existing `.rux-*` components and `--rux-*` tokens before creating new primitives.
 - Inspect `rux-ui/css/tokens.css` when token or styling contracts are involved.
 - Put reusable component styling under `rux-ui/css/base/`, product-specific styling under `scheduler/css/features/`, and layout behavior under `scheduler/css/layout/`, following existing imports.
@@ -184,7 +184,7 @@ Detailed UI rules belong in `SKILL.md`; model-selection strategy belongs here. T
 - Preserve light/dark support, responsiveness, semantic markup, keyboard behavior, focus visibility, and reduced-motion behavior.
 - Public tokens and `.rux-*` classes are compatibility surfaces; removal or renaming requires an explicit migration plan.
 
-`SKILL.md` remains authoritative for detailed UI rules. This section is only the operating summary.
+The `rux-design` skill remains authoritative for detailed UI rules. This section is only the operating summary.
 
 ## 11. JavaScript/Application Guardrails
 
@@ -221,7 +221,7 @@ Run [focused check] and report the diff plus anything unverified.
 
 ```text
 Task class: 2V.
-Read SKILL.md, then inspect [target markup/style] and the closest existing component.
+Load the rux-design skill, then inspect [target markup/style] and the closest existing component.
 Implement [acceptance criteria] using existing --rux-* tokens and .rux-* components.
 Verify narrow/wide layouts, light/dark themes, and affected interaction states.
 ```

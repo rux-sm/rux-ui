@@ -14,7 +14,7 @@ const componentsCss = read("scheduler/css/components.css");
 const schedulerLayoutCss = read("scheduler/css/layout/scheduler-app.css");
 const exampleHtml = read("examples/app-layout.html");
 const layoutDocs = read("docs/layout-composition.md");
-const skillDocs = read("SKILL.md");
+const skillDocs = read(".claude/skills/rux-design/SKILL.md");
 
 test("the reusable app shell keeps structural siblings attached", () => {
 	const rulesOnly = shellCss.replace(/\/\*[\s\S]*?\*\//g, "");
@@ -34,11 +34,11 @@ test("the design-system entrypoint owns the app shell for every consumer", () =>
 	assert.doesNotMatch(componentsCss, /@import "\.\.\/\.\.\/rux-ui\/css\/base\//);
 });
 
-test("the UI header owns the canonical fixed 48px contract", () => {
+test("the UI header owns the canonical fixed 40px contract", () => {
 	const headerTokenSection = tokensCss.match(
 		/COMPONENT · UI header[\s\S]*?COMPONENT · side navigation/,
 	)?.[0] ?? "";
-	assert.match(tokensCss, /--rux-ui-header-height:\s+var\(--rux-space-7\);/);
+	assert.match(tokensCss, /--rux-ui-header-height:\s+40px;/);
 	assert.match(
 		tokensCss,
 		/--rux-ui-header-min-height:\s+var\(--rux-ui-header-height\);/,
@@ -47,11 +47,13 @@ test("the UI header owns the canonical fixed 48px contract", () => {
 	assert.match(headerCss, /height:\s*var\(--rux-ui-header-height\);/);
 	assert.match(headerCss, /min-height:\s*var\(--rux-ui-header-min-height\);/);
 	assert.match(headerCss, /\.rux-ui-header::after\s*\{[^}]*border-bottom:\s*var\(--rux-ui-header-border\);/s);
-	assert.ok(
-		[...headerCss.matchAll(/\.rux-[\w-]*header[\w-]*/g)].every(
-			([selector]) => selector.startsWith(".rux-ui-header"),
-		),
-	);
+	/* No rival header *block* may live in this file. A modifier such as
+	   .rux-button--header is another block varying itself for header context,
+	   not a competing header component, so it is allowed. */
+	const rivalHeaderBlocks = [...headerCss.matchAll(/\.rux-[\w-]*header[\w-]*/g)]
+		.map(([selector]) => selector)
+		.filter((selector) => !selector.startsWith(".rux-ui-header") && !selector.includes("--"));
+	assert.deepEqual(rivalHeaderBlocks, [], `rival header blocks in ui-header.css:\n${rivalHeaderBlocks.join("\n")}`);
 	assert.ok(
 		[...headerTokenSection.matchAll(/^\s*(--rux-[\w-]+):/gm)].every(
 			([, token]) => token.startsWith("--rux-ui-header"),
@@ -156,7 +158,7 @@ test("Calendar workspace is inset while tools remain full-bleed", () => {
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] \.sched-scope-right-panel\s*\{[^}]*border-inline-start:\s*0;/s,
+		/\.scheduler-app__module\[data-module="calendar"\] \.sched-scope-right-panel\s*\{[^}]*border-inline-start:\s*var\(--rux-panel-right-border\);/s,
 	);
 	assert.match(
 		schedulerLayoutCss,

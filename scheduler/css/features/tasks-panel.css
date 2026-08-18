@@ -108,7 +108,6 @@
 }
 
 .rux-tasks__trip-customer {
-	margin: var(--rux-space-0-5) 0 0;
 	color: var(--rux-text-muted);
 	font-size: var(--rux-size-xs);
 	line-height: 1.4;
