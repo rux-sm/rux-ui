@@ -8,18 +8,13 @@
 
 .scheduler-app {
 	--scheduler-app-gap: var(--rux-space-5);
-	/* Outer frame around the main schedule/workspace card — an asymmetric
-	   shape (top 2, inline+bottom 3), kept as its own token rather than
-	   reusing --scheduler-app-gap since that token also drives the
-	   (still-uniform) inter-panel gutter and inner content insets below,
-	   which aren't part of this ask. */
-	--scheduler-app-module-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
-	/* Calendar is a view-specific split workspace, not a global shell panel.
-	   The canvas is inset while the tools panel remains full-bleed. The open
-	   resize channel owns the single token-controlled seam between them. */
-	--calendar-workspace-frame-inset-block: 0 var(--rux-space-5);
-	--calendar-workspace-frame-inset-inline: var(--rux-space-5);
-	--calendar-workspace-frame-radius: var(--rux-radius-container);
+	/* The one frame every view shares — an asymmetric shape (top 2,
+	   inline+bottom 3), kept distinct from --scheduler-app-gap since that
+	   token also drives the inter-panel gutter and inner content insets
+	   below. Set here, on the app shell, so no view can drift from the
+	   others: .rux-app-view (rux-ui/css/base/app-shell.css) reads both. */
+	--rux-app-view-padding: var(--rux-space-2) var(--rux-space-3) var(--rux-space-3) var(--rux-space-3);
+	--rux-app-view-radius: var(--rux-radius-container);
 	--scheduler-app-resize-hit-width: 20px;
 	--scheduler-app-resize-handle-width: 3px;
 	--scheduler-app-resize-handle-height: 32px;
@@ -133,46 +128,13 @@
 	}
 }
 
-/* Sides + bottom + top always keep a consistent inset (matching the panel
-   padding shape — see --scheduler-app-module-padding above), regardless of
-   whether a panel is open or closed — previously the sides/bottom only
-   applied while a panel was open (via :has(...is-open)), dropping to 0 once
-   closed, so the workspace would expand flush to the outer edge. An open
-   panel still sits flush against the workspace itself (see the panel
-   border-only-on-the-workspace-facing-side rule below); this gutter is
-   only ever between a panel/workspace and the outer edge of the app. */
-/* Box model, [hidden] toggling, and overflow come from the shared
-   .rux-app-view rule (rux-ui/css/base/app-shell.css); only this app's
-   gutter is declared here. */
-.rux-app-view {
-	padding: var(--scheduler-app-module-padding);
-}
-
-/* Calendar keeps its canvas inset while the Tools inspector reaches the top,
-   right, and bottom module edges. The resize gutter supplies the inline-end
-   inset while Tools is open; when closed, the workspace restores that inset
-   itself so the calendar never jumps flush to the outer edge. */
-.rux-app-view[data-view="calendar"] {
-	border-radius: var(--calendar-workspace-frame-radius);
-
-	padding: var(--calendar-workspace-padding);
-}
-
-.rux-app-view[data-view="calendar"] > .rux-workspace {
-	margin-block: var(--calendar-workspace-frame-inset-block);
-	margin-inline-start: var(--calendar-workspace-frame-inset-inline);
-	margin-inline-end: 0;
-	border-radius: 0;
-	transition:
-		margin-inline-end var(--rux-panel-motion-duration)
-			var(--rux-panel-standard-easing);
-}
-
-.rux-app-view[data-view="calendar"]:not(
-	:has(> #right-panel-drawer.is-open:not(.is-collapsing))
-) > .rux-workspace {
-	margin-inline-end: var(--calendar-workspace-frame-inset-inline);
-}
+/* The gutter between a view's contents and the app edge, and the rounding of
+   the clipped box, both come from .rux-app-view's own shared rule
+   (rux-ui/css/base/app-shell.css) reading the two --rux-app-view-* tokens
+   configured on .scheduler-app above. Every view — calendar included — uses
+   that one frame, so no view can drift from the others; the flex row inside
+   it (workspace | resize channel | tools panel) supplies the seam between
+   panes, which is why no view re-creates the inset as child margins. */
 
 .rux-app-view[data-view="calendar"] .sched-scope-right-panel {
 	border-inline-start: var(--rux-panel-right-border);
@@ -1257,18 +1219,11 @@
 		padding-bottom: 0;
 	}
 
-	/* Keep the schedule flush within the narrow shell. */
+	/* Every view goes flush within the narrow shell — one override for all
+	   of them, on the same two tokens the desktop frame uses. */
 	.rux-app-view {
-		padding: 0;
-	}
-
-	.rux-app-view[data-view="calendar"] {
-		--calendar-workspace-frame-inset-inline: 0;
-		border-radius: 0;
-	}
-
-	.rux-app-view[data-view="calendar"] > .rux-workspace {
-		margin: 0;
+		--rux-app-view-padding: 0;
+		--rux-app-view-radius: 0;
 	}
 
 	.rux-app-view > .rux-workspace {

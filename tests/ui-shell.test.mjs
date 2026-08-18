@@ -96,14 +96,16 @@ test("the calendar header contains no Trip Editor panel opener", () => {
 	);
 });
 
-test("mobile removes the Calendar right gutter and frame inset", () => {
+test("mobile removes the drawer gutter and releases the shared view frame", () => {
 	assert.match(
 		layoutStyles,
 		/\.scheduler-app__gutter\s*\{\s*display:\s*none !important;/,
 	);
+	// One release for every view, through the same tokens the desktop frame
+	// uses — not a per-view override.
 	assert.match(
 		layoutStyles,
-		/\.rux-app-view\[data-view="calendar"\]\s*\{\s*--calendar-workspace-frame-inset-inline:\s*0;\s*border-radius:\s*0;/,
+		/\.rux-app-view\s*\{\s*--rux-app-view-padding:\s*0;\s*--rux-app-view-radius:\s*0;\s*\}/,
 	);
 });
 

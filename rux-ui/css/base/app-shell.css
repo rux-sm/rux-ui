@@ -47,6 +47,11 @@
 	min-width: 0;
 	min-height: 0;
 	overflow: hidden;
+	/* One frame for every view — the gutter to the app edge and the rounding
+	   of the clipped box. Configured once on the application shell, never per
+	   view, so no view can drift from the others. */
+	padding: var(--rux-app-view-padding);
+	border-radius: var(--rux-app-view-radius);
 }
 
 .rux-app-view[hidden] {

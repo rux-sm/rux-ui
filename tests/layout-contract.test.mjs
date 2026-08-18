@@ -142,38 +142,44 @@ test("side navigation uses productive non-persistent overlay motion", () => {
 	);
 });
 
-test("Calendar workspace is inset while tools remain full-bleed", () => {
+test("every view shares one frame, configured on the application shell", () => {
+	// The frame lives on the portable component and is configured once by the
+	// app — no view may re-declare padding or radius for itself.
+	assert.match(
+		shellCss,
+		/\.rux-app-view\s*\{[^}]*padding:\s*var\(--rux-app-view-padding\);[^}]*border-radius:\s*var\(--rux-app-view-radius\);/s,
+	);
+	assert.match(tokensCss, /--rux-app-view-padding:\s*var\(--rux-space-0\);/);
+	assert.match(tokensCss, /--rux-app-view-radius:\s*var\(--rux-radius-0\);/);
 	assert.match(
 		schedulerLayoutCss,
-		/--calendar-workspace-frame-inset-block:\s+0 var\(--rux-space-5\);/,
+		/\.scheduler-app\s*\{[\s\S]*?--rux-app-view-padding:\s*var\(--rux-space-2\) var\(--rux-space-3\) var\(--rux-space-3\) var\(--rux-space-3\);/,
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/--calendar-workspace-frame-inset-inline:\s+var\(--rux-space-5\);/,
+		/\.scheduler-app\s*\{[\s\S]*?--rux-app-view-radius:\s*var\(--rux-radius-container\);/,
 	);
-	assert.match(
+	// No per-view frame overrides, and none of the retired calendar-specific
+	// frame tokens survive anywhere.
+	assert.doesNotMatch(
 		schedulerLayoutCss,
-		/\.rux-app-view\[data-view="calendar"\]\s*\{[^}]*border-radius:\s*var\(--calendar-workspace-frame-radius\);[^}]*padding:\s*var\(--calendar-workspace-padding\);/s,
+		/\.rux-app-view\[data-view=[^\]]+\]\s*\{[^}]*\b(padding|border-radius)\s*:/s,
 	);
-	assert.match(
-		schedulerLayoutCss,
-		/\.rux-app-view\[data-view="calendar"\] > \.rux-workspace\s*\{[^}]*margin-block:\s*var\(--calendar-workspace-frame-inset-block\);[^}]*margin-inline-start:\s*var\(--calendar-workspace-frame-inset-inline\);[^}]*margin-inline-end:\s*0;/s,
-	);
-	assert.match(
-		schedulerLayoutCss,
-		/:not\(\s*:has\(> #right-panel-drawer\.is-open:not\(\.is-collapsing\)\)\s*\) > \.rux-workspace\s*\{[^}]*margin-inline-end:\s*var\(--calendar-workspace-frame-inset-inline\);/s,
-	);
+	assert.doesNotMatch(schedulerLayoutCss, /--calendar-workspace-/);
+	assert.doesNotMatch(tokensCss, /--calendar-workspace-/);
+	// The workspace-facing seam on the Calendar tools panel stays.
 	assert.match(
 		schedulerLayoutCss,
 		/\.rux-app-view\[data-view="calendar"\] \.sched-scope-right-panel\s*\{[^}]*border-inline-start:\s*var\(--rux-panel-right-border\);/s,
 	);
+	// Mobile releases the frame for every view through the same two tokens.
 	assert.match(
 		schedulerLayoutCss,
-		/@media \(max-width: 500px\)[\s\S]*?\.rux-app-view\[data-view="calendar"\] > \.rux-workspace\s*\{[^}]*margin:\s*0;/,
+		/@media \(max-width: 500px\)[\s\S]*?\.rux-app-view\s*\{\s*--rux-app-view-padding:\s*0;\s*--rux-app-view-radius:\s*0;/,
 	);
 	assert.match(
 		layoutDocs,
-		/resize channel owns the single visual gutter\s+between them/,
+		/every view MUST use the\s+shared one/,
 	);
 });
 

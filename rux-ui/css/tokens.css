@@ -516,6 +516,16 @@
 	--rux-side-nav-scrim-enter-easing:   var(--rux-motion-easing-standard-productive);
 	--rux-side-nav-scrim-exit-duration:  0ms;
 
+	/* ─── COMPONENT · app view ───────────────────────────────────────────── */
+	/* One routable view — the panels + workspace row (rux-ui/css/base/
+	   app-shell.css). Every view in an application shares this frame: the
+	   gutter between the view's contents and the app edge, and the rounding
+	   of the clipped box. Both default to nothing, so an unconfigured view is
+	   full-bleed and square; an application sets them once on its own shell
+	   rather than per view. */
+	--rux-app-view-padding: var(--rux-space-0);
+	--rux-app-view-radius:  var(--rux-radius-0);
+
 	/* ─── COMPONENT · workspace ──────────────────────────────────────────── */
 
 	/* — shell — */
@@ -533,7 +543,6 @@
 	--rux-workspace-radius: var(--rux-radius-container);
 	/* --rux-workspace-shadow: not set — flattened alongside the header/
 	   side-nav redesign, no inset shadow on the primary view shell */
-	--calendar-workspace-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
 
 	/* — header — */
 	/* Keep header and view content on the same inline grid. */

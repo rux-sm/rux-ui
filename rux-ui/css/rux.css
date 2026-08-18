@@ -16,13 +16,13 @@
    tokens.css, colors_and_type.css, and base/ for maintainability.
    ========================================================================== */
 
-@import "./tokens.css?v=3";
+@import "./tokens.css?v=4";
 @import "./colors_and_type.css?v=2";
 @import "./base/icons.css";
 @import "./base/controls.css";
 @import "./base/ui-header.css";
 @import "./base/side-nav.css";
-@import "./base/app-shell.css?v=2";
+@import "./base/app-shell.css?v=3";
 @import "./base/badges.css";
 @import "./base/form.css";
 @import "./base/workspace.css";

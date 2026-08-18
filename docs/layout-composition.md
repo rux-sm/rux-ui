@@ -95,13 +95,14 @@ Right panels expose secondary content without replacing the center workspace.
   be controlled by a global header action.
 - A view-specific panel, such as Calendar Tools, SHOULD be controlled from that
   view's workspace header.
-- A persistent view-specific panel MAY share one inset outer frame with its
-  workspace. In that pattern, apply spacing around the combined assembly—not
-  between the panel and workspace—and use only a separator or resize handle at
-  their attached boundary.
-- A specialized canvas MAY instead be inset while its view-specific panel stays
-  full-bleed. In that pattern, the resize channel owns the single visual gutter
-  between them; do not duplicate it with workspace end padding or panel margin.
+- A persistent view-specific panel SHARES one inset outer frame with its
+  workspace: the frame belongs to `.rux-app-view` (`--rux-app-view-padding`
+  and `--rux-app-view-radius`, configured once on the application shell), so
+  spacing goes around the combined assembly—not between the panel and
+  workspace—and only a separator or resize channel sits at their attached
+  boundary. Do not duplicate that inset with workspace end padding or panel
+  margin, and do not give one view its own frame: every view MUST use the
+  shared one, so none can drift from the others.
 - The trigger MUST expose `aria-controls` and `aria-expanded`.
 - Persistent attached panels MUST NOT use `role="dialog"`. A panel that becomes
   modal at a narrow breakpoint must implement complete modal focus and
