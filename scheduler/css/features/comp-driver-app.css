@@ -55,7 +55,7 @@
 @media (min-width: 501px) {
 	/* The rail's persistent control owns desktop open/close. Retain this
 	   workspace button only as the mobile entry point for Table Options. */
-	.scheduler-app__module[data-module="drivers"] #driver-tools-toggle-btn {
+	.rux-app-view[data-view="drivers"] #driver-tools-toggle-btn {
 		display: none;
 	}
 }

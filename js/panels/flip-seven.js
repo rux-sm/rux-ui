@@ -1,4 +1,4 @@
-const root = document.querySelector('.scheduler-app__module[data-module="game"]');
+const root = document.querySelector('.rux-app-view[data-view="game"]');
 if (!root) throw new Error("Flip 7 module root not found");
 
 let supabase;
@@ -320,7 +320,7 @@ els.leave.addEventListener("click", async () => {
 			busy = false;
 		}
 	}
-	document.querySelector('.rux-side-nav__link[data-module="calendar"]')?.click();
+	document.querySelector('.rux-side-nav__link[data-view="calendar"]')?.click();
 });
 els.start.addEventListener("click", () => call("start_flip_seven", { acting_player: playerId }, {}));
 els.hit.addEventListener("click", () => call("hit_flip_seven_v2", { acting_player: playerId }));

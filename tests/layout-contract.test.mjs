@@ -18,6 +18,13 @@ const skillDocs = read(".claude/skills/rux-design/SKILL.md");
 
 test("the reusable app shell keeps structural siblings attached", () => {
 	const rulesOnly = shellCss.replace(/\/\*[\s\S]*?\*\//g, "");
+	assert.match(shellCss, /\.rux-app__body\s*\{[^}]*\bgap:\s*0;/s);
+	assert.match(shellCss, /\.rux-app__body\s*\{[^}]*overflow:\s*hidden;/s);
+	assert.match(shellCss, /\.rux-app-view\s*\{[^}]*flex:\s*1;/s);
+	assert.match(shellCss, /\.rux-app-view\s*\{[^}]*overflow:\s*hidden;/s);
+	assert.match(shellCss, /\.rux-app-view\[hidden\]\s*\{[^}]*display:\s*none;/s);
+	// Deprecated pre-rename names stay published until vendored consumers
+	// migrate (see the DEPRECATED block in app-shell.css).
 	assert.match(shellCss, /\.rux-app-shell\s*\{[^}]*\bgap:\s*0;/s);
 	assert.match(shellCss, /\.rux-app-shell__workspace\s*\{[^}]*flex:\s*1 1 auto;/s);
 	assert.match(shellCss, /\.rux-app-shell__workspace\s*\{[^}]*min-width:\s*0;/s);
@@ -29,7 +36,7 @@ test("the design-system entrypoint owns the app shell for every consumer", () =>
 	// layer. rux-core.css stays a working name by forwarding to it, and the
 	// scheduler bundle must not re-import the base files on top (that
 	// duplicate list is what this consolidation removed).
-	assert.match(ruxCss, /@import "\.\/base\/app-shell\.css";/);
+	assert.match(ruxCss, /@import "\.\/base\/app-shell\.css(\?v=\d+)?";/);
 	assert.match(coreCss, /@import "\.\/rux\.css";/);
 	assert.doesNotMatch(componentsCss, /@import "\.\.\/\.\.\/rux-ui\/css\/base\//);
 });
@@ -146,11 +153,11 @@ test("Calendar workspace is inset while tools remain full-bleed", () => {
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\]\s*\{[^}]*overflow:\s*hidden;[^}]*border:\s*var\(--calendar-workspace-frame-border\);[^}]*padding:\s*var\(--calendar-workspace-padding\);/s,
+		/\.rux-app-view\[data-view="calendar"\]\s*\{[^}]*border:\s*var\(--calendar-workspace-frame-border\);[^}]*padding:\s*var\(--calendar-workspace-padding\);/s,
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] > \.rux-workspace\s*\{[^}]*margin-block:\s*var\(--calendar-workspace-frame-inset-block\);[^}]*margin-inline-start:\s*var\(--calendar-workspace-frame-inset-inline\);[^}]*margin-inline-end:\s*0;/s,
+		/\.rux-app-view\[data-view="calendar"\] > \.rux-workspace\s*\{[^}]*margin-block:\s*var\(--calendar-workspace-frame-inset-block\);[^}]*margin-inline-start:\s*var\(--calendar-workspace-frame-inset-inline\);[^}]*margin-inline-end:\s*0;/s,
 	);
 	assert.match(
 		schedulerLayoutCss,
@@ -158,11 +165,11 @@ test("Calendar workspace is inset while tools remain full-bleed", () => {
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] \.sched-scope-right-panel\s*\{[^}]*border-inline-start:\s*var\(--rux-panel-right-border\);/s,
+		/\.rux-app-view\[data-view="calendar"\] \.sched-scope-right-panel\s*\{[^}]*border-inline-start:\s*var\(--rux-panel-right-border\);/s,
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/@media \(max-width: 500px\)[\s\S]*?\.scheduler-app__module\[data-module="calendar"\] > \.rux-workspace\s*\{[^}]*margin:\s*0;/,
+		/@media \(max-width: 500px\)[\s\S]*?\.rux-app-view\[data-view="calendar"\] > \.rux-workspace\s*\{[^}]*margin:\s*0;/,
 	);
 	assert.match(
 		layoutDocs,
@@ -177,19 +184,19 @@ test("mobile Calendar reserves the fixed toolbar's full rendered height", () => 
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] \.rux-workspace__toolbar\s*\{[^}]*min-height:\s*var\(--_mobile-toolbar-height\);/s,
+		/\.rux-app-view\[data-view="calendar"\] \.rux-workspace__toolbar\s*\{[^}]*min-height:\s*var\(--_mobile-toolbar-height\);/s,
 	);
 	assert.match(
 		schedulerLayoutCss,
-		/\.scheduler-app__module\[data-module="calendar"\] \.calendar-app__viewport\s*\{[^}]*padding-bottom:\s*var\(--_mobile-toolbar-height\);/s,
+		/\.rux-app-view\[data-view="calendar"\] \.calendar-app__viewport\s*\{[^}]*padding-bottom:\s*var\(--_mobile-toolbar-height\);/s,
 	);
 });
 
 test("the canonical example contains the required accessible composition", () => {
 	assert.match(exampleHtml, /class="rux-app"/);
-	assert.match(exampleHtml, /class="rux-app-shell"/);
-	assert.match(exampleHtml, /class="rux-workspace rux-app-shell__workspace"/);
-	assert.equal((exampleHtml.match(/rux-app-shell__panel/g) ?? []).length, 1);
+	assert.match(exampleHtml, /class="rux-app__body"/);
+	assert.match(exampleHtml, /class="rux-workspace"/);
+	assert.equal((exampleHtml.match(/class="rux-panel example-panel"/g) ?? []).length, 1);
 	assert.match(exampleHtml, /aria-current="page"/);
 	assert.match(exampleHtml, /class="rux-ui-header"/);
 	assert.match(exampleHtml, /class="rux-side-nav example-navigation"/);

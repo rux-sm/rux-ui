@@ -11,8 +11,8 @@
 		<link rel="stylesheet" href="../rux-ui/css/rux.css" />
 		<style>
 			/* Example-only sizing. Drawer and responsive behavior belong to the app. */
-			.rux-app-shell { position: relative; }
-			.example-panel { flex-basis: 18rem; }
+			.rux-app__body { position: relative; }
+			.example-panel { flex: 0 0 18rem; min-width: 0; min-height: 0; }
 			.example-navigation {
 				position: absolute;
 				inset-block: 0;
@@ -123,7 +123,7 @@
 				</div>
 			</header>
 
-			<main class="rux-app-shell">
+			<main class="rux-app__body">
 				<div
 					class="example-navigation-scrim"
 					aria-hidden="true"
@@ -154,7 +154,7 @@
 				</nav>
 
 				<section
-					class="rux-workspace rux-app-shell__workspace"
+					class="rux-workspace"
 					id="workspace"
 					aria-labelledby="workspace-title"
 				>
@@ -173,7 +173,7 @@
 				</section>
 
 				<aside
-					class="rux-panel rux-app-shell__panel example-panel"
+					class="rux-panel example-panel"
 					aria-label="Calendar Tools"
 				>
 					<div class="rux-panel__nav">

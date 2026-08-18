@@ -9,9 +9,11 @@
    demo of those components.
    ========================================================================== */
 
-.scheduler-app__module[data-module="components"] {
+/* Background intentionally not set: the shell behind the view
+   (.rux-app, --rux-shell-bg) already paints the surface the old
+   surface-1 fill duplicated. */
+.rux-app-view[data-view="components"] {
 	gap: var(--scheduler-app-gap);
-	background: var(--rux-surface-1);
 }
 
 .components-app__list {

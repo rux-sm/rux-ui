@@ -40,15 +40,15 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=1" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=261" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=3" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=262" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=10"
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-driver-app.css?v=9"
+			href="./scheduler/css/features/comp-driver-app.css?v=10"
 		/>
 		<link
 			rel="stylesheet"
@@ -64,7 +64,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-settings-app.css?v=4"
+			href="./scheduler/css/features/comp-settings-app.css?v=5"
 		/>
 		<link
 			rel="stylesheet"
@@ -80,7 +80,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/comp-components-app.css?v=14"
+			href="./scheduler/css/features/comp-components-app.css?v=15"
 		/>
 		<link
 			rel="stylesheet"
@@ -128,7 +128,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/documents-app.css?v=1"
+			href="./scheduler/css/features/documents-app.css?v=2"
 		/>
 		<link
 			rel="stylesheet"
@@ -139,17 +139,10 @@
 			href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
 		/>
 		<style>
-			/* Module wrapper — each module fills the full body area */
-			.scheduler-app__module {
-				display: flex;
-				flex: 1;
-				min-width: 0;
-				min-height: 0;
-				overflow: hidden;
-			}
-			.scheduler-app__module[hidden] {
-				display: none;
-			}
+			/* The view wrapper's box model, [hidden] toggling, and overflow all
+			   come from .rux-app-view (rux-ui/css/base/app-shell.css); the
+			   app-side gutter padding from scheduler/css/layout/scheduler-app.css.
+			   Only page-private helpers stay inline here. */
 			/* Placeholder for unbuilt modules */
 			.module-placeholder {
 				display: flex;
@@ -373,7 +366,7 @@
 					class="rux-menu__item"
 					type="button"
 					role="menuitem"
-					data-module="components"
+					data-view="components"
 				>
 					<span class="rux-icon" aria-hidden="true">widgets</span>
 					<span>Components</span>
@@ -747,7 +740,7 @@
 				</button>
 			</div>
 
-			<div class="rux-app-shell scheduler-app__body" id="app-content" tabindex="-1">
+			<div class="rux-app__body" id="app-content" tabindex="-1">
 				<div
 					class="scheduler-app__side-nav-scrim"
 					data-rux-side-nav-scrim
@@ -766,7 +759,7 @@
 							<button
 								class="rux-side-nav__link"
 								type="button"
-								data-module="calendar"
+								data-view="calendar"
 							>
 								<span class="rux-icon" aria-hidden="true"
 									>map</span
@@ -778,7 +771,7 @@
 							<button
 								class="rux-side-nav__link"
 								type="button"
-								data-module="drivers"
+								data-view="drivers"
 							>
 								<span class="rux-icon" aria-hidden="true"
 									>person</span
@@ -790,7 +783,7 @@
 							<button
 								class="rux-side-nav__link"
 								type="button"
-								data-module="fleet"
+								data-view="fleet"
 							>
 								<span class="rux-icon" aria-hidden="true"
 									>directions_bus</span
@@ -802,7 +795,7 @@
 							<button
 								class="rux-side-nav__link"
 								type="button"
-								data-module="customers"
+								data-view="customers"
 							>
 								<span class="rux-icon" aria-hidden="true"
 									>groups</span
@@ -836,7 +829,7 @@
 							<button
 								class="rux-side-nav__link"
 								type="button"
-								data-module="documents"
+								data-view="documents"
 							>
 								<span class="rux-icon" aria-hidden="true"
 									>description</span
@@ -864,7 +857,7 @@
 							<button
 								class="rux-side-nav__link"
 								type="button"
-								data-module="settings"
+								data-view="settings"
 							>
 								<span class="rux-icon" aria-hidden="true"
 									>settings</span
@@ -877,7 +870,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: CALENDAR
              ════════════════════════════════════════════════════════════════ -->
-				<div class="scheduler-app__module" data-module="calendar">
+				<div class="rux-app-view" data-view="calendar">
 					<!-- Movable, resizable trip editor workspace window -->
 					<div
 						class="rux-panel rux-panel--floating sched-trip-dialog sched-scope-trip"
@@ -3146,7 +3139,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: FLEET
              ════════════════════════════════════════════════════════════════ -->
-				<div class="scheduler-app__module" data-module="fleet" hidden>
+				<div class="rux-app-view" data-view="fleet" hidden>
 					<!-- Fleet panel drawer -->
 					<div class="scheduler-app__drawer" id="fleet-panel-drawer">
 						<aside
@@ -3756,7 +3749,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: DRIVERS
              ════════════════════════════════════════════════════════════════ -->
-				<div class="scheduler-app__module" data-module="drivers" hidden>
+				<div class="rux-app-view" data-view="drivers" hidden>
 					<!-- Driver panel drawer -->
 					<div
 						class="scheduler-app__drawer scheduler-app__drawer--railable"
@@ -4992,8 +4985,8 @@
              MODULE: CUSTOMERS
              ════════════════════════════════════════════════════════════════ -->
 				<div
-					class="scheduler-app__module"
-					data-module="customers"
+					class="rux-app-view"
+					data-view="customers"
 					hidden
 				>
 					<!-- Customer panel drawer -->
@@ -5207,8 +5200,8 @@
              MODULE: DOCUMENTS
              ════════════════════════════════════════════════════════════════ -->
 				<div
-					class="scheduler-app__module"
-					data-module="documents"
+					class="rux-app-view"
+					data-view="documents"
 					hidden
 				>
 					<section
@@ -5307,8 +5300,8 @@
              MODULE: COMPONENTS
              ════════════════════════════════════════════════════════════════ -->
 				<div
-					class="scheduler-app__module"
-					data-module="components"
+					class="rux-app-view"
+					data-view="components"
 					hidden
 				>
 					<aside
@@ -6237,7 +6230,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: FLIP 7
              ════════════════════════════════════════════════════════════════ -->
-				<div class="scheduler-app__module" data-module="game" hidden>
+				<div class="rux-app-view" data-view="game" hidden>
 					<section
 						class="rux-workspace flip-seven"
 						aria-label="Flip 7"
@@ -6516,8 +6509,8 @@
              MODULE: SETTINGS
              ════════════════════════════════════════════════════════════════ -->
 				<div
-					class="scheduler-app__module"
-					data-module="settings"
+					class="rux-app-view"
+					data-view="settings"
 					hidden
 				>
 					<section
@@ -7226,7 +7219,7 @@
 					</section>
 				</div>
 			</div>
-			<!-- /scheduler-app__body -->
+			<!-- /rux-app__body -->
 		</main>
 
 		<!-- Scheduler context menu (floats above everything) -->
@@ -7262,7 +7255,7 @@
 			// own layout class names, so declare them once here rather than
 			// having the portable module know about .scheduler-app.
 			window.RuxDrawer.configure({
-				container: ".scheduler-app__module",
+				container: ".rux-app-view",
 				gutter: ":scope > .scheduler-app__gutter",
 				scrimClass: "scheduler-app__drawer-scrim",
 				closeAnimation: "scheduler-mobile-drawer-out",
@@ -7271,7 +7264,7 @@
 				rightWidthVar: "--scheduler-app-right-drawer-default-width",
 				rightModifier: "scheduler-app__drawer--right",
 				railWidthVar: "--rux-panel-rail-width",
-				fallbackWidth: ".scheduler-app__body",
+				fallbackWidth: ".rux-app__body",
 			});
 		</script>
 		<script src="./rux-ui/js/popover.js?v=4"></script>
@@ -7283,10 +7276,10 @@
 		<script src="./rux-ui/js/suggestions.js?v=2"></script>
 		<script src="./js/panels/trip-panel.js?v=39"></script>
 		<script src="./js/components/itinerary.js?v=27"></script>
-		<script src="./js/panels/driver-panel.js?v=21" defer></script>
+		<script src="./js/panels/driver-panel.js?v=22" defer></script>
 		<script src="./js/panels/fleet-panel.js?v=7" defer></script>
 		<script src="./js/panels/customers-panel.js?v=5" defer></script>
-		<script src="./js/panels/settings-panel.js?v=4" defer></script>
+		<script src="./js/panels/settings-panel.js?v=5" defer></script>
 		<script src="./js/panels/trip-finder.js?v=5" defer></script>
 		<script src="./js/panels/request-inbox.js?v=1" defer></script>
 		<script src="./js/panels/trip-manifest.js?v=6" defer></script>
@@ -7321,7 +7314,7 @@
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=1"></script>
 		<script type="module" src="./js/panels/tasks-panel.js?v=58"></script>
-		<script type="module" src="./js/panels/flip-seven.js?v=20"></script>
+		<script type="module" src="./js/panels/flip-seven.js?v=21"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
 		<script type="module">
@@ -7371,9 +7364,9 @@
 			// the retired #schedule/#trips names, and the panels that boot lazily
 			// the first time their module is opened.
 			const moduleRouter = window.RuxViewRouter.create({
-				views: ".scheduler-app__module[data-module]",
-				controls: "button[data-module]",
-				attribute: "module",
+				views: ".rux-app-view[data-view]",
+				controls: "button[data-view]",
+				attribute: "view",
 				allow: [
 					"calendar",
 					"fleet",
@@ -9241,7 +9234,7 @@
 			// stretch) — the empty space dispatchers see below a short row list
 			// is .calendar-app__viewport's own background, pinned to full height
 			// by block-size:100% (see css/layout/scheduler-app.css's comment on
-			// .scheduler-app__module > .rux-workspace) so .sched-scheduler has a
+			// .rux-app-view > .rux-workspace) so .sched-scheduler has a
 			// definite ancestor height to cap its own max-block-size:100% against
 			// and scroll internally once content actually exceeds it. Pin the
 			// viewport down to the shorter of the two instead of always 100%.
@@ -11379,7 +11372,7 @@
 				// the panel between pointer frames and create a visible edge bounce.
 				if (rightDrawer.classList.contains("is-resizing")) return;
 				const scheduleEl = document.querySelector(
-					"[data-module='calendar'] .rux-workspace",
+					"[data-view='calendar'] .rux-workspace",
 				);
 				if (!scheduleEl) return;
 				if (scheduleEl.offsetParent === null) return;
@@ -11398,7 +11391,7 @@
 				}
 			}
 			new ResizeObserver(checkPanelFit).observe(
-				document.querySelector(".scheduler-app__body"),
+				document.querySelector(".rux-app__body"),
 			);
 
 			renderScheduler();

@@ -19,11 +19,18 @@ App
     └── Right Panel                   optional, header- or workspace-controlled
 ```
 
-- `.rux-ui-header` MUST sit directly above the application body or
-  `.rux-app-shell`.
-- `.rux-side-nav` MAY be attached inside the shell or positioned by the
+- `.rux-ui-header` MUST sit directly above the application body
+  (`.rux-app__body`).
+- `.rux-side-nav` MAY be attached inside the body or positioned by the
   consuming application as a header-controlled overlay.
-- `.rux-app-shell` MUST contain one center `.rux-workspace`.
+- `.rux-app__body` MUST contain the panels + workspace row: directly in a
+  single-view application, or as one `.rux-app-view` per routable view
+  (paired with `rux-ui/js/view-router.js` and its `data-view` attribute;
+  inactive views carry `hidden`). Whichever element forms that row MUST
+  contain one center `.rux-workspace`.
+- `.rux-app-shell` and its `__workspace`/`__panel` elements are the
+  DEPRECATED pre-2026-08 names for this composition; they remain published
+  for existing consumers and MUST NOT appear in new markup.
 - Side `.rux-panel` elements MAY appear before or after the workspace.
 - Panels and the workspace MUST be attached with no decorative gutter between
   them. A separator or resize hit target MAY occupy their shared boundary
@@ -311,6 +318,7 @@ tokens rather than defining their own duration or easing values.
 - An empty panel header added only because another panel has one.
 - Panel-wide actions hidden inside one tab's card.
 - Multiple nested cards used only to create indentation.
-- Calendar-specific rail or minimum-width rules added to `.rux-app-shell`.
+- Calendar-specific rail or minimum-width rules added to `.rux-app__body`
+  or `.rux-app-view`.
 
 See `examples/app-layout.html` for the smallest complete reference composition.

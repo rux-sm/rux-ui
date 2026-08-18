@@ -22,7 +22,7 @@
 	const dpAvatarMain = document.getElementById("dp-avatar-main");
 	const dpAvatarInput = document.getElementById("dp-avatar-input");
 	const driverModule = document.querySelector(
-		'.scheduler-app__module[data-module="drivers"]',
+		'.rux-app-view[data-view="drivers"]',
 	);
 	const rosterView = document.getElementById("driver-roster-view");
 	const driverTable = document.getElementById("driver-roster-table");

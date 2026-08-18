@@ -45,9 +45,9 @@
 }
 
 /* display:flex, min-width/min-height:0, gap:0, and overflow:hidden come from
-   .rux-app-shell, which this element also carries. Only the positioning
+   .rux-app__body (rux-ui/css/base/app-shell.css). Only the positioning
    context for the drawers and their scrim is app-specific. */
-.scheduler-app__body {
+.scheduler-app .rux-app__body {
 	position: relative;
 }
 
@@ -129,7 +129,7 @@
 	/* Leave one header-control width exposed as a tap-to-dismiss strip. Override
 	   the shared width token on the common containing block so the navigation
 	   and its scrim resolve to the exact same mobile edge. */
-	.scheduler-app__body {
+	.scheduler-app .rux-app__body {
 		--rux-side-nav-width: calc(100% - 150px);
 	}
 }
@@ -142,11 +142,10 @@
    panel still sits flush against the workspace itself (see the panel
    border-only-on-the-workspace-facing-side rule below); this gutter is
    only ever between a panel/workspace and the outer edge of the app. */
-.scheduler-app__module {
-	display: flex;
-	flex: 1;
-	min-width: 0;
-	min-height: 0;
+/* Box model, [hidden] toggling, and overflow come from the shared
+   .rux-app-view rule (rux-ui/css/base/app-shell.css); only this app's
+   gutter is declared here. */
+.rux-app-view {
 	padding: var(--scheduler-app-module-padding);
 }
 
@@ -154,9 +153,7 @@
    right, and bottom module edges. The resize gutter supplies the inline-end
    inset while Tools is open; when closed, the workspace restores that inset
    itself so the calendar never jumps flush to the outer edge. */
-.scheduler-app__module[data-module="calendar"] {
-	margin: 0;
-	overflow: hidden;
+.rux-app-view[data-view="calendar"] {
 	background: var(--rux-workspace-bg);
 	border: var(--calendar-workspace-frame-border);
 	border-radius: var(--calendar-workspace-frame-radius);
@@ -164,7 +161,7 @@
 	padding: var(--calendar-workspace-padding);
 }
 
-.scheduler-app__module[data-module="calendar"] > .rux-workspace {
+.rux-app-view[data-view="calendar"] > .rux-workspace {
 	margin-block: var(--calendar-workspace-frame-inset-block);
 	margin-inline-start: var(--calendar-workspace-frame-inset-inline);
 	margin-inline-end: 0;
@@ -175,13 +172,13 @@
 			var(--rux-panel-standard-easing);
 }
 
-.scheduler-app__module[data-module="calendar"]:not(
+.rux-app-view[data-view="calendar"]:not(
 	:has(> #right-panel-drawer.is-open:not(.is-collapsing))
 ) > .rux-workspace {
 	margin-inline-end: var(--calendar-workspace-frame-inset-inline);
 }
 
-.scheduler-app__module[data-module="calendar"] .sched-scope-right-panel {
+.rux-app-view[data-view="calendar"] .sched-scope-right-panel {
 	border-inline-start: var(--rux-panel-right-border);
 }
 
@@ -213,13 +210,13 @@
 
 /* The date occupies the flexible column and the Calendar Tools control keeps
    its natural width. The Trip Editor has no calendar-header trigger. */
-.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header {
+.rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	align-items: center;
 }
 
-.scheduler-app__module[data-module="calendar"] > .rux-workspace > .rux-workspace__header > * {
+.rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header > * {
 	min-width: 0;
 }
 
@@ -294,14 +291,14 @@
 }
 
 /* Stretches full-height by default (align-items:stretch, inherited from
-   .scheduler-app__module) so .sched-scheduler's max-block-size:100% has a
+   .rux-app-view) so .sched-scheduler's max-block-size:100% has a
    real definite ancestor height to cap against and scroll internally via
    its own overflow:auto. A schedule shorter than that (e.g. one vehicle)
    gets pinned down to its actual content height by fitSchedulerHeight()
    in index.html instead — max-height alone can't do this in CSS, since
    descendants' percentage/max-block-size heights only resolve against an
    explicit `height`, not a `max-height` clamp. */
-.scheduler-app__module > .rux-workspace {
+.rux-app-view > .rux-workspace {
 	min-width: 471px;
 	padding-block-end: var(--rux-workspace-gutter);
 }
@@ -1325,7 +1322,7 @@
 @media (min-width: 501px) {
 	/* The Drivers workspace toggle is mobile-only; its desktop rail has its own
 	   persistent open/close control. Fleet and Customer toggles are unaffected. */
-	.scheduler-app__module[data-module="drivers"] .scheduler-app__mobile-panel-btn--left {
+	.rux-app-view[data-view="drivers"] .scheduler-app__mobile-panel-btn--left {
 		display: none;
 	}
 
@@ -1548,27 +1545,26 @@
 	}
 
 	/* Keep the schedule flush within the narrow shell. */
-	.scheduler-app__module {
+	.rux-app-view {
 		padding: 0;
 	}
 
-	.scheduler-app__module[data-module="calendar"] {
+	.rux-app-view[data-view="calendar"] {
 		--calendar-workspace-frame-inset-inline: 0;
-		margin: 0;
 		border: 0;
 		border-radius: 0;
 	}
 
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace {
+	.rux-app-view[data-view="calendar"] > .rux-workspace {
 		margin: 0;
 	}
 
-	.scheduler-app__module > .rux-workspace {
+	.rux-app-view > .rux-workspace {
 		min-width: 0;
 		padding-block-end: 0;
 	}
 
-	.scheduler-app__module > .rux-workspace::after {
+	.rux-app-view > .rux-workspace::after {
 		content: "";
 		flex: none;
 		block-size: var(--scheduler-app-gap);
@@ -1595,7 +1591,7 @@
 /* — Schedule grid wrap — */
 
 /* margin-inline here is the *inner* inset between the workspace card and its
-   own scrollable content — a different gap than .scheduler-app__module's
+   own scrollable content — a different gap than .rux-app-view's
    padding-inline (the *outer* gutter between the workspace and the app
    edge/drawer). Both intentionally reuse --scheduler-app-gap for rhythm;
    per workspace.css, the shell never owns this inset, each feature module
@@ -1729,7 +1725,7 @@
 		margin: 0;
 	}
 
-	.scheduler-app__module > .rux-workspace {
+	.rux-app-view > .rux-workspace {
 		margin: 0;
 		border-radius: 0;
 		padding-block-end: 0;
@@ -1739,7 +1735,7 @@
 	   controls on this screen — pinned to the bottom instead of sitting at
 	   the top of a tall phone puts them in easy thumb reach instead of a
 	   two-handed stretch. Scoped to the calendar module specifically
-	   (matching the existing [data-module="calendar"] pattern above) —
+	   (matching the existing [data-view="calendar"] pattern above) —
 	   .rux-workspace__toolbar isn't unique to Calendar, Fleet/Drivers/
 	   Customers each have their own for unrelated view controls, and an
 	   unscoped rule here would just as easily turn theirs into a fixed
@@ -1750,7 +1746,7 @@
 	   viewport's reserved space and the toolbar's actual height can't drift
 	   out of sync the way a hand-copied number in two places eventually
 	   does. */
-	.scheduler-app__module[data-module="calendar"] > .rux-workspace {
+	.rux-app-view[data-view="calendar"] > .rux-workspace {
 		--_mobile-toolbar-height: calc(
 			var(--rux-button-height-header)
 			+ var(--rux-space-4)
@@ -1769,7 +1765,7 @@
 	   enough; no change needed to the grid itself. Un-setting the title's
 	   desktop left padding keeps the centering visually true instead of
 	   skewed toward the right. */
-	.scheduler-app__module[data-module="calendar"] .rux-workspace__title {
+	.rux-app-view[data-view="calendar"] .rux-workspace__title {
 		padding-left: 0;
 		text-align: center;
 	}
@@ -1782,7 +1778,7 @@
 	   spacer on the opposite side to fake it. Column 1 is empty on purpose
 	   — it's what makes column 2 sit at the true center instead of just
 	   left of column 3. */
-	.scheduler-app__module[data-module="calendar"] .rux-workspace__toolbar {
+	.rux-app-view[data-view="calendar"] .rux-workspace__toolbar {
 		position: fixed;
 		inset-inline: 0;
 		bottom: 0;
@@ -1798,12 +1794,12 @@
 		border-top: var(--rux-border-width) solid var(--rux-card-border);
 	}
 
-	.scheduler-app__module[data-module="calendar"] .calendar-app__date-controls {
+	.rux-app-view[data-view="calendar"] .calendar-app__date-controls {
 		grid-column: 2;
 		justify-self: center;
 	}
 
-	.scheduler-app__module[data-module="calendar"] .calendar-app__panel-toggle {
+	.rux-app-view[data-view="calendar"] .calendar-app__panel-toggle {
 		grid-column: 3;
 		justify-self: end;
 	}
@@ -1817,7 +1813,7 @@
 	   .sched-scheduler inside it) actually shrinks the space available to
 	   its content, opening up real screen space for the fixed bar to
 	   occupy instead of overlap. */
-	.scheduler-app__module[data-module="calendar"] .calendar-app__viewport {
+	.rux-app-view[data-view="calendar"] .calendar-app__viewport {
 		padding-bottom: var(--_mobile-toolbar-height);
 	}
 

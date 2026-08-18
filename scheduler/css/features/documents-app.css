@@ -11,9 +11,9 @@
    since each document is its own self-contained, print-ready HTML file.
    ========================================================================== */
 
-.scheduler-app__module[data-module="documents"] {
-	background: var(--rux-surface-1);
-}
+/* The view wrapper needs no background of its own: the shell behind it
+   (.rux-app, --rux-shell-bg) already paints the same surface its old
+   surface-1 fill duplicated. */
 
 .documents-app__list {
 	flex: none;

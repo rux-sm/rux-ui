@@ -22,7 +22,7 @@
 @import "./base/controls.css";
 @import "./base/ui-header.css";
 @import "./base/side-nav.css";
-@import "./base/app-shell.css";
+@import "./base/app-shell.css?v=2";
 @import "./base/badges.css";
 @import "./base/form.css";
 @import "./base/workspace.css";

@@ -14,7 +14,7 @@
     lng: null,
   };
 
-  const root = document.querySelector('.scheduler-app__module[data-module="settings"]');
+  const root = document.querySelector('.rux-app-view[data-view="settings"]');
   const nameInput = document.getElementById("settings-yard-name");
   const addressInput = document.getElementById("settings-yard-address");
   const latInput = document.getElementById("settings-yard-lat");

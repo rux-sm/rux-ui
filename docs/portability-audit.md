@@ -264,7 +264,7 @@ portable blocks.
 
 | Case | Example | Verdict |
 |---|---|---|
-| **Scoped descendant** — app content styled inside a portable block, or the block configured from the app's own scope | `.scheduler-app__module > .rux-workspace { min-width: 471px }`, `.rux-table td[data-col="…"] .sched-priority-dot` | **Not a violation.** This is how an application is supposed to configure a portable block, and `docs/layout-composition.md` explicitly assigns the workspace minimum width to the app. |
+| **Scoped descendant** — app content styled inside a portable block, or the block configured from the app's own scope | `.rux-app-view > .rux-workspace { min-width: 471px }` (pre-step-10: `.scheduler-app__module > …`), `.rux-table td[data-col="…"] .sched-priority-dot` | **Not a violation.** This is how an application is supposed to configure a portable block, and `docs/layout-composition.md` explicitly assigns the workspace minimum width to the app. |
 | **App-invented element in the portable namespace** — the app defines `.rux-block__thing` that the portable layer does not | `.rux-panel__footer-close`, `.rux-workspace__nav`, `.rux-ui-header__chat-btn` | **Defect.** Claims a namespace the app does not own. Renamed to `.sched-panel-footer-close`, `.sched-workspace-nav`, `.sched-ui-header-chat-btn`. |
 | **Unscoped global override** — the app restyles a portable element for every instance on the page | `trip-request.css` set `.rux-card__footer { justify-content: space-between }` | **Defect.** Publish a modifier instead: `.rux-card__footer--between` now lives in `card.css` and the page opts in. |
 
@@ -340,6 +340,11 @@ The shell now **composes** rather than duplicates: `class="rux-app scheduler-app
 `class="rux-app-shell scheduler-app__body"`. `.scheduler-app` dropped from 12 structural
 declarations to 2, and `.scheduler-app__body` from 4 to 1.
 
+> **Superseded in step 10 (2026-08-17):** the body element is now
+> `class="rux-app__body"` — one portable class, configured from the app's scope
+> (`.scheduler-app .rux-app__body`) — and `.rux-app-shell`/`__workspace`/`__panel`
+> are deprecated aliases kept published until vendored consumers migrate.
+
 **A bug this surfaced.** `--rux-shell-bg` was `var(--rux-danger)` — a debug value that had
 shipped, giving any consumer of the portable shell a **red page**. It went unnoticed for
 exactly the reason this audit exists: `index.html` used its own shell, so the portable one
@@ -348,8 +353,13 @@ displaying it. Now `var(--rux-surface-1)`.
 
 ### 5.2 View container
 
-`.scheduler-app__module` + `showModule()` (inline in `index.html`, currently ~7369) is the
-show-one-view router every multi-view app needs. `rux-ui/js/ui-shell.js:5` explicitly
+> **Status: resolved (steps 7 and 10).** Step 7 extracted the JS half
+> (`rux-ui/js/view-router.js`). Step 10 finished the CSS/markup half: the
+> container is now `.rux-app-view` in `app-shell.css`, on the router's portable
+> `data-view` contract.
+
+`.scheduler-app__module` + `showModule()` (inline in `index.html`, at the time ~7369) was
+the show-one-view router every multi-view app needs. `rux-ui/js/ui-shell.js:5` explicitly
 disclaims it: "Module routing remains the consuming application's job."
 
 Split:
@@ -449,6 +459,7 @@ re-deriving anything above.
 | 7 | ~~Extract the view container (§5.2)~~ **done** | `rux-ui/js/view-router.js` — `RuxViewRouter.create()`. The app supplies the allowlist, the retired `#schedule`/`#trips` aliases, and the lazy panel boots via `onChange`; the router owns container toggling, `aria-current`, and hash sync. `showModule()` is now a one-line delegate. |
 | 8 | ~~Decouple `drawer.js` (§5.3)~~ **JS done** | The coupling was far deeper than §5.3 recorded — ~20 references, not 4. Resolved with a single configuration seam, `RuxDrawer.configure()`, holding portable `.rux-*` defaults that the application overrides once at startup. The drawer **CSS** split (§4.1) is still open and belongs with the shell work. |
 | 9 | ~~Shell reconciliation (§5.1)~~ **done** | Lower risk than expected: every shell token already defaulted to 0, so the two implementations were geometrically identical in practice. The shell now composes — `class="rux-app scheduler-app"` — with `.scheduler-app` reduced from 12 declarations to 2. Fixed a shipped bug in passing: `--rux-shell-bg` was `var(--rux-danger)`. |
+| 10 | ~~View container class + body row rename (§5.2 CSS half)~~ **done (2026-08-17)** | `.scheduler-app__module` → `.rux-app-view` (base box model, `[hidden]` toggling, and overflow now live in `app-shell.css` beside the frame; the app keeps only its gutter padding), `class="rux-app-shell scheduler-app__body"` → `class="rux-app__body"`, and the routing attribute `data-module` → `data-view`, which is `view-router.js`'s portable default. `.rux-app-shell`/`__workspace`/`__panel` stay published as deprecated aliases until the vendored consumers sync their `rux-ui/` copy; removing them is a separate verified step. In passing, two provably invisible view backgrounds (documents/components painted the shell's own `--rux-surface-1` over itself) and three no-op declarations on the calendar view (`margin: 0` ×2, duplicate `overflow: hidden`) were removed per the 2026-08-17 layering audit — resolved-value identical in both themes. |
 
 **Enforcement.** Step 2 adds a test asserting that no file under `rux-ui/` references a
 domain noun in a selector, and that every `var(--rux-*)` used in `rux-ui/` resolves within

@@ -21,7 +21,7 @@ const publicForm = await readFile(
 
 test("the Requests nav item is wired and badge-aware", () => {
 	assert.match(page, /id="request-inbox-btn"/);
-	assert.match(page, /data-module/); // nav still uses the module bus
+	assert.match(page, /data-view/); // nav still uses the view bus
 	assert.match(page, /id="requests-badge"/);
 	assert.match(page, /rux-side-nav__badge/);
 });

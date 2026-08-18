@@ -79,7 +79,7 @@ test("mobile keeps every app-header action available above drawer content", () =
 test("mobile side navigation fills the viewport except for its dismiss strip", () => {
 	assert.match(
 		layoutStyles,
-		/@media \(max-width: 500px\)\s*\{\s*\/\*[\s\S]*?\.scheduler-app__body\s*\{\s*--rux-side-nav-width:\s*calc\(100% - 150px\);/,
+		/@media \(max-width: 500px\)\s*\{\s*\/\*[\s\S]*?\.scheduler-app \.rux-app__body\s*\{\s*--rux-side-nav-width:\s*calc\(100% - 150px\);/,
 	);
 	assert.doesNotMatch(
 		layoutStyles,
@@ -89,10 +89,10 @@ test("mobile side navigation fills the viewport except for its dismiss strip", (
 
 test("the calendar header contains no Trip Editor panel opener", () => {
 	assert.doesNotMatch(page, /data-opens="trip-editor-dialog"|aria-label="Open trip editor"/);
-	assert.doesNotMatch(layoutStyles, /data-module="calendar"[^\n{]*\.scheduler-app__mobile-panel-btn--left/);
+	assert.doesNotMatch(layoutStyles, /data-view="calendar"[^\n{]*\.scheduler-app__mobile-panel-btn--left/);
 	assert.match(
 		layoutStyles,
-		/data-module="calendar"[^\n{]*> \.rux-workspace > \.rux-workspace__header\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto;/s,
+		/data-view="calendar"[^\n{]*> \.rux-workspace > \.rux-workspace__header\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto;/s,
 	);
 });
 
@@ -103,7 +103,7 @@ test("mobile removes the Calendar right gutter and frame inset", () => {
 	);
 	assert.match(
 		layoutStyles,
-		/\.scheduler-app__module\[data-module="calendar"\]\s*\{\s*--calendar-workspace-frame-inset-inline:\s*0;\s*margin:\s*0;/,
+		/\.rux-app-view\[data-view="calendar"\]\s*\{\s*--calendar-workspace-frame-inset-inline:\s*0;\s*border:\s*0;/,
 	);
 });
 
@@ -284,9 +284,9 @@ test("the profile menu does not expose the internal Flip 7 destination", () => {
 	const profileMenuStart = page.indexOf('id="profile-menu"');
 	const profileMenuEnd = page.indexOf('id="notifications-menu"', profileMenuStart);
 	const profileMenu = page.slice(profileMenuStart, profileMenuEnd);
-	assert.doesNotMatch(profileMenu, /data-module="game"/);
+	assert.doesNotMatch(profileMenu, /data-view="game"/);
 	assert.doesNotMatch(profileMenu, />Flip 7</);
-	assert.match(page, /class="scheduler-app__module" data-module="game" hidden/);
+	assert.match(page, /class="rux-app-view" data-view="game" hidden/);
 });
 
 test("profile Preferences own the global theme control", () => {
@@ -505,7 +505,7 @@ test("Calendar resize uses its inset module and does not fight auto-collapse", (
 		drawerController,
 		/const containerEl = drawer\.closest\(env\.container\);[\s\S]*?const availableW = containerEl\?\.clientWidth/,
 	);
-	assert.match(page, /container:\s*"\.scheduler-app__module"/);
+	assert.match(page, /container:\s*"\.rux-app-view"/);
 	assert.match(
 		page,
 		/function checkPanelFit\(\)\s*\{[\s\S]*?rightDrawer\.classList\.contains\("is-resizing"\)/,
