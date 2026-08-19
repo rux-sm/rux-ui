@@ -145,7 +145,10 @@ test("header tab-tip popovers preserve the correct disclosure semantics", () => 
 		/\.rux-ui-header__profile \.rux-button__icon-swap\s*\{[^}]*width:\s*var\(--rux-ui-header-profile-avatar-size\);[^}]*height:\s*var\(--rux-ui-header-profile-avatar-size\);/s,
 	);
 	assert.match(headerStyles, /\.rux-ui-header__profile-identity\s*\{[^}]*width:\s*100%;[^}]*height:\s*100%;/s);
-	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip"\s+id="profile-menu"/);
+	// Composition, not an exact string — the profile menu also opts into
+	// .rux-popover--flush-end, being the one header popover flush with the
+	// viewport edge.
+	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip[^"]*"\s+id="profile-menu"/);
 	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-notifications-menu"/);
 	assert.match(chatController, /rux-popover rux-popover--surface rux-popover--tab-tip sched-team-chat-popover/);
 	assert.match(popoverStyles, /\.rux-popover\.rux-popover--surface\s*\{[^}]*background:\s*var\(--rux-popover-surface-bg\);[^}]*border:\s*var\(--rux-popover-surface-border\);[^}]*border-radius:\s*var\(--rux-popover-surface-radius\);[^}]*box-shadow:\s*var\(--rux-popover-surface-shadow\);/s);

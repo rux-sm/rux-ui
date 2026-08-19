@@ -119,17 +119,20 @@ test("a tab-tip popover draws no edge that something else already draws", () => 
 	assert.doesNotMatch(popoverCss, /tab-tip\[data-placement[^\]]*\]::before/);
 	assert.match(popoverCss, /overflow:\s*hidden/);
 
-	// Trailing: a bottom-end tab-tip aligns to a trigger flush with the
-	// viewport, so that border has nothing on its far side. Scoped to the
-	// placement that is actually flush — bottom-start keeps both sides.
+	// Trailing: opt-in, because placement cannot tell you this. Every header
+	// popover is bottom-end; only the one anchored to the last control is
+	// flush with the viewport and has nothing beyond that border.
 	assert.match(
 		popoverCss,
-		/\[data-placement="bottom-end"\]\s*\{[^}]*border-inline-end:\s*0/s,
+		/\.rux-popover--surface\.rux-popover--flush-end\s*\{[^}]*border-inline-end:\s*0/s,
 	);
 	assert.doesNotMatch(
 		popoverCss,
-		/\[data-placement="bottom-start"\]\s*\{[^}]*border-inline/s,
+		/\[data-placement="bottom-(end|start)"\]\s*\{[^}]*border-inline/s,
 	);
+	// Exactly one popover claims it — the flush one.
+	const markup = read("index.html");
+	assert.equal((markup.match(/rux-popover--flush-end/g) ?? []).length, 1);
 
 	// The surface sits below the header's border, never on it: overlapping
 	// would paint over that line across the popover's whole width.

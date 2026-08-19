@@ -77,13 +77,11 @@
 	border-block-start: 0;
 }
 
-/* Same reasoning on the trailing edge. A bottom-end tab-tip aligns its right
-   edge to a trigger that sits flush against the viewport, so this border has
-   nothing on its far side to separate the surface from — it only doubles
-   against whatever the application draws at that boundary.
-   Conditional on the placement, not the variant: a bottom-start tab-tip keeps
-   both side borders, and this one would want its border back if the header
-   ever gained trailing padding that moved the trigger off the edge. */
-.rux-popover--surface.rux-popover--tab-tip[data-placement="bottom-end"] {
+/* Opt-in, because placement alone cannot tell you this. Every header popover
+   is bottom-end; only the one anchored to the *last* control is flush with the
+   viewport, and only that one has nothing on the far side of its trailing
+   border to separate from. The rest sit mid-header over the application and
+   need all four edges. An application marks the flush one. */
+.rux-popover--surface.rux-popover--flush-end {
 	border-inline-end: 0;
 }

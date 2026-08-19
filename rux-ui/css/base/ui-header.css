@@ -154,6 +154,19 @@
 	color: var(--rux-button-ghost-hover-text);
 }
 
+/* An open trigger reads as a tab above the surface it opened, so it takes the
+   same side edges that surface has. Only the ones sitting mid-header need it:
+   the first and last controls are already bounded — one by the brand divider
+   on its inner side and the viewport on its outer, the other by the actions
+   divider and the viewport. Giving those a border too would double the line
+   they already sit against.
+   No block edges: the header's own bottom border runs above, and the bottom is
+   the seam this trigger shares with its panel. */
+.rux-ui-header
+	.rux-ui-header__disclosure:not(.rux-ui-header__profile)[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
+	border-inline: var(--rux-ui-header-border);
+}
+
 /* Surface disclosures share one connected-trigger contract. Each trigger
    supplies the background of the surface it owns: popover or side nav. Keep
    the open trigger above the body layer so the icon/avatar and focus ring stay
