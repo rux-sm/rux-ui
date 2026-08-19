@@ -40,8 +40,8 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=38" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=283" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=39" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=289" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=12"
@@ -116,7 +116,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/tasks-panel.css?v=43"
+			href="./scheduler/css/features/tasks-panel.css?v=44"
 		/>
 		<link
 			rel="stylesheet"
@@ -780,7 +780,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>map</span
 								>
-								<span class="rux-side-nav__label" data-view-label>Trips</span>
+								<span class="rux-side-nav__label" data-view-label>Schedule</span>
 							</button>
 						</li>
 						<li class="rux-side-nav__item">
@@ -2261,16 +2261,17 @@
 										>New Trip</span
 									>
 								</button>
-								<h2
-									class="rux-workspace__title"
-									id="week-label"
-								></h2>
 							</div>
 							<div
 								class="rux-workspace__toolbar"
 								role="group"
 								aria-label="View controls"
 							>
+								<!-- ‹ Today › centers between the header's edges (CSS
+								     absolute — see scheduler-app.css) with New Trip on the
+								     left flank and the panel toggle on the right. No date
+								     label: every day column carries its month, and the mini
+								     calendar's title holds month + year. -->
 								<div class="calendar-app__date-controls">
 									<button
 										class="rux-button rux-button--ghost rux-button--icon rux-button--header"
@@ -2326,7 +2327,8 @@
 								<div class="sched-scheduler__col-head">
 									<span
 										class="sched-scheduler__corner-label"
-									></span>
+										>Bus</span
+									>
 								</div>
 							</div>
 							<div
@@ -2479,7 +2481,7 @@
 												>
 											</button>
 											<span
-												class="sched-mini-cal__title"
+												class="rux-card__title sched-mini-cal__title"
 												id="mini-cal-title"
 											></span>
 											<button
@@ -2611,7 +2613,7 @@
 												>
 													<span
 														class="rux-view-options__label"
-														>Fine-tune width</span
+														>Day column width</span
 													>
 													<span
 														class="rux-view-options__value"
@@ -7413,7 +7415,7 @@
 			src="./js/panels/documents-panel.js?v=4"
 		></script>
 		<script type="module" src="./js/panels/trip-history.js?v=4"></script>
-		<script type="module" src="./js/panels/tasks-panel.js?v=61"></script>
+		<script type="module" src="./js/panels/tasks-panel.js?v=62"></script>
 		<script type="module" src="./js/panels/flip-seven.js?v=24"></script>
 		<script type="module" src="./js/panels/requirements-panel.js"></script>
 
@@ -8909,33 +8911,6 @@
 			// differs from the start date's month, and year only repeats on
 			// the start date when the week crosses a year boundary (rare, but
 			// Dec 29 – Jan 4 needs both).
-			function fmtWeekRange(weekStart, monthStyle) {
-				const weekEnd = addDays(weekStart, 6);
-				const sameMonth = weekStart.getMonth() === weekEnd.getMonth();
-				const sameYear =
-					weekStart.getFullYear() === weekEnd.getFullYear();
-				// Year is appended manually rather than via Intl's `year` option:
-				// asking Intl for {day, year} with no month (the same-month case's
-				// end date) doesn't resolve to a normal locale pattern — it falls
-				// back to something like "2026 (day: 12)" instead of just "12".
-				// month+day (with or without year) has no such issue, so year
-				// only ever goes through Intl on the rare cross-year start date.
-				const startStr =
-					weekStart.toLocaleDateString("en-US", {
-						month: monthStyle,
-						day: "numeric",
-					}) + (sameYear ? "" : `, ${weekStart.getFullYear()}`);
-				const endStr = weekEnd.toLocaleDateString("en-US", {
-					month: sameMonth ? undefined : monthStyle,
-					day: "numeric",
-				});
-				return `${startStr} - ${endStr}, ${weekEnd.getFullYear()}`;
-			}
-
-			function fmtWeekLabel(weekStart) {
-				return fmtWeekRange(weekStart, "long");
-			}
-
 			let trackOrder = [];
 
 			function computeBusLabel(tripKey) {
@@ -8976,14 +8951,7 @@
 				return `${prefix}-${String(maxSeq + 1).padStart(2, "0")}`;
 			}
 
-			function renderWeekLabel(weekStart) {
-				const weekLabelEl = document.getElementById("week-label");
-				if (!weekLabelEl) return;
-				weekLabelEl.textContent = fmtWeekLabel(weekStart);
-			}
-
 			function renderDayHeaders(weekStart) {
-				renderWeekLabel(weekStart);
 				schedulerEl.style.setProperty("--sched-scheduler-days", viewDays);
 				const colHead = schedulerEl.querySelector(
 					".sched-scheduler__col-head",
@@ -9000,7 +8968,10 @@
 					el.className =
 						"sched-scheduler__day-head" +
 						(isToday ? " sched-scheduler__day-head--today" : "");
-					el.innerHTML = `<span class="sched-scheduler__day-label"><span class="sched-scheduler__day-name">${names[index % 7]}</span><span class="sched-scheduler__day-number${isToday ? " sched-scheduler__day-number--today" : ""}">${date.getDate()}</span></span><div class="sched-scheduler__time-ticks"><span>12</span><span>6</span><span>6</span></div>`;
+					// Every column carries its month — with no date label in the
+					// workspace header, each cell is self-contained: "Mon Aug 17".
+					// Year lives in the mini calendar's title.
+					el.innerHTML = `<span class="sched-scheduler__day-label"><span class="sched-scheduler__day-name">${names[index % 7]}</span><span class="sched-scheduler__day-month">${date.toLocaleDateString("en-US", { month: "short" })}</span><span class="sched-scheduler__day-number${isToday ? " sched-scheduler__day-number--today" : ""}">${date.getDate()}</span></span><div class="sched-scheduler__time-ticks"><span>12</span><span>6</span><span>6</span></div>`;
 					insertAfter.insertAdjacentElement("afterend", el);
 					insertAfter = el;
 				}

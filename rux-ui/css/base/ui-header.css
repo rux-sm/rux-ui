@@ -77,6 +77,7 @@
 	color: var(--rux-heading-panel-color);
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	padding-inline: var(--rux-space-4);
 }
 
 .rux-ui-header__nav {

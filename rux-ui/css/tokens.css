@@ -194,7 +194,7 @@
        "Reference: Vercel Geist colors"): canvas, and everything raised
        off it — panels, cards, content areas. */
     --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 	/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 14.5% c h); /* cards  */	/* 22, 22 ,22 */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 18% c h); /* cards  */	/* 22, 22 ,22 */
 	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
 	--rux-input-bg-disabled:  oklch(from var(--rux-neutral) 21.5% c h); /* ( 24, 24, 24) */
 
@@ -490,14 +490,14 @@
 	--rux-ui-header-min-height: var(--rux-ui-header-height);
 	--rux-ui-header-gap:     	var(--rux-space-0);
 	/* — brand — */
-	--rux-ui-header-brand-padding-inline: var(--rux-space-2);  /* 8px — matches the buttons' optical inset */
+	--rux-ui-header-brand-padding-inline: var(--rux-space-4);  /* 8px — matches the buttons' optical inset */
 	/* Divider between the menu trigger and the brand. The header's left run is
 	   [menu] [logo] [title], which is two jobs — navigation, then identity and
 	   context — sharing one undifferentiated row. This states the split.
 	   Reuses the header's own border so the divider and the bottom rule stay
 	   the same weight and color, and retune together. */
 	--rux-ui-header-brand-border-start:   var(--rux-ui-header-border);
-	--rux-ui-header-brand-border:         none;
+	--rux-ui-header-brand-border:         var(--rux-ui-header-border);
 	--rux-ui-header-logo-height:          20px;
 
 	/* — optional inline navigation — */

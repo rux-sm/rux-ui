@@ -193,6 +193,11 @@
 	min-width: 0;
 	flex-direction: column;
 	box-sizing: border-box;
+	/* Width queries below measure "the column the collapsed content actually
+	   occupies", which is this element only for a single-day bar. Multi-day
+	   bars re-anchor the queries on their one-day content column — __head in
+	   the default anatomy, __head-content in centered mode — so a 3-day bar
+	   does not report 24rem while its times render in an 8rem head. */
 	container-type: inline-size;
 	font-family: var(--rux-font-sans-condensed);
 	background-color: var(--_surface);
@@ -525,6 +530,12 @@
 .sched-trip-bar__head {
 	grid-column: 1;
 	grid-row: 1;
+	/* Re-anchors the bar's width queries (see container-type on
+	   .sched-trip-bar) at this one-day column, which is where the collapsed
+	   content actually renders. Nearest-container rules do the rest: content
+	   inside the head resolves here, single-day bars have no head and keep
+	   resolving at the bar. */
+	container-type: inline-size;
 	position: relative;
 	z-index: 2;
 	display: flex;
@@ -622,6 +633,11 @@
 	max-width: 100%;
 	min-width: 0;
 	margin-inline: auto;
+	/* In this mode the head spans the whole trip and THIS is the one-day
+	   column, so the width queries re-anchor here. Outside this mode the
+	   element is display: contents — no box, so this declaration is inert
+	   and the head's own container applies instead. */
+	container-type: inline-size;
 }
 
 .sched-scheduler--centered-trip-heads .sched-trip-bar .sched-trip-bar__summary {
@@ -1240,7 +1256,13 @@
 	}
 }
 
-@container (max-width: 7rem) {
+/* Three time columns need roughly 3.3rem each before they stop ellipsizing —
+   at the 8rem default day width all three rendered and all three truncated
+   ("12:1… 12:3… 11:0…"), which conveys nothing. Dropping the middle (spot)
+   time at 10rem keeps departure and arrival legible instead. Two legible
+   times beat three unreadable ones; the bar's details view still shows all
+   three. */
+@container (max-width: 10rem) {
 	.sched-trip-bar__time {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
@@ -1248,7 +1270,9 @@
 	.sched-trip-bar__time-item:nth-child(2) {
 		display: none;
 	}
+}
 
+@container (max-width: 7rem) {
 	.sched-trip-bar__contact-phone {
 		display: none;
 	}

@@ -172,7 +172,11 @@
 	border-inline-start: none;
 }
 
-.sched-scheduler__day-name {
+.sched-scheduler__day-name,
+/* Month marker, rendered in every column head (see renderDayHeaders in
+   index.html) — with no date label in the workspace header each cell is
+   self-contained. Same voice as the day name it sits beside. */
+.sched-scheduler__day-month {
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-wide);
@@ -180,10 +184,14 @@
 	color: var(--rux-text-secondary);
 }
 
+/* The number is the scanning anchor — it is what the eye hunts when matching
+   a column against the mini calendar or a spoken date — so it carries the
+   emphasis while the weekday and month around it stay quiet. All three used
+   to share one secondary-gray recipe, which made the whole label chrome. */
 .sched-scheduler__day-number {
 	font-size: var(--rux-size-sm);
-	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-secondary);
+	font-weight: var(--rux-weight-500);
+	color: var(--rux-text-primary);
 	line-height: 1;
 }
 
@@ -220,7 +228,9 @@
 	white-space: nowrap;
 }
 
-.sched-scheduler__day-head--today .sched-scheduler__day-name,
+/* Today marks the number only — the weekday and month stay as quiet as every
+   other column's, so the accent lands on the one glyph that identifies today
+   instead of washing the whole label. */
 .sched-scheduler__day-head--today .sched-scheduler__day-number {
 	color: var(--rux-calendar-today-fg);
 }
@@ -309,10 +319,16 @@
 	border-start-start-radius: var(--rux-calendar-header-radius);
 }
 
+/* Same voice as .sched-scheduler__day-name — this is the header of the bus
+   column, one cell in the same header row as Mon/Tue/Wed. */
 .sched-scheduler__corner-label {
 	display: block;
 	line-height: 1;
 	text-align: center;
+	font-size: var(--rux-size-sm);
+	font-weight: var(--rux-weight-400);
+	letter-spacing: var(--rux-tracking-wide);
+	color: var(--rux-text-secondary);
 }
 
 .sched-scheduler__row-head {
@@ -335,9 +351,15 @@
 
 
 
+/* The row key — what a dispatcher scans down to find a vehicle — so it takes
+   the same emphasis as the day numbers across the top, and tabular figures so
+   a column of them aligns digit-for-digit. */
 .sched-scheduler__bus-number {
 	display: flex;
 	letter-spacing: var(--rux-tracking-wide);
+	color: var(--rux-text-primary);
+	font-weight: var(--rux-weight-500);
+	font-variant-numeric: tabular-nums;
 }
 
 .sched-scheduler__bus-pax {

@@ -38,7 +38,10 @@ test("the UI header routes product navigation through a side nav", () => {
 	assert.match(page, /aria-controls="app-side-navigation"/);
 	assert.match(page, /class="rux-side-nav rux-side-nav--overlay"/);
 	assert.match(page, /<nav[\s\S]*?aria-label="Primary Navigation"[\s\S]*?<ul class="rux-side-nav__list">/);
-	for (const label of ["Trips", "Drivers", "Fleet", "Customers", "Requests", "Samsara", "Options"]) {
+	// "Schedule", not "Trips": the destination names the bus-by-day board,
+	// while "Trips" remains the word for the records on it (tasks filter,
+	// editor tabs, customer trip history).
+	for (const label of ["Schedule", "Drivers", "Fleet", "Customers", "Requests", "Samsara", "Options"]) {
 		assert.match(page, new RegExp(`<span class="rux-side-nav__label"[^>]*>\\s*${label}\\s*</span`));
 	}
 	assert.match(

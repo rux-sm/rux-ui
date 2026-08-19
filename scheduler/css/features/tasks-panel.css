@@ -65,13 +65,26 @@
 	justify-content: center;
 }
 
-/* Only between multiple trip entries sharing one day-group's .rux-card__body
-   (renderTrip) — .sched-tasks__trip here is a plain .rux-card nested inside
-   a day-group specifically. Post Trip's own cards (renderPostTripCard) use
-   the same treatment but sit as flat siblings of #rp-tasks-departures-body
-   instead, sharing a border the same way day-groups do — no margin needed
-   between those. */
-.rux-card__body > .sched-tasks__trip + .sched-tasks__trip {
+/* Day heading — a flat section title over the run of trip cards that follows
+   it, replacing the day-group card that used to wrap them (a card nesting
+   cards). Type comes from the shared .rux-u-panel-title recipe in the
+   markup; this block owns only the spacing. */
+.sched-tasks__day-title {
+	margin: 0;
+	padding-block: var(--rux-space-1) var(--rux-space-2);
+}
+
+/* Breathing room before every day after the first. */
+* + .sched-tasks__day-title {
+	margin-block-start: var(--rux-space-5);
+}
+
+/* Only between trip entries in the Trips (day) view, where the cards are
+   flat siblings under a day heading — the ~ guard keys on such a heading
+   existing, which the Post Trip view has none of: its cards deliberately
+   stack border-to-border and take no margin. Both views' cards share the
+   same classes, so sibling structure is what tells them apart. */
+.sched-tasks__day-title ~ .sched-tasks__trip + .sched-tasks__trip {
 	margin-top: var(--rux-space-4);
 }
 

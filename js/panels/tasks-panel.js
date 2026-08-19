@@ -744,20 +744,17 @@ function emptyTripCard(text = "No Trips") {
 	`;
 }
 
-// Each day gets its own .rux-card, repeated once per day instead of
-// describing only the first of however many days are showing.
+// A heading over a flat run of trip cards — not a card wrapping cards. The
+// old day-group .rux-card nested the trip .rux-cards inside its body, which
+// spent two borders and two padding insets of an already-narrow panel on
+// chrome; the title alone carries the grouping. Repeated once per visible
+// day, same as before.
 function renderDayGroup(iso, entries) {
 	return `
-		<article class="rux-card sched-tasks__day-group">
-			<div class="rux-card__header">
-				<h4 class="rux-card__title">${formatDepartingTitle(iso)}</h4>
-			</div>
-			<div class="rux-card__body">
-				${entries.length
-					? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
-					: emptyTripCard()}
-			</div>
-		</article>
+		<h4 class="rux-u-panel-title sched-tasks__day-title">${formatDepartingTitle(iso)}</h4>
+		${entries.length
+			? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
+			: emptyTripCard()}
 	`;
 }
 

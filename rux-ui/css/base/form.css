@@ -260,7 +260,7 @@
   -moz-appearance: none;
   appearance: none;
   width: 100%;
-  height: var(--rux-slider-thumb-size);
+  height: var(--rux-slider-thumb-height);
   background: transparent;
   cursor: pointer;
 }
@@ -297,7 +297,10 @@
   -webkit-appearance: none;
   width: var(--rux-slider-thumb-width);
   height: var(--rux-slider-thumb-height);
-  margin-top: calc((var(--rux-slider-track-height) - var(--rux-slider-thumb-size)) / 2);
+  /* WebKit lays the thumb out against the top of the runnable track, so a
+     taller thumb has to be pulled up by half the difference to sit centred
+     on it. Firefox centres ::-moz-range-thumb itself and needs no margin. */
+  margin-top: calc((var(--rux-slider-track-height) - var(--rux-slider-thumb-height)) / 2);
   background: var(--rux-slider-thumb-bg);
   border-radius: var(--rux-slider-thumb-radius);
   box-shadow: var(--rux-slider-thumb-shadow);

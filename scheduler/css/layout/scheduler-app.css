@@ -109,6 +109,24 @@
 	gap: 0;
 }
 
+/* ‹ Today › sits at the header's true center — the same stance the mobile
+   bottom bar takes with its 1fr/auto/1fr grid — with New Trip on the left
+   flank and the panel toggle on the right. Absolute rather than a third grid
+   track: the cluster has to stay inside the toolbar so the ≤500px rules can
+   carry it into the fixed bottom bar, and absolute centering is immune to
+   the flanks' unequal widths anyway. */
+@media (min-width: 501px) {
+	.rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header {
+		position: relative;
+	}
+
+	.rux-app-view[data-view="calendar"] .calendar-app__date-controls {
+		position: absolute;
+		left: 50%;
+		translate: -50% 0;
+	}
+}
+
 .calendar-app__panel-toggle {
 	flex: none;
 }
@@ -282,13 +300,14 @@
 	gap: var(--rux-space-0);
 }
 
+/* Layout only — the type and color are the shared .rux-card__title recipe
+   this element now composes, so the mini calendar's month reads in the same
+   voice as every other card title. This block used to restate that recipe
+   value-for-value; centering between the chevrons is all that is actually
+   this component's own. */
 .sched-mini-cal__title {
 	flex: 1;
 	margin: 0;
-	color: var(--rux-text-primary);
-	font-size: var(--rux-size-md);
-	font-weight: var(--rux-card-header-weight);
-	line-height: var(--rux-line-height-md);
 	text-align: center;
 }
 
@@ -1092,24 +1111,9 @@
 	}
 
 	/* Prev/Today/Next + the panel toggle move into the fixed bottom bar
-	   below, so the top header is left with just the week label — center
-	   it now that it isn't sharing the row with anything else. The grid's
-	   second column (the toolbar's track) sizes to 0 once the toolbar is
-	   taken out of flow by position:fixed, so .sched-workspace-nav already
-	   spans the header's full width; centering the title inside it is
-	   enough; no change needed to the grid itself. Un-setting the title's
-	   desktop left padding keeps the centering visually true instead of
-	   skewed toward the right. */
-	.rux-app-view[data-view="calendar"] .rux-workspace__title {
-		padding-left: 0;
-		text-align: center;
-	}
-
-	/* Icon-only beside the centered week label — the text label would crowd
-	   a narrow header row. */
-	#calendar-new-trip-btn .rux-button__label {
-		display: none;
-	}
+	   below, within thumb reach; the top header keeps New Trip. The
+	   desktop centering above is scoped to min-width 501px, so down here
+	   the bar's own 1fr/auto/1fr grid owns the centering instead. */
 
 	/* display:grid, not the desktop's flex justify-content:flex-end — a
 	   fixed 1fr/auto/1fr layout is what actually centers Prev/Today/Next
