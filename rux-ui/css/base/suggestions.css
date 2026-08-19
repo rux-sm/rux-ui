@@ -42,7 +42,7 @@
 	background: transparent;
 	border: 0;
 	border-radius: var(--rux-radius-sm);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -53,13 +53,13 @@
 }
 
 .rux-suggestions__label {
-	font-size: var(--rux-size-sm);
-	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-sm);
+	font-size: var(--rux-label-control-size);
+	font-weight: var(--rux-label-control-weight);
+	line-height: var(--rux-label-control-line-height);
 }
 
 .rux-suggestions__sublabel {
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
+	color: var(--rux-text-caption-color);
+	font-size: var(--rux-text-caption-size);
+	line-height: var(--rux-text-caption-line-height);
 }

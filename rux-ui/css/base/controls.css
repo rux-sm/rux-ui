@@ -596,11 +596,11 @@
 	}
 }
 
-/* Print schedule modal — Orientation and Report type are always exactly two
-   options, so split the track evenly instead of sizing each segment to its
-   own label. */
-#ps-orientation-group > .rux-button,
-#ps-report-type-group > .rux-button {
+/* Segments share the track evenly instead of each sizing to its own label.
+   For a track whose options are a fixed, small set — two states of one
+   setting, say — where ragged segment widths read as accidental. Opt-in: the
+   default behavior suits a track whose labels genuinely differ in length. */
+.rux-segmented-track--even > .rux-button {
 	flex: 1;
 	min-width: 0;
 }

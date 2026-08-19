@@ -22,8 +22,8 @@
 
 .rux-notifications__empty {
 	padding: var(--rux-space-3) var(--rux-space-2);
-	color: var(--rux-text-faint);
-	font-size: var(--rux-size-sm);
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-body-size);
 	text-align: center;
 }
 
@@ -61,7 +61,7 @@
 
 .rux-notifications__item-title {
 	margin: 0;
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	line-height: 1.35;
 }
@@ -74,14 +74,14 @@
 	   appearance; if a gap was intended here, --rux-space-px (1px) or
 	   --rux-space-1 (4px) is the likely intent. */
 	margin: 0;
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-xs);
+	color: var(--rux-text-caption-color);
+	font-size: var(--rux-text-caption-size);
 }
 
 .rux-notifications__item-time {
 	margin: var(--rux-space-1) 0 0;
-	color: var(--rux-text-faint);
-	font-size: var(--rux-size-xs);
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-caption-size);
 }
 
 .rux-notifications__item-main > button[data-dismiss] {

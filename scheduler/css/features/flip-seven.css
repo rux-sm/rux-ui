@@ -16,7 +16,7 @@
 }
 .flip-seven__status,
 .flip-seven__copy,
-.flip-seven__turn p { margin: 0; color: var(--rux-text-muted); font-size: var(--rux-size-sm); }
+.flip-seven__turn p { margin: 0; color: var(--rux-text-secondary); font-size: var(--rux-size-sm); }
 
 .flip-seven__shell {
 	display: grid;
@@ -109,10 +109,10 @@
 	place-items: center;
 	border-radius: var(--rux-radius-full);
 	background: var(--rux-bg-active);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font: var(--rux-weight-400) var(--rux-size-xs)/1 var(--rux-font-mono);
 }
-.flip-seven__score .rux-avatar { background: var(--rux-bg-active); color: var(--rux-text-muted); }
+.flip-seven__score .rux-avatar { background: var(--rux-bg-active); color: var(--rux-text-secondary); }
 .flip-seven__score.is-active .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent); }
 .flip-seven__score-name { overflow: hidden; font-weight: var(--rux-weight-400); text-overflow: ellipsis; white-space: nowrap; }
 .flip-seven__score-name .rux-badge { margin-left: var(--rux-space-2); vertical-align: middle; }
@@ -196,7 +196,7 @@
 }
 .flip-seven__messages p {
 	margin: 0 0 var(--rux-space-2);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	line-height: var(--rux-line-height-sm);
 	overflow-wrap: anywhere;
@@ -260,7 +260,7 @@
 	white-space: nowrap;
 }
 .flip-seven__player-hand-name .rux-badge { margin-left: var(--rux-space-1); vertical-align: middle; }
-.flip-seven__player-hand-score { color: var(--rux-text-muted); font: var(--rux-weight-400) var(--rux-size-xs)/1 var(--rux-font-mono); }
+.flip-seven__player-hand-score { color: var(--rux-text-secondary); font: var(--rux-weight-400) var(--rux-size-xs)/1 var(--rux-font-mono); }
 .flip-seven__player-hand.is-active .flip-seven__player-hand-score { color: var(--rux-accent); }
 .flip-seven__player-hand.is-bust .flip-seven__player-hand-score { color: var(--rux-danger); }
 .flip-seven__player-cards {
@@ -281,7 +281,7 @@
 	border: var(--rux-border-width) solid var(--rux-card-border-hover);
 	border-radius: var(--rux-radius-sm);
 	background: var(--rux-surface-1);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font: var(--rux-weight-400) var(--rux-size-md)/1 var(--rux-font-mono);
 }
 .flip-seven__card.is-latest { border-color: var(--rux-accent); }
@@ -290,8 +290,8 @@
 	color: var(--rux-danger);
 	box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-danger);
 }
-.flip-seven__round-total { justify-self: center; color: var(--rux-text-muted); font-size: var(--rux-size-sm); }
-.flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-text-default); font: var(--rux-weight-400) var(--rux-size-2xl)/1 var(--rux-font-mono); }
+.flip-seven__round-total { justify-self: center; color: var(--rux-text-secondary); font-size: var(--rux-size-sm); }
+.flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-text-primary); font: var(--rux-weight-400) var(--rux-size-2xl)/1 var(--rux-font-mono); }
 /* Box styling (padding/gap/background/border-top) comes from .rux-panel__footer;
    this only adds what's specific to this footer. */
 .flip-seven__actions { justify-content: center; }

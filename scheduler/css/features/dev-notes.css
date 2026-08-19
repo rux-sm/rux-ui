@@ -26,7 +26,7 @@
 
 .sched-dev-notes__empty {
 	padding: var(--rux-space-3) var(--rux-space-2);
-	color: var(--rux-text-faint);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	text-align: center;
 }
@@ -49,14 +49,14 @@
 }
 
 .sched-dev-notes__item-text {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	line-height: 1.35;
 	overflow-wrap: anywhere;
 }
 
 .sched-dev-notes__item.is-done .sched-dev-notes__item-text {
-	color: var(--rux-text-faint);
+	color: var(--rux-text-secondary);
 	text-decoration: line-through;
 }
 

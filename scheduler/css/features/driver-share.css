@@ -63,7 +63,7 @@ html {
 	margin: 0;
 	overflow-x: hidden;
 	background: var(--rux-surface-1);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 }
 
 .driver-share-header {
@@ -87,7 +87,7 @@ html {
    stretch the header — this page keeps its own phone-first header rather
    than .rux-ui-header, so it styles its own title. */
 .driver-share-header__label {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--sched-driver-secondary-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-sm);
@@ -114,7 +114,7 @@ html {
 
 .driver-share__subtitle,
 .driver-share__range {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-lg);
 	line-height: var(--rux-line-height-lg);
 }
@@ -183,7 +183,7 @@ html {
 .driver-assignment-card__date-range {
 	grid-area: date;
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--sched-driver-date-primary-size);
 	font-weight: var(--sched-driver-date-primary-weight);
 	line-height: 1.2;
@@ -217,7 +217,7 @@ html {
 	overflow: hidden;
 	min-width: 0;
 	margin: 0;
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-2xl);
 	font-weight: var(--rux-weight-600);
 	line-height: var(--rux-line-height-2xl);
@@ -229,7 +229,7 @@ html {
 	overflow: hidden;
 	min-width: 0;
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-md);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-md);
@@ -281,7 +281,7 @@ html {
 }
 
 .driver-assignment-card__response-state {
-	--_state-color: var(--rux-text-muted);
+	--_state-color: var(--rux-text-secondary);
 	--_state-background: color-mix(
 		in oklch,
 		var(--_state-color) var(--rux-badge-background-opacity),
@@ -383,7 +383,7 @@ html {
 	height: var(--sched-driver-module-icon-size);
 	border-radius: var(--sched-driver-control-radius);
 	background: var(--sched-driver-control-bg);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .assignment-module__icon .rux-icon {
@@ -427,7 +427,7 @@ html {
 
 .assignment-module__primary {
 	margin: 0;
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--sched-driver-primary-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-lg);
@@ -450,14 +450,14 @@ html {
 .driver-assignment-card__role-location,
 .driver-assignment-card__role-relieves {
 	margin-top: var(--rux-space-2);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-md);
 	line-height: var(--rux-line-height-md);
 }
 
 .driver-assignment-card__role-location {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -468,7 +468,7 @@ html {
 
 .driver-assignment-card__role-instructions {
 	margin-top: var(--rux-space-4);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-md);
 	line-height: var(--rux-line-height-md);
 	white-space: pre-wrap;
@@ -477,7 +477,7 @@ html {
 .driver-assignment-card__time {
 	display: block;
 	margin: 0;
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--sched-driver-time-size);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
@@ -528,7 +528,7 @@ html {
 
 .assignment-compact-module__primary {
 	margin: 0;
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--sched-driver-primary-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-lg);
@@ -549,7 +549,7 @@ html {
 }
 
 .driver-assignment-card__contact-phone {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	font-variant-numeric: tabular-nums;
@@ -563,7 +563,7 @@ html {
 
 .assignment-compact-module__secondary {
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	font-style: normal;
 	line-height: var(--rux-line-height-sm);
@@ -644,7 +644,7 @@ html {
 }
 
 .driver-assignment-card__crew-role {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	line-height: var(--rux-line-height-sm);
 }
@@ -728,7 +728,7 @@ html {
 	margin: var(--rux-space-3) 0 0;
 	padding: 0;
 	background: transparent;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-md);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-md);
@@ -751,7 +751,7 @@ html {
 	place-items: center;
 	min-height: var(--sched-driver-status-min-height);
 	padding: var(--rux-space-6);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	text-align: center;
 }
 
@@ -764,7 +764,7 @@ html {
 	margin-inline: auto;
 	border-radius: var(--sched-driver-control-radius);
 	background: var(--sched-driver-control-bg);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 /* Shared with .driver-share-dialog__title below — same 24px size. */
@@ -775,7 +775,7 @@ html {
 
 .driver-share-status__title {
 	margin: var(--rux-space-4) 0 var(--rux-space-2);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 }
 
 .driver-share-status p {
@@ -843,7 +843,7 @@ html {
 	padding: 0;
 	overflow: hidden;
 	background: var(--rux-surface-1);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	border: none;
 	border-radius: var(--rux-radius-xl);
 }
@@ -864,7 +864,7 @@ html {
 }
 
 .driver-share-dialog__body {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .driver-share-dialog__footer {

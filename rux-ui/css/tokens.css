@@ -194,7 +194,7 @@
        "Reference: Vercel Geist colors"): canvas, and everything raised
        off it — panels, cards, content areas. */
     --rux-surface-0:	oklch(from var(--rux-neutral) 0% c h);	/* canvas */ 	/* 0,  0,  0  */
-    --rux-surface-1:    oklch(from var(--rux-neutral) 18% c h); /* cards  */	/* 22, 22 ,22 */
+    --rux-surface-1:    oklch(from var(--rux-neutral) 14.5% c h); /* cards  */	/* 22, 22 ,22 */
 	--rux-surface-2:    oklch(from var(--rux-neutral) 24% c h); /* button */ 	/* 25, 25 ,25 */
 	--rux-input-bg-disabled:  oklch(from var(--rux-neutral) 21.5% c h); /* ( 24, 24, 24) */
 
@@ -242,11 +242,23 @@
 	/* ─── COLOR · text roles ─────────────────────────────────────────────── */
 	/* One weight-based ladder, darkest/most-prominent to lightest — each
 	   name is the whole story, no separate layer to cross-reference. */
-	--rux-text-heading:  oklch(from var(--rux-neutral) 90% c h / 100%);
-	--rux-text-default:  oklch(from var(--rux-neutral) 100% c h / 100%);
-	--rux-text-muted:    oklch(from var(--rux-neutral) 60% c h / 100%);
-	--rux-text-faint:    oklch(from var(--rux-neutral) 100% c h / 40%);
-	--rux-text-disabled: oklch(from var(--rux-neutral) 100% c h / 28%);
+	/* Two emphasis levels, following Geist's neutral scale, which reserves
+	   exactly two steps for text: 900 secondary, 1000 primary. This was five
+	   (heading/default/muted/faint/disabled) — a finer-grained analog README's
+	   Geist reference already flagged as pending work.
+	   Disabled stays, because it is not an emphasis level: Geist's scale has no
+	   disabled-text step at all, so a state that must read as "you cannot use
+	   this" cannot be one of the two content levels without erasing itself. */
+	--rux-text-primary:   oklch(from var(--rux-neutral) 94% c h);  /* Geist 1000 */
+	--rux-text-secondary: oklch(from var(--rux-neutral) 70% c h);  /* Geist  900 */
+	--rux-text-disabled:  oklch(from var(--rux-neutral) 100% c h / 28%);
+
+	/* Deprecated — superseded by the pair above. Kept because the vendored
+	   consumers read them; do not use in new work. */
+	--rux-text-default:  var(--rux-text-primary);
+	--rux-text-heading:  var(--rux-text-primary);
+	--rux-text-muted:    var(--rux-text-secondary);
+	--rux-text-faint:    var(--rux-text-secondary);
 
 	--rux-fg-on-accent:        var(--rux-white);
 	--rux-fg-on-accent-muted:  oklch(from var(--rux-white) l c h / 75%);
@@ -350,13 +362,70 @@
 	--rux-status-dot-size: 6px;
 
 	/* ─── TYPOGRAPHY · shared roles ───────────────────────────────────────── */
+	/* A role names a recipe that more than one unrelated component reaches for,
+	   so the set can be restyled by intent — every caption, every item label —
+	   instead of by hunting for a size. Values are all aliases of the scale
+	   above; a role introduces meaning, never a new number.
+	   A recipe used by exactly one component is not a role: it belongs in that
+	   component's own token block, which is where --rux-field-label-*,
+	   --rux-badge-font-* and --rux-button-font-* already live. */
 
-	--rux-heading-panel-size:     var(--rux-size-md);
-	--rux-heading-panel-weight:   var(--rux-weight-600);
-	--rux-label-eyebrow-size:     var(--rux-size-xs);
-	--rux-label-eyebrow-weight:   var(--rux-weight-400);
-	--rux-label-eyebrow-tracking: var(--rux-tracking-wide);
-	--rux-label-eyebrow-color:    var(--rux-text-muted);
+	/* Every role carries the same five axes — size, weight, line-height,
+	   tracking, color — so a call site never has to fall back to the raw scale
+	   for one of them. `color` names the role's *default*; a component that
+	   deliberately differs (a faint timestamp, a disabled empty state) still
+	   sets its own, because emphasis is orthogonal to type role. */
+
+	/* Page heading — the document's <h1>. Note that an application shell whose
+	   header carries the page name uses the panel role there instead, so this
+	   may have no consumer beyond the h1 element default. */
+	--rux-heading-page-size:        var(--rux-size-4xl);         /* 36px */
+	--rux-heading-page-weight:      var(--rux-weight-400);       /* 400 */
+	--rux-heading-page-line-height: var(--rux-line-height-4xl);  /* 40px */
+	--rux-heading-page-tracking:    var(--rux-tracking-tight);   /* -0.02em */
+	--rux-heading-page-color:       var(--rux-text-primary);     /* L90 dark · L20 light */
+
+	/* Panel heading — card, panel, workspace and shell-header titles. Tracking
+	   is negative rather than zeroed: at 16px the tighter setting is what keeps
+	   a title reading as a heading instead of as body copy. */
+	--rux-heading-panel-size:        var(--rux-size-md);         /* 16px */
+	--rux-heading-panel-weight:      var(--rux-weight-600);      /* 600 */
+	--rux-heading-panel-line-height: var(--rux-line-height-md);  /* 24px */
+	--rux-heading-panel-tracking:    var(--rux-tracking-tight);  /* -0.02em */
+	--rux-heading-panel-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
+
+	/* Body — the dense-UI default, one step below the document base. Alerts,
+	   toasts, table cells, subtitles, empty states. */
+	--rux-text-body-size:        var(--rux-size-sm);             /* 14px */
+	--rux-text-body-weight:      var(--rux-weight-400);          /* 400 */
+	--rux-text-body-line-height: var(--rux-line-height-sm);      /* 20px */
+	--rux-text-body-tracking:    var(--rux-tracking-normal);     /* 0 */
+	--rux-text-body-color:       var(--rux-text-primary);        /* L94 dark · L14 light */
+
+	/* Caption — supporting text that annotates something else: timestamps,
+	   sublabels, tooltips, secondary detail lines. Muted by default; that is
+	   what makes it read as support rather than as content. */
+	--rux-text-caption-size:        var(--rux-size-xs);          /* 12px */
+	--rux-text-caption-weight:      var(--rux-weight-400);       /* 400 */
+	--rux-text-caption-line-height: var(--rux-line-height-xs);   /* 16px */
+	--rux-text-caption-tracking:    var(--rux-tracking-normal);  /* 0 */
+	--rux-text-caption-color:       var(--rux-text-secondary);    /* L70 dark · L38 light */
+
+	/* Item label — the text of something you can click or choose: navigation
+	   links, option rows, suggestion entries. Body size, but a distinct role,
+	   because these move with controls rather than with copy. */
+	--rux-label-control-size:        var(--rux-size-sm);         /* 14px */
+	--rux-label-control-weight:      var(--rux-weight-400);      /* 400 */
+	--rux-label-control-line-height: var(--rux-line-height-sm);  /* 20px */
+	--rux-label-control-tracking:    var(--rux-tracking-normal); /* 0 */
+	--rux-label-control-color:       var(--rux-text-primary);    /* L100 dark · L10 light */
+
+	/* Eyebrow — uppercase category/section markers. */
+	--rux-label-eyebrow-size:        var(--rux-size-xs);         /* 12px */
+	--rux-label-eyebrow-weight:      var(--rux-weight-400);      /* 400 */
+	--rux-label-eyebrow-line-height: var(--rux-line-height-xs);  /* 16px */
+	--rux-label-eyebrow-tracking:    var(--rux-tracking-wide);   /* 0.04em */
+	--rux-label-eyebrow-color:       var(--rux-text-secondary);      /* L60 dark · L32 light */
 
 	/* ─── SPACING · shared roles ──────────────────────────────────────────── */
 
@@ -412,48 +481,51 @@
 	/* ─── COMPONENT · UI header ───────────────────────────────────────────── */
 
 	/* — shell — */
-	--rux-ui-header-bg:     	var(--rux-surface-0);
+	--rux-ui-header-bg:     	var(--rux-surface-1);
 	--rux-ui-header-border: 	1px solid var(--rux-card-border);
 	/* --rux-ui-header-radius: not set — spans full width, no corners */
 	/* --rux-ui-header-shadow: not set */
-	--rux-ui-header-padding: 	var(--rux-space-0) var(--rux-space-0);
+	--rux-ui-header-padding: 	var(--rux-space-0);
 	--rux-ui-header-height:  	40px;
 	--rux-ui-header-min-height: var(--rux-ui-header-height);
 	--rux-ui-header-gap:     	var(--rux-space-0);
-	/* An open disclosure trigger paints the background of the surface it owns,
-	   so the two read as one silhouette. It borrowed
-	   --rux-button-ghost-active-background for this, which coupled a
-	   persistent open state to a momentary press state — they parted ways when
-	   ghost hover became a text-lightness step. Same value as before. */
-	--rux-ui-header-trigger-open-bg: var(--rux-surface-0);
-
 	/* — brand — */
-	--rux-ui-header-brand-padding-inline: var(--rux-space-4);
+	--rux-ui-header-brand-padding-inline: var(--rux-space-2);  /* 8px — matches the buttons' optical inset */
+	/* Divider between the menu trigger and the brand. The header's left run is
+	   [menu] [logo] [title], which is two jobs — navigation, then identity and
+	   context — sharing one undifferentiated row. This states the split.
+	   Reuses the header's own border so the divider and the bottom rule stay
+	   the same weight and color, and retune together. */
+	--rux-ui-header-brand-border-start:   var(--rux-ui-header-border);
 	--rux-ui-header-brand-border:         none;
 	--rux-ui-header-logo-height:          20px;
 
 	/* — optional inline navigation — */
 	--rux-ui-header-nav-gap:            var(--rux-space-2);
-	--rux-ui-header-nav-item-fg:        var(--rux-text-muted);
-	--rux-ui-header-nav-item-active-fg: var(--rux-text-default);
+	--rux-ui-header-nav-item-fg:        var(--rux-text-secondary);
+	--rux-ui-header-nav-item-active-fg: var(--rux-text-primary);
 
 	/* — actions — */
 	--rux-ui-header-profile-avatar-size: 32px;
-	--rux-ui-header-actions-gap: 		 var(--rux-space-0);
 	/* Two zones: actions (external links, chat, notifications) and identity
-	   (presence avatars and your own profile) — a wider gap plus
-	   a divider between them, a tighter gap within the identity cluster so
-	   presence avatars and your own profile read as one related group. */
-	--rux-ui-header-actions-group-gap: 	var(--rux-space-0);
-	--rux-ui-header-actions-divider:   	none;
-	--rux-ui-header-identity-gap:      	var(--rux-space-0);
+	   (presence avatars and your own profile), separated by the same hairline
+	   the brand carries on the other end of the bar. That gives the header a
+	   symmetric frame — the menu trigger bounded on its right, the profile
+	   bounded on its left, and the wide middle holding logo, title, and
+	   utilities.
+	   The group gap is narrower than it was without the rule: 12px either side
+	   of a line puts 24px around it, which reads as a break rather than a
+	   seam. The line separates; the gap only needs to keep it off the icons. */
+	--rux-ui-header-actions-gap: 		 var(--rux-space-1);   /* 4px · within a zone */
+	--rux-ui-header-actions-group-gap: 	var(--rux-space-2);   /* 8px · between groups, and the divider's content side */
+	--rux-ui-header-actions-divider:   	var(--rux-ui-header-border);
 	/* Tracks the header's own surface so the ring reads as a cutout. */
 	--rux-ui-header-avatar-border: 		2px solid var(--rux-ui-header-bg);
 
 	/* ─── COMPONENT · side navigation ─────────────────────────────────────── */
 	--rux-side-nav-width:           256px;
 	--rux-side-nav-bg:              var(--rux-surface-0);
-	--rux-side-nav-fg:              var(--rux-text-muted);
+	--rux-side-nav-fg:              var(--rux-text-secondary);
 	--rux-side-nav-border:          1px solid var(--rux-card-border);
 	--rux-side-nav-shadow:          none;
 	--rux-side-nav-padding:         var(--rux-space-2) var(--rux-space-0);
@@ -463,7 +535,7 @@
 	--rux-side-nav-item-radius:     var(--rux-radius-control);
 	--rux-side-nav-item-hover-bg: var(--rux-bg-hover);
 	--rux-side-nav-item-active-bg:  var(--rux-accent-subtle);
-	--rux-side-nav-item-active-fg:  var(--rux-text-default);
+	--rux-side-nav-item-active-fg:  var(--rux-text-primary);
 	--rux-side-nav-selected-width:  4px;
 	--rux-side-nav-focus-ring:      var(--rux-button-focus-ring);
 	/* UI-shell reveal: the panel stays at its final coordinates and its clipping
@@ -497,7 +569,7 @@
 	   workspace raises off it at --rux-surface-1 — one canvas, no second
 	   painted pane. */
 	--rux-workspace-bg:            transparent;
-	--rux-workspace-fg:            var(--rux-text-default);
+	--rux-workspace-fg:            var(--rux-text-primary);
 	--rux-workspace-border-inline: none;
 	--rux-workspace-border-block:  none;
 	/* Routed through the container role (currently also 0) rather than
@@ -567,7 +639,7 @@
 
 	/* — shell — */
 	--rux-panel-bg:     var(--rux-surface-0);
-	--rux-panel-fg:     var(--rux-text-default);
+	--rux-panel-fg:     var(--rux-text-primary);
 	--rux-panel-shadow: none;
 	--rux-panel-motion-duration:         var(--rux-motion-duration-moderate-01);
 	--rux-panel-enter-easing:            var(--rux-motion-easing-entrance-productive);
@@ -679,7 +751,7 @@
 	--rux-card-shell-shadow: var(--rux-card-body-shadow);
 
 	/* Compatibility inputs retained for existing consumers. */
-	--rux-card-fg:           var(--rux-text-default);
+	--rux-card-fg:           var(--rux-text-primary);
 	--rux-card-border-width: var(--rux-border-width);
 	--rux-card-body-border:  var(--rux-card-border-width) solid var(--rux-card-border);
 	--rux-card-body-radius:  var(--rux-radius-container);
@@ -725,13 +797,13 @@
 	--rux-field-gap:          var(--rux-stack-gap);
 	--rux-field-label-size:   var(--rux-size-xs);
 	--rux-field-label-weight: var(--rux-weight-400);
-	--rux-field-label-fg:     var(--rux-text-muted);
-	--rux-field-help-fg:      var(--rux-text-disabled);
+	--rux-field-label-fg:     var(--rux-text-secondary);
+	--rux-field-help-fg:      var(--rux-text-secondary);
 	--rux-field-error-fg:     var(--rux-danger);
 
 	/* — input shell — */
 	--rux-input-background:     var(--rux-well-bg);
-	--rux-input-fg:             var(--rux-text-default);
+	--rux-input-fg:             var(--rux-text-primary);
 	/* Was missing its trailing ";" — silently swallowed the next
 	   declaration (--rux-input-border-image) into this value instead of
 	   ever defining it. Harmless by accident (an undefined custom property
@@ -744,7 +816,7 @@
 	--rux-input-height:         var(--rux-field-height);
 	--rux-input-padding-inline: var(--rux-control-padding-inline);
 	--rux-input-font-size:      var(--rux-size-sm);
-	--rux-input-placeholder-fg: var(--rux-text-disabled);
+	--rux-input-placeholder-fg: var(--rux-text-secondary);
 	--rux-input-transition:     var(--rux-duration-fast) var(--rux-ease-out);
 
 	/* — textarea — */
@@ -820,7 +892,7 @@
 	--rux-button-font-weight: var(--rux-weight-400);
 
 	/* — states — */
-	--rux-button-hover-text:          var(--rux-text-default);
+	--rux-button-hover-text:          var(--rux-text-primary);
 	--rux-button-hover-border:        none;
 	--rux-button-hover-overlay:       var(--rux-state-hover-overlay);
 	--rux-button-transition-duration: var(--rux-duration-instant);
@@ -835,7 +907,7 @@
 	/* ─── COMPONENT · button default ─────────────────────────────────────────────── */
 
 	--rux-button-default-background: 		var(--rux-surface-2);
-	--rux-button-default-text:       		var(--rux-text-default);
+	--rux-button-default-text:       		var(--rux-text-primary);
 	--rux-button-default-border:     		none;
 	--rux-button-default-hover-background: 	oklch(from var(--rux-button-default-background) calc(l + 0.05) c h);
 	--rux-button-default-active-background:	oklch(from var(--rux-button-default-background) calc(l - 0.05) c h);
@@ -856,8 +928,8 @@
 	   step here. A container may override either background for a surface the
 	   neutral overlay does not suit. */
 	--rux-button-ghost-background: 			transparent;
-	--rux-button-ghost-text:       			var(--rux-text-default);
-	--rux-button-ghost-hover-text: 			var(--rux-text-default);
+	--rux-button-ghost-text:       			var(--rux-text-primary);
+	--rux-button-ghost-hover-text: 			var(--rux-text-primary);
 	--rux-button-ghost-border:     			none;
 	--rux-button-ghost-hover-background:  	var(--rux-state-hover-overlay);
 	--rux-button-ghost-active-background:	var(--rux-state-active-overlay);
@@ -936,15 +1008,15 @@
 	/* — segment item — */
 	--rux-segment-background:     var(--rux-button-ghost-background);
 	--rux-segment-height:         28px; /* 36px track - 4px inset per side */
-	--rux-segment-fg:             var(--rux-text-muted);
+	--rux-segment-fg:             var(--rux-text-secondary);
 	--rux-segment-border:         none;
 	--rux-segment-radius:         var(--rux-button-radius);
 	--rux-segment-padding-inline: var(--rux-space-4);
-	--rux-segment-fg-hover:       var(--rux-text-default);
+	--rux-segment-fg-hover:       var(--rux-text-primary);
 
 	/* — active segment — */
 	--rux-segment-active-background:   var(--rux-button-default-background);
-	--rux-segment-active-text:         var(--rux-text-default);
+	--rux-segment-active-text:         var(--rux-text-primary);
 	/* Must be a valid border color: `none` resolves to currentColor here. */
 	--rux-segment-active-border-color: transparent;
 	/* Active segments reuse the default button's raised bevel. */
@@ -975,7 +1047,7 @@
 	/* — value — */
 	--rux-number-stepper-value-width:     3rem;
 	--rux-number-stepper-value-bg:        transparent;
-	--rux-number-stepper-value-fg:        var(--rux-text-default);
+	--rux-number-stepper-value-fg:        var(--rux-text-primary);
 	--rux-number-stepper-value-font-size: var(--rux-size-sm);
 
 	/* — ghost variant (quiet trailing content in a section/card header,
@@ -1026,9 +1098,9 @@
 	   the track shows the other, fixed in place and dim, exposed on
 	   whichever side the thumb has slid away from. */
 	--rux-switch-theme-icon-size:        18px;
-	--rux-switch-theme-sun-color:        var(--rux-text-default);
-	--rux-switch-theme-moon-color:       var(--rux-text-default);
-	--rux-switch-theme-track-icon-color: var(--rux-text-disabled);
+	--rux-switch-theme-sun-color:        var(--rux-text-primary);
+	--rux-switch-theme-moon-color:       var(--rux-text-primary);
+	--rux-switch-theme-track-icon-color: var(--rux-text-secondary);
 	--rux-switch-theme-sun-shadow:       drop-shadow(0 1px 2px oklch(0% 0 0 / 40%));
 	/* Computed, not a flat px value, so it stays correct if switch
 	   width/thumb-size/padding ever change — centers the icon in whatever
@@ -1044,18 +1116,18 @@
 	   language as the switch above, same underlying primitives, so the two
 	   read as siblings rather than two different design systems. */
 
-	--rux-slider-track-height: 4px;
-	--rux-slider-track-bg:     var(--rux-input-background);
-	--rux-slider-track-radius: var(--rux-radius-full);
+	--rux-slider-track-height: 8px;
+	--rux-slider-track-bg:     var(--rux-surface-2);
+	--rux-slider-track-radius: var(--rux-radius-0);
 	--rux-slider-fill-bg:      var(--rux-accent-fill);
 
 	--rux-slider-thumb-size:   16px;
-	--rux-slider-thumb-bg:     var(--rux-thumb-bg);
+	--rux-slider-thumb-bg:     var(--rux-text-primary);
 	--rux-slider-thumb-radius: var(--rux-radius-full);
 	--rux-slider-thumb-shadow: var(--rux-button-shadow-raised);
 
 	--rux-slider-value-size:  var(--rux-size-xs);
-	--rux-slider-value-color: var(--rux-text-muted);
+	--rux-slider-value-color: var(--rux-text-secondary);
 	--rux-slider-value-width: 3.5rem;
 
 	/* ─── COMPONENT · checkbox ───────────────────────────────────────────── */
@@ -1107,7 +1179,7 @@
 
 	/* — shell — */
 	--rux-color-picker-bg:           var(--rux-input-background);
-	--rux-color-picker-fg:           var(--rux-text-default);
+	--rux-color-picker-fg:           var(--rux-text-primary);
 	--rux-color-picker-border:       var(--rux-input-border);
 	--rux-color-picker-hover-border: var(--rux-card-border);
 	--rux-color-picker-radius:       var(--rux-input-border-radius);
@@ -1163,7 +1235,7 @@
 	   is a stat." Flat + brighter + bolder than the input text around it
 	   reads as data instead, no matter how its border/bg is tinted. */
 	--rux-output-bg:          transparent;
-	--rux-output-fg:          var(--rux-text-default);
+	--rux-output-fg:          var(--rux-text-primary);
 	--rux-output-border:      none;
 	--rux-output-radius:      var(--rux-radius-0);
 	/* --rux-output-shadow: not set — deliberately flat, see note above */
@@ -1178,7 +1250,7 @@
 
 	/* — shell — */
 	--rux-table-bg:           var(--rux-surface-1);
-	--rux-table-fg:           var(--rux-text-default);
+	--rux-table-fg:           var(--rux-text-primary);
 	--rux-table-border-width: var(--rux-border-width);
 	--rux-table-border-color: var(--rux-card-border);
 	/* --rux-table-radius: not set — the wrap below owns the rounded corners */
@@ -1192,7 +1264,7 @@
 
 	/* — header — */
 	--rux-table-header-bg:       var(--rux-surface-1);
-	--rux-table-header-fg:       var(--rux-text-default);
+	--rux-table-header-fg:       var(--rux-text-primary);
 	--rux-table-header-weight:   var(--rux-weight-400);
 	--rux-table-header-tracking: var(--rux-tracking-wide);
 
@@ -1215,7 +1287,7 @@
 
 	/* — shell — */
 	--rux-menu-bg:     var(--rux-surface-1);
-	--rux-menu-fg:     var(--rux-text-default);
+	--rux-menu-fg:     var(--rux-text-primary);
 	--rux-menu-border: 1px solid var(--rux-card-border);
 	/* Direct value, not the shared --rux-radius-container role — floating
 	   overlay surfaces get real radius (Vercel Geist Materials: menus at
@@ -1238,10 +1310,10 @@
 	--rux-menu-item-font-size:      var(--rux-size-sm);
 	--rux-menu-item-fg:             var(--rux-menu-fg);
 	--rux-menu-item-hover-bg: var(--rux-button-hover-overlay);
-	--rux-menu-item-hover-fg:       var(--rux-text-default);
+	--rux-menu-item-hover-fg:       var(--rux-text-primary);
 	--rux-menu-item-pressed-bg:     var(--rux-bg-active);
 	--rux-menu-item-active-bg:      var(--rux-bg-active);
-	--rux-menu-item-active-fg:      var(--rux-text-default);
+	--rux-menu-item-active-fg:      var(--rux-text-primary);
 	--rux-menu-item-disabled-fg:    var(--rux-text-disabled);
 	--rux-menu-item-danger-fg:      var(--rux-danger);
 
@@ -1252,11 +1324,25 @@
 	/* Base .rux-popover owns positioning only. Add .rux-popover--surface when
 	   several content types need one consistent outer container. */
 
+	/* Every other stacking value in the system is a token; this one was a
+	   hardcoded --rux-z-dropdown, which left an application with a sticky row
+	   above 100 no seam at all — the scheduler's calendar header is
+	   --rux-z-sticky (200), so header-anchored popovers rendered underneath it
+	   and the only way out was reaching into the portable layer with ID
+	   selectors. Raise this on the popover instead. */
+	--rux-popover-z-index:          var(--rux-z-dropdown);
 	--rux-popover-offset:           var(--rux-space-1);
 	--rux-popover-viewport-padding: var(--rux-space-2);
 	--rux-popover-surface-bg:       var(--rux-surface-1);
-	--rux-popover-surface-fg:       var(--rux-text-default);
-	--rux-popover-surface-border:   none;
+	--rux-popover-surface-fg:       var(--rux-text-primary);
+	/* Was none, which silently cancelled the border of anything composed
+	   inside it: .rux-menu declares --rux-menu-border, but
+	   .rux-popover.rux-popover--surface deliberately outranks it to own the
+	   container's look, so a menu in a popover rendered with no outline at all.
+	   Same recipe as --rux-menu-border and --rux-modal-border. The tab-tip
+	   variant already accounts for it — its ::before bridges exactly the
+	   trigger's width of this border so the two still read as one silhouette. */
+	--rux-popover-surface-border:   1px solid var(--rux-card-border);
 	/* Direct value, same reasoning as --rux-menu-radius above. */
 	--rux-popover-surface-radius:   var(--rux-radius-lg);
 	--rux-popover-surface-shadow:   var(--rux-shadow-2);
@@ -1268,7 +1354,7 @@
 
 	/* — tab (plain) — */
 	--rux-tab-bg: var(--rux-surface-0); /* ghost at rest — never a milky white fill */
-	--rux-tab-fg: var(--rux-text-muted);
+	--rux-tab-fg: var(--rux-text-secondary);
 	--rux-tab-radius: var(--rux-radius-0);
 	/* --rux-tab-border: not set at rest — only the selected state below has one */
 	--rux-tabs-gap:           var(--rux-space-2);
@@ -1276,7 +1362,7 @@
 	--rux-tab-padding-inline: var(--rux-space-3);
 	--rux-tab-content-gap:    var(--rux-control-content-gap);
 	--rux-tab-hover-bg:            transparent;
-	--rux-tab-hover-fg:            var(--rux-text-default);
+	--rux-tab-hover-fg:            var(--rux-text-primary);
 	--rux-tab-pressed-bg:          var(--rux-state-active-overlay);
 	--rux-tab-disabled-fg:         var(--rux-text-disabled);
 	--rux-tab-selected-bg:         var(--rux-button-default-background);
@@ -1297,12 +1383,12 @@
 
 	/* — attached tab, inactive — */
 	--rux-tabs-attached-tab-bg:     var(--rux-surface-1); /* correct one for nav inactive tabs */
-	--rux-tabs-attached-tab-fg:     var(--rux-text-muted);
+	--rux-tabs-attached-tab-fg:     var(--rux-text-secondary);
 	--rux-tabs-attached-tab-border: 1px solid var(--rux-card-border);
 	--rux-tabs-attached-tab-top-left-radius:  var(--rux-radius-0);
 	--rux-tabs-attached-tab-top-right-radius: var(--rux-radius-0);
 	--rux-tabs-attached-tab-shadow:	none;
-	--rux-tabs-attached-tab-hover-fg:      var(--rux-text-default);
+	--rux-tabs-attached-tab-hover-fg:      var(--rux-text-primary);
 	--rux-tabs-attached-tab-inline-border: 1px solid var(--rux-card-border);
 
 	/* — attached tab, selected — */
@@ -1310,7 +1396,7 @@
 	   states share one border; navigation.css hides the active tab's
 	   bottom edge to merge it with the pane. */
 	--rux-tabs-attached-tab-selected-bg:            var(--rux-panel-pane-bg);
-	--rux-tabs-attached-tab-selected-fg:            var(--rux-text-default);
+	--rux-tabs-attached-tab-selected-fg:            var(--rux-text-primary);
 	--rux-tabs-attached-tab-selected-border:        none;
 	--rux-tabs-attached-tab-selected-inline-border: none;
 	--rux-tabs-attached-tab-selected-radius: var(--rux-radius-0);
@@ -1320,9 +1406,9 @@
 	   surface-1 instead of --rux-panel-bg. Independent tokens, scoped via
 	   .rux-panel--floating in navigation.css. */
 	--rux-tabs-floating-tab-bg:          var(--rux-surface-1);
-	--rux-tabs-floating-tab-fg:          var(--rux-text-muted);
+	--rux-tabs-floating-tab-fg:          var(--rux-text-secondary);
 	--rux-tabs-floating-tab-selected-bg: var(--rux-surface-0);
-	--rux-tabs-floating-tab-selected-fg: var(--rux-text-default);
+	--rux-tabs-floating-tab-selected-fg: var(--rux-text-primary);
 
 	/* — attached pane (content area beneath the tabs) — */
 	--rux-tabs-attached-pane-border: none;
@@ -1359,11 +1445,17 @@
 	--rux-gray:   oklch(from var(--rux-neutral) 98% c h);
 
 	/* ─── Text ────────────────────────────────────────────────────────────── */
-	--rux-text-heading:  oklch(from var(--rux-neutral) 20% c h);
-	--rux-text-default:  oklch(from var(--rux-neutral) 10% c h);
-	--rux-text-muted:    oklch(from var(--rux-neutral) 32% c h);
-	--rux-text-faint:    oklch(from var(--rux-neutral) 48% c h);
-	--rux-text-disabled: oklch(from var(--rux-neutral) 58% c h);
+	/* Mirrors the dark pair's 24-point gap from the opposite end of the scale:
+	   94/70 becomes 14/38, at 19.8:1 and 10.0:1 on a light card. */
+	--rux-text-primary:   oklch(from var(--rux-neutral) 14% c h);
+	--rux-text-secondary: oklch(from var(--rux-neutral) 38% c h);
+	--rux-text-disabled:  oklch(from var(--rux-neutral) 58% c h);
+
+	/* Deprecated — see the base block. */
+	--rux-text-default:  var(--rux-text-primary);
+	--rux-text-heading:  var(--rux-text-primary);
+	--rux-text-muted:    var(--rux-text-secondary);
+	--rux-text-faint:    var(--rux-text-secondary);
 
 	/* ─── Status ───────────────────────────────────────────────────────────── */
 	/* Darker foreground roles maintain readable contrast on the 92–98% light

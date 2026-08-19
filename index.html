@@ -40,8 +40,8 @@
 		<!-- The design system's public entrypoint: tokens, typography, webfonts,
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
-		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=20" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=279" />
+		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=30" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=281" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=12"
@@ -188,6 +188,18 @@
 						alt="Escamilla Tour Buses"
 					/>
 				</div>
+				<!-- The page's only <h1>. The side navigation is an overlay, so
+				     without this the current module is unlabelled on screen
+				     whenever the nav is closed, which is most of the time. Text
+				     is written by RuxViewRouter from the active nav link's own
+				     label (rux-ui/js/view-router.js), so the two cannot drift.
+				     Workspace headers below therefore carry controls and the
+				     name of what is being viewed — a week, a document — never
+				     the module's own name. -->
+				<h1
+					class="rux-ui-header__title"
+					id="app-module-title"
+				></h1>
 				<div
 					class="rux-ui-header__actions"
 					aria-label="Application Actions"
@@ -284,7 +296,7 @@
 						</button>
 					</div>
 					<div
-						class="rux-ui-header__action-group rux-ui-header__action-group--identity"
+						class="rux-ui-header__action-group rux-ui-header__action-group--presence"
 					>
 						<!-- Who else currently has a profile active (excludes yourself —
 						     that's the button right next to it) — Supabase Realtime
@@ -296,6 +308,10 @@
 							id="header-active-profiles"
 							hidden
 						></div>
+					</div>
+					<div
+						class="rux-ui-header__action-group rux-ui-header__action-group--identity"
+					>
 						<button
 							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure rux-ui-header__profile"
 							type="button"
@@ -369,7 +385,7 @@
 					data-view="components"
 				>
 					<span class="rux-icon" aria-hidden="true">widgets</span>
-					<span>Components</span>
+					<span data-view-label>Components</span>
 				</button>
 			</div>
 
@@ -764,7 +780,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>map</span
 								>
-								<span class="rux-side-nav__label">Trips</span>
+								<span class="rux-side-nav__label" data-view-label>Trips</span>
 							</button>
 						</li>
 						<li class="rux-side-nav__item">
@@ -776,7 +792,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>person</span
 								>
-								<span class="rux-side-nav__label">Drivers</span>
+								<span class="rux-side-nav__label" data-view-label>Drivers</span>
 							</button>
 						</li>
 						<li class="rux-side-nav__item">
@@ -788,7 +804,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>directions_bus</span
 								>
-								<span class="rux-side-nav__label">Fleet</span>
+								<span class="rux-side-nav__label" data-view-label>Fleet</span>
 							</button>
 						</li>
 						<li class="rux-side-nav__item">
@@ -800,7 +816,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>groups</span
 								>
-								<span class="rux-side-nav__label"
+								<span class="rux-side-nav__label" data-view-label
 									>Customers</span
 								>
 							</button>
@@ -816,7 +832,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>inbox</span
 								>
-								<span class="rux-side-nav__label"
+								<span class="rux-side-nav__label" data-view-label
 									>Requests</span
 								>
 								<span
@@ -835,7 +851,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>description</span
 								>
-								<span class="rux-side-nav__label"
+								<span class="rux-side-nav__label" data-view-label
 									>Documents</span
 								>
 							</button>
@@ -851,7 +867,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>location_on</span
 								>
-								<span class="rux-side-nav__label">Samsara</span>
+								<span class="rux-side-nav__label" data-view-label>Samsara</span>
 							</a>
 						</li>
 						<li class="rux-side-nav__item">
@@ -863,7 +879,7 @@
 								<span class="rux-icon" aria-hidden="true"
 									>settings</span
 								>
-								<span class="rux-side-nav__label">Options</span>
+								<span class="rux-side-nav__label" data-view-label>Options</span>
 							</button>
 						</li>
 					</ul>
@@ -2245,10 +2261,10 @@
 										>New Trip</span
 									>
 								</button>
-								<h1
+								<h2
 									class="rux-workspace__title"
 									id="week-label"
-								></h1>
+								></h2>
 							</div>
 							<div
 								class="rux-workspace__toolbar"
@@ -3650,23 +3666,19 @@
 									>
 								</button>
 								<button
-									class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
 									type="button"
 									id="fleet-tools-toggle-btn"
-									aria-label="Open table options"
-									aria-pressed="false"
+									aria-label="Table options"
+									aria-expanded="false"
 									data-rux-domain-toggle
 									data-scope="fleet-tools"
 								>
 									<span
-										class="rux-icon icon-off"
+										class="rux-icon"
+										data-panel-toggle-icon
 										aria-hidden="true"
 										>right_panel_open</span
-									>
-									<span
-										class="rux-icon icon-on"
-										aria-hidden="true"
-										>right_panel_close</span
 									>
 								</button>
 							</div>
@@ -4677,32 +4689,28 @@
 								</button>
 							</div>
 							<div class="sched-workspace-nav">
-								<h1
+								<h2
 									class="rux-workspace__title"
 									id="driver-workspace-title"
 								>
 									Driver Roster
-								</h1>
+								</h2>
 							</div>
 							<div class="rux-workspace__toolbar">
 								<button
-									class="rux-button rux-button--default rux-button--icon rux-button--header rux-button--toggle sched-app__mobile-panel-btn sched-app__mobile-panel-btn--right"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--header sched-app__mobile-panel-btn sched-app__mobile-panel-btn--right"
 									type="button"
 									id="driver-tools-toggle-btn"
-									aria-label="Open table options"
-									aria-pressed="false"
+									aria-label="Table options"
+									aria-expanded="false"
 									data-rux-domain-toggle
 									data-scope="driver-tools"
 								>
 									<span
-										class="rux-icon icon-off"
+										class="rux-icon"
+										data-panel-toggle-icon
 										aria-hidden="true"
 										>right_panel_open</span
-									>
-									<span
-										class="rux-icon icon-on"
-										aria-hidden="true"
-										>right_panel_close</span
 									>
 								</button>
 							</div>
@@ -5153,7 +5161,7 @@
 					<section
 						class="rux-workspace sched-scope-request"
 						id="request-inbox-view"
-						aria-labelledby="requests-title"
+						aria-label="Requests"
 					>
 						<!-- --table is the modifier Fleet, Drivers, and Customers
 						     use for a list view: it lets the toolbar grow and
@@ -5163,12 +5171,6 @@
 							class="rux-workspace__header rux-workspace__header--table"
 						>
 							<div class="rux-workspace__heading">
-								<h1
-									class="rux-workspace__title"
-									id="requests-title"
-								>
-									Requests
-								</h1>
 								<span
 									class="sched-scope-request__count"
 									id="request-inbox-footer"
@@ -5327,12 +5329,12 @@
 					>
 						<header class="rux-workspace__header">
 							<div class="rux-workspace__heading">
-								<h1
+								<h2
 									class="rux-workspace__title"
 									id="documents-title"
 								>
 									Credit Card Authorization
-								</h1>
+								</h2>
 							</div>
 							<div class="rux-workspace__toolbar">
 								<button
@@ -5501,12 +5503,12 @@
 					>
 						<header class="rux-workspace__header">
 							<div class="rux-workspace__heading">
-								<h1
+								<h2
 									class="rux-workspace__title"
 									id="components-title"
 								>
 									Components
-								</h1>
+								</h2>
 							</div>
 						</header>
 
@@ -6347,7 +6349,7 @@
 				<!-- ════════════════════════════════════════════════════════════════
              MODULE: FLIP 7
              ════════════════════════════════════════════════════════════════ -->
-				<div class="rux-app-view" data-view="game" hidden>
+				<div class="rux-app-view" data-view="game" data-view-title="Flip 7" hidden>
 					<section
 						class="rux-workspace flip-seven"
 						aria-label="Flip 7"
@@ -6632,18 +6634,12 @@
 				>
 					<section
 						class="rux-workspace settings-app__main"
-						aria-labelledby="settings-title"
+						aria-label="Options"
 					>
 						<header
 							class="rux-workspace__header settings-app__header"
 						>
 							<div class="rux-workspace__heading">
-								<h1
-									class="rux-workspace__title"
-									id="settings-title"
-								>
-									Settings
-								</h1>
 								<p
 									class="rux-workspace__subtitle settings-app__subtitle"
 								>
@@ -7365,8 +7361,8 @@
 		<script src="./rux-ui/js/theme.js?v=4"></script>
 		<script src="./js/core/address-format.js?v=4"></script>
 		<script src="./rux-ui/js/ui-shell.js?v=5"></script>
-		<script src="./rux-ui/js/view-router.js?v=4"></script>
-		<script src="./rux-ui/js/drawer.js?v=15"></script>
+		<script src="./rux-ui/js/view-router.js?v=5"></script>
+		<script src="./rux-ui/js/drawer.js?v=16"></script>
 		<!-- No RuxDrawer.configure() call: this app's drawer markup uses the
 		     portable .rux-drawer names, so every field would restate the
 		     module's own default. An application with different layout class
@@ -7485,6 +7481,7 @@
 				aliases: { schedule: "calendar", trips: "calendar" },
 				fallback: "calendar",
 				stateKey: "activeModule",
+				title: "#app-module-title",
 				onChange(name) {
 					if (name === "drivers") window.DriverPanel?.init();
 					if (name === "fleet") window.FleetPanel?.init();
@@ -8387,20 +8384,16 @@
 			);
 			const SCHEDULE_MIN = 471;
 
+			// aria-expanded and the panel glyph are RuxDrawer's job now
+			// (syncToggleButton in rux-ui/js/drawer.js), shared with the Fleet
+			// and Drivers toggles. Only the label is ours — its wording is
+			// specific to this panel, so the module keeps it.
 			function syncRightPanelToggle(open) {
 				if (!rightPanelToggleBtn) return;
-				rightPanelToggleBtn.setAttribute("aria-expanded", String(open));
 				rightPanelToggleBtn.setAttribute(
 					"aria-label",
 					open ? "Hide Calendar Tools" : "Show Calendar Tools",
 				);
-				const icon = rightPanelToggleBtn.querySelector(
-					"[data-panel-toggle-icon]",
-				);
-				if (icon)
-					icon.textContent = open
-						? "right_panel_close"
-						: "right_panel_open";
 			}
 
 			const rightDrawerHandle = RuxDrawer.create({
@@ -11445,6 +11438,7 @@
 					rightPanel.inert = true;
 					rightDrawer.setAttribute("aria-hidden", "true");
 					syncRightPanelToggle(false);
+					rightDrawerHandle.syncToggle(false);
 					rightDrawerHandle.syncHandle();
 					return;
 				}
@@ -11453,6 +11447,7 @@
 				rightPanel.inert = false;
 				rightDrawer.setAttribute("aria-hidden", "false");
 				syncRightPanelToggle(true);
+				rightDrawerHandle.syncToggle(true);
 				rightDrawerHandle.syncHandle();
 			}
 
@@ -12020,7 +12015,7 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Orientation</label>
 							<div
-								class="rux-segmented-track"
+								class="rux-segmented-track rux-segmented-track--even"
 								id="ps-orientation-group"
 								role="group"
 								aria-label="Orientation"
@@ -12067,7 +12062,7 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Report type</label>
 							<div
-								class="rux-segmented-track"
+								class="rux-segmented-track rux-segmented-track--even"
 								id="ps-report-type-group"
 								role="group"
 								aria-label="Report type"

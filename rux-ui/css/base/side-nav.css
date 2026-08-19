@@ -56,9 +56,9 @@
 	border: 0;
 	border-radius: var(--rux-side-nav-item-radius);
 	font: inherit;
-	font-size: var(--rux-size-sm);
-	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-sm);
+	font-size: var(--rux-label-control-size);
+	font-weight: var(--rux-label-control-weight);
+	line-height: var(--rux-label-control-line-height);
 	text-align: start;
 	cursor: pointer;
 }

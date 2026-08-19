@@ -50,7 +50,7 @@
 
 .rux-table {
 	border-collapse: collapse;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-text-body-size);
 	background: var(--rux-table-bg);
 }
 
@@ -120,7 +120,7 @@
 }
 
 .rux-table th[data-col-filter]:hover {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 }
 
 .rux-table th[data-col-filter].is-filtered {
@@ -149,7 +149,7 @@
 }
 
 .rux-table th[data-sort]:hover {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 }
 
 .rux-table th[data-sort].is-sort-asc::after {

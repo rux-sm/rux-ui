@@ -49,7 +49,7 @@
 
 .sched-team-chat__empty {
 	margin: auto 0;
-	color: var(--rux-text-faint);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	text-align: center;
 }
@@ -156,7 +156,7 @@
 	background: none;
 	border: none;
 	border-radius: var(--rux-radius-full);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	cursor: pointer;
 }
@@ -195,12 +195,12 @@
 	margin-bottom: var(--rux-space-1);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 }
 
 .sched-team-chat__message-time {
 	flex: none;
-	color: var(--rux-text-faint);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--rux-line-height-xs);
@@ -224,7 +224,7 @@
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--sched-team-chat-message-bg);
 	border-radius: var(--sched-team-chat-message-radius);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	line-height: 1.4;
 	white-space: pre-wrap;
@@ -327,7 +327,7 @@
 	flex: none;
 	margin: 0;
 	padding: var(--rux-space-1) var(--rux-space-5);
-	color: var(--rux-text-faint);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-style: italic;
 }

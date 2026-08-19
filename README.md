@@ -284,12 +284,19 @@ directly. Current rux-ui alignment with this shape:
 - `--rux-bg-hover` / `--rux-bg-active` are a separate axis (interactive
   list-item states, not depth) — no direct Geist background-hover/-active
   equivalent has been mapped yet.
-- `--rux-text-heading` / `-default` / `-muted` / `-faint` / `-disabled` is a
-  finer-grained analog of the secondary-text/primary-text pair (900/1000).
+- `--rux-text-primary` / `-secondary` maps directly onto the primary-text /
+  secondary-text pair (1000/900). This was five levels (`-heading` /
+  `-default` / `-muted` / `-faint` / `-disabled`) until 2026-08-18; the four
+  emphasis names now forward to the pair and stay published for the vendored
+  consumers. `--rux-text-disabled` deliberately stayed outside it: Geist's
+  scale has no disabled-text step, because a state that must read as "you
+  cannot use this" is not one of the two content levels. Collapsing the five
+  also moved placeholder and field-help text off the disabled value, where
+  they had been rendering at 2.27:1 — below AA — onto secondary at 7.9:1.
 
-This mapping is a reference point for future token work, not a completed
-audit — no full pass has been made to verify every rux-ui color role has a
-Geist-shaped equivalent.
+This mapping is a reference point for future token work. The text scale has
+had its pass (above); the remaining roles have not been audited against
+Geist's shape.
 
 #### Swappable accent — JS wiring exists, CSS side does not yet
 

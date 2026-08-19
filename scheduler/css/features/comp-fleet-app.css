@@ -58,7 +58,7 @@
 	height: var(--rux-avatar-md);
 	background: var(--rux-white);
 	border-radius: var(--rux-radius-xl);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	user-select: none;
 }
 
@@ -71,7 +71,7 @@
 
 .fleet-app__vehicle-name {
 	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 }
 
 .fleet-app__vehicle-ref {
@@ -94,7 +94,7 @@
 /* — Table cell variants — */
 
 .fleet-app__expiry {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .fleet-app__expiry--warn {

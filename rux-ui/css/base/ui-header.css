@@ -20,7 +20,7 @@
 }
 
 /* Paint the divider inside the fixed shell instead of adding it to the box
-   model. The header and its action buttons therefore both resolve to 44px. */
+   model. The header and its action buttons therefore both resolve to 40px. */
 .rux-ui-header::after {
 	position: absolute;
 	inset-inline: 0;
@@ -36,10 +36,14 @@
 	align-items: center;
 }
 
+/* The start border is declared here rather than on .rux-ui-header__menu
+   because .rux-button--ghost:hover sets the `border` shorthand to none at
+   (0,4,0) — a border on the trigger itself would vanish under the pointer. */
 .rux-ui-header__brand {
 	flex: none;
 	block-size: 100%;
 	padding-inline: var(--rux-ui-header-brand-padding-inline);
+	border-inline-start: var(--rux-ui-header-brand-border-start);
 	border-inline-end: var(--rux-ui-header-brand-border);
 }
 
@@ -68,9 +72,9 @@
 	overflow: hidden;
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-heading-panel-weight);
-	line-height: var(--rux-line-height-md);
-	letter-spacing: var(--rux-tracking-tight);
-	color: var(--rux-text-heading);
+	line-height: var(--rux-heading-panel-line-height);
+	letter-spacing: var(--rux-heading-panel-tracking);
+	color: var(--rux-heading-panel-color);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -120,19 +124,29 @@
 	gap: var(--rux-ui-header-actions-gap);
 }
 
-.rux-ui-header__action-group:not(:last-child) {
-	padding-inline-end: var(--rux-ui-header-actions-group-gap);
-	border-inline-end: var(--rux-ui-header-actions-divider);
+/* The last group sits in its own bounded section at the end of the bar,
+   mirroring the menu trigger at the start: one hairline, on the same edge,
+   from the same token. Anchored to :last-child rather than :not(:last-child)
+   so inserting a group between the utilities and the profile — presence, say —
+   adds a zone without adding a second line. */
+.rux-ui-header__action-group:last-child {
+	border-inline-start: var(--rux-ui-header-actions-divider);
 }
 
-/* Tighter gap so presence avatars sit close to your own profile button
-   instead of spacing out like the action icons do. */
-.rux-ui-header__action-group--identity {
-	gap: var(--rux-ui-header-identity-gap);
+/* A group whose only contents are hidden still claims the row's flex gap,
+   leaving a hole where the presence avatars will be once someone joins. */
+.rux-ui-header__action-group:not(:has(> :not([hidden]))) {
+	display: none;
 }
 
+/* Deliberately sets no background. This selector outranks the disclosure rule
+   below (0,5,0 against 0,2,0), so declaring one here would override the
+   per-trigger surface with a single flat value — which is exactly what went
+   wrong: every open trigger painted --rux-surface-0 regardless of what it
+   opened, and the "one silhouette" contract inverted the moment the header
+   itself stopped being surface-0. Every open-able header button is a
+   disclosure, so the rule below covers all of them. */
 .rux-ui-header .rux-button--header[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
-	background: var(--rux-ui-header-trigger-open-bg);
 	border: none;
 	/* Open is a state, not a hover — hold the trigger at full strength rather
 	   than letting it drop back to the ghost rest color when the pointer
@@ -164,7 +178,7 @@
 
 /* The profile's default content is a 32px avatar rather than a 24px glyph.
    Give its stack the avatar's real geometry so both states share the center
-   of the 44px button. */
+   of the 40px button. */
 .rux-ui-header__profile .rux-button__icon-swap {
 	width: var(--rux-ui-header-profile-avatar-size);
 	height: var(--rux-ui-header-profile-avatar-size);
@@ -217,17 +231,6 @@
 	font-size: var(--rux-size-xxs);
 }
 
-/* Both anchor to header buttons and need to float above the scheduler's
-   sticky day-header row (--rux-z-sticky, 200) — the shared .rux-popover
-   z-index (--rux-z-dropdown, 100) sits below that, so without this
-   override the sticky calendar header renders on top of these menus
-   instead of the other way around. */
-#notifications-menu,
-#profile-menu,
-#team-chat-popover {
-	z-index: var(--rux-z-overlay);
-}
-
 .rux-ui-header__profile-identity > :is(img, .rux-ui-header__profile-initials) {
 	display: flex;
 	align-items: center;
@@ -255,6 +258,7 @@
 	.rux-ui-header__brand {
 		min-width: 0;
 		padding-inline-end: 0;
+		border-inline-start: 0;
 		border-inline-end: 0;
 	}
 
@@ -268,9 +272,8 @@
 		gap: var(--rux-space-1);
 	}
 
-	.rux-ui-header__action-group:not(:last-child) {
-		padding-inline-end: 0;
-		border-inline-end: 0;
+	.rux-ui-header__action-group:last-child {
+		border-inline-start: 0;
 	}
 }
 
@@ -281,7 +284,7 @@
 	z-index: calc(var(--rux-z-modal) + 2);
 	padding: var(--rux-space-2) var(--rux-space-3);
 	background: var(--rux-surface-1);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	border-radius: var(--rux-radius-control);
 	box-shadow: var(--rux-button-focus-ring);
 	transform: translateY(calc(-100% - var(--rux-space-4)));
@@ -292,16 +295,16 @@
 }
 
 /* — Header avatar (top-right) — */
-/* The base header owns the avatar's 32px size within its 48px action button.
+/* The base header owns the avatar's 32px size within its 40px action button.
    This feature supplies only the initials fallback's visual treatment. */
 
 .rux-ui-header__profile-initials {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 50%;
+	border-radius: var(--rux-radius-full);
 	background: var(--rux-bg-active);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	border: var(--rux-ui-header-avatar-border);
@@ -312,11 +315,13 @@
    title tooltip rather than inline text, since this sits in the header nav
    rather than a dropdown with room for labels. */
 
+/* Height tracks the avatars it holds — it was a literal 28px around 32px
+   avatars, which overflowed the row by 4px. */
 .rux-ui-header__active-profiles {
 	display: flex;
 	align-items: center;
 	width: auto;
-	height: 28px;
+	height: var(--rux-ui-header-profile-avatar-size);
 }
 
 .rux-ui-header__active-avatar {

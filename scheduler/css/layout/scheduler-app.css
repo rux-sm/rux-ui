@@ -82,12 +82,18 @@
 }
 
 
-/* UI-header menus must float above the mobile drawer, which sits at --rux-z-modal
-   while open (see "Drawer fills full viewport" below) */
+/* UI-header menus must float above two things this application puts in their
+   way: the mobile drawer at --rux-z-modal while open (see "Drawer fills full
+   viewport" below), and the calendar's sticky day-header row at
+   --rux-z-sticky. Neither is the popover component's business, so this
+   configures its published --rux-popover-z-index rather than overriding the
+   z-index it computes — the same seam the trip bar uses for ghost buttons.
+   These are application ids, which is why the rule belongs here and not in
+   rux-ui/css/base/ui-header.css, where a dead copy of it used to sit. */
 #notifications-menu,
 #profile-menu,
 #team-chat-popover {
-	z-index: calc(var(--rux-z-modal) + 1);
+	--rux-popover-z-index: calc(var(--rux-z-modal) + 1);
 }
 
 .sched-app__nav {
@@ -279,7 +285,7 @@
 .sched-mini-cal__title {
 	flex: 1;
 	margin: 0;
-	color: var(--rux-text-heading);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-md);
 	font-weight: var(--rux-card-header-weight);
 	line-height: var(--rux-line-height-md);
@@ -326,7 +332,7 @@
 	border: none;
 	border-radius: var(--rux-button-radius);
 	background: transparent;
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font: inherit;
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-400);
@@ -453,7 +459,7 @@
 	padding: 0 var(--rux-space-2);
 	overflow: hidden;
 	background: var(--rux-surface-1);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	border: none;
 	border-left: var(--rux-side-nav-selected-width) solid
 		var(--sched-driver-priority-color);
@@ -540,7 +546,7 @@
 	background: oklch(
 		from var(--sched-driver-priority-color) l c h / 0.14
 	);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -572,7 +578,7 @@
 }
 
 .sched-driver-grid__day-label-date {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	font-variant-numeric: tabular-nums;
@@ -791,14 +797,14 @@
 }
 
 .sched-driver-grid__popover-title {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
 
 .sched-driver-grid__popover-meta {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
@@ -820,13 +826,13 @@
 .sched-driver-grid__popover-notes {
 	margin: 0 0 var(--rux-space-3);
 	padding-left: calc(var(--rux-icon-sm) + var(--rux-space-1));
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
 
 .sched-driver-grid__empty {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 

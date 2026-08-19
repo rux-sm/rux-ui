@@ -289,7 +289,10 @@ test("the profile menu does not expose the internal Flip 7 destination", () => {
 	const profileMenu = page.slice(profileMenuStart, profileMenuEnd);
 	assert.doesNotMatch(profileMenu, /data-view="game"/);
 	assert.doesNotMatch(profileMenu, />Flip 7</);
-	assert.match(page, /class="rux-app-view" data-view="game" hidden/);
+	// Reachable only by hash. It carries data-view-title because it is the one
+	// view with no navigation control to read a name from — see
+	// tests/module-title.test.mjs.
+	assert.match(page, /class="rux-app-view" data-view="game"[^>]*\shidden/);
 });
 
 test("profile Preferences own the global theme control", () => {

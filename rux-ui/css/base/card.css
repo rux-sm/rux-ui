@@ -177,11 +177,11 @@
 .rux-card__title,
 .rux-panel__title,
 .rux-workspace__title {
-	color: var(--rux-text-heading);
+	color: var(--rux-heading-panel-color);
 	font-size: var(--rux-heading-panel-size);
 	font-weight: var(--rux-heading-panel-weight);
-	letter-spacing: var(--rux-tracking-tight);
-	line-height: var(--rux-line-height-md);
+	letter-spacing: var(--rux-heading-panel-tracking);
+	line-height: var(--rux-heading-panel-line-height);
 }
 
 .rux-card__title {
@@ -199,9 +199,9 @@
 .rux-u-subtitle,
 .rux-card__subtitle,
 .rux-workspace__subtitle {
-	color: var(--rux-text-muted);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-text-body-size);
+	line-height: var(--rux-text-body-line-height);
 }
 
 .rux-card__subtitle {

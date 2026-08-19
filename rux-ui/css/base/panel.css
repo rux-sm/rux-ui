@@ -391,7 +391,7 @@
 }
 
 .rux-panel--modal > .rux-panel__body {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 /* ── Position: anchored (popover / menu surface) ─────────────────────── */

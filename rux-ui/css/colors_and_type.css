@@ -66,7 +66,7 @@ html {
 body {
   display: flow-root; /* new BFC so .rux-app's margin-bottom paints as body's own background instead of collapsing through to html's */
   background: var(--rux-surface-0);
-  color: var(--rux-text-default);
+  color: var(--rux-text-primary);
   font-family: var(--rux-font-sans);
   font-size: var(--rux-size-md);
   line-height: var(--rux-line-height-md);
@@ -81,10 +81,10 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
   font-weight: var(--rux-weight-400);
   letter-spacing: var(--rux-tracking-tight);
-  color: var(--rux-text-heading);
+  color: var(--rux-text-primary);
 }
 
-h1 { font-size: var(--rux-size-4xl); font-weight: var(--rux-weight-400); line-height: var(--rux-line-height-4xl); }
+h1 { font-size: var(--rux-heading-page-size); font-weight: var(--rux-heading-page-weight); line-height: var(--rux-heading-page-line-height); }
 h2 { font-size: var(--rux-size-3xl); line-height: var(--rux-line-height-3xl); }
 h3 { font-size: var(--rux-size-2xl); line-height: var(--rux-line-height-2xl); }
 h4 { font-size: var(--rux-size-lg); letter-spacing: var(--rux-tracking-normal); line-height: var(--rux-line-height-lg); }
@@ -93,7 +93,7 @@ h6 {
   font-size: var(--rux-size-xs);
   letter-spacing: var(--rux-tracking-wide);
   text-transform: uppercase;
-  color: var(--rux-text-muted);
+  color: var(--rux-text-secondary);
   font-weight: var(--rux-weight-400);
   line-height: var(--rux-line-height-xs);
 }
@@ -110,10 +110,10 @@ p + p { margin-top: var(--rux-space-3); }
 
 small {
   font-size: var(--rux-size-xs);
-  color: var(--rux-text-muted);
+  color: var(--rux-text-secondary);
 }
 
-strong, b { font-weight: var(--rux-weight-400); color: var(--rux-text-default); }
+strong, b { font-weight: var(--rux-weight-400); color: var(--rux-text-primary); }
 em, i    { font-style: italic; }
 
 /* ─── Links ─────────────────────────────────────────────────────────────── */
@@ -140,7 +140,7 @@ code {
   background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-xs);
-  color: var(--rux-text-default);
+  color: var(--rux-text-primary);
 }
 
 pre {
@@ -168,7 +168,7 @@ kbd {
   border-radius: var(--rux-radius-xs);
   font-size: 0.8em;
   font-weight: var(--rux-weight-400);
-  color: var(--rux-text-muted);
+  color: var(--rux-text-secondary);
 }
 
 /* ─── Lists ─────────────────────────────────────────────────────────────── */
@@ -201,5 +201,5 @@ hr {
 /* Use these when an element is the wrong tag but needs a specific scale.    */
 
 .rux-mono      { font-family: var(--rux-font-mono); }
-.rux-muted     { color: var(--rux-text-muted); }
-.rux-subtle    { color: var(--rux-text-disabled); }
+.rux-muted     { color: var(--rux-text-secondary); }
+.rux-subtle    { color: var(--rux-text-secondary); }

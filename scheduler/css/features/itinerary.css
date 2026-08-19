@@ -115,7 +115,7 @@
 
 .sched-trip-itinerary__day-date {
 	margin-left: var(--rux-space-2);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
@@ -175,7 +175,7 @@
 	align-items: center;
 	gap: var(--rux-space-1);
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 }
 
@@ -192,19 +192,19 @@
 	display: grid;
 	gap: var(--rux-space-1);
 	padding: var(--rux-card-padding);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
 .sched-trip-itinerary__idle-day strong {
 	/* --rux-fg-default doesn't exist as a token — was silently falling back
 	   to the parent's muted color instead of actually standing out. */
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-weight: var(--rux-weight-400);
 }
 
 .sched-trip-itinerary__boundary-note.is-stationary .rux-icon {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .sched-trip-itinerary__day > .sched-trip-itinerary__content > * + * {
@@ -374,7 +374,7 @@
 	position: relative;
 	z-index: 1;
 	background: oklch(from var(--rux-surface-1) calc(l + 6%) c h);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-icon-md);
 	line-height: 1;
 }
@@ -573,7 +573,7 @@
 	padding: 0;
 	background: none;
 	border: none;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	cursor: pointer;
 	opacity: 0;
 	pointer-events: none;
@@ -792,7 +792,7 @@
 	background: transparent;
 	border: 0;
 	border-radius: var(--rux-radius-sm);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -818,7 +818,7 @@
 }
 
 .sched-trip-itinerary__suggestion-address {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }

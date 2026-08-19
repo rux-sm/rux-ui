@@ -52,7 +52,7 @@
 .fleet-app__equip-icon {
 	width: 1rem;
 	height: 1rem;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	flex-shrink: 0;
 }
 
@@ -87,7 +87,7 @@
 .sched-scope-fleet__trip-meta {
 	flex: 1;
 	font-size: var(--rux-size-sm);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -133,7 +133,7 @@
 	left: var(--rux-space-3);
 	display: flex;
 	align-items: center;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	pointer-events: none;
 	z-index: 1;
 }

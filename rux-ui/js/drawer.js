@@ -32,14 +32,16 @@
 
    API
    ---
-   RuxDrawer.create(options) → { open, close, isOpen, syncHandle }
+   RuxDrawer.create(options) → { open, close, isOpen, syncToggle, syncHandle }
 
    options
    -------
    drawer        the drawer element                             (required)
    panel         the .rux-*-panel element inside it             (required)
    toggleBtn     toggle button; syncs aria-expanded when present, otherwise
-                 preserves the legacy aria-pressed contract (optional)
+                 preserves the legacy aria-pressed contract (optional). A
+                 descendant marked data-panel-toggle-icon has its Material
+                 Symbol swapped between {direction}_panel_open and _close.
    handle        resize gutter element — omit to skip drag wiring (optional)
    direction     "left" | "right" — which way dragging grows the drawer (default "left")
    getOtherDrawer  () => drawerEl|null — a sibling drawer whose width should
@@ -266,6 +268,18 @@
 				? "aria-expanded"
 				: "aria-pressed";
 			toggleBtn.setAttribute(stateAttribute, String(open));
+
+			// A toggle that marks itself with data-panel-toggle-icon gets its
+			// glyph swapped here, so a plain ghost button can show open/closed
+			// state without .rux-button--toggle — whose pressed treatment is a
+			// filled accent block, far too loud for a panel handle sitting in a
+			// workspace header. Callers that would rather swap two icons in CSS
+			// simply omit the attribute.
+			const icon = toggleBtn.querySelector("[data-panel-toggle-icon]");
+			if (icon) {
+				const edge = direction === "left" ? "left" : "right";
+				icon.textContent = `${edge}_panel_${open ? "close" : "open"}`;
+			}
 		}
 
 		function open() {
@@ -339,7 +353,7 @@
 
 		/* — Resize handle (optional) — */
 
-		if (!handle) return { open, close, isOpen };
+		if (!handle) return { open, close, isOpen, syncToggle: syncToggleButton };
 
 		function drawerWidth() {
 			const width = parseInt(getComputedStyle(drawer).getPropertyValue("--drawer-width"), 10);
@@ -465,7 +479,7 @@
 			handle.addEventListener("pointercancel", onEnd);
 		});
 
-		return { open, close, isOpen, syncHandle };
+		return { open, close, isOpen, syncToggle: syncToggleButton, syncHandle };
 	}
 
 	window.RuxDrawer = { create, configure };

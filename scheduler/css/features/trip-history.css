@@ -99,14 +99,14 @@
 }
 
 .sched-trip-history__timestamp {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 }
 
 .sched-trip-history__actor {
 	margin-top: var(--rux-space-1);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
@@ -135,7 +135,7 @@
 
 .sched-trip-history__route {
 	overflow: hidden;
-	color: var(--rux-text-heading);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	text-overflow: ellipsis;
@@ -174,19 +174,19 @@
 }
 
 .sched-trip-history__change dt {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 }
 
 .sched-trip-history__change dd {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-xs);
 	overflow-wrap: anywhere;
 }
 
 .sched-trip-history__old {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .sched-trip-history__arrow {

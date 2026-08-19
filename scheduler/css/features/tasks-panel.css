@@ -100,7 +100,7 @@
 
 .sched-tasks__trip-title {
 	margin: 0;
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-weight: var(--rux-weight-400);
 	font-size: var(--rux-size-sm);
 	line-height: 1.4;
@@ -108,7 +108,7 @@
 }
 
 .sched-tasks__trip-customer {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	line-height: 1.4;
 	overflow-wrap: anywhere;
@@ -181,11 +181,11 @@
    driver's own name is secondary, same weight as the row's other muted
    detail text elsewhere in this panel. */
 .sched-tasks__driver-name {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .sched-tasks__driver-empty {
-	color: var(--rux-text-faint);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 }
 
@@ -213,7 +213,7 @@
 /* Automated checks remain disabled, but successful results use the same
    accent checkbox and readable text treatment as completed manual tasks. */
 .sched-tasks__automatic-check--complete:has(input:disabled) {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 }
 
 .sched-tasks__automatic-check--complete input:checked:disabled {
@@ -224,7 +224,7 @@
 .sched-tasks__empty {
 	margin: 0;
 	padding: var(--rux-space-1) 0;
-	color: var(--rux-text-faint);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
@@ -236,7 +236,7 @@
 
 .sched-tasks__requirements-title {
 	margin: 0 0 var(--rux-space-1);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;

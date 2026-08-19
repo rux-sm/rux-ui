@@ -38,7 +38,7 @@ test("ghost hover is the shared neutral overlay", () => {
 		tokenValue("--rux-button-ghost-active-background"),
 		"var(--rux-state-active-overlay)",
 	);
-	assert.equal(tokenValue("--rux-button-ghost-text"), "var(--rux-text-default)");
+	assert.equal(tokenValue("--rux-button-ghost-text"), "var(--rux-text-primary)");
 	assert.doesNotMatch(controls, /--rux-surface-current/);
 });
 
@@ -90,9 +90,42 @@ test("ghost danger tints in its own hue rather than the neutral overlay", () => 
 	);
 });
 
-test("an open header trigger does not borrow the press token", () => {
-	assert.match(tokens, /--rux-ui-header-trigger-open-bg:\s*var\(--rux-surface-0\)/);
+test("an open header trigger paints the surface it opens, nothing else", () => {
+	// It has borrowed the wrong background twice: first the ghost *press*
+	// token (coupling a persistent open state to a momentary one), then a flat
+	// --rux-ui-header-trigger-open-bg that ignored which surface each trigger
+	// actually owned. The connected-trigger contract only works per-trigger.
 	assert.doesNotMatch(header, /--rux-button-ghost-active-background/);
+	assert.doesNotMatch(header, /--rux-ui-header-trigger-open-bg/);
+	assert.doesNotMatch(tokens, /--rux-ui-header-trigger-open-bg/);
+
+	// The broad open-state rule outranks the per-trigger one, so it must not
+	// declare a background at all.
+	const broad = header.match(
+		/\.rux-ui-header \.rux-button--header\[aria-expanded="true"\][^{]*\{[^}]*\}/,
+	)[0];
+	assert.doesNotMatch(broad, /background/);
+
+	// Each trigger names the surface it owns; the per-trigger rule applies it.
+	assert.match(header, /\.rux-ui-header__disclosure\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-popover-surface-bg\)/s);
+	assert.match(header, /\.rux-ui-header__menu\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-side-nav-bg\)/s);
+	assert.match(header, /\[aria-expanded="true"\]\s*\{[^}]*background:\s*var\(--_rux-header-disclosure-bg\)/s);
+});
+
+test("the header's action zones are actually separated", () => {
+	// All four spacing tokens were 0 while three comments described a two-zone
+	// grouping — five 40px buttons rendered as one undifferentiated strip.
+	const gap = (name) =>
+		tokens.match(new RegExp(`${name}:\\s*var\\(--rux-space-([\\w-]+)\\)`))?.[1];
+	assert.notEqual(gap("--rux-ui-header-actions-gap"), "0");
+	assert.notEqual(gap("--rux-ui-header-actions-group-gap"), "0");
+	// Between zones must exceed within a zone, or the grouping reads as even.
+	const scale = ["px", "1", "2", "3", "4", "5", "6", "8"];
+	assert.ok(
+		scale.indexOf(gap("--rux-ui-header-actions-group-gap")) >
+			scale.indexOf(gap("--rux-ui-header-actions-gap")),
+		"the between-zone gap must be wider than the within-zone gap",
+	);
 });
 
 // ── Rendered-value math ───────────────────────────────────────────────────

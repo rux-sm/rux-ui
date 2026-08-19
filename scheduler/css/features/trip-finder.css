@@ -79,7 +79,7 @@
    table in the selector to outweigh base/table.css's own `.rux-table td`
    color. */
 .sched-scope-trip-finder__table td[data-col="contact"] {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 /* — Customer results — */

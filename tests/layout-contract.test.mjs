@@ -42,11 +42,118 @@ test("the design-system entrypoint owns the app shell for every consumer", () =>
 	assert.doesNotMatch(componentsCss, /@import "\.\.\/\.\.\/rux-ui\/css\/base\//);
 });
 
-test("the UI header owns the canonical fixed 40px contract", () => {
+test("the header separates its navigation trigger from its identity block", () => {
+	// The left run is [menu] [logo] [title] — navigation, then identity and
+	// context. Without a divider the trigger reads as the first icon in a row
+	// rather than as the control that opens the module switcher.
+	assert.match(
+		tokensCss,
+		/--rux-ui-header-brand-border-start:\s*var\(--rux-ui-header-border\)/,
+		"the divider should reuse the header's own hairline, not its own value",
+	);
+	assert.match(
+		headerCss,
+		/\.rux-ui-header__brand\s*\{[^}]*border-inline-start:\s*var\(--rux-ui-header-brand-border-start\)/s,
+	);
+	// It must not live on the trigger: .rux-button--ghost:hover sets the
+	// `border` shorthand to none at (0,4,0) and would erase it on hover.
+	assert.doesNotMatch(
+		headerCss,
+		/\.rux-ui-header__menu\s*\{[^}]*border/s,
+	);
+	// Narrow screens already drop the brand's other border; this one goes too.
+	const narrow = headerCss.match(
+		/@media \(max-width: 620px\)\s*\{[\s\S]*?\n\}/,
+	)[0];
+	assert.match(narrow, /border-inline-start:\s*0/);
+});
+
+test("the header's two end sections are framed symmetrically", () => {
+	// Menu trigger bounded on its right, profile bounded on its left, wide
+	// middle between them. Both rules must be the same hairline, or the two
+	// ends of one bar are drawn with different weights.
+	for (const token of [
+		"--rux-ui-header-brand-border-start",
+		"--rux-ui-header-actions-divider",
+	]) {
+		assert.match(
+			tokensCss,
+			new RegExp(`${token}:\\s*var\\(--rux-ui-header-border\\)`),
+			`${token} should reuse the header's own hairline`,
+		);
+	}
+	// Both ends draw the same edge: the section that follows the line owns it,
+	// so the two rules are mirror images rather than two different mechanisms.
+	assert.match(
+		headerCss,
+		/\.rux-ui-header__action-group:last-child\s*\{[^}]*border-inline-start:\s*var\(--rux-ui-header-actions-divider\)/s,
+	);
+	// :last-child, not :not(:last-child) — the profile keeps exactly one line
+	// before it however many groups precede it. Presence was added between the
+	// utilities and the profile and must not have introduced a second.
+	assert.doesNotMatch(headerCss, /:not\(:last-child\)\s*\{[^}]*border-inline/s);
+
+	// Both drop together on narrow screens — one surviving would be lopsided.
+	const narrow = headerCss.match(
+		/@media \(max-width: 620px\)\s*\{[\s\S]*?\n\}/,
+	)[0];
+	assert.equal(
+		(narrow.match(/border-inline-start:\s*0/g) ?? []).length,
+		2,
+		"the brand divider and the profile divider must both drop at 620px",
+	);
+});
+
+test("a popover surface outlines what it contains", () => {
+	// It was `none`, which silently cancelled the border of anything composed
+	// inside it: .rux-menu declares --rux-menu-border, but
+	// .rux-popover.rux-popover--surface deliberately outranks it to own the
+	// container's look — so every menu rendered in a popover had no outline.
+	const popoverCss = read("rux-ui/css/base/popover.css");
+	assert.doesNotMatch(tokensCss, /--rux-popover-surface-border:\s*none/);
+	assert.match(
+		tokensCss,
+		/--rux-popover-surface-border:\s*1px solid var\(--rux-card-border\)/,
+	);
+	assert.match(
+		popoverCss,
+		/border:\s*var\(--rux-popover-surface-border\)/,
+	);
+	// border-box, or the outline would grow every popover by 2px.
+	assert.match(
+		popoverCss,
+		/\.rux-popover\.rux-popover--surface\s*\{[^}]*box-sizing:\s*border-box/s,
+	);
+	// The tab-tip bridge covers exactly the trigger's width of that border, so
+	// a connected popover still reads as one silhouette with its trigger.
+	assert.match(
+		tokensCss,
+		/--rux-popover-tab-tip-size:\s*var\(--rux-button-height-header\)/,
+	);
+	assert.match(
+		popoverCss,
+		/--tab-tip\[data-placement\^="bottom"\]::before\s*\{[^}]*height:\s*var\(--rux-border-width\)/s,
+	);
+});
+
+test("an action group with nothing visible in it claims no space", () => {
+	// Presence is hidden until someone else joins; without this its group
+	// still takes the row's flex gap and leaves a hole beside the profile.
+	assert.match(
+		headerCss,
+		/\.rux-ui-header__action-group:not\(:has\(> :not\(\[hidden\]\)\)\)\s*\{[^}]*display:\s*none/s,
+	);
+});
+
+test("the UI header owns one canonical fixed height", () => {
 	const headerTokenSection = tokensCss.match(
 		/COMPONENT · UI header[\s\S]*?COMPONENT · side navigation/,
 	)?.[0] ?? "";
-	assert.match(tokensCss, /--rux-ui-header-height:\s+40px;/);
+	// A fixed px, not min-content — the shell reserves this row and the app
+	// body sizes against it. The *value* is a design decision that may move
+	// (it has: 40px → 64px, following Geist's taller header bar), so pinning
+	// the number here only ever produced a failure that had to be rewritten.
+	assert.match(tokensCss, /--rux-ui-header-height:\s+\d+px;/);
 	assert.match(
 		tokensCss,
 		/--rux-ui-header-min-height:\s+var\(--rux-ui-header-height\);/,

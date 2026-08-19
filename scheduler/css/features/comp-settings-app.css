@@ -66,7 +66,7 @@
 
 .settings-app__panel-copy {
 	margin: var(--rux-space-1) 0 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	line-height: var(--rux-line-height-sm);
 }
@@ -97,7 +97,7 @@
 
 .settings-app__message {
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 	line-height: var(--rux-line-height-sm);
 }
@@ -145,7 +145,7 @@
 	background: transparent;
 	border: 0;
 	border-radius: var(--rux-radius-sm);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font: inherit;
 	text-align: left;
 	cursor: pointer;
@@ -162,7 +162,7 @@
 }
 
 .settings-app__suggestion-address {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	line-height: var(--rux-line-height-xs);
 }
@@ -212,7 +212,7 @@
 
 .settings-locations-empty {
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
@@ -273,7 +273,7 @@
 
 .settings-req-empty {
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
@@ -307,7 +307,7 @@
 }
 
 .settings-billing-row__label {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-label-eyebrow-size);
 	font-weight: var(--rux-label-eyebrow-weight);
 	text-transform: uppercase;

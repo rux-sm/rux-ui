@@ -102,7 +102,7 @@
 	   Tone-tinted background pair for .driver-assignment-card__document's
 	   attention state (features/driver-share.css). */
 	--sched-driver-doc-neutral-bg:       var(--rux-state-hover-overlay);
-	--sched-driver-doc-neutral-fg:       var(--rux-text-default);
+	--sched-driver-doc-neutral-fg:       var(--rux-text-primary);
 	--sched-driver-doc-neutral-border:   var(--rux-state-hover-overlay);
 	--sched-driver-doc-neutral-hover-bg: var(--rux-state-active-overlay);
 	--sched-driver-doc-warning-bg:       color-mix(in oklch, var(--rux-warning) 14%, transparent);

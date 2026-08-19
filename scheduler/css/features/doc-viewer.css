@@ -21,7 +21,7 @@
 }
 
 .sched-doc-viewer__title-group .rux-icon {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	flex: none;
 }
 

@@ -57,7 +57,7 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	max-width: 28ch;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
@@ -128,7 +128,7 @@
 }
 
 .sched-scope-request__detail-row dt {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
@@ -167,7 +167,7 @@
 	padding: 0;
 	overflow: hidden;
 	background: var(--rux-surface-1);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	border: var(--rux-border-width) solid var(--rux-card-border);
 	border-radius: var(--rux-radius-xl);
 }

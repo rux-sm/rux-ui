@@ -11,10 +11,10 @@
   background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-md);
-  font-size: var(--rux-size-sm);
-  line-height: var(--rux-line-height-sm);
+  font-size: var(--rux-text-body-size);
+  line-height: var(--rux-text-body-line-height);
 }
-.rux-alert__icon  { color: var(--rux-text-muted); flex: none; }
+.rux-alert__icon  { color: var(--rux-text-secondary); flex: none; }
 .rux-alert__body  { flex: 1; min-width: 0; }
 .rux-alert__title { font-weight: var(--rux-weight-400); margin-bottom: calc(var(--rux-space-1) / 2); }
 
@@ -38,7 +38,7 @@
   background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-md);
-  font-size: var(--rux-size-sm);
+  font-size: var(--rux-text-body-size);
   min-width: var(--rux-toast-min-width);
 }
 
@@ -72,7 +72,7 @@
 /* Header/title are shared with .rux-card__header / .rux-card__title (see
    card.css) — a modal header is the same title-bar shape as a card or
    floating-window header, just inside a backdrop-centered surface. */
-.rux-modal__body { padding: var(--rux-space-5); color: var(--rux-text-muted); }
+.rux-modal__body { padding: var(--rux-space-5); color: var(--rux-text-secondary); }
 .rux-modal__footer {
   display: flex;
   justify-content: flex-end;
@@ -127,7 +127,7 @@
   background: var(--rux-bg-active);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-sm);
-  color: var(--rux-text-default);
+  color: var(--rux-text-primary);
   font-size: var(--rux-size-xs);
   white-space: nowrap;
   pointer-events: none;
@@ -145,9 +145,9 @@
   background: var(--rux-bg-active);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-sm);
-  color: var(--rux-text-default);
-  font-size: var(--rux-size-xs);
-  line-height: var(--rux-line-height-xs);
+  color: var(--rux-text-body-color);
+  font-size: var(--rux-text-caption-size);
+  line-height: var(--rux-text-caption-line-height);
   overflow-wrap: anywhere;
   pointer-events: none;
   white-space: normal;

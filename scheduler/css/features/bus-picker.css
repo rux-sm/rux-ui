@@ -101,7 +101,7 @@
 	border-radius: var(--rux-radius-xs);
 	cursor: pointer;
 	font-size: var(--rux-size-sm);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	user-select: none;
 }
 
@@ -128,7 +128,7 @@
 	display: flex;
 	align-items: center;
 	flex-shrink: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	cursor: grab;
 }
 

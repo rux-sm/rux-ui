@@ -102,12 +102,12 @@
 	justify-content: space-between;
 	gap: var(--rux-space-2);
 	margin: 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
 .driver-app__workload-through strong {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -173,7 +173,7 @@
 	height: var(--rux-avatar-md);
 	background: var(--rux-surface-1);
 	border-radius: var(--rux-radius-control);
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	font-family: var(--rux-font-mono);
@@ -209,11 +209,11 @@
 /* — Table cell variants — */
 
 .driver-app__phone {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .driver-app__expiry {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 }
 
 .driver-app__expiry--warn {

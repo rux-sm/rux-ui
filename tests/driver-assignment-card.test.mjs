@@ -594,7 +594,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/\.driver-assignment-card__bus-badge,\s*\.driver-assignment-card__role-badge\s*\{/s,
 	);
-	assert.match(css, /\.driver-assignment-card__date-range\s*\{[^}]*color:\s*var\(--rux-text-muted\)/s);
+	assert.match(css, /\.driver-assignment-card__date-range\s*\{[^}]*color:\s*var\(--rux-text-secondary\)/s);
 	assert.match(css, /--sched-driver-date-primary-size:\s+var\(--rux-size-md\)/);
 	assert.match(
 		css,
@@ -610,7 +610,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__customer\s*\{[^}]*color:\s*var\(--rux-text-muted\)[^}]*font-size:\s*var\(--rux-size-md\)[^}]*text-overflow:\s*ellipsis/s,
+		/\.driver-assignment-card__customer\s*\{[^}]*color:\s*var\(--rux-text-secondary\)[^}]*font-size:\s*var\(--rux-size-md\)[^}]*text-overflow:\s*ellipsis/s,
 	);
 	assert.match(
 		css,

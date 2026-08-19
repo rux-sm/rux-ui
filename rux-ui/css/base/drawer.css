@@ -116,8 +116,8 @@
 	inline-size: var(--rux-resize-hit-width);
 	background:
 		linear-gradient(
-			color-mix(in oklch, var(--rux-text-default) 55%, transparent),
-			color-mix(in oklch, var(--rux-text-default) 55%, transparent)
+			color-mix(in oklch, var(--rux-text-primary) 55%, transparent),
+			color-mix(in oklch, var(--rux-text-primary) 55%, transparent)
 		)
 		center / var(--rux-resize-line-width) 100% no-repeat;
 	opacity: 0;
@@ -133,7 +133,7 @@
 	inset-inline-start: 50%;
 	inline-size: var(--rux-resize-handle-width);
 	block-size: var(--rux-resize-handle-height);
-	background: color-mix(in oklch, var(--rux-text-default) 75%, transparent);
+	background: color-mix(in oklch, var(--rux-text-primary) 75%, transparent);
 	border-radius: var(--rux-radius-full);
 	opacity: 0;
 	pointer-events: none;

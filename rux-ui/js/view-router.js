@@ -23,6 +23,8 @@
      fallback     name used when the hash is absent/unknown (default: first allowed)
      hash         keep location.hash in step                (default true)
      stateKey     document.body dataset key to mirror into  (default null)
+     title        element or selector whose textContent becomes the active
+                  view's name                               (default null)
      onChange     (name) => void, called after each switch  (default null)
 
    The returned show(name) is idempotent and safe to call with an unknown
@@ -37,6 +39,21 @@
 
    The active control gets .is-active and aria-current="page"; inactive
    controls get neither. Inactive containers get the `hidden` attribute.
+
+   With `title`, the router also writes the active view's name into that
+   element. The name is read from the matching control, so the navigation and
+   the heading cannot drift apart — there is one label, in one place:
+
+     <button data-view="reports">
+       <span class="rux-icon">bar_chart</span>
+       <span data-view-label>Reports</span>   ← this text
+     </button>
+
+   Mark the label rather than relying on the control's own textContent: an
+   icon-bearing control would otherwise contribute its glyph name to the
+   heading. A control with no marked label falls back to its trimmed text, and
+   `data-view-title` on the control overrides both when the heading needs to
+   read differently from the nav.
    ========================================================================== */
 
 (() => {
@@ -54,11 +71,14 @@
 			aliases = {},
 			hash = true,
 			stateKey = null,
+			title = null,
 			onChange = null,
 		} = options;
 
 		const sections = toArray(views, root);
 		const buttons = toArray(controls, root);
+		const titleEl =
+			typeof title === "string" ? root.querySelector(title) : title;
 		if (!sections.length) return null;
 
 		const named = (el) => el.dataset[attribute];
@@ -83,6 +103,20 @@
 				button.classList.toggle("is-active", on);
 				if (on) button.setAttribute("aria-current", "page");
 				else button.removeAttribute("aria-current");
+			}
+
+			if (titleEl) {
+				const control = buttons.find((button) => named(button) === next);
+				const section = sections.find((el) => named(el) === next);
+				// Assigned unconditionally, including the empty string: a view
+				// with no name of its own must clear the heading rather than
+				// leave the previous view's name standing.
+				titleEl.textContent =
+					control?.dataset.viewTitle ??
+					control?.querySelector("[data-view-label]")?.textContent?.trim() ??
+					section?.dataset.viewTitle ??
+					control?.textContent?.trim() ??
+					"";
 			}
 
 			if (stateKey) document.body.dataset[stateKey] = next;

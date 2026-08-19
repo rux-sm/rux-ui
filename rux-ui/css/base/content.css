@@ -10,7 +10,7 @@
   gap: var(--rux-space-1);
   padding: var(--rux-space-1) var(--rux-space-2);
   background: var(--rux-bg-hover);
-  color: var(--rux-text-default);
+  color: var(--rux-text-primary);
   border-radius: var(--rux-radius-xs);
   font-size: var(--rux-size-xs);
   font-weight: var(--rux-weight-400);
@@ -28,7 +28,7 @@
   height: var(--rux-avatar-md);
   border-radius: var(--rux-radius-full);
   background: var(--rux-bg-active);
-  color: var(--rux-text-default);
+  color: var(--rux-text-primary);
   font-size: var(--rux-size-xs);
   font-weight: var(--rux-weight-400);
   letter-spacing: 0;

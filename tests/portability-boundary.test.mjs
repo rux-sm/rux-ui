@@ -171,6 +171,30 @@ test("the application layer invents no .rux-* blocks of its own", () => {
 	);
 });
 
+test("the portable layer selects no element by id", () => {
+	// The prefix rules above inspect classes and tokens, so three hardcoded
+	// application ids (#notifications-menu, #profile-menu, #team-chat-popover)
+	// sat in base/ui-header.css undetected — styling elements that exist in one
+	// application's DOM and no other consumer's.
+	//
+	// An id is inherently one document's name for one element; a reusable layer
+	// has no business knowing it. When the portable layer needs to bend for an
+	// application, the fix is a token the application sets, not a selector that
+	// names its markup.
+	const offenders = [];
+	for (const { name, css } of baseFiles) {
+		for (const [, , selector] of css.matchAll(/(^|[\s,>+~])(#[a-z][\w-]*)/gim)) {
+			offenders.push(`${name} → ${selector}`);
+		}
+	}
+	assert.deepEqual(
+		[...new Set(offenders)].sort(),
+		[],
+		`The portable layer selects an application element by id. Publish a token ` +
+			`the application can set instead.`,
+	);
+});
+
 test("the portable layer names no application prefix anywhere", () => {
 	// Comments count. A Tier 1 file that cites .sched-* in prose still teaches
 	// the next reader that the dependency is acceptable.

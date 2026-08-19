@@ -45,9 +45,10 @@
 	gap: var(--rux-space-2);
 }
 
-/* Typography shared with every other panel/card title — see card.css.
-   This class previously set no color of its own (inherited); it now
-   explicitly resolves to --rux-text-heading like the rest of the group. */
+/* Box only. Its type and color are the shared panel-heading role, declared
+   once in card.css alongside .rux-card__title and .rux-panel__title — which
+   also makes it tag-agnostic, so demoting it from <h1> to <h2> under a shell
+   header that owns the page heading changes nothing visually. */
 .rux-workspace__title {
 	overflow: hidden;
 	text-overflow: ellipsis;

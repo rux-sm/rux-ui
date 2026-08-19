@@ -43,7 +43,7 @@
 
 .sched-driver-week-info__range {
 	margin: var(--rux-space-1) 0 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-sm);
 }
 
@@ -64,7 +64,7 @@
 
 .sched-driver-week-info__section-title {
 	margin: 0 0 var(--rux-space-2);
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
@@ -82,7 +82,7 @@
 	z-index: 1;
 	margin: 0;
 	padding: var(--rux-space-1) 0;
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
@@ -119,7 +119,7 @@
 }
 
 .sched-driver-week-info__trip-title {
-	color: var(--rux-text-default);
+	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 }
@@ -157,13 +157,13 @@
 }
 
 .sched-driver-week-info__share-state {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	text-align: right;
 }
 
 .sched-driver-week-info__list-scope {
-	color: var(--rux-text-muted);
+	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-xs);
 	white-space: nowrap;
 }
