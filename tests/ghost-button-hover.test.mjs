@@ -23,23 +23,26 @@ function tokenValue(name) {
 	return tokens.match(new RegExp(`${name}:\\s*([^;]+);`))[1].trim();
 }
 
-test("ghost hover is the shared neutral overlay", () => {
-	// Deliberately an alpha overlay, not an OKLCH lightness step. Measured in
-	// 8-bit code values — what reaches the screen — 10% white moves
-	// surface-0/1/2 by +26/+24/+22. A constant lightness step does not: sRGB
-	// compresses near black, so from --rux-surface-0 (pure black)
-	// calc(l + 0.06) renders rgb(1,1,1) and the hover vanishes. That
-	// regression shipped once; this is the guard.
-	assert.equal(
-		tokenValue("--rux-button-ghost-hover-background"),
-		"var(--rux-state-hover-overlay)",
+test("ghost hovers by stepping its foreground, not by growing a fill", () => {
+	// Workable only because text collapsed to two levels: rest is
+	// --rux-text-secondary (7.9:1 on --rux-surface-0) and hover is
+	// --rux-text-primary, a 24-point OKLCH jump. The earlier attempt sat at
+	// --rux-text-muted with --rux-text-default above it at oklch 100%, which
+	// left nowhere to step to.
+	assert.equal(tokenValue("--rux-button-ghost-text"), "var(--rux-text-secondary)");
+	assert.equal(tokenValue("--rux-button-ghost-hover-text"), "var(--rux-text-primary)");
+	assert.equal(tokenValue("--rux-button-ghost-hover-background"), "transparent");
+	assert.notEqual(
+		tokenValue("--rux-button-ghost-text"),
+		tokenValue("--rux-button-ghost-hover-text"),
+		"the two levels must differ or the hover does nothing",
 	);
+	// Press cannot step a foreground that is already at full strength, so it
+	// keeps a wash — the one state that still uses one.
 	assert.equal(
 		tokenValue("--rux-button-ghost-active-background"),
 		"var(--rux-state-active-overlay)",
 	);
-	assert.equal(tokenValue("--rux-button-ghost-text"), "var(--rux-text-primary)");
-	assert.doesNotMatch(controls, /--rux-surface-current/);
 });
 
 test("no state fill is a bare lightness step off a surface token", () => {
@@ -60,13 +63,12 @@ test("no state fill is a bare lightness step off a surface token", () => {
 	);
 });
 
-test("trip-bar actions run the same hover token as every other ghost button", () => {
-	// The bar configures only the foreground. Its earlier bespoke wash borrowed
-	// a tone-on-tone opacity (70%) and composited it as plain white, landing 26
-	// lightness points up where the bar's own hover step is 4 — the harsh block.
-	assert.doesNotMatch(tripBar, /--rux-button-ghost-hover-background:/);
-	assert.doesNotMatch(tripBar, /--rux-button-ghost-active-background:/);
-	assert.doesNotMatch(tripBar, /\.sched-trip-bar__action\.rux-button--ghost/);
+test("the trip bar is the one surface that keeps a hover fill", () => {
+	// A foreground step needs headroom above the rest color. On the bar the
+	// foreground is pinned to --rux-fg-on-accent, because a neutral grey is
+	// 1.10:1 against that blue where white is 4.34:1 — and white cannot step
+	// higher. Dropping rest to --rux-fg-on-accent-muted to make room would put
+	// it at 3.07:1, barely past the icon threshold. So the wash stays here.
 	for (const token of [
 		"--rux-button-ghost-text",
 		"--rux-button-ghost-hover-text",
@@ -74,19 +76,28 @@ test("trip-bar actions run the same hover token as every other ghost button", ()
 		assert.match(
 			tripBar,
 			new RegExp(`${token}:\\s*var\\(--rux-fg-on-accent\\)`),
-			`${token} must be pinned to the on-accent foreground`,
 		);
 	}
+	assert.match(
+		tripBar,
+		/--rux-button-ghost-hover-background:\s*oklch\(from var\(--rux-white\)/,
+		"the bar must restore a wash its pinned foreground cannot replace",
+	);
+	assert.doesNotMatch(tripBar, /\.sched-trip-bar__action\.rux-button--ghost/);
 });
 
-test("ghost danger tints in its own hue rather than the neutral overlay", () => {
-	assert.match(
-		tokenValue("--rux-button-danger-ghost-hover-background"),
-		/oklch\(from var\(--rux-danger\)/,
-	);
-	assert.notEqual(
+test("ghost danger steps within its own intent hue", () => {
+	// Same contract as plain ghost — no fill — but the step runs --rux-danger
+	// to its --strong stop, so a destructive button brightens toward danger
+	// rather than toward neutral.
+	assert.equal(
 		tokenValue("--rux-button-danger-ghost-hover-background"),
 		"transparent",
+	);
+	assert.equal(tokenValue("--rux-button-danger-ghost-text"), "var(--rux-danger)");
+	assert.equal(
+		tokenValue("--rux-button-danger-ghost-hover-text"),
+		"var(--rux-danger-strong)",
 	);
 });
 
@@ -109,7 +120,19 @@ test("an open header trigger paints the surface it opens, nothing else", () => {
 	// Each trigger names the surface it owns; the per-trigger rule applies it.
 	assert.match(header, /\.rux-ui-header__disclosure\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-popover-surface-bg\)/s);
 	assert.match(header, /\.rux-ui-header__menu\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-side-nav-bg\)/s);
-	assert.match(header, /\[aria-expanded="true"\]\s*\{[^}]*background:\s*var\(--_rux-header-disclosure-bg\)/s);
+
+	// That rule has to outrank .rux-button--ghost:hover, which is (0,4,0) and
+	// sets background: transparent. It is the open trigger's opaque surface
+	// that hides the header's ::after bottom border beneath it — lose it on
+	// hover and a line appears under an open trigger, cutting it off from the
+	// surface this whole contract exists to connect it to.
+	const openRule = header.match(
+		/\.rux-ui-header\s*\n?\s*:is\(\.rux-ui-header__disclosure, \.rux-ui-header__menu\)\[aria-expanded="true"\][^{]*\{[^}]*\}/s,
+	);
+	assert.ok(openRule, "the open-state rule must be scoped to .rux-ui-header");
+	assert.match(openRule[0], /background:\s*var\(--_rux-header-disclosure-bg\)/);
+	// Two :not() guards + the scope + the class + the attribute = (0,5,0).
+	assert.match(openRule[0], /:not\(:disabled\):not\(\[aria-disabled="true"\]\)/);
 });
 
 test("the header's action zones are actually separated", () => {

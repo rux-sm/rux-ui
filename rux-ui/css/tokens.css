@@ -530,11 +530,11 @@
 	--rux-side-nav-shadow:          none;
 	--rux-side-nav-padding:         var(--rux-space-2) var(--rux-space-0);
 	--rux-side-nav-item-min-height: 40px;
-	--rux-side-nav-item-gap:        var(--rux-space-3);
+	--rux-side-nav-item-gap:        var(--rux-space-2);
 	--rux-side-nav-item-padding:    0 var(--rux-space-3);
-	--rux-side-nav-item-radius:     var(--rux-radius-control);
+	--rux-side-nav-item-radius:     var(--rux-radius-0);
 	--rux-side-nav-item-hover-bg: var(--rux-bg-hover);
-	--rux-side-nav-item-active-bg:  var(--rux-accent-subtle);
+	--rux-side-nav-item-active-bg:  var(--rux-button-default-background);
 	--rux-side-nav-item-active-fg:  var(--rux-text-primary);
 	--rux-side-nav-selected-width:  4px;
 	--rux-side-nav-focus-ring:      var(--rux-button-focus-ring);
@@ -927,11 +927,20 @@
 	   behind it. See the state tokens above for why that beats a lightness
 	   step here. A container may override either background for a surface the
 	   neutral overlay does not suit. */
+	/* Ghost hovers by stepping its foreground, not by growing a fill. It sits
+	   at --rux-text-secondary and comes up to --rux-text-primary — a 24-point
+	   OKLCH jump, which is what makes this workable now: the pair was five
+	   levels deep before, with rest at 5.3:1 and nowhere above it to go.
+	   Rest still clears AA for text (7.9:1 on --rux-surface-0, 7.0:1 on
+	   --rux-surface-1), and the icon comes along because base/icons.css
+	   declares no color of its own.
+	   Press keeps a wash: a foreground that is already at full strength cannot
+	   step again, so the pressed state needs a different channel. */
 	--rux-button-ghost-background: 			transparent;
-	--rux-button-ghost-text:       			var(--rux-text-primary);
+	--rux-button-ghost-text:       			var(--rux-text-secondary);
 	--rux-button-ghost-hover-text: 			var(--rux-text-primary);
 	--rux-button-ghost-border:     			none;
-	--rux-button-ghost-hover-background:  	var(--rux-state-hover-overlay);
+	--rux-button-ghost-hover-background:  	transparent;
 	--rux-button-ghost-active-background:	var(--rux-state-active-overlay);
 
 	/* ─── COMPONENT · button danger ─────────────────────────────────────────────── */
@@ -944,15 +953,14 @@
 
 	/* ─── COMPONENT · button ghost danger ─────────────────────────────────────────────── */
 
-	/* Same hover contract as plain ghost above: a tinted fill appears, in the
-	   intent's own hue rather than the neutral overlay, so a destructive
-	   button reads as destructive before it is clicked. The label also steps
-	   to the --strong stop to stay legible once that fill is behind it. */
+	/* Same hover contract as plain ghost above — the foreground steps and no
+	   fill appears. The step runs --rux-danger to its --strong stop, so the
+	   button brightens within its own intent hue rather than toward neutral. */
 	--rux-button-danger-ghost-background: 			transparent;
 	--rux-button-danger-ghost-text:       			var(--rux-danger);
 	--rux-button-danger-ghost-hover-text:       	var(--rux-danger-strong);
 	--rux-button-danger-ghost-border:     			none;
-	--rux-button-danger-ghost-hover-background:  	oklch(from var(--rux-danger) l c h / 10%);
+	--rux-button-danger-ghost-hover-background:  	transparent;
 	--rux-button-danger-ghost-active-background:	oklch(from var(--rux-danger) l c h / 20%);
 
 	/* ─── COMPONENT · button disabled ─────────────────────────────────────────────── */
@@ -1121,9 +1129,10 @@
 	--rux-slider-track-radius: var(--rux-radius-0);
 	--rux-slider-fill-bg:      var(--rux-accent-fill);
 
-	--rux-slider-thumb-size:   16px;
+	--rux-slider-thumb-height: 16px;
+	--rux-slider-thumb-width:  8px;
 	--rux-slider-thumb-bg:     var(--rux-text-primary);
-	--rux-slider-thumb-radius: var(--rux-radius-full);
+	--rux-slider-thumb-radius: var(--rux-radius-0);
 	--rux-slider-thumb-shadow: var(--rux-button-shadow-raised);
 
 	--rux-slider-value-size:  var(--rux-size-xs);
@@ -1292,22 +1301,28 @@
 	/* Direct value, not the shared --rux-radius-container role — floating
 	   overlay surfaces get real radius (Vercel Geist Materials: menus at
 	   12px), everyday chrome (cards, attached panels) stays square. */
-	--rux-menu-radius: var(--rux-radius-lg);
+	/* A menu is a list of interactive rows, the same thing .rux-side-nav is —
+	   so it uses that list's geometry rather than a second one of its own:
+	   square, full-bleed rows at the nav's 40px, and the shared
+	   --rux-label-control-* type role both now read. The container loses its
+	   inset for the same reason: a row that stops 4px short of the edge reads
+	   as a floating chip, not as a list. */
+	--rux-menu-radius: var(--rux-radius-0);
 	--rux-menu-shadow: var(--rux-shadow-2);
 	--rux-menu-min-width: 200px;
-	--rux-menu-padding:   var(--rux-space-1);
+	--rux-menu-padding:   var(--rux-space-0);
 	--rux-menu-motion-duration: var(--rux-motion-duration-fast-02);
 	--rux-menu-enter-easing:    var(--rux-motion-easing-entrance-productive);
 	--rux-menu-exit-easing:     var(--rux-motion-easing-exit-productive);
 	--rux-menu-motion-distance: var(--rux-space-1);
 
 	/* — item — */
-	--rux-menu-item-height:         var(--rux-button-height-standard);
-	--rux-menu-item-padding-block:  var(--rux-space-2);
+	--rux-menu-item-height:         40px;                            /* matches --rux-side-nav-item-min-height */
+	--rux-menu-item-padding-block:  var(--rux-space-0);              /* the row height does the work */
 	--rux-menu-item-padding-inline: var(--rux-space-3);
 	--rux-menu-item-gap:            var(--rux-space-2);
-	--rux-menu-item-radius:         var(--rux-radius-control);
-	--rux-menu-item-font-size:      var(--rux-size-sm);
+	--rux-menu-item-radius:         var(--rux-radius-0);
+	--rux-menu-item-font-size:      var(--rux-label-control-size);
 	--rux-menu-item-fg:             var(--rux-menu-fg);
 	--rux-menu-item-hover-bg: var(--rux-button-hover-overlay);
 	--rux-menu-item-hover-fg:       var(--rux-text-primary);
@@ -1344,10 +1359,13 @@
 	   trigger's width of this border so the two still read as one silhouette. */
 	--rux-popover-surface-border:   1px solid var(--rux-card-border);
 	/* Direct value, same reasoning as --rux-menu-radius above. */
-	--rux-popover-surface-radius:   var(--rux-radius-lg);
+	--rux-popover-surface-radius:   var(--rux-radius-0);
 	--rux-popover-surface-shadow:   var(--rux-shadow-2);
+	/* Zero, not negative. The popover has no top border of its own (see
+	   base/popover.css), so the header's own bottom border is its top edge —
+	   and overlapping it by a pixel would let this surface paint over that
+	   border across the popover's whole width, not just under the trigger. */
 	--rux-popover-tab-tip-offset:   var(--rux-space-0);
-	--rux-popover-tab-tip-size:     var(--rux-button-height-header);
 	--rux-popover-tab-tip-shadow:   none;
 
 	/* ─── COMPONENT · tabs ───────────────────────────────────────────────── */

@@ -17,11 +17,11 @@
    tokens.css, colors_and_type.css, and base/ for maintainability.
    ========================================================================== */
 
-@import "./tokens.css?v=22";
+@import "./tokens.css?v=26";
 @import "./colors_and_type.css?v=4";
 @import "./base/icons.css";
 @import "./base/controls.css?v=5";
-@import "./base/ui-header.css?v=14";
+@import "./base/ui-header.css?v=15";
 @import "./base/side-nav.css?v=5";
 @import "./base/app-shell.css?v=5";
 @import "./base/badges.css?v=2";
@@ -29,8 +29,8 @@
 @import "./base/workspace.css?v=6";
 @import "./base/panel.css?v=2";
 @import "./base/drawer.css";
-@import "./base/menu.css?v=3";
-@import "./base/popover.css?v=4";
+@import "./base/menu.css?v=4";
+@import "./base/popover.css?v=8";
 @import "./base/suggestions.css?v=3";
 @import "./base/card.css?v=6";
 @import "./base/table.css?v=5";

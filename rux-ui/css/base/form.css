@@ -295,8 +295,8 @@
 
 .rux-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: var(--rux-slider-thumb-size);
-  height: var(--rux-slider-thumb-size);
+  width: var(--rux-slider-thumb-width);
+  height: var(--rux-slider-thumb-height);
   margin-top: calc((var(--rux-slider-track-height) - var(--rux-slider-thumb-size)) / 2);
   background: var(--rux-slider-thumb-bg);
   border-radius: var(--rux-slider-thumb-radius);
@@ -304,8 +304,8 @@
 }
 
 .rux-slider::-moz-range-thumb {
-  width: var(--rux-slider-thumb-size);
-  height: var(--rux-slider-thumb-size);
+  width: var(--rux-slider-thumb-width);
+  height: var(--rux-slider-thumb-height);
   background: var(--rux-slider-thumb-bg);
   border: none;
   border-radius: var(--rux-slider-thumb-radius);

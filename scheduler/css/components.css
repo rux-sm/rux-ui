@@ -37,7 +37,7 @@
    ========================================================================== */
 
 @import "./tokens.css?v=6";
-@import "./features/trip-bar.css?v=41";
+@import "./features/trip-bar.css?v=42";
 @import "./features/trip-panel.css?v=35";
 @import "./features/trip-history.css?v=3";
 @import "./features/trip-dialog.css?v=3";

@@ -155,16 +155,19 @@
 		13px
 	);
 
-	/* Only the foreground is configured. The state wash is the shared neutral
-	   overlay, same as every other ghost button — 10% white composites over
-	   this blue as readily as it does over a grey surface, which is the point
-	   of an overlay rather than a lightness step.
+	/* The one surface where ghost's foreground step cannot work, so this is the
+	   one place that keeps a hover fill.
 
-	   The foreground does have to be pinned: --rux-text-default is a neutral
-	   grey that computes to 1.10:1 against this fill where --rux-fg-on-accent
-	   gets 4.34:1. */
+	   The step needs a rest color with room above it. Here the foreground is
+	   pinned to --rux-fg-on-accent, because a neutral grey computes to 1.10:1
+	   against this blue where white gets 4.34:1 — and white has nothing above
+	   it. Stepping up from --rux-fg-on-accent-muted instead would put the rest
+	   state at 3.07:1: past the 3:1 icon threshold by a hair, on the primary
+	   actions of a selected trip, which is not a margin worth taking.
+	   So the foreground stays constant and the wash carries the state. */
 	--rux-button-ghost-text:       var(--rux-fg-on-accent);
 	--rux-button-ghost-hover-text: var(--rux-fg-on-accent);
+	--rux-button-ghost-hover-background: oklch(from var(--rux-white) l c h / 18%);
 
 	--_details-height: 0px;
 	--_conflict-height: 0px;

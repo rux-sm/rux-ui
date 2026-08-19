@@ -301,7 +301,9 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--rux-space-1);
-	padding: 0 var(--rux-menu-padding) var(--rux-space-2);
+	/* Was --rux-menu-padding, borrowed from an unrelated component; pinned to
+	   the value it resolved to so the menu's own inset can go to zero. */
+	padding: 0 var(--rux-space-1) var(--rux-space-2);
 }
 
 .sched-team-chat__emoji-option {

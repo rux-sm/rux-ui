@@ -35,8 +35,15 @@
    this surface attaches directly below it and removes the corner beneath the
    tab so both elements read as one connected silhouette. Ordinary context
    menus retain the default popover offset and radius. */
+/* A tab-tip is attached to its trigger, so it must be free to sit exactly
+   where that trigger is — including hard against the viewport edge, which is
+   where a flush-right header button puts it. The default 8px keep-away is for
+   a popover floating on its own; here it shifts the surface off its anchor,
+   which drags the ::before seam off the trigger with it and leaves the
+   trigger's outer edge sitting on a border the popover no longer covers. */
 .rux-popover--tab-tip {
 	--rux-popover-offset: var(--rux-popover-tab-tip-offset);
+	--rux-popover-viewport-padding: var(--rux-space-0);
 }
 
 /* A header tab-tip is visually continuous with its open trigger, so a shadow
@@ -54,20 +61,29 @@
 	border-start-start-radius: 0;
 }
 
-.rux-popover--tab-tip[data-placement^="bottom"]::before {
-	position: absolute;
-	inset-block-start: 0;
-	width: var(--rux-popover-tab-tip-size);
-	height: var(--rux-border-width);
-	content: "";
-	background: var(--rux-popover-surface-bg);
-	pointer-events: none;
+/* No top edge of its own. The header already draws a line across its full
+   width, one pixel above where this surface begins — drawing a second is the
+   doubled border, and erasing it with an overlaid strip cannot work because
+   .rux-popover--surface sets overflow: hidden, which clips any ::before back
+   to the padding box before it can reach the border row.
+
+   So the header's border *is* this popover's top edge. The seam under the
+   trigger comes free: an open trigger paints --_rux-header-disclosure-bg at
+   z-index 301, above the header's ::after, in the same surface color as the
+   popover — so the line simply stops for the trigger's width and the two read
+   as one silhouette. Nothing to align, and it cannot drift out of step with
+   the trigger's size. */
+.rux-popover--surface.rux-popover--tab-tip[data-placement^="bottom"] {
+	border-block-start: 0;
 }
 
-.rux-popover--tab-tip[data-placement="bottom-end"]::before {
-	inset-inline-end: 0;
-}
-
-.rux-popover--tab-tip[data-placement="bottom-start"]::before {
-	inset-inline-start: 0;
+/* Same reasoning on the trailing edge. A bottom-end tab-tip aligns its right
+   edge to a trigger that sits flush against the viewport, so this border has
+   nothing on its far side to separate the surface from — it only doubles
+   against whatever the application draws at that boundary.
+   Conditional on the placement, not the variant: a bottom-start tab-tip keeps
+   both side borders, and this one would want its border back if the header
+   ever gained trailing padding that moved the trigger off the edge. */
+.rux-popover--surface.rux-popover--tab-tip[data-placement="bottom-end"] {
+	border-inline-end: 0;
 }

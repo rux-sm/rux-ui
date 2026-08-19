@@ -104,6 +104,47 @@ test("the header's two end sections are framed symmetrically", () => {
 	);
 });
 
+test("a tab-tip popover draws no edge that something else already draws", () => {
+	const popoverCss = read("rux-ui/css/base/popover.css");
+
+	// Top: the header's own bottom border sits a pixel above where this
+	// surface begins, so drawing a second one is the doubled edge. Erasing it
+	// with an overlaid strip cannot work — .rux-popover--surface sets
+	// overflow: hidden, which clips any ::before back to the padding box
+	// before it can reach the border row.
+	assert.match(
+		popoverCss,
+		/\[data-placement\^="bottom"\]\s*\{[^}]*border-block-start:\s*0/s,
+	);
+	assert.doesNotMatch(popoverCss, /tab-tip\[data-placement[^\]]*\]::before/);
+	assert.match(popoverCss, /overflow:\s*hidden/);
+
+	// Trailing: a bottom-end tab-tip aligns to a trigger flush with the
+	// viewport, so that border has nothing on its far side. Scoped to the
+	// placement that is actually flush — bottom-start keeps both sides.
+	assert.match(
+		popoverCss,
+		/\[data-placement="bottom-end"\]\s*\{[^}]*border-inline-end:\s*0/s,
+	);
+	assert.doesNotMatch(
+		popoverCss,
+		/\[data-placement="bottom-start"\]\s*\{[^}]*border-inline/s,
+	);
+
+	// The surface sits below the header's border, never on it: overlapping
+	// would paint over that line across the popover's whole width.
+	assert.equal(
+		tokensCss.match(/--rux-popover-tab-tip-offset:\s*([^;]+);/)[1].trim(),
+		"var(--rux-space-0)",
+	);
+	// And it must be free to reach a flush-edge trigger, or the seam that
+	// trigger's own background opens will not line up with the surface below.
+	assert.match(
+		popoverCss,
+		/\.rux-popover--tab-tip\s*\{[^}]*--rux-popover-viewport-padding:\s*var\(--rux-space-0\)/s,
+	);
+});
+
 test("a popover surface outlines what it contains", () => {
 	// It was `none`, which silently cancelled the border of anything composed
 	// inside it: .rux-menu declares --rux-menu-border, but
@@ -124,16 +165,8 @@ test("a popover surface outlines what it contains", () => {
 		popoverCss,
 		/\.rux-popover\.rux-popover--surface\s*\{[^}]*box-sizing:\s*border-box/s,
 	);
-	// The tab-tip bridge covers exactly the trigger's width of that border, so
-	// a connected popover still reads as one silhouette with its trigger.
-	assert.match(
-		tokensCss,
-		/--rux-popover-tab-tip-size:\s*var\(--rux-button-height-header\)/,
-	);
-	assert.match(
-		popoverCss,
-		/--tab-tip\[data-placement\^="bottom"\]::before\s*\{[^}]*height:\s*var\(--rux-border-width\)/s,
-	);
+	// A bottom-placed tab-tip omits its top edge instead, so the outline never
+	// doubles with the header's own bottom border. See the tab-tip test above.
 });
 
 test("an action group with nothing visible in it claims no space", () => {
