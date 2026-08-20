@@ -31,13 +31,19 @@
 	color: var(--rux-panel-fg);
 }
 
+/* min-height, not height — same reasoning as .rux-card__header (card.css).
+   A fixed height plus align-items:center centres overflow instead of
+   containing it, so any control taller than the title spilled out of the
+   header and over whatever followed it. The --attached close button did
+   exactly that: a 44px tap target in a 44px header whose own block padding
+   left 28px of room hung 8px into the panel body. */
 .rux-panel__header {
 	flex: none;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: var(--rux-panel-header-gap);
-	height: var(--rux-panel-header-height);
+	min-height: var(--rux-panel-header-height);
 	font-weight: var(--rux-panel-header-weight);
 	border-bottom: var(--rux-panel-header-border);
 }

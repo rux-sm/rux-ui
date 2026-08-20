@@ -78,7 +78,14 @@
 
 /* Internal title region. The card shell owns the outside edge; the header
    owns only its fill and the divider shared with the body. It has no radius
-   of its own because the shell clips it. */
+   of its own because the shell clips it.
+
+   min-height, not height. A header is normally one 24px line and sits on the
+   40px floor, but it may hold a stacked title + subtitle (48px), and a fixed
+   height plus align-items:center made that overflow symmetrically out of both
+   ends — the title clipped away by the shell's own overflow:clip, the subtitle
+   painting across the divider into the body. The floor keeps the common case
+   at exactly 40px while letting the taller case grow. */
 .rux-card__header {
 	display: flex;
 	flex: none;
@@ -92,7 +99,28 @@
 	border-bottom: var(--rux-card-header-border);
 	border-radius: 0;
 	box-shadow: var(--rux-card-header-shadow);
-	height: var(--rux-card-header-height);
+	min-height: var(--rux-card-header-height);
+}
+
+/* A header carrying a subtitle is taller than the single-line band, so it is
+   the one shape that needs a real block inset — the band's own slack comes
+   from centering and cannot stretch. Scoped with :has() rather than pushed
+   into --rux-card-header-padding so the single-line headers, which have only
+   7px of block room inside the border-box floor, keep rendering unchanged. */
+.rux-card__header:has(.rux-card__subtitle) {
+	padding-block: var(--rux-space-2);
+}
+
+/* The header owns the inline inset for everything it holds — the title, a
+   stacked title + subtitle group, trailing actions — so the title's own
+   standalone padding is cancelled here; otherwise the two would sum to 32px.
+   That standalone padding still applies wherever .rux-card__title is borrowed
+   as a bare title outside this component (floating-window and modal title
+   bars, itinerary stop headings), none of which carry header padding of their
+   own. Un-faking that borrowed inset means giving those headers real padding
+   first; until then it stays where it is. */
+.rux-card__header .rux-card__title {
+	padding-left: 0;
 }
 
 /* Internal content region. The shell provides every outside edge and clips
@@ -184,6 +212,13 @@
 	line-height: var(--rux-heading-panel-line-height);
 }
 
+/* nowrap + ellipsis: a card title is a single line by contract. Anything that
+   needs a second line is a .rux-card__subtitle beneath it, not a wrapping
+   title — see .rux-card__header for how the header makes room for that.
+
+   padding-left serves only the borrowed, headerless uses of this class listed
+   at .rux-card__header above; inside a real card header the header supplies
+   the inset and this is cancelled. */
 .rux-card__title {
 	min-width: 0;
 	margin: 0;

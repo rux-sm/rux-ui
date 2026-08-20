@@ -15,6 +15,7 @@ const popoverStyles = read("rux-ui/css/base/popover.css");
 const suggestionStyles = read("rux-ui/css/base/suggestions.css");
 const feedbackStyles = read("rux-ui/css/base/feedback.css");
 const cardStyles = read("rux-ui/css/base/card.css");
+const panelStyles = read("rux-ui/css/base/panel.css");
 const tokens = read("rux-ui/css/tokens.css");
 const menuController = read("rux-ui/js/menu.js");
 const overlayController = read("rux-ui/js/overlay.js");
@@ -485,6 +486,65 @@ test("cards use one clipped outer frame with shell-owned region geometry", () =>
 	);
 	assert.doesNotMatch(cardStyles, /rux-card__sentinel|\.is-stuck|position:\s*sticky/);
 	assert.doesNotMatch(controlsController, /initStickySectionHeaders|rux-card__sentinel/);
+});
+
+test("a card header grows for a subtitle instead of spilling past the shell", () => {
+	// --rux-card-header-height is a floor. A fixed height plus align-items:
+	// center made a stacked title + subtitle (48px) overflow a 40px header at
+	// both ends: the title clipped away by the shell's overflow:clip, the
+	// subtitle painting across the divider into the body.
+	assert.match(
+		cardStyles,
+		/\.rux-card__header\s*\{[^}]*min-height:\s*var\(--rux-card-header-height\);/s,
+	);
+	assert.doesNotMatch(
+		cardStyles,
+		/\.rux-card__header\s*\{[^}]*[^-]height:\s*var\(--rux-card-header-height\);/s,
+	);
+
+	// The block inset is scoped to the subtitle case on purpose. The floor is a
+	// border-box floor, so the 1px divider spends part of it and a header
+	// carrying a 32px icon button has only 7px of block room; putting this in
+	// --rux-card-header-padding would push every such header past 40px.
+	assert.match(
+		cardStyles,
+		/\.rux-card__header:has\(\.rux-card__subtitle\)\s*\{[^}]*padding-block:\s*var\(--rux-space-2\);/s,
+	);
+	assert.match(
+		tokens,
+		/--rux-card-header-padding:\s*var\(--rux-space-0\)\s+var\(--rux-space-0\)\s+var\(--rux-space-0\)\s+var\(--rux-space-4\);/,
+	);
+
+	// The header owns the inline inset for every child it holds, so the title's
+	// own standalone padding — still load-bearing where .rux-card__title is
+	// borrowed by headerless floating-window and modal title bars — is
+	// cancelled inside a header rather than summing to 32px.
+	assert.match(
+		cardStyles,
+		/\.rux-card__header\s+\.rux-card__title\s*\{[^}]*padding-left:\s*0;/s,
+	);
+});
+
+test("a panel header contains its controls instead of spilling them into the body", () => {
+	// Same floor-not-cage contract as .rux-card__header. A fixed height plus
+	// align-items:center centred the overflow rather than containing it, so the
+	// --attached close button (a 44px tap target in a 44px header) hung 8px
+	// into the panel body.
+	assert.match(
+		panelStyles,
+		/\.rux-panel__header\s*\{[^}]*min-height:\s*var\(--rux-panel-header-height\);/s,
+	);
+	assert.doesNotMatch(
+		panelStyles,
+		/\.rux-panel__header\s*\{[^}]*[^-]height:\s*var\(--rux-panel-header-height\);/s,
+	);
+
+	// Symmetric block inset. The old 16px-top / 0-bottom value fit a 24px title
+	// in the 40px band exactly and left nothing for a taller trailing control.
+	assert.match(
+		tokens,
+		/--rux-panel-attached-header-padding:\s*var\(--rux-space-2\)\s+var\(--rux-space-4\)\s+var\(--rux-space-2\)\s+var\(--rux-space-4\);/,
+	);
 });
 
 test("Trip Bar Options is a card in the Calendar panel body", () => {

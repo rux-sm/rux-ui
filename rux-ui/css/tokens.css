@@ -665,6 +665,8 @@
 	--rux-panel-floating-safe-max-width: 64rem;
 
 	/* — header — */
+	/* A floor, not a fixed height (see panel.css), matching the card header:
+	   a header carrying a control taller than its title grows around it. */
 	--rux-panel-header-height: 40px;
 	--rux-panel-header-weight: var(--rux-weight-400);
 	--rux-panel-header-border: none;
@@ -695,7 +697,14 @@
 	--rux-panel-attached-radius:        var(--rux-radius-0);
 	--rux-panel-attached-shadow:        none;
 	--rux-panel-attached-header-bg:     var(--rux-surface-0);
-	--rux-panel-attached-header-padding: var(--rux-space-4) var(--rux-space-4) var(--rux-space-0) var(--rux-space-4);
+	/* Symmetric block inset. This was 16px top / 0 bottom, which measured
+	   exactly right for the one case it was written against — a 24px title in
+	   the 40px band — and left only 24px of room for anything else, so a
+	   trailing control taller than the title had nowhere to go but downward
+	   into the body. Centring the inset keeps a title-only header at the same
+	   40px total (24 + 8 + 8) and lets a header carrying a control grow around
+	   it evenly instead. */
+	--rux-panel-attached-header-padding: var(--rux-space-2) var(--rux-space-4) var(--rux-space-2) var(--rux-space-4);
 	--rux-panel-attached-footer-bg:     var(--rux-surface-0);
 	--rux-panel-attached-footer-border: 1px solid var(--rux-card-border);
 	--rux-panel-attached-footer-shadow: var(--rux-shadow-1); /* while scrolled */
@@ -776,12 +785,23 @@
 	--rux-card-body-shadow:  none;
 
 	/* — card header — owns title layout, fill, and the body divider. */
+	/* A floor, not a fixed height (see card.css): a header holding a stacked
+	   title + subtitle is taller than one line and has to grow rather than
+	   spill past the card's own clipped edge. */
 	--rux-card-header-height: 40px;
 	--rux-card-header-weight: var(--rux-weight-400);
 	/* Left-only — relies on a card that's already inset from the viewport
 	   by its own parent's padding, with the trailing button's own hit-area
-	   supplying the right edge. */
-	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-0);
+	   supplying the right edge.
+
+	   Block inset stays 0 on purpose. The 40px floor is a border-box floor, so
+	   the 1px divider spends part of it: a header holding the tallest thing it
+	   carries today (a 32px icon button) has only 7px of block room left, and
+	   any symmetric padding above 3px would push every such header past 40px
+	   app-wide. The single-line band gets its optical slack from centering
+	   instead, and the one case that genuinely needs block padding — a stacked
+	   title + subtitle — takes it in card.css, scoped to itself. */
+	--rux-card-header-padding: var(--rux-space-0) var(--rux-space-0) var(--rux-space-0) var(--rux-space-4);
 	--rux-card-header-bg:     var(--rux-surface-0);
 	--rux-card-header-border: 1px solid var(--rux-card-border);
 	--rux-card-header-shadow: none;
