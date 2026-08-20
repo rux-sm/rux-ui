@@ -2,7 +2,11 @@
 	"name": "rux-ui",
 	"private": true,
 	"type": "module",
+	"engines": {
+		"node": ">=22.13.0"
+	},
 	"scripts": {
+		"pretest": "bash tools/check-env.sh --warn",
 		"test": "node --test"
 	}
 }

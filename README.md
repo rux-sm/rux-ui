@@ -12,6 +12,27 @@ The reference application in `index.html`, its styles under `scheduler/css/`, an
 
 ---
 
+## Setup on a new machine
+
+Run once per clone, so the versioned hooks are active:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Then check the machine can actually build and test:
+
+```bash
+tools/check-env.sh
+```
+
+It reports Node's presence and version and whether hooks are enabled, in pure
+bash — a check that needed Node could not report Node's own absence. After that
+it runs automatically on every `git pull` (warn-only; the merge has already
+happened) and before `npm test`.
+
+---
+
 ## Index
 
 ```

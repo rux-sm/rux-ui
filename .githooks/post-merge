@@ -1,0 +1,11 @@
+#!/bin/bash
+# Runs after `git pull` / `git merge`. Reports environment problems on this
+# machine — a clone that cannot build is easier to fix at pull time than three
+# commands later.
+#
+# Warn-only by design: the merge has already happened by the time this runs,
+# so there is nothing left to block. Enforcement lives in the tools that
+# actually need Node.
+#
+# Enabled per clone with:  git config core.hooksPath .githooks
+exec "$(git rev-parse --show-toplevel)/tools/check-env.sh" --warn
