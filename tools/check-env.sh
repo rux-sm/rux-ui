@@ -78,7 +78,11 @@ fi
 # has none. Pointing core.hooksPath at the versioned directory fixes that, but
 # it is one command per clone that is easy to forget — so it is checked here.
 HOOKS_PATH="$(git -C "$REPO" config core.hooksPath 2>/dev/null || true)"
-if [ "$HOOKS_PATH" != ".githooks" ]; then
+if [ -n "${CI:-}" ]; then
+  # A CI checkout is not a working clone: it never commits or merges, so hooks
+  # are irrelevant there and reporting them as a problem is just noise.
+  note "✓ CI run — git hooks not applicable"
+elif [ "$HOOKS_PATH" != ".githooks" ]; then
   fail "Versioned git hooks are not enabled in this clone." \
        "Enable:  git -C \"$REPO\" config core.hooksPath .githooks"
 else

@@ -1,0 +1,12 @@
+#!/bin/bash
+# Blocks a commit that changes a shared asset without bumping the ?v= that the
+# reference pages load it with. A browser holding the old file cached would
+# otherwise keep using it against the new HTML — invisible on a hard refresh,
+# which is exactly why it drifted for months before anyone noticed.
+#
+# Unlike post-merge, this runs before the commit exists, so it can and does
+# block. The message names the fix, and `git commit --no-verify` overrides it
+# for the cases where the version genuinely should not move.
+#
+# Enabled per clone with:  git config core.hooksPath .githooks
+exec "$(git rev-parse --show-toplevel)/tools/check-cache-busters.sh" --staged

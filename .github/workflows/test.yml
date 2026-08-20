@@ -1,0 +1,52 @@
+name: Tests
+
+# rux-ui is the source of truth its consumers pin a tag of, so a tag that never
+# ran its own suite is a tag nobody has grounds to trust. This runs on tags for
+# exactly that reason, not only on branch pushes.
+#
+# There are no dependencies to install — package.json declares none and the
+# suite is node --test over plain files — so there is no npm ci step and no
+# lockfile to cache.
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v6
+        with:
+          # The cache-buster audit compares each asset's last commit against the
+          # last commit that touched its ?v=, so it needs real history.
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          # Matches the consuming portal's CI. package.json requires >=22.13.0.
+          node-version: 24
+
+      # npm test runs tools/check-env.sh via pretest, which is CI-aware: it
+      # reports Node and skips the git-hooks check that only matters in a
+      # working clone.
+      - name: Run tests
+        run: npm test
+
+      # A stale ?v= means a warm browser cache keeps serving an old asset
+      # against new HTML. Nothing else catches it: the file is valid, the tests
+      # pass, and a hard refresh hides it.
+      - name: Cache-buster drift
+        run: tools/check-cache-busters.sh
