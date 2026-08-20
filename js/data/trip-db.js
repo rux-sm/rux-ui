@@ -1991,6 +1991,88 @@ export async function reassignBus(assignmentId, newBusId) {
 	}
 }
 
+/**
+ * Give a trip its first bus assignment on one leg.
+ *
+ * reassignBus cannot serve this: it UPDATEs a trip_assignments row by id, and
+ * these trips have no row at all. The scheduler builds its grid by iterating
+ * trip_assignments, so a trip that never got a bus slot has nothing to iterate
+ * — it renders from a synthesised placement on the Unassigned row instead (see
+ * synthesiseUnassignedRows in index.html), and dropping that bar on a bus has
+ * to create the row before anything can point at it.
+ *
+ * Re-reads the leg's rows rather than trusting the caller's view of them: the
+ * grid may have been rendered before a concurrent save added a real row, and
+ * inserting a second one would leave the trip double-booked. If a row now
+ * exists, its bus is set instead, which is exactly what a drop should mean.
+ */
+export async function createBusAssignment(tripId, busId, leg = "outbound") {
+	const legName = leg === "return" ? "return" : "outbound";
+	const { data: existing, error: existingError } = await supabase
+		.from("trip_assignments")
+		.select("id, position, leg, bus_id")
+		.eq("trip_id", tripId);
+	if (existingError) throw existingError;
+
+	const onThisLeg = (existing ?? []).filter(
+		(row) => (row.leg ?? "outbound") === legName,
+	);
+	const free = onThisLeg.find((row) => !row.bus_id);
+	if (free) {
+		await reassignBus(free.id, busId);
+		return free.id;
+	}
+	if (onThisLeg.length) {
+		// Every slot on this leg is already taken by a real bus. The bar being
+		// dropped no longer reflects the database, so refuse rather than quietly
+		// adding an extra bus the dispatcher never asked for.
+		const error = new Error(
+			"This trip already has a bus on that leg — reload the schedule and try again.",
+		);
+		error.code = "assignment_exists";
+		throw error;
+	}
+
+	const position = (existing ?? []).reduce(
+		(max, row) => Math.max(max, Number(row.position) || 0),
+		-1,
+	) + 1;
+	const { data: created, error } = await supabase
+		.from("trip_assignments")
+		.insert({
+			trip_id: tripId,
+			bus_id: busId,
+			position,
+			active_roles: ["driver"],
+			leg: legName,
+		})
+		.select("id")
+		.single();
+	if (error) throw error;
+
+	try {
+		const [snapshot, busResult] = await Promise.all([
+			fetchTripHistorySnapshot(tripId),
+			supabase.from("buses").select("id, number").eq("id", busId).maybeSingle(),
+		]);
+		await safelyRecordTripHistory({
+			tripId,
+			action: "assignment_changed",
+			snapshot,
+			changes: [{
+				field: "bus",
+				label: "Bus",
+				before: null,
+				after: busResult.data ? `Bus ${busResult.data.number}` : String(busId),
+			}],
+		});
+	} catch (historyError) {
+		console.warn("Bus assignment history could not be recorded:", historyError);
+	}
+
+	return created.id;
+}
+
 /* ── Documents ──────────────────────────────────────────────────────────── */
 
 const BUCKET = "trip-documents";

@@ -52,7 +52,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/fleet-panel.css?v=7"
+			href="./scheduler/css/features/fleet-panel.css?v=8"
 		/>
 		<link
 			rel="stylesheet"
@@ -7388,7 +7388,7 @@
 		<script src="./js/panels/trip-panel.js?v=43"></script>
 		<script src="./js/components/itinerary.js?v=31"></script>
 		<script src="./js/panels/driver-panel.js?v=28" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=13" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=14" defer></script>
 		<script src="./js/panels/customers-panel.js?v=11" defer></script>
 		<script src="./js/panels/settings-panel.js?v=8" defer></script>
 		<script src="./js/panels/trip-finder.js?v=10" defer></script>
@@ -8240,6 +8240,45 @@
 			// real bus's track id.
 			const UNASSIGNED_TRACK_ID = "track-unassigned";
 
+			// A placement whose trip_assignments row does not exist yet. Real ids
+			// are UUIDs, so this prefix cannot collide with one.
+			const UNASSIGNED_ROW_PREFIX = "unassigned:";
+			const isSyntheticAssignmentId = (id) =>
+				String(id ?? "").startsWith(UNASSIGNED_ROW_PREFIX);
+
+			// Pseudo trip_assignments rows for a trip that has none. The grid is
+			// built by iterating that table, so "no bus yet" and "no row yet" used
+			// to render very differently: the first landed on the Unassigned track,
+			// the second vanished from the schedule altogether.
+			//
+			// These carry bus_id: null so the routing below sends them to that same
+			// track by the same test, and a synthetic id so nothing downstream can
+			// mistake one for a database row — assignmentId is what every mutation
+			// keys on, and performBusReassign checks the prefix before choosing
+			// between an update and an insert.
+			//
+			// One row per leg the trip actually has: a Drop-off / Pick-up trip runs
+			// its return on separate dates and needs its own bus there, so hiding
+			// that leg until someone opens the editor is how a return gets
+			// forgotten. Every other trip type is a single outbound leg.
+			function synthesiseUnassignedRows(trip) {
+				const makeRow = (leg) => ({
+					id: `${UNASSIGNED_ROW_PREFIX}${trip.id}:${leg}`,
+					position: 0,
+					bus_id: null,
+					buses: null,
+					active_roles: ["driver"],
+					leg,
+					drivers: [],
+				});
+				const rows = [];
+				if (trip.start_date) rows.push(makeRow("outbound"));
+				if (trip.trip_type === "dropoff_pickup" && trip.return_start_date) {
+					rows.push(makeRow("return"));
+				}
+				return rows;
+			}
+
 			function busNumberFromTrack(track) {
 				return (
 					track?.dataset.busNumber ||
@@ -8547,7 +8586,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=33");
+					const db = await import("./js/data/trip-db.js?v=34");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -8556,20 +8595,51 @@
 						if (oldBar) shrinkAndFadeOut(oldBar);
 					}
 
-					await db.reassignBus(trip.assignmentId, newBus.id);
+					// A synthetic placement has no row to update — the trip never had
+					// a bus slot on this leg, so the drop has to create one before
+					// anything can point at it. Everything after this is identical.
+					if (isSyntheticAssignmentId(trip.assignmentId)) {
+						await db.createBusAssignment(
+							trip.id,
+							newBus.id,
+							trip.leg ?? "outbound",
+						);
+					} else {
+						await db.reassignBus(trip.assignmentId, newBus.id);
+					}
 					if (conflictAssignmentId) {
 						await db.reassignBus(conflictAssignmentId, trip.busId);
 					}
 					await loadTripsFromDB();
 
 					requestAnimationFrame(() => {
-						const newBar = activePlacements.find(
-							(p) => p.trip.assignmentId === trip.assignmentId,
+						// The synthetic id is gone after the reload — the trip has a
+						// real row now — so that placement has to be found by what
+						// survived the insert rather than by the id it arrived with.
+						const wasSynthetic = isSyntheticAssignmentId(
+							trip.assignmentId,
+						);
+						const newBar = activePlacements.find((p) =>
+							wasSynthetic
+								? p.trip.id === trip.id &&
+									(p.trip.leg ?? "outbound") ===
+										(trip.leg ?? "outbound")
+								: p.trip.assignmentId === trip.assignmentId,
 						)?.bar;
 						if (newBar) growInFromCenter(newBar);
 					});
 				} catch (err) {
 					console.error("Reassign bus failed:", err);
+					// A stale bar losing its race with a concurrent save is the one
+					// failure the dispatcher can act on, so it gets said out loud
+					// rather than only reaching the console. The reload below puts
+					// the grid back in step with the database either way.
+					window.Rux?.toast(
+						err?.code === "assignment_exists"
+							? err.message
+							: "Bus assignment failed — try again.",
+					);
+					await loadTripsFromDB();
 				}
 			}
 
@@ -9721,7 +9791,16 @@
 					const billingStatus =
 						window.RuxBilling?.deriveRecordStatus?.(t) ||
 						t.contract_status;
-					(t.trip_assignments ?? []).forEach((assignment) => {
+					// A trip with no trip_assignments row at all has nothing for the
+					// loop below to iterate, so it was absent from the grid entirely
+					// rather than merely bus-less. Standing in a pseudo-row per leg
+					// puts it on the Unassigned track through the exact same path a
+					// real bus-less assignment takes — no second rendering branch,
+					// and no rows written to the database just to make it visible.
+					const assignmentRows = (t.trip_assignments ?? []).length
+						? t.trip_assignments
+						: synthesiseUnassignedRows(t);
+					assignmentRows.forEach((assignment) => {
 						const key = assignment.id;
 						const leg = assignment.leg ?? "outbound";
 						// A Drop-off / Pick-up trip's return-leg assignments occupy the
@@ -11503,7 +11582,7 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=33");
+					const db = await import("./js/data/trip-db.js?v=34");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
