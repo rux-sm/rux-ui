@@ -16,6 +16,7 @@
 
 import { supabase } from "./supabase.js";
 import { activeAssignmentDrivers } from "../core/trip-assignment-roles.js";
+import { assignmentsOnLeg, busSlotCount } from "../core/bus-slots.js";
 import { contactsShareIdentity } from "../core/contact-identity.js?v=2";
 import {
 	buildTripHistoryChanges,
@@ -34,6 +35,14 @@ import {
 	let currentTripSnapshot = null;
 	let currentAssignments = [];
 	let currentLoadedTrip = null;
+	// A save replaces trip_assignments by deleting every row and re-inserting
+	// them one at a time, so for the length of that sequence the database says
+	// the trip has fewer buses than it does — or none. Each of those writes is
+	// a Realtime event the scheduler reloads on, and a reload landing inside
+	// the window renders the trip's buses as empty slots on the Unassigned row,
+	// then jumps them back. Counted rather than a boolean so overlapping saves
+	// can't have the first one to finish clear the flag for the others.
+	let savesInFlight = 0;
 	// A calendar trip bar going active (single click, no editor involved) also
 	// counts as "there's a trip in play" for Contact Info — set via
 	// setSelectedTrip() below, wired to the scheduler's rux:trip-selection-
@@ -1171,6 +1180,7 @@ import {
 		const saveAttempt = String(Number(saveBtn.dataset.saveAttempt || 0) + 1);
 		saveBtn.dataset.saveAttempt = saveAttempt;
 		setSaveButtonState(saveBtn, { busy: true, label: "Saving" });
+		savesInFlight += 1;
 
 		try {
 			if (!currentStopsHydrated) {
@@ -1497,8 +1507,22 @@ import {
 				}
 			}, 2000);
 			return false;
+		} finally {
+			savesInFlight -= 1;
 		}
 	}
+
+/**
+ * True while this tab is part-way through replacing a trip's assignment rows.
+ *
+ * The scheduler checks this before acting on a Realtime change so it doesn't
+ * repaint from a half-written trip (see savesInFlight above). It only covers
+ * saves made here — another dispatcher's browser can still catch the window,
+ * which is why the reload is deferred rather than dropped.
+ */
+export function isSaveInFlight() {
+	return savesInFlight > 0;
+}
 
 	/* ── Cancel (soft-delete) ────────────────────────────────────────────── */
 	// "Delete" no longer removes the row — see supabase/trip-cancellation-
@@ -1825,10 +1849,11 @@ export function loadTrip(root, itinerary, trip) {
 	const loadedAssignments = Array.isArray(trip.trip_assignments)
 		? trip.trip_assignments
 		: (Array.isArray(trip.assignments) ? trip.assignments : []);
-	const outboundAssignments = loadedAssignments.filter((a) => (a.leg ?? "outbound") !== "return");
-	const returnAssignments = loadedAssignments.filter((a) => a.leg === "return");
-	const busCount = Math.max(1, normalized.bus_count || 0, outboundAssignments.length);
-	const returnBusCount = Math.max(1, normalized.return_bus_count || 0, returnAssignments.length);
+	// Same slot-count rule the scheduler grid places bars from (core/bus-slots.js),
+	// so the editor's bus groups and the grid's bars can never disagree about how
+	// many buses this trip needs.
+	const busCount = busSlotCount(normalized, "outbound", loadedAssignments);
+	const returnBusCount = busSlotCount(normalized, "return", loadedAssignments);
 	normalized.bus_count = busCount;
 	normalized.return_bus_count = returnBusCount;
 
@@ -1992,42 +2017,52 @@ export async function reassignBus(assignmentId, newBusId) {
 }
 
 /**
- * Give a trip its first bus assignment on one leg.
+ * Fill one of a trip's empty bus slots on one leg.
  *
  * reassignBus cannot serve this: it UPDATEs a trip_assignments row by id, and
- * these trips have no row at all. The scheduler builds its grid by iterating
- * trip_assignments, so a trip that never got a bus slot has nothing to iterate
- * — it renders from a synthesised placement on the Unassigned row instead (see
+ * an empty slot has no row. The scheduler builds its grid by iterating
+ * trip_assignments, so a slot the trip needs but never got is rendered from a
+ * synthesised placement on the Unassigned row instead (see
  * synthesiseUnassignedRows in index.html), and dropping that bar on a bus has
  * to create the row before anything can point at it.
  *
  * Re-reads the leg's rows rather than trusting the caller's view of them: the
- * grid may have been rendered before a concurrent save added a real row, and
- * inserting a second one would leave the trip double-booked. If a row now
- * exists, its bus is set instead, which is exactly what a drop should mean.
+ * grid may have been rendered before a concurrent save filled the slot, and
+ * inserting anyway would put more buses on the leg than the trip asked for. If
+ * a bus-less row now exists, its bus is set instead, which is exactly what a
+ * drop should mean.
  */
 export async function createBusAssignment(tripId, busId, leg = "outbound") {
 	const legName = leg === "return" ? "return" : "outbound";
-	const { data: existing, error: existingError } = await supabase
-		.from("trip_assignments")
-		.select("id, position, leg, bus_id")
-		.eq("trip_id", tripId);
+	const [{ data: existing, error: existingError }, { data: tripRow, error: tripError }] =
+		await Promise.all([
+			supabase
+				.from("trip_assignments")
+				.select("id, position, leg, bus_id")
+				.eq("trip_id", tripId),
+			supabase
+				.from("trips")
+				.select("trip_type, bus_count, return_bus_count")
+				.eq("id", tripId)
+				.single(),
+		]);
 	if (existingError) throw existingError;
+	if (tripError) throw tripError;
 
-	const onThisLeg = (existing ?? []).filter(
-		(row) => (row.leg ?? "outbound") === legName,
-	);
+	const onThisLeg = assignmentsOnLeg(existing, legName);
 	const free = onThisLeg.find((row) => !row.bus_id);
 	if (free) {
 		await reassignBus(free.id, busId);
 		return free.id;
 	}
-	if (onThisLeg.length) {
-		// Every slot on this leg is already taken by a real bus. The bar being
-		// dropped no longer reflects the database, so refuse rather than quietly
-		// adding an extra bus the dispatcher never asked for.
+	// A leg with room left is the normal case for this function — a trip needing
+	// six buses with three assigned has three empty slots to fill. Only refuse
+	// once every slot the trip asked for is taken by a real bus: the bar being
+	// dropped no longer reflects the database, so adding an extra bus would be a
+	// bus the dispatcher never asked for.
+	if (onThisLeg.length >= busSlotCount(tripRow, legName, existing)) {
 		const error = new Error(
-			"This trip already has a bus on that leg — reload the schedule and try again.",
+			"This trip already has every bus it asked for on that leg — reload the schedule and try again.",
 		);
 		error.code = "assignment_exists";
 		throw error;

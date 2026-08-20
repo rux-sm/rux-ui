@@ -7438,6 +7438,10 @@
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=6";
+			import {
+				legsForTrip,
+				missingBusSlots,
+			} from "./js/core/bus-slots.js";
 			import { loadRequirements } from "./js/data/requirements-db.js";
 			import { normalizeTripImport } from "./js/data/trip-import.js?v=5";
 			import { supabase } from "./js/data/supabase.js";
@@ -8054,6 +8058,7 @@
 			let loadTrip = null;
 			let newTrip = null;
 			let fetchTrips = null;
+			let isSaveInFlight = null;
 			let tripDBHandle = null;
 			let pendingNewTripContext = null;
 			const mobilePanelQuery = window.matchMedia("(max-width: 500px)");
@@ -8246,10 +8251,16 @@
 			const isSyntheticAssignmentId = (id) =>
 				String(id ?? "").startsWith(UNASSIGNED_ROW_PREFIX);
 
-			// Pseudo trip_assignments rows for a trip that has none. The grid is
-			// built by iterating that table, so "no bus yet" and "no row yet" used
-			// to render very differently: the first landed on the Unassigned track,
-			// the second vanished from the schedule altogether.
+			// Pseudo trip_assignments rows for the bus slots a trip needs but has
+			// no row for. The grid is built by iterating that table, so a slot that
+			// was never filled had nothing to iterate and simply wasn't drawn: only
+			// the buses that *did* get assigned appeared, and a trip needing six
+			// buses with three assigned looked complete at three.
+			//
+			// Standing one of these in per empty slot is what keeps every bus a trip
+			// needs visible somewhere — on its bus's row if assigned, on the
+			// Unassigned row if not. How many slots a leg has is core/bus-slots.js's
+			// call, shared with the editor so the grid and the form cannot disagree.
 			//
 			// These carry bus_id: null so the routing below sends them to that same
 			// track by the same test, and a synthetic id so nothing downstream can
@@ -8257,26 +8268,37 @@
 			// keys on, and performBusReassign checks the prefix before choosing
 			// between an update and an insert.
 			//
-			// One row per leg the trip actually has: a Drop-off / Pick-up trip runs
-			// its return on separate dates and needs its own bus there, so hiding
-			// that leg until someone opens the editor is how a return gets
-			// forgotten. Every other trip type is a single outbound leg.
+			// One run of slots per leg the trip actually has: a Drop-off / Pick-up
+			// trip runs its return on separate dates and needs its own bus there,
+			// so hiding that leg until someone opens the editor is how a return
+			// gets forgotten. Every other trip type is a single outbound leg.
 			function synthesiseUnassignedRows(trip) {
-				const makeRow = (leg) => ({
-					id: `${UNASSIGNED_ROW_PREFIX}${trip.id}:${leg}`,
-					position: 0,
-					bus_id: null,
-					buses: null,
-					active_roles: ["driver"],
-					leg,
-					drivers: [],
+				const rows = trip.trip_assignments ?? [];
+				// Positions are continuous across both legs, so carry on above the
+				// highest real one — that keeps the "N/M" pill's slot ordering a
+				// total order even if the stored positions are sparse.
+				const nextPosition = rows.reduce(
+					(max, row) => Math.max(max, Number(row.position) || 0),
+					-1,
+				);
+				const synthesised = [];
+				legsForTrip(trip).forEach((leg) => {
+					const missing = missingBusSlots(trip, leg, rows);
+					// The slot index is part of the id because one leg can now
+					// produce several of these, and every mutation keys on that id.
+					for (let slot = 0; slot < missing; slot++) {
+						synthesised.push({
+							id: `${UNASSIGNED_ROW_PREFIX}${trip.id}:${leg}:${slot}`,
+							position: nextPosition + 1 + synthesised.length,
+							bus_id: null,
+							buses: null,
+							active_roles: ["driver"],
+							leg,
+							drivers: [],
+						});
+					}
 				});
-				const rows = [];
-				if (trip.start_date) rows.push(makeRow("outbound"));
-				if (trip.trip_type === "dropoff_pickup" && trip.return_start_date) {
-					rows.push(makeRow("return"));
-				}
-				return rows;
+				return synthesised;
 			}
 
 			function busNumberFromTrack(track) {
@@ -8586,7 +8608,7 @@
 				skipDepart,
 			) {
 				try {
-					const db = await import("./js/data/trip-db.js?v=34");
+					const db = await import("./js/data/trip-db.js?v=35");
 
 					if (!skipDepart) {
 						const oldBar = activePlacements.find(
@@ -8595,11 +8617,12 @@
 						if (oldBar) shrinkAndFadeOut(oldBar);
 					}
 
-					// A synthetic placement has no row to update — the trip never had
-					// a bus slot on this leg, so the drop has to create one before
-					// anything can point at it. Everything after this is identical.
+					// A synthetic placement has no row to update — this bus slot was
+					// never filled, so the drop has to create the row before anything
+					// can point at it. Everything after this is identical.
+					let landedAssignmentId = trip.assignmentId;
 					if (isSyntheticAssignmentId(trip.assignmentId)) {
-						await db.createBusAssignment(
+						landedAssignmentId = await db.createBusAssignment(
 							trip.id,
 							newBus.id,
 							trip.leg ?? "outbound",
@@ -8613,18 +8636,14 @@
 					await loadTripsFromDB();
 
 					requestAnimationFrame(() => {
-						// The synthetic id is gone after the reload — the trip has a
-						// real row now — so that placement has to be found by what
-						// survived the insert rather than by the id it arrived with.
-						const wasSynthetic = isSyntheticAssignmentId(
-							trip.assignmentId,
-						);
-						const newBar = activePlacements.find((p) =>
-							wasSynthetic
-								? p.trip.id === trip.id &&
-									(p.trip.leg ?? "outbound") ===
-										(trip.leg ?? "outbound")
-								: p.trip.assignmentId === trip.assignmentId,
+						// The synthetic id is gone after the reload — the slot has a
+						// real row now — so the placement is found by the id the insert
+						// settled on rather than the one it arrived with. Matching on
+						// trip + leg instead would be ambiguous: a part-assigned leg
+						// leaves its other empty slots on the Unassigned track, and
+						// those share both values with the bar that just moved.
+						const newBar = activePlacements.find(
+							(p) => p.trip.assignmentId === landedAssignmentId,
 						)?.bar;
 						if (newBar) growInFromCenter(newBar);
 					});
@@ -8928,10 +8947,11 @@
 			const trips = {};
 			const tripTrackMap = {};
 			let schedulerBuses = [];
-			// Raw fetchTrips() result, unfiltered — `trips` above only keeps
-			// assignments that have a bus (it needs one to place on a scheduler
-			// track), so a trip search over `trips` would silently miss anything
-			// unassigned. This is the complete list search reads from instead.
+			// Raw fetchTrips() result, unfiltered — `trips` above is keyed per bus
+			// slot and drops any placement whose track isn't on screen, and it
+			// excludes cancelled trips outright, so a search over it would miss
+			// records the dispatcher still expects to find. This is the complete
+			// list search reads from instead.
 			let allTripsRaw = [];
 
 			// ── Time-aligned positioning ─────────────────────────────────────────
@@ -8999,18 +9019,23 @@
 					(k) => trips[k].tripGroupId === trip.tripGroupId,
 				);
 				if (groupKeys.length <= 1) return "";
-				const sorted = [...groupKeys].sort((a, b) => {
-					const posA = trackOrder.indexOf(
-						tripTrackMap[a]?.trackId ?? "",
+				// Bus order first, then the trip's own slot order. A group can now
+				// hold several bars on the Unassigned track at once (one per empty
+				// bus slot), and every one of those is absent from trackOrder — so
+				// without the slot tiebreak they'd all compare equal, and the old
+				// Infinity - Infinity produced NaN, which leaves sort() to decide.
+				const trackRank = (key) => {
+					const rank = trackOrder.indexOf(
+						tripTrackMap[key]?.trackId ?? "",
 					);
-					const posB = trackOrder.indexOf(
-						tripTrackMap[b]?.trackId ?? "",
-					);
-					return (
-						(posA < 0 ? Infinity : posA) -
-						(posB < 0 ? Infinity : posB)
-					);
-				});
+					return rank < 0 ? Number.MAX_SAFE_INTEGER : rank;
+				};
+				const sorted = [...groupKeys].sort(
+					(a, b) =>
+						trackRank(a) - trackRank(b) ||
+						(trips[a].slotPosition ?? 0) -
+							(trips[b].slotPosition ?? 0),
+				);
 				const pos = sorted.indexOf(tripKey) + 1;
 				return `${pos}/${sorted.length}`;
 			}
@@ -9791,15 +9816,20 @@
 					const billingStatus =
 						window.RuxBilling?.deriveRecordStatus?.(t) ||
 						t.contract_status;
-					// A trip with no trip_assignments row at all has nothing for the
-					// loop below to iterate, so it was absent from the grid entirely
-					// rather than merely bus-less. Standing in a pseudo-row per leg
-					// puts it on the Unassigned track through the exact same path a
-					// real bus-less assignment takes — no second rendering branch,
-					// and no rows written to the database just to make it visible.
-					const assignmentRows = (t.trip_assignments ?? []).length
-						? t.trip_assignments
-						: synthesiseUnassignedRows(t);
+					// A bus slot with no trip_assignments row behind it has nothing
+					// for the loop below to iterate, so it was absent from the grid
+					// entirely rather than merely bus-less. Appending a pseudo-row per
+					// empty slot puts it on the Unassigned track through the exact
+					// same path a real bus-less assignment takes — no second rendering
+					// branch, and no rows written to the database to make it visible.
+					//
+					// Appended to the real rows rather than standing in for them: a
+					// trip can be part-assigned, and its assigned buses must keep
+					// their own tracks while only the empty slots go to Unassigned.
+					const assignmentRows = [
+						...(t.trip_assignments ?? []),
+						...synthesiseUnassignedRows(t),
+					];
 					assignmentRows.forEach((assignment) => {
 						const key = assignment.id;
 						const leg = assignment.leg ?? "outbound";
@@ -9818,8 +9848,11 @@
 						);
 						// Group-id (drives the "N/M" bus-count pill) is scoped per leg —
 						// an outbound bar must never pair with a same-trip return bar,
-						// since they're on different, non-simultaneous dates.
-						const sameLegCount = (t.trip_assignments ?? []).filter(
+						// since they're on different, non-simultaneous dates. Counted
+						// over the synthesised slots too, so M is the buses the trip
+						// asked for rather than the ones that happen to be assigned:
+						// a 6-bus trip with 3 assigned reads 3/6, not 3/3.
+						const sameLegCount = assignmentRows.filter(
 							(a) => (a.leg ?? "outbound") === leg,
 						).length;
 						trips[key] = {
@@ -9828,6 +9861,9 @@
 							assignmentId: assignment.id,
 							busId: assignment.bus_id,
 							leg,
+							// Slot order within the trip — the "N/M" pill's tiebreak
+							// once a leg has several bars on the Unassigned track.
+							slotPosition: Number(assignment.position) || 0,
 							tripGroupId:
 								sameLegCount > 1 ? `${t.id}:${leg}` : null,
 							assignments: (t.trip_assignments ?? []).map(
@@ -11582,10 +11618,11 @@
 
 			async function initSchedulerData() {
 				try {
-					const db = await import("./js/data/trip-db.js?v=34");
+					const db = await import("./js/data/trip-db.js?v=35");
 					loadTrip = db.loadTrip;
 					newTrip = db.newTrip;
 					fetchTrips = db.fetchTrips;
+					isSaveInFlight = db.isSaveInFlight;
 					tripDBHandle = db.initTripDB(tripPanel, itinerary);
 					// Bars dispatch this on every select/deselect, regardless of
 					// whether the editor is open — lets Contact Info work from just
@@ -11705,10 +11742,27 @@
 			// collapses that whole burst into a single reload — 300ms is short
 			// enough to still feel instant, long enough to outlast one save's
 			// entire write sequence.
+			//
+			// A save is also the one moment the database is legitimately wrong:
+			// trip_assignments is replaced by deleting every row and re-inserting
+			// them one at a time, so a reload landing mid-sequence sees a trip with
+			// fewer buses than it has, and renders the missing ones as empty slots
+			// on the Unassigned row before the next reload puts them back. Waiting
+			// out our own save (isSaveInFlight) skips that flicker; re-arming the
+			// timer rather than dropping the reload keeps the refresh, just after
+			// the writes have landed. Only covers saves made in this tab — another
+			// dispatcher's browser can still catch the window, which is why the
+			// grid must stay correct either way rather than relying on this.
 			let _reloadDebounceTimer = null;
 			function scheduleTripsReload() {
 				clearTimeout(_reloadDebounceTimer);
-				_reloadDebounceTimer = setTimeout(loadTripsFromDB, 300);
+				_reloadDebounceTimer = setTimeout(() => {
+					if (isSaveInFlight?.()) {
+						scheduleTripsReload();
+						return;
+					}
+					loadTripsFromDB();
+				}, 300);
 			}
 
 			function initTripsRealtimeSync() {
