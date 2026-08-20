@@ -17,6 +17,7 @@
 
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { htmlPages } from "./pages.mjs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
@@ -63,10 +64,7 @@ const noteAttr = (value, where) => {
 	}
 };
 
-const pages = [
-	"index.html", "driver.html", "gallery.html", "request.html",
-	"maintenance.html", "doc.html", "examples/app-layout.html",
-].filter((page) => existsSync(new URL(page, root)));
+const pages = htmlPages();
 
 for (const page of pages) {
 	for (const [, value] of read(page).matchAll(/class="([^"]*)"/g)) noteAttr(value, page);

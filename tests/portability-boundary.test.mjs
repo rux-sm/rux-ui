@@ -13,6 +13,7 @@
 
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { htmlPages } from "./pages.mjs";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
@@ -220,17 +221,18 @@ test("every page using .rux-* classes loads a design-system entrypoint", () => {
 	// entrypoint renders every .rux-* component unstyled — the exact regression
 	// that reached driver.html, maintenance.html, and request.html when the
 	// entrypoints were consolidated and only index.html was updated.
-	const pages = [
-		"index.html",
-		"request.html",
-		"maintenance.html",
-		"driver.html",
-		"examples/app-layout.html",
-	];
+	const pages = htmlPages();
 
 	const broken = pages.filter((page) => {
 		const html = read(page);
-		if (!/\brux-[a-z]/.test(html)) return false; // self-contained page
+		// Class attributes only. Testing the whole file for /\brux-[a-z]/ fired
+		// on doc.html's Supabase URL — the host is rux-smercado.workers.dev — and
+		// a check loose enough to trip over a hostname is a check that gets
+		// switched off rather than fixed.
+		const usesRux = [...html.matchAll(/class="([^"]*)"/g)].some(([, value]) =>
+			value.split(/\s+/).some((token) => token.startsWith("rux-")),
+		);
+		if (!usesRux) return false; // self-contained page
 		return !/css\/rux(-core)?\.css/.test(html);
 	});
 
@@ -245,13 +247,7 @@ test("every stylesheet and script a page links actually exists", () => {
 	// Moving a file into rux-ui/ without removing the application's own <link>
 	// leaves a 404 that is invisible in the UI, because rux.css supplies the
 	// styles anyway. That slipped through twice during the audit migration.
-	const pages = [
-		"index.html",
-		"request.html",
-		"maintenance.html",
-		"driver.html",
-		"doc.html",
-	];
+	const pages = htmlPages();
 	const dangling = [];
 
 	for (const page of pages) {
