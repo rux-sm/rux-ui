@@ -47,8 +47,17 @@ Vendors `css/` and `js/`.
 <script src="design-system/js/controls.js" defer></script>
 <!-- plus theme.js, menu.js, popover.js, drawer.js, floating-window.js,
      suggestions.js, ui-shell.js, view-router.js — whichever the app uses -->
+
+<!-- boot.js last: it calls into the namespaces above. It does not boot the
+     page — each module still does that itself — it publishes Rux.boot(root)
+     for markup rendered after load. -->
+<script src="design-system/js/boot.js" defer></script>
 <script src="js/app.js" defer></script>
 ```
+
+Markup that appears after page load is not wired by anything: the scanning
+modules each listen for DOMContentLoaded and that is all. Call `Rux.boot(root)`
+after rendering a subtree — it runs the scanners in order and is safe to repeat.
 
 **`--profile css-only`** — framework applications (React, Svelte, …). Vendors
 `css/` alone. A framework owns the DOM, so a vanilla script mutating

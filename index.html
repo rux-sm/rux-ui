@@ -7380,6 +7380,11 @@
 		<script src="./rux-ui/js/floating-window.js?v=6"></script>
 		<script src="./js/core/doc-viewer.js?v=12"></script>
 		<script src="./rux-ui/js/suggestions.js?v=6"></script>
+		<!-- Rux.boot(root) — attaches the scanning modules (theme, utilities,
+		     controls, ui-shell) to a subtree rendered after page load. Loads
+		     last so every namespace it calls already exists. It does not boot
+		     the page itself; each module still does that for itself. -->
+		<script src="./rux-ui/js/boot.js?v=1"></script>
 		<script src="./js/panels/trip-panel.js?v=42"></script>
 		<script src="./js/components/itinerary.js?v=30"></script>
 		<script src="./js/panels/driver-panel.js?v=27" defer></script>

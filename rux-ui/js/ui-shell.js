@@ -9,6 +9,13 @@
 (() => {
 	"use strict";
 
+	/* createSideNav binds listeners, so calling init twice over the same markup
+	   would fire every handler twice per click. Remembering the instance already
+	   bound to a nav makes init(root) repeat-safe, which the other scanners
+	   (theme's wired list, controls' data-rux-scroll-edges-init) already are —
+	   and which Rux.boot(root) depends on. */
+	const bound = new WeakMap();
+
 	function createSideNav({ toggle, nav, scrim = null }) {
 		if (!toggle || !nav) return null;
 
@@ -81,7 +88,10 @@
 		const toggle = root.querySelector("[data-rux-side-nav-toggle]");
 		const nav = root.querySelector("[data-rux-side-nav]");
 		const scrim = root.querySelector("[data-rux-side-nav-scrim]");
-		return createSideNav({ toggle, nav, scrim });
+		if (nav && bound.has(nav)) return bound.get(nav);
+		const instance = createSideNav({ toggle, nav, scrim });
+		if (nav && instance) bound.set(nav, instance);
+		return instance;
 	}
 
 	window.Rux = window.Rux || {};
