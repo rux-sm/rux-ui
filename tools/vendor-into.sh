@@ -89,7 +89,7 @@ fi
 # ── 4. Documentation, classified here because it is knowledge about this
 #       repository, not about any one consumer ──────────────────────────────
 # Shipped: describes the portable system itself.
-DOCS_SHIP=(buttons.md cards.md layout-composition.md motion.md popovers.md portability-audit.md ui-header.md)
+DOCS_SHIP=(buttons.md cards.md design-system-distribution.md layout-composition.md motion.md popovers.md portability-audit.md ui-header.md)
 # App-tier: describes the reference application. Never leaves.
 DOCS_APP=(billing-workflow.md driver-assignment-card.md gem-itinerary-prompt.md project-brief.md trip-bar.md trip-import-schema-v2.json trip-request-inbox.md)
 # Repo-internal: working material for this repository, useful to no consumer.
