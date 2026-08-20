@@ -127,7 +127,13 @@ done < <(cd "$SRC/docs" && find . -type f ! -name .DS_Store | sed 's|^\./||' | s
 # This repository serves files raw and cache-busts @import lines with ?v=N. A
 # bundler resolves that as a literal filename and fails, and it inlines the
 # imports anyway. Mechanical, recorded below; the only edit the copy receives.
-sed -i '' -E 's/(@import "[^"?]+)\?v=[0-9]+(")/\1\2/g' "$DST"/css/*.css
+# No `sed -i`: BSD wants `-i ''` and GNU wants `-i` with the suffix attached,
+# and the two are mutually unparseable. Writing through a temp file needs no
+# in-place support at all, so this runs the same on a developer's Mac and on a
+# Linux CI runner. (It failed in CI exactly once, before this note existed.)
+for f in "$DST"/css/*.css; do
+  sed -E 's/(@import "[^"?]+)\?v=[0-9]+(")/\1\2/g' "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+done
 
 # ── 7. Junk sweep ────────────────────────────────────────────────────────────
 find "$DST" -name .DS_Store -delete

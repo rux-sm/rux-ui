@@ -81,6 +81,12 @@ In order, it:
 A consumer MUST NOT reimplement this. It keeps a thin wrapper naming its
 destination, its profile, and its own build command.
 
+This tooling runs on a developer's Mac *and* on a Linux CI runner, so it MUST
+avoid platform-specific shell. `sed -i` is the trap: BSD requires `-i ''` and
+GNU requires the suffix attached to the flag, and neither parses the other's
+form. Write through a temp file instead of editing in place. This was not
+hypothetical — the first CI run failed on exactly that line.
+
 ## 4. Gates
 
 Three gates, because no one of them is sufficient:
