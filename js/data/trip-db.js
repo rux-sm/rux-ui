@@ -10,7 +10,7 @@
    loadTrip(root, itinerary, trip)      → populate panel from a trip object
    newTrip(root, itinerary)             → clear panel for a new entry
    fetchTrips()                         → load all trips with assignments
-   fetchBuses()                         → load all active buses
+   fetchBuses()                         → load every bus, active and inactive
    fetchDrivers()                       → load all active drivers
    ========================================================================== */
 
@@ -1751,11 +1751,21 @@ export async function fetchTrips() {
 	}));
 }
 
+/**
+ * Every bus, including the inactive ones — status comes back for the caller to
+ * act on rather than being filtered here.
+ *
+ * Excluding inactive buses at the query was what made a trip assigned to one
+ * vanish from the grid entirely: no row to place it on, so the placement was
+ * dropped. The scheduler now renders a row for every bus and hides the inactive
+ * ones per week (see isBusVisibleThisWeek in core/bus-status.js), which needs
+ * them present. Anything offering a bus to *pick* — the bus picker, the trip
+ * editor's dropdowns — filters with isBusActive instead.
+ */
 export async function fetchBuses() {
 	const { data, error } = await supabase
 		.from("buses")
 		.select("id, number, sort_order, capacity, type, ada_lift, sleeper, color, status")
-		.neq("status", "retired")
 		.order("sort_order", { ascending: true, nullsFirst: false })
 		.order("number");
 	if (error) throw error;

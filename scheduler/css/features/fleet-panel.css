@@ -94,6 +94,45 @@
 	white-space: nowrap;
 }
 
+/* This trip runs while the vehicle is out of service. Same warning colour as
+   the calendar's own stripes and the bar's icon — one signal, three places. */
+.sched-scope-fleet__trip-warning {
+	color: var(--rux-warning);
+	flex: none;
+}
+
+/* — Service: out-of-service periods — */
+/* From / To / Reason on one line, with the remove button pinned at the end.
+   Collapses to stacked fields once the floating window is phone-width, where
+   three date fields side by side stop being readable. */
+
+.sched-scope-fleet__oos-rows {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-3);
+}
+
+.sched-scope-fleet__oos-row {
+	display: grid;
+	grid-template-columns: 1fr 1fr minmax(0, 1.5fr) auto;
+	align-items: end;
+	gap: var(--rux-space-2);
+}
+
+@media (max-width: 580px) {
+	.sched-scope-fleet__oos-row {
+		grid-template-columns: 1fr 1fr auto;
+	}
+
+	.sched-scope-fleet__oos-row .rux-field:nth-child(3) {
+		grid-column: 1 / -1;
+	}
+}
+
+.sched-scope-fleet__oos-empty {
+	font-size: var(--rux-size-sm);
+}
+
 .sched-scope-fleet__trip-empty {
 	padding: var(--rux-space-5);
 	text-align: center;

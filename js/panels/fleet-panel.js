@@ -16,11 +16,22 @@
   const typeSelect    = document.getElementById("fp-type");
   const typeIconWrap  = document.getElementById("fp-type-icon-wrap");
 
+  const oosRows      = document.getElementById("fp-oos-rows");
+  const oosAddBtn    = document.getElementById("fp-oos-add-btn");
+
   let db         = null;
   let settingsDb = null;
+  let busStatus  = null;   // core/bus-status.js, loaded alongside db in init()
   let selectedId = null;
   let allBuses   = [];
   let colConfig  = [];
+  // Every bus's out-of-service windows, grouped by bus id. The roster's Status
+  // column derives "Out of service" from today's windows rather than storing
+  // it, so the list needs the whole fleet's, not just the open vehicle's.
+  let oosByBus   = new Map();
+  // Last-rendered trip list for the open vehicle, kept so editing a period can
+  // re-flag the conflicts without another round-trip.
+  let openBusTrips = [];
 
   // ── Floating editor window ────────────────────────────────────────────────
   // Same composition as the trip editor dialog (index.html): a
@@ -41,8 +52,12 @@
   // Snapshot of the form as last populated/cleared — closing (or switching
   // vehicles) with edits on top of it asks before discarding.
   let cleanForm = null;
-  function markFormClean() { cleanForm = JSON.stringify(readForm()); }
-  function formIsDirty()   { return cleanForm !== null && JSON.stringify(readForm()) !== cleanForm; }
+  // Out-of-service periods live outside readForm() (they are their own table,
+  // not columns on buses) but are edited in the same window, so they have to
+  // count towards dirty or adding one and closing would discard it silently.
+  function formSnapshot()  { return JSON.stringify({ bus: readForm(), oos: readOos() }); }
+  function markFormClean() { cleanForm = formSnapshot(); }
+  function formIsDirty()   { return cleanForm !== null && formSnapshot() !== cleanForm; }
 
   function openDialog(title) {
     if (dialogTitleEl && title) dialogTitleEl.textContent = title;
@@ -178,11 +193,16 @@
     return "fleet-app__expiry";
   }
 
-  function statusMeta(s) {
-    if (s === "active")          return { label: "Active",         cls: "rux-badge--success" };
-    if (s === "maintenance")     return { label: "Maintenance",    cls: "rux-badge--warning" };
-    if (s === "out-of-service")  return { label: "Out of service", cls: "rux-badge--warning" };
-    return { label: "Retired", cls: "" };
+  // Status is only active/inactive now (see core/bus-status.js). "Out of
+  // service" is not a status — it is derived from whether a dated window covers
+  // today, so the badge and the dates can never disagree.
+  function statusMeta(bus) {
+    const label = busStatus
+      ? busStatus.deriveBusStatusLabel(bus, oosByBus.get(bus.id), localIsoDate())
+      : "Active";
+    if (label === "Out of service") return { label, cls: "rux-badge--warning" };
+    if (label === "Inactive")       return { label, cls: "" };
+    return { label, cls: "rux-badge--success" };
   }
 
   // ── Trip list ─────────────────────────────────────────────────────────────
@@ -193,6 +213,9 @@
         `<li class="sched-scope-fleet__trip-item"><span class="rux-u-muted">No trips assigned.</span></li>`;
       return;
     }
+    // Read from the rows currently in the form, not from what was last saved,
+    // so a period being added flags its conflicts before you commit to it.
+    const windows = readOos();
     tripList.innerHTML = trips.map((t) => {
       const dates = fmtTripDates(t.startDate, t.endDate);
       const meta  = [dates, t.destination, t.driverName ? `Driver: ${t.driverName}` : null]
@@ -200,10 +223,15 @@
       const status    = t.invoiceStatus || "pending";
       const badgeCls  = status === "paid" ? "rux-badge--success" : "";
       const badgeLabel = status.charAt(0).toUpperCase() + status.slice(1);
+      const clash = busStatus?.isOutOfServiceDuring(windows, t.startDate, t.endDate);
+      const warning = clash
+        ? `<span class="rux-icon sched-scope-fleet__trip-warning" title="This vehicle is out of service during this trip">warning</span>`
+        : "";
       return `
         <li class="sched-scope-fleet__trip-item">
           <span class="sched-scope-fleet__trip-id">${t.tripRef}</span>
           <span class="sched-scope-fleet__trip-meta">${meta}</span>
+          ${warning}
           <span class="rux-badge rux-badge--dot ${badgeCls}">${badgeLabel}</span>
         </li>
       `;
@@ -219,7 +247,7 @@
       cell: b => `<td data-col="order" class="col-order fleet-app__order">${b.sort_order ?? "—"}</td>` },
     { key: "status",           label: "Status",           defaultOn: true,
       head: `<th scope="col" data-col="status" data-col-filter="status" data-sort="status">Status <span class="rux-icon rux-col-filter-icon" aria-hidden="true">filter_list</span></th>`,
-      cell: b => { const s = statusMeta(b.status); return `<td data-col="status"><span class="rux-badge rux-badge--dot ${s.cls}">${s.label}</span></td>`; } },
+      cell: b => { const s = statusMeta(b); return `<td data-col="status"><span class="rux-badge rux-badge--dot ${s.cls}">${s.label}</span></td>`; } },
     { key: "type",             label: "Type",             defaultOn: false,
       head: `<th scope="col" data-col="type" data-sort="type">Type</th>`,
       cell: b => `<td data-col="type">${b.type || "—"}</td>` },
@@ -317,7 +345,9 @@
       tr.tabIndex       = 0;
       tr.dataset.id     = b.id;
       tr.dataset.idx    = idx;
-      tr.dataset.status = b.status || "active";
+      // The filter matches what the badge says, so a bus out of service today
+      // is findable under that label even though it is stored as active.
+      tr.dataset.status = statusMeta(b).label.toLowerCase().replace(/\s+/g, "-");
       tr.draggable      = sortKey === "order";
 
       tr.addEventListener("dragstart", e => {
@@ -410,6 +440,101 @@
     });
   }
 
+  // ── Out-of-service periods ────────────────────────────────────────────────
+  // A list of dated windows rather than a status, so a bus in the shop for
+  // three days is bookable for the other 362. Both ends are required: a bus
+  // that is out indefinitely is Inactive, which is a different thing.
+
+  function oosRowEl(period = {}) {
+    const row = document.createElement("div");
+    row.className = "sched-scope-fleet__oos-row";
+    if (period.id) row.dataset.id = period.id;
+    row.innerHTML = `
+      <div class="rux-field">
+        <label class="rux-field__label">From</label>
+        <input class="rux-input" type="date" data-oos="start" value="${period.start_date || ""}" />
+      </div>
+      <div class="rux-field">
+        <label class="rux-field__label">To</label>
+        <input class="rux-input" type="date" data-oos="end" value="${period.end_date || ""}" />
+      </div>
+      <div class="rux-field">
+        <label class="rux-field__label">Reason</label>
+        <input class="rux-input" type="text" data-oos="reason" placeholder="Optional" value="${(period.reason || "").replace(/"/g, "&quot;")}" />
+      </div>
+      <button class="rux-button rux-button--ghost rux-button--icon rux-button--danger" type="button" data-oos="remove" aria-label="Remove this period">
+        <span class="rux-icon" aria-hidden="true">delete</span>
+      </button>`;
+
+    const startEl = row.querySelector('[data-oos="start"]');
+    const endEl   = row.querySelector('[data-oos="end"]');
+    // Picking a start with no end yet gives a one-day window to widen — the
+    // only default that is always valid and never invents a length.
+    startEl.addEventListener("change", () => {
+      if (startEl.value && (!endEl.value || endEl.value < startEl.value)) {
+        endEl.value = startEl.value;
+      }
+      refreshTripWarnings();
+    });
+    endEl.addEventListener("change", refreshTripWarnings);
+    row.querySelector('[data-oos="remove"]').addEventListener("click", () => {
+      row.remove();
+      renderOosEmptyState();
+      refreshTripWarnings();
+    });
+    return row;
+  }
+
+  function refreshTripWarnings() {
+    if (openBusTrips.length) renderTripList(openBusTrips);
+  }
+
+  function renderOosEmptyState() {
+    if (!oosRows) return;
+    const empty = oosRows.querySelector(".sched-scope-fleet__oos-empty");
+    const hasRows = oosRows.querySelector(".sched-scope-fleet__oos-row");
+    if (hasRows) { empty?.remove(); return; }
+    if (empty) return;
+    const el = document.createElement("p");
+    el.className = "sched-scope-fleet__oos-empty rux-u-muted";
+    el.textContent = "In service every day.";
+    oosRows.appendChild(el);
+  }
+
+  function populateOos(windows) {
+    if (!oosRows) return;
+    oosRows.innerHTML = "";
+    (windows ?? []).forEach((w) => oosRows.appendChild(oosRowEl(w)));
+    renderOosEmptyState();
+  }
+
+  // Rows missing a start date are treated as abandoned and dropped rather than
+  // blocking the save — a half-filled row is a change of mind, not an error.
+  function readOos() {
+    if (!oosRows) return [];
+    return [...oosRows.querySelectorAll(".sched-scope-fleet__oos-row")]
+      .map((row) => ({
+        id:         row.dataset.id || undefined,
+        start_date: row.querySelector('[data-oos="start"]').value || null,
+        end_date:   row.querySelector('[data-oos="end"]').value || null,
+        reason:     row.querySelector('[data-oos="reason"]').value.trim() || null,
+      }))
+      .filter((w) => w.start_date);
+  }
+
+  // Returns the first row the database would reject, so the message names the
+  // problem before the round-trip. The CHECK constraint is the backstop.
+  function invalidOosRow(windows) {
+    return windows.find((w) => !busStatus?.isValidOutOfServiceWindow(w)) ?? null;
+  }
+
+  oosAddBtn?.addEventListener("click", () => {
+    oosRows.querySelector(".sched-scope-fleet__oos-empty")?.remove();
+    const row = oosRowEl();
+    oosRows.appendChild(row);
+    row.querySelector('[data-oos="start"]')?.focus();
+  });
+
   function populatePanel(b) {
     document.getElementById("fp-sort-order").value        = b.sort_order      ?? "";
     document.getElementById("fp-number").value           = b.number          || "";
@@ -430,7 +555,13 @@
 
     typeSelect.value = b.type || "Motorcoach";
     updateTypeIcon();
-    syncSegmented(document.getElementById("fp-status-group"), b.status || "active");
+    // Normalized, so a row still holding the pre-patch 'retired' selects
+    // Inactive instead of leaving the control with nothing pressed.
+    syncSegmented(
+      document.getElementById("fp-status-group"),
+      busStatus ? busStatus.normalizeBusStatus(b.status) : "active",
+    );
+    populateOos(oosByBus.get(b.id));
 
     // Equipment toggles
     const adaBtn     = document.getElementById("fp-ada-lift");
@@ -487,14 +618,35 @@
       document.getElementById("fp-number").focus();
       return;
     }
+    const windows = readOos();
+    const bad = invalidOosRow(windows);
+    if (bad) {
+      window.Rux?.toast("An out-of-service period ends before it starts.");
+      return;
+    }
     const btn = document.getElementById("fp-btn-save");
     btn.disabled = true;
     try {
-      await db.saveBus(selectedId ? { id: selectedId, ...payload } : payload);
+      const saved = await db.saveBus(selectedId ? { id: selectedId, ...payload } : payload);
+      // Windows are keyed on the bus, so a brand-new vehicle has to exist
+      // before they can be written — hence the id off the save above.
+      //
+      // Failing here must not fail the vehicle: the table does not exist until
+      // bus-status-patch.sql has been run, and the rest of this panel is
+      // supposed to keep working in the meantime. Say what was lost rather than
+      // reporting a save that half-happened as a clean success.
+      try {
+        await db.replaceBusOutOfService(saved?.id ?? selectedId, windows);
+      } catch (oosErr) {
+        console.error("Could not save out-of-service periods:", oosErr);
+        window.Rux?.toast("Vehicle saved, but its out-of-service periods could not be.");
+      }
       await loadBuses();
+      announceFleetChanged();
       resetPanel();
     } catch (err) {
       console.error("Could not save vehicle:", err);
+      window.Rux?.toast("Could not save the vehicle — check your connection and try again.");
     } finally {
       btn.disabled = false;
     }
@@ -511,6 +663,7 @@
       await db.deleteBus(selectedId);
       selectedId = null;
       await loadBuses();
+      announceFleetChanged();
       resetPanel();
     } catch (err) {
       console.error("Could not delete vehicle:", err);
@@ -546,6 +699,8 @@
     });
 
     tripList.innerHTML = "";
+    openBusTrips = [];
+    populateOos([]);
     switchTab(tabBtns[0]);
     window.Rux?.syncDateInputs(panelEl);
     markFormClean();
@@ -692,9 +847,8 @@
       options: [
         { value: "all",            label: "All"            },
         { value: "active",         label: "Active"         },
-        { value: "maintenance",    label: "Maintenance"    },
         { value: "out-of-service", label: "Out of service" },
-        { value: "retired",        label: "Retired"        },
+        { value: "inactive",       label: "Inactive"       },
       ],
     },
   };
@@ -772,7 +926,9 @@
       if (b.sort_order == null) return -1;
       return a.sort_order - b.sort_order;
     },
-    status:   (a, b) => { const o = { active: 0, maintenance: 1, "out-of-service": 2, retired: 3 }; return ((o[a.status] ?? 9) - (o[b.status] ?? 9)) || (a.number || "").localeCompare(b.number || ""); },
+    // Sorts by what the badge shows, not the stored column — otherwise a bus
+    // out of service today would sort in among the plain active ones.
+    status:   (a, b) => { const o = { Active: 0, "Out of service": 1, Inactive: 2 }; return ((o[statusMeta(a).label] ?? 9) - (o[statusMeta(b).label] ?? 9)) || (a.number || "").localeCompare(b.number || ""); },
     type:     (a, b) => (a.type || "").localeCompare(b.type || "") || (a.number || "").localeCompare(b.number || ""),
     capacity: (a, b) => ((a.capacity ?? 0) - (b.capacity ?? 0)) || (a.number || "").localeCompare(b.number || ""),
     service:  (a, b) => (a.next_service || "9999").localeCompare(b.next_service || "9999") || (a.number || "").localeCompare(b.number || ""),
@@ -864,8 +1020,8 @@
     tripList.innerHTML =
       `<li class="sched-scope-fleet__trip-item"><span class="rux-u-muted">Loading…</span></li>`;
     try {
-      const trips = await db.fetchBusTrips(busId);
-      renderTripList(trips);
+      openBusTrips = await db.fetchBusTrips(busId);
+      renderTripList(openBusTrips);
     } catch (err) {
       console.warn("Could not load bus trips:", err);
       tripList.innerHTML =
@@ -873,9 +1029,24 @@
     }
   }
 
+  // The scheduler builds its bus rows once at boot and never rebuilds them, so
+  // without this a window added here would not stripe the calendar until a
+  // reload — which reads as the feature not working.
+  function announceFleetChanged() {
+    document.dispatchEvent(new CustomEvent("rux:fleet-changed"));
+  }
+
   async function loadBuses() {
     try {
       allBuses = await db.fetchBuses();
+      try {
+        oosByBus = busStatus.indexOutOfServiceByBus(await db.fetchAllBusOutOfService());
+      } catch (oosErr) {
+        // Additive: the roster still lists every vehicle without them, which
+        // is what happens before bus-status-patch.sql has been run.
+        console.warn("Could not load out-of-service periods:", oosErr);
+        oosByBus = new Map();
+      }
       renderRows(getSortedBuses());
       applyFilter();
     } catch (err) {
@@ -889,7 +1060,10 @@
   async function init() {
     if (!db) {
       try {
-        db = await import("../data/fleet-db.js");
+        [db, busStatus] = await Promise.all([
+          import("../data/fleet-db.js"),
+          import("../core/bus-status.js"),
+        ]);
       } catch (err) {
         console.warn("Could not load fleet-db:", err);
         return;

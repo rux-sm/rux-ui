@@ -52,7 +52,7 @@
 		/>
 		<link
 			rel="stylesheet"
-			href="./scheduler/css/features/fleet-panel.css?v=9"
+			href="./scheduler/css/features/fleet-panel.css?v=10"
 		/>
 		<link
 			rel="stylesheet"
@@ -3445,36 +3445,19 @@
 												class="rux-button rux-button--segment"
 												type="button"
 												aria-pressed="false"
-												data-value="maintenance"
-												title="Maintenance"
-											>
-												<span class="rux-icon"
-													>build</span
-												><span>Maintenance</span>
-											</button>
-											<button
-												class="rux-button rux-button--segment"
-												type="button"
-												aria-pressed="false"
-												data-value="out-of-service"
-												title="Out of service"
-											>
-												<span class="rux-icon"
-													>block</span
-												><span>Out of service</span>
-											</button>
-											<button
-												class="rux-button rux-button--segment"
-												type="button"
-												aria-pressed="false"
-												data-value="retired"
-												title="Retired"
+												data-value="inactive"
+												title="Inactive — off the calendar, past trips still shown"
 											>
 												<span class="rux-icon"
 													>cancel</span
-												><span>Retired</span>
+												><span>Inactive</span>
 											</button>
 										</div>
+										<p class="rux-field__help">
+											Out for a known stretch? Leave this
+											Active and add the dates under
+											Service.
+										</p>
 									</div>
 								</div>
 
@@ -3578,6 +3561,39 @@
 											rows="4"
 											placeholder="Internal notes about this vehicle…"
 										></textarea>
+									</div>
+									<div class="rux-card">
+										<div class="rux-card__header">
+											<p class="rux-card__title">
+												Out of service
+											</p>
+											<div class="rux-u-cluster">
+												<button
+													class="rux-button rux-button--ghost rux-button--icon"
+													type="button"
+													id="fp-oos-add-btn"
+													aria-label="Add an out-of-service period"
+												>
+													<span
+														class="rux-icon"
+														aria-hidden="true"
+														>add</span
+													>
+												</button>
+											</div>
+										</div>
+										<div class="rux-card__body">
+											<div
+												class="sched-scope-fleet__oos-rows"
+												id="fp-oos-rows"
+											></div>
+											<p class="rux-field__help">
+												The vehicle stays on the
+												calendar and can still be
+												assigned — these days are
+												striped and warn.
+											</p>
+										</div>
 									</div>
 								</div>
 
@@ -7388,7 +7404,7 @@
 		<script src="./js/panels/trip-panel.js?v=43"></script>
 		<script src="./js/components/itinerary.js?v=31"></script>
 		<script src="./js/panels/driver-panel.js?v=28" defer></script>
-		<script src="./js/panels/fleet-panel.js?v=15" defer></script>
+		<script src="./js/panels/fleet-panel.js?v=16" defer></script>
 		<script src="./js/panels/customers-panel.js?v=11" defer></script>
 		<script src="./js/panels/settings-panel.js?v=8" defer></script>
 		<script src="./js/panels/trip-finder.js?v=10" defer></script>
@@ -7434,7 +7450,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=23";
+			} from "./js/components/trip-bar.js?v=24";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=6";
@@ -7442,6 +7458,12 @@
 				legsForTrip,
 				missingBusSlots,
 			} from "./js/core/bus-slots.js";
+			import {
+				indexOutOfServiceByBus,
+				isBusActive,
+				isOutOfServiceDuring,
+				outOfServiceOverlap,
+			} from "./js/core/bus-status.js";
 			import { loadRequirements } from "./js/data/requirements-db.js";
 			import { normalizeTripImport } from "./js/data/trip-import.js?v=5";
 			import { supabase } from "./js/data/supabase.js";
@@ -8238,6 +8260,28 @@
 				return `track-${String(number ?? "").replace(/[^A-Za-z0-9_-]/g, "_")}`;
 			}
 
+			// Out-of-service windows for the whole fleet, keyed by bus id. A
+			// stretch a bus is unavailable is dates, not a status — the row stays
+			// on the grid and bookable, with those days striped and warned about.
+			// See js/core/bus-status.js and supabase/bus-status-patch.sql.
+			let busOutOfService = new Map();
+
+			function outOfServiceFor(busId) {
+				return busOutOfService.get(busId) ?? [];
+			}
+
+			// Does putting this trip on this bus land on days the bus is out?
+			// Shared by the drag preview, the drop toast, and the bar's own
+			// warning icon so all three agree.
+			function busIsOutOfServiceForTrip(busId, trip) {
+				if (!busId || !trip) return false;
+				return isOutOfServiceDuring(
+					outOfServiceFor(busId),
+					trip.startDate,
+					trip.endDate,
+				);
+			}
+
 			// Synthetic track for trips whose assignment has no bus yet — lets a
 			// week's worth of unassigned trips surface in the grid instead of
 			// being invisible (previously only findable via search). Deliberately
@@ -8633,6 +8677,21 @@
 					if (conflictAssignmentId) {
 						await db.reassignBus(conflictAssignmentId, trip.busId);
 					}
+					// Said out loud once the assignment has actually landed, not
+					// as a question beforehand — the dispatcher is allowed to book
+					// across a shop window, they just shouldn't do it unaware. The
+					// bar keeps its own warning icon afterwards.
+					if (newBus?.id && busIsOutOfServiceForTrip(newBus.id, trip)) {
+						const windows = outOfServiceOverlap(
+							outOfServiceFor(newBus.id),
+							trip.startDate,
+							trip.endDate,
+						);
+						const reason = windows.find((w) => w.reason)?.reason;
+						window.Rux?.toast(
+							`Bus ${newBus.number} is out of service during this trip${reason ? ` — ${reason}` : ""}.`,
+						);
+					}
 					await loadTripsFromDB();
 
 					requestAnimationFrame(() => {
@@ -8702,19 +8761,28 @@
 							// since a hidden track has a zero-size rect below. Restored to
 							// its correct hidden/shown state in onUp once the drag ends.
 							if (unassignedRowEl) unassignedRowEl.hidden = false;
+							// An out-of-service stretch is a warning, not a wall —
+							// these rows are droppable now, and the overlap is
+							// flagged below instead. An inactive bus is still not
+							// a target: it's off the calendar for new work even on
+							// a week where an existing trip keeps its row visible.
 							rowRects = [
 								...schedulerEl.querySelectorAll(
 									".sched-scheduler__track",
 								),
 							]
-								.filter(
-									(t) =>
-										!t
-											.closest(".sched-scheduler__row")
-											?.classList.contains(
-												"is-out-of-service",
-											),
-								)
+								.filter((t) => {
+									const row = t.closest(
+										".sched-scheduler__row",
+									);
+									return (
+										row &&
+										!row.hidden &&
+										!row.classList.contains(
+											"sched-scheduler__row--inactive",
+										)
+									);
+								})
 								.map((t) => ({
 									track: t,
 									rect: t.getBoundingClientRect(),
@@ -8782,8 +8850,15 @@
 									trip,
 									trips,
 								);
+								// An out-of-service stretch reads the same as a
+								// double-booking here: the drop still goes
+								// through, but the row says so first.
+								const outOfService = busIsOutOfServiceForTrip(
+									targetTrack.dataset.busId,
+									trip,
+								);
 								targetTrack.classList.add(
-									conflict
+									conflict || outOfService
 										? "sched-scheduler__track--drop-conflict"
 										: "sched-scheduler__track--drop-target",
 								);
@@ -8854,11 +8929,7 @@
 						// the original track) — a real reassign will correct this shortly
 						// via loadTripsFromDB()'s renderScheduler() call regardless, but
 						// this avoids it sitting visibly empty in the meantime either way.
-						if (unassignedRowEl) {
-							unassignedRowEl.hidden = !activePlacements.some(
-								(p) => p.trackId === UNASSIGNED_TRACK_ID,
-							);
-						}
+						syncConditionalRows();
 
 						if (reassigning) {
 							// Fully hide it (not just dimmed) rather than restoring it —
@@ -8918,9 +8989,15 @@
 				onUploadPdf: (trip) => console.log("upload pdf", trip.id),
 				onViewPdf: (trip) => console.log("view pdf", trip.id),
 				onChangeBus: (trip) => {
+					// Active buses only — an inactive one is off the calendar for
+					// new work, so it should not be offered here either. The bus
+					// the trip is already on stays in the list regardless, or the
+					// picker could not show where the trip currently sits.
 					BusPicker.show(
 						trip,
-						schedulerBuses,
+						schedulerBuses.filter(
+							(bus) => isBusActive(bus) || bus.id === trip.busId,
+						),
 						trips,
 						(newBus, conflictAssignmentId) => {
 							performBusReassign(
@@ -9153,8 +9230,34 @@
 				};
 			}
 
-			function getWeekPlacements(weekStart, tripMap) {
+			// Where a date range sits in the current week's columns: a 1-based
+			// start column and a span in days, clipped to the week, plus whether
+			// it runs past either edge. Null when the range misses the week
+			// entirely.
+			//
+			// Both the trip bars and the out-of-service stripes lay out from
+			// this. Two copies of the arithmetic would drift apart exactly at
+			// the week boundaries, where a range is clipped and the off-by-one
+			// is easiest to get wrong — and stripes that disagree with the bar
+			// sitting on them is the whole point of drawing them.
+			function weekSpanFor(startDate, endDate, weekStart) {
 				const weekEnd = addDays(weekStart, viewDays - 1);
+				if (!startDate) return null;
+				const rangeStart = parseIsoDate(startDate);
+				const rangeEnd = parseIsoDate(endDate || startDate);
+				if (rangeEnd < weekStart || rangeStart > weekEnd) return null;
+				const visibleStart =
+					rangeStart < weekStart ? weekStart : rangeStart;
+				const visibleEnd = rangeEnd > weekEnd ? weekEnd : rangeEnd;
+				return {
+					start: Math.round((visibleStart - weekStart) / 864e5) + 1,
+					span: Math.round((visibleEnd - visibleStart) / 864e5) + 1,
+					fromPrev: rangeStart < weekStart,
+					toNext: rangeEnd > weekEnd,
+				};
+			}
+
+			function getWeekPlacements(weekStart, tripMap) {
 				const placements = [];
 				Object.entries(tripTrackMap).forEach(([key, info]) => {
 					const trip = tripMap[key];
@@ -9166,6 +9269,10 @@
 					const times = extractTripTimes(trip);
 					const depFrac = timeToFraction(times._depTime);
 					const retFrac = timeToFraction(times._retTime);
+					// A same-day trip whose return time is at or before its
+					// departure ran past midnight, so its bar reaches into the
+					// next day — resolved here, before the week arithmetic, since
+					// it changes which days the trip actually occupies.
 					const wrapsNextDay =
 						timeAlignEnabled &&
 						depFrac !== null &&
@@ -9175,17 +9282,13 @@
 					const effectiveEnd = wrapsNextDay
 						? addDays(tripEnd, 1)
 						: tripEnd;
-					if (effectiveEnd < weekStart || tripStart > weekEnd) return;
-					const visibleStart =
-						tripStart < weekStart ? weekStart : tripStart;
-					const visibleEnd =
-						effectiveEnd > weekEnd ? weekEnd : effectiveEnd;
-					const start =
-						Math.round((visibleStart - weekStart) / 864e5) + 1;
-					const span =
-						Math.round((visibleEnd - visibleStart) / 864e5) + 1;
-					const fromPrev = tripStart < weekStart;
-					const toNext = effectiveEnd > weekEnd;
+					const placed = weekSpanFor(
+						trip.startDate,
+						isoDate(effectiveEnd),
+						weekStart,
+					);
+					if (!placed) return;
+					const { start, span, fromPrev, toNext } = placed;
 					placements.push({
 						trip: { ...trip, ...times, fromPrev, toNext },
 						trackId: info.trackId,
@@ -9229,19 +9332,32 @@
 					const number = String(bus.number ?? "").trim();
 					if (!number) return;
 					const row = document.createElement("div");
-					const isOos = bus.status === "out-of-service";
+					// An inactive bus gets a row like any other — hidden by
+					// default, revealed by renderScheduler() on a week that has
+					// assignments on it, exactly as the Unassigned row works.
+					// Rendering the element unconditionally is also what stops
+					// its placements being discarded further down: the old
+					// filter-at-the-query approach left no track to place them
+					// on, so a trip on an inactive bus vanished outright.
+					const inactive = !isBusActive(bus);
 					row.className =
 						"sched-scheduler__row" +
-						(isOos ? " is-out-of-service" : "");
+						(inactive ? " sched-scheduler__row--inactive" : "");
+					row.hidden = inactive;
+					if (inactive) row.dataset.conditionalRow = "true";
 					const head = document.createElement("div");
 					head.className = "sched-scheduler__row-head";
 					head.setAttribute(
 						"aria-label",
-						bus.capacity
-							? `Bus ${number}, ${bus.capacity} pax`
-							: `Bus ${number}`,
+						inactive
+							? `Bus ${number}, inactive`
+							: bus.capacity
+								? `Bus ${number}, ${bus.capacity} pax`
+								: `Bus ${number}`,
 					);
-					if (isOos) head.title = `Bus ${number} — Out of service`;
+					if (inactive) {
+						head.title = `Bus ${number} — inactive, shown because this week has trips on it`;
+					}
 					const numberEl = document.createElement("span");
 					numberEl.className = "sched-scheduler__bus-number";
 					numberEl.setAttribute("aria-hidden", "true");
@@ -9257,12 +9373,13 @@
 						paxEl.textContent = `${bus.capacity} pax`;
 						head.appendChild(paxEl);
 					}
-					if (isOos) {
-						const oosEl = document.createElement("span");
-						oosEl.className = "rux-icon sched-scheduler__bus-oos";
-						oosEl.textContent = "block";
-						oosEl.setAttribute("aria-hidden", "true");
-						head.appendChild(oosEl);
+					if (inactive) {
+						const inactiveEl = document.createElement("span");
+						inactiveEl.className =
+							"rux-icon sched-scheduler__bus-oos";
+						inactiveEl.textContent = "cancel";
+						inactiveEl.setAttribute("aria-hidden", "true");
+						head.appendChild(inactiveEl);
 					}
 					const track = document.createElement("div");
 					track.className = "sched-scheduler__track";
@@ -9510,6 +9627,66 @@
 				});
 			}
 
+			// Rows that only exist for the weeks that need them: the Unassigned
+			// track, and every inactive bus. Both answer the same question —
+			// "did anything land here this week" — so they share one pass rather
+			// than the Unassigned row carrying its own special case.
+			//
+			// An inactive bus earns its row back from any assignment at all, not
+			// only a past one. A trip booked onto a retired coach next month is
+			// precisely the mistake a dispatcher has to be able to see, and
+			// hiding it would put us back to trips disappearing silently.
+			function syncConditionalRows() {
+				const occupied = new Set(activePlacements.map((p) => p.trackId));
+				if (unassignedRowEl) {
+					unassignedRowEl.hidden = !occupied.has(UNASSIGNED_TRACK_ID);
+				}
+				schedulerEl
+					.querySelectorAll("[data-conditional-row]")
+					.forEach((row) => {
+						const track = row.querySelector(
+							".sched-scheduler__track",
+						);
+						row.hidden = !track || !occupied.has(track.id);
+					});
+			}
+
+			// Paints the stretches each bus is out of service across its own row,
+			// one element per window per week. Drawn straight into the track
+			// under the bars — a background wash, not a blocker: the row stays a
+			// drop target and the overlap is warned about instead.
+			//
+			// Positioned off weekSpanFor, the same arithmetic the bars use, so a
+			// window clipped by the week edge lines up with a trip clipped by it.
+			function renderOutOfServiceSpans() {
+				schedulerEl
+					.querySelectorAll(".sched-scheduler__oos-span")
+					.forEach((el) => el.remove());
+				if (!busOutOfService.size) return;
+				const dayPct = 100 / viewDays;
+				schedulerEl
+					.querySelectorAll(".sched-scheduler__track[data-bus-id]")
+					.forEach((track) => {
+						outOfServiceFor(track.dataset.busId).forEach((period) => {
+							const placed = weekSpanFor(
+								period.start_date,
+								period.end_date,
+								currentWeekStart,
+							);
+							if (!placed) return;
+							const el = document.createElement("div");
+							el.className = "sched-scheduler__oos-span";
+							el.style.left = `${(placed.start - 1) * dayPct}%`;
+							el.style.width = `${placed.span * dayPct}%`;
+							el.setAttribute("aria-hidden", "true");
+							el.title = period.reason
+								? `Out of service — ${period.reason}`
+								: "Out of service";
+							track.appendChild(el);
+						});
+					});
+			}
+
 			function renderScheduler() {
 				activeObservers.forEach((o) => o.disconnect());
 				activeObservers = [];
@@ -9521,11 +9698,8 @@
 					trips[key].groupLabel = computeBusLabel(key);
 				});
 				activePlacements = getWeekPlacements(currentWeekStart, trips);
-				if (unassignedRowEl) {
-					unassignedRowEl.hidden = !activePlacements.some(
-						(p) => p.trackId === UNASSIGNED_TRACK_ID,
-					);
-				}
+				syncConditionalRows();
+				renderOutOfServiceSpans();
 				activePlacements.forEach((placement) => {
 					const track = document.getElementById(placement.trackId);
 					if (!track) return;
@@ -9864,6 +10038,15 @@
 							// Slot order within the trip — the "N/M" pill's tiebreak
 							// once a leg has several bars on the Unassigned track.
 							slotPosition: Number(assignment.position) || 0,
+							// Drives the bar's own warning icon, so an assignment
+							// made across an out-of-service stretch is still
+							// visible to whoever opens the week next — not only
+							// to the person who dragged it.
+							busOutOfService: isOutOfServiceDuring(
+								outOfServiceFor(assignment.bus_id),
+								legStart,
+								legEnd,
+							),
 							tripGroupId:
 								sameLegCount > 1 ? `${t.id}:${leg}` : null,
 							assignments: (t.trip_assignments ?? []).map(
@@ -11616,6 +11799,43 @@
 			// are real, not whatever was there before this render.
 			requestAnimationFrame(scrollTodayIntoView);
 
+			// Buses and their out-of-service windows, and the rows built from
+			// them. Re-runnable: the Fleet panel fires rux:fleet-changed on save
+			// so a vehicle going inactive, or a shop window being added, reaches
+			// the calendar without a reload. renderBusRows ends in
+			// renderScheduler(), which repaints the bars and the stripes.
+			async function loadFleet() {
+				const db = await import("./js/data/trip-db.js?v=35");
+				try {
+					schedulerBuses = await db.fetchBuses();
+				} catch (err) {
+					console.warn("Could not load buses:", err);
+				}
+				try {
+					const fleetDb = await import("./js/data/fleet-db.js");
+					busOutOfService = indexOutOfServiceByBus(
+						await fleetDb.fetchAllBusOutOfService(),
+					);
+				} catch (err) {
+					// Additive — the grid is correct without them, which is also
+					// what happens before bus-status-patch.sql has been run.
+					console.warn("Could not load out-of-service periods:", err);
+					busOutOfService = new Map();
+				}
+				renderBusRows(schedulerBuses);
+			}
+
+			document.addEventListener("rux:fleet-changed", () => {
+				// Trips reload too, not just the rows: tripTrackMap resolves a
+				// track id from the bus *number*, so renaming a vehicle leaves
+				// every placement pointing at a track that no longer exists.
+				loadFleet()
+					.then(loadTripsFromDB)
+					.catch((err) =>
+						console.warn("Could not refresh the fleet:", err),
+					);
+			});
+
 			async function initSchedulerData() {
 				try {
 					const db = await import("./js/data/trip-db.js?v=35");
@@ -11665,21 +11885,21 @@
 						delete: db.deleteContact,
 						trips: db.fetchContactTrips,
 					};
-					let buses = [],
-						drivers = [];
-					try {
-						buses = await db.fetchBuses();
-					} catch (err) {
-						console.warn("Could not load buses:", err);
-					}
-					schedulerBuses = buses;
-					renderBusRows(schedulerBuses);
+					let drivers = [];
+					await loadFleet();
 					try {
 						drivers = await db.fetchDrivers();
 					} catch (err) {
 						console.warn("Could not load drivers:", err);
 					}
-					TripPanel.updateOptions(tripPanel, { buses, drivers });
+					// Only an active bus can be picked for new work. The grid
+					// still renders rows for the inactive ones (hidden unless
+					// the week has trips on them), which is why the filter is
+					// here and not in the query.
+					TripPanel.updateOptions(tripPanel, {
+						buses: schedulerBuses.filter(isBusActive),
+						drivers,
+					});
 					await loadTripsFromDB();
 					initTripsRealtimeSync();
 					window.RuxTrips = { list: () => allTripsRaw };

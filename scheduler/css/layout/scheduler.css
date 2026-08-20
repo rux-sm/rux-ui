@@ -45,6 +45,9 @@
 	--sched-scheduler-row-head-color: var(--rux-text-secondary);
 	--sched-scheduler-max-block-size: none;
 	--sched-scheduler-scroll-padding-block-end: var(--rux-space-3);
+	/* Out-of-service stripes are a wash on the track, so they sit below both
+	   the now-line and the bars that may be booked across them. */
+	--sched-scheduler-oos-z-index: 0;
 	--sched-scheduler-now-line-z-index: 1;
 	--sched-scheduler-trip-bar-z-index: 2;
 	--sched-scheduler-row-block-inset: var(--rux-space-2);
@@ -366,21 +369,39 @@
 	display: none;
 }
 
-/* — Out of service row — */
+/* — Out of service — */
+/* Not a row state any more: a bus is out for dated stretches, so the stripes
+   cover only those columns and the rest of the row books normally. One span
+   element per window per week, positioned by renderOutOfServiceSpans() in
+   index.html off the same week arithmetic the trip bars use.
+
+   Sits under both the now-line and the bars — this is a background wash on the
+   track, not something to click or drop onto. The row stays a valid drop
+   target; landing on these days warns instead of refusing. */
 
 .sched-scheduler__bus-oos {
 	color: var(--rux-warning);
 }
 
-.sched-scheduler__row.is-out-of-service .sched-scheduler__track {
+.sched-scheduler__oos-span {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	z-index: var(--sched-scheduler-oos-z-index);
+	pointer-events: none;
 	background-image: repeating-linear-gradient(
 		-45deg,
 		transparent 0px 6px,
-		color-mix(in srgb, var(--rux-warning) 10%, transparent) 6px 12px
+		color-mix(in srgb, var(--rux-warning) 30%, transparent) 6px 12px
 	);
 }
 
-.sched-scheduler__row.is-out-of-service .sched-scheduler__row-head {
+/* — Inactive bus row — */
+/* Off the calendar, but its row still appears on a week that has trips on it,
+   so history reads correctly (see syncConditionalRows in index.html). Dimmed
+   head, no track treatment: the trips that ran are the point, not the row. */
+
+.sched-scheduler__row--inactive .sched-scheduler__row-head {
 	opacity: 0.7;
 }
 

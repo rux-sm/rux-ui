@@ -541,6 +541,17 @@ const PENDING_INDICATORS = [
     label: "Pending invoice",
     check: (trip) => trip.invoiceStatus === "pending",
   },
+  // The bus is out of service for part of this trip. Set by the scheduler off
+  // the bus's dated windows (core/bus-status.js) — the drag already warned
+  // whoever made the assignment, but this is what shows it to the next person
+  // to open the week.
+  {
+    key: "bus_out_of_service",
+    icon: "block",
+    label: "Bus is out of service during this trip",
+    tone: "warning",
+    check: (trip) => trip.busOutOfService === true,
+  },
 ];
 
 function isPendingValue(value) {
