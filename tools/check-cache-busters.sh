@@ -32,13 +32,15 @@ case "${1:-}" in
   *) echo "ERROR: unknown argument: $1" >&2; exit 2 ;;
 esac
 
-refs_in() { grep -oE 'rux-ui/(js|css)/[a-z-]+\.(js|css)\?v=[0-9]+' "$1" 2>/dev/null | sort -u; }
+# Any locally-served asset carrying a version, not just the design system's.
+# The application's own scripts are cached by the same browsers under the same
+# rules — js/panels/trip-envelope.js?v=14 goes stale exactly like rux.css does.
+refs_in() { grep -oE '[A-Za-z0-9_./-]+\.(js|css)\?v=[0-9]+' "$1" 2>/dev/null | sed 's|^\./||' | sort -u; }
 
 # ── Staged mode: the guard ───────────────────────────────────────────────────
 if [ "$MODE" = "staged" ]; then
-  STAGED_ASSETS="$(git diff --cached --name-only --diff-filter=ACM | grep -E '^rux-ui/(js|css)/.*\.(js|css)$' || true)"
+  STAGED_ASSETS="$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|css)$' | grep -vE '^(tests|tools)/' || true)"
   [ -n "$STAGED_ASSETS" ] || exit 0
-  STAGED_HTML="$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.html$' || true)"
   PROBLEMS=0
   for asset in $STAGED_ASSETS; do
     base="$(basename "$asset")"

@@ -56,6 +56,11 @@
 			</footer>
 		`;
 		document.body.appendChild(panelEl);
+		// Built after the page booted, so the scanning modules have never seen
+		// this markup: .rux-panel__body would get no scroll-shadow behaviour and
+		// a <select> no placeholder sync. controls' MutationObserver only covers
+		// segmented indicators, so it does not close this.
+		window.Rux?.boot?.(panelEl);
 
 		panelEl.querySelector("[data-doc-viewer-close]").addEventListener("click", close);
 		panelEl.querySelector("[data-doc-viewer-external]").addEventListener("pointerdown", (event) => event.stopPropagation());
