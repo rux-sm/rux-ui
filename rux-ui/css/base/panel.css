@@ -328,7 +328,7 @@
 	bottom: calc(var(--rux-panel-safe-margin) + env(safe-area-inset-bottom, 0px));
 	left: calc(var(--rux-panel-safe-margin) + env(safe-area-inset-left, 0px));
 	width: min(
-		var(--rux-panel-floating-safe-max-width, 64rem),
+		var(--rux-panel-floating-safe-max-width),
 		calc(
 			100vw - 2 * var(--rux-panel-safe-margin) - env(safe-area-inset-left, 0px) -
 				env(safe-area-inset-right, 0px)

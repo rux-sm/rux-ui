@@ -600,9 +600,14 @@ and check the two vendored consumers (H2) before touching any public name.
     *(D1, B8)* — done **additively**: every module publishes `Rux.<name>` beside its
     existing `Rux<Name>` global, `controls`/`utilities`/`theme`/`ui-shell` gained explicit
     `init(root)`, `Rux.theme` is a real API (`get`/`set`/`toggle`/`init` + `rux:theme-changed`),
-    and past-tense event siblings ship alongside the originals. **Still open:** retiring the
-    per-module DOMContentLoaded self-init for one boot — breaking for `driver.html` and the
-    vendored consumers, so it needs its own ledger step. The deprecated aliases this phase
+    and past-tense event siblings ship alongside the originals. **Re-scoped (2026-08-20):**
+    the missing piece was never the retirement, it was that nothing could wire markup
+    rendered after load. `rux-ui/js/boot.js` adds `Rux.boot(root)` — the scanners in a
+    defined order, safe to repeat — without touching how any page boots today, so the
+    breakage this line worried about does not arise. It found a live defect immediately:
+    `doc-viewer.js` and `trip-envelope.js` mount panels long after DOMContentLoaded, and
+    those had never been wired. Retiring the per-module self-init remains optional and
+    still breaking; it is no longer blocking anything. The deprecated aliases this phase
     created are listed in ledger step 17.
 
 **Phase 3 — Naming consolidation** — *items 13–15 done 2026-08-20 (ledger steps 18–20);
@@ -646,12 +651,27 @@ fallback name to catch them.
     the Phase 3 renames (`request.html` was missing from the target list), four ghost classes,
     and two dead modifiers; `state-contract` found `data-rux-accent` is written but read by no
     rule; `prefix-contract` drove `--_rux-*`→`--_*`; `focus-contract`'s five gaps were closed
-    rather than accepted. **Still open:** gallery-coverage ★, breakpoint allowlist, and
+    rather than accepted. ~~**Still open:** gallery-coverage ★, breakpoint allowlist, and
     extending tokens-contract with "portable rules read only tokens.css-declared tokens"
-    (catches C4).
-20. Wire-or-remove: type-role axes (C5), 3 deprecated text aliases, `--rux-divider`,
-    `--rux-shadow-pressed`, bridge motion tokens; declare the four rule-invented panel
-    tokens in tokens.css; `--rux-z-splash`. *(C4, C5, H3)*
+    (catches C4).~~ **done (2026-08-20)** — `gallery-coverage` and `breakpoint-contract`
+    ship as ratchets: today's 13 missing specimens and 4 portable breakpoints are recorded,
+    a new component or width cannot appear without a deliberate entry, and both lists are
+    asserted to stay honest. C4 landed in `portability-boundary` instead of
+    `tokens-contract`, where the dangling-token rule already lived: fallback reads now
+    count, so `var(--x, 8px)` no longer hides a token nothing portable declares.
+20. Wire-or-remove: type-role axes (C5), 3 deprecated text aliases, ~~`--rux-divider`~~,
+    ~~`--rux-shadow-pressed`~~, bridge motion tokens; ~~declare the four rule-invented panel
+    tokens in tokens.css~~; ~~`--rux-z-splash`~~. *(C4, C5, H3)*
+    **Partly done (2026-08-20).** `--rux-divider` and `--rux-z-splash` are gone.
+    `--rux-shadow-pressed` is **kept, not removed**: it reads as dead here because nothing
+    in this repository uses it, but `portal/app/globals.css:178` does and the README
+    publishes it — the same consumer blindness that pruned `.rux-card--boxed`,
+    `.rux-cluster`, and `.rux-button--header` out from under a live consumer. Of the panel
+    tokens, three were rule-local aliases declared before use and are fine as they are;
+    the real violation was `--rux-panel-floating-safe-max-width`, read with a `64rem`
+    fallback while only applications declared it. Now declared in `tokens.css` and the
+    fallback dropped. **Still open:** C5's type-role axes and the 3 deprecated text
+    aliases.
 
 **Phase 5 — Optional structural**
 21. `table.js` sort/filter behavior module (or an explicit "CSS-only contract" header). *(A2)*

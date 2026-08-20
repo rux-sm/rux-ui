@@ -43,20 +43,43 @@ if [ "$MODE" = "staged" ]; then
   [ -n "$STAGED_ASSETS" ] || exit 0
   PROBLEMS=0
   for asset in $STAGED_ASSETS; do
-    base="$(basename "$asset")"
+    # What a page actually versions for this asset. Pages link rux.css, not
+    # base/panel.css, so changing panel.css has to move rux.css's number — the
+    # asset's own name appears nowhere. Check the importers too.
+    NAMES="$(basename "$asset")"
+    while IFS= read -r importer; do
+      d="$(dirname "$importer")"
+      while IFS= read -r imp; do
+        # Resolve the import against the importing file's directory and compare
+        # PATHS. Matching basenames said scheduler/css/components.css imports
+        # rux-ui/css/tokens.css, because it imports its own ./tokens.css — a
+        # different file that happens to share a name.
+        if [ "$d/$imp" = "$asset" ]; then
+          NAMES="$NAMES $(basename "$importer")"
+          break
+        fi
+      done < <(grep -oE '@import "\./[^"]+"' "$importer" 2>/dev/null \
+               | sed 's|@import "\./||; s|"$||; s|?.*$||')
+    done < <(grep -rlE '@import "' rux-ui/css scheduler/css 2>/dev/null)
+    for base in $NAMES; do
+    # Anchored on the path separator. Matching the bare basename made
+    # "panel.css?v=" collide with driver-panel.css, fleet-panel.css and two
+    # others, blocking a commit over files that had not changed.
+    base_re="/$(printf '%s' "$base" | sed 's/[.[\*^$()+?{}|]/\\&/g')"
     for page in *.html; do
-      grep -q "$base?v=" "$page" 2>/dev/null || continue
+      grep -qE "$base_re\?v=" "$page" 2>/dev/null || continue
       # The page must be staged too, and its version for THIS asset must differ
       # from the committed one.
       # Compare HEAD against the INDEX, not the working tree. A bump sitting
       # unstaged in the working tree would otherwise satisfy this while the
       # commit shipped the asset without the page that versions it.
-      old="$(git show "HEAD:$page" 2>/dev/null | grep -oE "$base\?v=[0-9]+" | head -1)"
-      new="$(git show ":$page" 2>/dev/null | grep -oE "$base\?v=[0-9]+" | head -1)"
+      old="$(git show "HEAD:$page" 2>/dev/null | grep -oE "$base_re\?v=[0-9]+" | head -1)"
+      new="$(git show ":$page" 2>/dev/null | grep -oE "$base_re\?v=[0-9]+" | head -1)"
       if [ "$old" = "$new" ]; then
-        echo "✗ $asset changed but $page still says ${new:-<none>}"
+        echo "✗ $asset changed but $page still says ${new#/}"
         PROBLEMS=$((PROBLEMS + 1))
       fi
+    done
     done
   done
   if [ "$PROBLEMS" -gt 0 ]; then
@@ -71,6 +94,33 @@ if [ "$MODE" = "staged" ]; then
 fi
 
 # ── Audit / fix ──────────────────────────────────────────────────────────────
+# The newest commit across a file and anything it @imports. A page links
+# rux.css, but rux.css is 24 @import lines deep: change tokens.css and the
+# browser receives different bytes under rux.css's unchanged version, which the
+# file's own timestamp cannot see. One level is enough here — nothing under
+# base/ imports further — and a deeper tree would want recursion.
+newest_ct() {
+  local file="$1" dir newest ct target imp
+  newest="$(git log -1 --format=%ct -- "$file" 2>/dev/null)"
+  [ -n "$newest" ] || newest=0
+  # An uncommitted edit is a change that has happened, even though git log
+  # cannot see it. Without this, --fix could not resolve what --staged reports:
+  # the hook would send you to a command that had nothing to do. Compare against
+  # HEAD, not the index — a pre-commit hook runs with everything already staged,
+  # where a bare `git diff` reports clean.
+  git diff --quiet HEAD -- "$file" 2>/dev/null || newest=9999999999
+  dir="$(dirname "$file")"
+  while IFS= read -r imp; do
+    [ -n "$imp" ] || continue
+    target="$dir/$imp"
+    [ -f "$target" ] || continue
+    ct="$(git log -1 --format=%ct -- "$target" 2>/dev/null)"
+    git diff --quiet HEAD -- "$target" 2>/dev/null || ct=9999999999
+    [ -n "$ct" ] && [ "$ct" -gt "$newest" ] && newest="$ct"
+  done < <(grep -oE '@import "\./[^"]+"' "$file" 2>/dev/null | sed 's|@import "\./||; s|"$||; s|?.*$||')
+  echo "$newest"
+}
+
 STALE=0
 FIXED=0
 for page in *.html; do
@@ -79,13 +129,13 @@ for page in *.html; do
     version="${ref##*=}"
     base="$(basename "$file")"
     [ -f "$file" ] || continue
-    file_at="$(git log -1 --format=%ct -- "$file" 2>/dev/null)"
+    file_at="$(newest_ct "$file")"
     # -G, not -S. -S counts occurrences of a string, and bumping v4 to v5
     # leaves the count of "thing.js?v=" unchanged, so -S never sees a bump and
     # the audit would stay red forever. -G matches changed lines instead.
     base_re="$(printf '%s' "$base" | sed 's/[.[\*^$()+?{}|]/\\&/g')"
     ver_at="$(git log -1 --format=%ct -G"$base_re\?v=" -- "$page" 2>/dev/null)"
-    [ -n "$file_at" ] || continue
+    [ "$file_at" != "0" ] || continue
     [ -n "$ver_at" ] || ver_at=0
     [ "$file_at" -le "$ver_at" ] && continue
     STALE=$((STALE + 1))

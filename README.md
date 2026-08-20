@@ -38,7 +38,9 @@ happened) and before `npm test`.
 ```
 .
 ├── README.md              ← you are here
-├── gallery.html           ← every component, both themes, no app boot required
+├── gallery.html           ← component specimens, both themes, no app boot required
+│                            (9 of 22 base components so far — tests/gallery-coverage
+│                             records the gaps and stops new ones appearing)
 ├── .claude/skills/        ← Claude Code skills: rux-design, vendor-rux-ui, verify
 ├── CLAUDE.md              ← concise Claude Code repository policy
 ├── docs/ai/               ← human-facing AI workflow and model routing

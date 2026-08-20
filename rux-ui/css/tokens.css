@@ -656,6 +656,14 @@
 	--rux-panel-exit-easing:             var(--rux-motion-easing-exit-productive);
 	--rux-panel-standard-easing:         var(--rux-motion-easing-standard-productive);
 
+	/* Desktop ceiling for .rux-panel--floating.rux-panel--safe-viewport. This
+	   lived only as a literal fallback inside panel.css while the sole real
+	   declarations were application-side (doc-viewer 64rem, trip-envelope
+	   40rem) — a portable contract nothing portable defined, and invisible to
+	   anyone reading this file for what they may configure. Applications still
+	   narrow it by setting this on their own panel. */
+	--rux-panel-floating-safe-max-width: 64rem;
+
 	/* — header — */
 	--rux-panel-header-height: 40px;
 	--rux-panel-header-weight: var(--rux-weight-400);

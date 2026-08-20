@@ -79,10 +79,15 @@ test("every --rux-* custom property the portable layer reads resolves inside it"
 		const local = new Set(
 			[...css.matchAll(/^\s*(--rux-[a-z0-9-]+)\s*:/gim)].map(([, t]) => t),
 		);
-		// Only fallback-less reads can break a consumer. `var(--x, 8px)` is the
-		// documented escape hatch for a value the application may configure, so
-		// it carries its own portable default and is allowed.
-		for (const [, token] of css.matchAll(/var\(\s*(--rux-[a-z0-9-]+)\s*\)/gim)) {
+		// Reads with a fallback count too. `var(--x, 8px)` looks like an escape
+		// hatch for a value the application may configure, but if nothing
+		// portable declares --x then the literal is always the real value and
+		// the "contract" is fiction — invisible to anyone reading tokens.css for
+		// what they may set. That was true of exactly one token,
+		// --rux-panel-floating-safe-max-width, whose only real declarations were
+		// application-side. Declare the portable default in tokens.css and the
+		// fallback becomes unnecessary. (C4)
+		for (const [, token] of css.matchAll(/var\(\s*(--rux-[a-z0-9-]+)\s*[,)]/gim)) {
 			if (defined.has(token) || local.has(token)) continue;
 			dangling.push(`${name} → ${token}`);
 		}
