@@ -199,7 +199,7 @@ test("the UI header owns one canonical fixed height", () => {
 	assert.match(headerCss, /min-height:\s*var\(--rux-ui-header-min-height\);/);
 	assert.match(headerCss, /\.rux-ui-header::after\s*\{[^}]*border-bottom:\s*var\(--rux-ui-header-border\);/s);
 	/* No rival header *block* may live in this file. A modifier such as
-	   .rux-button--header is another block varying itself for header context,
+	   .rux-button--lg is another block varying itself for header context,
 	   not a competing header component, so it is allowed. */
 	const rivalHeaderBlocks = [...headerCss.matchAll(/\.rux-[\w-]*header[\w-]*/g)]
 		.map(([selector]) => selector)
@@ -268,7 +268,10 @@ test("side navigation uses productive non-persistent overlay motion", () => {
 	assert.match(sideNavMotionRules, /clip-path:\s*inset\(0 100% 0 0\);/);
 	assert.match(sideNavMotionRules, /\.rux-side-nav--overlay\.is-open\s*\{[^}]*clip-path:\s*inset\(0\);/s);
 	assert.doesNotMatch(sideNavMotionRules, /translateX/);
-	assert.match(tokensCss, /--rux-side-nav-scrim-opacity:\s+0\.65;/);
+	// All three scrims now paint --rux-overlay-scrim; opacity is the fade
+	// mechanism only, so the fully-shown value is 1.
+	assert.match(tokensCss, /--rux-side-nav-scrim-bg:\s+var\(--rux-overlay-scrim\);/);
+	assert.match(tokensCss, /--rux-side-nav-scrim-opacity:\s+1;/);
 	assert.match(tokensCss, /--rux-side-nav-scrim-enter-duration:\s+200ms;/);
 	assert.match(
 		tokensCss,

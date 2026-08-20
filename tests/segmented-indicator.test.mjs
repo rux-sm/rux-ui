@@ -19,7 +19,7 @@ test("segmented indicators preserve fractional geometry and the track gutter", (
 
 test("segmented tracks own selection, accessibility, and one change event", () => {
 	assert.match(controlsSource, /function setActiveSegment\(/);
-	assert.match(controlsSource, /new CustomEvent\("rux:segment-change"/);
+	assert.match(controlsSource, /new CustomEvent\("rux:segment-changed"/);
 	assert.match(controlsSource, /previousValue: segmentedValue\(previous\)/);
 	assert.match(controlsSource, /button\.tabIndex = isActive \? 0 : -1/);
 	assert.match(controlsSource, /e\.key === "Home"/);

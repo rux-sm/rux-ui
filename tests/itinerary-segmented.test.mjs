@@ -10,7 +10,7 @@ const itinerarySource = await readFile(
 test("itinerary segmented controls use the shared component contract", () => {
 	assert.match(itinerarySource, /data-rux-segmented data-itinerary-segment="origin-mode"/);
 	assert.match(itinerarySource, /data-rux-segmented data-itinerary-segment="dwell-status"/);
-	assert.match(itinerarySource, /addEventListener\("rux:segment-change"/);
+	assert.match(itinerarySource, /addEventListener\("rux:segment-changed"/);
 	assert.match(itinerarySource, /e\.detail\.value/);
 	assert.doesNotMatch(itinerarySource, /data-dwell-status=/);
 	assert.doesNotMatch(itinerarySource, /data-origin-mode=/);
@@ -18,7 +18,7 @@ test("itinerary segmented controls use the shared component contract", () => {
 
 test("segment changes patch dependent itinerary regions without rebuilding the stop list", () => {
 	const handler = itinerarySource.match(
-		/stopsEl\.addEventListener\("rux:segment-change",[\s\S]*?\n\t\t\}\);/,
+		/stopsEl\.addEventListener\("rux:segment-changed",[\s\S]*?\n\t\t\}\);/,
 	)?.[0] || "";
 	assert.ok(handler, "expected the itinerary segment-change handler");
 	assert.match(handler, /syncDwellSummaryCard/);

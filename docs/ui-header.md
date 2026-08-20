@@ -59,7 +59,7 @@ visible.
 ```html
 <header class="rux-ui-header" aria-label="Application Header">
   <button
-    class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__menu"
+    class="rux-button rux-button--ghost rux-button--icon rux-button--lg rux-ui-header__menu"
     type="button"
     aria-label="Open Navigation"
     aria-expanded="false"
@@ -117,7 +117,7 @@ configuration and does not use the hamburger disclosure pattern.
   `.rux-ui-header__nav-item` for its destinations.
 - `.rux-ui-header__actions` is the global-action bar.
 - Global actions use `.rux-button`, `.rux-button--ghost`,
-  `.rux-button--icon`, and `.rux-button--header` directly.
+  `.rux-button--icon`, and `.rux-button--lg` directly.
 - `.rux-ui-header__profile` identifies the profile-menu trigger. Its avatar is
   centered inside the same standard header-button target.
 - A right-panel trigger uses the same disclosure contract: `aria-controls`
@@ -144,13 +144,13 @@ configuration and does not use the hamburger disclosure pattern.
 Header actions use a shell-specific size contract inspired by productive UI
 shells. They do not change the compact application-button standard.
 
-| Part | Contract |
-|---|---:|
-| Header | `44px` high |
-| Hit target | `44px × 44px` |
-| Icon | `24px × 24px` |
-| Profile avatar | `32px × 32px` |
-| Corner radius | `0` |
+| Part | Desktop | Mobile (≤500px) |
+|---|---:|---:|
+| Header height | `40px` | `44px` |
+| Hit target | `40px × 40px` | `44px × 44px` |
+| Icon | `22px × 22px` | `24px × 24px` |
+| Profile avatar | `32px × 32px` | `32px × 32px` |
+| Corner radius | `var(--rux-radius-control)` (4px) | same |
 
 Use the action button for the navigation trigger and persistent global actions
 such as search, messages, notifications, and profile. The control is transparent
@@ -277,8 +277,8 @@ namespace.
 - Any right-panel trigger exposes accurate `aria-controls` and `aria-expanded`
   state.
 - Header actions remain usable in light and dark themes.
-- Header action hit targets resolve to 44px and glyphs resolve to 24px.
-- The complete header box resolves to 44px, including its visual divider.
+- Header action hit targets resolve to `--rux-button-height-header` (40px desktop, 44px mobile) and glyphs to `--rux-button-icon-size-header`.
+- The complete header box resolves to `--rux-ui-header-height`, including its visual divider.
 - Expanded menu and panel triggers retain a visible active state.
 - Header and navigation remain usable at desktop, tablet, mobile, and 200% zoom.
 - Workspace controls remain outside the global header.

@@ -108,6 +108,12 @@
 	background: var(--rux-table-row-hover-bg);
 }
 
+/* Keyboard parity for the row highlight: a cell's own control holding focus
+   should light the row the same way hovering it does. */
+.rux-table tbody tr:has(:focus-visible) {
+	background: var(--rux-table-row-hover-bg);
+}
+
 .rux-table tbody tr.is-selected {
 	background: var(--rux-table-row-selected-bg);
 }
@@ -150,6 +156,13 @@
 
 .rux-table th[data-sort]:hover {
 	color: var(--rux-text-primary);
+}
+
+.rux-table th[data-sort]:focus-visible,
+.rux-table th[data-col-filter]:focus-visible {
+	outline: none;
+	color: var(--rux-text-primary);
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
 }
 
 .rux-table th[data-sort].is-sort-asc::after {

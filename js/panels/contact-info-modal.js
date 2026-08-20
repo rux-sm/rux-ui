@@ -7,7 +7,7 @@
 	function ensureModal() {
 		if (modal) return modal;
 		modal = document.createElement("div");
-		modal.className = "rux-modal-backdrop";
+		modal.className = "rux-modal-scrim";
 		modal.hidden = true;
 		// Opts out of trip-bar.js's outside-pointerdown dismissal — this modal
 		// only opens from the currently selected bar's data, so interacting
@@ -17,7 +17,7 @@
 			<section class="rux-modal sched-contact-info-modal" role="dialog" aria-modal="true" aria-labelledby="contact-info-modal-title">
 				<header class="rux-card__header">
 					<h2 class="rux-card__title" id="contact-info-modal-title">Contact Info</h2>
-					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close">
+					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--lg" data-rux-dismiss aria-label="Close">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>

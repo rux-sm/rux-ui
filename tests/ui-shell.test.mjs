@@ -17,6 +17,7 @@ const feedbackStyles = read("rux-ui/css/base/feedback.css");
 const cardStyles = read("rux-ui/css/base/card.css");
 const tokens = read("rux-ui/css/tokens.css");
 const menuController = read("rux-ui/js/menu.js");
+const overlayController = read("rux-ui/js/overlay.js");
 const popoverController = read("rux-ui/js/popover.js");
 const suggestionsController = read("rux-ui/js/suggestions.js");
 const notificationsController = read("js/panels/notifications-panel.js");
@@ -62,7 +63,7 @@ test("global header actions use the shared 44px button and 20px icon contract", 
 		"notifications-menu-btn",
 		"profile-menu-btn",
 	]) {
-		assert.match(openingTag(id), /rux-button--icon rux-button--header/);
+		assert.match(openingTag(id), /rux-button--icon rux-button--lg/);
 	}
 	assert.match(tokens, /--rux-icon-md:\s+20px;/);
 	assert.match(tokens, /--rux-ui-header-height:\s+44px;/);
@@ -73,7 +74,7 @@ test("global header actions use the shared 44px button and 20px icon contract", 
 });
 
 test("mobile keeps every app-header action available above drawer content", () => {
-	assert.doesNotMatch(openingTag("team-chat-btn"), /rux-ui-header__utility--optional/);
+	assert.doesNotMatch(openingTag("team-chat-btn"), /rux-ui-header__utility--responsive/);
 	assert.match(
 		layoutStyles,
 		/#notifications-menu,\s*#profile-menu,\s*#team-chat-popover\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s,
@@ -122,15 +123,18 @@ test("header tab-tip popovers preserve the correct disclosure semantics", () => 
 	assert.match(profileButton, /aria-haspopup="menu"/);
 	assert.match(profileButton, /aria-controls="profile-menu"/);
 	assert.match(profileButton, /aria-expanded="false"/);
-	assert.match(headerStyles, /\.rux-ui-header \.rux-button--header\[aria-expanded="true"\]/);
+	assert.match(headerStyles, /\.rux-ui-header \.rux-button--lg\[aria-expanded="true"\]/);
 	assert.match(
 		headerStyles,
-		/:is\(\.rux-ui-header__disclosure, \.rux-ui-header__menu\)\[aria-expanded="true"\][^}]*background:\s*var\(--_rux-header-disclosure-bg\)/s,
+		/:is\(\.rux-ui-header__disclosure, \.rux-ui-header__menu\)\[aria-expanded="true"\][^}]*background:\s*var\(--_header-disclosure-bg\)/s,
 	);
-	assert.match(headerStyles, /\.rux-ui-header__menu\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-side-nav-bg\)/s);
+	assert.match(headerStyles, /\.rux-ui-header__menu\s*\{[^}]*--_header-disclosure-bg:\s*var\(--rux-side-nav-bg\)/s);
 	assert.match(tokens, /--rux-side-nav-shadow:\s+none;/);
-	assert.match(menuController, /active\.trigger\?\.contains\(event\.target\)/);
-	assert.match(menuController, /event\.key === "Escape"/);
+	// Outside-press and Escape moved out of menu.js into the overlay kernel;
+	// a menu registers its trigger as the anchor and the kernel does the rest.
+	assert.match(menuController, /window\.RuxOverlay\.register\(\{[\s\S]*?anchor: trigger,/);
+	assert.match(overlayController, /record\.anchor\?\.contains\?\.\(target\)/);
+	assert.match(overlayController, /event\.key !== "Escape"/);
 	assert.match(chatButton, /rux-ui-header__disclosure/);
 	assert.match(chatButton, /aria-haspopup="dialog"/);
 	assert.match(chatButton, /aria-controls="team-chat-popover"/);
@@ -152,7 +156,7 @@ test("header tab-tip popovers preserve the correct disclosure semantics", () => 
 	// .rux-popover--flush-end, being the one header popover flush with the
 	// viewport edge.
 	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip[^"]*"\s+id="profile-menu"/);
-	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-notifications-menu"/);
+	assert.match(page, /class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-notifications"/);
 	assert.match(chatController, /rux-popover rux-popover--surface rux-popover--tab-tip sched-team-chat-popover/);
 	assert.match(popoverStyles, /\.rux-popover\.rux-popover--surface\s*\{[^}]*background:\s*var\(--rux-popover-surface-bg\);[^}]*border:\s*var\(--rux-popover-surface-border\);[^}]*border-radius:\s*var\(--rux-popover-surface-radius\);[^}]*box-shadow:\s*var\(--rux-popover-surface-shadow\);/s);
 	assert.match(tokens, /--rux-popover-surface-bg:\s+var\(--rux-surface-\d+\);/);
@@ -163,7 +167,10 @@ test("header tab-tip popovers preserve the correct disclosure semantics", () => 
 		/\.rux-popover\.rux-popover--surface\.rux-popover--tab-tip\s*\{[^}]*box-shadow:\s*var\(--rux-popover-tab-tip-shadow\);/s,
 	);
 	assert.match(popoverController, /function createDisclosure\(trigger, popover, options = \{\}\)/);
-	assert.match(popoverController, /event\.key !== "Escape"/);
+	// A disclosure closes on Escape by registering with the kernel, which owns
+	// the single Escape policy for every overlay.
+	assert.match(popoverController, /registration = window\.RuxOverlay\.register\(/);
+	assert.match(overlayController, /event\.key !== "Escape"/);
 	assert.match(chatController, /panelEl\.id = "team-chat-popover"/);
 	assert.match(chatController, /role", "dialog"/);
 	assert.match(chatController, /RuxPopover\.createDisclosure\(btn, panelEl/);
@@ -268,9 +275,15 @@ test("Team Chat mentions use stable profile IDs and accessible suggestions", () 
 
 test("menus opened inside modals are promoted above the modal layer", () => {
 	assert.match(page, /id="tp-payment-add-btn"[^>]*aria-haspopup="menu"/s);
+	assert.match(popoverController, /window\.RuxOverlay\.promoteLayer\(popover, anchor\)/);
+	// The host list lives in the kernel now — one copy, three consumers.
 	assert.match(
-		popoverController,
-		/popover\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?Boolean\(anchor\.closest\("\.rux-modal-backdrop, \.rux-panel--floating"\)\)/,
+		overlayController,
+		/MODAL_LAYER_HOSTS = "\.rux-modal-scrim, \.rux-panel--floating"/,
+	);
+	assert.match(
+		overlayController,
+		/toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?anchor\?\.closest\?\.\(MODAL_LAYER_HOSTS\)/,
 	);
 	assert.match(
 		popoverStyles,
@@ -279,10 +292,7 @@ test("menus opened inside modals are promoted above the modal layer", () => {
 });
 
 test("autofill suggestions opened from windows are promoted above their surface", () => {
-	assert.match(
-		suggestionsController,
-		/panelEl\.toggleAttribute\([\s\S]*?"data-rux-modal-layer",[\s\S]*?input\.closest\("\.rux-modal-backdrop, \.rux-panel--floating"\)/,
-	);
+	assert.match(suggestionsController, /window\.RuxOverlay\.promoteLayer\(panelEl, input\)/);
 	assert.match(
 		suggestionStyles,
 		/\.rux-suggestions\[data-rux-modal-layer\]\s*\{[^}]*z-index:\s*calc\(var\(--rux-z-modal\) \+ 1\);/s,
@@ -309,13 +319,15 @@ test("profile Preferences own the global theme control", () => {
 	const preferencesEnd = page.indexOf('id="notifications-menu"', preferencesStart);
 	const preferences = page.slice(preferencesStart, preferencesEnd);
 
-	assert.doesNotMatch(header, /id="theme-toggle"/);
+	assert.doesNotMatch(header, /data-rux-theme-toggle/);
 	assert.match(page, /id="preferences-menu-btn"[\s\S]*?<span>Preferences…<\/span>/);
 	assert.match(preferences, /role="dialog"/);
 	assert.match(preferences, /aria-labelledby="preferences-title"/);
-	assert.match(preferences, /id="theme-toggle"/);
-	assert.equal(page.match(/id="theme-toggle"/g)?.length, 1);
-	assert.match(themeController, /getElementById\("theme-toggle"\)/);
+	assert.match(preferences, /data-rux-theme-toggle/);
+	assert.equal(page.match(/data-rux-theme-toggle/g)?.length, 1);
+	// One markup contract: the attribute. No ID coupling.
+	assert.match(themeController, /querySelectorAll\("\[data-rux-theme-toggle\]"\)/);
+	assert.doesNotMatch(themeController, /#theme-toggle/);
 	assert.match(
 		page,
 		/preferencesMenuBtn\?\.addEventListener\("click"[\s\S]*?queueMicrotask\(\(\) => window\.Rux\?\.openModal\(preferencesModal\)\)/,
@@ -325,9 +337,13 @@ test("profile Preferences own the global theme control", () => {
 
 test("side-nav disclosure behavior keeps accessibility state synchronized", () => {
 	assert.match(shellController, /toggle\.setAttribute\("aria-expanded", String\(open\)\)/);
-	assert.match(shellController, /nav\.setAttribute\("aria-hidden", String\(!open\)\)/);
+	// inert alone hides the nav from the accessibility tree; aria-hidden is redundant.
+	assert.doesNotMatch(shellController, /nav\.setAttribute\("aria-hidden"/);
 	assert.match(shellController, /nav\.inert = !open/);
-	assert.match(shellController, /event\.key === "Escape"/);
+	// Escape is the overlay kernel's; the nav registers while it is open and
+	// opts out of outside-press, since the scrim is its own dismiss surface.
+	assert.match(shellController, /window\.RuxOverlay\?\.register\(/);
+	assert.match(shellController, /dismissOn: \{ outside: false \}/);
 	assert.match(shellController, /restoreFocus: true/);
 	assert.match(shellController, /\.rux-side-nav__link/);
 });
@@ -336,14 +352,14 @@ test("the Calendar tools panel is workspace-controlled and fully hideable", () =
 	const drawerMarkup = page.match(
 		/<div\s+class="[^"]*rux-drawer--right[^"]*"\s+id="right-panel-drawer"/,
 	)?.[0] ?? "";
-	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__panel-toggle"/);
+	assert.match(page, /class="rux-button rux-button--ghost rux-button--icon rux-button--lg calendar-app__panel-toggle"/);
 	assert.doesNotMatch(page, /calendar-app__panel-toggle"[\s\S]{0,500}<span class="rux-button__label">Tools<\/span>/);
 	assert.match(tokens, /--rux-button-height-standard:\s+32px;/);
 	assert.match(tokens, /--rux-button-height-header:\s+44px;/);
 	assert.match(tokens, /--rux-button-icon-size-header:\s+var\(--rux-icon-lg\);/);
-	assert.match(controlStyles, /\.rux-button--header\s*\{[^}]*--_h:\s*var\(--rux-button-height-header\);/s);
-	assert.match(controlStyles, /\.rux-button--header\.rux-button--icon\s*\{[^}]*font-size:\s*var\(--rux-button-icon-size-header\);/s);
-	assert.match(controlStyles, /\.rux-button--header > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-button-icon-size-header\);/s);
+	assert.match(controlStyles, /\.rux-button--lg\s*\{[^}]*--_h:\s*var\(--rux-button-height-header\);/s);
+	assert.match(controlStyles, /\.rux-button--lg\.rux-button--icon\s*\{[^}]*font-size:\s*var\(--rux-button-icon-size-header\);/s);
+	assert.match(controlStyles, /\.rux-button--lg > \.rux-icon\s*\{[^}]*--_icon-size:\s*var\(--rux-button-icon-size-header\);/s);
 	assert.match(page, /aria-expanded="true"[\s\S]*?aria-controls="right-panel-drawer"/);
 	assert.match(drawerMarkup, /class="rux-drawer rux-drawer--right"/);
 	assert.match(page, /<aside[\s\S]*?class="rux-panel rux-panel--attached sched-scope-right-panel"[\s\S]*?aria-label="Calendar Tools"/);
@@ -356,9 +372,12 @@ test("button emphasis is limited to the approved variants and size roles", () =>
 	assert.doesNotMatch(tokens, /--rux-button-(?:outline|on-accent)-/);
 	assert.doesNotMatch(page, /rux-button--(?:accent|default)[^"\n]*rux-button--danger/);
 	assert.doesNotMatch(page, /Danger Outline/);
-	assert.doesNotMatch(page, /rux-button--sm/);
-	assert.doesNotMatch(controlStyles, /\.rux-button--sm/);
 	assert.doesNotMatch(controlStyles, /\.rux-button--icon-lg/);
+	// Size roles are --sm (24px) / unmodified (32px) / --lg (40px), matching
+	// --rux-icon-sm|md|lg and .rux-avatar--sm|--lg. One size vocabulary, so the
+	// old blanket ban on --sm is replaced by asserting both rungs resolve.
+	assert.match(controlStyles, /\.rux-button--sm\s*\{[^}]*--_h:\s*var\(--rux-button-height-compact\);/s);
+	assert.match(controlStyles, /\.rux-button--lg\s*\{[^}]*--_h:\s*var\(--rux-button-height-header\);/s);
 	assert.doesNotMatch(tokens, /--rux-button-danger-outline-/);
 	assert.match(tokens, /--rux-button-height-compact:\s+24px;/);
 	assert.match(tokens, /--rux-button-icon-size-compact:\s+var\(--rux-icon-sm\);/);
@@ -403,7 +422,7 @@ test("Today remains a text-only header action at every breakpoint", () => {
 
 test("mini calendar navigation uses shared 44px header icon buttons", () => {
 	for (const id of ["mini-cal-prev", "mini-cal-next"]) {
-		assert.match(openingTag(id), /rux-button--icon rux-button--header/);
+		assert.match(openingTag(id), /rux-button--icon rux-button--lg/);
 	}
 });
 

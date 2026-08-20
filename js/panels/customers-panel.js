@@ -188,13 +188,13 @@
 
 	async function loadContactTrips(contactId) {
 		if (!tripList) return;
-		tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+		tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-u-muted">Loading…</span></li>`;
 		try {
 			const db = await getContactsDb();
 			const trips = await db.fetchContactTrips(contactId);
 			if (selectedId !== contactId) return;
 			if (!trips.length) {
-				tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-subtle">No trips yet.</span></li>`;
+				tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-u-muted">No trips yet.</span></li>`;
 				return;
 			}
 			tripList.innerHTML = trips
@@ -209,7 +209,7 @@
 		} catch (err) {
 			if (selectedId !== contactId) return;
 			console.warn("Could not load customer trips:", err);
-			tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+			tripList.innerHTML = `<li class="sched-scope-customer__trip-item"><span class="rux-u-muted">Could not load trips.</span></li>`;
 		}
 	}
 

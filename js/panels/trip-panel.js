@@ -76,9 +76,6 @@ function setRoleStatus(button, value, metadata = {}) {
 		"rux-role--pending-response",
 		"rux-role--confirmed",
 		"rux-role--declined",
-		"rux-role--danger",
-		"rux-role--warning",
-		"rux-role--success",
 	);
 	if (state !== "off") button.classList.add(`rux-role--${state}`);
 	let detail = "";
@@ -186,7 +183,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
     <div class="sched-scope-trip__driver-row" data-role-row="${escHtml(r.role)}" hidden>
       <div class="rux-input-group rux-input-group--prefix rux-input-group--action sched-scope-trip__driver-select">
         <span class="rux-input-group__prefix">
-          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
+          <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].${escHtml(r.role)}.status" data-role-label="${escHtml(r.title)}" data-role-state="off" title="${escHtml(r.title)} status: Off" aria-label="${escHtml(r.title)} status: Off">
             <span class="rux-icon" aria-hidden="true">${escHtml(mapIcon(r.icon))}</span>
           </button>
         </span>
@@ -207,7 +204,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
 	el.innerHTML = `
     <header class="rux-card__header">
       <p class="rux-card__title">Bus ${idx + 1}</p>
-      <div class="rux-cluster">
+      <div class="rux-u-cluster">
         <button class="rux-button rux-button--ghost rux-button--toggle rux-button--icon" type="button" aria-pressed="false" data-role="coDriver" title="Co-driver" aria-label="Co-driver">
           <span class="rux-icon" aria-hidden="true">group</span>
         </button>
@@ -230,7 +227,7 @@ function buildBusGroup(idx, buses, drivers, fieldPrefix = "buses") {
       <div class="sched-scope-trip__driver-row">
         <div class="rux-input-group rux-input-group--prefix rux-input-group--action sched-scope-trip__driver-select">
           <span class="rux-input-group__prefix">
-            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
+            <button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm sched-scope-trip__role-label" data-role-key="${escHtml(fieldPrefix)}[${idx}].driver.status" data-role-label="Driver" data-role-state="off" title="Driver status: Off" aria-label="Driver status: Off">
               <span class="rux-icon" aria-hidden="true">person</span>
             </button>
           </span>
@@ -579,7 +576,7 @@ if (balancePaidEl) balancePaidEl.checked = fullyPaid;
 	paymentMenuEl.className = "rux-menu rux-popover";
 	paymentMenuEl.hidden = true;
 	paymentMenuEl.setAttribute("role", "menu");
-	paymentMenuEl.addEventListener("rux:menu-close", () => { paymentMenuEl.innerHTML = ""; });
+	paymentMenuEl.addEventListener("rux:menu-closed", () => { paymentMenuEl.innerHTML = ""; });
 	document.body.appendChild(paymentMenuEl);
 
 	const closePaymentMenu = () => {
@@ -1264,7 +1261,7 @@ function initTripPanel(root, { buses = [], drivers = [] } = {}) {
 		docMenuEl.className = "rux-menu rux-popover";
 		docMenuEl.hidden = true;
 		docMenuEl.setAttribute("role", "menu");
-		docMenuEl.addEventListener("rux:menu-close", () => { docMenuEl.innerHTML = ""; });
+		docMenuEl.addEventListener("rux:menu-closed", () => { docMenuEl.innerHTML = ""; });
 		document.body.appendChild(docMenuEl);
 
 		const closeDocMenu = () => {

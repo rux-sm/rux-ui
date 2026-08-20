@@ -200,6 +200,7 @@
 
 		const DRAWER_DEFAULT = configuredDefaultWidth(drawer);
 		let cancelPendingClose = null;
+		let registration = null;
 
 		function completeAfterMotion(target, type, expectedName, complete) {
 			cancelPendingClose?.();
@@ -302,6 +303,18 @@
 			drawer.setAttribute("aria-hidden", "false");
 			syncToggleButton(true);
 			showScrim(close);
+			// Escape comes from the overlay kernel, which closes the topmost
+			// surface only — so Escape with a menu open inside the drawer
+			// dismisses the menu and leaves the drawer standing. Outside-press
+			// is opted out: the scrim is the drawer's own dismiss affordance on
+			// mobile, and on desktop it is an attached panel where a stray click
+			// in the workspace must not collapse it.
+			registration = window.RuxOverlay?.register({
+				element: drawer,
+				anchor: toggleBtn,
+				close: () => close(),
+				dismissOn: { outside: false },
+			}) ?? null;
 			onOpen?.();
 		}
 
@@ -328,6 +341,8 @@
 			drawer.setAttribute("aria-hidden", "true");
 			syncToggleButton(false);
 			hideScrim(close);
+			registration?.release();
+			registration = null;
 			onClose?.();
 			if (isMobile) {
 				drawer.classList.replace("is-open", "is-closing");
@@ -482,5 +497,7 @@
 		return { open, close, isOpen, syncToggle: syncToggleButton, syncHandle };
 	}
 
-	window.RuxDrawer = { create, configure };
+	window.Rux = window.Rux || {};
+	window.Rux.drawer = { create, configure };
+	window.RuxDrawer = window.Rux.drawer;
 })();

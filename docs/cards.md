@@ -14,7 +14,7 @@ header corner.
   .rux-card__footer       — optional actions row; top divider
 .rux-card--elevated        — one relative step lighter than the plain default
 .rux-card--recessed        — one relative step darker than the plain default
-.rux-card--borderless      — makes the outer frame transparent
+.rux-card--ghost      — makes the outer frame transparent
 ```
 
 **One card color, regardless of nesting depth** — see "Reference: Vercel

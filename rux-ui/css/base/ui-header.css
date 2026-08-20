@@ -147,7 +147,7 @@
    opened, and the "one silhouette" contract inverted the moment the header
    itself stopped being surface-0. Every open-able header button is a
    disclosure, so the rule below covers all of them. */
-.rux-ui-header .rux-button--header[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
+.rux-ui-header .rux-button--lg[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
 	border: none;
 	/* Open is a state, not a hover — hold the trigger at full strength rather
 	   than letting it drop back to the ghost rest color when the pointer
@@ -173,11 +173,11 @@
    the open trigger above the body layer so the icon/avatar and focus ring stay
    visible while the two elements read as one silhouette. */
 .rux-ui-header__disclosure {
-	--_rux-header-disclosure-bg: var(--rux-popover-surface-bg);
+	--_header-disclosure-bg: var(--rux-popover-surface-bg);
 }
 
 .rux-ui-header__menu {
-	--_rux-header-disclosure-bg: var(--rux-side-nav-bg);
+	--_header-disclosure-bg: var(--rux-side-nav-bg);
 }
 
 /* Scoped and guarded to reach (0,5,0), because .rux-button--ghost:hover is
@@ -192,7 +192,7 @@
 	:is(.rux-ui-header__disclosure, .rux-ui-header__menu)[aria-expanded="true"]:not(:disabled):not([aria-disabled="true"]) {
 	position: relative;
 	z-index: calc(var(--rux-z-overlay) + 1);
-	background: var(--_rux-header-disclosure-bg);
+	background: var(--_header-disclosure-bg);
 }
 
 .rux-ui-header__profile {
@@ -271,7 +271,7 @@
 
 @media (max-width: 760px) {
 	.rux-ui-header__nav,
-	.rux-ui-header__utility--optional,
+	.rux-ui-header__utility--responsive,
 	.rux-ui-header__active-profiles {
 		display: none;
 	}

@@ -59,7 +59,7 @@ test("the trip editor is a draggable and resizable nonmodal workspace window", (
 	const editorMarkup = indexHtml.match(/<div[^>]*id="trip-editor-dialog"[^>]*>/)?.[0] ?? "";
 	assert.notEqual(editorMarkup, "", "trip editor dialog opening tag not found");
 	assert.match(editorMarkup, /role="dialog"/);
-	assert.doesNotMatch(editorMarkup, /aria-modal="true"|rux-modal-backdrop/);
+	assert.doesNotMatch(editorMarkup, /aria-modal="true"|rux-modal-scrim/);
 	/* width is owned by --sched-trip-dialog-width; assert the token wiring here
 	   and the value in tokens.css, so retokenising cannot break this test. */
 	assert.match(tripDialogCss, /\.sched-trip-dialog\s*\{[^}]*width:\s*var\(--sched-trip-dialog-width\)[^}]*height:\s*min\(840px[^}]*min-width:\s*480px[^}]*min-height:\s*520px/s);

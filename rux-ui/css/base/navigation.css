@@ -64,7 +64,7 @@
 	box-shadow: var(--rux-tabs-attached-tab-shadow);
 }
 
-.rux-tabs--fill > .rux-tab {
+.rux-tabs--block > .rux-tab {
 	flex: 1;
 }
 

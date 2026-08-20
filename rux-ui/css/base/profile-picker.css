@@ -4,6 +4,14 @@
    "Who's this?" modal — select an existing profile or add a new one.
    ========================================================================== */
 
+/* The block is a naming and scoping hook — its children own their layout.
+   Declared so the class is an explicit public contract, as .rux-button__label
+   is in controls.css. */
+.rux-profile-picker {
+	/* Intentionally empty — see the note above. */
+}
+
+
 .rux-profile-picker__list {
 	display: flex;
 	flex-direction: column;
@@ -28,6 +36,13 @@
 }
 
 .rux-profile-picker__row:hover {
+	background: var(--rux-button-hover-overlay);
+}
+
+/* The row is a wrapper — .rux-profile-picker__row-main is the button. Mirror
+   the hover highlight while anything inside holds focus, so keyboard users
+   get the same "this row" affordance the pointer gets. */
+.rux-profile-picker__row:has(:focus-visible) {
 	background: var(--rux-button-hover-overlay);
 }
 

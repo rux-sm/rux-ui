@@ -97,9 +97,6 @@ import {
 			"rux-role--pending-response",
 			"rux-role--confirmed",
 			"rux-role--declined",
-			"rux-role--danger",
-			"rux-role--warning",
-			"rux-role--success",
 		);
 		if (state !== "off") button.classList.add(`rux-role--${state}`);
 	}
@@ -1520,13 +1517,13 @@ import {
 	function ensureCancelTripModal() {
 		if (cancelTripModal) return cancelTripModal;
 		cancelTripModal = document.createElement("div");
-		cancelTripModal.className = "rux-modal-backdrop";
+		cancelTripModal.className = "rux-modal-scrim";
 		cancelTripModal.hidden = true;
 		cancelTripModal.innerHTML = `
 			<section class="rux-modal sched-cancel-trip-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-trip-modal-title">
 				<header class="rux-card__header">
 					<h2 class="rux-card__title" id="cancel-trip-modal-title">Cancel Trip</h2>
-					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close">
+					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--lg" data-rux-dismiss aria-label="Close">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>

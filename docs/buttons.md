@@ -18,16 +18,16 @@ a new monolithic button class for a combination the shared modifiers express.
 | Role | Class | Control height | Icon | Text padding | Content gap | Use |
 | --- | --- | ---: | ---: | ---: | ---: | --- |
 | Standard | `.rux-button` | 32px | 20px | 12px | 8px | Forms, cards, toolbars, and ordinary actions |
-| Header | `.rux-button--header` | 40px | 24px | 12px | 8px | Persistent header navigation and icon actions |
-| Compact | `.rux-button--compact` | 24px | 16px | 6px | 4px | Dense embedded desktop controls such as trip bars |
+| Header | `.rux-button--lg` | 40px | 22px | 12px | 8px | Persistent header navigation and icon actions |
+| Compact | `.rux-button--sm` | 24px | 18px | 4px | 4px | Dense embedded desktop controls such as trip bars |
 
 Icon-only buttons also use `.rux-button--icon`, which makes the control square
 at its resolved height:
 
 ```text
 Standard + Icon Only = 32 × 32px with a 20px icon
-Header + Icon Only   = 40 × 40px with a 24px icon
-Compact + Icon Only  = 24 × 24px with a 16px icon
+Header + Icon Only   = 40 × 40px with a 22px icon
+Compact + Icon Only  = 24 × 24px with a 18px icon
 ```
 
 Canonical size tokens use role-last naming (`-standard`, `-header`,
@@ -76,14 +76,14 @@ any necessary contrast treatment in the surrounding component.
 </button>
 
 <button
-  class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+  class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
   aria-label="Show Calendar Tools"
 >
   <span class="rux-icon" aria-hidden="true">right_panel_open</span>
 </button>
 
 <button
-  class="rux-button rux-button--ghost rux-button--icon rux-button--compact"
+  class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
   aria-label="Open Trip"
 >
   <span class="rux-icon" aria-hidden="true">open_in_new</span>
@@ -96,7 +96,7 @@ any necessary contrast treatment in the surrounding component.
 
 ## Header and profile controls
 
-Global shell actions use the same `.rux-button--header` composition as other
+Global shell actions use the same `.rux-button--lg` composition as other
 header controls. The profile button is not a separate visual variant; it is a
 specialized header-button composition with an avatar and account popover.
 

@@ -1,6 +1,5 @@
 (() => {
 	"use strict";
-	let activeDisclosure = null;
 
 	const clamp = (value, min, max) => Math.min(Math.max(value, min), Math.max(min, max));
 	const tokenPx = (element, token, fallback) => {
@@ -8,17 +7,26 @@
 		return Number.isFinite(value) ? value : fallback;
 	};
 
+	// position() is a pure reposition: open() owns unhiding. A surface that is
+	// still hidden is measured off-screen and left exactly as it was found.
 	function measure(popover) {
+		const wasHidden = popover.hidden;
+		const priorVisibility = popover.style.visibility;
 		popover.style.visibility = "hidden";
 		popover.hidden = false;
-		return popover.getBoundingClientRect();
+		const rect = popover.getBoundingClientRect();
+		if (wasHidden) {
+			popover.hidden = true;
+			popover.style.visibility = priorVisibility;
+		}
+		return rect;
 	}
 
 	function finish(popover, left, top, placement) {
 		popover.style.left = `${Math.round(left)}px`;
 		popover.style.top = `${Math.round(top)}px`;
 		popover.dataset.placement = placement;
-		popover.style.visibility = "";
+		if (!popover.hidden) popover.style.visibility = "";
 	}
 
 	function position(anchor, popover, options = {}) {
@@ -27,10 +35,7 @@
 		// context of the modal that launched them. Promote anchored popovers
 		// above their owning modal; otherwise menus such as Add Payment open
 		// successfully but remain hidden behind the Trip Editor surface.
-		popover.toggleAttribute(
-			"data-rux-modal-layer",
-			Boolean(anchor.closest(".rux-modal-backdrop, .rux-panel--floating")),
-		);
+		window.RuxOverlay.promoteLayer(popover, anchor);
 		const placement = options.placement || "bottom-end";
 		const offset = options.offset ?? tokenPx(popover, "--rux-popover-offset", 4);
 		const padding = options.viewportPadding ?? tokenPx(popover, "--rux-popover-viewport-padding", 8);
@@ -95,22 +100,12 @@
 	   native keyboard behavior. */
 	function createDisclosure(trigger, popover, options = {}) {
 		if (!trigger || !popover) return null;
-		if (!popover.id) popover.id = `rux-popover-${Math.random().toString(36).slice(2, 9)}`;
-		trigger.setAttribute("aria-controls", popover.id);
+		trigger.setAttribute("aria-controls", window.RuxOverlay.autoId(popover, "rux-popover"));
 		trigger.setAttribute("aria-expanded", String(!popover.hidden));
 
 		let previousFocus = null;
-		const ownedPopovers = new Set();
-		const record = {
-			api: null,
-			popover,
-			ownedPopovers,
-			contains: (target) => popover.contains(target)
-				|| trigger.contains(target)
-				|| [...ownedPopovers].some((owned) => owned.contains(target)),
-		};
+		let registration = null;
 		const api = { open, close, toggle, isOpen, reposition };
-		record.api = api;
 
 		function isOpen() {
 			return !popover.hidden;
@@ -127,13 +122,17 @@
 
 		function open() {
 			if (isOpen() || options.beforeOpen?.() === false) return;
-			activeDisclosure?.api.close({ restoreFocus: false });
 			previousFocus = document.activeElement;
+			registration = window.RuxOverlay.register({
+				element: popover,
+				anchor: trigger,
+				close,
+				reposition,
+			});
 			trigger.setAttribute("aria-expanded", "true");
-			activeDisclosure = record;
-			document.dispatchEvent(new CustomEvent("rux:popover-open", {
-				detail: { popover, trigger },
-			}));
+			// open() owns unhiding; position() only places the surface.
+			popover.style.visibility = "hidden";
+			popover.hidden = false;
 			position(trigger, popover, {
 				placement: options.placement || "bottom-end",
 				offset: options.offset,
@@ -153,13 +152,13 @@
 			popover.hidden = true;
 			popover.style.visibility = "";
 			trigger.setAttribute("aria-expanded", "false");
-			if (activeDisclosure === record) activeDisclosure = null;
+			registration?.release();
+			registration = null;
 			options.onClose?.();
 			if (closeOptions.restoreFocus !== false) {
 				previousFocus?.focus?.({ preventScroll: true });
 			}
 			previousFocus = null;
-			ownedPopovers.clear();
 		}
 
 		function toggle() {
@@ -171,35 +170,13 @@
 		return api;
 	}
 
-	document.addEventListener("pointerdown", (event) => {
-		if (!activeDisclosure) return;
-		if (activeDisclosure.contains(event.target)) return;
-		activeDisclosure.api.close({ restoreFocus: false });
-	}, true);
+	/* Outside-click, Escape, and resize are the overlay kernel's job
+	   (rux-ui/js/overlay.js) — a disclosure registers on open and releases on
+	   close. Nesting, such as Chat's emoji menu inside the chat popover, falls
+	   out of the kernel's stack: the menu's trigger lives inside this popover,
+	   so opening it leaves this one standing. */
 
-	document.addEventListener("keydown", (event) => {
-		if (event.key !== "Escape" || !activeDisclosure) return;
-		const disclosure = activeDisclosure;
-		// Menu.js may own a nested menu (for example Chat's emoji picker).
-		// Let the later menu listener consume Escape first; otherwise close the
-		// parent interactive popover after event dispatch completes.
-		queueMicrotask(() => {
-			if (!event.defaultPrevented && activeDisclosure === disclosure) {
-				disclosure.api.close();
-			}
-		});
-	});
-
-	document.addEventListener("rux:popover-open", (event) => {
-		if (!activeDisclosure || event.detail?.popover === activeDisclosure.popover) return;
-		if (activeDisclosure.contains(event.detail?.trigger)) {
-			activeDisclosure.ownedPopovers.add(event.detail.popover);
-			return;
-		}
-		activeDisclosure.api.close({ restoreFocus: false });
-	});
-
-	window.addEventListener("resize", () => activeDisclosure?.api.reposition());
-
-	window.RuxPopover = { position, positionAtPoint, createDisclosure };
+	window.Rux = window.Rux || {};
+	window.Rux.popover = { position, positionAtPoint, createDisclosure };
+	window.RuxPopover = window.Rux.popover;
 })();

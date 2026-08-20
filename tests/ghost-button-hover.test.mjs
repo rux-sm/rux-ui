@@ -113,13 +113,13 @@ test("an open header trigger paints the surface it opens, nothing else", () => {
 	// The broad open-state rule outranks the per-trigger one, so it must not
 	// declare a background at all.
 	const broad = header.match(
-		/\.rux-ui-header \.rux-button--header\[aria-expanded="true"\][^{]*\{[^}]*\}/,
+		/\.rux-ui-header \.rux-button--lg\[aria-expanded="true"\][^{]*\{[^}]*\}/,
 	)[0];
 	assert.doesNotMatch(broad, /background/);
 
 	// Each trigger names the surface it owns; the per-trigger rule applies it.
-	assert.match(header, /\.rux-ui-header__disclosure\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-popover-surface-bg\)/s);
-	assert.match(header, /\.rux-ui-header__menu\s*\{[^}]*--_rux-header-disclosure-bg:\s*var\(--rux-side-nav-bg\)/s);
+	assert.match(header, /\.rux-ui-header__disclosure\s*\{[^}]*--_header-disclosure-bg:\s*var\(--rux-popover-surface-bg\)/s);
+	assert.match(header, /\.rux-ui-header__menu\s*\{[^}]*--_header-disclosure-bg:\s*var\(--rux-side-nav-bg\)/s);
 
 	// That rule has to outrank .rux-button--ghost:hover, which is (0,4,0) and
 	// sets background: transparent. It is the open trigger's opaque surface
@@ -130,7 +130,7 @@ test("an open header trigger paints the surface it opens, nothing else", () => {
 		/\.rux-ui-header\s*\n?\s*:is\(\.rux-ui-header__disclosure, \.rux-ui-header__menu\)\[aria-expanded="true"\][^{]*\{[^}]*\}/s,
 	);
 	assert.ok(openRule, "the open-state rule must be scoped to .rux-ui-header");
-	assert.match(openRule[0], /background:\s*var\(--_rux-header-disclosure-bg\)/);
+	assert.match(openRule[0], /background:\s*var\(--_header-disclosure-bg\)/);
 	// Two :not() guards + the scope + the class + the attribute = (0,5,0).
 	assert.match(openRule[0], /:not\(:disabled\):not\(\[aria-disabled="true"\]\)/);
 });

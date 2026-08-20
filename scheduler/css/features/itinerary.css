@@ -344,7 +344,7 @@
    and should read as part of that same input-sized line, not stand out at
    its own weight. Only size/weight change; --success/--warning still carry
    the actual reset-vs-not color. */
-.sched-trip-itinerary__dwell-card .rux-output--boxed .rux-status-text {
+.sched-trip-itinerary__dwell-card .rux-output--solid .rux-status-text {
 	font-size: inherit;
 	font-weight: inherit;
 }

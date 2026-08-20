@@ -24,7 +24,7 @@ const postTripStatus = document.getElementById("rp-post-trip-status");
 // tracked for sending the post-trip survey).
 let activeList = "trips";
 let postTripFilter = "needs_follow_up";
-listToggle?.addEventListener("rux:segment-change", (e) => {
+listToggle?.addEventListener("rux:segment-changed", (e) => {
 	activeList = e.detail.value;
 	render();
 });
@@ -225,7 +225,7 @@ function hasPartTimeDriver(trip, leg) {
 }
 
 function taskActionButton(action, label, extra = "") {
-	return `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact sched-tasks__shortcut" data-task-action="${action}" ${extra} aria-label="${label}" title="${label}">
+	return `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm sched-tasks__shortcut" data-task-action="${action}" ${extra} aria-label="${label}" title="${label}">
 		<span class="rux-icon" aria-hidden="true">open_in_new</span>
 	</button>`;
 }
@@ -975,7 +975,7 @@ function ensureTaskActionMenu() {
 		const opened = open();
 		if (choice.dataset.taskMenuChoice === "open-complete" && opened !== false) markDone();
 	});
-	taskActionMenu.addEventListener("rux:menu-close", () => {
+	taskActionMenu.addEventListener("rux:menu-closed", () => {
 		pendingTaskAction = null;
 	});
 	return taskActionMenu;

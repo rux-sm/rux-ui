@@ -702,7 +702,7 @@ import {
 	function createButton(label, icon, variant, action, key) {
 		const button = document.createElement("button");
 		button.type = "button";
-		button.className = `rux-button rux-button--${variant} rux-button--compact`;
+		button.className = `rux-button rux-button--${variant} rux-button--sm`;
 		button.dataset.action = action;
 		if (key) button.dataset.entryKey = key;
 		button.innerHTML = `<span class="rux-icon" aria-hidden="true">${icon}</span><span>${label}</span>`;
@@ -776,7 +776,7 @@ import {
 	function ensureModal() {
 		if (modal) return modal;
 		modal = document.createElement("div");
-		modal.className = "rux-modal-backdrop";
+		modal.className = "rux-modal-scrim";
 		modal.hidden = true;
 		modal.innerHTML = `
 			<section class="rux-modal sched-driver-week-info" role="dialog" aria-modal="true" aria-labelledby="driver-week-info-title">
@@ -785,7 +785,7 @@ import {
 						<h2 class="rux-card__title" id="driver-week-info-title" data-driver-info-title>Driver Info</h2>
 						<p class="sched-driver-week-info__range" data-driver-info-range></p>
 					</div>
-					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-rux-dismiss aria-label="Close driver info">
+					<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--lg" data-rux-dismiss aria-label="Close driver info">
 						<span class="rux-icon" aria-hidden="true">close</span>
 					</button>
 				</header>
@@ -805,19 +805,19 @@ import {
 							</div>
 							<div data-driver-share-empty>
 								<p class="sched-driver-week-info__share-copy">Activate this driver’s permanent mobile link for the checked assignments, itineraries, directions, and envelopes.</p>
-								<button type="button" class="rux-button rux-button--accent rux-button--compact" data-driver-share-action="create" data-driver-share-create>
+								<button type="button" class="rux-button rux-button--accent rux-button--sm" data-driver-share-action="create" data-driver-share-create>
 									<span class="rux-icon" aria-hidden="true">link</span><span>Activate driver link</span>
 								</button>
 							</div>
 							<div data-driver-share-active hidden>
 								<div class="sched-driver-week-info__share-url-row">
 									<input class="rux-input" type="text" readonly data-driver-share-url aria-label="Driver schedule link" />
-									<button type="button" class="rux-button rux-button--accent rux-button--compact" data-driver-share-action="update" data-driver-share-update hidden>Update link</button>
+									<button type="button" class="rux-button rux-button--accent rux-button--sm" data-driver-share-action="update" data-driver-share-update hidden>Update link</button>
 								</div>
 								<div class="sched-driver-week-info__share-actions">
-									<button type="button" class="rux-button rux-button--default rux-button--compact" data-driver-share-action="copy"><span class="rux-icon" aria-hidden="true">content_copy</span>Copy link</button>
-									<button type="button" class="rux-button rux-button--default rux-button--compact" data-driver-share-action="preview"><span class="rux-icon" aria-hidden="true">open_in_new</span>Preview</button>
-									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--compact" data-driver-share-action="revoke">Deactivate</button>
+									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="copy"><span class="rux-icon" aria-hidden="true">content_copy</span>Copy link</button>
+									<button type="button" class="rux-button rux-button--default rux-button--sm" data-driver-share-action="preview"><span class="rux-icon" aria-hidden="true">open_in_new</span>Preview</button>
+									<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--sm" data-driver-share-action="revoke">Deactivate</button>
 								</div>
 							</div>
 						</div>

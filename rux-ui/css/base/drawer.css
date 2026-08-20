@@ -89,6 +89,13 @@
 	min-width: var(--rux-drawer-gap);
 }
 
+/* Focus ring for the gutter — the resize handle (tabindex=0) uses
+   .rux-resize-gutter below; the disclosure gutter needs one too. */
+.rux-drawer-gutter:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px var(--rux-accent-ring);
+}
+
 /* — Resize gutter (splitter) — */
 
 .rux-resize-gutter {
@@ -156,6 +163,16 @@
 
 .rux-resize-gutter.is-resizing::after {
 	background: var(--rux-accent);
+}
+
+.rux-resize-gutter:focus-visible {
+	outline: none;
+}
+.rux-resize-gutter:focus-visible::before {
+	opacity: 1;
+	background:
+		linear-gradient(var(--rux-accent-ring), var(--rux-accent-ring))
+		center / var(--rux-resize-line-width) 100% no-repeat;
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────────

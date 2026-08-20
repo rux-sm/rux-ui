@@ -28,7 +28,7 @@ test("every panel toggle is the same ghost button", () => {
 		for (const cls of [
 			"rux-button--ghost",
 			"rux-button--icon",
-			"rux-button--header",
+			"rux-button--lg",
 		]) {
 			assert.match(button, new RegExp(cls), `${marker} is missing ${cls}`);
 		}

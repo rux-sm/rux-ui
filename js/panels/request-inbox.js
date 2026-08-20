@@ -236,15 +236,15 @@
 
 		let actions = "";
 		if (row.status === "invited" && row._url) {
-			actions += `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--compact" data-copy-url data-url="${escapeAttr(row._url)}" aria-label="Copy invite link for ${title}"><span class="rux-icon" aria-hidden="true">content_copy</span></button>`;
+			actions += `<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--sm" data-copy-url data-url="${escapeAttr(row._url)}" aria-label="Copy invite link for ${title}"><span class="rux-icon" aria-hidden="true">content_copy</span></button>`;
 		}
 		if (row.status !== "closed") {
 			if (row.status !== "reviewed" && row.status !== "linked") {
-				actions += `<button type="button" class="rux-button rux-button--ghost rux-button--compact" data-request-action="reviewed" aria-label="Mark ${escapeAttr(row.reference)} reviewed">Reviewed</button>`;
+				actions += `<button type="button" class="rux-button rux-button--ghost rux-button--sm" data-request-action="reviewed" aria-label="Mark ${escapeAttr(row.reference)} reviewed">Reviewed</button>`;
 			}
-			actions += `<button type="button" class="rux-button rux-button--ghost rux-button--compact" data-request-action="closed" aria-label="Close ${escapeAttr(row.reference)}">Close</button>`;
+			actions += `<button type="button" class="rux-button rux-button--ghost rux-button--sm" data-request-action="closed" aria-label="Close ${escapeAttr(row.reference)}">Close</button>`;
 		}
-		actions += `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--compact" data-request-action="delete" aria-label="Delete ${escapeAttr(row.reference)}">Delete</button>`;
+		actions += `<button type="button" class="rux-button rux-button--ghost rux-button--danger rux-button--sm" data-request-action="delete" aria-label="Delete ${escapeAttr(row.reference)}">Delete</button>`;
 
 		tr.innerHTML = `
 			<td><span class="${chipClass(row.status)}">${escapeAttr(statusLabel(row.status))}</span></td>

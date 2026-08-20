@@ -165,7 +165,7 @@
 			<!-- ── UI header ────────────────────────────────────────────────────── -->
 			<header class="rux-ui-header" aria-label="Application Header">
 				<button
-					class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__menu"
+					class="rux-button rux-button--ghost rux-button--icon rux-button--lg rux-ui-header__menu"
 					type="button"
 					id="app-navigation-toggle"
 					aria-label="Open Navigation"
@@ -206,7 +206,7 @@
 				>
 					<div class="rux-ui-header__action-group">
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 							type="button"
 							id="workspace-search-btn"
 							aria-label="Search Trips"
@@ -217,7 +217,7 @@
 							>
 						</button>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--lg rux-ui-header__disclosure"
 							type="button"
 							id="team-chat-btn"
 							aria-label="Team chat"
@@ -243,7 +243,7 @@
 							></span>
 						</button>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--lg rux-ui-header__disclosure"
 							type="button"
 							id="notifications-menu-btn"
 							aria-label="Notifications"
@@ -269,7 +269,7 @@
 							></span>
 						</button>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--lg rux-ui-header__disclosure"
 							type="button"
 							id="dev-notes-btn"
 							aria-label="Dev Notes"
@@ -296,7 +296,7 @@
 						</button>
 					</div>
 					<div
-						class="rux-ui-header__action-group rux-ui-header__action-group--presence"
+						class="rux-ui-header__action-group"
 					>
 						<!-- Who else currently has a profile active (excludes yourself —
 						     that's the button right next to it) — Supabase Realtime
@@ -310,10 +310,10 @@
 						></div>
 					</div>
 					<div
-						class="rux-ui-header__action-group rux-ui-header__action-group--identity"
+						class="rux-ui-header__action-group"
 					>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header rux-ui-header__disclosure rux-ui-header__profile"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--lg rux-ui-header__disclosure rux-ui-header__profile"
 							type="button"
 							id="profile-menu-btn"
 							aria-label="Profile menu"
@@ -392,7 +392,7 @@
 			<!-- Personal application settings live behind the profile menu rather
 			     than occupying permanent UI-header space or becoming coupled to
 			     the Calendar workspace's view-specific tools. -->
-			<div class="rux-modal-backdrop" id="preferences-modal" hidden>
+			<div class="rux-modal-scrim" id="preferences-modal" hidden>
 				<div
 					class="rux-modal rux-preferences"
 					role="dialog"
@@ -404,7 +404,7 @@
 							Preferences
 						</div>
 						<button
-							class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+							class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 							type="button"
 							data-rux-dismiss
 							aria-label="Close Preferences"
@@ -438,7 +438,7 @@
 								</div>
 								<label
 									class="rux-switch rux-switch--theme"
-									id="theme-toggle"
+									data-rux-theme-toggle
 									title="Toggle Light/Dark Theme"
 								>
 									<input
@@ -473,7 +473,7 @@
 			</div>
 
 			<div
-				class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-notifications-menu"
+				class="rux-menu rux-popover rux-popover--surface rux-popover--tab-tip rux-notifications"
 				id="notifications-menu"
 				role="dialog"
 				aria-label="Notifications"
@@ -523,7 +523,7 @@
 			     valid) and reopenable anytime from the profile menu's "Switch
 			     profile" item (dismissible in that case — a profile is already
 			     active). See profile.js / profile-db.js for the data side. -->
-			<div class="rux-modal-backdrop" id="profile-picker-modal" hidden>
+			<div class="rux-modal-scrim" id="profile-picker-modal" hidden>
 				<div
 					class="rux-modal rux-profile-picker"
 					role="dialog"
@@ -908,7 +908,7 @@
 							</h2>
 							<button
 								type="button"
-								class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+								class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 								id="trip-dialog-close-btn"
 								aria-label="Close trip editor"
 							>
@@ -1244,7 +1244,7 @@
 											Trip Contact
 										</p>
 										<button
-											class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+											class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 											type="button"
 											id="tp-contact-add-btn"
 											aria-label="Add trip contact"
@@ -1279,7 +1279,7 @@
 													id="tp-vehicle-reqs"
 												></div>
 												<div
-													class="rux-cluster"
+													class="rux-u-cluster"
 													id="tp-driver-needs"
 												></div>
 											</div>
@@ -1289,7 +1289,7 @@
 								<div class="rux-card">
 									<div class="rux-card__header">
 										<p class="rux-card__title">Files</p>
-										<div class="rux-cluster">
+										<div class="rux-u-cluster">
 											<button
 												class="rux-button rux-button--ghost rux-button--icon rux-button--toggle"
 												type="button"
@@ -1620,7 +1620,7 @@
 										<p class="rux-card__title">
 											Ticket Pricing
 										</p>
-										<div class="rux-cluster">
+										<div class="rux-u-cluster">
 											<button
 												class="rux-button rux-button--ghost rux-button--icon"
 												type="button"
@@ -1696,7 +1696,7 @@
 													for="tp-balance-due"
 													>Balance</label
 												><output
-													class="rux-output rux-output--boxed"
+													class="rux-output rux-output--solid"
 													id="tp-balance-due"
 													for="tp-price tp-payment-rows"
 													>$0.00</output
@@ -1927,7 +1927,7 @@
 								<div class="rux-card" data-payment-card>
 									<div class="rux-card__header">
 										<p class="rux-card__title">Payments</p>
-										<div class="rux-cluster">
+										<div class="rux-u-cluster">
 											<button
 												class="rux-button rux-button--ghost rux-button--icon"
 												type="button"
@@ -2249,7 +2249,7 @@
 						<header class="rux-workspace__header">
 							<div class="sched-workspace-nav">
 								<button
-									class="rux-button rux-button--ghost rux-button--header"
+									class="rux-button rux-button--ghost rux-button--lg"
 									type="button"
 									id="calendar-new-trip-btn"
 									aria-haspopup="dialog"
@@ -2274,7 +2274,7 @@
 								     calendar's title holds month + year. -->
 								<div class="calendar-app__date-controls">
 									<button
-										class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+										class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 										id="prev-week"
 										aria-label="Previous week"
 									>
@@ -2283,7 +2283,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-button--header"
+										class="rux-button rux-button--ghost rux-button--lg"
 										id="today-btn"
 										type="button"
 										aria-label="Jump to current week"
@@ -2293,7 +2293,7 @@
 										>
 									</button>
 									<button
-										class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+										class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 										id="next-week"
 										aria-label="Next week"
 									>
@@ -2303,7 +2303,7 @@
 									</button>
 								</div>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header calendar-app__panel-toggle"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg calendar-app__panel-toggle"
 									type="button"
 									aria-label="Hide Calendar Panel"
 									aria-expanded="true"
@@ -2352,7 +2352,7 @@
 						</div>
 					</section>
 					<div
-						class="rux-drawer-gutter rux-resize-gutter rux-resize-gutter--right"
+						class="rux-drawer-gutter rux-resize-gutter"
 						id="right-panel-resize-gutter"
 						role="separator"
 						aria-orientation="vertical"
@@ -2471,7 +2471,7 @@
 											class="rux-card__header sched-mini-cal__header"
 										>
 											<button
-												class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+												class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 												id="mini-cal-prev"
 												type="button"
 												aria-label="Previous month"
@@ -2485,7 +2485,7 @@
 												id="mini-cal-title"
 											></span>
 											<button
-												class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+												class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 												id="mini-cal-next"
 												type="button"
 												aria-label="Next month"
@@ -2606,7 +2606,7 @@
 												</label>
 											</div>
 											<div
-												class="rux-view-options__row rux-view-options__row--stacked"
+												class="rux-view-options__row rux-view-options__row--stack"
 											>
 												<div
 													class="rux-view-options__row-header"
@@ -2742,7 +2742,7 @@
 												</label>
 											</div>
 											<div
-												class="rux-view-options__row rux-view-options__row--stacked"
+												class="rux-view-options__row rux-view-options__row--stack"
 											>
 												<span
 													class="rux-view-options__label"
@@ -2820,7 +2820,7 @@
 													role="grid"
 													aria-label="Driver assignments by day"
 												>
-													<p class="rux-subtle">
+													<p class="rux-u-muted">
 														Loading drivers…
 													</p>
 												</div>
@@ -2909,7 +2909,7 @@
 												</p>
 											</div>
 											<button
-												class="rux-button rux-button--default rux-button--compact sched-trip-history__filter"
+												class="rux-button rux-button--default rux-button--sm sched-trip-history__filter"
 												id="rp-history-trip-filter"
 												type="button"
 												hidden
@@ -2917,7 +2917,7 @@
 											></button>
 										</header>
 										<p
-											class="sched-trip-history__status rux-subtle"
+											class="sched-trip-history__status rux-u-muted"
 											id="rp-history-status"
 											aria-live="polite"
 										>
@@ -3138,7 +3138,7 @@
 								</h2>
 								<button
 									type="button"
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 									id="fleet-dialog-close-btn"
 									aria-label="Close vehicle editor"
 								>
@@ -3151,7 +3151,7 @@
 								class="rux-panel__nav rux-panel__nav--attached"
 							>
 								<nav
-									class="rux-tabs rux-tabs--attached rux-tabs--fill"
+									class="rux-tabs rux-tabs--attached rux-tabs--block"
 									role="tablist"
 									aria-label="Vehicle editor sections"
 									data-rux-tabs
@@ -3640,7 +3640,7 @@
 							class="rux-workspace__header rux-workspace__header--table"
 						>
 							<button
-								class="rux-button rux-button--ghost rux-button--header"
+								class="rux-button rux-button--ghost rux-button--lg"
 								type="button"
 								id="fleet-new-vehicle-btn"
 								aria-haspopup="dialog"
@@ -3668,7 +3668,7 @@
 									>
 								</button>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 									type="button"
 									id="fleet-tools-toggle-btn"
 									aria-label="Table options"
@@ -3729,7 +3729,7 @@
 					<!-- Fleet tools drawer (View Options) — calendar Tools
 					     pattern: resize channel + workspace-header toggle -->
 					<div
-						class="rux-drawer-gutter rux-resize-gutter rux-resize-gutter--right"
+						class="rux-drawer-gutter rux-resize-gutter"
 						id="fleet-tools-resize-gutter"
 						role="separator"
 						aria-orientation="vertical"
@@ -3751,7 +3751,7 @@
 									Table Options
 								</h2>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header sched-app__mobile-panel-btn sched-app__panel-header-toggle"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg sched-app__mobile-panel-btn sched-app__panel-header-toggle"
 									type="button"
 									aria-label="Close table options"
 									data-rux-domain-toggle
@@ -3809,7 +3809,7 @@
 								</h2>
 								<button
 									type="button"
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 									id="driver-dialog-close-btn"
 									aria-label="Close driver editor"
 								>
@@ -3822,7 +3822,7 @@
 								class="rux-panel__nav rux-panel__nav--attached"
 							>
 								<nav
-									class="rux-tabs rux-tabs--attached rux-tabs--fill rux-tabs--responsive"
+									class="rux-tabs rux-tabs--attached rux-tabs--block rux-tabs--responsive"
 									role="tablist"
 									aria-label="Driver editor sections"
 									data-rux-tabs
@@ -4481,12 +4481,12 @@
 									role="tabpanel"
 									hidden
 								>
-									<div class="rux-row">
+									<div class="rux-u-row">
 										<p class="rux-u-section-label">
 											Time Off
 										</p>
-										<span class="rux-spacer"></span>
-										<div class="rux-cluster">
+										<span class="rux-u-spacer"></span>
+										<div class="rux-u-cluster">
 											<button
 												class="rux-button rux-button--ghost rux-button--danger rux-button--icon"
 												type="button"
@@ -4677,7 +4677,7 @@
 						>
 							<div class="rux-workspace__heading">
 								<button
-									class="rux-button rux-button--ghost rux-button--header"
+									class="rux-button rux-button--ghost rux-button--lg"
 									type="button"
 									id="driver-new-btn"
 									aria-haspopup="dialog"
@@ -4700,7 +4700,7 @@
 							</div>
 							<div class="rux-workspace__toolbar">
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header sched-app__mobile-panel-btn sched-app__mobile-panel-btn--right"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg sched-app__mobile-panel-btn sched-app__mobile-panel-btn--right"
 									type="button"
 									id="driver-tools-toggle-btn"
 									aria-label="Table options"
@@ -4772,7 +4772,7 @@
 					<!-- Driver tools drawer (View Options + Filters) — calendar
 					     Tools pattern: resize channel + workspace-header toggle -->
 					<div
-						class="rux-drawer-gutter rux-resize-gutter rux-resize-gutter--right"
+						class="rux-drawer-gutter rux-resize-gutter"
 						id="driver-tools-resize-gutter"
 						role="separator"
 						aria-orientation="vertical"
@@ -4797,7 +4797,7 @@
 									Table Options
 								</h2>
 								<button
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header sched-app__mobile-panel-btn sched-app__panel-header-toggle"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg sched-app__mobile-panel-btn sched-app__panel-header-toggle"
 									type="button"
 									aria-label="Close table options"
 									data-rux-domain-toggle
@@ -4990,7 +4990,7 @@
 								</h2>
 								<button
 									type="button"
-									class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+									class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 									id="customer-dialog-close-btn"
 									aria-label="Close customer editor"
 								>
@@ -5111,7 +5111,7 @@
 							class="rux-workspace__header rux-workspace__header--table"
 						>
 							<button
-								class="rux-button rux-button--ghost rux-button--header"
+								class="rux-button rux-button--ghost rux-button--lg"
 								type="button"
 								id="customer-new-btn"
 								aria-haspopup="dialog"
@@ -5289,7 +5289,7 @@
 							></span>
 							<button
 								type="button"
-								class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+								class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 								id="request-detail-close-btn"
 								aria-label="Close request"
 							>
@@ -5794,7 +5794,7 @@
 												><span>44px · 24px icon</span>
 											</div>
 											<button
-												class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+												class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 												type="button"
 												aria-label="Search"
 											>
@@ -5803,7 +5803,7 @@
 													aria-hidden="true"
 													>search</span
 												></button
-											><code>.rux-button--header</code>
+											><code>.rux-button--lg</code>
 										</div>
 										<div
 											class="components-app__button-example"
@@ -5833,7 +5833,7 @@
 												><span>24px · 16px icon</span>
 											</div>
 											<button
-												class="rux-button rux-button--ghost rux-button--icon rux-button--compact"
+												class="rux-button rux-button--ghost rux-button--icon rux-button--sm"
 												type="button"
 												aria-label="Open trip"
 											>
@@ -5842,7 +5842,7 @@
 													aria-hidden="true"
 													>open_in_new</span
 												></button
-											><code>.rux-button--compact</code>
+											><code>.rux-button--sm</code>
 										</div>
 									</div>
 								</div>
@@ -5946,7 +5946,7 @@
 										</div>
 									</header>
 									<div class="rux-card__body">
-										<pre><code>&lt;button class=&quot;rux-button rux-button--ghost rux-button--icon rux-button--header&quot;
+										<pre><code>&lt;button class=&quot;rux-button rux-button--ghost rux-button--icon rux-button--lg&quot;
   type=&quot;button&quot; aria-label=&quot;Search&quot;&gt;
   &lt;span class=&quot;rux-icon&quot; aria-hidden=&quot;true&quot;&gt;search&lt;/span&gt;
 &lt;/button&gt;</code></pre>
@@ -6363,7 +6363,7 @@
 							>
 								<header class="rux-panel__header">
 									<h2 class="rux-panel__title">Flip 7</h2>
-									<div class="rux-cluster">
+									<div class="rux-u-cluster">
 										<p
 											class="flip-seven__status"
 											id="game-status"
@@ -7267,14 +7267,14 @@
 												</option>
 											</select>
 											<button
-												class="rux-button rux-button--accent rux-button--compact"
+												class="rux-button rux-button--accent rux-button--sm"
 												type="button"
 												id="settings-req-save-btn"
 											>
 												Add
 											</button>
 											<button
-												class="rux-button rux-button--default rux-button--compact"
+												class="rux-button rux-button--default rux-button--sm"
 												type="button"
 												id="settings-req-cancel-btn"
 											>
@@ -7359,7 +7359,11 @@
 		<div id="req-icon-picker" class="req-icon-picker" hidden></div>
 
 		<!-- ── Scripts ─────────────────────────────────────────────────────────── -->
-		<script src="./rux-ui/js/utilities.js"></script>
+		<!-- The overlay kernel owns outside-press, Escape, focus trapping and
+		     layer promotion for every dismissible surface, so it loads ahead
+		     of the modules that register with it. -->
+		<script src="./rux-ui/js/overlay.js?v=1"></script>
+		<script src="./rux-ui/js/utilities.js?v=2"></script>
 		<script src="./rux-ui/js/theme.js?v=4"></script>
 		<script src="./js/core/address-format.js?v=4"></script>
 		<script src="./rux-ui/js/ui-shell.js?v=5"></script>
@@ -7369,13 +7373,13 @@
 		     portable .rux-drawer names, so every field would restate the
 		     module's own default. An application with different layout class
 		     names configures the seam here instead. -->
-		<script src="./rux-ui/js/popover.js?v=7"></script>
-		<script src="./rux-ui/js/menu.js?v=6"></script>
-		<script src="./rux-ui/js/controls.js?v=9" defer></script>
+		<script src="./rux-ui/js/popover.js?v=8"></script>
+		<script src="./rux-ui/js/menu.js?v=7"></script>
+		<script src="./rux-ui/js/controls.js?v=9"></script>
 		<script src="./js/core/billing-config.js?v=8"></script>
 		<script src="./rux-ui/js/floating-window.js?v=6"></script>
 		<script src="./js/core/doc-viewer.js?v=12"></script>
-		<script src="./rux-ui/js/suggestions.js?v=5"></script>
+		<script src="./rux-ui/js/suggestions.js?v=6"></script>
 		<script src="./js/panels/trip-panel.js?v=42"></script>
 		<script src="./js/components/itinerary.js?v=30"></script>
 		<script src="./js/panels/driver-panel.js?v=27" defer></script>
@@ -7813,7 +7817,7 @@
 					const moreBtn = document.createElement("button");
 					moreBtn.type = "button";
 					moreBtn.className =
-						"rux-button rux-button--ghost rux-button--icon rux-button--compact";
+						"rux-button rux-button--ghost rux-button--icon rux-button--sm";
 					moreBtn.setAttribute(
 						"aria-label",
 						`${profile.display_name} actions`,
@@ -10099,7 +10103,7 @@
 			// "Row size" section for why nothing else needs to change. Reuses
 			// the existing .rux-segmented-track component (rux-ui/js/controls.js)
 			// rather than hand-rolling toggle logic: it manages its own
-			// aria-pressed state and fires "rux:segment-change" on click.
+			// aria-pressed state and fires "rux:segment-changed" on click.
 			const tripBarSizeTrack =
 				document.getElementById("opt-trip-bar-size");
 			let tripBarSize = "xs";
@@ -10129,7 +10133,7 @@
 			}
 			applyTripBarSize(tripBarSize);
 
-			tripBarSizeTrack?.addEventListener("rux:segment-change", (e) => {
+			tripBarSizeTrack?.addEventListener("rux:segment-changed", (e) => {
 				applyTripBarSize(e.detail.value);
 				try {
 					localStorage.setItem("rux:trip-bar-size", e.detail.value);
@@ -10773,7 +10777,7 @@
 				driverGridPopover.innerHTML = `
 					<header class="rux-card__header">
 						<p class="rux-card__title" data-driver-grid-popover-title></p>
-						<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--header" data-driver-grid-popover-close aria-label="Close assignment details">
+						<button type="button" class="rux-button rux-button--default rux-button--icon rux-button--lg" data-driver-grid-popover-close aria-label="Close assignment details">
 							<span class="rux-icon" aria-hidden="true">close</span>
 						</button>
 					</header>
@@ -11865,7 +11869,7 @@
 		</script>
 
 		<!-- Import trip modal -->
-		<div class="rux-modal-backdrop" id="tp-import-modal" hidden>
+		<div class="rux-modal-scrim" id="tp-import-modal" hidden>
 			<div
 				class="rux-modal"
 				role="dialog"
@@ -11949,7 +11953,7 @@
 			</div>
 		</div>
 
-		<div class="rux-modal-backdrop" id="print-schedule-modal" hidden>
+		<div class="rux-modal-scrim" id="print-schedule-modal" hidden>
 			<div
 				class="rux-modal"
 				role="dialog"
@@ -11986,7 +11990,7 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Orientation</label>
 							<div
-								class="rux-segmented-track rux-segmented-track--even"
+								class="rux-segmented-track rux-segmented-track--block"
 								id="ps-orientation-group"
 								role="group"
 								aria-label="Orientation"
@@ -12033,7 +12037,7 @@
 						<div class="rux-field">
 							<label class="rux-field__label">Report type</label>
 							<div
-								class="rux-segmented-track rux-segmented-track--even"
+								class="rux-segmented-track rux-segmented-track--block"
 								id="ps-report-type-group"
 								role="group"
 								aria-label="Report type"
@@ -12102,7 +12106,7 @@
 				</p>
 				<button
 					type="button"
-					class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+					class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 					id="manifest-window-close"
 					aria-label="Close manifest"
 				>
@@ -12125,7 +12129,7 @@
 							>
 						</div>
 					</div>
-					<div class="rux-cluster">
+					<div class="rux-u-cluster">
 						<!-- Placeholders for now — see js/panels/trip-manifest.js. Icon-only
                so a full row of secondary actions doesn't crowd out +Passenger,
                the one action that actually does something today. -->
@@ -12393,7 +12397,7 @@
 							<div class="rux-card" data-payment-card>
 								<header class="rux-card__header">
 									<p class="rux-card__title">Payments</p>
-									<div class="rux-cluster">
+									<div class="rux-u-cluster">
 										<button
 											class="rux-button rux-button--ghost rux-button--icon"
 											type="button"
@@ -12684,7 +12688,7 @@
 				<p class="rux-card__title">Trip Finder</p>
 				<button
 					type="button"
-					class="rux-button rux-button--ghost rux-button--icon rux-button--header"
+					class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
 					id="trip-finder-close-btn"
 					aria-label="Close trip finder"
 				>
@@ -12726,7 +12730,7 @@
 						</button>
 					</div>
 					<div
-						class="rux-cluster"
+						class="rux-u-cluster"
 						id="trip-finder-filter-badges"
 						hidden
 					></div>

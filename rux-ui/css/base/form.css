@@ -43,6 +43,21 @@
   border-color: var(--rux-input-hover);
 }
 
+.rux-input:focus-visible,
+.rux-select:focus-visible,
+.rux-textarea:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
+  border-color: var(--rux-accent);
+}
+
+.rux-input[aria-invalid="true"]:focus-visible,
+.rux-select[aria-invalid="true"]:focus-visible,
+.rux-textarea[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px oklch(from var(--rux-danger) l c h / 40%);
+  border-color: var(--rux-danger);
+}
+
 .rux-input:disabled,
 .rux-select:disabled,
 .rux-textarea:disabled {
@@ -172,6 +187,10 @@
   background: var(--rux-switch-checked-bg);
   border: var(--rux-switch-checked-border);
   box-shadow: var(--rux-switch-track-shadow);
+}
+
+.rux-switch input:focus-visible ~ .rux-switch__track {
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
 }
 
 .rux-switch:has(input:disabled) {
@@ -315,6 +334,16 @@
   box-shadow: var(--rux-slider-thumb-shadow);
 }
 
+.rux-slider:focus-visible {
+  outline: none;
+}
+.rux-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
+}
+.rux-slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
+}
+
 .rux-slider:disabled {
   cursor: not-allowed;
   opacity: 0.5;
@@ -372,6 +401,11 @@
   border-color: var(--rux-checkbox-disabled-border);
   cursor: not-allowed;
 }
+.rux-checkbox input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
+}
+
 .rux-checkbox input:checked::after {
   content: "";
   width: var(--rux-checkbox-mark-width);
@@ -451,6 +485,11 @@
 
 .rux-input-group--action .rux-input-group__suffix:is(button, a):hover:not(:disabled) {
   color: var(--rux-text-primary);
+}
+
+.rux-input-group--action .rux-input-group__suffix:is(button, a):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
 }
 
 /* — number — hide native spin buttons — */
@@ -575,6 +614,10 @@
   box-shadow: var(--rux-color-swatch-hover-ring);
 }
 
+.rux-color-swatch input:focus-visible + .rux-color-swatch__dot {
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
+}
+
 .rux-color-swatch input:checked + .rux-color-swatch__dot {
   box-shadow: var(--rux-color-swatch-checked-ring);
 }
@@ -608,6 +651,12 @@
 }
 
 .rux-color-picker__trigger:hover { border-color: var(--rux-color-picker-hover-border); }
+
+.rux-color-picker__trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
+  border-color: var(--rux-accent);
+}
 
 .rux-color-picker__preview {
   display: block;
@@ -723,6 +772,12 @@
   border-color: var(--rux-color-input-hover-border);
 }
 
+.rux-color-input:focus-within {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--rux-accent-ring);
+  border-color: var(--rux-accent);
+}
+
 .rux-color-input__swatch {
   flex-shrink: 0;
   width: var(--rux-color-input-swatch-size);
@@ -784,7 +839,7 @@
    Still not a real input: no focus ring. The status-color classes (.is-
    balance-full/-partial/-paid/-overpaid in trip-panel.css) still apply on
    top of this unchanged — this only touches size/shape, not color. */
-.rux-output--boxed {
+.rux-output--solid {
 	padding: 0 var(--rux-input-padding-inline);
 	background-color: var(--rux-input-background);
 	border: var(--rux-input-border);

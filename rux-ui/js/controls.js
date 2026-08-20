@@ -23,7 +23,12 @@
 		group.querySelectorAll(selector).forEach((item) => {
 			const isActive = item === active;
 			item.setAttribute(attr, isActive ? "true" : "false");
-			if (attr === "aria-selected") item.tabIndex = isActive ? 0 : -1;
+			// Roving tabindex for both aria-selected (tabs) and aria-pressed
+			// (toggle groups): only the active item is tabbable, the rest
+			// are reachable via arrow keys from the active one.
+			if (attr === "aria-selected" || attr === "aria-pressed") {
+				item.tabIndex = isActive ? 0 : -1;
+			}
 		});
 	}
 
@@ -49,14 +54,12 @@
 		});
 
 		if (emit && previous !== active) {
-			group.dispatchEvent(new CustomEvent("rux:segment-change", {
-				bubbles: true,
-				detail: {
-					value: segmentedValue(active),
-					previousValue: segmentedValue(previous),
-					button: active,
-				},
-			}));
+			const detail = {
+				value: segmentedValue(active),
+				previousValue: segmentedValue(previous),
+				button: active,
+			};
+			group.dispatchEvent(new CustomEvent("rux:segment-changed", { bubbles: true, detail }));
 		}
 		return previous !== active;
 	}
@@ -77,7 +80,9 @@
 	}
 
 	function moveActiveItem(group, selector, attr, dir) {
-		const items = Array.from(group.querySelectorAll(selector)).filter((item) => !item.disabled);
+		const items = Array.from(group.querySelectorAll(selector)).filter(
+			(item) => !item.disabled && item.getAttribute("aria-disabled") !== "true"
+		);
 		if (!items.length) return;
 
 		const current = group.querySelector(`${selector}[${attr}="true"]`) || items[0];
@@ -113,7 +118,7 @@
 		group.dataset.ruxIndicatorInit = "true";
 
 		const indicator = document.createElement("span");
-		indicator.className = "rux-segmented__indicator";
+		indicator.className = "rux-segmented-track__indicator";
 		indicator.setAttribute("aria-hidden", "true");
 		group.prepend(indicator);
 
@@ -160,10 +165,10 @@
 				width = Math.max(0, Math.min(activeRect.width, maxRight - x));
 				height = Math.max(0, Math.min(activeRect.height, maxBottom - y));
 
-				group.style.setProperty("--_rux-segment-indicator-x", `${x}px`);
-				group.style.setProperty("--_rux-segment-indicator-y", `${y}px`);
-				group.style.setProperty("--_rux-segment-indicator-width", `${width}px`);
-				group.style.setProperty("--_rux-segment-indicator-height", `${height}px`);
+				group.style.setProperty("--_segment-indicator-x", `${x}px`);
+				group.style.setProperty("--_segment-indicator-y", `${y}px`);
+				group.style.setProperty("--_segment-indicator-width", `${width}px`);
+				group.style.setProperty("--_segment-indicator-height", `${height}px`);
 				group.dataset.ruxIndicatorReady = "true";
 			});
 		};
@@ -218,12 +223,11 @@
 		const pressedToggle = e.target.closest("[data-rux-toggle-button]");
 		if (pressedToggle && !pressedToggle.disabled) {
 			const isActive = pressedToggle.getAttribute("aria-pressed") === "true";
-			pressedToggle.classList.toggle("is-active", !isActive);
 			pressedToggle.setAttribute("aria-pressed", isActive ? "false" : "true");
 		}
 
 		// .rux-segmented-track — one shared component for text, icon, or mixed
-		// segments. Feature code consumes rux:segment-change instead of owning
+		// segments. Feature code consumes rux:segment-changed instead of owning
 		// selection classes or rebuilding the control.
 		const segmentButton = e.target.closest(".rux-segmented-track > .rux-button--segment");
 		if (segmentButton && !segmentButton.disabled) {
@@ -298,9 +302,14 @@
 		return segmentedValue(active);
 	};
 
-	document.addEventListener("DOMContentLoaded", function () {
-		initSegmentedIndicators(document);
-		document.querySelectorAll("[data-rux-tabs]").forEach((group) => {
+	/* Declarative scan. Runs itself on DOMContentLoaded for the consumers that
+	   just drop the script in, and is callable as Rux.controls.init(root) for
+	   markup that arrives later. */
+	let observing = false;
+	function init(root) {
+		root = root || document;
+		initSegmentedIndicators(root);
+		root.querySelectorAll("[data-rux-tabs]").forEach((group) => {
 			const active = group.querySelector('.rux-tab[aria-selected="true"]') || group.querySelector(".rux-tab");
 			if (active) setActiveItem(group, active, ".rux-tab", "aria-selected");
 		});
@@ -308,14 +317,32 @@
 		// windows (trip editor, manifest, request inbox, trip finder) and
 		// attached panels (Calendar tools, Fleet, Driver, Customer, etc.) —
 		// gets the same nav/footer scroll-shadow behavior.
-		document.querySelectorAll(".rux-panel").forEach((panel) => {
+		root.querySelectorAll(".rux-panel").forEach((panel) => {
 			initPanelScrollEdges(panel);
 		});
-		window.Rux.syncSelectPlaceholders(document);
+		window.Rux.syncSelectPlaceholders(root);
 
-		new MutationObserver((records) => {
-			records.forEach((record) => record.addedNodes.forEach(initSegmentedIndicators));
-		}).observe(document.body, { childList: true, subtree: true });
+		// One observer for the document, however many times init runs.
+		if (!observing && document.body) {
+			observing = true;
+			new MutationObserver((records) => {
+				records.forEach((record) => record.addedNodes.forEach(initSegmentedIndicators));
+			}).observe(document.body, { childList: true, subtree: true });
+		}
+	}
+
+	// Namespaced entry is canonical; the flat Rux.* methods above stay as the
+	// published surface consumers already call.
+	window.Rux.controls = {
+		init,
+		syncDateInputs: window.Rux.syncDateInputs,
+		syncSelectPlaceholders: window.Rux.syncSelectPlaceholders,
+		setSegmentedValue: window.Rux.setSegmentedValue,
+		getSegmentedValue: window.Rux.getSegmentedValue,
+	};
+
+	document.addEventListener("DOMContentLoaded", function () {
+		init(document);
 	});
 
 	/* ── Keyboard navigation ────────────────────────────────────────────────── */

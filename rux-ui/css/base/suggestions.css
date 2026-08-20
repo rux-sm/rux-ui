@@ -52,6 +52,18 @@
 	background: var(--rux-button-hover-overlay);
 }
 
+.rux-suggestions__item:focus-visible {
+	outline: none;
+	background: var(--rux-button-hover-overlay);
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+}
+
+/* JS-driven active state — mirrors :hover so keyboard and pointer
+   highlight look identical. */
+.rux-suggestions__item[aria-selected="true"] {
+	background: var(--rux-state-hover-overlay);
+}
+
 .rux-suggestions__label {
 	font-size: var(--rux-label-control-size);
 	font-weight: var(--rux-label-control-weight);

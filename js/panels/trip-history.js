@@ -149,7 +149,7 @@ function renderCard(record) {
 	if (changes.length > 3) {
 		const more = element(
 			"button",
-			"rux-button rux-button--default rux-button--compact sched-trip-history__more",
+			"rux-button rux-button--default rux-button--sm sched-trip-history__more",
 			expanded ? "Show less" : `Show ${changes.length - 3} more`,
 		);
 		more.type = "button";

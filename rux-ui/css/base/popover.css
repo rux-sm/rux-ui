@@ -68,7 +68,7 @@
    to the padding box before it can reach the border row.
 
    So the header's border *is* this popover's top edge. The seam under the
-   trigger comes free: an open trigger paints --_rux-header-disclosure-bg at
+   trigger comes free: an open trigger paints --_header-disclosure-bg at
    z-index 301, above the header's ::after, in the same surface color as the
    popover — so the line simply stops for the trigger's width and the two read
    as one silhouette. Nothing to align, and it cannot drift out of step with

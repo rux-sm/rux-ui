@@ -38,6 +38,7 @@ if (btn && badge) {
 	let disclosure = null;
 	let emojiMenuEl = null;
 	let mentionMenuEl = null;
+	let mentionRegistration = null;
 	let mentionProfiles = [];
 	let activeMentionQuery = null;
 	let activeMentionIndex = 0;
@@ -193,7 +194,12 @@ if (btn && badge) {
 	function closeMentionMenu() {
 		activeMentionQuery = null;
 		activeMentionIndex = 0;
-		if (mentionMenuEl) mentionMenuEl.hidden = true;
+		if (mentionMenuEl) {
+			mentionMenuEl.hidden = true;
+			mentionMenuEl.style.visibility = "";
+		}
+		mentionRegistration?.release();
+		mentionRegistration = null;
 		const input = panelEl?.querySelector("[data-team-chat-input]");
 		input?.setAttribute("aria-expanded", "false");
 		input?.removeAttribute("aria-activedescendant");
@@ -263,11 +269,21 @@ if (btn && badge) {
 			);
 			return option;
 		}));
+		// The menu is portaled to <body>, so the chat popover cannot contain it.
+		// Registering the composer input as its anchor puts it above the popover
+		// on the overlay kernel's stack: opening it leaves the popover standing,
+		// and it inherits the shared outside-press and Escape handling. This
+		// replaces the private rux:popover-open protocol the two overlay
+		// singletons used before rux-ui/js/overlay.js existed.
+		mentionRegistration = window.RuxOverlay.register({
+			element: menu,
+			anchor: input,
+			close: closeMentionMenu,
+			reposition: positionMentionMenu,
+		});
+		menu.style.visibility = "hidden";
 		menu.hidden = false;
 		input.setAttribute("aria-expanded", "true");
-		document.dispatchEvent(new CustomEvent("rux:popover-open", {
-			detail: { popover: menu, trigger: input },
-		}));
 		positionMentionMenu();
 		setActiveMentionOption(0);
 	}

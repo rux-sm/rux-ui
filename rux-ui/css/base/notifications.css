@@ -6,7 +6,8 @@
    rows) opened via #notifications-menu / RuxMenu.
    ========================================================================== */
 
-.rux-notifications-menu {
+/* The block name matches the elements it owns (.rux-notifications__*). */
+.rux-notifications {
 	width: min(340px, calc(100vw - (var(--rux-popover-viewport-padding) * 2)));
 	max-height: 70vh;
 	overflow-y: auto;
@@ -34,6 +35,21 @@
 }
 
 .rux-notifications__item:hover {
+	background: var(--rux-menu-item-hover-bg);
+}
+
+/* The row carries a click handler of its own (mark-as-read) as well as a
+   nested dismiss button. The first rule gives the row itself a ring for when
+   the application makes it focusable; the second keeps the row highlighted
+   while the button inside it holds focus, so the pointer and keyboard
+   readings of "this row is active" match. */
+.rux-notifications__item:focus-visible {
+	outline: none;
+	background: var(--rux-menu-item-hover-bg);
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
+}
+
+.rux-notifications__item:has(:focus-visible) {
 	background: var(--rux-menu-item-hover-bg);
 }
 

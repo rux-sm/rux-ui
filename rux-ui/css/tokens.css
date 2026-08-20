@@ -440,6 +440,13 @@
 	--rux-container-xs:    480px;
 	--rux-panel-width-sm:  280px;
 	--rux-toast-min-width: var(--rux-panel-width-sm);
+	/* Toasts outrank everything, including the popovers and suggestion lists
+	   that promote themselves to --rux-z-modal + 1 to escape a modal: a
+	   confirmation is useless if the surface that triggered it covers it. */
+	--rux-toast-z-index:   calc(var(--rux-z-modal) + 100);
+	--rux-toast-inset:     var(--rux-space-4);
+	--rux-toast-gap:       var(--rux-space-2);
+	--rux-toast-enter-y:   8px;
 	--rux-overlay-blur:    4px;
 	--rux-modal-enter-y:   12px;
 	/* Topmost surface in the app — above floating windows, menus, and
@@ -544,8 +551,10 @@
 	--rux-side-nav-motion-duration: var(--rux-motion-duration-fast-02);
 	--rux-side-nav-enter-easing:    var(--rux-motion-easing-exit-productive);
 	--rux-side-nav-exit-easing:     var(--rux-motion-easing-exit-productive);
-	--rux-side-nav-scrim-bg:             var(--rux-black);
-	--rux-side-nav-scrim-opacity:        0.65;
+	/* The one shared scrim colour, so all three scrims retune together.
+	   Opacity is the fade mechanism only — the darkness lives in the token. */
+	--rux-side-nav-scrim-bg:             var(--rux-overlay-scrim);
+	--rux-side-nav-scrim-opacity:        1;
 	--rux-side-nav-scrim-enter-delay:    var(--rux-motion-duration-fast-01);
 	--rux-side-nav-scrim-enter-duration: 200ms;
 	--rux-side-nav-scrim-enter-easing:   var(--rux-motion-easing-standard-productive);
@@ -634,8 +643,9 @@
 	/* ─── COMPONENT · panel ──────────────────────────────────────────────── */
 	/* Outer-container primitive for any window/panel/dialog — see
 	   docs/cards.md. Position is a modifier (--attached/--floating/
-	   --modal/--anchored). --floating/--attached are live; --modal/
-	   --anchored are additive only, not yet read by any CSS rule. */
+	   --modal/--anchored). All four are live: --attached and --floating
+	   are consumed by navigation.css; --modal and --anchored are consumed
+	   by panel.css itself. */
 
 	/* — shell — */
 	--rux-panel-bg:     var(--rux-surface-0);
@@ -1061,7 +1071,7 @@
 	/* — ghost variant (quiet trailing content in a section/card header,
 	   e.g. Fleet Assignments' bus count) — */
 	/* --rux-button-height-header, not a new 40px literal: this is the same
-	   header-control height every .rux-button--header already uses, so a
+	   header-control height every .rux-button--lg already uses, so a
 	   stepper sitting next to header icon buttons lines up with them. */
 	--rux-number-stepper-ghost-height:        var(--rux-button-height-header);
 	--rux-number-stepper-ghost-btn-width:     var(--rux-button-height-header);
@@ -1544,12 +1554,34 @@
 	--rux-bg-hover:   oklch(from var(--rux-neutral) 88% c h);
 	--rux-bg-active:  oklch(from var(--rux-neutral) 84% c h);
 
+	/* ─── Recessed / raised fills ─────────────────────────────────────────── */
+	/* Dark theme defines these with absolute lightness values that render
+	   correctly on a black canvas but produce invisible or inverted results
+	   on the light one. Each override inverts the intent. */
+
+	/* Disabled inputs: dark theme is near-black (L21.5%) on black; light
+	   theme needs a visible light-gray well on a near-white surface. */
+	--rux-input-bg-disabled: oklch(from var(--rux-neutral) 93% c h);
+
+	/* Raised thumb: dark theme is near-white (L90%) on a dark track; light
+	   theme needs a dark thumb so the switch reads against a light track. */
+	--rux-thumb-bg: oklch(from var(--rux-neutral) 25% c h);
+
+	/* ─── Tag fills ──────────────────────────────────────────────────────── */
+	/* Dark theme fixes these at L90% — near-white pastels that pop on dark
+	   surfaces. On a light card they vanish. Invert to a visible tint. */
+	--rux-tag-purple: oklch(from var(--rux-purple) 80% .12 h);
+	--rux-tag-default: oklch(from var(--rux-neutral) 82% c h);
+
 	/* ─── Elevation colors ────────────────────────────────────────────────── */
 	--rux-shadow-contact-color: oklch(from var(--rux-neutral) 16% c h / 70%);
 	--rux-shadow-ambient-color: oklch(from var(--rux-neutral) 16% c h / 10%);
 	--rux-shadow-overlay-color: oklch(from var(--rux-neutral) 16% c h / 14%);
 	--rux-shadow-inset-color:   oklch(from var(--rux-neutral) 16% c h / 70%);
-	/* --rux-shadow-rim-color:     oklch(from var(--rux-white) l c h / 40%); */
+	/* Rim light is dark-theme only (white edge on a black surface). On a
+	   light canvas it reads as a stray white line — suppress it by routing
+	   to a fully transparent neutral. */
+	--rux-shadow-rim-color:     oklch(from var(--rux-neutral) l c h / 0%);
 
 	/* ─── Component overrides ─────────────────────────────────────────────── */
 	--rux-calendar-grid:           var(--rux-border-width) solid var(--rux-grid-guide);

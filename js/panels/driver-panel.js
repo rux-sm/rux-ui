@@ -598,7 +598,7 @@
 
 	function renderTripList(trips) {
 		if (!trips.length) {
-			tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
+			tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-u-muted">No trips assigned.</span></li>`;
 			return;
 		}
 		tripList.innerHTML = trips
@@ -654,7 +654,7 @@
 			defaultOn: true,
 			head: `<th scope="col" data-col="phone">Phone</th>`,
 			cell: (d) =>
-				`<td class="driver-app__phone col-phone rux-mono" data-col="phone">${d.phone || "—"}</td>`,
+				`<td class="driver-app__phone col-phone rux-u-mono" data-col="phone">${d.phone || "—"}</td>`,
 		},
 		{
 			key: "cdl",
@@ -662,7 +662,7 @@
 			defaultOn: true,
 			head: `<th scope="col" data-col="cdl">CDL</th>`,
 			cell: (d) =>
-				`<td data-col="cdl">${d.cdl_class ? `<span class="rux-tag">CDL-${d.cdl_class}</span>` : `<span class="rux-subtle">—</span>`}</td>`,
+				`<td data-col="cdl">${d.cdl_class ? `<span class="rux-tag">CDL-${d.cdl_class}</span>` : `<span class="rux-u-muted">—</span>`}</td>`,
 		},
 		{
 			key: "expiry",
@@ -680,7 +680,7 @@
 			defaultOn: false,
 			head: `<th scope="col" data-col="short-name">Short name</th>`,
 			cell: (d) =>
-				`<td data-col="short-name" class="rux-mono">${d.short_name || "—"}</td>`,
+				`<td data-col="short-name" class="rux-u-mono">${d.short_name || "—"}</td>`,
 		},
 		{
 			key: "email",
@@ -728,7 +728,7 @@
 			defaultOn: false,
 			head: `<th scope="col" data-col="license-number">License #</th>`,
 			cell: (d) =>
-				`<td data-col="license-number" class="rux-mono">${d.license_number || "—"}</td>`,
+				`<td data-col="license-number" class="rux-u-mono">${d.license_number || "—"}</td>`,
 		},
 		{
 			key: "license-state",
@@ -752,7 +752,7 @@
 			defaultOn: false,
 			head: `<th scope="col" data-col="notes">Notes</th>`,
 			cell: (d) =>
-				`<td data-col="notes">${d.notes ? `<span class="fleet-app__truncate rux-subtle" title="${d.notes.replace(/"/g, "&quot;")}">${d.notes}</span>` : '<span class="rux-subtle">—</span>'}</td>`,
+				`<td data-col="notes">${d.notes ? `<span class="fleet-app__truncate rux-u-muted" title="${d.notes.replace(/"/g, "&quot;")}">${d.notes}</span>` : '<span class="rux-u-muted">—</span>'}</td>`,
 		},
 		{
 			key: "next-trip",
@@ -760,7 +760,7 @@
 			defaultOn: true,
 			head: `<th scope="col" data-col="next-trip">Next trip</th>`,
 			cell: (d) =>
-				`<td data-col="next-trip"><span class="rux-subtle">—</span></td>`,
+				`<td data-col="next-trip"><span class="rux-u-muted">—</span></td>`,
 		},
 	];
 
@@ -1695,13 +1695,13 @@
 	// ── Data loading ──────────────────────────────────────────────────────────
 
 	async function loadDriverTrips(driverId) {
-		tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+		tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-u-muted">Loading…</span></li>`;
 		try {
 			const trips = await db.fetchDriverTrips(driverId);
 			renderTripList(trips);
 		} catch (err) {
 			console.warn("Could not load driver trips:", err);
-			tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+			tripList.innerHTML = `<li class="sched-scope-driver__trip-item"><span class="rux-u-muted">Could not load trips.</span></li>`;
 		}
 	}
 

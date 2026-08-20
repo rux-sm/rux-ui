@@ -16,7 +16,7 @@
    Lists             ul, ol — left padding, item spacing
    Rules             hr — hairline separator
    Selection         ::selection
-	Type utilities    .rux-mono .rux-muted .rux-subtle
+	Type utilities    .rux-u-mono .rux-u-muted
 
    Depends on tokens.css.
    ========================================================================== */
@@ -200,6 +200,9 @@ hr {
 /* ─── Semantic type utility classes ─────────────────────────────────────── */
 /* Use these when an element is the wrong tag but needs a specific scale.    */
 
-.rux-mono      { font-family: var(--rux-font-mono); }
-.rux-muted     { color: var(--rux-text-secondary); }
-.rux-subtle    { color: var(--rux-text-secondary); }
+/* Utilities carry the rux-u- prefix (docs/cards.md's three-prefix contract).
+   .rux-muted and .rux-subtle were byte-identical duplicates of one another;
+   .rux-u-muted is the single rule that replaced them both. */
+.rux-u-mono { font-family: var(--rux-font-mono); }
+
+.rux-u-muted { color: var(--rux-text-secondary); }

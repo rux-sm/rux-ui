@@ -294,7 +294,7 @@
   paymentMenuEl.className = "rux-menu rux-popover";
   paymentMenuEl.hidden = true;
   paymentMenuEl.setAttribute("role", "menu");
-  paymentMenuEl.addEventListener("rux:menu-close", () => { paymentMenuEl.innerHTML = ""; });
+  paymentMenuEl.addEventListener("rux:menu-closed", () => { paymentMenuEl.innerHTML = ""; });
   document.body.appendChild(paymentMenuEl);
 
   function closePaymentMenu() {

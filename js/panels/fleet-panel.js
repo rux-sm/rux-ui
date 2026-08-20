@@ -190,7 +190,7 @@
   function renderTripList(trips) {
     if (!trips.length) {
       tripList.innerHTML =
-        `<li class="sched-scope-fleet__trip-item"><span class="rux-subtle">No trips assigned.</span></li>`;
+        `<li class="sched-scope-fleet__trip-item"><span class="rux-u-muted">No trips assigned.</span></li>`;
       return;
     }
     tripList.innerHTML = trips.map((t) => {
@@ -240,10 +240,10 @@
       cell: b => `<td data-col="year">${b.year ?? "—"}</td>` },
     { key: "color",            label: "Color",            defaultOn: false,
       head: `<th scope="col" data-col="color">Color</th>`,
-      cell: b => { const hex = b.color && /^#[0-9a-fA-F]{6}$/.test(b.color) ? b.color : null; return `<td data-col="color">${hex ? `<span class="fleet-app__color-dot" style="background:${hex}" title="${hex}"></span> ${hex}` : '<span class="rux-subtle">—</span>'}</td>`; } },
+      cell: b => { const hex = b.color && /^#[0-9a-fA-F]{6}$/.test(b.color) ? b.color : null; return `<td data-col="color">${hex ? `<span class="fleet-app__color-dot" style="background:${hex}" title="${hex}"></span> ${hex}` : '<span class="rux-u-muted">—</span>'}</td>`; } },
     { key: "vin",              label: "VIN",              defaultOn: false,
       head: `<th scope="col" data-col="vin">VIN</th>`,
-      cell: b => `<td data-col="vin" class="rux-mono rux-subtle">${b.vin || "—"}</td>` },
+      cell: b => `<td data-col="vin" class="rux-u-mono rux-u-muted">${b.vin || "—"}</td>` },
     { key: "mileage",          label: "Mileage",          defaultOn: false,
       head: `<th scope="col" data-col="mileage">Mileage</th>`,
       cell: b => `<td data-col="mileage">${b.mileage != null ? b.mileage.toLocaleString() + " mi" : "—"}</td>` },
@@ -264,10 +264,10 @@
       cell: b => `<td data-col="inspection-exp">${fmtDate(b.inspection_exp)}</td>` },
     { key: "notes",            label: "Notes",            defaultOn: false,
       head: `<th scope="col" data-col="notes">Notes</th>`,
-      cell: b => `<td data-col="notes">${b.notes ? `<span class="fleet-app__truncate rux-subtle" title="${b.notes.replace(/"/g, '&quot;')}">${b.notes}</span>` : '<span class="rux-subtle">—</span>'}</td>` },
+      cell: b => `<td data-col="notes">${b.notes ? `<span class="fleet-app__truncate rux-u-muted" title="${b.notes.replace(/"/g, '&quot;')}">${b.notes}</span>` : '<span class="rux-u-muted">—</span>'}</td>` },
     { key: "next-trip",        label: "Next trip",        defaultOn: true,
       head: `<th scope="col" data-col="next-trip">Next trip</th>`,
-      cell: b => `<td data-col="next-trip"><span class="rux-subtle">—</span></td>` },
+      cell: b => `<td data-col="next-trip"><span class="rux-u-muted">—</span></td>` },
   ];
 
   function getActiveCols() {
@@ -719,7 +719,7 @@
       fleetColFilterPopover.className = "rux-menu rux-popover";
       fleetColFilterPopover.setAttribute("hidden", "");
       fleetColFilterPopover.setAttribute("role", "menu");
-      fleetColFilterPopover.addEventListener("rux:menu-close", () => { activeFilterTh = null; });
+      fleetColFilterPopover.addEventListener("rux:menu-closed", () => { activeFilterTh = null; });
       document.body.appendChild(fleetColFilterPopover);
     }
 
@@ -852,14 +852,14 @@
 
   async function loadBusTrips(busId) {
     tripList.innerHTML =
-      `<li class="sched-scope-fleet__trip-item"><span class="rux-subtle">Loading…</span></li>`;
+      `<li class="sched-scope-fleet__trip-item"><span class="rux-u-muted">Loading…</span></li>`;
     try {
       const trips = await db.fetchBusTrips(busId);
       renderTripList(trips);
     } catch (err) {
       console.warn("Could not load bus trips:", err);
       tripList.innerHTML =
-        `<li class="sched-scope-fleet__trip-item"><span class="rux-subtle">Could not load trips.</span></li>`;
+        `<li class="sched-scope-fleet__trip-item"><span class="rux-u-muted">Could not load trips.</span></li>`;
     }
   }
 

@@ -20,13 +20,13 @@ may set width and height, but must not redefine those outer visual properties.
 ## Header Tab-Tip Popovers
 
 Use `.rux-popover--tab-tip` for popovers opened by a global action in the UI
-header. The open 48px trigger is the visible tab and the popover body attaches
-directly below it with no gap.
+header. The header trigger button (`.rux-button--lg`) is the visible tab
+and the popover body attaches directly below it with no gap.
 
 ```html
 <button
   class="rux-button rux-button--ghost rux-button--icon
-    rux-button--header rux-ui-header__disclosure"
+    rux-button--lg rux-ui-header__disclosure"
   aria-haspopup="menu"
   aria-controls="account-menu"
   aria-expanded="false"
@@ -84,6 +84,7 @@ other Rux popovers. Continue using `RuxMenu.open()` for action menus.
 ## Popovers in Modals
 
 Anchored popovers are portaled to `document.body`. `RuxPopover.position()`
-automatically marks a popover whose trigger is inside `.rux-modal-backdrop`
+automatically marks a popover whose trigger is inside `.rux-modal-scrim`
 and promotes it above the modal layer. Feature code should not add its own
 z-index override for modal menus; use the shared positioning API instead.
+(Known violations: `scheduler-app.css`, `itinerary.css` — tracked for cleanup.)

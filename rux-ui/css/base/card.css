@@ -35,7 +35,7 @@
 /* Single-region cards with no dedicated __body opt into the same shell
    chrome explicitly. The modifier carries no padding — the content region
    owns its own inset, exactly as __body does. */
-.rux-card--boxed {
+.rux-card--solid {
 	background: var(--rux-card-shell-bg);
 	border: var(--rux-card-shell-border);
 	border-radius: var(--rux-card-shell-radius);
@@ -59,7 +59,7 @@
 	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l - 6%) c h);
 }
 
-.rux-card--borderless {
+.rux-card--ghost {
 	--rux-card-body-border: 1px solid transparent;
 }
 

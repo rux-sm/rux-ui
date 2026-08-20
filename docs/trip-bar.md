@@ -11,7 +11,7 @@ The trip bar is a compact Gantt-style card on the scheduler grid. Each bar repre
 | Collapsed height | **135px** | Exact fit for 7 rows + gaps + padding |
 | Body padding | **4px all sides** | `space-1` uniform |
 | Row gap | **1px** | `--sched-trip-bar-tight-gap` |
-| Icon size (all icons) | **18px** | Scoped `--rux-icon-md: 18px` on `.sched-trip-bar` |
+| Icon size (all icons) | **18px** | Scoped `--sched-trip-bar-icon-size` on `.sched-trip-bar` |
 | Day minimum width | **13rem (208px)** | Set on `.sched-app__grid` |
 
 ---
@@ -262,7 +262,7 @@ Changing any of these requires updating the placement math:
 
 ## Icon Rules
 
-- **Inside trip bars**: all icons are **18px** (scoped `--rux-icon-md: 18px`)
+- **Inside trip bars**: all icons are **18px** (scoped `--sched-trip-bar-icon-size`)
 - **Everywhere else in UI**: all icons are **20px** (global `--rux-icon-md: 20px`)
 - **Icon font**: Material Symbols Outlined
 - **Font variation**: `FILL 1, wght 400, GRAD 0, opsz 24`

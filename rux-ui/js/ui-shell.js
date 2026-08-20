@@ -21,14 +21,34 @@
 			return nav.classList.contains("is-open");
 		}
 
+		let registration = null;
+
 		function setOpen(open, { restoreFocus = false, focusNav = false } = {}) {
 			nav.classList.toggle("is-open", open);
 			scrim?.classList.toggle("is-visible", open);
+			// inert alone hides the nav from the accessibility tree and
+			// prevents focus; aria-hidden was redundant with it.
 			nav.inert = !open;
-			nav.setAttribute("aria-hidden", String(!open));
 			toggle.setAttribute("aria-expanded", String(open));
 			toggle.setAttribute("aria-label", open ? "Close Navigation" : "Open Navigation");
 			if (legacyIcon) legacyIcon.textContent = open ? "close" : "menu";
+
+			// Escape comes from the overlay kernel, which owns the one Escape
+			// policy for every dismissible surface. Outside-press stays opted
+			// out: the scrim below is this nav's own dismiss affordance, and on
+			// wide layouts the nav sits beside the workspace with no scrim at
+			// all, where a stray click should not collapse navigation.
+			if (open) {
+				registration = window.RuxOverlay?.register({
+					element: nav,
+					anchor: toggle,
+					close: (options) => close(options),
+					dismissOn: { outside: false },
+				}) ?? null;
+			} else {
+				registration?.release();
+				registration = null;
+			}
 
 			if (open && focusNav) {
 				requestAnimationFrame(() => nav.querySelector(".rux-side-nav__link")?.focus());
@@ -53,13 +73,6 @@
 				close({ restoreFocus: true });
 			}
 		});
-		document.addEventListener("keydown", (event) => {
-			if (event.key === "Escape" && isOpen()) {
-				event.preventDefault();
-				close({ restoreFocus: true });
-			}
-		});
-
 		setOpen(false);
 		return { open, close, isOpen };
 	}
@@ -71,6 +84,17 @@
 		return createSideNav({ toggle, nav, scrim });
 	}
 
-	window.RuxUiShell = { createSideNav, init };
+	window.Rux = window.Rux || {};
+	window.Rux.uiShell = { createSideNav, init };
+	window.RuxUiShell = window.Rux.uiShell;
+
+	// Wired at parse time, because consumers read RuxUiShell.sideNav straight
+	// after the script tag. If the shell markup has not been parsed yet, retry
+	// once the document is ready rather than leaving sideNav silently null.
 	window.RuxUiShell.sideNav = init();
+	if (!window.RuxUiShell.sideNav) {
+		document.addEventListener("DOMContentLoaded", () => {
+			window.RuxUiShell.sideNav = window.RuxUiShell.sideNav || init();
+		});
+	}
 })();

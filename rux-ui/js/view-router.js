@@ -142,5 +142,7 @@
 		return { show, current: () => active, destroy, fromHash };
 	}
 
-	window.RuxViewRouter = { create };
+	window.Rux = window.Rux || {};
+	window.Rux.viewRouter = { create };
+	window.RuxViewRouter = window.Rux.viewRouter;
 })();

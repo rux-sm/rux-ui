@@ -585,35 +585,70 @@ and check the two vendored consumers (H2) before touching any public name.
 9. Drawer Escape; `aria-disabled` filtering in `menu.js:6` and `controls.js:80,242`;
    toggle-group roving tabindex; drop redundant `aria-hidden` beside `inert`. *(G4)*
 
-**Phase 2 — The overlay kernel (M–L, judgment)**
-10. Extract the dismiss manager (singleton, outside-click, Escape policy, auto-id/ARIA,
+**Phase 2 — The overlay kernel (M–L, judgment)** — **done (2026-08-20)**, ledger step 17
+10. ~~Extract the dismiss manager (singleton, outside-click, Escape policy, auto-id/ARIA,
     layer promotion); migrate menu → popover → suggestions → modal; delete
     `rux:popover-open`; make `open()` own unhide; route suggestions positioning through
-    popover's token-aware engine. *(D2, D3)*
-11. Toast host to `.rux-toast-host` in `feedback.css` + motion tokens. *(C7)*
-12. Standardize init (`Rux.<name>.init(root)`) and events (bubbling past-tense on the
-    element); give `theme.js` a public API and drop the `#theme-toggle` ID coupling. *(D1, B8)*
+    popover's token-aware engine.~~ *(D2, D3)* — `rux-ui/js/overlay.js`. Drawer, side nav
+    and the app's chat mention menu were migrated too, so all five Escape handlers of D2
+    collapse to one.
+11. ~~Toast host to `.rux-toast-host` in `feedback.css` + motion tokens.~~ *(C7)* — added
+    `--rux-toast-z-index/-inset/-gap/-enter-y`; `utilities.js` reads the motion tokens off
+    the element, so the last token-violating behavior module is clean.
+12. ~~Standardize init (`Rux.<name>.init(root)`) and events (bubbling past-tense on the
+    element); give `theme.js` a public API and drop the `#theme-toggle` ID coupling.~~
+    *(D1, B8)* — done **additively**: every module publishes `Rux.<name>` beside its
+    existing `Rux<Name>` global, `controls`/`utilities`/`theme`/`ui-shell` gained explicit
+    `init(root)`, `Rux.theme` is a real API (`get`/`set`/`toggle`/`init` + `rux:theme-changed`),
+    and past-tense event siblings ship alongside the originals. **Still open:** retiring the
+    per-module DOMContentLoaded self-init for one boot — breaking for `driver.html` and the
+    vendored consumers, so it needs its own ledger step. The deprecated aliases this phase
+    created are listed in ledger step 17.
 
-**Phase 3 — Naming consolidation (M, mechanical once decided; ⚠ breaking — ledger + aliases)**
-13. Modifier synonyms → glossary canon (`--fill`/`--even`→`--block`, `--borderless`→`--ghost`,
-    `--boxed`→`--solid`, size scale). *(B1)*
-14. Scrim unification; notifications block; segmented block + token prefixes; tabs token
-    prefixes. *(H4, B3, D4)*
-15. Utility migration: delete `rux-muted`/`rux-stack` (0 uses), collapse the
-    muted/subtle duplicate, decide cluster/stack prefix, alias-then-migrate `rux-subtle`
-    (18 JS call sites). *(B5)*
+**Phase 3 — Naming consolidation** — *items 13–15 done 2026-08-20 (ledger steps 18–20);
+16–17 open.* **No aliases were kept.** The owner's standing rule is one name per concept, so
+every legacy name is gone rather than deprecated. Consequence, stated once: the vendored
+consumers pinned at `157b427` need markup updates when they next sync, since there is no
+fallback name to catch them.
+13. ~~Modifier synonyms → glossary canon.~~ *(B1)* — all of them, plus `.rux-output--boxed`
+    which B1's table missed. The size scale went too: `--compact`→`--sm`, `--header`→`--lg`,
+    unmodified = 32px default. The tokens had already voted (`--rux-icon-sm`/`--rux-icon-lg`)
+    and `.rux-avatar--sm|--lg` already shipped, so the system now has one size vocabulary.
+    `ui-shell.test.mjs`'s blanket ban on `--sm` is replaced by assertions that both rungs
+    resolve — the ban existed because `--sm` named nothing, which is no longer true.
+14. ~~Scrim unification; notifications block; segmented block.~~ *(H4, B3, D4)* —
+    `.rux-modal-backdrop`→`.rux-modal-scrim` (the other two were already "scrim"), and
+    side-nav now paints `--rux-overlay-scrim` at `opacity: 1` like the drawer does, so all
+    three retune from one token. **This lightens the side-nav scrim from 0.65 to 0.60** —
+    deliberate, and the one change here that still wants an eyeball in both themes.
+    Token-prefix regularization (`--rux-segmented-track-*`/`--rux-segment-*`,
+    `--rux-tab-*`/`--rux-tabs-attached-tab-*`) is still open and belongs with item 16.
+15. ~~Utility migration.~~ *(B5)* — `rux-u-*` for all six; `cluster`/`stack`/`row`/`spacer`
+    adjudicated as utilities; the muted/subtle duplicate collapsed into `.rux-u-muted`.
 16. `data-*`/custom-property prefixing (`data-placement` et al., `--drawer-width`,
-    `--_rux-*`→`--_*`); motion + state-overlay + font-size token families
-    (alias-then-migrate). *(B7, C2, C3)*
-17. App prefix sweep: 13 prefixes → `sched-`, one file per commit;
-    `@keyframes rux-pull-hint-pulse` → `sched-`. *(B6)*
+    `--_rux-*`→`--_*`); motion + state-overlay + font-size token families. *(B7, C2, C3)*
+    **Open.** Note `[data-dismiss]` (notifications) cannot simply become `[data-rux-dismiss]`:
+    that name already means "close the nearest modal" in `utilities.js`, so the two would
+    collide. It needs a distinct name, which is a decision rather than a sweep.
+17. App prefix sweep: 13 prefixes → `sched-`, one file per commit.
+    ~~`@keyframes rux-pull-hint-pulse` → `sched-`~~ **done** — it was the last `rux-` keyframe
+    in the application layer, a real boundary leak, isolated to two lines in one file.
+    **The 13-prefix sweep itself is open.** ~1,000 occurrences, and three of the prefixes
+    (`driver`, `assignment`, `req`) are also domain words appearing in data-layer code and
+    column names, so a regex sweep is unsafe — it wants the file-at-a-time commit discipline
+    this line already prescribes. *(B6)*
 
 **Phase 4 — Coverage that locks it in (M, mostly mechanical)**
 18. Gallery completion + fixed specimens (tabs, theme toggle, `examples/app-layout.html`). *(H1)*
-19. New contract tests from §5: class-resolution ★, state-contract ★, prefix-contract ★,
-    focus-contract ★, gallery-coverage ★, breakpoint allowlist; extend tokens-contract
-    with "portable rules read only tokens.css-declared tokens" (catches C4). Seed each
-    with an ACCEPTED list that must shrink — the mechanism §7 of the ledger proved.
+19. ~~New contract tests from §5: class-resolution ★, state-contract ★, prefix-contract ★,
+    focus-contract ★~~ **done (2026-08-20)**, ledger step 21 — four suites, 18 tests, 256→274,
+    each verified to fail when violated. `class-resolution` immediately caught a live bug from
+    the Phase 3 renames (`request.html` was missing from the target list), four ghost classes,
+    and two dead modifiers; `state-contract` found `data-rux-accent` is written but read by no
+    rule; `prefix-contract` drove `--_rux-*`→`--_*`; `focus-contract`'s five gaps were closed
+    rather than accepted. **Still open:** gallery-coverage ★, breakpoint allowlist, and
+    extending tokens-contract with "portable rules read only tokens.css-declared tokens"
+    (catches C4).
 20. Wire-or-remove: type-role axes (C5), 3 deprecated text aliases, `--rux-divider`,
     `--rux-shadow-pressed`, bridge motion tokens; declare the four rule-invented panel
     tokens in tokens.css; `--rux-z-splash`. *(C4, C5, H3)*

@@ -45,6 +45,15 @@
 		box-shadow var(--rux-button-transition-duration) var(--rux-button-transition-easing);
 }
 
+/* Button label — an inline element inside a .rux-button that wraps the text
+   portion when a button carries both an icon and a label. Defined here (even
+   with no visual rules) so the class is an explicit public contract rather
+   than an implicit one that happens to work because unstyled <span>s lay out
+   fine. App stylesheets may target it for spacing or truncation. */
+.rux-button__label {
+	/* Intentionally empty — the label inherits the button's own typography. */
+}
+
 .rux-button[hidden] {
 	display: none;
 }
@@ -389,9 +398,9 @@
 	display: none;
 }
 
-/* — compact (28px) — */
+/* — compact (24px) — */
 
-.rux-button--compact {
+.rux-button--sm {
 	--_h: var(--rux-button-height-compact);
 	--_icon-size: var(--rux-button-icon-size-compact);
 	--_icon-optical-size: var(--rux-icon-optical-size-sm);
@@ -400,7 +409,7 @@
 	gap: var(--rux-button-content-gap-compact);
 }
 
-.rux-button--compact > .rux-icon {
+.rux-button--sm > .rux-icon {
 	--_icon-size: var(--rux-button-icon-size-compact);
 	--_icon-optical-size: var(--rux-icon-optical-size-sm);
 }
@@ -418,18 +427,19 @@
 	--_bg: var(--rux-button-icon-selected-background);
 }
 
-/* Header actions share one 44px square/24px icon contract. */
-.rux-button--header {
+/* Header actions share one 40px square / 22px icon desktop contract
+   (44px / 24px at ≤500px — see tokens.css mobile touch-targets block). */
+.rux-button--lg {
 	--_h: var(--rux-button-height-header);
 	--_icon-size: var(--rux-button-icon-size-header);
 	--_icon-optical-size: var(--rux-icon-optical-size-lg);
 }
 
-.rux-button--header.rux-button--icon {
+.rux-button--lg.rux-button--icon {
 	font-size: var(--rux-button-icon-size-header);
 }
 
-.rux-button--header > .rux-icon {
+.rux-button--lg > .rux-icon {
 	--_icon-size: var(--rux-button-icon-size-header);
 	--_icon-optical-size: var(--rux-icon-optical-size-lg);
 }
@@ -493,31 +503,31 @@
 	overflow: hidden;
 }
 
-.rux-segmented__indicator {
+.rux-segmented-track__indicator {
 	position: absolute;
 	top: 0;
 	left: 0;
 	z-index: 0;
-	width: var(--_rux-segment-indicator-width, 0);
-	height: var(--_rux-segment-indicator-height, 0);
+	width: var(--_segment-indicator-width, 0);
+	height: var(--_segment-indicator-height, 0);
 	background: var(--rux-button-selected-background);
 	border-radius: var(--rux-segment-radius);
 	box-shadow: var(--rux-button-shadow-raised);
 	pointer-events: none;
 	transform: translate(
-		var(--_rux-segment-indicator-x, 0),
-		var(--_rux-segment-indicator-y, 0)
+		var(--_segment-indicator-x, 0),
+		var(--_segment-indicator-y, 0)
 	);
 }
 
-[data-rux-indicator-ready="true"] > .rux-segmented__indicator {
+[data-rux-indicator-ready="true"] > .rux-segmented-track__indicator {
 	transition:
 		transform var(--rux-segment-indicator-duration) var(--rux-segment-indicator-easing),
 		width var(--rux-segment-indicator-duration) var(--rux-segment-indicator-easing),
 		height var(--rux-segment-indicator-duration) var(--rux-segment-indicator-easing);
 }
 
-.rux-segmented-track > .rux-segmented__indicator {
+.rux-segmented-track > .rux-segmented-track__indicator {
 	background: var(--rux-segment-active-background);
 	border-color: var(--rux-segment-active-border-color);
 	box-shadow: var(--rux-button-shadow-raised);
@@ -591,7 +601,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	.rux-segmented__indicator {
+	.rux-segmented-track__indicator {
 		transition: none !important;
 	}
 }
@@ -600,7 +610,7 @@
    For a track whose options are a fixed, small set — two states of one
    setting, say — where ragged segment widths read as accidental. Opt-in: the
    default behavior suits a track whose labels genuinely differ in length. */
-.rux-segmented-track--even > .rux-button {
+.rux-segmented-track--block > .rux-button {
 	flex: 1;
 	min-width: 0;
 }
@@ -665,6 +675,11 @@
 .rux-number-stepper__btn:disabled {
 	color: var(--rux-number-stepper-btn-fg-disabled);
 	cursor: not-allowed;
+}
+
+.rux-number-stepper__btn:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px var(--rux-accent-ring);
 }
 
 .rux-number-stepper__input {

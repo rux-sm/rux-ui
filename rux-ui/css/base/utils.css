@@ -77,15 +77,35 @@
 
 /* Layout utilities from README's Visual Foundations contract: a control row
    that spaces adjacent controls and wraps on small screens, and a vertical
-   rhythm stack whose gap replaces margins. */
-.rux-cluster {
+   rhythm stack whose gap replaces margins.
+
+   These are utilities, not components — one rule each, no elements, no
+   modifiers — so they carry the rux-u- prefix per docs/cards.md's three-prefix
+   contract. */
+.rux-u-cluster {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--rux-space-3);
 }
 
-.rux-stack {
+/* A horizontal row with a consistent gap — the single-line counterpart to
+   .rux-u-cluster's wrapping flex. Use when items must not wrap (e.g. a label
+   beside an action cluster). */
+.rux-u-row {
+	display: flex;
+	align-items: center;
+	gap: var(--rux-space-3);
+}
+
+/* A flex spacer that absorbs remaining space between two siblings inside a
+   .rux-u-row or any flex container — the CSS-only equivalent of margin-auto
+   pushing. */
+.rux-u-spacer {
+	flex: 1 1 auto;
+}
+
+.rux-u-stack {
 	display: flex;
 	flex-direction: column;
 	gap: var(--rux-stack-gap);

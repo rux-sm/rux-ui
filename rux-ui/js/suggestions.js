@@ -28,10 +28,16 @@
 (() => {
 	"use strict";
 
+	/* The panel matches its input's width, but never gets so narrow that
+	   labels wrap; CSS owns the upper cap (.rux-suggestions max-width). */
+	const MIN_PANEL_WIDTH = 240;
+
 	let panelEl = null;
 	let activeInput = null;
 	let activeItems = [];
 	let activeOnSelect = null;
+	let highlightedIdx = -1;
+	let registration = null;
 
 	function escHtml(value) {
 		return String(value ?? "").replace(/[&<>"']/g, (c) => ({
@@ -42,9 +48,17 @@
 	function hide() {
 		if (panelEl) {
 			panelEl.hidden = true;
+			panelEl.style.visibility = "";
 			panelEl.innerHTML = "";
 		}
+		if (activeInput) {
+			activeInput.removeAttribute("aria-activedescendant");
+			activeInput.setAttribute("aria-expanded", "false");
+		}
+		registration?.release();
+		registration = null;
 		activeItems = [];
+		highlightedIdx = -1;
 	}
 
 	function select(item) {
@@ -53,19 +67,21 @@
 		onSelect?.(item);
 	}
 
+	/* Width is this component's own policy; placement, the offset and
+	   viewport-padding tokens, and the flip-when-it-does-not-fit logic all
+	   come from the shared popover engine, so a suggestions list sits under
+	   its field exactly the way a menu sits under its trigger. */
 	function position(input) {
-		const rect = input.getBoundingClientRect();
-		const margin = 8;
-		const width = Math.max(rect.width, 240);
-		panelEl.style.left = `${Math.max(margin, Math.min(rect.left, window.innerWidth - width - margin))}px`;
-		panelEl.style.top = `${rect.bottom + 4}px`;
-		panelEl.style.width = `${Math.min(width, window.innerWidth - margin * 2)}px`;
+		if (!panelEl) return;
+		panelEl.style.width = `${Math.max(input.getBoundingClientRect().width, MIN_PANEL_WIDTH)}px`;
+		window.RuxPopover.position(input, panelEl, { placement: "bottom-start" });
 	}
 
 	function ensurePanel() {
 		if (panelEl) return panelEl;
 		panelEl = document.createElement("div");
 		panelEl.className = "rux-suggestions";
+		panelEl.id = "rux-suggestions-panel";
 		panelEl.hidden = true;
 		panelEl.setAttribute("role", "listbox");
 		document.body.appendChild(panelEl);
@@ -76,23 +92,37 @@
 			const item = activeItems[parseInt(btn.dataset.suggestionIdx, 10)];
 			if (item) select(item);
 		});
-		// mousedown (not click) so this fires before the input's own blur —
-		// same reasoning as itinerary.js's address suggestions.
-		document.addEventListener("mousedown", (e) => {
-			if (!panelEl || panelEl.hidden) return;
-			if (panelEl.contains(e.target)) return;
-			if (e.target === activeInput) return;
-			hide();
-		});
-		document.addEventListener("keydown", (e) => {
-			if (e.key === "Escape") hide();
-		});
+		// Outside-press and Escape are the overlay kernel's
+		// (rux-ui/js/overlay.js); it listens on capture-phase pointerdown,
+		// which still lands before the input's own blur — the ordering this
+		// dropdown and itinerary.js's address list both depend on.
 
 		return panelEl;
 	}
 
+	function setHighlight(idx) {
+		if (!panelEl || panelEl.hidden) return;
+		const items = panelEl.querySelectorAll("[role='option']");
+		items.forEach((el) => el.setAttribute("aria-selected", "false"));
+		if (idx >= 0 && idx < items.length) {
+			highlightedIdx = idx;
+			items[idx].setAttribute("aria-selected", "true");
+			items[idx].scrollIntoView({ block: "nearest" });
+			if (activeInput) activeInput.setAttribute("aria-activedescendant", items[idx].id);
+		} else {
+			highlightedIdx = -1;
+			if (activeInput) activeInput.removeAttribute("aria-activedescendant");
+		}
+	}
+
 	function render(input, items, onSelect) {
 		ensurePanel();
+		// Moving the singleton to a new field: retire the old field's combobox
+		// state before it is forgotten, or it keeps claiming an open listbox.
+		if (activeInput && activeInput !== input) {
+			activeInput.removeAttribute("aria-activedescendant");
+			activeInput.setAttribute("aria-expanded", "false");
+		}
 		activeInput = input;
 		activeItems = items;
 		activeOnSelect = onSelect;
@@ -100,21 +130,31 @@
 			hide();
 			return;
 		}
-		panelEl.toggleAttribute(
-			"data-rux-modal-layer",
-			Boolean(input.closest(".rux-modal-backdrop, .rux-panel--floating")),
-		);
-		position(input);
+		window.RuxOverlay.promoteLayer(panelEl, input);
 		panelEl.innerHTML = items
 			.map(
 				(item, i) => `
-			<button class="rux-suggestions__item" type="button" role="option" data-suggestion-idx="${i}">
+			<button class="rux-suggestions__item" type="button" role="option" id="rux-suggestion-${i}" data-suggestion-idx="${i}">
 				<span class="rux-suggestions__label">${escHtml(item.label ?? "")}</span>
 				${item.sublabel ? `<span class="rux-suggestions__sublabel">${escHtml(item.sublabel)}</span>` : ""}
 			</button>`,
 			)
 			.join("");
+		registration = window.RuxOverlay.register({
+			element: panelEl,
+			anchor: input,
+			close: hide,
+			reposition: () => position(input),
+		});
+		// Reveal before positioning — the engine measures the rendered list to
+		// decide whether it fits below the field — but reveal invisibly so it
+		// never paints where the previous input left it.
+		panelEl.style.visibility = "hidden";
 		panelEl.hidden = false;
+		position(input);
+		input.setAttribute("aria-expanded", "true");
+		input.setAttribute("aria-controls", panelEl.id);
+		highlightedIdx = -1;
 	}
 
 	function attach(input, { fetch: fetchItems, onSelect, minChars = 2, debounceMs = 200 } = {}) {
@@ -149,18 +189,38 @@
 			if (input.value.trim().length >= minChars) run();
 		}
 
+		function onKeydown(e) {
+			if (!panelEl || panelEl.hidden || activeInput !== input) return;
+			const count = activeItems.length;
+			if (!count) return;
+			if (e.key === "ArrowDown") {
+				e.preventDefault();
+				setHighlight(highlightedIdx < count - 1 ? highlightedIdx + 1 : 0);
+			} else if (e.key === "ArrowUp") {
+				e.preventDefault();
+				setHighlight(highlightedIdx > 0 ? highlightedIdx - 1 : count - 1);
+			} else if (e.key === "Enter" && highlightedIdx >= 0) {
+				e.preventDefault();
+				select(activeItems[highlightedIdx]);
+			}
+		}
+
 		input.addEventListener("input", onInput);
 		input.addEventListener("focus", onFocus);
+		input.addEventListener("keydown", onKeydown);
 
 		return {
 			detach() {
 				input.removeEventListener("input", onInput);
 				input.removeEventListener("focus", onFocus);
+				input.removeEventListener("keydown", onKeydown);
 				clearTimeout(timer);
 				if (activeInput === input) hide();
 			},
 		};
 	}
 
-	window.RuxSuggestions = { attach };
+	window.Rux = window.Rux || {};
+	window.Rux.suggestions = { attach };
+	window.RuxSuggestions = window.Rux.suggestions;
 })();

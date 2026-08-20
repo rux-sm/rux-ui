@@ -1045,10 +1045,10 @@
 .sched-scheduler__pull-hint.is-ready {
 	opacity: 1;
 	background: var(--rux-accent);
-	animation: rux-pull-hint-pulse 700ms var(--rux-ease-in-out) infinite;
+	animation: sched-pull-hint-pulse 700ms var(--rux-ease-in-out) infinite;
 }
 
-@keyframes rux-pull-hint-pulse {
+@keyframes sched-pull-hint-pulse {
 	0%, 100% { transform: translateY(-50%) scale(1); }
 	50% { transform: translateY(-50%) scale(1.15); }
 }

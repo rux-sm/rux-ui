@@ -657,7 +657,7 @@
 		panelEl.innerHTML = `
 			<header class="rux-panel__header sched-trip-envelope-window__header">
 				<span class="rux-card__title" data-envelope-title>Trip Envelope</span>
-				<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--header" data-envelope-close aria-label="Close trip envelope">
+				<button type="button" class="rux-button rux-button--ghost rux-button--icon rux-button--lg" data-envelope-close aria-label="Close trip envelope">
 					<span class="rux-icon" aria-hidden="true">close</span>
 				</button>
 			</header>

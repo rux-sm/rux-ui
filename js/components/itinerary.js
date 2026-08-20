@@ -1175,7 +1175,7 @@
 			  <span class="sched-trip-itinerary__marker"><span class="rux-icon sched-trip-itinerary__marker-pin sched-trip-itinerary__marker-pin--${status === "sleeper" ? "sleeper" : "off"}" aria-hidden="true">${icon}</span></span>
 			  <h4 class="rux-card__title">${escHtml(label)}</h4>
 			</div>
-			<output class="rux-output rux-output--boxed sched-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time"><span>${escHtml(totalVal)} <span class="sched-trip-itinerary__unit">hr</span></span><span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
+			<output class="rux-output rux-output--solid sched-trip-itinerary__dwell-total" aria-label="Total ${escHtml(label)} time"><span>${escHtml(totalVal)} <span class="sched-trip-itinerary__unit">hr</span></span><span class="rux-status-text ${resetsClock ? "rux-status-text--success" : "rux-status-text--warning"}">${resetsClock ? "Reset" : "Not Reset"}</span></output>
 		  </header>
 		  <div class="sched-trip-itinerary__stop-body">
 		  ${sessionBlock}
@@ -1437,7 +1437,7 @@
 					<article class="rux-card sched-trip-itinerary__day-group" data-day-number="${dayNumber}">
 						<div class="rux-card__header">
 							<h3 class="rux-card__title">Day ${dayNumber}${dayDate ? `<span class="sched-trip-itinerary__day-date">${escHtml(formatBoundaryDate(dayDate))}</span>` : ""}</h3>
-							${dayExpandableCount > 0 ? `<div class="rux-cluster">
+							${dayExpandableCount > 0 ? `<div class="rux-u-cluster">
 				<button type="button" class="rux-button rux-button--ghost rux-button--icon" data-day-expand aria-expanded="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount}" aria-label="${dayExpandableCount > 0 && dayExpandedCount === dayExpandableCount ? "Collapse" : "Expand"} Day ${dayNumber} statistics"><span class="rux-icon rux-button__disclosure-icon" aria-hidden="true">keyboard_arrow_down</span></button>
 							</div>` : ""}
 						</div>
@@ -1658,7 +1658,7 @@
 				<button type="button" class="rux-menu__item" role="menuitem" data-day-add-type="day"><span class="rux-icon" aria-hidden="true">route</span>Add driving day boundary</button>`;
 			window.RuxMenu.open(trigger, dayAddMenu, { placement: "bottom-end" });
 		};
-		dayAddMenu.addEventListener("rux:menu-close", () => {
+		dayAddMenu.addEventListener("rux:menu-closed", () => {
 			activeAddDay = null;
 			dayAddMenu.innerHTML = "";
 		});
@@ -1720,10 +1720,9 @@
 			// .rux-panel--floating sits at --rux-z-modal (400) — without
 			// this, the address suggestions list renders behind the dialog
 			// it's popping out of instead of on top of it.
-			suggestionsEl.toggleAttribute(
-				"data-rux-modal-layer",
-				Boolean(input.closest(".rux-modal-backdrop, .rux-panel--floating")),
-			);
+			// The host list is the overlay kernel's, so this reads it rather
+			// than keeping a third verbatim copy of the selector.
+			window.RuxOverlay.promoteLayer(suggestionsEl, input);
 			positionSuggestions(input);
 			suggestionsEl.innerHTML = suggestions.map((suggestion, i) => {
 				const isSaved = suggestion.source === "saved";
@@ -2264,7 +2263,7 @@
 		});
 
 		/* — day header actions and inline section controls — */
-		stopsEl.addEventListener("rux:segment-change", (e) => {
+		stopsEl.addEventListener("rux:segment-changed", (e) => {
 			const group = e.target.closest?.("[data-itinerary-segment]");
 			if (!group) return;
 

@@ -83,6 +83,14 @@ function createHarness({ mobile = true } = {}) {
 		body,
 		createElement: () => new MockElement(),
 		querySelector: (selector) => selector === ".sched-app" ? app : null,
+		_listeners: new Map(),
+		addEventListener(type, listener) {
+			if (!this._listeners.has(type)) this._listeners.set(type, new Set());
+			this._listeners.get(type).add(listener);
+		},
+		removeEventListener(type, listener) {
+			this._listeners.get(type)?.delete(listener);
+		},
 	};
 	const window = {
 		clearTimeout,

@@ -7,8 +7,8 @@
    ========================================================================== */
 
 .rux-menu {
-	--_rux-menu-motion-x: 0;
-	--_rux-menu-motion-y: calc(-1 * var(--rux-menu-motion-distance));
+	--_menu-motion-x: 0;
+	--_menu-motion-y: calc(-1 * var(--rux-menu-motion-distance));
 
 	display: flex;
 	flex-direction: column;
@@ -28,17 +28,17 @@
 }
 
 .rux-menu[data-placement^="top"] {
-	--_rux-menu-motion-y: var(--rux-menu-motion-distance);
+	--_menu-motion-y: var(--rux-menu-motion-distance);
 }
 
 .rux-menu[data-placement^="left"] {
-	--_rux-menu-motion-x: var(--rux-menu-motion-distance);
-	--_rux-menu-motion-y: 0;
+	--_menu-motion-x: var(--rux-menu-motion-distance);
+	--_menu-motion-y: 0;
 }
 
 .rux-menu[data-placement^="right"] {
-	--_rux-menu-motion-x: calc(-1 * var(--rux-menu-motion-distance));
-	--_rux-menu-motion-y: 0;
+	--_menu-motion-x: calc(-1 * var(--rux-menu-motion-distance));
+	--_menu-motion-y: 0;
 }
 
 .rux-menu:not([hidden]) {
@@ -51,13 +51,13 @@
 .rux-menu[hidden] {
 	display: none;
 	opacity: 0;
-	translate: var(--_rux-menu-motion-x) var(--_rux-menu-motion-y);
+	translate: var(--_menu-motion-x) var(--_menu-motion-y);
 }
 
 @starting-style {
 	.rux-menu:not([hidden]) {
 		opacity: 0;
-		translate: var(--_rux-menu-motion-x) var(--_rux-menu-motion-y);
+		translate: var(--_menu-motion-x) var(--_menu-motion-y);
 	}
 }
 
@@ -83,6 +83,16 @@
 .rux-menu__item:hover {
 	background: var(--rux-menu-item-hover-bg);
 	color: var(--rux-menu-item-hover-fg);
+}
+
+/* Roving focus moves between items with the arrow keys (rux-ui/js/menu.js),
+   so the focused item must read as clearly as the hovered one. Inset, because
+   the item sits flush inside a scrolling menu surface. */
+.rux-menu__item:focus-visible {
+	outline: none;
+	background: var(--rux-menu-item-hover-bg);
+	color: var(--rux-menu-item-hover-fg);
+	box-shadow: inset 0 0 0 2px var(--rux-accent-ring);
 }
 
 .rux-menu__item:active {

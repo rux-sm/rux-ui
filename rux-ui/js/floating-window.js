@@ -83,5 +83,7 @@
 		panelEl.style.transform = "";
 	}
 
-	window.RuxFloatingWindow = { attachDrag, resetGeometry };
+	window.Rux = window.Rux || {};
+	window.Rux.floatingWindow = { attachDrag, resetGeometry };
+	window.RuxFloatingWindow = window.Rux.floatingWindow;
 })();

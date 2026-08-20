@@ -30,7 +30,25 @@
 
 /* — toast — */
 
+/* The host is created once by Rux.toast (rux-ui/js/utilities.js) and appended
+   to <body>. It used to be styled with inline cssText, which was the only
+   place in the portable layer that hardcoded design values; the class keeps
+   those values in the token system where the rest of the system can see them. */
+.rux-toast-host {
+  position: fixed;
+  top: var(--rux-toast-inset);
+  right: var(--rux-toast-inset);
+  z-index: var(--rux-toast-z-index);
+  display: flex;
+  flex-direction: column;
+  gap: var(--rux-toast-gap);
+  /* The host spans a corner of the viewport; only the toasts inside it
+     should intercept anything. */
+  pointer-events: none;
+}
+
 .rux-toast {
+  pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--rux-space-3);
@@ -45,7 +63,7 @@
 
 /* — modal — */
 
-.rux-modal-backdrop {
+.rux-modal-scrim {
   position: fixed;
   inset: 0;
   background: var(--rux-overlay-scrim);
@@ -57,7 +75,7 @@
   padding: var(--rux-space-5);
   animation: rux-fade-in var(--rux-duration-base) var(--rux-ease-out);
 }
-.rux-modal-backdrop[hidden] { display: none; }
+.rux-modal-scrim[hidden] { display: none; }
 
 .rux-modal {
   width: 100%;
@@ -71,7 +89,7 @@
 }
 /* Header/title are shared with .rux-card__header / .rux-card__title (see
    card.css) — a modal header is the same title-bar shape as a card or
-   floating-window header, just inside a backdrop-centered surface. */
+   floating-window header, just inside a scrim-centered surface. */
 .rux-modal__body { padding: var(--rux-space-5); color: var(--rux-text-secondary); }
 .rux-modal__footer {
   display: flex;
@@ -117,7 +135,10 @@
 [data-tooltip]:not([data-rux-tooltip="floating"]) {
   position: relative;
 }
-[data-tooltip]:not([data-rux-tooltip="floating"]):hover::after {
+/* A tooltip that appears only on hover does not exist for a keyboard user,
+   so focus-visible gets the same treatment rather than a separate one. */
+[data-tooltip]:not([data-rux-tooltip="floating"]):hover::after,
+[data-tooltip]:not([data-rux-tooltip="floating"]):focus-visible::after {
   content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + var(--rux-status-dot-size));

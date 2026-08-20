@@ -84,6 +84,6 @@ test("partial PO warns through the outline without replacing the trip color", ()
 
 test("trip bar action buttons use the compact 32px component contract", () => {
 	assert.match(tokenSource, /--sched-trip-bar-action-button-size:\s*32px/);
-	assert.match(tripBarSource, /rux-button--compact rux-button--block sched-trip-bar__action/);
+	assert.match(tripBarSource, /rux-button--sm rux-button--block sched-trip-bar__action/);
 	assert.match(tripBarCss, /\.sched-trip-bar__action\s*\{[^}]*--_h:\s*var\(--sched-trip-bar-action-button-size\)/s);
 });
