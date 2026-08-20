@@ -385,6 +385,18 @@
 	--rux-heading-page-tracking:    var(--rux-tracking-tight);   /* -0.02em */
 	--rux-heading-page-color:       var(--rux-text-primary);     /* L90 dark · L20 light */
 
+	/* Section heading — names a group of content from *above* it, the way a
+	   documentation or settings screen introduces each block. Distinct from the
+	   panel role below, which titles the inside of a framed box: a card header
+	   sits in a 40px band and stays 16px so the box reads as dense UI chrome,
+	   while a section heading is page copy and can afford the larger step. Pairs
+	   with the lead role below for its optional second line. */
+	--rux-heading-section-size:        var(--rux-size-2xl);        /* 24px */
+	--rux-heading-section-weight:      var(--rux-weight-600);      /* 600 */
+	--rux-heading-section-line-height: var(--rux-line-height-2xl); /* 32px */
+	--rux-heading-section-tracking:    var(--rux-tracking-tight);  /* -0.02em */
+	--rux-heading-section-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
+
 	/* Panel heading — card, panel, workspace and shell-header titles. Tracking
 	   is negative rather than zeroed: at 16px the tighter setting is what keeps
 	   a title reading as a heading instead of as body copy. */
@@ -393,6 +405,17 @@
 	--rux-heading-panel-line-height: var(--rux-line-height-md);  /* 24px */
 	--rux-heading-panel-tracking:    var(--rux-tracking-tight);  /* -0.02em */
 	--rux-heading-panel-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
+
+	/* Lead — the sentence that follows a section heading and explains it. One
+	   step above body because it is page copy rather than dense UI, and muted
+	   because the heading above it is what carries the emphasis. This is the
+	   only 16px text role; a second line inside a card header is a subtitle and
+	   reads the body role instead. */
+	--rux-text-lead-size:        var(--rux-size-md);             /* 16px */
+	--rux-text-lead-weight:      var(--rux-weight-400);          /* 400 */
+	--rux-text-lead-line-height: var(--rux-line-height-md);      /* 24px */
+	--rux-text-lead-tracking:    var(--rux-tracking-normal);     /* 0 */
+	--rux-text-lead-color:       var(--rux-text-secondary);      /* L70 dark · L38 light */
 
 	/* Body — the dense-UI default, one step below the document base. Alerts,
 	   toasts, table cells, subtitles, empty states. */

@@ -1,6 +1,55 @@
 /* ==========================================================================
-   CONTENT  ·  tag, avatar
+   CONTENT  ·  section, tag, avatar
    ========================================================================== */
+
+/* — section — */
+/* A heading that names a group of content from above it, with the content —
+   commonly a .rux-card — following underneath. This is the counterpart to
+   .rux-card__header, not a replacement for it: a card header titles the inside
+   of a framed box and stays at the 16px panel role so the box reads as dense
+   chrome, while a section heading is page copy introducing the box.
+
+   Three tiers of "label a group", smallest first, so the right one is easy to
+   pick: .rux-u-eyebrow / .rux-u-section-label (utils.css) is the 12px uppercase
+   marker that divides content inside one surface, .rux-card__header titles a
+   surface, and .rux-section titles a run of surfaces.
+
+   Two gap levels, because the heading and its lead belong together more
+   closely than the heading group belongs to the content: --space-1 inside the
+   header, --space-4 between the header and what it introduces. */
+.rux-section {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-card-content-gap);
+	min-width: 0;
+}
+
+.rux-section__header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--rux-space-1);
+}
+
+.rux-section__title {
+	margin: 0;
+	color: var(--rux-heading-section-color);
+	font-size: var(--rux-heading-section-size);
+	font-weight: var(--rux-heading-section-weight);
+	letter-spacing: var(--rux-heading-section-tracking);
+	line-height: var(--rux-heading-section-line-height);
+}
+
+/* Wraps, unlike .rux-card__title — a section heading is copy, and copy that
+   silently ellipsises is worse than copy that runs to a second line. */
+.rux-section__description {
+	margin: 0;
+	color: var(--rux-text-lead-color);
+	font-size: var(--rux-text-lead-size);
+	font-weight: var(--rux-text-lead-weight);
+	letter-spacing: var(--rux-text-lead-tracking);
+	line-height: var(--rux-text-lead-line-height);
+}
+
 
 /* — tag — */
 

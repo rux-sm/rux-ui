@@ -141,11 +141,13 @@ future addition in the same family.
 
 Floating Window, attached (docked) panel, Modal, and Popover-surface/Menu
 share one primitive, `.rux-panel` (`rux-ui/css/base/panel.css`), the same way Card
-unified the old Section/Embed split. Unlike Card, Panel keeps the
-*traditional* "header attached to the box" shape — one bordered unit, not a
-floating label above a separate box — since a window/panel/dialog title bar
-is supposed to read as part of the chrome. Position is a modifier
-(`--attached`, `--floating`, `--modal`, `--anchored`), not a separate
+unified the old Section/Embed split. Panel and Card both use the *traditional*
+"header attached to the box" shape — one bordered unit — since a window, panel,
+or dialog title bar is supposed to read as part of the chrome, and a card
+header titles the box it belongs to. The other shape, a label floating above a
+separate box, is `.rux-section` (`rux-ui/css/base/content.css`): a heading that
+names a *run* of content rather than the inside of one surface. Position is a
+modifier (`--attached`, `--floating`, `--modal`, `--anchored`), not a separate
 component.
 
 ```

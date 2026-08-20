@@ -26,7 +26,9 @@ sheets["colors_and_type.css"] = await readFile(
 const AXES = ["size", "weight", "line-height", "tracking", "color"];
 const ROLES = [
 	"--rux-heading-page",
+	"--rux-heading-section",
 	"--rux-heading-panel",
+	"--rux-text-lead",
 	"--rux-text-body",
 	"--rux-text-caption",
 	"--rux-label-control",
