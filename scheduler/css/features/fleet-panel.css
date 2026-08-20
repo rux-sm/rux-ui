@@ -187,3 +187,36 @@
 	color: var(--rux-text-disabled);
 	text-align: center;
 }
+
+/* — Roster column widths — */
+
+/* The spacer column absorbs the surplus so the data columns stay at their
+   content width. .rux-table-wrap sets width:100% on the table, and auto layout
+   spreads that surplus across every column unless one of them claims it — which
+   is what left a 3-character Vehicle and a 17-character VIN sitting the full
+   workspace apart. Giving one empty column width:100% biases the whole
+   distribution into it.
+
+   This is Primer's per-column `grow` pointed at a spacer rather than at real
+   data: every column here is naturally short, so promoting one of them would
+   just move the gap inside a cell instead of removing it. Swap the spacer out
+   the day a genuinely variable column (Notes, Next trip) is on by default —
+   real content absorbing the width beats emptiness absorbing it.
+
+   The <tr> still spans the full surface, so .rux-table's row hover and
+   selection bands keep painting edge to edge. */
+/* padding-left only. The shared .rux-table th:last-child rule still supplies
+   padding-right, and that is wanted: the spacer inherits the table's own edge
+   inset, so the frame keeps its 16px gutter even when the spacer has collapsed
+   to nothing under a narrow panel. Zeroing the left side lets it collapse that
+   far in the first place. */
+.fleet-app__table [data-col="spacer"] {
+	width: 100%;
+	padding-left: 0;
+}
+
+/* Auto layout would otherwise pay for the spacer by wrapping the longest
+   headers ("Registration exp", "Next service") onto two lines. */
+.fleet-app__table thead th {
+	white-space: nowrap;
+}

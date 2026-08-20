@@ -283,19 +283,28 @@
     const activeCols = getActiveCols();
     const table = tbody.closest("table");
 
-    // Rebuild thead
+    // Rebuild thead. The trailing spacer is an empty column that absorbs every
+    // pixel the real columns don't need: without it .rux-table-wrap's width:100%
+    // spreads the surplus evenly across all of them, so a 3-character Vehicle
+    // and a 17-character VIN end up the full workspace apart. Letting one empty
+    // column take the slack keeps the data columns at their content width while
+    // the <tr> still spans the surface, so row hover and selection keep painting
+    // edge to edge. It also self-corrects: the spacer shrinks first when the
+    // tools panel opens or is dragged wider, and grows again when a column is
+    // switched off, with no per-column widths to maintain.
     const theadRow = table.querySelector("thead tr");
     theadRow.innerHTML =
       `<th scope="col" data-sort="number">Vehicle</th>` +
-      activeCols.map(c => c.head).join("");
-    
+      activeCols.map(c => c.head).join("") +
+      `<th data-col="spacer" aria-hidden="true"></th>`;
+
     updateFilterHeaders(table);
     updateSortHeaders(table);
 
     tbody.innerHTML = "";
     if (!list.length) {
       tbody.innerHTML =
-        `<tr><td colspan="${1 + activeCols.length}" class="fleet-app__empty">No vehicles — add one to get started.</td></tr>`;
+        `<tr><td colspan="${2 + activeCols.length}" class="fleet-app__empty">No vehicles — add one to get started.</td></tr>`;
       return;
     }
 
@@ -363,7 +372,8 @@
             </div>
           </div>
         </td>
-      ` + activeCols.map(c => c.cell(b)).join("");
+      ` + activeCols.map(c => c.cell(b)).join("")
+        + `<td data-col="spacer"></td>`;
 
       tr.addEventListener("click", e => {
         if (didDragRow) {
