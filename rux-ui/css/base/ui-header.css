@@ -228,7 +228,12 @@
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-surface-1);
 	font-size: var(--rux-size-xxs);
-	font-weight: var(--rux-weight-600);
+	/* A count badge is a badge: 500, the same weight --rux-badge-font-weight
+	   carries. This read 600 while every other badge read 500 — one job with
+	   two answers. Stated as the rung rather than borrowed from the badge
+	   token, since this element is not a .rux-badge.
+	   docs/foundations/typography.md rule 2.11, step 6. */
+	font-weight: var(--rux-weight-500);
 	line-height: 1;
 }
 

@@ -1,14 +1,14 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.2.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.3.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 19 steps: **11 done · 2 ready · 5 open · 1 deferred**
-Ready now, no decision needed: steps 2 and 4. **Q1 and Q2 are answered** (§6), which closed
-steps 8, 10, and 12. Five remain open: Q3 gates 6 and 7, Q4 gates 9, step 11 needs external
-verification, and step 16 needs everything. Derived from §5;
-`tests/foundations-contract.test.mjs` fails if this line disagrees with the log.
+**Status** · 20 steps: **13 done · 1 ready · 4 open · 2 deferred**
+Ready now, no decision needed: step 20. **Q1, Q2 and Q3 are answered** (§6), closing steps
+6, 8, 10 and 12. Q4 gates 9, **Q6 now gates 7 alone**, step 11 needs external verification,
+step 16 needs everything, and steps 3 and 4 wait on a named consumer (§7.3). Derived from
+§5; `tests/foundations-contract.test.mjs` fails if this line disagrees with the log.
 
 This document is canonical for type in Rux UI: the scale, the roles, the utilities, and
 the rules that govern all three. It states the current contract, records the known
@@ -126,6 +126,20 @@ carries step numbers, times, counts, versions, or dates MUST set
 `font-variant-numeric: tabular-nums`. Setting it on `body` is prohibited: it applies
 tabular figures to prose, where they are wrong.
 
+**2.11 Weight is a property of the role, not of the size.** Three weights are published
+for application use: **400** for copy and labels, **500** for controls, badges, and inline
+emphasis, **600** for headings. A heading takes 600 at every size it appears at — a 14px
+heading is 600 exactly as a 72px heading is — and copy takes 400 at every size. Weight MUST
+NOT be varied to compensate for size; separating two levels is what the size scale and rule
+2.3 are for. Nothing above 600 is published: the only heavier weights in the codebase are
+the untokenized `700`/`800` literals in the print surface (S2), which §7.3 records as
+needing its own answer rather than a louder version of this one.
+
+This follows the Geist catalog the system's face comes from, not an independent judgement —
+`text-heading-*` is 600 at all ten published sizes from 14 to 72, `text-button-*` is 500,
+`text-copy-*` and `text-label-*` are 400. Geist's own Strong modifier measures **550**,
+which a ladder stepping in 100s cannot say; 500 is the adopted rung for `strong` (D2, Q3).
+
 **2.10 No unnamed off-grid value.** The 4px grid has named exceptions —
 `--rux-space-px` (1px) and `--rux-space-1-5` (6px). An off-grid value that is not one of
 them is the error. Absolutism here is false comfort: every real system accumulates two or
@@ -152,14 +166,15 @@ of this document. Values are px equivalents at a 16px root.
 | `3xl` | 30 | `3xl` | 40 | | |
 | `4xl` | 36 | `4xl` | 40 | | |
 
-Weights `--rux-weight-100` … `--rux-weight-900` exist as a complete ladder; §2 permits
-400 and 500 in application use, and 600 is currently in the heading roles (see D4).
+Weights `--rux-weight-100` … `--rux-weight-900` exist as a complete ladder; rule 2.11
+publishes 400, 500 and 600 for application use and nothing above. (Before step 6 this
+paragraph cited a §2 rule that did not exist — 2.11 is now that rule.)
 
 ### 3.2 Tier 1 — roles
 
 | Role | Size | Weight | Leading | Tracking | Color |
 |---|---|---|---|---|---|
-| `heading-page` | 36 | 400 | 40 | tight | primary |
+| `heading-page` | 36 | 600 | 40 | tight | primary |
 | `heading-section` | 24 | 600 | 32 | tight | primary |
 | `heading-panel` | 16 | 600 | 24 | tight | primary |
 | `text-lead` | 16 | 400 | 24 | normal | secondary |
@@ -190,9 +205,16 @@ type, and are out of scope here: `.rux-u-cluster`, `.rux-u-row`, `.rux-u-stack`,
 
 ### 3.4 Element defaults
 
-`body` is 16/24/400 at tracking 0. `h1`–`h6` default to weight 400 and tight tracking;
-`h1` reads the `heading-page` role, `h2` is 30/40, `h3` is 24/32, `h4` is 18/28, `h5` is
-16/24, `h6` is 12/16 uppercase wide secondary. `code` is `0.92em` mono.
+`body` is 14/20/400 at tracking 0 (step 8). `h1`–`h6` default to weight **600** and tight
+tracking (step 6); `h1` reads the `heading-page` role, `h2` is 30/40, `h3` is 24/32, `h4` is
+18/28 at normal tracking, `h5` is 16/24 at normal tracking, and `h6` is 12/16 uppercase wide
+secondary at **400** — it opts out of the heading weight because it is styled as a label.
+`code` is `--rux-size-xs` mono (step 10). A bare `p` keeps the 24px leading (Q2), the one
+place the base's size and leading are not a matched pair.
+
+*This section was stale until step 6: it still described the 16/24 body and the `0.92em`
+code that steps 8 and 10 had already replaced. §3 is verified against source, so a stale
+line here is the same defect class as a stale comment (D3).*
 
 ---
 
@@ -204,16 +226,17 @@ step in §5.
 | # | Defect | Evidence |
 |---|---|---|
 | **D1** | **Resolved (step 12) — not a defect.** `label-control` is byte-identical to `text-body`. Recorded as intentional convergence at the 14px base rather than faked apart or deleted; see rule 2.6. | `tokens.css` role block |
-| **D2** | `strong, b { font-weight: var(--rux-weight-400) }` — emphasis markup produces no weight change at all. | `colors_and_type.css:116` |
-| **D3** | The heading block's comment says "semibold by default"; the rule under it sets 400. | `colors_and_type.css:78` |
-| **D4** | Two heading-weight regimes coexist: element defaults render 400, the `heading-section` / `heading-panel` roles specify 600. Which one a title gets depends on whether it went through a component. | `colors_and_type.css:80` vs `tokens.css` roles |
+| **D2** | **Fixed (step 6).** `strong, b` set `--rux-weight-400`, so emphasis markup produced no weight change at all. Now `--rux-weight-500`. Six component-level pins keep their own 400 and are named in step 6 — those are mapping decisions their components own. | `colors_and_type.css:136` |
+| **D3** | **Fixed (step 2, executed inside step 17).** The comment said "semibold by default" over a rule setting 400, and now states 400. Only the *description* was wrong; the two-regime divergence it sat next to is D4 and is still open. | `colors_and_type.css:85` |
+| **D4** | **Fixed (step 6).** Two heading-weight regimes coexisted: element defaults rendered 400 while the `heading-section` / `heading-panel` roles specified 600, so which one a title got depended on whether it went through a component. Rule 2.11 settles both at 600, and `heading-page` — the one role that contradicted the policy at 400 — moved with them. | `colors_and_type.css` heading block vs `tokens.css:383` |
 | **D5** | `--rux-text-muted` and `--rux-text-faint` both alias `--rux-text-secondary`, in **both** themes. The system documents three emphasis tiers and ships two. | `tokens.css:260`, `:1536` |
 | **D6** | **Fixed (step 10).** `code { font-size: 0.92em }` violated 2.4 — it yields 12.88px inside body copy and 14.72px at 16px. Fractional at every call site. | `colors_and_type.css:134` |
-| **D7** | One flat `--rux-tracking-tight` (−0.02em) serves both 36px and 16px. Optical tracking must scale with size; 36px is under-tracked and 16px over-tracked by the same token. | `tokens.css` tracking block |
+| **D7** | One flat `--rux-tracking-tight` (−0.02em) serves both 36px and 16px. Optical tracking must scale with size; 36px is under-tracked and 16px over-tracked by the same token. **Measured against the Geist catalog during step 6:** its headings step −0.06em at 40–72px, −0.04em at 32px, and −0.02em at ≤20px. So the current token is correct at the small end and roughly two-and-a-half times too loose at `heading-page` — the defect is real but narrower than "one token serves everything" implied. | `tokens.css` tracking block; Geist published specimens |
 | **D8** | No measure token exists. Rule 2.8 has nothing to point at. | `tokens.css` |
 | **D9** | `font-feature-settings: "cv11", "ss03"` with the comment "Inter alt 1, alt g" — but the loaded face is Geist. These are Inter's axes; on Geist they are inert at best. | `colors_and_type.css:63` |
 | **D10** | The nine Tier 2 utilities are defined beside whichever component first needed each one. There is no single published index, so a call site cannot discover them. | §3.3 |
 | **D12** | **Only one of the seven type utilities applies its role's complete recipe.** `.rux-u-caption` and `.rux-u-hint` bypass the type roles entirely and read the `--rux-field-label-*` component tokens instead — so the utility named "caption" does not use `--rux-text-caption-*`. Four more apply a partial subset. Rule 1.3 exists because "a call site applying five `var()` references by hand can forget one"; the utilities are the call sites that forgot. | §3.3 |
+| **D13** | `--sched-trip-bar-bus-label-font-size` is `clamp(9px, calc(var(--sched-trip-bar-row-font-size) * 0.85), 13px)` — a proportional shrink with `px` bounds. It resolves to **10.2px** in the running app. This is D6's defect surviving in the scheduler tier: literal `px` type sizes against rule 2.1, a proportional shrink against 2.4, and an unnamed off-grid result against 2.10. Step 10's "the portable tier now contains zero raw type values" was scoped to the portable tier and still holds. | `scheduler/css/features/trip-bar.css:152`, measured live |
 | **D11** | The element scale and the role scale diverge: `h2` is 30px, but no role is 30px; `h3` is 24px/400 while `heading-section` is 24px/600. The same visual level has two definitions. | §3.2 vs §3.4 |
 
 ---
@@ -230,11 +253,11 @@ reversible and execute under standing authority.
 | # | Step | Status | Notes |
 |---|---|---|---|
 | 1 | Establish this document; state tiers, rules, current state, defects | **done** | Founding entry. Records the system as it is, not as it should be — every §3 value was read from source, and no §4 defect was fixed in passing. |
-| 2 | Correct the stale heading comment (D3) | **[ready]** | Comment-only. Deliberately does *not* change the weight it describes — that is step 6 and turns on Q3. |
+| 2 | Correct the stale heading comment (D3) | **done** | Class A, comment-only — and **already executed inside step 17**, which corrected this comment in passing while converting competing rule statements to pointers. The block now reads "All headings: tight tracking, weight 400. Override per-context." above a rule that sets 400 (`colors_and_type.css:85`). Recorded here rather than left **[ready]**: the log *is* this document's todo list (`README.md` §3), so a step still advertising itself as pending after its work has shipped is exactly the drift the log exists to prevent. Deliberately still does **not** change the weight the comment describes — that is step 6 and turns on Q3 — and deliberately does **not** renumber or fold the row into 17, because a later session is entitled to find step 2 where step 2 was. |
 | 3 | Add optical tracking steps per size rung (D7) | **[deferred]** | Was **[ready]**; downgraded by §7.3. Additive and safe in itself — new rungs keyed to the display sizes, existing values untouched — but §7.3 established that *a new rung needs a named consumer before it is added*, and this would land five tokens nothing reads. Do it **with** the role that adopts it (step 7), not before. |
-| 4 | Add `--rux-measure-prose` and `--rux-measure-wide` (D8) | **[ready]** | Additive; nothing consumes them until a component opts in. Values follow from Q1 — a 78-character measure is a different rem count at 14px than at 16px — so this step lands the names and provisional values, and step 8 fixes them. |
+| 4 | Add `--rux-measure-prose` and `--rux-measure-wide` (D8) | **[deferred]** | Was **[ready]**; downgraded on the same §7.3 grounds that deferred step 3, and by the precedent **Q2** set when it declined to mint `--rux-line-height-prose`. A measure is prose vocabulary, and prose is **S3's surface, which is not in this repository** — nothing under `rux-ui/css/` caps a measure today, so both tokens would land unread. The step's own note said so ("nothing consumes them until a component opts in"); after §7.3 that is the disqualifying condition, not a reassurance. Land them with the portal's foundation pass, beside the role that adopts them. **A constraint found while deferring, recorded so the step need not re-derive it:** rule 2.8 says the measures are expressed in `rem` "so they track the scale", but nothing sets `html { font-size }` — `rem` is the 16px root while the base is 14px on `body`, so a measure derived from a 14px character width and written in `rem` tracks the root, not the base it came from. Whichever unit the step lands on, it MUST say which of the two it follows. Deliberately did **not** take the other route to closing D8 — amending rule 2.8 so it stops promising a token that does not exist. That option was weighed and rejected in favour of deferral, so 2.8 keeps its `(No measure token exists yet — see D8)` pointer and **D8 stays open**. |
 | 5 | Publish the Tier 2 utility index (D10) | **done** | Class A, documentation only — §3.3 is now the index. Writing it surfaced **D12**, which is the more serious half of D10: the layer is not merely undiscoverable, it is inconsistent, and two utilities bypass their own role for component tokens. Deliberately **moved no definition and renamed nothing** — both were in scope for this step and both were dropped, because relocating a utility is churn until D12 says where it should live, and renaming is Class C. |
-| 6 | Settle the weight policy (D2, D3, D4) | **[open]** | Turns on **Q3**. Changes what renders in every heading and every `<strong>`. Needs both themes eyeballed. |
+| 6 | Settle the weight policy (D2, D3, D4) | **done · Class B** | Q3 answered: the ceiling is 600 and weight belongs to the role, not the size — recorded as rule 2.11, read from the Geist catalog rather than decided independently. **Four declarations moved, before → after:** `strong, b` **400 → 500** (D2); the `h1`–`h6` element default **400 → 600** (D4); `--rux-heading-page-weight` **400 → 600**, the one role that contradicted the new policy; and `.rux-ui-header__badge-count` **600 → 500** at 10px, ending a one-job-two-answers split against `--rux-badge-font-weight`. `h6` keeps its explicit 400 as a label. **Blast radius measured in a live browser, not reasoned about:** on `index.html` exactly **one element re-rendered** — the badge count. Nothing else moved, because 37 of 43 headings already read a role at 600 and the remaining 6, plus *every* `<strong>` on the page, are pinned at component level (`.rux-alert__title`, `.components-app__button-example strong`, `.driver-app__workload-through strong`, `.sched-trip-itinerary__idle-day strong`). That the app had locally pinned its way around D4 everywhere is why the two regimes never looked broken. Confirmed the defaults did change by injecting classless probes into the live document: a bare `<h2>` now resolves 30px/600 and a bare `<strong>` 500. **Eyeballed on `index.html` in both themes**; `gallery.html` measured byte-identical in distribution before and after (400×74, 500×13, 600×16). 331/331 green — the suite pins role→rung references and does not assert this one. Cache-busters bumped (`tools/check-cache-busters.sh --fix`), without which a warm browser keeps the old CSS. Deliberately **did not** unpin the six component overrides: a component using `<strong>` as a label and choosing 400 is a mapping decision it owns, and reversing four of them is not what "settle the weight policy" authorizes. Deliberately **did not** touch the element *size* scale — `h2` at 30px still has no role — that is step 7, which now turns on **Q6** alone. Deliberately **did not** mint a 550 rung to match Geist's Strong exactly. Contract 1.2.1 → **1.3.0**. |
 | 7 | Reconcile element scale with role scale (D11) | **[open]** | Turns on **Q3** and **Q6**. `h2` at 30px has no role; either a role gains 30 or `h2` moves to 24 and collides with `h3`. |
 | 8 | Settle the base size (Q1) and the prose leading (Q2) | **done · Class B** | The widest-blast-radius step in the log. Changes `body`, every element default, and both measures. Do not start before Q1 and Q2 are answered here. **Known cost, measured in advance:** the suite asserts role→rung *references*, not px, so a Class B value change survives it — but repointing a role breaks it. `tests/driver-assignment-card.test.mjs` pins `var(--rux-size-md)` and `var(--rux-size-2xl)` on four selectors, and `tests/badges.test.mjs` pins `--rux-badge-font-size`. Budget for updating them; they are doing their job. **Outcome:** `body` **16/24 → 14/20**. Blast radius measured in a live browser before and after rather than reasoned about — of 671 visible elements on `index.html`, only 5 kinds rendered at 16px and 3 of those set it explicitly (`.rux-ui-header__title`, `.rux-card__title`, `.rux-icon`, which resolves `--_icon-size` and was the one that could have silently shrunk 51 icons). **Two elements actually moved**: `.rux-profile-picker__name` (7 instances) and `.rux-skip-link`, both 16/24 → 14/20, plus bare `<p>` and `.rux-status-text` in the gallery. Verified after the change: `body` 14/20, the three explicit titles unchanged at 16/24, and **type identical in both themes** — as it must be, since no type token is theme-scoped. The predicted test breakage did **not** occur: the suite pins role→rung references and no role was repointed. 331/331 green. |
 | 9 | Give `--rux-text-faint` a real third value, or collapse to two tiers (D5) | **[open]** | Turns on **Q4**. Either branch changes what renders; the collapse branch also *removes* a published token and therefore stops and proposes first. |
@@ -245,6 +268,7 @@ reversible and execute under standing authority.
 | 14 | Resolve X1: inline markers take the step's own size and weight | **done** | Decided by the precedence rule above. The finding is that the *type system* was wrong and `guide-markup.md` §2.2 was right, so nothing downstream changes — the 13px chip and weight-500 value are dropped from the proposal before adoption. Deliberately **did not** touch X2/X3: those are colour mappings, out of scope per the precedence note. |
 | 15 | Establish the evolution contract (§8) and stamp version 1.0.0 | **done** | Written against the real gap: `docs/design-system-distribution.md` §4's three gates are all name-based, so they catch removals and renames and are **blind to a changed value**. Class B exists to cover exactly that blind spot. Deliberately **did not** invent a new automated gate — the honest mechanism today is the version stamp plus a named visual check, and claiming enforcement that does not exist would be worse than naming the gap. |
 | 16 | **Consolidate** — strip duplicated type rules elsewhere; convert them to pointers | **[open]** | The closing step: this document is not canonical while a second statement of the same rule exists. Measured scope: `README.md` § Visual Foundations carries **81 hardcoded values** and ships to consumers — the vendored copy at `v0.1.3` carries all 81. Also in scope: the `rux-design` skill's design rules, the type-bearing prose in `docs/layout-composition.md`, and any `tokens.css` comment that states a MUST rather than explaining a value. **Blocked on Q1–Q6**: converting a section to a pointer before the rule it points at is settled deletes the only statement of it. |
+| 20 | Put the trip-bar bus label on the scale (D13) | **[ready]** | Class B, but application work *conforming* to the foundation rather than amending it, so it mints no vocabulary: `--rux-size-xxs` (10px) is the rung the clamp already sits nearest at its measured 10.2px. Deliberately left **[ready]** rather than folded into step 6, which found it: it shares nothing with the weight policy, and hiding an unrelated Class B change inside a step whose named eyeball states are all about weight would defeat the review the class exists to trigger. |
 | 19 | Extract the shared mechanism to `README.md`; add a derived Status block | **done** | Class A. §8 was 68 lines of machinery of which five mentioned type — generic, and guaranteed to be duplicated the moment a second foundation document landed. It now lives in `README.md` §2 and §8 is a pointer. Answers the "should each document carry a todo list" question: **no** — the amendment log already is one, and a second statement of status drifts. What was missing was a *glance*, so each document gains a Status block derived from its log, rolled up in `README.md` §1, with `tests/foundations-contract.test.mjs` failing when the two disagree. Deliberately **did not** add a TODO or status file, and **did not** fold `../motion.md` in — that is its own decision. |
 | 17 | Convert competing rule statements to authority pointers | **done** | Class A. The problem step 16 solves is duplication; this solves *precedence* now, without waiting on Q1–Q6. `README.md` § Visual Foundations, the `rux-design` skill's design rules, and `docs/audit/design-system-audit.md` §5 each gained a note naming `docs/foundations/` as canonical. Deliberately **stripped nothing** — the 81 values stay until step 16, because deleting a rule before its replacement is settled loses it. Also corrected two stale comments in `colors_and_type.css`: the heading block said "semibold by default" over a rule setting 400 (D3), and the `font-feature-settings` line now flags that its axes are Inter's while the loaded face is Geist (D9), without changing the declaration — that half is Class B and needs verification first. |
 | 18 | Pair the notifications title's leading with its size (rule 2.2) | **done · Class B** | `.rux-notifications__item-title` held the only unitless leading on real text in the portable tier. **Before 18.9px** (14 × 1.35 — fractional and off the 4px grid), **after 20px** (`--rux-line-height-sm`, the pair for `--rux-size-sm`). Safe ahead of Q1/Q2 because the element pins `--rux-size-sm` explicitly, so it follows whatever that rung's pair becomes. **Verified by reading the constraint chain, not by rendering:** nothing between `.rux-notifications__item-title` and the menu root pins a height, sets `overflow: hidden`, or clamps lines — the only overflow control is the menu's own `max-height: 70vh; overflow-y: auto`, which absorbs the growth by scrolling. A two-line title therefore grows its row ~2.2px and nothing clips. A visual pass was **not** possible in this environment (`python3 -m http.server` fails under the sandbox at `os.getcwd()`), so the theme eyeball is still owed if wanted; the token is theme-independent, so it is a low-value check. Contract version 1.0.0 → 1.1.0. Applying this exposed that §8.1's Class B definition was too narrow — it named only token-value changes, and this is a rule moving from a literal to a token — so the definition was widened in the same step. |
@@ -296,7 +320,28 @@ and one of them must give:
 
 **Q3 — Is the weight ceiling 500 or 600?** Two weights (400/500) is the tighter system and
 matches `--rux-badge-font-weight`. 600 is what the heading roles specify today. Whichever
-wins, both the element defaults and the role tokens must state it. *Blocks steps 6, 7.*
+wins, both the element defaults and the role tokens must state it.
+
+> **Answered — 600, and weight is a property of the role rather than of the size.** Three
+> weights are published: 400 for copy and labels, 500 for controls, badges and inline
+> emphasis, 600 for headings. This was settled by reading the **Geist catalog** the system's
+> own face comes from, on Vercel's published specimens: `text-heading-*` resolves to 600 at
+> **all ten sizes from 14 to 72** — a 14px heading is 600 exactly as a 72px heading is —
+> while `text-button-*` is 500 and `text-copy-*` and `text-label-*` are 400 at every size.
+> `heading-section` and `heading-panel` were already conformant; `heading-page` at 400 was
+> the outlier and moved. Recorded as rule 2.11. **Deliberately not adopted:** a 500 ceiling,
+> which was the proposal on the table before the catalog was read and which the 24px and
+> 16px comparison had made look cleaner — the catalog is evidence about the face this system
+> actually renders in, and an eye preference is not. Also not adopted: vercel.com's own
+> 400/450/500 homepage usage, which carries no 600 at all but is a marketing surface rather
+> than the system, and which uses intermediate weights (450, 550) that only a variable axis
+> can express. **Worth recording for any future rung question:** Geist on Google Fonts is a
+> single variable file with a continuous `wght` 100–900 axis, so requesting more weights
+> costs **zero additional bytes** — all four of this project's requested weights resolve to
+> the same `.woff2`. Payload is therefore not an argument for or against any ceiling; only
+> restraint is. Executed as step 6.
+
+*Blocked steps 6 (done) and 7 — which now turns on **Q6** alone.*
 
 **Q4 — Two emphasis tiers or three?** Three (primary / muted / faint) is documented; two
 are implemented. Adding the third means specifying a real lightness in both themes and

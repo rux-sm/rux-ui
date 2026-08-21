@@ -380,7 +380,7 @@
 	   header carries the page name uses the panel role there instead, so this
 	   may have no consumer beyond the h1 element default. */
 	--rux-heading-page-size:        var(--rux-size-4xl);         /* 36px */
-	--rux-heading-page-weight:      var(--rux-weight-400);       /* 400 */
+	--rux-heading-page-weight:      var(--rux-weight-600);       /* 600 */
 	--rux-heading-page-line-height: var(--rux-line-height-4xl);  /* 40px */
 	--rux-heading-page-tracking:    var(--rux-tracking-tight);   /* -0.02em */
 	--rux-heading-page-color:       var(--rux-text-primary);     /* L90 dark · L20 light */

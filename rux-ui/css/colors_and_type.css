@@ -82,11 +82,15 @@ body {
 }
 
 /* ─── Headings ──────────────────────────────────────────────────────────── */
-/* All headings: tight tracking, weight 400. Override per-context.       */
+/* Headings take the heading weight at every size, which is how the Geist
+   catalog this face comes from is built: text-heading-14 is 600 exactly as
+   text-heading-72 is, and size — not weight — is what separates them. h6
+   opts out below, because it is styled as a label and Geist's label styles
+   are 400. docs/foundations/typography.md rule 2.11, step 6. */
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
-  font-weight: var(--rux-weight-400);
+  font-weight: var(--rux-weight-600);
   letter-spacing: var(--rux-tracking-tight);
   color: var(--rux-text-primary);
 }
@@ -125,7 +129,11 @@ small {
   color: var(--rux-text-secondary);
 }
 
-strong, b { font-weight: var(--rux-weight-400); color: var(--rux-text-primary); }
+/* Geist's own Strong modifier measures 550 against 400 copy. This ladder
+   steps in 100s and cannot say 550, so 500 — already the system's emphasis
+   weight — is the adopted rung. At 400 this rule rendered <strong> identically
+   to the text around it. docs/foundations/typography.md D2, step 6. */
+strong, b { font-weight: var(--rux-weight-500); color: var(--rux-text-primary); }
 em, i    { font-style: italic; }
 
 /* ─── Links ─────────────────────────────────────────────────────────────── */
