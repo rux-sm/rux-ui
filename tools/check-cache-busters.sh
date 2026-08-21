@@ -20,6 +20,18 @@
 # is only in the working tree does not clear it; commit and re-run. Staged mode
 # is the one that prevents recurrence: if an asset is staged, the ?v referencing
 # it must be changing in the same commit.
+#
+# --fix reads the WORKING TREE, not the index: newest_ct() below treats any file
+# differing from HEAD as newly changed, staged or not. It therefore bumps for
+# every uncommitted edit in the tree, including ones that are not yours. That
+# matters most through @import — rux.css is 24 import lines deep, so somebody
+# else's edit to a base/*.css you never opened moves rux.css's ?v= on every
+# page, and those pages land in whatever commit you make next.
+#
+# So: --staged is safe to run any time, but --fix assumes the tree holds only
+# your work. If a second session or a stray edit is live, bump your own asset's
+# ?v= by hand and re-run --staged to confirm. The guard's own message points at
+# --fix because the common case is a clean tree; it cannot see when it isn't.
 
 set -uo pipefail
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
