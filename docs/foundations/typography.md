@@ -1,6 +1,6 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.7.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.8.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
@@ -8,11 +8,11 @@ which is not control. See [`README.md`](README.md) §2.
 **Nothing is executable without a decision.** Steps **24 → 25 → 26 → 27** are done: the ladder
 sits on the catalog, every role is classified into a family and already carried its family's
 leading, and the tracking curve is applied — which closed **D7** and the long-deferred step 3,
-and closed two of D11's three halves. **Q1, Q2, Q3 and Q5 are answered** (§6), and the ramp, leading and tracking models are
+and closed two of D11's three halves. **Q1, Q2, Q3, Q4, Q5 and Q9 are answered** (§6), and the ramp, leading and tracking models are
 settled against the measured Geist catalog (rules 2.2, 2.12, 2.13). What remains is gated, and none of it on
 typography itself: **step 23 is deferred** — the 13px rung and the 18/36 leadings have no
-consumer, so Q8 waits for the role that wants one. Q4 gates 9, Q6
-gates 7, Q7 gates 20 and 28, Q9 blocks any mono role; step 11 needs external verification, step 16 needs everything, and step 22 needs a decision.
+consumer, so Q8 waits for the role that wants one. **Step 9 is a Class C proposal awaiting
+authorization**, not a decision; Q6 gates 7, Q7 gates 20 and 28; step 11 needs external verification, step 16 needs everything, and step 22 needs a decision.
 Derived from
 §5; `tests/foundations-contract.test.mjs` fails if this line disagrees with the log.
 
@@ -112,11 +112,15 @@ exist: `--rux-font-sans` (Geist), `--rux-font-sans-condensed` (aliases sans; Gei
 condensed cut), `--rux-font-mono` (Geist Mono). There is no fourth. No display serif, no
 script.
 
-**2.4 Mono steps down one rung from the sans beside it.** At matched nominal size a
-monospace face reads larger and heavier, so inline code inside 14px copy is 12px mono.
-The pairing is fixed; the numbers move with the base. Mono size MUST come from
-`--rux-size-*`, never from a proportional `em` — a proportional shrink lands off the scale
-at every call site and produces fractional pixels.
+**2.4 Inline mono steps down one rung from the sans around it; standalone mono holds its
+size.** At matched nominal size a monospace face reads larger and heavier, so inline code
+**inside** 14px copy is 12px mono — the surrounding text is the reference, and matching it
+would make the code read larger than the sentence carrying it. A **standalone** mono role,
+with no sans beside it to be measured against, takes its sibling's size instead: the
+catalog's `label-14-mono` is 14px and `copy-13-mono` is 13px (Q9). The pairing is fixed;
+the numbers move with the base. Mono size MUST come from `--rux-size-*`, never from a
+proportional `em` — a proportional shrink lands off the scale at every call site and
+produces fractional pixels.
 
 **2.5 Emphasis is a modifier, not a role.** Weight and color modifiers MUST NOT change
 size. A modifier that also sets `font-size` is a token wearing a modifier's name, and MUST
@@ -349,7 +353,7 @@ reversible and execute under standing authority.
 | 6 | Settle the weight policy (D2, D3, D4) | **done · Class B** | Q3 answered: the ceiling is 600 and weight belongs to the role, not the size — recorded as rule 2.11, read from the Geist catalog rather than decided independently. **Four declarations moved, before → after:** `strong, b` **400 → 500** (D2); the `h1`–`h6` element default **400 → 600** (D4); `--rux-heading-page-weight` **400 → 600**, the one role that contradicted the new policy; and `.rux-ui-header__badge-count` **600 → 500** at 10px, ending a one-job-two-answers split against `--rux-badge-font-weight`. `h6` keeps its explicit 400 as a label. **Blast radius measured in a live browser, not reasoned about — but on the *visible* DOM of `index.html` only, which this row did not say. Corrected by step 21: 12 elements move across the four pages, 3 of them visible on load.** As measured here: on `index.html` exactly **one visible element re-rendered** — the badge count — because 37 of 43 headings already read a role at 600 and the remaining 6 are pinned at component level (`.rux-alert__title`, `.components-app__button-example strong`, `.driver-app__workload-through strong`, `.sched-trip-itinerary__idle-day strong`). The claim that *every* `<strong>` on the page is pinned was **wrong**: `.flip-seven__turn-status strong` and `.flip-seven__messages strong` pin no weight and both moved. That the app had locally pinned its way around D4 everywhere is why the two regimes never looked broken. Confirmed the defaults did change by injecting classless probes into the live document: a bare `<h2>` now resolves 30px/600 and a bare `<strong>` 500. **Eyeballed on `index.html` in both themes** — but only `index.html`, which is the gap step 21 closes; `gallery.html` measured byte-identical in distribution before and after (400×74, 500×13, 600×16). 331/331 green — the suite pins role→rung references and does not assert this one. Cache-busters bumped (`tools/check-cache-busters.sh --fix`), without which a warm browser keeps the old CSS. Deliberately **did not** unpin the six component overrides: a component using `<strong>` as a label and choosing 400 is a mapping decision it owns, and reversing four of them is not what "settle the weight policy" authorizes. Deliberately **did not** touch the element *size* scale — `h2` at 30px still has no role — that is step 7, which now turns on **Q6** alone. Deliberately **did not** mint a 550 rung to match Geist's Strong exactly. Contract 1.2.1 → **1.3.0**. |
 | 7 | Reconcile element scale with role scale (D11) | **[open]** | Turns on **Q3** and **Q6**. `h2` at 30px has no role; either a role gains 30 or `h2` moves to 24 and collides with `h3`. |
 | 8 | Settle the base size (Q1) and the prose leading (Q2) | **done · Class B** | The widest-blast-radius step in the log. Changes `body`, every element default, and both measures. Do not start before Q1 and Q2 are answered here. **Known cost, measured in advance:** the suite asserts role→rung *references*, not px, so a Class B value change survives it — but repointing a role breaks it. `tests/driver-assignment-card.test.mjs` pins `var(--rux-size-md)` and `var(--rux-size-2xl)` on four selectors, and `tests/badges.test.mjs` pins `--rux-badge-font-size`. Budget for updating them; they are doing their job. **Outcome:** `body` **16/24 → 14/20**. Blast radius measured in a live browser before and after rather than reasoned about — of 671 visible elements on `index.html`, only 5 kinds rendered at 16px and 3 of those set it explicitly (`.rux-ui-header__title`, `.rux-card__title`, `.rux-icon`, which resolves `--_icon-size` and was the one that could have silently shrunk 51 icons). **Two elements actually moved**: `.rux-profile-picker__name` (7 instances) and `.rux-skip-link`, both 16/24 → 14/20, plus bare `<p>` and `.rux-status-text` in the gallery. Verified after the change: `body` 14/20, the three explicit titles unchanged at 16/24, and **type identical in both themes** — as it must be, since no type token is theme-scoped. The predicted test breakage did **not** occur: the suite pins role→rung references and no role was repointed. 331/331 green. |
-| 9 | Give `--rux-text-faint` a real third value, or collapse to two tiers (D5) | **[open]** | Turns on **Q4**. Either branch changes what renders; the collapse branch also *removes* a published token and therefore stops and proposes first. |
+| 9 | Give `--rux-text-faint` a real third value, or collapse to two tiers (D5) | **[open · Class C — proposal stands]** | **Q4 answered: collapse to two.** The branch that removes published tokens is the one that won, so this stops here and proposes rather than executing. **The proposal:** retire `--rux-text-faint` and `--rux-text-muted`; every call site reads `--rux-text-secondary`, which is what both already resolve to in both themes. **Migration cost, grepped:** `--rux-text-faint` has **zero consumers** anywhere outside its own two definitions — it is a published name nothing has ever used, in either theme block. `--rux-text-muted` has **six**, all of which repoint to `--rux-text-secondary` for an identical rendered result, since it is already an alias of it. **So the whole change renders identically**; it is Class C purely because two public names disappear, and vendored consumers pin a tag rather than tracking `main`. Needs the rename grep protocol (CLAUDE.md) and a consumer-migration step of its own before execution. Deliberately **not** executed alongside Q4's answer: Class C stops and proposes, and "the values are identical" is exactly the argument that makes a breaking rename feel safe when it is not. |
 | 10 | Fix inline code sizing (D6) | **done · Class B** | Unblocked by step 8. `code, kbd, samp, pre` **0.92em → `--rux-size-xs`** (12px, one rung below the 14px base per rule 2.4). The proportional shrink had produced 12.88px at every call site. `kbd`'s own `0.8em` override was removed rather than re-tokenized — it was a second proportional shrink stacked on the first, and nothing distinguishes a `kbd` from a `code` at this scale. **The portable tier now contains zero raw type values.** |
 | 11 | Resolve the font-feature-settings mismatch (D9) | **[open]** | Needs a decision that is not a design decision: confirm which stylistic sets Geist actually publishes before writing any replacement. Removing them outright is the safe default if none apply. |
 | 12 | Give `label-control` its distinguishing leading, or retire it (D1) | **done** | Q2 answered 20px, so Copy and Label converge exactly as anticipated. **Neither branch taken.** Retiring `label-control` was the option this step named, and it was rejected: three components read it, it names a different intent from body copy, and it would diverge the moment a prose surface declares its own base — so deleting it would destroy a distinction that is real but currently unexpressed. Faking a difference by nudging its leading off-grid was equally rejected. Rule 2.6 now records the convergence instead. **No Class C removal**, so nothing was proposed. |
@@ -443,7 +447,20 @@ wins, both the element defaults and the role tokens must state it.
 
 **Q4 — Two emphasis tiers or three?** Three (primary / muted / faint) is documented; two
 are implemented. Adding the third means specifying a real lightness in both themes and
-verifying contrast at the small sizes that would use it. *Blocks step 9.*
+verifying contrast at the small sizes that would use it.
+
+> **Answered — two.** Settled the same way Q3 and Q5 were, by measuring the catalog rather
+> than choosing. **Geist's colour scale publishes exactly two text colours**: step **9 is
+> "secondary text and icons"** and step **10 is "primary text and icons"**. The other eight
+> steps are backgrounds (1–3), borders (4–6) and high-contrast backgrounds (7–8) — none is a
+> third text tier. Measured on the dark theme: `--ds-gray-900` is **L63** and
+> `--ds-gray-1000` is **L93**, against this system's secondary **L60** and primary **L90**,
+> so the two systems already agree to within three points and the third tier was never
+> anything but documentation. **The code was right and the docs were wrong**, which is the
+> reverse of the usual direction and worth stating plainly. Deliberately **not** adopted:
+> inventing a real value for `faint`, which would have meant specifying a lightness and
+> proving contrast at the small sizes for a tier the reference system does not have.
+> Executes as step 9, which is **Class C** — see its note for the migration. *Blocks step 9.*
 
 **Q5 — Does the scale gain a 13px rung?** There is no 13px today; the scale steps 12 → 14.
 A 13px rung is useful for route lines, chip text, and step numbers, but it is a permanent
@@ -488,6 +505,18 @@ open until it is answered.*
 > mean the question is now **"does S1 get a documented sub-catalog floor, or does the density
 > control stop below 12"**, and that retiring `--rux-size-xxs` is Class C with four
 > consumers. Carried by step 28.
+>
+> **Complicating evidence, measured on the Badge page (not in the type catalog).** Geist's
+> own components go **below** the catalog floor: `Badge` at size Small renders **11px/20 at
+> weight 500 with +0.2px tracking** — a rung the type scale does not publish, with positive
+> tracking added to hold it legible. Medium is 12/24 and Large is 14/20, both on-catalog. So
+> "the catalog floors at 12" is true of the **type scale** and not of the **components**, and
+> the reference system's actual practice is that a dense component may go under the scale
+> **with compensating tracking, named at the component**. That does not vindicate the trip
+> bar's `clamp()` — a proportional shrink yielding 10.2px and 11.9px is off-grid and
+> fractional whatever the floor is — but it does mean a 10px chrome rung and a sub-12
+> component value are not automatically off-system. They have to be *named*, as Geist names
+> its badge.
 
 **Q8 — What are the off-ladder rungs called?** Rule 2.12 needs a **13px size** and **18** and
 **36** leadings. The t-shirt ladder has no slot between `xs` (12) and `sm` (14), and none
@@ -510,6 +539,14 @@ against Label's 16). Both may be right about different objects: 2.4 governs inli
 styles are **standalone** labels with no sans beside them. If that is the resolution then 2.4
 is not wrong, only under-scoped, and it should say so. *Blocks nothing today; blocks any mono
 role.*
+
+> **Answered — that is the resolution.** Rule **2.4 is under-scoped, not wrong**, and now
+> says so: it governs `code` **inside running copy**, where the surrounding size is the
+> reference and a same-size mono reads too large. A **standalone** mono role — a mono label
+> or mono copy with no sans beside it — holds its sibling's size, as the catalog does
+> (`label-14-mono` is 14px, `copy-13-mono` is 13px). Deliberately **not** adopted: changing
+> the inline-code rule to match the catalog. The catalog has no inline-code style to compare
+> against, so it is silent on that case rather than contradicting it.
 
 ---
 
