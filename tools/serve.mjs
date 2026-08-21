@@ -6,7 +6,7 @@
 // already a hard dependency of the test suite, so this removes a Python
 // requirement rather than adding a Node one.
 //
-//   node tools/serve.mjs [port]        (default 8642, matching the old command)
+//   node tools/serve.mjs [port]        (argv, then $PORT, then 8642 — the old command's port)
 
 import { createServer } from "node:http";
 import { createReadStream } from "node:fs";
@@ -14,7 +14,9 @@ import { stat } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
 
 const root = resolve(new URL("..", import.meta.url).pathname);
-const port = Number(process.argv[2]) || 8642;
+// Explicit argv wins, then $PORT (which is how a harness assigns one when 8642 is
+// already taken), then the documented default.
+const port = Number(process.argv[2]) || Number(process.env.PORT) || 8642;
 
 const TYPES = {
 	".html": "text/html; charset=utf-8",
