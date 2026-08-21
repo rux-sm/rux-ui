@@ -123,11 +123,14 @@
    already carries its own month. */
 .calendar-app__date-range {
 	display: none;
-	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
-	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
+	/* Type comes from .rux-u-panel-title in the markup — the same
+	   --rux-heading-panel-* recipe a card title uses. Only tabular figures are
+	   added here: the label rewrites on every week change, and proportional
+	   digits make it shift width as it does. docs/foundations/typography.md
+	   §2.9 would rather the role itself stated this, but heading-panel does
+	   not, so it sits with the one component that needs it (rule 1.2). */
+	font-variant-numeric: tabular-nums;
 }
 
 @media (min-width: 501px) {

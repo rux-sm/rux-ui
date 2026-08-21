@@ -41,7 +41,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=44" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=294" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=295" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=13"
@@ -2267,7 +2267,7 @@
 							     into the fixed bottom bar at <=500px and this must not
 							     ride down with it. Filled by renderDayHeaders(). -->
 							<p
-								class="calendar-app__date-range"
+								class="calendar-app__date-range rux-u-panel-title"
 								id="calendar-date-range"
 								aria-live="polite"
 							></p>
@@ -9166,14 +9166,15 @@
 					insertAfter = el;
 				}
 				// The header's week title. formatRange collapses a same-month
-				// span to "Aug 24 – 30, 2026" and expands it only where it must
-				// ("Aug 31 – Sep 6, 2026", "Dec 29, 2025 – Jan 4, 2026") — the
-				// boundaries hand-assembled formatting keeps getting wrong.
+				// span to "August 17 – 23, 2026" and expands it only where it
+				// must ("August 31 – September 6, 2026", "December 29, 2025 –
+				// January 4, 2026") — the boundaries hand-assembled formatting
+				// keeps getting wrong.
 				// Built here rather than once above because this function is
 				// hoisted and runs during init, before a module-scope const of
 				// its own would have left the temporal dead zone.
 				const weekRangeFormat = new Intl.DateTimeFormat("en-US", {
-					month: "short",
+					month: "long",
 					day: "numeric",
 					year: "numeric",
 				});
