@@ -771,6 +771,12 @@ html {
 .driver-share-status__title,
 .driver-share-dialog__title {
 	font-size: var(--rux-size-2xl);
+	/* Both set the 24px size and inherited their leading from the h1/h2 element
+	   default, which pairs with 40px and 32px headings — 24/40, unpaired against
+	   rule 2.2. Step 24 moves --rux-line-height-4xl to 48, which would have made
+	   the status title 24/48. Paired here with its own size instead.
+	   docs/foundations/typography.md D14, step 24. */
+	line-height: var(--rux-line-height-2xl);
 }
 
 .driver-share-status__title {

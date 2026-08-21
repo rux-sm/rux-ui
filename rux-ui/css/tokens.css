@@ -57,8 +57,8 @@
 	--rux-size-lg:		1.125rem;	/* 18px */
 	--rux-size-xl:		1.25rem;	/* 20px */
 	--rux-size-2xl:		1.5rem;		/* 24px */
-	--rux-size-3xl:		1.875rem;	/* 30px */
-	--rux-size-4xl:		2.25rem;	/* 36px */
+	--rux-size-3xl:		2rem;		/* 32px */
+	--rux-size-4xl:		2.5rem;		/* 40px */
 
 	/* ─── TYPOGRAPHY · line-height (4px-grid aligned) ─────────────────────── */
 	/* Defined in rem, not a unitless ratio — every paired size/line-height box
@@ -73,8 +73,8 @@
 	--rux-line-height-lg:	1.75rem;	/* 28px — pairs with size-lg (18px) */
 	--rux-line-height-xl:	1.75rem;	/* 28px — pairs with size-xl (20px) */
 	--rux-line-height-2xl:	2rem;		/* 32px — pairs with size-2xl (24px) */
-	--rux-line-height-3xl:	2.5rem;		/* 40px — pairs with size-3xl (30px) */
-	--rux-line-height-4xl:	2.5rem;		/* 40px — pairs with size-4xl (36px) */
+	--rux-line-height-3xl:	2.5rem;		/* 40px — pairs with size-3xl (32px) */
+	--rux-line-height-4xl:	3rem;		/* 48px — pairs with size-4xl (40px) */
 
 	/* ─── TYPOGRAPHY · font weight ────────────────────────────────────────────── */
 
@@ -379,9 +379,9 @@
 	/* Page heading — the document's <h1>. Note that an application shell whose
 	   header carries the page name uses the panel role there instead, so this
 	   may have no consumer beyond the h1 element default. */
-	--rux-heading-page-size:        var(--rux-size-4xl);         /* 36px */
+	--rux-heading-page-size:        var(--rux-size-4xl);         /* 40px */
 	--rux-heading-page-weight:      var(--rux-weight-600);       /* 600 */
-	--rux-heading-page-line-height: var(--rux-line-height-4xl);  /* 40px */
+	--rux-heading-page-line-height: var(--rux-line-height-4xl);  /* 48px */
 	--rux-heading-page-tracking:    var(--rux-tracking-tight);   /* -0.02em */
 	--rux-heading-page-color:       var(--rux-text-primary);     /* L90 dark · L20 light */
 
