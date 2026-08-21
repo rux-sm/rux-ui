@@ -7,6 +7,7 @@
 // requirement rather than adding a Node one.
 //
 //   node tools/serve.mjs [port]        (argv, then $PORT, then 8642 — the old command's port)
+//                                     port 0 asks the OS for any free one
 
 import { createServer } from "node:http";
 import { createReadStream } from "node:fs";
@@ -15,8 +16,17 @@ import { extname, join, normalize, resolve } from "node:path";
 
 const root = resolve(new URL("..", import.meta.url).pathname);
 // Explicit argv wins, then $PORT (which is how a harness assigns one when 8642 is
-// already taken), then the documented default.
-const port = Number(process.argv[2]) || Number(process.env.PORT) || 8642;
+// already taken), then the documented default. Spelled out rather than chained
+// with `||` so that 0 survives: 0 is the conventional "assign me any free port",
+// which is the case $PORT exists to serve, and `||` would read it as unset and
+// hand back the 8642 that was already taken.
+const asPort = (value) => {
+	const n = Number(value);
+	return value !== undefined && value !== "" && Number.isInteger(n) && n >= 0 && n <= 65535
+		? n
+		: null;
+};
+const port = asPort(process.argv[2]) ?? asPort(process.env.PORT) ?? 8642;
 
 const TYPES = {
 	".html": "text/html; charset=utf-8",
@@ -32,7 +42,7 @@ const TYPES = {
 	".woff2": "font/woff2",
 };
 
-createServer(async (req, res) => {
+const server = createServer(async (req, res) => {
 	const url = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
 	// normalize() collapses ../ before the prefix check, so a traversal
 	// attempt resolves inside root or fails the guard rather than escaping.
@@ -56,4 +66,10 @@ createServer(async (req, res) => {
 	} catch {
 		res.writeHead(404, { "Content-Type": "text/plain" }).end("Not found");
 	}
-}).listen(port, () => console.log(`serving ${root} on http://localhost:${port}`));
+});
+
+// address().port, not `port`: with 0 the OS chooses, and the assigned number is
+// the one a caller needs printed.
+server.listen(port, () =>
+	console.log(`serving ${root} on http://localhost:${server.address().port}`),
+);
