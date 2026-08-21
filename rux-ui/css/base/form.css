@@ -875,8 +875,9 @@
 	   status right. */
 	justify-content: space-between;
 	/* Same dim token its empty/placeholder-text neighbors use (--rux-input-
-	   placeholder-fg, not --rux-text-muted — muted is a full step brighter and
-	   was still visibly heavier than the placeholders next to it). The four
+	   placeholder-fg, not --rux-text-secondary — secondary is a full step
+	   brighter and was still visibly heavier than the placeholders next to it;
+	   this read --rux-text-muted before step 9 retired it). The four
 	   status classes an application may layer on (higher specificity: a scoped
 	   .rux-output.is-balance-*) still override this the moment there's an
 	   actual balance worth calling out. */

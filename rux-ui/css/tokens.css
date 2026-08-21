@@ -265,11 +265,13 @@
 	--rux-text-disabled:  oklch(from var(--rux-neutral) 100% c h / 28%);
 
 	/* Deprecated — superseded by the pair above. Kept because the vendored
-	   consumers read them; do not use in new work. */
+	   consumers read them; do not use in new work.
+	   --rux-text-muted and --rux-text-faint were retired here (typography.md
+	   §5 step 9, D5): both aliased secondary in both themes, and the grep
+	   found no var() consumer of either — the system documented three
+	   emphasis tiers and shipped two. */
 	--rux-text-default:  var(--rux-text-primary);
 	--rux-text-heading:  var(--rux-text-primary);
-	--rux-text-muted:    var(--rux-text-secondary);
-	--rux-text-faint:    var(--rux-text-secondary);
 
 	--rux-fg-on-accent:        var(--rux-white);
 	--rux-fg-on-accent-muted:  oklch(from var(--rux-white) l c h / 75%);
@@ -1544,8 +1546,6 @@
 	/* Deprecated — see the base block. */
 	--rux-text-default:  var(--rux-text-primary);
 	--rux-text-heading:  var(--rux-text-primary);
-	--rux-text-muted:    var(--rux-text-secondary);
-	--rux-text-faint:    var(--rux-text-secondary);
 
 	/* ─── Status ───────────────────────────────────────────────────────────── */
 	/* Darker foreground roles maintain readable contrast on the 92–98% light

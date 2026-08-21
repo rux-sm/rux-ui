@@ -123,8 +123,9 @@
 }
 
 /* Typography shared with every other eyebrow/section-label — see
-   rux-ui/css/base/utils.css. (Was --rux-text-disabled here; now
-   --rux-text-muted like the rest of the group.) */
+   rux-ui/css/base/utils.css, which is where the color comes from as well:
+   this rule sets padding only. (It once pinned --rux-text-disabled here, then
+   the since-retired --rux-text-muted; the eyebrow role carries it now.) */
 .rux-menu__header {
 	padding: var(--rux-menu-item-padding-block) var(--rux-menu-item-padding-inline);
 }

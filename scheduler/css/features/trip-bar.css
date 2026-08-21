@@ -1201,9 +1201,9 @@
 }
 
 .sched-trip-bar__detail-field-label {
-	/* --rux-fg-on-accent-muted, not --rux-text-muted — this row sits on the
-	   bar's own saturated per-category color, same as every other muted
-	   label here (__client, __contact, __time-label); --rux-text-muted is
+	/* --rux-fg-on-accent-muted, not --rux-text-secondary — this row sits on
+	   the bar's own saturated per-category color, same as every other muted
+	   label here (__client, __contact, __time-label); --rux-text-secondary is
 	   an opaque neutral gray tuned for cards/panels, not this surface. */
 	color: var(--rux-fg-on-accent-muted);
 	font-weight: var(--rux-weight-400);

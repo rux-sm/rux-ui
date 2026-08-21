@@ -317,9 +317,10 @@ directly. Current rux-ui alignment with this shape:
   equivalent has been mapped yet.
 - `--rux-text-primary` / `-secondary` maps directly onto the primary-text /
   secondary-text pair (1000/900). This was five levels (`-heading` /
-  `-default` / `-muted` / `-faint` / `-disabled`) until 2026-08-18; the four
-  emphasis names now forward to the pair and stay published for the vendored
-  consumers. `--rux-text-disabled` deliberately stayed outside it: Geist's
+  `-default` / `-muted` / `-faint` / `-disabled`) until 2026-08-18; `-heading`
+  and `-default` forward to the pair and stay published for the vendored
+  consumers, while `-muted` and `-faint` were retired outright — see
+  `docs/foundations/typography.md` §5 step 9. `--rux-text-disabled` deliberately stayed outside it: Geist's
   scale has no disabled-text step, because a state that must read as "you
   cannot use this" is not one of the two content levels. Collapsing the five
   also moved placeholder and field-help text off the disabled value, where
@@ -623,12 +624,12 @@ When in doubt, edit a token before adding a new component override.
 - **Fonts are CDN-loaded** (Geist, Geist Mono, and Material Symbols Sharp from Google Fonts). No `fonts/` directory is checked in. Add self-hosted `.woff2` files and update the two `@import` rules at the top of `rux-ui/css/colors_and_type.css` if you need offline reliability. Dropping the Material Symbols import without replacing it makes every `.rux-icon` render its ligature name as text.
 - **Material Symbols Sharp is CDN-loaded** by current host pages. A new app must load the font or provide an equivalent self-hosted font resource.
 - **Logo is `assets/logo.png`**, a raster asset, not a generated SVG wordmark.
-- The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-surface-N`, `--rux-text-default`) are intentionally divergent. To migrate from the old codebase, the mapping is:
+- The **historical TripBoard codebase used different token names** (`--rux-bg-1`, `--rux-text-1`, etc). This rebuild's tokens (`--rux-surface-N`, `--rux-text-primary`) are intentionally divergent. To migrate from the old codebase, the mapping is:
     ```
     --rux-bg-1   → --rux-surface-0
     --rux-bg-2/3/4/5 → --rux-surface-1  (two surfaces total now — see Backgrounds above)
-    --rux-text-1 → --rux-text-default
-    --rux-text-2 → --rux-text-muted
+    --rux-text-1 → --rux-text-primary
+    --rux-text-2 → --rux-text-secondary
     --rux-text-3 → --rux-text-disabled
     --rux-border-1/2/3 → --rux-card-border / --rux-card-border / --rux-card-border-hover
     ```

@@ -19,6 +19,12 @@ await collect(new URL("../scheduler/css/", import.meta.url), "scheduler/css/");
 const DEPRECATED = [
 	"--rux-text-default",
 	"--rux-text-heading",
+];
+
+// Retired outright by typography.md §5 step 9 (D5) rather than kept as
+// aliases like the pair above. Both resolved to --rux-text-secondary in both
+// themes and no rule consumed either, so there was nothing to forward.
+const RETIRED = [
 	"--rux-text-muted",
 	"--rux-text-faint",
 ];
@@ -47,7 +53,7 @@ test("nothing internal still reads a superseded level", () => {
 	const offenders = [];
 	for (const [name, css] of files) {
 		if (name.endsWith("tokens.css")) continue;
-		for (const token of DEPRECATED) {
+		for (const token of [...DEPRECATED, ...RETIRED]) {
 			if (css.includes(`var(${token})`)) offenders.push(`${name} → ${token}`);
 		}
 	}
@@ -62,6 +68,21 @@ test("the superseded names stay published for the vendored consumers", () => {
 			tokens,
 			new RegExp(`${token}:\\s*var\\(--rux-text-(primary|secondary)\\)`),
 			`${token} must remain published as an alias`,
+		);
+	}
+});
+
+test("the retired third tier is gone, not published as an alias", () => {
+	// Enforces typography.md §5 step 9. Keeping these as aliases is what let
+	// the gap persist: the system documented three emphasis tiers and shipped
+	// two, and an alias resolving to secondary made that invisible. A consumer
+	// still reading one should now fail its vendor name check rather than
+	// silently render the tier it thought it had opted out of.
+	for (const token of RETIRED) {
+		assert.doesNotMatch(
+			tokens,
+			new RegExp(`^\\s*${token}:`, "m"),
+			`${token} was retired and must not be defined again`,
 		);
 	}
 });
