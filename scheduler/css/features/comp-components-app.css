@@ -83,7 +83,7 @@
 
 .components-app__accent-label {
 	color: var(--rux-fg-on-accent);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -135,7 +135,7 @@
 }
 
 .components-app__button-state-grid span {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -197,18 +197,18 @@
 .components-app__button-rules dt,
 .components-app__button-example strong,
 .components-app__button-sections h3 {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-primary);
 	/* label@14 takes 20; the h3 was inheriting the 24px heading's 32.
 	   docs/foundations/typography.md D14, step 29. */
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 }
 
 .components-app__button-rules dd {
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .components-app__button-list {
@@ -238,7 +238,7 @@
 .components-app__button-example span,
 .components-app__button-example code {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 }
 
 .components-app__button-example code {
@@ -391,12 +391,12 @@
 
 .components-app__specs dt {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .components-app__specs dd {
 	margin: 0;
 	color: var(--rux-text-primary);
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }

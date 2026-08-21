@@ -52,8 +52,8 @@
 
    Row typography — scan rows (body, top to bottom). Every row shares one
    size/line-height pair, read from the trip bar's own component tokens
-   (tokens.css, COMPONENT · trip bar) rather than the raw --rux-size-xs/
-   --rux-line-height-xs primitives directly: --sched-trip-bar-row-font-size
+   (tokens.css, COMPONENT · trip bar) rather than the raw --rux-size-12/
+   --rux-line-height-16 primitives directly: --sched-trip-bar-row-font-size
    (12px) / --sched-trip-bar-row-line-height (16px — tokens.css defines
    line-height as an absolute, 4px-grid-aligned length, not a unitless
    ratio). Every row is locked to that same 16px height with zero gap and
@@ -255,8 +255,8 @@
 }
 
 .sched-scheduler--trip-bar-size-xxs {
-	--sched-trip-bar-row-font-size:   var(--rux-size-xxs);          /* 11px */
-	--sched-trip-bar-row-line-height: var(--rux-line-height-xxs);   /* 12px */
+	--sched-trip-bar-row-font-size:   var(--rux-size-11);          /* 11px */
+	--sched-trip-bar-row-line-height: var(--rux-line-height-12);   /* 12px */
 	--sched-trip-bar-row-tracking:    var(--rux-tracking-dense);
 	/* The pill matches the row's size here rather than stepping under it:
 	   a 12px row leaves no room for two legible sizes, so the separation comes
@@ -264,17 +264,17 @@
 	   size, weight, and space). The box fills the row exactly, which is this
 	   tier's stated cost: XS and SM keep their 4px of breathing room, XXS
 	   trades it for legible text. */
-	--sched-trip-bar-bus-label-height:      var(--rux-line-height-xxs);   /* 12px */
-	--sched-trip-bar-bus-label-font-size:   var(--rux-size-xxs);          /* 11px */
-	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-xxs);   /* 12px */
+	--sched-trip-bar-bus-label-height:      var(--rux-line-height-12);   /* 12px */
+	--sched-trip-bar-bus-label-font-size:   var(--rux-size-11);          /* 11px */
+	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-12);   /* 12px */
 }
 
 .sched-scheduler--trip-bar-size-sm {
-	--sched-trip-bar-row-font-size:   var(--rux-size-sm);           /* 14px */
-	--sched-trip-bar-row-line-height: var(--rux-line-height-sm);    /* 20px */
-	--sched-trip-bar-bus-label-height:      var(--rux-line-height-xs);    /* 16px */
-	--sched-trip-bar-bus-label-font-size:   var(--rux-size-xs);           /* 12px */
-	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-xs);    /* 16px */
+	--sched-trip-bar-row-font-size:   var(--rux-size-14);           /* 14px */
+	--sched-trip-bar-row-line-height: var(--rux-line-height-20);    /* 20px */
+	--sched-trip-bar-bus-label-height:      var(--rux-line-height-16);    /* 16px */
+	--sched-trip-bar-bus-label-font-size:   var(--rux-size-12);           /* 12px */
+	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-16);    /* 16px */
 	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-normal);   /* 12px is on-scale */
 }
 

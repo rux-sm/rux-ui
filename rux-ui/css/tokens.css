@@ -50,19 +50,24 @@
 	--rux-font-mono:			"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* ─── TYPOGRAPHY · font size ───────────────────────────────────────────── */
-	/* 11px is the floor, and it is Geist's: its Badge at size Small renders
-	   11px — the one rung its own type catalog does not publish, kept legible
-	   by positive tracking (rule 2.14). Was 10px, which nothing in the catalog
+	/* Named by the px each resolves to at a 16px root, because that is how the
+	   catalog names every ladder it has and a t-shirt name states nothing a
+	   reader can check. Values stay in rem so a raised browser default still
+	   scales them (rule 2.1) — the name is the nominal size, not the rendered
+	   one. docs/foundations/typography.md Q8, step 31.
+	   11 is the floor, and it is Geist's: its Badge at size Small renders 11px
+	   — the one rung its own type catalog does not publish, kept legible by
+	   positive tracking (rule 2.14). Was 10px, which nothing in the catalog
 	   uses. docs/foundations/typography.md Q7, step 30. */
-	--rux-size-xxs:		0.6875rem;	/* 11px */
-	--rux-size-xs:		0.75rem;	/* 12px */
-	--rux-size-sm:		0.875rem;	/* 14px */
-	--rux-size-md:		1rem;		/* 16px */
-	--rux-size-lg:		1.125rem;	/* 18px */
-	--rux-size-xl:		1.25rem;	/* 20px */
-	--rux-size-2xl:		1.5rem;		/* 24px */
-	--rux-size-3xl:		2rem;		/* 32px */
-	--rux-size-4xl:		2.5rem;		/* 40px */
+	--rux-size-11:		0.6875rem;
+	--rux-size-12:		0.75rem;
+	--rux-size-14:		0.875rem;
+	--rux-size-16:		1rem;
+	--rux-size-18:		1.125rem;
+	--rux-size-20:		1.25rem;
+	--rux-size-24:		1.5rem;
+	--rux-size-32:		2rem;
+	--rux-size-40:		2.5rem;
 
 	/* ─── TYPOGRAPHY · line-height (4px-grid aligned) ─────────────────────── */
 	/* Defined in rem, not a unitless ratio — every paired size/line-height box
@@ -70,15 +75,44 @@
 	   on exactly 56px), and every consumer reads a real length instead of
 	   multiplying font-size by a ratio itself. */
 
-	--rux-line-height-xxs:	0.75rem;	/* 12px — pairs with size-xxs (11px) */
-	--rux-line-height-xs:	1rem;		/* 16px — pairs with size-xs (12px) */
-	--rux-line-height-sm:	1.25rem;	/* 20px — pairs with size-sm (14px) */
-	--rux-line-height-md:	1.5rem;		/* 24px — pairs with size-md (16px) */
-	--rux-line-height-lg:	1.75rem;	/* 28px — pairs with size-lg (18px) */
-	--rux-line-height-xl:	1.75rem;	/* 28px — pairs with size-xl (20px) */
-	--rux-line-height-2xl:	2rem;		/* 32px — pairs with size-2xl (24px) */
-	--rux-line-height-3xl:	2.5rem;		/* 40px — pairs with size-3xl (32px) */
-	--rux-line-height-4xl:	3rem;		/* 48px — pairs with size-4xl (40px) */
+	/* Numeric for the same reason as the sizes above, and the rename collapsed
+	   a duplicate: -lg and -xl were both 1.75rem, so nine rungs became eight.
+	   A ladder that named the same length twice could not say which rung a
+	   role meant. docs/foundations/typography.md Q8, step 31. */
+	--rux-line-height-12:	0.75rem;	/* pairs with size-11 */
+	--rux-line-height-16:	1rem;		/* pairs with size-12 */
+	--rux-line-height-20:	1.25rem;	/* pairs with size-14 */
+	--rux-line-height-24:	1.5rem;		/* pairs with size-16 */
+	--rux-line-height-28:	1.75rem;	/* pairs with size-18 and size-20 */
+	--rux-line-height-32:	2rem;		/* pairs with size-24 */
+	--rux-line-height-40:	2.5rem;		/* pairs with size-32 */
+	--rux-line-height-48:	3rem;		/* pairs with size-40 */
+
+	/* ─── TYPOGRAPHY · superseded t-shirt names ──────────────────────────── */
+	/* Published alongside the numeric ladder for one release so a vendored
+	   consumer has somewhere to go rather than losing its type silently — the
+	   `v0.1.0` failure mode in design-system-distribution.md §4. Nothing in
+	   this repository reads them; removal is step 33.
+	   docs/foundations/typography.md §5 step 31. */
+	--rux-size-xxs:		var(--rux-size-11);
+	--rux-size-xs:		var(--rux-size-12);
+	--rux-size-sm:		var(--rux-size-14);
+	--rux-size-md:		var(--rux-size-16);
+	--rux-size-lg:		var(--rux-size-18);
+	--rux-size-xl:		var(--rux-size-20);
+	--rux-size-2xl:		var(--rux-size-24);
+	--rux-size-3xl:		var(--rux-size-32);
+	--rux-size-4xl:		var(--rux-size-40);
+
+	--rux-line-height-xxs:	var(--rux-line-height-12);
+	--rux-line-height-xs:	var(--rux-line-height-16);
+	--rux-line-height-sm:	var(--rux-line-height-20);
+	--rux-line-height-md:	var(--rux-line-height-24);
+	--rux-line-height-lg:	var(--rux-line-height-28);
+	--rux-line-height-xl:	var(--rux-line-height-28);	/* both were 1.75rem */
+	--rux-line-height-2xl:	var(--rux-line-height-32);
+	--rux-line-height-3xl:	var(--rux-line-height-40);
+	--rux-line-height-4xl:	var(--rux-line-height-48);
 
 	/* ─── TYPOGRAPHY · font weight ────────────────────────────────────────────── */
 
@@ -383,7 +417,15 @@
 	   component's own token block, which is where --rux-field-label-*,
 	   --rux-badge-font-* and --rux-button-font-* already live. */
 
-	/* Every role carries the same five axes — size, weight, line-height,
+	/* A role is named `text-{family}-{size}`, after the catalog's own shape and
+	   this system's prefix, so the name states which of rule 2.12's four
+	   families it belongs to and what size it is — the two things a call site
+	   actually reasons about. Where a family holds two roles at one size, the
+	   axis that separates them is suffixed, as the catalog suffixes
+	   `label-13-mono`: label at 12 is a caption, and label at 12 with open
+	   tracking is an eyebrow. docs/foundations/typography.md §5 step 31.
+
+	   Every role carries the same five axes — size, weight, line-height,
 	   tracking, color — so a call site never has to fall back to the raw scale
 	   for one of them. `color` names the role's *default*; a component that
 	   deliberately differs (a faint timestamp, a disabled empty state) still
@@ -392,11 +434,11 @@
 	/* Page heading — the document's <h1>. Note that an application shell whose
 	   header carries the page name uses the panel role there instead, so this
 	   may have no consumer beyond the h1 element default. */
-	--rux-heading-page-size:        var(--rux-size-4xl);         /* 40px */
-	--rux-heading-page-weight:      var(--rux-weight-600);       /* 600 */
-	--rux-heading-page-line-height: var(--rux-line-height-4xl);  /* 48px */
-	--rux-heading-page-tracking:    var(--rux-tracking-tightest);/* -0.06em */
-	--rux-heading-page-color:       var(--rux-text-primary);     /* L90 dark · L20 light */
+	--rux-text-heading-40-size:        var(--rux-size-40);
+	--rux-text-heading-40-weight:      var(--rux-weight-600);       /* 600 */
+	--rux-text-heading-40-line-height: var(--rux-line-height-48);
+	--rux-text-heading-40-tracking:    var(--rux-tracking-tightest);/* -0.06em */
+	--rux-text-heading-40-color:       var(--rux-text-primary);     /* L90 dark · L20 light */
 
 	/* Section heading — names a group of content from *above* it, the way a
 	   documentation or settings screen introduces each block. Distinct from the
@@ -404,64 +446,116 @@
 	   sits in a 40px band and stays 16px so the box reads as dense UI chrome,
 	   while a section heading is page copy and can afford the larger step. Pairs
 	   with the lead role below for its optional second line. */
-	--rux-heading-section-size:        var(--rux-size-2xl);        /* 24px */
-	--rux-heading-section-weight:      var(--rux-weight-600);      /* 600 */
-	--rux-heading-section-line-height: var(--rux-line-height-2xl); /* 32px */
-	--rux-heading-section-tracking:    var(--rux-tracking-tighter);/* -0.04em */
-	--rux-heading-section-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
+	--rux-text-heading-24-size:        var(--rux-size-24);
+	--rux-text-heading-24-weight:      var(--rux-weight-600);      /* 600 */
+	--rux-text-heading-24-line-height: var(--rux-line-height-32);
+	--rux-text-heading-24-tracking:    var(--rux-tracking-tighter);/* -0.04em */
+	--rux-text-heading-24-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
 
 	/* Panel heading — card, panel, workspace and shell-header titles. Tracking
 	   is negative rather than zeroed: at 16px the tighter setting is what keeps
 	   a title reading as a heading instead of as body copy. */
-	--rux-heading-panel-size:        var(--rux-size-md);         /* 16px */
-	--rux-heading-panel-weight:      var(--rux-weight-600);      /* 600 */
-	--rux-heading-panel-line-height: var(--rux-line-height-md);  /* 24px */
-	--rux-heading-panel-tracking:    var(--rux-tracking-tight);  /* -0.02em */
-	--rux-heading-panel-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
+	--rux-text-heading-16-size:        var(--rux-size-16);
+	--rux-text-heading-16-weight:      var(--rux-weight-600);      /* 600 */
+	--rux-text-heading-16-line-height: var(--rux-line-height-24);
+	--rux-text-heading-16-tracking:    var(--rux-tracking-tight);  /* -0.02em */
+	--rux-text-heading-16-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
 
 	/* Lead — the sentence that follows a section heading and explains it. One
 	   step above body because it is page copy rather than dense UI, and muted
 	   because the heading above it is what carries the emphasis. This is the
 	   only 16px text role; a second line inside a card header is a subtitle and
 	   reads the body role instead. */
-	--rux-text-lead-size:        var(--rux-size-md);             /* 16px */
-	--rux-text-lead-weight:      var(--rux-weight-400);          /* 400 */
-	--rux-text-lead-line-height: var(--rux-line-height-md);      /* 24px */
-	--rux-text-lead-tracking:    var(--rux-tracking-normal);     /* 0 */
-	--rux-text-lead-color:       var(--rux-text-secondary);      /* L70 dark · L38 light */
+	--rux-text-copy-16-size:        var(--rux-size-16);
+	--rux-text-copy-16-weight:      var(--rux-weight-400);          /* 400 */
+	--rux-text-copy-16-line-height: var(--rux-line-height-24);
+	--rux-text-copy-16-tracking:    var(--rux-tracking-normal);     /* 0 */
+	--rux-text-copy-16-color:       var(--rux-text-secondary);      /* L70 dark · L38 light */
 
 	/* Body — the dense-UI default, one step below the document base. Alerts,
 	   toasts, table cells, subtitles, empty states. */
-	--rux-text-body-size:        var(--rux-size-sm);             /* 14px */
-	--rux-text-body-weight:      var(--rux-weight-400);          /* 400 */
-	--rux-text-body-line-height: var(--rux-line-height-sm);      /* 20px */
-	--rux-text-body-tracking:    var(--rux-tracking-normal);     /* 0 */
-	--rux-text-body-color:       var(--rux-text-primary);        /* L94 dark · L14 light */
+	--rux-text-copy-14-size:        var(--rux-size-14);
+	--rux-text-copy-14-weight:      var(--rux-weight-400);          /* 400 */
+	--rux-text-copy-14-line-height: var(--rux-line-height-20);
+	--rux-text-copy-14-tracking:    var(--rux-tracking-normal);     /* 0 */
+	--rux-text-copy-14-color:       var(--rux-text-primary);        /* L94 dark · L14 light */
 
 	/* Caption — supporting text that annotates something else: timestamps,
 	   sublabels, tooltips, secondary detail lines. Muted by default; that is
 	   what makes it read as support rather than as content. */
-	--rux-text-caption-size:        var(--rux-size-xs);          /* 12px */
-	--rux-text-caption-weight:      var(--rux-weight-400);       /* 400 */
-	--rux-text-caption-line-height: var(--rux-line-height-xs);   /* 16px */
-	--rux-text-caption-tracking:    var(--rux-tracking-normal);  /* 0 */
-	--rux-text-caption-color:       var(--rux-text-secondary);    /* L70 dark · L38 light */
+	--rux-text-label-12-size:        var(--rux-size-12);
+	--rux-text-label-12-weight:      var(--rux-weight-400);       /* 400 */
+	--rux-text-label-12-line-height: var(--rux-line-height-16);
+	--rux-text-label-12-tracking:    var(--rux-tracking-normal);  /* 0 */
+	--rux-text-label-12-color:       var(--rux-text-secondary);    /* L70 dark · L38 light */
 
 	/* Item label — the text of something you can click or choose: navigation
 	   links, option rows, suggestion entries. Body size, but a distinct role,
 	   because these move with controls rather than with copy. */
-	--rux-label-control-size:        var(--rux-size-sm);         /* 14px */
-	--rux-label-control-weight:      var(--rux-weight-400);      /* 400 */
-	--rux-label-control-line-height: var(--rux-line-height-sm);  /* 20px */
-	--rux-label-control-tracking:    var(--rux-tracking-normal); /* 0 */
-	--rux-label-control-color:       var(--rux-text-primary);    /* L100 dark · L10 light */
+	--rux-text-label-14-size:        var(--rux-size-14);
+	--rux-text-label-14-weight:      var(--rux-weight-400);      /* 400 */
+	--rux-text-label-14-line-height: var(--rux-line-height-20);
+	--rux-text-label-14-tracking:    var(--rux-tracking-normal); /* 0 */
+	--rux-text-label-14-color:       var(--rux-text-primary);    /* L100 dark · L10 light */
 
 	/* Eyebrow — uppercase category/section markers. */
-	--rux-label-eyebrow-size:        var(--rux-size-xs);         /* 12px */
-	--rux-label-eyebrow-weight:      var(--rux-weight-400);      /* 400 */
-	--rux-label-eyebrow-line-height: var(--rux-line-height-xs);  /* 16px */
-	--rux-label-eyebrow-tracking:    var(--rux-tracking-wide);   /* 0.04em */
-	--rux-label-eyebrow-color:       var(--rux-text-secondary);      /* L60 dark · L32 light */
+	--rux-text-label-12-wide-size:        var(--rux-size-12);
+	--rux-text-label-12-wide-weight:      var(--rux-weight-400);      /* 400 */
+	--rux-text-label-12-wide-line-height: var(--rux-line-height-16);
+	--rux-text-label-12-wide-tracking:    var(--rux-tracking-wide);   /* 0.04em */
+	--rux-text-label-12-wide-color:       var(--rux-text-secondary);      /* L60 dark · L32 light */
+
+	/* ─── TYPOGRAPHY · superseded role names ─────────────────────────────── */
+	/* The intent-named roles, published alongside the shape-named ones for one
+	   release. A consumer's markup and stylesheets read these; removal is
+	   step 33. docs/foundations/typography.md §5 step 31. */
+	--rux-heading-page-size: var(--rux-text-heading-40-size);
+	--rux-heading-page-weight: var(--rux-text-heading-40-weight);
+	--rux-heading-page-line-height: var(--rux-text-heading-40-line-height);
+	--rux-heading-page-tracking: var(--rux-text-heading-40-tracking);
+	--rux-heading-page-color: var(--rux-text-heading-40-color);
+
+	--rux-heading-section-size: var(--rux-text-heading-24-size);
+	--rux-heading-section-weight: var(--rux-text-heading-24-weight);
+	--rux-heading-section-line-height: var(--rux-text-heading-24-line-height);
+	--rux-heading-section-tracking: var(--rux-text-heading-24-tracking);
+	--rux-heading-section-color: var(--rux-text-heading-24-color);
+
+	--rux-heading-panel-size: var(--rux-text-heading-16-size);
+	--rux-heading-panel-weight: var(--rux-text-heading-16-weight);
+	--rux-heading-panel-line-height: var(--rux-text-heading-16-line-height);
+	--rux-heading-panel-tracking: var(--rux-text-heading-16-tracking);
+	--rux-heading-panel-color: var(--rux-text-heading-16-color);
+
+	--rux-text-lead-size: var(--rux-text-copy-16-size);
+	--rux-text-lead-weight: var(--rux-text-copy-16-weight);
+	--rux-text-lead-line-height: var(--rux-text-copy-16-line-height);
+	--rux-text-lead-tracking: var(--rux-text-copy-16-tracking);
+	--rux-text-lead-color: var(--rux-text-copy-16-color);
+
+	--rux-text-body-size: var(--rux-text-copy-14-size);
+	--rux-text-body-weight: var(--rux-text-copy-14-weight);
+	--rux-text-body-line-height: var(--rux-text-copy-14-line-height);
+	--rux-text-body-tracking: var(--rux-text-copy-14-tracking);
+	--rux-text-body-color: var(--rux-text-copy-14-color);
+
+	--rux-text-caption-size: var(--rux-text-label-12-size);
+	--rux-text-caption-weight: var(--rux-text-label-12-weight);
+	--rux-text-caption-line-height: var(--rux-text-label-12-line-height);
+	--rux-text-caption-tracking: var(--rux-text-label-12-tracking);
+	--rux-text-caption-color: var(--rux-text-label-12-color);
+
+	--rux-label-control-size: var(--rux-text-label-14-size);
+	--rux-label-control-weight: var(--rux-text-label-14-weight);
+	--rux-label-control-line-height: var(--rux-text-label-14-line-height);
+	--rux-label-control-tracking: var(--rux-text-label-14-tracking);
+	--rux-label-control-color: var(--rux-text-label-14-color);
+
+	--rux-label-eyebrow-size: var(--rux-text-label-12-wide-size);
+	--rux-label-eyebrow-weight: var(--rux-text-label-12-wide-weight);
+	--rux-label-eyebrow-line-height: var(--rux-text-label-12-wide-line-height);
+	--rux-label-eyebrow-tracking: var(--rux-text-label-12-wide-tracking);
+	--rux-label-eyebrow-color: var(--rux-text-label-12-wide-color);
 
 	/* ─── SPACING · shared roles ──────────────────────────────────────────── */
 
@@ -869,7 +963,7 @@
 
 	/* — label — */
 	--rux-field-gap:          var(--rux-stack-gap);
-	--rux-field-label-size:   var(--rux-size-xs);
+	--rux-field-label-size:   var(--rux-size-12);
 	--rux-field-label-weight: var(--rux-weight-400);
 	--rux-field-label-fg:     var(--rux-text-secondary);
 	--rux-field-help-fg:      var(--rux-text-secondary);
@@ -889,7 +983,7 @@
 	--rux-input-shadow:         none;
 	--rux-input-height:         var(--rux-field-height);
 	--rux-input-padding-inline: var(--rux-control-padding-inline);
-	--rux-input-font-size:      var(--rux-size-sm);
+	--rux-input-font-size:      var(--rux-size-14);
 	--rux-input-placeholder-fg: var(--rux-text-secondary);
 	--rux-input-transition:     var(--rux-duration-fast) var(--rux-ease-out);
 
@@ -920,7 +1014,7 @@
 	/* --rux-badge-shadow: not set */
 	--rux-badge-padding-inline: var(--rux-space-2);
 	--rux-badge-height:         20px;
-	--rux-badge-font-size:      var(--rux-size-xs);
+	--rux-badge-font-size:      var(--rux-size-12);
 	--rux-badge-font-weight:    var(--rux-weight-500);
 	--rux-badge-background-opacity: 16%;
 	/* The border used to be the variant color at full strength against a 12%
@@ -944,7 +1038,7 @@
 	--rux-badge-module-icon-size: var(--rux-icon-sm);
 	/* Module chips are a metadata treatment at button scale, not row labels —
 	   they keep the body type step the base badge just stepped down from. */
-	--rux-badge-module-font-size: var(--rux-size-sm);
+	--rux-badge-module-font-size: var(--rux-size-14);
 
 	/* ─── COMPONENT · button base ─────────────────────────────────────────────── */
 
@@ -962,7 +1056,7 @@
 
 	/* — typography — */
 	--rux-button-font-family: var(--rux-font-sans);
-	--rux-button-font-size:   var(--rux-size-sm);
+	--rux-button-font-size:   var(--rux-size-14);
 	--rux-button-font-weight: var(--rux-weight-400);
 
 	/* — states — */
@@ -1064,7 +1158,7 @@
 
 	--rux-button-height-compact:        	24px;
 	--rux-button-icon-size-compact:     	var(--rux-icon-sm);
-	--rux-button-font-size-compact:     	var(--rux-size-xs);
+	--rux-button-font-size-compact:     	var(--rux-size-12);
 	--rux-button-padding-inline-compact: 	var(--rux-space-1);
 	--rux-button-content-gap-compact:   	var(--rux-space-1);
 
@@ -1130,7 +1224,7 @@
 	--rux-number-stepper-value-width:     3rem;
 	--rux-number-stepper-value-bg:        transparent;
 	--rux-number-stepper-value-fg:        var(--rux-text-primary);
-	--rux-number-stepper-value-font-size: var(--rux-size-sm);
+	--rux-number-stepper-value-font-size: var(--rux-size-14);
 
 	/* — ghost variant (quiet trailing content in a section/card header,
 	   e.g. Fleet Assignments' bus count) — */
@@ -1209,7 +1303,7 @@
 	--rux-slider-thumb-radius: var(--rux-radius-0);
 	--rux-slider-thumb-shadow: var(--rux-button-shadow-raised);
 
-	--rux-slider-value-size:  var(--rux-size-xs);
+	--rux-slider-value-size:  var(--rux-size-12);
 	--rux-slider-value-color: var(--rux-text-secondary);
 	--rux-slider-value-width: 3.5rem;
 
@@ -1222,7 +1316,7 @@
 	--rux-checkbox-size:             18px;
 	--rux-checkbox-target-height:    32px;
 	--rux-checkbox-content-gap:      var(--rux-control-content-gap);
-	--rux-checkbox-font-size:        var(--rux-size-sm);
+	--rux-checkbox-font-size:        var(--rux-size-14);
 	--rux-checkbox-transition-speed: var(--rux-duration-instant);
 
 	/* — states — */
@@ -1324,7 +1418,7 @@
 	/* --rux-output-shadow: not set — deliberately flat, see note above */
 	--rux-output-padding:     var(--rux-space-0);
 	--rux-output-height:      var(--rux-field-height);
-	--rux-output-font-size:   var(--rux-size-md);
+	--rux-output-font-size:   var(--rux-size-16);
 	--rux-output-font-weight: var(--rux-weight-400);
 
 	/* ─── COMPONENT · table ──────────────────────────────────────────────── */
@@ -1355,7 +1449,7 @@
 	--rux-table-row-height:           36px;
 	--rux-table-cell-padding-inline:  var(--rux-space-2);
 	--rux-table-edge-padding-inline:  var(--rux-space-4);
-	--rux-table-cell-font-size:       var(--rux-size-sm);
+	--rux-table-cell-font-size:       var(--rux-size-14);
 	--rux-table-cell-weight:          var(--rux-weight-400);
 	--rux-table-row-hover-bg: var(--rux-bg-hover);
 	--rux-table-row-selected-bg:      var(--rux-accent-subtle);
@@ -1378,7 +1472,7 @@
 	/* A menu is a list of interactive rows, the same thing .rux-side-nav is —
 	   so it uses that list's geometry rather than a second one of its own:
 	   square, full-bleed rows at the nav's 40px, and the shared
-	   --rux-label-control-* type role both now read. The container loses its
+	   --rux-text-label-14-* type role both now read. The container loses its
 	   inset for the same reason: a row that stops 4px short of the edge reads
 	   as a floating chip, not as a list. */
 	--rux-menu-radius: var(--rux-radius-0);
@@ -1396,7 +1490,7 @@
 	--rux-menu-item-padding-inline: var(--rux-space-3);
 	--rux-menu-item-gap:            var(--rux-space-2);
 	--rux-menu-item-radius:         var(--rux-radius-0);
-	--rux-menu-item-font-size:      var(--rux-label-control-size);
+	--rux-menu-item-font-size:      var(--rux-text-label-14-size);
 	--rux-menu-item-fg:             var(--rux-menu-fg);
 	--rux-menu-item-hover-bg: var(--rux-button-hover-overlay);
 	--rux-menu-item-hover-fg:       var(--rux-text-primary);

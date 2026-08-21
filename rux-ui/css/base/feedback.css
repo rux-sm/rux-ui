@@ -11,8 +11,8 @@
   background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-md);
-  font-size: var(--rux-text-body-size);
-  line-height: var(--rux-text-body-line-height);
+  font-size: var(--rux-text-copy-14-size);
+  line-height: var(--rux-text-copy-14-line-height);
 }
 .rux-alert__icon  { color: var(--rux-text-secondary); flex: none; }
 .rux-alert__body  { flex: 1; min-width: 0; }
@@ -56,7 +56,7 @@
   background: var(--rux-surface-1);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-md);
-  font-size: var(--rux-text-body-size);
+  font-size: var(--rux-text-copy-14-size);
   min-width: var(--rux-toast-min-width);
 }
 
@@ -149,7 +149,7 @@
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-sm);
   color: var(--rux-text-primary);
-  font-size: var(--rux-size-xs);
+  font-size: var(--rux-size-12);
   white-space: nowrap;
   pointer-events: none;
   z-index: var(--rux-z-overlay);
@@ -166,9 +166,9 @@
   background: var(--rux-bg-active);
   border: var(--rux-border-width) solid var(--rux-card-border);
   border-radius: var(--rux-radius-sm);
-  color: var(--rux-text-body-color);
-  font-size: var(--rux-text-caption-size);
-  line-height: var(--rux-text-caption-line-height);
+  color: var(--rux-text-copy-14-color);
+  font-size: var(--rux-text-label-12-size);
+  line-height: var(--rux-text-label-12-line-height);
   overflow-wrap: anywhere;
   pointer-events: none;
   white-space: normal;

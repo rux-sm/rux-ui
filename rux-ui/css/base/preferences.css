@@ -15,18 +15,19 @@
 /* The 14px/default/400 label recipe, published as .rux-u-label so callers
    opt in rather than being named here. .rux-preferences__heading and
    .rux-preferences__label were byte-for-byte duplicates of it. */
+.rux-text-label-14,
 .rux-u-label,
 .rux-preferences__heading,
 .rux-preferences__label {
-	color: var(--rux-label-control-color);
-	font-size: var(--rux-label-control-size);
-	font-weight: var(--rux-label-control-weight);
+	color: var(--rux-text-label-14-color);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
 	/* The fourth axis. .rux-preferences__heading is an h2, so without this it
 	   took the 32px heading's leading at 14px text.
 	   docs/foundations/typography.md D14, step 29. */
-	line-height: var(--rux-label-control-line-height);
-	/* And the fifth. docs/foundations/typography.md D12, step 31. */
-	letter-spacing: var(--rux-label-control-tracking);
+	line-height: var(--rux-text-label-14-line-height);
+	/* And the fifth. docs/foundations/typography.md D12, step 22. */
+	letter-spacing: var(--rux-text-label-14-tracking);
 }
 
 .rux-preferences__heading {
@@ -155,7 +156,7 @@
 }
 
 .rux-view-options__label {
-	font-size: var(--rux-label-control-size);
-	font-weight: var(--rux-label-control-weight);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
 	color: var(--rux-text-secondary);
 }

@@ -198,6 +198,7 @@
    comp-settings-app.css); grouped here so there's one place to change the
    role instead of six. Each class below keeps its own rule for structural
    properties only (margin, padding, flex, overflow handling). */
+.rux-text-heading-16,
 .rux-u-panel-title,
 /* The 16/24 semibold heading recipe, shared with .rux-ui-header__title.
    Tracking is negative rather than zeroed: at this size the tighter setting
@@ -205,11 +206,11 @@
 .rux-card__title,
 .rux-panel__title,
 .rux-workspace__title {
-	color: var(--rux-heading-panel-color);
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-heading-panel-weight);
-	letter-spacing: var(--rux-heading-panel-tracking);
-	line-height: var(--rux-heading-panel-line-height);
+	color: var(--rux-text-heading-16-color);
+	font-size: var(--rux-text-heading-16-size);
+	font-weight: var(--rux-text-heading-16-weight);
+	letter-spacing: var(--rux-text-heading-16-tracking);
+	line-height: var(--rux-text-heading-16-line-height);
 }
 
 /* nowrap + ellipsis: a card title is a single line by contract. Anything that
@@ -235,13 +236,13 @@
 .rux-card__subtitle,
 .rux-workspace__subtitle {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-text-body-size);
-	line-height: var(--rux-text-body-line-height);
+	font-size: var(--rux-text-copy-14-size);
+	line-height: var(--rux-text-copy-14-line-height);
 	/* The two axes this was missing. Both already resolved to the same values
 	   by inheritance; stating them is what stops the next context from
-	   changing them. docs/foundations/typography.md D12, step 31. */
-	font-weight: var(--rux-text-body-weight);
-	letter-spacing: var(--rux-text-body-tracking);
+	   changing them. docs/foundations/typography.md D12, step 22. */
+	font-weight: var(--rux-text-copy-14-weight);
+	letter-spacing: var(--rux-text-copy-14-tracking);
 }
 
 .rux-card__subtitle {

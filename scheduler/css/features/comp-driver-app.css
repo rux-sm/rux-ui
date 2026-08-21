@@ -103,7 +103,7 @@
 	gap: var(--rux-space-2);
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .driver-app__workload-through strong {
@@ -174,7 +174,7 @@
 	background: var(--rux-surface-1);
 	border-radius: var(--rux-radius-control);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	font-family: var(--rux-font-mono);
 	letter-spacing: 0;
@@ -201,7 +201,7 @@
 
 .driver-app__driver-ref {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-400);
 }
@@ -234,7 +234,7 @@
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-8);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	text-align: center;
 }
 

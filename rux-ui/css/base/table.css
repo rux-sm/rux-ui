@@ -50,7 +50,7 @@
 
 .rux-table {
 	border-collapse: collapse;
-	font-size: var(--rux-text-body-size);
+	font-size: var(--rux-text-copy-14-size);
 	background: var(--rux-table-bg);
 }
 

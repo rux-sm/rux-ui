@@ -72,11 +72,11 @@ body {
   color: var(--rux-text-primary);
   font-family: var(--rux-font-sans);
   /* 14/20, the dense-UI base. Was 16/24, a document base that 89% of the
-     application never inherited — it pins --rux-size-sm explicitly in 92
+     application never inherited — it pins --rux-size-14 explicitly in 92
      places. The role layer already encoded this: --rux-text-body has always
      been 14/20. docs/foundations/typography.md Q1, step 8. */
-  font-size: var(--rux-size-sm);
-  line-height: var(--rux-line-height-sm);
+  font-size: var(--rux-size-14);
+  line-height: var(--rux-line-height-20);
   font-weight: var(--rux-weight-400);
   letter-spacing: 0;
 }
@@ -100,18 +100,18 @@ h1, h2, h3, h4, h5, h6 {
    above: h1 at 40px and h5 at 16px are three steps apart on it. h4 and h5
    previously set tracking-normal, which is off the curve — a 16px heading
    tracks -0.02em, the same as any other heading at 16. */
-h1 { font-size: var(--rux-heading-page-size); font-weight: var(--rux-heading-page-weight); letter-spacing: var(--rux-heading-page-tracking); line-height: var(--rux-heading-page-line-height); }
-h2 { font-size: var(--rux-size-3xl); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-3xl); }
-h3 { font-size: var(--rux-size-2xl); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-2xl); }
-h4 { font-size: var(--rux-size-lg); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-lg); }
-h5 { font-size: var(--rux-size-md); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-md); }
+h1 { font-size: var(--rux-text-heading-40-size); font-weight: var(--rux-text-heading-40-weight); letter-spacing: var(--rux-text-heading-40-tracking); line-height: var(--rux-text-heading-40-line-height); }
+h2 { font-size: var(--rux-size-32); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-40); }
+h3 { font-size: var(--rux-size-24); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-32); }
+h4 { font-size: var(--rux-size-18); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-28); }
+h5 { font-size: var(--rux-size-16); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-24); }
 h6 {
-  font-size: var(--rux-size-xs);
+  font-size: var(--rux-size-12);
   letter-spacing: var(--rux-tracking-wide);
   text-transform: uppercase;
   color: var(--rux-text-secondary);
   font-weight: var(--rux-weight-400);
-  line-height: var(--rux-line-height-xs);
+  line-height: var(--rux-line-height-16);
 }
 
 /* ─── Body copy ─────────────────────────────────────────────────────────── */
@@ -123,14 +123,14 @@ h6 {
    when the portal and export surfaces (S3/S4) get their own treatment. */
 p {
   margin: 0;
-  line-height: var(--rux-line-height-md);
+  line-height: var(--rux-line-height-24);
   text-wrap: pretty;
 }
 
 p + p { margin-top: var(--rux-space-3); }
 
 small {
-  font-size: var(--rux-size-xs);
+  font-size: var(--rux-size-12);
   color: var(--rux-text-secondary);
 }
 
@@ -161,7 +161,7 @@ a:hover { color: var(--rux-accent-hover); text-decoration: underline; }
    with the base. docs/foundations/typography.md D6, step 10. */
 code, kbd, samp, pre {
   font-family: var(--rux-font-mono);
-  font-size: var(--rux-size-xs);
+  font-size: var(--rux-size-12);
 }
 
 code {
@@ -178,7 +178,7 @@ pre {
   border-radius: var(--rux-radius-md);
   padding: var(--rux-space-4);
   overflow-x: auto;
-  line-height: var(--rux-line-height-lg);
+  line-height: var(--rux-line-height-28);
 }
 
 pre code {
@@ -204,7 +204,7 @@ kbd {
 ul, ol {
   margin: 0;
   padding-left: var(--rux-space-5);
-  line-height: var(--rux-line-height-md);
+  line-height: var(--rux-line-height-24);
 }
 
 li + li { margin-top: var(--rux-space-1); }

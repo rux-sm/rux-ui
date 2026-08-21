@@ -65,7 +65,7 @@
 	background-color: var(--_bg);
 	color: var(--_fg);
 	border-radius: var(--rux-radius-sm);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -100,7 +100,7 @@
 	padding: var(--rux-space-2) var(--rux-space-3);
 	border-radius: var(--rux-radius-xs);
 	cursor: pointer;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	color: var(--rux-text-primary);
 	user-select: none;
 }

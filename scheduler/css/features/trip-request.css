@@ -33,9 +33,9 @@
 }
 
 .trip-request__page-title {
-	font-size: var(--rux-size-2xl);
+	font-size: var(--rux-size-24);
 	font-weight: var(--rux-weight-600);
-	line-height: var(--rux-line-height-2xl);
+	line-height: var(--rux-line-height-32);
 	letter-spacing: var(--rux-tracking-tight);
 	color: var(--rux-text-primary);
 }
@@ -161,7 +161,7 @@
    strip between the question and the switch that answers it. */
 .trip-request__switch-label {
 	padding-inline-end: var(--rux-space-3);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	cursor: pointer;
 }
 
@@ -172,7 +172,7 @@
    already gives a customer for free on both desktop and phone. Only the
    button half is restyled to sit with .rux-input. */
 .trip-request__file-input {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	color: var(--rux-text-secondary);
 }
 
@@ -206,7 +206,7 @@
 
 .trip-request__file {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	overflow-wrap: anywhere;
 }
 
@@ -231,7 +231,7 @@
 .trip-request__footer-note {
 	max-width: 22rem;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .trip-request__submit {
@@ -253,7 +253,7 @@
 }
 
 .trip-request__success-title {
-	font-size: var(--rux-size-2xl);
+	font-size: var(--rux-size-24);
 }
 
 .trip-request__success-text {
@@ -267,5 +267,5 @@
 .trip-request__success-note {
 	max-width: 26rem;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }

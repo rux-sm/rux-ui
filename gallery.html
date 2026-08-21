@@ -27,19 +27,19 @@
 		background: var(--rux-surface-0);
 		border-block-end: var(--rux-border-width) solid var(--rux-card-border);
 	}
-	.gallery-title { font-size: var(--rux-size-md); font-weight: var(--rux-weight-600); }
-	.gallery-meta  { font-size: var(--rux-size-xs); color: var(--rux-text-muted); font-variant-numeric: tabular-nums; }
+	.gallery-title { font-size: var(--rux-size-16); font-weight: var(--rux-weight-600); }
+	.gallery-meta  { font-size: var(--rux-size-12); color: var(--rux-text-muted); font-variant-numeric: tabular-nums; }
 	.gallery-section { margin-block-start: var(--rux-space-8); }
 	/* The eyebrow role, read whole rather than restated: this is a small
 	   uppercase section marker, which rule 2.12 classes as label. It carried
 	   weight 600 — the heading weight — and h2's 40px leading at 12px text. */
 	.gallery-section > h2 {
-		font-size: var(--rux-label-eyebrow-size);
-		font-weight: var(--rux-label-eyebrow-weight);
-		line-height: var(--rux-label-eyebrow-line-height);
-		letter-spacing: var(--rux-label-eyebrow-tracking);
+		font-size: var(--rux-text-label-12-wide-size);
+		font-weight: var(--rux-text-label-12-wide-weight);
+		line-height: var(--rux-text-label-12-wide-line-height);
+		letter-spacing: var(--rux-text-label-12-wide-tracking);
 		text-transform: uppercase;
-		color: var(--rux-label-eyebrow-color);
+		color: var(--rux-text-label-12-wide-color);
 		padding-block-end: var(--rux-space-2);
 		border-block-end: var(--rux-border-width) solid var(--rux-card-border);
 		margin-block-end: var(--rux-space-4);
@@ -52,7 +52,7 @@
 		margin-block-end: var(--rux-space-4);
 	}
 	.gallery-specimen { display: flex; flex-direction: column; gap: var(--rux-space-1); min-width: 0; }
-	.gallery-label { font-size: var(--rux-size-xxs); color: var(--rux-text-muted); font-family: var(--rux-font-mono); }
+	.gallery-label { font-size: var(--rux-size-11); color: var(--rux-text-muted); font-family: var(--rux-font-mono); }
 	.gallery-grid { display: grid; gap: var(--rux-space-4); grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
 </style>
 </head>

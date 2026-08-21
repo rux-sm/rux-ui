@@ -62,12 +62,12 @@
 .rux-u-eyebrow,
 .rux-u-section-label,
 .rux-menu__header {
-	font-size: var(--rux-label-eyebrow-size);
-	font-weight: var(--rux-label-eyebrow-weight);
-	color: var(--rux-label-eyebrow-color);
-	line-height: var(--rux-label-eyebrow-line-height);
+	font-size: var(--rux-text-label-12-wide-size);
+	font-weight: var(--rux-text-label-12-wide-weight);
+	color: var(--rux-text-label-12-wide-color);
+	line-height: var(--rux-text-label-12-wide-line-height);
 	text-transform: uppercase;
-	letter-spacing: var(--rux-label-eyebrow-tracking);
+	letter-spacing: var(--rux-text-label-12-wide-tracking);
 }
 
 .rux-u-section-label {

@@ -78,7 +78,7 @@
 
 .sched-scope-fleet__trip-id {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-400);
 	min-width: 5rem;
@@ -86,7 +86,7 @@
 
 .sched-scope-fleet__trip-meta {
 	flex: 1;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	color: var(--rux-text-secondary);
 	min-width: 0;
 	overflow: hidden;
@@ -130,14 +130,14 @@
 }
 
 .sched-scope-fleet__oos-empty {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .sched-scope-fleet__trip-empty {
 	padding: var(--rux-space-5);
 	text-align: center;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 /* — Narrow panel — */
@@ -222,7 +222,7 @@
 
 .fleet-app__order {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	color: var(--rux-text-disabled);
 	text-align: center;
 }

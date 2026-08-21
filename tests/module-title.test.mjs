@@ -64,10 +64,10 @@ test("the workspace title does not depend on its tag for size", () => {
 		/(?:^|\n)([^{}]*\.rux-workspace__title\s*\{[^}]*\})/,
 	)[1];
 	for (const role of [
-		"--rux-heading-panel-size",
-		"--rux-heading-panel-weight",
-		"--rux-heading-panel-line-height",
-		"--rux-heading-panel-tracking",
+		"--rux-text-heading-16-size",
+		"--rux-text-heading-16-weight",
+		"--rux-text-heading-16-line-height",
+		"--rux-text-heading-16-tracking",
 	]) {
 		assert.match(shared, new RegExp(role), `missing ${role}`);
 	}

@@ -146,11 +146,13 @@ test("type below 14px carries the dense tracking rung (rule 2.14)", () => {
 test("the size settings still drive the row typography", () => {
 	assert.match(
 		schedTokens,
-		/--sched-trip-bar-row-font-size:\s*var\(--rux-size-xs\)/,
+		/--sched-trip-bar-row-font-size:\s*var\(--rux-size-12\)/,
 	);
+	// The tier is the scheduler's own modifier name and keeps its t-shirt
+	// label — step 31 renamed the rux- vocabulary, not a consumer's namespace.
 	for (const [tier, size] of [
-		["xxs", "xxs"],
-		["sm", "sm"],
+		["xxs", "11"],
+		["sm", "14"],
 	]) {
 		assert.match(
 			barCss,

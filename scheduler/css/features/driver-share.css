@@ -35,12 +35,12 @@
 	--sched-driver-copy-max-width:          28rem;
 	--sched-driver-status-min-height:       60dvh;
 	--sched-driver-page-title-size:         clamp(2.25rem, 7vw, 2.5rem);
-	--sched-driver-date-primary-size:       var(--rux-size-md);
+	--sched-driver-date-primary-size:       var(--rux-size-16);
 	--sched-driver-date-primary-weight:     var(--rux-weight-400);
-	--sched-driver-time-size:               var(--rux-size-2xl);
-	--sched-driver-primary-size:            var(--rux-size-lg);
-	--sched-driver-secondary-size:          var(--rux-size-lg);
-	--sched-driver-label-size:              var(--rux-size-xs);
+	--sched-driver-time-size:               var(--rux-size-24);
+	--sched-driver-primary-size:            var(--rux-size-18);
+	--sched-driver-secondary-size:          var(--rux-size-18);
+	--sched-driver-label-size:              var(--rux-size-12);
 	--sched-driver-control-bg:              var(--rux-surface-0);
 	--sched-driver-control-radius:          var(--rux-radius-lg);
 	--sched-driver-accent-soft:             color-mix(in oklch, var(--rux-accent) 16%, transparent);
@@ -90,7 +90,7 @@ html {
 	color: var(--rux-text-secondary);
 	font-size: var(--sched-driver-secondary-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 	/* Overrides h1's size, so it must override h1's tracking too: step 27 put
 	   the element default on the 2.13 curve at 40px, and an 18px heading that
 	   inherits it lands three steps too tight. Pinned to the rung its own size
@@ -116,14 +116,14 @@ html {
 	margin: 0;
 	font-size: var(--sched-driver-page-title-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-4xl);
+	line-height: var(--rux-line-height-48);
 }
 
 .driver-share__subtitle,
 .driver-share__range {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-lg);
-	line-height: var(--rux-line-height-lg);
+	font-size: var(--rux-size-18);
+	line-height: var(--rux-line-height-28);
 }
 
 .driver-share__subtitle {
@@ -141,7 +141,7 @@ html {
 	gap: var(--rux-space-2);
 	margin-top: var(--rux-space-4);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -197,7 +197,7 @@ html {
 	   rule 2.2 calls a defect. Classed label@16 (grey, one line, never wraps,
 	   tabular figures), so it takes 20.
 	   docs/foundations/typography.md D14, step 29. */
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -229,9 +229,9 @@ html {
 	min-width: 0;
 	margin: 0;
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-2xl);
+	font-size: var(--rux-size-24);
 	font-weight: var(--rux-weight-600);
-	line-height: var(--rux-line-height-2xl);
+	line-height: var(--rux-line-height-32);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -241,9 +241,9 @@ html {
 	min-width: 0;
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-md);
+	font-size: var(--rux-size-16);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-md);
+	line-height: var(--rux-line-height-24);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -346,8 +346,8 @@ html {
 	max-width: var(--sched-driver-copy-max-width);
 	margin: 0;
 	color: var(--rux-danger-bright);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
+	font-size: var(--rux-size-14);
+	line-height: var(--rux-line-height-20);
 	text-align: right;
 }
 
@@ -421,7 +421,7 @@ html {
    rux-ui/css/base/utils.css. */
 .assignment-module__label {
 	margin: 0;
-	line-height: var(--rux-line-height-xs);
+	line-height: var(--rux-line-height-16);
 }
 
 .assignment-module__content {
@@ -441,7 +441,7 @@ html {
 	color: var(--rux-text-primary);
 	font-size: var(--sched-driver-primary-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-lg);
+	line-height: var(--rux-line-height-28);
 }
 
 .assignment-module__action-wrap {
@@ -462,8 +462,8 @@ html {
 .driver-assignment-card__role-relieves {
 	margin-top: var(--rux-space-2);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-md);
-	line-height: var(--rux-line-height-md);
+	font-size: var(--rux-size-16);
+	line-height: var(--rux-line-height-24);
 }
 
 .driver-assignment-card__role-location {
@@ -474,14 +474,14 @@ html {
 
 .driver-assignment-card__role-relieves {
 	margin-top: var(--rux-space-1);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .driver-assignment-card__role-instructions {
 	margin-top: var(--rux-space-4);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-md);
-	line-height: var(--rux-line-height-md);
+	font-size: var(--rux-size-16);
+	line-height: var(--rux-line-height-24);
 	white-space: pre-wrap;
 }
 
@@ -542,7 +542,7 @@ html {
 	color: var(--rux-text-primary);
 	font-size: var(--sched-driver-primary-size);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-lg);
+	line-height: var(--rux-line-height-28);
 }
 
 .driver-assignment-card__contact-line {
@@ -561,23 +561,23 @@ html {
 
 .driver-assignment-card__contact-phone {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	font-variant-numeric: tabular-nums;
 	white-space: nowrap;
 }
 
 .driver-assignment-card__spot-address {
-	font-size: var(--rux-size-md);
+	font-size: var(--rux-size-16);
 	font-style: normal;
 }
 
 .assignment-compact-module__secondary {
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-style: normal;
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 	white-space: pre-line;
 }
 
@@ -656,8 +656,8 @@ html {
 
 .driver-assignment-card__crew-role {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
+	font-size: var(--rux-size-14);
+	line-height: var(--rux-line-height-20);
 }
 
 .driver-assignment-card__crew-disclosure-section {
@@ -697,7 +697,7 @@ html {
 	border: var(--rux-border-width) solid var(--sched-driver-doc-neutral-border);
 	border-radius: var(--rux-radius-md);
 	font: inherit;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	text-align: center;
 	text-decoration: none;
@@ -740,9 +740,9 @@ html {
 	padding: 0;
 	background: transparent;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-md);
+	font-size: var(--rux-size-16);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-md);
+	line-height: var(--rux-line-height-24);
 	overflow-wrap: anywhere;
 	white-space: pre-wrap;
 }
@@ -781,13 +781,13 @@ html {
 /* Shared with .driver-share-dialog__title below — same 24px size. */
 .driver-share-status__title,
 .driver-share-dialog__title {
-	font-size: var(--rux-size-2xl);
+	font-size: var(--rux-size-24);
 	/* Both set the 24px size and inherited their leading from the h1/h2 element
 	   default, which pairs with 40px and 32px headings — 24/40, unpaired against
-	   rule 2.2. Step 24 moves --rux-line-height-4xl to 48, which would have made
+	   rule 2.2. Step 24 moves the 40px heading's leading to 48, which would have made
 	   the status title 24/48. Paired here with its own size instead.
 	   docs/foundations/typography.md D14, step 24. */
-	line-height: var(--rux-line-height-2xl);
+	line-height: var(--rux-line-height-32);
 	/* Same override, tracking axis (step 27): 24px sits on the -0.04em rung of
 	   the 2.13 curve, not on h1's -0.06em. */
 	letter-spacing: var(--rux-tracking-tighter);
@@ -975,7 +975,7 @@ html {
 
 	.driver-assignment-card__header-metadata > * {
 		padding-inline: var(--rux-space-1);
-		font-size: var(--rux-size-xs);
+		font-size: var(--rux-size-12);
 	}
 
 }

@@ -58,7 +58,7 @@
 
    Set in the 16/24 semibold heading recipe rather than as muted eyebrow
    chrome, so the page name reads as the page's title. It reads the same
-   --rux-heading-panel-* role as .rux-card__title and .rux-panel__title, so a
+   --rux-text-heading-16-* role as .rux-card__title and .rux-panel__title, so a
    page name beside the brand and a card title inside the page stay one
    typographic voice.
 
@@ -70,11 +70,11 @@
 	flex: 0 1 auto;
 	min-inline-size: 0;
 	overflow: hidden;
-	font-size: var(--rux-heading-panel-size);
-	font-weight: var(--rux-heading-panel-weight);
-	line-height: var(--rux-heading-panel-line-height);
-	letter-spacing: var(--rux-heading-panel-tracking);
-	color: var(--rux-heading-panel-color);
+	font-size: var(--rux-text-heading-16-size);
+	font-weight: var(--rux-text-heading-16-weight);
+	line-height: var(--rux-text-heading-16-line-height);
+	letter-spacing: var(--rux-text-heading-16-tracking);
+	color: var(--rux-text-heading-16-color);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	padding-inline: var(--rux-space-4);
@@ -227,7 +227,7 @@
 	border: 2px solid var(--rux-ui-header-bg);
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-surface-1);
-	font-size: var(--rux-size-xxs);
+	font-size: var(--rux-size-11);
 	/* A count badge is a badge: 500, the same weight --rux-badge-font-weight
 	   carries. This read 600 while every other badge read 500 — one job with
 	   two answers. Stated as the rung rather than borrowed from the badge
@@ -258,7 +258,7 @@
 	height: 16px;
 	padding: 0 var(--rux-space-1);
 	border: none;
-	font-size: var(--rux-size-xxs);
+	font-size: var(--rux-size-11);
 }
 
 .rux-ui-header__profile-identity > :is(img, .rux-ui-header__profile-initials) {
@@ -335,7 +335,7 @@
 	border-radius: var(--rux-radius-full);
 	background: var(--rux-bg-active);
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	border: var(--rux-ui-header-avatar-border);
 }

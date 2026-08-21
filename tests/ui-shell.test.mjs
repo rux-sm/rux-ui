@@ -237,7 +237,7 @@ test("Team Chat distinguishes the current user's messages with a trailing avatar
 	assert.doesNotMatch(chatController, /isEmojiOnlyMessage|message-text--jumbo/);
 	assert.match(
 		chatStyles,
-		/\.sched-team-chat__message-emoji\s*\{[^}]*font-size:\s*var\(--rux-size-xl\);[^}]*line-height:\s*1;/s,
+		/\.sched-team-chat__message-emoji\s*\{[^}]*font-size:\s*var\(--rux-size-20\);[^}]*line-height:\s*1;/s,
 	);
 	assert.doesNotMatch(chatStyles, /message-text--jumbo/);
 });

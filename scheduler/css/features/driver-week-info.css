@@ -44,7 +44,7 @@
 .sched-driver-week-info__range {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .sched-driver-week-info__body {
@@ -65,7 +65,7 @@
 .sched-driver-week-info__section-title {
 	margin: 0 0 var(--rux-space-2);
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -83,7 +83,7 @@
 	margin: 0;
 	padding: var(--rux-space-1) 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-tracking-wide);
@@ -120,13 +120,13 @@
 
 .sched-driver-week-info__trip-title {
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 
 .sched-driver-week-info__trip-meta {
 	margin-top: var(--rux-space-1);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 }
 
 .sched-driver-week-info__trip-actions {
@@ -158,20 +158,20 @@
 
 .sched-driver-week-info__share-state {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	text-align: right;
 }
 
 .sched-driver-week-info__list-scope {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	white-space: nowrap;
 }
 
 .sched-driver-week-info__share-copy {
 	margin: 0 0 var(--rux-space-2);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
+	font-size: var(--rux-size-12);
+	line-height: var(--rux-line-height-16);
 }
 
 .sched-driver-week-info__share-url-row,
@@ -184,7 +184,7 @@
 	flex: 1;
 	min-width: 0;
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 }
 
 .sched-driver-week-info__share-actions {
@@ -202,7 +202,7 @@
 	min-height: 17rem;
 	resize: none;
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	line-height: 1.5;
 	white-space: pre-wrap;
 }

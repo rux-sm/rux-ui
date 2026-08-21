@@ -74,8 +74,8 @@
 	border-radius: var(--rux-menu-item-radius);
 	font: inherit;
 	font-size: var(--rux-menu-item-font-size);
-	font-weight: var(--rux-label-control-weight);
-	line-height: var(--rux-label-control-line-height);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 	text-align: left;
 	cursor: pointer;
 }

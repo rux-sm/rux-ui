@@ -124,7 +124,7 @@
 	gap: var(--rux-space-2);
 	min-width: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	white-space: nowrap;
 }
@@ -180,7 +180,7 @@
 
 .sched-trip-envelope__day {
 	margin: 0;
-	font-size: var(--rux-size-4xl);
+	font-size: var(--rux-size-40);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-normal);
 	text-transform: uppercase;
@@ -196,14 +196,14 @@
 
 .sched-trip-envelope__company-line {
 	margin: 0;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	color: var(--env-ink-muted);
 }
 
 .sched-trip-envelope__section-title {
 	margin: var(--rux-space-4) 0 0;
-	font-size: var(--rux-size-md);
+	font-size: var(--rux-size-16);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-widest);
 	text-transform: uppercase;
@@ -253,7 +253,7 @@
 }
 
 .sched-trip-envelope__label {
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	letter-spacing: var(--rux-tracking-wide);
@@ -262,7 +262,7 @@
 }
 
 .sched-trip-envelope__value {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	line-height: 1;
 	text-transform: uppercase;
 	font-weight: var(--rux-weight-400);
@@ -299,7 +299,7 @@
 
 .sched-trip-envelope__footer-label {
 	padding: var(--rux-space-2) var(--rux-space-3);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	color: var(--env-ink);
@@ -315,7 +315,7 @@
 	display: inline-flex;
 	align-items: center;
 	gap: var(--rux-space-1);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	color: var(--env-ink);
@@ -331,7 +331,7 @@
 
 .sched-trip-envelope__footer-amount {
 	padding: var(--rux-space-2) var(--rux-space-3);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	color: var(--env-ink);
 }
@@ -350,7 +350,7 @@
 }
 
 .sched-trip-envelope__notes-label {
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	letter-spacing: var(--rux-tracking-wide);
@@ -386,14 +386,14 @@
 	height: 1.25rem;
 	align-items: center;
 	justify-content: center;
-	font-size: var(--rux-size-md);
+	font-size: var(--rux-size-16);
 	line-height: 1;
 }
 
 .sched-trip-envelope__requirement-label {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 	text-transform: uppercase;
 	white-space: nowrap;
 }
@@ -431,7 +431,7 @@
 }
 
 .sched-trip-envelope__log th {
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-wide);
 	text-transform: uppercase;

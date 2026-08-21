@@ -312,11 +312,11 @@
 }
 
 .sched-scope-trip__section-label {
-	font-size: var(--rux-label-eyebrow-size);
-	font-weight: var(--rux-label-eyebrow-weight);
-	color: var(--rux-label-eyebrow-color);
+	font-size: var(--rux-text-label-12-wide-size);
+	font-weight: var(--rux-text-label-12-wide-weight);
+	color: var(--rux-text-label-12-wide-color);
 	text-transform: uppercase;
-	letter-spacing: var(--rux-label-eyebrow-tracking);
+	letter-spacing: var(--rux-text-label-12-wide-tracking);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
 	line-height: 1;
@@ -391,8 +391,8 @@
 }
 .sched-scope-trip__billing-step-help {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
+	font-size: var(--rux-size-12);
+	line-height: var(--rux-line-height-16);
 }
 .sched-scope-trip__po-details {
 	display: grid;
@@ -409,7 +409,7 @@
 	align-items: center;
 	justify-content: center;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-variant-numeric: tabular-nums;
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
@@ -450,7 +450,7 @@
 	border: var(--rux-input-border);
 	border-color: var(--rux-input-disabled-border);
 	border-radius: var(--rux-input-border-radius);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	cursor: not-allowed;
 }
 .sched-scope-trip__payment-empty > .rux-icon,
@@ -496,7 +496,7 @@
 	min-width: 0;
 	overflow: hidden;
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -536,7 +536,7 @@
 	justify-content: center;
 	padding-inline: var(--rux-space-2);
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	pointer-events: none;
 }
 .sched-scope-trip__payment-date {
@@ -639,7 +639,7 @@
 	flex: 1;
 }
 .sched-scope-trip__bus-hint {
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	color: var(--rux-text-disabled);
 }
 
@@ -663,7 +663,7 @@
 	background: var(--rux-surface-1);
 }
 .sched-scope-trip__driver-row--head span {
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-disabled);
 	text-transform: uppercase;
@@ -773,7 +773,7 @@
 }
 .sched-scope-trip__doc-name {
 	flex: 1;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	color: currentColor;
 	overflow: hidden;
@@ -784,7 +784,7 @@
 }
 .sched-scope-trip__doc-date {
 	flex: none;
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-variant-numeric: tabular-nums;
 	color: var(--rux-fg-on-accent-muted);
 }
@@ -920,7 +920,7 @@
 /* — Scoped type overrides ————————————————————————————————————————————————— */
 
 .sched-scope-trip .rux-field__label {
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-secondary);
 	letter-spacing: var(--rux-tracking-wide);

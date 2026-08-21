@@ -1,33 +1,34 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.12.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.13.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 32 steps: **25 done · 5 open · 2 deferred**
-Nothing is executable without a decision. The type system conforms to the measured Geist
-catalog end to end: the ladder sits on it (24), roles own their leading and carry a family
-(25, 26), tracking follows the curve (27), every overridden heading is paired (29), the small
-end is on the catalog with nothing derived (30), and the utilities apply their roles (22).
-That closed **D2, D3, D4, D6, D7, D12, D13, D14** and two of D11's three halves. Step 9 then
-retired the third emphasis tier that was only ever documented, closing **D5**.
-**Q1–Q5 and Q7–Q9 are answered** (§6).
+**Status** · 34 steps: **26 done · 6 open · 2 deferred**
+The type system conforms to the measured Geist catalog end to end, in its **values** and now
+in its **names**: the ladder sits on the catalog (24), roles own their leading and carry a
+family (25, 26), tracking follows the curve (27), every overridden heading is paired (29),
+the small end is on the catalog with nothing derived (30), the utilities apply their roles
+(22), and step 31 renamed all three tiers to the catalog's `text-{family}-{size}` shape under
+this system's prefix. That closed **D2, D3, D4, D6, D7, D12, D13, D14** and two of D11's
+three halves; step 9 retired the third emphasis tier that was only ever documented, closing
+**D5**. **Q1–Q5 and Q7–Q9 are answered** (§6).
 
-**Where to pick up.** Four things are waiting, and none of them is a typography question:
+**Where to pick up.** One decision is open. Everything else waits on a consumer.
 
 1. **Q6 — the only live question, and only its *mapping*.** The mechanism is settled: the
    scale never moves, and a call site picks a *different published rung* at a breakpoint
-   (`md:text-heading-40`). What is undecided is which roles get a small-screen rung, which
-   rung, and at what breakpoint — and this system has no breakpoint vocabulary, so it likely
-   waits on `spacing.md`. *Gates step 7.*
-2. **Step 31 — the numeric rename**, which **Q8 folded into**: classes become
-   `text-{family}-{size}` and the primitive ladder goes numeric, both keeping the `rux-`
-   prefix. **Class C, awaiting authorization.** Staged deliberately behind step 22 so a
-   rename changes names and nothing else.
-3. **Step 32 — step 9's consumer migration**, which nobody here can close. Consumers pin a
-   tag, so the two retired names are still there for them until they upgrade; it closes when
-   each re-vendor PR comes back green against contract 1.12.0 or later. *Not a decision —
-   it needs a consumer to report, the same way step 11 needs external verification.*
+   (`md:text-heading-40` — a class that now exists, since step 31). What is undecided is
+   which roles get a small-screen rung, which rung, and at what breakpoint — and this system
+   has no breakpoint vocabulary, so it likely waits on `spacing.md`. *Gates step 7.*
+2. **The rename is live but not finished.** Every superseded name — 18 primitives, 40 role
+   tokens, 3 classes — is still published as an alias. **Step 34** migrates the consumers
+   onto the shape names; **step 33** then deletes the aliases and is gated on it. Neither is
+   a decision: they need a consumer's re-vendor PR to come back green against contract
+   1.13.0 or later.
+3. **Step 32 — the same shape, for step 9.** The two retired emphasis tokens are gone here
+   but still present in whatever tag a consumer pinned; it closes at contract 1.12.0 or
+   later.
 4. **The rest is not blocked on a decision**: step 11 needs external verification, step 16
    needs everything else first, and steps 4 and 23 are deferred for want of a consumer.
 
@@ -81,15 +82,29 @@ Type is expressed in three tiers, and a call site MUST consume the highest one t
 
 | Tier | What it is | Named by | Lives in |
 |---|---|---|---|
-| **0 · Primitives** | `--rux-size-*`, `--rux-line-height-*`, `--rux-weight-*`, `--rux-tracking-*` | its **value** (`sm`, `2xl`, `400`) | `rux-ui/css/tokens.css` |
-| **1 · Roles** | `--rux-text-body-*`, `--rux-heading-panel-*` — a complete five-axis recipe | its **meaning** (`body`, `caption`, `eyebrow`) | `rux-ui/css/tokens.css` |
-| **2 · Utilities** | `.rux-u-caption`, `.rux-u-eyebrow` — one class that applies a whole role | its role | `rux-ui/css/` |
+| **0 · Primitives** | `--rux-size-*`, `--rux-line-height-*`, `--rux-weight-*`, `--rux-tracking-*` | its **value** (`14`, `24`, `400`) | `rux-ui/css/tokens.css` |
+| **1 · Roles** | `--rux-text-copy-14-*`, `--rux-text-heading-16-*` — a complete five-axis recipe | its **family and size** (`copy-14`, `label-12-wide`) | `rux-ui/css/tokens.css` |
+| **2 · Utilities** | `.rux-text-label-12`, `.rux-u-eyebrow` — one class that applies a whole role | its role, or its **object** where it adds anything beyond the role | `rux-ui/css/` |
 
-The two naming schemes are deliberate and are not in conflict. A primitive MUST NOT be
-named for a role, because that is what lets a fourteenth size be recognised as a
-fourteenth size rather than as "the size the new thing needed." A role MUST NOT introduce
-a number, only alias one, because that is what lets every caption in the system be
-restyled at once. Collapsing the two tiers into one loses whichever guarantee it drops.
+**Both tiers are named by number, and the tiers are still distinct** (step 31; before it,
+Tier 1 was named by intent — `body`, `caption`, `eyebrow`). What separates them is not the
+naming scheme but what the name promises: a primitive is **one measurement**, a role is a
+**complete five-axis recipe** for one of rule 2.12's families at one size. `--rux-size-14`
+is a length; `--rux-text-copy-14-*` is a length, a weight, a leading, a tracking and a
+colour that agree with each other.
+
+Two rules survive the rename unchanged, and they are the ones that carry the guarantees. A
+primitive MUST NOT be named for a role, because that is what lets a fourteenth size be
+recognised as a fourteenth size rather than as "the size the new thing needed." A role MUST
+NOT introduce a number, only alias one, because that is what lets every caption in the
+system be restyled at once — a rule about *values*, which a numeric *name* does not touch.
+
+**What the rename costs, recorded because it is a real loss.** `caption` said what the text
+was for; `label-12` says what it measures. A call site that knows it wants supporting text
+must now know that supporting text is label at 12. The catalog accepts that trade — it has
+no intent-named type style anywhere — and §2.12's four-family question is what replaces the
+lost hint: the family is in the name, so the reader is choosing a size within a family
+rather than choosing blind.
 
 **Rule 1.1** — A role MUST carry all five axes: size, weight, line-height, tracking,
 color. A call site that has to reach past a role to Tier 0 for one axis is a defect in
@@ -150,7 +165,7 @@ and takes the taller leading. Label runs to one line and sits level with an icon
 one-line table cell is a Label even though it reads as prose. **At the 14px base this
 distinction has no metric expression** — Copy and Label resolve to the same recipe, because
 the grid offers 20 or 24 and 24 is prose leading. The two roles are kept apart anyway: they
-name different intents, three components read `label-control`, and they would move
+name different intents, three components read `text-label-14`, and they would move
 independently the moment a surface with real prose gets its own base. A convergence that is
 recorded is not a defect; an undocumented one is (Q2, step 12).
 
@@ -244,8 +259,8 @@ carries a curve:
 |---|---|---|---|---|---|---|
 | Tracking | −0.02em | −0.02em | −0.02em | −0.04em | −0.04em | −0.06em |
 
-A single flat token cannot serve both ends: at `heading-page` the current −0.02em is two
-steps too loose, which is D7. **The named exception is uppercase.** `label-eyebrow` sets
+A single flat token cannot serve both ends: at `text-heading-40` the current −0.02em is two
+steps too loose, which is D7. **The named exception is uppercase.** `text-label-12-wide` sets
 positive tracking because uppercase at small sizes needs it, and that stays — it is a
 property of the transform, not of the family, and rule 2.10's "every exception is named"
 covers it.
@@ -259,63 +274,88 @@ of this document. Values are px equivalents at a 16px root.
 
 ### 3.1 Tier 0 — primitives
 
-| Size | | Line-height | | Tracking | |
-|---|---|---|---|---|---|
-| `xxs` | 10 | `xxs` | 12 | `tightest` | −0.06em |
-| `xs` | 12 | `xs` | 16 | `tighter` | −0.04em |
-| `sm` | 14 | `sm` | 20 | `tight` | −0.02em |
-| `md` | 16 | `md` | 24 | `normal` | 0 |
-| `lg` | 18 | `lg` | 28 | `wide` | 0.04em |
-| `xl` | 20 | `xl` | 28 | `widest` | 0.1em |
-| `2xl` | 24 | `2xl` | 32 | | |
-| `3xl` | **32** | `3xl` | 40 | | |
-| `4xl` | **40** | `4xl` | **48** | | |
+Sizes and line-heights are named by the px they resolve to at a 16px root (step 31);
+tracking is not, because it is an em ratio with no px to name it by, and its names state
+position on the 2.13 curve.
+
+| Size | Line-height | Tracking | |
+|---|---|---|---|
+| `11` | `12` | `dense` | 0.02em |
+| `12` | `16` | `tight` | −0.02em |
+| `14` | `20` | `tighter` | −0.04em |
+| `16` | `24` | `tightest` | −0.06em |
+| `18` | `28` | `normal` | 0 |
+| `20` | `32` | `wide` | 0.04em |
+| `24` | `40` | `widest` | 0.1em |
+| `32` | `48` | | |
+| `40` | | | |
+
+Nine sizes, **eight** line-heights: the rename collapsed `lg` and `xl`, which were both
+1.75rem. A ladder cannot name one length twice and still say which rung a role meant.
 
 Weights `--rux-weight-100` … `--rux-weight-900` exist as a complete ladder; rule 2.11
 publishes 400, 500 and 600 for application use and nothing above. (Before step 6 this
 paragraph cited a §2 rule that did not exist — 2.11 is now that rule.)
 
 **What still separates this ladder from the one rule 2.12 publishes** (step 24 closed the
-heading end; step 27 added the tracking rungs). Sizes: the shipped ladder still has **10**
-and still lacks **13** — 10 is Q7/step 28, 13 is Q8/step 23. Leadings: `lg` and `xl` are
-**both 28**, a duplicate that resolves when `xl` becomes 26 for `heading-20` (step 26), and
-the set still needs **18** and **36**, which no rung names (Q8).
+heading end; step 27 added the tracking rungs; step 30 put the small end on the catalog and
+step 31 removed the duplicate leading). Sizes: the ladder still lacks **13** — step 23,
+deferred for want of a consumer rather than for want of a name, since Q8 settled that it
+would be called `13`. Leadings: the set still needs **18** and **36**, which no rung names,
+and step 23 records that no role sits where they would apply.
 
 ### 3.2 Tier 1 — roles
 
-Every role carries its **family** (rule 2.12). The family is what a call site reasons about;
-the role name is what it types. Names were deliberately not changed to `heading-40`-style —
-see step 26.
+Every role carries its **family** (rule 2.12), and since step 31 the family is *in the name*
+— `text-{family}-{size}`, the catalog's shape under this system's prefix. Step 26 had
+deliberately left the intent names in place; step 31 is where that reversed, because Q8's
+answer made a numeric Tier 0 and an intent-named Tier 1 read as two systems.
 
-| Role | Family | Size | Weight | Leading | Tracking | Color |
-|---|---|---|---|---|---|---|
-| `heading-page` | heading | **40** | 600 | **48** | **tightest** | primary |
-| `heading-section` | heading | 24 | 600 | 32 | **tighter** | primary |
-| `heading-panel` | heading | 16 | 600 | 24 | tight | primary |
-| `text-lead` | copy | 16 | 400 | 24 | normal | secondary |
-| `text-body` | copy | 14 | 400 | 20 | normal | primary |
-| `text-caption` | label | 12 | 400 | 16 | normal | secondary |
-| `label-control` | label | 14 | 400 | 20 | normal | primary |
-| `label-eyebrow` | label | 12 | 400 | 16 | wide | secondary |
+| Role | Was | Family | Size | Weight | Leading | Tracking | Color |
+|---|---|---|---|---|---|---|---|
+| `text-heading-40` | `heading-page` | heading | 40 | 600 | 48 | tightest | primary |
+| `text-heading-24` | `heading-section` | heading | 24 | 600 | 32 | tighter | primary |
+| `text-heading-16` | `heading-panel` | heading | 16 | 600 | 24 | tight | primary |
+| `text-copy-16` | `text-lead` | copy | 16 | 400 | 24 | normal | secondary |
+| `text-copy-14` | `text-body` | copy | 14 | 400 | 20 | normal | primary |
+| `text-label-12` | `text-caption` | label | 12 | 400 | 16 | normal | secondary |
+| `text-label-14` | `label-control` | label | 14 | 400 | 20 | normal | primary |
+| `text-label-12-wide` | `label-eyebrow` | label | 12 | 400 | 16 | wide | secondary |
 
-All eight already carried their family's size and leading before step 25 — see its note. The
-three bolded cells are what steps 24 and 27 moved, and all three are tracking or the page
-heading's box.
+**No metric moved in the rename** — the Was column is the whole diff, and every superseded
+name is still published as an alias until step 33.
+
+**Two roles are label at 12**, and family-plus-size cannot tell them apart: caption and
+eyebrow differ only in tracking. The axis that separates them is suffixed, following the
+catalog's own `label-13-mono` — so `text-label-12-wide` is the eyebrow. Deliberately not
+done: keeping `eyebrow` as a semantic exception, which is the mixed convention Q8 rejected
+one tier down and would leave a reader guessing which roles are numeric.
 
 ### 3.3 Tier 2 — published utilities
 
-Seven carry type. Each is defined beside whichever component first needed it, which is why
-this index exists — a call site cannot discover them otherwise.
+Six carry type — seven until step 31 merged two of them. Each is defined beside whichever
+component first needed it, which is why this index exists: a call site cannot discover them
+otherwise.
 
-| Utility | Defined in | Reads | Axes applied |
+**Which utilities took a shape name.** A class takes its role's name only when it applies
+**that role and nothing else**. Add anything — a transform, a divider, a colour that
+differs from the role's — and it is describing an *object*, not a role, so it keeps an
+object name. A `.rux-text-label-12-wide` that also uppercased would be a class doing
+something its name does not say, which is the defect this rename exists to remove.
+
+| Utility | Defined in | Applies | Beyond the role |
 |---|---|---|---|
-| `.rux-u-panel-title` | `base/card.css` | `--rux-heading-panel-*` | **all five** |
-| `.rux-u-eyebrow` | `base/utils.css` | `--rux-label-eyebrow-*` | **all five** (leading added in step 29) |
-| `.rux-u-section-label` | `base/utils.css` | `--rux-label-eyebrow-*` + a divider rule | **all five**, plus the divider; the `line-height: 1` override was removed in step 29 |
-| `.rux-u-label` | `base/preferences.css` | `--rux-label-control-*` | size, weight, leading, color — **no tracking** (leading added in step 29) |
-| `.rux-u-subtitle` | `base/card.css` | `--rux-text-body-*`, colour from `--rux-text-secondary` | size, leading, color — **no weight, no tracking** |
-| `.rux-u-caption` | `base/form.css` | **`--rux-field-label-*`** + raw `--rux-line-height-xs` | size, weight, leading, color |
-| `.rux-u-hint` | `base/form.css` | **`--rux-field-label-size`**, `--rux-field-help-fg` | size, color |
+| `.rux-text-heading-16` *(was `.rux-u-panel-title`)* | `base/card.css` | `--rux-text-heading-16-*`, **all five** | — |
+| `.rux-text-label-14` *(was `.rux-u-label`)* | `base/preferences.css` | `--rux-text-label-14-*`, **all five** | — |
+| `.rux-text-label-12` *(was `.rux-u-caption`, and absorbs `.rux-u-hint`)* | `base/form.css` | `--rux-text-label-12-*`, **all five** | — |
+| `.rux-u-eyebrow` | `base/utils.css` | `--rux-text-label-12-wide-*`, **all five** | `text-transform: uppercase` |
+| `.rux-u-section-label` | `base/utils.css` | `--rux-text-label-12-wide-*`, **all five** | uppercase, plus a padded bottom divider |
+| `.rux-u-subtitle` | `base/card.css` | `--rux-text-copy-14-*`, four axes | colour is `--rux-text-secondary`, **not** the role's primary |
+
+`.rux-u-caption` and `.rux-u-hint` **merged**: once step 22 completed both, the two rules
+were byte-identical, so the system published two names for one recipe and neither name said
+which to reach for. All three superseded class names remain as extra selectors on their
+rules until step 33.
 
 Two more carry a single property and are not role applications: `.rux-u-mono`
 (family) and `.rux-u-muted` (colour), both in `colors_and_type.css`. Five are layout, not
@@ -327,11 +367,11 @@ type, and are out of scope here: `.rux-u-cluster`, `.rux-u-row`, `.rux-u-stack`,
 `body` is 14/20/400 at tracking 0 (step 8). `h1`–`h6` default to weight **600** (step 6),
 and each level now states **its own tracking**, because the 2.13 curve makes one shared value
 impossible — `h1` at 40px and `h5` at 16px are three steps apart on it (step 27). `h1` reads
-the `heading-page` role (40/48, tightest), `h2` is **32/40 tighter**, `h3` is **24/32
+the `text-heading-40` role (40/48, tightest), `h2` is **32/40 tighter**, `h3` is **24/32
 tighter**, `h4` is **18/28 tight**, `h5` is **16/24 tight**, and `h6` is 12/16 uppercase wide
 secondary at **400** — it opts out of the heading weight because it is styled as a label.
 `h4` and `h5` previously set tracking `normal`, which was off the curve.
-`code` is `--rux-size-xs` mono (step 10). A bare `p` keeps the 24px leading (Q2), the one
+`code` is `--rux-size-12` mono (step 10). A bare `p` keeps the 24px leading (Q2), the one
 place the base's size and leading are not a matched pair.
 
 *This section was stale until step 6: it still described the 16/24 body and the `0.92em`
@@ -404,7 +444,9 @@ reversible and execute under standing authority.
 | 27 | Apply the tracking curve | **done · Class B** | Executes rule 2.13, **closes D7** and with it the long-deferred step 3. Two rungs added (Class A half): `--rux-tracking-tighter` **−0.04em** and `--rux-tracking-tightest` **−0.06em**, named to the ladder's existing convention so no naming question arises — unlike Q8, `tight`/`tighter`/`tightest` has one obvious answer. **Moved, before → after:** `--rux-heading-page-tracking` **−0.02em → −0.06em**; `--rux-heading-section-tracking` **−0.02em → −0.04em**; and each heading level now states its own tracking, because one shared value cannot serve h1 at 40 and h5 at 16 — `h2` and `h3` **−0.02em → −0.04em**, `h4` and `h5` **0 → −0.02em** (they were off the curve at `normal`). **A/B-measured on every page** by replaying the pre-step cascade at matched specificity: `index.html` **8** (all h2/h3 −0.02 → −0.04, **none visible**), `gallery.html` **0**, `request.html` **0**, `maintenance.html` **1 visible** — the 40px status `h1`, −0.8px → −2.4px, which **narrowed the line from 240px to 222px** and so relieves rather than worsens the 375px pressure recorded under Q6 — and `driver.html` **3**. **The first A/B attempt was wrong and is recorded as such:** it reverted with `!important`, which stomped component-level tracking the real prior CSS never touched, and reported 14 moves including an `h3` going *positive*. Replayed at matched specificity the true count was 8. A revert probe MUST match the specificity of what it replaces. **Caught a regression this step introduced, in the same defect class as step 24's:** two `h1` elements on `driver.html` override h1's *size* but not its tracking, so putting the element default on the 40px rung leaked −0.06em onto an 18px and a 24px heading. `.driver-share-status__title` and `.driver-share-dialog__title` are pinned to `tighter` (−0.04em, their own 24px rung) and `.driver-share-header__label` to `tight`, which **preserves its existing render** — whether it is heading-18 or `label-18` (which would track 0) is step 26's classification question for app-tier elements, and both readings agree it is not −0.06em. Re-measured after: driver.html shows **0** element-default leakage. Eyeballed on `maintenance.html` and `driver.html`, both dark-only. 331/331 green. Cache-busters bumped. Contract 1.5.0 → **1.6.0**. |
 | 29 | Pair the remaining overridden headings with their own leading (D14) | **done · Class B** | **Closes D14**, and is the first real exercise of rule 2.12's selection rule on live objects — which was half the point of running it now: seven elements is a cheap place to find out whether the four questions actually decide anything. They did; only two needed a human call. **Eight declarations, before → after.** *Portable tier:* the eyebrow block (`.rux-u-eyebrow`, `.rux-u-section-label`, `.rux-menu__header`) gains the role's **16px** leading and `.rux-u-section-label` loses `line-height: 1` — unitless on real text, a flat 2.2 defect; `.rux-u-label`/`.rux-preferences__heading`/`.rux-preferences__label` gain `--rux-label-control-line-height`, so `.rux-preferences__heading` goes **14/40 → 14/20** (it is an `h2`, and three of the four label axes were already there — the fourth was simply missing). *App tier:* `.sched-scope-request__dialog-title` **24/40 → 24/32** (heading@24); `.components-app__button-sections h3` **14/32 → 14/20** (label@14); `.flip-seven__scoreboard … h3` **16/32 → 16/24** (heading@16); `.driver-assignment-card__date-range` **16/19.2 → 16/20**, replacing a unitless `1.2`. *Specimen:* `gallery.html`'s ten section headers **12/40 → 12/16** and **weight 600 → 400**, now reading `--rux-label-eyebrow-*` whole instead of restating four of its axes. **Two calls were the author's, not derived:** the gallery headers adopting the eyebrow's 400 rather than keeping 600 (they are the most visible change here — ten headers, all above the fold), and `.driver-assignment-card__date-range` classed **label** rather than heading, on the grounds that it is grey, one line, never wraps, and sets tabular figures. **Verified by re-running the audit that found them:** `index.html`, `driver.html` and `gallery.html` each report **0 unpaired and 0 fractional** headings, against 6, 3 and 10 before. Eyeballed on `gallery.html` and `index.html`. Deliberately **did not** take D12's other axes while in the same rules — `.rux-u-label` still applies no tracking and `.rux-u-caption` still reads `--rux-field-label-*` — because "which recipe should this utility read" is step 22's question and one of its branches is Class C. Only the leading axis, which is D14's, was touched. 331/331 green. Contract 1.6.2 → **1.7.0**. |
 | 30 | Put the small end on the catalog and stop deriving the trip-bar pill (Q7, D13) | **done · Class B** | **Four parts.** **(1)** `--rux-size-xxs` **10px → 11px** — Geist's Badge Small rung. Four consumers, no rename. **Verified free before committing to it:** the trip bar's row height is `line-height × row-count` and font size appears nowhere in that math, so the densest tier loses no rows; and the XXS row already clipped 1px at 10px and clips the same 1px at 11px, because a 12px box and a 13px glyph box are what produce it either way. **(2)** Rule **2.14** and `--rux-tracking-dense` (+0.02em), applied to the four sub-14 consumers: the header badge count, the header's second 11px element, the side-nav count, and the XXS row (whose `letter-spacing: 0` became `--sched-trip-bar-row-tracking` so a tier can set it). **(3)** Both trip-bar `clamp()`s deleted. Before, the pill's size, leading and box each came from a *different* expression — `row-font × 0.85`, `line-height: 1`, and `row-line-height − 4px` — so none landed on the scale, two resolved fractional (**10.2px**, **11.9px**), and the box was computed from a term the text never saw, which is why it clipped its own glyphs. After, three hand-set specs: **XXS 11/12 in a 12px box · XS 11/12 in a 12px box · SM 12/16 in a 16px box**, every value a named rung. **(4)** The pill weight moves **600 → 500** — a filled chip carrying a bus number is a badge, and rule 2.11 puts badges at 500; this is the same one-job-two-answers split step 6 closed on `.rux-ui-header__badge-count`, found in the other half of the system. At XXS the pill now matches the row's 11px and separates by that weight plus its fill, per rule 2.3. **A cascade bug caught by measuring rather than by reading:** the three new pill tokens were first declared on `.sched-trip-bar`, and the SM tier silently did not apply — a custom property resolves from the *nearest* ancestor that declares it, and `.sched-trip-bar` is a descendant of the `.sched-scheduler--trip-bar-size-*` class trying to override it. The row tokens never had this problem only because they were already declared further up. Moved to `scheduler/css/tokens.css`; **a token a tier is meant to override MUST be declared above that tier's class in the ancestor chain**, and that is now stated in the code beside it. **`tests/trip-bar-size.test.mjs` rewritten**, deliberately and not to make this pass: its parser read `clamp()` and its assertions encoded "the pill is strictly smaller at every tier", which is the rule part (4) supersedes. The replacement asserts the *new* contract and is stricter — no `clamp`/`calc` in any of the three declarations, box and leading must agree, the pill may equal the row's size only if its weight differs, and sub-14 rows must carry the dense rung. 4 tests → 6, 333/333 green. **Known and not fixed:** 11px text in a 12px box clips ~1px at XXS and XS. The row itself has always done this at every tier; it is the box being 12 where the glyph box is 13, which is a container question and belongs to `spacing.md` under the precedence that type is settled first. Named here so it is not rediscovered as new. Contract 1.8.0 → **1.9.0**. |
-| 31 | Rename the type classes to the Geist shape, keeping the `rux-` prefix | **[open · Class C]** | **The author's stated direction, recorded so it is a plan rather than an intention.** Every published type class is renamed to name the **role** it applies rather than the *intent* it was coined for, following the catalog's `text-{family}-{size}` shape but keeping this system's prefix — so the token block and the class agree, `--rux-text-caption-*` beside `.rux-text-caption`, and 2.12's four questions land the reader on a class name rather than on a judgement call. **Class C and therefore stops and proposes**: these names are in vendored consumers' markup, which pins a tag rather than tracking `main`, so a rename removes their styling silently. **Staged, and the staging is the point.** Step 22 completed the recipes *in place*, which is where the rendering changed. This step changes only names, so if something looks wrong afterwards it cannot be this step — a big-bang rename would have made the day consumers break the same day rendering moved, and made the two indistinguishable. **Needs before it runs:** the rename grep protocol (CLAUDE.md), the new names published alongside the old for at least one release so consumers have somewhere to go, and a consumer-migration step of its own. **Out of scope:** the four layout utilities (`.rux-u-cluster`, `-row`, `-stack`, `-spacer`). They carry no type, and the catalog has layout primitives too — they are simply components there. |
+| 31 | Rename the type classes and the primitive ladder to the Geist shape, keeping the `rux-` prefix | **done · Class C** | **Executed 2026-08-21 under explicit authorization, with Q8 folded in.** Primitives are named by the px they resolve to, roles by `text-{family}-{size}`, and the three utilities that apply exactly one role take that role's name. The full map is the **Was column in §3.2**; §3.1 and §3.3 carry the other two tiers. **No value moved** — this step changes names and only names, which is why step 22 completed the recipes *in place* first. If something looks wrong after this step, it is not this step. **Grep protocol, before:** 307 CSS · 3 HTML · 11 test · 39 doc occurrences of the primitive ladder; 134 CSS · 4 test · 16 doc of the role tokens; 16 CSS · 18 HTML · 10 JS · 41 doc of the utilities — ≈596 in all. **After:** 292 primitive reads and 143 role reads repointed, 15 markup and JS class references rewritten, and **zero** old names left outside the alias block and the historical record. **Aliases, not a hard break.** All 18 primitive names, all 40 role names and all three class names stay published for one release, as this step's original terms required — a consumer that upgrades finds its names still resolving, and `design-system-distribution.md` §4's middle gate is what tells it to move. `tests/typography-roles.test.mjs` now asserts both halves: every superseded name forwards to its replacement, **and nothing in this repository reads one**. That second test is what makes step 33 a deletion rather than a migration, and it is the lesson of D5 made executable — an alias with an internal consumer never gets removed. **Two merges fell out of the rename.** `--rux-line-height-lg` and `-xl` were both 1.75rem, so nine leading rungs became eight: a ladder cannot name one length twice and still say which rung a role meant. `.rux-u-caption` and `.rux-u-hint` were byte-identical after step 22, so two published names for one recipe became `.rux-text-label-12`. Both merges are why this step retires more names than it renames. **Which classes did not move, and the rule that decides it:** a class takes its role's name only when it applies that role and nothing else. `.rux-u-eyebrow` adds `text-transform`, `.rux-u-section-label` adds a divider, `.rux-u-subtitle` overrides the role's colour — all three describe an object, keep an object name, and are recorded as such in §3.3. **The consumer's own namespace is untouched:** `.sched-scheduler--trip-bar-size-xxs` keeps its t-shirt label, because step 31's scope is the `rux-` vocabulary. **Fixed in passing:** three source comments cited "D12, step 31" for work **step 22** did (`preferences.css`, `form.css`, `card.css`), pointing a reader at an unexecuted rename. **§1's naming contract changed and says so** — Tier 1 was named by intent before this step, and the paragraph that justified two naming schemes now records what numeric naming costs. **Names in §5, §6 and §7 are left as written**: they record what was true when each step ran, and §3.2's Was column is the map. Suite 334 → 336, green. **Deliberately not done:** a hard rename with no alias window (it is the `v0.1.0` incident by design); renaming the tracking ladder, which is an em ratio with no px to name it by; and renaming `.rux-u-mono` / `.rux-u-muted` or the layout utilities, which carry no role. **Needs an eyeball** — nothing should differ, so the check is that nothing does: a card and panel header, a preferences row, a field caption and hint, an eyebrow and a section label, in both themes. |
+| 33 | Remove the superseded type names | **[open · Class C]** | Deletes the 18 primitive aliases, the 40 role aliases and the three class selectors step 31 published, leaving one name per thing. **Blocked on step 34**, not on a decision: the aliases exist so consumers have somewhere to go, and removing them before they have gone is the rename with the window taken out. **Preconditions, both already enforced:** `tests/typography-roles.test.mjs` proves nothing here reads a superseded role, and the same must be confirmed for the primitives at execution time. **Also in scope:** `docs/portability-audit.md` §4 names `.rux-u-caption`, `.rux-u-hint`, `.rux-u-panel-title` and `.rux-u-label` as a record of an extraction that happened — accurate today, dangling once the selectors go, so it needs a pointer rather than a rewrite. Deliberately **not** folded into step 31: publishing and removing in one step is a hard break wearing a deprecation window's clothes. |
+| 34 | Migrate the vendored consumers onto the shape names | **[open]** | Step 31's consumer-migration step, required as its own entry by CLAUDE.md § Foundation Work, and the gate on step 33. **Not verifiable from this repository** — same class as steps 11 and 32. **What a consumer does:** apply §3.2's Was column in reverse for role tokens, §3.1 for primitives, and swap `.rux-u-panel-title` → `.rux-text-heading-16`, `.rux-u-label` → `.rux-text-label-14`, `.rux-u-caption` and `.rux-u-hint` → `.rux-text-label-12`. Every substitution resolves to the value it resolved to before, so a correct migration renders identically and a missed one keeps working until step 33. **What surfaces a miss:** the consumer's own name check (`design-system-distribution.md` §4), which is the only gate that sees a rename — a renamed class is not a build error, not a type error, and not a test failure. **Closes when** each consumer's re-vendor PR is green against a tag at contract **1.13.0** or later. Deliberately **not** done: a codemod. The map is mechanical but it is 61 names, so unlike step 32 a consumer with a large surface may want one — that is the consumer's call, and it is theirs to write against §3.1 and §3.2. |
 | 32 | Migrate the vendored consumers off `--rux-text-muted` / `--rux-text-faint` | **[open]** | **Step 9's consumer-migration step**, required as its own entry by CLAUDE.md § Foundation Work. Consumers pin a tag rather than tracking `main`, so nothing is broken today; the loss lands when one upgrades. **Not verifiable from this repository** — the same class of step as 11. `tests/class-resolution.test.mjs` proves names resolve *here* and has no knowledge of any consumer, which is exactly the blind spot `design-system-distribution.md` §4 records. **What a consumer does:** replace either name with `--rux-text-secondary` — what both resolved to in both themes — for an unchanged rendered result. **What surfaces it:** the middle gate, the consumer's own check reading `--rux-*` out of its markup and failing when the vendored copy does not define them (§4). That gate is why this step is safe to leave open rather than blocking: it turns a silent loss of styling into a failure, which is the whole lesson of the `v0.1.0` incident. **Closes when** each consumer's re-vendor PR (§5) comes back green against a tag at contract **1.12.0** or later. **Deliberately not done: a codemod.** Two names with one identical replacement is a find-and-replace, and a tool would need maintaining well past the single release that needs it. |
 | 28 | Decide the fate of the 10px rung and the 9px pill (Q7, D13) | **done · moot** | **Closed without executing, because Q7's answer removed the question.** This step existed to decide whether `--rux-size-xxs` should be *retired* — Class C, four consumers, a consumer-migration step. Q7 moved the rung from 10px to 11px instead, which is Class B and touches no name, so nothing is removed and no consumer migrates. Recorded rather than deleted: the Class C proposal was real when it was written, and the reason it evaporated — that a rung can be *moved onto* the catalog instead of *removed from* the scale — is the useful part. | **Turns on Q7, reframed by the ramp decision.** The catalog floors at 12: `--rux-size-xxs` (10px) has no Geist counterpart, and the trip-bar's 9px pill is two rungs below anything published. That does not make 10px wrong — S1 is denser than vercel.com and §7.3 already says the base is a property of the surface — but it does mean the branch "mint a 9px rung" can no longer claim the catalog as evidence, which is what it was leaning on. Retiring `--rux-size-xxs` is **Class C** and would stop and propose; it has four consumers. Nothing here executes until Q7 is answered on its new footing. |
 

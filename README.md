@@ -380,12 +380,12 @@ See [Button Components](docs/buttons.md) for composition examples and usage rule
 
 | Control                |                                Height |                                    Font |                            Horizontal padding |                             Icon/text gap |
 | ---------------------- | ------------------------------------: | --------------------------------------: | --------------------------------------------: | ----------------------------------------: |
-| `.rux-button`          | `--rux-button-height-standard` `32px` |                  `--rux-size-sm` `14px` | `--rux-button-padding-inline-standard` `12px` | `--rux-button-content-gap-standard` `8px` |
+| `.rux-button`          | `--rux-button-height-standard` `32px` |                  `--rux-size-14` | `--rux-button-padding-inline-standard` `12px` | `--rux-button-content-gap-standard` `8px` |
 | `.rux-button--icon`    |                resolved button height |                      role-specific icon |                                           `0` |                                       n/a |
 | `.rux-button--header`  |   `--rux-button-height-header` `44px` |  `--rux-button-icon-size-header` `24px` |      standard padding or square with `--icon` |                                     `8px` |
 | `.rux-button--compact` |  `--rux-button-height-compact` `28px` | `--rux-button-icon-size-compact` `18px` |                 `8px` or square with `--icon` |                                     `4px` |
 | `.rux-segmented-track` |      `--rux-input-height` outer track |                                   track |               `--rux-segmented-track-padding` |            `--rux-segmented-track-radius` |
-| `.rux-button--segment` |         `--rux-segment-height` `28px` |                  `--rux-size-sm` `14px` |                `--rux-segment-padding-inline` |                    `--rux-segment-radius` |
+| `.rux-button--segment` |         `--rux-segment-height` `28px` |                  `--rux-size-14` |                `--rux-segment-padding-inline` |                    `--rux-segment-radius` |
 
 - Use `--rux-weight-400` (the default weight) for button labels — Rux buttons
   get their emphasis from fill and color, not bold text.
@@ -410,10 +410,10 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 | `.rux-input`, `.rux-select` |                                                                        `--rux-field-height` `36px` | Standard text-entry height                        |
 | `.rux-textarea`             |                                                                 `--rux-textarea-min-height` `84px` | Minimum height; vertical resize allowed           |
 | `.rux-field`                |                                                                         `gap: --rux-space-2` `8px` | Space between label, control, and help/error text |
-| `.rux-field__label`         | `--rux-field-label-size` (`--rux-size-xs` `12px`), `--rux-field-label-weight` (`--rux-weight-400`) | Muted, Title Case, no trailing period             |
+| `.rux-field__label`         | `--rux-field-label-size` (`--rux-size-12`), `--rux-field-label-weight` (`--rux-weight-400`) | Muted, Title Case, no trailing period             |
 | placeholder                 |                                                                              `--rux-text-disabled` | Hint only; never required information             |
-| help text                   |                                                             `--rux-size-xs`, `--rux-field-help-fg` | One short sentence when useful                    |
-| error text                  |                                                            `--rux-size-xs`, `--rux-field-error-fg` | Direct recovery instruction                       |
+| help text                   |                                                             `--rux-size-12`, `--rux-field-help-fg` | One short sentence when useful                    |
+| error text                  |                                                            `--rux-size-12`, `--rux-field-error-fg` | Direct recovery instruction                       |
 
 - Field height remains `36px`, standard action buttons are `32px`, and persistent header actions are `44px`. Choose the semantic size role instead of forcing adjacent controls to match.
 - Labels sit above fields. Do not use placeholder text as the only label.
@@ -422,7 +422,7 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 - Help text appears below the control and should explain how the value is used, not repeat the label.
 - Invalid fields use `aria-invalid="true"`, which switches the border to `--rux-input-invalid-border`. The error message belongs directly under the field.
 - Focus rings compose with the inset field shadow. A focused field should still read as recessed, not lifted.
-- Inputs and selects use `--rux-well-bg`, `--rux-input-border` (`--rux-card-border`), `--rux-input-border-radius`, and `--rux-size-sm`.
+- Inputs and selects use `--rux-well-bg`, `--rux-input-border` (`--rux-card-border`), `--rux-input-border-radius`, and `--rux-size-14`.
 - Checkboxes and switches are 32px target-height controls so they align with button rows and repeated settings lists.
 
 ### Optical radius

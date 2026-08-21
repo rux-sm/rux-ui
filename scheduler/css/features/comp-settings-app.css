@@ -67,8 +67,8 @@
 .settings-app__panel-copy {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
+	font-size: var(--rux-size-14);
+	line-height: var(--rux-line-height-20);
 }
 
 .settings-app__form {
@@ -98,8 +98,8 @@
 .settings-app__message {
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
+	font-size: var(--rux-size-14);
+	line-height: var(--rux-line-height-20);
 }
 
 .settings-app__message.is-error {
@@ -156,15 +156,15 @@
 }
 
 .settings-app__suggestion-name {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 }
 
 .settings-app__suggestion-address {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
+	font-size: var(--rux-size-12);
+	line-height: var(--rux-line-height-16);
 }
 
 /* — Saved locations ————————————————————————————————————————————————————— */
@@ -213,7 +213,7 @@
 .settings-locations-empty {
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 /* — Requirements panel ————————————————————————————————————————————————— */
@@ -225,10 +225,10 @@
 
 .settings-req-section {
 	margin: var(--rux-space-2) 0 var(--rux-space-1);
-	color: var(--rux-label-eyebrow-color);
-	font-size: var(--rux-label-eyebrow-size);
-	font-weight: var(--rux-label-eyebrow-weight);
-	letter-spacing: var(--rux-label-eyebrow-tracking);
+	color: var(--rux-text-label-12-wide-color);
+	font-size: var(--rux-text-label-12-wide-size);
+	font-weight: var(--rux-text-label-12-wide-weight);
+	letter-spacing: var(--rux-text-label-12-wide-tracking);
 	text-transform: uppercase;
 }
 
@@ -259,7 +259,7 @@
 	padding-block: 0;
 	background: transparent;
 	border-color: transparent;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .settings-req-label-input:hover {
@@ -274,7 +274,7 @@
 .settings-req-empty {
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .settings-req-add-area {
@@ -308,10 +308,10 @@
 
 .settings-billing-row__label {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-label-eyebrow-size);
-	font-weight: var(--rux-label-eyebrow-weight);
+	font-size: var(--rux-text-label-12-wide-size);
+	font-weight: var(--rux-text-label-12-wide-weight);
 	text-transform: uppercase;
-	letter-spacing: var(--rux-label-eyebrow-tracking);
+	letter-spacing: var(--rux-text-label-12-wide-tracking);
 }
 
 .settings-billing-confirm-grid {
@@ -345,7 +345,7 @@
 	justify-content: center;
 	border: var(--rux-border-width) solid transparent;
 	border-radius: var(--rux-radius-md);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .settings-billing-confirm input:not(:checked) + .rux-badge {

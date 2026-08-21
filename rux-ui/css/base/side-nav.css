@@ -56,9 +56,9 @@
 	border: 0;
 	border-radius: var(--rux-side-nav-item-radius);
 	font: inherit;
-	font-size: var(--rux-label-control-size);
-	font-weight: var(--rux-label-control-weight);
-	line-height: var(--rux-label-control-line-height);
+	font-size: var(--rux-text-label-14-size);
+	font-weight: var(--rux-text-label-14-weight);
+	line-height: var(--rux-text-label-14-line-height);
 	text-align: start;
 	cursor: pointer;
 }
@@ -108,7 +108,7 @@
 	background: var(--rux-danger);
 	color: var(--rux-fg-on-accent);
 	border-radius: var(--rux-radius-full);
-	font-size: var(--rux-size-xxs);
+	font-size: var(--rux-size-11);
 	font-weight: var(--rux-weight-400);
 	/* 11px is sub-14, so it carries the dense rung (rule 2.14). */
 	letter-spacing: var(--rux-tracking-dense);

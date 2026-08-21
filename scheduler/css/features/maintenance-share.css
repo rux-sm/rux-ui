@@ -9,7 +9,7 @@
 .maintenance-schedule__scroll { max-height: calc(100dvh - var(--rux-ui-header-height) - var(--rux-space-4) - var(--rux-space-4)); overflow: auto; border-block: var(--rux-border-width) solid var(--rux-grid-guide); border-inline-start: var(--rux-border-width) solid var(--rux-grid-guide); }
 .maintenance-schedule { min-width: calc(var(--maintenance-bus-column-width) + 2240px); background: var(--rux-surface-1); }
 .maintenance-schedule__days { position: sticky; z-index: 5; top: 0; display: grid; grid-template-columns: var(--maintenance-bus-column-width) repeat(14, minmax(var(--maintenance-day-column-min-width), 1fr)); background: var(--rux-surface-1); border-bottom: var(--rux-border-width) solid var(--rux-grid-guide); }
-.maintenance-schedule__days span { display: grid; place-items: center; height: 36px; color: var(--rux-text-secondary); font-size: var(--rux-size-sm); font-weight: var(--rux-weight-400); }
+.maintenance-schedule__days span { display: grid; place-items: center; height: 36px; color: var(--rux-text-secondary); font-size: var(--rux-size-14); font-weight: var(--rux-weight-400); }
 .maintenance-schedule__days span:nth-child(n + 3) { border-left: var(--rux-border-width) solid var(--rux-grid-guide); }
 .maintenance-schedule__days span:last-child { border-inline-end: var(--rux-border-width) solid var(--rux-grid-guide); }
 .maintenance-schedule__days span:first-child { position: sticky; z-index: 3; left: 0; background: var(--rux-surface-1); border-left: 0; border-inline-end: var(--rux-border-width) solid var(--rux-grid-guide); }
@@ -19,14 +19,14 @@
 }
 .maintenance-schedule__row { display: grid; grid-template-columns: var(--maintenance-bus-column-width) 1fr; border-bottom: var(--rux-border-width) solid var(--rux-grid-guide); }
 .maintenance-schedule__row:last-child { border-bottom: 0; }
-.maintenance-schedule__row > strong { position: sticky; z-index: 3; left: 0; display: grid; place-items: center; padding: var(--rux-space-2); background: var(--rux-surface-1); border-inline-end: var(--rux-border-width) solid var(--rux-grid-guide); color: var(--rux-text-secondary); font-size: var(--rux-size-sm); font-weight: var(--rux-weight-400); }
+.maintenance-schedule__row > strong { position: sticky; z-index: 3; left: 0; display: grid; place-items: center; padding: var(--rux-space-2); background: var(--rux-surface-1); border-inline-end: var(--rux-border-width) solid var(--rux-grid-guide); color: var(--rux-text-secondary); font-size: var(--rux-size-14); font-weight: var(--rux-weight-400); }
 .maintenance-schedule__track { position: relative; display: grid; align-content: center; grid-template-columns: repeat(14, minmax(var(--maintenance-day-column-min-width), 1fr)); grid-auto-rows: 44px; gap: var(--rux-space-1) 0; padding-block: var(--rux-space-1); background-image: repeating-linear-gradient(to right, transparent 0, transparent calc((100% / 14) - 1px), var(--rux-grid-guide) calc((100% / 14) - 1px), var(--rux-grid-guide) calc(100% / 14)); }
 .maintenance-schedule.has-today .maintenance-schedule__track::after { content: ""; position: absolute; z-index: 0; inset-block: -1px; left: var(--maintenance-today-position); width: var(--rux-space-px); background: var(--rux-accent); pointer-events: none; }
 .maintenance-trip { position: relative; z-index: 1; display: grid; min-width: 0; margin-inline: 2px; padding: var(--rux-space-1) var(--rux-space-2); overflow: hidden; background: var(--rux-button-accent-background); color: var(--rux-button-accent-text); border: var(--rux-button-accent-border); font-size: 12px; }
 .maintenance-trip > * { position: relative; z-index: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .maintenance-trip:is(.maintenance-trip--one-way, .maintenance-trip--split)::before { content: ""; position: absolute; z-index: 0; inset: 0; background: repeating-linear-gradient(135deg, transparent 0 7px, oklch(from var(--rux-white) l c h / 18%) 7px 11px); pointer-events: none; }
 .maintenance-trip--unconfirmed { background: var(--rux-button-danger-background); border: var(--rux-button-danger-border); }
-.maintenance-trip :is(strong, span, small) { font-size: 12px; line-height: var(--rux-line-height-xs); }
+.maintenance-trip :is(strong, span, small) { font-size: 12px; line-height: var(--rux-line-height-16); }
 .maintenance-trip small { align-self: end; font-weight: var(--rux-weight-400); }
 .maintenance-trip__times { display: flex; align-items: center; width: 100%; }
 .maintenance-trip__time { color: var(--rux-text-primary); }
@@ -46,7 +46,7 @@
    rux-ui/css/base/utils.css. (Was 14px/0.02em tracking here; now 12px/
    wide tracking like the rest of the group.) */
 .maintenance-changes__title { margin: 0 0 var(--rux-space-2); }
-.maintenance-changes__line, .maintenance-changes__empty { width: max-content; margin: 0; padding: var(--rux-space-1) 0; color: var(--rux-text-secondary); font-size: var(--rux-size-sm); white-space: nowrap; }
+.maintenance-changes__line, .maintenance-changes__empty { width: max-content; margin: 0; padding: var(--rux-space-1) 0; color: var(--rux-text-secondary); font-size: var(--rux-size-14); white-space: nowrap; }
 @media (max-width: 640px) { .maintenance-share { padding: var(--rux-space-3); } }
 @media (max-width: 500px) {
 	.maintenance-share-header.rux-ui-header {

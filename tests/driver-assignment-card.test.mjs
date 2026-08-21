@@ -595,7 +595,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		/\.driver-assignment-card__bus-badge,\s*\.driver-assignment-card__role-badge\s*\{/s,
 	);
 	assert.match(css, /\.driver-assignment-card__date-range\s*\{[^}]*color:\s*var\(--rux-text-secondary\)/s);
-	assert.match(css, /--sched-driver-date-primary-size:\s+var\(--rux-size-md\)/);
+	assert.match(css, /--sched-driver-date-primary-size:\s+var\(--rux-size-16\)/);
 	assert.match(
 		css,
 		/\.driver-assignment-card__header-summary\s*\{[^}]*display:\s*grid[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\) clamp\(104px,\s*24cqi,\s*128px\)[^}]*grid-template-areas:[^}]*"date bus"[^}]*"destination role"[^}]*row-gap:\s*var\(--rux-space-2\)[^}]*padding:\s*var\(--sched-driver-card-header-padding\)/s,
@@ -606,11 +606,11 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__destination\s*\{[^}]*overflow:\s*hidden[^}]*min-width:\s*0[^}]*font-size:\s*var\(--rux-size-2xl\)[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s,
+		/\.driver-assignment-card__destination\s*\{[^}]*overflow:\s*hidden[^}]*min-width:\s*0[^}]*font-size:\s*var\(--rux-size-24\)[^}]*text-overflow:\s*ellipsis[^}]*white-space:\s*nowrap/s,
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__customer\s*\{[^}]*color:\s*var\(--rux-text-secondary\)[^}]*font-size:\s*var\(--rux-size-md\)[^}]*text-overflow:\s*ellipsis/s,
+		/\.driver-assignment-card__customer\s*\{[^}]*color:\s*var\(--rux-text-secondary\)[^}]*font-size:\s*var\(--rux-size-16\)[^}]*text-overflow:\s*ellipsis/s,
 	);
 	assert.match(
 		css,
@@ -627,8 +627,8 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	assert.match(tokens, /--rux-badge-background-opacity:\s+16%/);
 	assert.match(tokens, /--rux-badge-module-height:\s+44px/);
 	// The card's bus/role chips are --module, which keeps body-size type after
-	// the base badge stepped down to --rux-size-xs.
-	assert.match(tokens, /--rux-badge-module-font-size:\s+var\(--rux-size-sm\)/);
+	// the base badge stepped down to --rux-size-12.
+	assert.match(tokens, /--rux-badge-module-font-size:\s+var\(--rux-size-14\)/);
 	assert.match(
 		css,
 		/--sched-driver-module-padding:\s+20px var\(--rux-space-5\)/,
@@ -670,9 +670,9 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/\.driver-assignment-card__response-state--danger\s*\{[^}]*--_state-color:\s*var\(--rux-danger-bright\)/s,
 	);
-	/* The emphasised driver type size is tokenised now (--rux-size-2xl is
+	/* The emphasised driver type size is tokenised now (--rux-size-24 is
 	   1.5rem); the -bus- and -route- variants no longer exist. */
-	assert.match(css, /--sched-driver-time-size:\s+var\(--rux-size-2xl\)/);
+	assert.match(css, /--sched-driver-time-size:\s+var\(--rux-size-24\)/);
 	assert.doesNotMatch(
 		css,
 		/@container driver-assignment-card \(max-width: 479px\)[\s\S]*?\.driver-assignment-card__response-actions\s*\{[\s\S]*?display:\s*flex/,
@@ -699,7 +699,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__crew-role\s*\{[^}]*font-size:\s*var\(--rux-size-sm\)/s,
+		/\.driver-assignment-card__crew-role\s*\{[^}]*font-size:\s*var\(--rux-size-14\)/s,
 	);
 	assert.match(
 		css,

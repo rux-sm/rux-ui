@@ -751,7 +751,7 @@ function emptyTripCard(text = "No Trips") {
 // day, same as before.
 function renderDayGroup(iso, entries) {
 	return `
-		<h4 class="rux-u-panel-title sched-tasks__day-title">${formatDepartingTitle(iso)}</h4>
+		<h4 class="rux-text-heading-16 sched-tasks__day-title">${formatDepartingTitle(iso)}</h4>
 		${entries.length
 			? entries.map(({ trip, leg }) => renderTrip(trip, leg)).join("")
 			: emptyTripCard()}

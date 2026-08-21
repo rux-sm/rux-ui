@@ -24,7 +24,7 @@
 .rux-notifications__empty {
 	padding: var(--rux-space-3) var(--rux-space-2);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-text-body-size);
+	font-size: var(--rux-text-copy-14-size);
 	text-align: center;
 }
 
@@ -78,11 +78,11 @@
 .rux-notifications__item-title {
 	margin: 0;
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	/* Was the unitless 1.35 — 18.9px, fractional and off the 4px grid. A size and
 	   its leading are a paired length, not a ratio: docs/foundations/typography.md
 	   rule 2.2, amendment step 18. */
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 }
 
 .rux-notifications__item-detail {
@@ -93,14 +93,14 @@
 	   appearance; if a gap was intended here, --rux-space-px (1px) or
 	   --rux-space-1 (4px) is the likely intent. */
 	margin: 0;
-	color: var(--rux-text-caption-color);
-	font-size: var(--rux-text-caption-size);
+	color: var(--rux-text-label-12-color);
+	font-size: var(--rux-text-label-12-size);
 }
 
 .rux-notifications__item-time {
 	margin: var(--rux-space-1) 0 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-text-caption-size);
+	font-size: var(--rux-text-label-12-size);
 }
 
 .rux-notifications__item-main > button[data-dismiss] {

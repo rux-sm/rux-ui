@@ -76,7 +76,7 @@
 
 .fleet-app__vehicle-ref {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	color: var(--rux-accent);
 	font-weight: var(--rux-weight-400);
 }
@@ -85,7 +85,7 @@
 
 .fleet-app__order {
 	font-family: var(--rux-font-mono);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	color: var(--rux-text-disabled);
 	width: 2rem;
 	text-align: center;
@@ -115,7 +115,7 @@
 	gap: var(--rux-space-3);
 	padding: var(--rux-space-8);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	text-align: center;
 }
 

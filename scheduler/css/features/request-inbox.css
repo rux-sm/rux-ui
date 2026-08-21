@@ -15,7 +15,7 @@
    the nav badge rather than repeating it. */
 .sched-scope-request__count {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -48,7 +48,7 @@
 .sched-scope-request__row-ref {
 	display: block;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -58,7 +58,7 @@
 	white-space: nowrap;
 	max-width: 28ch;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 /* Counts and dates get compared down the column, so they line up. */
@@ -129,7 +129,7 @@
 
 .sched-scope-request__detail-row dt {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .sched-scope-request__detail-row dd {
@@ -201,10 +201,10 @@
 .sched-scope-request__dialog-title {
 	flex: 1;
 	min-width: 0;
-	font-size: var(--rux-size-2xl);
+	font-size: var(--rux-size-24);
 	/* heading@24 takes 32, not the 40 this h2 inherited from the element
 	   default. docs/foundations/typography.md D14, step 29. */
-	line-height: var(--rux-line-height-2xl);
+	line-height: var(--rux-line-height-32);
 }
 
 .sched-scope-request__dialog-body {
@@ -219,7 +219,7 @@
 
 .sched-scope-request__dialog-intro {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .sched-scope-request__dialog-footer {
@@ -243,7 +243,7 @@
 
 .sched-scope-request__invite-label {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 

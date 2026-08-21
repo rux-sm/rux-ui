@@ -84,9 +84,9 @@
 	   split step 6 closed on .rux-ui-header__badge-count.
 	   docs/foundations/typography.md rule 2.11, step 30. */
 	--sched-trip-bar-bus-label-weight: var(--rux-weight-500);
-	--sched-trip-bar-bus-label-height:      var(--rux-line-height-xxs);   /* 12px */
-	--sched-trip-bar-bus-label-font-size:   var(--rux-size-xxs);          /* 11px */
-	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-xxs);   /* 12px */
+	--sched-trip-bar-bus-label-height:      var(--rux-line-height-12);   /* 12px */
+	--sched-trip-bar-bus-label-font-size:   var(--rux-size-11);          /* 11px */
+	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-12);   /* 12px */
 	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-dense);    /* 11px is sub-14 */
 	--sched-trip-bar-meta-radius:      var(--rux-radius-sm);
 	--sched-trip-bar-meta-fg: var(--rux-fg-on-accent);
@@ -94,8 +94,8 @@
 	--sched-trip-bar-meta-shadow: none; /* recessed rim, same as input fields */
 	--sched-trip-bar-stripe-color:   var(--rux-white);
 	--sched-trip-bar-stripe-opacity: 0.04;
-	--sched-trip-bar-row-font-size:   var(--rux-size-xs);
-	--sched-trip-bar-row-line-height: var(--rux-line-height-xs);
+	--sched-trip-bar-row-font-size:   var(--rux-size-12);
+	--sched-trip-bar-row-line-height: var(--rux-line-height-16);
 	--sched-trip-bar-icon-fill:         1;
 	--sched-trip-bar-icon-weight:       400;
 	--sched-trip-bar-icon-grade:        0;

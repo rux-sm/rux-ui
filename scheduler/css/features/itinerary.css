@@ -116,7 +116,7 @@
 .sched-trip-itinerary__day-date {
 	margin-left: var(--rux-space-2);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -176,7 +176,7 @@
 	gap: var(--rux-space-1);
 	margin: 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 }
 
 .sched-trip-itinerary__boundary-note .rux-icon {
@@ -193,7 +193,7 @@
 	gap: var(--rux-space-1);
 	padding: var(--rux-card-padding);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 .sched-trip-itinerary__idle-day strong {
@@ -655,12 +655,12 @@
 .sched-trip-itinerary__unit {
 	margin-left: var(--rux-space-1);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 }
 
 .sched-trip-itinerary__source {
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 	text-transform: uppercase;
@@ -812,15 +812,15 @@
 }
 
 .sched-trip-itinerary__suggestion-name {
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-sm);
+	line-height: var(--rux-line-height-20);
 }
 
 .sched-trip-itinerary__suggestion-address {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
+	font-size: var(--rux-size-12);
+	line-height: var(--rux-line-height-16);
 }
 
 @container (max-width: 460px) {

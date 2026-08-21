@@ -50,7 +50,7 @@
 .sched-team-chat__empty {
 	margin: auto 0;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	text-align: center;
 }
 
@@ -157,7 +157,7 @@
 	border: none;
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	cursor: pointer;
 }
 
@@ -169,7 +169,7 @@
    with the pill's own font-size. Same 20px as message emoji and the picker
    grid — one consistent emoji size across the chat. */
 .sched-team-chat__reaction-emoji {
-	font-size: var(--rux-size-xl);
+	font-size: var(--rux-size-20);
 	line-height: 1;
 }
 
@@ -193,7 +193,7 @@
 
 .sched-team-chat__message-name {
 	margin-bottom: var(--rux-space-1);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-primary);
 }
@@ -201,9 +201,9 @@
 .sched-team-chat__message-time {
 	flex: none;
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-xs);
+	line-height: var(--rux-line-height-16);
 	opacity: 0;
 	visibility: hidden;
 	transition: opacity var(--rux-motion-duration-fast-01)
@@ -225,7 +225,7 @@
 	background: var(--sched-team-chat-message-bg);
 	border-radius: var(--sched-team-chat-message-radius);
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	line-height: 1.4;
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
@@ -253,7 +253,7 @@
    surrounding 14px text and normal bubble geometry. */
 .sched-team-chat__message-emoji {
 	display: inline-block;
-	font-size: var(--rux-size-xl);
+	font-size: var(--rux-size-20);
 	line-height: 1;
 	vertical-align: -0.15em;
 }
@@ -314,7 +314,7 @@
 	background: none;
 	border: none;
 	border-radius: var(--rux-menu-item-radius);
-	font-size: var(--rux-size-xl);
+	font-size: var(--rux-size-20);
 	line-height: 1;
 	cursor: pointer;
 }
@@ -330,7 +330,7 @@
 	margin: 0;
 	padding: var(--rux-space-1) var(--rux-space-5);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-style: italic;
 }
 

@@ -16,7 +16,7 @@
 }
 .flip-seven__status,
 .flip-seven__copy,
-.flip-seven__turn p { margin: 0; color: var(--rux-text-secondary); font-size: var(--rux-size-sm); }
+.flip-seven__turn p { margin: 0; color: var(--rux-text-secondary); font-size: var(--rux-size-14); }
 
 .flip-seven__shell {
 	display: grid;
@@ -37,7 +37,7 @@
 .flip-seven__eyebrow {
 	margin: 0 0 var(--rux-space-2);
 	color: var(--rux-accent);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	letter-spacing: var(--rux-tracking-widest);
 	text-transform: uppercase;
@@ -48,7 +48,7 @@
 .flip-seven__roster,
 .flip-seven__scores { display: grid; gap: var(--rux-space-2); margin: 0; padding: 0; list-style: none; }
 .flip-seven__roster li { padding: var(--rux-space-3); border: var(--rux-border-width) solid var(--rux-card-border); border-radius: var(--rux-radius-sm); }
-.flip-seven__empty { color: var(--rux-text-disabled); font-size: var(--rux-size-sm); text-align: center; }
+.flip-seven__empty { color: var(--rux-text-disabled); font-size: var(--rux-size-14); text-align: center; }
 
 .flip-seven__panel {
 	align-self: stretch;
@@ -82,7 +82,7 @@
 }
 /* heading@16 takes 24, not the 32 this h3 inherited from the element default.
    docs/foundations/typography.md D14, step 29. */
-.flip-seven__scoreboard .flip-seven__section-heading h3 { font-size: var(--rux-size-md); line-height: var(--rux-line-height-md); }
+.flip-seven__scoreboard .flip-seven__section-heading h3 { font-size: var(--rux-size-16); line-height: var(--rux-line-height-24); }
 .flip-seven__scores {
 	gap: 0;
 	margin-top: 0;
@@ -112,17 +112,17 @@
 	border-radius: var(--rux-radius-full);
 	background: var(--rux-bg-active);
 	color: var(--rux-text-secondary);
-	font: var(--rux-weight-400) var(--rux-size-xs)/1 var(--rux-font-mono);
+	font: var(--rux-weight-400) var(--rux-size-12)/1 var(--rux-font-mono);
 }
 .flip-seven__score .rux-avatar { background: var(--rux-bg-active); color: var(--rux-text-secondary); }
 .flip-seven__score.is-active .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent); }
 .flip-seven__score-name { overflow: hidden; font-weight: var(--rux-weight-400); text-overflow: ellipsis; white-space: nowrap; }
 .flip-seven__score-name .rux-badge { margin-left: var(--rux-space-2); vertical-align: middle; }
-.flip-seven__score-total { font: var(--rux-weight-400) var(--rux-size-md)/1 var(--rux-font-mono); text-align: right; }
+.flip-seven__score-total { font: var(--rux-weight-400) var(--rux-size-16)/1 var(--rux-font-mono); text-align: right; }
 .flip-seven__score-history {
 	overflow: hidden;
 	color: var(--rux-text-disabled);
-	font: var(--rux-weight-400) var(--rux-size-sm)/1 var(--rux-font-mono);
+	font: var(--rux-weight-400) var(--rux-size-14)/1 var(--rux-font-mono);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
@@ -179,7 +179,7 @@
 	gap: var(--rux-space-2);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 }
 .flip-seven__turn-status .flip-seven__eyebrow { margin: 0; }
 .flip-seven__turn-status strong {
@@ -199,8 +199,8 @@
 .flip-seven__messages p {
 	margin: 0 0 var(--rux-space-2);
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
-	line-height: var(--rux-line-height-sm);
+	font-size: var(--rux-size-14);
+	line-height: var(--rux-line-height-20);
 	overflow-wrap: anywhere;
 }
 .flip-seven__messages p:last-child { margin-bottom: 0; }
@@ -256,13 +256,13 @@
 .flip-seven__player-hand-header .rux-avatar { background: var(--rux-accent-subtle); color: var(--rux-accent); }
 .flip-seven__player-hand-name {
 	overflow: hidden;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 .flip-seven__player-hand-name .rux-badge { margin-left: var(--rux-space-1); vertical-align: middle; }
-.flip-seven__player-hand-score { color: var(--rux-text-secondary); font: var(--rux-weight-400) var(--rux-size-xs)/1 var(--rux-font-mono); }
+.flip-seven__player-hand-score { color: var(--rux-text-secondary); font: var(--rux-weight-400) var(--rux-size-12)/1 var(--rux-font-mono); }
 .flip-seven__player-hand.is-active .flip-seven__player-hand-score { color: var(--rux-accent); }
 .flip-seven__player-hand.is-bust .flip-seven__player-hand-score { color: var(--rux-danger); }
 .flip-seven__player-cards {
@@ -274,7 +274,7 @@
 	flex-wrap: wrap;
 	gap: var(--rux-space-1);
 }
-.flip-seven__hand-empty { color: var(--rux-text-disabled); font-size: var(--rux-size-xs); }
+.flip-seven__hand-empty { color: var(--rux-text-disabled); font-size: var(--rux-size-12); }
 .flip-seven__card {
 	display: grid;
 	flex: 0 0 2.25rem;
@@ -284,7 +284,7 @@
 	border-radius: var(--rux-radius-sm);
 	background: var(--rux-surface-1);
 	color: var(--rux-text-primary);
-	font: var(--rux-weight-400) var(--rux-size-md)/1 var(--rux-font-mono);
+	font: var(--rux-weight-400) var(--rux-size-16)/1 var(--rux-font-mono);
 }
 .flip-seven__card.is-latest { border-color: var(--rux-accent); }
 .flip-seven__card.is-bust-card {
@@ -292,8 +292,8 @@
 	color: var(--rux-danger);
 	box-shadow: inset 0 0 0 var(--rux-border-width) var(--rux-danger);
 }
-.flip-seven__round-total { justify-self: center; color: var(--rux-text-secondary); font-size: var(--rux-size-sm); }
-.flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-text-primary); font: var(--rux-weight-400) var(--rux-size-2xl)/1 var(--rux-font-mono); }
+.flip-seven__round-total { justify-self: center; color: var(--rux-text-secondary); font-size: var(--rux-size-14); }
+.flip-seven__round-total strong { margin-left: var(--rux-space-2); color: var(--rux-text-primary); font: var(--rux-weight-400) var(--rux-size-24)/1 var(--rux-font-mono); }
 /* Box styling (padding/gap/background/border-top) comes from .rux-panel__footer;
    this only adds what's specific to this footer. */
 .flip-seven__actions { justify-content: center; }
@@ -322,10 +322,10 @@
 	}
 	.flip-seven__turn { width: min(44%, 12rem); padding: var(--rux-space-2); }
 	.flip-seven__turn-status .flip-seven__eyebrow { display: none; }
-	.flip-seven__messages p { font-size: var(--rux-size-xs); }
+	.flip-seven__messages p { font-size: var(--rux-size-12); }
 	.flip-seven__player-hand { padding: var(--rux-space-2); }
 	.flip-seven__player-hand-header { grid-template-columns: var(--rux-avatar-sm) minmax(0, 1fr); }
-	.flip-seven__player-hand-header .rux-avatar { width: var(--rux-avatar-sm); height: var(--rux-avatar-sm); font-size: var(--rux-size-xs); }
+	.flip-seven__player-hand-header .rux-avatar { width: var(--rux-avatar-sm); height: var(--rux-avatar-sm); font-size: var(--rux-size-12); }
 	.flip-seven__player-hand-score { grid-column: 1 / -1; }
 	.flip-seven__player-hand--left .flip-seven__player-hand-header,
 	.flip-seven__player-hand--right .flip-seven__player-hand-header { grid-template-columns: 1fr; justify-items: center; text-align: center; }

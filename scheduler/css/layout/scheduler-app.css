@@ -125,7 +125,7 @@
 	display: none;
 	white-space: nowrap;
 	/* Type comes from .rux-u-panel-title in the markup — the same
-	   --rux-heading-panel-* recipe a card title uses. Only tabular figures are
+	   --rux-text-heading-16-* recipe a card title uses. Only tabular figures are
 	   added here: the label rewrites on every week change, and proportional
 	   digits make it shift width as it does. docs/foundations/typography.md
 	   §2.9 would rather the role itself stated this, but heading-panel does
@@ -515,7 +515,7 @@
 		var(--sched-driver-priority-color);
 	border-radius: var(--rux-radius-control);
 	font: inherit;
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	text-align: left;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -566,7 +566,7 @@
 	align-items: flex-end;
 	padding-bottom: var(--rux-space-2);
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 	border-left-color: transparent;
@@ -622,14 +622,14 @@
 }
 
 .sched-driver-grid__day-label-weekday {
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	text-transform: uppercase;
 }
 
 .sched-driver-grid__day-label-date {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	font-variant-numeric: tabular-nums;
 }
@@ -716,7 +716,7 @@
 .sched-driver-grid__cell--unavailable::after,
 .sched-driver-grid__cell--conflict::after {
 	display: block;
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
 }
@@ -816,12 +816,12 @@
 .sched-driver-grid__popover-info dt {
 	flex: none;
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 }
 
 .sched-driver-grid__popover-info dd {
 	margin: 0;
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -848,15 +848,15 @@
 
 .sched-driver-grid__popover-title {
 	color: var(--rux-text-primary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
 }
 
 .sched-driver-grid__popover-meta {
 	margin-top: var(--rux-space-1);
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
+	font-size: var(--rux-size-12);
+	line-height: var(--rux-line-height-16);
 }
 
 .sched-driver-grid__popover-timeoff {
@@ -865,7 +865,7 @@
 	gap: var(--rux-space-1);
 	margin: 0 0 var(--rux-space-3);
 	color: var(--rux-danger-bright);
-	font-size: var(--rux-size-xs);
+	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -877,13 +877,13 @@
 	margin: 0 0 var(--rux-space-3);
 	padding-left: calc(var(--rux-icon-sm) + var(--rux-space-1));
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-xs);
-	line-height: var(--rux-line-height-xs);
+	font-size: var(--rux-size-12);
+	line-height: var(--rux-line-height-16);
 }
 
 .sched-driver-grid__empty {
 	color: var(--rux-text-secondary);
-	font-size: var(--rux-size-sm);
+	font-size: var(--rux-size-14);
 }
 
 /* On desktop the left-panel toggle in the workspace heading acts as the

@@ -25,15 +25,31 @@ sheets["colors_and_type.css"] = await readFile(
 // the raw scale for one of them.
 const AXES = ["size", "weight", "line-height", "tracking", "color"];
 const ROLES = [
-	"--rux-heading-page",
-	"--rux-heading-section",
-	"--rux-heading-panel",
-	"--rux-text-lead",
-	"--rux-text-body",
-	"--rux-text-caption",
-	"--rux-label-control",
-	"--rux-label-eyebrow",
+	"--rux-text-heading-40",
+	"--rux-text-heading-24",
+	"--rux-text-heading-16",
+	"--rux-text-copy-16",
+	"--rux-text-copy-14",
+	"--rux-text-label-12",
+	"--rux-text-label-14",
+	"--rux-text-label-12-wide",
 ];
+
+// The intent-named roles step 31 replaced, kept published for one release so a
+// vendored consumer has somewhere to go. Each forwards to its shape-named
+// replacement, and nothing in this repository may read one — an alias with an
+// internal consumer can never be removed, which is how D5 survived five
+// releases. Removal is step 33.
+const SUPERSEDED = {
+	"--rux-heading-page": "--rux-text-heading-40",
+	"--rux-heading-section": "--rux-text-heading-24",
+	"--rux-heading-panel": "--rux-text-heading-16",
+	"--rux-text-lead": "--rux-text-copy-16",
+	"--rux-text-body": "--rux-text-copy-14",
+	"--rux-text-caption": "--rux-text-label-12",
+	"--rux-label-control": "--rux-text-label-14",
+	"--rux-label-eyebrow": "--rux-text-label-12-wide",
+};
 
 test("every typography role is complete", () => {
 	for (const role of ROLES) {
@@ -64,6 +80,27 @@ test("a role introduces meaning, never a new number", () => {
 	}
 });
 
+test("every superseded role name still forwards to its replacement", () => {
+	for (const [old, current] of Object.entries(SUPERSEDED)) {
+		for (const axis of AXES) {
+			assert.match(
+				tokens,
+				new RegExp(`\\${old}-${axis}:\\s*var\\(\\${current}-${axis}\\)`),
+				`${old}-${axis} must forward to ${current}-${axis}`,
+			);
+		}
+	}
+});
+
+test("nothing internal reads a superseded role name", () => {
+	// What makes step 33 a deletion rather than a migration.
+	const consumers = Object.values(sheets).join("\n");
+	const offenders = Object.keys(SUPERSEDED).filter((old) =>
+		new RegExp(`var\\(\\${old}-`).test(consumers),
+	);
+	assert.deepEqual(offenders, []);
+});
+
 test("no role is defined but unused", () => {
 	const consumers = Object.values(sheets).join("\n");
 	for (const role of ROLES) {
@@ -80,12 +117,12 @@ test("recurring type recipes go through a role, not the raw scale", () => {
 	// components is a role that has not been named yet. One-offs are fine —
 	// they belong to their component — so this only guards the known set.
 	const ROLE_OWNED = [
-		[/\.rux-side-nav__link\s*\{[^}]*\}/, "--rux-label-control"],
-		[/\.rux-suggestions__label\s*\{[^}]*\}/, "--rux-label-control"],
-		[/\.rux-alert\s*\{[^}]*\}/, "--rux-text-body"],
-		[/\.rux-toast\s*\{[^}]*\}/, "--rux-text-body"],
-		[/\.rux-tooltip\s*\{[^}]*\}/, "--rux-text-caption"],
-		[/\.rux-suggestions__sublabel\s*\{[^}]*\}/, "--rux-text-caption"],
+		[/\.rux-side-nav__link\s*\{[^}]*\}/, "--rux-text-label-14"],
+		[/\.rux-suggestions__label\s*\{[^}]*\}/, "--rux-text-label-14"],
+		[/\.rux-alert\s*\{[^}]*\}/, "--rux-text-copy-14"],
+		[/\.rux-toast\s*\{[^}]*\}/, "--rux-text-copy-14"],
+		[/\.rux-tooltip\s*\{[^}]*\}/, "--rux-text-label-12"],
+		[/\.rux-suggestions__sublabel\s*\{[^}]*\}/, "--rux-text-label-12"],
 	];
 	const all = Object.values(sheets).join("\n");
 	for (const [pattern, role] of ROLE_OWNED) {

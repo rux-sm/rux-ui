@@ -35,7 +35,7 @@ test("a badge is sized as a label, not as a control", () => {
 });
 
 test("a badge recedes from the content it annotates", () => {
-	assert.equal(tokenValue("--rux-badge-font-size"), "var(--rux-size-xs)");
+	assert.equal(tokenValue("--rux-badge-font-size"), "var(--rux-size-12)");
 	assert.equal(tokenValue("--rux-badge-font-weight"), "var(--rux-weight-500)");
 	assert.equal(tokenValue("--rux-badge-radius"), "var(--rux-radius-full)");
 });
