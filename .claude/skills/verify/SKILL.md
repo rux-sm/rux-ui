@@ -19,11 +19,20 @@ in `package.json`.
 ## Launch
 
 ```bash
-python3 -m http.server 8642
+node tools/serve.mjs
 ```
 
-Matches `.claude/launch.json`'s `rux-ui-static` config. Then open
-`http://localhost:8642/index.html`.
+Same command as `.claude/launch.json`'s `rux-ui-static` config
+(`runtimeExecutable: node`, `runtimeArgs: ["tools/serve.mjs"]`) and as
+CLAUDE.md § Verification, which rules out `python3 -m http.server`: its
+argument parser calls `os.getcwd()` at import time and cannot start under a
+sandboxed shell.
+
+That config sets `autoPort: true`, so the port may not be 8642. The server
+prints the one it bound — `serving <root> on http://localhost:<port>` — and
+`tools/serve.mjs` takes a port from argv, then `$PORT`, then 8642. Open
+`http://localhost:<port>/index.html` with the reported number, and use that
+same number in the `curl` examples below.
 
 ## Hard constraints
 
@@ -49,9 +58,9 @@ Matches `.claude/launch.json`'s `rux-ui-static` config. Then open
 
 - JavaScript syntax: `node --check <changed-file.js>`.
 - Automated contracts: `node --test tests/<file>.test.mjs` or `npm test`.
-- Static serving: `curl -s -o /dev/null -w "%{http_code}" http://localhost:8642/<path>`
+- Static serving: `curl -s -o /dev/null -w "%{http_code}" http://localhost:<port>/<path>`
   confirms a file is served and current.
-- Content landed: `curl -s http://localhost:8642/<path> | grep ...` confirms
+- Content landed: `curl -s http://localhost:<port>/<path> | grep ...` confirms
   specific markup/code made it into what the browser would receive.
 - Without browser automation, rendering and click behavior need manual user
   verification. Live Supabase writes always require explicit authorization.
