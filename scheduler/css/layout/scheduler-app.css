@@ -109,13 +109,16 @@
 	gap: 0;
 }
 
-/* The week's range holds the header's true center, with New Trip on the left
-   flank and ‹ Today › + the panel toggle on the right. Absolute rather than a
-   third grid track, for the reason the controls used absolute before it: the
-   flanks have unequal widths, so a middle track would center the range
-   between them rather than in the header.
+/* The week's range holds the header's center, New Trip the left flank, and
+   ‹ Today › + the panel toggle the right — one row, always.
 
-   Hidden below 501px instead of following the toolbar into the fixed bottom
+   A real middle track rather than absolute centering. Equal minmax(0, 1fr)
+   flanks make the middle track land at the header's true center on their own,
+   which was absolute's only advantage, and unlike absolute this reserves the
+   space: the range cannot come to overlap New Trip or the controls at a narrow
+   desktop width or when a cross-year span makes it long.
+
+   Hidden below 501px rather than following the toolbar into the fixed bottom
    bar — that bar is thumb-reach navigation, not a title, and every day column
    already carries its own month. */
 .calendar-app__date-range {
@@ -128,15 +131,10 @@
 }
 
 @media (min-width: 501px) {
-	.rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header {
-		position: relative;
-	}
-
 	.rux-app-view[data-view="calendar"] .calendar-app__date-range {
 		display: block;
-		position: absolute;
-		left: 50%;
-		translate: -50% 0;
+		grid-column: 2;
+		justify-self: center;
 	}
 
 	/* Flush cluster, but not flush against the panel toggle beside it. */
@@ -149,13 +147,24 @@
 	flex: none;
 }
 
-/* New Trip occupies the flexible column and the view controls keep their
-   natural width; the centered range is absolute and out of flow. The Trip
-   Editor has no calendar-header trigger. */
+/* Three tracks on one row: New Trip, the week range, the view controls. The
+   flanks are equal so the middle is the header's true center; each child is
+   placed explicitly so nothing auto-flows onto a second row. Below 501px the
+   range is hidden and the toolbar goes position:fixed, leaving New Trip alone
+   in track 1. The Trip Editor has no calendar-header trigger. */
 .rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+	grid-template-rows: auto;
 	align-items: center;
+}
+
+.rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header > .sched-workspace-nav {
+	grid-column: 1;
+}
+
+.rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header > .rux-workspace__toolbar {
+	grid-column: 3;
 }
 
 .rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header > * {

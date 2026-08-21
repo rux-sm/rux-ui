@@ -96,9 +96,24 @@ test("mobile side navigation fills the viewport except for its dismiss strip", (
 test("the calendar header contains no Trip Editor panel opener", () => {
 	assert.doesNotMatch(page, /data-opens="trip-editor-dialog"|aria-label="Open trip editor"/);
 	assert.doesNotMatch(layoutStyles, /data-view="calendar"[^\n{]*\.sched-app__mobile-panel-btn--left/);
+	// Exactly three tracks — New Trip, the week range, the view controls — and
+	// the track count is still what proves no fourth control (a Trip Editor
+	// opener) came back. Equal minmax(0, 1fr) flanks are what put the middle
+	// one at the header's true center.
 	assert.match(
 		layoutStyles,
-		/data-view="calendar"[^\n{]*> \.rux-workspace > \.rux-workspace__header\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto;/s,
+		/data-view="calendar"[^\n{]*> \.rux-workspace > \.rux-workspace__header\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) auto minmax\(0, 1fr\);/s,
+	);
+	// The header is specified to stay one row. Explicit placement on both
+	// flanks is what enforces it: without them a third child auto-flows onto a
+	// second row, which is exactly how this regressed once already.
+	assert.match(
+		layoutStyles,
+		/> \.rux-workspace__header > \.sched-workspace-nav\s*\{\s*grid-column:\s*1;/s,
+	);
+	assert.match(
+		layoutStyles,
+		/> \.rux-workspace__header > \.rux-workspace__toolbar\s*\{\s*grid-column:\s*3;/s,
 	);
 });
 
