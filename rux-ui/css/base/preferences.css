@@ -21,6 +21,10 @@
 	color: var(--rux-label-control-color);
 	font-size: var(--rux-label-control-size);
 	font-weight: var(--rux-label-control-weight);
+	/* The fourth axis. .rux-preferences__heading is an h2, so without this it
+	   took the 32px heading's leading at 14px text.
+	   docs/foundations/typography.md D14, step 29. */
+	line-height: var(--rux-label-control-line-height);
 }
 
 .rux-preferences__heading {

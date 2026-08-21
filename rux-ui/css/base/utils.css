@@ -65,6 +65,7 @@
 	font-size: var(--rux-label-eyebrow-size);
 	font-weight: var(--rux-label-eyebrow-weight);
 	color: var(--rux-label-eyebrow-color);
+	line-height: var(--rux-label-eyebrow-line-height);
 	text-transform: uppercase;
 	letter-spacing: var(--rux-label-eyebrow-tracking);
 }
@@ -72,7 +73,9 @@
 .rux-u-section-label {
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-	line-height: 1;
+	/* Was line-height: 1 — a unitless leading on real text, which rule 2.2
+	   calls a defect. The role's own 16px now applies from the block above.
+	   docs/foundations/typography.md D14, step 29. */
 }
 
 /* Layout utilities from README's Visual Foundations contract: a control row

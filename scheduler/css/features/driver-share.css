@@ -193,7 +193,11 @@ html {
 	color: var(--rux-text-secondary);
 	font-size: var(--sched-driver-date-primary-size);
 	font-weight: var(--sched-driver-date-primary-weight);
-	line-height: 1.2;
+	/* Was 1.2 — unitless, resolving 19.2px, fractional and off the grid, which
+	   rule 2.2 calls a defect. Classed label@16 (grey, one line, never wraps,
+	   tabular figures), so it takes 20.
+	   docs/foundations/typography.md D14, step 29. */
+	line-height: var(--rux-line-height-sm);
 	font-variant-numeric: tabular-nums;
 }
 

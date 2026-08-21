@@ -202,6 +202,9 @@
 	flex: 1;
 	min-width: 0;
 	font-size: var(--rux-size-2xl);
+	/* heading@24 takes 32, not the 40 this h2 inherited from the element
+	   default. docs/foundations/typography.md D14, step 29. */
+	line-height: var(--rux-line-height-2xl);
 }
 
 .sched-scope-request__dialog-body {

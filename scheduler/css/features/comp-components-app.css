@@ -200,6 +200,9 @@
 	font-size: var(--rux-size-sm);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-primary);
+	/* label@14 takes 20; the h3 was inheriting the 24px heading's 32.
+	   docs/foundations/typography.md D14, step 29. */
+	line-height: var(--rux-line-height-sm);
 }
 
 .components-app__button-rules dd {

@@ -80,7 +80,9 @@
 	gap: var(--rux-space-3);
 	padding: var(--rux-card-padding);
 }
-.flip-seven__scoreboard .flip-seven__section-heading h3 { font-size: var(--rux-size-md); }
+/* heading@16 takes 24, not the 32 this h3 inherited from the element default.
+   docs/foundations/typography.md D14, step 29. */
+.flip-seven__scoreboard .flip-seven__section-heading h3 { font-size: var(--rux-size-md); line-height: var(--rux-line-height-md); }
 .flip-seven__scores {
 	gap: 0;
 	margin-top: 0;
