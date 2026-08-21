@@ -113,18 +113,38 @@
 
 .rux-field          { display: flex; flex-direction: column; gap: var(--rux-field-gap); min-width: 0; }
 
-/* Shared "small muted caption" typography. Applications opt in with
-   .rux-u-caption rather than being named here. */
-.rux-u-caption,
+/* The caption role, applied whole. This used to share a declaration with
+   .rux-field__label and read --rux-field-label-* — so the utility named
+   "caption" was the one utility that did not use --rux-text-caption-*, which
+   is the more serious half of D12. The two resolve identically today (12px,
+   400, 16px leading, secondary), so splitting them changes nothing rendered
+   and everything about which token owns the answer: a component reading its
+   own component tokens is correct, a *utility* doing it is the defect.
+   docs/foundations/typography.md D12, step 31. */
+.rux-u-caption {
+  font-size: var(--rux-text-caption-size);
+  font-weight: var(--rux-text-caption-weight);
+  line-height: var(--rux-text-caption-line-height);
+  letter-spacing: var(--rux-text-caption-tracking);
+  color: var(--rux-text-caption-color);
+}
 .rux-field__label {
   font-size: var(--rux-field-label-size);
   font-weight: var(--rux-field-label-weight);
   line-height: var(--rux-line-height-xs);
   color: var(--rux-field-label-fg);
 }
-/* Shared "small disabled caption" typography. Applications opt in with
-   .rux-u-hint. */
-.rux-u-hint,
+/* Same split, same reasoning. .rux-u-hint carried only size and colour, so its
+   leading came from whatever context it landed in — 12px text on a 20px row
+   inside body copy. It is caption: one short line of secondary UI text.
+   docs/foundations/typography.md D12, step 31. */
+.rux-u-hint {
+  font-size: var(--rux-text-caption-size);
+  font-weight: var(--rux-text-caption-weight);
+  line-height: var(--rux-text-caption-line-height);
+  letter-spacing: var(--rux-text-caption-tracking);
+  color: var(--rux-text-caption-color);
+}
 .rux-field__help {
   font-size: var(--rux-field-label-size);
   color: var(--rux-field-help-fg);

@@ -237,6 +237,11 @@
 	color: var(--rux-text-secondary);
 	font-size: var(--rux-text-body-size);
 	line-height: var(--rux-text-body-line-height);
+	/* The two axes this was missing. Both already resolved to the same values
+	   by inheritance; stating them is what stops the next context from
+	   changing them. docs/foundations/typography.md D12, step 31. */
+	font-weight: var(--rux-text-body-weight);
+	letter-spacing: var(--rux-text-body-tracking);
 }
 
 .rux-card__subtitle {
