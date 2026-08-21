@@ -1,14 +1,15 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.3.1** · Stamped at the top so a downstream document can state the
+**Contract version: 1.3.2** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 22 steps: **14 done · 1 ready · 5 open · 2 deferred**
-Ready now, no decision needed: step 20. **Q1, Q2 and Q3 are answered** (§6), closing steps
-6, 8, 10 and 12. Q4 gates 9, **Q6 now gates 7 alone**, step 11 needs external verification,
-step 16 needs everything, step 22 needs a decision it does not yet have, and steps 3 and 4
-wait on a named consumer (§7.3). Derived from
+**Status** · 22 steps: **14 done · 6 open · 2 deferred**
+**Nothing is executable without a decision.** **Q1, Q2 and Q3 are answered** (§6), closing
+steps 6, 8, 10 and 12. Q4 gates 9, Q6 gates 7, **Q7 gates 20** — which was `[ready]` until
+it was attempted and found to contradict a shipped fix — step 11 needs external
+verification, step 16 needs everything, step 22 needs a decision it does not yet have, and
+steps 3 and 4 wait on a named consumer (§7.3). Derived from
 §5; `tests/foundations-contract.test.mjs` fails if this line disagrees with the log.
 
 This document is canonical for type in Rux UI: the scale, the roles, the utilities, and
@@ -269,7 +270,7 @@ reversible and execute under standing authority.
 | 14 | Resolve X1: inline markers take the step's own size and weight | **done** | Decided by the precedence rule above. The finding is that the *type system* was wrong and `guide-markup.md` §2.2 was right, so nothing downstream changes — the 13px chip and weight-500 value are dropped from the proposal before adoption. Deliberately **did not** touch X2/X3: those are colour mappings, out of scope per the precedence note. |
 | 15 | Establish the evolution contract (§8) and stamp version 1.0.0 | **done** | Written against the real gap: `docs/design-system-distribution.md` §4's three gates are all name-based, so they catch removals and renames and are **blind to a changed value**. Class B exists to cover exactly that blind spot. Deliberately **did not** invent a new automated gate — the honest mechanism today is the version stamp plus a named visual check, and claiming enforcement that does not exist would be worse than naming the gap. |
 | 16 | **Consolidate** — strip duplicated type rules elsewhere; convert them to pointers | **[open]** | The closing step: this document is not canonical while a second statement of the same rule exists. Measured scope: `README.md` § Visual Foundations carries **81 hardcoded values** and ships to consumers — the vendored copy at `v0.1.3` carries all 81. Also in scope: the `rux-design` skill's design rules, the type-bearing prose in `docs/layout-composition.md`, and any `tokens.css` comment that states a MUST rather than explaining a value. **Blocked on Q1–Q6**: converting a section to a pointer before the rule it points at is settled deletes the only statement of it. |
-| 20 | Put the trip-bar bus label on the scale (D13) | **[ready]** | Class B, but application work *conforming* to the foundation rather than amending it, so it mints no vocabulary: `--rux-size-xxs` (10px) is the rung the clamp already sits nearest at its measured 10.2px. Deliberately left **[ready]** rather than folded into step 6, which found it: it shares nothing with the weight policy, and hiding an unrelated Class B change inside a step whose named eyeball states are all about weight would defeat the review the class exists to trigger. |
+| 20 | Put the trip-bar bus label on the scale (D13) | **[open]** | **Was `[ready]`; attempted, and it does not execute as written. Turns on Q7.** The premise — "`--rux-size-xxs` (10px) is the rung the clamp already sits nearest at its measured 10.2px" — was measured in the running app, which sits at the **XS** density tier. The token is not one value: `--sched-trip-bar-bus-label-font-size` tracks `--sched-trip-bar-row-font-size` × 0.85, and the trip-bar size control drives that across three tiers, so it resolves **9px (XXS) / 10.2px (XS) / 11.9px (SM)**. Pinning it to `--rux-size-xxs` collapses all three to 10px, which (a) reinstates the exact regression the comment above the declaration records as fixed — XXS and XS resolving pixel-identical, so two of the three settings produce the same pill — and (b) puts the XXS pill's text at 10px against 10px row text, when the pill MUST stay quieter than the row beside it. **Verified by applying it and running the suite, not by reasoning:** `tests/trip-bar-size.test.mjs` fails at load — it asserts the token *is* a `clamp()`, then that the pill font differs at all three tiers and rises monotonically with the row text. Reverted; no CSS changed. **The blocking fact:** `--rux-size-xxs` (10px) is the *smallest rung on the scale*, and the XXS tier needs type below its own 10px row text. There is nowhere on the scale for it to go. So D13 cannot be closed by "put it on the scale" — the scale does not reach. That is Q7. Deliberately **did not** execute it anyway and update the test: the test encodes a shipped design fix and three assertions about what the control must do, and a step that rewrites its own verification to pass is not conformance. Deliberately **did not** pick a branch for Q7 here — minting a sub-10px rung is Class A on shared vocabulary and outside what "put this label on the scale" authorizes. **Worth naming:** this is the same defect as the one step 21 corrects in step 6 — a value measured in one state and recorded as though it covered every state. Both were written in the same commit. |
 | 19 | Extract the shared mechanism to `README.md`; add a derived Status block | **done** | Class A. §8 was 68 lines of machinery of which five mentioned type — generic, and guaranteed to be duplicated the moment a second foundation document landed. It now lives in `README.md` §2 and §8 is a pointer. Answers the "should each document carry a todo list" question: **no** — the amendment log already is one, and a second statement of status drifts. What was missing was a *glance*, so each document gains a Status block derived from its log, rolled up in `README.md` §1, with `tests/foundations-contract.test.mjs` failing when the two disagree. Deliberately **did not** add a TODO or status file, and **did not** fold `../motion.md` in — that is its own decision. |
 | 17 | Convert competing rule statements to authority pointers | **done** | Class A. The problem step 16 solves is duplication; this solves *precedence* now, without waiting on Q1–Q6. `README.md` § Visual Foundations, the `rux-design` skill's design rules, and `docs/audit/design-system-audit.md` §5 each gained a note naming `docs/foundations/` as canonical. Deliberately **stripped nothing** — the 81 values stay until step 16, because deleting a rule before its replacement is settled loses it. Also corrected two stale comments in `colors_and_type.css`: the heading block said "semibold by default" over a rule setting 400 (D3), and the `font-feature-settings` line now flags that its axes are Inter's while the loaded face is Geist (D9), without changing the declaration — that half is Class B and needs verification first. |
 | 18 | Pair the notifications title's leading with its size (rule 2.2) | **done · Class B** | `.rux-notifications__item-title` held the only unitless leading on real text in the portable tier. **Before 18.9px** (14 × 1.35 — fractional and off the 4px grid), **after 20px** (`--rux-line-height-sm`, the pair for `--rux-size-sm`). Safe ahead of Q1/Q2 because the element pins `--rux-size-sm` explicitly, so it follows whatever that rung's pair becomes. **Verified by reading the constraint chain, not by rendering:** nothing between `.rux-notifications__item-title` and the menu root pins a height, sets `overflow: hidden`, or clamps lines — the only overflow control is the menu's own `max-height: 70vh; overflow-y: auto`, which absorbs the growth by scrolling. A two-line title therefore grows its row ~2.2px and nothing clips. A visual pass was **not** possible in this environment (`python3 -m http.server` fails under the sandbox at `os.getcwd()`), so the theme eyeball is still owed if wanted; the token is theme-independent, so it is a low-value check. Contract version 1.0.0 → 1.1.0. Applying this exposed that §8.1's Class B definition was too narrow — it named only token-value changes, and this is a rule moving from a literal to a token — so the definition was widened in the same step. |
@@ -358,7 +359,21 @@ addition to shared vocabulary and it narrows the gap that makes 12 and 14 distin
 **Q6 — Is there a responsive story?** The scale is fixed at all viewport widths today. A
 36px page heading at 375px is a decision no one has made explicitly. Options: fixed and
 the layout reflows; a single step-down at a breakpoint; or fluid via `clamp()`. *Blocks
-step 7 and any future heading work.*
+step 7 and any future heading work.* **Evidence added by step 21:** at 375px the
+`maintenance.html` `h1` renders 36/600 across two lines at 351px inside a 375px viewport —
+no overflow, but no margin either, and 600 makes that string wider than 400 did.
+
+**Q7 — Does the scale reach below 10px, and if not, what may a density tier do?**
+`--rux-size-xxs` (10px) is the smallest rung. The trip-bar's XXS density tier sets 10px row
+text and needs a pill quieter than it, which the scale cannot express — so the tier derives
+`row-font-size × 0.85` and lands on 9px, off the scale and off the grid (D13). Three
+branches, and they are not equivalent: **mint a sub-10px rung**, which is Class A but adds
+shared vocabulary for one consumer and invites 8px next; **name the exception**, amending
+rule 2.4 so a density tier MAY derive proportionally within a stated floor, which keeps the
+scale honest about what it does not cover; or **drop the requirement**, letting the XXS
+pill match its row text and accepting that the smallest tier has less hierarchy than the
+other two. The third is the only one that changes what renders. *Blocks step 20; D13 stays
+open until it is answered.*
 
 ---
 
