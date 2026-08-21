@@ -1,10 +1,10 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.13.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.13.2** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 34 steps: **26 done · 6 open · 2 deferred**
+**Status** · 36 steps: **28 done · 6 open · 2 deferred**
 The type system conforms to the measured Geist catalog end to end, in its **values** and now
 in its **names**: the ladder sits on the catalog (24), roles own their leading and carry a
 family (25, 26), tracking follows the curve (27), every overridden heading is paired (29),
@@ -19,8 +19,11 @@ three halves; step 9 retired the third emphasis tier that was only ever document
 1. **Q6 — the only live question, and only its *mapping*.** The mechanism is settled: the
    scale never moves, and a call site picks a *different published rung* at a breakpoint
    (`md:text-heading-40` — a class that now exists, since step 31). What is undecided is
-   which roles get a small-screen rung, which rung, and at what breakpoint — and this system
-   has no breakpoint vocabulary, so it likely waits on `spacing.md`. *Gates step 7.*
+   **which roles get a small-screen rung, and which rung** — two variables, not three: the
+   *widths* are already a closed set of four, enforced by
+   `tests/breakpoint-contract.test.mjs`, with **500** the standing candidate. What they lack
+   is a canonical home — now provided by [`layout.md`](layout.md) §1.1, which publishes the
+   set and makes **500** citable (steps 35, 36). *Gates step 7.*
 2. **The rename is live but not finished.** Every superseded name — 18 primitives, 40 role
    tokens, 3 classes — is still published as an alias. **Step 34** migrates the consumers
    onto the shape names; **step 33** then deletes the aliases and is gated on it. Neither is
@@ -449,6 +452,8 @@ reversible and execute under standing authority.
 | 34 | Migrate the vendored consumers onto the shape names | **[open]** | Step 31's consumer-migration step, required as its own entry by CLAUDE.md § Foundation Work, and the gate on step 33. **Not verifiable from this repository** — same class as steps 11 and 32. **What a consumer does:** apply §3.2's Was column in reverse for role tokens, §3.1 for primitives, and swap `.rux-u-panel-title` → `.rux-text-heading-16`, `.rux-u-label` → `.rux-text-label-14`, `.rux-u-caption` and `.rux-u-hint` → `.rux-text-label-12`. Every substitution resolves to the value it resolved to before, so a correct migration renders identically and a missed one keeps working until step 33. **What surfaces a miss:** the consumer's own name check (`design-system-distribution.md` §4), which is the only gate that sees a rename — a renamed class is not a build error, not a type error, and not a test failure. **Closes when** each consumer's re-vendor PR is green against a tag at contract **1.13.0** or later. Deliberately **not** done: a codemod. The map is mechanical but it is 61 names, so unlike step 32 a consumer with a large surface may want one — that is the consumer's call, and it is theirs to write against §3.1 and §3.2. |
 | 32 | Migrate the vendored consumers off `--rux-text-muted` / `--rux-text-faint` | **[open]** | **Step 9's consumer-migration step**, required as its own entry by CLAUDE.md § Foundation Work. Consumers pin a tag rather than tracking `main`, so nothing is broken today; the loss lands when one upgrades. **Not verifiable from this repository** — the same class of step as 11. `tests/class-resolution.test.mjs` proves names resolve *here* and has no knowledge of any consumer, which is exactly the blind spot `design-system-distribution.md` §4 records. **What a consumer does:** replace either name with `--rux-text-secondary` — what both resolved to in both themes — for an unchanged rendered result. **What surfaces it:** the middle gate, the consumer's own check reading `--rux-*` out of its markup and failing when the vendored copy does not define them (§4). That gate is why this step is safe to leave open rather than blocking: it turns a silent loss of styling into a failure, which is the whole lesson of the `v0.1.0` incident. **Closes when** each consumer's re-vendor PR (§5) comes back green against a tag at contract **1.12.0** or later. **Deliberately not done: a codemod.** Two names with one identical replacement is a find-and-replace, and a tool would need maintaining well past the single release that needs it. |
 | 28 | Decide the fate of the 10px rung and the 9px pill (Q7, D13) | **done · moot** | **Closed without executing, because Q7's answer removed the question.** This step existed to decide whether `--rux-size-xxs` should be *retired* — Class C, four consumers, a consumer-migration step. Q7 moved the rung from 10px to 11px instead, which is Class B and touches no name, so nothing is removed and no consumer migrates. Recorded rather than deleted: the Class C proposal was real when it was written, and the reason it evaporated — that a rung can be *moved onto* the catalog instead of *removed from* the scale — is the useful part. | **Turns on Q7, reframed by the ramp decision.** The catalog floors at 12: `--rux-size-xxs` (10px) has no Geist counterpart, and the trip-bar's 9px pill is two rungs below anything published. That does not make 10px wrong — S1 is denser than vercel.com and §7.3 already says the base is a property of the surface — but it does mean the branch "mint a 9px rung" can no longer claim the catalog as evidence, which is what it was leaning on. Retiring `--rux-size-xxs` is **Class C** and would stop and propose; it has four consumers. Nothing here executes until Q7 is answered on its new footing. |
+| 35 | Correct Q6's breakpoint claim (Status item 1; §6 Q6) | **done** | Class A, and **patch 1.13.0 → 1.13.1** — wording, evidence and a corrected citation; no token, rule, or value moves, and nothing re-renders. Both the Status block and §6 Q6 asserted that this system "has no breakpoint vocabulary," and on that basis deferred the whole of Q6's third variable to an unwritten `spacing.md`. `README.md` §1's source table carried the same claim a third time and is corrected in the same change, per the rule that README is fixed alongside the document it summarizes. **The claim was false.** `tests/breakpoint-contract.test.mjs` has recorded a **closed set of four** since before this document existed — **500** (shared mobile: touch-target minimums in `tokens.css`, the drawer's mobile mode), **580** (the floating-window frame contract on phones), **620** and **760** (both `ui-header.css`) — each with its purpose stated and an explicit ratchet requiring a fifth to be added on purpose. Q6 therefore narrows from three undecided variables to **two: which roles get a small-screen rung, and which rung.** **500** is the standing candidate for the width, and the test's own note that reusing one costs nothing means the mapping decision need not open the set. Step 21's Q6 evidence reads against it directly: the `maintenance.html` `h1` measured at 375px sits below 500. **What `spacing.md` actually owes Q6** is not the vocabulary but a **canonical home** for it. CLAUDE.md's one-home rule says an enforcement test SHOULD cite the section it enforces; this one cites nothing because no section exists, leaving the rule stated *only* in enforcement — the inverse of step 16's problem, where a rule is stated in `README.md` with no canonical home yet. **Deliberately did not answer Q6:** the mapping is a design decision this step has no authority over, and step 7 stays gated. **Deliberately did not write `spacing.md` or relocate the breakpoint set** — moving a rule into a document that does not exist is how a set ends up stated twice, which is the failure the one-home rule exists to prevent. **Deliberately did not add a citation to `breakpoint-contract.test.mjs`:** there is no section to cite until `spacing.md` is written, and a citation to a future anchor is worse than none. **Deliberately touched no CSS, token, or class.** Recorded as its own numbered step rather than folded into a later one, following **step 21**: a log that quietly edits its own history is worth less than one that shows the correction. |
+| 36 | Repoint Q6's breakpoint citation at `layout.md` | **done** | Class A, and **patch 1.13.1 → 1.13.2** — a corrected citation; no token, rule, or value moves, and nothing re-renders. Step 35 established that Q6's missing piece was a canonical home for the breakpoint set and named `spacing.md` as the likely owner, hedged with "or a `layout.md`". That was settled in favour of **`layout.md`**, which now exists at contract 1.0.0 and publishes the set as its §1.1 — so this document's two forward references were pointing at a document that will not own the rule. Both are repointed: the Status block's item 1 and §6 Q6's closing paragraph. **The substance of Q6 is unchanged** — the mechanism was already settled, the width was already decided, and what remains open is still the mapping: which roles take a small-screen rung, and which rung. What changed is that **500px is now a citable published width** rather than a number recovered from a test's allow-list, which is the whole point of step 35. **Deliberately did not rewrite step 35's own notes**, which still name `spacing.md`: that entry is history and was accurate when written, and a log that edits its own past silently is worth less than one that shows the correction — the same reasoning step 21 records. **Deliberately did not close Q6 or unblock step 7.** **Deliberately did not touch any CSS, token, or class.** |
 
 ---
 
@@ -581,9 +586,25 @@ no overflow, but no margin either, and 600 makes that string wider than 400 did.
 > width and only display type steps down.
 >
 > **What is left to decide** is therefore not the mechanism but the *mapping*: which roles
-> get a small-screen rung, which rung, and at what breakpoint — and this system has no
-> breakpoint vocabulary yet, which is `spacing.md`'s or a `layout.md`'s to define before
-> step 7 can use it. *Still blocks step 7, on the mapping rather than the question.*
+> get a small-screen rung, and which rung.
+>
+> **The third variable — at what breakpoint — is not open**, and this section's earlier
+> claim that the system has no breakpoint vocabulary was wrong (step 35).
+> `tests/breakpoint-contract.test.mjs` records a **closed set of four**, each with its
+> purpose stated and an explicit ratchet requiring a fifth to be added on purpose: **500**
+> (the shared mobile breakpoint — touch-target minimums and the drawer's mobile mode),
+> **580** (the floating-window frame contract on phones), **620** and **760** (both header
+> work). **500 is the standing candidate** for any type step-down, and the test's own note
+> that reusing one costs nothing means the mapping decision need not open the set.
+>
+> What the set lacks is a **canonical home**. Per `CLAUDE.md`'s one-home rule an enforcement
+> test SHOULD cite the section it enforces; this one cites nothing, because no section
+> exists — the rule's only statement is a test. So what `spacing.md` (or a `layout.md`) owes
+> Q6 is a *home for a set that already exists*, not the set itself. That is a smaller debt
+> than this section previously claimed — and it is now paid: [`layout.md`](layout.md) §1.1
+> publishes the set, and `tests/breakpoint-contract.test.mjs` cites it. **500px is a citable
+> published width**, so the mapping decision has one to name. *Still blocks step 7, on the
+> mapping rather than the question.*
 
 **Q7 — Does the scale reach below 10px, and if not, what may a density tier do?**
 `--rux-size-xxs` (10px) is the smallest rung. The trip-bar's XXS density tier sets 10px row

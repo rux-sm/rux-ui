@@ -1,15 +1,21 @@
 /* The portable layer's breakpoints are a closed set.
  *
+ * Enforces docs/foundations/layout.md §1.1 (the set) and §1.2 (the ratchet).
+ * That document states the rule; this file is the rule made executable. The map
+ * below is the check, not the canonical list — read layout.md for what each
+ * width is for and what it takes to add one.
+ *
  * A breakpoint is a design decision, not a local detail: every one added is a
  * width at which some consumer's layout changes without them asking for it, and
  * they multiply quietly because adding one is always the smallest fix in front
  * of you. The application layer shows where that ends — eleven distinct widths
- * (359, 420, 479, 480, 500, 560, 580, 640, 700, 720px), several a few pixels
- * apart, none of them a decision anybody remembers making.
+ * (359, 420, 479, 480, 500, 501, 560, 580, 640, 700, 720px) expressing nine
+ * boundaries, seven of them off the set, several a few pixels apart, none of
+ * them a decision anybody remembers making. See layout.md §3 and its step 3.
  *
  * This is a ratchet, not a redesign. The four the portable layer already uses
  * are recorded below with what each is for. Adding a fifth means adding it here
- * on purpose, which is the whole point; reusing one of these costs nothing. */
+ * on purpose AND as a numbered step in layout.md §5; reusing one costs nothing. */
 
 import test from "node:test";
 import assert from "node:assert/strict";

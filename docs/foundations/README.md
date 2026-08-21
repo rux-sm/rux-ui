@@ -15,7 +15,8 @@ roles onto that vocabulary.
 
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
-| [`typography.md`](typography.md) | 1.13.0 | 26 done · 6 open · 2 deferred | Q6 |
+| [`typography.md`](typography.md) | 1.13.2 | 28 done · 6 open · 2 deferred | Q6 |
+| [`layout.md`](layout.md) | 1.0.0 | 2 done · 5 open | — |
 | `spacing.md` | — | not written | — |
 | `color.md` | — | not written | — |
 | `motion.md` | — | not written | — |
@@ -33,7 +34,8 @@ the worked example; the unwritten documents follow the same method.
 |---|---|---|
 | `typography.md` | [vercel.com/geist/typography](https://vercel.com/geist/typography) | adopted; ramp, leading, tracking and role families all measured from it |
 | `color.md` | [vercel.com/geist/colors](https://vercel.com/geist/colors) | reviewed, not written. Ten-step scales: 1–3 component backgrounds, 4–6 borders, 7–8 high-contrast backgrounds, **9–10 the only two text colours** — which is what answered Q4 |
-| `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written. Eight elevation presets bundling radius, fill, stroke and shadow; also owes this repo a **breakpoint vocabulary**, which Q6 is waiting on |
+| [`layout.md`](layout.md) | **none — originated here** | written, breakpoints only. Geist publishes four foundations and **no breakpoint page**, so this is the first foundation rule this repo originates rather than adopts. Its remaining scope (space scale, radius, Materials elevation) is measured from Geist and is recorded as open steps |
+| `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written — and **may not be needed**: `layout.md` steps 4 and 5 already claim the space scale, radius, and the eight elevation presets. Fold or keep is `layout.md` Q4's to settle |
 | component specs | e.g. [badge](https://vercel.com/geist/badge), [note](https://vercel.com/geist/note) | reviewed, not written. `badge` maps to `.rux-badge`, `note` to `.rux-alert` |
 
 **The values are not published.** Vercel's pages name the classes and say the numbers come
