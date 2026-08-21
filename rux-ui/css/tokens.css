@@ -50,7 +50,11 @@
 	--rux-font-mono:			"Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	/* ─── TYPOGRAPHY · font size ───────────────────────────────────────────── */
-	--rux-size-xxs:		0.625rem;	/* 10px */
+	/* 11px is the floor, and it is Geist's: its Badge at size Small renders
+	   11px — the one rung its own type catalog does not publish, kept legible
+	   by positive tracking (rule 2.14). Was 10px, which nothing in the catalog
+	   uses. docs/foundations/typography.md Q7, step 30. */
+	--rux-size-xxs:		0.6875rem;	/* 11px */
 	--rux-size-xs:		0.75rem;	/* 12px */
 	--rux-size-sm:		0.875rem;	/* 14px */
 	--rux-size-md:		1rem;		/* 16px */
@@ -66,7 +70,7 @@
 	   on exactly 56px), and every consumer reads a real length instead of
 	   multiplying font-size by a ratio itself. */
 
-	--rux-line-height-xxs:	0.75rem;	/* 12px — pairs with size-xxs (10px) */
+	--rux-line-height-xxs:	0.75rem;	/* 12px — pairs with size-xxs (11px) */
 	--rux-line-height-xs:	1rem;		/* 16px — pairs with size-xs (12px) */
 	--rux-line-height-sm:	1.25rem;	/* 20px — pairs with size-sm (14px) */
 	--rux-line-height-md:	1.5rem;		/* 24px — pairs with size-md (16px) */
@@ -94,6 +98,7 @@
 	   only Heading rides it. Measured off the Geist specimens — -0.02em at
 	   14-20, -0.04em at 24-32, -0.06em at 40 and up.
 	   docs/foundations/typography.md rule 2.13, step 27. */
+	--rux-tracking-dense:    0.02em;    /* below 14 — see rule 2.14 */
 	--rux-tracking-tight:    -0.02em;   /* heading 14-20 */
 	--rux-tracking-tighter:  -0.04em;   /* heading 24-32 */
 	--rux-tracking-tightest: -0.06em;   /* heading 40+   */

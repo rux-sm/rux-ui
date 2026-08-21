@@ -110,6 +110,8 @@
 	border-radius: var(--rux-radius-full);
 	font-size: var(--rux-size-xxs);
 	font-weight: var(--rux-weight-400);
+	/* 11px is sub-14, so it carries the dense rung (rule 2.14). */
+	letter-spacing: var(--rux-tracking-dense);
 	line-height: 1;
 }
 

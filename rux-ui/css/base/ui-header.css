@@ -234,6 +234,8 @@
 	   token, since this element is not a .rux-badge.
 	   docs/foundations/typography.md rule 2.11, step 6. */
 	font-weight: var(--rux-weight-500);
+	/* 11px is sub-14, so it carries the dense rung (rule 2.14). */
+	letter-spacing: var(--rux-tracking-dense);
 	line-height: 1;
 }
 

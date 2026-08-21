@@ -144,16 +144,21 @@
 	   value so XXS has somewhere to go: 9px of 600-weight text on white is
 	   still legible at the density XXS exists to provide, and every tier stays
 	   shorter than its own row line-height, so the pill never grows the row. */
-	--sched-trip-bar-bus-label-height: clamp(
-		10px,
-		calc(var(--sched-trip-bar-row-line-height) - 4px),
-		16px
-	);
-	--sched-trip-bar-bus-label-font-size: clamp(
-		9px,
-		calc(var(--sched-trip-bar-row-font-size) * 0.85),
-		13px
-	);
+	/* Three hand-set specs, one per density tier — the shape Geist publishes
+	   for Badge (Small 11/20, Medium 12/24, Large 14/20), rather than one
+	   formula evaluated three times. The clamps this replaces derived size,
+	   leading and box from three *different* expressions, so none of them
+	   landed on the scale, two resolved fractional (10.2px, 11.9px), and the
+	   box was computed from a term the text never saw — which is why it
+	   clipped its own glyphs. A hand-set spec cannot do any of that.
+	   XS is the default, and the three values live in scheduler/css/tokens.css
+	   rather than here: a custom property resolves from the *nearest* ancestor
+	   that declares it, so a default on .sched-trip-bar — a descendant of
+	   .sched-scheduler — silently beat every tier override on the size class.
+	   The row tokens never had this problem because they were already declared
+	   further up. A token a tier is meant to override MUST be declared above
+	   that tier's class in the ancestor chain.
+	   docs/foundations/typography.md D13, Q7, step 30. */
 
 	/* The one surface where ghost's foreground step cannot work, so this is the
 	   one place that keeps a hover fill.
@@ -250,13 +255,27 @@
 }
 
 .sched-scheduler--trip-bar-size-xxs {
-	--sched-trip-bar-row-font-size:   var(--rux-size-xxs);
-	--sched-trip-bar-row-line-height: var(--rux-line-height-xxs);
+	--sched-trip-bar-row-font-size:   var(--rux-size-xxs);          /* 11px */
+	--sched-trip-bar-row-line-height: var(--rux-line-height-xxs);   /* 12px */
+	--sched-trip-bar-row-tracking:    var(--rux-tracking-dense);
+	/* The pill matches the row's size here rather than stepping under it:
+	   a 12px row leaves no room for two legible sizes, so the separation comes
+	   from weight and the pill's own fill instead (rule 2.3 — hierarchy from
+	   size, weight, and space). The box fills the row exactly, which is this
+	   tier's stated cost: XS and SM keep their 4px of breathing room, XXS
+	   trades it for legible text. */
+	--sched-trip-bar-bus-label-height:      var(--rux-line-height-xxs);   /* 12px */
+	--sched-trip-bar-bus-label-font-size:   var(--rux-size-xxs);          /* 11px */
+	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-xxs);   /* 12px */
 }
 
 .sched-scheduler--trip-bar-size-sm {
-	--sched-trip-bar-row-font-size:   var(--rux-size-sm);
-	--sched-trip-bar-row-line-height: var(--rux-line-height-sm);
+	--sched-trip-bar-row-font-size:   var(--rux-size-sm);           /* 14px */
+	--sched-trip-bar-row-line-height: var(--rux-line-height-sm);    /* 20px */
+	--sched-trip-bar-bus-label-height:      var(--rux-line-height-xs);    /* 16px */
+	--sched-trip-bar-bus-label-font-size:   var(--rux-size-xs);           /* 12px */
+	--sched-trip-bar-bus-label-line-height: var(--rux-line-height-xs);    /* 16px */
+	--sched-trip-bar-bus-label-tracking:    var(--rux-tracking-normal);   /* 12px is on-scale */
 }
 
 /* Partial POs keep the confirmed trip surface (including color overrides),
@@ -795,7 +814,10 @@
 	color: var(--rux-black);
 	font-size: var(--sched-trip-bar-bus-label-font-size);
 	font-weight: var(--sched-trip-bar-bus-label-weight);
-	line-height: 1;
+	/* Was line-height: 1 — unitless on real text, which rule 2.2 calls a
+	   defect, and the third of this element's three derived values. */
+	line-height: var(--sched-trip-bar-bus-label-line-height);
+	letter-spacing: var(--sched-trip-bar-bus-label-tracking);
 }
 
 .sched-trip-bar__destination {
@@ -809,7 +831,9 @@
 	white-space: nowrap;
 	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
-	letter-spacing: 0;
+	/* Tokenised so the XXS tier can carry the dense rung: its row text is 11px,
+	   and rule 2.14 requires positive tracking below 14. */
+	letter-spacing: var(--sched-trip-bar-row-tracking, 0);
 	line-height: var(--sched-trip-bar-row-line-height);
 }
 

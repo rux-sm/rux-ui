@@ -17,90 +17,128 @@ const ruxTokens = await readFile(
 
 const ROOT_FONT_PX = 16;
 
+// Resolve a --rux-* primitive to px. Only primitives are resolved: the point of
+// step 30 is that the trip bar states rungs, so anything else is a failure.
 function pxOf(name) {
 	const raw = ruxTokens.match(new RegExp(`${name}:\\s*([\\d.]+)(rem|px)`));
 	assert.ok(raw, `${name} not found in rux-ui/css/tokens.css`);
 	return raw[2] === "rem" ? Number(raw[1]) * ROOT_FONT_PX : Number(raw[1]);
 }
 
-// What each "Trip bar size" setting resolves the two row drivers to. XS is the
-// unmodified default in scheduler/css/tokens.css; XXS and SM are the two
-// .sched-scheduler--trip-bar-size-* override blocks in trip-bar.css.
-const TIERS = {
-	xxs: { font: pxOf("--rux-size-xxs"), line: pxOf("--rux-line-height-xxs") },
-	xs: { font: pxOf("--rux-size-xs"), line: pxOf("--rux-line-height-xs") },
-	sm: { font: pxOf("--rux-size-sm"), line: pxOf("--rux-line-height-sm") },
-};
-
-// Pull a clamp(floor, calc(<driver> * k | <driver> - n), cap) token out of the
-// stylesheet and turn it into a function of the tier.
-function clampToken(name) {
-	const body = barCss.match(
-		new RegExp(`${name}:\\s*clamp\\(([\\s\\S]*?)\\);`),
+// Read a custom property out of a block, falling back to the sheet-wide default
+// (the XS tier declares no override block — it *is* the default).
+function declIn(block, prop) {
+	const m = block.match(new RegExp(`${prop}:\\s*([^;]+);`));
+	return m ? m[1].trim() : null;
+}
+function blockFor(tier) {
+	if (tier === "xs") return null;
+	const m = barCss.match(
+		new RegExp(`\\.sched-scheduler--trip-bar-size-${tier}\\s*\\{([\\s\\S]*?)\\n\\}`),
 	);
-	assert.ok(body, `${name} is not a clamp() in trip-bar.css`);
-	const [floor, preferred, cap] = body[1]
-		.split(",")
-		.map((part) => part.trim());
-
-	const driver = preferred.includes("row-font-size") ? "font" : "line";
-	const scale = preferred.match(/\*\s*([\d.]+)/);
-	const offset = preferred.match(/-\s*([\d.]+)px/);
-
-	return (tier) => {
-		const base = TIERS[tier][driver];
-		const value = scale
-			? base * Number(scale[1])
-			: base - Number(offset[1]);
-		return Math.min(
-			Math.max(value, Number.parseFloat(floor)),
-			Number.parseFloat(cap),
-		);
-	};
+	assert.ok(m, `no override block for tier ${tier}`);
+	return m[1];
+}
+function valueOf(tier, prop) {
+	const block = blockFor(tier);
+	const own = block && declIn(block, prop);
+	const raw = own ?? declIn(barCss, prop) ?? declIn(schedTokens, prop);
+	assert.ok(raw, `${prop} has no value for tier ${tier}`);
+	return raw;
+}
+function pxFor(tier, prop) {
+	const raw = valueOf(tier, prop);
+	const ref = raw.match(/var\(\s*(--rux-[\w-]+)\s*\)/);
+	assert.ok(
+		ref,
+		`${prop} at tier ${tier} is "${raw}" — it must name a --rux-* rung (step 30)`,
+	);
+	return pxOf(ref[1]);
 }
 
-const pillFont = clampToken("--sched-trip-bar-bus-label-font-size");
-const pillHeight = clampToken("--sched-trip-bar-bus-label-height");
+const TIERS = ["xxs", "xs", "sm"];
+const rowFont = (t) => pxFor(t, "--sched-trip-bar-row-font-size");
+const rowLine = (t) => pxFor(t, "--sched-trip-bar-row-line-height");
+const pillFont = (t) => pxFor(t, "--sched-trip-bar-bus-label-font-size");
+const pillBox = (t) => pxFor(t, "--sched-trip-bar-bus-label-height");
+const pillLine = (t) => pxFor(t, "--sched-trip-bar-bus-label-line-height");
 
-test("the bus pill changes size at every trip-bar size setting", () => {
-	// The regression: the font tracked line-height x 0.625 with a 10px floor
-	// and the height tracked line-height - 4px with a 12px floor, so XXS and
-	// XS both resolved to a 12px-tall pill with 10px text — two of the three
-	// settings produced an identical pill and the control looked broken.
-	const fonts = ["xxs", "xs", "sm"].map(pillFont);
-	const heights = ["xxs", "xs", "sm"].map(pillHeight);
-
-	assert.equal(
-		new Set(fonts).size,
-		3,
-		`pill font must differ per tier, got ${fonts.join(" / ")}px`,
-	);
-	assert.equal(
-		new Set(heights).size,
-		3,
-		`pill height must differ per tier, got ${heights.join(" / ")}px`,
-	);
-	// And it has to move in the same direction as the text beside it.
-	assert.ok(fonts[0] < fonts[1] && fonts[1] < fonts[2]);
-	assert.ok(heights[0] < heights[1] && heights[1] < heights[2]);
+test("the bus pill states rungs instead of deriving them", () => {
+	// The regression this replaces: size, leading and box each came from a
+	// separate clamp() over a different term, so none landed on the scale, two
+	// resolved fractional (10.2px, 11.9px), and the box was computed from a
+	// term the text never saw — so it clipped its own glyphs.
+	for (const tier of TIERS) {
+		for (const prop of [
+			"--sched-trip-bar-bus-label-font-size",
+			"--sched-trip-bar-bus-label-height",
+			"--sched-trip-bar-bus-label-line-height",
+		]) {
+			const raw = valueOf(tier, prop);
+			assert.doesNotMatch(
+				raw,
+				/clamp\(|calc\(/,
+				`${tier}: ${prop} is derived ("${raw}"); it must name a rung`,
+			);
+		}
+	}
 });
 
 test("the bus pill never grows the row it sits in", () => {
 	// The collapsed bar height is row-line-height x visible-row-count, so a
-	// pill taller than its own row would silently blow that budget.
-	for (const tier of ["xxs", "xs", "sm"]) {
+	// pill taller than its own row would silently blow that budget. Equal is
+	// allowed: at XXS the pill fills the row exactly, which is that tier's
+	// stated cost for legible text.
+	for (const tier of TIERS) {
 		assert.ok(
-			pillHeight(tier) < TIERS[tier].line,
-			`${tier}: pill ${pillHeight(tier)}px must fit a ${TIERS[tier].line}px row`,
+			pillBox(tier) <= rowLine(tier),
+			`${tier}: pill ${pillBox(tier)}px must fit a ${rowLine(tier)}px row`,
 		);
 	}
 });
 
-test("the bus pill stays quieter than the row text beside it", () => {
-	for (const tier of ["xxs", "xs", "sm"]) {
+test("the bus pill's box fits its own leading", () => {
+	// The box and the text used to come from different expressions. They do not
+	// any more, and this is what keeps them together.
+	for (const tier of TIERS) {
+		assert.equal(
+			pillBox(tier),
+			pillLine(tier),
+			`${tier}: pill box ${pillBox(tier)}px and leading ${pillLine(tier)}px must agree`,
+		);
+	}
+});
+
+test("the bus pill is never louder than the row text beside it", () => {
+	// Where size cannot separate them — XXS has no room for two legible sizes —
+	// weight does, per rule 2.3. What is forbidden is the pill being *bigger*.
+	const pillWeight = schedTokens.match(
+		/--sched-trip-bar-bus-label-weight:\s*var\((--rux-weight-\d+)\)/,
+	);
+	assert.ok(pillWeight, "the pill weight must name a --rux-weight-* rung");
+	for (const tier of TIERS) {
 		assert.ok(
-			pillFont(tier) < TIERS[tier].font,
-			`${tier}: pill text ${pillFont(tier)}px must sit under the ${TIERS[tier].font}px row text`,
+			pillFont(tier) <= rowFont(tier),
+			`${tier}: pill text ${pillFont(tier)}px must not exceed the ${rowFont(tier)}px row text`,
+		);
+		if (pillFont(tier) === rowFont(tier)) {
+			assert.notEqual(
+				pillWeight[1],
+				"--rux-weight-400",
+				`${tier}: pill matches the row size, so its weight must differ from the row's 400`,
+			);
+		}
+	}
+});
+
+test("type below 14px carries the dense tracking rung (rule 2.14)", () => {
+	for (const tier of TIERS) {
+		if (rowFont(tier) >= 14) continue;
+		const raw = valueOf(tier, "--sched-trip-bar-row-tracking");
+		assert.match(
+			raw,
+			/--rux-tracking-dense/,
+			`${tier}: ${rowFont(tier)}px row text must carry --rux-tracking-dense`,
 		);
 	}
 });
