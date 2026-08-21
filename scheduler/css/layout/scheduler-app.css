@@ -109,21 +109,39 @@
 	gap: 0;
 }
 
-/* ‹ Today › sits at the header's true center — the same stance the mobile
-   bottom bar takes with its 1fr/auto/1fr grid — with New Trip on the left
-   flank and the panel toggle on the right. Absolute rather than a third grid
-   track: the cluster has to stay inside the toolbar so the ≤500px rules can
-   carry it into the fixed bottom bar, and absolute centering is immune to
-   the flanks' unequal widths anyway. */
+/* The week's range holds the header's true center, with New Trip on the left
+   flank and ‹ Today › + the panel toggle on the right. Absolute rather than a
+   third grid track, for the reason the controls used absolute before it: the
+   flanks have unequal widths, so a middle track would center the range
+   between them rather than in the header.
+
+   Hidden below 501px instead of following the toolbar into the fixed bottom
+   bar — that bar is thumb-reach navigation, not a title, and every day column
+   already carries its own month. */
+.calendar-app__date-range {
+	display: none;
+	color: var(--rux-text-secondary);
+	font-size: var(--rux-size-sm);
+	line-height: var(--rux-line-height-sm);
+	font-variant-numeric: tabular-nums;
+	white-space: nowrap;
+}
+
 @media (min-width: 501px) {
 	.rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header {
 		position: relative;
 	}
 
-	.rux-app-view[data-view="calendar"] .calendar-app__date-controls {
+	.rux-app-view[data-view="calendar"] .calendar-app__date-range {
+		display: block;
 		position: absolute;
 		left: 50%;
 		translate: -50% 0;
+	}
+
+	/* Flush cluster, but not flush against the panel toggle beside it. */
+	.rux-app-view[data-view="calendar"] .rux-workspace__toolbar {
+		gap: var(--rux-space-2);
 	}
 }
 
@@ -131,8 +149,9 @@
 	flex: none;
 }
 
-/* The date occupies the flexible column and the Calendar Tools control keeps
-   its natural width. The Trip Editor has no calendar-header trigger. */
+/* New Trip occupies the flexible column and the view controls keep their
+   natural width; the centered range is absolute and out of flow. The Trip
+   Editor has no calendar-header trigger. */
 .rux-app-view[data-view="calendar"] > .rux-workspace > .rux-workspace__header {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;

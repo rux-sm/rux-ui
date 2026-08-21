@@ -41,7 +41,7 @@
 		     and every reusable .rux-* component. This app loads the same file
 		     any other project would, so the portable path stays exercised. -->
 		<link rel="stylesheet" href="./rux-ui/css/rux.css?v=44" />
-		<link rel="stylesheet" href="./scheduler/css/components.css?v=292" />
+		<link rel="stylesheet" href="./scheduler/css/components.css?v=293" />
 		<link
 			rel="stylesheet"
 			href="./scheduler/css/features/driver-panel.css?v=13"
@@ -2262,16 +2262,25 @@
 									>
 								</button>
 							</div>
+							<!-- The visible week, centered between the header's edges.
+							     A header child, not a toolbar child: the toolbar turns
+							     into the fixed bottom bar at <=500px and this must not
+							     ride down with it. Filled by renderDayHeaders(). -->
+							<p
+								class="calendar-app__date-range"
+								id="calendar-date-range"
+								aria-live="polite"
+							></p>
 							<div
 								class="rux-workspace__toolbar"
 								role="group"
 								aria-label="View controls"
 							>
-								<!-- ‹ Today › centers between the header's edges (CSS
-								     absolute — see scheduler-app.css) with New Trip on the
-								     left flank and the panel toggle on the right. No date
-								     label: every day column carries its month, and the mini
-								     calendar's title holds month + year. -->
+								<!-- ‹ Today › sits on the right flank beside the panel
+								     toggle; the week's date range takes the header's center
+								     (CSS absolute — see scheduler-app.css) and New Trip the
+								     left. Day columns still carry their own month, so the
+								     range reads as the week's title, not its only date. -->
 								<div class="calendar-app__date-controls">
 									<button
 										class="rux-button rux-button--ghost rux-button--icon rux-button--lg"
@@ -9149,12 +9158,33 @@
 					el.className =
 						"sched-scheduler__day-head" +
 						(isToday ? " sched-scheduler__day-head--today" : "");
-					// Every column carries its month — with no date label in the
-					// workspace header, each cell is self-contained: "Mon Aug 17".
-					// Year lives in the mini calendar's title.
+					// Every column still carries its month, so a cell reads on its
+					// own — "Mon Aug 17" — without depending on the range in the
+					// header. Year lives in the range and the mini calendar title.
 					el.innerHTML = `<span class="sched-scheduler__day-label"><span class="sched-scheduler__day-name">${names[index % 7]}</span><span class="sched-scheduler__day-month">${date.toLocaleDateString("en-US", { month: "short" })}</span><span class="sched-scheduler__day-number${isToday ? " sched-scheduler__day-number--today" : ""}">${date.getDate()}</span></span><div class="sched-scheduler__time-ticks"><span>12</span><span>6</span><span>6</span></div>`;
 					insertAfter.insertAdjacentElement("afterend", el);
 					insertAfter = el;
+				}
+				// The header's week title. formatRange collapses a same-month
+				// span to "Aug 24 – 30, 2026" and expands it only where it must
+				// ("Aug 31 – Sep 6, 2026", "Dec 29, 2025 – Jan 4, 2026") — the
+				// boundaries hand-assembled formatting keeps getting wrong.
+				// Built here rather than once above because this function is
+				// hoisted and runs during init, before a module-scope const of
+				// its own would have left the temporal dead zone.
+				const weekRangeFormat = new Intl.DateTimeFormat("en-US", {
+					month: "short",
+					day: "numeric",
+					year: "numeric",
+				});
+				const rangeEl = document.getElementById(
+					"calendar-date-range",
+				);
+				if (rangeEl) {
+					rangeEl.textContent = weekRangeFormat.formatRange(
+						weekStart,
+						addDays(weekStart, viewDays - 1),
+					);
 				}
 			}
 
