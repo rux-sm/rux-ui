@@ -5,15 +5,32 @@ version it conforms to. Authority without a version is only "whatever `main` say
 which is not control. See [`README.md`](README.md) §2.
 
 **Status** · 31 steps: **24 done · 5 open · 2 deferred**
-**Nothing is executable without a decision.** Steps **24 → 25 → 26 → 27** are done: the ladder
-sits on the catalog, every role is classified into a family and already carried its family's
-leading, and the tracking curve is applied — which closed **D7** and the long-deferred step 3,
-and closed two of D11's three halves. **Q1–Q5, Q7, Q8 and Q9 are answered** (§6), and the ramp, leading and tracking models are
-settled against the measured Geist catalog (rules 2.2, 2.12, 2.13). What remains is gated, and none of it on
-typography itself: **step 23 is deferred** — the 13px rung and the 18/36 leadings have no
-consumer, so Q8 waits for the role that wants one. **Step 9 is a Class C proposal awaiting
-authorization**, not a decision; Q6 gates 7; step 11 needs external verification, step 16 needs everything, and **step 31 is a Class C rename awaiting authorization**.
-Derived from
+Nothing is executable without a decision. The type system conforms to the measured Geist
+catalog end to end: the ladder sits on it (24), roles own their leading and carry a family
+(25, 26), tracking follows the curve (27), every overridden heading is paired (29), the small
+end is on the catalog with nothing derived (30), and the utilities apply their roles (22).
+That closed **D2, D3, D4, D6, D7, D12, D13, D14** and two of D11's three halves.
+**Q1–Q5 and Q7–Q9 are answered** (§6).
+
+**Where to pick up.** Four things are waiting, and none of them is a typography question:
+
+1. **Q6 — the only live question, and only its *mapping*.** The mechanism is settled: the
+   scale never moves, and a call site picks a *different published rung* at a breakpoint
+   (`md:text-heading-40`). What is undecided is which roles get a small-screen rung, which
+   rung, and at what breakpoint — and this system has no breakpoint vocabulary, so it likely
+   waits on `spacing.md`. *Gates step 7.*
+2. **Step 31 — the numeric rename**, which **Q8 folded into**: classes become
+   `text-{family}-{size}` and the primitive ladder goes numeric, both keeping the `rux-`
+   prefix. **Class C, awaiting authorization.** Staged deliberately behind step 22 so a
+   rename changes names and nothing else.
+3. **Step 9 — collapse the emphasis tiers to two.** Also **Class C, awaiting
+   authorization**, and it renders identically: `--rux-text-faint` has zero consumers and
+   `--rux-text-muted` has six that already resolve to secondary.
+4. **The rest is not blocked on a decision**: step 11 needs external verification, step 16
+   needs everything else first, and steps 4 and 23 are deferred for want of a consumer.
+
+**Next foundation documents.** `colors.md`, `materials.md` and the component specs are the
+stated direction, with the catalog's own pages as the source — see `README.md` §1. Derived from
 §5; `tests/foundations-contract.test.mjs` fails if this line disagrees with the log.
 
 This document is canonical for type in Rux UI: the scale, the roles, the utilities, and

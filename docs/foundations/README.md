@@ -23,6 +23,29 @@ roles onto that vocabulary.
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
 it in is its own decision.
 
+### The source these documents are written against
+
+**Geist — Vercel's design system — is the adopted base, and the intent is to take it
+wholesale rather than section by section.** `typography.md` was settled against it and is
+the worked example; the unwritten documents follow the same method.
+
+| This document | Its source | Status |
+|---|---|---|
+| `typography.md` | [vercel.com/geist/typography](https://vercel.com/geist/typography) | adopted; ramp, leading, tracking and role families all measured from it |
+| `color.md` | [vercel.com/geist/colors](https://vercel.com/geist/colors) | reviewed, not written. Ten-step scales: 1–3 component backgrounds, 4–6 borders, 7–8 high-contrast backgrounds, **9–10 the only two text colours** — which is what answered Q4 |
+| `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written. Eight elevation presets bundling radius, fill, stroke and shadow; also owes this repo a **breakpoint vocabulary**, which Q6 is waiting on |
+| component specs | e.g. [badge](https://vercel.com/geist/badge), [note](https://vercel.com/geist/note) | reviewed, not written. `badge` maps to `.rux-badge`, `note` to `.rux-alert` |
+
+**The values are not published.** Vercel's pages name the classes and say the numbers come
+from "the Geist Core Figma system" without listing them, so every figure in `typography.md`
+was read off the *rendered specimens* in a browser. Any future document has to do the same —
+and should say so, the way its steps do.
+
+**Two places the catalog contradicts its own documentation**, both found by measuring and
+worth knowing before trusting a page: its `Badge` renders **11px** at size Small, below the
+12px floor its type catalog publishes; and its `label-20` takes 32px leading where every
+smaller Label rung is flat at 16–20. Adopt what the specimens do, not what the prose implies.
+
 ---
 
 ## 2. The evolution contract
