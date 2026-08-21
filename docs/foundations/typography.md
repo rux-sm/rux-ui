@@ -1,6 +1,6 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.10.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.11.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
@@ -8,7 +8,7 @@ which is not control. See [`README.md`](README.md) §2.
 **Nothing is executable without a decision.** Steps **24 → 25 → 26 → 27** are done: the ladder
 sits on the catalog, every role is classified into a family and already carried its family's
 leading, and the tracking curve is applied — which closed **D7** and the long-deferred step 3,
-and closed two of D11's three halves. **Q1–Q5, Q7 and Q9 are answered** (§6), and the ramp, leading and tracking models are
+and closed two of D11's three halves. **Q1–Q5, Q7, Q8 and Q9 are answered** (§6), and the ramp, leading and tracking models are
 settled against the measured Geist catalog (rules 2.2, 2.12, 2.13). What remains is gated, and none of it on
 typography itself: **step 23 is deferred** — the 13px rung and the 18/36 leadings have no
 consumer, so Q8 waits for the role that wants one. **Step 9 is a Class C proposal awaiting
@@ -498,6 +498,31 @@ step 7 and any future heading work.* **Evidence added by step 21:** at 375px the
 `maintenance.html` `h1` renders 36/600 across two lines at 351px inside a 375px viewport —
 no overflow, but no margin either, and 600 makes that string wider than 400 did.
 
+> **The mechanism is answered; the mapping is not.** Measured rather than read, because the
+> catalog has no page on this — `vercel.com/geist` publishes four foundations
+> (Introduction, Colors, Typography, Materials) and **none of them is about breakpoints**,
+> which is itself the first half of the answer.
+>
+> **The scale does not move.** Every published class resolves **byte-identically at 280px
+> and at 1440px** — `text-heading-72` is 72px at both, `text-copy-16` is 16/24 at both.
+> There is no `clamp()`, no `vw`, and no media query anywhere in the type system.
+>
+> **The call site moves instead.** The page carries breakpoint-scoped classes —
+> `md:text-heading-40` and `md:text-copy-20` — so an element renders one *published rung*
+> below the breakpoint and a *different published rung* above it. The token never changes;
+> the choice of rung does. That is option (b) of the three above, implemented at the call
+> site rather than inside the token, and it is strictly better than the other two: a 40px
+> rung stays 40px everywhere, so nothing downstream has to ask "40 at which width".
+>
+> **Only display type carries variants.** The responsive classes found are on the large end
+> (`heading-40`, `copy-20`); `label-14` and `copy-16` have none. UI chrome is fixed at every
+> width and only display type steps down.
+>
+> **What is left to decide** is therefore not the mechanism but the *mapping*: which roles
+> get a small-screen rung, which rung, and at what breakpoint — and this system has no
+> breakpoint vocabulary yet, which is `spacing.md`'s or a `layout.md`'s to define before
+> step 7 can use it. *Still blocks step 7, on the mapping rather than the question.*
+
 **Q7 — Does the scale reach below 10px, and if not, what may a density tier do?**
 `--rux-size-xxs` (10px) is the smallest rung. The trip-bar's XXS density tier sets 10px row
 text and needs a pill quieter than it, which the scale cannot express — so the tier derives
@@ -553,6 +578,20 @@ before step 23 executes, not during. *Blocks nothing today: step 23 is deferred 
 consumer, and step 25 turned out not to need the 18 and 36 leadings, because no role sits
 where they would apply. Answer this with the first role that wants one of the three rungs, not
 before.*
+
+> **Answered — numeric, and it is not a separate decision.** The catalog names **everything**
+> by number: type classes are `text-heading-72`, `text-copy-13`, `text-label-13-mono`, and
+> the colour tokens are `--ds-gray-100` … `--ds-gray-1000`, `--ds-blue-700`,
+> `--ds-background-100`. There is **no t-shirt name anywhere in Geist**. So "what is the 13px
+> rung called" has the answer **13**, and the three options above collapse: option 2 is what
+> the reference system does.
+>
+> **This makes Q8 part of step 31 rather than a question of its own.** Step 31 already
+> renames the type *classes* to `text-{family}-{size}`; a numeric primitive ladder
+> (`--rux-size-13`, `--rux-size-18`) is the same decision applied one tier down, and doing
+> half of it would leave numeric classes reading t-shirt tokens. **Both are Class C on every
+> existing name**, which is why they belong in one proposal and one migration. Step 23 stays
+> deferred regardless: naming it is no longer the blocker, having a consumer still is.
 
 **Q9 — Does mono step down a rung, or hold its size?** Rule 2.4 says mono steps down one rung
 from the sans beside it, on the reasoning that a monospace face reads larger at matched
