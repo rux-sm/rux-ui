@@ -234,6 +234,14 @@ heuristic does not settle it.
 
 ## Visual Foundations
 
+> **Orientation summary — not the authority.** The canonical statement of each design rule,
+> with its values, lives in `docs/foundations/`: one document per section, each carrying a
+> contract version and its own amendment log. `typography.md` is landed; spacing, colour,
+> and motion follow. Where this section and a foundation document disagree, **the
+> foundation document wins**. Values repeated below are convenience copies, are presumed
+> stale, and are being converted to pointers section by section as each foundation document
+> settles. Cite the foundation document, never this list.
+
 ### Backgrounds
 
 Two surfaces only, following the Vercel Geist model (see "Reference: Vercel

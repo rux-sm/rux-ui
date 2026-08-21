@@ -94,6 +94,11 @@ DOCS_SHIP=(buttons.md cards.md design-system-distribution.md layout-composition.
 DOCS_APP=(billing-workflow.md driver-assignment-card.md gem-itinerary-prompt.md project-brief.md trip-bar.md trip-import-schema-v2.json trip-request-inbox.md)
 # Repo-internal: working material for this repository, useful to no consumer.
 DOCS_INTERNAL_DIRS=(ai audit)
+# Shipped wholesale: the design-rule documents a consumer's own specs must defer to.
+# A directory rather than a file list on purpose — every file here is shared authority by
+# definition, so a new section (spacing, colour) must travel without editing this script.
+# That is the one place where skipping the §5 classification prompt is the correct default.
+DOCS_SHIP_DIRS=(foundations)
 
 mkdir -p "$DST/docs"
 find "$DST/docs" -type f -delete
@@ -104,13 +109,21 @@ for doc in "${DOCS_SHIP[@]}"; do
     echo "WARNING: shipped doc missing upstream: docs/$doc"
   fi
 done
+for dir in "${DOCS_SHIP_DIRS[@]}"; do
+  if [ -d "$SRC/docs/$dir" ]; then
+    mkdir -p "$DST/docs/$dir"
+    rsync -a --delete "$SRC/docs/$dir/" "$DST/docs/$dir/"
+  else
+    echo "WARNING: shipped doc directory missing upstream: docs/$dir"
+  fi
+done
 
 # ── 5. Drift check. Walks docs/ recursively: a new subdirectory is exactly the
 #       kind of thing that otherwise slips out of the classification silently. ─
 while IFS= read -r rel; do
   top="${rel%%/*}"
   if [ "$top" != "$rel" ]; then
-    for d in "${DOCS_INTERNAL_DIRS[@]}"; do
+    for d in "${DOCS_INTERNAL_DIRS[@]}" "${DOCS_SHIP_DIRS[@]}"; do
       [ "$top" = "$d" ] && continue 2
     done
     echo "REVIEW: new upstream doc directory not classified: docs/$rel"

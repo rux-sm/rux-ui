@@ -68,6 +68,11 @@ existing files merely to make the new-app structure cleaner.
 
 ## Design rules
 
+**`docs/foundations/` outranks this list.** These rules route an agent to the right tier
+and prefix; the canonical statement of a design rule and its values lives in the foundation
+document for that section (`typography.md` today; spacing, colour, and motion to follow).
+Where the two disagree, the foundation document wins. Do not restate a value here.
+
 0. **Pick the right prefix.** `.rux-*` / `--rux-*` is reserved for `rux-ui/` and
    means "portable and domain-free". Anything naming a trip, bus, driver, fleet,
    customer, manifest, or itinerary is `.sched-*` / `--sched-*` and lives in

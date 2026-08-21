@@ -72,7 +72,12 @@ In order, it:
    `references/`, so agents editing the consumer stay on-system.
 6. Copies allowlisted docs, and **warns about any doc it does not recognize**.
    The walk is recursive: a new subdirectory is exactly what otherwise slips
-   out of the classification silently.
+   out of the classification silently. `docs/foundations/` is the one directory
+   shipped wholesale (`DOCS_SHIP_DIRS`) rather than file by file: every document
+   in it is shared design authority by definition, and a new section must reach
+   consumers without an edit here. Those documents **outrank a consumer's own
+   specifications** on the vocabulary they define, and each carries a contract
+   version a consumer's specs declare conformance to.
 7. Strips `?v=N` cache-busters from `@import` lines — a bundler resolves them
    as literal filenames. This is the only edit the copy receives.
 8. **Verifies every `@import` in `css/rux.css` resolves.**

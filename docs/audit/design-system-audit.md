@@ -509,6 +509,12 @@ renames marked ⚠ are breaking and must go through the ledger + vendored-consum
 
 ## 5. Proposed design rules (CLAUDE.md-ready)
 
+> **Status (superseded in part).** Written before `docs/foundations/` existed. These rules
+> are still the enforcement agenda — each names the test that checks it — but they are no
+> longer the place a rule is *stated*. As each foundation document lands, the rules in its
+> domain move there and this list keeps only the test mapping. Rule 10's "the ledger is how
+> it changes" is the principle `docs/foundations/` generalizes.
+
 Each rule names the test that can enforce it. Rules marked ★ are new tests worth writing;
 the others extend existing suites.
 
