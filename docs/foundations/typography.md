@@ -1,14 +1,14 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.6.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.6.1** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
 **Status** · 29 steps: **19 done · 9 open · 1 deferred**
 **Nothing is executable without a decision.** Steps **24 → 25 → 26 → 27** are done: the ladder
 sits on the catalog, every role is classified into a family and already carried its family's
-leading, and the tracking curve is applied — which closed **D7**, **D11** and the long-deferred
-step 3. **Q1, Q2, Q3 and Q5 are answered** (§6), and the ramp, leading and tracking models are
+leading, and the tracking curve is applied — which closed **D7** and the long-deferred step 3,
+and closed two of D11's three halves. **Q1, Q2, Q3 and Q5 are answered** (§6), and the ramp, leading and tracking models are
 settled against the measured Geist catalog (rules 2.2, 2.12, 2.13). What remains is gated:
 **Q8 gates 23**, which is what the 13px rung and the 18/36 leadings wait on; Q4 gates 9, Q6
 gates 7, Q7 gates 20 and 28, Q9 blocks any mono role; step 29 follows 26 for the app tier,
@@ -326,7 +326,7 @@ step in §5.
 | **D12** | **Only one of the seven type utilities applies its role's complete recipe.** `.rux-u-caption` and `.rux-u-hint` bypass the type roles entirely and read the `--rux-field-label-*` component tokens instead — so the utility named "caption" does not use `--rux-text-caption-*`. Four more apply a partial subset. Rule 1.3 exists because "a call site applying five `var()` references by hand can forget one"; the utilities are the call sites that forgot. | §3.3 |
 | **D13** | `--sched-trip-bar-bus-label-font-size` is `clamp(9px, calc(var(--sched-trip-bar-row-font-size) * 0.85), 13px)` — a proportional shrink with `px` bounds. It resolves to **10.2px** in the running app. This is D6's defect surviving in the scheduler tier: literal `px` type sizes against rule 2.1, a proportional shrink against 2.4, and an unnamed off-grid result against 2.10. Step 10's "the portable tier now contains zero raw type values" was scoped to the portable tier and still holds. | `scheduler/css/features/trip-bar.css:152`, measured live |
 | **D14** | **A component that overrides a heading's size does not override its leading**, so the element default's leading outlives the size it was paired with. Measured live: **6 on `index.html`, 3 on `driver.html`** — `.rux-preferences__heading` at **14/40**, two bare `h3` at **14/32**, `.sched-scope-request__dialog-title` at **24/40**, and `.driver-assignment-card__date-range` at **16/19**, whose fractional leading means a unitless `line-height` and is a rule 2.2 defect outright. Two were fixed in step 24 because it would have worsened them; the rest are step 29. **The audit criterion changes under rule 2.2**: `.driver-share-header__label` at 18/20 reads as unpaired against the size ladder but is exactly `label-18`, so step 26 will reclassify some of these as correct rather than fix them. | measured on `index.html` and `driver.html` |
-| **D11** | The element scale and the role scale diverge: `h2` is 30px, but no role is 30px; `h3` is 24px/400 while `heading-section` is 24px/600. The same visual level has two definitions. **Cause identified:** 30 and 36 are not on the Geist catalog at all — it steps 24 → 32 → 40 — so the two rungs that have no role are exactly the two the face's own system never published. Closes at step 24, which moves them onto the catalog without renaming anything. The weight half already closed at step 6. | §3.2 vs §3.4 |
+| **D11** | The element scale and the role scale diverge: `h2` is 30px, but no role is 30px; `h3` is 24px/400 while `heading-section` is 24px/600. The same visual level has two definitions. **Two of three halves closed; the third is open.** The **weight** half closed at step 6 (`h3` and `heading-section` both read 600). The **off-catalog** half closed at step 24: 30 and 36 were not on the Geist catalog at all — it steps 24 → 32 → 40 — so the two rungs with no role were exactly the two the face's own system never published, and they now sit at 32 and 40. **What remains:** `h2` is 32px and `h4` is 18px, and **no role token exists at either size**. The role set is `heading-page` (40), `heading-section` (24), `heading-panel` (16). The difference step 24 made is that 32 and 18 are now sizes rule 2.12 *publishes*, so a role can be minted for them — 30 never could be. Minting one needs a named consumer (§7.3), so it waits for a component that wants it. | §3.2 vs §3.4 |
 
 ---
 
