@@ -7450,7 +7450,7 @@
 				clearTripBars,
 				applyItineraryUploaded,
 				applyItineraryDeleted,
-			} from "./js/components/trip-bar.js?v=24";
+			} from "./js/components/trip-bar.js?v=25";
 			import BusPicker, {
 				findConflict as findBusConflict,
 			} from "./js/components/bus-picker.js?v=6";
@@ -10127,6 +10127,10 @@
 							estimatedMiles: t.est_miles,
 							actualMiles: t.actual_miles,
 							quotedPrice: t.quoted_price,
+							// Saved aggregate of trip_payments — the balance-due
+							// indicator falls back to it for rows written before
+							// the payments list existed.
+							deposit_amount: t.deposit_amount,
 							paymentRef: t.po_ref,
 							invoiceNumber: t.invoice_number,
 							datePaid: t.date_paid,

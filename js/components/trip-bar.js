@@ -535,6 +535,18 @@ const PENDING_INDICATORS = [
     tone: "warning",
     check: (trip) => trip.paymentStatus === "po_partial",
   },
+  // Money is in, the quote still isn't covered, and no PO is carrying the rest.
+  // STEP_ORDER (billing-config.js) ranks this ABOVE a partial PO, so it warns
+  // through the icon only — it must not borrow the danger outline the PO-less
+  // rungs below it use, or a paying customer would read louder than a trip with
+  // no money in at all. Same money, same yellow as the Billing tab's Balance.
+  {
+    key: "balance_due",
+    get icon() { return window.RuxBilling?.STATUS_META?.deposit_received?.icon || "payments"; },
+    label: (trip) => `Balance due ${formatBalance(balanceDue(trip))}`,
+    tone: "warning",
+    check: (trip) => trip.paymentStatus === "deposit_received" && balanceDue(trip) > 0,
+  },
   {
     key: "invoice",
     icon: "receipt",
@@ -553,6 +565,33 @@ const PENDING_INDICATORS = [
     check: (trip) => trip.busOutOfService === true,
   },
 ];
+
+// The quote less every recorded payment — the same number the Billing tab's
+// Balance field shows. trip_payments is the live list the editor writes; the
+// deposit_amount aggregate (collectTrip in trip-db.js) is the fallback for
+// rows saved before that list existed.
+function balanceDue(trip) {
+  const price = Number(trip.quotedPrice) || 0;
+  const payments = Array.isArray(trip.trip_payments) ? trip.trip_payments : [];
+  const paid = payments.length
+    ? payments.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0)
+    : Number(trip.deposit_amount) || 0;
+  return price - paid;
+}
+
+// Matches formatCoverageAmount() in trip-panel.js so the bar and the Billing
+// tab print the same balance the same way.
+function formatBalance(value) {
+  return `$${value.toLocaleString("en-US", {
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+// An indicator label may depend on the trip (a balance carries its amount).
+function pendingLabel(item, trip) {
+  return typeof item.label === "function" ? item.label(trip) : item.label;
+}
 
 function isPendingValue(value) {
   if (value === true) return true;
@@ -844,7 +883,7 @@ export function applyItineraryDeleted(bar, trip) {
   const alreadyShown = bar.querySelector('.sched-trip-bar__pending-icon[data-tooltip="Pending itinerary"]');
   if (pendingItem && !alreadyShown && pendingItem.check(trip)) {
     const marker = icon(pendingItem.icon, "rux-icon sched-trip-bar__pending-icon");
-    setFloatingTooltip(marker, pendingItem.label);
+    setFloatingTooltip(marker, pendingLabel(pendingItem, trip));
     bar.querySelector(".sched-trip-bar__pending")?.prepend(marker);
   }
 }
@@ -966,13 +1005,13 @@ export function createTripBar(trip, callbacks = {}) {
   const paid = isPaidTrip(trip);
   const pending = document.createElement("span");
   pending.className = "sched-trip-bar__pending";
-  const summaryMarkerLabels = summaryMarkers.map((item) => item.label);
+  const summaryMarkerLabels = summaryMarkers.map((item) => pendingLabel(item, trip));
   summaryMarkers.forEach((item) => {
     const marker = icon(
       item.icon,
       `rux-icon sched-trip-bar__pending-icon${item.tone ? ` sched-trip-bar__pending-icon--${item.tone}` : ""}`,
     );
-    setFloatingTooltip(marker, item.label);
+    setFloatingTooltip(marker, pendingLabel(item, trip));
     pending.appendChild(marker);
   });
   const groupLabel = trip.groupLabel || "";
