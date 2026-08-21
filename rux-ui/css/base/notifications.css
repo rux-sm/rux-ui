@@ -79,7 +79,10 @@
 	margin: 0;
 	color: var(--rux-text-primary);
 	font-size: var(--rux-size-sm);
-	line-height: 1.35;
+	/* Was the unitless 1.35 — 18.9px, fractional and off the 4px grid. A size and
+	   its leading are a paired length, not a ratio: docs/foundations/typography.md
+	   rule 2.2, amendment step 18. */
+	line-height: var(--rux-line-height-sm);
 }
 
 .rux-notifications__item-detail {

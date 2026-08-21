@@ -60,7 +60,10 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "cv11", "ss03"; /* Inter alt 1, alt g */
+  /* SUSPECT — these are Inter's axes (alt 1, alt g), but the loaded face is Geist.
+     Verify what Geist publishes before changing; removing them is the safe default
+     if none apply. docs/foundations/typography.md D9, step 11. */
+  font-feature-settings: "cv11", "ss03";
 }
 
 body {
@@ -68,14 +71,18 @@ body {
   background: var(--rux-surface-0);
   color: var(--rux-text-primary);
   font-family: var(--rux-font-sans);
-  font-size: var(--rux-size-md);
-  line-height: var(--rux-line-height-md);
+  /* 14/20, the dense-UI base. Was 16/24, a document base that 89% of the
+     application never inherited — it pins --rux-size-sm explicitly in 92
+     places. The role layer already encoded this: --rux-text-body has always
+     been 14/20. docs/foundations/typography.md Q1, step 8. */
+  font-size: var(--rux-size-sm);
+  line-height: var(--rux-line-height-sm);
   font-weight: var(--rux-weight-400);
   letter-spacing: 0;
 }
 
 /* ─── Headings ──────────────────────────────────────────────────────────── */
-/* All headings: tight tracking, semibold by default. Override per-context.  */
+/* All headings: tight tracking, weight 400. Override per-context.       */
 
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
@@ -100,6 +107,11 @@ h6 {
 
 /* ─── Body copy ─────────────────────────────────────────────────────────── */
 
+/* A bare paragraph keeps the 24px leading rather than the base's 20: it is
+   prose, not chrome, and 14/20 is tight for multi-line reading. That makes
+   `p` the one place the base's size and leading are not a matched pair —
+   named here so it is an exception rather than an accident, and revisited
+   when the portal and export surfaces (S3/S4) get their own treatment. */
 p {
   margin: 0;
   line-height: var(--rux-line-height-md);
@@ -130,9 +142,13 @@ a:hover { color: var(--rux-accent-hover); text-decoration: underline; }
 
 /* ─── Code & monospace ──────────────────────────────────────────────────── */
 
+/* One rung below the sans beside it (rule 2.4). Was 0.92em, a proportional
+   shrink that landed off the scale at every call site — 12.88px inside the
+   old 16px base, 12.88 inside 14. The pairing is fixed, the number moves
+   with the base. docs/foundations/typography.md D6, step 10. */
 code, kbd, samp, pre {
   font-family: var(--rux-font-mono);
-  font-size: 0.92em;
+  font-size: var(--rux-size-xs);
 }
 
 code {
@@ -166,7 +182,6 @@ kbd {
   border: var(--rux-border-width) solid var(--rux-card-border-hover);
   border-bottom-width: calc(var(--rux-border-width) * 2);
   border-radius: var(--rux-radius-xs);
-  font-size: 0.8em;
   font-weight: var(--rux-weight-400);
   color: var(--rux-text-secondary);
 }
