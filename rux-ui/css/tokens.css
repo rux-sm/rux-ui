@@ -90,7 +90,13 @@
 
 	/* ─── TYPOGRAPHY · tracking ──────────────────────────────────────────── */
 
-	--rux-tracking-tight:  -0.02em;
+	/* Optical tracking is a curve, not a value: it tightens as size grows, and
+	   only Heading rides it. Measured off the Geist specimens — -0.02em at
+	   14-20, -0.04em at 24-32, -0.06em at 40 and up.
+	   docs/foundations/typography.md rule 2.13, step 27. */
+	--rux-tracking-tight:    -0.02em;   /* heading 14-20 */
+	--rux-tracking-tighter:  -0.04em;   /* heading 24-32 */
+	--rux-tracking-tightest: -0.06em;   /* heading 40+   */
 	--rux-tracking-normal: 0;
 	--rux-tracking-wide:   0.04em;
 	--rux-tracking-widest: 0.1em;
@@ -382,7 +388,7 @@
 	--rux-heading-page-size:        var(--rux-size-4xl);         /* 40px */
 	--rux-heading-page-weight:      var(--rux-weight-600);       /* 600 */
 	--rux-heading-page-line-height: var(--rux-line-height-4xl);  /* 48px */
-	--rux-heading-page-tracking:    var(--rux-tracking-tight);   /* -0.02em */
+	--rux-heading-page-tracking:    var(--rux-tracking-tightest);/* -0.06em */
 	--rux-heading-page-color:       var(--rux-text-primary);     /* L90 dark · L20 light */
 
 	/* Section heading — names a group of content from *above* it, the way a
@@ -394,7 +400,7 @@
 	--rux-heading-section-size:        var(--rux-size-2xl);        /* 24px */
 	--rux-heading-section-weight:      var(--rux-weight-600);      /* 600 */
 	--rux-heading-section-line-height: var(--rux-line-height-2xl); /* 32px */
-	--rux-heading-section-tracking:    var(--rux-tracking-tight);  /* -0.02em */
+	--rux-heading-section-tracking:    var(--rux-tracking-tighter);/* -0.04em */
 	--rux-heading-section-color:       var(--rux-text-primary);    /* L90 dark · L20 light */
 
 	/* Panel heading — card, panel, workspace and shell-header titles. Tracking

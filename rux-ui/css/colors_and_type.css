@@ -95,11 +95,16 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--rux-text-primary);
 }
 
-h1 { font-size: var(--rux-heading-page-size); font-weight: var(--rux-heading-page-weight); line-height: var(--rux-heading-page-line-height); }
-h2 { font-size: var(--rux-size-3xl); line-height: var(--rux-line-height-3xl); }
-h3 { font-size: var(--rux-size-2xl); line-height: var(--rux-line-height-2xl); }
-h4 { font-size: var(--rux-size-lg); letter-spacing: var(--rux-tracking-normal); line-height: var(--rux-line-height-lg); }
-h5 { font-size: var(--rux-size-md); letter-spacing: var(--rux-tracking-normal); line-height: var(--rux-line-height-md); }
+/* Each heading level takes the tracking its own size sits at on the 2.13
+   curve, which is why letter-spacing is stated per level rather than once
+   above: h1 at 40px and h5 at 16px are three steps apart on it. h4 and h5
+   previously set tracking-normal, which is off the curve — a 16px heading
+   tracks -0.02em, the same as any other heading at 16. */
+h1 { font-size: var(--rux-heading-page-size); font-weight: var(--rux-heading-page-weight); letter-spacing: var(--rux-heading-page-tracking); line-height: var(--rux-heading-page-line-height); }
+h2 { font-size: var(--rux-size-3xl); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-3xl); }
+h3 { font-size: var(--rux-size-2xl); letter-spacing: var(--rux-tracking-tighter); line-height: var(--rux-line-height-2xl); }
+h4 { font-size: var(--rux-size-lg); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-lg); }
+h5 { font-size: var(--rux-size-md); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-md); }
 h6 {
   font-size: var(--rux-size-xs);
   letter-spacing: var(--rux-tracking-wide);

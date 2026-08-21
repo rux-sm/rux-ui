@@ -1,17 +1,19 @@
 # Rux UI Foundations — Typography
 
-**Contract version: 1.5.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.6.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 29 steps: **15 done · 3 ready · 9 open · 2 deferred**
-**Q1, Q2, Q3 and Q5 are answered** (§6), and the ramp and leading models are settled against
-the measured Geist catalog (rules 2.2, 2.12, 2.13). **Step 24 is done** — the ladder now sits on
-the catalog. Ready next, in order: **25 → 26 → 27**, which give roles their own leading,
-classify the roles into the four families, and apply the tracking curve. Q8 gates 23 (and 25
-waits on it), step 29 waits on 26,
-Q4 gates 9, Q6 gates 7, Q7 gates 20 and 28, Q9 blocks any mono role, step 11 needs external
-verification, step 16 needs everything, and step 22 needs a decision. Derived from
+**Status** · 29 steps: **19 done · 9 open · 1 deferred**
+**Nothing is executable without a decision.** Steps **24 → 25 → 26 → 27** are done: the ladder
+sits on the catalog, every role is classified into a family and already carried its family's
+leading, and the tracking curve is applied — which closed **D7**, **D11** and the long-deferred
+step 3. **Q1, Q2, Q3 and Q5 are answered** (§6), and the ramp, leading and tracking models are
+settled against the measured Geist catalog (rules 2.2, 2.12, 2.13). What remains is gated:
+**Q8 gates 23**, which is what the 13px rung and the 18/36 leadings wait on; Q4 gates 9, Q6
+gates 7, Q7 gates 20 and 28, Q9 blocks any mono role; step 29 follows 26 for the app tier,
+step 11 needs external verification, step 16 needs everything, and step 22 needs a decision.
+Derived from
 §5; `tests/foundations-contract.test.mjs` fails if this line disagrees with the log.
 
 This document is canonical for type in Rux UI: the scale, the roles, the utilities, and
@@ -225,38 +227,46 @@ of this document. Values are px equivalents at a 16px root.
 
 | Size | | Line-height | | Tracking | |
 |---|---|---|---|---|---|
-| `xxs` | 10 | `xxs` | 12 | `tight` | −0.02em |
-| `xs` | 12 | `xs` | 16 | `normal` | 0 |
-| `sm` | 14 | `sm` | 20 | `wide` | 0.04em |
-| `md` | 16 | `md` | 24 | `widest` | 0.1em |
-| `lg` | 18 | `lg` | 28 | | |
-| `xl` | 20 | `xl` | 28 | | |
+| `xxs` | 10 | `xxs` | 12 | `tightest` | −0.06em |
+| `xs` | 12 | `xs` | 16 | `tighter` | −0.04em |
+| `sm` | 14 | `sm` | 20 | `tight` | −0.02em |
+| `md` | 16 | `md` | 24 | `normal` | 0 |
+| `lg` | 18 | `lg` | 28 | `wide` | 0.04em |
+| `xl` | 20 | `xl` | 28 | `widest` | 0.1em |
 | `2xl` | 24 | `2xl` | 32 | | |
-| `3xl` | 30 | `3xl` | 40 | | |
-| `4xl` | 36 | `4xl` | 40 | | |
+| `3xl` | **32** | `3xl` | 40 | | |
+| `4xl` | **40** | `4xl` | **48** | | |
 
 Weights `--rux-weight-100` … `--rux-weight-900` exist as a complete ladder; rule 2.11
 publishes 400, 500 and 600 for application use and nothing above. (Before step 6 this
 paragraph cited a §2 rule that did not exist — 2.11 is now that rule.)
 
-**This ladder is not yet the one rule 2.12 publishes.** Recorded here because §3 states what
-is in source, and §2 states what is decided; the gap between them is the work. Sizes: the
-shipped ladder has **10, 30, 36**, the catalog has **13, 32, 40**. Leadings: `lg` and `xl`
-are **both 28** (a duplicate), and the set needs **18** and **36**, which no rung names.
-Steps 23–27 close it, in that order.
+**What still separates this ladder from the one rule 2.12 publishes** (step 24 closed the
+heading end; step 27 added the tracking rungs). Sizes: the shipped ladder still has **10**
+and still lacks **13** — 10 is Q7/step 28, 13 is Q8/step 23. Leadings: `lg` and `xl` are
+**both 28**, a duplicate that resolves when `xl` becomes 26 for `heading-20` (step 26), and
+the set still needs **18** and **36**, which no rung names (Q8).
 
 ### 3.2 Tier 1 — roles
 
-| Role | Size | Weight | Leading | Tracking | Color |
-|---|---|---|---|---|---|
-| `heading-page` | 36 | 600 | 40 | tight | primary |
-| `heading-section` | 24 | 600 | 32 | tight | primary |
-| `heading-panel` | 16 | 600 | 24 | tight | primary |
-| `text-lead` | 16 | 400 | 24 | normal | secondary |
-| `text-body` | 14 | 400 | 20 | normal | primary |
-| `text-caption` | 12 | 400 | 16 | normal | secondary |
-| `label-control` | 14 | 400 | 20 | normal | primary |
-| `label-eyebrow` | 12 | 400 | 16 | wide | secondary |
+Every role carries its **family** (rule 2.12). The family is what a call site reasons about;
+the role name is what it types. Names were deliberately not changed to `heading-40`-style —
+see step 26.
+
+| Role | Family | Size | Weight | Leading | Tracking | Color |
+|---|---|---|---|---|---|---|
+| `heading-page` | heading | **40** | 600 | **48** | **tightest** | primary |
+| `heading-section` | heading | 24 | 600 | 32 | **tighter** | primary |
+| `heading-panel` | heading | 16 | 600 | 24 | tight | primary |
+| `text-lead` | copy | 16 | 400 | 24 | normal | secondary |
+| `text-body` | copy | 14 | 400 | 20 | normal | primary |
+| `text-caption` | label | 12 | 400 | 16 | normal | secondary |
+| `label-control` | label | 14 | 400 | 20 | normal | primary |
+| `label-eyebrow` | label | 12 | 400 | 16 | wide | secondary |
+
+All eight already carried their family's size and leading before step 25 — see its note. The
+three bolded cells are what steps 24 and 27 moved, and all three are tracking or the page
+heading's box.
 
 ### 3.3 Tier 2 — published utilities
 
@@ -280,10 +290,13 @@ type, and are out of scope here: `.rux-u-cluster`, `.rux-u-row`, `.rux-u-stack`,
 
 ### 3.4 Element defaults
 
-`body` is 14/20/400 at tracking 0 (step 8). `h1`–`h6` default to weight **600** and tight
-tracking (step 6); `h1` reads the `heading-page` role, `h2` is 30/40, `h3` is 24/32, `h4` is
-18/28 at normal tracking, `h5` is 16/24 at normal tracking, and `h6` is 12/16 uppercase wide
+`body` is 14/20/400 at tracking 0 (step 8). `h1`–`h6` default to weight **600** (step 6),
+and each level now states **its own tracking**, because the 2.13 curve makes one shared value
+impossible — `h1` at 40px and `h5` at 16px are three steps apart on it (step 27). `h1` reads
+the `heading-page` role (40/48, tightest), `h2` is **32/40 tighter**, `h3` is **24/32
+tighter**, `h4` is **18/28 tight**, `h5` is **16/24 tight**, and `h6` is 12/16 uppercase wide
 secondary at **400** — it opts out of the heading weight because it is styled as a label.
+`h4` and `h5` previously set tracking `normal`, which was off the curve.
 `code` is `--rux-size-xs` mono (step 10). A bare `p` keeps the 24px leading (Q2), the one
 place the base's size and leading are not a matched pair.
 
@@ -306,7 +319,7 @@ step in §5.
 | **D4** | **Fixed (step 6).** Two heading-weight regimes coexisted: element defaults rendered 400 while the `heading-section` / `heading-panel` roles specified 600, so which one a title got depended on whether it went through a component. Rule 2.11 settles both at 600, and `heading-page` — the one role that contradicted the policy at 400 — moved with them. | `colors_and_type.css` heading block vs `tokens.css:383` |
 | **D5** | `--rux-text-muted` and `--rux-text-faint` both alias `--rux-text-secondary`, in **both** themes. The system documents three emphasis tiers and ships two. | `tokens.css:260`, `:1536` |
 | **D6** | **Fixed (step 10).** `code { font-size: 0.92em }` violated 2.4 — it yields 12.88px inside body copy and 14.72px at 16px. Fractional at every call site. | `colors_and_type.css:134` |
-| **D7** | One flat `--rux-tracking-tight` (−0.02em) serves both 36px and 16px. Optical tracking must scale with size; 36px is under-tracked and 16px over-tracked by the same token. **Measured against the Geist catalog during step 6:** its headings step −0.06em at 40–72px, −0.04em at 32px, and −0.02em at ≤20px. So the current token is correct at the small end and roughly two-and-a-half times too loose at `heading-page` — the defect is real but narrower than "one token serves everything" implied. **Curve measured in full (step 22-decisions), by reading computed styles off the rendered specimens rather than the docs, which do not publish numbers:** −0.02em at 14/16/20, −0.04em at 24/32, −0.06em at 40/48/56/64/72, and 0 below 14. Stated as rule **2.13**; closes at step 27. | `tokens.css` tracking block; Geist published specimens, measured |
+| **D7** | **Fixed (step 27).** One flat `--rux-tracking-tight` (−0.02em) served both 36px and 16px. Optical tracking must scale with size; 36px is under-tracked and 16px over-tracked by the same token. **Measured against the Geist catalog during step 6:** its headings step −0.06em at 40–72px, −0.04em at 32px, and −0.02em at ≤20px. So the current token is correct at the small end and roughly two-and-a-half times too loose at `heading-page` — the defect is real but narrower than "one token serves everything" implied. **Curve measured in full (step 22-decisions), by reading computed styles off the rendered specimens rather than the docs, which do not publish numbers:** −0.02em at 14/16/20, −0.04em at 24/32, −0.06em at 40/48/56/64/72, and 0 below 14. Stated as rule **2.13**; closes at step 27. | `tokens.css` tracking block; Geist published specimens, measured |
 | **D8** | No measure token exists. Rule 2.8 has nothing to point at. | `tokens.css` |
 | **D9** | `font-feature-settings: "cv11", "ss03"` with the comment "Inter alt 1, alt g" — but the loaded face is Geist. These are Inter's axes; on Geist they are inert at best. | `colors_and_type.css:63` |
 | **D10** | The nine Tier 2 utilities are defined beside whichever component first needed each one. There is no single published index, so a call site cannot discover them. | §3.3 |
@@ -330,7 +343,7 @@ reversible and execute under standing authority.
 |---|---|---|---|
 | 1 | Establish this document; state tiers, rules, current state, defects | **done** | Founding entry. Records the system as it is, not as it should be — every §3 value was read from source, and no §4 defect was fixed in passing. |
 | 2 | Correct the stale heading comment (D3) | **done** | Class A, comment-only — and **already executed inside step 17**, which corrected this comment in passing while converting competing rule statements to pointers. The block then read "All headings: tight tracking, weight 400. Override per-context." above a rule that set 400 — **text step 6 has since replaced**, so what this step landed is no longer at `colors_and_type.css:85`. Left as a record of what step 2 did rather than rewritten to describe the file today (step 21). Recorded here rather than left **[ready]**: the log *is* this document's todo list (`README.md` §3), so a step still advertising itself as pending after its work has shipped is exactly the drift the log exists to prevent. Deliberately did **not** change the weight the comment describes — that was step 6, and it turned on Q3 — and deliberately does **not** renumber or fold the row into 17, because a later session is entitled to find step 2 where step 2 was. |
-| 3 | Add optical tracking steps per size rung (D7) | **[deferred]** | Was **[ready]**; downgraded by §7.3. Additive and safe in itself — new rungs keyed to the display sizes, existing values untouched — but §7.3 established that *a new rung needs a named consumer before it is added*, and this would land five tokens nothing reads. Do it **with** the role that adopts it (step 7), not before. **Superseded by step 27**, which has both the named consumer this lacked and the measured curve (2.13); step 3 closes when 27 does, and is left in place rather than renumbered. |
+| 3 | Add optical tracking steps per size rung (D7) | **done** | Was **[ready]**; downgraded by §7.3. Additive and safe in itself — new rungs keyed to the display sizes, existing values untouched — but §7.3 established that *a new rung needs a named consumer before it is added*, and this would land five tokens nothing reads. Do it **with** the role that adopts it (step 7), not before. **Closed by step 27**, which had both the named consumer this lacked and the measured curve (2.13). Left in place rather than renumbered or deleted: a later session is entitled to find step 3 where step 3 was, and the reason it was deferred — no consumer — is the reason 27 could do it. |
 | 4 | Add `--rux-measure-prose` and `--rux-measure-wide` (D8) | **[deferred]** | Was **[ready]**; downgraded on the same §7.3 grounds that deferred step 3, and by the precedent **Q2** set when it declined to mint `--rux-line-height-prose`. A measure is prose vocabulary, and prose is **S3's surface, which is not in this repository** — nothing under `rux-ui/css/` caps a measure today, so both tokens would land unread. The step's own note said so ("nothing consumes them until a component opts in"); after §7.3 that is the disqualifying condition, not a reassurance. Land them with the portal's foundation pass, beside the role that adopts them. **A constraint found while deferring, recorded so the step need not re-derive it:** rule 2.8 says the measures are expressed in `rem` "so they track the scale", but nothing sets `html { font-size }` — `rem` is the 16px root while the base is 14px on `body`, so a measure derived from a 14px character width and written in `rem` tracks the root, not the base it came from. Whichever unit the step lands on, it MUST say which of the two it follows. Deliberately did **not** take the other route to closing D8 — amending rule 2.8 so it stops promising a token that does not exist. That option was weighed and rejected in favour of deferral, so 2.8 keeps its `(No measure token exists yet — see D8)` pointer and **D8 stays open**. |
 | 5 | Publish the Tier 2 utility index (D10) | **done** | Class A, documentation only — §3.3 is now the index. Writing it surfaced **D12**, which is the more serious half of D10: the layer is not merely undiscoverable, it is inconsistent, and two utilities bypass their own role for component tokens. Deliberately **moved no definition and renamed nothing** — both were in scope for this step and both were dropped, because relocating a utility is churn until D12 says where it should live, and renaming is Class C. |
 | 6 | Settle the weight policy (D2, D3, D4) | **done · Class B** | Q3 answered: the ceiling is 600 and weight belongs to the role, not the size — recorded as rule 2.11, read from the Geist catalog rather than decided independently. **Four declarations moved, before → after:** `strong, b` **400 → 500** (D2); the `h1`–`h6` element default **400 → 600** (D4); `--rux-heading-page-weight` **400 → 600**, the one role that contradicted the new policy; and `.rux-ui-header__badge-count` **600 → 500** at 10px, ending a one-job-two-answers split against `--rux-badge-font-weight`. `h6` keeps its explicit 400 as a label. **Blast radius measured in a live browser, not reasoned about — but on the *visible* DOM of `index.html` only, which this row did not say. Corrected by step 21: 12 elements move across the four pages, 3 of them visible on load.** As measured here: on `index.html` exactly **one visible element re-rendered** — the badge count — because 37 of 43 headings already read a role at 600 and the remaining 6 are pinned at component level (`.rux-alert__title`, `.components-app__button-example strong`, `.driver-app__workload-through strong`, `.sched-trip-itinerary__idle-day strong`). The claim that *every* `<strong>` on the page is pinned was **wrong**: `.flip-seven__turn-status strong` and `.flip-seven__messages strong` pin no weight and both moved. That the app had locally pinned its way around D4 everywhere is why the two regimes never looked broken. Confirmed the defaults did change by injecting classless probes into the live document: a bare `<h2>` now resolves 30px/600 and a bare `<strong>` 500. **Eyeballed on `index.html` in both themes** — but only `index.html`, which is the gap step 21 closes; `gallery.html` measured byte-identical in distribution before and after (400×74, 500×13, 600×16). 331/331 green — the suite pins role→rung references and does not assert this one. Cache-busters bumped (`tools/check-cache-busters.sh --fix`), without which a warm browser keeps the old CSS. Deliberately **did not** unpin the six component overrides: a component using `<strong>` as a label and choosing 400 is a mapping decision it owns, and reversing four of them is not what "settle the weight policy" authorizes. Deliberately **did not** touch the element *size* scale — `h2` at 30px still has no role — that is step 7, which now turns on **Q6** alone. Deliberately **did not** mint a 550 rung to match Geist's Strong exactly. Contract 1.2.1 → **1.3.0**. |
@@ -352,9 +365,9 @@ reversible and execute under standing authority.
 | 22 | Make the type utilities apply their roles (D12) | **[open]** | **Added by step 21 because D12 had no step.** It was surfaced *by* step 5, described there as "the more serious half of D10", and then never given a row — so the log, which `README.md` §3 calls this document's todo list, silently dropped a defect it had itself found. The work: five of seven Tier 2 utilities apply a partial recipe, and `.rux-u-caption` and `.rux-u-hint` bypass the type roles entirely for `--rux-field-label-*` — so the utility named "caption" does not read `--rux-text-caption-*`. **Needs a decision before it can execute**, which is why it lands `[open]` rather than `[ready]`: completing a partial recipe is Class B on every call site of that utility, and repointing `.rux-u-caption` at its own role changes what renders wherever it is used. Whether the fix is *utilities adopt their roles* or *the two misnamed ones are renamed to what they actually are* is the open question — the second branch is Class C. Deliberately **not** folded into step 16: consolidation strips duplicated rule *statements*, and this is a defect in what the utilities *resolve to*. |
 | 23 | Name and land the off-ladder rungs | **[open]** | **Turns on Q8.** Rule 2.12 needs three values the t-shirt ladder has no slot for: the **13px size** (between `xs` 12 and `sm` 14) and the **18** and **36** leadings. Everything else the catalog needs is reachable by moving an existing rung (step 24). Class A once named — additive, nothing resolves differently. Left **[open]** rather than [ready] precisely because naming is the whole of it: inventing `--rux-size-xs-plus` in passing would put a name in the vendored surface that no one chose, and a primitive name is Class C to undo. |
 | 24 | Move the ladder rungs onto the catalog | **done · Class B** | **Three of the four planned moves landed, before → after:** `--rux-size-3xl` **30 → 32px**, `--rux-size-4xl` **36 → 40px**, `--rux-line-height-4xl` **40 → 48px**. No name moved, so nothing is Class C and 30/36 are not "retired" — they simply cease to be what the names resolve to. **D11's cause closes**: `h2` and `heading-page` now sit on rungs the catalog publishes. **Blast radius A/B-measured on all five pages** by injecting the old token values at `:root` and diffing every element's computed size and leading: `index.html` **0**, `gallery.html` **0**, `request.html` **0**, `driver.html` **2**, `maintenance.html` **1**. The only visible move is `maintenance.html`'s status `h1`, **36/40 → 40/48**, eyeballed at desktop and at 375px, where it wraps to two lines at 351px inside a 375px viewport with no horizontal overflow — the same 351px it occupied at 36px, so the container absorbed it. Both pages pin `color-scheme: dark`, so "both themes" does not apply (as step 21 recorded). Two consumers were **not** exercised by the current data — `.sched-trip-envelope__day` (36 → 40) and `.driver-share__title` (leading 40 → 48, its size is already a `clamp(36px, 7vw, 40px)`) — and are named here as owed. **The fourth move was dropped, deliberately:** `--rux-line-height-xl` **28 → 26** was in the plan and has **zero consumers** — the grep found only its own definition. Moving a token nothing reads to an off-grid value (26 is not on the 4px grid) ahead of the role that wants it is exactly what §7.3 forbids, and it would have needed a named 2.10 exception minted for no one. It lands with step 26, beside `heading-20`. **Surfaced D14 and fixed two instances of it**, because this step would otherwise have made one worse: `.driver-share-status__title` and `.driver-share-dialog__title` set `--rux-size-2xl` (24px) and inherited the `h1`/`h2` element leading of 40px; the 4xl move would have taken the first to **24/48**. Both now pair at **24/32** (`--rux-line-height-2xl`). Cache-busters bumped (6 references). 331/331 green. Contract 1.4.0 → **1.5.0**. |
-| 25 | Roles own their leading | **[ready]** | Class B. Executes rule 2.2's amendment: every role's leading is repointed to what its **family** takes, not what its size implies. Label flattens (`label-16` → 20, `label-18` → 20), Copy grows (`copy-16` → 24, `copy-18` → 28, `copy-20` → 36). At 14 nothing moves, which is why D1's convergence held. Depends on step 23 for the 18 and 36 leadings and on 24 for 26/48. **This is the step that makes rule 2.6 real** — until it lands, the Copy/Label split has no metric expression at any size. Containers that cannot fit a role's new row height are adjusted to it, not the other way round; those are spacing's problem and get rows in `spacing.md`, not here. |
-| 26 | Classify the roles into the four families | **[ready]** | Class B, and deliberately **not** Class C: the eight published role names stay exactly as they are and gain a *family*, so `heading-page` is heading@40, `text-lead` is copy@16, `label-control` is label@14, `label-eyebrow` is label@12 + wide tracking. §3.2 gains a Family column. Metrics move where a role's current recipe disagrees with its family's (that is the Class B half). Renaming the roles to `heading-40`/`copy-16` was considered and **rejected**: it would break every vendored consumer for a naming preference, and 2.12 governs *which recipe a role takes*, not what it is called. |
-| 27 | Apply the tracking curve | **[ready]** | Class B. Executes rule 2.13 and **closes D7**, absorbing the deferred step 3 — which lacked a named consumer and now has six. Adds the rungs the curve needs and repoints every role that tracks. `heading-page` is the one that visibly moves: −0.02em → −0.06em at 40px, which is the three-rung error D7 names. Needs an eyeball at the display sizes specifically, where tracking is what the change is. |
+| 25 | Roles own their leading | **done · no-op** | **Audited all eight roles against their family in rule 2.12 and every one already carried its family's size and leading**, so this step moved nothing and needed no Class B treatment. Read from `tokens.css`, not assumed: `heading-section` 24/32 ✓, `heading-panel` 16/24 ✓, `text-lead` 16/24 ✓ (copy@16), `text-body` 14/20 ✓, `text-caption` 12/16 ✓ (label@12), `label-control` 14/20 ✓, `label-eyebrow` 12/16 ✓; `heading-page` 40/48 ✓ as of step 24. **The reason is that the Label/Copy divergence appears at 16 and 18 in the Label family, and no published role sits there** — `heading-panel` is the only 16px role and it is a heading, which takes 24 either way. The rule was still necessary: it is what stops the *next* role from being wrong, and D1's convergence is now explained rather than merely recorded. Deliberately **not** marked `[ready]`-then-skipped: a step whose audit found nothing is a result, and leaving it open would mean auditing again. Dependency on step 23 never materialised, because the 18 and 36 leadings are needed by roles that do not exist yet. |
+| 26 | Classify the roles into the four families | **done · Class A** | Documentation only in the end, because step 25's audit had already established that no metric disagreed: §3.2 gains a **Family** column and every published role is assigned — `heading-page`/`-section`/`-panel` to **heading**, `text-lead` and `text-body` to **copy**, `text-caption`, `label-control` and `label-eyebrow` to **label**. The one that is not obvious is `text-caption`: it is named "text" but is 12/16 single-line, so it is **label**, and its name is now the misleading part. Renaming the roles to `heading-40`/`copy-16` was considered and **rejected** — it breaks every vendored consumer for a naming preference, and 2.12 governs which recipe a role takes, not what it is called. **No role is in the button family**, because none exists; buttons read `--rux-button-*` component tokens. That gap is real and is not invented here. Also deliberately **not** done: `--rux-line-height-xl` **28 → 26**, deferred here from step 24 and deferred again — it still has no consumer, since no role sits at 20px. It lands with the first `heading-20`, and until then `lg`/`xl` stay a recorded duplicate. |
+| 27 | Apply the tracking curve | **done · Class B** | Executes rule 2.13, **closes D7** and with it the long-deferred step 3. Two rungs added (Class A half): `--rux-tracking-tighter` **−0.04em** and `--rux-tracking-tightest` **−0.06em**, named to the ladder's existing convention so no naming question arises — unlike Q8, `tight`/`tighter`/`tightest` has one obvious answer. **Moved, before → after:** `--rux-heading-page-tracking` **−0.02em → −0.06em**; `--rux-heading-section-tracking` **−0.02em → −0.04em**; and each heading level now states its own tracking, because one shared value cannot serve h1 at 40 and h5 at 16 — `h2` and `h3` **−0.02em → −0.04em**, `h4` and `h5` **0 → −0.02em** (they were off the curve at `normal`). **A/B-measured on every page** by replaying the pre-step cascade at matched specificity: `index.html` **8** (all h2/h3 −0.02 → −0.04, **none visible**), `gallery.html` **0**, `request.html` **0**, `maintenance.html` **1 visible** — the 40px status `h1`, −0.8px → −2.4px, which **narrowed the line from 240px to 222px** and so relieves rather than worsens the 375px pressure recorded under Q6 — and `driver.html` **3**. **The first A/B attempt was wrong and is recorded as such:** it reverted with `!important`, which stomped component-level tracking the real prior CSS never touched, and reported 14 moves including an `h3` going *positive*. Replayed at matched specificity the true count was 8. A revert probe MUST match the specificity of what it replaces. **Caught a regression this step introduced, in the same defect class as step 24's:** two `h1` elements on `driver.html` override h1's *size* but not its tracking, so putting the element default on the 40px rung leaked −0.06em onto an 18px and a 24px heading. `.driver-share-status__title` and `.driver-share-dialog__title` are pinned to `tighter` (−0.04em, their own 24px rung) and `.driver-share-header__label` to `tight`, which **preserves its existing render** — whether it is heading-18 or `label-18` (which would track 0) is step 26's classification question for app-tier elements, and both readings agree it is not −0.06em. Re-measured after: driver.html shows **0** element-default leakage. Eyeballed on `maintenance.html` and `driver.html`, both dark-only. 331/331 green. Cache-busters bumped. Contract 1.5.0 → **1.6.0**. |
 | 29 | Pair the remaining overridden headings with their own leading (D14) | **[open]** | Class B on each site. **Waits on step 26, not on a decision of its own**: until the roles are classified into families, there is no way to tell a defect from a correct Label application — `.driver-share-header__label` at 18/20 is `label-18` and wants no fix, while `.rux-preferences__heading` at 14/40 is a heading wearing a leading from four rungs away. Doing it before 26 would "fix" the first one into being wrong. `.driver-assignment-card__date-range`'s **16/19** is the exception that can go early — a unitless `line-height` is a 2.2 defect whatever family it belongs to — but it is held here so the whole defect closes in one reviewable pass rather than two. |
 | 28 | Decide the fate of the 10px rung and the 9px pill (Q7, D13) | **[open]** | **Turns on Q7, reframed by the ramp decision.** The catalog floors at 12: `--rux-size-xxs` (10px) has no Geist counterpart, and the trip-bar's 9px pill is two rungs below anything published. That does not make 10px wrong — S1 is denser than vercel.com and §7.3 already says the base is a property of the surface — but it does mean the branch "mint a 9px rung" can no longer claim the catalog as evidence, which is what it was leaning on. Retiring `--rux-size-xxs` is **Class C** and would stop and propose; it has four consumers. Nothing here executes until Q7 is answered on its new footing. |
 
