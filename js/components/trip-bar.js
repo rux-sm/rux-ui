@@ -540,10 +540,14 @@ const PENDING_INDICATORS = [
   // through the icon only — it must not borrow the danger outline the PO-less
   // rungs below it use, or a paying customer would read louder than a trip with
   // no money in at all. Same money, same yellow as the Billing tab's Balance.
+  // Not "balance due": a PO covering the remainder clears this warning just as
+  // a payment does (deriveStatus reaches po_received), so naming only cash would
+  // tell a dispatcher to chase the wrong thing. "Covered" matches the PO
+  // coverage wording the Billing tab already uses for this same number.
   {
     key: "balance_due",
     get icon() { return window.RuxBilling?.STATUS_META?.deposit_received?.icon || "payments"; },
-    label: (trip) => `Balance due ${formatBalance(balanceDue(trip))}`,
+    label: (trip) => `${formatBalance(balanceDue(trip))} not covered by payment or PO`,
     tone: "warning",
     check: (trip) => trip.paymentStatus === "deposit_received" && balanceDue(trip) > 0,
   },

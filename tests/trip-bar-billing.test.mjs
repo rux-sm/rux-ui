@@ -47,7 +47,7 @@ test("a partly paid trip with no PO warns with the open balance", () => {
 		quotedPrice: 5525,
 		trip_payments: [{ amount: 4225, method: "Check", ref: "5502" }],
 	}));
-	assert.deepEqual(warningTooltips(bar), ["Balance due $1,300"]);
+	assert.deepEqual(warningTooltips(bar), ["$1,300 not covered by payment or PO"]);
 });
 
 test("the open balance warns without unconfirming the trip or taking an outline", () => {
@@ -97,7 +97,7 @@ test("rows saved before the payments list fall back to the deposit aggregate", (
 		deposit_amount: 4225,
 		trip_payments: [],
 	}));
-	assert.deepEqual(warningTooltips(bar), ["Balance due $1,300"]);
+	assert.deepEqual(warningTooltips(bar), ["$1,300 not covered by payment or PO"]);
 });
 
 test("a fractional balance prints both cents", () => {
@@ -106,5 +106,5 @@ test("a fractional balance prints both cents", () => {
 		quotedPrice: 5525,
 		trip_payments: [{ amount: 4224.5 }],
 	}));
-	assert.deepEqual(warningTooltips(bar), ["Balance due $1,300.50"]);
+	assert.deepEqual(warningTooltips(bar), ["$1,300.50 not covered by payment or PO"]);
 });
