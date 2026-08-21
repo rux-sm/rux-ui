@@ -92,6 +92,7 @@ step.
 - When working on the reference application data layer: inspect the affected `js/data/` module and existing SQL patches before schema work; this repository has no consolidated schema file.
 - Treat the configured Supabase project as live. Do not create speculative test data or execute production mutations implicitly.
 - Destructive SQL, bulk deletion, authentication, secrets, permissions, breaking APIs, and irreversible migrations require an inspect-first proposal, compatibility and rollback analysis, and explicit authorization before execution.
+- This client authenticates as `anon` with the key in page source (`js/data/supabase.js`), so any column it can read is readable by anyone who can load the app. Do not add Social Security numbers or comparable identity secrets to tables this client reads — they stay in the payroll/HR system that already holds them (decided 2026-08-21; destinations and phone numbers are fine, an SSN turns a leak into identity theft and a reportable breach). `supabase/trip_request_detail.sql` and `supabase/trip_request_documents.sql` show the shape such a field would need if this is ever revisited — `revoke all … from anon`, then `grant execute` on a `SECURITY DEFINER` function to `authenticated` — which requires standing up real authentication first, since this app has none.
 
 ## Verification
 
