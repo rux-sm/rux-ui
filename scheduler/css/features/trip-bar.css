@@ -409,19 +409,21 @@
 
 /* ---------- Modifier: unconfirmed ---------- */
 
-.sched-trip-bar[data-trip-bar-color="cyan"] { --_trip-bar-color: var(--sched-trip-color-cyan); }
+.sched-trip-bar[data-trip-bar-color="teal"] { --_trip-bar-color: var(--sched-trip-color-teal); }
 .sched-trip-bar[data-trip-bar-color="green"] { --_trip-bar-color: var(--sched-trip-color-green); }
 .sched-trip-bar[data-trip-bar-color="purple"] { --_trip-bar-color: var(--sched-trip-color-purple); }
-/* Yellow and orange alone read muddy at the shared --sched-trip-bar-bg-
-   lightness (70%) — noticeably darker than their own native 80% lightness
-   (--rux-yellow/--rux-orange), unlike the other trip colors which sit
-   closer to their native value already. Scoped to just these two so the
+/* Amber alone reads muddy at the shared --sched-trip-bar-bg-lightness —
+   noticeably darker than its own native lightness, unlike the other trip
+   colors which sit closer to theirs already. amber-700 is L 81.87%, the
+   lightest of the five, so the override survives the move onto the catalog
+   (step 17); orange used to need it too and was retired at step 16.
+   Scoped to just this one so the
    other colors and every other consumer of --sched-trip-bar-bg-lightness
    (accent/danger button glass, see tokens.css) are untouched;
    --hover/--pressed/--selected are calc()'d off this token at :root, so
    they pick up the lighter base automatically. */
-.sched-trip-bar[data-trip-bar-color="yellow"] {
-	--_trip-bar-color: var(--sched-trip-color-yellow);
+.sched-trip-bar[data-trip-bar-color="amber"] {
+	--_trip-bar-color: var(--sched-trip-color-amber);
 	--sched-trip-bar-bg-lightness: 80%;
 }
 

@@ -261,7 +261,7 @@
 	-webkit-print-color-adjust: exact;
 }
 
-.sched-print-trip[data-trip-bar-color="cyan"] {
+.sched-print-trip[data-trip-bar-color="teal"] {
 	--_print-trip-override-line: var(--print-cyan-line);
 	--_print-trip-override-tint: var(--print-cyan-tint);
 }
@@ -273,7 +273,7 @@
 	--_print-trip-override-line: var(--print-purple-line);
 	--_print-trip-override-tint: var(--print-purple-tint);
 }
-.sched-print-trip[data-trip-bar-color="yellow"] {
+.sched-print-trip[data-trip-bar-color="amber"] {
 	--_print-trip-override-line: var(--print-yellow-line);
 	--_print-trip-override-tint: var(--print-yellow-tint);
 }

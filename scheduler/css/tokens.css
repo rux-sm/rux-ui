@@ -21,11 +21,27 @@
 	   The hue palette feeding the Gantt bar's background (--_tone in
 	   trip-bar.css), with the lightness/opacity steps below computing each
 	   state's surface from that hue. */
-	--sched-trip-color-cyan:   var(--rux-cyan);
-	--sched-trip-color-green:  var(--rux-green);
-	--sched-trip-color-purple: var(--rux-purple);
-	--sched-trip-color-yellow: var(--rux-yellow);
-	--sched-trip-color-pink:   var(--rux-pink);
+	/* The five catalog hues nothing else has claimed — red is danger, blue is
+	   the accent. Each takes the 700 step, which is the catalog's high-contrast
+	   background and therefore what a solid bar is; it is also what
+	   --rux-accent already resolves to, so the uncoloured default bar and every
+	   coloured one finally derive from the same step.
+
+	   The step matters less than it looks: the bar sets its OWN lightness and
+	   scales the source chroma, so it consumes a hue rather than a step, and
+	   600/700/900 of one scale land within a few code values of each other.
+	   700 is the convention, not a constraint.
+
+	   Measured 2026-08-22, composited as the bar renders: teal moves 37 8-bit
+	   units from the old base, green 34, purple 31, pink 31, amber 9. The cost
+	   is separation — teal and green are the closest pair at 74 where the old
+	   bases sat 143 apart, and that is inherent to the catalog's hue set rather
+	   than to the step. docs/foundations/color.md §5 step 17. */
+	--sched-trip-color-teal:   var(--rux-teal-700);
+	--sched-trip-color-green:  var(--rux-green-700);
+	--sched-trip-color-purple: var(--rux-purple-700);
+	--sched-trip-color-amber:  var(--rux-amber-700);
+	--sched-trip-color-pink:   var(--rux-pink-700);
 	/* Orange retired 2026-08-22: the design system publishes one warm hue and
 	   the board used two. Stored rows still holding "orange" render yellow —
 	   js/core/trip-colors.js does the mapping, nothing was migrated.

@@ -239,7 +239,7 @@ import BusPicker from "../components/bus-picker.js?v=3";
 			driverStatus: "confirmed",
 			trip_type: "dropoff_pickup",
 			leg: "outbound",
-			trip_bar_color: "cyan",
+			trip_bar_color: "teal",
 			paymentStatus: "paid_full",
 			datePaid: "2026-07-20",
 			pdfUploaded: true,

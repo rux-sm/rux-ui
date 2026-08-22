@@ -286,10 +286,10 @@
     /* The one copy of the palette that cannot import js/core/trip-colors.js:
        this file is a classic IIFE loaded with `defer`, not a module. Kept in
        step with that file by hand, and named here so the next change to the
-       set knows to look. Orange maps to yellow rather than dropping, as it
-       does everywhere else. */
-    const printColor = tripBarColor === "orange" ? "yellow" : tripBarColor;
-    if (["cyan", "green", "purple", "yellow", "pink"].includes(printColor)) {
+       set knows to look. Retired names map rather than drop, as they do
+       everywhere else. */
+    const printColor = { orange: "amber", cyan: "teal", yellow: "amber" }[tripBarColor] || tripBarColor;
+    if (["teal", "green", "purple", "amber", "pink"].includes(printColor)) {
       card.dataset.tripBarColor = printColor;
     }
     const tripTypeVal = trip.trip_type || trip.tripType;

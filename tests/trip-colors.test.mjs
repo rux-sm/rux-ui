@@ -9,13 +9,28 @@ import { TRIP_COLORS, normalizeTripColor } from "../js/core/trip-colors.js";
    removing a single colour meant finding all five — which is what this file
    and js/core/trip-colors.js exist to prevent happening twice. */
 
-test("orange is retired but still renders", () => {
-	/* The whole point of retiring it this way: nothing was migrated, so rows in
-	   Supabase still hold "orange". They must keep a colour rather than lose
-	   one. If this ever returns "", every historically-orange trip silently
-	   goes uncoloured on the board. */
-	assert.equal(normalizeTripColor("orange"), "yellow");
-	assert.ok(!TRIP_COLORS.includes("orange"), "orange is not selectable");
+/* Every name the board has ever stored, and what it renders as now. The whole
+   point of retiring colours this way: nothing was migrated, so rows in Supabase
+   still hold these. They must keep a colour rather than lose one — if any of
+   these ever returns "", those trips silently go uncoloured on the board. */
+const RETIRED_NAMES = [
+	["orange", "amber"], // step 16 — the board had two warm hues, the catalog has one
+	["cyan", "teal"],    // step 17 — onto the catalog's hue
+	["yellow", "amber"], // step 17 — onto the catalog's hue
+];
+
+test("every retired name still renders as its replacement", () => {
+	for (const [stored, shown] of RETIRED_NAMES) {
+		assert.equal(normalizeTripColor(stored), shown, `${stored} should render as ${shown}`);
+		assert.ok(!TRIP_COLORS.includes(stored), `${stored} must not be selectable`);
+		assert.ok(TRIP_COLORS.includes(shown), `${shown} must be a live colour`);
+	}
+});
+
+test("the palette is the catalog's unclaimed hues", () => {
+	/* red is danger and blue is the accent, so five remain — the set is closed
+	   by the catalog rather than chosen, which is what step 17 settled. */
+	assert.deepEqual([...TRIP_COLORS].sort(), ["amber", "green", "pink", "purple", "teal"]);
 });
 
 test("a live colour passes through and an unknown one is dropped", () => {
@@ -51,5 +66,15 @@ test("the one copy that cannot import stays in step", () => {
 	assert.ok(list, "print-schedule.js should filter on the palette");
 	const names = [...list.matchAll(/"([a-z]+)"/g)].map((m) => m[1]);
 	assert.deepEqual(names.sort(), [...TRIP_COLORS].sort());
-	assert.match(print, /printColor = tripBarColor === "orange" \? "yellow"/);
+
+	/* and its copy of the retired map, which is the half that keeps old rows
+	   rendering on paper as well as on screen. */
+	const map = print.match(/\{([^}]*)\}\[tripBarColor\]/)?.[1];
+	assert.ok(map, "print-schedule.js should map retired names");
+	for (const [stored, shown] of RETIRED_NAMES)
+		assert.match(
+			map,
+			new RegExp(`${stored}:\\s*"${shown}"`),
+			`print-schedule.js is missing ${stored} -> ${shown}`,
+		);
 });
