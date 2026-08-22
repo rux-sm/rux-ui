@@ -19,8 +19,8 @@ roles onto that vocabulary.
 | [`layout.md`](layout.md) | 1.8.1 | 12 done | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
-| [`naming.md`](naming.md) | 1.16.0 | 14 done | — |
-| [`state.md`](state.md) | 1.6.0 | 8 done · 1 open | — |
+| [`naming.md`](naming.md) | 1.17.0 | 14 done · 1 open | — |
+| [`state.md`](state.md) | 1.7.0 | 9 done | — |
 
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
 it in is its own decision.

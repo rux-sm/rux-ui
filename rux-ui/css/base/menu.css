@@ -106,8 +106,16 @@
 	pointer-events: none;
 }
 
-.rux-menu__item.is-active,
-.rux-menu__item[aria-checked="true"] {
+/* The active item, whichever attribute the surface's role uses to say so.
+   .rux-menu is a visual list surface, not an ARIA menu: in this repository it
+   carries role="menu", role="dialog", role="radiogroup" and a bare <nav>, and
+   this stylesheet makes no role assumption anywhere. aria-checked is how a
+   menuitemradio expresses activeness and aria-current is how a navigation item
+   does, so reading both is one concept with two spellings rather than two
+   concepts sharing a rule. state.md rule 2.1, step 9 — which is also what
+   retired the .is-active class that used to lead this list. */
+.rux-menu__item[aria-checked="true"],
+.rux-menu__item[aria-current="page"] {
 	background: var(--rux-menu-item-active-bg);
 	color: var(--rux-menu-item-active-fg);
 }
