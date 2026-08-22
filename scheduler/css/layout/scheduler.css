@@ -255,11 +255,13 @@
 	position: absolute;
 	top: 0;
 	transform: translate(-50%, calc(-100% - 4px));
-	font-size: 9px;
-	font-weight: var(--rux-weight-400);
+	/* D15: this was a hardcoded 9px — below the old 11px floor, below the
+	   catalog's 12, and on no rung at all. label-12 at step 42. */
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
 	color: var(--rux-text-disabled);
-	letter-spacing: var(--rux-tracking-wide);
-	line-height: 1;
+	letter-spacing: var(--rux-text-label-12-tracking);
+	line-height: var(--rux-text-label-12-line-height);
 	background: var(--rux-calendar-header-bg);
 	min-width: 20px;
 	text-align: center;

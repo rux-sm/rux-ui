@@ -227,15 +227,15 @@
 	border: 2px solid var(--rux-ui-header-bg);
 	border-radius: var(--rux-radius-full);
 	color: var(--rux-surface-1);
-	font-size: var(--rux-size-11);
-	/* A count badge is a badge: 500, the same weight --rux-badge-font-weight
-	   carries. This read 600 while every other badge read 500 — one job with
-	   two answers. Stated as the rung rather than borrowed from the badge
-	   token, since this element is not a .rux-badge.
-	   docs/foundations/typography.md rule 2.11, step 6. */
-	font-weight: var(--rux-weight-500);
-	/* 11px is sub-12, so it carries the dense rung (rule 2.14). */
-	letter-spacing: var(--rux-tracking-dense);
+	/* A count badge is a badge, so it takes label-12 — which is what rule 2.12's
+	   tree calls a badge and what D16 settled at step 41. It read 11px/500 until
+	   step 42: 11 has no rung in the catalog, and 500 was the weight step 41
+	   removed from .rux-badge itself. At 12px rule 2.14 no longer applies, so
+	   the dense tracking goes too.
+	   docs/foundations/typography.md D16, steps 6, 41, 42. */
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	letter-spacing: var(--rux-text-label-12-tracking);
 	line-height: 1;
 }
 
@@ -258,7 +258,7 @@
 	height: 16px;
 	padding: 0 var(--rux-space-1);
 	border: none;
-	font-size: var(--rux-size-11);
+	font-size: var(--rux-text-label-12-size);
 }
 
 .rux-ui-header__profile-identity > :is(img, .rux-ui-header__profile-initials) {
