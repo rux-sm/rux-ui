@@ -365,8 +365,7 @@
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-disabled);
-	letter-spacing: var(--rux-tracking-wide);
-	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-normal);
 }
 
 .sched-mini-cal__dates {
@@ -568,7 +567,6 @@
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
-	text-transform: uppercase;
 	border-left-color: transparent;
 }
 
@@ -624,7 +622,6 @@
 .sched-driver-grid__day-label-weekday {
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
-	text-transform: uppercase;
 }
 
 .sched-driver-grid__day-label-date {

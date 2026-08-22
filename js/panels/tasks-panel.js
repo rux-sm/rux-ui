@@ -590,14 +590,14 @@ function renderTrip(trip, leg) {
 			<div class="rux-card__body sched-tasks__trip-body">
 				<div class="sched-tasks__section sched-tasks__section--readiness">
 					<div class="sched-tasks__checklist">
-						<p class="sched-tasks__requirements-title">Trip Status</p>
+						<p class="sched-tasks__requirements-title">Trip status</p>
 						${computedRows}
 					</div>
 				</div>
 				${requirementsHtml}
 				<div class="sched-tasks__section sched-tasks__section--prep">
 					<div class="sched-tasks__checklist">
-						<p class="sched-tasks__requirements-title">To Do</p>
+						<p class="sched-tasks__requirements-title">To do</p>
 						${manualRows}
 						${envelopeRows}
 						${reminderRows}

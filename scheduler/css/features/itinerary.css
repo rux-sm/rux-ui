@@ -663,7 +663,6 @@
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	line-height: 1;
-	text-transform: uppercase;
 }
 
 .sched-trip-itinerary__source--manual {

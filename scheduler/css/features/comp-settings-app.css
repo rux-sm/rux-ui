@@ -229,7 +229,6 @@
 	font-size: var(--rux-text-label-12-wide-size);
 	font-weight: var(--rux-text-label-12-wide-weight);
 	letter-spacing: var(--rux-text-label-12-wide-tracking);
-	text-transform: uppercase;
 }
 
 .settings-req-section:first-child {
@@ -310,7 +309,6 @@
 	color: var(--rux-text-secondary);
 	font-size: var(--rux-text-label-12-wide-size);
 	font-weight: var(--rux-text-label-12-wide-weight);
-	text-transform: uppercase;
 	letter-spacing: var(--rux-text-label-12-wide-tracking);
 }
 

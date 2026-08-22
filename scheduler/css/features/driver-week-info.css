@@ -85,8 +85,7 @@
 	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
-	text-transform: uppercase;
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-normal);
 	background: var(--rux-surface-0);
 }
 

@@ -179,8 +179,20 @@ read as language.
 - **Sentence case** for **headings, form field labels, radio/checkbox/switch option labels, and body copy**.
     - ✅ `Day of the trip`, `Pickup address or venue`, `Round trip`, `I am the day-of contact`
     - ❌ `Day Of The Trip`, `Pickup Address Or Venue`, `Round Trip`
-- **UPPERCASE** only for overlines and badges that need to read as a category, not a sentence. Track them out (`letter-spacing: 0.04em`).
-    - ✅ `DRAFT`, `INCOMPLETE`, `NEW`
+- **No UPPERCASE, and no tracking on labels.** Overlines and section labels are
+  **sentence case at the label role's own tracking (0)**, like every other label.
+    - ✅ `Recent changes`, `Trip contact`, `Move to bus`
+    - ❌ `RECENT CHANGES`, `TRIP CONTACT`
+    - Acronyms that are genuinely acronyms keep their caps — `CDL`, `VIN`, `ZIP`.
+
+  This bullet read *"UPPERCASE only for overlines and badges … track them out
+  (`letter-spacing: 0.04em`)"* until 2026-08-21. It was withdrawn because rule 2.13 in
+  `docs/foundations/typography.md` holds that Label tracks **0 at every size it publishes**,
+  measured on the Geist specimens — so an overline that is uppercased *and* tracked out is
+  two departures from the catalog at once. Of the three ways to resolve that, dropping the
+  uppercase is the only one needing no departure at all, and it is the one taken
+  (typography.md §5 step 40, Q10). Badges were never affected: nothing uppercases them in
+  CSS, and their caps come from the data.
 
 The split is deliberate. Title Case makes a control read as one named thing,
 which is why it earns its place on buttons and menu items. Field labels are

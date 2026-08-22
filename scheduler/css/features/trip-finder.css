@@ -92,7 +92,6 @@
 	font-size: var(--rux-text-label-12-wide-size);
 	font-weight: var(--rux-text-label-12-wide-weight);
 	letter-spacing: var(--rux-text-label-12-wide-tracking);
-	text-transform: uppercase;
 }
 
 /* It is a label, not a row you can pick. base/table.css makes every tbody row

@@ -107,8 +107,7 @@ h4 { font-size: var(--rux-size-18); letter-spacing: var(--rux-tracking-tight); l
 h5 { font-size: var(--rux-size-16); letter-spacing: var(--rux-tracking-tight); line-height: var(--rux-line-height-24); }
 h6 {
   font-size: var(--rux-size-12);
-  letter-spacing: var(--rux-tracking-wide);
-  text-transform: uppercase;
+  letter-spacing: var(--rux-tracking-normal);
   color: var(--rux-text-secondary);
   font-weight: var(--rux-weight-400);
   line-height: var(--rux-line-height-16);

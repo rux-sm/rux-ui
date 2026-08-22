@@ -73,8 +73,7 @@
 	color: var(--rux-text-disabled);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-wide);
-	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-normal);
 }
 
 /* margin-block, not margin-bottom alone: .sched-trip-history__group is plain

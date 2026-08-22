@@ -39,8 +39,7 @@
 	color: var(--rux-accent);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-widest);
-	text-transform: uppercase;
+	letter-spacing: var(--rux-tracking-normal);
 }
 .flip-seven__join { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: var(--rux-space-3); }
 .flip-seven__section-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--rux-space-3); }

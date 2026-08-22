@@ -502,7 +502,7 @@
 	--rux-text-label-12-wide-size:        var(--rux-size-12);
 	--rux-text-label-12-wide-weight:      var(--rux-weight-400);      /* 400 */
 	--rux-text-label-12-wide-line-height: var(--rux-line-height-16);
-	--rux-text-label-12-wide-tracking:    var(--rux-tracking-wide);   /* 0.04em */
+	--rux-text-label-12-wide-tracking:    var(--rux-tracking-normal); /* 0 — step 40. The name is now a misnomer; retiring it is Class C. */
 	--rux-text-label-12-wide-color:       var(--rux-text-secondary);      /* L60 dark · L32 light */
 
 	/* Button — interactive strings. Weight 500 and flat tracking per rules 2.11

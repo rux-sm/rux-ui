@@ -481,7 +481,7 @@ function contactRow(view) {
 	);
 	row.setAttribute("aria-label", "Trip contact");
 	const details = el("div", "assignment-compact-module__details");
-	details.appendChild(el("p", "assignment-module__label rux-u-eyebrow", "Trip Contact"));
+	details.appendChild(el("p", "assignment-module__label rux-u-eyebrow", "Trip contact"));
 	const identity = el("div", "assignment-compact-module__body");
 	if (contact.name || contact.phone) {
 		const contactLine = el(
