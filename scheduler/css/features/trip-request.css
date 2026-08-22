@@ -110,35 +110,12 @@
 	gap: var(--rux-space-2);
 }
 
-.trip-request-option {
-	display: flex;
-	flex-direction: column;
-	gap: var(--rux-space-1);
-	padding: var(--rux-space-3);
-	background: var(--rux-surface-1);
-	border: var(--rux-border-width) solid var(--rux-card-border);
-	border-radius: var(--rux-radius-md);
-	cursor: pointer;
-	transition: border-color var(--rux-duration-base) var(--rux-ease-out);
-}
-
-.trip-request-option input {
-	position: absolute;
-	opacity: 0;
-	pointer-events: none;
-}
-
-.trip-request-option__label {
-	font-weight: var(--rux-weight-400);
-}
-
-/* .trip-request-option__hint's typography is shared with every other
-   small disabled caption — see rux-ui/css/base/form.css. */
-
-.trip-request-option:has(input:checked) {
-	border-color: var(--rux-accent);
-	box-shadow: inset 0 0 0 1px var(--rux-accent);
-}
+/* The type picker's cards were `.trip-request-option`, a locally-built
+   choicebox in neither the `rux-` nor the `sched-` namespace. They are now
+   `.rux-choicebox` in rux-ui/css/base/form.css — docs/foundations/naming.md
+   step 12. Only the grid that lays them out stays here, because a
+   three-across row collapsing at 500px is this form's decision, not the
+   component's. */
 
 @media (max-width: 500px) {
 	.trip-request__type-row {

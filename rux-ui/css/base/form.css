@@ -431,6 +431,68 @@
 }
 
 
+/* — choicebox — */
+
+/* Geist's Choicebox: a radio or checkbox with a larger tap target and a
+   supporting line. The native control is visually hidden and the label is the
+   hit target, so selection and focus are painted on the card with :has().
+   naming.md step 12. */
+
+.rux-choicebox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--rux-choicebox-gap);
+  padding: var(--rux-choicebox-padding);
+  background: var(--rux-choicebox-bg);
+  border: var(--rux-choicebox-border);
+  border-radius: var(--rux-choicebox-radius);
+  cursor: pointer;
+  transition:
+    border-color var(--rux-choicebox-transition),
+    box-shadow var(--rux-choicebox-transition);
+}
+
+.rux-choicebox input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rux-choicebox__label {
+  font-weight: var(--rux-choicebox-label-weight);
+}
+
+/* The hint takes the Label 12 role rather than restating its numbers —
+   typography.md rule 2.12, the same way .rux-tag does. */
+.rux-choicebox__hint {
+  font-size: var(--rux-text-label-12-size);
+  font-weight: var(--rux-text-label-12-weight);
+  line-height: var(--rux-text-label-12-line-height);
+  color: var(--rux-choicebox-hint-color);
+}
+
+.rux-choicebox:hover {
+  border-color: var(--rux-choicebox-hover-border);
+}
+
+/* R8 — the hidden input cannot show focus, so the card carries it. */
+.rux-choicebox:has(input:focus-visible) {
+  outline: none;
+  border-color: var(--rux-choicebox-checked-border);
+  box-shadow: var(--rux-choicebox-focus-ring);
+}
+
+.rux-choicebox:has(input:checked) {
+  border-color: var(--rux-choicebox-checked-border);
+  box-shadow: var(--rux-choicebox-checked-ring);
+}
+
+/* Checked and focused at once — the focus ring must still read. */
+.rux-choicebox:has(input:checked):has(input:focus-visible) {
+  box-shadow: var(--rux-choicebox-checked-ring), var(--rux-choicebox-focus-ring);
+}
+
 /* — input group (prefix / suffix affix) — */
 
 .rux-input-group {

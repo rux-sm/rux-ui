@@ -1748,6 +1748,33 @@
 	--rux-checkbox-mark-width:  6px;
 	--rux-checkbox-mark-height: 10px;
 
+	/* ─── COMPONENT · choicebox ──────────────────────────────────────────── */
+
+	/* Geist's Choicebox — a radio or checkbox with a larger tap target and a
+	   supporting line. The native control is visually hidden and the whole card
+	   is the hit target, so selection AND focus have to be painted on the card;
+	   an unstyled card would leave a keyboard user with no visible focus at all,
+	   which is how the application-layer version this replaced behaved.
+	   docs/foundations/naming.md step 12. */
+
+	/* — shell — */
+	--rux-choicebox-bg:         var(--rux-surface-1);
+	--rux-choicebox-border:     var(--rux-border-width) solid var(--rux-card-border);
+	--rux-choicebox-radius:     var(--rux-radius-md);
+	--rux-choicebox-padding:    var(--rux-space-3);
+	--rux-choicebox-gap:        var(--rux-space-1);
+	--rux-choicebox-transition: var(--rux-duration-base) var(--rux-ease-out);
+
+	/* — states — */
+	--rux-choicebox-hover-border:   var(--rux-accent);
+	--rux-choicebox-checked-border: var(--rux-accent);
+	--rux-choicebox-checked-ring:   inset 0 0 0 var(--rux-border-width) var(--rux-accent);
+	--rux-choicebox-focus-ring:     0 0 0 3px var(--rux-accent-ring);
+
+	/* — content — */
+	--rux-choicebox-label-weight: var(--rux-weight-400);
+	--rux-choicebox-hint-color:   var(--rux-text-secondary);
+
 	/* ─── COMPONENT · color swatch ────────────────────────────────────────── */
 
 	/* --rux-color-swatch-bg: not set — the swatch's own fill comes from the
