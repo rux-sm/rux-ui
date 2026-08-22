@@ -369,11 +369,30 @@ added alongside the existing `--rux-blue`.
 
 ### Typography
 
-- **Geist Sans** (Vercel's typeface) for UI text (loaded as Google Font). System sans fallback (`-apple-system`, `Segoe UI`) is acceptable when offline.
-- **Geist Sans** for the trip bar too — Geist has no condensed cut, so `--rux-font-sans-condensed` aliases `--rux-font-sans` rather than loading a second family.
-- **Geist Mono** for code and monospaced data.
-- **No fourth family.** No display serif, no script. Hierarchy comes from size and weight, not font choice.
-- Tight tracking on display sizes (`-0.02em`), normal at body, wide on overlines (`0.04em`).
+**Canonical: [`docs/foundations/typography.md`](docs/foundations/typography.md).** That
+document owns the scale, the roles, the published utilities, the typefaces, and the rules
+governing all four. It carries a contract version and its own amendment log. **This section is
+a pointer: it names what is ruled, never what the rules say.** Where the two disagree, the
+foundation document wins and this section is corrected in the same change.
+
+| Where | What it governs |
+|---|---|
+| §1 | the three tiers — primitives, roles, published utilities — and the typefaces |
+| rule 2.11 | weight is a property of the role, not of the size |
+| rule 2.12 | four role families, and the decision tree that picks one |
+| rule 2.13 | only Heading tracks, and it tracks on a curve |
+| rule 2.14 | the floor |
+| §3 | the scale, roles and utilities as they stand today |
+
+Two things worth knowing before reading further: there is **no fourth typeface** — hierarchy
+comes from size and weight, never from a new face — and **the trip bar has no condensed cut**,
+because the adopted family publishes none.
+
+*This section carried six bullets of its own values until step 16. Two had gone stale against
+the document they duplicated: it still described tracking as flat on display sizes when rule
+2.13 puts Heading on a curve, and it still published a wide overline tracking that steps 40 and
+47 retired. That is the failure mode the one-home rule exists to prevent, observed rather than
+hypothesized.*
 
 ### Spacing
 
@@ -399,8 +418,13 @@ See [Button Components](docs/buttons.md) for composition examples and usage rule
 | `.rux-segmented-track` |      `--rux-input-height` outer track |                                   track |               `--rux-segmented-track-padding` |            `--rux-segmented-track-radius` |
 | `.rux-button--segment` |         `--rux-segment-height` `28px` |                  `--rux-size-14` |                `--rux-segment-padding-inline` |                    `--rux-segment-radius` |
 
-- Use `--rux-weight-400` (the default weight) for button labels — Rux buttons
-  get their emphasis from fill and color, not bold text.
+- Button labels take the **Button role** (`--rux-text-button-14-*`, or `-12` when compact),
+  which is canonical in [`typography.md`](docs/foundations/typography.md) rule 2.12 — not a
+  weight chosen here. This bullet read *"use `--rux-weight-400` … Rux buttons get their
+  emphasis from fill and color, not bold text"* until step 16; step 41 adopted the Button
+  family at **500**, which is the catalog's own weight for interactive text, so the advice had
+  been contradicting the foundation. Emphasis still comes from fill and colour — the weight
+  simply is not this file's to set.
 - Icon-only buttons are square: width equals the resolved button height.
 - UI-header actions use the same `.rux-button--header.rux-button--icon`
   composition as other 44px header controls.
