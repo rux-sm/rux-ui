@@ -446,10 +446,13 @@ false.
 gallery-coverage contract test (block census vs gallery classes — fully mechanizable);
 fix or remove the two contradicting specimens.
 
-**H2. Dead/deprecated items already adjudicated — do not re-litigate.** [Ledger §7 steps 10, 16]
-`.rux-app-shell`/`__panel`/`__workspace` look dead in this repo but are **used by vendored
-consumers** (`infor_ln_docs/portal`, `guide_runner` at commit `157b427` — 73 tokens,
-38 classes) and are kept as published deprecated aliases; likewise `--rux-panel-bg`,
+**H2. Dead/deprecated items already adjudicated — do not re-litigate.** [Ledger §7 steps 10, 16, 23]
+`.rux-app-shell`/`__panel`/`__workspace` were kept as published deprecated aliases because
+they were **used by vendored consumers** (`infor_ln_docs/portal`, `guide_runner` at commit
+`157b427` — 73 tokens, 38 classes). **That is no longer true and they were removed
+2026-08-22** (ledger entry 23): the portal rebuilt on 2026-08-19 and dropped the aliases,
+and `guide_runner` is archived. The keep was correct when written and the condition it
+waited on has since been met — which is the point of stating a condition. Likewise `--rux-panel-bg`,
 `--rux-panel-shadow`, `--rux-side-nav-shadow`, `--rux-card-border-active` and the unused
 rungs of complete scales are deliberate keeps. Any remediation below that renames a public
 name **must** check those two consumers' usage first.

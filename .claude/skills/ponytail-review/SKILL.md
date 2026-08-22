@@ -80,7 +80,7 @@ and only one of them may be cut.
 
 ✅ `js/core/bus-slots.js:L15: delete: legOf is exported and imported nowhere. Its only caller is assignmentsOnLeg on L33, same file — drop the export keyword, keep the function.`
 
-✅ `rux-ui/css/base/app-shell.css:L66: classC: .rux-app-shell appears in no markup or JS in this repository. It is the deprecated pre-2026-08 composition, still published for consumers on purpose — layout-composition.md says so. Propose, never cut.`
+✅ `rux-ui/css/base/form.css:L642: classC: .rux-color-picker appears in no markup or JS in this repository or in the consuming portal. But it is 7 elements, 43 rules and 20 public --rux-color-picker-* tokens, and whether .rux-color-swatch superseded it or it was simply never wired up is not decidable from the code. Propose, never cut.`
 
 ✅ `js/core/billing-config.js:L47: builtin: JSON.parse(JSON.stringify()) as a deep clone. structuredClone is the same one line and survives Date, Map and Set, which the JSON round-trip silently flattens. Same at js/data/trip-db.js:L302.`
 

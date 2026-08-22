@@ -25,11 +25,11 @@ test("the reusable app shell keeps structural siblings attached", () => {
 	assert.match(shellCss, /\.rux-app-view\s*\{[^}]*flex:\s*1;/s);
 	assert.match(shellCss, /\.rux-app-view\s*\{[^}]*overflow:\s*hidden;/s);
 	assert.match(shellCss, /\.rux-app-view\[hidden\]\s*\{[^}]*display:\s*none;/s);
-	// Deprecated pre-rename names stay published until vendored consumers
-	// migrate (see the DEPRECATED block in app-shell.css).
-	assert.match(shellCss, /\.rux-app-shell\s*\{[^}]*\bgap:\s*0;/s);
-	assert.match(shellCss, /\.rux-app-shell__workspace\s*\{[^}]*flex:\s*1 1 auto;/s);
-	assert.match(shellCss, /\.rux-app-shell__workspace\s*\{[^}]*min-width:\s*0;/s);
+	// .rux-app-shell/__workspace/__panel were removed 2026-08-22 — see
+	// docs/portability-audit.md entry 23. The successors are asserted above,
+	// so these assertions were deleted rather than repointed. The name must
+	// not come back by accident:
+	assert.doesNotMatch(shellCss, /\.rux-app-shell\b/);
 	assert.doesNotMatch(rulesOnly, /scheduler|drawer|rail|471px/);
 });
 

@@ -1,10 +1,10 @@
 # Rux UI Foundations — Naming
 
-**Contract version: 1.4.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.6.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 7 steps: **4 done · 3 open**
+**Status** · 10 steps: **6 done · 4 open**
 This document is canonical for **what things are called** — the class shape, the modifier
 vocabulary, the namespaces a portable layer may use, and the requirement that a name in
 markup resolves to a rule. It is the home `README.md` §1 routes **R1, R2, R4 and R5** to,
@@ -186,11 +186,16 @@ it. **§7 is that catalog**, and every later step reads it rather than the site.
 | # | Step | Status | Notes |
 |---|---|---|---|
 | 7 | Measure and publish Geist's component vocabulary | **done · Class A** | **Executed 2026-08-22; published as §7.** The census is the site's own sidebar in its own grouping — **72 component entries**, 71 pages plus `Pill`, which is a section of Badge the sidebar promotes — with each entry's definition taken from the page's own `meta description`, fetched for all 71 rather than transcribed. Mapped against the portable layer's **102 blocks**, **57** of them components once typography roles, `rux-u-*` utilities and base text are set aside. **The arithmetic closes on both sides** — 15 already-Geist names + 8 rename candidates + 34 with no counterpart = 57, and 23 matched + 49 unmatched = 72 — checked by script rather than by reading, because a mapping table that silently drops an entry looks exactly like one that does not. **The load-bearing finding is §7.2: Geist publishes a component vocabulary and no class vocabulary.** Its specimens carry Tailwind utilities; the only semantic names in the DOM are sparse `data-geist-*` attributes and a `geist-new-{variant}` / `-fill` variant set. So **adopting Geist wholesale cannot touch §1.1's class shape** — there is nothing on the other side to adopt — and the rename target is component names only. Two side findings came free, and **the first of them is a correction to my own first reading**: `geist-new-{v}` and `geist-new-{v}-fill` appear **on the same button simultaneously**, so `-fill` is a companion class naming one half of a variant's paint, **not** Geist's word for `--solid`. The tempting rename that reading suggested is unsupported, and **D4 stays open**. Second, Geist's own variant vocabulary is **not uniform** — Button is intent-named, Badge is hue-named with `-subtle` — so §1.2's Emphasis/Intent split cannot be resolved by copying it. **`switch`/`toggle` cross**: both names exist in both systems with opposite referents, `.rux-switch` being a boolean (Geist's Toggle) and `.rux-segmented-track` the option set (Geist's Switch); `drawer` crosses too, since Geist's Drawer is not the Sheet `.rux-drawer` maps to. §7.3 records that these move together or not at all. **Deliberately did not rename, retire, or decide anything** — §5.1 orders simplify before rename, and both later steps read this table. **Deliberately did not measure props, sizes or anatomy**: Badge documenting a Medium size does **not** reopen Q1, because a React prop and a CSS modifier are different artifacts and §7.2 records that Geist ships no modifier classes at all. **Deliberately did not fix the eight sibling-block pairs the census surfaced** (`.rux-tab`/`.rux-tabs`, the three scrims, `.rux-table-wrap`, the four `.rux-color-*`, and more) — those are **rule 2.1** candidates and **D1**'s untestable case, recorded in §7.4 as a finding for step 2, because settling R1's open question as a side effect of a naming census is precisely the accident this document has avoided. **Corrected the same day, in the open:** table D first listed **Theme Switcher** as unanswered. It is not — `.rux-switch--theme` is one. The census enumerated *blocks*, so an answer carried by a **modifier** was invisible to it, and the fix is the blind-spot note now in §7.3 rather than a quieter edit to the list. Geist-side arithmetic is now 23 by block + 1 by modifier + 48 unmatched = 72. `.rux-u-cols-2` was examined as a possible second case and **rejected**: a two-column utility is not an answer to **Grid**. Nothing renders differently; no code moved. Contract 1.3.0 → 1.4.0. |
+| 8 | Audit the component set for retirement candidates | **done · Class A** | **Executed 2026-08-22; published as §8.** The *simplify* half of §5.1, and it moved no name. Usage was counted as **markup and JavaScript only** — a block's own stylesheet is its definition, not evidence anyone uses it — across this repository and across the consuming portal **excluding its vendored `design-system/` copy**, which is this repository's CSS copied back and would otherwise report every block as used. **Of 57 component blocks, 53 are live, 2 are gallery-only, and 2 are used nowhere.** **Gallery-only is deliberately not treated as a retire finding**: a design system publishes components its own reference app does not use, and recording `.rux-progress` and `.rux-section` here stops a later reader assuming the audit missed them. **`.rux-app-shell` is the clean candidate** — already deprecated in place at `app-shell.css:62`, superseded by `.rux-app__body`/`.rux-app-view` in `../portability-audit.md` step 10, zero uses here, and the two downstream matches are a changelog line saying the portal dropped it and an archived `guide_runner` page. Its only live dependency is **a test**: `tests/layout-contract.test.mjs:30–32` asserts on the deprecated alias, which is why the block survived, and is worth saying plainly — the suite was holding the name alive. **`.rux-color-picker` is proposed rather than recommended.** It is unused by any markup or script, but it is fully built — 7 elements, 43 rules, **20 public tokens** — and the hypothesis that `.rux-color-swatch` superseded it is consistent with the evidence without being proven by it. The cost of being wrong is asymmetric, so the owner decides. **A method error is recorded rather than hidden:** the first pass required a word boundary after the block name, which misses every `block__element` form and made `.rux-app-shell` look like it had consumers it does not; the counts here are from the corrected pattern. **`.rux-tag` moved category** — §7.3 called it a probable duplicate, but it has three real uses, so it is a **merge** candidate, and a merge must answer what its call sites become before anything is deleted. **Deliberately did not retire anything** (Class C, step 9), **did not audit tokens** (`--rux-shadow-pressed`'s zero consumers are recorded in `layout.md` step 9, because a dead token and an obsolete component are different retirements), and **did not touch the 39 `sched-*` blocks**, which are domain. One finding it was not looking for: **38 of 57 blocks appear in no gallery page**, which is an R9 contract-surface gap, not a retirement, and bears on step 9 — a component with no gallery entry has no rendered reference to check a rename against. Contract 1.4.0 → 1.5.0. |
+| 9 | Retire the deprecated `.rux-app-shell` aliases | **done · Class C** | **Executed 2026-08-22 on the owner's approval**, recorded as `../portability-audit.md` **entry 23**, which owns the execution. Split from the `.rux-color-picker` decision at the owner's direction — take (a), hold (b) — and step 10 carries the held half. **The retirement closed a condition rather than overruling one.** Entry 10 kept these aliases *until the vendored consumers sync*, and entry 16 confirmed at commit `157b427` that the consumers still used them; both were correct when written, and the portal's 2026-08-19 rebuild dropped the aliases while `guide_runner` went to its archive. **The grep protocol is what made this safe, and it changed the plan twice.** First: §8.2 and this step both said the three `layout-contract` assertions would *move* onto `.rux-app-view`. They were **deleted** — the successors were already asserted four lines earlier, so repointing would have duplicated live coverage to keep a dead name company. An `assert.doesNotMatch` guard replaced them so the name cannot return by accident. Second, and more important: the grep reached `docs/` and `.claude/`, and found **three documents asserting these aliases must stay** — `layout-composition.md`'s MUST-NOT-USE rule, `audit/design-system-audit.md` H2 listing the block as a deliberate keep *because* consumers used it, and `.claude/skills/ponytail-review/SKILL.md`, which used it as its worked **classC** example under the promise that *every example is a real finding checked at the line cited*. All three were corrected in the same change; the skill's example moved to `.rux-color-picker`, verified at `rux-ui/css/base/form.css:642`, which is the better illustration now anyway — it is the candidate that was **held**. **A code-only rename would have left the repository contradicting itself in three places**, and none of them are CSS. **Cost:** 4 rules, no tokens. Contract 1.5.0 → 1.6.0. |
+| 10 | Decide `.rux-color-picker` | **[open]** | **Held by the owner 2026-08-22**, and held is the correct state rather than a stalled one. §8.2 records why: the block is unused by any markup or script in either repository, but it is fully built — 7 elements, 43 rules, **20 public `--rux-color-picker-*` tokens** — and the hypothesis that `.rux-color-swatch` superseded it is *consistent with* the evidence without being *proven by* it. The cost of being wrong is asymmetric: keeping it costs 43 rules, and reconstructing it costs the design work. **What would settle it** is not more grepping — it is the owner confirming whether the swatch UI replaced this picker or the picker was never wired up. Until then it stays published, and it is now the `ponytail-review` skill's worked example of exactly this situation. |
 
 **Next, in this order**, each opened as its own numbered step once the one before it
-lands — **step 8, retire, is now unblocked**: **retire** the components the audit finds
-obsolete (Class C — public names, so `../portability-audit.md` executes), and §7.3's table B
-already names one candidate, `.rux-tag`, which is one rule with one call site; **rename** the
+lands. **Step 8 landed — §8 is the audit, and it found two candidates, not the one §7.3
+predicted.** `.rux-tag` turned out to have real call sites and moved to the merge pile;
+`.rux-app-shell` and `.rux-color-picker` are the blocks nothing uses. **Step 9 retired the
+first** on the owner's approval (`../portability-audit.md` entry 23); **step 10 holds the
+second**, because unused and obsolete are not the same claim. Then: **rename** the
 survivors onto Geist's vocabulary (Class C likewise, and the grep protocol applies to each —
 with §7.3's warning that `switch`/`toggle` move together or not at all); **migrate** call
 sites and the gallery. **D7 is absorbed here** — `.rux-menu` and `.sched-scheduler` are merge decisions
@@ -433,3 +438,112 @@ are exactly the cases **D1** records as untestable because nothing declares whic
 belong to which component. This is a **finding for step 2**, recorded here and fixed there.
 Renaming them inside a Geist conformance step would settle R1's open question by accident, in
 the one document that has been careful not to.
+
+---
+
+## 8. The retire audit
+
+**Measured 2026-08-22**, step 8 of §5.1, and the first half of the program's *simplify*
+phase. §7 asked what Geist calls things; this section asks **what this system still needs**.
+It publishes findings and **retires nothing** — retirement moves public names, which is
+Class C and belongs to step 9 and `../portability-audit.md`.
+
+**Method.** Usage was counted as **markup and JavaScript only**, never CSS: a block's own
+stylesheet is its definition, not evidence that anyone uses it. Each of §7.3's **57 component
+blocks** was counted across this repository's pages, `js/`, `rux-ui/js/`, `scheduler/`, and
+`examples/`, and separately across the consuming portal at `~/Developer/infor-ln-docs`
+— **excluding its vendored `design-system/` copy**, which is this repository's own CSS
+copied back and would otherwise report every block as used. Element and modifier forms
+(`block__element`, `block--modifier`) count as uses of the block; an early pattern that
+required a word boundary after the block name missed them, which is why `.rux-app-shell`
+first appeared to have consumers it does not.
+
+### 8.1 The three categories
+
+| Category | Count | Meaning |
+|---|---|---|
+| **Used by an application** | 53 | Live. Not candidates. |
+| **Gallery-only** | 2 | `.rux-progress`, `.rux-section` — demoed on the contract surface, used by no app |
+| **Used nowhere** | 2 | `.rux-app-shell`, `.rux-color-picker` — the only retire candidates |
+
+**Gallery-only is not a retire finding, and this section will not treat it as one.** A design
+system publishes components its own reference application happens not to use; that is what
+being a design system means. `.rux-progress` and `.rux-section` are demoed, documented and
+reachable. They are recorded here so that a later reader does not rediscover them and assume
+the audit missed them.
+
+### 8.2 The two candidates
+
+**`.rux-app-shell` — retire. The evidence is unusually clean.**
+
+- **Already deprecated in place.** `rux-ui/css/base/app-shell.css:62` calls it and its
+  `__workspace` / `__panel` elements *"the pre-2026-08 aliases"*, superseded by
+  `.rux-app__body` and `.rux-app-view` in `../portability-audit.md` step 10.
+- **Zero uses here** — not in any page, not in `js/`, not in `examples/`.
+- **Zero live uses downstream.** Two portal files match, and **neither is live code**: one is
+  a changelog line in `index.md` recording that the portal *"dropped the deprecated
+  `.rux-app-shell` aliases"*, and the other is `_archive/guide_runner/index.html`, in the
+  archive since 2026-08-19. The consumer migrated off this block on its own.
+- **Cost:** 4 CSS rules. **No `--rux-app-shell-*` tokens exist**, so nothing else travels
+  with it.
+- **One live dependency, and it is a test.** `tests/layout-contract.test.mjs:30–32` asserts on
+  `.rux-app-shell` and `.rux-app-shell__workspace`. Retiring the block means those assertions
+  move to `.rux-app-view` or go.
+- **Outcome — retired 2026-08-22**, step 9 and `../portability-audit.md` entry 23. They
+  **went** rather than moved: the successors were already asserted four lines earlier. The
+  grep protocol also found three documents asserting these aliases must stay, all corrected
+  in the same change — see step 9. **A test asserting on a deprecated alias is the reason this
+  block survived**, and worth saying plainly: the suite was holding the name alive.
+
+**`.rux-color-picker` — propose to retire, but this one needs the owner, not the data.**
+
+- **Zero uses here and downstream.** The only two textual matches are a *comment* in
+  `scheduler/css/features/trip-request.css:62` and §7.3's own table in this document. The
+  portal's 66 matches are all inside its vendored copy of `form.css` — the block's own
+  definition, travelling as part of the stylesheet.
+- **It is fully built:** a container plus **7 elements** (`__trigger`, `__preview`, `__label`,
+  `__chevron`, `__popover`, `__option`, and the check), 43 CSS rules, and **20 public
+  `--rux-color-picker-*` tokens**.
+- **The likely story, offered as a hypothesis rather than a finding:** the application *does*
+  pick colours — `.rux-color-swatch` has 12 uses in `index.html` and `.rux-color-swatches`
+  three — so this looks like a **superseded earlier implementation** that the swatch approach
+  replaced without anyone deleting it. That is consistent with the evidence and is **not
+  proven by it**. A component built to this depth and never wired up may equally be waiting
+  for a use nobody got to.
+- **Because the cost of being wrong is asymmetric** — 20 public tokens and 43 rules are
+  cheap to keep and expensive to reconstruct — **this one is proposed, not recommended.**
+
+### 8.3 `.rux-tag`, re-examined
+
+§7.3 called it a *probable duplicate* of `.rux-badge`. With usage counted it is **not a
+zero-use block**: three occurrences, in `gallery.html` and at
+`js/panels/driver-panel.js:665`, where it renders a CDL chip. So it is a **merge** candidate,
+not a retire candidate, and the distinction matters because a merge has to answer *what the
+call sites become* before anything is deleted. Its single rule is a padded label; `.rux-badge`
+already carries a size and variant vocabulary that would have to absorb it. Recorded, and
+left to step 9.
+
+### 8.4 A finding this audit was not looking for
+
+**38 of the 57 blocks appear in no gallery page** — including `.rux-panel`, `.rux-menu`,
+`.rux-modal`, `.rux-popover`, `.rux-drawer`, `.rux-switch`, `.rux-table` and the entire
+application-shell family. The gallery demos 19.
+
+That is a **contract-surface gap, not a retirement finding**, and it belongs to **R9** — *the
+gallery as contract surface* — whose home `README.md` §1 records as `CLAUDE.md` rather than
+any foundation document. It is recorded here because this audit is what measured it, and
+because it bears on step 9: a component with no gallery entry has no rendered reference to
+check a rename against.
+
+### 8.5 What this step deliberately did not do
+
+**It retired nothing.** Both candidates are public names, so both are Class C: they stop and
+propose, and `../portability-audit.md` executes. Step 9 carries the proposal.
+
+**It did not audit tokens.** `--rux-shadow-pressed` was found to have **zero consumers**
+while step 9 of `layout.md` was measuring elevation, and it is recorded there rather than
+swept up here. A dead *token* and an obsolete *component* are different retirements with
+different blast radii, and §5.1's program is about the component set.
+
+**It did not extend to the application layer.** The 39 `sched-*` blocks are domain, out of
+this program's scope, and were not counted.

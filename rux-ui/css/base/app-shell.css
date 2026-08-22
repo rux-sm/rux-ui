@@ -57,28 +57,3 @@
 .rux-app-view[hidden] {
 	display: none;
 }
-
-/* ── DEPRECATED ──────────────────────────────────────────────────────────
-   .rux-app-shell and its __workspace/__panel elements are the pre-2026-08
-   names for the composition above: .rux-app__body is the body row, and a
-   view (or the body itself in a single-view app) is the panels+workspace
-   row. Kept while vendored consumers migrate; do not use in new markup. */
-.rux-app-shell {
-	display: flex;
-	min-width: 0;
-	min-height: 0;
-	gap: 0;
-	overflow: hidden;
-}
-
-.rux-app-shell__workspace {
-	flex: 1 1 auto;
-	min-width: 0;
-	min-height: 0;
-}
-
-.rux-app-shell__panel {
-	flex: none;
-	min-width: 0;
-	min-height: 0;
-}

@@ -28,9 +28,10 @@ App
   (paired with `rux-ui/js/view-router.js` and its `data-view` attribute;
   inactive views carry `hidden`). Whichever element forms that row MUST
   contain one center `.rux-workspace`.
-- `.rux-app-shell` and its `__workspace`/`__panel` elements are the
-  DEPRECATED pre-2026-08 names for this composition; they remain published
-  for existing consumers and MUST NOT appear in new markup.
+- `.rux-app-shell` and its `__workspace`/`__panel` elements were the
+  pre-2026-08 names for this composition. They were **removed 2026-08-22**
+  once the vendored consumer migrated off them — see `portability-audit.md`
+  entry 23. Markup still carrying them has no rule behind it.
 - Side `.rux-panel` elements MAY appear before or after the workspace.
 - Panels and the workspace MUST be attached with no decorative gutter between
   them. A separator or resize hit target MAY occupy their shared boundary
