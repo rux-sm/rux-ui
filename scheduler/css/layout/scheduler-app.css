@@ -124,7 +124,7 @@
 .calendar-app__date-range {
 	display: none;
 	white-space: nowrap;
-	/* Type comes from .rux-u-panel-title in the markup — the same
+	/* Type comes from .rux-text-heading-16 in the markup — the same
 	   --rux-text-heading-16-* recipe a card title uses. Only tabular figures are
 	   added here: the label rewrites on every week change, and proportional
 	   digits make it shift width as it does. docs/foundations/typography.md

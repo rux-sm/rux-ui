@@ -234,6 +234,15 @@ dedup rather than duplicating the block into each app file.
 > split in two — `.rux-u-section-label` carries a divider rule the borrowing classes never
 > had, so `.rux-u-eyebrow` exposes the typography alone. The record below is kept because
 > the pattern will recur.
+>
+> **Four of those six names no longer exist** (typography.md §5 steps 31, 33, 40, 47).
+> `.rux-u-panel-title`, `.rux-u-caption` and `.rux-u-hint` were renamed to the shape names
+> `.rux-text-heading-16` and `.rux-text-label-12` at step 31 and their aliases deleted at
+> step 33; `.rux-u-eyebrow` was merged into `.rux-text-label-12` at step 47, once step 40
+> dropped the uppercase that had distinguished it. `.rux-u-section-label` and
+> `.rux-u-subtitle` survive, each because it adds something beyond the role. **This
+> paragraph is deliberately not rewritten** — it records what step 3 did, which is still
+> true of step 3. A record corrected into the present tense stops being a record.
 
 **The inversion was already half-done.** `base/utils.css` showed the target state and the
 defect in the same rule:

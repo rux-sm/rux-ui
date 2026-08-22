@@ -27,21 +27,12 @@ sheets["colors_and_type.css"] = await readFile(
 // looks unread and both the used-check and the PENDING honesty test go blind —
 // which is exactly what happened when step 41 adopted the Button family.
 //
-// The superseded-alias block is cut out first. Those aliases are themselves
-// role reads (--rux-heading-page-size: var(--rux-text-heading-40-size)), so
-// leaving them in would let a role satisfy the used-check through its own
-// deprecated alias and nothing else. Removal is step 33.
-const SUPERSEDED_MARK = "TYPOGRAPHY · superseded role names";
-const supersededAt = tokens.indexOf(SUPERSEDED_MARK);
-if (supersededAt === -1) {
-	throw new Error(
-		"tokens.css no longer marks the superseded-alias block; this test sliced it out by that comment",
-	);
-}
-const nextSection = tokens.indexOf("/* ───", supersededAt + SUPERSEDED_MARK.length);
-sheets["tokens.css (component tier)"] =
-	tokens.slice(0, tokens.lastIndexOf("/* ───", supersededAt)) +
-	(nextSection === -1 ? "" : tokens.slice(nextSection));
+// Until step 33 this sliced out a superseded-alias block first: those aliases
+// were themselves role reads (--rux-heading-page-size: var(--rux-text-heading-
+// 40-size)), so leaving them in would have let a role satisfy the used-check
+// through its own deprecated alias and nothing else. Step 33 deleted the block,
+// so the whole file is the corpus and the slicing is gone with it.
+sheets["tokens.css (component tier)"] = tokens;
 
 // Every role carries the same axes; a call site should never have to drop to
 // the raw scale for one of them.
@@ -88,15 +79,23 @@ const PENDING = [
 // replacement, and nothing in this repository may read one — an alias with an
 // internal consumer can never be removed, which is how D5 survived five
 // releases. Removal is step 33.
-const SUPERSEDED = {
-	"--rux-heading-page": "--rux-text-heading-40",
-	"--rux-heading-section": "--rux-text-heading-24",
-	"--rux-heading-panel": "--rux-text-heading-16",
-	"--rux-text-lead": "--rux-text-copy-16",
-	"--rux-text-body": "--rux-text-copy-14",
-	"--rux-text-caption": "--rux-text-label-12",
-	"--rux-label-control": "--rux-text-label-14",
-};
+// Step 33 deleted every one of them. The list survives as the ratchet: these
+// names are retired and MUST NOT come back, which is the half still worth
+// enforcing now that forwarding is moot.
+const RETIRED = [
+	"--rux-heading-page",
+	"--rux-heading-section",
+	"--rux-heading-panel",
+	"--rux-text-lead",
+	"--rux-text-body",
+	"--rux-text-caption",
+	"--rux-label-control",
+	"--rux-label-eyebrow",
+	"--rux-text-label-12-wide",
+	"--rux-size-11",
+	"--rux-size-xxs",
+	"--rux-tracking-dense",
+];
 
 test("every typography role is complete", () => {
 	for (const role of ROLES) {
@@ -127,25 +126,18 @@ test("a role introduces meaning, never a new number", () => {
 	}
 });
 
-test("every superseded role name still forwards to its replacement", () => {
-	for (const [old, current] of Object.entries(SUPERSEDED)) {
-		for (const axis of AXES) {
-			assert.match(
-				tokens,
-				new RegExp(`\\${old}-${axis}:\\s*var\\(\\${current}-${axis}\\)`),
-				`${old}-${axis} must forward to ${current}-${axis}`,
-			);
-		}
-	}
-});
-
-test("nothing internal reads a superseded role name", () => {
-	// What makes step 33 a deletion rather than a migration.
+test("a retired name is neither defined nor read", () => {
+	// This asserted the opposite until step 33: that every superseded name still
+	// FORWARDED to its replacement, which is what an alias window is for. Step 48
+	// took consumers out of scope, step 33 deleted all 52 declarations, and what
+	// is left to enforce is that none of them comes back — by definition or by
+	// read. An alias with an internal consumer can never be removed, which is how
+	// D5 survived five releases; this is the guard against a repeat.
 	const consumers = Object.values(sheets).join("\n");
-	const offenders = Object.keys(SUPERSEDED).filter((old) =>
-		new RegExp(`var\\(\\${old}-`).test(consumers),
-	);
-	assert.deepEqual(offenders, []);
+	const defined = RETIRED.filter((n) => new RegExp(`\\${n}[-:]`).test(tokens));
+	const read = RETIRED.filter((n) => new RegExp(`var\\(\\s*\\${n}[-)]`).test(consumers));
+	assert.deepEqual(defined, [], "retired names must not be redefined");
+	assert.deepEqual(read, [], "retired names must not be read");
 });
 
 test("no role is defined but unused", () => {

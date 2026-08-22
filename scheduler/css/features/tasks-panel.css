@@ -67,7 +67,7 @@
 
 /* Day heading — a flat section title over the run of trip cards that follows
    it, replacing the day-group card that used to wrap them (a card nesting
-   cards). Type comes from the shared .rux-u-panel-title recipe in the
+   cards). Type comes from the shared .rux-text-heading-16 recipe in the
    markup; this block owns only the spacing. */
 .sched-tasks__day-title {
 	margin: 0;
