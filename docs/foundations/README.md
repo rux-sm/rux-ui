@@ -16,11 +16,11 @@ roles onto that vocabulary.
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
 | [`typography.md`](typography.md) | 4.10.1 | 58 done · 1 deferred · 3 withdrawn | — |
-| [`layout.md`](layout.md) | 1.8.0 | 12 done | — |
+| [`layout.md`](layout.md) | 1.8.1 | 12 done | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
 | [`naming.md`](naming.md) | 1.15.0 | 13 done · 1 open | owner — step 10 held |
-| [`state.md`](state.md) | 1.1.0 | 3 done · 3 open | — |
+| [`state.md`](state.md) | 1.2.0 | 4 done · 2 open | — |
 
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
 it in is its own decision.

@@ -1,6 +1,6 @@
 # Rux UI Foundations — Layout
 
-**Contract version: 1.8.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.8.1** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
@@ -156,7 +156,7 @@ correctly so.
 |---|---|---|
 | D1 | ~~The application layer holds seven boundaries off the set.~~ | **closed, step 3** |
 | D2 | ~~The space scale and radius scale are published from `tokens.css` and governed by no document.~~ | **closed, steps 4, 5** — §7 publishes the space scale, §8 the radius scale and the Materials presets, §10 the fixed dimensions. Elevation is measured but not adopted; that is step 9, not this defect. |
-| D3 | `../layout-composition.md` § Responsive Behavior still states four accessibility MUSTs outside a foundation document. **§ Spacing and the layout half moved in step 6**; the remainder is dialog and assistive-technology behaviour, which is `state.md`'s and cannot move until it exists. | **partly closed, step 6** — moves at [`state.md`](state.md) step 4 |
+| D3 | ~~`../layout-composition.md` § Responsive Behavior still states four accessibility MUSTs outside a foundation document.~~ **Fully closed 2026-08-22.** § Spacing and the layout half moved in step 6; the accessibility remainder was received by [`state.md`](state.md) step 4 as its rules 2.7–2.10, and that section is now a pointer to both halves. Step 6's refusal to relocate them here — into a home that would have had to hand them back — is what let the second half land in one move instead of two. | **closed** — step 6 and `state.md` step 4 |
 | D4 | ~~Nothing enforces §2.4 against the application layer.~~ | **closed, step 3** — the contract test covers both layers |
 | D5 | ~~`README.md` § Layout states `--rux-container-xs` (480px) and it has no canonical home — layout does not publish container widths, and whether it should is **Q3**. Not a duplicate, so step 7 left it: the fix is to answer Q3, not to move a value into a document that has not claimed the category. ~~ | **closed, step 10** — §10 publishes it, and Q3 is answered |
 

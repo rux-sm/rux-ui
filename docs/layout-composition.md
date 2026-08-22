@@ -256,22 +256,12 @@ panels attached at wide widths, drawers at narrow ones, rails and drawer widths 
 application variants. Which widths are narrow is **§1.1**'s, and it is the only place that
 answers it.
 
-**The rules below did not move, and are not layout's to own.** They are dialog and
-assistive-technology behaviour — the territory `foundations/README.md` §1 routes to
-`foundations/state.md` (R3, R7, R8). That document now exists, and its **step 4** is where
-these arrive — gated on its steps 2 and 3, because three of the four are about dismissal and
-focus restoration, and its rule 2.5 has not settled whether it governs all dismissal or only
-outside-dismissal. Moving them before that would import them into a rule still changing
-shape. `layout.md` D3 stays open for exactly this remainder.
-
-- Overlay drawers MUST support Escape dismissal, focus restoration, an
-  accessible name, and an operable close control.
-- Modal drawers MUST implement complete dialog behavior. Non-modal drawers
-  SHOULD remain complementary `<aside>` regions.
-- Resize separators MUST be keyboard operable and expose orientation, current
-  value, minimum, maximum, and the controlled panel.
-- A resize separator MUST be visible and operable only while its controlled
-  panel is open. It MUST NOT double as the panel disclosure control.
+Canonical for the accessibility half: **[`foundations/state.md`](foundations/state.md)
+rules 2.7–2.10** — overlay drawer dismissal, dialog behaviour for modal drawers, and the two
+resize-separator rules. They were dialog and assistive-technology behaviour rather than
+layout, so `foundations/README.md` §1 routed them to `state.md` (R3, R7, R8), and that
+document's **step 4** received them verbatim on 2026-08-22. **They are not restated here**,
+which closes `layout.md` D3.
 
 Panel and drawer transitions follow the shared [Productive Motion](motion.md)
 contract. Layout implementations should consume the `--rux-panel-*` motion
