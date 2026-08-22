@@ -96,7 +96,7 @@ const ALLOWED = new Map([
  * layout.md's call, since that document still has the scale open. Listed so the
  * count cannot grow quietly while it is. */
 const PENDING_ICON_SIZING = new Map([
-	["scheduler/css/features/comp-trip-list.css", new Set(["14px"])],
+	["scheduler/css/features/trip-list.css", new Set(["14px"])],
 	["scheduler/css/features/trip-request.css", new Set(["40px"])],
 ]);
 

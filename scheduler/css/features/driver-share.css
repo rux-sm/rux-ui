@@ -10,7 +10,6 @@
 
 :where(.driver-share-page, .components-app__driver-assignment-demo) {
 	--sched-driver-page-max-width:          520px;
-	--sched-driver-phone-preview-max-width: 430px;
 	--sched-driver-page-gutter:             var(--rux-space-4);
 	--sched-driver-page-gutter-compact:     var(--rux-space-3);
 	--sched-driver-page-bottom-padding:     var(--rux-space-6);

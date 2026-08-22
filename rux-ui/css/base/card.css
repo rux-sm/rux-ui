@@ -199,7 +199,7 @@
    class here used to hardcode its own near-identical copy (see
    rux-ui/css/base/panel.css, rux-ui/css/base/workspace.css,
    scheduler/css/features/maintenance-share.css, trip-history.css,
-   comp-settings-app.css); grouped here so there's one place to change the
+   settings-app.css); grouped here so there's one place to change the
    role instead of six. Each class below keeps its own rule for structural
    properties only (margin, padding, flex, overflow handling).
 
@@ -237,7 +237,7 @@
 }
 
 /* Shared "muted subtitle" typography — see rux-ui/css/base/workspace.css,
-   scheduler/css/features/comp-settings-app.css, trip-history.css, all of
+   scheduler/css/features/settings-app.css, trip-history.css, all of
    which used to hardcode the same (size, color, line-height) themselves. */
 .rux-u-subtitle,
 .rux-card__subtitle,

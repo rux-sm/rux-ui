@@ -338,7 +338,7 @@
 	justify-content: center;
 }
 
-/* The Reset/Not Reset text (.rux-status-text, comp-driver-app.css) carries
+/* The Reset/Not Reset text (.rux-status-text, driver-app.css) carries
    its own font-weight everywhere else it's used (a driver table's Status
    column) — here it sits inside the dwell card's boxed total-time output
    and should read as part of that same input-sized line, not stand out at

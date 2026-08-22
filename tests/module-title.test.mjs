@@ -23,7 +23,6 @@ const VIEWS = [
 	"customers",
 	"requests",
 	"documents",
-	"components",
 	"game",
 	"settings",
 ];

@@ -157,7 +157,7 @@ or components (bare) and apply it to both; correct the ledger row.
 **B6. App prefix sprawl: 13 non-`sched` prefixes across 10 of 33 feature files.**
 Severity: **Medium** · [Ledger §3 — the rule; the violations are New]
 `sched-`/`sched-scope-` is the documented norm and 20 files are clean, but
-`comp-driver-app.css`/`driver-share.css` use `driver-*` (121 occurrences) and
+`driver-app.css`/`driver-share.css` use `driver-*` (121 occurrences) and
 `assignment-*` (28), `flip-seven.css` uses `flip-seven` (114), plus `components-app`,
 `settings-app`, `fleet-app`, `trips-app`, `trip-request`, `maintenance-*`,
 `documents-app`, `calendar-app`, `req-`.

@@ -405,28 +405,29 @@ test("button labels use the shared BEM anatomy", () => {
 	assert.doesNotMatch(controlStyles, /rux-btn-label/);
 });
 
-test("the Components button page documents only the finalized contract", () => {
-	const buttonPage = page.match(
-		/<div\s+data-component-page="button"[\s\S]*?(?=<div\s+data-component-page="toggle-button")/,
-	)?.[0] ?? "";
-	assert.match(buttonPage, /href="\.\/docs\/buttons\.md"/);
-	assert.match(buttonPage, />\s*Emphasis\s*</);
-	assert.match(buttonPage, />\s*Size Roles\s*</);
-	assert.match(buttonPage, />\s*Content and States\s*</);
-	assert.match(buttonPage, />\s*Interaction States\s*</);
-	assert.match(buttonPage, />\s*Composition\s*</);
-	assert.match(buttonPage, /rux-button--accent/);
-	assert.match(buttonPage, /rux-button--default/);
-	assert.match(buttonPage, /rux-button--ghost/);
-	assert.match(buttonPage, /rux-button--danger/);
-	assert.doesNotMatch(buttonPage, /Button Anatomy|Button Variants|Button on Accent/);
-});
+/* "the Components button page documents only the finalized contract" stood here
+   until the in-app components demo was removed. It read that demo's
+   data-component-page="button" section, which no longer exists — the gallery is
+   the contract surface now (audit R9). The test was deleted rather than
+   repointed: it asserted the demo page's own headings and prose, not a rule. */
 
 test("toggle buttons use aria-pressed as their selection source of truth", () => {
 	assert.doesNotMatch(page, /class="[^"]*rux-button[^"]*is-active/);
 	assert.doesNotMatch(controlStyles, /rux-button[^\n{]*is-active/);
 	assert.doesNotMatch(tokens, /--rux-button-active-overlay/);
-	assert.match(page, /rux-button--toggle"[^>]*aria-pressed="true"/);
+	/* This asserted a PRESSED specimen — `aria-pressed="true"` — which only the
+	   components demo carried. That is a specimen check, not a contract check,
+	   and it went with the demo. What the test is named for is stronger and true
+	   of live markup: every toggle button carries aria-pressed at all, so the
+	   attribute is the state of record rather than an afterthought on the one
+	   that happened to be shown pressed. state.md rule 2.1. */
+	const toggles = page.match(/<button[^>]*rux-button--toggle[^>]*>/gs) ?? [];
+	assert.ok(toggles.length >= 8, `expected the shell's toggle buttons, found ${toggles.length}`);
+	assert.deepEqual(
+		toggles.filter((t) => !/aria-pressed=/.test(t)),
+		[],
+		"a toggle button without aria-pressed has no state of record",
+	);
 });
 
 test("Today remains a text-only header action at every breakpoint", () => {

@@ -581,9 +581,8 @@ test("document actions use neutral styling unless attention is required", () => 
 });
 
 test("responsive CSS protects narrow layouts and touch targets", async () => {
-	const [css, componentDemoCss, tokens, badges] = await Promise.all([
+	const [css, tokens, badges] = await Promise.all([
 		readFile(new URL("../scheduler/css/features/driver-share.css", import.meta.url), "utf8"),
-		readFile(new URL("../scheduler/css/features/comp-components-app.css", import.meta.url), "utf8"),
 		readFile(new URL("../rux-ui/css/tokens.css", import.meta.url), "utf8"),
 		readFile(new URL("../rux-ui/css/base/badges.css", import.meta.url), "utf8"),
 	]);
@@ -731,9 +730,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		/\.driver-assignment-card__crew-bus-section\s*\{[^}]*display:\s*grid[^}]*gap:\s*var\(--rux-space-3\)[^}]*padding:\s*var\(--sched-driver-module-padding\)[^}]*border-top:/s,
 	);
 	assert.match(css, /--sched-driver-page-max-width:\s*520px/);
-	assert.match(css, /--sched-driver-phone-preview-max-width:\s*430px/);
-	assert.match(
-		componentDemoCss,
-		/width:\s*min\(100%, var\(--sched-driver-phone-preview-max-width\)\)/,
-	);
+	/* --sched-driver-phone-preview-max-width was asserted here until the in-app
+	   components demo was removed. That demo was its only consumer, so the token
+	   went with it rather than being left declared and unread. */
 });

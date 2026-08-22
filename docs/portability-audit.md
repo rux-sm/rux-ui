@@ -156,7 +156,7 @@ They are the highest-value, lowest-risk extractions in the repository.
 | ~~`.rux-notifications`, `-menu`~~ | → `rux-ui/css/base/notifications.css` | none (0 domain hits, 83 lines) | `ui-shell.test.mjs` | **done** |
 | ~~`.rux-preferences`~~ | → `rux-ui/css/base/preferences.css` | none (0 domain hits, 54 lines) | `ui-shell.test.mjs` | **done** |
 | ~~`.rux-profile-picker`~~ | → `rux-ui/css/base/profile-picker.css` | none (0 domain hits, 153 lines) | none | **done** |
-| `.rux-col-picker`, `.rux-col-filter-icon` | `features/bus-picker.css`, `comp-driver-app.css` | column-picker mechanism is generic; its contents are not | none | Hybrid |
+| `.rux-col-picker`, `.rux-col-filter-icon` | `features/bus-picker.css`, `driver-app.css` | column-picker mechanism is generic; its contents are not | none | Hybrid |
 | `.rux-splash` | `layout/scheduler-app.css:11` | none in its own rules | none | Portable |
 | `.rux-view-options` | `layout/scheduler-app.css:1255` | none in its own rules | none | Portable |
 | `.rux-mini-cal` | `layout/scheduler-app.css:679` | date grid is generic; scheduler wiring is not | none | Hybrid |
@@ -176,10 +176,10 @@ are in §4.2. The remainder are App-specific and rename to `.sched-*`:
   `print-schedule.css` (128).
 - **Clearly domain-bound** (5–100): `driver-panel.css`, `driver-week-info.css`,
   `maintenance-share.css`, `tasks-panel.css`, `fleet-panel.css`, `trip-request.css`,
-  `trip-finder.css`, `trip-history.css`, `comp-driver-app.css`, `comp-trip-list.css`,
-  `customer-panel.css`, `trip-manifest.css`, `comp-fleet-app.css`, `bus-picker.css`,
+  `trip-finder.css`, `trip-history.css`, `driver-app.css`, `trip-list.css`,
+  `customer-panel.css`, `trip-manifest.css`, `fleet-app.css`, `bus-picker.css`,
   `trip-dialog.css`, `comp-components-app.css`, `request-inbox.css`.
-- **Low-score, inspect individually** (1–3): `comp-settings-app.css`, `dev-notes.css`,
+- **Low-score, inspect individually** (1–3): `settings-app.css`, `dev-notes.css`,
   `documents-app.css`, `team-chat.css`, `doc-viewer.css`, `flip-seven.css`,
   `contact-info.css`. Several are app *panels* whose chrome is generic; expect Hybrid
   rows here.

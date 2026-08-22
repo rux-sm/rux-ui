@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    Floating window chrome only — the shared .rux-panel--floating component
    (css/base/panel.css) owns drag/resize/mobile-breakpoint mechanics, and
-   the table itself reuses comp-trip-list.css's .trips-app__* classes
+   the table itself reuses trip-list.css's .trips-app__* classes
    verbatim (also shared with the trip manifest's passenger table). This
    file is just: window sizing, the search row, and the collapsible filter
    panel.
@@ -207,7 +207,7 @@
 
 /* The window resizes down to 480px, where five columns would ellipsize each
    other into uselessness. Contact is the supporting column, so it is the one
-   that goes — same call comp-trip-list.css makes for its money columns. */
+   that goes — same call trip-list.css makes for its money columns. */
 @container trip-finder-window (max-width: 640px) {
 	.sched-scope-trip-finder__table :is(th, td)[data-col="contact"] {
 		display: none;
