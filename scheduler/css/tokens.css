@@ -15,8 +15,8 @@
 	--sched-trip-bar-danger-icon:    var(--rux-danger-base);
 	--sched-trip-bar-warning-icon:   var(--rux-warning-base);
 	--sched-trip-bar-success-icon:   var(--rux-success-base);
-	--sched-trip-bar-warning-border: var(--rux-warning-vivid);
-	--sched-trip-bar-danger-border:  var(--rux-danger-vivid);
+	--sched-trip-bar-warning-border: var(--rux-warning-fill);
+	--sched-trip-bar-danger-border:  var(--rux-danger-fill);
 	/* — category colors —
 	   The hue palette feeding the Gantt bar's background (--_tone in
 	   trip-bar.css), with the lightness/opacity steps below computing each

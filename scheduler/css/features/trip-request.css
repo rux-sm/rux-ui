@@ -252,7 +252,7 @@
 
 .trip-request__success-icon {
 	font-size: 40px;
-	color: var(--rux-success-strong);
+	color: var(--rux-success);
 }
 
 .trip-request__success-title {

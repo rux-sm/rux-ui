@@ -176,7 +176,7 @@
 .sched-team-chat__reaction-pill.is-active {
 	background: none;
 	border-color: var(--rux-accent);
-	color: var(--rux-info-vivid);
+	color: var(--rux-info);
 }
 
 .sched-team-chat__message-line {
@@ -238,7 +238,7 @@
 
 .sched-team-chat__mention {
 	display: inline;
-	color: var(--rux-info-vivid);
+	color: var(--rux-info);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -294,7 +294,7 @@
 }
 
 .sched-ui-header-chat-btn.has-mention .rux-ui-header__badge-count {
-	background: var(--rux-info-vivid);
+	background: var(--rux-info-fill);
 }
 
 .sched-team-chat__emoji-grid {

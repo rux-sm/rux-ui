@@ -34,13 +34,6 @@
 	   foregrounds inside sRGB, since they are all `from var(--rux-neutral)`.
 	   docs/foundations/color.md rule 2.8, §5 step 12. */
 	--rux-neutral:	oklch(50% 0 0); /* Base */
-	--rux-red:   	oklch(60% 0.280 024); /* Gore */
-	--rux-yellow: 	oklch(80% 0.280 085); /* Gold */
-	--rux-green:	oklch(60% 0.280 140); /* Moss */
-	--rux-cyan:		oklch(70% 0.280 195); /* Wind */
-	--rux-blue:		oklch(60% 0.280 255); /* Mana */
-	--rux-purple:	oklch(60% 0.280 290); /* Void */
-	--rux-pink:		oklch(70% 0.280 350); /* Neon */	
 
 	/* ─── COLOR · the catalog's scales ─────────────────────────────────────── */
 	/* Tier 0. The Geist colour catalog, adopted whole: two backgrounds, a
@@ -193,7 +186,6 @@
 	/* Was a less-chromatic variant of the accent for solid controls; the 700
 	   step IS the solid-control fill, so it converges on the accent itself.
 	   Kept published, Class C to retire. */
-	--rux-accent-fill:   var(--rux-accent);
 	--rux-selection-bg:  var(--rux-accent);
 	--rux-selection-fg:  var(--rux-fg-on-accent);
 
@@ -549,10 +541,6 @@
 	   step it is readable in both, and strong has no job left: these four now
 	   resolve identically to the base. Kept as published names because removing
 	   one is Class C; recorded as retirement candidates. */
-	--rux-danger-strong:  var(--rux-danger);
-	--rux-warning-strong: var(--rux-warning);
-	--rux-success-strong: var(--rux-success);
-	--rux-info-strong:    var(--rux-info);
 
 	/* Fill: the 700 step, the catalog's high-contrast background, with 1000 —
 	   the scale's own near-white — as the text on it. Published for all four
@@ -577,19 +565,12 @@
 	   700's hover and nothing as 800's, so these now name the step they were
 	   the hover for. Kept published because removing a name is Class C; they
 	   have no consumer. What a fill's hover should be is D15. */
-	--rux-danger-fill-hover:  var(--rux-danger-fill);
-	--rux-warning-fill-hover: var(--rux-warning-fill);
-	--rux-success-fill-hover: var(--rux-success-fill);
-	--rux-info-fill-hover:    var(--rux-info-fill);
 
 	/* Vivid was the maximum-chroma tier for data surfaces (trip bars). It is
 	   the same purpose as fill — a solid colour carrying a label — so it takes
 	   the same step and now resolves identically to it. Same call as strong:
 	   converged, kept published, Class C to retire. The trip bar's own tone
 	   recipes are the application's mapping and are not touched here (rule 1.3). */
-	--rux-danger-vivid:  var(--rux-danger-fill);
-	--rux-warning-vivid: var(--rux-warning-fill);
-	--rux-info-vivid:    var(--rux-info-fill);
 	/* Same pairing as -on-fill, since -vivid resolves to the fill. The 1000 step
 	   these read until step 9 is a TINTED near-white (#feecee) for coloured text
 	   on a neutral ground, not a label on a saturated fill — the tint is what
@@ -599,9 +580,6 @@
 	--rux-success-on-vivid: var(--rux-success-on-fill);
 
 	/* Compatibility alias for existing consumers. */
-	--rux-danger-bright:  var(--rux-danger-on-vivid);
-	--rux-warning-bright: var(--rux-warning-on-vivid);
-	--rux-success-bright: var(--rux-success-on-vivid);
 
 	/* Trip bar: dedicated aliases so the Gantt bar's status coloring (pending-
 	   icon markers + partial-po/pending-po border overrides) can be retuned
@@ -609,8 +587,8 @@
 	   from. Two tiers, matching the bar's existing intensity split — icon
 	   markers stay muted (-base), border overrides stay punchy (-vivid). */
 
-	--rux-tag-purple:	oklch(from var(--rux-purple)   	90% .28 h);
-	--rux-tag-default:	oklch(from var(--rux-gray)   	90% .00 h);
+	--rux-tag-purple:	var(--rux-purple-900);
+	--rux-tag-default:	var(--rux-gray-900);
 
 	/* ─── SHAPE · radius roles ───────────────────────────────────────────── */
 	/* Components route through these roles even while both are square. This
@@ -1087,10 +1065,15 @@
 	/* Routed through the container role (currently also 0) rather than
 	   hardcoded — see --rux-workspace-radius above for why. */
 	--rux-calendar-radius: var(--rux-radius-0);
-	--rux-calendar-now-line-color:    var(--rux-accent-fill);
+	/* A fill that carries a white label (--rux-calendar-now-line-label-bg reads
+	   this, and -label-fg is --rux-fg-on-accent), so rule 2.11 applies: white on
+	   the 700 step measures 4.44 and fails. 800 it is. */
+	--rux-calendar-now-line-color:    var(--rux-accent-800);
 	--rux-calendar-now-line-label-bg: var(--rux-calendar-now-line-color);
 	--rux-calendar-now-line-label-fg: var(--rux-fg-on-accent);
-	--rux-calendar-today-fg:          var(--rux-accent-fill);
+	/* Text on the canvas, so it takes the accent scale's text step, not a fill
+	   step: 700 measures 4.73/4.26 where 900 measures 8.40/5.09. */
+	--rux-calendar-today-fg:          var(--rux-accent-900);
 
 
 	/* — header — */
@@ -1500,7 +1483,7 @@
 	   button brightens within its own intent hue rather than toward neutral. */
 	--rux-button-danger-ghost-background: 			transparent;
 	--rux-button-danger-ghost-text:       			var(--rux-danger);
-	--rux-button-danger-ghost-hover-text:       	var(--rux-danger-strong);
+	--rux-button-danger-ghost-hover-text:       	var(--rux-danger);
 	--rux-button-danger-ghost-border:     			none;
 	--rux-button-danger-ghost-hover-background:  	transparent;
 	--rux-button-danger-ghost-active-background:	oklch(from var(--rux-danger) l c h / 20%);
@@ -1633,7 +1616,7 @@
 	--rux-switch-thumb-size:           20px;
 
 	/* — checked — */
-	--rux-switch-checked-bg:       var(--rux-accent-fill);
+	--rux-switch-checked-bg:       var(--rux-accent);
 	--rux-switch-checked-border:   none;
 	--rux-switch-checked-thumb-bg: var(--rux-thumb-bg);
 
@@ -1670,7 +1653,7 @@
 	--rux-slider-track-height: 8px;
 	--rux-slider-track-bg:     var(--rux-surface-2);
 	--rux-slider-track-radius: var(--rux-radius-0);
-	--rux-slider-fill-bg:      var(--rux-accent-fill);
+	--rux-slider-fill-bg:      var(--rux-accent);
 
 	--rux-slider-thumb-height: 16px;
 	--rux-slider-thumb-width:  8px;
@@ -2043,13 +2026,6 @@
 	color-scheme: light;
 
 	/* ─── Primitives ──────────────────────────────────────────────────────── */
-	--rux-red:    oklch(60.0% 0.28 024.0); /*  Gore  */
-	--rux-yellow: oklch(80.0% 0.28 085.0); /*  Gold  */
-	--rux-green:  oklch(60.0% 0.28 140.0); /*  Moss  */
-	--rux-cyan:   oklch(60.0% 0.28 195.0); /*  Wind  */
-	--rux-blue:   oklch(60.0% 0.28 255.0); /*  Mana  */
-	--rux-purple: oklch(60.0% 0.28 290.0); /*  Void  */
-	--rux-pink:   oklch(60.0% 0.28 350.0); /*  Neon  */
 	--rux-gray:   oklch(from var(--rux-neutral) 98% c h);
 
 	/* ─── COLOR · the catalog's scales, light ──────────────────────────────── */
@@ -2215,7 +2191,7 @@
 	/* ─── Tag fills ──────────────────────────────────────────────────────── */
 	/* Dark theme fixes these at L90% — near-white pastels that pop on dark
 	   surfaces. On a light card they vanish. Invert to a visible tint. */
-	--rux-tag-purple: oklch(from var(--rux-purple) 80% .12 h);
+	--rux-tag-purple: var(--rux-purple-900);
 	--rux-tag-default: oklch(from var(--rux-neutral) 82% c h);
 
 	/* ─── Elevation colors ────────────────────────────────────────────────── */

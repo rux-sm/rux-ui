@@ -261,7 +261,7 @@
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 .sched-scope-trip__contact-select:hover {
-	color: var(--rux-danger-bright);
+	color: var(--rux-danger);
 }
 #tp-contacts-list .sched-scope-trip__contact-row:focus-within .sched-scope-trip__contact-select,
 #tp-contacts-list .sched-scope-trip__contact-select:focus-visible {
@@ -574,7 +574,7 @@
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 .sched-scope-trip__payment-select:hover {
-	color: var(--rux-danger-bright);
+	color: var(--rux-danger);
 }
 #dp-timeoff-delete-btn:disabled {
 	display: none;
@@ -811,7 +811,7 @@
 		opacity var(--rux-duration-fast) var(--rux-ease-out);
 }
 .sched-scope-trip__doc-select:hover {
-	color: var(--rux-danger-bright);
+	color: var(--rux-danger);
 }
 
 .sched-scope-trip__doc-select:focus-visible,

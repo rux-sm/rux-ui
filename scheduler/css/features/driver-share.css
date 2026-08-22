@@ -320,15 +320,15 @@ html {
 }
 
 .driver-assignment-card__response-state--success {
-	--_state-color: var(--rux-success-bright);
+	--_state-color: var(--rux-success);
 }
 
 .driver-assignment-card__response-state--danger {
-	--_state-color: var(--rux-danger-bright);
+	--_state-color: var(--rux-danger);
 }
 
 .driver-assignment-card__response-state--warning {
-	--_state-color: var(--rux-warning-bright);
+	--_state-color: var(--rux-warning);
 }
 
 .driver-assignment-card__response-state--neutral {
@@ -347,7 +347,7 @@ html {
 	flex: 1 0 100%;
 	max-width: var(--sched-driver-copy-max-width);
 	margin: 0;
-	color: var(--rux-danger-bright);
+	color: var(--rux-danger);
 	font-size: var(--rux-size-14);
 	line-height: var(--rux-line-height-20);
 	text-align: right;

@@ -145,7 +145,7 @@
 }
 
 .rux-priority-dot[data-priority="1"] { background: var(--rux-warning); }
-.rux-priority-dot[data-priority="2"] { background: var(--rux-purple); }
+.rux-priority-dot[data-priority="2"] { background: var(--rux-purple-700); }
 .rux-priority-dot[data-priority="3"] { background: var(--rux-info); }
 .rux-priority-dot[data-priority="4"] { background: var(--rux-success); }
 .rux-priority-dot[data-priority="5"] { background: var(--rux-white); }

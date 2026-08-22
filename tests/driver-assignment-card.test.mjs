@@ -635,7 +635,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		badges,
-		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info-strong\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid\s*color-mix\([^}]*var\(--rux-badge-border-opacity\)[^}]*color:\s*var\(--_badge-color\)/s,
+		/\.rux-badge\s*\{[^}]*--_badge-color:\s*var\(--rux-info\)[^}]*background:\s*color-mix\([^}]*var\(--rux-badge-background-opacity\)[^}]*border:\s*var\(--rux-border-width\) solid\s*color-mix\([^}]*var\(--rux-badge-border-opacity\)[^}]*color:\s*var\(--_badge-color\)/s,
 	);
 	for (const [tone, color] of [
 		["info", "info"],
@@ -645,7 +645,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	]) {
 		assert.match(
 			badges,
-			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${color}-strong\\)`),
+			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${color}\\)`),
 		);
 	}
 	assert.match(
@@ -668,7 +668,7 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 	);
 	assert.match(
 		css,
-		/\.driver-assignment-card__response-state--danger\s*\{[^}]*--_state-color:\s*var\(--rux-danger-bright\)/s,
+		/\.driver-assignment-card__response-state--danger\s*\{[^}]*--_state-color:\s*var\(--rux-danger\)/s,
 	);
 	/* The emphasised driver type size is tokenised now (--rux-size-24 is
 	   1.5rem); the -bus- and -route- variants no longer exist. */

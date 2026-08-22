@@ -525,7 +525,7 @@
 }
 
 .sched-driver-grid__row[data-priority="2"] .sched-driver-grid__name {
-	--sched-driver-priority-color: var(--rux-purple);
+	--sched-driver-priority-color: var(--rux-purple-700);
 }
 
 .sched-driver-grid__row[data-priority="3"] .sched-driver-grid__name {
@@ -861,7 +861,7 @@
 	align-items: center;
 	gap: var(--rux-space-1);
 	margin: 0 0 var(--rux-space-3);
-	color: var(--rux-danger-bright);
+	color: var(--rux-danger);
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 }

@@ -102,12 +102,15 @@ test("the legacy --accent alias is gone", () => {
 });
 
 test("every semantic keeps its color modifier", () => {
+	/* Reads the status role itself. It was `--rux-${tone}-strong` until
+	   color.md step 14 retired that name: step 5 moved the base onto the
+	   catalog's 900 step, which is readable in both themes, and "strong" —
+	   which existed only because the base was not — became the same colour.
+	   A badge wants the status colour, and that is what it now names. */
 	for (const tone of ["info", "success", "warning", "danger"]) {
 		assert.match(
 			badges,
-			new RegExp(
-				`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${tone}-strong\\)`,
-			),
+			new RegExp(`\\.rux-badge--${tone}[^}]*--_badge-color:\\s*var\\(--rux-${tone}\\)`),
 		);
 	}
 });

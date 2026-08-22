@@ -94,10 +94,15 @@ test("ghost danger steps within its own intent hue", () => {
 		tokenValue("--rux-button-danger-ghost-hover-background"),
 		"transparent",
 	);
+	/* Both ends read the danger role now. They used to be -danger and
+	   -danger-strong, a pair that stopped being two colours at color.md step 5
+	   — once the base moved onto the 900 step, "strong" had no job left — and
+	   whose name was retired at step 14. The ghost's step is carried by the
+	   background wash, not by two foregrounds. */
 	assert.equal(tokenValue("--rux-button-danger-ghost-text"), "var(--rux-danger)");
 	assert.equal(
 		tokenValue("--rux-button-danger-ghost-hover-text"),
-		"var(--rux-danger-strong)",
+		"var(--rux-danger)",
 	);
 });
 

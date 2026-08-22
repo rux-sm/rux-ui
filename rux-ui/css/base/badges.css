@@ -26,7 +26,7 @@
 /* — base — */
 
 .rux-badge {
-  --_badge-color: var(--rux-info-strong);
+  --_badge-color: var(--rux-info);
 
   display: inline-flex;
   align-items: center;
@@ -102,10 +102,10 @@
 
 /* — color variants — */
 
-.rux-badge--info    { --_badge-color: var(--rux-info-strong); }
-.rux-badge--success { --_badge-color: var(--rux-success-strong); }
-.rux-badge--warning { --_badge-color: var(--rux-warning-strong); }
-.rux-badge--danger  { --_badge-color: var(--rux-danger-strong); }
+.rux-badge--info    { --_badge-color: var(--rux-info); }
+.rux-badge--success { --_badge-color: var(--rux-success); }
+.rux-badge--warning { --_badge-color: var(--rux-warning); }
+.rux-badge--danger  { --_badge-color: var(--rux-danger); }
 
 /* — dot indicator — */
 

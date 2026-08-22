@@ -250,7 +250,7 @@
 }
 
 .sched-trip-itinerary__seg-stat--ok {
-	color: var(--rux-success-bright);
+	color: var(--rux-success);
 	font-weight: var(--rux-weight-400);
 }
 
@@ -670,7 +670,7 @@
 }
 
 .sched-trip-itinerary__source--stale {
-	color: var(--rux-warning-bright);
+	color: var(--rux-warning);
 }
 
 /* — Drag handle (visible only in drag mode) — */
@@ -696,7 +696,7 @@
 /* — Summary Route button stale state — */
 
 #tp-itin-recalc.is-stale {
-	color: var(--rux-warning-bright);
+	color: var(--rux-warning);
 }
 
 #tp-itin-recalc.is-routing {
@@ -705,7 +705,7 @@
 }
 
 #tp-itin-recalc.is-error {
-	color: var(--rux-danger-bright);
+	color: var(--rux-danger);
 }
 
 /* Disabled always wins over stale/error tinting — same specificity (ID + one
@@ -733,7 +733,7 @@
 	pointer-events: none;
 }
 .sched-trip-itinerary__addr-check--stale {
-	color: var(--rux-warning-bright);
+	color: var(--rux-warning);
 }
 
 .sched-trip-itinerary__address-wrap.is-verified .rux-input {
