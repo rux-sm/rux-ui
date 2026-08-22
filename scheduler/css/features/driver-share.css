@@ -87,17 +87,19 @@ html {
    stretch the header — this page keeps its own phone-first header rather
    than .rux-ui-header, so it styles its own title. */
 .driver-share-header__label {
+	/* Step 27 left this open: "whether it is heading-18 or label-18 — which
+	   would track 0 — is step 26's call". Step 39 answers it as label-18, the
+	   Label family's own 18/20 rung, published by step 38. Size, weight and
+	   leading are unchanged; only the tracking moves, -0.02em to 0.
+	   docs/foundations/typography.md D14, steps 27, 38, 39. */
+	font-size: var(--rux-text-label-18-size);
+	font-weight: var(--rux-text-label-18-weight);
+	line-height: var(--rux-text-label-18-line-height);
+	letter-spacing: var(--rux-text-label-18-tracking);
+	/* Deliberately overrides the role's colour: this is the quieter half of a
+	   two-line header, and the role publishes primary. Same allowance
+	   .rux-u-subtitle takes (§3.3). */
 	color: var(--rux-text-secondary);
-	font-size: var(--sched-driver-secondary-size);
-	font-weight: var(--rux-weight-400);
-	line-height: var(--rux-line-height-20);
-	/* Overrides h1's size, so it must override h1's tracking too: step 27 put
-	   the element default on the 2.13 curve at 40px, and an 18px heading that
-	   inherits it lands three steps too tight. Pinned to the rung its own size
-	   sits at. Whether it is heading-18 or label-18 — which would track 0 — is
-	   step 26's call; both agree it is not -0.06em.
-	   docs/foundations/typography.md D14, step 27. */
-	letter-spacing: var(--rux-tracking-tight);
 	white-space: nowrap;
 }
 

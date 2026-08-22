@@ -182,7 +182,7 @@
 .sched-scheduler__day-month {
 	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-normal);
 	line-height: 1;
 	color: var(--rux-text-secondary);
 }
@@ -330,7 +330,7 @@
 	text-align: center;
 	font-size: var(--rux-size-14);
 	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-normal);
 	color: var(--rux-text-secondary);
 }
 
@@ -359,7 +359,7 @@
    a column of them aligns digit-for-digit. */
 .sched-scheduler__bus-number {
 	display: flex;
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-normal);
 	color: var(--rux-text-primary);
 	font-weight: var(--rux-weight-500);
 	font-variant-numeric: tabular-nums;

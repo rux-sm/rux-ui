@@ -843,7 +843,7 @@
 	font-size: var(--sched-trip-bar-row-font-size);
 	font-weight: var(--rux-weight-400);
 	line-height: var(--sched-trip-bar-row-line-height);
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-normal);
 	white-space: nowrap;
 }
 
@@ -922,7 +922,7 @@
 	flex: none;
 	white-space: nowrap;
 	margin-left: var(--rux-space-1);
-	letter-spacing: -0.02em;
+	letter-spacing: var(--rux-tracking-normal);
 }
 
 .sched-trip-bar__notes {
@@ -988,7 +988,7 @@
 	box-shadow: var(--sched-trip-bar-meta-shadow);
 	color: var(--sched-trip-bar-meta-fg);
 	font-size: var(--sched-trip-bar-row-font-size);
-	letter-spacing: -0.02em;
+	letter-spacing: var(--sched-trip-bar-row-tracking, var(--rux-tracking-normal));
 	line-height: var(--sched-trip-bar-row-line-height);
 	white-space: nowrap;
 }
@@ -1207,7 +1207,7 @@
 	   an opaque neutral gray tuned for cards/panels, not this surface. */
 	color: var(--rux-fg-on-accent-muted);
 	font-weight: var(--rux-weight-400);
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-normal);
 }
 
 .sched-trip-bar__detail-field-label::after {

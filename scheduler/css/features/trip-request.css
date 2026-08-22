@@ -33,11 +33,14 @@
 }
 
 .trip-request__page-title {
-	font-size: var(--rux-size-24);
-	font-weight: var(--rux-weight-600);
-	line-height: var(--rux-line-height-32);
-	letter-spacing: var(--rux-tracking-tight);
-	color: var(--rux-text-primary);
+	/* Reads the role rather than restating its recipe (rule 1.2). That also
+	   corrects the tracking: -0.02em is the 2.13 rung for headings at 14-20,
+	   and this is 24, which takes -0.04em. Step 39. */
+	font-size: var(--rux-text-heading-24-size);
+	font-weight: var(--rux-text-heading-24-weight);
+	line-height: var(--rux-text-heading-24-line-height);
+	letter-spacing: var(--rux-text-heading-24-tracking);
+	color: var(--rux-text-heading-24-color);
 }
 
 .trip-request__intro {

@@ -923,6 +923,6 @@
 	font-size: var(--rux-size-12);
 	font-weight: var(--rux-weight-400);
 	color: var(--rux-text-secondary);
-	letter-spacing: var(--rux-tracking-wide);
+	letter-spacing: var(--rux-tracking-normal);
 	line-height: 1;
 }

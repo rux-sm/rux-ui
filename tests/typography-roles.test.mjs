@@ -45,6 +45,14 @@ const ROLES = [
 // second half is the honesty test. The moment a call site adopts one, this
 // list fails and the role must move up into ROLES — which is what stops a
 // pending role from sitting here unexamined after its migration lands.
+//
+// "Unread" here means unread BY THE PORTABLE LAYER, because `sheets` is
+// rux-ui/css/base only — the same scope the used-check above runs against.
+// A role the application layer has adopted stays in this list until a portable
+// consumer appears, and --rux-text-label-18 is in exactly that state after
+// step 39: .driver-share-header__label reads it from scheduler/css. Stated
+// rather than left implicit, because a reader who assumes PENDING means
+// "nothing uses it" would draw the wrong conclusion from that entry.
 const PENDING = [
 	"--rux-text-button-14",
 	"--rux-text-button-12",
