@@ -82,7 +82,7 @@
 		if (dialog.hidden) return true;
 		if (!discard && formIsDirty() && !confirm("Discard unsaved changes to this customer?")) return false;
 		dialog.hidden = true;
-		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
+		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.removeAttribute("aria-current"));
 		selectedId = null;
 		return true;
 	}
@@ -101,7 +101,7 @@
 			const tr = document.createElement("tr");
 			tr.className = "customer-app__row";
 			tr.tabIndex = 0;
-			if (c.id === selectedId) tr.classList.add("is-selected");
+			if (c.id === selectedId) tr.setAttribute("aria-current", "true");
 			tr.innerHTML = `
 				<td>${escHtml(c.name || "—")}</td>
 				<td>${escHtml(c.client || "")}</td>
@@ -160,7 +160,7 @@
 
 	function selectRow(tr, contact) {
 		if (!closeDialog()) return;
-		tr.classList.add("is-selected");
+		tr.setAttribute("aria-current", "true");
 		selectedId = contact.id;
 		populatePanel(contact);
 		loadContactTrips(contact.id);
@@ -216,7 +216,7 @@
 	/* ── Save / Delete / Clear ─────────────────────────────────────────── */
 
 	function clearPanel() {
-		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.classList.remove("is-selected"));
+		tbody.querySelectorAll(".customer-app__row").forEach((r) => r.removeAttribute("aria-current"));
 		selectedId = null;
 		panelEl.querySelectorAll(".sched-scope-customer__pane input").forEach((f) => { f.value = ""; });
 		if (tripList) tripList.innerHTML = "";
@@ -344,7 +344,7 @@
 		loadContactTrips(contact.id);
 		openDialog(contact.name || "Edit Customer");
 		tbody
-			.querySelector(".customer-app__row.is-selected")
+			.querySelector('.customer-app__row[aria-current="true"]')
 			?.scrollIntoView({ block: "nearest" });
 		return true;
 	}

@@ -92,7 +92,7 @@
 		dialog.hidden = true;
 		tbody
 			.querySelectorAll(".driver-app__row")
-			.forEach((r) => r.classList.remove("is-selected"));
+			.forEach((r) => r.removeAttribute("aria-current"));
 		selectedId = null;
 		return true;
 	}
@@ -396,7 +396,7 @@
 					? "—"
 					: formatWorkloadMiles(row.milesTotal);
 				return `
-					<tr class="driver-app__row driver-app__workload-row${String(row.driverId) === String(selectedId) ? " is-selected" : ""}" tabindex="0" data-id="${escapeHtml(row.driverId)}" data-status="${escapeHtml(row.driver.status || "active")}" data-employment-type="${escapeHtml(row.driver.employment_type || "")}">
+					<tr class="driver-app__row driver-app__workload-row"${String(row.driverId) === String(selectedId) ? ' aria-current="true"' : ""} tabindex="0" data-id="${escapeHtml(row.driverId)}" data-status="${escapeHtml(row.driver.status || "active")}" data-employment-type="${escapeHtml(row.driver.employment_type || "")}">
 						${driverIdentityCellHtml(row.driver)}
 						${employmentCellHtml(row.driver)}
 						<td>${row.daysWorked}</td>
@@ -792,7 +792,8 @@
 
 		list.forEach((d, idx) => {
 			const tr = document.createElement("tr");
-			tr.className = `driver-app__row${String(d.id) === String(selectedId) ? " is-selected" : ""}`;
+			tr.className = "driver-app__row";
+			if (String(d.id) === String(selectedId)) tr.setAttribute("aria-current", "true");
 			tr.tabIndex = 0;
 			tr.dataset.id = d.id;
 			tr.dataset.idx = idx;
@@ -831,7 +832,7 @@
 
 	function selectRow(tr, d) {
 		if (!closeDialog()) return;
-		tr.classList.add("is-selected");
+		tr.setAttribute("aria-current", "true");
 		selectedId = d.id;
 		populatePanel(d);
 		loadDriverTrips(d.id);
@@ -1259,7 +1260,7 @@
 	function clearPanel() {
 		tbody
 			.querySelectorAll(".driver-app__row")
-			.forEach((r) => r.classList.remove("is-selected"));
+			.forEach((r) => r.removeAttribute("aria-current"));
 		selectedId = null;
 		scheduleLoadRequest += 1;
 		renderScheduleShare(null);
@@ -1655,7 +1656,8 @@
 			const btn = document.createElement("button");
 			btn.type = "button";
 			const selected = def.get() === opt.value;
-			btn.className = "rux-menu__item" + (selected ? " is-active" : "");
+			btn.className = "rux-menu__item";
+			// aria-checked below is the only channel — state.md rule 2.1, step 8.
 			btn.setAttribute("role", "menuitemradio");
 			btn.setAttribute("aria-checked", String(selected));
 			btn.textContent = opt.label;

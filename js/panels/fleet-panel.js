@@ -71,7 +71,7 @@
     if (dialog.hidden) return true;
     if (!discard && formIsDirty() && !confirm("Discard unsaved changes to this vehicle?")) return false;
     dialog.hidden = true;
-    tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
+    tbody.querySelectorAll(".fleet-app__row").forEach(r => r.removeAttribute("aria-current"));
     selectedId = null;
     return true;
   }
@@ -424,7 +424,7 @@
 
   function selectRow(tr, b) {
     if (!closeDialog()) return;
-    tr.classList.add("is-selected");
+    tr.setAttribute("aria-current", "true");
     selectedId = b.id;
     populatePanel(b);
     loadBusTrips(b.id);
@@ -675,7 +675,7 @@
   // ── Clear ─────────────────────────────────────────────────────────────────
 
   function clearPanel() {
-    tbody.querySelectorAll(".fleet-app__row").forEach(r => r.classList.remove("is-selected"));
+    tbody.querySelectorAll(".fleet-app__row").forEach(r => r.removeAttribute("aria-current"));
     selectedId = null;
 
     panelEl.querySelectorAll(".sched-scope-fleet__pane input, .sched-scope-fleet__pane textarea")
@@ -897,7 +897,8 @@
       const btn = document.createElement("button");
       btn.type      = "button";
       const selected = def.get() === opt.value;
-      btn.className = "rux-menu__item" + (selected ? " is-active" : "");
+      btn.className = "rux-menu__item";
+      // aria-checked below is the only channel — state.md rule 2.1, step 8.
       btn.setAttribute("role", "menuitemradio");
       btn.setAttribute("aria-checked", String(selected));
       btn.textContent = opt.label;

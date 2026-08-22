@@ -20,7 +20,7 @@ roles onto that vocabulary.
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
 | [`naming.md`](naming.md) | 1.16.0 | 14 done | — |
-| [`state.md`](state.md) | 1.5.0 | 7 done · 1 open | owner — step 8 is two decisions |
+| [`state.md`](state.md) | 1.6.0 | 8 done · 1 open | — |
 
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
 it in is its own decision.

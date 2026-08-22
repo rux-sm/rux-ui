@@ -12,7 +12,7 @@
    .rux-table-wrap                     scroll container; owns the surface, the
                                        hairline frame, and the rounded corners
    .rux-table                          the table element
-   .rux-table tbody tr.is-selected     selected row
+   .rux-table tbody tr[aria-current]   the row whose editor is open
    th[data-col-filter]                 filterable header; .is-filtered when active
    .rux-col-filter-icon                the filter affordance inside such a header
    th[data-sort]                       sortable header; .is-sort-asc / .is-sort-desc
@@ -114,7 +114,11 @@
 	background: var(--rux-table-row-hover-bg);
 }
 
-.rux-table tbody tr.is-selected {
+/* aria-current, not aria-selected: the highlight tracks which row's editor is
+   open, not a selection the user holds. aria-selected would claim membership
+   in a selection widget, which a plain table is not — state.md rule 2.1 and
+   its step 8. */
+.rux-table tbody tr[aria-current="true"] {
 	background: var(--rux-table-row-selected-bg);
 }
 

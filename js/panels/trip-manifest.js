@@ -488,8 +488,8 @@
   }
 
   function selectRow(p) {
-    manifestBody.querySelectorAll(".trips-app__row").forEach((r) => r.classList.remove("is-selected"));
-    manifestBody.querySelector(`[data-id="${p.id}"]`)?.classList.add("is-selected");
+    manifestBody.querySelectorAll(".trips-app__row").forEach((r) => r.removeAttribute("aria-current"));
+    manifestBody.querySelector(`[data-id="${p.id}"]`)?.setAttribute("aria-current", "true");
     selectedId = p.id;
     deleteBtn.disabled = false;
     populateForm(p);
@@ -508,7 +508,7 @@
     resetPaymentRows();
     syncBalance();
     window.Rux?.syncSelectPlaceholders?.(passengerCard);
-    manifestBody.querySelectorAll(".trips-app__row").forEach((r) => r.classList.remove("is-selected"));
+    manifestBody.querySelectorAll(".trips-app__row").forEach((r) => r.removeAttribute("aria-current"));
   }
 
   clearBtn?.addEventListener("click", clearForm);
