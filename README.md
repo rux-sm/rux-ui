@@ -349,13 +349,15 @@ hypothesized.*
 
 ### Spacing
 
-A 4px grid: `--rux-space-1` (4px) through `--rux-space-6` (24px) step by their
-own index, then `--rux-space-8` (32px), `-10` (40px), `-12` (48px), `-16` (64px),
-`-20` (80px), and `-24` (96px). Two steps sit off the grid on purpose:
-`--rux-space-px` (1px) for hairlines and `--rux-space-1-5` (6px), the single
-half-step. **Do not invent new values** — propose the name and value instead.
-Dense UIs use `--rux-space-2` and `--rux-space-3`; section gaps use
-`--rux-space-5` or `--rux-space-6`.
+**Canonical: [`docs/foundations/layout.md` §7](docs/foundations/layout.md).** That document
+owns the space scale — every rung, the 4px grid, and the two steps that sit off it on
+purpose. **§9** owns which rung applies to which relationship: the card rhythm, and the
+dense repeating-row exception. **This section is a pointer: it names what is ruled, never
+what the rules say.** Where the two disagree, the foundation document wins and this section
+is corrected in the same change.
+
+Do not invent a spacing value. Propose the name and value against `layout.md`'s amendment
+log instead.
 
 ### Buttons
 
@@ -386,7 +388,7 @@ See [Button Components](docs/buttons.md) for composition examples and usage rule
 - Destructive actions use solid `.rux-button--danger` or quiet
   `.rux-button--ghost.rux-button--danger`. Rux does not use danger outline.
 - Toggle buttons use `.rux-button--toggle` with `aria-pressed`. They look like default buttons at rest, then press in and switch to the primary accent when active.
-- Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` (`12px`) and wraps on small screens.
+- Button rows use `.rux-cluster`, which spaces adjacent controls by `--rux-space-3` and wraps on small screens.
 - Segmented controls use a shallow recessed `.rux-segmented-track` around `.rux-button--segment` items. The selected indicator uses `--rux-segment-active-background` and is the strip's only raised layer.
 - Keep labels short, Title Case, and action-oriented.
 
@@ -416,44 +418,28 @@ Forms are data-entry surfaces, not action controls. They use the same type scale
 
 ### Optical radius
 
-Use component semantic tokens in component CSS; use the primitive scale only when defining those tokens:
+**Canonical: [`docs/foundations/layout.md` §8](docs/foundations/layout.md).** That document
+owns the radius scale, its measured source (Geist Materials), and which rung each semantic
+role takes. **This section is a pointer and states no values.** Where the two disagree, the
+foundation document wins and this section is corrected in the same change.
 
-```
---rux-radius-0       0px
---rux-radius-xs      2px
---rux-radius-sm      6px
---rux-radius-md      8px
---rux-radius-lg     12px
---rux-radius-xl     16px
---rux-radius-full 9999px
-```
-
-Panels, cards, buttons, and fields each route their own radius through one of
+Use component semantic tokens in component CSS; use the primitive scale only when defining
+those tokens. Panels, cards, buttons, and fields each route their own radius through one of
 two shared roles — `--rux-radius-container` (panels, cards, calendar) or
-`--rux-radius-control` (buttons, swatches, fields) — rather than a
-single `--rux-panel-radius`/`--rux-card-radius`/`--rux-button-radius` token
-apiece.
+`--rux-radius-control` (buttons, swatches, fields) — rather than a single
+`--rux-panel-radius`/`--rux-card-radius`/`--rux-button-radius` token apiece. Floating and
+overlay surfaces (menus, popovers, modals, floating windows) take a separate, more elevated
+step through their own tokens (`--rux-menu-radius`, `--rux-popover-surface-radius`,
+`--rux-modal-radius`, `--rux-panel-floating-radius`). A radius change to either shared role
+is a two-token edit, not a per-component hunt.
 
-**Badges are the exception, and deliberately so.** `.rux-badge` takes
-`--rux-radius-full`, not `--rux-radius-control`. A badge is a label applied to
-something else, not a control you can press, and the pill shape is what says so
-at a glance — the same split Vercel Geist draws between its Badge and its
-Button. Sizing follows: `--rux-badge-height` is its own 20px value rather than
-`--rux-control-height`, so a badge fits inside a `--rux-table-row-height` row
-instead of setting it. Following Vercel Geist's Materials page (its "everyday surface"
-tier — see "Reference: Vercel Geist colors" above for the general approach
-of following Vercel's structure, not literal values): `--rux-radius-container`
-is `--rux-radius-md` (8px, the roomier step for bigger boxes), `--rux-radius-control`
-is `--rux-radius-sm` (6px, the tighter step for smaller controls). Floating
-and overlay surfaces (menus, popovers, modals, floating windows) use a
-separate, more elevated step, `--rux-radius-lg` (12px), matching Materials'
-own floating-element tier — see each component's own token
-(`--rux-menu-radius`, `--rux-popover-surface-radius`, `--rux-modal-radius`,
-`--rux-panel-floating-radius`). `--rux-radius-full` remains reserved for
-elements that need full rounding by definition, such as the switch
-thumb/track. A future radius change to either shared role is a two-token
-edit, not a per-component hunt. A drawer shell may override the outer panel
-radius at a viewport edge; that is layout behavior, not a new panel variant.
+**Badges are the exception, and deliberately so.** `.rux-badge` takes `--rux-radius-full`,
+not `--rux-radius-control`. A badge is a label applied to something else, not a control you
+can press, and the pill shape is what says so at a glance — the same split Vercel Geist
+draws between its Badge and its Button. Sizing follows: `--rux-badge-height` is its own
+value rather than `--rux-control-height`, so a badge fits inside a table row instead of
+setting it. `--rux-radius-full` stays reserved for elements that need full rounding by
+definition, such as the switch thumb and track. A drawer shell may override the outer panel
 
 ### Surface depth
 
@@ -546,7 +532,8 @@ When imagery appears (avatars, logos, attachments), it sits inside hairline-bord
 - No content max-width for app shells — the workspace fills available width.
   `--rux-container-xs` (480px) exists for narrow dialogs/forms; there is no
   larger container scale today, since Rux UI has no marketing-page surfaces.
-- Section gutters: `--rux-space-6` (24px) desktop, `--rux-space-4` (16px) mobile.
+- Section gutters step down between desktop and mobile — the rungs and the width at which
+  they change are [`layout.md`](docs/foundations/layout.md) §7 and §1.1.
 - Vertical rhythm is enforced by `.rux-stack` flex containers with `gap`, never margins.
 
 ---

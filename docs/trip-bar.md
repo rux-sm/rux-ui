@@ -235,7 +235,7 @@ Trip bars are `position: absolute` inside `.sched-scheduler__track`. Placement i
 
 ### Insets
 
-All insets use `--rux-space-2` (8px) as the base, with 1px border compensation.
+All insets use `--rux-space-2` as the base, with 1px border compensation.
 
 | Side | Inset | Border | Visual gap |
 |---|---|---|---|

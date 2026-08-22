@@ -262,7 +262,8 @@
 /* A docked panel's tabs-alone top region (no .rux-panel__header before it —
    right panel, fleet editor) sits flush beneath .rux-ui-header, whose own
    border-bottom already draws this exact seam (0 gap header-to-shell, 0 gap
-   panel-to-workspace — see docs/layout-composition.md). The strip's own
+   panel-to-workspace — see docs/foundations/layout.md §9.1, which owns
+   that table since layout step 6). The strip's own
    border-top exists for every other case, where nothing above it owns that
    edge; here it doubles into a visibly thicker line right under the header.
    :first-child scopes this to the tabs-alone pattern specifically — panels

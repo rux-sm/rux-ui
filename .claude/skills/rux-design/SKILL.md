@@ -70,7 +70,9 @@ existing files merely to make the new-app structure cleaner.
 
 **`docs/foundations/` outranks this list.** These rules route an agent to the right tier
 and prefix; the canonical statement of a design rule and its values lives in the foundation
-document for that section (`typography.md` today; spacing, colour, and motion to follow).
+document for that section — `typography.md`, `color.md` and `layout.md` today; `motion.md`,
+`naming.md` and `state.md` to follow. There is no `spacing.md`: `layout.md` owns the space
+scale, and its Q4 records why the split was not made.
 Where the two disagree, the foundation document wins. Do not restate a value here.
 
 0. **Pick the right prefix.** `.rux-*` / `--rux-*` is reserved for `rux-ui/` and
@@ -98,8 +100,12 @@ Where the two disagree, the foundation document wins. Do not restate a value her
    token and class you add in your final report.
 4. Follow the BEM contract: `.rux-{block}`, `.rux-{block}__{element}`, and
    `.rux-{block}--{modifier}`. Use `.is-*` or `.has-*` for JavaScript state.
-5. Preserve optical radius nesting: nested controls normally step down one
-   radius level from their containing surface.
+5. Preserve optical radius nesting **where the scale still steps**: a floating
+   surface steps down to the card it contains. A control inside a card does
+   **not** — since `layout.md` step 8 put both `--rux-radius-container` and
+   `--rux-radius-control` on Geist's default rung, they are the same value, and
+   Geist does not step there either. Read `layout.md` §8.2 rather than assuming
+   a step exists.
 6. Use the current `.rux-icon` contract, which is backed by Material Symbols
    Sharp. Follow existing markup and load the font when the host page does not
    already provide it. Do not use emoji as interface icons.
@@ -133,7 +139,7 @@ Before completing layout work, verify:
 - The workspace occupies the flexible center and panels are attached.
 - Every panel has a header, attached tabs, or both, plus an accessible name.
 - Panel and workspace bodies own scrolling.
-- Cards and card sections follow the tokenized 16px visual rhythm.
+- Cards and card sections follow the tokenized card rhythm — `layout.md` §9.1.
 - Application drawer, rail, and minimum-width behavior has not leaked into
   reusable shell components.
 
