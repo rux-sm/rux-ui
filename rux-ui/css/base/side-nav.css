@@ -73,13 +73,11 @@
 	box-shadow: var(--rux-side-nav-focus-ring);
 }
 
-.rux-side-nav__link.is-active,
 .rux-side-nav__link[aria-current="page"] {
 	background: var(--rux-side-nav-item-active-bg);
 	color: var(--rux-side-nav-item-active-fg);
 }
 
-.rux-side-nav__link.is-active::before,
 .rux-side-nav__link[aria-current="page"]::before {
 	content: "";
 	position: absolute;

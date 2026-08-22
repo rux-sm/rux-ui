@@ -104,7 +104,6 @@
 	color: var(--rux-ui-header-nav-item-fg);
 }
 
-.rux-ui-header__nav-item.is-active,
 .rux-ui-header__nav-item[aria-current="page"] {
 	color: var(--rux-ui-header-nav-item-active-fg);
 }

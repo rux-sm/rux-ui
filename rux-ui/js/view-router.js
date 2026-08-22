@@ -37,7 +37,8 @@
      <section data-view="reports">…</section>
      <button  data-view="reports">Reports</button>
 
-   The active control gets .is-active and aria-current="page"; inactive
+   The active control gets aria-current="page" and nothing else — state.md
+   rule 2.1, step 6 retired the redundant .is-active channel; inactive
    controls get neither. Inactive containers get the `hidden` attribute.
 
    With `title`, the router also writes the active view's name into that
@@ -100,7 +101,6 @@
 			for (const section of sections) section.hidden = named(section) !== next;
 			for (const button of buttons) {
 				const on = named(button) === next;
-				button.classList.toggle("is-active", on);
 				if (on) button.setAttribute("aria-current", "page");
 				else button.removeAttribute("aria-current");
 			}
