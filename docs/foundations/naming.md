@@ -1,10 +1,10 @@
 # Rux UI Foundations — Naming
 
-**Contract version: 1.3.0** · Stamped at the top so a downstream document can state the
+**Contract version: 1.4.0** · Stamped at the top so a downstream document can state the
 version it conforms to. Authority without a version is only "whatever `main` says today,"
 which is not control. See [`README.md`](README.md) §2.
 
-**Status** · 7 steps: **3 done · 1 ready · 3 open**
+**Status** · 7 steps: **4 done · 3 open**
 This document is canonical for **what things are called** — the class shape, the modifier
 vocabulary, the namespaces a portable layer may use, and the requirement that a name in
 markup resolves to a rule. It is the home `README.md` §1 routes **R1, R2, R4 and R5** to,
@@ -156,9 +156,13 @@ Ordered by dependency. Every step records what it deliberately did **not** do.
 
 ### 5.1 The Geist conformance program
 
-**Opened 2026-08-22 by the owner; not started.** The stated goal: *simplify the component
-set, retire what is obsolete, replace it with a Geist-style selection, and normalize the
-names of what survives closer to Geist.*
+**Opened 2026-08-22 by the owner. Step 7 has landed; the source is measured.** The stated
+goal: *simplify the component set, retire what is obsolete, replace it with a Geist-style
+selection, and normalize the names of what survives closer to Geist.*
+
+**One clause of that goal is now bounded by measurement.** "Normalize the names" can only
+mean **component names**, because §7.2 found Geist publishes no class vocabulary to
+normalize toward. §1.1's class shape is this system's own and stays.
 
 This is the shape `typography.md` §5.1 used for the same kind of work, and it is here rather
 than in a new document for the reason that program demonstrated: retiring a rung and
@@ -171,22 +175,25 @@ guessing now.)*
 Renaming a component that is about to be deleted is pure waste, and it is the easy drift,
 because renaming feels more tractable than deciding what to cut.
 
-**This document is missing what typography's program ran on.** Typography could execute
+**This document now has what typography's program ran on.** Typography could execute
 because its §3 held a **measured catalog** — 29 styles read off rendered specimens, so every
-later step was a mapping against a fixed source. `naming.md` has no equivalent: §1 records
-this system's own vocabulary and nothing records **what Geist calls its components**.
-Renaming toward a target held only in someone's head cannot be reviewed and cannot be
-recorded, so measuring it is step 7 and everything else waits on it.
+later step was a mapping against a fixed source. `naming.md` had no equivalent when this
+program opened: §1 recorded this system's own vocabulary and nothing recorded **what Geist
+calls its components**. Renaming toward a target held only in someone's head cannot be
+reviewed and cannot be recorded, so measuring it was step 7 and everything else waited on
+it. **§7 is that catalog**, and every later step reads it rather than the site.
 
 | # | Step | Status | Notes |
 |---|---|---|---|
-| 7 | Measure and publish Geist's component vocabulary | **[ready]** | The step-49 equivalent, and the program's only unblocked step. Read the component names off **vercel.com/geist** — the pages, their headings, and the class names on the rendered specimens — and publish them in a new §7 the way `typography.md` §3 publishes the type catalog. **Values are not published**, so this is measurement, not transcription. **What it must record:** which of this system's blocks have a Geist counterpart, which are this system's own (a scheduler trip bar has no Geist equivalent and never will), and which Geist publishes that this system has no answer for. **Class A** — it publishes a source, renames nothing, and moves no code. **Do not begin renaming inside this step**; the whole point of separating it is that the retire-versus-keep decision reads the same table. |
+| 7 | Measure and publish Geist's component vocabulary | **done · Class A** | **Executed 2026-08-22; published as §7.** The census is the site's own sidebar in its own grouping — **72 component entries**, 71 pages plus `Pill`, which is a section of Badge the sidebar promotes — with each entry's definition taken from the page's own `meta description`, fetched for all 71 rather than transcribed. Mapped against the portable layer's **102 blocks**, **57** of them components once typography roles, `rux-u-*` utilities and base text are set aside. **The arithmetic closes on both sides** — 15 already-Geist names + 8 rename candidates + 34 with no counterpart = 57, and 23 matched + 49 unmatched = 72 — checked by script rather than by reading, because a mapping table that silently drops an entry looks exactly like one that does not. **The load-bearing finding is §7.2: Geist publishes a component vocabulary and no class vocabulary.** Its specimens carry Tailwind utilities; the only semantic names in the DOM are sparse `data-geist-*` attributes and a `geist-new-{variant}` / `-fill` variant set. So **adopting Geist wholesale cannot touch §1.1's class shape** — there is nothing on the other side to adopt — and the rename target is component names only. Two side findings came free, and **the first of them is a correction to my own first reading**: `geist-new-{v}` and `geist-new-{v}-fill` appear **on the same button simultaneously**, so `-fill` is a companion class naming one half of a variant's paint, **not** Geist's word for `--solid`. The tempting rename that reading suggested is unsupported, and **D4 stays open**. Second, Geist's own variant vocabulary is **not uniform** — Button is intent-named, Badge is hue-named with `-subtle` — so §1.2's Emphasis/Intent split cannot be resolved by copying it. **`switch`/`toggle` cross**: both names exist in both systems with opposite referents, `.rux-switch` being a boolean (Geist's Toggle) and `.rux-segmented-track` the option set (Geist's Switch); `drawer` crosses too, since Geist's Drawer is not the Sheet `.rux-drawer` maps to. §7.3 records that these move together or not at all. **Deliberately did not rename, retire, or decide anything** — §5.1 orders simplify before rename, and both later steps read this table. **Deliberately did not measure props, sizes or anatomy**: Badge documenting a Medium size does **not** reopen Q1, because a React prop and a CSS modifier are different artifacts and §7.2 records that Geist ships no modifier classes at all. **Deliberately did not fix the eight sibling-block pairs the census surfaced** (`.rux-tab`/`.rux-tabs`, the three scrims, `.rux-table-wrap`, the four `.rux-color-*`, and more) — those are **rule 2.1** candidates and **D1**'s untestable case, recorded in §7.4 as a finding for step 2, because settling R1's open question as a side effect of a naming census is precisely the accident this document has avoided. **Corrected the same day, in the open:** table D first listed **Theme Switcher** as unanswered. It is not — `.rux-switch--theme` is one. The census enumerated *blocks*, so an answer carried by a **modifier** was invisible to it, and the fix is the blind-spot note now in §7.3 rather than a quieter edit to the list. Geist-side arithmetic is now 23 by block + 1 by modifier + 48 unmatched = 72. `.rux-u-cols-2` was examined as a possible second case and **rejected**: a two-column utility is not an answer to **Grid**. Nothing renders differently; no code moved. Contract 1.3.0 → 1.4.0. |
 
-**After step 7, in this order**, each opened as its own numbered step once the one before it
-lands: **retire** the components the audit finds obsolete (Class C — public names, so
-`../portability-audit.md` executes); **rename** the survivors onto Geist's vocabulary
-(Class C likewise, and the grep protocol applies to each); **migrate** call sites and the
-gallery. **D7 is absorbed here** — `.rux-menu` and `.sched-scheduler` are merge decisions
+**Next, in this order**, each opened as its own numbered step once the one before it
+lands — **step 8, retire, is now unblocked**: **retire** the components the audit finds
+obsolete (Class C — public names, so `../portability-audit.md` executes), and §7.3's table B
+already names one candidate, `.rux-tag`, which is one rule with one call site; **rename** the
+survivors onto Geist's vocabulary (Class C likewise, and the grep protocol applies to each —
+with §7.3's warning that `switch`/`toggle` move together or not at all); **migrate** call
+sites and the gallery. **D7 is absorbed here** — `.rux-menu` and `.sched-scheduler` are merge decisions
 that the retire-and-rename pass reaches anyway, and fixing them first would risk merging a
 block that is about to be retired.
 
@@ -243,3 +250,186 @@ families are real, a new modifier outside them is a defect and the denylist can 
 they are only a reading aid, §1.2 should say that plainly. *Blocks nothing. It decides
 whether step 3's test is a denylist of known synonyms or an allowlist of sanctioned families
 — a much stronger rule, and a much easier one to get wrong.*
+
+---
+
+## 7. Geist's component vocabulary
+
+**Measured 2026-08-22 from [vercel.com/geist](https://vercel.com/geist) at 1440×900**, step 7
+of §5.1. This section is the program's fixed source, the equivalent of what §3 is to
+`typography.md`: everything that follows — retire, rename, migrate — reads this table rather
+than someone's recollection of the site.
+
+**Method.** The component list is the site's own sidebar, taken in its own grouping, not a
+reading of which pages looked component-shaped. Each entry's one-line definition is the
+page's own `meta description`, fetched same-origin for all 71 pages rather than transcribed.
+The class-name observations in §7.2 were read off rendered specimens on the Button and Badge
+pages. **No values were read** — this is a name census, and `README.md`'s note that Geist
+does not publish its numbers is unaffected by it.
+
+### 7.1 What Geist publishes
+
+**Four foundations** — Introduction, Colors, Typography, Materials — and **72 component
+entries**, of which 71 are pages; `Pill` is a section of the Badge page (`/geist/badge#pill`)
+that the sidebar promotes to a sibling. The sidebar's third group, Brands, is asset
+downloads and not a component vocabulary.
+
+**Three of those four are rule sources this repository has already routed against** —
+Colors, Typography and Materials; Introduction is orientation and carries no rules. There is
+still **no breakpoint page**, which is why `layout.md` records breakpoints as originated
+here rather than adopted.
+
+### 7.2 How Geist names things — the finding that bounds this program
+
+**Geist publishes a component vocabulary, not a class vocabulary.** Its components are React
+components, and the rendered specimens carry Tailwind utilities. Measured on `/geist/button`:
+427 distinct class tokens on the page, of which the semantic ones are
+
+- **`data-geist-*` attributes** — `data-geist-button`, `data-geist-kbd`,
+  `data-geist-textarea-wrapper`. These are the closest thing to a component identity in the
+  DOM, and they are **sparse**: the Badge page emits no `data-geist-badge`, only the three
+  above, which come from the page's own chrome rather than from the specimens.
+- **a variant vocabulary**, carried by **15 elements on the Button page, every one of them
+  a `<button>` inside `[data-geist-button]`**. Each carries **three** classes together:
+  `geist-new-themed` — which is on all 15, so it is a base rather than a variant — plus a
+  pair, `geist-new-{variant}` *and* `geist-new-{variant}-fill`. Four variants appear:
+  **default, tertiary, warning, error**.
+
+**Three consequences, and they are the reason this step came before any renaming.**
+
+1. **There is no Geist class shape to converge on.** `.rux-{block}__{element}--{modifier}`
+   has no counterpart, and adopting Geist "wholesale" cannot mean adopting its markup
+   convention, because it does not publish one. §1.1 is unaffected by this program, and the
+   rename target is **component names only**.
+2. **`-fill` is a companion class, not a "filled" variant — and it does *not* settle D4.**
+   The measurement is that `geist-new-error` and `geist-new-error-fill` appear **on the same
+   button at the same time**, so `-fill` names one half of a variant's paint (the filled
+   surface) rather than a variant meaning *filled*. That is a different construct from
+   `.rux-badge--solid`, which is a variant. The tempting reading — *Geist calls it `fill`, so
+   rename `--solid`* — **is not supported by what was measured**, and settling D4 needs the
+   Button page's own variant semantics read, which this step did not do. D4 stays open
+   against `../portability-audit.md` entry 22.
+3. **Geist's own variant vocabulary is not uniform.** Button is intent-named (default,
+   tertiary, warning, error — measured above) while Badge is hue-named (`Gray`, `Blue`, `Amber`, `Red`, each
+   with a **`-subtle`** counterpart). §1.2 splits Emphasis from Intent and is closer to
+   Button's model. A single vocabulary for both cannot be taken from Geist because Geist
+   does not have one.
+
+### 7.3 The mapping
+
+Measured against the portable layer's **102 blocks** in `rux-ui/css`. Of those, 29 are
+typography roles (`typography.md`'s, not components), 13 are `rux-u-*` utilities, two are
+legacy colour utilities and one is base `.rux-text` — leaving **57 component blocks**, every
+one of which appears in exactly one table below. The arithmetic closes on both sides: 15 + 8
++ 34 = 57 blocks, and 23 matched by a block + 1 matched by a modifier + 48 unmatched = 72
+Geist entries.
+
+> **The census counts blocks, and that is a known blind spot.** An answer that exists as a
+> **modifier** or a **utility** rather than a block is invisible to it. One was found by
+> re-reading: Geist's **Theme Switcher** is answered by `.rux-switch--theme`, which table D
+> listed as unanswered until this correction. `.rux-u-cols-2` is a thin partial for **Grid**
+> and is *not* counted as an answer — a two-column utility is not a grid system. Anyone
+> extending this table should search modifiers and `rux-u-*` before recording a gap.
+
+**A — the name is already Geist's (15).** Nothing to do; these are the program's fixed
+points.
+
+`.rux-avatar` · `.rux-badge` · `.rux-button` · `.rux-checkbox` · `.rux-input` · `.rux-menu` ·
+`.rux-modal` · `.rux-progress` · `.rux-select` · `.rux-slider` · `.rux-table` · `.rux-tabs` ·
+`.rux-textarea` · `.rux-toast` · `.rux-tooltip`
+
+**B — a counterpart under a different name (8).** The rename candidates. Every one is a
+public name, so every one is Class C and executes through `../portability-audit.md`.
+
+| This system | Geist | Fit | Note |
+|---|---|---|---|
+| `.rux-alert` | **Note** | exact | *"Display text that requires attention or provides additional information."* Already the mapping `README.md` records |
+| `.rux-switch` | **Toggle** | exact | **Crossing — see the warning below.** `.rux-switch` is a `<label>` over a hidden checkbox with `__track` and `__thumb`: a boolean. Geist's Toggle *"displays a boolean value"* |
+| `.rux-segmented-track` | **Switch** | exact | **Crossing.** Geist's Switch *"choose between a set of options"* — which is `.rux-segmented-track` + `.rux-button--segment`, not `.rux-switch` |
+| `.rux-drawer` | **Sheet** | partial | Geist's Sheet *"slides in from the edge of the screen"*. `.rux-drawer` animates `width` in flow on desktop (it pushes, it does not overlay) and only becomes `position: fixed` at the mobile breakpoint. Same role, different mechanics |
+| `.rux-priority-dot` | **Status Dot** | exact in form | Geist's is deployment status; this one is trip priority. The shape is the same, the domain is not |
+| `.rux-popover` | **Context Card** | partial | *"A floating card that appears on hover or focus. Capable of showing more complex UI than a tooltip"* |
+| `.rux-suggestions` | **Combobox** | partial | *"Filters large lists to selectable options based on the matching query"* |
+| `.rux-tag` | **Pill** | probable duplicate | `.rux-tag` is **one rule**, used in **one place** (`js/panels/driver-panel.js:665`, a CDL chip) and **zero times** in `index.html`. A retire-into-`.rux-badge` candidate, not a rename candidate |
+
+> **The `switch`/`toggle` crossing is the most dangerous rename in this program.** Both names
+> exist in both systems with **opposite** referents. A migration that renames one and
+> not the other produces a repository where `.rux-switch` means a boolean in some files and a
+> segmented control in others, and every grep for either word returns a mixture. If these are
+> taken, they are taken **in one step, or not at all** — and the step needs the §5.1 grep
+> protocol run for both names at once.
+>
+> **And the target name is not free.** `.rux-button--toggle` already exists — an
+> `aria-pressed` button, 23 occurrences, with its own test in
+> `tests/panel-toggle.test.mjs`. Renaming `.rux-switch` to `.rux-toggle` would put **two
+> different concepts** under the word *toggle* in one system: a boolean switch widget and a
+> pressed-state button. That is drift #4 in §3 — one name, two concepts — created
+> deliberately, in the document whose job is to prevent it. Whoever opens the rename step
+> owns this collision before the first `sed`.
+
+**C — this system's own, no Geist counterpart (34).** Geist publishes no generic **Card**;
+its card-like pages are Context Card, Error Card and Entity, all specific. `.rux-card` — 49
+selectors, this layer's most-used structural block — therefore has **nothing to converge
+on**, and neither does the entire application-shell family. These are not gaps.
+
+- **Shell and layout (9)** — `.rux-app` · `.rux-app-shell` · `.rux-app-view` ·
+  `.rux-ui-header` · `.rux-workspace` · `.rux-panel` · `.rux-side-nav` · `.rux-splash` ·
+  `.rux-skip-link`
+- **Structure (9)** — `.rux-card` · `.rux-section` · `.rux-field` · `.rux-input-group` ·
+  `.rux-tab` · `.rux-table-wrap` · `.rux-icon` · `.rux-output` · `.rux-status-text`
+- **Scrims and gutters (6)** — `.rux-side-nav-scrim` · `.rux-modal-scrim` ·
+  `.rux-drawer-scrim` · `.rux-drawer-gutter` · `.rux-resize-gutter` · `.rux-toast-host`
+- **Application furniture (10)** — `.rux-view-options` · `.rux-preferences` ·
+  `.rux-profile-picker` · `.rux-number-stepper` · `.rux-notifications` ·
+  `.rux-col-filter-icon` · `.rux-color-picker` · `.rux-color-swatch` · `.rux-color-swatches` ·
+  `.rux-color-input`
+
+The application layer's **39 `sched-*` blocks** are all domain — trip, driver, fleet,
+manifest, itinerary — and are out of this program's scope entirely. A trip bar has no Geist
+equivalent and never will.
+
+**D — Geist publishes it and this system has no answer (48).**
+
+Banner · Book · Breadcrumbs · Browser · Calendar · Choicebox · Clearable Input · Code · Code
+Block · Collapse · Command Menu · Context Menu · Copy Button · Description · Destructive
+Action Modal · Dots Menu · **Drawer** · Empty State · Entity · Error · Error Card · Feedback ·
+Fieldset · File Tree · Gauge · Grid · JSON View · Keyboard Input · Label · Load More Button ·
+Loading Dots · MiddleTruncate · Multi Select · Pagination · Phone · Project Banner · **Radio** ·
+Relative Time Card · Scroller · Search Input · Separator · Show more · Skeleton · Snippet ·
+Spinner · Split Button · Text With Copy Button · Video
+
+**This list is not a backlog.** Much of it is Vercel's domain and not this one: Book,
+Browser, Phone and Video are marketing frames; Code, Code Block, Snippet, JSON View and File
+Tree are developer-tool surfaces. **Drawer** appears here because Geist's Drawer is a
+separate view from the current context, a different component from the Sheet that
+`.rux-drawer` maps to — the name is taken in both systems for different things, which is the
+second crossing and the reason B's warning is not paranoia.
+
+**Two entries are real gaps.** **Radio** — the repository renders `type="radio"` inputs (the
+profile colour picker) with no portable block behind them, so the one radio in the system is
+styled as a colour swatch. **Separator** — dividers are open-coded as borders. Both are
+Class A additions whenever something needs them, and neither blocks this program.
+
+### 7.4 What this step deliberately did not do
+
+**No renames, and no retire decisions.** §5.1 orders the program simplify-first precisely so
+that a name is not moved onto a component that is about to be deleted, and this step
+publishes the table both of those later steps read. Table B is a list of *candidates* — the
+word is load-bearing. Nothing in §1, §2 or §3 changes.
+
+**Did not measure Geist's props, sizes or anatomy.** Only names. Badge documents Small,
+Medium and Large, and it is tempting to read that as reopening Q1's answer that the middle
+size is unmodified — it does not, because a React prop `size="medium"` and a CSS modifier
+`--md` are different artifacts, and §7.2 records that Geist ships no modifier classes at all.
+Q1 stands. Reopening it would need a measurement this step did not make.
+
+**Did not resolve the sibling-block pairs the census surfaced.** Building table C put them
+in one place for the first time: `.rux-tab`/`.rux-tabs`, `.rux-toast`/`.rux-toast-host`,
+`.rux-table`/`.rux-table-wrap`, `.rux-modal`/`.rux-modal-scrim`,
+`.rux-side-nav`/`.rux-side-nav-scrim`, `.rux-drawer`/`.rux-drawer-gutter`/`.rux-drawer-scrim`,
+`.rux-app`/`.rux-app-shell`/`.rux-app-view`, and the four `.rux-color-*` blocks. Each is a
+candidate violation of **rule 2.1** — sibling blocks for parts of one component — and they
+are exactly the cases **D1** records as untestable because nothing declares which blocks
+belong to which component. This is a **finding for step 2**, recorded here and fixed there.
+Renaming them inside a Geist conformance step would settle R1's open question by accident, in
+the one document that has been careful not to.

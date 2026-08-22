@@ -19,7 +19,7 @@ roles onto that vocabulary.
 | [`layout.md`](layout.md) | 1.6.1 | 10 done · 1 open | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
-| [`naming.md`](naming.md) | 1.3.0 | 3 done · 1 ready · 3 open | — |
+| [`naming.md`](naming.md) | 1.4.0 | 4 done · 3 open | — |
 | [`state.md`](state.md) | 1.1.0 | 3 done · 3 open | — |
 
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
@@ -37,7 +37,7 @@ the worked example; the unwritten documents follow the same method.
 | [`color.md`](color.md) | [vercel.com/geist/colors](https://vercel.com/geist/colors) | written (step 1, 2026-08-21); every scale measured off the page's custom properties in both themes and both gamut branches. Ten-step scales: 1–3 component backgrounds, 4–6 borders, 7–8 high-contrast backgrounds, **9–10 the only two text colours** — which is what answered typography's Q4. Tier 0 is the catalog and every role with a step reads it (steps 2–6). **Its component pages are deliberately *not* a source** — those are Geist's own mapping, and treating one as authority is the mistake `typography.md` Q7 made with the Badge and Q11 reversed; `color.md`'s source note records it |
 | [`layout.md`](layout.md) | **none — originated here** | written, breakpoints only. Geist publishes four foundations and **no breakpoint page**, so this is the first foundation rule this repo originates rather than adopts. Its remaining scope (space scale, radius, Materials elevation) is measured from Geist and is recorded as open steps |
 | `spacing.md` | [vercel.com/geist/materials](https://vercel.com/geist/materials) | reviewed, not written — and **may not be needed**: `layout.md` steps 4 and 5 already claim the space scale, radius, and the eight elevation presets. Fold or keep is `layout.md` Q4's to settle |
-| component specs | e.g. [badge](https://vercel.com/geist/badge), [note](https://vercel.com/geist/note) | reviewed, not written. `badge` maps to `.rux-badge`, `note` to `.rux-alert` |
+| component specs | the [component index](https://vercel.com/geist) and its 71 pages | **censused, not adopted** — [`naming.md`](naming.md) §7 publishes Geist's component vocabulary and maps it against this system's blocks. It is a name census: it renames nothing, and its central finding is that Geist publishes **no class vocabulary** to converge on. Read §7.3 for the mapping, including the `switch`/`toggle` crossing |
 
 **The values are not published.** Vercel's pages name the classes and say the numbers come
 from "the Geist Core Figma system" without listing them, so every figure in `typography.md`
