@@ -78,9 +78,16 @@ Every example below is a real finding in this repository, checked at the line
 cited. The first two are deliberately paired: they look identical from a grep
 and only one of them may be cut.
 
+The classC example has been replaced twice — `.rux-app-shell` and then
+`.rux-color-picker` were both retired after being cited here. That is not bad
+luck: the clearest illustration of *propose, never cut* is the best retirement
+candidate in the repository, which is exactly the thing most likely to be cut
+next. `--rux-shadow-pressed` is chosen to be stable — it is dead, it is
+published, and nothing on any current plan removes it.
+
 ✅ `js/core/bus-slots.js:L15: delete: legOf is exported and imported nowhere. Its only caller is assignmentsOnLeg on L33, same file — drop the export keyword, keep the function.`
 
-✅ `rux-ui/css/base/form.css:L642: classC: .rux-color-picker appears in no markup or JS in this repository or in the consuming portal. But it is 7 elements, 43 rules and 20 public --rux-color-picker-* tokens, and whether .rux-color-swatch superseded it or it was simply never wired up is not decidable from the code. Propose, never cut.`
+✅ `rux-ui/css/tokens.css:L383: classC: --rux-shadow-pressed has zero consumers — no rule in rux-ui/css or scheduler/css reads it. It is still a published token, so removing it is Class C and belongs in portability-audit.md. Propose, never cut.`
 
 ✅ `js/core/billing-config.js:L47: builtin: JSON.parse(JSON.stringify()) as a deep clone. structuredClone is the same one line and survives Date, Map and Set, which the JSON round-trip silently flattens. Same at js/data/trip-db.js:L302.`
 

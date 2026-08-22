@@ -1787,38 +1787,6 @@
 	--rux-color-swatch-checked-ring: 0 0 0 2px var(--rux-color-swatch-ring-bg), 0 0 0 4px var(--color, var(--rux-accent));
 	--rux-color-swatch-transition:   var(--rux-duration-fast) var(--rux-ease-out);
 
-	/* ─── COMPONENT · color picker ────────────────────────────────────────── */
-
-	/* — shell — */
-	--rux-color-picker-bg:           var(--rux-input-background);
-	--rux-color-picker-fg:           var(--rux-text-primary);
-	--rux-color-picker-border:       var(--rux-input-border);
-	--rux-color-picker-hover-border: var(--rux-card-border);
-	--rux-color-picker-radius:       var(--rux-input-border-radius);
-	--rux-color-picker-shadow:       var(--rux-input-shadow);
-	--rux-color-picker-height:         var(--rux-input-height);
-	--rux-color-picker-padding-inline: var(--rux-control-padding-inline);
-	--rux-color-picker-content-gap:    var(--rux-control-content-gap);
-	--rux-color-picker-transition:     var(--rux-duration-fast) var(--rux-ease-out);
-
-	/* — preview swatch — */
-	--rux-color-picker-preview-size: 14px;
-
-	/* — option swatches (popover) — */
-	--rux-color-picker-option-size:   22px;
-	--rux-color-picker-option-border: 1px solid var(--rux-card-border);
-	--rux-color-picker-option-scale:  1.18;
-
-	/* — popover — */
-	--rux-color-picker-popover-bg:     var(--rux-surface-1);
-	--rux-color-picker-popover-radius: var(--rux-radius-container);
-	--rux-color-picker-popover-shadow: var(--rux-shadow-2);
-
-	/* — check mark — */
-	--rux-color-picker-check-color:  var(--rux-fg-on-accent);
-	--rux-color-picker-check-width:  5px;
-	--rux-color-picker-check-height: 9px;
-
 	/* ─── COMPONENT · color input ─────────────────────────────────────────── */
 
 	/* — shell — */

@@ -59,7 +59,9 @@
    the script set `hidden`. One page-scoped guard covers the type-dependent
    sections, the day-of contact grid, and the success swap. The shared
    primitives carry their own guards where they need them — see
-   .rux-color-picker__popover[hidden] in rux-ui/css/base/form.css. */
+   .rux-color-input in rux-ui/css/base/form.css.
+   (.rux-color-picker__popover, cited here until 2026-08-22, was retired —
+   portability-audit.md entry 24.) */
 .trip-request [hidden] {
 	display: none;
 }
