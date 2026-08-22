@@ -35,8 +35,8 @@ step, lighter or darker, for the rare case a specific card needs to stand
 out from an identical sibling:
 
 ```css
-.rux-card--elevated { --rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l + 6%) c h); }
-.rux-card--recessed { --rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l - 6%) c h); }
+.rux-card--elevated { --rux-card-body-bg: var(--rux-card-bg-elevated); }
+.rux-card--recessed { --rux-card-body-bg: var(--rux-card-bg-recessed); }
 ```
 
 Background only; border/shadow stay untouched — this is just a brightness
@@ -117,9 +117,10 @@ for the shell aliases, so existing overrides continue to work.
 owner.
 
 `--elevated`/`--recessed` have no tokens of their own — they're a dynamic
-`oklch` adjustment on whatever `--rux-card-body-bg` is already in scope — which is the
-same defect class as `color.md` **D15**, arithmetic on a token rather than a published
-step, and is recorded there rather than fixed here. See
+named role — `--rux-card-bg-elevated` / `-recessed`, which state their value per theme.
+They were an `oklch` adjustment on whatever `--rux-card-body-bg` was in scope until
+`color.md` step 18 closed **D15**; the relativity was vestigial, since one rule defines
+that token and nothing overrides it. See
 card.css. `--rux-card-level-1..4-*` and `--rux-card-floating-bg/-shadow`
 no longer exist — deleted along with the level system and the "floating
 windows skip a layer" mechanism they backed (see Panel section below).

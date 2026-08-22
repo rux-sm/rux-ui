@@ -17,7 +17,7 @@
    tokens.css, colors_and_type.css, and base/ for maintainability.
    ========================================================================== */
 
-@import "./tokens.css?v=35";
+@import "./tokens.css?v=36";
 @import "./colors_and_type.css?v=6";
 @import "./base/icons.css";
 @import "./base/controls.css?v=5";
@@ -32,7 +32,7 @@
 @import "./base/menu.css?v=4";
 @import "./base/popover.css?v=9";
 @import "./base/suggestions.css?v=3";
-@import "./base/card.css?v=7";
+@import "./base/card.css?v=8";
 @import "./base/table.css?v=5";
 @import "./base/content.css?v=4";
 @import "./base/notifications.css?v=5";

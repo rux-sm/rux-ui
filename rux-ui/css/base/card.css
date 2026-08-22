@@ -43,20 +43,24 @@
 	overflow: clip;
 }
 
-/* — Elevated / recessed — dynamic adjustments layered on top of the
-   plain default, one relative step lighter or darker. Background only —
-   border/shadow stay untouched, this is just a brightness nudge. No
+/* — Elevated / recessed — one step lighter or darker than the plain default.
+   Background only — border/shadow stay untouched. Each reads a named role
+   rather than deriving a value: they were relative oklch arithmetic on
+   --rux-card-body-bg until color.md step 18 (D15), which put the result
+   somewhere the scale could not name, and made "elevated" a silent no-op in
+   light theme where the page is already white. It still carries no colour
+   there — the shadow does the work — but it says so now. No
    level system anymore (see README.md's "Reference: Vercel Geist
    colors") — one card color regardless of nesting depth, so a floating
    window's own cards need no separate auto-elevate mechanism either:
    they already read as a distinct box against the floating shell's
    surface-0, same as an attached panel's cards do. */
 .rux-card--elevated {
-	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l + 6%) c h);
+	--rux-card-body-bg: var(--rux-card-bg-elevated);
 }
 
 .rux-card--recessed {
-	--rux-card-body-bg: oklch(from var(--rux-card-body-bg) calc(l - 6%) c h);
+	--rux-card-body-bg: var(--rux-card-bg-recessed);
 }
 
 .rux-card--ghost {

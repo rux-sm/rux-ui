@@ -752,9 +752,14 @@
    column regardless of driver. outline (not box-shadow) so it never fights
    the inset box-shadow rings the busy/conflict/unavailable combos already
    use for their own signal. */
+/* The active-background role, not a bare grey. --rux-gray resolved L50 on a
+   dark canvas and L98 on a light one — strong to the point of shouting in
+   dark, and all but invisible in light against a 98.48 canvas. That split was
+   D10: one name carrying two different intentions. A persistent range marker
+   is a selected background, which the scale already publishes.
+   docs/foundations/color.md D10, §5 step 18. */
 .sched-driver-grid__cell.is-trip-range {
-	background: var(--rux-gray);
-
+	background: var(--rux-bg-active);
 }
 
 .sched-driver-grid__cell:hover {

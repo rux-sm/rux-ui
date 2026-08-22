@@ -18,7 +18,6 @@
 	/* ─── COLOR · base ─────────────────────────────────────────────────────── */
 
 	--rux-black:	oklch(from var(--rux-neutral)   0% c h);
-	--rux-gray:		oklch(from var(--rux-neutral)  50% c h);
 	--rux-white:	oklch(from var(--rux-neutral) 100% c h);
 
 	/* ─── COLOR · palette ──────────────────────────────────────────────────── */
@@ -1274,6 +1273,18 @@
 
 	/* — card body — owns content fill, padding, and internal rhythm. */
 	--rux-card-body-bg:       var(--rux-surface-1);
+	/* Elevation by colour is NOT in the catalog: it publishes background-100 for
+	   elements and background-200 for the page, and nothing above or below
+	   either — Materials carries elevation with shadow instead. So these are
+	   named Rux roles under rule 1.1a, stating a value per theme rather than
+	   deriving one. They were `oklch(from var(--rux-card-body-bg) calc(l ± 6%)
+	   c h)`, the card half of D15: arithmetic on a token, landing somewhere
+	   nothing could name. The values below are exactly what that resolved to,
+	   so nothing re-renders. The relativity was vestigial — one rule defines
+	   --rux-card-body-bg and nothing overrides it.
+	   docs/foundations/color.md D15, §5 step 18. */
+	--rux-card-bg-elevated:   oklch(20.57% 0 0);
+	--rux-card-bg-recessed:   oklch(8.57% 0 0);
 	--rux-card-padding-block: var(--rux-space-4);
 	--rux-card-padding-inline: var(--rux-space-4);
 	--rux-card-padding:       var(--rux-card-padding-block) var(--rux-card-padding-inline);
@@ -1435,15 +1446,24 @@
 	--rux-button-accent-background:   		var(--rux-accent-800);
 	--rux-button-accent-text:         		var(--rux-fg-on-accent);
 	--rux-button-accent-border:       		none;
-	/* Hover DARKENS, where it lightened until step 9. Two reasons: rule 2.5
-	   already has fills hovering to a darker step (700 -> 800), and a lighter
-	   hover on an 800 fill lands back at 700's contrast and drops the label
-	   under AA on hover — passing at rest and failing under the pointer is
-	   worse than either. These are still calc() derivations off a role rather
-	   than steps, which is D15; the direction is fixed here, the mechanism is
-	   not. */
-	--rux-button-accent-hover-background: 	oklch(from var(--rux-button-accent-background) calc(l - 0.06) c h);
-	--rux-button-accent-active-background:	oklch(from var(--rux-button-accent-background) calc(l - 0.11) c h);
+	/* Hover DARKENS. Rule 2.5 already has fills hovering to a darker step
+	   (700 -> 800), and a lighter hover on an 800 fill lands back at 700's
+	   contrast and drops the label under AA under the pointer — passing at rest
+	   and failing on hover is worse than either.
+
+	   A NAMED MIX, not arithmetic on a lightness channel. These read
+	   `calc(l - 0.06)` and `calc(l - 0.11)` until step 18, which put the result
+	   somewhere the scale could not name and is what D15 recorded. The catalog
+	   cannot supply the step — it publishes 800 as *700's* hover and nothing
+	   below 800 — so the amount is originated here and named, the way rule
+	   2.11's floor is. Black rather than white because the fill is chromatic:
+	   darkening raises the contrast with a white label, lightening lowers it.
+	   Theme-invariant, because the 800 step is.
+	   docs/foundations/color.md D15, §5 step 18. */
+	--rux-fill-hover-mix:  12%;
+	--rux-fill-active-mix: 22%;
+	--rux-button-accent-hover-background: 	color-mix(in oklab, var(--rux-black) var(--rux-fill-hover-mix), var(--rux-button-accent-background));
+	--rux-button-accent-active-background:	color-mix(in oklab, var(--rux-black) var(--rux-fill-active-mix), var(--rux-button-accent-background));
 
 	/* ─── COMPONENT · button ghost ─────────────────────────────────────────────── */
 
@@ -2026,7 +2046,6 @@
 	color-scheme: light;
 
 	/* ─── Primitives ──────────────────────────────────────────────────────── */
-	--rux-gray:   oklch(from var(--rux-neutral) 98% c h);
 
 	/* ─── COLOR · the catalog's scales, light ──────────────────────────────── */
 	/* The same steps, measured off the same page with its theme class flipped.
@@ -2174,6 +2193,13 @@
 	--rux-badge-solid-fg-lightness: 99%;
 
 	/* ─── Surfaces ────────────────────────────────────────────────────────── */
+	/* Nothing is lighter than the page in light theme, so "elevated" has no
+	   colour to move to and carries its elevation entirely in the shadow —
+	   which is what it already did: the old calc(l + 6%) clamped at 100% here
+	   and was a no-op. Named now instead of silently doing nothing. */
+	--rux-card-bg-elevated: var(--rux-background-100);
+	--rux-card-bg-recessed: oklch(94% 0 0);
+
 	/* --rux-panel-attached-bg (COMPONENT · panel, above) is a direct value,
 	   not aliased through --rux-surface-0 — needs its own light-theme
 	   override here for the same reason --rux-surface-0 used to. */
