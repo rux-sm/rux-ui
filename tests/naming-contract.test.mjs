@@ -1,3 +1,15 @@
+/* Rules R1 (partly) — the class shape.
+ *
+ * Enforces docs/foundations/naming.md rules 2.2 and 2.3. That document states
+ * the rules; this file is the rule made executable.
+ *
+ * Note what is NOT here: rule 2.1's operative half — no sibling blocks for one
+ * component — has no test, because nothing declares which blocks belong to
+ * which component. naming.md D1, and its step 2.
+ *
+ * The .is-* / .has-* check below is SHAPE only. state.md rules 2.1-2.2 own when
+ * either may be used at all, and that half is likewise unenforced. */
+
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";

@@ -19,7 +19,7 @@ roles onto that vocabulary.
 | [`layout.md`](layout.md) | 1.5.0 | 8 done · 1 open | — |
 | [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
-| `naming.md` | — | not written | — |
+| [`naming.md`](naming.md) | 1.0.0 | 1 done · 4 open | — |
 | [`state.md`](state.md) | 1.0.0 | 1 done · 4 open | — |
 
 `../motion.md` exists at the component tier and is not yet a foundation document; folding
@@ -63,7 +63,7 @@ document once one claims them.
 | `layout.md` | — breakpoints predate them too | written — breakpoints, space, radius, Materials |
 | `color.md` | **R6**, the color half — tokens only, both themes | written — rule 2.1 |
 | `motion.md` | **R6**, the duration/easing half | planned |
-| `naming.md` | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | **unplanned** |
+| [`naming.md`](naming.md) | **R1, R2, R4, R5** — one block per component, one modifier vocabulary, namespaces, every emitted class resolves | written |
 | [`state.md`](state.md) | **R3, R7, R8** — aria is the state of record, one overlay kernel, focus is visible everywhere | written |
 
 **R9 and R10 are deliberately absent.** The gallery as contract surface and "docs cite
@@ -71,15 +71,22 @@ tokens, not numbers" are process rules, and their homes are `CLAUDE.md` and
 `../portability-audit.md` rather than any foundation document. Naming them is what makes
 this routing exhaustive instead of a list of the tractable ones.
 
-**Four of the eight operative design rules still have no home.** When this table was
-written it was seven: R6 was the only one the set covered, and the note here recorded that
-four of the seven were *already enforced* — R3, R4 and R8 by their own contract suites, R5 by
-`class-resolution` — making them live rules whose only statement was a test. `state.md` has
-since taken **R3, R7 and R8**, which fixes that inversion for three of them and leaves it
-standing for R4 and R5. Both belong to `naming.md`, which is **not written**; **R1 and R2**
-are unenforced and unhomed alongside them. That makes `naming.md` the remaining gap in this
-set, and R7 the proof the gap is worth closing — it was the one rule stated nowhere *and*
-checked by nothing, and `state.md` §3 found its scope genuinely ambiguous on first reading.
+**Every operative design rule now has a home.** When this table was written, seven of the
+eight had none: R6 was the only one the set covered, and four of the seven were *already
+enforced* — R3, R4 and R8 by their own contract suites, R5 by `class-resolution` — making
+them live rules whose only statement was a test. `state.md` took R3, R7 and R8;
+`naming.md` took R1, R2, R4 and R5. R6's colour half is in `color.md` and its duration and
+easing half waits on `motion.md`, the one document still unwritten.
+
+**The inversion is fixed; the enforcement gaps it exposed are not.** Writing the two
+documents was mostly transcription, and the value was in what transcription forced someone
+to look at. **R7** was stated nowhere and checked by nothing, and `state.md` §3 found its
+scope genuinely ambiguous — `menu.js`'s comment and R7's sentence disagree about whether it
+governs all dismissal. **R2** was never enforced either, and `naming.md` §3 found four
+drifts a denylist would have caught, including one modifier carrying two concepts. **R1**
+turned out to be half enforced: the BEM pattern is checked, and the sentence the rule
+actually turns on is not. Three rules, three tests still to write, all recorded as numbered
+steps.
 
 **A caution about the shape of this set.** These documents are partitioned by *this
 repository's rules*. The table above them partitions by *Geist's pages* — a source for

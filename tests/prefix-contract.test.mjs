@@ -1,5 +1,9 @@
 /* Rule R4 — namespace everything portable.
  *
+ * Enforces docs/foundations/naming.md rule 2.5. That document states the rule;
+ * this file is the rule made executable. The accepted-bare lists below are its
+ * ten recorded exceptions, and naming.md §3 carries the same count.
+ *
  * data-rux-* for attributes, --rux-* for public custom properties, --_* for
  * private ones (ONE private convention, not two), rux: for events, rux- for
  * keyframes — all only inside rux-ui/.

@@ -1,4 +1,9 @@
 /* Every .rux-* class that ships in markup or is written by JS must resolve to a
+ *
+ * Enforces docs/foundations/naming.md rule 2.6 (audit R5). That document states
+ * the rule; this file is the rule made executable. Its accepted-unresolved list
+ * is empty, which naming.md §3 records: R5 is the one of R1/R2/R4/R5 that holds
+ * completely.
  * rule in some stylesheet.
  *
  * This closes the blind spot CLAUDE.md names: "the test suite does not cover
