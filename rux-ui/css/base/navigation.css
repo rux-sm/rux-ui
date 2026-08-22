@@ -86,7 +86,7 @@
 	font: inherit;
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-button-font-weight);
-	line-height: 1;
+	line-height: var(--rux-button-line-height);
 	white-space: nowrap;
 	cursor: pointer;
 	transition:

@@ -659,10 +659,14 @@
 }
 
 .sched-trip-itinerary__source {
+	/* label-12's metrics; the colour is deliberately not the role's, since this
+	   line is deemphasised beside the stop it annotates. Rule 2.2's colour
+	   clause is what permits the split. */
 	color: var(--rux-text-disabled);
-	font-size: var(--rux-size-12);
-	font-weight: var(--rux-weight-400);
-	line-height: 1;
+	font-size: var(--rux-text-label-12-size);
+	font-weight: var(--rux-text-label-12-weight);
+	letter-spacing: var(--rux-text-label-12-tracking);
+	line-height: var(--rux-text-label-12-line-height);
 }
 
 .sched-trip-itinerary__source--manual {

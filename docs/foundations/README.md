@@ -15,10 +15,10 @@ roles onto that vocabulary.
 
 | Document | Contract | Status | Blocked on |
 |---|---|---|---|
-| [`typography.md`](typography.md) | 4.5.0 | 49 done · 5 deferred | — |
+| [`typography.md`](typography.md) | 4.9.0 | 55 done · 5 deferred | — |
 | [`layout.md`](layout.md) | 1.0.0 | 2 done · 5 open | — |
 | `spacing.md` | — | not written | `layout.md` Q4 |
-| [`color.md`](color.md) | 3.0.0 | 18 done | — |
+| [`color.md`](color.md) | 3.0.0 | 19 done | — |
 | `motion.md` | — | not written | — |
 | `naming.md` | — | not written | — |
 | `state.md` | — | not written | — |
@@ -142,6 +142,33 @@ version comparison and the review is a diff of §5 between two tags.
 
 Adoption is deliberate, never automatic. A consumer MAY stay on an older contract version;
 what it MUST NOT do is claim conformance to a version it has not read.
+
+### 2.6 An element with no close match adapts; it does not earn a new rule
+
+When an element's current values match no published option, the default is to **change the
+element** to the nearest published option. It is not evidence that the foundation is short.
+
+This is the direction of travel, and it only runs one way. A foundation document is written
+against a measured source; an element is written against whatever the person building it
+needed that afternoon. When they disagree the element is the weaker claim, and "this one is
+special" is what every element says. Left to accumulate, those exceptions *are* the old
+system — the foundation ends up describing nothing that renders.
+
+So: a new rung, role, or token requires showing the **catalog is genuinely short** — a need
+that recurs, that no published option can express, and that a downstream would hit too.
+An element being unusual is not that. A value being someone's earlier preference is not
+that. Where the nearest option is not a perfect fit, the imperfection is accepted and the
+element moves; where it is genuinely unusable, that is a defect in the foundation and gets
+an amendment with the argument on record.
+
+The corollary for consolidation: **finished foundations are the only vocabulary.** Once a
+document is settled, every element it governs is expected to resolve entirely within it, and
+a review that finds otherwise is finding work, not an exception.
+
+*(Added 2026-08-22 by the owner's standing instruction: adapt content to the foundations;
+where a current element has no close match, pick a good option from the foundation and
+change it. Applies to all work going forward. Supersedes the closing sentence of
+`typography.md` rule 2.2's "metric axes" clause, which had the default backwards.)*
 
 ### 2.5 Versioning rules
 

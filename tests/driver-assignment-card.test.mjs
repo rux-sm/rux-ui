@@ -670,9 +670,15 @@ test("responsive CSS protects narrow layouts and touch targets", async () => {
 		css,
 		/\.driver-assignment-card__response-state--danger\s*\{[^}]*--_state-color:\s*var\(--rux-danger\)/s,
 	);
-	/* The emphasised driver type size is tokenised now (--rux-size-24 is
-	   1.5rem); the -bus- and -route- variants no longer exist. */
-	assert.match(css, /--sched-driver-time-size:\s+var\(--rux-size-24\)/);
+	/* The emphasised driver type reads the copy-24 role whole, rather than the
+	   --sched-driver-time-size alias it used to pin (typography.md step 60 —
+	   the alias had one consumer and stated only the size axis). The -bus- and
+	   -route- variants no longer exist. */
+	assert.match(
+		css,
+		/\.driver-assignment-card__time\s*\{[^}]*line-height:\s*var\(--rux-text-copy-24-line-height\)/s,
+	);
+	assert.doesNotMatch(css, /--sched-driver-time-size/);
 	assert.doesNotMatch(
 		css,
 		/@container driver-assignment-card \(max-width: 479px\)[\s\S]*?\.driver-assignment-card__response-actions\s*\{[\s\S]*?display:\s*flex/,

@@ -226,7 +226,7 @@
 	border-radius: var(--sched-team-chat-message-radius);
 	color: var(--rux-text-primary);
 	font-size: var(--rux-size-14);
-	line-height: 1.4;
+	line-height: var(--rux-line-height-20);
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
 }

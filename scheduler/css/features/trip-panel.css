@@ -318,7 +318,7 @@
 	letter-spacing: var(--rux-text-label-12-tracking);
 	padding-bottom: var(--rux-space-2);
 	border-bottom: var(--rux-border-width) solid var(--rux-card-border);
-	line-height: 1;
+	line-height: var(--rux-text-label-12-line-height);
 }
 .sched-scope-trip__section-label--minor {
 	color: var(--rux-text-secondary);
@@ -411,7 +411,7 @@
 	font-size: var(--rux-size-14);
 	font-variant-numeric: tabular-nums;
 	font-weight: var(--rux-weight-400);
-	line-height: 1;
+	line-height: var(--rux-line-height-20);
 	white-space: nowrap;
 }
 .sched-scope-trip__po-coverage > .rux-icon {
@@ -913,14 +913,4 @@
 	.sched-scope-trip__requirements-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
-}
-
-/* — Scoped type overrides ————————————————————————————————————————————————— */
-
-.sched-scope-trip .rux-field__label {
-	font-size: var(--rux-size-12);
-	font-weight: var(--rux-weight-400);
-	color: var(--rux-text-secondary);
-	letter-spacing: var(--rux-tracking-normal);
-	line-height: 1;
 }

@@ -17,7 +17,7 @@
 	resize: none;
 	font-family: var(--rux-font-mono);
 	font-size: var(--rux-size-14);
-	line-height: 1.5;
+	line-height: var(--rux-line-height-20);
 	white-space: pre-wrap;
 }
 

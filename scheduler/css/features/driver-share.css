@@ -37,7 +37,6 @@
 	--sched-driver-page-title-size:         clamp(2.25rem, 7vw, 2.5rem);
 	--sched-driver-date-primary-size:       var(--rux-size-16);
 	--sched-driver-date-primary-weight:     var(--rux-weight-400);
-	--sched-driver-time-size:               var(--rux-size-24);
 	--sched-driver-primary-size:            var(--rux-size-18);
 	--sched-driver-secondary-size:          var(--rux-size-18);
 	--sched-driver-label-size:              var(--rux-size-12);
@@ -315,7 +314,7 @@ html {
 	color: var(--_state-color);
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-400);
-	line-height: 1;
+	line-height: var(--rux-button-line-height);
 	user-select: none;
 }
 
@@ -490,11 +489,16 @@ html {
 .driver-assignment-card__time {
 	display: block;
 	margin: 0;
-	color: var(--rux-text-primary);
-	font-size: var(--sched-driver-time-size);
-	font-weight: var(--rux-weight-400);
-	line-height: 1;
-	letter-spacing: var(--rux-tracking-tight);
+	/* copy-24, whole. Geist publishes no role for a large tabular readout, and
+	   README.md §2.6 says the element adapts rather than earning one: this was
+	   24px at weight 400 with tracking-tight and no leading, which is copy-24 on
+	   three metric axes and an improvisation on the fourth. The -0.02em goes.
+	   tabular-nums stays — digit alignment in a column is not a type axis. */
+	color: var(--rux-text-copy-24-color);
+	font-size: var(--rux-text-copy-24-size);
+	font-weight: var(--rux-text-copy-24-weight);
+	line-height: var(--rux-text-copy-24-line-height);
+	letter-spacing: var(--rux-text-copy-24-tracking);
 	font-variant-numeric: tabular-nums;
 }
 

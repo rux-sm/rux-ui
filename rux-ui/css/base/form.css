@@ -453,7 +453,7 @@
   pointer-events: none;
   color: var(--rux-text-disabled);
   font-size: var(--rux-size-14);
-  line-height: 1;
+  line-height: var(--rux-line-height-20);
 }
 
 .rux-input-group__prefix { left: var(--rux-control-padding-inline); }

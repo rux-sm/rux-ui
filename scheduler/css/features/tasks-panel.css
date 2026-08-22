@@ -116,14 +116,14 @@
 	color: var(--rux-text-primary);
 	font-weight: var(--rux-weight-400);
 	font-size: var(--rux-size-14);
-	line-height: 1.4;
+	line-height: var(--rux-line-height-20);
 	overflow-wrap: anywhere;
 }
 
 .sched-tasks__trip-customer {
 	color: var(--rux-text-secondary);
 	font-size: var(--rux-size-12);
-	line-height: 1.4;
+	line-height: var(--rux-line-height-16);
 	overflow-wrap: anywhere;
 }
 

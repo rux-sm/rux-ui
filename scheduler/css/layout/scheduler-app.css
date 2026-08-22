@@ -385,7 +385,7 @@
 	font: inherit;
 	font-size: var(--rux-button-font-size);
 	font-weight: var(--rux-weight-400);
-	line-height: 1;
+	line-height: var(--rux-button-line-height);
 	cursor: pointer;
 	padding: 0;
 	transition: background var(--rux-duration-instant) var(--rux-ease-out);
@@ -615,7 +615,7 @@
 	padding-bottom: var(--rux-space-1);
 	color: var(--rux-text-disabled);
 	font-weight: var(--rux-weight-400);
-	line-height: 1;
+	line-height: var(--rux-button-line-height);
 	text-align: center;
 }
 
