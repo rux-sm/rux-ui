@@ -3,9 +3,10 @@
  * Enforces docs/foundations/naming.md rules 2.2 and 2.3. That document states
  * the rules; this file is the rule made executable.
  *
- * Note what is NOT here: rule 2.1's operative half — no sibling blocks for one
- * component — has no test, because nothing declares which blocks belong to
- * which component. naming.md D1, and its step 2.
+ * Note what is NOT here: rule 2.1's operative half — one block per component,
+ * declared in one home — lives in tests/block-ownership.test.mjs, which needs
+ * whole-selector parsing across both layers rather than the class-name census
+ * this file does. naming.md step 14 wrote it; D1 is closed.
  *
  * The .is-* / .has-* check below is SHAPE only. state.md rules 2.1-2.2 own when
  * either may be used at all, and that half is likewise unenforced. */
