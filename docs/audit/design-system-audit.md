@@ -517,31 +517,45 @@ renames marked ⚠ are breaking and must go through the ledger + vendored-consum
 > longer the place a rule is *stated*. As each foundation document lands, the rules in its
 > domain move there and this list keeps only the test mapping. Rule 10's "the ledger is how
 > it changes" is the principle `docs/foundations/` generalizes.
+>
+> **Moved so far:** **R6**'s colour half to `color.md` (rule 2.1); **R1, R2, R4 and R5** to
+> `naming.md` (rules 2.1, 2.4, 2.5, 2.6) by that document's step 4. **Still stated here:**
+> **R3, R7 and R8**, which `state.md` has claimed and will move on its own consolidation
+> step; **R6**'s duration/easing half, waiting on `motion.md`; and **R9** and **R10**, whose
+> homes are `CLAUDE.md` and `../portability-audit.md` rather than any foundation document.
+>
+> **Every ★ below is spent.** All four tests it marked as worth writing now exist —
+> `state-contract`, `focus-contract`, `motion-contract` and `gallery-coverage` — so the
+> marker is kept only where this list still describes work, which is nowhere.
 
-Each rule names the test that can enforce it. Rules marked ★ are new tests worth writing;
-the others extend existing suites.
+Each rule names the test that enforces it. Every one of them now exists; the ★ that marked
+"worth writing" is gone from this list, and survives only inside §6's struck-through
+history, where it is a record rather than a plan.
 
-1. **One block per component.** A component's container, elements, and modifiers share one
-   BEM block; sibling blocks for parts of one component are prohibited.
-   *(extends `tests/naming-contract.test.mjs` — element-without-block detection)*
-2. **One modifier vocabulary.** Sizes are `--sm/--md/--lg`; full-width is `--block`; quiet
-   is `--ghost`; filled is `--solid`; destructive is `--danger`. New modifier names require
-   a ledger entry. *(naming-contract: synonym denylist)*
+1. **One block per component.** **Moved** to
+   [`naming.md`](../foundations/naming.md) rule 2.1, which states it together with the three
+   clauses that made it testable at all — ownership, subject, contextual override.
+   *(`tests/naming-contract` for the class shape; `tests/block-ownership` for the rule)*
+2. **One modifier vocabulary.** **Moved** to
+   [`naming.md`](../foundations/naming.md) rule 2.4. The list of names this entry used to
+   carry was also **wrong** — `naming.md` Q1 answered that `--md` is *forbidden* rather than
+   canonical, because publishing it would make every call site restate the default. A rule
+   stated in two places is a rule that will drift, and this one had.
+   *(`tests/modifier-vocabulary`)*
 3. **Aria is the state of record.** Where an aria attribute expresses the state
    (`aria-expanded`, `aria-pressed`, `aria-selected`, `aria-current`, `[hidden]`), CSS
    selects on it and JS writes only it. `.is-*` is reserved for states with no aria
    equivalent (`is-dragging`, `is-scrolled`, `is-resizing`). BEM `--state` modifiers are
    prohibited. JS must not write a class or attribute no stylesheet reads.
-   *(★ state-contract test: forbid `--open|--active|--hidden` modifiers; flag `.is-*`
+   *(`tests/state-contract`: forbid `--open|--active|--hidden` modifiers; flag `.is-*`
    written in `rux-ui/js/` with no CSS reader)*
-4. **Namespace everything portable.** `data-rux-*` for attributes, `--rux-*` for public
-   custom properties, `--_*` for private ones (one private convention, not two), `rux:` for
-   events with past-tense verbs, `rux-` for keyframes — all only in `rux-ui/`.
-   *(★ prefix-contract test over `rux-ui/js` + `rux-ui/css`)*
-5. **Every emitted class resolves.** Any `rux-*` class appearing in `index.html` or
-   written by JS must be defined in a stylesheet or explicitly registered as a
-   markup-hook. *(★ class-resolution test — this is the suite's current blind spot per
-   CLAUDE.md, and it would have caught five ghosts)*
+4. **Namespace everything portable.** **Moved** to
+   [`naming.md`](../foundations/naming.md) rule 2.5, whose §1.3 carries the namespace table.
+   *(`tests/prefix-contract` over `rux-ui/js` + `rux-ui/css`; ten accepted-bare entries,
+   each with a reason and an audit reference)*
+5. **Every emitted class resolves.** **Moved** to
+   [`naming.md`](../foundations/naming.md) rule 2.6.
+   *(`tests/class-resolution` — written since, and its accepted-unresolved list is empty)*
 6. **Tokens only, both themes.** No literal duration, easing, or z-index in any rule.
    **The colour half of this rule has moved** to
    [`docs/foundations/color.md`](../foundations/color.md) rule 2.1, as this document's own
@@ -555,10 +569,10 @@ the others extend existing suites.
    listeners.
 8. **Focus is visible everywhere.** Every base file that styles an interactive selector
    carries a `:focus-visible` rule keyed to `--rux-accent-ring`.
-   *(★ focus-contract test: file styles `:hover` on interactive element ⇒ must contain
+   *(`tests/focus-contract`: file styles `:hover` on interactive element ⇒ must contain
    `:focus-visible`)*
 9. **The gallery is the contract surface.** Every base block appears in `gallery.html`,
-   with behavior modules loaded, before it ships. *(★ gallery-coverage test: CSS block
+   with behavior modules loaded, before it ships. *(`tests/gallery-coverage`, a ratchet: CSS block
    census ⊆ gallery class census)*
 10. **Docs cite tokens, not numbers.** Component docs reference token names; a literal px
     in a doc is presumed stale. Renames and public-surface changes go through
